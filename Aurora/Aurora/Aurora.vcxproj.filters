@@ -1,0 +1,377 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="include">
+      <UniqueIdentifier>{fd695e78-6142-4b69-a17a-5577f542871d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source">
+      <UniqueIdentifier>{cb9c267b-3455-4614-b144-fc09a534c82f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\drivers">
+      <UniqueIdentifier>{2cde440c-4aa7-4db2-8301-82d1309e02e8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\arch">
+      <UniqueIdentifier>{c7f80fec-a6d4-4a6d-b9d3-891929cf0aef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\arch\x86_64">
+      <UniqueIdentifier>{8663bf69-d004-4da1-9d68-cc471d089d7b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\arch">
+      <UniqueIdentifier>{3544d674-79be-4ff9-a468-0997f12c5087}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\arch\x86_64">
+      <UniqueIdentifier>{0782acb9-941e-4813-96ae-b38b9828a481}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\arch\x86_64\mmngr">
+      <UniqueIdentifier>{b6467ea8-d8e9-4fe4-9164-96e2b06d7988}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\drivers">
+      <UniqueIdentifier>{f1f3ed02-3832-4b17-be4e-71868ec95b05}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\fs">
+      <UniqueIdentifier>{3d52fe5b-4fb0-4ba8-8d17-a709fe686b36}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\fs">
+      <UniqueIdentifier>{285f7c3c-7904-4af9-9866-5221439049b9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\utils">
+      <UniqueIdentifier>{7ae4c9d9-4626-4ce7-ae84-67094bf2e95f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\utils">
+      <UniqueIdentifier>{1f946ce0-f241-4b61-85d7-f9829572af6a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\ipc">
+      <UniqueIdentifier>{539aa80b-8b34-4a92-a748-0c0d7f10f815}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\ipc">
+      <UniqueIdentifier>{7e1ee746-655a-47c1-a775-1d91573ca7f2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\atomic">
+      <UniqueIdentifier>{97005b98-e475-4f81-9fd5-6b83156c9aae}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\atomic">
+      <UniqueIdentifier>{2ca1fb27-0a6d-479c-8049-eaea8d9b724c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\sysserv">
+      <UniqueIdentifier>{dd8e8162-7dcc-4489-a920-072d5adc75ee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\drivers\svga">
+      <UniqueIdentifier>{5b20cff5-b472-450d-a2a9-36e1189706f1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\drivers\svga">
+      <UniqueIdentifier>{d3178b2a-86db-46a4-82ab-bd88c9e146c5}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\include\stdint.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\va_list.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\_xnboot.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\hal.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\arch\x86_64\cpu.h">
+      <Filter>include\arch\x86_64</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\arch\x86_64\apic.h">
+      <Filter>include\arch\x86_64</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\arch\x86_64\ioapic.h">
+      <Filter>include\arch\x86_64</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\string.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\pmmngr.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\mm.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\arch\x86_64\mmngr\vmmngr.h">
+      <Filter>include\arch\x86_64\mmngr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\console.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\stdio.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\arch\x86_64\exception.h">
+      <Filter>include\arch\x86_64</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\drivers\kybrd.h">
+      <Filter>include\drivers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\drivers\mouse.h">
+      <Filter>include\drivers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\drivers\ata.h">
+      <Filter>include\drivers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\fs\fat32.h">
+      <Filter>include\fs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\vfs.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\ctype.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\arch\x86_64\mmngr\kheap.h">
+      <Filter>include\arch\x86_64\mmngr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\arch\x86_64\user64.h">
+      <Filter>include\arch\x86_64</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\screen.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\utils\list.h">
+      <Filter>include\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\drivers\pci.h">
+      <Filter>include\drivers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\arch\x86_64\thread.h">
+      <Filter>include\arch\x86_64</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\sysserv.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\proc.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\pe.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\utils\ring.h">
+      <Filter>include\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\ipc\message.h">
+      <Filter>include\ipc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\atomic\mutex.h">
+      <Filter>include\atomic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\ipc\evntsh.h">
+      <Filter>include\ipc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\callback.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\ipc\dwm_ipc.h">
+      <Filter>include\ipc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\utils\lnklist.h">
+      <Filter>include\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\drivers\svga\vmsvga.h">
+      <Filter>include\drivers\svga</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\drivers\svga\svga_reg.h">
+      <Filter>include\drivers\svga</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\drivers\svga\svga3d_reg.h">
+      <Filter>include\drivers\svga</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\drivers\svga\svga_overlay.h">
+      <Filter>include\drivers\svga</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\drivers\svga\svga_escape.h">
+      <Filter>include\drivers\svga</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\drivers\svga\gmr.h">
+      <Filter>include\drivers\svga</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\drivers\svga\svga_screen.h">
+      <Filter>include\drivers\svga</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\drivers\vga.h">
+      <Filter>include\drivers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\drivers\svga\svga_screen_util.h">
+      <Filter>include\drivers\svga</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\drivers\svga\backdoor_def.h">
+      <Filter>include\drivers\svga</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\drivers\svga\vmmouse_defs.h">
+      <Filter>include\drivers\svga</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\drivers\vmmouse.h">
+      <Filter>include\drivers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\drivers\svga\rgba_arrow.h">
+      <Filter>include\drivers\svga</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\drvmngr.h">
+      <Filter>include</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="init.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="arch\x86_64\cpu.cpp">
+      <Filter>source\arch\x86_64</Filter>
+    </ClCompile>
+    <ClCompile Include="hal.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="arch\x86_64\apic.cpp">
+      <Filter>source\arch\x86_64</Filter>
+    </ClCompile>
+    <ClCompile Include="arch\x86_64\ioapic.cpp">
+      <Filter>source\arch\x86_64</Filter>
+    </ClCompile>
+    <ClCompile Include="string.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="pmmngr.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="mm.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="arch\x86_64\vmmngr.cpp">
+      <Filter>source\arch\x86_64</Filter>
+    </ClCompile>
+    <ClCompile Include="console.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="stdio.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="arch\x86_64\exception.cpp">
+      <Filter>source\arch\x86_64</Filter>
+    </ClCompile>
+    <ClCompile Include="drivers\kybrd.cpp">
+      <Filter>source\drivers</Filter>
+    </ClCompile>
+    <ClCompile Include="drivers\mouse.cpp">
+      <Filter>source\drivers</Filter>
+    </ClCompile>
+    <ClCompile Include="drivers\ata.cpp">
+      <Filter>source\drivers</Filter>
+    </ClCompile>
+    <ClCompile Include="fs\fat32.cpp">
+      <Filter>source\fs</Filter>
+    </ClCompile>
+    <ClCompile Include="vfs.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="arch\x86_64\kheap.cpp">
+      <Filter>source\arch\x86_64</Filter>
+    </ClCompile>
+    <ClCompile Include="arch\x86_64\user64.cpp">
+      <Filter>source\arch\x86_64</Filter>
+    </ClCompile>
+    <ClCompile Include="arch\x86_64\systable.cpp">
+      <Filter>source\arch\x86_64</Filter>
+    </ClCompile>
+    <ClCompile Include="screen.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="drivers\pci.cpp">
+      <Filter>source\drivers</Filter>
+    </ClCompile>
+    <ClCompile Include="arch\x86_64\thread.cpp">
+      <Filter>source\arch\x86_64</Filter>
+    </ClCompile>
+    <ClCompile Include="proc.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="pe.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\ring.cpp">
+      <Filter>source\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="ipc\message.cpp">
+      <Filter>source\ipc</Filter>
+    </ClCompile>
+    <ClCompile Include="atomic\mutex.cpp">
+      <Filter>source\atomic</Filter>
+    </ClCompile>
+    <ClCompile Include="ipc\evntsh.cpp">
+      <Filter>source\ipc</Filter>
+    </ClCompile>
+    <ClCompile Include="sysserv\syswait.cpp">
+      <Filter>source\sysserv</Filter>
+    </ClCompile>
+    <ClCompile Include="sysserv\sysproc.cpp">
+      <Filter>source\sysserv</Filter>
+    </ClCompile>
+    <ClCompile Include="sysserv\valloc.cpp">
+      <Filter>source\sysserv</Filter>
+    </ClCompile>
+    <ClCompile Include="sysserv\sysmem.cpp">
+      <Filter>source\sysserv</Filter>
+    </ClCompile>
+    <ClCompile Include="sysserv\systhread.cpp">
+      <Filter>source\sysserv</Filter>
+    </ClCompile>
+    <ClCompile Include="ipc\dwm_ipc.cpp">
+      <Filter>source\ipc</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\lnklist.cpp">
+      <Filter>source\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="drivers\svga\vmsvga.cpp">
+      <Filter>source\drivers\svga</Filter>
+    </ClCompile>
+    <ClCompile Include="drivers\svga\gmr.cpp">
+      <Filter>source\drivers\svga</Filter>
+    </ClCompile>
+    <ClCompile Include="drivers\svga\svga_screen.cpp">
+      <Filter>source\drivers\svga</Filter>
+    </ClCompile>
+    <ClCompile Include="drivers\vga.cpp">
+      <Filter>source\drivers</Filter>
+    </ClCompile>
+    <ClCompile Include="drivers\svga\svga_screen_util.cpp">
+      <Filter>source\drivers\svga</Filter>
+    </ClCompile>
+    <ClCompile Include="sysserv\sysfb.cpp">
+      <Filter>source\sysserv</Filter>
+    </ClCompile>
+    <ClCompile Include="sysserv\sysmouse.cpp">
+      <Filter>source\sysserv</Filter>
+    </ClCompile>
+    <ClCompile Include="drivers\svga\vm_backdoor.cpp">
+      <Filter>source\drivers\svga</Filter>
+    </ClCompile>
+    <ClCompile Include="sysserv\sysfile.cpp">
+      <Filter>source\sysserv</Filter>
+    </ClCompile>
+    <ClCompile Include="drvmngr.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <NASM Include="arch\x86_64\interrupts.asm">
+      <Filter>source\arch\x86_64</Filter>
+    </NASM>
+    <NASM Include="arch\x86_64\_low_level.asm">
+      <Filter>source\arch\x86_64</Filter>
+    </NASM>
+    <NASM Include="_fast_cpy.asm">
+      <Filter>source</Filter>
+    </NASM>
+    <NASM Include="arch\x86_64\user.asm">
+      <Filter>source\arch\x86_64</Filter>
+    </NASM>
+    <NASM Include="arch\x86_64\switch.asm">
+      <Filter>source\arch\x86_64</Filter>
+    </NASM>
+    <NASM Include="drivers\svga\backdoor_stuff.asm">
+      <Filter>source\drivers\svga</Filter>
+    </NASM>
+  </ItemGroup>
+</Project>

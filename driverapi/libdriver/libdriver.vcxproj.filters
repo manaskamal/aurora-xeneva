@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="include">
+      <UniqueIdentifier>{13dba9bb-a20f-4eb6-a77d-2f1ecd9eeece}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\cpu.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\stdint.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\pci.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\sys.h">
+      <Filter>include</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="entry.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="callback.asm" />
+  </ItemGroup>
+</Project>

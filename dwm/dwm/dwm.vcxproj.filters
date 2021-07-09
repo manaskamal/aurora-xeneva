@@ -1,0 +1,76 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="string.cpp" />
+    <ClCompile Include="allocator.cpp" />
+    <ClCompile Include="bufmngr.cpp" />
+    <ClCompile Include="dwmmsg.cpp" />
+    <ClCompile Include="winlist.cpp" />
+    <ClCompile Include="wm.cpp" />
+    <ClCompile Include="window.cpp" />
+    <ClCompile Include="imgbmp.cpp" />
+    <ClCompile Include="imgpng24.cpp" />
+    <ClCompile Include="imgjpg.cpp">
+      <Filter>codec</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <NASM Include="callback.asm" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="include">
+      <UniqueIdentifier>{acf7bc7f-6b91-467d-a280-6af96815425c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\codec">
+      <UniqueIdentifier>{c955b2d6-2f3f-40ea-aadd-3c1b75f48847}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="codec">
+      <UniqueIdentifier>{aab46e6d-abe4-45bc-8ff8-86f5022097e7}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\include\stdtypes.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\string.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\sys.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\dwm.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\bufmngr.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\allocator.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\dwmmsg.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\window.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\wm.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\winlist.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\color.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\imgbmp.h">
+      <Filter>include\codec</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\imgpng24.h">
+      <Filter>include\codec</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\imgjpg.h">
+      <Filter>include\codec</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,302 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{41392D3C-6BCC-49D5-92B3-B45573FA7C80}</ProjectGuid>
+    <RootNamespace>Aurora</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v110</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v110</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v110</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v110</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\nasm.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <GenerateManifest>false</GenerateManifest>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <GenerateManifest>false</GenerateManifest>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level1</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>E:\Xeneva Project\Xeneva\Aurora\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <SDLCheck>false</SDLCheck>
+      <OmitFramePointers />
+      <PreprocessorDefinitions>ARCH_X64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <IgnoreStandardIncludePath>true</IgnoreStandardIncludePath>
+      <ExceptionHandling>false</ExceptionHandling>
+      <BasicRuntimeChecks />
+      <RuntimeLibrary />
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions</EnableEnhancedInstructionSet>
+      <AssemblerOutput>AssemblyAndSourceCode</AssemblerOutput>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>
+      </GenerateDebugInformation>
+      <OutputFile>F:\EFI\XENEVA\xnkrnl.exe</OutputFile>
+      <AdditionalDependencies />
+      <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
+      <EnableUAC>false</EnableUAC>
+      <GenerateMapFile>true</GenerateMapFile>
+      <MapExports>true</MapExports>
+      <SubSystem>Native</SubSystem>
+      <StackReserveSize>0x100000</StackReserveSize>
+      <LargeAddressAware>true</LargeAddressAware>
+      <Driver>Driver</Driver>
+      <OptimizeReferences>false</OptimizeReferences>
+      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
+      <EntryPointSymbol>_kmain</EntryPointSymbol>
+      <BaseAddress>0xFFFFC00000000000</BaseAddress>
+      <RandomizedBaseAddress />
+      <FixedBaseAddress>false</FixedBaseAddress>
+      <DataExecutionPrevention />
+      <TargetMachine>MachineX64</TargetMachine>
+      <AdditionalOptions>/filealign:0x1000 %(AdditionalOptions)</AdditionalOptions>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level1</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>E:\Xeneva Project\Xeneva\Aurora\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <SDLCheck>false</SDLCheck>
+      <OmitFramePointers>
+      </OmitFramePointers>
+      <PreprocessorDefinitions>ARCH_X64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <IgnoreStandardIncludePath>true</IgnoreStandardIncludePath>
+      <ExceptionHandling>false</ExceptionHandling>
+      <BasicRuntimeChecks>
+      </BasicRuntimeChecks>
+      <RuntimeLibrary>
+      </RuntimeLibrary>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions</EnableEnhancedInstructionSet>
+      <AssemblerOutput>AssemblyAndSourceCode</AssemblerOutput>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>
+      </GenerateDebugInformation>
+      <OutputFile>F:\EFI\XENEVA\xnkrnl.exe</OutputFile>
+      <AdditionalDependencies>
+      </AdditionalDependencies>
+      <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
+      <EnableUAC>false</EnableUAC>
+      <GenerateMapFile>true</GenerateMapFile>
+      <MapExports>true</MapExports>
+      <SubSystem>Native</SubSystem>
+      <StackReserveSize>0x100000</StackReserveSize>
+      <LargeAddressAware>true</LargeAddressAware>
+      <Driver>Driver</Driver>
+      <OptimizeReferences>false</OptimizeReferences>
+      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
+      <EntryPointSymbol>_kmain</EntryPointSymbol>
+      <BaseAddress>0xFFFFC00000000000</BaseAddress>
+      <RandomizedBaseAddress>
+      </RandomizedBaseAddress>
+      <FixedBaseAddress>false</FixedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+      <AdditionalOptions>/filealign:0x1000 %(AdditionalOptions)</AdditionalOptions>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="..\include\arch\x86_64\apic.h" />
+    <ClInclude Include="..\include\arch\x86_64\cpu.h" />
+    <ClInclude Include="..\include\arch\x86_64\exception.h" />
+    <ClInclude Include="..\include\arch\x86_64\ioapic.h" />
+    <ClInclude Include="..\include\arch\x86_64\mmngr\kheap.h" />
+    <ClInclude Include="..\include\arch\x86_64\mmngr\vmmngr.h" />
+    <ClInclude Include="..\include\arch\x86_64\thread.h" />
+    <ClInclude Include="..\include\arch\x86_64\user64.h" />
+    <ClInclude Include="..\include\atomic\mutex.h" />
+    <ClInclude Include="..\include\callback.h" />
+    <ClInclude Include="..\include\console.h" />
+    <ClInclude Include="..\include\ctype.h" />
+    <ClInclude Include="..\include\drivers\ata.h" />
+    <ClInclude Include="..\include\drivers\kybrd.h" />
+    <ClInclude Include="..\include\drivers\mouse.h" />
+    <ClInclude Include="..\include\drivers\pci.h" />
+    <ClInclude Include="..\include\drivers\svga\backdoor_def.h" />
+    <ClInclude Include="..\include\drivers\svga\gmr.h" />
+    <ClInclude Include="..\include\drivers\svga\rgba_arrow.h" />
+    <ClInclude Include="..\include\drivers\svga\svga3d_reg.h" />
+    <ClInclude Include="..\include\drivers\svga\svga_escape.h" />
+    <ClInclude Include="..\include\drivers\svga\svga_overlay.h" />
+    <ClInclude Include="..\include\drivers\svga\svga_reg.h" />
+    <ClInclude Include="..\include\drivers\svga\svga_screen.h" />
+    <ClInclude Include="..\include\drivers\svga\svga_screen_util.h" />
+    <ClInclude Include="..\include\drivers\svga\vmmouse_defs.h" />
+    <ClInclude Include="..\include\drivers\svga\vmsvga.h" />
+    <ClInclude Include="..\include\drivers\vga.h" />
+    <ClInclude Include="..\include\drivers\vmmouse.h" />
+    <ClInclude Include="..\include\drvmngr.h" />
+    <ClInclude Include="..\include\fs\fat32.h" />
+    <ClInclude Include="..\include\hal.h" />
+    <ClInclude Include="..\include\ipc\dwm_ipc.h" />
+    <ClInclude Include="..\include\ipc\evntsh.h" />
+    <ClInclude Include="..\include\ipc\message.h" />
+    <ClInclude Include="..\include\mm.h" />
+    <ClInclude Include="..\include\pe.h" />
+    <ClInclude Include="..\include\pmmngr.h" />
+    <ClInclude Include="..\include\proc.h" />
+    <ClInclude Include="..\include\screen.h" />
+    <ClInclude Include="..\include\stdint.h" />
+    <ClInclude Include="..\include\stdio.h" />
+    <ClInclude Include="..\include\string.h" />
+    <ClInclude Include="..\include\sysserv.h" />
+    <ClInclude Include="..\include\utils\list.h" />
+    <ClInclude Include="..\include\utils\lnklist.h" />
+    <ClInclude Include="..\include\utils\ring.h" />
+    <ClInclude Include="..\include\va_list.h" />
+    <ClInclude Include="..\include\vfs.h" />
+    <ClInclude Include="..\include\_xnboot.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="arch\x86_64\apic.cpp" />
+    <ClCompile Include="arch\x86_64\cpu.cpp" />
+    <ClCompile Include="arch\x86_64\exception.cpp" />
+    <ClCompile Include="arch\x86_64\ioapic.cpp" />
+    <ClCompile Include="arch\x86_64\kheap.cpp" />
+    <ClCompile Include="arch\x86_64\systable.cpp" />
+    <ClCompile Include="arch\x86_64\thread.cpp" />
+    <ClCompile Include="arch\x86_64\user64.cpp" />
+    <ClCompile Include="arch\x86_64\vmmngr.cpp" />
+    <ClCompile Include="atomic\mutex.cpp" />
+    <ClCompile Include="console.cpp" />
+    <ClCompile Include="drivers\ata.cpp" />
+    <ClCompile Include="drivers\kybrd.cpp" />
+    <ClCompile Include="drivers\mouse.cpp" />
+    <ClCompile Include="drivers\pci.cpp" />
+    <ClCompile Include="drivers\svga\gmr.cpp" />
+    <ClCompile Include="drivers\svga\svga_screen.cpp" />
+    <ClCompile Include="drivers\svga\svga_screen_util.cpp" />
+    <ClCompile Include="drivers\svga\vmsvga.cpp" />
+    <ClCompile Include="drivers\svga\vm_backdoor.cpp" />
+    <ClCompile Include="drivers\vga.cpp" />
+    <ClCompile Include="drvmngr.cpp" />
+    <ClCompile Include="fs\fat32.cpp" />
+    <ClCompile Include="hal.cpp" />
+    <ClCompile Include="init.cpp" />
+    <ClCompile Include="ipc\dwm_ipc.cpp" />
+    <ClCompile Include="ipc\evntsh.cpp" />
+    <ClCompile Include="ipc\message.cpp" />
+    <ClCompile Include="mm.cpp" />
+    <ClCompile Include="pe.cpp" />
+    <ClCompile Include="pmmngr.cpp" />
+    <ClCompile Include="proc.cpp" />
+    <ClCompile Include="screen.cpp" />
+    <ClCompile Include="stdio.cpp" />
+    <ClCompile Include="string.cpp" />
+    <ClCompile Include="sysserv\sysfb.cpp" />
+    <ClCompile Include="sysserv\sysfile.cpp" />
+    <ClCompile Include="sysserv\sysmem.cpp" />
+    <ClCompile Include="sysserv\sysmouse.cpp" />
+    <ClCompile Include="sysserv\sysproc.cpp" />
+    <ClCompile Include="sysserv\systhread.cpp" />
+    <ClCompile Include="sysserv\syswait.cpp" />
+    <ClCompile Include="sysserv\valloc.cpp" />
+    <ClCompile Include="utils\lnklist.cpp" />
+    <ClCompile Include="utils\ring.cpp" />
+    <ClCompile Include="vfs.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <NASM Include="arch\x86_64\interrupts.asm" />
+    <NASM Include="arch\x86_64\switch.asm" />
+    <NASM Include="arch\x86_64\user.asm" />
+    <NASM Include="arch\x86_64\_low_level.asm">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+    </NASM>
+    <NASM Include="drivers\svga\backdoor_stuff.asm" />
+    <NASM Include="_fast_cpy.asm" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\nasm.targets" />
+  </ImportGroup>
+</Project>
