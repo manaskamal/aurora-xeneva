@@ -61,7 +61,6 @@ void _kmain (KERNEL_BOOT_INFO *info) {
 	
 	//!initialize every drivers
 	driver_mngr_initialize(info);
-	//git test
 
 #ifdef ARCH_X64
 	initialize_scheduler();
