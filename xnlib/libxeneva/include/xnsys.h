@@ -81,6 +81,8 @@ extern "C" void sys_move_cursor (uint32_t visible, uint32_t x,uint32_t y);
 extern "C" void sys_open_file (FILE *file, const char* filename);
 extern "C" void sys_read_file (FILE *file, unsigned char* buffer, int length);
 extern "C" uint16_t sys_get_scanline ();
+extern "C" uint64_t sys_get_used_ram ();
+extern "C" uint64_t sys_get_free_ram ();
 extern void message_poll (message_t *msg);
 extern void register_xn_application ();
 #endif

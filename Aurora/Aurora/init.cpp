@@ -58,7 +58,7 @@ void _kmain (KERNEL_BOOT_INFO *info) {
 	initialize_mouse();
 	message_init ();
 	dwm_ipc_init();
-	
+
 	//!initialize every drivers
 	driver_mngr_initialize(info);
 

@@ -26,3 +26,14 @@ void map_shared_memory (uint16_t dest_id,uint64_t pos, size_t size) {
 	for (int i = 0; i < size / 4096; i++)
 		cr3[pml4_index(pos + i * 4096)] = current_cr3[pml4_index(pos + i * 4096)];
 }
+
+
+uint64_t sys_get_used_ram () {
+	x64_cli ();
+	return pmmngr_get_used_ram ();
+}
+
+uint64_t sys_get_free_ram () {
+	x64_cli ();
+	return pmmngr_get_free_ram ();
+}

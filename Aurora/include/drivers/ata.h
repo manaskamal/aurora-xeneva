@@ -124,4 +124,6 @@
 extern void ata_initialize ();
 extern uint8_t ata_read_28 (uint32_t lba, uint16_t sec_count, uint8_t *buf);
 extern uint8_t ata_write_one (uint8_t *buf, uint32_t lba);
+extern uint8_t  ata_slave_read_28 (uint32_t lba, uint16_t sec_count, uint8_t *buf);
+extern uint8_t  ata_slave_write_one (uint8_t *buf, uint32_t lba);
 #endif

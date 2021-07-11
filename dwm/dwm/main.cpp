@@ -162,8 +162,8 @@ void main () {
 		}
 	}
 
-	/*FILE file;
-	sys_open_file (&file, "assam.bmp");
+	FILE file;
+	sys_open_file (&file, "game.bmp");
 
 	for (int i = 0; i < 3076096/4096; i++){
 		valloc (0xFFFFD00000200000 + i * 4096);
@@ -175,7 +175,7 @@ void main () {
 	bitmap_info *info = (bitmap_info*)(buffer_i + sizeof(bitmap_img));
 	int bwidth = info->biWidth;
 	int bheight = info->biHeight;
-	draw_bmp_image (buffer_i, width/2 - bwidth/2, height/2 - bheight/2);*/
+	draw_bmp_image (buffer_i, width/2 - bwidth/2, height/2 - bheight/2);
 	//draw_jpg_image (buffer_i,file.size);
 	
 	message_t msg;
@@ -260,9 +260,9 @@ void main () {
 				if (mouse_img_i[y* 11 + x] & 0xFF000000)
 					lfb[(y + mouse_y) * width + (x + mouse_x)] = mouse_img_i[y * 11 + x];
 		
-		//copy_to_screen((uint32_t*)0x0000600000000000,&update_rect);
+		copy_to_screen((uint32_t*)0x0000600000000000,&update_rect);
 		//!Store mouse old position
-     	//sys_fb_update();
+     	sys_fb_update();
 
 	}
 }

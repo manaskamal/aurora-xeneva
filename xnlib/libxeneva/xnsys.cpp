@@ -44,4 +44,7 @@ void register_xn_application () {
 	initialize_allocator (0x10);
 	drawer_register();
 	register_font_lib();
+	for (int i = 0; i < get_screen_width()*get_screen_height()/4096; i++) 
+		valloc (0x0000600000000000 + i * 4096);
+
 }

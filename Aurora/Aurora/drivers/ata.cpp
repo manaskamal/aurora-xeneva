@@ -14,6 +14,7 @@
 uint8_t ata_pm = 0;
 uint8_t ide_buf[512];
 uint8_t ata_drive;
+uint8_t ata_slave_drive;
 char    ata_device_name[40];
 
 
@@ -226,9 +227,6 @@ uint8_t  ata_write_one (uint8_t *buf, uint32_t lba)
 	return 1;
 }
 
-
-
-
 uint8_t  ata_read_28 (uint32_t lba, uint16_t sec_count, uint8_t *buf)
 {
 	//! we only support 28 bit LBA so far
@@ -341,6 +339,123 @@ void  ata_read_48 (uint64_t lba, uint16_t sector_count, uint8_t *target)
 	//kprintf("\nData 48 bit read");
 }
 
+uint8_t  ata_slave_read_28 (uint32_t lba, uint16_t sec_count, uint8_t *buf)
+{
+	//! we only support 28 bit LBA so far
+	uint16_t io = 0;
+	switch (ata_slave_drive)
+	{
+	case (ATA_PRIMARY << 1 |  ATA_MASTER):
+		io = ATA_PRIMARY_IO;
+		ata_slave_drive = ATA_MASTER;
+		break;
+	case (ATA_PRIMARY << 1 | ATA_SLAVE):
+		io = ATA_PRIMARY_IO;
+		ata_slave_drive = ATA_SLAVE;
+		break;
+	case (ATA_SECONDARY << 1 | ATA_MASTER):
+		io = ATA_SECONDARY_IO;
+		ata_slave_drive = ATA_MASTER;
+		break;
+	case (ATA_SECONDARY << 1 | ATA_SLAVE):
+		io = ATA_SECONDARY_IO;
+		ata_slave_drive = ATA_SLAVE;
+		break;
+	default:
+		return 0;
+	}
+
+	uint8_t cmd = (ata_slave_drive == ATA_MASTER ? 0xE0 : 0xF0);
+
+	ata_wait_busy (io);
+	
+	outportb (io + ATA_REG_HDDEVSEL, (cmd | (uint8_t) ((lba >> 24 & 0x0F))));
+	outportb (io + 1, 0x00);
+
+	//! single sector read
+	outportb (io + ATA_REG_SECCOUNT0, sec_count);
+
+	//! select LBA
+	outportb (io + ATA_REG_LBA0, (uint8_t)((lba)));
+	outportb (io + ATA_REG_LBA1, (uint8_t)((lba) >> 8));
+	outportb (io + ATA_REG_LBA2, (uint8_t)((lba) >> 16));
+
+	//! select read command
+	outportb (io + ATA_REG_COMMAND, ATA_CMD_READ_PIO);
+
+	//! wait untill ready
+	ide_poll (io);
+	
+	for (int i = 0; i < 256; i++ )
+	{
+			
+	   *(uint16_t*)(buf + i * 2) = inportw (io + ATA_REG_DATA);
+    }
+	
+	
+	ide_400ns_delay(io);
+	//ide_wait_irq ();
+	return 0;
+}
+
+uint8_t  ata_slave_write_one (uint8_t *buf, uint32_t lba)
+{
+	uint16_t io = 0;
+	switch (ata_slave_drive)
+	{
+	case (ATA_PRIMARY << 1 | ATA_MASTER):
+		io = ATA_PRIMARY_IO;
+		ata_slave_drive = ATA_MASTER;
+		break;
+	case (ATA_PRIMARY << 1 | ATA_SLAVE):
+		io = ATA_PRIMARY_IO;
+		ata_slave_drive = ATA_SLAVE;
+		break;
+	case (ATA_SECONDARY << 1 | ATA_MASTER):
+		io = ATA_SECONDARY_IO;
+		ata_slave_drive = ATA_MASTER;
+		break;
+	case (ATA_SECONDARY << 1 | ATA_SLAVE):
+		io = ATA_SECONDARY_IO;
+		ata_slave_drive = ATA_SLAVE;
+		break;
+	default:
+		return 0;
+	}
+
+	uint8_t  cmd = (ata_slave_drive == ATA_MASTER ? 0xE0 : 0xF0);
+
+	ata_wait_busy (io);
+	outportb(io + ATA_REG_HDDEVSEL, (cmd | (uint8_t) ((lba >> 24 & 0xFF))));
+	outportb(io + 1, 0x00);
+
+	//! single sector write
+    outportb(io + ATA_REG_SECCOUNT0, 1);
+
+	//! select LBA
+	outportb(io + ATA_REG_LBA0, (uint8_t)((lba)));
+	outportb(io + ATA_REG_LBA1, (uint8_t)((lba) >> 8));
+	outportb(io + ATA_REG_LBA2, (uint8_t)((lba) >> 16));
+
+	//! select write command
+	outportb (io + ATA_REG_COMMAND, ATA_CMD_WRITE_PIO);
+
+	//! wait until ready
+	ide_poll(io);
+
+	ata_wait_busy (io);
+	ata_wait_drq (io);
+	for (int i=0; i < 256; i++)
+	{
+	
+		x64_outportw(io + ATA_REG_DATA, *(uint16_t *)(buf + i * 2));
+	}
+
+	ide_400ns_delay (io);
+	return 1;
+}
+
+
 void  ata_probe ()
 {
 	if (ide_identify (ATA_PRIMARY, ATA_MASTER))
@@ -353,15 +468,25 @@ void  ata_probe ()
 			ata_device_name[i + 1] = ide_buf[ATA_IDENT_MODEL + i];
 		}
 
-		//printf("ATA: Device: %s\n", ata_device_name);
+		//printf("[ATA]: Primary-Master Device: %s\n", ata_device_name);
 		ata_drive = (ATA_PRIMARY << 1) | ATA_MASTER;
 	}
 
-	ide_identify (ATA_PRIMARY, ATA_SLAVE);
+	if (ide_identify (ATA_PRIMARY, ATA_SLAVE)) {
+		//ata_pm = 1;
+		memset (ata_device_name, 0, 40);
+		for (int i= 0; i < 40; i += 2)
+		{
+			ata_device_name[i] = ide_buf[ATA_IDENT_MODEL + i + 1];
+			ata_device_name[i + 1] = ide_buf[ATA_IDENT_MODEL + i];
+		}
+
+		ata_slave_drive = (ATA_PRIMARY << 1) | ATA_SLAVE;
+		//printf("[ATA]: Primary-Slave Device: %s\n", ata_device_name);
+	}
 }
 
-void ata_initialize ()
-{
+void ata_initialize (){
 
 	interrupt_set(35, ide_primary_irq, 14);
 

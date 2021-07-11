@@ -7,6 +7,7 @@
  *   /PROJECT - Xeneva v1.0
  *   /AUTHOR  - Manas Kamal Choudhury
  *
+ *   Read-Only Mode Supported for now
  * =====================================================
  */
 
@@ -14,21 +15,24 @@
 #include <drivers\ata.h>
 #include <pmmngr.h>
 #include <ctype.h>
+#include <mm.h>
 
 
 unsigned int part_lba;  //partition_begin_lba
 unsigned long fat_begin_lba;
 unsigned long cluster_begin_lba;
-unsigned char sectors_per_cluster;
+unsigned char sectors_per_cluster = 0;
 unsigned long root_dir_first_cluster;
 unsigned long root_sector;
+unsigned int sectors_per_fat32;
+int alloc_counter = 0;
+
 
 //! converts clusters to LBA 
 uint64_t  cluster_to_sector32 (uint64_t cluster)
 {
 	return cluster_begin_lba + (cluster - 2) * sectors_per_cluster ;
 }
-
 
 
 
@@ -68,6 +72,14 @@ void to_dos_file_name32 (const char* filename, char* fname, unsigned int fname_l
 
 
 
+static uint32_t read_32 (uint8_t* buff, size_t offset) {
+	uint8_t* ubuff = buff + offset;
+	return ((ubuff[3] << 24) & 0xFF000000) | 
+		((ubuff[2] << 16) & 0x00FF0000) | 
+		((ubuff[1] << 8) & 0x0000FF00) | 
+		(ubuff[0] & 0x000000FF);
+}
+
 
 
 void initialize_fat32 () {
@@ -100,6 +112,8 @@ void initialize_fat32 () {
 	sectors_per_cluster = fat32_data->sectors_per_cluster;
 	root_dir_first_cluster = fat32_data->info.FAT32.root_dir_cluster;
 	root_sector = cluster_to_sector32 (root_dir_first_cluster);
+	sectors_per_fat32 = fat32_data->info.FAT32.sect_per_fat32;
+
 }
 
 
@@ -393,3 +407,82 @@ FILE fat32_open (const char* filename) {
 	ret.flags = FILE_FLAG_INVALID;
 	return ret;
 }
+
+
+//! Write buffers to sectors {Physical Disk}
+//! @param buffer -- Buffer Pointer
+//! @param sector -- Starting lba
+//! @param count  -- number of sectors to write
+static void update_sector (uint8_t *buffer, uint32_t sector, uint32_t count) {
+	for (int i =0; i < count; i++) {
+		ata_write_one (buffer + (i * 512),sector + i);
+	}
+}
+
+//! Update clusters 
+//! @param buffer -- pointer to buffer to write
+//! @param cluster_number -- cluster pointer
+//! @.....
+static void update_cluster (uint8_t* buffer, uint32_t cluster_number) {
+	uint32_t sector = cluster_to_sector32 (cluster_number);
+	uint32_t sector_count = sectors_per_cluster;
+	update_sector (buffer, sector, sector_count);
+}
+
+//! Clear clusters
+//! @param cluster -- cluster pointer
+//! @...
+static void clear_cluster (uint32_t cluster) {
+	uint8_t *buffer = (uint8_t*)pmmngr_alloc();
+	memset (buffer, 0, 4096);
+	update_cluster (buffer,cluster);
+	pmmngr_free (buffer);
+}
+
+//void scan_free_cluster (bool write) {
+//	printf ("Fat Begin lba -> %d\n", fat_begin_lba);
+//	//for (int i = 0; i < sectors_per_fat32; i++) {
+//		auto fat_offset = 58 * 4;
+//		uint64_t fat_sector = fat_begin_lba + (fat_offset / 512);
+//		printf ("Fat sector -> %d\n",fat_sector);
+//		size_t ent_offset = fat_offset  % 512;
+//		unsigned char *buf = (unsigned char*)malloc(512);
+//		ata_read_28 (fat_sector,1,buf);
+//		uint32_t pos_fat;
+//		pos_fat &=  512 - 1;
+//		uint32_t value = *(uint32_t*)&buf[ent_offset];
+//		
+//		if (value == 0x0) {
+//			if (write) {	
+//				*(uint32_t*)&buf[ent_offset]= 0x0FFFFFFF;
+//				uint32_t value2 = *(uint32_t*)&buf[ent_offset];
+//				printf ("Value2 -> %x -> %d\n", value2,58);
+//				printf ("Fat Sector to write -> %d\n", fat_sector);
+//				//printf ("buf address -> %x\n", *(uint32_t*)&buf[ent_offset]);
+//				printf ("Buffer pointer -> %x\n", buf);
+//				for (int i = 0; i < sectors_per_fat32; i++) {
+//					ata_write_one (&buf[i],fat_sector + i);
+//				}
+//				return;
+//			}
+//		}
+//	//}
+//	
+//}
+//
+//void list_fat_entries () {
+//		auto fat_offset = 58 * 4;
+//		uint64_t fat_sector = fat_begin_lba + (fat_offset / 512);
+//		size_t ent_offset = fat_offset  % 512;
+//		unsigned char buf[512];
+//		ata_read_28 (fat_sector,1,buf);
+//		uint32_t pos_fat;
+//		pos_fat &=  512 - 1;
+//		uint32_t value = *(uint32_t*)&buf[ent_offset];
+//		if (value == 0)
+//			printf ("%x  %d\n", value, 58);
+//	
+//}
+//
+//
+//

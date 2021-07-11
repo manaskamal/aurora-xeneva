@@ -18,17 +18,17 @@ void* alloc_end;
 void* start;
 
 void initialize_allocator(int sz) {
-	for (int i=0; i < sz; i++) {
-		valloc(0xFFFFFFFF80000000 + i * 4096);
+	for (int i=0; i < 0xA00000/4096; i++) {
+		valloc(0x0000080000000000 + i * 4096);
 	}
 
-	start = (void*)0xFFFFFFFF80000000;
+	start = (void*)0x0000080000000000;
 	LIST_ENTRY *link = (LIST_ENTRY*)start;
 	link->next = NULL;
 	link->prev = NULL;
 	link->is_free = true;
 	last_header = link;
-	alloc_end = (void*)((size_t)start + sz * 4096);
+	alloc_end = (void*)((size_t)start + 0x100000 * 4096);
 }
 
 void expand_dwm_allocator(int sz) {

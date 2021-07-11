@@ -1,33 +1,43 @@
-﻿Build started 07-07-2021 আবেলি 11:10:37.
+﻿Build started 11-07-2021 আবেলি 3:32:19.
      1>Project "E:\Xeneva Project\Xeneva\xnlib\libxeneva\libxeneva.vcxproj" on node 2 (Rebuild target(s)).
      1>_NASM:
          callback.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp50faf15b91c54f68911d7a737fde8472.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp12665c92659d485aac0620e781bcd859.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\callback.obj"  "E:\Xeneva Project\Xeneva\xnlib\libxeneva\callback.asm"
      1>E:\Xeneva Project\Xeneva\xnlib\libxeneva\callback.asm(77): warning : label alone on a line without a colon might be in error
        _NASM:
          _fast_cpy.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp36cb1af407714395b01d9ce4237fa7c6.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp85483fb06c6b468e9cc5807b4fb55b3e.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\_fast_cpy.obj"  "E:\Xeneva Project\Xeneva\xnlib\libxeneva\_fast_cpy.asm"
        ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\xnlib\libxeneva\include" /Zi /nologo /W4 /WX- /sdl- /MP /Od /D ARCH_X64 /D _MBCS /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt gui\drawer.cpp gui\font.cpp list.cpp mm.cpp string.cpp xnsys.cpp xnwidget\xnbutton.cpp xnwidget\xnlabel.cpp xnwidget\xnwindow.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\xnlib\libxeneva\include" /Zi /nologo /W4 /WX- /sdl- /MP /Od /D ARCH_X64 /D _MBCS /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt gui\drawer.cpp gui\font.cpp list.cpp mm.cpp stdlib.cpp string.cpp xnsys.cpp xnwidget\xnbutton.cpp xnwidget\xnlabel.cpp xnwidget\xnmenu.cpp xnwidget\xnmenubar.cpp xnwidget\xnwindow.cpp
      1>cl : Command line warning D9025: overriding '/sdl-' with '/GS-'
      1>cl : Command line warning D9002: ignoring unknown option '/arch:SSE'
      1>cl : Command line warning D9030: '/Gm' is incompatible with multiprocessing; ignoring /MP switch
          xnwindow.cpp
      1>xnwidget\xnwindow.cpp(20): warning C4267: 'initializing' : conversion from 'size_t' to 'int', possible loss of data
+     1>xnwidget\xnwindow.cpp(49): warning C4267: 'argument' : conversion from 'size_t' to 'int', possible loss of data
      1>xnwidget\xnwindow.cpp(59): warning C4018: '<' : signed/unsigned mismatch
      1>xnwidget\xnwindow.cpp(82): warning C4018: '<' : signed/unsigned mismatch
      1>xnwidget\xnwindow.cpp(84): warning C4018: '>=' : signed/unsigned mismatch
      1>xnwidget\xnwindow.cpp(84): warning C4018: '<' : signed/unsigned mismatch
      1>xnwidget\xnwindow.cpp(85): warning C4018: '>=' : signed/unsigned mismatch
      1>xnwidget\xnwindow.cpp(85): warning C4018: '<' : signed/unsigned mismatch
+         xnmenubar.cpp
+     1>xnwidget\xnmenubar.cpp(19): warning C4018: '<' : signed/unsigned mismatch
+     1>xnwidget\xnmenubar.cpp(22): warning C4267: '+=' : conversion from 'size_t' to 'int', possible loss of data
+     1>xnwidget\xnmenubar.cpp(27): warning C4100: 'button_state' : unreferenced formal parameter
+     1>xnwidget\xnmenubar.cpp(27): warning C4100: 'win' : unreferenced formal parameter
+     1>xnwidget\xnmenubar.cpp(29): warning C4189: 'menubar' : local variable is initialized but not referenced
+         xnmenu.cpp
+     1>xnwidget\xnmenu.cpp(17): warning C4267: 'initializing' : conversion from 'size_t' to 'int', possible loss of data
          xnlabel.cpp
-     1>xnwidget\xnlabel.cpp(18): warning C4267: 'argument' : conversion from 'size_t' to 'int', possible loss of data
-     1>xnwidget\xnlabel.cpp(23): warning C4100: 'button_state' : unreferenced formal parameter
-     1>xnwidget\xnlabel.cpp(23): warning C4100: 'win' : unreferenced formal parameter
-     1>xnwidget\xnlabel.cpp(23): warning C4100: 'widget' : unreferenced formal parameter
-     1>xnwidget\xnlabel.cpp(27): warning C4267: 'initializing' : conversion from 'size_t' to 'int', possible loss of data
+     1>xnwidget\xnlabel.cpp(19): warning C4267: 'argument' : conversion from 'size_t' to 'int', possible loss of data
+     1>xnwidget\xnlabel.cpp(21): warning C4267: 'argument' : conversion from 'size_t' to 'int', possible loss of data
+     1>xnwidget\xnlabel.cpp(24): warning C4100: 'button_state' : unreferenced formal parameter
+     1>xnwidget\xnlabel.cpp(24): warning C4100: 'win' : unreferenced formal parameter
+     1>xnwidget\xnlabel.cpp(24): warning C4100: 'widget' : unreferenced formal parameter
+     1>xnwidget\xnlabel.cpp(28): warning C4267: 'initializing' : conversion from 'size_t' to 'int', possible loss of data
          xnbutton.cpp
      1>xnwidget\xnbutton.cpp(24): warning C4267: 'argument' : conversion from 'size_t' to 'int', possible loss of data
      1>xnwidget\xnbutton.cpp(29): warning C4267: 'argument' : conversion from 'size_t' to 'int', possible loss of data
@@ -44,8 +54,12 @@
      1>xnsys.cpp(32): warning C4244: '=' : conversion from 'uint64_t' to 'uint32_t', possible loss of data
      1>xnsys.cpp(33): warning C4244: '=' : conversion from 'uint64_t' to 'uint32_t', possible loss of data
      1>xnsys.cpp(36): warning C4244: '=' : conversion from 'uint64_t' to 'uint16_t', possible loss of data
+     1>xnsys.cpp(47): warning C4018: '<' : signed/unsigned mismatch
          string.cpp
+         stdlib.cpp
          mm.cpp
+     1>mm.cpp(31): warning C4307: '*' : integral constant overflow
+     1>mm.cpp(20): warning C4100: 'sz' : unreferenced formal parameter
      1>mm.cpp(52): warning C4127: conditional expression is constant
          list.cpp
          font.cpp
@@ -65,10 +79,13 @@
          x64\Debug\font.obj
          x64\Debug\list.obj
          x64\Debug\mm.obj
+         x64\Debug\stdlib.obj
          x64\Debug\string.obj
          x64\Debug\xnsys.obj
          x64\Debug\xnbutton.obj
          x64\Debug\xnlabel.obj
+         x64\Debug\xnmenu.obj
+         x64\Debug\xnmenubar.obj
          x64\Debug\xnwindow.obj
          x64\Debug\callback.obj
          x64\Debug\_fast_cpy.obj
@@ -77,4 +94,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:01.26
+Time Elapsed 00:00:01.18

@@ -60,6 +60,15 @@
     <ClInclude Include="include\xnwidget\xnlabel.h">
       <Filter>include\xnwidget</Filter>
     </ClInclude>
+    <ClInclude Include="include\xnwidget\xnmenubar.h">
+      <Filter>include\xnwidget</Filter>
+    </ClInclude>
+    <ClInclude Include="include\xnwidget\xnmenu.h">
+      <Filter>include\xnwidget</Filter>
+    </ClInclude>
+    <ClInclude Include="include\stdlib.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="string.cpp" />
@@ -81,6 +90,13 @@
     <ClCompile Include="xnwidget\xnlabel.cpp">
       <Filter>xnwidget</Filter>
     </ClCompile>
+    <ClCompile Include="xnwidget\xnmenubar.cpp">
+      <Filter>xnwidget</Filter>
+    </ClCompile>
+    <ClCompile Include="xnwidget\xnmenu.cpp">
+      <Filter>xnwidget</Filter>
+    </ClCompile>
+    <ClCompile Include="stdlib.cpp" />
   </ItemGroup>
   <ItemGroup>
     <NASM Include="_fast_cpy.asm" />

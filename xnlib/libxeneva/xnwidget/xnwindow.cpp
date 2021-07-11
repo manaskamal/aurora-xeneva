@@ -46,7 +46,7 @@ void xn_paint_titlebar (xn_window_t* win, bool default_min, bool default_max, bo
 	drawer_draw_filled_circle (win->x + 20, win->y + 20,10,color_close);
 	drawer_draw_filled_circle (win->x + 45, win->y + 20, 10, color_max);
 	drawer_draw_filled_circle (win->x + 70, win->y + 20, 10, color_min);
-	draw_string (win->title, win->x + (win->w/2) - 50, win->y + 10,LIGHTSILVER,0x2F2F2F);
+	draw_string (win->title, win->x + (win->w/2) - ((strlen(win->title)*8)/2), win->y + 10,LIGHTSILVER,0x2F2F2F);
 }
 
 void xn_paint_window (xn_window_t* win) {

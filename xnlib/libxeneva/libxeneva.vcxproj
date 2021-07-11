@@ -169,12 +169,15 @@
     <ClInclude Include="include\gui\font.h" />
     <ClInclude Include="include\mm.h" />
     <ClInclude Include="include\stdint.h" />
+    <ClInclude Include="include\stdlib.h" />
     <ClInclude Include="include\string.h" />
     <ClInclude Include="include\util\list.h" />
     <ClInclude Include="include\xnsys.h" />
     <ClInclude Include="include\xnwidget\geom_rect.h" />
     <ClInclude Include="include\xnwidget\xnbutton.h" />
     <ClInclude Include="include\xnwidget\xnlabel.h" />
+    <ClInclude Include="include\xnwidget\xnmenu.h" />
+    <ClInclude Include="include\xnwidget\xnmenubar.h" />
     <ClInclude Include="include\xnwidget\xnwidget.h" />
     <ClInclude Include="include\xnwidget\xnwindow.h" />
   </ItemGroup>
@@ -183,10 +186,13 @@
     <ClCompile Include="gui\font.cpp" />
     <ClCompile Include="list.cpp" />
     <ClCompile Include="mm.cpp" />
+    <ClCompile Include="stdlib.cpp" />
     <ClCompile Include="string.cpp" />
     <ClCompile Include="xnsys.cpp" />
     <ClCompile Include="xnwidget\xnbutton.cpp" />
     <ClCompile Include="xnwidget\xnlabel.cpp" />
+    <ClCompile Include="xnwidget\xnmenu.cpp" />
+    <ClCompile Include="xnwidget\xnmenubar.cpp" />
     <ClCompile Include="xnwidget\xnwindow.cpp" />
   </ItemGroup>
   <ItemGroup>

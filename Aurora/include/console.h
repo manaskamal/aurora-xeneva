@@ -40,4 +40,5 @@ extern void puts (char* str);
 
 //! print character to console output
 extern void putc (char c);
+
 #endif

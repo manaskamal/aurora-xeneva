@@ -43,6 +43,8 @@ static void* _syscalls[] = {
 	sys_open_file, //19
 	sys_read_file, //20
 	get_screen_scanline, //21
+	sys_get_used_ram, //22
+	sys_get_free_ram, //23
 	0
 };
 

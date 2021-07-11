@@ -6,7 +6,11 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 PUBLIC	?map_shared_memory@@YAXG_K0@Z			; map_shared_memory
+PUBLIC	?sys_get_used_ram@@YA_KXZ			; sys_get_used_ram
+PUBLIC	?sys_get_free_ram@@YA_KXZ			; sys_get_free_ram
 EXTRN	?pmmngr_alloc@@YAPEAXXZ:PROC			; pmmngr_alloc
+EXTRN	?pmmngr_get_free_ram@@YA_KXZ:PROC		; pmmngr_get_free_ram
+EXTRN	?pmmngr_get_used_ram@@YA_KXZ:PROC		; pmmngr_get_used_ram
 EXTRN	x64_cli:PROC
 EXTRN	?pml4_index@@YA_K_K@Z:PROC			; pml4_index
 EXTRN	?map_page@@YA_N_K0@Z:PROC			; map_page
@@ -16,11 +20,69 @@ pdata	SEGMENT
 $pdata$?map_shared_memory@@YAXG_K0@Z DD imagerel $LN9
 	DD	imagerel $LN9+338
 	DD	imagerel $unwind$?map_shared_memory@@YAXG_K0@Z
+$pdata$?sys_get_used_ram@@YA_KXZ DD imagerel $LN3
+	DD	imagerel $LN3+19
+	DD	imagerel $unwind$?sys_get_used_ram@@YA_KXZ
+$pdata$?sys_get_free_ram@@YA_KXZ DD imagerel $LN3
+	DD	imagerel $LN3+19
+	DD	imagerel $unwind$?sys_get_free_ram@@YA_KXZ
 pdata	ENDS
 xdata	SEGMENT
 $unwind$?map_shared_memory@@YAXG_K0@Z DD 011301H
 	DD	0c213H
+$unwind$?sys_get_used_ram@@YA_KXZ DD 010401H
+	DD	04204H
+$unwind$?sys_get_free_ram@@YA_KXZ DD 010401H
+	DD	04204H
 xdata	ENDS
+; Function compile flags: /Odtp
+; File e:\xeneva project\xeneva\aurora\aurora\sysserv\sysmem.cpp
+_TEXT	SEGMENT
+?sys_get_free_ram@@YA_KXZ PROC				; sys_get_free_ram
+
+; 36   : uint64_t sys_get_free_ram () {
+
+$LN3:
+	sub	rsp, 40					; 00000028H
+
+; 37   : 	x64_cli ();
+
+	call	x64_cli
+
+; 38   : 	return pmmngr_get_free_ram ();
+
+	call	?pmmngr_get_free_ram@@YA_KXZ		; pmmngr_get_free_ram
+
+; 39   : }
+
+	add	rsp, 40					; 00000028H
+	ret	0
+?sys_get_free_ram@@YA_KXZ ENDP				; sys_get_free_ram
+_TEXT	ENDS
+; Function compile flags: /Odtp
+; File e:\xeneva project\xeneva\aurora\aurora\sysserv\sysmem.cpp
+_TEXT	SEGMENT
+?sys_get_used_ram@@YA_KXZ PROC				; sys_get_used_ram
+
+; 31   : uint64_t sys_get_used_ram () {
+
+$LN3:
+	sub	rsp, 40					; 00000028H
+
+; 32   : 	x64_cli ();
+
+	call	x64_cli
+
+; 33   : 	return pmmngr_get_used_ram ();
+
+	call	?pmmngr_get_used_ram@@YA_KXZ		; pmmngr_get_used_ram
+
+; 34   : }
+
+	add	rsp, 40					; 00000028H
+	ret	0
+?sys_get_used_ram@@YA_KXZ ENDP				; sys_get_used_ram
+_TEXT	ENDS
 ; Function compile flags: /Odtp
 ; File e:\xeneva project\xeneva\aurora\aurora\sysserv\sysmem.cpp
 _TEXT	SEGMENT

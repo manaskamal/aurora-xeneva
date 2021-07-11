@@ -89,4 +89,6 @@ extern FILE fat32_open (const char* filename);
 extern void fat32_read_file (FILE *file, unsigned char* buf, int count);
 extern void fat32_read (FILE *file, unsigned char* buf);
 extern FILE fat32_locate_dir (const char* dir);
+extern void scan_free_cluster (bool write);
+extern void list_fat_entries ();
 #endif

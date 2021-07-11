@@ -53,7 +53,7 @@ void create_process(const char* filename, char* procname, uint8_t priority) {
 	//!extract the informations
     load_pe_file(buf,file.size);
 	ientry ent = get_entry_point();
-	uint64_t _image_base_ = get_image_base();
+	uint64_t _image_base_ = (uint64_t)get_image_base();
 	
 	//! create the user stack and address space
 	

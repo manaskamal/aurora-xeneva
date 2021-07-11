@@ -10,7 +10,7 @@
  */
 
 #include <console.h>
-
+#include <stdio.h>
 
 //! default kernel console
 static uint16_t scanline = 0;
@@ -87,3 +87,4 @@ void puts(char *s){
 
 	//!Scroll is needed
 }
+
