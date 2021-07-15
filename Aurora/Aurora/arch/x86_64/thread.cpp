@@ -109,7 +109,7 @@ thread_t* create_kthread (void (*entry) (void), uint64_t stack,uint64_t cr3, cha
 	t->cr3 = cr3;
 	t->name = name;
 	t->id = task_id++;
-	t->quanta = 4;
+	t->quanta = 0;
 	t->priviledge = THREAD_LEVEL_KERNEL;
 	t->state = THREAD_STATE_READY;
 	t->priority = priority;
@@ -151,7 +151,7 @@ thread_t* create_user_thread (void (*entry) (void*),uint64_t stack,uint64_t cr3,
 	t->cr3 = cr3;
 	t->name = name;
 	t->id = task_id++;
-	t->quanta = 4;
+	t->quanta = 0;
 	t->blocked_stack_resv = 0;
 	t->mouse_box = (uint64_t*)pmmngr_alloc();
 	t->_is_user = 1;
@@ -199,6 +199,20 @@ void next_task () {
 		}
 		goto end;
 	}
+
+	if (task->state == THREAD_STATE_SLEEP) {
+		task->quanta--;
+		if (task->quanta == 0)
+			goto end;
+
+		task = task->next;	
+
+		if (task == NULL) {
+			task = task_list_head;
+		}
+		goto end;
+	}
+
 
 	if (task->next != NULL) {
 		task = task->next;
@@ -313,6 +327,11 @@ void unblock_thread (thread_t *t) {
 	}
 }
 
+
+void sleep_thread (thread_t *t, uint64_t ms) {
+	t->quanta = ms;
+	t->state = THREAD_STATE_SLEEP;
+}
 
 //! returns currently running thread
 thread_t * get_current_thread () {

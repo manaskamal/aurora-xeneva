@@ -24,6 +24,7 @@ EXTRN	?sys_open_file@@YAXPEAU_file_@@PEBD@Z:PROC	; sys_open_file
 EXTRN	?sys_read_file@@YAXPEAU_file_@@PEAEH@Z:PROC	; sys_read_file
 EXTRN	?sys_get_used_ram@@YA_KXZ:PROC			; sys_get_used_ram
 EXTRN	?sys_get_free_ram@@YA_KXZ:PROC			; sys_get_free_ram
+EXTRN	?sys_sleep@@YAX_K@Z:PROC			; sys_sleep
 EXTRN	?dwm_put_message@@YAXPEAU_dwm_message_@@@Z:PROC	; dwm_put_message
 EXTRN	?dwm_dispatch_message@@YAXPEAU_dwm_message_@@@Z:PROC ; dwm_dispatch_message
 EXTRN	?printf@@YAXPEBDZZ:PROC				; printf
@@ -34,7 +35,7 @@ _BSS	SEGMENT
 funct	DQ	01H DUP (?)
 _BSS	ENDS
 CONST	SEGMENT
-$SG5651	DB	'System Call Fault!! Halting System', 0aH, 00H
+$SG5656	DB	'System Call Fault!! Halting System', 0aH, 00H
 CONST	ENDS
 _DATA	SEGMENT
 _syscalls DQ	FLAT:?printf@@YAXPEBDZZ
@@ -61,6 +62,7 @@ _syscalls DQ	FLAT:?printf@@YAXPEBDZZ
 	DQ	FLAT:?get_screen_scanline@@YAGXZ
 	DQ	FLAT:?sys_get_used_ram@@YA_KXZ
 	DQ	FLAT:?sys_get_free_ram@@YA_KXZ
+	DQ	FLAT:?sys_sleep@@YAX_K@Z
 	DQ	0000000000000000H
 _DATA	ENDS
 PUBLIC	x64_syscall_handler
@@ -102,7 +104,7 @@ $LN6:
 
 ; 21   : 		printf ("System Call Fault!! Halting System\n");
 
-	lea	rcx, OFFSET FLAT:$SG5651
+	lea	rcx, OFFSET FLAT:$SG5656
 	call	?printf@@YAXPEBDZZ			; printf
 $LN2@x64_syscal:
 

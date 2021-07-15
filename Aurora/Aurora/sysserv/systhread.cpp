@@ -21,3 +21,11 @@ void create_uthread (void (*entry) (void*)) {
 	x64_cli ();
 	create_user_thread (entry,(uint64_t)pmmngr_alloc(),x64_read_cr3(),"uthread",1);
 }
+
+
+void sys_sleep (uint64_t ms) {
+	x64_cli();
+	thread_t* t = get_current_thread();
+	sleep_thread (t, ms);
+	force_sched();
+}

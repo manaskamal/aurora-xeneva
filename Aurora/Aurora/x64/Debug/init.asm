@@ -6,12 +6,12 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 CONST	SEGMENT
-$SG6098	DB	'dwm', 00H
+$SG6105	DB	'dwm', 00H
 	ORG $+4
-$SG6099	DB	'dwm.exe', 00H
-$SG6100	DB	'dwm2', 00H
+$SG6106	DB	'dwm.exe', 00H
+$SG6107	DB	'dwm2', 00H
 	ORG $+3
-$SG6101	DB	'dwm2.exe', 00H
+$SG6108	DB	'dwm2.exe', 00H
 CONST	ENDS
 PUBLIC	?_kmain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z		; _kmain
 EXTRN	?hal_init@@YAXXZ:PROC				; hal_init
@@ -106,52 +106,57 @@ $LN5:
 	call	?dwm_ipc_init@@YAXXZ			; dwm_ipc_init
 
 ; 61   : 
-; 62   : 	//!initialize every drivers
-; 63   : 	driver_mngr_initialize(info);
+; 62   : 	/*unsigned char* buffer = (unsigned char*)pmmngr_alloc();
+; 63   : 	memset (buffer, 0, 4096);
+; 64   : 	strcpy ((char*)buffer, "A File created by Aurora's Xeneva Kernel v1.0");
+; 65   : 	fat32_create_file ("Xe.txt", buffer, 4096);*/
+; 66   : 
+; 67   : 	//!initialize every drivers
+; 68   : 	driver_mngr_initialize(info);
 
 	mov	rcx, QWORD PTR info$[rsp]
 	call	?driver_mngr_initialize@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z ; driver_mngr_initialize
 
-; 64   : 
-; 65   : #ifdef ARCH_X64
-; 66   : 	initialize_scheduler();
+; 69   : 
+; 70   : #ifdef ARCH_X64
+; 71   : 	initialize_scheduler();
 
 	call	?initialize_scheduler@@YAXXZ		; initialize_scheduler
 
-; 67   : 	create_process ("dwm.exe","dwm",20);
+; 72   : 	create_process ("dwm.exe","dwm",20);
 
 	mov	r8b, 20
-	lea	rdx, OFFSET FLAT:$SG6098
-	lea	rcx, OFFSET FLAT:$SG6099
+	lea	rdx, OFFSET FLAT:$SG6105
+	lea	rcx, OFFSET FLAT:$SG6106
 	call	?create_process@@YAXPEBDPEADE@Z		; create_process
 
-; 68   : 	//! task list should be more than 4 or less than 4 not 
-; 69   : 	create_process ("dwm2.exe", "dwm2", 1);
+; 73   : 	//! task list should be more than 4 or less than 4 not 
+; 74   : 	create_process ("dwm2.exe", "dwm2", 1);
 
 	mov	r8b, 1
-	lea	rdx, OFFSET FLAT:$SG6100
-	lea	rcx, OFFSET FLAT:$SG6101
+	lea	rdx, OFFSET FLAT:$SG6107
+	lea	rcx, OFFSET FLAT:$SG6108
 	call	?create_process@@YAXPEBDPEADE@Z		; create_process
 
-; 70   : 	//create_process ("dwm3.exe", "dwm3", 1);
-; 71   : 	scheduler_start();
+; 75   : 	//create_process ("dwm3.exe", "dwm3", 1);
+; 76   : 	scheduler_start();
 
 	call	?scheduler_start@@YAXXZ			; scheduler_start
 $LN2@kmain:
 
-; 72   : #endif
-; 73   : 	while(1) {
+; 77   : #endif
+; 78   : 	while(1) {
 
 	xor	eax, eax
 	cmp	eax, 1
 	je	SHORT $LN1@kmain
 
-; 74   : 	}
+; 79   : 	}
 
 	jmp	SHORT $LN2@kmain
 $LN1@kmain:
 
-; 75   : }
+; 80   : }
 
 	add	rsp, 40					; 00000028H
 	ret	0

@@ -34,4 +34,5 @@ extern void  sys_open_file (FILE *file, const char* filename);
 extern void sys_read_file (FILE *file, unsigned char* buffer, int length);
 extern uint64_t sys_get_used_ram ();
 extern uint64_t sys_get_free_ram ();
+extern void sys_sleep (uint64_t ms);
 #endif

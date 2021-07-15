@@ -174,3 +174,10 @@ swap_word:
       mov rax, rcx
 	  rol rax, 8
 	  ret
+
+global sys_sleep
+sys_sleep:
+      mov r12, 24
+	  mov r13, rcx
+	  syscall
+	  ret

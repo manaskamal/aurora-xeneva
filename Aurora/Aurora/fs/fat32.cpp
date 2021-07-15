@@ -26,6 +26,10 @@ unsigned long root_dir_first_cluster;
 unsigned long root_sector;
 unsigned int sectors_per_fat32;
 int alloc_counter = 0;
+unsigned int total_clusters;
+
+
+#define max(a, b) ((a) >= (b) ? (a) : (b))
 
 
 //! converts clusters to LBA 
@@ -114,6 +118,10 @@ void initialize_fat32 () {
 	root_sector = cluster_to_sector32 (root_dir_first_cluster);
 	sectors_per_fat32 = fat32_data->info.FAT32.sect_per_fat32;
 
+	printf ("Sector  Per Cluster -> %d\n", sectors_per_cluster);
+	//printf ("Total Sectors -> %d\n", fat32_data->large_sector_count);
+	//printf ("Total sector++ -> %d\n", fat32_data->large_sector_count/ sectors_per_cluster);
+	total_clusters = fat32_data->large_sector_count / sectors_per_cluster;
 }
 
 
@@ -126,6 +134,8 @@ uint32_t fat32_read_fat (uint32_t cluster_index) {
 	uint32_t value = *(uint32_t*) &buf[ent_offset];
 	return value & 0x0FFFFFFF;
 }
+
+
 
 void fat32_read (FILE *file, unsigned char* buf) {
 
@@ -435,54 +445,253 @@ static void update_cluster (uint8_t* buffer, uint32_t cluster_number) {
 static void clear_cluster (uint32_t cluster) {
 	uint8_t *buffer = (uint8_t*)pmmngr_alloc();
 	memset (buffer, 0, 4096);
-	update_cluster (buffer,cluster);
+	//update_cluster (buffer,cluster);
+	uint32_t sector = cluster_to_sector32 (cluster);
+	for (int i = 0; i < sectors_per_cluster; i++) {
+		ata_write_one(buffer + (i*512),sector + i);
+	}
 	pmmngr_free (buffer);
 }
 
-//void scan_free_cluster (bool write) {
-//	printf ("Fat Begin lba -> %d\n", fat_begin_lba);
-//	//for (int i = 0; i < sectors_per_fat32; i++) {
-//		auto fat_offset = 58 * 4;
-//		uint64_t fat_sector = fat_begin_lba + (fat_offset / 512);
-//		printf ("Fat sector -> %d\n",fat_sector);
-//		size_t ent_offset = fat_offset  % 512;
-//		unsigned char *buf = (unsigned char*)malloc(512);
-//		ata_read_28 (fat_sector,1,buf);
-//		uint32_t pos_fat;
-//		pos_fat &=  512 - 1;
-//		uint32_t value = *(uint32_t*)&buf[ent_offset];
-//		
-//		if (value == 0x0) {
-//			if (write) {	
-//				*(uint32_t*)&buf[ent_offset]= 0x0FFFFFFF;
-//				uint32_t value2 = *(uint32_t*)&buf[ent_offset];
-//				printf ("Value2 -> %x -> %d\n", value2,58);
-//				printf ("Fat Sector to write -> %d\n", fat_sector);
-//				//printf ("buf address -> %x\n", *(uint32_t*)&buf[ent_offset]);
-//				printf ("Buffer pointer -> %x\n", buf);
-//				for (int i = 0; i < sectors_per_fat32; i++) {
-//					ata_write_one (&buf[i],fat_sector + i);
-//				}
-//				return;
-//			}
-//		}
-//	//}
-//	
-//}
-//
-//void list_fat_entries () {
-//		auto fat_offset = 58 * 4;
-//		uint64_t fat_sector = fat_begin_lba + (fat_offset / 512);
-//		size_t ent_offset = fat_offset  % 512;
-//		unsigned char buf[512];
-//		ata_read_28 (fat_sector,1,buf);
-//		uint32_t pos_fat;
-//		pos_fat &=  512 - 1;
-//		uint32_t value = *(uint32_t*)&buf[ent_offset];
-//		if (value == 0)
-//			printf ("%x  %d\n", value, 58);
-//	
-//}
-//
-//
-//
+
+//! Finds free clusters in FAT Table
+uint32_t find_free_cluster () {
+	//!iterate through every sectors in fat32 table
+	for (int i = 2; i < total_clusters; i++) {
+		auto fat_offset = i * 4;
+		uint64_t fat_sector = fat_begin_lba + (fat_offset / 512);
+		size_t ent_offset = fat_offset  % 512;
+		unsigned char *buf = (unsigned char*)malloc(512);
+		ata_read_28 (fat_sector,1,buf);
+		uint32_t value = *(uint32_t*)&buf[ent_offset];
+		
+		//! Found a free cluster return the value
+		if (value == 0x0) {
+			return i;
+		}
+	}
+
+	return 0;
+}
+
+//!Allocate a new cluster and add the entry in FAT table
+uint32_t alloc_cluster (int position, uint32_t n_value) {
+	auto fat_offset = position * 4;
+	uint64_t fat_sector = fat_begin_lba + (fat_offset / 512);
+	size_t ent_offset = fat_offset  % 512;
+	unsigned char *buf = (unsigned char*)malloc(512);
+	ata_read_28 (fat_sector,1,buf);
+	uint32_t value = *(uint32_t*)&buf[ent_offset];
+		
+	*(uint32_t*)&buf[ent_offset] = n_value;// & 0x0FFFFFFF;
+	ata_write_one (buf,fat_sector);
+	uint32_t value2 = *(uint32_t*)&buf[ent_offset];
+	return value2;
+}
+
+
+//!Allocate a new cluster and add the entry in FAT table
+uint32_t find_cluster (uint32_t new_cluster) {
+	auto fat_offset = new_cluster * 4;
+	uint64_t fat_sector = fat_begin_lba + (fat_offset / 512);
+	size_t ent_offset = fat_offset  % 512;
+	unsigned char *buf = (unsigned char*)malloc(512);
+	ata_read_28 (fat_sector,1,buf);
+	uint32_t value = *(uint32_t*)&buf[ent_offset];		
+	return value;
+}
+
+//! Get cluster value
+uint32_t get_cluster (uint32_t cluster) {
+	auto fat_offset = cluster * 4;
+	uint64_t fat_sector = fat_begin_lba + (fat_offset / 512);
+	size_t ent_offset = fat_offset  % 512;
+	unsigned char *buf = (unsigned char*)malloc(512);
+	ata_read_28 (fat_sector,1,buf);
+	uint32_t value = *(uint32_t*)&buf[ent_offset];		
+	return value;
+}
+
+
+void format_fat83_32(char *string_to_format, char ext[3],  char *filename)
+{
+	char *p;
+	char *f = filename;
+	int i;
+
+	p = string_to_format;
+	i = 8;
+	while ((*p != 0x20) && i)
+	{
+		*f++ = *p++;
+		i--;
+	}
+
+	*f++ = '.';
+
+	p = (char*)ext;
+	i = 3;
+	while ((*p != 0x20) && i)
+	{
+		*f++ = *p++;
+		i--;
+	}
+
+	if (i == 3)
+		f--;
+
+	*f++ = '\0';
+}
+
+void list_fat_entries () {
+
+	printf ("Root Dir entries scanning\n");
+	fat32_dir *dirent;
+	char filename2[32];
+	char format_name[11];
+
+	unsigned char buf[512];
+	for (int i = 0; i < sectors_per_cluster; i++) {
+		ata_read_28 (root_sector + i, 1,buf);
+		dirent = (fat32_dir*)buf;
+		for (int j = 0; j < 16; j++) {
+			convert_fat83_32(dirent,filename2);
+			printf ("Other file size -> %s, dirent attrib -> %x, count ->%d\n", filename2, *(uint8_t*)&buf[j], i);
+			dirent++;
+		}
+	}
+}
+
+
+
+/**
+ * Write contents from RAM to disk 
+ *
+ * @param buffer - Pointer to the buffer {i.e data in RAM}
+ * @param first_cluster - Address of the first cluster
+ * @param length - Length of the file in bytes
+ */
+void fat32_write_content (uint8_t *buffer, uint32_t first_cluster, unsigned int length) {
+	bool parse_fat = false;
+	uint32_t num_cluster = 0;
+	uint32_t sector_first = cluster_to_sector32 (first_cluster);
+	for (int i = 0; i < sectors_per_cluster; i++) {
+		ata_write_one (buffer + (i * 512), sector_first + i);
+	}
+	buffer += 4096;
+
+	if (length > 4096) {
+		parse_fat = true;
+		num_cluster = length / 4096;
+	}
+
+	if (parse_fat) {
+		for (int k = 0; k < num_cluster; k++) {
+			uint32_t cluster_value = get_cluster (first_cluster);
+			if (cluster_value >= 0x0FFFFFF8)
+				return;
+			uint32_t sector = cluster_to_sector32 (cluster_value);
+			for (int i = 0; i < sectors_per_cluster; i++) {
+				ata_write_one (buffer + (i * 512), sector + i);
+			}
+			buffer += 4096;
+			first_cluster = cluster_value;
+		}
+	}
+}
+
+
+/** 
+ * Create a file and write the contents to disk
+ *
+ * @param filename -- Name of the file
+ * @param buffer -- Pointer to the data in RAM
+ * @param length -- Length of the file
+ *
+ */
+uint32_t fat32_create_file  (char* filename, uint8_t *buffer, unsigned int length) {
+
+	/**
+	 * First we scan the FAT table for free cluster which will
+	 * be used as first cluster and store it in a temporary variable
+	 */
+	uint32_t first_cluster = 0;
+	uint32_t cluster_first = find_free_cluster ();
+	first_cluster = cluster_first;
+	uint32_t status = alloc_cluster (cluster_first, 0x0FFFFFF8);
+
+	//! Clear the cluster
+	clear_cluster (cluster_first);
+
+	//! Now calculate the number of clusters required 
+	//! for the file
+	uint32_t required_cluster = 0;
+	if (length > 4096) {
+		for (int i = 0; i < length / 4096; i++) {
+			required_cluster++;
+		}
+	}
+
+	//! Now allocate each clusters in the fat table
+	//! [Knowledge]: In FAT table if the file requires more cluster
+	//! than the file's first cluster points to next cluster
+	//! kind of linked list data structure
+    uint32_t cluster = 0;
+	for (int i = 0; i < required_cluster; i++) {
+		cluster = find_free_cluster ();
+		uint32_t stat = alloc_cluster (cluster_first, cluster);
+		clear_cluster (cluster);
+		cluster_first = cluster;
+	}
+
+	//! the last cluster should be marked as EOC {0x0FFFFFF8}
+	uint32_t status2 = alloc_cluster (cluster, 0x0FFFFFF8);
+
+	//! Finally format the name 
+	//! for now Aurora's Xeneva support only short name MSDOS 8.3
+	char formated_name[11];
+	to_dos_file_name32 (filename, formated_name, 11);
+
+	//! now it's time to parse the root directory
+	unsigned char *buf = (unsigned char*)pmmngr_alloc ();
+	//! Root Directory Entries scanning goes here
+	for (int sector = 0; sector < sectors_per_cluster; sector++) {
+		ata_read_28 (root_sector + sector,1, buf);
+		for (int i = 0; i < 16; i++) {
+			fat32_dir *dirent = (fat32_dir*)(buf + i * sizeof(fat32_dir));
+
+			//! scan for free directory entry
+			if (dirent->filename[0] == 0x00){
+				
+				memset(dirent, 0, sizeof(fat32_dir));
+				memcpy (dirent->filename, formated_name, 11);
+				dirent->attrib = ATTRIBUTE_ARCHIVE;
+				dirent->time_created_ms = 2021;
+				dirent->time_created = 2021;
+				dirent->date_created = 2021;
+				dirent->date_last_accessed = 2021;
+				dirent->first_cluster_hi_bytes = (first_cluster >> 16) & 0xFFFF;
+				dirent->last_mod_time = 2021;
+				dirent->last_mod_date = 2021;
+				dirent->first_cluster = first_cluster & 0xFFFF;
+				dirent->file_size = length;
+				//! write the dir entry and go for writing the contents of the file
+				ata_write_one (buf, root_sector + sector);
+				//! actuall file writing process begins here
+				fat32_write_content (buffer, first_cluster,length);
+				return 0;
+			}
+		}
+		//! go to next slot  1 cluster = 8 sectors, goto next sector
+		buf += 512;
+	}
+
+	//!free every allocated memories
+	pmmngr_free(buf);
+}
+
+
+
+
+
+

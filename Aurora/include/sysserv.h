@@ -45,6 +45,7 @@ static void* _syscalls[] = {
 	get_screen_scanline, //21
 	sys_get_used_ram, //22
 	sys_get_free_ram, //23
+	sys_sleep, //24
 	0
 };
 

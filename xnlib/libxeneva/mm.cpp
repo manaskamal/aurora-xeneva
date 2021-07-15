@@ -14,24 +14,26 @@
 void* free_list;
 //const int allocation_block_size = 64;
 LIST_ENTRY *last_header;
-void* alloc_end;
-void* start;
+uint64_t* alloc_end = NULL;
+uint64_t* start = NULL;
 
 void initialize_allocator(int sz) {
-	for (int i=0; i < 0xA00000/4096; i++) {
+	for (int i=0; i < 0xB00000/4096; i++) {
 		valloc(0x0000080000000000 + i * 4096);
 	}
 
-	start = (void*)0x0000080000000000;
+	start = (uint64_t*)0x0000080000000000;
+
 	LIST_ENTRY *link = (LIST_ENTRY*)start;
 	link->next = NULL;
 	link->prev = NULL;
 	link->is_free = true;
+	link->length = 0xA00000 * ( 4096 - sizeof(LIST_ENTRY)); 
 	last_header = link;
-	alloc_end = (void*)((size_t)start + 0x100000 * 4096);
+	alloc_end = (uint64_t*)((ALLOCATOR_START + 0xA00000) * 4096);  
 }
 
-void expand_dwm_allocator(int sz) {
+void expand_allocator(int sz) {
 	int page_count = sz / 4096;
 
 	for (int i=0; i < page_count; i++) {
@@ -51,29 +53,31 @@ void* malloc (int size) {
 
 	while(true) {
 		if (list->is_free) {
-			if (size < 4096) {
-				uint64_t split_length = 4096 - size; // - sizeof(LIST_ENTRY);
-				void* new_addr = (void*)((size_t)list + split_length);
+
+			if (list->length > size) {
+				uint64_t split_length = list->length - (size - sizeof(LIST_ENTRY));
+				size_t* new_addr = (size_t*)((size_t)list + size + sizeof(LIST_ENTRY));
 				LIST_ENTRY* new_list = (LIST_ENTRY*)new_addr;
+
+				if (list->next != 0)
+					list->next->prev = new_list;
+
 				new_list->next = list->next;
 				list->next = new_list;
 				list->is_free = false;
+				new_list->length = split_length;
+				list->length = size;
 				new_list->prev = list;
 				new_list->is_free = true;
-				last_header = new_list;
+				if (last_header == list) last_header = new_list;
 				return (void*)((size_t)list + sizeof(LIST_ENTRY));
 			}
 
-			/*if (size > 4096) {
-				print_text("USER HEAP: size requested is > 4096\n");
-			}
-*/
-			if (size == 4096){
+		
+			if (list->length == size){
 				list->is_free = false;
 				return (void*)((size_t)list + sizeof(LIST_ENTRY));
-			}
-
-			
+			}	
 		}
 
 
@@ -82,7 +86,7 @@ void* malloc (int size) {
         list = list->next;
 	}
 
-	expand_dwm_allocator(size);
+	expand_allocator(size);
 	return malloc(size);
 
 }

@@ -6,15 +6,18 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 CONST	SEGMENT
-$SG3086	DB	'uthread', 00H
+$SG3089	DB	'uthread', 00H
 CONST	ENDS
 PUBLIC	?get_thread_id@@YAGXZ				; get_thread_id
 PUBLIC	?create_uthread@@YAXP6AXPEAX@Z@Z		; create_uthread
+PUBLIC	?sys_sleep@@YAX_K@Z				; sys_sleep
 EXTRN	?pmmngr_alloc@@YAPEAXXZ:PROC			; pmmngr_alloc
 EXTRN	x64_cli:PROC
 EXTRN	x64_read_cr3:PROC
 EXTRN	?create_user_thread@@YAPEAU_thread_@@P6AXPEAX@Z_K2QEADE@Z:PROC ; create_user_thread
 EXTRN	?get_current_thread@@YAPEAU_thread_@@XZ:PROC	; get_current_thread
+EXTRN	force_sched:PROC
+EXTRN	?sleep_thread@@YAXPEAU_thread_@@_K@Z:PROC	; sleep_thread
 pdata	SEGMENT
 $pdata$?get_thread_id@@YAGXZ DD imagerel $LN3
 	DD	imagerel $LN3+26
@@ -22,13 +25,56 @@ $pdata$?get_thread_id@@YAGXZ DD imagerel $LN3
 $pdata$?create_uthread@@YAXP6AXPEAX@Z@Z DD imagerel $LN3
 	DD	imagerel $LN3+67
 	DD	imagerel $unwind$?create_uthread@@YAXP6AXPEAX@Z@Z
+$pdata$?sys_sleep@@YAX_K@Z DD imagerel $LN3
+	DD	imagerel $LN3+49
+	DD	imagerel $unwind$?sys_sleep@@YAX_K@Z
 pdata	ENDS
 xdata	SEGMENT
 $unwind$?get_thread_id@@YAGXZ DD 010401H
 	DD	04204H
 $unwind$?create_uthread@@YAXP6AXPEAX@Z@Z DD 010901H
 	DD	08209H
+$unwind$?sys_sleep@@YAX_K@Z DD 010901H
+	DD	06209H
 xdata	ENDS
+; Function compile flags: /Odtp
+; File e:\xeneva project\xeneva\aurora\aurora\sysserv\systhread.cpp
+_TEXT	SEGMENT
+t$ = 32
+ms$ = 64
+?sys_sleep@@YAX_K@Z PROC				; sys_sleep
+
+; 26   : void sys_sleep (uint64_t ms) {
+
+$LN3:
+	mov	QWORD PTR [rsp+8], rcx
+	sub	rsp, 56					; 00000038H
+
+; 27   : 	x64_cli();
+
+	call	x64_cli
+
+; 28   : 	thread_t* t = get_current_thread();
+
+	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
+	mov	QWORD PTR t$[rsp], rax
+
+; 29   : 	sleep_thread (t, ms);
+
+	mov	rdx, QWORD PTR ms$[rsp]
+	mov	rcx, QWORD PTR t$[rsp]
+	call	?sleep_thread@@YAXPEAU_thread_@@_K@Z	; sleep_thread
+
+; 30   : 	force_sched();
+
+	call	force_sched
+
+; 31   : }
+
+	add	rsp, 56					; 00000038H
+	ret	0
+?sys_sleep@@YAX_K@Z ENDP				; sys_sleep
+_TEXT	ENDS
 ; Function compile flags: /Odtp
 ; File e:\xeneva project\xeneva\aurora\aurora\sysserv\systhread.cpp
 _TEXT	SEGMENT
@@ -52,7 +98,7 @@ $LN3:
 	mov	QWORD PTR tv67[rsp], rax
 	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
 	mov	BYTE PTR [rsp+32], 1
-	lea	r9, OFFSET FLAT:$SG3086
+	lea	r9, OFFSET FLAT:$SG3089
 	mov	rcx, QWORD PTR tv67[rsp]
 	mov	r8, rcx
 	mov	rdx, rax

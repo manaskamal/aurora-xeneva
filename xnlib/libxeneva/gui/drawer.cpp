@@ -108,4 +108,67 @@ void drawer_dirty_update (rect_t *r, uint32_t pixel) {
 	}
 }
 
+void draw_circle_corner (int x, int y, int radius, uint32_t corner, uint32_t color) {
+
+	int f = 1 - radius;
+	int ddf_x = 1;
+	int ddf_y = -1 * radius;
+	int i = 0;
+	int j = radius;
+
+	while (i < j) {
+		if (f >= 0) {
+			j--;
+			ddf_y += 2;
+			f += ddf_y;
+		}
+		i++;
+		ddf_x += 2;
+		f += ddf_x;
+		if (corner & 0x4) {
+			drawer_draw_pixel(x + i, y + j, color);
+			drawer_draw_pixel(x + j, y + i, color);
+		}
+
+		if (corner & 0x2) {
+			drawer_draw_pixel(x+i, y - j, color);
+			drawer_draw_pixel(x + j, y - i, color);
+		}
+		if (corner & 0x8) {
+			drawer_draw_pixel( x - j, y + i, color);
+			drawer_draw_pixel (x - i, y + j, color);
+		}
+
+		if (corner & 0x1) {
+			drawer_draw_pixel(x - j, y - i, color);
+			drawer_draw_pixel(x - i, y - j, color);
+		}
+	}
+}
+
+void draw_h_line_rr (int dx, int x1, int y1, uint32_t color) {
+	for (int i = 0; i < dx; i++)
+		drawer_draw_pixel (x1 + i, y1, color);
+}
+
+void draw_v_line_rr (int dy, int x1, int y1, uint32_t color){
+	for (int i = 0; i < dy; i++)
+		drawer_draw_pixel (x1, y1 + i, color);
+}
+
+
+void draw_rounded_rect (int x, int y, int w, int h, int radius, uint32_t color) {
+	
+	draw_h_line_rr (w - 2 * radius, x + radius, y, color);
+	draw_h_line_rr (w - 2 * radius, x + radius, y + h - 1, color);
+	draw_v_line_rr (h - 2 * radius, x, y + radius, color);
+	draw_v_line_rr (h - 2 * radius, x + w - 1, y + radius, color);
+
+	draw_circle_corner (x + radius, y + radius, radius, 1, color);
+	draw_circle_corner (x + w - radius - 1, y + radius, radius, 2, color);
+	draw_circle_corner (x + w - radius - 1, y + h - radius - 1, radius, 4, color);
+	draw_circle_corner (x + radius, y + h - radius - 1, radius, 8, color);
+
+}
+
 

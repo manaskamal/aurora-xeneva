@@ -6,7 +6,7 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 CONST	SEGMENT
-$SG3434	DB	'child', 00H
+$SG3437	DB	'child', 00H
 CONST	ENDS
 PUBLIC	?create__sys_process@@YAXPEBD@Z			; create__sys_process
 EXTRN	x64_cli:PROC
@@ -39,7 +39,7 @@ $LN3:
 ; 6    : 	create_process(name, "child",1);
 
 	mov	r8b, 1
-	lea	rdx, OFFSET FLAT:$SG3434
+	lea	rdx, OFFSET FLAT:$SG3437
 	mov	rcx, QWORD PTR name$[rsp]
 	call	?create_process@@YAXPEBDPEADE@Z		; create_process
 

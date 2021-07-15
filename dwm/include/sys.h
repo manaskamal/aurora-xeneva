@@ -82,4 +82,5 @@ extern "C" void sys_unblock_id (uint16_t id);
 extern "C" void sys_create_uthread(void (*entry)(void*));
 extern "C" void sys_open_file (FILE *file, const char* filename);
 extern "C" void sys_read_file (FILE *file, unsigned char* buffer, int length);
+extern "C" void sys_sleep (uint64_t ms);
 #endif

@@ -263,6 +263,6 @@ void main () {
 		copy_to_screen((uint32_t*)0x0000600000000000,&update_rect);
 		//!Store mouse old position
      	sys_fb_update();
-
+		sys_sleep (20000);
 	}
 }

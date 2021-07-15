@@ -43,4 +43,5 @@ extern void drawer_draw_horizontal_line (unsigned x, unsigned y, unsigned length
 extern void drawer_draw_rect_unfilled (int x, int y, int width, int height, uint32_t color);
 extern void drawer_draw_filled_circle (int o_x, int o_y, int radius, uint32_t fill_color);
 extern void drawer_dirty_update (rect_t *rect, uint32_t pixel);
+extern void draw_rounded_rect (int x, int y, int w, int h, int radius, uint32_t color);
 #endif

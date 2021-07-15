@@ -19,6 +19,7 @@
 
 #define  THREAD_STATE_READY  1
 #define  THREAD_STATE_BLOCKED 3
+#define  THREAD_STATE_SLEEP 4
 
 #define  THREAD_LEVEL_KERNEL 1
 #define  THREAD_LEVEL_USER 2
@@ -145,4 +146,6 @@ extern "C" void execute_idle(thread_t* stack, void* tss);
 extern void set_sched_debug (bool value);
 
 extern void set_current_thread (thread_t *thread);
+
+extern void sleep_thread (thread_t *t, uint64_t ms);
 #endif

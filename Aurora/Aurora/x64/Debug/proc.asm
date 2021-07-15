@@ -9,7 +9,7 @@ _BSS	SEGMENT
 user_stack_index DD 01H DUP (?)
 _BSS	ENDS
 CONST	SEGMENT
-$SG3630	DB	'Executable image not found', 0aH, 00H
+$SG3637	DB	'Executable image not found', 0aH, 00H
 CONST	ENDS
 PUBLIC	?create_process@@YAXPEBDPEADE@Z			; create_process
 PUBLIC	?create_user_stack@@YAPEA_KPEA_K@Z		; create_user_stack
@@ -223,7 +223,7 @@ $LN6:
 
 ; 46   : 		printf("Executable image not found\n");
 
-	lea	rcx, OFFSET FLAT:$SG3630
+	lea	rcx, OFFSET FLAT:$SG3637
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 47   : 		return;

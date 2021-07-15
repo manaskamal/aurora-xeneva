@@ -15,6 +15,15 @@
 #include <stdint.h>
 #include <vfs.h>
 
+//! Attributes for directory entry
+#define ATTRIBUTE_MASK        0x3F
+#define ATTRIBUTE_READ_ONLY   0x01
+#define ATTRIBUTE_HIDDEN      0x02
+#define ATTRIBUTE_SYSTEM      0x04
+#define ATTRIBUTE_VOLUME      0x08
+#define ATTRIBUTE_DIRECTORY   0x10
+#define ATTRIBUTE_ARCHIVE     0x20
+#define ATTRIBUTE_LONG_NAME   0x0F
 #pragma pack (push,1)
 
 typedef struct _fat32_ {
@@ -91,4 +100,5 @@ extern void fat32_read (FILE *file, unsigned char* buf);
 extern FILE fat32_locate_dir (const char* dir);
 extern void scan_free_cluster (bool write);
 extern void list_fat_entries ();
+extern uint32_t fat32_create_file  (char* filename, uint8_t *buffer, unsigned int length);
 #endif
