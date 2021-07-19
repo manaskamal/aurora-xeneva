@@ -18,6 +18,8 @@
 #include <bufmngr.h>
 #include <dwm.h>
 
+#define WIN_FOCUSED 10
+#define WIN_UNFOCUSED 11
 //! Window Structure
 typedef struct _window_ {
 	rect_t coord;
@@ -26,6 +28,8 @@ typedef struct _window_ {
 	uint32_t  *buffer;
 	uint16_t pid;
 	bool draggable_update;
+	bool focus;
+	bool close;
 	struct _window_ *next;
 	struct _window_ *prev;
 }window_t;

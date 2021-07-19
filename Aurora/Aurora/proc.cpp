@@ -86,3 +86,7 @@ void create_process(const char* filename, char* procname, uint8_t priority) {
 	mutex_unlock (process_mutex);
 
 }
+
+void kill_process () {
+
+}

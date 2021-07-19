@@ -1,9 +1,11 @@
 E:\XENEVA PROJECT\XENEVA\DWM\DWM\X64\DEBUG\ALLOCATOR.OBJ
 E:\XENEVA PROJECT\XENEVA\DWM\DWM\X64\DEBUG\BUFMNGR.OBJ
 E:\XENEVA PROJECT\XENEVA\DWM\DWM\X64\DEBUG\DWMMSG.OBJ
+E:\XENEVA PROJECT\XENEVA\DWM\DWM\X64\DEBUG\GUI.OBJ
 E:\XENEVA PROJECT\XENEVA\DWM\DWM\X64\DEBUG\IMGBMP.OBJ
 E:\XENEVA PROJECT\XENEVA\DWM\DWM\X64\DEBUG\IMGJPG.OBJ
 E:\XENEVA PROJECT\XENEVA\DWM\DWM\X64\DEBUG\IMGPNG24.OBJ
+E:\XENEVA PROJECT\XENEVA\DWM\DWM\X64\DEBUG\IMGRESIZE.OBJ
 E:\XENEVA PROJECT\XENEVA\DWM\DWM\X64\DEBUG\MAIN.OBJ
 E:\XENEVA PROJECT\XENEVA\DWM\DWM\X64\DEBUG\STRING.OBJ
 E:\XENEVA PROJECT\XENEVA\DWM\DWM\X64\DEBUG\WINDOW.OBJ
@@ -16,9 +18,11 @@ F:\DWM.MAP
 E:\Xeneva Project\Xeneva\dwm\dwm\x64\Debug\allocator.obj
 E:\Xeneva Project\Xeneva\dwm\dwm\x64\Debug\bufmngr.obj
 E:\Xeneva Project\Xeneva\dwm\dwm\x64\Debug\dwmmsg.obj
+E:\Xeneva Project\Xeneva\dwm\dwm\x64\Debug\gui.obj
 E:\Xeneva Project\Xeneva\dwm\dwm\x64\Debug\imgbmp.obj
 E:\Xeneva Project\Xeneva\dwm\dwm\x64\Debug\imgjpg.obj
 E:\Xeneva Project\Xeneva\dwm\dwm\x64\Debug\imgpng24.obj
+E:\Xeneva Project\Xeneva\dwm\dwm\x64\Debug\imgresize.obj
 E:\Xeneva Project\Xeneva\dwm\dwm\x64\Debug\main.obj
 E:\Xeneva Project\Xeneva\dwm\dwm\x64\Debug\string.obj
 E:\Xeneva Project\Xeneva\dwm\dwm\x64\Debug\window.obj

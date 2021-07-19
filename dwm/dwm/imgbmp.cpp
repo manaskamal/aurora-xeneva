@@ -11,14 +11,11 @@
 
 #include <imgbmp.h>
 #include <sys.h>
+#include <dwm.h>
 
 static int bmp_width = 0;
 static int bmp_height = 0;
 
-void draw_pixel3_wallp (unsigned x, unsigned y, uint32_t color ) {
-	uint32_t *lfb = (uint32_t*)0x0000500000000000;
-	lfb[x + y * get_screen_width()] = color;
-}
 
 
 void draw_bmp_image (unsigned char* data, int x, int y) {
@@ -51,7 +48,7 @@ void draw_bmp_image (unsigned char* data, int x, int y) {
 			uint32_t rgb = ((r<<16) | (g<<8) | (b)) & 0x00ffffff;
 			rgb = rgb | 0xff000000;
 			//fb_row[100 + 100] = rgb;
-			draw_pixel3_wallp(x + k,y +  i,rgb);
+			draw_pixel3(x + k,y +  i,rgb);
 		}
 	}
 

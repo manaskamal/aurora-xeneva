@@ -22,67 +22,26 @@
 #include <color.h>
 #include <imgpng24.h>
 #include <imgjpg.h>
+#include "jpeg_decoder.h"
+#include <dwm.h>
 
-static int s_width = 0;
+
+/* =======================================================
+ *  CPP STANDARD
+ * ======================================================= */
+ 
+extern "C" int _fltused = 1;
+void* __cdecl ::operator new(size_t size) {
+	return dalloc(size);
+}
+
+void* __cdecl operator new[] (size_t size) {
+	return dalloc(size);
+}
+
+
 static int win_coord_x = 400;
 static int win_coord_y = 400;
-/**=====================================================
- *  G L O B A L   G R A P H I C S   F U N C T I O N S
- * =====================================================
- */
-void draw_pixel (unsigned x, unsigned y, uint32_t color ) {
-	uint32_t *lfb = (uint32_t*)0x0000600000000000;
-	lfb[x + y * s_width] = color;
-}
-
-uint32_t get_pixel32bit (unsigned x, unsigned y)
-{
-	uint32_t* lfb = (uint32_t*)0x0000600000000000;
-	return lfb[x + y * s_width];
-}
-
-
-void draw_pixel2 (unsigned x, unsigned y, uint32_t color ) {
-	uint32_t *lfb = (uint32_t*)0xFFFFF00000000000;
-	lfb[x + y * s_width] = color;
-}
-
-void draw_pixel3 (unsigned x, unsigned y, uint32_t color ) {
-	uint32_t *lfb = (uint32_t*)0x0000500000000000;
-	lfb[x + y * s_width] = color;
-}
-
-
-
-
-
-
-
-
-
-void copy_to_screen(uint32_t *buf, rect_t *r) {
-	uint32_t* lfb = (uint32_t*)0xFFFFF00000000000;
-	int width = get_screen_width();
-	int height = get_screen_height();
-	for (int i=0; i < r->w; i++) {
-		for (int j=0; j < r->h; j++){
-			uint32_t color = buf[(r->x + i) + (r->y + j) * width];
-			lfb[(r->x + i) + (r->y + j) * width] = color;
-		}
-	}
-}
-
-void copy_to_screen2(uint32_t *buf, rect_t *r) {
-	uint32_t* lfb = (uint32_t*)0x0000600000000000;
-	int width = get_screen_width();
-	int height = get_screen_height();
-	for (int i=0; i < r->w; i++) {
-		for (int j=0; j < r->h; j++){
-			uint32_t color = buf[(r->x + i) + (r->y + j) * width] & 0xFFFFFF;
-			lfb[(r->x + i) + (r->y + j) * width] = color;
-		}
-	}
-}
 
 
 /******************************************************
@@ -127,8 +86,8 @@ void main () {
 	int width = get_screen_width();
 	int height = get_screen_height();
 
+	initialize_screen ();
 
-	s_width = width;
 	//! Map the DWM Internal Buffer
 	for (int i = 0; i < width * height * 32 / 4096; i++)
 		valloc (0x0000600000000000 + i * 4096);
@@ -163,7 +122,7 @@ void main () {
 	}
 
 	FILE file;
-	sys_open_file (&file, "game.bmp");
+	sys_open_file (&file, "cover.jpg");
 
 	for (int i = 0; i < 3076096/4096; i++){
 		valloc (0xFFFFD00000200000 + i * 4096);
@@ -171,13 +130,27 @@ void main () {
 	unsigned char *buffer_i = (unsigned char*)0xFFFFD00000200000;
 	sys_read_file (&file,buffer_i, file.size);
 
-	bitmap_img* file_header = (bitmap_img*)buffer_i;
-	bitmap_info *info = (bitmap_info*)(buffer_i + sizeof(bitmap_img));
-	int bwidth = info->biWidth;
-	int bheight = info->biHeight;
-	draw_bmp_image (buffer_i, width/2 - bwidth/2, height/2 - bheight/2);
-	//draw_jpg_image (buffer_i,file.size);
+
+	Jpeg::Decoder *decoder = new Jpeg::Decoder(buffer_i, file.size, dalloc, dfree);
+	if (decoder->GetResult() != Jpeg::Decoder::OK) {
+		print_text ("JPEG:Decoder Error\n");
+	}
 	
+	uint8_t* data = decoder->GetImage();
+	for (int i = 0; i < decoder->GetHeight(); i++) {
+		for (int k = 0; k < decoder->GetWidth(); k++) {
+			int j = k + i * decoder->GetWidth();
+			uint8_t r = data[j * 3];        //data[i * 3];
+			uint8_t g = data[j * 3 + 1];        //data[i * 3 + 1];
+			uint8_t b = data[j * 3 + 2];       //data[i * 3 + 2];
+			uint32_t rgb =  ((r<<16) | (g<<8) | (b)) & 0x00ffffff;  //0xFF000000 | (r << 16) | (g << 8) | b;
+			rgb = rgb | 0xff000000;
+		   // wallpaper_buffer[i] = 0xFF000000 | (r << 16) | (g << 8) | b;
+			draw_pixel3 (0 + k, 0 + i,rgb);
+			j++;
+		}
+	}
+
 	message_t msg;
 	rect_t update_rect;
 	update_rect.x = 0;
@@ -252,8 +225,8 @@ void main () {
 	    copy_to_screen2((uint32_t*)0x0000100000000000, &up_r);*/
 		wm_paint_windows();
 		/**********************************************************
-		 **        Draw The Cursor
-		 **********************************************************/
+		**        Draw The Cursor
+		**********************************************************/
 		
 		for (int x = 0; x < 11; x++)
 			for (int y=0; y < 18; y++)
@@ -263,6 +236,8 @@ void main () {
 		copy_to_screen((uint32_t*)0x0000600000000000,&update_rect);
 		//!Store mouse old position
      	sys_fb_update();
-		sys_sleep (20000);
+
+		//!Render at 60 Frames / Second
+		sys_sleep (16);
 	}
 }

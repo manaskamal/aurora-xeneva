@@ -23,6 +23,7 @@ xn_window_t * xn_create_window (uint32_t x, uint32_t y, uint32_t w, uint32_t h, 
 	win->y = y;
 	win->w = w;
 	win->h = h;
+	win->focus = false;
 	win->title = (char*)malloc(title_len);
 	win->xn_widget = initialize_list ();
 	win->dirty_rects = initialize_list ();
@@ -32,7 +33,7 @@ xn_window_t * xn_create_window (uint32_t x, uint32_t y, uint32_t w, uint32_t h, 
 	return win;
 }
 
-void xn_paint_titlebar (xn_window_t* win, bool default_min, bool default_max, bool default_close) {
+void xn_paint_titlebar (xn_window_t* win, bool default_min, bool default_max, bool default_close, uint32_t bkcolor) {
 	uint32_t color_close = ORANGE;
 	uint32_t color_max = PALEGREEN;
 	uint32_t color_min = YELLOW;
@@ -46,15 +47,24 @@ void xn_paint_titlebar (xn_window_t* win, bool default_min, bool default_max, bo
 	drawer_draw_filled_circle (win->x + 20, win->y + 20,10,color_close);
 	drawer_draw_filled_circle (win->x + 45, win->y + 20, 10, color_max);
 	drawer_draw_filled_circle (win->x + 70, win->y + 20, 10, color_min);
-	draw_string (win->title, win->x + (win->w/2) - ((strlen(win->title)*8)/2), win->y + 10,LIGHTSILVER,0x2F2F2F);
+	draw_string (win->title, win->x + (win->w/2) - ((strlen(win->title)*8)/2), win->y + 10,LIGHTSILVER,bkcolor);
 }
 
 void xn_paint_window (xn_window_t* win) {
-	drawer_draw_rect_unfilled(win->x,win->y,win->w,win->h,0x000000);
+	uint32_t titlebar_color = 0;
+	uint32_t focus_bound_rect = 0;
+	if (win->focus){
+		titlebar_color = TITLEBAR_DARK;
+		focus_bound_rect = BLUE;
+	} else if (win->focus == false) {
+		titlebar_color = LIGHTBLACK;
+		focus_bound_rect = LIGHTBLACK;
+	}
+	drawer_draw_rect_unfilled(win->x,win->y,win->w,win->h,focus_bound_rect);
 	drawer_draw_rect(win->x + 1, win->y + 1, win->w -2, win->h-2,0xFFFFFF);
-	drawer_draw_rect(win->x + 1, win->y + 1, win->w - 2, 35,  0x2F2F2F);
+	drawer_draw_rect(win->x + 1, win->y + 1, win->w - 2, 35,  titlebar_color);
 	
-	xn_paint_titlebar (win,false,false,false);
+	xn_paint_titlebar (win,false,false,false, titlebar_color);
 	
 	for (int i = 0; i < win->xn_widget->pointer; i++) {
 		xn_widget *widget = (xn_widget*)list_get_at (win->xn_widget,i);
@@ -91,5 +101,11 @@ void xn_handle_mouse (xn_window_t *win, int mouse_x, int mouse_y, bool button_st
 
 
 void xn_handle_close_button (xn_window_t* win) { 
-	xn_paint_titlebar (win,false, false, true);
+	uint32_t titlebar_color = 0;
+	if (win->focus){
+		titlebar_color = TITLEBAR_DARK;
+	} else if (win->focus == false) {
+		titlebar_color = LIGHTBLACK;
+	}
+	xn_paint_titlebar (win,false, false, true,titlebar_color);
 }

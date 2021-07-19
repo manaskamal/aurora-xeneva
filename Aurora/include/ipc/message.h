@@ -38,7 +38,7 @@ typedef struct _message_ {
 
 typedef struct _kernel_message_queue_ {
 	message_t msg;
-	struct _kernel_message_queue_ *next;
+	struct _kernel_message_queue_ *link;
 }kernel_message_queue_t;
 
 

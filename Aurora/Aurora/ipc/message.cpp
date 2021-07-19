@@ -18,16 +18,14 @@
 
 static mutex_t *ipc_mutex_msg = create_mutex();
 static mutex_t *ipc_rcv_msg = create_mutex();
-static kernel_message_queue_t *queue;
-static kernel_message_queue_t *head_pointer;
+static kernel_message_queue_t *top;
 //! Kernel Message service initialize
 void message_init () {
-	queue = (kernel_message_queue_t*)pmmngr_alloc();
-	head_pointer = queue;
-	memset (queue,0,4096);
-	memset (&queue->msg,0,sizeof (message_t));
-	queue->next == NULL;
 	//queue->prev == NULL;
+}
+
+bool is_message_queue_empty () {
+	return top == NULL;
 }
 
 
@@ -43,23 +41,14 @@ void message_send (uint16_t dest_id, message_t *msg) {
 		else
 			goto end;
 	}
+
+	//!Actuall Message model
+	kernel_message_queue_t * temp = (kernel_message_queue_t*)pmmngr_alloc();
+
+	memcpy (&temp->msg, msg, sizeof(message_t));
+	temp->link = top;
+	top = temp;
 	
-	if (queue->msg.type == 0 ) {
-		kernel_message_queue_t *km = (kernel_message_queue_t*)pmmngr_alloc();
-		memcpy (&km->msg, msg,sizeof(message_t));
-		km->next = NULL;
-		memcpy (queue, km,sizeof (kernel_message_queue_t));
-		pmmngr_free(km);
-	} else if (queue->msg.type != 0){
-		kernel_message_queue_t *tmsgq = queue;
-		do {
-			tmsgq = tmsgq->next;
-		}while (tmsgq->next != NULL);
-		kernel_message_queue_t *km = (kernel_message_queue_t*)pmmngr_alloc();
-		memcpy (&km->msg,msg,sizeof(message_t));
-		km->next = NULL;
-		tmsgq->next = km;
-	}
 end:
 	mutex_unlock (ipc_mutex_msg);
 }
@@ -73,21 +62,17 @@ void message_receive (message_t* msg) {
 	x64_cli ();
 	mutex_lock(ipc_rcv_msg);
 
-	kernel_message_queue_t *kq = (kernel_message_queue_t*)queue;
+	kernel_message_queue_t *temp;
 
-	memcpy (msg,&kq->msg,sizeof (message_t));
-	queue = queue->next;
-	
-	//!FIXME: Some buggy
-	if (queue == NULL) {
-		if (queue->next == 0x0) {
-			memset (kq,0,sizeof(kernel_message_queue_t));
-			queue = head_pointer;
-			goto end;
-		}
-		queue = queue->next;	
+	if (top == NULL) 
+		goto end;
+	else {
+		temp = top;
+		top = top->link;
+		temp->link = NULL;
+		memcpy (msg, &temp->msg,sizeof(message_t));
+		pmmngr_free(temp);
 	}
-	memset (kq,0,sizeof(kernel_message_queue_t));
 
 end:
 	mutex_unlock(ipc_rcv_msg);

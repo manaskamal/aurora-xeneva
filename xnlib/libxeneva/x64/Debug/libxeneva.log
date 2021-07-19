@@ -1,13 +1,13 @@
-﻿Build started 16-07-2021 ৰাতিপু 12:39:25.
+﻿Build started 18-07-2021 আবেলি 9:09:30.
      1>Project "E:\Xeneva Project\Xeneva\xnlib\libxeneva\libxeneva.vcxproj" on node 2 (Rebuild target(s)).
      1>_NASM:
          callback.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmpe56cb93fa88e4919b58f80c7c523ea09.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp047992e5d23b4afa8f2f5c52e6b31045.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\callback.obj"  "E:\Xeneva Project\Xeneva\xnlib\libxeneva\callback.asm"
      1>E:\Xeneva Project\Xeneva\xnlib\libxeneva\callback.asm(77): warning : label alone on a line without a colon might be in error
        _NASM:
          _fast_cpy.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp43d4de129272460e877f664e8ee25e66.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp025239008a1343e4b6ce321fd2fa56c0.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\_fast_cpy.obj"  "E:\Xeneva Project\Xeneva\xnlib\libxeneva\_fast_cpy.asm"
        ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\xnlib\libxeneva\include" /Zi /nologo /W4 /WX- /sdl- /MP /Od /D ARCH_X64 /D _MBCS /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt gui\drawer.cpp gui\font.cpp list.cpp mm.cpp stdlib.cpp string.cpp xnsys.cpp xnwidget\xnbutton.cpp xnwidget\xnlabel.cpp xnwidget\xnmenu.cpp xnwidget\xnmenubar.cpp xnwidget\xnwindow.cpp
@@ -16,13 +16,13 @@
      1>cl : Command line warning D9030: '/Gm' is incompatible with multiprocessing; ignoring /MP switch
          xnwindow.cpp
      1>xnwidget\xnwindow.cpp(20): warning C4267: 'initializing' : conversion from 'size_t' to 'int', possible loss of data
-     1>xnwidget\xnwindow.cpp(49): warning C4267: 'argument' : conversion from 'size_t' to 'int', possible loss of data
-     1>xnwidget\xnwindow.cpp(59): warning C4018: '<' : signed/unsigned mismatch
-     1>xnwidget\xnwindow.cpp(82): warning C4018: '<' : signed/unsigned mismatch
-     1>xnwidget\xnwindow.cpp(84): warning C4018: '>=' : signed/unsigned mismatch
-     1>xnwidget\xnwindow.cpp(84): warning C4018: '<' : signed/unsigned mismatch
-     1>xnwidget\xnwindow.cpp(85): warning C4018: '>=' : signed/unsigned mismatch
-     1>xnwidget\xnwindow.cpp(85): warning C4018: '<' : signed/unsigned mismatch
+     1>xnwidget\xnwindow.cpp(50): warning C4267: 'argument' : conversion from 'size_t' to 'int', possible loss of data
+     1>xnwidget\xnwindow.cpp(69): warning C4018: '<' : signed/unsigned mismatch
+     1>xnwidget\xnwindow.cpp(92): warning C4018: '<' : signed/unsigned mismatch
+     1>xnwidget\xnwindow.cpp(94): warning C4018: '>=' : signed/unsigned mismatch
+     1>xnwidget\xnwindow.cpp(94): warning C4018: '<' : signed/unsigned mismatch
+     1>xnwidget\xnwindow.cpp(95): warning C4018: '>=' : signed/unsigned mismatch
+     1>xnwidget\xnwindow.cpp(95): warning C4018: '<' : signed/unsigned mismatch
          xnmenubar.cpp
      1>xnwidget\xnmenubar.cpp(19): warning C4018: '<' : signed/unsigned mismatch
      1>xnwidget\xnmenubar.cpp(22): warning C4267: '+=' : conversion from 'size_t' to 'int', possible loss of data
@@ -59,7 +59,7 @@
          stdlib.cpp
          mm.cpp
      1>mm.cpp(20): warning C4100: 'sz' : unreferenced formal parameter
-     1>mm.cpp(56): warning C4127: conditional expression is constant
+     1>mm.cpp(54): warning C4127: conditional expression is constant
          list.cpp
          font.cpp
      1>gui\font.cpp(34): warning C4018: '<' : signed/unsigned mismatch
@@ -93,4 +93,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:01.30
+Time Elapsed 00:00:01.79

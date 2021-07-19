@@ -67,6 +67,8 @@ void _kmain (KERNEL_BOOT_INFO *info) {
 	create_process ("dwm.exe","dwm",20);
 	//! task list should be more than 4 or less than 4 not 
 	create_process ("dwm2.exe", "dwm2", 1);
+	create_process ("dwm3.exe", "dwm3", 1);
+	//create_process ("dwm3.exe", "dwm3", 1);
 	//create_process ("dwm3.exe", "dwm3", 1);
 	scheduler_start();
 #endif

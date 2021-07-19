@@ -14,6 +14,10 @@
     <ClCompile Include="imgjpg.cpp">
       <Filter>codec</Filter>
     </ClCompile>
+    <ClCompile Include="imgresize.cpp">
+      <Filter>codec</Filter>
+    </ClCompile>
+    <ClCompile Include="gui.cpp" />
   </ItemGroup>
   <ItemGroup>
     <NASM Include="callback.asm" />
@@ -70,6 +74,12 @@
       <Filter>include\codec</Filter>
     </ClInclude>
     <ClInclude Include="..\include\imgjpg.h">
+      <Filter>include\codec</Filter>
+    </ClInclude>
+    <ClInclude Include="jpeg_decoder.h">
+      <Filter>include\codec</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\imgresize.h">
       <Filter>include\codec</Filter>
     </ClInclude>
   </ItemGroup>

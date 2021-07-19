@@ -20,19 +20,15 @@ typedef struct _list_entry_ {
 	struct _list_entry_ *next;
 	struct _list_entry_ *prev;
 	bool is_free;
+	size_t  length;
 }LIST_ENTRY;
 
 
 //! INIT: Initialize the DWM internal memory allocator
 extern void initialize_dwm_allocator(int sz);
 //! ALLOCATE: Allocate some memory
-extern void* dalloc(int size);
+extern void* dalloc(uint32_t size);
 //! FREE: Free pointed memory
 extern void dfree(void* memory);
 
-extern void initialize_flat_allocator (int size);
-
-extern void *flat_alloc ();
-
-extern void flat_free ();
 #endif

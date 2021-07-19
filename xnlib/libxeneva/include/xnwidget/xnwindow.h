@@ -22,6 +22,7 @@ typedef struct _xn_win_ {
 	uint32_t w;
 	uint32_t h;
 	char *title;
+	bool focus;
 	list_t *xn_widget;
 	list_t *dirty_rects;
 }xn_window_t;

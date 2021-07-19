@@ -186,9 +186,11 @@
     <ClCompile Include="allocator.cpp" />
     <ClCompile Include="bufmngr.cpp" />
     <ClCompile Include="dwmmsg.cpp" />
+    <ClCompile Include="gui.cpp" />
     <ClCompile Include="imgbmp.cpp" />
     <ClCompile Include="imgjpg.cpp" />
     <ClCompile Include="imgpng24.cpp" />
+    <ClCompile Include="imgresize.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="string.cpp" />
     <ClCompile Include="window.cpp" />
@@ -207,12 +209,14 @@
     <ClInclude Include="..\include\imgbmp.h" />
     <ClInclude Include="..\include\imgjpg.h" />
     <ClInclude Include="..\include\imgpng24.h" />
+    <ClInclude Include="..\include\imgresize.h" />
     <ClInclude Include="..\include\stdtypes.h" />
     <ClInclude Include="..\include\string.h" />
     <ClInclude Include="..\include\sys.h" />
     <ClInclude Include="..\include\window.h" />
     <ClInclude Include="..\include\winlist.h" />
     <ClInclude Include="..\include\wm.h" />
+    <ClInclude Include="jpeg_decoder.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

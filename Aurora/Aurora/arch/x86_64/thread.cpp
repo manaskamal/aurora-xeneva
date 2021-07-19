@@ -185,40 +185,33 @@ void initialize_scheduler () {
 
 void next_task () {
 	thread_t* task = current_thread;
-	/*do {
+	do {
+		if (task->state == THREAD_STATE_SLEEP) {
+			if (task->quanta == 0) {
+				task->state = THREAD_STATE_READY;
+			}
+			task->quanta--;
+		}
 		task = task->next;
 		if (task == NULL) {
 			task = task_list_head;
 		}
-	}while (task->state == THREAD_STATE_BLOCKED);*/
-	if (task->state == THREAD_STATE_BLOCKED) {
-		task = task->next;
+	}while (task->state != THREAD_STATE_READY);
 
-		if (task == NULL) {
-			task = task_list_head;
-		}
-		goto end;
-	}
+	//if (task->state == THREAD_STATE_BLOCKED) {
+	//	task = task->next;
 
-	if (task->state == THREAD_STATE_SLEEP) {
-		task->quanta--;
-		if (task->quanta == 0)
-			goto end;
+	//	if (task == NULL) {
+	//		task = task_list_head;
+	//	}
+	//	goto end;
+	//}
 
-		task = task->next;	
-
-		if (task == NULL) {
-			task = task_list_head;
-		}
-		goto end;
-	}
-
-
-	if (task->next != NULL) {
-		task = task->next;
-	} else {
-		task = task_list_head;
-	}
+	//if (task->next != NULL) {
+	//	task = task->next;
+	//} else {
+	//	task = task_list_head;
+	//}
 
 end:
 	current_thread = task;
@@ -330,6 +323,7 @@ void unblock_thread (thread_t *t) {
 
 void sleep_thread (thread_t *t, uint64_t ms) {
 	t->quanta = ms;
+	//printf ("Sleeping thread -> %d\n", t->quanta);
 	t->state = THREAD_STATE_SLEEP;
 }
 
