@@ -21,7 +21,7 @@ void xn_label_paint_handler (xn_widget *widget, xn_window_t *win) {
 		win->y + label->base.y + (label->base.h / 2),LIGHTBLACK,WHITE);
 }
 
-void xn_label_mouse_event (xn_widget *widget, xn_window_t* win, bool button_state) {
+void xn_label_mouse_event (xn_widget *widget, xn_window_t* win, uint32_t mouse_x, uint32_t mouse_y, bool button_state) {
 }
 
 xn_label_t *xn_create_label (int x, int y, int w, int h,int outline_type, char* label_string) {

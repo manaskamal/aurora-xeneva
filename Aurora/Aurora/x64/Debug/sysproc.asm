@@ -6,20 +6,56 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 CONST	SEGMENT
-$SG3437	DB	'child', 00H
+$SG3444	DB	'child', 00H
 CONST	ENDS
 PUBLIC	?create__sys_process@@YAXPEBD@Z			; create__sys_process
+PUBLIC	?sys_exit@@YAXXZ				; sys_exit
 EXTRN	x64_cli:PROC
+EXTRN	force_sched:PROC
 EXTRN	?create_process@@YAXPEBDPEADE@Z:PROC		; create_process
+EXTRN	?kill_process@@YAXXZ:PROC			; kill_process
 pdata	SEGMENT
 $pdata$?create__sys_process@@YAXPEBD@Z DD imagerel $LN3
 	DD	imagerel $LN3+39
 	DD	imagerel $unwind$?create__sys_process@@YAXPEBD@Z
+$pdata$?sys_exit@@YAXXZ DD imagerel $LN3
+	DD	imagerel $LN3+24
+	DD	imagerel $unwind$?sys_exit@@YAXXZ
 pdata	ENDS
 xdata	SEGMENT
 $unwind$?create__sys_process@@YAXPEBD@Z DD 010901H
 	DD	04209H
+$unwind$?sys_exit@@YAXXZ DD 010401H
+	DD	04204H
 xdata	ENDS
+; Function compile flags: /Odtp
+; File e:\xeneva project\xeneva\aurora\aurora\sysserv\sysproc.cpp
+_TEXT	SEGMENT
+?sys_exit@@YAXXZ PROC					; sys_exit
+
+; 10   : void sys_exit () {
+
+$LN3:
+	sub	rsp, 40					; 00000028H
+
+; 11   : 	x64_cli();
+
+	call	x64_cli
+
+; 12   : 	kill_process ();
+
+	call	?kill_process@@YAXXZ			; kill_process
+
+; 13   : 	force_sched();
+
+	call	force_sched
+
+; 14   : }
+
+	add	rsp, 40					; 00000028H
+	ret	0
+?sys_exit@@YAXXZ ENDP					; sys_exit
+_TEXT	ENDS
 ; Function compile flags: /Odtp
 ; File e:\xeneva project\xeneva\aurora\aurora\sysserv\sysproc.cpp
 _TEXT	SEGMENT
@@ -39,7 +75,7 @@ $LN3:
 ; 6    : 	create_process(name, "child",1);
 
 	mov	r8b, 1
-	lea	rdx, OFFSET FLAT:$SG3437
+	lea	rdx, OFFSET FLAT:$SG3444
 	mov	rcx, QWORD PTR name$[rsp]
 	call	?create_process@@YAXPEBDPEADE@Z		; create_process
 

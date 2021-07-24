@@ -15,7 +15,6 @@
 #include <stdtypes.h>
 #include <string.h>
 
-
 //! Message format
 typedef struct _message_ {
 	uint32_t dword;
@@ -30,7 +29,9 @@ typedef struct _message_ {
 	uint32_t *dword10;
 	uint64_t quad;
 	uint16_t type;
+	char buffer[10];
 }message_t;
+
 
 
 typedef struct _dwm_message_ {
@@ -83,4 +84,6 @@ extern "C" void sys_create_uthread(void (*entry)(void*));
 extern "C" void sys_open_file (FILE *file, const char* filename);
 extern "C" void sys_read_file (FILE *file, unsigned char* buffer, int length);
 extern "C" void sys_sleep (uint64_t ms);
+extern "C" void sys_exit ();
+extern "C" uint16_t sys_get_scanline ();
 #endif

@@ -24,6 +24,8 @@ window_t* create_window (uint16_t id, uint16_t x, uint16_t y, uint16_t w, uint16
 	win->pid = id; 
 	win->focus = false;
 	win->close = false;
+	win->menu_list = initialize_winlist();
+	win->dirty_rect = initialize_winlist();
 	win->drag_off_x = 0;
 	win->drag_off_y = 0;
 	wm_add_window (win);

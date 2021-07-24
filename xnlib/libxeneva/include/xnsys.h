@@ -30,7 +30,10 @@ typedef struct _message_ {
 	uint32_t *dword10;
 	uint64_t quad;
 	uint16_t type;
+	char buffer[50];
 }message_t;
+
+
 
 
 typedef struct _dwm_message_ {
@@ -85,4 +88,5 @@ extern "C" uint64_t sys_get_used_ram ();
 extern "C" uint64_t sys_get_free_ram ();
 extern void message_poll (message_t *msg);
 extern void register_xn_application ();
+extern "C" void sys_exit();
 #endif

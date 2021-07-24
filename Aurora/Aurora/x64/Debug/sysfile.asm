@@ -6,8 +6,7 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 CONST	SEGMENT
-$SG2918	DB	'File not found', 0aH, 00H
-$SG2925	DB	'Buffer address -> %x', 0aH, 00H
+$SG2920	DB	'File not found', 0aH, 00H
 CONST	ENDS
 PUBLIC	?sys_open_file@@YAXPEAU_file_@@PEBD@Z		; sys_open_file
 PUBLIC	?sys_read_file@@YAXPEAU_file_@@PEAEH@Z		; sys_read_file
@@ -21,7 +20,7 @@ $pdata$?sys_open_file@@YAXPEAU_file_@@PEBD@Z DD imagerel $LN4
 	DD	imagerel $LN4+139
 	DD	imagerel $unwind$?sys_open_file@@YAXPEAU_file_@@PEBD@Z
 $pdata$?sys_read_file@@YAXPEAU_file_@@PEAEH@Z DD imagerel $LN3
-	DD	imagerel $LN3+66
+	DD	imagerel $LN3+49
 	DD	imagerel $unwind$?sys_read_file@@YAXPEAU_file_@@PEAEH@Z
 pdata	ENDS
 xdata	SEGMENT
@@ -51,21 +50,15 @@ $LN3:
 
 	call	x64_cli
 
-; 28   : 	printf ("Buffer address -> %x\n", buffer);
-
-	mov	rdx, QWORD PTR buffer$[rsp]
-	lea	rcx, OFFSET FLAT:$SG2925
-	call	?printf@@YAXPEBDZZ			; printf
-
-; 29   : 	read (file,buffer,length);
+; 28   : 	read (file,buffer,length);
 
 	mov	r8d, DWORD PTR length$[rsp]
 	mov	rdx, QWORD PTR buffer$[rsp]
 	mov	rcx, QWORD PTR file$[rsp]
 	call	?read@@YAXPEAU_file_@@PEAEI@Z		; read
 
-; 30   : 
-; 31   : }
+; 29   : 
+; 30   : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -118,7 +111,7 @@ $LN4:
 
 ; 21   : 		printf ("File not found\n");
 
-	lea	rcx, OFFSET FLAT:$SG2918
+	lea	rcx, OFFSET FLAT:$SG2920
 	call	?printf@@YAXPEBDZZ			; printf
 $LN1@sys_open_f:
 

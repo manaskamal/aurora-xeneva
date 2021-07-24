@@ -16,6 +16,7 @@
 #include <allocator.h>
 #include <sys.h>
 #include <bufmngr.h>
+#include <winlist.h>
 #include <dwm.h>
 
 #define WIN_FOCUSED 10
@@ -30,6 +31,8 @@ typedef struct _window_ {
 	bool draggable_update;
 	bool focus;
 	bool close;
+	winlist * menu_list;
+	winlist * dirty_rect;
 	struct _window_ *next;
 	struct _window_ *prev;
 }window_t;

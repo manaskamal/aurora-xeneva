@@ -10,17 +10,17 @@ _BSS	SEGMENT
 ?gmr@@3U_gmr_state_@@A DB 0cH DUP (?)			; gmr
 _BSS	ENDS
 CONST	SEGMENT
-$SG5256	DB	'Virtual device does not have GMR support', 0aH, 00H
+$SG5258	DB	'Virtual device does not have GMR support', 0aH, 00H
 	ORG $+6
-$SG5262	DB	'Virtual device does not have GMR v2 support', 0aH, 00H
+$SG5264	DB	'Virtual device does not have GMR v2 support', 0aH, 00H
 	ORG $+3
-$SG5278	DB	'First page -> %x', 0aH, 00H
+$SG5280	DB	'First page -> %x', 0aH, 00H
 	ORG $+6
-$SG5290	DB	'REGISTER WRITTEN', 0aH, 00H
+$SG5292	DB	'REGISTER WRITTEN', 0aH, 00H
 	ORG $+6
-$SG5297	DB	'PPN iiiii -> %x', 0aH, 00H
+$SG5299	DB	'PPN iiiii -> %x', 0aH, 00H
 	ORG $+7
-$SG5298	DB	'returning', 0aH, 00H
+$SG5300	DB	'returning', 0aH, 00H
 CONST	ENDS
 PUBLIC	?gmr_init@@YAXXZ				; gmr_init
 PUBLIC	?gmr2_init@@YAXXZ				; gmr2_init
@@ -235,7 +235,7 @@ $LN3:
 	mov	eax, DWORD PTR numPages$[rsp]
 	mov	DWORD PTR desc$[rsp+4], eax
 	mov	edx, DWORD PTR desc$[rsp]
-	lea	rcx, OFFSET FLAT:$SG5297
+	lea	rcx, OFFSET FLAT:$SG5299
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 108  : 
@@ -248,7 +248,7 @@ $LN3:
 
 ; 110  : 	printf ("returning\n");
 
-	lea	rcx, OFFSET FLAT:$SG5298
+	lea	rcx, OFFSET FLAT:$SG5300
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 111  :    return desc.ppn;
@@ -305,7 +305,7 @@ $LN3:
 
 ; 91   :    printf ("REGISTER WRITTEN\n");
 
-	lea	rcx, OFFSET FLAT:$SG5290
+	lea	rcx, OFFSET FLAT:$SG5292
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 92   :    //if (desc) {
@@ -385,7 +385,7 @@ $LN5@gmr_alloc_:
 ; 51   : 			printf ("First page -> %x\n", page);
 
 	mov	edx, DWORD PTR page$[rsp]
-	lea	rcx, OFFSET FLAT:$SG5278
+	lea	rcx, OFFSET FLAT:$SG5280
 	call	?printf@@YAXPEBDZZ			; printf
 $LN3@gmr_alloc_:
 
@@ -533,7 +533,7 @@ $LN2@gmr2_init:
 
 ; 35   : 		printf ("Virtual device does not have GMR v2 support\n");
 
-	lea	rcx, OFFSET FLAT:$SG5262
+	lea	rcx, OFFSET FLAT:$SG5264
 	call	?printf@@YAXPEBDZZ			; printf
 $LN1@gmr2_init:
 
@@ -581,7 +581,7 @@ $LN2@gmr_init:
 
 ; 25   : 		printf ("Virtual device does not have GMR support\n");
 
-	lea	rcx, OFFSET FLAT:$SG5256
+	lea	rcx, OFFSET FLAT:$SG5258
 	call	?printf@@YAXPEBDZZ			; printf
 $LN1@gmr_init:
 

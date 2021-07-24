@@ -16,6 +16,55 @@
 
 static int user_stack_index = 0;
 static mutex_t *process_mutex = create_mutex();
+process_t *process_head = NULL;
+process_t *process_last = NULL;
+
+//! Adds a process to the process list
+void add_process (process_t *proc) {
+
+	proc->next = NULL;
+	proc->prev = NULL;
+
+	if (process_head == NULL) {
+		process_head = proc;
+		process_last = proc;
+	} else {
+		process_last->next = proc;
+		proc->prev = process_last;
+		process_last = proc;
+	}
+}
+
+//! removes a process from the process list
+void remove_process (process_t *proc) {
+	
+	if (process_head == NULL)
+		return;
+
+	if (proc == process_head) {
+		process_head = process_head->next;
+	} else {
+		proc->prev->next = proc->next;
+	}
+
+	if (proc == process_last) {
+		process_last = proc->prev;
+	} else {
+		proc->next->prev = proc->prev;
+	}
+
+	pmmngr_free (proc);
+}
+
+
+//! Finds a process by its thread address
+process_t *find_process_by_thread (thread_t *thread) {
+	for (process_t *proc = process_head; proc != NULL; proc = proc->next) {
+		if (proc->thread_data_pointer == thread) {
+			return proc;
+		}
+	}
+}
 
 /* Create stack for User process */
 uint64_t *create_user_stack (uint64_t* cr3) {
@@ -36,7 +85,7 @@ uint64_t *create_user_stack (uint64_t* cr3) {
 
 void create_process(const char* filename, char* procname, uint8_t priority) {
 
-	mutex_lock (process_mutex);
+	//mutex_lock (process_mutex);
 	//!allocate a data-structure for process 
 	process_t *process = (process_t*)pmmngr_alloc();
 
@@ -50,10 +99,15 @@ void create_process(const char* filename, char* procname, uint8_t priority) {
 	unsigned char* buf = (unsigned char*)pmmngr_alloc();   //18*1024
 	read_blk(&file,buf);
 	
+	IMAGE_DOS_HEADER* dos = (IMAGE_DOS_HEADER*)buf;
+	PIMAGE_NT_HEADERS nt = raw_offset<PIMAGE_NT_HEADERS>(dos, dos->e_lfanew);
 	//!extract the informations
     load_pe_file(buf,file.size);
-	ientry ent = get_entry_point();
-	uint64_t _image_base_ = (uint64_t)get_image_base();
+	uint64_t _image_base_ = nt->OptionalHeader.ImageBase;
+	ientry ent = (ientry)(nt->OptionalHeader.AddressOfEntryPoint + nt->OptionalHeader.ImageBase); //buffer
+	//ientry ent = get_entry_point();
+	//printf ("size pf address for process -> %s is -> %x\n", procname, dos->e_magic);
+	//uint64_t _image_base_ = (uint64_t)get_image_base();
 	
 	//! create the user stack and address space
 	
@@ -77,16 +131,32 @@ void create_process(const char* filename, char* procname, uint8_t priority) {
 	process->cr3 = cr3;
 	process->image_base = _image_base_;
 	process->stack = stack;
-
+	process->image_size = nt->OptionalHeader.SizeOfImage;
 	//! Create and thread and start scheduling when scheduler starts */
 	thread_t *t = create_user_thread(process->entry_point,stack,(uint64_t)cr3,procname,priority);
+	printf ("Process for child created -> %s\n", procname);
 	//! add the process to process manager
 	process->thread_data_pointer = t;
-   // process_manager_add_process(process);
-	mutex_unlock (process_mutex);
+    add_process(process);
+	//mutex_unlock (process_mutex);
 
 }
 
+//! Kill Process
 void kill_process () {
+	x64_cli();
+	thread_t * remove_thread = get_current_thread();
+	process_t *proc = find_process_by_thread (remove_thread);
+	uint64_t  init_stack = proc->stack - 0x100000;
+	for (int i = 0; i < 0x100000 / 256; i++) {
+		unmap_page (init_stack + i * 4096);
+	}
 
+	for (int i = 0; i < proc->image_size / 4096; i++) {
+		uint64_t virtual_addr = proc->image_base + (i * 4096);
+		unmap_page (virtual_addr);
+	}
+
+	remove_process (proc);
+	task_delete (remove_thread);
 }

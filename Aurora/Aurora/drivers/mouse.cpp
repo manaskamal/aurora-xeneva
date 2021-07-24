@@ -123,10 +123,11 @@ finish_packet:
 		if (mouse_y > get_screen_height())
 			mouse_y = get_screen_height() - 7;
 
+		mouse_button_state = 0;
 
 		if (mouse_byte[0] & 0x01) {
 			curr_button[0] = 1;
-			mouse_button_state = 1;
+			mouse_button_state |= 1;
 		} else
 			curr_button[0] = 0;
 
@@ -138,6 +139,10 @@ finish_packet:
 		if (mouse_byte[0] & 0x04)
 			mouse_button |= MOUSE_MIDDLE_CLICK;
 		
+		//!Pass here the message stream to all waiting processes
+		/*if (left_button_up()) {
+			mouse_button_state = 0;
+		}*/
 		mutex_lock (mouse);
 		dwm_message_t *msg = (dwm_message_t*)pmmngr_alloc();
 		msg->type = 1;
@@ -156,11 +161,7 @@ finish_packet:
 			unblock_thread(thr);
 		}
 	
-		//!Pass here the message stream to all waiting processes
-		if (left_button_up()) {
-			mouse_button_state = 0;
-			
-		}
+		
 
 		memcpy (prev_button, curr_button, 3);
 		memset (curr_button, 0x00, 3);

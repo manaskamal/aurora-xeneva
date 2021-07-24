@@ -36,12 +36,12 @@ $pdata$?map_page_ex@@YA_NPEA_K_K1@Z DD imagerel $LN7
 $pdata$?create_user_address_space@@YAPEA_KXZ DD imagerel $LN15
 	DD	imagerel $LN15+694
 	DD	imagerel $unwind$?create_user_address_space@@YAPEA_KXZ
-$pdata$?clear@@YAXPEAX@Z DD imagerel ?clear@@YAXPEAX@Z
-	DD	imagerel ?clear@@YAXPEAX@Z+74
-	DD	imagerel $unwind$?clear@@YAXPEAX@Z
 $pdata$?unmap_page@@YAX_K@Z DD imagerel $LN4
 	DD	imagerel $LN4+219
 	DD	imagerel $unwind$?unmap_page@@YAX_K@Z
+$pdata$?clear@@YAXPEAX@Z DD imagerel ?clear@@YAXPEAX@Z
+	DD	imagerel ?clear@@YAXPEAX@Z+74
+	DD	imagerel $unwind$?clear@@YAXPEAX@Z
 pdata	ENDS
 xdata	SEGMENT
 $unwind$?vmmngr_x86_64_init@@YAXXZ DD 010401H
@@ -52,11 +52,58 @@ $unwind$?map_page_ex@@YA_NPEA_K_K1@Z DD 011301H
 	DD	0e213H
 $unwind$?create_user_address_space@@YAPEA_KXZ DD 010401H
 	DD	0e204H
-$unwind$?clear@@YAXPEAX@Z DD 010901H
-	DD	02209H
 $unwind$?unmap_page@@YAX_K@Z DD 010901H
 	DD	0c209H
+$unwind$?clear@@YAXPEAX@Z DD 010901H
+	DD	02209H
 xdata	ENDS
+; Function compile flags: /Odtp
+; File e:\xeneva project\xeneva\aurora\aurora\arch\x86_64\vmmngr.cpp
+_TEXT	SEGMENT
+n$1 = 0
+t$ = 8
+addr$ = 32
+?clear@@YAXPEAX@Z PROC					; clear
+
+; 48   : static void clear(void* addr){
+
+	mov	QWORD PTR [rsp+8], rcx
+	sub	rsp, 24
+
+; 49   : 	uint64_t* t = (uint64_t*)addr;
+
+	mov	rax, QWORD PTR addr$[rsp]
+	mov	QWORD PTR t$[rsp], rax
+
+; 50   : 	for (size_t n = 0; n < 4096 / sizeof(uint64_t); ++n){
+
+	mov	QWORD PTR n$1[rsp], 0
+	jmp	SHORT $LN3@clear
+$LN2@clear:
+	mov	rax, QWORD PTR n$1[rsp]
+	inc	rax
+	mov	QWORD PTR n$1[rsp], rax
+$LN3@clear:
+	cmp	QWORD PTR n$1[rsp], 512			; 00000200H
+	jae	SHORT $LN1@clear
+
+; 51   : 		t[n] = 0;
+
+	mov	rax, QWORD PTR t$[rsp]
+	mov	rcx, QWORD PTR n$1[rsp]
+	mov	QWORD PTR [rax+rcx*8], 0
+
+; 52   : 	}
+
+	jmp	SHORT $LN2@clear
+$LN1@clear:
+
+; 53   : }
+
+	add	rsp, 24
+	ret	0
+?clear@@YAXPEAX@Z ENDP					; clear
+_TEXT	ENDS
 ; Function compile flags: /Odtp
 ; File e:\xeneva project\xeneva\aurora\aurora\arch\x86_64\vmmngr.cpp
 _TEXT	SEGMENT
@@ -159,53 +206,6 @@ $LN1@unmap_page:
 	add	rsp, 104				; 00000068H
 	ret	0
 ?unmap_page@@YAX_K@Z ENDP				; unmap_page
-_TEXT	ENDS
-; Function compile flags: /Odtp
-; File e:\xeneva project\xeneva\aurora\aurora\arch\x86_64\vmmngr.cpp
-_TEXT	SEGMENT
-n$1 = 0
-t$ = 8
-addr$ = 32
-?clear@@YAXPEAX@Z PROC					; clear
-
-; 48   : static void clear(void* addr){
-
-	mov	QWORD PTR [rsp+8], rcx
-	sub	rsp, 24
-
-; 49   : 	uint64_t* t = (uint64_t*)addr;
-
-	mov	rax, QWORD PTR addr$[rsp]
-	mov	QWORD PTR t$[rsp], rax
-
-; 50   : 	for (size_t n = 0; n < 4096 / sizeof(uint64_t); ++n){
-
-	mov	QWORD PTR n$1[rsp], 0
-	jmp	SHORT $LN3@clear
-$LN2@clear:
-	mov	rax, QWORD PTR n$1[rsp]
-	inc	rax
-	mov	QWORD PTR n$1[rsp], rax
-$LN3@clear:
-	cmp	QWORD PTR n$1[rsp], 512			; 00000200H
-	jae	SHORT $LN1@clear
-
-; 51   : 		t[n] = 0;
-
-	mov	rax, QWORD PTR t$[rsp]
-	mov	rcx, QWORD PTR n$1[rsp]
-	mov	QWORD PTR [rax+rcx*8], 0
-
-; 52   : 	}
-
-	jmp	SHORT $LN2@clear
-$LN1@clear:
-
-; 53   : }
-
-	add	rsp, 24
-	ret	0
-?clear@@YAXPEAX@Z ENDP					; clear
 _TEXT	ENDS
 ; Function compile flags: /Odtp
 ; File e:\xeneva project\xeneva\aurora\aurora\arch\x86_64\vmmngr.cpp

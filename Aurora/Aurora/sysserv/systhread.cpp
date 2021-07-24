@@ -10,6 +10,8 @@
  */
 
 #include <arch\x86_64\thread.h>
+#include <proc.h>
+
 
 uint16_t get_thread_id () {
 	x64_cli ();
@@ -19,7 +21,10 @@ uint16_t get_thread_id () {
 
 void create_uthread (void (*entry) (void*)) {
 	x64_cli ();
-	create_user_thread (entry,(uint64_t)pmmngr_alloc(),x64_read_cr3(),"uthread",1);
+	map_page((uint64_t)pmmngr_alloc(), 0x0000000080000000);
+	printf ("Current cr3 value -> %x\n", x64_read_cr3());
+	printf ("Current entry address -> %x\n", entry);
+	thread_t * t = create_user_thread (entry,0x0000000080000000 + 4096, x64_read_cr3(), "uthread", 1);
 }
 
 

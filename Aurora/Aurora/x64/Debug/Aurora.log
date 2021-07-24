@@ -1,8 +1,8 @@
-﻿Build started 18-07-2021 আবেলি 7:03:04.
+﻿Build started 24-07-2021 আবেলি 9:48:36.
      1>Project "E:\Xeneva Project\Xeneva\Aurora\Aurora\Aurora.vcxproj" on node 2 (Rebuild target(s)).
      1>_NASM:
          arch\x86_64\interrupts.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp4e6da97471a145e3bb8d5da803692ddb.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmpdef62bae15294a91a2a30632c0f1a64a.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\interrupts.obj"  "E:\Xeneva Project\Xeneva\Aurora\Aurora\arch\x86_64\interrupts.asm"
      1>E:\Xeneva Project\Xeneva\Aurora\Aurora\arch\x86_64\interrupts.asm(64): warning : label alone on a line without a colon might be in error
      1>E:\Xeneva Project\Xeneva\Aurora\Aurora\arch\x86_64\interrupts.asm(132): warning : signed dword immediate exceeds bounds
@@ -255,23 +255,23 @@
      1>E:\Xeneva Project\Xeneva\Aurora\Aurora\arch\x86_64\interrupts.asm(156): warning : signed dword immediate exceeds bounds
        _NASM:
          arch\x86_64\switch.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp72ab85bc354a46ee98d888d614cebae4.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmpd9d33690ea7d4fc8a769ebd66e58bb53.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\switch.obj"  "E:\Xeneva Project\Xeneva\Aurora\Aurora\arch\x86_64\switch.asm"
        _NASM:
          arch\x86_64\user.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp6661bdea33fa4dae939aad547dacd513.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmpa0eb42e419a94f8ca4887b0ca03aa173.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\user.obj"  "E:\Xeneva Project\Xeneva\Aurora\Aurora\arch\x86_64\user.asm"
        _NASM:
          arch\x86_64\_low_level.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp840fee99695146599509729fa8969ac1.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmpaeb330046ded4ee2954021ffbce948e7.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\_low_level.obj"  "E:\Xeneva Project\Xeneva\Aurora\Aurora\arch\x86_64\_low_level.asm"
        _NASM:
          drivers\svga\backdoor_stuff.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmpa683d1ef191f480f9e78fd8e9055174f.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp96682628df374779a9478c52ce1a0b1b.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\backdoor_stuff.obj"  "E:\Xeneva Project\Xeneva\Aurora\Aurora\drivers\svga\backdoor_stuff.asm"
        _NASM:
          _fast_cpy.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp98369aa16b9b42d59943d81771ef7680.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmped22690dca6040a29b3b0acb809a3670.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\_fast_cpy.obj"  "E:\Xeneva Project\Xeneva\Aurora\Aurora\_fast_cpy.asm"
        ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\Aurora\include" /Zi /nologo /W1 /WX- /sdl- /Od /D ARCH_X64 /D _MBCS /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /FAs /Fa"x64\Debug\\" /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt arch\x86_64\apic.cpp arch\x86_64\cpu.cpp arch\x86_64\exception.cpp arch\x86_64\ioapic.cpp arch\x86_64\kheap.cpp arch\x86_64\systable.cpp arch\x86_64\thread.cpp arch\x86_64\user64.cpp arch\x86_64\vmmngr.cpp atomic\mutex.cpp console.cpp drivers\ata.cpp drivers\kybrd.cpp drivers\mouse.cpp drivers\pci.cpp drivers\svga\gmr.cpp drivers\svga\svga_screen.cpp drivers\svga\svga_screen_util.cpp drivers\svga\vmsvga.cpp drivers\svga\vm_backdoor.cpp drivers\vga.cpp drvmngr.cpp fs\fat32.cpp hal.cpp init.cpp ipc\dwm_ipc.cpp ipc\evntsh.cpp ipc\message.cpp mm.cpp pe.cpp pmmngr.cpp proc.cpp screen.cpp stdio.cpp string.cpp sysserv\sysfb.cpp sysserv\sysfile.cpp sysserv\sysmem.cpp sysserv\sysmouse.cpp sysserv\sysproc.cpp sysserv\systhread.cpp sysserv\syswait.cpp sysserv\valloc.cpp utils\lnklist.cpp utils\ring.cpp vfs.cpp
@@ -298,6 +298,7 @@
          message.cpp
          evntsh.cpp
          Generating Code...
+     1>e:\xeneva project\xeneva\aurora\aurora\proc.cpp(67): warning C4715: 'find_process_by_thread' : not all control paths return a value
          Compiling...
          dwm_ipc.cpp
          init.cpp
@@ -398,4 +399,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:08.39
+Time Elapsed 00:00:03.73

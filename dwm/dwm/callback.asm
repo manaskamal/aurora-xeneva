@@ -181,3 +181,17 @@ sys_sleep:
 	  mov r13, rcx
 	  syscall
 	  ret
+
+
+global sys_get_scanline
+sys_get_scanline:
+    mov r12, 21
+	syscall
+	ret
+
+global sys_exit
+sys_exit:
+    mov r12, 25
+	syscall
+	ret
+

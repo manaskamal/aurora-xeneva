@@ -38,7 +38,7 @@ typedef struct _xn_widget_ {
 	int type;
 	void *data_pointer;
 	void (*paint_handler) (struct _xn_widget_*,struct _xn_win_ *win);
-	void (*on_mouse_button) (struct _xn_widget_*, struct _xn_win_ *win, bool button_state);
+	void (*on_mouse_button) (struct _xn_widget_*, struct _xn_win_ *win,uint32_t mouse_x, uint32_t mouse_y,  bool button_state);
 }xn_widget;
 
 

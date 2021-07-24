@@ -1,13 +1,13 @@
-﻿Build started 18-07-2021 আবেলি 9:09:30.
+﻿Build started 24-07-2021 আবেলি 9:36:31.
      1>Project "E:\Xeneva Project\Xeneva\xnlib\libxeneva\libxeneva.vcxproj" on node 2 (Rebuild target(s)).
      1>_NASM:
          callback.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp047992e5d23b4afa8f2f5c52e6b31045.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp9808a55c27a14e06924e9c52c2430347.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\callback.obj"  "E:\Xeneva Project\Xeneva\xnlib\libxeneva\callback.asm"
      1>E:\Xeneva Project\Xeneva\xnlib\libxeneva\callback.asm(77): warning : label alone on a line without a colon might be in error
        _NASM:
          _fast_cpy.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp025239008a1343e4b6ce321fd2fa56c0.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmpb181a4bb95a74b1b8f74a4fa19e857c8.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\_fast_cpy.obj"  "E:\Xeneva Project\Xeneva\xnlib\libxeneva\_fast_cpy.asm"
        ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\xnlib\libxeneva\include" /Zi /nologo /W4 /WX- /sdl- /MP /Od /D ARCH_X64 /D _MBCS /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt gui\drawer.cpp gui\font.cpp list.cpp mm.cpp stdlib.cpp string.cpp xnsys.cpp xnwidget\xnbutton.cpp xnwidget\xnlabel.cpp xnwidget\xnmenu.cpp xnwidget\xnmenubar.cpp xnwidget\xnwindow.cpp
@@ -17,32 +17,46 @@
          xnwindow.cpp
      1>xnwidget\xnwindow.cpp(20): warning C4267: 'initializing' : conversion from 'size_t' to 'int', possible loss of data
      1>xnwidget\xnwindow.cpp(50): warning C4267: 'argument' : conversion from 'size_t' to 'int', possible loss of data
-     1>xnwidget\xnwindow.cpp(69): warning C4018: '<' : signed/unsigned mismatch
-     1>xnwidget\xnwindow.cpp(92): warning C4018: '<' : signed/unsigned mismatch
-     1>xnwidget\xnwindow.cpp(94): warning C4018: '>=' : signed/unsigned mismatch
-     1>xnwidget\xnwindow.cpp(94): warning C4018: '<' : signed/unsigned mismatch
-     1>xnwidget\xnwindow.cpp(95): warning C4018: '>=' : signed/unsigned mismatch
-     1>xnwidget\xnwindow.cpp(95): warning C4018: '<' : signed/unsigned mismatch
+     1>xnwidget\xnwindow.cpp(73): warning C4018: '<' : signed/unsigned mismatch
+     1>xnwidget\xnwindow.cpp(101): warning C4018: '<' : signed/unsigned mismatch
+     1>xnwidget\xnwindow.cpp(103): warning C4018: '>=' : signed/unsigned mismatch
+     1>xnwidget\xnwindow.cpp(103): warning C4018: '<' : signed/unsigned mismatch
+     1>xnwidget\xnwindow.cpp(104): warning C4018: '>=' : signed/unsigned mismatch
+     1>xnwidget\xnwindow.cpp(104): warning C4018: '<' : signed/unsigned mismatch
          xnmenubar.cpp
+     1>xnwidget\xnmenubar.cpp(18): warning C4267: 'initializing' : conversion from 'size_t' to 'int', possible loss of data
      1>xnwidget\xnmenubar.cpp(19): warning C4018: '<' : signed/unsigned mismatch
-     1>xnwidget\xnmenubar.cpp(22): warning C4267: '+=' : conversion from 'size_t' to 'int', possible loss of data
-     1>xnwidget\xnmenubar.cpp(27): warning C4100: 'button_state' : unreferenced formal parameter
-     1>xnwidget\xnmenubar.cpp(27): warning C4100: 'win' : unreferenced formal parameter
-     1>xnwidget\xnmenubar.cpp(29): warning C4189: 'menubar' : local variable is initialized but not referenced
+     1>xnwidget\xnmenubar.cpp(22): warning C4267: '=' : conversion from 'size_t' to 'int', possible loss of data
+     1>xnwidget\xnmenubar.cpp(25): warning C4018: '<' : signed/unsigned mismatch
+     1>xnwidget\xnmenubar.cpp(41): warning C4018: '<' : signed/unsigned mismatch
+     1>xnwidget\xnmenubar.cpp(46): warning C4267: 'argument' : conversion from 'size_t' to 'unsigned int', possible loss of data
+     1>xnwidget\xnmenubar.cpp(56): warning C4267: 'argument' : conversion from 'size_t' to 'int', possible loss of data
+     1>xnwidget\xnmenubar.cpp(61): warning C4267: '+=' : conversion from 'size_t' to 'int', possible loss of data
+     1>xnwidget\xnmenubar.cpp(70): warning C4018: '<' : signed/unsigned mismatch
+     1>xnwidget\xnmenubar.cpp(72): warning C4018: '>=' : signed/unsigned mismatch
+     1>xnwidget\xnmenubar.cpp(73): warning C4018: '>=' : signed/unsigned mismatch
+     1>xnwidget\xnmenubar.cpp(73): warning C4018: '<=' : signed/unsigned mismatch
+     1>xnwidget\xnmenubar.cpp(81): warning C4018: '<' : signed/unsigned mismatch
+     1>xnwidget\xnmenubar.cpp(83): warning C4018: '>=' : signed/unsigned mismatch
+     1>xnwidget\xnmenubar.cpp(84): warning C4018: '>=' : signed/unsigned mismatch
+     1>xnwidget\xnmenubar.cpp(84): warning C4018: '<=' : signed/unsigned mismatch
          xnmenu.cpp
      1>xnwidget\xnmenu.cpp(17): warning C4267: 'initializing' : conversion from 'size_t' to 'int', possible loss of data
          xnlabel.cpp
      1>xnwidget\xnlabel.cpp(19): warning C4267: 'argument' : conversion from 'size_t' to 'int', possible loss of data
      1>xnwidget\xnlabel.cpp(21): warning C4267: 'argument' : conversion from 'size_t' to 'int', possible loss of data
      1>xnwidget\xnlabel.cpp(24): warning C4100: 'button_state' : unreferenced formal parameter
+     1>xnwidget\xnlabel.cpp(24): warning C4100: 'mouse_y' : unreferenced formal parameter
+     1>xnwidget\xnlabel.cpp(24): warning C4100: 'mouse_x' : unreferenced formal parameter
      1>xnwidget\xnlabel.cpp(24): warning C4100: 'win' : unreferenced formal parameter
      1>xnwidget\xnlabel.cpp(24): warning C4100: 'widget' : unreferenced formal parameter
      1>xnwidget\xnlabel.cpp(28): warning C4267: 'initializing' : conversion from 'size_t' to 'int', possible loss of data
          xnbutton.cpp
      1>xnwidget\xnbutton.cpp(24): warning C4267: 'argument' : conversion from 'size_t' to 'int', possible loss of data
      1>xnwidget\xnbutton.cpp(29): warning C4267: 'argument' : conversion from 'size_t' to 'int', possible loss of data
-     1>xnwidget\xnbutton.cpp(34): warning C4100: 'button_state' : unreferenced formal parameter
-     1>xnwidget\xnbutton.cpp(46): warning C4267: 'initializing' : conversion from 'size_t' to 'int', possible loss of data
+     1>xnwidget\xnbutton.cpp(34): warning C4100: 'mouse_y' : unreferenced formal parameter
+     1>xnwidget\xnbutton.cpp(34): warning C4100: 'mouse_x' : unreferenced formal parameter
+     1>xnwidget\xnbutton.cpp(50): warning C4267: 'initializing' : conversion from 'size_t' to 'int', possible loss of data
          xnsys.cpp
      1>xnsys.cpp(25): warning C4244: '=' : conversion from 'uint64_t' to 'uint32_t', possible loss of data
      1>xnsys.cpp(26): warning C4244: '=' : conversion from 'uint64_t' to 'uint32_t', possible loss of data
@@ -70,8 +84,8 @@
      1>gui\drawer.cpp(74): warning C4018: '<' : signed/unsigned mismatch
      1>gui\drawer.cpp(75): warning C4018: '<' : signed/unsigned mismatch
          Generating Code...
-     1>e:\xeneva project\xeneva\xnlib\libxeneva\string.cpp(48): warning C4706: assignment within conditional expression
      1>e:\xeneva project\xeneva\xnlib\libxeneva\string.cpp(62): warning C4706: assignment within conditional expression
+     1>e:\xeneva project\xeneva\xnlib\libxeneva\string.cpp(48): warning C4706: assignment within conditional expression
      1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V110\Microsoft.CppBuild.targets(1299,5): warning MSB8012: TargetPath(E:\Xeneva Project\Xeneva\Aurora\x64\Debug\libxeneva.lib) does not match the Library's OutputFile property value (E:\Xeneva Project\Xeneva\xnlib\lib64\libxeneva.lib). This may cause your project to build incorrectly. To correct this, please make sure that $(OutDir), $(TargetName) and $(TargetExt) property values match the value specified in %(Lib.OutputFile).
        Lib:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\Lib.exe /OUT:"E:\Xeneva Project\Xeneva\xnlib\lib64\libxeneva.lib" /NOLOGO /NODEFAULTLIB /MACHINE:X64 x64\Debug\drawer.obj
@@ -93,4 +107,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:01.79
+Time Elapsed 00:00:01.53

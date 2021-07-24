@@ -18,6 +18,7 @@
       <Filter>codec</Filter>
     </ClCompile>
     <ClCompile Include="gui.cpp" />
+    <ClCompile Include="menubar.cpp" />
   </ItemGroup>
   <ItemGroup>
     <NASM Include="callback.asm" />
@@ -82,5 +83,6 @@
     <ClInclude Include="..\include\imgresize.h">
       <Filter>include\codec</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\menubar.h" />
   </ItemGroup>
 </Project>

@@ -25,7 +25,6 @@ void  sys_open_file (FILE *file, const char* filename) {
 
 void sys_read_file (FILE *file, unsigned char* buffer, int length) {
 	x64_cli ();
-	printf ("Buffer address -> %x\n", buffer);
 	read (file,buffer,length);
 
 }

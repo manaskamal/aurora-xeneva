@@ -24,3 +24,19 @@ void memset(void *targ, uint8_t val, uint32_t len){
 	while (len--)
 		*t++ = val;
 }
+
+
+size_t strlen (const char* str)
+{
+	size_t len=0;
+	while (str[len++]);
+	return len;
+}
+
+char *strcpy(char *s1, const char *s2)
+{
+	char *s1_p = s1;
+	while (*s1++ = *s2++);
+	return s1_p;
+}
+

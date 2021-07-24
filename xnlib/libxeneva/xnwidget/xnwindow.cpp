@@ -50,18 +50,22 @@ void xn_paint_titlebar (xn_window_t* win, bool default_min, bool default_max, bo
 	draw_string (win->title, win->x + (win->w/2) - ((strlen(win->title)*8)/2), win->y + 10,LIGHTSILVER,bkcolor);
 }
 
+void set_alpha_value(uint32_t color, uint32_t alpha) {
+	 ( ((color << 8) >> 8) | ((alpha << 24) & 0xff000000));
+}
 void xn_paint_window (xn_window_t* win) {
 	uint32_t titlebar_color = 0;
 	uint32_t focus_bound_rect = 0;
 	if (win->focus){
-		titlebar_color = TITLEBAR_DARK;
+		titlebar_color =  0xB32F2F2F;   //TitleBar Dark
 		focus_bound_rect = BLUE;
 	} else if (win->focus == false) {
-		titlebar_color = LIGHTBLACK;
+		titlebar_color = 0xB33E3E3E;   //Light Black
 		focus_bound_rect = LIGHTBLACK;
 	}
+	uint32_t white_color = 0xFFFFFFFF;
 	drawer_draw_rect_unfilled(win->x,win->y,win->w,win->h,focus_bound_rect);
-	drawer_draw_rect(win->x + 1, win->y + 1, win->w -2, win->h-2,0xFFFFFF);
+	drawer_draw_rect(win->x + 1, win->y + 1, win->w -2, win->h-2,white_color);
 	drawer_draw_rect(win->x + 1, win->y + 1, win->w - 2, 35,  titlebar_color);
 	
 	xn_paint_titlebar (win,false,false,false, titlebar_color);
@@ -78,7 +82,12 @@ void xn_show_window (xn_window_t *win) {
 	xn_paint_window (win);
 }
 
+void xn_update_old (xn_window_t *win) {
+	drawer_draw_rect (win->x, win->y, win->w, win->h,0x000000);
+}
+
 void xn_move_window (xn_window_t *win) {
+	xn_update_old(win);
 	xn_paint_window (win);
 }
 
@@ -93,11 +102,15 @@ void xn_handle_mouse (xn_window_t *win, int mouse_x, int mouse_y, bool button_st
 		xn_widget * wid = (xn_widget*)list_get_at(win->xn_widget,i);
 		if (mouse_x >= (win->x + wid->x)  && mouse_x < (win->x + wid->x + wid->w) &&
 			mouse_y >= (win->y + wid->y) && mouse_y < (win->y + wid->y + wid->h)) {
-				wid->on_mouse_button(wid,win,button_state);
+				wid->on_mouse_button(wid,win,mouse_x, mouse_y, button_state);
 		}
 	}	
 }
 
+
+//void xn_set_menubar (xn_window_t* win, xn_menubar_t *menubar) {
+//	win->menubar = menubar;
+//}
 
 
 void xn_handle_close_button (xn_window_t* win) { 

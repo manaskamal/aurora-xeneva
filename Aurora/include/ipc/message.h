@@ -19,6 +19,7 @@
 #include <arch\x86_64\thread.h>
 #endif
 
+
 //! Message format
 typedef struct _message_ {
 	uint32_t dword;
@@ -33,7 +34,9 @@ typedef struct _message_ {
 	uint32_t *dword10;
 	uint64_t quad;
 	uint16_t type;
+	char  buffer[50];
 }message_t;
+
 
 
 typedef struct _kernel_message_queue_ {

@@ -11,10 +11,10 @@ _BSS	SEGMENT
 driver_class_unique_id DD 01H DUP (?)
 _BSS	ENDS
 CONST	SEGMENT
-$SG3314	DB	'aurora_init_driver', 00H
+$SG3316	DB	'aurora_init_driver', 00H
 	ORG $+5
-$SG3316	DB	'aurora_close_driver', 00H
-$SG3322	DB	'sb16', 00H
+$SG3318	DB	'aurora_close_driver', 00H
+$SG3324	DB	'sb16', 00H
 CONST	ENDS
 PUBLIC	?driver_mngr_initialize@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z ; driver_mngr_initialize
 PUBLIC	?request_driver_class_uid@@YAIXZ		; request_driver_class_uid
@@ -196,7 +196,7 @@ $LN8:
 
 ; 51   : 		void* init_address = GetProcAddress (info->driver_entry1,"aurora_init_driver");
 
-	lea	rdx, OFFSET FLAT:$SG3314
+	lea	rdx, OFFSET FLAT:$SG3316
 	mov	rax, QWORD PTR info$[rsp]
 	mov	rcx, QWORD PTR [rax+98]
 	call	?GetProcAddress@@YAPEAXPEAXPEBD@Z	; GetProcAddress
@@ -204,7 +204,7 @@ $LN8:
 
 ; 52   : 		void* close_address = GetProcAddress (info->driver_entry1, "aurora_close_driver");
 
-	lea	rdx, OFFSET FLAT:$SG3316
+	lea	rdx, OFFSET FLAT:$SG3318
 	mov	rax, QWORD PTR info$[rsp]
 	mov	rcx, QWORD PTR [rax+98]
 	call	?GetProcAddress@@YAPEAXPEAXPEBD@Z	; GetProcAddress
@@ -237,7 +237,7 @@ $LN8:
 	mov	eax, DWORD PTR uid$1[rsp]
 	imul	rax, 40					; 00000028H
 	lea	rcx, OFFSET FLAT:?drivers@@3PAU_aurora_driver_@@A ; drivers
-	lea	rdx, OFFSET FLAT:$SG3322
+	lea	rdx, OFFSET FLAT:$SG3324
 	mov	QWORD PTR [rcx+rax+8], rdx
 
 ; 58   : 		drivers[uid].present = true;

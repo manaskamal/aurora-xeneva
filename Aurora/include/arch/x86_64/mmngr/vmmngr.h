@@ -33,4 +33,5 @@ extern void vmmngr_x86_64_init ();
 extern bool map_page (uint64_t physical_address, uint64_t virtual_address);
 extern bool map_page_ex (uint64_t *pml4i,uint64_t physical_address, uint64_t virtual_address);
 extern uint64_t *create_user_address_space ();
+extern void unmap_page(uint64_t virt_addr);
 #endif

@@ -29,6 +29,8 @@ typedef struct _xn_menubar_ {
 	menubar_action on_button_pressed;
 	bool button_toogle;
 	list_t *menus;
+	xn_menu_t *active_menu;
+	xn_menu_t *last_active_menu;
 }xn_menubar_t;
 
 extern xn_menubar_t* xn_create_menubar (xn_window_t *win);

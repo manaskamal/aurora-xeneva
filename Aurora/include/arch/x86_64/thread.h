@@ -148,4 +148,6 @@ extern void set_sched_debug (bool value);
 extern void set_current_thread (thread_t *thread);
 
 extern void sleep_thread (thread_t *t, uint64_t ms);
+
+extern void task_delete (thread_t* thread);
 #endif

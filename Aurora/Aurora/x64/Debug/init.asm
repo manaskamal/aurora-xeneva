@@ -6,16 +6,16 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 CONST	SEGMENT
-$SG6105	DB	'dwm', 00H
+$SG6113	DB	'dwm', 00H
 	ORG $+4
-$SG6106	DB	'dwm.exe', 00H
-$SG6107	DB	'dwm2', 00H
+$SG6114	DB	'dwm.exe', 00H
+$SG6115	DB	'dwm2', 00H
 	ORG $+3
-$SG6108	DB	'dwm2.exe', 00H
+$SG6116	DB	'dwm2.exe', 00H
 	ORG $+3
-$SG6109	DB	'dwm3', 00H
+$SG6117	DB	'dwm3', 00H
 	ORG $+7
-$SG6110	DB	'dwm3.exe', 00H
+$SG6118	DB	'dwm3.exe', 00H
 CONST	ENDS
 PUBLIC	?_kmain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z		; _kmain
 EXTRN	?hal_init@@YAXXZ:PROC				; hal_init
@@ -125,23 +125,23 @@ $LN5:
 ; 67   : 	create_process ("dwm.exe","dwm",20);
 
 	mov	r8b, 20
-	lea	rdx, OFFSET FLAT:$SG6105
-	lea	rcx, OFFSET FLAT:$SG6106
+	lea	rdx, OFFSET FLAT:$SG6113
+	lea	rcx, OFFSET FLAT:$SG6114
 	call	?create_process@@YAXPEBDPEADE@Z		; create_process
 
 ; 68   : 	//! task list should be more than 4 or less than 4 not 
 ; 69   : 	create_process ("dwm2.exe", "dwm2", 1);
 
 	mov	r8b, 1
-	lea	rdx, OFFSET FLAT:$SG6107
-	lea	rcx, OFFSET FLAT:$SG6108
+	lea	rdx, OFFSET FLAT:$SG6115
+	lea	rcx, OFFSET FLAT:$SG6116
 	call	?create_process@@YAXPEBDPEADE@Z		; create_process
 
 ; 70   : 	create_process ("dwm3.exe", "dwm3", 1);
 
 	mov	r8b, 1
-	lea	rdx, OFFSET FLAT:$SG6109
-	lea	rcx, OFFSET FLAT:$SG6110
+	lea	rdx, OFFSET FLAT:$SG6117
+	lea	rcx, OFFSET FLAT:$SG6118
 	call	?create_process@@YAXPEBDPEADE@Z		; create_process
 
 ; 71   : 	//create_process ("dwm3.exe", "dwm3", 1);

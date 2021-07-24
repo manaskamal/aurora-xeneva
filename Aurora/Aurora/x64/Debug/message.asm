@@ -179,18 +179,18 @@ $LN3@message_re:
 ; 71   : 		top = top->link;
 
 	mov	rax, QWORD PTR top
-	mov	rax, QWORD PTR [rax+64]
+	mov	rax, QWORD PTR [rax+112]
 	mov	QWORD PTR top, rax
 
 ; 72   : 		temp->link = NULL;
 
 	mov	rax, QWORD PTR temp$[rsp]
-	mov	QWORD PTR [rax+64], 0
+	mov	QWORD PTR [rax+112], 0
 
 ; 73   : 		memcpy (msg, &temp->msg,sizeof(message_t));
 
 	mov	rax, QWORD PTR temp$[rsp]
-	mov	r8d, 64					; 00000040H
+	mov	r8d, 112				; 00000070H
 	mov	rdx, rax
 	mov	rcx, QWORD PTR msg$[rsp]
 	call	memcpy
@@ -295,7 +295,7 @@ $LN4@message_se:
 ; 48   : 	memcpy (&temp->msg, msg, sizeof(message_t));
 
 	mov	rax, QWORD PTR temp$[rsp]
-	mov	r8d, 64					; 00000040H
+	mov	r8d, 112				; 00000070H
 	mov	rdx, QWORD PTR msg$[rsp]
 	mov	rcx, rax
 	call	memcpy
@@ -304,7 +304,7 @@ $LN4@message_se:
 
 	mov	rax, QWORD PTR temp$[rsp]
 	mov	rcx, QWORD PTR top
-	mov	QWORD PTR [rax+64], rcx
+	mov	QWORD PTR [rax+112], rcx
 
 ; 50   : 	top = temp;
 

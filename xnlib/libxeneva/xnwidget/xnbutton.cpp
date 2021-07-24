@@ -31,10 +31,14 @@ void xn_button_paint_handler (xn_widget *widget, xn_window_t *win) {
 
 }
 
-void xn_button_mouse_event (xn_widget *widget, xn_window_t* win, bool button_state) {
+void xn_button_mouse_event (xn_widget *widget, xn_window_t* win, uint32_t mouse_x, uint32_t mouse_y, bool button_state) {
 	xn_button_t * but = (xn_button_t*)widget->data_pointer;
 
-	but->button_toogle = !but->button_toogle;
+	if (button_state & 1){
+		but->button_toogle = true;
+	} else {
+		but->button_toogle = false;
+	}
 
 	xn_button_paint_handler (widget,win);
 	if (but->on_button_pressed)

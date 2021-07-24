@@ -6,7 +6,7 @@ are not included here.
 Features:
 1. x86_64 based kernel called Aurora Kernel
 2. Multitasking
-3. Read-only FAT32 file-system
+3. FAT32 file-system with {Read-Write Files but no mkdir yet}
 4. Driver Loader {loads PE32+ dll files as drivers}
 5. Process Manager {loads PE32+ executable as application}
 6. Custom system architecture design
@@ -17,7 +17,7 @@ Features:
 11. User Space with multiple address space
 12. IPC-Message passing and shared memory message passing
 [Userspace]:
-13. Window Compositor
+13. Window Compositor {with transclucent support}
 14. Userspace library called libxeneva
 15. Applications like {About.exe, Calc.exe,..etc}
 

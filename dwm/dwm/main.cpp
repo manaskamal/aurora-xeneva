@@ -24,6 +24,7 @@
 #include <imgjpg.h>
 #include "jpeg_decoder.h"
 #include <dwm.h>
+#include <menubar.h>
 
 
 /* =======================================================
@@ -78,6 +79,8 @@ static unsigned int mouse_y = 0;
 static unsigned int mouse_x_old = 0;
 static unsigned int mouse_y_old = 0;
 
+
+
 /* ========================================================================
  *  Main Entry Point
  * ========================================================================
@@ -85,6 +88,8 @@ static unsigned int mouse_y_old = 0;
 void main () {
 	int width = get_screen_width();
 	int height = get_screen_height();
+
+	
 
 	initialize_screen ();
 
@@ -105,6 +110,15 @@ void main () {
 	//!initialize internal window manager
 	wm_initialize ();
 
+	//!register font class
+	register_font_library();
+
+	//!initialize dirty list
+	initialize_dirty_list();
+
+	//!initialize system menubar
+	initialize_system_menubar();
+
 	//! Internal Buffer Pointer
 	uint32_t* buffer = (uint32_t*)0x0000600000000000;
 
@@ -122,7 +136,7 @@ void main () {
 	}
 
 	FILE file;
-	sys_open_file (&file, "cover.jpg");
+	sys_open_file (&file, "rain.jpg");
 
 	for (int i = 0; i < 3076096/4096; i++){
 		valloc (0xFFFFD00000200000 + i * 4096);
@@ -157,7 +171,15 @@ void main () {
 	update_rect.y = 0;
 	update_rect.w = width;
 	update_rect.h = height;
-	uint32_t* lfb = (uint32_t*)0x0000600000000000;
+
+	copy_to_screen ((uint32_t*)0x0000500000000000,&update_rect);
+	copy_to_screen2 ((uint32_t*)0x0000500000000000,&update_rect);
+	rect_t cur_rect;
+	cur_rect.w = 11;
+	cur_rect.h = 18;
+
+	//add_dirty_rect(&update_rect);
+	uint32_t* lfb = (uint32_t*)0x0000600000000000;           //)0xFFFFF00000000000; 
 	dwm_message_t dwm_msg;
 	while(1) {
 		message_receive (&msg);
@@ -169,16 +191,19 @@ void main () {
 			
 
 			/* Handle Left Button Click  event */
-			if (dwm_msg.dword4 == 1) {
-				wm_handle_mouse_event (mouse_x, mouse_y, dwm_msg.dword4, dwm_msg.dword5, dwm_msg.dword6);
-				dwm_msg.dword4 = 0;
-			}
+			//if (dwm_msg.dword4 == 1) {
+			wm_handle_mouse_event (mouse_x, mouse_y, dwm_msg.dword4, dwm_msg.dword5, dwm_msg.dword6);
+			//dwm_msg.dword4 = 0;
+			//}
 	
 			/* Draw dirty pixels for mouse update */
 			for (int w = 0; w < 11; w++) 
 				for (int h = 0; h < 18; h++) 
 					draw_pixel(mouse_x_old+w,mouse_y_old+h,color[h * 20+ w]);
 
+			cur_rect.x = mouse_x_old;
+			cur_rect.y = mouse_y_old;
+			//copy_to_screen ((uint32_t*)0x0000600000000000, &cur_rect);
 			/* Store Dirty Pixels for mouse update */
 			for (int w = 0; w < 11; w++) 
 				for (int h = 0; h < 18; h++) 
@@ -186,6 +211,7 @@ void main () {
 
 			mouse_x_old = mouse_x;
 		    mouse_y_old = mouse_y;
+
 
 			//sys_unblock_id(3);
 			memset (&dwm_msg,0,sizeof(dwm_message_t));
@@ -211,33 +237,55 @@ void main () {
 			msg1.dword5 = win_coord_x;
 			msg1.dword6 = win_coord_y;
 			dwmmsg_send (&msg1);
+			//enable_update(true);
+			wm_paint_required(true);
 			memset (&msg, 0, sizeof (message_t));
 		}
 
 		if (msg.type == DWM_KEY_EVENT) {
+			//Process Key Events
 			memset (&msg, 0, sizeof (message_t));
 		}
 
-		copy_to_screen2 ((uint32_t*)0x0000500000000000,&update_rect);
-		/*********************************************************
-		! If no event, simply composite everything and
-		! prepare the screen for user
-	    copy_to_screen2((uint32_t*)0x0000100000000000, &up_r);*/
-		wm_paint_windows();
-		/**********************************************************
-		**        Draw The Cursor
-		**********************************************************/
+		if (msg.type == DWM_CREATE_MENU) {
+			int id = msg.dword3;
+			window_t* win = wm_find_window_by_id(id);
+			menu_t *menu = (menu_t*)dalloc(sizeof(menu_t));
+			int length = strlen(msg.buffer);
+			menu->title = (char*)dalloc(length);
+			//print_text ("Msg Buffer message %s\n", msg.buffe
+			for (int i = 0; i < length; i++)
+				menu->title[i] = msg.buffer[i];
+			sys_menubar_add_menu (win, menu);
+			memset (&msg, 0, sizeof(message_t));
+		}
+	
 		
+		prepare_screen(&update_rect);
+		refresh_screen(&update_rect);
+		wm_paint_windows(&update_rect);
+		
+		///**********************************************************
+		//**        Draw The Cursor
+		//**********************************************************/
+		//
 		for (int x = 0; x < 11; x++)
 			for (int y=0; y < 18; y++)
 				if (mouse_img_i[y* 11 + x] & 0xFF000000)
 					lfb[(y + mouse_y) * width + (x + mouse_x)] = mouse_img_i[y * 11 + x];
+	 
+	
 		
 		copy_to_screen((uint32_t*)0x0000600000000000,&update_rect);
-		//!Store mouse old position
-     	sys_fb_update();
+ 
+		
+		
+		sys_fb_update();
 
-		//!Render at 60 Frames / Second
-		sys_sleep (16);
+		//!Render at 1000 Frames / Second -> 1ms
+		sys_sleep (1);
+		
+        //!Store mouse old position
+     	
 	}
 }

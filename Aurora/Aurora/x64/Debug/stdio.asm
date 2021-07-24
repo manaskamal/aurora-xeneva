@@ -6,16 +6,16 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 CONST	SEGMENT
-$SG2869	DB	'0123456789ABCDEF', 00H
+$SG2871	DB	'0123456789ABCDEF', 00H
 	ORG $+3
-$SG2925	DB	'0', 00H
+$SG2927	DB	'0', 00H
 	ORG $+2
-$SG2950	DB	'0x', 00H
+$SG2952	DB	'0x', 00H
 	ORG $+1
-$SG2963	DB	'.', 00H
+$SG2965	DB	'.', 00H
 CONST	ENDS
 _DATA	SEGMENT
-chars	DQ	FLAT:$SG2869
+chars	DQ	FLAT:$SG2871
 _DATA	ENDS
 PUBLIC	?printf@@YAXPEBDZZ				; printf
 PUBLIC	?sztoa@@YAPEAD_KPEADH@Z				; sztoa
@@ -389,7 +389,7 @@ $LN12@printf:
 
 ; 69   : 					puts("0");
 
-	lea	rcx, OFFSET FLAT:$SG2925
+	lea	rcx, OFFSET FLAT:$SG2927
 	call	?puts@@YAXPEAD@Z			; puts
 	jmp	SHORT $LN12@printf
 $LN11@printf:
@@ -463,7 +463,7 @@ $LN9@printf:
 
 ; 84   : 				puts("0x");
 
-	lea	rcx, OFFSET FLAT:$SG2950
+	lea	rcx, OFFSET FLAT:$SG2952
 	call	?puts@@YAXPEAD@Z			; puts
 
 ; 85   : 				puts(buffer);
@@ -514,7 +514,7 @@ $LN5@printf:
 ; 98   : 			{
 ; 99   : 				puts(".");
 
-	lea	rcx, OFFSET FLAT:$SG2963
+	lea	rcx, OFFSET FLAT:$SG2965
 	call	?puts@@YAXPEAD@Z			; puts
 
 ; 100  : 			}

@@ -162,3 +162,9 @@ sys_get_free_ram:
     mov r12, 23
 	syscall
 	ret
+
+global sys_exit
+sys_exit:
+    mov r12, 25
+	syscall
+	ret

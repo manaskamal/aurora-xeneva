@@ -17,6 +17,7 @@
 
 extern void *memcpy(void *dest, void *src, size_t count);
 extern void memset(void *targ, uint8_t val, uint32_t len);
-
+extern size_t strlen (const char* str);
+extern char *strcpy(char *s1, const char *s2);
 
 #endif
