@@ -40,10 +40,11 @@ ppn gmr_alloc_descriptor (SVGAGuestMemDescriptor *desc_array, uint32_t num_descr
 
 	const uint32_t desc_per_page = PAGE_SIZE / sizeof (SVGAGuestMemDescriptor) - 1;
 	SVGAGuestMemDescriptor *desc = NULL;
-	ppn first_page = 0;
+	ppn first_page ; //= (ppn)pmmngr_alloc();
 	ppn page = 0;
 
 	int i = 0;
+	printf ("Desc Array -> %x\n", desc_array);
 
 	while (num_descriptor) {
 		if (!first_page) {
@@ -51,11 +52,11 @@ ppn gmr_alloc_descriptor (SVGAGuestMemDescriptor *desc_array, uint32_t num_descr
 			printf ("First page -> %x\n", page);
 		}
 
-		desc = (SVGAGuestMemDescriptor *)PPN_POINTER(page);
+		desc = (SVGAGuestMemDescriptor *)page; //PPN_POINTER(page);
 
 		if (i == desc_per_page) {
 
-			page = (ppn)malloc(4096);
+			page = (ppn)pmmngr_alloc();   //malloc(4096)
 			desc[i].ppn = page;
 			desc[i].numPages = 0;
 			i = 0; 
@@ -115,13 +116,14 @@ ppn gmr_define_contiguous(uint32 gmrId, uint32 numPages){
 ppn gmr_define_even_pages(uint32 gmrId, uint32 numPages)
 {
    SVGAGuestMemDescriptor *desc;
-   ppn region = (ppn)malloc(numPages * 2);
+   ppn region = (ppn)pmmngr_alloc();   //malloc(numPages * 2);
+ 
    int i;
 
-   desc = (SVGAGuestMemDescriptor *)malloc(sizeof *desc * numPages);
-
+   desc = (SVGAGuestMemDescriptor *)pmmngr_alloc();//malloc(sizeof(desc) * numPages);
+   printf ("Desc allocated %x\n", desc);
    for (i = 0; i < numPages; i++) {
-      desc[i].ppn = region + i*2;
+      desc[i].ppn = region + i * 4096;
       desc[i].numPages = 1;
    }
 

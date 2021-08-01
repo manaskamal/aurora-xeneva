@@ -25,7 +25,7 @@
 #include "jpeg_decoder.h"
 #include <dwm.h>
 #include <menubar.h>
-
+#include <stack.h>
 
 /* =======================================================
  *  CPP STANDARD
@@ -49,7 +49,6 @@ static int win_coord_y = 400;
  **THE CURSOR
  ******************************************************
  */
-uint32_t color[1024];
 #define CA 0xFF000000
 #define CB 0xFFFFFFFF
 #define CD 0x00000000
@@ -126,44 +125,7 @@ void main () {
 
 	for (int i = 0; i < width; i++)
 		for (int j = 0; j < height; j++)
-			draw_pixel3(0 + i, 0 + j, LIGHTBLACK);/*0x5B7492*/
-
-	//*Store every thing
-	for (int w = 0; w < 11; w++) {
-		for (int h = 0; h < 18; h++) {
-			color[h * 20 + w] = get_pixel32bit(mouse_x_old+ w,mouse_y_old+ h);
-		}
-	}
-
-	FILE file;
-	sys_open_file (&file, "rain.jpg");
-
-	for (int i = 0; i < 3076096/4096; i++){
-		valloc (0xFFFFD00000200000 + i * 4096);
-	}
-	unsigned char *buffer_i = (unsigned char*)0xFFFFD00000200000;
-	sys_read_file (&file,buffer_i, file.size);
-
-
-	Jpeg::Decoder *decoder = new Jpeg::Decoder(buffer_i, file.size, dalloc, dfree);
-	if (decoder->GetResult() != Jpeg::Decoder::OK) {
-		print_text ("JPEG:Decoder Error\n");
-	}
-	
-	uint8_t* data = decoder->GetImage();
-	for (int i = 0; i < decoder->GetHeight(); i++) {
-		for (int k = 0; k < decoder->GetWidth(); k++) {
-			int j = k + i * decoder->GetWidth();
-			uint8_t r = data[j * 3];        //data[i * 3];
-			uint8_t g = data[j * 3 + 1];        //data[i * 3 + 1];
-			uint8_t b = data[j * 3 + 2];       //data[i * 3 + 2];
-			uint32_t rgb =  ((r<<16) | (g<<8) | (b)) & 0x00ffffff;  //0xFF000000 | (r << 16) | (g << 8) | b;
-			rgb = rgb | 0xff000000;
-		   // wallpaper_buffer[i] = 0xFF000000 | (r << 16) | (g << 8) | b;
-			draw_pixel3 (0 + k, 0 + i,rgb);
-			j++;
-		}
-	}
+			draw_pixel3(0 + i, 0 + j, CHARCOAL);/*0x5B7492*/
 
 	message_t msg;
 	rect_t update_rect;
@@ -172,8 +134,12 @@ void main () {
 	update_rect.w = width;
 	update_rect.h = height;
 
+	//!Draw the wallpaper
 	copy_to_screen ((uint32_t*)0x0000500000000000,&update_rect);
 	copy_to_screen2 ((uint32_t*)0x0000500000000000,&update_rect);
+	sys_fb_update ();
+
+
 	rect_t cur_rect;
 	cur_rect.w = 11;
 	cur_rect.h = 18;
@@ -197,22 +163,8 @@ void main () {
 			//}
 	
 			/* Draw dirty pixels for mouse update */
-			for (int w = 0; w < 11; w++) 
-				for (int h = 0; h < 18; h++) 
-					draw_pixel(mouse_x_old+w,mouse_y_old+h,color[h * 20+ w]);
-
-			cur_rect.x = mouse_x_old;
-			cur_rect.y = mouse_y_old;
 			//copy_to_screen ((uint32_t*)0x0000600000000000, &cur_rect);
 			/* Store Dirty Pixels for mouse update */
-			for (int w = 0; w < 11; w++) 
-				for (int h = 0; h < 18; h++) 
-					color[h * 20 + w] = get_pixel32bit(mouse_x+ w,mouse_y+ h);
-
-			mouse_x_old = mouse_x;
-		    mouse_y_old = mouse_y;
-
-
 			//sys_unblock_id(3);
 			memset (&dwm_msg,0,sizeof(dwm_message_t));
 		}
@@ -228,17 +180,20 @@ void main () {
 				win_coord_x = 500;
 				win_coord_y = 500;
 			}
-
-			window_t *win = create_window (msg.dword3,win_coord_x,win_coord_y,500,500);
+			int type = msg.dword5;
+			if (type == WIN_TYPE_ROOT) {
+				win_coord_x = 0;
+				win_coord_y = 0;
+			}
+			window_t *win = create_window (msg.dword3,msg.dword8,msg.dword9,msg.dword6,msg.dword7, type);
 			message_t msg1;
 			msg1.type = 1;
 			msg1.dword4 = win->pid;
 			msg1.dword10 = win->buffer;
-			msg1.dword5 = win_coord_x;
-			msg1.dword6 = win_coord_y;
+			msg1.dword5 = win->coord.x;
+			msg1.dword6 = win->coord.y;
 			dwmmsg_send (&msg1);
 			//enable_update(true);
-			wm_paint_required(true);
 			memset (&msg, 0, sizeof (message_t));
 		}
 
@@ -259,29 +214,36 @@ void main () {
 			sys_menubar_add_menu (win, menu);
 			memset (&msg, 0, sizeof(message_t));
 		}
+
+		//! Update a dirty area
+		if (msg.type == DWM_UPDATE) {
+			rect_t *r = (rect_t*)dalloc(sizeof(rect_t));
+			r->x = msg.dword5;
+			r->y = msg.dword6;
+			r->w = msg.dword7;
+			r->h = msg.dword8;
+			stack_push_rect(r);
+			copy_to_screen2 (msg.dword10,r);
+			memset(&msg, 0, sizeof(message_t));
+		}
+
+		if (msg.type == DWM_CLOSE)  {
+			window_t *win = wm_find_window_by_id(msg.dword4);
+			if (win != NULL)
+				wm_remove_window(win);
+			memset(&msg, 0, sizeof(message_t));
+			wm_paint_required(true);
+		}
+
 	
 		
-		prepare_screen(&update_rect);
+		//prepare_screen(&update_rect);
 		refresh_screen(&update_rect);
 		wm_paint_windows(&update_rect);
-		
-		///**********************************************************
-		//**        Draw The Cursor
-		//**********************************************************/
-		//
-		for (int x = 0; x < 11; x++)
-			for (int y=0; y < 18; y++)
-				if (mouse_img_i[y* 11 + x] & 0xFF000000)
-					lfb[(y + mouse_y) * width + (x + mouse_x)] = mouse_img_i[y * 11 + x];
-	 
-	
-		
-		copy_to_screen((uint32_t*)0x0000600000000000,&update_rect);
- 
-		
-		
-		sys_fb_update();
 
+		sys_fb_move_cursor (mouse_x, mouse_y);
+		sys_fb_update();
+	
 		//!Render at 1000 Frames / Second -> 1ms
 		sys_sleep (1);
 		

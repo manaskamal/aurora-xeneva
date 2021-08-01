@@ -5,10 +5,215 @@ include listing.inc
 INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
+PUBLIC	?mouse_img_i@@3PAIA				; mouse_img_i
+_DATA	SEGMENT
+?mouse_img_i@@3PAIA DD 0ff000000H			; mouse_img_i
+	DD	00H
+	DD	00H
+	DD	00H
+	DD	00H
+	DD	00H
+	DD	00H
+	DD	00H
+	DD	00H
+	DD	00H
+	DD	00H
+	DD	0ff000000H
+	DD	0ff000000H
+	DD	00H
+	DD	00H
+	DD	00H
+	DD	00H
+	DD	00H
+	DD	00H
+	DD	00H
+	DD	00H
+	DD	00H
+	DD	0ff000000H
+	DD	0ffffffffH
+	DD	0ff000000H
+	DD	00H
+	DD	00H
+	DD	00H
+	DD	00H
+	DD	00H
+	DD	00H
+	DD	00H
+	DD	00H
+	DD	0ff000000H
+	DD	0ffffffffH
+	DD	0ffffffffH
+	DD	0ff000000H
+	DD	00H
+	DD	00H
+	DD	00H
+	DD	00H
+	DD	00H
+	DD	00H
+	DD	00H
+	DD	0ff000000H
+	DD	0ffffffffH
+	DD	0ffffffffH
+	DD	0ffffffffH
+	DD	0ff000000H
+	DD	00H
+	DD	00H
+	DD	00H
+	DD	00H
+	DD	00H
+	DD	00H
+	DD	0ff000000H
+	DD	0ffffffffH
+	DD	0ffffffffH
+	DD	0ffffffffH
+	DD	0ffffffffH
+	DD	0ff000000H
+	DD	00H
+	DD	00H
+	DD	00H
+	DD	00H
+	DD	00H
+	DD	0ff000000H
+	DD	0ffffffffH
+	DD	0ffffffffH
+	DD	0ffffffffH
+	DD	0ffffffffH
+	DD	0ffffffffH
+	DD	0ff000000H
+	DD	00H
+	DD	00H
+	DD	00H
+	DD	00H
+	DD	0ff000000H
+	DD	0ffffffffH
+	DD	0ffffffffH
+	DD	0ffffffffH
+	DD	0ffffffffH
+	DD	0ffffffffH
+	DD	0ffffffffH
+	DD	0ff000000H
+	DD	00H
+	DD	00H
+	DD	00H
+	DD	0ff000000H
+	DD	0ffffffffH
+	DD	0ffffffffH
+	DD	0ffffffffH
+	DD	0ffffffffH
+	DD	0ffffffffH
+	DD	0ffffffffH
+	DD	0ffffffffH
+	DD	0ff000000H
+	DD	00H
+	DD	00H
+	DD	0ff000000H
+	DD	0ffffffffH
+	DD	0ffffffffH
+	DD	0ffffffffH
+	DD	0ffffffffH
+	DD	0ffffffffH
+	DD	0ffffffffH
+	DD	0ffffffffH
+	DD	0ffffffffH
+	DD	0ff000000H
+	DD	00H
+	DD	0ff000000H
+	DD	0ffffffffH
+	DD	0ffffffffH
+	DD	0ffffffffH
+	DD	0ffffffffH
+	DD	0ffffffffH
+	DD	0ffffffffH
+	DD	0ffffffffH
+	DD	0ffffffffH
+	DD	0ffffffffH
+	DD	0ff000000H
+	DD	0ff000000H
+	DD	0ff000000H
+	DD	0ff000000H
+	DD	0ff000000H
+	DD	0ffffffffH
+	DD	0ffffffffH
+	DD	0ffffffffH
+	DD	0ff000000H
+	DD	0ff000000H
+	DD	0ff000000H
+	DD	0ff000000H
+	DD	00H
+	DD	00H
+	DD	00H
+	DD	00H
+	DD	0ff000000H
+	DD	0ffffffffH
+	DD	0ffffffffH
+	DD	0ff000000H
+	DD	00H
+	DD	00H
+	DD	00H
+	DD	00H
+	DD	00H
+	DD	00H
+	DD	00H
+	DD	0ff000000H
+	DD	0ffffffffH
+	DD	0ffffffffH
+	DD	0ff000000H
+	DD	00H
+	DD	00H
+	DD	00H
+	DD	00H
+	DD	00H
+	DD	00H
+	DD	00H
+	DD	00H
+	DD	0ff000000H
+	DD	0ffffffffH
+	DD	0ffffffffH
+	DD	0ff000000H
+	DD	00H
+	DD	00H
+	DD	00H
+	DD	00H
+	DD	00H
+	DD	00H
+	DD	00H
+	DD	0ff000000H
+	DD	0ffffffffH
+	DD	0ffffffffH
+	DD	0ff000000H
+	DD	00H
+	DD	00H
+	DD	00H
+	DD	00H
+	DD	00H
+	DD	00H
+	DD	00H
+	DD	00H
+	DD	0ff000000H
+	DD	0ffffffffH
+	DD	0ff000000H
+	DD	00H
+	DD	00H
+	DD	00H
+	DD	00H
+	DD	00H
+	DD	00H
+	DD	00H
+	DD	00H
+	DD	00H
+	DD	0ff000000H
+	DD	0ff000000H
+	DD	00H
+	DD	00H
+_DATA	ENDS
 PUBLIC	?sys_get_fb_mem@@YAPEAIXZ			; sys_get_fb_mem
 PUBLIC	?sys_fb_update@@YAXXZ				; sys_fb_update
+PUBLIC	?sys_fb_move_cursor@@YAXII@Z			; sys_fb_move_cursor
 EXTRN	x64_cli:PROC
+EXTRN	?svga_fifo_commit_all@@YAXXZ:PROC		; svga_fifo_commit_all
 EXTRN	?svga_update@@YAXIIII@Z:PROC			; svga_update
+EXTRN	?svga_begin_define_alpha_cursor@@YAXPEBUSVGAFifoCmdDefineAlphaCursor@@PEAPEAX@Z:PROC ; svga_begin_define_alpha_cursor
+EXTRN	?svga_move_cursor@@YAXIIII@Z:PROC		; svga_move_cursor
 EXTRN	?svga_get_fb_mem@@YAPEAIXZ:PROC			; svga_get_fb_mem
 EXTRN	?get_screen_width@@YAIXZ:PROC			; get_screen_width
 EXTRN	?get_screen_height@@YAIXZ:PROC			; get_screen_height
@@ -19,29 +224,179 @@ $pdata$?sys_get_fb_mem@@YAPEAIXZ DD imagerel $LN3
 $pdata$?sys_fb_update@@YAXXZ DD imagerel $LN3
 	DD	imagerel $LN3+47
 	DD	imagerel $unwind$?sys_fb_update@@YAXXZ
+$pdata$?sys_fb_move_cursor@@YAXII@Z DD imagerel $LN9
+	DD	imagerel $LN9+212
+	DD	imagerel $unwind$?sys_fb_move_cursor@@YAXII@Z
 pdata	ENDS
 xdata	SEGMENT
 $unwind$?sys_get_fb_mem@@YAPEAIXZ DD 010401H
 	DD	04204H
 $unwind$?sys_fb_update@@YAXXZ DD 010401H
 	DD	06204H
+$unwind$?sys_fb_move_cursor@@YAXII@Z DD 010c01H
+	DD	0a20cH
 xdata	ENDS
+; Function compile flags: /Odtp
+; File e:\xeneva project\xeneva\aurora\aurora\sysserv\sysfb.cpp
+_TEXT	SEGMENT
+_y$1 = 32
+_x$2 = 36
+and_data$ = 40
+cursor$ = 48
+x$ = 96
+y$ = 104
+?sys_fb_move_cursor@@YAXII@Z PROC			; sys_fb_move_cursor
+
+; 53   : void sys_fb_move_cursor (uint32_t x, uint32_t y) {
+
+$LN9:
+	mov	DWORD PTR [rsp+16], edx
+	mov	DWORD PTR [rsp+8], ecx
+	sub	rsp, 88					; 00000058H
+
+; 54   : 	x64_cli();
+
+	call	x64_cli
+
+; 55   : 	
+; 56   : 	SVGAFifoCmdDefineAlphaCursor cursor;
+; 57   : 	cursor.id = 0;
+
+	mov	DWORD PTR cursor$[rsp], 0
+
+; 58   : 	cursor.hotspotX = 0;
+
+	mov	DWORD PTR cursor$[rsp+4], 0
+
+; 59   : 	cursor.hotspotY = 0;
+
+	mov	DWORD PTR cursor$[rsp+8], 0
+
+; 60   : 	cursor.width = 11;
+
+	mov	DWORD PTR cursor$[rsp+12], 11
+
+; 61   : 	cursor.height = 18;
+
+	mov	DWORD PTR cursor$[rsp+16], 18
+
+; 62   : 	uint32_t *and_data;
+; 63   : 	svga_begin_define_alpha_cursor (&cursor, (void**)&and_data);
+
+	lea	rdx, QWORD PTR and_data$[rsp]
+	lea	rcx, QWORD PTR cursor$[rsp]
+	call	?svga_begin_define_alpha_cursor@@YAXPEBUSVGAFifoCmdDefineAlphaCursor@@PEAPEAX@Z ; svga_begin_define_alpha_cursor
+
+; 64   : 
+; 65   : 	/*SVGAFifoCmdDefineCursor cursor;
+; 66   : 	cursor.id = 0;
+; 67   : 	cursor.hotspotX = 24;
+; 68   : 	cursor.hotspotY = 24;
+; 69   : 	cursor.width = 11;
+; 70   : 	cursor.height = 18;
+; 71   : 	cursor.andMaskDepth = 1;
+; 72   : 	cursor.xorMaskDepth = 1;*/
+; 73   : 
+; 74   : 	
+; 75   : 
+; 76   : 	/*for (int y = 0; y< 100; y++){
+; 77   : 		for (int x = 0; x< 100; x++){
+; 78   : 			uint8_t alpha = y * 255 / 10;
+; 79   : 			uint8_t luma = alpha;
+; 80   : 			*(data++) = (alpha << 24) | (luma << 16) | (luma << 8) | luma;
+; 81   : 		}
+; 82   : 	}*/
+; 83   : 
+; 84   : 	//svga_begin_define_cursor (&cursor, (void**)&and_data, (void**)&xor_data);
+; 85   : 
+; 86   : 	for (int _y = 0; _y < cursor.height; _y++) {
+
+	mov	DWORD PTR _y$1[rsp], 0
+	jmp	SHORT $LN6@sys_fb_mov
+$LN5@sys_fb_mov:
+	mov	eax, DWORD PTR _y$1[rsp]
+	inc	eax
+	mov	DWORD PTR _y$1[rsp], eax
+$LN6@sys_fb_mov:
+	mov	eax, DWORD PTR cursor$[rsp+16]
+	cmp	DWORD PTR _y$1[rsp], eax
+	jae	SHORT $LN4@sys_fb_mov
+
+; 87   : 		for ( int _x = 0; _x < cursor.width; _x++) {
+
+	mov	DWORD PTR _x$2[rsp], 0
+	jmp	SHORT $LN3@sys_fb_mov
+$LN2@sys_fb_mov:
+	mov	eax, DWORD PTR _x$2[rsp]
+	inc	eax
+	mov	DWORD PTR _x$2[rsp], eax
+$LN3@sys_fb_mov:
+	mov	eax, DWORD PTR cursor$[rsp+12]
+	cmp	DWORD PTR _x$2[rsp], eax
+	jae	SHORT $LN1@sys_fb_mov
+
+; 88   : 			//if ( mouse_img_i[_y * 11 + _x] & 0xFF000000){
+; 89   : 				*(and_data++) = mouse_img_i[_y * 11 + _x];
+
+	mov	eax, DWORD PTR _y$1[rsp]
+	imul	eax, 11
+	add	eax, DWORD PTR _x$2[rsp]
+	cdqe
+	lea	rcx, OFFSET FLAT:?mouse_img_i@@3PAIA	; mouse_img_i
+	mov	rdx, QWORD PTR and_data$[rsp]
+	mov	eax, DWORD PTR [rcx+rax*4]
+	mov	DWORD PTR [rdx], eax
+	mov	rax, QWORD PTR and_data$[rsp]
+	add	rax, 4
+	mov	QWORD PTR and_data$[rsp], rax
+
+; 90   : 			//	*(xor_data++) = _y * 127;
+; 91   : 			//}
+; 92   : 		}
+
+	jmp	SHORT $LN2@sys_fb_mov
+$LN1@sys_fb_mov:
+
+; 93   : 	}
+
+	jmp	SHORT $LN5@sys_fb_mov
+$LN4@sys_fb_mov:
+
+; 94   :     svga_move_cursor(true, x,y,0);
+
+	xor	r9d, r9d
+	mov	r8d, DWORD PTR y$[rsp]
+	mov	edx, DWORD PTR x$[rsp]
+	mov	ecx, 1
+	call	?svga_move_cursor@@YAXIIII@Z		; svga_move_cursor
+
+; 95   : 	svga_fifo_commit_all();
+
+	call	?svga_fifo_commit_all@@YAXXZ		; svga_fifo_commit_all
+
+; 96   : 	
+; 97   : }
+
+	add	rsp, 88					; 00000058H
+	ret	0
+?sys_fb_move_cursor@@YAXII@Z ENDP			; sys_fb_move_cursor
+_TEXT	ENDS
 ; Function compile flags: /Odtp
 ; File e:\xeneva project\xeneva\aurora\aurora\sysserv\sysfb.cpp
 _TEXT	SEGMENT
 tv64 = 32
 ?sys_fb_update@@YAXXZ PROC				; sys_fb_update
 
-; 23   : void sys_fb_update () {
+; 48   : void sys_fb_update () {
 
 $LN3:
 	sub	rsp, 56					; 00000038H
 
-; 24   : 	x64_cli();
+; 49   : 	x64_cli();
 
 	call	x64_cli
 
-; 25   : 	svga_update (0,0,get_screen_width(),get_screen_height());
+; 50   : 	svga_update (0,0,get_screen_width(),get_screen_height());
 
 	call	?get_screen_height@@YAIXZ		; get_screen_height
 	mov	DWORD PTR tv64[rsp], eax
@@ -53,7 +408,7 @@ $LN3:
 	xor	ecx, ecx
 	call	?svga_update@@YAXIIII@Z			; svga_update
 
-; 26   : }
+; 51   : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -64,20 +419,20 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 ?sys_get_fb_mem@@YAPEAIXZ PROC				; sys_get_fb_mem
 
-; 17   : uint32_t* sys_get_fb_mem () {
+; 42   : uint32_t* sys_get_fb_mem () {
 
 $LN3:
 	sub	rsp, 40					; 00000028H
 
-; 18   : 	x64_cli();
+; 43   : 	x64_cli();
 
 	call	x64_cli
 
-; 19   : 	return svga_get_fb_mem();
+; 44   : 	return svga_get_fb_mem();
 
 	call	?svga_get_fb_mem@@YAPEAIXZ		; svga_get_fb_mem
 
-; 20   : }
+; 45   : }
 
 	add	rsp, 40					; 00000028H
 	ret	0

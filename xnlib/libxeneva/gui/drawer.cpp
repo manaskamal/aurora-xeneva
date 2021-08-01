@@ -13,10 +13,13 @@
 #include <gui\drawer.h>
 #include <xnsys.h>
 #include <string.h>
+#include <mm.h>
 
 drawer_t draw_sys;
 
-void drawer_register () {
+#define DRAWER_UPDATE  6
+
+void drawer_register (int type,uint32_t x, uint32_t y,uint32_t gui_width, uint32_t gui_height) {
 	draw_sys.screen_width = get_screen_width ();
 	draw_sys.screen_height = get_screen_height ();
 	draw_sys.scanline = sys_get_scanline();
@@ -26,6 +29,11 @@ void drawer_register () {
 	msg.type = 2;
 	msg.dword = 1;
 	msg.dword3 = id;
+	msg.dword5 = type;
+	msg.dword6 = gui_width;
+	msg.dword7 = gui_height;
+	msg.dword8 = x;
+	msg.dword9 = y;
 	message_send(1,&msg);
 	memset(&msg,0,sizeof(message_t));
 
@@ -170,5 +178,36 @@ void draw_rounded_rect (int x, int y, int w, int h, int radius, uint32_t color) 
 	draw_circle_corner (x + radius, y + h - radius - 1, radius, 8, color);
 
 }
+
+void drawer_update (int x, int y, int w, int h) {
+	message_t msg;
+	msg.type = DRAWER_UPDATE;
+	msg.dword5 = x;
+	msg.dword6 = y;
+	msg.dword7 = w;
+	msg.dword8 = h;
+	msg.dword10 = draw_sys.framebuffer;
+	message_send (1, &msg);
+	memset(&msg, 0, sizeof(message_t));
+}
+
+
+void drawer_draw_image (unsigned char* buffer,uint32_t x, uint32_t y, uint32_t w, uint32_t h) {
+	uint8_t* data = buffer;
+	for (int i = 0; i < h; i++) {
+		for (int k = 0; k < w; k++) {
+			int j = k + i * w;
+			uint8_t r = data[j * 3];        //data[i * 3];
+			uint8_t g = data[j * 3 + 1];        //data[i * 3 + 1];
+			uint8_t b = data[j * 3 + 2];       //data[i * 3 + 2];
+			uint32_t rgb =  ((r<<16) | (g<<8) | (b)) & 0x00ffffff;  //0xFF000000 | (r << 16) | (g << 8) | b;
+			rgb = rgb | 0xff000000;
+			drawer_draw_pixel (x + k, y + i,rgb);
+			j++;
+		}
+	}
+}
+
+
 
 

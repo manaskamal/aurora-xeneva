@@ -15,6 +15,7 @@ PUBLIC	?outportw@@YAXGG@Z				; outportw
 PUBLIC	?outportd@@YAXGI@Z				; outportd
 PUBLIC	?interrupt_end@@YAXXZ				; interrupt_end
 PUBLIC	?interrupt_set@@YAX_KP6AX0PEAX@ZE@Z		; interrupt_set
+PUBLIC	?irq_mask@@YAXE_N@Z				; irq_mask
 EXTRN	?apic_local_eoi@@YAXXZ:PROC			; apic_local_eoi
 EXTRN	x64_inportb:PROC
 EXTRN	x64_inportw:PROC
@@ -25,6 +26,7 @@ EXTRN	x64_outportd:PROC
 EXTRN	?hal_x86_64_init@@YAXXZ:PROC			; hal_x86_64_init
 EXTRN	?setvect@@YAX_KP6AX0PEAX@Z@Z:PROC		; setvect
 EXTRN	?ioapic_register_irq@@YAX_KP6AX0PEAX@ZE@Z:PROC	; ioapic_register_irq
+EXTRN	?ioapic_mask_irq@@YAXE_N@Z:PROC			; ioapic_mask_irq
 pdata	SEGMENT
 $pdata$?hal_init@@YAXXZ DD imagerel $LN3
 	DD	imagerel $LN3+14
@@ -56,6 +58,9 @@ $pdata$?interrupt_end@@YAXXZ DD imagerel $LN3
 $pdata$?interrupt_set@@YAX_KP6AX0PEAX@ZE@Z DD imagerel $LN3
 	DD	imagerel $LN3+45
 	DD	imagerel $unwind$?interrupt_set@@YAX_KP6AX0PEAX@ZE@Z
+$pdata$?irq_mask@@YAXE_N@Z DD imagerel $LN3
+	DD	imagerel $LN3+32
+	DD	imagerel $unwind$?irq_mask@@YAXE_N@Z
 pdata	ENDS
 xdata	SEGMENT
 $unwind$?hal_init@@YAXXZ DD 010401H
@@ -78,7 +83,35 @@ $unwind$?interrupt_end@@YAXXZ DD 010401H
 	DD	04204H
 $unwind$?interrupt_set@@YAX_KP6AX0PEAX@ZE@Z DD 011301H
 	DD	04213H
+$unwind$?irq_mask@@YAXE_N@Z DD 010c01H
+	DD	0420cH
 xdata	ENDS
+; Function compile flags: /Odtp
+; File e:\xeneva project\xeneva\aurora\aurora\hal.cpp
+_TEXT	SEGMENT
+irq$ = 48
+value$ = 56
+?irq_mask@@YAXE_N@Z PROC				; irq_mask
+
+; 142  : void irq_mask (uint8_t irq, bool value) {
+
+$LN3:
+	mov	BYTE PTR [rsp+16], dl
+	mov	BYTE PTR [rsp+8], cl
+	sub	rsp, 40					; 00000028H
+
+; 143  : 	ioapic_mask_irq(irq, value);
+
+	movzx	edx, BYTE PTR value$[rsp]
+	movzx	ecx, BYTE PTR irq$[rsp]
+	call	?ioapic_mask_irq@@YAXE_N@Z		; ioapic_mask_irq
+
+; 144  : }
+
+	add	rsp, 40					; 00000028H
+	ret	0
+?irq_mask@@YAXE_N@Z ENDP				; irq_mask
+_TEXT	ENDS
 ; Function compile flags: /Odtp
 ; File e:\xeneva project\xeneva\aurora\aurora\hal.cpp
 _TEXT	SEGMENT

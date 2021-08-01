@@ -19,6 +19,7 @@
     </ClCompile>
     <ClCompile Include="gui.cpp" />
     <ClCompile Include="menubar.cpp" />
+    <ClCompile Include="stack.cpp" />
   </ItemGroup>
   <ItemGroup>
     <NASM Include="callback.asm" />
@@ -84,5 +85,8 @@
       <Filter>include\codec</Filter>
     </ClInclude>
     <ClInclude Include="..\include\menubar.h" />
+    <ClInclude Include="..\include\stack.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -15,9 +15,9 @@ user_stack_index DD 01H DUP (?)
 ?process_last@@3PEAU_process_@@EA DQ 01H DUP (?)	; process_last
 _BSS	ENDS
 CONST	SEGMENT
-$SG3667	DB	'Executable image not found', 0aH, 00H
+$SG3675	DB	'Executable image not found', 0aH, 00H
 	ORG $+4
-$SG3696	DB	'Process for child created -> %s', 0aH, 00H
+$SG3704	DB	'Process for child created -> %s', 0aH, 00H
 CONST	ENDS
 PUBLIC	?create_user_stack@@YAPEA_KPEA_K@Z		; create_user_stack
 PUBLIC	?create_process@@YAXPEBDPEADE@Z			; create_process
@@ -529,7 +529,7 @@ $LN6:
 
 ; 95   : 		printf("Executable image not found\n");
 
-	lea	rcx, OFFSET FLAT:$SG3667
+	lea	rcx, OFFSET FLAT:$SG3675
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 96   : 		return;
@@ -713,7 +713,7 @@ $LN1@create_pro:
 ; 137  : 	printf ("Process for child created -> %s\n", procname);
 
 	mov	rdx, QWORD PTR procname$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3696
+	lea	rcx, OFFSET FLAT:$SG3704
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 138  : 	//! add the process to process manager

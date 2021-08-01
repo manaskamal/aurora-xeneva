@@ -178,6 +178,7 @@ extern "C" void x64_sgdt(void* location);
 //! TLB Flush
 extern "C" void flush_tlb(void* addr);
 
+extern "C" void x64_atom_exchange (size_t r1, size_t r2);
 
 //! init -- initializer of x86_64 hal subsystem
 extern void hal_x86_64_init ();

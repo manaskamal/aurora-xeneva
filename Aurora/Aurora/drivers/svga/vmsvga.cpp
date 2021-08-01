@@ -88,9 +88,12 @@ void svga_init () {
 		svga_write_reg (SVGA_REG_IRQMASK, 0);
 		printf ("Irq of svga -> %d\n", irq);
 		outportd (svga_dev.io_base + SVGA_IRQSTATUS_PORT, 0xff);
-		if (irq <= 244) {
-		interrupt_set (irq, svga_interrupt_handler, irq);
-		}
+
+		svga_dev.irq.pending = 0;
+		if (irq <= 244)
+			interrupt_set (irq, svga_interrupt_handler, irq);
+		//irq_mask (irq, true);
+
 	}
 
 
@@ -100,7 +103,6 @@ void svga_init () {
 	memset(svga_dev.fb_mem,0x40,svga_dev.width*svga_dev.height*32);
 	svga_update(0,0,svga_dev.width,svga_dev.height);
 	screen_set_configuration(svga_dev.width,svga_dev.height);
-
 	vm_backdoor_mouse_init (true);
 
 }
@@ -116,6 +118,7 @@ void svga_enable () {
 	if (svga_has_fifo_cap (SVGA_CAP_EXTENDED_FIFO) &&
 		svga_is_fifo_reg_valid (SVGA_FIFO_GUEST_3D_HWVERSION)) {
 			svga_dev.fifo_mem[SVGA_FIFO_GUEST_3D_HWVERSION] = SVGA3D_HWVERSION_CURRENT;
+			printf ("HW3D supported\n");
 	}
 
 	//!Enable SVGA device and FIFO
@@ -124,7 +127,8 @@ void svga_enable () {
 
 	if (svga_dev.capabilities & SVGA_CAP_IRQMASK) {
 		svga_write_reg (SVGA_REG_IRQMASK, SVGA_IRQFLAG_ANY_FENCE);
-
+		printf ("SVGA IRQMask\n");
+		svga_dev.irq.pending = 0;
 		svga_insert_fence ();
 
 		svga_write_reg (SVGA_REG_SYNC, 1);
@@ -135,10 +139,8 @@ void svga_enable () {
 		if ((svga_dev.irq.pending & SVGA_IRQFLAG_ANY_FENCE) == 0) {
 			printf ("SVGA IRQ appears to be present but broken %d\n", svga_dev.irq.pending);
 		}
-		
 	}
 
-	
 }
 
 
@@ -381,8 +383,8 @@ void svga_begin_define_alpha_cursor (const SVGAFifoCmdDefineAlphaCursor *cursor_
 {
 	uint32_t image_size = cursor_info->width * cursor_info->height * sizeof(uint32_t);
 	SVGAFifoCmdDefineAlphaCursor *cmd =  (SVGAFifoCmdDefineAlphaCursor*)svga_fifo_reserved_cmd (SVGA_CMD_DEFINE_ALPHA_CURSOR,
-		sizeof *cmd + image_size);
-
+		sizeof(cmd) + image_size);  //sizeof *cmd;
+	//printf ("Cmd address -> %x, %x\n", cmd, *cmd);
 	*cmd = *cursor_info;
 	*data = (void*) (cmd + 1);
 }
@@ -397,7 +399,7 @@ void svga_move_cursor (uint32_t visible,
 	}
 
 	if (svga_has_fifo_cap (SVGA_FIFO_CAP_CURSOR_BYPASS_3)) {
-		printf ("Cursor Bypass 3 supported\n");
+		//printf ("Cursor Bypass 3 supported\n");
 		svga_dev.fifo_mem[SVGA_FIFO_CURSOR_ON] = visible;
 		svga_dev.fifo_mem[SVGA_FIFO_CURSOR_X] = x;
 		svga_dev.fifo_mem[SVGA_FIFO_CURSOR_Y] = y;
@@ -457,14 +459,6 @@ void svga_video_flush (uint32_t stream_id) {
 }
 
 
-		
-uint32_t svga_wait_for_irq () {
-	
-	uint32_t flags = 0;
-	for (int i = 0; i < 10000; i++)
-		;
-	return flags;
-}
 
 bool svga_has_fence_passed (uint32_t fence) {
 
@@ -556,6 +550,14 @@ uint32_t svga_insert_fence () {
 
 	return fence;
 }
+
+
+void svga_wait_for_irq () {
+	uint32_t flags = 0;
+	do {
+		flags = svga_dev.irq.pending;
+	}while (flags == 0);
+}
 /**===============================================================
  ** Interrupt handler
  ** ==============================================================
@@ -565,13 +567,13 @@ void svga_interrupt_handler (size_t s, void* p) {
 	uint16_t port = svga_dev.io_base + SVGA_IRQSTATUS_PORT;
 	uint32_t irq_flags = inportd (port);
 	outportd (port, irq_flags);
-	//printf ("Irq flags -> %d\n", irq_flags);
+	printf ("Irq flags -> %d\n", irq_flags);
 	svga_dev.irq.count++;
-	//printf ("SVGA interrupted\n");
-	/*if (!irq_flags)
-		printf ("[VMware SVGA]: spurious SVGA IRQ\n");*/
+	svga_dev.irq.pending = irq_flags;
+	printf ("SVGA interrupted\n");
+	if (!irq_flags)
+		printf ("[VMware SVGA]: spurious SVGA IRQ\n");
 	interrupt_end();
-	
 }
 
 

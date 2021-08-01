@@ -29,13 +29,14 @@ void xn_draw_popup_menu (xn_menu_t *menu, xn_window_t *win) {
 		draw_string (item->title, menu->pos_x + 4, win->y + 35 + h + 1, LIGHTSILVER ,menu_bk_color);
 		h += 25;
 	}
+	drawer_update(win->x, win->y, win->w, win->h);
 }
 
 
 void xn_menubar_paint_handler (xn_widget *widget, xn_window_t *win) {
 	xn_menubar_t * menubar = (xn_menubar_t*)widget->data_pointer;
 	drawer_draw_rect (win->x, win->y + 35, menubar->base.w, menubar->base.h, LIGHTBLACK);
-
+	drawer_update (win->x, win->y + 35, menubar->base.w, menubar->base.h);
 	int menu_pos_x = 10;
 	uint32_t focus_color = 0;
 	for (int i = 0; i < menubar->menus->pointer; i++) {
@@ -54,6 +55,7 @@ void xn_menubar_paint_handler (xn_widget *widget, xn_window_t *win) {
 
 		if (menu->over_effect) {
 			drawer_draw_rect_unfilled(win->x + menu_pos_x - 2, win->y + 35, (strlen(menu->popup_title)*8 + 4), 25, LIGHTSILVER);
+			drawer_update (win->x + menu_pos_x - 2, win->y + 35, (strlen(menu->popup_title)*8 + 4), 25);
 			menu->over_effect = false;
 		}
 		draw_string (menu->popup_title,win->x +  menu_pos_x, win->y + 35 + 3,LIGHTSILVER, focus_color);
@@ -67,11 +69,17 @@ void xn_menubar_mouse_event (xn_widget *widget, xn_window_t* win,uint32_t mouse_
 	//NOTHING TO DO NOW
 	xn_menubar_t * menubar = (xn_menubar_t*)widget->data_pointer;
 	if (button_state & 1) {
+		if (menubar->active_menu != NULL) {
+			xn_move_window(win);
+		}
+
+
 		for (int i = 0; i < menubar->menus->pointer; i++) {
 		xn_menu_t *menu = (xn_menu_t*)list_get_at (menubar->menus, i);
 		if (mouse_x >= menu->pos_x && mouse_x <= (menu->pos_x + (strlen(menu->popup_title)* 8 + 20)) &&
 			mouse_y >= menu->pos_y && mouse_y <= (menu->pos_y + 35 + 3)){
 				menu->clicked = true;
+				menubar->active_menu = menu;
 				//xn_menubar_paint_handler(widget, win);
 				break;
 		}
@@ -83,7 +91,6 @@ void xn_menubar_mouse_event (xn_widget *widget, xn_window_t* win,uint32_t mouse_
 			if (mouse_x >= menu->pos_x && mouse_x <= (menu->pos_x + (strlen(menu->popup_title)* 8 + 20)) &&
 				mouse_y >= menu->pos_y && mouse_y <= (menu->pos_y + 35 + 3)){
 					menu->over_effect = true;
-					
 					break;
 			}
 		}

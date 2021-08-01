@@ -40,5 +40,7 @@ extern void outportd(uint16_t port, uint32_t data);
 extern void interrupt_end ();
 //! Interrupt Vector Registration
 extern void interrupt_set (size_t vector, void (*fn)(size_t, void* p),uint8_t irq);
+//! Mask or unmask an interrupt
+extern void irq_mask (uint8_t irq, bool value);
 
 #endif

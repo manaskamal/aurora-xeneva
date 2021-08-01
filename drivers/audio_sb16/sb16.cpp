@@ -16,11 +16,17 @@
 #include <sys.h>
 
 
-
 void (*driver_debug) (const char* str, ...);
 void (*apic_local_eoi) ();
 
 bool _sb16 = false;
+unsigned int sb16_version_major;
+unsigned int sb16_version_minor;
+
+#define SIGNED_AUDIO  0x10
+#define STERIO_MODE   0x20
+#define DSP_STATUS  0x22E
+#define DSP_R_ACK   0x22F
 
 void sb16_reset_dsp () {
 	x64_outportb (SB16_DSP_RESET, 1);
@@ -84,8 +90,17 @@ void sb16_set_irq_register (uint8_t irq_number) {
 
 //! Sound Blaster 16 irq handler
 void sb16_handler (size_t s, void* p) {
+	x64_cli();
 	driver_debug ("[SB16]: IRQ fired\n");
+	sb16_write_dsp (0xd5);
+
+	x64_inportb (DSP_STATUS);
+	if (sb16_version_major >= 4)
+		x64_inportb (DSP_R_ACK);
+
+
 	apic_local_eoi();
+	x64_sti();
 }
 
 
@@ -103,21 +118,52 @@ void sb16_dma_start (uint64_t addr, uint32_t length) {
 	//! 0x48 - SINGLE LOOP; 0x58 - AUTO MODE + channel / REPEAT
 	dma_set_mode (channel, 0x48);
 
+	//!Low Bits of sound data address
 	uint16_t offset = (addr / 2) % 65536;
 	x64_outportb (0xC4, (uint8_t)offset);
 	x64_outportb (0xC4, (uint8_t)(offset >> 8));
+
 
 	//!Write the transfer length
 	x64_outportb (0xC6, (uint8_t)(length - 1));
 	x64_outportb (0xC6, (uint8_t)((length - 1) >> 8));
 
 	//! write the buffer
+	//! Low bit of the sound data address
 	x64_outportb (0x8b, addr >> 16);
 
 	//! Enable the DMA channel
 	dma_unmask_channel(channel);
 }
 
+//! Audio Write -- Uses sb16 play audio methods
+extern "C" void _declspec(dllexport) aurora_write (unsigned char* sound_buffer, size_t length) {
+	//!sb16 reset the dsp first
+	sb16_reset_dsp ();
+	
+	//! set up master volume
+	x64_outportb(0x22C, 0xD1);
+
+	sb16_set_sample_rate (44100);
+
+	sb16_dma_start ((uint64_t)sound_buffer, length);
+
+	uint8_t command = 0xB0;
+
+	uint16_t sample_count = length / sizeof(int16_t);
+	sample_count /= 2;
+
+	sample_count -= 1;
+
+	driver_debug ("Sample Count -> %d\n", sample_count);
+	sb16_write_dsp (command);
+	sb16_write_dsp (SIGNED_AUDIO | STERIO_MODE);
+	sb16_write_dsp ((uint8_t)sample_count);
+	sb16_write_dsp ((uint8_t)(sample_count >> 8));
+
+	driver_debug ("Aurora sound playing started\n");
+
+}
 //! Aurora Close Driver interface
 //! Free up space and perform every clean action
 extern "C" void _declspec(dllexport) aurora_close_driver () {
@@ -139,8 +185,8 @@ extern "C" int _declspec(dllexport) _cdecl aurora_init_driver (driver_param_t *p
 	}
 
 	sb16_write_dsp (0xE1);
-	unsigned int sb16_version_major = sb16_read_dsp ();
-	unsigned int sb16_version_minor = sb16_read_dsp ();
+	sb16_version_major = sb16_read_dsp ();
+	sb16_version_minor = sb16_read_dsp ();
 
 	driver_debug ("[SB16]: Sound Blaster 16 card found version %d.%d\n",sb16_version_major,sb16_version_minor);
 	sb16_set_irq_register (5);

@@ -16,6 +16,17 @@
 
 static uint16_t id = 0;
 
+
+extern "C" int _fltused = 1;
+void* __cdecl ::operator new(size_t size) {
+	return malloc(size);
+}
+
+void* __cdecl operator new[] (size_t size) {
+	return malloc(size);
+}
+
+
 void message_poll (message_t *msg) {
 
 	uint64_t* data = (uint64_t*)0xFFFFD00000000000;
@@ -39,12 +50,12 @@ void message_poll (message_t *msg) {
 	}
 }
 
-void register_xn_application () {
+void register_xn_application (int type,uint32_t x, uint32_t y, uint32_t gui_width, uint32_t gui_height) {
 	id = get_current_pid ();
 	initialize_allocator (0x10);
-	drawer_register();
+	drawer_register(type,x, y, gui_width, gui_height);
 	register_font_lib();
-	for (int i = 0; i < get_screen_width()*get_screen_height()/4096; i++) 
+	for (int i = 0; i < get_screen_width()*get_screen_height()*32/4096; i++) 
 		valloc (0x0000600000000000 + i * 4096);
 
 }

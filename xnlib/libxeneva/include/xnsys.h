@@ -63,6 +63,10 @@ typedef struct _file_ {
 	uint32_t  status;
 }FILE;
 
+
+#define APPLICATION_TYPE_ROOT 14
+#define APPLICATION_TYPE_NORMAL 15
+
 extern "C" void print_text(const char* text, ...);
 extern "C" void sched_wait ();
 extern "C" void create_process (const char * name);
@@ -86,7 +90,8 @@ extern "C" void sys_read_file (FILE *file, unsigned char* buffer, int length);
 extern "C" uint16_t sys_get_scanline ();
 extern "C" uint64_t sys_get_used_ram ();
 extern "C" uint64_t sys_get_free_ram ();
+extern "C" void sys_sleep (uint64_t ms);
 extern void message_poll (message_t *msg);
-extern void register_xn_application ();
+extern void register_xn_application (int app_type,uint32_t x, uint32_t y,uint32_t gui_width, uint32_t gui_height);
 extern "C" void sys_exit();
 #endif

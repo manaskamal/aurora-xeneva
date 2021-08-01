@@ -5,6 +5,7 @@ include listing.inc
 INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
+PUBLIC	?part_lba@@3IA					; part_lba
 PUBLIC	?fat_begin_lba@@3KA				; fat_begin_lba
 PUBLIC	?cluster_begin_lba@@3KA				; cluster_begin_lba
 PUBLIC	?sectors_per_cluster@@3EA			; sectors_per_cluster
@@ -13,8 +14,8 @@ PUBLIC	?root_sector@@3KA				; root_sector
 PUBLIC	?sectors_per_fat32@@3IA				; sectors_per_fat32
 PUBLIC	?alloc_counter@@3HA				; alloc_counter
 PUBLIC	?total_clusters@@3IA				; total_clusters
-PUBLIC	?part_lba@@3IA					; part_lba
 _BSS	SEGMENT
+?part_lba@@3IA DD 01H DUP (?)				; part_lba
 ?fat_begin_lba@@3KA DD 01H DUP (?)			; fat_begin_lba
 ?cluster_begin_lba@@3KA DD 01H DUP (?)			; cluster_begin_lba
 ?sectors_per_cluster@@3EA DB 01H DUP (?)		; sectors_per_cluster
@@ -25,18 +26,17 @@ _BSS	SEGMENT
 ?sectors_per_fat32@@3IA DD 01H DUP (?)			; sectors_per_fat32
 ?alloc_counter@@3HA DD 01H DUP (?)			; alloc_counter
 ?total_clusters@@3IA DD 01H DUP (?)			; total_clusters
-?part_lba@@3IA DD 01H DUP (?)				; part_lba
 _BSS	ENDS
 CONST	SEGMENT
-$SG3117	DB	'Sector  Per Cluster -> %d', 0aH, 00H
+$SG3125	DB	'Sector  Per Cluster -> %d', 0aH, 00H
 	ORG $+5
-$SG3221	DB	'%s             %d bytes', 0aH, 00H
-	ORG $+7
 $SG3229	DB	'%s             %d bytes', 0aH, 00H
 	ORG $+7
-$SG3355	DB	'Root Dir entries scanning', 0aH, 00H
+$SG3237	DB	'%s             %d bytes', 0aH, 00H
+	ORG $+7
+$SG3363	DB	'Root Dir entries scanning', 0aH, 00H
 	ORG $+5
-$SG3370	DB	'Other file size -> %s, dirent attrib -> %x, count ->%d', 0aH
+$SG3378	DB	'Other file size -> %s, dirent attrib -> %x, count ->%d', 0aH
 	DB	00H
 CONST	ENDS
 PUBLIC	?initialize_fat32@@YAXXZ			; initialize_fat32
@@ -1041,7 +1041,7 @@ $LN6@fat32_list:
 	mov	rax, QWORD PTR dir$[rsp]
 	mov	r8d, DWORD PTR [rax+28]
 	lea	rdx, QWORD PTR filename$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3221
+	lea	rcx, OFFSET FLAT:$SG3229
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 330  : 		dir++;
@@ -1085,7 +1085,7 @@ $LN3@fat32_list:
 	mov	rax, QWORD PTR dir2$[rsp]
 	mov	r8d, DWORD PTR [rax+28]
 	lea	rdx, QWORD PTR filename2$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3229
+	lea	rcx, OFFSET FLAT:$SG3237
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 338  : 		dir2++;
@@ -2202,7 +2202,7 @@ $LN9:
 ; 547  : 
 ; 548  : 	printf ("Root Dir entries scanning\n");
 
-	lea	rcx, OFFSET FLAT:$SG3355
+	lea	rcx, OFFSET FLAT:$SG3363
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 549  : 	fat32_dir *dirent;
@@ -2264,7 +2264,7 @@ $LN3@list_fat_e:
 	mov	r9d, DWORD PTR i$1[rsp]
 	mov	r8d, eax
 	lea	rdx, QWORD PTR filename2$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3370
+	lea	rcx, OFFSET FLAT:$SG3378
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 560  : 			dirent++;
@@ -3144,7 +3144,7 @@ $LN3:
 
 	movzx	eax, BYTE PTR ?sectors_per_cluster@@3EA	; sectors_per_cluster
 	mov	edx, eax
-	lea	rcx, OFFSET FLAT:$SG3117
+	lea	rcx, OFFSET FLAT:$SG3125
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 122  : 	//printf ("Total Sectors -> %d\n", fat32_data->large_sector_count);

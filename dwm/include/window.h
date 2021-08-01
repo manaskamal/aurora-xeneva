@@ -21,6 +21,9 @@
 
 #define WIN_FOCUSED 10
 #define WIN_UNFOCUSED 11
+
+#define WIN_TYPE_ROOT 14
+#define WIN_TYPE_NORMAL 15
 //! Window Structure
 typedef struct _window_ {
 	rect_t coord;
@@ -31,6 +34,7 @@ typedef struct _window_ {
 	bool draggable_update;
 	bool focus;
 	bool close;
+	uint8_t type;
 	winlist * menu_list;
 	winlist * dirty_rect;
 	struct _window_ *next;
@@ -38,6 +42,6 @@ typedef struct _window_ {
 }window_t;
 
 //!create window
-extern window_t* create_window (uint16_t id,uint16_t x, uint16_t y, uint16_t w, uint16_t h);
+extern window_t* create_window (uint16_t id,uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint8_t type);
 
 #endif

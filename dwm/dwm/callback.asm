@@ -195,3 +195,11 @@ sys_exit:
 	syscall
 	ret
 
+global sys_fb_move_cursor
+sys_fb_move_cursor:
+    mov r12, 26
+	mov r13, rcx
+	mov r14, rdx
+	syscall
+	ret
+   

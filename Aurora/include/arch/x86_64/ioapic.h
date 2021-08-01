@@ -24,4 +24,5 @@
 //! Initialize I/O Apic
 extern void ioapic_init(void* address);
 extern void ioapic_register_irq(size_t vector, void (*fn)(size_t, void* p),uint8_t irq);
+extern void ioapic_mask_irq (uint8_t irq, bool value);
 #endif

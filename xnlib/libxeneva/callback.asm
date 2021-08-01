@@ -168,3 +168,10 @@ sys_exit:
     mov r12, 25
 	syscall
 	ret
+
+global sys_sleep
+sys_sleep:
+      mov r12, 24
+	  mov r13, rcx
+	  syscall
+	  ret

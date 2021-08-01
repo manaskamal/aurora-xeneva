@@ -143,6 +143,21 @@ void unmap_page(uint64_t virt_addr){
 }
 
 
+//! returns a physical address from virtual address
+uint64_t* get_physical_address (uint64_t virt_addr) {
+	const long i1 = pml4_index(virt_addr);
+
+	uint64_t *pml4 = (uint64_t*)x64_read_cr3();
+	uint64_t *pdpt = (uint64_t*)(pml4[pml4_index(virt_addr)] & ~(4096 - 1));
+	uint64_t *pd = (uint64_t*)(pdpt[pdp_index(virt_addr)] & ~(4096 - 1));
+	uint64_t *pt = (uint64_t*)(pd[pd_index(virt_addr)] & ~(4096 - 1));
+	uint64_t *page = (uint64_t*)(pt[pt_index(virt_addr)] & ~(4096 - 1));
+
+	if (page != NULL)
+		return page;
+}
+
+
 
 bool map_page_ex (uint64_t *pml4i,uint64_t physical_address, uint64_t virtual_address){
 

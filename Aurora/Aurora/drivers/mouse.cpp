@@ -160,8 +160,6 @@ finish_packet:
 			thr->state = THREAD_STATE_READY;
 			unblock_thread(thr);
 		}
-	
-		
 
 		memcpy (prev_button, curr_button, 3);
 		memset (curr_button, 0x00, 3);
@@ -204,4 +202,5 @@ void initialize_mouse () {
 	mouse_read ();
 
 	interrupt_set (34, mouse_handler, 12);
+	//irq_mask(12, true);
 }

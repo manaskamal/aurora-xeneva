@@ -42,6 +42,7 @@ typedef struct _driver_param_ {
 	bool (*pci_find_device) (uint16_t vendor_id, uint16_t device_id, pci_address *addr);
 	uint32_t (*pci_get_bar) (const pci_address *addr, int index);
 	void (*pci_set_mem_enable) (const pci_address *addr, bool enable);
+	void* (*malloc) (size_t size);
 }driver_param_t;
 #pragma pack (pop)
 
@@ -52,11 +53,13 @@ typedef struct _aurora_driver_ {
 	bool present;
 	int (*aurora_init_driver) (driver_param_t *param);
 	void (*aurora_close_driver) ();
+	void (*aurora_write) (unsigned char* sound_buffer, size_t length);
 }aurora_driver_t;
 
 
 //!driver manager initialization
 extern void driver_mngr_initialize (KERNEL_BOOT_INFO *info);
+extern void drv_mngr_write_driver (unsigned char* buffer, size_t length);
 
 #endif
 

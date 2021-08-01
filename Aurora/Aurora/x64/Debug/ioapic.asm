@@ -7,6 +7,7 @@ INCLUDELIB OLDNAMES
 
 PUBLIC	?ioapic_init@@YAXPEAX@Z				; ioapic_init
 PUBLIC	?ioapic_register_irq@@YAX_KP6AX0PEAX@ZE@Z	; ioapic_register_irq
+PUBLIC	?ioapic_mask_irq@@YAXE_N@Z			; ioapic_mask_irq
 PUBLIC	??$raw_offset@PECIPEAX@@YAPECIPEAXH@Z		; raw_offset<unsigned int volatile * __ptr64,void * __ptr64>
 EXTRN	?read_apic_register@@YA_KG@Z:PROC		; read_apic_register
 EXTRN	?setvect@@YAX_KP6AX0PEAX@Z@Z:PROC		; setvect
@@ -15,8 +16,11 @@ $pdata$?ioapic_init@@YAXPEAX@Z DD imagerel $LN6
 	DD	imagerel $LN6+134
 	DD	imagerel $unwind$?ioapic_init@@YAXPEAX@Z
 $pdata$?ioapic_register_irq@@YAX_KP6AX0PEAX@ZE@Z DD imagerel $LN3
-	DD	imagerel $LN3+121
+	DD	imagerel $LN3+206
 	DD	imagerel $unwind$?ioapic_register_irq@@YAX_KP6AX0PEAX@ZE@Z
+$pdata$?ioapic_mask_irq@@YAXE_N@Z DD imagerel $LN5
+	DD	imagerel $LN5+139
+	DD	imagerel $unwind$?ioapic_mask_irq@@YAXE_N@Z
 $pdata$?read_ioapic_register@@YAIPEAXE@Z DD imagerel ?read_ioapic_register@@YAIPEAXE@Z
 	DD	imagerel ?read_ioapic_register@@YAIPEAXE@Z+67
 	DD	imagerel $unwind$?read_ioapic_register@@YAIPEAXE@Z
@@ -29,6 +33,8 @@ $unwind$?ioapic_init@@YAXPEAX@Z DD 010901H
 	DD	08209H
 $unwind$?ioapic_register_irq@@YAX_KP6AX0PEAX@ZE@Z DD 011301H
 	DD	06213H
+$unwind$?ioapic_mask_irq@@YAXE_N@Z DD 010c01H
+	DD	0620cH
 $unwind$?read_ioapic_register@@YAIPEAXE@Z DD 010d01H
 	DD	0620dH
 $unwind$?write_ioapic_register@@YAXPEAXEI@Z DD 011201H
@@ -154,7 +160,88 @@ _TEXT	ENDS
 ; Function compile flags: /Odtp
 ; File e:\xeneva project\xeneva\aurora\aurora\arch\x86_64\ioapic.cpp
 _TEXT	SEGMENT
-reg$ = 32
+low$ = 32
+reg$ = 36
+irq$ = 64
+value$ = 72
+?ioapic_mask_irq@@YAXE_N@Z PROC				; ioapic_mask_irq
+
+; 63   : void ioapic_mask_irq (uint8_t irq, bool value){
+
+$LN5:
+	mov	BYTE PTR [rsp+16], dl
+	mov	BYTE PTR [rsp+8], cl
+	sub	rsp, 56					; 00000038H
+
+; 64   : 	uint32_t reg = IOAPIC_REG_RED_TBL_BASE + irq* 2;
+
+	movzx	eax, BYTE PTR irq$[rsp]
+	lea	eax, DWORD PTR [rax+rax+16]
+	mov	DWORD PTR reg$[rsp], eax
+
+; 65   : 	write_ioapic_register((void*)0xfec00000, reg + 1, read_apic_register(0x02) << 24);
+
+	mov	cx, 2
+	call	?read_apic_register@@YA_KG@Z		; read_apic_register
+	shl	rax, 24
+	mov	ecx, DWORD PTR reg$[rsp]
+	inc	ecx
+	mov	r8d, eax
+	movzx	edx, cl
+	mov	ecx, -20971520				; fffffffffec00000H
+	call	?write_ioapic_register@@YAXPEAXEI@Z	; write_ioapic_register
+
+; 66   : 	uint32_t low = read_ioapic_register ((void*)0xfec00000,reg);
+
+	movzx	edx, BYTE PTR reg$[rsp]
+	mov	ecx, -20971520				; fffffffffec00000H
+	call	?read_ioapic_register@@YAIPEAXE@Z	; read_ioapic_register
+	mov	DWORD PTR low$[rsp], eax
+
+; 67   : 	//!unmask the irq
+; 68   : 	if (value)
+
+	movzx	eax, BYTE PTR value$[rsp]
+	test	eax, eax
+	je	SHORT $LN2@ioapic_mas
+
+; 69   : 		low |= (1<<16);  //mask
+
+	mov	eax, DWORD PTR low$[rsp]
+	bts	eax, 16
+	mov	DWORD PTR low$[rsp], eax
+
+; 70   : 	else
+
+	jmp	SHORT $LN1@ioapic_mas
+$LN2@ioapic_mas:
+
+; 71   : 		low &= ~(1<<16); //unmask
+
+	mov	eax, DWORD PTR low$[rsp]
+	btr	eax, 16
+	mov	DWORD PTR low$[rsp], eax
+$LN1@ioapic_mas:
+
+; 72   : 
+; 73   : 	write_ioapic_register((void*)0xfec00000, reg, low);   //vector + 32
+
+	mov	r8d, DWORD PTR low$[rsp]
+	movzx	edx, BYTE PTR reg$[rsp]
+	mov	ecx, -20971520				; fffffffffec00000H
+	call	?write_ioapic_register@@YAXPEAXEI@Z	; write_ioapic_register
+
+; 74   : }
+
+	add	rsp, 56					; 00000038H
+	ret	0
+?ioapic_mask_irq@@YAXE_N@Z ENDP				; ioapic_mask_irq
+_TEXT	ENDS
+; Function compile flags: /Odtp
+; File e:\xeneva project\xeneva\aurora\aurora\arch\x86_64\ioapic.cpp
+_TEXT	SEGMENT
+low$ = 32
+reg$ = 36
 vector$ = 64
 fn$ = 72
 irq$ = 80
@@ -186,7 +273,58 @@ $LN3:
 	mov	ecx, -20971520				; fffffffffec00000H
 	call	?write_ioapic_register@@YAXPEAXEI@Z	; write_ioapic_register
 
-; 48   : 	setvect(vector + 32, fn);
+; 48   : 	uint32_t low = read_ioapic_register ((void*)0xfec00000,reg);
+
+	movzx	edx, BYTE PTR reg$[rsp]
+	mov	ecx, -20971520				; fffffffffec00000H
+	call	?read_ioapic_register@@YAIPEAXE@Z	; read_ioapic_register
+	mov	DWORD PTR low$[rsp], eax
+
+; 49   : 	//!unmask the irq
+; 50   : 	low &= ~(1<<16);
+
+	mov	eax, DWORD PTR low$[rsp]
+	btr	eax, 16
+	mov	DWORD PTR low$[rsp], eax
+
+; 51   : 	//!set to physical delivery mode
+; 52   : 	low &= ~(1<<11);
+
+	mov	eax, DWORD PTR low$[rsp]
+	btr	eax, 11
+	mov	DWORD PTR low$[rsp], eax
+
+; 53   : 	low &= ~0x700;
+
+	mov	eax, DWORD PTR low$[rsp]
+	and	eax, -1793				; fffff8ffH
+	mov	DWORD PTR low$[rsp], eax
+
+; 54   : 
+; 55   : 	low &= ~0xff;
+
+	mov	eax, DWORD PTR low$[rsp]
+	and	eax, -256				; ffffff00H
+	mov	DWORD PTR low$[rsp], eax
+
+; 56   : 	low |= vector + 32;
+
+	mov	rax, QWORD PTR vector$[rsp]
+	add	rax, 32					; 00000020H
+	mov	ecx, DWORD PTR low$[rsp]
+	or	rcx, rax
+	mov	rax, rcx
+	mov	DWORD PTR low$[rsp], eax
+
+; 57   : 	
+; 58   : 	write_ioapic_register((void*)0xfec00000, reg, low);   //vector + 32
+
+	mov	r8d, DWORD PTR low$[rsp]
+	movzx	edx, BYTE PTR reg$[rsp]
+	mov	ecx, -20971520				; fffffffffec00000H
+	call	?write_ioapic_register@@YAXPEAXEI@Z	; write_ioapic_register
+
+; 59   :     setvect(vector + 32, fn);
 
 	mov	rax, QWORD PTR vector$[rsp]
 	add	rax, 32					; 00000020H
@@ -194,16 +332,7 @@ $LN3:
 	mov	rcx, rax
 	call	?setvect@@YAX_KP6AX0PEAX@Z@Z		; setvect
 
-; 49   : 	write_ioapic_register((void*)0xfec00000, reg, vector + 32);
-
-	mov	rax, QWORD PTR vector$[rsp]
-	add	rax, 32					; 00000020H
-	mov	r8d, eax
-	movzx	edx, BYTE PTR reg$[rsp]
-	mov	ecx, -20971520				; fffffffffec00000H
-	call	?write_ioapic_register@@YAXPEAXEI@Z	; write_ioapic_register
-
-; 50   : }
+; 60   : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -219,27 +348,27 @@ n$2 = 48
 address$ = 80
 ?ioapic_init@@YAXPEAX@Z PROC				; ioapic_init
 
-; 54   : {
+; 78   : {
 
 $LN6:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 72					; 00000048H
 
-; 55   : 	uint32_t ver = read_ioapic_register(address, IOAPIC_REG_VER);
+; 79   : 	uint32_t ver = read_ioapic_register(address, IOAPIC_REG_VER);
 
 	mov	dl, 1
 	mov	rcx, QWORD PTR address$[rsp]
 	call	?read_ioapic_register@@YAIPEAXE@Z	; read_ioapic_register
 	mov	DWORD PTR ver$[rsp], eax
 
-; 56   : 	uint32_t intr_num = (ver >> 16) & 0xFF;
+; 80   : 	uint32_t intr_num = (ver >> 16) & 0xFF;
 
 	mov	eax, DWORD PTR ver$[rsp]
 	shr	eax, 16
 	and	eax, 255				; 000000ffH
 	mov	DWORD PTR intr_num$[rsp], eax
 
-; 57   : 	for(size_t n = 0; n <= 255; ++n)
+; 81   : 	for(size_t n = 0; n <= 255; ++n)
 
 	mov	QWORD PTR n$2[rsp], 0
 	jmp	SHORT $LN3@ioapic_ini
@@ -251,14 +380,14 @@ $LN3@ioapic_ini:
 	cmp	QWORD PTR n$2[rsp], 255			; 000000ffH
 	ja	SHORT $LN1@ioapic_ini
 
-; 58   : 	{
-; 59   : 		uint32_t reg = IOAPIC_REG_RED_TBL_BASE + n * 2;
+; 82   : 	{
+; 83   : 		uint32_t reg = IOAPIC_REG_RED_TBL_BASE + n * 2;
 
 	mov	rax, QWORD PTR n$2[rsp]
 	lea	rax, QWORD PTR [rax+rax+16]
 	mov	DWORD PTR reg$1[rsp], eax
 
-; 60   : 		write_ioapic_register(address, reg, read_ioapic_register(address, reg) |(1<<16));
+; 84   : 		write_ioapic_register(address, reg, read_ioapic_register(address, reg) |(1<<16));
 
 	movzx	edx, BYTE PTR reg$1[rsp]
 	mov	rcx, QWORD PTR address$[rsp]
@@ -269,12 +398,12 @@ $LN3@ioapic_ini:
 	mov	rcx, QWORD PTR address$[rsp]
 	call	?write_ioapic_register@@YAXPEAXEI@Z	; write_ioapic_register
 
-; 61   : 	}
+; 85   : 	}
 
 	jmp	SHORT $LN2@ioapic_ini
 $LN1@ioapic_ini:
 
-; 62   : }
+; 86   : }
 
 	add	rsp, 72					; 00000048H
 	ret	0

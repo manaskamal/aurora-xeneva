@@ -23,12 +23,14 @@
 #define CLIENT_MINIMIZE_WIN             4
 #define CLIENT_MAXIMIZE_WIN             5
 #define CLIENT_DRAG_WIN   CLIENT_MOVE_WIN
+#define CLIENT_DESTROY   11
 
 //!Widget Control Types
 #define WIDGET_CONTROL_BUTTON  1
 #define WIDGET_CONTROL_LABEL   2
 #define WIDGET_CONTROL_MENU    3
 #define WIDGET_CONTROL_TOOLBAR 4
+#define WIDGET_CONTROL_VIEW 5
 
 typedef struct _xn_widget_ {
 	uint32_t x;

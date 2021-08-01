@@ -47,7 +47,7 @@ void expand_allocator(int sz) {
 	last_header = link;
 }
 
-void* malloc (int size) {
+void* malloc (uint32_t size) {
 
 	LIST_ENTRY* list = (LIST_ENTRY*)start;
 

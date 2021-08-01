@@ -45,8 +45,32 @@ void ioapic_register_irq(size_t vector, void (*fn)(size_t, void* p),uint8_t irq)
 {
 	uint32_t reg = IOAPIC_REG_RED_TBL_BASE + irq* 2;
 	write_ioapic_register((void*)0xfec00000, reg + 1, read_apic_register(0x02) << 24);
-	setvect(vector + 32, fn);
-	write_ioapic_register((void*)0xfec00000, reg, vector + 32);
+	uint32_t low = read_ioapic_register ((void*)0xfec00000,reg);
+	//!unmask the irq
+	low &= ~(1<<16);
+	//!set to physical delivery mode
+	low &= ~(1<<11);
+	low &= ~0x700;
+
+	low &= ~0xff;
+	low |= vector + 32;
+	
+	write_ioapic_register((void*)0xfec00000, reg, low);   //vector + 32
+    setvect(vector + 32, fn);
+}
+
+
+void ioapic_mask_irq (uint8_t irq, bool value){
+	uint32_t reg = IOAPIC_REG_RED_TBL_BASE + irq* 2;
+	write_ioapic_register((void*)0xfec00000, reg + 1, read_apic_register(0x02) << 24);
+	uint32_t low = read_ioapic_register ((void*)0xfec00000,reg);
+	//!unmask the irq
+	if (value)
+		low |= (1<<16);  //mask
+	else
+		low &= ~(1<<16); //unmask
+
+	write_ioapic_register((void*)0xfec00000, reg, low);   //vector + 32
 }
 
 //! I/O Apic Initialization

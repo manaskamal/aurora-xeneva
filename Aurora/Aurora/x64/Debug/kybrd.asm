@@ -139,7 +139,8 @@ $LN3:
 	mov	ecx, 1
 	call	?interrupt_set@@YAX_KP6AX0PEAX@ZE@Z	; interrupt_set
 
-; 52   : }
+; 52   : 	//irq_mask(1, true);
+; 53   : }
 
 	add	rsp, 40					; 00000028H
 	ret	0

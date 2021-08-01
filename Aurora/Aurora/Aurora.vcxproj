@@ -199,7 +199,9 @@
     <ClInclude Include="..\include\callback.h" />
     <ClInclude Include="..\include\console.h" />
     <ClInclude Include="..\include\ctype.h" />
+    <ClInclude Include="..\include\drivers\ac97\ac97.h" />
     <ClInclude Include="..\include\drivers\ata.h" />
+    <ClInclude Include="..\include\drivers\hdaudio\hda.h" />
     <ClInclude Include="..\include\drivers\kybrd.h" />
     <ClInclude Include="..\include\drivers\mouse.h" />
     <ClInclude Include="..\include\drivers\pci.h" />
@@ -251,7 +253,9 @@
     <ClCompile Include="arch\x86_64\vmmngr.cpp" />
     <ClCompile Include="atomic\mutex.cpp" />
     <ClCompile Include="console.cpp" />
+    <ClCompile Include="drivers\ac97\ac97.cpp" />
     <ClCompile Include="drivers\ata.cpp" />
+    <ClCompile Include="drivers\hda\hda.cpp" />
     <ClCompile Include="drivers\kybrd.cpp" />
     <ClCompile Include="drivers\mouse.cpp" />
     <ClCompile Include="drivers\pci.cpp" />

@@ -10,6 +10,8 @@
 #ifndef __MM_H__
 #define __MM_H__
 
+#include <stdint.h>
+
 
 #define ALLOCATOR_START     0x0000080000000000
 
@@ -25,7 +27,7 @@ typedef struct _list_entry_ {
 //! INIT: Initialize the user space allocator
 extern void initialize_allocator(int sz);
 //! ALLOCATE: Allocate some memory
-extern void* malloc(int size);
+extern void* malloc(uint32_t size);
 //! FREE: Free pointed memory
 extern void mfree(void* memory);
 #endif

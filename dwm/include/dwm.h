@@ -46,10 +46,18 @@ typedef struct {
 #define DWM_CREATE_MENU 4
 #define DWM_APPEND_MENU 5
 
+//!Provided a rectangle, update it to screen
+#define DWM_UPDATE  6
+#define DWM_CLOSE 11
+
 //!Window Messages to send
 #define WM_CLOSE 6
 #define WM_MAXIMIZE 7
 #define WM_MINIMIZE 8
+
+
+
+#define SET_ALPHA(color, alpha) ( ((color << 8) >> 8) | ((alpha << 24) & 0xff000000))
 
 extern void initialize_screen ();
 extern void draw_pixel (unsigned x, unsigned y, uint32_t color );
@@ -79,5 +87,8 @@ extern void initialize_dirty_list ();
 extern void add_dirty_rect (rect_t *rect);
 extern void remove_dirty_rect (rect_t *rect);
 
+extern bool is_enable_update();
+extern void dwm_add_alpha(uint32_t *buf, rect_t *r, uint32_t add_color);
+extern void set_alpha_value(uint32_t color, uint32_t alpha);
 
 #endif

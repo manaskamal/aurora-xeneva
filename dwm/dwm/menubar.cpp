@@ -15,6 +15,7 @@
 #include <allocator.h>
 #include <window.h>
 #include <wm.h>
+#include <stack.h>
 
 
 menubar_t *menubar = NULL;
@@ -33,6 +34,8 @@ void draw_menubar () {
 	int menu_pos_x = 10;
 	draw_rect (0,0,dwm_get_screen_width(), 25, 0x3E3E3E);
 	window_t * win = wm_get_focused_window();
+	if (win == NULL)
+		goto end;
 	if (win->menu_list->pointer > 0) {
 		for (int i = 0; i < win->menu_list->pointer; i++) {
 			menu_t *menu = (menu_t*)win_list_get_at(win->menu_list, i);
@@ -40,5 +43,11 @@ void draw_menubar () {
 			menu_pos_x += strlen (menu->title) * 8 + 20;  //55
 		}
 	}
-
+end:
+	rect_t r;
+	r.x = 0;
+	r.y = 0;
+	r.w = dwm_get_screen_width();
+	r.h = 25;
+	stack_push_rect (&r);
 }

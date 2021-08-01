@@ -10,17 +10,21 @@ _BSS	SEGMENT
 ?gmr@@3U_gmr_state_@@A DB 0cH DUP (?)			; gmr
 _BSS	ENDS
 CONST	SEGMENT
-$SG5258	DB	'Virtual device does not have GMR support', 0aH, 00H
+$SG5408	DB	'Virtual device does not have GMR support', 0aH, 00H
 	ORG $+6
-$SG5264	DB	'Virtual device does not have GMR v2 support', 0aH, 00H
+$SG5414	DB	'Virtual device does not have GMR v2 support', 0aH, 00H
 	ORG $+3
-$SG5280	DB	'First page -> %x', 0aH, 00H
+$SG5425	DB	'Desc Array -> %x', 0aH, 00H
 	ORG $+6
-$SG5292	DB	'REGISTER WRITTEN', 0aH, 00H
+$SG5431	DB	'First page -> %x', 0aH, 00H
 	ORG $+6
-$SG5299	DB	'PPN iiiii -> %x', 0aH, 00H
+$SG5442	DB	'REGISTER WRITTEN', 0aH, 00H
+	ORG $+6
+$SG5449	DB	'PPN iiiii -> %x', 0aH, 00H
 	ORG $+7
-$SG5300	DB	'returning', 0aH, 00H
+$SG5450	DB	'returning', 0aH, 00H
+	ORG $+5
+$SG5460	DB	'Desc allocated %x', 0aH, 00H
 CONST	ENDS
 PUBLIC	?gmr_init@@YAXXZ				; gmr_init
 PUBLIC	?gmr2_init@@YAXXZ				; gmr2_init
@@ -33,7 +37,6 @@ EXTRN	?pmmngr_alloc@@YAPEAXXZ:PROC			; pmmngr_alloc
 EXTRN	?printf@@YAXPEBDZZ:PROC				; printf
 EXTRN	?svga_read_reg@@YAII@Z:PROC			; svga_read_reg
 EXTRN	?svga_write_reg@@YAXII@Z:PROC			; svga_write_reg
-EXTRN	?malloc@@YAPEAX_K@Z:PROC			; malloc
 EXTRN	?svga_dev@@3U_svga_drive_@@A:BYTE		; svga_dev
 pdata	SEGMENT
 $pdata$?gmr_init@@YAXXZ DD imagerel $LN5
@@ -43,7 +46,7 @@ $pdata$?gmr2_init@@YAXXZ DD imagerel $LN5
 	DD	imagerel $LN5+70
 	DD	imagerel $unwind$?gmr2_init@@YAXXZ
 $pdata$?gmr_alloc_descriptor@@YAIPEAUSVGAGuestMemDescriptor@@I@Z DD imagerel $LN9
-	DD	imagerel $LN9+307
+	DD	imagerel $LN9+300
 	DD	imagerel $unwind$?gmr_alloc_descriptor@@YAIPEAUSVGAGuestMemDescriptor@@I@Z
 $pdata$?gmr_define@@YAXIPEAUSVGAGuestMemDescriptor@@I@Z DD imagerel $LN3
 	DD	imagerel $LN3+81
@@ -52,7 +55,7 @@ $pdata$?gmr_define_contiguous@@YAIII@Z DD imagerel $LN3
 	DD	imagerel $LN3+86
 	DD	imagerel $unwind$?gmr_define_contiguous@@YAIII@Z
 $pdata$?gmr_define_even_pages@@YAIII@Z DD imagerel $LN6
-	DD	imagerel $LN6+154
+	DD	imagerel $LN6+157
 	DD	imagerel $unwind$?gmr_define_even_pages@@YAIII@Z
 $pdata$?gmr_free_all@@YAXXZ DD imagerel $LN6
 	DD	imagerel $LN6+57
@@ -80,14 +83,14 @@ _TEXT	SEGMENT
 id$ = 32
 ?gmr_free_all@@YAXXZ PROC				; gmr_free_all
 
-; 135  : {
+; 137  : {
 
 $LN6:
 	sub	rsp, 56					; 00000038H
 
-; 136  :    uint32 id;
-; 137  : 
-; 138  :    for (id = 0; id < gmr.max_ids; id++) {
+; 138  :    uint32 id;
+; 139  : 
+; 140  :    for (id = 0; id < gmr.max_ids; id++) {
 
 	mov	DWORD PTR id$[rsp], 0
 	jmp	SHORT $LN3@gmr_free_a
@@ -100,19 +103,19 @@ $LN3@gmr_free_a:
 	cmp	DWORD PTR id$[rsp], eax
 	jae	SHORT $LN1@gmr_free_a
 
-; 139  :       gmr_define(id, NULL, 0);
+; 141  :       gmr_define(id, NULL, 0);
 
 	xor	r8d, r8d
 	xor	edx, edx
 	mov	ecx, DWORD PTR id$[rsp]
 	call	?gmr_define@@YAXIPEAUSVGAGuestMemDescriptor@@I@Z ; gmr_define
 
-; 140  :    }
+; 142  :    }
 
 	jmp	SHORT $LN2@gmr_free_a
 $LN1@gmr_free_a:
 
-; 141  : }
+; 143  : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -128,35 +131,34 @@ gmrId$ = 64
 numPages$ = 72
 ?gmr_define_even_pages@@YAIII@Z PROC			; gmr_define_even_pages
 
-; 116  : {
+; 117  : {
 
 $LN6:
 	mov	DWORD PTR [rsp+16], edx
 	mov	DWORD PTR [rsp+8], ecx
 	sub	rsp, 56					; 00000038H
 
-; 117  :    SVGAGuestMemDescriptor *desc;
-; 118  :    ppn region = (ppn)malloc(numPages * 2);
+; 118  :    SVGAGuestMemDescriptor *desc;
+; 119  :    ppn region = (ppn)pmmngr_alloc();   //malloc(numPages * 2);
 
-	mov	eax, DWORD PTR numPages$[rsp]
-	shl	eax, 1
-	mov	eax, eax
-	mov	ecx, eax
-	call	?malloc@@YAPEAX_K@Z			; malloc
+	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
 	mov	DWORD PTR region$[rsp], eax
 
-; 119  :    int i;
-; 120  : 
-; 121  :    desc = (SVGAGuestMemDescriptor *)malloc(sizeof *desc * numPages);
+; 120  :  
+; 121  :    int i;
+; 122  : 
+; 123  :    desc = (SVGAGuestMemDescriptor *)pmmngr_alloc();//malloc(sizeof(desc) * numPages);
 
-	mov	eax, DWORD PTR numPages$[rsp]
-	shl	rax, 3
-	mov	rcx, rax
-	call	?malloc@@YAPEAX_K@Z			; malloc
+	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
 	mov	QWORD PTR desc$[rsp], rax
 
-; 122  : 
-; 123  :    for (i = 0; i < numPages; i++) {
+; 124  :    printf ("Desc allocated %x\n", desc);
+
+	mov	rdx, QWORD PTR desc$[rsp]
+	lea	rcx, OFFSET FLAT:$SG5460
+	call	?printf@@YAXPEBDZZ			; printf
+
+; 125  :    for (i = 0; i < numPages; i++) {
 
 	mov	DWORD PTR i$[rsp], 0
 	jmp	SHORT $LN3@gmr_define
@@ -169,40 +171,42 @@ $LN3@gmr_define:
 	cmp	DWORD PTR i$[rsp], eax
 	jae	SHORT $LN1@gmr_define
 
-; 124  :       desc[i].ppn = region + i*2;
+; 126  :       desc[i].ppn = region + i * 4096;
 
-	mov	eax, DWORD PTR region$[rsp]
-	mov	ecx, DWORD PTR i$[rsp]
-	lea	eax, DWORD PTR [rax+rcx*2]
+	mov	eax, DWORD PTR i$[rsp]
+	imul	eax, 4096				; 00001000H
+	mov	ecx, DWORD PTR region$[rsp]
+	add	ecx, eax
+	mov	eax, ecx
 	movsxd	rcx, DWORD PTR i$[rsp]
 	mov	rdx, QWORD PTR desc$[rsp]
 	mov	DWORD PTR [rdx+rcx*8], eax
 
-; 125  :       desc[i].numPages = 1;
+; 127  :       desc[i].numPages = 1;
 
 	movsxd	rax, DWORD PTR i$[rsp]
 	mov	rcx, QWORD PTR desc$[rsp]
 	mov	DWORD PTR [rcx+rax*8+4], 1
 
-; 126  :    }
+; 128  :    }
 
 	jmp	SHORT $LN2@gmr_define
 $LN1@gmr_define:
 
-; 127  : 
-; 128  :    gmr_define(gmrId, desc, numPages);
+; 129  : 
+; 130  :    gmr_define(gmrId, desc, numPages);
 
 	mov	r8d, DWORD PTR numPages$[rsp]
 	mov	rdx, QWORD PTR desc$[rsp]
 	mov	ecx, DWORD PTR gmrId$[rsp]
 	call	?gmr_define@@YAXIPEAUSVGAGuestMemDescriptor@@I@Z ; gmr_define
 
-; 129  : 
-; 130  :    return region;
+; 131  : 
+; 132  :    return region;
 
 	mov	eax, DWORD PTR region$[rsp]
 
-; 131  : }
+; 133  : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -216,46 +220,46 @@ gmrId$ = 64
 numPages$ = 72
 ?gmr_define_contiguous@@YAIII@Z PROC			; gmr_define_contiguous
 
-; 103  : ppn gmr_define_contiguous(uint32 gmrId, uint32 numPages){
+; 104  : ppn gmr_define_contiguous(uint32 gmrId, uint32 numPages){
 
 $LN3:
 	mov	DWORD PTR [rsp+16], edx
 	mov	DWORD PTR [rsp+8], ecx
 	sub	rsp, 56					; 00000038H
 
-; 104  :    SVGAGuestMemDescriptor desc;
-; 105  :     desc.ppn = (ppn)pmmngr_alloc(); //malloc(numPages),
+; 105  :    SVGAGuestMemDescriptor desc;
+; 106  :     desc.ppn = (ppn)pmmngr_alloc(); //malloc(numPages),
 
 	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
 	mov	DWORD PTR desc$[rsp], eax
 
-; 106  :     desc.numPages = numPages,
-; 107  : 	printf ("PPN iiiii -> %x\n", desc.ppn);
+; 107  :     desc.numPages = numPages,
+; 108  : 	printf ("PPN iiiii -> %x\n", desc.ppn);
 
 	mov	eax, DWORD PTR numPages$[rsp]
 	mov	DWORD PTR desc$[rsp+4], eax
 	mov	edx, DWORD PTR desc$[rsp]
-	lea	rcx, OFFSET FLAT:$SG5299
+	lea	rcx, OFFSET FLAT:$SG5449
 	call	?printf@@YAXPEBDZZ			; printf
 
-; 108  : 
-; 109  :     gmr_define(gmrId, &desc, 1);
+; 109  : 
+; 110  :     gmr_define(gmrId, &desc, 1);
 
 	mov	r8d, 1
 	lea	rdx, QWORD PTR desc$[rsp]
 	mov	ecx, DWORD PTR gmrId$[rsp]
 	call	?gmr_define@@YAXIPEAUSVGAGuestMemDescriptor@@I@Z ; gmr_define
 
-; 110  : 	printf ("returning\n");
+; 111  : 	printf ("returning\n");
 
-	lea	rcx, OFFSET FLAT:$SG5300
+	lea	rcx, OFFSET FLAT:$SG5450
 	call	?printf@@YAXPEBDZZ			; printf
 
-; 111  :    return desc.ppn;
+; 112  :    return desc.ppn;
 
 	mov	eax, DWORD PTR desc$[rsp]
 
-; 112  : }
+; 113  : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -270,7 +274,7 @@ descArray$ = 72
 numDescriptors$ = 80
 ?gmr_define@@YAXIPEAUSVGAGuestMemDescriptor@@I@Z PROC	; gmr_define
 
-; 81   : {
+; 82   : {
 
 $LN3:
 	mov	DWORD PTR [rsp+24], r8d
@@ -278,44 +282,44 @@ $LN3:
 	mov	DWORD PTR [rsp+8], ecx
 	sub	rsp, 56					; 00000038H
 
-; 82   :    ppn desc = gmr_alloc_descriptor(descArray, numDescriptors);
+; 83   :    ppn desc = gmr_alloc_descriptor(descArray, numDescriptors);
 
 	mov	edx, DWORD PTR numDescriptors$[rsp]
 	mov	rcx, QWORD PTR descArray$[rsp]
 	call	?gmr_alloc_descriptor@@YAIPEAUSVGAGuestMemDescriptor@@I@Z ; gmr_alloc_descriptor
 	mov	DWORD PTR desc$[rsp], eax
 
-; 83   : 
-; 84   :    /*
-; 85   :     * Define/undefine the GMR. Defining an empty GMR is equivalent to
-; 86   :     * undefining a GMR.
-; 87   :     */
-; 88   : 
-; 89   :    svga_write_reg(SVGA_REG_GMR_ID, gmrId);
+; 84   : 
+; 85   :    /*
+; 86   :     * Define/undefine the GMR. Defining an empty GMR is equivalent to
+; 87   :     * undefining a GMR.
+; 88   :     */
+; 89   : 
+; 90   :    svga_write_reg(SVGA_REG_GMR_ID, gmrId);
 
 	mov	edx, DWORD PTR gmrId$[rsp]
 	mov	ecx, 41					; 00000029H
 	call	?svga_write_reg@@YAXII@Z		; svga_write_reg
 
-; 90   :    svga_write_reg(SVGA_REG_GMR_DESCRIPTOR, desc);
+; 91   :    svga_write_reg(SVGA_REG_GMR_DESCRIPTOR, desc);
 
 	mov	edx, DWORD PTR desc$[rsp]
 	mov	ecx, 42					; 0000002aH
 	call	?svga_write_reg@@YAXII@Z		; svga_write_reg
 
-; 91   :    printf ("REGISTER WRITTEN\n");
+; 92   :    printf ("REGISTER WRITTEN\n");
 
-	lea	rcx, OFFSET FLAT:$SG5292
+	lea	rcx, OFFSET FLAT:$SG5442
 	call	?printf@@YAXPEBDZZ			; printf
 
-; 92   :    //if (desc) {
-; 93   :       /*
-; 94   :        * Clobber the first page, to verify that the device reads our
-; 95   :        * descriptors synchronously when we write the GMR registers.
-; 96   :        */
-; 97   :       //Heap_DiscardPages(desc, 1);
-; 98   :   // }
-; 99   : }
+; 93   :    //if (desc) {
+; 94   :       /*
+; 95   :        * Clobber the first page, to verify that the device reads our
+; 96   :        * descriptors synchronously when we write the GMR registers.
+; 97   :        */
+; 98   :       //Heap_DiscardPages(desc, 1);
+; 99   :   // }
+; 100  : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -349,10 +353,7 @@ $LN9:
 
 	mov	QWORD PTR desc$[rsp], 0
 
-; 43   : 	ppn first_page = 0;
-
-	mov	DWORD PTR first_page$[rsp], 0
-
+; 43   : 	ppn first_page ; //= (ppn)pmmngr_alloc();
 ; 44   : 	ppn page = 0;
 
 	mov	DWORD PTR page$[rsp], 0
@@ -361,81 +362,84 @@ $LN9:
 ; 46   : 	int i = 0;
 
 	mov	DWORD PTR i$[rsp], 0
+
+; 47   : 	printf ("Desc Array -> %x\n", desc_array);
+
+	mov	rdx, QWORD PTR desc_array$[rsp]
+	lea	rcx, OFFSET FLAT:$SG5425
+	call	?printf@@YAXPEBDZZ			; printf
 $LN8@gmr_alloc_:
 $LN5@gmr_alloc_:
 
-; 47   : 
-; 48   : 	while (num_descriptor) {
+; 48   : 
+; 49   : 	while (num_descriptor) {
 
 	cmp	DWORD PTR num_descriptor$[rsp], 0
 	je	$LN4@gmr_alloc_
 
-; 49   : 		if (!first_page) {
+; 50   : 		if (!first_page) {
 
 	cmp	DWORD PTR first_page$[rsp], 0
 	jne	SHORT $LN3@gmr_alloc_
 
-; 50   : 			first_page = page = (ppn)pmmngr_alloc();//malloc(4096); //pmmngr_alloc();
+; 51   : 			first_page = page = (ppn)pmmngr_alloc();//malloc(4096); //pmmngr_alloc();
 
 	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
 	mov	DWORD PTR page$[rsp], eax
 	mov	eax, DWORD PTR page$[rsp]
 	mov	DWORD PTR first_page$[rsp], eax
 
-; 51   : 			printf ("First page -> %x\n", page);
+; 52   : 			printf ("First page -> %x\n", page);
 
 	mov	edx, DWORD PTR page$[rsp]
-	lea	rcx, OFFSET FLAT:$SG5280
+	lea	rcx, OFFSET FLAT:$SG5431
 	call	?printf@@YAXPEBDZZ			; printf
 $LN3@gmr_alloc_:
 
-; 52   : 		}
-; 53   : 
-; 54   : 		desc = (SVGAGuestMemDescriptor *)PPN_POINTER(page);
+; 53   : 		}
+; 54   : 
+; 55   : 		desc = (SVGAGuestMemDescriptor *)page; //PPN_POINTER(page);
 
 	mov	eax, DWORD PTR page$[rsp]
-	imul	eax, 4096				; 00001000H
-	mov	eax, eax
 	mov	QWORD PTR desc$[rsp], rax
 
-; 55   : 
-; 56   : 		if (i == desc_per_page) {
+; 56   : 
+; 57   : 		if (i == desc_per_page) {
 
 	cmp	DWORD PTR i$[rsp], 511			; 000001ffH
 	jne	SHORT $LN2@gmr_alloc_
 
-; 57   : 
-; 58   : 			page = (ppn)malloc(4096);
+; 58   : 
+; 59   : 			page = (ppn)pmmngr_alloc();   //malloc(4096)
 
-	mov	ecx, 4096				; 00001000H
-	call	?malloc@@YAPEAX_K@Z			; malloc
+	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
 	mov	DWORD PTR page$[rsp], eax
 
-; 59   : 			desc[i].ppn = page;
+; 60   : 			desc[i].ppn = page;
 
 	movsxd	rax, DWORD PTR i$[rsp]
 	mov	rcx, QWORD PTR desc$[rsp]
 	mov	edx, DWORD PTR page$[rsp]
 	mov	DWORD PTR [rcx+rax*8], edx
 
-; 60   : 			desc[i].numPages = 0;
+; 61   : 			desc[i].numPages = 0;
 
 	movsxd	rax, DWORD PTR i$[rsp]
 	mov	rcx, QWORD PTR desc$[rsp]
 	mov	DWORD PTR [rcx+rax*8+4], 0
 
-; 61   : 			i = 0; 
+; 62   : 			i = 0; 
 
 	mov	DWORD PTR i$[rsp], 0
 
-; 62   : 			continue;
+; 63   : 			continue;
 
-	jmp	$LN5@gmr_alloc_
+	jmp	SHORT $LN5@gmr_alloc_
 $LN2@gmr_alloc_:
 
-; 63   : 		}
-; 64   : 
-; 65   : 		desc[i] = *desc_array;
+; 64   : 		}
+; 65   : 
+; 66   : 		desc[i] = *desc_array;
 
 	mov	rax, QWORD PTR desc_array$[rsp]
 	mov	rax, QWORD PTR [rax]
@@ -443,54 +447,54 @@ $LN2@gmr_alloc_:
 	mov	rdx, QWORD PTR desc$[rsp]
 	mov	QWORD PTR [rdx+rcx*8], rax
 
-; 66   : 		i++;
+; 67   : 		i++;
 
 	mov	eax, DWORD PTR i$[rsp]
 	inc	eax
 	mov	DWORD PTR i$[rsp], eax
 
-; 67   : 		desc_array++;
+; 68   : 		desc_array++;
 
 	mov	rax, QWORD PTR desc_array$[rsp]
 	add	rax, 8
 	mov	QWORD PTR desc_array$[rsp], rax
 
-; 68   : 		num_descriptor--;
+; 69   : 		num_descriptor--;
 
 	mov	eax, DWORD PTR num_descriptor$[rsp]
 	dec	eax
 	mov	DWORD PTR num_descriptor$[rsp], eax
 
-; 69   : 	}
+; 70   : 	}
 
 	jmp	$LN8@gmr_alloc_
 $LN4@gmr_alloc_:
 
-; 70   : 
-; 71   : 	if (desc) {
+; 71   : 
+; 72   : 	if (desc) {
 
 	cmp	QWORD PTR desc$[rsp], 0
 	je	SHORT $LN1@gmr_alloc_
 
-; 72   : 		desc[i].ppn = 0;
+; 73   : 		desc[i].ppn = 0;
 
 	movsxd	rax, DWORD PTR i$[rsp]
 	mov	rcx, QWORD PTR desc$[rsp]
 	mov	DWORD PTR [rcx+rax*8], 0
 
-; 73   : 		desc[i].numPages = 0;
+; 74   : 		desc[i].numPages = 0;
 
 	movsxd	rax, DWORD PTR i$[rsp]
 	mov	rcx, QWORD PTR desc$[rsp]
 	mov	DWORD PTR [rcx+rax*8+4], 0
 $LN1@gmr_alloc_:
 
-; 74   : 	}
-; 75   : 	return first_page;
+; 75   : 	}
+; 76   : 	return first_page;
 
 	mov	eax, DWORD PTR first_page$[rsp]
 
-; 76   : }
+; 77   : }
 
 	add	rsp, 72					; 00000048H
 	ret	0
@@ -533,7 +537,7 @@ $LN2@gmr2_init:
 
 ; 35   : 		printf ("Virtual device does not have GMR v2 support\n");
 
-	lea	rcx, OFFSET FLAT:$SG5264
+	lea	rcx, OFFSET FLAT:$SG5414
 	call	?printf@@YAXPEBDZZ			; printf
 $LN1@gmr2_init:
 
@@ -581,7 +585,7 @@ $LN2@gmr_init:
 
 ; 25   : 		printf ("Virtual device does not have GMR support\n");
 
-	lea	rcx, OFFSET FLAT:$SG5258
+	lea	rcx, OFFSET FLAT:$SG5408
 	call	?printf@@YAXPEBDZZ			; printf
 $LN1@gmr_init:
 

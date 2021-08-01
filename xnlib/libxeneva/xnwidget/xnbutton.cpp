@@ -22,13 +22,14 @@ void xn_button_paint_handler (xn_widget *widget, xn_window_t *win) {
 	    drawer_draw_rect (win->x +  widget->x,win->y +  widget->y, widget->w, widget->h /2,BLACK);	
 		draw_string (but->text,win->x + widget->x + ((widget->w / 2) - ((strlen(but->text)*8)/2)),
 			win->y + widget->y + (widget->h /2) - 3, LIGHTSILVER,LIGHTBLACK);
+		
 	}else {
 		drawer_draw_rect (win->x + widget->x,win->y + widget->y, widget->w, widget->h, BLACK);
 		drawer_draw_rect (win->x +  widget->x,win->y + widget->y, widget->w, widget->h /2,LIGHTBLACK);
 		draw_string (but->text,win->x + widget->x + ((widget->w / 2) - ((strlen(but->text)*8) /2))
 			, win->y + widget->y + (widget->h /2) - 4, WHITE,BLACK);
 	}
-
+	
 }
 
 void xn_button_mouse_event (xn_widget *widget, xn_window_t* win, uint32_t mouse_x, uint32_t mouse_y, bool button_state) {
@@ -41,9 +42,13 @@ void xn_button_mouse_event (xn_widget *widget, xn_window_t* win, uint32_t mouse_
 	}
 
 	xn_button_paint_handler (widget,win);
-	if (but->on_button_pressed)
-		but->on_button_pressed(but);
 
+	drawer_update (win->x + but->base.x,win->y +  but->base.y, but->base.w, but->base.h);
+
+	if (button_state & 1) {
+		if (but->on_button_pressed)
+			but->on_button_pressed(but);
+	}
 }
 
 xn_button_t * xn_create_button (int x, int y, int w, int h, char *title) {

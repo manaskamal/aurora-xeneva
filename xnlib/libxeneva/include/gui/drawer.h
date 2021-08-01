@@ -28,8 +28,9 @@ typedef struct _drawer_struct_ {
 	uint32_t  win_coord_y;
 } drawer_t;
 
+
 //! initialize the drawer stuffs
-extern void drawer_register ();
+extern void drawer_register (int type,uint32_t x, uint32_t y, uint32_t gui_width, uint32_t gui_height);
 extern uint32_t drawer_get_screen_width ();
 extern uint32_t drawer_get_screen_height ();
 extern uint16_t drawer_get_scanline ();
@@ -44,4 +45,6 @@ extern void drawer_draw_rect_unfilled (int x, int y, int width, int height, uint
 extern void drawer_draw_filled_circle (int o_x, int o_y, int radius, uint32_t fill_color);
 extern void drawer_dirty_update (rect_t *rect, uint32_t pixel);
 extern void draw_rounded_rect (int x, int y, int w, int h, int radius, uint32_t color);
+extern void drawer_update (int x, int y, int w, int h);
+extern void drawer_draw_image (unsigned char* buffer,uint32_t x, uint32_t y,uint32_t w, uint32_t h);
 #endif

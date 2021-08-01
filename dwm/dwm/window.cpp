@@ -13,7 +13,7 @@
 #include <wm.h>
 
 
-window_t* create_window (uint16_t id, uint16_t x, uint16_t y, uint16_t w, uint16_t h) {
+window_t* create_window (uint16_t id, uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint8_t type) {
 	window_t *win = (window_t*)dalloc (sizeof(window_t));
 	uint32_t* buffer = (uint32_t*)request_buffer(id);
 	win->coord.x = x;
@@ -24,6 +24,7 @@ window_t* create_window (uint16_t id, uint16_t x, uint16_t y, uint16_t w, uint16
 	win->pid = id; 
 	win->focus = false;
 	win->close = false;
+	win->type = type;
 	win->menu_list = initialize_winlist();
 	win->dirty_rect = initialize_winlist();
 	win->drag_off_x = 0;

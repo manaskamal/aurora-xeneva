@@ -86,4 +86,5 @@ extern "C" void sys_read_file (FILE *file, unsigned char* buffer, int length);
 extern "C" void sys_sleep (uint64_t ms);
 extern "C" void sys_exit ();
 extern "C" uint16_t sys_get_scanline ();
+extern "C" void sys_fb_move_cursor (uint32_t x, uint32_t y);
 #endif

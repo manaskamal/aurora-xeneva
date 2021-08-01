@@ -19,6 +19,12 @@
     <Filter Include="include\util">
       <UniqueIdentifier>{306dcd33-ddbc-4b1b-ae8e-60b106129ddf}</UniqueIdentifier>
     </Filter>
+    <Filter Include="imaging">
+      <UniqueIdentifier>{ce89defc-b632-47e5-a9f2-e53035c3cdbb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\imaging">
+      <UniqueIdentifier>{d87254c8-3ab3-453f-b11b-ea6adec60422}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\xnsys.h">
@@ -69,6 +75,12 @@
     <ClInclude Include="include\stdlib.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="include\xnwidget\xnview.h">
+      <Filter>include\xnwidget</Filter>
+    </ClInclude>
+    <ClInclude Include="include\imaging\jpeg.h">
+      <Filter>include\imaging</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="string.cpp" />
@@ -97,6 +109,9 @@
       <Filter>xnwidget</Filter>
     </ClCompile>
     <ClCompile Include="stdlib.cpp" />
+    <ClCompile Include="xnwidget\xnview.cpp">
+      <Filter>xnwidget</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <NASM Include="_fast_cpy.asm" />

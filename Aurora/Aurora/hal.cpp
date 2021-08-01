@@ -139,4 +139,8 @@ void interrupt_set (size_t vector, void (*fn)(size_t, void* p),uint8_t irq){
 }
 	
 
+void irq_mask (uint8_t irq, bool value) {
+	ioapic_mask_irq(irq, value);
+}
+
 

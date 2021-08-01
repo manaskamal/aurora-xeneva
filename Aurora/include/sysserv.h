@@ -47,6 +47,7 @@ static void* _syscalls[] = {
 	sys_get_free_ram, //23
 	sys_sleep, //24
 	sys_exit, //25
+	sys_fb_move_cursor, //26
 	0
 };
 

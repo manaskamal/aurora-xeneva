@@ -197,7 +197,7 @@ $LN3:
 	mov	rcx, QWORD PTR msg_mutex
 	call	?mutex_lock@@YAXPEAUmutex_t@@@Z		; mutex_lock
 
-; 30   : 	thread_t *t  = thread_iterate_ready_list (1);
+; 30   : 	thread_t *t  = thread_iterate_ready_list (1);   //!ready list
 
 	mov	cx, 1
 	call	?thread_iterate_ready_list@@YAPEAU_thread_@@G@Z ; thread_iterate_ready_list

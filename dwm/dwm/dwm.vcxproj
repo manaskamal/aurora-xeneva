@@ -193,6 +193,7 @@
     <ClCompile Include="imgresize.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="menubar.cpp" />
+    <ClCompile Include="stack.cpp" />
     <ClCompile Include="string.cpp" />
     <ClCompile Include="window.cpp" />
     <ClCompile Include="winlist.cpp" />
@@ -212,6 +213,7 @@
     <ClInclude Include="..\include\imgpng24.h" />
     <ClInclude Include="..\include\imgresize.h" />
     <ClInclude Include="..\include\menubar.h" />
+    <ClInclude Include="..\include\stack.h" />
     <ClInclude Include="..\include\stdtypes.h" />
     <ClInclude Include="..\include\string.h" />
     <ClInclude Include="..\include\sys.h" />

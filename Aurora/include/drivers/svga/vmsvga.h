@@ -62,6 +62,7 @@ extern bool svga_has_fifo_cap (int cap);
 
 extern void svga_init ();
 extern void svga_enable ();
+extern void svga_disable ();
 extern void svga_set_mode (uint32_t width, uint32_t height, uint32_t bpp);
 extern void svga_fifo_full ();
 extern void* svga_fifo_reserve (uint32_t bytes);
@@ -88,6 +89,6 @@ extern void svga_interrupt_handler (size_t s, void* p);
 extern void svga_panic (const char* text);
 extern void svga_sync_to_fence (uint32_t fence);
 extern uint32_t svga_insert_fence ();
-extern uint32_t svga_wait_for_irq () ;
+extern void svga_wait_for_irq () ;
 extern uint32_t* svga_get_fb_mem ();
 #endif

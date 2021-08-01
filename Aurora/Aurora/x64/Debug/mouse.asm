@@ -597,17 +597,15 @@ $LN2@mouse_hand:
 $LN1@mouse_hand:
 
 ; 162  : 		}
-; 163  : 	
-; 164  : 		
-; 165  : 
-; 166  : 		memcpy (prev_button, curr_button, 3);
+; 163  : 
+; 164  : 		memcpy (prev_button, curr_button, 3);
 
 	mov	r8d, 3
 	lea	rdx, OFFSET FLAT:?curr_button@@3PAEA	; curr_button
 	lea	rcx, OFFSET FLAT:?prev_button@@3PAEA	; prev_button
 	call	memcpy
 
-; 167  : 		memset (curr_button, 0x00, 3);
+; 165  : 		memset (curr_button, 0x00, 3);
 
 	mov	r8d, 3
 	xor	edx, edx
@@ -616,31 +614,31 @@ $LN1@mouse_hand:
 $LN13@mouse_hand:
 $read_next$29:
 
-; 168  : read_next:
-; 169  : 		break;
+; 166  : read_next:
+; 167  : 		break;
 
 	jmp	SHORT $LN23@mouse_hand
 
-; 170  : 	}
+; 168  : 	}
 
 	jmp	$LN24@mouse_hand
 $LN23@mouse_hand:
 
-; 171  : 
-; 172  : 	set_multi_task_enable(true);
+; 169  : 
+; 170  : 	set_multi_task_enable(true);
 
 	mov	cl, 1
 	call	?set_multi_task_enable@@YAX_N@Z		; set_multi_task_enable
 
-; 173  : 	interrupt_end();
+; 171  : 	interrupt_end();
 
 	call	?interrupt_end@@YAXXZ			; interrupt_end
 
-; 174  : 	x64_sti();
+; 172  : 	x64_sti();
 
 	call	x64_sti
 
-; 175  : }
+; 173  : }
 
 	add	rsp, 72					; 00000048H
 	ret	0
@@ -877,56 +875,56 @@ _TEXT	SEGMENT
 status$ = 32
 ?initialize_mouse@@YAXXZ PROC				; initialize_mouse
 
-; 178  : void initialize_mouse () {
+; 176  : void initialize_mouse () {
 
 $LN3:
 	sub	rsp, 56					; 00000038H
 
-; 179  : 	mouse_cycle = 0;
+; 177  : 	mouse_cycle = 0;
 
 	mov	BYTE PTR mouse_cycle, 0
 
-; 180  : 	mouse_x = 0;
+; 178  : 	mouse_x = 0;
 
 	mov	DWORD PTR ?mouse_x@@3HA, 0		; mouse_x
 
-; 181  : 	mouse_y = 0;
+; 179  : 	mouse_y = 0;
 
 	mov	DWORD PTR ?mouse_y@@3HA, 0		; mouse_y
 
+; 180  : 
+; 181  : 	uint8_t status;
 ; 182  : 
-; 183  : 	uint8_t status;
-; 184  : 
-; 185  : 	mouse_wait (1);
+; 183  : 	mouse_wait (1);
 
 	mov	cl, 1
 	call	?mouse_wait@@YAXE@Z			; mouse_wait
 
-; 186  :     outportb (0x64, 0xA8);
+; 184  :     outportb (0x64, 0xA8);
 
 	mov	dl, 168					; 000000a8H
 	mov	cx, 100					; 00000064H
 	call	?outportb@@YAXGE@Z			; outportb
 
-; 187  : 
-; 188  : 	mouse_wait(1);
+; 185  : 
+; 186  : 	mouse_wait(1);
 
 	mov	cl, 1
 	call	?mouse_wait@@YAXE@Z			; mouse_wait
 
-; 189  : 	outportb (0x64, 0x20);
+; 187  : 	outportb (0x64, 0x20);
 
 	mov	dl, 32					; 00000020H
 	mov	cx, 100					; 00000064H
 	call	?outportb@@YAXGE@Z			; outportb
 
-; 190  : 
-; 191  : 	mouse_wait (0);
+; 188  : 
+; 189  : 	mouse_wait (0);
 
 	xor	ecx, ecx
 	call	?mouse_wait@@YAXE@Z			; mouse_wait
 
-; 192  : 	status = (inportb (0x60) | 2);
+; 190  : 	status = (inportb (0x60) | 2);
 
 	mov	cx, 96					; 00000060H
 	call	?inportb@@YAEG@Z			; inportb
@@ -934,59 +932,60 @@ $LN3:
 	or	eax, 2
 	mov	BYTE PTR status$[rsp], al
 
-; 193  : 
-; 194  : 	mouse_wait (1);
+; 191  : 
+; 192  : 	mouse_wait (1);
 
 	mov	cl, 1
 	call	?mouse_wait@@YAXE@Z			; mouse_wait
 
-; 195  : 	outportb (0x64, 0x60);
+; 193  : 	outportb (0x64, 0x60);
 
 	mov	dl, 96					; 00000060H
 	mov	cx, 100					; 00000064H
 	call	?outportb@@YAXGE@Z			; outportb
 
-; 196  : 
-; 197  : 	mouse_wait (1);
+; 194  : 
+; 195  : 	mouse_wait (1);
 
 	mov	cl, 1
 	call	?mouse_wait@@YAXE@Z			; mouse_wait
 
-; 198  : 	outportb (0x60, status);
+; 196  : 	outportb (0x60, status);
 
 	movzx	edx, BYTE PTR status$[rsp]
 	mov	cx, 96					; 00000060H
 	call	?outportb@@YAXGE@Z			; outportb
 
-; 199  : 
-; 200  : 	mouse_write (0xF6);
+; 197  : 
+; 198  : 	mouse_write (0xF6);
 
 	mov	cl, 246					; 000000f6H
 	call	?mouse_write@@YAXE@Z			; mouse_write
 
-; 201  : 	mouse_read ();
+; 199  : 	mouse_read ();
 
 	call	?mouse_read@@YAEXZ			; mouse_read
 
-; 202  : 
-; 203  : 	mouse_write (0xF4);
+; 200  : 
+; 201  : 	mouse_write (0xF4);
 
 	mov	cl, 244					; 000000f4H
 	call	?mouse_write@@YAXE@Z			; mouse_write
 
-; 204  : 	mouse_read ();
+; 202  : 	mouse_read ();
 
 	call	?mouse_read@@YAEXZ			; mouse_read
 
-; 205  : 
-; 206  : 	interrupt_set (34, mouse_handler, 12);
+; 203  : 
+; 204  : 	interrupt_set (34, mouse_handler, 12);
 
 	mov	r8b, 12
 	lea	rdx, OFFSET FLAT:?mouse_handler@@YAX_KPEAX@Z ; mouse_handler
 	mov	ecx, 34					; 00000022H
 	call	?interrupt_set@@YAX_KP6AX0PEAX@ZE@Z	; interrupt_set
 
-; 207  : }
+; 205  : 	//irq_mask(12, true);
+; 206  : }
 
 	add	rsp, 56					; 00000038H
 	ret	0

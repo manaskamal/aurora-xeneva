@@ -15,6 +15,7 @@
 #include <allocator.h>
 #include <wm.h>
 #include <menubar.h>
+#include <stack.h>
 
 static int s_width = 0;
 static int s_height = 0;
@@ -101,6 +102,21 @@ void copy_to_screen2(uint32_t *buf, rect_t *r) {
 }
 
 
+void dwm_add_alpha(uint32_t *buf, rect_t *r, uint32_t add_color) {
+	uint32_t* lfb = (uint32_t*)0x0000600000000000;
+	//uint32_t* wallp = (uint32_t*)0x0000600000000000;
+	int width = get_screen_width();
+	int height = get_screen_height();
+	for (int i=0; i < r->w; i++) {
+		for (int j=0; j < r->h; j++){
+			//uint32_t color = buf[(r->x + i) + (r->y + j) * width] & 0x993E3E3E;
+			uint32_t color_a = buf[(r->x + i) + (r->y + j) * width];
+			lfb[(r->x + i) + (r->y + j) * width] = alpha_blend(color_a, add_color);
+		}
+	}
+}
+
+
 void draw_rect (unsigned x, unsigned y, unsigned w, unsigned h, uint32_t col) {
 	for (int i = 0; i < w; i++)
 		for (int j = 0; j < h; j++)
@@ -121,6 +137,10 @@ void draw_rect_unfilled (int x, int y, int width, int height, uint32_t color) {
 	draw_vertical_line( x, y+1, height -2, color); //left
     draw_horizontal_line(x, y + height - 1, width, color); //bottom
 	draw_vertical_line (x + width - 1, y + 1, height - 2, color); //right
+}
+
+void set_alpha_value(uint32_t color, uint32_t alpha) {
+	 ( ((color << 8) >> 8) | ((alpha << 24) & 0xff000000));
 }
 
 uint32_t alpha_blend (uint32_t color1, uint32_t color2) {
@@ -188,6 +208,9 @@ void enable_update (bool value) {
 	update = value;
 }
 
+bool is_enable_update() {
+	return update;
+}
 
 void prepare_screen (rect_t *update_rect) {
 	if (update) {
@@ -199,7 +222,6 @@ void prepare_screen (rect_t *update_rect) {
 
 void refresh_screen (rect_t *update_rect) {
 	
-	draw_menubar ();
 	//wm_paint_windows (update_rect);
 	//add_dirty_rect (update_rect);
 	/*********************************************************
@@ -207,8 +229,17 @@ void refresh_screen (rect_t *update_rect) {
 	! prepare the screen for user
 	*/
 	//copy_to_screen ((uint32_t*)0x0000600000000000, update_rect);
-      
+	uint32_t *buffer = NULL;
 	//prepare_screen ();
+	unsigned int id = 0;
+	rect_t *r = stack_get_rect (&id);
+	if (r == NULL)
+		return;
+	else {
+		copy_to_screen ((uint32_t*)0x0000600000000000, r);
+		dfree (r);
+		sys_fb_update();
+	}
 }
 
 

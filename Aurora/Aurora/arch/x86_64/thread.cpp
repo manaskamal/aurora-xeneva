@@ -291,10 +291,11 @@ void block_thread (thread_t *thread) {
 
 //! Iterate through block list and find a specific thread
 thread_t* thread_iterate_block_list (int id) {
-	for (int i = 0; i < blocked_list->pointer; i++) {
-		thread_t*  t = (thread_t*)list_get_at (blocked_list,i);
-		if (t->id == id) {
-			return t;
+	if (blocked_list->pointer >0)
+		for (int i = 0; i < blocked_list->pointer; i++) {
+			thread_t*  t = (thread_t*)list_get_at (blocked_list,i);
+			if (t->id == id) {
+				return t;
 		}
 	}
 	return NULL;

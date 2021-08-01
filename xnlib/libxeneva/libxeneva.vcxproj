@@ -167,6 +167,7 @@
     <ClInclude Include="include\gui\colors.h" />
     <ClInclude Include="include\gui\drawer.h" />
     <ClInclude Include="include\gui\font.h" />
+    <ClInclude Include="include\imaging\jpeg.h" />
     <ClInclude Include="include\mm.h" />
     <ClInclude Include="include\stdint.h" />
     <ClInclude Include="include\stdlib.h" />
@@ -178,6 +179,7 @@
     <ClInclude Include="include\xnwidget\xnlabel.h" />
     <ClInclude Include="include\xnwidget\xnmenu.h" />
     <ClInclude Include="include\xnwidget\xnmenubar.h" />
+    <ClInclude Include="include\xnwidget\xnview.h" />
     <ClInclude Include="include\xnwidget\xnwidget.h" />
     <ClInclude Include="include\xnwidget\xnwindow.h" />
   </ItemGroup>
@@ -193,6 +195,7 @@
     <ClCompile Include="xnwidget\xnlabel.cpp" />
     <ClCompile Include="xnwidget\xnmenu.cpp" />
     <ClCompile Include="xnwidget\xnmenubar.cpp" />
+    <ClCompile Include="xnwidget\xnview.cpp" />
     <ClCompile Include="xnwidget\xnwindow.cpp" />
   </ItemGroup>
   <ItemGroup>

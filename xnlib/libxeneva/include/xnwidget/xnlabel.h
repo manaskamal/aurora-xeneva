@@ -28,5 +28,5 @@ typedef struct _xn_label_ {
 }xn_label_t;
 
 extern xn_label_t *xn_create_label (int x, int y, int w, int h,int outline_type, char *label);
-
+extern void xn_label_set_text (xn_label_t *label, xn_window_t* win, char *text);
 #endif

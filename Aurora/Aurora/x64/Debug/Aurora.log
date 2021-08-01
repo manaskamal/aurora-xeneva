@@ -1,8 +1,8 @@
-﻿Build started 24-07-2021 আবেলি 9:48:36.
+﻿Build started 02-08-2021 ৰাতিপু 1:35:17.
      1>Project "E:\Xeneva Project\Xeneva\Aurora\Aurora\Aurora.vcxproj" on node 2 (Rebuild target(s)).
      1>_NASM:
          arch\x86_64\interrupts.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmpdef62bae15294a91a2a30632c0f1a64a.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp94adcb65fadf4df8815b8ec765b0848b.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\interrupts.obj"  "E:\Xeneva Project\Xeneva\Aurora\Aurora\arch\x86_64\interrupts.asm"
      1>E:\Xeneva Project\Xeneva\Aurora\Aurora\arch\x86_64\interrupts.asm(64): warning : label alone on a line without a colon might be in error
      1>E:\Xeneva Project\Xeneva\Aurora\Aurora\arch\x86_64\interrupts.asm(132): warning : signed dword immediate exceeds bounds
@@ -255,26 +255,26 @@
      1>E:\Xeneva Project\Xeneva\Aurora\Aurora\arch\x86_64\interrupts.asm(156): warning : signed dword immediate exceeds bounds
        _NASM:
          arch\x86_64\switch.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmpd9d33690ea7d4fc8a769ebd66e58bb53.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp373f6c6c62554dfdade84fe21c59ec9e.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\switch.obj"  "E:\Xeneva Project\Xeneva\Aurora\Aurora\arch\x86_64\switch.asm"
        _NASM:
          arch\x86_64\user.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmpa0eb42e419a94f8ca4887b0ca03aa173.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp1b6d0fb14828454bb0cb0b031b345740.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\user.obj"  "E:\Xeneva Project\Xeneva\Aurora\Aurora\arch\x86_64\user.asm"
        _NASM:
          arch\x86_64\_low_level.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmpaeb330046ded4ee2954021ffbce948e7.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp57c3ccca9375442ba04353118d43def9.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\_low_level.obj"  "E:\Xeneva Project\Xeneva\Aurora\Aurora\arch\x86_64\_low_level.asm"
        _NASM:
          drivers\svga\backdoor_stuff.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp96682628df374779a9478c52ce1a0b1b.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp0cb53da42ef046588abb379796688447.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\backdoor_stuff.obj"  "E:\Xeneva Project\Xeneva\Aurora\Aurora\drivers\svga\backdoor_stuff.asm"
        _NASM:
          _fast_cpy.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmped22690dca6040a29b3b0acb809a3670.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp6def83dc0a3746639d5bb8837dd75f95.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\_fast_cpy.obj"  "E:\Xeneva Project\Xeneva\Aurora\Aurora\_fast_cpy.asm"
        ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\Aurora\include" /Zi /nologo /W1 /WX- /sdl- /Od /D ARCH_X64 /D _MBCS /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /FAs /Fa"x64\Debug\\" /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt arch\x86_64\apic.cpp arch\x86_64\cpu.cpp arch\x86_64\exception.cpp arch\x86_64\ioapic.cpp arch\x86_64\kheap.cpp arch\x86_64\systable.cpp arch\x86_64\thread.cpp arch\x86_64\user64.cpp arch\x86_64\vmmngr.cpp atomic\mutex.cpp console.cpp drivers\ata.cpp drivers\kybrd.cpp drivers\mouse.cpp drivers\pci.cpp drivers\svga\gmr.cpp drivers\svga\svga_screen.cpp drivers\svga\svga_screen_util.cpp drivers\svga\vmsvga.cpp drivers\svga\vm_backdoor.cpp drivers\vga.cpp drvmngr.cpp fs\fat32.cpp hal.cpp init.cpp ipc\dwm_ipc.cpp ipc\evntsh.cpp ipc\message.cpp mm.cpp pe.cpp pmmngr.cpp proc.cpp screen.cpp stdio.cpp string.cpp sysserv\sysfb.cpp sysserv\sysfile.cpp sysserv\sysmem.cpp sysserv\sysmouse.cpp sysserv\sysproc.cpp sysserv\systhread.cpp sysserv\syswait.cpp sysserv\valloc.cpp utils\lnklist.cpp utils\ring.cpp vfs.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\Aurora\include" /Zi /nologo /W1 /WX- /sdl- /Od /D ARCH_X64 /D _MBCS /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /FAs /Fa"x64\Debug\\" /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt arch\x86_64\apic.cpp arch\x86_64\cpu.cpp arch\x86_64\exception.cpp arch\x86_64\ioapic.cpp arch\x86_64\kheap.cpp arch\x86_64\map.cpp arch\x86_64\systable.cpp arch\x86_64\thread.cpp arch\x86_64\user64.cpp arch\x86_64\vmmngr.cpp atomic\mutex.cpp console.cpp drivers\ac97\ac97.cpp drivers\ata.cpp drivers\hda\hda.cpp drivers\kybrd.cpp drivers\mouse.cpp drivers\pci.cpp drivers\svga\gmr.cpp drivers\svga\svga_screen.cpp drivers\svga\svga_screen_util.cpp drivers\svga\vmsvga.cpp drivers\svga\vm_backdoor.cpp drivers\vga.cpp drvmngr.cpp fs\fat32.cpp hal.cpp init.cpp ipc\dwm_ipc.cpp ipc\evntsh.cpp ipc\message.cpp mm.cpp pe.cpp pmmngr.cpp proc.cpp screen.cpp stdio.cpp string.cpp sysserv\sysfb.cpp sysserv\sysfile.cpp sysserv\sysmem.cpp sysserv\sysmouse.cpp sysserv\sysproc.cpp sysserv\systhread.cpp sysserv\syswait.cpp sysserv\valloc.cpp utils\lnklist.cpp utils\ring.cpp vfs.cpp
      1>cl : Command line warning D9025: overriding '/sdl-' with '/GS-'
      1>cl : Command line warning D9002: ignoring unknown option '/arch:SSE'
          vfs.cpp
@@ -316,16 +316,21 @@
          pci.cpp
          mouse.cpp
          kybrd.cpp
+         hda.cpp
          ata.cpp
+         ac97.cpp
          console.cpp
          mutex.cpp
          vmmngr.cpp
-         user64.cpp
-         thread.cpp
          Generating Code...
+     1>e:\xeneva project\xeneva\aurora\aurora\arch\x86_64\vmmngr.cpp(158): warning C4715: 'get_physical_address' : not all control paths return a value
+     1>e:\xeneva project\xeneva\aurora\aurora\drivers\svga\gmr.cpp(50): warning C4700: uninitialized local variable 'first_page' used
      1>e:\xeneva project\xeneva\aurora\aurora\fs\fat32.cpp(691): warning C4715: 'fat32_create_file' : not all control paths return a value
          Compiling...
+         user64.cpp
+         thread.cpp
          systable.cpp
+         map.cpp
          kheap.cpp
          ioapic.cpp
          exception.cpp
@@ -340,13 +345,16 @@
          x64\Debug\exception.obj
          x64\Debug\ioapic.obj
          x64\Debug\kheap.obj
+         x64\Debug\map.obj
          x64\Debug\systable.obj
          x64\Debug\thread.obj
          x64\Debug\user64.obj
          x64\Debug\vmmngr.obj
          x64\Debug\mutex.obj
          x64\Debug\console.obj
+         x64\Debug\ac97.obj
          x64\Debug\ata.obj
+         x64\Debug\hda.obj
          x64\Debug\kybrd.obj
          x64\Debug\mouse.obj
          x64\Debug\pci.obj
@@ -399,4 +407,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:03.73
+Time Elapsed 00:00:05.08

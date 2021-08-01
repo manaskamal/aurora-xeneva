@@ -296,3 +296,9 @@ x64_hlt:
      hlt
 	 ret
 
+global x64_atom_exchange
+x64_atom_exchange:
+     xchg rcx, rdx
+	 hlt
+	 ret
+

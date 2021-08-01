@@ -36,4 +36,5 @@ extern uint64_t sys_get_used_ram ();
 extern uint64_t sys_get_free_ram ();
 extern void sys_sleep (uint64_t ms);
 extern void sys_exit();
+extern void sys_fb_move_cursor (uint32_t x, uint32_t y);
 #endif

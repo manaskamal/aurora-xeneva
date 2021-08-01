@@ -15,7 +15,7 @@
 void xn_label_paint_handler (xn_widget *widget, xn_window_t *win) {
 	xn_label_t * label = (xn_label_t*)widget->data_pointer;
 	if (label->outline_type == LABEL_OUTLINE_FILLED)
-		drawer_draw_rect_unfilled (win->x + label->base.x,win->y + label->base.y, label->base.w + strlen (label->label), 
+		drawer_draw_rect_unfilled (win->x + label->base.x,win->y + label->base.y, label->base.w + (strlen (label->label)), 
 		                           label->base.h,GRAY);
 	draw_string (label->label, win->x + label->base.x + (label->base.w/2) - (strlen(label->label)*8/2),
 		win->y + label->base.y + (label->base.h / 2),LIGHTBLACK,WHITE);
@@ -41,4 +41,11 @@ xn_label_t *xn_create_label (int x, int y, int w, int h,int outline_type, char* 
 		label->label[i] = label_string[i];
 
 	return label;
+}
+
+void xn_label_set_text (xn_label_t *label, xn_window_t* win, char *text) {
+	label->label = text;
+	label->base.w = strlen (label->label) * 8;
+	xn_label_paint_handler ((xn_widget*)label,win);
+	drawer_update(win->x + label->base.x, win->y + label->base.y, label->base.w + (strlen(label->label) *8), label->base.h);
 }

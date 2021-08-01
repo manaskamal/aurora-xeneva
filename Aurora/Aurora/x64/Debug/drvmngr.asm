@@ -7,16 +7,20 @@ INCLUDELIB OLDNAMES
 
 PUBLIC	?drivers@@3PAU_aurora_driver_@@A		; drivers
 _BSS	SEGMENT
-?drivers@@3PAU_aurora_driver_@@A DB 02800H DUP (?)	; drivers
+?drivers@@3PAU_aurora_driver_@@A DB 03000H DUP (?)	; drivers
 driver_class_unique_id DD 01H DUP (?)
 _BSS	ENDS
 CONST	SEGMENT
-$SG3316	DB	'aurora_init_driver', 00H
+$SG3498	DB	'aurora_init_driver', 00H
 	ORG $+5
-$SG3318	DB	'aurora_close_driver', 00H
-$SG3324	DB	'sb16', 00H
+$SG3500	DB	'aurora_close_driver', 00H
+	ORG $+4
+$SG3502	DB	'aurora_write', 00H
+	ORG $+3
+$SG3510	DB	'sb16', 00H
 CONST	ENDS
 PUBLIC	?driver_mngr_initialize@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z ; driver_mngr_initialize
+PUBLIC	?drv_mngr_write_driver@@YAXPEAE_K@Z		; drv_mngr_write_driver
 PUBLIC	?request_driver_class_uid@@YAIXZ		; request_driver_class_uid
 PUBLIC	?decreament_driver_class_uid@@YAXXZ		; decreament_driver_class_uid
 PUBLIC	?create_driver_parameter@@YAPEAU_driver_param_@@XZ ; create_driver_parameter
@@ -29,20 +33,26 @@ EXTRN	?pci_find_device@@YA_NGGPEAU_pci_address_@@@Z:PROC ; pci_find_device
 EXTRN	?pci_get_bar_addr@@YAIPEBU_pci_address_@@H@Z:PROC ; pci_get_bar_addr
 EXTRN	?pci_set_mem_enable@@YAXPEBU_pci_address_@@_N@Z:PROC ; pci_set_mem_enable
 EXTRN	?GetProcAddress@@YAPEAXPEAXPEBD@Z:PROC		; GetProcAddress
+EXTRN	?alloc@@YAPEAX_K@Z:PROC				; alloc
 pdata	SEGMENT
 $pdata$?driver_mngr_initialize@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z DD imagerel $LN8
-	DD	imagerel $LN8+352
+	DD	imagerel $LN8+425
 	DD	imagerel $unwind$?driver_mngr_initialize@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z
+$pdata$?drv_mngr_write_driver@@YAXPEAE_K@Z DD imagerel $LN7
+	DD	imagerel $LN7+117
+	DD	imagerel $unwind$?drv_mngr_write_driver@@YAXPEAE_K@Z
 $pdata$?request_driver_class_uid@@YAIXZ DD imagerel $LN3
 	DD	imagerel $LN3+35
 	DD	imagerel $unwind$?request_driver_class_uid@@YAIXZ
 $pdata$?create_driver_parameter@@YAPEAU_driver_param_@@XZ DD imagerel $LN3
-	DD	imagerel $LN3+119
+	DD	imagerel $LN3+135
 	DD	imagerel $unwind$?create_driver_parameter@@YAPEAU_driver_param_@@XZ
 pdata	ENDS
 xdata	SEGMENT
 $unwind$?driver_mngr_initialize@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z DD 010901H
-	DD	0c209H
+	DD	0e209H
+$unwind$?drv_mngr_write_driver@@YAXPEAE_K@Z DD 010e01H
+	DD	0620eH
 $unwind$?request_driver_class_uid@@YAIXZ DD 010401H
 	DD	02204H
 $unwind$?create_driver_parameter@@YAPEAU_driver_param_@@XZ DD 010401H
@@ -54,57 +64,63 @@ _TEXT	SEGMENT
 param$ = 32
 ?create_driver_parameter@@YAPEAU_driver_param_@@XZ PROC	; create_driver_parameter
 
-; 34   : driver_param_t * create_driver_parameter () {
+; 36   : driver_param_t * create_driver_parameter () {
 
 $LN3:
 	sub	rsp, 56					; 00000038H
 
-; 35   : 	driver_param_t* param = (driver_param_t*)pmmngr_alloc();
+; 37   : 	driver_param_t* param = (driver_param_t*)pmmngr_alloc();
 
 	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
 	mov	QWORD PTR param$[rsp], rax
 
-; 36   : 	param->kdebug = printf;
+; 38   : 	param->kdebug = printf;
 
 	mov	rax, QWORD PTR param$[rsp]
 	lea	rcx, OFFSET FLAT:?printf@@YAXPEBDZZ	; printf
 	mov	QWORD PTR [rax], rcx
 
-; 37   : 	param->irq_eoi = apic_local_eoi;
+; 39   : 	param->irq_eoi = apic_local_eoi;
 
 	mov	rax, QWORD PTR param$[rsp]
 	lea	rcx, OFFSET FLAT:?apic_local_eoi@@YAXXZ	; apic_local_eoi
 	mov	QWORD PTR [rax+8], rcx
 
-; 38   : 	param->interrupt_set = interrupt_set;
+; 40   : 	param->interrupt_set = interrupt_set;
 
 	mov	rax, QWORD PTR param$[rsp]
 	lea	rcx, OFFSET FLAT:?interrupt_set@@YAX_KP6AX0PEAX@ZE@Z ; interrupt_set
 	mov	QWORD PTR [rax+16], rcx
 
-; 39   : 	param->pci_find_device = pci_find_device;
+; 41   : 	param->pci_find_device = pci_find_device;
 
 	mov	rax, QWORD PTR param$[rsp]
 	lea	rcx, OFFSET FLAT:?pci_find_device@@YA_NGGPEAU_pci_address_@@@Z ; pci_find_device
 	mov	QWORD PTR [rax+24], rcx
 
-; 40   : 	param->pci_get_bar = pci_get_bar_addr;
+; 42   : 	param->pci_get_bar = pci_get_bar_addr;
 
 	mov	rax, QWORD PTR param$[rsp]
 	lea	rcx, OFFSET FLAT:?pci_get_bar_addr@@YAIPEBU_pci_address_@@H@Z ; pci_get_bar_addr
 	mov	QWORD PTR [rax+32], rcx
 
-; 41   : 	param->pci_set_mem_enable = pci_set_mem_enable;
+; 43   : 	param->pci_set_mem_enable = pci_set_mem_enable;
 
 	mov	rax, QWORD PTR param$[rsp]
 	lea	rcx, OFFSET FLAT:?pci_set_mem_enable@@YAXPEBU_pci_address_@@_N@Z ; pci_set_mem_enable
 	mov	QWORD PTR [rax+40], rcx
 
-; 42   : 	return param;
+; 44   : 	param->malloc = alloc;
+
+	mov	rax, QWORD PTR param$[rsp]
+	lea	rcx, OFFSET FLAT:?alloc@@YAPEAX_K@Z	; alloc
+	mov	QWORD PTR [rax+48], rcx
+
+; 45   : 	return param;
 
 	mov	rax, QWORD PTR param$[rsp]
 
-; 43   : }
+; 46   : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -115,13 +131,13 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 ?decreament_driver_class_uid@@YAXXZ PROC		; decreament_driver_class_uid
 
-; 31   : 	driver_class_unique_id--;
+; 33   : 	driver_class_unique_id--;
 
 	mov	eax, DWORD PTR driver_class_unique_id
 	dec	eax
 	mov	DWORD PTR driver_class_unique_id, eax
 
-; 32   : }
+; 34   : }
 
 	ret	0
 ?decreament_driver_class_uid@@YAXXZ ENDP		; decreament_driver_class_uid
@@ -132,27 +148,27 @@ _TEXT	SEGMENT
 uid$ = 0
 ?request_driver_class_uid@@YAIXZ PROC			; request_driver_class_uid
 
-; 23   : uint32_t request_driver_class_uid () {
+; 25   : uint32_t request_driver_class_uid () {
 
 $LN3:
 	sub	rsp, 24
 
-; 24   : 	uint32_t uid = driver_class_unique_id;
+; 26   : 	uint32_t uid = driver_class_unique_id;
 
 	mov	eax, DWORD PTR driver_class_unique_id
 	mov	DWORD PTR uid$[rsp], eax
 
-; 25   : 	driver_class_unique_id++;
+; 27   : 	driver_class_unique_id++;
 
 	mov	eax, DWORD PTR driver_class_unique_id
 	inc	eax
 	mov	DWORD PTR driver_class_unique_id, eax
 
-; 26   : 	return uid;
+; 28   : 	return uid;
 
 	mov	eax, DWORD PTR uid$[rsp]
 
-; 27   : }
+; 29   : }
 
 	add	rsp, 24
 	ret	0
@@ -161,117 +177,203 @@ _TEXT	ENDS
 ; Function compile flags: /Odtp
 ; File e:\xeneva project\xeneva\aurora\aurora\drvmngr.cpp
 _TEXT	SEGMENT
+i$1 = 32
+tv79 = 40
+buffer$ = 64
+length$ = 72
+?drv_mngr_write_driver@@YAXPEAE_K@Z PROC		; drv_mngr_write_driver
+
+; 80   : void drv_mngr_write_driver (unsigned char* buffer, size_t length) {
+
+$LN7:
+	mov	QWORD PTR [rsp+16], rdx
+	mov	QWORD PTR [rsp+8], rcx
+	sub	rsp, 56					; 00000038H
+
+; 81   : 	for (int i = 0; i < 256; i++) { 
+
+	mov	DWORD PTR i$1[rsp], 0
+	jmp	SHORT $LN4@drv_mngr_w
+$LN3@drv_mngr_w:
+	mov	eax, DWORD PTR i$1[rsp]
+	inc	eax
+	mov	DWORD PTR i$1[rsp], eax
+$LN4@drv_mngr_w:
+	cmp	DWORD PTR i$1[rsp], 256			; 00000100H
+	jge	SHORT $LN2@drv_mngr_w
+
+; 82   : 		if (drivers[i].present)
+
+	movsxd	rax, DWORD PTR i$1[rsp]
+	imul	rax, 48					; 00000030H
+	lea	rcx, OFFSET FLAT:?drivers@@3PAU_aurora_driver_@@A ; drivers
+	movzx	eax, BYTE PTR [rcx+rax+16]
+	test	eax, eax
+	je	SHORT $LN1@drv_mngr_w
+
+; 83   : 			drivers[i].aurora_write(buffer, length);
+
+	movsxd	rax, DWORD PTR i$1[rsp]
+	imul	rax, 48					; 00000030H
+	lea	rcx, OFFSET FLAT:?drivers@@3PAU_aurora_driver_@@A ; drivers
+	mov	QWORD PTR tv79[rsp], rcx
+	mov	rdx, QWORD PTR length$[rsp]
+	mov	rcx, QWORD PTR buffer$[rsp]
+	mov	r8, QWORD PTR tv79[rsp]
+	call	QWORD PTR [r8+rax+40]
+$LN1@drv_mngr_w:
+
+; 84   : 	}
+
+	jmp	SHORT $LN3@drv_mngr_w
+$LN2@drv_mngr_w:
+
+; 85   : }
+
+	add	rsp, 56					; 00000038H
+	ret	0
+?drv_mngr_write_driver@@YAXPEAE_K@Z ENDP		; drv_mngr_write_driver
+_TEXT	ENDS
+; Function compile flags: /Odtp
+; File e:\xeneva project\xeneva\aurora\aurora\drvmngr.cpp
+_TEXT	SEGMENT
 uid$1 = 32
 i$2 = 36
-init_address$3 = 40
-close_address$4 = 48
-i$5 = 56
-c$6 = 64
-param$ = 72
-tv150 = 80
-info$ = 112
+write_address$3 = 40
+c$4 = 48
+close_address$5 = 56
+w$6 = 64
+i$7 = 72
+param$ = 80
+init_address$8 = 88
+tv159 = 96
+info$ = 128
 ?driver_mngr_initialize@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z PROC ; driver_mngr_initialize
 
-; 45   : void driver_mngr_initialize (KERNEL_BOOT_INFO *info) {
+; 48   : void driver_mngr_initialize (KERNEL_BOOT_INFO *info) {
 
 $LN8:
 	mov	QWORD PTR [rsp+8], rcx
-	sub	rsp, 104				; 00000068H
+	sub	rsp, 120				; 00000078H
 
-; 46   :    
-; 47   : 	memset (drivers,0,sizeof(aurora_driver_t));
+; 49   : 
+; 50   : 	
+; 51   :    
+; 52   : 	memset (drivers,0,sizeof(aurora_driver_t));
 
-	mov	r8d, 40					; 00000028H
+	mov	r8d, 48					; 00000030H
 	xor	edx, edx
 	lea	rcx, OFFSET FLAT:?drivers@@3PAU_aurora_driver_@@A ; drivers
 	call	?memset@@YAXPEAXEI@Z			; memset
 
-; 48   : 
-; 49   : 	//!First of all register the pre-boot driver classes
-; 50   : 	if (info->driver_entry1 != NULL) {  
+; 53   : 
+; 54   : 	//!First of all register the pre-boot driver classes
+; 55   : 	if (info->driver_entry1 != NULL) {  
 
 	mov	rax, QWORD PTR info$[rsp]
 	cmp	QWORD PTR [rax+98], 0
 	je	$LN5@driver_mng
 
-; 51   : 		void* init_address = GetProcAddress (info->driver_entry1,"aurora_init_driver");
+; 56   : 		void* init_address = GetProcAddress (info->driver_entry1,"aurora_init_driver");
 
-	lea	rdx, OFFSET FLAT:$SG3316
+	lea	rdx, OFFSET FLAT:$SG3498
 	mov	rax, QWORD PTR info$[rsp]
 	mov	rcx, QWORD PTR [rax+98]
 	call	?GetProcAddress@@YAPEAXPEAXPEBD@Z	; GetProcAddress
-	mov	QWORD PTR init_address$3[rsp], rax
+	mov	QWORD PTR init_address$8[rsp], rax
 
-; 52   : 		void* close_address = GetProcAddress (info->driver_entry1, "aurora_close_driver");
+; 57   : 		void* close_address = GetProcAddress (info->driver_entry1, "aurora_close_driver");
 
-	lea	rdx, OFFSET FLAT:$SG3318
+	lea	rdx, OFFSET FLAT:$SG3500
 	mov	rax, QWORD PTR info$[rsp]
 	mov	rcx, QWORD PTR [rax+98]
 	call	?GetProcAddress@@YAPEAXPEAXPEBD@Z	; GetProcAddress
-	mov	QWORD PTR close_address$4[rsp], rax
+	mov	QWORD PTR close_address$5[rsp], rax
 
-; 53   : 		init i = (init)init_address;
+; 58   : 		void* write_address = GetProcAddress(info->driver_entry1 ,"aurora_write");
 
-	mov	rax, QWORD PTR init_address$3[rsp]
-	mov	QWORD PTR i$5[rsp], rax
+	lea	rdx, OFFSET FLAT:$SG3502
+	mov	rax, QWORD PTR info$[rsp]
+	mov	rcx, QWORD PTR [rax+98]
+	call	?GetProcAddress@@YAPEAXPEAXPEBD@Z	; GetProcAddress
+	mov	QWORD PTR write_address$3[rsp], rax
 
-; 54   : 		close c = (close)close_address;
+; 59   : 		init i = (init)init_address;
 
-	mov	rax, QWORD PTR close_address$4[rsp]
-	mov	QWORD PTR c$6[rsp], rax
+	mov	rax, QWORD PTR init_address$8[rsp]
+	mov	QWORD PTR i$7[rsp], rax
 
-; 55   : 	    uint32_t uid = request_driver_class_uid();
+; 60   : 		close c = (close)close_address;
+
+	mov	rax, QWORD PTR close_address$5[rsp]
+	mov	QWORD PTR c$4[rsp], rax
+
+; 61   : 		write w = (write)write_address;
+
+	mov	rax, QWORD PTR write_address$3[rsp]
+	mov	QWORD PTR w$6[rsp], rax
+
+; 62   : 	    uint32_t uid = request_driver_class_uid();
 
 	call	?request_driver_class_uid@@YAIXZ	; request_driver_class_uid
 	mov	DWORD PTR uid$1[rsp], eax
 
-; 56   : 		drivers[uid].class_type = DRIVER_CLASS_AUDIO;
+; 63   : 		drivers[uid].class_type = DRIVER_CLASS_AUDIO;
 
 	mov	eax, DWORD PTR uid$1[rsp]
-	imul	rax, 40					; 00000028H
+	imul	rax, 48					; 00000030H
 	lea	rcx, OFFSET FLAT:?drivers@@3PAU_aurora_driver_@@A ; drivers
 	mov	DWORD PTR [rcx+rax], 1
 
-; 57   : 		drivers[uid].name = "sb16";
+; 64   : 		drivers[uid].name = "sb16";
 
 	mov	eax, DWORD PTR uid$1[rsp]
-	imul	rax, 40					; 00000028H
+	imul	rax, 48					; 00000030H
 	lea	rcx, OFFSET FLAT:?drivers@@3PAU_aurora_driver_@@A ; drivers
-	lea	rdx, OFFSET FLAT:$SG3324
+	lea	rdx, OFFSET FLAT:$SG3510
 	mov	QWORD PTR [rcx+rax+8], rdx
 
-; 58   : 		drivers[uid].present = true;
+; 65   : 		drivers[uid].present = true;
 
 	mov	eax, DWORD PTR uid$1[rsp]
-	imul	rax, 40					; 00000028H
+	imul	rax, 48					; 00000030H
 	lea	rcx, OFFSET FLAT:?drivers@@3PAU_aurora_driver_@@A ; drivers
 	mov	BYTE PTR [rcx+rax+16], 1
 
-; 59   : 		drivers[uid].aurora_init_driver = i;
+; 66   : 		drivers[uid].aurora_init_driver = i;
 
 	mov	eax, DWORD PTR uid$1[rsp]
-	imul	rax, 40					; 00000028H
+	imul	rax, 48					; 00000030H
 	lea	rcx, OFFSET FLAT:?drivers@@3PAU_aurora_driver_@@A ; drivers
-	mov	rdx, QWORD PTR i$5[rsp]
+	mov	rdx, QWORD PTR i$7[rsp]
 	mov	QWORD PTR [rcx+rax+24], rdx
 
-; 60   : 		drivers[uid].aurora_close_driver = c;
+; 67   : 		drivers[uid].aurora_close_driver = c;
 
 	mov	eax, DWORD PTR uid$1[rsp]
-	imul	rax, 40					; 00000028H
+	imul	rax, 48					; 00000030H
 	lea	rcx, OFFSET FLAT:?drivers@@3PAU_aurora_driver_@@A ; drivers
-	mov	rdx, QWORD PTR c$6[rsp]
+	mov	rdx, QWORD PTR c$4[rsp]
 	mov	QWORD PTR [rcx+rax+32], rdx
+
+; 68   : 		drivers[uid].aurora_write = w;
+
+	mov	eax, DWORD PTR uid$1[rsp]
+	imul	rax, 48					; 00000030H
+	lea	rcx, OFFSET FLAT:?drivers@@3PAU_aurora_driver_@@A ; drivers
+	mov	rdx, QWORD PTR w$6[rsp]
+	mov	QWORD PTR [rcx+rax+40], rdx
 $LN5@driver_mng:
 
-; 61   : 	}
-; 62   : 
-; 63   :     driver_param_t *param = create_driver_parameter ();
+; 69   : 
+; 70   : 	}
+; 71   : 
+; 72   :     driver_param_t *param = create_driver_parameter ();
 
 	call	?create_driver_parameter@@YAPEAU_driver_param_@@XZ ; create_driver_parameter
 	mov	QWORD PTR param$[rsp], rax
 
-; 64   : 	for (int i = 0; i < 256; i++) { 
+; 73   : 	for (int i = 0; i < 256; i++) { 
 
 	mov	DWORD PTR i$2[rsp], 0
 	jmp	SHORT $LN4@driver_mng
@@ -283,35 +385,35 @@ $LN4@driver_mng:
 	cmp	DWORD PTR i$2[rsp], 256			; 00000100H
 	jge	SHORT $LN2@driver_mng
 
-; 65   : 		if (drivers[i].present)
+; 74   : 		if (drivers[i].present)
 
 	movsxd	rax, DWORD PTR i$2[rsp]
-	imul	rax, 40					; 00000028H
+	imul	rax, 48					; 00000030H
 	lea	rcx, OFFSET FLAT:?drivers@@3PAU_aurora_driver_@@A ; drivers
 	movzx	eax, BYTE PTR [rcx+rax+16]
 	test	eax, eax
 	je	SHORT $LN1@driver_mng
 
-; 66   : 			drivers[i].aurora_init_driver(param);
+; 75   : 			drivers[i].aurora_init_driver(param);
 
 	movsxd	rax, DWORD PTR i$2[rsp]
-	imul	rax, 40					; 00000028H
+	imul	rax, 48					; 00000030H
 	lea	rcx, OFFSET FLAT:?drivers@@3PAU_aurora_driver_@@A ; drivers
-	mov	QWORD PTR tv150[rsp], rcx
+	mov	QWORD PTR tv159[rsp], rcx
 	mov	rcx, QWORD PTR param$[rsp]
-	mov	rdx, QWORD PTR tv150[rsp]
+	mov	rdx, QWORD PTR tv159[rsp]
 	call	QWORD PTR [rdx+rax+24]
 $LN1@driver_mng:
 
-; 67   : 	}
+; 76   : 	}
 
 	jmp	SHORT $LN3@driver_mng
 $LN2@driver_mng:
 
-; 68   : 
-; 69   : }
+; 77   : 
+; 78   : }
 
-	add	rsp, 104				; 00000068H
+	add	rsp, 120				; 00000078H
 	ret	0
 ?driver_mngr_initialize@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z ENDP ; driver_mngr_initialize
 _TEXT	ENDS
