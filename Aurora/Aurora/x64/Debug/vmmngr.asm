@@ -16,6 +16,7 @@ PUBLIC	?map_page_ex@@YA_NPEA_K_K1@Z			; map_page_ex
 PUBLIC	?create_user_address_space@@YAPEA_KXZ		; create_user_address_space
 PUBLIC	?unmap_page@@YAX_K@Z				; unmap_page
 PUBLIC	?get_physical_address@@YAPEA_K_K@Z		; get_physical_address
+PUBLIC	?get_free_page@@YAPEA_K_K@Z			; get_free_page
 EXTRN	?pmmngr_alloc@@YAPEAXXZ:PROC			; pmmngr_alloc
 EXTRN	?pmmngr_free@@YAXPEAX@Z:PROC			; pmmngr_free
 EXTRN	x64_mfence:PROC
@@ -43,6 +44,9 @@ $pdata$?unmap_page@@YAX_K@Z DD imagerel $LN4
 $pdata$?get_physical_address@@YAPEA_K_K@Z DD imagerel $LN4
 	DD	imagerel $LN4+171
 	DD	imagerel $unwind$?get_physical_address@@YAPEA_K_K@Z
+$pdata$?get_free_page@@YAPEA_K_K@Z DD imagerel $LN7
+	DD	imagerel $LN7+274
+	DD	imagerel $unwind$?get_free_page@@YAPEA_K_K@Z
 $pdata$?clear@@YAXPEAX@Z DD imagerel ?clear@@YAXPEAX@Z
 	DD	imagerel ?clear@@YAXPEAX@Z+74
 	DD	imagerel $unwind$?clear@@YAXPEAX@Z
@@ -60,6 +64,8 @@ $unwind$?unmap_page@@YAX_K@Z DD 010901H
 	DD	0c209H
 $unwind$?get_physical_address@@YAPEA_K_K@Z DD 010901H
 	DD	0a209H
+$unwind$?get_free_page@@YAPEA_K_K@Z DD 010901H
+	DD	0e209H
 $unwind$?clear@@YAXPEAX@Z DD 010901H
 	DD	02209H
 xdata	ENDS
@@ -109,6 +115,135 @@ $LN1@clear:
 	add	rsp, 24
 	ret	0
 ?clear@@YAXPEAX@Z ENDP					; clear
+_TEXT	ENDS
+; Function compile flags: /Odtp
+; File e:\xeneva project\xeneva\aurora\aurora\arch\x86_64\vmmngr.cpp
+_TEXT	SEGMENT
+start$ = 32
+i$1 = 40
+pt$2 = 48
+pdpt$3 = 56
+pml4$ = 64
+pd$4 = 72
+page$ = 80
+end$ = 88
+page$5 = 96
+s$ = 128
+?get_free_page@@YAPEA_K_K@Z PROC			; get_free_page
+
+; 257  : uint64_t* get_free_page (size_t s) {
+
+$LN7:
+	mov	QWORD PTR [rsp+8], rcx
+	sub	rsp, 120				; 00000078H
+
+; 258  : 	uint64_t* page = 0;
+
+	mov	QWORD PTR page$[rsp], 0
+
+; 259  : 	uint64_t start = 0xFFFFC00000000000;
+
+	mov	rax, -70368744177664			; ffffc00000000000H
+	mov	QWORD PTR start$[rsp], rax
+
+; 260  : 	uint64_t* end = 0;
+
+	mov	QWORD PTR end$[rsp], 0
+
+; 261  : 	uint64_t *pml4 = (uint64_t*)x64_read_cr3();
+
+	call	x64_read_cr3
+	mov	QWORD PTR pml4$[rsp], rax
+
+; 262  : 	for (int i = 0; i < s; i++) {
+
+	mov	DWORD PTR i$1[rsp], 0
+	jmp	SHORT $LN4@get_free_p
+$LN3@get_free_p:
+	mov	eax, DWORD PTR i$1[rsp]
+	inc	eax
+	mov	DWORD PTR i$1[rsp], eax
+$LN4@get_free_p:
+	movsxd	rax, DWORD PTR i$1[rsp]
+	cmp	rax, QWORD PTR s$[rsp]
+	jae	$LN2@get_free_p
+
+; 263  : 		uint64_t *pdpt = (uint64_t*)(pml4[pml4_index(start)] & ~(4096 - 1));
+
+	mov	rcx, QWORD PTR start$[rsp]
+	call	?pml4_index@@YA_K_K@Z			; pml4_index
+	mov	rcx, QWORD PTR pml4$[rsp]
+	mov	rax, QWORD PTR [rcx+rax*8]
+	and	rax, -4096				; fffffffffffff000H
+	mov	QWORD PTR pdpt$3[rsp], rax
+
+; 264  : 	    uint64_t *pd = (uint64_t*)(pdpt[pdp_index(start)] & ~(4096 - 1));
+
+	mov	rcx, QWORD PTR start$[rsp]
+	call	?pdp_index@@YA_K_K@Z			; pdp_index
+	mov	rcx, QWORD PTR pdpt$3[rsp]
+	mov	rax, QWORD PTR [rcx+rax*8]
+	and	rax, -4096				; fffffffffffff000H
+	mov	QWORD PTR pd$4[rsp], rax
+
+; 265  : 		uint64_t *pt = (uint64_t*)(pd[pd_index(start)] & ~(4096 - 1));
+
+	mov	rcx, QWORD PTR start$[rsp]
+	call	?pd_index@@YA_K_K@Z			; pd_index
+	mov	rcx, QWORD PTR pd$4[rsp]
+	mov	rax, QWORD PTR [rcx+rax*8]
+	and	rax, -4096				; fffffffffffff000H
+	mov	QWORD PTR pt$2[rsp], rax
+
+; 266  : 		uint64_t *page = (uint64_t*)(pt[pt_index(start)] & ~(4096 - 1));
+
+	mov	rcx, QWORD PTR start$[rsp]
+	call	?pt_index@@YA_K_K@Z			; pt_index
+	mov	rcx, QWORD PTR pt$2[rsp]
+	mov	rax, QWORD PTR [rcx+rax*8]
+	and	rax, -4096				; fffffffffffff000H
+	mov	QWORD PTR page$5[rsp], rax
+
+; 267  : 
+; 268  : 		if ((pt[pt_index(start)] & PAGING_PRESENT) == 0){
+
+	mov	rcx, QWORD PTR start$[rsp]
+	call	?pt_index@@YA_K_K@Z			; pt_index
+	mov	rcx, QWORD PTR pt$2[rsp]
+	mov	rax, QWORD PTR [rcx+rax*8]
+	and	rax, 1
+	test	rax, rax
+	jne	SHORT $LN1@get_free_p
+
+; 269  : 			return (uint64_t*)start;
+
+	mov	rax, QWORD PTR start$[rsp]
+	jmp	SHORT $LN5@get_free_p
+$LN1@get_free_p:
+
+; 270  : 		}
+; 271  : 		start+= 4096;
+
+	mov	rax, QWORD PTR start$[rsp]
+	add	rax, 4096				; 00001000H
+	mov	QWORD PTR start$[rsp], rax
+
+; 272  : 	}
+
+	jmp	$LN3@get_free_p
+$LN2@get_free_p:
+
+; 273  : 
+; 274  : 	return 0;
+
+	xor	eax, eax
+$LN5@get_free_p:
+
+; 275  : }
+
+	add	rsp, 120				; 00000078H
+	ret	0
+?get_free_page@@YAPEA_K_K@Z ENDP			; get_free_page
 _TEXT	ENDS
 ; Function compile flags: /Odtp
 ; File e:\xeneva project\xeneva\aurora\aurora\arch\x86_64\vmmngr.cpp

@@ -6,11 +6,11 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 CONST	SEGMENT
-$SG3228	DB	'PCI Scanning device', 0aH, 00H
+$SG3234	DB	'PCI Scanning device', 0aH, 00H
 	ORG $+3
-$SG3242	DB	'Device found', 0aH, 00H
+$SG3248	DB	'Device found', 0aH, 00H
 	ORG $+2
-$SG3243	DB	'Device ID -> %x, Vendor ID -> %x', 0aH, 00H
+$SG3249	DB	'Device ID -> %x, Vendor ID -> %x', 0aH, 00H
 CONST	ENDS
 PUBLIC	?pci_config_read32@@YAIPEBU_pci_address_@@G@Z	; pci_config_read32
 PUBLIC	?pci_config_read16@@YAGPEBU_pci_address_@@G@Z	; pci_config_read16
@@ -331,7 +331,7 @@ $LN13:
 ; 134  : 	pci_device_info config;
 ; 135  : 	printf ("PCI Scanning device\n");
 
-	lea	rcx, OFFSET FLAT:$SG3228
+	lea	rcx, OFFSET FLAT:$SG3234
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 136  : 	for (int bus = 0; bus < 256; bus++) {
@@ -414,7 +414,7 @@ $LN4@pci_find_d:
 
 ; 146  : 					printf ("Device found\n");
 
-	lea	rcx, OFFSET FLAT:$SG3242
+	lea	rcx, OFFSET FLAT:$SG3248
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 147  : 					printf ("Device ID -> %x, Vendor ID -> %x\n", config.device.deviceID, config.device.vendorID);
@@ -423,7 +423,7 @@ $LN4@pci_find_d:
 	movzx	ecx, WORD PTR config$[rsp+2]
 	mov	r8d, eax
 	mov	edx, ecx
-	lea	rcx, OFFSET FLAT:$SG3243
+	lea	rcx, OFFSET FLAT:$SG3249
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 148  : 					return true;

@@ -253,3 +253,23 @@ uint64_t *create_user_address_space ()
 	return pml4_i;
 }
 
+
+uint64_t* get_free_page (size_t s) {
+	uint64_t* page = 0;
+	uint64_t start = 0xFFFFC00000000000;
+	uint64_t* end = 0;
+	uint64_t *pml4 = (uint64_t*)x64_read_cr3();
+	for (int i = 0; i < s; i++) {
+		uint64_t *pdpt = (uint64_t*)(pml4[pml4_index(start)] & ~(4096 - 1));
+	    uint64_t *pd = (uint64_t*)(pdpt[pdp_index(start)] & ~(4096 - 1));
+		uint64_t *pt = (uint64_t*)(pd[pd_index(start)] & ~(4096 - 1));
+		uint64_t *page = (uint64_t*)(pt[pt_index(start)] & ~(4096 - 1));
+
+		if ((pt[pt_index(start)] & PAGING_PRESENT) == 0){
+			return (uint64_t*)start;
+		}
+		start+= 4096;
+	}
+
+	return 0;
+}

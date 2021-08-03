@@ -168,6 +168,7 @@
     <ClInclude Include="include\gui\drawer.h" />
     <ClInclude Include="include\gui\font.h" />
     <ClInclude Include="include\imaging\jpeg.h" />
+    <ClInclude Include="include\input\KeyEvent.h" />
     <ClInclude Include="include\mm.h" />
     <ClInclude Include="include\stdint.h" />
     <ClInclude Include="include\stdlib.h" />
@@ -186,6 +187,7 @@
   <ItemGroup>
     <ClCompile Include="gui\drawer.cpp" />
     <ClCompile Include="gui\font.cpp" />
+    <ClCompile Include="input\KeyEvent.cpp" />
     <ClCompile Include="list.cpp" />
     <ClCompile Include="mm.cpp" />
     <ClCompile Include="stdlib.cpp" />

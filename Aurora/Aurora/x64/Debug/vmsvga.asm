@@ -10,34 +10,34 @@ _BSS	SEGMENT
 ?svga_dev@@3U_svga_drive_@@A DB 0100058H DUP (?)	; svga_dev
 _BSS	ENDS
 CONST	SEGMENT
-$SG5554	DB	'No VMware SVGA device found', 0aH, 00H
+$SG5560	DB	'No VMware SVGA device found', 0aH, 00H
 	ORG $+3
-$SG5563	DB	'[VMware SVGA]: negotiating SVGA device version!', 0aH, 00H
+$SG5569	DB	'[VMware SVGA]: negotiating SVGA device version!', 0aH, 00H
 	ORG $+7
-$SG5567	DB	'[VMware SVGA]: FIFO size is very small, probably incorre'
+$SG5573	DB	'[VMware SVGA]: FIFO size is very small, probably incorre'
 	DB	'ct', 0aH, 00H
 	ORG $+12
-$SG5565	DB	'[VMware SVGA]: FrameBuffer size is very small, probably '
+$SG5571	DB	'[VMware SVGA]: FrameBuffer size is very small, probably '
 	DB	'incorrect', 0aH, 00H
 	ORG $+5
-$SG5573	DB	'Irq of svga -> %d', 0aH, 00H
+$SG5579	DB	'Irq of svga -> %d', 0aH, 00H
 	ORG $+5
-$SG5579	DB	'HW3D supported', 0aH, 00H
-$SG5581	DB	'SVGA IRQMask', 0aH, 00H
+$SG5585	DB	'HW3D supported', 0aH, 00H
+$SG5587	DB	'SVGA IRQMask', 0aH, 00H
 	ORG $+2
-$SG5586	DB	'SVGA IRQ appears to be present but broken %d', 0aH, 00H
+$SG5592	DB	'SVGA IRQ appears to be present but broken %d', 0aH, 00H
 	ORG $+2
-$SG5606	DB	'[VMware SVGA]: FIFO command too large %d bytes', 0aH, 00H
-$SG5609	DB	'[VMware SVGA]: FIFO command length not 32-bit aligned', 0aH
+$SG5612	DB	'[VMware SVGA]: FIFO command too large %d bytes', 0aH, 00H
+$SG5615	DB	'[VMware SVGA]: FIFO command length not 32-bit aligned', 0aH
 	DB	00H
 	ORG $+1
-$SG5611	DB	'[VMware SVGA]: FIFO reserve before FIFO commit', 0aH, 00H
-$SG5644	DB	'[VMware SVGA]: FIFO commit before FIFO reserve', 0aH, 00H
-$SG5826	DB	'Irq flags -> %d', 0aH, 00H
+$SG5617	DB	'[VMware SVGA]: FIFO reserve before FIFO commit', 0aH, 00H
+$SG5650	DB	'[VMware SVGA]: FIFO commit before FIFO reserve', 0aH, 00H
+$SG5832	DB	'Irq flags -> %d', 0aH, 00H
 	ORG $+7
-$SG5827	DB	'SVGA interrupted', 0aH, 00H
+$SG5833	DB	'SVGA interrupted', 0aH, 00H
 	ORG $+6
-$SG5829	DB	'[VMware SVGA]: spurious SVGA IRQ', 0aH, 00H
+$SG5835	DB	'[VMware SVGA]: spurious SVGA IRQ', 0aH, 00H
 CONST	ENDS
 PUBLIC	?svga_read_reg@@YAII@Z				; svga_read_reg
 PUBLIC	?svga_write_reg@@YAXII@Z			; svga_write_reg
@@ -709,7 +709,7 @@ $LN4:
 ; 570  : 	printf ("Irq flags -> %d\n", irq_flags);
 
 	mov	edx, DWORD PTR irq_flags$[rsp]
-	lea	rcx, OFFSET FLAT:$SG5826
+	lea	rcx, OFFSET FLAT:$SG5832
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 571  : 	svga_dev.irq.count++;
@@ -725,7 +725,7 @@ $LN4:
 
 ; 573  : 	printf ("SVGA interrupted\n");
 
-	lea	rcx, OFFSET FLAT:$SG5827
+	lea	rcx, OFFSET FLAT:$SG5833
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 574  : 	if (!irq_flags)
@@ -735,7 +735,7 @@ $LN4:
 
 ; 575  : 		printf ("[VMware SVGA]: spurious SVGA IRQ\n");
 
-	lea	rcx, OFFSET FLAT:$SG5829
+	lea	rcx, OFFSET FLAT:$SG5835
 	call	?printf@@YAXPEBDZZ			; printf
 $LN1@svga_inter:
 
@@ -1588,7 +1588,7 @@ $LN16:
 
 ; 253  : 		printf ("[VMware SVGA]: FIFO commit before FIFO reserve\n");
 
-	lea	rcx, OFFSET FLAT:$SG5644
+	lea	rcx, OFFSET FLAT:$SG5650
 	call	?printf@@YAXPEBDZZ			; printf
 $LN11@svga_fifo_:
 
@@ -1888,7 +1888,7 @@ $LN23:
 ; 177  : 		printf ("[VMware SVGA]: FIFO command too large %d bytes\n", bytes);
 
 	mov	edx, DWORD PTR bytes$[rsp]
-	lea	rcx, OFFSET FLAT:$SG5606
+	lea	rcx, OFFSET FLAT:$SG5612
 	call	?printf@@YAXPEBDZZ			; printf
 $LN20@svga_fifo_:
 
@@ -1907,7 +1907,7 @@ $LN20@svga_fifo_:
 
 ; 182  : 		printf ("[VMware SVGA]: FIFO command length not 32-bit aligned\n");
 
-	lea	rcx, OFFSET FLAT:$SG5609
+	lea	rcx, OFFSET FLAT:$SG5615
 	call	?printf@@YAXPEBDZZ			; printf
 $LN19@svga_fifo_:
 
@@ -1921,7 +1921,7 @@ $LN19@svga_fifo_:
 
 ; 187  : 		printf ("[VMware SVGA]: FIFO reserve before FIFO commit\n");
 
-	lea	rcx, OFFSET FLAT:$SG5611
+	lea	rcx, OFFSET FLAT:$SG5617
 	call	?printf@@YAXPEBDZZ			; printf
 $LN18@svga_fifo_:
 
@@ -2384,7 +2384,7 @@ $LN8:
 
 ; 121  : 			printf ("HW3D supported\n");
 
-	lea	rcx, OFFSET FLAT:$SG5579
+	lea	rcx, OFFSET FLAT:$SG5585
 	call	?printf@@YAXPEBDZZ			; printf
 $LN5@svga_enabl:
 
@@ -2419,7 +2419,7 @@ $LN5@svga_enabl:
 
 ; 130  : 		printf ("SVGA IRQMask\n");
 
-	lea	rcx, OFFSET FLAT:$SG5581
+	lea	rcx, OFFSET FLAT:$SG5587
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 131  : 		svga_dev.irq.pending = 0;
@@ -2465,7 +2465,7 @@ $LN2@svga_enabl:
 ; 140  : 			printf ("SVGA IRQ appears to be present but broken %d\n", svga_dev.irq.pending);
 
 	mov	edx, DWORD PTR ?svga_dev@@3U_svga_drive_@@A+1048648
-	lea	rcx, OFFSET FLAT:$SG5586
+	lea	rcx, OFFSET FLAT:$SG5592
 	call	?printf@@YAXPEBDZZ			; printf
 $LN1@svga_enabl:
 $LN4@svga_enabl:
@@ -2503,7 +2503,7 @@ $LN15:
 
 ; 46   : 		printf ("No VMware SVGA device found\n");
 
-	lea	rcx, OFFSET FLAT:$SG5554
+	lea	rcx, OFFSET FLAT:$SG5560
 	call	?printf@@YAXPEBDZZ			; printf
 $LN12@svga_init:
 
@@ -2589,7 +2589,7 @@ $LN9@svga_init:
 
 ; 65   : 		printf ("[VMware SVGA]: negotiating SVGA device version!\n");
 
-	lea	rcx, OFFSET FLAT:$SG5563
+	lea	rcx, OFFSET FLAT:$SG5569
 	call	?printf@@YAXPEBDZZ			; printf
 $LN6@svga_init:
 
@@ -2622,7 +2622,7 @@ $LN6@svga_init:
 
 ; 74   : 		printf ("[VMware SVGA]: FrameBuffer size is very small, probably incorrect\n");
 
-	lea	rcx, OFFSET FLAT:$SG5565
+	lea	rcx, OFFSET FLAT:$SG5571
 	call	?printf@@YAXPEBDZZ			; printf
 $LN5@svga_init:
 
@@ -2635,7 +2635,7 @@ $LN5@svga_init:
 
 ; 78   : 		printf ("[VMware SVGA]: FIFO size is very small, probably incorrect\n");
 
-	lea	rcx, OFFSET FLAT:$SG5567
+	lea	rcx, OFFSET FLAT:$SG5573
 	call	?printf@@YAXPEBDZZ			; printf
 $LN4@svga_init:
 
@@ -2680,7 +2680,7 @@ $LN3@svga_init:
 
 	movzx	eax, BYTE PTR irq$1[rsp]
 	mov	edx, eax
-	lea	rcx, OFFSET FLAT:$SG5573
+	lea	rcx, OFFSET FLAT:$SG5579
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 90   : 		outportd (svga_dev.io_base + SVGA_IRQSTATUS_PORT, 0xff);

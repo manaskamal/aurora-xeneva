@@ -1,16 +1,16 @@
-﻿Build started 02-08-2021 ৰাতিপু 1:05:47.
+﻿Build started 03-08-2021 আবেলি 5:42:15.
      1>Project "E:\Xeneva Project\Xeneva\xnlib\libxeneva\libxeneva.vcxproj" on node 2 (Rebuild target(s)).
      1>_NASM:
          callback.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmpcf2403c0032a44f8b668e1ec5765bdc1.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp19ab2515980d4ef0a53493da5a54a658.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\callback.obj"  "E:\Xeneva Project\Xeneva\xnlib\libxeneva\callback.asm"
      1>E:\Xeneva Project\Xeneva\xnlib\libxeneva\callback.asm(77): warning : label alone on a line without a colon might be in error
        _NASM:
          _fast_cpy.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp239bc8e117f146bab4f7c02146ee0fd8.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmpdae2e465029745b8b215826494f10f81.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\_fast_cpy.obj"  "E:\Xeneva Project\Xeneva\xnlib\libxeneva\_fast_cpy.asm"
        ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\xnlib\libxeneva\include" /Zi /nologo /W4 /WX- /sdl- /MP /Od /D ARCH_X64 /D _MBCS /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt gui\drawer.cpp gui\font.cpp list.cpp mm.cpp stdlib.cpp string.cpp xnsys.cpp xnwidget\xnbutton.cpp xnwidget\xnlabel.cpp xnwidget\xnmenu.cpp xnwidget\xnmenubar.cpp xnwidget\xnview.cpp xnwidget\xnwindow.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\xnlib\libxeneva\include" /Zi /nologo /W4 /WX- /sdl- /MP /Od /D ARCH_X64 /D _MBCS /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt gui\drawer.cpp gui\font.cpp input\KeyEvent.cpp list.cpp mm.cpp stdlib.cpp string.cpp xnsys.cpp xnwidget\xnbutton.cpp xnwidget\xnlabel.cpp xnwidget\xnmenu.cpp xnwidget\xnmenubar.cpp xnwidget\xnview.cpp xnwidget\xnwindow.cpp
      1>cl : Command line warning D9025: overriding '/sdl-' with '/GS-'
      1>cl : Command line warning D9002: ignoring unknown option '/arch:SSE'
      1>cl : Command line warning D9030: '/Gm' is incompatible with multiprocessing; ignoring /MP switch
@@ -19,10 +19,6 @@
      1>xnwidget\xnwindow.cpp(50): warning C4267: 'argument' : conversion from 'size_t' to 'int', possible loss of data
      1>xnwidget\xnwindow.cpp(73): warning C4018: '<' : signed/unsigned mismatch
      1>xnwidget\xnwindow.cpp(111): warning C4018: '<' : signed/unsigned mismatch
-     1>xnwidget\xnwindow.cpp(113): warning C4018: '>=' : signed/unsigned mismatch
-     1>xnwidget\xnwindow.cpp(113): warning C4018: '<' : signed/unsigned mismatch
-     1>xnwidget\xnwindow.cpp(114): warning C4018: '>=' : signed/unsigned mismatch
-     1>xnwidget\xnwindow.cpp(114): warning C4018: '<' : signed/unsigned mismatch
          xnview.cpp
      1>E:\Xeneva Project\Xeneva\xnlib\libxeneva\include\imaging\jpeg.h(297): warning C4127: conditional expression is constant
      1>E:\Xeneva Project\Xeneva\xnlib\libxeneva\include\imaging\jpeg.h(299): warning C4127: conditional expression is constant
@@ -114,6 +110,8 @@
      1>mm.cpp(20): warning C4100: 'sz' : unreferenced formal parameter
      1>mm.cpp(54): warning C4127: conditional expression is constant
          list.cpp
+         KeyEvent.cpp
+     1>input\KeyEvent.cpp(182): warning C4244: '=' : conversion from 'int' to 'char', possible loss of data
          font.cpp
      1>gui\font.cpp(34): warning C4018: '<' : signed/unsigned mismatch
      1>gui\font.cpp(36): warning C4018: '<' : signed/unsigned mismatch
@@ -125,12 +123,13 @@
      1>gui\drawer.cpp(197): warning C4018: '<' : signed/unsigned mismatch
      1>gui\drawer.cpp(198): warning C4018: '<' : signed/unsigned mismatch
          Generating Code...
-     1>e:\xeneva project\xeneva\xnlib\libxeneva\string.cpp(62): warning C4706: assignment within conditional expression
      1>e:\xeneva project\xeneva\xnlib\libxeneva\string.cpp(48): warning C4706: assignment within conditional expression
+     1>e:\xeneva project\xeneva\xnlib\libxeneva\string.cpp(62): warning C4706: assignment within conditional expression
      1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V110\Microsoft.CppBuild.targets(1299,5): warning MSB8012: TargetPath(E:\Xeneva Project\Xeneva\Aurora\x64\Debug\libxeneva.lib) does not match the Library's OutputFile property value (E:\Xeneva Project\Xeneva\xnlib\lib64\libxeneva.lib). This may cause your project to build incorrectly. To correct this, please make sure that $(OutDir), $(TargetName) and $(TargetExt) property values match the value specified in %(Lib.OutputFile).
        Lib:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\Lib.exe /OUT:"E:\Xeneva Project\Xeneva\xnlib\lib64\libxeneva.lib" /NOLOGO /NODEFAULTLIB /MACHINE:X64 x64\Debug\drawer.obj
          x64\Debug\font.obj
+         x64\Debug\KeyEvent.obj
          x64\Debug\list.obj
          x64\Debug\mm.obj
          x64\Debug\stdlib.obj
@@ -149,4 +148,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:01.47
+Time Elapsed 00:00:04.92

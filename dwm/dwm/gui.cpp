@@ -101,6 +101,22 @@ void copy_to_screen2(uint32_t *buf, rect_t *r) {
 	}
 }
 
+void copy_to_screen2_no_geom(uint32_t *buf, uint32_t x, uint32_t y, uint32_t w, uint32_t h) {
+	uint32_t* lfb = (uint32_t*)0x0000600000000000;
+	uint32_t* wallp = (uint32_t*)0x0000500000000000;
+	int width = get_screen_width();
+	int height = get_screen_height();
+	for (int i=0; i < w; i++) {
+		for (int j=0; j < h; j++){
+			if (buf[(x + i) + (y + j) * width] | 0x00000000){
+			uint32_t color = buf[(x + i) + (y + j) * width];
+			uint32_t color_a = wallp[(x + i) + (y + j) * width];
+			lfb[(x + i) + (y + j) * width] = alpha_blend(color_a, color);
+			}
+		}
+	}
+}
+
 
 void dwm_add_alpha(uint32_t *buf, rect_t *r, uint32_t add_color) {
 	uint32_t* lfb = (uint32_t*)0x0000600000000000;

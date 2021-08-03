@@ -131,7 +131,7 @@ void general_protection_fault (size_t v, void* p){
 void page_fault (size_t vector, void* param){
 	x64_cli();
 	interrupt_stack_frame *frame = (interrupt_stack_frame*)param;
-	void* vaddr = (void*)x64_read_cr2();
+	size_t vaddr = x64_read_cr2();
 
 	int present = !(frame->error & 0x1);
 	int rw = frame->error & 0x2;

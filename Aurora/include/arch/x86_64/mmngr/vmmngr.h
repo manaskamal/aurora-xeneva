@@ -35,4 +35,5 @@ extern bool map_page_ex (uint64_t *pml4i,uint64_t physical_address, uint64_t vir
 extern uint64_t *create_user_address_space ();
 extern void unmap_page(uint64_t virt_addr);
 extern uint64_t* get_physical_address (uint64_t virt_addr);
+extern uint64_t* get_free_page (size_t s);
 #endif

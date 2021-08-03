@@ -66,6 +66,7 @@ extern void draw_pixel2 (unsigned x, unsigned y, uint32_t color );
 extern void draw_pixel3 (unsigned x, unsigned y, uint32_t color );
 extern void copy_to_screen(uint32_t *buf, rect_t *r);
 extern void copy_to_screen2(uint32_t *buf, rect_t *r);
+extern void copy_to_screen2_no_geom(uint32_t *buf, uint32_t x, uint32_t y, uint32_t w, uint32_t h);
 
 extern void draw_rect (unsigned x, unsigned y, unsigned w, unsigned h, uint32_t col);
 extern void draw_vertical_line (unsigned x, unsigned y, unsigned length, uint32_t color);

@@ -29,14 +29,10 @@ void kybrd_handler(size_t v, void* p)
 		message_send (1,msg);
 		pmmngr_free (msg);
 
-		//thread_t* thr = (thread_t*)thread_iterate_ready_list (3);
-		////thr->rsp = thr->blocked_stack_resv;
-	 //   if (thr != NULL){
-		//	//printf ("Unblocking thread stack -> %x\n", thr->rsp);
-		//   // printf ("Unblocking thread name -> %s\n", thr->name);
-		//	thr->state = THREAD_STATE_READY;
-		//	unblock_thread(thr);
-		//}
+		/*thread_t* thr = (thread_t*)thread_iterate_ready_list (1);
+	    if (thr != NULL){
+			unblock_thread(thr);
+		}*/
 		//!Here we need to pass this code to window manager process {a.k.a DWM} or shell program
 		//!shell will decode the scancode and will take action
 	}

@@ -26,15 +26,15 @@ _BSS	SEGMENT
 ?ide_irq_invoked@@3IA DD 01H DUP (?)			; ide_irq_invoked
 _BSS	ENDS
 CONST	SEGMENT
-$SG2985	DB	'master ', 00H
-$SG2986	DB	'slave', 00H
+$SG2991	DB	'master ', 00H
+$SG2992	DB	'slave', 00H
 	ORG $+2
-$SG2987	DB	'primary', 00H
-$SG2988	DB	'secondary', 00H
+$SG2993	DB	'primary', 00H
+$SG2994	DB	'secondary', 00H
 	ORG $+6
-$SG2989	DB	'ATA: %s s has error. disabled, ', 0aH, 00H
+$SG2995	DB	'ATA: %s s has error. disabled, ', 0aH, 00H
 	ORG $+7
-$SG3019	DB	'[ATA]: error!, device failure!', 0aH, 00H
+$SG3025	DB	'[ATA]: error!, device failure!', 0aH, 00H
 CONST	ENDS
 PUBLIC	?ata_initialize@@YAXXZ				; ata_initialize
 PUBLIC	?ata_read_28@@YAEIGPEAE@Z			; ata_read_28
@@ -657,7 +657,7 @@ $retry2$11:
 ; 160  : 	{
 ; 161  : 		printf("[ATA]: error!, device failure!\n");
 
-	lea	rcx, OFFSET FLAT:$SG3019
+	lea	rcx, OFFSET FLAT:$SG3025
 	call	?printf@@YAXPEBDZZ			; printf
 $LN2@ide_poll:
 
@@ -871,26 +871,26 @@ $pm_stat_read$20:
 	movzx	eax, BYTE PTR drive$[rsp]
 	test	eax, eax
 	jne	SHORT $LN15@ide_identi
-	lea	rax, OFFSET FLAT:$SG2985
+	lea	rax, OFFSET FLAT:$SG2991
 	mov	QWORD PTR tv152[rsp], rax
 	jmp	SHORT $LN16@ide_identi
 $LN15@ide_identi:
-	lea	rax, OFFSET FLAT:$SG2986
+	lea	rax, OFFSET FLAT:$SG2992
 	mov	QWORD PTR tv152[rsp], rax
 $LN16@ide_identi:
 	movzx	eax, BYTE PTR bus$[rsp]
 	test	eax, eax
 	jne	SHORT $LN17@ide_identi
-	lea	rax, OFFSET FLAT:$SG2987
+	lea	rax, OFFSET FLAT:$SG2993
 	mov	QWORD PTR tv156[rsp], rax
 	jmp	SHORT $LN18@ide_identi
 $LN17@ide_identi:
-	lea	rax, OFFSET FLAT:$SG2988
+	lea	rax, OFFSET FLAT:$SG2994
 	mov	QWORD PTR tv156[rsp], rax
 $LN18@ide_identi:
 	mov	r8, QWORD PTR tv152[rsp]
 	mov	rdx, QWORD PTR tv156[rsp]
-	lea	rcx, OFFSET FLAT:$SG2989
+	lea	rcx, OFFSET FLAT:$SG2995
 	call	?printf@@YAXPEBDZZ			; printf
 $LN7@ide_identi:
 $LN6@ide_identi:

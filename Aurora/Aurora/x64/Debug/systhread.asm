@@ -6,11 +6,11 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 CONST	SEGMENT
-$SG3453	DB	'Current cr3 value -> %x', 0aH, 00H
+$SG3459	DB	'Current cr3 value -> %x', 0aH, 00H
 	ORG $+7
-$SG3454	DB	'Current entry address -> %x', 0aH, 00H
+$SG3460	DB	'Current entry address -> %x', 0aH, 00H
 	ORG $+3
-$SG3456	DB	'uthread', 00H
+$SG3462	DB	'uthread', 00H
 CONST	ENDS
 PUBLIC	?get_thread_id@@YAGXZ				; get_thread_id
 PUBLIC	?create_uthread@@YAXP6AXPEAX@Z@Z		; create_uthread
@@ -109,20 +109,20 @@ $LN3:
 
 	call	x64_read_cr3
 	mov	rdx, rax
-	lea	rcx, OFFSET FLAT:$SG3453
+	lea	rcx, OFFSET FLAT:$SG3459
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 26   : 	printf ("Current entry address -> %x\n", entry);
 
 	mov	rdx, QWORD PTR entry$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3454
+	lea	rcx, OFFSET FLAT:$SG3460
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 27   : 	thread_t * t = create_user_thread (entry,0x0000000080000000 + 4096, x64_read_cr3(), "uthread", 1);
 
 	call	x64_read_cr3
 	mov	BYTE PTR [rsp+32], 1
-	lea	r9, OFFSET FLAT:$SG3456
+	lea	r9, OFFSET FLAT:$SG3462
 	mov	r8, rax
 	mov	edx, -2147479552			; 80001000H
 	mov	rcx, QWORD PTR entry$[rsp]

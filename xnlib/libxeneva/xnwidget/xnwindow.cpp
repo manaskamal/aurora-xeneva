@@ -74,7 +74,7 @@ void xn_paint_window (xn_window_t* win) {
 		xn_widget *widget = (xn_widget*)list_get_at (win->xn_widget,i);
 		widget->paint_handler (widget, win);
 	}
-	//drawer_update (win->x, win->y, win->w, win->h);
+	drawer_update (win->x, win->y, win->w, win->h);
 }
 
 
@@ -106,7 +106,7 @@ void xn_window_destroy () {
 	mfree(msg);
 }
 
-void xn_handle_mouse (xn_window_t *win, int mouse_x, int mouse_y, bool button_state) {
+void xn_handle_mouse (xn_window_t *win, uint32_t mouse_x, uint32_t mouse_y, bool button_state) {
 	
 	for (int i = 0; i < win->xn_widget->pointer; i++) {
 		xn_widget * wid = (xn_widget*)list_get_at(win->xn_widget,i);

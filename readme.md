@@ -6,7 +6,7 @@ are not included here.
 Features:
 1. x86_64 based kernel called Aurora Kernel
 2. Multitasking
-3. FAT32 file-system with {Read-Write Files but no mkdir yet}
+3. FAT32 file-system with {Read-Write support only on root dir}
 4. Driver Loader {loads PE32+ dll files as drivers}
 5. Process Manager {loads PE32+ executable as application}
 6. Custom system architecture design

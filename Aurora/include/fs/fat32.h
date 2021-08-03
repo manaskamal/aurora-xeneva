@@ -101,4 +101,5 @@ extern FILE fat32_locate_dir (const char* dir);
 extern void scan_free_cluster (bool write);
 extern void list_fat_entries ();
 extern uint32_t fat32_create_file  (char* filename, uint8_t *buffer, unsigned int length);
+extern void create_dir (const char* filename);
 #endif

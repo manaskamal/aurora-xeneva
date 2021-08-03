@@ -25,6 +25,7 @@
 #include <drivers\ac97\ac97.h>
 #include <drivers\hdaudio\hda.h>
 #include <drivers\vga.h>
+#include <drivers\rtc.h>
 #include <ipc\evntsh.h>
 #include <ipc\message.h>
 #include <ipc\dwm_ipc.h>
@@ -38,6 +39,7 @@
 
 #ifdef ARCH_X64
 #include <arch\x86_64\thread.h>
+#include <arch\x86_64\mmngr\map.h>
 #endif
 
 typedef struct _wav_riff_ {
@@ -80,19 +82,29 @@ void _kmain (KERNEL_BOOT_INFO *info) {
 	console_initialize(info);
 	kybrd_init();
 	
-	
+	initialize_rtc();
 	//!initialize runtime drivers
 	ata_initialize();
 	initialize_vfs();
 	initialize_screen(info);
 
+	/** For testing purpose **/
+    uint64_t *addr = (uint64_t*)map_memory (NULL,8192,NULL,NULL);
+	printf ("mmap address -> %x\n", addr);
+	memcpy (addr,(void*)0xFFFFC00000000000, 8192);
+	unmap_memory (addr, 8192);
+	//! for testing purpose
+
+	for(;;);
 	svga_init (); 
 	initialize_mouse();
 	message_init ();
 	dwm_ipc_init();
 
-	driver_mngr_initialize(info);
 	
+
+	driver_mngr_initialize(info);
+
 #ifdef ARCH_X64
 	initialize_scheduler();
 	create_process ("dwm.exe","dwm",20);

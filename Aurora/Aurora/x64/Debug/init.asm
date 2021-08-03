@@ -6,26 +6,29 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 CONST	SEGMENT
-$SG6472	DB	'dwm', 00H
-	ORG $+4
-$SG6473	DB	'dwm.exe', 00H
-$SG6474	DB	'dwm2', 00H
+$SG6494	DB	'mmap address -> %x', 0aH, 00H
+$SG6499	DB	'dwm', 00H
+$SG6500	DB	'dwm.exe', 00H
+$SG6501	DB	'dwm2', 00H
 	ORG $+3
-$SG6475	DB	'dwm2.exe', 00H
+$SG6502	DB	'dwm2.exe', 00H
 	ORG $+3
-$SG6476	DB	'dwm3', 00H
+$SG6503	DB	'dwm3', 00H
 	ORG $+7
-$SG6477	DB	'dwm3.exe', 00H
+$SG6504	DB	'dwm3.exe', 00H
 CONST	ENDS
 PUBLIC	?_kmain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z		; _kmain
 EXTRN	?hal_init@@YAXXZ:PROC				; hal_init
 EXTRN	?pmmngr_init@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z:PROC ; pmmngr_init
 EXTRN	?mm_init@@YAXXZ:PROC				; mm_init
+EXTRN	memcpy:PROC
 EXTRN	?console_initialize@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z:PROC ; console_initialize
+EXTRN	?printf@@YAXPEBDZZ:PROC				; printf
 EXTRN	?kybrd_init@@YAXXZ:PROC				; kybrd_init
 EXTRN	?initialize_mouse@@YAXXZ:PROC			; initialize_mouse
 EXTRN	?ata_initialize@@YAXXZ:PROC			; ata_initialize
 EXTRN	?svga_init@@YAXXZ:PROC				; svga_init
+EXTRN	?initialize_rtc@@YAXXZ:PROC			; initialize_rtc
 EXTRN	?initialize_scheduler@@YAXXZ:PROC		; initialize_scheduler
 EXTRN	?scheduler_start@@YAXXZ:PROC			; scheduler_start
 EXTRN	?message_init@@YAXXZ:PROC			; message_init
@@ -34,136 +37,178 @@ EXTRN	?initialize_vfs@@YAXXZ:PROC			; initialize_vfs
 EXTRN	?initialize_screen@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z:PROC ; initialize_screen
 EXTRN	?create_process@@YAXPEBDPEADE@Z:PROC		; create_process
 EXTRN	?driver_mngr_initialize@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z:PROC ; driver_mngr_initialize
+EXTRN	?map_memory@@YAPEAX_KIEE@Z:PROC			; map_memory
+EXTRN	?unmap_memory@@YAXPEAXI@Z:PROC			; unmap_memory
 pdata	SEGMENT
-$pdata$?_kmain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z DD imagerel $LN5
-	DD	imagerel $LN5+184
+$pdata$?_kmain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z DD imagerel $LN7
+	DD	imagerel $LN7+272
 	DD	imagerel $unwind$?_kmain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z
 pdata	ENDS
 xdata	SEGMENT
 $unwind$?_kmain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z DD 010901H
-	DD	04209H
+	DD	06209H
 xdata	ENDS
 ; Function compile flags: /Odtp
 ; File e:\xeneva project\xeneva\aurora\aurora\init.cpp
 _TEXT	SEGMENT
-info$ = 48
+addr$ = 32
+info$ = 64
 ?_kmain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z PROC		; _kmain
 
-; 76   : void _kmain (KERNEL_BOOT_INFO *info) {
+; 78   : void _kmain (KERNEL_BOOT_INFO *info) {
 
-$LN5:
+$LN7:
 	mov	QWORD PTR [rsp+8], rcx
-	sub	rsp, 40					; 00000028H
+	sub	rsp, 56					; 00000038H
 
-; 77   : 	hal_init ();
+; 79   : 	hal_init ();
 
 	call	?hal_init@@YAXXZ			; hal_init
 
-; 78   : 	pmmngr_init (info);
+; 80   : 	pmmngr_init (info);
 
 	mov	rcx, QWORD PTR info$[rsp]
 	call	?pmmngr_init@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z ; pmmngr_init
 
-; 79   : 	mm_init(); 
+; 81   : 	mm_init(); 
 
 	call	?mm_init@@YAXXZ				; mm_init
 
-; 80   : 	console_initialize(info);
+; 82   : 	console_initialize(info);
 
 	mov	rcx, QWORD PTR info$[rsp]
 	call	?console_initialize@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z ; console_initialize
 
-; 81   : 	kybrd_init();
+; 83   : 	kybrd_init();
 
 	call	?kybrd_init@@YAXXZ			; kybrd_init
 
-; 82   : 	
-; 83   : 	
-; 84   : 	//!initialize runtime drivers
-; 85   : 	ata_initialize();
+; 84   : 	
+; 85   : 	initialize_rtc();
+
+	call	?initialize_rtc@@YAXXZ			; initialize_rtc
+
+; 86   : 	//!initialize runtime drivers
+; 87   : 	ata_initialize();
 
 	call	?ata_initialize@@YAXXZ			; ata_initialize
 
-; 86   : 	initialize_vfs();
+; 88   : 	initialize_vfs();
 
 	call	?initialize_vfs@@YAXXZ			; initialize_vfs
 
-; 87   : 	initialize_screen(info);
+; 89   : 	initialize_screen(info);
 
 	mov	rcx, QWORD PTR info$[rsp]
 	call	?initialize_screen@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z ; initialize_screen
 
-; 88   : 
-; 89   : 	svga_init (); 
+; 90   : 
+; 91   : 
+; 92   :     uint64_t *addr = (uint64_t*)map_memory (NULL,8192,NULL,NULL);
+
+	xor	r9d, r9d
+	xor	r8d, r8d
+	mov	edx, 8192				; 00002000H
+	xor	ecx, ecx
+	call	?map_memory@@YAPEAX_KIEE@Z		; map_memory
+	mov	QWORD PTR addr$[rsp], rax
+
+; 93   : 	printf ("mmap address -> %x\n", addr);
+
+	mov	rdx, QWORD PTR addr$[rsp]
+	lea	rcx, OFFSET FLAT:$SG6494
+	call	?printf@@YAXPEBDZZ			; printf
+
+; 94   : 	memcpy (addr,(void*)0xFFFFC00000000000, 8192);
+
+	mov	r8d, 8192				; 00002000H
+	mov	rdx, -70368744177664			; ffffc00000000000H
+	mov	rcx, QWORD PTR addr$[rsp]
+	call	memcpy
+
+; 95   : 	unmap_memory (addr, 8192);
+
+	mov	edx, 8192				; 00002000H
+	mov	rcx, QWORD PTR addr$[rsp]
+	call	?unmap_memory@@YAXPEAXI@Z		; unmap_memory
+$LN4@kmain:
+
+; 96   : 	for(;;);
+
+	jmp	SHORT $LN4@kmain
+
+; 97   : 	svga_init (); 
 
 	call	?svga_init@@YAXXZ			; svga_init
 
-; 90   : 	initialize_mouse();
+; 98   : 	initialize_mouse();
 
 	call	?initialize_mouse@@YAXXZ		; initialize_mouse
 
-; 91   : 	message_init ();
+; 99   : 	message_init ();
 
 	call	?message_init@@YAXXZ			; message_init
 
-; 92   : 	dwm_ipc_init();
+; 100  : 	dwm_ipc_init();
 
 	call	?dwm_ipc_init@@YAXXZ			; dwm_ipc_init
 
-; 93   : 
-; 94   : 	driver_mngr_initialize(info);
+; 101  : 
+; 102  : 	
+; 103  : 
+; 104  : 	driver_mngr_initialize(info);
 
 	mov	rcx, QWORD PTR info$[rsp]
 	call	?driver_mngr_initialize@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z ; driver_mngr_initialize
 
-; 95   : 	
-; 96   : #ifdef ARCH_X64
-; 97   : 	initialize_scheduler();
+; 105  : 
+; 106  : #ifdef ARCH_X64
+; 107  : 	initialize_scheduler();
 
 	call	?initialize_scheduler@@YAXXZ		; initialize_scheduler
 
-; 98   : 	create_process ("dwm.exe","dwm",20);
+; 108  : 	create_process ("dwm.exe","dwm",20);
 
 	mov	r8b, 20
-	lea	rdx, OFFSET FLAT:$SG6472
-	lea	rcx, OFFSET FLAT:$SG6473
+	lea	rdx, OFFSET FLAT:$SG6499
+	lea	rcx, OFFSET FLAT:$SG6500
 	call	?create_process@@YAXPEBDPEADE@Z		; create_process
 
-; 99   : 	//! task list should be more than 4 or less than 4 not 
-; 100  : 	create_process ("dwm2.exe", "dwm2", 1);
+; 109  : 	//! task list should be more than 4 or less than 4 not 
+; 110  : 	create_process ("dwm2.exe", "dwm2", 1);
 
 	mov	r8b, 1
-	lea	rdx, OFFSET FLAT:$SG6474
-	lea	rcx, OFFSET FLAT:$SG6475
+	lea	rdx, OFFSET FLAT:$SG6501
+	lea	rcx, OFFSET FLAT:$SG6502
 	call	?create_process@@YAXPEBDPEADE@Z		; create_process
 
-; 101  : 	create_process ("dwm3.exe", "dwm3", 1);
+; 111  : 	create_process ("dwm3.exe", "dwm3", 1);
 
 	mov	r8b, 1
-	lea	rdx, OFFSET FLAT:$SG6476
-	lea	rcx, OFFSET FLAT:$SG6477
+	lea	rdx, OFFSET FLAT:$SG6503
+	lea	rcx, OFFSET FLAT:$SG6504
 	call	?create_process@@YAXPEBDPEADE@Z		; create_process
 
-; 102  : 	scheduler_start();
+; 112  : 	scheduler_start();
 
 	call	?scheduler_start@@YAXXZ			; scheduler_start
 $LN2@kmain:
 
-; 103  : #endif
-; 104  : 	while(1) {
+; 113  : #endif
+; 114  : 	while(1) {
 
 	xor	eax, eax
 	cmp	eax, 1
 	je	SHORT $LN1@kmain
 
-; 105  : 	}
+; 115  : 	}
 
 	jmp	SHORT $LN2@kmain
 $LN1@kmain:
 
-; 106  : }
+; 116  : }
 
-	add	rsp, 40					; 00000028H
+	add	rsp, 56					; 00000038H
 	ret	0
 ?_kmain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z ENDP		; _kmain
 _TEXT	ENDS

@@ -32,7 +32,7 @@ extern xn_window_t* xn_create_window (uint32_t x, uint32_t y, uint32_t w, uint32
 extern void xn_show_window (xn_window_t* win);
 extern void xn_move_window (xn_window_t *win);
 extern void xn_window_add (xn_window_t* win, xn_widget *widget);
-extern void xn_handle_mouse (xn_window_t *win, int mouse_x, int mouse_y, bool button_state);
+extern void xn_handle_mouse (xn_window_t *win, uint32_t mouse_x, uint32_t mouse_y, bool button_state);
 extern void xn_handle_close_button (xn_window_t* win);
 extern void xn_update_old (xn_window_t *win);
 extern void xn_window_destroy ();

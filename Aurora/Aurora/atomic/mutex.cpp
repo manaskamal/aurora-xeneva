@@ -26,7 +26,6 @@ mutex_t * create_mutex () {
 
 //! Locks a critical section from other process
 void mutex_lock (mutex_t * obj) {
-
 	//!disable multi tasking
 	set_multi_task_enable (false);
 
@@ -41,6 +40,7 @@ void mutex_lock (mutex_t * obj) {
 	while (obj->blocks != 0) {
 		block_thread(get_current_thread());
 		obj->block_thread_num++;
+		obj->block_thread_id[obj->block_thread_num] = get_current_thread()->id;
 		set_multi_task_enable (true);
 		force_sched();
 	}
@@ -64,8 +64,15 @@ void mutex_unlock (mutex_t *obj) {
 	}
 
 	if (obj->block_thread_num > 0) {
-		//unblock_thread(1);
+		while (obj->block_thread_num != 0) {
+			uint16_t id = obj->block_thread_id[obj->block_thread_num];
+			thread_t * thr = thread_iterate_block_list (id);
+			if (thr != NULL)
+				unblock_thread(thr);
+			obj->block_thread_num--;
+		}
 	}
+
 	//! decreament the block count
 	obj->blocks--;
 	obj->owner_thread = 0;

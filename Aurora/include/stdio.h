@@ -18,5 +18,6 @@
 #include <console.h>
 #include <stdint.h>
 
+extern char* sztoa(size_t value, char* str, int base);
 extern void printf(const char* format, ...);
 #endif

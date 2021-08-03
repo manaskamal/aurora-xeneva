@@ -653,15 +653,15 @@ uint32_t fat32_create_file  (char* filename, uint8_t *buffer, unsigned int lengt
 	to_dos_file_name32 (filename, formated_name, 11);
 
 	//! now it's time to parse the root directory
-	unsigned char *buf = (unsigned char*)pmmngr_alloc ();
+	unsigned char buf[512];
 	//! Root Directory Entries scanning goes here
 	for (int sector = 0; sector < sectors_per_cluster; sector++) {
-		ata_read_28 (root_sector + sector,1, buf);
+		ata_read_28 (root_sector + sector,1, buf);	
+		fat32_dir *dirent = (fat32_dir*)buf;
 		for (int i = 0; i < 16; i++) {
-			fat32_dir *dirent = (fat32_dir*)(buf + i * sizeof(fat32_dir));
-
+		
 			//! scan for free directory entry
-			if (dirent->filename[0] == 0x00){
+			if (dirent->filename[0] == 0x00 || dirent->filename[0] == 0xE5){
 				
 				memset(dirent, 0, sizeof(fat32_dir));
 				memcpy (dirent->filename, formated_name, 11);
@@ -681,13 +681,95 @@ uint32_t fat32_create_file  (char* filename, uint8_t *buffer, unsigned int lengt
 				fat32_write_content (buffer, first_cluster,length);
 				return 0;
 			}
+			dirent++;
 		}
-		//! go to next slot  1 cluster = 8 sectors, goto next sector
-		buf += 512;
+	
+	}
+	//!free every allocated memories
+}
+
+
+void create_dir (const char* filename) {
+	/**
+	 * First we scan the FAT table for free cluster which will
+	 * be used as first cluster and store it in a temporary variable
+	 */
+	uint32_t first_cluster = 0;
+	uint32_t cluster_first = find_free_cluster ();
+	first_cluster = cluster_first;
+	uint32_t status = alloc_cluster (cluster_first, 0x0FFFFFF8);
+
+	//! Clear the cluster
+	clear_cluster (cluster_first);
+
+	char formated_name[11];
+	to_dos_file_name32 (filename, formated_name, 11);
+    unsigned char buf[512];
+	//! now it's time to parse the root directory
+	//! Root Directory Entries scanning goes here
+	for (int sector = 0; sector < sectors_per_cluster; sector++) {
+		
+		ata_read_28 (root_sector + sector,1, buf);
+		fat32_dir *dirent = (fat32_dir*)buf;
+		for (int i = 0; i < 16; i++) {
+
+
+			//! scan for free directory entry
+			if (dirent->filename[0] == 0x00 || dirent->filename[0] == 0xE5){
+				printf ("Empty entry found\n");
+				memset(dirent, 0, sizeof(fat32_dir));
+				memcpy (dirent->filename, formated_name, 11);
+				dirent->attrib = ATTRIBUTE_DIRECTORY;
+				dirent->time_created_ms = 2021;
+				dirent->time_created = 2021;
+				dirent->date_created = 2021;
+				dirent->date_last_accessed = 2021;
+				dirent->first_cluster_hi_bytes = (first_cluster >> 16) & 0xFFFF;
+				dirent->last_mod_time = 2021;
+				dirent->last_mod_date = 2021;
+				dirent->first_cluster = first_cluster & 0xFFFF;
+				dirent->file_size = 0;
+
+				//! write the dir entry and go for writing the contents of the file
+				ata_write_one (buf, root_sector + sector);
+
+				unsigned char* dir_content = (unsigned char*)pmmngr_alloc();
+				memset(dir_content, 0, 4096);
+				uint32_t sector_d = cluster_to_sector32 (first_cluster);
+				fat32_dir *dot_entry = (fat32_dir*)dir_content;
+				dot_entry->attrib = ATTRIBUTE_DIRECTORY;
+				dot_entry->time_created_ms = 2021;
+				dot_entry->time_created = 2021;
+				dot_entry->date_created = 2021;
+				dot_entry->date_last_accessed = 2021;
+				dot_entry->first_cluster_hi_bytes = (first_cluster >> 16) & 0xFFFF;
+				dot_entry->last_mod_time = 2021;
+				dot_entry->last_mod_date = 2021;
+				dot_entry->first_cluster = first_cluster & 0xFFFF;
+				dot_entry->file_size = 0;
+
+
+				fat32_dir* dot_dot_entry = (fat32_dir*)(dir_content + 32);
+				dot_dot_entry->attrib = ATTRIBUTE_DIRECTORY;
+				dot_dot_entry->time_created_ms = 2021;
+				dot_dot_entry->time_created = 2021;
+				dot_dot_entry->date_created = 2021;
+				dot_dot_entry->date_last_accessed = 2021;
+				dot_dot_entry->first_cluster_hi_bytes = (root_dir_first_cluster >> 16) & 0xFFFF;
+				dot_dot_entry->last_mod_time = 2021;
+				dot_dot_entry->last_mod_date = 2021;
+				dot_dot_entry->first_cluster = root_dir_first_cluster & 0xFFFF;
+				dot_dot_entry->file_size = 0;
+
+				for (int i = 0; i < 8; i++) {
+					ata_write_one (dir_content + (i * 512),sector_d + i);
+				}
+				return;
+			}
+			dirent++;
+		}
 	}
 
-	//!free every allocated memories
-	pmmngr_free(buf);
 }
 
 

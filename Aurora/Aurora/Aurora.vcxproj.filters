@@ -234,6 +234,9 @@
     <ClInclude Include="..\include\drivers\hdaudio\hda.h">
       <Filter>include\drivers\hdaudio</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\drivers\rtc.h">
+      <Filter>include\drivers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="init.cpp">
@@ -382,6 +385,9 @@
     </ClCompile>
     <ClCompile Include="drivers\hda\hda.cpp">
       <Filter>source\drivers\hdaudio</Filter>
+    </ClCompile>
+    <ClCompile Include="drivers\rtc.cpp">
+      <Filter>source\drivers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

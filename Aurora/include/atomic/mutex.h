@@ -25,6 +25,7 @@ typedef struct {
 	thread_t* owner_thread;
 	uint16_t block_thread_num;
 	uint32_t  blocks;
+	int block_thread_id[50];
 }mutex_t;
 
 //!Create a mutex 

@@ -97,26 +97,22 @@ $LN4:
 $LN1@kybrd_hand:
 
 ; 31   : 
-; 32   : 		//thread_t* thr = (thread_t*)thread_iterate_ready_list (3);
-; 33   : 		////thr->rsp = thr->blocked_stack_resv;
-; 34   : 	 //   if (thr != NULL){
-; 35   : 		//	//printf ("Unblocking thread stack -> %x\n", thr->rsp);
-; 36   : 		//   // printf ("Unblocking thread name -> %s\n", thr->name);
-; 37   : 		//	thr->state = THREAD_STATE_READY;
-; 38   : 		//	unblock_thread(thr);
-; 39   : 		//}
-; 40   : 		//!Here we need to pass this code to window manager process {a.k.a DWM} or shell program
-; 41   : 		//!shell will decode the scancode and will take action
-; 42   : 	}
-; 43   : 
-; 44   :   
-; 45   : 	//! tell apic we are done!!!
-; 46   : 	interrupt_end();
+; 32   : 		/*thread_t* thr = (thread_t*)thread_iterate_ready_list (1);
+; 33   : 	    if (thr != NULL){
+; 34   : 			unblock_thread(thr);
+; 35   : 		}*/
+; 36   : 		//!Here we need to pass this code to window manager process {a.k.a DWM} or shell program
+; 37   : 		//!shell will decode the scancode and will take action
+; 38   : 	}
+; 39   : 
+; 40   :   
+; 41   : 	//! tell apic we are done!!!
+; 42   : 	interrupt_end();
 
 	call	?interrupt_end@@YAXXZ			; interrupt_end
 
-; 47   : 	return;
-; 48   : }
+; 43   : 	return;
+; 44   : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -127,20 +123,20 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 ?kybrd_init@@YAXXZ PROC					; kybrd_init
 
-; 50   : void kybrd_init () {
+; 46   : void kybrd_init () {
 
 $LN3:
 	sub	rsp, 40					; 00000028H
 
-; 51   : 	interrupt_set (1,kybrd_handler,1);
+; 47   : 	interrupt_set (1,kybrd_handler,1);
 
 	mov	r8b, 1
 	lea	rdx, OFFSET FLAT:?kybrd_handler@@YAX_KPEAX@Z ; kybrd_handler
 	mov	ecx, 1
 	call	?interrupt_set@@YAX_KP6AX0PEAX@ZE@Z	; interrupt_set
 
-; 52   : 	//irq_mask(1, true);
-; 53   : }
+; 48   : 	//irq_mask(1, true);
+; 49   : }
 
 	add	rsp, 40					; 00000028H
 	ret	0

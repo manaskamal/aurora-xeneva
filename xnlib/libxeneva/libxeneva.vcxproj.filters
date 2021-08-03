@@ -25,6 +25,12 @@
     <Filter Include="include\imaging">
       <UniqueIdentifier>{d87254c8-3ab3-453f-b11b-ea6adec60422}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\input">
+      <UniqueIdentifier>{61dfad45-ed7c-4a86-80bc-36fa0c27602b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="input">
+      <UniqueIdentifier>{a21389eb-1d43-4ebd-a838-feda24a66671}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\xnsys.h">
@@ -81,6 +87,9 @@
     <ClInclude Include="include\imaging\jpeg.h">
       <Filter>include\imaging</Filter>
     </ClInclude>
+    <ClInclude Include="include\input\KeyEvent.h">
+      <Filter>include\input</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="string.cpp" />
@@ -111,6 +120,9 @@
     <ClCompile Include="stdlib.cpp" />
     <ClCompile Include="xnwidget\xnview.cpp">
       <Filter>xnwidget</Filter>
+    </ClCompile>
+    <ClCompile Include="input\KeyEvent.cpp">
+      <Filter>input</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

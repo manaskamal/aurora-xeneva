@@ -205,6 +205,7 @@
     <ClInclude Include="..\include\drivers\kybrd.h" />
     <ClInclude Include="..\include\drivers\mouse.h" />
     <ClInclude Include="..\include\drivers\pci.h" />
+    <ClInclude Include="..\include\drivers\rtc.h" />
     <ClInclude Include="..\include\drivers\svga\backdoor_def.h" />
     <ClInclude Include="..\include\drivers\svga\gmr.h" />
     <ClInclude Include="..\include\drivers\svga\rgba_arrow.h" />
@@ -259,6 +260,7 @@
     <ClCompile Include="drivers\kybrd.cpp" />
     <ClCompile Include="drivers\mouse.cpp" />
     <ClCompile Include="drivers\pci.cpp" />
+    <ClCompile Include="drivers\rtc.cpp" />
     <ClCompile Include="drivers\svga\gmr.cpp" />
     <ClCompile Include="drivers\svga\svga_screen.cpp" />
     <ClCompile Include="drivers\svga\svga_screen_util.cpp" />

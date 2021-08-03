@@ -12,6 +12,7 @@
 #include <wm.h>
 #include <dwmmsg.h>
 #include <dwm.h>
+#include <stack.h>
 #include <allocator.h>
 
 
@@ -69,7 +70,7 @@ void wm_move_window(window_t *win, uint32_t mouse_x, uint32_t mouse_y) {
 		dwmmsg_send (&msg);
 		memset (&msg,0,sizeof(message_t));
 		sys_unblock_id(focus_win->pid);
-		wm_paint_required(true);
+		//wm_paint_required(true);
 	}
 }
 
@@ -113,11 +114,6 @@ void wm_handle_mouse_event (uint32_t mouse_x, uint32_t mouse_y, bool clicked, in
 						drag_win->draggable_update = true;
 						break;
 					} else {	
-						if (win->type == WIN_TYPE_ROOT) {
-							wm_set_focus_window(win);
-							break;
-						}
-
 					    if (window_last_focus == NULL)
 							window_last_focus = win;
 						
@@ -137,8 +133,7 @@ void wm_handle_mouse_event (uint32_t mouse_x, uint32_t mouse_y, bool clicked, in
 					//Send the mouse click event to dedicated window's thread
 					event_occured = true;
 				}
-
-
+				
 				if (focus_win == win) {
 					win->focus = true;
 					win->close = false;
@@ -150,9 +145,7 @@ void wm_handle_mouse_event (uint32_t mouse_x, uint32_t mouse_y, bool clicked, in
 					dwmmsg_send (&msg);
 					memset (&msg,0,sizeof(message_t));
 					sys_unblock_id(win->pid);
-				}
-			
-				
+				}	
 		}
 
 			//!Close button
@@ -194,32 +187,13 @@ void wm_paint_required (bool value) {
 void wm_paint_windows (rect_t *update_rect) {
 	if (wm_window_paint) {
 		//copy_to_screen2 ((uint32_t*)0x0000500000000000, update_rect);
-		if (root_window_buffer != NULL) {
-			copy_to_screen2(root_window_buffer, update_rect);
-			goto win_paint;
-		}
-
 		copy_to_screen2 ((uint32_t*)0x0000500000000000, update_rect);
-
-		//! Go through the list and search for the one root window
-		//! and paint it first
-		for (int i = 0; i < window_list->pointer; i++) {
-			window_t* win = (window_t*)win_list_get_at(window_list, i);
-			if (win->type == WIN_TYPE_ROOT) {
-				copy_to_screen2(win->buffer, update_rect);
-				root_window_buffer = win->buffer;
-				root_window_present = true;
-				break;
-			}
-		}
 
 win_paint:
 		//! And now draw other windows except the root window
 		for (int i = 0; i < window_list->pointer; i++) {
 			window_t* win = (window_t*)win_list_get_at(window_list, i);
-			if (win->type == WIN_TYPE_NORMAL) {
-				copy_to_screen2(win->buffer, &win->coord);
-			}
+			copy_to_screen2(win->buffer, &win->coord);
 		}
 
 		//! finally copy everything to screen
@@ -239,10 +213,7 @@ win_paint:
 }
 
 void wm_window_move_to_front (window_t *win) {
-
-	if (win->type == WIN_TYPE_ROOT)
-		return;
-
+    wm_set_focus_window(win);
 	for (int i = 0; i < window_list->pointer; i++){
 		window_t* win_ = (window_t*)win_list_get_at(window_list,i);
 		if (win_ == win){
@@ -251,7 +222,7 @@ void wm_window_move_to_front (window_t *win) {
 		}
 	}
 	win_list_add(window_list, win);
-	wm_set_focus_window(win);
+	
 }
 
 
