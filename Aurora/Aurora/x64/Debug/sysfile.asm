@@ -6,7 +6,7 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 CONST	SEGMENT
-$SG2931	DB	'File not found', 0aH, 00H
+$SG2932	DB	'File not found', 0aH, 00H
 CONST	ENDS
 PUBLIC	?sys_open_file@@YAXPEAU_file_@@PEBD@Z		; sys_open_file
 PUBLIC	?sys_read_file@@YAXPEAU_file_@@PEAEH@Z		; sys_read_file
@@ -111,7 +111,7 @@ $LN4:
 
 ; 21   : 		printf ("File not found\n");
 
-	lea	rcx, OFFSET FLAT:$SG2931
+	lea	rcx, OFFSET FLAT:$SG2932
 	call	?printf@@YAXPEBDZZ			; printf
 $LN1@sys_open_f:
 

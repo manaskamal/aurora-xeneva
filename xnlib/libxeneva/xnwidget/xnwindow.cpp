@@ -74,7 +74,7 @@ void xn_paint_window (xn_window_t* win) {
 		xn_widget *widget = (xn_widget*)list_get_at (win->xn_widget,i);
 		widget->paint_handler (widget, win);
 	}
-	drawer_update (win->x, win->y, win->w, win->h);
+	
 }
 
 
@@ -88,8 +88,9 @@ void xn_update_old (xn_window_t *win) {
 }
 
 void xn_move_window (xn_window_t *win) {
-	xn_update_old(win);
+	//xn_update_old(win);
 	xn_paint_window (win);
+	//drawer_update (win->x, win->y, win->w, win->h);
 }
 
 

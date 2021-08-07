@@ -88,20 +88,11 @@ void _kmain (KERNEL_BOOT_INFO *info) {
 	initialize_vfs();
 	initialize_screen(info);
 
-	/** For testing purpose **/
-    uint64_t *addr = (uint64_t*)map_memory (NULL,8192,NULL,NULL);
-	printf ("mmap address -> %x\n", addr);
-	memcpy (addr,(void*)0xFFFFC00000000000, 8192);
-	unmap_memory (addr, 8192);
 	//! for testing purpose
-
-	for(;;);
 	svga_init (); 
 	initialize_mouse();
 	message_init ();
 	dwm_ipc_init();
-
-	
 
 	driver_mngr_initialize(info);
 

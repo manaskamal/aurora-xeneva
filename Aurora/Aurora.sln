@@ -11,6 +11,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "audio_sb16", "..\drivers\au
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libdriver", "..\driverapi\libdriver\libdriver.vcxproj", "{6C94A58C-066E-4017-BB9A-29D6150010CA}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "shell", "..\shell\shell.vcxproj", "{F1CADE48-6095-4DA5-86F6-60157309395E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Mixed Platforms = Debug|Mixed Platforms
@@ -73,6 +75,16 @@ Global
 		{6C94A58C-066E-4017-BB9A-29D6150010CA}.Release|Win32.ActiveCfg = Release|Win32
 		{6C94A58C-066E-4017-BB9A-29D6150010CA}.Release|Win32.Build.0 = Release|Win32
 		{6C94A58C-066E-4017-BB9A-29D6150010CA}.Release|x64.ActiveCfg = Release|Win32
+		{F1CADE48-6095-4DA5-86F6-60157309395E}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{F1CADE48-6095-4DA5-86F6-60157309395E}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{F1CADE48-6095-4DA5-86F6-60157309395E}.Debug|Win32.ActiveCfg = Debug|Win32
+		{F1CADE48-6095-4DA5-86F6-60157309395E}.Debug|Win32.Build.0 = Debug|Win32
+		{F1CADE48-6095-4DA5-86F6-60157309395E}.Debug|x64.ActiveCfg = Debug|x64
+		{F1CADE48-6095-4DA5-86F6-60157309395E}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{F1CADE48-6095-4DA5-86F6-60157309395E}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{F1CADE48-6095-4DA5-86F6-60157309395E}.Release|Win32.ActiveCfg = Release|Win32
+		{F1CADE48-6095-4DA5-86F6-60157309395E}.Release|Win32.Build.0 = Release|Win32
+		{F1CADE48-6095-4DA5-86F6-60157309395E}.Release|x64.ActiveCfg = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

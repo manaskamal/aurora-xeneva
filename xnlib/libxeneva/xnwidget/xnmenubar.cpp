@@ -36,7 +36,7 @@ void xn_draw_popup_menu (xn_menu_t *menu, xn_window_t *win) {
 void xn_menubar_paint_handler (xn_widget *widget, xn_window_t *win) {
 	xn_menubar_t * menubar = (xn_menubar_t*)widget->data_pointer;
 	drawer_draw_rect (win->x, win->y + 35, menubar->base.w, menubar->base.h, LIGHTBLACK);
-	drawer_update (win->x, win->y + 35, menubar->base.w, menubar->base.h);
+	
 	int menu_pos_x = 10;
 	uint32_t focus_color = 0;
 	for (int i = 0; i < menubar->menus->pointer; i++) {
@@ -56,6 +56,7 @@ void xn_menubar_paint_handler (xn_widget *widget, xn_window_t *win) {
 		if (menu->over_effect) {
 			drawer_draw_rect_unfilled(win->x + menu_pos_x - 2, win->y + 35, (strlen(menu->popup_title)*8 + 4), 25, LIGHTSILVER);
 			drawer_update (win->x + menu_pos_x - 2, win->y + 35, (strlen(menu->popup_title)*8 + 4), 25);
+			drawer_update (win->x, win->y + 35, menubar->base.w, menubar->base.h);
 			menu->over_effect = false;
 		}
 		draw_string (menu->popup_title,win->x +  menu_pos_x, win->y + 35 + 3,LIGHTSILVER, focus_color);

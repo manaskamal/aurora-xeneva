@@ -37,6 +37,7 @@ typedef struct _driver_param_ {
 	uint32_t (*pci_get_bar) (const pci_address *addr, int index);
 	void (*pci_set_mem_enable) (const pci_address *addr, bool enable);
 	void* (*malloc) (size_t size);
+	uint64_t* (*get_phys_address) (uint64_t virt_address);
 }driver_param_t;
 
 #pragma pack (pop)

@@ -36,6 +36,7 @@ void drawer_register (int type,uint32_t x, uint32_t y,uint32_t gui_width, uint32
 	msg.dword9 = y;
 	message_send(1,&msg);
 	memset(&msg,0,sizeof(message_t));
+//	draw_sys.framebuffer = (uint32_t*)0x0000600000000000;
 
 	while (1) {
 		message_poll (&msg);
@@ -177,6 +178,19 @@ void draw_rounded_rect (int x, int y, int w, int h, int radius, uint32_t color) 
 	draw_circle_corner (x + w - radius - 1, y + h - radius - 1, radius, 4, color);
 	draw_circle_corner (x + radius, y + h - radius - 1, radius, 8, color);
 
+}
+
+
+void copy_to_framebuffer(uint32_t *buf, uint32_t x, uint32_t y, uint32_t w, uint32_t h) {
+	uint32_t* lfb = (uint32_t*)draw_sys.real_buffer;
+	int width = drawer_get_screen_width();
+	int height = drawer_get_screen_height();
+	for (int i=0; i < w; i++) {
+		for (int j=0; j < h; j++){
+			uint32_t color = buf[(x + i) + (y + j) * width];
+			lfb[(x + i) + (y + j) * width] =  color;
+		}
+	}
 }
 
 void drawer_update (int x, int y, int w, int h) {

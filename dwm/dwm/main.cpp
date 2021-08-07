@@ -79,7 +79,10 @@ static unsigned int mouse_x_old = 0;
 static unsigned int mouse_y_old = 0;
 
 
-
+void thread_test (void*) {
+	//print_text ("hello uthread\n");
+	while(1) {}
+}
 /* ========================================================================
  *  Main Entry Point
  * ========================================================================
@@ -135,6 +138,7 @@ void main () {
 	update_rect.h = height;
 
 
+	sys_create_uthread (thread_test);
 	//FILE f;
 	//sys_open_file (&f, "rain.jpg");
 	//unsigned char* buffer_i = (unsigned char*)0x0000500000000000;
@@ -219,6 +223,7 @@ void main () {
 			msg1.dword6 = win->coord.y;
 			dwmmsg_send (&msg1);
 			//enable_update(true);
+			wm_paint_required(true);
 			memset (&msg, 0, sizeof (message_t));
 		}
 
@@ -254,9 +259,10 @@ void main () {
 			r->y = msg.dword6;
 			r->w = msg.dword7;
 			r->h = msg.dword8;
-			stack_push_rect(r);
-			copy_to_screen2((uint32_t*)0x0000500000000000, r);
+			//stack_push_rect(r);
 			copy_to_screen2 (msg.dword10,r);
+			copy_to_screen((uint32_t*)0x0000600000000000, r);
+			dfree(r);
 			memset(&msg, 0, sizeof(message_t));
 		}
 
@@ -265,21 +271,22 @@ void main () {
 			if (win != NULL)
 				wm_remove_window(win);
 			memset(&msg, 0, sizeof(message_t));
-			wm_paint_required(true);
+			copy_to_screen2 ((uint32_t*)0x0000500000000000, &win->coord);
+			copy_to_screen ((uint32_t*)0x0000600000000000, &win->coord);
+			//wm_paint_required(true);
 		}
 
-	
-		
-		//prepare_screen(&update_rect);
-		refresh_screen(&update_rect);
-		wm_paint_windows(&update_rect);
 
+		//prepare_screen(&update_rect);
+		
+		wm_paint_windows(&update_rect);
+		//refresh_screen();
 		sys_fb_move_cursor (mouse_x, mouse_y);
 		sys_fb_update();
 	
 		//!Render at 1000 Frames / Second -> 1ms
 		sys_sleep (1);
-		
+		//sys_fb_update();
         //!Store mouse old position
      	
 	}

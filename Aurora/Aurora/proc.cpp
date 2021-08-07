@@ -134,7 +134,6 @@ void create_process(const char* filename, char* procname, uint8_t priority) {
 	process->image_size = nt->OptionalHeader.SizeOfImage;
 	//! Create and thread and start scheduling when scheduler starts */
 	thread_t *t = create_user_thread(process->entry_point,stack,(uint64_t)cr3,procname,priority);
-	printf ("Process for child created -> %s\n", procname);
 	//! add the process to process manager
 	process->thread_data_pointer = t;
     add_process(process);

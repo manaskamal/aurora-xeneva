@@ -28,8 +28,6 @@ _BSS	SEGMENT
 ?total_clusters@@3IA DD 01H DUP (?)			; total_clusters
 _BSS	ENDS
 CONST	SEGMENT
-$SG3133	DB	'Sector  Per Cluster -> %d', 0aH, 00H
-	ORG $+5
 $SG3237	DB	'%s             %d bytes', 0aH, 00H
 	ORG $+7
 $SG3245	DB	'%s             %d bytes', 0aH, 00H
@@ -74,7 +72,7 @@ EXTRN	?ata_write_one@@YAEPEAEI@Z:PROC			; ata_write_one
 EXTRN	?malloc@@YAPEAX_K@Z:PROC			; malloc
 pdata	SEGMENT
 $pdata$?initialize_fat32@@YAXXZ DD imagerel $LN3
-	DD	imagerel $LN3+244
+	DD	imagerel $LN3+223
 	DD	imagerel $unwind$?initialize_fat32@@YAXXZ
 $pdata$?fat32_open@@YA?AU_file_@@PEBD@Z DD imagerel $LN17
 	DD	imagerel $LN17+706
@@ -3478,7 +3476,7 @@ _TEXT	ENDS
 ; Function compile flags: /Odtp
 ; File e:\xeneva project\xeneva\aurora\aurora\fs\fat32.cpp
 _TEXT	SEGMENT
-tv128 = 32
+tv93 = 32
 fat32_data$ = 40
 buf$ = 48
 ?initialize_fat32@@YAXXZ PROC				; initialize_fat32
@@ -3578,23 +3576,17 @@ $LN3:
 	mov	DWORD PTR ?sectors_per_fat32@@3IA, eax	; sectors_per_fat32
 
 ; 120  : 
-; 121  : 	printf ("Sector  Per Cluster -> %d\n", sectors_per_cluster);
-
-	movzx	eax, BYTE PTR ?sectors_per_cluster@@3EA	; sectors_per_cluster
-	mov	edx, eax
-	lea	rcx, OFFSET FLAT:$SG3133
-	call	?printf@@YAXPEBDZZ			; printf
-
+; 121  : 	//printf ("Sector  Per Cluster -> %d\n", sectors_per_cluster);
 ; 122  : 	//printf ("Total Sectors -> %d\n", fat32_data->large_sector_count);
 ; 123  : 	//printf ("Total sector++ -> %d\n", fat32_data->large_sector_count/ sectors_per_cluster);
 ; 124  : 	total_clusters = fat32_data->large_sector_count / sectors_per_cluster;
 
 	movzx	eax, BYTE PTR ?sectors_per_cluster@@3EA	; sectors_per_cluster
-	mov	DWORD PTR tv128[rsp], eax
+	mov	DWORD PTR tv93[rsp], eax
 	xor	edx, edx
 	mov	rcx, QWORD PTR fat32_data$[rsp]
 	mov	eax, DWORD PTR [rcx+32]
-	mov	ecx, DWORD PTR tv128[rsp]
+	mov	ecx, DWORD PTR tv93[rsp]
 	div	ecx
 	mov	DWORD PTR ?total_clusters@@3IA, eax	; total_clusters
 

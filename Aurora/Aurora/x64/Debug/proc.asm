@@ -15,9 +15,7 @@ user_stack_index DD 01H DUP (?)
 ?process_last@@3PEAU_process_@@EA DQ 01H DUP (?)	; process_last
 _BSS	ENDS
 CONST	SEGMENT
-$SG3684	DB	'Executable image not found', 0aH, 00H
-	ORG $+4
-$SG3713	DB	'Process for child created -> %s', 0aH, 00H
+$SG3696	DB	'Executable image not found', 0aH, 00H
 CONST	ENDS
 PUBLIC	?create_user_stack@@YAPEA_KPEA_K@Z		; create_user_stack
 PUBLIC	?create_process@@YAXPEBDPEADE@Z			; create_process
@@ -48,7 +46,7 @@ $pdata$?create_user_stack@@YAPEA_KPEA_K@Z DD imagerel $LN6
 	DD	imagerel $LN6+162
 	DD	imagerel $unwind$?create_user_stack@@YAPEA_KPEA_K@Z
 $pdata$?create_process@@YAXPEBDPEADE@Z DD imagerel $LN6
-	DD	imagerel $LN6+591
+	DD	imagerel $LN6+571
 	DD	imagerel $unwind$?create_process@@YAXPEBDPEADE@Z
 $pdata$?kill_process@@YAXXZ DD imagerel $LN9
 	DD	imagerel $LN9+239
@@ -351,34 +349,34 @@ tv76 = 64
 virtual_addr$3 = 72
 ?kill_process@@YAXXZ PROC				; kill_process
 
-; 146  : void kill_process () {
+; 145  : void kill_process () {
 
 $LN9:
 	sub	rsp, 88					; 00000058H
 
-; 147  : 	x64_cli();
+; 146  : 	x64_cli();
 
 	call	x64_cli
 
-; 148  : 	thread_t * remove_thread = get_current_thread();
+; 147  : 	thread_t * remove_thread = get_current_thread();
 
 	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
 	mov	QWORD PTR remove_thread$[rsp], rax
 
-; 149  : 	process_t *proc = find_process_by_thread (remove_thread);
+; 148  : 	process_t *proc = find_process_by_thread (remove_thread);
 
 	mov	rcx, QWORD PTR remove_thread$[rsp]
 	call	?find_process_by_thread@@YAPEAU_process_@@PEAU_thread_@@@Z ; find_process_by_thread
 	mov	QWORD PTR proc$[rsp], rax
 
-; 150  : 	uint64_t  init_stack = proc->stack - 0x100000;
+; 149  : 	uint64_t  init_stack = proc->stack - 0x100000;
 
 	mov	rax, QWORD PTR proc$[rsp]
 	mov	rax, QWORD PTR [rax+48]
 	sub	rax, 1048576				; 00100000H
 	mov	QWORD PTR init_stack$[rsp], rax
 
-; 151  : 	for (int i = 0; i < 0x100000 / 256; i++) {
+; 150  : 	for (int i = 0; i < 0x100000 / 256; i++) {
 
 	mov	DWORD PTR i$1[rsp], 0
 	jmp	SHORT $LN6@kill_proce
@@ -390,7 +388,7 @@ $LN6@kill_proce:
 	cmp	DWORD PTR i$1[rsp], 4096		; 00001000H
 	jge	SHORT $LN4@kill_proce
 
-; 152  : 		unmap_page (init_stack + i * 4096);
+; 151  : 		unmap_page (init_stack + i * 4096);
 
 	mov	eax, DWORD PTR i$1[rsp]
 	imul	eax, 4096				; 00001000H
@@ -401,13 +399,13 @@ $LN6@kill_proce:
 	mov	rcx, rax
 	call	?unmap_page@@YAX_K@Z			; unmap_page
 
-; 153  : 	}
+; 152  : 	}
 
 	jmp	SHORT $LN5@kill_proce
 $LN4@kill_proce:
 
-; 154  : 
-; 155  : 	for (int i = 0; i < proc->image_size / 4096; i++) {
+; 153  : 
+; 154  : 	for (int i = 0; i < proc->image_size / 4096; i++) {
 
 	mov	DWORD PTR i$2[rsp], 0
 	jmp	SHORT $LN3@kill_proce
@@ -427,7 +425,7 @@ $LN3@kill_proce:
 	cmp	rcx, rax
 	jae	SHORT $LN1@kill_proce
 
-; 156  : 		uint64_t virtual_addr = proc->image_base + (i * 4096);
+; 155  : 		uint64_t virtual_addr = proc->image_base + (i * 4096);
 
 	mov	eax, DWORD PTR i$2[rsp]
 	imul	eax, 4096				; 00001000H
@@ -436,28 +434,28 @@ $LN3@kill_proce:
 	add	rax, QWORD PTR [rcx+40]
 	mov	QWORD PTR virtual_addr$3[rsp], rax
 
-; 157  : 		unmap_page (virtual_addr);
+; 156  : 		unmap_page (virtual_addr);
 
 	mov	rcx, QWORD PTR virtual_addr$3[rsp]
 	call	?unmap_page@@YAX_K@Z			; unmap_page
 
-; 158  : 	}
+; 157  : 	}
 
 	jmp	SHORT $LN2@kill_proce
 $LN1@kill_proce:
 
-; 159  : 
-; 160  : 	remove_process (proc);
+; 158  : 
+; 159  : 	remove_process (proc);
 
 	mov	rcx, QWORD PTR proc$[rsp]
 	call	?remove_process@@YAXPEAU_process_@@@Z	; remove_process
 
-; 161  : 	task_delete (remove_thread);
+; 160  : 	task_delete (remove_thread);
 
 	mov	rcx, QWORD PTR remove_thread$[rsp]
 	call	?task_delete@@YAXPEAU_thread_@@@Z	; task_delete
 
-; 162  : }
+; 161  : }
 
 	add	rsp, 88					; 00000058H
 	ret	0
@@ -529,7 +527,7 @@ $LN6:
 
 ; 95   : 		printf("Executable image not found\n");
 
-	lea	rcx, OFFSET FLAT:$SG3684
+	lea	rcx, OFFSET FLAT:$SG3696
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 96   : 		return;
@@ -710,28 +708,22 @@ $LN1@create_pro:
 	call	?create_user_thread@@YAPEAU_thread_@@P6AXPEAX@Z_K2QEADE@Z ; create_user_thread
 	mov	QWORD PTR t$[rsp], rax
 
-; 137  : 	printf ("Process for child created -> %s\n", procname);
-
-	mov	rdx, QWORD PTR procname$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3713
-	call	?printf@@YAXPEBDZZ			; printf
-
-; 138  : 	//! add the process to process manager
-; 139  : 	process->thread_data_pointer = t;
+; 137  : 	//! add the process to process manager
+; 138  : 	process->thread_data_pointer = t;
 
 	mov	rax, QWORD PTR process$[rsp]
 	mov	rcx, QWORD PTR t$[rsp]
 	mov	QWORD PTR [rax+16], rcx
 
-; 140  :     add_process(process);
+; 139  :     add_process(process);
 
 	mov	rcx, QWORD PTR process$[rsp]
 	call	?add_process@@YAXPEAU_process_@@@Z	; add_process
 $LN4@create_pro:
 
-; 141  : 	//mutex_unlock (process_mutex);
-; 142  : 
-; 143  : }
+; 140  : 	//mutex_unlock (process_mutex);
+; 141  : 
+; 142  : }
 
 	add	rsp, 344				; 00000158H
 	pop	rdi

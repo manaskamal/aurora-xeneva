@@ -23,6 +23,10 @@
  * 0000400000000000 - 0000500000000000   - User Space
  */
 
+#define KERNEL_BASE_ADDRESS  0xFFFFE00000000000
+#define USER_BASE_ADDRESS 0x0000400000000000
+
+
 size_t  pml4_index (uint64_t addr){
 	return (addr >> 39) & 0x1ff;
 }
@@ -254,9 +258,14 @@ uint64_t *create_user_address_space ()
 }
 
 
-uint64_t* get_free_page (size_t s) {
+uint64_t* get_free_page (size_t s, bool user) {
 	uint64_t* page = 0;
-	uint64_t start = 0xFFFFC00000000000;
+	uint64_t start = 0;
+	if (user)
+		start = USER_BASE_ADDRESS;
+	else
+		start = KERNEL_BASE_ADDRESS;
+
 	uint64_t* end = 0;
 	uint64_t *pml4 = (uint64_t*)x64_read_cr3();
 	for (int i = 0; i < s; i++) {
@@ -270,6 +279,5 @@ uint64_t* get_free_page (size_t s) {
 		}
 		start+= 4096;
 	}
-
 	return 0;
 }

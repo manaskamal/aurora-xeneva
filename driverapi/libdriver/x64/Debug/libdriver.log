@@ -1,8 +1,8 @@
-﻿Build started 07-07-2021 আবেলি 7:26:05.
+﻿Build started 04-08-2021 ৰাতিপু 10:03:50.
      1>Project "E:\Xeneva Project\Xeneva\driverapi\libdriver\libdriver.vcxproj" on node 2 (Rebuild target(s)).
      1>_NASM:
          callback.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmpa70a51c692274098869bfc050dc8a1f7.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp718af2af26de492fa7d2f110f46b3da4.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\callback.obj"  "E:\Xeneva Project\Xeneva\driverapi\libdriver\callback.asm"
        ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\driverapi\libdriver\include" /Zi /nologo /W3 /WX- /sdl- /MP /Od /D ARCH_X64 /D _MBCS /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt entry.cpp
@@ -18,4 +18,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:00.66
+Time Elapsed 00:00:01.00

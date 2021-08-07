@@ -13,6 +13,7 @@
 #include <allocator.h>
 
 static stack_t *top = NULL;
+static uint32_t rect_count = 0;
 
 //! Push a rect to the stack
 void stack_push_rect (rect_t *r) {
@@ -20,6 +21,7 @@ void stack_push_rect (rect_t *r) {
 	s->rect = r;
 	s->link = top;
 	top = s;
+	rect_count++;
 }
 
 //! Get a rect from stack
@@ -35,5 +37,11 @@ rect_t * stack_get_rect(uint32_t *id) {
 	temp->link = NULL;
 	r = temp->rect;
 	dfree(temp);
+	rect_count--;
 	return r;
 }
+
+uint32_t get_rect_count () {
+	return rect_count;
+}
+

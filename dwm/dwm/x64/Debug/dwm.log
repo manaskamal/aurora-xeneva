@@ -1,8 +1,8 @@
-﻿Build started 03-08-2021 আবেলি 6:16:34.
+﻿Build started 07-08-2021 ৰাতিপু 8:56:48.
      1>Project "E:\Xeneva Project\Xeneva\dwm\dwm\dwm.vcxproj" on node 2 (Rebuild target(s)).
      1>_NASM:
          callback.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmpb93c7b300945431baa736a3e54bbf3fc.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp8e4a63736d334a24a1effb48c71e8570.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\callback.obj"  "E:\Xeneva Project\Xeneva\dwm\dwm\callback.asm"
      1>E:\Xeneva Project\Xeneva\dwm\dwm\callback.asm(77): warning : label alone on a line without a colon might be in error
        ClCompile:
@@ -10,7 +10,7 @@
      1>cl : Command line warning D9025: overriding '/sdl-' with '/GS-'
      1>cl : Command line warning D9002: ignoring unknown option '/arch:SSE'
          wm.cpp
-     1>wm.cpp(201): warning C4804: '>' : unsafe use of type 'bool' in operation
+     1>wm.cpp(259): warning C4804: '>' : unsafe use of type 'bool' in operation
          winlist.cpp
          window.cpp
          string.cpp
@@ -51,4 +51,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:02.16
+Time Elapsed 00:00:01.94

@@ -99,6 +99,11 @@ typedef struct _thread_ {
 	struct _thread_* prev;
 }thread_t;
 
+typedef struct _uthread_ {
+	void (*entry)(void*);
+	struct _uthread_ *self_pointer;
+}uthread;
+
 
 //!****************************
 //! FUNCTION PROTOTYPE

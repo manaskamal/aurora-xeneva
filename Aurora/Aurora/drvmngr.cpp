@@ -42,6 +42,7 @@ driver_param_t * create_driver_parameter () {
 	param->pci_get_bar = pci_get_bar_addr;
 	param->pci_set_mem_enable = pci_set_mem_enable;
 	param->malloc = alloc;
+	param->get_phys_address = get_physical_address;
 	return param;
 }
 //!Driver Manager initializer

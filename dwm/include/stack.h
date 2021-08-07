@@ -24,5 +24,6 @@ typedef struct _stack_ {
 
 extern void stack_push_rect (rect_t *r);
 extern rect_t * stack_get_rect(uint32_t *id);
+extern uint32_t get_rect_count ();
 
 #endif

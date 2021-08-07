@@ -118,7 +118,7 @@ void initialize_fat32 () {
 	root_sector = cluster_to_sector32 (root_dir_first_cluster);
 	sectors_per_fat32 = fat32_data->info.FAT32.sect_per_fat32;
 
-	printf ("Sector  Per Cluster -> %d\n", sectors_per_cluster);
+	//printf ("Sector  Per Cluster -> %d\n", sectors_per_cluster);
 	//printf ("Total Sectors -> %d\n", fat32_data->large_sector_count);
 	//printf ("Total sector++ -> %d\n", fat32_data->large_sector_count/ sectors_per_cluster);
 	total_clusters = fat32_data->large_sector_count / sectors_per_cluster;

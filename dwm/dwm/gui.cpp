@@ -117,6 +117,23 @@ void copy_to_screen2_no_geom(uint32_t *buf, uint32_t x, uint32_t y, uint32_t w, 
 	}
 }
 
+void copy_to_screen_no_geom(uint32_t *buf, uint32_t x, uint32_t y, uint32_t w, uint32_t h) {
+	uint32_t* lfb = (uint32_t*)0xFFFFF00000000000;
+	uint32_t* wallp = (uint32_t*)0x0000500000000000;
+	int width = get_screen_width();
+	int height = get_screen_height();
+	for (int i=0; i < w; i++) {
+		for (int j=0; j < h; j++){
+			if (buf[(x + i) + (y + j) * width] | 0x00000000){
+			uint32_t color = buf[(x + i) + (y + j) * width];
+			uint32_t color_a = wallp[(x + i) + (y + j) * width];
+			lfb[(x + i) + (y + j) * width] = alpha_blend(color_a, color);
+			}
+		}
+	}
+}
+
+
 
 void dwm_add_alpha(uint32_t *buf, rect_t *r, uint32_t add_color) {
 	uint32_t* lfb = (uint32_t*)0x0000600000000000;
@@ -236,7 +253,7 @@ void prepare_screen (rect_t *update_rect) {
 	}
 }
 
-void refresh_screen (rect_t *update_rect) {
+uint32_t refresh_screen () {
 	
 	//wm_paint_windows (update_rect);
 	//add_dirty_rect (update_rect);
@@ -244,18 +261,25 @@ void refresh_screen (rect_t *update_rect) {
 	! If no event, simply composite everything and
 	! prepare the screen for user
 	*/
-	//copy_to_screen ((uint32_t*)0x0000600000000000, update_rect);
+	
 	uint32_t *buffer = NULL;
 	//prepare_screen ();
 	unsigned int id = 0;
-	rect_t *r = stack_get_rect (&id);
-	if (r == NULL)
-		return;
+	uint32_t count = get_rect_count();
+	
+	if (count == 0)
+		return 0;
 	else {
-		copy_to_screen ((uint32_t*)0x0000600000000000, r);
-		dfree (r);
-		sys_fb_update();
+		for (int i = 0; i < count; i++) {
+			rect_t *r = stack_get_rect (&id);
+			copy_to_screen2 ((uint32_t*)0x0000500000000000, r);
+			copy_to_screen ((uint32_t*)0x0000600000000000, r);	
+			dfree (r);
+			sys_fb_update();
+		}
+		return 1;
 	}
+	
 }
 
 

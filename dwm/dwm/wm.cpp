@@ -29,6 +29,8 @@ uint32_t * root_window_buffer = NULL;
 bool root_window_present = false;
 
 
+#define abs(a)  (((a) < 0)?-(a):(a))
+
 void wm_initialize () {
 	window_list = initialize_winlist ();
 }
@@ -54,14 +56,68 @@ void wm_remove_window (window_t *win) {
 	//window_count -= 1;
 }
 
+void subtract_rect (rect_t *s, rect_t* c) {
+	if (c->y > s->y && c->y <= s->h) {
+		rect_t *r = (rect_t*)dalloc(sizeof(rect_t));
+		r->x = s->x; //top
+		r->y = s->y; //left
+		r->w = s->x;  //bottom
+		r->h = c->y - 1; //right
+		stack_push_rect (r);
+	}
 
+	if (c->x > s->x && c->x <= s->w) {
+		rect_t *r = (rect_t*)dalloc(sizeof(rect_t));
+		r->x = s->x - 1;
+		r->y = s->y;
+		r->w = c->x - 1;
+		r->h = s->h;
+		stack_push_rect(r);
+	}
+}
 void wm_move_window(window_t *win, uint32_t mouse_x, uint32_t mouse_y) {
 	message_t msg;
 	
 	if (win->draggable_update) {
 		//wm_window_move_to_front(win);
+		int oldx = focus_win->coord.x, oldy = focus_win->coord.y, oldh = focus_win->coord.h,
+			oldw = focus_win->coord.w;
+		rect_t curr_rect;
 		focus_win->coord.x =  mouse_x - focus_win->drag_off_x;
 		focus_win->coord.y =  mouse_y - focus_win->drag_off_y;
+		int x = focus_win->coord.x, y = focus_win->coord.y;
+		rect_t *rect1 = (rect_t*)dalloc(sizeof(rect_t));
+		rect_t* rect2 = (rect_t*)dalloc(sizeof(rect_t));
+		rect1->w = abs(x - oldx);
+		rect2->h = abs(y - oldy);
+		rect1->h = oldh - rect2->h;
+		rect2->w = oldw;
+
+		if (x > oldx) {
+			rect1->x = oldx;
+			rect2->x = oldx;
+		} else {
+			rect1->x = x + oldw;
+			rect2->x = oldx;
+		}
+
+		if (y > oldy) {
+			rect1->y = y;
+			rect2->y = oldy;
+		} else {
+			rect1->y = oldy;
+			rect2->y = y + oldh;
+		}
+
+		if (rect1->w != 0 && rect1->h != 0) {
+			stack_push_rect (rect1);
+		}
+
+		if (rect2->w != 0 && rect2->h != 0) {
+			stack_push_rect (rect2);
+		}
+
+		if (refresh_screen()) {
 		msg.type = 2;
 		msg.dword2 = focus_win->coord.x;
 		msg.dword3 = focus_win->coord.y;
@@ -70,7 +126,8 @@ void wm_move_window(window_t *win, uint32_t mouse_x, uint32_t mouse_y) {
 		dwmmsg_send (&msg);
 		memset (&msg,0,sizeof(message_t));
 		sys_unblock_id(focus_win->pid);
-		//wm_paint_required(true);
+		wm_paint_required(true);
+		}
 	}
 }
 
@@ -181,23 +238,24 @@ void wm_handle_mouse_event (uint32_t mouse_x, uint32_t mouse_y, bool clicked, in
 
 void wm_paint_required (bool value) {
 	wm_window_paint = value;
-	wm_window_paint_count = 2;
+	wm_window_paint_count = 10;
 }
 
 void wm_paint_windows (rect_t *update_rect) {
 	if (wm_window_paint) {
 		//copy_to_screen2 ((uint32_t*)0x0000500000000000, update_rect);
-		copy_to_screen2 ((uint32_t*)0x0000500000000000, update_rect);
+	
 
 win_paint:
+		
 		//! And now draw other windows except the root window
 		for (int i = 0; i < window_list->pointer; i++) {
-			window_t* win = (window_t*)win_list_get_at(window_list, i);
-			copy_to_screen2(win->buffer, &win->coord);
+			window_t* win = (window_t*)win_list_get_at(window_list, i);	
+			copy_to_screen2(win->buffer, &win->coord);  
+			copy_to_screen ((uint32_t*)0x0000600000000000, &win->coord);
 		}
-
 		//! finally copy everything to screen
-        copy_to_screen((uint32_t*)0x0000600000000000, update_rect);
+		
 		if (wm_window_paint > 0)
 			wm_window_paint_count--;
 

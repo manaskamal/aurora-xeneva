@@ -20,6 +20,7 @@
 //!Drawer struct
 typedef struct _drawer_struct_ {
 	uint32_t* framebuffer;
+	uint32_t* real_buffer;
 	uint32_t  screen_width;
 	uint32_t  screen_height;
 	uint32_t  bpp;
