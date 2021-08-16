@@ -29,8 +29,8 @@ pdata	SEGMENT
 $pdata$?vmmngr_x86_64_init@@YAXXZ DD imagerel $LN7
 	DD	imagerel $LN7+123
 	DD	imagerel $unwind$?vmmngr_x86_64_init@@YAXXZ
-$pdata$?map_page@@YA_N_K0@Z DD imagerel $LN7
-	DD	imagerel $LN7+545
+$pdata$?map_page@@YA_N_K0@Z DD imagerel $LN6
+	DD	imagerel $LN6+524
 	DD	imagerel $unwind$?map_page@@YA_N_K0@Z
 $pdata$?map_page_ex@@YA_NPEA_K_K1@Z DD imagerel $LN7
 	DD	imagerel $LN7+549
@@ -54,8 +54,8 @@ pdata	ENDS
 xdata	SEGMENT
 $unwind$?vmmngr_x86_64_init@@YAXXZ DD 010401H
 	DD	08204H
-$unwind$?map_page@@YA_N_K0@Z DD 010e01H
-	DD	0e20eH
+$unwind$?map_page@@YA_N_K0@Z DD 021101H
+	DD	0110111H
 $unwind$?map_page_ex@@YA_NPEA_K_K1@Z DD 011301H
 	DD	0e213H
 $unwind$?create_user_address_space@@YAPEA_KXZ DD 010401H
@@ -970,28 +970,28 @@ _TEXT	ENDS
 ; Function compile flags: /Odtp
 ; File e:\xeneva project\xeneva\aurora\aurora\arch\x86_64\vmmngr.cpp
 _TEXT	SEGMENT
-i2$ = 32
-i4$ = 36
-i3$ = 40
-i1$ = 44
+i3$ = 32
+i2$ = 36
+i4$ = 40
 flags$ = 48
 page$1 = 56
 pml3$ = 64
-page$2 = 72
-page$3 = 80
-pml2$ = 88
-pml4i$ = 96
-pml1$ = 104
-physical_address$ = 128
-virtual_address$ = 136
+i1$ = 72
+page$2 = 80
+page$3 = 88
+pml2$ = 96
+pml4i$ = 104
+pml1$ = 112
+physical_address$ = 144
+virtual_address$ = 152
 ?map_page@@YA_N_K0@Z PROC				; map_page
 
 ; 79   : {
 
-$LN7:
+$LN6:
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
-	sub	rsp, 120				; 00000078H
+	sub	rsp, 136				; 00000088H
 
 ; 80   : 	size_t flags = PAGING_WRITABLE | PAGING_PRESENT | PAGING_USER;
 
@@ -1039,7 +1039,7 @@ $LN7:
 	mov	rax, QWORD PTR [rcx+rax*8]
 	and	rax, 1
 	test	rax, rax
-	jne	SHORT $LN4@map_page
+	jne	SHORT $LN3@map_page
 
 ; 89   : 	{
 ; 90   : 		const uint64_t page = (uint64_t)pmmngr_alloc();
@@ -1070,7 +1070,7 @@ $LN7:
 ; 94   : 		x64_mfence();
 
 	call	x64_mfence
-$LN4@map_page:
+$LN3@map_page:
 
 ; 95   : 	}
 ; 96   : 	uint64_t* pml3 = (uint64_t*)(pml4i[i4] & ~(4096 - 1));
@@ -1088,7 +1088,7 @@ $LN4@map_page:
 	mov	rax, QWORD PTR [rcx+rax*8]
 	and	rax, 1
 	test	rax, rax
-	jne	SHORT $LN3@map_page
+	jne	SHORT $LN2@map_page
 
 ; 98   : 	{
 ; 99   : 		const uint64_t page = (uint64_t)pmmngr_alloc();
@@ -1119,7 +1119,7 @@ $LN4@map_page:
 ; 103  : 		x64_mfence();
 
 	call	x64_mfence
-$LN3@map_page:
+$LN2@map_page:
 
 ; 104  : 		
 ; 105  : 	}
@@ -1139,7 +1139,7 @@ $LN3@map_page:
 	mov	rax, QWORD PTR [rcx+rax*8]
 	and	rax, 1
 	test	rax, rax
-	jne	SHORT $LN2@map_page
+	jne	SHORT $LN1@map_page
 
 ; 109  : 	{
 ; 110  : 		const uint64_t page = (uint64_t)pmmngr_alloc();
@@ -1170,7 +1170,7 @@ $LN3@map_page:
 ; 114  : 		x64_mfence();
 
 	call	x64_mfence
-$LN2@map_page:
+$LN1@map_page:
 
 ; 115  : 		
 ; 116  : 	}
@@ -1182,24 +1182,11 @@ $LN2@map_page:
 	and	rax, -4096				; fffffffffffff000H
 	mov	QWORD PTR pml1$[rsp], rax
 
-; 118  : 	if (pml1[i1] & PAGING_PRESENT)
-
-	movsxd	rax, DWORD PTR i1$[rsp]
-	mov	rcx, QWORD PTR pml1$[rsp]
-	mov	rax, QWORD PTR [rcx+rax*8]
-	and	rax, 1
-	test	rax, rax
-	je	SHORT $LN1@map_page
-
+; 118  : 	/*if (pml1[i1] & PAGING_PRESENT)
 ; 119  : 	{
 ; 120  : 		return false;
-
-	xor	al, al
-	jmp	SHORT $LN5@map_page
-$LN1@map_page:
-
 ; 121  : 	}
-; 122  : 
+; 122  : */
 ; 123  : 	pml1[i1] = physical_address | flags;
 
 	mov	rax, QWORD PTR flags$[rsp]
@@ -1222,11 +1209,10 @@ $LN1@map_page:
 ; 126  : 	return true;
 
 	mov	al, 1
-$LN5@map_page:
 
 ; 127  : }
 
-	add	rsp, 120				; 00000078H
+	add	rsp, 136				; 00000088H
 	ret	0
 ?map_page@@YA_N_K0@Z ENDP				; map_page
 _TEXT	ENDS

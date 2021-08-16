@@ -10,7 +10,7 @@ _BSS	SEGMENT
 ?sys@@3U_file_system_@@A DB 020H DUP (?)		; sys
 _BSS	ENDS
 CONST	SEGMENT
-$SG2777	DB	'FAT32', 00H
+$SG3037	DB	'FAT32', 00H
 CONST	ENDS
 PUBLIC	?initialize_vfs@@YAXXZ				; initialize_vfs
 PUBLIC	?open@@YA?AU_file_@@PEBD@Z			; open
@@ -26,7 +26,7 @@ $pdata$?initialize_vfs@@YAXXZ DD imagerel $LN3
 	DD	imagerel $LN3+81
 	DD	imagerel $unwind$?initialize_vfs@@YAXXZ
 $pdata$?open@@YA?AU_file_@@PEBD@Z DD imagerel $LN3
-	DD	imagerel $LN3+97
+	DD	imagerel $LN3+123
 	DD	imagerel $unwind$?open@@YA?AU_file_@@PEBD@Z
 $pdata$?read@@YAXPEAU_file_@@PEAEI@Z DD imagerel $LN3
 	DD	imagerel $LN3+45
@@ -39,7 +39,7 @@ xdata	SEGMENT
 $unwind$?initialize_vfs@@YAXXZ DD 010401H
 	DD	04204H
 $unwind$?open@@YA?AU_file_@@PEBD@Z DD 041301H
-	DD	0150113H
+	DD	01d0113H
 	DD	0600b700cH
 $unwind$?read@@YAXPEAU_file_@@PEAEI@Z DD 011301H
 	DD	04213H
@@ -49,24 +49,24 @@ xdata	ENDS
 ; Function compile flags: /Odtp
 ; File e:\xeneva project\xeneva\aurora\aurora\vfs.cpp
 _TEXT	SEGMENT
-pfile$ = 48
+f$ = 48
 buffer$ = 56
 ?read_blk@@YAXPEAU_file_@@PEAE@Z PROC			; read_blk
 
-; 37   : void read_blk (FILE *pfile, unsigned char *buffer) {
+; 39   : void read_blk (FILE *f, unsigned char *buffer) {
 
 $LN3:
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 40					; 00000028H
 
-; 38   : 	sys.sys_read_blk(pfile,buffer);
+; 40   : 	sys.sys_read_blk(f,buffer);
 
 	mov	rdx, QWORD PTR buffer$[rsp]
-	mov	rcx, QWORD PTR pfile$[rsp]
+	mov	rcx, QWORD PTR f$[rsp]
 	call	QWORD PTR ?sys@@3U_file_system_@@A+24
 
-; 39   : }
+; 41   : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -75,12 +75,12 @@ _TEXT	ENDS
 ; Function compile flags: /Odtp
 ; File e:\xeneva project\xeneva\aurora\aurora\vfs.cpp
 _TEXT	SEGMENT
-pfile$ = 48
+f$ = 48
 buffer$ = 56
 count$ = 64
 ?read@@YAXPEAU_file_@@PEAEI@Z PROC			; read
 
-; 33   : void read (FILE *pfile, unsigned char* buffer,unsigned int count) {
+; 35   : void read (FILE *f, unsigned char* buffer,unsigned int count) {
 
 $LN3:
 	mov	DWORD PTR [rsp+24], r8d
@@ -88,14 +88,14 @@ $LN3:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 40					; 00000028H
 
-; 34   :     sys.sys_read (pfile,buffer,count);
+; 36   :     sys.sys_read (f,buffer,count);
 
 	mov	r8d, DWORD PTR count$[rsp]
 	mov	rdx, QWORD PTR buffer$[rsp]
-	mov	rcx, QWORD PTR pfile$[rsp]
+	mov	rcx, QWORD PTR f$[rsp]
 	call	QWORD PTR ?sys@@3U_file_system_@@A+16
 
-; 35   : }
+; 37   : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -104,22 +104,23 @@ _TEXT	ENDS
 ; Function compile flags: /Odtp
 ; File e:\xeneva project\xeneva\aurora\aurora\vfs.cpp
 _TEXT	SEGMENT
-$T1 = 32
-$T2 = 96
-$T3 = 192
-filename$ = 200
+f$ = 32
+$T1 = 96
+$T2 = 160
+$T3 = 256
+filename$ = 264
 ?open@@YA?AU_file_@@PEBD@Z PROC				; open
 
-; 30   : FILE open (const char* filename) {
+; 31   : FILE open (const char* filename) {
 
 $LN3:
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
 	push	rsi
 	push	rdi
-	sub	rsp, 168				; 000000a8H
+	sub	rsp, 232				; 000000e8H
 
-; 31   : 	return sys.sys_open(filename);
+; 32   : 	FILE f =  sys.sys_open(filename);
 
 	mov	rdx, QWORD PTR filename$[rsp]
 	lea	rcx, QWORD PTR $T2[rsp]
@@ -129,16 +130,25 @@ $LN3:
 	mov	rsi, rax
 	mov	ecx, 60					; 0000003cH
 	rep movsb
-	lea	rax, QWORD PTR $T1[rsp]
+	lea	rax, QWORD PTR f$[rsp]
+	lea	rcx, QWORD PTR $T1[rsp]
+	mov	rdi, rax
+	mov	rsi, rcx
+	mov	ecx, 60					; 0000003cH
+	rep movsb
+
+; 33   : 	return f;
+
+	lea	rax, QWORD PTR f$[rsp]
 	mov	rdi, QWORD PTR $T3[rsp]
 	mov	rsi, rax
 	mov	ecx, 60					; 0000003cH
 	rep movsb
 	mov	rax, QWORD PTR $T3[rsp]
 
-; 32   : }
+; 34   : }
 
-	add	rsp, 168				; 000000a8H
+	add	rsp, 232				; 000000e8H
 	pop	rdi
 	pop	rsi
 	ret	0
@@ -149,42 +159,42 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 ?initialize_vfs@@YAXXZ PROC				; initialize_vfs
 
-; 18   : void initialize_vfs () {
+; 19   : void initialize_vfs () {
 
 $LN3:
 	sub	rsp, 40					; 00000028H
 
-; 19   : 	
-; 20   : 	//! By default FAT32 is recommended
-; 21   : #ifdef ARCH_X64
-; 22   : 	initialize_fat32();
+; 20   : 	
+; 21   : 	//! By default FAT32 is recommended
+; 22   : #ifdef ARCH_X64
+; 23   : 	initialize_fat32();
 
 	call	?initialize_fat32@@YAXXZ		; initialize_fat32
 
-; 23   : 	memcpy(sys.name,"FAT32",5);
+; 24   : 	memcpy(sys.name,"FAT32",5);
 
 	mov	r8d, 5
-	lea	rdx, OFFSET FLAT:$SG2777
+	lea	rdx, OFFSET FLAT:$SG3037
 	lea	rcx, OFFSET FLAT:?sys@@3U_file_system_@@A ; sys
 	call	memcpy
 
-; 24   : 	sys.sys_open = fat32_open;
+; 25   : 	sys.sys_open = fat32_open;
 
 	lea	rax, OFFSET FLAT:?fat32_open@@YA?AU_file_@@PEBD@Z ; fat32_open
 	mov	QWORD PTR ?sys@@3U_file_system_@@A+8, rax
 
-; 25   : 	sys.sys_read = fat32_read_file;
+; 26   : 	sys.sys_read = fat32_read_file;
 
 	lea	rax, OFFSET FLAT:?fat32_read_file@@YAXPEAU_file_@@PEAEH@Z ; fat32_read_file
 	mov	QWORD PTR ?sys@@3U_file_system_@@A+16, rax
 
-; 26   : 	sys.sys_read_blk = fat32_read;
+; 27   : 	sys.sys_read_blk = fat32_read;
 
 	lea	rax, OFFSET FLAT:?fat32_read@@YAXPEAU_file_@@PEAE@Z ; fat32_read
 	mov	QWORD PTR ?sys@@3U_file_system_@@A+24, rax
 
-; 27   : #endif
-; 28   : }
+; 28   : #endif
+; 29   : }
 
 	add	rsp, 40					; 00000028H
 	ret	0

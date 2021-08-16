@@ -239,14 +239,14 @@ void scheduler_isr (size_t v, void* param) {
 			get_kernel_tss()->rsp[0] = current_thread->kern_esp;
 		}
 		
-		x64_write_cr3 (current_thread->cr3);
+		//x64_write_cr3 (current_thread->cr3);
 		mutex_unlock (scheduler_mutex);
 		execute_idle (current_thread,get_kernel_tss());
 	}
 
 sched_end:
 	apic_local_eoi();
-	x64_sti();
+	//x64_sti();
 	
 }
 

@@ -39,7 +39,7 @@ void kybrd_handler(size_t v, void* p)
 
   
 	//! tell apic we are done!!!
-	interrupt_end();
+	interrupt_end(1);
 	return;
 }
 

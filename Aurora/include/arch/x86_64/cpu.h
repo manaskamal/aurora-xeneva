@@ -177,6 +177,7 @@ extern "C" void x64_sgdt(void* location);
 
 //! TLB Flush
 extern "C" void flush_tlb(void* addr);
+extern "C" void cache_flush ();
 
 extern "C" void x64_atom_exchange (size_t r1, size_t r2);
 

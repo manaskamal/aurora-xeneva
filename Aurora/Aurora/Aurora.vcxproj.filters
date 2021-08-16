@@ -73,6 +73,18 @@
     <Filter Include="source\drivers\hdaudio">
       <UniqueIdentifier>{8c9a931b-8e99-4bcf-8973-e448723d3f09}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\drivers\usb">
+      <UniqueIdentifier>{eef06587-64de-4b0e-84d1-57a9863441dd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\drivers\usb">
+      <UniqueIdentifier>{c93c4f49-ff9d-4c76-8309-53456705e9ec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\drivers\net">
+      <UniqueIdentifier>{73372792-6f5c-4785-87af-39b06acbb1d5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\drivers\net">
+      <UniqueIdentifier>{fa749acb-1065-4d19-87d2-dcf7eab39ea6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\stdint.h">
@@ -237,6 +249,27 @@
     <ClInclude Include="..\include\drivers\rtc.h">
       <Filter>include\drivers</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\procmngr.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\iodev.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\objctmngr.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\drivers\usb\xhci.h">
+      <Filter>include\drivers\usb</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\drivers\net\e1000.h">
+      <Filter>include\drivers\net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\drivers\net\amd_am79c973.h">
+      <Filter>include\drivers\net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\arch\x86_64\pic.h">
+      <Filter>include\arch\x86_64</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="init.cpp">
@@ -388,6 +421,21 @@
     </ClCompile>
     <ClCompile Include="drivers\rtc.cpp">
       <Filter>source\drivers</Filter>
+    </ClCompile>
+    <ClCompile Include="procmngr.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="drivers\usb\xhci.cpp">
+      <Filter>source\drivers\usb</Filter>
+    </ClCompile>
+    <ClCompile Include="drivers\net\e1000.cpp">
+      <Filter>source\drivers\net</Filter>
+    </ClCompile>
+    <ClCompile Include="drivers\net\amd_am79c973.cpp">
+      <Filter>source\drivers\net</Filter>
+    </ClCompile>
+    <ClCompile Include="arch\x86_64\pic.cpp">
+      <Filter>source\arch\x86_64</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

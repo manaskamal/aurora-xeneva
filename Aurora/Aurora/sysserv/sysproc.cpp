@@ -1,9 +1,14 @@
 #include <proc.h>
-
+#include <procmngr.h>
 
 void create__sys_process (const char* name) {
 	x64_cli();
-	create_process(name, "child",1);
+	/*procmngr_queue *queue = (procmngr_queue*)pmmngr_alloc();
+	strcpy(queue->name, "uproc");
+	strcpy(queue->path,name);
+	procmngr_add_process (queue);
+	procmngr_wakeup();*/
+	create_process (name, "uproc", 1);
 }
 
 //!Exit System call

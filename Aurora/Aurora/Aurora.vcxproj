@@ -122,7 +122,7 @@
       <SDLCheck>false</SDLCheck>
       <OmitFramePointers>
       </OmitFramePointers>
-      <PreprocessorDefinitions>ARCH_X64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>ARCH_X64;USE_APIC;AURORA_X64%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <IgnoreStandardIncludePath>true</IgnoreStandardIncludePath>
       <ExceptionHandling>false</ExceptionHandling>
       <BasicRuntimeChecks>
@@ -137,8 +137,7 @@
       <GenerateDebugInformation>
       </GenerateDebugInformation>
       <OutputFile>F:\EFI\XENEVA\xnkrnl.exe</OutputFile>
-      <AdditionalDependencies>
-      </AdditionalDependencies>
+      <AdditionalDependencies>Acpica_dbg.lib</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
       <EnableUAC>false</EnableUAC>
       <GenerateMapFile>true</GenerateMapFile>
@@ -157,6 +156,7 @@
       <DataExecutionPrevention>
       </DataExecutionPrevention>
       <AdditionalOptions>/filealign:0x1000 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalLibraryDirectories>E:\Xeneva Project\Xeneva\Aurora\x64\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -193,6 +193,7 @@
     <ClInclude Include="..\include\arch\x86_64\mmngr\kheap.h" />
     <ClInclude Include="..\include\arch\x86_64\mmngr\map.h" />
     <ClInclude Include="..\include\arch\x86_64\mmngr\vmmngr.h" />
+    <ClInclude Include="..\include\arch\x86_64\pic.h" />
     <ClInclude Include="..\include\arch\x86_64\thread.h" />
     <ClInclude Include="..\include\arch\x86_64\user64.h" />
     <ClInclude Include="..\include\atomic\mutex.h" />
@@ -204,6 +205,8 @@
     <ClInclude Include="..\include\drivers\hdaudio\hda.h" />
     <ClInclude Include="..\include\drivers\kybrd.h" />
     <ClInclude Include="..\include\drivers\mouse.h" />
+    <ClInclude Include="..\include\drivers\net\amd_am79c973.h" />
+    <ClInclude Include="..\include\drivers\net\e1000.h" />
     <ClInclude Include="..\include\drivers\pci.h" />
     <ClInclude Include="..\include\drivers\rtc.h" />
     <ClInclude Include="..\include\drivers\svga\backdoor_def.h" />
@@ -217,18 +220,22 @@
     <ClInclude Include="..\include\drivers\svga\svga_screen_util.h" />
     <ClInclude Include="..\include\drivers\svga\vmmouse_defs.h" />
     <ClInclude Include="..\include\drivers\svga\vmsvga.h" />
+    <ClInclude Include="..\include\drivers\usb\xhci.h" />
     <ClInclude Include="..\include\drivers\vga.h" />
     <ClInclude Include="..\include\drivers\vmmouse.h" />
     <ClInclude Include="..\include\drvmngr.h" />
     <ClInclude Include="..\include\fs\fat32.h" />
     <ClInclude Include="..\include\hal.h" />
+    <ClInclude Include="..\include\iodev.h" />
     <ClInclude Include="..\include\ipc\dwm_ipc.h" />
     <ClInclude Include="..\include\ipc\evntsh.h" />
     <ClInclude Include="..\include\ipc\message.h" />
     <ClInclude Include="..\include\mm.h" />
+    <ClInclude Include="..\include\objctmngr.h" />
     <ClInclude Include="..\include\pe.h" />
     <ClInclude Include="..\include\pmmngr.h" />
     <ClInclude Include="..\include\proc.h" />
+    <ClInclude Include="..\include\procmngr.h" />
     <ClInclude Include="..\include\screen.h" />
     <ClInclude Include="..\include\stdint.h" />
     <ClInclude Include="..\include\stdio.h" />
@@ -248,6 +255,7 @@
     <ClCompile Include="arch\x86_64\ioapic.cpp" />
     <ClCompile Include="arch\x86_64\kheap.cpp" />
     <ClCompile Include="arch\x86_64\map.cpp" />
+    <ClCompile Include="arch\x86_64\pic.cpp" />
     <ClCompile Include="arch\x86_64\systable.cpp" />
     <ClCompile Include="arch\x86_64\thread.cpp" />
     <ClCompile Include="arch\x86_64\user64.cpp" />
@@ -259,6 +267,8 @@
     <ClCompile Include="drivers\hda\hda.cpp" />
     <ClCompile Include="drivers\kybrd.cpp" />
     <ClCompile Include="drivers\mouse.cpp" />
+    <ClCompile Include="drivers\net\amd_am79c973.cpp" />
+    <ClCompile Include="drivers\net\e1000.cpp" />
     <ClCompile Include="drivers\pci.cpp" />
     <ClCompile Include="drivers\rtc.cpp" />
     <ClCompile Include="drivers\svga\gmr.cpp" />
@@ -266,6 +276,7 @@
     <ClCompile Include="drivers\svga\svga_screen_util.cpp" />
     <ClCompile Include="drivers\svga\vmsvga.cpp" />
     <ClCompile Include="drivers\svga\vm_backdoor.cpp" />
+    <ClCompile Include="drivers\usb\xhci.cpp" />
     <ClCompile Include="drivers\vga.cpp" />
     <ClCompile Include="drvmngr.cpp" />
     <ClCompile Include="fs\fat32.cpp" />
@@ -278,6 +289,7 @@
     <ClCompile Include="pe.cpp" />
     <ClCompile Include="pmmngr.cpp" />
     <ClCompile Include="proc.cpp" />
+    <ClCompile Include="procmngr.cpp" />
     <ClCompile Include="screen.cpp" />
     <ClCompile Include="stdio.cpp" />
     <ClCompile Include="string.cpp" />

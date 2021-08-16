@@ -6,11 +6,17 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 CONST	SEGMENT
-$SG3235	DB	'PCI Scanning device', 0aH, 00H
+$SG3290	DB	'PCI Scanning device', 0aH, 00H
 	ORG $+3
-$SG3249	DB	'Device found', 0aH, 00H
+$SG3310	DB	'PCI Scanning device', 0aH, 00H
+	ORG $+3
+$SG3324	DB	'Device found', 0aH, 00H
 	ORG $+2
-$SG3250	DB	'Device ID -> %x, Vendor ID -> %x', 0aH, 00H
+$SG3325	DB	'Device ID -> %x, Vendor ID -> %x', 0aH, 00H
+	ORG $+6
+$SG3385	DB	'MSI Available', 0aH, 00H
+	ORG $+1
+$SG3387	DB	'MSI-X Available for this device', 0aH, 00H
 CONST	ENDS
 PUBLIC	?pci_config_read32@@YAIPEBU_pci_address_@@G@Z	; pci_config_read32
 PUBLIC	?pci_config_read16@@YAGPEBU_pci_address_@@G@Z	; pci_config_read16
@@ -24,8 +30,11 @@ PUBLIC	?pci_setBAR@@YAXPEBU_pci_address_@@HI@Z		; pci_setBAR
 PUBLIC	?pci_get_bar_addr@@YAIPEBU_pci_address_@@H@Z	; pci_get_bar_addr
 PUBLIC	?pci_set_mem_enable@@YAXPEBU_pci_address_@@_N@Z	; pci_set_mem_enable
 PUBLIC	?pci_find_device_class@@YA_NEEPEATpci_device_info@@@Z ; pci_find_device_class
+PUBLIC	?pci_find_device_id@@YA_NGGPEATpci_device_info@@@Z ; pci_find_device_id
+PUBLIC	?pci_print_capabilities@@YAXPEATpci_device_info@@@Z ; pci_print_capabilities
 PUBLIC	?read_config_32@@YAXHHHHI@Z			; read_config_32
 PUBLIC	?read_config_header@@YAXHHHPEATpci_device_info@@@Z ; read_config_header
+PUBLIC	?pci_get_capability@@YAPEAUpci_cap_header@@PEATpci_device_info@@PEAU1@@Z ; pci_get_capability
 EXTRN	x64_inportd:PROC
 EXTRN	x64_outportd:PROC
 EXTRN	?inportb@@YAEG@Z:PROC				; inportb
@@ -70,8 +79,14 @@ $pdata$?pci_set_mem_enable@@YAXPEBU_pci_address_@@_N@Z DD imagerel $LN5
 	DD	imagerel $LN5+104
 	DD	imagerel $unwind$?pci_set_mem_enable@@YAXPEBU_pci_address_@@_N@Z
 $pdata$?pci_find_device_class@@YA_NEEPEATpci_device_info@@@Z DD imagerel $LN13
-	DD	imagerel $LN13+318
+	DD	imagerel $LN13+275
 	DD	imagerel $unwind$?pci_find_device_class@@YA_NEEPEATpci_device_info@@@Z
+$pdata$?pci_find_device_id@@YA_NGGPEATpci_device_info@@@Z DD imagerel $LN13
+	DD	imagerel $LN13+320
+	DD	imagerel $unwind$?pci_find_device_id@@YA_NGGPEATpci_device_info@@@Z
+$pdata$?pci_print_capabilities@@YAXPEATpci_device_info@@@Z DD imagerel $LN8
+	DD	imagerel $LN8+177
+	DD	imagerel $unwind$?pci_print_capabilities@@YAXPEATpci_device_info@@@Z
 $pdata$?pci_config_pack_address@@YAIPEBU_pci_address_@@G@Z DD imagerel ?pci_config_pack_address@@YAIPEBU_pci_address_@@G@Z
 	DD	imagerel ?pci_config_pack_address@@YAIPEBU_pci_address_@@G@Z+76
 	DD	imagerel $unwind$?pci_config_pack_address@@YAIPEBU_pci_address_@@G@Z
@@ -81,6 +96,9 @@ $pdata$?read_config_32@@YAXHHHHI@Z DD imagerel $LN3
 $pdata$?read_config_header@@YAXHHHPEATpci_device_info@@@Z DD imagerel $LN6
 	DD	imagerel $LN6+155
 	DD	imagerel $unwind$?read_config_header@@YAXHHHPEATpci_device_info@@@Z
+$pdata$?pci_get_capability@@YAPEAUpci_cap_header@@PEATpci_device_info@@PEAU1@@Z DD imagerel $LN14
+	DD	imagerel $LN14+172
+	DD	imagerel $unwind$?pci_get_capability@@YAPEAUpci_cap_header@@PEATpci_device_info@@PEAU1@@Z
 pdata	ENDS
 xdata	SEGMENT
 $unwind$?pci_config_read32@@YAIPEBU_pci_address_@@G@Z DD 010e01H
@@ -110,13 +128,152 @@ $unwind$?pci_set_mem_enable@@YAXPEBU_pci_address_@@_N@Z DD 010d01H
 $unwind$?pci_find_device_class@@YA_NEEPEATpci_device_info@@@Z DD 041601H
 	DD	0290116H
 	DD	0600e700fH
+$unwind$?pci_find_device_id@@YA_NGGPEATpci_device_info@@@Z DD 041801H
+	DD	0290118H
+	DD	060107011H
+$unwind$?pci_print_capabilities@@YAXPEATpci_device_info@@@Z DD 010901H
+	DD	08209H
 $unwind$?pci_config_pack_address@@YAIPEBU_pci_address_@@G@Z DD 010e01H
 	DD	0220eH
 $unwind$?read_config_32@@YAXHHHHI@Z DD 011601H
 	DD	06216H
 $unwind$?read_config_header@@YAXHHHPEATpci_device_info@@@Z DD 011601H
 	DD	06216H
+$unwind$?pci_get_capability@@YAPEAUpci_cap_header@@PEATpci_device_info@@PEAU1@@Z DD 010e01H
+	DD	0220eH
 xdata	ENDS
+; Function compile flags: /Odtp
+; File e:\xeneva project\xeneva\aurora\aurora\drivers\pci.cpp
+_TEXT	SEGMENT
+tv74 = 0
+dev_info$ = 32
+cap_header$ = 40
+?pci_get_capability@@YAPEAUpci_cap_header@@PEATpci_device_info@@PEAU1@@Z PROC ; pci_get_capability
+
+; 207  : pci_cap_header * pci_get_capability (pci_device_info *dev_info, pci_cap_header* cap_header) {
+
+$LN14:
+	mov	QWORD PTR [rsp+16], rdx
+	mov	QWORD PTR [rsp+8], rcx
+	sub	rsp, 24
+
+; 208  : 	
+; 209  : 	if (!dev_info) 
+
+	cmp	QWORD PTR dev_info$[rsp], 0
+	jne	SHORT $LN11@pci_get_ca
+
+; 210  : 		return NULL;
+
+	xor	eax, eax
+	jmp	$LN12@pci_get_ca
+$LN11@pci_get_ca:
+
+; 211  : 
+; 212  : 	if ((dev_info->device.statusReg & (1<<4)) != 0) {
+
+	mov	rax, QWORD PTR dev_info$[rsp]
+	movzx	eax, WORD PTR [rax+6]
+	and	eax, 16
+	test	eax, eax
+	je	SHORT $LN10@pci_get_ca
+
+; 213  : 
+; 214  : 		switch (dev_info->device.headerType & ~PCI_HEADERTYPE_MULTIFUNC) {
+
+	mov	rax, QWORD PTR dev_info$[rsp]
+	movzx	eax, BYTE PTR [rax+14]
+	btr	eax, 7
+	mov	DWORD PTR tv74[rsp], eax
+	cmp	DWORD PTR tv74[rsp], 0
+	je	SHORT $LN7@pci_get_ca
+	jmp	SHORT $LN2@pci_get_ca
+$LN7@pci_get_ca:
+
+; 215  : 		case PCI_HEADERTYPE_NORMAL:
+; 216  : 			if (cap_header) {
+
+	cmp	QWORD PTR cap_header$[rsp], 0
+	je	SHORT $LN6@pci_get_ca
+
+; 217  : 				if (cap_header->next){
+
+	mov	rax, QWORD PTR cap_header$[rsp]
+	movzx	eax, BYTE PTR [rax+1]
+	test	eax, eax
+	je	SHORT $LN5@pci_get_ca
+
+; 218  : 					cap_header = ((pci_cap_header*)dev_info + cap_header->next);
+
+	mov	rax, QWORD PTR cap_header$[rsp]
+	movzx	eax, BYTE PTR [rax+1]
+	mov	rcx, QWORD PTR dev_info$[rsp]
+	lea	rax, QWORD PTR [rcx+rax*2]
+	mov	QWORD PTR cap_header$[rsp], rax
+
+; 219  : 					//printf ("Cap Header next is not null\n");
+; 220  : 				}else
+
+	jmp	SHORT $LN4@pci_get_ca
+$LN5@pci_get_ca:
+
+; 221  : 					cap_header = NULL;
+
+	mov	QWORD PTR cap_header$[rsp], 0
+$LN4@pci_get_ca:
+
+; 222  : 			} else {
+
+	jmp	SHORT $LN3@pci_get_ca
+$LN6@pci_get_ca:
+
+; 223  : 				cap_header = ((pci_cap_header*)dev_info + 0xD);
+
+	mov	rax, QWORD PTR dev_info$[rsp]
+	add	rax, 26
+	mov	QWORD PTR cap_header$[rsp], rax
+$LN3@pci_get_ca:
+
+; 224  : 			//	printf ("CAp PTR\n");
+; 225  : 				//printf ("CAp Hdr nxt %x\n", cap_header->next);
+; 226  : 			}
+; 227  : 			break;
+
+	jmp	SHORT $LN8@pci_get_ca
+$LN2@pci_get_ca:
+
+; 228  : 
+; 229  : 		default:
+; 230  : 			cap_header = NULL;
+
+	mov	QWORD PTR cap_header$[rsp], 0
+$LN8@pci_get_ca:
+
+; 231  : 			break;
+; 232  : 		}
+; 233  : 	} else {
+
+	jmp	SHORT $LN1@pci_get_ca
+$LN10@pci_get_ca:
+
+; 234  : 		cap_header = NULL;
+
+	mov	QWORD PTR cap_header$[rsp], 0
+$LN1@pci_get_ca:
+
+; 235  : 	}
+; 236  : 
+; 237  : 	return cap_header;
+
+	mov	rax, QWORD PTR cap_header$[rsp]
+$LN12@pci_get_ca:
+
+; 238  : }
+
+	add	rsp, 24
+	ret	0
+?pci_get_capability@@YAPEAUpci_cap_header@@PEATpci_device_info@@PEAU1@@Z ENDP ; pci_get_capability
+_TEXT	ENDS
 ; Function compile flags: /Odtp
 ; File e:\xeneva project\xeneva\aurora\aurora\drivers\pci.cpp
 _TEXT	SEGMENT
@@ -309,6 +466,268 @@ _TEXT	ENDS
 ; Function compile flags: /Odtp
 ; File e:\xeneva project\xeneva\aurora\aurora\drivers\pci.cpp
 _TEXT	SEGMENT
+cap_header$ = 32
+msi_cap$ = 40
+msi_x_cap$ = 48
+dev_info$ = 80
+?pci_print_capabilities@@YAXPEATpci_device_info@@@Z PROC ; pci_print_capabilities
+
+; 240  : void pci_print_capabilities (pci_device_info *dev_info) {
+
+$LN8:
+	mov	QWORD PTR [rsp+8], rcx
+	sub	rsp, 72					; 00000048H
+
+; 241  : 
+; 242  : 	pci_cap_header *cap_header = NULL;
+
+	mov	QWORD PTR cap_header$[rsp], 0
+
+; 243  : 	pci_msi_cap *msi_cap = NULL;
+
+	mov	QWORD PTR msi_cap$[rsp], 0
+
+; 244  : 	pci_msi_xcap *msi_x_cap = NULL;
+
+	mov	QWORD PTR msi_x_cap$[rsp], 0
+
+; 245  : 
+; 246  : 	uint64_t *capptr;
+; 247  : 	if ((dev_info->device.statusReg & (1<<4)) != 0) {
+
+	mov	rax, QWORD PTR dev_info$[rsp]
+	movzx	eax, WORD PTR [rax+6]
+	and	eax, 16
+	test	eax, eax
+	je	SHORT $LN5@pci_print_
+
+; 248  : 		cap_header = (pci_cap_header*)(dev_info + dev_info->device.nonBridge.capPtr);
+
+	mov	rax, QWORD PTR dev_info$[rsp]
+	movzx	eax, BYTE PTR [rax+52]
+	imul	rax, 256				; 00000100H
+	mov	rcx, QWORD PTR dev_info$[rsp]
+	add	rcx, rax
+	mov	rax, rcx
+	mov	QWORD PTR cap_header$[rsp], rax
+$LN4@pci_print_:
+
+; 249  : 		while (cap_header->next != 0x00) {
+
+	mov	rax, QWORD PTR cap_header$[rsp]
+	movzx	eax, BYTE PTR [rax+1]
+	test	eax, eax
+	je	SHORT $LN3@pci_print_
+
+; 250  : 			if (cap_header->id == 0x05) {
+
+	mov	rax, QWORD PTR cap_header$[rsp]
+	movzx	eax, BYTE PTR [rax]
+	cmp	eax, 5
+	jne	SHORT $LN2@pci_print_
+
+; 251  : 				printf ("MSI Available\n");
+
+	lea	rcx, OFFSET FLAT:$SG3385
+	call	?printf@@YAXPEBDZZ			; printf
+$LN2@pci_print_:
+
+; 252  : 			}
+; 253  : 
+; 254  : 			if (cap_header->id == 0x11) {
+
+	mov	rax, QWORD PTR cap_header$[rsp]
+	movzx	eax, BYTE PTR [rax]
+	cmp	eax, 17
+	jne	SHORT $LN1@pci_print_
+
+; 255  : 				printf ("MSI-X Available for this device\n");
+
+	lea	rcx, OFFSET FLAT:$SG3387
+	call	?printf@@YAXPEBDZZ			; printf
+$LN1@pci_print_:
+
+; 256  : 			}
+; 257  : 			cap_header = (pci_cap_header*)(cap_header + cap_header->next);
+
+	mov	rax, QWORD PTR cap_header$[rsp]
+	movzx	eax, BYTE PTR [rax+1]
+	mov	rcx, QWORD PTR cap_header$[rsp]
+	lea	rax, QWORD PTR [rcx+rax*2]
+	mov	QWORD PTR cap_header$[rsp], rax
+
+; 258  : 		}
+
+	jmp	SHORT $LN4@pci_print_
+$LN3@pci_print_:
+$LN5@pci_print_:
+
+; 259  : 	}
+; 260  : }
+
+	add	rsp, 72					; 00000048H
+	ret	0
+?pci_print_capabilities@@YAXPEATpci_device_info@@@Z ENDP ; pci_print_capabilities
+_TEXT	ENDS
+; Function compile flags: /Odtp
+; File e:\xeneva project\xeneva\aurora\aurora\drivers\pci.cpp
+_TEXT	SEGMENT
+dev$1 = 48
+bus$2 = 52
+func$3 = 56
+config$ = 64
+device_id$ = 352
+vendor_id$ = 360
+addr_out$ = 368
+?pci_find_device_id@@YA_NGGPEATpci_device_info@@@Z PROC	; pci_find_device_id
+
+; 156  : bool pci_find_device_id (uint16_t device_id, uint16_t vendor_id, pci_device_info *addr_out) {
+
+$LN13:
+	mov	QWORD PTR [rsp+24], r8
+	mov	WORD PTR [rsp+16], dx
+	mov	WORD PTR [rsp+8], cx
+	push	rsi
+	push	rdi
+	sub	rsp, 328				; 00000148H
+
+; 157  : 	pci_device_info config;
+; 158  : 	printf ("PCI Scanning device\n");
+
+	lea	rcx, OFFSET FLAT:$SG3310
+	call	?printf@@YAXPEBDZZ			; printf
+
+; 159  : 	for (int bus = 0; bus < 256; bus++) {
+
+	mov	DWORD PTR bus$2[rsp], 0
+	jmp	SHORT $LN10@pci_find_d
+$LN9@pci_find_d:
+	mov	eax, DWORD PTR bus$2[rsp]
+	inc	eax
+	mov	DWORD PTR bus$2[rsp], eax
+$LN10@pci_find_d:
+	cmp	DWORD PTR bus$2[rsp], 256		; 00000100H
+	jge	$LN8@pci_find_d
+
+; 160  : 		for (int dev = 0; dev < 32; dev++) {
+
+	mov	DWORD PTR dev$1[rsp], 0
+	jmp	SHORT $LN7@pci_find_d
+$LN6@pci_find_d:
+	mov	eax, DWORD PTR dev$1[rsp]
+	inc	eax
+	mov	DWORD PTR dev$1[rsp], eax
+$LN7@pci_find_d:
+	cmp	DWORD PTR dev$1[rsp], 32		; 00000020H
+	jge	$LN5@pci_find_d
+
+; 161  : 			for (int func = 0; func < 8; func++) {
+
+	mov	DWORD PTR func$3[rsp], 0
+	jmp	SHORT $LN4@pci_find_d
+$LN3@pci_find_d:
+	mov	eax, DWORD PTR func$3[rsp]
+	inc	eax
+	mov	DWORD PTR func$3[rsp], eax
+$LN4@pci_find_d:
+	cmp	DWORD PTR func$3[rsp], 8
+	jge	$LN2@pci_find_d
+
+; 162  : 
+; 163  : 				read_config_32 (bus, dev, func, 0, config.header[0]);
+
+	mov	eax, 4
+	imul	rax, 0
+	mov	eax, DWORD PTR config$[rsp+rax]
+	mov	DWORD PTR [rsp+32], eax
+	xor	r9d, r9d
+	mov	r8d, DWORD PTR func$3[rsp]
+	mov	edx, DWORD PTR dev$1[rsp]
+	mov	ecx, DWORD PTR bus$2[rsp]
+	call	?read_config_32@@YAXHHHHI@Z		; read_config_32
+
+; 164  : 
+; 165  : 				read_config_header (bus, dev, func, &config);
+
+	lea	r9, QWORD PTR config$[rsp]
+	mov	r8d, DWORD PTR func$3[rsp]
+	mov	edx, DWORD PTR dev$1[rsp]
+	mov	ecx, DWORD PTR bus$2[rsp]
+	call	?read_config_header@@YAXHHHPEATpci_device_info@@@Z ; read_config_header
+
+; 166  : 
+; 167  : 				if (config.device.deviceID == device_id && config.device.vendorID == vendor_id) {
+
+	movzx	eax, WORD PTR config$[rsp+2]
+	movzx	ecx, WORD PTR device_id$[rsp]
+	cmp	eax, ecx
+	jne	SHORT $LN1@pci_find_d
+	movzx	eax, WORD PTR config$[rsp]
+	movzx	ecx, WORD PTR vendor_id$[rsp]
+	cmp	eax, ecx
+	jne	SHORT $LN1@pci_find_d
+
+; 168  : 					*addr_out = config;
+
+	lea	rax, QWORD PTR config$[rsp]
+	mov	rdi, QWORD PTR addr_out$[rsp]
+	mov	rsi, rax
+	mov	ecx, 256				; 00000100H
+	rep movsb
+
+; 169  : 					printf ("Device found\n");
+
+	lea	rcx, OFFSET FLAT:$SG3324
+	call	?printf@@YAXPEBDZZ			; printf
+
+; 170  : 					printf ("Device ID -> %x, Vendor ID -> %x\n", config.device.deviceID, config.device.vendorID);
+
+	movzx	eax, WORD PTR config$[rsp]
+	movzx	ecx, WORD PTR config$[rsp+2]
+	mov	r8d, eax
+	mov	edx, ecx
+	lea	rcx, OFFSET FLAT:$SG3325
+	call	?printf@@YAXPEBDZZ			; printf
+
+; 171  : 					return true;
+
+	mov	al, 1
+	jmp	SHORT $LN11@pci_find_d
+$LN1@pci_find_d:
+
+; 172  : 				}
+; 173  : 			}
+
+	jmp	$LN3@pci_find_d
+$LN2@pci_find_d:
+
+; 174  : 		}
+
+	jmp	$LN6@pci_find_d
+$LN5@pci_find_d:
+
+; 175  : 	}
+
+	jmp	$LN9@pci_find_d
+$LN8@pci_find_d:
+
+; 176  : 
+; 177  : 	return false;
+
+	xor	al, al
+$LN11@pci_find_d:
+
+; 178  : }
+
+	add	rsp, 328				; 00000148H
+	pop	rdi
+	pop	rsi
+	ret	0
+?pci_find_device_id@@YA_NGGPEATpci_device_info@@@Z ENDP	; pci_find_device_id
+_TEXT	ENDS
+; Function compile flags: /Odtp
+; File e:\xeneva project\xeneva\aurora\aurora\drivers\pci.cpp
+_TEXT	SEGMENT
 dev$1 = 48
 bus$2 = 52
 func$3 = 56
@@ -331,7 +750,7 @@ $LN13:
 ; 134  : 	pci_device_info config;
 ; 135  : 	printf ("PCI Scanning device\n");
 
-	lea	rcx, OFFSET FLAT:$SG3235
+	lea	rcx, OFFSET FLAT:$SG3290
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 136  : 	for (int bus = 0; bus < 256; bus++) {
@@ -368,7 +787,7 @@ $LN3@pci_find_d:
 	mov	DWORD PTR func$3[rsp], eax
 $LN4@pci_find_d:
 	cmp	DWORD PTR func$3[rsp], 8
-	jge	$LN2@pci_find_d
+	jge	SHORT $LN2@pci_find_d
 
 ; 139  : 
 ; 140  : 				read_config_32 (bus, dev, func, 0, config.header[0]);
@@ -412,49 +831,35 @@ $LN4@pci_find_d:
 	mov	ecx, 256				; 00000100H
 	rep movsb
 
-; 146  : 					printf ("Device found\n");
-
-	lea	rcx, OFFSET FLAT:$SG3249
-	call	?printf@@YAXPEBDZZ			; printf
-
-; 147  : 					printf ("Device ID -> %x, Vendor ID -> %x\n", config.device.deviceID, config.device.vendorID);
-
-	movzx	eax, WORD PTR config$[rsp]
-	movzx	ecx, WORD PTR config$[rsp+2]
-	mov	r8d, eax
-	mov	edx, ecx
-	lea	rcx, OFFSET FLAT:$SG3250
-	call	?printf@@YAXPEBDZZ			; printf
-
-; 148  : 					return true;
+; 146  : 					return true;
 
 	mov	al, 1
 	jmp	SHORT $LN11@pci_find_d
 $LN1@pci_find_d:
 
-; 149  : 				}
-; 150  : 			}
+; 147  : 				}
+; 148  : 			}
 
 	jmp	$LN3@pci_find_d
 $LN2@pci_find_d:
 
-; 151  : 		}
+; 149  : 		}
 
 	jmp	$LN6@pci_find_d
 $LN5@pci_find_d:
 
-; 152  : 	}
+; 150  : 	}
 
 	jmp	$LN9@pci_find_d
 $LN8@pci_find_d:
 
-; 153  : 
-; 154  : 	return false;
+; 151  : 
+; 152  : 	return false;
 
 	xor	al, al
 $LN11@pci_find_d:
 
-; 155  : }
+; 153  : }
 
 	add	rsp, 328				; 00000148H
 	pop	rdi
@@ -471,61 +876,61 @@ addr$ = 64
 enable$ = 72
 ?pci_set_mem_enable@@YAXPEBU_pci_address_@@_N@Z PROC	; pci_set_mem_enable
 
-; 170  : void pci_set_mem_enable (const pci_address *addr, bool enable) {
+; 193  : void pci_set_mem_enable (const pci_address *addr, bool enable) {
 
 $LN5:
 	mov	BYTE PTR [rsp+16], dl
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 56					; 00000038H
 
-; 171  : 	uint16_t command = pci_config_read16 (addr, offsetof (pci_config_space, command));
+; 194  : 	uint16_t command = pci_config_read16 (addr, offsetof (pci_config_space, command));
 
 	mov	dx, 4
 	mov	rcx, QWORD PTR addr$[rsp]
 	call	?pci_config_read16@@YAGPEBU_pci_address_@@G@Z ; pci_config_read16
 	mov	WORD PTR command$[rsp], ax
 
-; 172  : 
-; 173  : 	const uint16_t flags = 0x0007;
+; 195  : 
+; 196  : 	const uint16_t flags = 0x0007;
 
 	mov	eax, 7
 	mov	WORD PTR flags$[rsp], ax
 
-; 174  : 
-; 175  : 	if (enable) {
+; 197  : 
+; 198  : 	if (enable) {
 
 	movzx	eax, BYTE PTR enable$[rsp]
 	test	eax, eax
 	je	SHORT $LN2@pci_set_me
 
-; 176  : 		command |= flags;
+; 199  : 		command |= flags;
 
 	movzx	eax, WORD PTR command$[rsp]
 	or	eax, 7
 	mov	WORD PTR command$[rsp], ax
 
-; 177  : 	}else {
+; 200  : 	}else {
 
 	jmp	SHORT $LN1@pci_set_me
 $LN2@pci_set_me:
 
-; 178  : 		command &= ~flags;
+; 201  : 		command &= ~flags;
 
 	movzx	eax, WORD PTR command$[rsp]
 	and	eax, -8
 	mov	WORD PTR command$[rsp], ax
 $LN1@pci_set_me:
 
-; 179  : 	}
-; 180  : 
-; 181  : 	pci_config_write16 (addr, offsetof (pci_config_space, command), command);
+; 202  : 	}
+; 203  : 
+; 204  : 	pci_config_write16 (addr, offsetof (pci_config_space, command), command);
 
 	movzx	r8d, WORD PTR command$[rsp]
 	mov	dx, 4
 	mov	rcx, QWORD PTR addr$[rsp]
 	call	?pci_config_write16@@YAXPEBU_pci_address_@@GG@Z ; pci_config_write16
 
-; 182  : }
+; 205  : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -541,14 +946,14 @@ addr$ = 64
 index$ = 72
 ?pci_get_bar_addr@@YAIPEBU_pci_address_@@H@Z PROC	; pci_get_bar_addr
 
-; 162  : uint32_t pci_get_bar_addr (const pci_address *addr, int index) {
+; 185  : uint32_t pci_get_bar_addr (const pci_address *addr, int index) {
 
 $LN5:
 	mov	DWORD PTR [rsp+16], edx
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 56					; 00000038H
 
-; 163  : 	uint32_t bar = pci_config_read32 (addr, offsetof (pci_config_space, BAR[index]));
+; 186  : 	uint32_t bar = pci_config_read32 (addr, offsetof (pci_config_space, BAR[index]));
 
 	mov	eax, 16
 	movsxd	rcx, DWORD PTR index$[rsp]
@@ -558,7 +963,7 @@ $LN5:
 	call	?pci_config_read32@@YAIPEBU_pci_address_@@G@Z ; pci_config_read32
 	mov	DWORD PTR bar$[rsp], eax
 
-; 164  : 	uint32_t mask = (bar & PCI_CONF_BAR_IO) ? 0x3 : 0xf;
+; 187  : 	uint32_t mask = (bar & PCI_CONF_BAR_IO) ? 0x3 : 0xf;
 
 	mov	eax, DWORD PTR bar$[rsp]
 	and	eax, 1
@@ -572,8 +977,8 @@ $LN4@pci_get_ba:
 	mov	eax, DWORD PTR tv75[rsp]
 	mov	DWORD PTR mask$[rsp], eax
 
-; 165  : 
-; 166  : 	return bar & ~mask;
+; 188  : 
+; 189  : 	return bar & ~mask;
 
 	mov	eax, DWORD PTR mask$[rsp]
 	not	eax
@@ -581,7 +986,7 @@ $LN4@pci_get_ba:
 	and	ecx, eax
 	mov	eax, ecx
 
-; 167  : }
+; 190  : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -595,7 +1000,7 @@ index$ = 56
 value$ = 64
 ?pci_setBAR@@YAXPEBU_pci_address_@@HI@Z PROC		; pci_setBAR
 
-; 157  : void pci_setBAR (const pci_address *addr, int index, uint32_t value) {
+; 180  : void pci_setBAR (const pci_address *addr, int index, uint32_t value) {
 
 $LN3:
 	mov	DWORD PTR [rsp+24], r8d
@@ -603,7 +1008,7 @@ $LN3:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 40					; 00000028H
 
-; 158  : 	pci_config_write32 (addr, offsetof (pci_config_space,BAR[index]),value);
+; 181  : 	pci_config_write32 (addr, offsetof (pci_config_space,BAR[index]),value);
 
 	mov	eax, 16
 	movsxd	rcx, DWORD PTR index$[rsp]
@@ -613,7 +1018,7 @@ $LN3:
 	mov	rcx, QWORD PTR addr$[rsp]
 	call	?pci_config_write32@@YAXPEBU_pci_address_@@GI@Z ; pci_config_write32
 
-; 159  : }
+; 182  : }
 
 	add	rsp, 40					; 00000028H
 	ret	0

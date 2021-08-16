@@ -17,6 +17,7 @@
 #include <ipc\message.h>
 #include <callback.h>
 #include <ipc\dwm_ipc.h>
+#include <arch\x86_64\mmngr\map.h>
 
 
 //! List of available services in Aurora
@@ -48,6 +49,10 @@ static void* _syscalls[] = {
 	sys_sleep, //24
 	sys_exit, //25
 	sys_fb_move_cursor, //26
+	fork, //27
+	exec, //28
+	map_memory, //29
+	unmap_memory, //30
 	0
 };
 

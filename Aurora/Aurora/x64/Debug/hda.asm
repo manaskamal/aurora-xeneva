@@ -5,4 +5,1815 @@ include listing.inc
 INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
+PUBLIC	?_ihd_audio@@3U_hd_audio_@@A			; _ihd_audio
+PUBLIC	?rirbrp@@3GA					; rirbrp
+PUBLIC	?corbrp@@3GA					; corbrp
+_BSS	SEGMENT
+?_ihd_audio@@3U_hd_audio_@@A DB 018H DUP (?)		; _ihd_audio
+?rirbrp@@3GA DW	01H DUP (?)				; rirbrp
+	ALIGN	4
+
+?corbrp@@3GA DW	01H DUP (?)				; corbrp
+_BSS	ENDS
+CONST	SEGMENT
+$SG3344	DB	'HD-Audio Interrupt fired++', 0aH, 00H
+	ORG $+4
+$SG3356	DB	'HD Audio: No Supported CORB Size!', 0aH, 00H
+	ORG $+5
+$SG3357	DB	'CORB Entries -> %d', 0aH, 00H
+	ORG $+4
+$SG3359	DB	'CORB BASE LO -> %x', 0aH, 00H
+	ORG $+4
+$SG3360	DB	'CORB BASE HI -> %x', 0aH, 00H
+	ORG $+4
+$SG3372	DB	'HD Audio: No supported RIRB size !!', 0aH, 00H
+	ORG $+3
+$SG3374	DB	'RIRB Base -> %x', 0aH, 00H
+	ORG $+3
+$SG3419	DB	'output', 00H
+	ORG $+5
+$SG3376	DB	'RIRB Ctl ====== -> %x', 0aH, 00H
+	ORG $+1
+$SG3405	DB	'initializing widgets', 0aH, 00H
+	ORG $+2
+$SG3411	DB	'Widget capabilities 0', 0aH, 00H
+	ORG $+1
+$SG3421	DB	'input', 00H
+	ORG $+2
+$SG3423	DB	'mixer', 00H
+	ORG $+2
+$SG3425	DB	'selector', 00H
+	ORG $+3
+$SG3429	DB	'power', 00H
+	ORG $+6
+$SG3427	DB	'pin complex', 00H
+	ORG $+4
+$SG3431	DB	'volume knob', 00H
+	ORG $+4
+$SG3433	DB	'beep generator', 00H
+	ORG $+1
+$SG3435	DB	'vendor defined', 00H
+	ORG $+1
+$SG3437	DB	'unknown', 00H
+$SG3438	DB	'%s at ID %d; ', 0aH, 00H
+	ORG $+1
+$SG3447	DB	'pin config: %x', 0aH, 00H
+$SG3449	DB	'ctl: %x', 0aH, 00H
+	ORG $+7
+$SG3463	DB	'%d function groups starting at ID %d', 0aH, 00H
+	ORG $+2
+$SG3467	DB	'Looping %d', 0aH, 00H
+	ORG $+4
+$SG3468	DB	'%d widgets starting at ID %d', 0aH, 00H
+	ORG $+2
+$SG3470	DB	'Funtion group type %x', 0aH, 00H
+	ORG $+1
+$SG3478	DB	'HD Audio: Enumerating HDA Link Protocol', 0aH, 00H
+	ORG $+7
+$SG3483	DB	'Available Codec found at index %d', 0aH, 00H
+	ORG $+5
+$SG3486	DB	'HD Audio : Reset Controller started', 0aH, 00H
+	ORG $+3
+$SG3490	DB	'HD Audio : Controller out of reset', 0aH, 00H
+	ORG $+4
+$SG3493	DB	'INT CTL -> %x', 0aH, 00H
+	ORG $+1
+$SG3495	DB	'INT CTL2 -> %x', 0aH, 00H
+$SG3496	DB	'HD Audio: Reset completed', 0aH, 00H
+	ORG $+5
+$SG3498	DB	'CORBCONTROL is fully reseted', 0aH, 00H
+	ORG $+2
+$SG3499	DB	'RIRB Ctl -> %x', 0aH, 00H
+$SG3505	DB	'CORB CTL -> %x', 0aH, 00H
+$SG3506	DB	'CORBRIRB setup', 0aH, 00H
+$SG3511	DB	'No HD-Audio was found', 0aH, 00H
+	ORG $+1
+$SG3512	DB	'HD-Audio found', 0aH, 00H
+$SG3513	DB	'HD-Base Address -> %x', 0aH, 00H
+	ORG $+1
+$SG3514	DB	'HD-Audio Interrupt line -> %d', 0aH, 00H
+	ORG $+1
+$SG3515	DB	'HD-Audio Interrupt pin -> %d', 0aH, 00H
+	ORG $+2
+$SG3516	DB	'HD-Audio ALL Interrupt line -> %d', 0aH, 00H
+	ORG $+5
+$SG3522	DB	'HD-MMIO -> %x', 0aH, 00H
+	ORG $+1
+$SG3523	DB	'HD-Audio CORB -> %x', 0aH, 00H
+CONST	ENDS
+PUBLIC	?hda_initialize@@YAXXZ				; hda_initialize
+PUBLIC	?_aud_outl_@@YAXHI@Z				; _aud_outl_
+PUBLIC	?_aud_inl_@@YAIH@Z				; _aud_inl_
+PUBLIC	?_aud_outw_@@YAXHG@Z				; _aud_outw_
+PUBLIC	?_aud_inw_@@YAGH@Z				; _aud_inw_
+PUBLIC	?_aud_outb_@@YAXHE@Z				; _aud_outb_
+PUBLIC	?_aud_inb_@@YAEH@Z				; _aud_inb_
+PUBLIC	?hda_handler@@YAX_KPEAX@Z			; hda_handler
+PUBLIC	?setup_corb@@YAXXZ				; setup_corb
+PUBLIC	?setup_rirb@@YAXXZ				; setup_rirb
+PUBLIC	?widget_init@@YAXHH@Z				; widget_init
+PUBLIC	?hda_enumerate_codecs@@YAXXZ			; hda_enumerate_codecs
+PUBLIC	?hda_reset@@YAXXZ				; hda_reset
+EXTRN	?apic_local_eoi@@YAXXZ:PROC			; apic_local_eoi
+EXTRN	?interrupt_set@@YAX_KP6AX0PEAX@ZE@Z:PROC	; interrupt_set
+EXTRN	?pci_find_device_id@@YA_NGGPEATpci_device_info@@@Z:PROC ; pci_find_device_id
+EXTRN	?pmmngr_alloc@@YAPEAXXZ:PROC			; pmmngr_alloc
+EXTRN	?malloc@@YAPEAX_K@Z:PROC			; malloc
+EXTRN	?printf@@YAXPEBDZZ:PROC				; printf
+EXTRN	__ImageBase:BYTE
+pdata	SEGMENT
+$pdata$?hda_initialize@@YAXXZ DD imagerel $LN4
+	DD	imagerel $LN4+288
+	DD	imagerel $unwind$?hda_initialize@@YAXXZ
+$pdata$?_aud_outl_@@YAXHI@Z DD imagerel $LN3
+	DD	imagerel $LN3+49
+	DD	imagerel $unwind$?_aud_outl_@@YAXHI@Z
+$pdata$?_aud_inl_@@YAIH@Z DD imagerel $LN3
+	DD	imagerel $LN3+41
+	DD	imagerel $unwind$?_aud_inl_@@YAIH@Z
+$pdata$?_aud_outw_@@YAXHG@Z DD imagerel $LN3
+	DD	imagerel $LN3+52
+	DD	imagerel $unwind$?_aud_outw_@@YAXHG@Z
+$pdata$?_aud_inw_@@YAGH@Z DD imagerel $LN3
+	DD	imagerel $LN3+42
+	DD	imagerel $unwind$?_aud_inw_@@YAGH@Z
+$pdata$?_aud_outb_@@YAXHE@Z DD imagerel $LN3
+	DD	imagerel $LN3+50
+	DD	imagerel $unwind$?_aud_outb_@@YAXHE@Z
+$pdata$?_aud_inb_@@YAEH@Z DD imagerel $LN3
+	DD	imagerel $LN3+42
+	DD	imagerel $unwind$?_aud_inb_@@YAEH@Z
+$pdata$?hda_handler@@YAX_KPEAX@Z DD imagerel $LN3
+	DD	imagerel $LN3+36
+	DD	imagerel $unwind$?hda_handler@@YAX_KPEAX@Z
+$pdata$?setup_corb@@YAXXZ DD imagerel $LN9
+	DD	imagerel $LN9+320
+	DD	imagerel $unwind$?setup_corb@@YAXXZ
+$pdata$?setup_rirb@@YAXXZ DD imagerel $LN9
+	DD	imagerel $LN9+291
+	DD	imagerel $unwind$?setup_rirb@@YAXXZ
+$pdata$?corb_write@@YAXI@Z DD imagerel ?corb_write@@YAXI@Z
+	DD	imagerel ?corb_write@@YAXI@Z+136
+	DD	imagerel $unwind$?corb_write@@YAXI@Z
+$pdata$?rirb_read@@YAXPEA_K@Z DD imagerel ?rirb_read@@YAXPEA_K@Z
+	DD	imagerel ?rirb_read@@YAXPEA_K@Z+139
+	DD	imagerel $unwind$?rirb_read@@YAXPEA_K@Z
+$pdata$?codec_query@@YAIHHI@Z DD imagerel ?codec_query@@YAIHHI@Z
+	DD	imagerel ?codec_query@@YAIHHI@Z+98
+	DD	imagerel $unwind$?codec_query@@YAIHHI@Z
+$pdata$?widget_init@@YAXHH@Z DD imagerel $LN24
+	DD	imagerel $LN24+744
+	DD	imagerel $unwind$?widget_init@@YAXHH@Z
+$pdata$?hda_enumerate_codecs@@YAXXZ DD imagerel $LN7
+	DD	imagerel $LN7+116
+	DD	imagerel $unwind$?hda_enumerate_codecs@@YAXXZ
+$pdata$?hda_reset@@YAXXZ DD imagerel $LN8
+	DD	imagerel $LN8+417
+	DD	imagerel $unwind$?hda_reset@@YAXXZ
+pdata	ENDS
+xdata	SEGMENT
+$unwind$?hda_initialize@@YAXXZ DD 020701H
+	DD	0270107H
+$unwind$?_aud_outl_@@YAXHI@Z DD 010c01H
+	DD	0220cH
+$unwind$?_aud_inl_@@YAIH@Z DD 010801H
+	DD	02208H
+$unwind$?_aud_outw_@@YAXHG@Z DD 010d01H
+	DD	0220dH
+$unwind$?_aud_inw_@@YAGH@Z DD 010801H
+	DD	02208H
+$unwind$?_aud_outb_@@YAXHE@Z DD 010c01H
+	DD	0220cH
+$unwind$?_aud_inb_@@YAEH@Z DD 010801H
+	DD	02208H
+$unwind$?hda_handler@@YAX_KPEAX@Z DD 010e01H
+	DD	0420eH
+$unwind$?setup_corb@@YAXXZ DD 010401H
+	DD	06204H
+$unwind$?setup_rirb@@YAXXZ DD 010401H
+	DD	06204H
+$unwind$?corb_write@@YAXI@Z DD 010801H
+	DD	06208H
+$unwind$?rirb_read@@YAXPEA_K@Z DD 010901H
+	DD	06209H
+$unwind$?codec_query@@YAIHHI@Z DD 011101H
+	DD	06211H
+$unwind$?widget_init@@YAXHH@Z DD 010c01H
+	DD	0a20cH
+$unwind$?hda_enumerate_codecs@@YAXXZ DD 010401H
+	DD	06204H
+$unwind$?hda_reset@@YAXXZ DD 010401H
+	DD	06204H
+xdata	ENDS
+; Function compile flags: /Odtp
+; File e:\xeneva project\xeneva\aurora\aurora\drivers\hda\hda.cpp
+_TEXT	SEGMENT
+rirb_ctl$ = 32
+corb_ctl$ = 33
+wakeen_bit$ = 36
+int_ctl$ = 40
+int_ctl2$ = 44
+?hda_reset@@YAXXZ PROC					; hda_reset
+
+; 342  : void hda_reset() {
+
+$LN8:
+	sub	rsp, 56					; 00000038H
+
+; 343  :     printf ("HD Audio : Reset Controller started\n");
+
+	lea	rcx, OFFSET FLAT:$SG3486
+	call	?printf@@YAXPEBDZZ			; printf
+
+; 344  : 
+; 345  : 	//! clear CORB/RIRB RUN bits before reset
+; 346  : 
+; 347  : 	//! Reset the CRST bit and wait until hardware is in reset 
+; 348  : 
+; 349  : 	//! Take Controller out of reset
+; 350  : 	_aud_outl_(GCTL, GCTL_RESET);
+
+	mov	edx, 1
+	mov	ecx, 8
+	call	?_aud_outl_@@YAXHI@Z			; _aud_outl_
+$LN5@hda_reset:
+
+; 351  : 	while((_aud_inl_(GCTL) & GCTL_RESET) == 0);
+
+	mov	ecx, 8
+	call	?_aud_inl_@@YAIH@Z			; _aud_inl_
+	and	eax, 1
+	test	eax, eax
+	jne	SHORT $LN4@hda_reset
+	jmp	SHORT $LN5@hda_reset
+$LN4@hda_reset:
+
+; 352  : 
+; 353  : 	printf ("HD Audio : Controller out of reset\n");
+
+	lea	rcx, OFFSET FLAT:$SG3490
+	call	?printf@@YAXPEBDZZ			; printf
+
+; 354  : 
+; 355  : 	//! We want to get all interrupts
+; 356  : 	uint16_t wakeen_bit = _aud_inw_ (WAKEEN);
+
+	mov	ecx, 12
+	call	?_aud_inw_@@YAGH@Z			; _aud_inw_
+	mov	WORD PTR wakeen_bit$[rsp], ax
+
+; 357  : 	//wakeen_bit |= 1 << 1;
+; 358  : 	_aud_outw_(WAKEEN,0xffff);    //0xffff
+
+	mov	dx, 65535				; 0000ffffH
+	mov	ecx, 12
+	call	?_aud_outw_@@YAXHG@Z			; _aud_outw_
+
+; 359  : 	
+; 360  : 	uint32_t int_ctl = _aud_inl_ (INTCTL);
+
+	mov	ecx, 32					; 00000020H
+	call	?_aud_inl_@@YAIH@Z			; _aud_inl_
+	mov	DWORD PTR int_ctl$[rsp], eax
+
+; 361  : 	printf ("INT CTL -> %x\n", int_ctl);
+
+	mov	edx, DWORD PTR int_ctl$[rsp]
+	lea	rcx, OFFSET FLAT:$SG3493
+	call	?printf@@YAXPEBDZZ			; printf
+
+; 362  : 	int_ctl |= (1 << 0);
+
+	mov	eax, DWORD PTR int_ctl$[rsp]
+	or	eax, 1
+	mov	DWORD PTR int_ctl$[rsp], eax
+
+; 363  : 	int_ctl |= (1 << 1);
+
+	mov	eax, DWORD PTR int_ctl$[rsp]
+	or	eax, 2
+	mov	DWORD PTR int_ctl$[rsp], eax
+
+; 364  : 	int_ctl |= (1 << 2);
+
+	mov	eax, DWORD PTR int_ctl$[rsp]
+	or	eax, 4
+	mov	DWORD PTR int_ctl$[rsp], eax
+
+; 365  : 	_aud_outl_(INTCTL, 0x800000ff);   //0x800000ff
+
+	mov	edx, -2147483393			; 800000ffH
+	mov	ecx, 32					; 00000020H
+	call	?_aud_outl_@@YAXHI@Z			; _aud_outl_
+
+; 366  : 
+; 367  : 	uint32_t int_ctl2 = _aud_inl_ (INTCTL);
+
+	mov	ecx, 32					; 00000020H
+	call	?_aud_inl_@@YAIH@Z			; _aud_inl_
+	mov	DWORD PTR int_ctl2$[rsp], eax
+
+; 368  : 	printf ("INT CTL2 -> %x\n", int_ctl2);
+
+	mov	edx, DWORD PTR int_ctl2$[rsp]
+	lea	rcx, OFFSET FLAT:$SG3495
+	call	?printf@@YAXPEBDZZ			; printf
+
+; 369  : 
+; 370  : 	printf ("HD Audio: Reset completed\n");
+
+	lea	rcx, OFFSET FLAT:$SG3496
+	call	?printf@@YAXPEBDZZ			; printf
+
+; 371  : 
+; 372  : 
+; 373  : 	_aud_outl_(CORBCTL, 0);
+
+	xor	edx, edx
+	mov	ecx, 76					; 0000004cH
+	call	?_aud_outl_@@YAXHI@Z			; _aud_outl_
+
+; 374  : 	uint8_t rirb_ctl = _aud_inb_(RIRBCTL);
+
+	mov	ecx, 92					; 0000005cH
+	call	?_aud_inb_@@YAEH@Z			; _aud_inb_
+	mov	BYTE PTR rirb_ctl$[rsp], al
+
+; 375  : 	printf ("CORBCONTROL is fully reseted\n");
+
+	lea	rcx, OFFSET FLAT:$SG3498
+	call	?printf@@YAXPEBDZZ			; printf
+
+; 376  : 	printf ("RIRB Ctl -> %x\n", rirb_ctl);
+
+	movzx	eax, BYTE PTR rirb_ctl$[rsp]
+	mov	edx, eax
+	lea	rcx, OFFSET FLAT:$SG3499
+	call	?printf@@YAXPEBDZZ			; printf
+
+; 377  : 	rirb_ctl |= (1<<0);
+
+	movzx	eax, BYTE PTR rirb_ctl$[rsp]
+	or	eax, 1
+	mov	BYTE PTR rirb_ctl$[rsp], al
+
+; 378  : 	rirb_ctl |= (1<<1);
+
+	movzx	eax, BYTE PTR rirb_ctl$[rsp]
+	or	eax, 2
+	mov	BYTE PTR rirb_ctl$[rsp], al
+
+; 379  : 	rirb_ctl |= (1<<2);
+
+	movzx	eax, BYTE PTR rirb_ctl$[rsp]
+	or	eax, 4
+	mov	BYTE PTR rirb_ctl$[rsp], al
+
+; 380  : 	_aud_outl_(RIRBCTL,0);
+
+	xor	edx, edx
+	mov	ecx, 92					; 0000005cH
+	call	?_aud_outl_@@YAXHI@Z			; _aud_outl_
+$LN3@hda_reset:
+
+; 381  : 
+; 382  : 	while ((_aud_inl_(CORBCTL) & CORBCTL_CORBRUN) ||
+; 383  : 		(_aud_inl_ (RIRBCTL) & RIRBCTL_RIRBRUN));
+
+	mov	ecx, 76					; 0000004cH
+	call	?_aud_inl_@@YAIH@Z			; _aud_inl_
+	and	eax, 2
+	test	eax, eax
+	jne	SHORT $LN1@hda_reset
+	mov	ecx, 92					; 0000005cH
+	call	?_aud_inl_@@YAIH@Z			; _aud_inl_
+	and	eax, 2
+	test	eax, eax
+	je	SHORT $LN2@hda_reset
+$LN1@hda_reset:
+	jmp	SHORT $LN3@hda_reset
+$LN2@hda_reset:
+
+; 384  : 
+; 385  : 
+; 386  : 	uint8_t corb_ctl = _aud_inb_ (CORBCTL);
+
+	mov	ecx, 76					; 0000004cH
+	call	?_aud_inb_@@YAEH@Z			; _aud_inb_
+	mov	BYTE PTR corb_ctl$[rsp], al
+
+; 387  : 	printf ("CORB CTL -> %x\n", corb_ctl);
+
+	movzx	eax, BYTE PTR corb_ctl$[rsp]
+	mov	edx, eax
+	lea	rcx, OFFSET FLAT:$SG3505
+	call	?printf@@YAXPEBDZZ			; printf
+
+; 388  : 	setup_corb();
+
+	call	?setup_corb@@YAXXZ			; setup_corb
+
+; 389  : 	setup_rirb();
+
+	call	?setup_rirb@@YAXXZ			; setup_rirb
+
+; 390  : 	printf ("CORB\RIRB setup\n");
+
+	lea	rcx, OFFSET FLAT:$SG3506
+	call	?printf@@YAXPEBDZZ			; printf
+
+; 391  : 
+; 392  : 	hda_enumerate_codecs();
+
+	call	?hda_enumerate_codecs@@YAXXZ		; hda_enumerate_codecs
+
+; 393  : }
+
+	add	rsp, 56					; 00000038H
+	ret	0
+?hda_reset@@YAXXZ ENDP					; hda_reset
+_TEXT	ENDS
+; Function compile flags: /Odtp
+; File e:\xeneva project\xeneva\aurora\aurora\drivers\hda\hda.cpp
+_TEXT	SEGMENT
+statests$ = 32
+i$ = 36
+?hda_enumerate_codecs@@YAXXZ PROC			; hda_enumerate_codecs
+
+; 322  : void hda_enumerate_codecs() {
+
+$LN7:
+	sub	rsp, 56					; 00000038H
+
+; 323  : 	
+; 324  : 	uint16_t statests;
+; 325  : 	int i;
+; 326  : 
+; 327  : 	printf ("HD Audio: Enumerating HDA Link Protocol\n");
+
+	lea	rcx, OFFSET FLAT:$SG3478
+	call	?printf@@YAXPEBDZZ			; printf
+
+; 328  : 	statests = _aud_inw_(STATESTS);
+
+	mov	ecx, 14
+	call	?_aud_inw_@@YAGH@Z			; _aud_inw_
+	mov	WORD PTR statests$[rsp], ax
+
+; 329  : 
+; 330  : 	//! loop
+; 331  : 	for (i = 0; i < 15; i++) {
+
+	mov	DWORD PTR i$[rsp], 0
+	jmp	SHORT $LN4@hda_enumer
+$LN3@hda_enumer:
+	mov	eax, DWORD PTR i$[rsp]
+	inc	eax
+	mov	DWORD PTR i$[rsp], eax
+$LN4@hda_enumer:
+	cmp	DWORD PTR i$[rsp], 15
+	jge	SHORT $LN2@hda_enumer
+
+; 332  : 		if ((statests & (1 << i))){
+
+	movzx	eax, WORD PTR statests$[rsp]
+	mov	ecx, DWORD PTR i$[rsp]
+	mov	edx, 1
+	shl	edx, cl
+	mov	ecx, edx
+	and	eax, ecx
+	test	eax, eax
+	je	SHORT $LN1@hda_enumer
+
+; 333  : 			printf ("Available Codec found at index %d\n", i);
+
+	mov	edx, DWORD PTR i$[rsp]
+	lea	rcx, OFFSET FLAT:$SG3483
+	call	?printf@@YAXPEBDZZ			; printf
+
+; 334  : 			//codec_enumerate_widgets(i);
+; 335  : 			widget_init(i,0);
+
+	xor	edx, edx
+	mov	ecx, DWORD PTR i$[rsp]
+	call	?widget_init@@YAXHH@Z			; widget_init
+$LN1@hda_enumer:
+
+; 336  : 		}
+; 337  : 	}
+
+	jmp	SHORT $LN3@hda_enumer
+$LN2@hda_enumer:
+
+; 338  : }
+
+	add	rsp, 56					; 00000038H
+	ret	0
+?hda_enumerate_codecs@@YAXXZ ENDP			; hda_enumerate_codecs
+_TEXT	ENDS
+; Function compile flags: /Odtp
+; File e:\xeneva project\xeneva\aurora\aurora\drivers\hda\hda.cpp
+_TEXT	SEGMENT
+s$ = 32
+ctl$1 = 40
+widget_cap$ = 44
+tv128 = 48
+tv81 = 52
+eapd_btl$ = 56
+amp_gain$ = 60
+type$ = 64
+conf$2 = 68
+pin_cap$3 = 72
+amp_cap$ = 76
+codec$ = 96
+nid$ = 104
+?widget_init@@YAXHH@Z PROC				; widget_init
+
+; 193  : void widget_init (int codec, int nid) {
+
+$LN24:
+	mov	DWORD PTR [rsp+16], edx
+	mov	DWORD PTR [rsp+8], ecx
+	sub	rsp, 88					; 00000058H
+
+; 194  : 
+; 195  : 	printf ("initializing widgets\n");
+
+	lea	rcx, OFFSET FLAT:$SG3405
+	call	?printf@@YAXPEBDZZ			; printf
+
+; 196  : 	uint32_t widget_cap;
+; 197  : 	uint32_t type;
+; 198  : 	uint32_t amp_cap;
+; 199  : 	uint32_t eapd_btl;
+; 200  : 
+; 201  : 	widget_cap = codec_query (codec, nid, VERB_GET_PARAMETER | PARAM_AUDIO_WID_CAP);
+
+	mov	r8d, 983049				; 000f0009H
+	mov	edx, DWORD PTR nid$[rsp]
+	mov	ecx, DWORD PTR codec$[rsp]
+	call	?codec_query@@YAIHHI@Z			; codec_query
+	mov	DWORD PTR widget_cap$[rsp], eax
+
+; 202  : 
+; 203  : 	if (widget_cap == 0) {
+
+	cmp	DWORD PTR widget_cap$[rsp], 0
+	jne	SHORT $LN20@widget_ini
+
+; 204  : 		printf ("Widget capabilities 0\n");
+
+	lea	rcx, OFFSET FLAT:$SG3411
+	call	?printf@@YAXPEBDZZ			; printf
+
+; 205  : 		return;
+
+	jmp	$LN21@widget_ini
+$LN20@widget_ini:
+
+; 206  : 	}
+; 207  : 
+; 208  : 	type = (widget_cap & WIDGET_CAP_TYPE_MASK) >> WIDGET_CAP_TYPE_SHIFT;
+
+	mov	eax, DWORD PTR widget_cap$[rsp]
+	and	eax, 15728640				; 00f00000H
+	shr	eax, 20
+	mov	DWORD PTR type$[rsp], eax
+
+; 209  : 	amp_cap = codec_query (codec, nid, VERB_GET_PARAMETER | PARAM_OUT_AMP_CAP);
+
+	mov	r8d, 983058				; 000f0012H
+	mov	edx, DWORD PTR nid$[rsp]
+	mov	ecx, DWORD PTR codec$[rsp]
+	call	?codec_query@@YAIHHI@Z			; codec_query
+	mov	DWORD PTR amp_cap$[rsp], eax
+
+; 210  : 	eapd_btl = codec_query (codec, nid, VERB_GET_EAPD_BTL);
+
+	mov	r8d, 986112				; 000f0c00H
+	mov	edx, DWORD PTR nid$[rsp]
+	mov	ecx, DWORD PTR codec$[rsp]
+	call	?codec_query@@YAIHHI@Z			; codec_query
+	mov	DWORD PTR eapd_btl$[rsp], eax
+
+; 211  : 
+; 212  : 	uint32_t amp_gain;
+; 213  : 	const char* s;
+; 214  : 
+; 215  : 	switch(type) {
+
+	mov	eax, DWORD PTR type$[rsp]
+	mov	DWORD PTR tv81[rsp], eax
+	cmp	DWORD PTR tv81[rsp], 16
+	ja	$LN8@widget_ini
+	mov	eax, DWORD PTR tv81[rsp]
+	lea	rcx, OFFSET FLAT:__ImageBase
+	mov	eax, DWORD PTR $LN23@widget_ini[rcx+rax*4]
+	add	rax, rcx
+	jmp	rax
+$LN17@widget_ini:
+
+; 216  : 	case 0:  s = "output"; break;
+
+	lea	rax, OFFSET FLAT:$SG3419
+	mov	QWORD PTR s$[rsp], rax
+	jmp	SHORT $LN18@widget_ini
+$LN16@widget_ini:
+
+; 217  : 	case 1:  s = "input"; break;
+
+	lea	rax, OFFSET FLAT:$SG3421
+	mov	QWORD PTR s$[rsp], rax
+	jmp	SHORT $LN18@widget_ini
+$LN15@widget_ini:
+
+; 218  : 	case 2:  s = "mixer"; break;
+
+	lea	rax, OFFSET FLAT:$SG3423
+	mov	QWORD PTR s$[rsp], rax
+	jmp	SHORT $LN18@widget_ini
+$LN14@widget_ini:
+
+; 219  : 	case 3:  s = "selector"; break;
+
+	lea	rax, OFFSET FLAT:$SG3425
+	mov	QWORD PTR s$[rsp], rax
+	jmp	SHORT $LN18@widget_ini
+$LN13@widget_ini:
+
+; 220  : 	case 4:  s = "pin complex"; break;
+
+	lea	rax, OFFSET FLAT:$SG3427
+	mov	QWORD PTR s$[rsp], rax
+	jmp	SHORT $LN18@widget_ini
+$LN12@widget_ini:
+
+; 221  : 	case 5:  s = "power"; break;
+
+	lea	rax, OFFSET FLAT:$SG3429
+	mov	QWORD PTR s$[rsp], rax
+	jmp	SHORT $LN18@widget_ini
+$LN11@widget_ini:
+
+; 222  : 	case 6:  s = "volume knob"; break;
+
+	lea	rax, OFFSET FLAT:$SG3431
+	mov	QWORD PTR s$[rsp], rax
+	jmp	SHORT $LN18@widget_ini
+$LN10@widget_ini:
+
+; 223  : 	case 7:  s = "beep generator"; break;
+
+	lea	rax, OFFSET FLAT:$SG3433
+	mov	QWORD PTR s$[rsp], rax
+	jmp	SHORT $LN18@widget_ini
+$LN9@widget_ini:
+
+; 224  : 	case 16: s = "vendor defined"; break;
+
+	lea	rax, OFFSET FLAT:$SG3435
+	mov	QWORD PTR s$[rsp], rax
+	jmp	SHORT $LN18@widget_ini
+$LN8@widget_ini:
+
+; 225  : 	default: s = "unknown"; break;
+
+	lea	rax, OFFSET FLAT:$SG3437
+	mov	QWORD PTR s$[rsp], rax
+$LN18@widget_ini:
+
+; 226  : 
+; 227  : 	}
+; 228  : 
+; 229  : 	amp_gain = codec_query(codec, nid, VERB_GET_AMP_GAIN_MUTE | 0x8000) << 8;
+
+	mov	r8d, 753664				; 000b8000H
+	mov	edx, DWORD PTR nid$[rsp]
+	mov	ecx, DWORD PTR codec$[rsp]
+	call	?codec_query@@YAIHHI@Z			; codec_query
+	shl	eax, 8
+	mov	DWORD PTR amp_gain$[rsp], eax
+
+; 230  : 	amp_gain |= codec_query(codec, nid, VERB_GET_AMP_GAIN_MUTE | 0xa000);
+
+	mov	r8d, 761856				; 000ba000H
+	mov	edx, DWORD PTR nid$[rsp]
+	mov	ecx, DWORD PTR codec$[rsp]
+	call	?codec_query@@YAIHHI@Z			; codec_query
+	mov	ecx, DWORD PTR amp_gain$[rsp]
+	or	ecx, eax
+	mov	eax, ecx
+	mov	DWORD PTR amp_gain$[rsp], eax
+
+; 231  : 
+; 232  : 	printf ("%s at ID %d; \n",
+; 233  : 		s, nid);
+
+	mov	r8d, DWORD PTR nid$[rsp]
+	mov	rdx, QWORD PTR s$[rsp]
+	lea	rcx, OFFSET FLAT:$SG3438
+	call	?printf@@YAXPEBDZZ			; printf
+
+; 234  : 
+; 235  : 	switch (type) {
+
+	mov	eax, DWORD PTR type$[rsp]
+	mov	DWORD PTR tv128[rsp], eax
+	cmp	DWORD PTR tv128[rsp], 0
+	je	$LN3@widget_ini
+	cmp	DWORD PTR tv128[rsp], 4
+	je	SHORT $LN5@widget_ini
+	jmp	$LN2@widget_ini
+$LN5@widget_ini:
+
+; 236  : 	case WIDGET_PIN:
+; 237  : 		{
+; 238  : 			uint32_t pin_cap, ctl;
+; 239  : 			uint32_t conf = codec_query(codec, nid, VERB_GET_CONFIG_DEFAULT);
+
+	mov	r8d, 990208				; 000f1c00H
+	mov	edx, DWORD PTR nid$[rsp]
+	mov	ecx, DWORD PTR codec$[rsp]
+	call	?codec_query@@YAIHHI@Z			; codec_query
+	mov	DWORD PTR conf$2[rsp], eax
+
+; 240  : 			printf ("pin config: %x\n", conf);
+
+	mov	edx, DWORD PTR conf$2[rsp]
+	lea	rcx, OFFSET FLAT:$SG3447
+	call	?printf@@YAXPEBDZZ			; printf
+
+; 241  : 
+; 242  : 			pin_cap = codec_query (codec, nid, VERB_GET_PARAMETER | PARAM_PIN_CAP);
+
+	mov	r8d, 983052				; 000f000cH
+	mov	edx, DWORD PTR nid$[rsp]
+	mov	ecx, DWORD PTR codec$[rsp]
+	call	?codec_query@@YAIHHI@Z			; codec_query
+	mov	DWORD PTR pin_cap$3[rsp], eax
+
+; 243  : 
+; 244  : 			if ((pin_cap & PIN_CAP_OUTPUT) == 0) {
+
+	mov	eax, DWORD PTR pin_cap$3[rsp]
+	and	eax, 16
+	test	eax, eax
+	jne	SHORT $LN4@widget_ini
+
+; 245  : 				return;
+
+	jmp	$LN21@widget_ini
+$LN4@widget_ini:
+
+; 246  : 			}
+; 247  : 
+; 248  : 			ctl = codec_query (codec, nid, VERB_GET_PIN_CONTROL);
+
+	mov	r8d, 984832				; 000f0700H
+	mov	edx, DWORD PTR nid$[rsp]
+	mov	ecx, DWORD PTR codec$[rsp]
+	call	?codec_query@@YAIHHI@Z			; codec_query
+	mov	DWORD PTR ctl$1[rsp], eax
+
+; 249  : 			printf ("ctl: %x\n", ctl);
+
+	mov	edx, DWORD PTR ctl$1[rsp]
+	lea	rcx, OFFSET FLAT:$SG3449
+	call	?printf@@YAXPEBDZZ			; printf
+
+; 250  : 
+; 251  : 			ctl |= PIN_CTL_ENABLE_OUTPUT;
+
+	mov	eax, DWORD PTR ctl$1[rsp]
+	or	eax, 64					; 00000040H
+	mov	DWORD PTR ctl$1[rsp], eax
+
+; 252  : 			codec_query(codec, nid, VERB_SET_PIN_CONTROL | ctl);
+
+	mov	eax, DWORD PTR ctl$1[rsp]
+	or	eax, 460544				; 00070700H
+	mov	r8d, eax
+	mov	edx, DWORD PTR nid$[rsp]
+	mov	ecx, DWORD PTR codec$[rsp]
+	call	?codec_query@@YAIHHI@Z			; codec_query
+
+; 253  : 			codec_query(codec, nid, VERB_SET_EAPD_BTL | eapd_btl | 0x2);
+
+	mov	eax, DWORD PTR eapd_btl$[rsp]
+	or	eax, 461824				; 00070c00H
+	or	eax, 2
+	mov	r8d, eax
+	mov	edx, DWORD PTR nid$[rsp]
+	mov	ecx, DWORD PTR codec$[rsp]
+	call	?codec_query@@YAIHHI@Z			; codec_query
+
+; 254  : 			break;
+
+	jmp	SHORT $LN6@widget_ini
+$LN3@widget_ini:
+
+; 255  : 		}
+; 256  : 
+; 257  : 	case WIDGET_OUTPUT:
+; 258  : 		{
+; 259  : 			/*if (!output.nid) {
+; 260  : 				kprintf ("using output at ID %d\n", nid);
+; 261  : 				output.codec = codec;
+; 262  : 				output.nid = nid;
+; 263  : 				output.amp_gain_steps = (amp_cap >> 8) & 0x7f;
+; 264  : 			}*/
+; 265  : 
+; 266  : 			codec_query (codec, nid, VERB_SET_EAPD_BTL | eapd_btl | 0x2);
+
+	mov	eax, DWORD PTR eapd_btl$[rsp]
+	or	eax, 461824				; 00070c00H
+	or	eax, 2
+	mov	r8d, eax
+	mov	edx, DWORD PTR nid$[rsp]
+	mov	ecx, DWORD PTR codec$[rsp]
+	call	?codec_query@@YAIHHI@Z			; codec_query
+
+; 267  : 			break;
+
+	jmp	SHORT $LN6@widget_ini
+$LN2@widget_ini:
+
+; 268  : 		}
+; 269  : 
+; 270  : 	default:
+; 271  : 		return;
+
+	jmp	SHORT $LN21@widget_ini
+$LN6@widget_ini:
+
+; 272  : 
+; 273  : 	}
+; 274  : 
+; 275  : 	if (widget_cap & WIDGET_CAP_POWER_CNTRL) {
+
+	mov	eax, DWORD PTR widget_cap$[rsp]
+	and	eax, 1024				; 00000400H
+	test	eax, eax
+	je	SHORT $LN1@widget_ini
+
+; 276  : 		codec_query(codec, nid, VERB_SET_POWER_STATE | 0x0);
+
+	mov	r8d, 460032				; 00070500H
+	mov	edx, DWORD PTR nid$[rsp]
+	mov	ecx, DWORD PTR codec$[rsp]
+	call	?codec_query@@YAIHHI@Z			; codec_query
+$LN1@widget_ini:
+$LN21@widget_ini:
+
+; 277  : 	}
+; 278  : }
+
+	add	rsp, 88					; 00000058H
+	ret	0
+	npad	1
+$LN23@widget_ini:
+	DD	$LN17@widget_ini
+	DD	$LN16@widget_ini
+	DD	$LN15@widget_ini
+	DD	$LN14@widget_ini
+	DD	$LN13@widget_ini
+	DD	$LN12@widget_ini
+	DD	$LN11@widget_ini
+	DD	$LN10@widget_ini
+	DD	$LN8@widget_ini
+	DD	$LN8@widget_ini
+	DD	$LN8@widget_ini
+	DD	$LN8@widget_ini
+	DD	$LN8@widget_ini
+	DD	$LN8@widget_ini
+	DD	$LN8@widget_ini
+	DD	$LN8@widget_ini
+	DD	$LN9@widget_ini
+?widget_init@@YAXHH@Z ENDP				; widget_init
+_TEXT	ENDS
+; Function compile flags: /Odtp
+; File e:\xeneva project\xeneva\aurora\aurora\drivers\hda\hda.cpp
+_TEXT	SEGMENT
+verb$ = 32
+response$ = 40
+codec$ = 64
+nid$ = 72
+payload$ = 80
+?codec_query@@YAIHHI@Z PROC				; codec_query
+
+; 177  : static uint32_t codec_query (int codec, int nid, uint32_t payload) {
+
+	mov	DWORD PTR [rsp+24], r8d
+	mov	DWORD PTR [rsp+16], edx
+	mov	DWORD PTR [rsp+8], ecx
+	sub	rsp, 56					; 00000038H
+
+; 178  : 	uint64_t response;
+; 179  : 	uint32_t verb = ((codec & 0xf) << 28) | 
+; 180  : 		((nid & 0xff) << 20) | 
+; 181  : 		(payload & 0xfffff);
+
+	mov	eax, DWORD PTR codec$[rsp]
+	and	eax, 15
+	shl	eax, 28
+	mov	ecx, DWORD PTR nid$[rsp]
+	and	ecx, 255				; 000000ffH
+	shl	ecx, 20
+	or	eax, ecx
+	mov	ecx, DWORD PTR payload$[rsp]
+	and	ecx, 1048575				; 000fffffH
+	or	eax, ecx
+	mov	DWORD PTR verb$[rsp], eax
+
+; 182  : 	//uint32_t verb = 0xF00;
+; 183  : //	printf ("Requesting VERB -> %x\n", verb);
+; 184  : 	corb_write(verb);
+
+	mov	ecx, DWORD PTR verb$[rsp]
+	call	?corb_write@@YAXI@Z			; corb_write
+
+; 185  : 	//while ((_aud_inl_(RIRBSTS) & 1) == 0)
+; 186  : 	//	;
+; 187  : 	rirb_read(&response);
+
+	lea	rcx, QWORD PTR response$[rsp]
+	call	?rirb_read@@YAXPEA_K@Z			; rirb_read
+
+; 188  : 	return response & 0xffffffff;
+
+	mov	eax, -1					; ffffffffH
+	mov	rcx, QWORD PTR response$[rsp]
+	and	rcx, rax
+	mov	rax, rcx
+
+; 189  : }
+
+	add	rsp, 56					; 00000038H
+	ret	0
+?codec_query@@YAIHHI@Z ENDP				; codec_query
+_TEXT	ENDS
+; Function compile flags: /Odtp
+; File e:\xeneva project\xeneva\aurora\aurora\drivers\hda\hda.cpp
+_TEXT	SEGMENT
+rp$ = 32
+wp$ = 36
+response$ = 64
+?rirb_read@@YAXPEA_K@Z PROC				; rirb_read
+
+; 160  : static void rirb_read (uint64_t *response) {
+
+	mov	QWORD PTR [rsp+8], rcx
+	sub	rsp, 56					; 00000038H
+
+; 161  : 
+; 162  : 	uint16_t wp;
+; 163  : 	uint16_t rp = rirbrp;
+
+	movzx	eax, WORD PTR ?rirbrp@@3GA		; rirbrp
+	mov	WORD PTR rp$[rsp], ax
+$LN3@rirb_read:
+
+; 164  : 
+; 165  : 	/*Wait for an unread entry in the RIRB */
+; 166  : 	do {
+; 167  : 	   wp = _aud_inw_(RIRBWP) & 0xff;
+
+	mov	ecx, 88					; 00000058H
+	call	?_aud_inw_@@YAGH@Z			; _aud_inw_
+	movzx	eax, ax
+	and	eax, 255				; 000000ffH
+	mov	WORD PTR wp$[rsp], ax
+
+; 168  : 	} while (wp == rp);
+
+	movzx	eax, WORD PTR wp$[rsp]
+	movzx	ecx, WORD PTR rp$[rsp]
+	cmp	eax, ecx
+	je	SHORT $LN3@rirb_read
+
+; 169  : 
+; 170  : 	/*Read from RIRIB */
+; 171  : 	rp = (rp + 1) % 256;   //rirb_entries;
+
+	movzx	eax, WORD PTR rp$[rsp]
+	inc	eax
+	cdq
+	and	edx, 255				; 000000ffH
+	add	eax, edx
+	and	eax, 255				; 000000ffH
+	sub	eax, edx
+	mov	WORD PTR rp$[rsp], ax
+
+; 172  : 	rirbrp = rp;
+
+	movzx	eax, WORD PTR rp$[rsp]
+	mov	WORD PTR ?rirbrp@@3GA, ax		; rirbrp
+
+; 173  : 	*response = _ihd_audio.rirb[rp];
+
+	movzx	eax, WORD PTR rp$[rsp]
+	mov	rcx, QWORD PTR response$[rsp]
+	mov	rdx, QWORD PTR ?_ihd_audio@@3U_hd_audio_@@A+16
+	mov	rax, QWORD PTR [rdx+rax*8]
+	mov	QWORD PTR [rcx], rax
+
+; 174  : 	_aud_outb_(RIRBSTS, 0x5);
+
+	mov	dl, 5
+	mov	ecx, 93					; 0000005dH
+	call	?_aud_outb_@@YAXHE@Z			; _aud_outb_
+
+; 175  : }
+
+	add	rsp, 56					; 00000038H
+	ret	0
+?rirb_read@@YAXPEA_K@Z ENDP				; rirb_read
+_TEXT	ENDS
+; Function compile flags: /Odtp
+; File e:\xeneva project\xeneva\aurora\aurora\drivers\hda\hda.cpp
+_TEXT	SEGMENT
+next$ = 32
+wp$ = 36
+rp$ = 40
+verb$ = 64
+?corb_write@@YAXI@Z PROC				; corb_write
+
+; 142  : static void corb_write (uint32_t verb) {
+
+	mov	DWORD PTR [rsp+8], ecx
+	sub	rsp, 56					; 00000038H
+
+; 143  : 
+; 144  : 	uint16_t wp = _aud_inw_(CORBWP) & 0xff;
+
+	mov	ecx, 72					; 00000048H
+	call	?_aud_inw_@@YAGH@Z			; _aud_inw_
+	movzx	eax, ax
+	and	eax, 255				; 000000ffH
+	mov	WORD PTR wp$[rsp], ax
+
+; 145  : 	uint16_t rp;
+; 146  : 	uint16_t next;
+; 147  : 
+; 148  : 	/*Wait until there's a free entry in the CORB */
+; 149  : 	next = (wp + 1) % 256;   //corb_entries;
+
+	movzx	eax, WORD PTR wp$[rsp]
+	inc	eax
+	cdq
+	and	edx, 255				; 000000ffH
+	add	eax, edx
+	and	eax, 255				; 000000ffH
+	sub	eax, edx
+	mov	WORD PTR next$[rsp], ax
+$LN3@corb_write:
+
+; 150  : 
+; 151  : 	do {
+; 152  : 		rp = _aud_inw_(CORBRP) & 0xff;
+
+	mov	ecx, 74					; 0000004aH
+	call	?_aud_inw_@@YAGH@Z			; _aud_inw_
+	movzx	eax, ax
+	and	eax, 255				; 000000ffH
+	mov	WORD PTR rp$[rsp], ax
+
+; 153  : 	}while (next == rp);
+
+	movzx	eax, WORD PTR next$[rsp]
+	movzx	ecx, WORD PTR rp$[rsp]
+	cmp	eax, ecx
+	je	SHORT $LN3@corb_write
+
+; 154  : 
+; 155  : 	/* Write to CORB */
+; 156  : 	_ihd_audio.corb[next] = verb;
+
+	mov	eax, DWORD PTR verb$[rsp]
+	movzx	ecx, WORD PTR next$[rsp]
+	mov	rdx, QWORD PTR ?_ihd_audio@@3U_hd_audio_@@A+8
+	mov	QWORD PTR [rdx+rcx*8], rax
+
+; 157  : 	_aud_outw_(CORBWP, next);
+
+	movzx	edx, WORD PTR next$[rsp]
+	mov	ecx, 72					; 00000048H
+	call	?_aud_outw_@@YAXHG@Z			; _aud_outw_
+
+; 158  : }
+
+	add	rsp, 56					; 00000038H
+	ret	0
+?corb_write@@YAXI@Z ENDP				; corb_write
+_TEXT	ENDS
+; Function compile flags: /Odtp
+; File e:\xeneva project\xeneva\aurora\aurora\drivers\hda\hda.cpp
+_TEXT	SEGMENT
+reg$ = 32
+rirb_ctl2$ = 33
+rirb_entries$ = 36
+rirb_base$ = 40
+?setup_rirb@@YAXXZ PROC					; setup_rirb
+
+; 102  : void setup_rirb() {
+
+$LN9:
+	sub	rsp, 56					; 00000038H
+
+; 103  : 
+; 104  : 	uint8_t reg;
+; 105  : 	uint64_t rirb_base;
+; 106  : 	uint32_t rirb_entries = 0;
+
+	mov	DWORD PTR rirb_entries$[rsp], 0
+
+; 107  : 	reg = _aud_inb_ (RIRBSIZE);
+
+	mov	ecx, 94					; 0000005eH
+	call	?_aud_inb_@@YAEH@Z			; _aud_inb_
+	mov	BYTE PTR reg$[rsp], al
+
+; 108  : 
+; 109  : 	/* Check RIRB size capabilities and choose the largest size */
+; 110  : 	if (reg & (1 << 6)) {
+
+	movzx	eax, BYTE PTR reg$[rsp]
+	and	eax, 64					; 00000040H
+	test	eax, eax
+	je	SHORT $LN6@setup_rirb
+
+; 111  : 		rirb_entries = 256;
+
+	mov	DWORD PTR rirb_entries$[rsp], 256	; 00000100H
+
+; 112  : 		reg |= 0x2;
+
+	movzx	eax, BYTE PTR reg$[rsp]
+	or	eax, 2
+	mov	BYTE PTR reg$[rsp], al
+	jmp	SHORT $LN5@setup_rirb
+$LN6@setup_rirb:
+
+; 113  : 	} else if (reg & (1 << 5)) {
+
+	movzx	eax, BYTE PTR reg$[rsp]
+	and	eax, 32					; 00000020H
+	test	eax, eax
+	je	SHORT $LN4@setup_rirb
+
+; 114  : 		rirb_entries = 16;
+
+	mov	DWORD PTR rirb_entries$[rsp], 16
+
+; 115  : 		reg |= 0x1;
+
+	movzx	eax, BYTE PTR reg$[rsp]
+	or	eax, 1
+	mov	BYTE PTR reg$[rsp], al
+	jmp	SHORT $LN3@setup_rirb
+$LN4@setup_rirb:
+
+; 116  : 	}else if (reg & (1 << 4)) {
+
+	movzx	eax, BYTE PTR reg$[rsp]
+	and	eax, 16
+	test	eax, eax
+	je	SHORT $LN2@setup_rirb
+
+; 117  : 		rirb_entries = 2;
+
+	mov	DWORD PTR rirb_entries$[rsp], 2
+
+; 118  : 		reg |= 0x0;
+
+	movzx	eax, BYTE PTR reg$[rsp]
+	mov	BYTE PTR reg$[rsp], al
+
+; 119  : 	}else {
+
+	jmp	SHORT $LN1@setup_rirb
+$LN2@setup_rirb:
+
+; 120  : 		printf ("HD Audio: No supported RIRB size !!\n");
+
+	lea	rcx, OFFSET FLAT:$SG3372
+	call	?printf@@YAXPEBDZZ			; printf
+$LN1@setup_rirb:
+$LN3@setup_rirb:
+$LN5@setup_rirb:
+
+; 121  : 	}
+; 122  : 
+; 123  : 	_aud_outb_(RIRBSIZE,reg);
+
+	movzx	edx, BYTE PTR reg$[rsp]
+	mov	ecx, 94					; 0000005eH
+	call	?_aud_outb_@@YAXHE@Z			; _aud_outb_
+
+; 124  : 
+; 125  : 	/* Set RIRB Base address */
+; 126  : 	rirb_base = (uintptr_t)_ihd_audio.rirb;
+
+	mov	eax, DWORD PTR ?_ihd_audio@@3U_hd_audio_@@A+16
+	mov	QWORD PTR rirb_base$[rsp], rax
+
+; 127  : 	printf ("RIRB Base -> %x\n", rirb_base);
+
+	mov	rdx, QWORD PTR rirb_base$[rsp]
+	lea	rcx, OFFSET FLAT:$SG3374
+	call	?printf@@YAXPEBDZZ			; printf
+
+; 128  : 	_aud_outl_(RIRBLBASE, rirb_base & 0xffffffff);
+
+	mov	eax, -1					; ffffffffH
+	mov	rcx, QWORD PTR rirb_base$[rsp]
+	and	rcx, rax
+	mov	rax, rcx
+	mov	edx, eax
+	mov	ecx, 80					; 00000050H
+	call	?_aud_outl_@@YAXHI@Z			; _aud_outl_
+
+; 129  : 	_aud_outl_(RIRBUBASE, rirb_base >> 32);
+
+	mov	rax, QWORD PTR rirb_base$[rsp]
+	shr	rax, 32					; 00000020H
+	mov	edx, eax
+	mov	ecx, 84					; 00000054H
+	call	?_aud_outl_@@YAXHI@Z			; _aud_outl_
+
+; 130  : 
+; 131  : 	_aud_outb_(RINTCNT, 0x42); 
+
+	mov	dl, 66					; 00000042H
+	mov	ecx, 90					; 0000005aH
+	call	?_aud_outb_@@YAXHE@Z			; _aud_outb_
+
+; 132  : 
+; 133  : 	/* Start DMA Engine */
+; 134  : 	_aud_outb_(RIRBCTL, 0x02);
+
+	mov	dl, 2
+	mov	ecx, 92					; 0000005cH
+	call	?_aud_outb_@@YAXHE@Z			; _aud_outb_
+
+; 135  : 
+; 136  : 	uint8_t rirb_ctl2 = _aud_inb_(RIRBCTL);
+
+	mov	ecx, 92					; 0000005cH
+	call	?_aud_inb_@@YAEH@Z			; _aud_inb_
+	mov	BYTE PTR rirb_ctl2$[rsp], al
+
+; 137  : 	printf ("RIRB Ctl ====== -> %x\n", rirb_ctl2);
+
+	movzx	eax, BYTE PTR rirb_ctl2$[rsp]
+	mov	edx, eax
+	lea	rcx, OFFSET FLAT:$SG3376
+	call	?printf@@YAXPEBDZZ			; printf
+
+; 138  : }
+
+	add	rsp, 56					; 00000038H
+	ret	0
+?setup_rirb@@YAXXZ ENDP					; setup_rirb
+_TEXT	ENDS
+; Function compile flags: /Odtp
+; File e:\xeneva project\xeneva\aurora\aurora\drivers\hda\hda.cpp
+_TEXT	SEGMENT
+reg$ = 32
+corb_entries$ = 36
+corb_base$ = 40
+?setup_corb@@YAXXZ PROC					; setup_corb
+
+; 61   : void setup_corb () {
+
+$LN9:
+	sub	rsp, 56					; 00000038H
+
+; 62   : 	
+; 63   : 	uint8_t reg;
+; 64   : 	uint64_t corb_base;
+; 65   : 	unsigned int corb_entries = 0;
+
+	mov	DWORD PTR corb_entries$[rsp], 0
+
+; 66   : 
+; 67   : 	reg = _aud_inb_(CORBSIZE);
+
+	mov	ecx, 78					; 0000004eH
+	call	?_aud_inb_@@YAEH@Z			; _aud_inb_
+	mov	BYTE PTR reg$[rsp], al
+
+; 68   : 
+; 69   : 	/* Check CORB size capabilities and choose the largest size */
+; 70   : 	if (reg & (1 << 6)) {
+
+	movzx	eax, BYTE PTR reg$[rsp]
+	and	eax, 64					; 00000040H
+	test	eax, eax
+	je	SHORT $LN6@setup_corb
+
+; 71   : 		corb_entries = 256;
+
+	mov	DWORD PTR corb_entries$[rsp], 256	; 00000100H
+
+; 72   : 		reg |= 0x2;
+
+	movzx	eax, BYTE PTR reg$[rsp]
+	or	eax, 2
+	mov	BYTE PTR reg$[rsp], al
+	jmp	SHORT $LN5@setup_corb
+$LN6@setup_corb:
+
+; 73   : 	} else if (reg & (1 << 5)) {
+
+	movzx	eax, BYTE PTR reg$[rsp]
+	and	eax, 32					; 00000020H
+	test	eax, eax
+	je	SHORT $LN4@setup_corb
+
+; 74   : 		corb_entries = 16;
+
+	mov	DWORD PTR corb_entries$[rsp], 16
+
+; 75   : 		reg |= 0x1;
+
+	movzx	eax, BYTE PTR reg$[rsp]
+	or	eax, 1
+	mov	BYTE PTR reg$[rsp], al
+	jmp	SHORT $LN3@setup_corb
+$LN4@setup_corb:
+
+; 76   : 	} else if (reg & (1 << 4)) {
+
+	movzx	eax, BYTE PTR reg$[rsp]
+	and	eax, 16
+	test	eax, eax
+	je	SHORT $LN2@setup_corb
+
+; 77   : 		corb_entries = 2;
+
+	mov	DWORD PTR corb_entries$[rsp], 2
+
+; 78   : 		reg |= 0x0;
+
+	movzx	eax, BYTE PTR reg$[rsp]
+	mov	BYTE PTR reg$[rsp], al
+
+; 79   : 	} else {
+
+	jmp	SHORT $LN1@setup_corb
+$LN2@setup_corb:
+
+; 80   : 		printf ("HD Audio: No Supported CORB Size!\n");
+
+	lea	rcx, OFFSET FLAT:$SG3356
+	call	?printf@@YAXPEBDZZ			; printf
+
+; 81   : 		corb_entries = 256;
+
+	mov	DWORD PTR corb_entries$[rsp], 256	; 00000100H
+
+; 82   : 		reg |= 0x2;
+
+	movzx	eax, BYTE PTR reg$[rsp]
+	or	eax, 2
+	mov	BYTE PTR reg$[rsp], al
+$LN1@setup_corb:
+$LN3@setup_corb:
+$LN5@setup_corb:
+
+; 83   : 	}
+; 84   : 
+; 85   : 	_aud_outb_(CORBSIZE, reg);
+
+	movzx	edx, BYTE PTR reg$[rsp]
+	mov	ecx, 78					; 0000004eH
+	call	?_aud_outb_@@YAXHE@Z			; _aud_outb_
+
+; 86   : 
+; 87   : 	printf ("CORB Entries -> %d\n", corb_entries);
+
+	mov	edx, DWORD PTR corb_entries$[rsp]
+	lea	rcx, OFFSET FLAT:$SG3357
+	call	?printf@@YAXPEBDZZ			; printf
+
+; 88   : 
+; 89   : 	/* Set CORB Base Address */
+; 90   : 	corb_base = (uintptr_t)_ihd_audio.corb;
+
+	mov	eax, DWORD PTR ?_ihd_audio@@3U_hd_audio_@@A+8
+	mov	QWORD PTR corb_base$[rsp], rax
+
+; 91   : 	_aud_outl_(CORBLBASE, corb_base & 0xffffffff);
+
+	mov	eax, -1					; ffffffffH
+	mov	rcx, QWORD PTR corb_base$[rsp]
+	and	rcx, rax
+	mov	rax, rcx
+	mov	edx, eax
+	mov	ecx, 64					; 00000040H
+	call	?_aud_outl_@@YAXHI@Z			; _aud_outl_
+
+; 92   : 	_aud_outl_(CORBUBASE, corb_base >> 32);
+
+	mov	rax, QWORD PTR corb_base$[rsp]
+	shr	rax, 32					; 00000020H
+	mov	edx, eax
+	mov	ecx, 68					; 00000044H
+	call	?_aud_outl_@@YAXHI@Z			; _aud_outl_
+
+; 93   : 
+; 94   : 	printf ("CORB BASE LO -> %x\n", corb_base & 0xffffffff);
+
+	mov	eax, -1					; ffffffffH
+	mov	rcx, QWORD PTR corb_base$[rsp]
+	and	rcx, rax
+	mov	rax, rcx
+	mov	rdx, rax
+	lea	rcx, OFFSET FLAT:$SG3359
+	call	?printf@@YAXPEBDZZ			; printf
+
+; 95   : 	printf ("CORB BASE HI -> %x\n", corb_base >> 32);
+
+	mov	rax, QWORD PTR corb_base$[rsp]
+	shr	rax, 32					; 00000020H
+	mov	rdx, rax
+	lea	rcx, OFFSET FLAT:$SG3360
+	call	?printf@@YAXPEBDZZ			; printf
+
+; 96   : 	/* Start DMA engine */
+; 97   : 	_aud_outb_(CORBCTL, 0x02);
+
+	mov	dl, 2
+	mov	ecx, 76					; 0000004cH
+	call	?_aud_outb_@@YAXHE@Z			; _aud_outb_
+
+; 98   : }
+
+	add	rsp, 56					; 00000038H
+	ret	0
+?setup_corb@@YAXXZ ENDP					; setup_corb
+_TEXT	ENDS
+; Function compile flags: /Odtp
+; File e:\xeneva project\xeneva\aurora\aurora\drivers\hda\hda.cpp
+_TEXT	SEGMENT
+v$ = 48
+p$ = 56
+?hda_handler@@YAX_KPEAX@Z PROC				; hda_handler
+
+; 53   : void hda_handler (size_t v, void* p) {
+
+$LN3:
+	mov	QWORD PTR [rsp+16], rdx
+	mov	QWORD PTR [rsp+8], rcx
+	sub	rsp, 40					; 00000028H
+
+; 54   : 	printf ("HD-Audio Interrupt fired++\n");
+
+	lea	rcx, OFFSET FLAT:$SG3344
+	call	?printf@@YAXPEBDZZ			; printf
+
+; 55   : 	apic_local_eoi();
+
+	call	?apic_local_eoi@@YAXXZ			; apic_local_eoi
+
+; 56   : }
+
+	add	rsp, 40					; 00000028H
+	ret	0
+?hda_handler@@YAX_KPEAX@Z ENDP				; hda_handler
+_TEXT	ENDS
+; Function compile flags: /Odtp
+; File e:\xeneva project\xeneva\aurora\aurora\drivers\hda\hda.cpp
+_TEXT	SEGMENT
+mmio$ = 0
+reg$ = 32
+?_aud_inb_@@YAEH@Z PROC					; _aud_inb_
+
+; 47   : uint8_t _aud_inb_ (int reg) {
+
+$LN3:
+	mov	DWORD PTR [rsp+8], ecx
+	sub	rsp, 24
+
+; 48   : 	volatile uint8_t* mmio = (uint8_t*)(_ihd_audio.mmio + reg);
+
+	movsxd	rax, DWORD PTR reg$[rsp]
+	mov	rcx, QWORD PTR ?_ihd_audio@@3U_hd_audio_@@A
+	add	rcx, rax
+	mov	rax, rcx
+	mov	QWORD PTR mmio$[rsp], rax
+
+; 49   : 	return *mmio;
+
+	mov	rax, QWORD PTR mmio$[rsp]
+	movzx	eax, BYTE PTR [rax]
+
+; 50   : }
+
+	add	rsp, 24
+	ret	0
+?_aud_inb_@@YAEH@Z ENDP					; _aud_inb_
+_TEXT	ENDS
+; Function compile flags: /Odtp
+; File e:\xeneva project\xeneva\aurora\aurora\drivers\hda\hda.cpp
+_TEXT	SEGMENT
+mmio$ = 0
+reg$ = 32
+value$ = 40
+?_aud_outb_@@YAXHE@Z PROC				; _aud_outb_
+
+; 42   : void _aud_outb_ (int reg, uint8_t value) {
+
+$LN3:
+	mov	BYTE PTR [rsp+16], dl
+	mov	DWORD PTR [rsp+8], ecx
+	sub	rsp, 24
+
+; 43   : 	volatile uint8_t* mmio = (uint8_t*)(_ihd_audio.mmio + reg);
+
+	movsxd	rax, DWORD PTR reg$[rsp]
+	mov	rcx, QWORD PTR ?_ihd_audio@@3U_hd_audio_@@A
+	add	rcx, rax
+	mov	rax, rcx
+	mov	QWORD PTR mmio$[rsp], rax
+
+; 44   : 	*mmio = value;
+
+	mov	rax, QWORD PTR mmio$[rsp]
+	movzx	ecx, BYTE PTR value$[rsp]
+	mov	BYTE PTR [rax], cl
+
+; 45   : }
+
+	add	rsp, 24
+	ret	0
+?_aud_outb_@@YAXHE@Z ENDP				; _aud_outb_
+_TEXT	ENDS
+; Function compile flags: /Odtp
+; File e:\xeneva project\xeneva\aurora\aurora\drivers\hda\hda.cpp
+_TEXT	SEGMENT
+mmio$ = 0
+reg$ = 32
+?_aud_inw_@@YAGH@Z PROC					; _aud_inw_
+
+; 36   : uint16_t _aud_inw_(int reg) {
+
+$LN3:
+	mov	DWORD PTR [rsp+8], ecx
+	sub	rsp, 24
+
+; 37   : 	volatile uint16_t* mmio = (uint16_t*)(_ihd_audio.mmio + reg);
+
+	movsxd	rax, DWORD PTR reg$[rsp]
+	mov	rcx, QWORD PTR ?_ihd_audio@@3U_hd_audio_@@A
+	add	rcx, rax
+	mov	rax, rcx
+	mov	QWORD PTR mmio$[rsp], rax
+
+; 38   : 	return *mmio;
+
+	mov	rax, QWORD PTR mmio$[rsp]
+	movzx	eax, WORD PTR [rax]
+
+; 39   : }
+
+	add	rsp, 24
+	ret	0
+?_aud_inw_@@YAGH@Z ENDP					; _aud_inw_
+_TEXT	ENDS
+; Function compile flags: /Odtp
+; File e:\xeneva project\xeneva\aurora\aurora\drivers\hda\hda.cpp
+_TEXT	SEGMENT
+mmio$ = 0
+reg$ = 32
+value$ = 40
+?_aud_outw_@@YAXHG@Z PROC				; _aud_outw_
+
+; 31   : void _aud_outw_ (int reg, uint16_t value) {
+
+$LN3:
+	mov	WORD PTR [rsp+16], dx
+	mov	DWORD PTR [rsp+8], ecx
+	sub	rsp, 24
+
+; 32   : 	uint16_t* mmio = (uint16_t*)(_ihd_audio.mmio + reg);
+
+	movsxd	rax, DWORD PTR reg$[rsp]
+	mov	rcx, QWORD PTR ?_ihd_audio@@3U_hd_audio_@@A
+	add	rcx, rax
+	mov	rax, rcx
+	mov	QWORD PTR mmio$[rsp], rax
+
+; 33   : 	*mmio = value;
+
+	mov	rax, QWORD PTR mmio$[rsp]
+	movzx	ecx, WORD PTR value$[rsp]
+	mov	WORD PTR [rax], cx
+
+; 34   : }
+
+	add	rsp, 24
+	ret	0
+?_aud_outw_@@YAXHG@Z ENDP				; _aud_outw_
+_TEXT	ENDS
+; Function compile flags: /Odtp
+; File e:\xeneva project\xeneva\aurora\aurora\drivers\hda\hda.cpp
+_TEXT	SEGMENT
+mmio$ = 0
+reg$ = 32
+?_aud_inl_@@YAIH@Z PROC					; _aud_inl_
+
+; 26   : uint32_t _aud_inl_ (int reg) {
+
+$LN3:
+	mov	DWORD PTR [rsp+8], ecx
+	sub	rsp, 24
+
+; 27   : 	volatile uint32_t* mmio = (uint32_t*)(_ihd_audio.mmio + reg);
+
+	movsxd	rax, DWORD PTR reg$[rsp]
+	mov	rcx, QWORD PTR ?_ihd_audio@@3U_hd_audio_@@A
+	add	rcx, rax
+	mov	rax, rcx
+	mov	QWORD PTR mmio$[rsp], rax
+
+; 28   : 	return *mmio;
+
+	mov	rax, QWORD PTR mmio$[rsp]
+	mov	eax, DWORD PTR [rax]
+
+; 29   : }
+
+	add	rsp, 24
+	ret	0
+?_aud_inl_@@YAIH@Z ENDP					; _aud_inl_
+_TEXT	ENDS
+; Function compile flags: /Odtp
+; File e:\xeneva project\xeneva\aurora\aurora\drivers\hda\hda.cpp
+_TEXT	SEGMENT
+mmio$ = 0
+reg$ = 32
+value$ = 40
+?_aud_outl_@@YAXHI@Z PROC				; _aud_outl_
+
+; 21   : void _aud_outl_(int reg, uint32_t value) {
+
+$LN3:
+	mov	DWORD PTR [rsp+16], edx
+	mov	DWORD PTR [rsp+8], ecx
+	sub	rsp, 24
+
+; 22   : 	 volatile uint32_t* mmio = (uint32_t*)(_ihd_audio.mmio + reg);
+
+	movsxd	rax, DWORD PTR reg$[rsp]
+	mov	rcx, QWORD PTR ?_ihd_audio@@3U_hd_audio_@@A
+	add	rcx, rax
+	mov	rax, rcx
+	mov	QWORD PTR mmio$[rsp], rax
+
+; 23   : 	*mmio = value;
+
+	mov	rax, QWORD PTR mmio$[rsp]
+	mov	ecx, DWORD PTR value$[rsp]
+	mov	DWORD PTR [rax], ecx
+
+; 24   : }
+
+	add	rsp, 24
+	ret	0
+?_aud_outl_@@YAXHI@Z ENDP				; _aud_outl_
+_TEXT	ENDS
+; Function compile flags: /Odtp
+; File e:\xeneva project\xeneva\aurora\aurora\drivers\hda\hda.cpp
+_TEXT	SEGMENT
+ring_address$ = 32
+pci_dev$ = 48
+?hda_initialize@@YAXXZ PROC				; hda_initialize
+
+; 396  : void hda_initialize () {
+
+$LN4:
+	sub	rsp, 312				; 00000138H
+
+; 397  : 	pci_device_info pci_dev;
+; 398  : 	if (!pci_find_device_id (0x2668, 0x8086, &pci_dev)){
+
+	lea	r8, QWORD PTR pci_dev$[rsp]
+	mov	dx, 32902				; 00008086H
+	mov	cx, 9832				; 00002668H
+	call	?pci_find_device_id@@YA_NGGPEATpci_device_info@@@Z ; pci_find_device_id
+	movzx	eax, al
+	test	eax, eax
+	jne	SHORT $LN1@hda_initia
+
+; 399  : 		printf ("No HD-Audio was found\n");
+
+	lea	rcx, OFFSET FLAT:$SG3511
+	call	?printf@@YAXPEBDZZ			; printf
+
+; 400  : 		return;
+
+	jmp	$LN2@hda_initia
+$LN1@hda_initia:
+
+; 401  : 	}
+; 402  : 
+; 403  : 	printf ("HD-Audio found\n");
+
+	lea	rcx, OFFSET FLAT:$SG3512
+	call	?printf@@YAXPEBDZZ			; printf
+
+; 404  : 	printf ("HD-Base Address -> %x\n", pci_dev.device.nonBridge.baseAddress[0] & ~(0xF));
+
+	mov	eax, 4
+	imul	rax, 0
+	mov	eax, DWORD PTR pci_dev$[rsp+rax+16]
+	and	eax, -16				; fffffff0H
+	mov	edx, eax
+	lea	rcx, OFFSET FLAT:$SG3513
+	call	?printf@@YAXPEBDZZ			; printf
+
+; 405  : 	printf ("HD-Audio Interrupt line -> %d\n", pci_dev.device.nonBridge.interruptLine);
+
+	movzx	eax, BYTE PTR pci_dev$[rsp+60]
+	mov	edx, eax
+	lea	rcx, OFFSET FLAT:$SG3514
+	call	?printf@@YAXPEBDZZ			; printf
+
+; 406  : 	printf ("HD-Audio Interrupt pin -> %d\n", pci_dev.device.nonBridge.interruptPin);
+
+	movzx	eax, BYTE PTR pci_dev$[rsp+61]
+	mov	edx, eax
+	lea	rcx, OFFSET FLAT:$SG3515
+	call	?printf@@YAXPEBDZZ			; printf
+
+; 407  : 	printf ("HD-Audio ALL Interrupt line -> %d\n", pci_dev.device.all.interruptLine);
+
+	movzx	eax, BYTE PTR pci_dev$[rsp+60]
+	mov	edx, eax
+	lea	rcx, OFFSET FLAT:$SG3516
+	call	?printf@@YAXPEBDZZ			; printf
+
+; 408  : 
+; 409  : 	uint64_t* ring_address = (uint64_t*)malloc(1024 + 2048 + BDL_BYTES_ROUNDED + 128);
+
+	mov	ecx, 3328				; 00000d00H
+	call	?malloc@@YAPEAX_K@Z			; malloc
+	mov	QWORD PTR ring_address$[rsp], rax
+
+; 410  : 
+; 411  : 	interrupt_set (pci_dev.device.nonBridge.interruptLine, hda_handler, pci_dev.device.nonBridge.interruptLine);
+
+	movzx	eax, BYTE PTR pci_dev$[rsp+60]
+	movzx	r8d, BYTE PTR pci_dev$[rsp+60]
+	lea	rdx, OFFSET FLAT:?hda_handler@@YAX_KPEAX@Z ; hda_handler
+	mov	ecx, eax
+	call	?interrupt_set@@YAX_KP6AX0PEAX@ZE@Z	; interrupt_set
+
+; 412  : 	_ihd_audio.mmio = (pci_dev.device.nonBridge.baseAddress[0] & ~(0xF));
+
+	mov	eax, 4
+	imul	rax, 0
+	mov	eax, DWORD PTR pci_dev$[rsp+rax+16]
+	and	eax, -16				; fffffff0H
+	mov	eax, eax
+	mov	QWORD PTR ?_ihd_audio@@3U_hd_audio_@@A, rax
+
+; 413  : 	_ihd_audio.corb = (uint64_t*)ring_address;   //for 256 entries only 1 kb will be used
+
+	mov	rax, QWORD PTR ring_address$[rsp]
+	mov	QWORD PTR ?_ihd_audio@@3U_hd_audio_@@A+8, rax
+
+; 414  : 	_ihd_audio.rirb = (uint64_t*)pmmngr_alloc();
+
+	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
+	mov	QWORD PTR ?_ihd_audio@@3U_hd_audio_@@A+16, rax
+
+; 415  : 
+; 416  : 
+; 417  : 	printf ("HD-MMIO -> %x\n", _ihd_audio.mmio);
+
+	mov	rdx, QWORD PTR ?_ihd_audio@@3U_hd_audio_@@A
+	lea	rcx, OFFSET FLAT:$SG3522
+	call	?printf@@YAXPEBDZZ			; printf
+
+; 418  : 	printf ("HD-Audio CORB -> %x\n", _ihd_audio.corb);
+
+	mov	rdx, QWORD PTR ?_ihd_audio@@3U_hd_audio_@@A+8
+	lea	rcx, OFFSET FLAT:$SG3523
+	call	?printf@@YAXPEBDZZ			; printf
+
+; 419  : 	hda_reset();
+
+	call	?hda_reset@@YAXXZ			; hda_reset
+$LN2@hda_initia:
+
+; 420  : 
+; 421  : }
+
+	add	rsp, 312				; 00000138H
+	ret	0
+?hda_initialize@@YAXXZ ENDP				; hda_initialize
+_TEXT	ENDS
 END

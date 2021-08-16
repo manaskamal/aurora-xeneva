@@ -17,7 +17,7 @@ extern "C"
 #endif
 
 typedef unsigned char *_va_list_;
-    
+typedef unsigned char * va_list;
 
 #ifdef __cplusplus
 }

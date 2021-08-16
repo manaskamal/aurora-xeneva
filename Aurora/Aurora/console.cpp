@@ -54,6 +54,12 @@ void putc (char c) {
 }
 
 
+void console_pixel(uint32_t col, unsigned x, unsigned y)
+{
+	fb[x + y * screen_width] = col;
+}
+
+
 //! Prints string to console output
 void puts(char *s){
 	

@@ -79,10 +79,6 @@ static unsigned int mouse_x_old = 0;
 static unsigned int mouse_y_old = 0;
 
 
-void thread_test (void*) {
-	//print_text ("hello uthread\n");
-	while(1) {}
-}
 /* ========================================================================
  *  Main Entry Point
  * ========================================================================
@@ -137,8 +133,6 @@ void main () {
 	update_rect.w = width;
 	update_rect.h = height;
 
-
-	sys_create_uthread (thread_test);
 	//FILE f;
 	//sys_open_file (&f, "rain.jpg");
 	//unsigned char* buffer_i = (unsigned char*)0x0000500000000000;
@@ -213,6 +207,10 @@ void main () {
 			if (type == WIN_TYPE_ROOT) {
 				win_coord_x = 0;
 				win_coord_y = 0;
+			}
+			if (msg.dword5 & 16) {
+				msg.dword8 = win_coord_x;
+				msg.dword9 = win_coord_y;
 			}
 			window_t *win = create_window (msg.dword3,msg.dword8,msg.dword9,msg.dword6,msg.dword7, type);
 			message_t msg1;

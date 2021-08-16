@@ -17,12 +17,16 @@ void main () {
 	print_text ("Operating System : Aurora's Xeneva v1.0\n");
 	print_text ("XNShell v1.0\n");
 
+	/*uint32_t status = fork();
+	if (status)
+		print_text ("Current process forked\n");
+	exec ("dwm3.exe", status);*/
 	message_t msg;
 	while(1) {
 		message_receive (&msg);
 
 		if (msg.type == 3) {
-			print_text ("XNShell Key Pressed\n");
+			print_text ("Hello\n");
 			memset(&msg,0,sizeof (message_t));
 		}
 

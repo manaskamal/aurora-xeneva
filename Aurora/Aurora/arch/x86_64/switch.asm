@@ -66,8 +66,8 @@ execute_idle:
 	
 	;mov qword[fs:0x20], r8
 
-	;mov r10, [rcx + 0xC0]
-	;mov cr3, r10
+	mov r10, [rcx + 0xC0]
+	mov cr3, r10
 	
 	; returning
     mov r9, 1

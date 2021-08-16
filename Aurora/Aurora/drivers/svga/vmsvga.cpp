@@ -84,7 +84,8 @@ void svga_init () {
 
 	//!interrupts
 	if (svga_dev.capabilities & SVGA_CAP_IRQMASK) {
-		uint8_t irq = pci_config_read8 (&svga_dev.pci_addr, offsetof (pci_config_space,intr_line));
+		uint8_t irq = pci_config_read8 (&svga_dev.pci_addr, offsetof (pci_config_space,intr_line));	
+		svga_dev.irq_line = irq;
 		svga_write_reg (SVGA_REG_IRQMASK, 0);
 		printf ("Irq of svga -> %d\n", irq);
 		outportd (svga_dev.io_base + SVGA_IRQSTATUS_PORT, 0xff);
@@ -573,7 +574,7 @@ void svga_interrupt_handler (size_t s, void* p) {
 	printf ("SVGA interrupted\n");
 	if (!irq_flags)
 		printf ("[VMware SVGA]: spurious SVGA IRQ\n");
-	interrupt_end();
+	interrupt_end(svga_dev.irq_line);
 }
 
 

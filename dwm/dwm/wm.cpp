@@ -262,11 +262,12 @@ win_paint:
 		
 		if (wm_window_paint_count == 0)
 			wm_window_paint = false;
-		
+
+		sys_fb_update();
 	}
 
 	//!send update command to GPU
-	sys_fb_update();
+	
 	
 }
 

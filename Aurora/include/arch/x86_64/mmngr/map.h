@@ -22,11 +22,12 @@
 #define MAP_GLOBAL   2    //global gives access to every processes in the proc list
 
 //! Security Attributes
-#define ATTRIBUTE_READ  1
-#define ATTRIBUTE_WRITE 2
-#define ATTRIBUTE_USER  4
+#define ATTRIBUTE_READ  3
+#define ATTRIBUTE_WRITE 4
+#define ATTRIBUTE_USER  5
 
 //! Given an address do memory mapping
-extern void *map_memory (uint64_t address, uint32_t length, uint8_t map_type, uint8_t attribute);
+extern void *map_memory (uint64_t address, uint32_t length, uint8_t attribute);
+//! unmap a given memory region
 extern void unmap_memory (void* addr, uint32_t length);
 #endif

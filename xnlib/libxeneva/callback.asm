@@ -175,3 +175,36 @@ sys_sleep:
 	  mov r13, rcx
 	  syscall
 	  ret
+
+global fork
+fork:
+    mov r12, 27
+	syscall
+	ret
+
+global exec
+exec:
+   mov r12, 28
+   mov r13, rcx
+   mov r14, rdx
+   syscall
+   ret
+
+global mmap
+mmap:
+   mov r12, 29
+   mov r13, rcx
+   mov r14, rdx
+   mov r15, r8
+   syscall
+   ret
+
+global munmap
+munmap:
+   mov r12, 30
+   mov r13, rcx
+   mov r14, rdx
+   syscall
+   ret
+
+

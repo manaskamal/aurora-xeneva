@@ -41,7 +41,7 @@ EXTRN	x64_sti:PROC
 EXTRN	x64_inportb:PROC
 EXTRN	?inportb@@YAEG@Z:PROC				; inportb
 EXTRN	?outportb@@YAXGE@Z:PROC				; outportb
-EXTRN	?interrupt_end@@YAXXZ:PROC			; interrupt_end
+EXTRN	?interrupt_end@@YAXI@Z:PROC			; interrupt_end
 EXTRN	?interrupt_set@@YAX_KP6AX0PEAX@ZE@Z:PROC	; interrupt_set
 EXTRN	?memset@@YAXPEAXEI@Z:PROC			; memset
 EXTRN	memcpy:PROC
@@ -85,7 +85,7 @@ $pdata$?left_button_up@@YAHXZ DD imagerel $LN5
 	DD	imagerel $LN5+76
 	DD	imagerel $unwind$?left_button_up@@YAHXZ
 $pdata$?mouse_handler@@YAX_KPEAX@Z DD imagerel $LN27
-	DD	imagerel $LN27+1090
+	DD	imagerel $LN27+1095
 	DD	imagerel $unwind$?mouse_handler@@YAX_KPEAX@Z
 pdata	ENDS
 CRT$XCU	SEGMENT
@@ -630,9 +630,10 @@ $LN23@mouse_hand:
 	mov	cl, 1
 	call	?set_multi_task_enable@@YAX_N@Z		; set_multi_task_enable
 
-; 171  : 	interrupt_end();
+; 171  : 	interrupt_end(12);
 
-	call	?interrupt_end@@YAXXZ			; interrupt_end
+	mov	ecx, 12
+	call	?interrupt_end@@YAXI@Z			; interrupt_end
 
 ; 172  : 	x64_sti();
 

@@ -28,15 +28,15 @@ _BSS	SEGMENT
 ?total_clusters@@3IA DD 01H DUP (?)			; total_clusters
 _BSS	ENDS
 CONST	SEGMENT
-$SG3237	DB	'%s             %d bytes', 0aH, 00H
+$SG3239	DB	'%s             %d bytes', 0aH, 00H
 	ORG $+7
-$SG3245	DB	'%s             %d bytes', 0aH, 00H
+$SG3247	DB	'%s             %d bytes', 0aH, 00H
 	ORG $+7
-$SG3371	DB	'Root Dir entries scanning', 0aH, 00H
+$SG3373	DB	'Root Dir entries scanning', 0aH, 00H
 	ORG $+5
-$SG3386	DB	'Other file size -> %s, dirent attrib -> %x, count ->%d', 0aH
+$SG3388	DB	'Other file size -> %s, dirent attrib -> %x, count ->%d', 0aH
 	DB	00H
-$SG3468	DB	'Empty entry found', 0aH, 00H
+$SG3470	DB	'Empty entry found', 0aH, 00H
 CONST	ENDS
 PUBLIC	?initialize_fat32@@YAXXZ			; initialize_fat32
 PUBLIC	?fat32_open@@YA?AU_file_@@PEBD@Z		; fat32_open
@@ -1046,7 +1046,7 @@ $LN6@fat32_list:
 	mov	rax, QWORD PTR dir$[rsp]
 	mov	r8d, DWORD PTR [rax+28]
 	lea	rdx, QWORD PTR filename$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3237
+	lea	rcx, OFFSET FLAT:$SG3239
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 330  : 		dir++;
@@ -1090,7 +1090,7 @@ $LN3@fat32_list:
 	mov	rax, QWORD PTR dir2$[rsp]
 	mov	r8d, DWORD PTR [rax+28]
 	lea	rdx, QWORD PTR filename2$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3245
+	lea	rcx, OFFSET FLAT:$SG3247
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 338  : 		dir2++;
@@ -1950,7 +1950,7 @@ $LN4@create_dir:
 
 ; 719  : 				printf ("Empty entry found\n");
 
-	lea	rcx, OFFSET FLAT:$SG3468
+	lea	rcx, OFFSET FLAT:$SG3470
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 720  : 				memset(dirent, 0, sizeof(fat32_dir));
@@ -2638,7 +2638,7 @@ $LN9:
 ; 547  : 
 ; 548  : 	printf ("Root Dir entries scanning\n");
 
-	lea	rcx, OFFSET FLAT:$SG3371
+	lea	rcx, OFFSET FLAT:$SG3373
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 549  : 	fat32_dir *dirent;
@@ -2700,7 +2700,7 @@ $LN3@list_fat_e:
 	mov	r9d, DWORD PTR i$1[rsp]
 	mov	r8d, eax
 	lea	rdx, QWORD PTR filename2$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3386
+	lea	rcx, OFFSET FLAT:$SG3388
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 560  : 			dirent++;

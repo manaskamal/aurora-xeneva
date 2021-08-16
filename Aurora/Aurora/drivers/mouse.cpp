@@ -168,7 +168,7 @@ read_next:
 	}
 
 	set_multi_task_enable(true);
-	interrupt_end();
+	interrupt_end(12);
 	x64_sti();
 }
 

@@ -11,6 +11,8 @@
 #include <arch\x86_64\exception.h>
 #include <arch\x86_64\mmngr\vmmngr.h>
 #include <arch\x86_64\thread.h>
+#include <drivers\svga\vmsvga.h>
+#include <screen.h>
 
 void panic(const char* msg,...) {
 	printf ("***ARCH x86_64 : Exception Occured ***\n");
@@ -131,7 +133,7 @@ void general_protection_fault (size_t v, void* p){
 void page_fault (size_t vector, void* param){
 	x64_cli();
 	interrupt_stack_frame *frame = (interrupt_stack_frame*)param;
-	size_t vaddr = x64_read_cr2();
+	void* vaddr = (void*)x64_read_cr2();
 
 	int present = !(frame->error & 0x1);
 	int rw = frame->error & 0x2;
@@ -139,7 +141,8 @@ void page_fault (size_t vector, void* param){
 	int resv = frame->error & 0x8;
 	int id = frame->error & 0x10;
  
-	panic ("Page Fault at address %x\n",vaddr);
+	panic ("Page Fault \n");
+	printf ("Faulting Address -> %x\n", vaddr);
 	printf ("__PROCESSOR TRACE__\n");
 	printf ("RIP -> %x\n", frame->rip);
 	printf ("Stack -> %x\n", frame->rsp);
@@ -159,6 +162,7 @@ void page_fault (size_t vector, void* param){
 		printf ("*** Invalid Page ****\n");
 	//! here we must check for swap area for valid block
 	//map_page((uint64_t)pmmngr_alloc(),(uint64_t)vaddr);
+	svga_update(0,0,get_screen_width(), get_screen_height());
 	for(;;);
 }
 

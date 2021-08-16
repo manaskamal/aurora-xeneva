@@ -82,7 +82,7 @@ void rtc_clock_update(size_t s, void* p) {
 		rtc_read_datetime();
 	}
 	//!send a EOI to apic
-	apic_local_eoi();
+	interrupt_end(8);
 }
 
 void initialize_rtc () {

@@ -8,6 +8,7 @@
  * ==============================================*/
 
 #include <hal.h>
+#include <arch\x86_64\pic.h>
 
 #ifdef ARCH_X64
 #include <arch\x86_64\ioapic.h>
@@ -118,9 +119,14 @@ void  outportd (uint16_t port, uint32_t data) {
 }
 
 //! Architecture specific
-void interrupt_end () { 
+void interrupt_end (uint32_t irq) { 
 #ifdef ARCH_X64
+#ifdef USE_PIC
+	pic_interrupt_eoi(irq);
+#endif
+#ifdef USE_APIC
 	apic_local_eoi ();
+#endif
 #elif ARCH_ARM
 	//! update comming soon..
 #elif ARCH_ARM64
@@ -130,7 +136,12 @@ void interrupt_end () {
 
 void interrupt_set (size_t vector, void (*fn)(size_t, void* p),uint8_t irq){
 #ifdef ARCH_X64
+#ifdef USE_PIC
+	setvect(32 + vector, fn);
+#endif
+#ifdef USE_APIC
 	ioapic_register_irq(vector,fn,irq);
+#endif
 #elif  ARCH_ARM
 	//! update comming soon..
 #elif ARCH_ARM64

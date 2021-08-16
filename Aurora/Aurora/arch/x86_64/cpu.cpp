@@ -12,6 +12,7 @@
 #include <arch\x86_64\cpu.h>
 #include <arch\x86_64\exception.h>
 #include <arch\x86_64\user64.h>
+#include <arch\x86_64\pic.h>
 
 
 //! Global Descriptor Table functions
@@ -185,8 +186,14 @@ void hal_x86_64_init () {
 	//! initialize all exception handlers
 	exception_init ();
 
+#ifdef USE_PIC
+	initialize_pic(0x20, 0x28);
+#endif
+
+#ifdef USE_APIC
 	//!Initialize APIC
 	initialize_apic ();
+#endif
 
 	//!Enable EFER and SYSCALL Extension
 	size_t efer = x64_read_msr(IA32_EFER);

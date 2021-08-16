@@ -28,7 +28,7 @@ _BSS	SEGMENT
 current_thread DQ 01H DUP (?)
 _BSS	ENDS
 CONST	SEGMENT
-$SG3280	DB	'Idle', 00H
+$SG3282	DB	'Idle', 00H
 CONST	ENDS
 PUBLIC	?initialize_scheduler@@YAXXZ			; initialize_scheduler
 PUBLIC	?scheduler_start@@YAXXZ				; scheduler_start
@@ -53,9 +53,7 @@ EXTRN	?pmmngr_alloc@@YAPEAXXZ:PROC			; pmmngr_alloc
 EXTRN	?pmmngr_free@@YAXPEAX@Z:PROC			; pmmngr_free
 EXTRN	?apic_local_eoi@@YAXXZ:PROC			; apic_local_eoi
 EXTRN	x64_cli:PROC
-EXTRN	x64_sti:PROC
 EXTRN	x64_read_cr3:PROC
-EXTRN	x64_write_cr3:PROC
 EXTRN	?setvect@@YAX_KP6AX0PEAX@Z@Z:PROC		; setvect
 EXTRN	save_context:PROC
 EXTRN	execute_idle:PROC
@@ -103,7 +101,7 @@ $pdata$?next_task@@YAXXZ DD imagerel $LN9
 	DD	imagerel $LN9+147
 	DD	imagerel $unwind$?next_task@@YAXXZ
 $pdata$?scheduler_isr@@YAX_KPEAX@Z DD imagerel $LN8
-	DD	imagerel $LN8+279
+	DD	imagerel $LN8+255
 	DD	imagerel $unwind$?scheduler_isr@@YAX_KPEAX@Z
 pdata	ENDS
 xdata	SEGMENT
@@ -228,12 +226,7 @@ $LN1@scheduler_:
 
 ; 240  : 		}
 ; 241  : 		
-; 242  : 		x64_write_cr3 (current_thread->cr3);
-
-	mov	rax, QWORD PTR current_thread
-	mov	rcx, QWORD PTR [rax+192]
-	call	x64_write_cr3
-
+; 242  : 		//x64_write_cr3 (current_thread->cr3);
 ; 243  : 		mutex_unlock (scheduler_mutex);
 
 	mov	rcx, QWORD PTR ?scheduler_mutex@@3PEAUmutex_t@@EA ; scheduler_mutex
@@ -256,10 +249,7 @@ $sched_end$9:
 
 	call	?apic_local_eoi@@YAXXZ			; apic_local_eoi
 
-; 249  : 	x64_sti();
-
-	call	x64_sti
-
+; 249  : 	//x64_sti();
 ; 250  : 	
 ; 251  : }
 
@@ -1444,7 +1434,7 @@ $LN3:
 	mov	QWORD PTR tv70[rsp], rax
 	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
 	mov	BYTE PTR [rsp+32], 1
-	lea	r9, OFFSET FLAT:$SG3280
+	lea	r9, OFFSET FLAT:$SG3282
 	mov	rcx, QWORD PTR tv70[rsp]
 	mov	r8, rcx
 	mov	rdx, rax

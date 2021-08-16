@@ -12,6 +12,7 @@
 #include <fs\fat32.h>
 #include <vfs.h>
 #include <string.h>
+#include <stdio.h>
 
 file_system_t sys;
 
@@ -28,14 +29,15 @@ void initialize_vfs () {
 }
 
 FILE open (const char* filename) {
-	return sys.sys_open(filename);
+	FILE f =  sys.sys_open(filename);
+	return f;
 }
-void read (FILE *pfile, unsigned char* buffer,unsigned int count) {
-    sys.sys_read (pfile,buffer,count);
+void read (FILE *f, unsigned char* buffer,unsigned int count) {
+    sys.sys_read (f,buffer,count);
 }
 
-void read_blk (FILE *pfile, unsigned char *buffer) {
-	sys.sys_read_blk(pfile,buffer);
+void read_blk (FILE *f, unsigned char *buffer) {
+	sys.sys_read_blk(f,buffer);
 }
 
 

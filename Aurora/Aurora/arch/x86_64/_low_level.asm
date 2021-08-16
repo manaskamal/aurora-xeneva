@@ -282,6 +282,10 @@ flush_tlb:
        invlpg [rcx]
 	   ret
 
+global cache_flush
+cache_flush:
+       wbinvd
+	   ret
 
 ;======================================
 ; STACK FUNCTIONS

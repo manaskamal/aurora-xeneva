@@ -37,4 +37,6 @@ extern uint64_t sys_get_free_ram ();
 extern void sys_sleep (uint64_t ms);
 extern void sys_exit();
 extern void sys_fb_move_cursor (uint32_t x, uint32_t y);
+extern uint32_t fork ();
+extern void exec (const char* filename, uint32_t pid);
 #endif

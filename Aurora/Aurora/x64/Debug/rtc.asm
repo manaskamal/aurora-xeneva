@@ -28,9 +28,9 @@ PUBLIC	?set_rtc_register@@YAXGE@Z			; set_rtc_register
 PUBLIC	?is_updating_rtc@@YAHXZ				; is_updating_rtc
 PUBLIC	?rtc_read_datetime@@YAXXZ			; rtc_read_datetime
 PUBLIC	?rtc_clock_update@@YAX_KPEAX@Z			; rtc_clock_update
-EXTRN	?apic_local_eoi@@YAXXZ:PROC			; apic_local_eoi
 EXTRN	x64_inportb:PROC
 EXTRN	x64_outportb:PROC
+EXTRN	?interrupt_end@@YAXI@Z:PROC			; interrupt_end
 EXTRN	?interrupt_set@@YAX_KP6AX0PEAX@ZE@Z:PROC	; interrupt_set
 _BSS	SEGMENT
 bcd	DB	01H DUP (?)
@@ -52,7 +52,7 @@ $pdata$?rtc_read_datetime@@YAXXZ DD imagerel $LN6
 	DD	imagerel $LN6+455
 	DD	imagerel $unwind$?rtc_read_datetime@@YAXXZ
 $pdata$?rtc_clock_update@@YAX_KPEAX@Z DD imagerel $LN6
-	DD	imagerel $LN6+79
+	DD	imagerel $LN6+84
 	DD	imagerel $unwind$?rtc_clock_update@@YAX_KPEAX@Z
 pdata	ENDS
 xdata	SEGMENT
@@ -114,9 +114,10 @@ $LN1@rtc_clock_:
 
 ; 83   : 	}
 ; 84   : 	//!send a EOI to apic
-; 85   : 	apic_local_eoi();
+; 85   : 	interrupt_end(8);
 
-	call	?apic_local_eoi@@YAXXZ			; apic_local_eoi
+	mov	ecx, 8
+	call	?interrupt_end@@YAXI@Z			; interrupt_end
 
 ; 86   : }
 

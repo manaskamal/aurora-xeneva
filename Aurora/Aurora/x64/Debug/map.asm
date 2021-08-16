@@ -5,23 +5,24 @@ include listing.inc
 INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
-PUBLIC	?map_memory@@YAPEAX_KIEE@Z			; map_memory
+PUBLIC	?map_memory@@YAPEAX_KIE@Z			; map_memory
 PUBLIC	?unmap_memory@@YAXPEAXI@Z			; unmap_memory
 EXTRN	?pmmngr_alloc@@YAPEAXXZ:PROC			; pmmngr_alloc
 EXTRN	?map_page@@YA_N_K0@Z:PROC			; map_page
 EXTRN	?unmap_page@@YAX_K@Z:PROC			; unmap_page
 EXTRN	?get_free_page@@YAPEA_K_K_N@Z:PROC		; get_free_page
+EXTRN	?get_current_process@@YAPEAU_process_@@XZ:PROC	; get_current_process
 pdata	SEGMENT
-$pdata$?map_memory@@YAPEAX_KIEE@Z DD imagerel $LN14
-	DD	imagerel $LN14+343
-	DD	imagerel $unwind$?map_memory@@YAPEAX_KIEE@Z
+$pdata$?map_memory@@YAPEAX_KIE@Z DD imagerel $LN14
+	DD	imagerel $LN14+348
+	DD	imagerel $unwind$?map_memory@@YAPEAX_KIE@Z
 $pdata$?unmap_memory@@YAXPEAXI@Z DD imagerel $LN8
 	DD	imagerel $LN8+130
 	DD	imagerel $unwind$?unmap_memory@@YAXPEAXI@Z
 pdata	ENDS
 xdata	SEGMENT
-$unwind$?map_memory@@YAPEAX_KIEE@Z DD 011701H
-	DD	08217H
+$unwind$?map_memory@@YAPEAX_KIE@Z DD 011201H
+	DD	0a212H
 $unwind$?unmap_memory@@YAXPEAXI@Z DD 010d01H
 	DD	0620dH
 xdata	ENDS
@@ -34,40 +35,45 @@ addr$ = 64
 length$ = 72
 ?unmap_memory@@YAXPEAXI@Z PROC				; unmap_memory
 
-; 54   : void unmap_memory (void* addr, uint32_t length) {
+; 73   : void unmap_memory (void* addr, uint32_t length) {
 
 $LN8:
 	mov	DWORD PTR [rsp+16], edx
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 56					; 00000038H
 
-; 55   : 	/*unsigned char* buffer = (unsigned char*)addr;
-; 56   : 	fat32_create_file ("MM1.txt",buffer, length);*/
-; 57   : 
-; 58   : 	uint64_t address = (uint64_t)addr;
+; 74   : 
+; 75   : 	/*
+; 76   : 	 * Before unmapping the object, we should get the object
+; 77   : 	 * and write it to a file if object is not null
+; 78   : 	 * but for now object manager is not implemented,
+; 79   : 	 * kept for future use
+; 80   : 	 */
+; 81   : 
+; 82   : 	uint64_t address = (uint64_t)addr;
 
 	mov	rax, QWORD PTR addr$[rsp]
 	mov	QWORD PTR address$[rsp], rax
 
-; 59   : 
-; 60   : 	if (length == 4096) 
+; 83   : 
+; 84   : 	if (length == 4096) 
 
 	cmp	DWORD PTR length$[rsp], 4096		; 00001000H
 	jne	SHORT $LN5@unmap_memo
 
-; 61   : 		unmap_page (address);
+; 85   : 		unmap_page (address);
 
 	mov	rcx, QWORD PTR address$[rsp]
 	call	?unmap_page@@YAX_K@Z			; unmap_page
 $LN5@unmap_memo:
 
-; 62   : 
-; 63   : 	if (length > 4096) {
+; 86   : 
+; 87   : 	if (length > 4096) {
 
 	cmp	DWORD PTR length$[rsp], 4096		; 00001000H
 	jbe	SHORT $LN4@unmap_memo
 
-; 64   : 		for (int i = 0; i < length / 4096; i++) {
+; 88   : 		for (int i = 0; i < length / 4096; i++) {
 
 	mov	DWORD PTR i$1[rsp], 0
 	jmp	SHORT $LN3@unmap_memo
@@ -83,7 +89,7 @@ $LN3@unmap_memo:
 	cmp	DWORD PTR i$1[rsp], eax
 	jae	SHORT $LN1@unmap_memo
 
-; 65   : 			unmap_page (address + i * 4096);
+; 89   : 			unmap_page (address + i * 4096);
 
 	mov	eax, DWORD PTR i$1[rsp]
 	imul	eax, 4096				; 00001000H
@@ -94,14 +100,14 @@ $LN3@unmap_memo:
 	mov	rcx, rax
 	call	?unmap_page@@YAX_K@Z			; unmap_page
 
-; 66   : 		}
+; 90   : 		}
 
 	jmp	SHORT $LN2@unmap_memo
 $LN1@unmap_memo:
 $LN4@unmap_memo:
 
-; 67   : 	}
-; 68   : }
+; 91   : 	}
+; 92   : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -113,45 +119,55 @@ _TEXT	SEGMENT
 user$ = 32
 i$1 = 36
 i$2 = 40
-tv82 = 48
-tv95 = 56
-addr$ = 80
-length$ = 88
-map_type$ = 96
-attribute$ = 104
-?map_memory@@YAPEAX_KIEE@Z PROC				; map_memory
+tv83 = 48
+tv128 = 56
+c_proc$ = 64
+addr$ = 96
+length$ = 104
+attribute$ = 112
+?map_memory@@YAPEAX_KIE@Z PROC				; map_memory
 
-; 20   : void *map_memory (uint64_t addr, uint32_t length, uint8_t map_type, uint8_t attribute) {
+; 21   : void *map_memory (uint64_t addr, uint32_t length,uint8_t attribute) {
 
 $LN14:
-	mov	BYTE PTR [rsp+32], r9b
 	mov	BYTE PTR [rsp+24], r8b
 	mov	DWORD PTR [rsp+16], edx
 	mov	QWORD PTR [rsp+8], rcx
-	sub	rsp, 72					; 00000048H
+	sub	rsp, 88					; 00000058H
 
-; 21   : 	bool user = false;
+; 22   : 	process_t * c_proc = get_current_process();
+
+	call	?get_current_process@@YAPEAU_process_@@XZ ; get_current_process
+	mov	QWORD PTR c_proc$[rsp], rax
+
+; 23   : 
+; 24   : 	//!Attribute check
+; 25   : 	bool user = false;
 
 	mov	BYTE PTR user$[rsp], 0
 
-; 22   : 	if (attribute & ATTRIBUTE_USER)
+; 26   : 	if (attribute & ATTRIBUTE_USER)
 
 	movzx	eax, BYTE PTR attribute$[rsp]
-	and	eax, 4
+	and	eax, 5
 	test	eax, eax
 	je	SHORT $LN11@map_memory
 
-; 23   : 		user = true;
+; 27   : 		user = true;
 
 	mov	BYTE PTR user$[rsp], 1
 $LN11@map_memory:
 
-; 24   : 	if (addr == NULL) {
+; 28   : 
+; 29   : 	//! For more convenient, give a null to address parameter 
+; 30   : 	//! cause, null parameter will cause map_memory to look for free
+; 31   : 	//! memory in process's address space
+; 32   : 	if (addr == NULL) {
 
 	cmp	QWORD PTR addr$[rsp], 0
 	jne	$LN10@map_memory
 
-; 25   : 		addr = (uint64_t)get_free_page (length, user);
+; 33   : 		addr = (uint64_t)get_free_page (length, user);
 
 	mov	eax, DWORD PTR length$[rsp]
 	movzx	edx, BYTE PTR user$[rsp]
@@ -159,27 +175,27 @@ $LN11@map_memory:
 	call	?get_free_page@@YAPEA_K_K_N@Z		; get_free_page
 	mov	QWORD PTR addr$[rsp], rax
 
-; 26   : 		if (length == 4096) {
+; 34   : 		if (length == 4096) {
 
 	cmp	DWORD PTR length$[rsp], 4096		; 00001000H
 	jne	SHORT $LN9@map_memory
 
-; 27   : 			map_page ((uint64_t)pmmngr_alloc(), addr);
+; 35   : 			map_page ((uint64_t)pmmngr_alloc(), addr);
 
 	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
 	mov	rdx, QWORD PTR addr$[rsp]
 	mov	rcx, rax
 	call	?map_page@@YA_N_K0@Z			; map_page
 
-; 28   : 			return (void*)addr;
+; 36   : 			return (void*)addr;
 
 	mov	rax, QWORD PTR addr$[rsp]
 	jmp	$LN12@map_memory
 $LN9@map_memory:
 
-; 29   : 		}
-; 30   : 
-; 31   : 		for (int i = 0; i < length / 4096; i++)
+; 37   : 		}
+; 38   : 
+; 39   : 		for (int i = 0; i < length / 4096; i++)
 
 	mov	DWORD PTR i$1[rsp], 0
 	jmp	SHORT $LN8@map_memory
@@ -195,7 +211,7 @@ $LN8@map_memory:
 	cmp	DWORD PTR i$1[rsp], eax
 	jae	SHORT $LN6@map_memory
 
-; 32   : 				map_page ((uint64_t)pmmngr_alloc(),addr + i * 4096);
+; 40   : 				map_page ((uint64_t)pmmngr_alloc(),addr + i * 4096);
 
 	mov	eax, DWORD PTR i$1[rsp]
 	imul	eax, 4096				; 00001000H
@@ -203,41 +219,46 @@ $LN8@map_memory:
 	mov	rcx, QWORD PTR addr$[rsp]
 	add	rcx, rax
 	mov	rax, rcx
-	mov	QWORD PTR tv82[rsp], rax
+	mov	QWORD PTR tv83[rsp], rax
 	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
-	mov	rcx, QWORD PTR tv82[rsp]
+	mov	rcx, QWORD PTR tv83[rsp]
 	mov	rdx, rcx
 	mov	rcx, rax
 	call	?map_page@@YA_N_K0@Z			; map_page
 	jmp	SHORT $LN7@map_memory
 $LN6@map_memory:
+
+; 41   : 
+; 42   : 
+; 43   : 	} 
+; 44   : 	//! use the given address to map a region
+; 45   : 	//! TODO: Check if there's already a mapped region, and relocate the mapping
+; 46   : 	else {
+
 	jmp	SHORT $LN5@map_memory
 $LN10@map_memory:
 
-; 33   : 
-; 34   : 
-; 35   : 	} else {
-; 36   : 		if (length == 4096) {
+; 47   : 		if (length == 4096) {
 
 	cmp	DWORD PTR length$[rsp], 4096		; 00001000H
 	jne	SHORT $LN4@map_memory
 
-; 37   : 			map_page ((uint64_t)pmmngr_alloc(), addr);
+; 48   : 			map_page ((uint64_t)pmmngr_alloc(), addr);
 
 	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
 	mov	rdx, QWORD PTR addr$[rsp]
 	mov	rcx, rax
 	call	?map_page@@YA_N_K0@Z			; map_page
 
-; 38   : 			return (void*)addr;
+; 49   : 			return (void*)addr;
 
 	mov	rax, QWORD PTR addr$[rsp]
 	jmp	SHORT $LN12@map_memory
 $LN4@map_memory:
 
-; 39   : 		}
-; 40   : 
-; 41   : 		for (int i = 0; i < length / 4096; i++)
+; 50   : 		}
+; 51   : 
+; 52   : 		for (int i = 0; i < length / 4096; i++)
 
 	mov	DWORD PTR i$2[rsp], 0
 	jmp	SHORT $LN3@map_memory
@@ -253,7 +274,7 @@ $LN3@map_memory:
 	cmp	DWORD PTR i$2[rsp], eax
 	jae	SHORT $LN1@map_memory
 
-; 42   : 				map_page ((uint64_t)pmmngr_alloc(),addr + i * 4096);
+; 53   : 				map_page ((uint64_t)pmmngr_alloc(),addr + i * 4096);
 
 	mov	eax, DWORD PTR i$2[rsp]
 	imul	eax, 4096				; 00001000H
@@ -261,9 +282,9 @@ $LN3@map_memory:
 	mov	rcx, QWORD PTR addr$[rsp]
 	add	rcx, rax
 	mov	rax, rcx
-	mov	QWORD PTR tv95[rsp], rax
+	mov	QWORD PTR tv128[rsp], rax
 	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
-	mov	rcx, QWORD PTR tv95[rsp]
+	mov	rcx, QWORD PTR tv128[rsp]
 	mov	rdx, rcx
 	mov	rcx, rax
 	call	?map_page@@YA_N_K0@Z			; map_page
@@ -271,17 +292,25 @@ $LN3@map_memory:
 $LN1@map_memory:
 $LN5@map_memory:
 
-; 43   : 	}
-; 44   : 
-; 45   : 	return (void*)addr;
+; 54   : 	}
+; 55   : 
+; 56   : 	//! MAP_GLOBAL flag will cause the map_memory to map the address
+; 57   : 	//! in its child process, for now its not implemented
+; 58   : 
+; 59   : 	//if (attribute & MAP_GLOBAL) {
+; 60   : 	//	process_map_addresses (addr,length,(uint64_t*)c_proc->thread_data_pointer->cr3,c_proc);
+; 61   : 	//}
+; 62   : 	
+; 63   : 	//! return the mapped address
+; 64   : 	return (void*)addr;
 
 	mov	rax, QWORD PTR addr$[rsp]
 $LN12@map_memory:
 
-; 46   : }
+; 65   : }
 
-	add	rsp, 72					; 00000048H
+	add	rsp, 88					; 00000058H
 	ret	0
-?map_memory@@YAPEAX_KIEE@Z ENDP				; map_memory
+?map_memory@@YAPEAX_KIE@Z ENDP				; map_memory
 _TEXT	ENDS
 END

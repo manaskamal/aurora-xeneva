@@ -46,6 +46,6 @@ typedef struct _file_system_ {
 
 extern void initialize_vfs ();
 extern FILE open (const char* filename);
-extern void read (FILE* pfile, unsigned char* buffer, unsigned int length);
-extern void read_blk (FILE *pfile, unsigned char* buffer);
+extern void read (FILE *f, unsigned char* buffer, unsigned int length);
+extern void read_blk (FILE *f, unsigned char* buffer);
 #endif

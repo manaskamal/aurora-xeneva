@@ -1,4 +1,4 @@
-﻿Build started 04-08-2021 ৰাতিপু 10:03:53.
+﻿Build started 10-08-2021 ৰাতিপু 8:29:38.
      1>Project "E:\Xeneva Project\Xeneva\drivers\audio_sb16\audio_sb16.vcxproj" on node 2 (Rebuild target(s)).
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\driverapi\libdriver\include" /Zi /nologo /W4 /WX- /sdl- /Od /Oy- /D ARCH_X86 /D _WINDLL /D _MBCS /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt dma.cpp sb16.cpp
@@ -31,4 +31,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:00.56
+Time Elapsed 00:00:01.78

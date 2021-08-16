@@ -143,6 +143,29 @@ bool pci_find_device_class (uint8_t class_code, uint8_t sub_class, pci_device_in
 
 				if (config.device.classCode == class_code && config.device.subClassCode == sub_class) {
 					*addr_out = config;
+					return true;
+				}
+			}
+		}
+	}
+
+	return false;
+}
+
+
+bool pci_find_device_id (uint16_t device_id, uint16_t vendor_id, pci_device_info *addr_out) {
+	pci_device_info config;
+	printf ("PCI Scanning device\n");
+	for (int bus = 0; bus < 256; bus++) {
+		for (int dev = 0; dev < 32; dev++) {
+			for (int func = 0; func < 8; func++) {
+
+				read_config_32 (bus, dev, func, 0, config.header[0]);
+
+				read_config_header (bus, dev, func, &config);
+
+				if (config.device.deviceID == device_id && config.device.vendorID == vendor_id) {
+					*addr_out = config;
 					printf ("Device found\n");
 					printf ("Device ID -> %x, Vendor ID -> %x\n", config.device.deviceID, config.device.vendorID);
 					return true;
@@ -180,4 +203,61 @@ void pci_set_mem_enable (const pci_address *addr, bool enable) {
 
 	pci_config_write16 (addr, offsetof (pci_config_space, command), command);
 }
+
+pci_cap_header * pci_get_capability (pci_device_info *dev_info, pci_cap_header* cap_header) {
+	
+	if (!dev_info) 
+		return NULL;
+
+	if ((dev_info->device.statusReg & (1<<4)) != 0) {
+
+		switch (dev_info->device.headerType & ~PCI_HEADERTYPE_MULTIFUNC) {
+		case PCI_HEADERTYPE_NORMAL:
+			if (cap_header) {
+				if (cap_header->next){
+					cap_header = ((pci_cap_header*)dev_info + cap_header->next);
+					//printf ("Cap Header next is not null\n");
+				}else
+					cap_header = NULL;
+			} else {
+				cap_header = ((pci_cap_header*)dev_info + 0xD);
+			//	printf ("CAp PTR\n");
+				//printf ("CAp Hdr nxt %x\n", cap_header->next);
+			}
+			break;
+
+		default:
+			cap_header = NULL;
+			break;
+		}
+	} else {
+		cap_header = NULL;
+	}
+
+	return cap_header;
+}
+
+void pci_print_capabilities (pci_device_info *dev_info) {
+
+	pci_cap_header *cap_header = NULL;
+	pci_msi_cap *msi_cap = NULL;
+	pci_msi_xcap *msi_x_cap = NULL;
+
+	uint64_t *capptr;
+	if ((dev_info->device.statusReg & (1<<4)) != 0) {
+		cap_header = (pci_cap_header*)(dev_info + dev_info->device.nonBridge.capPtr);
+		while (cap_header->next != 0x00) {
+			if (cap_header->id == 0x05) {
+				printf ("MSI Available\n");
+			}
+
+			if (cap_header->id == 0x11) {
+				printf ("MSI-X Available for this device\n");
+			}
+			cap_header = (pci_cap_header*)(cap_header + cap_header->next);
+		}
+	}
+}
+
+
 

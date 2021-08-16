@@ -43,12 +43,13 @@ void xn_button_mouse_event (xn_widget *widget, xn_window_t* win, uint32_t mouse_
 
 	xn_button_paint_handler (widget,win);
 
-	drawer_update (win->x + but->base.x,win->y +  but->base.y, but->base.w, but->base.h);
-
-	if (button_state & 1) {
+    if (button_state & 1) {
 		if (but->on_button_pressed)
 			but->on_button_pressed(but);
 	}
+
+
+	drawer_update (win->x + but->base.x,win->y +  but->base.y, but->base.w, but->base.h);
 }
 
 xn_button_t * xn_create_button (int x, int y, int w, int h, char *title) {

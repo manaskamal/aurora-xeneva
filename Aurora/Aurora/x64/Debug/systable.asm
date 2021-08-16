@@ -27,8 +27,12 @@ EXTRN	?sys_get_free_ram@@YA_KXZ:PROC			; sys_get_free_ram
 EXTRN	?sys_sleep@@YAX_K@Z:PROC			; sys_sleep
 EXTRN	?sys_exit@@YAXXZ:PROC				; sys_exit
 EXTRN	?sys_fb_move_cursor@@YAXII@Z:PROC		; sys_fb_move_cursor
+EXTRN	?fork@@YAIXZ:PROC				; fork
+EXTRN	?exec@@YAXPEBDI@Z:PROC				; exec
 EXTRN	?dwm_put_message@@YAXPEAU_dwm_message_@@@Z:PROC	; dwm_put_message
 EXTRN	?dwm_dispatch_message@@YAXPEAU_dwm_message_@@@Z:PROC ; dwm_dispatch_message
+EXTRN	?map_memory@@YAPEAX_KIE@Z:PROC			; map_memory
+EXTRN	?unmap_memory@@YAXPEAXI@Z:PROC			; unmap_memory
 EXTRN	?printf@@YAXPEBDZZ:PROC				; printf
 EXTRN	?get_screen_width@@YAIXZ:PROC			; get_screen_width
 EXTRN	?get_screen_height@@YAIXZ:PROC			; get_screen_height
@@ -37,7 +41,7 @@ _BSS	SEGMENT
 funct	DQ	01H DUP (?)
 _BSS	ENDS
 CONST	SEGMENT
-$SG5833	DB	'System Call Fault!! Halting System', 0aH, 00H
+$SG5901	DB	'System Call Fault!! Halting System', 0aH, 00H
 CONST	ENDS
 _DATA	SEGMENT
 _syscalls DQ	FLAT:?printf@@YAXPEBDZZ
@@ -67,6 +71,10 @@ _syscalls DQ	FLAT:?printf@@YAXPEBDZZ
 	DQ	FLAT:?sys_sleep@@YAX_K@Z
 	DQ	FLAT:?sys_exit@@YAXXZ
 	DQ	FLAT:?sys_fb_move_cursor@@YAXII@Z
+	DQ	FLAT:?fork@@YAIXZ
+	DQ	FLAT:?exec@@YAXPEBDI@Z
+	DQ	FLAT:?map_memory@@YAPEAX_KIE@Z
+	DQ	FLAT:?unmap_memory@@YAXPEAXI@Z
 	DQ	0000000000000000H
 _DATA	ENDS
 PUBLIC	x64_syscall_handler
@@ -108,7 +116,7 @@ $LN6:
 
 ; 21   : 		printf ("System Call Fault!! Halting System\n");
 
-	lea	rcx, OFFSET FLAT:$SG5833
+	lea	rcx, OFFSET FLAT:$SG5901
 	call	?printf@@YAXPEBDZZ			; printf
 $LN2@x64_syscal:
 

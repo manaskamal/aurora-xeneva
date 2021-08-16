@@ -68,13 +68,13 @@ unsigned int ide_irq_invoked = 0;
 void ide_primary_irq (size_t vector, void* param)
 {
 	ide_irq_invoked = 1;
-	interrupt_end();
+	interrupt_end(14);
 }
 
 void ide_secondary_irq (size_t vector, void* param)
 {
 	reset_ata_controller (ATA_SECONDARY_IO);
-	interrupt_end();
+	interrupt_end(15);
 }
 
 void ide_wait_irq () {

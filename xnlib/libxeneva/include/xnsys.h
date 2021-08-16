@@ -66,6 +66,7 @@ typedef struct _file_ {
 
 #define APPLICATION_TYPE_ROOT 14
 #define APPLICATION_TYPE_NORMAL 15
+#define APPLICATION_COORD_AUTO 16
 
 extern "C" void print_text(const char* text, ...);
 extern "C" void sched_wait ();
@@ -94,4 +95,19 @@ extern "C" void sys_sleep (uint64_t ms);
 extern void message_poll (message_t *msg);
 extern void register_xn_application (int app_type,uint32_t x, uint32_t y,uint32_t gui_width, uint32_t gui_height);
 extern "C" void sys_exit();
+extern "C" uint32_t fork();
+extern "C" void exec (const char* filename, uint32_t pid);
+
+
+//! local and global mapping are same as MAP_PRIVATE | MAP_SHARED
+//! in unix systems
+#define MAP_LOCAL    1    //Local gives access to only mapping process
+#define MAP_GLOBAL   2    //global gives access to every processes in the proc list
+
+//! Security Attributes
+#define ATTRIBUTE_READ  3
+#define ATTRIBUTE_WRITE 4
+#define ATTRIBUTE_USER  5
+extern "C" void* mmap (uint64_t address, uint32_t length, uint8_t attribute);
+extern "C" void munmap (void* addr, uint32_t length);
 #endif

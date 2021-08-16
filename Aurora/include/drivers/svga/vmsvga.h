@@ -40,7 +40,7 @@ typedef struct _svga_drive_ {
 	uint32_t  height;
 	uint32_t  bpp;
 	uint32_t  pitch;
-
+	uint32_t  irq_line;
 	struct {
 		uint32_t reserved_size;
 		bool using_bounce_buffer;

@@ -263,6 +263,39 @@ typedef struct _pci_scan_state_ {
 	uint8_t  class_code;
 }pci_scan_state;
 
+#pragma pack(push)
+typedef struct {
+	unsigned char id;								// 00
+	unsigned char next;								// 01
+} pci_cap_header;
+#pragma pack(pop)
+
+typedef struct {
+	pci_cap_header header;							// 00 - 01
+	unsigned short msgCtrl;							// 02 - 03
+	void *msgAddr;									// 04 - 07
+	unsigned short msgData;							// 08 - 09
+
+} pci_msi_cap;
+
+typedef struct {
+	pci_cap_header header;							// 00 - 01
+	unsigned short msgCtrl;							// 02 - 03
+	void *msgAddr;									// 04 - 07
+	void *msgUpperAddr;								// 08 - 0B
+	unsigned short msgData;							// 0C - 0D
+
+} pci_msi_cap64;
+
+typedef struct {
+	pci_cap_header header;							// 00 - 01
+	unsigned short msgCtrl;							// 02 - 03
+	void *msgUpperAddr;								// 04 - 07
+	unsigned tableOffBir;							// 08 - 0B
+
+} pci_msi_xcap;
+
+
 #define PCI_CONF_BAR_IO  0x01
 #define PCI_CONF_BAR_64BIT 0x04
 #define PCI_CONF_BAR_PREFETCH  0x08
@@ -280,5 +313,8 @@ extern void pci_setBAR (const pci_address *addr, int index, uint32_t value);
 extern uint32_t pci_get_bar_addr (const pci_address *addr, int index);
 extern void pci_set_mem_enable (const pci_address *addr, bool enabe);
 extern bool pci_find_device_class (uint8_t class_code, uint8_t sub_class, pci_device_info *addr_out);
+extern bool pci_find_device_id (uint16_t device_id, uint16_t vendor_id, pci_device_info *addr_out);
+extern void pci_print_capabilities (pci_device_info *dev_info);
+
 
 #endif

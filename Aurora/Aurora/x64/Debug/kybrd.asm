@@ -8,7 +8,7 @@ INCLUDELIB OLDNAMES
 PUBLIC	?kybrd_init@@YAXXZ				; kybrd_init
 PUBLIC	?kybrd_handler@@YAX_KPEAX@Z			; kybrd_handler
 EXTRN	?inportb@@YAEG@Z:PROC				; inportb
-EXTRN	?interrupt_end@@YAXXZ:PROC			; interrupt_end
+EXTRN	?interrupt_end@@YAXI@Z:PROC			; interrupt_end
 EXTRN	?interrupt_set@@YAX_KP6AX0PEAX@ZE@Z:PROC	; interrupt_set
 EXTRN	?pmmngr_alloc@@YAPEAXXZ:PROC			; pmmngr_alloc
 EXTRN	?pmmngr_free@@YAXPEAX@Z:PROC			; pmmngr_free
@@ -18,7 +18,7 @@ $pdata$?kybrd_init@@YAXXZ DD imagerel $LN3
 	DD	imagerel $LN3+29
 	DD	imagerel $unwind$?kybrd_init@@YAXXZ
 $pdata$?kybrd_handler@@YAX_KPEAX@Z DD imagerel $LN4
-	DD	imagerel $LN4+126
+	DD	imagerel $LN4+131
 	DD	imagerel $unwind$?kybrd_handler@@YAX_KPEAX@Z
 pdata	ENDS
 xdata	SEGMENT
@@ -107,9 +107,10 @@ $LN1@kybrd_hand:
 ; 39   : 
 ; 40   :   
 ; 41   : 	//! tell apic we are done!!!
-; 42   : 	interrupt_end();
+; 42   : 	interrupt_end(1);
 
-	call	?interrupt_end@@YAXXZ			; interrupt_end
+	mov	ecx, 1
+	call	?interrupt_end@@YAXI@Z			; interrupt_end
 
 ; 43   : 	return;
 ; 44   : }

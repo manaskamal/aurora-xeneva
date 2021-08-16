@@ -13,7 +13,7 @@ PUBLIC	?inportd@@YAIG@Z				; inportd
 PUBLIC	?outportb@@YAXGE@Z				; outportb
 PUBLIC	?outportw@@YAXGG@Z				; outportw
 PUBLIC	?outportd@@YAXGI@Z				; outportd
-PUBLIC	?interrupt_end@@YAXXZ				; interrupt_end
+PUBLIC	?interrupt_end@@YAXI@Z				; interrupt_end
 PUBLIC	?interrupt_set@@YAX_KP6AX0PEAX@ZE@Z		; interrupt_set
 PUBLIC	?irq_mask@@YAXE_N@Z				; irq_mask
 EXTRN	?apic_local_eoi@@YAXXZ:PROC			; apic_local_eoi
@@ -52,9 +52,9 @@ $pdata$?outportw@@YAXGG@Z DD imagerel $LN3
 $pdata$?outportd@@YAXGI@Z DD imagerel $LN3
 	DD	imagerel $LN3+32
 	DD	imagerel $unwind$?outportd@@YAXGI@Z
-$pdata$?interrupt_end@@YAXXZ DD imagerel $LN3
-	DD	imagerel $LN3+14
-	DD	imagerel $unwind$?interrupt_end@@YAXXZ
+$pdata$?interrupt_end@@YAXI@Z DD imagerel $LN3
+	DD	imagerel $LN3+18
+	DD	imagerel $unwind$?interrupt_end@@YAXI@Z
 $pdata$?interrupt_set@@YAX_KP6AX0PEAX@ZE@Z DD imagerel $LN3
 	DD	imagerel $LN3+45
 	DD	imagerel $unwind$?interrupt_set@@YAX_KP6AX0PEAX@ZE@Z
@@ -79,8 +79,8 @@ $unwind$?outportw@@YAXGG@Z DD 010e01H
 	DD	0420eH
 $unwind$?outportd@@YAXGI@Z DD 010d01H
 	DD	0420dH
-$unwind$?interrupt_end@@YAXXZ DD 010401H
-	DD	04204H
+$unwind$?interrupt_end@@YAXI@Z DD 010801H
+	DD	04208H
 $unwind$?interrupt_set@@YAX_KP6AX0PEAX@ZE@Z DD 011301H
 	DD	04213H
 $unwind$?irq_mask@@YAXE_N@Z DD 010c01H
@@ -93,20 +93,20 @@ irq$ = 48
 value$ = 56
 ?irq_mask@@YAXE_N@Z PROC				; irq_mask
 
-; 142  : void irq_mask (uint8_t irq, bool value) {
+; 153  : void irq_mask (uint8_t irq, bool value) {
 
 $LN3:
 	mov	BYTE PTR [rsp+16], dl
 	mov	BYTE PTR [rsp+8], cl
 	sub	rsp, 40					; 00000028H
 
-; 143  : 	ioapic_mask_irq(irq, value);
+; 154  : 	ioapic_mask_irq(irq, value);
 
 	movzx	edx, BYTE PTR value$[rsp]
 	movzx	ecx, BYTE PTR irq$[rsp]
 	call	?ioapic_mask_irq@@YAXE_N@Z		; ioapic_mask_irq
 
-; 144  : }
+; 155  : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -120,7 +120,7 @@ fn$ = 56
 irq$ = 64
 ?interrupt_set@@YAX_KP6AX0PEAX@ZE@Z PROC		; interrupt_set
 
-; 131  : void interrupt_set (size_t vector, void (*fn)(size_t, void* p),uint8_t irq){
+; 137  : void interrupt_set (size_t vector, void (*fn)(size_t, void* p),uint8_t irq){
 
 $LN3:
 	mov	BYTE PTR [rsp+24], r8b
@@ -128,20 +128,25 @@ $LN3:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 40					; 00000028H
 
-; 132  : #ifdef ARCH_X64
-; 133  : 	ioapic_register_irq(vector,fn,irq);
+; 138  : #ifdef ARCH_X64
+; 139  : #ifdef USE_PIC
+; 140  : 	setvect(32 + vector, fn);
+; 141  : #endif
+; 142  : #ifdef USE_APIC
+; 143  : 	ioapic_register_irq(vector,fn,irq);
 
 	movzx	r8d, BYTE PTR irq$[rsp]
 	mov	rdx, QWORD PTR fn$[rsp]
 	mov	rcx, QWORD PTR vector$[rsp]
 	call	?ioapic_register_irq@@YAX_KP6AX0PEAX@ZE@Z ; ioapic_register_irq
 
-; 134  : #elif  ARCH_ARM
-; 135  : 	//! update comming soon..
-; 136  : #elif ARCH_ARM64
-; 137  : 	//! update comming soon...
-; 138  : #endif
-; 139  : }
+; 144  : #endif
+; 145  : #elif  ARCH_ARM
+; 146  : 	//! update comming soon..
+; 147  : #elif ARCH_ARM64
+; 148  : 	//! update comming soon...
+; 149  : #endif
+; 150  : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -150,28 +155,35 @@ _TEXT	ENDS
 ; Function compile flags: /Odtp
 ; File e:\xeneva project\xeneva\aurora\aurora\hal.cpp
 _TEXT	SEGMENT
-?interrupt_end@@YAXXZ PROC				; interrupt_end
+irq$ = 48
+?interrupt_end@@YAXI@Z PROC				; interrupt_end
 
-; 121  : void interrupt_end () { 
+; 122  : void interrupt_end (uint32_t irq) { 
 
 $LN3:
+	mov	DWORD PTR [rsp+8], ecx
 	sub	rsp, 40					; 00000028H
 
-; 122  : #ifdef ARCH_X64
-; 123  : 	apic_local_eoi ();
+; 123  : #ifdef ARCH_X64
+; 124  : #ifdef USE_PIC
+; 125  : 	pic_interrupt_eoi(irq);
+; 126  : #endif
+; 127  : #ifdef USE_APIC
+; 128  : 	apic_local_eoi ();
 
 	call	?apic_local_eoi@@YAXXZ			; apic_local_eoi
 
-; 124  : #elif ARCH_ARM
-; 125  : 	//! update comming soon..
-; 126  : #elif ARCH_ARM64
-; 127  : 	//! update comming soon..
-; 128  : #endif
-; 129  : }
+; 129  : #endif
+; 130  : #elif ARCH_ARM
+; 131  : 	//! update comming soon..
+; 132  : #elif ARCH_ARM64
+; 133  : 	//! update comming soon..
+; 134  : #endif
+; 135  : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
-?interrupt_end@@YAXXZ ENDP				; interrupt_end
+?interrupt_end@@YAXI@Z ENDP				; interrupt_end
 _TEXT	ENDS
 ; Function compile flags: /Odtp
 ; File e:\xeneva project\xeneva\aurora\aurora\hal.cpp
@@ -180,26 +192,26 @@ port$ = 48
 data$ = 56
 ?outportd@@YAXGI@Z PROC					; outportd
 
-; 110  : void  outportd (uint16_t port, uint32_t data) {
+; 111  : void  outportd (uint16_t port, uint32_t data) {
 
 $LN3:
 	mov	DWORD PTR [rsp+16], edx
 	mov	WORD PTR [rsp+8], cx
 	sub	rsp, 40					; 00000028H
 
-; 111  : #ifdef ARCH_X64
-; 112  : 	x64_outportd (port, data);
+; 112  : #ifdef ARCH_X64
+; 113  : 	x64_outportd (port, data);
 
 	mov	edx, DWORD PTR data$[rsp]
 	movzx	ecx, WORD PTR port$[rsp]
 	call	x64_outportd
 
-; 113  : #elif ARCH_ARM
-; 114  : 	//! arm32_outportd (port, data);
-; 115  : #elif ARCH_ARM64
-; 116  : 	//! arm64_outportw (port, data);
-; 117  : #endif
-; 118  : }
+; 114  : #elif ARCH_ARM
+; 115  : 	//! arm32_outportd (port, data);
+; 116  : #elif ARCH_ARM64
+; 117  : 	//! arm64_outportw (port, data);
+; 118  : #endif
+; 119  : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -212,26 +224,26 @@ port$ = 48
 data$ = 56
 ?outportw@@YAXGG@Z PROC					; outportw
 
-; 98   : void outportw (uint16_t port, uint16_t data) {
+; 99   : void outportw (uint16_t port, uint16_t data) {
 
 $LN3:
 	mov	WORD PTR [rsp+16], dx
 	mov	WORD PTR [rsp+8], cx
 	sub	rsp, 40					; 00000028H
 
-; 99   : #ifdef ARCH_X64
-; 100  : 	x64_outportw (port, data);
+; 100  : #ifdef ARCH_X64
+; 101  : 	x64_outportw (port, data);
 
 	movzx	edx, WORD PTR data$[rsp]
 	movzx	ecx, WORD PTR port$[rsp]
 	call	x64_outportw
 
-; 101  : #elif  ARCH_ARM
-; 102  : 	//! arm32_outportw (port, data);
-; 103  : #elif ARCH_ARM64
-; 104  : 	//! arm64_outportw (port, data);
-; 105  : #endif
-; 106  : }
+; 102  : #elif  ARCH_ARM
+; 103  : 	//! arm32_outportw (port, data);
+; 104  : #elif ARCH_ARM64
+; 105  : 	//! arm64_outportw (port, data);
+; 106  : #endif
+; 107  : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -244,26 +256,26 @@ port$ = 48
 data$ = 56
 ?outportb@@YAXGE@Z PROC					; outportb
 
-; 86   : void  outportb (uint16_t port, uint8_t data ) {
+; 87   : void  outportb (uint16_t port, uint8_t data ) {
 
 $LN3:
 	mov	BYTE PTR [rsp+16], dl
 	mov	WORD PTR [rsp+8], cx
 	sub	rsp, 40					; 00000028H
 
-; 87   : #ifdef ARCH_X64
-; 88   : 	x64_outportb (port,data);
+; 88   : #ifdef ARCH_X64
+; 89   : 	x64_outportb (port,data);
 
 	movzx	edx, BYTE PTR data$[rsp]
 	movzx	ecx, WORD PTR port$[rsp]
 	call	x64_outportb
 
-; 89   : #elif ARCH_ARM
-; 90   : 	//!arm32_outportb (port, data);
-; 91   : #elif ARCH_ARM64
-; 92   : 	//!arm64_outportb (port, data);
-; 93   : #endif
-; 94   : }
+; 90   : #elif ARCH_ARM
+; 91   : 	//!arm32_outportb (port, data);
+; 92   : #elif ARCH_ARM64
+; 93   : 	//!arm64_outportb (port, data);
+; 94   : #endif
+; 95   : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -275,25 +287,25 @@ _TEXT	SEGMENT
 port$ = 48
 ?inportd@@YAIG@Z PROC					; inportd
 
-; 73   : uint32_t  inportd (uint16_t port) {
+; 74   : uint32_t  inportd (uint16_t port) {
 
 $LN3:
 	mov	WORD PTR [rsp+8], cx
 	sub	rsp, 40					; 00000028H
 
-; 74   : #ifdef ARCH_X64
-; 75   : 	return x64_inportd (port);
+; 75   : #ifdef ARCH_X64
+; 76   : 	return x64_inportd (port);
 
 	movzx	ecx, WORD PTR port$[rsp]
 	call	x64_inportd
 
-; 76   : #elif ARCH_ARM
-; 77   : 	//! return arm32_inportd (port);
-; 78   : #elif ARCH_ARM64
-; 79   : 	//! return arm64_inportd (port);
-; 80   : #endif
-; 81   : 
-; 82   : }
+; 77   : #elif ARCH_ARM
+; 78   : 	//! return arm32_inportd (port);
+; 79   : #elif ARCH_ARM64
+; 80   : 	//! return arm64_inportd (port);
+; 81   : #endif
+; 82   : 
+; 83   : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -305,25 +317,25 @@ _TEXT	SEGMENT
 port$ = 48
 ?inportw@@YAGG@Z PROC					; inportw
 
-; 61   : uint16_t inportw (uint16_t port) {
+; 62   : uint16_t inportw (uint16_t port) {
 
 $LN3:
 	mov	WORD PTR [rsp+8], cx
 	sub	rsp, 40					; 00000028H
 
-; 62   : #ifdef ARCH_X64
-; 63   : 	return x64_inportw (port);
+; 63   : #ifdef ARCH_X64
+; 64   : 	return x64_inportw (port);
 
 	movzx	ecx, WORD PTR port$[rsp]
 	call	x64_inportw
 
-; 64   : #elif ARCH_ARM
-; 65   : 	//return arm32_inportw (port);
-; 66   : #elif ARCH_ARM64
-; 67   : 	//return arm64_inportw (port);
-; 68   : #endif
-; 69   : 
-; 70   : }
+; 65   : #elif ARCH_ARM
+; 66   : 	//return arm32_inportw (port);
+; 67   : #elif ARCH_ARM64
+; 68   : 	//return arm64_inportw (port);
+; 69   : #endif
+; 70   : 
+; 71   : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -335,24 +347,24 @@ _TEXT	SEGMENT
 port$ = 48
 ?inportb@@YAEG@Z PROC					; inportb
 
-; 50   : uint8_t inportb (uint16_t port) {
+; 51   : uint8_t inportb (uint16_t port) {
 
 $LN3:
 	mov	WORD PTR [rsp+8], cx
 	sub	rsp, 40					; 00000028H
 
-; 51   : #ifdef ARCH_X64
-; 52   : 	return x64_inportb (port);
+; 52   : #ifdef ARCH_X64
+; 53   : 	return x64_inportb (port);
 
 	movzx	ecx, WORD PTR port$[rsp]
 	call	x64_inportb
 
-; 53   : #elif ARCH_ARM
-; 54   : 	//return arm32_inportb (port);
-; 55   : #elif ARCH_ARM64
-; 56   : 	//return arm64_inportb (port);
-; 57   : #endif
-; 58   : }
+; 54   : #elif ARCH_ARM
+; 55   : 	//return arm32_inportb (port);
+; 56   : #elif ARCH_ARM64
+; 57   : 	//return arm64_inportb (port);
+; 58   : #endif
+; 59   : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -365,29 +377,29 @@ vector$ = 48
 function$ = 56
 ?hal_set_vect@@YAX_KP6AX0PEAX@Z@Z PROC			; hal_set_vect
 
-; 16   : void hal_set_vect (size_t vector, void (*function)(size_t vector, void* param)) {
+; 17   : void hal_set_vect (size_t vector, void (*function)(size_t vector, void* param)) {
 
 $LN3:
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 40					; 00000028H
 
-; 17   : #ifdef ARCH_X64
-; 18   : 	//! initialize x86_64 hal initializer
-; 19   : 	setvect (vector,function);
+; 18   : #ifdef ARCH_X64
+; 19   : 	//! initialize x86_64 hal initializer
+; 20   : 	setvect (vector,function);
 
 	mov	rdx, QWORD PTR function$[rsp]
 	mov	rcx, QWORD PTR vector$[rsp]
 	call	?setvect@@YAX_KP6AX0PEAX@Z@Z		; setvect
 
-; 20   : #elif  ARCH_ARM
-; 21   : 	//! initialize arm32 hal initializer
-; 22   : 	arm_set_vect(vector,function);
-; 23   : #elif  ARCH_ARM64
-; 24   : 	//! initialize arm64 hal initializer
-; 25   : 	arm64_set_vect(vector,function);
-; 26   : #endif
-; 27   : }
+; 21   : #elif  ARCH_ARM
+; 22   : 	//! initialize arm32 hal initializer
+; 23   : 	arm_set_vect(vector,function);
+; 24   : #elif  ARCH_ARM64
+; 25   : 	//! initialize arm64 hal initializer
+; 26   : 	arm64_set_vect(vector,function);
+; 27   : #endif
+; 28   : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -398,28 +410,28 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 ?hal_init@@YAXXZ PROC					; hal_init
 
-; 31   : void hal_init () {
+; 32   : void hal_init () {
 
 $LN3:
 	sub	rsp, 40					; 00000028H
 
-; 32   : 
-; 33   : 	//! Check processor type
-; 34   : #ifdef ARCH_X64
-; 35   : 	//! initialize x86_64 hal initializer
-; 36   : 	hal_x86_64_init ();
+; 33   : 
+; 34   : 	//! Check processor type
+; 35   : #ifdef ARCH_X64
+; 36   : 	//! initialize x86_64 hal initializer
+; 37   : 	hal_x86_64_init ();
 
 	call	?hal_x86_64_init@@YAXXZ			; hal_x86_64_init
 
-; 37   : #elif  ARCH_ARM
-; 38   : 	//! initialize arm32 hal initializer
-; 39   : 	hal_arm_init ();
-; 40   : #elif  ARCH_ARM64
-; 41   : 	//! initialize arm64 hal initializer
-; 42   : 	hal_arm64_init ();
-; 43   : #endif
-; 44   : 
-; 45   : }
+; 38   : #elif  ARCH_ARM
+; 39   : 	//! initialize arm32 hal initializer
+; 40   : 	hal_arm_init ();
+; 41   : #elif  ARCH_ARM64
+; 42   : 	//! initialize arm64 hal initializer
+; 43   : 	hal_arm64_init ();
+; 44   : #endif
+; 45   : 
+; 46   : }
 
 	add	rsp, 40					; 00000028H
 	ret	0

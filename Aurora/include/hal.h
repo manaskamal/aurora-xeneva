@@ -37,7 +37,7 @@ extern void outportw(uint16_t port, uint16_t data);
 extern void outportd(uint16_t port, uint32_t data);
 
 //! Interrupt EOI routine
-extern void interrupt_end ();
+extern void interrupt_end (uint32_t irq);
 //! Interrupt Vector Registration
 extern void interrupt_set (size_t vector, void (*fn)(size_t, void* p),uint8_t irq);
 //! Mask or unmask an interrupt

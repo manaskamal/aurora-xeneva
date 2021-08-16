@@ -25,6 +25,9 @@
 #include <drivers\ac97\ac97.h>
 #include <drivers\hdaudio\hda.h>
 #include <drivers\vga.h>
+#include <drivers\usb\xhci.h>
+#include <drivers\net\e1000.h>
+#include <drivers\net\amd_am79c973.h>
 #include <drivers\rtc.h>
 #include <ipc\evntsh.h>
 #include <ipc\message.h>
@@ -35,7 +38,7 @@
 #include <proc.h>
 #include <pmmngr.h>
 #include <drvmngr.h>
-
+#include <procmngr.h>
 
 #ifdef ARCH_X64
 #include <arch\x86_64\thread.h>
@@ -83,24 +86,29 @@ void _kmain (KERNEL_BOOT_INFO *info) {
 	kybrd_init();
 	
 	initialize_rtc();
+	e1000_initialize();
+	//amd_pcnet_initialize();
+	//xhci_initialize ();  //<- needs completion
+
 	//!initialize runtime drivers
 	ata_initialize();
 	initialize_vfs();
 	initialize_screen(info);
 
 	//! for testing purpose
-	svga_init (); 
+	//svga_init (); 
 	initialize_mouse();
 	message_init ();
 	dwm_ipc_init();
 
 	driver_mngr_initialize(info);
-
+	
 #ifdef ARCH_X64
 	initialize_scheduler();
-	create_process ("dwm.exe","dwm",20);
+	//create_process ("dwm.exe","dwm",20);
 	//! task list should be more than 4 or less than 4 not 
-	create_process ("dwm2.exe", "dwm2", 1);
+	//create_process ("dwm2.exe", "dwm2", 1);
+	create_process ("xshell.exe","shell",1);
 	create_process ("dwm3.exe", "dwm3", 1);
 	scheduler_start();
 #endif

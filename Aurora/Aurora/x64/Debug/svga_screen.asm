@@ -6,7 +6,7 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 CONST	SEGMENT
-$SG5387	DB	'[VMware SVGA]: Virtual Device does not have screen objec'
+$SG5443	DB	'[VMware SVGA]: Virtual Device does not have screen objec'
 	DB	't enabled', 0aH, 00H
 CONST	ENDS
 PUBLIC	?svga_screen_init@@YAXXZ			; svga_screen_init
@@ -627,7 +627,7 @@ $LN4:
 
 ; 20   : 			printf ("[VMware SVGA]: Virtual Device does not have screen object enabled\n");
 
-	lea	rcx, OFFSET FLAT:$SG5387
+	lea	rcx, OFFSET FLAT:$SG5443
 	call	?printf@@YAXPEBDZZ			; printf
 $LN1@svga_scree:
 

@@ -6,7 +6,7 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 CONST	SEGMENT
-$SG3467	DB	'child', 00H
+$SG3503	DB	'uproc', 00H
 CONST	ENDS
 PUBLIC	?create__sys_process@@YAXPEBD@Z			; create__sys_process
 PUBLIC	?sys_exit@@YAXXZ				; sys_exit
@@ -33,24 +33,24 @@ xdata	ENDS
 _TEXT	SEGMENT
 ?sys_exit@@YAXXZ PROC					; sys_exit
 
-; 10   : void sys_exit () {
+; 15   : void sys_exit () {
 
 $LN3:
 	sub	rsp, 40					; 00000028H
 
-; 11   : 	x64_cli();
+; 16   : 	x64_cli();
 
 	call	x64_cli
 
-; 12   : 	kill_process ();
+; 17   : 	kill_process ();
 
 	call	?kill_process@@YAXXZ			; kill_process
 
-; 13   : 	force_sched();
+; 18   : 	force_sched();
 
 	call	force_sched
 
-; 14   : }
+; 19   : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -72,14 +72,19 @@ $LN3:
 
 	call	x64_cli
 
-; 6    : 	create_process(name, "child",1);
+; 6    : 	/*procmngr_queue *queue = (procmngr_queue*)pmmngr_alloc();
+; 7    : 	strcpy(queue->name, "uproc");
+; 8    : 	strcpy(queue->path,name);
+; 9    : 	procmngr_add_process (queue);
+; 10   : 	procmngr_wakeup();*/
+; 11   : 	create_process (name, "uproc", 1);
 
 	mov	r8b, 1
-	lea	rdx, OFFSET FLAT:$SG3467
+	lea	rdx, OFFSET FLAT:$SG3503
 	mov	rcx, QWORD PTR name$[rsp]
 	call	?create_process@@YAXPEBDPEADE@Z		; create_process
 
-; 7    : }
+; 12   : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
