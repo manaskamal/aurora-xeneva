@@ -20,7 +20,7 @@ EXTRN	x64_read_cr3:PROC
 EXTRN	?map_page@@YA_N_K0@Z:PROC			; map_page
 EXTRN	?create_user_address_space@@YAPEA_KXZ:PROC	; create_user_address_space
 EXTRN	?get_current_thread@@YAPEAU_thread_@@XZ:PROC	; get_current_thread
-EXTRN	force_sched:PROC
+EXTRN	?force_sched@@YAXXZ:PROC			; force_sched
 EXTRN	?sleep_thread@@YAXPEAU_thread_@@_K@Z:PROC	; sleep_thread
 EXTRN	?printf@@YAXPEBDZZ:PROC				; printf
 pdata	SEGMENT
@@ -72,7 +72,7 @@ $LN3:
 
 ; 41   : 	force_sched();
 
-	call	force_sched
+	call	?force_sched@@YAXXZ			; force_sched
 
 ; 42   : }
 

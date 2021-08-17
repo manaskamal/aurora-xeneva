@@ -29,6 +29,7 @@
 #include <drivers\net\e1000.h>
 #include <drivers\net\amd_am79c973.h>
 #include <drivers\rtc.h>
+#include <drivers\acpi\acpi.h>
 #include <ipc\evntsh.h>
 #include <ipc\message.h>
 #include <ipc\dwm_ipc.h>
@@ -74,6 +75,10 @@ typedef struct _wav_format_ {
 }wav;
 
 
+void timer_callback (size_t v, void* p) {
+	printf ("Timer fired\n");
+	interrupt_end(0);
+}
 //! the main entry point of the kernel
 //! @param info -- The boot information passed by
 //!                XNLDR 
@@ -84,10 +89,10 @@ void _kmain (KERNEL_BOOT_INFO *info) {
 	mm_init(); 
 	console_initialize(info);
 	kybrd_init();
-	
+	initialize_acpi (info->acpi_table_pointer);
 	initialize_rtc();
-	e1000_initialize();
-	//amd_pcnet_initialize();
+	//e1000_initialize();
+	amd_pcnet_initialize();
 	//xhci_initialize ();  //<- needs completion
 
 	//!initialize runtime drivers
@@ -102,7 +107,8 @@ void _kmain (KERNEL_BOOT_INFO *info) {
 	dwm_ipc_init();
 
 	driver_mngr_initialize(info);
-	
+
+	//for(;;);
 #ifdef ARCH_X64
 	initialize_scheduler();
 	//create_process ("dwm.exe","dwm",20);

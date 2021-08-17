@@ -137,7 +137,7 @@ extern void set_multi_task_enable (bool value);
 extern bool is_multi_task_enable ();
 
 //! force the scheduler to task switch
-extern "C" void force_sched();
+extern void force_sched();
 
 //! iterate through ready list and return a specific thread
 extern thread_t * thread_iterate_ready_list (uint16_t id);

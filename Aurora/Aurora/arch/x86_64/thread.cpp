@@ -19,6 +19,8 @@
  ** E X T E R N A L  S T A T I C  S Y M B O L S
  **/
 extern "C" void x64_hlt();
+extern "C" void force_sched_pic ();
+extern "C" void force_sched_apic ();
 /** ============================================
  ** Global initializers
  ** ============================================
@@ -233,7 +235,12 @@ void scheduler_isr (size_t v, void* param) {
 		current_thread->cr3 = x64_read_cr3();
 		if (current_thread->priviledge == THREAD_LEVEL_USER)
 			current_thread->kern_esp = get_kernel_tss()->rsp[0];
+#ifdef USE_APIC
 		apic_local_eoi();
+#endif
+#ifdef USE_PIC
+		interrupt_end (0);
+#endif
 		next_task();
 		if (current_thread->priviledge == THREAD_LEVEL_USER){
 			get_kernel_tss()->rsp[0] = current_thread->kern_esp;
@@ -245,7 +252,12 @@ void scheduler_isr (size_t v, void* param) {
 	}
 
 sched_end:
+#ifdef USE_APIC
 	apic_local_eoi();
+#endif
+#ifdef USE_PIC
+	interrupt_end(0);
+#endif
 	//x64_sti();
 	
 }
@@ -254,7 +266,12 @@ sched_end:
 //! Start the scheduler engine
 void scheduler_start () {
 	x64_cli();
+#ifdef USE_APIC
 	setvect(0x40, scheduler_isr);
+#endif
+#ifdef USE_PIC
+	interrupt_set(0,scheduler_isr,0);
+#endif
 	execute_idle(current_thread,get_kernel_tss());
 }
 
@@ -333,4 +350,13 @@ void sleep_thread (thread_t *t, uint64_t ms) {
 //! returns currently running thread
 thread_t * get_current_thread () {
 	return current_thread;
+}
+
+//!force scheduler
+void force_sched () {
+#ifdef USE_APIC
+	force_sched_apic();
+#elif USE_PIC
+	force_sched_pic();
+#endif
 }

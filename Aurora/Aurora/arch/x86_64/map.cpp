@@ -19,6 +19,7 @@
  * at future, file mapping will be implemented
  */
 void *map_memory (uint64_t addr, uint32_t length,uint8_t attribute) {
+	x64_cli();
 	process_t * c_proc = get_current_process();
 
 	//!Attribute check
@@ -71,7 +72,8 @@ void *map_memory (uint64_t addr, uint32_t length,uint8_t attribute) {
  * file handle, will be implemented
  */
 void unmap_memory (void* addr, uint32_t length) {
-
+	x64_cli();
+	printf ("munmap called -> %x, length -> %d\n", addr, length);
 	/*
 	 * Before unmapping the object, we should get the object
 	 * and write it to a file if object is not null

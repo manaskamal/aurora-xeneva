@@ -124,6 +124,7 @@ void general_protection_fault (size_t v, void* p){
 	printf ("Stack -> %x\n", frame->rsp);
 	printf ("RFLAGS -> %x\n", frame->rflags);
 	printf ("Current task ->%s\n", get_current_thread()->name);
+	printf ("CS -> %x, SS -> %x\n", frame->cs, frame->ss);
     for(;;);
 }
 

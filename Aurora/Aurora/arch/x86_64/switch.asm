@@ -84,7 +84,12 @@ execute_idle:
 
 	
 	
-global force_sched
-force_sched:
+global force_sched_pic
+force_sched_pic:
+    int 32
+	ret
+
+global force_sched_apic
+force_sched_apic:
     int 0x40
 	ret

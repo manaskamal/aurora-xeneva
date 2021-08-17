@@ -13,7 +13,7 @@ EXTRN	?block_thread@@YAXPEAU_thread_@@@Z:PROC		; block_thread
 EXTRN	?unblock_thread@@YAXPEAU_thread_@@@Z:PROC	; unblock_thread
 EXTRN	?get_current_thread@@YAPEAU_thread_@@XZ:PROC	; get_current_thread
 EXTRN	?set_multi_task_enable@@YAX_N@Z:PROC		; set_multi_task_enable
-EXTRN	force_sched:PROC
+EXTRN	?force_sched@@YAXXZ:PROC			; force_sched
 EXTRN	?thread_iterate_block_list@@YAPEAU_thread_@@H@Z:PROC ; thread_iterate_block_list
 pdata	SEGMENT
 $pdata$?create_mutex@@YAPEAUmutex_t@@XZ DD imagerel $LN3
@@ -244,7 +244,7 @@ $LN2@mutex_lock:
 
 ; 45   : 		force_sched();
 
-	call	force_sched
+	call	?force_sched@@YAXXZ			; force_sched
 
 ; 46   : 	}
 

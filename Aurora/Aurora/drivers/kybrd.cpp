@@ -45,5 +45,4 @@ void kybrd_handler(size_t v, void* p)
 
 void kybrd_init () {
 	interrupt_set (1,kybrd_handler,1);
-	//irq_mask(1, true);
 }

@@ -138,6 +138,7 @@ void interrupt_set (size_t vector, void (*fn)(size_t, void* p),uint8_t irq){
 #ifdef ARCH_X64
 #ifdef USE_PIC
 	setvect(32 + vector, fn);
+	irq_mask(irq,false);
 #endif
 #ifdef USE_APIC
 	ioapic_register_irq(vector,fn,irq);
@@ -151,7 +152,14 @@ void interrupt_set (size_t vector, void (*fn)(size_t, void* p),uint8_t irq){
 	
 
 void irq_mask (uint8_t irq, bool value) {
+#ifdef USE_APIC
 	ioapic_mask_irq(irq, value);
+#elif USE_PIC
+	if(value)
+		pic_set_mask(irq);
+	else
+		pic_clear_mask(irq);
+#endif
 }
 
 

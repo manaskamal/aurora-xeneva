@@ -85,6 +85,12 @@
     <Filter Include="source\drivers\net">
       <UniqueIdentifier>{fa749acb-1065-4d19-87d2-dcf7eab39ea6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="source\drivers\acpi">
+      <UniqueIdentifier>{e89aec89-63a4-4866-9ec8-17158093dfee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\drivers\acpi">
+      <UniqueIdentifier>{75e84212-373b-4d3f-8558-e31d9db0b8b2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\stdint.h">
@@ -270,6 +276,9 @@
     <ClInclude Include="..\include\arch\x86_64\pic.h">
       <Filter>include\arch\x86_64</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\drivers\acpi\acpi.h">
+      <Filter>include\drivers\acpi</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="init.cpp">
@@ -436,6 +445,9 @@
     </ClCompile>
     <ClCompile Include="arch\x86_64\pic.cpp">
       <Filter>source\arch\x86_64</Filter>
+    </ClCompile>
+    <ClCompile Include="drivers\acpi\acpi.cpp">
+      <Filter>source\drivers\acpi</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

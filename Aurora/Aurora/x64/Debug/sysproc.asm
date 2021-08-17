@@ -11,7 +11,7 @@ CONST	ENDS
 PUBLIC	?create__sys_process@@YAXPEBD@Z			; create__sys_process
 PUBLIC	?sys_exit@@YAXXZ				; sys_exit
 EXTRN	x64_cli:PROC
-EXTRN	force_sched:PROC
+EXTRN	?force_sched@@YAXXZ:PROC			; force_sched
 EXTRN	?create_process@@YAXPEBDPEADE@Z:PROC		; create_process
 EXTRN	?kill_process@@YAXXZ:PROC			; kill_process
 pdata	SEGMENT
@@ -48,7 +48,7 @@ $LN3:
 
 ; 18   : 	force_sched();
 
-	call	force_sched
+	call	?force_sched@@YAXXZ			; force_sched
 
 ; 19   : }
 

@@ -102,9 +102,24 @@ void e1000_interrupt_handler (size_t v, void* p) {
 	
 
 void e1000_setup_interrupt () {
-	e1000_write_command (REG_IMASK, 0x1F6DC);
-	e1000_write_command (REG_IMASK, 0xff & ~4);
+	e1000_write_command (0xD8, 0xFFFF);
+	e1000_write_command (0xD0, 0xFFFF);
 	e1000_read_command (0xc0);
+}
+
+void e1000_reset () {
+	e1000_write_command (REG_RCTRL, 0);
+	e1000_write_command (REG_TCTRL, 0);
+
+	e1000_write_command (REG_CTRL, CTL_PHY_RESET);
+	for(int i = 0; i < 10; i++)
+		;
+	e1000_write_command (REG_CTRL, CTL_RESET);
+	for (int i = 0; i < 10; i++);
+	while (e1000_read_command (REG_CTRL) & CTL_RESET);
+
+	e1000_write_command (REG_CTRL, CTL_AUTO_SPEED | CTL_LINK_UP);
+	printf ("E1000 Reset completed\n");
 }
 
 
@@ -124,10 +139,14 @@ void e1000_initialize () {
 		printf ("E1000 MAC Address -> \n");
 		for (int i = 0; i < 6; i++)
 			printf ("%c", mac[i]);
+		printf ("\n");
 	}
 
-	//interrupt_set (dev->device.nonBridge.interruptLine, e1000_interrupt_handler,dev->device.nonBridge.interruptLine);
+	if (dev->device.nonBridge.interruptLine != 0xFF)
+		interrupt_set (dev->device.nonBridge.interruptLine, e1000_interrupt_handler,dev->device.nonBridge.interruptLine);
+	e1000_reset();
 	e1000_setup_interrupt();
-
+	
+	
 	pci_print_capabilities(dev);
 }

@@ -80,12 +80,9 @@ EXTRN	?pci_config_read8@@YAEPEBU_pci_address_@@G@Z:PROC ; pci_config_read8
 EXTRN	?pci_find_device@@YA_NGGPEAU_pci_address_@@@Z:PROC ; pci_find_device
 EXTRN	?pci_get_bar_addr@@YAIPEBU_pci_address_@@H@Z:PROC ; pci_get_bar_addr
 EXTRN	?pci_set_mem_enable@@YAXPEBU_pci_address_@@_N@Z:PROC ; pci_set_mem_enable
-EXTRN	?memset@@YAXPEAXEI@Z:PROC			; memset
 EXTRN	memcpy:PROC
 EXTRN	?printf@@YAXPEBDZZ:PROC				; printf
-EXTRN	?gmr_init@@YAXXZ:PROC				; gmr_init
 EXTRN	?vm_backdoor_mouse_init@@YAX_N@Z:PROC		; vm_backdoor_mouse_init
-EXTRN	?screen_set_configuration@@YAXII@Z:PROC		; screen_set_configuration
 pdata	SEGMENT
 $pdata$?svga_read_reg@@YAII@Z DD imagerel $LN3
 	DD	imagerel $LN3+45
@@ -100,7 +97,7 @@ $pdata$?svga_has_fifo_cap@@YA_NH@Z DD imagerel $LN5
 	DD	imagerel $LN5+62
 	DD	imagerel $unwind$?svga_has_fifo_cap@@YA_NH@Z
 $pdata$?svga_init@@YAXXZ DD imagerel $LN15
-	DD	imagerel $LN15+611
+	DD	imagerel $LN15+507
 	DD	imagerel $unwind$?svga_init@@YAXXZ
 $pdata$?svga_enable@@YAXXZ DD imagerel $LN8
 	DD	imagerel $LN8+368
@@ -2723,45 +2720,12 @@ $LN2@svga_init:
 ; 98   : 	}
 ; 99   : 
 ; 100  : 
-; 101  : 	svga_enable();
-
-	call	?svga_enable@@YAXXZ			; svga_enable
-
-; 102  : 	svga_set_mode (1280,1024,32);
-
-	mov	r8d, 32					; 00000020H
-	mov	edx, 1024				; 00000400H
-	mov	ecx, 1280				; 00000500H
-	call	?svga_set_mode@@YAXIII@Z		; svga_set_mode
-
-; 103  : 	gmr_init();
-
-	call	?gmr_init@@YAXXZ			; gmr_init
-
-; 104  : 	memset(svga_dev.fb_mem,0x40,svga_dev.width*svga_dev.height*32);
-
-	mov	eax, DWORD PTR ?svga_dev@@3U_svga_drive_@@A+44
-	imul	eax, DWORD PTR ?svga_dev@@3U_svga_drive_@@A+48
-	imul	eax, 32					; 00000020H
-	mov	r8d, eax
-	mov	dl, 64					; 00000040H
-	mov	rcx, QWORD PTR ?svga_dev@@3U_svga_drive_@@A+16
-	call	?memset@@YAXPEAXEI@Z			; memset
-
-; 105  : 	svga_update(0,0,svga_dev.width,svga_dev.height);
-
-	mov	r9d, DWORD PTR ?svga_dev@@3U_svga_drive_@@A+48
-	mov	r8d, DWORD PTR ?svga_dev@@3U_svga_drive_@@A+44
-	xor	edx, edx
-	xor	ecx, ecx
-	call	?svga_update@@YAXIIII@Z			; svga_update
-
-; 106  : 	screen_set_configuration(svga_dev.width,svga_dev.height);
-
-	mov	edx, DWORD PTR ?svga_dev@@3U_svga_drive_@@A+48
-	mov	ecx, DWORD PTR ?svga_dev@@3U_svga_drive_@@A+44
-	call	?screen_set_configuration@@YAXII@Z	; screen_set_configuration
-
+; 101  : 	//svga_enable();
+; 102  : 	//svga_set_mode (1280,1024,32);
+; 103  : 	//gmr_init();
+; 104  : 	/*memset(svga_dev.fb_mem,0x40,svga_dev.width*svga_dev.height*32);
+; 105  : 	svga_update(0,0,svga_dev.width,svga_dev.height);*/
+; 106  : 	//screen_set_configuration(svga_dev.width,svga_dev.height);
 ; 107  : 	vm_backdoor_mouse_init (true);
 
 	mov	cl, 1

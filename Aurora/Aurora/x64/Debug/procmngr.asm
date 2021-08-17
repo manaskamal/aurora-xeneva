@@ -20,7 +20,7 @@ EXTRN	?pmmngr_free@@YAXPEAX@Z:PROC			; pmmngr_free
 EXTRN	?block_thread@@YAXPEAU_thread_@@@Z:PROC		; block_thread
 EXTRN	?unblock_thread@@YAXPEAU_thread_@@@Z:PROC	; unblock_thread
 EXTRN	?get_current_thread@@YAPEAU_thread_@@XZ:PROC	; get_current_thread
-EXTRN	force_sched:PROC
+EXTRN	?force_sched@@YAXXZ:PROC			; force_sched
 EXTRN	?thread_iterate_block_list@@YAPEAU_thread_@@H@Z:PROC ; thread_iterate_block_list
 EXTRN	?create_process@@YAXPEBDPEADE@Z:PROC		; create_process
 pdata	SEGMENT
@@ -194,7 +194,7 @@ $LN4@procmngr_s:
 
 ; 71   : 		force_sched();
 
-	call	force_sched
+	call	?force_sched@@YAXXZ			; force_sched
 
 ; 72   : 		//sleep_thread(get_current_thread(),1000);
 ; 73   : 	}

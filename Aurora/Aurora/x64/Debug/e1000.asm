@@ -20,21 +20,24 @@ _BSS	SEGMENT
 ?mac@@3PAEA DB	06H DUP (?)				; mac
 _BSS	ENDS
 CONST	SEGMENT
-$SG3276	DB	'EEPROM exist', 0aH, 00H
+$SG3284	DB	'EEPROM exist', 0aH, 00H
 	ORG $+2
-$SG3279	DB	'Applying memory map', 0aH, 00H
+$SG3287	DB	'Applying memory map', 0aH, 00H
 	ORG $+3
-$SG3294	DB	'E1000 Interrupt fired', 0aH, 00H
+$SG3302	DB	'E1000 Interrupt fired', 0aH, 00H
 	ORG $+1
-$SG3302	DB	'Intel Ethernet not found', 0aH, 00H
+$SG3318	DB	'E1000 Reset completed', 0aH, 00H
+	ORG $+1
+$SG3324	DB	'Intel Ethernet not found', 0aH, 00H
 	ORG $+2
-$SG3311	DB	'%c', 00H
+$SG3333	DB	'%c', 00H
 	ORG $+1
-$SG3303	DB	'E1000 Base -> %x, mmio-> %x', 0aH, 00H
+$SG3325	DB	'E1000 Base -> %x, mmio-> %x', 0aH, 00H
 	ORG $+3
-$SG3305	DB	'E1000 MAC address received', 0aH, 00H
-	ORG $+4
-$SG3306	DB	'E1000 MAC Address -> ', 0aH, 00H
+$SG3327	DB	'E1000 MAC address received', 0aH, 00H
+$SG3334	DB	0aH, 00H
+	ORG $+2
+$SG3328	DB	'E1000 MAC Address -> ', 0aH, 00H
 CONST	ENDS
 PUBLIC	?e1000_initialize@@YAXXZ			; e1000_initialize
 PUBLIC	?e1000_read_command@@YAIG@Z			; e1000_read_command
@@ -44,16 +47,18 @@ PUBLIC	?e1000_eerprom_read@@YAIE@Z			; e1000_eerprom_read
 PUBLIC	?e1000_read_mac_address@@YA_NXZ			; e1000_read_mac_address
 PUBLIC	?e1000_interrupt_handler@@YAX_KPEAX@Z		; e1000_interrupt_handler
 PUBLIC	?e1000_setup_interrupt@@YAXXZ			; e1000_setup_interrupt
+PUBLIC	?e1000_reset@@YAXXZ				; e1000_reset
 EXTRN	x64_inportd:PROC
 EXTRN	x64_outportd:PROC
 EXTRN	?interrupt_end@@YAXI@Z:PROC			; interrupt_end
+EXTRN	?interrupt_set@@YAX_KP6AX0PEAX@ZE@Z:PROC	; interrupt_set
 EXTRN	?pci_find_device_class@@YA_NEEPEATpci_device_info@@@Z:PROC ; pci_find_device_class
 EXTRN	?pci_print_capabilities@@YAXPEATpci_device_info@@@Z:PROC ; pci_print_capabilities
 EXTRN	?pmmngr_alloc@@YAPEAXXZ:PROC			; pmmngr_alloc
 EXTRN	?printf@@YAXPEBDZZ:PROC				; printf
 pdata	SEGMENT
-$pdata$?e1000_initialize@@YAXXZ DD imagerel $LN8
-	DD	imagerel $LN8+268
+$pdata$?e1000_initialize@@YAXXZ DD imagerel $LN9
+	DD	imagerel $LN9+334
 	DD	imagerel $unwind$?e1000_initialize@@YAXXZ
 $pdata$?e1000_read_command@@YAIG@Z DD imagerel $LN3
 	DD	imagerel $LN3+52
@@ -76,6 +81,9 @@ $pdata$?e1000_interrupt_handler@@YAX_KPEAX@Z DD imagerel $LN3
 $pdata$?e1000_setup_interrupt@@YAXXZ DD imagerel $LN3
 	DD	imagerel $LN3+46
 	DD	imagerel $unwind$?e1000_setup_interrupt@@YAXXZ
+$pdata$?e1000_reset@@YAXXZ DD imagerel $LN11
+	DD	imagerel $LN11+152
+	DD	imagerel $unwind$?e1000_reset@@YAXXZ
 pdata	ENDS
 xdata	SEGMENT
 $unwind$?e1000_initialize@@YAXXZ DD 010401H
@@ -94,7 +102,106 @@ $unwind$?e1000_interrupt_handler@@YAX_KPEAX@Z DD 010e01H
 	DD	0420eH
 $unwind$?e1000_setup_interrupt@@YAXXZ DD 010401H
 	DD	04204H
+$unwind$?e1000_reset@@YAXXZ DD 010401H
+	DD	06204H
 xdata	ENDS
+; Function compile flags: /Odtp
+; File e:\xeneva project\xeneva\aurora\aurora\drivers\net\e1000.cpp
+_TEXT	SEGMENT
+i$1 = 32
+i$2 = 36
+?e1000_reset@@YAXXZ PROC				; e1000_reset
+
+; 110  : void e1000_reset () {
+
+$LN11:
+	sub	rsp, 56					; 00000038H
+
+; 111  : 	e1000_write_command (REG_RCTRL, 0);
+
+	xor	edx, edx
+	mov	cx, 256					; 00000100H
+	call	?e1000_write_command@@YAXGI@Z		; e1000_write_command
+
+; 112  : 	e1000_write_command (REG_TCTRL, 0);
+
+	xor	edx, edx
+	mov	cx, 1024				; 00000400H
+	call	?e1000_write_command@@YAXGI@Z		; e1000_write_command
+
+; 113  : 
+; 114  : 	e1000_write_command (REG_CTRL, CTL_PHY_RESET);
+
+	xor	edx, edx
+	xor	ecx, ecx
+	call	?e1000_write_command@@YAXGI@Z		; e1000_write_command
+
+; 115  : 	for(int i = 0; i < 10; i++)
+
+	mov	DWORD PTR i$1[rsp], 0
+	jmp	SHORT $LN8@e1000_rese
+$LN7@e1000_rese:
+	mov	eax, DWORD PTR i$1[rsp]
+	inc	eax
+	mov	DWORD PTR i$1[rsp], eax
+$LN8@e1000_rese:
+	cmp	DWORD PTR i$1[rsp], 10
+	jge	SHORT $LN6@e1000_rese
+
+; 116  : 		;
+
+	jmp	SHORT $LN7@e1000_rese
+$LN6@e1000_rese:
+
+; 117  : 	e1000_write_command (REG_CTRL, CTL_RESET);
+
+	mov	edx, 67108864				; 04000000H
+	xor	ecx, ecx
+	call	?e1000_write_command@@YAXGI@Z		; e1000_write_command
+
+; 118  : 	for (int i = 0; i < 10; i++);
+
+	mov	DWORD PTR i$2[rsp], 0
+	jmp	SHORT $LN5@e1000_rese
+$LN4@e1000_rese:
+	mov	eax, DWORD PTR i$2[rsp]
+	inc	eax
+	mov	DWORD PTR i$2[rsp], eax
+$LN5@e1000_rese:
+	cmp	DWORD PTR i$2[rsp], 10
+	jge	SHORT $LN3@e1000_rese
+	jmp	SHORT $LN4@e1000_rese
+$LN3@e1000_rese:
+$LN2@e1000_rese:
+
+; 119  : 	while (e1000_read_command (REG_CTRL) & CTL_RESET);
+
+	xor	ecx, ecx
+	call	?e1000_read_command@@YAIG@Z		; e1000_read_command
+	and	eax, 67108864				; 04000000H
+	test	eax, eax
+	je	SHORT $LN1@e1000_rese
+	jmp	SHORT $LN2@e1000_rese
+$LN1@e1000_rese:
+
+; 120  : 
+; 121  : 	e1000_write_command (REG_CTRL, CTL_AUTO_SPEED | CTL_LINK_UP);
+
+	mov	edx, 96					; 00000060H
+	xor	ecx, ecx
+	call	?e1000_write_command@@YAXGI@Z		; e1000_write_command
+
+; 122  : 	printf ("E1000 Reset completed\n");
+
+	lea	rcx, OFFSET FLAT:$SG3318
+	call	?printf@@YAXPEBDZZ			; printf
+
+; 123  : }
+
+	add	rsp, 56					; 00000038H
+	ret	0
+?e1000_reset@@YAXXZ ENDP				; e1000_reset
+_TEXT	ENDS
 ; Function compile flags: /Odtp
 ; File e:\xeneva project\xeneva\aurora\aurora\drivers\net\e1000.cpp
 _TEXT	SEGMENT
@@ -105,15 +212,15 @@ _TEXT	SEGMENT
 $LN3:
 	sub	rsp, 40					; 00000028H
 
-; 105  : 	e1000_write_command (REG_IMASK, 0x1F6DC);
+; 105  : 	e1000_write_command (0xD8, 0xFFFF);
 
-	mov	edx, 128732				; 0001f6dcH
-	mov	cx, 208					; 000000d0H
+	mov	edx, 65535				; 0000ffffH
+	mov	cx, 216					; 000000d8H
 	call	?e1000_write_command@@YAXGI@Z		; e1000_write_command
 
-; 106  : 	e1000_write_command (REG_IMASK, 0xff & ~4);
+; 106  : 	e1000_write_command (0xD0, 0xFFFF);
 
-	mov	edx, 251				; 000000fbH
+	mov	edx, 65535				; 0000ffffH
 	mov	cx, 208					; 000000d0H
 	call	?e1000_write_command@@YAXGI@Z		; e1000_write_command
 
@@ -144,7 +251,7 @@ $LN3:
 
 ; 98   : 	printf ("E1000 Interrupt fired\n");
 
-	lea	rcx, OFFSET FLAT:$SG3294
+	lea	rcx, OFFSET FLAT:$SG3302
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 99   : 	//apic_local_eoi();
@@ -181,7 +288,7 @@ $LN10:
 
 ; 70   : 		printf ("EEPROM exist\n");
 
-	lea	rcx, OFFSET FLAT:$SG3276
+	lea	rcx, OFFSET FLAT:$SG3284
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 71   : 		uint32_t temp;
@@ -264,7 +371,7 @@ $LN7@e1000_read:
 
 ; 82   : 		printf ("Applying memory map\n");
 
-	lea	rcx, OFFSET FLAT:$SG3279
+	lea	rcx, OFFSET FLAT:$SG3287
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 83   : 		uint8_t * mem_base_mac_8 = (uint8_t*)(e1000_mem_base + 0x5400);
@@ -591,17 +698,17 @@ i$1 = 32
 dev$ = 40
 ?e1000_initialize@@YAXXZ PROC				; e1000_initialize
 
-; 111  : void e1000_initialize () {
+; 126  : void e1000_initialize () {
 
-$LN8:
+$LN9:
 	sub	rsp, 56					; 00000038H
 
-; 112  : 	pci_device_info *dev = (pci_device_info*)pmmngr_alloc();
+; 127  : 	pci_device_info *dev = (pci_device_info*)pmmngr_alloc();
 
 	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
 	mov	QWORD PTR dev$[rsp], rax
 
-; 113  : 	if (!pci_find_device_class (0x02,0x00,dev)) {
+; 128  : 	if (!pci_find_device_class (0x02,0x00,dev)) {
 
 	mov	r8, QWORD PTR dev$[rsp]
 	xor	edx, edx
@@ -609,17 +716,17 @@ $LN8:
 	call	?pci_find_device_class@@YA_NEEPEATpci_device_info@@@Z ; pci_find_device_class
 	movzx	eax, al
 	test	eax, eax
-	jne	SHORT $LN5@e1000_init
+	jne	SHORT $LN6@e1000_init
 
-; 114  : 		printf ("Intel Ethernet not found\n");
+; 129  : 		printf ("Intel Ethernet not found\n");
 
-	lea	rcx, OFFSET FLAT:$SG3302
+	lea	rcx, OFFSET FLAT:$SG3324
 	call	?printf@@YAXPEBDZZ			; printf
-$LN5@e1000_init:
+$LN6@e1000_init:
 
-; 115  : 	}
-; 116  : 
-; 117  : 	e1000_base = dev->device.nonBridge.baseAddress[2] & ~1;  //TODO:Auto search 
+; 130  : 	}
+; 131  : 
+; 132  : 	e1000_base = dev->device.nonBridge.baseAddress[2] & ~1;  //TODO:Auto search 
 
 	mov	eax, 4
 	imul	rax, 2
@@ -629,7 +736,7 @@ $LN5@e1000_init:
 	mov	eax, eax
 	mov	QWORD PTR ?e1000_base@@3_KA, rax	; e1000_base
 
-; 118  : 	e1000_mem_base = dev->device.nonBridge.baseAddress[4] & ~3;  //TODO:Auto search  4
+; 133  : 	e1000_mem_base = dev->device.nonBridge.baseAddress[4] & ~3;  //TODO:Auto search  4
 
 	mov	eax, 4
 	imul	rax, 4
@@ -639,78 +746,105 @@ $LN5@e1000_init:
 	mov	eax, eax
 	mov	QWORD PTR ?e1000_mem_base@@3_KA, rax	; e1000_mem_base
 
-; 119  : 	printf ("E1000 Base -> %x, mmio-> %x\n", e1000_base, e1000_mem_base);
+; 134  : 	printf ("E1000 Base -> %x, mmio-> %x\n", e1000_base, e1000_mem_base);
 
 	mov	r8, QWORD PTR ?e1000_mem_base@@3_KA	; e1000_mem_base
 	mov	rdx, QWORD PTR ?e1000_base@@3_KA	; e1000_base
-	lea	rcx, OFFSET FLAT:$SG3303
+	lea	rcx, OFFSET FLAT:$SG3325
 	call	?printf@@YAXPEBDZZ			; printf
 
-; 120  : 	e1000_irq = dev->device.nonBridge.interruptLine;
+; 135  : 	e1000_irq = dev->device.nonBridge.interruptLine;
 
 	mov	rax, QWORD PTR dev$[rsp]
 	movzx	eax, BYTE PTR [rax+60]
 	mov	DWORD PTR ?e1000_irq@@3IA, eax		; e1000_irq
 
-; 121  : 	e1000_detect_eeprom();
+; 136  : 	e1000_detect_eeprom();
 
 	call	?e1000_detect_eeprom@@YA_NXZ		; e1000_detect_eeprom
 
-; 122  : 	if (e1000_read_mac_address()) {
+; 137  : 	if (e1000_read_mac_address()) {
 
 	call	?e1000_read_mac_address@@YA_NXZ		; e1000_read_mac_address
 	movzx	eax, al
 	test	eax, eax
-	je	SHORT $LN4@e1000_init
+	je	SHORT $LN5@e1000_init
 
-; 123  : 		printf ("E1000 MAC address received\n");
+; 138  : 		printf ("E1000 MAC address received\n");
 
-	lea	rcx, OFFSET FLAT:$SG3305
+	lea	rcx, OFFSET FLAT:$SG3327
 	call	?printf@@YAXPEBDZZ			; printf
 
-; 124  : 		printf ("E1000 MAC Address -> \n");
+; 139  : 		printf ("E1000 MAC Address -> \n");
 
-	lea	rcx, OFFSET FLAT:$SG3306
+	lea	rcx, OFFSET FLAT:$SG3328
 	call	?printf@@YAXPEBDZZ			; printf
 
-; 125  : 		for (int i = 0; i < 6; i++)
+; 140  : 		for (int i = 0; i < 6; i++)
 
 	mov	DWORD PTR i$1[rsp], 0
-	jmp	SHORT $LN3@e1000_init
-$LN2@e1000_init:
+	jmp	SHORT $LN4@e1000_init
+$LN3@e1000_init:
 	mov	eax, DWORD PTR i$1[rsp]
 	inc	eax
 	mov	DWORD PTR i$1[rsp], eax
-$LN3@e1000_init:
+$LN4@e1000_init:
 	cmp	DWORD PTR i$1[rsp], 6
-	jge	SHORT $LN1@e1000_init
+	jge	SHORT $LN2@e1000_init
 
-; 126  : 			printf ("%c", mac[i]);
+; 141  : 			printf ("%c", mac[i]);
 
 	movsxd	rax, DWORD PTR i$1[rsp]
 	lea	rcx, OFFSET FLAT:?mac@@3PAEA		; mac
 	movzx	eax, BYTE PTR [rcx+rax]
 	mov	edx, eax
-	lea	rcx, OFFSET FLAT:$SG3311
+	lea	rcx, OFFSET FLAT:$SG3333
 	call	?printf@@YAXPEBDZZ			; printf
-	jmp	SHORT $LN2@e1000_init
-$LN1@e1000_init:
-$LN4@e1000_init:
+	jmp	SHORT $LN3@e1000_init
+$LN2@e1000_init:
 
-; 127  : 	}
-; 128  : 
-; 129  : 	//interrupt_set (dev->device.nonBridge.interruptLine, e1000_interrupt_handler,dev->device.nonBridge.interruptLine);
-; 130  : 	e1000_setup_interrupt();
+; 142  : 		printf ("\n");
+
+	lea	rcx, OFFSET FLAT:$SG3334
+	call	?printf@@YAXPEBDZZ			; printf
+$LN5@e1000_init:
+
+; 143  : 	}
+; 144  : 
+; 145  : 	if (dev->device.nonBridge.interruptLine != 0xFF)
+
+	mov	rax, QWORD PTR dev$[rsp]
+	movzx	eax, BYTE PTR [rax+60]
+	cmp	eax, 255				; 000000ffH
+	je	SHORT $LN1@e1000_init
+
+; 146  : 		interrupt_set (dev->device.nonBridge.interruptLine, e1000_interrupt_handler,dev->device.nonBridge.interruptLine);
+
+	mov	rax, QWORD PTR dev$[rsp]
+	movzx	eax, BYTE PTR [rax+60]
+	mov	rcx, QWORD PTR dev$[rsp]
+	movzx	r8d, BYTE PTR [rcx+60]
+	lea	rdx, OFFSET FLAT:?e1000_interrupt_handler@@YAX_KPEAX@Z ; e1000_interrupt_handler
+	mov	ecx, eax
+	call	?interrupt_set@@YAX_KP6AX0PEAX@ZE@Z	; interrupt_set
+$LN1@e1000_init:
+
+; 147  : 	e1000_reset();
+
+	call	?e1000_reset@@YAXXZ			; e1000_reset
+
+; 148  : 	e1000_setup_interrupt();
 
 	call	?e1000_setup_interrupt@@YAXXZ		; e1000_setup_interrupt
 
-; 131  : 
-; 132  : 	pci_print_capabilities(dev);
+; 149  : 	
+; 150  : 	
+; 151  : 	pci_print_capabilities(dev);
 
 	mov	rcx, QWORD PTR dev$[rsp]
 	call	?pci_print_capabilities@@YAXPEATpci_device_info@@@Z ; pci_print_capabilities
 
-; 133  : }
+; 152  : }
 
 	add	rsp, 56					; 00000038H
 	ret	0

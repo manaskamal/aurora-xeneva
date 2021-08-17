@@ -103,6 +103,10 @@ void initialize_rtc () {
 
 	//!register interrupt
 	interrupt_set (8,rtc_clock_update, 8);
+
+#ifdef USE_PIC
+	irq_mask(8,false);
+#endif
 }
 
 

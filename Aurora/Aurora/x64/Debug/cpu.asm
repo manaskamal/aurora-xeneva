@@ -6,7 +6,7 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 CONST	SEGMENT
-$SG3000	DB	'*** [x64_idt] x64_default_handler: Unhandled Exception *'
+$SG3004	DB	'*** [x64_idt] x64_default_handler: Unhandled Exception *'
 	DB	'** ', 0aH, 00H
 CONST	ENDS
 PUBLIC	?hal_x86_64_init@@YAXXZ				; hal_x86_64_init
@@ -18,7 +18,6 @@ PUBLIC	gdt_initialize
 PUBLIC	interrupt_dispatcher
 PUBLIC	?default_irq@@YAX_KPEAX@Z			; default_irq
 PUBLIC	?interrupt_initialize@@YAXXZ			; interrupt_initialize
-EXTRN	?initialize_apic@@YAXXZ:PROC			; initialize_apic
 EXTRN	x64_cli:PROC
 EXTRN	x64_sti:PROC
 EXTRN	x64_read_msr:PROC
@@ -29,6 +28,7 @@ EXTRN	?printf@@YAXPEBDZZ:PROC				; printf
 EXTRN	?exception_init@@YAXXZ:PROC			; exception_init
 EXTRN	?initialize_syscall@@YAXXZ:PROC			; initialize_syscall
 EXTRN	?initialize_user_land@@YAX_K@Z:PROC		; initialize_user_land
+EXTRN	?initialize_pic@@YAXEE@Z:PROC			; initialize_pic
 EXTRN	x64_get_segment_register:PROC
 EXTRN	x64_set_segment_register:PROC
 EXTRN	x64_ltr:PROC
@@ -48,7 +48,7 @@ the_idt	DB	01000H DUP (?)
 _BSS	ENDS
 pdata	SEGMENT
 $pdata$?hal_x86_64_init@@YAXXZ DD imagerel $LN3
-	DD	imagerel $LN3+141
+	DD	imagerel $LN3+145
 	DD	imagerel $unwind$?hal_x86_64_init@@YAXXZ
 $pdata$load_default_sregs DD imagerel $LN3
 	DD	imagerel $LN3+90
@@ -339,7 +339,7 @@ $LN5:
 
 ; 134  : 	printf("*** [x64_idt] x64_default_handler: Unhandled Exception *** \n");
 
-	lea	rcx, OFFSET FLAT:$SG3000
+	lea	rcx, OFFSET FLAT:$SG3004
 	call	?printf@@YAXPEBDZZ			; printf
 $LN2@default_ir:
 
@@ -857,14 +857,16 @@ $LN3:
 ; 188  : 
 ; 189  : #ifdef USE_PIC
 ; 190  : 	initialize_pic(0x20, 0x28);
+
+	mov	dl, 40					; 00000028H
+	mov	cl, 32					; 00000020H
+	call	?initialize_pic@@YAXEE@Z		; initialize_pic
+
 ; 191  : #endif
 ; 192  : 
 ; 193  : #ifdef USE_APIC
 ; 194  : 	//!Initialize APIC
 ; 195  : 	initialize_apic ();
-
-	call	?initialize_apic@@YAXXZ			; initialize_apic
-
 ; 196  : #endif
 ; 197  : 
 ; 198  : 	//!Enable EFER and SYSCALL Extension
