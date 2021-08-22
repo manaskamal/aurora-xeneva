@@ -30,7 +30,7 @@ extern "C" void force_sched_apic ();
 bool  scheduler_enable = false;
 mutex_t * block_mutex;
 mutex_t * scheduler_mutex;
-
+bool  scheduler_initialized = false;
 uint16_t task_id = 0;
 
 list_t *blocked_list;
@@ -184,7 +184,6 @@ void initialize_scheduler () {
 	scheduler_enable = true;
 	thread_t *idle_ = create_kthread (idle_thread,(uint64_t)pmmngr_alloc(),x64_read_cr3(),"Idle",1);
 	current_thread = idle_;
-
 }
 
 void next_task () {
@@ -265,6 +264,7 @@ sched_end:
 
 //! Start the scheduler engine
 void scheduler_start () {
+	scheduler_initialized = true;
 	x64_cli();
 #ifdef USE_APIC
 	setvect(0x40, scheduler_isr);
@@ -359,4 +359,8 @@ void force_sched () {
 #elif USE_PIC
 	force_sched_pic();
 #endif
+}
+
+bool is_scheduler_initialized () {
+	return scheduler_initialized;
 }

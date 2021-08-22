@@ -81,7 +81,7 @@ void printf(const char* format, ...)
 				size_t x = va_arg(args, size_t);
 				char buffer[sizeof(size_t) * 8 + 1];
 				sztoa(x, buffer, 16);
-				puts("0x");
+				//puts("0x");
 				puts(buffer);
 			}
 			else if (*format == 's')

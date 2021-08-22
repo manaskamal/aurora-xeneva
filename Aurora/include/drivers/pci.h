@@ -149,7 +149,7 @@ typedef union _pci_config_space_ {
 
 #pragma pack (pop)
 
-
+#pragma pack(push)
 // This structure is adapted from Ralf Brown's CPI configuration data dumper
 typedef union {
 	struct {
@@ -246,7 +246,7 @@ typedef union {
 	unsigned header[PCI_CONFIGHEADER_SIZE / 4];
 
 }pci_device_info;
-
+#pragma pack(pop)
 
 typedef struct _pci_address_ {
 	uint8_t bus;

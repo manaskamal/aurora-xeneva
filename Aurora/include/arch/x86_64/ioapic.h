@@ -25,4 +25,5 @@
 extern void ioapic_init(void* address);
 extern void ioapic_register_irq(size_t vector, void (*fn)(size_t, void* p),uint8_t irq);
 extern void ioapic_mask_irq (uint8_t irq, bool value);
+extern void ioapic_redirect (uint8_t irq, uint32_t gsi, uint16_t flags, uint8_t apic);
 #endif

@@ -17,7 +17,7 @@
 
 
 void (*driver_debug) (const char* str, ...);
-void (*apic_local_eoi) ();
+void (*interrupt_eoi) (uint32_t irq);
 driver_param_t _param;
 
 bool _sb16 = false;
@@ -91,15 +91,15 @@ void sb16_set_irq_register (uint8_t irq_number) {
 
 //! Sound Blaster 16 irq handler
 void sb16_handler (size_t s, void* p) {
-	
-	//sb16_write_dsp (0xd5);
+	driver_debug ("[SB16]: IRQ fired\n");
+	sb16_write_dsp (0xd5);
 
-	//if (sb16_version_major >= 4)
-	x64_inportw(DSP_R_ACK);
+	x64_inportb (DSP_STATUS);
+	if (sb16_version_major >= 4)
+	   x64_inportw(DSP_R_ACK);
 
-    apic_local_eoi();
-    driver_debug ("[SB16]: IRQ fired\n");
-	
+	interrupt_eoi(5);
+
 }
 
 
@@ -138,7 +138,7 @@ void sb16_dma_start (uint64_t addr, uint32_t length) {
 //! Audio Write -- Uses sb16 play audio methods
 extern "C" void _declspec(dllexport) aurora_write (unsigned char* sound_buffer, size_t length) {
 
-	uint64_t phys_addr = (uint64_t)sound_buffer; //(uint64_t)_param.get_phys_address((uint64_t)sound_buffer);
+	uint64_t phys_addr = (uint64_t)(uint64_t)_param.get_phys_address((uint64_t)sound_buffer);
 	driver_debug("Physical Address for sb16 -> %x\n", phys_addr);
 	//!sb16 reset the dsp first
 	sb16_reset_dsp ();
@@ -177,7 +177,7 @@ extern "C" void _declspec(dllexport) aurora_close_driver () {
 //! Perform every initializing action here
 extern "C" int _declspec(dllexport) _cdecl aurora_init_driver (driver_param_t *param) {
 	driver_debug = param->kdebug;
-	apic_local_eoi = param->irq_eoi;
+	interrupt_eoi = param->irq_eoi;
 	_param = *param;
 	sb16_reset_dsp ();
 

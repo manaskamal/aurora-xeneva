@@ -6,16 +6,14 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 CONST	SEGMENT
-$SG2885	DB	'0123456789ABCDEF', 00H
+$SG2891	DB	'0123456789ABCDEF', 00H
 	ORG $+3
-$SG2941	DB	'0', 00H
+$SG2947	DB	'0', 00H
 	ORG $+2
-$SG2966	DB	'0x', 00H
-	ORG $+1
-$SG2979	DB	'.', 00H
+$SG2984	DB	'.', 00H
 CONST	ENDS
 _DATA	SEGMENT
-chars	DQ	FLAT:$SG2885
+chars	DQ	FLAT:$SG2891
 _DATA	ENDS
 PUBLIC	?sztoa@@YAPEAD_KPEADH@Z				; sztoa
 PUBLIC	?printf@@YAXPEBDZZ				; printf
@@ -27,7 +25,7 @@ $pdata$?sztoa@@YAPEAD_KPEADH@Z DD imagerel $LN11
 	DD	imagerel $LN11+275
 	DD	imagerel $unwind$?sztoa@@YAPEAD_KPEADH@Z
 $pdata$?printf@@YAXPEBDZZ DD imagerel $LN23
-	DD	imagerel $LN23+856
+	DD	imagerel $LN23+844
 	DD	imagerel $unwind$?printf@@YAXPEBDZZ
 pdata	ENDS
 xdata	SEGMENT
@@ -251,7 +249,7 @@ $LN12@printf:
 
 ; 69   : 					puts("0");
 
-	lea	rcx, OFFSET FLAT:$SG2941
+	lea	rcx, OFFSET FLAT:$SG2947
 	call	?puts@@YAXPEAD@Z			; puts
 	jmp	SHORT $LN12@printf
 $LN11@printf:
@@ -323,11 +321,7 @@ $LN9@printf:
 	mov	rcx, QWORD PTR x$9[rsp]
 	call	?sztoa@@YAPEAD_KPEADH@Z			; sztoa
 
-; 84   : 				puts("0x");
-
-	lea	rcx, OFFSET FLAT:$SG2966
-	call	?puts@@YAXPEAD@Z			; puts
-
+; 84   : 				//puts("0x");
 ; 85   : 				puts(buffer);
 
 	lea	rcx, QWORD PTR buffer$12[rsp]
@@ -376,7 +370,7 @@ $LN5@printf:
 ; 98   : 			{
 ; 99   : 				puts(".");
 
-	lea	rcx, OFFSET FLAT:$SG2979
+	lea	rcx, OFFSET FLAT:$SG2984
 	call	?puts@@YAXPEAD@Z			; puts
 
 ; 100  : 			}

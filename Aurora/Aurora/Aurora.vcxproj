@@ -122,7 +122,7 @@
       <SDLCheck>false</SDLCheck>
       <OmitFramePointers>
       </OmitFramePointers>
-      <PreprocessorDefinitions>ARCH_X64;USE_PIC;AURORA_X64%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>ARCH_X64;USE_APIC;AURORA_X64%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <IgnoreStandardIncludePath>true</IgnoreStandardIncludePath>
       <ExceptionHandling>false</ExceptionHandling>
       <BasicRuntimeChecks>
@@ -208,6 +208,7 @@
     <ClInclude Include="..\include\drivers\mouse.h" />
     <ClInclude Include="..\include\drivers\net\amd_am79c973.h" />
     <ClInclude Include="..\include\drivers\net\e1000.h" />
+    <ClInclude Include="..\include\drivers\net\rtl8139.h" />
     <ClInclude Include="..\include\drivers\pci.h" />
     <ClInclude Include="..\include\drivers\rtc.h" />
     <ClInclude Include="..\include\drivers\svga\backdoor_def.h" />
@@ -238,6 +239,7 @@
     <ClInclude Include="..\include\proc.h" />
     <ClInclude Include="..\include\procmngr.h" />
     <ClInclude Include="..\include\screen.h" />
+    <ClInclude Include="..\include\serial.h" />
     <ClInclude Include="..\include\stdint.h" />
     <ClInclude Include="..\include\stdio.h" />
     <ClInclude Include="..\include\string.h" />
@@ -271,6 +273,7 @@
     <ClCompile Include="drivers\mouse.cpp" />
     <ClCompile Include="drivers\net\amd_am79c973.cpp" />
     <ClCompile Include="drivers\net\e1000.cpp" />
+    <ClCompile Include="drivers\net\rtl8139.cpp" />
     <ClCompile Include="drivers\pci.cpp" />
     <ClCompile Include="drivers\rtc.cpp" />
     <ClCompile Include="drivers\svga\gmr.cpp" />
@@ -293,6 +296,7 @@
     <ClCompile Include="proc.cpp" />
     <ClCompile Include="procmngr.cpp" />
     <ClCompile Include="screen.cpp" />
+    <ClCompile Include="serial.cpp" />
     <ClCompile Include="stdio.cpp" />
     <ClCompile Include="string.cpp" />
     <ClCompile Include="sysserv\sysfb.cpp" />

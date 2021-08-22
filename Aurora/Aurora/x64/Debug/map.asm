@@ -6,7 +6,7 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 CONST	SEGMENT
-$SG3631	DB	'munmap called -> %x, length -> %d', 0aH, 00H
+$SG3638	DB	'munmap called -> %x, length -> %d', 0aH, 00H
 CONST	ENDS
 PUBLIC	?map_memory@@YAPEAX_KIE@Z			; map_memory
 PUBLIC	?unmap_memory@@YAXPEAXI@Z			; unmap_memory
@@ -55,7 +55,7 @@ $LN8:
 
 	mov	r8d, DWORD PTR length$[rsp]
 	mov	rdx, QWORD PTR addr$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3631
+	lea	rcx, OFFSET FLAT:$SG3638
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 77   : 	/*

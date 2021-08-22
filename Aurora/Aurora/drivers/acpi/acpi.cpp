@@ -10,6 +10,7 @@
  */
 
 #include <drivers\acpi\acpi.h>
+#include <arch\x86_64\ioapic.h>
 #include <string.h>
 #include <pmmngr.h>
 #include <stdio.h>
@@ -24,7 +25,11 @@ aurora_acpi *kern_acpi = nullptr;
 
 
 void acpi_power_button_enable () {
+	x64_outportw (kern_acpi->fadt->pm1aEventBlock, (1<<5));
+	x64_outportw (kern_acpi->fadt->pm1aEventBlock, (1<<8));
+	x64_outportw (kern_acpi->fadt->pm1aEventBlock, (1<<5));
 	x64_outportw (kern_acpi->fadt->pm1aEventBlock, POWER_BUTTON_ENABLE);
+	x64_outportw (kern_acpi->fadt->pm1aEventBlock, (1<<9));
 }
 
 //! Enable ACPI 
@@ -60,7 +65,7 @@ void acpi_enable () {
 
 void fadt_handler (size_t v, void* p) {
 	printf ("[ACPI]: Fadt interrupt fired\n");
-	//interrupt_end(0);
+	interrupt_end(9);
 }
 
 //! Initialize the acpi data structures
@@ -111,7 +116,7 @@ void initialize_acpi (void* acpi_base) {
 		kern_acpi->dsdt = (acpiDsdt*)kern_acpi->fadt->dsdtAddr;
 		printf ("[ACPI]: Dsdt found -> %x\n", kern_acpi->dsdt);
 		printf ("[ACPI]: Sci Interrupt -> %d\n", kern_acpi->fadt->sciInt);
-		setvect(kern_acpi->fadt->sciInt,fadt_handler);
+		interrupt_set(kern_acpi->fadt->sciInt,fadt_handler, kern_acpi->fadt->sciInt);
 		uint8_t* S5Block = search_s5(kern_acpi->dsdt);
 		if (S5Block != NULL) {
 			printf ("S5Block found\n");
@@ -151,7 +156,8 @@ void acpi_parse_madt () {
 		}
 		case ACPI_APICTYPE_ISOVER:{
 			apic_interrupt_override* over = (apic_interrupt_override*)apic_header;
-			printf ("[ACPI]: Madt entry -> Interrupt Source Override, GSI-> %d\n", over->interrupt);
+			
+			printf ("[ACPI]: Madt entry -> Interrupt Source Override, GSI-> %d SRC->%d\n", over->interrupt, over->source);
 			break;
 		}
 		default:{
@@ -173,8 +179,13 @@ void acpi_system_reboot () {
 void acpi_shutdown () {
 	x64_outportw (kern_acpi->fadt->pm1aCtrlBlock, (kern_acpi->slp_typa << 0) | SLP_EN);
 	printf ("Shutdown step1 complete\n");
-	if (kern_acpi->fadt->pm1bCtrlBlock != 0)
+
+	if (kern_acpi->fadt->pm1bCtrlBlock){
+		printf ("[ACPI] pm1bCtrlBlock -> %x\n", kern_acpi->fadt->pm1bCtrlBlock);
 		x64_outportw (kern_acpi->fadt->pm1bCtrlBlock,  (kern_acpi->slp_typb << 0) | SLP_EN);
+	} else {
+		x64_outportw (kern_acpi->fadt->pm1aCtrlBlock, (kern_acpi->slp_typb << 0) | SLP_EN);
+	}
 
 	printf ("\nShutdown step2 complete\n");
 	printf ("[ACPI]: Shutdown failed\n");

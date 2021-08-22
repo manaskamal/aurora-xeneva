@@ -25,6 +25,9 @@
 #define REG_EEPROM  0x0014
 #define REG_CTRL_EXT  0x0018
 #define REG_IMASK 0x00D0
+#define REG_IMC   0x00D8
+#define REG_ICR   0x00C0
+#define REG_ITR   0x00C4
 #define REG_RCTRL 0x0100
 #define REG_RXDESCLO  0x2800
 #define REG_RXDESCKHI  0x2804
@@ -44,10 +47,16 @@
 #define REG_RXDCTL       0x3828 // RX Descriptor Control
 #define REG_RADV         0x282C // RX Int. Absolute Delay Timer
 #define REG_RSRPD        0x2C00 // RX Small Packet Detect Interrupt
- 
+#define REG_MTA          0x5200 
  
  
 #define REG_TIPG         0x0410      // Transmit Inter Packet Gap
+#define REG_FCAL         0x00028
+#define REG_FCAH         0x0002c
+#define REG_FCT          0x00030
+#define REG_FCTTV        0x02800
+#define REG_CRCERRS      0x04000
+
 #define ECTRL_SLU        0x40        //set link up
  
  
@@ -82,7 +91,6 @@
 #define RCTL_BSIZE_8192                 ((2 << 16) | (1 << 25))
 #define RCTL_BSIZE_16384                ((1 << 16) | (1 << 25))
  
- 
 // Transmit Command
  
 #define CMD_EOP                         (1 << 0)    // End of Packet
@@ -108,7 +116,11 @@
 #define TSTA_LC                         (1 << 2)    // Late Collision
 #define LSTA_TU                         (1 << 3)    // Transmit Underrun
 
-
+#define E1000_IMS_TXDW   (1<<0)
+#define E1000_IMS_TXQE   (1<<1)
+#define E1000_IMS_LSC    (1<<2)
+#define E1000_IMS_RXO    (1<<6)
+#define E1000_IMS_RXT    (1<<7)
 enum {
 	CTL_AUTO_SPEED = (1 << 5),
 	CTL_LINK_UP = (1 << 6),
@@ -128,10 +140,10 @@ enum {
 struct e1000_rx_desc {
         volatile uint64_t addr;
         volatile uint16_t length;
-        volatile uint16_t padding;
+        volatile uint16_t checksum;
         volatile uint8_t status;
         volatile uint8_t errors;
-        volatile uint16_t padding2;
+        volatile uint16_t special;
 };
 #pragma pack(pop)
  
@@ -147,6 +159,20 @@ struct e1000_tx_desc {
 };
 #pragma pack(pop)
 
+
+typedef struct _e1000_dev_ {
+	size_t e1000_base;
+	uint64_t e1000_mem_base;
+	bool eerprom_exists;
+	uint32_t e1000_irq;
+	uint8_t mac[6];
+	uint8_t *rx_desc_base;
+	uint8_t* tx_desc_base;
+	uint16_t tx_tail;
+	uint16_t rx_tail;
+	e1000_rx_desc *rx_desc[E1000_NUM_RX_DESC];
+	e1000_tx_desc *tx_desc[E1000_NUM_TX_DESC];
+}e1000_dev;
 
 extern void e1000_initialize ();
 #endif

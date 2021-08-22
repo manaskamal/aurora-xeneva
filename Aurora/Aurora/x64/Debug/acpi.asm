@@ -10,64 +10,67 @@ _BSS	SEGMENT
 ?kern_acpi@@3PEAU_aurora_acpi_@@EA DQ 01H DUP (?)	; kern_acpi
 _BSS	ENDS
 CONST	SEGMENT
-$SG3212	DB	'[ACPI]: data structures are incomplete', 0aH, 00H
-$SG3215	DB	'[ACPI]: Already enabled', 0aH, 00H
+$SG3235	DB	'[ACPI]: data structures are incomplete', 0aH, 00H
+$SG3238	DB	'[ACPI]: Already enabled', 0aH, 00H
 	ORG $+7
-$SG3218	DB	'[ACPI]: Enabled successfully', 0aH, 00H
+$SG3241	DB	'[ACPI]: Enabled successfully', 0aH, 00H
 	ORG $+2
-$SG3220	DB	'[ACPI]: Verifying pm1bCtrlBlock ', 0aH, 00H
+$SG3243	DB	'[ACPI]: Verifying pm1bCtrlBlock ', 0aH, 00H
 	ORG $+6
-$SG3223	DB	'[ACPI]: Enabled successfully', 0aH, 00H
+$SG3246	DB	'[ACPI]: Enabled successfully', 0aH, 00H
 	ORG $+2
-$SG3228	DB	'[ACPI]: Fadt interrupt fired', 0aH, 00H
+$SG3251	DB	'[ACPI]: Fadt interrupt fired', 0aH, 00H
 	ORG $+2
-$SG3250	DB	'FACP', 00H
+$SG3273	DB	'FACP', 00H
 	ORG $+3
-$SG3251	DB	'FACP', 00H
+$SG3274	DB	'FACP', 00H
 	ORG $+3
-$SG3253	DB	'[ACPI]: Fadt table found', 0aH, 00H
+$SG3276	DB	'[ACPI]: Fadt table found', 0aH, 00H
 	ORG $+2
-$SG3256	DB	'CIPA', 00H
+$SG3279	DB	'CIPA', 00H
 	ORG $+3
-$SG3257	DB	'APIC', 00H
+$SG3280	DB	'APIC', 00H
 	ORG $+7
-$SG3259	DB	'[ACPI]: Madt table found', 0aH, 00H
+$SG3282	DB	'[ACPI]: Madt table found', 0aH, 00H
 	ORG $+2
-$SG3262	DB	'SRAT', 00H
+$SG3285	DB	'SRAT', 00H
 	ORG $+3
-$SG3263	DB	'SRAT', 00H
+$SG3286	DB	'SRAT', 00H
 	ORG $+7
-$SG3264	DB	'[ACPI]: Srat table found', 0aH, 00H
+$SG3287	DB	'[ACPI]: Srat table found', 0aH, 00H
 	ORG $+2
-$SG3267	DB	'MCFG', 00H
+$SG3290	DB	'MCFG', 00H
 	ORG $+3
-$SG3268	DB	'MCFG', 00H
+$SG3291	DB	'MCFG', 00H
 	ORG $+7
-$SG3269	DB	'[ACPI]: Mcfg table found', 0aH, 00H
+$SG3292	DB	'[ACPI]: Mcfg table found', 0aH, 00H
 	ORG $+6
-$SG3274	DB	'[ACPI]: Dsdt found -> %x', 0aH, 00H
+$SG3297	DB	'[ACPI]: Dsdt found -> %x', 0aH, 00H
 	ORG $+6
-$SG3275	DB	'[ACPI]: Sci Interrupt -> %d', 0aH, 00H
+$SG3298	DB	'[ACPI]: Sci Interrupt -> %d', 0aH, 00H
 	ORG $+3
-$SG3278	DB	'S5Block found', 0aH, 00H
+$SG3301	DB	'S5Block found', 0aH, 00H
 	ORG $+1
-$SG3281	DB	'[ACPI]: SLP_typA -> %x, SLP_typB -> %x', 0aH, 00H
-$SG3300	DB	'[ACPI]: Madt entry -> LAPIC ', 0aH, 00H
+$SG3304	DB	'[ACPI]: SLP_typA -> %x, SLP_typB -> %x', 0aH, 00H
+$SG3323	DB	'[ACPI]: Madt entry -> LAPIC ', 0aH, 00H
 	ORG $+2
-$SG3304	DB	'[ACPI]: Madt entry -> I/O APIC address -> %x, GSI -> %d', 0aH
+$SG3327	DB	'[ACPI]: Madt entry -> I/O APIC address -> %x, GSI -> %d', 0aH
 	DB	00H
 	ORG $+7
-$SG3308	DB	'[ACPI]: Madt entry -> Interrupt Source Override, GSI-> %'
-	DB	'd', 0aH, 00H
-	ORG $+5
-$SG3310	DB	'[ACPI]: Madt entry type = %d', 0aH, 00H
+$SG3333	DB	'[ACPI]: Madt entry type = %d', 0aH, 00H
 	ORG $+2
-$SG3320	DB	'[ACPI]: Reset Address -> %x, Reset value -> %x', 0aH, 00H
-$SG3323	DB	'Shutdown step1 complete', 0aH, 00H
+$SG3343	DB	'[ACPI]: Reset Address -> %x, Reset value -> %x', 0aH, 00H
+	ORG $+8
+$SG3331	DB	'[ACPI]: Madt entry -> Interrupt Source Override, GSI-> %'
+	DB	'd SRC->%d', 0aH, 00H
+	ORG $+5
+$SG3346	DB	'Shutdown step1 complete', 0aH, 00H
 	ORG $+7
-$SG3325	DB	0aH, 'Shutdown step2 complete', 0aH, 00H
+$SG3348	DB	'[ACPI] pm1bCtrlBlock -> %x', 0aH, 00H
+	ORG $+4
+$SG3350	DB	0aH, 'Shutdown step2 complete', 0aH, 00H
 	ORG $+6
-$SG3326	DB	'[ACPI]: Shutdown failed', 0aH, 00H
+$SG3351	DB	'[ACPI]: Shutdown failed', 0aH, 00H
 CONST	ENDS
 PUBLIC	?initialize_acpi@@YAXPEAX@Z			; initialize_acpi
 PUBLIC	?acpi_parse_madt@@YAXXZ				; acpi_parse_madt
@@ -79,21 +82,22 @@ PUBLIC	?acpi_enable@@YAXXZ				; acpi_enable
 PUBLIC	?fadt_handler@@YAX_KPEAX@Z			; fadt_handler
 PUBLIC	??$raw_diff@U_acpi_apic_header_@@UacpiMadt@@@@YAHPEAU_acpi_apic_header_@@PEAUacpiMadt@@@Z ; raw_diff<_acpi_apic_header_,acpiMadt>
 PUBLIC	??$raw_offset@PEAU_acpi_apic_header_@@PEAU1@@@YAPEAU_acpi_apic_header_@@PEAU0@H@Z ; raw_offset<_acpi_apic_header_ * __ptr64,_acpi_apic_header_ * __ptr64>
+EXTRN	x64_inportw:PROC
+EXTRN	x64_outportb:PROC
+EXTRN	x64_outportw:PROC
 EXTRN	?strlen@@YA_KPEBD@Z:PROC			; strlen
 EXTRN	?strncmp@@YAHPEBD0_K@Z:PROC			; strncmp
 EXTRN	?strncpy@@YAPEADPEADPEBD_K@Z:PROC		; strncpy
 EXTRN	?pmmngr_alloc@@YAPEAXXZ:PROC			; pmmngr_alloc
-EXTRN	x64_inportw:PROC
-EXTRN	x64_outportb:PROC
-EXTRN	x64_outportw:PROC
-EXTRN	?setvect@@YAX_KP6AX0PEAX@Z@Z:PROC		; setvect
 EXTRN	?printf@@YAXPEBDZZ:PROC				; printf
+EXTRN	?interrupt_end@@YAXI@Z:PROC			; interrupt_end
+EXTRN	?interrupt_set@@YAX_KP6AX0PEAX@ZE@Z:PROC	; interrupt_set
 pdata	SEGMENT
 $pdata$?initialize_acpi@@YAXPEAX@Z DD imagerel $LN18
-	DD	imagerel $LN18+876
+	DD	imagerel $LN18+890
 	DD	imagerel $unwind$?initialize_acpi@@YAXPEAX@Z
 $pdata$?acpi_parse_madt@@YAXXZ DD imagerel $LN11
-	DD	imagerel $LN11+245
+	DD	imagerel $LN11+257
 	DD	imagerel $unwind$?acpi_parse_madt@@YAXXZ
 $pdata$?acpi_system_reboot@@YAXXZ DD imagerel $LN3
 	DD	imagerel $LN3+92
@@ -101,17 +105,17 @@ $pdata$?acpi_system_reboot@@YAXXZ DD imagerel $LN3
 $pdata$?search_s5@@YAPEAEPEAUacpiDsdt@@@Z DD imagerel $LN6
 	DD	imagerel $LN6+104
 	DD	imagerel $unwind$?search_s5@@YAPEAEPEAUacpiDsdt@@@Z
-$pdata$?acpi_shutdown@@YAXXZ DD imagerel $LN6
-	DD	imagerel $LN6+140
+$pdata$?acpi_shutdown@@YAXXZ DD imagerel $LN7
+	DD	imagerel $LN7+206
 	DD	imagerel $unwind$?acpi_shutdown@@YAXXZ
 $pdata$?acpi_power_button_enable@@YAXXZ DD imagerel $LN3
-	DD	imagerel $LN3+33
+	DD	imagerel $LN3+129
 	DD	imagerel $unwind$?acpi_power_button_enable@@YAXXZ
 $pdata$?acpi_enable@@YAXXZ DD imagerel $LN9
 	DD	imagerel $LN9+281
 	DD	imagerel $unwind$?acpi_enable@@YAXXZ
 $pdata$?fadt_handler@@YAX_KPEAX@Z DD imagerel $LN3
-	DD	imagerel $LN3+31
+	DD	imagerel $LN3+41
 	DD	imagerel $unwind$?fadt_handler@@YAX_KPEAX@Z
 pdata	ENDS
 xdata	SEGMENT
@@ -189,20 +193,24 @@ v$ = 48
 p$ = 56
 ?fadt_handler@@YAX_KPEAX@Z PROC				; fadt_handler
 
-; 61   : void fadt_handler (size_t v, void* p) {
+; 66   : void fadt_handler (size_t v, void* p) {
 
 $LN3:
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 40					; 00000028H
 
-; 62   : 	printf ("[ACPI]: Fadt interrupt fired\n");
+; 67   : 	printf ("[ACPI]: Fadt interrupt fired\n");
 
-	lea	rcx, OFFSET FLAT:$SG3228
+	lea	rcx, OFFSET FLAT:$SG3251
 	call	?printf@@YAXPEBDZZ			; printf
 
-; 63   : 	//interrupt_end(0);
-; 64   : }
+; 68   : 	interrupt_end(9);
+
+	mov	ecx, 9
+	call	?interrupt_end@@YAXI@Z			; interrupt_end
+
+; 69   : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -216,12 +224,12 @@ word_1$ = 36
 word_3$1 = 40
 ?acpi_enable@@YAXXZ PROC				; acpi_enable
 
-; 31   : void acpi_enable () {
+; 36   : void acpi_enable () {
 
 $LN9:
 	sub	rsp, 56					; 00000038H
 
-; 32   : 	if (!kern_acpi->fadt || !kern_acpi->fadt->pm1aCtrlBlock) {
+; 37   : 	if (!kern_acpi->fadt || !kern_acpi->fadt->pm1aCtrlBlock) {
 
 	mov	rax, QWORD PTR ?kern_acpi@@3PEAU_aurora_acpi_@@EA ; kern_acpi
 	cmp	QWORD PTR [rax+9], 0
@@ -232,18 +240,18 @@ $LN9:
 	jne	SHORT $LN6@acpi_enabl
 $LN5@acpi_enabl:
 
-; 33   : 		printf ("[ACPI]: data structures are incomplete\n");
+; 38   : 		printf ("[ACPI]: data structures are incomplete\n");
 
-	lea	rcx, OFFSET FLAT:$SG3212
+	lea	rcx, OFFSET FLAT:$SG3235
 	call	?printf@@YAXPEBDZZ			; printf
 
-; 34   : 		return;
+; 39   : 		return;
 
 	jmp	$LN7@acpi_enabl
 $LN6@acpi_enabl:
 
-; 35   : 	}
-; 36   : 	uint16_t word = x64_inportw(kern_acpi->fadt->pm1aCtrlBlock);
+; 40   : 	}
+; 41   : 	uint16_t word = x64_inportw(kern_acpi->fadt->pm1aCtrlBlock);
 
 	mov	rax, QWORD PTR ?kern_acpi@@3PEAU_aurora_acpi_@@EA ; kern_acpi
 	mov	rax, QWORD PTR [rax+9]
@@ -251,25 +259,25 @@ $LN6@acpi_enabl:
 	call	x64_inportw
 	mov	WORD PTR word$[rsp], ax
 
-; 37   : 	if ((word & ACPI_PMCTRL_SCI_EN) == 1) {
+; 42   : 	if ((word & ACPI_PMCTRL_SCI_EN) == 1) {
 
 	movzx	eax, WORD PTR word$[rsp]
 	and	eax, 1
 	cmp	eax, 1
 	jne	SHORT $LN4@acpi_enabl
 
-; 38   : 		printf ("[ACPI]: Already enabled\n");
+; 43   : 		printf ("[ACPI]: Already enabled\n");
 
-	lea	rcx, OFFSET FLAT:$SG3215
+	lea	rcx, OFFSET FLAT:$SG3238
 	call	?printf@@YAXPEBDZZ			; printf
 
-; 39   : 		return;
+; 44   : 		return;
 
 	jmp	$LN7@acpi_enabl
 $LN4@acpi_enabl:
 
-; 40   : 	}
-; 41   : 	x64_outportb (kern_acpi->fadt->sciCmdPort, kern_acpi->fadt->acpiEnable);
+; 45   : 	}
+; 46   : 	x64_outportb (kern_acpi->fadt->sciCmdPort, kern_acpi->fadt->acpiEnable);
 
 	mov	rax, QWORD PTR ?kern_acpi@@3PEAU_aurora_acpi_@@EA ; kern_acpi
 	mov	rax, QWORD PTR [rax+9]
@@ -279,7 +287,7 @@ $LN4@acpi_enabl:
 	movzx	ecx, WORD PTR [rcx+48]
 	call	x64_outportb
 
-; 42   : 	uint16_t word_1 = x64_inportw(kern_acpi->fadt->pm1aCtrlBlock);
+; 47   : 	uint16_t word_1 = x64_inportw(kern_acpi->fadt->pm1aCtrlBlock);
 
 	mov	rax, QWORD PTR ?kern_acpi@@3PEAU_aurora_acpi_@@EA ; kern_acpi
 	mov	rax, QWORD PTR [rax+9]
@@ -287,35 +295,35 @@ $LN4@acpi_enabl:
 	call	x64_inportw
 	mov	WORD PTR word_1$[rsp], ax
 
-; 43   : 	if ((word_1 & ACPI_PMCTRL_SCI_EN) == 1){
+; 48   : 	if ((word_1 & ACPI_PMCTRL_SCI_EN) == 1){
 
 	movzx	eax, WORD PTR word_1$[rsp]
 	and	eax, 1
 	cmp	eax, 1
 	jne	SHORT $LN3@acpi_enabl
 
-; 44   : 		printf ("[ACPI]: Enabled successfully\n");
+; 49   : 		printf ("[ACPI]: Enabled successfully\n");
 
-	lea	rcx, OFFSET FLAT:$SG3218
+	lea	rcx, OFFSET FLAT:$SG3241
 	call	?printf@@YAXPEBDZZ			; printf
 $LN3@acpi_enabl:
 
-; 45   : 
-; 46   : 	}
-; 47   : 
-; 48   : 	if (kern_acpi->fadt->pm1bCtrlBlock){
+; 50   : 
+; 51   : 	}
+; 52   : 
+; 53   : 	if (kern_acpi->fadt->pm1bCtrlBlock){
 
 	mov	rax, QWORD PTR ?kern_acpi@@3PEAU_aurora_acpi_@@EA ; kern_acpi
 	mov	rax, QWORD PTR [rax+9]
 	cmp	DWORD PTR [rax+68], 0
 	je	SHORT $LN2@acpi_enabl
 
-; 49   : 		printf ("[ACPI]: Verifying pm1bCtrlBlock \n");
+; 54   : 		printf ("[ACPI]: Verifying pm1bCtrlBlock \n");
 
-	lea	rcx, OFFSET FLAT:$SG3220
+	lea	rcx, OFFSET FLAT:$SG3243
 	call	?printf@@YAXPEBDZZ			; printf
 
-; 50   : 		uint16_t word_3 = x64_inportw(kern_acpi->fadt->pm1bCtrlBlock);
+; 55   : 		uint16_t word_3 = x64_inportw(kern_acpi->fadt->pm1bCtrlBlock);
 
 	mov	rax, QWORD PTR ?kern_acpi@@3PEAU_aurora_acpi_@@EA ; kern_acpi
 	mov	rax, QWORD PTR [rax+9]
@@ -323,30 +331,30 @@ $LN3@acpi_enabl:
 	call	x64_inportw
 	mov	WORD PTR word_3$1[rsp], ax
 
-; 51   : 		if ((word_3 & ACPI_PMCTRL_SCI_EN) == 1){
+; 56   : 		if ((word_3 & ACPI_PMCTRL_SCI_EN) == 1){
 
 	movzx	eax, WORD PTR word_3$1[rsp]
 	and	eax, 1
 	cmp	eax, 1
 	jne	SHORT $LN1@acpi_enabl
 
-; 52   : 			printf ("[ACPI]: Enabled successfully\n");
+; 57   : 			printf ("[ACPI]: Enabled successfully\n");
 
-	lea	rcx, OFFSET FLAT:$SG3223
+	lea	rcx, OFFSET FLAT:$SG3246
 	call	?printf@@YAXPEBDZZ			; printf
 $LN1@acpi_enabl:
 $LN2@acpi_enabl:
 
-; 53   : 		}
-; 54   : 	}
-; 55   : 
-; 56   : 	acpi_power_button_enable();
+; 58   : 		}
+; 59   : 	}
+; 60   : 
+; 61   : 	acpi_power_button_enable();
 
 	call	?acpi_power_button_enable@@YAXXZ	; acpi_power_button_enable
 $LN7@acpi_enabl:
 
-; 57   : 	return;
-; 58   : }
+; 62   : 	return;
+; 63   : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -357,12 +365,20 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 ?acpi_power_button_enable@@YAXXZ PROC			; acpi_power_button_enable
 
-; 26   : void acpi_power_button_enable () {
+; 27   : void acpi_power_button_enable () {
 
 $LN3:
 	sub	rsp, 40					; 00000028H
 
-; 27   : 	x64_outportw (kern_acpi->fadt->pm1aEventBlock, POWER_BUTTON_ENABLE);
+; 28   : 	x64_outportw (kern_acpi->fadt->pm1aEventBlock, (1<<5));
+
+	mov	rax, QWORD PTR ?kern_acpi@@3PEAU_aurora_acpi_@@EA ; kern_acpi
+	mov	rax, QWORD PTR [rax+9]
+	mov	dx, 32					; 00000020H
+	movzx	ecx, WORD PTR [rax+56]
+	call	x64_outportw
+
+; 29   : 	x64_outportw (kern_acpi->fadt->pm1aEventBlock, (1<<8));
 
 	mov	rax, QWORD PTR ?kern_acpi@@3PEAU_aurora_acpi_@@EA ; kern_acpi
 	mov	rax, QWORD PTR [rax+9]
@@ -370,7 +386,31 @@ $LN3:
 	movzx	ecx, WORD PTR [rax+56]
 	call	x64_outportw
 
-; 28   : }
+; 30   : 	x64_outportw (kern_acpi->fadt->pm1aEventBlock, (1<<5));
+
+	mov	rax, QWORD PTR ?kern_acpi@@3PEAU_aurora_acpi_@@EA ; kern_acpi
+	mov	rax, QWORD PTR [rax+9]
+	mov	dx, 32					; 00000020H
+	movzx	ecx, WORD PTR [rax+56]
+	call	x64_outportw
+
+; 31   : 	x64_outportw (kern_acpi->fadt->pm1aEventBlock, POWER_BUTTON_ENABLE);
+
+	mov	rax, QWORD PTR ?kern_acpi@@3PEAU_aurora_acpi_@@EA ; kern_acpi
+	mov	rax, QWORD PTR [rax+9]
+	mov	dx, 256					; 00000100H
+	movzx	ecx, WORD PTR [rax+56]
+	call	x64_outportw
+
+; 32   : 	x64_outportw (kern_acpi->fadt->pm1aEventBlock, (1<<9));
+
+	mov	rax, QWORD PTR ?kern_acpi@@3PEAU_aurora_acpi_@@EA ; kern_acpi
+	mov	rax, QWORD PTR [rax+9]
+	mov	dx, 512					; 00000200H
+	movzx	ecx, WORD PTR [rax+56]
+	call	x64_outportw
+
+; 33   : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -381,12 +421,12 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 ?acpi_shutdown@@YAXXZ PROC				; acpi_shutdown
 
-; 173  : void acpi_shutdown () {
+; 179  : void acpi_shutdown () {
 
-$LN6:
+$LN7:
 	sub	rsp, 40					; 00000028H
 
-; 174  : 	x64_outportw (kern_acpi->fadt->pm1aCtrlBlock, (kern_acpi->slp_typa << 0) | SLP_EN);
+; 180  : 	x64_outportw (kern_acpi->fadt->pm1aCtrlBlock, (kern_acpi->slp_typa << 0) | SLP_EN);
 
 	mov	rax, QWORD PTR ?kern_acpi@@3PEAU_aurora_acpi_@@EA ; kern_acpi
 	movzx	eax, WORD PTR [rax+33]
@@ -397,19 +437,28 @@ $LN6:
 	movzx	ecx, WORD PTR [rcx+64]
 	call	x64_outportw
 
-; 175  : 	printf ("Shutdown step1 complete\n");
+; 181  : 	printf ("Shutdown step1 complete\n");
 
-	lea	rcx, OFFSET FLAT:$SG3323
+	lea	rcx, OFFSET FLAT:$SG3346
 	call	?printf@@YAXPEBDZZ			; printf
 
-; 176  : 	if (kern_acpi->fadt->pm1bCtrlBlock != 0)
+; 182  : 
+; 183  : 	if (kern_acpi->fadt->pm1bCtrlBlock){
 
 	mov	rax, QWORD PTR ?kern_acpi@@3PEAU_aurora_acpi_@@EA ; kern_acpi
 	mov	rax, QWORD PTR [rax+9]
 	cmp	DWORD PTR [rax+68], 0
-	je	SHORT $LN3@acpi_shutd
+	je	SHORT $LN4@acpi_shutd
 
-; 177  : 		x64_outportw (kern_acpi->fadt->pm1bCtrlBlock,  (kern_acpi->slp_typb << 0) | SLP_EN);
+; 184  : 		printf ("[ACPI] pm1bCtrlBlock -> %x\n", kern_acpi->fadt->pm1bCtrlBlock);
+
+	mov	rax, QWORD PTR ?kern_acpi@@3PEAU_aurora_acpi_@@EA ; kern_acpi
+	mov	rax, QWORD PTR [rax+9]
+	mov	edx, DWORD PTR [rax+68]
+	lea	rcx, OFFSET FLAT:$SG3348
+	call	?printf@@YAXPEBDZZ			; printf
+
+; 185  : 		x64_outportw (kern_acpi->fadt->pm1bCtrlBlock,  (kern_acpi->slp_typb << 0) | SLP_EN);
 
 	mov	rax, QWORD PTR ?kern_acpi@@3PEAU_aurora_acpi_@@EA ; kern_acpi
 	movzx	eax, WORD PTR [rax+35]
@@ -419,25 +468,42 @@ $LN6:
 	movzx	edx, ax
 	movzx	ecx, WORD PTR [rcx+68]
 	call	x64_outportw
+
+; 186  : 	} else {
+
+	jmp	SHORT $LN3@acpi_shutd
+$LN4@acpi_shutd:
+
+; 187  : 		x64_outportw (kern_acpi->fadt->pm1aCtrlBlock, (kern_acpi->slp_typb << 0) | SLP_EN);
+
+	mov	rax, QWORD PTR ?kern_acpi@@3PEAU_aurora_acpi_@@EA ; kern_acpi
+	movzx	eax, WORD PTR [rax+35]
+	bts	eax, 13
+	mov	rcx, QWORD PTR ?kern_acpi@@3PEAU_aurora_acpi_@@EA ; kern_acpi
+	mov	rcx, QWORD PTR [rcx+9]
+	movzx	edx, ax
+	movzx	ecx, WORD PTR [rcx+64]
+	call	x64_outportw
 $LN3@acpi_shutd:
 
-; 178  : 
-; 179  : 	printf ("\nShutdown step2 complete\n");
+; 188  : 	}
+; 189  : 
+; 190  : 	printf ("\nShutdown step2 complete\n");
 
-	lea	rcx, OFFSET FLAT:$SG3325
+	lea	rcx, OFFSET FLAT:$SG3350
 	call	?printf@@YAXPEBDZZ			; printf
 
-; 180  : 	printf ("[ACPI]: Shutdown failed\n");
+; 191  : 	printf ("[ACPI]: Shutdown failed\n");
 
-	lea	rcx, OFFSET FLAT:$SG3326
+	lea	rcx, OFFSET FLAT:$SG3351
 	call	?printf@@YAXPEBDZZ			; printf
 $LN2@acpi_shutd:
 
-; 181  : 	for(;;);
+; 192  : 	for(;;);
 
 	jmp	SHORT $LN2@acpi_shutd
 
-; 182  : }
+; 193  : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -452,30 +518,30 @@ S5$ = 8
 header$ = 32
 ?search_s5@@YAPEAEPEAUacpiDsdt@@@Z PROC			; search_s5
 
-; 185  : uint8_t* search_s5 (acpiDsdt* header) {
+; 196  : uint8_t* search_s5 (acpiDsdt* header) {
 
 $LN6:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 24
 
-; 186  : 	uint32_t l;
-; 187  : 	uint32_t* S5;
-; 188  : 
-; 189  : 	l = header->header.length - sizeof(acpiDsdt);
+; 197  : 	uint32_t l;
+; 198  : 	uint32_t* S5;
+; 199  : 
+; 200  : 	l = header->header.length - sizeof(acpiDsdt);
 
 	mov	rax, QWORD PTR header$[rsp]
 	mov	eax, DWORD PTR [rax+4]
 	sub	rax, 36					; 00000024H
 	mov	DWORD PTR l$[rsp], eax
 
-; 190  : 	S5 = (uint32_t*)(header + sizeof(acpiDsdt));
+; 201  : 	S5 = (uint32_t*)(header + sizeof(acpiDsdt));
 
 	mov	rax, QWORD PTR header$[rsp]
 	add	rax, 1296				; 00000510H
 	mov	QWORD PTR S5$[rsp], rax
 $LN3@search_s5:
 
-; 191  : 	while(l--) {
+; 202  : 	while(l--) {
 
 	mov	eax, DWORD PTR l$[rsp]
 	mov	DWORD PTR tv72[rsp], eax
@@ -485,38 +551,38 @@ $LN3@search_s5:
 	cmp	DWORD PTR tv72[rsp], 0
 	je	SHORT $LN2@search_s5
 
-; 192  : 		if (*S5 == (uint32_t)'_5S_') {
+; 203  : 		if (*S5 == (uint32_t)'_5S_') {
 
 	mov	rax, QWORD PTR S5$[rsp]
 	cmp	DWORD PTR [rax], 1597330271		; 5f35535fH
 	jne	SHORT $LN1@search_s5
 
-; 193  : 			return (uint8_t*)S5;
+; 204  : 			return (uint8_t*)S5;
 
 	mov	rax, QWORD PTR S5$[rsp]
 	jmp	SHORT $LN4@search_s5
 $LN1@search_s5:
 
-; 194  : 		}
-; 195  : 		S5 = (uint32_t*)((uint32_t)S5 + 1);
+; 205  : 		}
+; 206  : 		S5 = (uint32_t*)((uint32_t)S5 + 1);
 
 	mov	eax, DWORD PTR S5$[rsp]
 	inc	eax
 	mov	eax, eax
 	mov	QWORD PTR S5$[rsp], rax
 
-; 196  : 	}
+; 207  : 	}
 
 	jmp	SHORT $LN3@search_s5
 $LN2@search_s5:
 
-; 197  : 
-; 198  : 	return (uint8_t*)NULL;
+; 208  : 
+; 209  : 	return (uint8_t*)NULL;
 
 	xor	eax, eax
 $LN4@search_s5:
 
-; 199  : }
+; 210  : }
 
 	add	rsp, 24
 	ret	0
@@ -527,12 +593,12 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 ?acpi_system_reboot@@YAXXZ PROC				; acpi_system_reboot
 
-; 168  : void acpi_system_reboot () {
+; 174  : void acpi_system_reboot () {
 
 $LN3:
 	sub	rsp, 40					; 00000028H
 
-; 169  : 	printf ("[ACPI]: Reset Address -> %x, Reset value -> %x\n", kern_acpi->fadt->resetReg.address, kern_acpi->fadt->resetValue);
+; 175  : 	printf ("[ACPI]: Reset Address -> %x, Reset value -> %x\n", kern_acpi->fadt->resetReg.address, kern_acpi->fadt->resetValue);
 
 	mov	rax, QWORD PTR ?kern_acpi@@3PEAU_aurora_acpi_@@EA ; kern_acpi
 	mov	rax, QWORD PTR [rax+9]
@@ -541,10 +607,10 @@ $LN3:
 	mov	rcx, QWORD PTR [rcx+9]
 	mov	r8d, eax
 	mov	rdx, QWORD PTR [rcx+119]
-	lea	rcx, OFFSET FLAT:$SG3320
+	lea	rcx, OFFSET FLAT:$SG3343
 	call	?printf@@YAXPEBDZZ			; printf
 
-; 170  : 	x64_outportw (kern_acpi->fadt->resetReg.address, kern_acpi->fadt->resetValue);
+; 176  : 	x64_outportw (kern_acpi->fadt->resetReg.address, kern_acpi->fadt->resetValue);
 
 	mov	rax, QWORD PTR ?kern_acpi@@3PEAU_aurora_acpi_@@EA ; kern_acpi
 	mov	rax, QWORD PTR [rax+9]
@@ -555,7 +621,7 @@ $LN3:
 	movzx	ecx, WORD PTR [rcx+119]
 	call	x64_outportw
 
-; 171  : }
+; 177  : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -570,12 +636,12 @@ io_apic$1 = 48
 over$2 = 56
 ?acpi_parse_madt@@YAXXZ PROC				; acpi_parse_madt
 
-; 138  : void acpi_parse_madt () {
+; 143  : void acpi_parse_madt () {
 
 $LN11:
 	sub	rsp, 72					; 00000048H
 
-; 139  : 	acpiApicHeader *apic_header = (acpiApicHeader*)kern_acpi->madt->entry;
+; 144  : 	acpiApicHeader *apic_header = (acpiApicHeader*)kern_acpi->madt->entry;
 
 	mov	rax, QWORD PTR ?kern_acpi@@3PEAU_aurora_acpi_@@EA ; kern_acpi
 	mov	rax, QWORD PTR [rax+1]
@@ -583,8 +649,8 @@ $LN11:
 	mov	QWORD PTR apic_header$[rsp], rax
 $LN8@acpi_parse:
 
-; 140  : 
-; 141  : 	while (raw_diff(apic_header, kern_acpi->madt) < kern_acpi->madt->header.length) {
+; 145  : 
+; 146  : 	while (raw_diff(apic_header, kern_acpi->madt) < kern_acpi->madt->header.length) {
 
 	mov	rax, QWORD PTR ?kern_acpi@@3PEAU_aurora_acpi_@@EA ; kern_acpi
 	mov	rdx, QWORD PTR [rax+1]
@@ -595,7 +661,7 @@ $LN8@acpi_parse:
 	cmp	eax, DWORD PTR [rcx+4]
 	jae	$LN7@acpi_parse
 
-; 142  : 		switch (apic_header->type) {
+; 147  : 		switch (apic_header->type) {
 
 	mov	rax, QWORD PTR apic_header$[rsp]
 	movzx	eax, BYTE PTR [rax]
@@ -609,73 +675,77 @@ $LN8@acpi_parse:
 	jmp	SHORT $LN1@acpi_parse
 $LN4@acpi_parse:
 
-; 143  : 		case ACPI_APICTYPE_LAPIC: {
-; 144  : 			printf ("[ACPI]: Madt entry -> LAPIC \n");
+; 148  : 		case ACPI_APICTYPE_LAPIC: {
+; 149  : 			printf ("[ACPI]: Madt entry -> LAPIC \n");
 
-	lea	rcx, OFFSET FLAT:$SG3300
-	call	?printf@@YAXPEBDZZ			; printf
-
-; 145  : 			break;
-
-	jmp	SHORT $LN5@acpi_parse
-$LN3@acpi_parse:
-
-; 146  : 		}							 
-; 147  : 		case ACPI_APICTYPE_IOAPIC:{
-; 148  : 			acpiIoApic *io_apic = (acpiIoApic*)apic_header;
-
-	mov	rax, QWORD PTR apic_header$[rsp]
-	mov	QWORD PTR io_apic$1[rsp], rax
-
-; 149  : 			printf ("[ACPI]: Madt entry -> I/O APIC address -> %x, GSI -> %d\n",io_apic->ioApicAddr, io_apic->gsiBase );
-
-	mov	rax, QWORD PTR io_apic$1[rsp]
-	mov	r8d, DWORD PTR [rax+8]
-	mov	rax, QWORD PTR io_apic$1[rsp]
-	mov	edx, DWORD PTR [rax+4]
-	lea	rcx, OFFSET FLAT:$SG3304
+	lea	rcx, OFFSET FLAT:$SG3323
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 150  : 			break;
 
 	jmp	SHORT $LN5@acpi_parse
-$LN2@acpi_parse:
+$LN3@acpi_parse:
 
-; 151  : 		}
-; 152  : 		case ACPI_APICTYPE_ISOVER:{
-; 153  : 			apic_interrupt_override* over = (apic_interrupt_override*)apic_header;
+; 151  : 		}							 
+; 152  : 		case ACPI_APICTYPE_IOAPIC:{
+; 153  : 			acpiIoApic *io_apic = (acpiIoApic*)apic_header;
 
 	mov	rax, QWORD PTR apic_header$[rsp]
-	mov	QWORD PTR over$2[rsp], rax
+	mov	QWORD PTR io_apic$1[rsp], rax
 
-; 154  : 			printf ("[ACPI]: Madt entry -> Interrupt Source Override, GSI-> %d\n", over->interrupt);
+; 154  : 			printf ("[ACPI]: Madt entry -> I/O APIC address -> %x, GSI -> %d\n",io_apic->ioApicAddr, io_apic->gsiBase );
 
-	mov	rax, QWORD PTR over$2[rsp]
+	mov	rax, QWORD PTR io_apic$1[rsp]
+	mov	r8d, DWORD PTR [rax+8]
+	mov	rax, QWORD PTR io_apic$1[rsp]
 	mov	edx, DWORD PTR [rax+4]
-	lea	rcx, OFFSET FLAT:$SG3308
+	lea	rcx, OFFSET FLAT:$SG3327
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 155  : 			break;
 
 	jmp	SHORT $LN5@acpi_parse
-$LN1@acpi_parse:
+$LN2@acpi_parse:
 
 ; 156  : 		}
-; 157  : 		default:{
-; 158  : 			printf ("[ACPI]: Madt entry type = %d\n", apic_header->type);
+; 157  : 		case ACPI_APICTYPE_ISOVER:{
+; 158  : 			apic_interrupt_override* over = (apic_interrupt_override*)apic_header;
+
+	mov	rax, QWORD PTR apic_header$[rsp]
+	mov	QWORD PTR over$2[rsp], rax
+
+; 159  : 			
+; 160  : 			printf ("[ACPI]: Madt entry -> Interrupt Source Override, GSI-> %d SRC->%d\n", over->interrupt, over->source);
+
+	mov	rax, QWORD PTR over$2[rsp]
+	movzx	eax, BYTE PTR [rax+3]
+	mov	r8d, eax
+	mov	rax, QWORD PTR over$2[rsp]
+	mov	edx, DWORD PTR [rax+4]
+	lea	rcx, OFFSET FLAT:$SG3331
+	call	?printf@@YAXPEBDZZ			; printf
+
+; 161  : 			break;
+
+	jmp	SHORT $LN5@acpi_parse
+$LN1@acpi_parse:
+
+; 162  : 		}
+; 163  : 		default:{
+; 164  : 			printf ("[ACPI]: Madt entry type = %d\n", apic_header->type);
 
 	mov	rax, QWORD PTR apic_header$[rsp]
 	movzx	eax, BYTE PTR [rax]
 	mov	edx, eax
-	lea	rcx, OFFSET FLAT:$SG3310
+	lea	rcx, OFFSET FLAT:$SG3333
 	call	?printf@@YAXPEBDZZ			; printf
 $LN5@acpi_parse:
 
-; 159  : 			break;
-; 160  : 		}
-; 161  : 		}
-; 162  : 
-; 163  : 		apic_header = raw_offset <acpiApicHeader*>(apic_header, apic_header->length);
+; 165  : 			break;
+; 166  : 		}
+; 167  : 		}
+; 168  : 
+; 169  : 		apic_header = raw_offset <acpiApicHeader*>(apic_header, apic_header->length);
 
 	mov	rax, QWORD PTR apic_header$[rsp]
 	movzx	eax, BYTE PTR [rax+1]
@@ -684,12 +754,12 @@ $LN5@acpi_parse:
 	call	??$raw_offset@PEAU_acpi_apic_header_@@PEAU1@@@YAPEAU_acpi_apic_header_@@PEAU0@H@Z ; raw_offset<_acpi_apic_header_ * __ptr64,_acpi_apic_header_ * __ptr64>
 	mov	QWORD PTR apic_header$[rsp], rax
 
-; 164  : 	}
+; 170  : 	}
 
 	jmp	$LN8@acpi_parse
 $LN7@acpi_parse:
 
-; 165  : }
+; 171  : }
 
 	add	rsp, 72					; 00000048H
 	ret	0
@@ -709,36 +779,36 @@ xsdt$ = 80
 acpi_base$ = 112
 ?initialize_acpi@@YAXPEAX@Z PROC			; initialize_acpi
 
-; 67   : void initialize_acpi (void* acpi_base) {
+; 72   : void initialize_acpi (void* acpi_base) {
 
 $LN18:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 104				; 00000068H
 
-; 68   : 	kern_acpi = (aurora_acpi*)pmmngr_alloc();
+; 73   : 	kern_acpi = (aurora_acpi*)pmmngr_alloc();
 
 	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
 	mov	QWORD PTR ?kern_acpi@@3PEAU_aurora_acpi_@@EA, rax ; kern_acpi
 
-; 69   : 	acpiRsdp *rsdp = (acpiRsdp*)acpi_base;
+; 74   : 	acpiRsdp *rsdp = (acpiRsdp*)acpi_base;
 
 	mov	rax, QWORD PTR acpi_base$[rsp]
 	mov	QWORD PTR rsdp$[rsp], rax
 
-; 70   : 	acpiRsdt *rsdt = (acpiRsdt*)rsdp->rsdtAddr;
+; 75   : 	acpiRsdt *rsdt = (acpiRsdt*)rsdp->rsdtAddr;
 
 	mov	rax, QWORD PTR rsdp$[rsp]
 	mov	eax, DWORD PTR [rax+16]
 	mov	QWORD PTR rsdt$[rsp], rax
 
-; 71   : 	acpiXsdt *xsdt = (acpiXsdt*)rsdp->xsdtAddr;
+; 76   : 	acpiXsdt *xsdt = (acpiXsdt*)rsdp->xsdtAddr;
 
 	mov	rax, QWORD PTR rsdp$[rsp]
 	mov	rax, QWORD PTR [rax+24]
 	mov	QWORD PTR xsdt$[rsp], rax
 
-; 72   : 	char sig[5];
-; 73   : 	int entries = ((rsdt->header.length - sizeof(acpiRsdt)) / sizeof(void*));
+; 77   : 	char sig[5];
+; 78   : 	int entries = ((rsdt->header.length - sizeof(acpiRsdt)) / sizeof(void*));
 
 	mov	rax, QWORD PTR rsdt$[rsp]
 	mov	eax, DWORD PTR [rax+4]
@@ -748,13 +818,13 @@ $LN18:
 	div	rcx
 	mov	DWORD PTR entries$[rsp], eax
 
-; 74   : 
-; 75   : 	acpiSysDescHeader* header = nullptr;
+; 79   : 
+; 80   : 	acpiSysDescHeader* header = nullptr;
 
 	mov	QWORD PTR header$[rsp], 0
 
-; 76   : 
-; 77   : 	for (int count = 0; count < entries; count++) {
+; 81   : 
+; 82   : 	for (int count = 0; count < entries; count++) {
 
 	mov	DWORD PTR count$1[rsp], 0
 	jmp	SHORT $LN15@initialize
@@ -767,14 +837,14 @@ $LN15@initialize:
 	cmp	DWORD PTR count$1[rsp], eax
 	jge	$LN13@initialize
 
-; 78   : 		header = (acpiSysDescHeader*)rsdt->entry[count];
+; 83   : 		header = (acpiSysDescHeader*)rsdt->entry[count];
 
 	movsxd	rax, DWORD PTR count$1[rsp]
 	mov	rcx, QWORD PTR rsdt$[rsp]
 	mov	eax, DWORD PTR [rcx+rax*4+36]
 	mov	QWORD PTR header$[rsp], rax
 
-; 79   : 		strncpy (sig, header->signature, 4);
+; 84   : 		strncpy (sig, header->signature, 4);
 
 	mov	rax, QWORD PTR header$[rsp]
 	mov	r8d, 4
@@ -782,118 +852,118 @@ $LN15@initialize:
 	lea	rcx, QWORD PTR sig$[rsp]
 	call	?strncpy@@YAPEADPEADPEBD_K@Z		; strncpy
 
-; 80   : 		sig[4] = '\0';
+; 85   : 		sig[4] = '\0';
 
 	mov	eax, 1
 	imul	rax, 4
 	mov	BYTE PTR sig$[rsp+rax], 0
 
-; 81   : 
-; 82   : 
-; 83   : 		if (!strncmp(sig, ACPI_SIG_FADT, strlen(ACPI_SIG_FADT))) {
+; 86   : 
+; 87   : 
+; 88   : 		if (!strncmp(sig, ACPI_SIG_FADT, strlen(ACPI_SIG_FADT))) {
 
-	lea	rcx, OFFSET FLAT:$SG3250
+	lea	rcx, OFFSET FLAT:$SG3273
 	call	?strlen@@YA_KPEBD@Z			; strlen
 	mov	r8, rax
-	lea	rdx, OFFSET FLAT:$SG3251
+	lea	rdx, OFFSET FLAT:$SG3274
 	lea	rcx, QWORD PTR sig$[rsp]
 	call	?strncmp@@YAHPEBD0_K@Z			; strncmp
 	test	eax, eax
 	jne	SHORT $LN12@initialize
 
-; 84   : 			kern_acpi->fadt = (acpiFadt*) header;
+; 89   : 			kern_acpi->fadt = (acpiFadt*) header;
 
 	mov	rax, QWORD PTR ?kern_acpi@@3PEAU_aurora_acpi_@@EA ; kern_acpi
 	mov	rcx, QWORD PTR header$[rsp]
 	mov	QWORD PTR [rax+9], rcx
 
-; 85   : 			printf ("[ACPI]: Fadt table found\n");
+; 90   : 			printf ("[ACPI]: Fadt table found\n");
 
-	lea	rcx, OFFSET FLAT:$SG3253
+	lea	rcx, OFFSET FLAT:$SG3276
 	call	?printf@@YAXPEBDZZ			; printf
 	jmp	$LN11@initialize
 $LN12@initialize:
 
-; 86   : 		}
-; 87   : 		 
-; 88   : 		else if (!strncmp(sig, ACPI_SIG_APIC, strlen("CIPA"))) {
+; 91   : 		}
+; 92   : 		 
+; 93   : 		else if (!strncmp(sig, ACPI_SIG_APIC, strlen("CIPA"))) {
 
-	lea	rcx, OFFSET FLAT:$SG3256
+	lea	rcx, OFFSET FLAT:$SG3279
 	call	?strlen@@YA_KPEBD@Z			; strlen
 	mov	r8, rax
-	lea	rdx, OFFSET FLAT:$SG3257
+	lea	rdx, OFFSET FLAT:$SG3280
 	lea	rcx, QWORD PTR sig$[rsp]
 	call	?strncmp@@YAHPEBD0_K@Z			; strncmp
 	test	eax, eax
 	jne	SHORT $LN10@initialize
 
-; 89   : 			kern_acpi->madt = (acpiMadt*) header;
+; 94   : 			kern_acpi->madt = (acpiMadt*) header;
 
 	mov	rax, QWORD PTR ?kern_acpi@@3PEAU_aurora_acpi_@@EA ; kern_acpi
 	mov	rcx, QWORD PTR header$[rsp]
 	mov	QWORD PTR [rax+1], rcx
 
-; 90   : 			printf ("[ACPI]: Madt table found\n");
+; 95   : 			printf ("[ACPI]: Madt table found\n");
 
-	lea	rcx, OFFSET FLAT:$SG3259
+	lea	rcx, OFFSET FLAT:$SG3282
 	call	?printf@@YAXPEBDZZ			; printf
 
-; 91   : 			acpi_parse_madt ();
+; 96   : 			acpi_parse_madt ();
 
 	call	?acpi_parse_madt@@YAXXZ			; acpi_parse_madt
 	jmp	SHORT $LN9@initialize
 $LN10@initialize:
 
-; 92   : 		}
-; 93   : 
-; 94   : 		else if (!strncmp(sig, ACPI_SIG_SRAT, strlen(ACPI_SIG_SRAT))) {
+; 97   : 		}
+; 98   : 
+; 99   : 		else if (!strncmp(sig, ACPI_SIG_SRAT, strlen(ACPI_SIG_SRAT))) {
 
-	lea	rcx, OFFSET FLAT:$SG3262
+	lea	rcx, OFFSET FLAT:$SG3285
 	call	?strlen@@YA_KPEBD@Z			; strlen
 	mov	r8, rax
-	lea	rdx, OFFSET FLAT:$SG3263
+	lea	rdx, OFFSET FLAT:$SG3286
 	lea	rcx, QWORD PTR sig$[rsp]
 	call	?strncmp@@YAHPEBD0_K@Z			; strncmp
 	test	eax, eax
 	jne	SHORT $LN8@initialize
 
-; 95   : 			printf ("[ACPI]: Srat table found\n");
+; 100  : 			printf ("[ACPI]: Srat table found\n");
 
-	lea	rcx, OFFSET FLAT:$SG3264
+	lea	rcx, OFFSET FLAT:$SG3287
 	call	?printf@@YAXPEBDZZ			; printf
 	jmp	SHORT $LN7@initialize
 $LN8@initialize:
 
-; 96   : 		}
-; 97   : 
-; 98   : 		else if (!strncmp(sig, ACPI_SIG_MCFG, strlen(ACPI_SIG_MCFG))) {
+; 101  : 		}
+; 102  : 
+; 103  : 		else if (!strncmp(sig, ACPI_SIG_MCFG, strlen(ACPI_SIG_MCFG))) {
 
-	lea	rcx, OFFSET FLAT:$SG3267
+	lea	rcx, OFFSET FLAT:$SG3290
 	call	?strlen@@YA_KPEBD@Z			; strlen
 	mov	r8, rax
-	lea	rdx, OFFSET FLAT:$SG3268
+	lea	rdx, OFFSET FLAT:$SG3291
 	lea	rcx, QWORD PTR sig$[rsp]
 	call	?strncmp@@YAHPEBD0_K@Z			; strncmp
 	test	eax, eax
 	jne	SHORT $LN6@initialize
 
-; 99   : 			printf ("[ACPI]: Mcfg table found\n");
+; 104  : 			printf ("[ACPI]: Mcfg table found\n");
 
-	lea	rcx, OFFSET FLAT:$SG3269
+	lea	rcx, OFFSET FLAT:$SG3292
 	call	?printf@@YAXPEBDZZ			; printf
 $LN6@initialize:
 $LN7@initialize:
 $LN9@initialize:
 $LN11@initialize:
 
-; 100  : 		}
-; 101  : 	}
+; 105  : 		}
+; 106  : 	}
 
 	jmp	$LN14@initialize
 $LN13@initialize:
 
-; 102  : 
-; 103  : 	if (kern_acpi->fadt && kern_acpi->fadt->facsAddr) {
+; 107  : 
+; 108  : 	if (kern_acpi->fadt && kern_acpi->fadt->facsAddr) {
 
 	mov	rax, QWORD PTR ?kern_acpi@@3PEAU_aurora_acpi_@@EA ; kern_acpi
 	cmp	QWORD PTR [rax+9], 0
@@ -903,8 +973,8 @@ $LN13@initialize:
 	cmp	DWORD PTR [rax+36], 0
 	je	SHORT $LN5@initialize
 
-; 104  : 
-; 105  : 		kern_acpi->facs = (acpiFacs*)kern_acpi->fadt->facsAddr;
+; 109  : 
+; 110  : 		kern_acpi->facs = (acpiFacs*)kern_acpi->fadt->facsAddr;
 
 	mov	rax, QWORD PTR ?kern_acpi@@3PEAU_aurora_acpi_@@EA ; kern_acpi
 	mov	rax, QWORD PTR [rax+9]
@@ -913,10 +983,10 @@ $LN13@initialize:
 	mov	QWORD PTR [rcx+17], rax
 $LN5@initialize:
 
-; 106  : 
-; 107  : 	}
-; 108  : 
-; 109  : 	if (kern_acpi->fadt && kern_acpi->fadt->dsdtAddr) {
+; 111  : 
+; 112  : 	}
+; 113  : 
+; 114  : 	if (kern_acpi->fadt && kern_acpi->fadt->dsdtAddr) {
 
 	mov	rax, QWORD PTR ?kern_acpi@@3PEAU_aurora_acpi_@@EA ; kern_acpi
 	cmp	QWORD PTR [rax+9], 0
@@ -926,8 +996,8 @@ $LN5@initialize:
 	cmp	DWORD PTR [rax+40], 0
 	je	$LN4@initialize
 
-; 110  : 
-; 111  : 		kern_acpi->dsdt = (acpiDsdt*)kern_acpi->fadt->dsdtAddr;
+; 115  : 
+; 116  : 		kern_acpi->dsdt = (acpiDsdt*)kern_acpi->fadt->dsdtAddr;
 
 	mov	rax, QWORD PTR ?kern_acpi@@3PEAU_aurora_acpi_@@EA ; kern_acpi
 	mov	rax, QWORD PTR [rax+9]
@@ -935,55 +1005,57 @@ $LN5@initialize:
 	mov	rcx, QWORD PTR ?kern_acpi@@3PEAU_aurora_acpi_@@EA ; kern_acpi
 	mov	QWORD PTR [rcx+25], rax
 
-; 112  : 		printf ("[ACPI]: Dsdt found -> %x\n", kern_acpi->dsdt);
+; 117  : 		printf ("[ACPI]: Dsdt found -> %x\n", kern_acpi->dsdt);
 
 	mov	rax, QWORD PTR ?kern_acpi@@3PEAU_aurora_acpi_@@EA ; kern_acpi
 	mov	rdx, QWORD PTR [rax+25]
-	lea	rcx, OFFSET FLAT:$SG3274
+	lea	rcx, OFFSET FLAT:$SG3297
 	call	?printf@@YAXPEBDZZ			; printf
 
-; 113  : 		printf ("[ACPI]: Sci Interrupt -> %d\n", kern_acpi->fadt->sciInt);
+; 118  : 		printf ("[ACPI]: Sci Interrupt -> %d\n", kern_acpi->fadt->sciInt);
 
 	mov	rax, QWORD PTR ?kern_acpi@@3PEAU_aurora_acpi_@@EA ; kern_acpi
 	mov	rax, QWORD PTR [rax+9]
 	movzx	eax, WORD PTR [rax+46]
 	mov	edx, eax
-	lea	rcx, OFFSET FLAT:$SG3275
+	lea	rcx, OFFSET FLAT:$SG3298
 	call	?printf@@YAXPEBDZZ			; printf
 
-; 114  : 		setvect(kern_acpi->fadt->sciInt,fadt_handler);
+; 119  : 		interrupt_set(kern_acpi->fadt->sciInt,fadt_handler, kern_acpi->fadt->sciInt);
 
 	mov	rax, QWORD PTR ?kern_acpi@@3PEAU_aurora_acpi_@@EA ; kern_acpi
 	mov	rax, QWORD PTR [rax+9]
-	movzx	eax, WORD PTR [rax+46]
+	mov	rcx, QWORD PTR ?kern_acpi@@3PEAU_aurora_acpi_@@EA ; kern_acpi
+	mov	rcx, QWORD PTR [rcx+9]
+	movzx	ecx, WORD PTR [rcx+46]
+	movzx	r8d, BYTE PTR [rax+46]
 	lea	rdx, OFFSET FLAT:?fadt_handler@@YAX_KPEAX@Z ; fadt_handler
-	mov	ecx, eax
-	call	?setvect@@YAX_KP6AX0PEAX@Z@Z		; setvect
+	call	?interrupt_set@@YAX_KP6AX0PEAX@ZE@Z	; interrupt_set
 
-; 115  : 		uint8_t* S5Block = search_s5(kern_acpi->dsdt);
+; 120  : 		uint8_t* S5Block = search_s5(kern_acpi->dsdt);
 
 	mov	rax, QWORD PTR ?kern_acpi@@3PEAU_aurora_acpi_@@EA ; kern_acpi
 	mov	rcx, QWORD PTR [rax+25]
 	call	?search_s5@@YAPEAEPEAUacpiDsdt@@@Z	; search_s5
 	mov	QWORD PTR S5Block$2[rsp], rax
 
-; 116  : 		if (S5Block != NULL) {
+; 121  : 		if (S5Block != NULL) {
 
 	cmp	QWORD PTR S5Block$2[rsp], 0
 	je	$LN3@initialize
 
-; 117  : 			printf ("S5Block found\n");
+; 122  : 			printf ("S5Block found\n");
 
-	lea	rcx, OFFSET FLAT:$SG3278
+	lea	rcx, OFFSET FLAT:$SG3301
 	call	?printf@@YAXPEBDZZ			; printf
 
-; 118  : 			S5Block += 4;
+; 123  : 			S5Block += 4;
 
 	mov	rax, QWORD PTR S5Block$2[rsp]
 	add	rax, 4
 	mov	QWORD PTR S5Block$2[rsp], rax
 
-; 119  : 			S5Block += ((*S5Block & 0xC0) >> 6) + 2;
+; 124  : 			S5Block += ((*S5Block & 0xC0) >> 6) + 2;
 
 	mov	rax, QWORD PTR S5Block$2[rsp]
 	movzx	eax, BYTE PTR [rax]
@@ -996,58 +1068,58 @@ $LN5@initialize:
 	mov	rax, rcx
 	mov	QWORD PTR S5Block$2[rsp], rax
 
-; 120  : 			
-; 121  : 			if (*S5Block == 0x0A)
+; 125  : 			
+; 126  : 			if (*S5Block == 0x0A)
 
 	mov	rax, QWORD PTR S5Block$2[rsp]
 	movzx	eax, BYTE PTR [rax]
 	cmp	eax, 10
 	jne	SHORT $LN2@initialize
 
-; 122  : 				S5Block++;
+; 127  : 				S5Block++;
 
 	mov	rax, QWORD PTR S5Block$2[rsp]
 	inc	rax
 	mov	QWORD PTR S5Block$2[rsp], rax
 $LN2@initialize:
 
-; 123  : 			kern_acpi->slp_typa = *S5Block;
+; 128  : 			kern_acpi->slp_typa = *S5Block;
 
 	mov	rax, QWORD PTR S5Block$2[rsp]
 	movzx	eax, BYTE PTR [rax]
 	mov	rcx, QWORD PTR ?kern_acpi@@3PEAU_aurora_acpi_@@EA ; kern_acpi
 	mov	WORD PTR [rcx+33], ax
 
-; 124  : 			S5Block++;
+; 129  : 			S5Block++;
 
 	mov	rax, QWORD PTR S5Block$2[rsp]
 	inc	rax
 	mov	QWORD PTR S5Block$2[rsp], rax
 
-; 125  : 
-; 126  : 			if ( *S5Block == 0x0A)
+; 130  : 
+; 131  : 			if ( *S5Block == 0x0A)
 
 	mov	rax, QWORD PTR S5Block$2[rsp]
 	movzx	eax, BYTE PTR [rax]
 	cmp	eax, 10
 	jne	SHORT $LN1@initialize
 
-; 127  : 				S5Block++;
+; 132  : 				S5Block++;
 
 	mov	rax, QWORD PTR S5Block$2[rsp]
 	inc	rax
 	mov	QWORD PTR S5Block$2[rsp], rax
 $LN1@initialize:
 
-; 128  : 
-; 129  : 			kern_acpi->slp_typb = *S5Block;
+; 133  : 
+; 134  : 			kern_acpi->slp_typb = *S5Block;
 
 	mov	rax, QWORD PTR S5Block$2[rsp]
 	movzx	eax, BYTE PTR [rax]
 	mov	rcx, QWORD PTR ?kern_acpi@@3PEAU_aurora_acpi_@@EA ; kern_acpi
 	mov	WORD PTR [rcx+35], ax
 
-; 130  : 			printf ("[ACPI]: SLP_typA -> %x, SLP_typB -> %x\n", kern_acpi->slp_typa, kern_acpi->slp_typb);
+; 135  : 			printf ("[ACPI]: SLP_typA -> %x, SLP_typB -> %x\n", kern_acpi->slp_typa, kern_acpi->slp_typb);
 
 	mov	rax, QWORD PTR ?kern_acpi@@3PEAU_aurora_acpi_@@EA ; kern_acpi
 	movzx	eax, WORD PTR [rax+35]
@@ -1055,18 +1127,18 @@ $LN1@initialize:
 	movzx	ecx, WORD PTR [rcx+33]
 	mov	r8d, eax
 	mov	edx, ecx
-	lea	rcx, OFFSET FLAT:$SG3281
+	lea	rcx, OFFSET FLAT:$SG3304
 	call	?printf@@YAXPEBDZZ			; printf
 $LN3@initialize:
 $LN4@initialize:
 
-; 131  : 		}
-; 132  : 	}
-; 133  : 	acpi_enable ();
+; 136  : 		}
+; 137  : 	}
+; 138  : 	acpi_enable ();
 
 	call	?acpi_enable@@YAXXZ			; acpi_enable
 
-; 134  : }
+; 139  : }
 
 	add	rsp, 104				; 00000068H
 	ret	0

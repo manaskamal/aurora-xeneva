@@ -10,7 +10,7 @@ _BSS	SEGMENT
 ?sys@@3U_file_system_@@A DB 020H DUP (?)		; sys
 _BSS	ENDS
 CONST	SEGMENT
-$SG3037	DB	'FAT32', 00H
+$SG3043	DB	'FAT32', 00H
 CONST	ENDS
 PUBLIC	?initialize_vfs@@YAXXZ				; initialize_vfs
 PUBLIC	?open@@YA?AU_file_@@PEBD@Z			; open
@@ -174,7 +174,7 @@ $LN3:
 ; 24   : 	memcpy(sys.name,"FAT32",5);
 
 	mov	r8d, 5
-	lea	rdx, OFFSET FLAT:$SG3037
+	lea	rdx, OFFSET FLAT:$SG3043
 	lea	rcx, OFFSET FLAT:?sys@@3U_file_system_@@A ; sys
 	call	memcpy
 

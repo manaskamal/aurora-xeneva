@@ -279,6 +279,12 @@
     <ClInclude Include="..\include\drivers\acpi\acpi.h">
       <Filter>include\drivers\acpi</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\drivers\net\rtl8139.h">
+      <Filter>include\drivers\net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\serial.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="init.cpp">
@@ -448,6 +454,12 @@
     </ClCompile>
     <ClCompile Include="drivers\acpi\acpi.cpp">
       <Filter>source\drivers\acpi</Filter>
+    </ClCompile>
+    <ClCompile Include="drivers\net\rtl8139.cpp">
+      <Filter>source\drivers\net</Filter>
+    </ClCompile>
+    <ClCompile Include="serial.cpp">
+      <Filter>source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

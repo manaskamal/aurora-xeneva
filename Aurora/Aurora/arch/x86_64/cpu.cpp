@@ -193,6 +193,11 @@ void hal_x86_64_init () {
 #ifdef USE_APIC
 	//!Initialize APIC
 	initialize_apic ();
+
+	unsigned int divisor =  1193181 / 100;
+	x64_outportb(0x43, 0x00 | 0x06 | 0x30 | 0x00);
+	x64_outportb(0x40, divisor);
+	x64_outportb(0x40, divisor >> 8);
 #endif
 
 	//!Enable EFER and SYSCALL Extension

@@ -978,14 +978,14 @@ $LN3:
 	call	?mouse_read@@YAEXZ			; mouse_read
 
 ; 203  : 
-; 204  : 	interrupt_set (34, mouse_handler, 12);
+; 204  : 	interrupt_set (34, mouse_handler, 12);  //34
 
 	mov	r8b, 12
 	lea	rdx, OFFSET FLAT:?mouse_handler@@YAX_KPEAX@Z ; mouse_handler
 	mov	ecx, 34					; 00000022H
 	call	?interrupt_set@@YAX_KP6AX0PEAX@ZE@Z	; interrupt_set
 
-; 205  : 	//irq_mask(12, true);
+; 205  : 	//irq_mask(12, false);
 ; 206  : }
 
 	add	rsp, 56					; 00000038H

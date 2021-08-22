@@ -36,7 +36,7 @@ void decreament_driver_class_uid () {
 driver_param_t * create_driver_parameter () {
 	driver_param_t* param = (driver_param_t*)pmmngr_alloc();
 	param->kdebug = printf;
-	param->irq_eoi = apic_local_eoi;
+	param->interrupt_eoi = interrupt_end;
 	param->interrupt_set = interrupt_set;
 	param->pci_find_device = pci_find_device;
 	param->pci_get_bar = pci_get_bar_addr;

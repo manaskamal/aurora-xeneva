@@ -22,7 +22,7 @@ amd_net *a_card_net = nullptr;
 
 void amd_write_bcr (uint16_t bcr, uint16_t value) {
 	x64_outportw (amd_io_base + RAP, bcr);
-	x64_outportw (amd_io_base, value);
+	x64_outportw (amd_io_base + 0x16, value);
 }
 
 void amd_write_csr (uint8_t csr, uint16_t value) {
@@ -37,8 +37,8 @@ uint16_t amd_read_csr (uint8_t csr) {
 
 
 void amd_interrupt_handler (size_t v, void* p) {
-	x64_cli();
 	printf ("AMD NIC Interrupt handler++\n");
+	
 	//apic_local_eoi();
 	interrupt_end(amd_irq);
 }
@@ -50,17 +50,18 @@ void amd_pcnet_initialize () {
 	
 	if (!pci_find_device_class (0x02,0x00,dev)) {
 		printf ("AMD PCNet card not found\n");
+		return;
 	}
 	printf ("AMD Interrupt pin -> %x\n", dev->device.nonBridge.interruptPin);
 	amd_io_base = dev->device.nonBridge.baseAddress[0];
 	printf ("AMD PCNet card found -> device id -> %x, vendor id -> %x\n", dev->device.deviceID, dev->device.vendorID);
-	printf ("AMD Base Address -> %x, -> %x\n", dev->device.nonBridge.baseAddress[0], dev->device.nonBridge.baseAddress[1]);
-	printf ("AMD Interrupt line -> %d\n", dev->device.nonBridge.interruptLine);
+	printf ("AMD Base Address -> %x, -> %x\n", dev->device.nonBridge.baseAddress[0], dev->device.nonBridge.baseAddress[6]);
+	printf ("AMD Interrupt line -> %d\n", dev->device.bridge.interruptLine);
 
 	amd_irq = dev->device.nonBridge.interruptLine;
 	pci_print_capabilities(dev);
 
-	interrupt_set (dev->device.nonBridge.interruptLine, amd_interrupt_handler, dev->device.nonBridge.interruptLine);
+	
 
 	uint16_t temp = x64_inportw (amd_io_base + APROM0);
 	amd_mac[0] = temp;
@@ -75,27 +76,28 @@ void amd_pcnet_initialize () {
 
 	x64_inportw (amd_io_base + RESET);
 	x64_outportw (amd_io_base + RESET, 0);
-	for (int i = 0; i < 5; i++)
+	for (int i = 0; i < 20; i++)
 		;
-	amd_write_csr (20,0x0102);
+	
+	amd_write_bcr(20,0x102);//amd_write_csr (20,0x0102);
 
 	//!stop
 	amd_write_csr (0, 0x04);
 
 
-	void* rx_buffer = malloc(2048*8);
-	void* tx_buffer = malloc(2048*8);
+	uint32_t* rx_buffer = (uint32_t*)pmmngr_alloc();
+	uint32_t* tx_buffer = rx_buffer + 2048;
 	
 	a_card_net->recv_desc = (amd_descriptor*)pmmngr_alloc();
-	a_card_net->trans_desc = (amd_descriptor*)pmmngr_alloc();
+	a_card_net->trans_desc = (amd_descriptor*)(a_card_net->recv_desc + sizeof(amd_descriptor));
 
 	for (uint8_t i = 0; i < 8; i++) {
-		a_card_net->recv_desc[i].address = (uint32_t)get_physical_address((uint64_t)rx_buffer + i * 2048);
+		a_card_net->recv_desc[i].address = (uint32_t)rx_buffer + i * 2048;
 		a_card_net->recv_desc[i].flags = 0x80000000 | 0x0000F000 | (-2048 & 0xFFF);
 		a_card_net->recv_desc[i].flags2 = 0;
 		a_card_net->recv_desc[i].avail = (uint32_t)rx_buffer + i * 2048;
 
-		a_card_net->trans_desc[i].address = (uint32_t)get_physical_address((uint64_t)tx_buffer+i*2048);
+		a_card_net->trans_desc[i].address = (uint32_t)tx_buffer+i*2048;
 		a_card_net->trans_desc[i].flags = 0x0000F000;
 		a_card_net->trans_desc[i].flags2 = 0;
 		a_card_net->trans_desc[i].avail = (uint32_t)tx_buffer+i*2048;
@@ -115,15 +117,15 @@ void amd_pcnet_initialize () {
 
 	printf ("AMD Mac Code -> ");
 	for (int i = 0; i < 6; i++)
-		printf ("%c", init_block->physical_address[i]);
+		printf ("%x", amd_mac[i]);
 	printf ("\n");
 
+	interrupt_set (dev->device.nonBridge.interruptLine, amd_interrupt_handler, dev->device.nonBridge.interruptLine);
 	//!initialize
 	amd_write_csr (0, 0x0041);
-	for (int i = 0; i < 1000; i++)
-		;
-	amd_write_csr (4, 0x4C00 | amd_read_csr (4));
+	amd_write_csr (0,amd_read_csr(0));
+	amd_write_csr(4,0xC00 | amd_read_csr(4));
 	amd_write_csr (0,0x0042);
-
-	pmmngr_free(init_block);
+	
+	//pmmngr_free(init_block);
 }

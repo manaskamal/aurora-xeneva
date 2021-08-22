@@ -5,6 +5,9 @@ include listing.inc
 INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
+CONST	SEGMENT
+$SG3230	DB	'[Aurora]: Key Event occured!! ', 0aH, 00H
+CONST	ENDS
 PUBLIC	?kybrd_init@@YAXXZ				; kybrd_init
 PUBLIC	?kybrd_handler@@YAX_KPEAX@Z			; kybrd_handler
 EXTRN	?inportb@@YAEG@Z:PROC				; inportb
@@ -12,13 +15,15 @@ EXTRN	?interrupt_end@@YAXI@Z:PROC			; interrupt_end
 EXTRN	?interrupt_set@@YAX_KP6AX0PEAX@ZE@Z:PROC	; interrupt_set
 EXTRN	?pmmngr_alloc@@YAPEAXXZ:PROC			; pmmngr_alloc
 EXTRN	?pmmngr_free@@YAXPEAX@Z:PROC			; pmmngr_free
+EXTRN	?printf@@YAXPEBDZZ:PROC				; printf
+EXTRN	?is_scheduler_initialized@@YA_NXZ:PROC		; is_scheduler_initialized
 EXTRN	?message_send@@YAXGPEAU_message_@@@Z:PROC	; message_send
 pdata	SEGMENT
 $pdata$?kybrd_init@@YAXXZ DD imagerel $LN3
 	DD	imagerel $LN3+29
 	DD	imagerel $unwind$?kybrd_init@@YAXXZ
-$pdata$?kybrd_handler@@YAX_KPEAX@Z DD imagerel $LN4
-	DD	imagerel $LN4+131
+$pdata$?kybrd_handler@@YAX_KPEAX@Z DD imagerel $LN6
+	DD	imagerel $LN6+157
 	DD	imagerel $unwind$?kybrd_handler@@YAX_KPEAX@Z
 pdata	ENDS
 xdata	SEGMENT
@@ -39,7 +44,7 @@ p$ = 72
 
 ; 19   : {
 
-$LN4:
+$LN6:
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 56					; 00000038H
@@ -57,7 +62,7 @@ $LN4:
 	movzx	eax, al
 	and	eax, 1
 	test	eax, eax
-	je	SHORT $LN1@kybrd_hand
+	je	SHORT $LN3@kybrd_hand
 
 ; 24   : 	{
 ; 25   : 		int code = inportb(0x60);
@@ -67,53 +72,72 @@ $LN4:
 	movzx	eax, al
 	mov	DWORD PTR code$1[rsp], eax
 
-; 26   : 		message_t *msg = (message_t*)pmmngr_alloc();
+; 26   : 		if (is_scheduler_initialized()) {
+
+	call	?is_scheduler_initialized@@YA_NXZ	; is_scheduler_initialized
+	movzx	eax, al
+	test	eax, eax
+	je	SHORT $LN2@kybrd_hand
+
+; 27   : 			message_t *msg = (message_t*)pmmngr_alloc();
 
 	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
 	mov	QWORD PTR msg$2[rsp], rax
 
-; 27   : 		msg->type = 3;
+; 28   : 			msg->type = 3;
 
 	mov	eax, 3
 	mov	rcx, QWORD PTR msg$2[rsp]
 	mov	WORD PTR [rcx+56], ax
 
-; 28   : 		msg->dword = code;
+; 29   : 		    msg->dword = code;
 
 	mov	rax, QWORD PTR msg$2[rsp]
 	mov	ecx, DWORD PTR code$1[rsp]
 	mov	DWORD PTR [rax], ecx
 
-; 29   : 		message_send (1,msg);
+; 30   : 		    message_send (1,msg);
 
 	mov	rdx, QWORD PTR msg$2[rsp]
 	mov	cx, 1
 	call	?message_send@@YAXGPEAU_message_@@@Z	; message_send
 
-; 30   : 		pmmngr_free (msg);
+; 31   : 		    pmmngr_free (msg);
 
 	mov	rcx, QWORD PTR msg$2[rsp]
 	call	?pmmngr_free@@YAXPEAX@Z			; pmmngr_free
-$LN1@kybrd_hand:
 
-; 31   : 
-; 32   : 		/*thread_t* thr = (thread_t*)thread_iterate_ready_list (1);
-; 33   : 	    if (thr != NULL){
-; 34   : 			unblock_thread(thr);
-; 35   : 		}*/
-; 36   : 		//!Here we need to pass this code to window manager process {a.k.a DWM} or shell program
-; 37   : 		//!shell will decode the scancode and will take action
-; 38   : 	}
-; 39   : 
-; 40   :   
-; 41   : 	//! tell apic we are done!!!
-; 42   : 	interrupt_end(1);
+; 32   : 		} else {
+
+	jmp	SHORT $LN1@kybrd_hand
+$LN2@kybrd_hand:
+
+; 33   : 			printf ("[Aurora]: Key Event occured!! \n");
+
+	lea	rcx, OFFSET FLAT:$SG3230
+	call	?printf@@YAXPEBDZZ			; printf
+$LN1@kybrd_hand:
+$LN3@kybrd_hand:
+
+; 34   : 		}
+; 35   : 
+; 36   : 		/*thread_t* thr = (thread_t*)thread_iterate_ready_list (1);
+; 37   : 	    if (thr != NULL){
+; 38   : 			unblock_thread(thr);
+; 39   : 		}*/
+; 40   : 		//!Here we need to pass this code to window manager process {a.k.a DWM} or shell program
+; 41   : 		//!shell will decode the scancode and will take action
+; 42   : 	}
+; 43   : 
+; 44   :   
+; 45   : 	//! tell apic we are done!!!
+; 46   : 	interrupt_end(1);
 
 	mov	ecx, 1
 	call	?interrupt_end@@YAXI@Z			; interrupt_end
 
-; 43   : 	return;
-; 44   : }
+; 47   : 	return;
+; 48   : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -124,19 +148,19 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 ?kybrd_init@@YAXXZ PROC					; kybrd_init
 
-; 46   : void kybrd_init () {
+; 50   : void kybrd_init () {
 
 $LN3:
 	sub	rsp, 40					; 00000028H
 
-; 47   : 	interrupt_set (1,kybrd_handler,1);
+; 51   : 	interrupt_set (1,kybrd_handler,1);
 
 	mov	r8b, 1
 	lea	rdx, OFFSET FLAT:?kybrd_handler@@YAX_KPEAX@Z ; kybrd_handler
 	mov	ecx, 1
 	call	?interrupt_set@@YAX_KP6AX0PEAX@ZE@Z	; interrupt_set
 
-; 48   : }
+; 52   : }
 
 	add	rsp, 40					; 00000028H
 	ret	0

@@ -201,6 +201,6 @@ void initialize_mouse () {
 	mouse_write (0xF4);
 	mouse_read ();
 
-	interrupt_set (34, mouse_handler, 12);
-	//irq_mask(12, true);
+	interrupt_set (34, mouse_handler, 12);  //34
+	//irq_mask(12, false);
 }

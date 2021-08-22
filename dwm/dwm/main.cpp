@@ -133,29 +133,29 @@ void main () {
 	update_rect.w = width;
 	update_rect.h = height;
 
-	//FILE f;
-	//sys_open_file (&f, "rain.jpg");
-	//unsigned char* buffer_i = (unsigned char*)0x0000500000000000;
-	//sys_read_file (&f,buffer_i,f.size);
+	FILE f;
+	sys_open_file (&f, "nature.jpg");
+	unsigned char* buffer_i = (unsigned char*)0x0000500000000000;
+	sys_read_file (&f,buffer_i,f.size);
 
-	//Jpeg::Decoder *decoder = new Jpeg::Decoder(buffer_i, f.size, dalloc, dfree);
-	//if (decoder->GetResult() != Jpeg::Decoder::OK) {
-	//	print_text ("JPEG:Decoder Error\n");
-	//}
-	//
-	//uint8_t* data = decoder->GetImage();
-	//for (int i = 0; i < decoder->GetHeight(); i++) {
-	//	for (int k = 0; k < decoder->GetWidth(); k++) {
-	//		int j = k + i * decoder->GetWidth();
-	//		uint8_t r = data[j * 3];        //data[i * 3];
-	//		uint8_t g = data[j * 3 + 1];        //data[i * 3 + 1];
-	//		uint8_t b = data[j * 3 + 2];       //data[i * 3 + 2];
-	//		uint32_t rgb =  ((r<<16) | (g<<8) | (b)) & 0x00ffffff;  //0xFF000000 | (r << 16) | (g << 8) | b;
-	//		rgb = rgb | 0xff000000;
-	//		draw_pixel3(0 + k, 0 + i,rgb);
-	//		j++;
-	//	}
-	//}
+	Jpeg::Decoder *decoder = new Jpeg::Decoder(buffer_i, f.size, dalloc, dfree);
+	if (decoder->GetResult() != Jpeg::Decoder::OK) {
+		print_text ("JPEG:Decoder Error\n");
+	}
+	
+	uint8_t* data = decoder->GetImage();
+	for (int i = 0; i < decoder->GetHeight(); i++) {
+		for (int k = 0; k < decoder->GetWidth(); k++) {
+			int j = k + i * decoder->GetWidth();
+			uint8_t r = data[j * 3];        //data[i * 3];
+			uint8_t g = data[j * 3 + 1];        //data[i * 3 + 1];
+			uint8_t b = data[j * 3 + 2];       //data[i * 3 + 2];
+			uint32_t rgb =  ((r<<16) | (g<<8) | (b)) & 0x00ffffff;  //0xFF000000 | (r << 16) | (g << 8) | b;
+			rgb = rgb | 0xff000000;
+			draw_pixel3(0 + k, 0 + i,rgb);
+			j++;
+		}
+	}
 
 	//!Draw the wallpaper
 	copy_to_screen ((uint32_t*)0x0000500000000000,&update_rect);
@@ -228,12 +228,14 @@ void main () {
 		if (msg.type == DWM_KEY_EVENT) {
 			//Process Key Events
 			window_t *win = wm_get_focused_window();
+			if (win != NULL) {
 			message_t msg1;
 			msg1.type = 15;
 			msg1.dword4 = win->pid;
 			msg1.dword5 = msg.dword;  //scancode
 			dwmmsg_send (&msg1);
 			sys_unblock_id (win->pid);
+			}
 			memset (&msg, 0, sizeof (message_t));
 		}
 

@@ -1,8 +1,8 @@
-﻿Build started 18-08-2021 ৰাতিপু 2:43:03.
+﻿Build started 22-08-2021 ৰাতিপু 9:08:07.
      1>Project "E:\Xeneva Project\Xeneva\Aurora\Aurora\Aurora.vcxproj" on node 2 (Rebuild target(s)).
      1>_NASM:
          arch\x86_64\interrupts.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp0803673c1645422e98ab01e526e39d2e.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp974bdb4625e34a899ac65d1f07494dba.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\interrupts.obj"  "E:\Xeneva Project\Xeneva\Aurora\Aurora\arch\x86_64\interrupts.asm"
      1>E:\Xeneva Project\Xeneva\Aurora\Aurora\arch\x86_64\interrupts.asm(64): warning : label alone on a line without a colon might be in error
      1>E:\Xeneva Project\Xeneva\Aurora\Aurora\arch\x86_64\interrupts.asm(132): warning : signed dword immediate exceeds bounds
@@ -255,26 +255,26 @@
      1>E:\Xeneva Project\Xeneva\Aurora\Aurora\arch\x86_64\interrupts.asm(156): warning : signed dword immediate exceeds bounds
        _NASM:
          arch\x86_64\switch.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp902d36c529024b46aa7e12f13bf41259.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp601296ebeb8545e5b06c09c73940b3c4.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\switch.obj"  "E:\Xeneva Project\Xeneva\Aurora\Aurora\arch\x86_64\switch.asm"
        _NASM:
          arch\x86_64\user.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmpb2dfdbf8068f4226a2bef701f029912a.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmpd42c3100ade14202bb4f7fb9be17a659.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\user.obj"  "E:\Xeneva Project\Xeneva\Aurora\Aurora\arch\x86_64\user.asm"
        _NASM:
          arch\x86_64\_low_level.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp907ec08ed17d4ece8b16853849f2e652.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp58ec75719ce74d2c8c86859e7e0c171e.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\_low_level.obj"  "E:\Xeneva Project\Xeneva\Aurora\Aurora\arch\x86_64\_low_level.asm"
        _NASM:
          drivers\svga\backdoor_stuff.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmpfbe70cf188d943419c40cc4803807296.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp543f48f698ee47e18b78d65acdd69914.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\backdoor_stuff.obj"  "E:\Xeneva Project\Xeneva\Aurora\Aurora\drivers\svga\backdoor_stuff.asm"
        _NASM:
          _fast_cpy.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp602f06bfd1da44ddbc027b2bb9b6e021.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmpf4a9005712fa489daaa41bdb5bbaedaa.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\_fast_cpy.obj"  "E:\Xeneva Project\Xeneva\Aurora\Aurora\_fast_cpy.asm"
        ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\Aurora\include" /Zi /nologo /W1 /WX- /sdl- /Od /D ARCH_X64 /D USE_PIC /D AURORA_X64_MBCS /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /FAs /Fa"x64\Debug\\" /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt arch\x86_64\apic.cpp arch\x86_64\cpu.cpp arch\x86_64\exception.cpp arch\x86_64\ioapic.cpp arch\x86_64\kheap.cpp arch\x86_64\map.cpp arch\x86_64\pic.cpp arch\x86_64\systable.cpp arch\x86_64\thread.cpp arch\x86_64\user64.cpp arch\x86_64\vmmngr.cpp atomic\mutex.cpp console.cpp drivers\ac97\ac97.cpp drivers\acpi\acpi.cpp drivers\ata.cpp drivers\hda\hda.cpp drivers\kybrd.cpp drivers\mouse.cpp drivers\net\amd_am79c973.cpp drivers\net\e1000.cpp drivers\pci.cpp drivers\rtc.cpp drivers\svga\gmr.cpp drivers\svga\svga_screen.cpp drivers\svga\svga_screen_util.cpp drivers\svga\vmsvga.cpp drivers\svga\vm_backdoor.cpp drivers\usb\xhci.cpp drivers\vga.cpp drvmngr.cpp fs\fat32.cpp hal.cpp init.cpp ipc\dwm_ipc.cpp ipc\evntsh.cpp ipc\message.cpp mm.cpp pe.cpp pmmngr.cpp proc.cpp procmngr.cpp screen.cpp stdio.cpp string.cpp sysserv\sysfb.cpp sysserv\sysfile.cpp sysserv\sysmem.cpp sysserv\sysmouse.cpp sysserv\sysproc.cpp sysserv\systhread.cpp sysserv\syswait.cpp sysserv\valloc.cpp utils\lnklist.cpp utils\ring.cpp vfs.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\Aurora\include" /Zi /nologo /W1 /WX- /sdl- /Od /D ARCH_X64 /D USE_APIC /D AURORA_X64_MBCS /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /FAs /Fa"x64\Debug\\" /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt arch\x86_64\apic.cpp arch\x86_64\cpu.cpp arch\x86_64\exception.cpp arch\x86_64\ioapic.cpp arch\x86_64\kheap.cpp arch\x86_64\map.cpp arch\x86_64\pic.cpp arch\x86_64\systable.cpp arch\x86_64\thread.cpp arch\x86_64\user64.cpp arch\x86_64\vmmngr.cpp atomic\mutex.cpp console.cpp drivers\ac97\ac97.cpp drivers\acpi\acpi.cpp drivers\ata.cpp drivers\hda\hda.cpp drivers\kybrd.cpp drivers\mouse.cpp drivers\net\amd_am79c973.cpp drivers\net\e1000.cpp drivers\net\rtl8139.cpp drivers\pci.cpp drivers\rtc.cpp drivers\svga\gmr.cpp drivers\svga\svga_screen.cpp drivers\svga\svga_screen_util.cpp drivers\svga\vmsvga.cpp drivers\svga\vm_backdoor.cpp drivers\usb\xhci.cpp drivers\vga.cpp drvmngr.cpp fs\fat32.cpp hal.cpp init.cpp ipc\dwm_ipc.cpp ipc\evntsh.cpp ipc\message.cpp mm.cpp pe.cpp pmmngr.cpp proc.cpp procmngr.cpp screen.cpp serial.cpp stdio.cpp string.cpp sysserv\sysfb.cpp sysserv\sysfile.cpp sysserv\sysmem.cpp sysserv\sysmouse.cpp sysserv\sysproc.cpp sysserv\systhread.cpp sysserv\syswait.cpp sysserv\valloc.cpp utils\lnklist.cpp utils\ring.cpp vfs.cpp
      1>cl : Command line warning D9025: overriding '/sdl-' with '/GS-'
      1>cl : Command line warning D9002: ignoring unknown option '/arch:SSE'
          vfs.cpp
@@ -290,20 +290,21 @@
          sysfb.cpp
          string.cpp
          stdio.cpp
+         serial.cpp
          screen.cpp
          procmngr.cpp
          proc.cpp
          pmmngr.cpp
          pe.cpp
          mm.cpp
-         message.cpp
          Generating Code...
      1>e:\xeneva project\xeneva\aurora\aurora\proc.cpp(72): warning C4715: 'find_process_by_thread' : not all control paths return a value
          Compiling...
+         message.cpp
          evntsh.cpp
          dwm_ipc.cpp
          init.cpp
-     1>E:\Xeneva Project\Xeneva\Aurora\include\drivers\net\e1000.h(116): warning C4293: '<<' : shift count negative or too big, undefined behavior
+     1>E:\Xeneva Project\Xeneva\Aurora\include\drivers\net\e1000.h(128): warning C4293: '<<' : shift count negative or too big, undefined behavior
          hal.cpp
          fat32.cpp
      1>E:\Xeneva Project\Xeneva\Aurora\include\ctype.h(33): warning C4005: 'isascii' : macro redefinition
@@ -311,7 +312,6 @@
          drvmngr.cpp
          vga.cpp
          xhci.cpp
-     1>drivers\usb\xhci.cpp(27): warning C4293: '<<' : shift count negative or too big, undefined behavior
          vm_backdoor.cpp
          vmsvga.cpp
          svga_screen_util.cpp
@@ -319,18 +319,20 @@
          gmr.cpp
          rtc.cpp
          pci.cpp
+         rtl8139.cpp
          e1000.cpp
-     1>E:\Xeneva Project\Xeneva\Aurora\include\drivers\net\e1000.h(116): warning C4293: '<<' : shift count negative or too big, undefined behavior
+     1>E:\Xeneva Project\Xeneva\Aurora\include\drivers\net\e1000.h(128): warning C4293: '<<' : shift count negative or too big, undefined behavior
+     1>drivers\net\e1000.cpp(112): warning C4293: '>>' : shift count negative or too big, undefined behavior
+     1>drivers\net\e1000.cpp(138): warning C4293: '>>' : shift count negative or too big, undefined behavior
          amd_am79c973.cpp
-     1>drivers\net\amd_am79c973.cpp(113): warning C4333: '>>' : right shift by too large amount, data loss
+     1>drivers\net\amd_am79c973.cpp(115): warning C4333: '>>' : right shift by too large amount, data loss
          mouse.cpp
-         kybrd.cpp
-         hda.cpp
-     1>drivers\hda\hda.cpp(390): warning C4129: 'R' : unrecognized character escape sequence
          Generating Code...
      1>e:\xeneva project\xeneva\aurora\aurora\drivers\svga\gmr.cpp(50): warning C4700: uninitialized local variable 'first_page' used
      1>e:\xeneva project\xeneva\aurora\aurora\fs\fat32.cpp(689): warning C4715: 'fat32_create_file' : not all control paths return a value
          Compiling...
+         kybrd.cpp
+         hda.cpp
          ata.cpp
          acpi.cpp
          ac97.cpp
@@ -373,6 +375,7 @@
          x64\Debug\mouse.obj
          x64\Debug\amd_am79c973.obj
          x64\Debug\e1000.obj
+         x64\Debug\rtl8139.obj
          x64\Debug\pci.obj
          x64\Debug\rtc.obj
          x64\Debug\gmr.obj
@@ -395,6 +398,7 @@
          x64\Debug\proc.obj
          x64\Debug\procmngr.obj
          x64\Debug\screen.obj
+         x64\Debug\serial.obj
          x64\Debug\stdio.obj
          x64\Debug\string.obj
          x64\Debug\sysfb.obj
@@ -426,4 +430,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:04.98
+Time Elapsed 00:00:04.42

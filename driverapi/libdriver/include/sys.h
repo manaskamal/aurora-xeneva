@@ -31,7 +31,7 @@
 //! The driver parameter to process
 typedef struct _driver_param_ {
 	void (*kdebug) (const char* str, ...);
-	void (*irq_eoi) ();
+	void (*irq_eoi) (uint32_t irq);
 	void (*interrupt_set) (size_t vector, void (*fn)(size_t, void* p),uint8_t irq);
 	bool (*pci_find_device) (uint16_t vendor_id, uint16_t device_id, pci_address *addr);
 	uint32_t (*pci_get_bar) (const pci_address *addr, int index);

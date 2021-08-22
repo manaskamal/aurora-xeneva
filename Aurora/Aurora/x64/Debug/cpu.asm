@@ -6,7 +6,7 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 CONST	SEGMENT
-$SG3004	DB	'*** [x64_idt] x64_default_handler: Unhandled Exception *'
+$SG3010	DB	'*** [x64_idt] x64_default_handler: Unhandled Exception *'
 	DB	'** ', 0aH, 00H
 CONST	ENDS
 PUBLIC	?hal_x86_64_init@@YAXXZ				; hal_x86_64_init
@@ -18,8 +18,10 @@ PUBLIC	gdt_initialize
 PUBLIC	interrupt_dispatcher
 PUBLIC	?default_irq@@YAX_KPEAX@Z			; default_irq
 PUBLIC	?interrupt_initialize@@YAXXZ			; interrupt_initialize
+EXTRN	?initialize_apic@@YAXXZ:PROC			; initialize_apic
 EXTRN	x64_cli:PROC
 EXTRN	x64_sti:PROC
+EXTRN	x64_outportb:PROC
 EXTRN	x64_read_msr:PROC
 EXTRN	x64_write_msr:PROC
 EXTRN	x64_lgdt:PROC
@@ -28,7 +30,6 @@ EXTRN	?printf@@YAXPEBDZZ:PROC				; printf
 EXTRN	?exception_init@@YAXXZ:PROC			; exception_init
 EXTRN	?initialize_syscall@@YAXXZ:PROC			; initialize_syscall
 EXTRN	?initialize_user_land@@YAX_K@Z:PROC		; initialize_user_land
-EXTRN	?initialize_pic@@YAXEE@Z:PROC			; initialize_pic
 EXTRN	x64_get_segment_register:PROC
 EXTRN	x64_set_segment_register:PROC
 EXTRN	x64_ltr:PROC
@@ -48,7 +49,7 @@ the_idt	DB	01000H DUP (?)
 _BSS	ENDS
 pdata	SEGMENT
 $pdata$?hal_x86_64_init@@YAXXZ DD imagerel $LN3
-	DD	imagerel $LN3+145
+	DD	imagerel $LN3+193
 	DD	imagerel $unwind$?hal_x86_64_init@@YAXXZ
 $pdata$load_default_sregs DD imagerel $LN3
 	DD	imagerel $LN3+90
@@ -339,7 +340,7 @@ $LN5:
 
 ; 134  : 	printf("*** [x64_idt] x64_default_handler: Unhandled Exception *** \n");
 
-	lea	rcx, OFFSET FLAT:$SG3004
+	lea	rcx, OFFSET FLAT:$SG3010
 	call	?printf@@YAXPEBDZZ			; printf
 $LN2@default_ir:
 
@@ -823,7 +824,8 @@ _TEXT	ENDS
 ; Function compile flags: /Odtp
 ; File e:\xeneva project\xeneva\aurora\aurora\arch\x86_64\cpu.cpp
 _TEXT	SEGMENT
-efer$ = 32
+divisor$ = 32
+efer$ = 40
 ?hal_x86_64_init@@YAXXZ PROC				; hal_x86_64_init
 
 ; 176  : void hal_x86_64_init () {
@@ -857,74 +859,97 @@ $LN3:
 ; 188  : 
 ; 189  : #ifdef USE_PIC
 ; 190  : 	initialize_pic(0x20, 0x28);
-
-	mov	dl, 40					; 00000028H
-	mov	cl, 32					; 00000020H
-	call	?initialize_pic@@YAXEE@Z		; initialize_pic
-
 ; 191  : #endif
 ; 192  : 
 ; 193  : #ifdef USE_APIC
 ; 194  : 	//!Initialize APIC
 ; 195  : 	initialize_apic ();
-; 196  : #endif
-; 197  : 
-; 198  : 	//!Enable EFER and SYSCALL Extension
-; 199  : 	size_t efer = x64_read_msr(IA32_EFER);
+
+	call	?initialize_apic@@YAXXZ			; initialize_apic
+
+; 196  : 
+; 197  : 	unsigned int divisor =  1193181 / 100;
+
+	mov	DWORD PTR divisor$[rsp], 11931		; 00002e9bH
+
+; 198  : 	x64_outportb(0x43, 0x00 | 0x06 | 0x30 | 0x00);
+
+	mov	dl, 54					; 00000036H
+	mov	cx, 67					; 00000043H
+	call	x64_outportb
+
+; 199  : 	x64_outportb(0x40, divisor);
+
+	movzx	edx, BYTE PTR divisor$[rsp]
+	mov	cx, 64					; 00000040H
+	call	x64_outportb
+
+; 200  : 	x64_outportb(0x40, divisor >> 8);
+
+	mov	eax, DWORD PTR divisor$[rsp]
+	shr	eax, 8
+	movzx	edx, al
+	mov	cx, 64					; 00000040H
+	call	x64_outportb
+
+; 201  : #endif
+; 202  : 
+; 203  : 	//!Enable EFER and SYSCALL Extension
+; 204  : 	size_t efer = x64_read_msr(IA32_EFER);
 
 	mov	ecx, -1073741696			; c0000080H
 	call	x64_read_msr
 	mov	QWORD PTR efer$[rsp], rax
 
-; 200  : 	efer |= (1<<11);
+; 205  : 	efer |= (1<<11);
 
 	mov	rax, QWORD PTR efer$[rsp]
 	bts	rax, 11
 	mov	QWORD PTR efer$[rsp], rax
 
-; 201  : 	efer |= 1;
+; 206  : 	efer |= 1;
 
 	mov	rax, QWORD PTR efer$[rsp]
 	or	rax, 1
 	mov	QWORD PTR efer$[rsp], rax
 
-; 202  : 	efer |= (1<<0);
+; 207  : 	efer |= (1<<0);
 
 	mov	rax, QWORD PTR efer$[rsp]
 	or	rax, 1
 	mov	QWORD PTR efer$[rsp], rax
 
-; 203  : 	efer |= 1;
+; 208  : 	efer |= 1;
 
 	mov	rax, QWORD PTR efer$[rsp]
 	or	rax, 1
 	mov	QWORD PTR efer$[rsp], rax
 
-; 204  : 	x64_write_msr(IA32_EFER, efer);
+; 209  : 	x64_write_msr(IA32_EFER, efer);
 
 	mov	rdx, QWORD PTR efer$[rsp]
 	mov	ecx, -1073741696			; c0000080H
 	call	x64_write_msr
 
-; 205  : 	//! now start the interrupts
-; 206  : 
-; 207  : 	//! initialize the user land environment
-; 208  : 	initialize_user_land (64);
+; 210  : 	//! now start the interrupts
+; 211  : 
+; 212  : 	//! initialize the user land environment
+; 213  : 	initialize_user_land (64);
 
 	mov	ecx, 64					; 00000040H
 	call	?initialize_user_land@@YAX_K@Z		; initialize_user_land
 
-; 209  : 
-; 210  : 	//! initialize the syscall entries
-; 211  : 	initialize_syscall ();
+; 214  : 
+; 215  : 	//! initialize the syscall entries
+; 216  : 	initialize_syscall ();
 
 	call	?initialize_syscall@@YAXXZ		; initialize_syscall
 
-; 212  : 	x64_sti ();
+; 217  : 	x64_sti ();
 
 	call	x64_sti
 
-; 213  : }
+; 218  : }
 
 	add	rsp, 56					; 00000038H
 	ret	0

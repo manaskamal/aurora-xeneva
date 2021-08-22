@@ -44,10 +44,16 @@ void svga_init () {
 	
 	if (!pci_find_device (PCI_VENDOR_ID_VMWARE, PCI_DEVICE_ID_VMWARE_SVGA2, &svga_dev.pci_addr)) {
 		printf ("No VMware SVGA device found\n");
+		return;
 	}
+	/*pci_device_info *dev = (pci_device_info*)pmmngr_alloc();
+	if (!pci_find_device_class (0x03,0x00,dev)) {
+		printf ("SVGA Controller not found\n");
+		return;
+	}*/
 
 	pci_set_mem_enable (&svga_dev.pci_addr, true);
-	svga_dev.io_base = pci_get_bar_addr (&svga_dev.pci_addr,0);
+	svga_dev.io_base =  pci_get_bar_addr (&svga_dev.pci_addr,0);
 	svga_dev.fb_mem = (uint8_t*)pci_get_bar_addr (&svga_dev.pci_addr, 1);
 	svga_dev.fifo_mem = (uint32_t*)pci_get_bar_addr (&svga_dev.pci_addr, 2);
 
@@ -97,15 +103,13 @@ void svga_init () {
 
 	}
 
-
-	//svga_enable();
-	//svga_set_mode (1280,1024,32);
-	//gmr_init();
-	/*memset(svga_dev.fb_mem,0x40,svga_dev.width*svga_dev.height*32);
-	svga_update(0,0,svga_dev.width,svga_dev.height);*/
-	//screen_set_configuration(svga_dev.width,svga_dev.height);
+	svga_enable();
+	svga_set_mode (1280,1024,32);
+	gmr_init();
+	memset(svga_dev.fb_mem,0x40,svga_dev.width*svga_dev.height*32);
+	svga_update(0,0,svga_dev.width,svga_dev.height);
+	screen_set_configuration(svga_dev.width,svga_dev.height);
 	vm_backdoor_mouse_init (true);
-
 }
 
 
@@ -167,25 +171,26 @@ void svga_set_mode (uint32_t width, uint32_t height, uint32_t bpp) {
 }
 
 void* svga_fifo_reserve (uint32_t bytes) {
-
+	debug_serial ("[Aurora]: Actual Fifo Reserve function called\n");
 	volatile uint32_t *fifo = svga_dev.fifo_mem;
 	uint32_t max = fifo[SVGA_FIFO_MAX];
 	uint32_t min = fifo[SVGA_FIFO_MIN];
 	uint32_t next_cmd = fifo[SVGA_FIFO_NEXT_CMD];
+	debug_serial ("[Aurora]: Fifo memory acquired\n");
 	bool reserveable = svga_has_fifo_cap (SVGA_FIFO_CAP_RESERVE);
 
 	if (bytes  > sizeof (svga_dev.fifo.bounce_buffer)/* || bytes > (max - min)*/) {
-		printf ("[VMware SVGA]: FIFO command too large %d bytes\n", bytes);
+		debug_serial ("[VMware SVGA]: FIFO command too large bytes\n");
 		//for(;;);
 	}
 
 	if (bytes % sizeof (uint32_t)) {
-		printf ("[VMware SVGA]: FIFO command length not 32-bit aligned\n");
+		debug_serial ("[VMware SVGA]: FIFO command length not 32-bit aligned\n");
 		//for(;;);
 	}
 
 	if (svga_dev.fifo.reserved_size != 0) {
-		printf ("[VMware SVGA]: FIFO reserve before FIFO commit\n");
+		debug_serial ("[VMware SVGA]: FIFO reserve before FIFO commit\n");
 		//for(;;);
 	}
 
@@ -195,40 +200,32 @@ void* svga_fifo_reserve (uint32_t bytes) {
 		uint32_t stop = fifo[SVGA_FIFO_STOP];
 		bool reserve_in_place = false;
 		bool need_bounce = false;
-		//printf ("Stop -> %d\n", stop);
+		debug_serial("[Aurora]: Stop -> %d\n");
 		if (next_cmd >= stop) {
-			//printf ("Debug Step[1]\n");
+			debug_serial ("[Aurora]: Debug Step[1]\n");
 			if (next_cmd + bytes < max ||
 				(next_cmd + bytes == max && stop > min)) {
-					//printf ("Debug Step [2]\n");
 					reserve_in_place = true;
 			} else if ((max - next_cmd) + (stop - min) <= bytes) {
 				svga_fifo_full ();
-				//printf ("Debug Step [4]\n");
 			} else {
 				need_bounce = true;
-				//printf ("Debug Step [5]\n");
 			}
 		}else {
 			if (next_cmd + bytes < stop) {
 				reserve_in_place = true;
-				//printf ("Debug Step [6]\n");
 			}else {
 				svga_fifo_full ();
-				//printf ("Debug Step [7]\n");
 			}
 		}
 		if (reserve_in_place) {
 			if (reserveable || bytes <= sizeof (uint32_t)) {
 				svga_dev.fifo.using_bounce_buffer = false;
-				//printf ("Debug Step [9]\n");
 				if (reserveable) {
-					//printf ("Reservable\n");
 					fifo[SVGA_FIFO_RESERVED] = bytes;
 				}
 				return next_cmd + (uint8_t*)fifo;
 			}else {
-				//printf ("Debug Step [10]\n");
 				need_bounce = true;
 			}
 		}
@@ -298,6 +295,7 @@ void svga_fifo_commit_all () {
 }
 
 void* svga_fifo_reserved_cmd (uint32_t type, uint32_t bytes) {
+	debug_serial ("[Aurora]: Fifo Reserved function called\n");
 	uint32_t*cmd = (uint32_t*)svga_fifo_reserve (bytes + sizeof type);
 	cmd[0] = type;
 	return cmd + 1;
@@ -355,12 +353,14 @@ void* svga_alloc_gmr (uint32 size, SVGAGuestPtr *ptr) {
 }
 
 void svga_update (uint32_t x, uint32_t y, uint32_t width, uint32_t height) {
+	debug_serial ("[Aurora]: SVGA Screen Update called\n");
 	SVGAFifoCmdUpdate *cmd = (SVGAFifoCmdUpdate*)svga_fifo_reserved_cmd (SVGA_CMD_UPDATE, sizeof (SVGAFifoCmdUpdate));
 	cmd->x = x;
 	cmd->y = y;
 	cmd->width = width;
 	cmd->height = height;
 	svga_fifo_commit_all ();
+	debug_serial ("[Aurora]: Update fifo completed\n");
 }
 
 
@@ -565,15 +565,18 @@ void svga_wait_for_irq () {
  */
 void svga_interrupt_handler (size_t s, void* p) {
 	x64_cli ();
+	printf ("SVGA interrupted\n");
+
 	uint16_t port = svga_dev.io_base + SVGA_IRQSTATUS_PORT;
 	uint32_t irq_flags = inportd (port);
 	outportd (port, irq_flags);
 	printf ("Irq flags -> %d\n", irq_flags);
 	svga_dev.irq.count++;
 	svga_dev.irq.pending = irq_flags;
-	printf ("SVGA interrupted\n");
+	
 	if (!irq_flags)
-		printf ("[VMware SVGA]: spurious SVGA IRQ\n");
+		printf ("[VMware SVGA]: spurious SVGA IRQ\n");	
+	//svga_update(0,0,get_screen_width(), get_screen_height());
 	interrupt_end(svga_dev.irq_line);
 }
 

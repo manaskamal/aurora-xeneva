@@ -24,7 +24,7 @@ void xhci_initialize () {
 		return;
 	}
 
-	xhci_base_address = ((dev->device.nonBridge.baseAddress[0] & 0xFFFFFFF0) +( dev->device.nonBridge.baseAddress[1] & 0xFFFFFFFF) << 32);
+	xhci_base_address = dev->device.nonBridge.baseAddress[0] + dev->device.nonBridge.baseAddress[1];
 	printf ("USB xHCI: found\n");
 	printf ("XHCI Base Address -> %x\n", xhci_base_address);
 
@@ -39,5 +39,5 @@ void xhci_initialize () {
 
 	printf ("PCI Interrupt line -> %d\n", dev->device.nonBridge.interruptLine);
 	pci_print_capabilities(dev);
-	for(;;);
+	//for(;;);
 }

@@ -172,6 +172,8 @@ typedef struct _hd_audio_ {
 	size_t mmio;
 	uint64_t* corb;
 	uint64_t* rirb;
+	uint32_t rirb_entries;
+	uint32_t corb_entries;
 }hd_audio;
 
 extern void hda_initialize ();

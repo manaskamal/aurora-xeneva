@@ -47,6 +47,23 @@ void  read_config_32 (int bus, int dev, int function, int reg, uint32_t data)
 	data = x64_inportd (PCI_DATA_PORT);
 }
 
+void  read_config_16 (int bus, int dev, int function, int reg, unsigned short *data )
+{
+	//! read configuration word
+	unsigned address = header_address (bus, dev, function, (reg / 2));
+	x64_outportd (PCI_CONFIG_PORT, address);
+	*data = x64_inportw (PCI_DATA_PORT + (reg % 2));
+}
+
+
+void  write_config_16 (int bus, int dev, int function, int reg, unsigned short data )
+{
+	//! write configuration word
+	unsigned address = header_address (bus, dev, function, (reg / 2));
+	x64_outportd (PCI_CONFIG_PORT, address);
+	x64_outportw ((PCI_DATA_PORT + (reg % 2)), data);
+}
+
 
 uint16_t pci_config_read16 (const pci_address *addr, uint16_t offset) {
 	outportd (PCI_REG_CONFIG_ADDRESS, pci_config_pack_address (addr, offset));
@@ -136,6 +153,7 @@ bool pci_find_device_class (uint8_t class_code, uint8_t sub_class, pci_device_in
 	for (int bus = 0; bus < 256; bus++) {
 		for (int dev = 0; dev < 32; dev++) {
 			for (int func = 0; func < 8; func++) {
+				uint16_t command_reg = 0;
 
 				read_config_32 (bus, dev, func, 0, config.header[0]);
 
@@ -143,8 +161,15 @@ bool pci_find_device_class (uint8_t class_code, uint8_t sub_class, pci_device_in
 
 				if (config.device.classCode == class_code && config.device.subClassCode == sub_class) {
 					*addr_out = config;
+					read_config_16 (bus,dev,func,PCI_CONFREG_COMMAND_16, &command_reg);
+					command_reg |= PCI_COMMAND_IOENABLE;
+					command_reg |= PCI_COMMAND_MEMORYENABLE;
+					command_reg |= PCI_COMMAND_MASTERENABLE;
+					command_reg &= ~PCI_COMMAND_INTERRUPTDISABLE;
+				    write_config_16 (bus, dev,func,PCI_CONFREG_COMMAND_16,command_reg);
 					return true;
 				}
+				
 			}
 		}
 	}

@@ -60,6 +60,25 @@ void ioapic_register_irq(size_t vector, void (*fn)(size_t, void* p),uint8_t irq)
 }
 
 
+void ioapic_redirect (uint8_t irq, uint32_t gsi, uint16_t flags, uint8_t apic) {
+	uint32_t ioapic_base = 0xfec00000;
+	uint64_t redirection = irq + 32;
+	if (flags & 2) {
+		redirection |= 1 << 13;
+	}
+
+	if (flags & 8) {
+		redirection |= 1 << 15;
+	}
+
+	redirection |= ((uint64_t)apic) << 56;
+	
+	uint32_t ioredtbl = (gsi - 0) * 2 + 16;
+
+	write_ioapic_register ((void*)ioapic_base,ioredtbl + 0, (uint32_t)(redirection));
+	write_ioapic_register ((void*)ioapic_base,ioredtbl + 1, (uint32_t)(redirection >> 32));
+}
+
 void ioapic_mask_irq (uint8_t irq, bool value){
 	uint32_t reg = IOAPIC_REG_RED_TBL_BASE + irq* 2;
 	write_ioapic_register((void*)0xfec00000, reg + 1, read_apic_register(0x02) << 24);

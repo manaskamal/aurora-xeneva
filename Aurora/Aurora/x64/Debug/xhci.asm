@@ -10,17 +10,17 @@ _BSS	SEGMENT
 ?xhci_base_address@@3_KA DQ 01H DUP (?)			; xhci_base_address
 _BSS	ENDS
 CONST	SEGMENT
-$SG3236	DB	'USB xHCI: not found', 0aH, 00H
+$SG3242	DB	'USB xHCI: not found', 0aH, 00H
 	ORG $+3
-$SG3237	DB	'USB xHCI: found', 0aH, 00H
+$SG3243	DB	'USB xHCI: found', 0aH, 00H
 	ORG $+7
-$SG3238	DB	'XHCI Base Address -> %x', 0aH, 00H
+$SG3244	DB	'XHCI Base Address -> %x', 0aH, 00H
 	ORG $+7
-$SG3241	DB	'XHCI Version -> %x', 0aH, 00H
+$SG3247	DB	'XHCI Version -> %x', 0aH, 00H
 	ORG $+4
-$SG3246	DB	'[XHCI] has 64-bit addressing capability', 0aH, 00H
+$SG3252	DB	'[XHCI] has 64-bit addressing capability', 0aH, 00H
 	ORG $+7
-$SG3247	DB	'PCI Interrupt line -> %d', 0aH, 00H
+$SG3253	DB	'PCI Interrupt line -> %d', 0aH, 00H
 CONST	ENDS
 PUBLIC	?xhci_initialize@@YAXXZ				; xhci_initialize
 EXTRN	?pci_find_device_class@@YA_NEEPEATpci_device_info@@@Z:PROC ; pci_find_device_class
@@ -28,8 +28,8 @@ EXTRN	?pci_print_capabilities@@YAXPEATpci_device_info@@@Z:PROC ; pci_print_capab
 EXTRN	?pmmngr_alloc@@YAPEAXXZ:PROC			; pmmngr_alloc
 EXTRN	?printf@@YAXPEBDZZ:PROC				; printf
 pdata	SEGMENT
-$pdata$?xhci_initialize@@YAXXZ DD imagerel $LN7
-	DD	imagerel $LN7+282
+$pdata$?xhci_initialize@@YAXXZ DD imagerel $LN5
+	DD	imagerel $LN5+274
 	DD	imagerel $unwind$?xhci_initialize@@YAXXZ
 pdata	ENDS
 xdata	SEGMENT
@@ -47,7 +47,7 @@ hccparams1$ = 56
 
 ; 20   : void xhci_initialize () {
 
-$LN7:
+$LN5:
 	sub	rsp, 72					; 00000048H
 
 ; 21   : 	pci_device_info *dev = (pci_device_info*)pmmngr_alloc();
@@ -63,44 +63,42 @@ $LN7:
 	call	?pci_find_device_class@@YA_NEEPEATpci_device_info@@@Z ; pci_find_device_class
 	movzx	eax, al
 	test	eax, eax
-	jne	SHORT $LN4@xhci_initi
+	jne	SHORT $LN2@xhci_initi
 
 ; 23   : 		printf ("USB xHCI: not found\n");
 
-	lea	rcx, OFFSET FLAT:$SG3236
+	lea	rcx, OFFSET FLAT:$SG3242
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 24   : 		return;
 
-	jmp	$LN5@xhci_initi
-$LN4@xhci_initi:
+	jmp	$LN3@xhci_initi
+$LN2@xhci_initi:
 
 ; 25   : 	}
 ; 26   : 
-; 27   : 	xhci_base_address = ((dev->device.nonBridge.baseAddress[0] & 0xFFFFFFF0) +( dev->device.nonBridge.baseAddress[1] & 0xFFFFFFFF) << 32);
+; 27   : 	xhci_base_address = dev->device.nonBridge.baseAddress[0] + dev->device.nonBridge.baseAddress[1];
 
 	mov	eax, 4
 	imul	rax, 0
-	mov	rcx, QWORD PTR dev$[rsp]
-	mov	eax, DWORD PTR [rcx+rax+16]
-	and	eax, -16				; fffffff0H
 	mov	ecx, 4
 	imul	rcx, 1
 	mov	rdx, QWORD PTR dev$[rsp]
+	mov	eax, DWORD PTR [rdx+rax+16]
+	mov	rdx, QWORD PTR dev$[rsp]
 	add	eax, DWORD PTR [rdx+rcx+16]
-	shl	eax, 32					; 00000020H
 	mov	eax, eax
 	mov	QWORD PTR ?xhci_base_address@@3_KA, rax	; xhci_base_address
 
 ; 28   : 	printf ("USB xHCI: found\n");
 
-	lea	rcx, OFFSET FLAT:$SG3237
+	lea	rcx, OFFSET FLAT:$SG3243
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 29   : 	printf ("XHCI Base Address -> %x\n", xhci_base_address);
 
 	mov	rdx, QWORD PTR ?xhci_base_address@@3_KA	; xhci_base_address
-	lea	rcx, OFFSET FLAT:$SG3238
+	lea	rcx, OFFSET FLAT:$SG3244
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 30   : 
@@ -116,7 +114,7 @@ $LN4@xhci_initi:
 	mov	ecx, 8
 	imul	rcx, 0
 	mov	rdx, QWORD PTR [rax+rcx]
-	lea	rcx, OFFSET FLAT:$SG3241
+	lea	rcx, OFFSET FLAT:$SG3247
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 33   : 
@@ -139,13 +137,13 @@ $LN4@xhci_initi:
 	mov	rax, QWORD PTR hccparams1$[rsp]
 	and	rax, 1
 	test	rax, rax
-	je	SHORT $LN3@xhci_initi
+	je	SHORT $LN1@xhci_initi
 
 ; 37   : 		printf ("[XHCI] has 64-bit addressing capability\n");
 
-	lea	rcx, OFFSET FLAT:$SG3246
+	lea	rcx, OFFSET FLAT:$SG3252
 	call	?printf@@YAXPEBDZZ			; printf
-$LN3@xhci_initi:
+$LN1@xhci_initi:
 
 ; 38   : 	}
 ; 39   : 
@@ -154,20 +152,16 @@ $LN3@xhci_initi:
 	mov	rax, QWORD PTR dev$[rsp]
 	movzx	eax, BYTE PTR [rax+60]
 	mov	edx, eax
-	lea	rcx, OFFSET FLAT:$SG3247
+	lea	rcx, OFFSET FLAT:$SG3253
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 41   : 	pci_print_capabilities(dev);
 
 	mov	rcx, QWORD PTR dev$[rsp]
 	call	?pci_print_capabilities@@YAXPEATpci_device_info@@@Z ; pci_print_capabilities
-$LN2@xhci_initi:
+$LN3@xhci_initi:
 
-; 42   : 	for(;;);
-
-	jmp	SHORT $LN2@xhci_initi
-$LN5@xhci_initi:
-
+; 42   : 	//for(;;);
 ; 43   : }
 
 	add	rsp, 72					; 00000048H
