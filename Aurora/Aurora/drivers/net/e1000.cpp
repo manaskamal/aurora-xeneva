@@ -112,7 +112,7 @@ void e1000_rx_init () {
 	e1000_write_command (REG_RXDESCKHI, (uint32_t)get_physical_address((uint64_t)i_net_dev->rx_desc_base) >> 32);
 	e1000_write_command (REG_RXDESCLO,(uint32_t)get_physical_address((uint64_t)i_net_dev->rx_desc_base) & 0xFFFFFFFF);
 
-	printf ("E1000 RX Descriptor HI -> %x, LO -> %x\n", e1000_read_command(REG_RXDESCKHI), e1000_read_command(REG_RXDESCLO));
+	//printf ("E1000 RX Descriptor HI -> %x, LO -> %x\n", e1000_read_command(REG_RXDESCKHI), e1000_read_command(REG_RXDESCLO));
 	e1000_write_command (REG_RXDESCLEN, (uint32_t)(E1000_NUM_RX_DESC * 16));
 
 	e1000_write_command(REG_RXDESCHEAD, 0);
@@ -137,7 +137,7 @@ void e1000_tx_init () {
 	}
 	e1000_write_command (REG_TXDESCHI, (uint32_t)get_physical_address((uint64_t)i_net_dev->tx_desc_base) >> 32);
 	e1000_write_command (REG_TXDESCLO, (uint32_t)get_physical_address((uint64_t)i_net_dev->tx_desc_base) & 0xFFFFFFFF);
-	printf ("E1000 TX_DESC_HI -> %x, LO -> %x\n", e1000_read_command(REG_TXDESCHI), e1000_read_command(REG_TXDESCLO));
+	//printf ("E1000 TX_DESC_HI -> %x, LO -> %x\n", e1000_read_command(REG_TXDESCHI), e1000_read_command(REG_TXDESCLO));
 
 	e1000_write_command (REG_TXDESCLEN, (uint32_t)(E1000_NUM_TX_DESC * 16));
 
@@ -238,7 +238,7 @@ void e1000_initialize () {
 	imask |= (1<<5);
 	imask |= (1<<6);
 	imask |= (1<<7);
-	printf ("E1000 Interrupt register -> %x\n", imask);
+	//printf ("E1000 Interrupt register -> %x\n", imask);
 	e1000_write_command (REG_IMASK, imask);
 
 	e1000_reset();

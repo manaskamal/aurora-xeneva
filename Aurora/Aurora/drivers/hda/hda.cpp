@@ -69,39 +69,41 @@ void setup_corb () {
 	unsigned int corb_entries = 0;
 
 	reg = _aud_inw_(CORBSIZE);
-	printf ("CORB Size -> %x\n", reg);
 	/* Check CORB size capabilities and choose the largest size */
 	if (reg & (1 << 6)) {
 		_ihd_audio.corb_entries = 256;
-		printf ("CORB size -> 256\n");
 		reg |= 0x2;
 	} else if (reg & (1 << 5)) {
 		_ihd_audio.corb_entries = 16;
-		printf ("Corb size -> 16\n");
 		reg |= 0x1;
 	} else if (reg & (1 << 4)) {
 		_ihd_audio.corb_entries = 2;
-		printf ("Corb size -> 2\n");
 		reg |= 0x0;
 	} else {
 		printf ("HD Audio: No Supported CORB Size!\n");
 		_ihd_audio.corb_entries = 256;
-		//reg |= 0x2;*/
+		reg |= 0x2;
 	}
 
 	_aud_outb_(CORBSIZE, reg);
 
-	//printf ("CORB Entries -> %d\n", corb_entries);
 
 	/* Set CORB Base Address */
-	corb_base = (uintptr_t)_ihd_audio.corb;
-	_aud_outl_(CORBLBASE, corb_base & 0xffffffff);
+	corb_base = (uintptr_t)get_physical_address((uint64_t)_ihd_audio.corb);
+	_aud_outl_(CORBLBASE, corb_base);
 	_aud_outl_(CORBUBASE, corb_base >> 32);
 
-	//printf ("CORB BASE LO -> %x\n", corb_base & 0xffffffff);
-	//printf ("CORB BASE HI -> %x\n", corb_base >> 32);
+	_aud_outw_ (CORBWP, 0);
+	_aud_outw_ (CORBRP, 0x8000);
+
+	_aud_outw_ (CORBRP, 0x0);
+
+
 	/* Start DMA engine */
-	_aud_outl_(CORBCTL, 0x02);
+	_aud_outl_(CORBCTL, 0x01);
+	uint32_t corbctl = _aud_inb_(CORBCTL);
+	corbctl |= 0x02;
+	_aud_outb_ (CORBCTL, corbctl);
 }
 
 
@@ -116,96 +118,133 @@ void setup_rirb() {
 	//_aud_outw_(RIRBCTL, 0);
 
 	reg = _aud_inb_ (RIRBSIZE);
-	printf ("RIRB SIZE reg -> %x\n", reg);
 	/* Check RIRB size capabilities and choose the largest size */
 	if (reg & (1 << 6)) {
 		_ihd_audio.rirb_entries = 256;
-		printf ("RIRB size -> 256\n");
 		reg |= 0x2;
 	} else if (reg & (1 << 5)) {
 		_ihd_audio.rirb_entries = 16;
-		printf ("RIRB size -> 16\n");
 		reg |= 0x1;
 	}else if (reg & (1 << 4)) {
 		_ihd_audio.rirb_entries = 2;
-		printf ("RIRB size -> 2\n");
 		reg |= 0x0;
 	}else {
 		printf ("HD Audio: No supported RIRB size !!\n");
-		//_ihd_audio.rirb_entries = 256;
-		//reg |= 0x2;
+		_ihd_audio.rirb_entries = 256;
+		reg |= 0x2;
 	}
 
 	_aud_outb_(RIRBSIZE,reg);
 
 	/* Set RIRB Base address */
-	rirb_base = (uintptr_t)_ihd_audio.rirb;
-	_aud_outl_(RIRBLBASE, rirb_base & 0xffffffff);
+	rirb_base = (uintptr_t)get_physical_address((uint64_t)_ihd_audio.rirb);
+	_aud_outl_(RIRBLBASE, rirb_base);
 	_aud_outl_(RIRBUBASE, rirb_base >> 32);
 
-	_aud_outb_(RINTCNT, 0x42);
+	_aud_outw_ (RIRBWP, 0x8000);
+
+	_aud_outw_(RINTCNT, _ihd_audio.rirb_entries / 2);
+
+	_aud_outb_(RIRBCTL, 0x01);
 	/* Start DMA Engine */
-	_aud_outl_(RIRBCTL, 0x1);
-	_aud_outl_(RIRBCTL, (1<<1));
+	uint32_t rirbctl = _aud_inb_ (RIRBCTL);
+	rirbctl |= 0x02;
+	_aud_outb_ (RIRBCTL,rirbctl);
+
 }
 
 
 //* Write Commands to corb */
 static void corb_write (uint32_t verb) {
 
-	//uint16_t wp = _aud_inw_(CORBWP) & 0xff;
-	//uint16_t rp;
-	//uint16_t next;
+	if (_ihd_audio.immediate_use) {
+		_aud_outl_(ICOI,verb);
+		_aud_outl_(ICIS,1);
+		return;
+	}
 
-	///*Wait until there's a free entry in the CORB */
-	//next = (wp + 1) % _ihd_audio.corb_entries;   //corb_entries;
+	uint16_t wp = _aud_inw_(CORBWP) & 0xff;
+	uint16_t rp;
+	uint16_t next = 0;
 
-	//do {
-	//	rp = _aud_inw_(CORBRP) & 0xff;
-	//}while (next == rp);
+	/*Wait until there's a free entry in the CORB */
+	next = (wp + 1) % _ihd_audio.corb_entries;   //corb_entries;
 
-	///* Write to CORB */
-	//_ihd_audio.corb[next] = verb;
-	//_aud_outw_(CORBWP, next);
-	_aud_outl_(ICOI,verb);
-	_aud_outl_(ICIS,1);
+	do {
+		rp = _aud_inw_(CORBRP) & 0xff;
+	}while (next == rp);
+
+	/* Write to CORB */
+	_ihd_audio.corb[next] = verb;
+	_aud_outw_(CORBWP, next);
+	
 }
 
-static void rirb_read (uint64_t *response) {
-	//uint16_t wp;
-	//uint16_t rp = rirbrp;
+static void rirb_read (uint32_t *response) {
+	hda_rirb *rirb;
+	if (_ihd_audio.immediate_use) {
+		*response = _aud_inl_(ICII); 
+		_aud_outl_(ICIS, ~(1<<1));
+		return;
+	}
 
-	///*Wait for an unread entry in the RIRB */
-	//do {
-	//   wp = _aud_inw_(RIRBWP) & 0xff;
-	//} while (wp == rp);
+	uint16_t wp = _aud_inb_ (RIRBWP);
+	uint16_t rp = rirbrp;
 
-	///*Read from RIRIB */
-	//rp = (rp + 1) % _ihd_audio.rirb_entries;   //rirb_entries;
-	//rirbrp = rp;
-	*response = _aud_inl_(ICII);             //_ihd_audio.rirb[rp];
-	//printf ("RIRB WP -> %x\n", _aud_inl_(ICII));
-	_aud_outl_(ICIS, ~(1<<1));
+	/*Wait for an unread entry in the RIRB */
+	
+	while (rp != wp) {
+		rp++;
+		rp %= _ihd_audio.rirb_entries;
+		rirbrp = rp;
+		rirb = (hda_rirb*)&_ihd_audio.rirb[rp];
+		response = (uint32_t*)rirb->response;
+		if (rirb->response_ex != 0) {
+			*response = rirb->response_ex;
+		}
+		
+		return;
+	}
+	//for (int i = 0; i < 256; i++){
+	//	printf ("RIRB DATA -> %x   ", _ihd_audio.rirb[i]);
+	//}
+	return;
 }
 
 static uint32_t codec_query (int codec, int nid, uint32_t payload) {
-	uint64_t response; //= (uint64_t*)pmmngr_alloc();
-	uint32_t icount = 1000;
+	uint32_t response;// = (uint32_t)pmmngr_alloc();
+	uint32_t icount = 10000;
 	uint32_t verb = ((codec & 0xf) << 28) | 
 		((nid & 0xff) << 20) | 
 		(payload & 0xfffff);
 
+	//printf ("RIRB Status -> %d\n", (_aud_inl_(RIRBSTS >> 0)) & 0xff);
 	corb_write(verb);
-	while (( _aud_inw_(ICIS) & 1) == 1){
-		if(icount == 0){
-			_aud_outw_(ICIS, 0);
-			break;
+
+	if (_ihd_audio.immediate_use){
+		while (( _aud_inw_(ICIS) & 0xff) == 1){
+			if(icount == 0){
+				_aud_outw_(ICIS, 0);
+				break;
+			}
+			icount--;
 		}
-		icount--;
 	}
 
-	rirb_read(&response);
-	return response & 0xffffffff;
+	uint32_t rirb_status = 0;
+	do {
+		rirb_status =  (_aud_inl_(RIRBSTS >> 0)) & 0xff;
+		if (rirb_status){
+			rirb_read(&response);
+		}
+		for (int i = 0; i < 20; i++)
+			;
+	}while (rirb_status != 0 && --icount);
+
+	_aud_outl_(RIRBSTS, 0);
+	
+	//rirb_read(&response);
+	return response;
 }
 
 
@@ -228,6 +267,8 @@ void widget_init (int codec, int nid) {
 	type = (widget_cap & WIDGET_CAP_TYPE_MASK) >> WIDGET_CAP_TYPE_SHIFT;
 	amp_cap = codec_query (codec, nid, VERB_GET_PARAMETER | PARAM_OUT_AMP_CAP);
 	eapd_btl = codec_query (codec, nid, VERB_GET_EAPD_BTL);
+
+
 
 	uint32_t amp_gain;
 	const char* s;
@@ -257,7 +298,7 @@ void widget_init (int codec, int nid) {
 		{
 			uint32_t pin_cap, ctl;
 			uint32_t conf = codec_query(codec, nid, VERB_GET_CONFIG_DEFAULT);
-			printf ("pin config: %x\n", conf);
+			//printf ("pin config: %x\n", conf);
 
 			pin_cap = codec_query (codec, nid, VERB_GET_PARAMETER | PARAM_PIN_CAP);
 
@@ -266,7 +307,7 @@ void widget_init (int codec, int nid) {
 			}
 
 			ctl = codec_query (codec, nid, VERB_GET_PIN_CONTROL);
-			printf ("ctl: %x\n", ctl);
+			//printf ("ctl: %x\n", ctl);
 
 			ctl |= PIN_CTL_ENABLE_OUTPUT;
 			codec_query(codec, nid, VERB_SET_PIN_CONTROL | ctl);
@@ -282,7 +323,7 @@ void widget_init (int codec, int nid) {
 				output.nid = nid;
 				output.amp_gain_steps = (amp_cap >> 8) & 0x7f;
 			}*/
-			printf ("Widget type Output in codec -> %d at node -> %d\n", codec, nid);
+			//printf ("Widget type Output in codec -> %d at node -> %d\n", codec, nid);
 			codec_query (codec, nid, VERB_SET_EAPD_BTL | eapd_btl | 0x2);
 			break;
 		}
@@ -310,8 +351,15 @@ static void codec_enumerate_widgets(int codec) {
 	num_fg = (param >> 0) & 0xff;
 	fg_start = (param >> 16) & 0xff;
 
-	//printf ("Param Returned -> %x\n", param);
-	//printf ("[HD_Audio]: Num Function Group -> %d, fg_start -> %d\n", num_fg, fg_start);	
+	printf ("Param Returned -> %x\n", param);
+	printf ("[HD_Audio]: Num Function Group -> %d, fg_start -> %d\n", num_fg, fg_start);
+
+	uint32_t vendor_id = codec_query (codec, 0, VERB_GET_PARAMETER | PARAM_VENDOR_ID);
+	printf ("Widget device id -> %x, vendor id -> %x\n", vendor_id, vendor_id >> 16);
+
+	
+	uint32_t rev_id = codec_query (codec, 0, VERB_GET_PARAMETER | PARAM_REV_ID);
+	printf ("Widget version -> %d.%d, r0%d\n", rev_id>>20, rev_id>>16, rev_id>>8);
 
 	if (num_fg == 0) 
 		return;
@@ -349,23 +397,70 @@ void hda_reset() {
 	_aud_outl_(CORBCTL, 0);
 	_aud_outl_(RIRBCTL, 0);
 	//_aud_outw_(RIRBWP, 0);
-	_aud_outl_(GCTL, 1);
-	while ((_aud_inl_ (GCTL >> 0) & 0x3) != 1)
+
+	_aud_outl_ (DPIBLBASE, 0x0);
+	_aud_outl_ (DPIBUBASE, 0x0);
+
+	_aud_outl_(GCTL, 0);
+	uint32_t gctl;
+	for(int i = 0; i < 1000; i++){
+		gctl = _aud_inl_(GCTL);
+		if (!(gctl & 0x00000001))
+			break;
+		for (int j = 0; j < 10; j++)
+			;		
+	}
+
+	if (gctl & 0x00000001) {
+		printf ("Unable to put HD-Audio in reset mode\n");
+		return;
+	}
+
+	for (int i = 0; i < 1000; i++)
 		;
 
-	_aud_outw_ (WAKEEN, 1);
-	//_aud_outw_ (STATESTS, 1);
+	gctl = _aud_inl_(GCTL);
+	_aud_outl_ (GCTL, gctl | 0x00000001);
 	
-	if((_aud_inw_(ICIS) & 1)==0)
-		printf ("ICIS ICB bit is clear\n");
-	
-	uint16_t statests = _aud_inw_ (STATESTS);
+	int count = 10000;
+	do {
+		gctl = _aud_inl_(GCTL);
+		if (gctl & 0x00000001)
+			break;
+		for (int i = 0; i < 10; i++)
+			;
+	}while (--count);
 
+	if (!(gctl & 0x00000001)){
+		printf ("HD-Audio device stuck in reset\n");
+		return;
+	}
+
+	for (int i = 0; i < 1000; i++)
+		;
+
+	
+	if((_aud_inw_(ICIS) & 1)==0){
+		//printf ("ICIS ICB bit is clear\n");
+	}
+	
+	_ihd_audio.immediate_use = false;
+
+	if (!_ihd_audio.immediate_use){
+		setup_corb ();
+		setup_rirb ();
+		//debug_serial ("CORB/RIRB Setup complete\n");
+	}
+
+
+	uint16_t statests = _aud_inw_ (STATESTS);
 	for (int i = 0; i < 15; i++) {
 		if (statests & (1 << i)){
+			printf ("Found codec at index -> %d\n", i);
 			codec_enumerate_widgets(i);
 		}
 	}
+
 }
 
 
@@ -378,21 +473,25 @@ void hda_initialize () {
 
 	x64_cli();
 
-	//printf ("HD Audio found vendor -> %x, device -> %x\n", pci_dev.device.vendorID, pci_dev.device.deviceID);
+	printf ("HD Audio found vendor -> %x, device -> %x\n", pci_dev.device.vendorID, pci_dev.device.deviceID);
 
-	/*uint64_t* ring_address = (uint64_t*)malloc(1024 + 2048 + BDL_BYTES_ROUNDED + 128);
-	memset (ring_address, 100, 1024 + 2048 + BDL_BYTES_ROUNDED + 128);*/
+	uint64_t* ring_address = (uint64_t*)malloc(1024 + 2048 + BDL_BYTES_ROUNDED + 128);
+	memset (ring_address, 0, 1024 + 2048 + BDL_BYTES_ROUNDED + 128);
 
 	if (pci_dev.device.nonBridge.interruptLine < 255) 
 		interrupt_set (pci_dev.device.nonBridge.interruptLine, hda_handler, pci_dev.device.nonBridge.interruptLine);
 	_ihd_audio.mmio = pci_dev.device.nonBridge.baseAddress[0]; //& ~3);
-	_ihd_audio.corb = (uint64_t*)pmmngr_alloc(); //ring_address;   //for 256 entries only 1 kb will be used
-	_ihd_audio.rirb = (uint64_t*)pmmngr_alloc(); //(ring_address + 1024);
+	_ihd_audio.corb = (uint64_t*)ring_address;   //for 256 entries only 1 kb will be used
+	_ihd_audio.rirb = (uint64_t*)(ring_address + 1024);
+	memset (_ihd_audio.corb, 0, 4096);
+	memset (_ihd_audio.rirb, 0, 4096);
+
+	//printf ("_IHD_AUDIO_MMIO -> %x\n", _ihd_audio.mmio);
 	if (_aud_inw_ (GCAP) & 1) {
 		printf ("HD-Audio 64-OK\n");
 	}
-
-	printf ("HD-Audio Version - %d.%d\n", _aud_inb_(VMAJ), _aud_inb_(VMIN));
+	
+	//printf ("HD-Audio Version - %d.%d\n", _aud_inb_(VMAJ), _aud_inb_(VMIN));
 	hda_reset();
 	x64_sti();
 }

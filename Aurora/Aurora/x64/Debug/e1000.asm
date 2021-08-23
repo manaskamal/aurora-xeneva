@@ -16,27 +16,22 @@ $SG3317	DB	'Applying memory map', 0aH, 00H
 	ORG $+3
 $SG3332	DB	'E1000 Interrupt fired', 0aH, 00H
 	ORG $+1
-$SG3353	DB	'E1000 RX Descriptor HI -> %x, LO -> %x', 0aH, 00H
-$SG3374	DB	'E1000 TX_DESC_HI -> %x, LO -> %x', 0aH, 00H
+$SG3380	DB	'TxTail -> %d', 0aH, 00H
 	ORG $+2
-$SG3437	DB	':%x', 00H
-$SG3382	DB	'TxTail -> %d', 0aH, 00H
+$SG3386	DB	'E1000: Transmit status -> %x', 0aH, 00H
 	ORG $+2
-$SG3388	DB	'E1000: Transmit status -> %x', 0aH, 00H
+$SG3392	DB	'E1000 New Packet received #1', 0aH, 00H
 	ORG $+2
-$SG3394	DB	'E1000 New Packet received #1', 0aH, 00H
+$SG3396	DB	'E1000 New Packet received #2', 0aH, 00H
 	ORG $+2
-$SG3398	DB	'E1000 New Packet received #2', 0aH, 00H
+$SG3398	DB	'E1000 New Packet received #3', 0aH, 00H
 	ORG $+2
-$SG3400	DB	'E1000 New Packet received #3', 0aH, 00H
+$SG3428	DB	'E1000 MAC address received', 0aH, 00H
+$SG3434	DB	':%x', 00H
+$SG3429	DB	'E1000 MAC Address: ', 00H
+$SG3435	DB	0aH, 00H
 	ORG $+2
-$SG3421	DB	'E1000 Interrupt register -> %x', 0aH, 00H
-$SG3431	DB	'E1000 MAC address received', 0aH, 00H
-$SG3438	DB	0aH, 00H
-	ORG $+2
-$SG3432	DB	'E1000 MAC Address: ', 00H
-	ORG $+4
-$SG3439	DB	'E1000 IMASK Reg -> %x', 0aH, 00H
+$SG3436	DB	'E1000 IMASK Reg -> %x', 0aH, 00H
 CONST	ENDS
 PUBLIC	?e1000_initialize@@YAXXZ			; e1000_initialize
 PUBLIC	?e1000_read_command@@YAIG@Z			; e1000_read_command
@@ -64,7 +59,7 @@ EXTRN	?printf@@YAXPEBDZZ:PROC				; printf
 EXTRN	?malloc@@YAPEAX_K@Z:PROC			; malloc
 pdata	SEGMENT
 $pdata$?e1000_initialize@@YAXXZ DD imagerel $LN19
-	DD	imagerel $LN19+707
+	DD	imagerel $LN19+691
 	DD	imagerel $unwind$?e1000_initialize@@YAXXZ
 $pdata$?e1000_read_command@@YAIG@Z DD imagerel $LN3
 	DD	imagerel $LN3+65
@@ -85,10 +80,10 @@ $pdata$?e1000_interrupt_handler@@YAX_KPEAX@Z DD imagerel $LN3
 	DD	imagerel $LN3+46
 	DD	imagerel $unwind$?e1000_interrupt_handler@@YAX_KPEAX@Z
 $pdata$?e1000_rx_init@@YAXXZ DD imagerel $LN8
-	DD	imagerel $LN8+402
+	DD	imagerel $LN8+359
 	DD	imagerel $unwind$?e1000_rx_init@@YAXXZ
 $pdata$?e1000_tx_init@@YAXXZ DD imagerel $LN8
-	DD	imagerel $LN8+403
+	DD	imagerel $LN8+360
 	DD	imagerel $unwind$?e1000_tx_init@@YAXXZ
 $pdata$?e1000_setup_interrupt@@YAXXZ DD imagerel $LN3
 	DD	imagerel $LN3+46
@@ -119,9 +114,9 @@ $unwind$?e1000_read_mac_address@@YA_NXZ DD 010401H
 $unwind$?e1000_interrupt_handler@@YAX_KPEAX@Z DD 010e01H
 	DD	0420eH
 $unwind$?e1000_rx_init@@YAXXZ DD 020701H
-	DD	02b0107H
+	DD	0290107H
 $unwind$?e1000_tx_init@@YAXXZ DD 020701H
-	DD	0130107H
+	DD	0110107H
 $unwind$?e1000_setup_interrupt@@YAXXZ DD 010401H
 	DD	04204H
 $unwind$?e1000_tx_poll@@YAXPEAXG@Z DD 010e01H
@@ -245,7 +240,7 @@ $LN2@e1000_hand:
 
 ; 176  : 		printf ("E1000 New Packet received #1\n");
 
-	lea	rcx, OFFSET FLAT:$SG3394
+	lea	rcx, OFFSET FLAT:$SG3392
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 177  : 		uint8_t *buf = (uint8_t*)i_net_dev->rx_desc[i_net_dev->rx_tail]->addr;
@@ -268,7 +263,7 @@ $LN2@e1000_hand:
 
 ; 179  : 		printf ("E1000 New Packet received #2\n");
 
-	lea	rcx, OFFSET FLAT:$SG3398
+	lea	rcx, OFFSET FLAT:$SG3396
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 180  : 		i_net_dev->rx_desc[i_net_dev->rx_tail]->status = 0;
@@ -307,7 +302,7 @@ $LN2@e1000_hand:
 
 ; 184  : 		printf ("E1000 New Packet received #3\n");
 
-	lea	rcx, OFFSET FLAT:$SG3400
+	lea	rcx, OFFSET FLAT:$SG3398
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 185  : 	}
@@ -348,7 +343,7 @@ $LN5:
 	mov	rax, QWORD PTR ?i_net_dev@@3PEAU_e1000_dev_@@EA ; i_net_dev
 	movzx	eax, WORD PTR [rax+48]
 	mov	edx, eax
-	lea	rcx, OFFSET FLAT:$SG3382
+	lea	rcx, OFFSET FLAT:$SG3380
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 161  : 	i_net_dev->tx_desc[i_net_dev->tx_tail]->addr = (uint64_t)pkt;
@@ -430,7 +425,7 @@ $LN1@e1000_tx_p:
 	movzx	eax, al
 	and	eax, 15
 	mov	edx, eax
-	lea	rcx, OFFSET FLAT:$SG3388
+	lea	rcx, OFFSET FLAT:$SG3386
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 172  : }
@@ -477,16 +472,15 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 i$1 = 32
 tmp_base$ = 40
-tv138 = 48
-tv75 = 56
-tv71 = 64
-tx_desc$ = 80
+tv75 = 48
+tv71 = 56
+tx_desc$ = 64
 ?e1000_tx_init@@YAXXZ PROC				; e1000_tx_init
 
 ; 127  : void e1000_tx_init () {
 
 $LN8:
-	sub	rsp, 152				; 00000098H
+	sub	rsp, 136				; 00000088H
 
 ; 128  : 
 ; 129  : 	uint64_t tmp_base = (uint64_t)malloc((sizeof(e1000_tx_desc) * E1000_NUM_TX_DESC) + 16);
@@ -591,19 +585,7 @@ $LN1@e1000_tx_i:
 	mov	cx, 14336				; 00003800H
 	call	?e1000_write_command@@YAXGI@Z		; e1000_write_command
 
-; 140  : 	printf ("E1000 TX_DESC_HI -> %x, LO -> %x\n", e1000_read_command(REG_TXDESCHI), e1000_read_command(REG_TXDESCLO));
-
-	mov	cx, 14336				; 00003800H
-	call	?e1000_read_command@@YAIG@Z		; e1000_read_command
-	mov	DWORD PTR tv138[rsp], eax
-	mov	cx, 14340				; 00003804H
-	call	?e1000_read_command@@YAIG@Z		; e1000_read_command
-	mov	ecx, DWORD PTR tv138[rsp]
-	mov	r8d, ecx
-	mov	edx, eax
-	lea	rcx, OFFSET FLAT:$SG3374
-	call	?printf@@YAXPEBDZZ			; printf
-
+; 140  : 	//printf ("E1000 TX_DESC_HI -> %x, LO -> %x\n", e1000_read_command(REG_TXDESCHI), e1000_read_command(REG_TXDESCLO));
 ; 141  : 
 ; 142  : 	e1000_write_command (REG_TXDESCLEN, (uint32_t)(E1000_NUM_TX_DESC * 16));
 
@@ -640,7 +622,7 @@ $LN1@e1000_tx_i:
 
 ; 150  : }
 
-	add	rsp, 152				; 00000098H
+	add	rsp, 136				; 00000088H
 	ret	0
 ?e1000_tx_init@@YAXXZ ENDP				; e1000_tx_init
 _TEXT	ENDS
@@ -649,16 +631,15 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 i$1 = 32
 tmp_base$ = 40
-tv139 = 48
-tv75 = 56
-tv71 = 64
-rx_desc$ = 80
+tv75 = 48
+tv71 = 56
+rx_desc$ = 64
 ?e1000_rx_init@@YAXXZ PROC				; e1000_rx_init
 
 ; 101  : void e1000_rx_init () {
 
 $LN8:
-	sub	rsp, 344				; 00000158H
+	sub	rsp, 328				; 00000148H
 
 ; 102  : 	uint64_t tmp_base = (uint64_t)malloc ((sizeof(e1000_rx_desc) * E1000_NUM_RX_DESC) + 16);
 
@@ -765,19 +746,7 @@ $LN1@e1000_rx_i:
 	call	?e1000_write_command@@YAXGI@Z		; e1000_write_command
 
 ; 114  : 
-; 115  : 	printf ("E1000 RX Descriptor HI -> %x, LO -> %x\n", e1000_read_command(REG_RXDESCKHI), e1000_read_command(REG_RXDESCLO));
-
-	mov	cx, 10240				; 00002800H
-	call	?e1000_read_command@@YAIG@Z		; e1000_read_command
-	mov	DWORD PTR tv139[rsp], eax
-	mov	cx, 10244				; 00002804H
-	call	?e1000_read_command@@YAIG@Z		; e1000_read_command
-	mov	ecx, DWORD PTR tv139[rsp]
-	mov	r8d, ecx
-	mov	edx, eax
-	lea	rcx, OFFSET FLAT:$SG3353
-	call	?printf@@YAXPEBDZZ			; printf
-
+; 115  : 	//printf ("E1000 RX Descriptor HI -> %x, LO -> %x\n", e1000_read_command(REG_RXDESCKHI), e1000_read_command(REG_RXDESCLO));
 ; 116  : 	e1000_write_command (REG_RXDESCLEN, (uint32_t)(E1000_NUM_RX_DESC * 16));
 
 	mov	edx, 512				; 00000200H
@@ -813,7 +782,7 @@ $LN1@e1000_rx_i:
 
 ; 124  : }
 
-	add	rsp, 344				; 00000158H
+	add	rsp, 328				; 00000148H
 	ret	0
 ?e1000_rx_init@@YAXXZ ENDP				; e1000_rx_init
 _TEXT	ENDS
@@ -1476,12 +1445,7 @@ $LN11@e1000_init:
 	bts	eax, 7
 	mov	DWORD PTR imask$[rsp], eax
 
-; 241  : 	printf ("E1000 Interrupt register -> %x\n", imask);
-
-	mov	edx, DWORD PTR imask$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3421
-	call	?printf@@YAXPEBDZZ			; printf
-
+; 241  : 	//printf ("E1000 Interrupt register -> %x\n", imask);
 ; 242  : 	e1000_write_command (REG_IMASK, imask);
 
 	mov	edx, DWORD PTR imask$[rsp]
@@ -1582,12 +1546,12 @@ $LN5@e1000_init:
 
 ; 263  : 		printf ("E1000 MAC address received\n");
 
-	lea	rcx, OFFSET FLAT:$SG3431
+	lea	rcx, OFFSET FLAT:$SG3428
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 264  : 		printf ("E1000 MAC Address: ");
 
-	lea	rcx, OFFSET FLAT:$SG3432
+	lea	rcx, OFFSET FLAT:$SG3429
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 265  : 		for (int i = 0; i < 6; i++)
@@ -1608,14 +1572,14 @@ $LN3@e1000_init:
 	mov	rcx, QWORD PTR ?i_net_dev@@3PEAU_e1000_dev_@@EA ; i_net_dev
 	movzx	eax, BYTE PTR [rcx+rax+24]
 	mov	edx, eax
-	lea	rcx, OFFSET FLAT:$SG3437
+	lea	rcx, OFFSET FLAT:$SG3434
 	call	?printf@@YAXPEBDZZ			; printf
 	jmp	SHORT $LN2@e1000_init
 $LN1@e1000_init:
 
 ; 267  : 		printf ("\n");
 
-	lea	rcx, OFFSET FLAT:$SG3438
+	lea	rcx, OFFSET FLAT:$SG3435
 	call	?printf@@YAXPEBDZZ			; printf
 $LN4@e1000_init:
 
@@ -1656,7 +1620,7 @@ $LN4@e1000_init:
 	mov	cx, 208					; 000000d0H
 	call	?e1000_read_command@@YAIG@Z		; e1000_read_command
 	mov	edx, eax
-	lea	rcx, OFFSET FLAT:$SG3439
+	lea	rcx, OFFSET FLAT:$SG3436
 	call	?printf@@YAXPEBDZZ			; printf
 $LN17@e1000_init:
 

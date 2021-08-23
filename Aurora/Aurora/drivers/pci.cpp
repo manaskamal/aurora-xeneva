@@ -160,6 +160,7 @@ bool pci_find_device_class (uint8_t class_code, uint8_t sub_class, pci_device_in
 				read_config_header (bus, dev, func, &config);
 
 				if (config.device.classCode == class_code && config.device.subClassCode == sub_class) {
+					printf ("PCI Slot -> %d.%d.%d\n", bus, dev,func);
 					*addr_out = config;
 					read_config_16 (bus,dev,func,PCI_CONFREG_COMMAND_16, &command_reg);
 					command_reg |= PCI_COMMAND_IOENABLE;

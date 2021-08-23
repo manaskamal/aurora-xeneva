@@ -96,7 +96,8 @@ void _kmain (KERNEL_BOOT_INFO *info) {
 	initialize_rtc();
 	e1000_initialize();
 	//xhci_initialize ();  //<- needs completion	
-	
+	hda_initialize();
+	for(;;);
 	//!initialize runtime drivers
 	ata_initialize();
 	initialize_vfs();
@@ -109,7 +110,8 @@ void _kmain (KERNEL_BOOT_INFO *info) {
 	dwm_ipc_init();
    
 	driver_mngr_initialize(info);
-    hda_initialize();
+    
+	
 #ifdef ARCH_X64
 	initialize_scheduler();
 	create_process ("dwm.exe","dwm",20);

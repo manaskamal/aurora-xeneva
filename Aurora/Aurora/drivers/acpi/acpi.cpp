@@ -44,8 +44,10 @@ void acpi_enable () {
 		return;
 	}
 	x64_outportb (kern_acpi->fadt->sciCmdPort, kern_acpi->fadt->acpiEnable);
-	uint16_t word_1 = x64_inportw(kern_acpi->fadt->pm1aCtrlBlock);
+	uint16_t word_1 = x64_inportw(kern_acpi->fadt->pm1aCtrlBlock);	
+	printf ("PM1aCTRLBlock -> %x\n", kern_acpi->fadt->pm1aCtrlBlock);
 	if ((word_1 & ACPI_PMCTRL_SCI_EN) == 1){
+
 		printf ("[ACPI]: Enabled successfully\n");
 
 	}
@@ -177,15 +179,17 @@ void acpi_system_reboot () {
 }
 
 void acpi_shutdown () {
-	x64_outportw (kern_acpi->fadt->pm1aCtrlBlock, (kern_acpi->slp_typa << 0) | SLP_EN);
-	printf ("Shutdown step1 complete\n");
+	x64_cli();
+	x64_outportd (kern_acpi->fadt->sciCmdPort, 0);
+	if (kern_acpi->fadt->pm1aCtrlBlock != NULL) {
+		x64_outportw (kern_acpi->fadt->pm1aCtrlBlock, kern_acpi->slp_typa | SLP_EN);
+		printf ("Shutdown step1 complete\n");
+	}
 
 	if (kern_acpi->fadt->pm1bCtrlBlock){
 		printf ("[ACPI] pm1bCtrlBlock -> %x\n", kern_acpi->fadt->pm1bCtrlBlock);
 		x64_outportw (kern_acpi->fadt->pm1bCtrlBlock,  (kern_acpi->slp_typb << 0) | SLP_EN);
-	} else {
-		x64_outportw (kern_acpi->fadt->pm1aCtrlBlock, (kern_acpi->slp_typb << 0) | SLP_EN);
-	}
+	} 
 
 	printf ("\nShutdown step2 complete\n");
 	printf ("[ACPI]: Shutdown failed\n");

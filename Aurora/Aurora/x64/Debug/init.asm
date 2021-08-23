@@ -6,14 +6,14 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 CONST	SEGMENT
-$SG7077	DB	'Timer fired', 0aH, 00H
+$SG7090	DB	'Timer fired', 0aH, 00H
 	ORG $+3
-$SG7081	DB	'dwm', 00H
+$SG7097	DB	'dwm', 00H
 	ORG $+4
-$SG7082	DB	'dwm.exe', 00H
-$SG7083	DB	'dwm2', 00H
+$SG7098	DB	'dwm.exe', 00H
+$SG7099	DB	'dwm2', 00H
 	ORG $+3
-$SG7084	DB	'dwm2.exe', 00H
+$SG7100	DB	'dwm2.exe', 00H
 CONST	ENDS
 PUBLIC	?timer_callback@@YAX_KPEAX@Z			; timer_callback
 PUBLIC	?_kmain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z		; _kmain
@@ -44,8 +44,8 @@ pdata	SEGMENT
 $pdata$?timer_callback@@YAX_KPEAX@Z DD imagerel $LN3
 	DD	imagerel $LN3+41
 	DD	imagerel $unwind$?timer_callback@@YAX_KPEAX@Z
-$pdata$?_kmain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z DD imagerel $LN5
-	DD	imagerel $LN5+196
+$pdata$?_kmain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z DD imagerel $LN7
+	DD	imagerel $LN7+198
 	DD	imagerel $unwind$?_kmain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z
 pdata	ENDS
 xdata	SEGMENT
@@ -62,7 +62,7 @@ info$ = 48
 
 ; 88   : void _kmain (KERNEL_BOOT_INFO *info) {
 
-$LN5:
+$LN7:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 40					; 00000028H
 
@@ -107,89 +107,95 @@ $LN5:
 	call	?e1000_initialize@@YAXXZ		; e1000_initialize
 
 ; 98   : 	//xhci_initialize ();  //<- needs completion	
-; 99   : 	
-; 100  : 	//!initialize runtime drivers
-; 101  : 	ata_initialize();
+; 99   : 	hda_initialize();
+
+	call	?hda_initialize@@YAXXZ			; hda_initialize
+$LN4@kmain:
+
+; 100  : 	for(;;);
+
+	jmp	SHORT $LN4@kmain
+
+; 101  : 	//!initialize runtime drivers
+; 102  : 	ata_initialize();
 
 	call	?ata_initialize@@YAXXZ			; ata_initialize
 
-; 102  : 	initialize_vfs();
+; 103  : 	initialize_vfs();
 
 	call	?initialize_vfs@@YAXXZ			; initialize_vfs
 
-; 103  : 	initialize_screen(info);
+; 104  : 	initialize_screen(info);
 
 	mov	rcx, QWORD PTR info$[rsp]
 	call	?initialize_screen@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z ; initialize_screen
 
-; 104  : 
-; 105  : 	//! for testing purpose
-; 106  : 	svga_init (); 
+; 105  : 
+; 106  : 	//! for testing purpose
+; 107  : 	svga_init (); 
 
 	call	?svga_init@@YAXXZ			; svga_init
 
-; 107  : 	initialize_mouse();
+; 108  : 	initialize_mouse();
 
 	call	?initialize_mouse@@YAXXZ		; initialize_mouse
 
-; 108  : 	message_init ();
+; 109  : 	message_init ();
 
 	call	?message_init@@YAXXZ			; message_init
 
-; 109  : 	dwm_ipc_init();
+; 110  : 	dwm_ipc_init();
 
 	call	?dwm_ipc_init@@YAXXZ			; dwm_ipc_init
 
-; 110  :    
-; 111  : 	driver_mngr_initialize(info);
+; 111  :    
+; 112  : 	driver_mngr_initialize(info);
 
 	mov	rcx, QWORD PTR info$[rsp]
 	call	?driver_mngr_initialize@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z ; driver_mngr_initialize
 
-; 112  :     hda_initialize();
-
-	call	?hda_initialize@@YAXXZ			; hda_initialize
-
-; 113  : #ifdef ARCH_X64
-; 114  : 	initialize_scheduler();
+; 113  :     
+; 114  : 	
+; 115  : #ifdef ARCH_X64
+; 116  : 	initialize_scheduler();
 
 	call	?initialize_scheduler@@YAXXZ		; initialize_scheduler
 
-; 115  : 	create_process ("dwm.exe","dwm",20);
+; 117  : 	create_process ("dwm.exe","dwm",20);
 
 	mov	r8b, 20
-	lea	rdx, OFFSET FLAT:$SG7081
-	lea	rcx, OFFSET FLAT:$SG7082
+	lea	rdx, OFFSET FLAT:$SG7097
+	lea	rcx, OFFSET FLAT:$SG7098
 	call	?create_process@@YAXPEBDPEADE@Z		; create_process
 
-; 116  : 	//! task list should be more than 4 or less than 4 not 
-; 117  : 	create_process ("dwm2.exe", "dwm2", 1);
+; 118  : 	//! task list should be more than 4 or less than 4 not 
+; 119  : 	create_process ("dwm2.exe", "dwm2", 1);
 
 	mov	r8b, 1
-	lea	rdx, OFFSET FLAT:$SG7083
-	lea	rcx, OFFSET FLAT:$SG7084
+	lea	rdx, OFFSET FLAT:$SG7099
+	lea	rcx, OFFSET FLAT:$SG7100
 	call	?create_process@@YAXPEBDPEADE@Z		; create_process
 
-; 118  : 	//create_process ("xshell.exe","shell",1);
-; 119  : 	//create_process ("dwm3.exe", "dwm3", 1);
-; 120  : 	scheduler_start();
+; 120  : 	//create_process ("xshell.exe","shell",1);
+; 121  : 	//create_process ("dwm3.exe", "dwm3", 1);
+; 122  : 	scheduler_start();
 
 	call	?scheduler_start@@YAXXZ			; scheduler_start
 $LN2@kmain:
 
-; 121  : #endif
-; 122  : 	while(1) {
+; 123  : #endif
+; 124  : 	while(1) {
 
 	xor	eax, eax
 	cmp	eax, 1
 	je	SHORT $LN1@kmain
 
-; 123  : 	}
+; 125  : 	}
 
 	jmp	SHORT $LN2@kmain
 $LN1@kmain:
 
-; 124  : }
+; 126  : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -211,7 +217,7 @@ $LN3:
 
 ; 81   : 	printf ("Timer fired\n");
 
-	lea	rcx, OFFSET FLAT:$SG7077
+	lea	rcx, OFFSET FLAT:$SG7090
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 82   : 	interrupt_end(2);

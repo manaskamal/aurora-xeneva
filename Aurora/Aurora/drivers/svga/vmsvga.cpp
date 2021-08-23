@@ -57,6 +57,7 @@ void svga_init () {
 	svga_dev.fb_mem = (uint8_t*)pci_get_bar_addr (&svga_dev.pci_addr, 1);
 	svga_dev.fifo_mem = (uint32_t*)pci_get_bar_addr (&svga_dev.pci_addr, 2);
 
+
 	svga_dev.device_version_id = SVGA_ID_2;
 	do {
 		svga_write_reg (SVGA_REG_ID, svga_dev.device_version_id);
@@ -74,7 +75,6 @@ void svga_init () {
 	svga_dev.vram_size = svga_read_reg (SVGA_REG_VRAM_SIZE);
 	svga_dev.fb_size = svga_read_reg (SVGA_REG_FB_SIZE);
 	svga_dev.fifo_size = svga_read_reg (SVGA_REG_MEM_SIZE);
-
 	//! sanity check the fifo and framebuffer sizes
 	if (svga_dev.fb_size < 0x100000) {
 		printf ("[VMware SVGA]: FrameBuffer size is very small, probably incorrect\n");
@@ -219,6 +219,7 @@ void* svga_fifo_reserve (uint32_t bytes) {
 			}
 		}
 		if (reserve_in_place) {
+
 			if (reserveable || bytes <= sizeof (uint32_t)) {
 				svga_dev.fifo.using_bounce_buffer = false;
 				if (reserveable) {

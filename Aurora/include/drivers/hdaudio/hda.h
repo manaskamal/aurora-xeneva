@@ -120,6 +120,8 @@ enum codec_verbs {
 };
 
 enum codec_parameters {
+	PARAM_VENDOR_ID         = 0x00,
+	PARAM_REV_ID            = 0x02,
     PARAM_NODE_COUNT        = 0x04,
     PARAM_FN_GROUP_TYPE     = 0x05,
     PARAM_AUDIO_WID_CAP     = 0x09,
@@ -174,7 +176,14 @@ typedef struct _hd_audio_ {
 	uint64_t* rirb;
 	uint32_t rirb_entries;
 	uint32_t corb_entries;
+	bool immediate_use;
 }hd_audio;
+
+typedef struct _rirb_ {
+	uint32_t response;
+	uint32_t response_ex;
+}hda_rirb;
+
 
 extern void hda_initialize ();
 
