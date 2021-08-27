@@ -39,6 +39,19 @@ uint32_t pci_config_read32 (const pci_address *addr, uint16_t offset) {
 }
 
 
+void read_config_8 (int bus, int dev, int function, int reg, unsigned char* data) {
+	unsigned address = header_address (bus, dev, function, (reg / 4));
+	x64_outportd (PCI_CONFIG_PORT, address);
+	*data = x64_inportb ((PCI_DATA_PORT + (reg % 4)));
+}
+
+void write_config_8 (int bus, int dev, int func, int reg, unsigned char data) {
+	unsigned address = header_address (bus, dev, func, (reg / 4));
+	outportd (PCI_CONFIG_PORT, address);
+	outportb (PCI_DATA_PORT + (reg % 4), data);
+}
+
+
 void  read_config_32 (int bus, int dev, int function, int reg, uint32_t data)
 {
 	//! read configuration dword
@@ -147,9 +160,8 @@ bool pci_find_device (uint16_t vendor_id, uint16_t device_id, pci_address *addr_
 	return false;
 }
 
-bool pci_find_device_class (uint8_t class_code, uint8_t sub_class, pci_device_info *addr_out) {
+bool pci_find_device_class (uint8_t class_code, uint8_t sub_class, pci_device_info *addr_out, int *bus_, int *dev_, int *func_) {
 	pci_device_info config;
-	printf ("PCI Scanning device\n");
 	for (int bus = 0; bus < 256; bus++) {
 		for (int dev = 0; dev < 32; dev++) {
 			for (int func = 0; func < 8; func++) {
@@ -160,14 +172,16 @@ bool pci_find_device_class (uint8_t class_code, uint8_t sub_class, pci_device_in
 				read_config_header (bus, dev, func, &config);
 
 				if (config.device.classCode == class_code && config.device.subClassCode == sub_class) {
-					printf ("PCI Slot -> %d.%d.%d\n", bus, dev,func);
 					*addr_out = config;
 					read_config_16 (bus,dev,func,PCI_CONFREG_COMMAND_16, &command_reg);
 					command_reg |= PCI_COMMAND_IOENABLE;
 					command_reg |= PCI_COMMAND_MEMORYENABLE;
 					command_reg |= PCI_COMMAND_MASTERENABLE;
-					command_reg &= ~PCI_COMMAND_INTERRUPTDISABLE;
+					command_reg |= ~PCI_COMMAND_INTERRUPTDISABLE;
 				    write_config_16 (bus, dev,func,PCI_CONFREG_COMMAND_16,command_reg);
+					*bus_ = bus;
+					*dev_ = dev;
+					*func_ = func;
 					return true;
 				}
 				

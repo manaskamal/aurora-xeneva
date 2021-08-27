@@ -94,6 +94,42 @@ bool e1000_read_mac_address () {
 void e1000_interrupt_handler (size_t v, void* p) {
 	printf ("E1000 Interrupt fired\n");
 	//apic_local_eoi();
+	uint32_t icr = e1000_read_command (REG_ICR);
+
+	//e1000_write_command (REG_IMASK, 0x1);
+	if (icr & E1000_ICR_RECEIVE) {
+
+		uint32_t head = inportd (REG_RXDESCHEAD);
+
+		while (i_net_dev->rx_tail != head){
+			size_t size = i_net_dev->rx_desc[i_net_dev->rx_tail]->length;
+			uint8_t status = i_net_dev->rx_desc[i_net_dev->rx_tail]->status;
+
+			if ((status & 0x1)==0){
+				break;
+			}
+			
+			size -= 4;
+
+			printf ("E1000 Bytes received -> %d bytes, status 0x%x\n", size, status);
+
+			i_net_dev->rx_tail++;
+			i_net_dev->rx_tail %= E1000_NUM_RX_DESC;
+		}
+
+		if (i_net_dev->rx_tail == head) {
+			e1000_write_command (REG_RXDESCTAIL, (head + E1000_NUM_RX_DESC - 1) % E1000_NUM_RX_DESC);
+		}else {
+			e1000_write_command (REG_RXDESCTAIL, i_net_dev->rx_tail);
+		}
+
+	} else if (icr & E1000_ICR_TRANSMIT) {
+		printf ("E1000 interrupt data transmit\n");
+	} else if (icr & E1000_ICR_LINK_CHANGE) {
+		printf ("E1000 interrupt link change %s\n", (e1000_read_command(REG_STATUS) & STATUS_LINK_UP) ? "up" : "down");
+	} else {
+		printf ("E1000 unknown interrupt\n");
+	}
 	interrupt_end(i_net_dev->e1000_irq);
 }
 	
@@ -155,20 +191,31 @@ void e1000_setup_interrupt () {
 	e1000_read_command (0xc0);
 }
 
-void e1000_tx_poll (void* pkt, uint16_t length) {
-	i_net_dev->tx_tail = e1000_read_command (REG_TXDESCHEAD);
-	printf ("TxTail -> %d\n", i_net_dev->tx_tail);
-	i_net_dev->tx_desc[i_net_dev->tx_tail]->addr = (uint64_t)pkt;
-	i_net_dev->tx_desc[i_net_dev->tx_tail]->length = length;
-	i_net_dev->tx_desc[i_net_dev->tx_tail]->cmd = ((1 << 3) | (3));
+void e1000_send_packet (void* data, size_t size) {
 
-	int oldtail = i_net_dev->tx_tail;
-	i_net_dev->tx_tail = (i_net_dev->tx_tail + 1) % E1000_NUM_TX_DESC;
-	e1000_write_command (REG_TXDESCTAIL, i_net_dev->tx_tail);
+	uint32_t cur, head;
+	
+	cur = i_net_dev->tx_tail;
+	i_net_dev->tx_tail++;
+	i_net_dev->tx_tail %= E1000_NUM_TX_DESC;
 
-	while ( !(i_net_dev->tx_desc[oldtail]->status & 0xF));
+	head = e1000_read_command(REG_TXDESCHEAD);
+	if (i_net_dev->tx_tail == head) {
+		i_net_dev->tx_tail = cur;
+		return;
+	}
 
-	printf ("E1000: Transmit status -> %x\n", (i_net_dev->tx_desc[oldtail]->status & 0xF));
+	if (size > 2048) {  //max buffer size 2048 (2KB)
+		size = 2048;
+	}
+
+	memcpy (i_net_dev->tx_desc_base + cur * 2048, data, size);
+
+	i_net_dev->tx_desc[cur]->cmd = CMD_EOP | CMD_IFCS;
+	i_net_dev->tx_desc[cur]->length = size;
+	i_net_dev->tx_desc[cur]->addr = (uint64_t)get_physical_address ((uint64_t)(i_net_dev->tx_desc_base + (cur * 2048)));
+	e1000_write_command(REG_TXDESCTAIL, i_net_dev->tx_tail);
+
 }
 
 void e1000_handle_receive () {
@@ -204,11 +251,14 @@ void e1000_reset () {
 
 
 void e1000_initialize () {
+	int func, dev_, bus = 0;
 	pci_device_info *dev = (pci_device_info*)pmmngr_alloc();
-	if (!pci_find_device_class (0x02,0x00,dev)) {
+	if (!pci_find_device_class (0x02,0x00, dev,&bus, &dev_, &func)) {
 		//printf ("Intel Ethernet not found\n");
 		return;
 	}
+
+	
 
 	i_net_dev = (e1000_dev*)malloc(sizeof(e1000_dev));
     i_net_dev->e1000_mem_base = dev->device.nonBridge.baseAddress[0] & ~3;
@@ -220,6 +270,7 @@ void e1000_initialize () {
 			break;
 		}
 	}
+
 
 	//i_net_dev->e1000_base = dev->device.nonBridge.baseAddress[2] & ~1;  //TODO:Auto search 
 	i_net_dev->e1000_irq = dev->device.nonBridge.interruptLine;
@@ -279,6 +330,4 @@ void e1000_initialize () {
 	e1000_read_command (0xc0);
 	//!verify 
 	printf ("E1000 IMASK Reg -> %x\n", e1000_read_command(REG_IMASK));
-	//e1000_tx_poll(NULL, 4096);
-	//e1000_handle_receive();
 }

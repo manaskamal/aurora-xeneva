@@ -81,6 +81,11 @@ void timer_callback (size_t v, void* p) {
 	printf ("Timer fired\n");
 	interrupt_end(2);
 }
+
+struct test_bit {
+	unsigned char value_a;
+	unsigned char value_b;
+};
 //! the main entry point of the kernel
 //! @param info -- The boot information passed by
 //!                XNLDR 
@@ -93,32 +98,32 @@ void _kmain (KERNEL_BOOT_INFO *info) {
 	console_initialize(info);
 	kybrd_init();
 	initialize_acpi (info->acpi_table_pointer);
+	
+	
 	initialize_rtc();
 	e1000_initialize();
-	//xhci_initialize ();  //<- needs completion	
+	xhci_initialize ();  //<- needs completion	
 	hda_initialize();
-	for(;;);
 	//!initialize runtime drivers
 	ata_initialize();
 	initialize_vfs();
 	initialize_screen(info);
 
 	//! for testing purpose
-	svga_init (); 
+	//svga_init (); 
 	initialize_mouse();
 	message_init ();
 	dwm_ipc_init();
    
 	driver_mngr_initialize(info);
     
-	
 #ifdef ARCH_X64
 	initialize_scheduler();
-	create_process ("dwm.exe","dwm",20);
+	//create_process ("dwm.exe","dwm",20);
 	//! task list should be more than 4 or less than 4 not 
-	create_process ("dwm2.exe", "dwm2", 1);
-	//create_process ("xshell.exe","shell",1);
-	//create_process ("dwm3.exe", "dwm3", 1);
+	//create_process ("dwm2.exe", "dwm2", 1);
+	create_process ("xshell.exe","shell",1);
+	create_process ("dwm3.exe", "dwm3", 1);
 	scheduler_start();
 #endif
 	while(1) {

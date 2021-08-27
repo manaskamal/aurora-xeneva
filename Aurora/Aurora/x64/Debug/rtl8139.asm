@@ -14,24 +14,24 @@ _BSS	SEGMENT
 ?current_packet_ptr@@3IA DD 01H DUP (?)			; current_packet_ptr
 _BSS	ENDS
 CONST	SEGMENT
-$SG3291	DB	'***RTL8139: Interrupt fired ***', 0aH, 00H
+$SG3329	DB	'***RTL8139: Interrupt fired ***', 0aH, 00H
 	ORG $+7
-$SG3294	DB	'Receive packet', 0aH, 00H
-$SG3299	DB	'RTL8192 MAC:', 00H
+$SG3332	DB	'Receive packet', 0aH, 00H
+$SG3337	DB	'RTL8192 MAC:', 00H
 	ORG $+3
-$SG3304	DB	':%x', 00H
-$SG3305	DB	0aH, 00H
+$SG3342	DB	':%x', 00H
+$SG3343	DB	0aH, 00H
 	ORG $+2
-$SG3321	DB	'Realtek RTL8139 Device not found', 0aH, 00H
+$SG3359	DB	'Realtek RTL8139 Device not found', 0aH, 00H
 	ORG $+6
-$SG3323	DB	'Realtek RTL8139 Device found, io_addr -> %x, mem_base ->'
+$SG3361	DB	'Realtek RTL8139 Device found, io_addr -> %x, mem_base ->'
 	DB	' %x', 0aH, 00H
 	ORG $+3
-$SG3328	DB	'PCI Command reg -> %x', 0aH, 00H
+$SG3366	DB	'PCI Command reg -> %x', 0aH, 00H
 	ORG $+1
-$SG3329	DB	'RTL8139 Bus Mastering enabled', 0aH, 00H
+$SG3367	DB	'RTL8139 Bus Mastering enabled', 0aH, 00H
 	ORG $+1
-$SG3336	DB	'RTL8139 Irq -> %d', 0aH, 00H
+$SG3374	DB	'RTL8139 Irq -> %d', 0aH, 00H
 CONST	ENDS
 _DATA	SEGMENT
 ?TSAD_Array@@3PAEA DB 020H				; TSAD_Array
@@ -254,7 +254,7 @@ $LN6:
 ; 43   : 
 ; 44   : 	printf ("RTL8192 MAC:");
 
-	lea	rcx, OFFSET FLAT:$SG3299
+	lea	rcx, OFFSET FLAT:$SG3337
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 45   : 	for (int i = 0; i < 6; i++){
@@ -275,7 +275,7 @@ $LN3@rtl_read_m:
 	mov	rcx, QWORD PTR ?rtl_net_dev@@3PEAUrtl8139_dev@@EA ; rtl_net_dev
 	movzx	eax, BYTE PTR [rcx+rax+12]
 	mov	edx, eax
-	lea	rcx, OFFSET FLAT:$SG3304
+	lea	rcx, OFFSET FLAT:$SG3342
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 47   : 	}
@@ -285,7 +285,7 @@ $LN1@rtl_read_m:
 
 ; 48   : 	printf ("\n");
 
-	lea	rcx, OFFSET FLAT:$SG3305
+	lea	rcx, OFFSET FLAT:$SG3343
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 49   : }
@@ -311,7 +311,7 @@ $LN4:
 
 ; 23   : 	printf ("***RTL8139: Interrupt fired ***\n");
 
-	lea	rcx, OFFSET FLAT:$SG3291
+	lea	rcx, OFFSET FLAT:$SG3329
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 24   : 	uint16_t status = x64_inportw(rtl_net_dev->io_base + 0x3e);
@@ -333,7 +333,7 @@ $LN4:
 
 ; 27   : 		printf ("Receive packet\n");
 
-	lea	rcx, OFFSET FLAT:$SG3294
+	lea	rcx, OFFSET FLAT:$SG3332
 	call	?printf@@YAXPEBDZZ			; printf
 $LN1@rtl8139_ha:
 
@@ -396,7 +396,7 @@ $LN6:
 
 ; 66   : 		printf ("Realtek RTL8139 Device not found\n");
 
-	lea	rcx, OFFSET FLAT:$SG3321
+	lea	rcx, OFFSET FLAT:$SG3359
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 67   : 		return;
@@ -441,7 +441,7 @@ $LN3@rtl8139_in:
 	mov	rcx, QWORD PTR ?rtl_net_dev@@3PEAUrtl8139_dev@@EA ; rtl_net_dev
 	mov	r8d, DWORD PTR [rcx+4]
 	mov	edx, eax
-	lea	rcx, OFFSET FLAT:$SG3323
+	lea	rcx, OFFSET FLAT:$SG3361
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 75   : 	
@@ -485,7 +485,7 @@ $LN3@rtl8139_in:
 ; 83   : 	printf ("PCI Command reg -> %x\n", pci_command_reg);
 
 	mov	edx, DWORD PTR pci_command_reg$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3328
+	lea	rcx, OFFSET FLAT:$SG3366
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 84   : 	pci_command_reg |= (1 << 2);
@@ -503,7 +503,7 @@ $LN3@rtl8139_in:
 
 ; 86   :     printf ("RTL8139 Bus Mastering enabled\n");
 
-	lea	rcx, OFFSET FLAT:$SG3329
+	lea	rcx, OFFSET FLAT:$SG3367
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 87   : 	
@@ -609,7 +609,7 @@ $LN1@rtl8139_in:
 ; 108  : 	printf ("RTL8139 Irq -> %d\n", irq_num);
 
 	mov	edx, DWORD PTR irq_num$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3336
+	lea	rcx, OFFSET FLAT:$SG3374
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 109  : 	

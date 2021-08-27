@@ -20,24 +20,24 @@ _BSS	SEGMENT
 ?a_card_net@@3PEAU_amd_net_@@EA DQ 01H DUP (?)		; a_card_net
 _BSS	ENDS
 CONST	SEGMENT
-$SG3280	DB	'AMD NIC Interrupt handler++', 0aH, 00H
+$SG3318	DB	'AMD NIC Interrupt handler++', 0aH, 00H
 	ORG $+3
-$SG3287	DB	'AMD PCNet card not found', 0aH, 00H
+$SG3328	DB	'AMD PCNet card not found', 0aH, 00H
 	ORG $+2
-$SG3323	DB	'%x', 00H
+$SG3364	DB	'%x', 00H
 	ORG $+1
-$SG3288	DB	'AMD Interrupt pin -> %x', 0aH, 00H
+$SG3329	DB	'AMD Interrupt pin -> %x', 0aH, 00H
 	ORG $+3
-$SG3324	DB	0aH, 00H
+$SG3365	DB	0aH, 00H
 	ORG $+2
-$SG3289	DB	'AMD PCNet card found -> device id -> %x, vendor id -> %x'
+$SG3330	DB	'AMD PCNet card found -> device id -> %x, vendor id -> %x'
 	DB	0aH, 00H
 	ORG $+6
-$SG3290	DB	'AMD Base Address -> %x, -> %x', 0aH, 00H
+$SG3331	DB	'AMD Base Address -> %x, -> %x', 0aH, 00H
 	ORG $+1
-$SG3291	DB	'AMD Interrupt line -> %d', 0aH, 00H
+$SG3332	DB	'AMD Interrupt line -> %d', 0aH, 00H
 	ORG $+6
-$SG3318	DB	'AMD Mac Code -> ', 00H
+$SG3359	DB	'AMD Mac Code -> ', 00H
 CONST	ENDS
 PUBLIC	?amd_pcnet_initialize@@YAXXZ			; amd_pcnet_initialize
 PUBLIC	?amd_write_bcr@@YAXGG@Z				; amd_write_bcr
@@ -48,7 +48,7 @@ EXTRN	x64_inportw:PROC
 EXTRN	x64_outportw:PROC
 EXTRN	?interrupt_end@@YAXI@Z:PROC			; interrupt_end
 EXTRN	?interrupt_set@@YAX_KP6AX0PEAX@ZE@Z:PROC	; interrupt_set
-EXTRN	?pci_find_device_class@@YA_NEEPEATpci_device_info@@@Z:PROC ; pci_find_device_class
+EXTRN	?pci_find_device_class@@YA_NEEPEATpci_device_info@@PEAH11@Z:PROC ; pci_find_device_class
 EXTRN	?pci_print_capabilities@@YAXPEATpci_device_info@@@Z:PROC ; pci_print_capabilities
 EXTRN	?pmmngr_alloc@@YAPEAXXZ:PROC			; pmmngr_alloc
 EXTRN	?memset@@YAXPEAXEI@Z:PROC			; memset
@@ -56,7 +56,7 @@ EXTRN	memcpy:PROC
 EXTRN	?printf@@YAXPEBDZZ:PROC				; printf
 pdata	SEGMENT
 $pdata$?amd_pcnet_initialize@@YAXXZ DD imagerel $LN13
-	DD	imagerel $LN13+1309
+	DD	imagerel $LN13+1342
 	DD	imagerel $unwind$?amd_pcnet_initialize@@YAXXZ
 $pdata$?amd_write_bcr@@YAXGG@Z DD imagerel $LN3
 	DD	imagerel $LN3+67
@@ -73,7 +73,7 @@ $pdata$?amd_interrupt_handler@@YAX_KPEAX@Z DD imagerel $LN3
 pdata	ENDS
 xdata	SEGMENT
 $unwind$?amd_pcnet_initialize@@YAXXZ DD 010401H
-	DD	0a204H
+	DD	0e204H
 $unwind$?amd_write_bcr@@YAXGG@Z DD 010e01H
 	DD	0420eH
 $unwind$?amd_write_csr@@YAXEG@Z DD 010d01H
@@ -99,7 +99,7 @@ $LN3:
 
 ; 40   : 	printf ("AMD NIC Interrupt handler++\n");
 
-	lea	rcx, OFFSET FLAT:$SG3280
+	lea	rcx, OFFSET FLAT:$SG3318
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 41   : 	
@@ -223,20 +223,23 @@ _TEXT	ENDS
 ; Function compile flags: /Odtp
 ; File e:\xeneva project\xeneva\aurora\aurora\drivers\net\amd_am79c973.cpp
 _TEXT	SEGMENT
-i$1 = 32
-temp$ = 36
-i$2 = 40
-i$3 = 44
-dev$ = 48
-init_block$ = 56
-rx_buffer$ = 64
-tx_buffer$ = 72
+i$1 = 48
+temp$ = 52
+dev$ = 56
+init_block$ = 64
+i$2 = 72
+i$3 = 76
+func_$ = 80
+rx_buffer$ = 88
+tx_buffer$ = 96
+dev_$ = 104
+bus$ = 108
 ?amd_pcnet_initialize@@YAXXZ PROC			; amd_pcnet_initialize
 
 ; 46   : void amd_pcnet_initialize () {
 
 $LN13:
-	sub	rsp, 88					; 00000058H
+	sub	rsp, 120				; 00000078H
 
 ; 47   : 	pci_device_info *dev = (pci_device_info*)pmmngr_alloc();
 
@@ -249,20 +252,28 @@ $LN13:
 	mov	QWORD PTR ?a_card_net@@3PEAU_amd_net_@@EA, rax ; a_card_net
 
 ; 49   : 	//x64_outportw (dev->device.commandReg, ~(1 << 10));
-; 50   : 	
-; 51   : 	if (!pci_find_device_class (0x02,0x00,dev)) {
+; 50   : 	int bus,dev_, func_ = 0;
 
+	mov	DWORD PTR func_$[rsp], 0
+
+; 51   : 	if (!pci_find_device_class (0x02,0x00,dev, &bus, &dev_, &func_)) {
+
+	lea	rax, QWORD PTR func_$[rsp]
+	mov	QWORD PTR [rsp+40], rax
+	lea	rax, QWORD PTR dev_$[rsp]
+	mov	QWORD PTR [rsp+32], rax
+	lea	r9, QWORD PTR bus$[rsp]
 	mov	r8, QWORD PTR dev$[rsp]
 	xor	edx, edx
 	mov	cl, 2
-	call	?pci_find_device_class@@YA_NEEPEATpci_device_info@@@Z ; pci_find_device_class
+	call	?pci_find_device_class@@YA_NEEPEATpci_device_info@@PEAH11@Z ; pci_find_device_class
 	movzx	eax, al
 	test	eax, eax
 	jne	SHORT $LN10@amd_pcnet_
 
 ; 52   : 		printf ("AMD PCNet card not found\n");
 
-	lea	rcx, OFFSET FLAT:$SG3287
+	lea	rcx, OFFSET FLAT:$SG3328
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 53   : 		return;
@@ -276,7 +287,7 @@ $LN10@amd_pcnet_:
 	mov	rax, QWORD PTR dev$[rsp]
 	movzx	eax, BYTE PTR [rax+61]
 	mov	edx, eax
-	lea	rcx, OFFSET FLAT:$SG3288
+	lea	rcx, OFFSET FLAT:$SG3329
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 56   : 	amd_io_base = dev->device.nonBridge.baseAddress[0];
@@ -295,7 +306,7 @@ $LN10@amd_pcnet_:
 	movzx	ecx, WORD PTR [rcx+2]
 	mov	r8d, eax
 	mov	edx, ecx
-	lea	rcx, OFFSET FLAT:$SG3289
+	lea	rcx, OFFSET FLAT:$SG3330
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 58   : 	printf ("AMD Base Address -> %x, -> %x\n", dev->device.nonBridge.baseAddress[0], dev->device.nonBridge.baseAddress[6]);
@@ -308,7 +319,7 @@ $LN10@amd_pcnet_:
 	mov	r8d, DWORD PTR [rdx+rax+16]
 	mov	rax, QWORD PTR dev$[rsp]
 	mov	edx, DWORD PTR [rax+rcx+16]
-	lea	rcx, OFFSET FLAT:$SG3290
+	lea	rcx, OFFSET FLAT:$SG3331
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 59   : 	printf ("AMD Interrupt line -> %d\n", dev->device.bridge.interruptLine);
@@ -316,7 +327,7 @@ $LN10@amd_pcnet_:
 	mov	rax, QWORD PTR dev$[rsp]
 	movzx	eax, BYTE PTR [rax+60]
 	mov	edx, eax
-	lea	rcx, OFFSET FLAT:$SG3291
+	lea	rcx, OFFSET FLAT:$SG3332
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 60   : 
@@ -666,7 +677,7 @@ $LN4@amd_pcnet_:
 ; 117  : 
 ; 118  : 	printf ("AMD Mac Code -> ");
 
-	lea	rcx, OFFSET FLAT:$SG3318
+	lea	rcx, OFFSET FLAT:$SG3359
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 119  : 	for (int i = 0; i < 6; i++)
@@ -687,14 +698,14 @@ $LN3@amd_pcnet_:
 	lea	rcx, OFFSET FLAT:?amd_mac@@3PAEA	; amd_mac
 	movzx	eax, BYTE PTR [rcx+rax]
 	mov	edx, eax
-	lea	rcx, OFFSET FLAT:$SG3323
+	lea	rcx, OFFSET FLAT:$SG3364
 	call	?printf@@YAXPEBDZZ			; printf
 	jmp	SHORT $LN2@amd_pcnet_
 $LN1@amd_pcnet_:
 
 ; 121  : 	printf ("\n");
 
-	lea	rcx, OFFSET FLAT:$SG3324
+	lea	rcx, OFFSET FLAT:$SG3365
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 122  : 
@@ -744,7 +755,7 @@ $LN11@amd_pcnet_:
 ; 130  : 	//pmmngr_free(init_block);
 ; 131  : }
 
-	add	rsp, 88					; 00000058H
+	add	rsp, 120				; 00000078H
 	ret	0
 ?amd_pcnet_initialize@@YAXXZ ENDP			; amd_pcnet_initialize
 _TEXT	ENDS

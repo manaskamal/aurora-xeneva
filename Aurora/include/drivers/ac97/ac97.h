@@ -126,6 +126,6 @@ typedef struct _ac97_ {
 }ac97_t;
 
 
-extern void ac97_initialize (unsigned char* buffer);
+extern void ac97_initialize ();
 extern void ac97_start (unsigned char* buffer);
 #endif

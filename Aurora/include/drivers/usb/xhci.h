@@ -113,7 +113,17 @@
 #define XHCI_COMPLETION_SUCCESS 1
 #define XHCI_COMPLETION_STALL 6
 
-#pragma pack(push)
+#pragma pack(push, 1)
+
+
+typedef volatile struct {
+	unsigned port_sc;
+	unsigned port_pmsc;
+	unsigned port_li;
+	unsigned res;
+} xhci_port_reg_set;
+
+
 typedef volatile struct {
 	unsigned caps_len_hciver;
 	unsigned hcsparams1;
@@ -124,7 +134,30 @@ typedef volatile struct {
 	unsigned runtime_offset;
 } xhci_cap_reg;
 
+
+typedef volatile struct {
+	unsigned cmd;
+	unsigned stat;
+	unsigned pagesz;
+	char res1[8];
+	unsigned dncntrl;
+	unsigned cmdrctrlLo;
+	unsigned cmdrctrlHi;
+	char res2[16];
+	unsigned dcbaapLo;
+	unsigned dcbaapHi;
+	unsigned config;
+	char res3[964];
+	xhci_port_reg_set port_reg_set[256];
+}xhci_op_regs;
 #pragma pack(pop)
+
+typedef struct _xhci_ {
+	size_t xhci_base_address;
+	size_t xhci_op_address;
+	size_t doorbell_address;
+	size_t runtime_address;
+}xhci;
 
 extern void xhci_initialize ();
 #endif

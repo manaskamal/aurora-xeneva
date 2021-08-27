@@ -5,166 +5,238 @@ include listing.inc
 INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
-PUBLIC	?xhci_base_address@@3_KA			; xhci_base_address
+PUBLIC	?xusb_dev@@3PEAU_xhci_@@EA			; xusb_dev
 _BSS	SEGMENT
-?xhci_base_address@@3_KA DQ 01H DUP (?)			; xhci_base_address
+?xusb_dev@@3PEAU_xhci_@@EA DQ 01H DUP (?)		; xusb_dev
 _BSS	ENDS
 CONST	SEGMENT
-$SG3242	DB	'USB xHCI: not found', 0aH, 00H
+$SG3324	DB	'[XHCI USB]: Interrupt fired', 0aH, 00H
 	ORG $+3
-$SG3243	DB	'USB xHCI: found', 0aH, 00H
-	ORG $+7
-$SG3244	DB	'XHCI Base Address -> %x', 0aH, 00H
-	ORG $+7
-$SG3247	DB	'XHCI Version -> %x', 0aH, 00H
-	ORG $+4
-$SG3252	DB	'[XHCI] has 64-bit addressing capability', 0aH, 00H
-	ORG $+7
-$SG3253	DB	'PCI Interrupt line -> %d', 0aH, 00H
+$SG3334	DB	'USB xHCI: not found', 0aH, 00H
+	ORG $+3
+$SG3338	DB	'USB: xHCI version - (%d.%d%d)', 0aH, 00H
 CONST	ENDS
 PUBLIC	?xhci_initialize@@YAXXZ				; xhci_initialize
-EXTRN	?pci_find_device_class@@YA_NEEPEATpci_device_info@@@Z:PROC ; pci_find_device_class
-EXTRN	?pci_print_capabilities@@YAXPEATpci_device_info@@@Z:PROC ; pci_print_capabilities
+PUBLIC	?xhci_handler@@YAX_KPEAX@Z			; xhci_handler
+EXTRN	x64_cli:PROC
+EXTRN	x64_sti:PROC
+EXTRN	?interrupt_set@@YAX_KP6AX0PEAX@ZE@Z:PROC	; interrupt_set
+EXTRN	?pci_find_device_class@@YA_NEEPEATpci_device_info@@PEAH11@Z:PROC ; pci_find_device_class
 EXTRN	?pmmngr_alloc@@YAPEAXXZ:PROC			; pmmngr_alloc
 EXTRN	?printf@@YAXPEBDZZ:PROC				; printf
 pdata	SEGMENT
 $pdata$?xhci_initialize@@YAXXZ DD imagerel $LN5
-	DD	imagerel $LN5+274
+	DD	imagerel $LN5+400
 	DD	imagerel $unwind$?xhci_initialize@@YAXXZ
+$pdata$?xhci_handler@@YAX_KPEAX@Z DD imagerel $LN3
+	DD	imagerel $LN3+31
+	DD	imagerel $unwind$?xhci_handler@@YAX_KPEAX@Z
 pdata	ENDS
 xdata	SEGMENT
 $unwind$?xhci_initialize@@YAXXZ DD 010401H
-	DD	08204H
+	DD	0a204H
+$unwind$?xhci_handler@@YAX_KPEAX@Z DD 010e01H
+	DD	0420eH
 xdata	ENDS
 ; Function compile flags: /Odtp
 ; File e:\xeneva project\xeneva\aurora\aurora\drivers\usb\xhci.cpp
 _TEXT	SEGMENT
-version_address$ = 32
-dev$ = 40
-hccparams1adr$ = 48
-hccparams1$ = 56
+v$ = 48
+p$ = 56
+?xhci_handler@@YAX_KPEAX@Z PROC				; xhci_handler
+
+; 20   : void xhci_handler (size_t v, void* p) {
+
+$LN3:
+	mov	QWORD PTR [rsp+16], rdx
+	mov	QWORD PTR [rsp+8], rcx
+	sub	rsp, 40					; 00000028H
+
+; 21   : 	printf ("[XHCI USB]: Interrupt fired\n");
+
+	lea	rcx, OFFSET FLAT:$SG3324
+	call	?printf@@YAXPEBDZZ			; printf
+
+; 22   : }
+
+	add	rsp, 40					; 00000028H
+	ret	0
+?xhci_handler@@YAX_KPEAX@Z ENDP				; xhci_handler
+_TEXT	ENDS
+; Function compile flags: /Odtp
+; File e:\xeneva project\xeneva\aurora\aurora\drivers\usb\xhci.cpp
+_TEXT	SEGMENT
+version$ = 48
+func_$ = 52
+dev_$ = 56
+bus$ = 60
+cap$ = 64
+dev$ = 72
 ?xhci_initialize@@YAXXZ PROC				; xhci_initialize
 
-; 20   : void xhci_initialize () {
+; 25   : void xhci_initialize () {
 
 $LN5:
-	sub	rsp, 72					; 00000048H
+	sub	rsp, 88					; 00000058H
 
-; 21   : 	pci_device_info *dev = (pci_device_info*)pmmngr_alloc();
+; 26   : 	pci_device_info *dev = (pci_device_info*)pmmngr_alloc();
 
 	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
 	mov	QWORD PTR dev$[rsp], rax
 
-; 22   : 	if (!pci_find_device_class(0x0C, 0x03, dev)) {
+; 27   : 	xusb_dev = (xhci*)pmmngr_alloc();
 
+	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
+	mov	QWORD PTR ?xusb_dev@@3PEAU_xhci_@@EA, rax ; xusb_dev
+
+; 28   : 
+; 29   : 	int bus, dev_, func_ = 0;
+
+	mov	DWORD PTR func_$[rsp], 0
+
+; 30   : 	if (!pci_find_device_class(0x0C, 0x03, dev, &bus, &dev_, &func_)) {
+
+	lea	rax, QWORD PTR func_$[rsp]
+	mov	QWORD PTR [rsp+40], rax
+	lea	rax, QWORD PTR dev_$[rsp]
+	mov	QWORD PTR [rsp+32], rax
+	lea	r9, QWORD PTR bus$[rsp]
 	mov	r8, QWORD PTR dev$[rsp]
 	mov	dl, 3
 	mov	cl, 12
-	call	?pci_find_device_class@@YA_NEEPEATpci_device_info@@@Z ; pci_find_device_class
+	call	?pci_find_device_class@@YA_NEEPEATpci_device_info@@PEAH11@Z ; pci_find_device_class
 	movzx	eax, al
 	test	eax, eax
 	jne	SHORT $LN2@xhci_initi
 
-; 23   : 		printf ("USB xHCI: not found\n");
+; 31   : 		printf ("USB xHCI: not found\n");
 
-	lea	rcx, OFFSET FLAT:$SG3242
+	lea	rcx, OFFSET FLAT:$SG3334
 	call	?printf@@YAXPEBDZZ			; printf
 
-; 24   : 		return;
+; 32   : 		return;
 
 	jmp	$LN3@xhci_initi
 $LN2@xhci_initi:
 
-; 25   : 	}
-; 26   : 
-; 27   : 	xhci_base_address = dev->device.nonBridge.baseAddress[0] + dev->device.nonBridge.baseAddress[1];
+; 33   : 	}
+; 34   : 	x64_cli ();
+
+	call	x64_cli
+
+; 35   : 	xusb_dev->xhci_base_address = (dev->device.nonBridge.baseAddress[0] & 0xFFFFFFF0) +((dev->device.nonBridge.baseAddress[1] & 0xFFFFFFFF) << 32);
 
 	mov	eax, 4
 	imul	rax, 0
+	mov	rcx, QWORD PTR dev$[rsp]
+	mov	eax, DWORD PTR [rcx+rax+16]
+	and	eax, -16				; fffffff0H
 	mov	ecx, 4
 	imul	rcx, 1
 	mov	rdx, QWORD PTR dev$[rsp]
-	mov	eax, DWORD PTR [rdx+rax+16]
-	mov	rdx, QWORD PTR dev$[rsp]
-	add	eax, DWORD PTR [rdx+rcx+16]
+	mov	ecx, DWORD PTR [rdx+rcx+16]
+	shl	ecx, 32					; 00000020H
+	add	eax, ecx
 	mov	eax, eax
-	mov	QWORD PTR ?xhci_base_address@@3_KA, rax	; xhci_base_address
+	mov	rcx, QWORD PTR ?xusb_dev@@3PEAU_xhci_@@EA ; xusb_dev
+	mov	QWORD PTR [rcx], rax
 
-; 28   : 	printf ("USB xHCI: found\n");
+; 36   : 
+; 37   : 	xhci_cap_reg *cap = (xhci_cap_reg*)xusb_dev->xhci_base_address;
 
-	lea	rcx, OFFSET FLAT:$SG3243
+	mov	rax, QWORD PTR ?xusb_dev@@3PEAU_xhci_@@EA ; xusb_dev
+	mov	rax, QWORD PTR [rax]
+	mov	QWORD PTR cap$[rsp], rax
+
+; 38   :     uint32_t version = cap->caps_len_hciver >> 16;
+
+	mov	rax, QWORD PTR cap$[rsp]
+	mov	eax, DWORD PTR [rax]
+	shr	eax, 16
+	mov	DWORD PTR version$[rsp], eax
+
+; 39   : 	printf ("USB: xHCI version - (%d.%d%d)\n",((version >> 8) & 0xFF), ((version>>4) & 0xF), (version & 0xF));
+
+	mov	eax, DWORD PTR version$[rsp]
+	and	eax, 15
+	mov	ecx, DWORD PTR version$[rsp]
+	shr	ecx, 4
+	and	ecx, 15
+	mov	edx, DWORD PTR version$[rsp]
+	shr	edx, 8
+	and	edx, 255				; 000000ffH
+	mov	r9d, eax
+	mov	r8d, ecx
+	lea	rcx, OFFSET FLAT:$SG3338
 	call	?printf@@YAXPEBDZZ			; printf
 
-; 29   : 	printf ("XHCI Base Address -> %x\n", xhci_base_address);
+; 40   : 
+; 41   : 	xusb_dev->xhci_op_address = ((size_t)cap + (cap->caps_len_hciver & 0xFF));
 
-	mov	rdx, QWORD PTR ?xhci_base_address@@3_KA	; xhci_base_address
-	lea	rcx, OFFSET FLAT:$SG3244
-	call	?printf@@YAXPEBDZZ			; printf
+	mov	rax, QWORD PTR cap$[rsp]
+	mov	eax, DWORD PTR [rax]
+	and	eax, 255				; 000000ffH
+	mov	eax, eax
+	mov	rcx, QWORD PTR cap$[rsp]
+	add	rcx, rax
+	mov	rax, rcx
+	mov	rcx, QWORD PTR ?xusb_dev@@3PEAU_xhci_@@EA ; xusb_dev
+	mov	QWORD PTR [rcx+8], rax
 
-; 30   : 
-; 31   : 	uint32_t version_address = xhci_base_address + XHCI_CAPREG_HCIVERSION;
+; 42   : 	xusb_dev->doorbell_address = ((size_t)cap + (cap->dboffset & ~0x3UL));
 
-	mov	rax, QWORD PTR ?xhci_base_address@@3_KA	; xhci_base_address
-	add	rax, 2
-	mov	DWORD PTR version_address$[rsp], eax
+	mov	rax, QWORD PTR cap$[rsp]
+	mov	eax, DWORD PTR [rax+20]
+	and	eax, -4					; fffffffcH
+	mov	eax, eax
+	mov	rcx, QWORD PTR cap$[rsp]
+	add	rcx, rax
+	mov	rax, rcx
+	mov	rcx, QWORD PTR ?xusb_dev@@3PEAU_xhci_@@EA ; xusb_dev
+	mov	QWORD PTR [rcx+16], rax
 
-; 32   : 	printf ("XHCI Version -> %x\n", ((uint64_t*)version_address)[0]);
+; 43   : 	xusb_dev->runtime_address = ((size_t)cap + (cap->runtime_offset & ~0x1FUL));
 
-	mov	eax, DWORD PTR version_address$[rsp]
-	mov	ecx, 8
-	imul	rcx, 0
-	mov	rdx, QWORD PTR [rax+rcx]
-	lea	rcx, OFFSET FLAT:$SG3247
-	call	?printf@@YAXPEBDZZ			; printf
+	mov	rax, QWORD PTR cap$[rsp]
+	mov	eax, DWORD PTR [rax+24]
+	and	eax, -32				; ffffffe0H
+	mov	eax, eax
+	mov	rcx, QWORD PTR cap$[rsp]
+	add	rcx, rax
+	mov	rax, rcx
+	mov	rcx, QWORD PTR ?xusb_dev@@3PEAU_xhci_@@EA ; xusb_dev
+	mov	QWORD PTR [rcx+24], rax
 
-; 33   : 
-; 34   : 	uint64_t hccparams1adr = xhci_base_address + XHCI_CAPREG_HCCPARAMS1;
-
-	mov	rax, QWORD PTR ?xhci_base_address@@3_KA	; xhci_base_address
-	add	rax, 16
-	mov	QWORD PTR hccparams1adr$[rsp], rax
-
-; 35   : 	uint64_t hccparams1 = ((unsigned long*)hccparams1adr)[0];
-
-	mov	eax, 4
-	imul	rax, 0
-	mov	rcx, QWORD PTR hccparams1adr$[rsp]
-	mov	eax, DWORD PTR [rcx+rax]
-	mov	QWORD PTR hccparams1$[rsp], rax
-
-; 36   : 	if (hccparams1 & 1) {
-
-	mov	rax, QWORD PTR hccparams1$[rsp]
-	and	rax, 1
-	test	rax, rax
-	je	SHORT $LN1@xhci_initi
-
-; 37   : 		printf ("[XHCI] has 64-bit addressing capability\n");
-
-	lea	rcx, OFFSET FLAT:$SG3252
-	call	?printf@@YAXPEBDZZ			; printf
-$LN1@xhci_initi:
-
-; 38   : 	}
-; 39   : 
-; 40   : 	printf ("PCI Interrupt line -> %d\n", dev->device.nonBridge.interruptLine);
+; 44   : 
+; 45   : 	if (dev->device.nonBridge.interruptLine != 255)
 
 	mov	rax, QWORD PTR dev$[rsp]
 	movzx	eax, BYTE PTR [rax+60]
-	mov	edx, eax
-	lea	rcx, OFFSET FLAT:$SG3253
-	call	?printf@@YAXPEBDZZ			; printf
+	cmp	eax, 255				; 000000ffH
+	je	SHORT $LN1@xhci_initi
 
-; 41   : 	pci_print_capabilities(dev);
+; 46   : 		interrupt_set (dev->device.nonBridge.interruptLine, xhci_handler, dev->device.nonBridge.interruptLine);
 
+	mov	rax, QWORD PTR dev$[rsp]
+	movzx	eax, BYTE PTR [rax+60]
 	mov	rcx, QWORD PTR dev$[rsp]
-	call	?pci_print_capabilities@@YAXPEATpci_device_info@@@Z ; pci_print_capabilities
+	movzx	r8d, BYTE PTR [rcx+60]
+	lea	rdx, OFFSET FLAT:?xhci_handler@@YAX_KPEAX@Z ; xhci_handler
+	mov	ecx, eax
+	call	?interrupt_set@@YAX_KP6AX0PEAX@ZE@Z	; interrupt_set
+$LN1@xhci_initi:
+
+; 47   : 
+; 48   : 
+; 49   : 	x64_sti();
+
+	call	x64_sti
 $LN3@xhci_initi:
 
-; 42   : 	//for(;;);
-; 43   : }
+; 50   : 	//for(;;);
+; 51   : }
 
-	add	rsp, 72					; 00000048H
+	add	rsp, 88					; 00000058H
 	ret	0
 ?xhci_initialize@@YAXXZ ENDP				; xhci_initialize
 _TEXT	ENDS

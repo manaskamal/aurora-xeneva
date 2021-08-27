@@ -14,30 +14,38 @@
 #include <stdio.h>
 #include <mm.h>
 
-size_t xhci_base_address = 0;
+xhci *xusb_dev;
+
+
+void xhci_handler (size_t v, void* p) {
+	printf ("[XHCI USB]: Interrupt fired\n");
+}
 
 
 void xhci_initialize () {
 	pci_device_info *dev = (pci_device_info*)pmmngr_alloc();
-	if (!pci_find_device_class(0x0C, 0x03, dev)) {
+	xusb_dev = (xhci*)pmmngr_alloc();
+
+	int bus, dev_, func_ = 0;
+	if (!pci_find_device_class(0x0C, 0x03, dev, &bus, &dev_, &func_)) {
 		printf ("USB xHCI: not found\n");
 		return;
 	}
+	x64_cli ();
+	xusb_dev->xhci_base_address = (dev->device.nonBridge.baseAddress[0] & 0xFFFFFFF0) +((dev->device.nonBridge.baseAddress[1] & 0xFFFFFFFF) << 32);
 
-	xhci_base_address = dev->device.nonBridge.baseAddress[0] + dev->device.nonBridge.baseAddress[1];
-	printf ("USB xHCI: found\n");
-	printf ("XHCI Base Address -> %x\n", xhci_base_address);
+	xhci_cap_reg *cap = (xhci_cap_reg*)xusb_dev->xhci_base_address;
+    uint32_t version = cap->caps_len_hciver >> 16;
+	printf ("USB: xHCI version - (%d.%d%d)\n",((version >> 8) & 0xFF), ((version>>4) & 0xF), (version & 0xF));
 
-	uint32_t version_address = xhci_base_address + XHCI_CAPREG_HCIVERSION;
-	printf ("XHCI Version -> %x\n", ((uint64_t*)version_address)[0]);
+	xusb_dev->xhci_op_address = ((size_t)cap + (cap->caps_len_hciver & 0xFF));
+	xusb_dev->doorbell_address = ((size_t)cap + (cap->dboffset & ~0x3UL));
+	xusb_dev->runtime_address = ((size_t)cap + (cap->runtime_offset & ~0x1FUL));
 
-	uint64_t hccparams1adr = xhci_base_address + XHCI_CAPREG_HCCPARAMS1;
-	uint64_t hccparams1 = ((unsigned long*)hccparams1adr)[0];
-	if (hccparams1 & 1) {
-		printf ("[XHCI] has 64-bit addressing capability\n");
-	}
+	if (dev->device.nonBridge.interruptLine != 255)
+		interrupt_set (dev->device.nonBridge.interruptLine, xhci_handler, dev->device.nonBridge.interruptLine);
 
-	printf ("PCI Interrupt line -> %d\n", dev->device.nonBridge.interruptLine);
-	pci_print_capabilities(dev);
+
+	x64_sti();
 	//for(;;);
 }

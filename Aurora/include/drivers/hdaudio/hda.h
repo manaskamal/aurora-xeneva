@@ -61,6 +61,12 @@
 #define SD0FIFOD    0x90   //ISD0 FIFO Size
 #define SD0FMT      0x92   //ISD0 Format
 
+#define INTCTL_CIE  0x40000000
+#define INTCTL_GIE  0x80000000
+#define INTCTL_SIE_MASK  0x3fffffff
+#define INTCTL_SIE_SHIFT 0
+
+
 /* GCTL bits */
 enum reg_gctl {
 	GCTL_RESET = (1 << 0),
@@ -170,20 +176,21 @@ enum sample_format {
 };
 
 
+#pragma pack (push, 1)
 typedef struct _hd_audio_ {
 	size_t mmio;
-	uint64_t* corb;
-	uint64_t* rirb;
+	uint32_t *corb;
+	uint64_t *rirb;
 	uint32_t rirb_entries;
 	uint32_t corb_entries;
 	bool immediate_use;
 }hd_audio;
+#pragma pack (pop)
 
 typedef struct _rirb_ {
 	uint32_t response;
 	uint32_t response_ex;
 }hda_rirb;
-
 
 extern void hda_initialize ();
 

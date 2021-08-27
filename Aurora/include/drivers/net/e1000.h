@@ -135,6 +135,11 @@ enum {
 
 #define E1000_NUM_RX_DESC 32
 #define E1000_NUM_TX_DESC 8
+
+#define E1000_ICR_TRANSMIT  (1<<0)
+#define E1000_ICR_LINK_CHANGE  (1<<2)
+#define E1000_ICR_RECEIVE   (1<<7)
+#define STATUS_LINK_UP (1<<31)
  
 #pragma pack(push)
 struct e1000_rx_desc {
@@ -175,4 +180,5 @@ typedef struct _e1000_dev_ {
 }e1000_dev;
 
 extern void e1000_initialize ();
+extern void e1000_send_packet (void* data, size_t size);
 #endif

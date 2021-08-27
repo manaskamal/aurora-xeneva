@@ -47,8 +47,8 @@ void amd_pcnet_initialize () {
 	pci_device_info *dev = (pci_device_info*)pmmngr_alloc();
 	a_card_net = (amd_net*)pmmngr_alloc();
 	//x64_outportw (dev->device.commandReg, ~(1 << 10));
-	
-	if (!pci_find_device_class (0x02,0x00,dev)) {
+	int bus,dev_, func_ = 0;
+	if (!pci_find_device_class (0x02,0x00,dev, &bus, &dev_, &func_)) {
 		printf ("AMD PCNet card not found\n");
 		return;
 	}
