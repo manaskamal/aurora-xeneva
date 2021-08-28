@@ -99,11 +99,11 @@ void _kmain (KERNEL_BOOT_INFO *info) {
 	kybrd_init();
 	initialize_acpi (info->acpi_table_pointer);
 	
-	
 	initialize_rtc();
 	e1000_initialize();
 	xhci_initialize ();  //<- needs completion	
 	hda_initialize();
+	for(;;);
 	//!initialize runtime drivers
 	ata_initialize();
 	initialize_vfs();

@@ -68,7 +68,7 @@ void setup_corb () {
 	uint64_t corb_base;
 	unsigned int corb_entries = 0;
 
-	reg = _aud_inw_(CORBSIZE);
+	reg = _aud_inb_(CORBSIZE);
 	/* Check CORB size capabilities and choose the largest size */
 	if (reg & (1 << 6)) {
 		_ihd_audio.corb_entries = 256;
@@ -80,7 +80,6 @@ void setup_corb () {
 		_ihd_audio.corb_entries = 2;
 		reg |= 0x0;
 	} else {
-		printf ("HD Audio: No Supported CORB Size!\n");
 		_ihd_audio.corb_entries = 256;
 		reg |= 0x2;
 	}
@@ -100,9 +99,9 @@ void setup_corb () {
 		;*/
 
 	/* Start DMA engine */
-	_aud_outl_(CORBCTL, 0x01);
+	_aud_outb_(CORBCTL, 0x1);
 	uint32_t corbctl = _aud_inb_(CORBCTL);
-	corbctl |= 0x02;
+	corbctl |= 0x2;
 	_aud_outb_ (CORBCTL, corbctl);
 }
 
@@ -146,10 +145,10 @@ void setup_rirb() {
 		;*/
 	_aud_outw_(RINTCNT, _ihd_audio.rirb_entries / 2);
 
-	_aud_outb_ (RIRBCTL,0x01);
+	_aud_outb_ (RIRBCTL,0x1);
 	/* Start DMA Engine */
 	uint32_t rirbctl = _aud_inb_ (RIRBCTL);
-	rirbctl |= 0x02;
+	rirbctl |= 0x2;
 	_aud_outb_ (RIRBCTL,rirbctl);
 
 }
@@ -164,26 +163,35 @@ static void corb_write (uint32_t verb) {
 		return;
 	}
 
+	
+
 	uint16_t wp = _aud_inw_(CORBWP) & 0xff;
-	uint16_t rp;
+	uint16_t rp = _aud_inw_(CORBRP) & 0xff;
+    corbwp = 0;
+	corbwp = (rp + 1);
+	corbwp %= _ihd_audio.corb_entries;
+	do {
+		rp = _aud_inw_(CORBRP) & 0xff;
+	}while (rp == corbwp);
 
 	/*Wait until there's a free entry in the CORB */
 	/* Write to CORB */	
 
-	corbwp++;
-	corbwp %= _ihd_audio.corb_entries;
 	_ihd_audio.corb[corbwp] = verb;	
     _aud_outw_(CORBWP, corbwp);
-	
+
 }
 
 static void rirb_read (uint64_t *response) {
-
 	uint16_t wp = _aud_inb_ (RIRBWP);
 	uint16_t rp = rirbrp;
 	uint16_t old_rp = rp;
 	/*Wait for an unread entry in the RIRB */
 	//uint64_t resp;
+	while (rirbrp == wp) {
+		wp = _aud_inb_(RIRBWP);
+	}
+
 	while (rp != wp) {	
 		rp++;
 		rp %= _ihd_audio.rirb_entries;
@@ -203,6 +211,12 @@ static uint32_t codec_query (int codec, int nid, uint32_t payload) {
 
 	//printf ("RIRB Status -> %d\n", (_aud_inl_(RIRBSTS >> 0)) & 0xff);
 	corb_write(verb);
+	uint8_t rirb_status;
+	do {
+		rirb_status = _aud_inb_(RIRBSTS);
+	}while ((rirb_status & 1) == 0);
+
+
 	rirb_read(&response);
 	//_aud_outb_(RIRBSTS, 0);
 	return response & 0xffffffff;
@@ -219,7 +233,6 @@ void widget_init (int codec, int nid) {
 	uint32_t eapd_btl;
 
 	widget_cap = codec_query (codec, nid, VERB_GET_PARAMETER | PARAM_AUDIO_WID_CAP);
-
 	if (widget_cap == 0) {
 		//printf ("Widget capabilities 0\n");
 		return;
@@ -312,20 +325,15 @@ static void codec_enumerate_widgets(int codec) {
 	num_fg = (param >> 0) & 0xff;
 	fg_start = (param >> 16) & 0xff;
 
-	printf ("Param Returned -> %x\n", param);
+
 	printf ("[HD_Audio]: Num Function Group -> %d, fg_start -> %d\n", num_fg, fg_start);
 
 	uint32_t vendor_id = codec_query (codec, 0, VERB_GET_PARAMETER | PARAM_VENDOR_ID);
 	printf ("Widget device id -> %x, vendor id -> %x\n", vendor_id , (vendor_id >> 16 ));
-
 	
 	uint32_t rev_id = codec_query (codec, 0, VERB_GET_PARAMETER | PARAM_REV_ID);
 	printf ("Widget version -> %d.%d, r0%d\n", rev_id>>20, rev_id>>16, rev_id>>8);
 
-	if (num_fg == 0) {
-		num_fg = 1;
-		fg_start = 1;
-	}
 	
 	for (i = 0; i < num_fg; i++) {
 		param = codec_query (codec, fg_start + i, 
@@ -337,9 +345,8 @@ static void codec_enumerate_widgets(int codec) {
 
 		param = codec_query (codec, fg_start + i, VERB_GET_PARAMETER | PARAM_FN_GROUP_TYPE);
 		param &= 0x7f;
-		if (param == FN_GROUP_AUDIO) 
-			printf ("Audio Function Group\n");
-			//continue;
+		if (param != FN_GROUP_AUDIO) 
+			continue;
 
 		for (int i = 0; i < num_widgets; i++) {
 			widget_init (codec, widgets_start + i);
@@ -356,8 +363,8 @@ static void codec_enumerate_widgets(int codec) {
 
 //! Reset the HD Audio Controller
 void hda_reset() {
-	_aud_outl_(CORBCTL, 0);
-	_aud_outl_(RIRBCTL, 0);
+	_aud_outb_(CORBCTL, 0);
+	_aud_outb_(RIRBCTL, 0);
 	//_aud_outw_(RIRBWP, 0);
 
 	_aud_outl_ (DPIBLBASE, 0x0);
@@ -442,8 +449,8 @@ void hda_initialize () {
 	}
 	
 	hda_reset();
+    
    
-
 	uint16_t statests = _aud_inw_ (STATESTS);
 	for (int i = 0; i < 15; i++) {
 		if (statests & (1 << i)){
@@ -452,6 +459,5 @@ void hda_initialize () {
 	}
 
     x64_sti();
-   
   
 }

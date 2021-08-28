@@ -8,13 +8,13 @@ INCLUDELIB OLDNAMES
 CONST	SEGMENT
 $SG7175	DB	'Timer fired', 0aH, 00H
 	ORG $+3
-$SG7188	DB	'shell', 00H
+$SG7191	DB	'shell', 00H
 	ORG $+2
-$SG7189	DB	'xshell.exe', 00H
+$SG7192	DB	'xshell.exe', 00H
 	ORG $+1
-$SG7190	DB	'dwm3', 00H
+$SG7193	DB	'dwm3', 00H
 	ORG $+7
-$SG7191	DB	'dwm3.exe', 00H
+$SG7194	DB	'dwm3.exe', 00H
 CONST	ENDS
 PUBLIC	?timer_callback@@YAX_KPEAX@Z			; timer_callback
 PUBLIC	?_kmain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z		; _kmain
@@ -45,8 +45,8 @@ pdata	SEGMENT
 $pdata$?timer_callback@@YAX_KPEAX@Z DD imagerel $LN3
 	DD	imagerel $LN3+41
 	DD	imagerel $unwind$?timer_callback@@YAX_KPEAX@Z
-$pdata$?_kmain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z DD imagerel $LN5
-	DD	imagerel $LN5+196
+$pdata$?_kmain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z DD imagerel $LN7
+	DD	imagerel $LN7+198
 	DD	imagerel $unwind$?_kmain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z
 pdata	ENDS
 xdata	SEGMENT
@@ -63,7 +63,7 @@ info$ = 48
 
 ; 93   : void _kmain (KERNEL_BOOT_INFO *info) {
 
-$LN5:
+$LN7:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 40					; 00000028H
 
@@ -100,22 +100,26 @@ $LN5:
 	call	?initialize_acpi@@YAXPEAX@Z		; initialize_acpi
 
 ; 101  : 	
-; 102  : 	
-; 103  : 	initialize_rtc();
+; 102  : 	initialize_rtc();
 
 	call	?initialize_rtc@@YAXXZ			; initialize_rtc
 
-; 104  : 	e1000_initialize();
+; 103  : 	e1000_initialize();
 
 	call	?e1000_initialize@@YAXXZ		; e1000_initialize
 
-; 105  : 	xhci_initialize ();  //<- needs completion	
+; 104  : 	xhci_initialize ();  //<- needs completion	
 
 	call	?xhci_initialize@@YAXXZ			; xhci_initialize
 
-; 106  : 	hda_initialize();
+; 105  : 	hda_initialize();
 
 	call	?hda_initialize@@YAXXZ			; hda_initialize
+$LN4@kmain:
+
+; 106  : 	for(;;);
+
+	jmp	SHORT $LN4@kmain
 
 ; 107  : 	//!initialize runtime drivers
 ; 108  : 	ata_initialize();
@@ -164,15 +168,15 @@ $LN5:
 ; 125  : 	create_process ("xshell.exe","shell",1);
 
 	mov	r8b, 1
-	lea	rdx, OFFSET FLAT:$SG7188
-	lea	rcx, OFFSET FLAT:$SG7189
+	lea	rdx, OFFSET FLAT:$SG7191
+	lea	rcx, OFFSET FLAT:$SG7192
 	call	?create_process@@YAXPEBDPEADE@Z		; create_process
 
 ; 126  : 	create_process ("dwm3.exe", "dwm3", 1);
 
 	mov	r8b, 1
-	lea	rdx, OFFSET FLAT:$SG7190
-	lea	rcx, OFFSET FLAT:$SG7191
+	lea	rdx, OFFSET FLAT:$SG7193
+	lea	rcx, OFFSET FLAT:$SG7194
 	call	?create_process@@YAXPEBDPEADE@Z		; create_process
 
 ; 127  : 	scheduler_start();

@@ -20,50 +20,44 @@ _BSS	ENDS
 CONST	SEGMENT
 $SG3403	DB	'HD-Audio Interrupt fired++', 0aH, 00H
 	ORG $+4
-$SG3415	DB	'HD Audio: No Supported CORB Size!', 0aH, 00H
-	ORG $+5
-$SG3429	DB	'HD Audio: No supported RIRB size !!', 0aH, 00H
+$SG3428	DB	'HD Audio: No supported RIRB size !!', 0aH, 00H
 	ORG $+3
-$SG3471	DB	'output', 00H
+$SG3480	DB	'output', 00H
 	ORG $+1
-$SG3473	DB	'input', 00H
+$SG3482	DB	'input', 00H
 	ORG $+2
-$SG3475	DB	'mixer', 00H
+$SG3484	DB	'mixer', 00H
 	ORG $+2
-$SG3477	DB	'selector', 00H
+$SG3486	DB	'selector', 00H
 	ORG $+3
-$SG3481	DB	'power', 00H
+$SG3490	DB	'power', 00H
 	ORG $+6
-$SG3479	DB	'pin complex', 00H
+$SG3488	DB	'pin complex', 00H
 	ORG $+4
-$SG3483	DB	'volume knob', 00H
+$SG3492	DB	'volume knob', 00H
 	ORG $+4
-$SG3485	DB	'beep generator', 00H
+$SG3494	DB	'beep generator', 00H
 	ORG $+1
-$SG3487	DB	'vendor defined', 00H
+$SG3496	DB	'vendor defined', 00H
 	ORG $+1
-$SG3489	DB	'unknown', 00H
-$SG3490	DB	'[HD-Audio]: widget %s at node %d; ', 0aH, 00H
+$SG3498	DB	'unknown', 00H
+$SG3499	DB	'[HD-Audio]: widget %s at node %d; ', 0aH, 00H
 	ORG $+4
-$SG3513	DB	'Param Returned -> %x', 0aH, 00H
-	ORG $+2
-$SG3514	DB	'[HD_Audio]: Num Function Group -> %d, fg_start -> %d', 0aH
+$SG3522	DB	'[HD_Audio]: Num Function Group -> %d, fg_start -> %d', 0aH
 	DB	00H
 	ORG $+2
-$SG3516	DB	'Widget device id -> %x, vendor id -> %x', 0aH, 00H
+$SG3524	DB	'Widget device id -> %x, vendor id -> %x', 0aH, 00H
 	ORG $+7
-$SG3518	DB	'Widget version -> %d.%d, r0%d', 0aH, 00H
+$SG3526	DB	'Widget version -> %d.%d, r0%d', 0aH, 00H
 	ORG $+1
-$SG3524	DB	'Audio Function Group', 0aH, 00H
+$SG3548	DB	'Unable to put HD-Audio in reset mode', 0aH, 00H
 	ORG $+2
-$SG3542	DB	'Unable to put HD-Audio in reset mode', 0aH, 00H
-	ORG $+2
-$SG3557	DB	'HD-Audio device stuck in reset', 0aH, 00H
-$SG3570	DB	'No HD-Audio was found', 0aH, 00H
+$SG3563	DB	'HD-Audio device stuck in reset', 0aH, 00H
+$SG3576	DB	'No HD-Audio was found', 0aH, 00H
 	ORG $+1
-$SG3571	DB	'HD Audio found vendor -> %x, device -> %x', 0aH, 00H
+$SG3577	DB	'HD Audio found vendor -> %x, device -> %x', 0aH, 00H
 	ORG $+5
-$SG3576	DB	'HD-Audio 64-OK', 0aH, 00H
+$SG3582	DB	'HD-Audio 64-OK', 0aH, 00H
 CONST	ENDS
 PUBLIC	?hda_initialize@@YAXXZ				; hda_initialize
 PUBLIC	?_aud_outl_@@YAXHI@Z				; _aud_outl_
@@ -112,25 +106,25 @@ $pdata$?hda_handler@@YAX_KPEAX@Z DD imagerel $LN3
 	DD	imagerel $LN3+38
 	DD	imagerel $unwind$?hda_handler@@YAX_KPEAX@Z
 $pdata$?setup_corb@@YAXXZ DD imagerel $LN9
-	DD	imagerel $LN9+332
+	DD	imagerel $LN9+317
 	DD	imagerel $unwind$?setup_corb@@YAXXZ
 $pdata$?setup_rirb@@YAXXZ DD imagerel $LN9
 	DD	imagerel $LN9+329
 	DD	imagerel $unwind$?setup_rirb@@YAXXZ
 $pdata$?corb_write@@YAXI@Z DD imagerel ?corb_write@@YAXI@Z
-	DD	imagerel ?corb_write@@YAXI@Z+157
+	DD	imagerel ?corb_write@@YAXI@Z+228
 	DD	imagerel $unwind$?corb_write@@YAXI@Z
 $pdata$?rirb_read@@YAXPEA_K@Z DD imagerel ?rirb_read@@YAXPEA_K@Z
-	DD	imagerel ?rirb_read@@YAXPEA_K@Z+141
+	DD	imagerel ?rirb_read@@YAXPEA_K@Z+177
 	DD	imagerel $unwind$?rirb_read@@YAXPEA_K@Z
 $pdata$?codec_query@@YAIHHI@Z DD imagerel ?codec_query@@YAIHHI@Z
-	DD	imagerel ?codec_query@@YAIHHI@Z+106
+	DD	imagerel ?codec_query@@YAIHHI@Z+132
 	DD	imagerel $unwind$?codec_query@@YAIHHI@Z
 $pdata$?widget_init@@YAXHH@Z DD imagerel $LN24
 	DD	imagerel $LN24+688
 	DD	imagerel $unwind$?widget_init@@YAXHH@Z
 $pdata$?codec_enumerate_widgets@@YAXH@Z DD imagerel ?codec_enumerate_widgets@@YAXH@Z
-	DD	imagerel ?codec_enumerate_widgets@@YAXH@Z+449
+	DD	imagerel ?codec_enumerate_widgets@@YAXH@Z+403
 	DD	imagerel $unwind$?codec_enumerate_widgets@@YAXH@Z
 $pdata$?hda_reset@@YAXXZ DD imagerel $LN26
 	DD	imagerel $LN26+435
@@ -162,7 +156,7 @@ $unwind$?corb_write@@YAXI@Z DD 010801H
 $unwind$?rirb_read@@YAXPEA_K@Z DD 010901H
 	DD	06209H
 $unwind$?codec_query@@YAIHHI@Z DD 011101H
-	DD	06211H
+	DD	08211H
 $unwind$?widget_init@@YAXHH@Z DD 010c01H
 	DD	0a20cH
 $unwind$?codec_enumerate_widgets@@YAXH@Z DD 010801H
@@ -182,46 +176,46 @@ count$ = 52
 i$5 = 56
 ?hda_reset@@YAXXZ PROC					; hda_reset
 
-; 358  : void hda_reset() {
+; 365  : void hda_reset() {
 
 $LN26:
 	sub	rsp, 72					; 00000048H
 
-; 359  : 	_aud_outl_(CORBCTL, 0);
+; 366  : 	_aud_outb_(CORBCTL, 0);
 
 	xor	edx, edx
 	mov	ecx, 76					; 0000004cH
-	call	?_aud_outl_@@YAXHI@Z			; _aud_outl_
+	call	?_aud_outb_@@YAXHE@Z			; _aud_outb_
 
-; 360  : 	_aud_outl_(RIRBCTL, 0);
+; 367  : 	_aud_outb_(RIRBCTL, 0);
 
 	xor	edx, edx
 	mov	ecx, 92					; 0000005cH
-	call	?_aud_outl_@@YAXHI@Z			; _aud_outl_
+	call	?_aud_outb_@@YAXHE@Z			; _aud_outb_
 
-; 361  : 	//_aud_outw_(RIRBWP, 0);
-; 362  : 
-; 363  : 	_aud_outl_ (DPIBLBASE, 0x0);
+; 368  : 	//_aud_outw_(RIRBWP, 0);
+; 369  : 
+; 370  : 	_aud_outl_ (DPIBLBASE, 0x0);
 
 	xor	edx, edx
 	mov	ecx, 112				; 00000070H
 	call	?_aud_outl_@@YAXHI@Z			; _aud_outl_
 
-; 364  : 	_aud_outl_ (DPIBUBASE, 0x0);
+; 371  : 	_aud_outl_ (DPIBUBASE, 0x0);
 
 	xor	edx, edx
 	mov	ecx, 116				; 00000074H
 	call	?_aud_outl_@@YAXHI@Z			; _aud_outl_
 
-; 365  : 
-; 366  : 	_aud_outl_(GCTL, 0);
+; 372  : 
+; 373  : 	_aud_outl_(GCTL, 0);
 
 	xor	edx, edx
 	mov	ecx, 8
 	call	?_aud_outl_@@YAXHI@Z			; _aud_outl_
 
-; 367  : 	uint32_t gctl;
-; 368  : 	for(int i = 0; i < 1000; i++){
+; 374  : 	uint32_t gctl;
+; 375  : 	for(int i = 0; i < 1000; i++){
 
 	mov	DWORD PTR i$1[rsp], 0
 	jmp	SHORT $LN23@hda_reset
@@ -233,25 +227,25 @@ $LN23@hda_reset:
 	cmp	DWORD PTR i$1[rsp], 1000		; 000003e8H
 	jge	SHORT $LN21@hda_reset
 
-; 369  : 		gctl = _aud_inl_(GCTL);
+; 376  : 		gctl = _aud_inl_(GCTL);
 
 	mov	ecx, 8
 	call	?_aud_inl_@@YAIH@Z			; _aud_inl_
 	mov	DWORD PTR gctl$[rsp], eax
 
-; 370  : 		if (!(gctl & 0x00000001))
+; 377  : 		if (!(gctl & 0x00000001))
 
 	mov	eax, DWORD PTR gctl$[rsp]
 	and	eax, 1
 	test	eax, eax
 	jne	SHORT $LN20@hda_reset
 
-; 371  : 			break;
+; 378  : 			break;
 
 	jmp	SHORT $LN21@hda_reset
 $LN20@hda_reset:
 
-; 372  : 		for (int j = 0; j < 10; j++)
+; 379  : 		for (int j = 0; j < 10; j++)
 
 	mov	DWORD PTR j$2[rsp], 0
 	jmp	SHORT $LN19@hda_reset
@@ -263,37 +257,37 @@ $LN19@hda_reset:
 	cmp	DWORD PTR j$2[rsp], 10
 	jge	SHORT $LN17@hda_reset
 
-; 373  : 			;		
+; 380  : 			;		
 
 	jmp	SHORT $LN18@hda_reset
 $LN17@hda_reset:
 
-; 374  : 	}
+; 381  : 	}
 
 	jmp	SHORT $LN22@hda_reset
 $LN21@hda_reset:
 
-; 375  : 
-; 376  : 	if (gctl & 0x00000001) {
+; 382  : 
+; 383  : 	if (gctl & 0x00000001) {
 
 	mov	eax, DWORD PTR gctl$[rsp]
 	and	eax, 1
 	test	eax, eax
 	je	SHORT $LN16@hda_reset
 
-; 377  : 		printf ("Unable to put HD-Audio in reset mode\n");
+; 384  : 		printf ("Unable to put HD-Audio in reset mode\n");
 
-	lea	rcx, OFFSET FLAT:$SG3542
+	lea	rcx, OFFSET FLAT:$SG3548
 	call	?printf@@YAXPEBDZZ			; printf
 
-; 378  : 		return;
+; 385  : 		return;
 
 	jmp	$LN24@hda_reset
 $LN16@hda_reset:
 
-; 379  : 	}
-; 380  : 
-; 381  : 	for (int i = 0; i < 1000; i++)
+; 386  : 	}
+; 387  : 
+; 388  : 	for (int i = 0; i < 1000; i++)
 
 	mov	DWORD PTR i$3[rsp], 0
 	jmp	SHORT $LN15@hda_reset
@@ -305,19 +299,19 @@ $LN15@hda_reset:
 	cmp	DWORD PTR i$3[rsp], 1000		; 000003e8H
 	jge	SHORT $LN13@hda_reset
 
-; 382  : 		;
+; 389  : 		;
 
 	jmp	SHORT $LN14@hda_reset
 $LN13@hda_reset:
 
-; 383  : 
-; 384  : 	gctl = _aud_inl_(GCTL);
+; 390  : 
+; 391  : 	gctl = _aud_inl_(GCTL);
 
 	mov	ecx, 8
 	call	?_aud_inl_@@YAIH@Z			; _aud_inl_
 	mov	DWORD PTR gctl$[rsp], eax
 
-; 385  : 	_aud_outl_ (GCTL, gctl | 0x00000001);
+; 392  : 	_aud_outl_ (GCTL, gctl | 0x00000001);
 
 	mov	eax, DWORD PTR gctl$[rsp]
 	or	eax, 1
@@ -325,32 +319,32 @@ $LN13@hda_reset:
 	mov	ecx, 8
 	call	?_aud_outl_@@YAXHI@Z			; _aud_outl_
 
-; 386  : 	
-; 387  : 	int count = 10000;
+; 393  : 	
+; 394  : 	int count = 10000;
 
 	mov	DWORD PTR count$[rsp], 10000		; 00002710H
 $LN12@hda_reset:
 
-; 388  : 	do {
-; 389  : 		gctl = _aud_inl_(GCTL);
+; 395  : 	do {
+; 396  : 		gctl = _aud_inl_(GCTL);
 
 	mov	ecx, 8
 	call	?_aud_inl_@@YAIH@Z			; _aud_inl_
 	mov	DWORD PTR gctl$[rsp], eax
 
-; 390  : 		if (gctl & 0x00000001)
+; 397  : 		if (gctl & 0x00000001)
 
 	mov	eax, DWORD PTR gctl$[rsp]
 	and	eax, 1
 	test	eax, eax
 	je	SHORT $LN9@hda_reset
 
-; 391  : 			break;
+; 398  : 			break;
 
 	jmp	SHORT $LN10@hda_reset
 $LN9@hda_reset:
 
-; 392  : 		for (int i = 0; i < 10; i++)
+; 399  : 		for (int i = 0; i < 10; i++)
 
 	mov	DWORD PTR i$4[rsp], 0
 	jmp	SHORT $LN8@hda_reset
@@ -362,12 +356,12 @@ $LN8@hda_reset:
 	cmp	DWORD PTR i$4[rsp], 10
 	jge	SHORT $LN6@hda_reset
 
-; 393  : 			;
+; 400  : 			;
 
 	jmp	SHORT $LN7@hda_reset
 $LN6@hda_reset:
 
-; 394  : 	}while (--count);
+; 401  : 	}while (--count);
 
 	mov	eax, DWORD PTR count$[rsp]
 	dec	eax
@@ -376,48 +370,48 @@ $LN6@hda_reset:
 	jne	SHORT $LN12@hda_reset
 $LN10@hda_reset:
 
-; 395  : 
-; 396  : 	if (!(gctl & 0x00000001)){
+; 402  : 
+; 403  : 	if (!(gctl & 0x00000001)){
 
 	mov	eax, DWORD PTR gctl$[rsp]
 	and	eax, 1
 	test	eax, eax
 	jne	SHORT $LN5@hda_reset
 
-; 397  : 		printf ("HD-Audio device stuck in reset\n");
+; 404  : 		printf ("HD-Audio device stuck in reset\n");
 
-	lea	rcx, OFFSET FLAT:$SG3557
+	lea	rcx, OFFSET FLAT:$SG3563
 	call	?printf@@YAXPEBDZZ			; printf
 
-; 398  : 		return;
+; 405  : 		return;
 
 	jmp	SHORT $LN24@hda_reset
 $LN5@hda_reset:
 
-; 399  : 	}
-; 400  : 
-; 401  : 	
-; 402  : 	if((_aud_inw_(ICIS) & 1)==0){
+; 406  : 	}
+; 407  : 
+; 408  : 	
+; 409  : 	if((_aud_inw_(ICIS) & 1)==0){
 
 	mov	ecx, 104				; 00000068H
 	call	?_aud_inw_@@YAGH@Z			; _aud_inw_
 	movzx	eax, ax
 	and	eax, 1
 
-; 403  : 		//printf ("ICIS ICB bit is clear\n");
-; 404  : 	}
-; 405  : 	
-; 406  : 	_ihd_audio.immediate_use = false;
+; 410  : 		//printf ("ICIS ICB bit is clear\n");
+; 411  : 	}
+; 412  : 	
+; 413  : 	_ihd_audio.immediate_use = false;
 
 	mov	BYTE PTR ?_ihd_audio@@3U_hd_audio_@@A+32, 0
 
-; 407  :     _aud_outw_(WAKEEN, 0x01);
+; 414  :     _aud_outw_(WAKEEN, 0x01);
 
 	mov	dx, 1
 	mov	ecx, 12
 	call	?_aud_outw_@@YAXHG@Z			; _aud_outw_
 
-; 408  : 	for (int i = 0; i < 10000; i++)
+; 415  : 	for (int i = 0; i < 10000; i++)
 
 	mov	DWORD PTR i$5[rsp], 0
 	jmp	SHORT $LN3@hda_reset
@@ -429,23 +423,23 @@ $LN3@hda_reset:
 	cmp	DWORD PTR i$5[rsp], 10000		; 00002710H
 	jge	SHORT $LN1@hda_reset
 
-; 409  : 		;
+; 416  : 		;
 
 	jmp	SHORT $LN2@hda_reset
 $LN1@hda_reset:
 
-; 410  : 
-; 411  : 	
-; 412  : 	setup_corb ();
+; 417  : 
+; 418  : 	
+; 419  : 	setup_corb ();
 
 	call	?setup_corb@@YAXXZ			; setup_corb
 
-; 413  : 	setup_rirb ();
+; 420  : 	setup_rirb ();
 
 	call	?setup_rirb@@YAXXZ			; setup_rirb
 $LN24@hda_reset:
 
-; 414  : }
+; 421  : }
 
 	add	rsp, 72					; 00000048H
 	ret	0
@@ -458,27 +452,27 @@ param$ = 32
 i$ = 36
 i$1 = 40
 fg_start$ = 44
-num_fg$ = 48
-rev_id$ = 52
+rev_id$ = 48
+num_fg$ = 52
 vendor_id$ = 56
 num_widgets$ = 60
 widgets_start$ = 64
 codec$ = 96
 ?codec_enumerate_widgets@@YAXH@Z PROC			; codec_enumerate_widgets
 
-; 302  : static void codec_enumerate_widgets(int codec) {
+; 315  : static void codec_enumerate_widgets(int codec) {
 
 	mov	DWORD PTR [rsp+8], ecx
 	sub	rsp, 88					; 00000058H
 
-; 303  : 
-; 304  : 	uint32_t param;
-; 305  : 	int num_fg, num_widgets;
-; 306  : 	int fg_start, widgets_start;
-; 307  : 	int i, j;
-; 308  : 
-; 309  : 
-; 310  : 	param = codec_query (codec, 0, VERB_GET_PARAMETER | PARAM_NODE_COUNT);
+; 316  : 
+; 317  : 	uint32_t param;
+; 318  : 	int num_fg, num_widgets;
+; 319  : 	int fg_start, widgets_start;
+; 320  : 	int i, j;
+; 321  : 
+; 322  : 
+; 323  : 	param = codec_query (codec, 0, VERB_GET_PARAMETER | PARAM_NODE_COUNT);
 
 	mov	r8d, 983044				; 000f0004H
 	xor	edx, edx
@@ -486,36 +480,31 @@ codec$ = 96
 	call	?codec_query@@YAIHHI@Z			; codec_query
 	mov	DWORD PTR param$[rsp], eax
 
-; 311  : 
-; 312  : 	num_fg = (param >> 0) & 0xff;
+; 324  : 
+; 325  : 	num_fg = (param >> 0) & 0xff;
 
 	mov	eax, DWORD PTR param$[rsp]
 	and	eax, 255				; 000000ffH
 	mov	DWORD PTR num_fg$[rsp], eax
 
-; 313  : 	fg_start = (param >> 16) & 0xff;
+; 326  : 	fg_start = (param >> 16) & 0xff;
 
 	mov	eax, DWORD PTR param$[rsp]
 	shr	eax, 16
 	and	eax, 255				; 000000ffH
 	mov	DWORD PTR fg_start$[rsp], eax
 
-; 314  : 
-; 315  : 	printf ("Param Returned -> %x\n", param);
-
-	mov	edx, DWORD PTR param$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3513
-	call	?printf@@YAXPEBDZZ			; printf
-
-; 316  : 	printf ("[HD_Audio]: Num Function Group -> %d, fg_start -> %d\n", num_fg, fg_start);
+; 327  : 
+; 328  : 
+; 329  : 	printf ("[HD_Audio]: Num Function Group -> %d, fg_start -> %d\n", num_fg, fg_start);
 
 	mov	r8d, DWORD PTR fg_start$[rsp]
 	mov	edx, DWORD PTR num_fg$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3514
+	lea	rcx, OFFSET FLAT:$SG3522
 	call	?printf@@YAXPEBDZZ			; printf
 
-; 317  : 
-; 318  : 	uint32_t vendor_id = codec_query (codec, 0, VERB_GET_PARAMETER | PARAM_VENDOR_ID);
+; 330  : 
+; 331  : 	uint32_t vendor_id = codec_query (codec, 0, VERB_GET_PARAMETER | PARAM_VENDOR_ID);
 
 	mov	r8d, 983040				; 000f0000H
 	xor	edx, edx
@@ -523,18 +512,17 @@ codec$ = 96
 	call	?codec_query@@YAIHHI@Z			; codec_query
 	mov	DWORD PTR vendor_id$[rsp], eax
 
-; 319  : 	printf ("Widget device id -> %x, vendor id -> %x\n", vendor_id , (vendor_id >> 16 ));
+; 332  : 	printf ("Widget device id -> %x, vendor id -> %x\n", vendor_id , (vendor_id >> 16 ));
 
 	mov	eax, DWORD PTR vendor_id$[rsp]
 	shr	eax, 16
 	mov	r8d, eax
 	mov	edx, DWORD PTR vendor_id$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3516
+	lea	rcx, OFFSET FLAT:$SG3524
 	call	?printf@@YAXPEBDZZ			; printf
 
-; 320  : 
-; 321  : 	
-; 322  : 	uint32_t rev_id = codec_query (codec, 0, VERB_GET_PARAMETER | PARAM_REV_ID);
+; 333  : 	
+; 334  : 	uint32_t rev_id = codec_query (codec, 0, VERB_GET_PARAMETER | PARAM_REV_ID);
 
 	mov	r8d, 983042				; 000f0002H
 	xor	edx, edx
@@ -542,7 +530,7 @@ codec$ = 96
 	call	?codec_query@@YAIHHI@Z			; codec_query
 	mov	DWORD PTR rev_id$[rsp], eax
 
-; 323  : 	printf ("Widget version -> %d.%d, r0%d\n", rev_id>>20, rev_id>>16, rev_id>>8);
+; 335  : 	printf ("Widget version -> %d.%d, r0%d\n", rev_id>>20, rev_id>>16, rev_id>>8);
 
 	mov	eax, DWORD PTR rev_id$[rsp]
 	shr	eax, 8
@@ -552,27 +540,12 @@ codec$ = 96
 	shr	edx, 20
 	mov	r9d, eax
 	mov	r8d, ecx
-	lea	rcx, OFFSET FLAT:$SG3518
+	lea	rcx, OFFSET FLAT:$SG3526
 	call	?printf@@YAXPEBDZZ			; printf
 
-; 324  : 
-; 325  : 	if (num_fg == 0) {
-
-	cmp	DWORD PTR num_fg$[rsp], 0
-	jne	SHORT $LN8@codec_enum
-
-; 326  : 		num_fg = 1;
-
-	mov	DWORD PTR num_fg$[rsp], 1
-
-; 327  : 		fg_start = 1;
-
-	mov	DWORD PTR fg_start$[rsp], 1
-$LN8@codec_enum:
-
-; 328  : 	}
-; 329  : 	
-; 330  : 	for (i = 0; i < num_fg; i++) {
+; 336  : 
+; 337  : 	
+; 338  : 	for (i = 0; i < num_fg; i++) {
 
 	mov	DWORD PTR i$[rsp], 0
 	jmp	SHORT $LN7@codec_enum
@@ -585,8 +558,8 @@ $LN7@codec_enum:
 	cmp	DWORD PTR i$[rsp], eax
 	jge	$LN5@codec_enum
 
-; 331  : 		param = codec_query (codec, fg_start + i, 
-; 332  : 			VERB_GET_PARAMETER | PARAM_NODE_COUNT);
+; 339  : 		param = codec_query (codec, fg_start + i, 
+; 340  : 			VERB_GET_PARAMETER | PARAM_NODE_COUNT);
 
 	mov	eax, DWORD PTR i$[rsp]
 	mov	ecx, DWORD PTR fg_start$[rsp]
@@ -598,23 +571,23 @@ $LN7@codec_enum:
 	call	?codec_query@@YAIHHI@Z			; codec_query
 	mov	DWORD PTR param$[rsp], eax
 
-; 333  : 
-; 334  : 		num_widgets = param & 0xff;
+; 341  : 
+; 342  : 		num_widgets = param & 0xff;
 
 	mov	eax, DWORD PTR param$[rsp]
 	and	eax, 255				; 000000ffH
 	mov	DWORD PTR num_widgets$[rsp], eax
 
-; 335  : 		widgets_start = (param >> 16) & 0xff;
+; 343  : 		widgets_start = (param >> 16) & 0xff;
 
 	mov	eax, DWORD PTR param$[rsp]
 	shr	eax, 16
 	and	eax, 255				; 000000ffH
 	mov	DWORD PTR widgets_start$[rsp], eax
 
-; 336  : 
-; 337  : 
-; 338  : 		param = codec_query (codec, fg_start + i, VERB_GET_PARAMETER | PARAM_FN_GROUP_TYPE);
+; 344  : 
+; 345  : 
+; 346  : 		param = codec_query (codec, fg_start + i, VERB_GET_PARAMETER | PARAM_FN_GROUP_TYPE);
 
 	mov	eax, DWORD PTR i$[rsp]
 	mov	ecx, DWORD PTR fg_start$[rsp]
@@ -626,26 +599,24 @@ $LN7@codec_enum:
 	call	?codec_query@@YAIHHI@Z			; codec_query
 	mov	DWORD PTR param$[rsp], eax
 
-; 339  : 		param &= 0x7f;
+; 347  : 		param &= 0x7f;
 
 	mov	eax, DWORD PTR param$[rsp]
 	and	eax, 127				; 0000007fH
 	mov	DWORD PTR param$[rsp], eax
 
-; 340  : 		if (param == FN_GROUP_AUDIO) 
+; 348  : 		if (param != FN_GROUP_AUDIO) 
 
 	cmp	DWORD PTR param$[rsp], 1
-	jne	SHORT $LN4@codec_enum
+	je	SHORT $LN4@codec_enum
 
-; 341  : 			printf ("Audio Function Group\n");
+; 349  : 			continue;
 
-	lea	rcx, OFFSET FLAT:$SG3524
-	call	?printf@@YAXPEBDZZ			; printf
+	jmp	$LN6@codec_enum
 $LN4@codec_enum:
 
-; 342  : 			//continue;
-; 343  : 
-; 344  : 		for (int i = 0; i < num_widgets; i++) {
+; 350  : 
+; 351  : 		for (int i = 0; i < num_widgets; i++) {
 
 	mov	DWORD PTR i$1[rsp], 0
 	jmp	SHORT $LN3@codec_enum
@@ -658,7 +629,7 @@ $LN3@codec_enum:
 	cmp	DWORD PTR i$1[rsp], eax
 	jge	SHORT $LN1@codec_enum
 
-; 345  : 			widget_init (codec, widgets_start + i);
+; 352  : 			widget_init (codec, widgets_start + i);
 
 	mov	eax, DWORD PTR i$1[rsp]
 	mov	ecx, DWORD PTR widgets_start$[rsp]
@@ -668,21 +639,21 @@ $LN3@codec_enum:
 	mov	ecx, DWORD PTR codec$[rsp]
 	call	?widget_init@@YAXHH@Z			; widget_init
 
-; 346  : 		}
+; 353  : 		}
 
 	jmp	SHORT $LN2@codec_enum
 $LN1@codec_enum:
 
-; 347  : 		
-; 348  : 	}
+; 354  : 		
+; 355  : 	}
 
 	jmp	$LN6@codec_enum
 $LN5@codec_enum:
 
-; 349  : 
-; 350  : 
-; 351  : 	//return output.nid ? 0 : -2;
-; 352  : }
+; 356  : 
+; 357  : 
+; 358  : 	//return output.nid ? 0 : -2;
+; 359  : }
 
 	add	rsp, 88					; 00000058H
 	ret	0
@@ -706,21 +677,21 @@ codec$ = 96
 nid$ = 104
 ?widget_init@@YAXHH@Z PROC				; widget_init
 
-; 213  : void widget_init (int codec, int nid) {
+; 227  : void widget_init (int codec, int nid) {
 
 $LN24:
 	mov	DWORD PTR [rsp+16], edx
 	mov	DWORD PTR [rsp+8], ecx
 	sub	rsp, 88					; 00000058H
 
-; 214  : 
-; 215  : 	//printf ("[HD-Audio]: initializing widgets\n");
-; 216  : 	uint32_t widget_cap;
-; 217  : 	uint32_t type;
-; 218  : 	uint32_t amp_cap;
-; 219  : 	uint32_t eapd_btl;
-; 220  : 
-; 221  : 	widget_cap = codec_query (codec, nid, VERB_GET_PARAMETER | PARAM_AUDIO_WID_CAP);
+; 228  : 
+; 229  : 	//printf ("[HD-Audio]: initializing widgets\n");
+; 230  : 	uint32_t widget_cap;
+; 231  : 	uint32_t type;
+; 232  : 	uint32_t amp_cap;
+; 233  : 	uint32_t eapd_btl;
+; 234  : 
+; 235  : 	widget_cap = codec_query (codec, nid, VERB_GET_PARAMETER | PARAM_AUDIO_WID_CAP);
 
 	mov	r8d, 983049				; 000f0009H
 	mov	edx, DWORD PTR nid$[rsp]
@@ -728,28 +699,27 @@ $LN24:
 	call	?codec_query@@YAIHHI@Z			; codec_query
 	mov	DWORD PTR widget_cap$[rsp], eax
 
-; 222  : 
-; 223  : 	if (widget_cap == 0) {
+; 236  : 	if (widget_cap == 0) {
 
 	cmp	DWORD PTR widget_cap$[rsp], 0
 	jne	SHORT $LN20@widget_ini
 
-; 224  : 		//printf ("Widget capabilities 0\n");
-; 225  : 		return;
+; 237  : 		//printf ("Widget capabilities 0\n");
+; 238  : 		return;
 
 	jmp	$LN21@widget_ini
 $LN20@widget_ini:
 
-; 226  : 	}
-; 227  : 
-; 228  : 	type = (widget_cap & WIDGET_CAP_TYPE_MASK) >> WIDGET_CAP_TYPE_SHIFT;
+; 239  : 	}
+; 240  : 
+; 241  : 	type = (widget_cap & WIDGET_CAP_TYPE_MASK) >> WIDGET_CAP_TYPE_SHIFT;
 
 	mov	eax, DWORD PTR widget_cap$[rsp]
 	and	eax, 15728640				; 00f00000H
 	shr	eax, 20
 	mov	DWORD PTR type$[rsp], eax
 
-; 229  : 	amp_cap = codec_query (codec, nid, VERB_GET_PARAMETER | PARAM_OUT_AMP_CAP);
+; 242  : 	amp_cap = codec_query (codec, nid, VERB_GET_PARAMETER | PARAM_OUT_AMP_CAP);
 
 	mov	r8d, 983058				; 000f0012H
 	mov	edx, DWORD PTR nid$[rsp]
@@ -757,7 +727,7 @@ $LN20@widget_ini:
 	call	?codec_query@@YAIHHI@Z			; codec_query
 	mov	DWORD PTR amp_cap$[rsp], eax
 
-; 230  : 	eapd_btl = codec_query (codec, nid, VERB_GET_EAPD_BTL);
+; 243  : 	eapd_btl = codec_query (codec, nid, VERB_GET_EAPD_BTL);
 
 	mov	r8d, 986112				; 000f0c00H
 	mov	edx, DWORD PTR nid$[rsp]
@@ -765,13 +735,13 @@ $LN20@widget_ini:
 	call	?codec_query@@YAIHHI@Z			; codec_query
 	mov	DWORD PTR eapd_btl$[rsp], eax
 
-; 231  : 
-; 232  : 
-; 233  : 
-; 234  : 	uint32_t amp_gain;
-; 235  : 	const char* s;
-; 236  : 
-; 237  : 	switch(type) {
+; 244  : 
+; 245  : 
+; 246  : 
+; 247  : 	uint32_t amp_gain;
+; 248  : 	const char* s;
+; 249  : 
+; 250  : 	switch(type) {
 
 	mov	eax, DWORD PTR type$[rsp]
 	mov	DWORD PTR tv79[rsp], eax
@@ -784,79 +754,79 @@ $LN20@widget_ini:
 	jmp	rax
 $LN17@widget_ini:
 
-; 238  : 	case 0:  s = "output"; break;
+; 251  : 	case 0:  s = "output"; break;
 
-	lea	rax, OFFSET FLAT:$SG3471
+	lea	rax, OFFSET FLAT:$SG3480
 	mov	QWORD PTR s$[rsp], rax
 	jmp	SHORT $LN18@widget_ini
 $LN16@widget_ini:
 
-; 239  : 	case 1:  s = "input"; break;
+; 252  : 	case 1:  s = "input"; break;
 
-	lea	rax, OFFSET FLAT:$SG3473
+	lea	rax, OFFSET FLAT:$SG3482
 	mov	QWORD PTR s$[rsp], rax
 	jmp	SHORT $LN18@widget_ini
 $LN15@widget_ini:
 
-; 240  : 	case 2:  s = "mixer"; break;
+; 253  : 	case 2:  s = "mixer"; break;
 
-	lea	rax, OFFSET FLAT:$SG3475
+	lea	rax, OFFSET FLAT:$SG3484
 	mov	QWORD PTR s$[rsp], rax
 	jmp	SHORT $LN18@widget_ini
 $LN14@widget_ini:
 
-; 241  : 	case 3:  s = "selector"; break;
+; 254  : 	case 3:  s = "selector"; break;
 
-	lea	rax, OFFSET FLAT:$SG3477
+	lea	rax, OFFSET FLAT:$SG3486
 	mov	QWORD PTR s$[rsp], rax
 	jmp	SHORT $LN18@widget_ini
 $LN13@widget_ini:
 
-; 242  : 	case 4:  s = "pin complex"; break;
+; 255  : 	case 4:  s = "pin complex"; break;
 
-	lea	rax, OFFSET FLAT:$SG3479
+	lea	rax, OFFSET FLAT:$SG3488
 	mov	QWORD PTR s$[rsp], rax
 	jmp	SHORT $LN18@widget_ini
 $LN12@widget_ini:
 
-; 243  : 	case 5:  s = "power"; break;
+; 256  : 	case 5:  s = "power"; break;
 
-	lea	rax, OFFSET FLAT:$SG3481
+	lea	rax, OFFSET FLAT:$SG3490
 	mov	QWORD PTR s$[rsp], rax
 	jmp	SHORT $LN18@widget_ini
 $LN11@widget_ini:
 
-; 244  : 	case 6:  s = "volume knob"; break;
+; 257  : 	case 6:  s = "volume knob"; break;
 
-	lea	rax, OFFSET FLAT:$SG3483
+	lea	rax, OFFSET FLAT:$SG3492
 	mov	QWORD PTR s$[rsp], rax
 	jmp	SHORT $LN18@widget_ini
 $LN10@widget_ini:
 
-; 245  : 	case 7:  s = "beep generator"; break;
+; 258  : 	case 7:  s = "beep generator"; break;
 
-	lea	rax, OFFSET FLAT:$SG3485
+	lea	rax, OFFSET FLAT:$SG3494
 	mov	QWORD PTR s$[rsp], rax
 	jmp	SHORT $LN18@widget_ini
 $LN9@widget_ini:
 
-; 246  : 	case 16: s = "vendor defined"; break;
+; 259  : 	case 16: s = "vendor defined"; break;
 
-	lea	rax, OFFSET FLAT:$SG3487
+	lea	rax, OFFSET FLAT:$SG3496
 	mov	QWORD PTR s$[rsp], rax
 	jmp	SHORT $LN18@widget_ini
 $LN8@widget_ini:
 
-; 247  : 	default: s = "unknown"; break;
+; 260  : 	default: s = "unknown"; break;
 
-	lea	rax, OFFSET FLAT:$SG3489
+	lea	rax, OFFSET FLAT:$SG3498
 	mov	QWORD PTR s$[rsp], rax
 $LN18@widget_ini:
 
-; 248  : 
-; 249  : 	}
-; 250  : 
-; 251  : 	amp_gain = codec_query(codec, nid, VERB_GET_AMP_GAIN_MUTE | 0x8000) << 8;
+; 261  : 
+; 262  : 	}
+; 263  : 
+; 264  : 	amp_gain = codec_query(codec, nid, VERB_GET_AMP_GAIN_MUTE | 0x8000) << 8;
 
 	mov	r8d, 753664				; 000b8000H
 	mov	edx, DWORD PTR nid$[rsp]
@@ -865,7 +835,7 @@ $LN18@widget_ini:
 	shl	eax, 8
 	mov	DWORD PTR amp_gain$[rsp], eax
 
-; 252  : 	amp_gain |= codec_query(codec, nid, VERB_GET_AMP_GAIN_MUTE | 0xa000);
+; 265  : 	amp_gain |= codec_query(codec, nid, VERB_GET_AMP_GAIN_MUTE | 0xa000);
 
 	mov	r8d, 761856				; 000ba000H
 	mov	edx, DWORD PTR nid$[rsp]
@@ -876,17 +846,17 @@ $LN18@widget_ini:
 	mov	eax, ecx
 	mov	DWORD PTR amp_gain$[rsp], eax
 
-; 253  : 
-; 254  : 	printf ("[HD-Audio]: widget %s at node %d; \n",
-; 255  : 		s, nid);
+; 266  : 
+; 267  : 	printf ("[HD-Audio]: widget %s at node %d; \n",
+; 268  : 		s, nid);
 
 	mov	r8d, DWORD PTR nid$[rsp]
 	mov	rdx, QWORD PTR s$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3490
+	lea	rcx, OFFSET FLAT:$SG3499
 	call	?printf@@YAXPEBDZZ			; printf
 
-; 256  : 
-; 257  : 	switch (type) {
+; 269  : 
+; 270  : 	switch (type) {
 
 	mov	eax, DWORD PTR type$[rsp]
 	mov	DWORD PTR tv94[rsp], eax
@@ -897,10 +867,10 @@ $LN18@widget_ini:
 	jmp	$LN2@widget_ini
 $LN5@widget_ini:
 
-; 258  : 	case WIDGET_PIN:
-; 259  : 		{
-; 260  : 			uint32_t pin_cap, ctl;
-; 261  : 			uint32_t conf = codec_query(codec, nid, VERB_GET_CONFIG_DEFAULT);
+; 271  : 	case WIDGET_PIN:
+; 272  : 		{
+; 273  : 			uint32_t pin_cap, ctl;
+; 274  : 			uint32_t conf = codec_query(codec, nid, VERB_GET_CONFIG_DEFAULT);
 
 	mov	r8d, 990208				; 000f1c00H
 	mov	edx, DWORD PTR nid$[rsp]
@@ -908,9 +878,9 @@ $LN5@widget_ini:
 	call	?codec_query@@YAIHHI@Z			; codec_query
 	mov	DWORD PTR conf$3[rsp], eax
 
-; 262  : 			//printf ("pin config: %x\n", conf);
-; 263  : 
-; 264  : 			pin_cap = codec_query (codec, nid, VERB_GET_PARAMETER | PARAM_PIN_CAP);
+; 275  : 			//printf ("pin config: %x\n", conf);
+; 276  : 
+; 277  : 			pin_cap = codec_query (codec, nid, VERB_GET_PARAMETER | PARAM_PIN_CAP);
 
 	mov	r8d, 983052				; 000f000cH
 	mov	edx, DWORD PTR nid$[rsp]
@@ -918,22 +888,22 @@ $LN5@widget_ini:
 	call	?codec_query@@YAIHHI@Z			; codec_query
 	mov	DWORD PTR pin_cap$2[rsp], eax
 
-; 265  : 
-; 266  : 			if ((pin_cap & PIN_CAP_OUTPUT) == 0) {
+; 278  : 
+; 279  : 			if ((pin_cap & PIN_CAP_OUTPUT) == 0) {
 
 	mov	eax, DWORD PTR pin_cap$2[rsp]
 	and	eax, 16
 	test	eax, eax
 	jne	SHORT $LN4@widget_ini
 
-; 267  : 				return;
+; 280  : 				return;
 
 	jmp	$LN21@widget_ini
 $LN4@widget_ini:
 
-; 268  : 			}
-; 269  : 
-; 270  : 			ctl = codec_query (codec, nid, VERB_GET_PIN_CONTROL);
+; 281  : 			}
+; 282  : 
+; 283  : 			ctl = codec_query (codec, nid, VERB_GET_PIN_CONTROL);
 
 	mov	r8d, 984832				; 000f0700H
 	mov	edx, DWORD PTR nid$[rsp]
@@ -941,15 +911,15 @@ $LN4@widget_ini:
 	call	?codec_query@@YAIHHI@Z			; codec_query
 	mov	DWORD PTR ctl$1[rsp], eax
 
-; 271  : 			//printf ("ctl: %x\n", ctl);
-; 272  : 
-; 273  : 			ctl |= PIN_CTL_ENABLE_OUTPUT;
+; 284  : 			//printf ("ctl: %x\n", ctl);
+; 285  : 
+; 286  : 			ctl |= PIN_CTL_ENABLE_OUTPUT;
 
 	mov	eax, DWORD PTR ctl$1[rsp]
 	or	eax, 64					; 00000040H
 	mov	DWORD PTR ctl$1[rsp], eax
 
-; 274  : 			codec_query(codec, nid, VERB_SET_PIN_CONTROL | ctl);
+; 287  : 			codec_query(codec, nid, VERB_SET_PIN_CONTROL | ctl);
 
 	mov	eax, DWORD PTR ctl$1[rsp]
 	or	eax, 460544				; 00070700H
@@ -958,33 +928,7 @@ $LN4@widget_ini:
 	mov	ecx, DWORD PTR codec$[rsp]
 	call	?codec_query@@YAIHHI@Z			; codec_query
 
-; 275  : 			codec_query(codec, nid, VERB_SET_EAPD_BTL | eapd_btl | 0x2);
-
-	mov	eax, DWORD PTR eapd_btl$[rsp]
-	or	eax, 461824				; 00070c00H
-	or	eax, 2
-	mov	r8d, eax
-	mov	edx, DWORD PTR nid$[rsp]
-	mov	ecx, DWORD PTR codec$[rsp]
-	call	?codec_query@@YAIHHI@Z			; codec_query
-
-; 276  : 			break;
-
-	jmp	SHORT $LN6@widget_ini
-$LN3@widget_ini:
-
-; 277  : 		}
-; 278  : 
-; 279  : 	case WIDGET_OUTPUT:
-; 280  : 		{
-; 281  : 			/*if (!output.nid) {
-; 282  : 				kprintf ("using output at ID %d\n", nid);
-; 283  : 				output.codec = codec;
-; 284  : 				output.nid = nid;
-; 285  : 				output.amp_gain_steps = (amp_cap >> 8) & 0x7f;
-; 286  : 			}*/
-; 287  : 			//printf ("Widget type Output in codec -> %d at node -> %d\n", codec, nid);
-; 288  : 			codec_query (codec, nid, VERB_SET_EAPD_BTL | eapd_btl | 0x2);
+; 288  : 			codec_query(codec, nid, VERB_SET_EAPD_BTL | eapd_btl | 0x2);
 
 	mov	eax, DWORD PTR eapd_btl$[rsp]
 	or	eax, 461824				; 00070c00H
@@ -997,27 +941,53 @@ $LN3@widget_ini:
 ; 289  : 			break;
 
 	jmp	SHORT $LN6@widget_ini
-$LN2@widget_ini:
+$LN3@widget_ini:
 
 ; 290  : 		}
 ; 291  : 
-; 292  : 	default:
-; 293  : 		return;
+; 292  : 	case WIDGET_OUTPUT:
+; 293  : 		{
+; 294  : 			/*if (!output.nid) {
+; 295  : 				kprintf ("using output at ID %d\n", nid);
+; 296  : 				output.codec = codec;
+; 297  : 				output.nid = nid;
+; 298  : 				output.amp_gain_steps = (amp_cap >> 8) & 0x7f;
+; 299  : 			}*/
+; 300  : 			//printf ("Widget type Output in codec -> %d at node -> %d\n", codec, nid);
+; 301  : 			codec_query (codec, nid, VERB_SET_EAPD_BTL | eapd_btl | 0x2);
+
+	mov	eax, DWORD PTR eapd_btl$[rsp]
+	or	eax, 461824				; 00070c00H
+	or	eax, 2
+	mov	r8d, eax
+	mov	edx, DWORD PTR nid$[rsp]
+	mov	ecx, DWORD PTR codec$[rsp]
+	call	?codec_query@@YAIHHI@Z			; codec_query
+
+; 302  : 			break;
+
+	jmp	SHORT $LN6@widget_ini
+$LN2@widget_ini:
+
+; 303  : 		}
+; 304  : 
+; 305  : 	default:
+; 306  : 		return;
 
 	jmp	SHORT $LN21@widget_ini
 $LN6@widget_ini:
 
-; 294  : 
-; 295  : 	}
-; 296  : 
-; 297  : 	if (widget_cap & WIDGET_CAP_POWER_CNTRL) {
+; 307  : 
+; 308  : 	}
+; 309  : 
+; 310  : 	if (widget_cap & WIDGET_CAP_POWER_CNTRL) {
 
 	mov	eax, DWORD PTR widget_cap$[rsp]
 	and	eax, 1024				; 00000400H
 	test	eax, eax
 	je	SHORT $LN1@widget_ini
 
-; 298  : 		codec_query(codec, nid, VERB_SET_POWER_STATE | 0x0);
+; 311  : 		codec_query(codec, nid, VERB_SET_POWER_STATE | 0x0);
 
 	mov	r8d, 460032				; 00070500H
 	mov	edx, DWORD PTR nid$[rsp]
@@ -1026,8 +996,8 @@ $LN6@widget_ini:
 $LN1@widget_ini:
 $LN21@widget_ini:
 
-; 299  : 	}
-; 300  : }
+; 312  : 	}
+; 313  : }
 
 	add	rsp, 88					; 00000058H
 	ret	0
@@ -1055,29 +1025,30 @@ _TEXT	ENDS
 ; Function compile flags: /Odtp
 ; File e:\xeneva project\xeneva\aurora\aurora\drivers\hda\hda.cpp
 _TEXT	SEGMENT
-verb$ = 32
-icount$ = 36
-response$ = 40
-codec$ = 64
-nid$ = 72
-payload$ = 80
+rirb_status$ = 32
+verb$ = 36
+icount$ = 40
+response$ = 48
+codec$ = 80
+nid$ = 88
+payload$ = 96
 ?codec_query@@YAIHHI@Z PROC				; codec_query
 
-; 197  : static uint32_t codec_query (int codec, int nid, uint32_t payload) {
+; 205  : static uint32_t codec_query (int codec, int nid, uint32_t payload) {
 
 	mov	DWORD PTR [rsp+24], r8d
 	mov	DWORD PTR [rsp+16], edx
 	mov	DWORD PTR [rsp+8], ecx
-	sub	rsp, 56					; 00000038H
+	sub	rsp, 72					; 00000048H
 
-; 198  : 	uint64_t response;// = (uint32_t)pmmngr_alloc();
-; 199  : 	uint32_t icount = 10000;
+; 206  : 	uint64_t response;// = (uint32_t)pmmngr_alloc();
+; 207  : 	uint32_t icount = 10000;
 
 	mov	DWORD PTR icount$[rsp], 10000		; 00002710H
 
-; 200  : 	uint32_t verb = ((codec & 0xf) << 28) | 
-; 201  : 		((nid & 0xff) << 20) | 
-; 202  : 		(payload & 0xfffff);
+; 208  : 	uint32_t verb = ((codec & 0xf) << 28) | 
+; 209  : 		((nid & 0xff) << 20) | 
+; 210  : 		(payload & 0xfffff);
 
 	mov	eax, DWORD PTR codec$[rsp]
 	and	eax, 15
@@ -1091,29 +1062,47 @@ payload$ = 80
 	or	eax, ecx
 	mov	DWORD PTR verb$[rsp], eax
 
-; 203  : 
-; 204  : 	//printf ("RIRB Status -> %d\n", (_aud_inl_(RIRBSTS >> 0)) & 0xff);
-; 205  : 	corb_write(verb);
+; 211  : 
+; 212  : 	//printf ("RIRB Status -> %d\n", (_aud_inl_(RIRBSTS >> 0)) & 0xff);
+; 213  : 	corb_write(verb);
 
 	mov	ecx, DWORD PTR verb$[rsp]
 	call	?corb_write@@YAXI@Z			; corb_write
+$LN3@codec_quer:
 
-; 206  : 	rirb_read(&response);
+; 214  : 	uint8_t rirb_status;
+; 215  : 	do {
+; 216  : 		rirb_status = _aud_inb_(RIRBSTS);
+
+	mov	ecx, 93					; 0000005dH
+	call	?_aud_inb_@@YAEH@Z			; _aud_inb_
+	mov	BYTE PTR rirb_status$[rsp], al
+
+; 217  : 	}while ((rirb_status & 1) == 0);
+
+	movzx	eax, BYTE PTR rirb_status$[rsp]
+	and	eax, 1
+	test	eax, eax
+	je	SHORT $LN3@codec_quer
+
+; 218  : 
+; 219  : 
+; 220  : 	rirb_read(&response);
 
 	lea	rcx, QWORD PTR response$[rsp]
 	call	?rirb_read@@YAXPEA_K@Z			; rirb_read
 
-; 207  : 	//_aud_outb_(RIRBSTS, 0);
-; 208  : 	return response & 0xffffffff;
+; 221  : 	//_aud_outb_(RIRBSTS, 0);
+; 222  : 	return response & 0xffffffff;
 
 	mov	eax, -1					; ffffffffH
 	mov	rcx, QWORD PTR response$[rsp]
 	and	rcx, rax
 	mov	rax, rcx
 
-; 209  : }
+; 223  : }
 
-	add	rsp, 56					; 00000038H
+	add	rsp, 72					; 00000048H
 	ret	0
 ?codec_query@@YAIHHI@Z ENDP				; codec_query
 _TEXT	ENDS
@@ -1126,46 +1115,66 @@ old_rp$ = 40
 response$ = 64
 ?rirb_read@@YAXPEA_K@Z PROC				; rirb_read
 
-; 180  : static void rirb_read (uint64_t *response) {
+; 185  : static void rirb_read (uint64_t *response) {
 
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 56					; 00000038H
 
-; 181  : 
-; 182  : 	uint16_t wp = _aud_inb_ (RIRBWP);
+; 186  : 	uint16_t wp = _aud_inb_ (RIRBWP);
 
 	mov	ecx, 88					; 00000058H
 	call	?_aud_inb_@@YAEH@Z			; _aud_inb_
 	movzx	eax, al
 	mov	WORD PTR wp$[rsp], ax
 
-; 183  : 	uint16_t rp = rirbrp;
+; 187  : 	uint16_t rp = rirbrp;
 
 	movzx	eax, WORD PTR ?rirbrp@@3GA		; rirbrp
 	mov	WORD PTR rp$[rsp], ax
 
-; 184  : 	uint16_t old_rp = rp;
+; 188  : 	uint16_t old_rp = rp;
 
 	movzx	eax, WORD PTR rp$[rsp]
 	mov	WORD PTR old_rp$[rsp], ax
+$LN4@rirb_read:
+
+; 189  : 	/*Wait for an unread entry in the RIRB */
+; 190  : 	//uint64_t resp;
+; 191  : 	while (rirbrp == wp) {
+
+	movzx	eax, WORD PTR ?rirbrp@@3GA		; rirbrp
+	movzx	ecx, WORD PTR wp$[rsp]
+	cmp	eax, ecx
+	jne	SHORT $LN3@rirb_read
+
+; 192  : 		wp = _aud_inb_(RIRBWP);
+
+	mov	ecx, 88					; 00000058H
+	call	?_aud_inb_@@YAEH@Z			; _aud_inb_
+	movzx	eax, al
+	mov	WORD PTR wp$[rsp], ax
+
+; 193  : 	}
+
+	jmp	SHORT $LN4@rirb_read
+$LN3@rirb_read:
 $LN2@rirb_read:
 
-; 185  : 	/*Wait for an unread entry in the RIRB */
-; 186  : 	//uint64_t resp;
-; 187  : 	while (rp != wp) {	
+; 194  : 
+; 195  : 	while (rp != wp) {	
 
 	movzx	eax, WORD PTR rp$[rsp]
 	movzx	ecx, WORD PTR wp$[rsp]
 	cmp	eax, ecx
 	je	SHORT $LN1@rirb_read
 
-; 188  : 		rp++;
+; 196  : 		rp++;
 
 	movzx	eax, WORD PTR rp$[rsp]
 	inc	ax
 	mov	WORD PTR rp$[rsp], ax
 
-; 189  : 		rp %= _ihd_audio.rirb_entries;
+; 197  : 		rp %= _ihd_audio.rirb_entries;
 
 	movzx	eax, WORD PTR rp$[rsp]
 	xor	edx, edx
@@ -1173,12 +1182,12 @@ $LN2@rirb_read:
 	mov	eax, edx
 	mov	WORD PTR rp$[rsp], ax
 
-; 190  : 		rirbrp = rp;
+; 198  : 		rirbrp = rp;
 
 	movzx	eax, WORD PTR rp$[rsp]
 	mov	WORD PTR ?rirbrp@@3GA, ax		; rirbrp
 
-; 191  : 		*response = _ihd_audio.rirb[rirbrp];
+; 199  : 		*response = _ihd_audio.rirb[rirbrp];
 
 	movzx	eax, WORD PTR ?rirbrp@@3GA		; rirbrp
 	mov	rcx, QWORD PTR response$[rsp]
@@ -1186,14 +1195,14 @@ $LN2@rirb_read:
 	mov	rax, QWORD PTR [rdx+rax*8]
 	mov	QWORD PTR [rcx], rax
 
-; 192  : 	}
+; 200  : 	}
 
 	jmp	SHORT $LN2@rirb_read
 $LN1@rirb_read:
 
-; 193  : 
-; 194  : 	return;
-; 195  : }
+; 201  : 
+; 202  : 	return;
+; 203  : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -1202,42 +1211,45 @@ _TEXT	ENDS
 ; Function compile flags: /Odtp
 ; File e:\xeneva project\xeneva\aurora\aurora\drivers\hda\hda.cpp
 _TEXT	SEGMENT
-wp$ = 32
+rp$ = 32
+wp$ = 36
 verb$ = 64
 ?corb_write@@YAXI@Z PROC				; corb_write
 
-; 159  : static void corb_write (uint32_t verb) {
+; 158  : static void corb_write (uint32_t verb) {
 
 	mov	DWORD PTR [rsp+8], ecx
 	sub	rsp, 56					; 00000038H
 
-; 160  : 
-; 161  : 	if (_ihd_audio.immediate_use) {
+; 159  : 
+; 160  : 	if (_ihd_audio.immediate_use) {
 
 	movzx	eax, BYTE PTR ?_ihd_audio@@3U_hd_audio_@@A+32
 	test	eax, eax
-	je	SHORT $LN1@corb_write
+	je	SHORT $LN4@corb_write
 
-; 162  : 		_aud_outl_(ICOI,verb);
+; 161  : 		_aud_outl_(ICOI,verb);
 
 	mov	edx, DWORD PTR verb$[rsp]
 	mov	ecx, 96					; 00000060H
 	call	?_aud_outl_@@YAXHI@Z			; _aud_outl_
 
-; 163  : 		_aud_outl_(ICIS,1);
+; 162  : 		_aud_outl_(ICIS,1);
 
 	mov	edx, 1
 	mov	ecx, 104				; 00000068H
 	call	?_aud_outl_@@YAXHI@Z			; _aud_outl_
 
-; 164  : 		return;
+; 163  : 		return;
 
-	jmp	SHORT $LN2@corb_write
-$LN1@corb_write:
+	jmp	$LN5@corb_write
+$LN4@corb_write:
 
-; 165  : 	}
-; 166  : 
-; 167  : 	uint16_t wp = _aud_inw_(CORBWP) & 0xff;
+; 164  : 	}
+; 165  : 
+; 166  : 	
+; 167  : 
+; 168  : 	uint16_t wp = _aud_inw_(CORBWP) & 0xff;
 
 	mov	ecx, 72					; 00000048H
 	call	?_aud_inw_@@YAGH@Z			; _aud_inw_
@@ -1245,41 +1257,70 @@ $LN1@corb_write:
 	and	eax, 255				; 000000ffH
 	mov	WORD PTR wp$[rsp], ax
 
-; 168  : 	uint16_t rp;
-; 169  : 
-; 170  : 	/*Wait until there's a free entry in the CORB */
-; 171  : 	/* Write to CORB */	
-; 172  : 
-; 173  : 	corbwp++;
+; 169  : 	uint16_t rp = _aud_inw_(CORBRP) & 0xff;
 
-	movzx	eax, WORD PTR ?corbwp@@3GA		; corbwp
-	inc	ax
+	mov	ecx, 74					; 0000004aH
+	call	?_aud_inw_@@YAGH@Z			; _aud_inw_
+	movzx	eax, ax
+	and	eax, 255				; 000000ffH
+	mov	WORD PTR rp$[rsp], ax
+
+; 170  :     corbwp = 0;
+
+	xor	eax, eax
 	mov	WORD PTR ?corbwp@@3GA, ax		; corbwp
 
-; 174  : 	corbwp %= _ihd_audio.corb_entries;
+; 171  : 	corbwp = (rp + 1);
+
+	movzx	eax, WORD PTR rp$[rsp]
+	inc	eax
+	mov	WORD PTR ?corbwp@@3GA, ax		; corbwp
+
+; 172  : 	corbwp %= _ihd_audio.corb_entries;
 
 	movzx	eax, WORD PTR ?corbwp@@3GA		; corbwp
 	xor	edx, edx
 	div	DWORD PTR ?_ihd_audio@@3U_hd_audio_@@A+28
 	mov	eax, edx
 	mov	WORD PTR ?corbwp@@3GA, ax		; corbwp
+$LN3@corb_write:
 
-; 175  : 	_ihd_audio.corb[corbwp] = verb;	
+; 173  : 	do {
+; 174  : 		rp = _aud_inw_(CORBRP) & 0xff;
+
+	mov	ecx, 74					; 0000004aH
+	call	?_aud_inw_@@YAGH@Z			; _aud_inw_
+	movzx	eax, ax
+	and	eax, 255				; 000000ffH
+	mov	WORD PTR rp$[rsp], ax
+
+; 175  : 	}while (rp == corbwp);
+
+	movzx	eax, WORD PTR rp$[rsp]
+	movzx	ecx, WORD PTR ?corbwp@@3GA		; corbwp
+	cmp	eax, ecx
+	je	SHORT $LN3@corb_write
+
+; 176  : 
+; 177  : 	/*Wait until there's a free entry in the CORB */
+; 178  : 	/* Write to CORB */	
+; 179  : 
+; 180  : 	_ihd_audio.corb[corbwp] = verb;	
 
 	movzx	eax, WORD PTR ?corbwp@@3GA		; corbwp
 	mov	rcx, QWORD PTR ?_ihd_audio@@3U_hd_audio_@@A+8
 	mov	edx, DWORD PTR verb$[rsp]
 	mov	DWORD PTR [rcx+rax*4], edx
 
-; 176  :     _aud_outw_(CORBWP, corbwp);
+; 181  :     _aud_outw_(CORBWP, corbwp);
 
 	movzx	edx, WORD PTR ?corbwp@@3GA		; corbwp
 	mov	ecx, 72					; 00000048H
 	call	?_aud_outw_@@YAXHG@Z			; _aud_outw_
-$LN2@corb_write:
+$LN5@corb_write:
 
-; 177  : 	
-; 178  : }
+; 182  : 
+; 183  : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -1294,41 +1335,41 @@ rirb_entries$ = 40
 rirb_base$ = 48
 ?setup_rirb@@YAXXZ PROC					; setup_rirb
 
-; 111  : void setup_rirb() {
+; 110  : void setup_rirb() {
 
 $LN9:
 	sub	rsp, 72					; 00000048H
 
-; 112  : 
-; 113  : 	uint8_t reg;
-; 114  : 	uint64_t rirb_base;
-; 115  : 	uint32_t rirb_entries = 0;
+; 111  : 
+; 112  : 	uint8_t reg;
+; 113  : 	uint64_t rirb_base;
+; 114  : 	uint32_t rirb_entries = 0;
 
 	mov	DWORD PTR rirb_entries$[rsp], 0
 
-; 116  : 
-; 117  : 	
-; 118  : 	//_aud_outw_(RIRBCTL, 0);
-; 119  : 
-; 120  : 	reg = _aud_inb_ (RIRBSIZE);
+; 115  : 
+; 116  : 	
+; 117  : 	//_aud_outw_(RIRBCTL, 0);
+; 118  : 
+; 119  : 	reg = _aud_inb_ (RIRBSIZE);
 
 	mov	ecx, 94					; 0000005eH
 	call	?_aud_inb_@@YAEH@Z			; _aud_inb_
 	mov	BYTE PTR reg$[rsp], al
 
-; 121  : 	/* Check RIRB size capabilities and choose the largest size */
-; 122  : 	if (reg & (1 << 6)) {
+; 120  : 	/* Check RIRB size capabilities and choose the largest size */
+; 121  : 	if (reg & (1 << 6)) {
 
 	movzx	eax, BYTE PTR reg$[rsp]
 	and	eax, 64					; 00000040H
 	test	eax, eax
 	je	SHORT $LN6@setup_rirb
 
-; 123  : 		_ihd_audio.rirb_entries = 256;
+; 122  : 		_ihd_audio.rirb_entries = 256;
 
 	mov	DWORD PTR ?_ihd_audio@@3U_hd_audio_@@A+24, 256 ; 00000100H
 
-; 124  : 		reg |= 0x2;
+; 123  : 		reg |= 0x2;
 
 	movzx	eax, BYTE PTR reg$[rsp]
 	or	eax, 2
@@ -1336,18 +1377,18 @@ $LN9:
 	jmp	SHORT $LN5@setup_rirb
 $LN6@setup_rirb:
 
-; 125  : 	} else if (reg & (1 << 5)) {
+; 124  : 	} else if (reg & (1 << 5)) {
 
 	movzx	eax, BYTE PTR reg$[rsp]
 	and	eax, 32					; 00000020H
 	test	eax, eax
 	je	SHORT $LN4@setup_rirb
 
-; 126  : 		_ihd_audio.rirb_entries = 16;
+; 125  : 		_ihd_audio.rirb_entries = 16;
 
 	mov	DWORD PTR ?_ihd_audio@@3U_hd_audio_@@A+24, 16
 
-; 127  : 		reg |= 0x1;
+; 126  : 		reg |= 0x1;
 
 	movzx	eax, BYTE PTR reg$[rsp]
 	or	eax, 1
@@ -1355,37 +1396,37 @@ $LN6@setup_rirb:
 	jmp	SHORT $LN3@setup_rirb
 $LN4@setup_rirb:
 
-; 128  : 	}else if (reg & (1 << 4)) {
+; 127  : 	}else if (reg & (1 << 4)) {
 
 	movzx	eax, BYTE PTR reg$[rsp]
 	and	eax, 16
 	test	eax, eax
 	je	SHORT $LN2@setup_rirb
 
-; 129  : 		_ihd_audio.rirb_entries = 2;
+; 128  : 		_ihd_audio.rirb_entries = 2;
 
 	mov	DWORD PTR ?_ihd_audio@@3U_hd_audio_@@A+24, 2
 
-; 130  : 		reg |= 0x0;
+; 129  : 		reg |= 0x0;
 
 	movzx	eax, BYTE PTR reg$[rsp]
 	mov	BYTE PTR reg$[rsp], al
 
-; 131  : 	}else {
+; 130  : 	}else {
 
 	jmp	SHORT $LN1@setup_rirb
 $LN2@setup_rirb:
 
-; 132  : 		printf ("HD Audio: No supported RIRB size !!\n");
+; 131  : 		printf ("HD Audio: No supported RIRB size !!\n");
 
-	lea	rcx, OFFSET FLAT:$SG3429
+	lea	rcx, OFFSET FLAT:$SG3428
 	call	?printf@@YAXPEBDZZ			; printf
 
-; 133  : 		_ihd_audio.rirb_entries = 256;
+; 132  : 		_ihd_audio.rirb_entries = 256;
 
 	mov	DWORD PTR ?_ihd_audio@@3U_hd_audio_@@A+24, 256 ; 00000100H
 
-; 134  : 		reg |= 0x2;
+; 133  : 		reg |= 0x2;
 
 	movzx	eax, BYTE PTR reg$[rsp]
 	or	eax, 2
@@ -1394,28 +1435,28 @@ $LN1@setup_rirb:
 $LN3@setup_rirb:
 $LN5@setup_rirb:
 
-; 135  : 	}
-; 136  : 
-; 137  : 	_aud_outb_(RIRBSIZE,reg);
+; 134  : 	}
+; 135  : 
+; 136  : 	_aud_outb_(RIRBSIZE,reg);
 
 	movzx	edx, BYTE PTR reg$[rsp]
 	mov	ecx, 94					; 0000005eH
 	call	?_aud_outb_@@YAXHE@Z			; _aud_outb_
 
-; 138  : 
-; 139  : 	/* Set RIRB Base address */
-; 140  : 	rirb_base = (uint64_t)_ihd_audio.rirb;
+; 137  : 
+; 138  : 	/* Set RIRB Base address */
+; 139  : 	rirb_base = (uint64_t)_ihd_audio.rirb;
 
 	mov	rax, QWORD PTR ?_ihd_audio@@3U_hd_audio_@@A+16
 	mov	QWORD PTR rirb_base$[rsp], rax
 
-; 141  : 	_aud_outl_(RIRBLBASE, rirb_base);
+; 140  : 	_aud_outl_(RIRBLBASE, rirb_base);
 
 	mov	edx, DWORD PTR rirb_base$[rsp]
 	mov	ecx, 80					; 00000050H
 	call	?_aud_outl_@@YAXHI@Z			; _aud_outl_
 
-; 142  : 	_aud_outl_(RIRBUBASE, rirb_base >> 32);
+; 141  : 	_aud_outl_(RIRBUBASE, rirb_base >> 32);
 
 	mov	rax, QWORD PTR rirb_base$[rsp]
 	shr	rax, 32					; 00000020H
@@ -1423,16 +1464,16 @@ $LN5@setup_rirb:
 	mov	ecx, 84					; 00000054H
 	call	?_aud_outl_@@YAXHI@Z			; _aud_outl_
 
-; 143  : 
-; 144  : 	_aud_outw_ (RIRBWP, 0x8000);
+; 142  : 
+; 143  : 	_aud_outw_ (RIRBWP, 0x8000);
 
 	mov	dx, 32768				; 00008000H
 	mov	ecx, 88					; 00000058H
 	call	?_aud_outw_@@YAXHG@Z			; _aud_outw_
 
-; 145  : 	/*for (int i = 0; i < 1000; i++)
-; 146  : 		;*/
-; 147  : 	_aud_outw_(RINTCNT, _ihd_audio.rirb_entries / 2);
+; 144  : 	/*for (int i = 0; i < 1000; i++)
+; 145  : 		;*/
+; 146  : 	_aud_outw_(RINTCNT, _ihd_audio.rirb_entries / 2);
 
 	xor	edx, edx
 	mov	eax, DWORD PTR ?_ihd_audio@@3U_hd_audio_@@A+24
@@ -1442,35 +1483,35 @@ $LN5@setup_rirb:
 	mov	ecx, 90					; 0000005aH
 	call	?_aud_outw_@@YAXHG@Z			; _aud_outw_
 
-; 148  : 
-; 149  : 	_aud_outb_ (RIRBCTL,0x01);
+; 147  : 
+; 148  : 	_aud_outb_ (RIRBCTL,0x1);
 
 	mov	dl, 1
 	mov	ecx, 92					; 0000005cH
 	call	?_aud_outb_@@YAXHE@Z			; _aud_outb_
 
-; 150  : 	/* Start DMA Engine */
-; 151  : 	uint32_t rirbctl = _aud_inb_ (RIRBCTL);
+; 149  : 	/* Start DMA Engine */
+; 150  : 	uint32_t rirbctl = _aud_inb_ (RIRBCTL);
 
 	mov	ecx, 92					; 0000005cH
 	call	?_aud_inb_@@YAEH@Z			; _aud_inb_
 	movzx	eax, al
 	mov	DWORD PTR rirbctl$[rsp], eax
 
-; 152  : 	rirbctl |= 0x02;
+; 151  : 	rirbctl |= 0x2;
 
 	mov	eax, DWORD PTR rirbctl$[rsp]
 	or	eax, 2
 	mov	DWORD PTR rirbctl$[rsp], eax
 
-; 153  : 	_aud_outb_ (RIRBCTL,rirbctl);
+; 152  : 	_aud_outb_ (RIRBCTL,rirbctl);
 
 	movzx	edx, BYTE PTR rirbctl$[rsp]
 	mov	ecx, 92					; 0000005cH
 	call	?_aud_outb_@@YAXHE@Z			; _aud_outb_
 
-; 154  : 
-; 155  : }
+; 153  : 
+; 154  : }
 
 	add	rsp, 72					; 00000048H
 	ret	0
@@ -1498,10 +1539,10 @@ $LN9:
 	mov	DWORD PTR corb_entries$[rsp], 0
 
 ; 70   : 
-; 71   : 	reg = _aud_inw_(CORBSIZE);
+; 71   : 	reg = _aud_inb_(CORBSIZE);
 
 	mov	ecx, 78					; 0000004eH
-	call	?_aud_inw_@@YAGH@Z			; _aud_inw_
+	call	?_aud_inb_@@YAEH@Z			; _aud_inb_
 	mov	BYTE PTR reg$[rsp], al
 
 ; 72   : 	/* Check CORB size capabilities and choose the largest size */
@@ -1564,16 +1605,11 @@ $LN4@setup_corb:
 	jmp	SHORT $LN1@setup_corb
 $LN2@setup_corb:
 
-; 83   : 		printf ("HD Audio: No Supported CORB Size!\n");
-
-	lea	rcx, OFFSET FLAT:$SG3415
-	call	?printf@@YAXPEBDZZ			; printf
-
-; 84   : 		_ihd_audio.corb_entries = 256;
+; 83   : 		_ihd_audio.corb_entries = 256;
 
 	mov	DWORD PTR ?_ihd_audio@@3U_hd_audio_@@A+28, 256 ; 00000100H
 
-; 85   : 		reg |= 0x2;
+; 84   : 		reg |= 0x2;
 
 	movzx	eax, BYTE PTR reg$[rsp]
 	or	eax, 2
@@ -1582,29 +1618,29 @@ $LN1@setup_corb:
 $LN3@setup_corb:
 $LN5@setup_corb:
 
-; 86   : 	}
-; 87   : 
-; 88   : 	_aud_outb_(CORBSIZE, reg);
+; 85   : 	}
+; 86   : 
+; 87   : 	_aud_outb_(CORBSIZE, reg);
 
 	movzx	edx, BYTE PTR reg$[rsp]
 	mov	ecx, 78					; 0000004eH
 	call	?_aud_outb_@@YAXHE@Z			; _aud_outb_
 
+; 88   : 
 ; 89   : 
-; 90   : 
-; 91   : 	/* Set CORB Base Address */
-; 92   : 	corb_base = (uintptr_t)_ihd_audio.corb;
+; 90   : 	/* Set CORB Base Address */
+; 91   : 	corb_base = (uintptr_t)_ihd_audio.corb;
 
 	mov	eax, DWORD PTR ?_ihd_audio@@3U_hd_audio_@@A+8
 	mov	QWORD PTR corb_base$[rsp], rax
 
-; 93   : 	_aud_outl_(CORBLBASE, corb_base);
+; 92   : 	_aud_outl_(CORBLBASE, corb_base);
 
 	mov	edx, DWORD PTR corb_base$[rsp]
 	mov	ecx, 64					; 00000040H
 	call	?_aud_outl_@@YAXHI@Z			; _aud_outl_
 
-; 94   : 	_aud_outl_(CORBUBASE, corb_base >> 32);
+; 93   : 	_aud_outl_(CORBUBASE, corb_base >> 32);
 
 	mov	rax, QWORD PTR corb_base$[rsp]
 	shr	rax, 32					; 00000020H
@@ -1612,55 +1648,55 @@ $LN5@setup_corb:
 	mov	ecx, 68					; 00000044H
 	call	?_aud_outl_@@YAXHI@Z			; _aud_outl_
 
-; 95   : 
-; 96   : 	_aud_outw_ (CORBWP, corbwp);
+; 94   : 
+; 95   : 	_aud_outw_ (CORBWP, corbwp);
 
 	movzx	edx, WORD PTR ?corbwp@@3GA		; corbwp
 	mov	ecx, 72					; 00000048H
 	call	?_aud_outw_@@YAXHG@Z			; _aud_outw_
 
-; 97   : 	_aud_outw_ (CORBRP, 0x8000);
+; 96   : 	_aud_outw_ (CORBRP, 0x8000);
 
 	mov	dx, 32768				; 00008000H
 	mov	ecx, 74					; 0000004aH
 	call	?_aud_outw_@@YAXHG@Z			; _aud_outw_
 
-; 98   : 	_aud_outw_ (CORBRP, 0x0);
+; 97   : 	_aud_outw_ (CORBRP, 0x0);
 
 	xor	edx, edx
 	mov	ecx, 74					; 0000004aH
 	call	?_aud_outw_@@YAXHG@Z			; _aud_outw_
 
-; 99   : 	/*for (int i = 0; i < 1000; i++)
-; 100  : 		;*/
-; 101  : 
-; 102  : 	/* Start DMA engine */
-; 103  : 	_aud_outl_(CORBCTL, 0x01);
+; 98   : 	/*for (int i = 0; i < 1000; i++)
+; 99   : 		;*/
+; 100  : 
+; 101  : 	/* Start DMA engine */
+; 102  : 	_aud_outb_(CORBCTL, 0x1);
 
-	mov	edx, 1
+	mov	dl, 1
 	mov	ecx, 76					; 0000004cH
-	call	?_aud_outl_@@YAXHI@Z			; _aud_outl_
+	call	?_aud_outb_@@YAXHE@Z			; _aud_outb_
 
-; 104  : 	uint32_t corbctl = _aud_inb_(CORBCTL);
+; 103  : 	uint32_t corbctl = _aud_inb_(CORBCTL);
 
 	mov	ecx, 76					; 0000004cH
 	call	?_aud_inb_@@YAEH@Z			; _aud_inb_
 	movzx	eax, al
 	mov	DWORD PTR corbctl$[rsp], eax
 
-; 105  : 	corbctl |= 0x02;
+; 104  : 	corbctl |= 0x2;
 
 	mov	eax, DWORD PTR corbctl$[rsp]
 	or	eax, 2
 	mov	DWORD PTR corbctl$[rsp], eax
 
-; 106  : 	_aud_outb_ (CORBCTL, corbctl);
+; 105  : 	_aud_outb_ (CORBCTL, corbctl);
 
 	movzx	edx, BYTE PTR corbctl$[rsp]
 	mov	ecx, 76					; 0000004cH
 	call	?_aud_outb_@@YAXHE@Z			; _aud_outb_
 
-; 107  : }
+; 106  : }
 
 	add	rsp, 72					; 00000048H
 	ret	0
@@ -1909,15 +1945,15 @@ dev$ = 64
 pci_dev$ = 80
 ?hda_initialize@@YAXXZ PROC				; hda_initialize
 
-; 417  : void hda_initialize () {
+; 424  : void hda_initialize () {
 
 $LN10:
 	sub	rsp, 344				; 00000158H
 
-; 418  : 	pci_device_info pci_dev;
-; 419  : 	int bus, dev, func;
-; 420  : 
-; 421  : 	if (!pci_find_device_class (0x04, 0x03, &pci_dev, &bus, &dev, &func)){
+; 425  : 	pci_device_info pci_dev;
+; 426  : 	int bus, dev, func;
+; 427  : 
+; 428  : 	if (!pci_find_device_class (0x04, 0x03, &pci_dev, &bus, &dev, &func)){
 
 	lea	rax, QWORD PTR func$[rsp]
 	mov	QWORD PTR [rsp+40], rax
@@ -1932,41 +1968,41 @@ $LN10:
 	test	eax, eax
 	jne	SHORT $LN7@hda_initia
 
-; 422  : 		printf ("No HD-Audio was found\n");
+; 429  : 		printf ("No HD-Audio was found\n");
 
-	lea	rcx, OFFSET FLAT:$SG3570
+	lea	rcx, OFFSET FLAT:$SG3576
 	call	?printf@@YAXPEBDZZ			; printf
 
-; 423  : 		return;
+; 430  : 		return;
 
 	jmp	$LN8@hda_initia
 $LN7@hda_initia:
 
-; 424  : 	}
-; 425  : 
-; 426  : 	x64_cli();
+; 431  : 	}
+; 432  : 
+; 433  : 	x64_cli();
 
 	call	x64_cli
 
-; 427  : 
-; 428  : 	printf ("HD Audio found vendor -> %x, device -> %x\n", pci_dev.device.vendorID, pci_dev.device.deviceID);
+; 434  : 
+; 435  : 	printf ("HD Audio found vendor -> %x, device -> %x\n", pci_dev.device.vendorID, pci_dev.device.deviceID);
 
 	movzx	eax, WORD PTR pci_dev$[rsp+2]
 	movzx	ecx, WORD PTR pci_dev$[rsp]
 	mov	r8d, eax
 	mov	edx, ecx
-	lea	rcx, OFFSET FLAT:$SG3571
+	lea	rcx, OFFSET FLAT:$SG3577
 	call	?printf@@YAXPEBDZZ			; printf
 
-; 429  : 
-; 430  : 
-; 431  : 	if (pci_dev.device.nonBridge.interruptLine != 255) 
+; 436  : 
+; 437  : 
+; 438  : 	if (pci_dev.device.nonBridge.interruptLine != 255) 
 
 	movzx	eax, BYTE PTR pci_dev$[rsp+60]
 	cmp	eax, 255				; 000000ffH
 	je	SHORT $LN6@hda_initia
 
-; 432  : 		interrupt_set (pci_dev.device.nonBridge.interruptLine, hda_handler, pci_dev.device.nonBridge.interruptLine);
+; 439  : 		interrupt_set (pci_dev.device.nonBridge.interruptLine, hda_handler, pci_dev.device.nonBridge.interruptLine);
 
 	movzx	eax, BYTE PTR pci_dev$[rsp+60]
 	movzx	r8d, BYTE PTR pci_dev$[rsp+60]
@@ -1975,40 +2011,40 @@ $LN7@hda_initia:
 	call	?interrupt_set@@YAX_KP6AX0PEAX@ZE@Z	; interrupt_set
 $LN6@hda_initia:
 
-; 433  : 
-; 434  : 	_ihd_audio.mmio = pci_dev.device.nonBridge.baseAddress[0]; //& ~3);
+; 440  : 
+; 441  : 	_ihd_audio.mmio = pci_dev.device.nonBridge.baseAddress[0]; //& ~3);
 
 	mov	eax, 4
 	imul	rax, 0
 	mov	eax, DWORD PTR pci_dev$[rsp+rax+16]
 	mov	QWORD PTR ?_ihd_audio@@3U_hd_audio_@@A, rax
 
-; 435  : 	_ihd_audio.corb = (uint32_t*)pmmngr_alloc(); //for 256 entries only 1 kb will be used
+; 442  : 	_ihd_audio.corb = (uint32_t*)pmmngr_alloc(); //for 256 entries only 1 kb will be used
 
 	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
 	mov	QWORD PTR ?_ihd_audio@@3U_hd_audio_@@A+8, rax
 
-; 436  : 	_ihd_audio.rirb = (uint64_t*)pmmngr_alloc(); //(ring_address + 1024);
+; 443  : 	_ihd_audio.rirb = (uint64_t*)pmmngr_alloc(); //(ring_address + 1024);
 
 	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
 	mov	QWORD PTR ?_ihd_audio@@3U_hd_audio_@@A+16, rax
 
-; 437  : 	memset (_ihd_audio.corb, 0, 4096);
+; 444  : 	memset (_ihd_audio.corb, 0, 4096);
 
 	mov	r8d, 4096				; 00001000H
 	xor	edx, edx
 	mov	rcx, QWORD PTR ?_ihd_audio@@3U_hd_audio_@@A+8
 	call	?memset@@YAXPEAXEI@Z			; memset
 
-; 438  : 	memset (_ihd_audio.rirb, 0, 4096);
+; 445  : 	memset (_ihd_audio.rirb, 0, 4096);
 
 	mov	r8d, 4096				; 00001000H
 	xor	edx, edx
 	mov	rcx, QWORD PTR ?_ihd_audio@@3U_hd_audio_@@A+16
 	call	?memset@@YAXPEAXEI@Z			; memset
 
-; 439  : 
-; 440  : 	if (_aud_inw_ (GCAP) & 1) {
+; 446  : 
+; 447  : 	if (_aud_inw_ (GCAP) & 1) {
 
 	xor	ecx, ecx
 	call	?_aud_inw_@@YAGH@Z			; _aud_inw_
@@ -2017,27 +2053,27 @@ $LN6@hda_initia:
 	test	eax, eax
 	je	SHORT $LN5@hda_initia
 
-; 441  : 		printf ("HD-Audio 64-OK\n");
+; 448  : 		printf ("HD-Audio 64-OK\n");
 
-	lea	rcx, OFFSET FLAT:$SG3576
+	lea	rcx, OFFSET FLAT:$SG3582
 	call	?printf@@YAXPEBDZZ			; printf
 $LN5@hda_initia:
 
-; 442  : 	}
-; 443  : 	
-; 444  : 	hda_reset();
+; 449  : 	}
+; 450  : 	
+; 451  : 	hda_reset();
 
 	call	?hda_reset@@YAXXZ			; hda_reset
 
-; 445  :    
-; 446  : 
-; 447  : 	uint16_t statests = _aud_inw_ (STATESTS);
+; 452  :     
+; 453  :    
+; 454  : 	uint16_t statests = _aud_inw_ (STATESTS);
 
 	mov	ecx, 14
 	call	?_aud_inw_@@YAGH@Z			; _aud_inw_
 	mov	WORD PTR statests$[rsp], ax
 
-; 448  : 	for (int i = 0; i < 15; i++) {
+; 455  : 	for (int i = 0; i < 15; i++) {
 
 	mov	DWORD PTR i$1[rsp], 0
 	jmp	SHORT $LN4@hda_initia
@@ -2049,7 +2085,7 @@ $LN4@hda_initia:
 	cmp	DWORD PTR i$1[rsp], 15
 	jge	SHORT $LN2@hda_initia
 
-; 449  : 		if (statests & (1 << i)){
+; 456  : 		if (statests & (1 << i)){
 
 	movzx	eax, WORD PTR statests$[rsp]
 	mov	ecx, DWORD PTR i$1[rsp]
@@ -2060,27 +2096,26 @@ $LN4@hda_initia:
 	test	eax, eax
 	je	SHORT $LN1@hda_initia
 
-; 450  : 			codec_enumerate_widgets(i);
+; 457  : 			codec_enumerate_widgets(i);
 
 	mov	ecx, DWORD PTR i$1[rsp]
 	call	?codec_enumerate_widgets@@YAXH@Z	; codec_enumerate_widgets
 $LN1@hda_initia:
 
-; 451  : 		}
-; 452  : 	}
+; 458  : 		}
+; 459  : 	}
 
 	jmp	SHORT $LN3@hda_initia
 $LN2@hda_initia:
 
-; 453  : 
-; 454  :     x64_sti();
+; 460  : 
+; 461  :     x64_sti();
 
 	call	x64_sti
 $LN8@hda_initia:
 
-; 455  :    
-; 456  :   
-; 457  : }
+; 462  :   
+; 463  : }
 
 	add	rsp, 344				; 00000158H
 	ret	0
