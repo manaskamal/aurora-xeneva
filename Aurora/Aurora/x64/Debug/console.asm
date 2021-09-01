@@ -25,8 +25,8 @@ PUBLIC	?puts@@YAXPEAD@Z				; puts
 PUBLIC	?putc@@YAXD@Z					; putc
 PUBLIC	?console_pixel@@YAXIII@Z			; console_pixel
 pdata	SEGMENT
-$pdata$?puts@@YAXPEAD@Z DD imagerel $LN20
-	DD	imagerel $LN20+597
+$pdata$?puts@@YAXPEAD@Z DD imagerel $LN24
+	DD	imagerel $LN24+724
 	DD	imagerel $unwind$?puts@@YAXPEAD@Z
 $pdata$?putc@@YAXD@Z DD imagerel $LN13
 	DD	imagerel $LN13+501
@@ -284,23 +284,24 @@ _TEXT	ENDS
 ; Function compile flags: /Odtp
 ; File e:\xeneva project\xeneva\aurora\aurora\console.cpp
 _TEXT	SEGMENT
-line$ = 0
+i$1 = 0
+line$ = 4
 font$ = 8
-x$ = 16
-offs$ = 20
-mask$ = 24
-y$ = 28
-tv85 = 32
-tv143 = 36
+offs$ = 16
+y$ = 20
+x$ = 24
+mask$ = 28
+tv161 = 32
+tv135 = 36
 bpl$ = 40
-tv196 = 44
-glyph$1 = 48
+tv223 = 44
+glyph$2 = 48
 s$ = 80
 ?puts@@YAXPEAD@Z PROC					; puts
 
 ; 64   : void puts(char *s){
 
-$LN20:
+$LN24:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 72					; 00000048H
 
@@ -320,92 +321,147 @@ $LN20:
 	mov	ecx, 8
 	div	ecx
 	mov	DWORD PTR bpl$[rsp], eax
-$LN13@puts:
+$LN17@puts:
 
 ; 69   :     while(*s) {
 
 	mov	rax, QWORD PTR s$[rsp]
 	movsx	eax, BYTE PTR [rax]
 	test	eax, eax
-	je	$LN12@puts
+	je	$LN16@puts
 
 ; 70   : 		if (*s == '\n') {
 
 	mov	rax, QWORD PTR s$[rsp]
 	movsx	eax, BYTE PTR [rax]
 	cmp	eax, 10
-	jne	SHORT $LN11@puts
+	jne	$LN15@puts
 
-; 71   : 			console_y += 16;
+; 71   : 
+; 72   : 			//!Scroll
+; 73   : 			if (console_y + 1 > screen_height) {
+
+	mov	eax, DWORD PTR console_y
+	inc	eax
+	movzx	ecx, WORD PTR screen_height
+	cmp	eax, ecx
+	jle	SHORT $LN14@puts
+
+; 74   : 				for (int i = 16; i < screen_height * screen_width; i++) {
+
+	mov	DWORD PTR i$1[rsp], 16
+	jmp	SHORT $LN13@puts
+$LN12@puts:
+	mov	eax, DWORD PTR i$1[rsp]
+	inc	eax
+	mov	DWORD PTR i$1[rsp], eax
+$LN13@puts:
+	movzx	eax, WORD PTR screen_height
+	movzx	ecx, WORD PTR screen_width
+	imul	eax, ecx
+	cmp	DWORD PTR i$1[rsp], eax
+	jge	SHORT $LN11@puts
+
+; 75   : 					fb[i] = fb[i + screen_width * 16];
+
+	movzx	eax, WORD PTR screen_width
+	imul	eax, 16
+	mov	ecx, DWORD PTR i$1[rsp]
+	add	ecx, eax
+	mov	eax, ecx
+	cdqe
+	movsxd	rcx, DWORD PTR i$1[rsp]
+	mov	rdx, QWORD PTR fb
+	mov	r8, QWORD PTR fb
+	mov	eax, DWORD PTR [r8+rax*4]
+	mov	DWORD PTR [rdx+rcx*4], eax
+
+; 76   : 				}
+
+	jmp	SHORT $LN12@puts
+$LN11@puts:
+
+; 77   : 				console_y--;
+
+	mov	eax, DWORD PTR console_y
+	dec	eax
+	mov	DWORD PTR console_y, eax
+$LN14@puts:
+
+; 78   : 			}
+; 79   : 
+; 80   : 			console_y += 16;
 
 	mov	eax, DWORD PTR console_y
 	add	eax, 16
 	mov	DWORD PTR console_y, eax
 
-; 72   : 			console_x = 0;
+; 81   : 			console_x = 0;
 
 	mov	DWORD PTR console_x, 0
 	jmp	$LN10@puts
-$LN11@puts:
+$LN15@puts:
 
-; 73   : 		} else if (*s == '\b') {
+; 82   : 			//!Scroll is needed
+; 83   : 			
+; 84   : 		} else if (*s == '\b') {
 
 	mov	rax, QWORD PTR s$[rsp]
 	movsx	eax, BYTE PTR [rax]
 	cmp	eax, 8
 	jne	SHORT $LN9@puts
 
-; 74   : 			if (console_x > 0) {
+; 85   : 			if (console_x > 0) {
 
 	cmp	DWORD PTR console_x, 0
 	jle	SHORT $LN8@puts
 
-; 75   : 				console_x--;
+; 86   : 				console_x--;
 
 	mov	eax, DWORD PTR console_x
 	dec	eax
 	mov	DWORD PTR console_x, eax
 $LN8@puts:
 
-; 76   : 			}
-; 77   : 		}else {
+; 87   : 			}
+; 88   : 		}else {
 
 	jmp	$LN7@puts
 $LN9@puts:
 
-; 78   : 			unsigned char *glyph = (unsigned char*)psf_data + font->headersize + 
-; 79   : 				(*s>0&&*s<font->numglyph?*s:0)*font->bytesperglyph;
+; 89   : 			unsigned char *glyph = (unsigned char*)psf_data + font->headersize + 
+; 90   : 				(*s>0&&*s<font->numglyph?*s:0)*font->bytesperglyph;
 
 	mov	rax, QWORD PTR s$[rsp]
 	movsx	eax, BYTE PTR [rax]
 	test	eax, eax
-	jle	SHORT $LN16@puts
+	jle	SHORT $LN20@puts
 	mov	rax, QWORD PTR s$[rsp]
 	movsx	eax, BYTE PTR [rax]
 	mov	rcx, QWORD PTR font$[rsp]
 	cmp	eax, DWORD PTR [rcx+16]
-	jae	SHORT $LN16@puts
+	jae	SHORT $LN20@puts
 	mov	rax, QWORD PTR s$[rsp]
 	movsx	eax, BYTE PTR [rax]
-	mov	DWORD PTR tv85[rsp], eax
-	jmp	SHORT $LN17@puts
-$LN16@puts:
-	mov	DWORD PTR tv85[rsp], 0
-$LN17@puts:
+	mov	DWORD PTR tv135[rsp], eax
+	jmp	SHORT $LN21@puts
+$LN20@puts:
+	mov	DWORD PTR tv135[rsp], 0
+$LN21@puts:
 	mov	rax, QWORD PTR font$[rsp]
 	mov	eax, DWORD PTR [rax+8]
 	mov	rcx, QWORD PTR psf_data
 	add	rcx, rax
 	mov	rax, rcx
 	mov	rcx, QWORD PTR font$[rsp]
-	mov	edx, DWORD PTR tv85[rsp]
+	mov	edx, DWORD PTR tv135[rsp]
 	imul	edx, DWORD PTR [rcx+20]
 	mov	ecx, edx
 	mov	ecx, ecx
 	add	rax, rcx
-	mov	QWORD PTR glyph$1[rsp], rax
+	mov	QWORD PTR glyph$2[rsp], rax
 
-; 80   : 			offs = console_x * (font->width + 1);// * 4);
+; 91   : 			offs = console_x * (font->width + 1);// * 4);
 
 	mov	rax, QWORD PTR font$[rsp]
 	mov	eax, DWORD PTR [rax+28]
@@ -415,7 +471,7 @@ $LN17@puts:
 	mov	eax, ecx
 	mov	DWORD PTR offs$[rsp], eax
 
-; 81   : 			for(y=0;y<font->height;y++) {
+; 92   : 			for(y=0;y<font->height;y++) {
 
 	mov	DWORD PTR y$[rsp], 0
 	jmp	SHORT $LN6@puts
@@ -429,7 +485,7 @@ $LN6@puts:
 	cmp	DWORD PTR y$[rsp], eax
 	jae	$LN4@puts
 
-; 82   : 				line=offs; mask=1<<(font->width-1);
+; 93   : 				line=offs; mask=1<<(font->width-1);
 
 	mov	eax, DWORD PTR offs$[rsp]
 	mov	DWORD PTR line$[rsp], eax
@@ -437,13 +493,13 @@ $LN6@puts:
 	mov	eax, DWORD PTR [rax+28]
 	dec	eax
 	mov	ecx, 1
-	mov	DWORD PTR tv196[rsp], ecx
+	mov	DWORD PTR tv223[rsp], ecx
 	movzx	ecx, al
-	mov	eax, DWORD PTR tv196[rsp]
+	mov	eax, DWORD PTR tv223[rsp]
 	shl	eax, cl
 	mov	DWORD PTR mask$[rsp], eax
 
-; 83   : 				for(x=0;x<font->width;x++) {
+; 94   : 				for(x=0;x<font->width;x++) {
 
 	mov	DWORD PTR x$[rsp], 0
 	jmp	SHORT $LN3@puts
@@ -457,18 +513,18 @@ $LN3@puts:
 	cmp	DWORD PTR x$[rsp], eax
 	jae	SHORT $LN1@puts
 
-; 84   : 					fb[line  + console_y * screen_width ]=((int)*glyph) & (mask)?0xFFFFFF:0;
+; 95   : 					fb[line  + console_y * screen_width ]=((int)*glyph) & (mask)?0xFFFFFF:0;
 
-	mov	rax, QWORD PTR glyph$1[rsp]
+	mov	rax, QWORD PTR glyph$2[rsp]
 	movzx	eax, BYTE PTR [rax]
 	and	eax, DWORD PTR mask$[rsp]
 	test	eax, eax
-	je	SHORT $LN18@puts
-	mov	DWORD PTR tv143[rsp], 16777215		; 00ffffffH
-	jmp	SHORT $LN19@puts
-$LN18@puts:
-	mov	DWORD PTR tv143[rsp], 0
-$LN19@puts:
+	je	SHORT $LN22@puts
+	mov	DWORD PTR tv161[rsp], 16777215		; 00ffffffH
+	jmp	SHORT $LN23@puts
+$LN22@puts:
+	mov	DWORD PTR tv161[rsp], 0
+$LN23@puts:
 	movzx	eax, WORD PTR screen_width
 	mov	ecx, DWORD PTR console_y
 	imul	ecx, eax
@@ -478,10 +534,10 @@ $LN19@puts:
 	mov	eax, ecx
 	cdqe
 	mov	rcx, QWORD PTR fb
-	mov	edx, DWORD PTR tv143[rsp]
+	mov	edx, DWORD PTR tv161[rsp]
 	mov	DWORD PTR [rcx+rax*4], edx
 
-; 85   : 					mask>>=1; line+=1;
+; 96   : 					mask>>=1; line+=1;
 
 	mov	eax, DWORD PTR mask$[rsp]
 	sar	eax, 1
@@ -490,12 +546,12 @@ $LN19@puts:
 	inc	eax
 	mov	DWORD PTR line$[rsp], eax
 
-; 86   : 				}
+; 97   : 				}
 
 	jmp	SHORT $LN2@puts
 $LN1@puts:
 
-; 87   : 				fb[line  + console_y * screen_width]=0; glyph+=bpl; offs+=scanline;
+; 98   : 				fb[line  + console_y * screen_width]=0; glyph+=bpl; offs+=scanline;
 
 	movzx	eax, WORD PTR screen_width
 	mov	ecx, DWORD PTR console_y
@@ -508,22 +564,22 @@ $LN1@puts:
 	mov	rcx, QWORD PTR fb
 	mov	DWORD PTR [rcx+rax*4], 0
 	movsxd	rax, DWORD PTR bpl$[rsp]
-	mov	rcx, QWORD PTR glyph$1[rsp]
+	mov	rcx, QWORD PTR glyph$2[rsp]
 	add	rcx, rax
 	mov	rax, rcx
-	mov	QWORD PTR glyph$1[rsp], rax
+	mov	QWORD PTR glyph$2[rsp], rax
 	movzx	eax, WORD PTR scanline
 	mov	ecx, DWORD PTR offs$[rsp]
 	add	ecx, eax
 	mov	eax, ecx
 	mov	DWORD PTR offs$[rsp], eax
 
-; 88   : 			}
+; 99   : 			}
 
 	jmp	$LN5@puts
 $LN4@puts:
 
-; 89   : 			console_x++;
+; 100  : 			console_x++;
 
 	mov	eax, DWORD PTR console_x
 	inc	eax
@@ -531,21 +587,21 @@ $LN4@puts:
 $LN7@puts:
 $LN10@puts:
 
-; 90   : 		}
-; 91   : 		s++; 
+; 101  : 		}
+; 102  : 		s++; 
 
 	mov	rax, QWORD PTR s$[rsp]
 	inc	rax
 	mov	QWORD PTR s$[rsp], rax
 
-; 92   :     }
+; 103  :     }
 
-	jmp	$LN13@puts
-$LN12@puts:
+	jmp	$LN17@puts
+$LN16@puts:
 
-; 93   : 
-; 94   : 	//!Scroll is needed
-; 95   : }
+; 104  : 
+; 105  : 	
+; 106  : }
 
 	add	rsp, 72					; 00000048H
 	ret	0

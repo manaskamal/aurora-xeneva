@@ -22,6 +22,103 @@ void xhci_handler (size_t v, void* p) {
 }
 
 
+void xhci_start_stop (int start) {
+
+	int count;
+
+	xhci_op_regs* op = (xhci_op_regs*)xusb_dev->xhci_op_address;
+
+	if (start) {
+		//! set the run/stop bit
+		op->cmd |= XHCI_CMD_RUNSTOP;
+
+		for (count = 0; count < 20; count++) {
+			if (!(op->stat & XHCI_STAT_HCHALTED)) {
+				printf ("USB: stating controller took %d ms\n", count);
+				break;
+			}
+		}
+
+
+		//! started ?
+		if (op->stat &XHCI_STAT_HCHALTED) {
+			printf ("USB: error! couldn't clear controller halted bit\n");
+			return;
+		}
+	} else {
+		//! stop the controller
+		if (op->cmdrctrlLo & XHCI_CRCR_CMDRNGRUNNING) {
+			printf ("USB: XHCI stopping command ring\n");
+			op->cmdrctrlLo = XHCI_CRCR_COMMANDABORT;
+			op->cmdrctrlHi = 0;
+
+			//!wait for stopped
+			for (count = 0; count < 5000; count++) {
+				if (!(op->cmdrctrlLo & XHCI_CRCR_CMDRNGRUNNING)) {
+					printf ("USB: xHCI stopping ring took %d ms\n", count);
+					break;
+				}
+			}
+
+			//! stopped
+			if (op->cmdrctrlLo & XHCI_CRCR_CMDRNGRUNNING)
+				printf ("USB: xHCI couldn't stop command ring\n");
+		}
+
+		//! clear the run/stop bit
+		op->cmd &= ~XHCI_CMD_RUNSTOP;
+
+		//!wait for halted
+		for (count = 0; count < 20; count++) {
+			if (op->stat & XHCI_STAT_HCHALTED) {
+				printf ("USB: xHCI stopping controller took %d ms\n", count);
+				break;
+			}
+		}
+
+			//! stopped?
+		if (!(op->stat & XHCI_STAT_HCHALTED)){
+			printf ("USB: xHCI couldn't set controller halted bit\n");
+			return;
+		}
+	}
+
+	//!successfull
+	printf ("USB: xHCI controller reset completed \n");
+}
+
+
+//! Reset the root hub, i.e reset the controller
+static void reset () {
+	//! stop the controller
+	xhci_start_stop(0);
+
+	xhci_op_regs* op_reg = (xhci_op_regs*)xusb_dev->xhci_op_address;
+	op_reg->cmd |= XHCI_CMD_HCRESET;
+
+	//! wait until the host controller clears it
+	for (int count = 0; count < 2000; count++){
+		if (! op_reg->cmd & XHCI_CMD_HCRESET) {
+			printf ("USB: xHCI resetting controller took %dms \n",count);
+			break;
+		}
+	}
+
+	//! clear
+	if (op_reg->cmd & XHCI_CMD_HCRESET)
+	{
+		printf ("USB: controller did not clear reset bit\n");
+		return;
+	}
+
+	//! successfull
+	printf ("USB: xHCI controller reset successfully\n");
+}
+
+
+/**
+ * Initialize the xhci controller
+ */
 void xhci_initialize () {
 	pci_device_info *dev = (pci_device_info*)pmmngr_alloc();
 	xusb_dev = (xhci*)pmmngr_alloc();
@@ -46,6 +143,7 @@ void xhci_initialize () {
 		interrupt_set (dev->device.nonBridge.interruptLine, xhci_handler, dev->device.nonBridge.interruptLine);
 
 
+	reset ();
 	x64_sti();
 	//for(;;);
 }

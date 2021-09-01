@@ -122,7 +122,7 @@
       <SDLCheck>false</SDLCheck>
       <OmitFramePointers>
       </OmitFramePointers>
-      <PreprocessorDefinitions>ARCH_X64;USE_PIC;AURORA_X64%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>ARCH_X64;USE_APIC;AURORA_X64%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <IgnoreStandardIncludePath>true</IgnoreStandardIncludePath>
       <ExceptionHandling>false</ExceptionHandling>
       <BasicRuntimeChecks>

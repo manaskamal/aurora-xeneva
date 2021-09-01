@@ -96,27 +96,27 @@ void _kmain (KERNEL_BOOT_INFO *info) {
 	mm_init(); 
 	initialize_serial();
 	console_initialize(info);
+
+	//!Initialize kernel runtime drivers	
 	kybrd_init();
 	initialize_acpi (info->acpi_table_pointer);
-	
-	initialize_rtc();
+	initialize_rtc(); 
 	e1000_initialize();
 	xhci_initialize ();  //<- needs completion	
-	hda_initialize();
-	for(;;);
-	//!initialize runtime drivers
+    hda_initialize();
+   
+
 	ata_initialize();
 	initialize_vfs();
 	initialize_screen(info);
-
-	//! for testing purpose
 	//svga_init (); 
 	initialize_mouse();
+
 	message_init ();
 	dwm_ipc_init();
    
 	driver_mngr_initialize(info);
-    
+	
 #ifdef ARCH_X64
 	initialize_scheduler();
 	//create_process ("dwm.exe","dwm",20);

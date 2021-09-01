@@ -134,7 +134,7 @@ void main () {
 	update_rect.h = height;
 
 	FILE f;
-	sys_open_file (&f, "nature.jpg");
+	sys_open_file (&f, "nature.jpg");  //nature.jpg
 	unsigned char* buffer_i = (unsigned char*)0x0000500000000000;
 	sys_read_file (&f,buffer_i,f.size);
 

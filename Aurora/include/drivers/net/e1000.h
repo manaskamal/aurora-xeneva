@@ -141,7 +141,7 @@ enum {
 #define E1000_ICR_RECEIVE   (1<<7)
 #define STATUS_LINK_UP (1<<31)
  
-#pragma pack(push)
+#pragma pack(push,1)
 struct e1000_rx_desc {
         volatile uint64_t addr;
         volatile uint16_t length;
@@ -152,7 +152,7 @@ struct e1000_rx_desc {
 };
 #pragma pack(pop)
  
-#pragma pack(push)
+#pragma pack(push,1)
 struct e1000_tx_desc {
         volatile uint64_t addr;
         volatile uint16_t length;

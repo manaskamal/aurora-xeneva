@@ -54,6 +54,8 @@ void ioapic_register_irq(size_t vector, void (*fn)(size_t, void* p),uint8_t irq)
 
 	low &= ~0xff;
 	low |= vector + 32;
+
+	low &= ~(1<<13);
 	
 	write_ioapic_register((void*)0xfec00000, reg, low);   //vector + 32
     setvect(vector + 32, fn);
@@ -66,6 +68,7 @@ void ioapic_redirect (uint8_t irq, uint32_t gsi, uint16_t flags, uint8_t apic) {
 	if (flags & 2) {
 		redirection |= 1 << 13;
 	}
+
 
 	if (flags & 8) {
 		redirection |= 1 << 15;

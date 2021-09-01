@@ -6,100 +6,100 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 CONST	SEGMENT
-$SG5742	DB	'***ARCH x86_64 : Exception Occured ***', 0aH, 00H
-$SG5745	DB	'[Aurora Kernel]: Below is the code of exception', 0aH, 00H
+$SG5746	DB	'***ARCH x86_64 : Exception Occured ***', 0aH, 00H
+$SG5749	DB	'[Aurora Kernel]: Below is the code of exception', 0aH, 00H
 	ORG $+7
-$SG5743	DB	'[Aurora Kernel]: We are sorry to say that, a processor i'
+$SG5747	DB	'[Aurora Kernel]: We are sorry to say that, a processor i'
 	DB	'nvalid exception has occured', 0aH, 00H
 	ORG $+2
-$SG5744	DB	'[Aurora Kernel]: please inform it to the master of the k'
+$SG5748	DB	'[Aurora Kernel]: please inform it to the master of the k'
 	DB	'ernel', 0aH, 00H
 	ORG $+1
-$SG5750	DB	0aH, 'Divide by 0', 00H
+$SG5754	DB	0aH, 'Divide by 0', 00H
 	ORG $+3
-$SG5760	DB	0aH, 'Single Step Trap', 00H
+$SG5764	DB	0aH, 'Single Step Trap', 00H
 	ORG $+6
-$SG5768	DB	0aH, 'NMI [Non-Muskable-Interrupt] Trap', 00H
+$SG5772	DB	0aH, 'NMI [Non-Muskable-Interrupt] Trap', 00H
 	ORG $+5
-$SG5776	DB	0aH, 'Breakpoint Trap', 00H
+$SG5780	DB	0aH, 'Breakpoint Trap', 00H
 	ORG $+7
-$SG5784	DB	0aH, 'Overflow Trap', 00H
+$SG5788	DB	0aH, 'Overflow Trap', 00H
 	ORG $+1
-$SG5792	DB	0aH, 'Bound Check Fault', 00H
+$SG5796	DB	0aH, 'Bound Check Fault', 00H
 	ORG $+5
-$SG5802	DB	'Invalid Opcode Fault', 0aH, 00H
+$SG5806	DB	'Invalid Opcode Fault', 0aH, 00H
 	ORG $+2
-$SG5803	DB	'__PROCESSOR TRACE__', 0aH, 00H
+$SG5807	DB	'__PROCESSOR TRACE__', 0aH, 00H
 	ORG $+3
-$SG5804	DB	'RIP -> %x', 0aH, 00H
+$SG5808	DB	'RIP -> %x', 0aH, 00H
 	ORG $+5
-$SG5805	DB	'Stack -> %x', 0aH, 00H
+$SG5809	DB	'Stack -> %x', 0aH, 00H
 	ORG $+3
-$SG5806	DB	'RFLAGS -> %x', 0aH, 00H
+$SG5810	DB	'RFLAGS -> %x', 0aH, 00H
 	ORG $+2
-$SG5807	DB	'CS -> %x', 0aH, 00H
+$SG5811	DB	'CS -> %x', 0aH, 00H
 	ORG $+6
-$SG5808	DB	'SS -> %x', 0aH, 00H
+$SG5812	DB	'SS -> %x', 0aH, 00H
 	ORG $+6
-$SG5809	DB	'Current task -> %s', 0aH, 00H
+$SG5813	DB	'Current task -> %s', 0aH, 00H
 	ORG $+4
-$SG5817	DB	0aH, 'No Device Fault', 00H
+$SG5821	DB	0aH, 'No Device Fault', 00H
 	ORG $+7
-$SG5825	DB	0aH, 'Double Fault Abort', 00H
+$SG5829	DB	0aH, 'Double Fault Abort', 00H
 	ORG $+4
-$SG5833	DB	0aH, 'Invalid TSS Fault ', 00H
+$SG5837	DB	0aH, 'Invalid TSS Fault ', 00H
 	ORG $+4
-$SG5841	DB	0aH, 'No Segment Fault', 00H
+$SG5845	DB	0aH, 'No Segment Fault', 00H
 	ORG $+6
-$SG5849	DB	0aH, 'Stack Fault at ', 00H
+$SG5853	DB	0aH, 'Stack Fault at ', 00H
 	ORG $+7
-$SG5859	DB	'Genral Protection Fault', 0aH, 00H
+$SG5863	DB	'Genral Protection Fault', 0aH, 00H
 	ORG $+7
-$SG5860	DB	'__PROCESSOR TRACE__', 0aH, 00H
+$SG5864	DB	'__PROCESSOR TRACE__', 0aH, 00H
 	ORG $+3
-$SG5861	DB	'RIP -> %x', 0aH, 00H
+$SG5865	DB	'RIP -> %x', 0aH, 00H
 	ORG $+5
-$SG5862	DB	'Stack -> %x', 0aH, 00H
+$SG5866	DB	'Stack -> %x', 0aH, 00H
 	ORG $+3
-$SG5863	DB	'RFLAGS -> %x', 0aH, 00H
+$SG5867	DB	'RFLAGS -> %x', 0aH, 00H
 	ORG $+2
-$SG5864	DB	'Current task ->%s', 0aH, 00H
+$SG5868	DB	'Current task ->%s', 0aH, 00H
 	ORG $+5
-$SG5865	DB	'CS -> %x, SS -> %x', 0aH, 00H
+$SG5869	DB	'CS -> %x, SS -> %x', 0aH, 00H
 	ORG $+4
-$SG5882	DB	'Page Fault ', 0aH, 00H
+$SG5886	DB	'Page Fault ', 0aH, 00H
 	ORG $+3
-$SG5883	DB	'Faulting Address -> %x', 0aH, 00H
-$SG5884	DB	'__PROCESSOR TRACE__', 0aH, 00H
+$SG5887	DB	'Faulting Address -> %x', 0aH, 00H
+$SG5888	DB	'__PROCESSOR TRACE__', 0aH, 00H
 	ORG $+3
-$SG5885	DB	'RIP -> %x', 0aH, 00H
+$SG5889	DB	'RIP -> %x', 0aH, 00H
 	ORG $+5
-$SG5886	DB	'Stack -> %x', 0aH, 00H
+$SG5890	DB	'Stack -> %x', 0aH, 00H
 	ORG $+3
-$SG5887	DB	'RFLAGS -> %x', 0aH, 00H
+$SG5891	DB	'RFLAGS -> %x', 0aH, 00H
 	ORG $+2
-$SG5888	DB	'Current thread -> %s', 0aH, 00H
+$SG5892	DB	'Current thread -> %s', 0aH, 00H
 	ORG $+2
-$SG5889	DB	'CS -> %x, SS -> %x', 0aH, 00H
+$SG5893	DB	'CS -> %x, SS -> %x', 0aH, 00H
 	ORG $+4
-$SG5890	DB	'******Cause********', 0aH, 00H
+$SG5894	DB	'******Cause********', 0aH, 00H
 	ORG $+3
-$SG5892	DB	'***User Priviledge fault***', 0aH, 00H
+$SG5896	DB	'***User Priviledge fault***', 0aH, 00H
 	ORG $+3
-$SG5895	DB	'***Page not present***', 0aH, 00H
-$SG5898	DB	'*** R/W ***', 0aH, 00H
+$SG5899	DB	'***Page not present***', 0aH, 00H
+$SG5902	DB	'*** R/W ***', 0aH, 00H
 	ORG $+3
-$SG5901	DB	'*** Reserved Page ***', 0aH, 00H
+$SG5905	DB	'*** Reserved Page ***', 0aH, 00H
 	ORG $+1
-$SG5904	DB	'*** Invalid Page ****', 0aH, 00H
+$SG5908	DB	'*** Invalid Page ****', 0aH, 00H
 	ORG $+1
-$SG5912	DB	0aH, 'FPU Fault', 00H
+$SG5916	DB	0aH, 'FPU Fault', 00H
 	ORG $+5
-$SG5920	DB	0aH, 'Alignment Check Fault at address ', 00H
+$SG5924	DB	0aH, 'Alignment Check Fault at address ', 00H
 	ORG $+5
-$SG5928	DB	0aH, 'Machine Check Abort', 00H
+$SG5932	DB	0aH, 'Machine Check Abort', 00H
 	ORG $+3
-$SG5936	DB	0aH, 'SIMD FPU Fault', 00H
+$SG5940	DB	0aH, 'SIMD FPU Fault', 00H
 CONST	ENDS
 PUBLIC	?exception_init@@YAXXZ				; exception_init
 PUBLIC	?panic@@YAXPEBDZZ				; panic
@@ -254,7 +254,7 @@ $LN5:
 
 ; 196  : 	 panic("\nSIMD FPU Fault");
 
-	lea	rcx, OFFSET FLAT:$SG5936
+	lea	rcx, OFFSET FLAT:$SG5940
 	call	?panic@@YAXPEBDZZ			; panic
 $LN2@simd_fpu_f:
 
@@ -288,7 +288,7 @@ $LN5:
 
 ; 189  : 	panic("\nMachine Check Abort");
 
-	lea	rcx, OFFSET FLAT:$SG5928
+	lea	rcx, OFFSET FLAT:$SG5932
 	call	?panic@@YAXPEBDZZ			; panic
 $LN2@machine_ch:
 
@@ -322,7 +322,7 @@ $LN5:
 
 ; 182  : 	panic("\nAlignment Check Fault at address ");
 
-	lea	rcx, OFFSET FLAT:$SG5920
+	lea	rcx, OFFSET FLAT:$SG5924
 	call	?panic@@YAXPEBDZZ			; panic
 $LN2@alignment_:
 
@@ -356,7 +356,7 @@ $LN5:
 
 ; 174  : 	panic("\nFPU Fault");
 
-	lea	rcx, OFFSET FLAT:$SG5912
+	lea	rcx, OFFSET FLAT:$SG5916
 	call	?panic@@YAXPEBDZZ			; panic
 $LN2@fpu_fault:
 
@@ -454,46 +454,46 @@ $LN15@page_fault:
 ; 144  :  
 ; 145  : 	panic ("Page Fault \n");
 
-	lea	rcx, OFFSET FLAT:$SG5882
+	lea	rcx, OFFSET FLAT:$SG5886
 	call	?panic@@YAXPEBDZZ			; panic
 
 ; 146  : 	printf ("Faulting Address -> %x\n", vaddr);
 
 	mov	rdx, QWORD PTR vaddr$[rsp]
-	lea	rcx, OFFSET FLAT:$SG5883
+	lea	rcx, OFFSET FLAT:$SG5887
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 147  : 	printf ("__PROCESSOR TRACE__\n");
 
-	lea	rcx, OFFSET FLAT:$SG5884
+	lea	rcx, OFFSET FLAT:$SG5888
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 148  : 	printf ("RIP -> %x\n", frame->rip);
 
 	mov	rax, QWORD PTR frame$[rsp]
 	mov	rdx, QWORD PTR [rax+16]
-	lea	rcx, OFFSET FLAT:$SG5885
+	lea	rcx, OFFSET FLAT:$SG5889
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 149  : 	printf ("Stack -> %x\n", frame->rsp);
 
 	mov	rax, QWORD PTR frame$[rsp]
 	mov	rdx, QWORD PTR [rax+40]
-	lea	rcx, OFFSET FLAT:$SG5886
+	lea	rcx, OFFSET FLAT:$SG5890
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 150  : 	printf ("RFLAGS -> %x\n", frame->rflags);
 
 	mov	rax, QWORD PTR frame$[rsp]
 	mov	rdx, QWORD PTR [rax+32]
-	lea	rcx, OFFSET FLAT:$SG5887
+	lea	rcx, OFFSET FLAT:$SG5891
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 151  : 	printf ("Current thread -> %s\n", get_current_thread()->name);
 
 	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
 	mov	rdx, QWORD PTR [rax+216]
-	lea	rcx, OFFSET FLAT:$SG5888
+	lea	rcx, OFFSET FLAT:$SG5892
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 152  : 	printf ("CS -> %x, SS -> %x\n", frame->cs, frame->ss);
@@ -502,12 +502,12 @@ $LN15@page_fault:
 	mov	r8, QWORD PTR [rax+48]
 	mov	rax, QWORD PTR frame$[rsp]
 	mov	rdx, QWORD PTR [rax+24]
-	lea	rcx, OFFSET FLAT:$SG5889
+	lea	rcx, OFFSET FLAT:$SG5893
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 153  : 	printf ("******Cause********\n");
 
-	lea	rcx, OFFSET FLAT:$SG5890
+	lea	rcx, OFFSET FLAT:$SG5894
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 154  : 	if (us)
@@ -517,7 +517,7 @@ $LN15@page_fault:
 
 ; 155  : 		printf ("***User Priviledge fault***\n");
 
-	lea	rcx, OFFSET FLAT:$SG5892
+	lea	rcx, OFFSET FLAT:$SG5896
 	call	?printf@@YAXPEBDZZ			; printf
 	jmp	SHORT $LN10@page_fault
 $LN11@page_fault:
@@ -529,7 +529,7 @@ $LN11@page_fault:
 
 ; 157  : 		printf ("***Page not present***\n");
 
-	lea	rcx, OFFSET FLAT:$SG5895
+	lea	rcx, OFFSET FLAT:$SG5899
 	call	?printf@@YAXPEBDZZ			; printf
 	jmp	SHORT $LN8@page_fault
 $LN9@page_fault:
@@ -541,7 +541,7 @@ $LN9@page_fault:
 
 ; 159  : 		printf ("*** R/W ***\n");
 
-	lea	rcx, OFFSET FLAT:$SG5898
+	lea	rcx, OFFSET FLAT:$SG5902
 	call	?printf@@YAXPEBDZZ			; printf
 	jmp	SHORT $LN6@page_fault
 $LN7@page_fault:
@@ -553,7 +553,7 @@ $LN7@page_fault:
 
 ; 161  : 		printf ("*** Reserved Page ***\n");
 
-	lea	rcx, OFFSET FLAT:$SG5901
+	lea	rcx, OFFSET FLAT:$SG5905
 	call	?printf@@YAXPEBDZZ			; printf
 	jmp	SHORT $LN4@page_fault
 $LN5@page_fault:
@@ -565,7 +565,7 @@ $LN5@page_fault:
 
 ; 163  : 		printf ("*** Invalid Page ****\n");
 
-	lea	rcx, OFFSET FLAT:$SG5904
+	lea	rcx, OFFSET FLAT:$SG5908
 	call	?printf@@YAXPEBDZZ			; printf
 $LN3@page_fault:
 $LN4@page_fault:
@@ -624,40 +624,40 @@ $LN5:
 
 ; 121  : 	panic ("Genral Protection Fault\n");
 
-	lea	rcx, OFFSET FLAT:$SG5859
+	lea	rcx, OFFSET FLAT:$SG5863
 	call	?panic@@YAXPEBDZZ			; panic
 
 ; 122  : 	printf ("__PROCESSOR TRACE__\n");
 
-	lea	rcx, OFFSET FLAT:$SG5860
+	lea	rcx, OFFSET FLAT:$SG5864
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 123  : 	printf ("RIP -> %x\n",frame->rip);
 
 	mov	rax, QWORD PTR frame$[rsp]
 	mov	rdx, QWORD PTR [rax+16]
-	lea	rcx, OFFSET FLAT:$SG5861
+	lea	rcx, OFFSET FLAT:$SG5865
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 124  : 	printf ("Stack -> %x\n", frame->rsp);
 
 	mov	rax, QWORD PTR frame$[rsp]
 	mov	rdx, QWORD PTR [rax+40]
-	lea	rcx, OFFSET FLAT:$SG5862
+	lea	rcx, OFFSET FLAT:$SG5866
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 125  : 	printf ("RFLAGS -> %x\n", frame->rflags);
 
 	mov	rax, QWORD PTR frame$[rsp]
 	mov	rdx, QWORD PTR [rax+32]
-	lea	rcx, OFFSET FLAT:$SG5863
+	lea	rcx, OFFSET FLAT:$SG5867
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 126  : 	printf ("Current task ->%s\n", get_current_thread()->name);
 
 	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
 	mov	rdx, QWORD PTR [rax+216]
-	lea	rcx, OFFSET FLAT:$SG5864
+	lea	rcx, OFFSET FLAT:$SG5868
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 127  : 	printf ("CS -> %x, SS -> %x\n", frame->cs, frame->ss);
@@ -666,7 +666,7 @@ $LN5:
 	mov	r8, QWORD PTR [rax+48]
 	mov	rax, QWORD PTR frame$[rsp]
 	mov	rdx, QWORD PTR [rax+24]
-	lea	rcx, OFFSET FLAT:$SG5865
+	lea	rcx, OFFSET FLAT:$SG5869
 	call	?printf@@YAXPEBDZZ			; printf
 $LN2@general_pr:
 
@@ -700,7 +700,7 @@ $LN5:
 
 ; 112  : 	panic("\nStack Fault at ");
 
-	lea	rcx, OFFSET FLAT:$SG5849
+	lea	rcx, OFFSET FLAT:$SG5853
 	call	?panic@@YAXPEBDZZ			; panic
 $LN2@stack_faul:
 
@@ -734,7 +734,7 @@ $LN5:
 
 ; 105  : 	panic("\nNo Segment Fault");
 
-	lea	rcx, OFFSET FLAT:$SG5841
+	lea	rcx, OFFSET FLAT:$SG5845
 	call	?panic@@YAXPEBDZZ			; panic
 $LN2@no_segment:
 
@@ -768,7 +768,7 @@ $LN5:
 
 ; 98   : 	panic("\nInvalid TSS Fault ");
 
-	lea	rcx, OFFSET FLAT:$SG5833
+	lea	rcx, OFFSET FLAT:$SG5837
 	call	?panic@@YAXPEBDZZ			; panic
 $LN2@invalid_ts:
 
@@ -802,7 +802,7 @@ $LN5:
 
 ; 91   : 	panic("\nDouble Fault Abort");
 
-	lea	rcx, OFFSET FLAT:$SG5825
+	lea	rcx, OFFSET FLAT:$SG5829
 	call	?panic@@YAXPEBDZZ			; panic
 $LN2@double_fau:
 
@@ -836,7 +836,7 @@ $LN5:
 
 ; 84   : 	panic("\nNo Device Fault");
 
-	lea	rcx, OFFSET FLAT:$SG5817
+	lea	rcx, OFFSET FLAT:$SG5821
 	call	?panic@@YAXPEBDZZ			; panic
 $LN2@no_device_:
 
@@ -876,54 +876,54 @@ $LN5:
 
 ; 70   : 	panic("Invalid Opcode Fault\n");
 
-	lea	rcx, OFFSET FLAT:$SG5802
+	lea	rcx, OFFSET FLAT:$SG5806
 	call	?panic@@YAXPEBDZZ			; panic
 
 ; 71   : 	printf ("__PROCESSOR TRACE__\n");
 
-	lea	rcx, OFFSET FLAT:$SG5803
+	lea	rcx, OFFSET FLAT:$SG5807
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 72   : 	printf ("RIP -> %x\n",frame->rip);
 
 	mov	rax, QWORD PTR frame$[rsp]
 	mov	rdx, QWORD PTR [rax+16]
-	lea	rcx, OFFSET FLAT:$SG5804
+	lea	rcx, OFFSET FLAT:$SG5808
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 73   : 	printf ("Stack -> %x\n", frame->rsp);
 
 	mov	rax, QWORD PTR frame$[rsp]
 	mov	rdx, QWORD PTR [rax+40]
-	lea	rcx, OFFSET FLAT:$SG5805
+	lea	rcx, OFFSET FLAT:$SG5809
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 74   : 	printf ("RFLAGS -> %x\n", frame->rflags);
 
 	mov	rax, QWORD PTR frame$[rsp]
 	mov	rdx, QWORD PTR [rax+32]
-	lea	rcx, OFFSET FLAT:$SG5806
+	lea	rcx, OFFSET FLAT:$SG5810
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 75   : 	printf ("CS -> %x\n", frame->cs);
 
 	mov	rax, QWORD PTR frame$[rsp]
 	mov	rdx, QWORD PTR [rax+24]
-	lea	rcx, OFFSET FLAT:$SG5807
+	lea	rcx, OFFSET FLAT:$SG5811
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 76   : 	printf ("SS -> %x\n", frame->ss);
 
 	mov	rax, QWORD PTR frame$[rsp]
 	mov	rdx, QWORD PTR [rax+48]
-	lea	rcx, OFFSET FLAT:$SG5808
+	lea	rcx, OFFSET FLAT:$SG5812
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 77   : 	printf ("Current task -> %s\n", get_current_thread()->name);
 
 	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
 	mov	rdx, QWORD PTR [rax+216]
-	lea	rcx, OFFSET FLAT:$SG5809
+	lea	rcx, OFFSET FLAT:$SG5813
 	call	?printf@@YAXPEBDZZ			; printf
 $LN2@invalid_op:
 
@@ -957,7 +957,7 @@ $LN5:
 
 ; 62   : 	panic("\nBound Check Fault");
 
-	lea	rcx, OFFSET FLAT:$SG5792
+	lea	rcx, OFFSET FLAT:$SG5796
 	call	?panic@@YAXPEBDZZ			; panic
 $LN2@bounds_che:
 
@@ -991,7 +991,7 @@ $LN5:
 
 ; 55   : 	panic("\nOverflow Trap");
 
-	lea	rcx, OFFSET FLAT:$SG5784
+	lea	rcx, OFFSET FLAT:$SG5788
 	call	?panic@@YAXPEBDZZ			; panic
 $LN2@overflow_t:
 
@@ -1025,7 +1025,7 @@ $LN5:
 
 ; 48   : 	panic("\nBreakpoint Trap");
 
-	lea	rcx, OFFSET FLAT:$SG5776
+	lea	rcx, OFFSET FLAT:$SG5780
 	call	?panic@@YAXPEBDZZ			; panic
 $LN2@breakpoint:
 
@@ -1059,7 +1059,7 @@ $LN5:
 
 ; 40   : 	panic("\nNMI [Non-Muskable-Interrupt] Trap");
 
-	lea	rcx, OFFSET FLAT:$SG5768
+	lea	rcx, OFFSET FLAT:$SG5772
 	call	?panic@@YAXPEBDZZ			; panic
 $LN2@nmi_trap:
 
@@ -1100,7 +1100,7 @@ $LN5:
 
 ; 34   : 	panic ("\nSingle Step Trap");
 
-	lea	rcx, OFFSET FLAT:$SG5760
+	lea	rcx, OFFSET FLAT:$SG5764
 	call	?panic@@YAXPEBDZZ			; panic
 $LN2@single_ste:
 
@@ -1134,7 +1134,7 @@ $LN5:
 
 ; 27   : 	panic ("\nDivide by 0");
 
-	lea	rcx, OFFSET FLAT:$SG5750
+	lea	rcx, OFFSET FLAT:$SG5754
 	call	?panic@@YAXPEBDZZ			; panic
 $LN2@divide_by_:
 
@@ -1165,22 +1165,22 @@ $LN3:
 
 ; 18   : 	printf ("***ARCH x86_64 : Exception Occured ***\n");
 
-	lea	rcx, OFFSET FLAT:$SG5742
+	lea	rcx, OFFSET FLAT:$SG5746
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 19   : 	printf ("[Aurora Kernel]: We are sorry to say that, a processor invalid exception has occured\n");
 
-	lea	rcx, OFFSET FLAT:$SG5743
+	lea	rcx, OFFSET FLAT:$SG5747
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 20   : 	printf ("[Aurora Kernel]: please inform it to the master of the kernel\n");
 
-	lea	rcx, OFFSET FLAT:$SG5744
+	lea	rcx, OFFSET FLAT:$SG5748
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 21   : 	printf ("[Aurora Kernel]: Below is the code of exception\n");
 
-	lea	rcx, OFFSET FLAT:$SG5745
+	lea	rcx, OFFSET FLAT:$SG5749
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 22   : 	printf (msg);

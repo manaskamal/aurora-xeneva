@@ -165,7 +165,7 @@ bool pci_find_device_class (uint8_t class_code, uint8_t sub_class, pci_device_in
 	for (int bus = 0; bus < 256; bus++) {
 		for (int dev = 0; dev < 32; dev++) {
 			for (int func = 0; func < 8; func++) {
-				uint16_t command_reg = 0;
+				uint16_t command_reg;
 
 				read_config_32 (bus, dev, func, 0, config.header[0]);
 
@@ -177,7 +177,7 @@ bool pci_find_device_class (uint8_t class_code, uint8_t sub_class, pci_device_in
 					command_reg |= PCI_COMMAND_IOENABLE;
 					command_reg |= PCI_COMMAND_MEMORYENABLE;
 					command_reg |= PCI_COMMAND_MASTERENABLE;
-					command_reg |= ~PCI_COMMAND_INTERRUPTDISABLE;
+					//command_reg &= ~PCI_COMMAND_INTERRUPTDISABLE;
 				    write_config_16 (bus, dev,func,PCI_CONFREG_COMMAND_16,command_reg);
 					*bus_ = bus;
 					*dev_ = dev;
@@ -297,6 +297,14 @@ void pci_print_capabilities (pci_device_info *dev_info) {
 			cap_header = (pci_cap_header*)(cap_header + cap_header->next);
 		}
 	}
+}
+
+
+void pci_enable_interrupts (int func, int dev, int bus) {
+	/*uint16_t command_reg = 0;
+	read_config_16 (bus,dev,func,PCI_CONFREG_COMMAND_16, &command_reg);
+	command_reg &= ~PCI_COMMAND_INTERRUPTDISABLE;
+	write_config_16 (bus, dev,func,PCI_CONFREG_COMMAND_16,command_reg);*/
 }
 
 

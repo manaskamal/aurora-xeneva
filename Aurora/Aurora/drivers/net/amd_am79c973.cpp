@@ -38,7 +38,6 @@ uint16_t amd_read_csr (uint8_t csr) {
 
 void amd_interrupt_handler (size_t v, void* p) {
 	printf ("AMD NIC Interrupt handler++\n");
-	
 	//apic_local_eoi();
 	interrupt_end(amd_irq);
 }
@@ -47,6 +46,7 @@ void amd_pcnet_initialize () {
 	pci_device_info *dev = (pci_device_info*)pmmngr_alloc();
 	a_card_net = (amd_net*)pmmngr_alloc();
 	//x64_outportw (dev->device.commandReg, ~(1 << 10));
+	x64_cli();
 	int bus,dev_, func_ = 0;
 	if (!pci_find_device_class (0x02,0x00,dev, &bus, &dev_, &func_)) {
 		printf ("AMD PCNet card not found\n");
@@ -126,6 +126,6 @@ void amd_pcnet_initialize () {
 	amd_write_csr (0,amd_read_csr(0));
 	amd_write_csr(4,0xC00 | amd_read_csr(4));
 	amd_write_csr (0,0x0042);
-	
+	x64_sti();
 	//pmmngr_free(init_block);
 }

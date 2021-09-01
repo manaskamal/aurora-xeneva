@@ -57,13 +57,13 @@ PUBLIC	?next_task@@YAXXZ				; next_task
 PUBLIC	?scheduler_isr@@YAX_KPEAX@Z			; scheduler_isr
 EXTRN	?pmmngr_alloc@@YAPEAXXZ:PROC			; pmmngr_alloc
 EXTRN	?pmmngr_free@@YAXPEAX@Z:PROC			; pmmngr_free
+EXTRN	?apic_local_eoi@@YAXXZ:PROC			; apic_local_eoi
 EXTRN	x64_cli:PROC
 EXTRN	x64_read_cr3:PROC
+EXTRN	?setvect@@YAX_KP6AX0PEAX@Z@Z:PROC		; setvect
 EXTRN	save_context:PROC
 EXTRN	execute_idle:PROC
 EXTRN	get_kernel_tss:PROC
-EXTRN	?interrupt_end@@YAXI@Z:PROC			; interrupt_end
-EXTRN	?interrupt_set@@YAX_KP6AX0PEAX@ZE@Z:PROC	; interrupt_set
 EXTRN	?create_mutex@@YAPEAUmutex_t@@XZ:PROC		; create_mutex
 EXTRN	?mutex_lock@@YAXPEAUmutex_t@@@Z:PROC		; mutex_lock
 EXTRN	?mutex_unlock@@YAXPEAUmutex_t@@@Z:PROC		; mutex_unlock
@@ -72,7 +72,7 @@ EXTRN	?list_add@@YAXPEAU_list_@@PEAX@Z:PROC		; list_add
 EXTRN	?list_remove@@YAPEAXPEAU_list_@@I@Z:PROC	; list_remove
 EXTRN	?list_get_at@@YAPEAXPEAU_list_@@I@Z:PROC	; list_get_at
 EXTRN	x64_hlt:PROC
-EXTRN	force_sched_pic:PROC
+EXTRN	force_sched_apic:PROC
 pdata	SEGMENT
 $pdata$?initialize_scheduler@@YAXXZ DD imagerel $LN3
 	DD	imagerel $LN3+119
@@ -111,7 +111,7 @@ $pdata$?next_task@@YAXXZ DD imagerel $LN9
 	DD	imagerel $LN9+147
 	DD	imagerel $unwind$?next_task@@YAXXZ
 $pdata$?scheduler_isr@@YAX_KPEAX@Z DD imagerel $LN8
-	DD	imagerel $LN8+259
+	DD	imagerel $LN8+255
 	DD	imagerel $unwind$?scheduler_isr@@YAX_KPEAX@Z
 pdata	ENDS
 xdata	SEGMENT
@@ -213,13 +213,12 @@ $LN2@scheduler_:
 
 ; 237  : #ifdef USE_APIC
 ; 238  : 		apic_local_eoi();
+
+	call	?apic_local_eoi@@YAXXZ			; apic_local_eoi
+
 ; 239  : #endif
 ; 240  : #ifdef USE_PIC
 ; 241  : 		interrupt_end (0);
-
-	xor	ecx, ecx
-	call	?interrupt_end@@YAXI@Z			; interrupt_end
-
 ; 242  : #endif
 ; 243  : 		next_task();
 
@@ -265,13 +264,12 @@ $sched_end$9:
 ; 253  : sched_end:
 ; 254  : #ifdef USE_APIC
 ; 255  : 	apic_local_eoi();
+
+	call	?apic_local_eoi@@YAXXZ			; apic_local_eoi
+
 ; 256  : #endif
 ; 257  : #ifdef USE_PIC
 ; 258  : 	interrupt_end(0);
-
-	xor	ecx, ecx
-	call	?interrupt_end@@YAXI@Z			; interrupt_end
-
 ; 259  : #endif
 ; 260  : 	//x64_sti();
 ; 261  : 	
@@ -798,11 +796,11 @@ $LN3:
 
 ; 357  : #ifdef USE_APIC
 ; 358  : 	force_sched_apic();
+
+	call	force_sched_apic
+
 ; 359  : #elif USE_PIC
 ; 360  : 	force_sched_pic();
-
-	call	force_sched_pic
-
 ; 361  : #endif
 ; 362  : }
 
@@ -1446,15 +1444,14 @@ $LN3:
 
 ; 269  : #ifdef USE_APIC
 ; 270  : 	setvect(0x40, scheduler_isr);
+
+	lea	rdx, OFFSET FLAT:?scheduler_isr@@YAX_KPEAX@Z ; scheduler_isr
+	mov	ecx, 64					; 00000040H
+	call	?setvect@@YAX_KP6AX0PEAX@Z@Z		; setvect
+
 ; 271  : #endif
 ; 272  : #ifdef USE_PIC
 ; 273  : 	interrupt_set(0,scheduler_isr,0);
-
-	xor	r8d, r8d
-	lea	rdx, OFFSET FLAT:?scheduler_isr@@YAX_KPEAX@Z ; scheduler_isr
-	xor	ecx, ecx
-	call	?interrupt_set@@YAX_KP6AX0PEAX@ZE@Z	; interrupt_set
-
 ; 274  : #endif
 ; 275  : 	execute_idle(current_thread,get_kernel_tss());
 

@@ -60,12 +60,22 @@
 #define SD0LVI      0x8C   //ISD0 Last valid index
 #define SD0FIFOD    0x90   //ISD0 FIFO Size
 #define SD0FMT      0x92   //ISD0 Format
+#define SDBDPL      0x98
+#define SDBDPU      0x9C
 
 #define INTCTL_CIE  0x40000000
 #define INTCTL_GIE  0x80000000
 #define INTCTL_SIE_MASK  0x3fffffff
 #define INTCTL_SIE_SHIFT 0
 
+#define REG_O0_CTLL   0x100   ///< Output 0 - Control Lower
+#define REG_O0_CTLU   0x102   ///< Output 0 - Control Upper
+#define REG_O0_STS    0x103    ///< Output 0 - Status
+#define REG_O0_CBL    0x108   ///< Output 0 - Cyclic Buffer Length
+#define REG_O0_STLVI  0x10c    ///< Output 0 - Last Valid Index
+#define REG_O0_FMT    0x112    ///< Output 0 - Format
+#define REG_O0_BDLPL  0x118    ///< Output 0 - BDL Pointer Lower
+#define REG_O0_BDLPU  0x11c    ///< Output 0 - BDL Pointer Upper
 
 /* GCTL bits */
 enum reg_gctl {
@@ -175,6 +185,15 @@ enum sample_format {
     BITS_16                 = (1 <<  4),
 };
 
+//! DAC Output	
+typedef struct _hda_output_ {
+	uint8_t codec;
+	uint16_t nid;
+	uint32_t sample_rate;
+	int amp_gain_steps;
+	int num_channels;
+} hda_output;
+
 
 #pragma pack (push, 1)
 typedef struct _hd_audio_ {
@@ -184,6 +203,7 @@ typedef struct _hd_audio_ {
 	uint32_t rirb_entries;
 	uint32_t corb_entries;
 	bool immediate_use;
+	hda_output *output;
 }hd_audio;
 #pragma pack (pop)
 
@@ -192,6 +212,8 @@ typedef struct _rirb_ {
 	uint32_t response_ex;
 }hda_rirb;
 
+
+//! Initialize the High-Definition Audio Controller
 extern void hda_initialize ();
 
 #endif

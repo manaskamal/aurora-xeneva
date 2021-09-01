@@ -6,15 +6,15 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 CONST	SEGMENT
-$SG3393	DB	'PCI Scanning device', 0aH, 00H
+$SG3397	DB	'PCI Scanning device', 0aH, 00H
 	ORG $+3
-$SG3407	DB	'Device found', 0aH, 00H
+$SG3411	DB	'Device found', 0aH, 00H
 	ORG $+2
-$SG3408	DB	'Device ID -> %x, Vendor ID -> %x', 0aH, 00H
+$SG3412	DB	'Device ID -> %x, Vendor ID -> %x', 0aH, 00H
 	ORG $+6
-$SG3468	DB	'MSI Available', 0aH, 00H
+$SG3472	DB	'MSI Available', 0aH, 00H
 	ORG $+1
-$SG3470	DB	'MSI-X Available for this device', 0aH, 00H
+$SG3474	DB	'MSI-X Available for this device', 0aH, 00H
 CONST	ENDS
 PUBLIC	?pci_config_read32@@YAIPEBU_pci_address_@@G@Z	; pci_config_read32
 PUBLIC	?pci_config_read16@@YAGPEBU_pci_address_@@G@Z	; pci_config_read16
@@ -36,6 +36,7 @@ PUBLIC	?pci_set_mem_enable@@YAXPEBU_pci_address_@@_N@Z	; pci_set_mem_enable
 PUBLIC	?pci_find_device_class@@YA_NEEPEATpci_device_info@@PEAH11@Z ; pci_find_device_class
 PUBLIC	?pci_find_device_id@@YA_NGGPEATpci_device_info@@@Z ; pci_find_device_id
 PUBLIC	?pci_print_capabilities@@YAXPEATpci_device_info@@@Z ; pci_print_capabilities
+PUBLIC	?pci_enable_interrupts@@YAXHHH@Z		; pci_enable_interrupts
 PUBLIC	?pci_get_capability@@YAPEAUpci_cap_header@@PEATpci_device_info@@PEAU1@@Z ; pci_get_capability
 EXTRN	x64_inportb:PROC
 EXTRN	x64_inportw:PROC
@@ -102,7 +103,7 @@ $pdata$?pci_set_mem_enable@@YAXPEBU_pci_address_@@_N@Z DD imagerel $LN5
 	DD	imagerel $LN5+104
 	DD	imagerel $unwind$?pci_set_mem_enable@@YAXPEBU_pci_address_@@_N@Z
 $pdata$?pci_find_device_class@@YA_NEEPEATpci_device_info@@PEAH11@Z DD imagerel $LN13
-	DD	imagerel $LN13+451
+	DD	imagerel $LN13+429
 	DD	imagerel $unwind$?pci_find_device_class@@YA_NEEPEATpci_device_info@@PEAH11@Z
 $pdata$?pci_find_device_id@@YA_NGGPEATpci_device_info@@@Z DD imagerel $LN13
 	DD	imagerel $LN13+320
@@ -348,6 +349,29 @@ _TEXT	ENDS
 ; Function compile flags: /Odtp
 ; File e:\xeneva project\xeneva\aurora\aurora\drivers\pci.cpp
 _TEXT	SEGMENT
+func$ = 8
+dev$ = 16
+bus$ = 24
+?pci_enable_interrupts@@YAXHHH@Z PROC			; pci_enable_interrupts
+
+; 303  : void pci_enable_interrupts (int func, int dev, int bus) {
+
+	mov	DWORD PTR [rsp+24], r8d
+	mov	DWORD PTR [rsp+16], edx
+	mov	DWORD PTR [rsp+8], ecx
+
+; 304  : 	/*uint16_t command_reg = 0;
+; 305  : 	read_config_16 (bus,dev,func,PCI_CONFREG_COMMAND_16, &command_reg);
+; 306  : 	command_reg &= ~PCI_COMMAND_INTERRUPTDISABLE;
+; 307  : 	write_config_16 (bus, dev,func,PCI_CONFREG_COMMAND_16,command_reg);*/
+; 308  : }
+
+	ret	0
+?pci_enable_interrupts@@YAXHHH@Z ENDP			; pci_enable_interrupts
+_TEXT	ENDS
+; Function compile flags: /Odtp
+; File e:\xeneva project\xeneva\aurora\aurora\drivers\pci.cpp
+_TEXT	SEGMENT
 cap_header$ = 32
 msi_cap$ = 40
 msi_x_cap$ = 48
@@ -410,7 +434,7 @@ $LN4@pci_print_:
 
 ; 291  : 				printf ("MSI Available\n");
 
-	lea	rcx, OFFSET FLAT:$SG3468
+	lea	rcx, OFFSET FLAT:$SG3472
 	call	?printf@@YAXPEBDZZ			; printf
 $LN2@pci_print_:
 
@@ -425,7 +449,7 @@ $LN2@pci_print_:
 
 ; 295  : 				printf ("MSI-X Available for this device\n");
 
-	lea	rcx, OFFSET FLAT:$SG3470
+	lea	rcx, OFFSET FLAT:$SG3474
 	call	?printf@@YAXPEBDZZ			; printf
 $LN1@pci_print_:
 
@@ -476,7 +500,7 @@ $LN13:
 ; 197  : 	pci_device_info config;
 ; 198  : 	printf ("PCI Scanning device\n");
 
-	lea	rcx, OFFSET FLAT:$SG3393
+	lea	rcx, OFFSET FLAT:$SG3397
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 199  : 	for (int bus = 0; bus < 256; bus++) {
@@ -559,7 +583,7 @@ $LN4@pci_find_d:
 
 ; 209  : 					printf ("Device found\n");
 
-	lea	rcx, OFFSET FLAT:$SG3407
+	lea	rcx, OFFSET FLAT:$SG3411
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 210  : 					printf ("Device ID -> %x, Vendor ID -> %x\n", config.device.deviceID, config.device.vendorID);
@@ -568,7 +592,7 @@ $LN4@pci_find_d:
 	movzx	ecx, WORD PTR config$[rsp+2]
 	mov	r8d, eax
 	mov	edx, ecx
-	lea	rcx, OFFSET FLAT:$SG3408
+	lea	rcx, OFFSET FLAT:$SG3412
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 211  : 					return true;
@@ -671,11 +695,7 @@ $LN4@pci_find_d:
 	cmp	DWORD PTR func$3[rsp], 8
 	jge	$LN2@pci_find_d
 
-; 168  : 				uint16_t command_reg = 0;
-
-	xor	eax, eax
-	mov	WORD PTR command_reg$1[rsp], ax
-
+; 168  : 				uint16_t command_reg;
 ; 169  : 
 ; 170  : 				read_config_32 (bus, dev, func, 0, config.header[0]);
 
@@ -746,12 +766,7 @@ $LN4@pci_find_d:
 	or	eax, 4
 	mov	WORD PTR command_reg$1[rsp], ax
 
-; 180  : 					command_reg |= ~PCI_COMMAND_INTERRUPTDISABLE;
-
-	movzx	eax, WORD PTR command_reg$1[rsp]
-	or	eax, -1025				; fffffffffffffbffH
-	mov	WORD PTR command_reg$1[rsp], ax
-
+; 180  : 					//command_reg &= ~PCI_COMMAND_INTERRUPTDISABLE;
 ; 181  : 				    write_config_16 (bus, dev,func,PCI_CONFREG_COMMAND_16,command_reg);
 
 	movzx	eax, WORD PTR command_reg$1[rsp]

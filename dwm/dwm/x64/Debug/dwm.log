@@ -1,8 +1,8 @@
-﻿Build started 23-08-2021 ৰাতিপু 10:37:57.
+﻿Build started 31-08-2021 ৰাতিপু 11:24:05.
      1>Project "E:\Xeneva Project\Xeneva\dwm\dwm\dwm.vcxproj" on node 2 (Rebuild target(s)).
      1>_NASM:
          callback.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmpfdc065b3e5fe480294a4b25b1dca9ceb.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmpcb24fc70e9be4a1f9734e45a3f51172a.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\callback.obj"  "E:\Xeneva Project\Xeneva\dwm\dwm\callback.asm"
      1>E:\Xeneva Project\Xeneva\dwm\dwm\callback.asm(77): warning : label alone on a line without a colon might be in error
        ClCompile:
@@ -51,4 +51,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:01.95
+Time Elapsed 00:00:02.16

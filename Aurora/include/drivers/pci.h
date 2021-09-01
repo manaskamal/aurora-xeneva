@@ -321,6 +321,6 @@ extern void pci_set_mem_enable (const pci_address *addr, bool enabe);
 extern bool pci_find_device_class (uint8_t class_code, uint8_t sub_class, pci_device_info *addr_out, int *bus, int *dev, int *func);
 extern bool pci_find_device_id (uint16_t device_id, uint16_t vendor_id, pci_device_info *addr_out);
 extern void pci_print_capabilities (pci_device_info *dev_info);
-
+extern void pci_enable_interrupts (int func, int dev, int bus);
 
 #endif

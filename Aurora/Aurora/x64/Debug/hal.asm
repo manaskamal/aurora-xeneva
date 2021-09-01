@@ -16,6 +16,7 @@ PUBLIC	?outportd@@YAXGI@Z				; outportd
 PUBLIC	?interrupt_end@@YAXI@Z				; interrupt_end
 PUBLIC	?interrupt_set@@YAX_KP6AX0PEAX@ZE@Z		; interrupt_set
 PUBLIC	?irq_mask@@YAXE_N@Z				; irq_mask
+EXTRN	?apic_local_eoi@@YAXXZ:PROC			; apic_local_eoi
 EXTRN	x64_inportb:PROC
 EXTRN	x64_inportw:PROC
 EXTRN	x64_inportd:PROC
@@ -24,9 +25,8 @@ EXTRN	x64_outportw:PROC
 EXTRN	x64_outportd:PROC
 EXTRN	?hal_x86_64_init@@YAXXZ:PROC			; hal_x86_64_init
 EXTRN	?setvect@@YAX_KP6AX0PEAX@Z@Z:PROC		; setvect
-EXTRN	?pic_interrupt_eoi@@YAXI@Z:PROC			; pic_interrupt_eoi
-EXTRN	?pic_set_mask@@YAXE@Z:PROC			; pic_set_mask
-EXTRN	?pic_clear_mask@@YAXE@Z:PROC			; pic_clear_mask
+EXTRN	?ioapic_register_irq@@YAX_KP6AX0PEAX@ZE@Z:PROC	; ioapic_register_irq
+EXTRN	?ioapic_mask_irq@@YAXE_N@Z:PROC			; ioapic_mask_irq
 pdata	SEGMENT
 $pdata$?hal_init@@YAXXZ DD imagerel $LN3
 	DD	imagerel $LN3+14
@@ -53,13 +53,13 @@ $pdata$?outportd@@YAXGI@Z DD imagerel $LN3
 	DD	imagerel $LN3+32
 	DD	imagerel $unwind$?outportd@@YAXGI@Z
 $pdata$?interrupt_end@@YAXI@Z DD imagerel $LN3
-	DD	imagerel $LN3+22
+	DD	imagerel $LN3+18
 	DD	imagerel $unwind$?interrupt_end@@YAXI@Z
 $pdata$?interrupt_set@@YAX_KP6AX0PEAX@ZE@Z DD imagerel $LN3
-	DD	imagerel $LN3+58
+	DD	imagerel $LN3+45
 	DD	imagerel $unwind$?interrupt_set@@YAX_KP6AX0PEAX@ZE@Z
-$pdata$?irq_mask@@YAXE_N@Z DD imagerel $LN5
-	DD	imagerel $LN5+48
+$pdata$?irq_mask@@YAXE_N@Z DD imagerel $LN3
+	DD	imagerel $LN3+32
 	DD	imagerel $unwind$?irq_mask@@YAXE_N@Z
 pdata	ENDS
 xdata	SEGMENT
@@ -95,36 +95,23 @@ value$ = 56
 
 ; 154  : void irq_mask (uint8_t irq, bool value) {
 
-$LN5:
+$LN3:
 	mov	BYTE PTR [rsp+16], dl
 	mov	BYTE PTR [rsp+8], cl
 	sub	rsp, 40					; 00000028H
 
 ; 155  : #ifdef USE_APIC
 ; 156  : 	ioapic_mask_irq(irq, value);
+
+	movzx	edx, BYTE PTR value$[rsp]
+	movzx	ecx, BYTE PTR irq$[rsp]
+	call	?ioapic_mask_irq@@YAXE_N@Z		; ioapic_mask_irq
+
 ; 157  : #elif USE_PIC
 ; 158  : 	if(value)
-
-	movzx	eax, BYTE PTR value$[rsp]
-	test	eax, eax
-	je	SHORT $LN2@irq_mask
-
 ; 159  : 		pic_set_mask(irq);
-
-	movzx	ecx, BYTE PTR irq$[rsp]
-	call	?pic_set_mask@@YAXE@Z			; pic_set_mask
-
 ; 160  : 	else
-
-	jmp	SHORT $LN1@irq_mask
-$LN2@irq_mask:
-
 ; 161  : 		pic_clear_mask(irq);
-
-	movzx	ecx, BYTE PTR irq$[rsp]
-	call	?pic_clear_mask@@YAXE@Z			; pic_clear_mask
-$LN1@irq_mask:
-
 ; 162  : #endif
 ; 163  : }
 
@@ -151,22 +138,16 @@ $LN3:
 ; 138  : #ifdef ARCH_X64
 ; 139  : #ifdef USE_PIC
 ; 140  : 	setvect(32 + vector, fn);
-
-	mov	rax, QWORD PTR vector$[rsp]
-	add	rax, 32					; 00000020H
-	mov	rdx, QWORD PTR fn$[rsp]
-	mov	rcx, rax
-	call	?setvect@@YAX_KP6AX0PEAX@Z@Z		; setvect
-
 ; 141  : 	irq_mask(irq,false);
-
-	xor	edx, edx
-	movzx	ecx, BYTE PTR irq$[rsp]
-	call	?irq_mask@@YAXE_N@Z			; irq_mask
-
 ; 142  : #endif
 ; 143  : #ifdef USE_APIC
 ; 144  : 	ioapic_register_irq(vector,fn,irq);
+
+	movzx	r8d, BYTE PTR irq$[rsp]
+	mov	rdx, QWORD PTR fn$[rsp]
+	mov	rcx, QWORD PTR vector$[rsp]
+	call	?ioapic_register_irq@@YAX_KP6AX0PEAX@ZE@Z ; ioapic_register_irq
+
 ; 145  : #endif
 ; 146  : #elif  ARCH_ARM
 ; 147  : 	//! update comming soon..
@@ -194,13 +175,12 @@ $LN3:
 ; 123  : #ifdef ARCH_X64
 ; 124  : #ifdef USE_PIC
 ; 125  : 	pic_interrupt_eoi(irq);
-
-	mov	ecx, DWORD PTR irq$[rsp]
-	call	?pic_interrupt_eoi@@YAXI@Z		; pic_interrupt_eoi
-
 ; 126  : #endif
 ; 127  : #ifdef USE_APIC
 ; 128  : 	apic_local_eoi ();
+
+	call	?apic_local_eoi@@YAXXZ			; apic_local_eoi
+
 ; 129  : #endif
 ; 130  : #elif ARCH_ARM
 ; 131  : 	//! update comming soon..
