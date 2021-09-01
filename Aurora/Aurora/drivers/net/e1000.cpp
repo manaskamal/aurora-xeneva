@@ -6,7 +6,7 @@
  *  /PROJECT - Aurora Xeneva
  *  /AUTHOR  - Manas Kamal Choudhury
  *
- *  Intel PRO/1000 T Server
+ *  Intel PRO/1000 Ethernet
  * ================================================
  */
 
@@ -152,11 +152,11 @@ void e1000_rx_init () {
 	e1000_write_command (REG_RXDESCLEN, (uint32_t)E1000_NUM_RX_DESC * 16);
 
 	e1000_write_command(REG_RXDESCHEAD, 0);
-	e1000_write_command(REG_RXDESCTAIL, E1000_NUM_RX_DESC - 1);
+	e1000_write_command(REG_RXDESCTAIL, E1000_NUM_RX_DESC);
 	i_net_dev->rx_tail = 0;
 
-	e1000_write_command (REG_RCTRL, (RCTL_EN|  RCTL_SBP | RCTL_UPE | RCTL_MPE | RTCL_RDMTS_HALF | RCTL_SECRC | 
-		RCTL_LPE | RCTL_BAM | RCTL_BSIZE_2048));
+	e1000_write_command (REG_RCTRL, (1<<16) | (1<<17));
+	e1000_write_command (REG_RCTRL, RCTL_EN);
 }
 
 
@@ -229,7 +229,7 @@ void e1000_send_packet (void* data, size_t size) {
 
 void e1000_handle_receive () {
 	for(;;) {
-	if((i_net_dev->rx_desc[i_net_dev->rx_tail]->status & 0x1)) {
+	if((i_net_dev->rx_desc[i_net_dev->rx_tail]->status)) {
 		//printf ("E1000 New Packet received #1\n");
 		uint8_t *buf = (uint8_t*)i_net_dev->rx_desc[i_net_dev->rx_tail]->addr;
 		uint16_t len = i_net_dev->rx_desc[i_net_dev->rx_tail]->length;
@@ -289,7 +289,7 @@ void e1000_initialize () {
 		return;
 	}
 
-	x64_cli ();
+	
 
 	i_net_dev = (e1000_dev*)malloc(sizeof(e1000_dev));
     i_net_dev->e1000_mem_base = dev->device.nonBridge.baseAddress[0] & ~3;
@@ -302,16 +302,17 @@ void e1000_initialize () {
 		}
 	}
 
-	//i_net_dev->e1000_base = dev->device.nonBridge.baseAddress[0] & ~1;
 	i_net_dev->e1000_irq = dev->device.nonBridge.interruptLine;
 	
 	if (dev->device.nonBridge.interruptLine != 255) {
-		printf ("E1000: Setting up interrupt\n");
+		printf ("E1000: Setting up interrupt line -> %d\n",dev->device.nonBridge.interruptLine );
 		interrupt_set (dev->device.nonBridge.interruptLine, e1000_interrupt_handler,dev->device.nonBridge.interruptLine);
 	}
 	
-
+	e1000_write_command (REG_IMC, UINT32_MAX);
+	e1000_read_command (REG_ICR);
 	e1000_reset();
+	e1000_write_command (REG_CTRL, ECTRL_SLU | (1<<8) | (1<<9) | (1<<11));
 	e1000_detect_eeprom();
 	
 
@@ -337,14 +338,18 @@ void e1000_initialize () {
 	e1000_rx_init ();
 	e1000_tx_init ();
 
+	e1000_write_command (0x000E0, 0);
 	e1000_write_command (REG_IMASK,  E1000_IMS_LSC | 
 		                            E1000_IMS_RXO |
 									E1000_IMS_RXT |
 									E1000_IMS_TXQE |
 									E1000_IMS_TXDW);
+
+
 	//e1000_setup_interrupt ();
 
     e1000_read_command (0xC0);
-	x64_sti ();
-
+	unsigned char *buf = (unsigned char*)pmmngr_alloc();
+	memset (buf, 'M', 4096);
+	e1000_send_packet (buf, 2048);
 }

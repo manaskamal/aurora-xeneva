@@ -233,6 +233,7 @@
     <ClInclude Include="..\include\ipc\evntsh.h" />
     <ClInclude Include="..\include\ipc\message.h" />
     <ClInclude Include="..\include\mm.h" />
+    <ClInclude Include="..\include\net\arp.h" />
     <ClInclude Include="..\include\objctmngr.h" />
     <ClInclude Include="..\include\pe.h" />
     <ClInclude Include="..\include\pmmngr.h" />

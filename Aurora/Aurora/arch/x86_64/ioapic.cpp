@@ -55,8 +55,9 @@ void ioapic_register_irq(size_t vector, void (*fn)(size_t, void* p),uint8_t irq)
 	low &= ~0xff;
 	low |= vector + 32;
 
-	low &= ~(1<<13);
-	
+	low |= (0<<13);
+	low |= (0<<15);
+
 	write_ioapic_register((void*)0xfec00000, reg, low);   //vector + 32
     setvect(vector + 32, fn);
 }

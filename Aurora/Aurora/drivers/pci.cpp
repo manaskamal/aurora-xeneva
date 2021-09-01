@@ -177,7 +177,7 @@ bool pci_find_device_class (uint8_t class_code, uint8_t sub_class, pci_device_in
 					command_reg |= PCI_COMMAND_IOENABLE;
 					command_reg |= PCI_COMMAND_MEMORYENABLE;
 					command_reg |= PCI_COMMAND_MASTERENABLE;
-					//command_reg &= ~PCI_COMMAND_INTERRUPTDISABLE;
+					command_reg &= ~PCI_COMMAND_INTERRUPTDISABLE;
 				    write_config_16 (bus, dev,func,PCI_CONFREG_COMMAND_16,command_reg);
 					*bus_ = bus;
 					*dev_ = dev;

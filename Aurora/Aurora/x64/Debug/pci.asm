@@ -103,7 +103,7 @@ $pdata$?pci_set_mem_enable@@YAXPEBU_pci_address_@@_N@Z DD imagerel $LN5
 	DD	imagerel $LN5+104
 	DD	imagerel $unwind$?pci_set_mem_enable@@YAXPEBU_pci_address_@@_N@Z
 $pdata$?pci_find_device_class@@YA_NEEPEATpci_device_info@@PEAH11@Z DD imagerel $LN13
-	DD	imagerel $LN13+429
+	DD	imagerel $LN13+443
 	DD	imagerel $unwind$?pci_find_device_class@@YA_NEEPEATpci_device_info@@PEAH11@Z
 $pdata$?pci_find_device_id@@YA_NGGPEATpci_device_info@@@Z DD imagerel $LN13
 	DD	imagerel $LN13+320
@@ -766,7 +766,12 @@ $LN4@pci_find_d:
 	or	eax, 4
 	mov	WORD PTR command_reg$1[rsp], ax
 
-; 180  : 					//command_reg &= ~PCI_COMMAND_INTERRUPTDISABLE;
+; 180  : 					command_reg &= ~PCI_COMMAND_INTERRUPTDISABLE;
+
+	movzx	eax, WORD PTR command_reg$1[rsp]
+	btr	eax, 10
+	mov	WORD PTR command_reg$1[rsp], ax
+
 ; 181  : 				    write_config_16 (bus, dev,func,PCI_CONFREG_COMMAND_16,command_reg);
 
 	movzx	eax, WORD PTR command_reg$1[rsp]

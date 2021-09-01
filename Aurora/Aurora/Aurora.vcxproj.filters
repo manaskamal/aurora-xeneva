@@ -91,6 +91,12 @@
     <Filter Include="include\drivers\acpi">
       <UniqueIdentifier>{75e84212-373b-4d3f-8558-e31d9db0b8b2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\net">
+      <UniqueIdentifier>{8e0e2a55-af13-43d8-b27a-51044595d738}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\net">
+      <UniqueIdentifier>{52f7101f-b3ad-4133-81e9-88520926a5f8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\stdint.h">
@@ -284,6 +290,9 @@
     </ClInclude>
     <ClInclude Include="..\include\serial.h">
       <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\net\arp.h">
+      <Filter>include\net</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
