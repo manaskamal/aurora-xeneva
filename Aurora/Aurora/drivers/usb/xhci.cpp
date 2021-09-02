@@ -129,6 +129,10 @@ void xhci_initialize () {
 		return;
 	}
 	x64_cli ();
+
+	printf ("Scanning MSI support for USB\n");
+	pci_print_capabilities(func_, dev_, bus);
+
 	xusb_dev->xhci_base_address = (dev->device.nonBridge.baseAddress[0] & 0xFFFFFFF0) +((dev->device.nonBridge.baseAddress[1] & 0xFFFFFFFF) << 32);
 
 	xhci_cap_reg *cap = (xhci_cap_reg*)xusb_dev->xhci_base_address;
@@ -139,10 +143,11 @@ void xhci_initialize () {
 	xusb_dev->doorbell_address = ((size_t)cap + (cap->dboffset & ~0x3UL));
 	xusb_dev->runtime_address = ((size_t)cap + (cap->runtime_offset & ~0x1FUL));
 
-	if (dev->device.nonBridge.interruptLine != 255)
-		interrupt_set (dev->device.nonBridge.interruptLine, xhci_handler, dev->device.nonBridge.interruptLine);
+	/**if (dev->device.nonBridge.interruptLine != 255)
+		interrupt_set (dev->device.nonBridge.interruptLine, xhci_handler, dev->device.nonBridge.interruptLine);**/
 
-
+	printf ("USB: xHCI interrupt line -> %d\n", dev->device.nonBridge.interruptLine);
+	printf ("USB: xHCI interrupt pin -> %d\n", dev->device.nonBridge.interruptPin);
 	reset ();
 	x64_sti();
 	//for(;;);

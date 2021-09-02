@@ -40,5 +40,7 @@ typedef struct _arp_table_ {
 	uint64_t mac_addr;
 }arp_table_entry_t;
 
-
+extern void arp_initialize ();
+extern void arp_send_packet (uint8_t *dst_hardware_addr, uint8_t* dst_protocol_addr);
+extern void arp_broadcast();
 #endif

@@ -294,6 +294,18 @@
     <ClInclude Include="..\include\net\arp.h">
       <Filter>include\net</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\net\ethernet.h">
+      <Filter>include\net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\net\nethw.h">
+      <Filter>include\net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\net\udp.h">
+      <Filter>include\net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\arch\x86_64\multiproc.h">
+      <Filter>include\arch\x86_64</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="init.cpp">
@@ -469,6 +481,18 @@
     </ClCompile>
     <ClCompile Include="serial.cpp">
       <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="net\ethernet.cpp">
+      <Filter>source\net</Filter>
+    </ClCompile>
+    <ClCompile Include="net\nethw.cpp">
+      <Filter>source\net</Filter>
+    </ClCompile>
+    <ClCompile Include="net\arp.cpp">
+      <Filter>source\net</Filter>
+    </ClCompile>
+    <ClCompile Include="net\udp.cpp">
+      <Filter>source\net</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

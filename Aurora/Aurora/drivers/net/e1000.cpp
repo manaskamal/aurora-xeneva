@@ -15,6 +15,7 @@
 #include <stdio.h>
 #include <mm.h>
 #include <console.h>
+#include <net\nethw.h>
 
 
 e1000_dev *i_net_dev = NULL;
@@ -290,7 +291,7 @@ void e1000_initialize () {
 	}
 
 	
-
+	x64_cli ();
 	i_net_dev = (e1000_dev*)malloc(sizeof(e1000_dev));
     i_net_dev->e1000_mem_base = dev->device.nonBridge.baseAddress[0] & ~3;
 
@@ -304,10 +305,15 @@ void e1000_initialize () {
 
 	i_net_dev->e1000_irq = dev->device.nonBridge.interruptLine;
 	
-	if (dev->device.nonBridge.interruptLine != 255) {
-		printf ("E1000: Setting up interrupt line -> %d\n",dev->device.nonBridge.interruptLine );
-		interrupt_set (dev->device.nonBridge.interruptLine, e1000_interrupt_handler,dev->device.nonBridge.interruptLine);
-	}
+	//if (dev->device.nonBridge.interruptLine != 255) {
+	    printf ("E1000: Setting up interrupt line -> %d\n",dev->device.nonBridge.interruptLine );
+		printf ("E1000: Interrupt pin-> %d\n", dev->device.nonBridge.interruptPin);
+		int interrupt_line = 10;
+		write_config_8 (bus, dev_, func, PCI_CONFREG_INTLINE_8, interrupt_line);
+		read_config_8 (bus, dev_, func, PCI_CONFREG_INTLINE_8, &dev->device.all.interruptLine);
+		interrupt_set (dev->device.nonBridge.interruptLine, e1000_interrupt_handler, dev->device.nonBridge.interruptLine);
+		printf ("E1000: interrupt reassigned to-> %d\n",dev->device.nonBridge.interruptLine );
+	//}
 	
 	e1000_write_command (REG_IMC, UINT32_MAX);
 	e1000_read_command (REG_ICR);
@@ -324,21 +330,16 @@ void e1000_initialize () {
 		e1000_write_command (REG_CRCERRS + (i * 4), 0);
 	}
 	
-
-	if (e1000_read_mac_address()) {
-		printf ("E1000 MAC address received\n");
-		printf ("E1000 MAC Address: ");
-		for (int i = 0; i < 6; i++)
-			printf (":%x", i_net_dev->mac[i]);
-		printf ("\n");
-	}
-
-	pci_print_capabilities(dev);
+	printf ("Scanning MSI support for e1000\n");
+	pci_print_capabilities(func, dev_, bus);
 
 	e1000_rx_init ();
 	e1000_tx_init ();
 
 	e1000_write_command (0x000E0, 0);
+	e1000_write_command (0x00C8, (1<<0) | (1<<1) | (1<<2) | (1<<3) | 
+		(1<<4) | (1<<6) | (1<<7) | (1<<9) | (1<<10) | (1<<13) | (1<<14) | (1<<15) | (1<<16) | 
+		(1<<17) | (1<<20) | (1<<21) | (1<<22) | (1<<24) | (1<<25));
 	e1000_write_command (REG_IMASK,  E1000_IMS_LSC | 
 		                            E1000_IMS_RXO |
 									E1000_IMS_RXT |
@@ -349,7 +350,14 @@ void e1000_initialize () {
 	//e1000_setup_interrupt ();
 
     e1000_read_command (0xC0);
-	unsigned char *buf = (unsigned char*)pmmngr_alloc();
-	memset (buf, 'M', 4096);
-	e1000_send_packet (buf, 2048);
+	
+	//! Initialize the Network Manager (NetHW)
+	nethw_initialize ();
+
+	if (e1000_read_mac_address()) {
+		//! Set the MAC address code
+	    nethw_set_mac (i_net_dev->mac);
+	}
+
+	x64_sti();
 }

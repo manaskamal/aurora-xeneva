@@ -6,15 +6,15 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 CONST	SEGMENT
-$SG7193	DB	'Timer fired', 0aH, 00H
+$SG7285	DB	'Timer fired', 0aH, 00H
 	ORG $+3
-$SG7206	DB	'shell', 00H
+$SG7298	DB	'shell', 00H
 	ORG $+2
-$SG7207	DB	'xshell.exe', 00H
+$SG7299	DB	'xshell.exe', 00H
 	ORG $+1
-$SG7208	DB	'dwm3', 00H
+$SG7300	DB	'dwm3', 00H
 	ORG $+7
-$SG7209	DB	'dwm3.exe', 00H
+$SG7301	DB	'dwm3.exe', 00H
 CONST	ENDS
 PUBLIC	?timer_callback@@YAX_KPEAX@Z			; timer_callback
 PUBLIC	?_kmain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z		; _kmain
@@ -41,12 +41,13 @@ EXTRN	?initialize_vfs@@YAXXZ:PROC			; initialize_vfs
 EXTRN	?initialize_screen@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z:PROC ; initialize_screen
 EXTRN	?create_process@@YAXPEBDPEADE@Z:PROC		; create_process
 EXTRN	?driver_mngr_initialize@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z:PROC ; driver_mngr_initialize
+EXTRN	?arp_initialize@@YAXXZ:PROC			; arp_initialize
 pdata	SEGMENT
 $pdata$?timer_callback@@YAX_KPEAX@Z DD imagerel $LN3
 	DD	imagerel $LN3+41
 	DD	imagerel $unwind$?timer_callback@@YAX_KPEAX@Z
 $pdata$?_kmain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z DD imagerel $LN5
-	DD	imagerel $LN5+196
+	DD	imagerel $LN5+201
 	DD	imagerel $unwind$?_kmain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z
 pdata	ENDS
 xdata	SEGMENT
@@ -61,138 +62,143 @@ _TEXT	SEGMENT
 info$ = 48
 ?_kmain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z PROC		; _kmain
 
-; 93   : void _kmain (KERNEL_BOOT_INFO *info) {
+; 97   : void _kmain (KERNEL_BOOT_INFO *info) {
 
 $LN5:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 40					; 00000028H
 
-; 94   : 	hal_init ();
+; 98   : 	hal_init ();
 
 	call	?hal_init@@YAXXZ			; hal_init
 
-; 95   : 	pmmngr_init (info);
+; 99   : 	pmmngr_init (info);
 
 	mov	rcx, QWORD PTR info$[rsp]
 	call	?pmmngr_init@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z ; pmmngr_init
 
-; 96   : 	mm_init(); 
+; 100  : 	mm_init(); 
 
 	call	?mm_init@@YAXXZ				; mm_init
 
-; 97   : 	initialize_serial();
+; 101  : 	initialize_serial();
 
 	call	?initialize_serial@@YAXXZ		; initialize_serial
 
-; 98   : 	console_initialize(info);
+; 102  : 	console_initialize(info);
 
 	mov	rcx, QWORD PTR info$[rsp]
 	call	?console_initialize@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z ; console_initialize
 
-; 99   : 
-; 100  : 	//!Initialize kernel runtime drivers	
-; 101  : 	kybrd_init();
+; 103  : 
+; 104  : 	//!Initialize kernel runtime drivers	
+; 105  : 	kybrd_init();
 
 	call	?kybrd_init@@YAXXZ			; kybrd_init
 
-; 102  : 	initialize_acpi (info->acpi_table_pointer);
+; 106  : 	initialize_acpi (info->acpi_table_pointer);
 
 	mov	rax, QWORD PTR info$[rsp]
 	mov	rcx, QWORD PTR [rax+66]
 	call	?initialize_acpi@@YAXPEAX@Z		; initialize_acpi
 
-; 103  : 	initialize_rtc(); 
+; 107  : 	initialize_rtc(); 
 
 	call	?initialize_rtc@@YAXXZ			; initialize_rtc
 
-; 104  : 	e1000_initialize();
+; 108  : 	e1000_initialize();  //<< receiver not working
 
 	call	?e1000_initialize@@YAXXZ		; e1000_initialize
 
-; 105  : 	xhci_initialize ();  //<- needs completion	
+; 109  : 	xhci_initialize ();  //<- needs completion	
 
 	call	?xhci_initialize@@YAXXZ			; xhci_initialize
 
-; 106  :     hda_initialize();
+; 110  :     hda_initialize();
 
 	call	?hda_initialize@@YAXXZ			; hda_initialize
 
-; 107  :    
-; 108  : 
-; 109  : 	ata_initialize();
+; 111  :    
+; 112  : 
+; 113  : 	ata_initialize();
 
 	call	?ata_initialize@@YAXXZ			; ata_initialize
 
-; 110  : 	initialize_vfs();
+; 114  : 	initialize_vfs();
 
 	call	?initialize_vfs@@YAXXZ			; initialize_vfs
 
-; 111  : 	initialize_screen(info);
+; 115  : 	initialize_screen(info);
 
 	mov	rcx, QWORD PTR info$[rsp]
 	call	?initialize_screen@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z ; initialize_screen
 
-; 112  : 	//svga_init (); 
-; 113  : 	initialize_mouse();
+; 116  : 	//svga_init (); 
+; 117  : 	initialize_mouse();
 
 	call	?initialize_mouse@@YAXXZ		; initialize_mouse
 
-; 114  : 
-; 115  : 	message_init ();
+; 118  : 
+; 119  : 	message_init ();
 
 	call	?message_init@@YAXXZ			; message_init
 
-; 116  : 	dwm_ipc_init();
+; 120  : 	dwm_ipc_init();
 
 	call	?dwm_ipc_init@@YAXXZ			; dwm_ipc_init
 
-; 117  :    
-; 118  : 	driver_mngr_initialize(info);
+; 121  :    
+; 122  : 	driver_mngr_initialize(info);
 
 	mov	rcx, QWORD PTR info$[rsp]
 	call	?driver_mngr_initialize@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z ; driver_mngr_initialize
 
-; 119  : 	
-; 120  : #ifdef ARCH_X64
-; 121  : 	initialize_scheduler();
+; 123  : 	//!Networking layer
+; 124  : 	arp_initialize();
+
+	call	?arp_initialize@@YAXXZ			; arp_initialize
+
+; 125  : 
+; 126  : #ifdef ARCH_X64
+; 127  : 	initialize_scheduler();
 
 	call	?initialize_scheduler@@YAXXZ		; initialize_scheduler
 
-; 122  : 	//create_process ("dwm.exe","dwm",20);
-; 123  : 	//! task list should be more than 4 or less than 4 not 
-; 124  : 	//create_process ("dwm2.exe", "dwm2", 1);
-; 125  : 	create_process ("xshell.exe","shell",1);
+; 128  : 	//create_process ("dwm.exe","dwm",20);
+; 129  : 	//! task list should be more than 4 or less than 4 not 
+; 130  : 	//create_process ("dwm2.exe", "dwm2", 1);
+; 131  : 	create_process ("xshell.exe","shell",1);
 
 	mov	r8b, 1
-	lea	rdx, OFFSET FLAT:$SG7206
-	lea	rcx, OFFSET FLAT:$SG7207
+	lea	rdx, OFFSET FLAT:$SG7298
+	lea	rcx, OFFSET FLAT:$SG7299
 	call	?create_process@@YAXPEBDPEADE@Z		; create_process
 
-; 126  : 	create_process ("dwm3.exe", "dwm3", 1);
+; 132  : 	create_process ("dwm3.exe", "dwm3", 1);
 
 	mov	r8b, 1
-	lea	rdx, OFFSET FLAT:$SG7208
-	lea	rcx, OFFSET FLAT:$SG7209
+	lea	rdx, OFFSET FLAT:$SG7300
+	lea	rcx, OFFSET FLAT:$SG7301
 	call	?create_process@@YAXPEBDPEADE@Z		; create_process
 
-; 127  : 	scheduler_start();
+; 133  : 	scheduler_start();
 
 	call	?scheduler_start@@YAXXZ			; scheduler_start
 $LN2@kmain:
 
-; 128  : #endif
-; 129  : 	while(1) {
+; 134  : #endif
+; 135  : 	while(1) {
 
 	xor	eax, eax
 	cmp	eax, 1
 	je	SHORT $LN1@kmain
 
-; 130  : 	}
+; 136  : 	}
 
 	jmp	SHORT $LN2@kmain
 $LN1@kmain:
 
-; 131  : }
+; 137  : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -205,24 +211,24 @@ v$ = 48
 p$ = 56
 ?timer_callback@@YAX_KPEAX@Z PROC			; timer_callback
 
-; 80   : void timer_callback (size_t v, void* p) {
+; 84   : void timer_callback (size_t v, void* p) {
 
 $LN3:
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 40					; 00000028H
 
-; 81   : 	printf ("Timer fired\n");
+; 85   : 	printf ("Timer fired\n");
 
-	lea	rcx, OFFSET FLAT:$SG7193
+	lea	rcx, OFFSET FLAT:$SG7285
 	call	?printf@@YAXPEBDZZ			; printf
 
-; 82   : 	interrupt_end(2);
+; 86   : 	interrupt_end(2);
 
 	mov	ecx, 2
 	call	?interrupt_end@@YAXI@Z			; interrupt_end
 
-; 83   : }
+; 87   : }
 
 	add	rsp, 40					; 00000028H
 	ret	0

@@ -60,6 +60,14 @@ void  read_config_32 (int bus, int dev, int function, int reg, uint32_t data)
 	data = x64_inportd (PCI_DATA_PORT);
 }
 
+void  read_config_32_ext (int bus, int dev, int function, int reg, uint32_t *data)
+{
+	//! read configuration dword
+	unsigned address = header_address (bus, dev, function, reg);
+	x64_outportd (PCI_CONFIG_PORT, address);
+	*data = x64_inportd (PCI_DATA_PORT);
+}
+
 void  read_config_16 (int bus, int dev, int function, int reg, unsigned short *data )
 {
 	//! read configuration word
@@ -277,26 +285,34 @@ pci_cap_header * pci_get_capability (pci_device_info *dev_info, pci_cap_header* 
 	return cap_header;
 }
 
-void pci_print_capabilities (pci_device_info *dev_info) {
+void pci_print_capabilities (int func, int dev, int bus) {
 
 	pci_cap_header *cap_header = NULL;
 	pci_msi_cap *msi_cap = NULL;
 	pci_msi_xcap *msi_x_cap = NULL;
 
-	uint64_t *capptr;
-	if ((dev_info->device.statusReg & (1<<4)) != 0) {
-		cap_header = (pci_cap_header*)(dev_info + dev_info->device.nonBridge.capPtr);
-		while (cap_header->next != 0x00) {
-			if (cap_header->id == 0x05) {
-				printf ("MSI Available\n");
+
+	uint32_t status = 0;
+	read_config_32_ext (bus, dev, func, 0x1,&status);
+	status >>= 16;
+	if (status & (1<<4)) {
+		uint32_t capptr = 0, cap_reg = 0; 
+		read_config_32_ext (bus, dev, func, 0xD, &capptr);
+		capptr &= 0xFF;
+		capptr /= 4;
+		while (capptr != 0) {
+			read_config_32_ext (bus, dev, func, capptr, &cap_reg);
+			if ((cap_reg & 0xFF) == PCI_CAPABILITY_MSIX) {
+				printf ("MSI-X found for this device\n");
 			}
 
-			if (cap_header->id == 0x11) {
-				printf ("MSI-X Available for this device\n");
+			if ((cap_reg & 0xFF) == PCI_CAPABILITY_MSI) {
+				printf ("MSI found for this device\n");
 			}
-			cap_header = (pci_cap_header*)(cap_header + cap_header->next);
+			capptr = ((cap_reg >> 8) & 0xFF) / 4;
 		}
-	}
+	
+	}	
 }
 
 

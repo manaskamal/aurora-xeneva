@@ -263,10 +263,10 @@ typedef struct _pci_scan_state_ {
 	uint8_t  class_code;
 }pci_scan_state;
 
-#pragma pack(push)
+#pragma pack(push,1)
 typedef struct {
-	unsigned char id;								// 00
-	unsigned char next;								// 01
+	uint16_t id;								// 00
+	uint16_t next;								// 01
 } pci_cap_header;
 #pragma pack(pop)
 
@@ -320,7 +320,7 @@ extern uint32_t pci_get_bar_addr (const pci_address *addr, int index);
 extern void pci_set_mem_enable (const pci_address *addr, bool enabe);
 extern bool pci_find_device_class (uint8_t class_code, uint8_t sub_class, pci_device_info *addr_out, int *bus, int *dev, int *func);
 extern bool pci_find_device_id (uint16_t device_id, uint16_t vendor_id, pci_device_info *addr_out);
-extern void pci_print_capabilities (pci_device_info *dev_info);
+extern void pci_print_capabilities (int func, int dev, int bus);
 extern void pci_enable_interrupts (int func, int dev, int bus);
 
 #endif

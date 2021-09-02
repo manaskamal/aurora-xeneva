@@ -43,6 +43,10 @@
 #include <procmngr.h>
 #include <serial.h>
 
+#include <net\arp.h>
+#include <net\ethernet.h>
+#include <net\nethw.h>
+
 #ifdef ARCH_X64
 #include <arch\x86_64\thread.h>
 #include <arch\x86_64\mmngr\map.h>
@@ -101,7 +105,7 @@ void _kmain (KERNEL_BOOT_INFO *info) {
 	kybrd_init();
 	initialize_acpi (info->acpi_table_pointer);
 	initialize_rtc(); 
-	e1000_initialize();
+	e1000_initialize();  //<< receiver not working
 	xhci_initialize ();  //<- needs completion	
     hda_initialize();
    
@@ -116,7 +120,9 @@ void _kmain (KERNEL_BOOT_INFO *info) {
 	dwm_ipc_init();
    
 	driver_mngr_initialize(info);
-	
+	//!Networking layer
+	arp_initialize();
+
 #ifdef ARCH_X64
 	initialize_scheduler();
 	//create_process ("dwm.exe","dwm",20);

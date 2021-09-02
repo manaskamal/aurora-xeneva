@@ -122,7 +122,7 @@
       <SDLCheck>false</SDLCheck>
       <OmitFramePointers>
       </OmitFramePointers>
-      <PreprocessorDefinitions>ARCH_X64;USE_APIC;AURORA_X64%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>ARCH_X64;USE_PIC;AURORA_X64%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <IgnoreStandardIncludePath>true</IgnoreStandardIncludePath>
       <ExceptionHandling>false</ExceptionHandling>
       <BasicRuntimeChecks>
@@ -193,6 +193,7 @@
     <ClInclude Include="..\include\arch\x86_64\mmngr\kheap.h" />
     <ClInclude Include="..\include\arch\x86_64\mmngr\map.h" />
     <ClInclude Include="..\include\arch\x86_64\mmngr\vmmngr.h" />
+    <ClInclude Include="..\include\arch\x86_64\multiproc.h" />
     <ClInclude Include="..\include\arch\x86_64\pic.h" />
     <ClInclude Include="..\include\arch\x86_64\thread.h" />
     <ClInclude Include="..\include\arch\x86_64\user64.h" />
@@ -234,6 +235,9 @@
     <ClInclude Include="..\include\ipc\message.h" />
     <ClInclude Include="..\include\mm.h" />
     <ClInclude Include="..\include\net\arp.h" />
+    <ClInclude Include="..\include\net\ethernet.h" />
+    <ClInclude Include="..\include\net\nethw.h" />
+    <ClInclude Include="..\include\net\udp.h" />
     <ClInclude Include="..\include\objctmngr.h" />
     <ClInclude Include="..\include\pe.h" />
     <ClInclude Include="..\include\pmmngr.h" />
@@ -292,6 +296,10 @@
     <ClCompile Include="ipc\evntsh.cpp" />
     <ClCompile Include="ipc\message.cpp" />
     <ClCompile Include="mm.cpp" />
+    <ClCompile Include="net\arp.cpp" />
+    <ClCompile Include="net\ethernet.cpp" />
+    <ClCompile Include="net\nethw.cpp" />
+    <ClCompile Include="net\udp.cpp" />
     <ClCompile Include="pe.cpp" />
     <ClCompile Include="pmmngr.cpp" />
     <ClCompile Include="proc.cpp" />
