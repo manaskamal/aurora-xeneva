@@ -530,16 +530,19 @@ void hda_initialize () {
 	}
 
 	x64_cli();
-	printf ("Scanning for MSI support for HD Audio\n");
-	pci_print_capabilities (func, dev, bus);
+
 	_ihd_audio.output = (hda_output*)pmmngr_alloc();
 	memset (_ihd_audio.output, 0, 4096);
 
 	printf ("HD Audio found vendor -> %x, device -> %x\n", pci_dev.device.vendorID, pci_dev.device.deviceID);
 	printf ("HD-Audio interrupt line -> %d\n", pci_dev.device.nonBridge.interruptLine);
 
-	/**if (pci_dev.device.nonBridge.interruptLine != 255) 
-		interrupt_set (pci_dev.device.nonBridge.interruptLine, hda_handler, pci_dev.device.nonBridge.interruptLine);**/
+
+	bool pci_status = pci_alloc_msi (func, dev, bus, hda_handler);
+	if (!pci_status) {
+		//! fall to legacy interrupt handling mode
+		printf ("[HD-Audio]: Setting up legacy interrupt handling mode is not supported -> %d\n", pci_dev.device.nonBridge.interruptLine);
+	}
 
 	_ihd_audio.mmio = pci_dev.device.nonBridge.baseAddress[0]; //& ~3);
 	_ihd_audio.corb = (uint32_t*)pmmngr_alloc(); //for 256 entries only 1 kb will be used
@@ -564,7 +567,6 @@ void hda_initialize () {
 
 	//! Initialize audio output
 	init_output();
-	pci_enable_interrupts (func, dev, bus);
 
     x64_sti();
    

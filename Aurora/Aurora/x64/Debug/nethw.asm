@@ -9,6 +9,12 @@ PUBLIC	?hw@@3PEAU_net_hw_@@EA				; hw
 _BSS	SEGMENT
 ?hw@@3PEAU_net_hw_@@EA DQ 01H DUP (?)			; hw
 _BSS	ENDS
+CONST	SEGMENT
+$SG2933	DB	0aH, 'MAC:', 00H
+	ORG $+2
+$SG2938	DB	':%x', 00H
+$SG2939	DB	0aH, 00H
+CONST	ENDS
 PUBLIC	?nethw_set_mac@@YAXPEAE@Z			; nethw_set_mac
 PUBLIC	?nethw_get_mac@@YAXPEAE@Z			; nethw_get_mac
 PUBLIC	?nethw_initialize@@YAXXZ			; nethw_initialize
@@ -23,9 +29,10 @@ PUBLIC	?ntohs@@YAGG@Z					; ntohs
 PUBLIC	?ntohl@@YAII@Z					; ntohl
 EXTRN	?malloc@@YAPEAX_K@Z:PROC			; malloc
 EXTRN	memcpy:PROC
+EXTRN	?printf@@YAXPEBDZZ:PROC				; printf
 pdata	SEGMENT
-$pdata$?nethw_set_mac@@YAXPEAE@Z DD imagerel $LN3
-	DD	imagerel $LN3+40
+$pdata$?nethw_set_mac@@YAXPEAE@Z DD imagerel $LN6
+	DD	imagerel $LN6+121
 	DD	imagerel $unwind$?nethw_set_mac@@YAXPEAE@Z
 $pdata$?nethw_get_mac@@YAXPEAE@Z DD imagerel $LN3
 	DD	imagerel $LN3+40
@@ -63,7 +70,7 @@ $pdata$?ntohl@@YAII@Z DD imagerel $LN3
 pdata	ENDS
 xdata	SEGMENT
 $unwind$?nethw_set_mac@@YAXPEAE@Z DD 010901H
-	DD	04209H
+	DD	06209H
 $unwind$?nethw_get_mac@@YAXPEAE@Z DD 010901H
 	DD	04209H
 $unwind$?nethw_initialize@@YAXXZ DD 010401H
@@ -93,18 +100,18 @@ _TEXT	SEGMENT
 netlong$ = 48
 ?ntohl@@YAII@Z PROC					; ntohl
 
-; 79   : uint32_t ntohl (uint32_t netlong) {
+; 83   : uint32_t ntohl (uint32_t netlong) {
 
 $LN3:
 	mov	DWORD PTR [rsp+8], ecx
 	sub	rsp, 40					; 00000028H
 
-; 80   : 	return flip_long (netlong);
+; 84   : 	return flip_long (netlong);
 
 	mov	ecx, DWORD PTR netlong$[rsp]
 	call	?flip_long@@YAII@Z			; flip_long
 
-; 81   : }
+; 85   : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -116,18 +123,18 @@ _TEXT	SEGMENT
 netshort$ = 48
 ?ntohs@@YAGG@Z PROC					; ntohs
 
-; 75   : uint16_t ntohs (uint16_t netshort) {
+; 79   : uint16_t ntohs (uint16_t netshort) {
 
 $LN3:
 	mov	WORD PTR [rsp+8], cx
 	sub	rsp, 40					; 00000028H
 
-; 76   : 	return flip_short (netshort);
+; 80   : 	return flip_short (netshort);
 
 	movzx	ecx, WORD PTR netshort$[rsp]
 	call	?flip_short@@YAGG@Z			; flip_short
 
-; 77   : }
+; 81   : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -139,18 +146,18 @@ _TEXT	SEGMENT
 hostlong$ = 48
 ?htonl@@YAII@Z PROC					; htonl
 
-; 71   : uint32_t htonl (uint32_t hostlong) {
+; 75   : uint32_t htonl (uint32_t hostlong) {
 
 $LN3:
 	mov	DWORD PTR [rsp+8], ecx
 	sub	rsp, 40					; 00000028H
 
-; 72   : 	return flip_long (hostlong);
+; 76   : 	return flip_long (hostlong);
 
 	mov	ecx, DWORD PTR hostlong$[rsp]
 	call	?flip_long@@YAII@Z			; flip_long
 
-; 73   : }
+; 77   : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -162,18 +169,18 @@ _TEXT	SEGMENT
 hostshort$ = 48
 ?htons@@YAGG@Z PROC					; htons
 
-; 67   : uint16_t htons (uint16_t hostshort) {
+; 71   : uint16_t htons (uint16_t hostshort) {
 
 $LN3:
 	mov	WORD PTR [rsp+8], cx
 	sub	rsp, 40					; 00000028H
 
-; 68   : 	return flip_short (hostshort);
+; 72   : 	return flip_short (hostshort);
 
 	movzx	ecx, WORD PTR hostshort$[rsp]
 	call	?flip_short@@YAGG@Z			; flip_short
 
-; 69   : }
+; 73   : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -186,14 +193,14 @@ byte$ = 48
 num_bits$ = 56
 ?ntohb@@YAEEH@Z PROC					; ntohb
 
-; 62   : uint8_t ntohb (uint8_t byte, int num_bits) {
+; 66   : uint8_t ntohb (uint8_t byte, int num_bits) {
 
 $LN3:
 	mov	DWORD PTR [rsp+16], edx
 	mov	BYTE PTR [rsp+8], cl
 	sub	rsp, 40					; 00000028H
 
-; 63   : 	return flip_byte (byte, 8 - num_bits);
+; 67   : 	return flip_byte (byte, 8 - num_bits);
 
 	mov	eax, 8
 	sub	eax, DWORD PTR num_bits$[rsp]
@@ -201,7 +208,7 @@ $LN3:
 	movzx	ecx, BYTE PTR byte$[rsp]
 	call	?flip_byte@@YAEEH@Z			; flip_byte
 
-; 64   : }
+; 68   : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -214,20 +221,20 @@ byte$ = 48
 num_bits$ = 56
 ?htonb@@YAEEH@Z PROC					; htonb
 
-; 58   : uint8_t htonb (uint8_t byte, int num_bits) {
+; 62   : uint8_t htonb (uint8_t byte, int num_bits) {
 
 $LN3:
 	mov	DWORD PTR [rsp+16], edx
 	mov	BYTE PTR [rsp+8], cl
 	sub	rsp, 40					; 00000028H
 
-; 59   : 	return flip_byte (byte, num_bits);
+; 63   : 	return flip_byte (byte, num_bits);
 
 	mov	edx, DWORD PTR num_bits$[rsp]
 	movzx	ecx, BYTE PTR byte$[rsp]
 	call	?flip_byte@@YAEEH@Z			; flip_byte
 
-; 60   : }
+; 64   : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -242,14 +249,14 @@ byte$ = 32
 num_bits$ = 40
 ?flip_byte@@YAEEH@Z PROC				; flip_byte
 
-; 53   : uint8_t flip_byte (uint8_t byte, int num_bits) {
+; 57   : uint8_t flip_byte (uint8_t byte, int num_bits) {
 
 $LN3:
 	mov	DWORD PTR [rsp+16], edx
 	mov	BYTE PTR [rsp+8], cl
 	sub	rsp, 24
 
-; 54   : 	uint8_t t = byte << (8 - num_bits);
+; 58   : 	uint8_t t = byte << (8 - num_bits);
 
 	movzx	eax, BYTE PTR byte$[rsp]
 	mov	ecx, 8
@@ -257,7 +264,7 @@ $LN3:
 	shl	eax, cl
 	mov	BYTE PTR t$[rsp], al
 
-; 55   : 	return t | (byte >> num_bits);
+; 59   : 	return t | (byte >> num_bits);
 
 	movzx	eax, BYTE PTR t$[rsp]
 	movzx	ecx, BYTE PTR byte$[rsp]
@@ -269,7 +276,7 @@ $LN3:
 	mov	ecx, edx
 	or	eax, ecx
 
-; 56   : }
+; 60   : }
 
 	add	rsp, 24
 	ret	0
@@ -285,33 +292,33 @@ fourth_byte$ = 12
 long_int$ = 32
 ?flip_long@@YAII@Z PROC					; flip_long
 
-; 45   : uint32_t flip_long (uint32_t long_int) {
+; 49   : uint32_t flip_long (uint32_t long_int) {
 
 $LN3:
 	mov	DWORD PTR [rsp+8], ecx
 	sub	rsp, 24
 
-; 46   : 	uint32_t first_byte = *((uint8_t*)(&long_int));
+; 50   : 	uint32_t first_byte = *((uint8_t*)(&long_int));
 
 	movzx	eax, BYTE PTR long_int$[rsp]
 	mov	DWORD PTR first_byte$[rsp], eax
 
-; 47   : 	uint32_t second_byte = *((uint8_t*)(&long_int) + 1);
+; 51   : 	uint32_t second_byte = *((uint8_t*)(&long_int) + 1);
 
 	movzx	eax, BYTE PTR long_int$[rsp+1]
 	mov	DWORD PTR second_byte$[rsp], eax
 
-; 48   : 	uint32_t third_byte = *((uint8_t*)(&long_int) + 2);
+; 52   : 	uint32_t third_byte = *((uint8_t*)(&long_int) + 2);
 
 	movzx	eax, BYTE PTR long_int$[rsp+2]
 	mov	DWORD PTR third_byte$[rsp], eax
 
-; 49   : 	uint32_t fourth_byte = *((uint8_t*)(&long_int) + 3);
+; 53   : 	uint32_t fourth_byte = *((uint8_t*)(&long_int) + 3);
 
 	movzx	eax, BYTE PTR long_int$[rsp+3]
 	mov	DWORD PTR fourth_byte$[rsp], eax
 
-; 50   : 	return (first_byte << 24) | (second_byte << 16) | (third_byte << 8) | (fourth_byte);
+; 54   : 	return (first_byte << 24) | (second_byte << 16) | (third_byte << 8) | (fourth_byte);
 
 	mov	eax, DWORD PTR first_byte$[rsp]
 	shl	eax, 24
@@ -323,7 +330,7 @@ $LN3:
 	or	eax, ecx
 	or	eax, DWORD PTR fourth_byte$[rsp]
 
-; 51   : }
+; 55   : }
 
 	add	rsp, 24
 	ret	0
@@ -337,29 +344,29 @@ second_byte$ = 4
 short_int$ = 32
 ?flip_short@@YAGG@Z PROC				; flip_short
 
-; 39   : uint16_t flip_short (uint16_t short_int) {
+; 43   : uint16_t flip_short (uint16_t short_int) {
 
 $LN3:
 	mov	WORD PTR [rsp+8], cx
 	sub	rsp, 24
 
-; 40   : 	uint32_t first_byte = *((uint8_t*)(&short_int));
+; 44   : 	uint32_t first_byte = *((uint8_t*)(&short_int));
 
 	movzx	eax, BYTE PTR short_int$[rsp]
 	mov	DWORD PTR first_byte$[rsp], eax
 
-; 41   : 	uint32_t second_byte = *((uint8_t*)(&short_int) + 1);
+; 45   : 	uint32_t second_byte = *((uint8_t*)(&short_int) + 1);
 
 	movzx	eax, BYTE PTR short_int$[rsp+1]
 	mov	DWORD PTR second_byte$[rsp], eax
 
-; 42   : 	return (first_byte << 8) | (second_byte);
+; 46   : 	return (first_byte << 8) | (second_byte);
 
 	mov	eax, DWORD PTR first_byte$[rsp]
 	shl	eax, 8
 	or	eax, DWORD PTR second_byte$[rsp]
 
-; 43   : }
+; 47   : }
 
 	add	rsp, 24
 	ret	0
@@ -370,18 +377,18 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 ?nethw_initialize@@YAXXZ PROC				; nethw_initialize
 
-; 31   : void nethw_initialize () {
+; 35   : void nethw_initialize () {
 
 $LN3:
 	sub	rsp, 40					; 00000028H
 
-; 32   : 	hw = (net_hw_t*)malloc (sizeof(net_hw_t));
+; 36   : 	hw = (net_hw_t*)malloc (sizeof(net_hw_t));
 
 	mov	ecx, 6
 	call	?malloc@@YAPEAX_K@Z			; malloc
 	mov	QWORD PTR ?hw@@3PEAU_net_hw_@@EA, rax	; hw
 
-; 33   : }
+; 37   : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -393,13 +400,13 @@ _TEXT	SEGMENT
 dst_mac$ = 48
 ?nethw_get_mac@@YAXPEAE@Z PROC				; nethw_get_mac
 
-; 26   : void nethw_get_mac (uint8_t* dst_mac) {
+; 30   : void nethw_get_mac (uint8_t* dst_mac) {
 
 $LN3:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 40					; 00000028H
 
-; 27   : 	memcpy (dst_mac, hw->mac, 6);
+; 31   : 	memcpy (dst_mac, hw->mac, 6);
 
 	mov	rax, QWORD PTR ?hw@@3PEAU_net_hw_@@EA	; hw
 	mov	r8d, 6
@@ -407,7 +414,7 @@ $LN3:
 	mov	rcx, QWORD PTR dst_mac$[rsp]
 	call	memcpy
 
-; 28   : }
+; 32   : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -416,14 +423,15 @@ _TEXT	ENDS
 ; Function compile flags: /Odtp
 ; File e:\xeneva project\xeneva\aurora\aurora\net\nethw.cpp
 _TEXT	SEGMENT
-mac$ = 48
+i$1 = 32
+mac$ = 64
 ?nethw_set_mac@@YAXPEAE@Z PROC				; nethw_set_mac
 
 ; 21   : void nethw_set_mac (uint8_t* mac) {
 
-$LN3:
+$LN6:
 	mov	QWORD PTR [rsp+8], rcx
-	sub	rsp, 40					; 00000028H
+	sub	rsp, 56					; 00000038H
 
 ; 22   : 	memcpy (hw->mac, mac, 6);
 
@@ -433,9 +441,42 @@ $LN3:
 	mov	rcx, rax
 	call	memcpy
 
-; 23   : }
+; 23   : 	printf ("\nMAC:");
 
-	add	rsp, 40					; 00000028H
+	lea	rcx, OFFSET FLAT:$SG2933
+	call	?printf@@YAXPEBDZZ			; printf
+
+; 24   : 	for (int i = 0; i < 6; i++)
+
+	mov	DWORD PTR i$1[rsp], 0
+	jmp	SHORT $LN3@nethw_set_
+$LN2@nethw_set_:
+	mov	eax, DWORD PTR i$1[rsp]
+	inc	eax
+	mov	DWORD PTR i$1[rsp], eax
+$LN3@nethw_set_:
+	cmp	DWORD PTR i$1[rsp], 6
+	jge	SHORT $LN1@nethw_set_
+
+; 25   : 		printf (":%x", mac[i]);
+
+	movsxd	rax, DWORD PTR i$1[rsp]
+	mov	rcx, QWORD PTR mac$[rsp]
+	movzx	eax, BYTE PTR [rcx+rax]
+	mov	edx, eax
+	lea	rcx, OFFSET FLAT:$SG2938
+	call	?printf@@YAXPEBDZZ			; printf
+	jmp	SHORT $LN2@nethw_set_
+$LN1@nethw_set_:
+
+; 26   : 	printf ("\n");
+
+	lea	rcx, OFFSET FLAT:$SG2939
+	call	?printf@@YAXPEBDZZ			; printf
+
+; 27   : }
+
+	add	rsp, 56					; 00000038H
 	ret	0
 ?nethw_set_mac@@YAXPEAE@Z ENDP				; nethw_set_mac
 _TEXT	ENDS

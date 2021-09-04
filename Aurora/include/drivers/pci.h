@@ -307,11 +307,11 @@ extern void pci_config_write32 (const pci_address *addr, uint16_t offset, uint32
 extern void pci_config_write16 (const pci_address *addr, uint16_t offset, uint16_t data);
 extern void pci_config_write8 (const pci_address *addr, uint16_t offset, uint8_t data);
 extern void read_config_header (int bus, int dev, int function, pci_device_info *dev_info);
-extern void  read_config_16 (int bus, int dev, int function, int reg, unsigned short *data );
-extern void  write_config_16 (int bus, int dev, int function, int reg, unsigned short data );
-extern void  read_config_32 (int bus, int dev, int function, int reg, uint32_t data);
-extern void read_config_8 (int bus, int dev, int function, int reg, unsigned char* data);
-extern void write_config_8 (int bus, int dev, int func, int reg, unsigned char data);
+extern void  read_config_16 (uint16_t segment,int bus, int dev, int function, int reg, unsigned short *data );
+extern void  write_config_16 (uint16_t segment,int bus, int dev, int function, int reg, unsigned short data );
+extern void  read_config_32 (uint16_t segment, int bus, int dev, int function, int reg, uint32_t data);
+extern void read_config_8 (uint16_t segment,int bus, int dev, int function, int reg, unsigned char* data);
+extern void write_config_8 (uint16_t segment,int bus, int dev, int func, int reg, unsigned char data);
 
 extern bool pci_scan_bus (pci_scan_state *state);
 extern bool pci_find_device (uint16_t vendor_id, uint16_t device_id, pci_address *addr_out);
@@ -320,7 +320,6 @@ extern uint32_t pci_get_bar_addr (const pci_address *addr, int index);
 extern void pci_set_mem_enable (const pci_address *addr, bool enabe);
 extern bool pci_find_device_class (uint8_t class_code, uint8_t sub_class, pci_device_info *addr_out, int *bus, int *dev, int *func);
 extern bool pci_find_device_id (uint16_t device_id, uint16_t vendor_id, pci_device_info *addr_out);
-extern void pci_print_capabilities (int func, int dev, int bus);
-extern void pci_enable_interrupts (int func, int dev, int bus);
+extern bool pci_alloc_msi (int func, int dev, int bus, void (*fn)(size_t, void* p));
 
 #endif

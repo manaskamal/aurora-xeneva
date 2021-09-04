@@ -32,13 +32,12 @@ EXTRN	x64_inportb:PROC
 EXTRN	x64_outportb:PROC
 EXTRN	?interrupt_end@@YAXI@Z:PROC			; interrupt_end
 EXTRN	?interrupt_set@@YAX_KP6AX0PEAX@ZE@Z:PROC	; interrupt_set
-EXTRN	?irq_mask@@YAXE_N@Z:PROC			; irq_mask
 _BSS	SEGMENT
 bcd	DB	01H DUP (?)
 _BSS	ENDS
 pdata	SEGMENT
 $pdata$?initialize_rtc@@YAXXZ DD imagerel $LN5
-	DD	imagerel $LN5+176
+	DD	imagerel $LN5+167
 	DD	imagerel $unwind$?initialize_rtc@@YAXXZ
 $pdata$?get_rtc_register@@YAEH@Z DD imagerel $LN3
 	DD	imagerel $LN3+36
@@ -520,11 +519,6 @@ $LN4@initialize:
 ; 106  : 
 ; 107  : #ifdef USE_PIC
 ; 108  : 	irq_mask(8,false);
-
-	xor	edx, edx
-	mov	cl, 8
-	call	?irq_mask@@YAXE_N@Z			; irq_mask
-
 ; 109  : #endif
 ; 110  : }
 

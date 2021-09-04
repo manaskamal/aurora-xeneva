@@ -273,6 +273,19 @@ typedef struct
 	unsigned char res[3];
 } acpiBoot;
 
+typedef struct {
+	acpiSysDescHeader header;
+	uint8_t reserved[8];
+} acpiMcfg;
+
+typedef struct {
+	uint64_t baseAddress;
+	uint16_t pciSegment;
+	uint8_t  startBusNum;
+	uint8_t  endBusNum;
+	uint32_t reserved;
+} acpiMcfgAlloc;
+
 //! Standard kernel ACPI header for kernel use only
 typedef struct _aurora_acpi_ 
 {
@@ -281,6 +294,7 @@ typedef struct _aurora_acpi_
 	acpiFadt *fadt;
 	acpiFacs *facs;
 	acpiDsdt *dsdt;
+	acpiMcfg *mcfg;
 	uint16_t slp_typa;
 	uint16_t slp_typb;
 }aurora_acpi;
@@ -329,4 +343,6 @@ extern void acpi_parse_madt ();
 extern void acpi_system_reboot ();
 extern uint8_t* search_s5 (acpiDsdt* header);
 extern void acpi_shutdown ();
+extern bool acpi_pcie_supported ();
+extern acpiMcfg *acpi_get_mcfg ();
 #endif

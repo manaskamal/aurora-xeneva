@@ -59,7 +59,7 @@ void amd_pcnet_initialize () {
 	printf ("AMD Interrupt line -> %d\n", dev->device.bridge.interruptLine);
 
 	amd_irq = dev->device.nonBridge.interruptLine;
-	pci_print_capabilities(func_,dev_,bus);
+	//pci_print_capabilities(func_,dev_,bus);
 
 	
 
@@ -128,8 +128,8 @@ void amd_pcnet_initialize () {
 	amd_write_csr (0,0x0042);
 
 
-	printf ("Scanning MSI capability for AMD PCNET\n");
-	pci_print_capabilities (func_, dev_, bus);
+	
+
 	x64_sti();
 	//pmmngr_free(init_block);
 }

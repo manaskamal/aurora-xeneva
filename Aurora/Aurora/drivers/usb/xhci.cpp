@@ -128,10 +128,14 @@ void xhci_initialize () {
 		printf ("USB xHCI: not found\n");
 		return;
 	}
+
 	x64_cli ();
 
 	printf ("Scanning MSI support for USB\n");
-	pci_print_capabilities(func_, dev_, bus);
+	bool pci_status = pci_alloc_msi(func_, dev_, bus, xhci_handler);
+	if (!pci_status) {
+		printf ("Legacy Interrupt handling for USB xhci is not supported\n");
+	}
 
 	xusb_dev->xhci_base_address = (dev->device.nonBridge.baseAddress[0] & 0xFFFFFFF0) +((dev->device.nonBridge.baseAddress[1] & 0xFFFFFFFF) << 32);
 

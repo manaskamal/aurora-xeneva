@@ -103,6 +103,7 @@ void svga_init () {
 
 	}
 
+
 	svga_enable();
 	svga_set_mode (1280,1024,32);
 	gmr_init();

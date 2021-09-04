@@ -286,35 +286,36 @@ void e1000_initialize () {
 	int func, dev_, bus = 0;
 	pci_device_info *dev = (pci_device_info*)pmmngr_alloc();
 	if (!pci_find_device_class (0x02,0x00, dev,&bus, &dev_, &func)) {
-		//printf ("Intel Ethernet not found\n");
+		printf ("Intel Ethernet not found\n");
 		return;
 	}
 
-	
+	printf ("E1000 device found\n");
 	x64_cli ();
 	i_net_dev = (e1000_dev*)malloc(sizeof(e1000_dev));
     i_net_dev->e1000_mem_base = dev->device.nonBridge.baseAddress[0] & ~3;
 
 	for (int i = 0; i < 6; i++) {
-		if ( dev->device.nonBridge.baseAddress[i] & 1) {
+		if (( dev->device.nonBridge.baseAddress[i] & 1) != 0){
 			  //TODO:Auto search  4
 	        i_net_dev->e1000_base = dev->device.nonBridge.baseAddress[i] & ~1; 
 			break;
 		}
 	}
 
+	i_net_dev->e1000_base = dev->device.nonBridge.baseAddress[0] & ~1; 
 	i_net_dev->e1000_irq = dev->device.nonBridge.interruptLine;
 	
-	//if (dev->device.nonBridge.interruptLine != 255) {
-	    printf ("E1000: Setting up interrupt line -> %d\n",dev->device.nonBridge.interruptLine );
-		printf ("E1000: Interrupt pin-> %d\n", dev->device.nonBridge.interruptPin);
-		int interrupt_line = 10;
-		write_config_8 (bus, dev_, func, PCI_CONFREG_INTLINE_8, interrupt_line);
-		read_config_8 (bus, dev_, func, PCI_CONFREG_INTLINE_8, &dev->device.all.interruptLine);
-		interrupt_set (dev->device.nonBridge.interruptLine, e1000_interrupt_handler, dev->device.nonBridge.interruptLine);
-		printf ("E1000: interrupt reassigned to-> %d\n",dev->device.nonBridge.interruptLine );
-	//}
+	bool pci_status = pci_alloc_msi (func, dev_, bus, e1000_interrupt_handler);
+	if (!pci_status) {
+		if (dev->device.nonBridge.interruptLine != 255) {
+			//write_config_8 (0,bus,dev_,func,PCI_CONFREG_INTLINE_8, 10);
+			//read_config_8 (0,bus, dev_, func, PCI_CONFREG_INTLINE_8,&dev->device.all.interruptLine);
+			interrupt_set (10, e1000_interrupt_handler, 10);
+		}
+	}
 	
+
 	e1000_write_command (REG_IMC, UINT32_MAX);
 	e1000_read_command (REG_ICR);
 	e1000_reset();
@@ -330,8 +331,8 @@ void e1000_initialize () {
 		e1000_write_command (REG_CRCERRS + (i * 4), 0);
 	}
 	
-	printf ("Scanning MSI support for e1000\n");
-	pci_print_capabilities(func, dev_, bus);
+	//printf ("Scanning MSI support for e1000\n");
+	//pci_print_capabilities(func, dev_, bus);
 
 	e1000_rx_init ();
 	e1000_tx_init ();

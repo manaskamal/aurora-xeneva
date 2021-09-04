@@ -108,7 +108,6 @@ void _kmain (KERNEL_BOOT_INFO *info) {
 	e1000_initialize();  //<< receiver not working
 	xhci_initialize ();  //<- needs completion	
     hda_initialize();
-   
 
 	ata_initialize();
 	initialize_vfs();
@@ -121,7 +120,6 @@ void _kmain (KERNEL_BOOT_INFO *info) {
    
 	driver_mngr_initialize(info);
 	//!Networking layer
-	arp_initialize();
 
 #ifdef ARCH_X64
 	initialize_scheduler();

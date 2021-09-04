@@ -77,8 +77,7 @@ void initialize_acpi (void* acpi_base) {
 	acpiRsdt *rsdt = (acpiRsdt*)rsdp->rsdtAddr;
 	acpiXsdt *xsdt = (acpiXsdt*)rsdp->xsdtAddr;
 	char sig[5];
-	int entries = ((rsdt->header.length - sizeof(acpiRsdt)) / sizeof(void*));
-
+	int entries = (rsdt->header.length - sizeof(rsdt->header))/4;
 	acpiSysDescHeader* header = nullptr;
 
 	for (int count = 0; count < entries; count++) {
@@ -103,8 +102,21 @@ void initialize_acpi (void* acpi_base) {
 		}
 
 		else if (!strncmp(sig, ACPI_SIG_MCFG, strlen(ACPI_SIG_MCFG))) {
-			printf ("[ACPI]: Mcfg table found\n");
+			//printf ("[ACPI]: Mcfg table found\n");
+			kern_acpi->mcfg = (acpiMcfg*) header;
+			acpiMcfgAlloc *allocs = mem_after<acpiMcfgAlloc*>(kern_acpi->mcfg);
+			for (; raw_diff(allocs, kern_acpi->mcfg) < kern_acpi->mcfg->header.length; ++allocs) {
+				printf ("PCIe Start bus num -> %d, End bus num -> %d, base address-> %x\n", allocs->startBusNum, allocs->endBusNum,
+					allocs->baseAddress);
+			}
 		}
+		else if (!strncmp(sig, ACPI_SIG_HPET, strlen(ACPI_SIG_HPET))) {
+			printf ("[ACPI]: HPET table found\n");
+		}
+		else if (!strncmp(sig, ACPI_SIG_MCHI, strlen(ACPI_SIG_MCHI))) {
+			printf ("[ACPI]: Management Controller Host Interface Table\n");
+		}
+
 	}
 
 	if (kern_acpi->fadt && kern_acpi->fadt->facsAddr) {
@@ -148,7 +160,8 @@ void acpi_parse_madt () {
 	while (raw_diff(apic_header, kern_acpi->madt) < kern_acpi->madt->header.length) {
 		switch (apic_header->type) {
 		case ACPI_APICTYPE_LAPIC: {
-			printf ("[ACPI]: Madt entry -> LAPIC \n");
+			acpiLocalApic *lapic = (acpiLocalApic*)apic_header;
+			printf ("[ACPI]: Madt entry -> LAPIC id -> %d\n", lapic->lapicId);
 			break;
 		}							 
 		case ACPI_APICTYPE_IOAPIC:{
@@ -158,8 +171,7 @@ void acpi_parse_madt () {
 		}
 		case ACPI_APICTYPE_ISOVER:{
 			apic_interrupt_override* over = (apic_interrupt_override*)apic_header;
-			
-			printf ("[ACPI]: Madt entry -> Interrupt Source Override, GSI-> %d SRC->%d\n", over->interrupt, over->source);
+			printf ("[ACPI]: Interrupt Source Override, GSI -> %d, SRC -> %d\n", over->interrupt, over->source);
 			break;
 		}
 		default:{
@@ -211,4 +223,18 @@ uint8_t* search_s5 (acpiDsdt* header) {
 	}
 
 	return (uint8_t*)NULL;
+}
+
+//! Checks for PCIe support
+bool acpi_pcie_supported () {
+	if (!kern_acpi->mcfg) {
+		return false;
+	} 
+	//! for now let's use pci legacy mode
+	return true;
+}
+
+//! Get MCFG table
+acpiMcfg *acpi_get_mcfg () {
+	return kern_acpi->mcfg;
 }
