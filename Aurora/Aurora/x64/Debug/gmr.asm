@@ -10,21 +10,21 @@ _BSS	SEGMENT
 ?gmr@@3U_gmr_state_@@A DB 0cH DUP (?)			; gmr
 _BSS	ENDS
 CONST	SEGMENT
-$SG5525	DB	'Virtual device does not have GMR support', 0aH, 00H
+$SG5533	DB	'Virtual device does not have GMR support', 0aH, 00H
 	ORG $+6
-$SG5531	DB	'Virtual device does not have GMR v2 support', 0aH, 00H
+$SG5539	DB	'Virtual device does not have GMR v2 support', 0aH, 00H
 	ORG $+3
-$SG5542	DB	'Desc Array -> %x', 0aH, 00H
+$SG5550	DB	'Desc Array -> %x', 0aH, 00H
 	ORG $+6
-$SG5548	DB	'First page -> %x', 0aH, 00H
+$SG5556	DB	'First page -> %x', 0aH, 00H
 	ORG $+6
-$SG5559	DB	'REGISTER WRITTEN', 0aH, 00H
+$SG5567	DB	'REGISTER WRITTEN', 0aH, 00H
 	ORG $+6
-$SG5566	DB	'PPN iiiii -> %x', 0aH, 00H
+$SG5574	DB	'PPN iiiii -> %x', 0aH, 00H
 	ORG $+7
-$SG5567	DB	'returning', 0aH, 00H
+$SG5575	DB	'returning', 0aH, 00H
 	ORG $+5
-$SG5577	DB	'Desc allocated %x', 0aH, 00H
+$SG5585	DB	'Desc allocated %x', 0aH, 00H
 CONST	ENDS
 PUBLIC	?gmr_init@@YAXXZ				; gmr_init
 PUBLIC	?gmr2_init@@YAXXZ				; gmr2_init
@@ -155,7 +155,7 @@ $LN6:
 ; 124  :    printf ("Desc allocated %x\n", desc);
 
 	mov	rdx, QWORD PTR desc$[rsp]
-	lea	rcx, OFFSET FLAT:$SG5577
+	lea	rcx, OFFSET FLAT:$SG5585
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 125  :    for (i = 0; i < numPages; i++) {
@@ -239,7 +239,7 @@ $LN3:
 	mov	eax, DWORD PTR numPages$[rsp]
 	mov	DWORD PTR desc$[rsp+4], eax
 	mov	edx, DWORD PTR desc$[rsp]
-	lea	rcx, OFFSET FLAT:$SG5566
+	lea	rcx, OFFSET FLAT:$SG5574
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 109  : 
@@ -252,7 +252,7 @@ $LN3:
 
 ; 111  : 	printf ("returning\n");
 
-	lea	rcx, OFFSET FLAT:$SG5567
+	lea	rcx, OFFSET FLAT:$SG5575
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 112  :    return desc.ppn;
@@ -309,7 +309,7 @@ $LN3:
 
 ; 92   :    printf ("REGISTER WRITTEN\n");
 
-	lea	rcx, OFFSET FLAT:$SG5559
+	lea	rcx, OFFSET FLAT:$SG5567
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 93   :    //if (desc) {
@@ -366,7 +366,7 @@ $LN9:
 ; 47   : 	printf ("Desc Array -> %x\n", desc_array);
 
 	mov	rdx, QWORD PTR desc_array$[rsp]
-	lea	rcx, OFFSET FLAT:$SG5542
+	lea	rcx, OFFSET FLAT:$SG5550
 	call	?printf@@YAXPEBDZZ			; printf
 $LN8@gmr_alloc_:
 $LN5@gmr_alloc_:
@@ -392,7 +392,7 @@ $LN5@gmr_alloc_:
 ; 52   : 			printf ("First page -> %x\n", page);
 
 	mov	edx, DWORD PTR page$[rsp]
-	lea	rcx, OFFSET FLAT:$SG5548
+	lea	rcx, OFFSET FLAT:$SG5556
 	call	?printf@@YAXPEBDZZ			; printf
 $LN3@gmr_alloc_:
 
@@ -513,7 +513,7 @@ $LN5:
 ; 30   : 	
 ; 31   : 	if (svga_dev.capabilities & SVGA_CAP_GMR2) {
 
-	mov	eax, DWORD PTR ?svga_dev@@3U_svga_drive_@@A+40
+	mov	eax, DWORD PTR ?svga_dev@@3U_svga_drive_@@A+48
 	and	eax, 4194304				; 00400000H
 	test	eax, eax
 	je	SHORT $LN2@gmr2_init
@@ -537,7 +537,7 @@ $LN2@gmr2_init:
 
 ; 35   : 		printf ("Virtual device does not have GMR v2 support\n");
 
-	lea	rcx, OFFSET FLAT:$SG5531
+	lea	rcx, OFFSET FLAT:$SG5539
 	call	?printf@@YAXPEBDZZ			; printf
 $LN1@gmr2_init:
 
@@ -561,7 +561,7 @@ $LN5:
 ; 20   : 
 ; 21   : 	if (svga_dev.capabilities & SVGA_CAP_GMR) {
 
-	mov	eax, DWORD PTR ?svga_dev@@3U_svga_drive_@@A+40
+	mov	eax, DWORD PTR ?svga_dev@@3U_svga_drive_@@A+48
 	and	eax, 1048576				; 00100000H
 	test	eax, eax
 	je	SHORT $LN2@gmr_init
@@ -585,7 +585,7 @@ $LN2@gmr_init:
 
 ; 25   : 		printf ("Virtual device does not have GMR support\n");
 
-	lea	rcx, OFFSET FLAT:$SG5525
+	lea	rcx, OFFSET FLAT:$SG5533
 	call	?printf@@YAXPEBDZZ			; printf
 $LN1@gmr_init:
 

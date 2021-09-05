@@ -41,21 +41,20 @@ bool svga_has_fifo_cap (int cap) {
 
 
 void svga_init () {
-	
-	if (!pci_find_device (PCI_VENDOR_ID_VMWARE, PCI_DEVICE_ID_VMWARE_SVGA2, &svga_dev.pci_addr)) {
+	svga_dev.pci_addr = (pci_device_info*)pmmngr_alloc();
+	int bus, dev, func;
+	if (!pci_find_device_class (0x03, 0x00, svga_dev.pci_addr, &bus, &dev, &func)) {
 		printf ("No VMware SVGA device found\n");
 		return;
 	}
-	/*pci_device_info *dev = (pci_device_info*)pmmngr_alloc();
-	if (!pci_find_device_class (0x03,0x00,dev)) {
-		printf ("SVGA Controller not found\n");
-		return;
-	}*/
 
-	pci_set_mem_enable (&svga_dev.pci_addr, true);
-	svga_dev.io_base =  pci_get_bar_addr (&svga_dev.pci_addr,0);
-	svga_dev.fb_mem = (uint8_t*)pci_get_bar_addr (&svga_dev.pci_addr, 1);
-	svga_dev.fifo_mem = (uint32_t*)pci_get_bar_addr (&svga_dev.pci_addr, 2);
+	//for I/O base
+	uint32_t mask = (svga_dev.pci_addr->device.nonBridge.baseAddress[0] & PCI_CONF_BAR_IO) ? 0x3 : 0xf;
+
+	//bar & ~mask;
+	svga_dev.io_base =  svga_dev.pci_addr->device.nonBridge.baseAddress[0] & ~mask;         //pci_get_bar_addr (&svga_dev.pci_addr,0);
+	svga_dev.fb_mem =   (uint8_t*)(svga_dev.pci_addr->device.nonBridge.baseAddress[1] & ~0xf);  //(uint8_t*)pci_get_bar_addr (&svga_dev.pci_addr, 1);
+	svga_dev.fifo_mem = (uint32_t*)(svga_dev.pci_addr->device.nonBridge.baseAddress[2] & ~0xf);  //(uint32_t*)pci_get_bar_addr (&svga_dev.pci_addr, 2);
 
 
 	svga_dev.device_version_id = SVGA_ID_2;
@@ -90,15 +89,15 @@ void svga_init () {
 
 	//!interrupts
 	if (svga_dev.capabilities & SVGA_CAP_IRQMASK) {
-		uint8_t irq = pci_config_read8 (&svga_dev.pci_addr, offsetof (pci_config_space,intr_line));	
+		uint8_t irq = svga_dev.pci_addr->device.nonBridge.interruptLine;//pci_config_read8 (&svga_dev.pci_addr, offsetof (pci_config_space,intr_line));	
 		svga_dev.irq_line = irq;
 		svga_write_reg (SVGA_REG_IRQMASK, 0);
 		printf ("Irq of svga -> %d\n", irq);
 		outportd (svga_dev.io_base + SVGA_IRQSTATUS_PORT, 0xff);
 
 		svga_dev.irq.pending = 0;
-		if (irq <= 244)
-			interrupt_set (irq, svga_interrupt_handler, irq);
+		//if (irq <= 244)
+		//	interrupt_set (irq, svga_interrupt_handler, irq);
 		//irq_mask (irq, true);
 
 	}

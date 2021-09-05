@@ -20,24 +20,26 @@ _BSS	SEGMENT
 ?a_card_net@@3PEAU_amd_net_@@EA DQ 01H DUP (?)		; a_card_net
 _BSS	ENDS
 CONST	SEGMENT
-$SG3328	DB	'AMD NIC Interrupt handler++', 0aH, 00H
+$SG3336	DB	'AMD NIC Interrupt handler++', 0aH, 00H
 	ORG $+3
-$SG3338	DB	'AMD PCNet card not found', 0aH, 00H
+$SG3346	DB	'AMD PCNet card not found', 0aH, 00H
 	ORG $+2
-$SG3374	DB	'%x', 00H
+$SG3382	DB	'%x', 00H
 	ORG $+1
-$SG3339	DB	'AMD Interrupt pin -> %x', 0aH, 00H
+$SG3347	DB	'AMD Interrupt pin -> %x', 0aH, 00H
 	ORG $+3
-$SG3375	DB	0aH, 00H
+$SG3383	DB	0aH, 00H
 	ORG $+2
-$SG3340	DB	'AMD PCNet card found -> device id -> %x, vendor id -> %x'
+$SG3348	DB	'AMD PCNet card found -> device id -> %x, vendor id -> %x'
 	DB	0aH, 00H
 	ORG $+6
-$SG3341	DB	'AMD Base Address -> %x, -> %x', 0aH, 00H
+$SG3349	DB	'AMD Base Address -> %x, -> %x', 0aH, 00H
 	ORG $+1
-$SG3342	DB	'AMD Interrupt line -> %d', 0aH, 00H
+$SG3350	DB	'AMD Interrupt line -> %d', 0aH, 00H
 	ORG $+6
-$SG3369	DB	'AMD Mac Code -> ', 00H
+$SG3377	DB	'AMD Mac Code -> ', 00H
+	ORG $+7
+$SG3386	DB	'MSI for amd not found', 0aH, 00H
 CONST	ENDS
 PUBLIC	?amd_pcnet_initialize@@YAXXZ			; amd_pcnet_initialize
 PUBLIC	?amd_write_bcr@@YAXGG@Z				; amd_write_bcr
@@ -51,13 +53,14 @@ EXTRN	x64_outportw:PROC
 EXTRN	?interrupt_end@@YAXI@Z:PROC			; interrupt_end
 EXTRN	?interrupt_set@@YAX_KP6AX0PEAX@ZE@Z:PROC	; interrupt_set
 EXTRN	?pci_find_device_class@@YA_NEEPEATpci_device_info@@PEAH11@Z:PROC ; pci_find_device_class
+EXTRN	?pci_alloc_msi@@YA_NHHHP6AX_KPEAX@Z@Z:PROC	; pci_alloc_msi
 EXTRN	?pmmngr_alloc@@YAPEAXXZ:PROC			; pmmngr_alloc
 EXTRN	?memset@@YAXPEAXEI@Z:PROC			; memset
 EXTRN	memcpy:PROC
 EXTRN	?printf@@YAXPEBDZZ:PROC				; printf
 pdata	SEGMENT
-$pdata$?amd_pcnet_initialize@@YAXXZ DD imagerel $LN13
-	DD	imagerel $LN13+1342
+$pdata$?amd_pcnet_initialize@@YAXXZ DD imagerel $LN14
+	DD	imagerel $LN14+1398
 	DD	imagerel $unwind$?amd_pcnet_initialize@@YAXXZ
 $pdata$?amd_write_bcr@@YAXGG@Z DD imagerel $LN3
 	DD	imagerel $LN3+67
@@ -73,8 +76,8 @@ $pdata$?amd_interrupt_handler@@YAX_KPEAX@Z DD imagerel $LN3
 	DD	imagerel $unwind$?amd_interrupt_handler@@YAX_KPEAX@Z
 pdata	ENDS
 xdata	SEGMENT
-$unwind$?amd_pcnet_initialize@@YAXXZ DD 010401H
-	DD	0e204H
+$unwind$?amd_pcnet_initialize@@YAXXZ DD 020701H
+	DD	0110107H
 $unwind$?amd_write_bcr@@YAXGG@Z DD 010e01H
 	DD	0420eH
 $unwind$?amd_write_csr@@YAXEG@Z DD 010d01H
@@ -100,7 +103,7 @@ $LN3:
 
 ; 40   : 	printf ("AMD NIC Interrupt handler++\n");
 
-	lea	rcx, OFFSET FLAT:$SG3328
+	lea	rcx, OFFSET FLAT:$SG3336
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 41   : 	//apic_local_eoi();
@@ -225,21 +228,22 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 i$1 = 48
 temp$ = 52
-dev$ = 56
-init_block$ = 64
-i$2 = 72
-i$3 = 76
-func_$ = 80
-rx_buffer$ = 88
-tx_buffer$ = 96
-dev_$ = 104
-bus$ = 108
+pci_status$ = 56
+dev$ = 64
+init_block$ = 72
+i$2 = 80
+i$3 = 84
+func_$ = 88
+dev_$ = 92
+rx_buffer$ = 96
+bus$ = 104
+tx_buffer$ = 112
 ?amd_pcnet_initialize@@YAXXZ PROC			; amd_pcnet_initialize
 
 ; 45   : void amd_pcnet_initialize () {
 
-$LN13:
-	sub	rsp, 120				; 00000078H
+$LN14:
+	sub	rsp, 136				; 00000088H
 
 ; 46   : 	pci_device_info *dev = (pci_device_info*)pmmngr_alloc();
 
@@ -273,17 +277,17 @@ $LN13:
 	call	?pci_find_device_class@@YA_NEEPEATpci_device_info@@PEAH11@Z ; pci_find_device_class
 	movzx	eax, al
 	test	eax, eax
-	jne	SHORT $LN10@amd_pcnet_
+	jne	SHORT $LN11@amd_pcnet_
 
 ; 52   : 		printf ("AMD PCNet card not found\n");
 
-	lea	rcx, OFFSET FLAT:$SG3338
+	lea	rcx, OFFSET FLAT:$SG3346
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 53   : 		return;
 
-	jmp	$LN11@amd_pcnet_
-$LN10@amd_pcnet_:
+	jmp	$LN12@amd_pcnet_
+$LN11@amd_pcnet_:
 
 ; 54   : 	}
 ; 55   : 	printf ("AMD Interrupt pin -> %x\n", dev->device.nonBridge.interruptPin);
@@ -291,7 +295,7 @@ $LN10@amd_pcnet_:
 	mov	rax, QWORD PTR dev$[rsp]
 	movzx	eax, BYTE PTR [rax+61]
 	mov	edx, eax
-	lea	rcx, OFFSET FLAT:$SG3339
+	lea	rcx, OFFSET FLAT:$SG3347
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 56   : 	amd_io_base = dev->device.nonBridge.baseAddress[0];
@@ -310,7 +314,7 @@ $LN10@amd_pcnet_:
 	movzx	ecx, WORD PTR [rcx+2]
 	mov	r8d, eax
 	mov	edx, ecx
-	lea	rcx, OFFSET FLAT:$SG3340
+	lea	rcx, OFFSET FLAT:$SG3348
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 58   : 	printf ("AMD Base Address -> %x, -> %x\n", dev->device.nonBridge.baseAddress[0], dev->device.nonBridge.baseAddress[6]);
@@ -323,7 +327,7 @@ $LN10@amd_pcnet_:
 	mov	r8d, DWORD PTR [rdx+rax+16]
 	mov	rax, QWORD PTR dev$[rsp]
 	mov	edx, DWORD PTR [rax+rcx+16]
-	lea	rcx, OFFSET FLAT:$SG3341
+	lea	rcx, OFFSET FLAT:$SG3349
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 59   : 	printf ("AMD Interrupt line -> %d\n", dev->device.bridge.interruptLine);
@@ -331,7 +335,7 @@ $LN10@amd_pcnet_:
 	mov	rax, QWORD PTR dev$[rsp]
 	movzx	eax, BYTE PTR [rax+60]
 	mov	edx, eax
-	lea	rcx, OFFSET FLAT:$SG3342
+	lea	rcx, OFFSET FLAT:$SG3350
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 60   : 
@@ -438,19 +442,19 @@ $LN10@amd_pcnet_:
 ; 79   : 	for (int i = 0; i < 20; i++)
 
 	mov	DWORD PTR i$3[rsp], 0
-	jmp	SHORT $LN9@amd_pcnet_
-$LN8@amd_pcnet_:
+	jmp	SHORT $LN10@amd_pcnet_
+$LN9@amd_pcnet_:
 	mov	eax, DWORD PTR i$3[rsp]
 	inc	eax
 	mov	DWORD PTR i$3[rsp], eax
-$LN9@amd_pcnet_:
+$LN10@amd_pcnet_:
 	cmp	DWORD PTR i$3[rsp], 20
-	jge	SHORT $LN7@amd_pcnet_
+	jge	SHORT $LN8@amd_pcnet_
 
 ; 80   : 		;
 
-	jmp	SHORT $LN8@amd_pcnet_
-$LN7@amd_pcnet_:
+	jmp	SHORT $LN9@amd_pcnet_
+$LN8@amd_pcnet_:
 
 ; 81   : 	
 ; 82   : 	amd_write_bcr(20,0x102);//amd_write_csr (20,0x0102);
@@ -499,15 +503,15 @@ $LN7@amd_pcnet_:
 ; 94   : 	for (uint8_t i = 0; i < 8; i++) {
 
 	mov	BYTE PTR i$1[rsp], 0
-	jmp	SHORT $LN6@amd_pcnet_
-$LN5@amd_pcnet_:
+	jmp	SHORT $LN7@amd_pcnet_
+$LN6@amd_pcnet_:
 	movzx	eax, BYTE PTR i$1[rsp]
 	inc	al
 	mov	BYTE PTR i$1[rsp], al
-$LN6@amd_pcnet_:
+$LN7@amd_pcnet_:
 	movzx	eax, BYTE PTR i$1[rsp]
 	cmp	eax, 8
-	jge	$LN4@amd_pcnet_
+	jge	$LN5@amd_pcnet_
 
 ; 95   : 		a_card_net->recv_desc[i].address = (uint32_t)rx_buffer + i * 2048;
 
@@ -596,8 +600,8 @@ $LN6@amd_pcnet_:
 
 ; 104  : 	}
 
-	jmp	$LN5@amd_pcnet_
-$LN4@amd_pcnet_:
+	jmp	$LN6@amd_pcnet_
+$LN5@amd_pcnet_:
 
 ; 105  : 
 ; 106  : 	amd_init_block *init_block = (amd_init_block*)pmmngr_alloc();
@@ -677,20 +681,20 @@ $LN4@amd_pcnet_:
 ; 117  : 
 ; 118  : 	printf ("AMD Mac Code -> ");
 
-	lea	rcx, OFFSET FLAT:$SG3369
+	lea	rcx, OFFSET FLAT:$SG3377
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 119  : 	for (int i = 0; i < 6; i++)
 
 	mov	DWORD PTR i$2[rsp], 0
-	jmp	SHORT $LN3@amd_pcnet_
-$LN2@amd_pcnet_:
+	jmp	SHORT $LN4@amd_pcnet_
+$LN3@amd_pcnet_:
 	mov	eax, DWORD PTR i$2[rsp]
 	inc	eax
 	mov	DWORD PTR i$2[rsp], eax
-$LN3@amd_pcnet_:
+$LN4@amd_pcnet_:
 	cmp	DWORD PTR i$2[rsp], 6
-	jge	SHORT $LN1@amd_pcnet_
+	jge	SHORT $LN2@amd_pcnet_
 
 ; 120  : 		printf ("%x", amd_mac[i]);
 
@@ -698,18 +702,38 @@ $LN3@amd_pcnet_:
 	lea	rcx, OFFSET FLAT:?amd_mac@@3PAEA	; amd_mac
 	movzx	eax, BYTE PTR [rcx+rax]
 	mov	edx, eax
-	lea	rcx, OFFSET FLAT:$SG3374
+	lea	rcx, OFFSET FLAT:$SG3382
 	call	?printf@@YAXPEBDZZ			; printf
-	jmp	SHORT $LN2@amd_pcnet_
-$LN1@amd_pcnet_:
+	jmp	SHORT $LN3@amd_pcnet_
+$LN2@amd_pcnet_:
 
 ; 121  : 	printf ("\n");
 
-	lea	rcx, OFFSET FLAT:$SG3375
+	lea	rcx, OFFSET FLAT:$SG3383
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 122  : 
-; 123  : 	interrupt_set (dev->device.nonBridge.interruptLine, amd_interrupt_handler, dev->device.nonBridge.interruptLine);
+; 123  : 	bool pci_status = pci_alloc_msi (func_, dev_, bus,amd_interrupt_handler);
+
+	lea	r9, OFFSET FLAT:?amd_interrupt_handler@@YAX_KPEAX@Z ; amd_interrupt_handler
+	mov	r8d, DWORD PTR bus$[rsp]
+	mov	edx, DWORD PTR dev_$[rsp]
+	mov	ecx, DWORD PTR func_$[rsp]
+	call	?pci_alloc_msi@@YA_NHHHP6AX_KPEAX@Z@Z	; pci_alloc_msi
+	mov	BYTE PTR pci_status$[rsp], al
+
+; 124  : 	if (!pci_status) {
+
+	movzx	eax, BYTE PTR pci_status$[rsp]
+	test	eax, eax
+	jne	SHORT $LN1@amd_pcnet_
+
+; 125  : 		printf ("MSI for amd not found\n");
+
+	lea	rcx, OFFSET FLAT:$SG3386
+	call	?printf@@YAXPEBDZZ			; printf
+
+; 126  : 		interrupt_set (dev->device.nonBridge.interruptLine, amd_interrupt_handler, dev->device.nonBridge.interruptLine);
 
 	mov	rax, QWORD PTR dev$[rsp]
 	movzx	eax, BYTE PTR [rax+60]
@@ -718,15 +742,17 @@ $LN1@amd_pcnet_:
 	lea	rdx, OFFSET FLAT:?amd_interrupt_handler@@YAX_KPEAX@Z ; amd_interrupt_handler
 	mov	ecx, eax
 	call	?interrupt_set@@YAX_KP6AX0PEAX@ZE@Z	; interrupt_set
+$LN1@amd_pcnet_:
 
-; 124  : 	//!initialize
-; 125  : 	amd_write_csr (0, 0x0041);
+; 127  : 	}
+; 128  : 	//!initialize
+; 129  : 	amd_write_csr (0, 0x0041);
 
 	mov	dx, 65					; 00000041H
 	xor	ecx, ecx
 	call	?amd_write_csr@@YAXEG@Z			; amd_write_csr
 
-; 126  : 	amd_write_csr (0,amd_read_csr(0));
+; 130  : 	amd_write_csr (0,amd_read_csr(0));
 
 	xor	ecx, ecx
 	call	?amd_read_csr@@YAGE@Z			; amd_read_csr
@@ -734,7 +760,7 @@ $LN1@amd_pcnet_:
 	xor	ecx, ecx
 	call	?amd_write_csr@@YAXEG@Z			; amd_write_csr
 
-; 127  : 	amd_write_csr(4,0xC00 | amd_read_csr(4));
+; 131  : 	amd_write_csr(4,0xC00 | amd_read_csr(4));
 
 	mov	cl, 4
 	call	?amd_read_csr@@YAGE@Z			; amd_read_csr
@@ -744,25 +770,25 @@ $LN1@amd_pcnet_:
 	mov	cl, 4
 	call	?amd_write_csr@@YAXEG@Z			; amd_write_csr
 
-; 128  : 	amd_write_csr (0,0x0042);
+; 132  : 	amd_write_csr (0,0x0042);
 
 	mov	dx, 66					; 00000042H
 	xor	ecx, ecx
 	call	?amd_write_csr@@YAXEG@Z			; amd_write_csr
 
-; 129  : 
-; 130  : 
-; 131  : 	
-; 132  : 
-; 133  : 	x64_sti();
+; 133  : 
+; 134  : 
+; 135  : 	
+; 136  : 
+; 137  : 	x64_sti();
 
 	call	x64_sti
-$LN11@amd_pcnet_:
+$LN12@amd_pcnet_:
 
-; 134  : 	//pmmngr_free(init_block);
-; 135  : }
+; 138  : 	//pmmngr_free(init_block);
+; 139  : }
 
-	add	rsp, 120				; 00000078H
+	add	rsp, 136				; 00000088H
 	ret	0
 ?amd_pcnet_initialize@@YAXXZ ENDP			; amd_pcnet_initialize
 _TEXT	ENDS

@@ -6,7 +6,7 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 CONST	SEGMENT
-$SG5497	DB	'[VMware SVGA]: Virtual Device does not have screen objec'
+$SG5505	DB	'[VMware SVGA]: Virtual Device does not have screen objec'
 	DB	't enabled', 0aH, 00H
 CONST	ENDS
 PUBLIC	?svga_screen_init@@YAXXZ			; svga_screen_init
@@ -190,7 +190,7 @@ $LN9:
 
 ; 122  : 	uint32_t *fb = (uint32_t*)svga_dev.fb_mem;
 
-	mov	rax, QWORD PTR ?svga_dev@@3U_svga_drive_@@A+16
+	mov	rax, QWORD PTR ?svga_dev@@3U_svga_drive_@@A+24
 	mov	QWORD PTR fb$[rsp], rax
 
 ; 123  : 	int x, y;
@@ -215,7 +215,7 @@ $LN6@svga_paint:
 	mov	ecx, DWORD PTR y_$[rsp]
 	add	ecx, eax
 	mov	eax, ecx
-	imul	eax, DWORD PTR ?svga_dev@@3U_svga_drive_@@A+44
+	imul	eax, DWORD PTR ?svga_dev@@3U_svga_drive_@@A+52
 	add	eax, DWORD PTR x_$[rsp]
 	mov	eax, eax
 	mov	rcx, QWORD PTR fb$[rsp]
@@ -627,7 +627,7 @@ $LN4:
 
 ; 20   : 			printf ("[VMware SVGA]: Virtual Device does not have screen object enabled\n");
 
-	lea	rcx, OFFSET FLAT:$SG5497
+	lea	rcx, OFFSET FLAT:$SG5505
 	call	?printf@@YAXPEBDZZ			; printf
 $LN1@svga_scree:
 

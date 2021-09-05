@@ -10,41 +10,41 @@ _BSS	SEGMENT
 ?xusb_dev@@3PEAU_xhci_@@EA DQ 01H DUP (?)		; xusb_dev
 _BSS	ENDS
 CONST	SEGMENT
-$SG3334	DB	'[XHCI USB]: Interrupt fired', 0aH, 00H
+$SG3342	DB	'[XHCI USB]: Interrupt fired', 0aH, 00H
 	ORG $+3
-$SG3346	DB	'USB: stating controller took %d ms', 0aH, 00H
+$SG3354	DB	'USB: stating controller took %d ms', 0aH, 00H
 	ORG $+4
-$SG3348	DB	'USB: error! couldn''t clear controller halted bit', 0aH, 00H
+$SG3356	DB	'USB: error! couldn''t clear controller halted bit', 0aH, 00H
 	ORG $+6
-$SG3351	DB	'USB: XHCI stopping command ring', 0aH, 00H
+$SG3359	DB	'USB: XHCI stopping command ring', 0aH, 00H
 	ORG $+7
-$SG3356	DB	'USB: xHCI stopping ring took %d ms', 0aH, 00H
+$SG3364	DB	'USB: xHCI stopping ring took %d ms', 0aH, 00H
 	ORG $+4
-$SG3358	DB	'USB: xHCI couldn''t stop command ring', 0aH, 00H
+$SG3366	DB	'USB: xHCI couldn''t stop command ring', 0aH, 00H
 	ORG $+2
-$SG3363	DB	'USB: xHCI stopping controller took %d ms', 0aH, 00H
+$SG3371	DB	'USB: xHCI stopping controller took %d ms', 0aH, 00H
 	ORG $+6
-$SG3365	DB	'USB: xHCI couldn''t set controller halted bit', 0aH, 00H
+$SG3373	DB	'USB: xHCI couldn''t set controller halted bit', 0aH, 00H
 	ORG $+2
-$SG3366	DB	'USB: xHCI controller reset completed ', 0aH, 00H
+$SG3374	DB	'USB: xHCI controller reset completed ', 0aH, 00H
 	ORG $+1
-$SG3376	DB	'USB: xHCI resetting controller took %dms ', 0aH, 00H
+$SG3384	DB	'USB: xHCI resetting controller took %dms ', 0aH, 00H
 	ORG $+5
-$SG3378	DB	'USB: controller did not clear reset bit', 0aH, 00H
+$SG3386	DB	'USB: controller did not clear reset bit', 0aH, 00H
 	ORG $+7
-$SG3379	DB	'USB: xHCI controller reset successfully', 0aH, 00H
+$SG3387	DB	'USB: xHCI controller reset successfully', 0aH, 00H
 	ORG $+7
-$SG3389	DB	'USB xHCI: not found', 0aH, 00H
+$SG3397	DB	'USB xHCI: not found', 0aH, 00H
 	ORG $+3
-$SG3390	DB	'Scanning MSI support for USB', 0aH, 00H
+$SG3398	DB	'Scanning MSI support for USB', 0aH, 00H
 	ORG $+2
-$SG3393	DB	'Legacy Interrupt handling for USB xhci is not supported', 0aH
+$SG3401	DB	'Legacy Interrupt handling for USB xhci is not supported', 0aH
 	DB	00H
 	ORG $+7
-$SG3397	DB	'USB: xHCI version - (%d.%d%d)', 0aH, 00H
+$SG3405	DB	'USB: xHCI version - (%d.%d%d)', 0aH, 00H
 	ORG $+1
-$SG3401	DB	'USB: xHCI interrupt line -> %d', 0aH, 00H
-$SG3402	DB	'USB: xHCI interrupt pin -> %d', 0aH, 00H
+$SG3409	DB	'USB: xHCI interrupt line -> %d', 0aH, 00H
+$SG3410	DB	'USB: xHCI interrupt pin -> %d', 0aH, 00H
 CONST	ENDS
 PUBLIC	?xhci_initialize@@YAXXZ				; xhci_initialize
 PUBLIC	?xhci_handler@@YAX_KPEAX@Z			; xhci_handler
@@ -53,11 +53,12 @@ EXTRN	x64_cli:PROC
 EXTRN	x64_sti:PROC
 EXTRN	?pci_find_device_class@@YA_NEEPEATpci_device_info@@PEAH11@Z:PROC ; pci_find_device_class
 EXTRN	?pci_alloc_msi@@YA_NHHHP6AX_KPEAX@Z@Z:PROC	; pci_alloc_msi
+EXTRN	?pci_enable_bus_master@@YAXHHH@Z:PROC		; pci_enable_bus_master
 EXTRN	?pmmngr_alloc@@YAPEAXXZ:PROC			; pmmngr_alloc
 EXTRN	?printf@@YAXPEBDZZ:PROC				; printf
 pdata	SEGMENT
 $pdata$?xhci_initialize@@YAXXZ DD imagerel $LN5
-	DD	imagerel $LN5+464
+	DD	imagerel $LN5+482
 	DD	imagerel $unwind$?xhci_initialize@@YAXXZ
 $pdata$?xhci_handler@@YAX_KPEAX@Z DD imagerel $LN3
 	DD	imagerel $LN3+31
@@ -145,7 +146,7 @@ $LN9@reset:
 ; 102  : 			printf ("USB: xHCI resetting controller took %dms \n",count);
 
 	mov	edx, DWORD PTR count$1[rsp]
-	lea	rcx, OFFSET FLAT:$SG3376
+	lea	rcx, OFFSET FLAT:$SG3384
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 103  : 			break;
@@ -172,7 +173,7 @@ $LN3@reset:
 ; 109  : 	{
 ; 110  : 		printf ("USB: controller did not clear reset bit\n");
 
-	lea	rcx, OFFSET FLAT:$SG3378
+	lea	rcx, OFFSET FLAT:$SG3386
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 111  : 		return;
@@ -185,7 +186,7 @@ $LN1@reset:
 ; 114  : 	//! successfull
 ; 115  : 	printf ("USB: xHCI controller reset successfully\n");
 
-	lea	rcx, OFFSET FLAT:$SG3379
+	lea	rcx, OFFSET FLAT:$SG3387
 	call	?printf@@YAXPEBDZZ			; printf
 $LN6@reset:
 
@@ -257,7 +258,7 @@ $LN17@xhci_start:
 ; 37   : 				printf ("USB: stating controller took %d ms\n", count);
 
 	mov	edx, DWORD PTR count$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3346
+	lea	rcx, OFFSET FLAT:$SG3354
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 38   : 				break;
@@ -284,7 +285,7 @@ $LN15@xhci_start:
 
 ; 45   : 			printf ("USB: error! couldn't clear controller halted bit\n");
 
-	lea	rcx, OFFSET FLAT:$SG3348
+	lea	rcx, OFFSET FLAT:$SG3356
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 46   : 			return;
@@ -309,7 +310,7 @@ $LN18@xhci_start:
 
 ; 51   : 			printf ("USB: XHCI stopping command ring\n");
 
-	lea	rcx, OFFSET FLAT:$SG3351
+	lea	rcx, OFFSET FLAT:$SG3359
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 52   : 			op->cmdrctrlLo = XHCI_CRCR_COMMANDABORT;
@@ -347,7 +348,7 @@ $LN10@xhci_start:
 ; 58   : 					printf ("USB: xHCI stopping ring took %d ms\n", count);
 
 	mov	edx, DWORD PTR count$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3356
+	lea	rcx, OFFSET FLAT:$SG3364
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 59   : 					break;
@@ -373,7 +374,7 @@ $LN8@xhci_start:
 
 ; 65   : 				printf ("USB: xHCI couldn't stop command ring\n");
 
-	lea	rcx, OFFSET FLAT:$SG3358
+	lea	rcx, OFFSET FLAT:$SG3366
 	call	?printf@@YAXPEBDZZ			; printf
 $LN6@xhci_start:
 $LN11@xhci_start:
@@ -414,7 +415,7 @@ $LN5@xhci_start:
 ; 74   : 				printf ("USB: xHCI stopping controller took %d ms\n", count);
 
 	mov	edx, DWORD PTR count$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3363
+	lea	rcx, OFFSET FLAT:$SG3371
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 75   : 				break;
@@ -440,7 +441,7 @@ $LN3@xhci_start:
 
 ; 81   : 			printf ("USB: xHCI couldn't set controller halted bit\n");
 
-	lea	rcx, OFFSET FLAT:$SG3365
+	lea	rcx, OFFSET FLAT:$SG3373
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 82   : 			return;
@@ -455,7 +456,7 @@ $LN12@xhci_start:
 ; 86   : 	//!successfull
 ; 87   : 	printf ("USB: xHCI controller reset completed \n");
 
-	lea	rcx, OFFSET FLAT:$SG3366
+	lea	rcx, OFFSET FLAT:$SG3374
 	call	?printf@@YAXPEBDZZ			; printf
 $LN19@xhci_start:
 
@@ -481,7 +482,7 @@ $LN3:
 
 ; 21   : 	printf ("[XHCI USB]: Interrupt fired\n");
 
-	lea	rcx, OFFSET FLAT:$SG3334
+	lea	rcx, OFFSET FLAT:$SG3342
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 22   : }
@@ -494,10 +495,10 @@ _TEXT	ENDS
 ; File e:\xeneva project\xeneva\aurora\aurora\drivers\usb\xhci.cpp
 _TEXT	SEGMENT
 pci_status$ = 48
-version$ = 52
-func_$ = 56
-bus$ = 60
-dev_$ = 64
+func_$ = 52
+version$ = 56
+dev_$ = 60
+bus$ = 64
 cap$ = 72
 dev$ = 80
 ?xhci_initialize@@YAXXZ PROC				; xhci_initialize
@@ -539,7 +540,7 @@ $LN5:
 
 ; 128  : 		printf ("USB xHCI: not found\n");
 
-	lea	rcx, OFFSET FLAT:$SG3389
+	lea	rcx, OFFSET FLAT:$SG3397
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 129  : 		return;
@@ -556,7 +557,7 @@ $LN2@xhci_initi:
 ; 133  : 
 ; 134  : 	printf ("Scanning MSI support for USB\n");
 
-	lea	rcx, OFFSET FLAT:$SG3390
+	lea	rcx, OFFSET FLAT:$SG3398
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 135  : 	bool pci_status = pci_alloc_msi(func_, dev_, bus, xhci_handler);
@@ -576,13 +577,20 @@ $LN2@xhci_initi:
 
 ; 137  : 		printf ("Legacy Interrupt handling for USB xhci is not supported\n");
 
-	lea	rcx, OFFSET FLAT:$SG3393
+	lea	rcx, OFFSET FLAT:$SG3401
 	call	?printf@@YAXPEBDZZ			; printf
 $LN1@xhci_initi:
 
 ; 138  : 	}
 ; 139  : 
-; 140  : 	xusb_dev->xhci_base_address = (dev->device.nonBridge.baseAddress[0] & 0xFFFFFFF0) +((dev->device.nonBridge.baseAddress[1] & 0xFFFFFFFF) << 32);
+; 140  : 	pci_enable_bus_master (bus, dev_, func_);
+
+	mov	r8d, DWORD PTR func_$[rsp]
+	mov	edx, DWORD PTR dev_$[rsp]
+	mov	ecx, DWORD PTR bus$[rsp]
+	call	?pci_enable_bus_master@@YAXHHH@Z	; pci_enable_bus_master
+
+; 141  : 	xusb_dev->xhci_base_address = (dev->device.nonBridge.baseAddress[0] & 0xFFFFFFF0) +((dev->device.nonBridge.baseAddress[1] & 0xFFFFFFFF) << 32);
 
 	mov	eax, 4
 	imul	rax, 0
@@ -599,21 +607,21 @@ $LN1@xhci_initi:
 	mov	rcx, QWORD PTR ?xusb_dev@@3PEAU_xhci_@@EA ; xusb_dev
 	mov	QWORD PTR [rcx], rax
 
-; 141  : 
-; 142  : 	xhci_cap_reg *cap = (xhci_cap_reg*)xusb_dev->xhci_base_address;
+; 142  : 
+; 143  : 	xhci_cap_reg *cap = (xhci_cap_reg*)xusb_dev->xhci_base_address;
 
 	mov	rax, QWORD PTR ?xusb_dev@@3PEAU_xhci_@@EA ; xusb_dev
 	mov	rax, QWORD PTR [rax]
 	mov	QWORD PTR cap$[rsp], rax
 
-; 143  :     uint32_t version = cap->caps_len_hciver >> 16;
+; 144  :     uint32_t version = cap->caps_len_hciver >> 16;
 
 	mov	rax, QWORD PTR cap$[rsp]
 	mov	eax, DWORD PTR [rax]
 	shr	eax, 16
 	mov	DWORD PTR version$[rsp], eax
 
-; 144  : 	printf ("USB: xHCI version - (%d.%d%d)\n",((version >> 8) & 0xFF), ((version>>4) & 0xF), (version & 0xF));
+; 145  : 	printf ("USB: xHCI version - (%d.%d%d)\n",((version >> 8) & 0xFF), ((version>>4) & 0xF), (version & 0xF));
 
 	mov	eax, DWORD PTR version$[rsp]
 	and	eax, 15
@@ -625,11 +633,11 @@ $LN1@xhci_initi:
 	and	edx, 255				; 000000ffH
 	mov	r9d, eax
 	mov	r8d, ecx
-	lea	rcx, OFFSET FLAT:$SG3397
+	lea	rcx, OFFSET FLAT:$SG3405
 	call	?printf@@YAXPEBDZZ			; printf
 
-; 145  : 
-; 146  : 	xusb_dev->xhci_op_address = ((size_t)cap + (cap->caps_len_hciver & 0xFF));
+; 146  : 
+; 147  : 	xusb_dev->xhci_op_address = ((size_t)cap + (cap->caps_len_hciver & 0xFF));
 
 	mov	rax, QWORD PTR cap$[rsp]
 	mov	eax, DWORD PTR [rax]
@@ -641,7 +649,7 @@ $LN1@xhci_initi:
 	mov	rcx, QWORD PTR ?xusb_dev@@3PEAU_xhci_@@EA ; xusb_dev
 	mov	QWORD PTR [rcx+8], rax
 
-; 147  : 	xusb_dev->doorbell_address = ((size_t)cap + (cap->dboffset & ~0x3UL));
+; 148  : 	xusb_dev->doorbell_address = ((size_t)cap + (cap->dboffset & ~0x3UL));
 
 	mov	rax, QWORD PTR cap$[rsp]
 	mov	eax, DWORD PTR [rax+20]
@@ -653,7 +661,7 @@ $LN1@xhci_initi:
 	mov	rcx, QWORD PTR ?xusb_dev@@3PEAU_xhci_@@EA ; xusb_dev
 	mov	QWORD PTR [rcx+16], rax
 
-; 148  : 	xusb_dev->runtime_address = ((size_t)cap + (cap->runtime_offset & ~0x1FUL));
+; 149  : 	xusb_dev->runtime_address = ((size_t)cap + (cap->runtime_offset & ~0x1FUL));
 
 	mov	rax, QWORD PTR cap$[rsp]
 	mov	eax, DWORD PTR [rax+24]
@@ -665,37 +673,37 @@ $LN1@xhci_initi:
 	mov	rcx, QWORD PTR ?xusb_dev@@3PEAU_xhci_@@EA ; xusb_dev
 	mov	QWORD PTR [rcx+24], rax
 
-; 149  : 
-; 150  : 	/**if (dev->device.nonBridge.interruptLine != 255)
-; 151  : 		interrupt_set (dev->device.nonBridge.interruptLine, xhci_handler, dev->device.nonBridge.interruptLine);**/
-; 152  : 
-; 153  : 	printf ("USB: xHCI interrupt line -> %d\n", dev->device.nonBridge.interruptLine);
+; 150  : 
+; 151  : 	/**if (dev->device.nonBridge.interruptLine != 255)
+; 152  : 		interrupt_set (dev->device.nonBridge.interruptLine, xhci_handler, dev->device.nonBridge.interruptLine);**/
+; 153  : 
+; 154  : 	printf ("USB: xHCI interrupt line -> %d\n", dev->device.nonBridge.interruptLine);
 
 	mov	rax, QWORD PTR dev$[rsp]
 	movzx	eax, BYTE PTR [rax+60]
 	mov	edx, eax
-	lea	rcx, OFFSET FLAT:$SG3401
+	lea	rcx, OFFSET FLAT:$SG3409
 	call	?printf@@YAXPEBDZZ			; printf
 
-; 154  : 	printf ("USB: xHCI interrupt pin -> %d\n", dev->device.nonBridge.interruptPin);
+; 155  : 	printf ("USB: xHCI interrupt pin -> %d\n", dev->device.nonBridge.interruptPin);
 
 	mov	rax, QWORD PTR dev$[rsp]
 	movzx	eax, BYTE PTR [rax+61]
 	mov	edx, eax
-	lea	rcx, OFFSET FLAT:$SG3402
+	lea	rcx, OFFSET FLAT:$SG3410
 	call	?printf@@YAXPEBDZZ			; printf
 
-; 155  : 	reset ();
+; 156  : 	reset ();
 
 	call	?reset@@YAXXZ				; reset
 
-; 156  : 	x64_sti();
+; 157  : 	x64_sti();
 
 	call	x64_sti
 $LN3@xhci_initi:
 
-; 157  : 	//for(;;);
-; 158  : }
+; 158  : 	//for(;;);
+; 159  : }
 
 	add	rsp, 104				; 00000068H
 	ret	0

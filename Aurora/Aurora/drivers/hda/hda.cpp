@@ -544,7 +544,7 @@ void hda_initialize () {
 		printf ("[HD-Audio]: Setting up legacy interrupt handling mode is not supported -> %d\n", pci_dev.device.nonBridge.interruptLine);
 	}
 
-	_ihd_audio.mmio = pci_dev.device.nonBridge.baseAddress[0]; //& ~3);
+	_ihd_audio.mmio = pci_dev.device.nonBridge.baseAddress[0] & ~3;
 	_ihd_audio.corb = (uint32_t*)pmmngr_alloc(); //for 256 entries only 1 kb will be used
 	_ihd_audio.rirb = (uint64_t*)pmmngr_alloc(); //(ring_address + 1024);
 	memset (_ihd_audio.corb, 0, 4096);

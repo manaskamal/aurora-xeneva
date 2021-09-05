@@ -137,6 +137,7 @@ void xhci_initialize () {
 		printf ("Legacy Interrupt handling for USB xhci is not supported\n");
 	}
 
+	pci_enable_bus_master (bus, dev_, func_);
 	xusb_dev->xhci_base_address = (dev->device.nonBridge.baseAddress[0] & 0xFFFFFFF0) +((dev->device.nonBridge.baseAddress[1] & 0xFFFFFFFF) << 32);
 
 	xhci_cap_reg *cap = (xhci_cap_reg*)xusb_dev->xhci_base_address;

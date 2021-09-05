@@ -10,8 +10,8 @@ _BSS	SEGMENT
 ?hw@@3PEAU_net_hw_@@EA DQ 01H DUP (?)			; hw
 _BSS	ENDS
 CONST	SEGMENT
-$SG2933	DB	0aH, 'MAC:', 00H
-	ORG $+2
+$SG2933	DB	'MAC:', 00H
+	ORG $+3
 $SG2938	DB	':%x', 00H
 $SG2939	DB	0aH, 00H
 CONST	ENDS
@@ -441,7 +441,7 @@ $LN6:
 	mov	rcx, rax
 	call	memcpy
 
-; 23   : 	printf ("\nMAC:");
+; 23   : 	printf ("MAC:");
 
 	lea	rcx, OFFSET FLAT:$SG2933
 	call	?printf@@YAXPEBDZZ			; printf

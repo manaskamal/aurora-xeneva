@@ -6,15 +6,14 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 CONST	SEGMENT
-$SG7315	DB	'Timer fired', 0aH, 00H
+$SG7323	DB	'Timer fired', 0aH, 00H
 	ORG $+3
-$SG7328	DB	'shell', 00H
-	ORG $+2
-$SG7329	DB	'xshell.exe', 00H
-	ORG $+1
-$SG7330	DB	'dwm3', 00H
-	ORG $+7
-$SG7331	DB	'dwm3.exe', 00H
+$SG7336	DB	'dwm', 00H
+	ORG $+4
+$SG7337	DB	'dwm.exe', 00H
+$SG7338	DB	'dwm2', 00H
+	ORG $+3
+$SG7339	DB	'dwm2.exe', 00H
 CONST	ENDS
 PUBLIC	?timer_callback@@YAX_KPEAX@Z			; timer_callback
 PUBLIC	?_kmain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z		; _kmain
@@ -28,9 +27,8 @@ EXTRN	?printf@@YAXPEBDZZ:PROC				; printf
 EXTRN	?kybrd_init@@YAXXZ:PROC				; kybrd_init
 EXTRN	?initialize_mouse@@YAXXZ:PROC			; initialize_mouse
 EXTRN	?ata_initialize@@YAXXZ:PROC			; ata_initialize
-EXTRN	?hda_initialize@@YAXXZ:PROC			; hda_initialize
+EXTRN	?svga_init@@YAXXZ:PROC				; svga_init
 EXTRN	?xhci_initialize@@YAXXZ:PROC			; xhci_initialize
-EXTRN	?e1000_initialize@@YAXXZ:PROC			; e1000_initialize
 EXTRN	?initialize_rtc@@YAXXZ:PROC			; initialize_rtc
 EXTRN	?initialize_acpi@@YAXPEAX@Z:PROC		; initialize_acpi
 EXTRN	?initialize_scheduler@@YAXXZ:PROC		; initialize_scheduler
@@ -46,7 +44,7 @@ $pdata$?timer_callback@@YAX_KPEAX@Z DD imagerel $LN3
 	DD	imagerel $LN3+41
 	DD	imagerel $unwind$?timer_callback@@YAX_KPEAX@Z
 $pdata$?_kmain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z DD imagerel $LN5
-	DD	imagerel $LN5+196
+	DD	imagerel $LN5+191
 	DD	imagerel $unwind$?_kmain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z
 pdata	ENDS
 xdata	SEGMENT
@@ -105,94 +103,93 @@ $LN5:
 
 	call	?initialize_rtc@@YAXXZ			; initialize_rtc
 
-; 108  : 	e1000_initialize();  //<< receiver not working
-
-	call	?e1000_initialize@@YAXXZ		; e1000_initialize
-
-; 109  : 	xhci_initialize ();  //<- needs completion	
+; 108  : 	//e1000_initialize();  //<< receiver not working
+; 109  : 	//!Networking layer
+; 110  : 	// ();
+; 111  : 	//arp_broadcast ();
+; 112  : 	xhci_initialize ();  //<- needs completion	
 
 	call	?xhci_initialize@@YAXXZ			; xhci_initialize
 
-; 110  :     hda_initialize();
-
-	call	?hda_initialize@@YAXXZ			; hda_initialize
-
-; 111  : 
-; 112  : 	ata_initialize();
+; 113  :     //hda_initialize();
+; 114  : 
+; 115  : 	ata_initialize();
 
 	call	?ata_initialize@@YAXXZ			; ata_initialize
 
-; 113  : 	initialize_vfs();
+; 116  : 	initialize_vfs();
 
 	call	?initialize_vfs@@YAXXZ			; initialize_vfs
 
-; 114  : 	initialize_screen(info);
+; 117  : 	initialize_screen(info);
 
 	mov	rcx, QWORD PTR info$[rsp]
 	call	?initialize_screen@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z ; initialize_screen
 
-; 115  : 	//svga_init (); 
-; 116  : 	initialize_mouse();
+; 118  : 	svga_init (); 
+
+	call	?svga_init@@YAXXZ			; svga_init
+
+; 119  : 	initialize_mouse();
 
 	call	?initialize_mouse@@YAXXZ		; initialize_mouse
 
-; 117  : 
-; 118  : 	message_init ();
+; 120  : 
+; 121  : 	message_init ();
 
 	call	?message_init@@YAXXZ			; message_init
 
-; 119  : 	dwm_ipc_init();
+; 122  : 	dwm_ipc_init();
 
 	call	?dwm_ipc_init@@YAXXZ			; dwm_ipc_init
 
-; 120  :    
-; 121  : 	driver_mngr_initialize(info);
+; 123  :    
+; 124  : 	driver_mngr_initialize(info);
 
 	mov	rcx, QWORD PTR info$[rsp]
 	call	?driver_mngr_initialize@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z ; driver_mngr_initialize
 
-; 122  : 	//!Networking layer
-; 123  : 
-; 124  : #ifdef ARCH_X64
-; 125  : 	initialize_scheduler();
+; 125  : 	
+; 126  : #ifdef ARCH_X64
+; 127  : 	initialize_scheduler();
 
 	call	?initialize_scheduler@@YAXXZ		; initialize_scheduler
 
-; 126  : 	//create_process ("dwm.exe","dwm",20);
-; 127  : 	//! task list should be more than 4 or less than 4 not 
-; 128  : 	//create_process ("dwm2.exe", "dwm2", 1);
-; 129  : 	create_process ("xshell.exe","shell",1);
+; 128  : 	create_process ("dwm.exe","dwm",20);
 
-	mov	r8b, 1
-	lea	rdx, OFFSET FLAT:$SG7328
-	lea	rcx, OFFSET FLAT:$SG7329
+	mov	r8b, 20
+	lea	rdx, OFFSET FLAT:$SG7336
+	lea	rcx, OFFSET FLAT:$SG7337
 	call	?create_process@@YAXPEBDPEADE@Z		; create_process
 
-; 130  : 	create_process ("dwm3.exe", "dwm3", 1);
+; 129  : 	//! task list should be more than 4 or less than 4 not 
+; 130  : 	create_process ("dwm2.exe", "dwm2", 1);
 
 	mov	r8b, 1
-	lea	rdx, OFFSET FLAT:$SG7330
-	lea	rcx, OFFSET FLAT:$SG7331
+	lea	rdx, OFFSET FLAT:$SG7338
+	lea	rcx, OFFSET FLAT:$SG7339
 	call	?create_process@@YAXPEBDPEADE@Z		; create_process
 
-; 131  : 	scheduler_start();
+; 131  : 	//create_process ("xshell.exe","shell",1);
+; 132  : 	//create_process ("dwm3.exe", "dwm3", 1);
+; 133  : 	scheduler_start();
 
 	call	?scheduler_start@@YAXXZ			; scheduler_start
 $LN2@kmain:
 
-; 132  : #endif
-; 133  : 	while(1) {
+; 134  : #endif
+; 135  : 	while(1) {
 
 	xor	eax, eax
 	cmp	eax, 1
 	je	SHORT $LN1@kmain
 
-; 134  : 	}
+; 136  : 	}
 
 	jmp	SHORT $LN2@kmain
 $LN1@kmain:
 
-; 135  : }
+; 137  : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -214,7 +211,7 @@ $LN3:
 
 ; 85   : 	printf ("Timer fired\n");
 
-	lea	rcx, OFFSET FLAT:$SG7315
+	lea	rcx, OFFSET FLAT:$SG7323
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 86   : 	interrupt_end(2);

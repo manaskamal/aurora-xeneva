@@ -120,7 +120,11 @@ void amd_pcnet_initialize () {
 		printf ("%x", amd_mac[i]);
 	printf ("\n");
 
-	interrupt_set (dev->device.nonBridge.interruptLine, amd_interrupt_handler, dev->device.nonBridge.interruptLine);
+	bool pci_status = pci_alloc_msi (func_, dev_, bus,amd_interrupt_handler);
+	if (!pci_status) {
+		printf ("MSI for amd not found\n");
+		interrupt_set (dev->device.nonBridge.interruptLine, amd_interrupt_handler, dev->device.nonBridge.interruptLine);
+	}
 	//!initialize
 	amd_write_csr (0, 0x0041);
 	amd_write_csr (0,amd_read_csr(0));

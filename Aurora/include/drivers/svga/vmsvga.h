@@ -25,7 +25,7 @@
 
 
 typedef struct _svga_drive_ {
-	pci_address pci_addr;
+	pci_device_info* pci_addr;
 	uint32_t io_base;
 	uint32_t *fifo_mem;
 	uint8_t  *fb_mem;

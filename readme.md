@@ -1,9 +1,9 @@
-# Aurora's Xeneva
+#Aurora's Xeneva
 An Operating System fully written from scratch level. It usage UEFI based bootloader called Xnldr {Currently not included here} to boot
 the kernel called Aurora. Further Aurora launch the window compositor system process and other applications. Currently applications
 are not included here.
 
-Features:
+#Features:
 1. x86_64 based kernel called Aurora Kernel
 2. Multitasking
 3. FAT32 file-system with {Read-Write support only on root dir}
@@ -18,8 +18,23 @@ Features:
 12. IPC-Message passing and shared memory message passing
 [Userspace]:
 13. Window Compositor {with transclucent support}
-14. Userspace library called libxeneva
-15. Applications like {About.exe, Calc.exe,..etc}
+
+#Hardware Features
+1. e1000 nic [half done]
+2. USB xhci [incomplete]
+3. HD-Audio 
+4. VMware SVGA driver
+5. PCI-Express
+6. AMD PCnet
+7. Legacy PS/2 Keyboard Mouse
+6. APIC & IOAPIC support
+7. ACPI with shutdown and reset
+8. MSI/MSI-X support
+9. RTL8139 NIC 
+10. AC97 Sound support
+11. ATA
+12. RTC 
+13. VMware mouse support
 
 
 #Screenshot

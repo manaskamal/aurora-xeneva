@@ -20,7 +20,7 @@ net_hw_t *hw;
 //! Set the MAC address
 void nethw_set_mac (uint8_t* mac) {
 	memcpy (hw->mac, mac, 6);
-	printf ("\nMAC:");
+	printf ("MAC:");
 	for (int i = 0; i < 6; i++)
 		printf (":%x", mac[i]);
 	printf ("\n");

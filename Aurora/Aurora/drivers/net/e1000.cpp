@@ -21,14 +21,21 @@
 e1000_dev *i_net_dev = NULL;
 
 uint32_t e1000_read_command (uint16_t p_address) {
-	x64_outportd (i_net_dev->e1000_base,p_address);
-	char *io_data = (char*)(i_net_dev->e1000_base + 4);
-	return x64_inportd ((uint16_t)io_data);
+	if (i_net_dev->e1000_base != 0) {
+		x64_outportd (i_net_dev->e1000_base,p_address);
+		char *io_data = (char*)(i_net_dev->e1000_base + 4);
+		return x64_inportd ((uint16_t)io_data);
+	}else 
+		return *(uint32_t*)(i_net_dev->e1000_mem_base + p_address);
+
 }
 
 void e1000_write_command (uint16_t p_address, uint32_t p_value) {
-	x64_outportd (i_net_dev->e1000_base, p_address);
-	x64_outportd (i_net_dev->e1000_base + 4, p_value);  //4
+	if (i_net_dev->e1000_base != 0) {
+		x64_outportd (i_net_dev->e1000_base, p_address);
+		x64_outportd (i_net_dev->e1000_base + 4, p_value);  //4
+	}else
+		*(uint32_t*)(i_net_dev->e1000_mem_base + p_address) = p_value;
 }
 
 bool e1000_detect_eeprom () {
@@ -290,29 +297,28 @@ void e1000_initialize () {
 		return;
 	}
 
-	printf ("E1000 device found\n");
 	x64_cli ();
 	i_net_dev = (e1000_dev*)malloc(sizeof(e1000_dev));
-    i_net_dev->e1000_mem_base = dev->device.nonBridge.baseAddress[0] & ~3;
-
+    
+    i_net_dev->e1000_mem_base = dev->device.nonBridge.baseAddress[1] & ~0xf;
 	for (int i = 0; i < 6; i++) {
-		if (( dev->device.nonBridge.baseAddress[i] & 1) != 0){
+		if ( dev->device.nonBridge.baseAddress[i] & 1){
 			  //TODO:Auto search  4
-	        i_net_dev->e1000_base = dev->device.nonBridge.baseAddress[i] & ~1; 
+			
+	        i_net_dev->e1000_base = dev->device.nonBridge.baseAddress[i] & ~3; 
 			break;
 		}
 	}
 
-	i_net_dev->e1000_base = dev->device.nonBridge.baseAddress[0] & ~1; 
 	i_net_dev->e1000_irq = dev->device.nonBridge.interruptLine;
-	
 	bool pci_status = pci_alloc_msi (func, dev_, bus, e1000_interrupt_handler);
 	if (!pci_status) {
-		if (dev->device.nonBridge.interruptLine != 255) {
-			//write_config_8 (0,bus,dev_,func,PCI_CONFREG_INTLINE_8, 10);
-			//read_config_8 (0,bus, dev_, func, PCI_CONFREG_INTLINE_8,&dev->device.all.interruptLine);
-			interrupt_set (10, e1000_interrupt_handler, 10);
-		}
+		//if (dev->device.nonBridge.interruptLine != 255) {
+			printf ("E1000 legacy irq -> %d, pin -> %d\n", dev->device.nonBridge.interruptLine, dev->device.nonBridge.interruptPin);
+			write_config_8 (0,bus,dev_,func,0x3C, 10);
+			read_config_8 (0,bus, dev_, func, 0x3C,&dev->device.all.interruptLine);
+			interrupt_set (dev->device.nonBridge.interruptLine, e1000_interrupt_handler, dev->device.nonBridge.interruptLine);
+		//}
 	}
 	
 
@@ -359,6 +365,6 @@ void e1000_initialize () {
 		//! Set the MAC address code
 	    nethw_set_mac (i_net_dev->mac);
 	}
-
+	printf ("e1000 setup completed\n");
 	x64_sti();
 }
