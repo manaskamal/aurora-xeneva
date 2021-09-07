@@ -24,6 +24,7 @@
 	((reg) & 0x3F) << 2))
 
 
+
 //! Configuration space pack address
 static uint32_t pci_config_pack_address (const pci_address *addr, uint16_t offset) {
 
@@ -198,77 +199,57 @@ void read_config_header (int bus, int dev, int function, pci_device_info *dev_in
 }
 
 
-
-//!============================================================================
-//!  PCIE implementation 
-//!============================================================================
-
-bool pci_find_device (uint16_t vendor_id, uint16_t device_id, pci_address *addr_out) {
-	pci_scan_state bus_scan = {};
-
-	while (pci_scan_bus (&bus_scan)) {
-		if (bus_scan.vendor_id == vendor_id && bus_scan.device_id == device_id) {
-			*addr_out = bus_scan.addr;
-			return true;
-		}
-	}
-
-	return false;
-}
-
-
-
 bool pci_find_device_class (uint8_t class_code, uint8_t sub_class, pci_device_info *addr_out, int *bus_, int *dev_, int *func_) {	
 	pci_device_info config;
 	acpiMcfg *mcfg = acpi_get_mcfg();
 	acpiMcfgAlloc *alloc = mem_after<acpiMcfgAlloc*>(mcfg);
 	//if (!acpi_pcie_supported()){
-	/**
-	 * Use legacy PCI method
-	 */
 		for (int bus = 0; bus < 256; bus++) {
 			for (int dev = 0; dev < 32; dev++) {
 				for (int func = 0; func < 8; func++) {
-					uint16_t command_reg;
-
-					uint32_t class_, subclass_;
-					uint32_t result = 0;
-					read_config_32_ext (alloc->pciSegment,bus, dev, func, 0x8, &result);
-					class_ = (result >> 24) & 0xFF;
-					subclass_ = (result >> 16) & 0xFF;
-
-					read_config_32_ext (alloc->pciSegment, bus, dev, func, 0x10, &config.device.nonBridge.baseAddress[0]);
-					read_config_32_ext (alloc->pciSegment, bus, dev, func, 0x14, &config.device.nonBridge.baseAddress[1]);
-					read_config_32_ext (alloc->pciSegment, bus, dev, func, 0x18, &config.device.nonBridge.baseAddress[2]);
-					read_config_32_ext (alloc->pciSegment,bus, dev, func, 0x1C, &config.device.nonBridge.baseAddress[3]);
-					read_config_32_ext (alloc->pciSegment, bus, dev, func, 0x20, &config.device.nonBridge.baseAddress[4]);
-
 					
-					
-					if (class_ == 0xFF || class_ == 0x00)
-						continue;
-					//printf ("Class found -> %x, sub_class -> %x\n", class_, subclass_);
-					//read_config_header (bus, dev, func, &config);
+					if (!acpi_pcie_supported()) {
+						read_config_32 (0,bus, dev, func, 0, config.header[0]);
+						read_config_header (bus, dev, func, &config);
 
-					if (class_ == class_code && subclass_ == sub_class) {	
-						uint32_t intLine = 0;
-						read_config_32_ext(alloc->pciSegment, bus, dev, func, 0x3C, &intLine);
+						if (config.device.classCode == class_code &&  config.device.subClassCode == sub_class) {
+							 *addr_out = config;
+							 *bus_ = bus;
+					         *dev_ = dev;
+					         *func_ = func;
+							 return true;
+						}
+					} else {
+						uint32_t class_, subclass_;
+						uint32_t result = 0;
+						read_config_32_ext (alloc->pciSegment,bus, dev, func, 0x8, &result);
+						class_ = (result >> 24) & 0xFF;
+						subclass_ = (result >> 16) & 0xFF;
+						if (class_ == 0xFF || class_ == 0x00)
+							continue;
+
+						//printf ("Class found -> %x, sub_class -> %x\n", class_, subclass_);
+					   //read_config_header (bus, dev, func, &config);
+
+						if (class_ == class_code && subclass_ == sub_class) {	
+							uint32_t intLine = 0;
+							read_config_32_ext(alloc->pciSegment, bus, dev, func, 0x3C, &intLine);
+						    read_config_32_ext (alloc->pciSegment, bus, dev, func, 0x10, &config.device.nonBridge.baseAddress[0]);
+				     	    read_config_32_ext (alloc->pciSegment, bus, dev, func, 0x14, &config.device.nonBridge.baseAddress[1]);
+					        read_config_32_ext (alloc->pciSegment, bus, dev, func, 0x18, &config.device.nonBridge.baseAddress[2]);
+					        read_config_32_ext (alloc->pciSegment,bus, dev, func, 0x1C, &config.device.nonBridge.baseAddress[3]);
+					        read_config_32_ext (alloc->pciSegment, bus, dev, func, 0x20, &config.device.nonBridge.baseAddress[4]);
+					
+						    *addr_out = config;
+						    addr_out->device.nonBridge.interruptLine = intLine & 0xff;
+						    addr_out->device.nonBridge.interruptPin = (intLine >> 8) & 0xff;
 						
-						//printf ("Device Found on pcie bus -> %d.%d.%d\n", bus, dev, func);
-						*addr_out = config;
-						addr_out->device.nonBridge.interruptLine = intLine & 0xff;
-						addr_out->device.nonBridge.interruptPin = (intLine >> 8) & 0xff;
-						//command reg -> 0x4
-						/*read_config_16 (0,bus,dev,func,0x4, &command_reg);
-					    command_reg |= (1<<2);
-						command_reg |= (1<<10);
-				        write_config_16 (0,bus, dev,func,0x4,command_reg);*/
-					
-					    *bus_ = bus;
-					    *dev_ = dev;
-					    *func_ = func;
-					     return true;
-				    }
+					         *bus_ = bus;
+					         *dev_ = dev;
+					         *func_ = func;
+					         return true;
+						}
+					}	
 				}
 			}
 		}
@@ -399,6 +380,13 @@ void pci_enable_interrupt (int bus, int dev, int func) {
     write_config_16 (0,bus, dev,func,0x4,command_reg);
 }
 
+
+bool pcie_supported () {
+	if (!acpi_pcie_supported ())
+		return false;
+	else 
+		return true;
+}
 
 
 

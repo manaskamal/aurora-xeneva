@@ -6,7 +6,7 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 CONST	SEGMENT
-$SG2924	DB	'Serial Handler', 0aH, 00H
+$SG2927	DB	'Serial Handler', 0aH, 00H
 CONST	ENDS
 PUBLIC	?initialize_serial@@YAXXZ			; initialize_serial
 PUBLIC	?write_serial@@YAXD@Z				; write_serial
@@ -87,7 +87,7 @@ $LN3:
 
 ; 21   : 	printf ("Serial Handler\n");
 
-	lea	rcx, OFFSET FLAT:$SG2924
+	lea	rcx, OFFSET FLAT:$SG2927
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 22   : 	interrupt_end(4);

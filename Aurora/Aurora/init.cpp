@@ -104,29 +104,33 @@ void _kmain (KERNEL_BOOT_INFO *info) {
 	//!Initialize kernel runtime drivers	
 	kybrd_init();
 	initialize_acpi (info->acpi_table_pointer);
-	initialize_rtc(); 
+	initialize_rtc();  
+	hda_initialize();
 	e1000_initialize();  //<< receiver not working
-	xhci_initialize ();  //<- needs completion	
-    hda_initialize();
+   
 
-	ata_initialize();
+
+    ata_initialize();
 	initialize_vfs();
 	initialize_screen(info);
-	svga_init (); 
+	//svga_init (); 
 	initialize_mouse();
 
 	message_init ();
 	dwm_ipc_init();
-   
-	driver_mngr_initialize(info);
+
+
 	
+	driver_mngr_initialize(info);
+	arp_initialize();
+
 #ifdef ARCH_X64
 	initialize_scheduler();
-	create_process ("dwm.exe","dwm",20);
+	//create_process ("dwm.exe","dwm",20);
 	//! task list should be more than 4 or less than 4 not 
-	create_process ("dwm2.exe", "dwm2", 1);
-	//create_process ("xshell.exe","shell",1);
-	//create_process ("dwm3.exe", "dwm3", 1);
+	//create_process ("dwm2.exe", "dwm2", 1);
+	create_process ("xshell.exe","shell",1);
+	create_process ("dwm3.exe", "dwm3", 1);
 	scheduler_start();
 #endif
 	while(1) {

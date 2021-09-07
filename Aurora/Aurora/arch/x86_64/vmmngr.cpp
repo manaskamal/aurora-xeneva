@@ -127,6 +127,58 @@ bool map_page (uint64_t physical_address, uint64_t virtual_address)
 }
 
 
+bool vmmngr_update_flags (uint64_t virtual_address, size_t flags_){
+
+	uint64_t phys_addr = (uint64_t)get_physical_address (virtual_address);
+
+	size_t flags = PAGING_WRITABLE | PAGING_PRESENT | PAGING_USER;
+
+	const long i4 = (virtual_address >> 39) & 0x1FF;
+	const long i3 = (virtual_address >> 30) & 0x1FF;
+	const long i2 = (virtual_address >> 21) & 0x1FF;
+	const long i1 = (virtual_address >> 12) & 0x1FF;
+
+	uint64_t *pml4i = (uint64_t*)x64_read_cr3();
+	if (!(pml4i[i4] & PAGING_PRESENT))
+	{
+		const uint64_t page = (uint64_t)pmmngr_alloc();
+		pml4i[i4] = page | flags;
+		clear((void*)page);
+		flush_tlb((void*)page);
+		x64_mfence();
+	}
+	uint64_t* pml3 = (uint64_t*)(pml4i[i4] & ~(4096 - 1));
+	if (!(pml3[i3] & PAGING_PRESENT))
+	{
+		const uint64_t page = (uint64_t)pmmngr_alloc();
+		pml3[i3] = page | flags;
+		clear((void*)page);
+		flush_tlb((void*)page);
+		x64_mfence();
+		
+	}
+
+	uint64_t* pml2 = (uint64_t*)(pml3[i3] & ~(4096 - 1));
+	if (!(pml2[i2] & PAGING_PRESENT))
+	{
+		const uint64_t page = (uint64_t)pmmngr_alloc();
+		pml2[i2] = page | flags;
+		clear((void*)page);
+		flush_tlb((void*)page);
+		x64_mfence();
+		
+	}
+	uint64_t* pml1 = (uint64_t*)(pml2[i2] & ~(4096 - 1));
+	if (pml1[i1] & PAGING_PRESENT)
+	{
+		printf ("Address already present\n");
+	}
+
+	pml1[i1] = phys_addr | flags;
+	flush_tlb ((void*)virtual_address);
+	x64_mfence ();
+	return true;
+}
 
 void unmap_page(uint64_t virt_addr){
 	

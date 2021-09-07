@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClInclude Include="stdint.h" />
+    <ClInclude Include="string.h" />
+    <ClInclude Include="float.h" />
+    <ClInclude Include="stddef.h" />
+    <ClInclude Include="stdlib.h" />
+    <ClInclude Include="heap.h" />
+    <ClInclude Include="sys\mmap.h">
+      <Filter>sys</Filter>
+    </ClInclude>
+    <ClInclude Include="ctype.h" />
+    <ClInclude Include="sys\utf.h">
+      <Filter>sys</Filter>
+    </ClInclude>
+    <ClInclude Include="limits.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="string.cpp" />
+    <ClCompile Include="heap.cpp" />
+    <ClCompile Include="sys\stdlib.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="sys">
+      <UniqueIdentifier>{70bd303c-b870-43b3-b9ab-073231887fea}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="sys\callback.asm">
+      <Filter>sys</Filter>
+    </None>
+  </ItemGroup>
+</Project>

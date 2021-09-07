@@ -20,26 +20,26 @@ _BSS	SEGMENT
 ?a_card_net@@3PEAU_amd_net_@@EA DQ 01H DUP (?)		; a_card_net
 _BSS	ENDS
 CONST	SEGMENT
-$SG3336	DB	'AMD NIC Interrupt handler++', 0aH, 00H
+$SG3310	DB	'AMD NIC Interrupt handler++', 0aH, 00H
 	ORG $+3
-$SG3346	DB	'AMD PCNet card not found', 0aH, 00H
+$SG3320	DB	'AMD PCNet card not found', 0aH, 00H
 	ORG $+2
-$SG3382	DB	'%x', 00H
+$SG3356	DB	'%x', 00H
 	ORG $+1
-$SG3347	DB	'AMD Interrupt pin -> %x', 0aH, 00H
+$SG3321	DB	'AMD Interrupt pin -> %x', 0aH, 00H
 	ORG $+3
-$SG3383	DB	0aH, 00H
+$SG3357	DB	0aH, 00H
 	ORG $+2
-$SG3348	DB	'AMD PCNet card found -> device id -> %x, vendor id -> %x'
+$SG3322	DB	'AMD PCNet card found -> device id -> %x, vendor id -> %x'
 	DB	0aH, 00H
 	ORG $+6
-$SG3349	DB	'AMD Base Address -> %x, -> %x', 0aH, 00H
+$SG3323	DB	'AMD Base Address -> %x, -> %x', 0aH, 00H
 	ORG $+1
-$SG3350	DB	'AMD Interrupt line -> %d', 0aH, 00H
+$SG3324	DB	'AMD Interrupt line -> %d', 0aH, 00H
 	ORG $+6
-$SG3377	DB	'AMD Mac Code -> ', 00H
+$SG3351	DB	'AMD Mac Code -> ', 00H
 	ORG $+7
-$SG3386	DB	'MSI for amd not found', 0aH, 00H
+$SG3360	DB	'MSI for amd not found', 0aH, 00H
 CONST	ENDS
 PUBLIC	?amd_pcnet_initialize@@YAXXZ			; amd_pcnet_initialize
 PUBLIC	?amd_write_bcr@@YAXGG@Z				; amd_write_bcr
@@ -103,7 +103,7 @@ $LN3:
 
 ; 40   : 	printf ("AMD NIC Interrupt handler++\n");
 
-	lea	rcx, OFFSET FLAT:$SG3336
+	lea	rcx, OFFSET FLAT:$SG3310
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 41   : 	//apic_local_eoi();
@@ -281,7 +281,7 @@ $LN14:
 
 ; 52   : 		printf ("AMD PCNet card not found\n");
 
-	lea	rcx, OFFSET FLAT:$SG3346
+	lea	rcx, OFFSET FLAT:$SG3320
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 53   : 		return;
@@ -295,7 +295,7 @@ $LN11@amd_pcnet_:
 	mov	rax, QWORD PTR dev$[rsp]
 	movzx	eax, BYTE PTR [rax+61]
 	mov	edx, eax
-	lea	rcx, OFFSET FLAT:$SG3347
+	lea	rcx, OFFSET FLAT:$SG3321
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 56   : 	amd_io_base = dev->device.nonBridge.baseAddress[0];
@@ -314,7 +314,7 @@ $LN11@amd_pcnet_:
 	movzx	ecx, WORD PTR [rcx+2]
 	mov	r8d, eax
 	mov	edx, ecx
-	lea	rcx, OFFSET FLAT:$SG3348
+	lea	rcx, OFFSET FLAT:$SG3322
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 58   : 	printf ("AMD Base Address -> %x, -> %x\n", dev->device.nonBridge.baseAddress[0], dev->device.nonBridge.baseAddress[6]);
@@ -327,7 +327,7 @@ $LN11@amd_pcnet_:
 	mov	r8d, DWORD PTR [rdx+rax+16]
 	mov	rax, QWORD PTR dev$[rsp]
 	mov	edx, DWORD PTR [rax+rcx+16]
-	lea	rcx, OFFSET FLAT:$SG3349
+	lea	rcx, OFFSET FLAT:$SG3323
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 59   : 	printf ("AMD Interrupt line -> %d\n", dev->device.bridge.interruptLine);
@@ -335,7 +335,7 @@ $LN11@amd_pcnet_:
 	mov	rax, QWORD PTR dev$[rsp]
 	movzx	eax, BYTE PTR [rax+60]
 	mov	edx, eax
-	lea	rcx, OFFSET FLAT:$SG3350
+	lea	rcx, OFFSET FLAT:$SG3324
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 60   : 
@@ -681,7 +681,7 @@ $LN5@amd_pcnet_:
 ; 117  : 
 ; 118  : 	printf ("AMD Mac Code -> ");
 
-	lea	rcx, OFFSET FLAT:$SG3377
+	lea	rcx, OFFSET FLAT:$SG3351
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 119  : 	for (int i = 0; i < 6; i++)
@@ -702,14 +702,14 @@ $LN4@amd_pcnet_:
 	lea	rcx, OFFSET FLAT:?amd_mac@@3PAEA	; amd_mac
 	movzx	eax, BYTE PTR [rcx+rax]
 	mov	edx, eax
-	lea	rcx, OFFSET FLAT:$SG3382
+	lea	rcx, OFFSET FLAT:$SG3356
 	call	?printf@@YAXPEBDZZ			; printf
 	jmp	SHORT $LN3@amd_pcnet_
 $LN2@amd_pcnet_:
 
 ; 121  : 	printf ("\n");
 
-	lea	rcx, OFFSET FLAT:$SG3383
+	lea	rcx, OFFSET FLAT:$SG3357
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 122  : 
@@ -730,7 +730,7 @@ $LN2@amd_pcnet_:
 
 ; 125  : 		printf ("MSI for amd not found\n");
 
-	lea	rcx, OFFSET FLAT:$SG3386
+	lea	rcx, OFFSET FLAT:$SG3360
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 126  : 		interrupt_set (dev->device.nonBridge.interruptLine, amd_interrupt_handler, dev->device.nonBridge.interruptLine);

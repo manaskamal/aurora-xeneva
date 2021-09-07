@@ -62,5 +62,5 @@ TSS* get_kernel_tss () {
 extern "C" void syscall_debug  (uint64_t rcx) {
 	printf ("Syscalled occured\n");
 	printf ("Loaded kernel stack is %x\n", rcx);
-	for(;;);
+	//for(;;);
 }

@@ -6,7 +6,7 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 CONST	SEGMENT
-$SG3010	DB	'*** [x64_idt] x64_default_handler: Unhandled Exception *'
+$SG3013	DB	'*** [x64_idt] x64_default_handler: Unhandled Exception *'
 	DB	'** ', 0aH, 00H
 CONST	ENDS
 PUBLIC	?hal_x86_64_init@@YAXXZ				; hal_x86_64_init
@@ -340,7 +340,7 @@ $LN5:
 
 ; 134  : 	printf("*** [x64_idt] x64_default_handler: Unhandled Exception *** \n");
 
-	lea	rcx, OFFSET FLAT:$SG3010
+	lea	rcx, OFFSET FLAT:$SG3013
 	call	?printf@@YAXPEBDZZ			; printf
 $LN2@default_ir:
 

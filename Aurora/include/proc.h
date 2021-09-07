@@ -36,6 +36,8 @@ typedef struct _process_ {
 	uint64_t* cr3;
 	uint64_t image_base;
 	uint64_t stack;
+	void*    user_heap_start;
+	size_t   heap_size;
 	struct _process_ *next;
 	struct _process_ *prev;
 	struct _process_ *parent;

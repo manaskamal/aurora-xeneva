@@ -151,9 +151,9 @@ void page_fault (size_t vector, void* param){
 	printf ("Current thread -> %s\n", get_current_thread()->name);
 	printf ("CS -> %x, SS -> %x\n", frame->cs, frame->ss);
 	printf ("******Cause********\n");
-	if (us)
+	if (us){
 		printf ("***User Priviledge fault***\n");
-	else if (present)
+	}else if (present)
 		printf ("***Page not present***\n");
 	else if (rw) 
 		printf ("*** R/W ***\n");
@@ -162,9 +162,8 @@ void page_fault (size_t vector, void* param){
 	else if (id)
 		printf ("*** Invalid Page ****\n");
 	//! here we must check for swap area for valid block
-	//map_page((uint64_t)pmmngr_alloc(),(uint64_t)vaddr);
 	svga_update(0,0,get_screen_width(), get_screen_height());
-	for(;;);
+	//for(;;);
 }
 
 //! exception function -- fpu_fault

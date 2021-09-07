@@ -207,4 +207,12 @@ munmap:
    syscall
    ret
 
+global create_uthread
+create_uthread:
+    mov r12, 18
+	mov r13, rcx
+	syscall
+	ret
+
+
 

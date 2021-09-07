@@ -6,29 +6,24 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 CONST	SEGMENT
-$SG3497	DB	'Current cr3 value -> %x', 0aH, 00H
-	ORG $+7
-$SG3498	DB	'Current entry address -> %x', 0aH, 00H
+$SG3509	DB	'uthread', 00H
 CONST	ENDS
 PUBLIC	?get_thread_id@@YAGXZ				; get_thread_id
 PUBLIC	?create_uthread@@YAXP6AXPEAX@Z@Z		; create_uthread
 PUBLIC	?sys_sleep@@YAX_K@Z				; sys_sleep
 EXTRN	?pmmngr_alloc@@YAPEAXXZ:PROC			; pmmngr_alloc
 EXTRN	x64_cli:PROC
-EXTRN	x64_write_msr:PROC
-EXTRN	x64_read_cr3:PROC
 EXTRN	?map_page@@YA_N_K0@Z:PROC			; map_page
-EXTRN	?create_user_address_space@@YAPEA_KXZ:PROC	; create_user_address_space
+EXTRN	?create_user_thread@@YAPEAU_thread_@@P6AXPEAX@Z_K2QEADE@Z:PROC ; create_user_thread
 EXTRN	?get_current_thread@@YAPEAU_thread_@@XZ:PROC	; get_current_thread
 EXTRN	?force_sched@@YAXXZ:PROC			; force_sched
 EXTRN	?sleep_thread@@YAXPEAU_thread_@@_K@Z:PROC	; sleep_thread
-EXTRN	?printf@@YAXPEBDZZ:PROC				; printf
 pdata	SEGMENT
 $pdata$?get_thread_id@@YAGXZ DD imagerel $LN3
 	DD	imagerel $LN3+26
 	DD	imagerel $unwind$?get_thread_id@@YAGXZ
-$pdata$?create_uthread@@YAXP6AXPEAX@Z@Z DD imagerel $LN3
-	DD	imagerel $LN3+140
+$pdata$?create_uthread@@YAXP6AXPEAX@Z@Z DD imagerel $LN6
+	DD	imagerel $LN6+189
 	DD	imagerel $unwind$?create_uthread@@YAXP6AXPEAX@Z@Z
 $pdata$?sys_sleep@@YAX_K@Z DD imagerel $LN3
 	DD	imagerel $LN3+49
@@ -38,7 +33,7 @@ xdata	SEGMENT
 $unwind$?get_thread_id@@YAGXZ DD 010401H
 	DD	04204H
 $unwind$?create_uthread@@YAXP6AXPEAX@Z@Z DD 010901H
-	DD	06209H
+	DD	0c209H
 $unwind$?sys_sleep@@YAX_K@Z DD 010901H
 	DD	06209H
 xdata	ENDS
@@ -49,32 +44,32 @@ t$ = 32
 ms$ = 64
 ?sys_sleep@@YAX_K@Z PROC				; sys_sleep
 
-; 37   : void sys_sleep (uint64_t ms) {
+; 36   : void sys_sleep (uint64_t ms) {
 
 $LN3:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 56					; 00000038H
 
-; 38   : 	x64_cli();
+; 37   : 	x64_cli();
 
 	call	x64_cli
 
-; 39   : 	thread_t* t = get_current_thread();
+; 38   : 	thread_t* t = get_current_thread();
 
 	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
 	mov	QWORD PTR t$[rsp], rax
 
-; 40   : 	sleep_thread (t, ms);
+; 39   : 	sleep_thread (t, ms);
 
 	mov	rdx, QWORD PTR ms$[rsp]
 	mov	rcx, QWORD PTR t$[rsp]
 	call	?sleep_thread@@YAXPEAU_thread_@@_K@Z	; sleep_thread
 
-; 41   : 	force_sched();
+; 40   : 	force_sched();
 
 	call	?force_sched@@YAXXZ			; force_sched
 
-; 42   : }
+; 41   : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -83,75 +78,88 @@ _TEXT	ENDS
 ; Function compile flags: /Odtp
 ; File e:\xeneva project\xeneva\aurora\aurora\sysserv\systhread.cpp
 _TEXT	SEGMENT
-uthr$ = 32
-cr3$ = 40
-entry$ = 64
+i$1 = 48
+uthr$ = 56
+tv69 = 64
+cthread$ = 72
+t$ = 80
+entry$ = 112
 ?create_uthread@@YAXP6AXPEAX@Z@Z PROC			; create_uthread
 
 ; 22   : void create_uthread (void (*entry) (void*)) {
 
-$LN3:
+$LN6:
 	mov	QWORD PTR [rsp+8], rcx
-	sub	rsp, 56					; 00000038H
+	sub	rsp, 104				; 00000068H
 
-; 23   : 	x64_cli ();
+; 23   : 	for (int i = 0; i < 0x100000/ 4096; i++)
 
-	call	x64_cli
+	mov	DWORD PTR i$1[rsp], 0
+	jmp	SHORT $LN3@create_uth
+$LN2@create_uth:
+	mov	eax, DWORD PTR i$1[rsp]
+	inc	eax
+	mov	DWORD PTR i$1[rsp], eax
+$LN3@create_uth:
+	cmp	DWORD PTR i$1[rsp], 256			; 00000100H
+	jge	SHORT $LN1@create_uth
 
-; 24   : 	map_page((uint64_t)pmmngr_alloc(), 0x0000000080000000);
+; 24   : 		map_page((uint64_t)pmmngr_alloc(), 0x0000000080000000 + i * 4096);
 
+	mov	eax, DWORD PTR i$1[rsp]
+	imul	eax, 4096				; 00001000H
+	add	eax, -2147483648			; 80000000H
+	mov	eax, eax
+	mov	QWORD PTR tv69[rsp], rax
 	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
-	mov	edx, -2147483648			; 80000000H
+	mov	rcx, QWORD PTR tv69[rsp]
+	mov	rdx, rcx
 	mov	rcx, rax
 	call	?map_page@@YA_N_K0@Z			; map_page
+	jmp	SHORT $LN2@create_uth
+$LN1@create_uth:
 
-; 25   : 	printf ("Current cr3 value -> %x\n", x64_read_cr3());
+; 25   : 
+; 26   : 	thread_t *cthread = get_current_thread();
 
-	call	x64_read_cr3
-	mov	rdx, rax
-	lea	rcx, OFFSET FLAT:$SG3497
-	call	?printf@@YAXPEBDZZ			; printf
+	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
+	mov	QWORD PTR cthread$[rsp], rax
 
-; 26   : 	printf ("Current entry address -> %x\n", entry);
-
-	mov	rdx, QWORD PTR entry$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3498
-	call	?printf@@YAXPEBDZZ			; printf
-
-; 27   : 	uint64_t *cr3 = create_user_address_space();
-
-	call	?create_user_address_space@@YAPEA_KXZ	; create_user_address_space
-	mov	QWORD PTR cr3$[rsp], rax
-
-; 28   : 	uthread *uthr = (uthread*)pmmngr_alloc();
+; 27   : 	uthread *uthr = (uthread*)pmmngr_alloc();
 
 	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
 	mov	QWORD PTR uthr$[rsp], rax
 
-; 29   : 	uthr->entry = entry;
+; 28   : 	uthr->entry = entry;
 
 	mov	rax, QWORD PTR uthr$[rsp]
 	mov	rcx, QWORD PTR entry$[rsp]
 	mov	QWORD PTR [rax], rcx
 
-; 30   : 	uthr->self_pointer = uthr;
+; 29   : 	uthr->self_pointer = uthr;
 
 	mov	rax, QWORD PTR uthr$[rsp]
 	mov	rcx, QWORD PTR uthr$[rsp]
 	mov	QWORD PTR [rax+8], rcx
 
-; 31   : 	x64_write_msr (0xC0000100, (uint64_t)uthr->self_pointer);
+; 30   : 	thread_t * t = create_user_thread (entry, (uint64_t)pmmngr_alloc() + 4096, cthread->cr3, "uthread", 1);
 
-	mov	rax, QWORD PTR uthr$[rsp]
-	mov	rdx, QWORD PTR [rax+8]
-	mov	ecx, -1073741568			; c0000100H
-	call	x64_write_msr
+	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
+	add	rax, 4096				; 00001000H
+	mov	BYTE PTR [rsp+32], 1
+	lea	r9, OFFSET FLAT:$SG3509
+	mov	rcx, QWORD PTR cthread$[rsp]
+	mov	r8, QWORD PTR [rcx+192]
+	mov	rdx, rax
+	mov	rcx, QWORD PTR entry$[rsp]
+	call	?create_user_thread@@YAPEAU_thread_@@P6AXPEAX@Z_K2QEADE@Z ; create_user_thread
+	mov	QWORD PTR t$[rsp], rax
 
-; 32   : 	//printf ("FS Base written\n");
-; 33   : 	//thread_t * t = create_user_thread (uthr->entry,0x0000000080000000 + 4096, (size_t)cr3, "uthread", 1);
-; 34   : }
+; 31   : 	
+; 32   : 	//NOT IMPLEMENTED YET
+; 33   : }
 
-	add	rsp, 56					; 00000038H
+	add	rsp, 104				; 00000068H
 	ret	0
 ?create_uthread@@YAXP6AXPEAX@Z@Z ENDP			; create_uthread
 _TEXT	ENDS

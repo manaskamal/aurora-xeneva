@@ -130,7 +130,7 @@ void xhci_initialize () {
 	}
 
 	x64_cli ();
-
+	pci_enable_bus_master (bus, dev_, func_);
 	printf ("Scanning MSI support for USB\n");
 	bool pci_status = pci_alloc_msi(func_, dev_, bus, xhci_handler);
 	if (!pci_status) {
@@ -138,7 +138,7 @@ void xhci_initialize () {
 	}
 
 	pci_enable_bus_master (bus, dev_, func_);
-	xusb_dev->xhci_base_address = (dev->device.nonBridge.baseAddress[0] & 0xFFFFFFF0) +((dev->device.nonBridge.baseAddress[1] & 0xFFFFFFFF) << 32);
+	xusb_dev->xhci_base_address = dev->device.nonBridge.baseAddress[0] +dev->device.nonBridge.baseAddress[1];
 
 	xhci_cap_reg *cap = (xhci_cap_reg*)xusb_dev->xhci_base_address;
     uint32_t version = cap->caps_len_hciver >> 16;

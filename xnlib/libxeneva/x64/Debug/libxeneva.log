@@ -1,13 +1,13 @@
-﻿Build started 13-08-2021 ৰাতিপু 8:37:07.
+﻿Build started 06-09-2021 আবেলি 10:56:45.
      1>Project "E:\Xeneva Project\Xeneva\xnlib\libxeneva\libxeneva.vcxproj" on node 2 (Rebuild target(s)).
      1>_NASM:
          callback.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp77e2a685b1274bdb9bc8feb05f2918e3.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmpcef74e171cb94822ab0efc70c892ed2c.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\callback.obj"  "E:\Xeneva Project\Xeneva\xnlib\libxeneva\callback.asm"
      1>E:\Xeneva Project\Xeneva\xnlib\libxeneva\callback.asm(77): warning : label alone on a line without a colon might be in error
        _NASM:
          _fast_cpy.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmpe83fcbb1ea134b7bb645c0f3e0c8bd68.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp7da329da50d64494881581143486a6b8.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\_fast_cpy.obj"  "E:\Xeneva Project\Xeneva\xnlib\libxeneva\_fast_cpy.asm"
        ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\xnlib\libxeneva\include" /Zi /nologo /W4 /WX- /sdl- /MP /Od /D ARCH_X64 /D _MBCS /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt gui\drawer.cpp gui\font.cpp input\KeyEvent.cpp list.cpp mm.cpp stdlib.cpp string.cpp xnsys.cpp xnwidget\xnbutton.cpp xnwidget\xnlabel.cpp xnwidget\xnmenu.cpp xnwidget\xnmenubar.cpp xnwidget\xnview.cpp xnwidget\xnwindow.cpp
@@ -151,4 +151,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:02.22
+Time Elapsed 00:00:02.88

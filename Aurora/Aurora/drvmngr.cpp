@@ -38,9 +38,9 @@ driver_param_t * create_driver_parameter () {
 	param->kdebug = printf;
 	param->interrupt_eoi = interrupt_end;
 	param->interrupt_set = interrupt_set;
-	param->pci_find_device = pci_find_device;
-	param->pci_get_bar = pci_get_bar_addr;
-	param->pci_set_mem_enable = pci_set_mem_enable;
+	param->pci_find_device = 0; //pci_find_device;
+	param->pci_get_bar = 0; //pci_get_bar_addr;
+	param->pci_set_mem_enable = 0; //pci_set_mem_enable;
 	param->malloc = alloc;
 	param->get_phys_address = get_physical_address;
 	return param;

@@ -6,7 +6,7 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 CONST	SEGMENT
-$SG2984	DB	'UDP Packet sent', 0aH, 00H
+$SG2987	DB	'UDP Packet sent', 0aH, 00H
 CONST	ENDS
 PUBLIC	?udp_send_packet@@YAXPEAEGGPEAXH@Z		; udp_send_packet
 EXTRN	?malloc@@YAPEAX_K@Z:PROC			; malloc
@@ -103,7 +103,7 @@ $LN3:
 
 ; 29   : 	printf ("UDP Packet sent\n");
 
-	lea	rcx, OFFSET FLAT:$SG2984
+	lea	rcx, OFFSET FLAT:$SG2987
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 30   : 	//not completed

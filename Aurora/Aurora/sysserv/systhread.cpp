@@ -20,17 +20,21 @@ uint16_t get_thread_id () {
 
 
 void create_uthread (void (*entry) (void*)) {
-	x64_cli ();
-	map_page((uint64_t)pmmngr_alloc(), 0x0000000080000000);
-	printf ("Current cr3 value -> %x\n", x64_read_cr3());
-	printf ("Current entry address -> %x\n", entry);
-	uint64_t *cr3 = create_user_address_space();
+
+	/*
+	 * Not implemented properly
+	 *
+	 * when syscalls occurs it causes page fault 
+	 */
+
+	for (int i = 0; i < 0x100000/ 4096; i++)
+		map_page((uint64_t)pmmngr_alloc(), 0x0000000080000000 + i * 4096);
+
+	thread_t *cthread = get_current_thread();
 	uthread *uthr = (uthread*)pmmngr_alloc();
 	uthr->entry = entry;
 	uthr->self_pointer = uthr;
-	x64_write_msr (0xC0000100, (uint64_t)uthr->self_pointer);
-	//printf ("FS Base written\n");
-	//thread_t * t = create_user_thread (uthr->entry,0x0000000080000000 + 4096, (size_t)cr3, "uthread", 1);
+	thread_t * t = create_user_thread (entry, (uint64_t)pmmngr_alloc() + 4096, cthread->cr3, "uthread", 1);
 }
 
 

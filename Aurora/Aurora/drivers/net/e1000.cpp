@@ -107,7 +107,7 @@ void e1000_interrupt_handler (size_t v, void* p) {
 
 	//e1000_write_command (REG_IMASK, 0x1);
 	if (icr & E1000_ICR_RECEIVE) {
-
+		printf ("E1000 recevied\n");
 		uint32_t head = inportd (REG_RXDESCHEAD);
 
 		while (i_net_dev->rx_tail != head){
@@ -157,14 +157,22 @@ void e1000_rx_init () {
 	e1000_write_command (REG_RXDESCLO,(uint32_t)((uint64_t)i_net_dev->rx_desc_base & 0xFFFFFFFF));
 
     printf ("E1000 RX Descriptor HI -> %x, LO -> %x\n", e1000_read_command(REG_RXDESCKHI), e1000_read_command(REG_RXDESCLO));
-	e1000_write_command (REG_RXDESCLEN, (uint32_t)E1000_NUM_RX_DESC * 16);
+	e1000_write_command (REG_RXDESCLEN, E1000_NUM_RX_DESC * 16);
 
 	e1000_write_command(REG_RXDESCHEAD, 0);
 	e1000_write_command(REG_RXDESCTAIL, E1000_NUM_RX_DESC);
 	i_net_dev->rx_tail = 0;
 
-	e1000_write_command (REG_RCTRL, (1<<16) | (1<<17));
-	e1000_write_command (REG_RCTRL, RCTL_EN);
+	uint32_t rctl = e1000_read_command (REG_RCTRL);
+	rctl |= RCTL_EN;
+	rctl &= ~RCTL_SBP;
+	rctl |= RCTL_BAM;
+	rctl &= ~RCTL_BSIZE_4096;
+	rctl |= RCTL_BSIZE_2048;
+	rctl &= ~0x02000000;
+	rctl |= RCTL_SECRC;
+	e1000_write_command (REG_RCTRL, rctl);
+
 }
 
 
@@ -313,12 +321,12 @@ void e1000_initialize () {
 	i_net_dev->e1000_irq = dev->device.nonBridge.interruptLine;
 	bool pci_status = pci_alloc_msi (func, dev_, bus, e1000_interrupt_handler);
 	if (!pci_status) {
-		//if (dev->device.nonBridge.interruptLine != 255) {
+		if (dev->device.nonBridge.interruptLine != 255) {
 			printf ("E1000 legacy irq -> %d, pin -> %d\n", dev->device.nonBridge.interruptLine, dev->device.nonBridge.interruptPin);
 			write_config_8 (0,bus,dev_,func,0x3C, 10);
 			read_config_8 (0,bus, dev_, func, 0x3C,&dev->device.all.interruptLine);
-			interrupt_set (dev->device.nonBridge.interruptLine, e1000_interrupt_handler, dev->device.nonBridge.interruptLine);
-		//}
+			interrupt_set (dev->device.nonBridge.interruptLine, e1000_interrupt_handler,dev->device.nonBridge.interruptLine);
+		}
 	}
 	
 

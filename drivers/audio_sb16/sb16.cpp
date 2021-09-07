@@ -85,6 +85,8 @@ void sb16_set_irq_register (uint8_t irq_number) {
 	}
 
 	x64_outportb (SB16_DSP_MIXER, 0x80);
+	for (int i = 0; i < 100; i++)
+		;
 	x64_outportb (SB16_DSP_MIXER_DATA_PORT, value);
 }
 

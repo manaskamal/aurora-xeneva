@@ -136,6 +136,11 @@ void create_process(const char* filename, char* procname, uint8_t priority) {
 		position++;
 	}
 
+
+	for (int i = 0; i < 0xB00000 / 4096; i++) {
+		map_page_ex (cr3, (uint64_t)pmmngr_alloc(), 0x0000080000000000 + i * 4096);
+	}
+
 	//!allocate current process
 	process->name = procname;
 	process->entry_point = ent;
@@ -145,6 +150,8 @@ void create_process(const char* filename, char* procname, uint8_t priority) {
 	process->stack = stack;
 	process->image_size = nt->OptionalHeader.SizeOfImage;
 	process->parent = NULL;
+	process->user_heap_start = (void*)0x0000080000000000;
+	process->heap_size = 0xB00000;
 	//! Create and thread and start scheduling when scheduler starts */
 	thread_t *t = create_user_thread(process->entry_point,stack,(uint64_t)cr3,procname,priority);
 	//! add the process to process manager

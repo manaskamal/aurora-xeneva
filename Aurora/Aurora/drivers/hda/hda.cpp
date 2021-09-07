@@ -541,7 +541,7 @@ void hda_initialize () {
 	bool pci_status = pci_alloc_msi (func, dev, bus, hda_handler);
 	if (!pci_status) {
 		//! fall to legacy interrupt handling mode
-		printf ("[HD-Audio]: Setting up legacy interrupt handling mode is not supported -> %d\n", pci_dev.device.nonBridge.interruptLine);
+		//interrupt_set (pci_dev.device.nonBridge.interruptLine, hda_handler, pci_dev.device.nonBridge.interruptLine);
 	}
 
 	_ihd_audio.mmio = pci_dev.device.nonBridge.baseAddress[0] & ~3;

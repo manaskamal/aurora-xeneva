@@ -1,4 +1,4 @@
-﻿Build started 18-08-2021 আবেলি 4:15:35.
+﻿Build started 06-09-2021 আবেলি 7:35:49.
      1>Project "E:\Xeneva Project\Xeneva\drivers\audio_sb16\audio_sb16.vcxproj" on node 2 (Rebuild target(s)).
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\driverapi\libdriver\include" /Zi /nologo /W4 /WX- /sdl- /Od /Oy- /D ARCH_X86 /D _WINDLL /D _MBCS /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt dma.cpp sb16.cpp
@@ -6,11 +6,11 @@
      1>cl : Command line warning D9002: ignoring unknown option '/arch:SSE'
          sb16.cpp
      1>sb16.cpp(48): warning C4244: 'argument' : conversion from 'int' to 'uint8_t', possible loss of data
-     1>sb16.cpp(93): warning C4100: 'p' : unreferenced formal parameter
-     1>sb16.cpp(93): warning C4100: 's' : unreferenced formal parameter
-     1>sb16.cpp(132): warning C4244: 'argument' : conversion from 'uint64_t' to 'uint8_t', possible loss of data
-     1>sb16.cpp(151): warning C4267: 'argument' : conversion from 'size_t' to 'uint32_t', possible loss of data
-     1>sb16.cpp(155): warning C4267: 'initializing' : conversion from 'size_t' to 'uint16_t', possible loss of data
+     1>sb16.cpp(95): warning C4100: 'p' : unreferenced formal parameter
+     1>sb16.cpp(95): warning C4100: 's' : unreferenced formal parameter
+     1>sb16.cpp(134): warning C4244: 'argument' : conversion from 'uint64_t' to 'uint8_t', possible loss of data
+     1>sb16.cpp(153): warning C4267: 'argument' : conversion from 'size_t' to 'uint32_t', possible loss of data
+     1>sb16.cpp(157): warning C4267: 'initializing' : conversion from 'size_t' to 'uint16_t', possible loss of data
          dma.cpp
      1>dma.cpp(34): warning C4100: 'dma' : unreferenced formal parameter
      1>dma.cpp(41): warning C4100: 'dma' : unreferenced formal parameter
@@ -31,4 +31,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:01.55
+Time Elapsed 00:00:03.50

@@ -13,6 +13,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libdriver", "..\driverapi\l
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "shell", "..\shell\shell.vcxproj", "{F1CADE48-6095-4DA5-86F6-60157309395E}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "xnclib", "..\xnlib\xnclib\xnclib.vcxproj", "{C516DF8B-54FB-4D10-B4F7-7E22BDB20336}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Mixed Platforms = Debug|Mixed Platforms
@@ -85,6 +87,16 @@ Global
 		{F1CADE48-6095-4DA5-86F6-60157309395E}.Release|Win32.ActiveCfg = Release|Win32
 		{F1CADE48-6095-4DA5-86F6-60157309395E}.Release|Win32.Build.0 = Release|Win32
 		{F1CADE48-6095-4DA5-86F6-60157309395E}.Release|x64.ActiveCfg = Release|Win32
+		{C516DF8B-54FB-4D10-B4F7-7E22BDB20336}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{C516DF8B-54FB-4D10-B4F7-7E22BDB20336}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{C516DF8B-54FB-4D10-B4F7-7E22BDB20336}.Debug|Win32.ActiveCfg = Debug|Win32
+		{C516DF8B-54FB-4D10-B4F7-7E22BDB20336}.Debug|Win32.Build.0 = Debug|Win32
+		{C516DF8B-54FB-4D10-B4F7-7E22BDB20336}.Debug|x64.ActiveCfg = Debug|x64
+		{C516DF8B-54FB-4D10-B4F7-7E22BDB20336}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{C516DF8B-54FB-4D10-B4F7-7E22BDB20336}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{C516DF8B-54FB-4D10-B4F7-7E22BDB20336}.Release|Win32.ActiveCfg = Release|Win32
+		{C516DF8B-54FB-4D10-B4F7-7E22BDB20336}.Release|Win32.Build.0 = Release|Win32
+		{C516DF8B-54FB-4D10-B4F7-7E22BDB20336}.Release|x64.ActiveCfg = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

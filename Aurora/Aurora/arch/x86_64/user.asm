@@ -65,8 +65,8 @@ syscall_entry:
 
 	 ;user stack
 	 mov rsp, rdx
-	; mov rcx, rsp   ;;;;;;DEBUG PURPOSES
-	; call syscall_debug    ;;;;;;;;DEBUG PURPOSES
+	 ;mov rcx, rsp   ;;;;;;DEBUG PURPOSES
+	 ;call syscall_debug    ;;;;;;;;DEBUG PURPOSES
 	 o64 sysret
 
 x64_compat_common:

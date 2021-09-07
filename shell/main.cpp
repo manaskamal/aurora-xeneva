@@ -11,12 +11,22 @@
 
 #include <xnsys.h>
 
+char *manas = 0;
+extern "C" void shl_test ();
+void func_call () {
+}
+void thread_1 (void* p) {
+	func_call();
+	shl_test ();
+	for(;;);
+}
 void main () {
 	print_text ("\n");
 	print_text ("Copyright (C) Manas Kamal Choudhury 2021\n");
 	print_text ("Operating System : Aurora's Xeneva v1.0\n");
 	print_text ("XNShell v1.0\n");
-
+	create_uthread (thread_1);
+	print_text ("Shell created thread\n");
 	/*uint32_t status = fork();
 	if (status)
 		print_text ("Current process forked\n");

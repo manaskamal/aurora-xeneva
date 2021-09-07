@@ -10,41 +10,42 @@ _BSS	SEGMENT
 ?i_net_dev@@3PEAU_e1000_dev_@@EA DQ 01H DUP (?)		; i_net_dev
 _BSS	ENDS
 CONST	SEGMENT
-$SG3415	DB	'EEPROM exist', 0aH, 00H
+$SG3389	DB	'EEPROM exist', 0aH, 00H
 	ORG $+2
-$SG3418	DB	'Applying memory map', 0aH, 00H
+$SG3392	DB	'Applying memory map', 0aH, 00H
 	ORG $+3
-$SG3433	DB	'E1000 Interrupt fired', 0aH, 00H
+$SG3407	DB	'E1000 Interrupt fired', 0aH, 00H
 	ORG $+1
-$SG3443	DB	'E1000 Bytes received -> %d bytes, status 0x%x', 0aH, 00H
+$SG3410	DB	'E1000 recevied', 0aH, 00H
+$SG3418	DB	'E1000 Bytes received -> %d bytes, status 0x%x', 0aH, 00H
 	ORG $+1
-$SG3448	DB	'E1000 interrupt data transmit', 0aH, 00H
+$SG3423	DB	'E1000 interrupt data transmit', 0aH, 00H
 	ORG $+1
-$SG3451	DB	'up', 00H
+$SG3426	DB	'up', 00H
 	ORG $+1
-$SG3452	DB	'down', 00H
+$SG3427	DB	'down', 00H
 	ORG $+7
-$SG3453	DB	'E1000 interrupt link change %s', 0aH, 00H
-$SG3455	DB	'E1000 unknown interrupt', 0aH, 00H
+$SG3428	DB	'E1000 interrupt link change %s', 0aH, 00H
+$SG3430	DB	'E1000 unknown interrupt', 0aH, 00H
 	ORG $+7
-$SG3469	DB	'E1000 RX Descriptor HI -> %x, LO -> %x', 0aH, 00H
-$SG3483	DB	'E1000 TX_DESC_HI -> %x, LO -> %x', 0aH, 00H
+$SG3444	DB	'E1000 RX Descriptor HI -> %x, LO -> %x', 0aH, 00H
+$SG3458	DB	'E1000 TX_DESC_HI -> %x, LO -> %x', 0aH, 00H
 	ORG $+6
-$SG3493	DB	'CUR Tx tail -> %d', 0aH, 00H
+$SG3468	DB	'CUR Tx tail -> %d', 0aH, 00H
 	ORG $+5
-$SG3498	DB	'TX Next tail -> %d', 0aH, 00H
+$SG3473	DB	'TX Next tail -> %d', 0aH, 00H
 	ORG $+4
-$SG3503	DB	'Transmit status ->%x', 0aH, 00H
+$SG3478	DB	'Transmit status ->%x', 0aH, 00H
 	ORG $+2
-$SG3504	DB	'Transmitted', 0aH, 00H
+$SG3479	DB	'Transmitted', 0aH, 00H
 	ORG $+3
-$SG3515	DB	'E1000 New Packet received #3', 0aH, 00H
+$SG3490	DB	'E1000 New Packet received #3', 0aH, 00H
 	ORG $+2
-$SG3550	DB	'Intel Ethernet not found', 0aH, 00H
+$SG3525	DB	'Intel Ethernet not found', 0aH, 00H
 	ORG $+6
-$SG3560	DB	'E1000 legacy irq -> %d, pin -> %d', 0aH, 00H
+$SG3536	DB	'E1000 legacy irq -> %d, pin -> %d', 0aH, 00H
 	ORG $+5
-$SG3570	DB	'e1000 setup completed', 0aH, 00H
+$SG3546	DB	'e1000 setup completed', 0aH, 00H
 CONST	ENDS
 PUBLIC	?e1000_initialize@@YAXXZ			; e1000_initialize
 PUBLIC	?e1000_send_packet@@YAXPEAX_K@Z			; e1000_send_packet
@@ -77,8 +78,8 @@ EXTRN	?malloc@@YAPEAX_K@Z:PROC			; malloc
 EXTRN	?nethw_set_mac@@YAXPEAE@Z:PROC			; nethw_set_mac
 EXTRN	?nethw_initialize@@YAXXZ:PROC			; nethw_initialize
 pdata	SEGMENT
-$pdata$?e1000_initialize@@YAXXZ DD imagerel $LN16
-	DD	imagerel $LN16+692
+$pdata$?e1000_initialize@@YAXXZ DD imagerel $LN17
+	DD	imagerel $LN17+712
 	DD	imagerel $unwind$?e1000_initialize@@YAXXZ
 $pdata$?e1000_send_packet@@YAXPEAX_K@Z DD imagerel $LN8
 	DD	imagerel $LN8+455
@@ -99,10 +100,10 @@ $pdata$?e1000_read_mac_address@@YA_NXZ DD imagerel $LN10
 	DD	imagerel $LN10+390
 	DD	imagerel $unwind$?e1000_read_mac_address@@YA_NXZ
 $pdata$?e1000_interrupt_handler@@YAX_KPEAX@Z DD imagerel $LN16
-	DD	imagerel $LN16+475
+	DD	imagerel $LN16+487
 	DD	imagerel $unwind$?e1000_interrupt_handler@@YAX_KPEAX@Z
 $pdata$?e1000_rx_init@@YAXXZ DD imagerel $LN6
-	DD	imagerel $LN6+316
+	DD	imagerel $LN6+393
 	DD	imagerel $unwind$?e1000_rx_init@@YAXXZ
 $pdata$?e1000_tx_init@@YAXXZ DD imagerel $LN6
 	DD	imagerel $LN6+334
@@ -156,18 +157,18 @@ i$5 = 48
 i$6 = 52
 ?e1000_reset@@YAXXZ PROC				; e1000_reset
 
-; 255  : void e1000_reset () {
+; 263  : void e1000_reset () {
 
 $LN21:
 	sub	rsp, 72					; 00000048H
 
-; 256  : 	e1000_write_command (REG_CTRL, (1<<31));
+; 264  : 	e1000_write_command (REG_CTRL, (1<<31));
 
 	mov	edx, -2147483648			; 80000000H
 	xor	ecx, ecx
 	call	?e1000_write_command@@YAXGI@Z		; e1000_write_command
 
-; 257  : 	for (int i = 0; i < 1000; i++)
+; 265  : 	for (int i = 0; i < 1000; i++)
 
 	mov	DWORD PTR i$1[rsp], 0
 	jmp	SHORT $LN18@e1000_rese
@@ -179,20 +180,20 @@ $LN18@e1000_rese:
 	cmp	DWORD PTR i$1[rsp], 1000		; 000003e8H
 	jge	SHORT $LN16@e1000_rese
 
-; 258  : 		;
+; 266  : 		;
 
 	jmp	SHORT $LN17@e1000_rese
 $LN16@e1000_rese:
 
-; 259  : 
-; 260  : 	//! Reset the hardware guide from MINIX3
-; 261  : 	e1000_write_command (REG_CTRL, (1 << 26));
+; 267  : 
+; 268  : 	//! Reset the hardware guide from MINIX3
+; 269  : 	e1000_write_command (REG_CTRL, (1 << 26));
 
 	mov	edx, 67108864				; 04000000H
 	xor	ecx, ecx
 	call	?e1000_write_command@@YAXGI@Z		; e1000_write_command
 
-; 262  : 	for (int i = 0; i < 1000; i++)
+; 270  : 	for (int i = 0; i < 1000; i++)
 
 	mov	DWORD PTR i$2[rsp], 0
 	jmp	SHORT $LN15@e1000_rese
@@ -204,25 +205,25 @@ $LN15@e1000_rese:
 	cmp	DWORD PTR i$2[rsp], 1000		; 000003e8H
 	jge	SHORT $LN13@e1000_rese
 
-; 263  : 		;
+; 271  : 		;
 
 	jmp	SHORT $LN14@e1000_rese
 $LN13@e1000_rese:
 
-; 264  : 	e1000_write_command (REG_CTRL, (1<<0));
+; 272  : 	e1000_write_command (REG_CTRL, (1<<0));
 
 	mov	edx, 1
 	xor	ecx, ecx
 	call	?e1000_write_command@@YAXGI@Z		; e1000_write_command
 
-; 265  : 
-; 266  : 	e1000_write_command (REG_CTRL, (1<<3));
+; 273  : 
+; 274  : 	e1000_write_command (REG_CTRL, (1<<3));
 
 	mov	edx, 8
 	xor	ecx, ecx
 	call	?e1000_write_command@@YAXGI@Z		; e1000_write_command
 
-; 267  : 	for (int i = 0; i < 1000; i++)
+; 275  : 	for (int i = 0; i < 1000; i++)
 
 	mov	DWORD PTR i$3[rsp], 0
 	jmp	SHORT $LN12@e1000_rese
@@ -234,18 +235,18 @@ $LN12@e1000_rese:
 	cmp	DWORD PTR i$3[rsp], 1000		; 000003e8H
 	jge	SHORT $LN10@e1000_rese
 
-; 268  : 		;
+; 276  : 		;
 
 	jmp	SHORT $LN11@e1000_rese
 $LN10@e1000_rese:
 
-; 269  : 	e1000_write_command (REG_CTRL, (1<<6));
+; 277  : 	e1000_write_command (REG_CTRL, (1<<6));
 
 	mov	edx, 64					; 00000040H
 	xor	ecx, ecx
 	call	?e1000_write_command@@YAXGI@Z		; e1000_write_command
 
-; 270  : 	for (int i = 0; i < 1000; i++)
+; 278  : 	for (int i = 0; i < 1000; i++)
 
 	mov	DWORD PTR i$4[rsp], 0
 	jmp	SHORT $LN9@e1000_rese
@@ -257,24 +258,24 @@ $LN9@e1000_rese:
 	cmp	DWORD PTR i$4[rsp], 1000		; 000003e8H
 	jge	SHORT $LN7@e1000_rese
 
-; 271  : 		;
+; 279  : 		;
 
 	jmp	SHORT $LN8@e1000_rese
 $LN7@e1000_rese:
 
-; 272  : 	e1000_write_command (REG_CTRL, (1<<11));
+; 280  : 	e1000_write_command (REG_CTRL, (1<<11));
 
 	mov	edx, 2048				; 00000800H
 	xor	ecx, ecx
 	call	?e1000_write_command@@YAXGI@Z		; e1000_write_command
 
-; 273  : 	e1000_write_command (REG_CTRL, ~(1<<3));
+; 281  : 	e1000_write_command (REG_CTRL, ~(1<<3));
 
 	mov	edx, -9					; fffffff7H
 	xor	ecx, ecx
 	call	?e1000_write_command@@YAXGI@Z		; e1000_write_command
 
-; 274  : 	for (int i = 0; i < 1000;i++)
+; 282  : 	for (int i = 0; i < 1000;i++)
 
 	mov	DWORD PTR i$5[rsp], 0
 	jmp	SHORT $LN6@e1000_rese
@@ -286,45 +287,45 @@ $LN6@e1000_rese:
 	cmp	DWORD PTR i$5[rsp], 1000		; 000003e8H
 	jge	SHORT $LN4@e1000_rese
 
-; 275  : 		;
+; 283  : 		;
 
 	jmp	SHORT $LN5@e1000_rese
 $LN4@e1000_rese:
 
-; 276  : 	e1000_write_command (REG_CTRL, ~(1<<31));
+; 284  : 	e1000_write_command (REG_CTRL, ~(1<<31));
 
 	mov	edx, 2147483647				; 7fffffffH
 	xor	ecx, ecx
 	call	?e1000_write_command@@YAXGI@Z		; e1000_write_command
 
-; 277  : 
-; 278  : 	e1000_write_command (REG_FCAL, 0);
+; 285  : 
+; 286  : 	e1000_write_command (REG_FCAL, 0);
 
 	xor	edx, edx
 	mov	cx, 40					; 00000028H
 	call	?e1000_write_command@@YAXGI@Z		; e1000_write_command
 
-; 279  : 	e1000_write_command (REG_FCAH, 0);
+; 287  : 	e1000_write_command (REG_FCAH, 0);
 
 	xor	edx, edx
 	mov	cx, 44					; 0000002cH
 	call	?e1000_write_command@@YAXGI@Z		; e1000_write_command
 
-; 280  : 	e1000_write_command (REG_FCT, 0);
+; 288  : 	e1000_write_command (REG_FCT, 0);
 
 	xor	edx, edx
 	mov	cx, 48					; 00000030H
 	call	?e1000_write_command@@YAXGI@Z		; e1000_write_command
 
-; 281  : 	e1000_write_command (REG_FCTTV, 0);
+; 289  : 	e1000_write_command (REG_FCTTV, 0);
 
 	xor	edx, edx
 	mov	cx, 10240				; 00002800H
 	call	?e1000_write_command@@YAXGI@Z		; e1000_write_command
 
-; 282  : 	//e1000_write_command (REG_CTRL, (1<<30));
-; 283  : 
-; 284  : 	for (int i = 0; i < 1000; i++)
+; 290  : 	//e1000_write_command (REG_CTRL, (1<<30));
+; 291  : 
+; 292  : 	for (int i = 0; i < 1000; i++)
 
 	mov	DWORD PTR i$6[rsp], 0
 	jmp	SHORT $LN3@e1000_rese
@@ -336,15 +337,15 @@ $LN3@e1000_rese:
 	cmp	DWORD PTR i$6[rsp], 1000		; 000003e8H
 	jge	SHORT $LN1@e1000_rese
 
-; 285  : 		;
+; 293  : 		;
 
 	jmp	SHORT $LN2@e1000_rese
 $LN1@e1000_rese:
 
-; 286  : 	
-; 287  : 
-; 288  : 
-; 289  : }
+; 294  : 	
+; 295  : 
+; 296  : 
+; 297  : }
 
 	add	rsp, 72					; 00000048H
 	ret	0
@@ -358,14 +359,14 @@ len$2 = 36
 buf$3 = 40
 ?e1000_handle_receive@@YAXXZ PROC			; e1000_handle_receive
 
-; 238  : void e1000_handle_receive () {
+; 246  : void e1000_handle_receive () {
 
 $LN6:
 	sub	rsp, 56					; 00000038H
 $LN3@e1000_hand:
 
-; 239  : 	for(;;) {
-; 240  : 	if((i_net_dev->rx_desc[i_net_dev->rx_tail]->status)) {
+; 247  : 	for(;;) {
+; 248  : 	if((i_net_dev->rx_desc[i_net_dev->rx_tail]->status)) {
 
 	mov	rax, QWORD PTR ?i_net_dev@@3PEAU_e1000_dev_@@EA ; i_net_dev
 	movzx	eax, WORD PTR [rax+50]
@@ -376,8 +377,8 @@ $LN3@e1000_hand:
 	test	eax, eax
 	je	$LN1@e1000_hand
 
-; 241  : 		//printf ("E1000 New Packet received #1\n");
-; 242  : 		uint8_t *buf = (uint8_t*)i_net_dev->rx_desc[i_net_dev->rx_tail]->addr;
+; 249  : 		//printf ("E1000 New Packet received #1\n");
+; 250  : 		uint8_t *buf = (uint8_t*)i_net_dev->rx_desc[i_net_dev->rx_tail]->addr;
 
 	mov	rax, QWORD PTR ?i_net_dev@@3PEAU_e1000_dev_@@EA ; i_net_dev
 	movzx	eax, WORD PTR [rax+50]
@@ -386,7 +387,7 @@ $LN3@e1000_hand:
 	mov	rax, QWORD PTR [rax]
 	mov	QWORD PTR buf$3[rsp], rax
 
-; 243  : 		uint16_t len = i_net_dev->rx_desc[i_net_dev->rx_tail]->length;
+; 251  : 		uint16_t len = i_net_dev->rx_desc[i_net_dev->rx_tail]->length;
 
 	mov	rax, QWORD PTR ?i_net_dev@@3PEAU_e1000_dev_@@EA ; i_net_dev
 	movzx	eax, WORD PTR [rax+50]
@@ -395,8 +396,8 @@ $LN3@e1000_hand:
 	movzx	eax, WORD PTR [rax+8]
 	mov	WORD PTR len$2[rsp], ax
 
-; 244  : 		//printf ("E1000 New Packet received #2\n");
-; 245  : 		i_net_dev->rx_desc[i_net_dev->rx_tail]->status = 0;
+; 252  : 		//printf ("E1000 New Packet received #2\n");
+; 253  : 		i_net_dev->rx_desc[i_net_dev->rx_tail]->status = 0;
 
 	mov	rax, QWORD PTR ?i_net_dev@@3PEAU_e1000_dev_@@EA ; i_net_dev
 	movzx	eax, WORD PTR [rax+50]
@@ -404,13 +405,13 @@ $LN3@e1000_hand:
 	mov	rax, QWORD PTR [rcx+rax*8+56]
 	mov	BYTE PTR [rax+12], 0
 
-; 246  : 		uint16_t old_cur = i_net_dev->rx_tail;
+; 254  : 		uint16_t old_cur = i_net_dev->rx_tail;
 
 	mov	rax, QWORD PTR ?i_net_dev@@3PEAU_e1000_dev_@@EA ; i_net_dev
 	movzx	eax, WORD PTR [rax+50]
 	mov	WORD PTR old_cur$1[rsp], ax
 
-; 247  : 		i_net_dev->rx_tail = (i_net_dev->rx_tail + 1) % E1000_NUM_RX_DESC;
+; 255  : 		i_net_dev->rx_tail = (i_net_dev->rx_tail + 1) % E1000_NUM_RX_DESC;
 
 	mov	rax, QWORD PTR ?i_net_dev@@3PEAU_e1000_dev_@@EA ; i_net_dev
 	movzx	eax, WORD PTR [rax+50]
@@ -423,30 +424,30 @@ $LN3@e1000_hand:
 	mov	rcx, QWORD PTR ?i_net_dev@@3PEAU_e1000_dev_@@EA ; i_net_dev
 	mov	WORD PTR [rcx+50], ax
 
-; 248  : 		e1000_write_command (REG_RXDESCTAIL, old_cur);
+; 256  : 		e1000_write_command (REG_RXDESCTAIL, old_cur);
 
 	movzx	eax, WORD PTR old_cur$1[rsp]
 	mov	edx, eax
 	mov	cx, 10264				; 00002818H
 	call	?e1000_write_command@@YAXGI@Z		; e1000_write_command
 
-; 249  : 		printf ("E1000 New Packet received #3\n");
+; 257  : 		printf ("E1000 New Packet received #3\n");
 
-	lea	rcx, OFFSET FLAT:$SG3515
+	lea	rcx, OFFSET FLAT:$SG3490
 	call	?printf@@YAXPEBDZZ			; printf
 
-; 250  : 		break;
+; 258  : 		break;
 
 	jmp	SHORT $LN2@e1000_hand
 $LN1@e1000_hand:
 
-; 251  : 	}
-; 252  : 	}
+; 259  : 	}
+; 260  : 	}
 
 	jmp	$LN3@e1000_hand
 $LN2@e1000_hand:
 
-; 253  : }
+; 261  : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -457,29 +458,29 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 ?e1000_setup_interrupt@@YAXXZ PROC			; e1000_setup_interrupt
 
-; 195  : void e1000_setup_interrupt () {
+; 203  : void e1000_setup_interrupt () {
 
 $LN3:
 	sub	rsp, 40					; 00000028H
 
-; 196  : 	e1000_write_command (0xD8, 0xFFFF);
+; 204  : 	e1000_write_command (0xD8, 0xFFFF);
 
 	mov	edx, 65535				; 0000ffffH
 	mov	cx, 216					; 000000d8H
 	call	?e1000_write_command@@YAXGI@Z		; e1000_write_command
 
-; 197  : 	e1000_write_command (0xD0, 0xFFFF);
+; 205  : 	e1000_write_command (0xD0, 0xFFFF);
 
 	mov	edx, 65535				; 0000ffffH
 	mov	cx, 208					; 000000d0H
 	call	?e1000_write_command@@YAXGI@Z		; e1000_write_command
 
-; 198  : 	e1000_read_command (0xc0);
+; 206  : 	e1000_read_command (0xc0);
 
 	mov	cx, 192					; 000000c0H
 	call	?e1000_read_command@@YAIG@Z		; e1000_read_command
 
-; 199  : }
+; 207  : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -492,20 +493,20 @@ i$1 = 32
 tv133 = 36
 ?e1000_tx_init@@YAXXZ PROC				; e1000_tx_init
 
-; 171  : void e1000_tx_init () {
+; 179  : void e1000_tx_init () {
 
 $LN6:
 	sub	rsp, 56					; 00000038H
 
-; 172  : 
-; 173  : 	i_net_dev->tx_desc_base = (uint8_t*)pmmngr_alloc();
+; 180  : 
+; 181  : 	i_net_dev->tx_desc_base = (uint8_t*)pmmngr_alloc();
 
 	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
 	mov	rcx, QWORD PTR ?i_net_dev@@3PEAU_e1000_dev_@@EA ; i_net_dev
 	mov	QWORD PTR [rcx+40], rax
 
-; 174  : 
-; 175  : 	for (int i = 0; i < E1000_NUM_TX_DESC; i++) {
+; 182  : 
+; 183  : 	for (int i = 0; i < E1000_NUM_TX_DESC; i++) {
 
 	mov	DWORD PTR i$1[rsp], 0
 	jmp	SHORT $LN3@e1000_tx_i
@@ -517,7 +518,7 @@ $LN3@e1000_tx_i:
 	cmp	DWORD PTR i$1[rsp], 8
 	jge	SHORT $LN1@e1000_tx_i
 
-; 176  : 		i_net_dev->tx_desc[i] = (e1000_tx_desc*)(i_net_dev->tx_desc_base + (i * 16));
+; 184  : 		i_net_dev->tx_desc[i] = (e1000_tx_desc*)(i_net_dev->tx_desc_base + (i * 16));
 
 	mov	eax, DWORD PTR i$1[rsp]
 	imul	eax, 16
@@ -528,33 +529,33 @@ $LN3@e1000_tx_i:
 	mov	rdx, QWORD PTR ?i_net_dev@@3PEAU_e1000_dev_@@EA ; i_net_dev
 	mov	QWORD PTR [rdx+rcx*8+312], rax
 
-; 177  : 		i_net_dev->tx_desc[i]->addr = 0;
+; 185  : 		i_net_dev->tx_desc[i]->addr = 0;
 
 	movsxd	rax, DWORD PTR i$1[rsp]
 	mov	rcx, QWORD PTR ?i_net_dev@@3PEAU_e1000_dev_@@EA ; i_net_dev
 	mov	rax, QWORD PTR [rcx+rax*8+312]
 	mov	QWORD PTR [rax], 0
 
-; 178  : 		i_net_dev->tx_desc[i]->cmd = 0;
+; 186  : 		i_net_dev->tx_desc[i]->cmd = 0;
 
 	movsxd	rax, DWORD PTR i$1[rsp]
 	mov	rcx, QWORD PTR ?i_net_dev@@3PEAU_e1000_dev_@@EA ; i_net_dev
 	mov	rax, QWORD PTR [rcx+rax*8+312]
 	mov	BYTE PTR [rax+11], 0
 
-; 179  : 		i_net_dev->tx_desc[i]->status = 0;
+; 187  : 		i_net_dev->tx_desc[i]->status = 0;
 
 	movsxd	rax, DWORD PTR i$1[rsp]
 	mov	rcx, QWORD PTR ?i_net_dev@@3PEAU_e1000_dev_@@EA ; i_net_dev
 	mov	rax, QWORD PTR [rcx+rax*8+312]
 	mov	BYTE PTR [rax+12], 0
 
-; 180  : 	}
+; 188  : 	}
 
 	jmp	$LN2@e1000_tx_i
 $LN1@e1000_tx_i:
 
-; 181  : 	e1000_write_command (REG_TXDESCHI, (uint32_t)((uint64_t)i_net_dev->tx_desc_base >> 32));
+; 189  : 	e1000_write_command (REG_TXDESCHI, (uint32_t)((uint64_t)i_net_dev->tx_desc_base >> 32));
 
 	mov	rax, QWORD PTR ?i_net_dev@@3PEAU_e1000_dev_@@EA ; i_net_dev
 	mov	rax, QWORD PTR [rax+40]
@@ -563,7 +564,7 @@ $LN1@e1000_tx_i:
 	mov	cx, 14340				; 00003804H
 	call	?e1000_write_command@@YAXGI@Z		; e1000_write_command
 
-; 182  : 	e1000_write_command (REG_TXDESCLO, (uint32_t)((uint64_t)i_net_dev->tx_desc_base & 0xFFFFFFFF));
+; 190  : 	e1000_write_command (REG_TXDESCLO, (uint32_t)((uint64_t)i_net_dev->tx_desc_base & 0xFFFFFFFF));
 
 	mov	rax, QWORD PTR ?i_net_dev@@3PEAU_e1000_dev_@@EA ; i_net_dev
 	mov	ecx, -1					; ffffffffH
@@ -573,7 +574,7 @@ $LN1@e1000_tx_i:
 	mov	cx, 14336				; 00003800H
 	call	?e1000_write_command@@YAXGI@Z		; e1000_write_command
 
-; 183  : 	printf ("E1000 TX_DESC_HI -> %x, LO -> %x\n", e1000_read_command(REG_TXDESCHI), e1000_read_command(REG_TXDESCLO));
+; 191  : 	printf ("E1000 TX_DESC_HI -> %x, LO -> %x\n", e1000_read_command(REG_TXDESCHI), e1000_read_command(REG_TXDESCLO));
 
 	mov	cx, 14336				; 00003800H
 	call	?e1000_read_command@@YAIG@Z		; e1000_read_command
@@ -583,44 +584,44 @@ $LN1@e1000_tx_i:
 	mov	ecx, DWORD PTR tv133[rsp]
 	mov	r8d, ecx
 	mov	edx, eax
-	lea	rcx, OFFSET FLAT:$SG3483
+	lea	rcx, OFFSET FLAT:$SG3458
 	call	?printf@@YAXPEBDZZ			; printf
 
-; 184  : 
-; 185  : 	e1000_write_command (REG_TXDESCLEN, (uint32_t)E1000_NUM_TX_DESC * 16);
+; 192  : 
+; 193  : 	e1000_write_command (REG_TXDESCLEN, (uint32_t)E1000_NUM_TX_DESC * 16);
 
 	mov	edx, 128				; 00000080H
 	mov	cx, 14344				; 00003808H
 	call	?e1000_write_command@@YAXGI@Z		; e1000_write_command
 
-; 186  : 
-; 187  : 	e1000_write_command (REG_TXDESCHEAD, 0);
+; 194  : 
+; 195  : 	e1000_write_command (REG_TXDESCHEAD, 0);
 
 	xor	edx, edx
 	mov	cx, 14352				; 00003810H
 	call	?e1000_write_command@@YAXGI@Z		; e1000_write_command
 
-; 188  : 	e1000_write_command (REG_TXDESCTAIL,0);
+; 196  : 	e1000_write_command (REG_TXDESCTAIL,0);
 
 	xor	edx, edx
 	mov	cx, 14360				; 00003818H
 	call	?e1000_write_command@@YAXGI@Z		; e1000_write_command
 
-; 189  : 	i_net_dev->tx_tail = 0;
+; 197  : 	i_net_dev->tx_tail = 0;
 
 	xor	eax, eax
 	mov	rcx, QWORD PTR ?i_net_dev@@3PEAU_e1000_dev_@@EA ; i_net_dev
 	mov	WORD PTR [rcx+48], ax
 
-; 190  : 
-; 191  : 
-; 192  : 	e1000_write_command (REG_TCTRL, TCTL_EN | TCTL_PSP | TCTL_RTLC );
+; 198  : 
+; 199  : 
+; 200  : 	e1000_write_command (REG_TCTRL, TCTL_EN | TCTL_PSP | TCTL_RTLC );
 
 	mov	edx, 16777226				; 0100000aH
 	mov	cx, 1024				; 00000400H
 	call	?e1000_write_command@@YAXGI@Z		; e1000_write_command
 
-; 193  : }
+; 201  : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -629,8 +630,9 @@ _TEXT	ENDS
 ; Function compile flags: /Odtp
 ; File e:\xeneva project\xeneva\aurora\aurora\drivers\net\e1000.cpp
 _TEXT	SEGMENT
-i$1 = 32
-tv129 = 36
+rctl$ = 32
+i$1 = 36
+tv129 = 40
 ?e1000_rx_init@@YAXXZ PROC				; e1000_rx_init
 
 ; 146  : void e1000_rx_init () {
@@ -720,10 +722,10 @@ $LN1@e1000_rx_i:
 	mov	ecx, DWORD PTR tv129[rsp]
 	mov	r8d, ecx
 	mov	edx, eax
-	lea	rcx, OFFSET FLAT:$SG3469
+	lea	rcx, OFFSET FLAT:$SG3444
 	call	?printf@@YAXPEBDZZ			; printf
 
-; 160  : 	e1000_write_command (REG_RXDESCLEN, (uint32_t)E1000_NUM_RX_DESC * 16);
+; 160  : 	e1000_write_command (REG_RXDESCLEN, E1000_NUM_RX_DESC * 16);
 
 	mov	edx, 512				; 00000200H
 	mov	cx, 10248				; 00002808H
@@ -749,19 +751,61 @@ $LN1@e1000_rx_i:
 	mov	WORD PTR [rcx+50], ax
 
 ; 165  : 
-; 166  : 	e1000_write_command (REG_RCTRL, (1<<16) | (1<<17));
+; 166  : 	uint32_t rctl = e1000_read_command (REG_RCTRL);
 
-	mov	edx, 196608				; 00030000H
+	mov	cx, 256					; 00000100H
+	call	?e1000_read_command@@YAIG@Z		; e1000_read_command
+	mov	DWORD PTR rctl$[rsp], eax
+
+; 167  : 	rctl |= RCTL_EN;
+
+	mov	eax, DWORD PTR rctl$[rsp]
+	or	eax, 2
+	mov	DWORD PTR rctl$[rsp], eax
+
+; 168  : 	rctl &= ~RCTL_SBP;
+
+	mov	eax, DWORD PTR rctl$[rsp]
+	and	eax, -5					; fffffffbH
+	mov	DWORD PTR rctl$[rsp], eax
+
+; 169  : 	rctl |= RCTL_BAM;
+
+	mov	eax, DWORD PTR rctl$[rsp]
+	bts	eax, 15
+	mov	DWORD PTR rctl$[rsp], eax
+
+; 170  : 	rctl &= ~RCTL_BSIZE_4096;
+
+	mov	eax, DWORD PTR rctl$[rsp]
+	and	eax, -33751041				; fdfcffffH
+	mov	DWORD PTR rctl$[rsp], eax
+
+; 171  : 	rctl |= RCTL_BSIZE_2048;
+
+	mov	eax, DWORD PTR rctl$[rsp]
+	mov	DWORD PTR rctl$[rsp], eax
+
+; 172  : 	rctl &= ~0x02000000;
+
+	mov	eax, DWORD PTR rctl$[rsp]
+	btr	eax, 25
+	mov	DWORD PTR rctl$[rsp], eax
+
+; 173  : 	rctl |= RCTL_SECRC;
+
+	mov	eax, DWORD PTR rctl$[rsp]
+	bts	eax, 26
+	mov	DWORD PTR rctl$[rsp], eax
+
+; 174  : 	e1000_write_command (REG_RCTRL, rctl);
+
+	mov	edx, DWORD PTR rctl$[rsp]
 	mov	cx, 256					; 00000100H
 	call	?e1000_write_command@@YAXGI@Z		; e1000_write_command
 
-; 167  : 	e1000_write_command (REG_RCTRL, RCTL_EN);
-
-	mov	edx, 2
-	mov	cx, 256					; 00000100H
-	call	?e1000_write_command@@YAXGI@Z		; e1000_write_command
-
-; 168  : }
+; 175  : 
+; 176  : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -774,7 +818,7 @@ status$1 = 32
 head$2 = 36
 icr$ = 40
 size$3 = 48
-tv159 = 56
+tv160 = 56
 v$ = 80
 p$ = 88
 ?e1000_interrupt_handler@@YAX_KPEAX@Z PROC		; e1000_interrupt_handler
@@ -788,7 +832,7 @@ $LN16:
 
 ; 104  : 	printf ("E1000 Interrupt fired\n");
 
-	lea	rcx, OFFSET FLAT:$SG3433
+	lea	rcx, OFFSET FLAT:$SG3407
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 105  : 	//apic_local_eoi();
@@ -807,7 +851,11 @@ $LN16:
 	test	eax, eax
 	je	$LN11@e1000_inte
 
-; 110  : 
+; 110  : 		printf ("E1000 recevied\n");
+
+	lea	rcx, OFFSET FLAT:$SG3410
+	call	?printf@@YAXPEBDZZ			; printf
+
 ; 111  : 		uint32_t head = inportd (REG_RXDESCHEAD);
 
 	mov	cx, 10256				; 00002810H
@@ -869,7 +917,7 @@ $LN8@e1000_inte:
 	movzx	eax, BYTE PTR status$1[rsp]
 	mov	r8d, eax
 	mov	rdx, QWORD PTR size$3[rsp]
-	lea	rcx, OFFSET FLAT:$SG3443
+	lea	rcx, OFFSET FLAT:$SG3418
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 124  : 
@@ -947,7 +995,7 @@ $LN11@e1000_inte:
 
 ; 136  : 		printf ("E1000 interrupt data transmit\n");
 
-	lea	rcx, OFFSET FLAT:$SG3448
+	lea	rcx, OFFSET FLAT:$SG3423
 	call	?printf@@YAXPEBDZZ			; printf
 	jmp	SHORT $LN3@e1000_inte
 $LN4@e1000_inte:
@@ -966,15 +1014,15 @@ $LN4@e1000_inte:
 	and	eax, -2147483648			; 80000000H
 	test	eax, eax
 	je	SHORT $LN14@e1000_inte
-	lea	rax, OFFSET FLAT:$SG3451
-	mov	QWORD PTR tv159[rsp], rax
+	lea	rax, OFFSET FLAT:$SG3426
+	mov	QWORD PTR tv160[rsp], rax
 	jmp	SHORT $LN15@e1000_inte
 $LN14@e1000_inte:
-	lea	rax, OFFSET FLAT:$SG3452
-	mov	QWORD PTR tv159[rsp], rax
+	lea	rax, OFFSET FLAT:$SG3427
+	mov	QWORD PTR tv160[rsp], rax
 $LN15@e1000_inte:
-	mov	rdx, QWORD PTR tv159[rsp]
-	lea	rcx, OFFSET FLAT:$SG3453
+	mov	rdx, QWORD PTR tv160[rsp]
+	lea	rcx, OFFSET FLAT:$SG3428
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 139  : 	} else {
@@ -984,7 +1032,7 @@ $LN2@e1000_inte:
 
 ; 140  : 		printf ("E1000 unknown interrupt\n");
 
-	lea	rcx, OFFSET FLAT:$SG3455
+	lea	rcx, OFFSET FLAT:$SG3430
 	call	?printf@@YAXPEBDZZ			; printf
 $LN1@e1000_inte:
 $LN3@e1000_inte:
@@ -1026,7 +1074,7 @@ $LN10:
 
 ; 76   : 		printf ("EEPROM exist\n");
 
-	lea	rcx, OFFSET FLAT:$SG3415
+	lea	rcx, OFFSET FLAT:$SG3389
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 77   : 		uint32_t temp;
@@ -1109,7 +1157,7 @@ $LN7@e1000_read:
 
 ; 88   : 		printf ("Applying memory map\n");
 
-	lea	rcx, OFFSET FLAT:$SG3418
+	lea	rcx, OFFSET FLAT:$SG3392
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 89   : 		uint8_t * mem_base_mac_8 = (uint8_t*)(i_net_dev->e1000_mem_base + 0x5400);
@@ -1496,20 +1544,20 @@ data$ = 64
 size$ = 72
 ?e1000_send_packet@@YAXPEAX_K@Z PROC			; e1000_send_packet
 
-; 201  : void e1000_send_packet (void* data, size_t size) {
+; 209  : void e1000_send_packet (void* data, size_t size) {
 
 $LN8:
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 56					; 00000038H
 
-; 202  : 	x64_cli();
+; 210  : 	x64_cli();
 
 	call	x64_cli
 
-; 203  : 	uint32_t cur, head;
-; 204  : 	
-; 205  : 	cur = e1000_read_command (REG_TXDESCTAIL) % E1000_NUM_TX_DESC; //i_net_dev->tx_tail;
+; 211  : 	uint32_t cur, head;
+; 212  : 	
+; 213  : 	cur = e1000_read_command (REG_TXDESCTAIL) % E1000_NUM_TX_DESC; //i_net_dev->tx_tail;
 
 	mov	cx, 14360				; 00003818H
 	call	?e1000_read_command@@YAIG@Z		; e1000_read_command
@@ -1519,13 +1567,13 @@ $LN8:
 	mov	eax, edx
 	mov	DWORD PTR cur$[rsp], eax
 
-; 206  : 	printf ("CUR Tx tail -> %d\n", cur);
+; 214  : 	printf ("CUR Tx tail -> %d\n", cur);
 
 	mov	edx, DWORD PTR cur$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3493
+	lea	rcx, OFFSET FLAT:$SG3468
 	call	?printf@@YAXPEBDZZ			; printf
 
-; 207  : 	i_net_dev->tx_tail++;
+; 215  : 	i_net_dev->tx_tail++;
 
 	mov	rax, QWORD PTR ?i_net_dev@@3PEAU_e1000_dev_@@EA ; i_net_dev
 	movzx	eax, WORD PTR [rax+48]
@@ -1533,7 +1581,7 @@ $LN8:
 	mov	rcx, QWORD PTR ?i_net_dev@@3PEAU_e1000_dev_@@EA ; i_net_dev
 	mov	WORD PTR [rcx+48], ax
 
-; 208  : 	i_net_dev->tx_tail %= E1000_NUM_TX_DESC;
+; 216  : 	i_net_dev->tx_tail %= E1000_NUM_TX_DESC;
 
 	mov	rax, QWORD PTR ?i_net_dev@@3PEAU_e1000_dev_@@EA ; i_net_dev
 	movzx	eax, WORD PTR [rax+48]
@@ -1545,55 +1593,55 @@ $LN8:
 	mov	rcx, QWORD PTR ?i_net_dev@@3PEAU_e1000_dev_@@EA ; i_net_dev
 	mov	WORD PTR [rcx+48], ax
 
-; 209  : 
-; 210  : 	head = e1000_read_command(REG_TXDESCHEAD);
+; 217  : 
+; 218  : 	head = e1000_read_command(REG_TXDESCHEAD);
 
 	mov	cx, 14352				; 00003810H
 	call	?e1000_read_command@@YAIG@Z		; e1000_read_command
 	mov	DWORD PTR head$[rsp], eax
 
-; 211  : 	if (i_net_dev->tx_tail == head) {
+; 219  : 	if (i_net_dev->tx_tail == head) {
 
 	mov	rax, QWORD PTR ?i_net_dev@@3PEAU_e1000_dev_@@EA ; i_net_dev
 	movzx	eax, WORD PTR [rax+48]
 	cmp	eax, DWORD PTR head$[rsp]
 	jne	SHORT $LN5@e1000_send
 
-; 212  : 		i_net_dev->tx_tail = cur;
+; 220  : 		i_net_dev->tx_tail = cur;
 
 	mov	rax, QWORD PTR ?i_net_dev@@3PEAU_e1000_dev_@@EA ; i_net_dev
 	movzx	ecx, WORD PTR cur$[rsp]
 	mov	WORD PTR [rax+48], cx
 
-; 213  : 		return;
+; 221  : 		return;
 
 	jmp	$LN6@e1000_send
 $LN5@e1000_send:
 
-; 214  : 	}
-; 215  : 
-; 216  : 	if (size > 2048) {  //max buffer size 2048 (2KB)
+; 222  : 	}
+; 223  : 
+; 224  : 	if (size > 2048) {  //max buffer size 2048 (2KB)
 
 	cmp	QWORD PTR size$[rsp], 2048		; 00000800H
 	jbe	SHORT $LN4@e1000_send
 
-; 217  : 		size = 2048;
+; 225  : 		size = 2048;
 
 	mov	QWORD PTR size$[rsp], 2048		; 00000800H
 $LN4@e1000_send:
 
-; 218  : 	}
-; 219  : 
-; 220  : 	
-; 221  : 
-; 222  : 	i_net_dev->tx_desc[cur]->cmd = CMD_EOP | CMD_IFCS | CMD_RS | CMD_RPS | CMD_IDE;
+; 226  : 	}
+; 227  : 
+; 228  : 	
+; 229  : 
+; 230  : 	i_net_dev->tx_desc[cur]->cmd = CMD_EOP | CMD_IFCS | CMD_RS | CMD_RPS | CMD_IDE;
 
 	mov	eax, DWORD PTR cur$[rsp]
 	mov	rcx, QWORD PTR ?i_net_dev@@3PEAU_e1000_dev_@@EA ; i_net_dev
 	mov	rax, QWORD PTR [rcx+rax*8+312]
 	mov	BYTE PTR [rax+11], 155			; 0000009bH
 
-; 223  : 	i_net_dev->tx_desc[cur]->length = size;
+; 231  : 	i_net_dev->tx_desc[cur]->length = size;
 
 	mov	eax, DWORD PTR cur$[rsp]
 	mov	rcx, QWORD PTR ?i_net_dev@@3PEAU_e1000_dev_@@EA ; i_net_dev
@@ -1601,7 +1649,7 @@ $LN4@e1000_send:
 	movzx	ecx, WORD PTR size$[rsp]
 	mov	WORD PTR [rax+8], cx
 
-; 224  : 	i_net_dev->tx_desc[cur]->addr = (uint64_t)pmmngr_alloc(); //(i_net_dev->tx_desc_base + (cur * 2048));
+; 232  : 	i_net_dev->tx_desc[cur]->addr = (uint64_t)pmmngr_alloc(); //(i_net_dev->tx_desc_base + (cur * 2048));
 
 	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
 	mov	ecx, DWORD PTR cur$[rsp]
@@ -1609,7 +1657,7 @@ $LN4@e1000_send:
 	mov	rcx, QWORD PTR [rdx+rcx*8+312]
 	mov	QWORD PTR [rcx], rax
 
-; 225  : 	e1000_write_command(REG_TXDESCTAIL, i_net_dev->tx_tail);
+; 233  : 	e1000_write_command(REG_TXDESCTAIL, i_net_dev->tx_tail);
 
 	mov	rax, QWORD PTR ?i_net_dev@@3PEAU_e1000_dev_@@EA ; i_net_dev
 	movzx	eax, WORD PTR [rax+48]
@@ -1617,7 +1665,7 @@ $LN4@e1000_send:
 	mov	cx, 14360				; 00003818H
 	call	?e1000_write_command@@YAXGI@Z		; e1000_write_command
 
-; 226  : 	memcpy ((void*)i_net_dev->tx_desc[cur]->addr, data, size);
+; 234  : 	memcpy ((void*)i_net_dev->tx_desc[cur]->addr, data, size);
 
 	mov	eax, DWORD PTR cur$[rsp]
 	mov	rcx, QWORD PTR ?i_net_dev@@3PEAU_e1000_dev_@@EA ; i_net_dev
@@ -1627,7 +1675,7 @@ $LN4@e1000_send:
 	mov	rcx, QWORD PTR [rax]
 	call	memcpy
 
-; 227  : 	printf ("TX Next tail -> %d\n", e1000_read_command (REG_TXDESCTAIL) % E1000_NUM_TX_DESC);
+; 235  : 	printf ("TX Next tail -> %d\n", e1000_read_command (REG_TXDESCTAIL) % E1000_NUM_TX_DESC);
 
 	mov	cx, 14360				; 00003818H
 	call	?e1000_read_command@@YAIG@Z		; e1000_read_command
@@ -1636,16 +1684,16 @@ $LN4@e1000_send:
 	div	ecx
 	mov	eax, edx
 	mov	edx, eax
-	lea	rcx, OFFSET FLAT:$SG3498
+	lea	rcx, OFFSET FLAT:$SG3473
 	call	?printf@@YAXPEBDZZ			; printf
 
-; 228  : 	x64_sti();
+; 236  : 	x64_sti();
 
 	call	x64_sti
 $LN3@e1000_send:
 
-; 229  : 	for(;;) {
-; 230  : 		if (i_net_dev->tx_desc[cur]->status) {
+; 237  : 	for(;;) {
+; 238  : 		if (i_net_dev->tx_desc[cur]->status) {
 
 	mov	eax, DWORD PTR cur$[rsp]
 	mov	rcx, QWORD PTR ?i_net_dev@@3PEAU_e1000_dev_@@EA ; i_net_dev
@@ -1655,7 +1703,7 @@ $LN3@e1000_send:
 	test	eax, eax
 	je	SHORT $LN1@e1000_send
 
-; 231  : 			printf ("Transmit status ->%x\n", i_net_dev->tx_desc[cur]->status);
+; 239  : 			printf ("Transmit status ->%x\n", i_net_dev->tx_desc[cur]->status);
 
 	mov	eax, DWORD PTR cur$[rsp]
 	mov	rcx, QWORD PTR ?i_net_dev@@3PEAU_e1000_dev_@@EA ; i_net_dev
@@ -1663,27 +1711,27 @@ $LN3@e1000_send:
 	movzx	eax, BYTE PTR [rax+12]
 	movzx	eax, al
 	mov	edx, eax
-	lea	rcx, OFFSET FLAT:$SG3503
+	lea	rcx, OFFSET FLAT:$SG3478
 	call	?printf@@YAXPEBDZZ			; printf
 
-; 232  : 			printf ("Transmitted\n");
+; 240  : 			printf ("Transmitted\n");
 
-	lea	rcx, OFFSET FLAT:$SG3504
+	lea	rcx, OFFSET FLAT:$SG3479
 	call	?printf@@YAXPEBDZZ			; printf
 
-; 233  : 			break;
+; 241  : 			break;
 
 	jmp	SHORT $LN2@e1000_send
 $LN1@e1000_send:
 
-; 234  : 		}
-; 235  : 	}
+; 242  : 		}
+; 243  : 	}
 
 	jmp	SHORT $LN3@e1000_send
 $LN2@e1000_send:
 $LN6@e1000_send:
 
-; 236  : }
+; 244  : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -1702,21 +1750,21 @@ dev_$ = 72
 dev$ = 80
 ?e1000_initialize@@YAXXZ PROC				; e1000_initialize
 
-; 292  : void e1000_initialize () {
+; 300  : void e1000_initialize () {
 
-$LN16:
+$LN17:
 	sub	rsp, 104				; 00000068H
 
-; 293  : 	int func, dev_, bus = 0;
+; 301  : 	int func, dev_, bus = 0;
 
 	mov	DWORD PTR bus$[rsp], 0
 
-; 294  : 	pci_device_info *dev = (pci_device_info*)pmmngr_alloc();
+; 302  : 	pci_device_info *dev = (pci_device_info*)pmmngr_alloc();
 
 	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
 	mov	QWORD PTR dev$[rsp], rax
 
-; 295  : 	if (!pci_find_device_class (0x02,0x00, dev,&bus, &dev_, &func)) {
+; 303  : 	if (!pci_find_device_class (0x02,0x00, dev,&bus, &dev_, &func)) {
 
 	lea	rax, QWORD PTR func$[rsp]
 	mov	QWORD PTR [rsp+40], rax
@@ -1729,32 +1777,32 @@ $LN16:
 	call	?pci_find_device_class@@YA_NEEPEATpci_device_info@@PEAH11@Z ; pci_find_device_class
 	movzx	eax, al
 	test	eax, eax
-	jne	SHORT $LN13@e1000_init
+	jne	SHORT $LN14@e1000_init
 
-; 296  : 		printf ("Intel Ethernet not found\n");
+; 304  : 		printf ("Intel Ethernet not found\n");
 
-	lea	rcx, OFFSET FLAT:$SG3550
+	lea	rcx, OFFSET FLAT:$SG3525
 	call	?printf@@YAXPEBDZZ			; printf
 
-; 297  : 		return;
+; 305  : 		return;
 
-	jmp	$LN14@e1000_init
-$LN13@e1000_init:
+	jmp	$LN15@e1000_init
+$LN14@e1000_init:
 
-; 298  : 	}
-; 299  : 
-; 300  : 	x64_cli ();
+; 306  : 	}
+; 307  : 
+; 308  : 	x64_cli ();
 
 	call	x64_cli
 
-; 301  : 	i_net_dev = (e1000_dev*)malloc(sizeof(e1000_dev));
+; 309  : 	i_net_dev = (e1000_dev*)malloc(sizeof(e1000_dev));
 
 	mov	ecx, 376				; 00000178H
 	call	?malloc@@YAPEAX_K@Z			; malloc
 	mov	QWORD PTR ?i_net_dev@@3PEAU_e1000_dev_@@EA, rax ; i_net_dev
 
-; 302  :     
-; 303  :     i_net_dev->e1000_mem_base = dev->device.nonBridge.baseAddress[1] & ~0xf;
+; 310  :     
+; 311  :     i_net_dev->e1000_mem_base = dev->device.nonBridge.baseAddress[1] & ~0xf;
 
 	mov	eax, 4
 	imul	rax, 1
@@ -1765,30 +1813,30 @@ $LN13@e1000_init:
 	mov	rcx, QWORD PTR ?i_net_dev@@3PEAU_e1000_dev_@@EA ; i_net_dev
 	mov	QWORD PTR [rcx+8], rax
 
-; 304  : 	for (int i = 0; i < 6; i++) {
+; 312  : 	for (int i = 0; i < 6; i++) {
 
 	mov	DWORD PTR i$1[rsp], 0
-	jmp	SHORT $LN12@e1000_init
-$LN11@e1000_init:
+	jmp	SHORT $LN13@e1000_init
+$LN12@e1000_init:
 	mov	eax, DWORD PTR i$1[rsp]
 	inc	eax
 	mov	DWORD PTR i$1[rsp], eax
-$LN12@e1000_init:
+$LN13@e1000_init:
 	cmp	DWORD PTR i$1[rsp], 6
-	jge	SHORT $LN10@e1000_init
+	jge	SHORT $LN11@e1000_init
 
-; 305  : 		if ( dev->device.nonBridge.baseAddress[i] & 1){
+; 313  : 		if ( dev->device.nonBridge.baseAddress[i] & 1){
 
 	movsxd	rax, DWORD PTR i$1[rsp]
 	mov	rcx, QWORD PTR dev$[rsp]
 	mov	eax, DWORD PTR [rcx+rax*4+16]
 	and	eax, 1
 	test	eax, eax
-	je	SHORT $LN9@e1000_init
+	je	SHORT $LN10@e1000_init
 
-; 306  : 			  //TODO:Auto search  4
-; 307  : 			
-; 308  : 	        i_net_dev->e1000_base = dev->device.nonBridge.baseAddress[i] & ~3; 
+; 314  : 			  //TODO:Auto search  4
+; 315  : 			
+; 316  : 	        i_net_dev->e1000_base = dev->device.nonBridge.baseAddress[i] & ~3; 
 
 	movsxd	rax, DWORD PTR i$1[rsp]
 	mov	rcx, QWORD PTR dev$[rsp]
@@ -1798,26 +1846,26 @@ $LN12@e1000_init:
 	mov	rcx, QWORD PTR ?i_net_dev@@3PEAU_e1000_dev_@@EA ; i_net_dev
 	mov	QWORD PTR [rcx], rax
 
-; 309  : 			break;
-
-	jmp	SHORT $LN10@e1000_init
-$LN9@e1000_init:
-
-; 310  : 		}
-; 311  : 	}
+; 317  : 			break;
 
 	jmp	SHORT $LN11@e1000_init
 $LN10@e1000_init:
 
-; 312  : 
-; 313  : 	i_net_dev->e1000_irq = dev->device.nonBridge.interruptLine;
+; 318  : 		}
+; 319  : 	}
+
+	jmp	SHORT $LN12@e1000_init
+$LN11@e1000_init:
+
+; 320  : 
+; 321  : 	i_net_dev->e1000_irq = dev->device.nonBridge.interruptLine;
 
 	mov	rax, QWORD PTR dev$[rsp]
 	movzx	eax, BYTE PTR [rax+60]
 	mov	rcx, QWORD PTR ?i_net_dev@@3PEAU_e1000_dev_@@EA ; i_net_dev
 	mov	DWORD PTR [rcx+20], eax
 
-; 314  : 	bool pci_status = pci_alloc_msi (func, dev_, bus, e1000_interrupt_handler);
+; 322  : 	bool pci_status = pci_alloc_msi (func, dev_, bus, e1000_interrupt_handler);
 
 	lea	r9, OFFSET FLAT:?e1000_interrupt_handler@@YAX_KPEAX@Z ; e1000_interrupt_handler
 	mov	r8d, DWORD PTR bus$[rsp]
@@ -1826,14 +1874,20 @@ $LN10@e1000_init:
 	call	?pci_alloc_msi@@YA_NHHHP6AX_KPEAX@Z@Z	; pci_alloc_msi
 	mov	BYTE PTR pci_status$[rsp], al
 
-; 315  : 	if (!pci_status) {
+; 323  : 	if (!pci_status) {
 
 	movzx	eax, BYTE PTR pci_status$[rsp]
 	test	eax, eax
-	jne	$LN8@e1000_init
+	jne	$LN9@e1000_init
 
-; 316  : 		//if (dev->device.nonBridge.interruptLine != 255) {
-; 317  : 			printf ("E1000 legacy irq -> %d, pin -> %d\n", dev->device.nonBridge.interruptLine, dev->device.nonBridge.interruptPin);
+; 324  : 		if (dev->device.nonBridge.interruptLine != 255) {
+
+	mov	rax, QWORD PTR dev$[rsp]
+	movzx	eax, BYTE PTR [rax+60]
+	cmp	eax, 255				; 000000ffH
+	je	$LN8@e1000_init
+
+; 325  : 			printf ("E1000 legacy irq -> %d, pin -> %d\n", dev->device.nonBridge.interruptLine, dev->device.nonBridge.interruptPin);
 
 	mov	rax, QWORD PTR dev$[rsp]
 	movzx	eax, BYTE PTR [rax+61]
@@ -1841,10 +1895,10 @@ $LN10@e1000_init:
 	movzx	ecx, BYTE PTR [rcx+60]
 	mov	r8d, eax
 	mov	edx, ecx
-	lea	rcx, OFFSET FLAT:$SG3560
+	lea	rcx, OFFSET FLAT:$SG3536
 	call	?printf@@YAXPEBDZZ			; printf
 
-; 318  : 			write_config_8 (0,bus,dev_,func,0x3C, 10);
+; 326  : 			write_config_8 (0,bus,dev_,func,0x3C, 10);
 
 	mov	BYTE PTR [rsp+40], 10
 	mov	DWORD PTR [rsp+32], 60			; 0000003cH
@@ -1854,7 +1908,7 @@ $LN10@e1000_init:
 	xor	ecx, ecx
 	call	?write_config_8@@YAXGHHHHE@Z		; write_config_8
 
-; 319  : 			read_config_8 (0,bus, dev_, func, 0x3C,&dev->device.all.interruptLine);
+; 327  : 			read_config_8 (0,bus, dev_, func, 0x3C,&dev->device.all.interruptLine);
 
 	mov	rax, QWORD PTR dev$[rsp]
 	add	rax, 60					; 0000003cH
@@ -1866,7 +1920,7 @@ $LN10@e1000_init:
 	xor	ecx, ecx
 	call	?read_config_8@@YAXGHHHHPEAE@Z		; read_config_8
 
-; 320  : 			interrupt_set (dev->device.nonBridge.interruptLine, e1000_interrupt_handler, dev->device.nonBridge.interruptLine);
+; 328  : 			interrupt_set (dev->device.nonBridge.interruptLine, e1000_interrupt_handler,dev->device.nonBridge.interruptLine);
 
 	mov	rax, QWORD PTR dev$[rsp]
 	movzx	eax, BYTE PTR [rax+60]
@@ -1876,39 +1930,40 @@ $LN10@e1000_init:
 	mov	ecx, eax
 	call	?interrupt_set@@YAX_KP6AX0PEAX@ZE@Z	; interrupt_set
 $LN8@e1000_init:
+$LN9@e1000_init:
 
-; 321  : 		//}
-; 322  : 	}
-; 323  : 	
-; 324  : 
-; 325  : 	e1000_write_command (REG_IMC, UINT32_MAX);
+; 329  : 		}
+; 330  : 	}
+; 331  : 	
+; 332  : 
+; 333  : 	e1000_write_command (REG_IMC, UINT32_MAX);
 
 	mov	edx, -1					; ffffffffH
 	mov	cx, 216					; 000000d8H
 	call	?e1000_write_command@@YAXGI@Z		; e1000_write_command
 
-; 326  : 	e1000_read_command (REG_ICR);
+; 334  : 	e1000_read_command (REG_ICR);
 
 	mov	cx, 192					; 000000c0H
 	call	?e1000_read_command@@YAIG@Z		; e1000_read_command
 
-; 327  : 	e1000_reset();
+; 335  : 	e1000_reset();
 
 	call	?e1000_reset@@YAXXZ			; e1000_reset
 
-; 328  : 	e1000_write_command (REG_CTRL, ECTRL_SLU | (1<<8) | (1<<9) | (1<<11));
+; 336  : 	e1000_write_command (REG_CTRL, ECTRL_SLU | (1<<8) | (1<<9) | (1<<11));
 
 	mov	edx, 2880				; 00000b40H
 	xor	ecx, ecx
 	call	?e1000_write_command@@YAXGI@Z		; e1000_write_command
 
-; 329  : 	e1000_detect_eeprom();
+; 337  : 	e1000_detect_eeprom();
 
 	call	?e1000_detect_eeprom@@YA_NXZ		; e1000_detect_eeprom
 
-; 330  : 	
-; 331  : 
-; 332  : 	for (int i = 0; i < 128; i++)
+; 338  : 	
+; 339  : 
+; 340  : 	for (int i = 0; i < 128; i++)
 
 	mov	DWORD PTR i$2[rsp], 0
 	jmp	SHORT $LN7@e1000_init
@@ -1920,7 +1975,7 @@ $LN7@e1000_init:
 	cmp	DWORD PTR i$2[rsp], 128			; 00000080H
 	jge	SHORT $LN5@e1000_init
 
-; 333  : 		e1000_write_command (REG_MTA + (i * 4), 0);
+; 341  : 		e1000_write_command (REG_MTA + (i * 4), 0);
 
 	mov	eax, DWORD PTR i$2[rsp]
 	lea	eax, DWORD PTR [rax*4+20992]
@@ -1930,9 +1985,9 @@ $LN7@e1000_init:
 	jmp	SHORT $LN6@e1000_init
 $LN5@e1000_init:
 
-; 334  : 
-; 335  : 	//!Initialize all statistical counters as per spec section 14.3
-; 336  : 	for (int i = 0; i < 64; i++) {
+; 342  : 
+; 343  : 	//!Initialize all statistical counters as per spec section 14.3
+; 344  : 	for (int i = 0; i < 64; i++) {
 
 	mov	DWORD PTR i$3[rsp], 0
 	jmp	SHORT $LN4@e1000_init
@@ -1944,7 +1999,7 @@ $LN4@e1000_init:
 	cmp	DWORD PTR i$3[rsp], 64			; 00000040H
 	jge	SHORT $LN2@e1000_init
 
-; 337  : 		e1000_write_command (REG_CRCERRS + (i * 4), 0);
+; 345  : 		e1000_write_command (REG_CRCERRS + (i * 4), 0);
 
 	mov	eax, DWORD PTR i$3[rsp]
 	lea	eax, DWORD PTR [rax*4+16384]
@@ -1952,73 +2007,73 @@ $LN4@e1000_init:
 	movzx	ecx, ax
 	call	?e1000_write_command@@YAXGI@Z		; e1000_write_command
 
-; 338  : 	}
+; 346  : 	}
 
 	jmp	SHORT $LN3@e1000_init
 $LN2@e1000_init:
 
-; 339  : 	
-; 340  : 	//printf ("Scanning MSI support for e1000\n");
-; 341  : 	//pci_print_capabilities(func, dev_, bus);
-; 342  : 
-; 343  : 	e1000_rx_init ();
+; 347  : 	
+; 348  : 	//printf ("Scanning MSI support for e1000\n");
+; 349  : 	//pci_print_capabilities(func, dev_, bus);
+; 350  : 
+; 351  : 	e1000_rx_init ();
 
 	call	?e1000_rx_init@@YAXXZ			; e1000_rx_init
 
-; 344  : 	e1000_tx_init ();
+; 352  : 	e1000_tx_init ();
 
 	call	?e1000_tx_init@@YAXXZ			; e1000_tx_init
 
-; 345  : 
-; 346  : 	e1000_write_command (0x000E0, 0);
+; 353  : 
+; 354  : 	e1000_write_command (0x000E0, 0);
 
 	xor	edx, edx
 	mov	cx, 224					; 000000e0H
 	call	?e1000_write_command@@YAXGI@Z		; e1000_write_command
 
-; 347  : 	e1000_write_command (0x00C8, (1<<0) | (1<<1) | (1<<2) | (1<<3) | 
-; 348  : 		(1<<4) | (1<<6) | (1<<7) | (1<<9) | (1<<10) | (1<<13) | (1<<14) | (1<<15) | (1<<16) | 
-; 349  : 		(1<<17) | (1<<20) | (1<<21) | (1<<22) | (1<<24) | (1<<25));
+; 355  : 	e1000_write_command (0x00C8, (1<<0) | (1<<1) | (1<<2) | (1<<3) | 
+; 356  : 		(1<<4) | (1<<6) | (1<<7) | (1<<9) | (1<<10) | (1<<13) | (1<<14) | (1<<15) | (1<<16) | 
+; 357  : 		(1<<17) | (1<<20) | (1<<21) | (1<<22) | (1<<24) | (1<<25));
 
 	mov	edx, 57927391				; 0373e6dfH
 	mov	cx, 200					; 000000c8H
 	call	?e1000_write_command@@YAXGI@Z		; e1000_write_command
 
-; 350  : 	e1000_write_command (REG_IMASK,  E1000_IMS_LSC | 
-; 351  : 		                            E1000_IMS_RXO |
-; 352  : 									E1000_IMS_RXT |
-; 353  : 									E1000_IMS_TXQE |
-; 354  : 									E1000_IMS_TXDW);
+; 358  : 	e1000_write_command (REG_IMASK,  E1000_IMS_LSC | 
+; 359  : 		                            E1000_IMS_RXO |
+; 360  : 									E1000_IMS_RXT |
+; 361  : 									E1000_IMS_TXQE |
+; 362  : 									E1000_IMS_TXDW);
 
 	mov	edx, 199				; 000000c7H
 	mov	cx, 208					; 000000d0H
 	call	?e1000_write_command@@YAXGI@Z		; e1000_write_command
 
-; 355  : 
-; 356  : 
-; 357  : 	//e1000_setup_interrupt ();
-; 358  : 
-; 359  :     e1000_read_command (0xC0);
+; 363  : 
+; 364  : 
+; 365  : 	//e1000_setup_interrupt ();
+; 366  : 
+; 367  :     e1000_read_command (0xC0);
 
 	mov	cx, 192					; 000000c0H
 	call	?e1000_read_command@@YAIG@Z		; e1000_read_command
 
-; 360  : 	
-; 361  : 	//! Initialize the Network Manager (NetHW)
-; 362  : 	nethw_initialize ();
+; 368  : 	
+; 369  : 	//! Initialize the Network Manager (NetHW)
+; 370  : 	nethw_initialize ();
 
 	call	?nethw_initialize@@YAXXZ		; nethw_initialize
 
-; 363  : 
-; 364  : 	if (e1000_read_mac_address()) {
+; 371  : 
+; 372  : 	if (e1000_read_mac_address()) {
 
 	call	?e1000_read_mac_address@@YA_NXZ		; e1000_read_mac_address
 	movzx	eax, al
 	test	eax, eax
 	je	SHORT $LN1@e1000_init
 
-; 365  : 		//! Set the MAC address code
-; 366  : 	    nethw_set_mac (i_net_dev->mac);
+; 373  : 		//! Set the MAC address code
+; 374  : 	    nethw_set_mac (i_net_dev->mac);
 
 	mov	rax, QWORD PTR ?i_net_dev@@3PEAU_e1000_dev_@@EA ; i_net_dev
 	add	rax, 24
@@ -2026,18 +2081,18 @@ $LN2@e1000_init:
 	call	?nethw_set_mac@@YAXPEAE@Z		; nethw_set_mac
 $LN1@e1000_init:
 
-; 367  : 	}
-; 368  : 	printf ("e1000 setup completed\n");
+; 375  : 	}
+; 376  : 	printf ("e1000 setup completed\n");
 
-	lea	rcx, OFFSET FLAT:$SG3570
+	lea	rcx, OFFSET FLAT:$SG3546
 	call	?printf@@YAXPEBDZZ			; printf
 
-; 369  : 	x64_sti();
+; 377  : 	x64_sti();
 
 	call	x64_sti
-$LN14@e1000_init:
+$LN15@e1000_init:
 
-; 370  : }
+; 378  : }
 
 	add	rsp, 104				; 00000068H
 	ret	0
