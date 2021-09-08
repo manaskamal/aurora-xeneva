@@ -6,7 +6,7 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 CONST	SEGMENT
-$SG3513	DB	'uproc', 00H
+$SG3517	DB	'uproc', 00H
 CONST	ENDS
 PUBLIC	?create__sys_process@@YAXPEBD@Z			; create__sys_process
 PUBLIC	?sys_exit@@YAXXZ				; sys_exit
@@ -80,7 +80,7 @@ $LN3:
 ; 11   : 	create_process (name, "uproc", 1);
 
 	mov	r8b, 1
-	lea	rdx, OFFSET FLAT:$SG3513
+	lea	rdx, OFFSET FLAT:$SG3517
 	mov	rcx, QWORD PTR name$[rsp]
 	call	?create_process@@YAXPEBDPEADE@Z		; create_process
 

@@ -97,7 +97,7 @@ extern void register_xn_application (int app_type,uint32_t x, uint32_t y,uint32_
 extern "C" void sys_exit();
 extern "C" uint32_t fork();
 extern "C" void exec (const char* filename, uint32_t pid);
-extern "C" void create_uthread (void (*entry) (void*));
+extern "C" void create_uthread (void (*entry) ());
 
 
 //! local and global mapping are same as MAP_PRIVATE | MAP_SHARED

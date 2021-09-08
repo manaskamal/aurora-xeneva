@@ -44,6 +44,7 @@ typedef struct _process_ {
 }process_t;
 
 extern uint64_t *create_user_stack (uint64_t* cr3);
+extern uint64_t* create_inc_stack (uint64_t* cr3);
 extern void create_process(const char* filename, char* procname, uint8_t priority);
 extern void kill_process ();
 extern uint32_t get_num_process ();

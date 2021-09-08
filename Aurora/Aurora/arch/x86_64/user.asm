@@ -29,7 +29,7 @@ syscall_entry:
 	 mov r9, [rel current_thread]
 	 mov rsp, [r9 + 0xC8]
 	; mov rsp, qword[fs:0x20]    ;load kernel stack
-	 ;swapgs
+	 swapgs
 
 	 ;save syscall return stuff
 	 push rcx
@@ -61,7 +61,7 @@ syscall_entry:
 	 pop rdx
 	 pop rcx
 
-	 ;swapgs
+	 swapgs
 
 	 ;user stack
 	 mov rsp, rdx

@@ -26,15 +26,12 @@ void create_uthread (void (*entry) (void*)) {
 	 *
 	 * when syscalls occurs it causes page fault 
 	 */
-
-	for (int i = 0; i < 0x100000/ 4096; i++)
-		map_page((uint64_t)pmmngr_alloc(), 0x0000000080000000 + i * 4096);
-
-	thread_t *cthread = get_current_thread();
+    thread_t *cthread = get_current_thread();
+	uint64_t stack = (uint64_t)create_inc_stack((uint64_t*)cthread->cr3);
 	uthread *uthr = (uthread*)pmmngr_alloc();
 	uthr->entry = entry;
 	uthr->self_pointer = uthr;
-	thread_t * t = create_user_thread (entry, (uint64_t)pmmngr_alloc() + 4096, cthread->cr3, "uthread", 1);
+	thread_t * t = create_user_thread (entry, stack, cthread->cr3, "uthread", 1);
 }
 
 

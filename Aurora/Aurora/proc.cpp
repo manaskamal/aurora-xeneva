@@ -95,6 +95,22 @@ uint64_t *create_user_stack (uint64_t* cr3) {
 	return (uint64_t*)(USER_STACK + 0x100000); // +  user_stack_index);
 }
 
+/*
+ * Create incremental stack : Creates stack in same address space
+ */
+uint64_t* create_inc_stack (uint64_t* cr3) {
+#define INC_STACK 0x0000010000000000
+	uint64_t location = INC_STACK + user_stack_index;
+
+	for (int i = 0; i < 0x100000 / 4096; i++) {
+		map_page_ex (cr3, (uint64_t)pmmngr_alloc(), location + i * 4096);
+	}
+
+	user_stack_index += 0x100000;
+	return (uint64_t*)(INC_STACK + 0x100000);
+}
+
+
 
 
 void create_process(const char* filename, char* procname, uint8_t priority) {

@@ -6,15 +6,15 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 CONST	SEGMENT
-$SG7297	DB	'Timer fired', 0aH, 00H
+$SG7301	DB	'Timer fired', 0aH, 00H
 	ORG $+3
-$SG7310	DB	'shell', 00H
+$SG7314	DB	'shell', 00H
 	ORG $+2
-$SG7311	DB	'xshell.exe', 00H
+$SG7315	DB	'xshell.exe', 00H
 	ORG $+1
-$SG7312	DB	'dwm3', 00H
+$SG7316	DB	'dwm3', 00H
 	ORG $+7
-$SG7313	DB	'dwm3.exe', 00H
+$SG7317	DB	'dwm3.exe', 00H
 CONST	ENDS
 PUBLIC	?timer_callback@@YAX_KPEAX@Z			; timer_callback
 PUBLIC	?_kmain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z		; _kmain
@@ -167,15 +167,15 @@ $LN5:
 ; 132  : 	create_process ("xshell.exe","shell",1);
 
 	mov	r8b, 1
-	lea	rdx, OFFSET FLAT:$SG7310
-	lea	rcx, OFFSET FLAT:$SG7311
+	lea	rdx, OFFSET FLAT:$SG7314
+	lea	rcx, OFFSET FLAT:$SG7315
 	call	?create_process@@YAXPEBDPEADE@Z		; create_process
 
 ; 133  : 	create_process ("dwm3.exe", "dwm3", 1);
 
 	mov	r8b, 1
-	lea	rdx, OFFSET FLAT:$SG7312
-	lea	rcx, OFFSET FLAT:$SG7313
+	lea	rdx, OFFSET FLAT:$SG7316
+	lea	rcx, OFFSET FLAT:$SG7317
 	call	?create_process@@YAXPEBDPEADE@Z		; create_process
 
 ; 134  : 	scheduler_start();
@@ -217,7 +217,7 @@ $LN3:
 
 ; 85   : 	printf ("Timer fired\n");
 
-	lea	rcx, OFFSET FLAT:$SG7297
+	lea	rcx, OFFSET FLAT:$SG7301
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 86   : 	interrupt_end(2);

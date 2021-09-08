@@ -12,13 +12,23 @@
 #include <xnsys.h>
 
 char *manas = 0;
-extern "C" void shl_test ();
+extern "C" void shl_print(const char* txt);
 void func_call () {
 }
-void thread_1 (void* p) {
-	func_call();
-	shl_test ();
-	for(;;);
+void thread_1 () {
+	manas = "Manas";
+	print_text ("User inner thread spawned %s\n",manas);
+	print_text ("Hello Multi-threading world\n");
+	while(1) {
+	}
+}
+
+void thread_2 () {
+	manas = "Kamal";
+	print_text ("User inner thread 2\n");
+	print_text ("Multi threading World from thread 2  %s\n", manas);
+	while(1) {
+	}
 }
 void main () {
 	print_text ("\n");
@@ -26,6 +36,9 @@ void main () {
 	print_text ("Operating System : Aurora's Xeneva v1.0\n");
 	print_text ("XNShell v1.0\n");
 	print_text ("Shell created thread\n");
+	create_uthread (thread_1);
+	create_uthread (thread_2);
+
 	/*uint32_t status = fork();
 	if (status)
 		print_text ("Current process forked\n");
