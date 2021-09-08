@@ -1,0 +1,136 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="include">
+      <UniqueIdentifier>{5d911240-01dc-4dff-8c30-35ba51fe2a5c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src">
+      <UniqueIdentifier>{1d007548-a7b7-41e5-9180-6d28b0e0ab51}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\acbuffer.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\accommon.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\acconfig.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\acdebug.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\acdisasm.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\acdispat.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\acefi.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\acenv.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\acevents.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\acexcep.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\acfreebsd.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\acgcc.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\acglobal.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\achware.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\acinterp.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\aclinux.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\aclocal.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\acmacros.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\acmsvc.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\acnames.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\acnamesp.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\acobject.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\acopcode.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\acoutput.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\acparser.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\acpi.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\acpiosxf.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\acpixf.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\acpredef.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\acresrc.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\acstruct.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\actables.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\actbl.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\actbl1.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\actbl2.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\actypes.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\acutils.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\acwin.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\acwin64.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\amlcode.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\amlresrc.h">
+      <Filter>include</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

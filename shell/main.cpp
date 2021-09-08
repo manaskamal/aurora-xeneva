@@ -25,7 +25,6 @@ void main () {
 	print_text ("Copyright (C) Manas Kamal Choudhury 2021\n");
 	print_text ("Operating System : Aurora's Xeneva v1.0\n");
 	print_text ("XNShell v1.0\n");
-	create_uthread (thread_1);
 	print_text ("Shell created thread\n");
 	/*uint32_t status = fork();
 	if (status)
