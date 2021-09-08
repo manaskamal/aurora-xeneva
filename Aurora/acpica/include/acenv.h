@@ -296,7 +296,7 @@
 
 /* Unknown environment */
 
-#error Unknown target environment
+//#error "Unknown target environment"
 #endif
 
 /*! [End] no source code translation !*/

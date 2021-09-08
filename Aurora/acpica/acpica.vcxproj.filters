@@ -7,6 +7,36 @@
     <Filter Include="src">
       <UniqueIdentifier>{1d007548-a7b7-41e5-9180-6d28b0e0ab51}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\common">
+      <UniqueIdentifier>{d3ec8102-182a-43b0-a14d-4ce656389efa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\debugger">
+      <UniqueIdentifier>{b5dc4f31-e66e-4a32-b13c-5232fd0dbda6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\disassembler">
+      <UniqueIdentifier>{96aacfb3-4316-473a-9c5e-8f06481e3202}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\tables">
+      <UniqueIdentifier>{994745cd-9f16-400e-a455-5dacc3b90d49}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\dispatcher">
+      <UniqueIdentifier>{eaafd485-7c02-4c0d-89cc-04a49f8d419e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\events">
+      <UniqueIdentifier>{2fec1be1-c80b-494a-87eb-e1f42560dfdc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\hardware">
+      <UniqueIdentifier>{0fbbc03f-3219-4301-ba38-5ed4132009c9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\parser">
+      <UniqueIdentifier>{9411100a-35b5-4cb1-b5c3-971c5aa54ae9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\resources">
+      <UniqueIdentifier>{4f841ace-59e0-48b5-9441-42a17a34d003}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\interpreter">
+      <UniqueIdentifier>{e739e6f7-44dc-4201-acb8-2b5a9cfc0eb7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\acbuffer.h">
@@ -132,5 +162,418 @@
     <ClInclude Include="include\amlresrc.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="include\acapps.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\actbl3.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\acuuid.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\acrestyp.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\acenvex.h">
+      <Filter>include</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="components\common\acgetline.c">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="components\common\adwalk.c">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="components\common\ahids.c">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="components\common\ahpredef.c">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="components\common\ahtable.c">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="components\common\ahuuids.c">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="components\common\cmfsize.c">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="components\common\dmtbdump.c">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="components\common\dmtbinfo.c">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="components\common\getopt.c">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="components\debugger\dbcmds.c">
+      <Filter>src\debugger</Filter>
+    </ClCompile>
+    <ClCompile Include="components\debugger\dbconvert.c">
+      <Filter>src\debugger</Filter>
+    </ClCompile>
+    <ClCompile Include="components\debugger\dbdisply.c">
+      <Filter>src\debugger</Filter>
+    </ClCompile>
+    <ClCompile Include="components\debugger\dbexec.c">
+      <Filter>src\debugger</Filter>
+    </ClCompile>
+    <ClCompile Include="components\debugger\dbfileio.c">
+      <Filter>src\debugger</Filter>
+    </ClCompile>
+    <ClCompile Include="components\debugger\dbhistry.c">
+      <Filter>src\debugger</Filter>
+    </ClCompile>
+    <ClCompile Include="components\debugger\dbinput.c">
+      <Filter>src\debugger</Filter>
+    </ClCompile>
+    <ClCompile Include="components\debugger\dbmethod.c">
+      <Filter>src\debugger</Filter>
+    </ClCompile>
+    <ClCompile Include="components\debugger\dbnames.c">
+      <Filter>src\debugger</Filter>
+    </ClCompile>
+    <ClCompile Include="components\debugger\dbstats.c">
+      <Filter>src\debugger</Filter>
+    </ClCompile>
+    <ClCompile Include="components\debugger\dbtest.c">
+      <Filter>src\debugger</Filter>
+    </ClCompile>
+    <ClCompile Include="components\debugger\dbutils.c">
+      <Filter>src\debugger</Filter>
+    </ClCompile>
+    <ClCompile Include="components\debugger\dbxface.c">
+      <Filter>src\debugger</Filter>
+    </ClCompile>
+    <ClCompile Include="components\disassembler\dmbuffer.c">
+      <Filter>src\disassembler</Filter>
+    </ClCompile>
+    <ClCompile Include="components\disassembler\dmcstyle.c">
+      <Filter>src\disassembler</Filter>
+    </ClCompile>
+    <ClCompile Include="components\disassembler\dmdeferred.c">
+      <Filter>src\disassembler</Filter>
+    </ClCompile>
+    <ClCompile Include="components\disassembler\dmnames.c">
+      <Filter>src\disassembler</Filter>
+    </ClCompile>
+    <ClCompile Include="components\disassembler\dmobject.c">
+      <Filter>src\disassembler</Filter>
+    </ClCompile>
+    <ClCompile Include="components\disassembler\dmopcode.c">
+      <Filter>src\disassembler</Filter>
+    </ClCompile>
+    <ClCompile Include="components\disassembler\dmresrc.c">
+      <Filter>src\disassembler</Filter>
+    </ClCompile>
+    <ClCompile Include="components\disassembler\dmresrcl.c">
+      <Filter>src\disassembler</Filter>
+    </ClCompile>
+    <ClCompile Include="components\disassembler\dmresrcl2.c">
+      <Filter>src\disassembler</Filter>
+    </ClCompile>
+    <ClCompile Include="components\disassembler\dmresrcs.c">
+      <Filter>src\disassembler</Filter>
+    </ClCompile>
+    <ClCompile Include="components\disassembler\dmutils.c">
+      <Filter>src\disassembler</Filter>
+    </ClCompile>
+    <ClCompile Include="components\disassembler\dmwalk.c">
+      <Filter>src\disassembler</Filter>
+    </ClCompile>
+    <ClCompile Include="components\tables\tbdata.c">
+      <Filter>src\tables</Filter>
+    </ClCompile>
+    <ClCompile Include="components\tables\tbfadt.c">
+      <Filter>src\tables</Filter>
+    </ClCompile>
+    <ClCompile Include="components\tables\tbfind.c">
+      <Filter>src\tables</Filter>
+    </ClCompile>
+    <ClCompile Include="components\tables\tbinstal.c">
+      <Filter>src\tables</Filter>
+    </ClCompile>
+    <ClCompile Include="components\tables\tbprint.c">
+      <Filter>src\tables</Filter>
+    </ClCompile>
+    <ClCompile Include="components\tables\tbutils.c">
+      <Filter>src\tables</Filter>
+    </ClCompile>
+    <ClCompile Include="components\tables\tbxface.c">
+      <Filter>src\tables</Filter>
+    </ClCompile>
+    <ClCompile Include="components\tables\tbxfload.c">
+      <Filter>src\tables</Filter>
+    </ClCompile>
+    <ClCompile Include="components\tables\tbxfroot.c">
+      <Filter>src\tables</Filter>
+    </ClCompile>
+    <ClCompile Include="components\dispatcher\dsargc.c">
+      <Filter>src\dispatcher</Filter>
+    </ClCompile>
+    <ClCompile Include="components\dispatcher\dscontrol.c">
+      <Filter>src\dispatcher</Filter>
+    </ClCompile>
+    <ClCompile Include="components\dispatcher\dsfield.c">
+      <Filter>src\dispatcher</Filter>
+    </ClCompile>
+    <ClCompile Include="components\dispatcher\dsinit.c">
+      <Filter>src\dispatcher</Filter>
+    </ClCompile>
+    <ClCompile Include="components\dispatcher\dsmethod.c">
+      <Filter>src\dispatcher</Filter>
+    </ClCompile>
+    <ClCompile Include="components\dispatcher\dsmthdat.c">
+      <Filter>src\dispatcher</Filter>
+    </ClCompile>
+    <ClCompile Include="components\dispatcher\dsobject.c">
+      <Filter>src\dispatcher</Filter>
+    </ClCompile>
+    <ClCompile Include="components\dispatcher\dsopcode.c">
+      <Filter>src\dispatcher</Filter>
+    </ClCompile>
+    <ClCompile Include="components\dispatcher\dsutils.c">
+      <Filter>src\dispatcher</Filter>
+    </ClCompile>
+    <ClCompile Include="components\dispatcher\dswexec.c">
+      <Filter>src\dispatcher</Filter>
+    </ClCompile>
+    <ClCompile Include="components\dispatcher\dswload.c">
+      <Filter>src\dispatcher</Filter>
+    </ClCompile>
+    <ClCompile Include="components\dispatcher\dswload2.c">
+      <Filter>src\dispatcher</Filter>
+    </ClCompile>
+    <ClCompile Include="components\dispatcher\dswscope.c">
+      <Filter>src\dispatcher</Filter>
+    </ClCompile>
+    <ClCompile Include="components\dispatcher\dswstate.c">
+      <Filter>src\dispatcher</Filter>
+    </ClCompile>
+    <ClCompile Include="components\events\evevent.c">
+      <Filter>src\events</Filter>
+    </ClCompile>
+    <ClCompile Include="components\events\evglock.c">
+      <Filter>src\events</Filter>
+    </ClCompile>
+    <ClCompile Include="components\events\evgpe.c">
+      <Filter>src\events</Filter>
+    </ClCompile>
+    <ClCompile Include="components\events\evgpeblk.c">
+      <Filter>src\events</Filter>
+    </ClCompile>
+    <ClCompile Include="components\events\evgpeinit.c">
+      <Filter>src\events</Filter>
+    </ClCompile>
+    <ClCompile Include="components\events\evgpeutil.c">
+      <Filter>src\events</Filter>
+    </ClCompile>
+    <ClCompile Include="components\events\evhandler.c">
+      <Filter>src\events</Filter>
+    </ClCompile>
+    <ClCompile Include="components\events\evmisc.c">
+      <Filter>src\events</Filter>
+    </ClCompile>
+    <ClCompile Include="components\events\evregion.c">
+      <Filter>src\events</Filter>
+    </ClCompile>
+    <ClCompile Include="components\events\evrgnini.c">
+      <Filter>src\events</Filter>
+    </ClCompile>
+    <ClCompile Include="components\events\evsci.c">
+      <Filter>src\events</Filter>
+    </ClCompile>
+    <ClCompile Include="components\events\evxface.c">
+      <Filter>src\events</Filter>
+    </ClCompile>
+    <ClCompile Include="components\events\evxfevnt.c">
+      <Filter>src\events</Filter>
+    </ClCompile>
+    <ClCompile Include="components\events\evxfgpe.c">
+      <Filter>src\events</Filter>
+    </ClCompile>
+    <ClCompile Include="components\events\evxfregn.c">
+      <Filter>src\events</Filter>
+    </ClCompile>
+    <ClCompile Include="components\hardware\hwacpi.c">
+      <Filter>src\hardware</Filter>
+    </ClCompile>
+    <ClCompile Include="components\hardware\hwesleep.c">
+      <Filter>src\hardware</Filter>
+    </ClCompile>
+    <ClCompile Include="components\hardware\hwgpe.c">
+      <Filter>src\hardware</Filter>
+    </ClCompile>
+    <ClCompile Include="components\hardware\hwpci.c">
+      <Filter>src\hardware</Filter>
+    </ClCompile>
+    <ClCompile Include="components\hardware\hwregs.c">
+      <Filter>src\hardware</Filter>
+    </ClCompile>
+    <ClCompile Include="components\hardware\hwsleep.c">
+      <Filter>src\hardware</Filter>
+    </ClCompile>
+    <ClCompile Include="components\hardware\hwtimer.c">
+      <Filter>src\hardware</Filter>
+    </ClCompile>
+    <ClCompile Include="components\hardware\hwvalid.c">
+      <Filter>src\hardware</Filter>
+    </ClCompile>
+    <ClCompile Include="components\hardware\hwxface.c">
+      <Filter>src\hardware</Filter>
+    </ClCompile>
+    <ClCompile Include="components\hardware\hwxfsleep.c">
+      <Filter>src\hardware</Filter>
+    </ClCompile>
+    <ClCompile Include="components\parser\psargs.c">
+      <Filter>src\parser</Filter>
+    </ClCompile>
+    <ClCompile Include="components\parser\psloop.c">
+      <Filter>src\parser</Filter>
+    </ClCompile>
+    <ClCompile Include="components\parser\psobject.c">
+      <Filter>src\parser</Filter>
+    </ClCompile>
+    <ClCompile Include="components\parser\psopcode.c">
+      <Filter>src\parser</Filter>
+    </ClCompile>
+    <ClCompile Include="components\parser\psopinfo.c">
+      <Filter>src\parser</Filter>
+    </ClCompile>
+    <ClCompile Include="components\parser\psparse.c">
+      <Filter>src\parser</Filter>
+    </ClCompile>
+    <ClCompile Include="components\parser\psscope.c">
+      <Filter>src\parser</Filter>
+    </ClCompile>
+    <ClCompile Include="components\parser\pstree.c">
+      <Filter>src\parser</Filter>
+    </ClCompile>
+    <ClCompile Include="components\parser\psutils.c">
+      <Filter>src\parser</Filter>
+    </ClCompile>
+    <ClCompile Include="components\parser\pswalk.c">
+      <Filter>src\parser</Filter>
+    </ClCompile>
+    <ClCompile Include="components\parser\psxface.c">
+      <Filter>src\parser</Filter>
+    </ClCompile>
+    <ClCompile Include="components\resources\rsaddr.c">
+      <Filter>src\resources</Filter>
+    </ClCompile>
+    <ClCompile Include="components\resources\rscalc.c">
+      <Filter>src\resources</Filter>
+    </ClCompile>
+    <ClCompile Include="components\resources\rscreate.c">
+      <Filter>src\resources</Filter>
+    </ClCompile>
+    <ClCompile Include="components\resources\rsdump.c">
+      <Filter>src\resources</Filter>
+    </ClCompile>
+    <ClCompile Include="components\resources\rsdumpinfo.c">
+      <Filter>src\resources</Filter>
+    </ClCompile>
+    <ClCompile Include="components\resources\rsinfo.c">
+      <Filter>src\resources</Filter>
+    </ClCompile>
+    <ClCompile Include="components\resources\rsio.c">
+      <Filter>src\resources</Filter>
+    </ClCompile>
+    <ClCompile Include="components\resources\rsirq.c">
+      <Filter>src\resources</Filter>
+    </ClCompile>
+    <ClCompile Include="components\resources\rslist.c">
+      <Filter>src\resources</Filter>
+    </ClCompile>
+    <ClCompile Include="components\resources\rsmemory.c">
+      <Filter>src\resources</Filter>
+    </ClCompile>
+    <ClCompile Include="components\resources\rsmisc.c">
+      <Filter>src\resources</Filter>
+    </ClCompile>
+    <ClCompile Include="components\resources\rsserial.c">
+      <Filter>src\resources</Filter>
+    </ClCompile>
+    <ClCompile Include="components\resources\rsutils.c">
+      <Filter>src\resources</Filter>
+    </ClCompile>
+    <ClCompile Include="components\resources\rsxface.c">
+      <Filter>src\resources</Filter>
+    </ClCompile>
+    <ClCompile Include="components\interpreter\exconfig.c">
+      <Filter>src\interpreter</Filter>
+    </ClCompile>
+    <ClCompile Include="components\interpreter\exconvrt.c">
+      <Filter>src\interpreter</Filter>
+    </ClCompile>
+    <ClCompile Include="components\interpreter\excreate.c">
+      <Filter>src\interpreter</Filter>
+    </ClCompile>
+    <ClCompile Include="components\interpreter\exdebug.c">
+      <Filter>src\interpreter</Filter>
+    </ClCompile>
+    <ClCompile Include="components\interpreter\exdump.c">
+      <Filter>src\interpreter</Filter>
+    </ClCompile>
+    <ClCompile Include="components\interpreter\exfield.c">
+      <Filter>src\interpreter</Filter>
+    </ClCompile>
+    <ClCompile Include="components\interpreter\exfldio.c">
+      <Filter>src\interpreter</Filter>
+    </ClCompile>
+    <ClCompile Include="components\interpreter\exmisc.c">
+      <Filter>src\interpreter</Filter>
+    </ClCompile>
+    <ClCompile Include="components\interpreter\exmutex.c">
+      <Filter>src\interpreter</Filter>
+    </ClCompile>
+    <ClCompile Include="components\interpreter\exnames.c">
+      <Filter>src\interpreter</Filter>
+    </ClCompile>
+    <ClCompile Include="components\interpreter\exoparg1.c">
+      <Filter>src\interpreter</Filter>
+    </ClCompile>
+    <ClCompile Include="components\interpreter\exoparg2.c">
+      <Filter>src\interpreter</Filter>
+    </ClCompile>
+    <ClCompile Include="components\interpreter\exoparg3.c">
+      <Filter>src\interpreter</Filter>
+    </ClCompile>
+    <ClCompile Include="components\interpreter\exoparg6.c">
+      <Filter>src\interpreter</Filter>
+    </ClCompile>
+    <ClCompile Include="components\interpreter\exprep.c">
+      <Filter>src\interpreter</Filter>
+    </ClCompile>
+    <ClCompile Include="components\interpreter\exregion.c">
+      <Filter>src\interpreter</Filter>
+    </ClCompile>
+    <ClCompile Include="components\interpreter\exresnte.c">
+      <Filter>src\interpreter</Filter>
+    </ClCompile>
+    <ClCompile Include="components\interpreter\exresolv.c">
+      <Filter>src\interpreter</Filter>
+    </ClCompile>
+    <ClCompile Include="components\interpreter\exresop.c">
+      <Filter>src\interpreter</Filter>
+    </ClCompile>
+    <ClCompile Include="components\interpreter\exstore.c">
+      <Filter>src\interpreter</Filter>
+    </ClCompile>
+    <ClCompile Include="components\interpreter\exstoren.c">
+      <Filter>src\interpreter</Filter>
+    </ClCompile>
+    <ClCompile Include="components\interpreter\exstorob.c">
+      <Filter>src\interpreter</Filter>
+    </ClCompile>
+    <ClCompile Include="components\interpreter\exsystem.c">
+      <Filter>src\interpreter</Filter>
+    </ClCompile>
+    <ClCompile Include="components\interpreter\exutils.c">
+      <Filter>src\interpreter</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

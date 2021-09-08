@@ -82,7 +82,7 @@
       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
       <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
       <OmitFramePointers>true</OmitFramePointers>
-      <PreprocessorDefinitions>ARCH_X64;PROCESSOR_ARCHITECHTURE=X64;X64;ACPI_FULL_DEBUG%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>ARCH_X64;PROCESSOR_ARCHITECHTURE=X64;X64;ACPI_MACHINE_WIDTH=64;ACPI_DEBUGGER;ACPI_DISASSEMBLER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <IgnoreStandardIncludePath>true</IgnoreStandardIncludePath>
       <StringPooling>true</StringPooling>
       <MinimalRebuild>false</MinimalRebuild>
@@ -93,6 +93,7 @@
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <DisableLanguageExtensions>true</DisableLanguageExtensions>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <AdditionalIncludeDirectories>E:\Xeneva Project\Xeneva\Aurora\acpica\include;E:\Xeneva Project\Xeneva\Aurora\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -129,6 +130,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="include\acapps.h" />
     <ClInclude Include="include\acbuffer.h" />
     <ClInclude Include="include\accommon.h" />
     <ClInclude Include="include\acconfig.h" />
@@ -137,6 +139,7 @@
     <ClInclude Include="include\acdispat.h" />
     <ClInclude Include="include\acefi.h" />
     <ClInclude Include="include\acenv.h" />
+    <ClInclude Include="include\acenvex.h" />
     <ClInclude Include="include\acevents.h" />
     <ClInclude Include="include\acexcep.h" />
     <ClInclude Include="include\acfreebsd.h" />
@@ -159,17 +162,154 @@
     <ClInclude Include="include\acpixf.h" />
     <ClInclude Include="include\acpredef.h" />
     <ClInclude Include="include\acresrc.h" />
+    <ClInclude Include="include\acrestyp.h" />
     <ClInclude Include="include\acstruct.h" />
     <ClInclude Include="include\actables.h" />
     <ClInclude Include="include\actbl.h" />
     <ClInclude Include="include\actbl1.h" />
     <ClInclude Include="include\actbl2.h" />
+    <ClInclude Include="include\actbl3.h" />
     <ClInclude Include="include\actypes.h" />
     <ClInclude Include="include\acutils.h" />
+    <ClInclude Include="include\acuuid.h" />
     <ClInclude Include="include\acwin.h" />
     <ClInclude Include="include\acwin64.h" />
     <ClInclude Include="include\amlcode.h" />
     <ClInclude Include="include\amlresrc.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="components\common\acgetline.c" />
+    <ClCompile Include="components\common\adwalk.c" />
+    <ClCompile Include="components\common\ahids.c" />
+    <ClCompile Include="components\common\ahpredef.c" />
+    <ClCompile Include="components\common\ahtable.c" />
+    <ClCompile Include="components\common\ahuuids.c" />
+    <ClCompile Include="components\common\cmfsize.c" />
+    <ClCompile Include="components\common\dmtbdump.c" />
+    <ClCompile Include="components\common\dmtbinfo.c" />
+    <ClCompile Include="components\common\getopt.c" />
+    <ClCompile Include="components\debugger\dbcmds.c" />
+    <ClCompile Include="components\debugger\dbconvert.c" />
+    <ClCompile Include="components\debugger\dbdisply.c" />
+    <ClCompile Include="components\debugger\dbexec.c" />
+    <ClCompile Include="components\debugger\dbfileio.c" />
+    <ClCompile Include="components\debugger\dbhistry.c" />
+    <ClCompile Include="components\debugger\dbinput.c" />
+    <ClCompile Include="components\debugger\dbmethod.c" />
+    <ClCompile Include="components\debugger\dbnames.c" />
+    <ClCompile Include="components\debugger\dbstats.c" />
+    <ClCompile Include="components\debugger\dbtest.c" />
+    <ClCompile Include="components\debugger\dbutils.c" />
+    <ClCompile Include="components\debugger\dbxface.c" />
+    <ClCompile Include="components\disassembler\dmbuffer.c" />
+    <ClCompile Include="components\disassembler\dmcstyle.c" />
+    <ClCompile Include="components\disassembler\dmdeferred.c" />
+    <ClCompile Include="components\disassembler\dmnames.c" />
+    <ClCompile Include="components\disassembler\dmobject.c" />
+    <ClCompile Include="components\disassembler\dmopcode.c" />
+    <ClCompile Include="components\disassembler\dmresrc.c" />
+    <ClCompile Include="components\disassembler\dmresrcl.c" />
+    <ClCompile Include="components\disassembler\dmresrcl2.c" />
+    <ClCompile Include="components\disassembler\dmresrcs.c" />
+    <ClCompile Include="components\disassembler\dmutils.c" />
+    <ClCompile Include="components\disassembler\dmwalk.c" />
+    <ClCompile Include="components\dispatcher\dsargc.c" />
+    <ClCompile Include="components\dispatcher\dscontrol.c" />
+    <ClCompile Include="components\dispatcher\dsfield.c" />
+    <ClCompile Include="components\dispatcher\dsinit.c" />
+    <ClCompile Include="components\dispatcher\dsmethod.c" />
+    <ClCompile Include="components\dispatcher\dsmthdat.c" />
+    <ClCompile Include="components\dispatcher\dsobject.c" />
+    <ClCompile Include="components\dispatcher\dsopcode.c" />
+    <ClCompile Include="components\dispatcher\dsutils.c" />
+    <ClCompile Include="components\dispatcher\dswexec.c" />
+    <ClCompile Include="components\dispatcher\dswload.c" />
+    <ClCompile Include="components\dispatcher\dswload2.c" />
+    <ClCompile Include="components\dispatcher\dswscope.c" />
+    <ClCompile Include="components\dispatcher\dswstate.c" />
+    <ClCompile Include="components\events\evevent.c" />
+    <ClCompile Include="components\events\evglock.c" />
+    <ClCompile Include="components\events\evgpe.c" />
+    <ClCompile Include="components\events\evgpeblk.c" />
+    <ClCompile Include="components\events\evgpeinit.c" />
+    <ClCompile Include="components\events\evgpeutil.c" />
+    <ClCompile Include="components\events\evhandler.c" />
+    <ClCompile Include="components\events\evmisc.c" />
+    <ClCompile Include="components\events\evregion.c" />
+    <ClCompile Include="components\events\evrgnini.c" />
+    <ClCompile Include="components\events\evsci.c" />
+    <ClCompile Include="components\events\evxface.c" />
+    <ClCompile Include="components\events\evxfevnt.c" />
+    <ClCompile Include="components\events\evxfgpe.c" />
+    <ClCompile Include="components\events\evxfregn.c" />
+    <ClCompile Include="components\hardware\hwacpi.c" />
+    <ClCompile Include="components\hardware\hwesleep.c" />
+    <ClCompile Include="components\hardware\hwgpe.c" />
+    <ClCompile Include="components\hardware\hwpci.c" />
+    <ClCompile Include="components\hardware\hwregs.c" />
+    <ClCompile Include="components\hardware\hwsleep.c" />
+    <ClCompile Include="components\hardware\hwtimer.c" />
+    <ClCompile Include="components\hardware\hwvalid.c" />
+    <ClCompile Include="components\hardware\hwxface.c" />
+    <ClCompile Include="components\hardware\hwxfsleep.c" />
+    <ClCompile Include="components\interpreter\exconfig.c" />
+    <ClCompile Include="components\interpreter\exconvrt.c" />
+    <ClCompile Include="components\interpreter\excreate.c" />
+    <ClCompile Include="components\interpreter\exdebug.c" />
+    <ClCompile Include="components\interpreter\exdump.c" />
+    <ClCompile Include="components\interpreter\exfield.c" />
+    <ClCompile Include="components\interpreter\exfldio.c" />
+    <ClCompile Include="components\interpreter\exmisc.c" />
+    <ClCompile Include="components\interpreter\exmutex.c" />
+    <ClCompile Include="components\interpreter\exnames.c" />
+    <ClCompile Include="components\interpreter\exoparg1.c" />
+    <ClCompile Include="components\interpreter\exoparg2.c" />
+    <ClCompile Include="components\interpreter\exoparg3.c" />
+    <ClCompile Include="components\interpreter\exoparg6.c" />
+    <ClCompile Include="components\interpreter\exprep.c" />
+    <ClCompile Include="components\interpreter\exregion.c" />
+    <ClCompile Include="components\interpreter\exresnte.c" />
+    <ClCompile Include="components\interpreter\exresolv.c" />
+    <ClCompile Include="components\interpreter\exresop.c" />
+    <ClCompile Include="components\interpreter\exstore.c" />
+    <ClCompile Include="components\interpreter\exstoren.c" />
+    <ClCompile Include="components\interpreter\exstorob.c" />
+    <ClCompile Include="components\interpreter\exsystem.c" />
+    <ClCompile Include="components\interpreter\exutils.c" />
+    <ClCompile Include="components\parser\psargs.c" />
+    <ClCompile Include="components\parser\psloop.c" />
+    <ClCompile Include="components\parser\psobject.c" />
+    <ClCompile Include="components\parser\psopcode.c" />
+    <ClCompile Include="components\parser\psopinfo.c" />
+    <ClCompile Include="components\parser\psparse.c" />
+    <ClCompile Include="components\parser\psscope.c" />
+    <ClCompile Include="components\parser\pstree.c" />
+    <ClCompile Include="components\parser\psutils.c" />
+    <ClCompile Include="components\parser\pswalk.c" />
+    <ClCompile Include="components\parser\psxface.c" />
+    <ClCompile Include="components\resources\rsaddr.c" />
+    <ClCompile Include="components\resources\rscalc.c" />
+    <ClCompile Include="components\resources\rscreate.c" />
+    <ClCompile Include="components\resources\rsdump.c" />
+    <ClCompile Include="components\resources\rsdumpinfo.c" />
+    <ClCompile Include="components\resources\rsinfo.c" />
+    <ClCompile Include="components\resources\rsio.c" />
+    <ClCompile Include="components\resources\rsirq.c" />
+    <ClCompile Include="components\resources\rslist.c" />
+    <ClCompile Include="components\resources\rsmemory.c" />
+    <ClCompile Include="components\resources\rsmisc.c" />
+    <ClCompile Include="components\resources\rsserial.c" />
+    <ClCompile Include="components\resources\rsutils.c" />
+    <ClCompile Include="components\resources\rsxface.c" />
+    <ClCompile Include="components\tables\tbdata.c" />
+    <ClCompile Include="components\tables\tbfadt.c" />
+    <ClCompile Include="components\tables\tbfind.c" />
+    <ClCompile Include="components\tables\tbinstal.c" />
+    <ClCompile Include="components\tables\tbprint.c" />
+    <ClCompile Include="components\tables\tbutils.c" />
+    <ClCompile Include="components\tables\tbxface.c" />
+    <ClCompile Include="components\tables\tbxfload.c" />
+    <ClCompile Include="components\tables\tbxfroot.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

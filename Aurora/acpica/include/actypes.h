@@ -518,7 +518,7 @@ typedef UINT64                          ACPI_PHYSICAL_ADDRESS;
 #define TRUE                            (1 == 1)
 
 #ifndef NULL
-#define NULL                            (void *) 0
+#define NULL                            0    //(void*)0
 #endif
 
 
