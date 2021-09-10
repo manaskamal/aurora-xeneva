@@ -15,6 +15,18 @@
       <Filter>sys</Filter>
     </ClInclude>
     <ClInclude Include="limits.h" />
+    <ClInclude Include="sys\_exit.h">
+      <Filter>sys</Filter>
+    </ClInclude>
+    <ClInclude Include="sys\_term.h">
+      <Filter>sys</Filter>
+    </ClInclude>
+    <ClInclude Include="sys\_wait.h">
+      <Filter>sys</Filter>
+    </ClInclude>
+    <ClInclude Include="sys\ioquery.h">
+      <Filter>sys</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="string.cpp" />
@@ -27,8 +39,9 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="sys\callback.asm">
+    <NASM Include="crt0.asm" />
+    <NASM Include="sys\callback.asm">
       <Filter>sys</Filter>
-    </None>
+    </NASM>
   </ItemGroup>
 </Project>

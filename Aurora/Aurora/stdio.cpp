@@ -10,7 +10,11 @@
  */
 
 #include <stdio.h>
+#include <console.h>
+#include <stdint.h>
+#include <serial.h>
 #include <va_list.h>
+#include <string.h>
 
 static char* chars = "0123456789ABCDEF";
 

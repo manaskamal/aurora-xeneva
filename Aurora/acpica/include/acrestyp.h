@@ -116,7 +116,7 @@
 #ifndef __ACRESTYP_H__
 #define __ACRESTYP_H__
 
-
+#include <actypes.h>
 /*
  * Definitions for Resource Attributes
  */

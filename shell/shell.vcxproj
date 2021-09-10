@@ -119,7 +119,7 @@
       <WarningLevel>Level1</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>false</SDLCheck>
-      <AdditionalIncludeDirectories>E:\Xeneva Project\Xeneva\xnlib\libxeneva\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>E:\Xeneva Project\Xeneva\xnlib\xnclib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <OmitFramePointers>
       </OmitFramePointers>
@@ -139,7 +139,7 @@
       </GenerateDebugInformation>
       <OutputFile>F:\xshell.exe</OutputFile>
       <AdditionalLibraryDirectories>E:\Xeneva Project\Xeneva\xnlib\lib64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libxeneva.lib</AdditionalDependencies>
+      <AdditionalDependencies>xnclib.lib</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
       <EnableUAC>false</EnableUAC>
       <GenerateMapFile>true</GenerateMapFile>
@@ -150,7 +150,7 @@
       <Driver>Driver</Driver>
       <OptimizeReferences>false</OptimizeReferences>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
-      <EntryPointSymbol>main</EntryPointSymbol>
+      <EntryPointSymbol>_start</EntryPointSymbol>
       <BaseAddress>0x0000400000000000</BaseAddress>
       <RandomizedBaseAddress>
       </RandomizedBaseAddress>

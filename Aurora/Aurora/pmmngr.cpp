@@ -10,6 +10,7 @@
  */
 
 #include <pmmngr.h>
+#include <_null.h>
 
 uint64_t free_memory;
 uint64_t reserved_memory;

@@ -12,7 +12,10 @@
 #ifndef __HAL_H__
 #define __HAL_H__
 
+
 #include <stdint.h>
+#include <arch\x86_64\apic.h>
+
 
 //!Architecture specific
 #ifdef ARCH_X64

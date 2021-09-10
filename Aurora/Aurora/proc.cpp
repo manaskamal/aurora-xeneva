@@ -12,6 +12,7 @@
 #include <proc.h>
 #include <atomic\mutex.h>
 #include <fs\fat32.h>
+#include <_null.h>
 
 
 static int user_stack_index = 0;
@@ -113,7 +114,7 @@ uint64_t* create_inc_stack (uint64_t* cr3) {
 
 
 
-void create_process(const char* filename, char* procname, uint8_t priority) {
+void create_process(const char* filename, char* procname, uint8_t priority, char *strings) {
 	mutex_lock (process_mutex);
 	//!allocate a data-structure for process 
 	process_t *process = (process_t*)pmmngr_alloc();
@@ -127,7 +128,7 @@ void create_process(const char* filename, char* procname, uint8_t priority) {
 
 	//!open the binary file and read it
 	unsigned char* buf = (unsigned char*)pmmngr_alloc();   //18*1024
-	read_blk(&file,buf);
+	read_blk(&file,buf,file.id);
 	
 	IMAGE_DOS_HEADER* dos = (IMAGE_DOS_HEADER*)buf;
 	PIMAGE_NT_HEADERS nt = raw_offset<PIMAGE_NT_HEADERS>(dos, dos->e_lfanew);
@@ -147,7 +148,7 @@ void create_process(const char* filename, char* procname, uint8_t priority) {
 	int position = 1;  //we already read 4096 bytes at first
 	while(file.eof != 1){
 		unsigned char* block = (unsigned char*)pmmngr_alloc();
-		read_blk(&file,block);
+		read_blk(&file,block,file.id);
 		map_page_ex(cr3,(uint64_t)block,_image_base_ + position * 4096);
 		position++;
 	}
@@ -170,6 +171,8 @@ void create_process(const char* filename, char* procname, uint8_t priority) {
 	process->heap_size = 0xB00000;
 	//! Create and thread and start scheduling when scheduler starts */
 	thread_t *t = create_user_thread(process->entry_point,stack,(uint64_t)cr3,procname,priority);
+	t->rcx = priority;
+	t->rdx = (uint64_t)strings;
 	//! add the process to process manager
 	process->thread_data_pointer = t;
     add_process(process);
@@ -184,10 +187,13 @@ void kill_process () {
 	thread_t * remove_thread = get_current_thread();
 	process_t *proc = find_process_by_thread (remove_thread);
 	uint64_t  init_stack = proc->stack - 0x100000;
-	for (int i = 0; i < 0x100000 / 256; i++) {
+
+	//!unmap the runtime stack
+	for (int i = 0; i < 0x100000 / 4096; i++) {
 		unmap_page (init_stack + i * 4096);
 	}
 
+	//!unmap the binary image
 	for (int i = 0; i < proc->image_size / 4096; i++) {
 		uint64_t virtual_addr = proc->image_base + (i * 4096);
 		unmap_page (virtual_addr);
@@ -232,7 +238,7 @@ void exec (const char* filename, uint32_t pid) {
 	if (f.status == FILE_FLAG_INVALID)
 		return;
 	unsigned char* buffer = (unsigned char*)pmmngr_alloc();
-	read_blk (&f, buffer);
+	read_blk (&f, buffer, f.id);
 
 	//! Create new mappings for exec
 	uint64_t* new_cr3 = create_user_address_space();
@@ -262,7 +268,7 @@ void exec (const char* filename, uint32_t pid) {
 	int position = 1;  //we already read 4096 bytes at first
 	while(f.eof != 1){
 		unsigned char* block = (unsigned char*)pmmngr_alloc();
-		read_blk(&f,block);
+		read_blk(&f,block, f.id);
 		map_page((uint64_t)block,_image_base_ + position * 4096);
 		position++;
 	}

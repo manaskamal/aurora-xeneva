@@ -12,6 +12,8 @@
 #include <drvmngr.h>
 #include <pe.h>
 #include <arch\x86_64\mmngr\kheap.h>
+#include <string.h>
+
 
 //!Global Variable for the program
 aurora_driver_t drivers[256];

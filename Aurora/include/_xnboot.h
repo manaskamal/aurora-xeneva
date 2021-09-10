@@ -12,6 +12,7 @@
 #ifndef __XNBOOT_H__
 #define __XNBOOT_H__
 
+
 #include <stdint.h>
 
 
@@ -42,6 +43,5 @@ typedef struct _KERNEL_BOOT_INFO_ {
 	uint8_t* driver_entry6;   //!USB
 }KERNEL_BOOT_INFO, *PKERNEL_BOOT_INFO;
 #pragma pack(pop)
-
 
 #endif

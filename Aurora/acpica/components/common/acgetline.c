@@ -291,7 +291,7 @@ AcpiOsGetLine (
 
             /* Display the new part of line starting at the new character */
 
-            fprintf (stdout, "%s", &Buffer[CursorPosition]);
+            //fprintf (stdout, "%s", &Buffer[CursorPosition]);
 
             /* Restore cursor */
 
@@ -328,7 +328,7 @@ AcpiOsGetLine (
             /* Display the new part of line starting at the new character */
 
             putchar (_ASCII_BACKSPACE);
-            fprintf (stdout, "%s ", &Buffer[CursorPosition - 1]);
+           // fprintf (stdout, "%s ", &Buffer[CursorPosition - 1]);
 
             /* Restore cursor */
 
@@ -400,7 +400,7 @@ AcpiOsGetLine (
                     /* Backup to start of line and print the entire line */
 
                     ACPI_BACKUP_CURSOR (i, CursorPosition);
-                    fprintf (stdout, "%s", Buffer);
+                    //fprintf (stdout, "%s", Buffer);
 
                     /* Backup to where the cursor should be */
 
@@ -437,7 +437,7 @@ AcpiOsGetLine (
 
                 AcpiAcClearLine (EndOfLine, CursorPosition);
                 strcpy (Buffer, NextCommand);
-                fprintf (stdout, "%s", Buffer);
+                //fprintf (stdout, "%s", Buffer);
                 EndOfLine = CursorPosition = strlen (Buffer);
 
                 PreviousCommandIndex = CurrentCommandIndex;
@@ -483,7 +483,7 @@ AcpiOsGetLine (
 
                 AcpiAcClearLine (EndOfLine, CursorPosition);
                 strcpy (Buffer, NextCommand);
-                fprintf (stdout, "%s", Buffer);
+               // fprintf (stdout, "%s", Buffer);
                 EndOfLine = CursorPosition = strlen (Buffer);
                 continue;
 

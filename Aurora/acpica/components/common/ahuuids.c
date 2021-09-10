@@ -116,7 +116,6 @@
 #include "acpi.h"
 #include "accommon.h"
 #include "acuuid.h"
-#include <string.h>
 
 #define _COMPONENT          ACPI_UTILITIES
         ACPI_MODULE_NAME    ("ahuuids")
@@ -193,7 +192,7 @@ AcpiAhMatchUuid (
             continue;
         }
 
-        AcpiUtConvertStringToUuid (Info->String, UuidBuffer);
+       // AcpiUtConvertStringToUuid (Info->String, UuidBuffer);
 
         if (!memcmp (Data, UuidBuffer, UUID_BUFFER_LENGTH))
         {

@@ -688,7 +688,7 @@ AcpiDsExecEndOp (
                  * Put the Node on the object stack (Contains the ACPI Name
                  * of this object)
                  */
-                WalkState->Operands[0] = (acpi_operand_object*) Op->Common.Parent->Common.Node;
+                WalkState->Operands[0] = (ACPI_OPERAND_OBJECT*) Op->Common.Parent->Common.Node;
                 WalkState->NumOperands = 1;
 
                 Status = AcpiDsCreateNode (WalkState,

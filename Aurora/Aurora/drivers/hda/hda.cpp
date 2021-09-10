@@ -11,6 +11,7 @@
 
 #include <drivers\hdaudio\hda.h>
 #include <stdio.h>
+#include <string.h>
 
 //! static datas
 hd_audio _ihd_audio;

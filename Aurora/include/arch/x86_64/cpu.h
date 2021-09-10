@@ -12,8 +12,9 @@
 #ifndef __CPU_H__
 #define __CPU_H__
 
+
 #include <stdint.h>
-#include <arch\x86_64\apic.h>
+//#include <arch\x86_64\apic.h>
 
 #define GDT_ENTRY_NULL 0
 #define GDT_ENTRY_KERNEL_CODE 1
@@ -185,4 +186,5 @@ extern "C" void x64_atom_exchange (size_t r1, size_t r2);
 extern void hal_x86_64_init ();
 //! setvect -- installs a interrupt vector
 extern void setvect(size_t vector, void (*function)(size_t vector, void* param));
+
 #endif

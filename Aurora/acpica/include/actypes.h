@@ -200,8 +200,8 @@ typedef unsigned char                   BOOLEAN;
 typedef unsigned char                   UINT8;
 typedef unsigned short                  UINT16;
 typedef short                           INT16;
-typedef COMPILER_DEPENDENT_UINT64       UINT64;
-typedef COMPILER_DEPENDENT_INT64        INT64;
+typedef unsigned long long             UINT64;
+typedef long long        INT64;
 
 #endif /* ACPI_USE_SYSTEM_INTTYPES */
 
@@ -1157,12 +1157,14 @@ typedef struct acpi_statistics
 /*
  * Types specific to the OS service interfaces
  */
+
+//!ACPI_SYSTEM_XFACE
 typedef UINT32
-(ACPI_SYSTEM_XFACE *ACPI_OSD_HANDLER) (
+(*ACPI_OSD_HANDLER) (
     void                            *Context);
 
 typedef void
-(ACPI_SYSTEM_XFACE *ACPI_OSD_EXEC_CALLBACK) (
+(*ACPI_OSD_EXEC_CALLBACK) (
     void                            *Context);
 
 /*

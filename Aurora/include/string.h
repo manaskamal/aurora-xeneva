@@ -11,6 +11,7 @@
 
 #ifndef __STRING_H__
 #define __STRING_H__
+#pragma once
 
 #include <stdint.h>
 
@@ -30,6 +31,6 @@ extern char* strchr (char* str, int character);
 extern void  memset(void *targ, uint8_t val, uint32_t len);
 extern "C" void memcpy(void *targ, void *src, uint32_t len);
 extern int memcmp(const void *first, const void *second, size_t length);
-
+extern void* memmove (void*, const void*, size_t);
 
 #endif

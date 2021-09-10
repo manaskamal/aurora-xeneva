@@ -264,9 +264,6 @@
     <ClInclude Include="..\include\procmngr.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\iodev.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\objctmngr.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -305,6 +302,15 @@
     </ClInclude>
     <ClInclude Include="..\include\arch\x86_64\multiproc.h">
       <Filter>include\arch\x86_64</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\_null.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\stdarg.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\drivers\svga\svga_qrcode.h">
+      <Filter>include\drivers\svga</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -493,6 +499,9 @@
     </ClCompile>
     <ClCompile Include="net\udp.cpp">
       <Filter>source\net</Filter>
+    </ClCompile>
+    <ClCompile Include="sysserv\ioquery.cpp">
+      <Filter>source\sysserv</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

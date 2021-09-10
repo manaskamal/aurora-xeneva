@@ -295,357 +295,357 @@ enum AcpiReturnPackageTypes
 
 const ACPI_PREDEFINED_INFO          AcpiGbl_PredefinedMethods[] =
 {
-    {{"_AC0",   METHOD_0ARGS,
+    {{(const char)"_AC0",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER)}},
 
-    {{"_AC1",   METHOD_0ARGS,
+    {{(const char)"_AC1",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER)}},
 
-    {{"_AC2",   METHOD_0ARGS,
+    {{(const char)"_AC2",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER)}},
 
-    {{"_AC3",   METHOD_0ARGS,
+    {{(const char)"_AC3",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER)}},
 
-    {{"_AC4",   METHOD_0ARGS,
+    {{(const char)"_AC4",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER)}},
 
-    {{"_AC5",   METHOD_0ARGS,
+    {{(const char)"_AC5",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER)}},
 
-    {{"_AC6",   METHOD_0ARGS,
+    {{(const char)"_AC6",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER)}},
 
-    {{"_AC7",   METHOD_0ARGS,
+    {{(const char)"_AC7",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER)}},
 
-    {{"_AC8",   METHOD_0ARGS,
+    {{(const char)"_AC8",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER)}},
 
-    {{"_AC9",   METHOD_0ARGS,
+    {{(const char)"_AC9",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER)}},
 
-    {{"_ADR",   METHOD_0ARGS,
+    {{(const char)"_ADR",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER)}},
 
-    {{"_AEI",   METHOD_0ARGS,
+    {{(const char)"_AEI",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_BUFFER)}},
 
-    {{"_AL0",   METHOD_0ARGS,
+    {{(const char)"_AL0",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_PACKAGE)}}, /* Variable-length (Refs) */
                     PACKAGE_INFO (ACPI_PTYPE1_VAR, ACPI_RTYPE_REFERENCE, 0,0,0,0),
 
-    {{"_AL1",   METHOD_0ARGS,
+    {{(const char)"_AL1",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_PACKAGE)}}, /* Variable-length (Refs) */
                     PACKAGE_INFO (ACPI_PTYPE1_VAR, ACPI_RTYPE_REFERENCE, 0,0,0,0),
 
-    {{"_AL2",   METHOD_0ARGS,
+    {{(const char)"_AL2",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_PACKAGE)}}, /* Variable-length (Refs) */
                     PACKAGE_INFO (ACPI_PTYPE1_VAR, ACPI_RTYPE_REFERENCE, 0,0,0,0),
 
-    {{"_AL3",   METHOD_0ARGS,
+    {{(const char)"_AL3",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_PACKAGE)}}, /* Variable-length (Refs) */
                     PACKAGE_INFO (ACPI_PTYPE1_VAR, ACPI_RTYPE_REFERENCE, 0,0,0,0),
 
-    {{"_AL4",   METHOD_0ARGS,
+    {{(const char)"_AL4",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_PACKAGE)}}, /* Variable-length (Refs) */
                     PACKAGE_INFO (ACPI_PTYPE1_VAR, ACPI_RTYPE_REFERENCE, 0,0,0,0),
 
-    {{"_AL5",   METHOD_0ARGS,
+    {{(const char)"_AL5",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_PACKAGE)}}, /* Variable-length (Refs) */
                     PACKAGE_INFO (ACPI_PTYPE1_VAR, ACPI_RTYPE_REFERENCE, 0,0,0,0),
 
-    {{"_AL6",   METHOD_0ARGS,
+    {{(const char)"_AL6",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_PACKAGE)}}, /* Variable-length (Refs) */
                     PACKAGE_INFO (ACPI_PTYPE1_VAR, ACPI_RTYPE_REFERENCE, 0,0,0,0),
 
-    {{"_AL7",   METHOD_0ARGS,
+    {{(const char)"_AL7",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_PACKAGE)}}, /* Variable-length (Refs) */
                     PACKAGE_INFO (ACPI_PTYPE1_VAR, ACPI_RTYPE_REFERENCE, 0,0,0,0),
 
-    {{"_AL8",   METHOD_0ARGS,
+    {{(const char)"_AL8",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_PACKAGE)}}, /* Variable-length (Refs) */
                     PACKAGE_INFO (ACPI_PTYPE1_VAR, ACPI_RTYPE_REFERENCE, 0,0,0,0),
 
-    {{"_AL9",   METHOD_0ARGS,
+    {{(const char)"_AL9",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_PACKAGE)}}, /* Variable-length (Refs) */
                     PACKAGE_INFO (ACPI_PTYPE1_VAR, ACPI_RTYPE_REFERENCE, 0,0,0,0),
 
-    {{"_ALC",   METHOD_0ARGS,
+    {{(const char)"_ALC",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER)}},
 
-    {{"_ALI",   METHOD_0ARGS,
+    {{(const char)"_ALI",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER)}},
 
-    {{"_ALP",   METHOD_0ARGS,
+    {{(const char)"_ALP",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER)}},
 
-    {{"_ALR",   METHOD_0ARGS,
+    {{(const char)"_ALR",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_PACKAGE)}}, /* Variable-length (Pkgs) each 2 (Ints) */
                     PACKAGE_INFO (ACPI_PTYPE2, ACPI_RTYPE_INTEGER, 2,0,0,0),
 
-    {{"_ALT",   METHOD_0ARGS,
+    {{(const char)"_ALT",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER)}},
 
-    {{"_ART",   METHOD_0ARGS,
+    {{(const char)"_ART",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_PACKAGE)}}, /* Variable-length (1 Int(rev), n Pkg (2 Ref/11 Int) */
                     PACKAGE_INFO (ACPI_PTYPE2_REV_FIXED, ACPI_RTYPE_REFERENCE, 2, ACPI_RTYPE_INTEGER, 11,0),
 
-    {{"_BBN",   METHOD_0ARGS,
+    {{(const char)"_BBN",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER)}},
 
-    {{"_BCL",   METHOD_0ARGS,
+    {{(const char)"_BCL",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_PACKAGE)}}, /* Variable-length (Ints) */
                     PACKAGE_INFO (ACPI_PTYPE1_VAR, ACPI_RTYPE_INTEGER, 0,0,0,0),
 
-    {{"_BCM",   METHOD_1ARGS (ACPI_TYPE_INTEGER),
+    {{(const char)"_BCM",   METHOD_1ARGS (ACPI_TYPE_INTEGER),
                 METHOD_NO_RETURN_VALUE}},
 
-    {{"_BCT",   METHOD_1ARGS (ACPI_TYPE_INTEGER),
+    {{(const char)"_BCT",   METHOD_1ARGS (ACPI_TYPE_INTEGER),
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER)}},
 
-    {{"_BDN",   METHOD_0ARGS,
+    {{(const char)"_BDN",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER)}},
 
-    {{"_BFS",   METHOD_1ARGS (ACPI_TYPE_INTEGER),
+    {{(const char)"_BFS",   METHOD_1ARGS (ACPI_TYPE_INTEGER),
                 METHOD_NO_RETURN_VALUE}},
 
-    {{"_BIF",   METHOD_0ARGS,
+    {{(const char)"_BIF",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_PACKAGE)}}, /* Fixed-length (9 Int),(4 Str) */
                     PACKAGE_INFO (ACPI_PTYPE1_FIXED, ACPI_RTYPE_INTEGER, 9, ACPI_RTYPE_STRING, 4,0),
 
-    {{"_BIX",   METHOD_0ARGS,
+    {{(const char)"_BIX",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_PACKAGE)}}, /* Fixed-length (16 Int),(4 Str) */
                     PACKAGE_INFO (ACPI_PTYPE1_FIXED, ACPI_RTYPE_INTEGER, 16, ACPI_RTYPE_STRING, 4,0),
 
-    {{"_BLT",   METHOD_3ARGS (ACPI_TYPE_INTEGER, ACPI_TYPE_INTEGER, ACPI_TYPE_INTEGER),
+    {{(const char)"_BLT",   METHOD_3ARGS (ACPI_TYPE_INTEGER, ACPI_TYPE_INTEGER, ACPI_TYPE_INTEGER),
                 METHOD_NO_RETURN_VALUE}},
 
-    {{"_BMA",   METHOD_1ARGS (ACPI_TYPE_INTEGER),
+    {{(const char)"_BMA",   METHOD_1ARGS (ACPI_TYPE_INTEGER),
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER)}},
 
-    {{"_BMC",   METHOD_1ARGS (ACPI_TYPE_INTEGER),
+    {{(const char)"_BMC",   METHOD_1ARGS (ACPI_TYPE_INTEGER),
                 METHOD_NO_RETURN_VALUE}},
 
-    {{"_BMD",   METHOD_0ARGS,
+    {{(const char)"_BMD",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_PACKAGE)}}, /* Fixed-length (5 Int) */
                     PACKAGE_INFO (ACPI_PTYPE1_FIXED, ACPI_RTYPE_INTEGER, 5,0,0,0),
 
-    {{"_BMS",   METHOD_1ARGS (ACPI_TYPE_INTEGER),
+    {{(const char)"_BMS",   METHOD_1ARGS (ACPI_TYPE_INTEGER),
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER)}},
 
-    {{"_BQC",   METHOD_0ARGS,
+    {{(const char)"_BQC",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER)}},
 
-    {{"_BST",   METHOD_0ARGS,
+    {{(const char)"_BST",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_PACKAGE)}}, /* Fixed-length (4 Int) */
                     PACKAGE_INFO (ACPI_PTYPE1_FIXED, ACPI_RTYPE_INTEGER, 4,0,0,0),
 
-    {{"_BTH",   METHOD_1ARGS (ACPI_TYPE_INTEGER),      /* ACPI 6.0 */
+    {{(const char)"_BTH",   METHOD_1ARGS (ACPI_TYPE_INTEGER),      /* ACPI 6.0 */
                 METHOD_NO_RETURN_VALUE}},
 
-    {{"_BTM",   METHOD_1ARGS (ACPI_TYPE_INTEGER),
+    {{(const char)"_BTM",   METHOD_1ARGS (ACPI_TYPE_INTEGER),
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER)}},
 
-    {{"_BTP",   METHOD_1ARGS (ACPI_TYPE_INTEGER),
+    {{(const char)"_BTP",   METHOD_1ARGS (ACPI_TYPE_INTEGER),
                 METHOD_NO_RETURN_VALUE}},
 
-    {{"_CBA",   METHOD_0ARGS,
+    {{(const char)"_CBA",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER)}}, /* See PCI firmware spec 3.0 */
 
-    {{"_CCA",   METHOD_0ARGS,
+    {{(const char)"_CCA",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER)}}, /* ACPI 5.1 */
 
-    {{"_CDM",   METHOD_0ARGS,
+    {{(const char)"_CDM",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER)}},
 
-    {{"_CID",   METHOD_0ARGS,
+    {{(const char)"_CID",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER | ACPI_RTYPE_STRING | ACPI_RTYPE_PACKAGE)}}, /* Variable-length (Ints/Strs) */
                     PACKAGE_INFO (ACPI_PTYPE1_VAR, ACPI_RTYPE_INTEGER | ACPI_RTYPE_STRING, 0,0,0,0),
 
-    {{"_CLS",   METHOD_0ARGS,
+    {{(const char)"_CLS",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_PACKAGE)}}, /* Fixed-length (3 Int) */
                     PACKAGE_INFO (ACPI_PTYPE1_FIXED, ACPI_RTYPE_INTEGER, 3,0,0,0),
 
-    {{"_CPC",   METHOD_0ARGS,
+    {{(const char)"_CPC",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_PACKAGE)}}, /* Variable-length (Ints/Bufs) */
                     PACKAGE_INFO (ACPI_PTYPE1_VAR, ACPI_RTYPE_INTEGER | ACPI_RTYPE_BUFFER, 0,0,0,0),
 
-    {{"_CR3",   METHOD_0ARGS,                          /* ACPI 6.0 */
+    {{(const char)"_CR3",   METHOD_0ARGS,                          /* ACPI 6.0 */
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER)}},
 
-    {{"_CRS",   METHOD_0ARGS,
+    {{(const char)"_CRS",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_BUFFER)}},
 
-    {{"_CRT",   METHOD_0ARGS,
+    {{(const char)"_CRT",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER)}},
 
-    {{"_CSD",   METHOD_0ARGS,
+    {{(const char)"_CSD",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_PACKAGE)}}, /* Variable-length (1 Int(n), n-1 Int) */
                     PACKAGE_INFO (ACPI_PTYPE2_COUNT, ACPI_RTYPE_INTEGER, 0,0,0,0),
 
-    {{"_CST",   METHOD_0ARGS,
+    {{(const char)"_CST",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_PACKAGE)}}, /* Variable-length (1 Int(n), n Pkg (1 Buf/3 Int) */
                     PACKAGE_INFO (ACPI_PTYPE2_PKG_COUNT,ACPI_RTYPE_BUFFER, 1, ACPI_RTYPE_INTEGER, 3,0),
 
-    {{"_CWS",   METHOD_1ARGS (ACPI_TYPE_INTEGER),
+    {{(const char)"_CWS",   METHOD_1ARGS (ACPI_TYPE_INTEGER),
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER)}},
 
-    {{"_DCK",   METHOD_1ARGS (ACPI_TYPE_INTEGER),
+    {{(const char)"_DCK",   METHOD_1ARGS (ACPI_TYPE_INTEGER),
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER)}},
 
-    {{"_DCS",   METHOD_0ARGS,
+    {{(const char)"_DCS",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER)}},
 
-    {{"_DDC",   METHOD_1ARGS (ACPI_TYPE_INTEGER),
+    {{(const char)"_DDC",   METHOD_1ARGS (ACPI_TYPE_INTEGER),
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER | ACPI_RTYPE_BUFFER)}},
 
-    {{"_DDN",   METHOD_0ARGS,
+    {{(const char)"_DDN",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_STRING)}},
 
-    {{"_DEP",   METHOD_0ARGS,
+    {{(const char)"_DEP",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_PACKAGE)}}, /* Variable-length (Refs) */
                     PACKAGE_INFO (ACPI_PTYPE1_VAR, ACPI_RTYPE_REFERENCE, 0,0,0,0),
 
-    {{"_DGS",   METHOD_0ARGS,
+    {{(const char)"_DGS",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER)}},
 
-    {{"_DIS",   METHOD_0ARGS,
+    {{(const char)"_DIS",   METHOD_0ARGS,
                 METHOD_NO_RETURN_VALUE}},
 
-    {{"_DLM",   METHOD_0ARGS,
+    {{(const char)"_DLM",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_PACKAGE)}}, /* Variable-length (Pkgs) each (1 Ref, 0/1 Optional Buf/Ref) */
                     PACKAGE_INFO (ACPI_PTYPE2_FIX_VAR, ACPI_RTYPE_REFERENCE, 1, ACPI_RTYPE_REFERENCE | ACPI_RTYPE_BUFFER, 0,0),
 
-    {{"_DMA",   METHOD_0ARGS,
+    {{(const char)"_DMA",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_BUFFER)}},
 
-    {{"_DOD",   METHOD_0ARGS,
+    {{(const char)"_DOD",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_PACKAGE)}}, /* Variable-length (Ints) */
                     PACKAGE_INFO (ACPI_PTYPE1_VAR, ACPI_RTYPE_INTEGER, 0,0,0,0),
 
-    {{"_DOS",   METHOD_1ARGS (ACPI_TYPE_INTEGER),
+    {{(const char)"_DOS",   METHOD_1ARGS (ACPI_TYPE_INTEGER),
                 METHOD_NO_RETURN_VALUE}},
 
-    {{"_DSD",   METHOD_0ARGS,                          /* ACPI 6.0 */
+    {{(const char)"_DSD",   METHOD_0ARGS,                          /* ACPI 6.0 */
                 METHOD_RETURNS (ACPI_RTYPE_PACKAGE)}}, /* Variable-length (Pkgs) each: 1 Buf, 1 Pkg */
                     PACKAGE_INFO (ACPI_PTYPE2_UUID_PAIR, ACPI_RTYPE_BUFFER, 1, ACPI_RTYPE_PACKAGE, 1,0),
 
-    {{"_DSM",   METHOD_4ARGS (ACPI_TYPE_BUFFER, ACPI_TYPE_INTEGER, ACPI_TYPE_INTEGER, ACPI_TYPE_PACKAGE),
+    {{(const char)"_DSM",   METHOD_4ARGS (ACPI_TYPE_BUFFER, ACPI_TYPE_INTEGER, ACPI_TYPE_INTEGER, ACPI_TYPE_PACKAGE),
                 METHOD_RETURNS (ACPI_RTYPE_ALL)}}, /* Must return a value, but it can be of any type */
 
-    {{"_DSS",   METHOD_1ARGS (ACPI_TYPE_INTEGER),
+    {{(const char)"_DSS",   METHOD_1ARGS (ACPI_TYPE_INTEGER),
                 METHOD_NO_RETURN_VALUE}},
 
-    {{"_DSW",   METHOD_3ARGS (ACPI_TYPE_INTEGER, ACPI_TYPE_INTEGER, ACPI_TYPE_INTEGER),
+    {{(const char)"_DSW",   METHOD_3ARGS (ACPI_TYPE_INTEGER, ACPI_TYPE_INTEGER, ACPI_TYPE_INTEGER),
                 METHOD_NO_RETURN_VALUE}},
 
-    {{"_DTI",   METHOD_1ARGS (ACPI_TYPE_INTEGER),
+    {{(const char)"_DTI",   METHOD_1ARGS (ACPI_TYPE_INTEGER),
                 METHOD_NO_RETURN_VALUE}},
 
-    {{"_EC_",   METHOD_0ARGS,
+    {{(const char)"_EC_",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER)}},
 
-    {{"_EDL",   METHOD_0ARGS,
+    {{(const char)"_EDL",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_PACKAGE)}}, /* Variable-length (Refs)*/
                     PACKAGE_INFO (ACPI_PTYPE1_VAR, ACPI_RTYPE_REFERENCE, 0,0,0,0),
 
-    {{"_EJ0",   METHOD_1ARGS (ACPI_TYPE_INTEGER),
+    {{(const char)"_EJ0",   METHOD_1ARGS (ACPI_TYPE_INTEGER),
                 METHOD_NO_RETURN_VALUE}},
 
-    {{"_EJ1",   METHOD_1ARGS (ACPI_TYPE_INTEGER),
+    {{(const char)"_EJ1",   METHOD_1ARGS (ACPI_TYPE_INTEGER),
                 METHOD_NO_RETURN_VALUE}},
 
-    {{"_EJ2",   METHOD_1ARGS (ACPI_TYPE_INTEGER),
+    {{(const char)"_EJ2",   METHOD_1ARGS (ACPI_TYPE_INTEGER),
                 METHOD_NO_RETURN_VALUE}},
 
-    {{"_EJ3",   METHOD_1ARGS (ACPI_TYPE_INTEGER),
+    {{(const char)"_EJ3",   METHOD_1ARGS (ACPI_TYPE_INTEGER),
                 METHOD_NO_RETURN_VALUE}},
 
-    {{"_EJ4",   METHOD_1ARGS (ACPI_TYPE_INTEGER),
+    {{(const char)"_EJ4",   METHOD_1ARGS (ACPI_TYPE_INTEGER),
                 METHOD_NO_RETURN_VALUE}},
 
-    {{"_EJD",   METHOD_0ARGS,
+    {{(const char)"_EJD",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_STRING)}},
 
-    {{"_ERR",   METHOD_3ARGS (ACPI_TYPE_INTEGER, ACPI_TYPE_STRING, ACPI_TYPE_INTEGER),
+    {{(const char)"_ERR",   METHOD_3ARGS (ACPI_TYPE_INTEGER, ACPI_TYPE_STRING, ACPI_TYPE_INTEGER),
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER)}}, /* Internal use only, used by ACPICA test suites */
 
-    {{"_EVT",   METHOD_1ARGS (ACPI_TYPE_INTEGER),
+    {{(const char)"_EVT",   METHOD_1ARGS (ACPI_TYPE_INTEGER),
                 METHOD_NO_RETURN_VALUE}},
 
-    {{"_FDE",   METHOD_0ARGS,
+    {{(const char)"_FDE",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_BUFFER)}},
 
-    {{"_FDI",   METHOD_0ARGS,
+    {{(const char)"_FDI",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_PACKAGE)}}, /* Fixed-length (16 Int) */
                     PACKAGE_INFO (ACPI_PTYPE1_FIXED, ACPI_RTYPE_INTEGER, 16,0,0,0),
 
-    {{"_FDM",   METHOD_1ARGS (ACPI_TYPE_INTEGER),
+    {{(const char)"_FDM",   METHOD_1ARGS (ACPI_TYPE_INTEGER),
                 METHOD_NO_RETURN_VALUE}},
 
-    {{"_FIF",   METHOD_0ARGS,
+    {{(const char)"_FIF",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_PACKAGE)}}, /* Fixed-length (4 Int) */
                     PACKAGE_INFO (ACPI_PTYPE1_FIXED, ACPI_RTYPE_INTEGER, 4,0,0,0),
 
-    {{"_FIX",   METHOD_0ARGS,
+    {{(const char)"_FIX",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_PACKAGE)}}, /* Variable-length (Ints) */
                     PACKAGE_INFO (ACPI_PTYPE1_VAR, ACPI_RTYPE_INTEGER, 0,0,0,0),
 
-    {{"_FPS",   METHOD_0ARGS,
+    {{(const char)"_FPS",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_PACKAGE)}}, /* Variable-length (1 Int(rev), n Pkg (5 Int) */
                     PACKAGE_INFO (ACPI_PTYPE2_REV_FIXED,ACPI_RTYPE_INTEGER, 5, 0,0,0),
 
-    {{"_FSL",   METHOD_1ARGS (ACPI_TYPE_INTEGER),
+    {{(const char)"_FSL",   METHOD_1ARGS (ACPI_TYPE_INTEGER),
                 METHOD_NO_RETURN_VALUE}},
 
-    {{"_FST",   METHOD_0ARGS,
+    {{(const char)"_FST",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_PACKAGE)}}, /* Fixed-length (3 Int) */
                     PACKAGE_INFO (ACPI_PTYPE1_FIXED, ACPI_RTYPE_INTEGER, 3,0,0,0),
 
-    {{"_GAI",   METHOD_0ARGS,
+    {{(const char)"_GAI",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER)}},
 
-    {{"_GCP",   METHOD_0ARGS,
+    {{(const char)"_GCP",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER)}},
 
-    {{"_GHL",   METHOD_0ARGS,
+    {{(const char)"_GHL",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER)}},
 
-    {{"_GLK",   METHOD_0ARGS,
+    {{(const char)"_GLK",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER)}},
 
-    {{"_GPD",   METHOD_0ARGS,
+    {{(const char)"_GPD",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER)}},
 
-    {{"_GPE",   METHOD_0ARGS,
+    {{(const char)"_GPE",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER)}}, /* _GPE method, not _GPE scope */
 
-    {{"_GRT",   METHOD_0ARGS,
+    {{(const char)"_GRT",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_BUFFER)}},
 
-    {{"_GSB",   METHOD_0ARGS,
+    {{(const char)"_GSB",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER)}},
 
-    {{"_GTF",   METHOD_0ARGS,
+    {{(const char)"_GTF",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_BUFFER)}},
 
-    {{"_GTM",   METHOD_0ARGS,
+    {{(const char)"_GTM",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_BUFFER)}},
 
-    {{"_GTS",   METHOD_1ARGS (ACPI_TYPE_INTEGER),
+    {{(const char)"_GTS",   METHOD_1ARGS (ACPI_TYPE_INTEGER),
                 METHOD_NO_RETURN_VALUE}},
 
-    {{"_GWS",   METHOD_1ARGS (ACPI_TYPE_INTEGER),
+    {{(const char)"_GWS",   METHOD_1ARGS (ACPI_TYPE_INTEGER),
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER)}},
 
-    {{"_HID",   METHOD_0ARGS,
+    {{(const char)"_HID",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER | ACPI_RTYPE_STRING)}},
 
-    {{"_HOT",   METHOD_0ARGS,
+    {{(const char)"_HOT",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER)}},
 
-    {{"_HPP",   METHOD_0ARGS,
+    {{(const char)"_HPP",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_PACKAGE)}}, /* Fixed-length (4 Int) */
                     PACKAGE_INFO (ACPI_PTYPE1_FIXED, ACPI_RTYPE_INTEGER, 4,0,0,0),
 
@@ -655,149 +655,149 @@ const ACPI_PREDEFINED_INFO          AcpiGbl_PredefinedMethods[] =
      * There are several different type of record settings, of different
      * lengths, but all elements of all settings are Integers.
      */
-    {{"_HPX",   METHOD_0ARGS,
+    {{(const char)"_HPX",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_PACKAGE)}}, /* Variable-length (Pkgs) each (var Ints) */
                     PACKAGE_INFO (ACPI_PTYPE2_MIN, ACPI_RTYPE_INTEGER, 5,0,0,0),
 
-    {{"_HRV",   METHOD_0ARGS,
+    {{(const char)"_HRV",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER)}},
 
-    {{"_IFT",   METHOD_0ARGS,
+    {{(const char)"_IFT",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER)}}, /* See IPMI spec */
 
-    {{"_INI",   METHOD_0ARGS,
+    {{(const char)"_INI",   METHOD_0ARGS,
                 METHOD_NO_RETURN_VALUE}},
 
-    {{"_IRC",   METHOD_0ARGS,
+    {{(const char)"_IRC",   METHOD_0ARGS,
                 METHOD_NO_RETURN_VALUE}},
 
-    {{"_LCK",   METHOD_1ARGS (ACPI_TYPE_INTEGER),
+    {{(const char)"_LCK",   METHOD_1ARGS (ACPI_TYPE_INTEGER),
                 METHOD_NO_RETURN_VALUE}},
 
-    {{"_LID",   METHOD_0ARGS,
+    {{(const char)"_LID",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER)}},
 
-    {{"_LPD",   METHOD_0ARGS,
+    {{(const char)"_LPD",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_PACKAGE)}}, /* Variable-length (1 Int(rev), n Pkg (2 Int) */
                     PACKAGE_INFO (ACPI_PTYPE2_REV_FIXED, ACPI_RTYPE_INTEGER, 2,0,0,0),
 
-    {{"_LPI",   METHOD_0ARGS,                          /* ACPI 6.0 */
+    {{(const char)"_LPI",   METHOD_0ARGS,                          /* ACPI 6.0 */
                 METHOD_RETURNS (ACPI_RTYPE_PACKAGE)}}, /* Variable-length (3 Int, n Pkg (10 Int/Buf) */
                     PACKAGE_INFO (ACPI_PTYPE2_VAR_VAR, ACPI_RTYPE_INTEGER, 3,
                     ACPI_RTYPE_INTEGER | ACPI_RTYPE_BUFFER | ACPI_RTYPE_STRING, 10,0),
 
-    {{"_MAT",   METHOD_0ARGS,
+    {{(const char)"_MAT",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_BUFFER)}},
 
-    {{"_MBM",   METHOD_0ARGS,
+    {{(const char)"_MBM",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_PACKAGE)}}, /* Fixed-length (8 Int) */
                     PACKAGE_INFO (ACPI_PTYPE1_FIXED, ACPI_RTYPE_INTEGER, 8,0,0,0),
 
-    {{"_MLS",   METHOD_0ARGS,
+    {{(const char)"_MLS",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_PACKAGE)}}, /* Variable-length (Pkgs) each (1 Str/1 Buf) */
                     PACKAGE_INFO (ACPI_PTYPE2, ACPI_RTYPE_STRING, 1, ACPI_RTYPE_BUFFER, 1,0),
 
-    {{"_MSG",   METHOD_1ARGS (ACPI_TYPE_INTEGER),
+    {{(const char)"_MSG",   METHOD_1ARGS (ACPI_TYPE_INTEGER),
                 METHOD_NO_RETURN_VALUE}},
 
-    {{"_MSM",   METHOD_4ARGS (ACPI_TYPE_INTEGER, ACPI_TYPE_INTEGER, ACPI_TYPE_INTEGER, ACPI_TYPE_INTEGER),
+    {{(const char)"_MSM",   METHOD_4ARGS (ACPI_TYPE_INTEGER, ACPI_TYPE_INTEGER, ACPI_TYPE_INTEGER, ACPI_TYPE_INTEGER),
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER)}},
 
-    {{"_MTL",   METHOD_0ARGS,                          /* ACPI 6.0 */
+    {{(const char)"_MTL",   METHOD_0ARGS,                          /* ACPI 6.0 */
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER)}},
 
-    {{"_NTT",   METHOD_0ARGS,
+    {{(const char)"_NTT",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER)}},
 
-    {{"_OFF",   METHOD_0ARGS,
+    {{(const char)"_OFF",   METHOD_0ARGS,
                 METHOD_NO_RETURN_VALUE}},
 
-    {{"_ON_",   METHOD_0ARGS,
+    {{(const char)"_ON_",   METHOD_0ARGS,
                 METHOD_NO_RETURN_VALUE}},
 
-    {{"_OS_",   METHOD_0ARGS,
+    {{(const char)"_OS_",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_STRING)}},
 
-    {{"_OSC",   METHOD_4ARGS (ACPI_TYPE_BUFFER, ACPI_TYPE_INTEGER, ACPI_TYPE_INTEGER, ACPI_TYPE_BUFFER),
+    {{(const char)"_OSC",   METHOD_4ARGS (ACPI_TYPE_BUFFER, ACPI_TYPE_INTEGER, ACPI_TYPE_INTEGER, ACPI_TYPE_BUFFER),
                 METHOD_RETURNS (ACPI_RTYPE_BUFFER)}},
 
-    {{"_OST",   METHOD_3ARGS (ACPI_TYPE_INTEGER, ACPI_TYPE_INTEGER, ACPI_TYPE_BUFFER),
+    {{(const char)"_OST",   METHOD_3ARGS (ACPI_TYPE_INTEGER, ACPI_TYPE_INTEGER, ACPI_TYPE_BUFFER),
                 METHOD_NO_RETURN_VALUE}},
 
-    {{"_PAI",   METHOD_1ARGS (ACPI_TYPE_INTEGER),
+    {{(const char)"_PAI",   METHOD_1ARGS (ACPI_TYPE_INTEGER),
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER)}},
 
-    {{"_PCL",   METHOD_0ARGS,
+    {{(const char)"_PCL",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_PACKAGE)}}, /* Variable-length (Refs) */
                     PACKAGE_INFO (ACPI_PTYPE1_VAR, ACPI_RTYPE_REFERENCE, 0,0,0,0),
 
-    {{"_PCT",   METHOD_0ARGS,
+    {{(const char)"_PCT",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_PACKAGE)}}, /* Fixed-length (2 Buf) */
                     PACKAGE_INFO (ACPI_PTYPE1_FIXED, ACPI_RTYPE_BUFFER, 2,0,0,0),
 
-    {{"_PDC",   METHOD_1ARGS (ACPI_TYPE_BUFFER),
+    {{(const char)"_PDC",   METHOD_1ARGS (ACPI_TYPE_BUFFER),
                 METHOD_NO_RETURN_VALUE}},
 
-    {{"_PDL",   METHOD_0ARGS,
+    {{(const char)"_PDL",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER)}},
 
-    {{"_PIC",   METHOD_1ARGS (ACPI_TYPE_INTEGER),
+    {{(const char)"_PIC",   METHOD_1ARGS (ACPI_TYPE_INTEGER),
                 METHOD_NO_RETURN_VALUE}},
 
-    {{"_PIF",   METHOD_0ARGS,
+    {{(const char)"_PIF",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_PACKAGE)}}, /* Fixed-length (3 Int),(3 Str) */
                     PACKAGE_INFO (ACPI_PTYPE1_FIXED, ACPI_RTYPE_INTEGER, 3, ACPI_RTYPE_STRING, 3,0),
 
-    {{"_PLD",   METHOD_0ARGS,
+    {{(const char)"_PLD",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_PACKAGE)}}, /* Variable-length (Bufs) */
                     PACKAGE_INFO (ACPI_PTYPE1_VAR, ACPI_RTYPE_BUFFER, 0,0,0,0),
 
-    {{"_PMC",   METHOD_0ARGS,
+    {{(const char)"_PMC",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_PACKAGE)}}, /* Fixed-length (11 Int),(3 Str) */
                     PACKAGE_INFO (ACPI_PTYPE1_FIXED, ACPI_RTYPE_INTEGER, 11, ACPI_RTYPE_STRING, 3,0),
 
-    {{"_PMD",   METHOD_0ARGS,
+    {{(const char)"_PMD",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_PACKAGE)}}, /* Variable-length (Refs) */
                     PACKAGE_INFO (ACPI_PTYPE1_VAR, ACPI_RTYPE_REFERENCE, 0,0,0,0),
 
-    {{"_PMM",   METHOD_0ARGS,
+    {{(const char)"_PMM",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER)}},
 
-    {{"_PPC",   METHOD_0ARGS,
+    {{(const char)"_PPC",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER)}},
 
-    {{"_PPE",   METHOD_0ARGS,
+    {{(const char)"_PPE",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER)}}, /* See dig64 spec */
 
-    {{"_PR0",   METHOD_0ARGS,
+    {{(const char)"_PR0",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_PACKAGE)}}, /* Variable-length (Refs) */
                     PACKAGE_INFO (ACPI_PTYPE1_VAR, ACPI_RTYPE_REFERENCE, 0,0,0,0),
 
-    {{"_PR1",   METHOD_0ARGS,
+    {{(const char)"_PR1",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_PACKAGE)}}, /* Variable-length (Refs) */
                     PACKAGE_INFO (ACPI_PTYPE1_VAR, ACPI_RTYPE_REFERENCE, 0,0,0,0),
 
-    {{"_PR2",   METHOD_0ARGS,
+    {{(const char)"_PR2",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_PACKAGE)}}, /* Variable-length (Refs) */
                     PACKAGE_INFO (ACPI_PTYPE1_VAR, ACPI_RTYPE_REFERENCE, 0,0,0,0),
 
-    {{"_PR3",   METHOD_0ARGS,
+    {{(const char)"_PR3",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_PACKAGE)}}, /* Variable-length (Refs) */
                     PACKAGE_INFO (ACPI_PTYPE1_VAR, ACPI_RTYPE_REFERENCE, 0,0,0,0),
 
-    {{"_PRE",   METHOD_0ARGS,
+    {{(const char)"_PRE",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_PACKAGE)}}, /* Variable-length (Refs) */
                     PACKAGE_INFO (ACPI_PTYPE1_VAR, ACPI_RTYPE_REFERENCE, 0,0,0,0),
 
-    {{"_PRL",   METHOD_0ARGS,
+    {{(const char)"_PRL",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_PACKAGE)}}, /* Variable-length (Refs) */
                     PACKAGE_INFO (ACPI_PTYPE1_VAR, ACPI_RTYPE_REFERENCE, 0,0,0,0),
 
-    {{"_PRR",   METHOD_0ARGS,                          /* ACPI 6.0 */
+    {{(const char)"_PRR",   METHOD_0ARGS,                          /* ACPI 6.0 */
                 METHOD_RETURNS (ACPI_RTYPE_PACKAGE)}}, /* Fixed-length (1 Ref) */
                     PACKAGE_INFO (ACPI_PTYPE1_FIXED, ACPI_RTYPE_REFERENCE, 1,0,0,0),
 
-    {{"_PRS",   METHOD_0ARGS,
+    {{(const char)"_PRS",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_BUFFER)}},
 
     /*
@@ -808,93 +808,93 @@ const ACPI_PREDEFINED_INFO          AcpiGbl_PredefinedMethods[] =
      * warning, add the ACPI_RTYPE_REFERENCE type to the 4th element (index 3)
      * in the statement below.
      */
-    {{"_PRT",   METHOD_0ARGS,
+    {{(const char)"_PRT",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_PACKAGE)}}, /* Variable-length (Pkgs) each (4): Int,Int,Int/Ref,Int */
                     PACKAGE_INFO (ACPI_PTYPE2_FIXED, 4, ACPI_RTYPE_INTEGER, ACPI_RTYPE_INTEGER,
                                   ACPI_RTYPE_INTEGER | ACPI_RTYPE_REFERENCE, ACPI_RTYPE_INTEGER),
 
-    {{"_PRW",   METHOD_0ARGS,
+    {{(const char)"_PRW",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_PACKAGE)}}, /* Variable-length (Pkgs) each: Pkg/Int,Int,[Variable-length Refs] (Pkg is Ref/Int) */
                     PACKAGE_INFO (ACPI_PTYPE1_OPTION, 2, ACPI_RTYPE_INTEGER | ACPI_RTYPE_PACKAGE,
                                   ACPI_RTYPE_INTEGER, ACPI_RTYPE_REFERENCE, 0),
 
-    {{"_PS0",   METHOD_0ARGS,
+    {{(const char)"_PS0",   METHOD_0ARGS,
                 METHOD_NO_RETURN_VALUE}},
 
-    {{"_PS1",   METHOD_0ARGS,
+    {{(const char)"_PS1",   METHOD_0ARGS,
                 METHOD_NO_RETURN_VALUE}},
 
-    {{"_PS2",   METHOD_0ARGS,
+    {{(const char)"_PS2",   METHOD_0ARGS,
                 METHOD_NO_RETURN_VALUE}},
 
-    {{"_PS3",   METHOD_0ARGS,
+    {{(const char)"_PS3",   METHOD_0ARGS,
                 METHOD_NO_RETURN_VALUE}},
 
-    {{"_PSC",   METHOD_0ARGS,
+    {{(const char)"_PSC",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER)}},
 
-    {{"_PSD",   METHOD_0ARGS,
+    {{(const char)"_PSD",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_PACKAGE)}}, /* Variable-length (Pkgs) each (5 Int) with count */
                     PACKAGE_INFO (ACPI_PTYPE2_COUNT, ACPI_RTYPE_INTEGER, 0,0,0,0),
 
-    {{"_PSE",   METHOD_1ARGS (ACPI_TYPE_INTEGER),
+    {{(const char)"_PSE",   METHOD_1ARGS (ACPI_TYPE_INTEGER),
                 METHOD_NO_RETURN_VALUE}},
 
-    {{"_PSL",   METHOD_0ARGS,
+    {{(const char)"_PSL",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_PACKAGE)}}, /* Variable-length (Refs) */
                     PACKAGE_INFO (ACPI_PTYPE1_VAR, ACPI_RTYPE_REFERENCE, 0,0,0,0),
 
-    {{"_PSR",   METHOD_0ARGS,
+    {{(const char)"_PSR",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER)}},
 
-    {{"_PSS",   METHOD_0ARGS,
+    {{(const char)"_PSS",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_PACKAGE)}}, /* Variable-length (Pkgs) each (6 Int) */
                     PACKAGE_INFO (ACPI_PTYPE2, ACPI_RTYPE_INTEGER, 6,0,0,0),
 
-    {{"_PSV",   METHOD_0ARGS,
+    {{(const char)"_PSV",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER)}},
 
-    {{"_PSW",   METHOD_1ARGS (ACPI_TYPE_INTEGER),
+    {{(const char)"_PSW",   METHOD_1ARGS (ACPI_TYPE_INTEGER),
                 METHOD_NO_RETURN_VALUE}},
 
-    {{"_PTC",   METHOD_0ARGS,
+    {{(const char)"_PTC",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_PACKAGE)}}, /* Fixed-length (2 Buf) */
                     PACKAGE_INFO (ACPI_PTYPE1_FIXED, ACPI_RTYPE_BUFFER, 2,0,0,0),
 
-    {{"_PTP",   METHOD_2ARGS (ACPI_TYPE_INTEGER, ACPI_TYPE_INTEGER),
+    {{(const char)"_PTP",   METHOD_2ARGS (ACPI_TYPE_INTEGER, ACPI_TYPE_INTEGER),
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER)}},
 
-    {{"_PTS",   METHOD_1ARGS (ACPI_TYPE_INTEGER),
+    {{(const char)"_PTS",   METHOD_1ARGS (ACPI_TYPE_INTEGER),
                 METHOD_NO_RETURN_VALUE}},
 
-    {{"_PUR",   METHOD_0ARGS,
+    {{(const char)"_PUR",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_PACKAGE)}}, /* Fixed-length (2 Int) */
                     PACKAGE_INFO (ACPI_PTYPE1_FIXED, ACPI_RTYPE_INTEGER, 2,0,0,0),
 
-    {{"_PXM",   METHOD_0ARGS,
+    {{(const char)"_PXM",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER)}},
 
-    {{"_RDI",   METHOD_0ARGS,                          /* ACPI 6.0 */
+    {{(const char)"_RDI",   METHOD_0ARGS,                          /* ACPI 6.0 */
                 METHOD_RETURNS (ACPI_RTYPE_PACKAGE)}}, /* Variable-length (1 Int, n Pkg (m Ref)) */
                     PACKAGE_INFO (ACPI_PTYPE2_VAR_VAR, ACPI_RTYPE_INTEGER, 1,
                     ACPI_RTYPE_REFERENCE,0,0),
 
-    {{"_REG",   METHOD_2ARGS (ACPI_TYPE_INTEGER, ACPI_TYPE_INTEGER),
+    {{(const char)"_REG",   METHOD_2ARGS (ACPI_TYPE_INTEGER, ACPI_TYPE_INTEGER),
                 METHOD_NO_RETURN_VALUE}},
 
-    {{"_REV",   METHOD_0ARGS,
+    {{(const char)"_REV",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER)}},
 
-    {{"_RMV",   METHOD_0ARGS,
+    {{(const char)"_RMV",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER)}},
 
-    {{"_ROM",   METHOD_2ARGS (ACPI_TYPE_INTEGER, ACPI_TYPE_INTEGER),
+    {{(const char)"_ROM",   METHOD_2ARGS (ACPI_TYPE_INTEGER, ACPI_TYPE_INTEGER),
                 METHOD_RETURNS (ACPI_RTYPE_BUFFER)}},
 
-    {{"_RST",   METHOD_0ARGS,                          /* ACPI 6.0 */
+    {{(const char)"_RST",   METHOD_0ARGS,                          /* ACPI 6.0 */
                 METHOD_NO_RETURN_VALUE}},
 
-    {{"_RTV",   METHOD_0ARGS,
+    {{(const char)"_RTV",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER)}},
 
     /*
@@ -903,203 +903,203 @@ const ACPI_PREDEFINED_INFO          AcpiGbl_PredefinedMethods[] =
      * Allow this by making the objects "Variable-length length", but all elements
      * must be Integers.
      */
-    {{"_S0_",   METHOD_0ARGS,
+    {{(const char)"_S0_",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_PACKAGE)}}, /* Fixed-length (1 Int) */
                     PACKAGE_INFO (ACPI_PTYPE1_VAR, ACPI_RTYPE_INTEGER, 1,0,0,0),
 
-    {{"_S1_",   METHOD_0ARGS,
+    {{(const char)"_S1_",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_PACKAGE)}}, /* Fixed-length (1 Int) */
                     PACKAGE_INFO (ACPI_PTYPE1_VAR, ACPI_RTYPE_INTEGER, 1,0,0,0),
 
-    {{"_S2_",   METHOD_0ARGS,
+    {{(const char)"_S2_",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_PACKAGE)}}, /* Fixed-length (1 Int) */
                     PACKAGE_INFO (ACPI_PTYPE1_VAR, ACPI_RTYPE_INTEGER, 1,0,0,0),
 
-    {{"_S3_",   METHOD_0ARGS,
+    {{(const char)"_S3_",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_PACKAGE)}}, /* Fixed-length (1 Int) */
                     PACKAGE_INFO (ACPI_PTYPE1_VAR, ACPI_RTYPE_INTEGER, 1,0,0,0),
 
-    {{"_S4_",   METHOD_0ARGS,
+    {{(const char)"_S4_",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_PACKAGE)}}, /* Fixed-length (1 Int) */
                     PACKAGE_INFO (ACPI_PTYPE1_VAR, ACPI_RTYPE_INTEGER, 1,0,0,0),
 
-    {{"_S5_",   METHOD_0ARGS,
+    {{(const char)"_S5_",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_PACKAGE)}}, /* Fixed-length (1 Int) */
                     PACKAGE_INFO (ACPI_PTYPE1_VAR, ACPI_RTYPE_INTEGER, 1,0,0,0),
 
-    {{"_S1D",   METHOD_0ARGS,
+    {{(const char)"_S1D",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER)}},
 
-    {{"_S2D",   METHOD_0ARGS,
+    {{(const char)"_S2D",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER)}},
 
-    {{"_S3D",   METHOD_0ARGS,
+    {{(const char)"_S3D",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER)}},
 
-    {{"_S4D",   METHOD_0ARGS,
+    {{(const char)"_S4D",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER)}},
 
-    {{"_S0W",   METHOD_0ARGS,
+    {{(const char)"_S0W",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER)}},
 
-    {{"_S1W",   METHOD_0ARGS,
+    {{(const char)"_S1W",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER)}},
 
-    {{"_S2W",   METHOD_0ARGS,
+    {{(const char)"_S2W",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER)}},
 
-    {{"_S3W",   METHOD_0ARGS,
+    {{(const char)"_S3W",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER)}},
 
-    {{"_S4W",   METHOD_0ARGS,
+    {{(const char)"_S4W",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER)}},
 
-    {{"_SBS",   METHOD_0ARGS,
+    {{(const char)"_SBS",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER)}},
 
-    {{"_SCP",   METHOD_1ARGS (ACPI_TYPE_INTEGER) | ARG_COUNT_IS_MINIMUM,
+    {{(const char)"_SCP",   METHOD_1ARGS (ACPI_TYPE_INTEGER) | ARG_COUNT_IS_MINIMUM,
                 METHOD_NO_RETURN_VALUE}},   /* Acpi 1.0 allowed 1 integer arg. Acpi 3.0 expanded to 3 args. Allow both. */
 
-    {{"_SDD",   METHOD_1ARGS (ACPI_TYPE_BUFFER),
+    {{(const char)"_SDD",   METHOD_1ARGS (ACPI_TYPE_BUFFER),
                 METHOD_NO_RETURN_VALUE}},
 
-    {{"_SEG",   METHOD_0ARGS,
+    {{(const char)"_SEG",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER)}},
 
-    {{"_SHL",   METHOD_1ARGS (ACPI_TYPE_INTEGER),
+    {{(const char)"_SHL",   METHOD_1ARGS (ACPI_TYPE_INTEGER),
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER)}},
 
-    {{"_SLI",   METHOD_0ARGS,
+    {{(const char)"_SLI",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_BUFFER)}},
 
-    {{"_SPD",   METHOD_1ARGS (ACPI_TYPE_INTEGER),
+    {{(const char)"_SPD",   METHOD_1ARGS (ACPI_TYPE_INTEGER),
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER)}},
 
-    {{"_SRS",   METHOD_1ARGS (ACPI_TYPE_BUFFER),
+    {{(const char)"_SRS",   METHOD_1ARGS (ACPI_TYPE_BUFFER),
                 METHOD_NO_RETURN_VALUE}},
 
-    {{"_SRT",   METHOD_1ARGS (ACPI_TYPE_BUFFER),
+    {{(const char)"_SRT",   METHOD_1ARGS (ACPI_TYPE_BUFFER),
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER)}},
 
-    {{"_SRV",   METHOD_0ARGS,
+    {{(const char)"_SRV",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER)}}, /* See IPMI spec */
 
-    {{"_SST",   METHOD_1ARGS (ACPI_TYPE_INTEGER),
+    {{(const char)"_SST",   METHOD_1ARGS (ACPI_TYPE_INTEGER),
                 METHOD_NO_RETURN_VALUE}},
 
-    {{"_STA",   METHOD_0ARGS,
+    {{(const char)"_STA",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER)}},
 
-    {{"_STM",   METHOD_3ARGS (ACPI_TYPE_BUFFER, ACPI_TYPE_BUFFER, ACPI_TYPE_BUFFER),
+    {{(const char)"_STM",   METHOD_3ARGS (ACPI_TYPE_BUFFER, ACPI_TYPE_BUFFER, ACPI_TYPE_BUFFER),
                 METHOD_NO_RETURN_VALUE}},
 
-    {{"_STP",   METHOD_2ARGS (ACPI_TYPE_INTEGER, ACPI_TYPE_INTEGER),
+    {{(const char)"_STP",   METHOD_2ARGS (ACPI_TYPE_INTEGER, ACPI_TYPE_INTEGER),
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER)}},
 
-    {{"_STR",   METHOD_0ARGS,
+    {{(const char)"_STR",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_BUFFER)}},
 
-    {{"_STV",   METHOD_2ARGS (ACPI_TYPE_INTEGER, ACPI_TYPE_INTEGER),
+    {{(const char)"_STV",   METHOD_2ARGS (ACPI_TYPE_INTEGER, ACPI_TYPE_INTEGER),
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER)}},
 
-    {{"_SUB",   METHOD_0ARGS,
+    {{(const char)"_SUB",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_STRING)}},
 
-    {{"_SUN",   METHOD_0ARGS,
+    {{(const char)"_SUN",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER)}},
 
-    {{"_SWS",   METHOD_0ARGS,
+    {{(const char)"_SWS",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER)}},
 
-    {{"_TC1",   METHOD_0ARGS,
+    {{(const char)"_TC1",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER)}},
 
-    {{"_TC2",   METHOD_0ARGS,
+    {{(const char)"_TC2",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER)}},
 
-    {{"_TDL",   METHOD_0ARGS,
+    {{(const char)"_TDL",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER)}},
 
-    {{"_TFP",   METHOD_0ARGS,                          /* ACPI 6.0 */
+    {{(const char)"_TFP",   METHOD_0ARGS,                          /* ACPI 6.0 */
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER)}},
 
-    {{"_TIP",   METHOD_1ARGS (ACPI_TYPE_INTEGER),
+    {{(const char)"_TIP",   METHOD_1ARGS (ACPI_TYPE_INTEGER),
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER)}},
 
-    {{"_TIV",   METHOD_1ARGS (ACPI_TYPE_INTEGER),
+    {{(const char)"_TIV",   METHOD_1ARGS (ACPI_TYPE_INTEGER),
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER)}},
 
-    {{"_TMP",   METHOD_0ARGS,
+    {{(const char)"_TMP",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER)}},
 
-    {{"_TPC",   METHOD_0ARGS,
+    {{(const char)"_TPC",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER)}},
 
-    {{"_TPT",   METHOD_1ARGS (ACPI_TYPE_INTEGER),
+    {{(const char)"_TPT",   METHOD_1ARGS (ACPI_TYPE_INTEGER),
                 METHOD_NO_RETURN_VALUE}},
 
-    {{"_TRT",   METHOD_0ARGS,
+    {{(const char)"_TRT",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_PACKAGE)}}, /* Variable-length (Pkgs) each 2 Ref/6 Int */
                     PACKAGE_INFO (ACPI_PTYPE2, ACPI_RTYPE_REFERENCE, 2, ACPI_RTYPE_INTEGER, 6, 0),
 
-    {{"_TSD",   METHOD_0ARGS,
+    {{(const char)"_TSD",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_PACKAGE)}}, /* Variable-length (Pkgs) each 5 Int with count */
                     PACKAGE_INFO (ACPI_PTYPE2_COUNT,ACPI_RTYPE_INTEGER, 5,0,0,0),
 
-    {{"_TSN",   METHOD_0ARGS,                          /* ACPI 6.0 */
+    {{(const char)"_TSN",   METHOD_0ARGS,                          /* ACPI 6.0 */
                 METHOD_RETURNS (ACPI_RTYPE_REFERENCE)}},
 
-    {{"_TSP",   METHOD_0ARGS,
+    {{(const char)"_TSP",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER)}},
 
-    {{"_TSS",   METHOD_0ARGS,
+    {{(const char)"_TSS",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_PACKAGE)}}, /* Variable-length (Pkgs) each 5 Int */
                     PACKAGE_INFO (ACPI_PTYPE2, ACPI_RTYPE_INTEGER, 5,0,0,0),
 
-    {{"_TST",   METHOD_0ARGS,
+    {{(const char)"_TST",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER)}},
 
-    {{"_TTS",   METHOD_1ARGS (ACPI_TYPE_INTEGER),
+    {{(const char)"_TTS",   METHOD_1ARGS (ACPI_TYPE_INTEGER),
                 METHOD_NO_RETURN_VALUE}},
 
-    {{"_TZD",   METHOD_0ARGS,
+    {{(const char)"_TZD",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_PACKAGE)}}, /* Variable-length (Refs) */
                     PACKAGE_INFO (ACPI_PTYPE1_VAR, ACPI_RTYPE_REFERENCE, 0,0,0,0),
 
-    {{"_TZM",   METHOD_0ARGS,
+    {{(const char)"_TZM",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_REFERENCE)}},
 
-    {{"_TZP",   METHOD_0ARGS,
+    {{(const char)"_TZP",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER)}},
 
-    {{"_UID",   METHOD_0ARGS,
+    {{(const char)"_UID",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER | ACPI_RTYPE_STRING)}},
 
-    {{"_UPC",   METHOD_0ARGS,
+    {{(const char)"_UPC",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_PACKAGE)}}, /* Fixed-length (4 Int) */
                     PACKAGE_INFO (ACPI_PTYPE1_FIXED, ACPI_RTYPE_INTEGER, 4,0,0,0),
 
-    {{"_UPD",   METHOD_0ARGS,
+    {{(const char)"_UPD",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER)}},
 
-    {{"_UPP",   METHOD_0ARGS,
+    {{(const char)"_UPP",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER)}},
 
-    {{"_VPO",   METHOD_0ARGS,
+    {{(const char)"_VPO",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER)}},
 
     /* Acpi 1.0 defined _WAK with no return value. Later, it was changed to return a package */
 
-    {{"_WAK",   METHOD_1ARGS (ACPI_TYPE_INTEGER),
+    {{(const char)"_WAK",   METHOD_1ARGS (ACPI_TYPE_INTEGER),
                 METHOD_RETURNS (ACPI_RTYPE_NONE | ACPI_RTYPE_INTEGER | ACPI_RTYPE_PACKAGE)}},
                     PACKAGE_INFO (ACPI_PTYPE1_FIXED, ACPI_RTYPE_INTEGER, 2,0,0,0), /* Fixed-length (2 Int), but is optional */
 
     /* _WDG/_WED are MS extensions defined by "Windows Instrumentation" */
 
-    {{"_WDG",   METHOD_0ARGS,
+    {{(const char)"_WDG",   METHOD_0ARGS,
                 METHOD_RETURNS (ACPI_RTYPE_BUFFER)}},
 
-    {{"_WED",   METHOD_1ARGS (ACPI_TYPE_INTEGER),
+    {{(const char)"_WED",   METHOD_1ARGS (ACPI_TYPE_INTEGER),
                 METHOD_RETURNS (ACPI_RTYPE_INTEGER | ACPI_RTYPE_STRING | ACPI_RTYPE_BUFFER)}},
 
     PACKAGE_INFO (0,0,0,0,0,0) /* Table terminator */

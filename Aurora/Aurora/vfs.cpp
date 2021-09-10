@@ -13,32 +13,67 @@
 #include <vfs.h>
 #include <string.h>
 #include <stdio.h>
+#include <console.h>
 
-file_system_t sys;
+
+#define MAX_FILE_DESC  256
+
+file_system_t *sys[MAX_FILE_DESC];
 
 void initialize_vfs () {
-	
-	//! By default FAT32 is recommended
+	//! By default FAT32 is recommended for boot disk
 #ifdef ARCH_X64
 	initialize_fat32();
-	memcpy(sys.name,"FAT32",5);
-	sys.sys_open = fat32_open;
-	sys.sys_read = fat32_read_file;
-	sys.sys_read_blk = fat32_read;
+	fat32_self_register();
 #endif
 }
 
 FILE open (const char* filename) {
-	FILE f =  sys.sys_open(filename);
-	return f;
-}
-void read (FILE *f, unsigned char* buffer,unsigned int count) {
-    sys.sys_read (f,buffer,count);
+	FILE file;
+	unsigned char device;
+	int device_id = 0;
+
+	char* fname = (char*)filename;
+	if (filename[1] == ':') {
+		device = filename[0];
+		filename += 2;
+	}
+	if (device == 'a' || device == 'A')
+		device_id = 10;
+	else if (device =='c' || device == 'C')
+		device_id = 11;
+
+	file = sys[device_id]->sys_open(filename);
+	return file;
 }
 
-void read_blk (FILE *f, unsigned char *buffer) {
-	sys.sys_read_blk(f,buffer);
+
+void read (FILE *f, unsigned char* buffer,unsigned int count, int device_id) {
+    sys[device_id]->sys_read (f,buffer,count);
 }
+
+void read_blk (FILE *f, unsigned char *buffer, int device_id) {
+	sys[device_id]->sys_read_blk(f,buffer);
+}
+
+void vfs_io_query (int device_id, int code, void* arg) {
+
+	//! INVALID device id code
+	if (device_id < 0)
+		return;
+
+	sys[device_id]->ioquery(code, arg);
+}
+
+void vfs_register (int id, file_system_t *fsys) {
+	sys[id]  = fsys;
+}
+
+file_system_t * vfs_get_file_system (int id) {
+	return sys[id];
+}
+
+
 
 
 

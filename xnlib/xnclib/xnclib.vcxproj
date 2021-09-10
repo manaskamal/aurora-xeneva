@@ -96,7 +96,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <OutputFile>E:\Xeneva Project\Xeneva\xnlib\lib64\xnclib</OutputFile>
+      <OutputFile>E:\Xeneva Project\Xeneva\xnlib\lib64\xnclib.lib</OutputFile>
     </Lib>
     <Lib>
       <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
@@ -137,8 +137,12 @@
     <ClInclude Include="stdint.h" />
     <ClInclude Include="stdlib.h" />
     <ClInclude Include="string.h" />
+    <ClInclude Include="sys\ioquery.h" />
     <ClInclude Include="sys\mmap.h" />
     <ClInclude Include="sys\utf.h" />
+    <ClInclude Include="sys\_exit.h" />
+    <ClInclude Include="sys\_term.h" />
+    <ClInclude Include="sys\_wait.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="heap.cpp" />
@@ -146,7 +150,15 @@
     <ClCompile Include="sys\stdlib.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="sys\callback.asm" />
+    <NASM Include="sys\callback.asm">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <FileType>Document</FileType>
+    </NASM>
+  </ItemGroup>
+  <ItemGroup>
+    <NASM Include="crt0.asm">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+    </NASM>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

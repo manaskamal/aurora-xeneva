@@ -53,6 +53,7 @@ static void* _syscalls[] = {
 	exec, //28
 	map_memory, //29
 	unmap_memory, //30
+	ioquery, //31
 	0
 };
 

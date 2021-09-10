@@ -8,12 +8,12 @@ void create__sys_process (const char* name) {
 	strcpy(queue->path,name);
 	procmngr_add_process (queue);
 	procmngr_wakeup();*/
-	create_process (name, "uproc", 1);
+	create_process (name, "uproc", 1, NULL);
 }
 
 //!Exit System call
 void sys_exit () {
-	x64_cli();
+	x64_cli();	
 	kill_process ();
 	force_sched();
 }

@@ -13,6 +13,7 @@
 #include <arch\x86_64\thread.h>
 #include <ipc\message.h>
 #include <proc.h>
+#include <_null.h>
 
 static procmngr_queue *top = NULL;
 static int process_count = 0;
@@ -41,7 +42,7 @@ procmngr_queue* procmngr_get_process () {
 }
 
 void procmngr_create_process (procmngr_queue *queue) {
-	create_process (queue->path,queue->name,1);
+	create_process (queue->path,queue->name,1, "0");
 }
 
 

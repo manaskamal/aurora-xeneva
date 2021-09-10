@@ -430,7 +430,7 @@ AcpiDsObjStackPush (
 
     /* Put the object onto the stack */
 
-    WalkState->Operands [WalkState->OperandIndex] = (acpi_operand_object*)Object;
+	WalkState->Operands [WalkState->OperandIndex] = (ACPI_OPERAND_OBJECT*)Object;
     WalkState->NumOperands++;
 
     /* For the usual order of filling the operand stack */

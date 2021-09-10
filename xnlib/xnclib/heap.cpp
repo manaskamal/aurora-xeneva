@@ -18,7 +18,7 @@ LIST_ENTRY *last_header;
 uint64_t* alloc_end = NULL;
 uint64_t* start = NULL;
 
-void heap_initialize_allocator(int sz) {
+void heap_initialize_allocator() {
 	//for (int i=0; i < 0xB00000/4096; i++) {
 	//	valloc(0x0000080000000000 + i * 4096);
 	//}

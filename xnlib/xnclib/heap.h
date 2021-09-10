@@ -27,7 +27,7 @@ typedef struct _list_entry_ {
 }LIST_ENTRY;
 
 //! INIT: Initialize the user space allocator
-extern void heap_initialize_allocator(int sz);
+extern "C" void heap_initialize_allocator();
 //! ALLOCATE: Allocate some memory
 extern void* _malloc(uint32_t size);
 //! FREE: Free pointed memory

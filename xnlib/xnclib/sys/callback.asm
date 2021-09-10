@@ -37,3 +37,35 @@ valloc:
 	mov r13, rcx
 	syscall
 	ret
+
+global sys_exit
+sys_exit:
+    mov r12, 25
+	syscall
+	ret
+
+global sys_print_text
+sys_print_text:
+    mov r12, 0
+	mov r13, rcx
+	mov r14, rdx
+	mov r15, r8
+	syscall
+	ret
+
+
+global sys_wait
+sys_wait:
+    mov r12, 1
+	syscall
+	ret
+
+
+global ioquery
+ioquery:
+    mov r12, 31
+	mov r13, rcx
+	mov r14, rdx
+	mov r15, r8
+	syscall
+	ret

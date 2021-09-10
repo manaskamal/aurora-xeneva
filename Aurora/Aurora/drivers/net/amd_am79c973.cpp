@@ -13,6 +13,7 @@
 #include <pmmngr.h>
 #include <stdio.h>
 #include <mm.h>
+#include <string.h>
 
 size_t amd_io_base = 0;
 uint8_t amd_mac[6];

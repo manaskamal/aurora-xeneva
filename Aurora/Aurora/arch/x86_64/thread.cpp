@@ -14,6 +14,7 @@
 #include <stdio.h>
 #include <atomic\mutex.h>
 #include <utils\lnklist.h>
+#include <string.h>
 
 /**
  ** E X T E R N A L  S T A T I C  S Y M B O L S

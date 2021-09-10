@@ -115,7 +115,6 @@
 
 #include "acpi.h"
 #include "accommon.h"
-#include <string.h>
 
 #define _COMPONENT          ACPI_UTILITIES
         ACPI_MODULE_NAME    ("ahids")

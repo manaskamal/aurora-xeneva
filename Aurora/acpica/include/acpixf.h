@@ -124,7 +124,8 @@
 #include "actypes.h"
 #include "actbl.h"
 #include "acbuffer.h"
-
+#include "acuuid.h"
+#include "acrestyp.h"
 
 /*****************************************************************************
  *
@@ -401,8 +402,7 @@ ACPI_GLOBAL (BOOLEAN,               AcpiGbl_SystemAwakeAndRunning);
  * ACPI_NO_ERROR_MESSAGE flag is defined.
  */
 #ifndef ACPI_NO_ERROR_MESSAGES
-#define ACPI_MSG_DEPENDENT_RETURN_VOID(Prototype) \
-    Prototype;
+#define ACPI_MSG_DEPENDENT_RETURN_VOID(Prototype)  Prototype;
 
 #else
 #define ACPI_MSG_DEPENDENT_RETURN_VOID(Prototype) \
@@ -1180,68 +1180,63 @@ AcpiGetTimerDuration (
 /*
  * Error/Warning output
  */
-ACPI_MSG_DEPENDENT_RETURN_VOID (
-ACPI_PRINTF_LIKE(3)
-void ACPI_INTERNAL_VAR_XFACE
+
+void 
 AcpiError (
     const char              *ModuleName,
     UINT32                  LineNumber,
     const char              *Format,
-    ...))
+    ...);
 
-ACPI_MSG_DEPENDENT_RETURN_VOID (
-ACPI_PRINTF_LIKE(4)
-void  ACPI_INTERNAL_VAR_XFACE
+
+void  
 AcpiException (
     const char              *ModuleName,
     UINT32                  LineNumber,
     ACPI_STATUS             Status,
     const char              *Format,
-    ...))
+    ...);
 
-ACPI_MSG_DEPENDENT_RETURN_VOID (
-ACPI_PRINTF_LIKE(3)
-void ACPI_INTERNAL_VAR_XFACE
+
+void 
 AcpiWarning (
     const char              *ModuleName,
     UINT32                  LineNumber,
     const char              *Format,
-    ...))
+    ...);
 
-ACPI_MSG_DEPENDENT_RETURN_VOID (
-ACPI_PRINTF_LIKE(3)
-void ACPI_INTERNAL_VAR_XFACE
+
+void 
 AcpiInfo (
     const char              *ModuleName,
     UINT32                  LineNumber,
     const char              *Format,
-    ...))
+    ...);
 
-ACPI_MSG_DEPENDENT_RETURN_VOID (
-ACPI_PRINTF_LIKE(3)
-void ACPI_INTERNAL_VAR_XFACE
+/*ACPI_MSG_DEPENDENT_RETURN_VOID (
+ACPI_PRINTF_LIKE(3)*/
+void /*ACPI_INTERNAL_VAR_XFACE*/
 AcpiBiosError (
     const char              *ModuleName,
     UINT32                  LineNumber,
     const char              *Format,
-    ...))
+    ...);
 
-ACPI_MSG_DEPENDENT_RETURN_VOID (
-ACPI_PRINTF_LIKE(3)
-void ACPI_INTERNAL_VAR_XFACE
+/*ACPI_MSG_DEPENDENT_RETURN_VOID (
+ACPI_PRINTF_LIKE(3)*/
+void /*ACPI_INTERNAL_VAR_XFACE*/
 AcpiBiosWarning (
     const char              *ModuleName,
     UINT32                  LineNumber,
     const char              *Format,
-    ...))
+    ...);
 
 
 /*
  * Debug output
  */
-ACPI_DBG_DEPENDENT_RETURN_VOID (
-ACPI_PRINTF_LIKE(6)
-void ACPI_INTERNAL_VAR_XFACE
+
+void 
 AcpiDebugPrint (
     UINT32                  RequestedDebugLevel,
     UINT32                  LineNumber,
@@ -1249,11 +1244,10 @@ AcpiDebugPrint (
     const char              *ModuleName,
     UINT32                  ComponentId,
     const char              *Format,
-    ...))
+    ...);
 
-ACPI_DBG_DEPENDENT_RETURN_VOID (
-ACPI_PRINTF_LIKE(6)
-void ACPI_INTERNAL_VAR_XFACE
+
+void 
 AcpiDebugPrintRaw (
     UINT32                  RequestedDebugLevel,
     UINT32                  LineNumber,
@@ -1261,13 +1255,12 @@ AcpiDebugPrintRaw (
     const char              *ModuleName,
     UINT32                  ComponentId,
     const char              *Format,
-    ...))
+    ...);
 
-ACPI_APP_DEPENDENT_RETURN_VOID (
-ACPI_PRINTF_LIKE(1)
-void ACPI_INTERNAL_VAR_XFACE
+
+void 
 AcpiLogError (
     const char              *Format,
-    ...))
+    ...);
 
 #endif /* __ACXFACE_H__ */

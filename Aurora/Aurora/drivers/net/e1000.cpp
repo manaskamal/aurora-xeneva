@@ -16,6 +16,7 @@
 #include <mm.h>
 #include <console.h>
 #include <net\nethw.h>
+#include <string.h>
 
 
 e1000_dev *i_net_dev = NULL;

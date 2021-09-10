@@ -15,8 +15,12 @@
 #include <drivers\svga\svga_screen.h>
 #include <drivers\vga.h>
 #include <drivers\svga\svga_screen_util.h>
+#include <drivers\svga\svga_qrcode.h>
 #include <drivers\vmmouse.h>
 #include <screen.h>
+#include <serial.h>
+#include <string.h>
+#include <vfs.h>
 
 svga_device svga_dev;
 
@@ -38,6 +42,8 @@ bool svga_is_fifo_reg_valid (int reg) {
 bool svga_has_fifo_cap (int cap) {
 	return (svga_dev.fifo_mem[SVGA_FIFO_CAPABILITIES] & cap) != 0;
 }
+
+void svga_register_file ();
 
 
 void svga_init () {
@@ -101,6 +107,8 @@ void svga_init () {
 		//irq_mask (irq, true);
 
 	}
+
+	svga_register_file ();
 
 
 	svga_enable();
@@ -584,4 +592,38 @@ void svga_interrupt_handler (size_t s, void* p) {
 
 uint32_t* svga_get_fb_mem () {
 	return (uint32_t*)svga_dev.fb_mem;
+}
+
+
+int svga_io_query (int code, void* arg) {
+	svga_io_query_t *query_struct = (svga_io_query_t*)arg;
+	switch (code) {
+
+	case SVGA_SETMODE:
+		svga_set_mode (query_struct->value, query_struct->value2, query_struct->value3);
+		break;
+	case SVGA_GETWIDTH:
+		printf ("SVGA Get width syscall\n");
+		break;
+	case SVGA_GETHEIGHT:
+		printf ("Svga get height syscall\n");
+		break;
+	case SVGA_GETBPP:
+		printf ("Svga get bpp syscall\n");
+		break;
+	default:
+		return 1;
+	}
+
+	return 1;
+}
+
+void svga_register_file () {
+	file_system_t *fs = (file_system_t*)pmmngr_alloc();
+	strcpy (fs->name, "IOSVGA");
+	fs->sys_open = NULL;
+	fs->sys_read = NULL;
+	fs->sys_read_blk = NULL;
+	fs->ioquery = svga_io_query;
+	vfs_register (4,fs);
 }

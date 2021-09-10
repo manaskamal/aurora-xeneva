@@ -94,13 +94,25 @@ struct test_bit {
 //! @param info -- The boot information passed by
 //!                XNLDR 
 
+
+void* __cdecl ::operator new(size_t size) {
+	return malloc(size);
+}
+
+void* __cdecl operator new[] (size_t size) {
+	return malloc(size);
+}
+
+void __cdecl operator delete (void* p) {
+	mfree(p);
+}
+
 void _kmain (KERNEL_BOOT_INFO *info) {
 	hal_init ();
 	pmmngr_init (info);
 	mm_init(); 
 	initialize_serial();
 	console_initialize(info);
-
 	//!Initialize kernel runtime drivers	
 	kybrd_init();
 	initialize_acpi (info->acpi_table_pointer);
@@ -113,24 +125,21 @@ void _kmain (KERNEL_BOOT_INFO *info) {
     ata_initialize();
 	initialize_vfs();
 	initialize_screen(info);
-	//svga_init (); 
+	svga_init (); 
 	initialize_mouse();
 
 	message_init ();
 	dwm_ipc_init();
 
-
-	
 	driver_mngr_initialize(info);
-	arp_initialize();
-
+	
 #ifdef ARCH_X64
 	initialize_scheduler();
 	//create_process ("dwm.exe","dwm",20);
-	//! task list should be more than 4 or less than 4 not 
+	//! task list should be more than 4 or less than 4 not  
 	//create_process ("dwm2.exe", "dwm2", 1);
-	create_process ("xshell.exe","shell",1);
-	create_process ("dwm3.exe", "dwm3", 1);
+	create_process ("a:xshell.exe","shell",0, NULL);
+	create_process ("A:dwm3.exe", "dwm3", 0, NULL);
 	scheduler_start();
 #endif
 	while(1) {

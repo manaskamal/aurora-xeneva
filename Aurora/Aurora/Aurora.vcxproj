@@ -115,29 +115,30 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <WarningLevel>Level1</WarningLevel>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>E:\Xeneva Project\Xeneva\Aurora\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>E:\Xeneva Project\Xeneva\Aurora\include;E:\Xeneva Project\Xeneva\Aurora\acpica\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <SDLCheck>false</SDLCheck>
-      <OmitFramePointers>
-      </OmitFramePointers>
-      <PreprocessorDefinitions>ARCH_X64;USE_APIC;AURORA_X64%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>
+      </SDLCheck>
+      <OmitFramePointers>true</OmitFramePointers>
+      <PreprocessorDefinitions>ARCH_X64;USE_APIC;ACPI_MACHINE_WIDTH=64;PROCESSOR_ARCHITECHTURE=X64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <IgnoreStandardIncludePath>true</IgnoreStandardIncludePath>
       <ExceptionHandling>false</ExceptionHandling>
-      <BasicRuntimeChecks>
-      </BasicRuntimeChecks>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <RuntimeLibrary>
       </RuntimeLibrary>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions</EnableEnhancedInstructionSet>
       <AssemblerOutput>AssemblyAndSourceCode</AssemblerOutput>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>
       </GenerateDebugInformation>
       <OutputFile>F:\EFI\XENEVA\xnkrnl.exe</OutputFile>
-      <AdditionalDependencies>Acpica_dbg.lib</AdditionalDependencies>
+      <AdditionalDependencies>
+      </AdditionalDependencies>
       <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
       <EnableUAC>false</EnableUAC>
       <GenerateMapFile>true</GenerateMapFile>
@@ -218,6 +219,7 @@
     <ClInclude Include="..\include\drivers\svga\svga3d_reg.h" />
     <ClInclude Include="..\include\drivers\svga\svga_escape.h" />
     <ClInclude Include="..\include\drivers\svga\svga_overlay.h" />
+    <ClInclude Include="..\include\drivers\svga\svga_qrcode.h" />
     <ClInclude Include="..\include\drivers\svga\svga_reg.h" />
     <ClInclude Include="..\include\drivers\svga\svga_screen.h" />
     <ClInclude Include="..\include\drivers\svga\svga_screen_util.h" />
@@ -229,7 +231,6 @@
     <ClInclude Include="..\include\drvmngr.h" />
     <ClInclude Include="..\include\fs\fat32.h" />
     <ClInclude Include="..\include\hal.h" />
-    <ClInclude Include="..\include\iodev.h" />
     <ClInclude Include="..\include\ipc\dwm_ipc.h" />
     <ClInclude Include="..\include\ipc\evntsh.h" />
     <ClInclude Include="..\include\ipc\message.h" />
@@ -245,6 +246,7 @@
     <ClInclude Include="..\include\procmngr.h" />
     <ClInclude Include="..\include\screen.h" />
     <ClInclude Include="..\include\serial.h" />
+    <ClInclude Include="..\include\stdarg.h" />
     <ClInclude Include="..\include\stdint.h" />
     <ClInclude Include="..\include\stdio.h" />
     <ClInclude Include="..\include\string.h" />
@@ -254,6 +256,7 @@
     <ClInclude Include="..\include\utils\ring.h" />
     <ClInclude Include="..\include\va_list.h" />
     <ClInclude Include="..\include\vfs.h" />
+    <ClInclude Include="..\include\_null.h" />
     <ClInclude Include="..\include\_xnboot.h" />
   </ItemGroup>
   <ItemGroup>
@@ -308,6 +311,7 @@
     <ClCompile Include="serial.cpp" />
     <ClCompile Include="stdio.cpp" />
     <ClCompile Include="string.cpp" />
+    <ClCompile Include="sysserv\ioquery.cpp" />
     <ClCompile Include="sysserv\sysfb.cpp" />
     <ClCompile Include="sysserv\sysfile.cpp" />
     <ClCompile Include="sysserv\sysmem.cpp" />

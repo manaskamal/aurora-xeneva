@@ -17,6 +17,7 @@
 #include <ipc\dwm_ipc.h>
 #include <drivers\vmmouse.h>
 #include <atomic\mutex.h>
+#include <vfs.h>
 
 static uint8_t mouse_cycle = 0;
 static uint8_t mouse_byte[4];
@@ -173,6 +174,25 @@ read_next:
 }
 
 
+/**  Mouse IOQuery function **/
+int mouse_ioquery (int code, void* arg) {
+	return 1;
+}
+
+
+/**
+ * Register it to the VFS Subsystem
+ */
+void mouse_register_device () {
+	file_system_t *mouse_file = (file_system_t*)pmmngr_alloc();
+	strcpy (mouse_file->name, "IOMOUSE");
+	mouse_file->sys_open = NULL;
+	mouse_file->sys_read = NULL;
+	mouse_file->sys_read_blk = NULL;
+	mouse_file->ioquery = mouse_ioquery;
+	vfs_register (3,mouse_file);
+}
+
 void initialize_mouse () {
 	mouse_cycle = 0;
 	mouse_x = 0;
@@ -202,5 +222,7 @@ void initialize_mouse () {
 	mouse_read ();
 
 	interrupt_set (34, mouse_handler, 12);  //34
+
+	mouse_register_device ();
 	//irq_mask(12, false);
 }

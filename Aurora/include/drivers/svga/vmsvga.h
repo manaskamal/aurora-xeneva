@@ -55,6 +55,19 @@ typedef struct _svga_drive_ {
 	} irq;
 }svga_device;
 
+/**
+ * IOQuery struct format passed to svga 
+ * driver
+ */
+typedef struct _svga_io_query_struct_ {
+	uint32_t value;
+	uint32_t value2;
+	uint32_t value3;
+	uint32_t value4;
+	uint32_t value5;
+	uint32_t value6;
+}svga_io_query_t;
+
 extern uint32_t svga_read_reg (uint32_t index);
 extern void svga_write_reg (uint32_t index, uint32_t value);
 extern bool svga_is_fifo_reg_valid (int reg);

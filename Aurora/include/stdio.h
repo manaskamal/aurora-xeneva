@@ -13,12 +13,29 @@
 #ifndef __STDIO_H__
 #define __STDIO_H__
 
-
 #include <string.h>
-#include <console.h>
+#include <_null.h>
 #include <stdint.h>
-#include <serial.h>
+
+#define EOF (-1)
+
+#define STDIN_FILENO  0
+#define STDOUT_FILENO 1
+#define STDERR_FILENO 2
+
+#ifndef SEEK_SET
+#define SEEK_SET 1
+#define SEEK_CUR 2
+#define SEEK_END 3
+#endif
+
+typedef unsigned fpos_t;
 
 extern char* sztoa(size_t value, char* str, int base);
 extern void printf(const char* format, ...);
+extern int putchar (int);
+extern int getchar ();
+extern void *memmove (void* dest, const void* src, size_t n);
+
+
 #endif

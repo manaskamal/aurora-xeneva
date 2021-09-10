@@ -106,7 +106,7 @@ int mbtowc (wchar_t *wc, const char* bytes, size_t n) {
 
 	if (wc) 
 		*wc = (wchar_t) utf8CharToUnicode (bytes, n);
-	return (num_bytes;
+	return (num_bytes);
 }
 
 

@@ -9,49 +9,22 @@
  * ====================================================
  */
 
-#include <xnsys.h>
+#include <sys\_term.h>
+#include <sys\_wait.h>
+#include <sys\_exit.h>
+#include <sys\ioquery.h>
+#include <stdlib.h>
 
-char *manas = 0;
-extern "C" void shl_print(const char* txt);
-void func_call () {
-}
-void thread_1 () {
-	manas = "Manas";
-	print_text ("User inner thread spawned %s\n",manas);
-	print_text ("Hello Multi-threading world\n");
+void main (int argc, char*argv[]) {
+	sys_print_text ("\n");
+	sys_print_text ("Copyright (C) Manas Kamal Choudhury 2021\n");
+	sys_print_text ("Operating System : Aurora's Xeneva v1.0\n");
+	sys_print_text ("XNShell v1.0\n");
+	sys_print_text ("Shell created thread\n");
+	ioquery(IO_QUERY_SVGA, 0x201, 0);
+
 	while(1) {
-	}
-}
-
-void thread_2 () {
-	manas = "Kamal";
-	print_text ("User inner thread 2\n");
-	print_text ("Multi threading World from thread 2  %s\n", manas);
-	while(1) {
-	}
-}
-void main () {
-	print_text ("\n");
-	print_text ("Copyright (C) Manas Kamal Choudhury 2021\n");
-	print_text ("Operating System : Aurora's Xeneva v1.0\n");
-	print_text ("XNShell v1.0\n");
-	print_text ("Shell created thread\n");
-	create_uthread (thread_1);
-	create_uthread (thread_2);
-
-	/*uint32_t status = fork();
-	if (status)
-		print_text ("Current process forked\n");
-	exec ("dwm3.exe", status);*/
-	message_t msg;
-	while(1) {
-		message_receive (&msg);
-
-		if (msg.type == 3) {
-			print_text ("Hello\n");
-			memset(&msg,0,sizeof (message_t));
-		}
-
-		sched_wait();
+		sys_print_text ("Shell Loop\n");
+		sys_wait();
 	}
 }

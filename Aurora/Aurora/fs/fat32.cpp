@@ -16,6 +16,7 @@
 #include <pmmngr.h>
 #include <ctype.h>
 #include <mm.h>
+#include <vfs.h>
 
 
 unsigned int part_lba;  //partition_begin_lba
@@ -140,14 +141,7 @@ uint32_t fat32_read_fat (uint32_t cluster_index) {
 void fat32_read (FILE *file, unsigned char* buf) {
 
 	auto lba = cluster_to_sector32 (file->start_cluster); 
-	/*ata_read_28 (lba, 1, buf);
-	ata_read_28 (lba + 1, 1, buf + 512);
-	ata_read_28 (lba + 2, 1, buf + 512 + 512);
-	ata_read_28 (lba + 3, 1, buf + 512 + 512 + 512);
-	ata_read_28 (lba + 4, 1, buf + 512 + 512 + 512 + 512);
-	ata_read_28 (lba + 5, 1, buf + 512 + 512 + 512 + 512 + 512);
-	ata_read_28 (lba + 6, 1, buf + 512 + 512 + 512 + 512 + 512 + 512);
-	ata_read_28 (lba + 7, 1, buf + 512 + 512 + 512 + 512 + 512 + 512 + 512);*/
+	
 	for (int i = 0; i < 8; i++) {
 		ata_read_28 (lba+i,1,buf);
 		buf += 512;
@@ -201,7 +195,7 @@ FILE fat32_locate_dir (const char* dir) {
 			if (strcmp (dos_file_name, name) == 0) {
 				//kprintf ("File found\n");
 				strcpy (file.filename, dir);
-				file.id = 0;
+				file.id = 10;   //boot disk device id
 				file.start_cluster = dirent->first_cluster;
 				file.size = dirent->file_size;
 				file.eof = 0;
@@ -259,7 +253,7 @@ FILE fat32_locate_subdir (FILE kfile, const char* filename) {
 
 					//! found file
 					strcpy (file.filename, filename);
-					file.id = 0;
+					file.id = 10;  //boot disk device id
 					file.start_cluster = pkDir->first_cluster;
 					file.size = pkDir->file_size;
 					file.eof = 0;
@@ -345,7 +339,6 @@ void fat32_list_files() {
 //! @param filename -- name of the file
 //! @example -- \\EFI\\BOOT\\BOOTx64.efi
 FILE fat32_open (const char* filename) {
-
 	FILE cur_dir;
 	char* p = 0;
 	bool  root_dir = true;
@@ -770,6 +763,18 @@ void create_dir (const char* filename) {
 		}
 	}
 
+}
+
+
+void fat32_self_register () {
+	file_system_t *fsys = (file_system_t*)pmmngr_alloc();
+	memset (fsys, 0, sizeof(file_system_t));
+	strcpy (fsys->name, "FAT32BOOT");
+	fsys->sys_open = fat32_open;
+	fsys->sys_read = fat32_read_file;
+	fsys->sys_read_blk = fat32_read;
+	fsys->ioquery = 0;
+	vfs_register (BOOT_DISK_DEVICE_ID, fsys);
 }
 
 

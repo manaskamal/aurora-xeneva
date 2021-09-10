@@ -500,7 +500,7 @@ AcpiDsLoad2EndOp (
      * Put the Node on the object stack (Contains the ACPI Name of
      * this object)
      */
-    WalkState->Operands[0] = (acpi_operand_object*) Node;
+	WalkState->Operands[0] = (ACPI_OPERAND_OBJECT*) Node;
     WalkState->NumOperands = 1;
 
     /* Pop the scope stack */
@@ -741,7 +741,7 @@ AcpiDsLoad2EndOp (
 
             if (!AcpiNsGetAttachedObject (Op->Named.Node))
             {
-                WalkState->Operands[0] = (acpi_operand_object*)ACPI_CAST_PTR (void, Op->Named.Node);
+				WalkState->Operands[0] = (ACPI_OPERAND_OBJECT*)ACPI_CAST_PTR (void, Op->Named.Node);
                 WalkState->NumOperands = 1;
 
                 Status = AcpiDsCreateOperands (WalkState, Op->Common.Value.Arg);

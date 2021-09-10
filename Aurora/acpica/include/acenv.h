@@ -311,13 +311,13 @@
 
 /* 64-bit data types */
 
-#ifndef COMPILER_DEPENDENT_INT64
+//#ifndef COMPILER_DEPENDENT_INT64
 #define COMPILER_DEPENDENT_INT64   long long
-#endif
+//#endif
 
-#ifndef COMPILER_DEPENDENT_UINT64
+//#ifndef COMPILER_DEPENDENT_UINT64
 #define COMPILER_DEPENDENT_UINT64  unsigned long long
-#endif
+//#endif
 
 /* Type of mutex supported by host. Default is binary semaphores. */
 

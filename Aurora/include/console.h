@@ -12,11 +12,9 @@
 #ifndef __CONSOLE_H__
 #define __CONSOLE_H__
 
-#include <stdint.h>
 #include <_xnboot.h>
 #include <pmmngr.h>
 #include <arch\x86_64\mmngr\vmmngr.h>
-#include <string.h>
 
 #pragma pack (push, 1)
 typedef struct {

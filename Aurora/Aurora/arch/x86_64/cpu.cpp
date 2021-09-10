@@ -13,6 +13,7 @@
 #include <arch\x86_64\exception.h>
 #include <arch\x86_64\user64.h>
 #include <arch\x86_64\pic.h>
+#include <arch\x86_64\apic.h>
 
 
 //! Global Descriptor Table functions

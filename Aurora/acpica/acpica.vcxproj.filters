@@ -37,6 +37,15 @@
     <Filter Include="src\interpreter">
       <UniqueIdentifier>{e739e6f7-44dc-4201-acb8-2b5a9cfc0eb7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\namespace">
+      <UniqueIdentifier>{a9ceafa9-79cc-4085-b004-878266ff06da}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\utilities">
+      <UniqueIdentifier>{257991c7-a981-45f1-8fe0-388505303f7b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\xeneva">
+      <UniqueIdentifier>{3e59e3c2-de47-49b1-ae7c-25b79d8168ae}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\acbuffer.h">
@@ -175,6 +184,9 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="include\acenvex.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\acclib.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
@@ -574,6 +586,171 @@
     </ClCompile>
     <ClCompile Include="components\interpreter\exutils.c">
       <Filter>src\interpreter</Filter>
+    </ClCompile>
+    <ClCompile Include="components\namespace\nsaccess.c">
+      <Filter>src\namespace</Filter>
+    </ClCompile>
+    <ClCompile Include="components\namespace\nsalloc.c">
+      <Filter>src\namespace</Filter>
+    </ClCompile>
+    <ClCompile Include="components\namespace\nsarguments.c">
+      <Filter>src\namespace</Filter>
+    </ClCompile>
+    <ClCompile Include="components\namespace\nsconvert.c">
+      <Filter>src\namespace</Filter>
+    </ClCompile>
+    <ClCompile Include="components\namespace\nsdump.c">
+      <Filter>src\namespace</Filter>
+    </ClCompile>
+    <ClCompile Include="components\namespace\nseval.c">
+      <Filter>src\namespace</Filter>
+    </ClCompile>
+    <ClCompile Include="components\namespace\nsinit.c">
+      <Filter>src\namespace</Filter>
+    </ClCompile>
+    <ClCompile Include="components\namespace\nsload.c">
+      <Filter>src\namespace</Filter>
+    </ClCompile>
+    <ClCompile Include="components\namespace\nsnames.c">
+      <Filter>src\namespace</Filter>
+    </ClCompile>
+    <ClCompile Include="components\namespace\nsobject.c">
+      <Filter>src\namespace</Filter>
+    </ClCompile>
+    <ClCompile Include="components\namespace\nsparse.c">
+      <Filter>src\namespace</Filter>
+    </ClCompile>
+    <ClCompile Include="components\namespace\nspredef.c">
+      <Filter>src\namespace</Filter>
+    </ClCompile>
+    <ClCompile Include="components\namespace\nsprepkg.c">
+      <Filter>src\namespace</Filter>
+    </ClCompile>
+    <ClCompile Include="components\namespace\nsrepair.c">
+      <Filter>src\namespace</Filter>
+    </ClCompile>
+    <ClCompile Include="components\namespace\nsrepair2.c">
+      <Filter>src\namespace</Filter>
+    </ClCompile>
+    <ClCompile Include="components\namespace\nssearch.c">
+      <Filter>src\namespace</Filter>
+    </ClCompile>
+    <ClCompile Include="components\namespace\nsutils.c">
+      <Filter>src\namespace</Filter>
+    </ClCompile>
+    <ClCompile Include="components\namespace\nswalk.c">
+      <Filter>src\namespace</Filter>
+    </ClCompile>
+    <ClCompile Include="components\namespace\nsxfeval.c">
+      <Filter>src\namespace</Filter>
+    </ClCompile>
+    <ClCompile Include="components\namespace\nsxfname.c">
+      <Filter>src\namespace</Filter>
+    </ClCompile>
+    <ClCompile Include="components\namespace\nsxfobj.c">
+      <Filter>src\namespace</Filter>
+    </ClCompile>
+    <ClCompile Include="components\utilities\utaddress.c">
+      <Filter>src\utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="components\utilities\utalloc.c">
+      <Filter>src\utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="components\utilities\utbuffer.c">
+      <Filter>src\utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="components\utilities\utcache.c">
+      <Filter>src\utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="components\utilities\utclib.c">
+      <Filter>src\utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="components\utilities\utcopy.c">
+      <Filter>src\utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="components\utilities\utdebug.c">
+      <Filter>src\utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="components\utilities\utdecode.c">
+      <Filter>src\utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="components\utilities\utdelete.c">
+      <Filter>src\utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="components\utilities\uterror.c">
+      <Filter>src\utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="components\utilities\uteval.c">
+      <Filter>src\utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="components\utilities\utexcep.c">
+      <Filter>src\utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="components\utilities\utglobal.c">
+      <Filter>src\utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="components\utilities\uthex.c">
+      <Filter>src\utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="components\utilities\utids.c">
+      <Filter>src\utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="components\utilities\utinit.c">
+      <Filter>src\utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="components\utilities\utlock.c">
+      <Filter>src\utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="components\utilities\utmath.c">
+      <Filter>src\utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="components\utilities\utmisc.c">
+      <Filter>src\utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="components\utilities\utmutex.c">
+      <Filter>src\utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="components\utilities\utobject.c">
+      <Filter>src\utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="components\utilities\utosi.c">
+      <Filter>src\utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="components\utilities\utownerid.c">
+      <Filter>src\utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="components\utilities\utpredef.c">
+      <Filter>src\utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="components\utilities\utprint.c">
+      <Filter>src\utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="components\utilities\utresrc.c">
+      <Filter>src\utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="components\utilities\utstate.c">
+      <Filter>src\utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="components\utilities\utstring.c">
+      <Filter>src\utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="components\utilities\utuuid.c">
+      <Filter>src\utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="components\utilities\utxface.c">
+      <Filter>src\utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="components\utilities\utxferror.c">
+      <Filter>src\utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="components\utilities\utxfinit.c">
+      <Filter>src\utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="components\utilities\utxfmutex.c">
+      <Filter>src\utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="components\xeneva\xenevaosi.cpp">
+      <Filter>src\xeneva</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

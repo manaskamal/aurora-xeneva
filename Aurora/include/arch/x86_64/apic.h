@@ -12,6 +12,7 @@
 #ifndef __APIC_H__
 #define __APIC_H__
 
+
 #include <stdint.h>
 #include <arch\x86_64\cpu.h>
 

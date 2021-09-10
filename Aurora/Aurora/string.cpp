@@ -10,8 +10,12 @@
  */
 
 #include <string.h>
+#include <_null.h>
 
 #define MAX_STRING_LENGTH 25
+
+typedef size_t WT;
+#define WS (sizeof(WT))
 
 void memset(void *targ, uint8_t val, uint32_t len){
 	uint8_t *t = (uint8_t*) targ;
@@ -119,3 +123,9 @@ char* strchr (char* str, int character) {
 
 	return 0;
 }
+
+void *memmove (void* dest, const void* src, size_t n) {
+	return 0;
+}
+
+

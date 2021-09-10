@@ -13,7 +13,6 @@
 #define __THREAD_H__
 
 #include <stdint.h>
-#include <string.h>
 #include <utils\list.h>
 #include <mm.h>
 

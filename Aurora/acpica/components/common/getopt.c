@@ -126,7 +126,6 @@
 #include "acpi.h"
 #include "accommon.h"
 #include "acapps.h"
-#include <string.h>
 
 #define ACPI_OPTION_ERROR(msg, badchar) \
     if (AcpiGbl_Opterr) {AcpiLogError ("%s%c\n", msg, badchar);}

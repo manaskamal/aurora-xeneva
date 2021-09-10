@@ -6,10 +6,11 @@
  * /PROJECT - Aurora 1.0
  * /AUTHOR  - Manas Kamal Choudhury
  *
- */
+ **/
 
 #ifndef __STDINT_H__
 #define __STDINT_H__
+
 
 #define __need_wint_t
 #define __need_wchar_t
@@ -152,7 +153,7 @@ typedef unsigned long long   uintmax_t;
 
 
 /* 7.18.4  Macros for integer constants */
-#if !defined ( __cplusplus) || defined (__STDC_CONSTANT_MACROS)
+#if !defined ( __cplusplus) || defined __STDC_LIMIT_MACROS 
 
 /* 7.18.4.1  Macros for minimum-width integer constants */
 
@@ -177,19 +178,18 @@ extern "C++" {
 	template <class T, class U> intptr_t raw_diff(T* p1, U* p2)
 	{
 		return (intptr_t)p1 - (intptr_t)p2;
-	}
+	};
 	template <class T, class U> T raw_offset(U p1, const intptr_t offset)
 	{
 		return (T) ((size_t)p1 + offset);
-	}
+	};
 	template <class T, class U> T mem_after(U* p1)
 	{
 		return (T) (&p1[1]);
-	}
-}
-#else
-#define RAW_OFFSET(type, x, offset)  (type)((size_t)x + offset)
+	};
+};
 #endif
 
-#define NULL  0
+#define RAW_OFFSET(type, x, offset)  (type)((size_t)x + offset)
+
 #endif

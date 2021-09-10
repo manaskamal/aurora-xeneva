@@ -12,6 +12,8 @@
 #ifndef __PMMNGR_H__
 #define __PMMNGR_H__
 
+
+
 #include <_xnboot.h>
 #include <stdint.h>
 
@@ -20,6 +22,5 @@ extern void* pmmngr_alloc();
 extern void pmmngr_free (void* addr);
 extern uint64_t pmmngr_get_free_ram ();
 extern uint64_t pmmngr_get_used_ram ();
-
 
 #endif

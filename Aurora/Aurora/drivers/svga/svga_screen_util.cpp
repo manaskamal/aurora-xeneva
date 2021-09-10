@@ -12,6 +12,7 @@
 #include <drivers\svga\svga_screen_util.h>
 #include <drivers\svga\svga3d_reg.h>
 #include <drivers\svga\svga_screen.h>
+#include <string.h>
 
 
 svga_screen_console g_screen;

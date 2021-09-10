@@ -39,4 +39,5 @@ extern void sys_exit();
 extern void sys_fb_move_cursor (uint32_t x, uint32_t y);
 extern uint32_t fork ();
 extern void exec (const char* filename, uint32_t pid);
+extern void ioquery (int devid, int code, void* arg);
 #endif

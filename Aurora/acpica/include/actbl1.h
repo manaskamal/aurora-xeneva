@@ -1385,7 +1385,7 @@ typedef struct acpi_table_slit
  *
  ******************************************************************************/
 
-typedef struct acpi_table_srat
+typedef struct _acpi_table_srat_
 {
     ACPI_TABLE_HEADER       Header;             /* Common ACPI table header */
     UINT32                  TableRevision;      /* Must be value '1' */
