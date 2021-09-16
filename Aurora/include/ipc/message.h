@@ -34,6 +34,7 @@ typedef struct _message_ {
 	uint32_t *dword10;
 	uint64_t quad;
 	uint16_t type;
+	uint16_t dest_id;
 	char  buffer[50];
 }message_t;
 

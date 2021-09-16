@@ -112,7 +112,7 @@ void svga_init () {
 
 
 	svga_enable();
-	svga_set_mode (1280,1024,32);
+	svga_set_mode (get_screen_width(),get_screen_height(),32);
 	gmr_init();
 	memset(svga_dev.fb_mem,0x40,svga_dev.width*svga_dev.height*32);
 	svga_update(0,0,svga_dev.width,svga_dev.height);
@@ -598,21 +598,44 @@ uint32_t* svga_get_fb_mem () {
 int svga_io_query (int code, void* arg) {
 	svga_io_query_t *query_struct = (svga_io_query_t*)arg;
 	switch (code) {
-
-	case SVGA_SETMODE:
+	case SVGA_SETMODE: {
 		svga_set_mode (query_struct->value, query_struct->value2, query_struct->value3);
 		break;
-	case SVGA_GETWIDTH:
-		printf ("SVGA Get width syscall\n");
+	 }
+	case SVGA_GETWIDTH:{
+		uint32_t width = get_screen_width();
+		return width;
 		break;
-	case SVGA_GETHEIGHT:
-		printf ("Svga get height syscall\n");
+	}
+	case SVGA_GETHEIGHT:{
+		uint32_t height = get_screen_height();
+		return height;
 		break;
-	case SVGA_GETBPP:
-		printf ("Svga get bpp syscall\n");
+	}
+	case SVGA_GETBPP:{
+		uint32_t bpp = get_bpp();
+		return bpp;
 		break;
-	default:
+	 }
+	case SVGA_UPDATE:{
+		uint32_t xcoord = query_struct->value;
+		uint32_t ycoord = query_struct->value2;
+		uint32_t width = query_struct->value3;
+		uint32_t height = query_struct->value4;
+		svga_update(xcoord, ycoord, width, height);
+		break;
+	}
+	case SVGA_MOVE_CURSOR: {
+		break;
+	}
+	case SVGA_GET_SCANLINE: {
+		uint16_t scanline = get_screen_scanline();
+		return scanline;
+		break;
+	}
+	default: {
 		return 1;
+	}
 	}
 
 	return 1;

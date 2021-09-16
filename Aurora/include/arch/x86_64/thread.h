@@ -59,7 +59,7 @@ typedef struct _trap_frame_ {
 typedef struct _thread_ {
 	//uint64_t stack;   //0x00
 	uint64_t ss;       //0x00
-	uint64_t rsp;      //0x08
+	uint64_t *rsp;      //0x08
 	uint64_t rflags;   //0x10
 	uint64_t cs;       //0x18
 	uint64_t rip;      //0x20
@@ -143,6 +143,9 @@ extern thread_t * thread_iterate_ready_list (uint16_t id);
 
 extern thread_t* thread_iterate_block_list (int id);
 
+//!Get thread id by its name
+extern uint16_t thread_get_id_by_name (char* name);
+
 extern "C" int save_context (thread_t *t,void *tss);
 
 extern "C" void execute_idle(thread_t* stack, void* tss);
@@ -156,4 +159,5 @@ extern void sleep_thread (thread_t *t, uint64_t ms);
 extern void task_delete (thread_t* thread);
 
 extern bool is_scheduler_initialized ();
+
 #endif

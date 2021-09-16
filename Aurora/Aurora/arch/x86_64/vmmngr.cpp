@@ -12,6 +12,7 @@
 #include <arch\x86_64\mmngr\vmmngr.h>
 #include <screen.h>
 #include <ipc\dwm_ipc.h>
+#include <arch\x86_64\thread.h>
 
 //================================================
 // M E M O R Y   M A P 
@@ -94,8 +95,10 @@ bool map_page (uint64_t physical_address, uint64_t virtual_address)
 		x64_mfence();
 	}
 	uint64_t* pml3 = (uint64_t*)(pml4i[i4] & ~(4096 - 1));
+	
 	if (!(pml3[i3] & PAGING_PRESENT))
 	{
+		
 		const uint64_t page = (uint64_t)pmmngr_alloc();
 		pml3[i3] = page | flags;
 		clear((void*)page);
@@ -103,8 +106,10 @@ bool map_page (uint64_t physical_address, uint64_t virtual_address)
 		x64_mfence();
 		
 	}
-
+    
+	
 	uint64_t* pml2 = (uint64_t*)(pml3[i3] & ~(4096 - 1));
+	
 	if (!(pml2[i2] & PAGING_PRESENT))
 	{
 		const uint64_t page = (uint64_t)pmmngr_alloc();
@@ -114,12 +119,14 @@ bool map_page (uint64_t physical_address, uint64_t virtual_address)
 		x64_mfence();
 		
 	}
+	
 	uint64_t* pml1 = (uint64_t*)(pml2[i2] & ~(4096 - 1));
-	/*if (pml1[i1] & PAGING_PRESENT)
-	{
-		return false;
-	}
-*/
+	//if (pml1[i1] & PAGING_PRESENT)
+	//{
+	//	printf ("Paging present\n");
+	//	return false;
+	//}
+
 	pml1[i1] = physical_address | flags;
 	flush_tlb ((void*)virtual_address);
 	x64_mfence ();
@@ -256,8 +263,8 @@ bool map_page_ex (uint64_t *pml4i,uint64_t physical_address, uint64_t virtual_ad
 	uint64_t* pml1 = (uint64_t*)(pml2[i2] & ~(4096 - 1));
 
 	if (pml1[i1] & PAGING_PRESENT){
-
-		return false;
+		//printf ("Paging present\n");
+		//return false;
 	}
 
 	pml1[i1] = physical_address | flags;
@@ -276,12 +283,13 @@ uint64_t *create_user_address_space ()
 	uint64_t* pml4_i = (uint64_t*)pmmngr_alloc(); 
 	uint64_t* old_pml4 = (uint64_t*)x64_read_cr3();
 
+	memset (pml4_i, 0, 4096);
 	//! copy the 0 and 1 entries from old address space to new one
 	/*for (int i = 0; i < 512; i++) {
 		if ((old_pml4[i] & 1) == 1)
 			pml4_i[i] = old_pml4[i];
-	}*/
-
+	}
+*/
 	pml4_i[0] = old_pml4[0];
 	pml4_i[1] = old_pml4[1];
 	//!**Copy the kernel stack to new address space
@@ -301,7 +309,7 @@ uint64_t *create_user_address_space ()
 		pml4_i[pml4_index(0xFFFF800000000000 + i*4096)] = old_pml4[pml4_index(0xFFFF800000000000 + i*4096)];
 	
 
-
+	pml4_i[pml4_index(0xFFFFFD0000000000)] = old_pml4[pml4_index(0xFFFFFD0000000000)];
 	pml4_i[pml4_index(0xFFFFD00000000000)] = old_pml4[pml4_index(0xFFFFD00000000000)];
 	//! copy the user stack area to new address space
 	//pml4_i[511] = *pml4_i | PAGING_PRESENT | PAGING_WRITABLE;

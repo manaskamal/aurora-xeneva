@@ -41,6 +41,12 @@ int memcmp(const void *first, const void *second, size_t length)
 	return (0); //return successful code
 }
 
+void *memcpy(void *dest, void *src, size_t count) {
+	const char *sp = (const char*)src;
+	char *dp = (char*)dest;
+	for(; count != 0; count--) *dp++ = *sp++;
+	return dest;
+}
 
 int strcmp (const char* str1, const char* str2)
 {

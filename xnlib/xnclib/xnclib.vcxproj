@@ -91,6 +91,7 @@
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions</EnableEnhancedInstructionSet>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <AdditionalIncludeDirectories>E:\Xeneva Project\Xeneva\xnlib\xnclib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <CallingConvention>Cdecl</CallingConvention>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -141,11 +142,17 @@
     <ClInclude Include="sys\mmap.h" />
     <ClInclude Include="sys\utf.h" />
     <ClInclude Include="sys\_exit.h" />
+    <ClInclude Include="sys\_file.h" />
+    <ClInclude Include="sys\_ipc.h" />
+    <ClInclude Include="sys\_process.h" />
+    <ClInclude Include="sys\_sleep.h" />
     <ClInclude Include="sys\_term.h" />
+    <ClInclude Include="sys\_thread.h" />
     <ClInclude Include="sys\_wait.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="heap.cpp" />
+    <ClCompile Include="initializer.cpp" />
     <ClCompile Include="string.cpp" />
     <ClCompile Include="sys\stdlib.cpp" />
   </ItemGroup>
@@ -154,6 +161,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <FileType>Document</FileType>
     </NASM>
+    <NASM Include="_fast_copy.asm" />
   </ItemGroup>
   <ItemGroup>
     <NASM Include="crt0.asm">

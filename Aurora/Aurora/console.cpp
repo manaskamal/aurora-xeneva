@@ -71,12 +71,12 @@ void puts(char *s){
 		if (*s == '\n') {
 
 			////!Scroll
-			//if (console_y + 1 > screen_height) {
-			//	for (int i = 16; i < screen_height * screen_width; i++) {
-			//		fb[i] = fb[i + screen_width * 16];
-			//	}
-			//	console_y--;
-			//}
+			if (console_y + 1 > screen_height) {
+				for (int i = 16; i < screen_height * screen_width; i++) {
+					fb[i] = fb[i + screen_width * 16];
+				}
+				console_y--;
+			}
 
 			console_y += 16;
 			console_x = 0;

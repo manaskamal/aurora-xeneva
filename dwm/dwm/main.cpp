@@ -152,6 +152,7 @@ void main () {
 			uint8_t b = data[j * 3 + 2];       //data[i * 3 + 2];
 			uint32_t rgb =  ((r<<16) | (g<<8) | (b)) & 0x00ffffff;  //0xFF000000 | (r << 16) | (g << 8) | b;
 			rgb = rgb | 0xff000000;
+
 			draw_pixel3(0 + k, 0 + i,rgb);
 			j++;
 		}

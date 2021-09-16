@@ -27,11 +27,27 @@
     <ClInclude Include="sys\ioquery.h">
       <Filter>sys</Filter>
     </ClInclude>
+    <ClInclude Include="sys\_process.h">
+      <Filter>sys</Filter>
+    </ClInclude>
+    <ClInclude Include="sys\_ipc.h">
+      <Filter>sys</Filter>
+    </ClInclude>
+    <ClInclude Include="sys\_sleep.h">
+      <Filter>sys</Filter>
+    </ClInclude>
+    <ClInclude Include="sys\_thread.h">
+      <Filter>sys</Filter>
+    </ClInclude>
+    <ClInclude Include="sys\_file.h">
+      <Filter>sys</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="string.cpp" />
     <ClCompile Include="heap.cpp" />
     <ClCompile Include="sys\stdlib.cpp" />
+    <ClCompile Include="initializer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="sys">
@@ -43,5 +59,6 @@
     <NASM Include="sys\callback.asm">
       <Filter>sys</Filter>
     </NASM>
+    <NASM Include="_fast_copy.asm" />
   </ItemGroup>
 </Project>

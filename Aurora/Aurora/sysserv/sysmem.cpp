@@ -11,6 +11,7 @@
 #ifdef ARCH_X64
 #include <arch\x86_64\mmngr\vmmngr.h>
 #include <arch\x86_64\thread.h>
+#include <_null.h>
 #endif
 
 
@@ -21,6 +22,9 @@ void map_shared_memory (uint16_t dest_id,uint64_t pos, size_t size) {
 		map_page ((uint64_t)pmmngr_alloc(),pos + i * 4096);
 
 	thread_t* t = thread_iterate_ready_list (dest_id);
+	if (t == NULL) {
+		t = thread_iterate_block_list(dest_id);
+	}
 	uint64_t *cr3 = (uint64_t*)t->cr3;
 	uint64_t *current_cr3 = (uint64_t*)get_current_thread()->cr3;
 	for (int i = 0; i < size / 4096; i++)

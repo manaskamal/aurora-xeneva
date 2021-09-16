@@ -19,7 +19,7 @@ uint16_t get_thread_id () {
 }
 
 
-void create_uthread (void (*entry) (void*)) {
+void create_uthread (void (*entry) (void*), char* name) {
 
 	/*
 	 * Not implemented properly
@@ -31,7 +31,7 @@ void create_uthread (void (*entry) (void*)) {
 	uthread *uthr = (uthread*)pmmngr_alloc();
 	uthr->entry = entry;
 	uthr->self_pointer = uthr;
-	thread_t * t = create_user_thread (entry, stack, cthread->cr3, "uthread", 1);
+	thread_t * t = create_user_thread (entry, stack, cthread->cr3,name, 1);
 }
 
 

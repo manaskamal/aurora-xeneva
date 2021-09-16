@@ -27,7 +27,7 @@ void kybrd_handler(size_t v, void* p)
 			message_t *msg = (message_t*)pmmngr_alloc();
 			msg->type = 3;
 		    msg->dword = code;
-		    message_send (1,msg);
+		    message_send (2,msg);
 		    pmmngr_free (msg);
 		} else {
 			printf ("[Aurora]: Key Event occured!! \n");
@@ -41,7 +41,7 @@ void kybrd_handler(size_t v, void* p)
 		//!shell will decode the scancode and will take action
 	}
 
-  
+ end:
 	//! tell apic we are done!!!
 	interrupt_end(1);
 	return;

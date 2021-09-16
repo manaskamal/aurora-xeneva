@@ -1,15 +1,20 @@
-﻿Build started 10-09-2021 আবেলি 12:48:46.
+﻿Build started 16-09-2021 ৰাতিপু 8:17:12.
      1>Project "E:\Xeneva Project\Xeneva\xnlib\xnclib\xnclib.vcxproj" on node 2 (Rebuild target(s)).
      1>_NASM:
          sys\callback.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp450033a58dee486481a9a85d5f651e9d.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmpcaad36bfc295478c857b8ae9466fb805.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\callback.obj"  "E:\Xeneva Project\Xeneva\xnlib\xnclib\sys\callback.asm"
+     1>E:\Xeneva Project\Xeneva\xnlib\xnclib\sys\callback.asm(98): warning : label alone on a line without a colon might be in error
+       _NASM:
+         _fast_copy.asm
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmpc68ea149dfdd4a858e3cbe61910bad63.cmd"
+         "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\_fast_copy.obj"  "E:\Xeneva Project\Xeneva\xnlib\xnclib\_fast_copy.asm"
        _NASM:
          crt0.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp848156e790e849148d78e3d38212da1b.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp35c147fa8dbd42a38948aa96010633a1.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\crt0.obj"  "E:\Xeneva Project\Xeneva\xnlib\xnclib\crt0.asm"
        ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\xnlib\xnclib" /Zi /nologo /W4 /WX- /sdl- /MP /Od /D ARCH_X64 /D _MBCS /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt heap.cpp string.cpp sys\stdlib.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\xnlib\xnclib" /Zi /nologo /W4 /WX- /sdl- /MP /Od /D ARCH_X64 /D _MBCS /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt heap.cpp initializer.cpp string.cpp sys\stdlib.cpp
      1>cl : Command line warning D9025: overriding '/sdl-' with '/GS-'
      1>cl : Command line warning D9002: ignoring unknown option '/arch:SSE'
      1>cl : Command line warning D9030: '/Gm' is incompatible with multiprocessing; ignoring /MP switch
@@ -31,26 +36,30 @@
      1>E:\Xeneva Project\Xeneva\xnlib\xnclib\sys/utf.h(115): warning C4244: '=' : conversion from 'unsigned int' to 'unsigned char', possible loss of data
      1>E:\Xeneva Project\Xeneva\xnlib\xnclib\sys/utf.h(116): warning C4244: '=' : conversion from 'unsigned int' to 'unsigned char', possible loss of data
      1>E:\Xeneva Project\Xeneva\xnlib\xnclib\sys/utf.h(117): warning C4244: '=' : conversion from 'unsigned int' to 'unsigned char', possible loss of data
-     1>sys\stdlib.cpp(42): warning C4267: 'argument' : conversion from 'size_t' to 'uint32_t', possible loss of data
      1>sys\stdlib.cpp(72): warning C4267: 'initializing' : conversion from 'size_t' to 'int', possible loss of data
      1>sys\stdlib.cpp(82): warning C4245: 'return' : conversion from 'int' to 'size_t', signed/unsigned mismatch
      1>sys\stdlib.cpp(108): warning C4267: 'argument' : conversion from 'size_t' to 'unsigned int', possible loss of data
          string.cpp
+         initializer.cpp
+     1>initializer.cpp(17): warning C4267: 'argument' : conversion from 'size_t' to 'unsigned int', possible loss of data
+     1>initializer.cpp(21): warning C4267: 'argument' : conversion from 'size_t' to 'unsigned int', possible loss of data
          heap.cpp
      1>heap.cpp(55): warning C4127: conditional expression is constant
          Generating Code...
-     1>e:\xeneva project\xeneva\xnlib\xnclib\string.cpp(62): warning C4706: assignment within conditional expression
-     1>e:\xeneva project\xeneva\xnlib\xnclib\string.cpp(48): warning C4706: assignment within conditional expression
+     1>e:\xeneva project\xeneva\xnlib\xnclib\string.cpp(54): warning C4706: assignment within conditional expression
+     1>e:\xeneva project\xeneva\xnlib\xnclib\string.cpp(68): warning C4706: assignment within conditional expression
      1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V110\Microsoft.CppBuild.targets(1299,5): warning MSB8012: TargetPath(E:\Xeneva Project\Xeneva\Aurora\x64\Debug\xnclib.lib) does not match the Library's OutputFile property value (E:\Xeneva Project\Xeneva\xnlib\lib64\xnclib.lib). This may cause your project to build incorrectly. To correct this, please make sure that $(OutDir), $(TargetName) and $(TargetExt) property values match the value specified in %(Lib.OutputFile).
        Lib:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\Lib.exe /OUT:"E:\Xeneva Project\Xeneva\xnlib\lib64\xnclib.lib" /NOLOGO /NODEFAULTLIB /MACHINE:X64 x64\Debug\heap.obj
+         x64\Debug\initializer.obj
          x64\Debug\string.obj
          x64\Debug\stdlib.obj
          x64\Debug\callback.obj
          x64\Debug\crt0.obj
+         x64\Debug\_fast_copy.obj
          xnclib.vcxproj -> E:\Xeneva Project\Xeneva\Aurora\x64\Debug\xnclib.lib
      1>Done Building Project "E:\Xeneva Project\Xeneva\xnlib\xnclib\xnclib.vcxproj" (Rebuild target(s)).
 
 Build succeeded.
 
-Time Elapsed 00:00:00.93
+Time Elapsed 00:00:00.98

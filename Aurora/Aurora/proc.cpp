@@ -16,6 +16,7 @@
 
 
 static int user_stack_index = 0;
+static int user_stack_index_2 = 0;
 static mutex_t *process_mutex = create_mutex();
 static mutex_t *kill_mutex = create_mutex();
 static mutex_t *add_mutex = create_mutex();
@@ -83,17 +84,21 @@ process_t *find_process_by_id (uint32_t pid) {
 }
 /* Create stack for User process */
 uint64_t *create_user_stack (uint64_t* cr3) {
-
-#define USER_STACK 0x0000700000000000
-	uint64_t location = USER_STACK; // + user_stack_index;
+#define USER_STACK 0x0000700000000000 
+	
+	uint64_t* old_cr3 = (uint64_t*)x64_read_cr3();
+	x64_write_cr3 ((size_t)cr3);
+	uint64_t location = USER_STACK;
 	
 	/* 1 mb stack / process */
-	for (int i=0; i < 0x100000/4096; i++) {
-		map_page_ex(cr3,(uint64_t)pmmngr_alloc(),location + i * 4096);
+	for (int i=0; i < (256*1024)/4096; i++) {
+		uint64_t block = (uint64_t)pmmngr_alloc();
+		map_page(block,location + i * 4096);
 	}
-
-	//user_stack_index += 0x100000;
-	return (uint64_t*)(USER_STACK + 0x100000); // +  user_stack_index);
+ 
+	x64_write_cr3((size_t)old_cr3);
+	
+	return (uint64_t*)(USER_STACK + (256*1024));
 }
 
 /*

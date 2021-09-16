@@ -1,0 +1,12 @@
+^arch\x86_64\interrupts.asm
+E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\interrupts.obj
+^arch\x86_64\switch.asm
+E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\switch.obj
+^arch\x86_64\user.asm
+E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\user.obj
+^arch\x86_64\_low_level.asm
+E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\_low_level.obj
+^drivers\svga\backdoor_stuff.asm
+E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\backdoor_stuff.obj
+^_fast_cpy.asm
+E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\_fast_cpy.obj

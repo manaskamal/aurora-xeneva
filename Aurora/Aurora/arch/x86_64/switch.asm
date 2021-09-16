@@ -65,22 +65,23 @@ execute_idle:
 	;mov [rdx + 0x4],rax     ;store it in tss, as we are going to enter user mode for user threads
 	
 	;mov qword[fs:0x20], r8
-
-	mov r10, [rcx + 0xC0]
-	mov cr3, r10
 	
 	; returning
     mov r9, 1
 	cmp r8, 0
 	cmove r8, r9
-	mov r9, [rcx + 0x10]
+	mov r9, [rcx + 0x10];
+	
+	mov r10, [rcx + 0xC0]
+	mov cr3, r10
+
 	mov rsp, [rcx + 0x08]
 	mov rdx, [rcx + 0x20]
 	mov rcx, [rcx + 0x38]
-	mov rax, r8
-    push r9   ;rflags
+	push r9
 	popfq
 	jmp rdx
+
 
 	
 	

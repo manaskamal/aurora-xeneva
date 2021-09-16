@@ -20,7 +20,7 @@ extern long atol (const char*);
 extern long atoll (const char *);
 extern double atof (const char*);
 extern int abs (int);
-extern void* malloc(size_t);
+extern void* malloc(unsigned int);
 extern void free(void* ptr);
 extern int mblen (const char*, size_t);
 extern size_t mbstowcs(wchar_t *, const char*, size_t);

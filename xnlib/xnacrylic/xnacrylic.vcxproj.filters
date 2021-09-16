@@ -1,0 +1,57 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="include">
+      <UniqueIdentifier>{e9467283-5a78-4413-91ab-9bbe2464cb22}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source">
+      <UniqueIdentifier>{1d32b75d-07e8-4692-b2a7-68a983a0947f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\psf">
+      <UniqueIdentifier>{a9c1e161-85ee-4a82-9606-530665aa9251}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\psf">
+      <UniqueIdentifier>{423ea0d8-f746-4d23-81cd-ae426ca8ed4c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\jpg">
+      <UniqueIdentifier>{607bee2c-14d2-4ac4-bd25-935033aeff09}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="source\canvas.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\psf\psf.cpp">
+      <Filter>source\psf</Filter>
+    </ClCompile>
+    <ClCompile Include="source\acrylic.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\image.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\color.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\canvas.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\color.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\psf\psf.h">
+      <Filter>include\psf</Filter>
+    </ClInclude>
+    <ClInclude Include="include\acrylic.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\jpg\jpeg_decoder.h">
+      <Filter>include\jpg</Filter>
+    </ClInclude>
+    <ClInclude Include="include\image.h">
+      <Filter>include</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

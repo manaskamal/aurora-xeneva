@@ -18,7 +18,7 @@ static mutex_t *msg_mutex = create_mutex ();
 static mutex_t *msg_rcv_mutex = create_mutex();
 
 void dwm_ipc_init () {
-
+	map_page((uint64_t)pmmngr_alloc(),0xFFFFFD0000000000);
 }
 
 uint64_t* get_dwm_message_q_address () {
@@ -27,7 +27,11 @@ uint64_t* get_dwm_message_q_address () {
 void dwm_put_message (dwm_message_t *msg) {
 	x64_cli ();
 	mutex_lock (msg_mutex);
-	thread_t *t  = thread_iterate_ready_list (1);   //!ready list
+	thread_t *t  = thread_iterate_ready_list (2);   //!ready list
+	if (t == NULL) {
+		t = thread_iterate_block_list(2);
+	}
+
 	memcpy (t->mouse_box,msg,sizeof(dwm_message_t));
 	mutex_unlock (msg_mutex);
 

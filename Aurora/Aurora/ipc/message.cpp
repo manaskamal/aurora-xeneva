@@ -36,19 +36,19 @@ void message_send (uint16_t dest_id, message_t *msg) {
 	thread_t * dest_thread = thread_iterate_ready_list (dest_id);
 	if (!dest_thread) {
 		thread_t * blocked_thread = thread_iterate_block_list (dest_id);
-		if (blocked_thread  != NULL)
+		if (blocked_thread  != NULL){
 			unblock_thread (blocked_thread);
-		else
+		}else
 			goto end;
 	}
 
+	msg->dest_id = dest_id;
 	//!Actuall Message model
 	kernel_message_queue_t * temp = (kernel_message_queue_t*)pmmngr_alloc();
 
 	memcpy (&temp->msg, msg, sizeof(message_t));
 	temp->link = top;
 	top = temp;
-	
 end:
 	mutex_unlock (ipc_mutex_msg);
 }
@@ -68,10 +68,12 @@ void message_receive (message_t* msg) {
 		goto end;
 	else {
 		temp = top;
-		top = top->link;
-		temp->link = NULL;
-		memcpy (msg, &temp->msg,sizeof(message_t));
-		pmmngr_free(temp);
+		if (temp->msg.dest_id == get_current_thread()->id) {
+			top = top->link;
+			temp->link = NULL;
+			memcpy (msg, &temp->msg,sizeof(message_t));
+			pmmngr_free(temp);
+		}
 	}
 
 end:

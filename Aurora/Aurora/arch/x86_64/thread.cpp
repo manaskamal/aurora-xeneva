@@ -15,6 +15,7 @@
 #include <atomic\mutex.h>
 #include <utils\lnklist.h>
 #include <string.h>
+#include <serial.h>
 
 /**
  ** E X T E R N A L  S T A T I C  S Y M B O L S
@@ -86,7 +87,7 @@ thread_t* create_kthread (void (*entry) (void), uint64_t stack,uint64_t cr3, cha
 {
 	thread_t *t = (thread_t*)pmmngr_alloc();
 	t->ss = 0x10;
-	t->rsp = stack;
+	t->rsp = (uint64_t*)stack;
 	t->rflags = 0x202;
 	t->cs = 0x08;
 	t->rip = (uint64_t)entry;
@@ -96,7 +97,7 @@ thread_t* create_kthread (void (*entry) (void), uint64_t stack,uint64_t cr3, cha
 	t->rdx = 0;
 	t->rsi = 0;
 	t->rdi = 0;
-	t->rbp = t->rsp;
+	t->rbp = (uint64_t)t->rsp;
 	t->r8 = 0;
 	t->r9 = 0;
 	t->r10 = 0;
@@ -128,8 +129,8 @@ thread_t* create_kthread (void (*entry) (void), uint64_t stack,uint64_t cr3, cha
 thread_t* create_user_thread (void (*entry) (void*),uint64_t stack,uint64_t cr3, char name[8], uint8_t priority)
 {
 	thread_t *t = (thread_t*)pmmngr_alloc();
-	t->ss = SEGVAL(GDT_ENTRY_USER_DATA,3);//0x23;
-	t->rsp = stack;
+	t->ss = SEGVAL(GDT_ENTRY_USER_DATA,3);//0x23; 
+	t->rsp = (uint64_t*)stack;
 	t->rflags = 0x286;
 	t->cs = SEGVAL (GDT_ENTRY_USER_CODE,3);// 0x2b;
 	t->rip = (uint64_t)entry;
@@ -139,7 +140,7 @@ thread_t* create_user_thread (void (*entry) (void*),uint64_t stack,uint64_t cr3,
 	t->rdx = 0;
 	t->rsi = 10;
 	t->rdi = 0;
-	t->rbp = t->rsp;
+	t->rbp = (uint64_t)t->rsp;
 	t->r8 = 0;
 	t->r9 = 0;
 	t->r10 = 0;
@@ -159,6 +160,7 @@ thread_t* create_user_thread (void (*entry) (void*),uint64_t stack,uint64_t cr3,
 	t->quanta = 0;
 	t->blocked_stack_resv = 0;
 	t->mouse_box = (uint64_t*)pmmngr_alloc();
+	map_page_ex((uint64_t*)t->cr3,(uint64_t)t->mouse_box,(uint64_t)0xFFFFFFFFB0000000);
 	t->_is_user = 1;
 	t->priviledge = THREAD_LEVEL_USER;
 	t->state = THREAD_STATE_READY;
@@ -183,6 +185,7 @@ void initialize_scheduler () {
 	block_mutex = create_mutex();
 	scheduler_mutex = create_mutex ();
 	scheduler_enable = true;
+	scheduler_initialized = true;
 	thread_t *idle_ = create_kthread (idle_thread,(uint64_t)pmmngr_alloc(),x64_read_cr3(),"Idle",1);
 	current_thread = idle_;
 }
@@ -246,7 +249,7 @@ void scheduler_isr (size_t v, void* param) {
 			get_kernel_tss()->rsp[0] = current_thread->kern_esp;
 		}
 		
-		//x64_write_cr3 (current_thread->cr3);
+		debug_serial ("Switching tasssssskkk\n");
 		mutex_unlock (scheduler_mutex);
 		execute_idle (current_thread,get_kernel_tss());
 	}
@@ -265,7 +268,6 @@ sched_end:
 
 //! Start the scheduler engine
 void scheduler_start () {
-	scheduler_initialized = true;
 	x64_cli();
 #ifdef USE_APIC
 	setvect(0x40, scheduler_isr);
@@ -289,9 +291,8 @@ void set_current_thread (thread_t *thread) {
 	current_thread = thread;
 }
 
-void set_sched_debug (bool value) {
-	//debug = value;
-}
+
+
 //! check if multi tasking is previously enabled
 bool is_multi_task_enable () {
 	return scheduler_enable;
@@ -326,6 +327,31 @@ thread_t * thread_iterate_ready_list (uint16_t id) {
 			return it;
 		}
 	}
+	return NULL;
+}
+
+//!Get thread id by its name
+uint16_t thread_get_id_by_name (char* name) {
+	uint16_t id = 0;
+	for (thread_t *it = task_list_head; it != NULL; it = it->next) {
+		if (it->name == name) {
+			id = it->id;
+			break;
+		}
+	}
+
+	if (id > 0)
+		return id;
+	else{
+		if (blocked_list->pointer >0)
+			for (int i = 0; i < blocked_list->pointer; i++) {
+				thread_t*  t = (thread_t*)list_get_at (blocked_list,i);
+				if (t->name == name) {
+					return t->id;
+				}
+			}
+	}
+
 	return NULL;
 }
 

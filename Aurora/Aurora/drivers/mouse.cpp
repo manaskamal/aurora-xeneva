@@ -141,9 +141,9 @@ finish_packet:
 			mouse_button |= MOUSE_MIDDLE_CLICK;
 		
 		//!Pass here the message stream to all waiting processes
-		/*if (left_button_up()) {
-			mouse_button_state = 0;
-		}*/
+	
+
+
 		mutex_lock (mouse);
 		dwm_message_t *msg = (dwm_message_t*)pmmngr_alloc();
 		msg->type = 1;
@@ -156,11 +156,16 @@ finish_packet:
 		pmmngr_free (msg);
 		mutex_unlock (mouse);
 
-		thread_t* thr = (thread_t*)thread_iterate_block_list (1);
+		thread_t* thr = (thread_t*)thread_iterate_block_list (2);
 		if (thr != NULL){
 			thr->state = THREAD_STATE_READY;
 			unblock_thread(thr);
 		}
+
+		if (left_button_up()) {
+			mouse_button_state |= 5;
+		}
+
 
 		memcpy (prev_button, curr_button, 3);
 		memset (curr_button, 0x00, 3);

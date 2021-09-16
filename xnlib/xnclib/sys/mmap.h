@@ -28,6 +28,6 @@
 extern "C" void* mmap (uint64_t address, uint32_t length, uint8_t attribute);
 extern "C" void munmap (void* addr, uint32_t length);
 extern "C" void valloc (unsigned long long pos);
-
+extern "C" void map_shared_memory (uint16_t dest_id, uint64_t pos, size_t size);
 
 #endif

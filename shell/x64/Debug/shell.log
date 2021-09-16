@@ -1,8 +1,8 @@
-﻿Build started 10-09-2021 আবেলি 12:48:59.
+﻿Build started 16-09-2021 ৰাতিপু 12:38:29.
      1>Project "E:\Xeneva Project\Xeneva\shell\shell.vcxproj" on node 2 (Rebuild target(s)).
      1>_NASM:
          shl.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp2303580935614130b59d08e8b70eb5ae.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmpb02efdd7322a41149c24d3773e7ef6c5.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\shl.obj"  "E:\Xeneva Project\Xeneva\shell\shl.asm"
        ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\xnlib\xnclib" /Zi /nologo /W1 /WX- /sdl- /Od /D ARCH_X64 /D _MBCS /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt main.cpp
@@ -21,4 +21,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:00.93
+Time Elapsed 00:00:00.60

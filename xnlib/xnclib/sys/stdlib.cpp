@@ -38,7 +38,7 @@ int atoi (const char* s) {
 }
 
 
-void* malloc (size_t s) {
+void* malloc (uint32_t s) {
 	return _malloc(s);
 }
 

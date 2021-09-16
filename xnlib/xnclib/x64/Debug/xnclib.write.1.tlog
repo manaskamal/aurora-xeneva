@@ -1,4 +1,6 @@
 ^sys\callback.asm
 E:\Xeneva Project\Xeneva\xnlib\xnclib\x64\Debug\callback.obj
+^_fast_copy.asm
+E:\Xeneva Project\Xeneva\xnlib\xnclib\x64\Debug\_fast_copy.obj
 ^crt0.asm
 E:\Xeneva Project\Xeneva\xnlib\xnclib\x64\Debug\crt0.obj

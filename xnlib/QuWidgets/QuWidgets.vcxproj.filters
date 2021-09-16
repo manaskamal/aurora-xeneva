@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="include">
+      <UniqueIdentifier>{9287de45-7899-498f-b9a0-d54192a76a72}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source">
+      <UniqueIdentifier>{58614f7c-731a-4f91-9c6f-5fd0b09057ae}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\QuBase.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\QuWindow.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\QuPanel.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\QuRect.h">
+      <Filter>include</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="source\QuBase.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\QuWindow.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\QuPanel.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

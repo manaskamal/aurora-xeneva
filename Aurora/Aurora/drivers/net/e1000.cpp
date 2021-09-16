@@ -102,7 +102,7 @@ bool e1000_read_mac_address () {
 }
 
 void e1000_interrupt_handler (size_t v, void* p) {
-	printf ("E1000 Interrupt fired\n");
+//	printf ("E1000 Interrupt fired\n");
 	//apic_local_eoi();
 	uint32_t icr = e1000_read_command (REG_ICR);
 
@@ -136,7 +136,7 @@ void e1000_interrupt_handler (size_t v, void* p) {
 	} else if (icr & E1000_ICR_TRANSMIT) {
 		printf ("E1000 interrupt data transmit\n");
 	} else if (icr & E1000_ICR_LINK_CHANGE) {
-		printf ("E1000 interrupt link change %s\n", (e1000_read_command(REG_STATUS) & STATUS_LINK_UP) ? "up" : "down");
+		//printf ("E1000 interrupt link change %s\n", (e1000_read_command(REG_STATUS) & STATUS_LINK_UP) ? "up" : "down");
 	} else {
 		printf ("E1000 unknown interrupt\n");
 	}

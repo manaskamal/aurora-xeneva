@@ -107,6 +107,11 @@ void __cdecl operator delete (void* p) {
 	mfree(p);
 }
 
+void dummy_thread_2 () {
+	while(1) {
+	}
+}
+
 void _kmain (KERNEL_BOOT_INFO *info) {
 	hal_init ();
 	pmmngr_init (info);
@@ -117,8 +122,8 @@ void _kmain (KERNEL_BOOT_INFO *info) {
 	kybrd_init();
 	initialize_acpi (info->acpi_table_pointer);
 	initialize_rtc();  
-	hda_initialize();
-	e1000_initialize();  //<< receiver not working
+	//hda_initialize();
+	//e1000_initialize();  //<< receiver not working
    
 
 
@@ -139,7 +144,9 @@ void _kmain (KERNEL_BOOT_INFO *info) {
 	//! task list should be more than 4 or less than 4 not  
 	//create_process ("dwm2.exe", "dwm2", 1);
 	create_process ("a:xshell.exe","shell",0, NULL);
-	create_process ("A:dwm3.exe", "dwm3", 0, NULL);
+	create_process ("a:quince.exe","quince",0, NULL);
+	create_process ("a:dwm3.exe", "dwm3", 0, NULL);
+	create_process ("a:dwm2.exe", "dwm2", 0, NULL);
 	scheduler_start();
 #endif
 	while(1) {
