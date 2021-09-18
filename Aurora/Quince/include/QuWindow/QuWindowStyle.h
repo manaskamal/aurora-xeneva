@@ -12,6 +12,4 @@
 #define __QU_WINDOW_STYLE_H__
 
 
-extern void QuWindowDrawTitlebar (unsigned x, unsigned y, unsigned w);
-
 #endif

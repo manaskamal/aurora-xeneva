@@ -42,6 +42,7 @@
 #include <drvmngr.h>
 #include <procmngr.h>
 #include <serial.h>
+#include <gui\splash.h>
 
 #include <net\arp.h>
 #include <net\ethernet.h>
@@ -122,7 +123,7 @@ void _kmain (KERNEL_BOOT_INFO *info) {
 	kybrd_init();
 	initialize_acpi (info->acpi_table_pointer);
 	initialize_rtc();  
-	//hda_initialize();
+	hda_initialize();
 	//e1000_initialize();  //<< receiver not working
    
 
@@ -137,7 +138,7 @@ void _kmain (KERNEL_BOOT_INFO *info) {
 	dwm_ipc_init();
 
 	driver_mngr_initialize(info);
-	
+	//x64_cli();
 #ifdef ARCH_X64
 	initialize_scheduler();
 	//create_process ("dwm.exe","dwm",20);

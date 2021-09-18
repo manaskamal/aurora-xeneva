@@ -21,6 +21,7 @@
 #include <serial.h>
 #include <string.h>
 #include <vfs.h>
+#include <hwcursor.h>
 
 svga_device svga_dev;
 
@@ -594,7 +595,6 @@ uint32_t* svga_get_fb_mem () {
 	return (uint32_t*)svga_dev.fb_mem;
 }
 
-
 int svga_io_query (int code, void* arg) {
 	svga_io_query_t *query_struct = (svga_io_query_t*)arg;
 	switch (code) {
@@ -626,6 +626,12 @@ int svga_io_query (int code, void* arg) {
 		break;
 	}
 	case SVGA_MOVE_CURSOR: {
+		uint32_t xcoord = query_struct->value;
+		uint32_t ycoord = query_struct->value2;
+		if (query_struct->value6 == 103) //Standard Cursor Image
+			hw_move_cursor (NULL,xcoord, ycoord);
+		else
+			hw_move_cursor ((uint32_t*)0x0000070000001000,xcoord, ycoord);
 		break;
 	}
 	case SVGA_GET_SCANLINE: {

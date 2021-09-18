@@ -230,7 +230,10 @@
     <ClInclude Include="..\include\drivers\vmmouse.h" />
     <ClInclude Include="..\include\drvmngr.h" />
     <ClInclude Include="..\include\fs\fat32.h" />
+    <ClInclude Include="..\include\gui\jpeg.h" />
+    <ClInclude Include="..\include\gui\splash.h" />
     <ClInclude Include="..\include\hal.h" />
+    <ClInclude Include="..\include\hwcursor.h" />
     <ClInclude Include="..\include\ipc\dwm_ipc.h" />
     <ClInclude Include="..\include\ipc\evntsh.h" />
     <ClInclude Include="..\include\ipc\message.h" />
@@ -293,7 +296,9 @@
     <ClCompile Include="drivers\vga.cpp" />
     <ClCompile Include="drvmngr.cpp" />
     <ClCompile Include="fs\fat32.cpp" />
+    <ClCompile Include="gui\splash.cpp" />
     <ClCompile Include="hal.cpp" />
+    <ClCompile Include="hwcursor.cpp" />
     <ClCompile Include="init.cpp" />
     <ClCompile Include="ipc\dwm_ipc.cpp" />
     <ClCompile Include="ipc\evntsh.cpp" />

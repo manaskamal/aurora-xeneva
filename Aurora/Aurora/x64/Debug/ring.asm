@@ -10,7 +10,7 @@ PUBLIC	?ring_insert@@YA_NPEAU_ring_@@PEAX_N@Z		; ring_insert
 PUBLIC	?ring_is_empty@@YA_NPEBU_ring_@@@Z		; ring_is_empty
 PUBLIC	?ring_delete_first@@YA_NPEAU_ring_@@PEAX@Z	; ring_delete_first
 PUBLIC	?ring_move@@YAXPEAU_ring_@@0PEAX@Z		; ring_move
-EXTRN	?malloc@@YAPEAX_K@Z:PROC			; malloc
+EXTRN	?malloc@@YAPEAXI@Z:PROC				; malloc
 EXTRN	?mfree@@YAXPEAX@Z:PROC				; mfree
 pdata	SEGMENT
 $pdata$?ring_insert@@YA_NPEAU_ring_@@PEAX_N@Z DD imagerel $LN10
@@ -557,7 +557,7 @@ $LN6@ring_inser:
 ; 64   : 	element_t* item = (element_t*)malloc(sizeof(element_t*));
 
 	mov	ecx, 8
-	call	?malloc@@YAPEAX_K@Z			; malloc
+	call	?malloc@@YAPEAXI@Z			; malloc
 	mov	QWORD PTR item$[rsp], rax
 
 ; 65   : 	if (item) {

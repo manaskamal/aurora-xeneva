@@ -27,7 +27,7 @@ PUBLIC	?htons@@YAGG@Z					; htons
 PUBLIC	?htonl@@YAII@Z					; htonl
 PUBLIC	?ntohs@@YAGG@Z					; ntohs
 PUBLIC	?ntohl@@YAII@Z					; ntohl
-EXTRN	?malloc@@YAPEAX_K@Z:PROC			; malloc
+EXTRN	?malloc@@YAPEAXI@Z:PROC				; malloc
 EXTRN	memcpy:PROC
 EXTRN	?printf@@YAXPEBDZZ:PROC				; printf
 pdata	SEGMENT
@@ -385,7 +385,7 @@ $LN3:
 ; 36   : 	hw = (net_hw_t*)malloc (sizeof(net_hw_t));
 
 	mov	ecx, 6
-	call	?malloc@@YAPEAX_K@Z			; malloc
+	call	?malloc@@YAPEAXI@Z			; malloc
 	mov	QWORD PTR ?hw@@3PEAU_net_hw_@@EA, rax	; hw
 
 ; 37   : }

@@ -29,7 +29,7 @@ PUBLIC	?arp_initialize@@YAXXZ				; arp_initialize
 PUBLIC	?arp_send_packet@@YAXPEAE0@Z			; arp_send_packet
 PUBLIC	?arp_broadcast@@YAXXZ				; arp_broadcast
 PUBLIC	?arp_lookup_add@@YAXPEAE0@Z			; arp_lookup_add
-EXTRN	?malloc@@YAPEAX_K@Z:PROC			; malloc
+EXTRN	?malloc@@YAPEAXI@Z:PROC				; malloc
 EXTRN	?ethernet_send_packet@@YAHPEAE0HG@Z:PROC	; ethernet_send_packet
 EXTRN	?nethw_get_mac@@YAXPEAE@Z:PROC			; nethw_get_mac
 EXTRN	?htons@@YAGG@Z:PROC				; htons
@@ -139,7 +139,7 @@ $LN3:
 ; 72   : 	arp_packet_t *pack = (arp_packet_t*)malloc(sizeof(arp_packet_t));
 
 	mov	ecx, 28
-	call	?malloc@@YAPEAX_K@Z			; malloc
+	call	?malloc@@YAPEAXI@Z			; malloc
 	mov	QWORD PTR pack$[rsp], rax
 
 ; 73   : 	pack->hw_type = 0x0100;
@@ -295,7 +295,7 @@ $LN3:
 ; 26   : 	arp_packet_t *arp_packet = (arp_packet_t*)malloc(sizeof(arp_packet_t));
 
 	mov	ecx, 28
-	call	?malloc@@YAPEAX_K@Z			; malloc
+	call	?malloc@@YAPEAXI@Z			; malloc
 	mov	QWORD PTR arp_packet$[rsp], rax
 
 ; 27   : 
@@ -419,7 +419,7 @@ $LN3:
 ; 60   : 	arp_table = (arp_table_entry_t*)malloc(512);
 
 	mov	ecx, 512				; 00000200H
-	call	?malloc@@YAPEAX_K@Z			; malloc
+	call	?malloc@@YAPEAXI@Z			; malloc
 	mov	QWORD PTR ?arp_table@@3PEAU_arp_table_@@EA, rax ; arp_table
 
 ; 61   : 	uint8_t broadcast_ip[4];

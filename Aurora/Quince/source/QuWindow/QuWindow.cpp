@@ -12,6 +12,7 @@
 #include <QuWindow\QuWindowMngr.h>
 #include <QuWindow\QuWindowStyle.h>
 #include <QuCanvas\QuCanvasMngr.h>
+#include <QuWindow\QuTitleBar.h>
 #include <QuRect.h>
 #include <stdlib.h>
 #include <acrylic.h>
@@ -21,7 +22,7 @@
 #define QUWIN_DEFAULT_WIDTH   500
 #define QUWIN_DEFAULT_HEIGHT  500
 
-QuWindow* QuWindowCreate (unsigned x, unsigned y, uint16_t owner_id) {
+QuWindow* QuWindowCreate (unsigned x, unsigned y, uint16_t owner_id, uint8_t attr) {
 	QuWindow* win = (QuWindow*)malloc(sizeof(QuWindow));
 	win->x = x;
 	win->y = y;
@@ -34,8 +35,14 @@ QuWindow* QuWindowCreate (unsigned x, unsigned y, uint16_t owner_id) {
 	win->canvas = NULL;
 	win->owner_id = owner_id;
 	win->decorate = true;
+	win->attr = attr;
 	win->dirty_areas = QuListInit ();
+	win->titlebar_object = QuListInit ();
 	QuWindowMngr_Add (win);
+	
+	QuWindowAddMinimizeButton(win);
+	QuWindowAddMaximizeButton(win);
+	QuWindowAddCloseButton(win);
 	return win;
 }
 
@@ -67,17 +74,35 @@ void QuWindowRemoveDirtyArea (QuWindow* win, QuRect* dirty_rect) {
 	}
 }
 
+void QuWindowAddMinimizeButton (QuWindow *win) {
+	QuTitleBarObject *minimize = QuCreateTitleBarObject(win->x + win->width - 43,win->y + 9, 11,18, QU_TITLE_BAR_OBJ_MINIMIZE);
+	QuAddTitleBarObject(win, minimize);
+}
+
+void QuWindowAddMaximizeButton (QuWindow *win) {
+	QuTitleBarObject *maximize = QuCreateTitleBarObject (win->x + win->width - 28, win->y + 9, 11, 18, 
+		QU_TITLE_BAR_OBJ_MAXIMIZE);
+	QuAddTitleBarObject(win, maximize);
+}
+
+void QuWindowAddCloseButton(QuWindow *win) {
+	QuTitleBarObject *close = QuCreateTitleBarObject (win->x + win->width - 13, win->y + 9, 11, 18,
+		QU_TITLE_BAR_OBJ_CLOSE);
+	QuAddTitleBarObject (win, close);
+}
 
 void QuWindowDraw (QuWindow* win) {
 	if (win->dirty_areas->pointer > 0) {
 		for (int i = 0; i < win->dirty_areas->pointer; i++) {
-			QuRect * r = (QuRect*)QuListGetAt(win->dirty_areas, i);
+			QuRect * r = (QuRect*)QuListGetAt(win->dirty_areas, i);  
 			QuCanvasBlit (win->canvas, r->x, r->y, r->w, r->h);
-			QuWindowDrawTitlebar (win->x, win->y, win->width);
+			QuWindowDrawTitlebar (win, win->x, win->y, win->width);
 			canvas_screen_update(r->x, r->y, r->w , r->h);		
 			QuListRemove(win->dirty_areas, i);
 			free(r);
-		}
+			/*if (!QuCanvasGetUpdateBit())
+				QuCanvasSetUpdateBit(true);*/
+		}	
 	}
 }
 

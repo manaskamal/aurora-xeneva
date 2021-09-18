@@ -50,7 +50,7 @@ EXTRN	?apic_local_eoi@@YAXXZ:PROC			; apic_local_eoi
 EXTRN	?interrupt_set@@YAX_KP6AX0PEAX@ZE@Z:PROC	; interrupt_set
 EXTRN	?pci_find_device_class@@YA_NEEPEATpci_device_info@@PEAH11@Z:PROC ; pci_find_device_class
 EXTRN	?printf@@YAXPEBDZZ:PROC				; printf
-EXTRN	?malloc@@YAPEAX_K@Z:PROC			; malloc
+EXTRN	?malloc@@YAPEAXI@Z:PROC				; malloc
 pdata	SEGMENT
 $pdata$?ac97_initialize@@YAXXZ DD imagerel $LN6
 	DD	imagerel $LN6+613
@@ -349,7 +349,7 @@ $LN6:
 ; 56   : 	pci_device_info *addr = (pci_device_info*)malloc(sizeof(pci_config_space));
 
 	mov	ecx, 64					; 00000040H
-	call	?malloc@@YAPEAX_K@Z			; malloc
+	call	?malloc@@YAPEAXI@Z			; malloc
 	mov	QWORD PTR addr$[rsp], rax
 
 ; 57   : 	int bus, dev, func = 0;

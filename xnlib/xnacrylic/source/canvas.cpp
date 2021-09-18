@@ -13,6 +13,7 @@
 #include <stdlib.h>
 #include <sys\ioquery.h>
 #include <sys\mmap.h>
+#include <sys\_term.h>
 
 
 canvas_t* canvas = NULL;
@@ -56,10 +57,11 @@ void canvas_screen_update (uint32_t x, uint32_t y, uint32_t w, uint32_t h) {
 	uint32_t* lfb = (uint32_t*)0xFFFFF00000000000;
 	for (int i=0; i < w; i++) {
 		for (int j=0; j < h; j++){
-			uint32_t color = canvas->address[(x + i) + (y + j) * canvas_get_width()];
+			uint32_t color = canvas->address[(x + i) + (y + j) * canvas_get_scale()];
 			lfb[(x + i) + (y + j) * canvas_get_scale()] = color;
 		}
 	}
+
 	svga_io_query_t *query = (svga_io_query_t*)malloc(sizeof(svga_io_query_t));
 	query->value = x;
 	query->value2 = y;
@@ -70,14 +72,14 @@ void canvas_screen_update (uint32_t x, uint32_t y, uint32_t w, uint32_t h) {
 
 
 void canvas_draw_pixel (uint32_t x, uint32_t y, uint32_t color) {
-	uint32_t *lfb = canvas->address;      
-	lfb[x + y * canvas_get_scale()] = color;
+	uint32_t *lfb =  canvas->address;      
+	lfb[x + y * canvas_get_width()] = color;
 }
 
 
 uint32_t canvas_get_pixel (uint32_t x, uint32_t y) {
-	uint32_t* lfb = canvas->address; 
-	return lfb[x + y * canvas->width];
+	uint32_t* lfb =  canvas->address; 
+	return lfb[x + y * canvas_get_scale()];
 }
 
 

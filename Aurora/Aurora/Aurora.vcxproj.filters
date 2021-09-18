@@ -97,6 +97,12 @@
     <Filter Include="source\net">
       <UniqueIdentifier>{52f7101f-b3ad-4133-81e9-88520926a5f8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\gui">
+      <UniqueIdentifier>{05c89289-a5d1-42de-9e0b-bb57c275425a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\gui">
+      <UniqueIdentifier>{60c634c7-fb55-48e7-8460-f644b194e2fe}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\stdint.h">
@@ -312,6 +318,15 @@
     <ClInclude Include="..\include\drivers\svga\svga_qrcode.h">
       <Filter>include\drivers\svga</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\hwcursor.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\gui\jpeg.h">
+      <Filter>include\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\gui\splash.h">
+      <Filter>include\gui</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="init.cpp">
@@ -502,6 +517,12 @@
     </ClCompile>
     <ClCompile Include="sysserv\ioquery.cpp">
       <Filter>source\sysserv</Filter>
+    </ClCompile>
+    <ClCompile Include="hwcursor.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="gui\splash.cpp">
+      <Filter>source\gui</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

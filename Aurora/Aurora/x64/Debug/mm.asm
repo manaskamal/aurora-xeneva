@@ -6,7 +6,7 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 PUBLIC	?mm_init@@YAXXZ					; mm_init
-PUBLIC	?malloc@@YAPEAX_K@Z				; malloc
+PUBLIC	?malloc@@YAPEAXI@Z				; malloc
 PUBLIC	?mfree@@YAXPEAX@Z				; mfree
 EXTRN	?vmmngr_x86_64_init@@YAXXZ:PROC			; vmmngr_x86_64_init
 EXTRN	?initialize_kmemory@@YAX_K@Z:PROC		; initialize_kmemory
@@ -16,9 +16,9 @@ pdata	SEGMENT
 $pdata$?mm_init@@YAXXZ DD imagerel $LN3
 	DD	imagerel $LN3+24
 	DD	imagerel $unwind$?mm_init@@YAXXZ
-$pdata$?malloc@@YAPEAX_K@Z DD imagerel $LN3
+$pdata$?malloc@@YAPEAXI@Z DD imagerel $LN3
 	DD	imagerel $LN3+24
-	DD	imagerel $unwind$?malloc@@YAPEAX_K@Z
+	DD	imagerel $unwind$?malloc@@YAPEAXI@Z
 $pdata$?mfree@@YAXPEAX@Z DD imagerel $LN3
 	DD	imagerel $LN3+24
 	DD	imagerel $unwind$?mfree@@YAXPEAX@Z
@@ -26,8 +26,8 @@ pdata	ENDS
 xdata	SEGMENT
 $unwind$?mm_init@@YAXXZ DD 010401H
 	DD	04204H
-$unwind$?malloc@@YAPEAX_K@Z DD 010901H
-	DD	04209H
+$unwind$?malloc@@YAPEAXI@Z DD 010801H
+	DD	04208H
 $unwind$?mfree@@YAXPEAX@Z DD 010901H
 	DD	04209H
 xdata	ENDS
@@ -64,18 +64,19 @@ _TEXT	ENDS
 ; File e:\xeneva project\xeneva\aurora\aurora\mm.cpp
 _TEXT	SEGMENT
 address$ = 48
-?malloc@@YAPEAX_K@Z PROC				; malloc
+?malloc@@YAPEAXI@Z PROC					; malloc
 
-; 25   : void* malloc (size_t address) {
+; 25   : void* malloc (uint32_t address) {
 
 $LN3:
-	mov	QWORD PTR [rsp+8], rcx
+	mov	DWORD PTR [rsp+8], ecx
 	sub	rsp, 40					; 00000028H
 
 ; 26   : #ifdef ARCH_X64
 ; 27   : 	return alloc (address);
 
-	mov	rcx, QWORD PTR address$[rsp]
+	mov	eax, DWORD PTR address$[rsp]
+	mov	ecx, eax
 	call	?alloc@@YAPEAX_K@Z			; alloc
 
 ; 28   : #elif  ARCH_ARM
@@ -87,7 +88,7 @@ $LN3:
 
 	add	rsp, 40					; 00000028H
 	ret	0
-?malloc@@YAPEAX_K@Z ENDP				; malloc
+?malloc@@YAPEAXI@Z ENDP					; malloc
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\mm.cpp

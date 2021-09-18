@@ -18,6 +18,6 @@
 #endif
 
 extern void mm_init ();
-extern void* malloc (size_t size);
+extern void* malloc (uint32_t size);
 extern void mfree (void* address);
 #endif

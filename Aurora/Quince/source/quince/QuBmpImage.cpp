@@ -39,22 +39,22 @@ void QuinceDrawBmp (const char* filename, unsigned x, unsigned y, QuBitmap *bmp)
 	bmp->width = width;
 	bmp->height = height;
 	
-	for(int i=0; i < height; i++) {
-		char* image_row = (char*)image + (height - i - 1) * (width * 4);
-		//uint32_t* fb_row = (uint32_t*)get_framebuffer() + (height - 1 - i ) * (width*3);
-		int h = height -1 - i;
-		j = 0;
-		for (int k = 0; k < width; k++) {
-			uint32_t b = image_row[j++] & 0xff;
-			uint32_t g = image_row[j++] & 0xff;
-			uint32_t r = image_row[j++] & 0xff;
-			uint32_t a = image_row[j++] & 0xff;
-			uint32_t rgb = ((a<<24) | (r<<16) | (g<<8) | (b));
-			//rgb = rgb | 0xff000000;
-			//fb_row[100 + 100] = rgb;
-			if (rgb & 0xFF000000)
-				canvas_draw_pixel(x + k,y +  i,rgb);
-		}
-	}
+	//for(int i=0; i < height; i++) {
+	//	char* image_row = (char*)image + (height - i - 1) * (width * 4);
+	//	//uint32_t* fb_row = (uint32_t*)get_framebuffer() + (height - 1 - i ) * (width*3);
+	//	int h = height -1 - i;
+	//	j = 0;
+	//	for (int k = 0; k < width; k++) {
+	//		uint32_t b = image_row[j++] & 0xff;
+	//		uint32_t g = image_row[j++] & 0xff;
+	//		uint32_t r = image_row[j++] & 0xff;
+	//		uint32_t a = image_row[j++] & 0xff;
+	//		uint32_t rgb = ((a<<24) | (r<<16) | (g<<8) | (b));
+	//		//rgb = rgb | 0xff000000;
+	//		//fb_row[100 + 100] = rgb;
+	//		if (rgb & 0xFF000000)
+	//			canvas_draw_pixel(x + k,y +  i,rgb);
+	//	}
+	//}
 
  }

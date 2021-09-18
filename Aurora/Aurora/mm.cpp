@@ -22,7 +22,7 @@ void mm_init () {
 #endif
 }
 
-void* malloc (size_t address) {
+void* malloc (uint32_t address) {
 #ifdef ARCH_X64
 	return alloc (address);
 #elif  ARCH_ARM

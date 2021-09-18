@@ -46,8 +46,7 @@ int main (int argc, char* argv[]) {
 	QuWallpaperDraw (img);
 	QuWallpaperPresent ();
 	
-	//! Initialize Cursor Manager
-	QuCursorInit(0, 0, QU_CURSOR_ARROW);
+	
 	
 	//! Initialize Taskbar Manager
 	QuTaskbarInit();
@@ -60,6 +59,8 @@ int main (int argc, char* argv[]) {
 
 	canvas_screen_update(0,0,w, h);
 
+    //! Initialize Cursor Manager
+	QuCursorInit(0, 0, QU_CURSOR_ARROW);
 	//! Execute the Event Loop
 	QuEventLoop();
 }

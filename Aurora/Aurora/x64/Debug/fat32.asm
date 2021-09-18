@@ -73,7 +73,7 @@ EXTRN	?ata_read_28@@YAEIGPEAE@Z:PROC			; ata_read_28
 EXTRN	?ata_write_one@@YAEPEAEI@Z:PROC			; ata_write_one
 EXTRN	?pmmngr_alloc@@YAPEAXXZ:PROC			; pmmngr_alloc
 EXTRN	?pmmngr_free@@YAXPEAX@Z:PROC			; pmmngr_free
-EXTRN	?malloc@@YAPEAX_K@Z:PROC			; malloc
+EXTRN	?malloc@@YAPEAXI@Z:PROC				; malloc
 pdata	SEGMENT
 $pdata$?initialize_fat32@@YAXXZ DD imagerel $LN3
 	DD	imagerel $LN3+223
@@ -586,7 +586,7 @@ $LN3:
 ; 502  : 	unsigned char *buf = (unsigned char*)malloc(512);
 
 	mov	ecx, 512				; 00000200H
-	call	?malloc@@YAPEAX_K@Z			; malloc
+	call	?malloc@@YAPEAXI@Z			; malloc
 	mov	QWORD PTR buf$[rsp], rax
 
 ; 503  : 	ata_read_28 (fat_sector,1,buf);
@@ -663,7 +663,7 @@ $LN3:
 ; 491  : 	unsigned char *buf = (unsigned char*)malloc(512);
 
 	mov	ecx, 512				; 00000200H
-	call	?malloc@@YAPEAX_K@Z			; malloc
+	call	?malloc@@YAPEAXI@Z			; malloc
 	mov	QWORD PTR buf$[rsp], rax
 
 ; 492  : 	ata_read_28 (fat_sector,1,buf);
@@ -745,7 +745,7 @@ $LN3:
 ; 475  : 	unsigned char *buf = (unsigned char*)malloc(512);
 
 	mov	ecx, 512				; 00000200H
-	call	?malloc@@YAPEAX_K@Z			; malloc
+	call	?malloc@@YAPEAXI@Z			; malloc
 	mov	QWORD PTR buf$[rsp], rax
 
 ; 476  : 	ata_read_28 (fat_sector,1,buf);
@@ -862,7 +862,7 @@ $LN4@find_free_:
 ; 457  : 		unsigned char *buf = (unsigned char*)malloc(512);
 
 	mov	ecx, 512				; 00000200H
-	call	?malloc@@YAPEAX_K@Z			; malloc
+	call	?malloc@@YAPEAXI@Z			; malloc
 	mov	QWORD PTR buf$4[rsp], rax
 
 ; 458  : 		ata_read_28 (fat_sector,1,buf);

@@ -26,7 +26,7 @@
 
 uint32_t cursor_pos = 0;
 QuList * dirty_list = NULL;
-
+bool update_bit = false;
 
 void QuCanvasMngr_Initialize() {
 	dirty_list = QuListInit();
@@ -63,18 +63,22 @@ void QuCanvasBlit (uint32_t *canvas, unsigned x, unsigned y, unsigned w, unsigne
 	int height = canvas_get_height();
 	for (int i=0; i < w; i++) {
 		for (int j=0; j < h; j++){
-			//if (canvas[(x + i) + (y + j) * width] | 0x00000000){
+			if (canvas[(x + i) + (y + j) * width] | 0x00000000){
 			uint32_t color = canvas[(x + i) + (y + j) * width];
 			//uint32_t color_a = wallp[(x + i) + (y + j) * width];
 			lfb[(x + i) + (y + j) * width] = color; //alpha_blend(color_a, color);
-			//}
+			}
 		}
 	}
 }
 
 
 void QuCanvasPutPixel (uint32_t *canvas, unsigned x, unsigned y, uint32_t color) {
-	canvas[x + y * canvas_get_width()] = color;
+	canvas[x + y * canvas_get_scale()] = color;
+}
+
+uint32_t QuCanvasGetPixel (uint32_t *canvas, unsigned x, unsigned y) {
+	return canvas[x + y * canvas_get_scale()];
 }
 
 
@@ -105,6 +109,16 @@ void QuCanvasUpdateDirty() {
 			canvas_screen_update (r->x, r->y, r->w, r->h);
 			QuListRemove(dirty_list, i);
 			free(r);
+			/*if (!update_bit)
+				QuCanvasSetUpdateBit(true);*/
 		}
 	}
 }
+
+ void QuCanvasSetUpdateBit(bool value) {
+	 update_bit = value;
+ }
+
+ bool QuCanvasGetUpdateBit() {
+	 return update_bit;
+ }

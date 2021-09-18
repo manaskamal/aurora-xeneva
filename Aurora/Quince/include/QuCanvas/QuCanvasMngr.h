@@ -44,6 +44,12 @@ extern void QuCanvasBlit (uint32_t *canvas, unsigned x, unsigned y, unsigned w, 
 //! @param color - Color 24 bit 
 extern void QuCanvasPutPixel (uint32_t *canvas, unsigned x, unsigned y, uint32_t color);
 
+//! QuCanvasGetPixel -- Get Pixel from specific canvas
+//! @param canvas -- Canvas Address
+//! @param x -- X coordination
+//! @param y -- Y Coordination
+extern uint32_t QuCanvasGetPixel (uint32_t *canvas, unsigned x, unsigned y);
+
 //! QuCanvasAddDirty -- Add Dirty Areas to be updated by canvas manager
 //! @param r -- Dirty Rectangle
 extern void QuCanvasAddDirty (QuRect *r);
@@ -58,4 +64,11 @@ extern void QuCanvasUpdate (unsigned x, unsigned y, unsigned w, unsigned h);
 //! QuCanvasUpdateDirty -- Update the dirty areas by iterating dirty rectangles
 //! @param -- Null
 extern void QuCanvasUpdateDirty();
+
+//! QuCanvasSetUpdateBit -- Set the update for Screen update
+//! @param value -- boolean value
+extern void QuCanvasSetUpdateBit(bool value);
+
+//! QuCanvasGetUpdateBit -- Checks the update bit
+extern bool QuCanvasGetUpdateBit();
 #endif

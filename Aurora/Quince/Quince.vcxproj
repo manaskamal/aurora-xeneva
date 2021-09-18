@@ -83,7 +83,7 @@
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>E:\Xeneva Project\Xeneva\xnlib\xnclib;E:\Xeneva Project\Xeneva\xnlib\xnacrylic\include;E:\Xeneva Project\Xeneva\Aurora\Quince\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <SDLCheck>false</SDLCheck>
-      <PreprocessorDefinitions>ARCH_X64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>ARCH_X64; HW_CURSOR;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <IgnoreStandardIncludePath>true</IgnoreStandardIncludePath>
       <ExceptionHandling>false</ExceptionHandling>
       <BasicRuntimeChecks />
@@ -154,6 +154,7 @@
     <ClCompile Include="source\QuWidget\QuTaskbar.cpp" />
     <ClCompile Include="source\QuWidget\QuWallpaper.cpp" />
     <ClCompile Include="source\QuWindow\QuList.cpp" />
+    <ClCompile Include="source\QuWindow\QuTitleBar.cpp" />
     <ClCompile Include="source\QuWindow\QuWindow.cpp" />
     <ClCompile Include="source\QuWindow\QuWindowMngr.cpp" />
     <ClCompile Include="source\QuWindow\QuWindowStyle.cpp" />
@@ -169,6 +170,7 @@
     <ClInclude Include="include\QuRect.h" />
     <ClInclude Include="include\QuWidget\QuTaskbar.h" />
     <ClInclude Include="include\QuWidget\QuWallpaper.h" />
+    <ClInclude Include="include\QuWindow\QuTitleBar.h" />
     <ClInclude Include="include\QuWindow\QuWindow.h" />
     <ClInclude Include="include\QuWindow\QuWindowMngr.h" />
     <ClInclude Include="include\QuWindow\QuWindowStyle.h" />

@@ -9,14 +9,14 @@ CONST	SEGMENT
 $SG2962	DB	'UDP Packet sent', 0aH, 00H
 CONST	ENDS
 PUBLIC	?udp_send_packet@@YAXPEAEGGPEAXH@Z		; udp_send_packet
-EXTRN	?malloc@@YAPEAX_K@Z:PROC			; malloc
+EXTRN	?malloc@@YAPEAXI@Z:PROC				; malloc
 EXTRN	?htons@@YAGG@Z:PROC				; htons
 EXTRN	?memset@@YAXPEAXEI@Z:PROC			; memset
 EXTRN	memcpy:PROC
 EXTRN	?printf@@YAXPEBDZZ:PROC				; printf
 pdata	SEGMENT
 $pdata$?udp_send_packet@@YAXPEAEGGPEAXH@Z DD imagerel $LN3
-	DD	imagerel $LN3+185
+	DD	imagerel $LN3+181
 	DD	imagerel $unwind$?udp_send_packet@@YAXPEAEGGPEAXH@Z
 pdata	ENDS
 xdata	SEGMENT
@@ -52,9 +52,8 @@ $LN3:
 
 ; 21   : 	udp_packet_t *packet = (udp_packet_t*)malloc(length);
 
-	movsxd	rax, DWORD PTR length$[rsp]
-	mov	rcx, rax
-	call	?malloc@@YAPEAX_K@Z			; malloc
+	mov	ecx, DWORD PTR length$[rsp]
+	call	?malloc@@YAPEAXI@Z			; malloc
 	mov	QWORD PTR packet$[rsp], rax
 
 ; 22   : 	memset(packet, 0, sizeof(udp_packet_t));

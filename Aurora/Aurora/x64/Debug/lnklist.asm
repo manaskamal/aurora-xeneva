@@ -9,7 +9,7 @@ PUBLIC	?initialize_list@@YAPEAU_list_@@XZ		; initialize_list
 PUBLIC	?list_add@@YAXPEAU_list_@@PEAX@Z		; list_add
 PUBLIC	?list_remove@@YAPEAXPEAU_list_@@I@Z		; list_remove
 PUBLIC	?list_get_at@@YAPEAXPEAU_list_@@I@Z		; list_get_at
-EXTRN	?malloc@@YAPEAX_K@Z:PROC			; malloc
+EXTRN	?malloc@@YAPEAXI@Z:PROC				; malloc
 EXTRN	?mfree@@YAXPEAX@Z:PROC				; mfree
 pdata	SEGMENT
 $pdata$?initialize_list@@YAPEAU_list_@@XZ DD imagerel $LN3
@@ -300,7 +300,7 @@ $LN7:
 ; 25   : 	dataentry *current_data = (dataentry*)malloc(sizeof(dataentry));
 
 	mov	ecx, 24
-	call	?malloc@@YAPEAX_K@Z			; malloc
+	call	?malloc@@YAPEAXI@Z			; malloc
 	mov	QWORD PTR current_data$[rsp], rax
 
 ; 26   : 	current_data->next = nullptr;
@@ -405,7 +405,7 @@ $LN3:
 ; 17   : 	list_t *list = (list_t*)malloc(4096);
 
 	mov	ecx, 4096				; 00001000H
-	call	?malloc@@YAPEAX_K@Z			; malloc
+	call	?malloc@@YAPEAXI@Z			; malloc
 	mov	QWORD PTR list$[rsp], rax
 
 ; 18   : 	list->entry_current = nullptr;

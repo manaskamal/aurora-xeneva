@@ -11,11 +11,13 @@
 
 #include <QuWindow\QuList.h>
 #include <QuWindow\QuWindowMngr.h>
+#include <QuWindow\QuTitleBar.h>
 #include <QuCursor.h>
 #include <stdlib.h>
 #include <QuCanvas\QuCanvasMngr.h>
 #include <sys\_term.h>
 #include <string.h>
+#include <canvas.h>
 
 
 QuList* WindowList = NULL;
@@ -64,15 +66,13 @@ QuWindow* QuWindowMngrGetFocused () {
 
 
 void QuWindowMngr_DrawAll () {
-	QuCanvasUpdateDirty();
+    QuCanvasUpdateDirty();
 	if (WindowList->pointer > 0) {
 		for (int i = 0; i < WindowList->pointer; i++) {
 			QuWindow* _win = (QuWindow*)QuListGetAt(WindowList, i);
 			QuWindowDraw (_win);
 		}
-
-		
-	}
+	}	
 }
 
 
@@ -131,6 +131,7 @@ void QuWindowMngr_MoveFocusWindow (unsigned x, unsigned y) {
 		QuCanvasAddDirty(r2);
 	}
 
+	QuUpdateTitleBar(focus_win);
 
 	QuRect *r = (QuRect*)malloc(sizeof(QuRect));
 	r->x = focus_win->x;
@@ -138,8 +139,34 @@ void QuWindowMngr_MoveFocusWindow (unsigned x, unsigned y) {
 	r->w = focus_win->width;
 	r->h = focus_win->height;
 	QuWindowAddDirtyArea(focus_win, r);
-	//focus_win->draggable = false;
 
+	for (int i = 0; i < WindowList->pointer; i++) {
+		QuWindow* win = (QuWindow*)QuListGetAt (WindowList,i);
+		if (win == focus_win) 
+			continue;
+		if (focus_win->x > win->x && focus_win->x < (win->x + win->width + 1) &&
+			focus_win->y > win->y && focus_win->y < (win->y + win->height + 1) ||
+			win->x > focus_win->x && win->x < (focus_win->x + focus_win->width + 1) &&
+			win->y > focus_win->y && win->y < (focus_win->y + focus_win->height + 1)) {
+
+				QuRect *r = (QuRect*)malloc(sizeof(QuRect));
+				if (win->x + win->width > focus_win->x + focus_win->width) {
+					r->w = focus_win->x + focus_win->width - max(win->x, focus_win->x) + 50;
+				}else {
+					r->w = win->x + win->width - max (win->x, focus_win->x) + 50;
+				}
+
+				r->x = max(win->x, oldx) - 50;
+				if (win->y + win->height > focus_win->y + focus_win->height) {
+					r->h = focus_win->y + focus_win->height - max(win->y, focus_win->y) + 50;
+				}else {
+					r->h = win->y + win->height - max(win->y, focus_win->y) + 50;
+				}
+
+				r->y = max(win->y, oldy) - 50;
+				QuWindowAddDirtyArea(win, r);
+		}
+	}
 }
 
 void QuWindowMngr_HandleMouseDown (unsigned x, unsigned y) {
@@ -149,12 +176,11 @@ void QuWindowMngr_HandleMouseDown (unsigned x, unsigned y) {
 			focus_win->drag_y = y - focus_win->y;
 			focus_win->draggable = true;
 	}
+
 }
 
 void QuWindowMngr_HandleMouseUp (unsigned x, unsigned y) {
-	//if (focus_win->draggable){
 	QuWindowMngr_MoveFocusWindow (x,y);
-	//}
 }
 
 

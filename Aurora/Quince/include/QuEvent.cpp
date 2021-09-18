@@ -80,6 +80,7 @@ void QuEventLoop() {
 		if (m_pack.type == _MOUSE_MOVE) {
 			QuMoveCursor(m_pack.dword, m_pack.dword2);
 			canvas_screen_update (QuCursorGetNewX(), QuCursorGetNewY(), 24, 24);
+			QuCursorNewCoord(m_pack.dword, m_pack.dword2);
 
 			QuWindow * focus_win = QuWindowMngrGetFocused();
 			//! Mouse Clicked Bit
@@ -126,13 +127,16 @@ void QuEventLoop() {
 			uint16_t from_id = msg.dword5;
 			QuWindow* win = (QuWindow*)QuWindowMngrFindByID(from_id);
 			QuWindowAddDirtyArea(win,r);
-		   /*QuCanvasBlit(win->canvas, qu_msg->dword, qu_msg->dword2, qu_msg->dword3, qu_msg->dword4);
-		   canvas_screen_update(qu_msg->dword,qu_msg->dword2, qu_msg->dword3, qu_msg->dword4);*/
 			memset(&msg, 0, sizeof(message_t));
 		}
 
-
-		QuWindowMngr_DrawAll();
+		
+		QuWindowMngr_DrawAll();	
+		/*if (QuCanvasGetUpdateBit()) {
+			canvas_screen_update(0,0,canvas_get_width(), canvas_get_height());
+			QuCanvasSetUpdateBit(false);
+		}*/
 		sys_sleep(25);
+	
 	}
 }

@@ -12,7 +12,7 @@ $SG3374	DB	'Ethernet Protocol Received packet ->> IP Packet', 0aH, 00H
 CONST	ENDS
 PUBLIC	?ethernet_send_packet@@YAHPEAE0HG@Z		; ethernet_send_packet
 PUBLIC	?ethernet_handle_packet@@YAXPEAU_ethernet_frame_@@H@Z ; ethernet_handle_packet
-EXTRN	?malloc@@YAPEAX_K@Z:PROC			; malloc
+EXTRN	?malloc@@YAPEAXI@Z:PROC				; malloc
 EXTRN	?mfree@@YAXPEAX@Z:PROC				; mfree
 EXTRN	?nethw_get_mac@@YAXPEAE@Z:PROC			; nethw_get_mac
 EXTRN	?htons@@YAGG@Z:PROC				; htons
@@ -22,7 +22,7 @@ EXTRN	?e1000_send_packet@@YAXPEAX_K@Z:PROC		; e1000_send_packet
 EXTRN	?printf@@YAXPEBDZZ:PROC				; printf
 pdata	SEGMENT
 $pdata$?ethernet_send_packet@@YAHPEAE0HG@Z DD imagerel $LN3
-	DD	imagerel $LN3+205
+	DD	imagerel $LN3+204
 	DD	imagerel $unwind$?ethernet_send_packet@@YAHPEAE0HG@Z
 $pdata$?ethernet_handle_packet@@YAXPEAU_ethernet_frame_@@H@Z DD imagerel $LN5
 	DD	imagerel $LN5+119
@@ -130,8 +130,8 @@ $LN3:
 
 	movsxd	rax, DWORD PTR len$[rsp]
 	add	rax, 14
-	mov	rcx, rax
-	call	?malloc@@YAPEAX_K@Z			; malloc
+	mov	ecx, eax
+	call	?malloc@@YAPEAXI@Z			; malloc
 	mov	QWORD PTR frame$[rsp], rax
 
 ; 23   : 	void *frame_data = (void*)(frame + sizeof(ethernet_frame_t));

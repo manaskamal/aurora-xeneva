@@ -43,7 +43,7 @@ EXTRN	x64_outportd:PROC
 EXTRN	?interrupt_end@@YAXI@Z:PROC			; interrupt_end
 EXTRN	?pmmngr_alloc@@YAPEAXXZ:PROC			; pmmngr_alloc
 EXTRN	?get_physical_address@@YAPEA_K_K@Z:PROC		; get_physical_address
-EXTRN	?malloc@@YAPEAX_K@Z:PROC			; malloc
+EXTRN	?malloc@@YAPEAXI@Z:PROC				; malloc
 EXTRN	?printf@@YAXPEBDZZ:PROC				; printf
 pdata	SEGMENT
 $pdata$?rtl8139_initialize@@YAXXZ DD imagerel $LN3
@@ -56,7 +56,7 @@ $pdata$?rtl_read_mac_address@@YAXXZ DD imagerel $LN6
 	DD	imagerel $LN6+299
 	DD	imagerel $unwind$?rtl_read_mac_address@@YAXXZ
 $pdata$?rtl_send_packet@@YAXPEAXI@Z DD imagerel $LN4
-	DD	imagerel $LN4+198
+	DD	imagerel $LN4+196
 	DD	imagerel $unwind$?rtl_send_packet@@YAXPEAXI@Z
 pdata	ENDS
 xdata	SEGMENT
@@ -72,7 +72,7 @@ xdata	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\drivers\net\rtl8139.cpp
 _TEXT	SEGMENT
-tv93 = 32
+tv92 = 32
 transfar_data$ = 40
 phys_addr$ = 48
 data$ = 80
@@ -88,9 +88,8 @@ $LN4:
 
 ; 53   : 	void *transfar_data = malloc(len);
 
-	mov	eax, DWORD PTR len$[rsp]
-	mov	ecx, eax
-	call	?malloc@@YAPEAX_K@Z			; malloc
+	mov	ecx, DWORD PTR len$[rsp]
+	call	?malloc@@YAPEAXI@Z			; malloc
 	mov	QWORD PTR transfar_data$[rsp], rax
 
 ; 54   : 	void *phys_addr = get_physical_address((uint64_t)transfar_data);
@@ -122,14 +121,14 @@ $LN4:
 	lea	rdx, OFFSET FLAT:?TSD_Array@@3PAEA	; TSD_Array
 	movzx	ecx, BYTE PTR [rdx+rcx]
 	add	eax, ecx
-	mov	DWORD PTR tv93[rsp], eax
+	mov	DWORD PTR tv92[rsp], eax
 	mov	rax, QWORD PTR ?rtl_net_dev@@3PEAUrtl8139_dev@@EA ; rtl_net_dev
 	mov	eax, DWORD PTR [rax+32]
 	inc	eax
 	mov	rcx, QWORD PTR ?rtl_net_dev@@3PEAUrtl8139_dev@@EA ; rtl_net_dev
 	mov	DWORD PTR [rcx+32], eax
 	mov	edx, DWORD PTR len$[rsp]
-	movzx	ecx, WORD PTR tv93[rsp]
+	movzx	ecx, WORD PTR tv92[rsp]
 	call	x64_outportd
 
 ; 58   : 	if (rtl_net_dev->tx_cur > 3)
