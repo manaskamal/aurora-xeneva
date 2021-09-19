@@ -1,0 +1,53 @@
+
+#ifndef _MEMORY_HPP
+#define _MEMORY_HPP
+
+#include <cstddef>
+
+namespace std {
+
+	template <class T> class allocator;
+
+	template <>
+	class allocator<void>
+	{
+		public:
+			typedef void		value_type;
+			typedef void*		pointer;
+			typedef const void*	const_pointer;
+	};
+
+	template <class T>
+	class allocator
+	{
+		public:
+			typedef T			value_type;
+			typedef T*			pointer;
+			typedef T&			reference;
+			typedef const T*	const_pointer;
+			typedef const T&	const_reference;
+			typedef size_t		size_type;
+			typedef ptrdiff_t	difference_type;
+
+			template <class U>
+			struct rebind {
+				typedef allocator<U> other;
+			};
+
+			// Const/dest
+			allocator() throw();
+			allocator(const allocator&) throw();
+			~allocator() throw();
+
+			// Member functions
+			pointer address(reference) const;
+			const_pointer address(const_reference) const;
+			pointer allocate(size_type,
+				allocator<void>::const_pointer hint = 0) const;
+			void deallocate(pointer, size_type) const;
+			size_type max_size() const throw();
+	};
+}
+
+#endif
+

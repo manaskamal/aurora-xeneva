@@ -32,6 +32,9 @@ extern "C" void heap_initialize_allocator();
 extern void* _malloc(uint32_t size);
 //! FREE: Free pointed memory
 extern void _free(void* memory);
-
+//! REALLOC : Reallocate a new memory address
+extern void* _realloc (void* address, uint32_t new_size);
+//! CALLOC
+extern void* _calloc(uint64_t num, uint64_t size);
 
 #endif

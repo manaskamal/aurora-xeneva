@@ -1,0 +1,21 @@
+///!
+///!  Copyright (C) Manas Kamal Choudhury 2021
+///!
+///!  cstdlib -- C++ standard library
+///!
+///!  /PROJECT - Aurora's Xeneva
+///!  /AUTHOR  - Manas Kamal Choudhury
+///!
+///!==============================================
+
+#ifndef _CSTDLIB_HPP
+#define _CSTDLIB_HPP
+
+namespace std {
+	extern "C" {
+		#include <stdlib.h>
+	}
+}
+
+#endif
+

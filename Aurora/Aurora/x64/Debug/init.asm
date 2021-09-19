@@ -5,24 +5,16 @@ include listing.inc
 INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
+PUBLIC	_fltused
+_DATA	SEGMENT
+_fltused DD	01H
+_DATA	ENDS
 CONST	SEGMENT
 $SG7976	DB	'Timer fired', 0aH, 00H
 	ORG $+3
-$SG8003	DB	'shell', 00H
+$SG8004	DB	'shell', 00H
 	ORG $+2
-$SG8004	DB	'a:xshell.exe', 00H
-	ORG $+3
-$SG8005	DB	'quince', 00H
-	ORG $+1
-$SG8006	DB	'a:quince.exe', 00H
-	ORG $+3
-$SG8007	DB	'dwm3', 00H
-	ORG $+3
-$SG8008	DB	'a:dwm3.exe', 00H
-	ORG $+1
-$SG8009	DB	'dwm2', 00H
-	ORG $+7
-$SG8010	DB	'a:dwm2.exe', 00H
+$SG8005	DB	'a:xshell.exe', 00H
 CONST	ENDS
 PUBLIC	??2@YAPEAX_K@Z					; operator new
 PUBLIC	??3@YAXPEAX@Z					; operator delete
@@ -41,7 +33,6 @@ EXTRN	?printf@@YAXPEBDZZ:PROC				; printf
 EXTRN	?kybrd_init@@YAXXZ:PROC				; kybrd_init
 EXTRN	?initialize_mouse@@YAXXZ:PROC			; initialize_mouse
 EXTRN	?ata_initialize@@YAXXZ:PROC			; ata_initialize
-EXTRN	?svga_init@@YAXXZ:PROC				; svga_init
 EXTRN	?hda_initialize@@YAXXZ:PROC			; hda_initialize
 EXTRN	?initialize_rtc@@YAXXZ:PROC			; initialize_rtc
 EXTRN	?initialize_acpi@@YAXPEAX@Z:PROC		; initialize_acpi
@@ -68,7 +59,7 @@ $pdata$??_U@YAPEAX_K@Z DD imagerel $LN3
 	DD	imagerel $LN3+23
 	DD	imagerel $unwind$??_U@YAPEAX_K@Z
 $pdata$?_kmain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z DD imagerel $LN5
-	DD	imagerel $LN5+247
+	DD	imagerel $LN5+167
 	DD	imagerel $unwind$?_kmain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z
 pdata	ENDS
 xdata	SEGMENT
@@ -89,152 +80,128 @@ _TEXT	SEGMENT
 info$ = 48
 ?_kmain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z PROC		; _kmain
 
-; 116  : void _kmain (KERNEL_BOOT_INFO *info) {
+; 117  : void _kmain (KERNEL_BOOT_INFO *info) {
 
 $LN5:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 40					; 00000028H
 
-; 117  : 	hal_init ();
+; 118  : 	hal_init ();
 
 	call	?hal_init@@YAXXZ			; hal_init
 
-; 118  : 	pmmngr_init (info);
+; 119  : 	pmmngr_init (info);
 
 	mov	rcx, QWORD PTR info$[rsp]
 	call	?pmmngr_init@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z ; pmmngr_init
 
-; 119  : 	mm_init(); 
+; 120  : 	mm_init(); 
 
 	call	?mm_init@@YAXXZ				; mm_init
 
-; 120  : 	initialize_serial();
+; 121  : 	initialize_serial();
 
 	call	?initialize_serial@@YAXXZ		; initialize_serial
 
-; 121  : 	console_initialize(info);
+; 122  : 	console_initialize(info);
 
 	mov	rcx, QWORD PTR info$[rsp]
 	call	?console_initialize@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z ; console_initialize
 
-; 122  : 	//!Initialize kernel runtime drivers	
-; 123  : 	kybrd_init();
+; 123  : 	//!Initialize kernel runtime drivers	
+; 124  : 	kybrd_init();
 
 	call	?kybrd_init@@YAXXZ			; kybrd_init
 
-; 124  : 	initialize_acpi (info->acpi_table_pointer);
+; 125  : 	initialize_acpi (info->acpi_table_pointer);
 
 	mov	rax, QWORD PTR info$[rsp]
 	mov	rcx, QWORD PTR [rax+66]
 	call	?initialize_acpi@@YAXPEAX@Z		; initialize_acpi
 
-; 125  : 	initialize_rtc();  
+; 126  : 	initialize_rtc();  
 
 	call	?initialize_rtc@@YAXXZ			; initialize_rtc
 
-; 126  : 	hda_initialize();
+; 127  : 	hda_initialize();
 
 	call	?hda_initialize@@YAXXZ			; hda_initialize
 
-; 127  : 	//e1000_initialize();  //<< receiver not working
-; 128  :    
-; 129  : 
+; 128  : 	//e1000_initialize();  //<< receiver not working
+; 129  :    
 ; 130  : 
-; 131  :     ata_initialize();
+; 131  : 
+; 132  :     ata_initialize();
 
 	call	?ata_initialize@@YAXXZ			; ata_initialize
 
-; 132  : 	initialize_vfs();
+; 133  : 	initialize_vfs();
 
 	call	?initialize_vfs@@YAXXZ			; initialize_vfs
 
-; 133  : 	initialize_screen(info);
+; 134  : 	initialize_screen(info);
 
 	mov	rcx, QWORD PTR info$[rsp]
 	call	?initialize_screen@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z ; initialize_screen
 
-; 134  : 	svga_init (); 
-
-	call	?svga_init@@YAXXZ			; svga_init
-
-; 135  : 	initialize_mouse();
+; 135  : 	//svga_init (); 
+; 136  : 	initialize_mouse();
 
 	call	?initialize_mouse@@YAXXZ		; initialize_mouse
 
-; 136  : 
-; 137  : 	message_init ();
+; 137  : 
+; 138  : 	message_init ();
 
 	call	?message_init@@YAXXZ			; message_init
 
-; 138  : 	dwm_ipc_init();
+; 139  : 	dwm_ipc_init();
 
 	call	?dwm_ipc_init@@YAXXZ			; dwm_ipc_init
 
-; 139  : 
-; 140  : 	driver_mngr_initialize(info);
+; 140  : 
+; 141  : 	driver_mngr_initialize(info);
 
 	mov	rcx, QWORD PTR info$[rsp]
 	call	?driver_mngr_initialize@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z ; driver_mngr_initialize
 
-; 141  : 	//x64_cli();
-; 142  : #ifdef ARCH_X64
-; 143  : 	initialize_scheduler();
+; 142  : 	//x64_cli();
+; 143  : #ifdef ARCH_X64
+; 144  : 	initialize_scheduler();
 
 	call	?initialize_scheduler@@YAXXZ		; initialize_scheduler
 
-; 144  : 	//create_process ("dwm.exe","dwm",20);
-; 145  : 	//! task list should be more than 4 or less than 4 not  
-; 146  : 	//create_process ("dwm2.exe", "dwm2", 1);
-; 147  : 	create_process ("a:xshell.exe","shell",0, NULL);
+; 145  : 	//create_process ("dwm.exe","dwm",20);
+; 146  : 	//! task list should be more than 4 or less than 4 not  
+; 147  : 	//create_process ("dwm2.exe", "dwm2", 1);
+; 148  : 	create_process ("a:xshell.exe","shell",0, NULL);
 
 	xor	r9d, r9d
 	xor	r8d, r8d
-	lea	rdx, OFFSET FLAT:$SG8003
-	lea	rcx, OFFSET FLAT:$SG8004
+	lea	rdx, OFFSET FLAT:$SG8004
+	lea	rcx, OFFSET FLAT:$SG8005
 	call	?create_process@@YAXPEBDPEADE1@Z	; create_process
 
-; 148  : 	create_process ("a:quince.exe","quince",0, NULL);
-
-	xor	r9d, r9d
-	xor	r8d, r8d
-	lea	rdx, OFFSET FLAT:$SG8005
-	lea	rcx, OFFSET FLAT:$SG8006
-	call	?create_process@@YAXPEBDPEADE1@Z	; create_process
-
-; 149  : 	create_process ("a:dwm3.exe", "dwm3", 0, NULL);
-
-	xor	r9d, r9d
-	xor	r8d, r8d
-	lea	rdx, OFFSET FLAT:$SG8007
-	lea	rcx, OFFSET FLAT:$SG8008
-	call	?create_process@@YAXPEBDPEADE1@Z	; create_process
-
-; 150  : 	create_process ("a:dwm2.exe", "dwm2", 0, NULL);
-
-	xor	r9d, r9d
-	xor	r8d, r8d
-	lea	rdx, OFFSET FLAT:$SG8009
-	lea	rcx, OFFSET FLAT:$SG8010
-	call	?create_process@@YAXPEBDPEADE1@Z	; create_process
-
-; 151  : 	scheduler_start();
+; 149  : 	//create_process ("a:quince.exe","quince",0, NULL);
+; 150  : 	//create_process ("a:dwm3.exe", "dwm3", 0, NULL);
+; 151  : 	//create_process ("a:dwm2.exe", "dwm2", 0, NULL);
+; 152  : 	scheduler_start();
 
 	call	?scheduler_start@@YAXXZ			; scheduler_start
 $LN2@kmain:
 
-; 152  : #endif
-; 153  : 	while(1) {
+; 153  : #endif
+; 154  : 	while(1) {
 
 	xor	eax, eax
 	cmp	eax, 1
 	je	SHORT $LN1@kmain
 
-; 154  : 	}
+; 155  : 	}
 
 	jmp	SHORT $LN2@kmain
 $LN1@kmain:
 
-; 155  : }
+; 156  : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -245,23 +212,23 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 ?dummy_thread_2@@YAXXZ PROC				; dummy_thread_2
 
-; 111  : void dummy_thread_2 () {
+; 112  : void dummy_thread_2 () {
 
 	npad	2
 $LN2@dummy_thre:
 
-; 112  : 	while(1) {
+; 113  : 	while(1) {
 
 	xor	eax, eax
 	cmp	eax, 1
 	je	SHORT $LN1@dummy_thre
 
-; 113  : 	}
+; 114  : 	}
 
 	jmp	SHORT $LN2@dummy_thre
 $LN1@dummy_thre:
 
-; 114  : }
+; 115  : }
 
 	fatret	0
 ?dummy_thread_2@@YAXXZ ENDP				; dummy_thread_2
@@ -272,18 +239,18 @@ _TEXT	SEGMENT
 size$ = 48
 ??_U@YAPEAX_K@Z PROC					; operator new[]
 
-; 103  : void* __cdecl operator new[] (size_t size) {
+; 104  : void* __cdecl operator new[] (size_t size) {
 
 $LN3:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 40					; 00000028H
 
-; 104  : 	return malloc(size);
+; 105  : 	return malloc(size);
 
 	mov	ecx, DWORD PTR size$[rsp]
 	call	?malloc@@YAPEAXI@Z			; malloc
 
-; 105  : }
+; 106  : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -325,18 +292,18 @@ _TEXT	SEGMENT
 p$ = 48
 ??3@YAXPEAX@Z PROC					; operator delete
 
-; 107  : void __cdecl operator delete (void* p) {
+; 108  : void __cdecl operator delete (void* p) {
 
 $LN3:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 40					; 00000028H
 
-; 108  : 	mfree(p);
+; 109  : 	mfree(p);
 
 	mov	rcx, QWORD PTR p$[rsp]
 	call	?mfree@@YAXPEAX@Z			; mfree
 
-; 109  : }
+; 110  : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -348,18 +315,18 @@ _TEXT	SEGMENT
 size$ = 48
 ??2@YAPEAX_K@Z PROC					; operator new
 
-; 99   : void* __cdecl ::operator new(size_t size) {
+; 100  : void* __cdecl ::operator new(size_t size) {
 
 $LN3:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 40					; 00000028H
 
-; 100  : 	return malloc(size);
+; 101  : 	return malloc(size);
 
 	mov	ecx, DWORD PTR size$[rsp]
 	call	?malloc@@YAPEAXI@Z			; malloc
 
-; 101  : }
+; 102  : }
 
 	add	rsp, 40					; 00000028H
 	ret	0

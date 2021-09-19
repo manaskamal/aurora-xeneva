@@ -1,0 +1,77 @@
+
+
+#ifndef _ISTREAM_HPP
+#define _ISTREAM_HPP
+
+#include <ios>
+
+namespace std {
+
+	class ios_base
+	{
+		public:
+			class Init
+			{
+				friend class ios_base;
+
+				public:
+					Init();
+					~Init();
+
+				private:
+					static int refCount;
+			};
+
+		protected:
+			ios_base();
+	};
+
+	template <class charT, class traits = char_traits<charT> >
+	class basic_ios : ios_base
+	{
+		public:
+			typedef charT						char_type;
+			typedef traits						traits_type;
+			typedef typename traits::int_type	int_type;
+			typedef typename traits::pos_type	streampos;
+			typedef typename traits::off_type	streamoff;
+
+			// Const/dest
+			explicit basic_ios(basic_streambuf<charT, traits> *);
+
+		protected:
+			basic_ios();
+	};
+
+	typedef basic_ios<char> ios;
+
+	template <class charT, class traits = char_traits<charT> >
+	class basic_istream : basic_ios<charT, traits>
+	{
+		public:
+			// Const/dest
+			explicit basic_istream(basic_streambuf<charT, traits> *);
+			virtual ~basic_istream();
+
+			// Member functions
+			basic_istream& operator>>(charT&);
+			basic_istream& operator>>(charT *);
+	};
+
+	typedef basic_istream<char> istream;
+
+	template <class charT, class traits = char_traits<charT> >
+	class basic_iostream :
+		basic_istream<charT, traits>, basic_ostream<charT, traits>
+	{
+		public:
+			// Const/dest
+			explicit basic_iostream(basic_streambuf<charT, traits> *);
+			virtual ~basic_iostream();
+	};
+
+	typedef basic_iostream<char> iostream;
+}
+
+#endif
+

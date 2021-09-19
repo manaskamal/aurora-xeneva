@@ -1,0 +1,19 @@
+//!
+//!  Copyright (C) Manas Kamal Choudhury 2021
+//!  cstddef -- C++ Standard Library
+//!
+//!  /PROJECT - Aurora's Xeneva
+//!  /AUTHOR  - Manas Kamal Choudhury
+//!=================================================
+
+#ifndef _CSTDDEF_HPP
+#define _CSTDDEF_HPP
+
+namespace std {
+	extern "C" {
+		#include <stddef.h>
+	}
+}
+
+#endif
+

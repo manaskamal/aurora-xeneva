@@ -10,6 +10,7 @@
 #include <heap.h>
 #include <stdint.h>
 #include <sys/mmap.h>
+#include <string.h>
 
 
 void* free_list;
@@ -96,6 +97,27 @@ void* _malloc (uint32_t size) {
 void _free (void* memory) {
 	LIST_ENTRY* entry = (LIST_ENTRY*)memory - 1;
 	entry->is_free = true;
+}
+
+void* _realloc (void* address, uint32_t new_size) {
+	LIST_ENTRY *old_segment_header = (LIST_ENTRY*)address;
+	uint64_t smaller_size = new_size;
+	if (old_segment_header->length < new_size)
+		smaller_size = old_segment_header->length;
+	void* new_mem = _malloc(new_size);
+	memcpy (new_mem, address, new_size);
+	_free(address);
+	return new_mem;
+}
+
+void* _calloc(uint64_t size) {
+	void* malloc_val = _malloc(size);
+	memset(malloc_val, 0, size);
+	return malloc_val;
+}
+
+void* _calloc(uint64_t num, uint64_t size) {
+	return _calloc(num * size);
 }
 
 

@@ -42,16 +42,83 @@
     <ClInclude Include="sys\_file.h">
       <Filter>sys</Filter>
     </ClInclude>
+    <ClInclude Include="sys\types.h">
+      <Filter>sys</Filter>
+    </ClInclude>
+    <ClInclude Include="stdarg.h" />
+    <ClInclude Include="math.h" />
+    <ClInclude Include="values.h" />
+    <ClInclude Include="endian.h" />
+    <ClInclude Include="c++\string">
+      <Filter>c++</Filter>
+    </ClInclude>
+    <ClInclude Include="c++\iterator">
+      <Filter>c++</Filter>
+    </ClInclude>
+    <ClInclude Include="c++\cstddef">
+      <Filter>c++</Filter>
+    </ClInclude>
+    <ClInclude Include="c++\cstdlib">
+      <Filter>c++</Filter>
+    </ClInclude>
+    <ClInclude Include="c++\cmath">
+      <Filter>c++</Filter>
+    </ClInclude>
+    <ClInclude Include="c++\ostream">
+      <Filter>c++</Filter>
+    </ClInclude>
+    <ClInclude Include="c++\istream">
+      <Filter>c++</Filter>
+    </ClInclude>
+    <ClInclude Include="c++\ios">
+      <Filter>c++</Filter>
+    </ClInclude>
+    <ClInclude Include="c++\streambuf">
+      <Filter>c++</Filter>
+    </ClInclude>
+    <ClInclude Include="c++\memory">
+      <Filter>c++</Filter>
+    </ClInclude>
+    <ClInclude Include="c++\iostream">
+      <Filter>c++</Filter>
+    </ClInclude>
+    <ClInclude Include="c++\cctype">
+      <Filter>c++</Filter>
+    </ClInclude>
+    <ClInclude Include="stdio.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="string.cpp" />
     <ClCompile Include="heap.cpp" />
     <ClCompile Include="sys\stdlib.cpp" />
     <ClCompile Include="initializer.cpp" />
+    <ClCompile Include="math.cpp" />
+    <ClCompile Include="c++\_string.cpp">
+      <Filter>c++</Filter>
+    </ClCompile>
+    <ClCompile Include="c++\memory.cpp">
+      <Filter>c++</Filter>
+    </ClCompile>
+    <ClCompile Include="c++\iostream.cpp">
+      <Filter>c++</Filter>
+    </ClCompile>
+    <ClCompile Include="c++\ios.cpp">
+      <Filter>c++</Filter>
+    </ClCompile>
+    <ClCompile Include="c++\istream.cpp">
+      <Filter>c++</Filter>
+    </ClCompile>
+    <ClCompile Include="c++\ostream.cpp">
+      <Filter>c++</Filter>
+    </ClCompile>
+    <ClCompile Include="stdio.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="sys">
       <UniqueIdentifier>{70bd303c-b870-43b3-b9ab-073231887fea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="c++">
+      <UniqueIdentifier>{0819fca2-7cf6-4dbd-87f5-fea846a02966}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

@@ -1,0 +1,238 @@
+﻿Build started 20-09-2021 ৰাতিপু 12:52:56.
+     1>Project "E:\Xeneva Project\Xeneva\xnlib\libsfn\libsfn.vcxproj" on node 2 (Rebuild target(s)).
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\xnlib\xnclib" /I"E:\Xeneva Project\Xeneva\xnlib\libsfn" /I"E:\Xeneva Project\Xeneva\xnlib\xnclib\c++" /Zi /nologo /W4 /WX- /sdl- /MP /Od /Oy /D ARCH_X64 /D USE_NOFOREIGN=1 /D SSFN_CONSOLEBITMAP_PALETTE /D _MBCS /X /Gm- /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt bitmap.cpp potracelib\curve.cpp potracelib\decompose.cpp potracelib\potracelib.cpp potracelib\trace.cpp sfn.cpp unicode.cpp util.cpp vector.cpp zlib.cpp
+     1>cl : Command line warning D9025: overriding '/sdl-' with '/GS-'
+     1>cl : Command line warning D9002: ignoring unknown option '/arch:SSE'
+     1>cl : Command line warning D9025: overriding '/sdl-' with '/GS-'
+     1>cl : Command line warning D9002: ignoring unknown option '/arch:SSE'
+     1>cl : Command line warning D9025: overriding '/sdl-' with '/GS-'
+     1>cl : Command line warning D9002: ignoring unknown option '/arch:SSE'
+     1>cl : Command line warning D9025: overriding '/sdl-' with '/GS-'
+         bitmap.cpp
+     1>cl : Command line warning D9002: ignoring unknown option '/arch:SSE'
+         curve.cpp
+     1>cl : Command line warning D9025: overriding '/sdl-' with '/GS-'
+     1>cl : Command line warning D9002: ignoring unknown option '/arch:SSE'
+         decompose.cpp
+         potracelib.cpp
+     1>cl : Command line warning D9025: overriding '/sdl-' with '/GS-'
+     1>cl : Command line warning D9025: overriding '/sdl-' with '/GS-'
+     1>cl : Command line warning D9002: ignoring unknown option '/arch:SSE'
+     1>cl : Command line warning D9002: ignoring unknown option '/arch:SSE'
+     1>cl : Command line warning D9025: overriding '/sdl-' with '/GS-'
+     1>cl : Command line warning D9002: ignoring unknown option '/arch:SSE'
+     1>cl : Command line warning D9025: overriding '/sdl-' with '/GS-'
+     1>cl : Command line warning D9002: ignoring unknown option '/arch:SSE'
+         trace.cpp
+         sfn.cpp
+         unicode.cpp
+         util.cpp
+     1>e:\xeneva project\xeneva\xnlib\libsfn\potracelib\auxiliary.h(33): warning C4505: 'dpoint' : unreferenced local function has been removed (potracelib\curve.cpp)
+     1>e:\xeneva project\xeneva\xnlib\libsfn\potracelib\auxiliary.h(41): warning C4505: 'interval' : unreferenced local function has been removed (potracelib\curve.cpp)
+     1>e:\xeneva project\xeneva\xnlib\libsfn\potracelib\auxiliary.h(60): warning C4505: 'mod' : unreferenced local function has been removed (potracelib\curve.cpp)
+     1>e:\xeneva project\xeneva\xnlib\libsfn\potracelib\auxiliary.h(64): warning C4505: 'floordiv' : unreferenced local function has been removed (potracelib\curve.cpp)
+     1>potracelib\decompose.cpp(218): warning C4127: conditional expression is constant
+     1>potracelib\decompose.cpp(281): warning C4244: '=' : conversion from 'uint64_t' to 'int', possible loss of data
+     1>potracelib\decompose.cpp(355): warning C4127: conditional expression is constant
+     1>potracelib\decompose.cpp(361): warning C4127: conditional expression is constant
+     1>potracelib\decompose.cpp(363): warning C4127: conditional expression is constant
+     1>potracelib\decompose.cpp(406): warning C4127: conditional expression is constant
+     1>potracelib\decompose.cpp(411): warning C4127: conditional expression is constant
+     1>potracelib\decompose.cpp(414): warning C4127: conditional expression is constant
+     1>potracelib\decompose.cpp(497): warning C4127: conditional expression is constant
+     1>e:\xeneva project\xeneva\xnlib\libsfn\potracelib\auxiliary.h(33): warning C4505: 'dpoint' : unreferenced local function has been removed (potracelib\decompose.cpp)
+     1>e:\xeneva project\xeneva\xnlib\libsfn\potracelib\auxiliary.h(41): warning C4505: 'interval' : unreferenced local function has been removed (potracelib\decompose.cpp)
+     1>e:\xeneva project\xeneva\xnlib\libsfn\potracelib\auxiliary.h(60): warning C4505: 'mod' : unreferenced local function has been removed (potracelib\decompose.cpp)
+     1>e:\xeneva project\xeneva\xnlib\libsfn\potracelib\auxiliary.h(64): warning C4505: 'floordiv' : unreferenced local function has been removed (potracelib\decompose.cpp)
+     1>e:\xeneva project\xeneva\xnlib\libsfn\potracelib\bitmap.h(153): warning C4505: 'bm_invert' : unreferenced local function has been removed (potracelib\decompose.cpp)
+     1>e:\xeneva project\xeneva\xnlib\libsfn\potracelib\bitmap.h(190): warning C4505: 'bm_resize' : unreferenced local function has been removed (potracelib\decompose.cpp)
+     1>e:\xeneva project\xeneva\xnlib\libsfn\potracelib\progress.h(43): warning C4505: 'progress_subrange_start' : unreferenced local function has been removed (potracelib\decompose.cpp)
+     1>e:\xeneva project\xeneva\xnlib\libsfn\potracelib\progress.h(68): warning C4505: 'progress_subrange_end' : unreferenced local function has been removed (potracelib\decompose.cpp)
+     1>potracelib\trace.cpp(118): warning C4244: 'argument' : conversion from 'double' to 'float', possible loss of data
+     1>potracelib\trace.cpp(125): warning C4244: 'argument' : conversion from 'double' to 'float', possible loss of data
+     1>potracelib\trace.cpp(131): warning C4244: 'argument' : conversion from 'double' to 'float', possible loss of data
+     1>E:\Xeneva Project\Xeneva\xnlib\libsfn\ssfn.h(289): warning C4244: '=' : conversion from 'int' to 'unsigned char', possible loss of data (sfn.cpp)
+     1>E:\Xeneva Project\Xeneva\xnlib\libsfn\ssfn.h(305): warning C4146: unary minus operator applied to unsigned type, result still unsigned (sfn.cpp)
+     1>E:\Xeneva Project\Xeneva\xnlib\libsfn\ssfn.h(313): warning C4146: unary minus operator applied to unsigned type, result still unsigned (sfn.cpp)
+     1>E:\Xeneva Project\Xeneva\xnlib\libsfn\ssfn.h(318): warning C4146: unary minus operator applied to unsigned type, result still unsigned (sfn.cpp)
+     1>potracelib\trace.cpp(210): warning C4244: 'argument' : conversion from 'double' to 'float', possible loss of data
+     1>e:\xeneva project\xeneva\xnlib\libsfn\potracelib\auxiliary.h(33): warning C4505: 'dpoint' : unreferenced local function has been removed (potracelib\potracelib.cpp)
+     1>e:\xeneva project\xeneva\xnlib\libsfn\potracelib\auxiliary.h(41): warning C4505: 'interval' : unreferenced local function has been removed (potracelib\potracelib.cpp)
+     1>e:\xeneva project\xeneva\xnlib\libsfn\potracelib\auxiliary.h(60): warning C4505: 'mod' : unreferenced local function has been removed (potracelib\potracelib.cpp)
+     1>e:\xeneva project\xeneva\xnlib\libsfn\potracelib\auxiliary.h(64): warning C4505: 'floordiv' : unreferenced local function has been removed (potracelib\potracelib.cpp)
+     1>potracelib\trace.cpp(250): warning C4244: 'argument' : conversion from 'double' to 'float', possible loss of data
+     1>E:\Xeneva Project\Xeneva\xnlib\libsfn\ssfn.h(352): warning C4244: '=' : conversion from 'int' to 'uint16_t', possible loss of data (sfn.cpp)
+     1>E:\Xeneva Project\Xeneva\xnlib\libsfn\ssfn.h(353): warning C4244: '=' : conversion from 'int' to 'uint16_t', possible loss of data (sfn.cpp)
+     1>E:\Xeneva Project\Xeneva\xnlib\libsfn\ssfn.h(356): warning C4244: '=' : conversion from 'int' to 'uint16_t', possible loss of data (sfn.cpp)
+     1>E:\Xeneva Project\Xeneva\xnlib\libsfn\ssfn.h(357): warning C4244: '=' : conversion from 'int' to 'uint16_t', possible loss of data (sfn.cpp)
+     1>potracelib\trace.cpp(376): warning C4127: conditional expression is constant
+     1>potracelib\trace.cpp(524): warning C4244: 'argument' : conversion from 'double' to 'float', possible loss of data
+     1>potracelib\trace.cpp(730): warning C4127: conditional expression is constant
+     1>potracelib\trace.cpp(994): warning C4244: 'argument' : conversion from 'double' to 'float', possible loss of data
+     1>E:\Xeneva Project\Xeneva\xnlib\libsfn\ssfn.h(1515): warning C4244: '=' : conversion from 'uint32_t' to 'uint8_t', possible loss of data (util.cpp)
+     1>E:\Xeneva Project\Xeneva\xnlib\libsfn\ssfn.h(1524): warning C4244: '=' : conversion from 'uint32_t' to 'uint8_t', possible loss of data (util.cpp)
+     1>E:\Xeneva Project\Xeneva\xnlib\libsfn\ssfn.h(1526): warning C4244: '=' : conversion from 'uint32_t' to 'uint8_t', possible loss of data (util.cpp)
+     1>E:\Xeneva Project\Xeneva\xnlib\libsfn\ssfn.h(1534): warning C4244: '=' : conversion from 'uint32_t' to 'uint8_t', possible loss of data (util.cpp)
+     1>util.cpp(78): warning C4244: '=' : conversion from 'int' to 'unsigned char', possible loss of data
+     1>E:\Xeneva Project\Xeneva\xnlib\libsfn\ssfn.h(940): warning C4244: '+=' : conversion from 'int' to 'int16_t', possible loss of data (sfn.cpp)
+         vector.cpp
+     1>E:\Xeneva Project\Xeneva\xnlib\libsfn\ssfn.h(1036): warning C4244: '=' : conversion from 'int' to 'uint16_t', possible loss of data (sfn.cpp)
+     1>E:\Xeneva Project\Xeneva\xnlib\libsfn\ssfn.h(1037): warning C4244: '=' : conversion from 'int' to 'uint8_t', possible loss of data (sfn.cpp)
+     1>E:\Xeneva Project\Xeneva\xnlib\libsfn\ssfn.h(1038): warning C4244: '=' : conversion from 'int' to 'uint8_t', possible loss of data (sfn.cpp)
+     1>E:\Xeneva Project\Xeneva\xnlib\libsfn\ssfn.h(1040): warning C4244: '=' : conversion from 'int' to 'uint8_t', possible loss of data (sfn.cpp)
+     1>E:\Xeneva Project\Xeneva\xnlib\libsfn\ssfn.h(1081): warning C4244: '=' : conversion from 'int' to 'uint16_t', possible loss of data (sfn.cpp)
+     1>E:\Xeneva Project\Xeneva\xnlib\libsfn\ssfn.h(1082): warning C4244: '=' : conversion from 'int' to 'uint16_t', possible loss of data (sfn.cpp)
+     1>E:\Xeneva Project\Xeneva\xnlib\libsfn\ssfn.h(1106): warning C4244: '=' : conversion from 'int' to 'uint16_t', possible loss of data (sfn.cpp)
+     1>E:\Xeneva Project\Xeneva\xnlib\libsfn\ssfn.h(1112): warning C4244: '=' : conversion from 'int' to 'uint8_t', possible loss of data (sfn.cpp)
+     1>E:\Xeneva Project\Xeneva\xnlib\libsfn\ssfn.h(1128): warning C4244: '=' : conversion from 'int' to 'uint8_t', possible loss of data (sfn.cpp)
+     1>E:\Xeneva Project\Xeneva\xnlib\libsfn\ssfn.h(1148): warning C4244: '=' : conversion from 'int' to 'uint8_t', possible loss of data (sfn.cpp)
+     1>E:\Xeneva Project\Xeneva\xnlib\libsfn\ssfn.h(1160): warning C4244: '=' : conversion from 'int' to 'uint8_t', possible loss of data (sfn.cpp)
+     1>E:\Xeneva Project\Xeneva\xnlib\libsfn\ssfn.h(1174): warning C4244: '=' : conversion from 'int' to 'uint8_t', possible loss of data (sfn.cpp)
+     1>E:\Xeneva Project\Xeneva\xnlib\libsfn\ssfn.h(1220): warning C4244: '=' : conversion from 'int' to 'uint8_t', possible loss of data (sfn.cpp)
+     1>E:\Xeneva Project\Xeneva\xnlib\libsfn\ssfn.h(1330): warning C4244: '+=' : conversion from 'int' to 'int16_t', possible loss of data (sfn.cpp)
+     1>E:\Xeneva Project\Xeneva\xnlib\libsfn\ssfn.h(1331): warning C4244: '+=' : conversion from 'int' to 'int16_t', possible loss of data (sfn.cpp)
+     1>E:\Xeneva Project\Xeneva\xnlib\libsfn\ssfn.h(1354): warning C4018: '<' : signed/unsigned mismatch (sfn.cpp)
+     1>E:\Xeneva Project\Xeneva\xnlib\libsfn\ssfn.h(1359): warning C4244: '+=' : conversion from 'int' to 'int16_t', possible loss of data (sfn.cpp)
+     1>E:\Xeneva Project\Xeneva\xnlib\libsfn\ssfn.h(1403): warning C4244: '+=' : conversion from 'int' to 'int16_t', possible loss of data (sfn.cpp)
+     1>E:\Xeneva Project\Xeneva\xnlib\libsfn\ssfn.h(1413): warning C4244: '+=' : conversion from 'int' to 'int16_t', possible loss of data (sfn.cpp)
+     1>E:\Xeneva Project\Xeneva\xnlib\libsfn\ssfn.h(1515): warning C4244: '=' : conversion from 'uint32_t' to 'uint8_t', possible loss of data (sfn.cpp)
+     1>E:\Xeneva Project\Xeneva\xnlib\libsfn\ssfn.h(1524): warning C4244: '=' : conversion from 'uint32_t' to 'uint8_t', possible loss of data (sfn.cpp)
+     1>E:\Xeneva Project\Xeneva\xnlib\libsfn\ssfn.h(1526): warning C4244: '=' : conversion from 'uint32_t' to 'uint8_t', possible loss of data (sfn.cpp)
+     1>E:\Xeneva Project\Xeneva\xnlib\libsfn\ssfn.h(1534): warning C4244: '=' : conversion from 'uint32_t' to 'uint8_t', possible loss of data (sfn.cpp)
+     1>e:\xeneva project\xeneva\xnlib\libsfn\potracelib\auxiliary.h(33): warning C4505: 'dpoint' : unreferenced local function has been removed (potracelib\trace.cpp)
+     1>e:\xeneva project\xeneva\xnlib\libsfn\potracelib\progress.h(43): warning C4505: 'progress_subrange_start' : unreferenced local function has been removed (potracelib\trace.cpp)
+     1>e:\xeneva project\xeneva\xnlib\libsfn\potracelib\progress.h(68): warning C4505: 'progress_subrange_end' : unreferenced local function has been removed (potracelib\trace.cpp)
+         zlib.cpp
+     1>sfn.cpp(282): warning C4244: '=' : conversion from 'int' to 'unsigned char', possible loss of data
+     1>sfn.cpp(283): warning C4244: '=' : conversion from 'int' to 'unsigned char', possible loss of data
+     1>sfn.cpp(288): warning C4244: '=' : conversion from 'int' to 'unsigned char', possible loss of data
+     1>sfn.cpp(289): warning C4244: '=' : conversion from 'int' to 'unsigned char', possible loss of data
+     1>sfn.cpp(346): warning C4244: '=' : conversion from 'int' to 'unsigned char', possible loss of data
+     1>sfn.cpp(347): warning C4244: '=' : conversion from 'int' to 'unsigned char', possible loss of data
+     1>sfn.cpp(402): warning C4244: '=' : conversion from 'int' to 'unsigned char', possible loss of data
+     1>sfn.cpp(405): warning C4244: '=' : conversion from 'int' to 'unsigned char', possible loss of data
+     1>sfn.cpp(412): warning C4244: '=' : conversion from 'int' to 'unsigned char', possible loss of data
+     1>sfn.cpp(415): warning C4244: '=' : conversion from 'int' to 'unsigned char', possible loss of data
+     1>sfn.cpp(446): warning C4244: '=' : conversion from 'int' to 'char', possible loss of data
+     1>sfn.cpp(447): warning C4244: '=' : conversion from 'int' to 'char', possible loss of data
+     1>sfn.cpp(595): warning C4244: '=' : conversion from 'int' to 'unsigned char', possible loss of data
+     1>sfn.cpp(596): warning C4244: '=' : conversion from 'int' to 'unsigned char', possible loss of data
+     1>sfn.cpp(597): warning C4244: '=' : conversion from 'int' to 'unsigned char', possible loss of data
+     1>sfn.cpp(598): warning C4244: '=' : conversion from 'int' to 'unsigned char', possible loss of data
+     1>sfn.cpp(599): warning C4244: '=' : conversion from 'int' to 'unsigned char', possible loss of data
+     1>sfn.cpp(600): warning C4244: '=' : conversion from 'int' to 'unsigned char', possible loss of data
+     1>sfn.cpp(645): warning C4244: '=' : conversion from 'int' to 'unsigned char', possible loss of data
+     1>sfn.cpp(655): warning C4244: '=' : conversion from 'int' to 'unsigned char', possible loss of data
+     1>sfn.cpp(663): warning C4244: '=' : conversion from 'int' to 'unsigned char', possible loss of data
+     1>sfn.cpp(664): warning C4244: '=' : conversion from 'int' to 'unsigned char', possible loss of data
+     1>sfn.cpp(678): warning C4244: '=' : conversion from 'int' to 'unsigned char', possible loss of data
+     1>sfn.cpp(683): warning C4244: '=' : conversion from 'int' to 'unsigned char', possible loss of data
+     1>sfn.cpp(759): warning C4244: '=' : conversion from 'int' to 'unsigned char', possible loss of data
+     1>sfn.cpp(760): warning C4244: '=' : conversion from 'int' to 'unsigned char', possible loss of data
+     1>sfn.cpp(761): warning C4244: '=' : conversion from 'int' to 'unsigned char', possible loss of data
+     1>sfn.cpp(762): warning C4244: '=' : conversion from 'int' to 'unsigned char', possible loss of data
+     1>sfn.cpp(763): warning C4244: '=' : conversion from 'int' to 'unsigned char', possible loss of data
+     1>sfn.cpp(764): warning C4244: '=' : conversion from 'int' to 'unsigned char', possible loss of data
+     1>sfn.cpp(795): warning C4244: '=' : conversion from 'int' to 'char', possible loss of data
+     1>sfn.cpp(796): warning C4244: '=' : conversion from 'int' to 'char', possible loss of data
+     1>sfn.cpp(815): warning C4244: '=' : conversion from 'int' to 'char', possible loss of data
+     1>sfn.cpp(816): warning C4244: '=' : conversion from 'int' to 'char', possible loss of data
+     1>sfn.cpp(854): warning C4244: '=' : conversion from 'int' to 'unsigned char', possible loss of data
+     1>sfn.cpp(856): warning C4244: '=' : conversion from 'int' to 'unsigned char', possible loss of data
+     1>sfn.cpp(925): warning C4244: '=' : conversion from 'int' to 'unsigned char', possible loss of data
+     1>sfn.cpp(990): warning C4244: 'return' : conversion from 'int' to 'unsigned char', possible loss of data
+     1>sfn.cpp(1001): warning C4244: '=' : conversion from 'int' to 'unsigned char', possible loss of data
+     1>sfn.cpp(1002): warning C4244: '=' : conversion from 'int' to 'unsigned char', possible loss of data
+     1>sfn.cpp(1003): warning C4244: '=' : conversion from 'int' to 'unsigned char', possible loss of data
+     1>sfn.cpp(1004): warning C4244: '=' : conversion from 'int' to 'unsigned char', possible loss of data
+     1>sfn.cpp(1006): warning C4244: 'return' : conversion from 'int' to 'unsigned char', possible loss of data
+     1>sfn.cpp(1009): warning C4244: '=' : conversion from 'int' to 'unsigned char', possible loss of data
+     1>sfn.cpp(1010): warning C4244: '=' : conversion from 'int' to 'unsigned char', possible loss of data
+     1>sfn.cpp(1011): warning C4244: '=' : conversion from 'int' to 'unsigned char', possible loss of data
+     1>sfn.cpp(1012): warning C4244: '=' : conversion from 'int' to 'unsigned char', possible loss of data
+     1>sfn.cpp(1013): warning C4244: 'return' : conversion from 'int' to 'unsigned char', possible loss of data
+     1>zlib.cpp(845): warning C4127: conditional expression is constant
+     1>sfn.cpp(1440): warning C4100: 'comp' : unreferenced formal parameter
+     1>sfn.cpp(1440): warning C4100: 'ascii' : unreferenced formal parameter
+     1>sfn.cpp(1440): warning C4100: 'filename' : unreferenced formal parameter
+     1>sfn.cpp(2141): warning C4244: '=' : conversion from 'int' to 'unsigned char', possible loss of data
+     1>sfn.cpp(2232): warning C4244: '=' : conversion from 'int' to 'unsigned char', possible loss of data
+     1>sfn.cpp(2239): warning C4244: '=' : conversion from 'int' to 'unsigned char', possible loss of data
+     1>sfn.cpp(2242): warning C4244: '=' : conversion from 'int' to 'unsigned char', possible loss of data
+     1>zlib.cpp(1979): warning C4127: conditional expression is constant
+     1>sfn.cpp(2243): warning C4244: '=' : conversion from 'int' to 'unsigned char', possible loss of data
+     1>zlib.cpp(1992): warning C4127: conditional expression is constant
+     1>sfn.cpp(2252): warning C4244: '=' : conversion from 'int' to 'unsigned char', possible loss of data
+     1>zlib.cpp(2003): warning C4127: conditional expression is constant
+     1>sfn.cpp(2270): warning C4244: '=' : conversion from 'int' to 'uint16_t', possible loss of data
+     1>zlib.cpp(2014): warning C4127: conditional expression is constant
+     1>sfn.cpp(2271): warning C4244: '=' : conversion from 'int' to 'uint16_t', possible loss of data
+     1>zlib.cpp(2025): warning C4127: conditional expression is constant
+     1>sfn.cpp(2274): warning C4244: '=' : conversion from 'int' to 'uint16_t', possible loss of data
+     1>sfn.cpp(2275): warning C4244: '=' : conversion from 'int' to 'uint16_t', possible loss of data
+     1>zlib.cpp(2036): warning C4127: conditional expression is constant
+     1>sfn.cpp(2318): warning C4244: '=' : conversion from 'int' to 'uint16_t', possible loss of data
+     1>sfn.cpp(2319): warning C4244: '=' : conversion from 'int' to 'uint16_t', possible loss of data
+     1>sfn.cpp(2321): warning C4244: '=' : conversion from 'int' to 'uint16_t', possible loss of data
+     1>sfn.cpp(2322): warning C4244: '=' : conversion from 'int' to 'uint16_t', possible loss of data
+     1>sfn.cpp(2323): warning C4244: '=' : conversion from 'int' to 'uint16_t', possible loss of data
+     1>zlib.cpp(2565): warning C4127: conditional expression is constant
+     1>sfn.cpp(2371): warning C4244: '=' : conversion from 'int' to 'uint16_t', possible loss of data
+     1>zlib.cpp(2763): warning C4244: '=' : conversion from 'unsigned int' to 'Bytef', possible loss of data
+     1>sfn.cpp(2400): warning C4244: '=' : conversion from 'int' to 'uint8_t', possible loss of data
+     1>zlib.cpp(2764): warning C4244: '=' : conversion from 'unsigned int' to 'Bytef', possible loss of data
+     1>sfn.cpp(2412): warning C4244: '=' : conversion from 'int' to 'uint8_t', possible loss of data
+     1>zlib.cpp(2765): warning C4244: '=' : conversion from 'unsigned int' to 'Bytef', possible loss of data
+     1>sfn.cpp(2417): warning C4244: '=' : conversion from 'int' to 'uint8_t', possible loss of data
+     1>zlib.cpp(2766): warning C4244: '=' : conversion from 'unsigned int' to 'Bytef', possible loss of data
+     1>sfn.cpp(2448): warning C4244: '=' : conversion from 'int' to 'unsigned char', possible loss of data
+     1>sfn.cpp(2449): warning C4244: '=' : conversion from 'int' to 'unsigned char', possible loss of data
+     1>sfn.cpp(2450): warning C4244: '=' : conversion from 'int' to 'unsigned char', possible loss of data
+     1>sfn.cpp(2452): warning C4244: '=' : conversion from 'int' to 'unsigned char', possible loss of data
+     1>sfn.cpp(2453): warning C4244: '=' : conversion from 'int' to 'unsigned char', possible loss of data
+     1>sfn.cpp(2462): warning C4244: '=' : conversion from 'int' to 'char', possible loss of data
+     1>sfn.cpp(2463): warning C4244: '=' : conversion from 'int' to 'char', possible loss of data
+     1>sfn.cpp(2476): warning C4244: '=' : conversion from 'int' to 'unsigned char', possible loss of data
+     1>sfn.cpp(2477): warning C4244: '=' : conversion from 'int' to 'unsigned char', possible loss of data
+     1>sfn.cpp(2569): warning C4244: 'argument' : conversion from 'double' to 'int', possible loss of data
+     1>sfn.cpp(2573): warning C4244: 'argument' : conversion from 'double' to 'int', possible loss of data
+     1>sfn.cpp(2574): warning C4244: 'argument' : conversion from 'double' to 'int', possible loss of data
+     1>sfn.cpp(2578): warning C4244: 'argument' : conversion from 'double' to 'int', possible loss of data
+     1>sfn.cpp(2592): warning C4244: '=' : conversion from 'int' to 'unsigned char', possible loss of data
+     1>sfn.cpp(2593): warning C4244: '=' : conversion from 'int' to 'unsigned char', possible loss of data
+     1>sfn.cpp(2594): warning C4244: '=' : conversion from 'int' to 'unsigned char', possible loss of data
+     1>sfn.cpp(2596): warning C4244: '=' : conversion from 'int' to 'char', possible loss of data
+     1>sfn.cpp(2597): warning C4244: '=' : conversion from 'int' to 'char', possible loss of data
+     1>zlib.cpp(4082): warning C4244: '+=' : conversion from 'int' to 'ush', possible loss of data
+     1>unicode.cpp(102): warning C4244: '=' : conversion from 'int' to 'char', possible loss of data
+     1>e:\xeneva project\xeneva\xnlib\libsfn\ssfn.h(956): warning C4706: assignment within conditional expression
+     1>e:\xeneva project\xeneva\xnlib\libsfn\ssfn.h(960): warning C4706: assignment within conditional expression
+     1>e:\xeneva project\xeneva\xnlib\libsfn\ssfn.h(964): warning C4706: assignment within conditional expression
+     1>e:\xeneva project\xeneva\xnlib\libsfn\ssfn.h(969): warning C4706: assignment within conditional expression
+     1>e:\xeneva project\xeneva\xnlib\libsfn\ssfn.h(974): warning C4706: assignment within conditional expression
+     1>e:\xeneva project\xeneva\xnlib\libsfn\ssfn.h(1401): warning C4706: assignment within conditional expression
+     1>e:\xeneva project\xeneva\xnlib\libsfn\ssfn.h(992): warning C4701: potentially uninitialized local variable 'unicode' used
+     1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V110\Microsoft.CppBuild.targets(1299,5): warning MSB8012: TargetPath(E:\Xeneva Project\Xeneva\Aurora\x64\Debug\libsfn.lib) does not match the Library's OutputFile property value (E:\Xeneva Project\Xeneva\xnlib\lib64\libsfn.lib). This may cause your project to build incorrectly. To correct this, please make sure that $(OutDir), $(TargetName) and $(TargetExt) property values match the value specified in %(Lib.OutputFile).
+       Lib:
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\Lib.exe /OUT:"E:\Xeneva Project\Xeneva\xnlib\lib64\libsfn.lib" /NOLOGO /MACHINE:X64 x64\Debug\bitmap.obj
+         x64\Debug\curve.obj
+         x64\Debug\decompose.obj
+         x64\Debug\potracelib.obj
+         x64\Debug\trace.obj
+         x64\Debug\sfn.obj
+         x64\Debug\unicode.obj
+         x64\Debug\util.obj
+         x64\Debug\vector.obj
+         x64\Debug\zlib.obj
+     1>sfn.obj : warning LNK4006: ssfn_errstr already defined in util.obj; second definition ignored
+     1>sfn.obj : warning LNK4006: ssfn_src already defined in util.obj; second definition ignored
+     1>sfn.obj : warning LNK4006: ssfn_dst already defined in util.obj; second definition ignored
+     1>sfn.obj : warning LNK4006: ssfn_utf8 already defined in util.obj; second definition ignored
+     1>sfn.obj : warning LNK4006: ssfn_putc already defined in util.obj; second definition ignored
+         libsfn.vcxproj -> E:\Xeneva Project\Xeneva\Aurora\x64\Debug\libsfn.lib
+     1>Done Building Project "E:\Xeneva Project\Xeneva\xnlib\libsfn\libsfn.vcxproj" (Rebuild target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:01.13

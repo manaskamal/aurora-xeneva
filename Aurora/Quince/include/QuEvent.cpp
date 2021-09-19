@@ -137,6 +137,5 @@ void QuEventLoop() {
 			QuCanvasSetUpdateBit(false);
 		}*/
 		sys_sleep(25);
-	
 	}
 }

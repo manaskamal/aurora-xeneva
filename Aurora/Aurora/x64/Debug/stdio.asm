@@ -5,12 +5,18 @@ include listing.inc
 INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
+PUBLIC	?integer_buffer@@3PADA				; integer_buffer
+PUBLIC	?float_to_string_output@@3PADA			; float_to_string_output
+_BSS	SEGMENT
+?integer_buffer@@3PADA DB 020H DUP (?)			; integer_buffer
+?float_to_string_output@@3PADA DB 020H DUP (?)		; float_to_string_output
+_BSS	ENDS
 CONST	SEGMENT
 $SG2899	DB	'0123456789ABCDEF', 00H
 	ORG $+3
-$SG2955	DB	'0', 00H
+$SG2994	DB	'0', 00H
 	ORG $+2
-$SG2992	DB	'.', 00H
+$SG3041	DB	'.', 00H
 CONST	ENDS
 _DATA	SEGMENT
 chars	DQ	FLAT:$SG2899
@@ -18,22 +24,365 @@ _DATA	ENDS
 PUBLIC	?sztoa@@YAPEAD_KPEADH@Z				; sztoa
 PUBLIC	?printf@@YAXPEBDZZ				; printf
 PUBLIC	?atow@@YAXPEADPEBD@Z				; atow
+PUBLIC	?int_to_str@@YAPEBDH@Z				; int_to_str
+PUBLIC	?ftoa@@YAPEADME@Z				; ftoa
+PUBLIC	__real@41200000
+PUBLIC	__real@bf800000
 EXTRN	?strlen@@YA_KPEBD@Z:PROC			; strlen
 EXTRN	?puts@@YAXPEAD@Z:PROC				; puts
+EXTRN	_fltused:DWORD
 pdata	SEGMENT
 $pdata$?sztoa@@YAPEAD_KPEADH@Z DD imagerel $LN11
 	DD	imagerel $LN11+275
 	DD	imagerel $unwind$?sztoa@@YAPEAD_KPEADH@Z
-$pdata$?printf@@YAXPEBDZZ DD imagerel $LN23
-	DD	imagerel $LN23+844
+$pdata$?printf@@YAXPEBDZZ DD imagerel $LN25
+	DD	imagerel $LN25+916
 	DD	imagerel $unwind$?printf@@YAXPEBDZZ
+$pdata$?int_to_str@@YAPEBDH@Z DD imagerel $LN7
+	DD	imagerel $LN7+280
+	DD	imagerel $unwind$?int_to_str@@YAPEBDH@Z
+$pdata$?ftoa@@YAPEADME@Z DD imagerel $LN9
+	DD	imagerel $LN9+311
+	DD	imagerel $unwind$?ftoa@@YAPEADME@Z
 pdata	ENDS
+;	COMDAT __real@bf800000
+CONST	SEGMENT
+__real@bf800000 DD 0bf800000r			; -1
+CONST	ENDS
+;	COMDAT __real@41200000
+CONST	SEGMENT
+__real@41200000 DD 041200000r			; 10
+CONST	ENDS
 xdata	SEGMENT
 $unwind$?sztoa@@YAPEAD_KPEADH@Z DD 011301H
 	DD	04213H
 $unwind$?printf@@YAXPEBDZZ DD 021b01H
 	DD	02f011bH
+$unwind$?int_to_str@@YAPEBDH@Z DD 010801H
+	DD	04208H
+$unwind$?ftoa@@YAPEADME@Z DD 010e01H
+	DD	0820eH
 xdata	ENDS
+; Function compile flags: /Odtpy
+; File e:\xeneva project\xeneva\aurora\aurora\stdio.cpp
+_TEXT	SEGMENT
+i$1 = 32
+new_value$ = 36
+float_ptr$ = 40
+int_ptr$ = 48
+value$ = 80
+decimal_places$ = 88
+?ftoa@@YAPEADME@Z PROC					; ftoa
+
+; 72   : char* ftoa(float value, uint8_t decimal_places) {
+
+$LN9:
+	mov	BYTE PTR [rsp+16], dl
+	movss	DWORD PTR [rsp+8], xmm0
+	sub	rsp, 72					; 00000048H
+
+; 73   : 	char* int_ptr = (char*)int_to_str((int)value);
+
+	cvttss2si eax, DWORD PTR value$[rsp]
+	mov	ecx, eax
+	call	?int_to_str@@YAPEBDH@Z			; int_to_str
+	mov	QWORD PTR int_ptr$[rsp], rax
+
+; 74   : 	char* float_ptr = float_to_string_output;
+
+	lea	rax, OFFSET FLAT:?float_to_string_output@@3PADA ; float_to_string_output
+	mov	QWORD PTR float_ptr$[rsp], rax
+
+; 75   : 
+; 76   : 	if (value < 0) {
+
+	xorps	xmm0, xmm0
+	comiss	xmm0, DWORD PTR value$[rsp]
+	jbe	SHORT $LN6@ftoa
+
+; 77   : 		value *= -1;
+
+	movss	xmm0, DWORD PTR value$[rsp]
+	mulss	xmm0, DWORD PTR __real@bf800000
+	movss	DWORD PTR value$[rsp], xmm0
+$LN6@ftoa:
+$LN5@ftoa:
+
+; 78   : 	}
+; 79   : 
+; 80   : 
+; 81   : 	while (*int_ptr != 0) {
+
+	mov	rax, QWORD PTR int_ptr$[rsp]
+	movsx	eax, BYTE PTR [rax]
+	test	eax, eax
+	je	SHORT $LN4@ftoa
+
+; 82   : 		*float_ptr = *int_ptr;
+
+	mov	rax, QWORD PTR float_ptr$[rsp]
+	mov	rcx, QWORD PTR int_ptr$[rsp]
+	movzx	ecx, BYTE PTR [rcx]
+	mov	BYTE PTR [rax], cl
+
+; 83   : 		int_ptr++;
+
+	mov	rax, QWORD PTR int_ptr$[rsp]
+	inc	rax
+	mov	QWORD PTR int_ptr$[rsp], rax
+
+; 84   : 		float_ptr++;
+
+	mov	rax, QWORD PTR float_ptr$[rsp]
+	inc	rax
+	mov	QWORD PTR float_ptr$[rsp], rax
+
+; 85   : 	}
+
+	jmp	SHORT $LN5@ftoa
+$LN4@ftoa:
+
+; 86   : 
+; 87   : 	*float_ptr = '.';
+
+	mov	rax, QWORD PTR float_ptr$[rsp]
+	mov	BYTE PTR [rax], 46			; 0000002eH
+
+; 88   : 	float_ptr++;
+
+	mov	rax, QWORD PTR float_ptr$[rsp]
+	inc	rax
+	mov	QWORD PTR float_ptr$[rsp], rax
+
+; 89   : 
+; 90   : 	float new_value = value - (int)value;
+
+	cvttss2si eax, DWORD PTR value$[rsp]
+	cvtsi2ss xmm0, eax
+	movss	xmm1, DWORD PTR value$[rsp]
+	subss	xmm1, xmm0
+	movaps	xmm0, xmm1
+	movss	DWORD PTR new_value$[rsp], xmm0
+
+; 91   : 
+; 92   : 	for (uint8_t i = 0; i < decimal_places; i++) {
+
+	mov	BYTE PTR i$1[rsp], 0
+	jmp	SHORT $LN3@ftoa
+$LN2@ftoa:
+	movzx	eax, BYTE PTR i$1[rsp]
+	inc	al
+	mov	BYTE PTR i$1[rsp], al
+$LN3@ftoa:
+	movzx	eax, BYTE PTR i$1[rsp]
+	movzx	ecx, BYTE PTR decimal_places$[rsp]
+	cmp	eax, ecx
+	jge	SHORT $LN1@ftoa
+
+; 93   : 		new_value *= 10;
+
+	movss	xmm0, DWORD PTR new_value$[rsp]
+	mulss	xmm0, DWORD PTR __real@41200000
+	movss	DWORD PTR new_value$[rsp], xmm0
+
+; 94   : 		*float_ptr = (int)new_value + 48;
+
+	cvttss2si eax, DWORD PTR new_value$[rsp]
+	add	eax, 48					; 00000030H
+	mov	rcx, QWORD PTR float_ptr$[rsp]
+	mov	BYTE PTR [rcx], al
+
+; 95   : 		new_value -= (int)new_value;
+
+	cvttss2si eax, DWORD PTR new_value$[rsp]
+	cvtsi2ss xmm0, eax
+	movss	xmm1, DWORD PTR new_value$[rsp]
+	subss	xmm1, xmm0
+	movaps	xmm0, xmm1
+	movss	DWORD PTR new_value$[rsp], xmm0
+
+; 96   : 		float_ptr++;
+
+	mov	rax, QWORD PTR float_ptr$[rsp]
+	inc	rax
+	mov	QWORD PTR float_ptr$[rsp], rax
+
+; 97   : 	}
+
+	jmp	SHORT $LN2@ftoa
+$LN1@ftoa:
+
+; 98   : 
+; 99   : 	*float_ptr = 0;
+
+	mov	rax, QWORD PTR float_ptr$[rsp]
+	mov	BYTE PTR [rax], 0
+
+; 100  : 
+; 101  : 	return float_to_string_output;
+
+	lea	rax, OFFSET FLAT:?float_to_string_output@@3PADA ; float_to_string_output
+
+; 102  : }
+
+	add	rsp, 72					; 00000048H
+	ret	0
+?ftoa@@YAPEADME@Z ENDP					; ftoa
+_TEXT	ENDS
+; Function compile flags: /Odtpy
+; File e:\xeneva project\xeneva\aurora\aurora\stdio.cpp
+_TEXT	SEGMENT
+size$ = 0
+index$ = 1
+remainder$1 = 2
+remainder$ = 3
+new_value$ = 8
+size_tester$ = 16
+value$ = 48
+?int_to_str@@YAPEBDH@Z PROC				; int_to_str
+
+; 48   : const char* int_to_str (int value) {
+
+$LN7:
+	mov	DWORD PTR [rsp+8], ecx
+	sub	rsp, 40					; 00000028H
+
+; 49   : 	uint8_t size = 0;
+
+	mov	BYTE PTR size$[rsp], 0
+
+; 50   : 	uint64_t size_tester = (uint64_t)value;
+
+	movsxd	rax, DWORD PTR value$[rsp]
+	mov	QWORD PTR size_tester$[rsp], rax
+$LN4@int_to_str:
+
+; 51   : 	while (size_tester / 10 > 0) {
+
+	xor	edx, edx
+	mov	rax, QWORD PTR size_tester$[rsp]
+	mov	ecx, 10
+	div	rcx
+	test	rax, rax
+	jbe	SHORT $LN3@int_to_str
+
+; 52   : 		size_tester /= 10;
+
+	xor	edx, edx
+	mov	rax, QWORD PTR size_tester$[rsp]
+	mov	ecx, 10
+	div	rcx
+	mov	QWORD PTR size_tester$[rsp], rax
+
+; 53   : 		size++;
+
+	movzx	eax, BYTE PTR size$[rsp]
+	inc	al
+	mov	BYTE PTR size$[rsp], al
+
+; 54   : 	}
+
+	jmp	SHORT $LN4@int_to_str
+$LN3@int_to_str:
+
+; 55   : 
+; 56   : 	uint8_t index = 0;
+
+	mov	BYTE PTR index$[rsp], 0
+
+; 57   : 	uint64_t new_value = (uint64_t)value;
+
+	movsxd	rax, DWORD PTR value$[rsp]
+	mov	QWORD PTR new_value$[rsp], rax
+$LN2@int_to_str:
+
+; 58   : 	while (new_value / 10 > 0) {
+
+	xor	edx, edx
+	mov	rax, QWORD PTR new_value$[rsp]
+	mov	ecx, 10
+	div	rcx
+	test	rax, rax
+	jbe	SHORT $LN1@int_to_str
+
+; 59   : 		uint8_t remainder = new_value % 10;
+
+	xor	edx, edx
+	mov	rax, QWORD PTR new_value$[rsp]
+	mov	ecx, 10
+	div	rcx
+	mov	rax, rdx
+	mov	BYTE PTR remainder$1[rsp], al
+
+; 60   : 		new_value /= 10;
+
+	xor	edx, edx
+	mov	rax, QWORD PTR new_value$[rsp]
+	mov	ecx, 10
+	div	rcx
+	mov	QWORD PTR new_value$[rsp], rax
+
+; 61   : 		integer_buffer[size - index] = remainder + 48;
+
+	movzx	eax, BYTE PTR remainder$1[rsp]
+	add	eax, 48					; 00000030H
+	movzx	ecx, BYTE PTR size$[rsp]
+	movzx	edx, BYTE PTR index$[rsp]
+	sub	ecx, edx
+	movsxd	rcx, ecx
+	lea	rdx, OFFSET FLAT:?integer_buffer@@3PADA	; integer_buffer
+	mov	BYTE PTR [rdx+rcx], al
+
+; 62   : 		index++;
+
+	movzx	eax, BYTE PTR index$[rsp]
+	inc	al
+	mov	BYTE PTR index$[rsp], al
+
+; 63   : 	}
+
+	jmp	SHORT $LN2@int_to_str
+$LN1@int_to_str:
+
+; 64   : 
+; 65   : 	uint8_t remainder = new_value % 10;
+
+	xor	edx, edx
+	mov	rax, QWORD PTR new_value$[rsp]
+	mov	ecx, 10
+	div	rcx
+	mov	rax, rdx
+	mov	BYTE PTR remainder$[rsp], al
+
+; 66   : 	integer_buffer[size - index] = remainder + 48;
+
+	movzx	eax, BYTE PTR remainder$[rsp]
+	add	eax, 48					; 00000030H
+	movzx	ecx, BYTE PTR size$[rsp]
+	movzx	edx, BYTE PTR index$[rsp]
+	sub	ecx, edx
+	movsxd	rcx, ecx
+	lea	rdx, OFFSET FLAT:?integer_buffer@@3PADA	; integer_buffer
+	mov	BYTE PTR [rdx+rcx], al
+
+; 67   : 	integer_buffer[size + 1] = 0;
+
+	movzx	eax, BYTE PTR size$[rsp]
+	inc	eax
+	cdqe
+	lea	rcx, OFFSET FLAT:?integer_buffer@@3PADA	; integer_buffer
+	mov	BYTE PTR [rcx+rax], 0
+
+; 68   : 	return integer_buffer;
+
+	lea	rax, OFFSET FLAT:?integer_buffer@@3PADA	; integer_buffer
+
+; 69   : }
+
+	add	rsp, 40					; 00000028H
+	ret	0
+?int_to_str@@YAPEBDH@Z ENDP				; int_to_str
+_TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\stdio.cpp
 _TEXT	SEGMENT
@@ -88,108 +437,109 @@ c$5 = 64
 len$6 = 72
 i$7 = 80
 x$8 = 88
-tv134 = 96
-x$9 = 104
-tv133 = 112
-buffer$10 = 128
-buffer$11 = 208
-buffer$12 = 288
+x$9 = 96
+tv133 = 104
+tv134 = 112
+x$10 = 120
+buffer$11 = 128
+buffer$12 = 208
+buffer$13 = 288
 format$ = 384
 ?printf@@YAXPEBDZZ PROC					; printf
 
-; 48   : {
+; 105  : {
 
-$LN23:
+$LN25:
 	mov	QWORD PTR [rsp+8], rcx
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+24], r8
 	mov	QWORD PTR [rsp+32], r9
 	sub	rsp, 376				; 00000178H
 
-; 49   : 	_va_list_ args;
-; 50   : 	va_start(args, format);
+; 106  : 	_va_list_ args;
+; 107  : 	va_start(args, format);
 
 	lea	rax, QWORD PTR format$[rsp+8]
 	mov	QWORD PTR args$[rsp], rax
-$LN20@printf:
+$LN22@printf:
 
-; 51   : 
-; 52   : 	while (*format)
+; 108  : 
+; 109  : 	while (*format)
 
 	mov	rax, QWORD PTR format$[rsp]
 	movsx	eax, BYTE PTR [rax]
 	test	eax, eax
-	je	$LN19@printf
+	je	$LN21@printf
 
-; 53   : 	{
-; 54   : 		if (*format == '%')
+; 110  : 	{
+; 111  : 		if (*format == '%')
 
 	mov	rax, QWORD PTR format$[rsp]
 	movsx	eax, BYTE PTR [rax]
 	cmp	eax, 37					; 00000025H
-	jne	$LN18@printf
+	jne	$LN20@printf
 
-; 55   : 		{
-; 56   : 			++format;
+; 112  : 		{
+; 113  : 			++format;
 
 	mov	rax, QWORD PTR format$[rsp]
 	inc	rax
 	mov	QWORD PTR format$[rsp], rax
 
-; 57   : 			if (*format == 'd')
+; 114  : 			if (*format == 'd')
 
 	mov	rax, QWORD PTR format$[rsp]
 	movsx	eax, BYTE PTR [rax]
 	cmp	eax, 100				; 00000064H
-	jne	$LN17@printf
+	jne	$LN19@printf
 
-; 58   : 			{
-; 59   : 				size_t width = 0;
+; 115  : 			{
+; 116  : 				size_t width = 0;
 
 	mov	QWORD PTR width$4[rsp], 0
 
-; 60   : 				if (format[1] == '.')
+; 117  : 				if (format[1] == '.')
 
 	mov	eax, 1
 	imul	rax, 1
 	mov	rcx, QWORD PTR format$[rsp]
 	movsx	eax, BYTE PTR [rcx+rax]
 	cmp	eax, 46					; 0000002eH
-	jne	$LN16@printf
+	jne	$LN18@printf
 
-; 61   : 				{
-; 62   : 					for (size_t i = 2; format[i] >= '0' && format[i] <= '9'; ++i)
+; 118  : 				{
+; 119  : 					for (size_t i = 2; format[i] >= '0' && format[i] <= '9'; ++i)
 
 	mov	QWORD PTR i$3[rsp], 2
-	jmp	SHORT $LN15@printf
-$LN14@printf:
+	jmp	SHORT $LN17@printf
+$LN16@printf:
 	mov	rax, QWORD PTR i$3[rsp]
 	inc	rax
 	mov	QWORD PTR i$3[rsp], rax
-$LN15@printf:
+$LN17@printf:
 	mov	rax, QWORD PTR i$3[rsp]
 	mov	rcx, QWORD PTR format$[rsp]
 	add	rcx, rax
 	mov	rax, rcx
 	movsx	eax, BYTE PTR [rax]
 	cmp	eax, 48					; 00000030H
-	jl	SHORT $LN13@printf
+	jl	SHORT $LN15@printf
 	mov	rax, QWORD PTR i$3[rsp]
 	mov	rcx, QWORD PTR format$[rsp]
 	add	rcx, rax
 	mov	rax, rcx
 	movsx	eax, BYTE PTR [rax]
 	cmp	eax, 57					; 00000039H
-	jg	SHORT $LN13@printf
+	jg	SHORT $LN15@printf
 
-; 63   : 					{
-; 64   : 						width *= 10;
+; 120  : 					{
+; 121  : 						width *= 10;
 
 	mov	rax, QWORD PTR width$4[rsp]
 	imul	rax, 10
 	mov	QWORD PTR width$4[rsp], rax
 
-; 65   : 						width += format[i] - '0';
+; 122  : 						width += format[i] - '0';
 
 	mov	rax, QWORD PTR i$3[rsp]
 	mov	rcx, QWORD PTR format$[rsp]
@@ -203,14 +553,14 @@ $LN15@printf:
 	mov	rax, rcx
 	mov	QWORD PTR width$4[rsp], rax
 
-; 66   : 					}
+; 123  : 					}
 
-	jmp	SHORT $LN14@printf
-$LN13@printf:
-$LN16@printf:
+	jmp	SHORT $LN16@printf
+$LN15@printf:
+$LN18@printf:
 
-; 67   : 				}
-; 68   : 				size_t i = va_arg(args, size_t);
+; 124  : 				}
+; 125  : 				size_t i = va_arg(args, size_t);
 
 	mov	rax, QWORD PTR args$[rsp]
 	add	rax, 8
@@ -219,22 +569,22 @@ $LN16@printf:
 	mov	rax, QWORD PTR [rax-8]
 	mov	QWORD PTR i$7[rsp], rax
 
-; 69   : 				char buffer[sizeof(size_t) * 8 + 1];
-; 70   : 				sztoa(i, buffer, 10);
+; 126  : 				char buffer[sizeof(size_t) * 8 + 1];
+; 127  : 				sztoa(i, buffer, 10);
 
 	mov	r8d, 10
-	lea	rdx, QWORD PTR buffer$10[rsp]
+	lea	rdx, QWORD PTR buffer$11[rsp]
 	mov	rcx, QWORD PTR i$7[rsp]
 	call	?sztoa@@YAPEAD_KPEADH@Z			; sztoa
 
-; 71   : 				size_t len = strlen(buffer);
+; 128  : 				size_t len = strlen(buffer);
 
-	lea	rcx, QWORD PTR buffer$10[rsp]
+	lea	rcx, QWORD PTR buffer$11[rsp]
 	call	?strlen@@YA_KPEBD@Z			; strlen
 	mov	QWORD PTR len$6[rsp], rax
-$LN12@printf:
+$LN14@printf:
 
-; 72   : 				while (len++ < width)
+; 129  : 				while (len++ < width)
 
 	mov	rax, QWORD PTR len$6[rsp]
 	mov	QWORD PTR tv133[rsp], rax
@@ -245,32 +595,32 @@ $LN12@printf:
 	mov	QWORD PTR len$6[rsp], rax
 	mov	rax, QWORD PTR tv134[rsp]
 	cmp	QWORD PTR tv133[rsp], rax
-	jae	SHORT $LN11@printf
+	jae	SHORT $LN13@printf
 
-; 73   : 					puts("0");
+; 130  : 					puts("0");
 
-	lea	rcx, OFFSET FLAT:$SG2955
+	lea	rcx, OFFSET FLAT:$SG2994
 	call	?puts@@YAXPEAD@Z			; puts
-	jmp	SHORT $LN12@printf
-$LN11@printf:
+	jmp	SHORT $LN14@printf
+$LN13@printf:
 
-; 74   : 				puts(buffer);
+; 131  : 				puts(buffer);
 
-	lea	rcx, QWORD PTR buffer$10[rsp]
+	lea	rcx, QWORD PTR buffer$11[rsp]
 	call	?puts@@YAXPEAD@Z			; puts
-	jmp	$LN10@printf
-$LN17@printf:
+	jmp	$LN12@printf
+$LN19@printf:
 
-; 75   : 			}
-; 76   : 			else if (*format == 'c')
+; 132  : 			}
+; 133  : 			else if (*format == 'c')
 
 	mov	rax, QWORD PTR format$[rsp]
 	movsx	eax, BYTE PTR [rax]
 	cmp	eax, 99					; 00000063H
-	jne	SHORT $LN9@printf
+	jne	SHORT $LN11@printf
 
-; 77   : 			{
-; 78   : 				int c = va_arg(args, int);
+; 134  : 			{
+; 135  : 				int c = va_arg(args, int);
 
 	mov	rax, QWORD PTR args$[rsp]
 	add	rax, 4
@@ -279,66 +629,66 @@ $LN17@printf:
 	mov	eax, DWORD PTR [rax-4]
 	mov	DWORD PTR c$5[rsp], eax
 
-; 79   : 				char buffer[sizeof(size_t) * 8 + 1];
-; 80   : 				sztoa(c, buffer, 10);
+; 136  : 				char buffer[sizeof(size_t) * 8 + 1];
+; 137  : 				sztoa(c, buffer, 10);
 
 	movsxd	rax, DWORD PTR c$5[rsp]
 	mov	r8d, 10
-	lea	rdx, QWORD PTR buffer$11[rsp]
+	lea	rdx, QWORD PTR buffer$12[rsp]
 	mov	rcx, rax
 	call	?sztoa@@YAPEAD_KPEADH@Z			; sztoa
 
-; 81   : 				puts(buffer);
+; 138  : 				puts(buffer);
 
-	lea	rcx, QWORD PTR buffer$11[rsp]
+	lea	rcx, QWORD PTR buffer$12[rsp]
 	call	?puts@@YAXPEAD@Z			; puts
-	jmp	$LN8@printf
-$LN9@printf:
+	jmp	$LN10@printf
+$LN11@printf:
 
-; 82   : 			}
-; 83   : 			else if (*format == 'x')
+; 139  : 			}
+; 140  : 			else if (*format == 'x')
 
 	mov	rax, QWORD PTR format$[rsp]
 	movsx	eax, BYTE PTR [rax]
 	cmp	eax, 120				; 00000078H
-	jne	SHORT $LN7@printf
+	jne	SHORT $LN9@printf
 
-; 84   : 			{
-; 85   : 				size_t x = va_arg(args, size_t);
+; 141  : 			{
+; 142  : 				size_t x = va_arg(args, size_t);
 
 	mov	rax, QWORD PTR args$[rsp]
 	add	rax, 8
 	mov	QWORD PTR args$[rsp], rax
 	mov	rax, QWORD PTR args$[rsp]
 	mov	rax, QWORD PTR [rax-8]
-	mov	QWORD PTR x$9[rsp], rax
+	mov	QWORD PTR x$10[rsp], rax
 
-; 86   : 				char buffer[sizeof(size_t) * 8 + 1];
-; 87   : 				sztoa(x, buffer, 16);
+; 143  : 				char buffer[sizeof(size_t) * 8 + 1];
+; 144  : 				sztoa(x, buffer, 16);
 
 	mov	r8d, 16
-	lea	rdx, QWORD PTR buffer$12[rsp]
-	mov	rcx, QWORD PTR x$9[rsp]
+	lea	rdx, QWORD PTR buffer$13[rsp]
+	mov	rcx, QWORD PTR x$10[rsp]
 	call	?sztoa@@YAPEAD_KPEADH@Z			; sztoa
 
-; 88   : 				//puts("0x");
-; 89   : 				puts(buffer);
+; 145  : 				//puts("0x");
+; 146  : 				puts(buffer);
 
-	lea	rcx, QWORD PTR buffer$12[rsp]
+	lea	rcx, QWORD PTR buffer$13[rsp]
 	call	?puts@@YAXPEAD@Z			; puts
-	jmp	$LN6@printf
-$LN7@printf:
+	jmp	$LN8@printf
+$LN9@printf:
 
-; 90   : 			}
-; 91   : 			else if (*format == 's')
+; 147  : 			}
+; 148  : 			else if (*format == 's')
 
 	mov	rax, QWORD PTR format$[rsp]
 	movsx	eax, BYTE PTR [rax]
 	cmp	eax, 115				; 00000073H
-	jne	SHORT $LN5@printf
+	jne	SHORT $LN7@printf
 
-; 92   : 			{
-; 93   : 				char* x = va_arg(args, char*);
+; 149  : 			{
+; 150  : 				char* x = va_arg(args, char*);
 
 	mov	rax, QWORD PTR args$[rsp]
 	add	rax, 8
@@ -347,41 +697,64 @@ $LN7@printf:
 	mov	rax, QWORD PTR [rax-8]
 	mov	QWORD PTR x$8[rsp], rax
 
-; 94   : 				puts(x);
+; 151  : 				puts(x);
 
 	mov	rcx, QWORD PTR x$8[rsp]
+	call	?puts@@YAXPEAD@Z			; puts
+	jmp	$LN6@printf
+$LN7@printf:
+
+; 152  : 			}
+; 153  : 			else if (*format == 'f')
+
+	mov	rax, QWORD PTR format$[rsp]
+	movsx	eax, BYTE PTR [rax]
+	cmp	eax, 102				; 00000066H
+	jne	SHORT $LN5@printf
+
+; 154  : 			{
+; 155  : 				double x = va_arg(args, double);
+
+	mov	rax, QWORD PTR args$[rsp]
+	add	rax, 8
+	mov	QWORD PTR args$[rsp], rax
+	mov	rax, QWORD PTR args$[rsp]
+	movsdx	xmm0, QWORD PTR [rax-8]
+	movsdx	QWORD PTR x$9[rsp], xmm0
+
+; 156  : 				puts(ftoa(x,2));
+
+	cvtsd2ss xmm0, QWORD PTR x$9[rsp]
+	mov	dl, 2
+	call	?ftoa@@YAPEADME@Z			; ftoa
+	mov	rcx, rax
 	call	?puts@@YAXPEAD@Z			; puts
 	jmp	SHORT $LN4@printf
 $LN5@printf:
 
-; 95   : 			}
-; 96   : 			/*else if (*format == 'f')
-; 97   : 			{
-; 98   : 				double x = va_arg(args, double);
-; 99   : 				xput_char(ftoa(x,2));
-; 100  : 			}*/
-; 101  : 			else if (*format == '%')
+; 157  : 			}
+; 158  : 			else if (*format == '%')
 
 	mov	rax, QWORD PTR format$[rsp]
 	movsx	eax, BYTE PTR [rax]
 	cmp	eax, 37					; 00000025H
 	jne	SHORT $LN3@printf
 
-; 102  : 			{
-; 103  : 				puts(".");
+; 159  : 			{
+; 160  : 				puts(".");
 
-	lea	rcx, OFFSET FLAT:$SG2992
+	lea	rcx, OFFSET FLAT:$SG3041
 	call	?puts@@YAXPEAD@Z			; puts
 
-; 104  : 			}
-; 105  : 			else
+; 161  : 			}
+; 162  : 			else
 
 	jmp	SHORT $LN2@printf
 $LN3@printf:
 
-; 106  : 			{
-; 107  : 				char buf[3];
-; 108  : 				buf[0] = '%'; buf[1] = *format; buf[2] = '\0';
+; 163  : 			{
+; 164  : 				char buf[3];
+; 165  : 				buf[0] = '%'; buf[1] = *format; buf[2] = '\0';
 
 	mov	eax, 1
 	imul	rax, 0
@@ -395,7 +768,7 @@ $LN3@printf:
 	imul	rax, 2
 	mov	BYTE PTR buf$2[rsp+rax], 0
 
-; 109  : 				puts(buf);
+; 166  : 				puts(buf);
 
 	lea	rcx, QWORD PTR buf$2[rsp]
 	call	?puts@@YAXPEAD@Z			; puts
@@ -404,17 +777,18 @@ $LN4@printf:
 $LN6@printf:
 $LN8@printf:
 $LN10@printf:
+$LN12@printf:
 
-; 110  : 			}
-; 111  : 		}
-; 112  : 		else
+; 167  : 			}
+; 168  : 		}
+; 169  : 		else
 
 	jmp	SHORT $LN1@printf
-$LN18@printf:
+$LN20@printf:
 
-; 113  : 		{
-; 114  : 			char buf[2];
-; 115  : 			buf[0] = *format; buf[1] = '\0';
+; 170  : 		{
+; 171  : 			char buf[2];
+; 172  : 			buf[0] = *format; buf[1] = '\0';
 
 	mov	eax, 1
 	imul	rax, 0
@@ -425,26 +799,26 @@ $LN18@printf:
 	imul	rax, 1
 	mov	BYTE PTR buf$1[rsp+rax], 0
 
-; 116  : 			puts(buf);
+; 173  : 			puts(buf);
 
 	lea	rcx, QWORD PTR buf$1[rsp]
 	call	?puts@@YAXPEAD@Z			; puts
 $LN1@printf:
 
-; 117  : 		}
-; 118  : 		++format;
+; 174  : 		}
+; 175  : 		++format;
 
 	mov	rax, QWORD PTR format$[rsp]
 	inc	rax
 	mov	QWORD PTR format$[rsp], rax
 
-; 119  : 	}
+; 176  : 	}
 
-	jmp	$LN20@printf
-$LN19@printf:
+	jmp	$LN22@printf
+$LN21@printf:
 
-; 120  : 	va_end(args);
-; 121  : }
+; 177  : 	va_end(args);
+; 178  : }
 
 	add	rsp, 376				; 00000178H
 	ret	0

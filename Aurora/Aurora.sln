@@ -23,6 +23,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "xnacrylic", "..\xnlib\xnacr
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "QuWidgets", "..\xnlib\QuWidgets\QuWidgets.vcxproj", "{381850E7-1963-487D-AE0E-31EC3B4FBF1D}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libsfn", "..\xnlib\libsfn\libsfn.vcxproj", "{461574A3-925C-4856-A021-295117C32348}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Mixed Platforms = Debug|Mixed Platforms
@@ -145,6 +147,16 @@ Global
 		{381850E7-1963-487D-AE0E-31EC3B4FBF1D}.Release|Win32.ActiveCfg = Release|Win32
 		{381850E7-1963-487D-AE0E-31EC3B4FBF1D}.Release|Win32.Build.0 = Release|Win32
 		{381850E7-1963-487D-AE0E-31EC3B4FBF1D}.Release|x64.ActiveCfg = Release|Win32
+		{461574A3-925C-4856-A021-295117C32348}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{461574A3-925C-4856-A021-295117C32348}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{461574A3-925C-4856-A021-295117C32348}.Debug|Win32.ActiveCfg = Debug|Win32
+		{461574A3-925C-4856-A021-295117C32348}.Debug|Win32.Build.0 = Debug|Win32
+		{461574A3-925C-4856-A021-295117C32348}.Debug|x64.ActiveCfg = Debug|x64
+		{461574A3-925C-4856-A021-295117C32348}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{461574A3-925C-4856-A021-295117C32348}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{461574A3-925C-4856-A021-295117C32348}.Release|Win32.ActiveCfg = Release|Win32
+		{461574A3-925C-4856-A021-295117C32348}.Release|Win32.Build.0 = Release|Win32
+		{461574A3-925C-4856-A021-295117C32348}.Release|x64.ActiveCfg = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

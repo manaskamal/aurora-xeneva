@@ -13,6 +13,9 @@
 #include <stdlib.h>
 #include <stdint.h>
 
+
+extern "C" int _fltused = 1;
+
 void* __cdecl ::operator new(size_t size) {
 	return malloc(size);
 }

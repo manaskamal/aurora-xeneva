@@ -1,0 +1,20 @@
+///!
+///!  Copyright (C) Manas Kamal Choudhury 2021
+///!
+///!  cmath -- C++ Standard Library
+///!  
+///!  /PROJECT - Aurora's Xeneva
+///!  /AUTHOR  - Manas Kamal Choudhury
+///!================================================
+
+#ifndef _CMATH_HPP
+#define _CMATH_HPP
+
+namespace std {
+	extern "C" {
+		#include <math.h>
+	}
+}
+
+#endif
+

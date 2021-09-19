@@ -1,0 +1,18 @@
+
+
+#ifndef _IOSTREAM_HPP
+#define _IOSTREAM_HPP
+
+#include <istream>
+#include <ostream>
+
+namespace std {
+
+	extern istream cin;
+	extern ostream cout;
+	extern ostream cerr;
+	extern ostream clog;
+}
+
+#endif
+

@@ -1,0 +1,12 @@
+
+#ifndef _CCTYPE_HPP
+#define _CCTYPE_HPP
+
+namespace std {
+	extern "C" {
+		#include <ctype.h>
+	}
+}
+
+#endif
+

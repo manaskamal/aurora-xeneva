@@ -11,6 +11,7 @@
 #include <ctype.h>
 #include <heap.h>
 #include <sys/utf.h>
+#include <string.h>
 #include <limits.h>
 
 #define MB_CUR_MAX   MB_LEN_MAX
@@ -44,6 +45,14 @@ void* malloc (uint32_t s) {
 
 void free (void* ptr) {
 	return _free(ptr);
+}
+
+void* realloc (void* address, unsigned int new_size) {
+	return _realloc(address, new_size);
+}
+
+void* calloc (unsigned long long num, unsigned long long size) {
+	return _calloc(num, size);
 }
 
 int mblen (const char* s, size_t n) {
@@ -114,6 +123,94 @@ int mbtowc (wchar_t *wc, const char* bytes, size_t n) {
 //! NOT IMPLEMENTED
 int rand () {
 	return 1;
+}
+
+
+int wctomb(char *s, wchar_t wc){
+
+	int numBytes = 0;
+
+	if (!s)
+		// Stateless
+		return (0);
+
+	numBytes = utf8CodeWidth(wc);
+	if (!numBytes)
+		// Too large
+		return (-1);
+
+	unicodeToUtf8Char(wc, (unsigned char *) s, sizeof(wchar_t) /* assumed */);
+
+	return (numBytes);
+}
+
+
+size_t wcstombs(char *dest, const wchar_t *src, size_t n) {
+	size_t out_bytes = 0;
+	int num_bytes = 0;
+
+	while (!dest || (out_bytes < n)) {
+		if (dest) 
+			num_bytes = wctomb(dest, *src);
+		else
+			num_bytes = utf8CodeWidth(*src);
+
+		if (num_bytes <= 0)
+			return -1;
+
+		if (*src == L'\0')
+			break;
+
+		dest += num_bytes;
+		src += 1;
+		out_bytes += num_bytes;
+	}
+
+	return out_bytes;
+}
+
+static void swap(void* a, void* b, size_t size) {
+	if (a == b) 
+		return;
+
+	char temp[32];
+	memcpy (temp, a, size);
+	memcpy (a, b, size);
+	memcpy (b, temp, size);
+}
+
+void qsort(void* base, size_t num, size_t size, int (*comparator)(const void*, const void*)) {
+	if (num < 2) {
+		return;
+	}
+
+	size_t left = 1, right = num - 1;
+
+	while (left <= right) {
+		while ((left <= right) && (comparator(base, (const unsigned*)base + left * size) > 0)) {
+			++left;
+		}
+
+		while ((left < right) && (comparator (base, &base + right * size) <= 0)) {
+			--right;
+		}
+
+		if (left >= right) {
+			break;
+		}
+
+		swap(&base + left * size, &base + right * size, size);
+		++left;
+		--right;
+	}
+
+	right = left--;
+
+	swap(&base, &base + left *size, size);
+
+	qsort(base, left, size, comparator);
+
+	qsort (&base + right * size, num - right, size, comparator);
 }
 
 

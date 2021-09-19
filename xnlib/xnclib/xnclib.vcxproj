@@ -90,7 +90,7 @@
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions</EnableEnhancedInstructionSet>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
-      <AdditionalIncludeDirectories>E:\Xeneva Project\Xeneva\xnlib\xnclib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>E:\Xeneva Project\Xeneva\xnlib\xnclib;E:\Xeneva Project\Xeneva\xnlib\xnclib\c++;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CallingConvention>Cdecl</CallingConvention>
     </ClCompile>
     <Link>
@@ -130,16 +130,33 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="c++\cctype" />
+    <ClInclude Include="c++\cmath" />
+    <ClInclude Include="c++\cstddef" />
+    <ClInclude Include="c++\cstdlib" />
+    <ClInclude Include="c++\ios" />
+    <ClInclude Include="c++\iostream" />
+    <ClInclude Include="c++\istream" />
+    <ClInclude Include="c++\iterator" />
+    <ClInclude Include="c++\memory" />
+    <ClInclude Include="c++\ostream" />
+    <ClInclude Include="c++\streambuf" />
+    <ClInclude Include="c++\string" />
     <ClInclude Include="ctype.h" />
+    <ClInclude Include="endian.h" />
     <ClInclude Include="float.h" />
     <ClInclude Include="heap.h" />
     <ClInclude Include="limits.h" />
+    <ClInclude Include="math.h" />
+    <ClInclude Include="stdarg.h" />
     <ClInclude Include="stddef.h" />
     <ClInclude Include="stdint.h" />
+    <ClInclude Include="stdio.h" />
     <ClInclude Include="stdlib.h" />
     <ClInclude Include="string.h" />
     <ClInclude Include="sys\ioquery.h" />
     <ClInclude Include="sys\mmap.h" />
+    <ClInclude Include="sys\types.h" />
     <ClInclude Include="sys\utf.h" />
     <ClInclude Include="sys\_exit.h" />
     <ClInclude Include="sys\_file.h" />
@@ -149,10 +166,19 @@
     <ClInclude Include="sys\_term.h" />
     <ClInclude Include="sys\_thread.h" />
     <ClInclude Include="sys\_wait.h" />
+    <ClInclude Include="values.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="c++\ios.cpp" />
+    <ClCompile Include="c++\iostream.cpp" />
+    <ClCompile Include="c++\istream.cpp" />
+    <ClCompile Include="c++\memory.cpp" />
+    <ClCompile Include="c++\ostream.cpp" />
+    <ClCompile Include="c++\_string.cpp" />
     <ClCompile Include="heap.cpp" />
     <ClCompile Include="initializer.cpp" />
+    <ClCompile Include="math.cpp" />
+    <ClCompile Include="stdio.cpp" />
     <ClCompile Include="string.cpp" />
     <ClCompile Include="sys\stdlib.cpp" />
   </ItemGroup>
