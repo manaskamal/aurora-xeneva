@@ -9,7 +9,9 @@ E:\XENEVA PROJECT\XENEVA\XNLIB\XNCLIB\X64\DEBUG\INITIALIZER.OBJ
 E:\XENEVA PROJECT\XENEVA\XNLIB\XNCLIB\X64\DEBUG\MATH.OBJ
 E:\XENEVA PROJECT\XENEVA\XNLIB\XNCLIB\X64\DEBUG\STDIO.OBJ
 E:\XENEVA PROJECT\XENEVA\XNLIB\XNCLIB\X64\DEBUG\STRING.OBJ
+E:\XENEVA PROJECT\XENEVA\XNLIB\XNCLIB\X64\DEBUG\STDLIB.OBJ
 E:\XENEVA PROJECT\XENEVA\XNLIB\XNCLIB\X64\DEBUG\VC110.PDB
+E:\XENEVA PROJECT\XENEVA\XNLIB\LIB64\XNCLIB.LIB
 E:\Xeneva Project\Xeneva\xnlib\xnclib\x64\Debug\callback.obj
 E:\Xeneva Project\Xeneva\xnlib\xnclib\x64\Debug\_fast_copy.obj
 E:\Xeneva Project\Xeneva\xnlib\xnclib\x64\Debug\crt0.obj
@@ -22,11 +24,15 @@ E:\Xeneva Project\Xeneva\xnlib\xnclib\x64\Debug\math.obj
 E:\Xeneva Project\Xeneva\xnlib\xnclib\x64\Debug\memory.obj
 E:\Xeneva Project\Xeneva\xnlib\xnclib\x64\Debug\ostream.obj
 E:\Xeneva Project\Xeneva\xnlib\xnclib\x64\Debug\stdio.obj
+E:\Xeneva Project\Xeneva\xnlib\xnclib\x64\Debug\stdlib.obj
 E:\Xeneva Project\Xeneva\xnlib\xnclib\x64\Debug\string.obj
 E:\Xeneva Project\Xeneva\xnlib\xnclib\x64\Debug\_string.obj
 E:\Xeneva Project\Xeneva\xnlib\xnclib\x64\Debug\cl.command.1.tlog
 E:\Xeneva Project\Xeneva\xnlib\xnclib\x64\Debug\CL.read.1.tlog
 E:\Xeneva Project\Xeneva\xnlib\xnclib\x64\Debug\CL.write.1.tlog
+E:\Xeneva Project\Xeneva\xnlib\xnclib\x64\Debug\Lib-link.read.1.tlog
+E:\Xeneva Project\Xeneva\xnlib\xnclib\x64\Debug\Lib-link.write.1.tlog
+E:\Xeneva Project\Xeneva\xnlib\xnclib\x64\Debug\lib.command.1.tlog
 E:\Xeneva Project\Xeneva\xnlib\xnclib\x64\Debug\xnclib.write.1.tlog
 E:\Xeneva Project\Xeneva\xnlib\xnclib\x64\Debug\vc110.idb
 E:\Xeneva Project\Xeneva\xnlib\xnclib\x64\Debug\vc110.pdb

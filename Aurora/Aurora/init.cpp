@@ -132,7 +132,7 @@ void _kmain (KERNEL_BOOT_INFO *info) {
     ata_initialize();
 	initialize_vfs();
 	initialize_screen(info);
-	//svga_init (); 
+	svga_init (); 
 	initialize_mouse();
 
 	message_init ();
@@ -146,9 +146,9 @@ void _kmain (KERNEL_BOOT_INFO *info) {
 	//! task list should be more than 4 or less than 4 not  
 	//create_process ("dwm2.exe", "dwm2", 1);
 	create_process ("a:xshell.exe","shell",0, NULL);
-	//create_process ("a:quince.exe","quince",0, NULL);
-	//create_process ("a:dwm3.exe", "dwm3", 0, NULL);
-	//create_process ("a:dwm2.exe", "dwm2", 0, NULL);
+	create_process ("a:quince.exe","quince",0, NULL);
+	create_process ("a:dwm3.exe", "dwm3", 0, NULL);
+	create_process ("a:dwm2.exe", "dwm2", 0, NULL);
 	scheduler_start();
 #endif
 	while(1) {

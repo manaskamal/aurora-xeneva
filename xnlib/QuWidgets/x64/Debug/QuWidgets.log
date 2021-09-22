@@ -1,29 +1,31 @@
-﻿Build started 16-09-2021 আবেলি 12:25:43.
+﻿Build started 22-09-2021 ৰাতিপু 11:35:37.
      1>Project "E:\Xeneva Project\Xeneva\xnlib\QuWidgets\QuWidgets.vcxproj" on node 2 (Rebuild target(s)).
      1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\xnlib\xnclib" /I"E:\Xeneva Project\Xeneva\xnlib\QuWidgets\include" /I"E:\Xeneva Project\Xeneva\xnlib\xnacrylic\include" /Zi /nologo /W4 /WX- /sdl- /MP /Od /D ARCH_X64 /D _MBCS /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt source\QuBase.cpp source\QuPanel.cpp source\QuWindow.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\xnlib\xnclib" /I"E:\Xeneva Project\Xeneva\xnlib\QuWidgets\include" /I"E:\Xeneva Project\Xeneva\xnlib\xnacrylic\include" /Zi /nologo /W4 /WX- /sdl- /MP /Od /D ARCH_X64 /D _MBCS /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt source\QuBase.cpp source\QuPanel.cpp source\QuUtils\QuList.cpp source\QuWindow.cpp
      1>cl : Command line warning D9025: overriding '/sdl-' with '/GS-'
      1>cl : Command line warning D9002: ignoring unknown option '/arch:SSE'
      1>cl : Command line warning D9030: '/Gm' is incompatible with multiprocessing; ignoring /MP switch
          QuWindow.cpp
+     1>source\QuWindow.cpp(64): warning C4018: '<' : signed/unsigned mismatch
+     1>source\QuWindow.cpp(77): warning C4018: '<' : signed/unsigned mismatch
+         QuList.cpp
          QuPanel.cpp
-     1>source\QuPanel.cpp(37): warning C4018: '<' : signed/unsigned mismatch
-     1>source\QuPanel.cpp(38): warning C4018: '<' : signed/unsigned mismatch
-     1>source\QuPanel.cpp(36): warning C4189: 'height' : local variable is initialized but not referenced
+     1>source\QuPanel.cpp(45): warning C4189: 'height' : local variable is initialized but not referenced
          QuBase.cpp
-     1>source\QuBase.cpp(23): warning C4244: 'initializing' : conversion from 'unsigned int' to 'uint16_t', possible loss of data
-     1>source\QuBase.cpp(25): warning C4244: '=' : conversion from 'uint16_t' to 'uint8_t', possible loss of data
+     1>source\QuBase.cpp(24): warning C4244: 'initializing' : conversion from 'unsigned int' to 'uint16_t', possible loss of data
      1>source\QuBase.cpp(26): warning C4244: '=' : conversion from 'uint16_t' to 'uint8_t', possible loss of data
-     1>source\QuBase.cpp(42): warning C4244: '=' : conversion from 'unsigned int' to 'uint16_t', possible loss of data
+     1>source\QuBase.cpp(27): warning C4244: '=' : conversion from 'uint16_t' to 'uint8_t', possible loss of data
+     1>source\QuBase.cpp(44): warning C4244: '=' : conversion from 'unsigned int' to 'uint16_t', possible loss of data
          Generating Code...
      1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V110\Microsoft.CppBuild.targets(1299,5): warning MSB8012: TargetPath(E:\Xeneva Project\Xeneva\Aurora\x64\Debug\QuWidgets.lib) does not match the Library's OutputFile property value (E:\Xeneva Project\Xeneva\xnlib\lib64\QuWidgets.lib). This may cause your project to build incorrectly. To correct this, please make sure that $(OutDir), $(TargetName) and $(TargetExt) property values match the value specified in %(Lib.OutputFile).
        Lib:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\Lib.exe /OUT:"E:\Xeneva Project\Xeneva\xnlib\lib64\QuWidgets.lib" /NOLOGO /MACHINE:X64 x64\Debug\QuBase.obj
          x64\Debug\QuPanel.obj
+         x64\Debug\QuList.obj
          x64\Debug\QuWindow.obj
          QuWidgets.vcxproj -> E:\Xeneva Project\Xeneva\Aurora\x64\Debug\QuWidgets.lib
      1>Done Building Project "E:\Xeneva Project\Xeneva\xnlib\QuWidgets\QuWidgets.vcxproj" (Rebuild target(s)).
 
 Build succeeded.
 
-Time Elapsed 00:00:00.66
+Time Elapsed 00:00:00.68

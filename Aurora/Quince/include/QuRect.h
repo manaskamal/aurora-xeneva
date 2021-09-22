@@ -14,10 +14,10 @@
 #include <stdint.h>
 
 typedef struct _QuRect_ {
-	unsigned x;
-	unsigned y;
-	unsigned w;
-	unsigned h;
+	int x;
+	int y;
+	int w;
+	int h;
 }QuRect;
 
 

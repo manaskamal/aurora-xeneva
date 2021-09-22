@@ -27,12 +27,12 @@
 
 
 typedef struct _QuWindow_ {
-	unsigned x;
-	unsigned y;
-	unsigned width;
-	unsigned height;
-	unsigned drag_x;
-	unsigned drag_y;
+	int x;
+	int y;
+	int width;
+	int height;
+	int drag_x;
+	int drag_y;
 	bool draggable;
 	bool visible;
 	unsigned int *canvas;
@@ -46,8 +46,8 @@ typedef struct _QuWindow_ {
 }QuWindow;
 
 
-extern QuWindow* QuWindowCreate (unsigned x, unsigned y, uint16_t owner_id, uint8_t attr = QU_WIN_FULL);
-extern void QuWindowSetSize (QuWindow* win, unsigned width, unsigned height);
+extern QuWindow* QuWindowCreate (int x, int y, uint16_t owner_id, uint8_t attr = QU_WIN_FULL);
+extern void QuWindowSetSize (QuWindow* win, int width, int height);
 extern void QuWindowSetCanvas(QuWindow* win, unsigned int *canvas);
 extern void QuWindowSetVisible (QuWindow* win,bool visible);
 extern void QuWindowAddDirtyArea (QuWindow* win, QuRect *dirty_rect);

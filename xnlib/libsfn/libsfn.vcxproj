@@ -83,7 +83,7 @@
       <SDLCheck>false</SDLCheck>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <OmitFramePointers>true</OmitFramePointers>
-      <PreprocessorDefinitions>ARCH_X64;USE_NOFOREIGN=1;SSFN_CONSOLEBITMAP_PALETTE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>ARCH_X64;USE_NOFOREIGN=1;SSFN_CONSOLEBITMAP_PALETTE;STBI_IMPLEMENTATION;SSFN_IMPLEMENTATION;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <IgnoreStandardIncludePath>true</IgnoreStandardIncludePath>
       <MinimalRebuild>false</MinimalRebuild>
       <ExceptionHandling>false</ExceptionHandling>
@@ -133,6 +133,7 @@
     <ClCompile Include="potracelib\potracelib.cpp" />
     <ClCompile Include="potracelib\trace.cpp" />
     <ClCompile Include="sfn.cpp" />
+    <ClCompile Include="ssfn.cpp" />
     <ClCompile Include="unicode.cpp" />
     <ClCompile Include="util.cpp" />
     <ClCompile Include="vector.cpp" />

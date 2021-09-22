@@ -71,4 +71,9 @@ extern void QuCanvasSetUpdateBit(bool value);
 
 //! QuCanvasGetUpdateBit -- Checks the update bit
 extern bool QuCanvasGetUpdateBit();
+
+
+extern void QuCanvasCopyToFB(unsigned x, unsigned y, unsigned w, unsigned h);
+
+extern void QuCanvasQuery(unsigned x, unsigned y, unsigned w, unsigned h);
 #endif

@@ -18,7 +18,7 @@
 
 
 void QuChannelPut (QuMessage *msg, uint16_t to_id) {
-	uint16_t from_id = get_current_pid ();
+	uint16_t from_id = 2; //get_current_pid ();
 	QuMessage* channel_addr = (QuMessage*)QU_CHANNEL_ADDRESS;
 	msg->from_id = from_id;
 	msg->to_id = to_id;

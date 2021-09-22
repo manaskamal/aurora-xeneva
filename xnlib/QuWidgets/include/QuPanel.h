@@ -11,17 +11,16 @@
 #define __QU_PANEL_H__
 
 #include <stdint.h>
+#include <QuBase.h>
+#include <QuWindow.h>
 
 typedef struct _QuPanel_ {
-	unsigned x;
-	unsigned y;
-	unsigned w;
-	unsigned h;
-	uint32_t* panel_data;
+	QuWidget base;
 }QuPanel;
 
 extern QuPanel *QuCreatePanel();
-extern void QuPanelUpdate(unsigned x, unsigned y, unsigned w, unsigned h);
-
-
+extern void QuPanelUpdate(int x, int y, int w, int h);
+extern void QuPanelContentUpdate(int x, int y, int w, int h);
+extern void QuPanelRefresh (QuWidget *wid, QuWindow *win);
+extern void QuPanelUpdateRequired (bool value);
 #endif

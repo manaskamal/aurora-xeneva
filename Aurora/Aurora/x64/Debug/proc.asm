@@ -63,7 +63,7 @@ add_mutex DQ	01H DUP (?)
 _BSS	ENDS
 pdata	SEGMENT
 $pdata$?create_user_stack@@YAPEA_KPEA_K@Z DD imagerel $LN6
-	DD	imagerel $LN6+144
+	DD	imagerel $LN6+147
 	DD	imagerel $unwind$?create_user_stack@@YAPEA_KPEA_K@Z
 $pdata$?create_inc_stack@@YAPEA_KPEA_K@Z DD imagerel $LN6
 	DD	imagerel $LN6+152
@@ -1678,7 +1678,7 @@ $LN6:
 
 ; 92   : 	
 ; 93   : 	/* 1 mb stack / process */
-; 94   : 	for (int i=0; i < (256*1024)/4096; i++) {
+; 94   : 	for (int i=0; i < (1024*1024)/4096; i++) {
 
 	mov	DWORD PTR i$1[rsp], 0
 	jmp	SHORT $LN3@create_use
@@ -1687,7 +1687,7 @@ $LN2@create_use:
 	inc	eax
 	mov	DWORD PTR i$1[rsp], eax
 $LN3@create_use:
-	cmp	DWORD PTR i$1[rsp], 64			; 00000040H
+	cmp	DWORD PTR i$1[rsp], 256			; 00000100H
 	jge	SHORT $LN1@create_use
 
 ; 95   : 		uint64_t block = (uint64_t)pmmngr_alloc();
@@ -1719,9 +1719,9 @@ $LN1@create_use:
 	call	x64_write_cr3
 
 ; 100  : 	
-; 101  : 	return (uint64_t*)(USER_STACK + (256*1024));
+; 101  : 	return (uint64_t*)(USER_STACK + (1024*1024));
 
-	mov	rax, 123145302573056			; 0000700000040000H
+	mov	rax, 123145303359488			; 0000700000100000H
 
 ; 102  : }
 

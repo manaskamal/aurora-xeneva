@@ -119,11 +119,11 @@
       <WarningLevel>Level1</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>false</SDLCheck>
-      <AdditionalIncludeDirectories>E:\Xeneva Project\Xeneva\xnlib\xnclib;E:\Xeneva Project\Xeneva\xnlib\libsfn;E:\Xeneva Project\Xeneva\xnlib\xnclib\c++;E:\Xeneva Project\Xeneva\xnlib\xnacrylic\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>E:\Xeneva Project\Xeneva\xnlib\xnclib;E:\Xeneva Project\Xeneva\xnlib\xnclib\c++;E:\Xeneva Project\Xeneva\xnlib\xnacrylic\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <OmitFramePointers>
       </OmitFramePointers>
-      <PreprocessorDefinitions>ARCH_X64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>ARCH_X64;SSFN_CONSOLEBITMAP_PALETTE;SSFN_CONSOLEBITMAP_HICOLOR;SSFN_CONSOLEBITMAP_TRUECOLOR;SSFN_CONSOLEBITMAP_CLEARBG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <IgnoreStandardIncludePath>true</IgnoreStandardIncludePath>
       <ExceptionHandling>false</ExceptionHandling>
       <BasicRuntimeChecks>
@@ -140,7 +140,7 @@
       </GenerateDebugInformation>
       <OutputFile>F:\xshell.exe</OutputFile>
       <AdditionalLibraryDirectories>E:\Xeneva Project\Xeneva\xnlib\lib64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>xnclib.lib; libsfn.lib; xnacrylic.lib;</AdditionalDependencies>
+      <AdditionalDependencies>xnclib.lib;xnacrylic.lib;</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
       <EnableUAC>false</EnableUAC>
       <GenerateMapFile>true</GenerateMapFile>

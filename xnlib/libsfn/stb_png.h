@@ -70,14 +70,14 @@ static const char *stbi__g_failure_reason;
 #define STBI_FREE(p)              free(p)
 #define STBI_REALLOC_SIZED(p,oldsz,newsz) realloc(p,newsz)
 
-__inline__ static unsigned char stbi__get8(stbi__context *s)
+static unsigned char stbi__get8(stbi__context *s)
 {
    if (s->img_buffer < s->img_buffer_end)
       return *s->img_buffer++;
    return 0;
 }
 
-__inline__ static int stbi__at_eof(stbi__context *s)
+static int stbi__at_eof(stbi__context *s)
 {
    return s->img_buffer >= s->img_buffer_end;
 }
@@ -120,7 +120,7 @@ static int stbi__errstr(const char *str)
    return 0;
 }
 
-__inline__ static void *stbi__malloc(size_t size)
+static void *stbi__malloc(size_t size)
 {
     return STBI_MALLOC(size);
 }
@@ -270,7 +270,7 @@ typedef struct
    stbi__uint16 value[288];
 } stbi__zhuffman;
 
-__inline__ static int stbi__bitreverse16(int n)
+ static int stbi__bitreverse16(int n)
 {
   n = ((n & 0xAAAA) >>  1) | ((n & 0x5555) << 1);
   n = ((n & 0xCCCC) >>  2) | ((n & 0x3333) << 2);
@@ -279,7 +279,7 @@ __inline__ static int stbi__bitreverse16(int n)
   return n;
 }
 
-__inline__ static int stbi__bit_reverse(int v, int bits)
+static int stbi__bit_reverse(int v, int bits)
 {
    STBI_ASSERT(bits <= 16);
    return stbi__bitreverse16(v) >> (16-bits);
@@ -345,7 +345,7 @@ typedef struct
    stbi__zhuffman z_length, z_distance;
 } stbi__zbuf;
 
-__inline__ static unsigned char stbi__zget8(stbi__zbuf *z)
+static unsigned char stbi__zget8(stbi__zbuf *z)
 {
    if (z->zbuffer >= z->zbuffer_end) return 0;
    return *z->zbuffer++;
@@ -360,7 +360,7 @@ static void stbi__fill_bits(stbi__zbuf *z)
    } while (z->num_bits <= 24);
 }
 
-__inline__ static unsigned int stbi__zreceive(stbi__zbuf *z, int n)
+static unsigned int stbi__zreceive(stbi__zbuf *z, int n)
 {
    unsigned int k;
    if (z->num_bits < n) stbi__fill_bits(z);
@@ -385,7 +385,7 @@ static int stbi__zhuffman_decode_slowpath(stbi__zbuf *a, stbi__zhuffman *z)
    return z->value[b];
 }
 
-__inline__ static int stbi__zhuffman_decode(stbi__zbuf *a, stbi__zhuffman *z)
+static int stbi__zhuffman_decode(stbi__zbuf *a, stbi__zhuffman *z)
 {
    int b,s;
    if (a->num_bits < 16) stbi__fill_bits(a);
@@ -523,7 +523,7 @@ static int stbi__compute_huffman_codes(stbi__zbuf *a)
    return 1;
 }
 
-__inline__ static int stbi__parse_uncompressed_block(stbi__zbuf *a)
+static int stbi__parse_uncompressed_block(stbi__zbuf *a)
 {
    unsigned char header[4];
    int len,nlen,k;
@@ -641,7 +641,7 @@ static stbi__pngchunk stbi__get_chunk_header(stbi__context *s)
    return c;
 }
 
-__inline__ static int stbi__check_png_header(stbi__context *s)
+static int stbi__check_png_header(stbi__context *s)
 {
    static unsigned char png_sig[8] = { 137,80,78,71,13,10,26,10 };
    int i;

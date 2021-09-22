@@ -35,7 +35,7 @@
 #include "zlib.h"
 #include "stb_png.h"
 #define SSFN_IMPLEMENTATION
-#include <ssfn.h>
+//#include <ssfn.h>
 #include "libsfn.h"
 #include "vector.h"
 #include <sys\_file.h>
@@ -52,7 +52,7 @@
 #define BM_USET(bm, x, y) (*bm_index(bm, x, y) |= bm_mask(x))
 
 int rs = 0, re = 0x10FFFF, replace = 0, skipundef = 0, skipcode = 0, hinting = 0, adv = 0, relul = 0;
-int rasterize = 0, origwh = 0, lastuni = -1, *fidx, dorounderr = 0;
+int rasterize = 0, origwh = 0, /*lastuni = -1,*/ *fidx/*, dorounderr = 0*/;
 sfnctx_t ctx;
 sfnprogressbar_t pbar = NULL;
 

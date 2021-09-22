@@ -37,6 +37,9 @@ typedef struct _svga_io_query_struct_ {
 }svga_io_query_t;
 
 extern void create_canvas ();
+extern void canvas_set_double_buffer (bool enable);
+extern void canvas_set_address (uint32_t* address);
+extern bool canvas_is_double_buffered();
 extern void canvas_set_width (uint32_t width);
 extern uint32_t canvas_get_width ();
 extern void canvas_set_height (uint32_t height);

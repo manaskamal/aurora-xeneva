@@ -16,6 +16,15 @@
     <Filter Include="include\jpg">
       <UniqueIdentifier>{607bee2c-14d2-4ac4-bd25-935033aeff09}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\ssfn">
+      <UniqueIdentifier>{b1e4a022-9e9d-407f-b913-56a86a9ff703}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\ttf">
+      <UniqueIdentifier>{8164c56b-ae65-405e-a8b3-edea543c10c0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\ttf">
+      <UniqueIdentifier>{47632ede-142b-4015-8a1b-493a7823396f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\canvas.cpp">
@@ -32,6 +41,9 @@
     </ClCompile>
     <ClCompile Include="source\color.cpp">
       <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\ttf\ttf.cpp">
+      <Filter>source\ttf</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -52,6 +64,12 @@
     </ClInclude>
     <ClInclude Include="include\image.h">
       <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ssfn\ssfn.h">
+      <Filter>include\ssfn</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ttf\ttf.h">
+      <Filter>include\ttf</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

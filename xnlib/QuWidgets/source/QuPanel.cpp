@@ -15,21 +15,30 @@
 #include <QuBase.h>
 #include <sys\_ipc.h>
 #include <sys\_process.h>
+#include <acrylic.h>
+#include <color.h>
+#include <sys\_term.h>
 
-
+bool panel_update = false;
 
 QuPanel* QuCreatePanel () {
 	QuPanel* panel = (QuPanel*)malloc(sizeof(QuPanel));
-	panel->x = QuGetWindow()->x;
-	panel->y = QuGetWindow()->y;
-	panel->w = QuGetWindow()->w;
-	panel->h = QuGetWindow()->h;
-	panel->panel_data = (uint32_t*)0x0000600000000000;
+	panel->base.x = 0;
+	panel->base.y = 0;
+	panel->base.width = QuGetWindow()->w;
+	panel->base.height = QuGetWindow()->h;
+	panel->base.Refresh = QuPanelRefresh;
 	return panel;
 }
 
 
-void QuPanelUpdate(unsigned x, unsigned y, unsigned w, unsigned h) {
+void QuPanelRefresh (QuWidget *wid, QuWindow* win) {
+	acrylic_draw_rect_filled(win->x + wid->x, win->y + wid->y, wid->width, wid->height, WHITE);
+}
+
+
+void QuPanelUpdate(int x, int y, int w, int h) {
+	if (canvas_is_double_buffered()){
 	uint32_t* lfb = (uint32_t*)QuGetWindow()->canvas;
 	uint32_t* dbl_canvas = (uint32_t*)0x0000600000000000;
 	int width = canvas_get_width();
@@ -39,6 +48,7 @@ void QuPanelUpdate(unsigned x, unsigned y, unsigned w, unsigned h) {
 			uint32_t color = dbl_canvas[(x + i) + (y + j) * width];
 			lfb[(x + i) + (y + j) * width] = color;
 		}
+	}
 	}
 
 	/*QuMessage msg;
@@ -56,4 +66,25 @@ void QuPanelUpdate(unsigned x, unsigned y, unsigned w, unsigned h) {
 	msg.dword4 = h;
 	msg.dword5 = get_current_pid();
 	message_send(2, &msg);
+}
+
+
+void QuPanelUpdateRequired (bool value) {
+	panel_update = value;
+}
+
+void QuPanelContentUpdate(int x, int y, int w, int h) {
+	if (panel_update) {
+	uint32_t* lfb = (uint32_t*)QuGetWindow()->canvas;
+	uint32_t* dbl_canvas = (uint32_t*)0x0000600000000000;
+	/*int width = canvas_get_width();
+	int height = canvas_get_height();*/
+	for (int i=0; i < w; i++) {
+		for (int j=0; j < h; j++){
+			uint32_t color = dbl_canvas[(x + i) + (y + j) * canvas_get_width()];
+			lfb[(x + i) + (y + j) * canvas_get_width()] = color;
+		}
+	}
+	panel_update = false;
+	}
 }

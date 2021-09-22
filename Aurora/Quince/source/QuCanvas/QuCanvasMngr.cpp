@@ -16,20 +16,21 @@
 #include <ipc\QuChannel.h>
 #include <sys\_ipc.h>
 #include <stdint.h>
+#include <sys\ioquery.h>
 #include <sys\_process.h>
 #include <sys\_term.h>
 #include <color.h>
 #include <QuRect.h>
 #include <stdlib.h>
+#include <QuCanvas\QuDirtyStack.h>
 
 #define QU_CANVAS_START   0x0000100000000000
 
 uint32_t cursor_pos = 0;
-QuList * dirty_list = NULL;
 bool update_bit = false;
 
 void QuCanvasMngr_Initialize() {
-	dirty_list = QuListInit();
+	//dirty_list = QuListInit();
 }
 
 //!Creates a canvas
@@ -83,7 +84,7 @@ uint32_t QuCanvasGetPixel (uint32_t *canvas, unsigned x, unsigned y) {
 
 
 void QuCanvasAddDirty (QuRect *r) {
-	QuListAdd (dirty_list, r);
+	QuStackPushRect(r);
 }
 
 void QuCanvasUpdate (unsigned x, unsigned y, unsigned w, unsigned h) {
@@ -101,17 +102,25 @@ void QuCanvasUpdate (unsigned x, unsigned y, unsigned w, unsigned h) {
 }
 
 
-void QuCanvasUpdateDirty() {
-	if (dirty_list->pointer > 0) {
-		for (int i = 0; i < dirty_list->pointer; i++) {
-			QuRect* r = (QuRect*)QuListGetAt (dirty_list, i);
-			QuCanvasUpdate(r->x, r->y, r->w, r->h);
-			canvas_screen_update (r->x, r->y, r->w, r->h);
-			QuListRemove(dirty_list, i);
-			free(r);
-			/*if (!update_bit)
-				QuCanvasSetUpdateBit(true);*/
+void QuCanvasCopyToFB(unsigned x, unsigned y, unsigned w, unsigned h) {
+	uint32_t* lfb = (uint32_t*)0xFFFFF00000000000;
+	uint32_t* canvas = (uint32_t*)0x0000600000000000;
+
+	for (int i=0; i < w; i++) {
+		for (int j=0; j < h; j++){
+			uint32_t color = canvas[(x + i) + (y + j) * canvas_get_scanline()];
+			lfb[(x + i) + (y + j) * canvas_get_scanline()] = color;
 		}
+	}
+}
+
+
+void QuCanvasUpdateDirty() {
+	if (QuStackGetRectCount() > 0) {
+		QuRect* r = (QuRect*)QuStackGetRect();
+		QuCanvasUpdate(r->x, r->y, r->w, r->h);
+		//canvas_screen_update(r->x, r->y, r->w, r->h);
+		QuCanvasSetUpdateBit(true);
 	}
 }
 
@@ -121,4 +130,14 @@ void QuCanvasUpdateDirty() {
 
  bool QuCanvasGetUpdateBit() {
 	 return update_bit;
+ }
+
+
+ void QuCanvasQuery(unsigned x, unsigned y, unsigned w, unsigned h) {
+	svga_io_query_t *query = (svga_io_query_t*)malloc(sizeof(svga_io_query_t));
+	query->value = x;
+	query->value2 = y;
+	query->value3 = w;
+	query->value4 = h;
+	ioquery(IO_QUERY_SVGA, SVGA_UPDATE, query);
  }

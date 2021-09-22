@@ -82,7 +82,7 @@
       <AdditionalIncludeDirectories>E:\Xeneva Project\Xeneva\xnlib\xnclib;E:\Xeneva Project\Xeneva\xnlib\xnacrylic\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <SDLCheck>false</SDLCheck>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <PreprocessorDefinitions>ARCH_X64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>ARCH_X64;SSFN_CONSOLEBITMAP_PALETTE;SSFN_CONSOLEBITMAP_HICOLOR;SSFN_CONSOLEBITMAP_TRUECOLOR;SSFN_CONSOLEBITMAP_CLEARBG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <IgnoreStandardIncludePath>true</IgnoreStandardIncludePath>
       <ExceptionHandling>false</ExceptionHandling>
       <BasicRuntimeChecks />
@@ -131,6 +131,7 @@
     <ClCompile Include="source\color.cpp" />
     <ClCompile Include="source\image.cpp" />
     <ClCompile Include="source\psf\psf.cpp" />
+    <ClCompile Include="source\ttf\ttf.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\acrylic.h" />
@@ -139,6 +140,8 @@
     <ClInclude Include="include\image.h" />
     <ClInclude Include="include\jpg\jpeg_decoder.h" />
     <ClInclude Include="include\psf\psf.h" />
+    <ClInclude Include="include\ssfn\ssfn.h" />
+    <ClInclude Include="include\ttf\ttf.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

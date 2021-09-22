@@ -14,6 +14,7 @@
 #include <QuWindow.h>
 #include <canvas.h>
 #include <sys\_ipc.h>
+#include <sys\_term.h>
 
 #define QU_CHANNEL_ADDRESS  0xFFFFFD0000000000
 uint32_t * QuCanvasAddress = NULL;
@@ -38,6 +39,7 @@ void QuChannelGet (QuMessage *msg) {
 }
 
 void QuRegisterApplication () {
+	canvas_set_double_buffer(false);
 	create_canvas();
 	app_id = get_current_pid();
 	QuMessage qmsg;
@@ -53,11 +55,17 @@ void QuRegisterApplication () {
 
 		if (qmsg.type == QU_CANVAS_READY) {
 			QuCanvasAddress = qmsg.p_value;
+			canvas_set_address(QuCanvasAddress);
 			QuCreateWindow (qmsg.dword, qmsg.dword2, qmsg.dword3, qmsg.dword4);
 			QuWindowSetCanvas(QuCanvasAddress);
 			memset (&qmsg, 0, sizeof(QuMessage));
 			break;
 		}
 	}
+}
+
+
+uint16_t QuGetAppId() {
+	return app_id;
 }
 

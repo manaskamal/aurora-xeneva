@@ -17,6 +17,7 @@
 
 
 canvas_t* canvas = NULL;
+bool double_buffer = true;
 
 void create_canvas () {
 	uint32_t width = ioquery(IO_QUERY_SVGA,SVGA_GET_WIDTH,NULL);
@@ -24,8 +25,9 @@ void create_canvas () {
 	uint32_t bpp = ioquery(IO_QUERY_SVGA, SVGA_GET_BPP, NULL);
 	uint16_t scanline = ioquery(IO_QUERY_SVGA, SVGA_GET_SCANLINE, NULL);
 
-	for (int i = 0; i < (width * height * 32) / 4096; i++)
-		valloc(0x0000600000000000 + i * 4096);
+	if (double_buffer)
+		for (int i = 0; i < (width * height * 32) / 4096; i++)
+			valloc(0x0000600000000000 + i * 4096);
 
 
 	canvas = (canvas_t*)malloc(sizeof(canvas_t));
@@ -33,7 +35,23 @@ void create_canvas () {
 	canvas->height = height;
 	canvas->bpp = bpp;
 	canvas->scanline = scanline;
-    canvas->address = (uint32_t*)0x0000600000000000;
+	if (double_buffer)
+		canvas->address = (uint32_t*)0x0000600000000000;
+
+}
+
+void canvas_set_double_buffer (bool enable) {
+	double_buffer = enable;
+}
+
+
+bool canvas_is_double_buffered() {
+	return double_buffer;
+}
+
+void canvas_set_address (uint32_t* address) {
+	if (double_buffer == false)
+		canvas->address = address;
 }
 
 
@@ -55,6 +73,7 @@ uint32_t canvas_get_height () {
 
 void canvas_screen_update (uint32_t x, uint32_t y, uint32_t w, uint32_t h) {
 	uint32_t* lfb = (uint32_t*)0xFFFFF00000000000;
+
 	for (int i=0; i < w; i++) {
 		for (int j=0; j < h; j++){
 			uint32_t color = canvas->address[(x + i) + (y + j) * canvas_get_scale()];

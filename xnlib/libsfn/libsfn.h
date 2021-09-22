@@ -195,7 +195,7 @@ extern sfnprogressbar_t pbar;
 
 /*** arguments ***/
 extern int rs, re, replace, skipundef, skipcode, hinting, adv, relul, rasterize, dump, origwh;
-extern int unicode, lastuni, quiet, dorounderr;
+int unicode, lastuni, quiet, dorounderr;
 
 /*** unicode.c ***/
 #include "unicode.h"

@@ -21,26 +21,11 @@ void memset(void *targ, uint8_t val, uint32_t len){
 		*t++ = val;
 }
 
-int memcmp(const void *first, const void *second, size_t length)
+int memcmp(const void *vl, const void *vr, size_t n)
 {
-
-	size_t count;
-	for (count = 0; count < length; count++)
-	{
-		if (((unsigned char*)first)[count] != ((unsigned char *) second)[count])
-		{
-			if (((unsigned char*)first)[count] < ((unsigned char *)second)[count])
-			{
-				return (-1);
-			}
-			else
-			{
-				return (1);
-			}
-		}
-	}
-
-	return (0); //return successful code
+	const unsigned char *l = (unsigned char*)vl, *r=(unsigned char*)vr;
+	for (; n && *l == *r; n--, l++, r++);
+	return n ? *l-*r : 0;
 }
 
 void *memcpy(void *dest, void *src, size_t count) {

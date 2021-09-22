@@ -31,6 +31,7 @@
 
 
 int x , y = 100;
+bool mouse_down = false;
 
 void QuHandleQuinceMsg (QuMessage *qu_msg) {
 	if (qu_msg->type == QU_CODE_WIN_CREATE) {
@@ -78,16 +79,17 @@ void QuEventLoop() {
 
 		//!System Messages
 		if (m_pack.type == _MOUSE_MOVE) {
+			//QuCursorNewCoord(m_pack.dword, m_pack.dword2);
 			QuMoveCursor(m_pack.dword, m_pack.dword2);
-			canvas_screen_update (QuCursorGetNewX(), QuCursorGetNewY(), 24, 24);
-			QuCursorNewCoord(m_pack.dword, m_pack.dword2);
-
-			QuWindow * focus_win = QuWindowMngrGetFocused();
+			canvas_screen_update (m_pack.dword,m_pack.dword2, 24, 24);
+			
+			mouse_down = false;
 			//! Mouse Clicked Bit
 			if (m_pack.dword4 & 0x01) {
-				QuWindowMngr_HandleMouseDown(m_pack.dword, m_pack.dword2);
+				mouse_down = true;
 			}
 
+            QuWindowMngr_HandleMouse(m_pack.dword, m_pack.dword2, mouse_down);
 			//! Mouse Released Bit
 			if (m_pack.dword4 & 0x5) {
 				QuWindowMngr_HandleMouseUp (m_pack.dword, m_pack.dword2);
@@ -132,10 +134,10 @@ void QuEventLoop() {
 
 		
 		QuWindowMngr_DrawAll();	
-		/*if (QuCanvasGetUpdateBit()) {
+		if (QuCanvasGetUpdateBit()) {
 			canvas_screen_update(0,0,canvas_get_width(), canvas_get_height());
 			QuCanvasSetUpdateBit(false);
-		}*/
-		sys_sleep(25);
+		}
+		sys_sleep(16);
 	}
 }

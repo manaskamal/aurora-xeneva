@@ -19,6 +19,7 @@
     <ClCompile Include="potracelib\trace.cpp">
       <Filter>potracelib</Filter>
     </ClCompile>
+    <ClCompile Include="ssfn.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="bitmap.h" />

@@ -22,5 +22,11 @@
 //! Codes that are sent by Quince to clients
 #define QU_CANVAS_READY  200
 #define QU_CANVAS_DESTROYED 201
-
+#define QU_CANVAS_MOVE  202
+#define QU_CANVAS_MOUSE_MOVE 203
+#define QU_CANVAS_MOUSE_LCLICKED 204
+#define QU_CANVAS_MOUSE_LRELEASE 205
+#define QU_CANVAS_KEY_PRESSED  206
+#define QU_CANVAS_KEY_RELEASED 207
+#define QU_CANVAS_RESIZE 208
 #endif

@@ -20,6 +20,6 @@ extern void QuWindowMngr_DrawAll ();
 extern QuWindow* QuWindowMngrFindByID (uint16_t id);
 extern void QuWindowMngrSetFocus (QuWindow* win);
 extern QuWindow* QuWindowMngrGetFocused ();
-extern void QuWindowMngr_HandleMouseDown (unsigned x, unsigned y);
-extern void QuWindowMngr_HandleMouseUp (unsigned x, unsigned y);
+extern void QuWindowMngr_HandleMouse (int x, int y, bool clicked);
+extern void QuWindowMngr_HandleMouseUp (int x, int y);
 #endif

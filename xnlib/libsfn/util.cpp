@@ -28,7 +28,10 @@
  */
 
 #include <stdlib.h>
-#include <ssfn.h>
+#include <stdint.h>
+//#include <ssfn.h>
+
+extern uint32_t ssfn_utf8(char **s);
 
 /**
  * Convert hex string to binary number. Use this lightning fast implementation

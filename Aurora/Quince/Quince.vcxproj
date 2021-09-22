@@ -148,6 +148,7 @@
     <ClCompile Include="source\ipc\QuChannel.cpp" />
     <ClCompile Include="source\ipc\_ipc_mouse.cpp" />
     <ClCompile Include="source\QuCanvas\QuCanvasMngr.cpp" />
+    <ClCompile Include="source\QuCanvas\QuDirtyStack.cpp" />
     <ClCompile Include="source\quince\main.cpp" />
     <ClCompile Include="source\quince\QuBmpImage.cpp" />
     <ClCompile Include="source\quince\QuCursor.cpp" />
@@ -164,6 +165,7 @@
     <ClInclude Include="include\ipc\QuChannel.h" />
     <ClInclude Include="include\ipc\_ipc_mouse.h" />
     <ClInclude Include="include\QuCanvas\QuCanvasMngr.h" />
+    <ClInclude Include="include\QuCanvas\QuDirtyStack.h" />
     <ClInclude Include="include\QuCode.h" />
     <ClInclude Include="include\QuCursor.h" />
     <ClInclude Include="include\QuEvent.h" />

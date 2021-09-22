@@ -15,6 +15,18 @@ $SG7976	DB	'Timer fired', 0aH, 00H
 $SG8004	DB	'shell', 00H
 	ORG $+2
 $SG8005	DB	'a:xshell.exe', 00H
+	ORG $+3
+$SG8006	DB	'quince', 00H
+	ORG $+1
+$SG8007	DB	'a:quince.exe', 00H
+	ORG $+3
+$SG8008	DB	'dwm3', 00H
+	ORG $+3
+$SG8009	DB	'a:dwm3.exe', 00H
+	ORG $+1
+$SG8010	DB	'dwm2', 00H
+	ORG $+7
+$SG8011	DB	'a:dwm2.exe', 00H
 CONST	ENDS
 PUBLIC	??2@YAPEAX_K@Z					; operator new
 PUBLIC	??3@YAXPEAX@Z					; operator delete
@@ -33,6 +45,7 @@ EXTRN	?printf@@YAXPEBDZZ:PROC				; printf
 EXTRN	?kybrd_init@@YAXXZ:PROC				; kybrd_init
 EXTRN	?initialize_mouse@@YAXXZ:PROC			; initialize_mouse
 EXTRN	?ata_initialize@@YAXXZ:PROC			; ata_initialize
+EXTRN	?svga_init@@YAXXZ:PROC				; svga_init
 EXTRN	?hda_initialize@@YAXXZ:PROC			; hda_initialize
 EXTRN	?initialize_rtc@@YAXXZ:PROC			; initialize_rtc
 EXTRN	?initialize_acpi@@YAXPEAX@Z:PROC		; initialize_acpi
@@ -59,7 +72,7 @@ $pdata$??_U@YAPEAX_K@Z DD imagerel $LN3
 	DD	imagerel $LN3+23
 	DD	imagerel $unwind$??_U@YAPEAX_K@Z
 $pdata$?_kmain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z DD imagerel $LN5
-	DD	imagerel $LN5+167
+	DD	imagerel $LN5+247
 	DD	imagerel $unwind$?_kmain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z
 pdata	ENDS
 xdata	SEGMENT
@@ -144,7 +157,10 @@ $LN5:
 	mov	rcx, QWORD PTR info$[rsp]
 	call	?initialize_screen@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z ; initialize_screen
 
-; 135  : 	//svga_init (); 
+; 135  : 	svga_init (); 
+
+	call	?svga_init@@YAXXZ			; svga_init
+
 ; 136  : 	initialize_mouse();
 
 	call	?initialize_mouse@@YAXXZ		; initialize_mouse
@@ -181,9 +197,30 @@ $LN5:
 	lea	rcx, OFFSET FLAT:$SG8005
 	call	?create_process@@YAXPEBDPEADE1@Z	; create_process
 
-; 149  : 	//create_process ("a:quince.exe","quince",0, NULL);
-; 150  : 	//create_process ("a:dwm3.exe", "dwm3", 0, NULL);
-; 151  : 	//create_process ("a:dwm2.exe", "dwm2", 0, NULL);
+; 149  : 	create_process ("a:quince.exe","quince",0, NULL);
+
+	xor	r9d, r9d
+	xor	r8d, r8d
+	lea	rdx, OFFSET FLAT:$SG8006
+	lea	rcx, OFFSET FLAT:$SG8007
+	call	?create_process@@YAXPEBDPEADE1@Z	; create_process
+
+; 150  : 	create_process ("a:dwm3.exe", "dwm3", 0, NULL);
+
+	xor	r9d, r9d
+	xor	r8d, r8d
+	lea	rdx, OFFSET FLAT:$SG8008
+	lea	rcx, OFFSET FLAT:$SG8009
+	call	?create_process@@YAXPEBDPEADE1@Z	; create_process
+
+; 151  : 	create_process ("a:dwm2.exe", "dwm2", 0, NULL);
+
+	xor	r9d, r9d
+	xor	r8d, r8d
+	lea	rdx, OFFSET FLAT:$SG8010
+	lea	rcx, OFFSET FLAT:$SG8011
+	call	?create_process@@YAXPEBDPEADE1@Z	; create_process
+
 ; 152  : 	scheduler_start();
 
 	call	?scheduler_start@@YAXXZ			; scheduler_start

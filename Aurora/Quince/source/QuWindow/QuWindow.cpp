@@ -22,7 +22,7 @@
 #define QUWIN_DEFAULT_WIDTH   500
 #define QUWIN_DEFAULT_HEIGHT  500
 
-QuWindow* QuWindowCreate (unsigned x, unsigned y, uint16_t owner_id, uint8_t attr) {
+QuWindow* QuWindowCreate (int x, int y, uint16_t owner_id, uint8_t attr) {
 	QuWindow* win = (QuWindow*)malloc(sizeof(QuWindow));
 	win->x = x;
 	win->y = y;
@@ -97,11 +97,11 @@ void QuWindowDraw (QuWindow* win) {
 			QuRect * r = (QuRect*)QuListGetAt(win->dirty_areas, i);  
 			QuCanvasBlit (win->canvas, r->x, r->y, r->w, r->h);
 			QuWindowDrawTitlebar (win, win->x, win->y, win->width);
-			canvas_screen_update(r->x, r->y, r->w , r->h);		
+			//canvas_screen_update(r->x, r->y, r->w , r->h);	
+			//QuCanvasAddDirty(r);
 			QuListRemove(win->dirty_areas, i);
 			free(r);
-			/*if (!QuCanvasGetUpdateBit())
-				QuCanvasSetUpdateBit(true);*/
+			QuCanvasSetUpdateBit(true);
 		}	
 	}
 }
