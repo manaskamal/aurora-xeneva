@@ -1,7 +1,7 @@
-﻿Build started 23-09-2021 ৰাতিপু 1:05:15.
+﻿Build started 24-09-2021 ৰাতিপু 1:31:36.
      1>Project "E:\Xeneva Project\Xeneva\Aurora\Quince\Quince.vcxproj" on node 2 (Rebuild target(s)).
      1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\xnlib\xnclib" /I"E:\Xeneva Project\Xeneva\xnlib\xnacrylic\include" /I"E:\Xeneva Project\Xeneva\Aurora\Quince\include" /Zi /nologo /W3 /WX- /sdl- /Od /D ARCH_X64 /D HW_CURSOR /D _MBCS /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt include\QuEvent.cpp include\QuWindow\QuList.h source\ipc\QuChannel.cpp source\ipc\_ipc_mouse.cpp source\QuCanvas\QuCanvasMngr.cpp source\QuCanvas\QuDirtyStack.cpp source\quince\main.cpp source\quince\QuBmpImage.cpp source\quince\QuCursor.cpp source\QuWidget\QuTaskbar.cpp source\QuWidget\QuWallpaper.cpp source\QuWindow\QuList.cpp source\QuWindow\QuTitleBar.cpp source\QuWindow\QuWindow.cpp source\QuWindow\QuWindowMngr.cpp source\QuWindow\QuWindowStyle.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\xnlib\xnclib" /I"E:\Xeneva Project\Xeneva\xnlib\xnacrylic\include" /I"E:\Xeneva Project\Xeneva\Aurora\Quince\include" /Zi /nologo /W3 /WX- /sdl- /Od /D ARCH_X64 /D HW_CURSOR /D _MBCS /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt include\QuEvent.cpp include\QuWindow\QuList.h source\ipc\QuChannel.cpp source\ipc\_ipc_mouse.cpp source\QuCanvas\QuCanvasMngr.cpp source\QuCanvas\QuDirtyStack.cpp source\QuCanvas\QuScreenStack.cpp source\quince\main.cpp source\quince\QuBmpImage.cpp source\quince\QuCursor.cpp source\QuWidget\QuTaskbar.cpp source\QuWidget\QuWallpaper.cpp source\QuWindow\QuList.cpp source\QuWindow\QuTitleBar.cpp source\QuWindow\QuWindow.cpp source\QuWindow\QuWindowMngr.cpp source\QuWindow\QuWindowStyle.cpp
      1>cl : Command line warning D9025: overriding '/sdl-' with '/GS-'
      1>cl : Command line warning D9002: ignoring unknown option '/arch:SSE'
          QuWindowStyle.cpp
@@ -9,13 +9,13 @@
      1>source\QuWindow\QuWindowMngr.cpp(50): warning C4018: '<' : signed/unsigned mismatch
      1>source\QuWindow\QuWindowMngr.cpp(59): warning C4018: '<' : signed/unsigned mismatch
      1>source\QuWindow\QuWindowMngr.cpp(94): warning C4018: '<' : signed/unsigned mismatch
-     1>source\QuWindow\QuWindowMngr.cpp(127): warning C4018: '>=' : signed/unsigned mismatch
-     1>source\QuWindow\QuWindowMngr.cpp(130): warning C4018: '>=' : signed/unsigned mismatch
-     1>source\QuWindow\QuWindowMngr.cpp(143): warning C4018: '<' : signed/unsigned mismatch
-     1>source\QuWindow\QuWindowMngr.cpp(187): warning C4018: '<' : signed/unsigned mismatch
+     1>source\QuWindow\QuWindowMngr.cpp(105): warning C4018: '<' : signed/unsigned mismatch
+     1>source\QuWindow\QuWindowMngr.cpp(137): warning C4018: '>=' : signed/unsigned mismatch
+     1>source\QuWindow\QuWindowMngr.cpp(140): warning C4018: '>=' : signed/unsigned mismatch
+     1>source\QuWindow\QuWindowMngr.cpp(153): warning C4018: '<' : signed/unsigned mismatch
+     1>source\QuWindow\QuWindowMngr.cpp(197): warning C4018: '<' : signed/unsigned mismatch
          QuWindow.cpp
-     1>source\QuWindow\QuWindow.cpp(70): warning C4018: '<' : signed/unsigned mismatch
-     1>source\QuWindow\QuWindow.cpp(96): warning C4018: '<' : signed/unsigned mismatch
+     1>source\QuWindow\QuWindow.cpp(71): warning C4018: '<' : signed/unsigned mismatch
          QuTitleBar.cpp
      1>source\QuWindow\QuTitleBar.cpp(41): warning C4018: '<' : signed/unsigned mismatch
      1>source\QuWindow\QuTitleBar.cpp(49): warning C4018: '<' : signed/unsigned mismatch
@@ -35,24 +35,25 @@
          QuCursor.cpp
          QuBmpImage.cpp
          main.cpp
+         QuScreenStack.cpp
          QuDirtyStack.cpp
          QuCanvasMngr.cpp
-     1>source\QuCanvas\QuCanvasMngr.cpp(50): warning C4244: '=' : conversion from 'uint16_t' to 'uint8_t', possible loss of data
-     1>source\QuCanvas\QuCanvasMngr.cpp(65): warning C4018: '<' : signed/unsigned mismatch
+     1>source\QuCanvas\QuCanvasMngr.cpp(51): warning C4244: '=' : conversion from 'uint16_t' to 'uint8_t', possible loss of data
      1>source\QuCanvas\QuCanvasMngr.cpp(66): warning C4018: '<' : signed/unsigned mismatch
-     1>source\QuCanvas\QuCanvasMngr.cpp(96): warning C4018: '<' : signed/unsigned mismatch
+     1>source\QuCanvas\QuCanvasMngr.cpp(67): warning C4018: '<' : signed/unsigned mismatch
      1>source\QuCanvas\QuCanvasMngr.cpp(97): warning C4018: '<' : signed/unsigned mismatch
-     1>source\QuCanvas\QuCanvasMngr.cpp(109): warning C4018: '<' : signed/unsigned mismatch
+     1>source\QuCanvas\QuCanvasMngr.cpp(98): warning C4018: '<' : signed/unsigned mismatch
      1>source\QuCanvas\QuCanvasMngr.cpp(110): warning C4018: '<' : signed/unsigned mismatch
+     1>source\QuCanvas\QuCanvasMngr.cpp(111): warning C4018: '<' : signed/unsigned mismatch
          _ipc_mouse.cpp
          QuChannel.cpp
      1>source\ipc\QuChannel.cpp(23): warning C4244: '=' : conversion from 'uint16_t' to 'uint8_t', possible loss of data
      1>source\ipc\QuChannel.cpp(24): warning C4244: '=' : conversion from 'uint16_t' to 'uint8_t', possible loss of data
          QuList.h
          QuEvent.cpp
-     1>include\QuEvent.cpp(41): warning C4018: '<' : signed/unsigned mismatch
-     1>include\QuEvent.cpp(42): warning C4018: '<' : signed/unsigned mismatch
-     1>include\QuEvent.cpp(74): warning C4101: 'qu_msg' : unreferenced local variable
+     1>include\QuEvent.cpp(47): warning C4018: '<' : signed/unsigned mismatch
+     1>include\QuEvent.cpp(48): warning C4018: '<' : signed/unsigned mismatch
+     1>include\QuEvent.cpp(80): warning C4101: 'qu_msg' : unreferenced local variable
          Generating Code...
      1>e:\xeneva project\xeneva\aurora\quince\source\quwindow\quwindowmngr.cpp(65): warning C4715: 'QuWindowMngrFindByID' : not all control paths return a value
      1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V110\Microsoft.CppBuild.targets(1137,5): warning MSB8012: TargetPath(E:\Xeneva Project\Xeneva\Aurora\x64\Debug\Quince.exe) does not match the Linker's OutputFile property value (F:\quince.exe). This may cause your project to build incorrectly. To correct this, please make sure that $(OutDir), $(TargetName) and $(TargetExt) property values match the value specified in %(Link.OutputFile).
@@ -63,6 +64,7 @@
          x64\Debug\_ipc_mouse.obj
          x64\Debug\QuCanvasMngr.obj
          x64\Debug\QuDirtyStack.obj
+         x64\Debug\QuScreenStack.obj
          x64\Debug\main.obj
          x64\Debug\QuBmpImage.obj
          x64\Debug\QuCursor.obj
@@ -81,4 +83,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:01.73
+Time Elapsed 00:00:01.28

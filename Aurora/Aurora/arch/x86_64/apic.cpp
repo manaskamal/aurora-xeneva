@@ -27,7 +27,6 @@
 static bool x2apic = false;
 static void* apic = nullptr;
 
-
 //! Reads APIC register
 uint64_t read_apic_register(uint16_t reg){
 
@@ -200,3 +199,4 @@ void initialize_apic () {
 
 	x64_sti();
 }
+

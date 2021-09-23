@@ -86,6 +86,9 @@
       <Filter>c++</Filter>
     </ClInclude>
     <ClInclude Include="stdio.h" />
+    <ClInclude Include="sys\_time.h">
+      <Filter>sys</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="string.cpp" />

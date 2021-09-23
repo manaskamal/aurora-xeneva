@@ -8,11 +8,11 @@ INCLUDELIB OLDNAMES
 PUBLIC	funct
 EXTRN	?message_send@@YAXGPEAU_message_@@@Z:PROC	; message_send
 EXTRN	?message_receive@@YAXPEAU_message_@@@Z:PROC	; message_receive
+EXTRN	?printf@@YAXPEBDZZ:PROC				; printf
 EXTRN	?wait@@YAXXZ:PROC				; wait
 EXTRN	?create__sys_process@@YAXPEBDPEAD@Z:PROC	; create__sys_process
 EXTRN	?valloc@@YAX_K@Z:PROC				; valloc
 EXTRN	?map_shared_memory@@YAXG_K0@Z:PROC		; map_shared_memory
-EXTRN	?printf@@YAXPEBDZZ:PROC				; printf
 EXTRN	?get_thread_id@@YAGXZ:PROC			; get_thread_id
 EXTRN	?sys_get_fb_mem@@YAPEAIXZ:PROC			; sys_get_fb_mem
 EXTRN	?sys_fb_update@@YAXXZ:PROC			; sys_fb_update
@@ -30,9 +30,11 @@ EXTRN	?sys_exit@@YAXXZ:PROC				; sys_exit
 EXTRN	?sys_fb_move_cursor@@YAXII@Z:PROC		; sys_fb_move_cursor
 EXTRN	?fork@@YAIXZ:PROC				; fork
 EXTRN	?exec@@YAXPEBDI@Z:PROC				; exec
-EXTRN	?ioquery@@YAXHHPEAX@Z:PROC			; ioquery
 EXTRN	?get_screen_width@@YAIXZ:PROC			; get_screen_width
 EXTRN	?get_screen_height@@YAIXZ:PROC			; get_screen_height
+EXTRN	?ioquery@@YAXHHPEAX@Z:PROC			; ioquery
+EXTRN	?sys_get_current_time@@YAXPEAU_sys_time_@@@Z:PROC ; sys_get_current_time
+EXTRN	?sys_get_system_tick@@YAIXZ:PROC		; sys_get_system_tick
 EXTRN	?get_screen_scanline@@YAGXZ:PROC		; get_screen_scanline
 EXTRN	?dwm_put_message@@YAXPEAU_dwm_message_@@@Z:PROC	; dwm_put_message
 EXTRN	?dwm_dispatch_message@@YAXPEAU_dwm_message_@@@Z:PROC ; dwm_dispatch_message
@@ -42,7 +44,7 @@ _BSS	SEGMENT
 funct	DQ	01H DUP (?)
 _BSS	ENDS
 CONST	SEGMENT
-$SG5956	DB	'System Call Fault!! Halting System', 0aH, 00H
+$SG5984	DB	'System Call Fault!! Halting System', 0aH, 00H
 CONST	ENDS
 _DATA	SEGMENT
 _syscalls DQ	FLAT:?printf@@YAXPEBDZZ
@@ -77,6 +79,8 @@ _syscalls DQ	FLAT:?printf@@YAXPEBDZZ
 	DQ	FLAT:?map_memory@@YAPEAX_KIE@Z
 	DQ	FLAT:?unmap_memory@@YAXPEAXI@Z
 	DQ	FLAT:?ioquery@@YAXHHPEAX@Z
+	DQ	FLAT:?sys_get_current_time@@YAXPEAU_sys_time_@@@Z
+	DQ	FLAT:?sys_get_system_tick@@YAIXZ
 	DQ	0000000000000000H
 _DATA	ENDS
 PUBLIC	x64_syscall_handler
@@ -118,7 +122,7 @@ $LN6:
 
 ; 21   : 		printf ("System Call Fault!! Halting System\n");
 
-	lea	rcx, OFFSET FLAT:$SG5956
+	lea	rcx, OFFSET FLAT:$SG5984
 	call	?printf@@YAXPEBDZZ			; printf
 $LN2@x64_syscal:
 

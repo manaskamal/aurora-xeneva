@@ -524,6 +524,9 @@
     <ClCompile Include="gui\splash.cpp">
       <Filter>source\gui</Filter>
     </ClCompile>
+    <ClCompile Include="sysserv\systime.cpp">
+      <Filter>source\sysserv</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <NASM Include="arch\x86_64\interrupts.asm">

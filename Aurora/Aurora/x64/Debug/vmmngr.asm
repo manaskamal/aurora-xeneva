@@ -6,7 +6,7 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 CONST	SEGMENT
-$SG3301	DB	'Address already present', 0aH, 00H
+$SG3302	DB	'Address already present', 0aH, 00H
 CONST	ENDS
 PUBLIC	?pml4_index@@YA_K_K@Z				; pml4_index
 PUBLIC	?pdp_index@@YA_K_K@Z				; pdp_index
@@ -363,7 +363,7 @@ $LN2@vmmngr_upd:
 ; 180  : 	{
 ; 181  : 		printf ("Address already present\n");
 
-	lea	rcx, OFFSET FLAT:$SG3301
+	lea	rcx, OFFSET FLAT:$SG3302
 	call	?printf@@YAXPEBDZZ			; printf
 $LN1@vmmngr_upd:
 

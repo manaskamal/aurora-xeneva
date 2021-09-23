@@ -31,7 +31,7 @@ mouse_cycle DB	01H DUP (?)
 ?mouse_button@@3HC DD 01H DUP (?)			; mouse_button
 _BSS	ENDS
 CONST	SEGMENT
-$SG6042	DB	'IOMOUSE', 00H
+$SG6043	DB	'IOMOUSE', 00H
 CONST	ENDS
 PUBLIC	?initialize_mouse@@YAXXZ			; initialize_mouse
 PUBLIC	?mouse_wait@@YAXE@Z				; mouse_wait
@@ -141,7 +141,7 @@ $LN3:
 ; 193  : 	strcpy (mouse_file->name, "IOMOUSE");
 
 	mov	rax, QWORD PTR mouse_file$[rsp]
-	lea	rdx, OFFSET FLAT:$SG6042
+	lea	rdx, OFFSET FLAT:$SG6043
 	mov	rcx, rax
 	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
 

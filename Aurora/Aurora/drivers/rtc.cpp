@@ -113,3 +113,28 @@ void initialize_rtc () {
 uint8_t rtc_get_year () {
 	return year;
 }
+
+uint8_t rtc_get_century() {
+	return century;
+}
+
+uint8_t rtc_get_minutes() {
+	return minute;
+}
+
+uint8_t rtc_get_second() {
+	return second;
+}
+
+uint8_t rtc_get_day () {
+	return day;
+}
+
+uint8_t rtc_get_hour () {
+	return hour;
+}
+
+uint8_t rtc_get_month() {
+	return month;
+}
+

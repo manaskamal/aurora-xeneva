@@ -23,6 +23,7 @@
 #include <QuRect.h>
 #include <stdlib.h>
 #include <QuCanvas\QuDirtyStack.h>
+#include <QuCanvas\QuScreenStack.h>
 
 #define QU_CANVAS_START   0x0000100000000000
 
@@ -119,8 +120,8 @@ void QuCanvasUpdateDirty() {
 	if (QuStackGetRectCount() > 0) {
 		QuRect* r = (QuRect*)QuStackGetRect();
 		QuCanvasUpdate(r->x, r->y, r->w, r->h);
-		//canvas_screen_update(r->x, r->y, r->w, r->h);
-		QuCanvasSetUpdateBit(true);
+		if (!QuCanvasGetUpdateBit())
+			QuCanvasSetUpdateBit(true);
 	}
 }
 

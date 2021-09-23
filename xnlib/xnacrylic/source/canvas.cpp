@@ -14,6 +14,7 @@
 #include <sys\ioquery.h>
 #include <sys\mmap.h>
 #include <sys\_term.h>
+#include <string.h>
 
 
 canvas_t* canvas = NULL;
@@ -73,8 +74,7 @@ uint32_t canvas_get_height () {
 
 void canvas_screen_update (uint32_t x, uint32_t y, uint32_t w, uint32_t h) {
 	uint32_t* lfb = (uint32_t*)0xFFFFF00000000000;
-
-	for (int i=0; i < w; i++) {
+	for (int i=0; i < w; i++) {	
 		for (int j=0; j < h; j++){
 			uint32_t color = canvas->address[(x + i) + (y + j) * canvas_get_scale()];
 			lfb[(x + i) + (y + j) * canvas_get_scale()] = color;

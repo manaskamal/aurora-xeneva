@@ -38,8 +38,9 @@ uint16_t task_id = 0;
 list_t *blocked_list;
 thread_t *task_list_head = NULL;
 thread_t *task_list_last = NULL;
-extern "C" thread_t *current_thread = NULL;
 
+uint32_t system_tick;
+extern "C" thread_t *current_thread = NULL;
 
 void thread_insert (thread_t* new_task ) {
 	new_task->next = NULL;
@@ -229,6 +230,7 @@ end:
  **/
 void scheduler_isr (size_t v, void* param) {
 	x64_cli();
+	system_tick++;
 	//interrupt_stack_frame *frame = (interrupt_stack_frame*)param;
 	if (scheduler_enable == false)
 		goto sched_end;
@@ -390,4 +392,8 @@ void force_sched () {
 
 bool is_scheduler_initialized () {
 	return scheduler_initialized;
+}
+
+uint32_t sched_get_tick() {
+	return system_tick;
 }

@@ -3,6 +3,8 @@ An Operating System fully written from scratch level. It usage UEFI based bootlo
 the kernel called Aurora. Further Aurora launch the window compositor system process and other applications. Currently applications
 are not included here.
 
+Now, EFI-based bootloader called Xnldr is also included in the repository "uefi\bootx64.efi"
+
 #Features:
 1. x86_64 based kernel called Aurora Kernel
 2. Multitasking / Multi-threading

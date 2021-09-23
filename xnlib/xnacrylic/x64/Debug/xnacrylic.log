@@ -1,4 +1,4 @@
-﻿Build started 22-09-2021 আবেলি 8:06:19.
+﻿Build started 23-09-2021 আবেলি 6:39:29.
      1>Project "E:\Xeneva Project\Xeneva\xnlib\xnacrylic\xnacrylic.vcxproj" on node 2 (Rebuild target(s)).
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\xnlib\xnclib" /I"E:\Xeneva Project\Xeneva\xnlib\xnacrylic\include" /Zi /nologo /W4 /WX- /sdl- /MP /Od /D ARCH_X64 /D SSFN_CONSOLEBITMAP_PALETTE /D SSFN_CONSOLEBITMAP_HICOLOR /D SSFN_CONSOLEBITMAP_TRUECOLOR /D SSFN_CONSOLEBITMAP_CLEARBG /D _MBCS /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt source\acrylic.cpp source\canvas.cpp source\color.cpp source\image.cpp source\psf\psf.cpp source\ttf\ttf.cpp
@@ -71,8 +71,8 @@
      1>E:\Xeneva Project\Xeneva\xnlib\xnacrylic\include\jpg\jpeg_decoder.h(580): warning C4127: conditional expression is constant
          color.cpp
          canvas.cpp
-     1>source\canvas.cpp(26): warning C4244: 'initializing' : conversion from 'int' to 'uint16_t', possible loss of data
-     1>source\canvas.cpp(29): warning C4018: '<' : signed/unsigned mismatch
+     1>source\canvas.cpp(27): warning C4244: 'initializing' : conversion from 'int' to 'uint16_t', possible loss of data
+     1>source\canvas.cpp(30): warning C4018: '<' : signed/unsigned mismatch
      1>source\canvas.cpp(77): warning C4018: '<' : signed/unsigned mismatch
      1>source\canvas.cpp(78): warning C4018: '<' : signed/unsigned mismatch
      1>source\canvas.cpp(106): warning C4018: '<' : signed/unsigned mismatch
@@ -99,4 +99,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:00.89
+Time Elapsed 00:00:00.49

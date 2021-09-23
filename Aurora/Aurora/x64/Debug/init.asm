@@ -10,23 +10,23 @@ _DATA	SEGMENT
 _fltused DD	01H
 _DATA	ENDS
 CONST	SEGMENT
-$SG7976	DB	'Timer fired', 0aH, 00H
+$SG7998	DB	'Timer fired', 0aH, 00H
 	ORG $+3
-$SG8004	DB	'shell', 00H
+$SG8026	DB	'shell', 00H
 	ORG $+2
-$SG8005	DB	'a:xshell.exe', 00H
+$SG8027	DB	'a:xshell.exe', 00H
 	ORG $+3
-$SG8006	DB	'quince', 00H
+$SG8028	DB	'quince', 00H
 	ORG $+1
-$SG8007	DB	'a:quince.exe', 00H
+$SG8029	DB	'a:quince.exe', 00H
 	ORG $+3
-$SG8008	DB	'dwm3', 00H
+$SG8030	DB	'dwm3', 00H
 	ORG $+3
-$SG8009	DB	'a:dwm3.exe', 00H
+$SG8031	DB	'a:dwm3.exe', 00H
 	ORG $+1
-$SG8010	DB	'dwm2', 00H
+$SG8032	DB	'dwm2', 00H
 	ORG $+7
-$SG8011	DB	'a:dwm2.exe', 00H
+$SG8033	DB	'a:dwm2.exe', 00H
 CONST	ENDS
 PUBLIC	??2@YAPEAX_K@Z					; operator new
 PUBLIC	??3@YAXPEAX@Z					; operator delete
@@ -193,32 +193,32 @@ $LN5:
 
 	xor	r9d, r9d
 	xor	r8d, r8d
-	lea	rdx, OFFSET FLAT:$SG8004
-	lea	rcx, OFFSET FLAT:$SG8005
+	lea	rdx, OFFSET FLAT:$SG8026
+	lea	rcx, OFFSET FLAT:$SG8027
 	call	?create_process@@YAXPEBDPEADE1@Z	; create_process
 
 ; 149  : 	create_process ("a:quince.exe","quince",0, NULL);
 
 	xor	r9d, r9d
 	xor	r8d, r8d
-	lea	rdx, OFFSET FLAT:$SG8006
-	lea	rcx, OFFSET FLAT:$SG8007
+	lea	rdx, OFFSET FLAT:$SG8028
+	lea	rcx, OFFSET FLAT:$SG8029
 	call	?create_process@@YAXPEBDPEADE1@Z	; create_process
 
 ; 150  : 	create_process ("a:dwm3.exe", "dwm3", 0, NULL);
 
 	xor	r9d, r9d
 	xor	r8d, r8d
-	lea	rdx, OFFSET FLAT:$SG8008
-	lea	rcx, OFFSET FLAT:$SG8009
+	lea	rdx, OFFSET FLAT:$SG8030
+	lea	rcx, OFFSET FLAT:$SG8031
 	call	?create_process@@YAXPEBDPEADE1@Z	; create_process
 
 ; 151  : 	create_process ("a:dwm2.exe", "dwm2", 0, NULL);
 
 	xor	r9d, r9d
 	xor	r8d, r8d
-	lea	rdx, OFFSET FLAT:$SG8010
-	lea	rcx, OFFSET FLAT:$SG8011
+	lea	rdx, OFFSET FLAT:$SG8032
+	lea	rcx, OFFSET FLAT:$SG8033
 	call	?create_process@@YAXPEBDPEADE1@Z	; create_process
 
 ; 152  : 	scheduler_start();
@@ -309,7 +309,7 @@ $LN3:
 
 ; 86   : 	printf ("Timer fired\n");
 
-	lea	rcx, OFFSET FLAT:$SG7976
+	lea	rcx, OFFSET FLAT:$SG7998
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 87   : 	interrupt_end(2);

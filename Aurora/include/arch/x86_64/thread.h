@@ -160,4 +160,5 @@ extern void task_delete (thread_t* thread);
 
 extern bool is_scheduler_initialized ();
 
+extern uint32_t sched_get_tick();
 #endif

@@ -323,6 +323,7 @@
     <ClCompile Include="sysserv\sysmouse.cpp" />
     <ClCompile Include="sysserv\sysproc.cpp" />
     <ClCompile Include="sysserv\systhread.cpp" />
+    <ClCompile Include="sysserv\systime.cpp" />
     <ClCompile Include="sysserv\syswait.cpp" />
     <ClCompile Include="sysserv\valloc.cpp" />
     <ClCompile Include="utils\lnklist.cpp" />

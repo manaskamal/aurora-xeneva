@@ -23,6 +23,12 @@ _BSS	SEGMENT
 _BSS	ENDS
 PUBLIC	?initialize_rtc@@YAXXZ				; initialize_rtc
 PUBLIC	?rtc_get_year@@YAEXZ				; rtc_get_year
+PUBLIC	?rtc_get_second@@YAEXZ				; rtc_get_second
+PUBLIC	?rtc_get_day@@YAEXZ				; rtc_get_day
+PUBLIC	?rtc_get_hour@@YAEXZ				; rtc_get_hour
+PUBLIC	?rtc_get_minutes@@YAEXZ				; rtc_get_minutes
+PUBLIC	?rtc_get_century@@YAEXZ				; rtc_get_century
+PUBLIC	?rtc_get_month@@YAEXZ				; rtc_get_month
 PUBLIC	?get_rtc_register@@YAEH@Z			; get_rtc_register
 PUBLIC	?set_rtc_register@@YAXGE@Z			; set_rtc_register
 PUBLIC	?is_updating_rtc@@YAHXZ				; is_updating_rtc
@@ -414,6 +420,90 @@ $LN3:
 	add	rsp, 40					; 00000028H
 	ret	0
 ?get_rtc_register@@YAEH@Z ENDP				; get_rtc_register
+_TEXT	ENDS
+; Function compile flags: /Odtpy
+; File e:\xeneva project\xeneva\aurora\aurora\drivers\rtc.cpp
+_TEXT	SEGMENT
+?rtc_get_month@@YAEXZ PROC				; rtc_get_month
+
+; 138  : 	return month;
+
+	movzx	eax, BYTE PTR ?month@@3EA		; month
+
+; 139  : }
+
+	ret	0
+?rtc_get_month@@YAEXZ ENDP				; rtc_get_month
+_TEXT	ENDS
+; Function compile flags: /Odtpy
+; File e:\xeneva project\xeneva\aurora\aurora\drivers\rtc.cpp
+_TEXT	SEGMENT
+?rtc_get_century@@YAEXZ PROC				; rtc_get_century
+
+; 118  : 	return century;
+
+	movzx	eax, BYTE PTR ?century@@3EA		; century
+
+; 119  : }
+
+	ret	0
+?rtc_get_century@@YAEXZ ENDP				; rtc_get_century
+_TEXT	ENDS
+; Function compile flags: /Odtpy
+; File e:\xeneva project\xeneva\aurora\aurora\drivers\rtc.cpp
+_TEXT	SEGMENT
+?rtc_get_minutes@@YAEXZ PROC				; rtc_get_minutes
+
+; 122  : 	return minute;
+
+	movzx	eax, BYTE PTR ?minute@@3EA		; minute
+
+; 123  : }
+
+	ret	0
+?rtc_get_minutes@@YAEXZ ENDP				; rtc_get_minutes
+_TEXT	ENDS
+; Function compile flags: /Odtpy
+; File e:\xeneva project\xeneva\aurora\aurora\drivers\rtc.cpp
+_TEXT	SEGMENT
+?rtc_get_hour@@YAEXZ PROC				; rtc_get_hour
+
+; 134  : 	return hour;
+
+	movzx	eax, BYTE PTR ?hour@@3EA		; hour
+
+; 135  : }
+
+	ret	0
+?rtc_get_hour@@YAEXZ ENDP				; rtc_get_hour
+_TEXT	ENDS
+; Function compile flags: /Odtpy
+; File e:\xeneva project\xeneva\aurora\aurora\drivers\rtc.cpp
+_TEXT	SEGMENT
+?rtc_get_day@@YAEXZ PROC				; rtc_get_day
+
+; 130  : 	return day;
+
+	movzx	eax, BYTE PTR ?day@@3EA			; day
+
+; 131  : }
+
+	ret	0
+?rtc_get_day@@YAEXZ ENDP				; rtc_get_day
+_TEXT	ENDS
+; Function compile flags: /Odtpy
+; File e:\xeneva project\xeneva\aurora\aurora\drivers\rtc.cpp
+_TEXT	SEGMENT
+?rtc_get_second@@YAEXZ PROC				; rtc_get_second
+
+; 126  : 	return second;
+
+	movzx	eax, BYTE PTR ?second@@3EA		; second
+
+; 127  : }
+
+	ret	0
+?rtc_get_second@@YAEXZ ENDP				; rtc_get_second
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\drivers\rtc.cpp

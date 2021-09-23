@@ -46,4 +46,5 @@ extern void apic_local_eoi();
 extern uint64_t read_apic_register(uint16_t reg);
 extern void write_apic_register(uint16_t reg, uint64_t value);
 
+
 #endif

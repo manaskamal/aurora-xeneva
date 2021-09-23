@@ -13,6 +13,7 @@
 #include <QuWindow\QuWindowStyle.h>
 #include <QuCanvas\QuCanvasMngr.h>
 #include <QuWindow\QuTitleBar.h>
+#include <QuCanvas\QuScreenStack.h>
 #include <QuRect.h>
 #include <stdlib.h>
 #include <acrylic.h>
@@ -92,17 +93,16 @@ void QuWindowAddCloseButton(QuWindow *win) {
 }
 
 void QuWindowDraw (QuWindow* win) {
-	if (win->dirty_areas->pointer > 0) {
-		for (int i = 0; i < win->dirty_areas->pointer; i++) {
-			QuRect * r = (QuRect*)QuListGetAt(win->dirty_areas, i);  
-			QuCanvasBlit (win->canvas, r->x, r->y, r->w, r->h);
-			QuWindowDrawTitlebar (win, win->x, win->y, win->width);
-			//canvas_screen_update(r->x, r->y, r->w , r->h);	
+	/*if (win->dirty_areas->pointer > 0) {
+		for (int i = 0; i < win->dirty_areas->pointer; i++) {*/
+			//QuRect * r = (QuRect*)QuListGetAt(win->dirty_areas, i);  
+	QuCanvasBlit (win->canvas, win->x, win->y, win->width,win->height);
+	QuWindowDrawTitlebar (win, win->x, win->y, win->width);
 			//QuCanvasAddDirty(r);
-			QuListRemove(win->dirty_areas, i);
-			free(r);
-			QuCanvasSetUpdateBit(true);
-		}	
-	}
+			//QuListRemove(win->dirty_areas, i);
+			//free(r);
+	//QuCanvasSetUpdateBit(true);
+		//}	
+	//}
 }
 

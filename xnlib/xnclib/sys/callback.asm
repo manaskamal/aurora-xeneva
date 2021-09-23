@@ -153,3 +153,18 @@ sys_unblock_id:
 	ret
 
 
+global sys_get_current_time
+sys_get_current_time:
+    mov r12, 32
+	mov r13, rcx
+	syscall
+	ret
+
+global sys_get_system_tick
+sys_get_system_tick:
+    mov r12, 33
+	syscall
+	ret
+
+
+

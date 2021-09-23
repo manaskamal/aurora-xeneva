@@ -15,6 +15,7 @@
 #include <string.h>
 #include <drivers\vmmouse.h>
 #include <vfs.h>
+#include <drivers\rtc.h>
 
 //!This is an interface layer between system service callbacks
 //! wait sys
@@ -40,4 +41,6 @@ extern void sys_fb_move_cursor (uint32_t x, uint32_t y);
 extern uint32_t fork ();
 extern void exec (const char* filename, uint32_t pid);
 extern void ioquery (int devid, int code, void* arg);
+extern void sys_get_current_time (sys_time *time);
+extern uint32_t sys_get_system_tick ();
 #endif

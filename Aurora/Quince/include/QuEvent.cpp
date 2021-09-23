@@ -13,6 +13,7 @@
 #include <sys\_term.h>
 #include <sys\_wait.h>
 #include <sys\_exit.h>
+#include <sys\_time.h>
 #include <stdlib.h>
 
 //! Quince Library
@@ -24,6 +25,7 @@
 #include <QuCanvas\QuCanvasMngr.h>
 #include <QuWindow\QuWindow.h>
 #include <QuWindow\QuWindowMngr.h>
+#include <QuCanvas\QuScreenStack.h>
 #include <QuRect.h>
 #include <canvas.h>
 #include <color.h>
@@ -32,6 +34,10 @@
 
 int x , y = 100;
 bool mouse_down = false;
+const int ticks_per_second = 8;
+const int skip_ticks = 1000 / ticks_per_second;
+const int max_frame_skip = 10;
+
 
 void QuHandleQuinceMsg (QuMessage *qu_msg) {
 	if (qu_msg->type == QU_CODE_WIN_CREATE) {
@@ -72,10 +78,13 @@ void QuEventLoop() {
 	message_t msg;
 	mouse_message_t m_pack;
 	QuMessage qu_msg;
+	sys_time time;
+	uint32_t next_tick = sys_get_system_tick();
+	int loops;
 	while(1) {
 		message_receive(&msg);
 		_ipc_mouse_dispatch (&m_pack);
-		
+		sys_get_current_time(&time);
 
 		//!System Messages
 		if (m_pack.type == _MOUSE_MOVE) {
@@ -98,7 +107,6 @@ void QuEventLoop() {
 			memset (&m_pack, 0, sizeof(mouse_message_t));
 		}
 		if (msg.type == 3) {
-			//sys_print_text ("Quince: Key Pressed\n");
 			memset(&msg, 0, sizeof(message_t));
 		}
 
@@ -132,12 +140,23 @@ void QuEventLoop() {
 			memset(&msg, 0, sizeof(message_t));
 		}
 
-		
+		//! Here We Prepare the frame that will be displayed
+		loops = 0;
 		QuWindowMngr_DrawAll();	
+		while (sys_get_system_tick() > next_tick && loops < max_frame_skip){
+				
+			QuWindowMngr_DisplayWindow();
+			next_tick += skip_ticks;
+			loops++;
+		}
+	
+	
 		if (QuCanvasGetUpdateBit()) {
 			canvas_screen_update(0,0,canvas_get_width(), canvas_get_height());
 			QuCanvasSetUpdateBit(false);
 		}
-		sys_sleep(16);
+
+
+	sys_sleep(16);
 	}
 }

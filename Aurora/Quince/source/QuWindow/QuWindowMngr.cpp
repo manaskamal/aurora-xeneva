@@ -100,6 +100,16 @@ void QuWindowMngr_DrawAll () {
 }
 
 
+void QuWindowMngr_DisplayWindow() {
+	if (WindowList->pointer > 0) {
+		for (int i = 0; i < WindowList->pointer; i++) {
+			QuWindow* _win = (QuWindow*)QuListGetAt(WindowList, i);
+			canvas_screen_update(_win->x, _win->y, _win->width, _win->height);
+		}
+	} 
+}
+
+
 void QuWindowMngr_MoveFocusWindow (int x, int y) {
 
 	QuRect re;
@@ -192,8 +202,8 @@ void QuWindowMngr_HandleMouse (int x, int y, bool clicked) {
 
 				if (clicked) {
 					if (draggable_win != NULL) {
-						draggable_win->drag_x = x - draggable_win->x;
-						draggable_win->drag_y = y - draggable_win->y;
+						draggable_win->drag_x = x + 12 - draggable_win->x;
+						draggable_win->drag_y = y + 12 - draggable_win->y;
 						draggable_win->draggable = true;
 					//draggable_win = win;
 					} else {
