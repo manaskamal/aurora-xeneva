@@ -31,6 +31,7 @@
 #include <drivers\net\rtl8139.h>
 #include <drivers\rtc.h>
 #include <drivers\acpi\acpi.h>
+#include <drivers\vbox.h>
 #include <ipc\evntsh.h>
 #include <ipc\message.h>
 #include <ipc\dwm_ipc.h>
@@ -125,8 +126,8 @@ void _kmain (KERNEL_BOOT_INFO *info) {
 	initialize_acpi (info->acpi_table_pointer);
 	initialize_rtc();  
 	hda_initialize();
-	//e1000_initialize();  //<< receiver not working
-   
+	e1000_initialize();  //<< receiver not working
+	//initialize_guest_vbox();
 
 
     ata_initialize();
@@ -149,6 +150,7 @@ void _kmain (KERNEL_BOOT_INFO *info) {
 	create_process ("a:quince.exe","quince",0, NULL);
 	create_process ("a:dwm3.exe", "dwm3", 0, NULL);
 	create_process ("a:dwm2.exe", "dwm2", 0, NULL);
+	//create_process ("a:dwm3.exe", "dwm3", 0, NULL);
 	scheduler_start();
 #endif
 	while(1) {

@@ -13,6 +13,7 @@
 
 #include <stdint.h>
 #include <QuRect.h>
+#include <QuWindow\QuWindow.h>
 
 //! QuCanvasMngr_Initialize -- Initialize the QuCanvasMngr
 //! @oaram null -- No parameters
@@ -35,7 +36,7 @@ extern void QuCanvasCommit (uint32_t* canvas, uint16_t destid, unsigned x, unsig
 //! @param y - Y coord
 //! @param w - Width
 //! @param h - Height
-extern void QuCanvasBlit (uint32_t *canvas, unsigned x, unsigned y, unsigned w, unsigned h);
+extern void QuCanvasBlit (QuWindow* win,uint32_t *canvas, unsigned x, unsigned y, unsigned w, unsigned h);
 
 //! QuCanvasPutPixel -- Puts pixel on specific canvas
 //! @param canvas -- Canvas Address

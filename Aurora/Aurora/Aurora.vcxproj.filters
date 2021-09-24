@@ -327,6 +327,9 @@
     <ClInclude Include="..\include\gui\splash.h">
       <Filter>include\gui</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\drivers\vbox.h">
+      <Filter>include\drivers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="init.cpp">
@@ -526,6 +529,9 @@
     </ClCompile>
     <ClCompile Include="sysserv\systime.cpp">
       <Filter>source\sysserv</Filter>
+    </ClCompile>
+    <ClCompile Include="drivers\vbox.cpp">
+      <Filter>source\drivers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

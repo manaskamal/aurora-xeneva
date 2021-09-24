@@ -24,6 +24,7 @@
 #include <stdlib.h>
 #include <QuCanvas\QuDirtyStack.h>
 #include <QuCanvas\QuScreenStack.h>
+#include <QuWindow\QuWindowMngr.h>
 
 #define QU_CANVAS_START   0x0000100000000000
 
@@ -58,18 +59,21 @@ void QuCanvasCommit (uint32_t* canvas, uint16_t destid, unsigned x, unsigned y, 
 	//sys_unblock_id (destid);
 }
 
-void QuCanvasBlit (uint32_t *canvas, unsigned x, unsigned y, unsigned w, unsigned h) {
+void QuCanvasBlit (QuWindow* win,uint32_t *canvas, unsigned x, unsigned y, unsigned w, unsigned h) {
 	uint32_t* lfb = (uint32_t*)0x0000600000000000;
-	uint32_t* wallp = (uint32_t*)0x0000060000000000;
+	uint32_t* fb = (uint32_t*)0xFFFFF00000000000;
 	int width = canvas_get_width();
 	int height = canvas_get_height();
+	int j = 0;
 	for (int i=0; i < w; i++) {
 		for (int j=0; j < h; j++){
-			if (canvas[(x + i) + (y + j) * width] | 0x00000000){
-			uint32_t color = canvas[(x + i) + (y + j) * width];
-			//uint32_t color_a = wallp[(x + i) + (y + j) * width];
-			lfb[(x + i) + (y + j) * width] = color; //alpha_blend(color_a, color);
+			if (lfb[(x + i) + (y + j) * width] != canvas[(x + i) + (y + j) * width]){
+				lfb[(x + i) + (y + j) * width] = canvas[(x + i) + (y + j) * width];
+				QuWindowMngr_UpdateWindow(true);
+				QuWindowUpdateTitlebar(true);
+				win->invalidate = true;
 			}
+			//}
 		}
 	}
 }
@@ -98,6 +102,7 @@ void QuCanvasUpdate (unsigned x, unsigned y, unsigned w, unsigned h) {
 		for (int j=0; j < h; j++){
 			uint32_t color = wallp[(x + i) + (y + j) * canvas_get_scanline()];
 			lfb[(x + i) + (y + j) * canvas_get_scanline()] = color;
+			QuWindowMngr_UpdateWindow(true);
 		}
 	}
 }

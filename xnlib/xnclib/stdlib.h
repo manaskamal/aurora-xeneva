@@ -34,4 +34,6 @@ extern int rand (void);
 extern size_t wcstombs (char*, const wchar_t *, size_t);
 extern int wctomb (char*, wchar_t);
 extern void qsort(void* base, size_t num, size_t size, int (*comparator)(const void*, const void*));
+
+extern char* sztoa(size_t value, char* str, int base);
 #endif

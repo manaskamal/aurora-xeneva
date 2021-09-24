@@ -23,6 +23,8 @@
 #define QUWIN_DEFAULT_WIDTH   500
 #define QUWIN_DEFAULT_HEIGHT  500
 
+static bool UpdateToolbar = false;
+
 QuWindow* QuWindowCreate (int x, int y, uint16_t owner_id, uint8_t attr) {
 	QuWindow* win = (QuWindow*)malloc(sizeof(QuWindow));
 	win->x = x;
@@ -33,6 +35,7 @@ QuWindow* QuWindowCreate (int x, int y, uint16_t owner_id, uint8_t attr) {
 	win->width = QUWIN_DEFAULT_WIDTH;
 	win->height = QUWIN_DEFAULT_HEIGHT;
 	win->visible = true;
+	win->invalidate = true;
 	win->canvas = NULL;
 	win->owner_id = owner_id;
 	win->decorate = true;
@@ -93,16 +96,21 @@ void QuWindowAddCloseButton(QuWindow *win) {
 }
 
 void QuWindowDraw (QuWindow* win) {
-	/*if (win->dirty_areas->pointer > 0) {
-		for (int i = 0; i < win->dirty_areas->pointer; i++) {*/
-			//QuRect * r = (QuRect*)QuListGetAt(win->dirty_areas, i);  
-	QuCanvasBlit (win->canvas, win->x, win->y, win->width,win->height);
-	QuWindowDrawTitlebar (win, win->x, win->y, win->width);
-			//QuCanvasAddDirty(r);
-			//QuListRemove(win->dirty_areas, i);
-			//free(r);
-	//QuCanvasSetUpdateBit(true);
-		//}	
-	//}
+	
+	QuCanvasBlit (win,win->canvas, win->x, win->y + 23, win->width,win->height - 23);
+	if (UpdateToolbar){
+		QuWindowDrawTitlebar (win, win->x, win->y, win->width);
+		UpdateToolbar = false;
+	}
+
+		
+}
+
+void QuWindowUpdateTitlebar (bool value) {
+	UpdateToolbar = value;
+}
+
+bool QuWindowGetUpdateTitlebar() {
+	return UpdateToolbar;
 }
 

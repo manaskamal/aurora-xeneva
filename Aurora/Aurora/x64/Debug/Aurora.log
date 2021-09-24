@@ -1,8 +1,8 @@
-﻿Build started 24-09-2021 ৰাতিপু 1:25:58.
+﻿Build started 24-09-2021 আবেলি 7:33:52.
      1>Project "E:\Xeneva Project\Xeneva\Aurora\Aurora\Aurora.vcxproj" on node 2 (Rebuild target(s)).
      1>_NASM:
          arch\x86_64\interrupts.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp6e1ea601d5c647f884f2dbfa38e0ea87.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp8339fdedc86040e1aa8923b5ace644a9.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\interrupts.obj"  "E:\Xeneva Project\Xeneva\Aurora\Aurora\arch\x86_64\interrupts.asm"
      1>E:\Xeneva Project\Xeneva\Aurora\Aurora\arch\x86_64\interrupts.asm(64): warning : label alone on a line without a colon might be in error
      1>E:\Xeneva Project\Xeneva\Aurora\Aurora\arch\x86_64\interrupts.asm(132): warning : signed dword immediate exceeds bounds
@@ -255,26 +255,26 @@
      1>E:\Xeneva Project\Xeneva\Aurora\Aurora\arch\x86_64\interrupts.asm(156): warning : signed dword immediate exceeds bounds
        _NASM:
          arch\x86_64\switch.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp230b398ebc00448bb00c2b8068aa5255.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmpd87a1ab1d519494ea05cdcf7d7cd2a0f.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\switch.obj"  "E:\Xeneva Project\Xeneva\Aurora\Aurora\arch\x86_64\switch.asm"
        _NASM:
          arch\x86_64\user.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp123ddcb3291d4f688f8e756ea875c4f0.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp8cd5f0680ea24ec7a8a8fe87d890c079.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\user.obj"  "E:\Xeneva Project\Xeneva\Aurora\Aurora\arch\x86_64\user.asm"
        _NASM:
          arch\x86_64\_low_level.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmpb85b8cd1b1cc42a09fb9f37b3cf15443.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp6ffa1012d4ad44b487bbf4766a40a9a1.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\_low_level.obj"  "E:\Xeneva Project\Xeneva\Aurora\Aurora\arch\x86_64\_low_level.asm"
        _NASM:
          drivers\svga\backdoor_stuff.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp633d9d5b311c429789f4412e0bea4fd5.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp4735cd62535a441abc61f1719fc9ad65.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\backdoor_stuff.obj"  "E:\Xeneva Project\Xeneva\Aurora\Aurora\drivers\svga\backdoor_stuff.asm"
        _NASM:
          _fast_cpy.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp4278223312414679b80c1cfd2b952971.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp95c464b1c27e43f89814262514479f83.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\_fast_cpy.obj"  "E:\Xeneva Project\Xeneva\Aurora\Aurora\_fast_cpy.asm"
        ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\Aurora\include" /I"E:\Xeneva Project\Xeneva\Aurora\acpica\include" /Zi /nologo /W0 /WX- /Od /Oy /D ARCH_X64 /D USE_APIC /D ACPI_MACHINE_WIDTH=64 /D PROCESSOR_ARCHITECHTURE=X64 /D _MBCS /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /GR- /FAs /Fa"x64\Debug\\" /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt arch\x86_64\apic.cpp arch\x86_64\cpu.cpp arch\x86_64\exception.cpp arch\x86_64\ioapic.cpp arch\x86_64\kheap.cpp arch\x86_64\map.cpp arch\x86_64\pic.cpp arch\x86_64\systable.cpp arch\x86_64\thread.cpp arch\x86_64\user64.cpp arch\x86_64\vmmngr.cpp atomic\mutex.cpp console.cpp drivers\ac97\ac97.cpp drivers\acpi\acpi.cpp drivers\ata.cpp drivers\hda\hda.cpp drivers\kybrd.cpp drivers\mouse.cpp drivers\net\amd_am79c973.cpp drivers\net\e1000.cpp drivers\net\rtl8139.cpp drivers\pci.cpp drivers\rtc.cpp drivers\svga\gmr.cpp drivers\svga\svga_screen.cpp drivers\svga\svga_screen_util.cpp drivers\svga\vmsvga.cpp drivers\svga\vm_backdoor.cpp drivers\usb\xhci.cpp drivers\vga.cpp drvmngr.cpp fs\fat32.cpp gui\splash.cpp hal.cpp hwcursor.cpp init.cpp ipc\dwm_ipc.cpp ipc\evntsh.cpp ipc\message.cpp mm.cpp net\arp.cpp net\ethernet.cpp net\nethw.cpp net\udp.cpp pe.cpp pmmngr.cpp proc.cpp procmngr.cpp screen.cpp serial.cpp stdio.cpp string.cpp sysserv\ioquery.cpp sysserv\sysfb.cpp sysserv\sysfile.cpp sysserv\sysmem.cpp sysserv\sysmouse.cpp sysserv\sysproc.cpp sysserv\systhread.cpp sysserv\systime.cpp sysserv\syswait.cpp sysserv\valloc.cpp utils\lnklist.cpp utils\ring.cpp vfs.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\Aurora\include" /I"E:\Xeneva Project\Xeneva\Aurora\acpica\include" /Zi /nologo /W0 /WX- /Od /Oy /D ARCH_X64 /D USE_APIC /D ACPI_MACHINE_WIDTH=64 /D PROCESSOR_ARCHITECHTURE=X64 /D _MBCS /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /GR- /FAs /Fa"x64\Debug\\" /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt arch\x86_64\apic.cpp arch\x86_64\cpu.cpp arch\x86_64\exception.cpp arch\x86_64\ioapic.cpp arch\x86_64\kheap.cpp arch\x86_64\map.cpp arch\x86_64\pic.cpp arch\x86_64\systable.cpp arch\x86_64\thread.cpp arch\x86_64\user64.cpp arch\x86_64\vmmngr.cpp atomic\mutex.cpp console.cpp drivers\ac97\ac97.cpp drivers\acpi\acpi.cpp drivers\ata.cpp drivers\hda\hda.cpp drivers\kybrd.cpp drivers\mouse.cpp drivers\net\amd_am79c973.cpp drivers\net\e1000.cpp drivers\net\rtl8139.cpp drivers\pci.cpp drivers\rtc.cpp drivers\svga\gmr.cpp drivers\svga\svga_screen.cpp drivers\svga\svga_screen_util.cpp drivers\svga\vmsvga.cpp drivers\svga\vm_backdoor.cpp drivers\usb\xhci.cpp drivers\vbox.cpp drivers\vga.cpp drvmngr.cpp fs\fat32.cpp gui\splash.cpp hal.cpp hwcursor.cpp init.cpp ipc\dwm_ipc.cpp ipc\evntsh.cpp ipc\message.cpp mm.cpp net\arp.cpp net\ethernet.cpp net\nethw.cpp net\udp.cpp pe.cpp pmmngr.cpp proc.cpp procmngr.cpp screen.cpp serial.cpp stdio.cpp string.cpp sysserv\ioquery.cpp sysserv\sysfb.cpp sysserv\sysfile.cpp sysserv\sysmem.cpp sysserv\sysmouse.cpp sysserv\sysproc.cpp sysserv\systhread.cpp sysserv\systime.cpp sysserv\syswait.cpp sysserv\valloc.cpp utils\lnklist.cpp utils\ring.cpp vfs.cpp
      1>cl : Command line warning D9002: ignoring unknown option '/arch:SSE'
          vfs.cpp
          ring.cpp
@@ -314,12 +314,13 @@
          fat32.cpp
          drvmngr.cpp
          vga.cpp
+         vbox.cpp
          xhci.cpp
          vm_backdoor.cpp
          vmsvga.cpp
-         svga_screen_util.cpp
          Generating Code...
          Compiling...
+         svga_screen_util.cpp
          svga_screen.cpp
          gmr.cpp
          rtc.cpp
@@ -339,9 +340,9 @@
          user64.cpp
          thread.cpp
          systable.cpp
-         pic.cpp
          Generating Code...
          Compiling...
+         pic.cpp
          map.cpp
          kheap.cpp
          ioapic.cpp
@@ -382,6 +383,7 @@
          x64\Debug\vmsvga.obj
          x64\Debug\vm_backdoor.obj
          x64\Debug\xhci.obj
+         x64\Debug\vbox.obj
          x64\Debug\vga.obj
          x64\Debug\drvmngr.obj
          x64\Debug\fat32.obj
@@ -436,4 +438,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:04.52
+Time Elapsed 00:00:05.16

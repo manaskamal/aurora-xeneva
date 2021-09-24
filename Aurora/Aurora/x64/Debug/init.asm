@@ -10,23 +10,23 @@ _DATA	SEGMENT
 _fltused DD	01H
 _DATA	ENDS
 CONST	SEGMENT
-$SG7998	DB	'Timer fired', 0aH, 00H
+$SG8070	DB	'Timer fired', 0aH, 00H
 	ORG $+3
-$SG8026	DB	'shell', 00H
+$SG8098	DB	'shell', 00H
 	ORG $+2
-$SG8027	DB	'a:xshell.exe', 00H
+$SG8099	DB	'a:xshell.exe', 00H
 	ORG $+3
-$SG8028	DB	'quince', 00H
+$SG8100	DB	'quince', 00H
 	ORG $+1
-$SG8029	DB	'a:quince.exe', 00H
+$SG8101	DB	'a:quince.exe', 00H
 	ORG $+3
-$SG8030	DB	'dwm3', 00H
+$SG8102	DB	'dwm3', 00H
 	ORG $+3
-$SG8031	DB	'a:dwm3.exe', 00H
+$SG8103	DB	'a:dwm3.exe', 00H
 	ORG $+1
-$SG8032	DB	'dwm2', 00H
+$SG8104	DB	'dwm2', 00H
 	ORG $+7
-$SG8033	DB	'a:dwm2.exe', 00H
+$SG8105	DB	'a:dwm2.exe', 00H
 CONST	ENDS
 PUBLIC	??2@YAPEAX_K@Z					; operator new
 PUBLIC	??3@YAXPEAX@Z					; operator delete
@@ -47,6 +47,7 @@ EXTRN	?initialize_mouse@@YAXXZ:PROC			; initialize_mouse
 EXTRN	?ata_initialize@@YAXXZ:PROC			; ata_initialize
 EXTRN	?svga_init@@YAXXZ:PROC				; svga_init
 EXTRN	?hda_initialize@@YAXXZ:PROC			; hda_initialize
+EXTRN	?e1000_initialize@@YAXXZ:PROC			; e1000_initialize
 EXTRN	?initialize_rtc@@YAXXZ:PROC			; initialize_rtc
 EXTRN	?initialize_acpi@@YAXPEAX@Z:PROC		; initialize_acpi
 EXTRN	?initialize_scheduler@@YAXXZ:PROC		; initialize_scheduler
@@ -72,7 +73,7 @@ $pdata$??_U@YAPEAX_K@Z DD imagerel $LN3
 	DD	imagerel $LN3+23
 	DD	imagerel $unwind$??_U@YAPEAX_K@Z
 $pdata$?_kmain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z DD imagerel $LN5
-	DD	imagerel $LN5+247
+	DD	imagerel $LN5+252
 	DD	imagerel $unwind$?_kmain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z
 pdata	ENDS
 xdata	SEGMENT
@@ -93,152 +94,156 @@ _TEXT	SEGMENT
 info$ = 48
 ?_kmain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z PROC		; _kmain
 
-; 117  : void _kmain (KERNEL_BOOT_INFO *info) {
+; 118  : void _kmain (KERNEL_BOOT_INFO *info) {
 
 $LN5:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 40					; 00000028H
 
-; 118  : 	hal_init ();
+; 119  : 	hal_init ();
 
 	call	?hal_init@@YAXXZ			; hal_init
 
-; 119  : 	pmmngr_init (info);
+; 120  : 	pmmngr_init (info);
 
 	mov	rcx, QWORD PTR info$[rsp]
 	call	?pmmngr_init@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z ; pmmngr_init
 
-; 120  : 	mm_init(); 
+; 121  : 	mm_init(); 
 
 	call	?mm_init@@YAXXZ				; mm_init
 
-; 121  : 	initialize_serial();
+; 122  : 	initialize_serial();
 
 	call	?initialize_serial@@YAXXZ		; initialize_serial
 
-; 122  : 	console_initialize(info);
+; 123  : 	console_initialize(info);
 
 	mov	rcx, QWORD PTR info$[rsp]
 	call	?console_initialize@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z ; console_initialize
 
-; 123  : 	//!Initialize kernel runtime drivers	
-; 124  : 	kybrd_init();
+; 124  : 	//!Initialize kernel runtime drivers	
+; 125  : 	kybrd_init();
 
 	call	?kybrd_init@@YAXXZ			; kybrd_init
 
-; 125  : 	initialize_acpi (info->acpi_table_pointer);
+; 126  : 	initialize_acpi (info->acpi_table_pointer);
 
 	mov	rax, QWORD PTR info$[rsp]
 	mov	rcx, QWORD PTR [rax+66]
 	call	?initialize_acpi@@YAXPEAX@Z		; initialize_acpi
 
-; 126  : 	initialize_rtc();  
+; 127  : 	initialize_rtc();  
 
 	call	?initialize_rtc@@YAXXZ			; initialize_rtc
 
-; 127  : 	hda_initialize();
+; 128  : 	hda_initialize();
 
 	call	?hda_initialize@@YAXXZ			; hda_initialize
 
-; 128  : 	//e1000_initialize();  //<< receiver not working
-; 129  :    
-; 130  : 
+; 129  : 	e1000_initialize();  //<< receiver not working
+
+	call	?e1000_initialize@@YAXXZ		; e1000_initialize
+
+; 130  : 	//initialize_guest_vbox();
 ; 131  : 
-; 132  :     ata_initialize();
+; 132  : 
+; 133  :     ata_initialize();
 
 	call	?ata_initialize@@YAXXZ			; ata_initialize
 
-; 133  : 	initialize_vfs();
+; 134  : 	initialize_vfs();
 
 	call	?initialize_vfs@@YAXXZ			; initialize_vfs
 
-; 134  : 	initialize_screen(info);
+; 135  : 	initialize_screen(info);
 
 	mov	rcx, QWORD PTR info$[rsp]
 	call	?initialize_screen@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z ; initialize_screen
 
-; 135  : 	svga_init (); 
+; 136  : 	svga_init (); 
 
 	call	?svga_init@@YAXXZ			; svga_init
 
-; 136  : 	initialize_mouse();
+; 137  : 	initialize_mouse();
 
 	call	?initialize_mouse@@YAXXZ		; initialize_mouse
 
-; 137  : 
-; 138  : 	message_init ();
+; 138  : 
+; 139  : 	message_init ();
 
 	call	?message_init@@YAXXZ			; message_init
 
-; 139  : 	dwm_ipc_init();
+; 140  : 	dwm_ipc_init();
 
 	call	?dwm_ipc_init@@YAXXZ			; dwm_ipc_init
 
-; 140  : 
-; 141  : 	driver_mngr_initialize(info);
+; 141  : 
+; 142  : 	driver_mngr_initialize(info);
 
 	mov	rcx, QWORD PTR info$[rsp]
 	call	?driver_mngr_initialize@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z ; driver_mngr_initialize
 
-; 142  : 	//x64_cli();
-; 143  : #ifdef ARCH_X64
-; 144  : 	initialize_scheduler();
+; 143  : 	//x64_cli();
+; 144  : #ifdef ARCH_X64
+; 145  : 	initialize_scheduler();
 
 	call	?initialize_scheduler@@YAXXZ		; initialize_scheduler
 
-; 145  : 	//create_process ("dwm.exe","dwm",20);
-; 146  : 	//! task list should be more than 4 or less than 4 not  
-; 147  : 	//create_process ("dwm2.exe", "dwm2", 1);
-; 148  : 	create_process ("a:xshell.exe","shell",0, NULL);
+; 146  : 	//create_process ("dwm.exe","dwm",20);
+; 147  : 	//! task list should be more than 4 or less than 4 not  
+; 148  : 	//create_process ("dwm2.exe", "dwm2", 1);
+; 149  : 	create_process ("a:xshell.exe","shell",0, NULL);
 
 	xor	r9d, r9d
 	xor	r8d, r8d
-	lea	rdx, OFFSET FLAT:$SG8026
-	lea	rcx, OFFSET FLAT:$SG8027
+	lea	rdx, OFFSET FLAT:$SG8098
+	lea	rcx, OFFSET FLAT:$SG8099
 	call	?create_process@@YAXPEBDPEADE1@Z	; create_process
 
-; 149  : 	create_process ("a:quince.exe","quince",0, NULL);
+; 150  : 	create_process ("a:quince.exe","quince",0, NULL);
 
 	xor	r9d, r9d
 	xor	r8d, r8d
-	lea	rdx, OFFSET FLAT:$SG8028
-	lea	rcx, OFFSET FLAT:$SG8029
+	lea	rdx, OFFSET FLAT:$SG8100
+	lea	rcx, OFFSET FLAT:$SG8101
 	call	?create_process@@YAXPEBDPEADE1@Z	; create_process
 
-; 150  : 	create_process ("a:dwm3.exe", "dwm3", 0, NULL);
+; 151  : 	create_process ("a:dwm3.exe", "dwm3", 0, NULL);
 
 	xor	r9d, r9d
 	xor	r8d, r8d
-	lea	rdx, OFFSET FLAT:$SG8030
-	lea	rcx, OFFSET FLAT:$SG8031
+	lea	rdx, OFFSET FLAT:$SG8102
+	lea	rcx, OFFSET FLAT:$SG8103
 	call	?create_process@@YAXPEBDPEADE1@Z	; create_process
 
-; 151  : 	create_process ("a:dwm2.exe", "dwm2", 0, NULL);
+; 152  : 	create_process ("a:dwm2.exe", "dwm2", 0, NULL);
 
 	xor	r9d, r9d
 	xor	r8d, r8d
-	lea	rdx, OFFSET FLAT:$SG8032
-	lea	rcx, OFFSET FLAT:$SG8033
+	lea	rdx, OFFSET FLAT:$SG8104
+	lea	rcx, OFFSET FLAT:$SG8105
 	call	?create_process@@YAXPEBDPEADE1@Z	; create_process
 
-; 152  : 	scheduler_start();
+; 153  : 	//create_process ("a:dwm3.exe", "dwm3", 0, NULL);
+; 154  : 	scheduler_start();
 
 	call	?scheduler_start@@YAXXZ			; scheduler_start
 $LN2@kmain:
 
-; 153  : #endif
-; 154  : 	while(1) {
+; 155  : #endif
+; 156  : 	while(1) {
 
 	xor	eax, eax
 	cmp	eax, 1
 	je	SHORT $LN1@kmain
 
-; 155  : 	}
+; 157  : 	}
 
 	jmp	SHORT $LN2@kmain
 $LN1@kmain:
 
-; 156  : }
+; 158  : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -249,23 +254,23 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 ?dummy_thread_2@@YAXXZ PROC				; dummy_thread_2
 
-; 112  : void dummy_thread_2 () {
+; 113  : void dummy_thread_2 () {
 
 	npad	2
 $LN2@dummy_thre:
 
-; 113  : 	while(1) {
+; 114  : 	while(1) {
 
 	xor	eax, eax
 	cmp	eax, 1
 	je	SHORT $LN1@dummy_thre
 
-; 114  : 	}
+; 115  : 	}
 
 	jmp	SHORT $LN2@dummy_thre
 $LN1@dummy_thre:
 
-; 115  : }
+; 116  : }
 
 	fatret	0
 ?dummy_thread_2@@YAXXZ ENDP				; dummy_thread_2
@@ -276,18 +281,18 @@ _TEXT	SEGMENT
 size$ = 48
 ??_U@YAPEAX_K@Z PROC					; operator new[]
 
-; 104  : void* __cdecl operator new[] (size_t size) {
+; 105  : void* __cdecl operator new[] (size_t size) {
 
 $LN3:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 40					; 00000028H
 
-; 105  : 	return malloc(size);
+; 106  : 	return malloc(size);
 
 	mov	ecx, DWORD PTR size$[rsp]
 	call	?malloc@@YAPEAXI@Z			; malloc
 
-; 106  : }
+; 107  : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -300,24 +305,24 @@ v$ = 48
 p$ = 56
 ?timer_callback@@YAX_KPEAX@Z PROC			; timer_callback
 
-; 85   : void timer_callback (size_t v, void* p) {
+; 86   : void timer_callback (size_t v, void* p) {
 
 $LN3:
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 40					; 00000028H
 
-; 86   : 	printf ("Timer fired\n");
+; 87   : 	printf ("Timer fired\n");
 
-	lea	rcx, OFFSET FLAT:$SG7998
+	lea	rcx, OFFSET FLAT:$SG8070
 	call	?printf@@YAXPEBDZZ			; printf
 
-; 87   : 	interrupt_end(2);
+; 88   : 	interrupt_end(2);
 
 	mov	ecx, 2
 	call	?interrupt_end@@YAXI@Z			; interrupt_end
 
-; 88   : }
+; 89   : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -329,18 +334,18 @@ _TEXT	SEGMENT
 p$ = 48
 ??3@YAXPEAX@Z PROC					; operator delete
 
-; 108  : void __cdecl operator delete (void* p) {
+; 109  : void __cdecl operator delete (void* p) {
 
 $LN3:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 40					; 00000028H
 
-; 109  : 	mfree(p);
+; 110  : 	mfree(p);
 
 	mov	rcx, QWORD PTR p$[rsp]
 	call	?mfree@@YAXPEAX@Z			; mfree
 
-; 110  : }
+; 111  : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -352,18 +357,18 @@ _TEXT	SEGMENT
 size$ = 48
 ??2@YAPEAX_K@Z PROC					; operator new
 
-; 100  : void* __cdecl ::operator new(size_t size) {
+; 101  : void* __cdecl ::operator new(size_t size) {
 
 $LN3:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 40					; 00000028H
 
-; 101  : 	return malloc(size);
+; 102  : 	return malloc(size);
 
 	mov	ecx, DWORD PTR size$[rsp]
 	call	?malloc@@YAPEAXI@Z			; malloc
 
-; 102  : }
+; 103  : }
 
 	add	rsp, 40					; 00000028H
 	ret	0

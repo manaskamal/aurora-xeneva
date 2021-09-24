@@ -35,6 +35,7 @@ typedef struct _QuWindow_ {
 	int drag_y;
 	bool draggable;
 	bool visible;
+	bool invalidate;
 	unsigned int *canvas;
 	unsigned short owner_id;
 	bool decorate;
@@ -55,5 +56,7 @@ extern void QuWindowDraw (QuWindow* win);
 extern void QuWindowAddMinimizeButton (QuWindow *win);
 extern void QuWindowAddMaximizeButton (QuWindow *win);
 extern void QuWindowAddCloseButton(QuWindow *win);
+extern void QuWindowUpdateTitlebar (bool value);
+extern bool QuWindowGetUpdateTitlebar();
 
 #endif

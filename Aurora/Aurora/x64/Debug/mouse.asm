@@ -504,7 +504,7 @@ $LN8@mouse_hand:
 	mov	DWORD PTR ?mouse_button_state@@3IA, 0	; mouse_button_state
 
 ; 128  : 
-; 129  : 		if (mouse_byte[0] & 0x01) {
+; 129  : 		if (mouse_byte[0] & 0x01) {    //0x01 for PS/2
 
 	mov	eax, 1
 	imul	rax, 0
@@ -527,7 +527,7 @@ $LN8@mouse_hand:
 	or	eax, 1
 	mov	DWORD PTR ?mouse_button_state@@3IA, eax	; mouse_button_state
 
-; 132  : 		} else
+; 132  : 		}else
 
 	jmp	SHORT $LN6@mouse_hand
 $LN7@mouse_hand:

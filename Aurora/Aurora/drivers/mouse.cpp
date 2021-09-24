@@ -126,10 +126,10 @@ finish_packet:
 
 		mouse_button_state = 0;
 
-		if (mouse_byte[0] & 0x01) {
+		if (mouse_byte[0] & 0x01) {    //0x01 for PS/2
 			curr_button[0] = 1;
 			mouse_button_state |= 1;
-		} else
+		}else
 			curr_button[0] = 0;
 
 		if (mouse_byte[0] & 0x02) {

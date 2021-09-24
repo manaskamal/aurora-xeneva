@@ -46,8 +46,6 @@ int main (int argc, char* argv[]) {
 	QuWallpaperDraw (img);
 	QuWallpaperPresent ();
 	
-	
-	
 	//! Initialize Taskbar Manager
 	QuTaskbarInit();
 

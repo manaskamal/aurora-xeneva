@@ -15,6 +15,7 @@
 #include <canvas.h>
 #include <sys\_ipc.h>
 #include <sys\_term.h>
+#include <psf\psf.h>
 
 #define QU_CHANNEL_ADDRESS  0xFFFFFD0000000000
 uint32_t * QuCanvasAddress = NULL;
@@ -39,8 +40,10 @@ void QuChannelGet (QuMessage *msg) {
 }
 
 void QuRegisterApplication () {
+	//psf_register_font_lib();
 	canvas_set_double_buffer(false);
 	create_canvas();
+	
 	app_id = get_current_pid();
 	QuMessage qmsg;
 	//qmsg.type = QU_CODE_WIN_CREATE;

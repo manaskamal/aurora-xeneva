@@ -8,10 +8,11 @@
 
 #include <QuWindow\QuList.h>
 #include <stdlib.h>
+#include <stdint.h>
 
 QuList* QuListInit() {
 	QuList *list = (QuList*)malloc(sizeof(QuList));
-	list->entry_current = nullptr;
+	list->entry_current = NULL;
 	list->pointer = 0;
 	return list;
 }
@@ -19,8 +20,8 @@ QuList* QuListInit() {
 
 void QuListAdd(QuList* list, void* data) {
 	dataentry *current_data = (dataentry*)malloc(sizeof(dataentry));
-	current_data->next = nullptr;
-	current_data->prev = nullptr;
+	current_data->next = NULL;
+	current_data->prev = NULL;
 	current_data->data = data;
 	//print_text ("[Winlist_Add]: Current data address -> %x\n", current_data);
 
@@ -76,7 +77,7 @@ void* QuListRemove(QuList* list, unsigned int index) {
 	if (index == 0)
 		list->entry_current = current_node->next;
 
-	//dfree(current_node);
+	free(current_node);
 
 	list->pointer--;
 

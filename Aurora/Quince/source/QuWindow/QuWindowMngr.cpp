@@ -29,7 +29,7 @@ QuList* WindowList = NULL;
 QuWindow * focus_win = NULL;
 QuWindow * draggable_win = NULL;
 QuWindow * top_window = NULL;
-
+bool UpdateWindows = false;
 #define abs(a)  (((a) < 0)?-(a):(a))
 
 void QuWindowMngr_Initialize () {
@@ -78,6 +78,7 @@ void QuWindowMngr_MoveFront (QuWindow *win) {
 		QuWindowMngr_Remove(win);
 		QuWindowMngr_Add(win);
 		top_window = win;
+		//QuWindowUpdateTitlebar(true);
 	}
 }
 
@@ -102,11 +103,27 @@ void QuWindowMngr_DrawAll () {
 
 void QuWindowMngr_DisplayWindow() {
 	if (WindowList->pointer > 0) {
-		for (int i = 0; i < WindowList->pointer; i++) {
-			QuWindow* _win = (QuWindow*)QuListGetAt(WindowList, i);
-			canvas_screen_update(_win->x, _win->y, _win->width, _win->height);
-		}
+		if (UpdateWindows){
+			for (int i = 0; i < WindowList->pointer; i++) {
+				QuWindow* _win = (QuWindow*)QuListGetAt(WindowList, i);
+				if (_win->invalidate){
+					canvas_screen_update(_win->x, _win->y, _win->width, _win->height);	
+					_win->invalidate = false;
+				}
+				
+			}
+		   UpdateWindows = false;
+		}		
 	} 
+}
+
+
+void QuWindowMngr_UpdateWindow (bool value) {
+	UpdateWindows = value;
+}
+
+bool QuWindowMngr_GetUpdateBit() {
+	return UpdateWindows;
 }
 
 

@@ -11,9 +11,18 @@
 #include <QuBase.h>
 #include <stdlib.h>
 #include <QuPanel.h>
+#include <acrylic.h>
+#include <string.h>
+#include <color.h>
 
 
 QuWindow* root_win = NULL;
+
+
+uint32_t title_bar_colors[23] = {0xff59584f, 0xff5f5d53, 0xff58564e, 0xff57554d, 0xff56544c, 0xff55534b, \
+    0xff54524a, 0xff525049, 0xff514f48, 0xff504e47, 0xff4e4c45, 0xff4e4c45, \
+        0xff4c4a44, 0xff4b4943, 0xff4a4842, 0xff484741, 0xff46453f, 0xff45443f, \
+        0xff44433e, 0xff43423d, 0xff42413c, 0xff403f3a, 0xff3f3e3a };
 
 
 void QuCreateWindow (int x, int y, int w, int h) {

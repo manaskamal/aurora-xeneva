@@ -23,4 +23,6 @@ extern QuWindow* QuWindowMngrGetFocused ();
 extern void QuWindowMngr_HandleMouse (int x, int y, bool clicked);
 extern void QuWindowMngr_HandleMouseUp (int x, int y);
 extern void QuWindowMngr_DisplayWindow();
+extern void QuWindowMngr_UpdateWindow (bool value);
+extern bool QuWindowMngr_GetUpdateBit();
 #endif

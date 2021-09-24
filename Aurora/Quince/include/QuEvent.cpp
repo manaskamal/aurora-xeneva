@@ -30,6 +30,7 @@
 #include <canvas.h>
 #include <color.h>
 #include <sys\_sleep.h>
+#include <acrylic.h>
 
 
 int x , y = 100;
@@ -79,12 +80,27 @@ void QuEventLoop() {
 	mouse_message_t m_pack;
 	QuMessage qu_msg;
 	sys_time time;
-	uint32_t next_tick = sys_get_system_tick();
+	uint32_t next_tick = 0; //sys_get_system_tick();
+	uint32_t frame_time = 0;
+	uint32_t diff_time = 0;
 	int loops;
+	char fps_str[60];
 	while(1) {
 		message_receive(&msg);
 		_ipc_mouse_dispatch (&m_pack);
 		sys_get_current_time(&time);
+		frame_time = sys_get_system_tick();
+		diff_time = frame_time - next_tick;
+
+			
+		if (diff_time > 15){
+			QuWindowMngr_DrawAll();	
+			QuWindowMngr_DisplayWindow();
+			next_tick = sys_get_system_tick();
+			frame_time = 0;
+		}
+	
+
 
 		//!System Messages
 		if (m_pack.type == _MOUSE_MOVE) {
@@ -96,6 +112,8 @@ void QuEventLoop() {
 			//! Mouse Clicked Bit
 			if (m_pack.dword4 & 0x01) {
 				mouse_down = true;
+			
+				
 			}
 
             QuWindowMngr_HandleMouse(m_pack.dword, m_pack.dword2, mouse_down);
@@ -141,14 +159,6 @@ void QuEventLoop() {
 		}
 
 		//! Here We Prepare the frame that will be displayed
-		loops = 0;
-		QuWindowMngr_DrawAll();	
-		while (sys_get_system_tick() > next_tick && loops < max_frame_skip){
-				
-			QuWindowMngr_DisplayWindow();
-			next_tick += skip_ticks;
-			loops++;
-		}
 	
 	
 		if (QuCanvasGetUpdateBit()) {
@@ -157,6 +167,6 @@ void QuEventLoop() {
 		}
 
 
-	sys_sleep(16);
+		sys_sleep(16);
 	}
 }

@@ -226,6 +226,7 @@
     <ClInclude Include="..\include\drivers\svga\vmmouse_defs.h" />
     <ClInclude Include="..\include\drivers\svga\vmsvga.h" />
     <ClInclude Include="..\include\drivers\usb\xhci.h" />
+    <ClInclude Include="..\include\drivers\vbox.h" />
     <ClInclude Include="..\include\drivers\vga.h" />
     <ClInclude Include="..\include\drivers\vmmouse.h" />
     <ClInclude Include="..\include\drvmngr.h" />
@@ -293,6 +294,7 @@
     <ClCompile Include="drivers\svga\vmsvga.cpp" />
     <ClCompile Include="drivers\svga\vm_backdoor.cpp" />
     <ClCompile Include="drivers\usb\xhci.cpp" />
+    <ClCompile Include="drivers\vbox.cpp" />
     <ClCompile Include="drivers\vga.cpp" />
     <ClCompile Include="drvmngr.cpp" />
     <ClCompile Include="fs\fat32.cpp" />

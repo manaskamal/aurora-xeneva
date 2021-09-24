@@ -1,17 +1,17 @@
-﻿Build started 24-09-2021 ৰাতিপু 12:08:36.
+﻿Build started 24-09-2021 আবেলি 6:33:01.
      1>Project "E:\Xeneva Project\Xeneva\xnlib\xnclib\xnclib.vcxproj" on node 2 (Rebuild target(s)).
      1>_NASM:
          sys\callback.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmpe82859af165e484a8dbae30d1f1324a8.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp441def8a7b9148249583beb52e37a4da.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\callback.obj"  "E:\Xeneva Project\Xeneva\xnlib\xnclib\sys\callback.asm"
      1>E:\Xeneva Project\Xeneva\xnlib\xnclib\sys\callback.asm(98): warning : label alone on a line without a colon might be in error
        _NASM:
          _fast_copy.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp66842ef39bdb4600ba2c0a4008610692.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp52f3472c253349d0bd1fdb147a45206f.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\_fast_copy.obj"  "E:\Xeneva Project\Xeneva\xnlib\xnclib\_fast_copy.asm"
        _NASM:
          crt0.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp14314099ff49470781ff7fca35049c4c.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp0013c566149c40a3ad1948174ff943f5.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\crt0.obj"  "E:\Xeneva Project\Xeneva\xnlib\xnclib\crt0.asm"
        ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\xnlib\xnclib" /I"E:\Xeneva Project\Xeneva\xnlib\xnclib\c++" /Zi /nologo /W4 /WX- /sdl- /MP /Od /D ARCH_X64 /D _MBCS /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt c++\ios.cpp c++\iostream.cpp c++\istream.cpp c++\memory.cpp c++\ostream.cpp c++\_string.cpp heap.cpp initializer.cpp math.cpp stdio.cpp string.cpp sys\stdlib.cpp
@@ -122,4 +122,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:02.48
+Time Elapsed 00:00:03.95
