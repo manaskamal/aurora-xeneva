@@ -15,6 +15,7 @@
 #include <sys\_wait.h>
 #include <sys\_ipc.h>
 #include <sys\_process.h>
+#include <sys\ioquery.h>
 #include <sys\mmap.h>
 #include <string.h>
 #include <canvas.h>
@@ -45,20 +46,24 @@ int main (int argc, char* argv[]) {
 	Image * img = QuWallpaperInit("a:nature.jpg");
 	QuWallpaperDraw (img);
 	QuWallpaperPresent ();
-	
+
+
 	//! Initialize Taskbar Manager
-	QuTaskbarInit();
+	//QuTaskbarInit();
 
 	//! Initialize the Window Manager
 	QuWindowMngr_Initialize();
 
-	//! Initialize QuCanvas Manager
+	////! Initialize QuCanvas Manager
 	QuCanvasMngr_Initialize();
 
 	canvas_screen_update(0,0,w, h);
 
     //! Initialize Cursor Manager
 	QuCursorInit(0, 0, QU_CURSOR_ARROW);
+
+	////!Start the mouse
+	ioquery (IO_QUERY_MOUSE, MOUSE_IOCODE_ENABLE,NULL);
 	//! Execute the Event Loop
 	QuEventLoop();
 }

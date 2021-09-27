@@ -23,11 +23,11 @@ uint8_t *font_data = nullptr;
 
 
 void psf_register_font_lib (){
-	font_data = (uint8_t*)malloc(4096);
+	valloc(0xFFFFFFFFA0000000);
+	font_data = (uint8_t*)0xFFFFFFFFA0000000;
 	FILE file;
 	sys_open_file (&file, "a:font.psf");
 	sys_read_file (&file,font_data,file.size);
-	sys_print_text ("Font opened\n");
 }
 
 //! Put a character to console output

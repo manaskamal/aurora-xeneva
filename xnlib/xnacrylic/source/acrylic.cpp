@@ -13,6 +13,7 @@
 #include <image.h>
 #include <color.h>
 #include <psf\psf.h>
+#include <arrayfont.h>
 
 void acrylic_draw_rect_filled (unsigned x, unsigned y, unsigned w, unsigned h, uint32_t col) {
 	for (int i = 0; i < w; i++) {
@@ -69,4 +70,25 @@ void acrylic_draw_image (Image *img, unsigned x, unsigned y) {
 
 void acrylic_draw_string (unsigned x, unsigned y, char *text, uint32_t b_color, uint32_t f_color) {
 	psf_draw_string (text, x, y, f_color, b_color);
+}
+
+
+void acrylic_draw_arr_font (unsigned x, unsigned y, char c, uint32_t color) {
+	uint8_t shift_line;
+	for (int i = 0; i < 12; i++) { //h
+		shift_line = font_array[i * 128 + c];
+		
+		for (int j = 0; j < 8; j++) { //w
+
+			if (shift_line & 0x80)
+				canvas_get_framebuffer()[(i + y) * canvas_get_width() + (j + x)] = color;
+			shift_line <<= 1;
+		}
+	}
+
+}
+
+void acrylic_draw_arr_string (unsigned x, unsigned y, char *text, uint32_t color) {
+	for (; *text; x += 8)
+		acrylic_draw_arr_font(x, y, *(text)++, color);
 }

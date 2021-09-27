@@ -150,7 +150,7 @@ thread_t* create_user_thread (void (*entry) (void*),uint64_t stack,uint64_t cr3,
 	t->r13 = 0;
 	t->r14 = 0;
 	t->r15 = 0;
-	t->kern_esp = (uint64_t)pmmngr_alloc();
+	t->kern_esp = (uint64_t)pmmngr_alloc() + 4096;
 	t->ds = 0x23;
 	t->es = 0x23;
 	t->fs = 0x23;
@@ -230,7 +230,6 @@ end:
  **/
 void scheduler_isr (size_t v, void* param) {
 	x64_cli();
-	system_tick++;
 	//interrupt_stack_frame *frame = (interrupt_stack_frame*)param;
 	if (scheduler_enable == false)
 		goto sched_end;
@@ -240,6 +239,8 @@ void scheduler_isr (size_t v, void* param) {
 		current_thread->cr3 = x64_read_cr3();
 		if (current_thread->priviledge == THREAD_LEVEL_USER)
 			current_thread->kern_esp = get_kernel_tss()->rsp[0];
+
+		system_tick++;
 #ifdef USE_APIC
 		apic_local_eoi();
 #endif
@@ -251,7 +252,6 @@ void scheduler_isr (size_t v, void* param) {
 			get_kernel_tss()->rsp[0] = current_thread->kern_esp;
 		}
 		
-		debug_serial ("Switching tasssssskkk\n");
 		mutex_unlock (scheduler_mutex);
 		execute_idle (current_thread,get_kernel_tss());
 	}

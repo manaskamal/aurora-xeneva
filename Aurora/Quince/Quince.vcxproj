@@ -171,6 +171,7 @@
     <ClInclude Include="include\QuCode.h" />
     <ClInclude Include="include\QuCursor.h" />
     <ClInclude Include="include\QuEvent.h" />
+    <ClInclude Include="include\QuMessageStore.h" />
     <ClInclude Include="include\QuRect.h" />
     <ClInclude Include="include\QuWidget\QuTaskbar.h" />
     <ClInclude Include="include\QuWidget\QuWallpaper.h" />

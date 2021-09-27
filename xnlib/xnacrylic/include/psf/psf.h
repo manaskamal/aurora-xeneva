@@ -14,7 +14,6 @@
 
 #include <stdint.h>
 
-#pragma pack (push, 1)
 typedef struct {
     uint32_t magic;
     uint32_t version;
@@ -26,7 +25,6 @@ typedef struct {
     uint32_t width;
     uint8_t glyphs;
 }psf2_t;
-#pragma pack (pop)
 
 extern void psf_register_font_lib ();
 extern void psf_draw_string (const char *s,int pos_x, int pos_y, uint32_t f_color, uint32_t b_color);

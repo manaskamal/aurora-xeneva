@@ -161,6 +161,7 @@
     <ClInclude Include="sys\_exit.h" />
     <ClInclude Include="sys\_file.h" />
     <ClInclude Include="sys\_ipc.h" />
+    <ClInclude Include="sys\_kybrd.h" />
     <ClInclude Include="sys\_process.h" />
     <ClInclude Include="sys\_sleep.h" />
     <ClInclude Include="sys\_term.h" />

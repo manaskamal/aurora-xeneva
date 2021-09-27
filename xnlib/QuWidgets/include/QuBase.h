@@ -19,6 +19,7 @@
 #define QU_CODE_WIN_MINIMIZE 102
 #define QU_CODE_WIN_MAXIMIZE 103
 #define QU_CODE_DIRTY_UPDATE 104
+#define QU_CODE_WIN_CONFIG   105
 
 //! Codes that are sent by Quince to clients
 #define QU_CANVAS_READY  200
@@ -48,6 +49,12 @@ typedef struct __QuMessage__ {
 }QuMessage;
 
 
+typedef struct _QuObject_ {
+	int x;
+	int y;
+	int w;
+	int h;
+}QuObject;
 
 extern void QuChannelPut (QuMessage *msg, uint16_t to_id);
 extern void QuChannelGet (QuMessage *msg);

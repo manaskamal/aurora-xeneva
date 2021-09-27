@@ -135,6 +135,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\acrylic.h" />
+    <ClInclude Include="include\arrayfont.h" />
     <ClInclude Include="include\canvas.h" />
     <ClInclude Include="include\color.h" />
     <ClInclude Include="include\image.h" />

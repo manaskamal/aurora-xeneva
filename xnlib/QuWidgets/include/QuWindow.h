@@ -14,8 +14,9 @@
 #include <QuBase.h>
 #include <QuUtils\QuList.h>
 
-
-
+#define QU_WIN_CONFIG_AUTO_INVALIDATE 6
+#define QU_WIN_SET_SIZE 7
+#define QU_WIN_AUTO_INVALIDATE_RGN 8
 
 typedef struct _QU_WIN_ {
 	int x;
@@ -45,4 +46,7 @@ extern void QuWindowSetBound (int width, int height);
 extern void QuWindowAdd (QuWidget* wid);
 extern void QuWindowShow();
 extern void QuWindowMove (int x, int y);
+extern void QuWindowSetAutoInvalidation (bool value);
+extern void QuWindowSetAutoInvalidateRegion (int x, int y, int w, int h);
+extern void QuWindowSetSize (int width, int height);
 #endif

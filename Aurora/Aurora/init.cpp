@@ -127,7 +127,6 @@ void _kmain (KERNEL_BOOT_INFO *info) {
 	initialize_rtc();  
 	hda_initialize();
 	e1000_initialize();  //<< receiver not working
-	//initialize_guest_vbox();
 
 
     ata_initialize();
@@ -140,17 +139,13 @@ void _kmain (KERNEL_BOOT_INFO *info) {
 	dwm_ipc_init();
 
 	driver_mngr_initialize(info);
-	//x64_cli();
+
 #ifdef ARCH_X64
 	initialize_scheduler();
-	//create_process ("dwm.exe","dwm",20);
-	//! task list should be more than 4 or less than 4 not  
-	//create_process ("dwm2.exe", "dwm2", 1);
 	create_process ("a:xshell.exe","shell",0, NULL);
 	create_process ("a:quince.exe","quince",0, NULL);
-	create_process ("a:dwm3.exe", "dwm3", 0, NULL);
-	create_process ("a:dwm2.exe", "dwm2", 0, NULL);
-	//create_process ("a:dwm3.exe", "dwm3", 0, NULL);
+	create_process ("a:dwm2.exe", "dwm3", 0, NULL);
+	create_process ("a:dwm2.exe", "dwm3", 0, NULL);
 	scheduler_start();
 #endif
 	while(1) {

@@ -40,10 +40,11 @@ void QuChannelGet (QuMessage *msg) {
 }
 
 void QuRegisterApplication () {
-	//psf_register_font_lib();
 	canvas_set_double_buffer(false);
 	create_canvas();
-	
+	//psf_register_font_lib();
+
+
 	app_id = get_current_pid();
 	QuMessage qmsg;
 	//qmsg.type = QU_CODE_WIN_CREATE;

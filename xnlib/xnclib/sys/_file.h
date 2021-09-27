@@ -15,7 +15,7 @@
 #include <stdint.h>
 
 typedef struct _file_ {
-	char filename[32];
+	//char filename[32];
 	uint32_t  id;
 	uint32_t  size;
 	uint32_t  eof;

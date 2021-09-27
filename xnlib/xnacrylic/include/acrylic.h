@@ -26,5 +26,6 @@ extern void acrylic_draw_rect_unfilled (int x, int y, int width, int height, uin
 extern void acrylic_draw_filled_circle (int o_x, int o_y, int radius, uint32_t fill_color);
 extern void acrylic_draw_image (Image *img, unsigned x, unsigned y);
 extern void acrylic_draw_string (unsigned x, unsigned y, char *text, uint32_t b_color, uint32_t f_color);
-
+extern void acrylic_draw_arr_font (unsigned x, unsigned y, char c, uint32_t color);
+extern void acrylic_draw_arr_string (unsigned x, unsigned y, char *text, uint32_t color);
 #endif

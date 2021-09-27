@@ -37,8 +37,6 @@ current_thread DQ 01H DUP (?)
 _BSS	ENDS
 CONST	SEGMENT
 $SG3295	DB	'Idle', 00H
-	ORG $+3
-$SG3316	DB	'Switching tasssssskkk', 0aH, 00H
 CONST	ENDS
 PUBLIC	?initialize_scheduler@@YAXXZ			; initialize_scheduler
 PUBLIC	?scheduler_start@@YAXXZ				; scheduler_start
@@ -79,7 +77,6 @@ EXTRN	?initialize_list@@YAPEAU_list_@@XZ:PROC		; initialize_list
 EXTRN	?list_add@@YAXPEAU_list_@@PEAX@Z:PROC		; list_add
 EXTRN	?list_remove@@YAPEAXPEAU_list_@@I@Z:PROC	; list_remove
 EXTRN	?list_get_at@@YAPEAXPEAU_list_@@I@Z:PROC	; list_get_at
-EXTRN	?debug_serial@@YAXPEAD@Z:PROC			; debug_serial
 EXTRN	x64_hlt:PROC
 EXTRN	force_sched_apic:PROC
 pdata	SEGMENT
@@ -90,7 +87,7 @@ $pdata$?scheduler_start@@YAXXZ DD imagerel $LN3
 	DD	imagerel $LN3+51
 	DD	imagerel $unwind$?scheduler_start@@YAXXZ
 $pdata$?create_user_thread@@YAPEAU_thread_@@P6AXPEAX@Z_K2QEADE@Z DD imagerel $LN3
-	DD	imagerel $LN3+618
+	DD	imagerel $LN3+624
 	DD	imagerel $unwind$?create_user_thread@@YAPEAU_thread_@@P6AXPEAX@Z_K2QEADE@Z
 $pdata$?create_kthread@@YAPEAU_thread_@@P6AXXZ_K1QEADE@Z DD imagerel $LN3
 	DD	imagerel $LN3+549
@@ -123,7 +120,7 @@ $pdata$?next_task@@YAXXZ DD imagerel $LN9
 	DD	imagerel $LN9+147
 	DD	imagerel $unwind$?next_task@@YAXXZ
 $pdata$?scheduler_isr@@YAX_KPEAX@Z DD imagerel $LN8
-	DD	imagerel $LN8+281
+	DD	imagerel $LN8+269
 	DD	imagerel $unwind$?scheduler_isr@@YAX_KPEAX@Z
 pdata	ENDS
 xdata	SEGMENT
@@ -174,32 +171,26 @@ $LN8:
 
 	call	x64_cli
 
-; 233  : 	system_tick++;
-
-	mov	eax, DWORD PTR ?system_tick@@3IA	; system_tick
-	inc	eax
-	mov	DWORD PTR ?system_tick@@3IA, eax	; system_tick
-
-; 234  : 	//interrupt_stack_frame *frame = (interrupt_stack_frame*)param;
-; 235  : 	if (scheduler_enable == false)
+; 233  : 	//interrupt_stack_frame *frame = (interrupt_stack_frame*)param;
+; 234  : 	if (scheduler_enable == false)
 
 	movzx	eax, BYTE PTR ?scheduler_enable@@3_NA	; scheduler_enable
 	test	eax, eax
 	jne	SHORT $LN5@scheduler_
 
-; 236  : 		goto sched_end;
+; 235  : 		goto sched_end;
 
 	jmp	$LN4@scheduler_
 	jmp	$sched_end$9
 $LN5@scheduler_:
 
-; 237  : 	mutex_lock (scheduler_mutex);
+; 236  : 	mutex_lock (scheduler_mutex);
 
 	mov	rcx, QWORD PTR ?scheduler_mutex@@3PEAUmutex_t@@EA ; scheduler_mutex
 	call	?mutex_lock@@YAXPEAUmutex_t@@@Z		; mutex_lock
 
-; 238  :    
-; 239  : 	if (save_context(current_thread,get_kernel_tss()) == 0) {
+; 237  :    
+; 238  : 	if (save_context(current_thread,get_kernel_tss()) == 0) {
 
 	call	get_kernel_tss
 	mov	rdx, rax
@@ -208,20 +199,20 @@ $LN5@scheduler_:
 	test	eax, eax
 	jne	$LN3@scheduler_
 
-; 240  : 		current_thread->cr3 = x64_read_cr3();
+; 239  : 		current_thread->cr3 = x64_read_cr3();
 
 	call	x64_read_cr3
 	mov	rcx, QWORD PTR current_thread
 	mov	QWORD PTR [rcx+192], rax
 
-; 241  : 		if (current_thread->priviledge == THREAD_LEVEL_USER)
+; 240  : 		if (current_thread->priviledge == THREAD_LEVEL_USER)
 
 	mov	rax, QWORD PTR current_thread
 	movzx	eax, BYTE PTR [rax+228]
 	cmp	eax, 2
 	jne	SHORT $LN2@scheduler_
 
-; 242  : 			current_thread->kern_esp = get_kernel_tss()->rsp[0];
+; 241  : 			current_thread->kern_esp = get_kernel_tss()->rsp[0];
 
 	call	get_kernel_tss
 	mov	ecx, 8
@@ -231,27 +222,34 @@ $LN5@scheduler_:
 	mov	QWORD PTR [rdx+200], rax
 $LN2@scheduler_:
 
-; 243  : #ifdef USE_APIC
-; 244  : 		apic_local_eoi();
+; 242  : 
+; 243  : 		system_tick++;
+
+	mov	eax, DWORD PTR ?system_tick@@3IA	; system_tick
+	inc	eax
+	mov	DWORD PTR ?system_tick@@3IA, eax	; system_tick
+
+; 244  : #ifdef USE_APIC
+; 245  : 		apic_local_eoi();
 
 	call	?apic_local_eoi@@YAXXZ			; apic_local_eoi
 
-; 245  : #endif
-; 246  : #ifdef USE_PIC
-; 247  : 		interrupt_end (0);
-; 248  : #endif
-; 249  : 		next_task();
+; 246  : #endif
+; 247  : #ifdef USE_PIC
+; 248  : 		interrupt_end (0);
+; 249  : #endif
+; 250  : 		next_task();
 
 	call	?next_task@@YAXXZ			; next_task
 
-; 250  : 		if (current_thread->priviledge == THREAD_LEVEL_USER){
+; 251  : 		if (current_thread->priviledge == THREAD_LEVEL_USER){
 
 	mov	rax, QWORD PTR current_thread
 	movzx	eax, BYTE PTR [rax+228]
 	cmp	eax, 2
 	jne	SHORT $LN1@scheduler_
 
-; 251  : 			get_kernel_tss()->rsp[0] = current_thread->kern_esp;
+; 252  : 			get_kernel_tss()->rsp[0] = current_thread->kern_esp;
 
 	call	get_kernel_tss
 	mov	ecx, 8
@@ -261,13 +259,8 @@ $LN2@scheduler_:
 	mov	QWORD PTR [rax+rcx+4], rdx
 $LN1@scheduler_:
 
-; 252  : 		}
-; 253  : 		
-; 254  : 		debug_serial ("Switching tasssssskkk\n");
-
-	lea	rcx, OFFSET FLAT:$SG3316
-	call	?debug_serial@@YAXPEAD@Z		; debug_serial
-
+; 253  : 		}
+; 254  : 		
 ; 255  : 		mutex_unlock (scheduler_mutex);
 
 	mov	rcx, QWORD PTR ?scheduler_mutex@@3PEAUmutex_t@@EA ; scheduler_mutex
@@ -1483,9 +1476,10 @@ $LN3:
 	mov	rax, QWORD PTR t$[rsp]
 	mov	QWORD PTR [rax+152], 0
 
-; 153  : 	t->kern_esp = (uint64_t)pmmngr_alloc();
+; 153  : 	t->kern_esp = (uint64_t)pmmngr_alloc() + 4096;
 
 	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
+	add	rax, 4096				; 00001000H
 	mov	rcx, QWORD PTR t$[rsp]
 	mov	QWORD PTR [rcx+200], rax
 

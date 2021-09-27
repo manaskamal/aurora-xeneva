@@ -71,5 +71,8 @@
     <ClInclude Include="include\ttf\ttf.h">
       <Filter>include\ttf</Filter>
     </ClInclude>
+    <ClInclude Include="include\arrayfont.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

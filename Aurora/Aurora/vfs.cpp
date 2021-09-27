@@ -14,6 +14,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <console.h>
+#include <mm.h>
 
 
 #define MAX_FILE_DESC  256
@@ -45,6 +46,30 @@ FILE open (const char* filename) {
 
 	file = sys[device_id]->sys_open(filename);
 	return file;
+}
+
+void open_call (UFILE *f, const char* filename) {
+	FILE file;
+	unsigned char device;
+	int device_id = 0;
+
+	char* fname = (char*)filename;
+	if (filename[1] == ':') {
+		device = filename[0];
+		filename += 2;
+	}
+	if (device == 'a' || device == 'A')
+		device_id = 10;
+	else if (device =='c' || device == 'C')
+		device_id = 11;
+	file = sys[device_id]->sys_open(filename);
+	f->id = file.id;
+	f->size = file.size;
+	f->eof = file.eof;
+	f->pos = file.pos;
+	f->start_cluster = file.start_cluster;
+	f->flags = file.flags; 
+	f->status = file.status;
 }
 
 

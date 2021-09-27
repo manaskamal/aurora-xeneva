@@ -36,4 +36,6 @@ extern void QuWallpaperDraw (Image *image);
 //! @param = none
 extern void QuWallpaperPresent ();
 
+extern void QuWallpaperChange (const char* filename, uint32_t color);
+
 #endif

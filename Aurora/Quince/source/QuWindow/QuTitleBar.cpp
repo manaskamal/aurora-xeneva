@@ -62,6 +62,9 @@ void QuUpdateTitleBar (QuWindow *win) {
 }
 
 void QuWindowDrawTitlebar (QuWindow* win, unsigned x, unsigned y, unsigned w) {
+	uint32_t* lfb = (uint32_t*)0x0000600000000000;
+	uint32_t* fb = (uint32_t*)0xFFFFF00000000000;
+
 	for (int i = 0; i < 23; i++) {
 		acrylic_draw_horizontal_line (x, y + i, w, title_bar_colors[i]);
 	}
@@ -81,5 +84,5 @@ void QuWindowDrawTitlebar (QuWindow* win, unsigned x, unsigned y, unsigned w) {
 			buttons_color = RED;
 		acrylic_draw_filled_circle(to->x, to->y, 6, buttons_color);
 	}
-
+	
 }

@@ -137,5 +137,8 @@
     <ClInclude Include="include\QuCanvas\QuScreenStack.h">
       <Filter>include\QuCanvas</Filter>
     </ClInclude>
+    <ClInclude Include="include\QuMessageStore.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -34,6 +34,10 @@
 #define MOUSE_MOUSE_SCROLL_UP   0x10
 #define MOUSE_MOUSE_SCROLL_DOWN 0x20
 
+//! Mouse Code
+#define MOUSE_IOCODE_DISABLE   300
+#define MOUSE_IOCODE_ENABLE    301
+
 
 extern void initialize_mouse ();
 #endif

@@ -126,6 +126,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="include\QuBase.h" />
+    <ClInclude Include="include\QuButton.h" />
     <ClInclude Include="include\QuEventCode.h" />
     <ClInclude Include="include\QuPanel.h" />
     <ClInclude Include="include\QuRect.h" />
@@ -134,6 +135,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\QuBase.cpp" />
+    <ClCompile Include="source\QuButton.cpp" />
     <ClCompile Include="source\QuPanel.cpp" />
     <ClCompile Include="source\QuUtils\QuList.cpp" />
     <ClCompile Include="source\QuWindow.cpp" />

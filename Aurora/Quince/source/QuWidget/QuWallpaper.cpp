@@ -9,8 +9,10 @@
 ///! =================================================
 
 #include <QuWidget\QuWallpaper.h>
+#include <QuCanvas\QuCanvasMngr.h>
 #include <canvas.h>
 #include <stdlib.h>
+#include <sys\_term.h>
 #include <color.h>
 
 QuWallpaper *wallpaper;
@@ -48,6 +50,30 @@ Image* QuWallpaperInit (const char* filename) {
 	}
 	return img;
 }
+
+void QuWallpaperChange (const char* filename, uint32_t color) {
+	//wallpaper = (QuWallpaper*)malloc (sizeof(QuWallpaper));
+
+	unsigned w = canvas_get_width  ();
+	unsigned h = canvas_get_height ();
+    Image *img;
+
+	if (filename != NULL) {
+		img = LoadImage (filename,(uint8_t*) 0x0000060000000000);
+		CallJpegDecoder(img);
+	} else {
+		for (int i = 0; i < w; i++)
+			for (int j = 0; j < h; j++)
+				QuWallpaperPixel (0 + i,0 + j,color);
+		img = (Image*)malloc(sizeof(Image));
+		img->data = NULL;
+	}
+
+//	QuWallpaperDraw(img);
+	QuWallpaperPresent();
+	QuCanvasSetUpdateBit(true);
+}
+
 
 void QuWallpaperDraw (Image *img) {
 	unsigned x = 0;

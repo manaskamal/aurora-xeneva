@@ -31,7 +31,7 @@ mouse_cycle DB	01H DUP (?)
 ?mouse_button@@3HC DD 01H DUP (?)			; mouse_button
 _BSS	ENDS
 CONST	SEGMENT
-$SG6043	DB	'IOMOUSE', 00H
+$SG6068	DB	'IOMOUSE', 00H
 CONST	ENDS
 PUBLIC	?initialize_mouse@@YAXXZ			; initialize_mouse
 PUBLIC	?mouse_wait@@YAXE@Z				; mouse_wait
@@ -48,6 +48,7 @@ EXTRN	?inportb@@YAEG@Z:PROC				; inportb
 EXTRN	?outportb@@YAXGE@Z:PROC				; outportb
 EXTRN	?interrupt_end@@YAXI@Z:PROC			; interrupt_end
 EXTRN	?interrupt_set@@YAX_KP6AX0PEAX@ZE@Z:PROC	; interrupt_set
+EXTRN	?irq_mask@@YAXE_N@Z:PROC			; irq_mask
 EXTRN	?strcpy@@YAPEADPEADPEBD@Z:PROC			; strcpy
 EXTRN	?memset@@YAXPEAXEI@Z:PROC			; memset
 EXTRN	memcpy:PROC
@@ -69,7 +70,7 @@ mouse	DQ	01H DUP (?)
 _BSS	ENDS
 pdata	SEGMENT
 $pdata$?initialize_mouse@@YAXXZ DD imagerel $LN3
-	DD	imagerel $LN3+186
+	DD	imagerel $LN3+195
 	DD	imagerel $unwind$?initialize_mouse@@YAXXZ
 pdata	ENDS
 ;	COMDAT pdata
@@ -94,6 +95,9 @@ $pdata$?left_button_up@@YAHXZ DD imagerel $LN5
 $pdata$?mouse_handler@@YAX_KPEAX@Z DD imagerel $LN28
 	DD	imagerel $LN28+1119
 	DD	imagerel $unwind$?mouse_handler@@YAX_KPEAX@Z
+$pdata$?mouse_ioquery@@YAHHPEAX@Z DD imagerel $LN8
+	DD	imagerel $LN8+73
+	DD	imagerel $unwind$?mouse_ioquery@@YAHHPEAX@Z
 $pdata$?mouse_register_device@@YAXXZ DD imagerel $LN3
 	DD	imagerel $LN3+109
 	DD	imagerel $unwind$?mouse_register_device@@YAXXZ
@@ -119,6 +123,8 @@ $unwind$?left_button_up@@YAHXZ DD 010401H
 	DD	02204H
 $unwind$?mouse_handler@@YAX_KPEAX@Z DD 010e01H
 	DD	0820eH
+$unwind$?mouse_ioquery@@YAHHPEAX@Z DD 010d01H
+	DD	0620dH
 $unwind$?mouse_register_device@@YAXXZ DD 010401H
 	DD	06204H
 xdata	ENDS
@@ -128,51 +134,51 @@ _TEXT	SEGMENT
 mouse_file$ = 32
 ?mouse_register_device@@YAXXZ PROC			; mouse_register_device
 
-; 191  : void mouse_register_device () {
+; 202  : void mouse_register_device () {
 
 $LN3:
 	sub	rsp, 56					; 00000038H
 
-; 192  : 	file_system_t *mouse_file = (file_system_t*)pmmngr_alloc();
+; 203  : 	file_system_t *mouse_file = (file_system_t*)pmmngr_alloc();
 
 	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
 	mov	QWORD PTR mouse_file$[rsp], rax
 
-; 193  : 	strcpy (mouse_file->name, "IOMOUSE");
+; 204  : 	strcpy (mouse_file->name, "IOMOUSE");
 
 	mov	rax, QWORD PTR mouse_file$[rsp]
-	lea	rdx, OFFSET FLAT:$SG6043
+	lea	rdx, OFFSET FLAT:$SG6068
 	mov	rcx, rax
 	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
 
-; 194  : 	mouse_file->sys_open = NULL;
+; 205  : 	mouse_file->sys_open = NULL;
 
 	mov	rax, QWORD PTR mouse_file$[rsp]
 	mov	QWORD PTR [rax+8], 0
 
-; 195  : 	mouse_file->sys_read = NULL;
+; 206  : 	mouse_file->sys_read = NULL;
 
 	mov	rax, QWORD PTR mouse_file$[rsp]
 	mov	QWORD PTR [rax+16], 0
 
-; 196  : 	mouse_file->sys_read_blk = NULL;
+; 207  : 	mouse_file->sys_read_blk = NULL;
 
 	mov	rax, QWORD PTR mouse_file$[rsp]
 	mov	QWORD PTR [rax+24], 0
 
-; 197  : 	mouse_file->ioquery = mouse_ioquery;
+; 208  : 	mouse_file->ioquery = mouse_ioquery;
 
 	mov	rax, QWORD PTR mouse_file$[rsp]
 	lea	rcx, OFFSET FLAT:?mouse_ioquery@@YAHHPEAX@Z ; mouse_ioquery
 	mov	QWORD PTR [rax+32], rcx
 
-; 198  : 	vfs_register (3,mouse_file);
+; 209  : 	vfs_register (3,mouse_file);
 
 	mov	rdx, QWORD PTR mouse_file$[rsp]
 	mov	ecx, 3
 	call	?vfs_register@@YAXHPEAU_file_system_@@@Z ; vfs_register
 
-; 199  : }
+; 210  : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -181,21 +187,62 @@ _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\drivers\mouse.cpp
 _TEXT	SEGMENT
-code$ = 8
-arg$ = 16
+tv64 = 32
+code$ = 64
+arg$ = 72
 ?mouse_ioquery@@YAHHPEAX@Z PROC				; mouse_ioquery
 
 ; 183  : int mouse_ioquery (int code, void* arg) {
 
+$LN8:
 	mov	QWORD PTR [rsp+16], rdx
 	mov	DWORD PTR [rsp+8], ecx
+	sub	rsp, 56					; 00000038H
 
-; 184  : 	return 1;
+; 184  : 	switch (code) {
+
+	mov	eax, DWORD PTR code$[rsp]
+	mov	DWORD PTR tv64[rsp], eax
+	cmp	DWORD PTR tv64[rsp], 300		; 0000012cH
+	je	SHORT $LN3@mouse_ioqu
+	cmp	DWORD PTR tv64[rsp], 301		; 0000012dH
+	je	SHORT $LN2@mouse_ioqu
+	jmp	SHORT $LN1@mouse_ioqu
+$LN3@mouse_ioqu:
+
+; 185  : 		case MOUSE_IOCODE_DISABLE:
+; 186  : 			irq_mask(12,true);
+
+	mov	dl, 1
+	mov	cl, 12
+	call	?irq_mask@@YAXE_N@Z			; irq_mask
+
+; 187  : 			break;
+
+	jmp	SHORT $LN4@mouse_ioqu
+$LN2@mouse_ioqu:
+
+; 188  : 		case MOUSE_IOCODE_ENABLE:
+; 189  : 			irq_mask(12, false);
+
+	xor	edx, edx
+	mov	cl, 12
+	call	?irq_mask@@YAXE_N@Z			; irq_mask
+$LN1@mouse_ioqu:
+$LN4@mouse_ioqu:
+
+; 190  : 			break;
+; 191  : 		default:
+; 192  : 			break;
+; 193  : 	}
+; 194  : 
+; 195  : 	return 1;
 
 	mov	eax, 1
 
-; 185  : }
+; 196  : }
 
+	add	rsp, 56					; 00000038H
 	ret	0
 ?mouse_ioquery@@YAHHPEAX@Z ENDP				; mouse_ioquery
 _TEXT	ENDS
@@ -981,56 +1028,56 @@ _TEXT	SEGMENT
 status$ = 32
 ?initialize_mouse@@YAXXZ PROC				; initialize_mouse
 
-; 201  : void initialize_mouse () {
+; 212  : void initialize_mouse () {
 
 $LN3:
 	sub	rsp, 56					; 00000038H
 
-; 202  : 	mouse_cycle = 0;
+; 213  : 	mouse_cycle = 0;
 
 	mov	BYTE PTR mouse_cycle, 0
 
-; 203  : 	mouse_x = 0;
+; 214  : 	mouse_x = 0;
 
 	mov	DWORD PTR ?mouse_x@@3HA, 0		; mouse_x
 
-; 204  : 	mouse_y = 0;
+; 215  : 	mouse_y = 0;
 
 	mov	DWORD PTR ?mouse_y@@3HA, 0		; mouse_y
 
-; 205  : 
-; 206  : 	uint8_t status;
-; 207  : 
-; 208  : 	mouse_wait (1);
+; 216  : 
+; 217  : 	uint8_t status;
+; 218  : 
+; 219  : 	mouse_wait (1);
 
 	mov	cl, 1
 	call	?mouse_wait@@YAXE@Z			; mouse_wait
 
-; 209  :     outportb (0x64, 0xA8);
+; 220  :     outportb (0x64, 0xA8);
 
 	mov	dl, 168					; 000000a8H
 	mov	cx, 100					; 00000064H
 	call	?outportb@@YAXGE@Z			; outportb
 
-; 210  : 
-; 211  : 	mouse_wait(1);
+; 221  : 
+; 222  : 	mouse_wait(1);
 
 	mov	cl, 1
 	call	?mouse_wait@@YAXE@Z			; mouse_wait
 
-; 212  : 	outportb (0x64, 0x20);
+; 223  : 	outportb (0x64, 0x20);
 
 	mov	dl, 32					; 00000020H
 	mov	cx, 100					; 00000064H
 	call	?outportb@@YAXGE@Z			; outportb
 
-; 213  : 
-; 214  : 	mouse_wait (0);
+; 224  : 
+; 225  : 	mouse_wait (0);
 
 	xor	ecx, ecx
 	call	?mouse_wait@@YAXE@Z			; mouse_wait
 
-; 215  : 	status = (inportb (0x60) | 2);
+; 226  : 	status = (inportb (0x60) | 2);
 
 	mov	cx, 96					; 00000060H
 	call	?inportb@@YAEG@Z			; inportb
@@ -1038,65 +1085,70 @@ $LN3:
 	or	eax, 2
 	mov	BYTE PTR status$[rsp], al
 
-; 216  : 
-; 217  : 	mouse_wait (1);
+; 227  : 
+; 228  : 	mouse_wait (1);
 
 	mov	cl, 1
 	call	?mouse_wait@@YAXE@Z			; mouse_wait
 
-; 218  : 	outportb (0x64, 0x60);
+; 229  : 	outportb (0x64, 0x60);
 
 	mov	dl, 96					; 00000060H
 	mov	cx, 100					; 00000064H
 	call	?outportb@@YAXGE@Z			; outportb
 
-; 219  : 
-; 220  : 	mouse_wait (1);
+; 230  : 
+; 231  : 	mouse_wait (1);
 
 	mov	cl, 1
 	call	?mouse_wait@@YAXE@Z			; mouse_wait
 
-; 221  : 	outportb (0x60, status);
+; 232  : 	outportb (0x60, status);
 
 	movzx	edx, BYTE PTR status$[rsp]
 	mov	cx, 96					; 00000060H
 	call	?outportb@@YAXGE@Z			; outportb
 
-; 222  : 
-; 223  : 	mouse_write (0xF6);
+; 233  : 
+; 234  : 	mouse_write (0xF6);
 
 	mov	cl, 246					; 000000f6H
 	call	?mouse_write@@YAXE@Z			; mouse_write
 
-; 224  : 	mouse_read ();
+; 235  : 	mouse_read ();
 
 	call	?mouse_read@@YAEXZ			; mouse_read
 
-; 225  : 
-; 226  : 	mouse_write (0xF4);
+; 236  : 
+; 237  : 	mouse_write (0xF4);
 
 	mov	cl, 244					; 000000f4H
 	call	?mouse_write@@YAXE@Z			; mouse_write
 
-; 227  : 	mouse_read ();
+; 238  : 	mouse_read ();
 
 	call	?mouse_read@@YAEXZ			; mouse_read
 
-; 228  : 
-; 229  : 	interrupt_set (34, mouse_handler, 12);  //34
+; 239  : 
+; 240  : 	interrupt_set (34, mouse_handler, 12);  //34
 
 	mov	r8b, 12
 	lea	rdx, OFFSET FLAT:?mouse_handler@@YAX_KPEAX@Z ; mouse_handler
 	mov	ecx, 34					; 00000022H
 	call	?interrupt_set@@YAX_KP6AX0PEAX@ZE@Z	; interrupt_set
 
-; 230  : 
-; 231  : 	mouse_register_device ();
+; 241  : 
+; 242  : 	mouse_register_device ();
 
 	call	?mouse_register_device@@YAXXZ		; mouse_register_device
 
-; 232  : 	//irq_mask(12, false);
-; 233  : }
+; 243  : 	irq_mask(12, true);
+
+	mov	dl, 1
+	mov	cl, 12
+	call	?irq_mask@@YAXE_N@Z			; irq_mask
+
+; 244  : }
 
 	add	rsp, 56					; 00000038H
 	ret	0

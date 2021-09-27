@@ -86,19 +86,19 @@ process_t *find_process_by_id (uint32_t pid) {
 uint64_t *create_user_stack (uint64_t* cr3) {
 #define USER_STACK 0x0000700000000000 
 	
-	uint64_t* old_cr3 = (uint64_t*)x64_read_cr3();
-	x64_write_cr3 ((size_t)cr3);
+	/*uint64_t* old_cr3 = (uint64_t*)x64_read_cr3();
+	x64_write_cr3 ((size_t)cr3);*/
 	uint64_t location = USER_STACK;
 	
 	/* 1 mb stack / process */
-	for (int i=0; i < (1024*1024)/4096; i++) {
+	for (int i=0; i < (2*1024*1024)/4096; i++) {
 		uint64_t block = (uint64_t)pmmngr_alloc();
-		map_page(block,location + i * 4096);
+		map_page_ex(cr3, block,location + i * 4096);
 	}
  
-	x64_write_cr3((size_t)old_cr3);
+	//x64_write_cr3((size_t)old_cr3);
 	
-	return (uint64_t*)(USER_STACK + (1024*1024));
+	return (uint64_t*)(USER_STACK + (2*1024*1024));
 }
 
 /*

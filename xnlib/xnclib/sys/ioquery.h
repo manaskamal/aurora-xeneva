@@ -29,6 +29,11 @@
 #define SVGA_MOVE_CURSOR  0x206
 #define SVGA_GET_SCANLINE 0x207
 
+//! Mouse Code
+#define MOUSE_IOCODE_DISABLE   300
+#define MOUSE_IOCODE_ENABLE    301
+
+
 extern "C" int ioquery (int devid, int code, void* arg);
 
 #endif

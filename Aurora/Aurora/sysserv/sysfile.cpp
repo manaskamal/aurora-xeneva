@@ -14,16 +14,23 @@
 #include <string.h>
 #include <stdio.h>
 
-void  sys_open_file (FILE *file, const char* filename) {
-	x64_cli ();
-	FILE f = open (filename);
-	if (f.status == FILE_FLAG_INVALID) {
-		printf ("File not found\n");
-	}
-	memcpy (file, &f, sizeof(FILE));
+void  sys_open_file (UFILE* file, const char* filename) {
+	x64_cli();
+	open_call (file,filename);
+	//memcpy (file, &f, sizeof(FILE));
+	//return;
 }
 
-void sys_read_file (FILE *file, unsigned char* buffer, int length) {
+void sys_read_file (UFILE *file, unsigned char* buffer, int length) {
 	x64_cli ();
-	read (file,buffer,length,file->id);
+	FILE f;
+	memset(f.filename, 0, 32);
+	f.eof = file->eof;
+	f.flags = file->flags;
+	f.id = file->id;
+	f.pos = file->pos;
+	f.size = file->size;
+	f.start_cluster = file->start_cluster;
+	f.status = file->status;
+	read (&f,buffer,length,file->id);
 }

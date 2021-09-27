@@ -25,6 +25,9 @@
 #define QU_WIN_FULL (QU_WIN_MINIMIZABLE | QU_WIN_MAXIMIZABLE | \
 	QU_WIN_CLOSABLE | QU_WIN_DRAGGABLE)
 
+#define QU_WIN_CONFIG_AUTO_INVALIDATE 6
+#define QU_WIN_SET_SIZE  7
+#define QU_WIN_AUTO_INVALIDATE_RGN 8
 
 typedef struct _QuWindow_ {
 	int x;
@@ -35,7 +38,7 @@ typedef struct _QuWindow_ {
 	int drag_y;
 	bool draggable;
 	bool visible;
-	bool invalidate;
+	bool auto_invalidate;
 	unsigned int *canvas;
 	unsigned short owner_id;
 	bool decorate;
@@ -52,6 +55,7 @@ extern void QuWindowSetSize (QuWindow* win, int width, int height);
 extern void QuWindowSetCanvas(QuWindow* win, unsigned int *canvas);
 extern void QuWindowSetVisible (QuWindow* win,bool visible);
 extern void QuWindowAddDirtyArea (QuWindow* win, QuRect *dirty_rect);
+extern void QuWindowSetAutoInvalidation (QuWindow* win,bool value);
 extern void QuWindowDraw (QuWindow* win);
 extern void QuWindowAddMinimizeButton (QuWindow *win);
 extern void QuWindowAddMaximizeButton (QuWindow *win);

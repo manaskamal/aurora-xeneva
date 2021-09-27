@@ -10,23 +10,23 @@ _DATA	SEGMENT
 _fltused DD	01H
 _DATA	ENDS
 CONST	SEGMENT
-$SG8070	DB	'Timer fired', 0aH, 00H
+$SG8088	DB	'Timer fired', 0aH, 00H
 	ORG $+3
-$SG8098	DB	'shell', 00H
+$SG8116	DB	'shell', 00H
 	ORG $+2
-$SG8099	DB	'a:xshell.exe', 00H
+$SG8117	DB	'a:xshell.exe', 00H
 	ORG $+3
-$SG8100	DB	'quince', 00H
+$SG8118	DB	'quince', 00H
 	ORG $+1
-$SG8101	DB	'a:quince.exe', 00H
+$SG8119	DB	'a:quince.exe', 00H
 	ORG $+3
-$SG8102	DB	'dwm3', 00H
+$SG8120	DB	'dwm3', 00H
 	ORG $+3
-$SG8103	DB	'a:dwm3.exe', 00H
+$SG8121	DB	'a:dwm2.exe', 00H
 	ORG $+1
-$SG8104	DB	'dwm2', 00H
+$SG8122	DB	'dwm3', 00H
 	ORG $+7
-$SG8105	DB	'a:dwm2.exe', 00H
+$SG8123	DB	'a:dwm2.exe', 00H
 CONST	ENDS
 PUBLIC	??2@YAPEAX_K@Z					; operator new
 PUBLIC	??3@YAXPEAX@Z					; operator delete
@@ -145,105 +145,100 @@ $LN5:
 
 	call	?e1000_initialize@@YAXXZ		; e1000_initialize
 
-; 130  : 	//initialize_guest_vbox();
+; 130  : 
 ; 131  : 
-; 132  : 
-; 133  :     ata_initialize();
+; 132  :     ata_initialize();
 
 	call	?ata_initialize@@YAXXZ			; ata_initialize
 
-; 134  : 	initialize_vfs();
+; 133  : 	initialize_vfs();
 
 	call	?initialize_vfs@@YAXXZ			; initialize_vfs
 
-; 135  : 	initialize_screen(info);
+; 134  : 	initialize_screen(info);
 
 	mov	rcx, QWORD PTR info$[rsp]
 	call	?initialize_screen@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z ; initialize_screen
 
-; 136  : 	svga_init (); 
+; 135  : 	svga_init (); 
 
 	call	?svga_init@@YAXXZ			; svga_init
 
-; 137  : 	initialize_mouse();
+; 136  : 	initialize_mouse();
 
 	call	?initialize_mouse@@YAXXZ		; initialize_mouse
 
-; 138  : 
-; 139  : 	message_init ();
+; 137  : 
+; 138  : 	message_init ();
 
 	call	?message_init@@YAXXZ			; message_init
 
-; 140  : 	dwm_ipc_init();
+; 139  : 	dwm_ipc_init();
 
 	call	?dwm_ipc_init@@YAXXZ			; dwm_ipc_init
 
-; 141  : 
-; 142  : 	driver_mngr_initialize(info);
+; 140  : 
+; 141  : 	driver_mngr_initialize(info);
 
 	mov	rcx, QWORD PTR info$[rsp]
 	call	?driver_mngr_initialize@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z ; driver_mngr_initialize
 
-; 143  : 	//x64_cli();
-; 144  : #ifdef ARCH_X64
-; 145  : 	initialize_scheduler();
+; 142  : 
+; 143  : #ifdef ARCH_X64
+; 144  : 	initialize_scheduler();
 
 	call	?initialize_scheduler@@YAXXZ		; initialize_scheduler
 
-; 146  : 	//create_process ("dwm.exe","dwm",20);
-; 147  : 	//! task list should be more than 4 or less than 4 not  
-; 148  : 	//create_process ("dwm2.exe", "dwm2", 1);
-; 149  : 	create_process ("a:xshell.exe","shell",0, NULL);
+; 145  : 	create_process ("a:xshell.exe","shell",0, NULL);
 
 	xor	r9d, r9d
 	xor	r8d, r8d
-	lea	rdx, OFFSET FLAT:$SG8098
-	lea	rcx, OFFSET FLAT:$SG8099
+	lea	rdx, OFFSET FLAT:$SG8116
+	lea	rcx, OFFSET FLAT:$SG8117
 	call	?create_process@@YAXPEBDPEADE1@Z	; create_process
 
-; 150  : 	create_process ("a:quince.exe","quince",0, NULL);
+; 146  : 	create_process ("a:quince.exe","quince",0, NULL);
 
 	xor	r9d, r9d
 	xor	r8d, r8d
-	lea	rdx, OFFSET FLAT:$SG8100
-	lea	rcx, OFFSET FLAT:$SG8101
+	lea	rdx, OFFSET FLAT:$SG8118
+	lea	rcx, OFFSET FLAT:$SG8119
 	call	?create_process@@YAXPEBDPEADE1@Z	; create_process
 
-; 151  : 	create_process ("a:dwm3.exe", "dwm3", 0, NULL);
+; 147  : 	create_process ("a:dwm2.exe", "dwm3", 0, NULL);
 
 	xor	r9d, r9d
 	xor	r8d, r8d
-	lea	rdx, OFFSET FLAT:$SG8102
-	lea	rcx, OFFSET FLAT:$SG8103
+	lea	rdx, OFFSET FLAT:$SG8120
+	lea	rcx, OFFSET FLAT:$SG8121
 	call	?create_process@@YAXPEBDPEADE1@Z	; create_process
 
-; 152  : 	create_process ("a:dwm2.exe", "dwm2", 0, NULL);
+; 148  : 	create_process ("a:dwm2.exe", "dwm3", 0, NULL);
 
 	xor	r9d, r9d
 	xor	r8d, r8d
-	lea	rdx, OFFSET FLAT:$SG8104
-	lea	rcx, OFFSET FLAT:$SG8105
+	lea	rdx, OFFSET FLAT:$SG8122
+	lea	rcx, OFFSET FLAT:$SG8123
 	call	?create_process@@YAXPEBDPEADE1@Z	; create_process
 
-; 153  : 	//create_process ("a:dwm3.exe", "dwm3", 0, NULL);
-; 154  : 	scheduler_start();
+; 149  : 	scheduler_start();
 
 	call	?scheduler_start@@YAXXZ			; scheduler_start
 $LN2@kmain:
 
-; 155  : #endif
-; 156  : 	while(1) {
+; 150  : #endif
+; 151  : 	while(1) {
 
 	xor	eax, eax
 	cmp	eax, 1
 	je	SHORT $LN1@kmain
 
-; 157  : 	}
+; 152  : 	}
 
 	jmp	SHORT $LN2@kmain
 $LN1@kmain:
 
-; 158  : }
+; 153  : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -314,7 +309,7 @@ $LN3:
 
 ; 87   : 	printf ("Timer fired\n");
 
-	lea	rcx, OFFSET FLAT:$SG8070
+	lea	rcx, OFFSET FLAT:$SG8088
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 88   : 	interrupt_end(2);

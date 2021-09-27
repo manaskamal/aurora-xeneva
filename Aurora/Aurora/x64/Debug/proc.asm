@@ -15,8 +15,8 @@ user_stack_index_2 DD 01H DUP (?)
 pid	DD	01H DUP (?)
 _BSS	ENDS
 CONST	SEGMENT
-$SG3762	DB	'Executable image not found', 0aH, 00H
-$SG3863	DB	'child', 00H
+$SG3776	DB	'Executable image not found', 0aH, 00H
+$SG3877	DB	'child', 00H
 CONST	ENDS
 PUBLIC	?create_user_stack@@YAPEA_KPEA_K@Z		; create_user_stack
 PUBLIC	?create_inc_stack@@YAPEA_KPEA_K@Z		; create_inc_stack
@@ -63,7 +63,7 @@ add_mutex DQ	01H DUP (?)
 _BSS	ENDS
 pdata	SEGMENT
 $pdata$?create_user_stack@@YAPEA_KPEA_K@Z DD imagerel $LN6
-	DD	imagerel $LN6+147
+	DD	imagerel $LN6+122
 	DD	imagerel $unwind$?create_user_stack@@YAPEA_KPEA_K@Z
 $pdata$?create_inc_stack@@YAPEA_KPEA_K@Z DD imagerel $LN6
 	DD	imagerel $LN6+152
@@ -431,7 +431,7 @@ $LN1@exec:
 ; 285  : 	thread_t *t = create_user_thread(child_proc->entry_point,child_proc->stack,(uint64_t)child_proc->cr3,"child",1);
 
 	mov	BYTE PTR [rsp+32], 1
-	lea	r9, OFFSET FLAT:$SG3863
+	lea	r9, OFFSET FLAT:$SG3877
 	mov	rax, QWORD PTR child_proc$[rsp]
 	mov	r8, QWORD PTR [rax+40]
 	mov	rax, QWORD PTR child_proc$[rsp]
@@ -1298,7 +1298,7 @@ $LN9:
 
 ; 130  : 		printf("Executable image not found\n");
 
-	lea	rcx, OFFSET FLAT:$SG3762
+	lea	rcx, OFFSET FLAT:$SG3776
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 131  : 		return;
@@ -1649,7 +1649,6 @@ _TEXT	SEGMENT
 i$1 = 32
 location$ = 40
 block$2 = 48
-old_cr3$ = 56
 cr3$ = 80
 ?create_user_stack@@YAPEA_KPEA_K@Z PROC			; create_user_stack
 
@@ -1661,16 +1660,8 @@ $LN6:
 
 ; 87   : #define USER_STACK 0x0000700000000000 
 ; 88   : 	
-; 89   : 	uint64_t* old_cr3 = (uint64_t*)x64_read_cr3();
-
-	call	x64_read_cr3
-	mov	QWORD PTR old_cr3$[rsp], rax
-
-; 90   : 	x64_write_cr3 ((size_t)cr3);
-
-	mov	rcx, QWORD PTR cr3$[rsp]
-	call	x64_write_cr3
-
+; 89   : 	/*uint64_t* old_cr3 = (uint64_t*)x64_read_cr3();
+; 90   : 	x64_write_cr3 ((size_t)cr3);*/
 ; 91   : 	uint64_t location = USER_STACK;
 
 	mov	rax, 123145302310912			; 0000700000000000H
@@ -1678,7 +1669,7 @@ $LN6:
 
 ; 92   : 	
 ; 93   : 	/* 1 mb stack / process */
-; 94   : 	for (int i=0; i < (1024*1024)/4096; i++) {
+; 94   : 	for (int i=0; i < (2*1024*1024)/4096; i++) {
 
 	mov	DWORD PTR i$1[rsp], 0
 	jmp	SHORT $LN3@create_use
@@ -1687,7 +1678,7 @@ $LN2@create_use:
 	inc	eax
 	mov	DWORD PTR i$1[rsp], eax
 $LN3@create_use:
-	cmp	DWORD PTR i$1[rsp], 256			; 00000100H
+	cmp	DWORD PTR i$1[rsp], 512			; 00000200H
 	jge	SHORT $LN1@create_use
 
 ; 95   : 		uint64_t block = (uint64_t)pmmngr_alloc();
@@ -1695,7 +1686,7 @@ $LN3@create_use:
 	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
 	mov	QWORD PTR block$2[rsp], rax
 
-; 96   : 		map_page(block,location + i * 4096);
+; 96   : 		map_page_ex(cr3, block,location + i * 4096);
 
 	mov	eax, DWORD PTR i$1[rsp]
 	imul	eax, 4096				; 00001000H
@@ -1703,9 +1694,10 @@ $LN3@create_use:
 	mov	rcx, QWORD PTR location$[rsp]
 	add	rcx, rax
 	mov	rax, rcx
-	mov	rdx, rax
-	mov	rcx, QWORD PTR block$2[rsp]
-	call	?map_page@@YA_N_K0@Z			; map_page
+	mov	r8, rax
+	mov	rdx, QWORD PTR block$2[rsp]
+	mov	rcx, QWORD PTR cr3$[rsp]
+	call	?map_page_ex@@YA_NPEA_K_K1@Z		; map_page_ex
 
 ; 97   : 	}
 
@@ -1713,15 +1705,11 @@ $LN3@create_use:
 $LN1@create_use:
 
 ; 98   :  
-; 99   : 	x64_write_cr3((size_t)old_cr3);
-
-	mov	rcx, QWORD PTR old_cr3$[rsp]
-	call	x64_write_cr3
-
+; 99   : 	//x64_write_cr3((size_t)old_cr3);
 ; 100  : 	
-; 101  : 	return (uint64_t*)(USER_STACK + (1024*1024));
+; 101  : 	return (uint64_t*)(USER_STACK + (2*1024*1024));
 
-	mov	rax, 123145303359488			; 0000700000100000H
+	mov	rax, 123145304408064			; 0000700000200000H
 
 ; 102  : }
 

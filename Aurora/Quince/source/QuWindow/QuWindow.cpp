@@ -23,7 +23,7 @@
 #define QUWIN_DEFAULT_WIDTH   500
 #define QUWIN_DEFAULT_HEIGHT  500
 
-static bool UpdateToolbar = false;
+static bool UpdateToolbar = true;
 
 QuWindow* QuWindowCreate (int x, int y, uint16_t owner_id, uint8_t attr) {
 	QuWindow* win = (QuWindow*)malloc(sizeof(QuWindow));
@@ -35,7 +35,7 @@ QuWindow* QuWindowCreate (int x, int y, uint16_t owner_id, uint8_t attr) {
 	win->width = QUWIN_DEFAULT_WIDTH;
 	win->height = QUWIN_DEFAULT_HEIGHT;
 	win->visible = true;
-	win->invalidate = true;
+	win->auto_invalidate = false;
 	win->canvas = NULL;
 	win->owner_id = owner_id;
 	win->decorate = true;
@@ -50,7 +50,7 @@ QuWindow* QuWindowCreate (int x, int y, uint16_t owner_id, uint8_t attr) {
 	return win;
 }
 
-void QuWindowSetSize (QuWindow* win, unsigned width, unsigned height) {
+void QuWindowSetSize (QuWindow* win, int width, int height) {
 	win->width = width;
 	win->height = height;
 }
@@ -68,6 +68,9 @@ void QuWindowAddDirtyArea (QuWindow* win, QuRect *dirty_rect) {
 	QuListAdd (win->dirty_areas, dirty_rect);
 }
 
+void QuWindowSetAutoInvalidation (QuWindow* win,bool value) {
+	win->auto_invalidate = value;
+}
 
 
 void QuWindowRemoveDirtyArea (QuWindow* win, QuRect* dirty_rect) {
@@ -96,14 +99,8 @@ void QuWindowAddCloseButton(QuWindow *win) {
 }
 
 void QuWindowDraw (QuWindow* win) {
-	
-	QuCanvasBlit (win,win->canvas, win->x, win->y + 23, win->width,win->height - 23);
-	if (UpdateToolbar){
-		QuWindowDrawTitlebar (win, win->x, win->y, win->width);
-		UpdateToolbar = false;
-	}
 
-		
+	QuCanvasBlit (win,win->canvas, win->x, win->y, win->width,win->height);	
 }
 
 void QuWindowUpdateTitlebar (bool value) {

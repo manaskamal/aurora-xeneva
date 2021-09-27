@@ -65,17 +65,40 @@ void QuCanvasBlit (QuWindow* win,uint32_t *canvas, unsigned x, unsigned y, unsig
 	int width = canvas_get_width();
 	int height = canvas_get_height();
 	int j = 0;
-	for (int i=0; i < w; i++) {
-		for (int j=0; j < h; j++){
-			if (lfb[(x + i) + (y + j) * width] != canvas[(x + i) + (y + j) * width]){
-				lfb[(x + i) + (y + j) * width] = canvas[(x + i) + (y + j) * width];
-				QuWindowMngr_UpdateWindow(true);
-				QuWindowUpdateTitlebar(true);
-				win->invalidate = true;
+
+	/**
+	 * Some specific clients will enable to whole frame update bit which will
+	 * turn on the whole frame update or sometimes screen update
+	 */
+	if (win->auto_invalidate){
+		//! If no dirty rectangle than, we draw whole window in every frames
+		for (int i=0; i < w; i++) {
+			for (int j=0; j < h; j++){
+				if (lfb[(x + i) + (y + j) * width] != canvas[(x + i) + (y + j) * width]){
+					lfb[(x + i) + (y + j) * width] = canvas[(x + i) + (y + j) * width];
+					QuWindowMngr_UpdateWindow(true);
+					QuCanvasSetUpdateBit(true);
+				}
 			}
-			//}
 		}
 	}
+	//! No Auto-invalidation window 
+	//! this is a normal window, it must contains dirty areas
+	//! go through dirty areas and draw it
+	if (win->dirty_areas->pointer > 0) {
+		for (int i = 0; i < win->dirty_areas->pointer; i++) {
+			QuRect* r = (QuRect*)QuListGetAt(win->dirty_areas, i);
+			for (int i=0; i < r->w; i++) {
+				for (int j=0; j < r->h; j++){
+					lfb[(r->x + i) + (r->y + j) * width] = canvas[(r->x + i) + (r->y + j) * width];
+				}
+			}
+			QuListRemove(win->dirty_areas, i);
+		}	
+		QuCanvasSetUpdateBit(true);
+		}
+	
+	//}
 }
 
 

@@ -181,6 +181,17 @@ read_next:
 
 /**  Mouse IOQuery function **/
 int mouse_ioquery (int code, void* arg) {
+	switch (code) {
+		case MOUSE_IOCODE_DISABLE:
+			irq_mask(12,true);
+			break;
+		case MOUSE_IOCODE_ENABLE:
+			irq_mask(12, false);
+			break;
+		default:
+			break;
+	}
+
 	return 1;
 }
 
@@ -229,5 +240,5 @@ void initialize_mouse () {
 	interrupt_set (34, mouse_handler, 12);  //34
 
 	mouse_register_device ();
-	//irq_mask(12, false);
+	irq_mask(12, true);
 }

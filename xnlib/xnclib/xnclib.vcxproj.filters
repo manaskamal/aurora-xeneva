@@ -89,6 +89,9 @@
     <ClInclude Include="sys\_time.h">
       <Filter>sys</Filter>
     </ClInclude>
+    <ClInclude Include="sys\_kybrd.h">
+      <Filter>sys</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="string.cpp" />

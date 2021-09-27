@@ -46,6 +46,19 @@ typedef struct _file_ {
 	uint32_t  status;
 }FILE;
 
+
+typedef struct _ufile_ {
+	//char filename[32];
+	uint32_t  id;
+	uint32_t  size;
+	uint32_t  eof;
+	uint32_t  pos;
+	uint32_t  start_cluster;
+	uint32_t  flags; 
+	uint32_t  status;
+}UFILE;
+
+
 #pragma pack(push,1)
 
 typedef struct _file_system_ {
@@ -61,6 +74,7 @@ typedef struct _file_system_ {
 
 extern void initialize_vfs ();
 extern FILE open (const char* filename);
+extern void open_call (UFILE *f, const char* filename);
 extern void read (FILE *f, unsigned char* buffer, unsigned int length,int device_id);
 extern void read_blk (FILE *f, unsigned char* buffer,int device_id);
 extern void vfs_register (int id, file_system_t *sys);

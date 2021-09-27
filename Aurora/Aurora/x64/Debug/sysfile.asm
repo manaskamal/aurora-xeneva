@@ -5,131 +5,142 @@ include listing.inc
 INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
-CONST	SEGMENT
-$SG2857	DB	'File not found', 0aH, 00H
-CONST	ENDS
-PUBLIC	?sys_open_file@@YAXPEAU_file_@@PEBD@Z		; sys_open_file
-PUBLIC	?sys_read_file@@YAXPEAU_file_@@PEAEH@Z		; sys_read_file
-EXTRN	?open@@YA?AU_file_@@PEBD@Z:PROC			; open
+PUBLIC	?sys_open_file@@YAXPEAU_ufile_@@PEBD@Z		; sys_open_file
+PUBLIC	?sys_read_file@@YAXPEAU_ufile_@@PEAEH@Z		; sys_read_file
+EXTRN	?open_call@@YAXPEAU_ufile_@@PEBD@Z:PROC		; open_call
 EXTRN	?read@@YAXPEAU_file_@@PEAEIH@Z:PROC		; read
 EXTRN	x64_cli:PROC
-EXTRN	memcpy:PROC
-EXTRN	?printf@@YAXPEBDZZ:PROC				; printf
+EXTRN	?memset@@YAXPEAXEI@Z:PROC			; memset
 pdata	SEGMENT
-$pdata$?sys_open_file@@YAXPEAU_file_@@PEBD@Z DD imagerel $LN4
-	DD	imagerel $LN4+139
-	DD	imagerel $unwind$?sys_open_file@@YAXPEAU_file_@@PEBD@Z
-$pdata$?sys_read_file@@YAXPEAU_file_@@PEAEH@Z DD imagerel $LN3
-	DD	imagerel $LN3+58
-	DD	imagerel $unwind$?sys_read_file@@YAXPEAU_file_@@PEAEH@Z
+$pdata$?sys_open_file@@YAXPEAU_ufile_@@PEBD@Z DD imagerel $LN3
+	DD	imagerel $LN3+39
+	DD	imagerel $unwind$?sys_open_file@@YAXPEAU_ufile_@@PEBD@Z
+$pdata$?sys_read_file@@YAXPEAU_ufile_@@PEAEH@Z DD imagerel $LN3
+	DD	imagerel $LN3+161
+	DD	imagerel $unwind$?sys_read_file@@YAXPEAU_ufile_@@PEAEH@Z
 pdata	ENDS
 xdata	SEGMENT
-$unwind$?sys_open_file@@YAXPEAU_file_@@PEBD@Z DD 041301H
-	DD	01d0113H
-	DD	0600b700cH
-$unwind$?sys_read_file@@YAXPEAU_file_@@PEAEH@Z DD 011301H
-	DD	04213H
+$unwind$?sys_open_file@@YAXPEAU_ufile_@@PEBD@Z DD 010e01H
+	DD	0420eH
+$unwind$?sys_read_file@@YAXPEAU_ufile_@@PEAEH@Z DD 011301H
+	DD	0c213H
 xdata	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\sysserv\sysfile.cpp
 _TEXT	SEGMENT
-file$ = 48
-buffer$ = 56
-length$ = 64
-?sys_read_file@@YAXPEAU_file_@@PEAEH@Z PROC		; sys_read_file
+f$ = 32
+file$ = 112
+buffer$ = 120
+length$ = 128
+?sys_read_file@@YAXPEAU_ufile_@@PEAEH@Z PROC		; sys_read_file
 
-; 26   : void sys_read_file (FILE *file, unsigned char* buffer, int length) {
+; 24   : void sys_read_file (UFILE *file, unsigned char* buffer, int length) {
 
 $LN3:
 	mov	DWORD PTR [rsp+24], r8d
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
-	sub	rsp, 40					; 00000028H
+	sub	rsp, 104				; 00000068H
 
-; 27   : 	x64_cli ();
+; 25   : 	x64_cli ();
 
 	call	x64_cli
 
-; 28   : 	read (file,buffer,length,file->id);
+; 26   : 	FILE f;
+; 27   : 	memset(f.filename, 0, 32);
+
+	mov	r8d, 32					; 00000020H
+	xor	edx, edx
+	lea	rcx, QWORD PTR f$[rsp]
+	call	?memset@@YAXPEAXEI@Z			; memset
+
+; 28   : 	f.eof = file->eof;
 
 	mov	rax, QWORD PTR file$[rsp]
-	mov	r9d, DWORD PTR [rax+32]
+	mov	eax, DWORD PTR [rax+8]
+	mov	DWORD PTR f$[rsp+40], eax
+
+; 29   : 	f.flags = file->flags;
+
+	mov	rax, QWORD PTR file$[rsp]
+	mov	eax, DWORD PTR [rax+20]
+	mov	DWORD PTR f$[rsp+52], eax
+
+; 30   : 	f.id = file->id;
+
+	mov	rax, QWORD PTR file$[rsp]
+	mov	eax, DWORD PTR [rax]
+	mov	DWORD PTR f$[rsp+32], eax
+
+; 31   : 	f.pos = file->pos;
+
+	mov	rax, QWORD PTR file$[rsp]
+	mov	eax, DWORD PTR [rax+12]
+	mov	DWORD PTR f$[rsp+44], eax
+
+; 32   : 	f.size = file->size;
+
+	mov	rax, QWORD PTR file$[rsp]
+	mov	eax, DWORD PTR [rax+4]
+	mov	DWORD PTR f$[rsp+36], eax
+
+; 33   : 	f.start_cluster = file->start_cluster;
+
+	mov	rax, QWORD PTR file$[rsp]
+	mov	eax, DWORD PTR [rax+16]
+	mov	DWORD PTR f$[rsp+48], eax
+
+; 34   : 	f.status = file->status;
+
+	mov	rax, QWORD PTR file$[rsp]
+	mov	eax, DWORD PTR [rax+24]
+	mov	DWORD PTR f$[rsp+56], eax
+
+; 35   : 	read (&f,buffer,length,file->id);
+
+	mov	rax, QWORD PTR file$[rsp]
+	mov	r9d, DWORD PTR [rax]
 	mov	r8d, DWORD PTR length$[rsp]
 	mov	rdx, QWORD PTR buffer$[rsp]
-	mov	rcx, QWORD PTR file$[rsp]
+	lea	rcx, QWORD PTR f$[rsp]
 	call	?read@@YAXPEAU_file_@@PEAEIH@Z		; read
 
-; 29   : }
+; 36   : }
 
-	add	rsp, 40					; 00000028H
+	add	rsp, 104				; 00000068H
 	ret	0
-?sys_read_file@@YAXPEAU_file_@@PEAEH@Z ENDP		; sys_read_file
+?sys_read_file@@YAXPEAU_ufile_@@PEAEH@Z ENDP		; sys_read_file
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\sysserv\sysfile.cpp
 _TEXT	SEGMENT
-f$ = 32
-$T1 = 96
-$T2 = 160
-file$ = 256
-filename$ = 264
-?sys_open_file@@YAXPEAU_file_@@PEBD@Z PROC		; sys_open_file
+file$ = 48
+filename$ = 56
+?sys_open_file@@YAXPEAU_ufile_@@PEBD@Z PROC		; sys_open_file
 
-; 17   : void  sys_open_file (FILE *file, const char* filename) {
+; 17   : void  sys_open_file (UFILE* file, const char* filename) {
 
-$LN4:
+$LN3:
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
-	push	rsi
-	push	rdi
-	sub	rsp, 232				; 000000e8H
+	sub	rsp, 40					; 00000028H
 
-; 18   : 	x64_cli ();
+; 18   : 	x64_cli();
 
 	call	x64_cli
 
-; 19   : 	FILE f = open (filename);
+; 19   : 	open_call (file,filename);
 
 	mov	rdx, QWORD PTR filename$[rsp]
-	lea	rcx, QWORD PTR $T2[rsp]
-	call	?open@@YA?AU_file_@@PEBD@Z		; open
-	lea	rcx, QWORD PTR $T1[rsp]
-	mov	rdi, rcx
-	mov	rsi, rax
-	mov	ecx, 60					; 0000003cH
-	rep movsb
-	lea	rax, QWORD PTR f$[rsp]
-	lea	rcx, QWORD PTR $T1[rsp]
-	mov	rdi, rax
-	mov	rsi, rcx
-	mov	ecx, 60					; 0000003cH
-	rep movsb
-
-; 20   : 	if (f.status == FILE_FLAG_INVALID) {
-
-	cmp	DWORD PTR f$[rsp+56], 3
-	jne	SHORT $LN1@sys_open_f
-
-; 21   : 		printf ("File not found\n");
-
-	lea	rcx, OFFSET FLAT:$SG2857
-	call	?printf@@YAXPEBDZZ			; printf
-$LN1@sys_open_f:
-
-; 22   : 	}
-; 23   : 	memcpy (file, &f, sizeof(FILE));
-
-	mov	r8d, 60					; 0000003cH
-	lea	rdx, QWORD PTR f$[rsp]
 	mov	rcx, QWORD PTR file$[rsp]
-	call	memcpy
+	call	?open_call@@YAXPEAU_ufile_@@PEBD@Z	; open_call
 
-; 24   : }
+; 20   : 	//memcpy (file, &f, sizeof(FILE));
+; 21   : 	//return;
+; 22   : }
 
-	add	rsp, 232				; 000000e8H
-	pop	rdi
-	pop	rsi
+	add	rsp, 40					; 00000028H
 	ret	0
-?sys_open_file@@YAXPEAU_file_@@PEBD@Z ENDP		; sys_open_file
+?sys_open_file@@YAXPEAU_ufile_@@PEBD@Z ENDP		; sys_open_file
 _TEXT	ENDS
 END

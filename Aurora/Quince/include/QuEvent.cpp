@@ -14,6 +14,8 @@
 #include <sys\_wait.h>
 #include <sys\_exit.h>
 #include <sys\_time.h>
+#include <sys\_kybrd.h>
+#include <sys\_process.h>
 #include <stdlib.h>
 
 //! Quince Library
@@ -25,6 +27,7 @@
 #include <QuCanvas\QuCanvasMngr.h>
 #include <QuWindow\QuWindow.h>
 #include <QuWindow\QuWindowMngr.h>
+#include <QuWidget\QuWallpaper.h>
 #include <QuCanvas\QuScreenStack.h>
 #include <QuRect.h>
 #include <canvas.h>
@@ -33,7 +36,7 @@
 #include <acrylic.h>
 
 
-int x , y = 100;
+int x , y = 20;
 bool mouse_down = false;
 const int ticks_per_second = 8;
 const int skip_ticks = 1000 / ticks_per_second;
@@ -58,8 +61,8 @@ void QuHandleQuinceMsg (QuMessage *qu_msg) {
 		r->h = window->height;
 		QuWindowAddDirtyArea(window, r);
 		QuCanvasCommit(canvas, dest_id, window->x, window->y, window->width, window->height);
-		x += 100;
-		y += 100;
+		x += 10;
+		y += 10;
 	}
 
 	if (qu_msg->type == QU_CODE_DIRTY_UPDATE) {
@@ -88,21 +91,16 @@ void QuEventLoop() {
 	while(1) {
 		message_receive(&msg);
 		_ipc_mouse_dispatch (&m_pack);
+
+
 		sys_get_current_time(&time);
 		frame_time = sys_get_system_tick();
 		diff_time = frame_time - next_tick;
 
-			
-		if (diff_time > 15){
-			QuWindowMngr_DrawAll();	
-			QuWindowMngr_DisplayWindow();
-			next_tick = sys_get_system_tick();
-			frame_time = 0;
-		}
-	
 
-
-		//!System Messages
+		/**
+		 *  Mouse Move message handle
+		 */
 		if (m_pack.type == _MOUSE_MOVE) {
 			//QuCursorNewCoord(m_pack.dword, m_pack.dword2);
 			QuMoveCursor(m_pack.dword, m_pack.dword2);
@@ -112,8 +110,6 @@ void QuEventLoop() {
 			//! Mouse Clicked Bit
 			if (m_pack.dword4 & 0x01) {
 				mouse_down = true;
-			
-				
 			}
 
             QuWindowMngr_HandleMouse(m_pack.dword, m_pack.dword2, mouse_down);
@@ -122,12 +118,33 @@ void QuEventLoop() {
 				QuWindowMngr_HandleMouseUp (m_pack.dword, m_pack.dword2);
 			}
 
+			if (QuWindowMngrGetFocused() != NULL) {
+				QuWindowMngr_SendEvent (QuWindowMngrGetFocused(), QU_CANVAS_MOUSE_MOVE,m_pack.dword, m_pack.dword2,NULL);
+			}
 			memset (&m_pack, 0, sizeof(mouse_message_t));
 		}
+
+
+
+		/**
+		 * Handle Key Pressed Events!! 
+		 * Quince sends the key event to currently focused window
+		 */
 		if (msg.type == 3) {
+			//! Send the key event
+			if (QuWindowMngrGetFocused() != NULL) {
+				QuWindowMngr_SendEvent (QuWindowMngrGetFocused(), QU_CANVAS_KEY_PRESSED,NULL, NULL,msg.dword);
+			}
 			memset(&msg, 0, sizeof(message_t));
 		}
 
+
+		/** ===================================================================================
+		 ** Quince Clients Messages
+		 ** ===================================================================================
+		 **/
+
+		//! Create Window Request
 		if (msg.type == QU_CODE_WIN_CREATE) {
 			uint16_t dest_id = msg.dword;
 			uint32_t* canvas = QuCanvasCreate(dest_id);
@@ -142,10 +159,13 @@ void QuEventLoop() {
 			r->h = window->height;
 			QuWindowAddDirtyArea(window, r);
 			
-			x += 200;
-			y += 200;
+			x += 30;
+			y += 30;
 			memset (&msg, 0, sizeof(message_t));
 		}
+
+
+		//! Dirty Update Request
 		if (msg.type == QU_CODE_DIRTY_UPDATE) {
 			QuRect *r = (QuRect*)malloc(sizeof(QuRect));
 			r->x = msg.dword;
@@ -158,7 +178,47 @@ void QuEventLoop() {
 			memset(&msg, 0, sizeof(message_t));
 		}
 
+
+
+		//! Set Window Configuration
+		//! for specific window
+		if (msg.type == QU_CODE_WIN_CONFIG) {
+			uint16_t from_id = msg.dword5;
+			QuWindow* win = (QuWindow*)QuWindowMngrFindByID(from_id);
+			if (msg.dword == QU_WIN_CONFIG_AUTO_INVALIDATE){
+				QuWindowSetAutoInvalidation(win, true);
+			}
+			if (msg.dword == QU_WIN_SET_SIZE) {
+				QuWindowSetSize (win,msg.dword2,msg.dword3);
+			}
+
+			if (msg.dword == QU_WIN_AUTO_INVALIDATE_RGN) {
+				QuRect *r = (QuRect*)malloc(sizeof(QuRect));
+				r->x = msg.dword2; 
+				r->y = msg.dword3;
+				r->w = msg.dword4;
+				r->h = msg.dword6;
+				QuWindowAddDirtyArea (win, r);
+				QuWindowSetAutoInvalidation(win,true);
+			}
+
+			memset (&msg, 0, sizeof(message_t));
+		}
+
+
+
+
+		//*==========================================================================
+		//*==========================================================================
+
 		//! Here We Prepare the frame that will be displayed
+	
+		if (diff_time > 15){
+			QuWindowMngr_DrawAll();	
+			QuWindowMngr_DisplayWindow();
+			next_tick = sys_get_system_tick();
+			frame_time = 0;
+		}
 	
 	
 		if (QuCanvasGetUpdateBit()) {
