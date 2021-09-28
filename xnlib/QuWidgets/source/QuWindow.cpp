@@ -105,6 +105,12 @@ void QuWindowSetAutoInvalidation (bool value) {
 	msg.dword = QU_WIN_CONFIG_AUTO_INVALIDATE;
 	msg.dword5 = QuGetAppId();
 	message_send(2, &msg);
+	/*QuMessage msg;
+	msg.type = QU_CODE_WIN_CONFIG;
+	msg.dword = QU_WIN_CONFIG_AUTO_INVALIDATE;*/
+	//msg.dword5 = QuGetAppId();
+	//message_send(2, &msg);
+	//QuChannelPut (&msg, 2);
 }
 
 void QuWindowSetAutoInvalidateRegion (int x, int y, int w, int h) {
@@ -128,4 +134,20 @@ void QuWindowSetSize (int width, int height) {
 	msg.dword2 = width;
 	msg.dword3 = height;
 	message_send(2, &msg);
+}
+
+
+void QuWindowHandleMouse (int mouse_x, int mouse_y, int code) {
+	bool clicked = false;
+	for (int i = 0; i < root_win->widgets->pointer; i++) {
+		QuWidget *wid = (QuWidget*)QuListGetAt(root_win->widgets, i);
+		if (mouse_x > (root_win->x + wid->x) && mouse_x < (root_win->x + wid->x + wid->width) &&
+			mouse_y > (root_win->y + wid->y) && mouse_y < (root_win->y + wid->y + wid->height)) {
+				if (code == QU_CANVAS_MOUSE_LCLICKED)
+					clicked = true;
+				wid->MouseEvent(wid, root_win, QU_EVENT_MOUSE_ENTER,clicked);
+		} else {
+			wid->MouseEvent (wid, root_win, QU_EVENT_MOUSE_LEAVE, clicked);
+		}
+	}
 }

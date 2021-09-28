@@ -32,6 +32,7 @@
 #define QU_CANVAS_KEY_RELEASED 207
 #define QU_CANVAS_RESIZE 208
 
+
 typedef struct __QuMessage__ {
 	uint8_t type;
 	uint8_t to_id;

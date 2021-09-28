@@ -33,6 +33,8 @@ typedef struct _QuWidget_ {
 	int width;
 	int height;
 	void (*Refresh) (struct _QuWidget_ *, QuWindow* win);
+	void (*MouseEvent) (struct _QuWidget_*, QuWindow* win, int code,bool clicked);
+	void (*ActionEvent) (struct _QuWidget_*, QuWindow* win);
 }QuWidget;
 
 extern void QuCreateWindow (int x, int y, int w,int h);
@@ -49,4 +51,5 @@ extern void QuWindowMove (int x, int y);
 extern void QuWindowSetAutoInvalidation (bool value);
 extern void QuWindowSetAutoInvalidateRegion (int x, int y, int w, int h);
 extern void QuWindowSetSize (int width, int height);
+extern void QuWindowHandleMouse (int mouse_x, int mouse_y, int code);
 #endif

@@ -182,7 +182,6 @@ void create_process(const char* filename, char* procname, uint8_t priority, char
 	process->thread_data_pointer = t;
     add_process(process);
 	mutex_unlock (process_mutex);
-
 }
 
 //! Kill Process

@@ -130,6 +130,7 @@
     <ClInclude Include="include\QuEventCode.h" />
     <ClInclude Include="include\QuPanel.h" />
     <ClInclude Include="include\QuRect.h" />
+    <ClInclude Include="include\QuTextbox.h" />
     <ClInclude Include="include\QuUtils\QuList.h" />
     <ClInclude Include="include\QuWindow.h" />
   </ItemGroup>
@@ -137,6 +138,7 @@
     <ClCompile Include="source\QuBase.cpp" />
     <ClCompile Include="source\QuButton.cpp" />
     <ClCompile Include="source\QuPanel.cpp" />
+    <ClCompile Include="source\QuTextbox.cpp" />
     <ClCompile Include="source\QuUtils\QuList.cpp" />
     <ClCompile Include="source\QuWindow.cpp" />
   </ItemGroup>

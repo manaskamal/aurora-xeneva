@@ -17,21 +17,23 @@
 #include <sys\_term.h>
 #include <psf\psf.h>
 
-#define QU_CHANNEL_ADDRESS  0xFFFFFD0000000000
+#define QU_CHANNEL_ADDRESS   0xFFFFD00000000000  //Client Send address
+#define QU_CHANNEL_RECEIVER  0xFFFFFD0000000000  //Client receiver address
+
 uint32_t * QuCanvasAddress = NULL;
 uint16_t app_id = 0;
 
 void QuChannelPut (QuMessage *msg, uint16_t to_id) {
-	uint16_t from_id = get_current_pid ();
+	uint16_t from_id = app_id;
 	QuMessage* channel_addr = (QuMessage*)QU_CHANNEL_ADDRESS;
 	msg->from_id = from_id;
 	msg->to_id = to_id;
-	if (channel_addr->type == 0)
-		memcpy (channel_addr, msg, (sizeof(QuMessage)));
+	//if (channel_addr->type == 0)
+	memcpy (channel_addr, msg, (sizeof(QuMessage)));
 }
 
 void QuChannelGet (QuMessage *msg) {
-	QuMessage* data = (QuMessage*)QU_CHANNEL_ADDRESS;
+	QuMessage* data = (QuMessage*)QU_CHANNEL_RECEIVER;
 	uint16_t to_id = app_id;
 	if (data->to_id == to_id){
 		memcpy (msg, data, sizeof (QuMessage));
@@ -47,13 +49,13 @@ void QuRegisterApplication () {
 
 	app_id = get_current_pid();
 	QuMessage qmsg;
-	//qmsg.type = QU_CODE_WIN_CREATE;
-	//QuChannelPut (&qmsg, 2);*/
+	/*qmsg.type = QU_CODE_WIN_CREATE;
+	QuChannelPut (&qmsg, 2);*/
 	message_t msg;
 	msg.type = QU_CODE_WIN_CREATE;
 	msg.dword = app_id;
 	message_send (2,&msg);
-	memset (&msg, 0, sizeof(message_t));
+	memset (&qmsg, 0, sizeof(QuMessage));
 	for (;;) {
 		QuChannelGet(&qmsg);
 

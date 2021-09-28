@@ -21,6 +21,13 @@
 
 bool panel_update = false;
 
+void QuPanelMouseEvent (QuWidget *widget, QuWindow* win, int code, bool clicked) {
+	//! No Effect
+}
+
+void QuPanelActionEvent (QuWidget *widget, QuWindow* win) {
+}
+
 QuPanel* QuCreatePanel () {
 	QuPanel* panel = (QuPanel*)malloc(sizeof(QuPanel));
 	panel->base.x = 0;
@@ -28,6 +35,8 @@ QuPanel* QuCreatePanel () {
 	panel->base.width = QuGetWindow()->w;
 	panel->base.height = QuGetWindow()->h;
 	panel->base.Refresh = QuPanelRefresh;
+	panel->base.MouseEvent = QuPanelMouseEvent;
+	panel->base.ActionEvent = QuPanelActionEvent;
 	return panel;
 }
 

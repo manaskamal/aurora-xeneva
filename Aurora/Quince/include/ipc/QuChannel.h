@@ -32,4 +32,6 @@ typedef struct _qu_message_ {
 
 extern void QuChannelPut (QuMessage *msg, uint16_t to_id);
 extern void QuChannelGet (QuMessage *msg);
+extern void QuMessageStackGetMsg(QuMessage *r);
+extern uint32_t QuStackGetMsgCount ();
 #endif

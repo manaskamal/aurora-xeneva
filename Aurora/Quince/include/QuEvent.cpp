@@ -41,7 +41,7 @@ bool mouse_down = false;
 const int ticks_per_second = 8;
 const int skip_ticks = 1000 / ticks_per_second;
 const int max_frame_skip = 10;
-
+static int _mouse_code_ = 0;
 
 void QuHandleQuinceMsg (QuMessage *qu_msg) {
 	if (qu_msg->type == QU_CODE_WIN_CREATE) {
@@ -81,16 +81,19 @@ void QuHandleQuinceMsg (QuMessage *qu_msg) {
 void QuEventLoop() {
 	message_t msg;
 	mouse_message_t m_pack;
-	QuMessage qu_msg;
+	QuMessage q_msg;
 	sys_time time;
 	uint32_t next_tick = 0; //sys_get_system_tick();
 	uint32_t frame_time = 0;
 	uint32_t diff_time = 0;
 	int loops;
 	char fps_str[60];
+
 	while(1) {
 		message_receive(&msg);
 		_ipc_mouse_dispatch (&m_pack);
+		QuChannelGet(&q_msg);
+	
 
 
 		sys_get_current_time(&time);
@@ -107,20 +110,26 @@ void QuEventLoop() {
 			canvas_screen_update (m_pack.dword,m_pack.dword2, 24, 24);
 			
 			mouse_down = false;
+			_mouse_code_ = 0;
 			//! Mouse Clicked Bit
 			if (m_pack.dword4 & 0x01) {
 				mouse_down = true;
+				_mouse_code_ = QU_CANVAS_MOUSE_LCLICKED;
 			}
 
             QuWindowMngr_HandleMouse(m_pack.dword, m_pack.dword2, mouse_down);
+
+
+			if (QuWindowMngrGetFocused() != NULL) {
+				QuWindowMngr_SendEvent (QuWindowMngrGetFocused(), QU_CANVAS_MOUSE_MOVE,m_pack.dword, m_pack.dword2,_mouse_code_);
+			}
 			//! Mouse Released Bit
 			if (m_pack.dword4 & 0x5) {
 				QuWindowMngr_HandleMouseUp (m_pack.dword, m_pack.dword2);
+				_mouse_code_ = QU_CANVAS_MOUSE_LRELEASE;
 			}
 
-			if (QuWindowMngrGetFocused() != NULL) {
-				QuWindowMngr_SendEvent (QuWindowMngrGetFocused(), QU_CANVAS_MOUSE_MOVE,m_pack.dword, m_pack.dword2,NULL);
-			}
+			
 			memset (&m_pack, 0, sizeof(mouse_message_t));
 		}
 
@@ -175,7 +184,8 @@ void QuEventLoop() {
 			uint16_t from_id = msg.dword5;
 			QuWindow* win = (QuWindow*)QuWindowMngrFindByID(from_id);
 			QuWindowAddDirtyArea(win,r);
-			memset(&msg, 0, sizeof(message_t));
+			//memset(&msg, 0, sizeof(message_t));
+			memset (&msg, 0, sizeof(message_t));
 		}
 
 
@@ -192,7 +202,7 @@ void QuEventLoop() {
 				QuWindowSetSize (win,msg.dword2,msg.dword3);
 			}
 
-			if (msg.dword == QU_WIN_AUTO_INVALIDATE_RGN) {
+			if (q_msg.dword == QU_WIN_AUTO_INVALIDATE_RGN) {
 				QuRect *r = (QuRect*)malloc(sizeof(QuRect));
 				r->x = msg.dword2; 
 				r->y = msg.dword3;
@@ -202,7 +212,7 @@ void QuEventLoop() {
 				QuWindowSetAutoInvalidation(win,true);
 			}
 
-			memset (&msg, 0, sizeof(message_t));
+			memset (&msg, 0, sizeof(QuMessage));
 		}
 
 

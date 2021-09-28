@@ -13,6 +13,7 @@
 #include <stdint.h>
 #include <QuBase.h>
 #include <QuWindow.h>
+#include <QuEventCode.h>
 
 typedef struct _QuPanel_ {
 	QuWidget base;

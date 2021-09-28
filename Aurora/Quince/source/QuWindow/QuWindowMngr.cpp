@@ -301,6 +301,7 @@ void QuWindowMngr_SendEvent (QuWindow *win, int type, int x, int y, int code) {
 	if (type == QU_CANVAS_MOUSE_MOVE) {
 		msg.dword = x;
 		msg.dword2 = y;
+		msg.dword3 = code;
 	}else if (type == QU_CANVAS_KEY_PRESSED) {
 		msg.dword = code;
 	}
