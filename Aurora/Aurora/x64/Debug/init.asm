@@ -10,23 +10,25 @@ _DATA	SEGMENT
 _fltused DD	01H
 _DATA	ENDS
 CONST	SEGMENT
-$SG8088	DB	'Timer fired', 0aH, 00H
+$SG8090	DB	'Timer fired', 0aH, 00H
 	ORG $+3
-$SG8116	DB	'shell', 00H
+$SG8118	DB	'shell', 00H
 	ORG $+2
-$SG8117	DB	'a:xshell.exe', 00H
+$SG8119	DB	'a:xshell.exe', 00H
 	ORG $+3
-$SG8118	DB	'quince', 00H
+$SG8120	DB	'quince', 00H
 	ORG $+1
-$SG8119	DB	'a:quince.exe', 00H
+$SG8121	DB	'a:quince.exe', 00H
 	ORG $+3
-$SG8120	DB	'dwm3', 00H
+$SG8123	DB	'procmngr', 00H
 	ORG $+3
-$SG8121	DB	'a:dwm2.exe', 00H
-	ORG $+1
-$SG8122	DB	'dwm3', 00H
+$SG8124	DB	'dwm3', 00H
 	ORG $+7
-$SG8123	DB	'a:dwm2.exe', 00H
+$SG8125	DB	'a:dwm2.exe', 00H
+	ORG $+1
+$SG8126	DB	'dwm4', 00H
+	ORG $+7
+$SG8127	DB	'a:dwm2.exe', 00H
 CONST	ENDS
 PUBLIC	??2@YAPEAX_K@Z					; operator new
 PUBLIC	??3@YAXPEAX@Z					; operator delete
@@ -34,9 +36,11 @@ PUBLIC	?timer_callback@@YAX_KPEAX@Z			; timer_callback
 PUBLIC	??_U@YAPEAX_K@Z					; operator new[]
 PUBLIC	?dummy_thread_2@@YAXXZ				; dummy_thread_2
 PUBLIC	?_kmain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z		; _kmain
+EXTRN	x64_read_cr3:PROC
 EXTRN	?hal_init@@YAXXZ:PROC				; hal_init
 EXTRN	?interrupt_end@@YAXI@Z:PROC			; interrupt_end
 EXTRN	?pmmngr_init@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z:PROC ; pmmngr_init
+EXTRN	?pmmngr_alloc@@YAPEAXXZ:PROC			; pmmngr_alloc
 EXTRN	?mm_init@@YAXXZ:PROC				; mm_init
 EXTRN	?malloc@@YAPEAXI@Z:PROC				; malloc
 EXTRN	?mfree@@YAXPEAX@Z:PROC				; mfree
@@ -52,12 +56,14 @@ EXTRN	?initialize_rtc@@YAXXZ:PROC			; initialize_rtc
 EXTRN	?initialize_acpi@@YAXPEAX@Z:PROC		; initialize_acpi
 EXTRN	?initialize_scheduler@@YAXXZ:PROC		; initialize_scheduler
 EXTRN	?scheduler_start@@YAXXZ:PROC			; scheduler_start
+EXTRN	?create_kthread@@YAPEAU_thread_@@P6AXXZ_K1QEADE@Z:PROC ; create_kthread
 EXTRN	?message_init@@YAXXZ:PROC			; message_init
 EXTRN	?dwm_ipc_init@@YAXXZ:PROC			; dwm_ipc_init
 EXTRN	?initialize_vfs@@YAXXZ:PROC			; initialize_vfs
 EXTRN	?initialize_screen@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z:PROC ; initialize_screen
 EXTRN	?create_process@@YAXPEBDPEADE1@Z:PROC		; create_process
 EXTRN	?driver_mngr_initialize@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z:PROC ; driver_mngr_initialize
+EXTRN	?procmngr_start@@YAXXZ:PROC			; procmngr_start
 EXTRN	?initialize_serial@@YAXXZ:PROC			; initialize_serial
 pdata	SEGMENT
 $pdata$??2@YAPEAX_K@Z DD imagerel $LN3
@@ -73,7 +79,7 @@ $pdata$??_U@YAPEAX_K@Z DD imagerel $LN3
 	DD	imagerel $LN3+23
 	DD	imagerel $unwind$??_U@YAPEAX_K@Z
 $pdata$?_kmain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z DD imagerel $LN5
-	DD	imagerel $LN5+252
+	DD	imagerel $LN5+302
 	DD	imagerel $unwind$?_kmain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z
 pdata	ENDS
 xdata	SEGMENT
@@ -86,19 +92,20 @@ $unwind$?timer_callback@@YAX_KPEAX@Z DD 010e01H
 $unwind$??_U@YAPEAX_K@Z DD 010901H
 	DD	04209H
 $unwind$?_kmain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z DD 010901H
-	DD	04209H
+	DD	08209H
 xdata	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\init.cpp
 _TEXT	SEGMENT
-info$ = 48
+tv81 = 48
+info$ = 80
 ?_kmain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z PROC		; _kmain
 
 ; 118  : void _kmain (KERNEL_BOOT_INFO *info) {
 
 $LN5:
 	mov	QWORD PTR [rsp+8], rcx
-	sub	rsp, 40					; 00000028H
+	sub	rsp, 72					; 00000048H
 
 ; 119  : 	hal_init ();
 
@@ -193,19 +200,11 @@ $LN5:
 
 	xor	r9d, r9d
 	xor	r8d, r8d
-	lea	rdx, OFFSET FLAT:$SG8116
-	lea	rcx, OFFSET FLAT:$SG8117
-	call	?create_process@@YAXPEBDPEADE1@Z	; create_process
-
-; 146  : 	create_process ("a:quince.exe","quince",0, NULL);
-
-	xor	r9d, r9d
-	xor	r8d, r8d
 	lea	rdx, OFFSET FLAT:$SG8118
 	lea	rcx, OFFSET FLAT:$SG8119
 	call	?create_process@@YAXPEBDPEADE1@Z	; create_process
 
-; 147  : 	create_process ("a:dwm2.exe", "dwm3", 0, NULL);
+; 146  : 	create_process ("a:quince.exe","quince",0, NULL);
 
 	xor	r9d, r9d
 	xor	r8d, r8d
@@ -213,34 +212,55 @@ $LN5:
 	lea	rcx, OFFSET FLAT:$SG8121
 	call	?create_process@@YAXPEBDPEADE1@Z	; create_process
 
+; 147  : 	create_kthread (procmngr_start,(uint64_t)pmmngr_alloc(),x64_read_cr3(),"procmngr",0);
+
+	call	x64_read_cr3
+	mov	QWORD PTR tv81[rsp], rax
+	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
+	mov	BYTE PTR [rsp+32], 0
+	lea	r9, OFFSET FLAT:$SG8123
+	mov	rcx, QWORD PTR tv81[rsp]
+	mov	r8, rcx
+	mov	rdx, rax
+	lea	rcx, OFFSET FLAT:?procmngr_start@@YAXXZ	; procmngr_start
+	call	?create_kthread@@YAPEAU_thread_@@P6AXXZ_K1QEADE@Z ; create_kthread
+
 ; 148  : 	create_process ("a:dwm2.exe", "dwm3", 0, NULL);
 
 	xor	r9d, r9d
 	xor	r8d, r8d
-	lea	rdx, OFFSET FLAT:$SG8122
-	lea	rcx, OFFSET FLAT:$SG8123
+	lea	rdx, OFFSET FLAT:$SG8124
+	lea	rcx, OFFSET FLAT:$SG8125
 	call	?create_process@@YAXPEBDPEADE1@Z	; create_process
 
-; 149  : 	scheduler_start();
+; 149  : 	create_process ("a:dwm2.exe", "dwm4", 0, NULL);
+
+	xor	r9d, r9d
+	xor	r8d, r8d
+	lea	rdx, OFFSET FLAT:$SG8126
+	lea	rcx, OFFSET FLAT:$SG8127
+	call	?create_process@@YAXPEBDPEADE1@Z	; create_process
+
+; 150  : 	scheduler_start();
 
 	call	?scheduler_start@@YAXXZ			; scheduler_start
 $LN2@kmain:
 
-; 150  : #endif
-; 151  : 	while(1) {
+; 151  : #endif
+; 152  : 	while(1) {
 
 	xor	eax, eax
 	cmp	eax, 1
 	je	SHORT $LN1@kmain
 
-; 152  : 	}
+; 153  : 	}
 
 	jmp	SHORT $LN2@kmain
 $LN1@kmain:
 
-; 153  : }
+; 154  : }
 
-	add	rsp, 40					; 00000028H
+	add	rsp, 72					; 00000048H
 	ret	0
 ?_kmain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z ENDP		; _kmain
 _TEXT	ENDS
@@ -309,7 +329,7 @@ $LN3:
 
 ; 87   : 	printf ("Timer fired\n");
 
-	lea	rcx, OFFSET FLAT:$SG8088
+	lea	rcx, OFFSET FLAT:$SG8090
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 88   : 	interrupt_end(2);

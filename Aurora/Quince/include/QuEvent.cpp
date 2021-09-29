@@ -16,6 +16,7 @@
 #include <sys\_time.h>
 #include <sys\_kybrd.h>
 #include <sys\_process.h>
+#include <sys\ioquery.h>
 #include <stdlib.h>
 
 //! Quince Library
@@ -155,6 +156,9 @@ void QuEventLoop() {
 
 		//! Create Window Request
 		if (msg.type == QU_CODE_WIN_CREATE) {
+			////!Stop the mouse
+			ioquery (IO_QUERY_MOUSE, MOUSE_IOCODE_DISABLE,NULL);
+
 			uint16_t dest_id = msg.dword;
 			uint32_t* canvas = QuCanvasCreate(dest_id);
 		
@@ -171,6 +175,8 @@ void QuEventLoop() {
 			x += 30;
 			y += 30;
 			memset (&msg, 0, sizeof(message_t));
+
+			ioquery (IO_QUERY_MOUSE, MOUSE_IOCODE_ENABLE,NULL);
 		}
 
 

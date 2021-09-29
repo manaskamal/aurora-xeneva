@@ -43,7 +43,7 @@ void QuWindowMngr_Add (QuWindow *window) {
 	QuListAdd (WindowList, window);
 	focus_win = window;
 	draggable_win = window;
-	top_window = window;
+	//top_window = window;
 }
 
 

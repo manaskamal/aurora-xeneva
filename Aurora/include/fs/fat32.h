@@ -94,7 +94,7 @@ typedef struct _fat32_dir_
 #pragma pack(pop)
 
 extern void initialize_fat32 ();
-//extern FILE fat32_open (const char* filename);
+extern FILE fat32_open (const char* filename);
 extern void fat32_read_file (FILE *file, unsigned char* buf, int count);
 extern void fat32_read (FILE *file, unsigned char* buf);
 extern FILE fat32_locate_dir (const char* dir);

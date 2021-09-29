@@ -108,7 +108,7 @@ void expand_kmem (size_t length) {
 
 
 void* alloc(size_t size) {
-	
+	x64_cli();
 	if (size % 0x10 > 0) {
 		size -= (size % 0x10);
 		size += 0x10;
@@ -135,6 +135,7 @@ void* alloc(size_t size) {
 	}
 
 	expand_kmem(size);
+	x64_sti();
 	return alloc(size);
 }
 

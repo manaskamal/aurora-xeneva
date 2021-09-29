@@ -42,12 +42,14 @@ procmngr_queue* procmngr_get_process () {
 }
 
 void procmngr_create_process (procmngr_queue *queue) {
+	x64_cli();
 	create_process (queue->path,queue->name,1, "0");
+	x64_sti();
 }
 
 
 void procmngr_wakeup () {
-	thread_t *proc_thr = (thread_t*)thread_iterate_block_list (2);
+	thread_t *proc_thr = (thread_t*)thread_iterate_block_list (3);
 	if (proc_thr != NULL) {
 		if (!waked) {
 			waked = true;

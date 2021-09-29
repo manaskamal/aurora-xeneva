@@ -26,7 +26,7 @@
 
 #define KERNEL_BASE_ADDRESS  0xFFFFE00000000000
 #define USER_BASE_ADDRESS 0x0000400000000000
-
+uint64_t* root_cr3;
 
 size_t  pml4_index (uint64_t addr){
 	return (addr >> 39) & 0x1ff;
@@ -63,7 +63,7 @@ void vmmngr_x86_64_init () {
 	//! FIXME: the address assigned should be 4 KB aligned
 	uint64_t * pml4 = (uint64_t*)pmmngr_alloc(); 
 	uint64_t* old_pml4 = (uint64_t*)x64_read_cr3();
-
+	root_cr3 = pml4;
 	//! just copy the paging structure setuped by XNLDR 
 	//! for the kernel! also known as kernel address space
 	for (int i = 0; i < 512; i++) {
@@ -281,7 +281,7 @@ uint64_t *create_user_address_space ()
 {
 	
 	uint64_t* pml4_i = (uint64_t*)pmmngr_alloc(); 
-	uint64_t* old_pml4 = (uint64_t*)x64_read_cr3();
+	uint64_t* old_pml4 = (uint64_t*)x64_read_cr3(); //root_cr3;
 
 	memset (pml4_i, 0, 4096);
 	//! copy the 0 and 1 entries from old address space to new one
@@ -297,14 +297,15 @@ uint64_t *create_user_address_space ()
 		pml4_i[pml4_index(0xFFFFA00000000000 + i *4096) ] = old_pml4[pml4_index(0xFFFFA00000000000 + i *4096) ];
 	
 	//! copy the entire kernel to new address space {180kb kernel size}
-	for (int i=0; i < 0x100000/4096; i++) 
+	for (int i=0; i < 0x100000/4096; i++)  {
 		pml4_i[pml4_index(0xFFFFC00000000000 + i*4096)] = old_pml4[pml4_index(0xFFFFC00000000000 + i*4096)];
+	}
 
-	//
+	////
 	for (int i=0; i < get_screen_width() * get_screen_height() * 32 / 4096; i++) 
 		pml4_i[pml4_index(0xFFFFF00000000000 + i * 4096)] = old_pml4[pml4_index(0xFFFFF00000000000 + i * 4096)];
-	
-	////! copy the kernel heap area to new address space
+	//
+	//////! copy the kernel heap area to new address space
 	for (int i=0; i < 0x200000/4096; i++) 
 		pml4_i[pml4_index(0xFFFF800000000000 + i*4096)] = old_pml4[pml4_index(0xFFFF800000000000 + i*4096)];
 	

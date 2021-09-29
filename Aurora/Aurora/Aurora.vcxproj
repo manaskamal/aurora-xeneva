@@ -191,6 +191,7 @@
     <ClInclude Include="..\include\arch\x86_64\cpu.h" />
     <ClInclude Include="..\include\arch\x86_64\exception.h" />
     <ClInclude Include="..\include\arch\x86_64\ioapic.h" />
+    <ClInclude Include="..\include\arch\x86_64\kstack.h" />
     <ClInclude Include="..\include\arch\x86_64\mmngr\kheap.h" />
     <ClInclude Include="..\include\arch\x86_64\mmngr\map.h" />
     <ClInclude Include="..\include\arch\x86_64\mmngr\vmmngr.h" />
@@ -269,6 +270,7 @@
     <ClCompile Include="arch\x86_64\exception.cpp" />
     <ClCompile Include="arch\x86_64\ioapic.cpp" />
     <ClCompile Include="arch\x86_64\kheap.cpp" />
+    <ClCompile Include="arch\x86_64\kstack.cpp" />
     <ClCompile Include="arch\x86_64\map.cpp" />
     <ClCompile Include="arch\x86_64\pic.cpp" />
     <ClCompile Include="arch\x86_64\systable.cpp" />

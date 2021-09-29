@@ -17,6 +17,7 @@
 #include <ctype.h>
 #include <mm.h>
 #include <vfs.h>
+#include <console.h>
 
 
 unsigned int part_lba;  //partition_begin_lba
@@ -28,7 +29,7 @@ unsigned long root_sector;
 unsigned int sectors_per_fat32;
 int alloc_counter = 0;
 unsigned int total_clusters;
-
+unsigned char* root_dir_cache;
 
 #define max(a, b) ((a) >= (b) ? (a) : (b))
 
@@ -123,6 +124,12 @@ void initialize_fat32 () {
 	//printf ("Total Sectors -> %d\n", fat32_data->large_sector_count);
 	//printf ("Total sector++ -> %d\n", fat32_data->large_sector_count/ sectors_per_cluster);
 	total_clusters = fat32_data->large_sector_count / sectors_per_cluster;
+	root_dir_cache = (unsigned char*)pmmngr_alloc();
+	//for (int i = 0; i < sectors_per_cluster; i++) {
+	//	ata_read_28 (root_sector + i, 1, root_dir_cache);
+	//	root_dir_cache += 512;
+	//}
+
 }
 
 
@@ -173,7 +180,6 @@ void fat32_read_file (FILE *file, unsigned char* buf, int count) {
 }
 
 FILE fat32_locate_dir (const char* dir) {
-    
 	FILE file;
 	unsigned char* buf;
 	fat32_dir *dirent;
@@ -181,19 +187,17 @@ FILE fat32_locate_dir (const char* dir) {
 	char dos_file_name[11];
 	to_dos_file_name32 (dir, dos_file_name, 11);
 	//dos_file_name[11]=0;
-
-	for (unsigned int sector = 0; sector < 14; sector++) {
+	for (unsigned int sector = 0; sector < sectors_per_cluster; sector++) {
 		buf = (unsigned char*)pmmngr_alloc ();
+		memset (buf, 0, 4096);
 		ata_read_28 (root_sector + sector,1, buf);
 		dirent = (fat32_dir*)buf;
 		for (int i=0; i < 16; i++) {
 			
 			char name[11];
 			memcpy (name, dirent->filename, 11);
-			//name[11] = 0;
-
+			name[11] = 0;
 			if (strcmp (dos_file_name, name) == 0) {
-				//kprintf ("File found\n");
 				strcpy (file.filename, dir);
 				file.id = 10;   //boot disk device id
 				file.start_cluster = dirent->first_cluster;
@@ -352,8 +356,9 @@ FILE fat32_open (const char* filename) {
 		cur_dir = fat32_locate_dir (path);
 
 		//! found file ?
-		if (cur_dir.flags == FILE_FLAG_GENERAL)
+		if (cur_dir.flags == FILE_FLAG_GENERAL) {
 			return cur_dir;
+		}
 
 		//! unable to find
 		FILE ret;

@@ -7,13 +7,16 @@ INCLUDELIB OLDNAMES
 
 PUBLIC	?create__sys_process@@YAXPEBDPEAD@Z		; create__sys_process
 PUBLIC	?sys_exit@@YAXXZ				; sys_exit
+EXTRN	?pmmngr_alloc@@YAPEAXXZ:PROC			; pmmngr_alloc
 EXTRN	x64_cli:PROC
 EXTRN	?force_sched@@YAXXZ:PROC			; force_sched
-EXTRN	?create_process@@YAXPEBDPEADE1@Z:PROC		; create_process
+EXTRN	?strcpy@@YAPEADPEADPEBD@Z:PROC			; strcpy
 EXTRN	?kill_process@@YAXXZ:PROC			; kill_process
+EXTRN	?procmngr_add_process@@YAXPEAU_procmngr_queue_@@@Z:PROC ; procmngr_add_process
+EXTRN	?procmngr_wakeup@@YAXXZ:PROC			; procmngr_wakeup
 pdata	SEGMENT
 $pdata$?create__sys_process@@YAXPEBDPEAD@Z DD imagerel $LN3
-	DD	imagerel $LN3+45
+	DD	imagerel $LN3+84
 	DD	imagerel $unwind$?create__sys_process@@YAXPEBDPEAD@Z
 $pdata$?sys_exit@@YAXXZ DD imagerel $LN3
 	DD	imagerel $LN3+24
@@ -21,7 +24,7 @@ $pdata$?sys_exit@@YAXXZ DD imagerel $LN3
 pdata	ENDS
 xdata	SEGMENT
 $unwind$?create__sys_process@@YAXPEBDPEAD@Z DD 010e01H
-	DD	0420eH
+	DD	0620eH
 $unwind$?sys_exit@@YAXXZ DD 010401H
 	DD	04204H
 xdata	ENDS
@@ -56,8 +59,9 @@ _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\sysserv\sysproc.cpp
 _TEXT	SEGMENT
-name$ = 48
-procnm$ = 56
+queue$ = 32
+name$ = 64
+procnm$ = 72
 ?create__sys_process@@YAXPEBDPEAD@Z PROC		; create__sys_process
 
 ; 4    : void create__sys_process (const char* name, char* procnm) {
@@ -65,28 +69,42 @@ procnm$ = 56
 $LN3:
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
-	sub	rsp, 40					; 00000028H
+	sub	rsp, 56					; 00000038H
 
-; 5    : 	x64_cli();
+; 5    : 	//x64_cli();
+; 6    : 	procmngr_queue *queue = (procmngr_queue*)pmmngr_alloc();
 
-	call	x64_cli
+	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
+	mov	QWORD PTR queue$[rsp], rax
 
-; 6    : 	/*procmngr_queue *queue = (procmngr_queue*)pmmngr_alloc();
-; 7    : 	strcpy(queue->name, "uproc");
-; 8    : 	strcpy(queue->path,name);
-; 9    : 	procmngr_add_process (queue);
-; 10   : 	procmngr_wakeup();*/
-; 11   : 	create_process (name, procnm, 1, NULL);
+; 7    : 	strcpy(queue->name, procnm);
 
-	xor	r9d, r9d
-	mov	r8b, 1
+	mov	rax, QWORD PTR queue$[rsp]
 	mov	rdx, QWORD PTR procnm$[rsp]
-	mov	rcx, QWORD PTR name$[rsp]
-	call	?create_process@@YAXPEBDPEADE1@Z	; create_process
+	mov	rcx, rax
+	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
 
+; 8    : 	strcpy(queue->path,name);
+
+	mov	rax, QWORD PTR queue$[rsp]
+	add	rax, 8
+	mov	rdx, QWORD PTR name$[rsp]
+	mov	rcx, rax
+	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
+
+; 9    : 	procmngr_add_process (queue);
+
+	mov	rcx, QWORD PTR queue$[rsp]
+	call	?procmngr_add_process@@YAXPEAU_procmngr_queue_@@@Z ; procmngr_add_process
+
+; 10   : 	procmngr_wakeup();
+
+	call	?procmngr_wakeup@@YAXXZ			; procmngr_wakeup
+
+; 11   : 	//create_process (name, procnm, 1, NULL);
 ; 12   : }
 
-	add	rsp, 40					; 00000028H
+	add	rsp, 56					; 00000038H
 	ret	0
 ?create__sys_process@@YAXPEBDPEAD@Z ENDP		; create__sys_process
 _TEXT	ENDS

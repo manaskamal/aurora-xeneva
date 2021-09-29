@@ -134,6 +134,8 @@ E:\XENEVA PROJECT\XENEVA\AURORA\AURORA\X64\DEBUG\IOAPIC.OBJ
 E:\XENEVA PROJECT\XENEVA\AURORA\AURORA\X64\DEBUG\IOAPIC.ASM
 E:\XENEVA PROJECT\XENEVA\AURORA\AURORA\X64\DEBUG\KHEAP.OBJ
 E:\XENEVA PROJECT\XENEVA\AURORA\AURORA\X64\DEBUG\KHEAP.ASM
+E:\XENEVA PROJECT\XENEVA\AURORA\AURORA\X64\DEBUG\KSTACK.OBJ
+E:\XENEVA PROJECT\XENEVA\AURORA\AURORA\X64\DEBUG\KSTACK.ASM
 E:\XENEVA PROJECT\XENEVA\AURORA\AURORA\X64\DEBUG\MAP.OBJ
 E:\XENEVA PROJECT\XENEVA\AURORA\AURORA\X64\DEBUG\MAP.ASM
 E:\XENEVA PROJECT\XENEVA\AURORA\AURORA\X64\DEBUG\PIC.OBJ
@@ -164,6 +166,7 @@ E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\init.obj
 E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\ioapic.obj
 E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\ioquery.obj
 E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\kheap.obj
+E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\kstack.obj
 E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\kybrd.obj
 E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\lnklist.obj
 E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\map.obj

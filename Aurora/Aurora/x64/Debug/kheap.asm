@@ -21,6 +21,8 @@ PUBLIC	?alloc@@YAPEAX_K@Z				; alloc
 PUBLIC	?free@@YAXPEAX@Z				; free
 PUBLIC	?expand_kmem@@YAX_K@Z				; expand_kmem
 EXTRN	?pmmngr_alloc@@YAPEAXXZ:PROC			; pmmngr_alloc
+EXTRN	x64_cli:PROC
+EXTRN	x64_sti:PROC
 EXTRN	?map_page@@YA_N_K0@Z:PROC			; map_page
 pdata	SEGMENT
 $pdata$?align_prev@kmem@@QEAAXXZ DD imagerel $LN4
@@ -33,7 +35,7 @@ $pdata$?initialize_kmemory@@YAX_K@Z DD imagerel $LN6
 	DD	imagerel $LN6+236
 	DD	imagerel $unwind$?initialize_kmemory@@YAX_K@Z
 $pdata$?alloc@@YAPEAX_K@Z DD imagerel $LN11
-	DD	imagerel $LN11+274
+	DD	imagerel $LN11+284
 	DD	imagerel $unwind$?alloc@@YAPEAX_K@Z
 $pdata$?free@@YAXPEAX@Z DD imagerel $LN3
 	DD	imagerel $LN3+57
@@ -200,34 +202,34 @@ seg$ = 32
 memory$ = 64
 ?free@@YAXPEAX@Z PROC					; free
 
-; 141  : void free (void* memory) {
+; 142  : void free (void* memory) {
 
 $LN3:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 56					; 00000038H
 
-; 142  :    kmem* seg = (kmem*)memory - 1;
+; 143  :    kmem* seg = (kmem*)memory - 1;
 
 	mov	rax, QWORD PTR memory$[rsp]
 	sub	rax, 32					; 00000020H
 	mov	QWORD PTR seg$[rsp], rax
 
-; 143  :    seg->free = true;
+; 144  :    seg->free = true;
 
 	mov	rax, QWORD PTR seg$[rsp]
 	mov	BYTE PTR [rax+24], 1
 
-; 144  :    seg->align_next();
+; 145  :    seg->align_next();
 
 	mov	rcx, QWORD PTR seg$[rsp]
 	call	?align_next@kmem@@QEAAXXZ		; kmem::align_next
 
-; 145  :    seg->align_prev();	
+; 146  :    seg->align_prev();	
 
 	mov	rcx, QWORD PTR seg$[rsp]
 	call	?align_prev@kmem@@QEAAXXZ		; kmem::align_prev
 
-; 146  : }
+; 147  : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -246,7 +248,10 @@ $LN11:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 56					; 00000038H
 
-; 111  : 	
+; 111  : 	x64_cli();
+
+	call	x64_cli
+
 ; 112  : 	if (size % 0x10 > 0) {
 
 	xor	edx, edx
@@ -380,13 +385,17 @@ $LN5@alloc:
 	mov	rcx, QWORD PTR size$[rsp]
 	call	?expand_kmem@@YAX_K@Z			; expand_kmem
 
-; 138  : 	return alloc(size);
+; 138  : 	x64_sti();
+
+	call	x64_sti
+
+; 139  : 	return alloc(size);
 
 	mov	rcx, QWORD PTR size$[rsp]
 	call	?alloc@@YAPEAX_K@Z			; alloc
 $LN9@alloc:
 
-; 139  : }
+; 140  : }
 
 	add	rsp, 56					; 00000038H
 	ret	0

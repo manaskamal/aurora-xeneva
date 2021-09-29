@@ -330,6 +330,9 @@
     <ClInclude Include="..\include\drivers\vbox.h">
       <Filter>include\drivers</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\arch\x86_64\kstack.h">
+      <Filter>include\arch\x86_64</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="init.cpp">
@@ -532,6 +535,9 @@
     </ClCompile>
     <ClCompile Include="drivers\vbox.cpp">
       <Filter>source\drivers</Filter>
+    </ClCompile>
+    <ClCompile Include="arch\x86_64\kstack.cpp">
+      <Filter>source\arch\x86_64</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

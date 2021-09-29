@@ -11,6 +11,7 @@
 
 #include <arch\x86_64\thread.h>
 #include <arch\x86_64\user64.h>
+#include <arch\x86_64\kstack.h>
 #include <stdio.h>
 #include <atomic\mutex.h>
 #include <utils\lnklist.h>
@@ -150,7 +151,7 @@ thread_t* create_user_thread (void (*entry) (void*),uint64_t stack,uint64_t cr3,
 	t->r13 = 0;
 	t->r14 = 0;
 	t->r15 = 0;
-	t->kern_esp = (uint64_t)pmmngr_alloc() + 4096;
+	t->kern_esp = (uint64_t)allocate_kstack((uint64_t*)cr3);
 	t->ds = 0x23;
 	t->es = 0x23;
 	t->fs = 0x23;

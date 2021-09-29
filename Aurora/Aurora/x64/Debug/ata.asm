@@ -26,15 +26,19 @@ _BSS	SEGMENT
 ?ide_irq_invoked@@3IA DD 01H DUP (?)			; ide_irq_invoked
 _BSS	ENDS
 CONST	SEGMENT
-$SG2914	DB	'master ', 00H
-$SG2915	DB	'slave', 00H
-	ORG $+2
-$SG2916	DB	'primary', 00H
-$SG2917	DB	'secondary', 00H
-	ORG $+6
-$SG2918	DB	'ATA: %s s has error. disabled, ', 0aH, 00H
+$SG2893	DB	'Ide primary irq', 0aH, 00H
 	ORG $+7
-$SG2948	DB	'[ATA]: error!, device failure!', 0aH, 00H
+$SG2898	DB	'Ide sec irq', 0aH, 00H
+	ORG $+3
+$SG2916	DB	'master ', 00H
+$SG2917	DB	'slave', 00H
+	ORG $+2
+$SG2918	DB	'primary', 00H
+$SG2919	DB	'secondary', 00H
+	ORG $+6
+$SG2920	DB	'ATA: %s s has error. disabled, ', 0aH, 00H
+	ORG $+7
+$SG2950	DB	'[ATA]: error!, device failure!', 0aH, 00H
 CONST	ENDS
 PUBLIC	?ata_initialize@@YAXXZ				; ata_initialize
 PUBLIC	?ata_read_28@@YAEIGPEAE@Z			; ata_read_28
@@ -87,10 +91,10 @@ $pdata$?reset_ata_controller@@YAXG@Z DD imagerel ?reset_ata_controller@@YAXG@Z
 	DD	imagerel ?reset_ata_controller@@YAXG@Z+131
 	DD	imagerel $unwind$?reset_ata_controller@@YAXG@Z
 $pdata$?ide_primary_irq@@YAX_KPEAX@Z DD imagerel $LN3
-	DD	imagerel $LN3+39
+	DD	imagerel $LN3+51
 	DD	imagerel $unwind$?ide_primary_irq@@YAX_KPEAX@Z
 $pdata$?ide_secondary_irq@@YAX_KPEAX@Z DD imagerel $LN3
-	DD	imagerel $LN3+38
+	DD	imagerel $LN3+50
 	DD	imagerel $unwind$?ide_secondary_irq@@YAX_KPEAX@Z
 $pdata$?ide_identify@@YA_NEE@Z DD imagerel $LN19
 	DD	imagerel $LN19+433
@@ -149,12 +153,12 @@ i$1 = 32
 i$2 = 36
 ?ata_probe@@YAXXZ PROC					; ata_probe
 
-; 460  : {
+; 462  : {
 
 $LN11:
 	sub	rsp, 56					; 00000038H
 
-; 461  : 	if (ide_identify (ATA_PRIMARY, ATA_MASTER))
+; 463  : 	if (ide_identify (ATA_PRIMARY, ATA_MASTER))
 
 	xor	edx, edx
 	xor	ecx, ecx
@@ -163,19 +167,19 @@ $LN11:
 	test	eax, eax
 	je	$LN8@ata_probe
 
-; 462  : 	{
-; 463  : 		ata_pm = 1;
+; 464  : 	{
+; 465  : 		ata_pm = 1;
 
 	mov	BYTE PTR ?ata_pm@@3EA, 1		; ata_pm
 
-; 464  : 		memset (ata_device_name, 0, 40);
+; 466  : 		memset (ata_device_name, 0, 40);
 
 	mov	r8d, 40					; 00000028H
 	xor	edx, edx
 	lea	rcx, OFFSET FLAT:?ata_device_name@@3PADA ; ata_device_name
 	call	?memset@@YAXPEAXEI@Z			; memset
 
-; 465  : 		for (int i= 0; i < 40; i += 2)
+; 467  : 		for (int i= 0; i < 40; i += 2)
 
 	mov	DWORD PTR i$1[rsp], 0
 	jmp	SHORT $LN7@ata_probe
@@ -187,8 +191,8 @@ $LN7@ata_probe:
 	cmp	DWORD PTR i$1[rsp], 40			; 00000028H
 	jge	SHORT $LN5@ata_probe
 
-; 466  : 		{
-; 467  : 			ata_device_name[i] = ide_buf[ATA_IDENT_MODEL + i + 1];
+; 468  : 		{
+; 469  : 			ata_device_name[i] = ide_buf[ATA_IDENT_MODEL + i + 1];
 
 	mov	eax, DWORD PTR i$1[rsp]
 	add	eax, 55					; 00000037H
@@ -199,7 +203,7 @@ $LN7@ata_probe:
 	movzx	eax, BYTE PTR [rcx+rax]
 	mov	BYTE PTR [r8+rdx], al
 
-; 468  : 			ata_device_name[i + 1] = ide_buf[ATA_IDENT_MODEL + i];
+; 470  : 			ata_device_name[i + 1] = ide_buf[ATA_IDENT_MODEL + i];
 
 	mov	eax, DWORD PTR i$1[rsp]
 	add	eax, 54					; 00000036H
@@ -212,21 +216,21 @@ $LN7@ata_probe:
 	movzx	eax, BYTE PTR [rcx+rax]
 	mov	BYTE PTR [r8+rdx], al
 
-; 469  : 		}
+; 471  : 		}
 
 	jmp	SHORT $LN6@ata_probe
 $LN5@ata_probe:
 
-; 470  : 
-; 471  : 		//printf("[ATA]: Primary-Master Device: %s\n", ata_device_name);
-; 472  : 		ata_drive = (ATA_PRIMARY << 1) | ATA_MASTER;
+; 472  : 
+; 473  : 		//printf("[ATA]: Primary-Master Device: %s\n", ata_device_name);
+; 474  : 		ata_drive = (ATA_PRIMARY << 1) | ATA_MASTER;
 
 	mov	BYTE PTR ?ata_drive@@3EA, 0		; ata_drive
 $LN8@ata_probe:
 
-; 473  : 	}
-; 474  : 
-; 475  : 	if (ide_identify (ATA_PRIMARY, ATA_SLAVE)) {
+; 475  : 	}
+; 476  : 
+; 477  : 	if (ide_identify (ATA_PRIMARY, ATA_SLAVE)) {
 
 	mov	dl, 1
 	xor	ecx, ecx
@@ -235,15 +239,15 @@ $LN8@ata_probe:
 	test	eax, eax
 	je	$LN4@ata_probe
 
-; 476  : 		//ata_pm = 1;
-; 477  : 		memset (ata_device_name, 0, 40);
+; 478  : 		//ata_pm = 1;
+; 479  : 		memset (ata_device_name, 0, 40);
 
 	mov	r8d, 40					; 00000028H
 	xor	edx, edx
 	lea	rcx, OFFSET FLAT:?ata_device_name@@3PADA ; ata_device_name
 	call	?memset@@YAXPEAXEI@Z			; memset
 
-; 478  : 		for (int i= 0; i < 40; i += 2)
+; 480  : 		for (int i= 0; i < 40; i += 2)
 
 	mov	DWORD PTR i$2[rsp], 0
 	jmp	SHORT $LN3@ata_probe
@@ -255,8 +259,8 @@ $LN3@ata_probe:
 	cmp	DWORD PTR i$2[rsp], 40			; 00000028H
 	jge	SHORT $LN1@ata_probe
 
-; 479  : 		{
-; 480  : 			ata_device_name[i] = ide_buf[ATA_IDENT_MODEL + i + 1];
+; 481  : 		{
+; 482  : 			ata_device_name[i] = ide_buf[ATA_IDENT_MODEL + i + 1];
 
 	mov	eax, DWORD PTR i$2[rsp]
 	add	eax, 55					; 00000037H
@@ -267,7 +271,7 @@ $LN3@ata_probe:
 	movzx	eax, BYTE PTR [rcx+rax]
 	mov	BYTE PTR [r8+rdx], al
 
-; 481  : 			ata_device_name[i + 1] = ide_buf[ATA_IDENT_MODEL + i];
+; 483  : 			ata_device_name[i + 1] = ide_buf[ATA_IDENT_MODEL + i];
 
 	mov	eax, DWORD PTR i$2[rsp]
 	add	eax, 54					; 00000036H
@@ -280,20 +284,20 @@ $LN3@ata_probe:
 	movzx	eax, BYTE PTR [rcx+rax]
 	mov	BYTE PTR [r8+rdx], al
 
-; 482  : 		}
+; 484  : 		}
 
 	jmp	SHORT $LN2@ata_probe
 $LN1@ata_probe:
 
-; 483  : 
-; 484  : 		ata_slave_drive = (ATA_PRIMARY << 1) | ATA_SLAVE;
+; 485  : 
+; 486  : 		ata_slave_drive = (ATA_PRIMARY << 1) | ATA_SLAVE;
 
 	mov	BYTE PTR ?ata_slave_drive@@3EA, 1	; ata_slave_drive
 $LN4@ata_probe:
 
-; 485  : 		//printf("[ATA]: Primary-Slave Device: %s\n", ata_device_name);
-; 486  : 	}
-; 487  : }
+; 487  : 		//printf("[ATA]: Primary-Slave Device: %s\n", ata_device_name);
+; 488  : 	}
+; 489  : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -312,7 +316,7 @@ sector_count$ = 72
 target$ = 80
 ?ata_read_48@@YAX_KGPEAE@Z PROC				; ata_read_48
 
-; 290  : {
+; 292  : {
 
 $LN15:
 	mov	QWORD PTR [rsp+24], r8
@@ -320,13 +324,13 @@ $LN15:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 56					; 00000038H
 
-; 291  : 
-; 292  : 	uint16_t io = 0;
+; 293  : 
+; 294  : 	uint16_t io = 0;
 
 	xor	eax, eax
 	mov	WORD PTR io$[rsp], ax
 
-; 293  : 	switch (ata_drive)
+; 295  : 	switch (ata_drive)
 
 	movzx	eax, BYTE PTR ?ata_drive@@3EA		; ata_drive
 	mov	BYTE PTR tv65[rsp], al
@@ -341,76 +345,76 @@ $LN15:
 	jmp	SHORT $LN4@ata_read_4
 $LN8@ata_read_4:
 
-; 294  : 	{
-; 295  : 	case (ATA_PRIMARY << 1 |  ATA_MASTER):
-; 296  : 		io = ATA_PRIMARY_IO;
+; 296  : 	{
+; 297  : 	case (ATA_PRIMARY << 1 |  ATA_MASTER):
+; 298  : 		io = ATA_PRIMARY_IO;
 
 	mov	eax, 496				; 000001f0H
 	mov	WORD PTR io$[rsp], ax
 
-; 297  : 		ata_drive = ATA_MASTER;
+; 299  : 		ata_drive = ATA_MASTER;
 
 	mov	BYTE PTR ?ata_drive@@3EA, 0		; ata_drive
 
-; 298  : 		break;
+; 300  : 		break;
 
 	jmp	SHORT $LN9@ata_read_4
 $LN7@ata_read_4:
 
-; 299  : 	case (ATA_PRIMARY << 1 | ATA_SLAVE):
-; 300  : 		io = ATA_PRIMARY_IO;
+; 301  : 	case (ATA_PRIMARY << 1 | ATA_SLAVE):
+; 302  : 		io = ATA_PRIMARY_IO;
 
 	mov	eax, 496				; 000001f0H
 	mov	WORD PTR io$[rsp], ax
 
-; 301  : 		ata_drive = ATA_SLAVE;
+; 303  : 		ata_drive = ATA_SLAVE;
 
 	mov	BYTE PTR ?ata_drive@@3EA, 1		; ata_drive
 
-; 302  : 		break;
+; 304  : 		break;
 
 	jmp	SHORT $LN9@ata_read_4
 $LN6@ata_read_4:
 
-; 303  : 	case (ATA_SECONDARY << 1 | ATA_MASTER):
-; 304  : 		io = ATA_SECONDARY_IO;
+; 305  : 	case (ATA_SECONDARY << 1 | ATA_MASTER):
+; 306  : 		io = ATA_SECONDARY_IO;
 
 	mov	eax, 368				; 00000170H
 	mov	WORD PTR io$[rsp], ax
 
-; 305  : 		ata_drive = ATA_MASTER;
+; 307  : 		ata_drive = ATA_MASTER;
 
 	mov	BYTE PTR ?ata_drive@@3EA, 0		; ata_drive
 
-; 306  : 		break;
+; 308  : 		break;
 
 	jmp	SHORT $LN9@ata_read_4
 $LN5@ata_read_4:
 
-; 307  : 	case (ATA_SECONDARY << 1 | ATA_SLAVE):
-; 308  : 		io = ATA_SECONDARY_IO;
+; 309  : 	case (ATA_SECONDARY << 1 | ATA_SLAVE):
+; 310  : 		io = ATA_SECONDARY_IO;
 
 	mov	eax, 368				; 00000170H
 	mov	WORD PTR io$[rsp], ax
 
-; 309  : 		ata_drive = ATA_SLAVE;
+; 311  : 		ata_drive = ATA_SLAVE;
 
 	mov	BYTE PTR ?ata_drive@@3EA, 1		; ata_drive
 
-; 310  : 		break;
+; 312  : 		break;
 
 	jmp	SHORT $LN9@ata_read_4
 $LN4@ata_read_4:
 
-; 311  : 	default:
-; 312  : 		return;
+; 313  : 	default:
+; 314  : 		return;
 
 	jmp	$LN11@ata_read_4
 $LN9@ata_read_4:
 
-; 313  : 	}
-; 314  : 
-; 315  : 	uint8_t cmd = (ata_drive == ATA_MASTER ? 0x40 : 0x50);
+; 315  : 	}
+; 316  : 
+; 317  : 	uint8_t cmd = (ata_drive == ATA_MASTER ? 0x40 : 0x50);
 
 	movzx	eax, BYTE PTR ?ata_drive@@3EA		; ata_drive
 	test	eax, eax
@@ -423,8 +427,8 @@ $LN14@ata_read_4:
 	movzx	eax, BYTE PTR tv74[rsp]
 	mov	BYTE PTR cmd$[rsp], al
 
-; 316  : 
-; 317  : 	outportb (io + ATA_REG_HDDEVSEL, cmd);
+; 318  : 
+; 319  : 	outportb (io + ATA_REG_HDDEVSEL, cmd);
 
 	movzx	eax, WORD PTR io$[rsp]
 	add	eax, 6
@@ -432,7 +436,7 @@ $LN14@ata_read_4:
 	movzx	ecx, ax
 	call	?outportb@@YAXGE@Z			; outportb
 
-; 318  : 	outportb (io + ATA_REG_SECCOUNT0, (sector_count >> 8) & 0xFF);
+; 320  : 	outportb (io + ATA_REG_SECCOUNT0, (sector_count >> 8) & 0xFF);
 
 	movzx	eax, WORD PTR sector_count$[rsp]
 	sar	eax, 8
@@ -442,7 +446,7 @@ $LN14@ata_read_4:
 	movzx	edx, al
 	call	?outportb@@YAXGE@Z			; outportb
 
-; 319  : 	outportb (io + ATA_REG_LBA0, (lba >> 24) & 0xFF);
+; 321  : 	outportb (io + ATA_REG_LBA0, (lba >> 24) & 0xFF);
 
 	mov	rax, QWORD PTR lba$[rsp]
 	shr	rax, 24
@@ -452,7 +456,7 @@ $LN14@ata_read_4:
 	movzx	edx, al
 	call	?outportb@@YAXGE@Z			; outportb
 
-; 320  : 	outportb (io + ATA_REG_LBA1, (lba >> 32) & 0xFF);
+; 322  : 	outportb (io + ATA_REG_LBA1, (lba >> 32) & 0xFF);
 
 	mov	rax, QWORD PTR lba$[rsp]
 	shr	rax, 32					; 00000020H
@@ -462,7 +466,7 @@ $LN14@ata_read_4:
 	movzx	edx, al
 	call	?outportb@@YAXGE@Z			; outportb
 
-; 321  : 	outportb (io + ATA_REG_LBA2, (lba >> 40) & 0xFF);
+; 323  : 	outportb (io + ATA_REG_LBA2, (lba >> 40) & 0xFF);
 
 	mov	rax, QWORD PTR lba$[rsp]
 	shr	rax, 40					; 00000028H
@@ -472,7 +476,7 @@ $LN14@ata_read_4:
 	movzx	edx, al
 	call	?outportb@@YAXGE@Z			; outportb
 
-; 322  : 	outportb (io + ATA_REG_SECCOUNT0, sector_count & 0xFF);
+; 324  : 	outportb (io + ATA_REG_SECCOUNT0, sector_count & 0xFF);
 
 	movzx	eax, WORD PTR sector_count$[rsp]
 	and	eax, 255				; 000000ffH
@@ -481,7 +485,7 @@ $LN14@ata_read_4:
 	movzx	edx, al
 	call	?outportb@@YAXGE@Z			; outportb
 
-; 323  : 	outportb (io + ATA_REG_LBA0, lba & 0xFF);
+; 325  : 	outportb (io + ATA_REG_LBA0, lba & 0xFF);
 
 	mov	rax, QWORD PTR lba$[rsp]
 	and	rax, 255				; 000000ffH
@@ -490,7 +494,7 @@ $LN14@ata_read_4:
 	movzx	edx, al
 	call	?outportb@@YAXGE@Z			; outportb
 
-; 324  : 	outportb (io + ATA_REG_LBA1, (lba >> 8) & 0xFF);
+; 326  : 	outportb (io + ATA_REG_LBA1, (lba >> 8) & 0xFF);
 
 	mov	rax, QWORD PTR lba$[rsp]
 	shr	rax, 8
@@ -500,7 +504,7 @@ $LN14@ata_read_4:
 	movzx	edx, al
 	call	?outportb@@YAXGE@Z			; outportb
 
-; 325  : 	outportb (io + ATA_REG_LBA2, (lba >> 16) & 0xFF);
+; 327  : 	outportb (io + ATA_REG_LBA2, (lba >> 16) & 0xFF);
 
 	mov	rax, QWORD PTR lba$[rsp]
 	shr	rax, 16
@@ -510,7 +514,7 @@ $LN14@ata_read_4:
 	movzx	edx, al
 	call	?outportb@@YAXGE@Z			; outportb
 
-; 326  : 	outportb (io + ATA_REG_STATUS, ATA_CMD_READ_PIO_EXT);
+; 328  : 	outportb (io + ATA_REG_STATUS, ATA_CMD_READ_PIO_EXT);
 
 	movzx	eax, WORD PTR io$[rsp]
 	add	eax, 7
@@ -518,15 +522,15 @@ $LN14@ata_read_4:
 	movzx	ecx, ax
 	call	?outportb@@YAXGE@Z			; outportb
 
-; 327  : 	
-; 328  : 
-; 329  : 	ide_poll(io);
+; 329  : 	
+; 330  : 
+; 331  : 	ide_poll(io);
 
 	movzx	ecx, WORD PTR io$[rsp]
 	call	?ide_poll@@YAXG@Z			; ide_poll
 
-; 330  : 	uint8_t i;
-; 331  : 	for (i = 0; i < 256; i++)
+; 332  : 	uint8_t i;
+; 333  : 	for (i = 0; i < 256; i++)
 
 	mov	BYTE PTR i$[rsp], 0
 	jmp	SHORT $LN3@ata_read_4
@@ -539,9 +543,9 @@ $LN3@ata_read_4:
 	cmp	eax, 256				; 00000100H
 	jge	SHORT $LN1@ata_read_4
 
-; 332  : 	{
-; 333  : 
-; 334  : 		 *(uint16_t*)(target + i * 2) = inportw (io + ATA_REG_DATA);
+; 334  : 	{
+; 335  : 
+; 336  : 		 *(uint16_t*)(target + i * 2) = inportw (io + ATA_REG_DATA);
 
 	movzx	ecx, WORD PTR io$[rsp]
 	call	?inportw@@YAGG@Z			; inportw
@@ -551,21 +555,21 @@ $LN3@ata_read_4:
 	mov	rdx, QWORD PTR target$[rsp]
 	mov	WORD PTR [rdx+rcx], ax
 
-; 335  : 		
-; 336  : 	}
+; 337  : 		
+; 338  : 	}
 
 	jmp	SHORT $LN2@ata_read_4
 $LN1@ata_read_4:
 
-; 337  :     
-; 338  : 	ide_400ns_delay(io);
+; 339  :     
+; 340  : 	ide_400ns_delay(io);
 
 	movzx	ecx, WORD PTR io$[rsp]
 	call	?ide_400ns_delay@@YAXG@Z		; ide_400ns_delay
 $LN11@ata_read_4:
 
-; 339  : 	//kprintf("\nData 48 bit read");
-; 340  : }
+; 341  : 	//kprintf("\nData 48 bit read");
+; 342  : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -579,13 +583,13 @@ i$1 = 36
 io$ = 64
 ?ide_poll@@YAXG@Z PROC					; ide_poll
 
-; 143  : {
+; 145  : {
 
 $LN9:
 	mov	WORD PTR [rsp+8], cx
 	sub	rsp, 56					; 00000038H
 
-; 144  : 	for (int i = 0; i < 4; i++)
+; 146  : 	for (int i = 0; i < 4; i++)
 
 	mov	DWORD PTR i$1[rsp], 0
 	jmp	SHORT $LN6@ide_poll
@@ -597,22 +601,22 @@ $LN6@ide_poll:
 	cmp	DWORD PTR i$1[rsp], 4
 	jge	SHORT $LN4@ide_poll
 
-; 145  : 	{
-; 146  : 		inportb (io + ATA_REG_STATUS);
+; 147  : 	{
+; 148  : 		inportb (io + ATA_REG_STATUS);
 
 	movzx	eax, WORD PTR io$[rsp]
 	add	eax, 7
 	movzx	ecx, ax
 	call	?inportb@@YAEG@Z			; inportb
 
-; 147  : 	}
+; 149  : 	}
 
 	jmp	SHORT $LN5@ide_poll
 $LN4@ide_poll:
 $retry$10:
 
-; 148  : retry:
-; 149  : 	uint8_t status = inportb (io + ATA_REG_STATUS);
+; 150  : retry:
+; 151  : 	uint8_t status = inportb (io + ATA_REG_STATUS);
 
 	movzx	eax, WORD PTR io$[rsp]
 	add	eax, 7
@@ -620,26 +624,26 @@ $retry$10:
 	call	?inportb@@YAEG@Z			; inportb
 	mov	BYTE PTR status$[rsp], al
 
-; 150  : 
-; 151  : 	if (status & ATA_SR_BSY)
+; 152  : 
+; 153  : 	if (status & ATA_SR_BSY)
 
 	movzx	eax, BYTE PTR status$[rsp]
 	and	eax, 128				; 00000080H
 	test	eax, eax
 	je	SHORT $LN3@ide_poll
 
-; 152  : 	{
-; 153  : 		//kprintf ("\n ATA status busy");
-; 154  : 		goto retry;
+; 154  : 	{
+; 155  : 		//kprintf ("\n ATA status busy");
+; 156  : 		goto retry;
 
 	jmp	SHORT $retry$10
 $LN3@ide_poll:
 $retry2$11:
 
-; 155  : 	}
-; 156  : 
-; 157  : retry2:
-; 158  : 	status = inportb (io + ATA_REG_STATUS);
+; 157  : 	}
+; 158  : 
+; 159  : retry2:
+; 160  : 	status = inportb (io + ATA_REG_STATUS);
 
 	movzx	eax, WORD PTR io$[rsp]
 	add	eax, 7
@@ -647,40 +651,40 @@ $retry2$11:
 	call	?inportb@@YAEG@Z			; inportb
 	mov	BYTE PTR status$[rsp], al
 
-; 159  : 	if (status & ATA_SR_ERR)
+; 161  : 	if (status & ATA_SR_ERR)
 
 	movzx	eax, BYTE PTR status$[rsp]
 	and	eax, 1
 	test	eax, eax
 	je	SHORT $LN2@ide_poll
 
-; 160  : 	{
-; 161  : 		printf("[ATA]: error!, device failure!\n");
+; 162  : 	{
+; 163  : 		printf("[ATA]: error!, device failure!\n");
 
-	lea	rcx, OFFSET FLAT:$SG2948
+	lea	rcx, OFFSET FLAT:$SG2950
 	call	?printf@@YAXPEBDZZ			; printf
 $LN2@ide_poll:
 
-; 162  : 	}
-; 163  : 
-; 164  : 	if (! (status & ATA_SR_DRQ))
+; 164  : 	}
+; 165  : 
+; 166  : 	if (! (status & ATA_SR_DRQ))
 
 	movzx	eax, BYTE PTR status$[rsp]
 	and	eax, 8
 	test	eax, eax
 	jne	SHORT $LN1@ide_poll
 
-; 165  : 	{
-; 166  : 		//printf ("[ATA]: Status, drq");
-; 167  : 		goto retry2;
+; 167  : 	{
+; 168  : 		//printf ("[ATA]: Status, drq");
+; 169  : 		goto retry2;
 
 	jmp	SHORT $retry2$11
 $LN1@ide_poll:
 
-; 168  : 	}
-; 169  : 
-; 170  : 	return;
-; 171  : }
+; 170  : 	}
+; 171  : 
+; 172  : 	return;
+; 173  : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -694,14 +698,14 @@ i$2 = 36
 io$ = 64
 ?ide_400ns_delay@@YAXG@Z PROC				; ide_400ns_delay
 
-; 134  : {
+; 136  : {
 
 $LN6:
 	mov	WORD PTR [rsp+8], cx
 	sub	rsp, 56					; 00000038H
 
-; 135  : 	
-; 136  : 	for (int i = 0; i < 4; i++)
+; 137  : 	
+; 138  : 	for (int i = 0; i < 4; i++)
 
 	mov	DWORD PTR i$2[rsp], 0
 	jmp	SHORT $LN3@ide_400ns_
@@ -713,8 +717,8 @@ $LN3@ide_400ns_:
 	cmp	DWORD PTR i$2[rsp], 4
 	jge	SHORT $LN1@ide_400ns_
 
-; 137  : 	{
-; 138  : 		uint8_t data = inportb(io + ATA_REG_ALTSTATUS);
+; 139  : 	{
+; 140  : 		uint8_t data = inportb(io + ATA_REG_ALTSTATUS);
 
 	movzx	eax, WORD PTR io$[rsp]
 	add	eax, 12
@@ -722,12 +726,12 @@ $LN3@ide_400ns_:
 	call	?inportb@@YAEG@Z			; inportb
 	mov	BYTE PTR data$1[rsp], al
 
-; 139  : 	}
+; 141  : 	}
 
 	jmp	SHORT $LN2@ide_400ns_
 $LN1@ide_400ns_:
 
-; 140  : }
+; 142  : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -746,21 +750,21 @@ bus$ = 80
 drive$ = 88
 ?ide_identify@@YA_NEE@Z PROC				; ide_identify
 
-; 87   : {
+; 89   : {
 
 $LN19:
 	mov	BYTE PTR [rsp+16], dl
 	mov	BYTE PTR [rsp+8], cl
 	sub	rsp, 72					; 00000048H
 
-; 88   : 	ide_select_drive (bus, drive);
+; 90   : 	ide_select_drive (bus, drive);
 
 	movzx	edx, BYTE PTR drive$[rsp]
 	movzx	ecx, BYTE PTR bus$[rsp]
 	call	?ide_select_drive@@YAXEE@Z		; ide_select_drive
 
-; 89   : 
-; 90   : 	uint16_t  io = bus == ATA_PRIMARY ? ATA_PRIMARY_IO : ATA_SECONDARY_IO;
+; 91   : 
+; 92   : 	uint16_t  io = bus == ATA_PRIMARY ? ATA_PRIMARY_IO : ATA_SECONDARY_IO;
 
 	movzx	eax, BYTE PTR bus$[rsp]
 	test	eax, eax
@@ -773,8 +777,8 @@ $LN14@ide_identi:
 	movzx	eax, WORD PTR tv68[rsp]
 	mov	WORD PTR io$[rsp], ax
 
-; 91   : 
-; 92   : 	outportb(io + ATA_REG_SECCOUNT0, 0);
+; 93   : 
+; 94   : 	outportb(io + ATA_REG_SECCOUNT0, 0);
 
 	movzx	eax, WORD PTR io$[rsp]
 	add	eax, 2
@@ -782,7 +786,7 @@ $LN14@ide_identi:
 	movzx	ecx, ax
 	call	?outportb@@YAXGE@Z			; outportb
 
-; 93   : 	outportb(io + ATA_REG_LBA0, 0);
+; 95   : 	outportb(io + ATA_REG_LBA0, 0);
 
 	movzx	eax, WORD PTR io$[rsp]
 	add	eax, 3
@@ -790,7 +794,7 @@ $LN14@ide_identi:
 	movzx	ecx, ax
 	call	?outportb@@YAXGE@Z			; outportb
 
-; 94   : 	outportb(io + ATA_REG_LBA1, 0);
+; 96   : 	outportb(io + ATA_REG_LBA1, 0);
 
 	movzx	eax, WORD PTR io$[rsp]
 	add	eax, 4
@@ -798,7 +802,7 @@ $LN14@ide_identi:
 	movzx	ecx, ax
 	call	?outportb@@YAXGE@Z			; outportb
 
-; 95   : 	outportb(io + ATA_REG_LBA2, 0);
+; 97   : 	outportb(io + ATA_REG_LBA2, 0);
 
 	movzx	eax, WORD PTR io$[rsp]
 	add	eax, 5
@@ -806,9 +810,9 @@ $LN14@ide_identi:
 	movzx	ecx, ax
 	call	?outportb@@YAXGE@Z			; outportb
 
-; 96   : 
-; 97   : 	// now send identify
-; 98   : 	outportb(io + ATA_REG_COMMAND, ATA_CMD_IDENTIFY);
+; 98   : 
+; 99   : 	// now send identify
+; 100  : 	outportb(io + ATA_REG_COMMAND, ATA_CMD_IDENTIFY);
 
 	movzx	eax, WORD PTR io$[rsp]
 	add	eax, 7
@@ -816,9 +820,9 @@ $LN14@ide_identi:
 	movzx	ecx, ax
 	call	?outportb@@YAXGE@Z			; outportb
 
-; 99   : 
-; 100  : 	//! read status port
-; 101  : 	uint8_t status = inportb (io + ATA_REG_STATUS );
+; 101  : 
+; 102  : 	//! read status port
+; 103  : 	uint8_t status = inportb (io + ATA_REG_STATUS );
 
 	movzx	eax, WORD PTR io$[rsp]
 	add	eax, 7
@@ -826,15 +830,15 @@ $LN14@ide_identi:
 	call	?inportb@@YAEG@Z			; inportb
 	mov	BYTE PTR status$[rsp], al
 
-; 102  : 	if (status)
+; 104  : 	if (status)
 
 	movzx	eax, BYTE PTR status$[rsp]
 	test	eax, eax
 	je	$LN10@ide_identi
 $LN9@ide_identi:
 
-; 103  : 	{
-; 104  : 		while ((inportb(io + ATA_REG_STATUS) & ATA_SR_BSY) != 0);
+; 105  : 	{
+; 106  : 		while ((inportb(io + ATA_REG_STATUS) & ATA_SR_BSY) != 0);
 
 	movzx	eax, WORD PTR io$[rsp]
 	add	eax, 7
@@ -848,8 +852,8 @@ $LN9@ide_identi:
 $LN8@ide_identi:
 $pm_stat_read$20:
 
-; 105  : pm_stat_read:
-; 106  : 		status = inportb (io + ATA_REG_STATUS);
+; 107  : pm_stat_read:
+; 108  : 		status = inportb (io + ATA_REG_STATUS);
 
 	movzx	eax, WORD PTR io$[rsp]
 	add	eax, 7
@@ -857,66 +861,66 @@ $pm_stat_read$20:
 	call	?inportb@@YAEG@Z			; inportb
 	mov	BYTE PTR status$[rsp], al
 
-; 107  : 		if (status & ATA_SR_ERR)
+; 109  : 		if (status & ATA_SR_ERR)
 
 	movzx	eax, BYTE PTR status$[rsp]
 	and	eax, 1
 	test	eax, eax
 	je	SHORT $LN7@ide_identi
 
-; 108  : 		{
-; 109  : 			printf("ATA: %s s has error. disabled, \n", bus == ATA_PRIMARY ? "primary" : "secondary", 
-; 110  : 				drive == ATA_PRIMARY ? "master " : "slave");
+; 110  : 		{
+; 111  : 			printf("ATA: %s s has error. disabled, \n", bus == ATA_PRIMARY ? "primary" : "secondary", 
+; 112  : 				drive == ATA_PRIMARY ? "master " : "slave");
 
 	movzx	eax, BYTE PTR drive$[rsp]
 	test	eax, eax
 	jne	SHORT $LN15@ide_identi
-	lea	rax, OFFSET FLAT:$SG2914
+	lea	rax, OFFSET FLAT:$SG2916
 	mov	QWORD PTR tv152[rsp], rax
 	jmp	SHORT $LN16@ide_identi
 $LN15@ide_identi:
-	lea	rax, OFFSET FLAT:$SG2915
+	lea	rax, OFFSET FLAT:$SG2917
 	mov	QWORD PTR tv152[rsp], rax
 $LN16@ide_identi:
 	movzx	eax, BYTE PTR bus$[rsp]
 	test	eax, eax
 	jne	SHORT $LN17@ide_identi
-	lea	rax, OFFSET FLAT:$SG2916
+	lea	rax, OFFSET FLAT:$SG2918
 	mov	QWORD PTR tv156[rsp], rax
 	jmp	SHORT $LN18@ide_identi
 $LN17@ide_identi:
-	lea	rax, OFFSET FLAT:$SG2917
+	lea	rax, OFFSET FLAT:$SG2919
 	mov	QWORD PTR tv156[rsp], rax
 $LN18@ide_identi:
 	mov	r8, QWORD PTR tv152[rsp]
 	mov	rdx, QWORD PTR tv156[rsp]
-	lea	rcx, OFFSET FLAT:$SG2918
+	lea	rcx, OFFSET FLAT:$SG2920
 	call	?printf@@YAXPEBDZZ			; printf
 $LN7@ide_identi:
 $LN6@ide_identi:
 
-; 111  : 			//return false;
-; 112  : 		}
-; 113  : 
-; 114  : 		while (! (status & ATA_SR_DRQ))
+; 113  : 			//return false;
+; 114  : 		}
+; 115  : 
+; 116  : 		while (! (status & ATA_SR_DRQ))
 
 	movzx	eax, BYTE PTR status$[rsp]
 	and	eax, 8
 	test	eax, eax
 	jne	SHORT $LN5@ide_identi
 
-; 115  : 		{
-; 116  : 			goto pm_stat_read;
+; 117  : 		{
+; 118  : 			goto pm_stat_read;
 
 	jmp	$pm_stat_read$20
 
-; 117  : 		}
+; 119  : 		}
 
 	jmp	SHORT $LN6@ide_identi
 $LN5@ide_identi:
 
-; 118  : 
-; 119  : 		for (int i = 0; i < 256;i++ )
+; 120  : 
+; 121  : 		for (int i = 0; i < 256;i++ )
 
 	mov	DWORD PTR i$1[rsp], 0
 	jmp	SHORT $LN4@ide_identi
@@ -928,8 +932,8 @@ $LN4@ide_identi:
 	cmp	DWORD PTR i$1[rsp], 256			; 00000100H
 	jge	SHORT $LN2@ide_identi
 
-; 120  : 		{
-; 121  : 			*(uint16_t *) (ide_buf + i*2) = inportw(io + ATA_REG_DATA);
+; 122  : 		{
+; 123  : 			*(uint16_t *) (ide_buf + i*2) = inportw(io + ATA_REG_DATA);
 
 	movzx	ecx, WORD PTR io$[rsp]
 	call	?inportw@@YAGG@Z			; inportw
@@ -939,29 +943,29 @@ $LN4@ide_identi:
 	lea	rdx, OFFSET FLAT:?ide_buf@@3PAEA	; ide_buf
 	mov	WORD PTR [rdx+rcx], ax
 
-; 122  : 			//("\n%x %x", *(uint16_t*) (ide_buf + i * 2) >> 8, *(uint16_t *)(ide_buf + i * 2) & 0xFF);
-; 123  : 		}
+; 124  : 			//("\n%x %x", *(uint16_t*) (ide_buf + i * 2) >> 8, *(uint16_t *)(ide_buf + i * 2) & 0xFF);
+; 125  : 		}
 
 	jmp	SHORT $LN3@ide_identi
 $LN2@ide_identi:
 
-; 124  : 		return true;
+; 126  : 		return true;
 
 	mov	al, 1
 	jmp	SHORT $LN11@ide_identi
 $LN10@ide_identi:
 
-; 125  : 	}
-; 126  : 	else
-; 127  : 	{
-; 128  : 		//printf("ATA: Status 0\n");
-; 129  : 	}
-; 130  : 	return false;
+; 127  : 	}
+; 128  : 	else
+; 129  : 	{
+; 130  : 		//printf("ATA: Status 0\n");
+; 131  : 	}
+; 132  : 	return false;
 
 	xor	al, al
 $LN11@ide_identi:
 
-; 131  : }
+; 133  : }
 
 	add	rsp, 72					; 00000048H
 	ret	0
@@ -972,26 +976,26 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 ?ide_wait_irq@@YAXXZ PROC				; ide_wait_irq
 
-; 80   : void ide_wait_irq () {
+; 82   : void ide_wait_irq () {
 
 	npad	2
 $LN2@ide_wait_i:
 
-; 81   : 	while (!ide_irq_invoked)
+; 83   : 	while (!ide_irq_invoked)
 
 	cmp	DWORD PTR ?ide_irq_invoked@@3IA, 0	; ide_irq_invoked
 	jne	SHORT $LN1@ide_wait_i
 
-; 82   : 		;
+; 84   : 		;
 
 	jmp	SHORT $LN2@ide_wait_i
 $LN1@ide_wait_i:
 
-; 83   : 	ide_irq_invoked = 0;
+; 85   : 	ide_irq_invoked = 0;
 
 	mov	DWORD PTR ?ide_irq_invoked@@3IA, 0	; ide_irq_invoked
 
-; 84   : }
+; 86   : }
 
 	ret	0
 ?ide_wait_irq@@YAXXZ ENDP				; ide_wait_irq
@@ -1003,24 +1007,29 @@ vector$ = 48
 param$ = 56
 ?ide_secondary_irq@@YAX_KPEAX@Z PROC			; ide_secondary_irq
 
-; 75   : {
+; 76   : {
 
 $LN3:
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 40					; 00000028H
 
-; 76   : 	reset_ata_controller (ATA_SECONDARY_IO);
+; 77   : 	printf ("Ide sec irq\n");
+
+	lea	rcx, OFFSET FLAT:$SG2898
+	call	?printf@@YAXPEBDZZ			; printf
+
+; 78   : 	reset_ata_controller (ATA_SECONDARY_IO);
 
 	mov	cx, 368					; 00000170H
 	call	?reset_ata_controller@@YAXG@Z		; reset_ata_controller
 
-; 77   : 	interrupt_end(15);
+; 79   : 	interrupt_end(15);
 
 	mov	ecx, 15
 	call	?interrupt_end@@YAXI@Z			; interrupt_end
 
-; 78   : }
+; 80   : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -1044,12 +1053,17 @@ $LN3:
 
 	mov	DWORD PTR ?ide_irq_invoked@@3IA, 1	; ide_irq_invoked
 
-; 71   : 	interrupt_end(14);
+; 71   : 	printf ("Ide primary irq\n");
+
+	lea	rcx, OFFSET FLAT:$SG2893
+	call	?printf@@YAXPEBDZZ			; printf
+
+; 72   : 	interrupt_end(14);
 
 	mov	ecx, 14
 	call	?interrupt_end@@YAXI@Z			; interrupt_end
 
-; 72   : }
+; 73   : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -1300,19 +1314,19 @@ buf$ = 80
 lba$ = 88
 ?ata_slave_write_one@@YAEPEAEI@Z PROC			; ata_slave_write_one
 
-; 402  : {
+; 404  : {
 
 $LN15:
 	mov	DWORD PTR [rsp+16], edx
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 72					; 00000048H
 
-; 403  : 	uint16_t io = 0;
+; 405  : 	uint16_t io = 0;
 
 	xor	eax, eax
 	mov	WORD PTR io$[rsp], ax
 
-; 404  : 	switch (ata_slave_drive)
+; 406  : 	switch (ata_slave_drive)
 
 	movzx	eax, BYTE PTR ?ata_slave_drive@@3EA	; ata_slave_drive
 	mov	BYTE PTR tv65[rsp], al
@@ -1327,77 +1341,77 @@ $LN15:
 	jmp	SHORT $LN4@ata_slave_
 $LN8@ata_slave_:
 
-; 405  : 	{
-; 406  : 	case (ATA_PRIMARY << 1 | ATA_MASTER):
-; 407  : 		io = ATA_PRIMARY_IO;
+; 407  : 	{
+; 408  : 	case (ATA_PRIMARY << 1 | ATA_MASTER):
+; 409  : 		io = ATA_PRIMARY_IO;
 
 	mov	eax, 496				; 000001f0H
 	mov	WORD PTR io$[rsp], ax
 
-; 408  : 		ata_slave_drive = ATA_MASTER;
+; 410  : 		ata_slave_drive = ATA_MASTER;
 
 	mov	BYTE PTR ?ata_slave_drive@@3EA, 0	; ata_slave_drive
 
-; 409  : 		break;
+; 411  : 		break;
 
 	jmp	SHORT $LN9@ata_slave_
 $LN7@ata_slave_:
 
-; 410  : 	case (ATA_PRIMARY << 1 | ATA_SLAVE):
-; 411  : 		io = ATA_PRIMARY_IO;
+; 412  : 	case (ATA_PRIMARY << 1 | ATA_SLAVE):
+; 413  : 		io = ATA_PRIMARY_IO;
 
 	mov	eax, 496				; 000001f0H
 	mov	WORD PTR io$[rsp], ax
 
-; 412  : 		ata_slave_drive = ATA_SLAVE;
+; 414  : 		ata_slave_drive = ATA_SLAVE;
 
 	mov	BYTE PTR ?ata_slave_drive@@3EA, 1	; ata_slave_drive
 
-; 413  : 		break;
+; 415  : 		break;
 
 	jmp	SHORT $LN9@ata_slave_
 $LN6@ata_slave_:
 
-; 414  : 	case (ATA_SECONDARY << 1 | ATA_MASTER):
-; 415  : 		io = ATA_SECONDARY_IO;
+; 416  : 	case (ATA_SECONDARY << 1 | ATA_MASTER):
+; 417  : 		io = ATA_SECONDARY_IO;
 
 	mov	eax, 368				; 00000170H
 	mov	WORD PTR io$[rsp], ax
 
-; 416  : 		ata_slave_drive = ATA_MASTER;
+; 418  : 		ata_slave_drive = ATA_MASTER;
 
 	mov	BYTE PTR ?ata_slave_drive@@3EA, 0	; ata_slave_drive
 
-; 417  : 		break;
+; 419  : 		break;
 
 	jmp	SHORT $LN9@ata_slave_
 $LN5@ata_slave_:
 
-; 418  : 	case (ATA_SECONDARY << 1 | ATA_SLAVE):
-; 419  : 		io = ATA_SECONDARY_IO;
+; 420  : 	case (ATA_SECONDARY << 1 | ATA_SLAVE):
+; 421  : 		io = ATA_SECONDARY_IO;
 
 	mov	eax, 368				; 00000170H
 	mov	WORD PTR io$[rsp], ax
 
-; 420  : 		ata_slave_drive = ATA_SLAVE;
+; 422  : 		ata_slave_drive = ATA_SLAVE;
 
 	mov	BYTE PTR ?ata_slave_drive@@3EA, 1	; ata_slave_drive
 
-; 421  : 		break;
+; 423  : 		break;
 
 	jmp	SHORT $LN9@ata_slave_
 $LN4@ata_slave_:
 
-; 422  : 	default:
-; 423  : 		return 0;
+; 424  : 	default:
+; 425  : 		return 0;
 
 	xor	al, al
 	jmp	$LN11@ata_slave_
 $LN9@ata_slave_:
 
-; 424  : 	}
-; 425  : 
-; 426  : 	uint8_t  cmd = (ata_slave_drive == ATA_MASTER ? 0xE0 : 0xF0);
+; 426  : 	}
+; 427  : 
+; 428  : 	uint8_t  cmd = (ata_slave_drive == ATA_MASTER ? 0xE0 : 0xF0);
 
 	movzx	eax, BYTE PTR ?ata_slave_drive@@3EA	; ata_slave_drive
 	test	eax, eax
@@ -1410,13 +1424,13 @@ $LN14@ata_slave_:
 	movzx	eax, BYTE PTR tv74[rsp]
 	mov	BYTE PTR cmd$[rsp], al
 
-; 427  : 
-; 428  : 	ata_wait_busy (io);
+; 429  : 
+; 430  : 	ata_wait_busy (io);
 
 	movzx	ecx, WORD PTR io$[rsp]
 	call	?ata_wait_busy@@YAXG@Z			; ata_wait_busy
 
-; 429  : 	outportb(io + ATA_REG_HDDEVSEL, (cmd | (uint8_t) ((lba >> 24 & 0xFF))));
+; 431  : 	outportb(io + ATA_REG_HDDEVSEL, (cmd | (uint8_t) ((lba >> 24 & 0xFF))));
 
 	movzx	eax, BYTE PTR cmd$[rsp]
 	mov	ecx, DWORD PTR lba$[rsp]
@@ -1429,7 +1443,7 @@ $LN14@ata_slave_:
 	movzx	edx, al
 	call	?outportb@@YAXGE@Z			; outportb
 
-; 430  : 	outportb(io + 1, 0x00);
+; 432  : 	outportb(io + 1, 0x00);
 
 	movzx	eax, WORD PTR io$[rsp]
 	inc	eax
@@ -1437,9 +1451,9 @@ $LN14@ata_slave_:
 	movzx	ecx, ax
 	call	?outportb@@YAXGE@Z			; outportb
 
-; 431  : 
-; 432  : 	//! single sector write
-; 433  :     outportb(io + ATA_REG_SECCOUNT0, 1);
+; 433  : 
+; 434  : 	//! single sector write
+; 435  :     outportb(io + ATA_REG_SECCOUNT0, 1);
 
 	movzx	eax, WORD PTR io$[rsp]
 	add	eax, 2
@@ -1447,9 +1461,9 @@ $LN14@ata_slave_:
 	movzx	ecx, ax
 	call	?outportb@@YAXGE@Z			; outportb
 
-; 434  : 
-; 435  : 	//! select LBA
-; 436  : 	outportb(io + ATA_REG_LBA0, (uint8_t)((lba)));
+; 436  : 
+; 437  : 	//! select LBA
+; 438  : 	outportb(io + ATA_REG_LBA0, (uint8_t)((lba)));
 
 	movzx	eax, WORD PTR io$[rsp]
 	add	eax, 3
@@ -1457,7 +1471,7 @@ $LN14@ata_slave_:
 	movzx	ecx, ax
 	call	?outportb@@YAXGE@Z			; outportb
 
-; 437  : 	outportb(io + ATA_REG_LBA1, (uint8_t)((lba) >> 8));
+; 439  : 	outportb(io + ATA_REG_LBA1, (uint8_t)((lba) >> 8));
 
 	mov	eax, DWORD PTR lba$[rsp]
 	shr	eax, 8
@@ -1466,7 +1480,7 @@ $LN14@ata_slave_:
 	movzx	edx, al
 	call	?outportb@@YAXGE@Z			; outportb
 
-; 438  : 	outportb(io + ATA_REG_LBA2, (uint8_t)((lba) >> 16));
+; 440  : 	outportb(io + ATA_REG_LBA2, (uint8_t)((lba) >> 16));
 
 	mov	eax, DWORD PTR lba$[rsp]
 	shr	eax, 16
@@ -1475,9 +1489,9 @@ $LN14@ata_slave_:
 	movzx	edx, al
 	call	?outportb@@YAXGE@Z			; outportb
 
-; 439  : 
-; 440  : 	//! select write command
-; 441  : 	outportb (io + ATA_REG_COMMAND, ATA_CMD_WRITE_PIO);
+; 441  : 
+; 442  : 	//! select write command
+; 443  : 	outportb (io + ATA_REG_COMMAND, ATA_CMD_WRITE_PIO);
 
 	movzx	eax, WORD PTR io$[rsp]
 	add	eax, 7
@@ -1485,25 +1499,25 @@ $LN14@ata_slave_:
 	movzx	ecx, ax
 	call	?outportb@@YAXGE@Z			; outportb
 
-; 442  : 
-; 443  : 	//! wait until ready
-; 444  : 	ide_poll(io);
+; 444  : 
+; 445  : 	//! wait until ready
+; 446  : 	ide_poll(io);
 
 	movzx	ecx, WORD PTR io$[rsp]
 	call	?ide_poll@@YAXG@Z			; ide_poll
 
-; 445  : 
-; 446  : 	ata_wait_busy (io);
+; 447  : 
+; 448  : 	ata_wait_busy (io);
 
 	movzx	ecx, WORD PTR io$[rsp]
 	call	?ata_wait_busy@@YAXG@Z			; ata_wait_busy
 
-; 447  : 	ata_wait_drq (io);
+; 449  : 	ata_wait_drq (io);
 
 	movzx	ecx, WORD PTR io$[rsp]
 	call	?ata_wait_drq@@YAXG@Z			; ata_wait_drq
 
-; 448  : 	for (int i=0; i < 256; i++)
+; 450  : 	for (int i=0; i < 256; i++)
 
 	mov	DWORD PTR i$1[rsp], 0
 	jmp	SHORT $LN3@ata_slave_
@@ -1515,9 +1529,9 @@ $LN3@ata_slave_:
 	cmp	DWORD PTR i$1[rsp], 256			; 00000100H
 	jge	SHORT $LN1@ata_slave_
 
-; 449  : 	{
-; 450  : 	
-; 451  : 		x64_outportw(io + ATA_REG_DATA, *(uint16_t *)(buf + i * 2));
+; 451  : 	{
+; 452  : 	
+; 453  : 		x64_outportw(io + ATA_REG_DATA, *(uint16_t *)(buf + i * 2));
 
 	mov	eax, DWORD PTR i$1[rsp]
 	shl	eax, 1
@@ -1527,23 +1541,23 @@ $LN3@ata_slave_:
 	movzx	ecx, WORD PTR io$[rsp]
 	call	x64_outportw
 
-; 452  : 	}
+; 454  : 	}
 
 	jmp	SHORT $LN2@ata_slave_
 $LN1@ata_slave_:
 
-; 453  : 
-; 454  : 	ide_400ns_delay (io);
+; 455  : 
+; 456  : 	ide_400ns_delay (io);
 
 	movzx	ecx, WORD PTR io$[rsp]
 	call	?ide_400ns_delay@@YAXG@Z		; ide_400ns_delay
 
-; 455  : 	return 1;
+; 457  : 	return 1;
 
 	mov	al, 1
 $LN11@ata_slave_:
 
-; 456  : }
+; 458  : }
 
 	add	rsp, 72					; 00000048H
 	ret	0
@@ -1562,7 +1576,7 @@ sec_count$ = 88
 buf$ = 96
 ?ata_slave_read_28@@YAEIGPEAE@Z PROC			; ata_slave_read_28
 
-; 343  : {
+; 345  : {
 
 $LN15:
 	mov	QWORD PTR [rsp+24], r8
@@ -1570,13 +1584,13 @@ $LN15:
 	mov	DWORD PTR [rsp+8], ecx
 	sub	rsp, 72					; 00000048H
 
-; 344  : 	//! we only support 28 bit LBA so far
-; 345  : 	uint16_t io = 0;
+; 346  : 	//! we only support 28 bit LBA so far
+; 347  : 	uint16_t io = 0;
 
 	xor	eax, eax
 	mov	WORD PTR io$[rsp], ax
 
-; 346  : 	switch (ata_slave_drive)
+; 348  : 	switch (ata_slave_drive)
 
 	movzx	eax, BYTE PTR ?ata_slave_drive@@3EA	; ata_slave_drive
 	mov	BYTE PTR tv65[rsp], al
@@ -1591,77 +1605,77 @@ $LN15:
 	jmp	SHORT $LN4@ata_slave_
 $LN8@ata_slave_:
 
-; 347  : 	{
-; 348  : 	case (ATA_PRIMARY << 1 |  ATA_MASTER):
-; 349  : 		io = ATA_PRIMARY_IO;
+; 349  : 	{
+; 350  : 	case (ATA_PRIMARY << 1 |  ATA_MASTER):
+; 351  : 		io = ATA_PRIMARY_IO;
 
 	mov	eax, 496				; 000001f0H
 	mov	WORD PTR io$[rsp], ax
 
-; 350  : 		ata_slave_drive = ATA_MASTER;
+; 352  : 		ata_slave_drive = ATA_MASTER;
 
 	mov	BYTE PTR ?ata_slave_drive@@3EA, 0	; ata_slave_drive
 
-; 351  : 		break;
+; 353  : 		break;
 
 	jmp	SHORT $LN9@ata_slave_
 $LN7@ata_slave_:
 
-; 352  : 	case (ATA_PRIMARY << 1 | ATA_SLAVE):
-; 353  : 		io = ATA_PRIMARY_IO;
+; 354  : 	case (ATA_PRIMARY << 1 | ATA_SLAVE):
+; 355  : 		io = ATA_PRIMARY_IO;
 
 	mov	eax, 496				; 000001f0H
 	mov	WORD PTR io$[rsp], ax
 
-; 354  : 		ata_slave_drive = ATA_SLAVE;
+; 356  : 		ata_slave_drive = ATA_SLAVE;
 
 	mov	BYTE PTR ?ata_slave_drive@@3EA, 1	; ata_slave_drive
 
-; 355  : 		break;
+; 357  : 		break;
 
 	jmp	SHORT $LN9@ata_slave_
 $LN6@ata_slave_:
 
-; 356  : 	case (ATA_SECONDARY << 1 | ATA_MASTER):
-; 357  : 		io = ATA_SECONDARY_IO;
+; 358  : 	case (ATA_SECONDARY << 1 | ATA_MASTER):
+; 359  : 		io = ATA_SECONDARY_IO;
 
 	mov	eax, 368				; 00000170H
 	mov	WORD PTR io$[rsp], ax
 
-; 358  : 		ata_slave_drive = ATA_MASTER;
+; 360  : 		ata_slave_drive = ATA_MASTER;
 
 	mov	BYTE PTR ?ata_slave_drive@@3EA, 0	; ata_slave_drive
 
-; 359  : 		break;
+; 361  : 		break;
 
 	jmp	SHORT $LN9@ata_slave_
 $LN5@ata_slave_:
 
-; 360  : 	case (ATA_SECONDARY << 1 | ATA_SLAVE):
-; 361  : 		io = ATA_SECONDARY_IO;
+; 362  : 	case (ATA_SECONDARY << 1 | ATA_SLAVE):
+; 363  : 		io = ATA_SECONDARY_IO;
 
 	mov	eax, 368				; 00000170H
 	mov	WORD PTR io$[rsp], ax
 
-; 362  : 		ata_slave_drive = ATA_SLAVE;
+; 364  : 		ata_slave_drive = ATA_SLAVE;
 
 	mov	BYTE PTR ?ata_slave_drive@@3EA, 1	; ata_slave_drive
 
-; 363  : 		break;
+; 365  : 		break;
 
 	jmp	SHORT $LN9@ata_slave_
 $LN4@ata_slave_:
 
-; 364  : 	default:
-; 365  : 		return 0;
+; 366  : 	default:
+; 367  : 		return 0;
 
 	xor	al, al
 	jmp	$LN11@ata_slave_
 $LN9@ata_slave_:
 
-; 366  : 	}
-; 367  : 
-; 368  : 	uint8_t cmd = (ata_slave_drive == ATA_MASTER ? 0xE0 : 0xF0);
+; 368  : 	}
+; 369  : 
+; 370  : 	uint8_t cmd = (ata_slave_drive == ATA_MASTER ? 0xE0 : 0xF0);
 
 	movzx	eax, BYTE PTR ?ata_slave_drive@@3EA	; ata_slave_drive
 	test	eax, eax
@@ -1674,14 +1688,14 @@ $LN14@ata_slave_:
 	movzx	eax, BYTE PTR tv74[rsp]
 	mov	BYTE PTR cmd$[rsp], al
 
-; 369  : 
-; 370  : 	ata_wait_busy (io);
+; 371  : 
+; 372  : 	ata_wait_busy (io);
 
 	movzx	ecx, WORD PTR io$[rsp]
 	call	?ata_wait_busy@@YAXG@Z			; ata_wait_busy
 
-; 371  : 	
-; 372  : 	outportb (io + ATA_REG_HDDEVSEL, (cmd | (uint8_t) ((lba >> 24 & 0x0F))));
+; 373  : 	
+; 374  : 	outportb (io + ATA_REG_HDDEVSEL, (cmd | (uint8_t) ((lba >> 24 & 0x0F))));
 
 	movzx	eax, BYTE PTR cmd$[rsp]
 	mov	ecx, DWORD PTR lba$[rsp]
@@ -1694,7 +1708,7 @@ $LN14@ata_slave_:
 	movzx	edx, al
 	call	?outportb@@YAXGE@Z			; outportb
 
-; 373  : 	outportb (io + 1, 0x00);
+; 375  : 	outportb (io + 1, 0x00);
 
 	movzx	eax, WORD PTR io$[rsp]
 	inc	eax
@@ -1702,9 +1716,9 @@ $LN14@ata_slave_:
 	movzx	ecx, ax
 	call	?outportb@@YAXGE@Z			; outportb
 
-; 374  : 
-; 375  : 	//! single sector read
-; 376  : 	outportb (io + ATA_REG_SECCOUNT0, sec_count);
+; 376  : 
+; 377  : 	//! single sector read
+; 378  : 	outportb (io + ATA_REG_SECCOUNT0, sec_count);
 
 	movzx	eax, WORD PTR io$[rsp]
 	add	eax, 2
@@ -1712,9 +1726,9 @@ $LN14@ata_slave_:
 	movzx	ecx, ax
 	call	?outportb@@YAXGE@Z			; outportb
 
-; 377  : 
-; 378  : 	//! select LBA
-; 379  : 	outportb (io + ATA_REG_LBA0, (uint8_t)((lba)));
+; 379  : 
+; 380  : 	//! select LBA
+; 381  : 	outportb (io + ATA_REG_LBA0, (uint8_t)((lba)));
 
 	movzx	eax, WORD PTR io$[rsp]
 	add	eax, 3
@@ -1722,7 +1736,7 @@ $LN14@ata_slave_:
 	movzx	ecx, ax
 	call	?outportb@@YAXGE@Z			; outportb
 
-; 380  : 	outportb (io + ATA_REG_LBA1, (uint8_t)((lba) >> 8));
+; 382  : 	outportb (io + ATA_REG_LBA1, (uint8_t)((lba) >> 8));
 
 	mov	eax, DWORD PTR lba$[rsp]
 	shr	eax, 8
@@ -1731,7 +1745,7 @@ $LN14@ata_slave_:
 	movzx	edx, al
 	call	?outportb@@YAXGE@Z			; outportb
 
-; 381  : 	outportb (io + ATA_REG_LBA2, (uint8_t)((lba) >> 16));
+; 383  : 	outportb (io + ATA_REG_LBA2, (uint8_t)((lba) >> 16));
 
 	mov	eax, DWORD PTR lba$[rsp]
 	shr	eax, 16
@@ -1740,9 +1754,9 @@ $LN14@ata_slave_:
 	movzx	edx, al
 	call	?outportb@@YAXGE@Z			; outportb
 
-; 382  : 
-; 383  : 	//! select read command
-; 384  : 	outportb (io + ATA_REG_COMMAND, ATA_CMD_READ_PIO);
+; 384  : 
+; 385  : 	//! select read command
+; 386  : 	outportb (io + ATA_REG_COMMAND, ATA_CMD_READ_PIO);
 
 	movzx	eax, WORD PTR io$[rsp]
 	add	eax, 7
@@ -1750,15 +1764,15 @@ $LN14@ata_slave_:
 	movzx	ecx, ax
 	call	?outportb@@YAXGE@Z			; outportb
 
-; 385  : 
-; 386  : 	//! wait untill ready
-; 387  : 	ide_poll (io);
+; 387  : 
+; 388  : 	//! wait untill ready
+; 389  : 	ide_poll (io);
 
 	movzx	ecx, WORD PTR io$[rsp]
 	call	?ide_poll@@YAXG@Z			; ide_poll
 
-; 388  : 	
-; 389  : 	for (int i = 0; i < 256; i++ )
+; 390  : 	
+; 391  : 	for (int i = 0; i < 256; i++ )
 
 	mov	DWORD PTR i$1[rsp], 0
 	jmp	SHORT $LN3@ata_slave_
@@ -1770,9 +1784,9 @@ $LN3@ata_slave_:
 	cmp	DWORD PTR i$1[rsp], 256			; 00000100H
 	jge	SHORT $LN1@ata_slave_
 
-; 390  : 	{
-; 391  : 			
-; 392  : 	   *(uint16_t*)(buf + i * 2) = inportw (io + ATA_REG_DATA);
+; 392  : 	{
+; 393  : 			
+; 394  : 	   *(uint16_t*)(buf + i * 2) = inportw (io + ATA_REG_DATA);
 
 	movzx	ecx, WORD PTR io$[rsp]
 	call	?inportw@@YAGG@Z			; inportw
@@ -1782,25 +1796,25 @@ $LN3@ata_slave_:
 	mov	rdx, QWORD PTR buf$[rsp]
 	mov	WORD PTR [rdx+rcx], ax
 
-; 393  :     }
+; 395  :     }
 
 	jmp	SHORT $LN2@ata_slave_
 $LN1@ata_slave_:
 
-; 394  : 	
-; 395  : 	
-; 396  : 	ide_400ns_delay(io);
+; 396  : 	
+; 397  : 	
+; 398  : 	ide_400ns_delay(io);
 
 	movzx	ecx, WORD PTR io$[rsp]
 	call	?ide_400ns_delay@@YAXG@Z		; ide_400ns_delay
 
-; 397  : 	//ide_wait_irq ();
-; 398  : 	return 0;
+; 399  : 	//ide_wait_irq ();
+; 400  : 	return 0;
 
 	xor	al, al
 $LN11@ata_slave_:
 
-; 399  : }
+; 401  : }
 
 	add	rsp, 72					; 00000048H
 	ret	0
@@ -1818,19 +1832,19 @@ buf$ = 80
 lba$ = 88
 ?ata_write_one@@YAEPEAEI@Z PROC				; ata_write_one
 
-; 174  : {
+; 176  : {
 
 $LN15:
 	mov	DWORD PTR [rsp+16], edx
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 72					; 00000048H
 
-; 175  : 	uint16_t io = 0;
+; 177  : 	uint16_t io = 0;
 
 	xor	eax, eax
 	mov	WORD PTR io$[rsp], ax
 
-; 176  : 	switch (ata_drive)
+; 178  : 	switch (ata_drive)
 
 	movzx	eax, BYTE PTR ?ata_drive@@3EA		; ata_drive
 	mov	BYTE PTR tv65[rsp], al
@@ -1845,77 +1859,77 @@ $LN15:
 	jmp	SHORT $LN4@ata_write_
 $LN8@ata_write_:
 
-; 177  : 	{
-; 178  : 	case (ATA_PRIMARY << 1 | ATA_MASTER):
-; 179  : 		io = ATA_PRIMARY_IO;
+; 179  : 	{
+; 180  : 	case (ATA_PRIMARY << 1 | ATA_MASTER):
+; 181  : 		io = ATA_PRIMARY_IO;
 
 	mov	eax, 496				; 000001f0H
 	mov	WORD PTR io$[rsp], ax
 
-; 180  : 		ata_drive = ATA_MASTER;
+; 182  : 		ata_drive = ATA_MASTER;
 
 	mov	BYTE PTR ?ata_drive@@3EA, 0		; ata_drive
 
-; 181  : 		break;
+; 183  : 		break;
 
 	jmp	SHORT $LN9@ata_write_
 $LN7@ata_write_:
 
-; 182  : 	case (ATA_PRIMARY << 1 | ATA_SLAVE):
-; 183  : 		io = ATA_PRIMARY_IO;
+; 184  : 	case (ATA_PRIMARY << 1 | ATA_SLAVE):
+; 185  : 		io = ATA_PRIMARY_IO;
 
 	mov	eax, 496				; 000001f0H
 	mov	WORD PTR io$[rsp], ax
 
-; 184  : 		ata_drive = ATA_SLAVE;
+; 186  : 		ata_drive = ATA_SLAVE;
 
 	mov	BYTE PTR ?ata_drive@@3EA, 1		; ata_drive
 
-; 185  : 		break;
+; 187  : 		break;
 
 	jmp	SHORT $LN9@ata_write_
 $LN6@ata_write_:
 
-; 186  : 	case (ATA_SECONDARY << 1 | ATA_MASTER):
-; 187  : 		io = ATA_SECONDARY_IO;
+; 188  : 	case (ATA_SECONDARY << 1 | ATA_MASTER):
+; 189  : 		io = ATA_SECONDARY_IO;
 
 	mov	eax, 368				; 00000170H
 	mov	WORD PTR io$[rsp], ax
 
-; 188  : 		ata_drive = ATA_MASTER;
+; 190  : 		ata_drive = ATA_MASTER;
 
 	mov	BYTE PTR ?ata_drive@@3EA, 0		; ata_drive
 
-; 189  : 		break;
+; 191  : 		break;
 
 	jmp	SHORT $LN9@ata_write_
 $LN5@ata_write_:
 
-; 190  : 	case (ATA_SECONDARY << 1 | ATA_SLAVE):
-; 191  : 		io = ATA_SECONDARY_IO;
+; 192  : 	case (ATA_SECONDARY << 1 | ATA_SLAVE):
+; 193  : 		io = ATA_SECONDARY_IO;
 
 	mov	eax, 368				; 00000170H
 	mov	WORD PTR io$[rsp], ax
 
-; 192  : 		ata_drive = ATA_SLAVE;
+; 194  : 		ata_drive = ATA_SLAVE;
 
 	mov	BYTE PTR ?ata_drive@@3EA, 1		; ata_drive
 
-; 193  : 		break;
+; 195  : 		break;
 
 	jmp	SHORT $LN9@ata_write_
 $LN4@ata_write_:
 
-; 194  : 	default:
-; 195  : 		return 0;
+; 196  : 	default:
+; 197  : 		return 0;
 
 	xor	al, al
 	jmp	$LN11@ata_write_
 $LN9@ata_write_:
 
-; 196  : 	}
-; 197  : 
-; 198  : 	uint8_t  cmd = (ata_drive == ATA_MASTER ? 0xE0 : 0xF0);
+; 198  : 	}
+; 199  : 
+; 200  : 	uint8_t  cmd = (ata_drive == ATA_MASTER ? 0xE0 : 0xF0);
 
 	movzx	eax, BYTE PTR ?ata_drive@@3EA		; ata_drive
 	test	eax, eax
@@ -1928,13 +1942,13 @@ $LN14@ata_write_:
 	movzx	eax, BYTE PTR tv74[rsp]
 	mov	BYTE PTR cmd$[rsp], al
 
-; 199  : 
-; 200  : 	ata_wait_busy (io);
+; 201  : 
+; 202  : 	ata_wait_busy (io);
 
 	movzx	ecx, WORD PTR io$[rsp]
 	call	?ata_wait_busy@@YAXG@Z			; ata_wait_busy
 
-; 201  : 	outportb(io + ATA_REG_HDDEVSEL, (cmd | (uint8_t) ((lba >> 24 & 0xFF))));
+; 203  : 	outportb(io + ATA_REG_HDDEVSEL, (cmd | (uint8_t) ((lba >> 24 & 0xFF))));
 
 	movzx	eax, BYTE PTR cmd$[rsp]
 	mov	ecx, DWORD PTR lba$[rsp]
@@ -1947,7 +1961,7 @@ $LN14@ata_write_:
 	movzx	edx, al
 	call	?outportb@@YAXGE@Z			; outportb
 
-; 202  : 	outportb(io + 1, 0x00);
+; 204  : 	outportb(io + 1, 0x00);
 
 	movzx	eax, WORD PTR io$[rsp]
 	inc	eax
@@ -1955,9 +1969,9 @@ $LN14@ata_write_:
 	movzx	ecx, ax
 	call	?outportb@@YAXGE@Z			; outportb
 
-; 203  : 
-; 204  : 	//! single sector write
-; 205  :     outportb(io + ATA_REG_SECCOUNT0, 1);
+; 205  : 
+; 206  : 	//! single sector write
+; 207  :     outportb(io + ATA_REG_SECCOUNT0, 1);
 
 	movzx	eax, WORD PTR io$[rsp]
 	add	eax, 2
@@ -1965,9 +1979,9 @@ $LN14@ata_write_:
 	movzx	ecx, ax
 	call	?outportb@@YAXGE@Z			; outportb
 
-; 206  : 
-; 207  : 	//! select LBA
-; 208  : 	outportb(io + ATA_REG_LBA0, (uint8_t)((lba)));
+; 208  : 
+; 209  : 	//! select LBA
+; 210  : 	outportb(io + ATA_REG_LBA0, (uint8_t)((lba)));
 
 	movzx	eax, WORD PTR io$[rsp]
 	add	eax, 3
@@ -1975,7 +1989,7 @@ $LN14@ata_write_:
 	movzx	ecx, ax
 	call	?outportb@@YAXGE@Z			; outportb
 
-; 209  : 	outportb(io + ATA_REG_LBA1, (uint8_t)((lba) >> 8));
+; 211  : 	outportb(io + ATA_REG_LBA1, (uint8_t)((lba) >> 8));
 
 	mov	eax, DWORD PTR lba$[rsp]
 	shr	eax, 8
@@ -1984,7 +1998,7 @@ $LN14@ata_write_:
 	movzx	edx, al
 	call	?outportb@@YAXGE@Z			; outportb
 
-; 210  : 	outportb(io + ATA_REG_LBA2, (uint8_t)((lba) >> 16));
+; 212  : 	outportb(io + ATA_REG_LBA2, (uint8_t)((lba) >> 16));
 
 	mov	eax, DWORD PTR lba$[rsp]
 	shr	eax, 16
@@ -1993,9 +2007,9 @@ $LN14@ata_write_:
 	movzx	edx, al
 	call	?outportb@@YAXGE@Z			; outportb
 
-; 211  : 
-; 212  : 	//! select write command
-; 213  : 	outportb (io + ATA_REG_COMMAND, ATA_CMD_WRITE_PIO);
+; 213  : 
+; 214  : 	//! select write command
+; 215  : 	outportb (io + ATA_REG_COMMAND, ATA_CMD_WRITE_PIO);
 
 	movzx	eax, WORD PTR io$[rsp]
 	add	eax, 7
@@ -2003,25 +2017,25 @@ $LN14@ata_write_:
 	movzx	ecx, ax
 	call	?outportb@@YAXGE@Z			; outportb
 
-; 214  : 
-; 215  : 	//! wait until ready
-; 216  : 	ide_poll(io);
+; 216  : 
+; 217  : 	//! wait until ready
+; 218  : 	ide_poll(io);
 
 	movzx	ecx, WORD PTR io$[rsp]
 	call	?ide_poll@@YAXG@Z			; ide_poll
 
-; 217  : 
-; 218  : 	ata_wait_busy (io);
+; 219  : 
+; 220  : 	ata_wait_busy (io);
 
 	movzx	ecx, WORD PTR io$[rsp]
 	call	?ata_wait_busy@@YAXG@Z			; ata_wait_busy
 
-; 219  : 	ata_wait_drq (io);
+; 221  : 	ata_wait_drq (io);
 
 	movzx	ecx, WORD PTR io$[rsp]
 	call	?ata_wait_drq@@YAXG@Z			; ata_wait_drq
 
-; 220  : 	for (int i=0; i < 256; i++)
+; 222  : 	for (int i=0; i < 256; i++)
 
 	mov	DWORD PTR i$1[rsp], 0
 	jmp	SHORT $LN3@ata_write_
@@ -2033,9 +2047,9 @@ $LN3@ata_write_:
 	cmp	DWORD PTR i$1[rsp], 256			; 00000100H
 	jge	SHORT $LN1@ata_write_
 
-; 221  : 	{
-; 222  : 	
-; 223  : 		x64_outportw(io + ATA_REG_DATA, *(uint16_t *)(buf + i * 2));
+; 223  : 	{
+; 224  : 	
+; 225  : 		x64_outportw(io + ATA_REG_DATA, *(uint16_t *)(buf + i * 2));
 
 	mov	eax, DWORD PTR i$1[rsp]
 	shl	eax, 1
@@ -2045,23 +2059,23 @@ $LN3@ata_write_:
 	movzx	ecx, WORD PTR io$[rsp]
 	call	x64_outportw
 
-; 224  : 	}
+; 226  : 	}
 
 	jmp	SHORT $LN2@ata_write_
 $LN1@ata_write_:
 
-; 225  : 
-; 226  : 	ide_400ns_delay (io);
+; 227  : 
+; 228  : 	ide_400ns_delay (io);
 
 	movzx	ecx, WORD PTR io$[rsp]
 	call	?ide_400ns_delay@@YAXG@Z		; ide_400ns_delay
 
-; 227  : 	return 1;
+; 229  : 	return 1;
 
 	mov	al, 1
 $LN11@ata_write_:
 
-; 228  : }
+; 230  : }
 
 	add	rsp, 72					; 00000048H
 	ret	0
@@ -2080,7 +2094,7 @@ sec_count$ = 88
 buf$ = 96
 ?ata_read_28@@YAEIGPEAE@Z PROC				; ata_read_28
 
-; 231  : {
+; 233  : {
 
 $LN15:
 	mov	QWORD PTR [rsp+24], r8
@@ -2088,13 +2102,13 @@ $LN15:
 	mov	DWORD PTR [rsp+8], ecx
 	sub	rsp, 72					; 00000048H
 
-; 232  : 	//! we only support 28 bit LBA so far
-; 233  : 	uint16_t io = 0;
+; 234  : 	//! we only support 28 bit LBA so far
+; 235  : 	uint16_t io = 0;
 
 	xor	eax, eax
 	mov	WORD PTR io$[rsp], ax
 
-; 234  : 	switch (ata_drive)
+; 236  : 	switch (ata_drive)
 
 	movzx	eax, BYTE PTR ?ata_drive@@3EA		; ata_drive
 	mov	BYTE PTR tv65[rsp], al
@@ -2109,77 +2123,77 @@ $LN15:
 	jmp	SHORT $LN4@ata_read_2
 $LN8@ata_read_2:
 
-; 235  : 	{
-; 236  : 	case (ATA_PRIMARY << 1 |  ATA_MASTER):
-; 237  : 		io = ATA_PRIMARY_IO;
+; 237  : 	{
+; 238  : 	case (ATA_PRIMARY << 1 |  ATA_MASTER):
+; 239  : 		io = ATA_PRIMARY_IO;
 
 	mov	eax, 496				; 000001f0H
 	mov	WORD PTR io$[rsp], ax
 
-; 238  : 		ata_drive = ATA_MASTER;
+; 240  : 		ata_drive = ATA_MASTER;
 
 	mov	BYTE PTR ?ata_drive@@3EA, 0		; ata_drive
 
-; 239  : 		break;
+; 241  : 		break;
 
 	jmp	SHORT $LN9@ata_read_2
 $LN7@ata_read_2:
 
-; 240  : 	case (ATA_PRIMARY << 1 | ATA_SLAVE):
-; 241  : 		io = ATA_PRIMARY_IO;
+; 242  : 	case (ATA_PRIMARY << 1 | ATA_SLAVE):
+; 243  : 		io = ATA_PRIMARY_IO;
 
 	mov	eax, 496				; 000001f0H
 	mov	WORD PTR io$[rsp], ax
 
-; 242  : 		ata_drive = ATA_SLAVE;
+; 244  : 		ata_drive = ATA_SLAVE;
 
 	mov	BYTE PTR ?ata_drive@@3EA, 1		; ata_drive
 
-; 243  : 		break;
+; 245  : 		break;
 
 	jmp	SHORT $LN9@ata_read_2
 $LN6@ata_read_2:
 
-; 244  : 	case (ATA_SECONDARY << 1 | ATA_MASTER):
-; 245  : 		io = ATA_SECONDARY_IO;
+; 246  : 	case (ATA_SECONDARY << 1 | ATA_MASTER):
+; 247  : 		io = ATA_SECONDARY_IO;
 
 	mov	eax, 368				; 00000170H
 	mov	WORD PTR io$[rsp], ax
 
-; 246  : 		ata_drive = ATA_MASTER;
+; 248  : 		ata_drive = ATA_MASTER;
 
 	mov	BYTE PTR ?ata_drive@@3EA, 0		; ata_drive
 
-; 247  : 		break;
+; 249  : 		break;
 
 	jmp	SHORT $LN9@ata_read_2
 $LN5@ata_read_2:
 
-; 248  : 	case (ATA_SECONDARY << 1 | ATA_SLAVE):
-; 249  : 		io = ATA_SECONDARY_IO;
+; 250  : 	case (ATA_SECONDARY << 1 | ATA_SLAVE):
+; 251  : 		io = ATA_SECONDARY_IO;
 
 	mov	eax, 368				; 00000170H
 	mov	WORD PTR io$[rsp], ax
 
-; 250  : 		ata_drive = ATA_SLAVE;
+; 252  : 		ata_drive = ATA_SLAVE;
 
 	mov	BYTE PTR ?ata_drive@@3EA, 1		; ata_drive
 
-; 251  : 		break;
+; 253  : 		break;
 
 	jmp	SHORT $LN9@ata_read_2
 $LN4@ata_read_2:
 
-; 252  : 	default:
-; 253  : 		return 0;
+; 254  : 	default:
+; 255  : 		return 0;
 
 	xor	al, al
 	jmp	$LN11@ata_read_2
 $LN9@ata_read_2:
 
-; 254  : 	}
-; 255  : 
-; 256  : 	uint8_t cmd = (ata_drive == ATA_MASTER ? 0xE0 : 0xF0);
+; 256  : 	}
+; 257  : 
+; 258  : 	uint8_t cmd = (ata_drive == ATA_MASTER ? 0xE0 : 0xF0);
 
 	movzx	eax, BYTE PTR ?ata_drive@@3EA		; ata_drive
 	test	eax, eax
@@ -2192,14 +2206,14 @@ $LN14@ata_read_2:
 	movzx	eax, BYTE PTR tv74[rsp]
 	mov	BYTE PTR cmd$[rsp], al
 
-; 257  : 
-; 258  : 	ata_wait_busy (io);
+; 259  : 
+; 260  : 	ata_wait_busy (io);
 
 	movzx	ecx, WORD PTR io$[rsp]
 	call	?ata_wait_busy@@YAXG@Z			; ata_wait_busy
 
-; 259  : 	
-; 260  : 	outportb (io + ATA_REG_HDDEVSEL, (cmd | (uint8_t) ((lba >> 24 & 0x0F))));
+; 261  : 	
+; 262  : 	outportb (io + ATA_REG_HDDEVSEL, (cmd | (uint8_t) ((lba >> 24 & 0x0F))));
 
 	movzx	eax, BYTE PTR cmd$[rsp]
 	mov	ecx, DWORD PTR lba$[rsp]
@@ -2212,7 +2226,7 @@ $LN14@ata_read_2:
 	movzx	edx, al
 	call	?outportb@@YAXGE@Z			; outportb
 
-; 261  : 	outportb (io + 1, 0x00);
+; 263  : 	outportb (io + 1, 0x00);
 
 	movzx	eax, WORD PTR io$[rsp]
 	inc	eax
@@ -2220,9 +2234,9 @@ $LN14@ata_read_2:
 	movzx	ecx, ax
 	call	?outportb@@YAXGE@Z			; outportb
 
-; 262  : 
-; 263  : 	//! single sector read
-; 264  : 	outportb (io + ATA_REG_SECCOUNT0, sec_count);
+; 264  : 
+; 265  : 	//! single sector read
+; 266  : 	outportb (io + ATA_REG_SECCOUNT0, sec_count);
 
 	movzx	eax, WORD PTR io$[rsp]
 	add	eax, 2
@@ -2230,9 +2244,9 @@ $LN14@ata_read_2:
 	movzx	ecx, ax
 	call	?outportb@@YAXGE@Z			; outportb
 
-; 265  : 
-; 266  : 	//! select LBA
-; 267  : 	outportb (io + ATA_REG_LBA0, (uint8_t)((lba)));
+; 267  : 
+; 268  : 	//! select LBA
+; 269  : 	outportb (io + ATA_REG_LBA0, (uint8_t)((lba)));
 
 	movzx	eax, WORD PTR io$[rsp]
 	add	eax, 3
@@ -2240,7 +2254,7 @@ $LN14@ata_read_2:
 	movzx	ecx, ax
 	call	?outportb@@YAXGE@Z			; outportb
 
-; 268  : 	outportb (io + ATA_REG_LBA1, (uint8_t)((lba) >> 8));
+; 270  : 	outportb (io + ATA_REG_LBA1, (uint8_t)((lba) >> 8));
 
 	mov	eax, DWORD PTR lba$[rsp]
 	shr	eax, 8
@@ -2249,7 +2263,7 @@ $LN14@ata_read_2:
 	movzx	edx, al
 	call	?outportb@@YAXGE@Z			; outportb
 
-; 269  : 	outportb (io + ATA_REG_LBA2, (uint8_t)((lba) >> 16));
+; 271  : 	outportb (io + ATA_REG_LBA2, (uint8_t)((lba) >> 16));
 
 	mov	eax, DWORD PTR lba$[rsp]
 	shr	eax, 16
@@ -2258,9 +2272,9 @@ $LN14@ata_read_2:
 	movzx	edx, al
 	call	?outportb@@YAXGE@Z			; outportb
 
-; 270  : 
-; 271  : 	//! select read command
-; 272  : 	outportb (io + ATA_REG_COMMAND, ATA_CMD_READ_PIO);
+; 272  : 
+; 273  : 	//! select read command
+; 274  : 	outportb (io + ATA_REG_COMMAND, ATA_CMD_READ_PIO);
 
 	movzx	eax, WORD PTR io$[rsp]
 	add	eax, 7
@@ -2268,15 +2282,15 @@ $LN14@ata_read_2:
 	movzx	ecx, ax
 	call	?outportb@@YAXGE@Z			; outportb
 
-; 273  : 
-; 274  : 	//! wait untill ready
-; 275  : 	ide_poll (io);
+; 275  : 
+; 276  : 	//! wait untill ready
+; 277  : 	ide_poll (io);
 
 	movzx	ecx, WORD PTR io$[rsp]
 	call	?ide_poll@@YAXG@Z			; ide_poll
 
-; 276  : 	
-; 277  : 	for (int i = 0; i < 256; i++ )
+; 278  : 	
+; 279  : 	for (int i = 0; i < 256; i++ )
 
 	mov	DWORD PTR i$1[rsp], 0
 	jmp	SHORT $LN3@ata_read_2
@@ -2288,9 +2302,9 @@ $LN3@ata_read_2:
 	cmp	DWORD PTR i$1[rsp], 256			; 00000100H
 	jge	SHORT $LN1@ata_read_2
 
-; 278  : 	{
-; 279  : 			
-; 280  : 	   *(uint16_t*)(buf + i * 2) = inportw (io + ATA_REG_DATA);
+; 280  : 	{
+; 281  : 			
+; 282  : 	   *(uint16_t*)(buf + i * 2) = inportw (io + ATA_REG_DATA);
 
 	movzx	ecx, WORD PTR io$[rsp]
 	call	?inportw@@YAGG@Z			; inportw
@@ -2300,25 +2314,25 @@ $LN3@ata_read_2:
 	mov	rdx, QWORD PTR buf$[rsp]
 	mov	WORD PTR [rdx+rcx], ax
 
-; 281  :     }
+; 283  :     }
 
 	jmp	SHORT $LN2@ata_read_2
 $LN1@ata_read_2:
 
-; 282  : 	
-; 283  : 	
-; 284  : 	ide_400ns_delay(io);
+; 284  : 	
+; 285  : 	
+; 286  : 	ide_400ns_delay(io);
 
 	movzx	ecx, WORD PTR io$[rsp]
 	call	?ide_400ns_delay@@YAXG@Z		; ide_400ns_delay
 
-; 285  : 	//ide_wait_irq ();
-; 286  : 	return 0;
+; 287  : 	//ide_wait_irq ();
+; 288  : 	return 0;
 
 	xor	al, al
 $LN11@ata_read_2:
 
-; 287  : }
+; 289  : }
 
 	add	rsp, 72					; 00000048H
 	ret	0
@@ -2329,33 +2343,33 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 ?ata_initialize@@YAXXZ PROC				; ata_initialize
 
-; 489  : void ata_initialize (){
+; 491  : void ata_initialize (){
 
 $LN3:
 	sub	rsp, 40					; 00000028H
 
-; 490  : 
-; 491  : 	interrupt_set(35, ide_primary_irq, 14);
+; 492  : 
+; 493  : 	interrupt_set(35, ide_primary_irq, 14);
 
 	mov	r8b, 14
 	lea	rdx, OFFSET FLAT:?ide_primary_irq@@YAX_KPEAX@Z ; ide_primary_irq
 	mov	ecx, 35					; 00000023H
 	call	?interrupt_set@@YAX_KP6AX0PEAX@ZE@Z	; interrupt_set
 
-; 492  : 
-; 493  : 	interrupt_set(36, ide_secondary_irq,15);
+; 494  : 
+; 495  : 	interrupt_set(36, ide_secondary_irq,15);
 
 	mov	r8b, 15
 	lea	rdx, OFFSET FLAT:?ide_secondary_irq@@YAX_KPEAX@Z ; ide_secondary_irq
 	mov	ecx, 36					; 00000024H
 	call	?interrupt_set@@YAX_KP6AX0PEAX@ZE@Z	; interrupt_set
 
-; 494  : 
-; 495  : 	ata_probe ();
+; 496  : 
+; 497  : 	ata_probe ();
 
 	call	?ata_probe@@YAXXZ			; ata_probe
 
-; 496  : }
+; 498  : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
