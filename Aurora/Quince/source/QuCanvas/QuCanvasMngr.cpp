@@ -56,7 +56,7 @@ void QuCanvasCommit (uint32_t* canvas, uint16_t destid, unsigned x, unsigned y, 
 	msg.dword3 = w;
 	msg.dword4 = h;
 	QuChannelPut(&msg,destid);
-	//sys_unblock_id (destid);
+	sys_unblock_id (destid);
 }
 
 void QuCanvasBlit (QuWindow* win,uint32_t *canvas, unsigned x, unsigned y, unsigned w, unsigned h) {
@@ -85,18 +85,28 @@ void QuCanvasBlit (QuWindow* win,uint32_t *canvas, unsigned x, unsigned y, unsig
 	//! No Auto-invalidation window 
 	//! this is a normal window, it must contains dirty areas
 	//! go through dirty areas and draw it
-	if (win->dirty_areas->pointer > 0) {
+	/*///*if (win->dirty_areas->pointer > 0) {
 		for (int i = 0; i < win->dirty_areas->pointer; i++) {
 			QuRect* r = (QuRect*)QuListGetAt(win->dirty_areas, i);
-			for (int i=0; i < r->w; i++) {
-				for (int j=0; j < r->h; j++){
-					lfb[(r->x + i) + (r->y + j) * width] = canvas[(r->x + i) + (r->y + j) * width];
+			for (int i=0; i < win->width; i++) {
+				for (int j=0; j < win->height; j++){
+					lfb[(win->x + i) + (win->y + j) * width] = win->canvas[(win->x + i) + (win->y + j) * width];
 				}
 			}
 			QuListRemove(win->dirty_areas, i);
+			QuCanvasSetUpdateBit(true);
 		}	
-		QuCanvasSetUpdateBit(true);
+		*/
+	//}
+	for (int i=0; i < win->width; i++) {
+		for (int j=0; j < win->height; j++){
+			//if (lfb[(win->x + i) + (win->y + j) * width] != canvas[(win->x + i) + (win->y + j) * width]) {
+				lfb[(win->x + i) + (win->y + j) * width] = win->canvas[(win->x + i) + (win->y + j) * width];	
+				
+			//}
 		}
+		QuCanvasSetUpdateBit(true);
+	}
 	
 	//}
 }

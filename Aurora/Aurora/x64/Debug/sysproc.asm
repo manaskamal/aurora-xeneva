@@ -33,24 +33,24 @@ xdata	ENDS
 _TEXT	SEGMENT
 ?sys_exit@@YAXXZ PROC					; sys_exit
 
-; 15   : void sys_exit () {
+; 14   : void sys_exit () {
 
 $LN3:
 	sub	rsp, 40					; 00000028H
 
-; 16   : 	x64_cli();	
+; 15   : 	x64_cli();	
 
 	call	x64_cli
 
-; 17   : 	kill_process ();
+; 16   : 	kill_process ();
 
 	call	?kill_process@@YAXXZ			; kill_process
 
-; 18   : 	force_sched();
+; 17   : 	force_sched();
 
 	call	?force_sched@@YAXXZ			; force_sched
 
-; 19   : }
+; 18   : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -71,20 +71,19 @@ $LN3:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 56					; 00000038H
 
-; 5    : 	//x64_cli();
-; 6    : 	procmngr_queue *queue = (procmngr_queue*)pmmngr_alloc();
+; 5    : 	procmngr_queue *queue = (procmngr_queue*)pmmngr_alloc();
 
 	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
 	mov	QWORD PTR queue$[rsp], rax
 
-; 7    : 	strcpy(queue->name, procnm);
+; 6    : 	strcpy(queue->name, procnm);
 
 	mov	rax, QWORD PTR queue$[rsp]
 	mov	rdx, QWORD PTR procnm$[rsp]
 	mov	rcx, rax
 	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
 
-; 8    : 	strcpy(queue->path,name);
+; 7    : 	strcpy(queue->path,name);
 
 	mov	rax, QWORD PTR queue$[rsp]
 	add	rax, 8
@@ -92,17 +91,17 @@ $LN3:
 	mov	rcx, rax
 	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
 
-; 9    : 	procmngr_add_process (queue);
+; 8    : 	procmngr_add_process (queue);
 
 	mov	rcx, QWORD PTR queue$[rsp]
 	call	?procmngr_add_process@@YAXPEAU_procmngr_queue_@@@Z ; procmngr_add_process
 
-; 10   : 	procmngr_wakeup();
+; 9    : 	procmngr_wakeup();
 
 	call	?procmngr_wakeup@@YAXXZ			; procmngr_wakeup
 
-; 11   : 	//create_process (name, procnm, 1, NULL);
-; 12   : }
+; 10   : 	//create_process (name, procnm, 1, NULL);
+; 11   : }
 
 	add	rsp, 56					; 00000038H
 	ret	0

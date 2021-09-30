@@ -97,12 +97,12 @@ bool QuWindowMngr_CheckTop (QuWindow *win) {
 
 void QuWindowMngr_DrawAll () {	
 	QuCanvasUpdateDirty();
-	if (WindowList->pointer > 0) {
+	//if (WindowList->pointer > 0) {
 		for (int i = 0; i < WindowList->pointer; i++) {
 			QuWindow* _win = (QuWindow*)QuListGetAt(WindowList, i);
 			QuWindowDraw (_win);
 		}
-	} 
+	//} 
 	
 }
 
@@ -120,7 +120,7 @@ void QuWindowMngr_DisplayWindow() {
 				}
 				
 			}
-		   UpdateWindows = false;
+			UpdateWindows = false;
 		}		
 	} 
 }
@@ -225,6 +225,7 @@ void QuWindowMngr_HandleMouse (int x, int y, bool clicked) {
 			if (x > win->x && x < (win->x + win->width) &&
 				y > win->y && y < (win->y + 23)) {
 
+					if (clicked) {
 					if (draggable_win != NULL) {
 						StreamEvent = false;
 						draggable_win->drag_x = x - draggable_win->x;
@@ -235,6 +236,7 @@ void QuWindowMngr_HandleMouse (int x, int y, bool clicked) {
 						if (draggable_win != win)
 							draggable_win = win;
 						QuWindowMngr_MoveFront(win);
+					}
 					}
 			}
 

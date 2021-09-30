@@ -42,7 +42,6 @@ void initialize_kmemory (size_t sz) {
 }
 
 void kmem::align_next () {
-
 	if (next == NULL) return;
 	if (!next->free) return;
 
@@ -63,7 +62,6 @@ void kmem::align_prev () {
 
 
 kmem* kmem::split(size_t split_length) {
-
 	if (split_length < 0x10) return NULL;
 	int64_t split_seg_length = length - split_length - (sizeof(kmem));
 	if (split_seg_length < 0x10) return NULL;
@@ -140,6 +138,7 @@ void* alloc(size_t size) {
 }
 
 void free (void* memory) {
+	//x64_cli();
    kmem* seg = (kmem*)memory - 1;
    seg->free = true;
    seg->align_next();

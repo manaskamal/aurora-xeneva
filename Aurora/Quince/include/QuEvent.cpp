@@ -43,6 +43,8 @@ const int ticks_per_second = 8;
 const int skip_ticks = 1000 / ticks_per_second;
 const int max_frame_skip = 10;
 static int _mouse_code_ = 0;
+static bool render_disable = false;
+
 
 void QuHandleQuinceMsg (QuMessage *qu_msg) {
 	if (qu_msg->type == QU_CODE_WIN_CREATE) {
@@ -155,15 +157,19 @@ void QuEventLoop() {
 		 **/
 
 		//! Create Window Request
-		if (msg.type == QU_CODE_WIN_CREATE) {
+		if (q_msg.type == QU_CODE_WIN_CREATE) {
 			////!Stop the mouse
-			ioquery (IO_QUERY_MOUSE, MOUSE_IOCODE_DISABLE,NULL);
-
-			uint16_t dest_id = msg.dword;
-			uint32_t* canvas = QuCanvasCreate(dest_id);
+			//ioquery (IO_QUERY_MOUSE, MOUSE_IOCODE_DISABLE,NULL);
+			render_disable = true;
+			uint16_t dest_id =  q_msg.from_id;//msg.dword;
 		
-			QuWindow * window = QuWindowCreate(x,y,dest_id);
+			uint32_t* canvas = QuCanvasCreate(dest_id);
+	     	//sys_print_text ("dest id req -> %d\n", dest_id);
+			QuWindow * window = QuWindowCreate(x,y,dest_id);	
+			//sys_print_text ("Win created\n");
+			//sys_sleep(16);
 			QuCanvasCommit(canvas, dest_id, window->x, window->y, window->width, window->height);
+			//sys_print_text ("Canvas commited\n");
 			QuWindowSetCanvas (window, canvas);
 			QuRect *r = (QuRect*)malloc(sizeof(QuRect));
 			r->x = window->x;
@@ -174,24 +180,24 @@ void QuEventLoop() {
 			
 			x += 30;
 			y += 30;
-			memset (&msg, 0, sizeof(message_t));
-
-			ioquery (IO_QUERY_MOUSE, MOUSE_IOCODE_ENABLE,NULL);
+			memset (&q_msg, 0, sizeof(QuMessage));
+			render_disable = false;
+			//ioquery (IO_QUERY_MOUSE, MOUSE_IOCODE_ENABLE,NULL);
 		}
 
 
 		//! Dirty Update Request
-		if (msg.type == QU_CODE_DIRTY_UPDATE) {
+		if (q_msg.type == QU_CODE_DIRTY_UPDATE) {
 			QuRect *r = (QuRect*)malloc(sizeof(QuRect));
-			r->x = msg.dword;
-			r->y = msg.dword2;
-			r->w = msg.dword3;
-			r->h = msg.dword4;
-			uint16_t from_id = msg.dword5;
+			r->x = q_msg.dword;
+			r->y = q_msg.dword2;
+			r->w = q_msg.dword3;
+			r->h = q_msg.dword4;
+			uint16_t from_id = q_msg.from_id;//msg.dword5;
 			QuWindow* win = (QuWindow*)QuWindowMngrFindByID(from_id);
 			QuWindowAddDirtyArea(win,r);
 			//memset(&msg, 0, sizeof(message_t));
-			memset (&msg, 0, sizeof(message_t));
+			memset (&q_msg, 0, sizeof(QuMessage));
 		}
 
 
@@ -230,10 +236,12 @@ void QuEventLoop() {
 		//! Here We Prepare the frame that will be displayed
 	
 		if (diff_time > 15){
-			QuWindowMngr_DrawAll();	
-			QuWindowMngr_DisplayWindow();
-			next_tick = sys_get_system_tick();
-			frame_time = 0;
+			if (!render_disable) {
+				QuWindowMngr_DrawAll();	
+				QuWindowMngr_DisplayWindow();
+				next_tick = sys_get_system_tick();
+				frame_time = 0;
+			}
 		}
 	
 	

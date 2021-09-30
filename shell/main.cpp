@@ -38,12 +38,6 @@ void main (int argc, char*argv[]) {
 
 	message_t msg;
 	while(1) {
-		message_receive(&msg);
-
-		if(msg.type == 3) {
-			sys_print_text ("Key pressed\n");
-		}
-
 		//sys_print_text ("Shell Loop\n");
 		sys_wait();
 	}

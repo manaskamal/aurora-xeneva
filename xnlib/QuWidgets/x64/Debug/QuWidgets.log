@@ -1,4 +1,4 @@
-﻿Build started 28-09-2021 আবেলি 9:32:37.
+﻿Build started 01-10-2021 ৰাতিপু 1:33:30.
      1>Project "E:\Xeneva Project\Xeneva\xnlib\QuWidgets\QuWidgets.vcxproj" on node 2 (Rebuild target(s)).
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\xnlib\xnclib" /I"E:\Xeneva Project\Xeneva\xnlib\QuWidgets\include" /I"E:\Xeneva Project\Xeneva\xnlib\xnacrylic\include" /Zi /nologo /W4 /WX- /sdl- /MP /Od /D ARCH_X64 /D _MBCS /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt source\QuBase.cpp source\QuButton.cpp source\QuPanel.cpp source\QuTextbox.cpp source\QuUtils\QuList.cpp source\QuWindow.cpp
@@ -30,9 +30,9 @@
      1>source\QuButton.cpp(62): warning C4267: 'argument' : conversion from 'size_t' to 'unsigned int', possible loss of data
      1>source\QuButton.cpp(77): warning C4267: 'argument' : conversion from 'size_t' to 'unsigned int', possible loss of data
          QuBase.cpp
-     1>source\QuBase.cpp(29): warning C4244: '=' : conversion from 'uint16_t' to 'uint8_t', possible loss of data
-     1>source\QuBase.cpp(30): warning C4244: '=' : conversion from 'uint16_t' to 'uint8_t', possible loss of data
-     1>source\QuBase.cpp(50): warning C4244: '=' : conversion from 'unsigned int' to 'uint16_t', possible loss of data
+     1>source\QuBase.cpp(32): warning C4244: '=' : conversion from 'uint16_t' to 'uint8_t', possible loss of data
+     1>source\QuBase.cpp(33): warning C4244: '=' : conversion from 'uint16_t' to 'uint8_t', possible loss of data
+     1>source\QuBase.cpp(65): warning C4244: '=' : conversion from 'unsigned int' to 'uint16_t', possible loss of data
          Generating Code...
      1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V110\Microsoft.CppBuild.targets(1299,5): warning MSB8012: TargetPath(E:\Xeneva Project\Xeneva\Aurora\x64\Debug\QuWidgets.lib) does not match the Library's OutputFile property value (E:\Xeneva Project\Xeneva\xnlib\lib64\QuWidgets.lib). This may cause your project to build incorrectly. To correct this, please make sure that $(OutDir), $(TargetName) and $(TargetExt) property values match the value specified in %(Lib.OutputFile).
        Lib:
@@ -47,4 +47,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:01.86
+Time Elapsed 00:00:00.94

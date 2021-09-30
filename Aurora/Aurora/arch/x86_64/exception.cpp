@@ -163,7 +163,7 @@ void page_fault (size_t vector, void* param){
 	else if (id)
 		printf ("*** Invalid Page ****\n");
 	////! here we must check for swap area for valid block
-	//svga_update(0,0,get_screen_width(), get_screen_height());
+	svga_update(0,0,get_screen_width(), get_screen_height());
 	//map_page((uint64_t)pmmngr_alloc(), (uint64_t)vaddr);
 	for(;;);
 }

@@ -25,10 +25,6 @@ $SG8123	DB	'procmngr', 00H
 $SG8124	DB	'dwm3', 00H
 	ORG $+7
 $SG8125	DB	'a:dwm2.exe', 00H
-	ORG $+1
-$SG8126	DB	'dwm4', 00H
-	ORG $+7
-$SG8127	DB	'a:dwm2.exe', 00H
 CONST	ENDS
 PUBLIC	??2@YAPEAX_K@Z					; operator new
 PUBLIC	??3@YAXPEAX@Z					; operator delete
@@ -79,7 +75,7 @@ $pdata$??_U@YAPEAX_K@Z DD imagerel $LN3
 	DD	imagerel $LN3+23
 	DD	imagerel $unwind$??_U@YAPEAX_K@Z
 $pdata$?_kmain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z DD imagerel $LN5
-	DD	imagerel $LN5+302
+	DD	imagerel $LN5+277
 	DD	imagerel $unwind$?_kmain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z
 pdata	ENDS
 xdata	SEGMENT
@@ -101,102 +97,106 @@ tv81 = 48
 info$ = 80
 ?_kmain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z PROC		; _kmain
 
-; 118  : void _kmain (KERNEL_BOOT_INFO *info) {
+; 126  : void _kmain (KERNEL_BOOT_INFO *info) {
 
 $LN5:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 72					; 00000048H
 
-; 119  : 	hal_init ();
+; 127  : 	hal_init ();
 
 	call	?hal_init@@YAXXZ			; hal_init
 
-; 120  : 	pmmngr_init (info);
+; 128  : 	pmmngr_init (info);
 
 	mov	rcx, QWORD PTR info$[rsp]
 	call	?pmmngr_init@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z ; pmmngr_init
 
-; 121  : 	mm_init(); 
+; 129  : 	mm_init(); 
 
 	call	?mm_init@@YAXXZ				; mm_init
 
-; 122  : 	initialize_serial();
+; 130  : 	initialize_serial();
 
 	call	?initialize_serial@@YAXXZ		; initialize_serial
 
-; 123  : 	console_initialize(info);
+; 131  : 	console_initialize(info);
 
 	mov	rcx, QWORD PTR info$[rsp]
 	call	?console_initialize@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z ; console_initialize
 
-; 124  : 	//!Initialize kernel runtime drivers	
-; 125  : 	kybrd_init();
+; 132  : 	//!Initialize kernel runtime drivers	
+; 133  : 	kybrd_init();
 
 	call	?kybrd_init@@YAXXZ			; kybrd_init
 
-; 126  : 	initialize_acpi (info->acpi_table_pointer);
+; 134  : 	initialize_acpi (info->acpi_table_pointer);
 
 	mov	rax, QWORD PTR info$[rsp]
 	mov	rcx, QWORD PTR [rax+66]
 	call	?initialize_acpi@@YAXPEAX@Z		; initialize_acpi
 
-; 127  : 	initialize_rtc();  
+; 135  : 	initialize_rtc();  
 
 	call	?initialize_rtc@@YAXXZ			; initialize_rtc
 
-; 128  : 	hda_initialize();
+; 136  : 	hda_initialize();
 
 	call	?hda_initialize@@YAXXZ			; hda_initialize
 
-; 129  : 	e1000_initialize();  //<< receiver not working
+; 137  : 	e1000_initialize();  //<< receiver not working
 
 	call	?e1000_initialize@@YAXXZ		; e1000_initialize
 
-; 130  : 
-; 131  : 
-; 132  :     ata_initialize();
+; 138  : 
+; 139  : 
+; 140  :     ata_initialize();
 
 	call	?ata_initialize@@YAXXZ			; ata_initialize
 
-; 133  : 	initialize_vfs();
+; 141  : 	initialize_vfs();
 
 	call	?initialize_vfs@@YAXXZ			; initialize_vfs
 
-; 134  : 	initialize_screen(info);
+; 142  : 	initialize_screen(info);
 
 	mov	rcx, QWORD PTR info$[rsp]
 	call	?initialize_screen@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z ; initialize_screen
 
-; 135  : 	svga_init (); 
+; 143  : 	svga_init (); 
 
 	call	?svga_init@@YAXXZ			; svga_init
 
-; 136  : 	initialize_mouse();
+; 144  : 	initialize_mouse();
 
 	call	?initialize_mouse@@YAXXZ		; initialize_mouse
 
-; 137  : 
-; 138  : 	message_init ();
+; 145  : 
+; 146  : 	message_init ();
 
 	call	?message_init@@YAXXZ			; message_init
 
-; 139  : 	dwm_ipc_init();
+; 147  : 	dwm_ipc_init();
 
 	call	?dwm_ipc_init@@YAXXZ			; dwm_ipc_init
 
-; 140  : 
-; 141  : 	driver_mngr_initialize(info);
+; 148  : 
+; 149  : 	driver_mngr_initialize(info);
 
 	mov	rcx, QWORD PTR info$[rsp]
 	call	?driver_mngr_initialize@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z ; driver_mngr_initialize
 
-; 142  : 
-; 143  : #ifdef ARCH_X64
-; 144  : 	initialize_scheduler();
+; 150  : 
+; 151  : #ifdef ARCH_X64
+; 152  : 
+; 153  : 	//================================================
+; 154  : 	//! Initialize the scheduler here
+; 155  : 	//!===============================================
+; 156  : 	initialize_scheduler();
 
 	call	?initialize_scheduler@@YAXXZ		; initialize_scheduler
 
-; 145  : 	create_process ("a:xshell.exe","shell",0, NULL);
+; 157  : 	create_process ("a:xshell.exe","shell",0, NULL);
 
 	xor	r9d, r9d
 	xor	r8d, r8d
@@ -204,7 +204,10 @@ $LN5:
 	lea	rcx, OFFSET FLAT:$SG8119
 	call	?create_process@@YAXPEBDPEADE1@Z	; create_process
 
-; 146  : 	create_process ("a:quince.exe","quince",0, NULL);
+; 158  : 
+; 159  : 	//! Quince -- The Compositing window manager for Aurora kernel
+; 160  : 	//! always put quince in thread id -- > 2
+; 161  : 	create_process ("a:quince.exe","quince",0, NULL);
 
 	xor	r9d, r9d
 	xor	r8d, r8d
@@ -212,7 +215,13 @@ $LN5:
 	lea	rcx, OFFSET FLAT:$SG8121
 	call	?create_process@@YAXPEBDPEADE1@Z	; create_process
 
-; 147  : 	create_kthread (procmngr_start,(uint64_t)pmmngr_alloc(),x64_read_cr3(),"procmngr",0);
+; 162  : 
+; 163  : 	/**=====================================================
+; 164  : 	 ** Kernel threads handle some specific callbacks like
+; 165  : 	 ** procmngr handles process creation and termination
+; 166  : 	 **=====================================================
+; 167  : 	 */
+; 168  : 	create_kthread (procmngr_start,(uint64_t)pmmngr_alloc(),x64_read_cr3(),"procmngr",0);
 
 	call	x64_read_cr3
 	mov	QWORD PTR tv81[rsp], rax
@@ -225,7 +234,9 @@ $LN5:
 	lea	rcx, OFFSET FLAT:?procmngr_start@@YAXXZ	; procmngr_start
 	call	?create_kthread@@YAPEAU_thread_@@P6AXXZ_K1QEADE@Z ; create_kthread
 
-; 148  : 	create_process ("a:dwm2.exe", "dwm3", 0, NULL);
+; 169  : 
+; 170  : 	//! Misc programs goes here
+; 171  : 	create_process ("a:dwm2.exe", "dwm3", 0, NULL);
 
 	xor	r9d, r9d
 	xor	r8d, r8d
@@ -233,32 +244,30 @@ $LN5:
 	lea	rcx, OFFSET FLAT:$SG8125
 	call	?create_process@@YAXPEBDPEADE1@Z	; create_process
 
-; 149  : 	create_process ("a:dwm2.exe", "dwm4", 0, NULL);
-
-	xor	r9d, r9d
-	xor	r8d, r8d
-	lea	rdx, OFFSET FLAT:$SG8126
-	lea	rcx, OFFSET FLAT:$SG8127
-	call	?create_process@@YAXPEBDPEADE1@Z	; create_process
-
-; 150  : 	scheduler_start();
+; 172  : 	//create_process ("a:dwm2.exe", "dwm4", 0, NULL);
+; 173  : 
+; 174  : 	//! Here start the scheduler (multitasking engine)
+; 175  : 	scheduler_start();
 
 	call	?scheduler_start@@YAXXZ			; scheduler_start
 $LN2@kmain:
 
-; 151  : #endif
-; 152  : 	while(1) {
+; 176  : #endif
+; 177  : 
+; 178  : 	//! Loop forever
+; 179  : 	while(1) {
 
 	xor	eax, eax
 	cmp	eax, 1
 	je	SHORT $LN1@kmain
 
-; 153  : 	}
+; 180  : 		//!looping looping
+; 181  : 	}
 
 	jmp	SHORT $LN2@kmain
 $LN1@kmain:
 
-; 154  : }
+; 182  : }
 
 	add	rsp, 72					; 00000048H
 	ret	0

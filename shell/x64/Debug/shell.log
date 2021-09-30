@@ -1,8 +1,8 @@
-﻿Build started 26-09-2021 ৰাতিপু 1:54:56.
+﻿Build started 01-10-2021 ৰাতিপু 1:27:19.
      1>Project "E:\Xeneva Project\Xeneva\shell\shell.vcxproj" on node 2 (Rebuild target(s)).
      1>_NASM:
          shl.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp6a0893c3e77349808ca6ed76fd686d29.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp6d181e65076741698cad0bdbee1fd53a.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\shl.obj"  "E:\Xeneva Project\Xeneva\shell\shl.asm"
        ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\xnlib\xnclib" /I"E:\Xeneva Project\Xeneva\xnlib\xnclib\c++" /I"E:\Xeneva Project\Xeneva\xnlib\xnacrylic\include" /Zi /nologo /W1 /WX- /sdl- /Od /D ARCH_X64 /D SSFN_CONSOLEBITMAP_PALETTE /D SSFN_CONSOLEBITMAP_HICOLOR /D SSFN_CONSOLEBITMAP_TRUECOLOR /D SSFN_CONSOLEBITMAP_CLEARBG /D _MBCS /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt main.cpp
@@ -24,4 +24,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:00.95
+Time Elapsed 00:00:01.86

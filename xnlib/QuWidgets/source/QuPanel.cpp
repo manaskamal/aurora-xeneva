@@ -60,21 +60,21 @@ void QuPanelUpdate(int x, int y, int w, int h) {
 	}
 	}
 
-	/*QuMessage msg;
+	QuMessage msg;
 	msg.type = QU_CODE_DIRTY_UPDATE;
 	msg.dword = x;
 	msg.dword2 = y;
 	msg.dword3 = w;
 	msg.dword4 = h;
-	QuChannelPut(&msg, 2);*/
-	message_t msg;
-	msg.type = QU_CODE_DIRTY_UPDATE;
-	msg.dword = x;
-	msg.dword2 = y;
-	msg.dword3 = w;
-	msg.dword4 = h;
-	msg.dword5 = get_current_pid();
-	message_send(2, &msg);
+	QuChannelPut(&msg, 2);
+	//message_t msg;
+	//msg.type = QU_CODE_DIRTY_UPDATE;
+	//msg.dword = x;
+	//msg.dword2 = y;
+	//msg.dword3 = w;
+	//msg.dword4 = h;
+	//msg.dword5 = get_current_pid();
+	//message_send(2, &msg);
 }
 
 

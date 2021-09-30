@@ -120,7 +120,7 @@ uint64_t* create_inc_stack (uint64_t* cr3) {
 
 
 void create_process(const char* filename, char* procname, uint8_t priority, char *strings) {
-	printf ("Creating processs -> %s\n", filename);
+	//printf ("Creating processs -> %s\n", filename);
 	mutex_lock (process_mutex);
 	//!allocate a data-structure for process 
 	process_t *process = (process_t*)pmmngr_alloc();
@@ -131,7 +131,7 @@ void create_process(const char* filename, char* procname, uint8_t priority, char
 		printf("Executable image not found\n");
 		return;
 	}
-	printf ("File size -> %d\n", file.size);
+	//printf ("File size -> %d\n", file.size);
 	//!open the binary file and read it
 	unsigned char* buf = (unsigned char*)pmmngr_alloc();   //18*1024
 	read_blk(&file,buf,file.id);
@@ -165,6 +165,7 @@ void create_process(const char* filename, char* procname, uint8_t priority, char
 		map_page_ex (cr3, (uint64_t)pmmngr_alloc(), 0x0000080000000000 + i * 4096);
 	}
 
+	
 	//!allocate current process
 	process->name = procname;
 	process->entry_point = ent;

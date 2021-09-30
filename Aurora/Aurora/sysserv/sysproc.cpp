@@ -2,7 +2,6 @@
 #include <procmngr.h>
 
 void create__sys_process (const char* name, char* procnm) {
-	//x64_cli();
 	procmngr_queue *queue = (procmngr_queue*)pmmngr_alloc();
 	strcpy(queue->name, procnm);
 	strcpy(queue->path,name);

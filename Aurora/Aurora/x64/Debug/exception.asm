@@ -129,6 +129,9 @@ EXTRN	x64_sti:PROC
 EXTRN	x64_read_cr2:PROC
 EXTRN	?setvect@@YAX_KP6AX0PEAX@Z@Z:PROC		; setvect
 EXTRN	?get_current_thread@@YAPEAU_thread_@@XZ:PROC	; get_current_thread
+EXTRN	?svga_update@@YAXIIII@Z:PROC			; svga_update
+EXTRN	?get_screen_width@@YAIXZ:PROC			; get_screen_width
+EXTRN	?get_screen_height@@YAIXZ:PROC			; get_screen_height
 pdata	SEGMENT
 $pdata$?exception_init@@YAXXZ DD imagerel $LN3
 	DD	imagerel $LN3+322
@@ -176,7 +179,7 @@ $pdata$?general_protection_fault@@YAX_KPEAX@Z DD imagerel $LN5
 	DD	imagerel $LN5+177
 	DD	imagerel $unwind$?general_protection_fault@@YAX_KPEAX@Z
 $pdata$?page_fault@@YAX_KPEAX@Z DD imagerel $LN16
-	DD	imagerel $LN16+457
+	DD	imagerel $LN16+490
 	DD	imagerel $unwind$?page_fault@@YAX_KPEAX@Z
 $pdata$?fpu_fault@@YAX_KPEAX@Z DD imagerel $LN5
 	DD	imagerel $LN5+38
@@ -372,14 +375,15 @@ _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\arch\x86_64\exception.cpp
 _TEXT	SEGMENT
-tv68 = 32
-us$ = 36
-present$ = 40
-rw$ = 44
-resv$ = 48
-id$ = 52
-frame$ = 56
-vaddr$ = 64
+frame$ = 32
+tv68 = 40
+resv$ = 44
+id$ = 48
+tv151 = 52
+us$ = 56
+present$ = 60
+rw$ = 64
+vaddr$ = 72
 vector$ = 96
 param$ = 104
 ?page_fault@@YAX_KPEAX@Z PROC				; page_fault
@@ -578,10 +582,21 @@ $LN4@page_fault:
 $LN6@page_fault:
 $LN8@page_fault:
 $LN10@page_fault:
-$LN2@page_fault:
 
 ; 165  : 	////! here we must check for swap area for valid block
-; 166  : 	//svga_update(0,0,get_screen_width(), get_screen_height());
+; 166  : 	svga_update(0,0,get_screen_width(), get_screen_height());
+
+	call	?get_screen_height@@YAIXZ		; get_screen_height
+	mov	DWORD PTR tv151[rsp], eax
+	call	?get_screen_width@@YAIXZ		; get_screen_width
+	mov	ecx, DWORD PTR tv151[rsp]
+	mov	r9d, ecx
+	mov	r8d, eax
+	xor	edx, edx
+	xor	ecx, ecx
+	call	?svga_update@@YAXIIII@Z			; svga_update
+$LN2@page_fault:
+
 ; 167  : 	//map_page((uint64_t)pmmngr_alloc(), (uint64_t)vaddr);
 ; 168  : 	for(;;);
 

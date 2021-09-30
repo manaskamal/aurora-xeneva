@@ -12,6 +12,7 @@
 #include <sys\_process.h>
 #include <string.h>
 #include <sys\_term.h>
+#include <sys\_sleep.h>
 #include <stdlib.h>
 
 //! QuChannel address
@@ -30,10 +31,20 @@ static uint32_t msg_count = 0;
 
 void QuChannelPut (QuMessage *msg, uint16_t to_id) {
 	uint16_t from_id = 2; //get_current_pid ();
-	QuMessage* channel_addr = (QuMessage*)QU_CHANNEL_ADDRESS;
+	void* channel_addr = (void*)QU_CHANNEL_ADDRESS;
+	QuMessage *tom = (QuMessage*)channel_addr;
 	msg->from_id = from_id;
 	msg->to_id = to_id;
-	memcpy (channel_addr, msg, (sizeof(QuMessage)));
+send:
+	if (tom->type == 0) {
+		memcpy (channel_addr, msg, (sizeof(QuMessage)));
+		//sys_unblock_id (to_id);
+		return;
+	}else {
+		sys_sleep (16);
+		goto send;
+	}
+
 }
 
 void QuChannelPushMessage (QuMessage *msg){
