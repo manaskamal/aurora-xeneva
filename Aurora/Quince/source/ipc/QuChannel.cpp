@@ -41,7 +41,7 @@ send:
 		//sys_unblock_id (to_id);
 		return;
 	}else {
-		sys_sleep (16);
+		//sys_sleep (16);
 		goto send;
 	}
 
@@ -76,11 +76,12 @@ uint32_t QuStackGetMsgCount () {
 }
 
 void QuChannelGet (QuMessage *msg) {
-	QuMessage* data = (QuMessage*)QU_CHANNEL_RECEIVER;
+   void* addr = (void*)QU_CHANNEL_RECEIVER;	
+   QuMessage* data = (QuMessage*)addr;
 	uint16_t to_id = get_current_pid ();
 	if (data->to_id == to_id){
 		memcpy (msg, data, sizeof(QuMessage));
-		memset (data, 0, 4096);
+		memset (addr, 0, 4096);
 	}
 }
 

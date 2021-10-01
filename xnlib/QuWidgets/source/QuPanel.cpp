@@ -18,6 +18,7 @@
 #include <acrylic.h>
 #include <color.h>
 #include <sys\_term.h>
+#include <sys\_sleep.h>
 
 bool panel_update = false;
 
@@ -75,6 +76,17 @@ void QuPanelUpdate(int x, int y, int w, int h) {
 	//msg.dword4 = h;
 	//msg.dword5 = get_current_pid();
 	//message_send(2, &msg);
+}
+
+
+void QuPanelRepaint (int x, int y, int w, int h) {
+	QuMessage msg;
+	msg.type = QU_CODE_REPAINT;
+	msg.dword = x;
+	msg.dword2 = y;
+	msg.dword3 = w;
+	msg.dword4 = h;
+	QuChannelPut(&msg, 2);
 }
 
 

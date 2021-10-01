@@ -44,9 +44,6 @@ QuWindow* QuWindowCreate (int x, int y, uint16_t owner_id, uint8_t attr) {
 	win->titlebar_object = QuListInit ();
 	QuWindowMngr_Add (win);
 	
-	QuWindowAddMinimizeButton(win);
-	QuWindowAddMaximizeButton(win);
-	QuWindowAddCloseButton(win);
 	return win;
 }
 

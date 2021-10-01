@@ -28,7 +28,7 @@ typedef struct _qulist_ {
 
 extern QuList* QuListInit();
 extern void QuListAdd (QuList* list, void* data);
-extern void* QuListRemove(QuList* list, unsigned int);
+extern void QuListRemove(QuList* list, unsigned int);
 extern void * QuListGetAt(QuList* list, unsigned int index);
 
 

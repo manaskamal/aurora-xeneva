@@ -144,6 +144,14 @@ void QuEventLoop() {
 		 */
 		if (msg.type == 3) {
 			//! Send the key event
+			if (msg.dword == KEY_Z)
+				QuWallpaperChange(NULL,BLUE);
+			if (msg.dword == KEY_X)
+				QuWallpaperChange(NULL,ORANGE);
+			if (msg.dword == KEY_C)
+				QuWallpaperChange(NULL,LIGHTBLACK);
+			if (msg.dword == KEY_V)
+				QuWallpaperChange(NULL,PURPLE);
 			if (QuWindowMngrGetFocused() != NULL) {
 				QuWindowMngr_SendEvent (QuWindowMngrGetFocused(), QU_CANVAS_KEY_PRESSED,NULL, NULL,msg.dword);
 			}
@@ -159,17 +167,12 @@ void QuEventLoop() {
 		//! Create Window Request
 		if (q_msg.type == QU_CODE_WIN_CREATE) {
 			////!Stop the mouse
-			//ioquery (IO_QUERY_MOUSE, MOUSE_IOCODE_DISABLE,NULL);
 			render_disable = true;
 			uint16_t dest_id =  q_msg.from_id;//msg.dword;
 		
 			uint32_t* canvas = QuCanvasCreate(dest_id);
-	     	//sys_print_text ("dest id req -> %d\n", dest_id);
 			QuWindow * window = QuWindowCreate(x,y,dest_id);	
-			//sys_print_text ("Win created\n");
-			//sys_sleep(16);
 			QuCanvasCommit(canvas, dest_id, window->x, window->y, window->width, window->height);
-			//sys_print_text ("Canvas commited\n");
 			QuWindowSetCanvas (window, canvas);
 			QuRect *r = (QuRect*)malloc(sizeof(QuRect));
 			r->x = window->x;
@@ -182,7 +185,6 @@ void QuEventLoop() {
 			y += 30;
 			memset (&q_msg, 0, sizeof(QuMessage));
 			render_disable = false;
-			//ioquery (IO_QUERY_MOUSE, MOUSE_IOCODE_ENABLE,NULL);
 		}
 
 
@@ -196,10 +198,16 @@ void QuEventLoop() {
 			uint16_t from_id = q_msg.from_id;//msg.dword5;
 			QuWindow* win = (QuWindow*)QuWindowMngrFindByID(from_id);
 			QuWindowAddDirtyArea(win,r);
-			//memset(&msg, 0, sizeof(message_t));
 			memset (&q_msg, 0, sizeof(QuMessage));
 		}
 
+
+		if (q_msg.type == QU_CODE_REPAINT) {
+			uint16_t from_id = q_msg.from_id;
+			QuWindow* win = (QuWindow*)QuWindowMngrFindByID(from_id);
+			QuCanvasQuickPaint (win->canvas,q_msg.dword, q_msg.dword2, q_msg.dword3, q_msg.dword4);
+			memset (&q_msg, 0, sizeof(QuMessage));
+		}
 
 
 		//! Set Window Configuration

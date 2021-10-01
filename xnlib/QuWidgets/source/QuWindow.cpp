@@ -72,6 +72,7 @@ void QuWindowAdd (QuWidget *widget) {
 
 void QuWindowShow() {
 
+	
 	for (int i = 0; i < root_win->widgets->pointer; i++) {
 		QuWidget* wid = (QuWidget*)QuListGetAt(root_win->widgets, i);
 		wid->Refresh(wid, root_win);
@@ -80,7 +81,7 @@ void QuWindowShow() {
 	for (int i = 0; i < 23; i++)
 		acrylic_draw_horizontal_line(root_win->x, root_win->y + i,root_win->w,title_bar_colors[i]);
 
-	
+	acrylic_draw_rect_unfilled (root_win->x, root_win->y, root_win->w, root_win->h, SILVER);
 	QuPanelUpdate(root_win->x, root_win->y, root_win->w, root_win->h);
 }
 
@@ -96,6 +97,8 @@ void QuWindowMove (int x, int y) {
 
 	for (int i = 0; i < 23; i++)
 		acrylic_draw_horizontal_line(root_win->x, root_win->y + i,root_win->w,title_bar_colors[i]);
+
+	acrylic_draw_rect_unfilled (root_win->x, root_win->y, root_win->w, root_win->h, SILVER);
 }
 
 

@@ -95,6 +95,12 @@ void QuButtonRefresh (QuWidget *wid, QuWindow* win) {
 void QuButtonMouseEvent (QuWidget *wid, QuWindow* win, int code, bool clicked) {
 	QuButton *but = (QuButton*)wid;
 
+	if (but->default_state) {
+		but->hover = false;
+		QuButtonRefresh(wid, win);
+		QuPanelRepaint(win->x + wid->x,win->y + wid->y, wid->width, wid->height);
+		but->default_state = false;
+	}
 	/**
 	 * The mouse enter event
 	 */
@@ -103,10 +109,12 @@ void QuButtonMouseEvent (QuWidget *wid, QuWindow* win, int code, bool clicked) {
 		if (clicked) {
 			but->clicked = true;
 			but->hover = false;
+			QuButtonRefresh(wid, win);
+			QuPanelRepaint(win->x + wid->x,win->y + wid->y, wid->width, wid->height);
+			but->default_state = true;
 		}
-		QuButtonRefresh(wid, win);
-		QuPanelUpdate (win->x + wid->x,win->y + wid->y, wid->width, wid->height);
-		but->default_state = true;
+		
+		//but->default_state = true;
 
 		if (clicked) {
 			//!Call the action handler
@@ -115,17 +123,8 @@ void QuButtonMouseEvent (QuWidget *wid, QuWindow* win, int code, bool clicked) {
 		}
 	}
 
-	/**
-	 * Mouse leave event
-	 */
-	else if (code == QU_EVENT_MOUSE_LEAVE) {
-		if (but->default_state) {
-			but->hover = false;
-			QuButtonRefresh(wid, win);
-			QuPanelUpdate (win->x + wid->x,win->y + wid->y, wid->width, wid->height);
-			but->default_state = false;
-		}
-	}
+	
+
 }
 
 

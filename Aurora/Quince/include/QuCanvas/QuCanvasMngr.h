@@ -77,4 +77,6 @@ extern bool QuCanvasGetUpdateBit();
 extern void QuCanvasCopyToFB(unsigned x, unsigned y, unsigned w, unsigned h);
 
 extern void QuCanvasQuery(unsigned x, unsigned y, unsigned w, unsigned h);
+
+extern void QuCanvasQuickPaint (uint32_t* canvas,int x, int y, int w,int h);
 #endif

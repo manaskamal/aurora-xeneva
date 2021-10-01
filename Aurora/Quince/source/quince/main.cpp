@@ -43,7 +43,7 @@ int main (int argc, char* argv[]) {
     psf_register_font_lib();
 
 	//!Initialize Quince Wallpaper Manager
-	Image * img = QuWallpaperInit("a:nature.jpg");
+	Image * img = QuWallpaperInit("a:coffee.jpg");
 	QuWallpaperDraw (img);
 	QuWallpaperPresent ();
 

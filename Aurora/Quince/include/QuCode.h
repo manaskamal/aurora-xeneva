@@ -19,6 +19,7 @@
 #define QU_CODE_WIN_MAXIMIZE 103
 #define QU_CODE_DIRTY_UPDATE 104
 #define QU_CODE_WIN_CONFIG   105
+#define QU_CODE_REPAINT      106
 
 //! Codes that are sent by Quince to clients
 #define QU_CANVAS_READY  200

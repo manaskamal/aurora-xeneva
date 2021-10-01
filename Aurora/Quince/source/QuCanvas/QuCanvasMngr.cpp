@@ -85,30 +85,24 @@ void QuCanvasBlit (QuWindow* win,uint32_t *canvas, unsigned x, unsigned y, unsig
 	//! No Auto-invalidation window 
 	//! this is a normal window, it must contains dirty areas
 	//! go through dirty areas and draw it
-	/*///*if (win->dirty_areas->pointer > 0) {
-		for (int i = 0; i < win->dirty_areas->pointer; i++) {
-			QuRect* r = (QuRect*)QuListGetAt(win->dirty_areas, i);
-			for (int i=0; i < win->width; i++) {
-				for (int j=0; j < win->height; j++){
-					lfb[(win->x + i) + (win->y + j) * width] = win->canvas[(win->x + i) + (win->y + j) * width];
-				}
-			}
-			QuListRemove(win->dirty_areas, i);
-			QuCanvasSetUpdateBit(true);
-		}	
-		*/
-	//}
-	for (int i=0; i < win->width; i++) {
-		for (int j=0; j < win->height; j++){
+	for (int k=0; k < win->dirty_areas->pointer; k++){
+		QuRect *r = (QuRect*)QuListGetAt(win->dirty_areas, k);
+		for (int i=0; i < win->width; i++) {
+			for (int j=0; j < win->height; j++){
 			//if (lfb[(win->x + i) + (win->y + j) * width] != canvas[(win->x + i) + (win->y + j) * width]) {
 				lfb[(win->x + i) + (win->y + j) * width] = win->canvas[(win->x + i) + (win->y + j) * width];	
 				
 			//}
+			}
+			QuCanvasSetUpdateBit(true);
 		}
-		QuCanvasSetUpdateBit(true);
 	}
-	
-	//}
+
+	for (int k =0; k < win->dirty_areas->pointer; k++){
+		QuRect *r = (QuRect*)QuListGetAt(win->dirty_areas, k);
+		QuListRemove(win->dirty_areas,k);
+		free(r);
+	}
 }
 
 
@@ -136,6 +130,18 @@ void QuCanvasUpdate (unsigned x, unsigned y, unsigned w, unsigned h) {
 			uint32_t color = wallp[(x + i) + (y + j) * canvas_get_scanline()];
 			lfb[(x + i) + (y + j) * canvas_get_scanline()] = color;
 			QuWindowMngr_UpdateWindow(true);
+		}
+	}
+}
+
+void QuCanvasQuickPaint (uint32_t* canvas,int x, int y, int w,int h) {
+	uint32_t* lfb = (uint32_t*)0x0000600000000000;
+
+	for (int i=0; i < w; i++) {
+		for (int j=0; j < h; j++){
+			uint32_t color = canvas[(x + i) + (y + j) * canvas_get_scanline()];
+			lfb[(x + i) + (y + j) * canvas_get_scanline()] = color;
+			QuCanvasSetUpdateBit(true);
 		}
 	}
 }

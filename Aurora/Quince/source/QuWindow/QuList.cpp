@@ -46,26 +46,26 @@ void * QuListGetAt(QuList* list, unsigned int index) {
 
 	dataentry * current_node = list->entry_current;
 	
-	for (unsigned int current_index = 0; (current_index < index) && current_node; current_index++)
+	for (unsigned int current_index = 0;current_index < index ; current_index++)    //(current_index < index) && current_node
 		current_node = current_node->next;
 
 	return current_node ? current_node->data : nullptr;
 }
 
-void* QuListRemove(QuList* list, unsigned int index) {
+void QuListRemove(QuList* list, unsigned int index) {
 
 	void* payload;
 
 	if (list->pointer == 0 || index >= list->pointer)
-		return nullptr;
+		return;
 
 	dataentry* current_node = list->entry_current;
 
-	for (unsigned int current_index = 0; (current_index < index) && current_node; current_index++)
+	for (unsigned int current_index = 0;current_index < index ; current_index++)   //(current_index < index) && current_node
 		current_node = current_node->next;
 
 	if (!current_node)
-		return nullptr;
+		return;
 	payload = current_node->data;
 
 	if (current_node->prev)
@@ -78,8 +78,8 @@ void* QuListRemove(QuList* list, unsigned int index) {
 		list->entry_current = current_node->next;
 
 	free(current_node);
-
+	//free (payload);
 	list->pointer--;
 
-	return payload;
+	//return payload;
 }
