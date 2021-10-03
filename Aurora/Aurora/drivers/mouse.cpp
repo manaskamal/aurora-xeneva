@@ -144,17 +144,17 @@ finish_packet:
 	
 
 
-		mutex_lock (mouse);
-		dwm_message_t *msg = (dwm_message_t*)pmmngr_alloc();
-		msg->type = 1;
-		msg->dword = mouse_x;
-		msg->dword2 = mouse_y;
-		msg->dword4 = mouse_button_state;
-		msg->dword5 = mouse_byte[1];
-		msg->dword6 = -mouse_byte[2];
-		dwm_put_message (msg);
-		pmmngr_free (msg);
-		mutex_unlock (mouse);
+		//mutex_lock (mouse);
+		dwm_message_t msg; // = (dwm_message_t*)pmmngr_alloc();
+		msg.type = 1;
+		msg.dword = mouse_x;
+		msg.dword2 = mouse_y;
+		msg.dword4 = mouse_button_state;
+		msg.dword5 = mouse_byte[1];
+		msg.dword6 = -mouse_byte[2];
+		dwm_put_message (&msg);
+		//pmmngr_free (msg);
+		//mutex_unlock (mouse);
 
 		thread_t* thr = (thread_t*)thread_iterate_block_list (2);
 		if (thr != NULL){
@@ -162,9 +162,9 @@ finish_packet:
 			unblock_thread(thr);
 		}
 
-		if (left_button_up()) {
+		/*if (left_button_up()) {
 			mouse_button_state |= 5;
-		}
+		}*/
 
 
 		memcpy (prev_button, curr_button, 3);

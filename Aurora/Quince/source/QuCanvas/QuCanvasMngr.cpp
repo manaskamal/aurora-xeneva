@@ -62,6 +62,7 @@ void QuCanvasCommit (uint32_t* canvas, uint16_t destid, unsigned x, unsigned y, 
 void QuCanvasBlit (QuWindow* win,uint32_t *canvas, unsigned x, unsigned y, unsigned w, unsigned h) {
 	uint32_t* lfb = (uint32_t*)0x0000600000000000;
 	uint32_t* fb = (uint32_t*)0xFFFFF00000000000;
+	uint32_t* wallp = (uint32_t*)0x0000060000000000;
 	int width = canvas_get_width();
 	int height = canvas_get_height();
 	int j = 0;
@@ -85,24 +86,18 @@ void QuCanvasBlit (QuWindow* win,uint32_t *canvas, unsigned x, unsigned y, unsig
 	//! No Auto-invalidation window 
 	//! this is a normal window, it must contains dirty areas
 	//! go through dirty areas and draw it
-	for (int k=0; k < win->dirty_areas->pointer; k++){
-		QuRect *r = (QuRect*)QuListGetAt(win->dirty_areas, k);
-		for (int i=0; i < win->width; i++) {
-			for (int j=0; j < win->height; j++){
-			//if (lfb[(win->x + i) + (win->y + j) * width] != canvas[(win->x + i) + (win->y + j) * width]) {
-				lfb[(win->x + i) + (win->y + j) * width] = win->canvas[(win->x + i) + (win->y + j) * width];	
-				
-			//}
+
+	for (int i=0; i < win->width; i++) {
+		for (int j=0; j < win->height; j++){
+			if (win->canvas[(win->x + i) + (win->y + j) * width] | 0x00000000){
+				uint32_t color = win->canvas[(win->x + i) + (win->y + j) * width];
+				uint32_t color_a = wallp[(win->x + i) + (win->y + j) * width];
+				lfb[(win->x + i) + (win->y + j) * width] =  alpha_blend(color_a, color); //win->canvas[(win->x + i) + (win->y + j) * width];	
+				QuCanvasSetUpdateBit(true);
 			}
-			QuCanvasSetUpdateBit(true);
 		}
 	}
-
-	for (int k =0; k < win->dirty_areas->pointer; k++){
-		QuRect *r = (QuRect*)QuListGetAt(win->dirty_areas, k);
-		QuListRemove(win->dirty_areas,k);
-		free(r);
-	}
+	
 }
 
 
@@ -127,9 +122,9 @@ void QuCanvasUpdate (unsigned x, unsigned y, unsigned w, unsigned h) {
 //	int height = canvas_get_height();
 	for (int i=0; i < w; i++) {
 		for (int j=0; j < h; j++){
-			uint32_t color = wallp[(x + i) + (y + j) * canvas_get_scanline()];
-			lfb[(x + i) + (y + j) * canvas_get_scanline()] = color;
-			QuWindowMngr_UpdateWindow(true);
+			uint32_t color = wallp[(x + i) + (y + j) * canvas_get_scale()];
+			lfb[(x + i) + (y + j) * canvas_get_scale()] = color;
+			
 		}
 	}
 }
@@ -164,6 +159,8 @@ void QuCanvasUpdateDirty() {
 	if (QuStackGetRectCount() > 0) {
 		QuRect* r = (QuRect*)QuStackGetRect();
 		QuCanvasUpdate(r->x, r->y, r->w, r->h);
+		//canvas_screen_update (r->x, r->y, r->w, r->h);
+		free(r);
 		if (!QuCanvasGetUpdateBit())
 			QuCanvasSetUpdateBit(true);
 	}

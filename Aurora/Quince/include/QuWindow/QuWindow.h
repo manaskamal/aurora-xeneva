@@ -28,6 +28,7 @@
 #define QU_WIN_CONFIG_AUTO_INVALIDATE 6
 #define QU_WIN_SET_SIZE  7
 #define QU_WIN_AUTO_INVALIDATE_RGN 8
+#define QU_WIN_SET_POS  8
 
 typedef struct _QuWindow_ {
 	int x;

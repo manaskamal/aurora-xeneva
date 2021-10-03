@@ -142,30 +142,62 @@ void page_fault (size_t vector, void* param){
 	int resv = frame->error & 0x8;
 	int id = frame->error & 0x10;
  //
-	panic ("Page Fault \n");
-	printf ("Faulting Address -> %x\n", vaddr);
-	printf ("__PROCESSOR TRACE__\n");
-	printf ("RIP -> %x\n", frame->rip);
-	printf ("Stack -> %x\n", frame->rsp);
-	printf ("RFLAGS -> %x\n", frame->rflags);
-	printf ("Current thread -> %s\n", get_current_thread()->name);
-	printf ("Current Thread id -> %d\n", get_current_thread()->id);
-	printf ("CS -> %x, SS -> %x\n", frame->cs, frame->ss);
-	printf ("******Cause********\n");
+	
 	if (us){
+		panic ("Page Fault \n");
+		printf ("Faulting Address -> %x\n", vaddr);
+		printf ("__PROCESSOR TRACE__\n");
+		printf ("RIP -> %x\n", frame->rip);
+		printf ("Stack -> %x\n", frame->rsp);
+		printf ("RFLAGS -> %x\n", frame->rflags);
+		printf ("Current thread -> %s\n", get_current_thread()->name);
+		printf ("Current Thread id -> %d\n", get_current_thread()->id);
+		printf ("CS -> %x, SS -> %x\n", frame->cs, frame->ss);
+		printf ("******Cause********\n");
 		printf ("***User Priviledge fault***\n");
-	}else if (present)
-		printf ("***Page not present***\n");
-	else if (rw) 
+		for(;;);
+	}else if (present){
+		map_page((uint64_t)pmmngr_alloc(), (uint64_t)vaddr);
+	}else if (rw) {
+		panic ("Page Fault \n");
+		printf ("Faulting Address -> %x\n", vaddr);
+		printf ("__PROCESSOR TRACE__\n");
+		printf ("RIP -> %x\n", frame->rip);
+		printf ("Stack -> %x\n", frame->rsp);
+		printf ("RFLAGS -> %x\n", frame->rflags);
+		printf ("Current thread -> %s\n", get_current_thread()->name);
+		printf ("Current Thread id -> %d\n", get_current_thread()->id);
+		printf ("CS -> %x, SS -> %x\n", frame->cs, frame->ss);
+		printf ("******Cause********\n");
 		printf ("*** R/W ***\n");
-	else if (resv)
+		for(;;);
+	}else if (resv) {
+		panic ("Page Fault \n");
+		printf ("Faulting Address -> %x\n", vaddr);
+		printf ("__PROCESSOR TRACE__\n");
+		printf ("RIP -> %x\n", frame->rip);
+		printf ("Stack -> %x\n", frame->rsp);
+		printf ("RFLAGS -> %x\n", frame->rflags);
+		printf ("Current thread -> %s\n", get_current_thread()->name);
+		printf ("Current Thread id -> %d\n", get_current_thread()->id);
+		printf ("CS -> %x, SS -> %x\n", frame->cs, frame->ss);
+		printf ("******Cause********\n");
 		printf ("*** Reserved Page ***\n");
-	else if (id)
+		for(;;);
+	}else if (id) {
+		panic ("Page Fault \n");
+		printf ("Faulting Address -> %x\n", vaddr);
+		printf ("__PROCESSOR TRACE__\n");
+		printf ("RIP -> %x\n", frame->rip);
+		printf ("Stack -> %x\n", frame->rsp);
+		printf ("RFLAGS -> %x\n", frame->rflags);
+		printf ("Current thread -> %s\n", get_current_thread()->name);
+		printf ("Current Thread id -> %d\n", get_current_thread()->id);
+		printf ("CS -> %x, SS -> %x\n", frame->cs, frame->ss);
+		printf ("******Cause********\n");
 		printf ("*** Invalid Page ****\n");
-	////! here we must check for swap area for valid block
-	svga_update(0,0,get_screen_width(), get_screen_height());
-	//map_page((uint64_t)pmmngr_alloc(), (uint64_t)vaddr);
-	for(;;);
+		for(;;);
+	}
 }
 
 //! exception function -- fpu_fault

@@ -42,7 +42,7 @@ int main (int argc, char* argv[]) {
 	uint32_t h = canvas_get_height();
     psf_register_font_lib();
 
-	//!Initialize Quince Wallpaper Manager
+	//!Initialize Quince Wallpaper Manager  "a:coffee.jpg"
 	Image * img = QuWallpaperInit("a:coffee.jpg");
 	QuWallpaperDraw (img);
 	QuWallpaperPresent ();

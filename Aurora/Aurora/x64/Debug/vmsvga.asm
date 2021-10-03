@@ -123,7 +123,7 @@ $pdata$?svga_has_fifo_cap@@YA_NH@Z DD imagerel $LN5
 	DD	imagerel $LN5+62
 	DD	imagerel $unwind$?svga_has_fifo_cap@@YA_NH@Z
 $pdata$?svga_init@@YAXXZ DD imagerel $LN16
-	DD	imagerel $LN16+685
+	DD	imagerel $LN16+673
 	DD	imagerel $unwind$?svga_init@@YAXXZ
 $pdata$?svga_enable@@YAXXZ DD imagerel $LN8
 	DD	imagerel $LN8+368
@@ -294,19 +294,19 @@ code$ = 112
 arg$ = 120
 ?svga_io_query@@YAHHPEAX@Z PROC				; svga_io_query
 
-; 598  : int svga_io_query (int code, void* arg) {
+; 599  : int svga_io_query (int code, void* arg) {
 
 $LN16:
 	mov	QWORD PTR [rsp+16], rdx
 	mov	DWORD PTR [rsp+8], ecx
 	sub	rsp, 104				; 00000068H
 
-; 599  : 	svga_io_query_t *query_struct = (svga_io_query_t*)arg;
+; 600  : 	svga_io_query_t *query_struct = (svga_io_query_t*)arg;
 
 	mov	rax, QWORD PTR arg$[rsp]
 	mov	QWORD PTR query_struct$[rsp], rax
 
-; 600  : 	switch (code) {
+; 601  : 	switch (code) {
 
 	mov	eax, DWORD PTR code$[rsp]
 	mov	DWORD PTR tv64[rsp], eax
@@ -322,8 +322,8 @@ $LN16:
 	jmp	rax
 $LN10@svga_io_qu:
 
-; 601  : 	case SVGA_SETMODE: {
-; 602  : 		svga_set_mode (query_struct->value, query_struct->value2, query_struct->value3);
+; 602  : 	case SVGA_SETMODE: {
+; 603  : 		svga_set_mode (query_struct->value, query_struct->value2, query_struct->value3);
 
 	mov	rax, QWORD PTR query_struct$[rsp]
 	mov	r8d, DWORD PTR [rax+8]
@@ -333,89 +333,89 @@ $LN10@svga_io_qu:
 	mov	ecx, DWORD PTR [rax]
 	call	?svga_set_mode@@YAXIII@Z		; svga_set_mode
 
-; 603  : 		break;
+; 604  : 		break;
 
 	jmp	$LN11@svga_io_qu
 $LN9@svga_io_qu:
 
-; 604  : 	 }
-; 605  : 	case SVGA_GETWIDTH:{
-; 606  : 		uint32_t width = get_screen_width();
+; 605  : 	 }
+; 606  : 	case SVGA_GETWIDTH:{
+; 607  : 		uint32_t width = get_screen_width();
 
 	call	?get_screen_width@@YAIXZ		; get_screen_width
 	mov	DWORD PTR width$10[rsp], eax
 
-; 607  : 		return width;
+; 608  : 		return width;
 
 	mov	eax, DWORD PTR width$10[rsp]
 	jmp	$LN13@svga_io_qu
 
-; 608  : 		break;
+; 609  : 		break;
 
 	jmp	$LN11@svga_io_qu
 $LN8@svga_io_qu:
 
-; 609  : 	}
-; 610  : 	case SVGA_GETHEIGHT:{
-; 611  : 		uint32_t height = get_screen_height();
+; 610  : 	}
+; 611  : 	case SVGA_GETHEIGHT:{
+; 612  : 		uint32_t height = get_screen_height();
 
 	call	?get_screen_height@@YAIXZ		; get_screen_height
 	mov	DWORD PTR height$4[rsp], eax
 
-; 612  : 		return height;
+; 613  : 		return height;
 
 	mov	eax, DWORD PTR height$4[rsp]
 	jmp	$LN13@svga_io_qu
 
-; 613  : 		break;
+; 614  : 		break;
 
 	jmp	$LN11@svga_io_qu
 $LN7@svga_io_qu:
 
-; 614  : 	}
-; 615  : 	case SVGA_GETBPP:{
-; 616  : 		uint32_t bpp = get_bpp();
+; 615  : 	}
+; 616  : 	case SVGA_GETBPP:{
+; 617  : 		uint32_t bpp = get_bpp();
 
 	call	?get_bpp@@YAIXZ				; get_bpp
 	mov	DWORD PTR bpp$9[rsp], eax
 
-; 617  : 		return bpp;
+; 618  : 		return bpp;
 
 	mov	eax, DWORD PTR bpp$9[rsp]
 	jmp	$LN13@svga_io_qu
 
-; 618  : 		break;
+; 619  : 		break;
 
 	jmp	$LN11@svga_io_qu
 $LN6@svga_io_qu:
 
-; 619  : 	 }
-; 620  : 	case SVGA_UPDATE:{
-; 621  : 		uint32_t xcoord = query_struct->value;
+; 620  : 	 }
+; 621  : 	case SVGA_UPDATE:{
+; 622  : 		uint32_t xcoord = query_struct->value;
 
 	mov	rax, QWORD PTR query_struct$[rsp]
 	mov	eax, DWORD PTR [rax]
 	mov	DWORD PTR xcoord$8[rsp], eax
 
-; 622  : 		uint32_t ycoord = query_struct->value2;
+; 623  : 		uint32_t ycoord = query_struct->value2;
 
 	mov	rax, QWORD PTR query_struct$[rsp]
 	mov	eax, DWORD PTR [rax+4]
 	mov	DWORD PTR ycoord$6[rsp], eax
 
-; 623  : 		uint32_t width = query_struct->value3;
+; 624  : 		uint32_t width = query_struct->value3;
 
 	mov	rax, QWORD PTR query_struct$[rsp]
 	mov	eax, DWORD PTR [rax+8]
 	mov	DWORD PTR width$5[rsp], eax
 
-; 624  : 		uint32_t height = query_struct->value4;
+; 625  : 		uint32_t height = query_struct->value4;
 
 	mov	rax, QWORD PTR query_struct$[rsp]
 	mov	eax, DWORD PTR [rax+12]
 	mov	DWORD PTR height$7[rsp], eax
 
-; 625  : 		svga_update(xcoord, ycoord, width, height);
+; 626  : 		svga_update(xcoord, ycoord, width, height);
 
 	mov	r9d, DWORD PTR height$7[rsp]
 	mov	r8d, DWORD PTR width$5[rsp]
@@ -423,44 +423,44 @@ $LN6@svga_io_qu:
 	mov	ecx, DWORD PTR xcoord$8[rsp]
 	call	?svga_update@@YAXIIII@Z			; svga_update
 
-; 626  : 		break;
+; 627  : 		break;
 
 	jmp	SHORT $LN11@svga_io_qu
 $LN5@svga_io_qu:
 
-; 627  : 	}
-; 628  : 	case SVGA_MOVE_CURSOR: {
-; 629  : 		uint32_t xcoord = query_struct->value;
+; 628  : 	}
+; 629  : 	case SVGA_MOVE_CURSOR: {
+; 630  : 		uint32_t xcoord = query_struct->value;
 
 	mov	rax, QWORD PTR query_struct$[rsp]
 	mov	eax, DWORD PTR [rax]
 	mov	DWORD PTR xcoord$3[rsp], eax
 
-; 630  : 		uint32_t ycoord = query_struct->value2;
+; 631  : 		uint32_t ycoord = query_struct->value2;
 
 	mov	rax, QWORD PTR query_struct$[rsp]
 	mov	eax, DWORD PTR [rax+4]
 	mov	DWORD PTR ycoord$2[rsp], eax
 
-; 631  : 		if (query_struct->value6 == 103) //Standard Cursor Image
+; 632  : 		if (query_struct->value6 == 103) //Standard Cursor Image
 
 	mov	rax, QWORD PTR query_struct$[rsp]
 	cmp	DWORD PTR [rax+20], 103			; 00000067H
 	jne	SHORT $LN4@svga_io_qu
 
-; 632  : 			hw_move_cursor (NULL,xcoord, ycoord);
+; 633  : 			hw_move_cursor (NULL,xcoord, ycoord);
 
 	mov	r8d, DWORD PTR ycoord$2[rsp]
 	mov	edx, DWORD PTR xcoord$3[rsp]
 	xor	ecx, ecx
 	call	?hw_move_cursor@@YAXPEAIII@Z		; hw_move_cursor
 
-; 633  : 		else
+; 634  : 		else
 
 	jmp	SHORT $LN3@svga_io_qu
 $LN4@svga_io_qu:
 
-; 634  : 			hw_move_cursor ((uint32_t*)0x0000070000001000,xcoord, ycoord);
+; 635  : 			hw_move_cursor ((uint32_t*)0x0000070000001000,xcoord, ycoord);
 
 	mov	r8d, DWORD PTR ycoord$2[rsp]
 	mov	edx, DWORD PTR xcoord$3[rsp]
@@ -468,45 +468,45 @@ $LN4@svga_io_qu:
 	call	?hw_move_cursor@@YAXPEAIII@Z		; hw_move_cursor
 $LN3@svga_io_qu:
 
-; 635  : 		break;
+; 636  : 		break;
 
 	jmp	SHORT $LN11@svga_io_qu
 $LN2@svga_io_qu:
 
-; 636  : 	}
-; 637  : 	case SVGA_GET_SCANLINE: {
-; 638  : 		uint16_t scanline = get_screen_scanline();
+; 637  : 	}
+; 638  : 	case SVGA_GET_SCANLINE: {
+; 639  : 		uint16_t scanline = get_screen_scanline();
 
 	call	?get_screen_scanline@@YAGXZ		; get_screen_scanline
 	mov	WORD PTR scanline$1[rsp], ax
 
-; 639  : 		return scanline;
+; 640  : 		return scanline;
 
 	movzx	eax, WORD PTR scanline$1[rsp]
 	jmp	SHORT $LN13@svga_io_qu
 
-; 640  : 		break;
+; 641  : 		break;
 
 	jmp	SHORT $LN11@svga_io_qu
 $LN1@svga_io_qu:
 
-; 641  : 	}
-; 642  : 	default: {
-; 643  : 		return 1;
+; 642  : 	}
+; 643  : 	default: {
+; 644  : 		return 1;
 
 	mov	eax, 1
 	jmp	SHORT $LN13@svga_io_qu
 $LN11@svga_io_qu:
 
-; 644  : 	}
 ; 645  : 	}
-; 646  : 
-; 647  : 	return 1;
+; 646  : 	}
+; 647  : 
+; 648  : 	return 1;
 
 	mov	eax, 1
 $LN13@svga_io_qu:
 
-; 648  : }
+; 649  : }
 
 	add	rsp, 104				; 00000068H
 	ret	0
@@ -528,27 +528,27 @@ tv73 = 32
 fence$ = 64
 ?svga_has_fence_passed@@YA_NI@Z PROC			; svga_has_fence_passed
 
-; 474  : bool svga_has_fence_passed (uint32_t fence) {
+; 475  : bool svga_has_fence_passed (uint32_t fence) {
 
 $LN7:
 	mov	DWORD PTR [rsp+8], ecx
 	sub	rsp, 56					; 00000038H
 
-; 475  : 
-; 476  : 	if (!fence) {
+; 476  : 
+; 477  : 	if (!fence) {
 
 	cmp	DWORD PTR fence$[rsp], 0
 	jne	SHORT $LN2@svga_has_f
 
-; 477  : 		return true;
+; 478  : 		return true;
 
 	mov	al, 1
 	jmp	SHORT $LN3@svga_has_f
 $LN2@svga_has_f:
 
-; 478  : 	}
-; 479  : 
-; 480  : 	if (!svga_has_fifo_cap (SVGA_FIFO_CAP_FENCE)) {
+; 479  : 	}
+; 480  : 
+; 481  : 	if (!svga_has_fifo_cap (SVGA_FIFO_CAP_FENCE)) {
 
 	mov	ecx, 1
 	call	?svga_has_fifo_cap@@YA_NH@Z		; svga_has_fifo_cap
@@ -556,15 +556,15 @@ $LN2@svga_has_f:
 	test	eax, eax
 	jne	SHORT $LN1@svga_has_f
 
-; 481  : 		return false;
+; 482  : 		return false;
 
 	xor	al, al
 	jmp	SHORT $LN3@svga_has_f
 $LN1@svga_has_f:
 
-; 482  : 	}
-; 483  : 
-; 484  : 	return ((int32_t)(svga_dev.fifo_mem[SVGA_FIFO_FENCE] - fence)) >= 0;
+; 483  : 	}
+; 484  : 
+; 485  : 	return ((int32_t)(svga_dev.fifo_mem[SVGA_FIFO_FENCE] - fence)) >= 0;
 
 	mov	eax, 4
 	imul	rax, 6
@@ -582,7 +582,7 @@ $LN6@svga_has_f:
 	movzx	eax, BYTE PTR tv73[rsp]
 $LN3@svga_has_f:
 
-; 485  : }
+; 486  : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -594,51 +594,51 @@ _TEXT	SEGMENT
 fs$ = 32
 ?svga_register_file@@YAXXZ PROC				; svga_register_file
 
-; 650  : void svga_register_file () {
+; 651  : void svga_register_file () {
 
 $LN3:
 	sub	rsp, 56					; 00000038H
 
-; 651  : 	file_system_t *fs = (file_system_t*)pmmngr_alloc();
+; 652  : 	file_system_t *fs = (file_system_t*)pmmngr_alloc();
 
 	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
 	mov	QWORD PTR fs$[rsp], rax
 
-; 652  : 	strcpy (fs->name, "IOSVGA");
+; 653  : 	strcpy (fs->name, "IOSVGA");
 
 	mov	rax, QWORD PTR fs$[rsp]
 	lea	rdx, OFFSET FLAT:$SG6061
 	mov	rcx, rax
 	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
 
-; 653  : 	fs->sys_open = NULL;
+; 654  : 	fs->sys_open = NULL;
 
 	mov	rax, QWORD PTR fs$[rsp]
 	mov	QWORD PTR [rax+8], 0
 
-; 654  : 	fs->sys_read = NULL;
+; 655  : 	fs->sys_read = NULL;
 
 	mov	rax, QWORD PTR fs$[rsp]
 	mov	QWORD PTR [rax+16], 0
 
-; 655  : 	fs->sys_read_blk = NULL;
+; 656  : 	fs->sys_read_blk = NULL;
 
 	mov	rax, QWORD PTR fs$[rsp]
 	mov	QWORD PTR [rax+24], 0
 
-; 656  : 	fs->ioquery = svga_io_query;
+; 657  : 	fs->ioquery = svga_io_query;
 
 	mov	rax, QWORD PTR fs$[rsp]
 	lea	rcx, OFFSET FLAT:?svga_io_query@@YAHHPEAX@Z ; svga_io_query
 	mov	QWORD PTR [rax+32], rcx
 
-; 657  : 	vfs_register (4,fs);
+; 658  : 	vfs_register (4,fs);
 
 	mov	rdx, QWORD PTR fs$[rsp]
 	mov	ecx, 4
 	call	?vfs_register@@YAXHPEAU_file_system_@@@Z ; vfs_register
 
-; 658  : }
+; 659  : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -649,11 +649,11 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 ?svga_get_fb_mem@@YAPEAIXZ PROC				; svga_get_fb_mem
 
-; 595  : 	return (uint32_t*)svga_dev.fb_mem;
+; 596  : 	return (uint32_t*)svga_dev.fb_mem;
 
 	mov	rax, QWORD PTR ?svga_dev@@3U_svga_drive_@@A+24
 
-; 596  : }
+; 597  : }
 
 	ret	0
 ?svga_get_fb_mem@@YAPEAIXZ ENDP				; svga_get_fb_mem
@@ -664,28 +664,28 @@ _TEXT	SEGMENT
 flags$ = 0
 ?svga_wait_for_irq@@YAXXZ PROC				; svga_wait_for_irq
 
-; 566  : void svga_wait_for_irq () {
+; 567  : void svga_wait_for_irq () {
 
 $LN6:
 	sub	rsp, 24
 
-; 567  : 	uint32_t flags = 0;
+; 568  : 	uint32_t flags = 0;
 
 	mov	DWORD PTR flags$[rsp], 0
 $LN3@svga_wait_:
 
-; 568  : 	do {
-; 569  : 		flags = svga_dev.irq.pending;
+; 569  : 	do {
+; 570  : 		flags = svga_dev.irq.pending;
 
 	mov	eax, DWORD PTR ?svga_dev@@3U_svga_drive_@@A+1048660
 	mov	DWORD PTR flags$[rsp], eax
 
-; 570  : 	}while (flags == 0);
+; 571  : 	}while (flags == 0);
 
 	cmp	DWORD PTR flags$[rsp], 0
 	je	SHORT $LN3@svga_wait_
 
-; 571  : }
+; 572  : }
 
 	add	rsp, 24
 	ret	0
@@ -698,46 +698,46 @@ fence$ = 32
 cmd$ = 40
 ?svga_insert_fence@@YAIXZ PROC				; svga_insert_fence
 
-; 532  : uint32_t svga_insert_fence () {
+; 533  : uint32_t svga_insert_fence () {
 
 $LN5:
 	sub	rsp, 56					; 00000038H
 
-; 533  : 	uint32_t fence;
-; 534  : 
-; 535  : #pragma pack (push)
-; 536  : 	struct cmmnd{
-; 537  : 		uint32_t id;
-; 538  : 		uint32_t fence;
-; 539  : 	};
-; 540  : #pragma pack (pop)
-; 541  : 
-; 542  : 	cmmnd *cmd;
-; 543  : 
-; 544  : 	//printf ("Insert fence cmd size -> %d\n", sizeof *cmd);
-; 545  : 	if (!svga_has_fifo_cap (SVGA_FIFO_CAP_FENCE)) {
+; 534  : 	uint32_t fence;
+; 535  : 
+; 536  : #pragma pack (push)
+; 537  : 	struct cmmnd{
+; 538  : 		uint32_t id;
+; 539  : 		uint32_t fence;
+; 540  : 	};
+; 541  : #pragma pack (pop)
+; 542  : 
+; 543  : 	cmmnd *cmd;
+; 544  : 
+; 545  : 	//printf ("Insert fence cmd size -> %d\n", sizeof *cmd);
+; 546  : 	if (!svga_has_fifo_cap (SVGA_FIFO_CAP_FENCE)) {
 
 	mov	ecx, 1
 	call	?svga_has_fifo_cap@@YA_NH@Z		; svga_has_fifo_cap
 	movzx	eax, al
 
-; 546  : 		//printf ("Insert fence no cap\n");
-; 547  : 		//return 1;
-; 548  : 	}
-; 549  : 
-; 550  : 	if (svga_dev.fifo.next_fence == 0) {
+; 547  : 		//printf ("Insert fence no cap\n");
+; 548  : 		//return 1;
+; 549  : 	}
+; 550  : 
+; 551  : 	if (svga_dev.fifo.next_fence == 0) {
 
 	cmp	DWORD PTR ?svga_dev@@3U_svga_drive_@@A+1048656, 0
 	jne	SHORT $LN1@svga_inser
 
-; 551  : 		svga_dev.fifo.next_fence = 1;
+; 552  : 		svga_dev.fifo.next_fence = 1;
 
 	mov	DWORD PTR ?svga_dev@@3U_svga_drive_@@A+1048656, 1
 $LN1@svga_inser:
 
-; 552  : 	}
-; 553  : 
-; 554  : 	fence = svga_dev.fifo.next_fence++;
+; 553  : 	}
+; 554  : 
+; 555  : 	fence = svga_dev.fifo.next_fence++;
 
 	mov	eax, DWORD PTR ?svga_dev@@3U_svga_drive_@@A+1048656
 	mov	DWORD PTR fence$[rsp], eax
@@ -745,35 +745,35 @@ $LN1@svga_inser:
 	inc	eax
 	mov	DWORD PTR ?svga_dev@@3U_svga_drive_@@A+1048656, eax
 
-; 555  : 	//printf ("Fence -> %x\n", fence);
-; 556  : 	cmd = (cmmnd*)svga_fifo_reserve (sizeof *cmd);
+; 556  : 	//printf ("Fence -> %x\n", fence);
+; 557  : 	cmd = (cmmnd*)svga_fifo_reserve (sizeof *cmd);
 
 	mov	ecx, 8
 	call	?svga_fifo_reserve@@YAPEAXI@Z		; svga_fifo_reserve
 	mov	QWORD PTR cmd$[rsp], rax
 
-; 557  : 	cmd->id = SVGA_CMD_FENCE;
+; 558  : 	cmd->id = SVGA_CMD_FENCE;
 
 	mov	rax, QWORD PTR cmd$[rsp]
 	mov	DWORD PTR [rax], 30
 
-; 558  : 	cmd->fence = fence;
+; 559  : 	cmd->fence = fence;
 
 	mov	rax, QWORD PTR cmd$[rsp]
 	mov	ecx, DWORD PTR fence$[rsp]
 	mov	DWORD PTR [rax+4], ecx
 
-; 559  : 
-; 560  : 	svga_fifo_commit_all();
+; 560  : 
+; 561  : 	svga_fifo_commit_all();
 
 	call	?svga_fifo_commit_all@@YAXXZ		; svga_fifo_commit_all
 
-; 561  : 
-; 562  : 	return fence;
+; 562  : 
+; 563  : 	return fence;
 
 	mov	eax, DWORD PTR fence$[rsp]
 
-; 563  : }
+; 564  : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -787,25 +787,25 @@ tv141 = 36
 fence$ = 64
 ?svga_sync_to_fence@@YAXI@Z PROC			; svga_sync_to_fence
 
-; 487  : void svga_sync_to_fence (uint32_t fence) {
+; 488  : void svga_sync_to_fence (uint32_t fence) {
 
 $LN17:
 	mov	DWORD PTR [rsp+8], ecx
 	sub	rsp, 56					; 00000038H
 
-; 488  : 
-; 489  : 	if (!fence) 
+; 489  : 
+; 490  : 	if (!fence) 
 
 	cmp	DWORD PTR fence$[rsp], 0
 	jne	SHORT $LN12@svga_sync_
 
-; 490  : 		return;
+; 491  : 		return;
 
 	jmp	$LN13@svga_sync_
 $LN12@svga_sync_:
 
-; 491  : 
-; 492  : 	if (!svga_has_fifo_cap (SVGA_FIFO_CAP_FENCE)) {
+; 492  : 
+; 493  : 	if (!svga_has_fifo_cap (SVGA_FIFO_CAP_FENCE)) {
 
 	mov	ecx, 1
 	call	?svga_has_fifo_cap@@YA_NH@Z		; svga_has_fifo_cap
@@ -813,15 +813,15 @@ $LN12@svga_sync_:
 	test	eax, eax
 	jne	SHORT $LN11@svga_sync_
 
-; 493  : 		//printf ("Fence Polling\n");
-; 494  : 		svga_write_reg (SVGA_REG_SYNC, 1);
+; 494  : 		//printf ("Fence Polling\n");
+; 495  : 		svga_write_reg (SVGA_REG_SYNC, 1);
 
 	mov	edx, 1
 	mov	ecx, 21
 	call	?svga_write_reg@@YAXII@Z		; svga_write_reg
 $LN10@svga_sync_:
 
-; 495  : 		while (svga_read_reg (SVGA_REG_BUSY) != false) {}
+; 496  : 		while (svga_read_reg (SVGA_REG_BUSY) != false) {}
 
 	mov	ecx, 22
 	call	?svga_read_reg@@YAII@Z			; svga_read_reg
@@ -831,20 +831,20 @@ $LN10@svga_sync_:
 $LN9@svga_sync_:
 $LN11@svga_sync_:
 
-; 496  : 		//return;
-; 497  : 	}
-; 498  : 
-; 499  : 	if (svga_has_fence_passed (fence)) {
+; 497  : 		//return;
+; 498  : 	}
+; 499  : 
+; 500  : 	if (svga_has_fence_passed (fence)) {
 
 	mov	ecx, DWORD PTR fence$[rsp]
 	call	?svga_has_fence_passed@@YA_NI@Z		; svga_has_fence_passed
 	movzx	eax, al
 
-; 500  : 		//return;
-; 501  : 	}
-; 502  : 
-; 503  : 	if (svga_is_fifo_reg_valid (SVGA_FIFO_FENCE_GOAL) &&
-; 504  : 		(svga_dev.capabilities & SVGA_CAP_IRQMASK)) {
+; 501  : 		//return;
+; 502  : 	}
+; 503  : 
+; 504  : 	if (svga_is_fifo_reg_valid (SVGA_FIFO_FENCE_GOAL) &&
+; 505  : 		(svga_dev.capabilities & SVGA_CAP_IRQMASK)) {
 
 	mov	ecx, 289				; 00000121H
 	call	?svga_is_fifo_reg_valid@@YA_NH@Z	; svga_is_fifo_reg_valid
@@ -856,7 +856,7 @@ $LN11@svga_sync_:
 	test	eax, eax
 	je	SHORT $LN7@svga_sync_
 
-; 505  : 			svga_dev.fifo_mem[SVGA_FIFO_FENCE_GOAL] = fence;
+; 506  : 			svga_dev.fifo_mem[SVGA_FIFO_FENCE_GOAL] = fence;
 
 	mov	eax, 4
 	imul	rax, 289				; 00000121H
@@ -864,18 +864,18 @@ $LN11@svga_sync_:
 	mov	edx, DWORD PTR fence$[rsp]
 	mov	DWORD PTR [rcx+rax], edx
 
-; 506  : 			svga_write_reg (SVGA_REG_IRQMASK, SVGA_IRQFLAG_FENCE_GOAL);
+; 507  : 			svga_write_reg (SVGA_REG_IRQMASK, SVGA_IRQFLAG_FENCE_GOAL);
 
 	mov	edx, 4
 	mov	ecx, 33					; 00000021H
 	call	?svga_write_reg@@YAXII@Z		; svga_write_reg
 
-; 507  : 			x64_cli ();
+; 508  : 			x64_cli ();
 
 	call	x64_cli
 
-; 508  : 
-; 509  : 			if (!svga_has_fence_passed(fence)) {
+; 509  : 
+; 510  : 			if (!svga_has_fence_passed(fence)) {
 
 	mov	ecx, DWORD PTR fence$[rsp]
 	call	?svga_has_fence_passed@@YA_NI@Z		; svga_has_fence_passed
@@ -883,11 +883,11 @@ $LN11@svga_sync_:
 	test	eax, eax
 	jne	SHORT $LN6@svga_sync_
 
-; 510  : 				svga_ring_doorbell ();
+; 511  : 				svga_ring_doorbell ();
 
 	call	?svga_ring_doorbell@@YAXXZ		; svga_ring_doorbell
 
-; 511  : 				if (!svga_has_fence_passed(fence)) {
+; 512  : 				if (!svga_has_fence_passed(fence)) {
 
 	mov	ecx, DWORD PTR fence$[rsp]
 	call	?svga_has_fence_passed@@YA_NI@Z		; svga_has_fence_passed
@@ -895,39 +895,39 @@ $LN11@svga_sync_:
 	test	eax, eax
 	jne	SHORT $LN5@svga_sync_
 
-; 512  : 					svga_wait_for_irq();
+; 513  : 					svga_wait_for_irq();
 
 	call	?svga_wait_for_irq@@YAXXZ		; svga_wait_for_irq
 $LN5@svga_sync_:
 $LN6@svga_sync_:
 
-; 513  : 				}
-; 514  : 			}
-; 515  : 
-; 516  : 			svga_write_reg (SVGA_REG_IRQMASK, 0);
+; 514  : 				}
+; 515  : 			}
+; 516  : 
+; 517  : 			svga_write_reg (SVGA_REG_IRQMASK, 0);
 
 	xor	edx, edx
 	mov	ecx, 33					; 00000021H
 	call	?svga_write_reg@@YAXII@Z		; svga_write_reg
 
-; 517  : 	} else {
+; 518  : 	} else {
 
 	jmp	SHORT $LN4@svga_sync_
 $LN7@svga_sync_:
 
-; 518  : 		bool busy = true;
+; 519  : 		bool busy = true;
 
 	mov	BYTE PTR busy$1[rsp], 1
 
-; 519  : 		svga_write_reg (SVGA_REG_SYNC, 1);
+; 520  : 		svga_write_reg (SVGA_REG_SYNC, 1);
 
 	mov	edx, 1
 	mov	ecx, 21
 	call	?svga_write_reg@@YAXII@Z		; svga_write_reg
 $LN3@svga_sync_:
 
-; 520  : 
-; 521  : 		while (!svga_has_fence_passed (fence) && busy) {
+; 521  : 
+; 522  : 		while (!svga_has_fence_passed (fence) && busy) {
 
 	mov	ecx, DWORD PTR fence$[rsp]
 	call	?svga_has_fence_passed@@YA_NI@Z		; svga_has_fence_passed
@@ -938,7 +938,7 @@ $LN3@svga_sync_:
 	test	eax, eax
 	je	SHORT $LN2@svga_sync_
 
-; 522  : 			busy = (svga_read_reg (SVGA_REG_BUSY) != 0);
+; 523  : 			busy = (svga_read_reg (SVGA_REG_BUSY) != 0);
 
 	mov	ecx, 22
 	call	?svga_read_reg@@YAII@Z			; svga_read_reg
@@ -952,25 +952,25 @@ $LN16@svga_sync_:
 	movzx	eax, BYTE PTR tv141[rsp]
 	mov	BYTE PTR busy$1[rsp], al
 
-; 523  : 		}
+; 524  : 		}
 
 	jmp	SHORT $LN3@svga_sync_
 $LN2@svga_sync_:
 $LN4@svga_sync_:
 
-; 524  : 	}
-; 525  : 
-; 526  : 	if (!svga_has_fence_passed (fence)) {
+; 525  : 	}
+; 526  : 
+; 527  : 	if (!svga_has_fence_passed (fence)) {
 
 	mov	ecx, DWORD PTR fence$[rsp]
 	call	?svga_has_fence_passed@@YA_NI@Z		; svga_has_fence_passed
 	movzx	eax, al
 $LN13@svga_sync_:
 
-; 527  : 		//printf ("[VMware SVGA]: SyncToFence failed\n");
-; 528  : 	}
-; 529  : 
-; 530  : }
+; 528  : 		//printf ("[VMware SVGA]: SyncToFence failed\n");
+; 529  : 	}
+; 530  : 
+; 531  : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -982,22 +982,22 @@ _TEXT	SEGMENT
 text$ = 48
 ?svga_panic@@YAXPEBD@Z PROC				; svga_panic
 
-; 166  : void svga_panic (const char* text) {
+; 167  : void svga_panic (const char* text) {
 
 $LN3:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 40					; 00000028H
 
-; 167  : 	svga_disable ();
+; 168  : 	svga_disable ();
 
 	call	?svga_disable@@YAXXZ			; svga_disable
 
-; 168  : 	printf (text);
+; 169  : 	printf (text);
 
 	mov	rcx, QWORD PTR text$[rsp]
 	call	?printf@@YAXPEBDZZ			; printf
 
-; 169  : }
+; 170  : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -1012,77 +1012,77 @@ s$ = 64
 p$ = 72
 ?svga_interrupt_handler@@YAX_KPEAX@Z PROC		; svga_interrupt_handler
 
-; 576  : void svga_interrupt_handler (size_t s, void* p) {
+; 577  : void svga_interrupt_handler (size_t s, void* p) {
 
 $LN4:
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 56					; 00000038H
 
-; 577  : 	x64_cli ();
+; 578  : 	x64_cli ();
 
 	call	x64_cli
 
-; 578  : 	printf ("SVGA interrupted\n");
+; 579  : 	printf ("SVGA interrupted\n");
 
 	lea	rcx, OFFSET FLAT:$SG6017
 	call	?printf@@YAXPEBDZZ			; printf
 
-; 579  : 
-; 580  : 	uint16_t port = svga_dev.io_base + SVGA_IRQSTATUS_PORT;
+; 580  : 
+; 581  : 	uint16_t port = svga_dev.io_base + SVGA_IRQSTATUS_PORT;
 
 	mov	eax, DWORD PTR ?svga_dev@@3U_svga_drive_@@A+8
 	add	eax, 8
 	mov	WORD PTR port$[rsp], ax
 
-; 581  : 	uint32_t irq_flags = inportd (port);
+; 582  : 	uint32_t irq_flags = inportd (port);
 
 	movzx	ecx, WORD PTR port$[rsp]
 	call	?inportd@@YAIG@Z			; inportd
 	mov	DWORD PTR irq_flags$[rsp], eax
 
-; 582  : 	outportd (port, irq_flags);
+; 583  : 	outportd (port, irq_flags);
 
 	mov	edx, DWORD PTR irq_flags$[rsp]
 	movzx	ecx, WORD PTR port$[rsp]
 	call	?outportd@@YAXGI@Z			; outportd
 
-; 583  : 	printf ("Irq flags -> %d\n", irq_flags);
+; 584  : 	printf ("Irq flags -> %d\n", irq_flags);
 
 	mov	edx, DWORD PTR irq_flags$[rsp]
 	lea	rcx, OFFSET FLAT:$SG6020
 	call	?printf@@YAXPEBDZZ			; printf
 
-; 584  : 	svga_dev.irq.count++;
+; 585  : 	svga_dev.irq.count++;
 
 	mov	eax, DWORD PTR ?svga_dev@@3U_svga_drive_@@A+1048668
 	inc	eax
 	mov	DWORD PTR ?svga_dev@@3U_svga_drive_@@A+1048668, eax
 
-; 585  : 	svga_dev.irq.pending = irq_flags;
+; 586  : 	svga_dev.irq.pending = irq_flags;
 
 	mov	eax, DWORD PTR irq_flags$[rsp]
 	mov	DWORD PTR ?svga_dev@@3U_svga_drive_@@A+1048660, eax
 
-; 586  : 	
-; 587  : 	if (!irq_flags)
+; 587  : 	
+; 588  : 	if (!irq_flags)
 
 	cmp	DWORD PTR irq_flags$[rsp], 0
 	jne	SHORT $LN1@svga_inter
 
-; 588  : 		printf ("[VMware SVGA]: spurious SVGA IRQ\n");	
+; 589  : 		printf ("[VMware SVGA]: spurious SVGA IRQ\n");	
 
 	lea	rcx, OFFSET FLAT:$SG6022
 	call	?printf@@YAXPEBDZZ			; printf
 $LN1@svga_inter:
 
-; 589  : 	//svga_update(0,0,get_screen_width(), get_screen_height());
-; 590  : 	interrupt_end(svga_dev.irq_line);
+; 590  : 	//svga_update(0,0,get_screen_width(), get_screen_height());
+; 591  : 	interrupt_end(svga_dev.irq_line);
 
 	mov	ecx, DWORD PTR ?svga_dev@@3U_svga_drive_@@A+68
 	call	?interrupt_end@@YAXI@Z			; interrupt_end
 
-; 591  : }
+; 592  : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -1095,37 +1095,37 @@ cmd$ = 32
 stream_id$ = 64
 ?svga_video_flush@@YAXI@Z PROC				; svga_video_flush
 
-; 463  : void svga_video_flush (uint32_t stream_id) {
+; 464  : void svga_video_flush (uint32_t stream_id) {
 
 $LN3:
 	mov	DWORD PTR [rsp+8], ecx
 	sub	rsp, 56					; 00000038H
 
-; 464  : 	SVGAEscapeVideoFlush *cmd;
-; 465  : 
-; 466  : 	cmd = (SVGAEscapeVideoFlush*)svga_fifo_reserve_escape (SVGA_ESCAPE_NSID_VMWARE, sizeof *cmd);
+; 465  : 	SVGAEscapeVideoFlush *cmd;
+; 466  : 
+; 467  : 	cmd = (SVGAEscapeVideoFlush*)svga_fifo_reserve_escape (SVGA_ESCAPE_NSID_VMWARE, sizeof *cmd);
 
 	mov	edx, 8
 	xor	ecx, ecx
 	call	?svga_fifo_reserve_escape@@YAPEAXII@Z	; svga_fifo_reserve_escape
 	mov	QWORD PTR cmd$[rsp], rax
 
-; 467  : 	cmd->cmdType = SVGA_ESCAPE_VMWARE_VIDEO_FLUSH;
+; 468  : 	cmd->cmdType = SVGA_ESCAPE_VMWARE_VIDEO_FLUSH;
 
 	mov	rax, QWORD PTR cmd$[rsp]
 	mov	DWORD PTR [rax], 131074			; 00020002H
 
-; 468  : 	cmd->streamId = stream_id;
+; 469  : 	cmd->streamId = stream_id;
 
 	mov	rax, QWORD PTR cmd$[rsp]
 	mov	ecx, DWORD PTR stream_id$[rsp]
 	mov	DWORD PTR [rax+4], ecx
 
-; 469  : 	svga_fifo_commit_all();
+; 470  : 	svga_fifo_commit_all();
 
 	call	?svga_fifo_commit_all@@YAXXZ		; svga_fifo_commit_all
 
-; 470  : }
+; 471  : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -1140,7 +1140,7 @@ register_id$ = 72
 value$ = 80
 ?svga_video_set_reg@@YAXIII@Z PROC			; svga_video_set_reg
 
-; 452  : void svga_video_set_reg (uint32_t stream_id, uint32_t register_id, uint32_t value) {
+; 453  : void svga_video_set_reg (uint32_t stream_id, uint32_t register_id, uint32_t value) {
 
 $LN3:
 	mov	DWORD PTR [rsp+24], r8d
@@ -1148,17 +1148,17 @@ $LN3:
 	mov	DWORD PTR [rsp+8], ecx
 	sub	rsp, 56					; 00000038H
 
-; 453  : 
-; 454  : 	SVGAEscapeVideoSetRegs *set_regs;
-; 455  : 
-; 456  : 	svga_begin_video_set_regs (stream_id, 1, &set_regs);
+; 454  : 
+; 455  : 	SVGAEscapeVideoSetRegs *set_regs;
+; 456  : 
+; 457  : 	svga_begin_video_set_regs (stream_id, 1, &set_regs);
 
 	lea	r8, QWORD PTR set_regs$[rsp]
 	mov	edx, 1
 	mov	ecx, DWORD PTR stream_id$[rsp]
 	call	?svga_begin_video_set_regs@@YAXIIPEAPEAUSVGAEscapeVideoSetRegs@@@Z ; svga_begin_video_set_regs
 
-; 457  : 	set_regs->items[0].registerId = register_id;
+; 458  : 	set_regs->items[0].registerId = register_id;
 
 	mov	eax, 8
 	imul	rax, 0
@@ -1166,7 +1166,7 @@ $LN3:
 	mov	edx, DWORD PTR register_id$[rsp]
 	mov	DWORD PTR [rcx+rax+8], edx
 
-; 458  : 	set_regs->items[0].value = value;
+; 459  : 	set_regs->items[0].value = value;
 
 	mov	eax, 8
 	imul	rax, 0
@@ -1174,11 +1174,11 @@ $LN3:
 	mov	edx, DWORD PTR value$[rsp]
 	mov	DWORD PTR [rcx+rax+12], edx
 
-; 459  : 	svga_fifo_commit_all();
+; 460  : 	svga_fifo_commit_all();
 
 	call	?svga_fifo_commit_all@@YAXXZ		; svga_fifo_commit_all
 
-; 460  : }
+; 461  : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -1196,7 +1196,7 @@ regs$ = 88
 max_reg$ = 96
 ?svga_video_set_all_regs@@YAXIPEAUSVGAOverlayUnit@@I@Z PROC ; svga_video_set_all_regs
 
-; 433  : void svga_video_set_all_regs (uint32_t stream_id, SVGAOverlayUnit *regs, uint32_t max_reg) {
+; 434  : void svga_video_set_all_regs (uint32_t stream_id, SVGAOverlayUnit *regs, uint32_t max_reg) {
 
 $LN6:
 	mov	DWORD PTR [rsp+24], r8d
@@ -1204,30 +1204,30 @@ $LN6:
 	mov	DWORD PTR [rsp+8], ecx
 	sub	rsp, 72					; 00000048H
 
-; 434  : 
-; 435  : 	uint32_t *reg_array = (uint32_t*) regs;
+; 435  : 
+; 436  : 	uint32_t *reg_array = (uint32_t*) regs;
 
 	mov	rax, QWORD PTR regs$[rsp]
 	mov	QWORD PTR reg_array$[rsp], rax
 
-; 436  : 	const uint32_t num_regs = max_reg + 1;
+; 437  : 	const uint32_t num_regs = max_reg + 1;
 
 	mov	eax, DWORD PTR max_reg$[rsp]
 	inc	eax
 	mov	DWORD PTR num_regs$[rsp], eax
 
-; 437  : 	SVGAEscapeVideoSetRegs *set_regs;
-; 438  : 	uint32_t i;
-; 439  : 
-; 440  : 	svga_begin_video_set_regs (stream_id, num_regs, &set_regs);
+; 438  : 	SVGAEscapeVideoSetRegs *set_regs;
+; 439  : 	uint32_t i;
+; 440  : 
+; 441  : 	svga_begin_video_set_regs (stream_id, num_regs, &set_regs);
 
 	lea	r8, QWORD PTR set_regs$[rsp]
 	mov	edx, DWORD PTR num_regs$[rsp]
 	mov	ecx, DWORD PTR stream_id$[rsp]
 	call	?svga_begin_video_set_regs@@YAXIIPEAPEAUSVGAEscapeVideoSetRegs@@@Z ; svga_begin_video_set_regs
 
-; 441  : 
-; 442  : 	for (i = 0; i < num_regs; i++) {
+; 442  : 
+; 443  : 	for (i = 0; i < num_regs; i++) {
 
 	mov	DWORD PTR i$[rsp], 0
 	jmp	SHORT $LN3@svga_video
@@ -1240,14 +1240,14 @@ $LN3@svga_video:
 	cmp	DWORD PTR i$[rsp], eax
 	jae	SHORT $LN1@svga_video
 
-; 443  : 		set_regs->items[i].registerId = i;
+; 444  : 		set_regs->items[i].registerId = i;
 
 	mov	eax, DWORD PTR i$[rsp]
 	mov	rcx, QWORD PTR set_regs$[rsp]
 	mov	edx, DWORD PTR i$[rsp]
 	mov	DWORD PTR [rcx+rax*8+8], edx
 
-; 444  : 		set_regs->items[i].value = reg_array[i];
+; 445  : 		set_regs->items[i].value = reg_array[i];
 
 	mov	eax, DWORD PTR i$[rsp]
 	mov	ecx, DWORD PTR i$[rsp]
@@ -1256,17 +1256,17 @@ $LN3@svga_video:
 	mov	eax, DWORD PTR [r8+rax*4]
 	mov	DWORD PTR [rdx+rcx*8+12], eax
 
-; 445  : 	}
+; 446  : 	}
 
 	jmp	SHORT $LN2@svga_video
 $LN1@svga_video:
 
-; 446  : 
-; 447  : 	svga_fifo_commit_all();
+; 447  : 
+; 448  : 	svga_fifo_commit_all();
 
 	call	?svga_fifo_commit_all@@YAXXZ		; svga_fifo_commit_all
 
-; 448  : }
+; 449  : }
 
 	add	rsp, 72					; 00000048H
 	ret	0
@@ -1282,7 +1282,7 @@ num_items$ = 72
 set_regs$ = 80
 ?svga_begin_video_set_regs@@YAXIIPEAPEAUSVGAEscapeVideoSetRegs@@@Z PROC ; svga_begin_video_set_regs
 
-; 422  : void svga_begin_video_set_regs (uint32_t stream_id, uint32_t num_items, SVGAEscapeVideoSetRegs **set_regs) {
+; 423  : void svga_begin_video_set_regs (uint32_t stream_id, uint32_t num_items, SVGAEscapeVideoSetRegs **set_regs) {
 
 $LN3:
 	mov	QWORD PTR [rsp+24], r8
@@ -1290,40 +1290,40 @@ $LN3:
 	mov	DWORD PTR [rsp+8], ecx
 	sub	rsp, 56					; 00000038H
 
-; 423  : 	SVGAEscapeVideoSetRegs *cmd;
-; 424  : 	uint32_t cmd_size = (sizeof *cmd - sizeof cmd->items + num_items * sizeof cmd->items[0]);
+; 424  : 	SVGAEscapeVideoSetRegs *cmd;
+; 425  : 	uint32_t cmd_size = (sizeof *cmd - sizeof cmd->items + num_items * sizeof cmd->items[0]);
 
 	mov	eax, DWORD PTR num_items$[rsp]
 	lea	rax, QWORD PTR [rax*8+8]
 	mov	DWORD PTR cmd_size$[rsp], eax
 
-; 425  : 
-; 426  : 	cmd = (SVGAEscapeVideoSetRegs*)svga_fifo_reserve_escape (SVGA_ESCAPE_NSID_VMWARE, cmd_size);
+; 426  : 
+; 427  : 	cmd = (SVGAEscapeVideoSetRegs*)svga_fifo_reserve_escape (SVGA_ESCAPE_NSID_VMWARE, cmd_size);
 
 	mov	edx, DWORD PTR cmd_size$[rsp]
 	xor	ecx, ecx
 	call	?svga_fifo_reserve_escape@@YAPEAXII@Z	; svga_fifo_reserve_escape
 	mov	QWORD PTR cmd$[rsp], rax
 
-; 427  : 	cmd->header.cmdType = SVGA_ESCAPE_VMWARE_VIDEO_SET_REGS;
+; 428  : 	cmd->header.cmdType = SVGA_ESCAPE_VMWARE_VIDEO_SET_REGS;
 
 	mov	rax, QWORD PTR cmd$[rsp]
 	mov	DWORD PTR [rax], 131073			; 00020001H
 
-; 428  : 	cmd->header.streamId = stream_id;
+; 429  : 	cmd->header.streamId = stream_id;
 
 	mov	rax, QWORD PTR cmd$[rsp]
 	mov	ecx, DWORD PTR stream_id$[rsp]
 	mov	DWORD PTR [rax+4], ecx
 
-; 429  : 
-; 430  : 	*set_regs = cmd;
+; 430  : 
+; 431  : 	*set_regs = cmd;
 
 	mov	rax, QWORD PTR set_regs$[rsp]
 	mov	rcx, QWORD PTR cmd$[rsp]
 	mov	QWORD PTR [rax], rcx
 
-; 431  : }
+; 432  : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -1338,7 +1338,7 @@ y$ = 64
 screen_id$ = 72
 ?svga_move_cursor@@YAXIIII@Z PROC			; svga_move_cursor
 
-; 407  : {
+; 408  : {
 
 $LN5:
 	mov	DWORD PTR [rsp+32], r9d
@@ -1347,7 +1347,7 @@ $LN5:
 	mov	DWORD PTR [rsp+8], ecx
 	sub	rsp, 40					; 00000028H
 
-; 408  : 	if (svga_has_fifo_cap (SVGA_FIFO_CAP_SCREEN_OBJECT)) {
+; 409  : 	if (svga_has_fifo_cap (SVGA_FIFO_CAP_SCREEN_OBJECT)) {
 
 	mov	ecx, 128				; 00000080H
 	call	?svga_has_fifo_cap@@YA_NH@Z		; svga_has_fifo_cap
@@ -1355,7 +1355,7 @@ $LN5:
 	test	eax, eax
 	je	SHORT $LN2@svga_move_
 
-; 409  : 		svga_dev.fifo_mem[SVGA_FIFO_CURSOR_SCREEN_ID] = screen_id;
+; 410  : 		svga_dev.fifo_mem[SVGA_FIFO_CURSOR_SCREEN_ID] = screen_id;
 
 	mov	eax, 4
 	imul	rax, 15
@@ -1364,9 +1364,9 @@ $LN5:
 	mov	DWORD PTR [rcx+rax], edx
 $LN2@svga_move_:
 
-; 410  : 	}
-; 411  : 
-; 412  : 	if (svga_has_fifo_cap (SVGA_FIFO_CAP_CURSOR_BYPASS_3)) {
+; 411  : 	}
+; 412  : 
+; 413  : 	if (svga_has_fifo_cap (SVGA_FIFO_CAP_CURSOR_BYPASS_3)) {
 
 	mov	ecx, 16
 	call	?svga_has_fifo_cap@@YA_NH@Z		; svga_has_fifo_cap
@@ -1374,8 +1374,8 @@ $LN2@svga_move_:
 	test	eax, eax
 	je	SHORT $LN1@svga_move_
 
-; 413  : 		//printf ("Cursor Bypass 3 supported\n");
-; 414  : 		svga_dev.fifo_mem[SVGA_FIFO_CURSOR_ON] = visible;
+; 414  : 		//printf ("Cursor Bypass 3 supported\n");
+; 415  : 		svga_dev.fifo_mem[SVGA_FIFO_CURSOR_ON] = visible;
 
 	mov	eax, 4
 	imul	rax, 9
@@ -1383,7 +1383,7 @@ $LN2@svga_move_:
 	mov	edx, DWORD PTR visible$[rsp]
 	mov	DWORD PTR [rcx+rax], edx
 
-; 415  : 		svga_dev.fifo_mem[SVGA_FIFO_CURSOR_X] = x;
+; 416  : 		svga_dev.fifo_mem[SVGA_FIFO_CURSOR_X] = x;
 
 	mov	eax, 4
 	imul	rax, 10
@@ -1391,7 +1391,7 @@ $LN2@svga_move_:
 	mov	edx, DWORD PTR x$[rsp]
 	mov	DWORD PTR [rcx+rax], edx
 
-; 416  : 		svga_dev.fifo_mem[SVGA_FIFO_CURSOR_Y] = y;
+; 417  : 		svga_dev.fifo_mem[SVGA_FIFO_CURSOR_Y] = y;
 
 	mov	eax, 4
 	imul	rax, 11
@@ -1399,7 +1399,7 @@ $LN2@svga_move_:
 	mov	edx, DWORD PTR y$[rsp]
 	mov	DWORD PTR [rcx+rax], edx
 
-; 417  : 		svga_dev.fifo_mem[SVGA_FIFO_CURSOR_COUNT]++;
+; 418  : 		svga_dev.fifo_mem[SVGA_FIFO_CURSOR_COUNT]++;
 
 	mov	eax, 4
 	imul	rax, 12
@@ -1412,8 +1412,8 @@ $LN2@svga_move_:
 	mov	DWORD PTR [rdx+rcx], eax
 $LN1@svga_move_:
 
-; 418  : 	}
-; 419  : }
+; 419  : 	}
+; 420  : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -1428,7 +1428,7 @@ cursor_info$ = 80
 data$ = 88
 ?svga_begin_define_alpha_cursor@@YAXPEBUSVGAFifoCmdDefineAlphaCursor@@PEAPEAX@Z PROC ; svga_begin_define_alpha_cursor
 
-; 394  : {
+; 395  : {
 
 $LN3:
 	mov	QWORD PTR [rsp+16], rdx
@@ -1437,7 +1437,7 @@ $LN3:
 	push	rdi
 	sub	rsp, 56					; 00000038H
 
-; 395  : 	uint32_t image_size = cursor_info->width * cursor_info->height * sizeof(uint32_t);
+; 396  : 	uint32_t image_size = cursor_info->width * cursor_info->height * sizeof(uint32_t);
 
 	mov	rax, QWORD PTR cursor_info$[rsp]
 	mov	rcx, QWORD PTR cursor_info$[rsp]
@@ -1447,8 +1447,8 @@ $LN3:
 	shl	rax, 2
 	mov	DWORD PTR image_size$[rsp], eax
 
-; 396  : 	SVGAFifoCmdDefineAlphaCursor *cmd =  (SVGAFifoCmdDefineAlphaCursor*)svga_fifo_reserved_cmd (SVGA_CMD_DEFINE_ALPHA_CURSOR,
-; 397  : 		sizeof(cmd) + image_size);  //sizeof *cmd;
+; 397  : 	SVGAFifoCmdDefineAlphaCursor *cmd =  (SVGAFifoCmdDefineAlphaCursor*)svga_fifo_reserved_cmd (SVGA_CMD_DEFINE_ALPHA_CURSOR,
+; 398  : 		sizeof(cmd) + image_size);  //sizeof *cmd;
 
 	mov	eax, DWORD PTR image_size$[rsp]
 	add	rax, 8
@@ -1457,22 +1457,22 @@ $LN3:
 	call	?svga_fifo_reserved_cmd@@YAPEAXII@Z	; svga_fifo_reserved_cmd
 	mov	QWORD PTR cmd$[rsp], rax
 
-; 398  : 	//printf ("Cmd address -> %x, %x\n", cmd, *cmd);
-; 399  : 	*cmd = *cursor_info;
+; 399  : 	//printf ("Cmd address -> %x, %x\n", cmd, *cmd);
+; 400  : 	*cmd = *cursor_info;
 
 	mov	rdi, QWORD PTR cmd$[rsp]
 	mov	rsi, QWORD PTR cursor_info$[rsp]
 	mov	ecx, 20
 	rep movsb
 
-; 400  : 	*data = (void*) (cmd + 1);
+; 401  : 	*data = (void*) (cmd + 1);
 
 	mov	rax, QWORD PTR cmd$[rsp]
 	add	rax, 20
 	mov	rcx, QWORD PTR data$[rsp]
 	mov	QWORD PTR [rcx], rax
 
-; 401  : }
+; 402  : }
 
 	add	rsp, 56					; 00000038H
 	pop	rdi
@@ -1493,7 +1493,7 @@ and_mask$ = 104
 xor_mask$ = 112
 ?svga_begin_define_cursor@@YAXPEBUSVGAFifoCmdDefineCursor@@PEAPEAX1@Z PROC ; svga_begin_define_cursor
 
-; 379  : {
+; 380  : {
 
 $LN3:
 	mov	QWORD PTR [rsp+24], r8
@@ -1503,7 +1503,7 @@ $LN3:
 	push	rdi
 	sub	rsp, 72					; 00000048H
 
-; 380  :     uint32_t and_pitch = ((cursor_info->andMaskDepth * cursor_info->width + 31) >> 5) << 2;
+; 381  :     uint32_t and_pitch = ((cursor_info->andMaskDepth * cursor_info->width + 31) >> 5) << 2;
 
 	mov	rax, QWORD PTR cursor_info$[rsp]
 	mov	rcx, QWORD PTR cursor_info$[rsp]
@@ -1514,7 +1514,7 @@ $LN3:
 	shl	eax, 2
 	mov	DWORD PTR and_pitch$[rsp], eax
 
-; 381  : 	uint32_t and_size = and_pitch * cursor_info->height;
+; 382  : 	uint32_t and_size = and_pitch * cursor_info->height;
 
 	mov	rax, QWORD PTR cursor_info$[rsp]
 	mov	ecx, DWORD PTR and_pitch$[rsp]
@@ -1522,7 +1522,7 @@ $LN3:
 	mov	eax, ecx
 	mov	DWORD PTR and_size$[rsp], eax
 
-; 382  : 	uint32_t xor_pitch = ((cursor_info->xorMaskDepth * cursor_info->width + 31) >> 5) << 2;
+; 383  : 	uint32_t xor_pitch = ((cursor_info->xorMaskDepth * cursor_info->width + 31) >> 5) << 2;
 
 	mov	rax, QWORD PTR cursor_info$[rsp]
 	mov	rcx, QWORD PTR cursor_info$[rsp]
@@ -1533,7 +1533,7 @@ $LN3:
 	shl	eax, 2
 	mov	DWORD PTR xor_pitch$[rsp], eax
 
-; 383  : 	uint32_t xor_size = xor_pitch * cursor_info->height;
+; 384  : 	uint32_t xor_size = xor_pitch * cursor_info->height;
 
 	mov	rax, QWORD PTR cursor_info$[rsp]
 	mov	ecx, DWORD PTR xor_pitch$[rsp]
@@ -1541,8 +1541,8 @@ $LN3:
 	mov	eax, ecx
 	mov	DWORD PTR xor_size$[rsp], eax
 
-; 384  : 
-; 385  : 	SVGAFifoCmdDefineCursor *cmd = (SVGAFifoCmdDefineCursor*)svga_fifo_reserved_cmd (SVGA_CMD_DEFINE_CURSOR, sizeof *cmd + and_size + xor_size);
+; 385  : 
+; 386  : 	SVGAFifoCmdDefineCursor *cmd = (SVGAFifoCmdDefineCursor*)svga_fifo_reserved_cmd (SVGA_CMD_DEFINE_CURSOR, sizeof *cmd + and_size + xor_size);
 
 	mov	eax, DWORD PTR and_size$[rsp]
 	mov	ecx, DWORD PTR xor_size$[rsp]
@@ -1552,22 +1552,22 @@ $LN3:
 	call	?svga_fifo_reserved_cmd@@YAPEAXII@Z	; svga_fifo_reserved_cmd
 	mov	QWORD PTR cmd$[rsp], rax
 
-; 386  : 
-; 387  : 	*cmd = *cursor_info;
+; 387  : 
+; 388  : 	*cmd = *cursor_info;
 
 	mov	rdi, QWORD PTR cmd$[rsp]
 	mov	rsi, QWORD PTR cursor_info$[rsp]
 	mov	ecx, 28
 	rep movsb
 
-; 388  : 	*and_mask = (void*)(cmd + 1);
+; 389  : 	*and_mask = (void*)(cmd + 1);
 
 	mov	rax, QWORD PTR cmd$[rsp]
 	add	rax, 28
 	mov	rcx, QWORD PTR and_mask$[rsp]
 	mov	QWORD PTR [rcx], rax
 
-; 389  : 	*xor_mask  = (void*)(and_size + (uint8_t*)*and_mask);
+; 390  : 	*xor_mask  = (void*)(and_size + (uint8_t*)*and_mask);
 
 	mov	eax, DWORD PTR and_size$[rsp]
 	mov	rcx, QWORD PTR and_mask$[rsp]
@@ -1575,7 +1575,7 @@ $LN3:
 	mov	rcx, QWORD PTR xor_mask$[rsp]
 	mov	QWORD PTR [rcx], rax
 
-; 390  : }
+; 391  : }
 
 	add	rsp, 72					; 00000048H
 	pop	rdi
@@ -1593,7 +1593,7 @@ width$ = 80
 height$ = 88
 ?svga_update@@YAXIIII@Z PROC				; svga_update
 
-; 365  : void svga_update (uint32_t x, uint32_t y, uint32_t width, uint32_t height) {
+; 366  : void svga_update (uint32_t x, uint32_t y, uint32_t width, uint32_t height) {
 
 $LN3:
 	mov	DWORD PTR [rsp+32], r9d
@@ -1602,52 +1602,52 @@ $LN3:
 	mov	DWORD PTR [rsp+8], ecx
 	sub	rsp, 56					; 00000038H
 
-; 366  : 	debug_serial ("[Aurora]: SVGA Screen Update called\n");
+; 367  : 	debug_serial ("[Aurora]: SVGA Screen Update called\n");
 
 	lea	rcx, OFFSET FLAT:$SG5899
 	call	?debug_serial@@YAXPEAD@Z		; debug_serial
 
-; 367  : 	SVGAFifoCmdUpdate *cmd = (SVGAFifoCmdUpdate*)svga_fifo_reserved_cmd (SVGA_CMD_UPDATE, sizeof (SVGAFifoCmdUpdate));
+; 368  : 	SVGAFifoCmdUpdate *cmd = (SVGAFifoCmdUpdate*)svga_fifo_reserved_cmd (SVGA_CMD_UPDATE, sizeof (SVGAFifoCmdUpdate));
 
 	mov	edx, 16
 	mov	ecx, 1
 	call	?svga_fifo_reserved_cmd@@YAPEAXII@Z	; svga_fifo_reserved_cmd
 	mov	QWORD PTR cmd$[rsp], rax
 
-; 368  : 	cmd->x = x;
+; 369  : 	cmd->x = x;
 
 	mov	rax, QWORD PTR cmd$[rsp]
 	mov	ecx, DWORD PTR x$[rsp]
 	mov	DWORD PTR [rax], ecx
 
-; 369  : 	cmd->y = y;
+; 370  : 	cmd->y = y;
 
 	mov	rax, QWORD PTR cmd$[rsp]
 	mov	ecx, DWORD PTR y$[rsp]
 	mov	DWORD PTR [rax+4], ecx
 
-; 370  : 	cmd->width = width;
+; 371  : 	cmd->width = width;
 
 	mov	rax, QWORD PTR cmd$[rsp]
 	mov	ecx, DWORD PTR width$[rsp]
 	mov	DWORD PTR [rax+8], ecx
 
-; 371  : 	cmd->height = height;
+; 372  : 	cmd->height = height;
 
 	mov	rax, QWORD PTR cmd$[rsp]
 	mov	ecx, DWORD PTR height$[rsp]
 	mov	DWORD PTR [rax+12], ecx
 
-; 372  : 	svga_fifo_commit_all ();
+; 373  : 	svga_fifo_commit_all ();
 
 	call	?svga_fifo_commit_all@@YAXXZ		; svga_fifo_commit_all
 
-; 373  : 	debug_serial ("[Aurora]: Update fifo completed\n");
+; 374  : 	debug_serial ("[Aurora]: Update fifo completed\n");
 
 	lea	rcx, OFFSET FLAT:$SG5903
 	call	?debug_serial@@YAXPEAD@Z		; debug_serial
 
-; 374  : }
+; 375  : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -1660,19 +1660,19 @@ size$ = 8
 ptr$ = 16
 ?svga_alloc_gmr@@YAPEAXIPEAUSVGAGuestPtr@@@Z PROC	; svga_alloc_gmr
 
-; 358  : void* svga_alloc_gmr (uint32 size, SVGAGuestPtr *ptr) {
+; 359  : void* svga_alloc_gmr (uint32 size, SVGAGuestPtr *ptr) {
 
 	mov	QWORD PTR [rsp+16], rdx
 	mov	DWORD PTR [rsp+8], ecx
 
-; 359  : 	static SVGAGuestPtr next_ptr = {SVGA_GMR_FRAMEBUFFER, 0 };
-; 360  : 	*ptr = next_ptr;
+; 360  : 	static SVGAGuestPtr next_ptr = {SVGA_GMR_FRAMEBUFFER, 0 };
+; 361  : 	*ptr = next_ptr;
 
 	mov	rax, QWORD PTR ptr$[rsp]
 	mov	rcx, QWORD PTR ?next_ptr@?1??svga_alloc_gmr@@YAPEAXIPEAUSVGAGuestPtr@@@Z@4U2@A
 	mov	QWORD PTR [rax], rcx
 
-; 361  : 	next_ptr.offset += size;
+; 362  : 	next_ptr.offset += size;
 
 	mov	eax, DWORD PTR size$[rsp]
 	mov	ecx, DWORD PTR ?next_ptr@?1??svga_alloc_gmr@@YAPEAXIPEAUSVGAGuestPtr@@@Z@4U2@A+4
@@ -1680,7 +1680,7 @@ ptr$ = 16
 	mov	eax, ecx
 	mov	DWORD PTR ?next_ptr@?1??svga_alloc_gmr@@YAPEAXIPEAUSVGAGuestPtr@@@Z@4U2@A+4, eax
 
-; 362  : 	return svga_dev.fb_mem + ptr->offset;
+; 363  : 	return svga_dev.fb_mem + ptr->offset;
 
 	mov	rax, QWORD PTR ptr$[rsp]
 	mov	eax, DWORD PTR [rax+4]
@@ -1688,7 +1688,7 @@ ptr$ = 16
 	add	rcx, rax
 	mov	rax, rcx
 
-; 363  : }
+; 364  : }
 
 	ret	0
 ?svga_alloc_gmr@@YAPEAXIPEAUSVGAGuestPtr@@@Z ENDP	; svga_alloc_gmr
@@ -1698,12 +1698,12 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 ?svga_ring_doorbell@@YAXXZ PROC				; svga_ring_doorbell
 
-; 351  : void svga_ring_doorbell () {
+; 352  : void svga_ring_doorbell () {
 
 $LN4:
 	sub	rsp, 40					; 00000028H
 
-; 352  : 	if (svga_is_fifo_reg_valid (SVGA_FIFO_BUSY) && svga_dev.fifo_mem[SVGA_FIFO_BUSY] == false) {
+; 353  : 	if (svga_is_fifo_reg_valid (SVGA_FIFO_BUSY) && svga_dev.fifo_mem[SVGA_FIFO_BUSY] == false) {
 
 	mov	ecx, 290				; 00000122H
 	call	?svga_is_fifo_reg_valid@@YA_NH@Z	; svga_is_fifo_reg_valid
@@ -1716,22 +1716,22 @@ $LN4:
 	cmp	DWORD PTR [rcx+rax], 0
 	jne	SHORT $LN1@svga_ring_
 
-; 353  : 		svga_dev.fifo_mem[SVGA_FIFO_BUSY] = true;
+; 354  : 		svga_dev.fifo_mem[SVGA_FIFO_BUSY] = true;
 
 	mov	eax, 4
 	imul	rax, 290				; 00000122H
 	mov	rcx, QWORD PTR ?svga_dev@@3U_svga_drive_@@A+16
 	mov	DWORD PTR [rcx+rax], 1
 
-; 354  : 		svga_write_reg (SVGA_REG_SYNC, 1);
+; 355  : 		svga_write_reg (SVGA_REG_SYNC, 1);
 
 	mov	edx, 1
 	mov	ecx, 21
 	call	?svga_write_reg@@YAXII@Z		; svga_write_reg
 $LN1@svga_ring_:
 
-; 355  : 	}
-; 356  : }
+; 356  : 	}
+; 357  : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -1746,30 +1746,30 @@ nsid$ = 64
 bytes$ = 72
 ?svga_fifo_reserve_escape@@YAPEAXII@Z PROC		; svga_fifo_reserve_escape
 
-; 315  : void* svga_fifo_reserve_escape (uint32_t nsid, uint32_t bytes) {
+; 316  : void* svga_fifo_reserve_escape (uint32_t nsid, uint32_t bytes) {
 
 $LN3:
 	mov	DWORD PTR [rsp+16], edx
 	mov	DWORD PTR [rsp+8], ecx
 	sub	rsp, 56					; 00000038H
 
-; 316  : 
-; 317  : 	uint32_t padded_bytes = (bytes + 3) & ~3UL;
+; 317  : 
+; 318  : 	uint32_t padded_bytes = (bytes + 3) & ~3UL;
 
 	mov	eax, DWORD PTR bytes$[rsp]
 	add	eax, 3
 	and	eax, -4					; fffffffcH
 	mov	DWORD PTR padded_bytes$[rsp], eax
 
-; 318  : #pragma pack (push)
-; 319  : 	struct header{
-; 320  : 		uint32_t cmd;
-; 321  : 		uint32_t nsid;
-; 322  : 		uint32_t size;
-; 323  : 	};
-; 324  : #pragma pack (pop)
-; 325  : 
-; 326  : 	header *h = (header*)svga_fifo_reserve (padded_bytes + sizeof (header));
+; 319  : #pragma pack (push)
+; 320  : 	struct header{
+; 321  : 		uint32_t cmd;
+; 322  : 		uint32_t nsid;
+; 323  : 		uint32_t size;
+; 324  : 	};
+; 325  : #pragma pack (pop)
+; 326  : 
+; 327  : 	header *h = (header*)svga_fifo_reserve (padded_bytes + sizeof (header));
 
 	mov	eax, DWORD PTR padded_bytes$[rsp]
 	add	rax, 12
@@ -1777,30 +1777,30 @@ $LN3:
 	call	?svga_fifo_reserve@@YAPEAXI@Z		; svga_fifo_reserve
 	mov	QWORD PTR h$[rsp], rax
 
-; 327  : 	h->cmd = SVGA_CMD_ESCAPE;
+; 328  : 	h->cmd = SVGA_CMD_ESCAPE;
 
 	mov	rax, QWORD PTR h$[rsp]
 	mov	DWORD PTR [rax], 33			; 00000021H
 
-; 328  : 	h->nsid = nsid;
+; 329  : 	h->nsid = nsid;
 
 	mov	rax, QWORD PTR h$[rsp]
 	mov	ecx, DWORD PTR nsid$[rsp]
 	mov	DWORD PTR [rax+4], ecx
 
-; 329  : 	h->size = bytes;
+; 330  : 	h->size = bytes;
 
 	mov	rax, QWORD PTR h$[rsp]
 	mov	ecx, DWORD PTR bytes$[rsp]
 	mov	DWORD PTR [rax+8], ecx
 
-; 330  : 
-; 331  : 	return h + 1;
+; 331  : 
+; 332  : 	return h + 1;
 
 	mov	rax, QWORD PTR h$[rsp]
 	add	rax, 12
 
-; 332  : }
+; 333  : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -1814,19 +1814,19 @@ type$ = 64
 bytes$ = 72
 ?svga_fifo_reserved_cmd@@YAPEAXII@Z PROC		; svga_fifo_reserved_cmd
 
-; 307  : void* svga_fifo_reserved_cmd (uint32_t type, uint32_t bytes) {
+; 308  : void* svga_fifo_reserved_cmd (uint32_t type, uint32_t bytes) {
 
 $LN3:
 	mov	DWORD PTR [rsp+16], edx
 	mov	DWORD PTR [rsp+8], ecx
 	sub	rsp, 56					; 00000038H
 
-; 308  : 	debug_serial ("[Aurora]: Fifo Reserved function called\n");
+; 309  : 	debug_serial ("[Aurora]: Fifo Reserved function called\n");
 
 	lea	rcx, OFFSET FLAT:$SG5858
 	call	?debug_serial@@YAXPEAD@Z		; debug_serial
 
-; 309  : 	uint32_t*cmd = (uint32_t*)svga_fifo_reserve (bytes + sizeof type);
+; 310  : 	uint32_t*cmd = (uint32_t*)svga_fifo_reserve (bytes + sizeof type);
 
 	mov	eax, DWORD PTR bytes$[rsp]
 	add	rax, 4
@@ -1834,7 +1834,7 @@ $LN3:
 	call	?svga_fifo_reserve@@YAPEAXI@Z		; svga_fifo_reserve
 	mov	QWORD PTR cmd$[rsp], rax
 
-; 310  : 	cmd[0] = type;
+; 311  : 	cmd[0] = type;
 
 	mov	eax, 4
 	imul	rax, 0
@@ -1842,12 +1842,12 @@ $LN3:
 	mov	edx, DWORD PTR type$[rsp]
 	mov	DWORD PTR [rcx+rax], edx
 
-; 311  : 	return cmd + 1;
+; 312  : 	return cmd + 1;
 
 	mov	rax, QWORD PTR cmd$[rsp]
 	add	rax, 4
 
-; 312  : }
+; 313  : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -1858,17 +1858,17 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 ?svga_fifo_commit_all@@YAXXZ PROC			; svga_fifo_commit_all
 
-; 303  : void svga_fifo_commit_all () {
+; 304  : void svga_fifo_commit_all () {
 
 $LN3:
 	sub	rsp, 40					; 00000028H
 
-; 304  : 	svga_fifo_commit (svga_dev.fifo.reserved_size);
+; 305  : 	svga_fifo_commit (svga_dev.fifo.reserved_size);
 
 	mov	ecx, DWORD PTR ?svga_dev@@3U_svga_drive_@@A+72
 	call	?svga_fifo_commit@@YAXI@Z		; svga_fifo_commit
 
-; 305  : }
+; 306  : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -1890,20 +1890,20 @@ tv130 = 88
 bytes$ = 112
 ?svga_fifo_commit@@YAXI@Z PROC				; svga_fifo_commit
 
-; 250  : void svga_fifo_commit (uint32_t bytes) {
+; 251  : void svga_fifo_commit (uint32_t bytes) {
 
 $LN16:
 	mov	DWORD PTR [rsp+8], ecx
 	sub	rsp, 104				; 00000068H
 
-; 251  : 	
-; 252  : 	volatile uint32_t *fifo = svga_dev.fifo_mem;
+; 252  : 	
+; 253  : 	volatile uint32_t *fifo = svga_dev.fifo_mem;
 
 	mov	rax, QWORD PTR ?svga_dev@@3U_svga_drive_@@A+16
 	mov	QWORD PTR fifo$[rsp], rax
 
-; 253  : 	//printf ("FIFO Commit address -> %x\n", fifo);
-; 254  : 	uint32_t next_cmd = fifo[SVGA_FIFO_NEXT_CMD];
+; 254  : 	//printf ("FIFO Commit address -> %x\n", fifo);
+; 255  : 	uint32_t next_cmd = fifo[SVGA_FIFO_NEXT_CMD];
 
 	mov	eax, 4
 	imul	rax, 2
@@ -1911,7 +1911,7 @@ $LN16:
 	mov	eax, DWORD PTR [rcx+rax]
 	mov	DWORD PTR next_cmd$[rsp], eax
 
-; 255  : 	uint32_t max = fifo[SVGA_FIFO_MAX];
+; 256  : 	uint32_t max = fifo[SVGA_FIFO_MAX];
 
 	mov	eax, 4
 	imul	rax, 1
@@ -1919,7 +1919,7 @@ $LN16:
 	mov	eax, DWORD PTR [rcx+rax]
 	mov	DWORD PTR max$[rsp], eax
 
-; 256  : 	uint32_t min = fifo[SVGA_FIFO_MIN];
+; 257  : 	uint32_t min = fifo[SVGA_FIFO_MIN];
 
 	mov	eax, 4
 	imul	rax, 0
@@ -1927,52 +1927,52 @@ $LN16:
 	mov	eax, DWORD PTR [rcx+rax]
 	mov	DWORD PTR min$[rsp], eax
 
-; 257  : 
-; 258  : 	bool reserveable = svga_has_fifo_cap (SVGA_FIFO_CAP_RESERVE);
+; 258  : 
+; 259  : 	bool reserveable = svga_has_fifo_cap (SVGA_FIFO_CAP_RESERVE);
 
 	mov	ecx, 64					; 00000040H
 	call	?svga_has_fifo_cap@@YA_NH@Z		; svga_has_fifo_cap
 	mov	BYTE PTR reserveable$[rsp], al
 
-; 259  : 
-; 260  : 	if (svga_dev.fifo.reserved_size == 0) {
+; 260  : 
+; 261  : 	if (svga_dev.fifo.reserved_size == 0) {
 
 	cmp	DWORD PTR ?svga_dev@@3U_svga_drive_@@A+72, 0
 	jne	SHORT $LN11@svga_fifo_
 
-; 261  : 		printf ("[VMware SVGA]: FIFO commit before FIFO reserve\n");
+; 262  : 		printf ("[VMware SVGA]: FIFO commit before FIFO reserve\n");
 
 	lea	rcx, OFFSET FLAT:$SG5834
 	call	?printf@@YAXPEBDZZ			; printf
 $LN11@svga_fifo_:
 
-; 262  : 	}
-; 263  : 	svga_dev.fifo.reserved_size = 0;
+; 263  : 	}
+; 264  : 	svga_dev.fifo.reserved_size = 0;
 
 	mov	DWORD PTR ?svga_dev@@3U_svga_drive_@@A+72, 0
 
-; 264  : 
-; 265  : 	if (svga_dev.fifo.using_bounce_buffer) {
+; 265  : 
+; 266  : 	if (svga_dev.fifo.using_bounce_buffer) {
 
 	movzx	eax, BYTE PTR ?svga_dev@@3U_svga_drive_@@A+76
 	test	eax, eax
 	je	$LN10@svga_fifo_
 
-; 266  : 		//printf ("Commit using bounce buffer\n");
-; 267  : 		uint8_t* buffer = svga_dev.fifo.bounce_buffer;
+; 267  : 		//printf ("Commit using bounce buffer\n");
+; 268  : 		uint8_t* buffer = svga_dev.fifo.bounce_buffer;
 
 	lea	rax, OFFSET FLAT:?svga_dev@@3U_svga_drive_@@A+77
 	mov	QWORD PTR buffer$2[rsp], rax
 
-; 268  : 		//printf ("Bounce buffer -> %x\n", buffer);
-; 269  : 		if (reserveable) {
+; 269  : 		//printf ("Bounce buffer -> %x\n", buffer);
+; 270  : 		if (reserveable) {
 
 	movzx	eax, BYTE PTR reserveable$[rsp]
 	test	eax, eax
 	je	$LN9@svga_fifo_
 
-; 270  : 			//printf ("Reserved\n");
-; 271  : 			uint32_t chunk_size = MIN (bytes, max - next_cmd);
+; 271  : 			//printf ("Reserved\n");
+; 272  : 			uint32_t chunk_size = MIN (bytes, max - next_cmd);
 
 	mov	eax, DWORD PTR next_cmd$[rsp]
 	mov	ecx, DWORD PTR max$[rsp]
@@ -1993,7 +1993,7 @@ $LN15@svga_fifo_:
 	mov	eax, DWORD PTR tv84[rsp]
 	mov	DWORD PTR chunk_size$1[rsp], eax
 
-; 272  : 			fifo[SVGA_FIFO_RESERVED] = bytes;
+; 273  : 			fifo[SVGA_FIFO_RESERVED] = bytes;
 
 	mov	eax, 4
 	imul	rax, 14
@@ -2001,7 +2001,7 @@ $LN15@svga_fifo_:
 	mov	edx, DWORD PTR bytes$[rsp]
 	mov	DWORD PTR [rcx+rax], edx
 
-; 273  : 			memcpy (next_cmd + (uint8_t*) fifo, buffer, chunk_size);
+; 274  : 			memcpy (next_cmd + (uint8_t*) fifo, buffer, chunk_size);
 
 	mov	eax, DWORD PTR next_cmd$[rsp]
 	mov	rcx, QWORD PTR fifo$[rsp]
@@ -2012,7 +2012,7 @@ $LN15@svga_fifo_:
 	mov	rcx, rax
 	call	memcpy
 
-; 274  : 			memcpy (min + (uint8_t*)fifo, buffer + chunk_size, bytes - chunk_size);
+; 275  : 			memcpy (min + (uint8_t*)fifo, buffer + chunk_size, bytes - chunk_size);
 
 	mov	eax, DWORD PTR chunk_size$1[rsp]
 	mov	ecx, DWORD PTR bytes$[rsp]
@@ -2033,23 +2033,23 @@ $LN15@svga_fifo_:
 	mov	rcx, rax
 	call	memcpy
 
-; 275  : 		} else {
+; 276  : 		} else {
 
 	jmp	SHORT $LN8@svga_fifo_
 $LN9@svga_fifo_:
 
-; 276  : 			uint32_t *dword = (uint32_t*) buffer;
+; 277  : 			uint32_t *dword = (uint32_t*) buffer;
 
 	mov	rax, QWORD PTR buffer$2[rsp]
 	mov	QWORD PTR dword$3[rsp], rax
 $LN7@svga_fifo_:
 
-; 277  : 			while (bytes > 0) {
+; 278  : 			while (bytes > 0) {
 
 	cmp	DWORD PTR bytes$[rsp], 0
 	jbe	SHORT $LN6@svga_fifo_
 
-; 278  : 				fifo[next_cmd / sizeof *dword] = *dword++;
+; 279  : 				fifo[next_cmd / sizeof *dword] = *dword++;
 
 	mov	eax, DWORD PTR next_cmd$[rsp]
 	xor	edx, edx
@@ -2063,26 +2063,26 @@ $LN7@svga_fifo_:
 	add	rax, 4
 	mov	QWORD PTR dword$3[rsp], rax
 
-; 279  : 				next_cmd += sizeof *dword;
+; 280  : 				next_cmd += sizeof *dword;
 
 	mov	eax, DWORD PTR next_cmd$[rsp]
 	add	rax, 4
 	mov	DWORD PTR next_cmd$[rsp], eax
 
-; 280  : 				if (next_cmd == max) {
+; 281  : 				if (next_cmd == max) {
 
 	mov	eax, DWORD PTR max$[rsp]
 	cmp	DWORD PTR next_cmd$[rsp], eax
 	jne	SHORT $LN5@svga_fifo_
 
-; 281  : 					next_cmd = min;
+; 282  : 					next_cmd = min;
 
 	mov	eax, DWORD PTR min$[rsp]
 	mov	DWORD PTR next_cmd$[rsp], eax
 $LN5@svga_fifo_:
 
-; 282  : 				}
-; 283  : 				fifo[SVGA_FIFO_NEXT_CMD] = next_cmd;
+; 283  : 				}
+; 284  : 				fifo[SVGA_FIFO_NEXT_CMD] = next_cmd;
 
 	mov	eax, 4
 	imul	rax, 2
@@ -2090,23 +2090,23 @@ $LN5@svga_fifo_:
 	mov	edx, DWORD PTR next_cmd$[rsp]
 	mov	DWORD PTR [rcx+rax], edx
 
-; 284  : 				bytes -= sizeof *dword;
+; 285  : 				bytes -= sizeof *dword;
 
 	mov	eax, DWORD PTR bytes$[rsp]
 	sub	rax, 4
 	mov	DWORD PTR bytes$[rsp], eax
 
-; 285  : 			}
+; 286  : 			}
 
 	jmp	SHORT $LN7@svga_fifo_
 $LN6@svga_fifo_:
 $LN8@svga_fifo_:
 $LN10@svga_fifo_:
 
-; 286  : 		}
-; 287  : 	}
-; 288  : 
-; 289  : 	if (!svga_dev.fifo.using_bounce_buffer || reserveable) {
+; 287  : 		}
+; 288  : 	}
+; 289  : 
+; 290  : 	if (!svga_dev.fifo.using_bounce_buffer || reserveable) {
 
 	movzx	eax, BYTE PTR ?svga_dev@@3U_svga_drive_@@A+76
 	test	eax, eax
@@ -2116,7 +2116,7 @@ $LN10@svga_fifo_:
 	je	SHORT $LN4@svga_fifo_
 $LN3@svga_fifo_:
 
-; 290  : 		next_cmd += bytes;
+; 291  : 		next_cmd += bytes;
 
 	mov	eax, DWORD PTR bytes$[rsp]
 	mov	ecx, DWORD PTR next_cmd$[rsp]
@@ -2124,13 +2124,13 @@ $LN3@svga_fifo_:
 	mov	eax, ecx
 	mov	DWORD PTR next_cmd$[rsp], eax
 
-; 291  : 		if (next_cmd >= max) {
+; 292  : 		if (next_cmd >= max) {
 
 	mov	eax, DWORD PTR max$[rsp]
 	cmp	DWORD PTR next_cmd$[rsp], eax
 	jb	SHORT $LN2@svga_fifo_
 
-; 292  : 			next_cmd -= max - min;
+; 293  : 			next_cmd -= max - min;
 
 	mov	eax, DWORD PTR min$[rsp]
 	mov	ecx, DWORD PTR max$[rsp]
@@ -2142,8 +2142,8 @@ $LN3@svga_fifo_:
 	mov	DWORD PTR next_cmd$[rsp], eax
 $LN2@svga_fifo_:
 
-; 293  : 		}
-; 294  : 		fifo[SVGA_FIFO_NEXT_CMD] = next_cmd;
+; 294  : 		}
+; 295  : 		fifo[SVGA_FIFO_NEXT_CMD] = next_cmd;
 
 	mov	eax, 4
 	imul	rax, 2
@@ -2152,15 +2152,15 @@ $LN2@svga_fifo_:
 	mov	DWORD PTR [rcx+rax], edx
 $LN4@svga_fifo_:
 
-; 295  : 	}
-; 296  : 
-; 297  : 	if (reserveable) {
+; 296  : 	}
+; 297  : 
+; 298  : 	if (reserveable) {
 
 	movzx	eax, BYTE PTR reserveable$[rsp]
 	test	eax, eax
 	je	SHORT $LN1@svga_fifo_
 
-; 298  : 		fifo[SVGA_FIFO_RESERVED] = 0;
+; 299  : 		fifo[SVGA_FIFO_RESERVED] = 0;
 
 	mov	eax, 4
 	imul	rax, 14
@@ -2168,9 +2168,9 @@ $LN4@svga_fifo_:
 	mov	DWORD PTR [rcx+rax], 0
 $LN1@svga_fifo_:
 
-; 299  : 	}
-; 300  : 	//printf ("Fifo commited\n");
-; 301  : }
+; 300  : 	}
+; 301  : 	//printf ("Fifo commited\n");
+; 302  : }
 
 	add	rsp, 104				; 00000068H
 	ret	0
@@ -2190,23 +2190,23 @@ fifo$ = 56
 bytes$ = 80
 ?svga_fifo_reserve@@YAPEAXI@Z PROC			; svga_fifo_reserve
 
-; 182  : void* svga_fifo_reserve (uint32_t bytes) {
+; 183  : void* svga_fifo_reserve (uint32_t bytes) {
 
 $LN23:
 	mov	DWORD PTR [rsp+8], ecx
 	sub	rsp, 72					; 00000048H
 
-; 183  : 	debug_serial ("[Aurora]: Actual Fifo Reserve function called\n");
+; 184  : 	debug_serial ("[Aurora]: Actual Fifo Reserve function called\n");
 
 	lea	rcx, OFFSET FLAT:$SG5786
 	call	?debug_serial@@YAXPEAD@Z		; debug_serial
 
-; 184  : 	volatile uint32_t *fifo = svga_dev.fifo_mem;
+; 185  : 	volatile uint32_t *fifo = svga_dev.fifo_mem;
 
 	mov	rax, QWORD PTR ?svga_dev@@3U_svga_drive_@@A+16
 	mov	QWORD PTR fifo$[rsp], rax
 
-; 185  : 	uint32_t max = fifo[SVGA_FIFO_MAX];
+; 186  : 	uint32_t max = fifo[SVGA_FIFO_MAX];
 
 	mov	eax, 4
 	imul	rax, 1
@@ -2214,7 +2214,7 @@ $LN23:
 	mov	eax, DWORD PTR [rcx+rax]
 	mov	DWORD PTR max$[rsp], eax
 
-; 186  : 	uint32_t min = fifo[SVGA_FIFO_MIN];
+; 187  : 	uint32_t min = fifo[SVGA_FIFO_MIN];
 
 	mov	eax, 4
 	imul	rax, 0
@@ -2222,7 +2222,7 @@ $LN23:
 	mov	eax, DWORD PTR [rcx+rax]
 	mov	DWORD PTR min$[rsp], eax
 
-; 187  : 	uint32_t next_cmd = fifo[SVGA_FIFO_NEXT_CMD];
+; 188  : 	uint32_t next_cmd = fifo[SVGA_FIFO_NEXT_CMD];
 
 	mov	eax, 4
 	imul	rax, 2
@@ -2230,34 +2230,34 @@ $LN23:
 	mov	eax, DWORD PTR [rcx+rax]
 	mov	DWORD PTR next_cmd$[rsp], eax
 
-; 188  : 	debug_serial ("[Aurora]: Fifo memory acquired\n");
+; 189  : 	debug_serial ("[Aurora]: Fifo memory acquired\n");
 
 	lea	rcx, OFFSET FLAT:$SG5791
 	call	?debug_serial@@YAXPEAD@Z		; debug_serial
 
-; 189  : 	bool reserveable = svga_has_fifo_cap (SVGA_FIFO_CAP_RESERVE);
+; 190  : 	bool reserveable = svga_has_fifo_cap (SVGA_FIFO_CAP_RESERVE);
 
 	mov	ecx, 64					; 00000040H
 	call	?svga_has_fifo_cap@@YA_NH@Z		; svga_has_fifo_cap
 	mov	BYTE PTR reserveable$[rsp], al
 
-; 190  : 
-; 191  : 	if (bytes  > sizeof (svga_dev.fifo.bounce_buffer)/* || bytes > (max - min)*/) {
+; 191  : 
+; 192  : 	if (bytes  > sizeof (svga_dev.fifo.bounce_buffer)/* || bytes > (max - min)*/) {
 
 	mov	eax, DWORD PTR bytes$[rsp]
 	cmp	rax, 1048576				; 00100000H
 	jbe	SHORT $LN20@svga_fifo_
 
-; 192  : 		debug_serial ("[VMware SVGA]: FIFO command too large bytes\n");
+; 193  : 		debug_serial ("[VMware SVGA]: FIFO command too large bytes\n");
 
 	lea	rcx, OFFSET FLAT:$SG5794
 	call	?debug_serial@@YAXPEAD@Z		; debug_serial
 $LN20@svga_fifo_:
 
-; 193  : 		//for(;;);
-; 194  : 	}
-; 195  : 
-; 196  : 	if (bytes % sizeof (uint32_t)) {
+; 194  : 		//for(;;);
+; 195  : 	}
+; 196  : 
+; 197  : 	if (bytes % sizeof (uint32_t)) {
 
 	mov	eax, DWORD PTR bytes$[rsp]
 	xor	edx, edx
@@ -2267,43 +2267,43 @@ $LN20@svga_fifo_:
 	test	rax, rax
 	je	SHORT $LN19@svga_fifo_
 
-; 197  : 		debug_serial ("[VMware SVGA]: FIFO command length not 32-bit aligned\n");
+; 198  : 		debug_serial ("[VMware SVGA]: FIFO command length not 32-bit aligned\n");
 
 	lea	rcx, OFFSET FLAT:$SG5797
 	call	?debug_serial@@YAXPEAD@Z		; debug_serial
 $LN19@svga_fifo_:
 
-; 198  : 		//for(;;);
-; 199  : 	}
-; 200  : 
-; 201  : 	if (svga_dev.fifo.reserved_size != 0) {
+; 199  : 		//for(;;);
+; 200  : 	}
+; 201  : 
+; 202  : 	if (svga_dev.fifo.reserved_size != 0) {
 
 	cmp	DWORD PTR ?svga_dev@@3U_svga_drive_@@A+72, 0
 	je	SHORT $LN18@svga_fifo_
 
-; 202  : 		debug_serial ("[VMware SVGA]: FIFO reserve before FIFO commit\n");
+; 203  : 		debug_serial ("[VMware SVGA]: FIFO reserve before FIFO commit\n");
 
 	lea	rcx, OFFSET FLAT:$SG5799
 	call	?debug_serial@@YAXPEAD@Z		; debug_serial
 $LN18@svga_fifo_:
 
-; 203  : 		//for(;;);
-; 204  : 	}
-; 205  : 
-; 206  : 	svga_dev.fifo.reserved_size = bytes;
+; 204  : 		//for(;;);
+; 205  : 	}
+; 206  : 
+; 207  : 	svga_dev.fifo.reserved_size = bytes;
 
 	mov	eax, DWORD PTR bytes$[rsp]
 	mov	DWORD PTR ?svga_dev@@3U_svga_drive_@@A+72, eax
 $LN17@svga_fifo_:
 
-; 207  : 
-; 208  : 	while (1) {
+; 208  : 
+; 209  : 	while (1) {
 
 	xor	eax, eax
 	cmp	eax, 1
 	je	$LN16@svga_fifo_
 
-; 209  : 		uint32_t stop = fifo[SVGA_FIFO_STOP];
+; 210  : 		uint32_t stop = fifo[SVGA_FIFO_STOP];
 
 	mov	eax, 4
 	imul	rax, 3
@@ -2311,32 +2311,32 @@ $LN17@svga_fifo_:
 	mov	eax, DWORD PTR [rcx+rax]
 	mov	DWORD PTR stop$3[rsp], eax
 
-; 210  : 		bool reserve_in_place = false;
+; 211  : 		bool reserve_in_place = false;
 
 	mov	BYTE PTR reserve_in_place$1[rsp], 0
 
-; 211  : 		bool need_bounce = false;
+; 212  : 		bool need_bounce = false;
 
 	mov	BYTE PTR need_bounce$2[rsp], 0
 
-; 212  : 		debug_serial("[Aurora]: Stop -> %d\n");
+; 213  : 		debug_serial("[Aurora]: Stop -> %d\n");
 
 	lea	rcx, OFFSET FLAT:$SG5806
 	call	?debug_serial@@YAXPEAD@Z		; debug_serial
 
-; 213  : 		if (next_cmd >= stop) {
+; 214  : 		if (next_cmd >= stop) {
 
 	mov	eax, DWORD PTR stop$3[rsp]
 	cmp	DWORD PTR next_cmd$[rsp], eax
 	jb	SHORT $LN15@svga_fifo_
 
-; 214  : 			debug_serial ("[Aurora]: Debug Step[1]\n");
+; 215  : 			debug_serial ("[Aurora]: Debug Step[1]\n");
 
 	lea	rcx, OFFSET FLAT:$SG5808
 	call	?debug_serial@@YAXPEAD@Z		; debug_serial
 
-; 215  : 			if (next_cmd + bytes < max ||
-; 216  : 				(next_cmd + bytes == max && stop > min)) {
+; 216  : 			if (next_cmd + bytes < max ||
+; 217  : 				(next_cmd + bytes == max && stop > min)) {
 
 	mov	eax, DWORD PTR bytes$[rsp]
 	mov	ecx, DWORD PTR next_cmd$[rsp]
@@ -2355,13 +2355,13 @@ $LN17@svga_fifo_:
 	jbe	SHORT $LN14@svga_fifo_
 $LN13@svga_fifo_:
 
-; 217  : 					reserve_in_place = true;
+; 218  : 					reserve_in_place = true;
 
 	mov	BYTE PTR reserve_in_place$1[rsp], 1
 	jmp	SHORT $LN12@svga_fifo_
 $LN14@svga_fifo_:
 
-; 218  : 			} else if ((max - next_cmd) + (stop - min) <= bytes) {
+; 219  : 			} else if ((max - next_cmd) + (stop - min) <= bytes) {
 
 	mov	eax, DWORD PTR next_cmd$[rsp]
 	mov	ecx, DWORD PTR max$[rsp]
@@ -2375,28 +2375,28 @@ $LN14@svga_fifo_:
 	cmp	eax, DWORD PTR bytes$[rsp]
 	ja	SHORT $LN11@svga_fifo_
 
-; 219  : 				svga_fifo_full ();
+; 220  : 				svga_fifo_full ();
 
 	call	?svga_fifo_full@@YAXXZ			; svga_fifo_full
 
-; 220  : 			} else {
+; 221  : 			} else {
 
 	jmp	SHORT $LN10@svga_fifo_
 $LN11@svga_fifo_:
 
-; 221  : 				need_bounce = true;
+; 222  : 				need_bounce = true;
 
 	mov	BYTE PTR need_bounce$2[rsp], 1
 $LN10@svga_fifo_:
 $LN12@svga_fifo_:
 
-; 222  : 			}
-; 223  : 		}else {
+; 223  : 			}
+; 224  : 		}else {
 
 	jmp	SHORT $LN9@svga_fifo_
 $LN15@svga_fifo_:
 
-; 224  : 			if (next_cmd + bytes < stop) {
+; 225  : 			if (next_cmd + bytes < stop) {
 
 	mov	eax, DWORD PTR bytes$[rsp]
 	mov	ecx, DWORD PTR next_cmd$[rsp]
@@ -2405,31 +2405,31 @@ $LN15@svga_fifo_:
 	cmp	eax, DWORD PTR stop$3[rsp]
 	jae	SHORT $LN8@svga_fifo_
 
-; 225  : 				reserve_in_place = true;
+; 226  : 				reserve_in_place = true;
 
 	mov	BYTE PTR reserve_in_place$1[rsp], 1
 
-; 226  : 			}else {
+; 227  : 			}else {
 
 	jmp	SHORT $LN7@svga_fifo_
 $LN8@svga_fifo_:
 
-; 227  : 				svga_fifo_full ();
+; 228  : 				svga_fifo_full ();
 
 	call	?svga_fifo_full@@YAXXZ			; svga_fifo_full
 $LN7@svga_fifo_:
 $LN9@svga_fifo_:
 
-; 228  : 			}
-; 229  : 		}
-; 230  : 		if (reserve_in_place) {
+; 229  : 			}
+; 230  : 		}
+; 231  : 		if (reserve_in_place) {
 
 	movzx	eax, BYTE PTR reserve_in_place$1[rsp]
 	test	eax, eax
 	je	SHORT $LN6@svga_fifo_
 
-; 231  : 
-; 232  : 			if (reserveable || bytes <= sizeof (uint32_t)) {
+; 232  : 
+; 233  : 			if (reserveable || bytes <= sizeof (uint32_t)) {
 
 	movzx	eax, BYTE PTR reserveable$[rsp]
 	test	eax, eax
@@ -2439,17 +2439,17 @@ $LN9@svga_fifo_:
 	ja	SHORT $LN5@svga_fifo_
 $LN4@svga_fifo_:
 
-; 233  : 				svga_dev.fifo.using_bounce_buffer = false;
+; 234  : 				svga_dev.fifo.using_bounce_buffer = false;
 
 	mov	BYTE PTR ?svga_dev@@3U_svga_drive_@@A+76, 0
 
-; 234  : 				if (reserveable) {
+; 235  : 				if (reserveable) {
 
 	movzx	eax, BYTE PTR reserveable$[rsp]
 	test	eax, eax
 	je	SHORT $LN3@svga_fifo_
 
-; 235  : 					fifo[SVGA_FIFO_RESERVED] = bytes;
+; 236  : 					fifo[SVGA_FIFO_RESERVED] = bytes;
 
 	mov	eax, 4
 	imul	rax, 14
@@ -2458,8 +2458,8 @@ $LN4@svga_fifo_:
 	mov	DWORD PTR [rcx+rax], edx
 $LN3@svga_fifo_:
 
-; 236  : 				}
-; 237  : 				return next_cmd + (uint8_t*)fifo;
+; 237  : 				}
+; 238  : 				return next_cmd + (uint8_t*)fifo;
 
 	mov	eax, DWORD PTR next_cmd$[rsp]
 	mov	rcx, QWORD PTR fifo$[rsp]
@@ -2467,43 +2467,43 @@ $LN3@svga_fifo_:
 	mov	rax, rcx
 	jmp	SHORT $LN21@svga_fifo_
 
-; 238  : 			}else {
+; 239  : 			}else {
 
 	jmp	SHORT $LN2@svga_fifo_
 $LN5@svga_fifo_:
 
-; 239  : 				need_bounce = true;
+; 240  : 				need_bounce = true;
 
 	mov	BYTE PTR need_bounce$2[rsp], 1
 $LN2@svga_fifo_:
 $LN6@svga_fifo_:
 
-; 240  : 			}
-; 241  : 		}
-; 242  : 		if (need_bounce) {
+; 241  : 			}
+; 242  : 		}
+; 243  : 		if (need_bounce) {
 
 	movzx	eax, BYTE PTR need_bounce$2[rsp]
 	test	eax, eax
 	je	SHORT $LN1@svga_fifo_
 
-; 243  : 			svga_dev.fifo.using_bounce_buffer = true;
+; 244  : 			svga_dev.fifo.using_bounce_buffer = true;
 
 	mov	BYTE PTR ?svga_dev@@3U_svga_drive_@@A+76, 1
 
-; 244  : 			return svga_dev.fifo.bounce_buffer;
+; 245  : 			return svga_dev.fifo.bounce_buffer;
 
 	lea	rax, OFFSET FLAT:?svga_dev@@3U_svga_drive_@@A+77
 	jmp	SHORT $LN21@svga_fifo_
 $LN1@svga_fifo_:
 
-; 245  : 		}
-; 246  : 	}
+; 246  : 		}
+; 247  : 	}
 
 	jmp	$LN17@svga_fifo_
 $LN16@svga_fifo_:
 $LN21@svga_fifo_:
 
-; 247  : }
+; 248  : }
 
 	add	rsp, 72					; 00000048H
 	ret	0
@@ -2514,13 +2514,13 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 ?svga_fifo_full@@YAXXZ PROC				; svga_fifo_full
 
-; 334  : void svga_fifo_full () {
+; 335  : void svga_fifo_full () {
 
 $LN5:
 	sub	rsp, 40					; 00000028H
 
-; 335  : 	if (svga_is_fifo_reg_valid (SVGA_FIFO_FENCE_GOAL) &&
-; 336  : 		(svga_dev.capabilities & SVGA_CAP_IRQMASK)) {
+; 336  : 	if (svga_is_fifo_reg_valid (SVGA_FIFO_FENCE_GOAL) &&
+; 337  : 		(svga_dev.capabilities & SVGA_CAP_IRQMASK)) {
 
 	mov	ecx, 289				; 00000121H
 	call	?svga_is_fifo_reg_valid@@YA_NH@Z	; svga_is_fifo_reg_valid
@@ -2532,54 +2532,54 @@ $LN5:
 	test	eax, eax
 	je	SHORT $LN2@svga_fifo_
 
-; 337  : 
-; 338  : 			svga_write_reg (SVGA_REG_IRQMASK, SVGA_IRQFLAG_FIFO_PROGRESS);
+; 338  : 
+; 339  : 			svga_write_reg (SVGA_REG_IRQMASK, SVGA_IRQFLAG_FIFO_PROGRESS);
 
 	mov	edx, 2
 	mov	ecx, 33					; 00000021H
 	call	?svga_write_reg@@YAXII@Z		; svga_write_reg
 
-; 339  : 			x64_cli();
+; 340  : 			x64_cli();
 
 	call	x64_cli
 
-; 340  : 			svga_ring_doorbell ();
+; 341  : 			svga_ring_doorbell ();
 
 	call	?svga_ring_doorbell@@YAXXZ		; svga_ring_doorbell
 
-; 341  : 			svga_wait_for_irq();
+; 342  : 			svga_wait_for_irq();
 
 	call	?svga_wait_for_irq@@YAXXZ		; svga_wait_for_irq
 
-; 342  : 			svga_write_reg (SVGA_REG_IRQMASK, 0);
+; 343  : 			svga_write_reg (SVGA_REG_IRQMASK, 0);
 
 	xor	edx, edx
 	mov	ecx, 33					; 00000021H
 	call	?svga_write_reg@@YAXII@Z		; svga_write_reg
 
-; 343  : 			x64_sti();
+; 344  : 			x64_sti();
 
 	call	x64_sti
 
-; 344  : 	} else {
+; 345  : 	} else {
 
 	jmp	SHORT $LN1@svga_fifo_
 $LN2@svga_fifo_:
 
-; 345  : 		svga_write_reg (SVGA_REG_SYNC, 1);
+; 346  : 		svga_write_reg (SVGA_REG_SYNC, 1);
 
 	mov	edx, 1
 	mov	ecx, 21
 	call	?svga_write_reg@@YAXII@Z		; svga_write_reg
 
-; 346  : 		svga_read_reg (SVGA_REG_BUSY);
+; 347  : 		svga_read_reg (SVGA_REG_BUSY);
 
 	mov	ecx, 22
 	call	?svga_read_reg@@YAII@Z			; svga_read_reg
 $LN1@svga_fifo_:
 
-; 347  : 	}
-; 348  : }
+; 348  : 	}
+; 349  : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -2593,7 +2593,7 @@ height$ = 56
 bpp$ = 64
 ?svga_set_mode@@YAXIII@Z PROC				; svga_set_mode
 
-; 170  : void svga_set_mode (uint32_t width, uint32_t height, uint32_t bpp) {
+; 171  : void svga_set_mode (uint32_t width, uint32_t height, uint32_t bpp) {
 
 $LN3:
 	mov	DWORD PTR [rsp+24], r8d
@@ -2601,53 +2601,53 @@ $LN3:
 	mov	DWORD PTR [rsp+8], ecx
 	sub	rsp, 40					; 00000028H
 
-; 171  : 	svga_dev.width = width;
+; 172  : 	svga_dev.width = width;
 
 	mov	eax, DWORD PTR width$[rsp]
 	mov	DWORD PTR ?svga_dev@@3U_svga_drive_@@A+52, eax
 
-; 172  : 	svga_dev.height = height;
+; 173  : 	svga_dev.height = height;
 
 	mov	eax, DWORD PTR height$[rsp]
 	mov	DWORD PTR ?svga_dev@@3U_svga_drive_@@A+56, eax
 
-; 173  : 	svga_dev.bpp = bpp;
+; 174  : 	svga_dev.bpp = bpp;
 
 	mov	eax, DWORD PTR bpp$[rsp]
 	mov	DWORD PTR ?svga_dev@@3U_svga_drive_@@A+60, eax
 
-; 174  : 
-; 175  : 	svga_write_reg (SVGA_REG_WIDTH, width);
+; 175  : 
+; 176  : 	svga_write_reg (SVGA_REG_WIDTH, width);
 
 	mov	edx, DWORD PTR width$[rsp]
 	mov	ecx, 2
 	call	?svga_write_reg@@YAXII@Z		; svga_write_reg
 
-; 176  : 	svga_write_reg (SVGA_REG_HEIGHT, height);
+; 177  : 	svga_write_reg (SVGA_REG_HEIGHT, height);
 
 	mov	edx, DWORD PTR height$[rsp]
 	mov	ecx, 3
 	call	?svga_write_reg@@YAXII@Z		; svga_write_reg
 
-; 177  : 	svga_write_reg (SVGA_REG_BITS_PER_PIXEL, bpp);
+; 178  : 	svga_write_reg (SVGA_REG_BITS_PER_PIXEL, bpp);
 
 	mov	edx, DWORD PTR bpp$[rsp]
 	mov	ecx, 7
 	call	?svga_write_reg@@YAXII@Z		; svga_write_reg
 
-; 178  : 	svga_write_reg (SVGA_REG_ENABLE, true);
+; 179  : 	svga_write_reg (SVGA_REG_ENABLE, true);
 
 	mov	edx, 1
 	mov	ecx, 1
 	call	?svga_write_reg@@YAXII@Z		; svga_write_reg
 
-; 179  : 	svga_dev.pitch = svga_read_reg (SVGA_REG_BYTES_PER_LINE);
+; 180  : 	svga_dev.pitch = svga_read_reg (SVGA_REG_BYTES_PER_LINE);
 
 	mov	ecx, 12
 	call	?svga_read_reg@@YAII@Z			; svga_read_reg
 	mov	DWORD PTR ?svga_dev@@3U_svga_drive_@@A+64, eax
 
-; 180  : }
+; 181  : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -2658,18 +2658,18 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 ?svga_disable@@YAXXZ PROC				; svga_disable
 
-; 161  : void svga_disable () {
+; 162  : void svga_disable () {
 
 $LN3:
 	sub	rsp, 40					; 00000028H
 
-; 162  : 	svga_write_reg (SVGA_REG_ENABLE, false);
+; 163  : 	svga_write_reg (SVGA_REG_ENABLE, false);
 
 	xor	edx, edx
 	mov	ecx, 1
 	call	?svga_write_reg@@YAXII@Z		; svga_write_reg
 
-; 163  : }
+; 164  : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -2680,20 +2680,20 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 ?svga_enable@@YAXXZ PROC				; svga_enable
 
-; 125  : void svga_enable () {
+; 126  : void svga_enable () {
 
 $LN8:
 	sub	rsp, 40					; 00000028H
 
-; 126  : 
-; 127  : 	svga_dev.fifo_mem[SVGA_FIFO_MIN] = SVGA_FIFO_NUM_REGS * sizeof(uint32_t);
+; 127  : 
+; 128  : 	svga_dev.fifo_mem[SVGA_FIFO_MIN] = SVGA_FIFO_NUM_REGS * sizeof(uint32_t);
 
 	mov	eax, 4
 	imul	rax, 0
 	mov	rcx, QWORD PTR ?svga_dev@@3U_svga_drive_@@A+16
 	mov	DWORD PTR [rcx+rax], 1164		; 0000048cH
 
-; 128  : 	svga_dev.fifo_mem[SVGA_FIFO_MAX] = svga_dev.fifo_size;
+; 129  : 	svga_dev.fifo_mem[SVGA_FIFO_MAX] = svga_dev.fifo_size;
 
 	mov	eax, 4
 	imul	rax, 1
@@ -2701,7 +2701,7 @@ $LN8:
 	mov	edx, DWORD PTR ?svga_dev@@3U_svga_drive_@@A+32
 	mov	DWORD PTR [rcx+rax], edx
 
-; 129  : 	svga_dev.fifo_mem[SVGA_FIFO_NEXT_CMD] = svga_dev.fifo_mem[SVGA_FIFO_MIN];
+; 130  : 	svga_dev.fifo_mem[SVGA_FIFO_NEXT_CMD] = svga_dev.fifo_mem[SVGA_FIFO_MIN];
 
 	mov	eax, 4
 	imul	rax, 0
@@ -2712,7 +2712,7 @@ $LN8:
 	mov	eax, DWORD PTR [r8+rax]
 	mov	DWORD PTR [rdx+rcx], eax
 
-; 130  : 	svga_dev.fifo_mem[SVGA_FIFO_STOP] = svga_dev.fifo_mem[SVGA_FIFO_MIN];
+; 131  : 	svga_dev.fifo_mem[SVGA_FIFO_STOP] = svga_dev.fifo_mem[SVGA_FIFO_MIN];
 
 	mov	eax, 4
 	imul	rax, 0
@@ -2723,9 +2723,9 @@ $LN8:
 	mov	eax, DWORD PTR [r8+rax]
 	mov	DWORD PTR [rdx+rcx], eax
 
-; 131  : 
-; 132  : 	if (svga_has_fifo_cap (SVGA_CAP_EXTENDED_FIFO) &&
-; 133  : 		svga_is_fifo_reg_valid (SVGA_FIFO_GUEST_3D_HWVERSION)) {
+; 132  : 
+; 133  : 	if (svga_has_fifo_cap (SVGA_CAP_EXTENDED_FIFO) &&
+; 134  : 		svga_is_fifo_reg_valid (SVGA_FIFO_GUEST_3D_HWVERSION)) {
 
 	mov	ecx, 32768				; 00008000H
 	call	?svga_has_fifo_cap@@YA_NH@Z		; svga_has_fifo_cap
@@ -2738,70 +2738,70 @@ $LN8:
 	test	eax, eax
 	je	SHORT $LN5@svga_enabl
 
-; 134  : 			svga_dev.fifo_mem[SVGA_FIFO_GUEST_3D_HWVERSION] = SVGA3D_HWVERSION_CURRENT;
+; 135  : 			svga_dev.fifo_mem[SVGA_FIFO_GUEST_3D_HWVERSION] = SVGA3D_HWVERSION_CURRENT;
 
 	mov	eax, 4
 	imul	rax, 288				; 00000120H
 	mov	rcx, QWORD PTR ?svga_dev@@3U_svga_drive_@@A+16
 	mov	DWORD PTR [rcx+rax], 131073		; 00020001H
 
-; 135  : 			printf ("HW3D supported\n");
+; 136  : 			printf ("HW3D supported\n");
 
 	lea	rcx, OFFSET FLAT:$SG5765
 	call	?printf@@YAXPEBDZZ			; printf
 $LN5@svga_enabl:
 
-; 136  : 	}
-; 137  : 
-; 138  : 	//!Enable SVGA device and FIFO
-; 139  : 	svga_write_reg (SVGA_REG_ENABLE, true);
+; 137  : 	}
+; 138  : 
+; 139  : 	//!Enable SVGA device and FIFO
+; 140  : 	svga_write_reg (SVGA_REG_ENABLE, true);
 
 	mov	edx, 1
 	mov	ecx, 1
 	call	?svga_write_reg@@YAXII@Z		; svga_write_reg
 
-; 140  : 	svga_write_reg (SVGA_REG_CONFIG_DONE, true);
+; 141  : 	svga_write_reg (SVGA_REG_CONFIG_DONE, true);
 
 	mov	edx, 1
 	mov	ecx, 20
 	call	?svga_write_reg@@YAXII@Z		; svga_write_reg
 
-; 141  : 
-; 142  : 	if (svga_dev.capabilities & SVGA_CAP_IRQMASK) {
+; 142  : 
+; 143  : 	if (svga_dev.capabilities & SVGA_CAP_IRQMASK) {
 
 	mov	eax, DWORD PTR ?svga_dev@@3U_svga_drive_@@A+48
 	and	eax, 262144				; 00040000H
 	test	eax, eax
 	je	SHORT $LN4@svga_enabl
 
-; 143  : 		svga_write_reg (SVGA_REG_IRQMASK, SVGA_IRQFLAG_ANY_FENCE);
+; 144  : 		svga_write_reg (SVGA_REG_IRQMASK, SVGA_IRQFLAG_ANY_FENCE);
 
 	mov	edx, 1
 	mov	ecx, 33					; 00000021H
 	call	?svga_write_reg@@YAXII@Z		; svga_write_reg
 
-; 144  : 		printf ("SVGA IRQMask\n");
+; 145  : 		printf ("SVGA IRQMask\n");
 
 	lea	rcx, OFFSET FLAT:$SG5767
 	call	?printf@@YAXPEBDZZ			; printf
 
-; 145  : 		svga_dev.irq.pending = 0;
+; 146  : 		svga_dev.irq.pending = 0;
 
 	mov	DWORD PTR ?svga_dev@@3U_svga_drive_@@A+1048660, 0
 
-; 146  : 		svga_insert_fence ();
+; 147  : 		svga_insert_fence ();
 
 	call	?svga_insert_fence@@YAIXZ		; svga_insert_fence
 
-; 147  : 
-; 148  : 		svga_write_reg (SVGA_REG_SYNC, 1);
+; 148  : 
+; 149  : 		svga_write_reg (SVGA_REG_SYNC, 1);
 
 	mov	edx, 1
 	mov	ecx, 21
 	call	?svga_write_reg@@YAXII@Z		; svga_write_reg
 $LN3@svga_enabl:
 
-; 149  : 		while (svga_read_reg (SVGA_REG_BUSY) != false);
+; 150  : 		while (svga_read_reg (SVGA_REG_BUSY) != false);
 
 	mov	ecx, 22
 	call	?svga_read_reg@@YAII@Z			; svga_read_reg
@@ -2810,22 +2810,22 @@ $LN3@svga_enabl:
 	jmp	SHORT $LN3@svga_enabl
 $LN2@svga_enabl:
 
-; 150  : 
-; 151  : 		svga_write_reg (SVGA_REG_IRQMASK, 0);
+; 151  : 
+; 152  : 		svga_write_reg (SVGA_REG_IRQMASK, 0);
 
 	xor	edx, edx
 	mov	ecx, 33					; 00000021H
 	call	?svga_write_reg@@YAXII@Z		; svga_write_reg
 
-; 152  : 
-; 153  : 		if ((svga_dev.irq.pending & SVGA_IRQFLAG_ANY_FENCE) == 0) {
+; 153  : 
+; 154  : 		if ((svga_dev.irq.pending & SVGA_IRQFLAG_ANY_FENCE) == 0) {
 
 	mov	eax, DWORD PTR ?svga_dev@@3U_svga_drive_@@A+1048660
 	and	eax, 1
 	test	eax, eax
 	jne	SHORT $LN1@svga_enabl
 
-; 154  : 			printf ("SVGA IRQ appears to be present but broken %d\n", svga_dev.irq.pending);
+; 155  : 			printf ("SVGA IRQ appears to be present but broken %d\n", svga_dev.irq.pending);
 
 	mov	edx, DWORD PTR ?svga_dev@@3U_svga_drive_@@A+1048660
 	lea	rcx, OFFSET FLAT:$SG5772
@@ -2833,10 +2833,10 @@ $LN2@svga_enabl:
 $LN1@svga_enabl:
 $LN4@svga_enabl:
 
-; 155  : 		}
-; 156  : 	}
-; 157  : 
-; 158  : }
+; 156  : 		}
+; 157  : 	}
+; 158  : 
+; 159  : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -2848,10 +2848,9 @@ _TEXT	SEGMENT
 irq$1 = 48
 tv82 = 52
 mask$ = 56
-tv174 = 60
-func$ = 64
-dev$ = 68
-bus$ = 72
+func$ = 60
+dev$ = 64
+bus$ = 68
 ?svga_init@@YAXXZ PROC					; svga_init
 
 ; 50   : void svga_init () {
@@ -3122,22 +3121,19 @@ $LN1@svga_init:
 
 	call	?svga_enable@@YAXXZ			; svga_enable
 
-; 116  : 	svga_set_mode (get_screen_width(),get_screen_height(),32);
+; 116  : 	//svga_set_mode (get_screen_width(),get_screen_height(),32);
+; 117  : 	svga_set_mode (1280,768,32);
 
-	call	?get_screen_height@@YAIXZ		; get_screen_height
-	mov	DWORD PTR tv174[rsp], eax
-	call	?get_screen_width@@YAIXZ		; get_screen_width
 	mov	r8d, 32					; 00000020H
-	mov	ecx, DWORD PTR tv174[rsp]
-	mov	edx, ecx
-	mov	ecx, eax
+	mov	edx, 768				; 00000300H
+	mov	ecx, 1280				; 00000500H
 	call	?svga_set_mode@@YAXIII@Z		; svga_set_mode
 
-; 117  : 	gmr_init();
+; 118  : 	gmr_init();
 
 	call	?gmr_init@@YAXXZ			; gmr_init
 
-; 118  : 	memset(svga_dev.fb_mem,0x40,svga_dev.width*svga_dev.height*32);
+; 119  : 	memset(svga_dev.fb_mem,0x40,svga_dev.width*svga_dev.height*32);
 
 	mov	eax, DWORD PTR ?svga_dev@@3U_svga_drive_@@A+52
 	imul	eax, DWORD PTR ?svga_dev@@3U_svga_drive_@@A+56
@@ -3147,7 +3143,7 @@ $LN1@svga_init:
 	mov	rcx, QWORD PTR ?svga_dev@@3U_svga_drive_@@A+24
 	call	?memset@@YAXPEAXEI@Z			; memset
 
-; 119  : 	svga_update(0,0,svga_dev.width,svga_dev.height);
+; 120  : 	svga_update(0,0,svga_dev.width,svga_dev.height);
 
 	mov	r9d, DWORD PTR ?svga_dev@@3U_svga_drive_@@A+56
 	mov	r8d, DWORD PTR ?svga_dev@@3U_svga_drive_@@A+52
@@ -3155,19 +3151,19 @@ $LN1@svga_init:
 	xor	ecx, ecx
 	call	?svga_update@@YAXIIII@Z			; svga_update
 
-; 120  : 	screen_set_configuration(svga_dev.width,svga_dev.height);
+; 121  : 	screen_set_configuration(svga_dev.width,svga_dev.height);
 
 	mov	edx, DWORD PTR ?svga_dev@@3U_svga_drive_@@A+56
 	mov	ecx, DWORD PTR ?svga_dev@@3U_svga_drive_@@A+52
 	call	?screen_set_configuration@@YAXII@Z	; screen_set_configuration
 
-; 121  : 	vm_backdoor_mouse_init (true);
+; 122  : 	vm_backdoor_mouse_init (true);
 
 	mov	cl, 1
 	call	?vm_backdoor_mouse_init@@YAX_N@Z	; vm_backdoor_mouse_init
 $LN12@svga_init:
 
-; 122  : }
+; 123  : }
 
 	add	rsp, 88					; 00000058H
 	ret	0

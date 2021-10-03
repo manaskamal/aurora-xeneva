@@ -33,7 +33,7 @@ $pdata$?dwm_ipc_init@@YAXXZ DD imagerel $LN3
 	DD	imagerel $LN3+32
 	DD	imagerel $unwind$?dwm_ipc_init@@YAXXZ
 $pdata$?dwm_put_message@@YAXPEAU_dwm_message_@@@Z DD imagerel $LN4
-	DD	imagerel $LN4+108
+	DD	imagerel $LN4+103
 	DD	imagerel $unwind$?dwm_put_message@@YAXPEAU_dwm_message_@@@Z
 $pdata$?dwm_dispatch_message@@YAXPEAU_dwm_message_@@@Z DD imagerel $LN4
 	DD	imagerel $LN4+118
@@ -196,10 +196,7 @@ $LN4:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 56					; 00000038H
 
-; 28   : 	x64_cli ();
-
-	call	x64_cli
-
+; 28   : 	//x64_cli ();
 ; 29   : 	mutex_lock (msg_mutex);
 
 	mov	rcx, QWORD PTR msg_mutex

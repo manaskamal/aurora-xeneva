@@ -74,5 +74,4 @@ void QuTextboxInvalidate (QuTextbox *tb, QuWindow* win) {
 
 void QuTextboxRefresh (QuTextbox *tb, QuWindow* win) {
 	tb->wid.Refresh ((QuWidget*)tb,win);
-	QuPanelUpdate (win->x + tb->wid.x, win->y + tb->wid.y,tb->wid.width, tb->wid.height);
 }

@@ -44,7 +44,7 @@ const int skip_ticks = 1000 / ticks_per_second;
 const int max_frame_skip = 10;
 static int _mouse_code_ = 0;
 static bool render_disable = false;
-
+static int mouse_x, mouse_y = 0;
 
 void QuHandleQuinceMsg (QuMessage *qu_msg) {
 	if (qu_msg->type == QU_CODE_WIN_CREATE) {
@@ -109,7 +109,9 @@ void QuEventLoop() {
 		 */
 		if (m_pack.type == _MOUSE_MOVE) {
 			//QuCursorNewCoord(m_pack.dword, m_pack.dword2);
-			QuMoveCursor(m_pack.dword, m_pack.dword2);
+			mouse_x = m_pack.dword;
+			mouse_y = m_pack.dword2;
+			QuMoveCursor(mouse_x, mouse_y);
 			canvas_screen_update (m_pack.dword,m_pack.dword2, 24, 24);
 			
 			mouse_down = false;
@@ -190,49 +192,53 @@ void QuEventLoop() {
 
 		//! Dirty Update Request
 		if (q_msg.type == QU_CODE_DIRTY_UPDATE) {
-			QuRect *r = (QuRect*)malloc(sizeof(QuRect));
-			r->x = q_msg.dword;
-			r->y = q_msg.dword2;
-			r->w = q_msg.dword3;
-			r->h = q_msg.dword4;
-			uint16_t from_id = q_msg.from_id;//msg.dword5;
-			QuWindow* win = (QuWindow*)QuWindowMngrFindByID(from_id);
-			QuWindowAddDirtyArea(win,r);
+			//QuRect *r = (QuRect*)malloc(sizeof(QuRect));
+			//r->x = q_msg.dword;
+			//r->y = q_msg.dword2;
+			//r->w = q_msg.dword3;
+			//r->h = q_msg.dword4;
+			//uint16_t from_id = q_msg.from_id;//msg.dword5;
+			//QuWindow* win = (QuWindow*)QuWindowMngrFindByID(from_id);
+			//QuWindowAddDirtyArea(win,r);
 			memset (&q_msg, 0, sizeof(QuMessage));
 		}
 
 
 		if (q_msg.type == QU_CODE_REPAINT) {
-			uint16_t from_id = q_msg.from_id;
+			/*uint16_t from_id = q_msg.from_id;
 			QuWindow* win = (QuWindow*)QuWindowMngrFindByID(from_id);
-			QuCanvasQuickPaint (win->canvas,q_msg.dword, q_msg.dword2, q_msg.dword3, q_msg.dword4);
+			QuCanvasQuickPaint (win->canvas,q_msg.dword, q_msg.dword2, q_msg.dword3, q_msg.dword4);*/
 			memset (&q_msg, 0, sizeof(QuMessage));
 		}
 
 
 		//! Set Window Configuration
 		//! for specific window
-		if (msg.type == QU_CODE_WIN_CONFIG) {
-			uint16_t from_id = msg.dword5;
+		if (q_msg.type == QU_CODE_WIN_CONFIG) {
+			uint16_t from_id = q_msg.from_id;
 			QuWindow* win = (QuWindow*)QuWindowMngrFindByID(from_id);
-			if (msg.dword == QU_WIN_CONFIG_AUTO_INVALIDATE){
+			if (q_msg.dword == QU_WIN_CONFIG_AUTO_INVALIDATE){
 				QuWindowSetAutoInvalidation(win, true);
 			}
-			if (msg.dword == QU_WIN_SET_SIZE) {
-				QuWindowSetSize (win,msg.dword2,msg.dword3);
+			if (q_msg.dword == QU_WIN_SET_SIZE) {
+				QuWindowSetSize (win,q_msg.dword2,q_msg.dword3);
+			}
+
+			if (q_msg.dword == QU_WIN_NON_DRAGGABLE) {
+				win->attr = QU_WIN_NON_DRAGGABLE;
 			}
 
 			if (q_msg.dword == QU_WIN_AUTO_INVALIDATE_RGN) {
 				QuRect *r = (QuRect*)malloc(sizeof(QuRect));
-				r->x = msg.dword2; 
-				r->y = msg.dword3;
-				r->w = msg.dword4;
-				r->h = msg.dword6;
+				r->x = q_msg.dword2; 
+				r->y = q_msg.dword3;
+				r->w = q_msg.dword4;
+				r->h = q_msg.dword6;
 				QuWindowAddDirtyArea (win, r);
 				QuWindowSetAutoInvalidation(win,true);
 			}
 
-			memset (&msg, 0, sizeof(QuMessage));
+			memset (&q_msg, 0, sizeof(QuMessage));
 		}
 
 
@@ -240,25 +246,20 @@ void QuEventLoop() {
 
 		//*==========================================================================
 		//*==========================================================================
-
-		//! Here We Prepare the frame that will be displayed
+		//if (diff_time > 60){
+			QuWindowMngr_DrawAll();
+			
 	
-		if (diff_time > 15){
-			if (!render_disable) {
-				QuWindowMngr_DrawAll();	
-				QuWindowMngr_DisplayWindow();
-				next_tick = sys_get_system_tick();
-				frame_time = 0;
-			}
-		}
-	
-	
+		if (diff_time > 60) {
 		if (QuCanvasGetUpdateBit()) {
 			canvas_screen_update(0,0,canvas_get_width(), canvas_get_height());
 			QuCanvasSetUpdateBit(false);
+			
+			next_tick = sys_get_system_tick();
+			frame_time = 0;
 		}
-
-
+		}
+		//! Here We Prepare the frame that will be displayed
 		sys_sleep(16);
 	}
 }

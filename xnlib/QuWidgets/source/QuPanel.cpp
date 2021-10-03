@@ -38,12 +38,18 @@ QuPanel* QuCreatePanel () {
 	panel->base.Refresh = QuPanelRefresh;
 	panel->base.MouseEvent = QuPanelMouseEvent;
 	panel->base.ActionEvent = QuPanelActionEvent;
+	panel->color = 0xFFFFFFFF;
 	return panel;
 }
 
 
+void QuPanelSetBackground (QuPanel* panel,uint32_t color) {
+	panel->color = color;
+}
+
 void QuPanelRefresh (QuWidget *wid, QuWindow* win) {
-	acrylic_draw_rect_filled(win->x + wid->x, win->y + wid->y, wid->width, wid->height, WHITE);
+	QuPanel *panel = (QuPanel*)wid;
+	acrylic_draw_rect_filled(win->x + wid->x, win->y + wid->y, wid->width, wid->height,panel->color);
 }
 
 

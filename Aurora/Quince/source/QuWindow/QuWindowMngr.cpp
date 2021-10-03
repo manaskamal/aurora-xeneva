@@ -111,17 +111,10 @@ void QuWindowMngr_DrawAll () {
  * this functions will only needed for that specific purpose
  */
 void QuWindowMngr_DisplayWindow() {
-	if (WindowList->pointer > 0) {
-		if (UpdateWindows){
-			for (int i = 0; i < WindowList->pointer; i++) {
-				QuWindow* _win = (QuWindow*)QuListGetAt(WindowList, i);
-				if (_win->auto_invalidate){
-					canvas_screen_update(_win->x, _win->y, _win->width, _win->height);	
-				}
-				
-			}
-			UpdateWindows = false;
-		}		
+	for (int i = 0; i < WindowList->pointer; i++) {
+		QuWindow* _win = (QuWindow*)QuListGetAt(WindowList, i);
+			canvas_screen_update(_win->x, _win->y, _win->width, _win->height);	
+		
 	} 
 }
 
@@ -226,17 +219,17 @@ void QuWindowMngr_HandleMouse (int x, int y, bool clicked) {
 				y > win->y && y < (win->y + 23)) {
 
 					if (clicked) {
-					if (draggable_win != NULL) {
-						StreamEvent = false;
-						draggable_win->drag_x = x - draggable_win->x;
-						draggable_win->drag_y = y - draggable_win->y;
-						draggable_win->draggable = true;
-					}else {
-						StreamEvent = false;
-						if (draggable_win != win)
-							draggable_win = win;
-						QuWindowMngr_MoveFront(win);
-					}
+						if (draggable_win != NULL && draggable_win->attr != QU_WIN_NON_DRAGGABLE) {
+							StreamEvent = false;
+							draggable_win->drag_x = x - draggable_win->x;
+							draggable_win->drag_y = y - draggable_win->y;
+							draggable_win->draggable = true;
+						}else {
+							StreamEvent = false;
+							if (draggable_win != win)
+								draggable_win = win;
+							QuWindowMngr_MoveFront(win);
+						}
 					}
 			}
 
@@ -278,7 +271,7 @@ void QuWindowMngr_HandleMouse (int x, int y, bool clicked) {
 
 
 	if (clicked) {
-		if (draggable_win != NULL) {
+		if (draggable_win != NULL && draggable_win->attr != QU_WIN_NON_DRAGGABLE) {
 			QuWindowMngr_MoveFocusWindow (x,y);	
 		}
 	}else {

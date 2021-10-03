@@ -76,17 +76,20 @@ void canvas_screen_update (uint32_t x, uint32_t y, uint32_t w, uint32_t h) {
 	uint32_t* lfb = (uint32_t*)0xFFFFF00000000000;
 	for (int i=0; i < w; i++) {	
 		for (int j=0; j < h; j++){
+			if (lfb[(x + i) + (y + j) * canvas_get_scale()] != canvas->address[(x + i) + (y + j) * canvas_get_scale()]) {
 			uint32_t color = canvas->address[(x + i) + (y + j) * canvas_get_scale()];
 			lfb[(x + i) + (y + j) * canvas_get_scale()] = color;
+			}
 		}
 	}
 
-	svga_io_query_t *query = (svga_io_query_t*)malloc(sizeof(svga_io_query_t));
-	query->value = x;
-	query->value2 = y;
-	query->value3 = w;
-	query->value4 = h;
-	ioquery(IO_QUERY_SVGA, SVGA_UPDATE, query);
+	svga_io_query_t query; // = (svga_io_query_t*)malloc(sizeof(svga_io_query_t));
+	query.value = x;
+	query.value2 = y;
+	query.value3 = w;
+	query.value4 = h;
+	ioquery(IO_QUERY_SVGA, SVGA_UPDATE, &query);
+	//free(query);
 }
 
 
@@ -119,7 +122,7 @@ uint16_t canvas_get_scanline () {
 
 
 uint32_t canvas_get_scale () {
-	return canvas->scanline;
+	return canvas->width;
 }
 
 
