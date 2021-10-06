@@ -31,7 +31,7 @@ mouse_cycle DB	01H DUP (?)
 ?mouse_button@@3HC DD 01H DUP (?)			; mouse_button
 _BSS	ENDS
 CONST	SEGMENT
-$SG6066	DB	'IOMOUSE', 00H
+$SG6064	DB	'IOMOUSE', 00H
 CONST	ENDS
 PUBLIC	?initialize_mouse@@YAXXZ			; initialize_mouse
 PUBLIC	?mouse_wait@@YAXE@Z				; mouse_wait
@@ -53,9 +53,7 @@ EXTRN	?strcpy@@YAPEADPEADPEBD@Z:PROC			; strcpy
 EXTRN	?memset@@YAXPEAXEI@Z:PROC			; memset
 EXTRN	memcpy:PROC
 EXTRN	?pmmngr_alloc@@YAPEAXXZ:PROC			; pmmngr_alloc
-EXTRN	?unblock_thread@@YAXPEAU_thread_@@@Z:PROC	; unblock_thread
 EXTRN	?set_multi_task_enable@@YAX_N@Z:PROC		; set_multi_task_enable
-EXTRN	?thread_iterate_block_list@@YAPEAU_thread_@@H@Z:PROC ; thread_iterate_block_list
 EXTRN	?get_screen_width@@YAIXZ:PROC			; get_screen_width
 EXTRN	?get_screen_height@@YAIXZ:PROC			; get_screen_height
 EXTRN	?dwm_put_message@@YAXPEAU_dwm_message_@@@Z:PROC	; dwm_put_message
@@ -89,8 +87,8 @@ $pdata$?mouse_read@@YAEXZ DD imagerel $LN3
 $pdata$?left_button_up@@YAHXZ DD imagerel $LN5
 	DD	imagerel $LN5+76
 	DD	imagerel $unwind$?left_button_up@@YAHXZ
-$pdata$?mouse_handler@@YAX_KPEAX@Z DD imagerel $LN27
-	DD	imagerel $LN27+1028
+$pdata$?mouse_handler@@YAX_KPEAX@Z DD imagerel $LN26
+	DD	imagerel $LN26+983
 	DD	imagerel $unwind$?mouse_handler@@YAX_KPEAX@Z
 $pdata$?mouse_ioquery@@YAHHPEAX@Z DD imagerel $LN8
 	DD	imagerel $LN8+73
@@ -119,7 +117,7 @@ $unwind$?mouse_read@@YAEXZ DD 010401H
 $unwind$?left_button_up@@YAHXZ DD 010401H
 	DD	02204H
 $unwind$?mouse_handler@@YAX_KPEAX@Z DD 010e01H
-	DD	0c20eH
+	DD	0a20eH
 $unwind$?mouse_ioquery@@YAHHPEAX@Z DD 010d01H
 	DD	0620dH
 $unwind$?mouse_register_device@@YAXXZ DD 010401H
@@ -131,51 +129,51 @@ _TEXT	SEGMENT
 mouse_file$ = 32
 ?mouse_register_device@@YAXXZ PROC			; mouse_register_device
 
-; 202  : void mouse_register_device () {
+; 196  : void mouse_register_device () {
 
 $LN3:
 	sub	rsp, 56					; 00000038H
 
-; 203  : 	file_system_t *mouse_file = (file_system_t*)pmmngr_alloc();
+; 197  : 	file_system_t *mouse_file = (file_system_t*)pmmngr_alloc();
 
 	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
 	mov	QWORD PTR mouse_file$[rsp], rax
 
-; 204  : 	strcpy (mouse_file->name, "IOMOUSE");
+; 198  : 	strcpy (mouse_file->name, "IOMOUSE");
 
 	mov	rax, QWORD PTR mouse_file$[rsp]
-	lea	rdx, OFFSET FLAT:$SG6066
+	lea	rdx, OFFSET FLAT:$SG6064
 	mov	rcx, rax
 	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
 
-; 205  : 	mouse_file->sys_open = NULL;
+; 199  : 	mouse_file->sys_open = NULL;
 
 	mov	rax, QWORD PTR mouse_file$[rsp]
 	mov	QWORD PTR [rax+8], 0
 
-; 206  : 	mouse_file->sys_read = NULL;
+; 200  : 	mouse_file->sys_read = NULL;
 
 	mov	rax, QWORD PTR mouse_file$[rsp]
 	mov	QWORD PTR [rax+16], 0
 
-; 207  : 	mouse_file->sys_read_blk = NULL;
+; 201  : 	mouse_file->sys_read_blk = NULL;
 
 	mov	rax, QWORD PTR mouse_file$[rsp]
 	mov	QWORD PTR [rax+24], 0
 
-; 208  : 	mouse_file->ioquery = mouse_ioquery;
+; 202  : 	mouse_file->ioquery = mouse_ioquery;
 
 	mov	rax, QWORD PTR mouse_file$[rsp]
 	lea	rcx, OFFSET FLAT:?mouse_ioquery@@YAHHPEAX@Z ; mouse_ioquery
 	mov	QWORD PTR [rax+32], rcx
 
-; 209  : 	vfs_register (3,mouse_file);
+; 203  : 	vfs_register (3,mouse_file);
 
 	mov	rdx, QWORD PTR mouse_file$[rsp]
 	mov	ecx, 3
 	call	?vfs_register@@YAXHPEAU_file_system_@@@Z ; vfs_register
 
-; 210  : }
+; 204  : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -189,14 +187,14 @@ code$ = 64
 arg$ = 72
 ?mouse_ioquery@@YAHHPEAX@Z PROC				; mouse_ioquery
 
-; 183  : int mouse_ioquery (int code, void* arg) {
+; 177  : int mouse_ioquery (int code, void* arg) {
 
 $LN8:
 	mov	QWORD PTR [rsp+16], rdx
 	mov	DWORD PTR [rsp+8], ecx
 	sub	rsp, 56					; 00000038H
 
-; 184  : 	switch (code) {
+; 178  : 	switch (code) {
 
 	mov	eax, DWORD PTR code$[rsp]
 	mov	DWORD PTR tv64[rsp], eax
@@ -207,20 +205,20 @@ $LN8:
 	jmp	SHORT $LN1@mouse_ioqu
 $LN3@mouse_ioqu:
 
-; 185  : 		case MOUSE_IOCODE_DISABLE:
-; 186  : 			irq_mask(12,true);
+; 179  : 		case MOUSE_IOCODE_DISABLE:
+; 180  : 			irq_mask(12,true);
 
 	mov	dl, 1
 	mov	cl, 12
 	call	?irq_mask@@YAXE_N@Z			; irq_mask
 
-; 187  : 			break;
+; 181  : 			break;
 
 	jmp	SHORT $LN4@mouse_ioqu
 $LN2@mouse_ioqu:
 
-; 188  : 		case MOUSE_IOCODE_ENABLE:
-; 189  : 			irq_mask(12, false);
+; 182  : 		case MOUSE_IOCODE_ENABLE:
+; 183  : 			irq_mask(12, false);
 
 	xor	edx, edx
 	mov	cl, 12
@@ -228,16 +226,16 @@ $LN2@mouse_ioqu:
 $LN1@mouse_ioqu:
 $LN4@mouse_ioqu:
 
-; 190  : 			break;
-; 191  : 		default:
-; 192  : 			break;
-; 193  : 	}
-; 194  : 
-; 195  : 	return 1;
+; 184  : 			break;
+; 185  : 		default:
+; 186  : 			break;
+; 187  : 	}
+; 188  : 
+; 189  : 	return 1;
 
 	mov	eax, 1
 
-; 196  : }
+; 190  : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -251,18 +249,17 @@ status$ = 33
 tv76 = 36
 x$2 = 40
 y$3 = 44
-thr$4 = 48
-msg$5 = 56
-p$ = 112
-param$ = 120
+msg$4 = 48
+p$ = 96
+param$ = 104
 ?mouse_handler@@YAX_KPEAX@Z PROC			; mouse_handler
 
 ; 71   : void mouse_handler (size_t p, void* param) {
 
-$LN27:
+$LN26:
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
-	sub	rsp, 104				; 00000068H
+	sub	rsp, 88					; 00000058H
 
 ; 72   : 	x64_cli();
 
@@ -278,18 +275,18 @@ $LN27:
 	mov	cx, 100					; 00000064H
 	call	?inportb@@YAEG@Z			; inportb
 	mov	BYTE PTR status$[rsp], al
-$LN24@mouse_hand:
+$LN23@mouse_hand:
 
 ; 75   : 	while ((status & MOUSE_BBIT) && (status & MOUSE_F_BIT)) {
 
 	movzx	eax, BYTE PTR status$[rsp]
 	and	eax, 1
 	test	eax, eax
-	je	$LN23@mouse_hand
+	je	$LN22@mouse_hand
 	movzx	eax, BYTE PTR status$[rsp]
 	and	eax, 32					; 00000020H
 	test	eax, eax
-	je	$LN23@mouse_hand
+	je	$LN22@mouse_hand
 
 ; 76   : 		int8_t mouse_in = inportb (MOUSE_PORT);
 
@@ -302,15 +299,15 @@ $LN24@mouse_hand:
 	movzx	eax, BYTE PTR mouse_cycle
 	mov	BYTE PTR tv76[rsp], al
 	cmp	BYTE PTR tv76[rsp], 0
-	je	SHORT $LN20@mouse_hand
+	je	SHORT $LN19@mouse_hand
 	cmp	BYTE PTR tv76[rsp], 1
-	je	SHORT $LN18@mouse_hand
-	cmp	BYTE PTR tv76[rsp], 2
 	je	SHORT $LN17@mouse_hand
+	cmp	BYTE PTR tv76[rsp], 2
+	je	SHORT $LN16@mouse_hand
 	cmp	BYTE PTR tv76[rsp], 3
-	je	$LN15@mouse_hand
-	jmp	$LN21@mouse_hand
-$LN20@mouse_hand:
+	je	$LN14@mouse_hand
+	jmp	$LN20@mouse_hand
+$LN19@mouse_hand:
 
 ; 78   : 		case 0:
 ; 79   : 			mouse_byte[0] = mouse_in;
@@ -326,9 +323,9 @@ $LN20@mouse_hand:
 	movsx	eax, BYTE PTR mouse_in$1[rsp]
 	and	eax, 8
 	test	eax, eax
-	jne	SHORT $LN19@mouse_hand
-	jmp	SHORT $LN21@mouse_hand
-$LN19@mouse_hand:
+	jne	SHORT $LN18@mouse_hand
+	jmp	SHORT $LN20@mouse_hand
+$LN18@mouse_hand:
 
 ; 81   : 			++mouse_cycle;
 
@@ -338,8 +335,8 @@ $LN19@mouse_hand:
 
 ; 82   : 			break;
 
-	jmp	SHORT $LN21@mouse_hand
-$LN18@mouse_hand:
+	jmp	SHORT $LN20@mouse_hand
+$LN17@mouse_hand:
 
 ; 83   : 		case 1:
 ; 84   : 			mouse_byte[1] = mouse_in;
@@ -358,8 +355,8 @@ $LN18@mouse_hand:
 
 ; 86   : 			break;
 
-	jmp	SHORT $LN21@mouse_hand
-$LN17@mouse_hand:
+	jmp	SHORT $LN20@mouse_hand
+$LN16@mouse_hand:
 
 ; 87   : 		case 2:
 ; 88   : 			mouse_byte[2] = mouse_in;
@@ -372,9 +369,9 @@ $LN17@mouse_hand:
 
 ; 89   : 			goto finish_packet;
 
-	jmp	SHORT $LN16@mouse_hand
-	jmp	SHORT $finish_packet$28
-$LN15@mouse_hand:
+	jmp	SHORT $LN15@mouse_hand
+	jmp	SHORT $finish_packet$27
+$LN14@mouse_hand:
 
 ; 90   : 		case 3:
 ; 91   : 			mouse_byte[3] = mouse_in;
@@ -387,19 +384,19 @@ $LN15@mouse_hand:
 
 ; 92   : 			goto finish_packet;
 
-	jmp	SHORT $LN14@mouse_hand
-	jmp	SHORT $finish_packet$28
-$LN21@mouse_hand:
+	jmp	SHORT $LN13@mouse_hand
+	jmp	SHORT $finish_packet$27
+$LN20@mouse_hand:
 
 ; 93   : 		}
 ; 94   : 
 ; 95   : 		goto read_next;
 
-	jmp	$LN13@mouse_hand
-	jmp	$read_next$29
-$LN14@mouse_hand:
-$LN16@mouse_hand:
-$finish_packet$28:
+	jmp	$LN12@mouse_hand
+	jmp	$read_next$28
+$LN13@mouse_hand:
+$LN15@mouse_hand:
+$finish_packet$27:
 
 ; 96   : 
 ; 97   : finish_packet:
@@ -427,42 +424,42 @@ $finish_packet$28:
 ; 102  : 		if (x && mouse_byte[0] & ( 1 <<  4)) {
 
 	cmp	DWORD PTR x$2[rsp], 0
-	je	SHORT $LN12@mouse_hand
+	je	SHORT $LN11@mouse_hand
 	mov	eax, 1
 	imul	rax, 0
 	lea	rcx, OFFSET FLAT:mouse_byte
 	movzx	eax, BYTE PTR [rcx+rax]
 	and	eax, 16
 	test	eax, eax
-	je	SHORT $LN12@mouse_hand
+	je	SHORT $LN11@mouse_hand
 
 ; 103  : 			x = x - 0x100;
 
 	mov	eax, DWORD PTR x$2[rsp]
 	sub	eax, 256				; 00000100H
 	mov	DWORD PTR x$2[rsp], eax
-$LN12@mouse_hand:
+$LN11@mouse_hand:
 
 ; 104  : 		}
 ; 105  : 
 ; 106  : 		if (y && mouse_byte[0] & (1 << 5)) {
 
 	cmp	DWORD PTR y$3[rsp], 0
-	je	SHORT $LN11@mouse_hand
+	je	SHORT $LN10@mouse_hand
 	mov	eax, 1
 	imul	rax, 0
 	lea	rcx, OFFSET FLAT:mouse_byte
 	movzx	eax, BYTE PTR [rcx+rax]
 	and	eax, 32					; 00000020H
 	test	eax, eax
-	je	SHORT $LN11@mouse_hand
+	je	SHORT $LN10@mouse_hand
 
 ; 107  : 			y = y - 0x100;
 
 	mov	eax, DWORD PTR y$3[rsp]
 	sub	eax, 256				; 00000100H
 	mov	DWORD PTR y$3[rsp], eax
-$LN11@mouse_hand:
+$LN10@mouse_hand:
 
 ; 108  : 		}
 ; 109  : 
@@ -496,51 +493,51 @@ $LN11@mouse_hand:
 ; 115  : 		if (mouse_x < 0)
 
 	cmp	DWORD PTR ?mouse_x@@3HA, 0		; mouse_x
-	jge	SHORT $LN10@mouse_hand
+	jge	SHORT $LN9@mouse_hand
 
 ; 116  : 			mouse_x = 0;
 
 	mov	DWORD PTR ?mouse_x@@3HA, 0		; mouse_x
-$LN10@mouse_hand:
+$LN9@mouse_hand:
 
 ; 117  : 
 ; 118  : 		if (mouse_y < 0)
 
 	cmp	DWORD PTR ?mouse_y@@3HA, 0		; mouse_y
-	jge	SHORT $LN9@mouse_hand
+	jge	SHORT $LN8@mouse_hand
 
 ; 119  : 			mouse_y = 0;
 
 	mov	DWORD PTR ?mouse_y@@3HA, 0		; mouse_y
-$LN9@mouse_hand:
+$LN8@mouse_hand:
 
 ; 120  : 
 ; 121  : 		if (mouse_x > get_screen_width())
 
 	call	?get_screen_width@@YAIXZ		; get_screen_width
 	cmp	DWORD PTR ?mouse_x@@3HA, eax		; mouse_x
-	jbe	SHORT $LN8@mouse_hand
+	jbe	SHORT $LN7@mouse_hand
 
 ; 122  : 			mouse_x = get_screen_width() - 7;
 
 	call	?get_screen_width@@YAIXZ		; get_screen_width
 	sub	eax, 7
 	mov	DWORD PTR ?mouse_x@@3HA, eax		; mouse_x
-$LN8@mouse_hand:
+$LN7@mouse_hand:
 
 ; 123  : 
 ; 124  : 		if (mouse_y > get_screen_height())
 
 	call	?get_screen_height@@YAIXZ		; get_screen_height
 	cmp	DWORD PTR ?mouse_y@@3HA, eax		; mouse_y
-	jbe	SHORT $LN7@mouse_hand
+	jbe	SHORT $LN6@mouse_hand
 
 ; 125  : 			mouse_y = get_screen_height() - 7;
 
 	call	?get_screen_height@@YAIXZ		; get_screen_height
 	sub	eax, 7
 	mov	DWORD PTR ?mouse_y@@3HA, eax		; mouse_y
-$LN7@mouse_hand:
+$LN6@mouse_hand:
 
 ; 126  : 
 ; 127  : 		mouse_button_state = 0;
@@ -556,7 +553,7 @@ $LN7@mouse_hand:
 	movzx	eax, BYTE PTR [rcx+rax]
 	and	eax, 1
 	test	eax, eax
-	je	SHORT $LN6@mouse_hand
+	je	SHORT $LN5@mouse_hand
 
 ; 130  : 			curr_button[0] = 1;
 
@@ -573,8 +570,8 @@ $LN7@mouse_hand:
 
 ; 132  : 		}else
 
-	jmp	SHORT $LN5@mouse_hand
-$LN6@mouse_hand:
+	jmp	SHORT $LN4@mouse_hand
+$LN5@mouse_hand:
 
 ; 133  : 			curr_button[0] = 0;
 
@@ -582,7 +579,7 @@ $LN6@mouse_hand:
 	imul	rax, 0
 	lea	rcx, OFFSET FLAT:?curr_button@@3PAEA	; curr_button
 	mov	BYTE PTR [rcx+rax], 0
-$LN5@mouse_hand:
+$LN4@mouse_hand:
 
 ; 134  : 
 ; 135  : 		if (mouse_byte[0] & 0x02) {
@@ -593,7 +590,7 @@ $LN5@mouse_hand:
 	movzx	eax, BYTE PTR [rcx+rax]
 	and	eax, 2
 	test	eax, eax
-	je	SHORT $LN4@mouse_hand
+	je	SHORT $LN3@mouse_hand
 
 ; 136  : 			curr_button[2] = 1;
 
@@ -604,8 +601,8 @@ $LN5@mouse_hand:
 
 ; 137  : 		}else 
 
-	jmp	SHORT $LN3@mouse_hand
-$LN4@mouse_hand:
+	jmp	SHORT $LN2@mouse_hand
+$LN3@mouse_hand:
 
 ; 138  : 			curr_button[2] = 0;
 
@@ -613,7 +610,7 @@ $LN4@mouse_hand:
 	imul	rax, 2
 	lea	rcx, OFFSET FLAT:?curr_button@@3PAEA	; curr_button
 	mov	BYTE PTR [rcx+rax], 0
-$LN3@mouse_hand:
+$LN2@mouse_hand:
 
 ; 139  : 
 ; 140  : 		if (mouse_byte[0] & 0x04)
@@ -624,14 +621,14 @@ $LN3@mouse_hand:
 	movzx	eax, BYTE PTR [rcx+rax]
 	and	eax, 4
 	test	eax, eax
-	je	SHORT $LN2@mouse_hand
+	je	SHORT $LN1@mouse_hand
 
 ; 141  : 			mouse_button |= MOUSE_MIDDLE_CLICK;
 
 	mov	eax, DWORD PTR ?mouse_button@@3HC	; mouse_button
 	or	eax, 4
 	mov	DWORD PTR ?mouse_button@@3HC, eax	; mouse_button
-$LN2@mouse_hand:
+$LN1@mouse_hand:
 
 ; 142  : 		
 ; 143  : 		//!Pass here the message stream to all waiting processes
@@ -643,22 +640,22 @@ $LN2@mouse_hand:
 ; 149  : 		msg.type = 1;
 
 	mov	eax, 1
-	mov	WORD PTR msg$5[rsp], ax
+	mov	WORD PTR msg$4[rsp], ax
 
 ; 150  : 		msg.dword = mouse_x;
 
 	mov	eax, DWORD PTR ?mouse_x@@3HA		; mouse_x
-	mov	DWORD PTR msg$5[rsp+4], eax
+	mov	DWORD PTR msg$4[rsp+4], eax
 
 ; 151  : 		msg.dword2 = mouse_y;
 
 	mov	eax, DWORD PTR ?mouse_y@@3HA		; mouse_y
-	mov	DWORD PTR msg$5[rsp+8], eax
+	mov	DWORD PTR msg$4[rsp+8], eax
 
 ; 152  : 		msg.dword4 = mouse_button_state;
 
 	mov	eax, DWORD PTR ?mouse_button_state@@3IA	; mouse_button_state
-	mov	DWORD PTR msg$5[rsp+16], eax
+	mov	DWORD PTR msg$4[rsp+16], eax
 
 ; 153  : 		msg.dword5 = mouse_byte[1];
 
@@ -666,7 +663,7 @@ $LN2@mouse_hand:
 	imul	rax, 1
 	lea	rcx, OFFSET FLAT:mouse_byte
 	movzx	eax, BYTE PTR [rcx+rax]
-	mov	DWORD PTR msg$5[rsp+20], eax
+	mov	DWORD PTR msg$4[rsp+20], eax
 
 ; 154  : 		msg.dword6 = -mouse_byte[2];
 
@@ -675,89 +672,65 @@ $LN2@mouse_hand:
 	lea	rcx, OFFSET FLAT:mouse_byte
 	movzx	eax, BYTE PTR [rcx+rax]
 	neg	eax
-	mov	DWORD PTR msg$5[rsp+24], eax
+	mov	DWORD PTR msg$4[rsp+24], eax
 
 ; 155  : 		dwm_put_message (&msg);
 
-	lea	rcx, QWORD PTR msg$5[rsp]
+	lea	rcx, QWORD PTR msg$4[rsp]
 	call	?dwm_put_message@@YAXPEAU_dwm_message_@@@Z ; dwm_put_message
 
 ; 156  : 		//pmmngr_free (msg);
 ; 157  : 		//mutex_unlock (mouse);
 ; 158  : 
-; 159  : 		thread_t* thr = (thread_t*)thread_iterate_block_list (2);
-
-	mov	ecx, 2
-	call	?thread_iterate_block_list@@YAPEAU_thread_@@H@Z ; thread_iterate_block_list
-	mov	QWORD PTR thr$4[rsp], rax
-
-; 160  : 		if (thr != NULL){
-
-	cmp	QWORD PTR thr$4[rsp], 0
-	je	SHORT $LN1@mouse_hand
-
-; 161  : 			thr->state = THREAD_STATE_READY;
-
-	mov	rax, QWORD PTR thr$4[rsp]
-	mov	BYTE PTR [rax+224], 1
-
-; 162  : 			unblock_thread(thr);
-
-	mov	rcx, QWORD PTR thr$4[rsp]
-	call	?unblock_thread@@YAXPEAU_thread_@@@Z	; unblock_thread
-$LN1@mouse_hand:
-
-; 163  : 		}
-; 164  : 
-; 165  : 		/*if (left_button_up()) {
-; 166  : 			mouse_button_state |= 5;
-; 167  : 		}*/
-; 168  : 
-; 169  : 
-; 170  : 		memcpy (prev_button, curr_button, 3);
+; 159  : 		/*if (left_button_up()) {
+; 160  : 			mouse_button_state |= 5;
+; 161  : 		}*/
+; 162  : 
+; 163  : 
+; 164  : 		memcpy (prev_button, curr_button, 3);
 
 	mov	r8d, 3
 	lea	rdx, OFFSET FLAT:?curr_button@@3PAEA	; curr_button
 	lea	rcx, OFFSET FLAT:?prev_button@@3PAEA	; prev_button
 	call	memcpy
 
-; 171  : 		memset (curr_button, 0x00, 3);
+; 165  : 		memset (curr_button, 0x00, 3);
 
 	mov	r8d, 3
 	xor	edx, edx
 	lea	rcx, OFFSET FLAT:?curr_button@@3PAEA	; curr_button
 	call	?memset@@YAXPEAXEI@Z			; memset
-$LN13@mouse_hand:
-$read_next$29:
+$LN12@mouse_hand:
+$read_next$28:
 
-; 172  : read_next:
-; 173  : 		break;
+; 166  : read_next:
+; 167  : 		break;
 
-	jmp	SHORT $LN23@mouse_hand
+	jmp	SHORT $LN22@mouse_hand
 
-; 174  : 	}
+; 168  : 	}
 
-	jmp	$LN24@mouse_hand
-$LN23@mouse_hand:
+	jmp	$LN23@mouse_hand
+$LN22@mouse_hand:
 
-; 175  : 
-; 176  : 	set_multi_task_enable(true);
+; 169  : 
+; 170  : 	set_multi_task_enable(true);
 
 	mov	cl, 1
 	call	?set_multi_task_enable@@YAX_N@Z		; set_multi_task_enable
 
-; 177  : 	interrupt_end(12);
+; 171  : 	interrupt_end(12);
 
 	mov	ecx, 12
 	call	?interrupt_end@@YAXI@Z			; interrupt_end
 
-; 178  : 	x64_sti();
+; 172  : 	x64_sti();
 
 	call	x64_sti
 
-; 179  : }
+; 173  : }
 
-	add	rsp, 104				; 00000068H
+	add	rsp, 88					; 00000058H
 	ret	0
 ?mouse_handler@@YAX_KPEAX@Z ENDP			; mouse_handler
 _TEXT	ENDS
@@ -992,56 +965,56 @@ _TEXT	SEGMENT
 status$ = 32
 ?initialize_mouse@@YAXXZ PROC				; initialize_mouse
 
-; 212  : void initialize_mouse () {
+; 206  : void initialize_mouse () {
 
 $LN3:
 	sub	rsp, 56					; 00000038H
 
-; 213  : 	mouse_cycle = 0;
+; 207  : 	mouse_cycle = 0;
 
 	mov	BYTE PTR mouse_cycle, 0
 
-; 214  : 	mouse_x = 0;
+; 208  : 	mouse_x = 0;
 
 	mov	DWORD PTR ?mouse_x@@3HA, 0		; mouse_x
 
-; 215  : 	mouse_y = 0;
+; 209  : 	mouse_y = 0;
 
 	mov	DWORD PTR ?mouse_y@@3HA, 0		; mouse_y
 
-; 216  : 
-; 217  : 	uint8_t status;
-; 218  : 
-; 219  : 	mouse_wait (1);
+; 210  : 
+; 211  : 	uint8_t status;
+; 212  : 
+; 213  : 	mouse_wait (1);
 
 	mov	cl, 1
 	call	?mouse_wait@@YAXE@Z			; mouse_wait
 
-; 220  :     outportb (0x64, 0xA8);
+; 214  :     outportb (0x64, 0xA8);
 
 	mov	dl, 168					; 000000a8H
 	mov	cx, 100					; 00000064H
 	call	?outportb@@YAXGE@Z			; outportb
 
-; 221  : 
-; 222  : 	mouse_wait(1);
+; 215  : 
+; 216  : 	mouse_wait(1);
 
 	mov	cl, 1
 	call	?mouse_wait@@YAXE@Z			; mouse_wait
 
-; 223  : 	outportb (0x64, 0x20);
+; 217  : 	outportb (0x64, 0x20);
 
 	mov	dl, 32					; 00000020H
 	mov	cx, 100					; 00000064H
 	call	?outportb@@YAXGE@Z			; outportb
 
-; 224  : 
-; 225  : 	mouse_wait (0);
+; 218  : 
+; 219  : 	mouse_wait (0);
 
 	xor	ecx, ecx
 	call	?mouse_wait@@YAXE@Z			; mouse_wait
 
-; 226  : 	status = (inportb (0x60) | 2);
+; 220  : 	status = (inportb (0x60) | 2);
 
 	mov	cx, 96					; 00000060H
 	call	?inportb@@YAEG@Z			; inportb
@@ -1049,70 +1022,70 @@ $LN3:
 	or	eax, 2
 	mov	BYTE PTR status$[rsp], al
 
-; 227  : 
-; 228  : 	mouse_wait (1);
+; 221  : 
+; 222  : 	mouse_wait (1);
 
 	mov	cl, 1
 	call	?mouse_wait@@YAXE@Z			; mouse_wait
 
-; 229  : 	outportb (0x64, 0x60);
+; 223  : 	outportb (0x64, 0x60);
 
 	mov	dl, 96					; 00000060H
 	mov	cx, 100					; 00000064H
 	call	?outportb@@YAXGE@Z			; outportb
 
-; 230  : 
-; 231  : 	mouse_wait (1);
+; 224  : 
+; 225  : 	mouse_wait (1);
 
 	mov	cl, 1
 	call	?mouse_wait@@YAXE@Z			; mouse_wait
 
-; 232  : 	outportb (0x60, status);
+; 226  : 	outportb (0x60, status);
 
 	movzx	edx, BYTE PTR status$[rsp]
 	mov	cx, 96					; 00000060H
 	call	?outportb@@YAXGE@Z			; outportb
 
-; 233  : 
-; 234  : 	mouse_write (0xF6);
+; 227  : 
+; 228  : 	mouse_write (0xF6);
 
 	mov	cl, 246					; 000000f6H
 	call	?mouse_write@@YAXE@Z			; mouse_write
 
-; 235  : 	mouse_read ();
+; 229  : 	mouse_read ();
 
 	call	?mouse_read@@YAEXZ			; mouse_read
 
-; 236  : 
-; 237  : 	mouse_write (0xF4);
+; 230  : 
+; 231  : 	mouse_write (0xF4);
 
 	mov	cl, 244					; 000000f4H
 	call	?mouse_write@@YAXE@Z			; mouse_write
 
-; 238  : 	mouse_read ();
+; 232  : 	mouse_read ();
 
 	call	?mouse_read@@YAEXZ			; mouse_read
 
-; 239  : 
-; 240  : 	interrupt_set (34, mouse_handler, 12);  //34
+; 233  : 
+; 234  : 	interrupt_set (34, mouse_handler, 12);  //34
 
 	mov	r8b, 12
 	lea	rdx, OFFSET FLAT:?mouse_handler@@YAX_KPEAX@Z ; mouse_handler
 	mov	ecx, 34					; 00000022H
 	call	?interrupt_set@@YAX_KP6AX0PEAX@ZE@Z	; interrupt_set
 
-; 241  : 
-; 242  : 	mouse_register_device ();
+; 235  : 
+; 236  : 	mouse_register_device ();
 
 	call	?mouse_register_device@@YAXXZ		; mouse_register_device
 
-; 243  : 	irq_mask(12, true);
+; 237  : 	irq_mask(12, true);
 
 	mov	dl, 1
 	mov	cl, 12
 	call	?irq_mask@@YAXE_N@Z			; irq_mask
 
-; 244  : }
+; 238  : }
 
 	add	rsp, 56					; 00000038H
 	ret	0

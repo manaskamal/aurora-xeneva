@@ -156,12 +156,6 @@ finish_packet:
 		//pmmngr_free (msg);
 		//mutex_unlock (mouse);
 
-		thread_t* thr = (thread_t*)thread_iterate_block_list (2);
-		if (thr != NULL){
-			thr->state = THREAD_STATE_READY;
-			unblock_thread(thr);
-		}
-
 		/*if (left_button_up()) {
 			mouse_button_state |= 5;
 		}*/

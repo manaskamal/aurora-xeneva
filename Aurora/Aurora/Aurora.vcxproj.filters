@@ -333,6 +333,9 @@
     <ClInclude Include="..\include\arch\x86_64\kstack.h">
       <Filter>include\arch\x86_64</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\fs\gpt.h">
+      <Filter>include\fs</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="init.cpp">
@@ -538,6 +541,9 @@
     </ClCompile>
     <ClCompile Include="arch\x86_64\kstack.cpp">
       <Filter>source\arch\x86_64</Filter>
+    </ClCompile>
+    <ClCompile Include="fs\gpt.cpp">
+      <Filter>source\fs</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

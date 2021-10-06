@@ -130,13 +130,12 @@ bool QuWindowMngr_GetUpdateBit() {
 
 void QuWindowMngr_MoveFocusWindow (int x, int y) {
 
-	QuRect re;
-	re.x = draggable_win->x;
-	re.y = draggable_win->y;
-	re.w = draggable_win->width;
-	re.h = draggable_win->height;
-	QuCanvasAddDirty(&re);
-
+	QuRect *re = (QuRect*)malloc(sizeof(QuRect));
+	re->x = draggable_win->x;
+	re->y = draggable_win->y;
+	re->w = draggable_win->width;
+	re->h = draggable_win->height;
+	QuCanvasAddDirty(re);
 	//!Store Old Coordinates
 	int oldx = draggable_win->x;
 	int oldy = draggable_win->y;
@@ -159,16 +158,6 @@ void QuWindowMngr_MoveFocusWindow (int x, int y) {
 	if (draggable_win->y + draggable_win->height >= canvas_get_height())
 		draggable_win->y = canvas_get_height() - draggable_win->height;
 
-
-	QuUpdateTitleBar(draggable_win);
-
-	QuRect *r = (QuRect*)malloc(sizeof(QuRect));
-	r->x = draggable_win->x;
-	r->y = draggable_win->y;
-	r->w = draggable_win->width;
-	r->h = draggable_win->height;
-	QuWindowAddDirtyArea(draggable_win, r);
-
 	for (int i = 0; i < WindowList->pointer; i++) {
 		QuWindow* win = (QuWindow*)QuListGetAt (WindowList,i);
 		if (win == draggable_win)
@@ -178,28 +167,16 @@ void QuWindowMngr_MoveFocusWindow (int x, int y) {
 			(draggable_win->x + draggable_win->width) >= (win->x + win->width) ||
 			(win->x + win->width) >= (draggable_win->x + draggable_win->width)) {
 
-				QuRect *r = (QuRect*)malloc(sizeof(QuRect));
-				r->x = win->x;
-				r->y = win->y;
-				r->w = win->width;
-				r->h = win->height;
-				/*if (win->x + win->width > draggable_win->x + draggable_win->width) {
-					r->w = draggable_win->x + draggable_win->width - max(win->x, draggable_win->x) + 50;
-				}else {
-					r->w = win->x + win->width - max (win->x, draggable_win->x) + 50;
-				}
-
-				r->x = max(win->x, oldx) - 50;
-				if (win->y + win->height > draggable_win->y + draggable_win->height) {
-					r->h = draggable_win->y + draggable_win->height - max(win->y, draggable_win->y) + 50;
-				}else {
-					r->h = win->y + win->height - max(win->y, draggable_win->y) + 50;
-				}
-
-				r->y = max(win->y, oldy) - 50;*/
-				QuWindowAddDirtyArea(win, r);
+				QuWindowInfo *w_info = (QuWindowInfo*)win->win_info_location;
+				w_info->dirty = 1;
+				w_info->rect_count = 0;
 		}
 	}
+
+	QuWindowInfo *info = (QuWindowInfo*)draggable_win->win_info_location;
+	info->dirty = 1;
+	info->rect_count = 0;
+
 
 	QuMessage msg;
 	msg.type = QU_CANVAS_MOVE;

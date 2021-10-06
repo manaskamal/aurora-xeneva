@@ -121,8 +121,7 @@ void initialize_fat32 () {
 	sectors_per_fat32 = fat32_data->info.FAT32.sect_per_fat32;
 
 	//printf ("Sector  Per Cluster -> %d\n", sectors_per_cluster);
-	//printf ("Total Sectors -> %d\n", fat32_data->large_sector_count);
-	//printf ("Total sector++ -> %d\n", fat32_data->large_sector_count/ sectors_per_cluster);
+	//printf ("Number of FATs -> %d\n", fat32_data->num_fats);
 	total_clusters = fat32_data->large_sector_count / sectors_per_cluster;
 	root_dir_cache = (unsigned char*)pmmngr_alloc();
 	//for (int i = 0; i < sectors_per_cluster; i++) {

@@ -46,17 +46,7 @@ uint32_t* QuCanvasCreate (uint16_t dest_pid) {
 
 
 void QuCanvasCommit (uint32_t* canvas, uint16_t destid, unsigned x, unsigned y, unsigned w, unsigned h) {
-	QuMessage msg;
-	msg.type = QU_CANVAS_READY;
-	msg.from_id = get_current_pid();
-	msg.to_id = destid;
-	msg.p_value = canvas;
-	msg.dword = x;
-	msg.dword2 = y;
-	msg.dword3 = w;
-	msg.dword4 = h;
-	QuChannelPut(&msg,destid);
-	sys_unblock_id (destid);
+	//sys_unblock_id (destid);
 }
 
 void QuCanvasBlit (QuWindow* win,uint32_t *canvas, unsigned x, unsigned y, unsigned w, unsigned h) {
@@ -67,37 +57,41 @@ void QuCanvasBlit (QuWindow* win,uint32_t *canvas, unsigned x, unsigned y, unsig
 	int height = canvas_get_height();
 	int j = 0;
 
-	/**
-	 * Some specific clients will enable to whole frame update bit which will
-	 * turn on the whole frame update or sometimes screen update
-	 */
-	if (win->auto_invalidate){
-		//! If no dirty rectangle than, we draw whole window in every frames
-		for (int i=0; i < w; i++) {
-			for (int j=0; j < h; j++){
-				if (lfb[(x + i) + (y + j) * width] != canvas[(x + i) + (y + j) * width]){
-					lfb[(x + i) + (y + j) * width] = canvas[(x + i) + (y + j) * width];
-					QuWindowMngr_UpdateWindow(true);
-					QuCanvasSetUpdateBit(true);
-				}
-			}
-		}
-	}
 	//! No Auto-invalidation window 
 	//! this is a normal window, it must contains dirty areas
 	//! go through dirty areas and draw it
+	QuWindowInfo *info = (QuWindowInfo*)win->win_info_location;
 
-	for (int i=0; i < win->width; i++) {
-		for (int j=0; j < win->height; j++){
-			if (win->canvas[(win->x + i) + (win->y + j) * width] | 0x00000000){
-				uint32_t color = win->canvas[(win->x + i) + (win->y + j) * width];
-				uint32_t color_a = wallp[(win->x + i) + (win->y + j) * width];
-				lfb[(win->x + i) + (win->y + j) * width] =  alpha_blend(color_a, color); //win->canvas[(win->x + i) + (win->y + j) * width];	
-				QuCanvasSetUpdateBit(true);
+	if (info->dirty) {
+		if (info->rect_count > 0) {
+			for (int k = 0; k < info->rect_count; k++) {
+				for (int i=0; i < info->rect[k].w; i++) {
+					for (int j=0; j < info->rect[k].h; j++){
+						if (win->canvas[(info->rect[k].x + i) + (info->rect[k].y + j) * width] | 0x00000000){
+							uint32_t color = win->canvas[(info->rect[k].x + i) + (info->rect[k].y + j) * width];
+							uint32_t color_a = wallp[(info->rect[k].x + i) + (info->rect[k].y + j) * width];
+							lfb[(info->rect[k].x + i) + (info->rect[k].y + j) * width] =  alpha_blend(color_a, color); //win->canvas[(win->x + i) + (win->y + j) * width];	
+						}
+					}
+				}
+			}
+			info->rect_count = 0;
+		} else {
+			for (int i=0; i < win->width; i++) {
+				for (int j=0; j < win->height; j++){
+					if (win->canvas[(win->x + i) + (win->y + j) * width] | 0x00000000){
+						uint32_t color = win->canvas[(win->x + i) + (win->y + j) * width];
+						uint32_t color_a = wallp[(win->x + i) + (win->y + j) * width];
+						lfb[(win->x + i) + (win->y + j) * width] =  alpha_blend(color_a, color); //win->canvas[(win->x + i) + (win->y + j) * width];	
+					}
+				}
 			}
 		}
+		
+		info->dirty = false;	
+		QuCanvasSetUpdateBit(true);
 	}
-	
+  
 }
 
 
@@ -159,10 +153,10 @@ void QuCanvasUpdateDirty() {
 	if (QuStackGetRectCount() > 0) {
 		QuRect* r = (QuRect*)QuStackGetRect();
 		QuCanvasUpdate(r->x, r->y, r->w, r->h);
-		//canvas_screen_update (r->x, r->y, r->w, r->h);
-		free(r);
-		if (!QuCanvasGetUpdateBit())
-			QuCanvasSetUpdateBit(true);
+		//canvas_screen_update (r->x, r->y, r->w, r->h)
+		free (r);
+		//if (!QuCanvasGetUpdateBit())
+		QuCanvasSetUpdateBit(true);
 	}
 }
 

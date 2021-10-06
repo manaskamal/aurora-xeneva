@@ -93,6 +93,7 @@ typedef struct _thread_ {
 	uint16_t quanta;
 	uint64_t blocked_stack_resv;
 	uint64_t* mouse_box;
+	uint64_t* qu_box;
 	uint8_t priority;
 	struct _thread_* next;
 	struct _thread_* prev;

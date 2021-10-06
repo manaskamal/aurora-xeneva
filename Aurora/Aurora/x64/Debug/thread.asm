@@ -36,7 +36,7 @@ _BSS	SEGMENT
 current_thread DQ 01H DUP (?)
 _BSS	ENDS
 CONST	SEGMENT
-$SG3299	DB	'Idle', 00H
+$SG3300	DB	'Idle', 00H
 CONST	ENDS
 PUBLIC	?initialize_scheduler@@YAXXZ			; initialize_scheduler
 PUBLIC	?scheduler_start@@YAXXZ				; scheduler_start
@@ -349,7 +349,7 @@ $LN3@next_task:
 ; 204  : 		task = task->next;
 
 	mov	rax, QWORD PTR task$[rsp]
-	mov	rax, QWORD PTR [rax+256]
+	mov	rax, QWORD PTR [rax+264]
 	mov	QWORD PTR task$[rsp], rax
 
 ; 205  : 		if (task == NULL) {
@@ -445,12 +445,12 @@ new_task$ = 8
 ; 47   : 	new_task->next = NULL;
 
 	mov	rax, QWORD PTR new_task$[rsp]
-	mov	QWORD PTR [rax+256], 0
+	mov	QWORD PTR [rax+264], 0
 
 ; 48   : 	new_task->prev = NULL;
 
 	mov	rax, QWORD PTR new_task$[rsp]
-	mov	QWORD PTR [rax+264], 0
+	mov	QWORD PTR [rax+272], 0
 
 ; 49   : 
 ; 50   : 	if (task_list_head == NULL) {
@@ -482,13 +482,13 @@ $LN2@thread_ins:
 
 	mov	rax, QWORD PTR ?task_list_last@@3PEAU_thread_@@EA ; task_list_last
 	mov	rcx, QWORD PTR new_task$[rsp]
-	mov	QWORD PTR [rax+256], rcx
+	mov	QWORD PTR [rax+264], rcx
 
 ; 56   : 		new_task->prev = task_list_last;
 
 	mov	rax, QWORD PTR new_task$[rsp]
 	mov	rcx, QWORD PTR ?task_list_last@@3PEAU_thread_@@EA ; task_list_last
-	mov	QWORD PTR [rax+264], rcx
+	mov	QWORD PTR [rax+272], rcx
 $LN1@thread_ins:
 
 ; 57   : 	}
@@ -563,7 +563,7 @@ $LN5@task_delet:
 ; 68   : 		task_list_head = task_list_head->next;
 
 	mov	rax, QWORD PTR ?task_list_head@@3PEAU_thread_@@EA ; task_list_head
-	mov	rax, QWORD PTR [rax+256]
+	mov	rax, QWORD PTR [rax+264]
 	mov	QWORD PTR ?task_list_head@@3PEAU_thread_@@EA, rax ; task_list_head
 
 ; 69   : 	} else {
@@ -574,10 +574,10 @@ $LN4@task_delet:
 ; 70   : 		thread->prev->next = thread->next;
 
 	mov	rax, QWORD PTR thread$[rsp]
-	mov	rax, QWORD PTR [rax+264]
+	mov	rax, QWORD PTR [rax+272]
 	mov	rcx, QWORD PTR thread$[rsp]
-	mov	rcx, QWORD PTR [rcx+256]
-	mov	QWORD PTR [rax+256], rcx
+	mov	rcx, QWORD PTR [rcx+264]
+	mov	QWORD PTR [rax+264], rcx
 $LN3@task_delet:
 
 ; 71   : 	}
@@ -591,7 +591,7 @@ $LN3@task_delet:
 ; 74   : 		task_list_last = thread->prev;
 
 	mov	rax, QWORD PTR thread$[rsp]
-	mov	rax, QWORD PTR [rax+264]
+	mov	rax, QWORD PTR [rax+272]
 	mov	QWORD PTR ?task_list_last@@3PEAU_thread_@@EA, rax ; task_list_last
 
 ; 75   : 	} else {
@@ -602,10 +602,10 @@ $LN2@task_delet:
 ; 76   : 		thread->next->prev = thread->prev;
 
 	mov	rax, QWORD PTR thread$[rsp]
-	mov	rax, QWORD PTR [rax+256]
+	mov	rax, QWORD PTR [rax+264]
 	mov	rcx, QWORD PTR thread$[rsp]
-	mov	rcx, QWORD PTR [rcx+264]
-	mov	QWORD PTR [rax+264], rcx
+	mov	rcx, QWORD PTR [rcx+272]
+	mov	QWORD PTR [rax+272], rcx
 $LN1@task_delet:
 
 ; 77   : 	}
@@ -699,7 +699,7 @@ $LN14:
 	jmp	SHORT $LN11@thread_get
 $LN10@thread_get:
 	mov	rax, QWORD PTR it$2[rsp]
-	mov	rax, QWORD PTR [rax+256]
+	mov	rax, QWORD PTR [rax+264]
 	mov	QWORD PTR it$2[rsp], rax
 $LN11@thread_get:
 	cmp	QWORD PTR it$2[rsp], 0
@@ -900,7 +900,7 @@ $LN7:
 	jmp	SHORT $LN4@thread_ite
 $LN3@thread_ite:
 	mov	rax, QWORD PTR it$1[rsp]
-	mov	rax, QWORD PTR [rax+256]
+	mov	rax, QWORD PTR [rax+264]
 	mov	QWORD PTR it$1[rsp], rax
 $LN4@thread_ite:
 	cmp	QWORD PTR it$1[rsp], 0
@@ -1331,7 +1331,7 @@ $LN3:
 
 	mov	rax, QWORD PTR t$[rsp]
 	movzx	ecx, BYTE PTR priority$[rsp]
-	mov	BYTE PTR [rax+248], cl
+	mov	BYTE PTR [rax+256], cl
 
 ; 124  : 	thread_insert(t);
 
@@ -1570,7 +1570,7 @@ $LN3:
 
 	mov	rax, QWORD PTR t$[rsp]
 	movzx	ecx, BYTE PTR priority$[rsp]
-	mov	BYTE PTR [rax+248], cl
+	mov	BYTE PTR [rax+256], cl
 
 ; 170  : 	thread_insert (t);
 
@@ -1666,7 +1666,7 @@ $LN3:
 	mov	QWORD PTR tv70[rsp], rax
 	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
 	mov	BYTE PTR [rsp+32], 1
-	lea	r9, OFFSET FLAT:$SG3299
+	lea	r9, OFFSET FLAT:$SG3300
 	mov	rcx, QWORD PTR tv70[rsp]
 	mov	r8, rcx
 	mov	rdx, rax

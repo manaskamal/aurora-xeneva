@@ -31,6 +31,24 @@ typedef struct _message_ {
 	char  buffer[50];
 }message_t;
 
+
+///! Message format
+typedef struct _qu_message_ {
+	uint8_t type;
+	uint8_t to_id;
+	uint8_t from_id;
+	uint32_t dword;
+	uint32_t dword2;
+	uint32_t dword3;
+	uint32_t dword4;
+	uint32_t dword5;
+	uint32_t dword6;
+	uint32_t dword7;
+	uint32_t dword8;
+	uint32_t *p_value;
+	char *value;
+}qu_message_t;
+
 //*********************************************************************
 //! Standard Kernel Message Passing System. little lazy
 //! more advanced ipc is the shared ipc system, it's fast
@@ -40,5 +58,6 @@ typedef struct _message_ {
 
 extern "C" void message_send (unsigned short dest_id, message_t *msg);
 extern "C" void message_receive (message_t *msg);
+
 
 #endif

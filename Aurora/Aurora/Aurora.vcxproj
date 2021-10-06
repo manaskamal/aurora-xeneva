@@ -232,6 +232,7 @@
     <ClInclude Include="..\include\drivers\vmmouse.h" />
     <ClInclude Include="..\include\drvmngr.h" />
     <ClInclude Include="..\include\fs\fat32.h" />
+    <ClInclude Include="..\include\fs\gpt.h" />
     <ClInclude Include="..\include\gui\jpeg.h" />
     <ClInclude Include="..\include\gui\splash.h" />
     <ClInclude Include="..\include\hal.h" />
@@ -300,6 +301,7 @@
     <ClCompile Include="drivers\vga.cpp" />
     <ClCompile Include="drvmngr.cpp" />
     <ClCompile Include="fs\fat32.cpp" />
+    <ClCompile Include="fs\gpt.cpp" />
     <ClCompile Include="gui\splash.cpp" />
     <ClCompile Include="hal.cpp" />
     <ClCompile Include="hwcursor.cpp" />

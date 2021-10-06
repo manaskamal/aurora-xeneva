@@ -47,6 +47,7 @@ typedef struct __QuMessage__ {
 	uint32_t dword7;
 	uint32_t dword8;
 	uint32_t *p_value;
+	uint32_t *p_value2;
 	char *value;
 }QuMessage;
 

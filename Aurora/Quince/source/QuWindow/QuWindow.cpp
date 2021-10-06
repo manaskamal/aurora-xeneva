@@ -19,6 +19,7 @@
 #include <acrylic.h>
 #include <color.h>
 #include <sys\_term.h>
+#include <sys\mmap.h>
 
 #define QUWIN_DEFAULT_WIDTH   500
 #define QUWIN_DEFAULT_HEIGHT  500
@@ -35,15 +36,11 @@ QuWindow* QuWindowCreate (int x, int y, uint16_t owner_id, uint8_t attr) {
 	win->width = QUWIN_DEFAULT_WIDTH;
 	win->height = QUWIN_DEFAULT_HEIGHT;
 	win->visible = true;
-	win->auto_invalidate = false;
 	win->canvas = NULL;
 	win->owner_id = owner_id;
 	win->decorate = true;
 	win->attr = attr;
-	win->dirty_areas = QuListInit ();
-	win->titlebar_object = QuListInit ();
-	QuWindowMngr_Add (win);
-	
+    QuWindowMngr_Add (win);
 	return win;
 }
 
@@ -62,38 +59,22 @@ void QuWindowSetVisible (QuWindow* win,bool visible) {
 
 
 void QuWindowAddDirtyArea (QuWindow* win, QuRect *dirty_rect) {
-	QuListAdd (win->dirty_areas, dirty_rect);
+	//QuListAdd (win->dirty_areas, dirty_rect);
 }
 
 void QuWindowSetAutoInvalidation (QuWindow* win,bool value) {
-	win->auto_invalidate = value;
+	//win->auto_invalidate = value;
 }
 
 
 void QuWindowRemoveDirtyArea (QuWindow* win, QuRect* dirty_rect) {
-	for (int i = 0; i < win->dirty_areas->pointer; i++) {
+	/*for (int i = 0; i < win->dirty_areas->pointer; i++) {
 		QuRect * r = (QuRect*)QuListGetAt(win->dirty_areas, i);
 		if (r == dirty_rect)
 			QuListRemove(win->dirty_areas, i);
-	}
+	}*/
 }
 
-void QuWindowAddMinimizeButton (QuWindow *win) {
-	QuTitleBarObject *minimize = QuCreateTitleBarObject(win->x + win->width - 43,win->y + 9, 11,18, QU_TITLE_BAR_OBJ_MINIMIZE);
-	QuAddTitleBarObject(win, minimize);
-}
-
-void QuWindowAddMaximizeButton (QuWindow *win) {
-	QuTitleBarObject *maximize = QuCreateTitleBarObject (win->x + win->width - 28, win->y + 9, 11, 18, 
-		QU_TITLE_BAR_OBJ_MAXIMIZE);
-	QuAddTitleBarObject(win, maximize);
-}
-
-void QuWindowAddCloseButton(QuWindow *win) {
-	QuTitleBarObject *close = QuCreateTitleBarObject (win->x + win->width - 13, win->y + 9, 11, 18,
-		QU_TITLE_BAR_OBJ_CLOSE);
-	QuAddTitleBarObject (win, close);
-}
 
 void QuWindowDraw (QuWindow* win) {
 

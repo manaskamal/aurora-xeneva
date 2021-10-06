@@ -54,7 +54,7 @@ void QuPanelRefresh (QuWidget *wid, QuWindow* win) {
 
 
 void QuPanelUpdate(int x, int y, int w, int h) {
-	if (canvas_is_double_buffered()){
+	/*if (canvas_is_double_buffered()){
 	uint32_t* lfb = (uint32_t*)QuGetWindow()->canvas;
 	uint32_t* dbl_canvas = (uint32_t*)0x0000600000000000;
 	int width = canvas_get_width();
@@ -66,22 +66,14 @@ void QuPanelUpdate(int x, int y, int w, int h) {
 		}
 	}
 	}
-
-	QuMessage msg;
-	msg.type = QU_CODE_DIRTY_UPDATE;
-	msg.dword = x;
-	msg.dword2 = y;
-	msg.dword3 = w;
-	msg.dword4 = h;
-	QuChannelPut(&msg, 2);
-	//message_t msg;
-	//msg.type = QU_CODE_DIRTY_UPDATE;
-	//msg.dword = x;
-	//msg.dword2 = y;
-	//msg.dword3 = w;
-	//msg.dword4 = h;
-	//msg.dword5 = get_current_pid();
-	//message_send(2, &msg);
+*/
+	QuWinInfo *info = (QuWinInfo*)QuGetWindow()->win_info_data;
+	info->dirty = 1;
+	info->rect[info->rect_count].x = x;
+	info->rect[info->rect_count].y = y;
+	info->rect[info->rect_count].w = w;
+	info->rect[info->rect_count].h = h;
+	info->rect_count += 1;
 }
 
 

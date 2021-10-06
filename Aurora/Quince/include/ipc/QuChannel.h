@@ -13,7 +13,7 @@
 
 #include <stdint.h>
 
-typedef struct _qu_message_ {
+typedef struct _Qu_message_ {
 	uint8_t type;
 	uint8_t to_id;
 	uint8_t from_id;
@@ -26,6 +26,7 @@ typedef struct _qu_message_ {
 	uint32_t dword7;
 	uint32_t dword8;
 	uint32_t *p_value;
+	uint32_t *p_value2;
 	char *value;
 }QuMessage;
 

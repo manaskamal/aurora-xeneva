@@ -12,6 +12,7 @@
 
 #include <stdint.h>
 #include <QuBase.h>
+#include <QuRect.h>
 #include <QuUtils\QuList.h>
 
 #define QU_WIN_CONFIG_AUTO_INVALIDATE 6
@@ -31,7 +32,6 @@
 #define QU_WIN_CONTROL_CLOSE  3
 #define QU_WIN_CONTROL_OTHER  4
 
-
 typedef struct _QuWinControl_ {
 	int x;
 	int y;
@@ -40,12 +40,19 @@ typedef struct _QuWinControl_ {
 	uint8_t type;
 }QuWinControl;
 
+typedef struct _QuWinInfo_ {
+	bool dirty;
+	QuRect rect[256];
+	int rect_count;
+}QuWinInfo;
+
 typedef struct _QU_WIN_ {
 	int x;
 	int y;
 	int w;
 	int h;
 	uint32_t*  canvas;
+	uint32_t*  win_info_data;
 	QuList* widgets;
 	QuList* controls;
 }QuWindow;
@@ -60,7 +67,7 @@ typedef struct _QuWidget_ {
 	void (*ActionEvent) (struct _QuWidget_*, QuWindow* win);
 }QuWidget;
 
-extern void QuCreateWindow (int x, int y, int w,int h);
+extern void QuCreateWindow (int x, int y, int w,int h, uint32_t* info_data);
 extern void QuWindowSetCanvas (uint32_t* address);
 extern QuWindow* QuGetWindow ();
 extern int QuWindowGetX();

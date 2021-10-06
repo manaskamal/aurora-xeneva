@@ -37,6 +37,7 @@
 #include <ipc\dwm_ipc.h>
 #include <vfs.h>
 #include <fs\fat32.h>
+#include <fs\gpt.h>
 #include <screen.h>
 #include <proc.h>
 #include <pmmngr.h>
@@ -138,6 +139,7 @@ void _kmain (KERNEL_BOOT_INFO *info) {
 
 
     ata_initialize();
+	initialize_gpt();
 	initialize_vfs();
 	initialize_screen(info);
 	svga_init (); 
@@ -147,7 +149,6 @@ void _kmain (KERNEL_BOOT_INFO *info) {
 	dwm_ipc_init();
 
 	driver_mngr_initialize(info);
-
 #ifdef ARCH_X64
 
 	//================================================
@@ -169,7 +170,7 @@ void _kmain (KERNEL_BOOT_INFO *info) {
 
 	//! Misc programs goes here
 	create_process ("a:dwm2.exe", "dwm3", 0, NULL);
-	//create_process ("a:dwm2.exe", "dwm4", 0, NULL);
+//	create_process ("a:dwm2.exe", "dwm4", 0, NULL);
 
 	//! Here start the scheduler (multitasking engine)
 	scheduler_start();

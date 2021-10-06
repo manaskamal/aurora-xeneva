@@ -123,7 +123,7 @@ $pdata$?svga_has_fifo_cap@@YA_NH@Z DD imagerel $LN5
 	DD	imagerel $LN5+62
 	DD	imagerel $unwind$?svga_has_fifo_cap@@YA_NH@Z
 $pdata$?svga_init@@YAXXZ DD imagerel $LN16
-	DD	imagerel $LN16+673
+	DD	imagerel $LN16+685
 	DD	imagerel $unwind$?svga_init@@YAXXZ
 $pdata$?svga_enable@@YAXXZ DD imagerel $LN8
 	DD	imagerel $LN8+368
@@ -2848,9 +2848,10 @@ _TEXT	SEGMENT
 irq$1 = 48
 tv82 = 52
 mask$ = 56
-func$ = 60
-dev$ = 64
-bus$ = 68
+tv174 = 60
+func$ = 64
+dev$ = 68
+bus$ = 72
 ?svga_init@@YAXXZ PROC					; svga_init
 
 ; 50   : void svga_init () {
@@ -3121,14 +3122,18 @@ $LN1@svga_init:
 
 	call	?svga_enable@@YAXXZ			; svga_enable
 
-; 116  : 	//svga_set_mode (get_screen_width(),get_screen_height(),32);
-; 117  : 	svga_set_mode (1280,768,32);
+; 116  : 	svga_set_mode (get_screen_width(),get_screen_height(),32);
 
+	call	?get_screen_height@@YAIXZ		; get_screen_height
+	mov	DWORD PTR tv174[rsp], eax
+	call	?get_screen_width@@YAIXZ		; get_screen_width
 	mov	r8d, 32					; 00000020H
-	mov	edx, 768				; 00000300H
-	mov	ecx, 1280				; 00000500H
+	mov	ecx, DWORD PTR tv174[rsp]
+	mov	edx, ecx
+	mov	ecx, eax
 	call	?svga_set_mode@@YAXIII@Z		; svga_set_mode
 
+; 117  : 	//svga_set_mode (1280,768,32);
 ; 118  : 	gmr_init();
 
 	call	?gmr_init@@YAXXZ			; gmr_init

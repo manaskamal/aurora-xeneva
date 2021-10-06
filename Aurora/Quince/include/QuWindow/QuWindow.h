@@ -30,6 +30,16 @@
 #define QU_WIN_AUTO_INVALIDATE_RGN 8
 #define QU_WIN_SET_POS  8
 
+
+
+#define QU_WIN_INFO_START   0x00000A0000000000
+
+typedef struct _QuWinInfo_ {
+	bool dirty;
+	QuRect rect[256];
+	int rect_count;
+}QuWindowInfo;
+
 typedef struct _QuWindow_ {
 	int x;
 	int y;
@@ -39,15 +49,11 @@ typedef struct _QuWindow_ {
 	int drag_y;
 	bool draggable;
 	bool visible;
-	bool auto_invalidate;
 	unsigned int *canvas;
 	unsigned short owner_id;
 	bool decorate;
-	QuList *dirty_areas;
-	QuList *titlebar_object;
 	uint8_t attr;
-	struct _QuWindow_ *next;
-	struct _QuWindow_ *prev;
+	uint32_t *win_info_location;
 }QuWindow;
 
 

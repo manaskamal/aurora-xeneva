@@ -18,6 +18,7 @@
 #include <sys\_wait.h>
 #include <sys\_sleep.h>
 #include <psf\psf.h>
+#include <acrylic.h>
 
 #define QU_CHANNEL_ADDRESS   0xFFFFD00000000000  //Client Send address
 #define QU_CHANNEL_RECEIVER  0xFFFFFD0000000000  //Client receiver address
@@ -51,38 +52,43 @@ get:
 		memset (data, 0, 4096);
 		return;
 	}else {
-		sys_wait();
+		//sys_wait();
 		goto get;
 	}
 }
 
 void QuRegisterApplication () {
-	canvas_set_double_buffer(false);
-	create_canvas();
-	//psf_register_font_lib();
-
-
 	app_id = get_current_pid();
+
 	QuMessage qmsg;
 	qmsg.type = QU_CODE_WIN_CREATE;
-	QuChannelPut (&qmsg, 2);
-	/*message_t msg;
-	msg.type = QU_CODE_WIN_CREATE;
-	msg.dword = app_id;
-	message_send (2,&msg);*/
-	memset (&qmsg, 0, sizeof(QuMessage));
-	for (;;) {
+	qmsg.from_id = app_id;
+	qmsg.to_id = 2;
+	QuChannelPut(&qmsg, 2);
+
+	int win_def_x, win_def_y, win_def_w, win_def_h = 0;
+	uint32_t* info_data;
+	memset(&qmsg, 0, sizeof(QuMessage));
+	while(1) {
 		QuChannelGet(&qmsg);
 
 		if (qmsg.type == QU_CANVAS_READY) {
 			QuCanvasAddress = qmsg.p_value;
-			canvas_set_address(QuCanvasAddress);
-			QuCreateWindow (qmsg.dword, qmsg.dword2, qmsg.dword3, qmsg.dword4);
-			QuWindowSetCanvas(QuCanvasAddress);
-			memset (&qmsg, 0, sizeof(QuMessage));
+			win_def_x = qmsg.dword;
+			win_def_y = qmsg.dword2;
+			win_def_w = qmsg.dword3;
+			win_def_h = qmsg.dword4;
+			info_data = qmsg.p_value2;
+			//memset (&qmsg, 0, sizeof(qu_message_t));
 			break;
 		}
 	}
+
+	canvas_set_double_buffer(false);
+	create_canvas();
+	canvas_set_address (QuCanvasAddress);
+	QuCreateWindow (win_def_x, win_def_y, win_def_w, win_def_h, info_data);
+	QuWindowSetCanvas (QuCanvasAddress);
 }
 
 

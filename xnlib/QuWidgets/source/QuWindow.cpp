@@ -15,6 +15,7 @@
 #include <string.h>
 #include <color.h>
 #include <sys\_ipc.h>
+#include <sys\_term.h>
 
 
 QuWindow* root_win = NULL;
@@ -55,7 +56,7 @@ void QuWindowAddCloseButton(QuWindow *win) {
 
 
 
-void QuCreateWindow (int x, int y, int w, int h) {
+void QuCreateWindow (int x, int y, int w, int h, uint32_t* info_data) {
 	QuWindow* win = (QuWindow*)malloc(sizeof(QuWindow));
 	win->x = x;
 	win->y = y;
@@ -63,7 +64,11 @@ void QuCreateWindow (int x, int y, int w, int h) {
 	win->h = h;	
 	win->widgets = QuListInit();
 	win->controls = QuListInit();
+	win->win_info_data = info_data;
 
+	QuWinInfo* info = (QuWinInfo*)win->win_info_data;
+	sys_print_text ("QuWinInfo size -> %d bytes \n", sizeof(QuWinInfo));
+	//info->rect_count = 0;
 	//QuWindowAddMinimizeButton(win);
 	//QuWindowAddMaximizeButton(win);
 	//QuWindowAddCloseButton(win);
@@ -112,15 +117,16 @@ void QuWindowShowControls (QuWindow *win) {
 }
 
 void QuWindowShow() {
-
-	
+//	sys_print_text ("Root window wid -> %d\n", root_win->widgets->pointer);
 	for (int i = 0; i < root_win->widgets->pointer; i++) {
 		QuWidget* wid = (QuWidget*)QuListGetAt(root_win->widgets, i);
 		wid->Refresh(wid, root_win);
 	}
 
+
 	for (int i = 0; i < 23; i++)
 		acrylic_draw_horizontal_line(root_win->x, root_win->y + i,root_win->w,title_bar_colors[i]);
+
 
 	uint32_t buttons_color = WHITE;
 	for (int i = 0; i < root_win->controls->pointer; i++) {
@@ -134,8 +140,9 @@ void QuWindowShow() {
 		acrylic_draw_filled_circle(to->x, to->y, 6, buttons_color);
 	}
 
+	//sys_print_text ("Refresh #5\n");
 	acrylic_draw_rect_unfilled (root_win->x, root_win->y, root_win->w, root_win->h, SILVER);
-	//QuPanelUpdate(root_win->x, root_win->y, root_win->w, root_win->h);
+	QuPanelUpdate(root_win->x, root_win->y, root_win->w, root_win->h);
 }
 
 
@@ -181,6 +188,7 @@ void QuWindowMove (int x, int y) {
 	}
 
 	acrylic_draw_rect_unfilled (root_win->x, root_win->y, root_win->w, root_win->h, SILVER);
+	//QuPanelUpdate(root_win->x, root_win->y, root_win->w, root_win->h);
 }
 
 
