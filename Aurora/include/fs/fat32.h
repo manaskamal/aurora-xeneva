@@ -103,4 +103,5 @@ extern void list_fat_entries ();
 extern uint32_t fat32_create_file  (char* filename, uint8_t *buffer, unsigned int length);
 extern void create_dir (const char* filename);
 extern void fat32_self_register ();
+extern void fat32_list_files();
 #endif

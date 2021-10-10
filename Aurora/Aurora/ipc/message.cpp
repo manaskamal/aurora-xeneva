@@ -38,8 +38,7 @@ void message_send (uint16_t dest_id, message_t *msg) {
 		thread_t * blocked_thread = thread_iterate_block_list (dest_id);
 		if (blocked_thread  != NULL){
 			unblock_thread (blocked_thread);
-		}else
-			goto end;
+		}
 	}
 
 	msg->dest_id = dest_id;

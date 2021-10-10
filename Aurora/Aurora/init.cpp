@@ -149,6 +149,7 @@ void _kmain (KERNEL_BOOT_INFO *info) {
 	dwm_ipc_init();
 
 	driver_mngr_initialize(info);
+
 #ifdef ARCH_X64
 
 	//================================================
@@ -156,7 +157,6 @@ void _kmain (KERNEL_BOOT_INFO *info) {
 	//!===============================================
 	initialize_scheduler();
 	create_process ("a:xshell.exe","shell",0, NULL);
-
 	//! Quince -- The Compositing window manager for Aurora kernel
 	//! always put quince in thread id -- > 2
 	create_process ("a:quince.exe","quince",0, NULL);
@@ -168,6 +168,7 @@ void _kmain (KERNEL_BOOT_INFO *info) {
 	 */
 	create_kthread (procmngr_start,(uint64_t)pmmngr_alloc(),x64_read_cr3(),"procmngr",0);
 
+	create_process ("a:autask.exe", "tsk", 0, NULL);
 	//! Misc programs goes here
 	create_process ("a:dwm2.exe", "dwm3", 0, NULL);
 //	create_process ("a:dwm2.exe", "dwm4", 0, NULL);

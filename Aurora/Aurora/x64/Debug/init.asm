@@ -10,21 +10,24 @@ _DATA	SEGMENT
 _fltused DD	01H
 _DATA	ENDS
 CONST	SEGMENT
-$SG8129	DB	'Timer fired', 0aH, 00H
+$SG8130	DB	'Timer fired', 0aH, 00H
 	ORG $+3
-$SG8157	DB	'shell', 00H
+$SG8158	DB	'shell', 00H
 	ORG $+2
-$SG8158	DB	'a:xshell.exe', 00H
+$SG8159	DB	'a:xshell.exe', 00H
 	ORG $+3
-$SG8159	DB	'quince', 00H
+$SG8160	DB	'quince', 00H
 	ORG $+1
-$SG8160	DB	'a:quince.exe', 00H
+$SG8161	DB	'a:quince.exe', 00H
 	ORG $+3
-$SG8162	DB	'procmngr', 00H
+$SG8163	DB	'procmngr', 00H
 	ORG $+3
-$SG8163	DB	'dwm3', 00H
-	ORG $+7
-$SG8164	DB	'a:dwm2.exe', 00H
+$SG8164	DB	'tsk', 00H
+$SG8165	DB	'a:autask.exe', 00H
+	ORG $+3
+$SG8166	DB	'dwm3', 00H
+	ORG $+3
+$SG8167	DB	'a:dwm2.exe', 00H
 CONST	ENDS
 PUBLIC	??2@YAPEAX_K@Z					; operator new
 PUBLIC	??3@YAXPEAX@Z					; operator delete
@@ -76,7 +79,7 @@ $pdata$??_U@YAPEAX_K@Z DD imagerel $LN3
 	DD	imagerel $LN3+23
 	DD	imagerel $unwind$??_U@YAPEAX_K@Z
 $pdata$?_kmain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z DD imagerel $LN5
-	DD	imagerel $LN5+282
+	DD	imagerel $LN5+307
 	DD	imagerel $unwind$?_kmain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z
 pdata	ENDS
 xdata	SEGMENT
@@ -191,32 +194,32 @@ $LN5:
 	mov	rcx, QWORD PTR info$[rsp]
 	call	?driver_mngr_initialize@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z ; driver_mngr_initialize
 
-; 152  : #ifdef ARCH_X64
-; 153  : 
-; 154  : 	//================================================
-; 155  : 	//! Initialize the scheduler here
-; 156  : 	//!===============================================
-; 157  : 	initialize_scheduler();
+; 152  : 
+; 153  : #ifdef ARCH_X64
+; 154  : 
+; 155  : 	//================================================
+; 156  : 	//! Initialize the scheduler here
+; 157  : 	//!===============================================
+; 158  : 	initialize_scheduler();
 
 	call	?initialize_scheduler@@YAXXZ		; initialize_scheduler
 
-; 158  : 	create_process ("a:xshell.exe","shell",0, NULL);
+; 159  : 	create_process ("a:xshell.exe","shell",0, NULL);
 
 	xor	r9d, r9d
 	xor	r8d, r8d
-	lea	rdx, OFFSET FLAT:$SG8157
-	lea	rcx, OFFSET FLAT:$SG8158
+	lea	rdx, OFFSET FLAT:$SG8158
+	lea	rcx, OFFSET FLAT:$SG8159
 	call	?create_process@@YAXPEBDPEADE1@Z	; create_process
 
-; 159  : 
 ; 160  : 	//! Quince -- The Compositing window manager for Aurora kernel
 ; 161  : 	//! always put quince in thread id -- > 2
 ; 162  : 	create_process ("a:quince.exe","quince",0, NULL);
 
 	xor	r9d, r9d
 	xor	r8d, r8d
-	lea	rdx, OFFSET FLAT:$SG8159
-	lea	rcx, OFFSET FLAT:$SG8160
+	lea	rdx, OFFSET FLAT:$SG8160
+	lea	rcx, OFFSET FLAT:$SG8161
 	call	?create_process@@YAXPEBDPEADE1@Z	; create_process
 
 ; 163  : 
@@ -231,7 +234,7 @@ $LN5:
 	mov	QWORD PTR tv81[rsp], rax
 	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
 	mov	BYTE PTR [rsp+32], 0
-	lea	r9, OFFSET FLAT:$SG8162
+	lea	r9, OFFSET FLAT:$SG8163
 	mov	rcx, QWORD PTR tv81[rsp]
 	mov	r8, rcx
 	mov	rdx, rax
@@ -239,39 +242,47 @@ $LN5:
 	call	?create_kthread@@YAPEAU_thread_@@P6AXXZ_K1QEADE@Z ; create_kthread
 
 ; 170  : 
-; 171  : 	//! Misc programs goes here
-; 172  : 	create_process ("a:dwm2.exe", "dwm3", 0, NULL);
+; 171  : 	create_process ("a:autask.exe", "tsk", 0, NULL);
 
 	xor	r9d, r9d
 	xor	r8d, r8d
-	lea	rdx, OFFSET FLAT:$SG8163
-	lea	rcx, OFFSET FLAT:$SG8164
+	lea	rdx, OFFSET FLAT:$SG8164
+	lea	rcx, OFFSET FLAT:$SG8165
 	call	?create_process@@YAXPEBDPEADE1@Z	; create_process
 
-; 173  : //	create_process ("a:dwm2.exe", "dwm4", 0, NULL);
-; 174  : 
-; 175  : 	//! Here start the scheduler (multitasking engine)
-; 176  : 	scheduler_start();
+; 172  : 	//! Misc programs goes here
+; 173  : 	create_process ("a:dwm2.exe", "dwm3", 0, NULL);
+
+	xor	r9d, r9d
+	xor	r8d, r8d
+	lea	rdx, OFFSET FLAT:$SG8166
+	lea	rcx, OFFSET FLAT:$SG8167
+	call	?create_process@@YAXPEBDPEADE1@Z	; create_process
+
+; 174  : //	create_process ("a:dwm2.exe", "dwm4", 0, NULL);
+; 175  : 
+; 176  : 	//! Here start the scheduler (multitasking engine)
+; 177  : 	scheduler_start();
 
 	call	?scheduler_start@@YAXXZ			; scheduler_start
 $LN2@kmain:
 
-; 177  : #endif
-; 178  : 
-; 179  : 	//! Loop forever
-; 180  : 	while(1) {
+; 178  : #endif
+; 179  : 
+; 180  : 	//! Loop forever
+; 181  : 	while(1) {
 
 	xor	eax, eax
 	cmp	eax, 1
 	je	SHORT $LN1@kmain
 
-; 181  : 		//!looping looping
-; 182  : 	}
+; 182  : 		//!looping looping
+; 183  : 	}
 
 	jmp	SHORT $LN2@kmain
 $LN1@kmain:
 
-; 183  : }
+; 184  : }
 
 	add	rsp, 72					; 00000048H
 	ret	0
@@ -342,7 +353,7 @@ $LN3:
 
 ; 88   : 	printf ("Timer fired\n");
 
-	lea	rcx, OFFSET FLAT:$SG8129
+	lea	rcx, OFFSET FLAT:$SG8130
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 89   : 	interrupt_end(2);

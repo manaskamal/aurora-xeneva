@@ -224,16 +224,10 @@ void QuWindowMngr_HandleMouse (int x, int y, bool clicked) {
 				
 				if (clicked){
 					if(focus_win != win)
-						focus_win = win;
+						return;
 					focus_win->draggable = false;
 					focus_win->width += 10;
 					focus_win->height += 10;
-					QuRect *r = (QuRect*)malloc(sizeof(QuRect));
-					r->x = focus_win->x;
-					r->y = focus_win->y;
-					r->w = focus_win->width;
-					r->h = focus_win->height;
-					QuWindowAddDirtyArea(focus_win, r);
 
 					QuMessage msg;
 					msg.type = QU_CANVAS_RESIZE;

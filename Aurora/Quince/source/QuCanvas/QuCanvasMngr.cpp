@@ -25,6 +25,10 @@
 #include <QuCanvas\QuDirtyStack.h>
 #include <QuCanvas\QuScreenStack.h>
 #include <QuWindow\QuWindowMngr.h>
+#include <QuCursor.h>
+#include <acrylic.h>
+#include <string.h>
+
 
 #define QU_CANVAS_START   0x0000100000000000
 
@@ -75,6 +79,9 @@ void QuCanvasBlit (QuWindow* win,uint32_t *canvas, unsigned x, unsigned y, unsig
 					}
 				}
 			}
+#ifdef SW_CURSOR
+			QuMoveCursor(QuCursorGetNewX(), QuCursorGetNewY());
+#endif
 			info->rect_count = 0;
 		} else {
 			for (int i=0; i < win->width; i++) {
@@ -87,7 +94,9 @@ void QuCanvasBlit (QuWindow* win,uint32_t *canvas, unsigned x, unsigned y, unsig
 				}
 			}
 		}
-		
+#ifdef SW_CURSOR
+		QuMoveCursor(QuCursorGetNewX(), QuCursorGetNewY());
+#endif
 		info->dirty = false;	
 		QuCanvasSetUpdateBit(true);
 	}
@@ -176,4 +185,46 @@ void QuCanvasUpdateDirty() {
 	query->value3 = w;
 	query->value4 = h;
 	ioquery(IO_QUERY_SVGA, SVGA_UPDATE, query);
+ }
+
+ void QuRenderTime (uint8_t sec, uint8_t min, uint8_t hr) {
+    acrylic_draw_rect_filled (canvas_get_width() - 100, canvas_get_height() - 35,100,30,0x8C3E3E3E);
+	acrylic_draw_rect_unfilled (canvas_get_width() - 100, canvas_get_height() - 35, 100, 30,0xD9FFFFFF);
+
+	char _sec[2];
+	char _min[2];
+	char _hour[2];
+
+	sztoa(sec,_sec,10);
+	sztoa(min,_min, 10);
+	sztoa(hr,_hour, 10);
+
+
+	acrylic_draw_arr_string (canvas_get_width() - 100 + 100/2 - (strlen(_hour)*8)/2 - 16,
+		canvas_get_height() - 35 + 30/2 - 12/2,
+		_hour, 
+		0xD9FFFFFF);
+
+	acrylic_draw_arr_string (canvas_get_width() - 100 + 100/2 - (strlen(":")*8)/2 - 9,
+		canvas_get_height() - 35 + 30/2 - 12/2,
+		":", 
+		0xD9FFFFFF);
+
+	acrylic_draw_arr_string (canvas_get_width() - 100 + 100/2 - (strlen(_min)*8)/2,
+		canvas_get_height() - 35 + 30/2 - 12/2,
+		_min, 
+		0xD9FFFFFF);
+
+	acrylic_draw_arr_string (canvas_get_width() - 100 + 100/2 - (strlen(":")*8)/2 + 9,
+		canvas_get_height() - 35 + 30/2 - 12/2,
+		":", 
+		0xD9FFFFFF);
+
+	acrylic_draw_arr_string (canvas_get_width() - 100 + 100/2 - (strlen(_sec)*8)/2 + 19,
+		canvas_get_height() - 35 + 30/2 - 12/2,
+		_sec, 
+		0xD9FFFFFF);
+
+	canvas_screen_update(canvas_get_width() - 100, canvas_get_height() - 35,100,30);
+
  }

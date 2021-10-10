@@ -26,8 +26,8 @@ ipc_rcv_msg DQ	01H DUP (?)
 top	DQ	01H DUP (?)
 _BSS	ENDS
 pdata	SEGMENT
-$pdata$?message_send@@YAXGPEAU_message_@@@Z DD imagerel $LN7
-	DD	imagerel $LN7+188
+$pdata$?message_send@@YAXGPEAU_message_@@@Z DD imagerel $LN5
+	DD	imagerel $LN5+182
 	DD	imagerel $unwind$?message_send@@YAXGPEAU_message_@@@Z
 $pdata$?message_receive@@YAXPEAU_message_@@@Z DD imagerel $LN7
 	DD	imagerel $LN7+169
@@ -140,45 +140,45 @@ temp$ = 40
 msg$ = 64
 ?message_receive@@YAXPEAU_message_@@@Z PROC		; message_receive
 
-; 61   : void message_receive (message_t* msg) {
+; 60   : void message_receive (message_t* msg) {
 
 $LN7:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 56					; 00000038H
 
-; 62   : 	x64_cli ();
+; 61   : 	x64_cli ();
 
 	call	x64_cli
 
-; 63   : 	mutex_lock(ipc_rcv_msg);
+; 62   : 	mutex_lock(ipc_rcv_msg);
 
 	mov	rcx, QWORD PTR ipc_rcv_msg
 	call	?mutex_lock@@YAXPEAUmutex_t@@@Z		; mutex_lock
 
-; 64   : 
-; 65   : 	kernel_message_queue_t *temp;
-; 66   : 
-; 67   : 	if (top == NULL) 
+; 63   : 
+; 64   : 	kernel_message_queue_t *temp;
+; 65   : 
+; 66   : 	if (top == NULL) 
 
 	cmp	QWORD PTR top, 0
 	jne	SHORT $LN4@message_re
 
-; 68   : 		goto end;
+; 67   : 		goto end;
 
 	jmp	SHORT $LN3@message_re
 	jmp	SHORT $end$8
 
-; 69   : 	else {
+; 68   : 	else {
 
 	jmp	SHORT $LN2@message_re
 $LN4@message_re:
 
-; 70   : 		temp = top;
+; 69   : 		temp = top;
 
 	mov	rax, QWORD PTR top
 	mov	QWORD PTR temp$[rsp], rax
 
-; 71   : 		if (temp->msg.dest_id == get_current_thread()->id) {
+; 70   : 		if (temp->msg.dest_id == get_current_thread()->id) {
 
 	mov	rax, QWORD PTR temp$[rsp]
 	movzx	eax, WORD PTR [rax+58]
@@ -189,18 +189,18 @@ $LN4@message_re:
 	cmp	ecx, eax
 	jne	SHORT $LN1@message_re
 
-; 72   : 			top = top->link;
+; 71   : 			top = top->link;
 
 	mov	rax, QWORD PTR top
 	mov	rax, QWORD PTR [rax+112]
 	mov	QWORD PTR top, rax
 
-; 73   : 			temp->link = NULL;
+; 72   : 			temp->link = NULL;
 
 	mov	rax, QWORD PTR temp$[rsp]
 	mov	QWORD PTR [rax+112], 0
 
-; 74   : 			memcpy (msg, &temp->msg,sizeof(message_t));
+; 73   : 			memcpy (msg, &temp->msg,sizeof(message_t));
 
 	mov	rax, QWORD PTR temp$[rsp]
 	mov	r8d, 112				; 00000070H
@@ -208,7 +208,7 @@ $LN4@message_re:
 	mov	rcx, QWORD PTR msg$[rsp]
 	call	memcpy
 
-; 75   : 			pmmngr_free(temp);
+; 74   : 			pmmngr_free(temp);
 
 	mov	rcx, QWORD PTR temp$[rsp]
 	call	?pmmngr_free@@YAXPEAX@Z			; pmmngr_free
@@ -217,16 +217,16 @@ $LN2@message_re:
 $LN3@message_re:
 $end$8:
 
-; 76   : 		}
-; 77   : 	}
-; 78   : 
-; 79   : end:
-; 80   : 	mutex_unlock(ipc_rcv_msg);
+; 75   : 		}
+; 76   : 	}
+; 77   : 
+; 78   : end:
+; 79   : 	mutex_unlock(ipc_rcv_msg);
 
 	mov	rcx, QWORD PTR ipc_rcv_msg
 	call	?mutex_unlock@@YAXPEAUmutex_t@@@Z	; mutex_unlock
 
-; 81   : }
+; 80   : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -244,7 +244,7 @@ msg$ = 88
 
 ; 33   : void message_send (uint16_t dest_id, message_t *msg) {
 
-$LN7:
+$LN5:
 	mov	QWORD PTR [rsp+16], rdx
 	mov	WORD PTR [rsp+8], cx
 	sub	rsp, 72					; 00000048H
@@ -267,7 +267,7 @@ $LN7:
 ; 37   : 	if (!dest_thread) {
 
 	cmp	QWORD PTR dest_thread$[rsp], 0
-	jne	SHORT $LN4@message_se
+	jne	SHORT $LN2@message_se
 
 ; 38   : 		thread_t * blocked_thread = thread_iterate_block_list (dest_id);
 
@@ -279,41 +279,32 @@ $LN7:
 ; 39   : 		if (blocked_thread  != NULL){
 
 	cmp	QWORD PTR blocked_thread$1[rsp], 0
-	je	SHORT $LN3@message_se
+	je	SHORT $LN1@message_se
 
 ; 40   : 			unblock_thread (blocked_thread);
 
 	mov	rcx, QWORD PTR blocked_thread$1[rsp]
 	call	?unblock_thread@@YAXPEAU_thread_@@@Z	; unblock_thread
-
-; 41   : 		}else
-
-	jmp	SHORT $LN2@message_se
-$LN3@message_se:
-
-; 42   : 			goto end;
-
-	jmp	SHORT $LN1@message_se
-	jmp	SHORT $end$8
+$LN1@message_se:
 $LN2@message_se:
-$LN4@message_se:
 
-; 43   : 	}
-; 44   : 
-; 45   : 	msg->dest_id = dest_id;
+; 41   : 		}
+; 42   : 	}
+; 43   : 
+; 44   : 	msg->dest_id = dest_id;
 
 	mov	rax, QWORD PTR msg$[rsp]
 	movzx	ecx, WORD PTR dest_id$[rsp]
 	mov	WORD PTR [rax+58], cx
 
-; 46   : 	//!Actuall Message model
-; 47   : 	kernel_message_queue_t * temp = (kernel_message_queue_t*)pmmngr_alloc();
+; 45   : 	//!Actuall Message model
+; 46   : 	kernel_message_queue_t * temp = (kernel_message_queue_t*)pmmngr_alloc();
 
 	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
 	mov	QWORD PTR temp$[rsp], rax
 
-; 48   : 
-; 49   : 	memcpy (&temp->msg, msg, sizeof(message_t));
+; 47   : 
+; 48   : 	memcpy (&temp->msg, msg, sizeof(message_t));
 
 	mov	rax, QWORD PTR temp$[rsp]
 	mov	r8d, 112				; 00000070H
@@ -321,26 +312,25 @@ $LN4@message_se:
 	mov	rcx, rax
 	call	memcpy
 
-; 50   : 	temp->link = top;
+; 49   : 	temp->link = top;
 
 	mov	rax, QWORD PTR temp$[rsp]
 	mov	rcx, QWORD PTR top
 	mov	QWORD PTR [rax+112], rcx
 
-; 51   : 	top = temp;
+; 50   : 	top = temp;
 
 	mov	rax, QWORD PTR temp$[rsp]
 	mov	QWORD PTR top, rax
-$LN1@message_se:
-$end$8:
+$end$6:
 
-; 52   : end:
-; 53   : 	mutex_unlock (ipc_mutex_msg);
+; 51   : end:
+; 52   : 	mutex_unlock (ipc_mutex_msg);
 
 	mov	rcx, QWORD PTR ipc_mutex_msg
 	call	?mutex_unlock@@YAXPEAUmutex_t@@@Z	; mutex_unlock
 
-; 54   : }
+; 53   : }
 
 	add	rsp, 72					; 00000048H
 	ret	0

@@ -135,10 +135,9 @@ void create_process(const char* filename, char* procname, uint8_t priority, char
 	//!open the binary file and read it
 	unsigned char* buf = (unsigned char*)pmmngr_alloc();   //18*1024
 	read_blk(&file,buf,file.id);
-	
+
 	IMAGE_DOS_HEADER* dos = (IMAGE_DOS_HEADER*)buf;
 	PIMAGE_NT_HEADERS nt = raw_offset<PIMAGE_NT_HEADERS>(dos, dos->e_lfanew);
-
 
 	//!extract the informations
     load_pe_file(buf,file.size);

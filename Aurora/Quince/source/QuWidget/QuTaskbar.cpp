@@ -11,7 +11,10 @@
 #include <acrylic.h>
 #include <stdint.h>
 #include <canvas.h>
+#include <color.h>
+#include <string.h>
 
+int pos_x = 20;
 uint32_t task_bar_colors[35] = {0xff59584f, 0xff5f5d53, 0xff58564e, 0xff57554d, 0xff56544c, 0xff55534b, \
     0xff54524a, 0xff525049, 0xff514f48, 0xff504e47, 0xff4e4c45, 0xff4e4c45, \
         0xff4c4a44, 0xff4b4943, 0xff4a4842, 0xff484741, 0xff46453f, 0xff45443f, \
@@ -20,10 +23,11 @@ uint32_t task_bar_colors[35] = {0xff59584f, 0xff5f5d53, 0xff58564e, 0xff57554d, 
         0xff0f0e0b};
 
 void QuTaskbarInit () {
-
-	unsigned y = canvas_get_height() - 35;
-	for (int i = 0; i < 35; i++) {
-		acrylic_draw_horizontal_line(0, y+ i, canvas_get_width(),task_bar_colors[i]);
-	}
-
+	acrylic_draw_rect_filled (0, canvas_get_height() - 40, canvas_get_width(), 40, 0x8CFFFFFF);
+	/*acrylic_draw_rect_unfilled (0, canvas_get_height() - 40, canvas_get_width(), 40, 0xB3D9D9D9);*/
+	acrylic_draw_rect_filled (pos_x, canvas_get_height() - 40,100,30,0x8CFFFFFF);
+	acrylic_draw_rect_unfilled (pos_x, canvas_get_height() - 40, 100, 30,BLACK);
+	acrylic_draw_arr_string (100/2 - (strlen("Xeneva")*8)/2,
+		canvas_get_height() - 40 + 30/2 - 12/2,
+		"Xeneva", BLACK);
 }

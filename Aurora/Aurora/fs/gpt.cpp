@@ -36,27 +36,9 @@ void initialize_gpt () {
 	//memset (buf, 0, 4096);
 	auto raw_byte_index = gpt_h->partition_table_lba;
 
-	for (int i = 0; i < 34; i++) {
+	for (int i = 0; i < 128; i++) {
 		ata_read_28(raw_byte_index, 1, buf);
 		gpt_partition_t *part = (gpt_partition_t*)buf;
-		for (int j = 0; j < 4; j++) {
-			//printf ("Partition start lba -> %d\n", part->first_lba);
-			/*if (part->partition_guid == 0x00000000) {
-				printf ("not present\n");
-				part++;
-				continue;
-			}*/
-
-			if (part->attributes & 2){
-				char name[10];
-				for (int k=0; k < sizeof(name); k++) 
-					name[k] = part->partition_name[k];
-				printf ("[GPT]: Partition found -> %s\n", name);
-				printf ("[GPT]: Partition first lba -> %d\n", part->first_lba);
-			}
-			//printf ("[GPT]: Attribute  %x\n", part->attributes);
-			part++;
-		}
 		raw_byte_index++;
 	}
 

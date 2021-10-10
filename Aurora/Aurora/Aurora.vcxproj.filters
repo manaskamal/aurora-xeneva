@@ -336,6 +336,9 @@
     <ClInclude Include="..\include\fs\gpt.h">
       <Filter>include\fs</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\error.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="init.cpp">

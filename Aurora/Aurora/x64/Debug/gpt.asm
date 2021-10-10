@@ -17,9 +17,6 @@ $SG2938	DB	'[GPT]: Total partition entries %d', 0aH, 00H
 $SG2939	DB	'[GPT]: Partition table lba -> %d', 0aH, 00H
 	ORG $+6
 $SG2941	DB	'[GPT]: SizeOf(GPTPartitionTable) -> %d', 0aH, 00H
-$SG2961	DB	'[GPT]: Partition found -> %s', 0aH, 00H
-	ORG $+2
-$SG2962	DB	'[GPT]: Partition first lba -> %d', 0aH, 00H
 CONST	ENDS
 PUBLIC	?initialize_gpt@@YAXXZ				; initialize_gpt
 EXTRN	?memset@@YAXPEAXEI@Z:PROC			; memset
@@ -27,32 +24,29 @@ EXTRN	?printf@@YAXPEBDZZ:PROC				; printf
 EXTRN	?pmmngr_free@@YAXPEAX@Z:PROC			; pmmngr_free
 EXTRN	?ata_read_28@@YAEIGPEAE@Z:PROC			; ata_read_28
 pdata	SEGMENT
-$pdata$?initialize_gpt@@YAXXZ DD imagerel $LN13
-	DD	imagerel $LN13+450
+$pdata$?initialize_gpt@@YAXXZ DD imagerel $LN6
+	DD	imagerel $LN6+278
 	DD	imagerel $unwind$?initialize_gpt@@YAXXZ
 pdata	ENDS
 xdata	SEGMENT
 $unwind$?initialize_gpt@@YAXXZ DD 020701H
-	DD	08d0107H
+	DD	0890107H
 xdata	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\fs\gpt.cpp
 _TEXT	SEGMENT
-k$1 = 32
-i$2 = 36
-j$3 = 40
-part$4 = 48
-gpt_h$ = 56
-raw_byte_index$ = 64
-name$5 = 72
-buffer$ = 96
-buf$ = 608
+i$1 = 32
+gpt_h$ = 40
+raw_byte_index$ = 48
+part$2 = 56
+buffer$ = 64
+buf$ = 576
 ?initialize_gpt@@YAXXZ PROC				; initialize_gpt
 
 ; 21   : void initialize_gpt () {
 
-$LN13:
-	sub	rsp, 1128				; 00000468H
+$LN6:
+	sub	rsp, 1096				; 00000448H
 
 ; 22   : 	printf ("[GPT]: Initializing gpt partition tables....\n");
 
@@ -125,17 +119,17 @@ $LN13:
 	mov	QWORD PTR raw_byte_index$[rsp], rax
 
 ; 38   : 
-; 39   : 	for (int i = 0; i < 34; i++) {
+; 39   : 	for (int i = 0; i < 128; i++) {
 
-	mov	DWORD PTR i$2[rsp], 0
-	jmp	SHORT $LN10@initialize
-$LN9@initialize:
-	mov	eax, DWORD PTR i$2[rsp]
+	mov	DWORD PTR i$1[rsp], 0
+	jmp	SHORT $LN3@initialize
+$LN2@initialize:
+	mov	eax, DWORD PTR i$1[rsp]
 	inc	eax
-	mov	DWORD PTR i$2[rsp], eax
-$LN10@initialize:
-	cmp	DWORD PTR i$2[rsp], 34			; 00000022H
-	jge	$LN8@initialize
+	mov	DWORD PTR i$1[rsp], eax
+$LN3@initialize:
+	cmp	DWORD PTR i$1[rsp], 128			; 00000080H
+	jge	SHORT $LN1@initialize
 
 ; 40   : 		ata_read_28(raw_byte_index, 1, buf);
 
@@ -147,107 +141,28 @@ $LN10@initialize:
 ; 41   : 		gpt_partition_t *part = (gpt_partition_t*)buf;
 
 	lea	rax, QWORD PTR buf$[rsp]
-	mov	QWORD PTR part$4[rsp], rax
+	mov	QWORD PTR part$2[rsp], rax
 
-; 42   : 		for (int j = 0; j < 4; j++) {
-
-	mov	DWORD PTR j$3[rsp], 0
-	jmp	SHORT $LN7@initialize
-$LN6@initialize:
-	mov	eax, DWORD PTR j$3[rsp]
-	inc	eax
-	mov	DWORD PTR j$3[rsp], eax
-$LN7@initialize:
-	cmp	DWORD PTR j$3[rsp], 4
-	jge	$LN5@initialize
-
-; 43   : 			//printf ("Partition start lba -> %d\n", part->first_lba);
-; 44   : 			/*if (part->partition_guid == 0x00000000) {
-; 45   : 				printf ("not present\n");
-; 46   : 				part++;
-; 47   : 				continue;
-; 48   : 			}*/
-; 49   : 
-; 50   : 			if (part->attributes & 2){
-
-	mov	rax, QWORD PTR part$4[rsp]
-	mov	rax, QWORD PTR [rax+48]
-	and	rax, 2
-	test	rax, rax
-	je	SHORT $LN4@initialize
-
-; 51   : 				char name[10];
-; 52   : 				for (int k=0; k < sizeof(name); k++) 
-
-	mov	DWORD PTR k$1[rsp], 0
-	jmp	SHORT $LN3@initialize
-$LN2@initialize:
-	mov	eax, DWORD PTR k$1[rsp]
-	inc	eax
-	mov	DWORD PTR k$1[rsp], eax
-$LN3@initialize:
-	movsxd	rax, DWORD PTR k$1[rsp]
-	cmp	rax, 10
-	jae	SHORT $LN1@initialize
-
-; 53   : 					name[k] = part->partition_name[k];
-
-	movsxd	rax, DWORD PTR k$1[rsp]
-	movsxd	rcx, DWORD PTR k$1[rsp]
-	mov	rdx, QWORD PTR part$4[rsp]
-	movzx	eax, BYTE PTR [rdx+rax+56]
-	mov	BYTE PTR name$5[rsp+rcx], al
-	jmp	SHORT $LN2@initialize
-$LN1@initialize:
-
-; 54   : 				printf ("[GPT]: Partition found -> %s\n", name);
-
-	lea	rdx, QWORD PTR name$5[rsp]
-	lea	rcx, OFFSET FLAT:$SG2961
-	call	?printf@@YAXPEBDZZ			; printf
-
-; 55   : 				printf ("[GPT]: Partition first lba -> %d\n", part->first_lba);
-
-	mov	rax, QWORD PTR part$4[rsp]
-	add	rax, 32					; 00000020H
-	mov	rdx, rax
-	lea	rcx, OFFSET FLAT:$SG2962
-	call	?printf@@YAXPEBDZZ			; printf
-$LN4@initialize:
-
-; 56   : 			}
-; 57   : 			//printf ("[GPT]: Attribute  %x\n", part->attributes);
-; 58   : 			part++;
-
-	mov	rax, QWORD PTR part$4[rsp]
-	add	rax, 128				; 00000080H
-	mov	QWORD PTR part$4[rsp], rax
-
-; 59   : 		}
-
-	jmp	$LN6@initialize
-$LN5@initialize:
-
-; 60   : 		raw_byte_index++;
+; 42   : 		raw_byte_index++;
 
 	mov	rax, QWORD PTR raw_byte_index$[rsp]
 	inc	rax
 	mov	QWORD PTR raw_byte_index$[rsp], rax
 
-; 61   : 	}
+; 43   : 	}
 
-	jmp	$LN9@initialize
-$LN8@initialize:
+	jmp	SHORT $LN2@initialize
+$LN1@initialize:
 
-; 62   : 
-; 63   : 	pmmngr_free(buf);
+; 44   : 
+; 45   : 	pmmngr_free(buf);
 
 	lea	rcx, QWORD PTR buf$[rsp]
 	call	?pmmngr_free@@YAXPEAX@Z			; pmmngr_free
 
-; 64   : }
+; 46   : }
 
-	add	rsp, 1128				; 00000468H
+	add	rsp, 1096				; 00000448H
 	ret	0
 ?initialize_gpt@@YAXXZ ENDP				; initialize_gpt
 _TEXT	ENDS

@@ -61,6 +61,6 @@ typedef struct _QuObject_ {
 
 extern void QuChannelPut (QuMessage *msg, uint16_t to_id);
 extern void QuChannelGet (QuMessage *msg);
-extern void QuRegisterApplication ();
+extern void QuRegisterApplication (char* app_title);
 extern uint16_t QuGetAppId();
 #endif

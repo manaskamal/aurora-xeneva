@@ -136,7 +136,7 @@
     <Link>
       <GenerateDebugInformation>
       </GenerateDebugInformation>
-      <OutputFile>F:\EFI\XENEVA\xnkrnl.exe</OutputFile>
+      <OutputFile>D:\EFI\XENEVA\xnkrnl.exe</OutputFile>
       <AdditionalDependencies>
       </AdditionalDependencies>
       <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
@@ -231,6 +231,7 @@
     <ClInclude Include="..\include\drivers\vga.h" />
     <ClInclude Include="..\include\drivers\vmmouse.h" />
     <ClInclude Include="..\include\drvmngr.h" />
+    <ClInclude Include="..\include\error.h" />
     <ClInclude Include="..\include\fs\fat32.h" />
     <ClInclude Include="..\include\fs\gpt.h" />
     <ClInclude Include="..\include\gui\jpeg.h" />

@@ -105,13 +105,14 @@ void initialize_fat32 () {
 	printf ("Number Of FATs -> %d\n", fat32_data->num_fats);
 	printf ("Root Base Cluster -> %d\n", fat32_data->info.FAT32.root_dir_cluster);
 	printf ("Sector/FAT32 -> %d\n", fat32_data->info.FAT32.sect_per_fat32);
+#endif
 	for (int i=0; i <12; i++) {
 		putc(fat32_data->info.FAT32.vol_label[i]);
 	}
 	for (int i=0; i <9; i++) {
 		putc(fat32_data->info.FAT32.sys_id[i]);
 	}
-#endif
+
 
 	fat_begin_lba = part_lba + fat32_data->reserved_sectors;
 	cluster_begin_lba = part_lba + fat32_data->reserved_sectors + (fat32_data->num_fats * fat32_data->info.FAT32.sect_per_fat32);
@@ -120,10 +121,8 @@ void initialize_fat32 () {
 	root_sector = cluster_to_sector32 (root_dir_first_cluster);
 	sectors_per_fat32 = fat32_data->info.FAT32.sect_per_fat32;
 
-	//printf ("Sector  Per Cluster -> %d\n", sectors_per_cluster);
-	//printf ("Number of FATs -> %d\n", fat32_data->num_fats);
 	total_clusters = fat32_data->large_sector_count / sectors_per_cluster;
-	root_dir_cache = (unsigned char*)pmmngr_alloc();
+	//fat32_list_files();
 	//for (int i = 0; i < sectors_per_cluster; i++) {
 	//	ata_read_28 (root_sector + i, 1, root_dir_cache);
 	//	root_dir_cache += 512;
@@ -146,24 +145,23 @@ uint32_t fat32_read_fat (uint32_t cluster_index) {
 
 void fat32_read (FILE *file, unsigned char* buf) {
 
-	auto lba = cluster_to_sector32 (file->start_cluster); 
-	
-	for (int i = 0; i < 8; i++) {
+	auto lba = cluster_to_sector32 (file->start_cluster); 	
+
+	for (int i = 0; i < sectors_per_cluster; i++) {
 		ata_read_28 (lba+i,1,buf);
 		buf += 512;
 	}
-
-	//kprintf("Current cluster -> %x\n",file->start_cluster);
     uint32_t value = fat32_read_fat (file->start_cluster);
 	if (value  >= 0x0FFFFFF8) {
 	    file->eof = 1;
+		return;
 	}
 
 	if (value  == 0x0FFFFFF7) {
 	    file->eof = 1;
+		return;
 	}
-
-
+	
 	file->start_cluster = value;
 }
 
@@ -185,9 +183,10 @@ FILE fat32_locate_dir (const char* dir) {
 
 	char dos_file_name[11];
 	to_dos_file_name32 (dir, dos_file_name, 11);
-	//dos_file_name[11]=0;
+	//dos_file_name[11]=0;	
+	buf = (unsigned char*)pmmngr_alloc ();
 	for (unsigned int sector = 0; sector < sectors_per_cluster; sector++) {
-		buf = (unsigned char*)pmmngr_alloc ();
+	
 		memset (buf, 0, 4096);
 		ata_read_28 (root_sector + sector,1, buf);
 		dirent = (fat32_dir*)buf;
@@ -232,14 +231,14 @@ FILE fat32_locate_subdir (FILE kfile, const char* filename) {
 	char dos_file_name[11];
 	to_dos_file_name32 (filename, dos_file_name, 11);
 	//dos_file_name[11] = 0;
-
+	unsigned char* buf = (unsigned char*)pmmngr_alloc();
 	if (kfile.flags != FILE_FLAG_INVALID) {
 		
 		//! read the directory
 		while (!kfile.eof) {
 
 			//! read 
-			unsigned char* buf = (unsigned char*)pmmngr_alloc();
+		
 			fat32_read (&kfile, buf);
 			//! set directory
 			fat32_dir* pkDir = (fat32_dir*)buf;

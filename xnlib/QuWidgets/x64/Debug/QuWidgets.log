@@ -1,4 +1,4 @@
-﻿Build started 07-10-2021 ৰাতিপু 12:24:51.
+﻿Build started 10-10-2021 আবেলি 11:45:43.
      1>Project "E:\Xeneva Project\Xeneva\xnlib\QuWidgets\QuWidgets.vcxproj" on node 2 (Rebuild target(s)).
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\xnlib\xnclib" /I"E:\Xeneva Project\Xeneva\xnlib\QuWidgets\include" /I"E:\Xeneva Project\Xeneva\xnlib\xnacrylic\include" /Zi /nologo /W4 /WX- /sdl- /MP /Od /D ARCH_X64 /D _MBCS /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt source\QuBase.cpp source\QuButton.cpp source\QuPanel.cpp source\QuTextbox.cpp source\QuUtils\QuList.cpp source\QuWindow.cpp
@@ -6,15 +6,15 @@
      1>cl : Command line warning D9002: ignoring unknown option '/arch:SSE'
      1>cl : Command line warning D9030: '/Gm' is incompatible with multiprocessing; ignoring /MP switch
          QuWindow.cpp
-     1>source\QuWindow.cpp(69): warning C4189: 'info' : local variable is initialized but not referenced
-     1>source\QuWindow.cpp(121): warning C4018: '<' : signed/unsigned mismatch
-     1>source\QuWindow.cpp(132): warning C4018: '<' : signed/unsigned mismatch
-     1>source\QuWindow.cpp(155): warning C4018: '<' : signed/unsigned mismatch
-     1>source\QuWindow.cpp(169): warning C4018: '<' : signed/unsigned mismatch
-     1>source\QuWindow.cpp(179): warning C4018: '<' : signed/unsigned mismatch
-     1>source\QuWindow.cpp(195): warning C4100: 'value' : unreferenced formal parameter
-     1>source\QuWindow.cpp(230): warning C4100: 'prop' : unreferenced formal parameter
-     1>source\QuWindow.cpp(240): warning C4018: '<' : signed/unsigned mismatch
+     1>source\QuWindow.cpp(70): warning C4189: 'info' : local variable is initialized but not referenced
+     1>source\QuWindow.cpp(122): warning C4018: '<' : signed/unsigned mismatch
+     1>source\QuWindow.cpp(133): warning C4018: '<' : signed/unsigned mismatch
+     1>source\QuWindow.cpp(156): warning C4018: '<' : signed/unsigned mismatch
+     1>source\QuWindow.cpp(170): warning C4018: '<' : signed/unsigned mismatch
+     1>source\QuWindow.cpp(180): warning C4018: '<' : signed/unsigned mismatch
+     1>source\QuWindow.cpp(196): warning C4100: 'value' : unreferenced formal parameter
+     1>source\QuWindow.cpp(242): warning C4100: 'prop' : unreferenced formal parameter
+     1>source\QuWindow.cpp(252): warning C4018: '<' : signed/unsigned mismatch
          QuList.cpp
          QuTextbox.cpp
      1>source\QuTextbox.cpp(31): warning C4100: 'clicked' : unreferenced formal parameter
@@ -53,4 +53,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:00.57
+Time Elapsed 00:00:01.08

@@ -56,7 +56,7 @@ void QuWindowAddCloseButton(QuWindow *win) {
 
 
 
-void QuCreateWindow (int x, int y, int w, int h, uint32_t* info_data) {
+void QuCreateWindow (int x, int y, int w, int h, uint32_t* info_data, char* title) {
 	QuWindow* win = (QuWindow*)malloc(sizeof(QuWindow));
 	win->x = x;
 	win->y = y;
@@ -65,6 +65,7 @@ void QuCreateWindow (int x, int y, int w, int h, uint32_t* info_data) {
 	win->widgets = QuListInit();
 	win->controls = QuListInit();
 	win->win_info_data = info_data;
+	win->title = title;
 
 	QuWinInfo* info = (QuWinInfo*)win->win_info_data;
 	sys_print_text ("QuWinInfo size -> %d bytes \n", sizeof(QuWinInfo));
@@ -224,6 +225,17 @@ void QuWindowSetSize (int width, int height) {
 	msg.dword = QU_WIN_SET_SIZE;
 	msg.dword2 = width;
 	msg.dword3 = height;
+	QuChannelPut(&msg, 2);
+}
+
+void QuWindowSetPos (int x, int y) {
+	root_win->x = x;
+	root_win->y = y;
+	QuMessage msg;
+	msg.type = QU_CODE_WIN_CONFIG;
+	msg.dword = QU_WIN_SET_POS;
+	msg.dword2 = root_win->x;
+	msg.dword3 = root_win->y;
 	QuChannelPut(&msg, 2);
 }
 

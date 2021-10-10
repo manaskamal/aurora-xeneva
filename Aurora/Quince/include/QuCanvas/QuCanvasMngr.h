@@ -81,4 +81,6 @@ extern void QuCanvasQuery(unsigned x, unsigned y, unsigned w, unsigned h);
 extern void QuCanvasQuickPaint (uint32_t* canvas,int x, int y, int w,int h);
 
 extern void QuCanvasUpdateDirtyFB();
+
+extern  void QuRenderTime (uint8_t sec, uint8_t min, uint8_t hr);
 #endif

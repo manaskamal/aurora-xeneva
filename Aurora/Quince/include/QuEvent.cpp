@@ -112,7 +112,7 @@ void QuEventLoop() {
 		 *  Mouse Move message handle
 		 */
 		if (m_pack.type == _MOUSE_MOVE) {
-			//QuCursorNewCoord(m_pack.dword, m_pack.dword2);
+			QuCursorNewCoord(m_pack.dword, m_pack.dword2);
 			mouse_x = m_pack.dword;
 			mouse_y = m_pack.dword2;
 			QuMoveCursor(mouse_x, mouse_y);
@@ -172,6 +172,7 @@ void QuEventLoop() {
 
 		//! Create Window Request
 		if (q_msg.type == QU_CODE_WIN_CREATE) {
+
 			////!Stop the mouse
 			render_disable = true;
 			uint16_t dest_id = q_msg.from_id; 
@@ -219,6 +220,11 @@ void QuEventLoop() {
 				QuWindowSetSize (win,q_msg.dword2,q_msg.dword3);
 			}
 
+			if (q_msg.dword == QU_WIN_SET_POS) {
+				win->x = q_msg.dword2;
+				win->y = q_msg.dword3;
+			}
+
 			if (q_msg.dword == QU_WIN_NON_DRAGGABLE) {
 				win->attr = QU_WIN_NON_DRAGGABLE;
 			}
@@ -241,19 +247,18 @@ void QuEventLoop() {
 
 		//*==========================================================================
 		//*==========================================================================
-		//if (diff_time > 60){
-		QuWindowMngr_DrawAll();
-			
+		if (diff_time > 15){
+			QuWindowMngr_DrawAll();
+			QuRenderTime(time.seconds, time.minutes, time.hour);
+			next_tick = sys_get_system_tick();
+			frame_time = 0;
+		}
 			
 	
-		if (diff_time > 60) {	
-			if (QuCanvasGetUpdateBit()) {
-				canvas_screen_update(0,0,canvas_get_width(), canvas_get_height());
-				QuCanvasSetUpdateBit(false);
+		if (QuCanvasGetUpdateBit()) {
+			canvas_screen_update(0,0,canvas_get_width(), canvas_get_height());
+			QuCanvasSetUpdateBit(false);
 			
-				next_tick = sys_get_system_tick();
-				frame_time = 0;
-			}
 		}
 		//! Here We Prepare the frame that will be displayed
 		sys_sleep(16);

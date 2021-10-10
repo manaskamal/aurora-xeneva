@@ -74,7 +74,7 @@ void ide_primary_irq (size_t vector, void* param)
 
 void ide_secondary_irq (size_t vector, void* param)
 {
-	printf ("Ide sec irq\n");
+	printf ("Ide secondary irq\n");
 	reset_ata_controller (ATA_SECONDARY_IO);
 	interrupt_end(15);
 }
@@ -251,10 +251,14 @@ uint8_t  ata_read_28 (uint32_t lba, uint16_t sec_count, uint8_t *buf)
 		io = ATA_SECONDARY_IO;
 		ata_drive = ATA_SLAVE;
 		break;
-	default:
+	default:{
+		printf ("[ATA]: Read28 -- no selected io & drive\n");
 		return 0;
 	}
+	}
 
+	/*printf ("[ATA]: Read28 -- io device selected -> %x\n", io);
+	printf ("[ATA]: Read28 -- ata drive selected -> %x\n", ata_drive);*/
 	uint8_t cmd = (ata_drive == ATA_MASTER ? 0xE0 : 0xF0);
 
 	ata_wait_busy (io);
@@ -470,7 +474,7 @@ void  ata_probe ()
 			ata_device_name[i + 1] = ide_buf[ATA_IDENT_MODEL + i];
 		}
 
-		//printf("[ATA]: Primary-Master Device: %s\n", ata_device_name);
+		printf("[ATA]: Primary-Master Device: %s\n", ata_device_name);
 		ata_drive = (ATA_PRIMARY << 1) | ATA_MASTER;
 	}
 
@@ -484,16 +488,20 @@ void  ata_probe ()
 		}
 
 		ata_slave_drive = (ATA_PRIMARY << 1) | ATA_SLAVE;
-		//printf("[ATA]: Primary-Slave Device: %s\n", ata_device_name);
+		printf("[ATA]: Primary-Slave Device: %s\n", ata_device_name);
 	}
 }
 
 void ata_initialize (){
+
+	x64_cli();
 
 	interrupt_set(35, ide_primary_irq, 14);
 
 	interrupt_set(36, ide_secondary_irq,15);
 
 	ata_probe ();
+
+	x64_sti();
 }
 

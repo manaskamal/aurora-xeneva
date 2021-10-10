@@ -18,6 +18,7 @@
 #define QU_WIN_CONFIG_AUTO_INVALIDATE 6
 #define QU_WIN_SET_SIZE 7
 #define QU_WIN_AUTO_INVALIDATE_RGN 8
+#define QU_WIN_SET_POS  14
 
 //! Window Attributes
 #define QU_WIN_MINIMIZABLE   1
@@ -55,6 +56,7 @@ typedef struct _QU_WIN_ {
 	uint32_t*  win_info_data;
 	QuList* widgets;
 	QuList* controls;
+	char *title;
 }QuWindow;
 
 typedef struct _QuWidget_ {
@@ -67,7 +69,7 @@ typedef struct _QuWidget_ {
 	void (*ActionEvent) (struct _QuWidget_*, QuWindow* win);
 }QuWidget;
 
-extern void QuCreateWindow (int x, int y, int w,int h, uint32_t* info_data);
+extern void QuCreateWindow (int x, int y, int w,int h, uint32_t* info_data, char* title);
 extern void QuWindowSetCanvas (uint32_t* address);
 extern QuWindow* QuGetWindow ();
 extern int QuWindowGetX();
@@ -81,6 +83,7 @@ extern void QuWindowMove (int x, int y);
 extern void QuWindowSetAutoInvalidation (bool value);
 extern void QuWindowSetAutoInvalidateRegion (int x, int y, int w, int h);
 extern void QuWindowSetSize (int width, int height);
+extern void QuWindowSetPos (int x, int y);
 extern void QuWindowHandleMouse (int mouse_x, int mouse_y, int code);
 extern void QuWindowSetProperty (uint8_t prop);
 extern void QuWindowShowControls (QuWindow *win);
