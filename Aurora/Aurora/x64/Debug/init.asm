@@ -10,24 +10,28 @@ _DATA	SEGMENT
 _fltused DD	01H
 _DATA	ENDS
 CONST	SEGMENT
-$SG8130	DB	'Timer fired', 0aH, 00H
+$SG8131	DB	'Timer fired', 0aH, 00H
 	ORG $+3
-$SG8158	DB	'shell', 00H
+$SG8159	DB	'shell', 00H
 	ORG $+2
-$SG8159	DB	'a:xshell.exe', 00H
+$SG8160	DB	'a:xshell.exe', 00H
 	ORG $+3
-$SG8160	DB	'quince', 00H
+$SG8161	DB	'quince', 00H
 	ORG $+1
-$SG8161	DB	'a:quince.exe', 00H
+$SG8162	DB	'a:quince.exe', 00H
 	ORG $+3
-$SG8163	DB	'procmngr', 00H
+$SG8164	DB	'procmngr', 00H
 	ORG $+3
-$SG8164	DB	'tsk', 00H
-$SG8165	DB	'a:autask.exe', 00H
+$SG8165	DB	'tsk', 00H
+$SG8166	DB	'a:autask.exe', 00H
 	ORG $+3
-$SG8166	DB	'dwm3', 00H
+$SG8167	DB	'dwm3', 00H
 	ORG $+3
-$SG8167	DB	'a:dwm2.exe', 00H
+$SG8168	DB	'a:cnsl.exe', 00H
+	ORG $+1
+$SG8169	DB	'dwm4', 00H
+	ORG $+7
+$SG8170	DB	'a:dwm2.exe', 00H
 CONST	ENDS
 PUBLIC	??2@YAPEAX_K@Z					; operator new
 PUBLIC	??3@YAXPEAX@Z					; operator delete
@@ -79,7 +83,7 @@ $pdata$??_U@YAPEAX_K@Z DD imagerel $LN3
 	DD	imagerel $LN3+23
 	DD	imagerel $unwind$??_U@YAPEAX_K@Z
 $pdata$?_kmain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z DD imagerel $LN5
-	DD	imagerel $LN5+307
+	DD	imagerel $LN5+332
 	DD	imagerel $unwind$?_kmain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z
 pdata	ENDS
 xdata	SEGMENT
@@ -208,8 +212,8 @@ $LN5:
 
 	xor	r9d, r9d
 	xor	r8d, r8d
-	lea	rdx, OFFSET FLAT:$SG8158
-	lea	rcx, OFFSET FLAT:$SG8159
+	lea	rdx, OFFSET FLAT:$SG8159
+	lea	rcx, OFFSET FLAT:$SG8160
 	call	?create_process@@YAXPEBDPEADE1@Z	; create_process
 
 ; 160  : 	//! Quince -- The Compositing window manager for Aurora kernel
@@ -218,8 +222,8 @@ $LN5:
 
 	xor	r9d, r9d
 	xor	r8d, r8d
-	lea	rdx, OFFSET FLAT:$SG8160
-	lea	rcx, OFFSET FLAT:$SG8161
+	lea	rdx, OFFSET FLAT:$SG8161
+	lea	rcx, OFFSET FLAT:$SG8162
 	call	?create_process@@YAXPEBDPEADE1@Z	; create_process
 
 ; 163  : 
@@ -234,7 +238,7 @@ $LN5:
 	mov	QWORD PTR tv81[rsp], rax
 	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
 	mov	BYTE PTR [rsp+32], 0
-	lea	r9, OFFSET FLAT:$SG8163
+	lea	r9, OFFSET FLAT:$SG8164
 	mov	rcx, QWORD PTR tv81[rsp]
 	mov	r8, rcx
 	mov	rdx, rax
@@ -246,20 +250,27 @@ $LN5:
 
 	xor	r9d, r9d
 	xor	r8d, r8d
-	lea	rdx, OFFSET FLAT:$SG8164
-	lea	rcx, OFFSET FLAT:$SG8165
+	lea	rdx, OFFSET FLAT:$SG8165
+	lea	rcx, OFFSET FLAT:$SG8166
 	call	?create_process@@YAXPEBDPEADE1@Z	; create_process
 
 ; 172  : 	//! Misc programs goes here
-; 173  : 	create_process ("a:dwm2.exe", "dwm3", 0, NULL);
+; 173  : 	create_process ("a:cnsl.exe", "dwm3", 0, NULL);
 
 	xor	r9d, r9d
 	xor	r8d, r8d
-	lea	rdx, OFFSET FLAT:$SG8166
-	lea	rcx, OFFSET FLAT:$SG8167
+	lea	rdx, OFFSET FLAT:$SG8167
+	lea	rcx, OFFSET FLAT:$SG8168
 	call	?create_process@@YAXPEBDPEADE1@Z	; create_process
 
-; 174  : //	create_process ("a:dwm2.exe", "dwm4", 0, NULL);
+; 174  : 	create_process ("a:dwm2.exe", "dwm4", 0, NULL);
+
+	xor	r9d, r9d
+	xor	r8d, r8d
+	lea	rdx, OFFSET FLAT:$SG8169
+	lea	rcx, OFFSET FLAT:$SG8170
+	call	?create_process@@YAXPEBDPEADE1@Z	; create_process
+
 ; 175  : 
 ; 176  : 	//! Here start the scheduler (multitasking engine)
 ; 177  : 	scheduler_start();
@@ -353,7 +364,7 @@ $LN3:
 
 ; 88   : 	printf ("Timer fired\n");
 
-	lea	rcx, OFFSET FLAT:$SG8130
+	lea	rcx, OFFSET FLAT:$SG8131
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 89   : 	interrupt_end(2);

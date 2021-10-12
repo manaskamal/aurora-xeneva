@@ -223,7 +223,7 @@ f$ = 272
 filename$ = 280
 ?open_call@@YAXPEAU_ufile_@@PEBD@Z PROC			; open_call
 
-; 51   : void open_call (UFILE *f, const char* filename) {
+; 52   : void open_call (UFILE *f, const char* filename) {
 
 $LN9:
 	mov	QWORD PTR [rsp+16], rdx
@@ -232,19 +232,19 @@ $LN9:
 	push	rdi
 	sub	rsp, 248				; 000000f8H
 
-; 52   : 	FILE file;
-; 53   : 	unsigned char device;
-; 54   : 	int device_id = 0;
+; 53   : 	FILE file;
+; 54   : 	unsigned char device;
+; 55   : 	int device_id = 0;
 
 	mov	DWORD PTR device_id$[rsp], 0
 
-; 55   : 
-; 56   : 	char* fname = (char*)filename;
+; 56   : 
+; 57   : 	char* fname = (char*)filename;
 
 	mov	rax, QWORD PTR filename$[rsp]
 	mov	QWORD PTR fname$[rsp], rax
 
-; 57   : 	if (filename[1] == ':') {
+; 58   : 	if (filename[1] == ':') {
 
 	mov	eax, 1
 	imul	rax, 1
@@ -253,7 +253,7 @@ $LN9:
 	cmp	eax, 58					; 0000003aH
 	jne	SHORT $LN6@open_call
 
-; 58   : 		device = filename[0];
+; 59   : 		device = filename[0];
 
 	mov	eax, 1
 	imul	rax, 0
@@ -261,15 +261,15 @@ $LN9:
 	movzx	eax, BYTE PTR [rcx+rax]
 	mov	BYTE PTR device$[rsp], al
 
-; 59   : 		filename += 2;
+; 60   : 		filename += 2;
 
 	mov	rax, QWORD PTR filename$[rsp]
 	add	rax, 2
 	mov	QWORD PTR filename$[rsp], rax
 $LN6@open_call:
 
-; 60   : 	}
-; 61   : 	if (device == 'a' || device == 'A')
+; 61   : 	}
+; 62   : 	if (device == 'a' || device == 'A')
 
 	movzx	eax, BYTE PTR device$[rsp]
 	cmp	eax, 97					; 00000061H
@@ -279,13 +279,13 @@ $LN6@open_call:
 	jne	SHORT $LN5@open_call
 $LN4@open_call:
 
-; 62   : 		device_id = 10;
+; 63   : 		device_id = 10;
 
 	mov	DWORD PTR device_id$[rsp], 10
 	jmp	SHORT $LN3@open_call
 $LN5@open_call:
 
-; 63   : 	else if (device =='c' || device == 'C')
+; 64   : 	else if (device =='c' || device == 'C')
 
 	movzx	eax, BYTE PTR device$[rsp]
 	cmp	eax, 99					; 00000063H
@@ -295,13 +295,13 @@ $LN5@open_call:
 	jne	SHORT $LN2@open_call
 $LN1@open_call:
 
-; 64   : 		device_id = 11;
+; 65   : 		device_id = 11;
 
 	mov	DWORD PTR device_id$[rsp], 11
 $LN2@open_call:
 $LN3@open_call:
 
-; 65   : 	file = sys[device_id]->sys_open(filename);
+; 66   : 	file = sys[device_id]->sys_open(filename);
 
 	movsxd	rax, DWORD PTR device_id$[rsp]
 	lea	rcx, OFFSET FLAT:?sys@@3PAPEAU_file_system_@@A ; sys
@@ -321,49 +321,49 @@ $LN3@open_call:
 	mov	ecx, 60					; 0000003cH
 	rep movsb
 
-; 66   : 	f->id = file.id;
+; 67   : 	f->id = file.id;
 
 	mov	rax, QWORD PTR f$[rsp]
 	mov	ecx, DWORD PTR file$[rsp+32]
 	mov	DWORD PTR [rax], ecx
 
-; 67   : 	f->size = file.size;
+; 68   : 	f->size = file.size;
 
 	mov	rax, QWORD PTR f$[rsp]
 	mov	ecx, DWORD PTR file$[rsp+36]
 	mov	DWORD PTR [rax+4], ecx
 
-; 68   : 	f->eof = file.eof;
+; 69   : 	f->eof = file.eof;
 
 	mov	rax, QWORD PTR f$[rsp]
 	mov	ecx, DWORD PTR file$[rsp+40]
 	mov	DWORD PTR [rax+8], ecx
 
-; 69   : 	f->pos = file.pos;
+; 70   : 	f->pos = file.pos;
 
 	mov	rax, QWORD PTR f$[rsp]
 	mov	ecx, DWORD PTR file$[rsp+44]
 	mov	DWORD PTR [rax+12], ecx
 
-; 70   : 	f->start_cluster = file.start_cluster;
+; 71   : 	f->start_cluster = file.start_cluster;
 
 	mov	rax, QWORD PTR f$[rsp]
 	mov	ecx, DWORD PTR file$[rsp+48]
 	mov	DWORD PTR [rax+16], ecx
 
-; 71   : 	f->flags = file.flags; 
+; 72   : 	f->flags = file.flags; 
 
 	mov	rax, QWORD PTR f$[rsp]
 	mov	ecx, DWORD PTR file$[rsp+52]
 	mov	DWORD PTR [rax+20], ecx
 
-; 72   : 	f->status = file.status;
+; 73   : 	f->status = file.status;
 
 	mov	rax, QWORD PTR f$[rsp]
 	mov	ecx, DWORD PTR file$[rsp+56]
 	mov	DWORD PTR [rax+24], ecx
 
-; 73   : }
+; 74   : }
 
 	add	rsp, 248				; 000000f8H
 	pop	rdi
@@ -384,7 +384,7 @@ $T3 = 272
 filename$ = 280
 ?open@@YA?AU_file_@@PEBD@Z PROC				; open
 
-; 32   : FILE open (const char* filename) {
+; 33   : FILE open (const char* filename) {
 
 $LN9:
 	mov	QWORD PTR [rsp+16], rdx
@@ -393,19 +393,19 @@ $LN9:
 	push	rdi
 	sub	rsp, 248				; 000000f8H
 
-; 33   : 	FILE file;
-; 34   : 	unsigned char device;
-; 35   : 	int device_id = 0;
+; 34   : 	FILE file;
+; 35   : 	unsigned char device;
+; 36   : 	int device_id = 0;
 
 	mov	DWORD PTR device_id$[rsp], 0
 
-; 36   : 
-; 37   : 	char* fname = (char*)filename;
+; 37   : 
+; 38   : 	char* fname = (char*)filename;
 
 	mov	rax, QWORD PTR filename$[rsp]
 	mov	QWORD PTR fname$[rsp], rax
 
-; 38   : 	if (filename[1] == ':') {
+; 39   : 	if (filename[1] == ':') {
 
 	mov	eax, 1
 	imul	rax, 1
@@ -414,7 +414,7 @@ $LN9:
 	cmp	eax, 58					; 0000003aH
 	jne	SHORT $LN6@open
 
-; 39   : 		device = filename[0];
+; 40   : 		device = filename[0];
 
 	mov	eax, 1
 	imul	rax, 0
@@ -422,15 +422,15 @@ $LN9:
 	movzx	eax, BYTE PTR [rcx+rax]
 	mov	BYTE PTR device$[rsp], al
 
-; 40   : 		filename += 2;
+; 41   : 		filename += 2;
 
 	mov	rax, QWORD PTR filename$[rsp]
 	add	rax, 2
 	mov	QWORD PTR filename$[rsp], rax
 $LN6@open:
 
-; 41   : 	}
-; 42   : 	if (device == 'a' || device == 'A')
+; 42   : 	}
+; 43   : 	if (device == 'a' || device == 'A')
 
 	movzx	eax, BYTE PTR device$[rsp]
 	cmp	eax, 97					; 00000061H
@@ -440,13 +440,13 @@ $LN6@open:
 	jne	SHORT $LN5@open
 $LN4@open:
 
-; 43   : 		device_id = 10;
+; 44   : 		device_id = 10;
 
 	mov	DWORD PTR device_id$[rsp], 10
 	jmp	SHORT $LN3@open
 $LN5@open:
 
-; 44   : 	else if (device =='c' || device == 'C')
+; 45   : 	else if (device =='c' || device == 'C')
 
 	movzx	eax, BYTE PTR device$[rsp]
 	cmp	eax, 99					; 00000063H
@@ -456,14 +456,14 @@ $LN5@open:
 	jne	SHORT $LN2@open
 $LN1@open:
 
-; 45   : 		device_id = 11;
+; 46   : 		device_id = 11;
 
 	mov	DWORD PTR device_id$[rsp], 11
 $LN2@open:
 $LN3@open:
 
-; 46   : 
-; 47   : 	file = sys[device_id]->sys_open(filename);
+; 47   : 
+; 48   : 	file = sys[device_id]->sys_open(filename);
 
 	movsxd	rax, DWORD PTR device_id$[rsp]
 	lea	rcx, OFFSET FLAT:?sys@@3PAPEAU_file_system_@@A ; sys
@@ -483,7 +483,7 @@ $LN3@open:
 	mov	ecx, 60					; 0000003cH
 	rep movsb
 
-; 48   : 	return file;
+; 49   : 	return file;
 
 	lea	rax, QWORD PTR file$[rsp]
 	mov	rdi, QWORD PTR $T3[rsp]
@@ -492,7 +492,7 @@ $LN3@open:
 	rep movsb
 	mov	rax, QWORD PTR $T3[rsp]
 
-; 49   : }
+; 50   : }
 
 	add	rsp, 248				; 000000f8H
 	pop	rdi
@@ -505,23 +505,23 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 ?initialize_vfs@@YAXXZ PROC				; initialize_vfs
 
-; 24   : void initialize_vfs () {
+; 25   : void initialize_vfs () {
 
 $LN3:
 	sub	rsp, 40					; 00000028H
 
-; 25   : 	//! By default FAT32 is recommended for boot disk
-; 26   : #ifdef ARCH_X64
-; 27   : 	initialize_fat32();
+; 26   : 	//! By default FAT32 is recommended for boot disk
+; 27   : #ifdef ARCH_X64
+; 28   : 	initialize_fat32();
 
 	call	?initialize_fat32@@YAXXZ		; initialize_fat32
 
-; 28   : 	fat32_self_register();
+; 29   : 	fat32_self_register();
 
 	call	?fat32_self_register@@YAXXZ		; fat32_self_register
 
-; 29   : #endif
-; 30   : }
+; 30   : #endif
+; 31   : }
 
 	add	rsp, 40					; 00000028H
 	ret	0

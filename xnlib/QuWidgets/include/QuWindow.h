@@ -56,6 +56,7 @@ typedef struct _QU_WIN_ {
 	uint32_t*  win_info_data;
 	QuList* widgets;
 	QuList* controls;
+	bool decorate;
 	char *title;
 }QuWindow;
 
@@ -66,10 +67,12 @@ typedef struct _QuWidget_ {
 	int height;
 	void (*Refresh) (struct _QuWidget_ *, QuWindow* win);
 	void (*MouseEvent) (struct _QuWidget_*, QuWindow* win, int code,bool clicked);
+	void (*KeyEvent) (struct _QuWidget_*, QuWindow *win, int code);
 	void (*ActionEvent) (struct _QuWidget_*, QuWindow* win);
 }QuWidget;
 
 extern void QuCreateWindow (int x, int y, int w,int h, uint32_t* info_data, char* title);
+extern void QuWindowEnableDecoration (bool value);
 extern void QuWindowSetCanvas (uint32_t* address);
 extern QuWindow* QuGetWindow ();
 extern int QuWindowGetX();

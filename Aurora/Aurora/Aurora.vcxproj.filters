@@ -339,6 +339,12 @@
     <ClInclude Include="..\include\error.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\ipc\pipe.h">
+      <Filter>include\ipc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\utils\circ_buf.h">
+      <Filter>include\utils</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="init.cpp">
@@ -547,6 +553,12 @@
     </ClCompile>
     <ClCompile Include="fs\gpt.cpp">
       <Filter>source\fs</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\circ_buf.cpp">
+      <Filter>source\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\pipe.cpp">
+      <Filter>source\ipc</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

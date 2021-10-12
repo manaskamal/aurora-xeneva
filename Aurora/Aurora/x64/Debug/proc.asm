@@ -15,8 +15,8 @@ user_stack_index_2 DD 01H DUP (?)
 pid	DD	01H DUP (?)
 _BSS	ENDS
 CONST	SEGMENT
-$SG3780	DB	'Executable image not found', 0aH, 00H
-$SG3881	DB	'child', 00H
+$SG3781	DB	'Executable image not found', 0aH, 00H
+$SG3882	DB	'child', 00H
 CONST	ENDS
 PUBLIC	?create_user_stack@@YAPEA_KPEA_K@Z		; create_user_stack
 PUBLIC	?create_inc_stack@@YAPEA_KPEA_K@Z		; create_inc_stack
@@ -431,7 +431,7 @@ $LN1@exec:
 ; 286  : 	thread_t *t = create_user_thread(child_proc->entry_point,child_proc->stack,(uint64_t)child_proc->cr3,"child",1);
 
 	mov	BYTE PTR [rsp+32], 1
-	lea	r9, OFFSET FLAT:$SG3881
+	lea	r9, OFFSET FLAT:$SG3882
 	mov	rax, QWORD PTR child_proc$[rsp]
 	mov	r8, QWORD PTR [rax+40]
 	mov	rax, QWORD PTR child_proc$[rsp]
@@ -1299,7 +1299,7 @@ $LN9:
 
 ; 131  : 		printf("Executable image not found\n");
 
-	lea	rcx, OFFSET FLAT:$SG3780
+	lea	rcx, OFFSET FLAT:$SG3781
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 132  : 		return;

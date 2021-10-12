@@ -21,6 +21,7 @@
 
 file_system_t *sys[MAX_FILE_DESC];
 
+
 void initialize_vfs () {
 	//! By default FAT32 is recommended for boot disk
 #ifdef ARCH_X64
@@ -71,7 +72,6 @@ void open_call (UFILE *f, const char* filename) {
 	f->flags = file.flags; 
 	f->status = file.status;
 }
-
 
 void read (FILE *f, unsigned char* buffer,unsigned int count, int device_id) {
     sys[device_id]->sys_read (f,buffer,count);

@@ -250,6 +250,9 @@ void QuEventLoop() {
 		if (diff_time > 15){
 			QuWindowMngr_DrawAll();
 			QuRenderTime(time.seconds, time.minutes, time.hour);
+
+			acrylic_draw_arr_string (canvas_get_width() - (strlen("Aurora's Xeneva beta-preview")*8),
+				10,"Aurora's Xeneva beta-preview", WHITE);
 			next_tick = sys_get_system_tick();
 			frame_time = 0;
 		}

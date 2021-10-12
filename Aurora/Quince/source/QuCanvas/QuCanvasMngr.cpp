@@ -56,7 +56,7 @@ void QuCanvasCommit (uint32_t* canvas, uint16_t destid, unsigned x, unsigned y, 
 void QuCanvasBlit (QuWindow* win,uint32_t *canvas, unsigned x, unsigned y, unsigned w, unsigned h) {
 	uint32_t* lfb = (uint32_t*)0x0000600000000000;
 	uint32_t* fb = (uint32_t*)0xFFFFF00000000000;
-	uint32_t* wallp = (uint32_t*)0x0000060000000000;
+	uint32_t* wallp = (uint32_t*)0x0000600000000000;   //0x0000060000000000;
 	int width = canvas_get_width();
 	int height = canvas_get_height();
 	int j = 0;
@@ -65,7 +65,6 @@ void QuCanvasBlit (QuWindow* win,uint32_t *canvas, unsigned x, unsigned y, unsig
 	//! this is a normal window, it must contains dirty areas
 	//! go through dirty areas and draw it
 	QuWindowInfo *info = (QuWindowInfo*)win->win_info_location;
-
 	if (info->dirty) {
 		if (info->rect_count > 0) {
 			for (int k = 0; k < info->rect_count; k++) {

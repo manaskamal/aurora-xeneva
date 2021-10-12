@@ -39,6 +39,9 @@
     <ClInclude Include="include\QuTextbox.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="include\QuTerminal.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\QuBase.cpp">
@@ -57,6 +60,9 @@
       <Filter>source</Filter>
     </ClCompile>
     <ClCompile Include="source\QuTextbox.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\QuTerminal.cpp">
       <Filter>source</Filter>
     </ClCompile>
   </ItemGroup>

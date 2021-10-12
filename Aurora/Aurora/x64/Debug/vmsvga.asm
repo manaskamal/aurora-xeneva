@@ -3133,7 +3133,7 @@ $LN1@svga_init:
 	mov	ecx, eax
 	call	?svga_set_mode@@YAXIII@Z		; svga_set_mode
 
-; 117  : 	//svga_set_mode (1280,768,32);
+; 117  : 	//svga_set_mode (1920,1280,32);
 ; 118  : 	gmr_init();
 
 	call	?gmr_init@@YAXXZ			; gmr_init

@@ -147,6 +147,7 @@ QuButton * QuCreateButton(int x, int y) {
 	but->widget.height = QU_BUTTON_DEFAULT_HEIGHT;
 	but->widget.Refresh = QuButtonRefresh;
 	but->widget.MouseEvent = QuButtonMouseEvent;
+	but->widget.KeyEvent = 0;
 	but->widget.ActionEvent = NULL;
 	but->text = NULL;
 	but->hover = false;

@@ -37,6 +37,7 @@ QuPanel* QuCreatePanel () {
 	panel->base.height = QuGetWindow()->h;
 	panel->base.Refresh = QuPanelRefresh;
 	panel->base.MouseEvent = QuPanelMouseEvent;
+	panel->base.KeyEvent = 0;
 	panel->base.ActionEvent = QuPanelActionEvent;
 	panel->color = 0xFFFFFFFF;
 	return panel;

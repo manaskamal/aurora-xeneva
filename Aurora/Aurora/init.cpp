@@ -170,8 +170,8 @@ void _kmain (KERNEL_BOOT_INFO *info) {
 
 	create_process ("a:autask.exe", "tsk", 0, NULL);
 	//! Misc programs goes here
-	create_process ("a:dwm2.exe", "dwm3", 0, NULL);
-//	create_process ("a:dwm2.exe", "dwm4", 0, NULL);
+	create_process ("a:cnsl.exe", "dwm3", 0, NULL);
+	create_process ("a:dwm2.exe", "dwm4", 0, NULL);
 
 	//! Here start the scheduler (multitasking engine)
 	scheduler_start();

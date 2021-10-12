@@ -87,12 +87,6 @@ int main (int argc, char* argv[]) {
 			add_taskbar_button(msg.buffer);
 			memset (&msg, 0, sizeof(message_t));
 		}
-
-      /*  QuChannelGet(&qmsg);
-		if (qmsg.to_id == app_id)
-			QuActions(&qmsg);
-
-*/
 		sys_wait();
 	}	
 	return 1;

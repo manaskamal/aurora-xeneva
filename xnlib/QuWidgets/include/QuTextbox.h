@@ -20,7 +20,7 @@
 typedef struct _QuTextbox_ {
 	QuWidget wid;
 	bool editable;
-	char *text;
+	char text[512];
 	int cursor_pos_x;
 	bool hover;
 	bool clicked;
@@ -55,4 +55,6 @@ extern void QuTextboxInvalidate (QuTextbox *tb, QuWindow* win);
 ///! @param win -- Pointer to the root window
 ///!
 void QuTextboxRefresh (QuTextbox *tb, QuWindow* win);
+
+extern void QuTextboxAppendText (QuTextbox *tb, char* text);
 #endif

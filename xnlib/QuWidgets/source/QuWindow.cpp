@@ -66,9 +66,8 @@ void QuCreateWindow (int x, int y, int w, int h, uint32_t* info_data, char* titl
 	win->controls = QuListInit();
 	win->win_info_data = info_data;
 	win->title = title;
-
+	win->decorate = true;
 	QuWinInfo* info = (QuWinInfo*)win->win_info_data;
-	sys_print_text ("QuWinInfo size -> %d bytes \n", sizeof(QuWinInfo));
 	//info->rect_count = 0;
 	//QuWindowAddMinimizeButton(win);
 	//QuWindowAddMaximizeButton(win);
@@ -76,6 +75,11 @@ void QuCreateWindow (int x, int y, int w, int h, uint32_t* info_data, char* titl
 
 	root_win = win;
 }
+
+void QuWindowEnableDecoration (bool value) {
+	root_win->decorate = value;
+}
+
 
 void QuWindowSetCanvas (uint32_t* address) {
 	root_win->canvas = address;
@@ -124,7 +128,7 @@ void QuWindowShow() {
 		wid->Refresh(wid, root_win);
 	}
 
-
+	if (root_win->decorate) {
 	for (int i = 0; i < 23; i++)
 		acrylic_draw_horizontal_line(root_win->x, root_win->y + i,root_win->w,title_bar_colors[i]);
 
@@ -141,8 +145,12 @@ void QuWindowShow() {
 		acrylic_draw_filled_circle(to->x, to->y, 6, buttons_color);
 	}
 
+	acrylic_draw_arr_string (root_win->x + root_win->w/2 - (strlen(root_win->title)*8)/2,
+		root_win->y + 3, 
+		root_win->title, WHITE);
 	//sys_print_text ("Refresh #5\n");
 	acrylic_draw_rect_unfilled (root_win->x, root_win->y, root_win->w, root_win->h, SILVER);
+	}
 	QuPanelUpdate(root_win->x, root_win->y, root_win->w, root_win->h);
 }
 
@@ -151,7 +159,7 @@ void QuWindowMove (int x, int y) {
 	root_win->x = x;
 	root_win->y = y;
 
-
+	if (root_win->decorate){
 	//! Update controls coordinates
 	for (int i = 0; i < root_win->controls->pointer; i++) {
 		QuWinControl *to = (QuWinControl*)QuListGetAt(root_win->controls, i);
@@ -188,7 +196,13 @@ void QuWindowMove (int x, int y) {
 		acrylic_draw_filled_circle(to->x, to->y, 6, buttons_color);
 	}
 
+	acrylic_draw_arr_string (root_win->x + root_win->w/2 - (strlen(root_win->title)*8)/2,
+		root_win->y + 3, 
+		root_win->title, WHITE);
+
+
 	acrylic_draw_rect_unfilled (root_win->x, root_win->y, root_win->w, root_win->h, SILVER);
+	}
 	//QuPanelUpdate(root_win->x, root_win->y, root_win->w, root_win->h);
 }
 
@@ -261,3 +275,4 @@ void QuWindowHandleMouse (int mouse_x, int mouse_y, int code) {
 		}
 	}
 }
+

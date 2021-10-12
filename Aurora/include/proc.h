@@ -22,9 +22,12 @@
 
 typedef void (*main_thread) (void*);
 
-typedef struct _file_descriptor_ {
-	uint32_t length;
-}file_descriptor;
+///! Future use!! Current vfs system is not sufficient
+typedef struct _files_ {
+	uint8_t fd_handle;
+	UFILE *fd[256];
+}files_t;
+
 //!Process structure
 typedef struct _process_ {
 	uint32_t pid_t;
