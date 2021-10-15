@@ -34,6 +34,8 @@
 #include <QuWidget\QuWallpaper.h>
 #include <QuWindow\QuWindowMngr.h>
 #include <QuCanvas\QuCanvasMngr.h>
+#include <sys\_exit.h>
+
 
 
 int main (int argc, char* argv[]) {
@@ -43,10 +45,9 @@ int main (int argc, char* argv[]) {
     psf_register_font_lib();
 
 	//!Initialize Quince Wallpaper Manager  "a:coffee.jpg"
-	Image * img = QuWallpaperInit("a:flower.jpg");
+	Image * img = QuWallpaperInit("a:bihu.jpg");
 	QuWallpaperDraw (img);
 	QuWallpaperPresent ();
-
 
 	//! Initialize Taskbar Manager
 	//QuTaskbarInit();

@@ -24,6 +24,7 @@
 #include <sys\_ipc.h>
 #include <sys\_time.h>
 #include <QuTerminal.h>
+#include <sys\_exit.h>
 
 QuTerminal *term;
 
@@ -66,10 +67,16 @@ void QuActions (QuMessage *msg) {
 }
 
 
+void WindowClosed (QuWinControl *control, QuWindow *win, bool bit) {
+}
+
 int main (int argc, char* argv[]) {
 	QuRegisterApplication ("command~");
 	QuWindow* win = QuGetWindow();
-	
+	QuWindowShowControls(win);
+	QuWindowAddControlEvent(QU_WIN_CONTROL_CLOSE, WindowClosed);
+
+
 	term = QuCreateTerminal(0, 0, win->w, win->h);
 	QuWindowAdd((QuWidget*)term);
 

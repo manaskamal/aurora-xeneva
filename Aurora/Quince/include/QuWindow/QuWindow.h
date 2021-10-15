@@ -49,6 +49,7 @@ typedef struct _QuWindow_ {
 	int drag_y;
 	bool draggable;
 	bool visible;
+	bool mark_for_close;
 	unsigned int *canvas;
 	unsigned short owner_id;
 	bool decorate;

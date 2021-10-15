@@ -8,6 +8,7 @@
 ///!================================================
 
 #include <QuWindow.h>
+#include <QuWindowControl.h>
 #include <QuBase.h>
 #include <stdlib.h>
 #include <QuPanel.h>
@@ -19,7 +20,8 @@
 
 
 QuWindow* root_win = NULL;
-
+int old_mouse_x = 0;
+int old_mouse_y = 0;
 
 uint32_t title_bar_colors[23] = {0xff59584f, 0xff5f5d53, 0xff58564e, 0xff57554d, 0xff56544c, 0xff55534b, \
     0xff54524a, 0xff525049, 0xff514f48, 0xff504e47, 0xff4e4c45, 0xff4e4c45, \
@@ -33,27 +35,43 @@ QuWinControl* QuCreateControl (unsigned x, unsigned y, unsigned w, unsigned h, u
 	obj->y = y;
 	obj->w = w;
 	obj->h = h;
+	obj->hover = false;
 	obj->type = type;
+	obj->restore = false;
+	obj->ControlEvent = 0;
 	return obj;
 }
 
 void QuWindowAddMinimizeButton (QuWindow *win) {
-	QuWinControl *minimize = QuCreateControl(win->x + win->w - 43,win->y + 9, 11,18, QU_WIN_CONTROL_MINIMIZE);
+	QuWinControl *minimize = QuCreateControl(win->x + win->w - 43,win->y + 2, 11,18, QU_WIN_CONTROL_MINIMIZE);
+	minimize->ControlRedraw = QuMinimizeButtonDraw;
 	QuListAdd (win->controls, minimize);
 }
 
 void QuWindowAddMaximizeButton (QuWindow *win) {
-	QuWinControl *maximize = QuCreateControl (win->x + win->w - 28, win->y + 9, 11, 18, 
+	QuWinControl *maximize = QuCreateControl (win->x + win->w - 28, win->y + 2, 11, 18, 
 		QU_WIN_CONTROL_MAXIMIZE);
+	maximize->ControlRedraw = QuMaximizeButtonDraw;
 	QuListAdd (win->controls, maximize);
 }
 
 void QuWindowAddCloseButton(QuWindow *win) {
-	QuWinControl *close = QuCreateControl (win->x + win->w - 13, win->y + 9, 11, 18,
+	QuWinControl *close = QuCreateControl (win->x + win->w - 13, win->y + 2, 11, 18,
 		QU_WIN_CONTROL_CLOSE);
+	close->ControlRedraw = QuCloseButtonDraw;
 	QuListAdd (win->controls, close);
 }
 
+
+void QuWindowAddControlEvent (int type, void (*Event)(QuWinControl *control, QuWindow* win, bool bit)){
+	for (int i = 0; i < root_win->controls->pointer; i++) {
+		QuWinControl *control = (QuWinControl*)QuListGetAt(root_win->controls, i);
+		if (control->type == type) {
+			control->ControlEvent = Event;
+			return;
+		}
+	}
+}
 
 
 void QuCreateWindow (int x, int y, int w, int h, uint32_t* info_data, char* title) {
@@ -136,13 +154,14 @@ void QuWindowShow() {
 	uint32_t buttons_color = WHITE;
 	for (int i = 0; i < root_win->controls->pointer; i++) {
 		QuWinControl *to = (QuWinControl*)QuListGetAt(root_win->controls, i);
-		if (to->type == QU_WIN_CONTROL_MINIMIZE)
+		/*if (to->type == QU_WIN_CONTROL_MINIMIZE)
 			buttons_color = ORANGE;
 		if (to->type == QU_WIN_CONTROL_MAXIMIZE)
 			buttons_color = PALEGREEN;
 		if (to->type == QU_WIN_CONTROL_CLOSE)
 			buttons_color = RED;
-		acrylic_draw_filled_circle(to->x, to->y, 6, buttons_color);
+		acrylic_draw_filled_circle(to->x, to->y, 6, buttons_color);*/
+		to->ControlRedraw(to,root_win, false);
 	}
 
 	acrylic_draw_arr_string (root_win->x + root_win->w/2 - (strlen(root_win->title)*8)/2,
@@ -165,13 +184,13 @@ void QuWindowMove (int x, int y) {
 		QuWinControl *to = (QuWinControl*)QuListGetAt(root_win->controls, i);
 		if (to->type == QU_WIN_CONTROL_MINIMIZE){
 			to->x = root_win->x + root_win->w - 43;
-			to->y = root_win->y + 9;
+			to->y = root_win->y + 2;
 		}if (to->type == QU_WIN_CONTROL_MAXIMIZE){
 			to->x = root_win->x + root_win->w - 28;
-			to->y = root_win->y + 9;
+			to->y = root_win->y + 2;
 		}if (to->type == QU_WIN_CONTROL_CLOSE){
 			to->x = root_win->x + root_win->w - 13;
-			to->y = root_win->y + 9;
+			to->y = root_win->y + 2;
 		}
 	}
 
@@ -187,13 +206,14 @@ void QuWindowMove (int x, int y) {
 	uint32_t buttons_color = WHITE;
 	for (int i = 0; i < root_win->controls->pointer; i++) {
 		QuWinControl *to = (QuWinControl*)QuListGetAt(root_win->controls, i);
-		if (to->type == QU_WIN_CONTROL_MINIMIZE)
+		/*if (to->type == QU_WIN_CONTROL_MINIMIZE)
 			buttons_color = ORANGE;
 		if (to->type == QU_WIN_CONTROL_MAXIMIZE)
 			buttons_color = PALEGREEN;
 		if (to->type == QU_WIN_CONTROL_CLOSE)
 			buttons_color = RED;
-		acrylic_draw_filled_circle(to->x, to->y, 6, buttons_color);
+		acrylic_draw_filled_circle(to->x, to->y, 6, buttons_color);*/
+		to->ControlRedraw(to,root_win, false);
 	}
 
 	acrylic_draw_arr_string (root_win->x + root_win->w/2 - (strlen(root_win->title)*8)/2,
@@ -263,16 +283,39 @@ void QuWindowSetProperty (uint8_t prop) {
 
 void QuWindowHandleMouse (int mouse_x, int mouse_y, int code) {
 	bool clicked = false;
+	bool control_click = false;
 	for (int i = 0; i < root_win->widgets->pointer; i++) {
 		QuWidget *wid = (QuWidget*)QuListGetAt(root_win->widgets, i);
 		if (mouse_x > (root_win->x + wid->x) && mouse_x < (root_win->x + wid->x + wid->width) &&
 			mouse_y > (root_win->y + wid->y) && mouse_y < (root_win->y + wid->y + wid->height)) {
-				if (code == QU_CANVAS_MOUSE_LCLICKED)
+
+				//! Make the difference between left click and dragging here
+				if (code == QU_CANVAS_MOUSE_LCLICKED && old_mouse_x == mouse_x && old_mouse_y == mouse_y)
 					clicked = true;
+
 				wid->MouseEvent(wid, root_win, QU_EVENT_MOUSE_ENTER,clicked);
 		} else {
 			wid->MouseEvent (wid, root_win, QU_EVENT_MOUSE_LEAVE, clicked);
 		}
+
 	}
+
+	for (int i = 0; i < root_win->controls->pointer; i++) {
+		QuWinControl *control = (QuWinControl*)QuListGetAt(root_win->controls, i);
+		if (mouse_x > (control->x) && mouse_x < (control->x + control->w) &&
+			mouse_y > (control->y) && mouse_y < (control->y + control->h)) {
+
+				if (code == QU_CANVAS_MOUSE_LCLICKED && old_mouse_x == mouse_x && old_mouse_y == mouse_y)
+					control_click = true;
+				control->hover = true;
+
+				control->ControlRedraw (control, root_win, control_click);
+		}else {
+			control->ControlRedraw(control, root_win, false);
+		}
+
+	}
+	old_mouse_x = mouse_x;
+	old_mouse_y = mouse_y;
 }
 

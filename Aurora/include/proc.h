@@ -50,6 +50,7 @@ extern uint64_t *create_user_stack (uint64_t* cr3);
 extern uint64_t* create_inc_stack (uint64_t* cr3);
 extern void create_process(const char* filename, char* procname, uint8_t priority, char* strings);
 extern void kill_process ();
+extern void kill_process_by_id (uint16_t id);
 extern uint32_t get_num_process ();
 extern void process_map_addresses (uint64_t addr, size_t length, uint64_t *c_address_space, process_t* c_process);
 extern process_t * get_current_process ();

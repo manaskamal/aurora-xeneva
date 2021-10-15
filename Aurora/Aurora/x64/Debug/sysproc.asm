@@ -7,11 +7,15 @@ INCLUDELIB OLDNAMES
 
 PUBLIC	?create__sys_process@@YAXPEBDPEAD@Z		; create__sys_process
 PUBLIC	?sys_exit@@YAXXZ				; sys_exit
+PUBLIC	?sys_kill@@YAXHH@Z				; sys_kill
+PUBLIC	?sys_set_signal@@YAXHP6AXH@Z@Z			; sys_set_signal
 EXTRN	?pmmngr_alloc@@YAPEAXXZ:PROC			; pmmngr_alloc
 EXTRN	x64_cli:PROC
+EXTRN	?get_current_thread@@YAPEAU_thread_@@XZ:PROC	; get_current_thread
 EXTRN	?force_sched@@YAXXZ:PROC			; force_sched
 EXTRN	?strcpy@@YAPEADPEADPEBD@Z:PROC			; strcpy
 EXTRN	?kill_process@@YAXXZ:PROC			; kill_process
+EXTRN	?kill_process_by_id@@YAXG@Z:PROC		; kill_process_by_id
 EXTRN	?procmngr_add_process@@YAXPEAU_procmngr_queue_@@@Z:PROC ; procmngr_add_process
 EXTRN	?procmngr_wakeup@@YAXXZ:PROC			; procmngr_wakeup
 pdata	SEGMENT
@@ -21,36 +25,118 @@ $pdata$?create__sys_process@@YAXPEBDPEAD@Z DD imagerel $LN3
 $pdata$?sys_exit@@YAXXZ DD imagerel $LN3
 	DD	imagerel $LN3+24
 	DD	imagerel $unwind$?sys_exit@@YAXXZ
+$pdata$?sys_kill@@YAXHH@Z DD imagerel $LN3
+	DD	imagerel $LN3+32
+	DD	imagerel $unwind$?sys_kill@@YAXHH@Z
+$pdata$?sys_set_signal@@YAXHP6AXH@Z@Z DD imagerel $LN3
+	DD	imagerel $LN3+46
+	DD	imagerel $unwind$?sys_set_signal@@YAXHP6AXH@Z@Z
 pdata	ENDS
 xdata	SEGMENT
 $unwind$?create__sys_process@@YAXPEBDPEAD@Z DD 010e01H
 	DD	0620eH
 $unwind$?sys_exit@@YAXXZ DD 010401H
 	DD	04204H
+$unwind$?sys_kill@@YAXHH@Z DD 010c01H
+	DD	0420cH
+$unwind$?sys_set_signal@@YAXHP6AXH@Z@Z DD 010d01H
+	DD	0420dH
 xdata	ENDS
+; Function compile flags: /Odtpy
+; File e:\xeneva project\xeneva\aurora\aurora\sysserv\sysproc.cpp
+_TEXT	SEGMENT
+signo$ = 48
+handler$ = 56
+?sys_set_signal@@YAXHP6AXH@Z@Z PROC			; sys_set_signal
+
+; 39   : void sys_set_signal (int signo, sig_handler handler) {
+
+$LN3:
+	mov	QWORD PTR [rsp+16], rdx
+	mov	DWORD PTR [rsp+8], ecx
+	sub	rsp, 40					; 00000028H
+
+; 40   : 	x64_cli();
+
+	call	x64_cli
+
+; 41   : 	get_current_thread()->signals[signo] = handler;
+
+	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
+	movsxd	rcx, DWORD PTR signo$[rsp]
+	mov	rdx, QWORD PTR handler$[rsp]
+	mov	QWORD PTR [rax+rcx*8+264], rdx
+
+; 42   : }
+
+	add	rsp, 40					; 00000028H
+	ret	0
+?sys_set_signal@@YAXHP6AXH@Z@Z ENDP			; sys_set_signal
+_TEXT	ENDS
+; Function compile flags: /Odtpy
+; File e:\xeneva project\xeneva\aurora\aurora\sysserv\sysproc.cpp
+_TEXT	SEGMENT
+pid$ = 48
+signo$ = 56
+?sys_kill@@YAXHH@Z PROC					; sys_kill
+
+; 22   : void sys_kill (int pid, int signo) {
+
+$LN3:
+	mov	DWORD PTR [rsp+16], edx
+	mov	DWORD PTR [rsp+8], ecx
+	sub	rsp, 40					; 00000028H
+
+; 23   : 	//x64_cli();
+; 24   : 	/*thread_t * t = (thread_t*)thread_iterate_ready_list(pid);
+; 25   : 	if (t == NULL) {
+; 26   : 		t = (thread_t*)thread_iterate_block_list(pid);
+; 27   : 	}
+; 28   : 
+; 29   : 	if (t == NULL)
+; 30   : 		return;
+; 31   : 
+; 32   : 	t->signal_interrupt = true;*/
+; 33   : 
+; 34   : 	kill_process_by_id(pid);
+
+	movzx	ecx, WORD PTR pid$[rsp]
+	call	?kill_process_by_id@@YAXG@Z		; kill_process_by_id
+
+; 35   : 	force_sched();
+
+	call	?force_sched@@YAXXZ			; force_sched
+
+; 36   : 	//! For now, no signals are supported, just kill the process
+; 37   : }
+
+	add	rsp, 40					; 00000028H
+	ret	0
+?sys_kill@@YAXHH@Z ENDP					; sys_kill
+_TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\sysserv\sysproc.cpp
 _TEXT	SEGMENT
 ?sys_exit@@YAXXZ PROC					; sys_exit
 
-; 14   : void sys_exit () {
+; 15   : void sys_exit () {
 
 $LN3:
 	sub	rsp, 40					; 00000028H
 
-; 15   : 	x64_cli();	
+; 16   : 	x64_cli();	
 
 	call	x64_cli
 
-; 16   : 	kill_process ();
+; 17   : 	kill_process ();
 
 	call	?kill_process@@YAXXZ			; kill_process
 
-; 17   : 	force_sched();
+; 18   : 	force_sched();
 
 	call	?force_sched@@YAXXZ			; force_sched
 
-; 18   : }
+; 19   : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -64,26 +150,26 @@ name$ = 64
 procnm$ = 72
 ?create__sys_process@@YAXPEBDPEAD@Z PROC		; create__sys_process
 
-; 4    : void create__sys_process (const char* name, char* procnm) {
+; 5    : void create__sys_process (const char* name, char* procnm) {
 
 $LN3:
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 56					; 00000038H
 
-; 5    : 	procmngr_queue *queue = (procmngr_queue*)pmmngr_alloc();
+; 6    : 	procmngr_queue *queue = (procmngr_queue*)pmmngr_alloc();
 
 	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
 	mov	QWORD PTR queue$[rsp], rax
 
-; 6    : 	strcpy(queue->name, procnm);
+; 7    : 	strcpy(queue->name, procnm);
 
 	mov	rax, QWORD PTR queue$[rsp]
 	mov	rdx, QWORD PTR procnm$[rsp]
 	mov	rcx, rax
 	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
 
-; 7    : 	strcpy(queue->path,name);
+; 8    : 	strcpy(queue->path,name);
 
 	mov	rax, QWORD PTR queue$[rsp]
 	add	rax, 8
@@ -91,17 +177,17 @@ $LN3:
 	mov	rcx, rax
 	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
 
-; 8    : 	procmngr_add_process (queue);
+; 9    : 	procmngr_add_process (queue);
 
 	mov	rcx, QWORD PTR queue$[rsp]
 	call	?procmngr_add_process@@YAXPEAU_procmngr_queue_@@@Z ; procmngr_add_process
 
-; 9    : 	procmngr_wakeup();
+; 10   : 	procmngr_wakeup();
 
 	call	?procmngr_wakeup@@YAXXZ			; procmngr_wakeup
 
-; 10   : 	//create_process (name, procnm, 1, NULL);
-; 11   : }
+; 11   : 	//create_process (name, procnm, 1, NULL);
+; 12   : }
 
 	add	rsp, 56					; 00000038H
 	ret	0

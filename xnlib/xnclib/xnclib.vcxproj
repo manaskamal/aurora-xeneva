@@ -156,6 +156,7 @@
     <ClInclude Include="string.h" />
     <ClInclude Include="sys\ioquery.h" />
     <ClInclude Include="sys\mmap.h" />
+    <ClInclude Include="sys\signal.h" />
     <ClInclude Include="sys\types.h" />
     <ClInclude Include="sys\utf.h" />
     <ClInclude Include="sys\_exit.h" />

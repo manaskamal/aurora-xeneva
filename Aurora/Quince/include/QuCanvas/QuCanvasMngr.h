@@ -53,7 +53,7 @@ extern uint32_t QuCanvasGetPixel (uint32_t *canvas, unsigned x, unsigned y);
 
 //! QuCanvasAddDirty -- Add Dirty Areas to be updated by canvas manager
 //! @param r -- Dirty Rectangle
-extern void QuCanvasAddDirty (QuRect *r);
+extern void QuCanvasAddDirty (int x, int y, int w, int h);
 
 //! QuCanvasUpdate -- Update the dirty areas by background filled pixels
 //! @param x -- X coord
@@ -83,4 +83,6 @@ extern void QuCanvasQuickPaint (uint32_t* canvas,int x, int y, int w,int h);
 extern void QuCanvasUpdateDirtyFB();
 
 extern  void QuRenderTime (uint8_t sec, uint8_t min, uint8_t hr);
+
+extern void QuCanvasRelease (uint16_t dest_pid, QuWindow *win);
 #endif

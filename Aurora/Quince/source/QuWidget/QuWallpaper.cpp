@@ -34,15 +34,13 @@ Image* QuWallpaperInit (const char* filename) {
 	for (int i = 0; i < (w * h * 32) / 4096; i++) 
 		valloc(0x0000060000000000 + i * 4096);
 
-	for (int i = 0; i < (w * h * 32) / 4096; i++) 
-		valloc(0x0000060000400000 + i * 4096);
 
 	wallpaper->buffer = (unsigned char*)0x0000060000000000;
 	wallpaper->w = w;
 	wallpaper->h = h;
     Image *img;
 	if (filename != NULL) {
-		img = LoadImage (filename,(uint8_t*) 0x0000060000400000);
+		img = LoadImage (filename,(uint8_t*) 0x0000060000000000);
 		CallJpegDecoder(img);
 	} else {
 		for (int i = 0; i < w; i++)
@@ -52,7 +50,6 @@ Image* QuWallpaperInit (const char* filename) {
 		img->data = NULL;
 	}
 
-	ImageResizeBilinear((uint8_t*) 0x0000060000400000,img->width, img->height,w,h,(uint8_t*)0x0000060000000000);
 	return img;
 }
 

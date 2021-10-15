@@ -6,6 +6,7 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 PUBLIC	?map_shared_memory@@YAXG_K0@Z			; map_shared_memory
+PUBLIC	?unmap_shared_memory@@YAXG_K0@Z			; unmap_shared_memory
 PUBLIC	?sys_get_used_ram@@YA_KXZ			; sys_get_used_ram
 PUBLIC	?sys_get_free_ram@@YA_KXZ			; sys_get_free_ram
 EXTRN	?pmmngr_alloc@@YAPEAXXZ:PROC			; pmmngr_alloc
@@ -14,6 +15,7 @@ EXTRN	?pmmngr_get_used_ram@@YA_KXZ:PROC		; pmmngr_get_used_ram
 EXTRN	x64_cli:PROC
 EXTRN	?pml4_index@@YA_K_K@Z:PROC			; pml4_index
 EXTRN	?map_page@@YA_N_K0@Z:PROC			; map_page
+EXTRN	?unmap_page@@YAX_K@Z:PROC			; unmap_page
 EXTRN	?get_current_thread@@YAPEAU_thread_@@XZ:PROC	; get_current_thread
 EXTRN	?thread_iterate_ready_list@@YAPEAU_thread_@@G@Z:PROC ; thread_iterate_ready_list
 EXTRN	?thread_iterate_block_list@@YAPEAU_thread_@@H@Z:PROC ; thread_iterate_block_list
@@ -21,6 +23,9 @@ pdata	SEGMENT
 $pdata$?map_shared_memory@@YAXG_K0@Z DD imagerel $LN10
 	DD	imagerel $LN10+363
 	DD	imagerel $unwind$?map_shared_memory@@YAXG_K0@Z
+$pdata$?unmap_shared_memory@@YAXG_K0@Z DD imagerel $LN6
+	DD	imagerel $LN6+117
+	DD	imagerel $unwind$?unmap_shared_memory@@YAXG_K0@Z
 $pdata$?sys_get_used_ram@@YA_KXZ DD imagerel $LN3
 	DD	imagerel $LN3+19
 	DD	imagerel $unwind$?sys_get_used_ram@@YA_KXZ
@@ -31,6 +36,8 @@ pdata	ENDS
 xdata	SEGMENT
 $unwind$?map_shared_memory@@YAXG_K0@Z DD 011301H
 	DD	0c213H
+$unwind$?unmap_shared_memory@@YAXG_K0@Z DD 011301H
+	DD	06213H
 $unwind$?sys_get_used_ram@@YA_KXZ DD 010401H
 	DD	04204H
 $unwind$?sys_get_free_ram@@YA_KXZ DD 010401H
@@ -41,20 +48,20 @@ xdata	ENDS
 _TEXT	SEGMENT
 ?sys_get_free_ram@@YA_KXZ PROC				; sys_get_free_ram
 
-; 42   : uint64_t sys_get_free_ram () {
+; 61   : uint64_t sys_get_free_ram () {
 
 $LN3:
 	sub	rsp, 40					; 00000028H
 
-; 43   : 	x64_cli ();
+; 62   : 	x64_cli ();
 
 	call	x64_cli
 
-; 44   : 	return pmmngr_get_free_ram ();
+; 63   : 	return pmmngr_get_free_ram ();
 
 	call	?pmmngr_get_free_ram@@YA_KXZ		; pmmngr_get_free_ram
 
-; 45   : }
+; 64   : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -65,24 +72,95 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 ?sys_get_used_ram@@YA_KXZ PROC				; sys_get_used_ram
 
-; 37   : uint64_t sys_get_used_ram () {
+; 56   : uint64_t sys_get_used_ram () {
 
 $LN3:
 	sub	rsp, 40					; 00000028H
+
+; 57   : 	x64_cli ();
+
+	call	x64_cli
+
+; 58   : 	return pmmngr_get_used_ram ();
+
+	call	?pmmngr_get_used_ram@@YA_KXZ		; pmmngr_get_used_ram
+
+; 59   : }
+
+	add	rsp, 40					; 00000028H
+	ret	0
+?sys_get_used_ram@@YA_KXZ ENDP				; sys_get_used_ram
+_TEXT	ENDS
+; Function compile flags: /Odtpy
+; File e:\xeneva project\xeneva\aurora\aurora\sysserv\sysmem.cpp
+_TEXT	SEGMENT
+i$1 = 32
+tv65 = 40
+dest_id$ = 64
+pos$ = 72
+size$ = 80
+?unmap_shared_memory@@YAXG_K0@Z PROC			; unmap_shared_memory
+
+; 37   : void unmap_shared_memory (uint16_t dest_id, uint64_t pos, size_t size) {
+
+$LN6:
+	mov	QWORD PTR [rsp+24], r8
+	mov	QWORD PTR [rsp+16], rdx
+	mov	WORD PTR [rsp+8], cx
+	sub	rsp, 56					; 00000038H
 
 ; 38   : 	x64_cli ();
 
 	call	x64_cli
 
-; 39   : 	return pmmngr_get_used_ram ();
+; 39   : 
+; 40   : 	
+; 41   : 	for (int i = 0; i < size/4096; i++)
 
-	call	?pmmngr_get_used_ram@@YA_KXZ		; pmmngr_get_used_ram
+	mov	DWORD PTR i$1[rsp], 0
+	jmp	SHORT $LN3@unmap_shar
+$LN2@unmap_shar:
+	mov	eax, DWORD PTR i$1[rsp]
+	inc	eax
+	mov	DWORD PTR i$1[rsp], eax
+$LN3@unmap_shar:
+	movsxd	rax, DWORD PTR i$1[rsp]
+	mov	QWORD PTR tv65[rsp], rax
+	xor	edx, edx
+	mov	rax, QWORD PTR size$[rsp]
+	mov	ecx, 4096				; 00001000H
+	div	rcx
+	mov	rcx, QWORD PTR tv65[rsp]
+	cmp	rcx, rax
+	jae	SHORT $LN1@unmap_shar
 
-; 40   : }
+; 42   : 		unmap_page (pos + size * 4096);
 
-	add	rsp, 40					; 00000028H
+	mov	rax, QWORD PTR size$[rsp]
+	imul	rax, 4096				; 00001000H
+	mov	rcx, QWORD PTR pos$[rsp]
+	add	rcx, rax
+	mov	rax, rcx
+	mov	rcx, rax
+	call	?unmap_page@@YAX_K@Z			; unmap_page
+	jmp	SHORT $LN2@unmap_shar
+$LN1@unmap_shar:
+
+; 43   : 
+; 44   : 
+; 45   : 	/*thread_t* t = thread_iterate_ready_list (dest_id);
+; 46   : 	if (t == NULL) {
+; 47   : 		t = thread_iterate_block_list(dest_id);
+; 48   : 	}
+; 49   : 	uint64_t *cr3 = (uint64_t*)t->cr3;
+; 50   : 
+; 51   : 	for (int i = 0; i < size / 4096; i++)
+; 52   : 		unmap_page_ex(cr3,pos + size * 4096);*/
+; 53   : }
+
+	add	rsp, 56					; 00000038H
 	ret	0
-?sys_get_used_ram@@YA_KXZ ENDP				; sys_get_used_ram
+?unmap_shared_memory@@YAXG_K0@Z ENDP			; unmap_shared_memory
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\sysserv\sysmem.cpp

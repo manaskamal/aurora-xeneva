@@ -10,28 +10,28 @@ _DATA	SEGMENT
 _fltused DD	01H
 _DATA	ENDS
 CONST	SEGMENT
-$SG8131	DB	'Timer fired', 0aH, 00H
+$SG8145	DB	'Timer fired', 0aH, 00H
 	ORG $+3
-$SG8159	DB	'shell', 00H
+$SG8173	DB	'shell', 00H
 	ORG $+2
-$SG8160	DB	'a:xshell.exe', 00H
+$SG8174	DB	'a:xshell.exe', 00H
 	ORG $+3
-$SG8161	DB	'quince', 00H
+$SG8175	DB	'quince', 00H
 	ORG $+1
-$SG8162	DB	'a:quince.exe', 00H
+$SG8176	DB	'a:quince.exe', 00H
 	ORG $+3
-$SG8164	DB	'procmngr', 00H
+$SG8178	DB	'procmngr', 00H
 	ORG $+3
-$SG8165	DB	'tsk', 00H
-$SG8166	DB	'a:autask.exe', 00H
+$SG8179	DB	'tsk', 00H
+$SG8180	DB	'a:autask.exe', 00H
 	ORG $+3
-$SG8167	DB	'dwm3', 00H
+$SG8181	DB	'cnsl', 00H
 	ORG $+3
-$SG8168	DB	'a:cnsl.exe', 00H
+$SG8182	DB	'a:cnsl.exe', 00H
 	ORG $+1
-$SG8169	DB	'dwm4', 00H
+$SG8183	DB	'dwm4', 00H
 	ORG $+7
-$SG8170	DB	'a:dwm2.exe', 00H
+$SG8184	DB	'a:dwm2.exe', 00H
 CONST	ENDS
 PUBLIC	??2@YAPEAX_K@Z					; operator new
 PUBLIC	??3@YAXPEAX@Z					; operator delete
@@ -212,8 +212,8 @@ $LN5:
 
 	xor	r9d, r9d
 	xor	r8d, r8d
-	lea	rdx, OFFSET FLAT:$SG8159
-	lea	rcx, OFFSET FLAT:$SG8160
+	lea	rdx, OFFSET FLAT:$SG8173
+	lea	rcx, OFFSET FLAT:$SG8174
 	call	?create_process@@YAXPEBDPEADE1@Z	; create_process
 
 ; 160  : 	//! Quince -- The Compositing window manager for Aurora kernel
@@ -222,8 +222,8 @@ $LN5:
 
 	xor	r9d, r9d
 	xor	r8d, r8d
-	lea	rdx, OFFSET FLAT:$SG8161
-	lea	rcx, OFFSET FLAT:$SG8162
+	lea	rdx, OFFSET FLAT:$SG8175
+	lea	rcx, OFFSET FLAT:$SG8176
 	call	?create_process@@YAXPEBDPEADE1@Z	; create_process
 
 ; 163  : 
@@ -238,7 +238,7 @@ $LN5:
 	mov	QWORD PTR tv81[rsp], rax
 	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
 	mov	BYTE PTR [rsp+32], 0
-	lea	r9, OFFSET FLAT:$SG8164
+	lea	r9, OFFSET FLAT:$SG8178
 	mov	rcx, QWORD PTR tv81[rsp]
 	mov	r8, rcx
 	mov	rdx, rax
@@ -250,25 +250,25 @@ $LN5:
 
 	xor	r9d, r9d
 	xor	r8d, r8d
-	lea	rdx, OFFSET FLAT:$SG8165
-	lea	rcx, OFFSET FLAT:$SG8166
+	lea	rdx, OFFSET FLAT:$SG8179
+	lea	rcx, OFFSET FLAT:$SG8180
 	call	?create_process@@YAXPEBDPEADE1@Z	; create_process
 
 ; 172  : 	//! Misc programs goes here
-; 173  : 	create_process ("a:cnsl.exe", "dwm3", 0, NULL);
+; 173  : 	create_process ("a:cnsl.exe", "cnsl", 0, NULL);
 
 	xor	r9d, r9d
 	xor	r8d, r8d
-	lea	rdx, OFFSET FLAT:$SG8167
-	lea	rcx, OFFSET FLAT:$SG8168
+	lea	rdx, OFFSET FLAT:$SG8181
+	lea	rcx, OFFSET FLAT:$SG8182
 	call	?create_process@@YAXPEBDPEADE1@Z	; create_process
 
 ; 174  : 	create_process ("a:dwm2.exe", "dwm4", 0, NULL);
 
 	xor	r9d, r9d
 	xor	r8d, r8d
-	lea	rdx, OFFSET FLAT:$SG8169
-	lea	rcx, OFFSET FLAT:$SG8170
+	lea	rdx, OFFSET FLAT:$SG8183
+	lea	rcx, OFFSET FLAT:$SG8184
 	call	?create_process@@YAXPEBDPEADE1@Z	; create_process
 
 ; 175  : 
@@ -364,7 +364,7 @@ $LN3:
 
 ; 88   : 	printf ("Timer fired\n");
 
-	lea	rcx, OFFSET FLAT:$SG8131
+	lea	rcx, OFFSET FLAT:$SG8145
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 89   : 	interrupt_end(2);

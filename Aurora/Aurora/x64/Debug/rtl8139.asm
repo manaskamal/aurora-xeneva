@@ -14,13 +14,13 @@ _BSS	SEGMENT
 ?current_packet_ptr@@3IA DD 01H DUP (?)			; current_packet_ptr
 _BSS	ENDS
 CONST	SEGMENT
-$SG3304	DB	'***RTL8139: Interrupt fired ***', 0aH, 00H
+$SG3307	DB	'***RTL8139: Interrupt fired ***', 0aH, 00H
 	ORG $+7
-$SG3307	DB	'Receive packet', 0aH, 00H
-$SG3312	DB	'RTL8192 MAC:', 00H
+$SG3310	DB	'Receive packet', 0aH, 00H
+$SG3315	DB	'RTL8192 MAC:', 00H
 	ORG $+3
-$SG3317	DB	':%x', 00H
-$SG3318	DB	0aH, 00H
+$SG3320	DB	':%x', 00H
+$SG3321	DB	0aH, 00H
 CONST	ENDS
 _DATA	SEGMENT
 ?TSAD_Array@@3PAEA DB 020H				; TSAD_Array
@@ -234,7 +234,7 @@ $LN6:
 ; 43   : 
 ; 44   : 	printf ("RTL8192 MAC:");
 
-	lea	rcx, OFFSET FLAT:$SG3312
+	lea	rcx, OFFSET FLAT:$SG3315
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 45   : 	for (int i = 0; i < 6; i++){
@@ -255,7 +255,7 @@ $LN3@rtl_read_m:
 	mov	rcx, QWORD PTR ?rtl_net_dev@@3PEAUrtl8139_dev@@EA ; rtl_net_dev
 	movzx	eax, BYTE PTR [rcx+rax+12]
 	mov	edx, eax
-	lea	rcx, OFFSET FLAT:$SG3317
+	lea	rcx, OFFSET FLAT:$SG3320
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 47   : 	}
@@ -265,7 +265,7 @@ $LN1@rtl_read_m:
 
 ; 48   : 	printf ("\n");
 
-	lea	rcx, OFFSET FLAT:$SG3318
+	lea	rcx, OFFSET FLAT:$SG3321
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 49   : }
@@ -291,7 +291,7 @@ $LN4:
 
 ; 23   : 	printf ("***RTL8139: Interrupt fired ***\n");
 
-	lea	rcx, OFFSET FLAT:$SG3304
+	lea	rcx, OFFSET FLAT:$SG3307
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 24   : 	uint16_t status = x64_inportw(rtl_net_dev->io_base + 0x3e);
@@ -313,7 +313,7 @@ $LN4:
 
 ; 27   : 		printf ("Receive packet\n");
 
-	lea	rcx, OFFSET FLAT:$SG3307
+	lea	rcx, OFFSET FLAT:$SG3310
 	call	?printf@@YAXPEBDZZ			; printf
 $LN1@rtl8139_ha:
 

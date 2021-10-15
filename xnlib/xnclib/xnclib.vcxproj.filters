@@ -92,6 +92,9 @@
     <ClInclude Include="sys\_kybrd.h">
       <Filter>sys</Filter>
     </ClInclude>
+    <ClInclude Include="sys\signal.h">
+      <Filter>sys</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="string.cpp" />

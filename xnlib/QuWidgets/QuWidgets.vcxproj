@@ -134,6 +134,7 @@
     <ClInclude Include="include\QuTextbox.h" />
     <ClInclude Include="include\QuUtils\QuList.h" />
     <ClInclude Include="include\QuWindow.h" />
+    <ClInclude Include="include\QuWindowControl.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\QuBase.cpp" />
@@ -143,6 +144,7 @@
     <ClCompile Include="source\QuTextbox.cpp" />
     <ClCompile Include="source\QuUtils\QuList.cpp" />
     <ClCompile Include="source\QuWindow.cpp" />
+    <ClCompile Include="source\QuWindowControl.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

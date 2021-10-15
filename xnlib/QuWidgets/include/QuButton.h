@@ -25,6 +25,7 @@ typedef struct _QuButton_ {
 	bool hover;
 	bool clicked;
 	bool default_state;
+	bool swap_bit;
 }QuButton;
 
 
@@ -66,4 +67,6 @@ extern void QuButtonSetSize (QuButton* but,int width, int height);
  */
 extern void QuButtonSetActionHandler (QuButton* but, void(*ActionHandler)(QuWidget* wid, QuWindow* win));
 
+
+extern void QuButtonAckAction (QuButton* but);
 #endif

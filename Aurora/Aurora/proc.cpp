@@ -210,6 +210,36 @@ void kill_process () {
 	mutex_unlock (kill_mutex);
 }
 
+//! Kill Process
+void kill_process_by_id (uint16_t id) {
+	x64_cli();
+	mutex_lock (kill_mutex);
+	bool was_blocked = false;
+	thread_t * remove_thread = thread_iterate_ready_list(id);
+	if (remove_thread == NULL) {
+		remove_thread = (thread_t*)thread_iterate_block_list(id);
+		was_blocked = true;
+	}
+	process_t *proc = find_process_by_thread (remove_thread);
+	
+	uint64_t  init_stack = proc->stack - 0x100000;
+
+	//!unmap the runtime stack
+	for (int i = 0; i < 0x100000 / 4096; i++) {
+		unmap_page_ex ((uint64_t*)remove_thread->cr3,init_stack + i * 4096);
+	}
+
+	//!unmap the binary image
+	for (int i = 0; i < proc->image_size / 4096; i++) {
+		uint64_t virtual_addr = proc->image_base + (i * 4096);
+		unmap_page_ex ((uint64_t*)remove_thread->cr3, virtual_addr);
+	}
+
+	task_delete (remove_thread);
+	remove_process (proc);
+	mutex_unlock (kill_mutex);
+}
+
 
 uint32_t fork () {
 	process_t *child_process = (process_t*)pmmngr_alloc();

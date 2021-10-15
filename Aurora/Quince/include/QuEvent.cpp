@@ -118,7 +118,7 @@ void QuEventLoop() {
 			QuMoveCursor(mouse_x, mouse_y);
 			canvas_screen_update (m_pack.dword,m_pack.dword2, 24, 24);
 			
-			mouse_down = false;
+
 			_mouse_code_ = 0;
 			//! Mouse Clicked Bit
 			if (m_pack.dword4 & 0x01) {
@@ -126,19 +126,21 @@ void QuEventLoop() {
 				_mouse_code_ = QU_CANVAS_MOUSE_LCLICKED;
 			}
 
-            QuWindowMngr_HandleMouse(m_pack.dword, m_pack.dword2, mouse_down);
+            QuWindowMngr_HandleMouse(m_pack.dword, m_pack.dword2, mouse_down);	
 
-
+	
+			//! Mouse Released Bit
 			if (QuWindowMngrGetFocused() != NULL) {
 				QuWindowMngr_SendEvent (QuWindowMngrGetFocused(), QU_CANVAS_MOUSE_MOVE,m_pack.dword, m_pack.dword2,_mouse_code_);
+				
 			}
-			//! Mouse Released Bit
-			if (m_pack.dword4 & 0x5) {
+
+		    if (m_pack.dword4 & 0x5) {
 				QuWindowMngr_HandleMouseUp (m_pack.dword, m_pack.dword2);
 				_mouse_code_ = QU_CANVAS_MOUSE_LRELEASE;
 			}
-
-			
+		
+			mouse_down = false;
 			memset (&m_pack, 0, sizeof(mouse_message_t));
 		}
 
@@ -243,6 +245,18 @@ void QuEventLoop() {
 		}
 
 
+		if (q_msg.type == QU_CODE_WIN_CLOSE) {
+			uint16_t from_id = q_msg.from_id;
+			QuWindow* win = (QuWindow*)QuWindowMngrFindByID(from_id);
+			//sys_unmap_sh_mem(from_id, (uint64_t)win->canvas, canvas_get_width() * canvas_get_height()* 32);	
+			
+			win_info_counter--;
+			win->mark_for_close = true;
+			QuCanvasSetUpdateBit(true);
+			memset (&q_msg, 0, sizeof(QuMessage));
+		}
+
+
 
 
 		//*==========================================================================
@@ -259,7 +273,7 @@ void QuEventLoop() {
 			
 	
 		if (QuCanvasGetUpdateBit()) {
-			canvas_screen_update(0,0,canvas_get_width(), canvas_get_height());
+		    canvas_screen_update(0,0,canvas_get_width(), canvas_get_height());
 			QuCanvasSetUpdateBit(false);
 			
 		}

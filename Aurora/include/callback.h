@@ -43,4 +43,8 @@ extern void exec (const char* filename, uint32_t pid);
 extern void ioquery (int devid, int code, void* arg);
 extern void sys_get_current_time (sys_time *time);
 extern uint32_t sys_get_system_tick ();
+extern void sys_kill (int pid, int signo);
+extern void sys_set_signal (int signo, sig_handler handler);
+extern void unmap_shared_memory (uint16_t dest_id, uint64_t pos, size_t size);
+
 #endif

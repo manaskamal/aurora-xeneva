@@ -18,14 +18,14 @@ EXTRN	?sys_get_fb_mem@@YAPEAIXZ:PROC			; sys_get_fb_mem
 EXTRN	?sys_fb_update@@YAXXZ:PROC			; sys_fb_update
 EXTRN	?sys_set_mouse_data@@YAXXZ:PROC			; sys_set_mouse_data
 EXTRN	?sys_get_mouse_pack@@YA_NPEAU_mouse_packet_@@@Z:PROC ; sys_get_mouse_pack
+EXTRN	?get_screen_width@@YAIXZ:PROC			; get_screen_width
+EXTRN	?get_screen_height@@YAIXZ:PROC			; get_screen_height
 EXTRN	?sys_move_cursor@@YAXIII@Z:PROC			; sys_move_cursor
+EXTRN	?get_screen_scanline@@YAGXZ:PROC		; get_screen_scanline
 EXTRN	?sys_unblock_id@@YAXG@Z:PROC			; sys_unblock_id
 EXTRN	?create_uthread@@YAXP6AXPEAX@ZPEAD@Z:PROC	; create_uthread
 EXTRN	?sys_open_file@@YAXPEAU_ufile_@@PEBD@Z:PROC	; sys_open_file
-EXTRN	?get_screen_width@@YAIXZ:PROC			; get_screen_width
-EXTRN	?get_screen_height@@YAIXZ:PROC			; get_screen_height
 EXTRN	?sys_read_file@@YAXPEAU_ufile_@@PEAEH@Z:PROC	; sys_read_file
-EXTRN	?get_screen_scanline@@YAGXZ:PROC		; get_screen_scanline
 EXTRN	?sys_get_used_ram@@YA_KXZ:PROC			; sys_get_used_ram
 EXTRN	?sys_get_free_ram@@YA_KXZ:PROC			; sys_get_free_ram
 EXTRN	?sys_sleep@@YAX_K@Z:PROC			; sys_sleep
@@ -36,6 +36,9 @@ EXTRN	?exec@@YAXPEBDI@Z:PROC				; exec
 EXTRN	?ioquery@@YAXHHPEAX@Z:PROC			; ioquery
 EXTRN	?sys_get_current_time@@YAXPEAU_sys_time_@@@Z:PROC ; sys_get_current_time
 EXTRN	?sys_get_system_tick@@YAIXZ:PROC		; sys_get_system_tick
+EXTRN	?sys_kill@@YAXHH@Z:PROC				; sys_kill
+EXTRN	?sys_set_signal@@YAXHP6AXH@Z@Z:PROC		; sys_set_signal
+EXTRN	?unmap_shared_memory@@YAXG_K0@Z:PROC		; unmap_shared_memory
 EXTRN	?dwm_put_message@@YAXPEAU_dwm_message_@@@Z:PROC	; dwm_put_message
 EXTRN	?dwm_dispatch_message@@YAXPEAU_dwm_message_@@@Z:PROC ; dwm_dispatch_message
 EXTRN	?map_memory@@YAPEAX_KIE@Z:PROC			; map_memory
@@ -44,7 +47,7 @@ _BSS	SEGMENT
 funct	DQ	01H DUP (?)
 _BSS	ENDS
 CONST	SEGMENT
-$SG6003	DB	'System Call Fault!! Halting System', 0aH, 00H
+$SG6025	DB	'System Call Fault!! Halting System', 0aH, 00H
 CONST	ENDS
 _DATA	SEGMENT
 _syscalls DQ	FLAT:?printf@@YAXPEBDZZ
@@ -81,6 +84,9 @@ _syscalls DQ	FLAT:?printf@@YAXPEBDZZ
 	DQ	FLAT:?ioquery@@YAXHHPEAX@Z
 	DQ	FLAT:?sys_get_current_time@@YAXPEAU_sys_time_@@@Z
 	DQ	FLAT:?sys_get_system_tick@@YAIXZ
+	DQ	FLAT:?sys_kill@@YAXHH@Z
+	DQ	FLAT:?sys_set_signal@@YAXHP6AXH@Z@Z
+	DQ	FLAT:?unmap_shared_memory@@YAXG_K0@Z
 	DQ	0000000000000000H
 _DATA	ENDS
 PUBLIC	x64_syscall_handler
@@ -122,7 +128,7 @@ $LN6:
 
 ; 21   : 		printf ("System Call Fault!! Halting System\n");
 
-	lea	rcx, OFFSET FLAT:$SG6003
+	lea	rcx, OFFSET FLAT:$SG6025
 	call	?printf@@YAXPEBDZZ			; printf
 $LN2@x64_syscal:
 

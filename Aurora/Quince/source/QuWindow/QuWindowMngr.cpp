@@ -130,12 +130,8 @@ bool QuWindowMngr_GetUpdateBit() {
 
 void QuWindowMngr_MoveFocusWindow (int x, int y) {
 
-	QuRect *re = (QuRect*)malloc(sizeof(QuRect));
-	re->x = draggable_win->x;
-	re->y = draggable_win->y;
-	re->w = draggable_win->width;
-	re->h = draggable_win->height;
-	QuCanvasAddDirty(re);
+	
+	QuCanvasAddDirty(draggable_win->x, draggable_win->y, draggable_win->width, draggable_win->height);
 	//!Store Old Coordinates
 	int oldx = draggable_win->x;
 	int oldy = draggable_win->y;
@@ -192,18 +188,21 @@ void QuWindowMngr_HandleMouse (int x, int y, bool clicked) {
 	if (WindowList->pointer > 0){
 		for (int i = 0; i < WindowList->pointer; i++) {
 			QuWindow* win = (QuWindow*)QuListGetAt(WindowList, i);
-			if (x > win->x && x < (win->x + win->width) &&
+
+			//! Only a limited portion is available for dragging purpose
+			if (x > win->x && x < (win->x + win->width - 74) &&
 				y > win->y && y < (win->y + 23)) {
 
 					if (clicked) {
-						if (draggable_win != NULL && draggable_win->attr != QU_WIN_NON_DRAGGABLE) {
+						if (draggable_win != NULL && draggable_win->attr != QU_WIN_NON_DRAGGABLE &&
+							focus_win == win) {
 							StreamEvent = false;
 							draggable_win->drag_x = x - draggable_win->x;
 							draggable_win->drag_y = y - draggable_win->y;
 							draggable_win->draggable = true;
 						}else {
 							StreamEvent = false;
-							if (draggable_win != win)
+							if (draggable_win == NULL)
 								draggable_win = win;
 							QuWindowMngr_MoveFront(win);
 						}
@@ -213,8 +212,9 @@ void QuWindowMngr_HandleMouse (int x, int y, bool clicked) {
 			///! Send the event to client
 			/*if (x > win->x && x < (win->x + win->width) &&
 				y > win->y + 23 && y < (win->y + win->height)) {
-					if (focus_win == win) {
-						QuWindowMngr_SendEvent (win, QU_CANVAS_MOUSE_MOVE, x, y, NULL);
+					if (clicked){
+						if (focus_win != win) 
+							return;
 					}
 			}*/
 
@@ -239,7 +239,6 @@ void QuWindowMngr_HandleMouse (int x, int y, bool clicked) {
 			}
 		}
 	}
-
 
 	if (clicked) {
 		if (draggable_win != NULL && draggable_win->attr != QU_WIN_NON_DRAGGABLE) {

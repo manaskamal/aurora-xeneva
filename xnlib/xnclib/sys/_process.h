@@ -14,6 +14,7 @@
 #define __PROCESS_H__
 
 #include <stdint.h>
+#include <sys\signal.h>
 
 /****************************************************************
  ** Creates a process
@@ -33,5 +34,8 @@ extern "C" unsigned int get_current_pid ();
 
 //! Unblocks a thread from a certain process
 //! @param id -- Process thread id
-extern "C" extern "C" void sys_unblock_id (uint16_t id);
+extern "C" void sys_unblock_id (uint16_t id);
+
+extern "C" void sys_kill (int pid, int signo);
+extern "C" void sys_set_signal (int signo, sig_handler handler);
 #endif

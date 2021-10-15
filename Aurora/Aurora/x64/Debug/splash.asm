@@ -6,9 +6,9 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 CONST	SEGMENT
-$SG6193	DB	'a:bs.jpg', 00H
+$SG6196	DB	'a:bs.jpg', 00H
 	ORG $+7
-$SG6206	DB	'JPEG:Decoder Error', 0aH, 00H
+$SG6209	DB	'JPEG:Decoder Error', 0aH, 00H
 CONST	ENDS
 PUBLIC	??0Decoder@Jpeg@@QEAA@PEBEIP6APEAXI@ZP6AXPEAX@Z@Z ; Jpeg::Decoder::Decoder
 PUBLIC	?GetResult@Decoder@Jpeg@@QEBA?AW4DecodeResult@12@XZ ; Jpeg::Decoder::GetResult
@@ -367,7 +367,7 @@ $LN9:
 
 ; 24   : 	FILE f = open("a:bs.jpg");
 
-	lea	rdx, OFFSET FLAT:$SG6193
+	lea	rdx, OFFSET FLAT:$SG6196
 	lea	rcx, QWORD PTR $T4[rsp]
 	call	?open@@YA?AU_file_@@PEBD@Z		; open
 	lea	rcx, QWORD PTR $T3[rsp]
@@ -453,7 +453,7 @@ $LN8@start_boot:
 
 ; 32   : 		printf ("JPEG:Decoder Error\n");
 
-	lea	rcx, OFFSET FLAT:$SG6206
+	lea	rcx, OFFSET FLAT:$SG6209
 	call	?printf@@YAXPEBDZZ			; printf
 $LN1@start_boot:
 

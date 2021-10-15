@@ -32,7 +32,9 @@ void dwm_put_message (dwm_message_t *msg) {
 		t = thread_iterate_block_list(2);
 	}
 
-	memcpy (t->mouse_box,msg,sizeof(dwm_message_t));
+	dwm_message_t *tmsg = (dwm_message_t*)t->mouse_box;
+	if (tmsg->type == 0)
+		memcpy (t->mouse_box,msg,sizeof(dwm_message_t));
 	mutex_unlock (msg_mutex);
 
 }
@@ -46,6 +48,6 @@ void dwm_dispatch_message (dwm_message_t *msg) {
 		memcpy (msg,tmsg,sizeof(dwm_message_t));
 	}
 
-	memset (get_current_thread()->mouse_box, 0, sizeof(dwm_message_t));
+	memset (get_current_thread()->mouse_box, 0, 4096);
 	mutex_unlock (msg_rcv_mutex);
 }

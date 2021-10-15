@@ -30,95 +30,150 @@ void RegisterObject (QuTextbox *_tb) {
 }
 
 void OneClicked (QuWidget *wid, QuWindow *win) {
+	QuButton *but = (QuButton*)wid;
 
 	QuTextboxAppendText(tb, "1");
 	QuTextboxRefresh(tb,win);
 	QuTextboxInvalidate(tb,win);
-	
+
+	QuButtonAckAction(but);
 }
 
 
 void TwoClicked (QuWidget *wid, QuWindow *win) {
+	QuButton *but = (QuButton*)wid;
+
 	QuTextboxAppendText(tb, "2");
 	QuTextboxRefresh(tb,win);
 	QuTextboxInvalidate(tb,win);
+
+	QuButtonAckAction(but);
 }
 void ThreeClicked (QuWidget *wid, QuWindow *win) {
+	QuButton *but = (QuButton*)wid;
+
 	QuTextboxAppendText(tb, "3");
 	QuTextboxRefresh(tb,win);
 	QuTextboxInvalidate(tb,win);
+
+	QuButtonAckAction(but);
 }
 void FourClicked (QuWidget *wid, QuWindow *win) {
+	QuButton *but = (QuButton*)wid;
+
 	QuTextboxAppendText(tb, "4");
 	QuTextboxRefresh(tb,win);
 	QuTextboxInvalidate(tb,win);
+
+	QuButtonAckAction(but);
 }
 void FiveClicked (QuWidget *wid, QuWindow *win) {
+	QuButton *but = (QuButton*)wid;
+
 	QuTextboxAppendText(tb, "5");
 	QuTextboxRefresh(tb,win);
 	QuTextboxInvalidate(tb,win);
+
+	QuButtonAckAction(but);
 }
 void SixClicked (QuWidget *wid, QuWindow *win) {
+	QuButton *but = (QuButton*)wid;
+
 	QuTextboxAppendText(tb, "6");
 	QuTextboxRefresh(tb,win);
 	QuTextboxInvalidate(tb,win);
+
+	QuButtonAckAction(but);
 }
 void SevenClicked (QuWidget *wid, QuWindow *win) {
+	QuButton *but = (QuButton*)wid;
+
 	QuTextboxAppendText(tb, "7");
 	QuTextboxRefresh(tb,win);
 	QuTextboxInvalidate(tb,win);
+
+	QuButtonAckAction(but);
 }
 void EightClicked (QuWidget *wid, QuWindow *win) {
+	QuButton *but = (QuButton*)wid;
+
 	QuTextboxAppendText(tb, "8");
 	QuTextboxRefresh(tb,win);
 	QuTextboxInvalidate(tb,win);
+	QuButtonAckAction(but);
 }
 void NineClicked (QuWidget *wid, QuWindow *win) {
+	QuButton *but = (QuButton*)wid;
+
 	QuTextboxAppendText(tb, "9");
 	QuTextboxRefresh(tb,win);
 	QuTextboxInvalidate(tb,win);
+
+	QuButtonAckAction(but);
 }
 void ZeroClicked (QuWidget *wid, QuWindow *win) {
+	QuButton *but = (QuButton*)wid;
+
 	QuTextboxAppendText(tb,"0");
 	QuTextboxRefresh(tb,win);
 	QuTextboxInvalidate(tb,win);
+
+	QuButtonAckAction(but);
 }
 
 
 void AddClicked (QuWidget *wid, QuWindow *win) {
+	QuButton *but = (QuButton*)wid;
+
 	input_1 = atoi(tb->text);
 	operator_type = ADD;
 	memset(tb->text, 0, 512);
 	QuTextboxRefresh(tb, win);
 	QuTextboxInvalidate(tb, win);
 
+	QuButtonAckAction(but);
+
 }
 
 void MulClicked (QuWidget *wid, QuWindow *win) {
+	QuButton *but = (QuButton*)wid;
+
 	input_1 = atoi(tb->text);
 	operator_type = MUL;
 	memset(tb->text, 0, 512);
 	QuTextboxRefresh(tb, win);
 	QuTextboxInvalidate(tb, win);
+
+	QuButtonAckAction(but);
 }
 
 void SubClicked (QuWidget *wid, QuWindow *win) {
+	QuButton *but = (QuButton*)wid;
+
 	input_1 = atoi(tb->text);
 	operator_type = SUB;
 	memset(tb->text, 0, 512);
 	QuTextboxRefresh(tb, win);
 	QuTextboxInvalidate(tb, win);
+
+	QuButtonAckAction(but);
 }
 
 void DivClicked (QuWidget *wid, QuWindow *win) {
+	QuButton *but = (QuButton*)wid;
+
 	input_1 = atoi(tb->text);
 	operator_type = DIV;
 	memset(tb->text, 0, 512);
 	QuTextboxRefresh(tb, win);
 	QuTextboxInvalidate(tb, win);
+
+	QuButtonAckAction(but);
 }
 
 void EqClicked (QuWidget *wid, QuWindow *win) {
+	QuButton *but = (QuButton*)wid;
+
 	input_2 = atoi(tb->text);
 	int output = 0;
 	if (input_1 != 0 && input_2 != 0) {
@@ -145,14 +200,21 @@ void EqClicked (QuWidget *wid, QuWindow *win) {
 	QuTextboxRefresh(tb, win);
 	QuTextboxInvalidate(tb, win);
 	output = 0;
+
+	QuButtonAckAction(but);
 }
 
 
 void ClearClicked (QuWidget *wid, QuWindow *win){
+
+	QuButton *but = (QuButton*)wid;
+
 	input_1 = 0;
 	input_2 = 0;
 	memset(tb->text, 0, 512);
 	operator_type = 0;
 	QuTextboxRefresh(tb, win);
 	QuTextboxInvalidate(tb, win);
+
+	QuButtonAckAction(but);
 }

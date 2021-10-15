@@ -70,7 +70,7 @@ int main (int argc, char* argv[]) {
 	QuRegisterApplication ("au_taskbar");
 	QuWindow* win = QuGetWindow();
 	QuWindowSetSize(canvas_get_width(), canvas_get_height());
-	QuWindowSetPos(0,0);
+	QuWindowSetPos(0, canvas_get_height() - 40);
 	QuWindowSetProperty(NULL);
 	
 	start_taskbar();

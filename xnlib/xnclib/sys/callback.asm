@@ -166,6 +166,32 @@ sys_get_system_tick:
 	syscall
 	ret
 
+global sys_kill
+sys_kill:
+    mov r12, 34
+	mov r13, rcx
+	mov r14, rdx
+	syscall
+	ret
+
+global sys_set_signal
+sys_set_signal:
+    mov r12, 35
+	mov r13, rcx
+	mov r14, rdx
+	syscall
+	ret
+
+global sys_unmap_sh_mem 
+sys_unmap_sh_mem:
+    mov r12, 26
+	mov r13, rcx
+	mov r14, rdx
+	mov r15, r8
+	syscall
+	ret
+
+
 
 
 

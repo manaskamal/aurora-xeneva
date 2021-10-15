@@ -33,12 +33,18 @@
 #define QU_WIN_CONTROL_CLOSE  3
 #define QU_WIN_CONTROL_OTHER  4
 
+struct _QU_WIN_ ;
+
 typedef struct _QuWinControl_ {
 	int x;
 	int y;
 	int w;
 	int h;
 	uint8_t type;
+	bool hover;
+	bool restore;
+	void (*ControlRedraw)(_QuWinControl_ *ctrl, _QU_WIN_ *win, bool bit);
+	void (*ControlEvent) (_QuWinControl_ *ctrl, _QU_WIN_ *win, bool bit);
 }QuWinControl;
 
 typedef struct _QuWinInfo_ {
@@ -90,4 +96,5 @@ extern void QuWindowSetPos (int x, int y);
 extern void QuWindowHandleMouse (int mouse_x, int mouse_y, int code);
 extern void QuWindowSetProperty (uint8_t prop);
 extern void QuWindowShowControls (QuWindow *win);
+extern void QuWindowAddControlEvent (int type, void (*Event)(QuWinControl *control, QuWindow* win, bool bit));
 #endif

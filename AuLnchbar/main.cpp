@@ -62,6 +62,9 @@ void AboutClicked (QuWidget *wid, QuWindow *win) {
 int main (int argc, char* argv[]) {
 	QuRegisterApplication ("Calculator");
 	QuWindow* win = QuGetWindow();
+	QuWindowShowControls(win);
+
+
 	win->title = "Calculator-beta";
 
 	QuPanel *panel = QuCreatePanel();

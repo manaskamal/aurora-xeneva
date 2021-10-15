@@ -345,6 +345,9 @@
     <ClInclude Include="..\include\utils\circ_buf.h">
       <Filter>include\utils</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\ipc\signals.h">
+      <Filter>include\ipc</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="init.cpp">

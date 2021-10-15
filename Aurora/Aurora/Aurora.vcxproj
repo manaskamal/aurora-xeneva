@@ -242,6 +242,7 @@
     <ClInclude Include="..\include\ipc\evntsh.h" />
     <ClInclude Include="..\include\ipc\message.h" />
     <ClInclude Include="..\include\ipc\pipe.h" />
+    <ClInclude Include="..\include\ipc\signals.h" />
     <ClInclude Include="..\include\mm.h" />
     <ClInclude Include="..\include\net\arp.h" />
     <ClInclude Include="..\include\net\ethernet.h" />

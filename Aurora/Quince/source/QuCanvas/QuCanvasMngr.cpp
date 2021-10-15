@@ -29,13 +29,16 @@
 #include <acrylic.h>
 #include <string.h>
 
-
 #define QU_CANVAS_START   0x0000100000000000
 
 uint32_t cursor_pos = 0;
 bool update_bit = false;
+QuRect dirty_rect[512];
+int dirty_r_count;
 
 void QuCanvasMngr_Initialize() {
+	memset(dirty_rect, 0, 512);
+	dirty_r_count = 0;
 	//dirty_list = QuListInit();
 }
 
@@ -46,6 +49,12 @@ uint32_t* QuCanvasCreate (uint16_t dest_pid) {
 	map_shared_memory(dest_pid,QU_CANVAS_START + pos,size);
 	cursor_pos += size;
 	return (uint32_t*)(QU_CANVAS_START + pos);
+}
+
+void QuCanvasRelease (uint16_t dest_pid, QuWindow *win) {
+	uint32_t size = canvas_get_width() * canvas_get_height() * 32;
+	sys_unmap_sh_mem(dest_pid, (uint64_t)win->canvas, size);
+	cursor_pos -= size;
 }
 
 
@@ -77,12 +86,15 @@ void QuCanvasBlit (QuWindow* win,uint32_t *canvas, unsigned x, unsigned y, unsig
 						}
 					}
 				}
+				canvas_screen_update(info->rect[k].x, info->rect[k].y, info->rect[k].w, info->rect[k].h);
 			}
 #ifdef SW_CURSOR
 			QuMoveCursor(QuCursorGetNewX(), QuCursorGetNewY());
 #endif
 			info->rect_count = 0;
 		} else {
+			
+
 			for (int i=0; i < win->width; i++) {
 				for (int j=0; j < win->height; j++){
 					if (win->canvas[(win->x + i) + (win->y + j) * width] | 0x00000000){
@@ -92,12 +104,25 @@ void QuCanvasBlit (QuWindow* win,uint32_t *canvas, unsigned x, unsigned y, unsig
 					}
 				}
 			}
+			QuCanvasSetUpdateBit(true);
 		}
 #ifdef SW_CURSOR
 		QuMoveCursor(QuCursorGetNewX(), QuCursorGetNewY());
 #endif
 		info->dirty = false;	
-		QuCanvasSetUpdateBit(true);
+		
+	}
+
+	if (win->mark_for_close) {
+		uint16_t id = win->owner_id;
+		QuCanvasRelease(win->owner_id, win);
+		sys_unmap_sh_mem(win->owner_id, (uint64_t)win->win_info_location,8192);	
+		QuCanvasUpdate(win->x, win->y, win->width, win->height);
+		QuWindowMngr_Remove(win);
+		/*QuMessage msg;
+		msg.type = QU_CANVAS_DESTROYED;
+		QuChannelPut(&msg, id);*/
+		//sys_kill(id,2);
 	}
   
 }
@@ -112,9 +137,15 @@ uint32_t QuCanvasGetPixel (uint32_t *canvas, unsigned x, unsigned y) {
 }
 
 
-void QuCanvasAddDirty (QuRect *r) {
-	QuStackPushRect(r);
+void QuCanvasAddDirty (int x, int y, int w, int h) {
+	//QuStackPushRect(r);
+	dirty_rect[dirty_r_count].x = x;
+	dirty_rect[dirty_r_count].y = y;
+	dirty_rect[dirty_r_count].w = w;
+	dirty_rect[dirty_r_count].h = h;
+	dirty_r_count++;
 }
+
 
 void QuCanvasUpdate (unsigned x, unsigned y, unsigned w, unsigned h) {
 	
@@ -158,14 +189,19 @@ void QuCanvasCopyToFB(unsigned x, unsigned y, unsigned w, unsigned h) {
 
 
 void QuCanvasUpdateDirty() {
-	if (QuStackGetRectCount() > 0) {
-		QuRect* r = (QuRect*)QuStackGetRect();
-		QuCanvasUpdate(r->x, r->y, r->w, r->h);
-		//canvas_screen_update (r->x, r->y, r->w, r->h)
-		free (r);
-		//if (!QuCanvasGetUpdateBit())
-		QuCanvasSetUpdateBit(true);
+	//if (QuStackGetRectCount() > 0) {
+	//	QuRect* r = (QuRect*)QuStackGetRect();
+	//	QuCanvasUpdate(r->x, r->y, r->w, r->h);
+	//	//canvas_screen_update (r->x, r->y, r->w, r->h)
+	//	free (r);
+	//	//if (!QuCanvasGetUpdateBit())
+	//	//QuCanvasSetUpdateBit(true);
+	//	canvas_screen_update (r->x, r->y, r->w, r->h);
+	//}
+	for (int i = 0; i < dirty_r_count; i++) {
+		QuCanvasUpdate(dirty_rect[i].x, dirty_rect[i].y, dirty_rect[i].w, dirty_rect[i].h);
 	}
+	dirty_r_count = 0;
 }
 
  void QuCanvasSetUpdateBit(bool value) {

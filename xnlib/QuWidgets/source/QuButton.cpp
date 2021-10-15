@@ -112,9 +112,12 @@ void QuButtonMouseEvent (QuWidget *wid, QuWindow* win, int code, bool clicked) {
 		but->default_state = true;
 
 		if (clicked) {
-			//!Call the action handler
-			if (but->widget.ActionEvent)
-				but->widget.ActionEvent(wid,win);
+			if (but->swap_bit == 0) {
+				//!Call the action handler
+				but->swap_bit = 1;
+				if (but->widget.ActionEvent)
+					but->widget.ActionEvent(wid,win);
+			}
 		}
 		
 	}
@@ -153,6 +156,7 @@ QuButton * QuCreateButton(int x, int y) {
 	but->hover = false;
 	but->clicked = false;
 	but->default_state = false;
+	but->swap_bit = 0;
 	return but;
 }
 
@@ -191,6 +195,11 @@ void QuButtonSetSize (QuButton* but,int width, int height) {
  */
 void QuButtonSetActionHandler (QuButton* but, void(*ActionHandler)(QuWidget* wid, QuWindow* win)) {
 	but->widget.ActionEvent = ActionHandler;
+}
+
+
+void QuButtonAckAction (QuButton* but) {
+	but->swap_bit = 0;
 }
 
 

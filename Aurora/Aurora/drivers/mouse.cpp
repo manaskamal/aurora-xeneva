@@ -30,7 +30,7 @@ uint8_t curr_button[3];
 uint32_t mouse_button_state;
 volatile int32_t mouse_button = 0;
 static mutex_t  *mouse = create_mutex();
-
+dwm_message_t old_message;
 
 void  mouse_wait (uint8_t a_type){
 	uint32_t _timer_out_ = 100000;
@@ -142,8 +142,8 @@ finish_packet:
 		
 		//!Pass here the message stream to all waiting processes
 	
-
-
+		
+	
 		//mutex_lock (mouse);
 		dwm_message_t msg; // = (dwm_message_t*)pmmngr_alloc();
 		msg.type = 1;
@@ -155,11 +155,9 @@ finish_packet:
 		dwm_put_message (&msg);
 		//pmmngr_free (msg);
 		//mutex_unlock (mouse);
-
-		/*if (left_button_up()) {
+    /*	if (left_button_up()) {
 			mouse_button_state |= 5;
 		}*/
-
 
 		memcpy (prev_button, curr_button, 3);
 		memset (curr_button, 0x00, 3);

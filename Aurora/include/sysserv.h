@@ -56,6 +56,9 @@ static void* _syscalls[] = {
 	ioquery, //31
 	sys_get_current_time, //32
 	sys_get_system_tick, //33
+	sys_kill, //34
+	sys_set_signal, //35
+	unmap_shared_memory, //36
 	0
 };
 
