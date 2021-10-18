@@ -105,7 +105,7 @@ $LN3:
 
 	call	?vmmngr_x86_64_init@@YAXXZ		; vmmngr_x86_64_init
 
-; 17   : 	initialize_kmemory(0x10);
+; 17   : 	initialize_kmemory(16);
 
 	mov	ecx, 16
 	call	?initialize_kmemory@@YAX_K@Z		; initialize_kmemory

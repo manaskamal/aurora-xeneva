@@ -126,15 +126,20 @@ void create_process(const char* filename, char* procname, uint8_t priority, char
 	process_t *process = (process_t*)pmmngr_alloc();
 	process->pid_t = pid;
 	//!open the process file-binary
-	FILE file = open(filename);
-	if (file.status == FILE_FLAG_INVALID) {
+	char *fname = (char*)filename;
+	//printf ("filename -> %s\n", fname);
+	vfs_node_t *node = vfs_finddir (fname);
+	//printf ("[[[[[[Node Name -> %s]]]]]]\n", node->filename);
+
+	vfs_node_t file = openfs (node, fname);
+	if (file.status == FS_FLAG_INVALID) {
 		printf("Executable image not found\n");
 		return;
 	}
 	//printf ("File size -> %d\n", file.size);
 	//!open the binary file and read it
 	unsigned char* buf = (unsigned char*)pmmngr_alloc();   //18*1024
-	read_blk(&file,buf,file.id);
+	readfs_block(node,&file,buf);
 
 	IMAGE_DOS_HEADER* dos = (IMAGE_DOS_HEADER*)buf;
 	PIMAGE_NT_HEADERS nt = raw_offset<PIMAGE_NT_HEADERS>(dos, dos->e_lfanew);
@@ -153,7 +158,8 @@ void create_process(const char* filename, char* procname, uint8_t priority, char
 	int position = 1;  //we already read 4096 bytes at first
 	while(file.eof != 1){
 		unsigned char* block = (unsigned char*)pmmngr_alloc();
-		read_blk(&file,block,file.id);
+		//read_blk(&file,block,file.id);
+		readfs_block (node, &file, block);
 		//fat32_read (&file,block);
 		map_page_ex(cr3,(uint64_t)block,_image_base_ + position * 4096);
 		position++;
@@ -226,13 +232,13 @@ void kill_process_by_id (uint16_t id) {
 
 	//!unmap the runtime stack
 	for (int i = 0; i < 0x100000 / 4096; i++) {
-		unmap_page_ex ((uint64_t*)remove_thread->cr3,init_stack + i * 4096);
+		unmap_page_ex ((uint64_t*)remove_thread->cr3,init_stack + i * 4096, true);
 	}
 
 	//!unmap the binary image
 	for (int i = 0; i < proc->image_size / 4096; i++) {
 		uint64_t virtual_addr = proc->image_base + (i * 4096);
-		unmap_page_ex ((uint64_t*)remove_thread->cr3, virtual_addr);
+		unmap_page_ex ((uint64_t*)remove_thread->cr3, virtual_addr, true);
 	}
 
 	task_delete (remove_thread);
@@ -269,13 +275,12 @@ void exec (const char* filename, uint32_t pid) {
 	//!Clear up the child address space
 	uint64_t c_cr3 = (uint64_t)child_proc->cr3;
 	memset((void*)c_cr3, 0, 4096);
-
-	FILE f = open (filename);
+	/*FILE f = open (filename);
 	if (f.status == FILE_FLAG_INVALID)
-		return;
+		return;*/
 	unsigned char* buffer = (unsigned char*)pmmngr_alloc();
-	read_blk (&f, buffer, f.id);
-
+/*	read_blk (&f, buffer, f.id);
+*/
 	//! Create new mappings for exec
 	uint64_t* new_cr3 = create_user_address_space();
 	//! copy the new mappings to child_cr3
@@ -296,18 +301,18 @@ void exec (const char* filename, uint32_t pid) {
 	PIMAGE_NT_HEADERS nt = raw_offset<PIMAGE_NT_HEADERS>(dos, dos->e_lfanew);
 	
 	//!extract the informations
-    load_pe_file(buffer,f.size);
+    //load_pe_file(buffer,f.size);
 	uint64_t _image_base_ = nt->OptionalHeader.ImageBase;
 	ientry ent = (ientry)(nt->OptionalHeader.AddressOfEntryPoint + nt->OptionalHeader.ImageBase); //buffer
 
 	map_page((uint64_t)buffer,_image_base_);
 	int position = 1;  //we already read 4096 bytes at first
-	while(f.eof != 1){
-		unsigned char* block = (unsigned char*)pmmngr_alloc();
-		read_blk(&f,block, f.id);
-		map_page((uint64_t)block,_image_base_ + position * 4096);
-		position++;
-	}
+	//while(f.eof != 1){
+	//	unsigned char* block = (unsigned char*)pmmngr_alloc();
+	//	//read_blk(&f,block, f.id);
+	//	map_page((uint64_t)block,_image_base_ + position * 4096);
+	//	position++;
+	//}
 
 	child_proc->entry_point = ent;
 	x64_write_cr3(p_cr3);

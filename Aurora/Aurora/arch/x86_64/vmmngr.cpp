@@ -206,7 +206,7 @@ void unmap_page(uint64_t virt_addr){
 }
 
 
-void unmap_page_ex(uint64_t* cr3, uint64_t virt_addr){
+void unmap_page_ex(uint64_t* cr3, uint64_t virt_addr, bool free_physical){
 	
 	const long i1 = pml4_index(virt_addr);
 
@@ -221,7 +221,8 @@ void unmap_page_ex(uint64_t* cr3, uint64_t virt_addr){
 		pml[i1] = 0;
 	}
 
-	pmmngr_free(page);
+	if (free_physical)
+		pmmngr_free(page);
 }
 
 

@@ -15,21 +15,23 @@
 #include <sys\mmap.h>
 #include <sys\_term.h>
 #include <string.h>
+#include <sys\_file.h>
 
 
 canvas_t* canvas = NULL;
 bool double_buffer = true;
+int svga_fd = 0;
 
 void create_canvas () {
-	uint32_t width = ioquery(IO_QUERY_SVGA,SVGA_GET_WIDTH,NULL);
-	uint32_t height = ioquery(IO_QUERY_SVGA, SVGA_GET_HEIGHT, NULL);
-	uint32_t bpp = ioquery(IO_QUERY_SVGA, SVGA_GET_BPP, NULL);
-	uint16_t scanline = ioquery(IO_QUERY_SVGA, SVGA_GET_SCANLINE, NULL);
+	svga_fd = sys_open_file ("/dev/svga", NULL);
+	uint32_t width = ioquery(svga_fd,SVGA_GET_WIDTH,NULL);
+	uint32_t height = ioquery(svga_fd, SVGA_GET_HEIGHT, NULL);
+	uint32_t bpp = ioquery(svga_fd, SVGA_GET_BPP, NULL);
+	uint16_t scanline = ioquery(svga_fd, SVGA_GET_SCANLINE, NULL);
 
 	if (double_buffer)
 		for (int i = 0; i < (width * height * 32) / 4096; i++)
 			valloc(0x0000600000000000 + i * 4096);
-
 
 	canvas = (canvas_t*)malloc(sizeof(canvas_t));
 	canvas->width = width;
@@ -88,7 +90,7 @@ void canvas_screen_update (uint32_t x, uint32_t y, uint32_t w, uint32_t h) {
 	query.value2 = y;
 	query.value3 = w;
 	query.value4 = h;
-	ioquery(IO_QUERY_SVGA, SVGA_UPDATE, &query);
+	ioquery(svga_fd, SVGA_UPDATE, &query);
 	//free(query);
 }
 
@@ -123,6 +125,10 @@ uint16_t canvas_get_scanline () {
 
 uint32_t canvas_get_scale () {
 	return canvas->width;
+}
+
+int canvas_get_fd () {
+	return svga_fd;
 }
 
 

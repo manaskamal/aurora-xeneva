@@ -26,7 +26,7 @@
 
 static bool UpdateToolbar = true;
 
-QuWindow* QuWindowCreate (int x, int y, uint16_t owner_id, uint8_t attr) {
+QuWindow* QuWindowCreate (int x, int y, uint16_t owner_id, uint32_t* canvas) {
 	QuWindow* win = (QuWindow*)malloc(sizeof(QuWindow));
 	win->x = x;
 	win->y = y;
@@ -36,11 +36,11 @@ QuWindow* QuWindowCreate (int x, int y, uint16_t owner_id, uint8_t attr) {
 	win->width = QUWIN_DEFAULT_WIDTH;
 	win->height = QUWIN_DEFAULT_HEIGHT;
 	win->visible = true;
-	win->canvas = NULL;
+	win->canvas = canvas; //NULL;
 	win->owner_id = owner_id;
 	win->decorate = true;
 	win->mark_for_close = false;
-	win->attr = attr;
+	win->attr = QU_WIN_FULL; //attr;
     QuWindowMngr_Add (win);
 	return win;
 }

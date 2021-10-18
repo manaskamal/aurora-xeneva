@@ -232,8 +232,10 @@
     <ClInclude Include="..\include\drivers\vmmouse.h" />
     <ClInclude Include="..\include\drvmngr.h" />
     <ClInclude Include="..\include\error.h" />
+    <ClInclude Include="..\include\fs\devfs.h" />
     <ClInclude Include="..\include\fs\fat32.h" />
     <ClInclude Include="..\include\fs\gpt.h" />
+    <ClInclude Include="..\include\fs\vfs.h" />
     <ClInclude Include="..\include\gui\jpeg.h" />
     <ClInclude Include="..\include\gui\splash.h" />
     <ClInclude Include="..\include\hal.h" />
@@ -261,11 +263,9 @@
     <ClInclude Include="..\include\string.h" />
     <ClInclude Include="..\include\sysserv.h" />
     <ClInclude Include="..\include\utils\circ_buf.h" />
-    <ClInclude Include="..\include\utils\list.h" />
     <ClInclude Include="..\include\utils\lnklist.h" />
     <ClInclude Include="..\include\utils\ring.h" />
     <ClInclude Include="..\include\va_list.h" />
-    <ClInclude Include="..\include\vfs.h" />
     <ClInclude Include="..\include\_null.h" />
     <ClInclude Include="..\include\_xnboot.h" />
   </ItemGroup>
@@ -304,9 +304,10 @@
     <ClCompile Include="drivers\vbox.cpp" />
     <ClCompile Include="drivers\vga.cpp" />
     <ClCompile Include="drvmngr.cpp" />
+    <ClCompile Include="fs\devfs.cpp" />
     <ClCompile Include="fs\fat32.cpp" />
     <ClCompile Include="fs\gpt.cpp" />
-    <ClCompile Include="gui\splash.cpp" />
+    <ClCompile Include="fs\vfs.cpp" />
     <ClCompile Include="hal.cpp" />
     <ClCompile Include="hwcursor.cpp" />
     <ClCompile Include="init.cpp" />
@@ -340,7 +341,6 @@
     <ClCompile Include="utils\lnklist.cpp" />
     <ClCompile Include="utils\pipe.cpp" />
     <ClCompile Include="utils\ring.cpp" />
-    <ClCompile Include="vfs.cpp" />
   </ItemGroup>
   <ItemGroup>
     <NASM Include="arch\x86_64\interrupts.asm" />

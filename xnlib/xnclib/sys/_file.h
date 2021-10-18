@@ -25,8 +25,8 @@ typedef struct _file_ {
 	uint32_t  status;
 }FILE;
 
-extern "C" void sys_open_file (FILE *file, const char* filename);
-extern "C" void sys_read_file (FILE *file, unsigned char* buffer, int length);
+extern "C" int sys_open_file (char* filename, FILE *stream);
+extern "C" void sys_read_file (int fd, unsigned char* buffer,FILE *f);
 
 
 #endif

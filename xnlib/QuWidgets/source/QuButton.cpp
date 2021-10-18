@@ -92,7 +92,7 @@ void QuButtonRefresh (QuWidget *wid, QuWindow* win) {
  * @param clicked -- Click bit
  *====================================================================
  */
-void QuButtonMouseEvent (QuWidget *wid, QuWindow* win, int code, bool clicked) {
+void QuButtonMouseEvent (QuWidget *wid, QuWindow* win, int code, bool clicked, int x, int y) {
 	QuButton *but = (QuButton*)wid;
 	/**
 	 * The mouse enter event

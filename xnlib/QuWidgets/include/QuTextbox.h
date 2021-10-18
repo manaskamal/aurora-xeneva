@@ -22,9 +22,11 @@ typedef struct _QuTextbox_ {
 	bool editable;
 	char text[512];
 	int cursor_pos_x;
+	int cursor_pos_y;
 	bool hover;
 	bool clicked;
 	bool text_paint;
+	bool multiline;
 }QuTextbox;
 
 

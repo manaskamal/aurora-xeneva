@@ -14,7 +14,7 @@
 void mm_init () {
 #ifdef ARCH_X64
 	vmmngr_x86_64_init ();
-	initialize_kmemory(0x10);
+	initialize_kmemory(16);
 #elif  ARCH_ARM
 	//!initialize arm32 virtual memory manager
 #elif  ARCH_ARM64

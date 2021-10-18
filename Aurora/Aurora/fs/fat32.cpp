@@ -18,6 +18,7 @@
 #include <mm.h>
 #include <vfs.h>
 #include <console.h>
+#include <fs/vfs.h>
 
 
 unsigned int part_lba;  //partition_begin_lba
@@ -143,15 +144,15 @@ uint32_t fat32_read_fat (uint32_t cluster_index) {
 
 
 
-void fat32_read (FILE *file, unsigned char* buf) {
+void fat32_read (vfs_node_t *file, unsigned char* buf) {
 
-	auto lba = cluster_to_sector32 (file->start_cluster); 	
+	auto lba = cluster_to_sector32 (file->current); 	
 
 	for (int i = 0; i < sectors_per_cluster; i++) {
 		ata_read_28 (lba+i,1,buf);
 		buf += 512;
 	}
-    uint32_t value = fat32_read_fat (file->start_cluster);
+	uint32_t value = fat32_read_fat (file->current);
 	if (value  >= 0x0FFFFFF8) {
 	    file->eof = 1;
 		return;
@@ -162,11 +163,11 @@ void fat32_read (FILE *file, unsigned char* buf) {
 		return;
 	}
 	
-	file->start_cluster = value;
+	file->current = value;
 }
 
 
-void fat32_read_file (FILE *file, unsigned char* buf, int count) {
+void fat32_read_file (vfs_node_t *file, unsigned char* buf, uint32_t count) {
 	for (int i=0; i < count; i+= 8) {
 		fat32_read(file,buf);
 		if(file->eof) {
@@ -176,8 +177,8 @@ void fat32_read_file (FILE *file, unsigned char* buf, int count) {
 	}
 }
 
-FILE fat32_locate_dir (const char* dir) {
-	FILE file;
+vfs_node_t fat32_locate_dir (const char* dir) {
+	vfs_node_t file;
 	unsigned char* buf;
 	fat32_dir *dirent;
 
@@ -197,16 +198,15 @@ FILE fat32_locate_dir (const char* dir) {
 			name[11] = 0;
 			if (strcmp (dos_file_name, name) == 0) {
 				strcpy (file.filename, dir);
-				file.id = 10;   //boot disk device id
-				file.start_cluster = dirent->first_cluster;
+				file.current = dirent->first_cluster;
 				file.size = dirent->file_size;
 				file.eof = 0;
-				file.status = FILE_STATUS_FOUND;
+				file.status = FS_STATUS_FOUND;
 
 				if (dirent->attrib == 0x10)
-					file.flags = FILE_FLAG_DIRECTORY;
+					file.flags = FS_FLAG_DIRECTORY;
 				else
-					file.flags = FILE_FLAG_GENERAL;
+					file.flags = FS_FLAG_GENERAL;
 				
 				pmmngr_free(buf);
 				return file;
@@ -216,23 +216,22 @@ FILE fat32_locate_dir (const char* dir) {
 		pmmngr_free(buf);		
 	}
 
-	file.status = FILE_FLAG_INVALID;
-	file.id = 0;
+	file.status = FS_FLAG_INVALID;
 	file.size = 0;
 	file.eof = 0;
 	return file;
 }
 
 
-FILE fat32_locate_subdir (FILE kfile, const char* filename) {
+vfs_node_t fat32_locate_subdir (vfs_node_t kfile, const char* filename) {
 
-	FILE file;
+	vfs_node_t file;
 
 	char dos_file_name[11];
 	to_dos_file_name32 (filename, dos_file_name, 11);
 	//dos_file_name[11] = 0;
 	unsigned char* buf = (unsigned char*)pmmngr_alloc();
-	if (kfile.flags != FILE_FLAG_INVALID) {
+	if (kfile.flags != FS_FLAG_INVALID) {
 		
 		//! read the directory
 		while (!kfile.eof) {
@@ -255,16 +254,15 @@ FILE fat32_locate_subdir (FILE kfile, const char* filename) {
 
 					//! found file
 					strcpy (file.filename, filename);
-					file.id = 10;  //boot disk device id
-					file.start_cluster = pkDir->first_cluster;
+					file.current = pkDir->first_cluster;
 					file.size = pkDir->file_size;
 					file.eof = 0;
-					file.status = FILE_STATUS_FOUND;
+					file.status = FS_STATUS_FOUND;
 					//! set file type
 					if (pkDir->attrib == 0x10)
-						file.flags = FILE_FLAG_DIRECTORY;
+						file.flags = FS_FLAG_DIRECTORY;
 					else
-						file.flags = FILE_FLAG_GENERAL;
+						file.flags = FS_FLAG_GENERAL;
 
 					//!return file
 					return file;
@@ -278,7 +276,7 @@ FILE fat32_locate_subdir (FILE kfile, const char* filename) {
 		}
 	}
 
-	file.flags = FILE_FLAG_INVALID;
+	file.flags = FS_FLAG_INVALID;
 	return file;
 }
 
@@ -340,27 +338,27 @@ void fat32_list_files() {
 //! Opens a file 
 //! @param filename -- name of the file
 //! @example -- \\EFI\\BOOT\\BOOTx64.efi
-FILE fat32_open (const char* filename) {
-	FILE cur_dir;
+vfs_node_t fat32_open (vfs_node_t * node, char* filename) {
+	vfs_node_t cur_dir;
 	char* p = 0;
 	bool  root_dir = true;
 	char* path = (char*) filename;
 
 	//! any '\'s in path ?
-	p = strchr (path, '\\');
+	p = strchr (path, '/');
 	if (!p) {
 
 		//! nope, must be in root directory, search it
 		cur_dir = fat32_locate_dir (path);
 
 		//! found file ?
-		if (cur_dir.flags == FILE_FLAG_GENERAL) {
+		if (cur_dir.flags == FS_FLAG_GENERAL) {
 			return cur_dir;
 		}
 
 		//! unable to find
-		FILE ret;
-		ret.flags = FILE_FLAG_INVALID;
+		vfs_node_t ret;
+		ret.flags = FS_FLAG_INVALID;
 		return ret;
 	}
 
@@ -375,7 +373,7 @@ FILE fat32_open (const char* filename) {
 		for (i=0; i < 16; i++) {
 
 			//! if another '\' or end of line is reached, we are done
-			if (p[i] == '\\' || p[i]=='\0')
+			if (p[i] == '/' || p[i]=='\0')
 				break;
 
 			//! copy character
@@ -395,22 +393,22 @@ FILE fat32_open (const char* filename) {
 		}
 
 		//! found directory or file?
-		if (cur_dir.flags == FILE_FLAG_INVALID)
+		if (cur_dir.flags == FS_FLAG_INVALID)
 			break;
 
 		//! found file?
-		if (cur_dir.flags == FILE_FLAG_GENERAL)
+		if (cur_dir.flags == FS_FLAG_GENERAL)
 			return cur_dir;
 
 		//! find next '\'
-		p=strchr(p+1, '\\');
+		p=strchr(p+1, '/');
 		if (p)
 			p++;
 	}
 
 	//! unable to find
-	FILE ret;
-	ret.flags = FILE_FLAG_INVALID;
+	vfs_node_t ret;
+	ret.flags = FS_FLAG_INVALID;
 	return ret;
 }
 
@@ -770,14 +768,21 @@ void create_dir (const char* filename) {
 
 
 void fat32_self_register () {
-	file_system_t *fsys = (file_system_t*)pmmngr_alloc();
-	memset (fsys, 0, sizeof(file_system_t));
-	strcpy (fsys->name, "FAT32BOOT");
-	fsys->sys_open = fat32_open;
-	fsys->sys_read = fat32_read_file;
-	fsys->sys_read_blk = fat32_read;
+	vfs_node_t *fsys = (vfs_node_t*)malloc(sizeof(vfs_node_t));
+	strcpy (fsys->filename, "/");
+	fsys->size = 0;
+	fsys->eof = 0;
+	fsys->pos = 0;
+	fsys->current = 0;
+	fsys->flags = FS_FLAG_DIRECTORY;
+	fsys->status = 0;
+	fsys->open = fat32_open;
+	fsys->read = fat32_read_file;
+	fsys->write = 0;
+	fsys->read_blk = fat32_read;
 	fsys->ioquery = 0;
-	vfs_register (BOOT_DISK_DEVICE_ID, fsys);
+	vfs_mount ("/", fsys);
+	printf ("File System registered\n");
 }
 
 

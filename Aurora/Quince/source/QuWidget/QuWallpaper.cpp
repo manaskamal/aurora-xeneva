@@ -24,7 +24,7 @@ void QuWallpaperPixel (unsigned x, unsigned y, uint32_t color) {
 }
 
 
-Image* QuWallpaperInit (const char* filename) {
+Image* QuWallpaperInit (char* filename) {
 
 	wallpaper = (QuWallpaper*)malloc (sizeof(QuWallpaper));
 
@@ -53,7 +53,7 @@ Image* QuWallpaperInit (const char* filename) {
 	return img;
 }
 
-void QuWallpaperChange (const char* filename, uint32_t color) {
+void QuWallpaperChange (char* filename, uint32_t color) {
 	//wallpaper = (QuWallpaper*)malloc (sizeof(QuWallpaper));
 
 	unsigned w = canvas_get_width  ();

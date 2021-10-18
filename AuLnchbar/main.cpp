@@ -18,7 +18,10 @@
 #include <QuPanel.h>
 #include <QuTextbox.h>
 #include "actions.h"
+#include <sys\_exit.h>
+#include <sys\_term.h>
 
+QuTextbox *text;
 
 
 void QuActions (QuMessage *msg) {
@@ -49,6 +52,8 @@ void QuActions (QuMessage *msg) {
 	}
 
 	if (msg->type == QU_CANVAS_KEY_PRESSED) {
+		//text->wid.KeyEvent((QuWidget*)text,QuGetWindow(),msg->dword);
+		QuWindowHandleKey(msg->dword);
 		memset(msg, 0, sizeof(QuMessage));
 	}
 	
@@ -59,11 +64,14 @@ void QuActions (QuMessage *msg) {
 void AboutClicked (QuWidget *wid, QuWindow *win) {
 }
 
+void CloseEvent (QuWinControl *control, QuWindow *win, bool bit) {
+	//sys_exit();
+}
 int main (int argc, char* argv[]) {
 	QuRegisterApplication ("Calculator");
 	QuWindow* win = QuGetWindow();
 	QuWindowShowControls(win);
-
+	QuWindowAddControlEvent (QU_WIN_CONTROL_CLOSE, CloseEvent);
 
 	win->title = "Calculator-beta";
 
@@ -71,7 +79,7 @@ int main (int argc, char* argv[]) {
 	QuPanelSetBackground (panel, 0x59FFFFFF);
 	QuWindowAdd((QuWidget*)panel);
 
-	QuTextbox *text = QuCreateTextbox(10,28, win->w - 20,30);
+	text = QuCreateTextbox(10,28, win->w - 20,30);
 	QuWindowAdd((QuWidget*)text);
 	
 	RegisterObject(text);

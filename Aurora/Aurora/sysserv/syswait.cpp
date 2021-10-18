@@ -32,13 +32,13 @@ void wait () {
 void sys_unblock_id (uint16_t id) {
 	x64_cli ();
 	//mutex_lock (unblock_lock);
-	set_multi_task_enable (false);
+	//set_multi_task_enable (false);
 	thread_t* thr = (thread_t*)thread_iterate_block_list (id);
 	if (thr != NULL){
 		//thr->state = THREAD_STATE_READY;
 		unblock_thread(thr);
 	}
-	set_multi_task_enable (true);
+	//set_multi_task_enable (true);
 }
 
 

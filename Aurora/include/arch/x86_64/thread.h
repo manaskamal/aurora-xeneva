@@ -15,6 +15,7 @@
 #include <stdint.h>
 #include <utils\list.h>
 #include <ipc\signals.h>
+#include <fs\vfs.h>
 #include <mm.h>
 
 #define  THREAD_STATE_READY  1
@@ -96,8 +97,8 @@ typedef struct _thread_ {
 	uint64_t* mouse_box;
 	uint64_t* qu_box;
 	uint8_t priority;
-	sig_handler signals[NSIG-1];  //signals
-	bool signal_interrupt;     //actually here needed a list to store signal messages
+	vfs_node_t *fd[60];   //file descriptor
+	int fd_current;
 	struct _thread_* next;
 	struct _thread_* prev;
 }thread_t;

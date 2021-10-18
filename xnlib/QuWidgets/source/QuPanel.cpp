@@ -22,7 +22,7 @@
 
 bool panel_update = false;
 
-void QuPanelMouseEvent (QuWidget *widget, QuWindow* win, int code, bool clicked) {
+void QuPanelMouseEvent (QuWidget *widget, QuWindow* win, int code, bool clicked, int x, int y) {
 	//! No Effect
 }
 

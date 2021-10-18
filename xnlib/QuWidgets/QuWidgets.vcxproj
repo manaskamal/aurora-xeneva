@@ -128,8 +128,10 @@
     <ClInclude Include="include\QuBase.h" />
     <ClInclude Include="include\QuButton.h" />
     <ClInclude Include="include\QuEventCode.h" />
+    <ClInclude Include="include\QuKeycodeHelper.h" />
     <ClInclude Include="include\QuPanel.h" />
     <ClInclude Include="include\QuRect.h" />
+    <ClInclude Include="include\QuSlider.h" />
     <ClInclude Include="include\QuTerminal.h" />
     <ClInclude Include="include\QuTextbox.h" />
     <ClInclude Include="include\QuUtils\QuList.h" />
@@ -139,7 +141,9 @@
   <ItemGroup>
     <ClCompile Include="source\QuBase.cpp" />
     <ClCompile Include="source\QuButton.cpp" />
+    <ClCompile Include="source\QuKeycodeHelper.cpp" />
     <ClCompile Include="source\QuPanel.cpp" />
+    <ClCompile Include="source\QuSlider.cpp" />
     <ClCompile Include="source\QuTerminal.cpp" />
     <ClCompile Include="source\QuTextbox.cpp" />
     <ClCompile Include="source\QuUtils\QuList.cpp" />

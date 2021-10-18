@@ -54,7 +54,7 @@ uint32_t* QuCanvasCreate (uint16_t dest_pid) {
 void QuCanvasRelease (uint16_t dest_pid, QuWindow *win) {
 	uint32_t size = canvas_get_width() * canvas_get_height() * 32;
 	sys_unmap_sh_mem(dest_pid, (uint64_t)win->canvas, size);
-	cursor_pos -= size;
+	//cursor_pos -= size;
 }
 
 
@@ -114,15 +114,17 @@ void QuCanvasBlit (QuWindow* win,uint32_t *canvas, unsigned x, unsigned y, unsig
 	}
 
 	if (win->mark_for_close) {
+		//win->mark_for_close = false;
 		uint16_t id = win->owner_id;
 		QuCanvasRelease(win->owner_id, win);
-		sys_unmap_sh_mem(win->owner_id, (uint64_t)win->win_info_location,8192);	
 		QuCanvasUpdate(win->x, win->y, win->width, win->height);
 		QuWindowMngr_Remove(win);
+		QuCanvasSetUpdateBit(true);
+		QuWindowMngr_DrawBehind(win);
 		/*QuMessage msg;
 		msg.type = QU_CANVAS_DESTROYED;
 		QuChannelPut(&msg, id);*/
-		//sys_kill(id,2);
+		sys_kill(id,2);
 	}
   
 }

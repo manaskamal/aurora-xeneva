@@ -6,11 +6,12 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 PUBLIC	?ioquery@@YAXHHPEAX@Z				; ioquery
-EXTRN	?vfs_get_file_system@@YAPEAU_file_system_@@H@Z:PROC ; vfs_get_file_system
+EXTRN	?vfs_ioquery@@YAHPEAU_vfs_node_@@HPEAX@Z:PROC	; vfs_ioquery
 EXTRN	x64_cli:PROC
+EXTRN	?get_current_thread@@YAPEAU_thread_@@XZ:PROC	; get_current_thread
 pdata	SEGMENT
-$pdata$?ioquery@@YAXHHPEAX@Z DD imagerel $LN4
-	DD	imagerel $LN4+67
+$pdata$?ioquery@@YAXHHPEAX@Z DD imagerel $LN3
+	DD	imagerel $LN3+69
 	DD	imagerel $unwind$?ioquery@@YAXHHPEAX@Z
 pdata	ENDS
 xdata	SEGMENT
@@ -20,51 +21,40 @@ xdata	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\sysserv\ioquery.cpp
 _TEXT	SEGMENT
-sys_$ = 32
+node$ = 32
 device_id$ = 64
 code$ = 72
 arg$ = 80
 ?ioquery@@YAXHHPEAX@Z PROC				; ioquery
 
-; 21   : void ioquery (int device_id, int code, void* arg) {
+; 22   : void ioquery (int device_id, int code, void* arg) {
 
-$LN4:
+$LN3:
 	mov	QWORD PTR [rsp+24], r8
 	mov	DWORD PTR [rsp+16], edx
 	mov	DWORD PTR [rsp+8], ecx
 	sub	rsp, 56					; 00000038H
 
-; 22   : 	x64_cli();
+; 23   : 	x64_cli();
 
 	call	x64_cli
 
-; 23   : 
-; 24   : 	if (device_id < 0)
+; 24   : 	vfs_node_t *node = get_current_thread()->fd[device_id];
 
-	cmp	DWORD PTR device_id$[rsp], 0
-	jge	SHORT $LN1@ioquery
+	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
+	movsxd	rcx, DWORD PTR device_id$[rsp]
+	mov	rax, QWORD PTR [rax+rcx*8+264]
+	mov	QWORD PTR node$[rsp], rax
 
-; 25   : 		return;
+; 25   : 	vfs_ioquery(node, code, arg);
 
-	jmp	SHORT $LN2@ioquery
-$LN1@ioquery:
+	mov	r8, QWORD PTR arg$[rsp]
+	mov	edx, DWORD PTR code$[rsp]
+	mov	rcx, QWORD PTR node$[rsp]
+	call	?vfs_ioquery@@YAHPEAU_vfs_node_@@HPEAX@Z ; vfs_ioquery
 
-; 26   : 
-; 27   : 	file_system_t *sys_ = vfs_get_file_system(device_id);
-
-	mov	ecx, DWORD PTR device_id$[rsp]
-	call	?vfs_get_file_system@@YAPEAU_file_system_@@H@Z ; vfs_get_file_system
-	mov	QWORD PTR sys_$[rsp], rax
-
-; 28   : 	sys_->ioquery (code, arg);
-
-	mov	rdx, QWORD PTR arg$[rsp]
-	mov	ecx, DWORD PTR code$[rsp]
-	mov	rax, QWORD PTR sys_$[rsp]
-	call	QWORD PTR [rax+32]
-$LN2@ioquery:
-
-; 29   : }
+; 26   : 	return;
+; 27   : }
 
 	add	rsp, 56					; 00000038H
 	ret	0

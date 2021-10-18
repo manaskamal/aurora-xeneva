@@ -38,6 +38,7 @@
 #include <vfs.h>
 #include <fs\fat32.h>
 #include <fs\gpt.h>
+#include <fs\vfs.h>
 #include <screen.h>
 #include <proc.h>
 #include <pmmngr.h>
@@ -137,14 +138,16 @@ void _kmain (KERNEL_BOOT_INFO *info) {
 	hda_initialize();
 	e1000_initialize();  //<< receiver not working
 
-
+	
     ata_initialize();
 	initialize_gpt();
-	initialize_vfs();
+	//initialize_vfs();
+	vfs_init();
+
 	initialize_screen(info);
 	svga_init (); 
 	initialize_mouse();
-
+    
 	message_init ();
 	dwm_ipc_init();
 
@@ -156,10 +159,10 @@ void _kmain (KERNEL_BOOT_INFO *info) {
 	//! Initialize the scheduler here
 	//!===============================================
 	initialize_scheduler();
-	create_process ("a:xshell.exe","shell",0, NULL);
+	create_process ("/xshell.exe","shell",0, NULL);
 	//! Quince -- The Compositing window manager for Aurora kernel
 	//! always put quince in thread id -- > 2
-	create_process ("a:quince.exe","quince",0, NULL);
+	create_process ("/quince.exe","quince",0, NULL);
 
 	/**=====================================================
 	 ** Kernel threads handle some specific callbacks like
@@ -168,10 +171,10 @@ void _kmain (KERNEL_BOOT_INFO *info) {
 	 */
 	create_kthread (procmngr_start,(uint64_t)pmmngr_alloc(),x64_read_cr3(),"procmngr",0);
 
-	create_process ("a:autask.exe", "tsk", 0, NULL);
+	create_process ("/autask.exe", "tsk", 0, NULL);
 	//! Misc programs goes here
-	create_process ("a:cnsl.exe", "cnsl", 0, NULL);
-	create_process ("a:dwm2.exe", "dwm4", 0, NULL);
+	create_process ("/cnsl.exe", "cnsl", 0, NULL);
+	create_process ("/dwm2.exe", "dwm4", 0, NULL);
 
 	//! Here start the scheduler (multitasking engine)
 	scheduler_start();

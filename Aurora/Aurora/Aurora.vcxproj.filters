@@ -100,9 +100,6 @@
     <Filter Include="include\gui">
       <UniqueIdentifier>{05c89289-a5d1-42de-9e0b-bb57c275425a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="source\gui">
-      <UniqueIdentifier>{60c634c7-fb55-48e7-8460-f644b194e2fe}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\stdint.h">
@@ -159,9 +156,6 @@
     <ClInclude Include="..\include\fs\fat32.h">
       <Filter>include\fs</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\vfs.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\ctype.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -173,9 +167,6 @@
     </ClInclude>
     <ClInclude Include="..\include\screen.h">
       <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\utils\list.h">
-      <Filter>include\utils</Filter>
     </ClInclude>
     <ClInclude Include="..\include\drivers\pci.h">
       <Filter>include\drivers</Filter>
@@ -348,6 +339,12 @@
     <ClInclude Include="..\include\ipc\signals.h">
       <Filter>include\ipc</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\fs\vfs.h">
+      <Filter>include\fs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\fs\devfs.h">
+      <Filter>include\fs</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="init.cpp">
@@ -397,9 +394,6 @@
     </ClCompile>
     <ClCompile Include="fs\fat32.cpp">
       <Filter>source\fs</Filter>
-    </ClCompile>
-    <ClCompile Include="vfs.cpp">
-      <Filter>source</Filter>
     </ClCompile>
     <ClCompile Include="arch\x86_64\kheap.cpp">
       <Filter>source\arch\x86_64</Filter>
@@ -542,9 +536,6 @@
     <ClCompile Include="hwcursor.cpp">
       <Filter>source</Filter>
     </ClCompile>
-    <ClCompile Include="gui\splash.cpp">
-      <Filter>source\gui</Filter>
-    </ClCompile>
     <ClCompile Include="sysserv\systime.cpp">
       <Filter>source\sysserv</Filter>
     </ClCompile>
@@ -562,6 +553,12 @@
     </ClCompile>
     <ClCompile Include="utils\pipe.cpp">
       <Filter>source\ipc</Filter>
+    </ClCompile>
+    <ClCompile Include="fs\vfs.cpp">
+      <Filter>source\fs</Filter>
+    </ClCompile>
+    <ClCompile Include="fs\devfs.cpp">
+      <Filter>source\fs</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -25,7 +25,7 @@ typedef struct _QuWallpaper_ {
 //! QuWallpaperInit --> Initialize and Loads the wallpaper
 //!
 //! @param filename -- Path of the wallpaper
-extern Image* QuWallpaperInit (const char* filename);
+extern Image* QuWallpaperInit (char* filename);
 
 //! QuWallpaperDraw --> Draw the wallpaper to its 
 //! internal buffer
@@ -36,6 +36,6 @@ extern void QuWallpaperDraw (Image *image);
 //! @param = none
 extern void QuWallpaperPresent ();
 
-extern void QuWallpaperChange (const char* filename, uint32_t color);
+extern void QuWallpaperChange (char* filename, uint32_t color);
 
 #endif

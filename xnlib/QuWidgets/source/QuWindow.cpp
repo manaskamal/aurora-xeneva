@@ -85,6 +85,7 @@ void QuCreateWindow (int x, int y, int w, int h, uint32_t* info_data, char* titl
 	win->win_info_data = info_data;
 	win->title = title;
 	win->decorate = true;
+	win->focus_widget = NULL;
 	QuWinInfo* info = (QuWinInfo*)win->win_info_data;
 	//info->rect_count = 0;
 	//QuWindowAddMinimizeButton(win);
@@ -131,6 +132,7 @@ void QuWindowSetBound(int w, int h) {
 
 void QuWindowAdd (QuWidget *widget) {
 	QuListAdd(root_win->widgets, widget);
+	root_win->focus_widget = widget;
 }
 
 void QuWindowShowControls (QuWindow *win) {
@@ -224,6 +226,10 @@ void QuWindowMove (int x, int y) {
 	acrylic_draw_rect_unfilled (root_win->x, root_win->y, root_win->w, root_win->h, SILVER);
 	}
 	//QuPanelUpdate(root_win->x, root_win->y, root_win->w, root_win->h);
+
+	/*QuWinInfo *info = (QuWinInfo*)root_win->win_info_data;
+	info->dirty = 1;
+	info->rect_count = 0;*/
 }
 
 
@@ -290,12 +296,14 @@ void QuWindowHandleMouse (int mouse_x, int mouse_y, int code) {
 			mouse_y > (root_win->y + wid->y) && mouse_y < (root_win->y + wid->y + wid->height)) {
 
 				//! Make the difference between left click and dragging here
-				if (code == QU_CANVAS_MOUSE_LCLICKED && old_mouse_x == mouse_x && old_mouse_y == mouse_y)
+				if (code == QU_CANVAS_MOUSE_LCLICKED && old_mouse_x == mouse_x && old_mouse_y == mouse_y){
 					clicked = true;
+					root_win->focus_widget = wid;
+				}
 
-				wid->MouseEvent(wid, root_win, QU_EVENT_MOUSE_ENTER,clicked);
+				wid->MouseEvent(wid, root_win, QU_EVENT_MOUSE_ENTER,clicked, mouse_x, mouse_y);
 		} else {
-			wid->MouseEvent (wid, root_win, QU_EVENT_MOUSE_LEAVE, clicked);
+			wid->MouseEvent (wid, root_win, QU_EVENT_MOUSE_LEAVE, clicked, mouse_x,mouse_y);
 		}
 
 	}
@@ -319,3 +327,13 @@ void QuWindowHandleMouse (int mouse_x, int mouse_y, int code) {
 	old_mouse_y = mouse_y;
 }
 
+
+
+void QuWindowHandleKey (int code) {
+	for (int i = 0; i < root_win->widgets->pointer; i++) {
+		QuWidget *wid = (QuWidget*)QuListGetAt(root_win->widgets, i);
+		//! Make the difference between left click and dragging here
+		if (root_win->focus_widget == wid && wid->KeyEvent != 0)
+			wid->KeyEvent(wid, root_win,code);
+	}
+}

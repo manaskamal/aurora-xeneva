@@ -121,9 +121,10 @@ thread_t* create_kthread (void (*entry) (void), uint64_t stack,uint64_t cr3, cha
 	t->priviledge = THREAD_LEVEL_KERNEL;
 	t->state = THREAD_STATE_READY;
 	t->priority = priority;
+	/*
 	for (int i = 0; i < 38-1; i++)
 		t->signals[i] = 0;
-	t->signal_interrupt = false;
+	t->signal_interrupt = false;*/
 	thread_insert(t);
 	return t;
 }
@@ -170,9 +171,9 @@ thread_t* create_user_thread (void (*entry) (void*),uint64_t stack,uint64_t cr3,
 	t->priviledge = THREAD_LEVEL_USER;
 	t->state = THREAD_STATE_READY;
 	t->priority = priority;
-	for (int i = 0; i < 38-1; i++)
+	/*for (int i = 0; i < 38-1; i++)
 		t->signals[i] = 0;
-	t->signal_interrupt = false;
+	t->signal_interrupt = false;*/
 	thread_insert (t);
 	return t;
 }

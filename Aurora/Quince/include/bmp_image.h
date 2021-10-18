@@ -49,6 +49,6 @@ typedef struct _BITMAP_ {
 //! @param filename -- Path of the file
 //!
 //!============================================
-extern void QuinceDrawBmp (const char* filename, unsigned x, unsigned y, QuBitmap *bmp);
+extern void QuinceDrawBmp (char* filename, unsigned x, unsigned y, QuBitmap *bmp);
 
 #endif

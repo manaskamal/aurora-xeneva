@@ -14,12 +14,12 @@
 #include <acrylic.h>
 #include <canvas.h>
 
-void QuinceDrawBmp (const char* filename, unsigned x, unsigned y, QuBitmap *bmp){
+void QuinceDrawBmp (char* filename, unsigned x, unsigned y, QuBitmap *bmp){
 	 FILE f;
-	 sys_open_file (&f, filename);
+	 int fd = sys_open_file (filename, &f);
 	 valloc(0x0000070000000000);
 	 unsigned char* data = (unsigned char*)0x0000070000000000;
-	 sys_read_file (&f,data, f.size);
+	 sys_read_file (fd,data, &f);
 
 	bitmap_img* file_header = (bitmap_img*)data;
 	unsigned int offset = file_header->off_bits;

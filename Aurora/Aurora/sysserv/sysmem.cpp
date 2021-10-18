@@ -39,17 +39,17 @@ void unmap_shared_memory (uint16_t dest_id, uint64_t pos, size_t size) {
 
 	
 	for (int i = 0; i < size/4096; i++)
-		unmap_page (pos + size * 4096);
+		unmap_page (pos + i * 4096);
 
 
-	/*thread_t* t = thread_iterate_ready_list (dest_id);
+	thread_t* t = thread_iterate_ready_list (dest_id);
 	if (t == NULL) {
 		t = thread_iterate_block_list(dest_id);
 	}
 	uint64_t *cr3 = (uint64_t*)t->cr3;
 
 	for (int i = 0; i < size / 4096; i++)
-		unmap_page_ex(cr3,pos + size * 4096);*/
+		unmap_page_ex(cr3,pos + i * 4096, false);
 }
 
 

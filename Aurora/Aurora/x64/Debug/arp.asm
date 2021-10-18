@@ -15,7 +15,7 @@ _BSS	SEGMENT
 ?arp_table_curr@@3HA DD 01H DUP (?)			; arp_table_curr
 _BSS	ENDS
 CONST	SEGMENT
-$SG2988	DB	'Address Resolution Protocol Initialized', 0aH, 00H
+$SG2989	DB	'Address Resolution Protocol Initialized', 0aH, 00H
 CONST	ENDS
 _DATA	SEGMENT
 ?broadcast_mac_address@@3PAEA DB 0ffH			; broadcast_mac_address
@@ -447,7 +447,7 @@ $LN3:
 
 ; 67   : 	printf ("Address Resolution Protocol Initialized\n");
 
-	lea	rcx, OFFSET FLAT:$SG2988
+	lea	rcx, OFFSET FLAT:$SG2989
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 68   : }

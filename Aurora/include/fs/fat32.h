@@ -14,6 +14,7 @@
 
 #include <stdint.h>
 #include <vfs.h>
+#include <fs/vfs.h>
 
 //! Attributes for directory entry
 #define ATTRIBUTE_MASK        0x3F
@@ -94,10 +95,10 @@ typedef struct _fat32_dir_
 #pragma pack(pop)
 
 extern void initialize_fat32 ();
-extern FILE fat32_open (const char* filename);
-extern void fat32_read_file (FILE *file, unsigned char* buf, int count);
-extern void fat32_read (FILE *file, unsigned char* buf);
-extern FILE fat32_locate_dir (const char* dir);
+extern vfs_node_t fat32_open (vfs_node_t *node,char* filename);
+extern void fat32_read_file (vfs_node_t *file, unsigned char* buf, uint32_t count);
+extern void fat32_read (vfs_node_t *file, unsigned char* buf);
+extern vfs_node_t fat32_locate_dir (const char* dir);
 extern void scan_free_cluster (bool write);
 extern void list_fat_entries ();
 extern uint32_t fat32_create_file  (char* filename, uint8_t *buffer, unsigned int length);

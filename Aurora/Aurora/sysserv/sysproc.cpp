@@ -15,6 +15,7 @@ void create__sys_process (const char* name, char* procnm) {
 void sys_exit () {
 	x64_cli();	
 	kill_process ();
+	x64_sti();
 	force_sched();
 }
 
@@ -38,5 +39,5 @@ void sys_kill (int pid, int signo) {
 
 void sys_set_signal (int signo, sig_handler handler) {
 	x64_cli();
-	get_current_thread()->signals[signo] = handler;
+	//get_current_thread()->signals[signo] = handler;
 }

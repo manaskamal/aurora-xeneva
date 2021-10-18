@@ -45,6 +45,12 @@
     <ClInclude Include="include\QuWindowControl.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="include\QuKeycodeHelper.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\QuSlider.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\QuBase.cpp">
@@ -69,6 +75,12 @@
       <Filter>source</Filter>
     </ClCompile>
     <ClCompile Include="source\QuWindowControl.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\QuKeycodeHelper.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\QuSlider.cpp">
       <Filter>source</Filter>
     </ClCompile>
   </ItemGroup>

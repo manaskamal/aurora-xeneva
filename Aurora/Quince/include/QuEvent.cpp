@@ -59,8 +59,8 @@ void QuHandleQuinceMsg (QuMessage *qu_msg) {
 			for (int j = 0; j < canvas_get_height(); j++)
 				QuCanvasPutPixel (canvas, 0 + i, 0 + j, WHITE);
 		
-		QuWindow * window = QuWindowCreate(x,y,dest_id);
-		QuWindowSetCanvas (window, canvas);
+		QuWindow * window = QuWindowCreate(x,y,dest_id,canvas);
+		//QuWindowSetCanvas (window, canvas);
 		QuRect *r = (QuRect*)malloc(sizeof(QuRect));
 		r->x = window->x;
 		r->y = window->y;
@@ -120,13 +120,14 @@ void QuEventLoop() {
 			
 
 			_mouse_code_ = 0;
+			mouse_down = false;
 			//! Mouse Clicked Bit
 			if (m_pack.dword4 & 0x01) {
 				mouse_down = true;
 				_mouse_code_ = QU_CANVAS_MOUSE_LCLICKED;
 			}
 
-            QuWindowMngr_HandleMouse(m_pack.dword, m_pack.dword2, mouse_down);	
+            QuWindowMngr_HandleMouse(m_pack.dword, m_pack.dword2, mouse_down, _mouse_code_);	
 
 	
 			//! Mouse Released Bit
@@ -140,7 +141,6 @@ void QuEventLoop() {
 				_mouse_code_ = QU_CANVAS_MOUSE_LRELEASE;
 			}
 		
-			mouse_down = false;
 			memset (&m_pack, 0, sizeof(mouse_message_t));
 		}
 
@@ -179,7 +179,7 @@ void QuEventLoop() {
 			render_disable = true;
 			uint16_t dest_id = q_msg.from_id; 
 			uint32_t* canvas = QuCanvasCreate(dest_id);
-			QuWindow * window = QuWindowCreate(x,y,dest_id);
+			QuWindow * window = QuWindowCreate(x,y,dest_id, canvas);
 
 
 			uint64_t info_location = QU_WIN_INFO_START + win_info_counter * 4096;
@@ -248,9 +248,8 @@ void QuEventLoop() {
 		if (q_msg.type == QU_CODE_WIN_CLOSE) {
 			uint16_t from_id = q_msg.from_id;
 			QuWindow* win = (QuWindow*)QuWindowMngrFindByID(from_id);
-			//sys_unmap_sh_mem(from_id, (uint64_t)win->canvas, canvas_get_width() * canvas_get_height()* 32);	
-			
-			win_info_counter--;
+			sys_unmap_sh_mem(from_id, (uint64_t)win->win_info_location, 8192);	
+			//win_info_counter--;
 			win->mark_for_close = true;
 			QuCanvasSetUpdateBit(true);
 			memset (&q_msg, 0, sizeof(QuMessage));
@@ -264,7 +263,6 @@ void QuEventLoop() {
 		if (diff_time > 15){
 			QuWindowMngr_DrawAll();
 			QuRenderTime(time.seconds, time.minutes, time.hour);
-
 			acrylic_draw_arr_string (canvas_get_width() - (strlen("Aurora's Xeneva beta-preview")*8),
 				10,"Aurora's Xeneva beta-preview", WHITE);
 			next_tick = sys_get_system_tick();

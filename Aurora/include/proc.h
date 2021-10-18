@@ -15,7 +15,7 @@
 #include <arch\x86_64\thread.h>
 #include <stdio.h>
 #include <arch\x86_64\cpu.h>
-#include <vfs.h>
+#include <fs\vfs.h>
 #include <mm.h>
 #include <pe.h>
 
@@ -23,10 +23,6 @@
 typedef void (*main_thread) (void*);
 
 ///! Future use!! Current vfs system is not sufficient
-typedef struct _files_ {
-	uint8_t fd_handle;
-	UFILE *fd[256];
-}files_t;
 
 //!Process structure
 typedef struct _process_ {
@@ -54,4 +50,6 @@ extern void kill_process_by_id (uint16_t id);
 extern uint32_t get_num_process ();
 extern void process_map_addresses (uint64_t addr, size_t length, uint64_t *c_address_space, process_t* c_process);
 extern process_t * get_current_process ();
+extern process_t *find_process_by_id (uint32_t pid);
+extern process_t *find_process_by_thread (thread_t *thread);
 #endif

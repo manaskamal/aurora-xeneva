@@ -38,4 +38,6 @@ extern "C" void sys_unblock_id (uint16_t id);
 
 extern "C" void sys_kill (int pid, int signo);
 extern "C" void sys_set_signal (int signo, sig_handler handler);
+
+extern "C" uint64_t sys_get_used_ram ();
 #endif

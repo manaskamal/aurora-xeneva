@@ -68,9 +68,9 @@ void QuCursorInit (unsigned x, unsigned y, int type) {
 	}
 
 	if (type == QU_CURSOR_ARROW)
-		QuinceDrawBmp ("a:cursor.bmp", x, y, bmp);
+		QuinceDrawBmp ("/cursor.bmp", x, y, bmp);
 	else 
-		QuinceDrawBmp ("a:cursor.bmp", x, y, bmp);
+		QuinceDrawBmp ("/cursor.bmp", x, y, bmp);
 
 	MouseData = (unsigned char*)0x0000070000000000;
 
@@ -153,7 +153,7 @@ void QuMoveCursor (unsigned x, unsigned y) {
 	ioq.value = x;
 	ioq.value2 = y;
 	ioq.value6 = QU_CURSOR_ARROW;
-	ioquery(IO_QUERY_SVGA, SVGA_MOVE_CURSOR, &ioq);
+	ioquery(canvas_get_fd(), SVGA_MOVE_CURSOR, &ioq);
 #endif
 }
 

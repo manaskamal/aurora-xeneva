@@ -191,6 +191,12 @@ sys_unmap_sh_mem:
 	syscall
 	ret
 
+global sys_get_used_ram 
+sys_get_used_ram:
+    mov r12, 22
+	syscall
+	ret
+
 
 
 

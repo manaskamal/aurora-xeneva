@@ -51,4 +51,5 @@ extern void canvas_fill (uint32_t w, uint32_t h, uint32_t color);
 extern uint32_t* canvas_get_framebuffer ();
 extern uint16_t canvas_get_scanline ();
 extern uint32_t canvas_get_scale();
+extern int canvas_get_fd ();
 #endif

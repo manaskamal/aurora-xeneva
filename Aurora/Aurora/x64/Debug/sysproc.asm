@@ -9,11 +9,11 @@ PUBLIC	?create__sys_process@@YAXPEBDPEAD@Z		; create__sys_process
 PUBLIC	?sys_exit@@YAXXZ				; sys_exit
 PUBLIC	?sys_kill@@YAXHH@Z				; sys_kill
 PUBLIC	?sys_set_signal@@YAXHP6AXH@Z@Z			; sys_set_signal
+EXTRN	?strcpy@@YAPEADPEADPEBD@Z:PROC			; strcpy
 EXTRN	?pmmngr_alloc@@YAPEAXXZ:PROC			; pmmngr_alloc
 EXTRN	x64_cli:PROC
-EXTRN	?get_current_thread@@YAPEAU_thread_@@XZ:PROC	; get_current_thread
+EXTRN	x64_sti:PROC
 EXTRN	?force_sched@@YAXXZ:PROC			; force_sched
-EXTRN	?strcpy@@YAPEADPEADPEBD@Z:PROC			; strcpy
 EXTRN	?kill_process@@YAXXZ:PROC			; kill_process
 EXTRN	?kill_process_by_id@@YAXG@Z:PROC		; kill_process_by_id
 EXTRN	?procmngr_add_process@@YAXPEAU_procmngr_queue_@@@Z:PROC ; procmngr_add_process
@@ -23,13 +23,13 @@ $pdata$?create__sys_process@@YAXPEBDPEAD@Z DD imagerel $LN3
 	DD	imagerel $LN3+84
 	DD	imagerel $unwind$?create__sys_process@@YAXPEBDPEAD@Z
 $pdata$?sys_exit@@YAXXZ DD imagerel $LN3
-	DD	imagerel $LN3+24
+	DD	imagerel $LN3+29
 	DD	imagerel $unwind$?sys_exit@@YAXXZ
 $pdata$?sys_kill@@YAXHH@Z DD imagerel $LN3
 	DD	imagerel $LN3+32
 	DD	imagerel $unwind$?sys_kill@@YAXHH@Z
 $pdata$?sys_set_signal@@YAXHP6AXH@Z@Z DD imagerel $LN3
-	DD	imagerel $LN3+46
+	DD	imagerel $LN3+23
 	DD	imagerel $unwind$?sys_set_signal@@YAXHP6AXH@Z@Z
 pdata	ENDS
 xdata	SEGMENT
@@ -49,25 +49,19 @@ signo$ = 48
 handler$ = 56
 ?sys_set_signal@@YAXHP6AXH@Z@Z PROC			; sys_set_signal
 
-; 39   : void sys_set_signal (int signo, sig_handler handler) {
+; 40   : void sys_set_signal (int signo, sig_handler handler) {
 
 $LN3:
 	mov	QWORD PTR [rsp+16], rdx
 	mov	DWORD PTR [rsp+8], ecx
 	sub	rsp, 40					; 00000028H
 
-; 40   : 	x64_cli();
+; 41   : 	x64_cli();
 
 	call	x64_cli
 
-; 41   : 	get_current_thread()->signals[signo] = handler;
-
-	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
-	movsxd	rcx, DWORD PTR signo$[rsp]
-	mov	rdx, QWORD PTR handler$[rsp]
-	mov	QWORD PTR [rax+rcx*8+264], rdx
-
-; 42   : }
+; 42   : 	//get_current_thread()->signals[signo] = handler;
+; 43   : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -80,35 +74,35 @@ pid$ = 48
 signo$ = 56
 ?sys_kill@@YAXHH@Z PROC					; sys_kill
 
-; 22   : void sys_kill (int pid, int signo) {
+; 23   : void sys_kill (int pid, int signo) {
 
 $LN3:
 	mov	DWORD PTR [rsp+16], edx
 	mov	DWORD PTR [rsp+8], ecx
 	sub	rsp, 40					; 00000028H
 
-; 23   : 	//x64_cli();
-; 24   : 	/*thread_t * t = (thread_t*)thread_iterate_ready_list(pid);
-; 25   : 	if (t == NULL) {
-; 26   : 		t = (thread_t*)thread_iterate_block_list(pid);
-; 27   : 	}
-; 28   : 
-; 29   : 	if (t == NULL)
-; 30   : 		return;
-; 31   : 
-; 32   : 	t->signal_interrupt = true;*/
-; 33   : 
-; 34   : 	kill_process_by_id(pid);
+; 24   : 	//x64_cli();
+; 25   : 	/*thread_t * t = (thread_t*)thread_iterate_ready_list(pid);
+; 26   : 	if (t == NULL) {
+; 27   : 		t = (thread_t*)thread_iterate_block_list(pid);
+; 28   : 	}
+; 29   : 
+; 30   : 	if (t == NULL)
+; 31   : 		return;
+; 32   : 
+; 33   : 	t->signal_interrupt = true;*/
+; 34   : 
+; 35   : 	kill_process_by_id(pid);
 
 	movzx	ecx, WORD PTR pid$[rsp]
 	call	?kill_process_by_id@@YAXG@Z		; kill_process_by_id
 
-; 35   : 	force_sched();
+; 36   : 	force_sched();
 
 	call	?force_sched@@YAXXZ			; force_sched
 
-; 36   : 	//! For now, no signals are supported, just kill the process
-; 37   : }
+; 37   : 	//! For now, no signals are supported, just kill the process
+; 38   : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -132,11 +126,15 @@ $LN3:
 
 	call	?kill_process@@YAXXZ			; kill_process
 
-; 18   : 	force_sched();
+; 18   : 	x64_sti();
+
+	call	x64_sti
+
+; 19   : 	force_sched();
 
 	call	?force_sched@@YAXXZ			; force_sched
 
-; 19   : }
+; 20   : }
 
 	add	rsp, 40					; 00000028H
 	ret	0

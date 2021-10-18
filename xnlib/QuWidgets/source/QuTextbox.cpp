@@ -13,33 +13,41 @@
 #include <stdlib.h>
 #include <string.h>
 #include <color.h>
+#include <ctype.h>
+#include <QuKeycodeHelper.h>
 
 void QuTextboxRefresh (QuWidget *wid, QuWindow *win) {
 	QuTextbox *tb = (QuTextbox*)wid;
+
 	acrylic_draw_rect_filled (win->x + wid->x, win->y + wid->y, wid->width, wid->height,WHITE);
 	acrylic_draw_rect_unfilled (win->x + wid->x, win->y + wid->y,wid->width, wid->height,SILVER);
 	acrylic_draw_arr_string (win->x + wid->x + 2,
 		win->y + wid->y + (wid->height/2) - 12/2,tb->text,BLACK);
 
 	/*if (tb->hover)  {
-		acrylic_draw_rect_unfilled (win->x + wid->x, win->y + wid->y, 240, 150, DESKBLUE);
+		acrylic_draw_rect_unfilled (win->x + wid->x, win->y + wid->y, wid->width, wid->height, DESKBLUE);
 		tb->hover = false;
 	}*/
 }
 
 
-void QuTextboxMouseEvent (QuWidget *wid, QuWindow *win, int code, bool clicked) {
-	//QuTextbox *tb = (QuTextbox*)wid;
+void QuTextboxMouseEvent (QuWidget *wid, QuWindow *win, int code, bool clicked, int x, int y) {
+}
 
-	/*if (code == QU_EVENT_MOUSE_ENTER) {
-		tb->hover = true;
-		QuTextboxRefresh (wid, win);
-		QuPanelUpdate(win->x + wid->x, win->y + wid->y, wid->width,wid->height);
-	}else if (code == QU_EVENT_MOUSE_LEAVE) {
-		QuTextboxRefresh (wid, win);
-		QuPanelUpdate(win->x + wid->x, win->y + wid->y, wid->width,wid->height);
-	}*/
 
+void QuTextBoxKeyEvent (QuWidget *wid, QuWindow *win, int code) {
+	QuTextbox *tb = (QuTextbox*)wid;
+	if (isascii(code)){
+		if (code != 0){
+		//uint8_t key = code;
+		char p[1];
+		memset(p,0,2);
+		QuConvertKeyToString(code, p);
+		QuTextboxAppendText(tb,p);	
+		QuTextboxRefresh(tb,win);
+		QuTextboxInvalidate(tb,win);
+		}
+	}
 }
 
 
@@ -51,12 +59,15 @@ QuTextbox * QuCreateTextbox (int x, int y, int width, int height) {
 	tb->wid.height = height;
 	tb->wid.ActionEvent = 0;
 	tb->wid.MouseEvent = QuTextboxMouseEvent;
+	tb->wid.KeyEvent = QuTextBoxKeyEvent;
 	tb->wid.Refresh = QuTextboxRefresh;
 	tb->editable = false;
 	tb->cursor_pos_x = 0;
+	tb->cursor_pos_y = 0;
 	tb->hover = false;
 	tb->clicked = false;
 	tb->text_paint = false;
+	tb->multiline = false;
 	memset(tb->text, 0, 512);
 	return tb;
 }
@@ -79,6 +90,7 @@ void QuTextboxRefresh (QuTextbox *tb, QuWindow* win) {
 
 void QuTextboxAppendText (QuTextbox *tb, char* text) {
 	char original_offset = strlen(tb->text);
+	tb->cursor_pos_x += original_offset*8;
 	char* original_text = tb->text;
 	int original_length = 0;
 	int new_length = 0;
@@ -97,7 +109,7 @@ void QuTextboxAppendText (QuTextbox *tb, char* text) {
 		new_value[i] = original_text[i];
 
 	for (int j = 0; j < new_length; j++) {
-		if (original_length + j == 250) 
+		if (original_length + j == tb->wid.width) 
 			original_length = 0;
 		new_value[original_length + j] = text[j];
 	}

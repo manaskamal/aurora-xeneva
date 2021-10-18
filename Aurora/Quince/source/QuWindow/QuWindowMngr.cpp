@@ -31,6 +31,7 @@ QuWindow * draggable_win = NULL;
 QuWindow * top_window = NULL;
 bool UpdateWindows = false;
 bool StreamEvent = true;
+uint8_t last_mouse_button = 0;
 
 #define abs(a)  (((a) < 0)?-(a):(a))
 
@@ -41,9 +42,9 @@ void QuWindowMngr_Initialize () {
 
 void QuWindowMngr_Add (QuWindow *window) {
 	QuListAdd (WindowList, window);
-	//focus_win = window;
-	//draggable_win = window;
-	//top_window = window;
+	focus_win = window;
+	draggable_win = window;
+	top_window = window;
 }
 
 
@@ -55,6 +56,11 @@ void QuWindowMngr_Remove (QuWindow *win) {
 			QuListRemove(WindowList, i);
 		}
 	}
+	
+
+	focus_win = NULL;
+	draggable_win = NULL;
+	top_window = NULL;
 }
 
 QuWindow* QuWindowMngrFindByID (uint16_t id) {
@@ -80,7 +86,7 @@ QuWindow* QuWindowMngrGetFocused () {
 void QuWindowMngr_MoveFront (QuWindow *win) {
 	QuWindowMngrSetFocus(win);
 
-	if (top_window != win){
+	if (top_window != win || top_window == NULL){
 		QuWindowMngr_Remove(win);
 		QuWindowMngr_Add(win);
 		top_window = win;
@@ -129,14 +135,8 @@ bool QuWindowMngr_GetUpdateBit() {
 
 
 void QuWindowMngr_MoveFocusWindow (int x, int y) {
-
-	
 	QuCanvasAddDirty(draggable_win->x, draggable_win->y, draggable_win->width, draggable_win->height);
 	//!Store Old Coordinates
-	int oldx = draggable_win->x;
-	int oldy = draggable_win->y;
-	int oldw = draggable_win->width;
-	int oldh = draggable_win->height;
 
 
 	draggable_win->x = x - draggable_win->drag_x;
@@ -154,6 +154,18 @@ void QuWindowMngr_MoveFocusWindow (int x, int y) {
 	if (draggable_win->y + draggable_win->height >= canvas_get_height())
 		draggable_win->y = canvas_get_height() - draggable_win->height;
 
+	QuWindowInfo *info = (QuWindowInfo*)draggable_win->win_info_location;
+	info->dirty = 1;
+	info->rect_count = 0;
+
+	QuMessage msg;
+	msg.type = QU_CANVAS_MOVE;
+	msg.dword = draggable_win->x;
+	msg.dword2 = draggable_win->y;
+	QuChannelPut(&msg, draggable_win->owner_id);
+	sys_unblock_id (draggable_win->owner_id);
+
+
 	for (int i = 0; i < WindowList->pointer; i++) {
 		QuWindow* win = (QuWindow*)QuListGetAt (WindowList,i);
 		if (win == draggable_win)
@@ -169,89 +181,54 @@ void QuWindowMngr_MoveFocusWindow (int x, int y) {
 		}
 	}
 
-	QuWindowInfo *info = (QuWindowInfo*)draggable_win->win_info_location;
-	info->dirty = 1;
-	info->rect_count = 0;
-
-
-	QuMessage msg;
-	msg.type = QU_CANVAS_MOVE;
-	msg.dword = draggable_win->x;
-	msg.dword2 = draggable_win->y;
-	QuChannelPut(&msg, draggable_win->owner_id);
-	sys_unblock_id (draggable_win->owner_id);
+	/*
+*/
+	
+	
 
 }
 
 
-void QuWindowMngr_HandleMouse (int x, int y, bool clicked) {	
-	if (WindowList->pointer > 0){
-		for (int i = 0; i < WindowList->pointer; i++) {
-			QuWindow* win = (QuWindow*)QuListGetAt(WindowList, i);
+void QuWindowMngr_HandleMouse (int x, int y, uint8_t button, int mouse_code) {	
+	//if (WindowList->pointer > 0){
+	QuWindow* win;
+	for (int i = 0; i < WindowList->pointer; i++) {
+		win = (QuWindow*)QuListGetAt(WindowList, i);
 
+		if ((x >= win->x && x < (win->x + win->width) &&
+			y >= win->y && y < (win->y + win->height))) {
+			//continue;
+		
+		
+		if (button && !last_mouse_button) {
+			 
 			//! Only a limited portion is available for dragging purpose
-			if (x > win->x && x < (win->x + win->width - 74) &&
-				y > win->y && y < (win->y + 23)) {
-
-					if (clicked) {
-						if (draggable_win != NULL && draggable_win->attr != QU_WIN_NON_DRAGGABLE &&
-							focus_win == win) {
-							StreamEvent = false;
-							draggable_win->drag_x = x - draggable_win->x;
-							draggable_win->drag_y = y - draggable_win->y;
-							draggable_win->draggable = true;
-						}else {
-							StreamEvent = false;
-							if (draggable_win == NULL)
-								draggable_win = win;
-							QuWindowMngr_MoveFront(win);
-						}
-					}
-			}
-
-			///! Send the event to client
-			/*if (x > win->x && x < (win->x + win->width) &&
-				y > win->y + 23 && y < (win->y + win->height)) {
-					if (clicked){
-						if (focus_win != win) 
-							return;
-					}
-			}*/
-
-
-			if (x >= (win->x + win->width - 40) && x < (win->x + win->width + 1) && 
-				y >= (win->y + win->height - 50) && y < (win->y + win->height + 1)){
+			if (y >= win->y && y < (win->y + 23)) {  
 				
-				if (clicked){
-					if(focus_win != win)
-						return;
-					focus_win->draggable = false;
-					focus_win->width += 10;
-					focus_win->height += 10;
-
-					QuMessage msg;
-					msg.type = QU_CANVAS_RESIZE;
-					msg.dword = focus_win->x;
-					msg.dword2 = focus_win->y;
-					QuChannelPut(&msg, focus_win->owner_id);
-					sys_unblock_id(focus_win->owner_id);
-				}
+				draggable_win = win;
+				draggable_win->drag_x = x - draggable_win->x;
+				draggable_win->drag_y = y - draggable_win->y;
+		        QuWindowMngr_MoveFront(win);
+				break;
 			}
 		}
+		}
 	}
 
-	if (clicked) {
-		if (draggable_win != NULL && draggable_win->attr != QU_WIN_NON_DRAGGABLE) {
-			QuWindowMngr_MoveFocusWindow (x,y);	
-		}
-	}else {
-		if (draggable_win)
-			draggable_win = NULL;
-		StreamEvent = true;
-	}
+	if (!button) 
+		draggable_win = NULL;
+
+	/*if (draggable_win && button) {
+		QuWindowMngr_MoveFocusWindow(x, y);
+	}*/
+
+	last_mouse_button = button;
 }
 
 void QuWindowMngr_HandleMouseUp (int x, int y) {
+	if (draggable_win) {
+		QuWindowMngr_MoveFocusWindow(x, y);
+	}
 }
 
 
@@ -280,3 +257,12 @@ void QuWindowMngr_EventStreamEnable (bool value) {
 }
 
 
+
+void QuWindowMngr_DrawBehind (QuWindow *current_win) {
+	for (int i = 0; i < WindowList->pointer; i++) {
+		QuWindow* win = (QuWindow*)QuListGetAt (WindowList,i);
+		QuWindowInfo *info = (QuWindowInfo*)win->win_info_location;
+		info->dirty = 1;
+		info->rect_count = 0;
+	}
+}

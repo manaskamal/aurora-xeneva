@@ -34,6 +34,7 @@
 #define QU_WIN_CONTROL_OTHER  4
 
 struct _QU_WIN_ ;
+struct _QuWidget_;
 
 typedef struct _QuWinControl_ {
 	int x;
@@ -62,6 +63,7 @@ typedef struct _QU_WIN_ {
 	uint32_t*  win_info_data;
 	QuList* widgets;
 	QuList* controls;
+	_QuWidget_* focus_widget;
 	bool decorate;
 	char *title;
 }QuWindow;
@@ -72,7 +74,7 @@ typedef struct _QuWidget_ {
 	int width;
 	int height;
 	void (*Refresh) (struct _QuWidget_ *, QuWindow* win);
-	void (*MouseEvent) (struct _QuWidget_*, QuWindow* win, int code,bool clicked);
+	void (*MouseEvent) (struct _QuWidget_*, QuWindow* win, int code,bool clicked, int x, int y);
 	void (*KeyEvent) (struct _QuWidget_*, QuWindow *win, int code);
 	void (*ActionEvent) (struct _QuWidget_*, QuWindow* win);
 }QuWidget;
@@ -97,4 +99,5 @@ extern void QuWindowHandleMouse (int mouse_x, int mouse_y, int code);
 extern void QuWindowSetProperty (uint8_t prop);
 extern void QuWindowShowControls (QuWindow *win);
 extern void QuWindowAddControlEvent (int type, void (*Event)(QuWinControl *control, QuWindow* win, bool bit));
+extern void QuWindowHandleKey (int code);
 #endif

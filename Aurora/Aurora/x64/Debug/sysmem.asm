@@ -15,6 +15,7 @@ EXTRN	?pmmngr_get_used_ram@@YA_KXZ:PROC		; pmmngr_get_used_ram
 EXTRN	x64_cli:PROC
 EXTRN	?pml4_index@@YA_K_K@Z:PROC			; pml4_index
 EXTRN	?map_page@@YA_N_K0@Z:PROC			; map_page
+EXTRN	?unmap_page_ex@@YAXPEA_K_K_N@Z:PROC		; unmap_page_ex
 EXTRN	?unmap_page@@YAX_K@Z:PROC			; unmap_page
 EXTRN	?get_current_thread@@YAPEAU_thread_@@XZ:PROC	; get_current_thread
 EXTRN	?thread_iterate_ready_list@@YAPEAU_thread_@@G@Z:PROC ; thread_iterate_ready_list
@@ -23,8 +24,8 @@ pdata	SEGMENT
 $pdata$?map_shared_memory@@YAXG_K0@Z DD imagerel $LN10
 	DD	imagerel $LN10+363
 	DD	imagerel $unwind$?map_shared_memory@@YAXG_K0@Z
-$pdata$?unmap_shared_memory@@YAXG_K0@Z DD imagerel $LN6
-	DD	imagerel $LN6+117
+$pdata$?unmap_shared_memory@@YAXG_K0@Z DD imagerel $LN10
+	DD	imagerel $LN10+270
 	DD	imagerel $unwind$?unmap_shared_memory@@YAXG_K0@Z
 $pdata$?sys_get_used_ram@@YA_KXZ DD imagerel $LN3
 	DD	imagerel $LN3+19
@@ -37,7 +38,7 @@ xdata	SEGMENT
 $unwind$?map_shared_memory@@YAXG_K0@Z DD 011301H
 	DD	0c213H
 $unwind$?unmap_shared_memory@@YAXG_K0@Z DD 011301H
-	DD	06213H
+	DD	0a213H
 $unwind$?sys_get_used_ram@@YA_KXZ DD 010401H
 	DD	04204H
 $unwind$?sys_get_free_ram@@YA_KXZ DD 010401H
@@ -95,19 +96,23 @@ _TEXT	ENDS
 ; File e:\xeneva project\xeneva\aurora\aurora\sysserv\sysmem.cpp
 _TEXT	SEGMENT
 i$1 = 32
-tv65 = 40
-dest_id$ = 64
-pos$ = 72
-size$ = 80
+i$2 = 36
+t$ = 40
+tv65 = 48
+tv80 = 56
+cr3$ = 64
+dest_id$ = 96
+pos$ = 104
+size$ = 112
 ?unmap_shared_memory@@YAXG_K0@Z PROC			; unmap_shared_memory
 
 ; 37   : void unmap_shared_memory (uint16_t dest_id, uint64_t pos, size_t size) {
 
-$LN6:
+$LN10:
 	mov	QWORD PTR [rsp+24], r8
 	mov	QWORD PTR [rsp+16], rdx
 	mov	WORD PTR [rsp+8], cx
-	sub	rsp, 56					; 00000038H
+	sub	rsp, 88					; 00000058H
 
 ; 38   : 	x64_cli ();
 
@@ -118,12 +123,12 @@ $LN6:
 ; 41   : 	for (int i = 0; i < size/4096; i++)
 
 	mov	DWORD PTR i$1[rsp], 0
-	jmp	SHORT $LN3@unmap_shar
-$LN2@unmap_shar:
+	jmp	SHORT $LN7@unmap_shar
+$LN6@unmap_shar:
 	mov	eax, DWORD PTR i$1[rsp]
 	inc	eax
 	mov	DWORD PTR i$1[rsp], eax
-$LN3@unmap_shar:
+$LN7@unmap_shar:
 	movsxd	rax, DWORD PTR i$1[rsp]
 	mov	QWORD PTR tv65[rsp], rax
 	xor	edx, edx
@@ -132,33 +137,87 @@ $LN3@unmap_shar:
 	div	rcx
 	mov	rcx, QWORD PTR tv65[rsp]
 	cmp	rcx, rax
-	jae	SHORT $LN1@unmap_shar
+	jae	SHORT $LN5@unmap_shar
 
-; 42   : 		unmap_page (pos + size * 4096);
+; 42   : 		unmap_page (pos + i * 4096);
 
-	mov	rax, QWORD PTR size$[rsp]
-	imul	rax, 4096				; 00001000H
+	mov	eax, DWORD PTR i$1[rsp]
+	imul	eax, 4096				; 00001000H
+	cdqe
 	mov	rcx, QWORD PTR pos$[rsp]
 	add	rcx, rax
 	mov	rax, rcx
 	mov	rcx, rax
 	call	?unmap_page@@YAX_K@Z			; unmap_page
-	jmp	SHORT $LN2@unmap_shar
-$LN1@unmap_shar:
+	jmp	SHORT $LN6@unmap_shar
+$LN5@unmap_shar:
 
 ; 43   : 
 ; 44   : 
-; 45   : 	/*thread_t* t = thread_iterate_ready_list (dest_id);
+; 45   : 	thread_t* t = thread_iterate_ready_list (dest_id);
+
+	movzx	ecx, WORD PTR dest_id$[rsp]
+	call	?thread_iterate_ready_list@@YAPEAU_thread_@@G@Z ; thread_iterate_ready_list
+	mov	QWORD PTR t$[rsp], rax
+
 ; 46   : 	if (t == NULL) {
+
+	cmp	QWORD PTR t$[rsp], 0
+	jne	SHORT $LN4@unmap_shar
+
 ; 47   : 		t = thread_iterate_block_list(dest_id);
+
+	movzx	eax, WORD PTR dest_id$[rsp]
+	mov	ecx, eax
+	call	?thread_iterate_block_list@@YAPEAU_thread_@@H@Z ; thread_iterate_block_list
+	mov	QWORD PTR t$[rsp], rax
+$LN4@unmap_shar:
+
 ; 48   : 	}
 ; 49   : 	uint64_t *cr3 = (uint64_t*)t->cr3;
+
+	mov	rax, QWORD PTR t$[rsp]
+	mov	rax, QWORD PTR [rax+192]
+	mov	QWORD PTR cr3$[rsp], rax
+
 ; 50   : 
 ; 51   : 	for (int i = 0; i < size / 4096; i++)
-; 52   : 		unmap_page_ex(cr3,pos + size * 4096);*/
+
+	mov	DWORD PTR i$2[rsp], 0
+	jmp	SHORT $LN3@unmap_shar
+$LN2@unmap_shar:
+	mov	eax, DWORD PTR i$2[rsp]
+	inc	eax
+	mov	DWORD PTR i$2[rsp], eax
+$LN3@unmap_shar:
+	movsxd	rax, DWORD PTR i$2[rsp]
+	mov	QWORD PTR tv80[rsp], rax
+	xor	edx, edx
+	mov	rax, QWORD PTR size$[rsp]
+	mov	ecx, 4096				; 00001000H
+	div	rcx
+	mov	rcx, QWORD PTR tv80[rsp]
+	cmp	rcx, rax
+	jae	SHORT $LN1@unmap_shar
+
+; 52   : 		unmap_page_ex(cr3,pos + i * 4096, false);
+
+	mov	eax, DWORD PTR i$2[rsp]
+	imul	eax, 4096				; 00001000H
+	cdqe
+	mov	rcx, QWORD PTR pos$[rsp]
+	add	rcx, rax
+	mov	rax, rcx
+	xor	r8d, r8d
+	mov	rdx, rax
+	mov	rcx, QWORD PTR cr3$[rsp]
+	call	?unmap_page_ex@@YAXPEA_K_K_N@Z		; unmap_page_ex
+	jmp	SHORT $LN2@unmap_shar
+$LN1@unmap_shar:
+
 ; 53   : }
 
-	add	rsp, 56					; 00000038H
+	add	rsp, 88					; 00000058H
 	ret	0
 ?unmap_shared_memory@@YAXG_K0@Z ENDP			; unmap_shared_memory
 _TEXT	ENDS

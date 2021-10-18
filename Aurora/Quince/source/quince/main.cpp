@@ -42,10 +42,10 @@ int main (int argc, char* argv[]) {
 	create_canvas ();
 	uint32_t w = canvas_get_width();
 	uint32_t h = canvas_get_height();
-    psf_register_font_lib();
+  //  psf_register_font_lib();
 
 	//!Initialize Quince Wallpaper Manager  "a:coffee.jpg"
-	Image * img = QuWallpaperInit("a:bihu.jpg");
+	Image * img = QuWallpaperInit("/bihu.jpg");
 	QuWallpaperDraw (img);
 	QuWallpaperPresent ();
 
@@ -63,8 +63,10 @@ int main (int argc, char* argv[]) {
     //! Initialize Cursor Manager
 	QuCursorInit(0, 0, QU_CURSOR_ARROW);
 
+	int mouse_fd = sys_open_file ("/dev/mouse", NULL);
+
 	////!Start the mouse
-	ioquery (IO_QUERY_MOUSE, MOUSE_IOCODE_ENABLE,NULL);
+	ioquery (mouse_fd, MOUSE_IOCODE_ENABLE,NULL);
 	//! Execute the Event Loop
 	QuEventLoop();
 }

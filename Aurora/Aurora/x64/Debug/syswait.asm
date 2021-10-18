@@ -36,7 +36,7 @@ $pdata$?wait@@YAXXZ DD imagerel $LN3
 	DD	imagerel $LN3+53
 	DD	imagerel $unwind$?wait@@YAXXZ
 $pdata$?sys_unblock_id@@YAXG@Z DD imagerel $LN4
-	DD	imagerel $LN4+68
+	DD	imagerel $LN4+54
 	DD	imagerel $unwind$?sys_unblock_id@@YAXG@Z
 pdata	ENDS
 CRT$XCU	SEGMENT
@@ -79,11 +79,7 @@ $LN4:
 	call	x64_cli
 
 ; 34   : 	//mutex_lock (unblock_lock);
-; 35   : 	set_multi_task_enable (false);
-
-	xor	ecx, ecx
-	call	?set_multi_task_enable@@YAX_N@Z		; set_multi_task_enable
-
+; 35   : 	//set_multi_task_enable (false);
 ; 36   : 	thread_t* thr = (thread_t*)thread_iterate_block_list (id);
 
 	movzx	eax, WORD PTR id$[rsp]
@@ -104,11 +100,7 @@ $LN4:
 $LN1@sys_unbloc:
 
 ; 40   : 	}
-; 41   : 	set_multi_task_enable (true);
-
-	mov	cl, 1
-	call	?set_multi_task_enable@@YAX_N@Z		; set_multi_task_enable
-
+; 41   : 	//set_multi_task_enable (true);
 ; 42   : }
 
 	add	rsp, 56					; 00000038H

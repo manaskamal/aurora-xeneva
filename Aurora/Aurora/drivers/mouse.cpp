@@ -17,7 +17,7 @@
 #include <ipc\dwm_ipc.h>
 #include <drivers\vmmouse.h>
 #include <atomic\mutex.h>
-#include <vfs.h>
+#include <fs\vfs.h>
 
 static uint8_t mouse_cycle = 0;
 static uint8_t mouse_byte[4];
@@ -172,13 +172,16 @@ read_next:
 
 
 /**  Mouse IOQuery function **/
-int mouse_ioquery (int code, void* arg) {
+int mouse_ioquery (vfs_node_t *node, int code, void* arg) {
 	switch (code) {
 		case MOUSE_IOCODE_DISABLE:
 			irq_mask(12,true);
 			break;
 		case MOUSE_IOCODE_ENABLE:
 			irq_mask(12, false);
+			break;
+		case 302:
+			return 10;
 			break;
 		default:
 			break;
@@ -192,13 +195,20 @@ int mouse_ioquery (int code, void* arg) {
  * Register it to the VFS Subsystem
  */
 void mouse_register_device () {
-	file_system_t *mouse_file = (file_system_t*)pmmngr_alloc();
-	strcpy (mouse_file->name, "IOMOUSE");
-	mouse_file->sys_open = NULL;
-	mouse_file->sys_read = NULL;
-	mouse_file->sys_read_blk = NULL;
-	mouse_file->ioquery = mouse_ioquery;
-	vfs_register (3,mouse_file);
+	vfs_node_t *node = (vfs_node_t*)malloc(sizeof(vfs_node_t));
+	strcpy (node->filename, "mouse");
+	node->size = 0;
+	node->eof = 0;
+	node->pos = 0;
+	node->current = 0;
+	node->flags = FS_FLAG_GENERAL;
+	node->status = 0;
+	node->open = 0;
+	node->read = 0;
+	node->write = 0;
+	node->read_blk = 0;
+	node->ioquery = mouse_ioquery;
+	vfs_mount ("/dev/mouse", node);
 }
 
 void initialize_mouse () {

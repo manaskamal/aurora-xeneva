@@ -14,11 +14,11 @@
 #include <sys\_term.h>
 
 
-Image* LoadImage (const char* filename, unsigned char* data) {
+Image* LoadImage (char* filename, unsigned char* data) {
 	Image *img = (Image*)malloc (sizeof(Image));
 	FILE f;
-	sys_open_file (&f,filename);
-	sys_read_file (&f, data, f.size);
+	int fd = sys_open_file (filename, &f);
+	sys_read_file (fd, data, &f);
 	img->width = 0;
 	img->height = 0;
 	img->size = f.size;

@@ -20,8 +20,9 @@
 #include <screen.h>
 #include <serial.h>
 #include <string.h>
-#include <vfs.h>
 #include <hwcursor.h>
+#include <mm.h>
+#include <fs/vfs.h>
 
 svga_device svga_dev;
 
@@ -596,7 +597,7 @@ uint32_t* svga_get_fb_mem () {
 	return (uint32_t*)svga_dev.fb_mem;
 }
 
-int svga_io_query (int code, void* arg) {
+int svga_io_query (vfs_node_t* node, int code, void* arg) {
 	svga_io_query_t *query_struct = (svga_io_query_t*)arg;
 	switch (code) {
 	case SVGA_SETMODE: {
@@ -649,11 +650,18 @@ int svga_io_query (int code, void* arg) {
 }
 
 void svga_register_file () {
-	file_system_t *fs = (file_system_t*)pmmngr_alloc();
-	strcpy (fs->name, "IOSVGA");
-	fs->sys_open = NULL;
-	fs->sys_read = NULL;
-	fs->sys_read_blk = NULL;
-	fs->ioquery = svga_io_query;
-	vfs_register (4,fs);
+	vfs_node_t * svga = (vfs_node_t*)malloc(sizeof(vfs_node_t));
+	strcpy (svga->filename, "svga");
+	svga->size = 0;
+	svga->eof = 0;
+	svga->pos = 0;
+	svga->current = 0;
+	svga->flags = FS_FLAG_GENERAL;
+	svga->status = 0;
+	svga->open = 0;
+	svga->read = 0;
+	svga->write = 0;
+	svga->read_blk = 0;
+	svga->ioquery = svga_io_query;
+	vfs_mount ("/dev/svga", svga);
 }

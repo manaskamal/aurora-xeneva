@@ -22,7 +22,7 @@ void QuTermPrint (QuTerminal *term , char p) {
 }
 
 
-void QuTermMouse (QuWidget* wid, QuWindow *win, int code, bool clicked) {
+void QuTermMouse (QuWidget* wid, QuWindow *win, int code, bool clicked, int x, int y) {
 }
 
 
