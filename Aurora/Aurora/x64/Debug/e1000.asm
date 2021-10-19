@@ -10,35 +10,35 @@ _BSS	SEGMENT
 ?i_net_dev@@3PEAU_e1000_dev_@@EA DQ 01H DUP (?)		; i_net_dev
 _BSS	ENDS
 CONST	SEGMENT
-$SG3400	DB	'EEPROM exist', 0aH, 00H
+$SG3401	DB	'EEPROM exist', 0aH, 00H
 	ORG $+2
-$SG3403	DB	'Applying memory map', 0aH, 00H
+$SG3404	DB	'Applying memory map', 0aH, 00H
 	ORG $+3
-$SG3420	DB	'E1000 recevied', 0aH, 00H
-$SG3428	DB	'E1000 Bytes received -> %d bytes, status 0x%x', 0aH, 00H
+$SG3421	DB	'E1000 recevied', 0aH, 00H
+$SG3429	DB	'E1000 Bytes received -> %d bytes, status 0x%x', 0aH, 00H
 	ORG $+1
-$SG3433	DB	'E1000 interrupt data transmit', 0aH, 00H
+$SG3434	DB	'E1000 interrupt data transmit', 0aH, 00H
 	ORG $+1
-$SG3437	DB	'E1000 unknown interrupt', 0aH, 00H
+$SG3438	DB	'E1000 unknown interrupt', 0aH, 00H
 	ORG $+7
-$SG3451	DB	'E1000 RX Descriptor HI -> %x, LO -> %x', 0aH, 00H
-$SG3465	DB	'E1000 TX_DESC_HI -> %x, LO -> %x', 0aH, 00H
+$SG3452	DB	'E1000 RX Descriptor HI -> %x, LO -> %x', 0aH, 00H
+$SG3466	DB	'E1000 TX_DESC_HI -> %x, LO -> %x', 0aH, 00H
 	ORG $+6
-$SG3475	DB	'CUR Tx tail -> %d', 0aH, 00H
+$SG3476	DB	'CUR Tx tail -> %d', 0aH, 00H
 	ORG $+5
-$SG3480	DB	'TX Next tail -> %d', 0aH, 00H
+$SG3481	DB	'TX Next tail -> %d', 0aH, 00H
 	ORG $+4
-$SG3485	DB	'Transmit status ->%x', 0aH, 00H
+$SG3486	DB	'Transmit status ->%x', 0aH, 00H
 	ORG $+2
-$SG3486	DB	'Transmitted', 0aH, 00H
+$SG3487	DB	'Transmitted', 0aH, 00H
 	ORG $+3
-$SG3497	DB	'E1000 New Packet received #3', 0aH, 00H
+$SG3498	DB	'E1000 New Packet received #3', 0aH, 00H
 	ORG $+2
-$SG3532	DB	'Intel Ethernet not found', 0aH, 00H
+$SG3533	DB	'Intel Ethernet not found', 0aH, 00H
 	ORG $+6
-$SG3543	DB	'E1000 legacy irq -> %d, pin -> %d', 0aH, 00H
+$SG3544	DB	'E1000 legacy irq -> %d, pin -> %d', 0aH, 00H
 	ORG $+5
-$SG3553	DB	'e1000 setup completed', 0aH, 00H
+$SG3554	DB	'e1000 setup completed', 0aH, 00H
 CONST	ENDS
 PUBLIC	?e1000_initialize@@YAXXZ			; e1000_initialize
 PUBLIC	?e1000_send_packet@@YAXPEAX_K@Z			; e1000_send_packet
@@ -426,7 +426,7 @@ $LN3@e1000_hand:
 
 ; 258  : 		printf ("E1000 New Packet received #3\n");
 
-	lea	rcx, OFFSET FLAT:$SG3497
+	lea	rcx, OFFSET FLAT:$SG3498
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 259  : 		break;
@@ -577,7 +577,7 @@ $LN1@e1000_tx_i:
 	mov	ecx, DWORD PTR tv133[rsp]
 	mov	r8d, ecx
 	mov	edx, eax
-	lea	rcx, OFFSET FLAT:$SG3465
+	lea	rcx, OFFSET FLAT:$SG3466
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 193  : 
@@ -715,7 +715,7 @@ $LN1@e1000_rx_i:
 	mov	ecx, DWORD PTR tv129[rsp]
 	mov	r8d, ecx
 	mov	edx, eax
-	lea	rcx, OFFSET FLAT:$SG3451
+	lea	rcx, OFFSET FLAT:$SG3452
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 161  : 	e1000_write_command (REG_RXDESCLEN, E1000_NUM_RX_DESC * 16);
@@ -841,7 +841,7 @@ $LN14:
 
 ; 111  : 		printf ("E1000 recevied\n");
 
-	lea	rcx, OFFSET FLAT:$SG3420
+	lea	rcx, OFFSET FLAT:$SG3421
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 112  : 		uint32_t head = inportd (REG_RXDESCHEAD);
@@ -905,7 +905,7 @@ $LN8@e1000_inte:
 	movzx	eax, BYTE PTR status$1[rsp]
 	mov	r8d, eax
 	mov	rdx, QWORD PTR size$3[rsp]
-	lea	rcx, OFFSET FLAT:$SG3428
+	lea	rcx, OFFSET FLAT:$SG3429
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 125  : 
@@ -983,7 +983,7 @@ $LN11@e1000_inte:
 
 ; 137  : 		printf ("E1000 interrupt data transmit\n");
 
-	lea	rcx, OFFSET FLAT:$SG3433
+	lea	rcx, OFFSET FLAT:$SG3434
 	call	?printf@@YAXPEBDZZ			; printf
 	jmp	SHORT $LN3@e1000_inte
 $LN4@e1000_inte:
@@ -1003,7 +1003,7 @@ $LN2@e1000_inte:
 
 ; 141  : 		printf ("E1000 unknown interrupt\n");
 
-	lea	rcx, OFFSET FLAT:$SG3437
+	lea	rcx, OFFSET FLAT:$SG3438
 	call	?printf@@YAXPEBDZZ			; printf
 $LN1@e1000_inte:
 $LN3@e1000_inte:
@@ -1045,7 +1045,7 @@ $LN10:
 
 ; 77   : 		printf ("EEPROM exist\n");
 
-	lea	rcx, OFFSET FLAT:$SG3400
+	lea	rcx, OFFSET FLAT:$SG3401
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 78   : 		uint32_t temp;
@@ -1128,7 +1128,7 @@ $LN7@e1000_read:
 
 ; 89   : 		printf ("Applying memory map\n");
 
-	lea	rcx, OFFSET FLAT:$SG3403
+	lea	rcx, OFFSET FLAT:$SG3404
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 90   : 		uint8_t * mem_base_mac_8 = (uint8_t*)(i_net_dev->e1000_mem_base + 0x5400);
@@ -1541,7 +1541,7 @@ $LN8:
 ; 215  : 	printf ("CUR Tx tail -> %d\n", cur);
 
 	mov	edx, DWORD PTR cur$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3475
+	lea	rcx, OFFSET FLAT:$SG3476
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 216  : 	i_net_dev->tx_tail++;
@@ -1655,7 +1655,7 @@ $LN4@e1000_send:
 	div	ecx
 	mov	eax, edx
 	mov	edx, eax
-	lea	rcx, OFFSET FLAT:$SG3480
+	lea	rcx, OFFSET FLAT:$SG3481
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 237  : 	x64_sti();
@@ -1682,12 +1682,12 @@ $LN3@e1000_send:
 	movzx	eax, BYTE PTR [rax+12]
 	movzx	eax, al
 	mov	edx, eax
-	lea	rcx, OFFSET FLAT:$SG3485
+	lea	rcx, OFFSET FLAT:$SG3486
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 241  : 			printf ("Transmitted\n");
 
-	lea	rcx, OFFSET FLAT:$SG3486
+	lea	rcx, OFFSET FLAT:$SG3487
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 242  : 			break;
@@ -1752,7 +1752,7 @@ $LN17:
 
 ; 305  : 		printf ("Intel Ethernet not found\n");
 
-	lea	rcx, OFFSET FLAT:$SG3532
+	lea	rcx, OFFSET FLAT:$SG3533
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 306  : 		return;
@@ -1866,7 +1866,7 @@ $LN11@e1000_init:
 	movzx	ecx, BYTE PTR [rcx+60]
 	mov	r8d, eax
 	mov	edx, ecx
-	lea	rcx, OFFSET FLAT:$SG3543
+	lea	rcx, OFFSET FLAT:$SG3544
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 327  : 			write_config_8 (0,bus,dev_,func,0x3C, 10);
@@ -2055,7 +2055,7 @@ $LN1@e1000_init:
 ; 376  : 	}
 ; 377  : 	printf ("e1000 setup completed\n");
 
-	lea	rcx, OFFSET FLAT:$SG3553
+	lea	rcx, OFFSET FLAT:$SG3554
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 378  : 	x64_sti();

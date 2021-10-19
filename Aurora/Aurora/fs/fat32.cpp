@@ -16,7 +16,6 @@
 #include <pmmngr.h>
 #include <ctype.h>
 #include <mm.h>
-#include <vfs.h>
 #include <console.h>
 #include <fs/vfs.h>
 

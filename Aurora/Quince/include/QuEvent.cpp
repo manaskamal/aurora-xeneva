@@ -152,14 +152,6 @@ void QuEventLoop() {
 		 */
 		if (msg.type == 3) {
 			//! Send the key event
-			if (msg.dword == KEY_Z)
-				QuWallpaperChange(NULL,BLUE);
-			if (msg.dword == KEY_X)
-				QuWallpaperChange(NULL,ORANGE);
-			if (msg.dword == KEY_C)
-				QuWallpaperChange(NULL,LIGHTBLACK);
-			if (msg.dword == KEY_V)
-				QuWallpaperChange(NULL,PURPLE);
 			if (QuWindowMngrGetFocused() != NULL) {
 				QuWindowMngr_SendEvent (QuWindowMngrGetFocused(), QU_CANVAS_KEY_PRESSED,NULL, NULL,msg.dword);
 			}

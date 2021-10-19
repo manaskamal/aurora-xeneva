@@ -12,13 +12,43 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <acrylic.h>
+#include <QuPanel.h>
 #include <color.h>
 #include <string.h>
+#include <QuKeycodeHelper.h>
 
 
-void QuTermPrint (QuTerminal *term , char p) {
-	term->buffer[term->cursor_x] = p;
+#define TERM_WIDTH 74
+#define TERM_HEIGHT 26
+
+
+void QuTermPrint (QuTerminal *term, char s, uint32_t color) {
+	if (s == '\n'){
+		term->text[term->cursor_y * TERM_WIDTH + term->cursor_x] = s;
+		term->cursor_x = 0;
+		term->cursor_y++;
+		term->ypos += 13;
+		term->xpos = 0;
+		return;
+	}
+
+	if (s == '\b') {
+		term->cursor_x--;
+		term->xpos -= 8;	
+		term->text[term->cursor_y * TERM_WIDTH + term->cursor_x] = '\0';
+		QuTermFlush(term, QuGetWindow());
+		return;
+	}
+
+	if (term->cursor_y == TERM_HEIGHT){
+		term->cursor_y = 0;
+		term->ypos = 0;
+	}
+
+	term->text[term->cursor_y * TERM_WIDTH + term->cursor_x] = s;
+	QuTermFlush(term, QuGetWindow());
 	term->cursor_x++;
+	term->xpos += 8;
 }
 
 
@@ -29,15 +59,62 @@ void QuTermMouse (QuWidget* wid, QuWindow *win, int code, bool clicked, int x, i
 void QuTermRefresh (QuWidget* wid, QuWindow *win) {
 	QuTerminal *term = (QuTerminal*)wid;
 	acrylic_draw_rect_filled(win->x + wid->x, win->y + wid->y, wid->width, wid->height, BLACK);
-	acrylic_draw_arr_string(win->x + wid->x, win->y + wid->y,term->buffer, WHITE);
+
+	char tmp_str[2];
+	tmp_str[1] = '\0';
+	int xoff = 0;
+	int yoff = 0;
+	int ypos = 0;
+	int xpos = 0;
+	for (int yp = 0; yp < TERM_HEIGHT; yp++) {
+		for (int xp = 0; xp < TERM_WIDTH; xp++) {
+			tmp_str[0] = term->text[yoff * TERM_WIDTH + xoff];
+			if (tmp_str[0] == '\n') {
+				xoff = 0;
+				yoff++;
+				xpos = 0;
+				ypos += 13;
+				continue;
+			}
+
+			//if (tmp_str[0] == '\b') {
+			//	xoff--;
+			//	xpos -= 8;
+			//	continue;
+			//}
+			acrylic_draw_arr_string(win->x + wid->x + xpos, win->y + wid->y + 23 + ypos, tmp_str, WHITE);
+			xoff++;
+			xpos += 8;
+		}
+	}
+}
+
+void QuTermFlush (QuTerminal *term, QuWindow* win) {
+	char c = term->text[term->cursor_y * TERM_WIDTH + term->cursor_x];
+	acrylic_draw_arr_font (win->x + term->wid.x + term->xpos, win->y + term->wid.y + 23 + term->ypos,c, WHITE);
+	QuPanelUpdate (win->x + term->wid.x, win->y + term->wid.y + 23+ term->ypos, win->w, 14);
 }
 
 
 void QuTermKeyEvent (QuWidget* wid, QuWindow *win, int code){
 	QuTerminal *term = (QuTerminal*)wid;
-	if (isascii(code)) {
-		QuTermPrint(term, code);
-		QuTermRefresh(wid, win);
+	if (isascii(code)){
+
+		if (code == KEY_KP_ENTER) {
+			QuTermPrint (term, '\n',WHITE);
+			QuTermFlush(term, win);
+			return;
+		}
+		if (code == KEY_BACKSPACE) {
+			QuTermPrint (term, '\b', WHITE);
+			QuTermFlush(term, win);
+			return;
+		}
+		char p[1];
+		memset(p,0,2);
+		QuConvertKeyToString(code, p);
+		QuTermPrint(term, p[0], WHITE);
+		QuTermFlush(term, win);
 	}
 }
 
@@ -53,8 +130,10 @@ QuTerminal * QuCreateTerminal (int x, int y, int w, int h) {
 	term->wid.MouseEvent = QuTermMouse;
 	term->wid.KeyEvent = QuTermKeyEvent;
 	term->wid.Refresh = QuTermRefresh;
-	memset(term->buffer, 0, 512);
 	term->cursor_x = 0;
 	term->cursor_y = 0;
+	term->xpos = 0;
+	term->ypos = 0;
+	memset (term->text, 0, TERM_WIDTH*TERM_HEIGHT);
 	return term;
 }

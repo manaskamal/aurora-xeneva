@@ -145,6 +145,7 @@ struct interrupt_stack_frame {
 //!=======================================================
 extern "C" void x64_cli ();
 extern "C" void x64_sti ();
+extern "C" void x64_hlt();
 //! in & out port functions
 extern "C" uint8_t x64_inportb(uint16_t port);
 extern "C" uint16_t x64_inportw(uint16_t port);

@@ -14,7 +14,6 @@
 #include <stdint.h>
 #include <string.h>
 #include <drivers\vmmouse.h>
-#include <vfs.h>
 #include <drivers\rtc.h>
 
 //!This is an interface layer between system service callbacks

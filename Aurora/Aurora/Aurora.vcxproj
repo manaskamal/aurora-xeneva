@@ -226,6 +226,7 @@
     <ClInclude Include="..\include\drivers\svga\svga_screen_util.h" />
     <ClInclude Include="..\include\drivers\svga\vmmouse_defs.h" />
     <ClInclude Include="..\include\drivers\svga\vmsvga.h" />
+    <ClInclude Include="..\include\drivers\term.h" />
     <ClInclude Include="..\include\drivers\usb\xhci.h" />
     <ClInclude Include="..\include\drivers\vbox.h" />
     <ClInclude Include="..\include\drivers\vga.h" />
@@ -236,8 +237,6 @@
     <ClInclude Include="..\include\fs\fat32.h" />
     <ClInclude Include="..\include\fs\gpt.h" />
     <ClInclude Include="..\include\fs\vfs.h" />
-    <ClInclude Include="..\include\gui\jpeg.h" />
-    <ClInclude Include="..\include\gui\splash.h" />
     <ClInclude Include="..\include\hal.h" />
     <ClInclude Include="..\include\hwcursor.h" />
     <ClInclude Include="..\include\ipc\dwm_ipc.h" />

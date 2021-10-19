@@ -97,9 +97,6 @@
     <Filter Include="source\net">
       <UniqueIdentifier>{52f7101f-b3ad-4133-81e9-88520926a5f8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="include\gui">
-      <UniqueIdentifier>{05c89289-a5d1-42de-9e0b-bb57c275425a}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\stdint.h">
@@ -312,12 +309,6 @@
     <ClInclude Include="..\include\hwcursor.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\gui\jpeg.h">
-      <Filter>include\gui</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\gui\splash.h">
-      <Filter>include\gui</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\drivers\vbox.h">
       <Filter>include\drivers</Filter>
     </ClInclude>
@@ -344,6 +335,9 @@
     </ClInclude>
     <ClInclude Include="..\include\fs\devfs.h">
       <Filter>include\fs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\drivers\term.h">
+      <Filter>include\drivers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

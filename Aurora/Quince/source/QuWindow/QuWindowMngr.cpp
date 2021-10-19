@@ -84,7 +84,9 @@ QuWindow* QuWindowMngrGetFocused () {
 
 
 void QuWindowMngr_MoveFront (QuWindow *win) {
-	QuWindowMngrSetFocus(win);
+	if (focus_win == win)
+		return;
+
 
 	if (top_window != win || top_window == NULL){
 		QuWindowMngr_Remove(win);
@@ -92,6 +94,8 @@ void QuWindowMngr_MoveFront (QuWindow *win) {
 		top_window = win;
 		//QuWindowUpdateTitlebar(true);
 	}
+
+	focus_win = win;
 }
 
 bool QuWindowMngr_CheckTop (QuWindow *win) {
@@ -195,23 +199,21 @@ void QuWindowMngr_HandleMouse (int x, int y, uint8_t button, int mouse_code) {
 	for (int i = 0; i < WindowList->pointer; i++) {
 		win = (QuWindow*)QuListGetAt(WindowList, i);
 
-		if ((x >= win->x && x < (win->x + win->width) &&
-			y >= win->y && y < (win->y + win->height))) {
-			//continue;
+		if (!(x >= win->x && x < (win->x + win->width) &&
+			y >= win->y && y < (win->y + win->height))) 
+			continue;
 		
 		
 		if (button && !last_mouse_button) {
-			 
 			//! Only a limited portion is available for dragging purpose
 			if (y >= win->y && y < (win->y + 23)) {  
-				
 				draggable_win = win;
 				draggable_win->drag_x = x - draggable_win->x;
 				draggable_win->drag_y = y - draggable_win->y;
 		        QuWindowMngr_MoveFront(win);
 				break;
 			}
-		}
+		//}
 		}
 	}
 

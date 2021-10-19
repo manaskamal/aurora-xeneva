@@ -15,6 +15,7 @@
 #include <sys\_thread.h>
 #include <sys\_term.h>
 #include <sys\_file.h>
+#include <sys\mmap.h>
 #include <canvas.h>
 #include <acrylic.h>
 #include <color.h>
@@ -25,8 +26,8 @@
 #include <sys\_time.h>
 #include <QuTerminal.h>
 #include <sys\_exit.h>
+#include "console.h"
 
-QuTerminal *term;
 
 void QuActions (QuMessage *msg) {
 	if (msg->type == QU_CANVAS_MOVE) {
@@ -58,7 +59,7 @@ void QuActions (QuMessage *msg) {
 	}
 
 	if (msg->type == QU_CANVAS_KEY_PRESSED) {
-		term->wid.KeyEvent((QuWidget*)term,QuGetWindow(), msg->dword);
+		QuWindowHandleKey(msg->dword);
 		memset(msg, 0, sizeof(QuMessage));
 	}
 	
@@ -70,18 +71,27 @@ void QuActions (QuMessage *msg) {
 void WindowClosed (QuWinControl *control, QuWindow *win, bool bit) {
 }
 
+
+void PrintString (QuTerminal *text, char* string) {
+	while(*string)
+		QuTermPrint(text,*(string)++,WHITE);
+}
+
 int main (int argc, char* argv[]) {
 	QuRegisterApplication ("command~");
 	QuWindow* win = QuGetWindow();
 	QuWindowShowControls(win);
 	QuWindowAddControlEvent(QU_WIN_CONTROL_CLOSE, WindowClosed);
 
+	///! map a memory section for text 
 
-	term = QuCreateTerminal(0, 0, win->w, win->h);
+	QuTerminal *term = QuCreateTerminal(0,0,win->w, win->h);
 	QuWindowAdd((QuWidget*)term);
 
 	QuWindowShow();
-
+    PrintString (term, "Copyright (C) Manas Kamal Choudhury\n"); //13
+	PrintString (term, "Xeneva v1.0\n"); //13
+	PrintString (term, "Manas Kamal Choudhury\n");
 
 	QuMessage qmsg;
 	uint16_t app_id = QuGetAppId();

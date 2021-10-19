@@ -10,6 +10,5 @@
 
 #include <ipc\pipe.h>
 #include <mm.h>
-#include <vfs.h>
 
 

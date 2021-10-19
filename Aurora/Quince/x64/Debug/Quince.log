@@ -1,4 +1,4 @@
-﻿Build started 19-10-2021 ৰাতিপু 1:05:38.
+﻿Build started 19-10-2021 আবেলি 11:52:25.
      1>Project "E:\Xeneva Project\Xeneva\Aurora\Quince\Quince.vcxproj" on node 2 (Rebuild target(s)).
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\xnlib\xnclib" /I"E:\Xeneva Project\Xeneva\xnlib\xnacrylic\include" /I"E:\Xeneva Project\Xeneva\Aurora\Quince\include" /Zi /nologo /W3 /WX- /sdl- /Od /D ARCH_X64 /D HW_CURSOR /D _MBCS /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt include\QuEvent.cpp include\QuWindow\QuList.h source\ipc\QuChannel.cpp source\ipc\_ipc_mouse.cpp source\QuCanvas\QuCanvasMngr.cpp source\QuCanvas\QuDirtyStack.cpp source\QuCanvas\QuScreenStack.cpp source\quince\main.cpp source\quince\QuBmpImage.cpp source\quince\QuCursor.cpp source\QuWidget\QuTaskbar.cpp source\QuWidget\QuWallpaper.cpp source\QuWindow\QuList.cpp source\QuWindow\QuTitleBar.cpp source\QuWindow\QuWindow.cpp source\QuWindow\QuWindowMngr.cpp source\QuWindow\QuWindowStyle.cpp
@@ -8,14 +8,14 @@
          QuWindowMngr.cpp
      1>source\QuWindow\QuWindowMngr.cpp(53): warning C4018: '<' : signed/unsigned mismatch
      1>source\QuWindow\QuWindowMngr.cpp(67): warning C4018: '<' : signed/unsigned mismatch
-     1>source\QuWindow\QuWindowMngr.cpp(107): warning C4018: '<' : signed/unsigned mismatch
-     1>source\QuWindow\QuWindowMngr.cpp(120): warning C4018: '<' : signed/unsigned mismatch
-     1>source\QuWindow\QuWindowMngr.cpp(151): warning C4018: '>=' : signed/unsigned mismatch
-     1>source\QuWindow\QuWindowMngr.cpp(154): warning C4018: '>=' : signed/unsigned mismatch
-     1>source\QuWindow\QuWindowMngr.cpp(169): warning C4018: '<' : signed/unsigned mismatch
-     1>source\QuWindow\QuWindowMngr.cpp(195): warning C4018: '<' : signed/unsigned mismatch
-     1>source\QuWindow\QuWindowMngr.cpp(242): warning C4244: '=' : conversion from 'unsigned short' to 'uint8_t', possible loss of data
-     1>source\QuWindow\QuWindowMngr.cpp(262): warning C4018: '<' : signed/unsigned mismatch
+     1>source\QuWindow\QuWindowMngr.cpp(111): warning C4018: '<' : signed/unsigned mismatch
+     1>source\QuWindow\QuWindowMngr.cpp(124): warning C4018: '<' : signed/unsigned mismatch
+     1>source\QuWindow\QuWindowMngr.cpp(155): warning C4018: '>=' : signed/unsigned mismatch
+     1>source\QuWindow\QuWindowMngr.cpp(158): warning C4018: '>=' : signed/unsigned mismatch
+     1>source\QuWindow\QuWindowMngr.cpp(173): warning C4018: '<' : signed/unsigned mismatch
+     1>source\QuWindow\QuWindowMngr.cpp(199): warning C4018: '<' : signed/unsigned mismatch
+     1>source\QuWindow\QuWindowMngr.cpp(244): warning C4244: '=' : conversion from 'unsigned short' to 'uint8_t', possible loss of data
+     1>source\QuWindow\QuWindowMngr.cpp(264): warning C4018: '<' : signed/unsigned mismatch
          QuWindow.cpp
          QuTitleBar.cpp
          QuList.cpp
@@ -54,8 +54,8 @@
          QuEvent.cpp
      1>include\QuEvent.cpp(58): warning C4018: '<' : signed/unsigned mismatch
      1>include\QuEvent.cpp(59): warning C4018: '<' : signed/unsigned mismatch
-     1>include\QuEvent.cpp(194): warning C4244: '=' : conversion from 'uint16_t' to 'uint8_t', possible loss of data
-     1>include\QuEvent.cpp(267): warning C4267: 'argument' : conversion from 'size_t' to 'unsigned int', possible loss of data
+     1>include\QuEvent.cpp(186): warning C4244: '=' : conversion from 'uint16_t' to 'uint8_t', possible loss of data
+     1>include\QuEvent.cpp(259): warning C4267: 'argument' : conversion from 'size_t' to 'unsigned int', possible loss of data
      1>include\QuEvent.cpp(96): warning C4101: 'loops' : unreferenced local variable
      1>include\QuEvent.cpp(97): warning C4101: 'fps_str' : unreferenced local variable
          Generating Code...
@@ -87,4 +87,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:02.31
+Time Elapsed 00:00:03.46

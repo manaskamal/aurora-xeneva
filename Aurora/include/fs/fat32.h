@@ -13,7 +13,6 @@
 #define __FAT32_H__
 
 #include <stdint.h>
-#include <vfs.h>
 #include <fs/vfs.h>
 
 //! Attributes for directory entry

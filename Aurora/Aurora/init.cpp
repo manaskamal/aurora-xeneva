@@ -35,7 +35,6 @@
 #include <ipc\evntsh.h>
 #include <ipc\message.h>
 #include <ipc\dwm_ipc.h>
-#include <vfs.h>
 #include <fs\fat32.h>
 #include <fs\gpt.h>
 #include <fs\vfs.h>
@@ -45,7 +44,6 @@
 #include <drvmngr.h>
 #include <procmngr.h>
 #include <serial.h>
-#include <gui\splash.h>
 
 #include <net\arp.h>
 #include <net\ethernet.h>
@@ -141,7 +139,6 @@ void _kmain (KERNEL_BOOT_INFO *info) {
 	
     ata_initialize();
 	initialize_gpt();
-	//initialize_vfs();
 	vfs_init();
 
 	initialize_screen(info);
@@ -183,5 +180,6 @@ void _kmain (KERNEL_BOOT_INFO *info) {
 	//! Loop forever
 	while(1) {
 		//!looping looping
+		x64_hlt();
 	}
 }

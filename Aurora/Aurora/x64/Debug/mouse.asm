@@ -33,9 +33,9 @@ mouse_cycle DB	01H DUP (?)
 ?old_message@@3U_dwm_message_@@A DB 01cH DUP (?)	; old_message
 _BSS	ENDS
 CONST	SEGMENT
-$SG6047	DB	'mouse', 00H
+$SG6048	DB	'mouse', 00H
 	ORG $+2
-$SG6048	DB	'/dev/mouse', 00H
+$SG6049	DB	'/dev/mouse', 00H
 CONST	ENDS
 PUBLIC	?initialize_mouse@@YAXXZ			; initialize_mouse
 PUBLIC	?mouse_wait@@YAXE@Z				; mouse_wait
@@ -149,7 +149,7 @@ $LN3:
 ; 199  : 	strcpy (node->filename, "mouse");
 
 	mov	rax, QWORD PTR node$[rsp]
-	lea	rdx, OFFSET FLAT:$SG6047
+	lea	rdx, OFFSET FLAT:$SG6048
 	mov	rcx, rax
 	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
 
@@ -212,7 +212,7 @@ $LN3:
 ; 211  : 	vfs_mount ("/dev/mouse", node);
 
 	mov	rdx, QWORD PTR node$[rsp]
-	lea	rcx, OFFSET FLAT:$SG6048
+	lea	rcx, OFFSET FLAT:$SG6049
 	call	?vfs_mount@@YAXPEADPEAU_vfs_node_@@@Z	; vfs_mount
 
 ; 212  : }

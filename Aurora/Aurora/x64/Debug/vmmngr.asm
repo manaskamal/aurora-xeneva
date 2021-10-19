@@ -10,7 +10,7 @@ _BSS	SEGMENT
 ?root_cr3@@3PEA_KEA DQ 01H DUP (?)			; root_cr3
 _BSS	ENDS
 CONST	SEGMENT
-$SG3358	DB	'Address already present', 0aH, 00H
+$SG3359	DB	'Address already present', 0aH, 00H
 CONST	ENDS
 PUBLIC	?pml4_index@@YA_K_K@Z				; pml4_index
 PUBLIC	?pdp_index@@YA_K_K@Z				; pdp_index
@@ -373,7 +373,7 @@ $LN2@vmmngr_upd:
 ; 180  : 	{
 ; 181  : 		printf ("Address already present\n");
 
-	lea	rcx, OFFSET FLAT:$SG3358
+	lea	rcx, OFFSET FLAT:$SG3359
 	call	?printf@@YAXPEBDZZ			; printf
 $LN1@vmmngr_upd:
 

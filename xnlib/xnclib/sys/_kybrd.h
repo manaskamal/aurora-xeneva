@@ -95,5 +95,6 @@
 	//KEY_UNKNOWN	//0x56
 #define	KEY_F11		    0x57
 #define	KEY_F12			0x58
+#define KEY_KP_ENTER    0x3010
 
 #endif
