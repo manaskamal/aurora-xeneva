@@ -90,7 +90,7 @@ void QuRegisterApplication (char* title) {
 	message_send (4,&msg);
 	//sys_unblock_id(4);
 	sys_sleep(2);
-	canvas_set_double_buffer(false);
+//	canvas_set_double_buffer(e);
 	create_canvas();
 	canvas_set_address (QuCanvasAddress);
 	QuCreateWindow (win_def_x, win_def_y, win_def_w, win_def_h, info_data, title);

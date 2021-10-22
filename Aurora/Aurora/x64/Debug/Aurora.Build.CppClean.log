@@ -52,6 +52,8 @@ E:\XENEVA PROJECT\XENEVA\AURORA\AURORA\X64\DEBUG\DRVMNGR.OBJ
 E:\XENEVA PROJECT\XENEVA\AURORA\AURORA\X64\DEBUG\DRVMNGR.ASM
 E:\XENEVA PROJECT\XENEVA\AURORA\AURORA\X64\DEBUG\DEVFS.OBJ
 E:\XENEVA PROJECT\XENEVA\AURORA\AURORA\X64\DEBUG\DEVFS.ASM
+E:\XENEVA PROJECT\XENEVA\AURORA\AURORA\X64\DEBUG\FAT32.OBJ
+E:\XENEVA PROJECT\XENEVA\AURORA\AURORA\X64\DEBUG\FAT32.ASM
 E:\XENEVA PROJECT\XENEVA\AURORA\AURORA\X64\DEBUG\GPT.OBJ
 E:\XENEVA PROJECT\XENEVA\AURORA\AURORA\X64\DEBUG\GPT.ASM
 E:\XENEVA PROJECT\XENEVA\AURORA\AURORA\X64\DEBUG\VFS.OBJ
@@ -138,11 +140,15 @@ E:\XENEVA PROJECT\XENEVA\AURORA\AURORA\X64\DEBUG\MAP.OBJ
 E:\XENEVA PROJECT\XENEVA\AURORA\AURORA\X64\DEBUG\MAP.ASM
 E:\XENEVA PROJECT\XENEVA\AURORA\AURORA\X64\DEBUG\PIC.OBJ
 E:\XENEVA PROJECT\XENEVA\AURORA\AURORA\X64\DEBUG\PIC.ASM
+E:\XENEVA PROJECT\XENEVA\AURORA\AURORA\X64\DEBUG\SYSTABLE.OBJ
+E:\XENEVA PROJECT\XENEVA\AURORA\AURORA\X64\DEBUG\SYSTABLE.ASM
 E:\XENEVA PROJECT\XENEVA\AURORA\AURORA\X64\DEBUG\THREAD.OBJ
 E:\XENEVA PROJECT\XENEVA\AURORA\AURORA\X64\DEBUG\THREAD.ASM
 E:\XENEVA PROJECT\XENEVA\AURORA\AURORA\X64\DEBUG\USER64.OBJ
 E:\XENEVA PROJECT\XENEVA\AURORA\AURORA\X64\DEBUG\USER64.ASM
 E:\XENEVA PROJECT\XENEVA\AURORA\AURORA\X64\DEBUG\VC110.PDB
+D:\EFI\XENEVA\XNKRNL.EXE
+D:\EFI\XENEVA\XNKRNL.MAP
 E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\ac97.obj
 E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\acpi.obj
 E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\amd_am79c973.obj
@@ -159,6 +165,7 @@ E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\e1000.obj
 E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\ethernet.obj
 E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\evntsh.obj
 E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\exception.obj
+E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\fat32.obj
 E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\gmr.obj
 E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\gpt.obj
 E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\hal.obj
@@ -198,6 +205,7 @@ E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\sysfile.obj
 E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\sysmem.obj
 E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\sysmouse.obj
 E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\sysproc.obj
+E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\systable.obj
 E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\systhread.obj
 E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\systime.obj
 E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\syswait.obj
@@ -220,5 +228,8 @@ E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\CL.read.3.tlog
 E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\CL.read.4.tlog
 E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\CL.read.5.tlog
 E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\CL.write.1.tlog
+E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\link.command.1.tlog
+E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\link.read.1.tlog
+E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\link.write.1.tlog
 E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\vc110.idb
 E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\vc110.pdb

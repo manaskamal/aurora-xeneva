@@ -28,4 +28,5 @@ extern bool QuWindowMngr_GetUpdateBit();
 extern void QuWindowMngr_SendEvent (QuWindow *win, int type, int x, int y, int code);
 extern void QuWindowMngr_EventStreamEnable (bool value);
 extern void QuWindowMngr_DrawBehind (QuWindow *current_win);
+extern QuList *QuWindowMngr_GetList ();
 #endif

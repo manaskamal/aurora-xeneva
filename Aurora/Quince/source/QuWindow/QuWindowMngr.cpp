@@ -23,6 +23,7 @@
 #include <acrylic.h>
 #include <color.h>
 #include <QuCode.h>
+#include <sys\_sleep.h>
 
 
 QuList* WindowList = NULL;
@@ -62,6 +63,12 @@ void QuWindowMngr_Remove (QuWindow *win) {
 	draggable_win = NULL;
 	top_window = NULL;
 }
+
+
+QuList *QuWindowMngr_GetList () {
+	return WindowList;
+}
+
 
 QuWindow* QuWindowMngrFindByID (uint16_t id) {
 	for (int i = 0; i < WindowList->pointer; i++) {
@@ -106,14 +113,14 @@ bool QuWindowMngr_CheckTop (QuWindow *win) {
 }
 
 void QuWindowMngr_DrawAll () {	
-	QuCanvasUpdateDirty();
+     QuCanvasUpdateDirty();
 	//if (WindowList->pointer > 0) {
 		for (int i = 0; i < WindowList->pointer; i++) {
 			QuWindow* _win = (QuWindow*)QuListGetAt(WindowList, i);
 			QuWindowDraw (_win);
 		}
 	//} 
-	
+		
 }
 
 /*
@@ -137,15 +144,28 @@ bool QuWindowMngr_GetUpdateBit() {
 	return UpdateWindows;
 }
 
+int QuWindowMngr_CheckOverlap(QuWindow* win1, QuWindow *win2) {
+	if ((win1->x > win2->x + win2->width + 70) || (win1->x + win1->width + 70 < win2->x))
+		return 0;
+
+	if ((win1->y > win2->y + win2->height + 70) || (win1->y + win1->height + 70 < win2->y))
+		return 0;
+
+	return 1;
+}
+
 
 void QuWindowMngr_MoveFocusWindow (int x, int y) {
 	QuCanvasAddDirty(draggable_win->x, draggable_win->y, draggable_win->width, draggable_win->height);
 	//!Store Old Coordinates
 
+	int oldx = draggable_win->x, oldy = draggable_win->y, oldh = draggable_win->height,
+		oldw = draggable_win->width;
 
 	draggable_win->x = x - draggable_win->drag_x;
 	draggable_win->y = y - draggable_win->drag_y;
 
+	
 	if (draggable_win->x < 0)
 		draggable_win->x = 0;
 
@@ -158,9 +178,6 @@ void QuWindowMngr_MoveFocusWindow (int x, int y) {
 	if (draggable_win->y + draggable_win->height >= canvas_get_height())
 		draggable_win->y = canvas_get_height() - draggable_win->height;
 
-	QuWindowInfo *info = (QuWindowInfo*)draggable_win->win_info_location;
-	info->dirty = 1;
-	info->rect_count = 0;
 
 	QuMessage msg;
 	msg.type = QU_CANVAS_MOVE;
@@ -170,25 +187,23 @@ void QuWindowMngr_MoveFocusWindow (int x, int y) {
 	sys_unblock_id (draggable_win->owner_id);
 
 
+	sys_sleep(1);
+
+	QuWindowInfo *info = (QuWindowInfo*)draggable_win->win_info_location;
+	info->dirty = 1;
+	info->rect_count = 0;
+
 	for (int i = 0; i < WindowList->pointer; i++) {
 		QuWindow* win = (QuWindow*)QuListGetAt (WindowList,i);
-		if (win == draggable_win)
-			continue;
-		if (draggable_win->x >= win->x || win->x >= draggable_win->x &&
-			draggable_win->y >= win->y || win->y >= draggable_win->y &&
-			(draggable_win->x + draggable_win->width) >= (win->x + win->width) ||
-			(win->x + win->width) >= (draggable_win->x + draggable_win->width)) {
-
-				QuWindowInfo *w_info = (QuWindowInfo*)win->win_info_location;
-				w_info->dirty = 1;
-				w_info->rect_count = 0;
+		if (win == draggable_win) continue;
+		if (win == draggable_win) continue;
+		if (QuWindowMngr_CheckOverlap(draggable_win, win)){
+			QuWindowInfo *info = (QuWindowInfo*)win->win_info_location;
+			info->dirty = 1;
+			info->rect_count=0;
+			//break;
 		}
 	}
-
-	/*
-*/
-	
-	
 
 }
 

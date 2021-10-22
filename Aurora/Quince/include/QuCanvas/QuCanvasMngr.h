@@ -25,10 +25,6 @@ extern void QuCanvasMngr_Initialize();
 //! @param dest_pid -- Destination process id
 extern uint32_t* QuCanvasCreate (uint16_t dest_pid);
 
-//! QuCanvasCommit -- Commits the canvas to the process
-//! @param canvas -- The Canvas Address
-//! @param destid -- Destination process id
-extern void QuCanvasCommit (uint32_t* canvas, uint16_t destid, unsigned x, unsigned y, unsigned w, unsigned h);
 
 //! QuCanvasBlit -- Copy pixels from another buffer to Quince Internal Buffer
 //! @param canvas - External Buffer
@@ -73,7 +69,6 @@ extern void QuCanvasSetUpdateBit(bool value);
 //! QuCanvasGetUpdateBit -- Checks the update bit
 extern bool QuCanvasGetUpdateBit();
 
-
 extern void QuCanvasCopyToFB(unsigned x, unsigned y, unsigned w, unsigned h);
 
 extern void QuCanvasQuery(unsigned x, unsigned y, unsigned w, unsigned h);
@@ -85,4 +80,6 @@ extern void QuCanvasUpdateDirtyFB();
 extern  void QuRenderTime (uint8_t sec, uint8_t min, uint8_t hr);
 
 extern void QuCanvasRelease (uint16_t dest_pid, QuWindow *win);
+
+
 #endif

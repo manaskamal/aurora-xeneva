@@ -172,7 +172,9 @@ void QuWindowShow() {
 	//sys_print_text ("Refresh #5\n");
 	acrylic_draw_rect_unfilled (root_win->x, root_win->y, root_win->w, root_win->h, SILVER);
 	}
-	QuPanelUpdate(root_win->x, root_win->y, root_win->w, root_win->h);
+	
+	QuPanelUpdate(root_win->x,root_win->y, root_win->w, root_win->h, true);
+
 }
 
 
@@ -225,7 +227,7 @@ void QuWindowMove (int x, int y) {
 
 	acrylic_draw_rect_unfilled (root_win->x, root_win->y, root_win->w, root_win->h, SILVER);
 	}
-	//QuPanelUpdate(root_win->x, root_win->y, root_win->w, root_win->h);
+	QuPanelRepaint(root_win->x, root_win->y, root_win->w, root_win->h);
 
 	/*QuWinInfo *info = (QuWinInfo*)root_win->win_info_data;
 	info->dirty = 1;
@@ -296,7 +298,7 @@ void QuWindowHandleMouse (int mouse_x, int mouse_y, int code) {
 			mouse_y > (root_win->y + wid->y) && mouse_y < (root_win->y + wid->y + wid->height)) {
 
 				//! Make the difference between left click and dragging here
-				if (code == QU_CANVAS_MOUSE_LCLICKED && old_mouse_x == mouse_x && old_mouse_y == mouse_y){
+				if (code == QU_CANVAS_MOUSE_LCLICKED /*&& old_mouse_x == mouse_x && old_mouse_y == mouse_y*/){
 					clicked = true;
 					root_win->focus_widget = wid;
 				}

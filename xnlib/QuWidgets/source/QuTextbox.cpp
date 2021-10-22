@@ -81,7 +81,7 @@ void QuEnterText (QuTextbox* tb, char* text) {
 }
 
 void QuTextboxInvalidate (QuTextbox *tb, QuWindow* win) {
-	QuPanelUpdate (win->x + tb->wid.x, win->y + tb->wid.y,tb->wid.width, tb->wid.height);
+	QuPanelUpdate (win->x + tb->wid.x, win->y + tb->wid.y,tb->wid.width, tb->wid.height, false);
 }
 
 void QuTextboxRefresh (QuTextbox *tb, QuWindow* win) {

@@ -38,7 +38,7 @@ void QuSliderMouseEvent (QuWidget *wid, QuWindow *win, int code, bool clicked, i
 		slider->thumb_x = x;
 		slider->thumb_y = y;
 		QuSliderRefresh(wid, win);
-		QuPanelUpdate(slider->wid.x, slider->wid.y, slider->wid.width, slider->wid.height);
+		QuPanelUpdate(slider->wid.x, slider->wid.y, slider->wid.width, slider->wid.height, false);
 	}
 	}
 }

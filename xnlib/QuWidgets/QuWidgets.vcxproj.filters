@@ -51,6 +51,12 @@
     <ClInclude Include="include\QuSlider.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="include\QuEditbox.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\QuScrollbar.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\QuBase.cpp">
@@ -81,6 +87,9 @@
       <Filter>source</Filter>
     </ClCompile>
     <ClCompile Include="source\QuSlider.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\QuScrollbar.cpp">
       <Filter>source</Filter>
     </ClCompile>
   </ItemGroup>

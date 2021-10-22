@@ -33,6 +33,7 @@
 #define QU_CANVAS_KEY_PRESSED  206
 #define QU_CANVAS_KEY_RELEASED 207
 #define QU_CANVAS_RESIZE 208
+#define QU_CANVAS_REPAINT 209
 
 
 typedef struct __QuMessage__ {

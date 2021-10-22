@@ -101,12 +101,12 @@ void QuButtonMouseEvent (QuWidget *wid, QuWindow* win, int code, bool clicked, i
 		but->hover = true;
 	
 		QuButtonRefresh(wid, win);
-        QuPanelUpdate (win->x + but->widget.x, win->y + but->widget.y, but->widget.width, but->widget.height);
+        QuPanelUpdate (win->x + but->widget.x, win->y + but->widget.y, but->widget.width, but->widget.height, false);
 		if (clicked) {
 			but->clicked = true;
 			but->hover = false;
 			QuButtonRefresh(wid, win);
-			QuPanelUpdate (win->x + but->widget.x, win->y + but->widget.y, but->widget.width, but->widget.height);
+			QuPanelUpdate (win->x + but->widget.x, win->y + but->widget.y, but->widget.width, but->widget.height, false);
 			//but->default_state = true;
 		}
 		but->default_state = true;
@@ -127,7 +127,7 @@ void QuButtonMouseEvent (QuWidget *wid, QuWindow* win, int code, bool clicked, i
 			but->hover = false;
 			QuButtonRefresh(wid, win);
 			but->default_state = false;
-			QuPanelUpdate (win->x + but->widget.x, win->y + but->widget.y, but->widget.width, but->widget.height);
+			QuPanelUpdate (win->x + but->widget.x, win->y + but->widget.y, but->widget.width, but->widget.height, false);
 		}
 	}
 

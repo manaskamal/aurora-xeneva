@@ -21,7 +21,7 @@ typedef struct _QuPanel_ {
 }QuPanel;
 
 extern QuPanel *QuCreatePanel();
-extern void QuPanelUpdate(int x, int y, int w, int h);
+extern void QuPanelUpdate(int x, int y, int w, int h,bool move);
 extern void QuPanelContentUpdate(int x, int y, int w, int h);
 extern void QuPanelRefresh (QuWidget *wid, QuWindow *win);
 extern void QuPanelUpdateRequired (bool value);

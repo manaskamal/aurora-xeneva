@@ -30,6 +30,7 @@
 #include <QuWindow\QuWindowMngr.h>
 #include <QuWidget\QuWallpaper.h>
 #include <QuCanvas\QuScreenStack.h>
+#include <QuCanvas\QuScreenRectList.h>
 #include <QuRect.h>
 #include <canvas.h>
 #include <color.h>
@@ -67,7 +68,6 @@ void QuHandleQuinceMsg (QuMessage *qu_msg) {
 		r->w = window->width;
 		r->h = window->height;
 		QuWindowAddDirtyArea(window, r);
-		QuCanvasCommit(canvas, dest_id, window->x, window->y, window->width, window->height);
 		x += 10;
 		y += 10;
 	}
@@ -194,6 +194,7 @@ void QuEventLoop() {
 
 			QuWindowSetCanvas (window, canvas);
 
+			QuScreenRectAdd(window->x, window->y, window->width, window->height);
 			QuCanvasSetUpdateBit(true);
 
 			x += 30;
@@ -261,12 +262,10 @@ void QuEventLoop() {
 			frame_time = 0;
 		}
 			
-	
-		if (QuCanvasGetUpdateBit()) {
-		    canvas_screen_update(0,0,canvas_get_width(), canvas_get_height());
-			QuCanvasSetUpdateBit(false);
-			
-		}
+		
+
+		QuScreenRectUpdate();
+		//}
 		//! Here We Prepare the frame that will be displayed
 		sys_sleep(16);
 	}

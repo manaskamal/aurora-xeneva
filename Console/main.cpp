@@ -27,6 +27,7 @@
 #include <QuTerminal.h>
 #include <sys\_exit.h>
 #include "console.h"
+#include <QuScrollbar.h>
 
 
 void QuActions (QuMessage *msg) {
@@ -45,11 +46,7 @@ void QuActions (QuMessage *msg) {
 		memset(msg, 0, sizeof(QuMessage));
 	}
 
-	if (msg->type == QU_CANVAS_MOUSE_LCLICKED) {
-		memset(msg, 0, sizeof(QuMessage));
-	}
-
-	if (msg->type == QU_CANVAS_MOUSE_LRELEASE) {
+	if (msg->type == QU_CANVAS_REPAINT) {
 		memset(msg, 0, sizeof(QuMessage));
 	}
 
@@ -86,12 +83,19 @@ int main (int argc, char* argv[]) {
 	///! map a memory section for text 
 
 	QuTerminal *term = QuCreateTerminal(0,0,win->w, win->h);
-	QuWindowAdd((QuWidget*)term);
+	QuWindowAdd((QuWidget*)term);	
+
+	QuScrollBar *sb = QuCreateScrollbar(QU_SCROLLBAR_VERTICAL);
+	QuWindowAdd((QuWidget*)sb);
+
+	QuScrollBar *sb2 = QuCreateScrollbar(QU_SCROLLBAR_HORIZONTAL);
+	QuWindowAdd((QuWidget*)sb2);
 
 	QuWindowShow();
-    PrintString (term, "Copyright (C) Manas Kamal Choudhury\n"); //13
-	PrintString (term, "Xeneva v1.0\n"); //13
-	PrintString (term, "Manas Kamal Choudhury\n");
+
+	PrintString (term,"Aurora's Xeneva v1.0\n");
+	PrintString (term,"Copyright (C) Manas Kamal Choudhury\n");
+
 
 	QuMessage qmsg;
 	uint16_t app_id = QuGetAppId();

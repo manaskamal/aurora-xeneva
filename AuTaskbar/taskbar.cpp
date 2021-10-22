@@ -17,7 +17,7 @@ int pos_x = 20;
 
 void start_taskbar () {
 	acrylic_draw_rect_filled (0, canvas_get_height() - 40, canvas_get_width(), 40, 0x8C3E3E3E);
-	QuPanelUpdate (0, canvas_get_height() - 40, canvas_get_width(), 40);	
+	QuPanelUpdate (0, canvas_get_height() - 40, canvas_get_width(), 40, false);	
 }
 
 void add_taskbar_button(char *text) {
@@ -29,7 +29,7 @@ void add_taskbar_button(char *text) {
 		text, 
 		0xD9FFFFFF);
 
-	QuPanelUpdate (pos_x, canvas_get_height() - 35,100,30);
+	QuPanelUpdate (pos_x, canvas_get_height() - 35,100,30, false);
 	pos_x += 130;
 }
 
@@ -61,5 +61,5 @@ void taskbar_print_date_time (uint8_t sec, uint8_t min, uint8_t hr) {
 		_sec, 
 		0xD9FFFFFF);
 
-	QuPanelUpdate (canvas_get_width() - 100, canvas_get_height() - 35,100,30);
+	QuPanelUpdate (canvas_get_width() - 100, canvas_get_height() - 35,100,30, false);
 }

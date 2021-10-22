@@ -32,7 +32,7 @@ void QuTermScroll (QuTerminal *term) {
 	QuTermFlush(term, QuGetWindow());
 	//term->wid.Refresh ((QuWidget*)term, QuGetWindow());
 	QuWindowShow ();
-	QuPanelUpdate ( QuGetWindow()->x,  QuGetWindow()->y,  QuGetWindow()->w,  QuGetWindow()->h);
+	QuPanelUpdate ( QuGetWindow()->x,  QuGetWindow()->y,  QuGetWindow()->w,  QuGetWindow()->h, false);
 }
 
 
@@ -90,7 +90,7 @@ void QuTermRefresh (QuWidget* wid, QuWindow *win) {
 	acrylic_draw_rect_filled(win->x + wid->x, win->y + wid->y, wid->width, wid->height, BLACK);
 
 	char tmp_str[2];
-	tmp_str[1] = '\0';
+	memset(tmp_str, 0, 2);
 	int xoff = 0;
 	int yoff = 0;
 	int ypos = 0;
@@ -117,7 +117,7 @@ void QuTermFlush (QuTerminal *term, QuWindow* win) {
 	acrylic_draw_rect_filled(win->x + term->wid.x + term->xpos + 1, win->y + term->wid.y + 23 + term->ypos,8,13,BLACK);
 	if (c != '\n' && c != '\0')
 		acrylic_draw_arr_font (win->x + term->wid.x + term->xpos, win->y + term->wid.y + 23 + term->ypos,c, WHITE);
-	QuPanelUpdate (win->x + term->wid.x, win->y + term->wid.y + 23+ term->ypos, win->w, 14);
+	QuPanelUpdate (win->x + term->wid.x, win->y + term->wid.y + 23+ term->ypos, win->w, 14, false);
 }
 
 

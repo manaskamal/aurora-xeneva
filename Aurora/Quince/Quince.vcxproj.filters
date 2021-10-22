@@ -87,6 +87,9 @@
     <ClCompile Include="source\QuCanvas\QuScreenStack.cpp">
       <Filter>source\QuCanvas</Filter>
     </ClCompile>
+    <ClCompile Include="source\QuCanvas\QuScreenRectList.cpp">
+      <Filter>source\QuCanvas</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\bmp_image.h">
@@ -139,6 +142,9 @@
     </ClInclude>
     <ClInclude Include="include\QuMessageStore.h">
       <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\QuCanvas\QuScreenRectList.h">
+      <Filter>include\QuCanvas</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
