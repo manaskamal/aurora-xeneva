@@ -102,7 +102,9 @@ void QuButtonMouseEvent (QuWidget *wid, QuWindow* win, int code, bool clicked, i
 	
 		QuButtonRefresh(wid, win);
         QuPanelUpdate (win->x + but->widget.x, win->y + but->widget.y, but->widget.width, but->widget.height, false);
-		if (clicked) {
+
+		/* Make the difference between clicking & dragging here */
+		if (clicked && but->m_x == x && but->m_y == y) {
 			but->clicked = true;
 			but->hover = false;
 			QuButtonRefresh(wid, win);
@@ -111,7 +113,11 @@ void QuButtonMouseEvent (QuWidget *wid, QuWindow* win, int code, bool clicked, i
 		}
 		but->default_state = true;
 
-		if (clicked) {
+		/* 
+		 * Make the difference between clicking & dragging here, before 
+		 * calling the action event */
+
+		if (clicked && but->m_x == x && but->m_y == y) {
 			if (but->swap_bit == 0) {
 				//!Call the action handler
 				but->swap_bit = 1;
@@ -131,6 +137,12 @@ void QuButtonMouseEvent (QuWidget *wid, QuWindow* win, int code, bool clicked, i
 		}
 	}
 
+	/*
+	 * Store the mouse coord
+	 * next mouse events
+	 */
+	but->m_x = x;
+	but->m_y = y;
 }
 
 
@@ -157,6 +169,8 @@ QuButton * QuCreateButton(int x, int y) {
 	but->clicked = false;
 	but->default_state = false;
 	but->swap_bit = 0;
+	but->m_x = 0;
+	but->m_y = 0;
 	return but;
 }
 

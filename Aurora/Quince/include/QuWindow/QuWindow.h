@@ -62,13 +62,6 @@ extern QuWindow* QuWindowCreate (int x, int y, uint16_t owner_id, uint32_t* canv
 extern void QuWindowSetSize (QuWindow* win, int width, int height);
 extern void QuWindowSetCanvas(QuWindow* win, unsigned int *canvas);
 extern void QuWindowSetVisible (QuWindow* win,bool visible);
-extern void QuWindowAddDirtyArea (QuWindow* win, QuRect *dirty_rect);
-extern void QuWindowSetAutoInvalidation (QuWindow* win,bool value);
 extern void QuWindowDraw (QuWindow* win);
-extern void QuWindowAddMinimizeButton (QuWindow *win);
-extern void QuWindowAddMaximizeButton (QuWindow *win);
-extern void QuWindowAddCloseButton(QuWindow *win);
-extern void QuWindowUpdateTitlebar (bool value);
-extern bool QuWindowGetUpdateTitlebar();
 
 #endif

@@ -26,6 +26,8 @@ typedef struct _QuButton_ {
 	bool clicked;
 	bool default_state;
 	bool swap_bit;
+	int  m_x;
+	int  m_y;
 }QuButton;
 
 

@@ -64,6 +64,7 @@ typedef struct _QU_WIN_ {
 	QuList* widgets;
 	QuList* controls;
 	_QuWidget_* focus_widget;
+	_QuWidget_ *draggable_widget;
 	bool decorate;
 	char *title;
 }QuWindow;

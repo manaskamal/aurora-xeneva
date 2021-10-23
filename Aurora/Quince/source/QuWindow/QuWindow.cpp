@@ -10,9 +10,7 @@
 
 #include <QuWindow\QuWindow.h>
 #include <QuWindow\QuWindowMngr.h>
-#include <QuWindow\QuWindowStyle.h>
 #include <QuCanvas\QuCanvasMngr.h>
-#include <QuWindow\QuTitleBar.h>
 #include <QuCanvas\QuScreenStack.h>
 #include <QuRect.h>
 #include <stdlib.h>
@@ -56,24 +54,6 @@ void QuWindowSetCanvas(QuWindow* win, uint32_t *canvas) {
 
 void QuWindowSetVisible (QuWindow* win,bool visible) {
 	win->visible = visible;
-}
-
-
-void QuWindowAddDirtyArea (QuWindow* win, QuRect *dirty_rect) {
-	//QuListAdd (win->dirty_areas, dirty_rect);
-}
-
-void QuWindowSetAutoInvalidation (QuWindow* win,bool value) {
-	//win->auto_invalidate = value;
-}
-
-
-void QuWindowRemoveDirtyArea (QuWindow* win, QuRect* dirty_rect) {
-	/*for (int i = 0; i < win->dirty_areas->pointer; i++) {
-		QuRect * r = (QuRect*)QuListGetAt(win->dirty_areas, i);
-		if (r == dirty_rect)
-			QuListRemove(win->dirty_areas, i);
-	}*/
 }
 
 

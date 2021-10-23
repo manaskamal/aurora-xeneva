@@ -22,7 +22,6 @@
 #include <color.h>
 #include <QuRect.h>
 #include <stdlib.h>
-#include <QuCanvas\QuDirtyStack.h>
 #include <QuCanvas\QuScreenStack.h>
 #include <QuWindow\QuWindowMngr.h>
 #include <QuCanvas\QuScreenRectList.h>
@@ -166,31 +165,6 @@ void QuCanvasUpdate (unsigned x, unsigned y, unsigned w, unsigned h) {
 	}
 }
 
-void QuCanvasQuickPaint (uint32_t* canvas,int x, int y, int w,int h) {
-	uint32_t* lfb = (uint32_t*)0x0000600000000000;
-
-	for (int i=0; i < w; i++) {
-		for (int j=0; j < h; j++){
-			uint32_t color = canvas[(x + i) + (y + j) * canvas_get_scanline()];
-			lfb[(x + i) + (y + j) * canvas_get_scanline()] = color;
-			QuCanvasSetUpdateBit(true);
-		}
-	}
-}
-
-
-void QuCanvasCopyToFB(unsigned x, unsigned y, unsigned w, unsigned h) {
-	uint32_t* lfb = (uint32_t*)0xFFFFF00000000000;
-	uint32_t* canvas = (uint32_t*)0x0000600000000000;
-
-	for (int i=0; i < w; i++) {
-		for (int j=0; j < h; j++){
-			uint32_t color = canvas[(x + i) + (y + j) * canvas_get_scanline()];
-			lfb[(x + i) + (y + j) * canvas_get_scanline()] = color;
-		}
-	}
-}
-
 
 void QuCanvasUpdateDirty() {
 	//if (QuStackGetRectCount() > 0) {
@@ -217,15 +191,6 @@ void QuCanvasUpdateDirty() {
 	 return update_bit;
  }
 
-
- void QuCanvasQuery(unsigned x, unsigned y, unsigned w, unsigned h) {
-	svga_io_query_t *query = (svga_io_query_t*)malloc(sizeof(svga_io_query_t));
-	query->value = x;
-	query->value2 = y;
-	query->value3 = w;
-	query->value4 = h;
-	ioquery(IO_QUERY_SVGA, SVGA_UPDATE, query);
- }
 
  void QuRenderTime (uint8_t sec, uint8_t min, uint8_t hr) {
     acrylic_draw_rect_filled (canvas_get_width() - 100, canvas_get_height() - 35,100,30,0x8C3E3E3E);

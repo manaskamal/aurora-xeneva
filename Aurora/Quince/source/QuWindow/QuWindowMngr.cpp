@@ -11,7 +11,6 @@
 
 #include <QuWindow\QuList.h>
 #include <QuWindow\QuWindowMngr.h>
-#include <QuWindow\QuTitleBar.h>
 #include <QuCursor.h>
 #include <stdlib.h>
 #include <QuCanvas\QuCanvasMngr.h>
@@ -189,10 +188,6 @@ void QuWindowMngr_MoveFocusWindow (int x, int y) {
 
 	sys_sleep(1);
 
-	QuWindowInfo *info = (QuWindowInfo*)draggable_win->win_info_location;
-	info->dirty = 1;
-	info->rect_count = 0;
-
 	for (int i = 0; i < WindowList->pointer; i++) {
 		QuWindow* win = (QuWindow*)QuListGetAt (WindowList,i);
 		if (win == draggable_win) continue;
@@ -204,6 +199,10 @@ void QuWindowMngr_MoveFocusWindow (int x, int y) {
 			//break;
 		}
 	}
+
+	QuWindowInfo *info = (QuWindowInfo*)draggable_win->win_info_location;
+	info->dirty = 1;
+	info->rect_count = 0;
 
 }
 

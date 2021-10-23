@@ -180,6 +180,7 @@ void _kmain (KERNEL_BOOT_INFO *info) {
 	//! Loop forever
 	while(1) {
 		//!looping looping
+		x64_cli();
 		x64_hlt();
 	}
 }

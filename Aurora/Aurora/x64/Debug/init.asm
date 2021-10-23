@@ -37,6 +37,7 @@ PUBLIC	?timer_callback@@YAX_KPEAX@Z			; timer_callback
 PUBLIC	??_U@YAPEAX_K@Z					; operator new[]
 PUBLIC	?dummy_thread_2@@YAXXZ				; dummy_thread_2
 PUBLIC	?_kmain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z		; _kmain
+EXTRN	x64_cli:PROC
 EXTRN	x64_hlt:PROC
 EXTRN	x64_read_cr3:PROC
 EXTRN	?hal_init@@YAXXZ:PROC				; hal_init
@@ -82,7 +83,7 @@ $pdata$??_U@YAPEAX_K@Z DD imagerel $LN3
 	DD	imagerel $LN3+23
 	DD	imagerel $unwind$??_U@YAPEAX_K@Z
 $pdata$?_kmain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z DD imagerel $LN5
-	DD	imagerel $LN5+337
+	DD	imagerel $LN5+342
 	DD	imagerel $unwind$?_kmain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z
 pdata	ENDS
 xdata	SEGMENT
@@ -288,16 +289,20 @@ $LN2@kmain:
 	je	SHORT $LN1@kmain
 
 ; 182  : 		//!looping looping
-; 183  : 		x64_hlt();
+; 183  : 		x64_cli();
+
+	call	x64_cli
+
+; 184  : 		x64_hlt();
 
 	call	x64_hlt
 
-; 184  : 	}
+; 185  : 	}
 
 	jmp	SHORT $LN2@kmain
 $LN1@kmain:
 
-; 185  : }
+; 186  : }
 
 	add	rsp, 72					; 00000048H
 	ret	0

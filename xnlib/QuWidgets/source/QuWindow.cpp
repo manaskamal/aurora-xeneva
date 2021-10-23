@@ -86,6 +86,7 @@ void QuCreateWindow (int x, int y, int w, int h, uint32_t* info_data, char* titl
 	win->title = title;
 	win->decorate = true;
 	win->focus_widget = NULL;
+	win->draggable_widget = NULL;
 	QuWinInfo* info = (QuWinInfo*)win->win_info_data;
 	//info->rect_count = 0;
 	//QuWindowAddMinimizeButton(win);

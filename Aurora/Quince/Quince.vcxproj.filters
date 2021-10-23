@@ -75,15 +75,6 @@
     <ClCompile Include="source\QuWindow\QuWindow.cpp">
       <Filter>source\QuWindow</Filter>
     </ClCompile>
-    <ClCompile Include="source\QuWindow\QuWindowStyle.cpp">
-      <Filter>source\QuWindow</Filter>
-    </ClCompile>
-    <ClCompile Include="source\QuWindow\QuTitleBar.cpp">
-      <Filter>source\QuWindow</Filter>
-    </ClCompile>
-    <ClCompile Include="source\QuCanvas\QuDirtyStack.cpp">
-      <Filter>source\QuCanvas</Filter>
-    </ClCompile>
     <ClCompile Include="source\QuCanvas\QuScreenStack.cpp">
       <Filter>source\QuCanvas</Filter>
     </ClCompile>
@@ -125,17 +116,8 @@
     <ClInclude Include="include\QuWindow\QuWindow.h">
       <Filter>include\QuWindow</Filter>
     </ClInclude>
-    <ClInclude Include="include\QuWindow\QuWindowStyle.h">
-      <Filter>include\QuWindow</Filter>
-    </ClInclude>
     <ClInclude Include="include\QuRect.h">
       <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="include\QuWindow\QuTitleBar.h">
-      <Filter>include\QuWindow</Filter>
-    </ClInclude>
-    <ClInclude Include="include\QuCanvas\QuDirtyStack.h">
-      <Filter>include\QuCanvas</Filter>
     </ClInclude>
     <ClInclude Include="include\QuCanvas\QuScreenStack.h">
       <Filter>include\QuCanvas</Filter>

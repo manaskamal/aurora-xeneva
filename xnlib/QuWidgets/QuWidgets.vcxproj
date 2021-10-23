@@ -143,6 +143,7 @@
   <ItemGroup>
     <ClCompile Include="source\QuBase.cpp" />
     <ClCompile Include="source\QuButton.cpp" />
+    <ClCompile Include="source\QuEditBox.cpp" />
     <ClCompile Include="source\QuKeycodeHelper.cpp" />
     <ClCompile Include="source\QuPanel.cpp" />
     <ClCompile Include="source\QuScrollbar.cpp" />
