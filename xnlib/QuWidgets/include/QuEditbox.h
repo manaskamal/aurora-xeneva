@@ -15,6 +15,9 @@
 
 typedef struct _qu_edit_box_ {
 	QuWidget wid;
+	uint32_t* content;
+	int last_scroll_diffx;
+	int last_scroll_diffy;
 }QuEditBox;
 
 

@@ -78,6 +78,7 @@ typedef struct _QuWidget_ {
 	void (*MouseEvent) (struct _QuWidget_*, QuWindow* win, int code,bool clicked, int x, int y);
 	void (*KeyEvent) (struct _QuWidget_*, QuWindow *win, int code);
 	void (*ActionEvent) (struct _QuWidget_*, QuWindow* win);
+	void (*ScrollEvent) (struct _QuWidget_*, struct _QuWidget_*, QuWindow* win);
 }QuWidget;
 
 extern void QuCreateWindow (int x, int y, int w,int h, uint32_t* info_data, char* title);

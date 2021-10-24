@@ -41,7 +41,7 @@ void QuScrollBarRefresh (QuWidget *wid, QuWindow* win) {
 
 		for (int i = 0; i < 14; i++)
 			acrylic_draw_horizontal_line(win->x + wid->x + scroll->thumb_x,
-			win->y + wid->y + i,
+			win->y + wid->y + 1 + i,
 			scroll->thumb_sz,scrollbox_col[i]); 
 	}
 }
@@ -93,7 +93,7 @@ void QuScrollbarMouseEvent (QuWidget* wid, QuWindow* win, int code,bool clicked,
 				scroll->thumb_x = 0;
 
 			QuScrollBarRefresh(wid, win);
-			QuPanelUpdate(win->x + wid->x + 1, win->y + wid->y, wid->width, 13,false);
+			QuPanelUpdate(win->x + wid->x , win->y + wid->y, wid->width, 15,false);
 		}
 
 
@@ -109,6 +109,13 @@ void QuScrollbarMouseEvent (QuWidget* wid, QuWindow* win, int code,bool clicked,
 			QuScrollBarRefresh(wid, win);
 			QuPanelUpdate(win->x + wid->x + 1, win->y + wid->y, wid->width, wid->height,false);
 		}
+
+		//! Call the scroll event of the content
+		if (scroll->content) {
+			if (scroll->content->ScrollEvent) {
+				scroll->content->ScrollEvent (scroll->content,wid,win);
+			}
+		}
 	}
 
 }
@@ -123,7 +130,7 @@ QuScrollBar * QuCreateScrollbar (QuWidget *content, int type) {
 	if (type == QU_SCROLLBAR_HORIZONTAL) {
 		if (content){
 			scr->wid.x = content->x;
-			scr->wid.y = content->y + content->height - 14;
+			scr->wid.y = content->y + content->height - 15;
 			scr->wid.width = content->width;
 			scr->wid.height = 15;
 		}else {
@@ -151,6 +158,7 @@ QuScrollBar * QuCreateScrollbar (QuWidget *content, int type) {
 	scr->wid.KeyEvent = NULL;
 	scr->wid.MouseEvent = QuScrollbarMouseEvent;
 	scr->wid.ActionEvent = NULL;
+	scr->wid.ScrollEvent = NULL;
 	scr->type = type;
 	scr->thumb_x = 0;
 	scr->thumb_y = 0;

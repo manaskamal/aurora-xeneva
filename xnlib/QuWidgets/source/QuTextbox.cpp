@@ -61,6 +61,7 @@ QuTextbox * QuCreateTextbox (int x, int y, int width, int height) {
 	tb->wid.MouseEvent = QuTextboxMouseEvent;
 	tb->wid.KeyEvent = QuTextBoxKeyEvent;
 	tb->wid.Refresh = QuTextboxRefresh;
+	tb->wid.ScrollEvent = NULL;
 	tb->editable = false;
 	tb->cursor_pos_x = 0;
 	tb->cursor_pos_y = 0;

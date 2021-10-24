@@ -164,6 +164,7 @@ QuButton * QuCreateButton(int x, int y) {
 	but->widget.MouseEvent = QuButtonMouseEvent;
 	but->widget.KeyEvent = 0;
 	but->widget.ActionEvent = NULL;
+	but->widget.ScrollEvent = NULL;
 	but->text = NULL;
 	but->hover = false;
 	but->clicked = false;

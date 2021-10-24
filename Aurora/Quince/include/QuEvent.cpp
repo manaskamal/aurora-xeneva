@@ -161,7 +161,7 @@ void QuEventLoop() {
 			QuWindowSetCanvas (window, canvas);
 
 			QuScreenRectAdd(window->x, window->y, window->width, window->height);
-			QuCanvasSetUpdateBit(true);
+			//QuCanvasSetUpdateBit(true);
 
 			x += 30;
 			y += 30;
@@ -201,23 +201,24 @@ void QuEventLoop() {
 			memset (&q_msg, 0, sizeof(QuMessage));
 		}
 
-
-
-
 		//*==========================================================================
 		//*==========================================================================
 		if (diff_time > 15){
 			QuWindowMngr_DrawAll();
 			QuRenderTime(time.seconds, time.minutes, time.hour);
-			acrylic_draw_arr_string (canvas_get_width() - (strlen("Aurora's Xeneva beta-preview")*8),
-				10,"Aurora's Xeneva beta-preview", WHITE);
 			next_tick = sys_get_system_tick();
 			frame_time = 0;
 		}
 			
-		
+
+		if (QuCanvasGetUpdateBit()) {
+			QuCanvasUpdateAll();
+			QuCanvasSetUpdateBit(false);
+		}
 
 		QuScreenRectUpdate();
+
+
 		//}
 		//! Here We Prepare the frame that will be displayed
 		sys_sleep(16);

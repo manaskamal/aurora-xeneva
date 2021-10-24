@@ -185,24 +185,24 @@ void QuWindowMngr_MoveFocusWindow (int x, int y) {
 	QuChannelPut(&msg, draggable_win->owner_id);
 	sys_unblock_id (draggable_win->owner_id);
 
+	//sys_sleep(1);
 
-	sys_sleep(1);
+	//for (int i = 0; i < WindowList->pointer; i++) {
+	//	QuWindow* win = (QuWindow*)QuListGetAt (WindowList,i);
+	//	if (win == draggable_win) continue;
+	//	if (win == draggable_win) continue;
+	//	if (QuWindowMngr_CheckOverlap(draggable_win, win)){
+	//		QuWindowInfo *info = (QuWindowInfo*)win->win_info_location;
+	//		info->dirty = 1;
+	//		info->rect_count=0;
+	//		//break;
+	//	}
+	//}
 
-	for (int i = 0; i < WindowList->pointer; i++) {
-		QuWindow* win = (QuWindow*)QuListGetAt (WindowList,i);
-		if (win == draggable_win) continue;
-		if (win == draggable_win) continue;
-		if (QuWindowMngr_CheckOverlap(draggable_win, win)){
-			QuWindowInfo *info = (QuWindowInfo*)win->win_info_location;
-			info->dirty = 1;
-			info->rect_count=0;
-			//break;
-		}
-	}
-
-	QuWindowInfo *info = (QuWindowInfo*)draggable_win->win_info_location;
-	info->dirty = 1;
-	info->rect_count = 0;
+	//QuWindowInfo *info = (QuWindowInfo*)draggable_win->win_info_location;
+	//info->dirty = 1;
+	//info->rect_count = 0;
+	QuCanvasSetUpdateBit(true);
 
 }
 

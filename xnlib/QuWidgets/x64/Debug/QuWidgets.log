@@ -1,4 +1,4 @@
-﻿Build started 23-10-2021 আবেলি 11:06:28.
+﻿Build started 25-10-2021 ৰাতিপু 2:33:35.
      1>Project "E:\Xeneva Project\Xeneva\xnlib\QuWidgets\QuWidgets.vcxproj" on node 2 (Rebuild target(s)).
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\xnlib\xnclib" /I"E:\Xeneva Project\Xeneva\xnlib\QuWidgets\include" /I"E:\Xeneva Project\Xeneva\xnlib\xnacrylic\include" /Zi /nologo /W4 /WX- /sdl- /MP /Od /D ARCH_X64 /D _MBCS /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt source\QuBase.cpp source\QuButton.cpp source\QuEditBox.cpp source\QuKeycodeHelper.cpp source\QuPanel.cpp source\QuScrollbar.cpp source\QuSlider.cpp source\QuTerminal.cpp source\QuTextbox.cpp source\QuUtils\QuList.cpp source\QuWindow.cpp source\QuWindowControl.cpp
@@ -20,11 +20,11 @@
      1>source\QuWindow.cpp(212): warning C4018: '<' : signed/unsigned mismatch
      1>source\QuWindow.cpp(226): warning C4267: 'argument' : conversion from 'size_t' to 'unsigned int', possible loss of data
      1>source\QuWindow.cpp(211): warning C4189: 'buttons_color' : local variable is initialized but not referenced
-     1>source\QuWindow.cpp(239): warning C4100: 'value' : unreferenced formal parameter
-     1>source\QuWindow.cpp(285): warning C4100: 'prop' : unreferenced formal parameter
-     1>source\QuWindow.cpp(296): warning C4018: '<' : signed/unsigned mismatch
-     1>source\QuWindow.cpp(314): warning C4018: '<' : signed/unsigned mismatch
-     1>source\QuWindow.cpp(336): warning C4018: '<' : signed/unsigned mismatch
+     1>source\QuWindow.cpp(240): warning C4100: 'value' : unreferenced formal parameter
+     1>source\QuWindow.cpp(286): warning C4100: 'prop' : unreferenced formal parameter
+     1>source\QuWindow.cpp(297): warning C4018: '<' : signed/unsigned mismatch
+     1>source\QuWindow.cpp(315): warning C4018: '<' : signed/unsigned mismatch
+     1>source\QuWindow.cpp(337): warning C4018: '<' : signed/unsigned mismatch
          QuList.cpp
          QuTextbox.cpp
      1>E:\Xeneva Project\Xeneva\xnlib\xnclib\ctype.h(33): warning C4005: 'isascii' : macro redefinition
@@ -35,8 +35,8 @@
      1>source\QuTextbox.cpp(34): warning C4100: 'code' : unreferenced formal parameter
      1>source\QuTextbox.cpp(34): warning C4100: 'win' : unreferenced formal parameter
      1>source\QuTextbox.cpp(34): warning C4100: 'wid' : unreferenced formal parameter
-     1>source\QuTextbox.cpp(79): warning C4267: '+=' : conversion from 'size_t' to 'int', possible loss of data
-     1>source\QuTextbox.cpp(92): warning C4267: 'initializing' : conversion from 'size_t' to 'char', possible loss of data
+     1>source\QuTextbox.cpp(80): warning C4267: '+=' : conversion from 'size_t' to 'int', possible loss of data
+     1>source\QuTextbox.cpp(93): warning C4267: 'initializing' : conversion from 'size_t' to 'char', possible loss of data
          QuTerminal.cpp
      1>E:\Xeneva Project\Xeneva\xnlib\xnclib\ctype.h(33): warning C4005: 'isascii' : macro redefinition
                  E:\Xeneva Project\Xeneva\xnlib\xnclib\ctype.h(22) : see previous definition of 'isascii'
@@ -51,24 +51,29 @@
          QuScrollbar.cpp
      1>source\QuScrollbar.cpp(53): warning C4189: 'update' : local variable is initialized but not referenced
          QuPanel.cpp
-     1>source\QuPanel.cpp(25): warning C4100: 'y' : unreferenced formal parameter
-     1>source\QuPanel.cpp(25): warning C4100: 'x' : unreferenced formal parameter
-     1>source\QuPanel.cpp(25): warning C4100: 'clicked' : unreferenced formal parameter
-     1>source\QuPanel.cpp(25): warning C4100: 'code' : unreferenced formal parameter
-     1>source\QuPanel.cpp(25): warning C4100: 'win' : unreferenced formal parameter
-     1>source\QuPanel.cpp(25): warning C4100: 'widget' : unreferenced formal parameter
-     1>source\QuPanel.cpp(29): warning C4100: 'win' : unreferenced formal parameter
-     1>source\QuPanel.cpp(29): warning C4100: 'widget' : unreferenced formal parameter
-     1>source\QuPanel.cpp(62): warning C4189: 'height' : local variable is initialized but not referenced
-     1>source\QuPanel.cpp(88): warning C4189: 'height' : local variable is initialized but not referenced
+     1>source\QuPanel.cpp(27): warning C4100: 'y' : unreferenced formal parameter
+     1>source\QuPanel.cpp(27): warning C4100: 'x' : unreferenced formal parameter
+     1>source\QuPanel.cpp(27): warning C4100: 'clicked' : unreferenced formal parameter
+     1>source\QuPanel.cpp(27): warning C4100: 'code' : unreferenced formal parameter
+     1>source\QuPanel.cpp(27): warning C4100: 'win' : unreferenced formal parameter
+     1>source\QuPanel.cpp(27): warning C4100: 'widget' : unreferenced formal parameter
+     1>source\QuPanel.cpp(31): warning C4100: 'win' : unreferenced formal parameter
+     1>source\QuPanel.cpp(31): warning C4100: 'widget' : unreferenced formal parameter
+     1>source\QuPanel.cpp(60): warning C4100: 'move' : unreferenced formal parameter
+     1>source\QuPanel.cpp(65): warning C4189: 'height' : local variable is initialized but not referenced
+     1>source\QuPanel.cpp(95): warning C4189: 'height' : local variable is initialized but not referenced
          QuKeycodeHelper.cpp
          QuEditBox.cpp
-     1>source\QuEditBox.cpp(24): warning C4100: 'm_y' : unreferenced formal parameter
-     1>source\QuEditBox.cpp(24): warning C4100: 'm_x' : unreferenced formal parameter
-     1>source\QuEditBox.cpp(24): warning C4100: 'clicked' : unreferenced formal parameter
-     1>source\QuEditBox.cpp(24): warning C4100: 'code' : unreferenced formal parameter
-     1>source\QuEditBox.cpp(24): warning C4100: 'win' : unreferenced formal parameter
-     1>source\QuEditBox.cpp(24): warning C4100: 'wid' : unreferenced formal parameter
+     1>source\QuEditBox.cpp(21): warning C4189: 'lfb' : local variable is initialized but not referenced
+     1>source\QuEditBox.cpp(38): warning C4100: 'm_y' : unreferenced formal parameter
+     1>source\QuEditBox.cpp(38): warning C4100: 'm_x' : unreferenced formal parameter
+     1>source\QuEditBox.cpp(38): warning C4100: 'clicked' : unreferenced formal parameter
+     1>source\QuEditBox.cpp(38): warning C4100: 'code' : unreferenced formal parameter
+     1>source\QuEditBox.cpp(38): warning C4100: 'win' : unreferenced formal parameter
+     1>source\QuEditBox.cpp(38): warning C4100: 'wid' : unreferenced formal parameter
+     1>source\QuEditBox.cpp(57): warning C4305: 'initializing' : truncation from '__int64' to 'uint32_t'
+     1>source\QuEditBox.cpp(57): warning C4309: 'initializing' : truncation of constant value
+     1>source\QuEditBox.cpp(58): warning C4018: '<' : signed/unsigned mismatch
          QuButton.cpp
      1>source\QuButton.cpp(55): warning C4267: 'argument' : conversion from 'size_t' to 'unsigned int', possible loss of data
      1>source\QuButton.cpp(62): warning C4267: 'argument' : conversion from 'size_t' to 'unsigned int', possible loss of data
@@ -99,4 +104,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:04.28
+Time Elapsed 00:00:01.11

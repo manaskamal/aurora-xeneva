@@ -85,12 +85,6 @@ int main (int argc, char* argv[]) {
 	QuTerminal *term = QuCreateTerminal(0,0,win->w, win->h);
 	QuWindowAdd((QuWidget*)term);	
 
-	QuScrollBar *sb = QuCreateScrollbar(NULL,QU_SCROLLBAR_VERTICAL);
-	QuWindowAdd((QuWidget*)sb);
-
-	QuScrollBar *sb2 = QuCreateScrollbar(NULL, QU_SCROLLBAR_HORIZONTAL);
-	QuWindowAdd((QuWidget*)sb2);
-
 	QuWindowShow();
 
 

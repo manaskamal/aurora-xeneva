@@ -16,20 +16,14 @@ $SG7503	DB	'shell', 00H
 	ORG $+2
 $SG7504	DB	'/xshell.exe', 00H
 $SG7505	DB	'quince', 00H
-	ORG $+1
-$SG7509	DB	'tsk', 00H
+	ORG $+5
 $SG7506	DB	'/quince.exe', 00H
 	ORG $+4
 $SG7508	DB	'procmngr', 00H
+	ORG $+3
+$SG7509	DB	'dwm4', 00H
 	ORG $+7
-$SG7510	DB	'/autask.exe', 00H
-$SG7511	DB	'cnsl', 00H
-	ORG $+7
-$SG7512	DB	'/cnsl.exe', 00H
-	ORG $+2
-$SG7513	DB	'dwm4', 00H
-	ORG $+7
-$SG7514	DB	'/dwm2.exe', 00H
+$SG7510	DB	'/dwm2.exe', 00H
 CONST	ENDS
 PUBLIC	??2@YAPEAX_K@Z					; operator new
 PUBLIC	??3@YAXPEAX@Z					; operator delete
@@ -83,7 +77,7 @@ $pdata$??_U@YAPEAX_K@Z DD imagerel $LN3
 	DD	imagerel $LN3+23
 	DD	imagerel $unwind$??_U@YAPEAX_K@Z
 $pdata$?_kmain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z DD imagerel $LN5
-	DD	imagerel $LN5+342
+	DD	imagerel $LN5+292
 	DD	imagerel $unwind$?_kmain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z
 pdata	ENDS
 xdata	SEGMENT
@@ -247,29 +241,15 @@ $LN5:
 	call	?create_kthread@@YAPEAU_thread_@@P6AXXZ_K1QEADE@Z ; create_kthread
 
 ; 170  : 
-; 171  : 	create_process ("/autask.exe", "tsk", 0, NULL);
+; 171  : 	//create_process ("/autask.exe", "tsk", 0, NULL);
+; 172  : 	//! Misc programs goes here
+; 173  : 	//create_process ("/cnsl.exe", "cnsl", 0, NULL);
+; 174  : 	create_process ("/dwm2.exe", "dwm4", 0, NULL);
 
 	xor	r9d, r9d
 	xor	r8d, r8d
 	lea	rdx, OFFSET FLAT:$SG7509
 	lea	rcx, OFFSET FLAT:$SG7510
-	call	?create_process@@YAXPEBDPEADE1@Z	; create_process
-
-; 172  : 	//! Misc programs goes here
-; 173  : 	create_process ("/cnsl.exe", "cnsl", 0, NULL);
-
-	xor	r9d, r9d
-	xor	r8d, r8d
-	lea	rdx, OFFSET FLAT:$SG7511
-	lea	rcx, OFFSET FLAT:$SG7512
-	call	?create_process@@YAXPEBDPEADE1@Z	; create_process
-
-; 174  : 	create_process ("/dwm2.exe", "dwm4", 0, NULL);
-
-	xor	r9d, r9d
-	xor	r8d, r8d
-	lea	rdx, OFFSET FLAT:$SG7513
-	lea	rcx, OFFSET FLAT:$SG7514
 	call	?create_process@@YAXPEBDPEADE1@Z	; create_process
 
 ; 175  : 

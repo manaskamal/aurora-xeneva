@@ -19,6 +19,8 @@
 #include <color.h>
 #include <sys\_term.h>
 #include <sys\_sleep.h>
+#include <string.h>
+#include <fastcpy.h>
 
 bool panel_update = false;
 
@@ -39,6 +41,7 @@ QuPanel* QuCreatePanel () {
 	panel->base.MouseEvent = QuPanelMouseEvent;
 	panel->base.KeyEvent = 0;
 	panel->base.ActionEvent = QuPanelActionEvent;
+	panel->base.ScrollEvent = NULL;
 	panel->color = 0xFFFFFFFF;
 	return panel;
 }
@@ -55,28 +58,32 @@ void QuPanelRefresh (QuWidget *wid, QuWindow* win) {
 
 
 void QuPanelUpdate(int x, int y, int w, int h, bool move) {
-	if (canvas_is_double_buffered()){
+	//if (canvas_is_double_buffered()){
 	uint32_t* lfb = (uint32_t*)QuGetWindow()->canvas;
 	uint32_t* dbl_canvas = (uint32_t*)0x0000600000000000;
 	int width = canvas_get_width();
 	int height = canvas_get_height();
-	for (int i=0; i < w; i++) {
-		for (int j=0; j < h; j++){
-			uint32_t color = dbl_canvas[(x + i) + (y + j) * width];
-			lfb[(x + i) + (y + j) * width] = color;
-		}
-	}
-	}
+	//for (int i=0; i < w; i++) {
+	//	for (int j=0; j < h; j++){
+	//		uint32_t color = dbl_canvas[(x + i) + (y + j) * width];
+	//		lfb[(x + i) + (y + j) * width] = color;
+	//	}
+	//}
+	//}
+
+	for (int i = 0; i < h; i++)
+		fastcpy (lfb + (y + i) * width + x,dbl_canvas + (y + i) * width + x, w * 4);
 	 
 	QuWinInfo *info = (QuWinInfo*)QuGetWindow()->win_info_data;
 	info->dirty = 1;
-	if (!move){
+	/*if (!move){
 	info->rect[info->rect_count].x = x;
 	info->rect[info->rect_count].y = y;
 	info->rect[info->rect_count].w = w;
 	info->rect[info->rect_count].h = h;
-	info->rect_count++;
-	}else
+	info->rect_count += 1;
+	}
+	if (move)*/
 		info->rect_count = 0;
 }
 
@@ -86,12 +93,14 @@ void QuPanelRepaint (int x, int y, int w, int h) {
 	uint32_t* dbl_canvas = (uint32_t*)0x0000600000000000;
 	int width = canvas_get_width();
 	int height = canvas_get_height();
-	for (int i=0; i < w; i++) {
+	/*for (int i=0; i < w; i++) {
 		for (int j=0; j < h; j++){
 			uint32_t color = dbl_canvas[(x + i) + (y + j) * width];
 			lfb[(x + i) + (y + j) * width] = color;
 		}
-	}
+	}*/
+	for (int i = 0; i < h; i++)
+		fastcpy (lfb + (y + i) * width + x,dbl_canvas + (y + i) * width + x, w * 4);
 }
 
 

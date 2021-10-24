@@ -228,6 +228,7 @@ void QuWindowMove (int x, int y) {
 
 	acrylic_draw_rect_unfilled (root_win->x, root_win->y, root_win->w, root_win->h, SILVER);
 	}
+
 	QuPanelRepaint(root_win->x, root_win->y, root_win->w, root_win->h);
 
 	/*QuWinInfo *info = (QuWinInfo*)root_win->win_info_data;

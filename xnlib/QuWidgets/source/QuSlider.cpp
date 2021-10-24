@@ -60,6 +60,7 @@ QuSlider * QuCreateSlider (int x, int y, int type) {
 	slider->wid.KeyEvent = 0;
 	slider->wid.ActionEvent = 0;
 	slider->wid.Refresh = QuSliderRefresh;
+	slider->wid.ScrollEvent = NULL;
 	slider->max = 0;
 	slider->min = 0;
 	slider->position = 0;

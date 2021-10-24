@@ -168,9 +168,9 @@ void _kmain (KERNEL_BOOT_INFO *info) {
 	 */
 	create_kthread (procmngr_start,(uint64_t)pmmngr_alloc(),x64_read_cr3(),"procmngr",0);
 
-	create_process ("/autask.exe", "tsk", 0, NULL);
+	//create_process ("/autask.exe", "tsk", 0, NULL);
 	//! Misc programs goes here
-	create_process ("/cnsl.exe", "cnsl", 0, NULL);
+	//create_process ("/cnsl.exe", "cnsl", 0, NULL);
 	create_process ("/dwm2.exe", "dwm4", 0, NULL);
 
 	//! Here start the scheduler (multitasking engine)

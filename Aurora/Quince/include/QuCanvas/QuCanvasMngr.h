@@ -81,5 +81,7 @@ extern  void QuRenderTime (uint8_t sec, uint8_t min, uint8_t hr);
 
 extern void QuCanvasRelease (uint16_t dest_pid, QuWindow *win);
 
+extern  void QuCanvasUpdateAll ();
+
 
 #endif

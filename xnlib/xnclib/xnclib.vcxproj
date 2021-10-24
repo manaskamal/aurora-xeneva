@@ -144,6 +144,7 @@
     <ClInclude Include="c++\string" />
     <ClInclude Include="ctype.h" />
     <ClInclude Include="endian.h" />
+    <ClInclude Include="fastcpy.h" />
     <ClInclude Include="float.h" />
     <ClInclude Include="heap.h" />
     <ClInclude Include="limits.h" />

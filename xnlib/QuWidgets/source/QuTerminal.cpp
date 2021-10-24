@@ -155,6 +155,7 @@ QuTerminal * QuCreateTerminal (int x, int y, int w, int h) {
 	term->wid.MouseEvent = QuTermMouse;
 	term->wid.KeyEvent = QuTermKeyEvent;
 	term->wid.Refresh = QuTermRefresh;
+	term->wid.ScrollEvent = NULL;
 	term->cursor_x = 0;
 	term->cursor_y = 0;
 	term->xpos = 0;

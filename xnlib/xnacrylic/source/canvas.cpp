@@ -16,7 +16,7 @@
 #include <sys\_term.h>
 #include <string.h>
 #include <sys\_file.h>
-
+#include <fastcpy.h>
 
 canvas_t* canvas = NULL;
 bool double_buffer = true;
@@ -76,14 +76,17 @@ uint32_t canvas_get_height () {
 
 void canvas_screen_update (uint32_t x, uint32_t y, uint32_t w, uint32_t h) {
 	uint32_t* lfb = (uint32_t*)0xFFFFF00000000000;
-	for (int i=0; i < w; i++) {	
+	/*for (int i=0; i < w; i++) {	
 		for (int j=0; j < h; j++){
 			if (lfb[(x + i) + (y + j) * canvas_get_scale()] != canvas->address[(x + i) + (y + j) * canvas_get_scale()]) {
 			uint32_t color = canvas->address[(x + i) + (y + j) * canvas_get_scale()];
 			lfb[(x + i) + (y + j) * canvas_get_scale()] = color;
 			}
 		}
-	}
+	}*/
+
+	for (int i = 0; i < h; i++)
+		fastcpy (lfb + (y + i) * canvas->width + x,canvas->address + (y + i) * canvas->width + x, w * 4);
 
 	svga_io_query_t query; // = (svga_io_query_t*)malloc(sizeof(svga_io_query_t));
 	query.value = x;

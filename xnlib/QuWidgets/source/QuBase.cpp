@@ -83,13 +83,7 @@ void QuRegisterApplication (char* title) {
 			break;
 		}
 	}
-
-	message_t msg;
-	msg.type = 1;
-	strcpy (msg.buffer, title);
-	message_send (4,&msg);
 	//sys_unblock_id(4);
-	sys_sleep(2);
 //	canvas_set_double_buffer(e);
 	create_canvas();
 	canvas_set_address (QuCanvasAddress);
