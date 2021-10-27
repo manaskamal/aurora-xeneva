@@ -10,8 +10,10 @@
 
 
 #include <QuKeycodeHelper.h>
+#include <ctype.h>
 
 bool shift = false;
+bool capslock = false;
 
 char kbdus[128] = {
     0,  27, '1', '2', '3', '4', '5', '6', '7', '8', /* 9 */
@@ -54,5 +56,111 @@ char kbdus[128] = {
 
 
 void QuConvertKeyToString (int code, char *p) {
-	*p = kbdus[code];
+
+	if (code == KEY_CAPSLOCK) {
+		capslock = !capslock;
+		return;
+	}
+
+
+	if (shift ) {
+		switch (code) {
+		case KEY_0:
+			*p = KEY_C_RIGHTPARENTHESIS;
+			shift = !shift;
+			return;
+		case KEY_1:
+			*p = KEY_C_EXCLAMATION;
+			shift = !shift;
+			return;
+		case KEY_2:
+			*p = KEY_C_AT;
+			shift = !shift;
+			return;
+		case KEY_3:
+			*p = KEY_C_HASH;
+			shift = !shift;
+			return;
+		case KEY_4:
+			*p = KEY_C_EURO;
+			shift = !shift;
+			return;
+		case KEY_5:
+			*p = KEY_C_PERCENT;
+			shift = !shift;
+			return;
+		case KEY_6:
+			*p = KEY_C_CARRET;
+			shift = !shift;
+			return;
+		case KEY_7:
+			*p = KEY_C_AMPERSAND;
+			shift = !shift;
+			return;
+		case KEY_8:
+			*p = KEY_C_ASTERISK;
+			shift = !shift;
+			return;
+		case KEY_9:
+			*p = KEY_C_LEFTPARENTHESIS;
+			shift = !shift;
+			return;
+		case KEY_MINUS:
+			*p = KEY_C_UNDERSCORE;
+			shift = !shift;
+			return;
+		case KEY_EQUAL:
+			*p = KEY_C_PLUS;
+			shift = !shift;
+			return;
+		case KEY_LEFTBRACKET:
+			*p = KEY_C_LEFTCURL;
+			shift = !shift;
+			return;
+		case KEY_RIGHTBRACKET:
+			*p = KEY_C_RIGHTCURL;
+			shift = !shift;
+			return;
+		case KEY_BACKSLASH:
+			*p = KEY_C_BAR;
+			shift = !shift;
+			return;
+		case KEY_SEMICOLON:
+			*p = KEY_C_COLON;
+			shift = !shift;
+			return;
+		case KEY_QUOTE:
+			*p = KEY_C_QUOTEDOUBLE;
+			shift = !shift;
+			return;
+		case KEY_COMMA:
+			*p = KEY_C_LESS;
+			shift = !shift;
+			return;
+		case KEY_DOT:
+			*p = KEY_C_GREATER;
+			shift = !shift;
+			return;
+		case KEY_SLASH:
+			*p = KEY_C_QUESTION;
+			shift = !shift;
+			return;
+		case KEY_GRAVE:
+			*p = KEY_C_TILDE;
+			shift = !shift;
+			return;
+		}
+	} 
+
+
+	if (code == KEY_LSHIFT || code == KEY_RSHIFT) {
+		shift = true;
+		return;
+	}
+	
+
+	if (capslock) 
+		*p = toupper(kbdus[code]);
+	else 
+		*p = kbdus[code];
 }

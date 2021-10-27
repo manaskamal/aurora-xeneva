@@ -185,24 +185,17 @@ void QuWindowMngr_MoveFocusWindow (int x, int y) {
 	QuChannelPut(&msg, draggable_win->owner_id);
 	sys_unblock_id (draggable_win->owner_id);
 
-	//sys_sleep(1);
+	//! to avoid tearing effect 
+	//! sleep for 1 ms
+	sys_sleep(1);
 
-	//for (int i = 0; i < WindowList->pointer; i++) {
-	//	QuWindow* win = (QuWindow*)QuListGetAt (WindowList,i);
-	//	if (win == draggable_win) continue;
-	//	if (win == draggable_win) continue;
-	//	if (QuWindowMngr_CheckOverlap(draggable_win, win)){
-	//		QuWindowInfo *info = (QuWindowInfo*)win->win_info_location;
-	//		info->dirty = 1;
-	//		info->rect_count=0;
-	//		//break;
-	//	}
-	//}
-
-	//QuWindowInfo *info = (QuWindowInfo*)draggable_win->win_info_location;
-	//info->dirty = 1;
-	//info->rect_count = 0;
-	QuCanvasSetUpdateBit(true);
+	for (int i = 0; i < WindowList->pointer; i++) {
+		QuWindow* win = (QuWindow*)QuListGetAt (WindowList,i);
+		//if (win == draggable_win) continue;
+		QuWindowInfo *w_info = (QuWindowInfo*)win->win_info_location;
+		w_info->dirty = 1;
+		w_info->rect_count=0;
+	}
 
 }
 
@@ -225,7 +218,7 @@ void QuWindowMngr_HandleMouse (int x, int y, uint8_t button, int mouse_code) {
 				draggable_win->drag_x = x - draggable_win->x;
 				draggable_win->drag_y = y - draggable_win->y;
 		        QuWindowMngr_MoveFront(win);
-				break;
+		        break;
 			}
 		//}
 		}

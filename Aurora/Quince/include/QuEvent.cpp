@@ -195,30 +195,25 @@ void QuEventLoop() {
 			uint16_t from_id = q_msg.from_id;
 			QuWindow* win = (QuWindow*)QuWindowMngrFindByID(from_id);
 			sys_unmap_sh_mem(from_id, (uint64_t)win->win_info_location, 8192);	
-			//win_info_counter--;
+			win_info_counter--;
 			win->mark_for_close = true;
 			QuCanvasSetUpdateBit(true);
 			memset (&q_msg, 0, sizeof(QuMessage));
 		}
 
+
+	
 		//*==========================================================================
 		//*==========================================================================
-		if (diff_time > 15){
-			QuWindowMngr_DrawAll();
+		if (diff_time > 15){	
+			
 			QuRenderTime(time.seconds, time.minutes, time.hour);
 			next_tick = sys_get_system_tick();
 			frame_time = 0;
 		}
-			
-
-		if (QuCanvasGetUpdateBit()) {
-			QuCanvasUpdateAll();
-			QuCanvasSetUpdateBit(false);
-		}
+		QuWindowMngr_DrawAll();	
 
 		QuScreenRectUpdate();
-
-
 		//}
 		//! Here We Prepare the frame that will be displayed
 		sys_sleep(16);

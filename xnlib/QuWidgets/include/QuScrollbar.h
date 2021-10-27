@@ -30,8 +30,11 @@ typedef struct _qu_scrollbar_ {
 	int thumb_x;
 	int thumb_y;
 	int thumb_sz;
-	int thumb_drag_x;
-	int thumb_drag_y;
+	int last_thumb_x;
+	int last_thumb_y;
+	int scroll_xoff;
+	int scroll_yoff;
+	bool update_off;
 }QuScrollBar;
 
 /**

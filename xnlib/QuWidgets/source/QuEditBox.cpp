@@ -15,22 +15,28 @@
 #include <QuScrollbar.h>
 #include <QuPanel.h>
 #include <sys\mmap.h>
+#include <sys\_term.h>
+#include <fastcpy.h>
+#include <clientctx.h>
 
+#define EDIT_BOX_WIDTH  74
+#define EDIT_BOX_HEIGHT 36
 
-void CopyToFB (QuWidget* wid, QuWindow* win, int x, int y, int w, int h) {
-	uint32_t *lfb = (uint32_t*)QuGetWindow()->canvas;
+void CopyToFB (QuWidget* wid, QuWindow* win, int x, int y, int w, int h, uint32_t *backstr) {
 	uint32_t *dbl_buffer = (uint32_t*)0x0000600000000000;
-	for (int i = 0; i < w; i++) {
-		for (int j = 0; j < h; j++) {
-			uint32_t color = dbl_buffer[(x + i) + (y + j) * canvas_get_width()];
-			dbl_buffer[(win->x + wid->x + i) + (win->y + wid->y + j) * canvas_get_width()] = color;
-		}
-	}
+	for (int i = 0; i < h; i++)
+		fastcpy (dbl_buffer + (win->y + wid->y + i) * canvas_get_width() + win->x + wid->x,
+		backstr + (y + i) * canvas_get_width() + x, w * 4);
 }
 
 
 void QuEditBoxRefresh (QuWidget *wid, QuWindow *win) {
-	acrylic_draw_rect_filled (win->x + wid->x,win->y + wid->y, wid->width, wid->height, WHITE);
+	QuEditBox *eb = (QuEditBox*)wid;
+	
+	CopyToFB (wid,win,
+			0 + eb->last_scroll_diffx,  
+			0 + eb->last_scroll_diffy,
+			wid->width - 15, wid->height - 15,(uint32_t*) eb->backstore);	
 	acrylic_draw_rect_unfilled (win->x + wid->x,win->y + wid->y, wid->width, wid->height, GRAY);
 }
 
@@ -41,23 +47,35 @@ void QuEditBoxMouseEvent (QuWidget *wid, QuWindow *win, int code, bool clicked, 
 void QuEditBoxScrollEvent (QuWidget *wid, QuWidget *scroll, QuWindow *win) {
 	QuScrollBar *sb = (QuScrollBar*)scroll;
 	QuEditBox *eb = (QuEditBox*)wid;
-	int sc_x = 0;
-	if (sb->thumb_x > eb->last_scroll_diffx) 
-		sc_x = 32;
-	else
-		sc_x -= 32;
+  
+	if (sb->type == QU_SCROLLBAR_HORIZONTAL)
+		eb->last_scroll_diffx = sb->scroll_xoff;
 
-	CopyToFB (wid,win,win->x,win->y,wid->width, wid->height);
-	QuPanelUpdate (win->x + wid->x, win->y + wid->y, wid->width, wid->height, false);
-	eb->last_scroll_diffx = sb->thumb_x;
+	if (sb->type == QU_SCROLLBAR_VERTICAL)
+		eb->last_scroll_diffy = sb->scroll_yoff;
+
+	if (sb->type == QU_SCROLLBAR_HORIZONTAL){  
+		
+		CopyToFB (wid,win,
+			0 + eb->last_scroll_diffx,  
+			0 + eb->last_scroll_diffy,
+			wid->width - 15, wid->height - 15,(uint32_t*) eb->backstore);	
+	}
+
+	if (sb->type == QU_SCROLLBAR_VERTICAL) {
+		CopyToFB (wid,win,
+			0 + eb->last_scroll_diffx,
+			0 + eb->last_scroll_diffy,
+			wid->width - 15, wid->height - 15,(uint32_t*) eb->backstore);	
+	}
+
+	acrylic_draw_rect_unfilled (win->x + wid->x,win->y + wid->y, wid->width, wid->height, GRAY);
+
+	//QuPanelUpdate (win->x + wid->x, win->y + wid->y, wid->width - 15, wid->height - 15, false);
 }
 
 
 QuEditBox *QuCreateEditBox (int x, int y, int w, int h) {
-	uint32_t location = 0x0000070000000000; 
-	for (int i = 0; i < canvas_get_width() * canvas_get_height() * 32 / 4096; i++) 
-		valloc (location + i * 4096);
-
 	QuEditBox *eb = (QuEditBox*)malloc(sizeof(QuEditBox));
 	eb->wid.x = x;
 	eb->wid.y = y;
@@ -68,8 +86,86 @@ QuEditBox *QuCreateEditBox (int x, int y, int w, int h) {
 	eb->wid.KeyEvent = NULL;
 	eb->wid.ActionEvent = NULL;
 	eb->wid.ScrollEvent = QuEditBoxScrollEvent;
-	eb->content = (uint32_t*)location;
 	eb->last_scroll_diffx = 0;
 	eb->last_scroll_diffy = 0;
+	//! This should be much larger memory allocation
+	//! this mappings should be moved to another object
+	//! called QuStringBuffer...  for now
+	//! let's create it here
+	uint64_t location = 0x0000070000000000; 
+	for (int i = 0; i < 1024 * 720 * 32 / 4096; i++) 
+		valloc (location + i * 4096);
+
+    eb->backstore = (uint8_t*)location;
+	uint64_t buff_loc = location + (1024*720*32);
+	for (int i = 0; i < 65535 / 4096; i++)
+		valloc (buff_loc + i * 4096);
+
+	eb->buffer = (uint8_t*)buff_loc;
+	
 	return eb;
+}
+
+
+void QuEditBoxSetVisible (QuEditBox *eb) {
+	for (int i = 0; i < 1024; i++)
+		for (int j = 0; j < 720; j++)
+			cc_draw_pixel((uint32_t*)eb->backstore, 0 + i, 0 + j, LIGHTSILVER);
+
+}
+
+void QuEditBoxFlush (QuEditBox *eb, QuWindow *win) {
+	char c = eb->buffer[eb->cursor_y * EDIT_BOX_WIDTH + eb->cursor_x];
+	//cc_draw_rect_filled(eb->xpos + 1, eb->ypos,8,13,WHITE);
+	if (c != '\n' && c != '\0')
+		cc_draw_arr_font ((uint32_t*)eb->backstore,eb->xpos, eb->ypos,c, BLACK);
+	//QuPanelUpdate (win->x + eb->wid.x, win->y + eb->wid.y + 23+ eb->ypos, win->w, 14, false);
+}
+
+
+void QuEditBoxSetChar (QuEditBox *eb, char s, uint32_t color) {
+	if (s == '\n'){
+		eb->buffer[eb->cursor_y * EDIT_BOX_WIDTH + eb->cursor_x] = s;
+		QuEditBoxFlush (eb, QuGetWindow());
+		eb->cursor_x = 0;
+
+		eb->cursor_y++;
+		eb->ypos += 13;
+		
+		eb->xpos = 0;
+		return;
+	}
+
+	if (s == '\b') {
+		eb->buffer[eb->cursor_y * EDIT_BOX_WIDTH + eb->cursor_x] = '\0';
+		QuEditBoxFlush(eb, QuGetWindow());
+		eb->cursor_x--;
+		eb->xpos -= 8;	
+		if (eb->cursor_x <= 0 && eb->xpos <= 0){
+			eb->cursor_x = 0;
+			eb->xpos = 0;
+		}
+		return;
+	}
+
+	if (eb->cursor_x == EDIT_BOX_WIDTH) {
+		eb->cursor_x = EDIT_BOX_WIDTH;
+		/*if (eb->cursor_y == EDIT_BOX_HEIGHT - 1)
+			QuTermScroll(term);
+		else */
+		eb->cursor_y++;
+	}
+
+	eb->buffer[eb->cursor_y * EDIT_BOX_WIDTH + eb->cursor_x] = s;
+	QuEditBoxFlush(eb, QuGetWindow());
+	eb->cursor_x++;
+	eb->xpos += 8;
+	//eb->buffer[eb->cursor_y * EDIT_BOX_WIDTH + eb->cursor_x] = '_';
+	//QuEditBoxFlush(eb, QuGetWindow());
+}
+
+
+void QuEditSetText (QuEditBox *eb, char* string) {
+	while(*string)
+		QuEditBoxSetChar(eb,*(string)++,BLACK);
 }

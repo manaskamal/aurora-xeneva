@@ -45,6 +45,9 @@
     <ClCompile Include="source\ttf\ttf.cpp">
       <Filter>source\ttf</Filter>
     </ClCompile>
+    <ClCompile Include="source\clientctx.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\canvas.h">
@@ -72,6 +75,9 @@
       <Filter>include\ttf</Filter>
     </ClInclude>
     <ClInclude Include="include\arrayfont.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\clientctx.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>

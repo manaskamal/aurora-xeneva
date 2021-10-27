@@ -49,6 +49,8 @@ void QuTermPrint (QuTerminal *term, char s, uint32_t color) {
 			term->ypos += 13;
 		}
 		term->xpos = 0;
+		term->text[term->cursor_y * TERM_WIDTH + term->cursor_x] = '_';
+		QuTermFlush(term, QuGetWindow());
 		return;
 	}
 
@@ -60,7 +62,10 @@ void QuTermPrint (QuTerminal *term, char s, uint32_t color) {
 		if (term->cursor_x <= 0 && term->xpos <= 0){
 			term->cursor_x = 0;
 			term->xpos = 0;
+			term->ypos -= 13;
 		}
+		term->text[term->cursor_y * TERM_WIDTH + term->cursor_x] = '_';
+		QuTermFlush(term, QuGetWindow());
 		return;
 	}
 
@@ -80,11 +85,18 @@ void QuTermPrint (QuTerminal *term, char s, uint32_t color) {
 	QuTermFlush(term, QuGetWindow());
 }
 
-
+/**
+ *  QuTermMouse -- Mouse event callback
+ */
 void QuTermMouse (QuWidget* wid, QuWindow *win, int code, bool clicked, int x, int y) {
 }
 
-
+/**
+ *  QuTermRefresh -- The refresh callback
+ *
+ *  @param wid -- Pointer to self
+ *  @param win -- Pointer to root window
+ */
 void QuTermRefresh (QuWidget* wid, QuWindow *win) {
 	QuTerminal *term = (QuTerminal*)wid;
 	acrylic_draw_rect_filled(win->x + wid->x, win->y + wid->y, wid->width, wid->height, BLACK);
@@ -112,6 +124,8 @@ void QuTermRefresh (QuWidget* wid, QuWindow *win) {
 	}
 }
 
+
+//! Flush the current line
 void QuTermFlush (QuTerminal *term, QuWindow* win) {
 	char c = term->text[term->cursor_y * TERM_WIDTH + term->cursor_x];
 	acrylic_draw_rect_filled(win->x + term->wid.x + term->xpos + 1, win->y + term->wid.y + 23 + term->ypos,8,13,BLACK);
@@ -121,6 +135,10 @@ void QuTermFlush (QuTerminal *term, QuWindow* win) {
 }
 
 
+//**
+//*  Handle Key Events
+//**
+//---------------------------------------------------------
 void QuTermKeyEvent (QuWidget* wid, QuWindow *win, int code){
 	QuTerminal *term = (QuTerminal*)wid;
 	if (isascii(code)){
@@ -135,17 +153,29 @@ void QuTermKeyEvent (QuWidget* wid, QuWindow *win, int code){
 			QuTermFlush(term, win);
 			return;
 		}
+
+
 		char p[1];
 		memset(p,0,2);
 		QuConvertKeyToString(code, p);
+
+		if (code == KEY_CAPSLOCK || code == KEY_LSHIFT || code == KEY_RSHIFT)
+			return;
+
 		QuTermPrint(term, p[0], WHITE);
 		QuTermFlush(term, win);
 	}
 }
 
 
-
-
+/**
+ *  QuCreateTerminal -- Create a terminal widget 
+ *
+ * @param x -- X Coordinate relative to window coords system
+ * @param y -- Y Coordinate relative to window coords system
+ * @param w -- Width of the terminal widget
+ * @param h -- Height of the terminal widget
+ */
 QuTerminal * QuCreateTerminal (int x, int y, int w, int h) {
 	QuTerminal *term = (QuTerminal*)malloc(sizeof(QuTerminal));
 	term->wid.x = x;

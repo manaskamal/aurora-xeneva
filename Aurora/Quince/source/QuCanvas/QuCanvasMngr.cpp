@@ -55,7 +55,7 @@ uint32_t* QuCanvasCreate (uint16_t dest_pid) {
 void QuCanvasRelease (uint16_t dest_pid, QuWindow *win) {
 	uint32_t size = canvas_get_width() * canvas_get_height() * 32;
 	sys_unmap_sh_mem(dest_pid, (uint64_t)win->canvas, size);
-	//cursor_pos -= size;
+	cursor_pos -= size;
 }
 
 
@@ -75,40 +75,22 @@ void QuCanvasBlit (QuWindow* win,uint32_t *canvas, unsigned x, unsigned y, unsig
 	if (info->dirty) {
 		if (info->rect_count > 0) {
 			for (int k = 0; k < info->rect_count; k++) {
-				//for (int i=0; i < info->rect[k].w; i++) {
-				//	for (int j=0; j < info->rect[k].h; j++){
-				//		if (win->canvas[(info->rect[k].x + i) + (info->rect[k].y + j) * width] | 0x00000000){
-				//			uint32_t color = win->canvas[(info->rect[k].x + i) + (info->rect[k].y + j) * width];
-				//			uint32_t color_a = wallp[(info->rect[k].x + i) + (info->rect[k].y + j) * width];
-				//			lfb[(info->rect[k].x + i) + (info->rect[k].y + j) * width] =  alpha_blend(color_a, color); //win->canvas[(win->x + i) + (win->y + j) * width];	
-				//		}
-				//	}
-				//}
 				for (int i = 0; i < info->rect[k].h; i++) 
 					fastcpy (lfb + (info->rect[k].y + i) * width + info->rect[k].x,win->canvas + (info->rect[k].y + i) * width + info->rect[k].x, 
 					info->rect[k].w * 4);
-
-				//canvas_screen_update(info->rect[k].x, info->rect[k].y, info->rect[k].w, info->rect[k].h);
-				QuScreenRectAdd(info->rect[k].x, info->rect[k].y, info->rect[k].w, info->rect[k].h);
+				canvas_screen_update(info->rect[k].x, info->rect[k].y, info->rect[k].w, info->rect[k].h);
+				//QuScreenRectAdd(info->rect[k].x, info->rect[k].y, info->rect[k].w, info->rect[k].h);
 			}
+
+			info->rect_count = 0;
 #ifdef SW_CURSOR
 			QuMoveCursor(QuCursorGetNewX(), QuCursorGetNewY());
 #endif
-			info->rect_count = 0;
+
 		} else {
 			
-
-			//for (int i=0; i < win->width; i++) {
-			//	for (int j=0; j < win->height; j++){
-			//		if (win->canvas[(win->x + i) + (win->y + j) * width] | 0x00000000){
-			//			uint32_t color = win->canvas[(win->x + i) + (win->y + j) * width];
-			//			uint32_t color_a = wallp[(win->x + i) + (win->y + j) * width];
-			//			lfb[(win->x + i) + (win->y + j) * width] =  alpha_blend(color_a, color); //win->canvas[(win->x + i) + (win->y + j) * width];	
-			//		}
-			//	}
-			//}
 			for (int i = 0; i < win->height; i++) 
-					fastcpy (lfb + (win->y + i) * width + win->x,win->canvas + (win->y + i) * width + win->x, win->width * 4);
+				fastcpy (lfb + (win->y + i) * width + win->x,win->canvas + (win->y + i) * width + win->x, win->width * 4);
 
 			QuScreenRectAdd(win->x, win->y, win->width, win->height);
 		}
@@ -132,7 +114,6 @@ void QuCanvasBlit (QuWindow* win,uint32_t *canvas, unsigned x, unsigned y, unsig
 		QuChannelPut(&msg, id);*/
 		sys_kill(id,2);
 	}
-
 
 }
 
@@ -174,15 +155,6 @@ void QuCanvasUpdate (unsigned x, unsigned y, unsigned w, unsigned h) {
 
 
 void QuCanvasUpdateDirty() {
-	//if (QuStackGetRectCount() > 0) {
-	//	QuRect* r = (QuRect*)QuStackGetRect();
-	//	QuCanvasUpdate(r->x, r->y, r->w, r->h);
-	//	//canvas_screen_update (r->x, r->y, r->w, r->h)
-	//	free (r);
-	//	//if (!QuCanvasGetUpdateBit())
-	//	//QuCanvasSetUpdateBit(true);
-	//	canvas_screen_update (r->x, r->y, r->w, r->h);
-	//}
 	for (int i = 0; i < dirty_r_count; i++) {
 		QuCanvasUpdate(dirty_rect[i].x, dirty_rect[i].y, dirty_rect[i].w, dirty_rect[i].h);
 		QuScreenRectAdd(dirty_rect[i].x, dirty_rect[i].y, dirty_rect[i].w, dirty_rect[i].h);
@@ -198,6 +170,7 @@ void QuCanvasUpdateDirty() {
 	 return update_bit;
  }
 
+
  void QuCanvasUpdateAll () {
 	 uint32_t* lfb = (uint32_t*)0x0000600000000000;
 	uint32_t* fb = (uint32_t*)0xFFFFF00000000000;
@@ -206,18 +179,9 @@ void QuCanvasUpdateDirty() {
 	int height = canvas_get_height();
 	 for (int i = 0; i < QuWindowMngr_GetList()->pointer; i++) {
 		 QuWindow* win = (QuWindow*)QuListGetAt(QuWindowMngr_GetList(), i);
-		 //for (int i=0; i < win->width; i++) {
-			//	for (int j=0; j < win->height; j++){
-			//		if (win->canvas[(win->x + i) + (win->y + j) * width] | 0x00000000){
-			//			uint32_t color = win->canvas[(win->x + i) + (win->y + j) * width];
-			//			uint32_t color_a = wallp[(win->x + i) + (win->y + j) * width];
-			//			lfb[(win->x + i) + (win->y + j) * width] =  alpha_blend(color_a, color); //win->canvas[(win->x + i) + (win->y + j) * width];	
-			//		}
-			//	}
-			//}
-		 for (int i = 0; i < win->height; i++)
-			 fastcpy (lfb + (win->y + i) * width + win->x,win->canvas + (win->y + i) * width + win->x, win->width * 4);
-		QuScreenRectAdd(win->x, win->y, win->width, win->height);
+		 QuWindowInfo *info = (QuWindowInfo*)win->win_info_location;
+		 info->dirty = 1;
+		 info->rect_count = 0;
 	 }
  }
 

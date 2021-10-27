@@ -76,14 +76,14 @@ void QuPanelUpdate(int x, int y, int w, int h, bool move) {
 	 
 	QuWinInfo *info = (QuWinInfo*)QuGetWindow()->win_info_data;
 	info->dirty = 1;
-	/*if (!move){
-	info->rect[info->rect_count].x = x;
-	info->rect[info->rect_count].y = y;
-	info->rect[info->rect_count].w = w;
-	info->rect[info->rect_count].h = h;
-	info->rect_count += 1;
+	if (!move){
+		info->rect[info->rect_count].x = x;
+		info->rect[info->rect_count].y = y;
+		info->rect[info->rect_count].w = w;
+		info->rect[info->rect_count].h = h;
+		info->rect_count++;
 	}
-	if (move)*/
+	if (move)
 		info->rect_count = 0;
 }
 

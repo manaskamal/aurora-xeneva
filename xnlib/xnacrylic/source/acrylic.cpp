@@ -92,3 +92,4 @@ void acrylic_draw_arr_string (unsigned x, unsigned y, char *text, uint32_t color
 	for (; *text; x += 8)
 		acrylic_draw_arr_font(x, y, *(text)++, color);
 }
+
