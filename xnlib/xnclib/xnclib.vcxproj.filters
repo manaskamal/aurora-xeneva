@@ -96,6 +96,7 @@
       <Filter>sys</Filter>
     </ClInclude>
     <ClInclude Include="fastcpy.h" />
+    <ClInclude Include="setjmp.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="string.cpp" />

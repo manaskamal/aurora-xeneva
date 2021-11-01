@@ -29,6 +29,8 @@
 #include <acrylic.h>
 #include <string.h>
 #include <fastcpy.h>
+#include <QuEffect\QuBlur.h>
+#include <QuWidget\QuWallpaper.h>
 
 #define QU_CANVAS_START   0x0000100000000000
 
@@ -88,7 +90,6 @@ void QuCanvasBlit (QuWindow* win,uint32_t *canvas, unsigned x, unsigned y, unsig
 #endif
 
 		} else {
-			
 			for (int i = 0; i < win->height; i++) 
 				fastcpy (lfb + (win->y + i) * width + win->x,win->canvas + (win->y + i) * width + win->x, win->width * 4);
 

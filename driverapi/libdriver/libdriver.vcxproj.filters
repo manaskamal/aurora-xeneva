@@ -23,6 +23,6 @@
     <ClCompile Include="entry.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="callback.asm" />
+    <NASM Include="callback.asm" />
   </ItemGroup>
 </Project>

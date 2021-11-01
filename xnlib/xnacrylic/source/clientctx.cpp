@@ -11,6 +11,9 @@
 
 #include <clientctx.h>
 #include <canvas.h>
+#include <font.h>
+#include <color.h>
+#include <sys\_term.h>
 
 extern uint8_t font_array[] ;
 
@@ -38,6 +41,66 @@ void cc_draw_arr_string (uint32_t *canvas,unsigned x, unsigned y, char *text, ui
 	for (; *text; x += 8)
 		cc_draw_arr_font(canvas, x, y, *(text)++, color);
 }
+
+
+void cc_font_draw_string (uint32_t* canvas, char* string, int x, int y, uint32_t color) {
+	Font *font = acrylic_get_system_font();
+	int xoff = x;
+	int yoff = y;
+
+	while(*string) {
+		char c = *string++;
+
+		const uint8_t* charData = (uint8_t*)(font->data + font->offsetTable[(int)c - 32]);
+		const uint8_t width = charData[0];
+		const uint8_t height = charData[1];
+
+		for (uint8_t px = 0; px < width; px++) {
+			for (uint8_t py = 0; py < height; py++) {
+
+				uint8_t d = charData[py * width + px + 2];
+
+				/*if (d == 0)
+					continue;*/
+
+			//	if (d == 255)
+					//cc_draw_pixel (canvas,px + xoff, py + yoff, color);
+				/*else*/
+					cc_draw_pixel (canvas,px + xoff, py + yoff, alpha_blend(color,WHITE));
+				//}
+			}
+		}
+		xoff += width;
+	}
+}
+
+void cc_font_draw_char (uint32_t* canvas, char string, int x, int y, uint32_t color) {
+	Font *font = acrylic_get_system_font();
+	int xoff = x;
+	int yoff = y;
+
+
+	const uint8_t* charData = (uint8_t*)(font->data + font->offsetTable[(int)string - 32]);
+	const uint8_t width = charData[0];
+	const uint8_t height = charData[1];
+
+	for (uint8_t px = 0; px < width; px++) {
+		for (uint8_t py = 0; py < height; py++) {
+
+			uint8_t d = charData[py * width + px + 2];
+			
+			if (d == 0)
+				continue;
+          //  sys_print_text ("D Value -> %d\n", d);
+			/*if (d == 255)*/
+				cc_draw_pixel (canvas,px + xoff, py + yoff, color);
+			/*else*/
+				//cc_draw_pixel (canvas,px + xoff, py + yoff, alpha_blend(WHITE, color));
+				//}
+		}
+	}
+}
+
 
 
 

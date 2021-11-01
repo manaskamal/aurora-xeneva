@@ -19,6 +19,7 @@
 #include <sys\_sleep.h>
 #include <psf\psf.h>
 #include <acrylic.h>
+#include <font.h>
 
 #define QU_CHANNEL_ADDRESS   0xFFFFD00000000000  //Client Send address
 #define QU_CHANNEL_RECEIVER  0xFFFFFD0000000000  //Client receiver address
@@ -89,6 +90,7 @@ void QuRegisterApplication (char* title) {
 	canvas_set_address (QuCanvasAddress);
 	QuCreateWindow (win_def_x, win_def_y, win_def_w, win_def_h, info_data, title);
 	QuWindowSetCanvas (QuCanvasAddress);
+	acrylic_initialize_font();
 }
 
 

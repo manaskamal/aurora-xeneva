@@ -24,9 +24,13 @@ void QuSliderRefresh (QuWidget *wid, QuWindow *win) {
 		acrylic_draw_rect_unfilled (win->x + wid->x, win->y + wid->y, wid->width, wid->height, GRAY);
 
 		///!Progress
-		if (slider->progress != 0)
-			acrylic_draw_rect_filled (win->x + wid->x + 1, win->y + wid->y + slider->progress,
-			9,(win->y + wid->y + wid->height) - (win->y + wid->y + slider->progress),DESKBLUE );
+		if (slider->progress != 0) {
+			/*acrylic_draw_rect_filled (win->x + wid->x + 1, win->y + wid->y + slider->progress,
+			9,(win->y + wid->y + wid->height) - (win->y + wid->y + slider->progress),DESKBLUE );*/
+			linear_gradient (win->x + wid->x + 1, win->y + wid->y + slider->progress,9,
+				(win->y + wid->y + wid->height) - (win->y + wid->y + slider->progress), 
+				PALEGREEN, GREEN);
+		}
 
 		///!Slider Thumb
 		acrylic_draw_rect_filled (win->x + wid->x,   //X
@@ -44,9 +48,13 @@ void QuSliderRefresh (QuWidget *wid, QuWindow *win) {
 		acrylic_draw_rect_unfilled (win->x + wid->x, win->y + wid->y, wid->width, wid->height, GRAY);
 
 		///!Progress
-		if (slider->progress != 0)
-			acrylic_draw_rect_filled (win->x + wid->x, win->y + wid->y + 1,
-			(win->x + wid->x + slider->progress) - (win->x + wid->x),9, DESKBLUE );
+		if (slider->progress != 0){
+		/*	acrylic_draw_rect_filled (win->x + wid->x, win->y + wid->y + 1,
+			(win->x + wid->x + slider->progress) - (win->x + wid->x),9, DESKBLUE );*/
+			linear_gradient (win->x + wid->x, win->y + wid->y + 1,(win->x + wid->x + slider->progress) - (win->x + wid->x),
+				9,PALEGREEN, GREEN);
+
+		}
 
 		///!Slider Thumb
 		acrylic_draw_rect_filled (win->x + wid->x + slider->thumb_x,   //X

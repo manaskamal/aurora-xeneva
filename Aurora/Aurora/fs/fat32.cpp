@@ -346,7 +346,6 @@ vfs_node_t fat32_open (vfs_node_t * node, char* filename) {
 	//! any '\'s in path ?
 	p = strchr (path, '/');
 	if (!p) {
-
 		//! nope, must be in root directory, search it
 		cur_dir = fat32_locate_dir (path);
 
@@ -358,6 +357,7 @@ vfs_node_t fat32_open (vfs_node_t * node, char* filename) {
 		//! unable to find
 		vfs_node_t ret;
 		ret.flags = FS_FLAG_INVALID;
+		ret.size = 0;
 		return ret;
 	}
 
@@ -396,8 +396,9 @@ vfs_node_t fat32_open (vfs_node_t * node, char* filename) {
 			break;
 
 		//! found file?
-		if (cur_dir.flags == FS_FLAG_GENERAL)
+		if (cur_dir.flags == FS_FLAG_GENERAL){
 			return cur_dir;
+		}
 
 		//! find next '\'
 		p=strchr(p+1, '/');
@@ -408,6 +409,7 @@ vfs_node_t fat32_open (vfs_node_t * node, char* filename) {
 	//! unable to find
 	vfs_node_t ret;
 	ret.flags = FS_FLAG_INVALID;
+	ret.size = 0;
 	return ret;
 }
 

@@ -88,7 +88,7 @@ $pdata$?initialize_fat32@@YAXXZ DD imagerel $LN9
 	DD	imagerel $LN9+321
 	DD	imagerel $unwind$?initialize_fat32@@YAXXZ
 $pdata$?fat32_open@@YA?AU_vfs_node_@@PEAU1@PEAD@Z DD imagerel $LN17
-	DD	imagerel $LN17+720
+	DD	imagerel $LN17+742
 	DD	imagerel $unwind$?fat32_open@@YA?AU_vfs_node_@@PEAU1@PEAD@Z
 $pdata$?fat32_read_file@@YAXPEAU_vfs_node_@@PEAEI@Z DD imagerel $LN7
 	DD	imagerel $LN7+101
@@ -211,7 +211,7 @@ first_cluster$ = 88
 length$ = 96
 ?fat32_write_content@@YAXPEAEII@Z PROC			; fat32_write_content
 
-; 567  : void fat32_write_content (uint8_t *buffer, uint32_t first_cluster, unsigned int length) {
+; 569  : void fat32_write_content (uint8_t *buffer, uint32_t first_cluster, unsigned int length) {
 
 $LN15:
 	mov	DWORD PTR [rsp+24], r8d
@@ -219,22 +219,22 @@ $LN15:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 72					; 00000048H
 
-; 568  : 	bool parse_fat = false;
+; 570  : 	bool parse_fat = false;
 
 	mov	BYTE PTR parse_fat$[rsp], 0
 
-; 569  : 	uint32_t num_cluster = 0;
+; 571  : 	uint32_t num_cluster = 0;
 
 	mov	DWORD PTR num_cluster$[rsp], 0
 
-; 570  : 	uint32_t sector_first = cluster_to_sector32 (first_cluster);
+; 572  : 	uint32_t sector_first = cluster_to_sector32 (first_cluster);
 
 	mov	eax, DWORD PTR first_cluster$[rsp]
 	mov	ecx, eax
 	call	?cluster_to_sector32@@YA_K_K@Z		; cluster_to_sector32
 	mov	DWORD PTR sector_first$[rsp], eax
 
-; 571  : 	for (int i = 0; i < sectors_per_cluster; i++) {
+; 573  : 	for (int i = 0; i < sectors_per_cluster; i++) {
 
 	mov	DWORD PTR i$1[rsp], 0
 	jmp	SHORT $LN12@fat32_writ
@@ -247,7 +247,7 @@ $LN12@fat32_writ:
 	cmp	DWORD PTR i$1[rsp], eax
 	jge	SHORT $LN10@fat32_writ
 
-; 572  : 		ata_write_one (buffer + (i * 512), sector_first + i);
+; 574  : 		ata_write_one (buffer + (i * 512), sector_first + i);
 
 	mov	eax, DWORD PTR i$1[rsp]
 	mov	ecx, DWORD PTR sector_first$[rsp]
@@ -262,28 +262,28 @@ $LN12@fat32_writ:
 	mov	edx, eax
 	call	?ata_write_one@@YAEPEAEI@Z		; ata_write_one
 
-; 573  : 	}
+; 575  : 	}
 
 	jmp	SHORT $LN11@fat32_writ
 $LN10@fat32_writ:
 
-; 574  : 	buffer += 4096;
+; 576  : 	buffer += 4096;
 
 	mov	rax, QWORD PTR buffer$[rsp]
 	add	rax, 4096				; 00001000H
 	mov	QWORD PTR buffer$[rsp], rax
 
-; 575  : 
-; 576  : 	if (length > 4096) {
+; 577  : 
+; 578  : 	if (length > 4096) {
 
 	cmp	DWORD PTR length$[rsp], 4096		; 00001000H
 	jbe	SHORT $LN9@fat32_writ
 
-; 577  : 		parse_fat = true;
+; 579  : 		parse_fat = true;
 
 	mov	BYTE PTR parse_fat$[rsp], 1
 
-; 578  : 		num_cluster = length / 4096;
+; 580  : 		num_cluster = length / 4096;
 
 	xor	edx, edx
 	mov	eax, DWORD PTR length$[rsp]
@@ -292,15 +292,15 @@ $LN10@fat32_writ:
 	mov	DWORD PTR num_cluster$[rsp], eax
 $LN9@fat32_writ:
 
-; 579  : 	}
-; 580  : 
-; 581  : 	if (parse_fat) {
+; 581  : 	}
+; 582  : 
+; 583  : 	if (parse_fat) {
 
 	movzx	eax, BYTE PTR parse_fat$[rsp]
 	test	eax, eax
 	je	$LN8@fat32_writ
 
-; 582  : 		for (int k = 0; k < num_cluster; k++) {
+; 584  : 		for (int k = 0; k < num_cluster; k++) {
 
 	mov	DWORD PTR k$3[rsp], 0
 	jmp	SHORT $LN7@fat32_writ
@@ -313,30 +313,30 @@ $LN7@fat32_writ:
 	cmp	DWORD PTR k$3[rsp], eax
 	jae	$LN5@fat32_writ
 
-; 583  : 			uint32_t cluster_value = get_cluster (first_cluster);
+; 585  : 			uint32_t cluster_value = get_cluster (first_cluster);
 
 	mov	ecx, DWORD PTR first_cluster$[rsp]
 	call	?get_cluster@@YAII@Z			; get_cluster
 	mov	DWORD PTR cluster_value$4[rsp], eax
 
-; 584  : 			if (cluster_value >= 0x0FFFFFF8)
+; 586  : 			if (cluster_value >= 0x0FFFFFF8)
 
 	cmp	DWORD PTR cluster_value$4[rsp], 268435448 ; 0ffffff8H
 	jb	SHORT $LN4@fat32_writ
 
-; 585  : 				return;
+; 587  : 				return;
 
 	jmp	SHORT $LN13@fat32_writ
 $LN4@fat32_writ:
 
-; 586  : 			uint32_t sector = cluster_to_sector32 (cluster_value);
+; 588  : 			uint32_t sector = cluster_to_sector32 (cluster_value);
 
 	mov	eax, DWORD PTR cluster_value$4[rsp]
 	mov	ecx, eax
 	call	?cluster_to_sector32@@YA_K_K@Z		; cluster_to_sector32
 	mov	DWORD PTR sector$5[rsp], eax
 
-; 587  : 			for (int i = 0; i < sectors_per_cluster; i++) {
+; 589  : 			for (int i = 0; i < sectors_per_cluster; i++) {
 
 	mov	DWORD PTR i$2[rsp], 0
 	jmp	SHORT $LN3@fat32_writ
@@ -349,7 +349,7 @@ $LN3@fat32_writ:
 	cmp	DWORD PTR i$2[rsp], eax
 	jge	SHORT $LN1@fat32_writ
 
-; 588  : 				ata_write_one (buffer + (i * 512), sector + i);
+; 590  : 				ata_write_one (buffer + (i * 512), sector + i);
 
 	mov	eax, DWORD PTR i$2[rsp]
 	mov	ecx, DWORD PTR sector$5[rsp]
@@ -364,31 +364,31 @@ $LN3@fat32_writ:
 	mov	edx, eax
 	call	?ata_write_one@@YAEPEAEI@Z		; ata_write_one
 
-; 589  : 			}
+; 591  : 			}
 
 	jmp	SHORT $LN2@fat32_writ
 $LN1@fat32_writ:
 
-; 590  : 			buffer += 4096;
+; 592  : 			buffer += 4096;
 
 	mov	rax, QWORD PTR buffer$[rsp]
 	add	rax, 4096				; 00001000H
 	mov	QWORD PTR buffer$[rsp], rax
 
-; 591  : 			first_cluster = cluster_value;
+; 593  : 			first_cluster = cluster_value;
 
 	mov	eax, DWORD PTR cluster_value$4[rsp]
 	mov	DWORD PTR first_cluster$[rsp], eax
 
-; 592  : 		}
+; 594  : 		}
 
 	jmp	$LN6@fat32_writ
 $LN5@fat32_writ:
 $LN8@fat32_writ:
 $LN13@fat32_writ:
 
-; 593  : 	}
-; 594  : }
+; 595  : 	}
+; 596  : }
 
 	add	rsp, 72					; 00000048H
 	ret	0
@@ -405,7 +405,7 @@ ext$ = 56
 filename$ = 64
 ?format_fat83_32@@YAXPEADQEAD0@Z PROC			; format_fat83_32
 
-; 510  : {
+; 512  : {
 
 $LN8:
 	mov	QWORD PTR [rsp+24], r8
@@ -413,25 +413,25 @@ $LN8:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 40					; 00000028H
 
-; 511  : 	char *p;
-; 512  : 	char *f = filename;
+; 513  : 	char *p;
+; 514  : 	char *f = filename;
 
 	mov	rax, QWORD PTR filename$[rsp]
 	mov	QWORD PTR f$[rsp], rax
 
-; 513  : 	int i;
-; 514  : 
-; 515  : 	p = string_to_format;
+; 515  : 	int i;
+; 516  : 
+; 517  : 	p = string_to_format;
 
 	mov	rax, QWORD PTR string_to_format$[rsp]
 	mov	QWORD PTR p$[rsp], rax
 
-; 516  : 	i = 8;
+; 518  : 	i = 8;
 
 	mov	DWORD PTR i$[rsp], 8
 $LN5@format_fat:
 
-; 517  : 	while ((*p != 0x20) && i)
+; 519  : 	while ((*p != 0x20) && i)
 
 	mov	rax, QWORD PTR p$[rsp]
 	movsx	eax, BYTE PTR [rax]
@@ -440,8 +440,8 @@ $LN5@format_fat:
 	cmp	DWORD PTR i$[rsp], 0
 	je	SHORT $LN4@format_fat
 
-; 518  : 	{
-; 519  : 		*f++ = *p++;
+; 520  : 	{
+; 521  : 		*f++ = *p++;
 
 	mov	rax, QWORD PTR f$[rsp]
 	mov	rcx, QWORD PTR p$[rsp]
@@ -454,19 +454,19 @@ $LN5@format_fat:
 	inc	rax
 	mov	QWORD PTR p$[rsp], rax
 
-; 520  : 		i--;
+; 522  : 		i--;
 
 	mov	eax, DWORD PTR i$[rsp]
 	dec	eax
 	mov	DWORD PTR i$[rsp], eax
 
-; 521  : 	}
+; 523  : 	}
 
 	jmp	SHORT $LN5@format_fat
 $LN4@format_fat:
 
-; 522  : 
-; 523  : 	*f++ = '.';
+; 524  : 
+; 525  : 	*f++ = '.';
 
 	mov	rax, QWORD PTR f$[rsp]
 	mov	BYTE PTR [rax], 46			; 0000002eH
@@ -474,18 +474,18 @@ $LN4@format_fat:
 	inc	rax
 	mov	QWORD PTR f$[rsp], rax
 
-; 524  : 
-; 525  : 	p = (char*)ext;
+; 526  : 
+; 527  : 	p = (char*)ext;
 
 	mov	rax, QWORD PTR ext$[rsp]
 	mov	QWORD PTR p$[rsp], rax
 
-; 526  : 	i = 3;
+; 528  : 	i = 3;
 
 	mov	DWORD PTR i$[rsp], 3
 $LN3@format_fat:
 
-; 527  : 	while ((*p != 0x20) && i)
+; 529  : 	while ((*p != 0x20) && i)
 
 	mov	rax, QWORD PTR p$[rsp]
 	movsx	eax, BYTE PTR [rax]
@@ -494,8 +494,8 @@ $LN3@format_fat:
 	cmp	DWORD PTR i$[rsp], 0
 	je	SHORT $LN2@format_fat
 
-; 528  : 	{
-; 529  : 		*f++ = *p++;
+; 530  : 	{
+; 531  : 		*f++ = *p++;
 
 	mov	rax, QWORD PTR f$[rsp]
 	mov	rcx, QWORD PTR p$[rsp]
@@ -508,32 +508,32 @@ $LN3@format_fat:
 	inc	rax
 	mov	QWORD PTR p$[rsp], rax
 
-; 530  : 		i--;
+; 532  : 		i--;
 
 	mov	eax, DWORD PTR i$[rsp]
 	dec	eax
 	mov	DWORD PTR i$[rsp], eax
 
-; 531  : 	}
+; 533  : 	}
 
 	jmp	SHORT $LN3@format_fat
 $LN2@format_fat:
 
-; 532  : 
-; 533  : 	if (i == 3)
+; 534  : 
+; 535  : 	if (i == 3)
 
 	cmp	DWORD PTR i$[rsp], 3
 	jne	SHORT $LN1@format_fat
 
-; 534  : 		f--;
+; 536  : 		f--;
 
 	mov	rax, QWORD PTR f$[rsp]
 	dec	rax
 	mov	QWORD PTR f$[rsp], rax
 $LN1@format_fat:
 
-; 535  : 
-; 536  : 	*f++ = '\0';
+; 537  : 
+; 538  : 	*f++ = '\0';
 
 	mov	rax, QWORD PTR f$[rsp]
 	mov	BYTE PTR [rax], 0
@@ -541,7 +541,7 @@ $LN1@format_fat:
 	inc	rax
 	mov	QWORD PTR f$[rsp], rax
 
-; 537  : }
+; 539  : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -558,19 +558,19 @@ ent_offset$ = 56
 cluster$ = 80
 ?get_cluster@@YAII@Z PROC				; get_cluster
 
-; 498  : uint32_t get_cluster (uint32_t cluster) {
+; 500  : uint32_t get_cluster (uint32_t cluster) {
 
 $LN3:
 	mov	DWORD PTR [rsp+8], ecx
 	sub	rsp, 72					; 00000048H
 
-; 499  : 	auto fat_offset = cluster * 4;
+; 501  : 	auto fat_offset = cluster * 4;
 
 	mov	eax, DWORD PTR cluster$[rsp]
 	shl	eax, 2
 	mov	DWORD PTR fat_offset$[rsp], eax
 
-; 500  : 	uint64_t fat_sector = fat_begin_lba + (fat_offset / 512);
+; 502  : 	uint64_t fat_sector = fat_begin_lba + (fat_offset / 512);
 
 	xor	edx, edx
 	mov	eax, DWORD PTR fat_offset$[rsp]
@@ -582,7 +582,7 @@ $LN3:
 	mov	eax, eax
 	mov	QWORD PTR fat_sector$[rsp], rax
 
-; 501  : 	size_t ent_offset = fat_offset  % 512;
+; 503  : 	size_t ent_offset = fat_offset  % 512;
 
 	xor	edx, edx
 	mov	eax, DWORD PTR fat_offset$[rsp]
@@ -592,20 +592,20 @@ $LN3:
 	mov	eax, eax
 	mov	QWORD PTR ent_offset$[rsp], rax
 
-; 502  : 	unsigned char *buf = (unsigned char*)malloc(512);
+; 504  : 	unsigned char *buf = (unsigned char*)malloc(512);
 
 	mov	ecx, 512				; 00000200H
 	call	?malloc@@YAPEAXI@Z			; malloc
 	mov	QWORD PTR buf$[rsp], rax
 
-; 503  : 	ata_read_28 (fat_sector,1,buf);
+; 505  : 	ata_read_28 (fat_sector,1,buf);
 
 	mov	r8, QWORD PTR buf$[rsp]
 	mov	dx, 1
 	mov	ecx, DWORD PTR fat_sector$[rsp]
 	call	?ata_read_28@@YAEIGPEAE@Z		; ata_read_28
 
-; 504  : 	uint32_t value = *(uint32_t*)&buf[ent_offset];		
+; 506  : 	uint32_t value = *(uint32_t*)&buf[ent_offset];		
 
 	mov	rax, QWORD PTR ent_offset$[rsp]
 	mov	rcx, QWORD PTR buf$[rsp]
@@ -614,11 +614,11 @@ $LN3:
 	mov	eax, DWORD PTR [rax]
 	mov	DWORD PTR value$[rsp], eax
 
-; 505  : 	return value;
+; 507  : 	return value;
 
 	mov	eax, DWORD PTR value$[rsp]
 
-; 506  : }
+; 508  : }
 
 	add	rsp, 72					; 00000048H
 	ret	0
@@ -635,19 +635,19 @@ ent_offset$ = 56
 new_cluster$ = 80
 ?find_cluster@@YAII@Z PROC				; find_cluster
 
-; 487  : uint32_t find_cluster (uint32_t new_cluster) {
+; 489  : uint32_t find_cluster (uint32_t new_cluster) {
 
 $LN3:
 	mov	DWORD PTR [rsp+8], ecx
 	sub	rsp, 72					; 00000048H
 
-; 488  : 	auto fat_offset = new_cluster * 4;
+; 490  : 	auto fat_offset = new_cluster * 4;
 
 	mov	eax, DWORD PTR new_cluster$[rsp]
 	shl	eax, 2
 	mov	DWORD PTR fat_offset$[rsp], eax
 
-; 489  : 	uint64_t fat_sector = fat_begin_lba + (fat_offset / 512);
+; 491  : 	uint64_t fat_sector = fat_begin_lba + (fat_offset / 512);
 
 	xor	edx, edx
 	mov	eax, DWORD PTR fat_offset$[rsp]
@@ -659,7 +659,7 @@ $LN3:
 	mov	eax, eax
 	mov	QWORD PTR fat_sector$[rsp], rax
 
-; 490  : 	size_t ent_offset = fat_offset  % 512;
+; 492  : 	size_t ent_offset = fat_offset  % 512;
 
 	xor	edx, edx
 	mov	eax, DWORD PTR fat_offset$[rsp]
@@ -669,20 +669,20 @@ $LN3:
 	mov	eax, eax
 	mov	QWORD PTR ent_offset$[rsp], rax
 
-; 491  : 	unsigned char *buf = (unsigned char*)malloc(512);
+; 493  : 	unsigned char *buf = (unsigned char*)malloc(512);
 
 	mov	ecx, 512				; 00000200H
 	call	?malloc@@YAPEAXI@Z			; malloc
 	mov	QWORD PTR buf$[rsp], rax
 
-; 492  : 	ata_read_28 (fat_sector,1,buf);
+; 494  : 	ata_read_28 (fat_sector,1,buf);
 
 	mov	r8, QWORD PTR buf$[rsp]
 	mov	dx, 1
 	mov	ecx, DWORD PTR fat_sector$[rsp]
 	call	?ata_read_28@@YAEIGPEAE@Z		; ata_read_28
 
-; 493  : 	uint32_t value = *(uint32_t*)&buf[ent_offset];		
+; 495  : 	uint32_t value = *(uint32_t*)&buf[ent_offset];		
 
 	mov	rax, QWORD PTR ent_offset$[rsp]
 	mov	rcx, QWORD PTR buf$[rsp]
@@ -691,11 +691,11 @@ $LN3:
 	mov	eax, DWORD PTR [rax]
 	mov	DWORD PTR value$[rsp], eax
 
-; 494  : 	return value;
+; 496  : 	return value;
 
 	mov	eax, DWORD PTR value$[rsp]
 
-; 495  : }
+; 497  : }
 
 	add	rsp, 72					; 00000048H
 	ret	0
@@ -714,20 +714,20 @@ position$ = 96
 n_value$ = 104
 ?alloc_cluster@@YAIHI@Z PROC				; alloc_cluster
 
-; 471  : uint32_t alloc_cluster (int position, uint32_t n_value) {
+; 473  : uint32_t alloc_cluster (int position, uint32_t n_value) {
 
 $LN3:
 	mov	DWORD PTR [rsp+16], edx
 	mov	DWORD PTR [rsp+8], ecx
 	sub	rsp, 88					; 00000058H
 
-; 472  : 	auto fat_offset = position * 4;
+; 474  : 	auto fat_offset = position * 4;
 
 	mov	eax, DWORD PTR position$[rsp]
 	shl	eax, 2
 	mov	DWORD PTR fat_offset$[rsp], eax
 
-; 473  : 	uint64_t fat_sector = fat_begin_lba + (fat_offset / 512);
+; 475  : 	uint64_t fat_sector = fat_begin_lba + (fat_offset / 512);
 
 	mov	eax, DWORD PTR fat_offset$[rsp]
 	cdq
@@ -740,7 +740,7 @@ $LN3:
 	mov	eax, eax
 	mov	QWORD PTR fat_sector$[rsp], rax
 
-; 474  : 	size_t ent_offset = fat_offset  % 512;
+; 476  : 	size_t ent_offset = fat_offset  % 512;
 
 	mov	eax, DWORD PTR fat_offset$[rsp]
 	cdq
@@ -751,20 +751,20 @@ $LN3:
 	cdqe
 	mov	QWORD PTR ent_offset$[rsp], rax
 
-; 475  : 	unsigned char *buf = (unsigned char*)malloc(512);
+; 477  : 	unsigned char *buf = (unsigned char*)malloc(512);
 
 	mov	ecx, 512				; 00000200H
 	call	?malloc@@YAPEAXI@Z			; malloc
 	mov	QWORD PTR buf$[rsp], rax
 
-; 476  : 	ata_read_28 (fat_sector,1,buf);
+; 478  : 	ata_read_28 (fat_sector,1,buf);
 
 	mov	r8, QWORD PTR buf$[rsp]
 	mov	dx, 1
 	mov	ecx, DWORD PTR fat_sector$[rsp]
 	call	?ata_read_28@@YAEIGPEAE@Z		; ata_read_28
 
-; 477  : 	uint32_t value = *(uint32_t*)&buf[ent_offset];
+; 479  : 	uint32_t value = *(uint32_t*)&buf[ent_offset];
 
 	mov	rax, QWORD PTR ent_offset$[rsp]
 	mov	rcx, QWORD PTR buf$[rsp]
@@ -773,8 +773,8 @@ $LN3:
 	mov	eax, DWORD PTR [rax]
 	mov	DWORD PTR value$[rsp], eax
 
-; 478  : 		
-; 479  : 	*(uint32_t*)&buf[ent_offset] = n_value;// & 0x0FFFFFFF;
+; 480  : 		
+; 481  : 	*(uint32_t*)&buf[ent_offset] = n_value;// & 0x0FFFFFFF;
 
 	mov	rax, QWORD PTR ent_offset$[rsp]
 	mov	rcx, QWORD PTR buf$[rsp]
@@ -783,13 +783,13 @@ $LN3:
 	mov	ecx, DWORD PTR n_value$[rsp]
 	mov	DWORD PTR [rax], ecx
 
-; 480  : 	ata_write_one (buf,fat_sector);
+; 482  : 	ata_write_one (buf,fat_sector);
 
 	mov	edx, DWORD PTR fat_sector$[rsp]
 	mov	rcx, QWORD PTR buf$[rsp]
 	call	?ata_write_one@@YAEPEAEI@Z		; ata_write_one
 
-; 481  : 	uint32_t value2 = *(uint32_t*)&buf[ent_offset];
+; 483  : 	uint32_t value2 = *(uint32_t*)&buf[ent_offset];
 
 	mov	rax, QWORD PTR ent_offset$[rsp]
 	mov	rcx, QWORD PTR buf$[rsp]
@@ -798,11 +798,11 @@ $LN3:
 	mov	eax, DWORD PTR [rax]
 	mov	DWORD PTR value2$[rsp], eax
 
-; 482  : 	return value2;
+; 484  : 	return value2;
 
 	mov	eax, DWORD PTR value2$[rsp]
 
-; 483  : }
+; 485  : }
 
 	add	rsp, 88					; 00000058H
 	ret	0
@@ -819,13 +819,13 @@ fat_sector$5 = 56
 ent_offset$6 = 64
 ?find_free_cluster@@YAIXZ PROC				; find_free_cluster
 
-; 451  : uint32_t find_free_cluster () {
+; 453  : uint32_t find_free_cluster () {
 
 $LN7:
 	sub	rsp, 88					; 00000058H
 
-; 452  : 	//!iterate through every sectors in fat32 table
-; 453  : 	for (int i = 2; i < total_clusters; i++) {
+; 454  : 	//!iterate through every sectors in fat32 table
+; 455  : 	for (int i = 2; i < total_clusters; i++) {
 
 	mov	DWORD PTR i$1[rsp], 2
 	jmp	SHORT $LN4@find_free_
@@ -838,13 +838,13 @@ $LN4@find_free_:
 	cmp	DWORD PTR i$1[rsp], eax
 	jae	$LN2@find_free_
 
-; 454  : 		auto fat_offset = i * 4;
+; 456  : 		auto fat_offset = i * 4;
 
 	mov	eax, DWORD PTR i$1[rsp]
 	shl	eax, 2
 	mov	DWORD PTR fat_offset$2[rsp], eax
 
-; 455  : 		uint64_t fat_sector = fat_begin_lba + (fat_offset / 512);
+; 457  : 		uint64_t fat_sector = fat_begin_lba + (fat_offset / 512);
 
 	mov	eax, DWORD PTR fat_offset$2[rsp]
 	cdq
@@ -857,7 +857,7 @@ $LN4@find_free_:
 	mov	eax, eax
 	mov	QWORD PTR fat_sector$5[rsp], rax
 
-; 456  : 		size_t ent_offset = fat_offset  % 512;
+; 458  : 		size_t ent_offset = fat_offset  % 512;
 
 	mov	eax, DWORD PTR fat_offset$2[rsp]
 	cdq
@@ -868,20 +868,20 @@ $LN4@find_free_:
 	cdqe
 	mov	QWORD PTR ent_offset$6[rsp], rax
 
-; 457  : 		unsigned char *buf = (unsigned char*)malloc(512);
+; 459  : 		unsigned char *buf = (unsigned char*)malloc(512);
 
 	mov	ecx, 512				; 00000200H
 	call	?malloc@@YAPEAXI@Z			; malloc
 	mov	QWORD PTR buf$4[rsp], rax
 
-; 458  : 		ata_read_28 (fat_sector,1,buf);
+; 460  : 		ata_read_28 (fat_sector,1,buf);
 
 	mov	r8, QWORD PTR buf$4[rsp]
 	mov	dx, 1
 	mov	ecx, DWORD PTR fat_sector$5[rsp]
 	call	?ata_read_28@@YAEIGPEAE@Z		; ata_read_28
 
-; 459  : 		uint32_t value = *(uint32_t*)&buf[ent_offset];
+; 461  : 		uint32_t value = *(uint32_t*)&buf[ent_offset];
 
 	mov	rax, QWORD PTR ent_offset$6[rsp]
 	mov	rcx, QWORD PTR buf$4[rsp]
@@ -890,32 +890,32 @@ $LN4@find_free_:
 	mov	eax, DWORD PTR [rax]
 	mov	DWORD PTR value$3[rsp], eax
 
-; 460  : 		
-; 461  : 		//! Found a free cluster return the value
-; 462  : 		if (value == 0x0) {
+; 462  : 		
+; 463  : 		//! Found a free cluster return the value
+; 464  : 		if (value == 0x0) {
 
 	cmp	DWORD PTR value$3[rsp], 0
 	jne	SHORT $LN1@find_free_
 
-; 463  : 			return i;
+; 465  : 			return i;
 
 	mov	eax, DWORD PTR i$1[rsp]
 	jmp	SHORT $LN5@find_free_
 $LN1@find_free_:
 
-; 464  : 		}
-; 465  : 	}
+; 466  : 		}
+; 467  : 	}
 
 	jmp	$LN3@find_free_
 $LN2@find_free_:
 
-; 466  : 
-; 467  : 	return 0;
+; 468  : 
+; 469  : 	return 0;
 
 	xor	eax, eax
 $LN5@find_free_:
 
-; 468  : }
+; 470  : }
 
 	add	rsp, 88					; 00000058H
 	ret	0
@@ -930,32 +930,32 @@ buffer$ = 40
 cluster$ = 64
 ?clear_cluster@@YAXI@Z PROC				; clear_cluster
 
-; 438  : static void clear_cluster (uint32_t cluster) {
+; 440  : static void clear_cluster (uint32_t cluster) {
 
 	mov	DWORD PTR [rsp+8], ecx
 	sub	rsp, 56					; 00000038H
 
-; 439  : 	uint8_t *buffer = (uint8_t*)pmmngr_alloc();
+; 441  : 	uint8_t *buffer = (uint8_t*)pmmngr_alloc();
 
 	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
 	mov	QWORD PTR buffer$[rsp], rax
 
-; 440  : 	memset (buffer, 0, 4096);
+; 442  : 	memset (buffer, 0, 4096);
 
 	mov	r8d, 4096				; 00001000H
 	xor	edx, edx
 	mov	rcx, QWORD PTR buffer$[rsp]
 	call	?memset@@YAXPEAXEI@Z			; memset
 
-; 441  : 	//update_cluster (buffer,cluster);
-; 442  : 	uint32_t sector = cluster_to_sector32 (cluster);
+; 443  : 	//update_cluster (buffer,cluster);
+; 444  : 	uint32_t sector = cluster_to_sector32 (cluster);
 
 	mov	eax, DWORD PTR cluster$[rsp]
 	mov	ecx, eax
 	call	?cluster_to_sector32@@YA_K_K@Z		; cluster_to_sector32
 	mov	DWORD PTR sector$[rsp], eax
 
-; 443  : 	for (int i = 0; i < sectors_per_cluster; i++) {
+; 445  : 	for (int i = 0; i < sectors_per_cluster; i++) {
 
 	mov	DWORD PTR i$1[rsp], 0
 	jmp	SHORT $LN3@clear_clus
@@ -968,7 +968,7 @@ $LN3@clear_clus:
 	cmp	DWORD PTR i$1[rsp], eax
 	jge	SHORT $LN1@clear_clus
 
-; 444  : 		ata_write_one(buffer + (i*512),sector + i);
+; 446  : 		ata_write_one(buffer + (i*512),sector + i);
 
 	mov	eax, DWORD PTR i$1[rsp]
 	mov	ecx, DWORD PTR sector$[rsp]
@@ -983,17 +983,17 @@ $LN3@clear_clus:
 	mov	edx, eax
 	call	?ata_write_one@@YAEPEAEI@Z		; ata_write_one
 
-; 445  : 	}
+; 447  : 	}
 
 	jmp	SHORT $LN2@clear_clus
 $LN1@clear_clus:
 
-; 446  : 	pmmngr_free (buffer);
+; 448  : 	pmmngr_free (buffer);
 
 	mov	rcx, QWORD PTR buffer$[rsp]
 	call	?pmmngr_free@@YAXPEAX@Z			; pmmngr_free
 
-; 447  : }
+; 449  : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -1838,94 +1838,94 @@ _TEXT	SEGMENT
 fsys$ = 32
 ?fat32_self_register@@YAXXZ PROC			; fat32_self_register
 
-; 769  : void fat32_self_register () {
+; 771  : void fat32_self_register () {
 
 $LN3:
 	sub	rsp, 56					; 00000038H
 
-; 770  : 	vfs_node_t *fsys = (vfs_node_t*)malloc(sizeof(vfs_node_t));
+; 772  : 	vfs_node_t *fsys = (vfs_node_t*)malloc(sizeof(vfs_node_t));
 
 	mov	ecx, 96					; 00000060H
 	call	?malloc@@YAPEAXI@Z			; malloc
 	mov	QWORD PTR fsys$[rsp], rax
 
-; 771  : 	strcpy (fsys->filename, "/");
+; 773  : 	strcpy (fsys->filename, "/");
 
 	mov	rax, QWORD PTR fsys$[rsp]
 	lea	rdx, OFFSET FLAT:$SG3569
 	mov	rcx, rax
 	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
 
-; 772  : 	fsys->size = 0;
+; 774  : 	fsys->size = 0;
 
 	mov	rax, QWORD PTR fsys$[rsp]
 	mov	DWORD PTR [rax+32], 0
 
-; 773  : 	fsys->eof = 0;
+; 775  : 	fsys->eof = 0;
 
 	mov	rax, QWORD PTR fsys$[rsp]
 	mov	DWORD PTR [rax+36], 0
 
-; 774  : 	fsys->pos = 0;
+; 776  : 	fsys->pos = 0;
 
 	mov	rax, QWORD PTR fsys$[rsp]
 	mov	DWORD PTR [rax+40], 0
 
-; 775  : 	fsys->current = 0;
+; 777  : 	fsys->current = 0;
 
 	mov	rax, QWORD PTR fsys$[rsp]
 	mov	DWORD PTR [rax+44], 0
 
-; 776  : 	fsys->flags = FS_FLAG_DIRECTORY;
+; 778  : 	fsys->flags = FS_FLAG_DIRECTORY;
 
 	mov	rax, QWORD PTR fsys$[rsp]
 	mov	DWORD PTR [rax+48], 1
 
-; 777  : 	fsys->status = 0;
+; 779  : 	fsys->status = 0;
 
 	mov	rax, QWORD PTR fsys$[rsp]
 	mov	DWORD PTR [rax+52], 0
 
-; 778  : 	fsys->open = fat32_open;
+; 780  : 	fsys->open = fat32_open;
 
 	mov	rax, QWORD PTR fsys$[rsp]
 	lea	rcx, OFFSET FLAT:?fat32_open@@YA?AU_vfs_node_@@PEAU1@PEAD@Z ; fat32_open
 	mov	QWORD PTR [rax+56], rcx
 
-; 779  : 	fsys->read = fat32_read_file;
+; 781  : 	fsys->read = fat32_read_file;
 
 	mov	rax, QWORD PTR fsys$[rsp]
 	lea	rcx, OFFSET FLAT:?fat32_read_file@@YAXPEAU_vfs_node_@@PEAEI@Z ; fat32_read_file
 	mov	QWORD PTR [rax+64], rcx
 
-; 780  : 	fsys->write = 0;
+; 782  : 	fsys->write = 0;
 
 	mov	rax, QWORD PTR fsys$[rsp]
 	mov	QWORD PTR [rax+72], 0
 
-; 781  : 	fsys->read_blk = fat32_read;
+; 783  : 	fsys->read_blk = fat32_read;
 
 	mov	rax, QWORD PTR fsys$[rsp]
 	lea	rcx, OFFSET FLAT:?fat32_read@@YAXPEAU_vfs_node_@@PEAE@Z ; fat32_read
 	mov	QWORD PTR [rax+80], rcx
 
-; 782  : 	fsys->ioquery = 0;
+; 784  : 	fsys->ioquery = 0;
 
 	mov	rax, QWORD PTR fsys$[rsp]
 	mov	QWORD PTR [rax+88], 0
 
-; 783  : 	vfs_mount ("/", fsys);
+; 785  : 	vfs_mount ("/", fsys);
 
 	mov	rdx, QWORD PTR fsys$[rsp]
 	lea	rcx, OFFSET FLAT:$SG3570
 	call	?vfs_mount@@YAXPEADPEAU_vfs_node_@@@Z	; vfs_mount
 
-; 784  : 	printf ("File System registered\n");
+; 786  : 	printf ("File System registered\n");
 
 	lea	rcx, OFFSET FLAT:$SG3571
 	call	?printf@@YAXPEBDZZ			; printf
 
-; 785  : }
+; 787  : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -1950,57 +1950,57 @@ buf$ = 112
 filename$ = 640
 ?create_dir@@YAXPEBD@Z PROC				; create_dir
 
-; 685  : void create_dir (const char* filename) {
+; 687  : void create_dir (const char* filename) {
 
 $LN14:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 632				; 00000278H
 
-; 686  : 	/**
-; 687  : 	 * First we scan the FAT table for free cluster which will
-; 688  : 	 * be used as first cluster and store it in a temporary variable
-; 689  : 	 */
-; 690  : 	uint32_t first_cluster = 0;
+; 688  : 	/**
+; 689  : 	 * First we scan the FAT table for free cluster which will
+; 690  : 	 * be used as first cluster and store it in a temporary variable
+; 691  : 	 */
+; 692  : 	uint32_t first_cluster = 0;
 
 	mov	DWORD PTR first_cluster$[rsp], 0
 
-; 691  : 	uint32_t cluster_first = find_free_cluster ();
+; 693  : 	uint32_t cluster_first = find_free_cluster ();
 
 	call	?find_free_cluster@@YAIXZ		; find_free_cluster
 	mov	DWORD PTR cluster_first$[rsp], eax
 
-; 692  : 	first_cluster = cluster_first;
+; 694  : 	first_cluster = cluster_first;
 
 	mov	eax, DWORD PTR cluster_first$[rsp]
 	mov	DWORD PTR first_cluster$[rsp], eax
 
-; 693  : 	uint32_t status = alloc_cluster (cluster_first, 0x0FFFFFF8);
+; 695  : 	uint32_t status = alloc_cluster (cluster_first, 0x0FFFFFF8);
 
 	mov	edx, 268435448				; 0ffffff8H
 	mov	ecx, DWORD PTR cluster_first$[rsp]
 	call	?alloc_cluster@@YAIHI@Z			; alloc_cluster
 	mov	DWORD PTR status$[rsp], eax
 
-; 694  : 
-; 695  : 	//! Clear the cluster
-; 696  : 	clear_cluster (cluster_first);
+; 696  : 
+; 697  : 	//! Clear the cluster
+; 698  : 	clear_cluster (cluster_first);
 
 	mov	ecx, DWORD PTR cluster_first$[rsp]
 	call	?clear_cluster@@YAXI@Z			; clear_cluster
 
-; 697  : 
-; 698  : 	char formated_name[11];
-; 699  : 	to_dos_file_name32 (filename, formated_name, 11);
+; 699  : 
+; 700  : 	char formated_name[11];
+; 701  : 	to_dos_file_name32 (filename, formated_name, 11);
 
 	mov	r8d, 11
 	lea	rdx, QWORD PTR formated_name$[rsp]
 	mov	rcx, QWORD PTR filename$[rsp]
 	call	?to_dos_file_name32@@YAXPEBDPEADI@Z	; to_dos_file_name32
 
-; 700  :     unsigned char buf[512];
-; 701  : 	//! now it's time to parse the root directory
-; 702  : 	//! Root Directory Entries scanning goes here
-; 703  : 	for (int sector = 0; sector < sectors_per_cluster; sector++) {
+; 702  :     unsigned char buf[512];
+; 703  : 	//! now it's time to parse the root directory
+; 704  : 	//! Root Directory Entries scanning goes here
+; 705  : 	for (int sector = 0; sector < sectors_per_cluster; sector++) {
 
 	mov	DWORD PTR sector$3[rsp], 0
 	jmp	SHORT $LN11@create_dir
@@ -2013,8 +2013,8 @@ $LN11@create_dir:
 	cmp	DWORD PTR sector$3[rsp], eax
 	jge	$LN9@create_dir
 
-; 704  : 		
-; 705  : 		ata_read_28 (root_sector + sector,1, buf);
+; 706  : 		
+; 707  : 		ata_read_28 (root_sector + sector,1, buf);
 
 	mov	eax, DWORD PTR sector$3[rsp]
 	mov	ecx, DWORD PTR ?root_sector@@3KA	; root_sector
@@ -2025,12 +2025,12 @@ $LN11@create_dir:
 	mov	ecx, eax
 	call	?ata_read_28@@YAEIGPEAE@Z		; ata_read_28
 
-; 706  : 		fat32_dir *dirent = (fat32_dir*)buf;
+; 708  : 		fat32_dir *dirent = (fat32_dir*)buf;
 
 	lea	rax, QWORD PTR buf$[rsp]
 	mov	QWORD PTR dirent$1[rsp], rax
 
-; 707  : 		for (int i = 0; i < 16; i++) {
+; 709  : 		for (int i = 0; i < 16; i++) {
 
 	mov	DWORD PTR i$6[rsp], 0
 	jmp	SHORT $LN8@create_dir
@@ -2042,10 +2042,10 @@ $LN8@create_dir:
 	cmp	DWORD PTR i$6[rsp], 16
 	jge	$LN6@create_dir
 
-; 708  : 
-; 709  : 
-; 710  : 			//! scan for free directory entry
-; 711  : 			if (dirent->filename[0] == 0x00 || dirent->filename[0] == 0xE5){
+; 710  : 
+; 711  : 
+; 712  : 			//! scan for free directory entry
+; 713  : 			if (dirent->filename[0] == 0x00 || dirent->filename[0] == 0xE5){
 
 	mov	eax, 1
 	imul	rax, 0
@@ -2061,19 +2061,19 @@ $LN8@create_dir:
 	jne	$LN5@create_dir
 $LN4@create_dir:
 
-; 712  : 				printf ("Empty entry found\n");
+; 714  : 				printf ("Empty entry found\n");
 
 	lea	rcx, OFFSET FLAT:$SG3551
 	call	?printf@@YAXPEBDZZ			; printf
 
-; 713  : 				memset(dirent, 0, sizeof(fat32_dir));
+; 715  : 				memset(dirent, 0, sizeof(fat32_dir));
 
 	mov	r8d, 32					; 00000020H
 	xor	edx, edx
 	mov	rcx, QWORD PTR dirent$1[rsp]
 	call	?memset@@YAXPEAXEI@Z			; memset
 
-; 714  : 				memcpy (dirent->filename, formated_name, 11);
+; 716  : 				memcpy (dirent->filename, formated_name, 11);
 
 	mov	rax, QWORD PTR dirent$1[rsp]
 	mov	r8d, 11
@@ -2081,35 +2081,35 @@ $LN4@create_dir:
 	mov	rcx, rax
 	call	memcpy
 
-; 715  : 				dirent->attrib = ATTRIBUTE_DIRECTORY;
+; 717  : 				dirent->attrib = ATTRIBUTE_DIRECTORY;
 
 	mov	rax, QWORD PTR dirent$1[rsp]
 	mov	BYTE PTR [rax+11], 16
 
-; 716  : 				dirent->time_created_ms = 2021;
+; 718  : 				dirent->time_created_ms = 2021;
 
 	mov	rax, QWORD PTR dirent$1[rsp]
 	mov	BYTE PTR [rax+13], 229			; 000000e5H
 
-; 717  : 				dirent->time_created = 2021;
+; 719  : 				dirent->time_created = 2021;
 
 	mov	eax, 2021				; 000007e5H
 	mov	rcx, QWORD PTR dirent$1[rsp]
 	mov	WORD PTR [rcx+14], ax
 
-; 718  : 				dirent->date_created = 2021;
+; 720  : 				dirent->date_created = 2021;
 
 	mov	eax, 2021				; 000007e5H
 	mov	rcx, QWORD PTR dirent$1[rsp]
 	mov	WORD PTR [rcx+16], ax
 
-; 719  : 				dirent->date_last_accessed = 2021;
+; 721  : 				dirent->date_last_accessed = 2021;
 
 	mov	eax, 2021				; 000007e5H
 	mov	rcx, QWORD PTR dirent$1[rsp]
 	mov	WORD PTR [rcx+18], ax
 
-; 720  : 				dirent->first_cluster_hi_bytes = (first_cluster >> 16) & 0xFFFF;
+; 722  : 				dirent->first_cluster_hi_bytes = (first_cluster >> 16) & 0xFFFF;
 
 	mov	eax, DWORD PTR first_cluster$[rsp]
 	shr	eax, 16
@@ -2117,33 +2117,33 @@ $LN4@create_dir:
 	mov	rcx, QWORD PTR dirent$1[rsp]
 	mov	WORD PTR [rcx+20], ax
 
-; 721  : 				dirent->last_mod_time = 2021;
+; 723  : 				dirent->last_mod_time = 2021;
 
 	mov	eax, 2021				; 000007e5H
 	mov	rcx, QWORD PTR dirent$1[rsp]
 	mov	WORD PTR [rcx+22], ax
 
-; 722  : 				dirent->last_mod_date = 2021;
+; 724  : 				dirent->last_mod_date = 2021;
 
 	mov	eax, 2021				; 000007e5H
 	mov	rcx, QWORD PTR dirent$1[rsp]
 	mov	WORD PTR [rcx+24], ax
 
-; 723  : 				dirent->first_cluster = first_cluster & 0xFFFF;
+; 725  : 				dirent->first_cluster = first_cluster & 0xFFFF;
 
 	mov	eax, DWORD PTR first_cluster$[rsp]
 	and	eax, 65535				; 0000ffffH
 	mov	rcx, QWORD PTR dirent$1[rsp]
 	mov	WORD PTR [rcx+26], ax
 
-; 724  : 				dirent->file_size = 0;
+; 726  : 				dirent->file_size = 0;
 
 	mov	rax, QWORD PTR dirent$1[rsp]
 	mov	DWORD PTR [rax+28], 0
 
-; 725  : 
-; 726  : 				//! write the dir entry and go for writing the contents of the file
-; 727  : 				ata_write_one (buf, root_sector + sector);
+; 727  : 
+; 728  : 				//! write the dir entry and go for writing the contents of the file
+; 729  : 				ata_write_one (buf, root_sector + sector);
 
 	mov	eax, DWORD PTR sector$3[rsp]
 	mov	ecx, DWORD PTR ?root_sector@@3KA	; root_sector
@@ -2153,60 +2153,60 @@ $LN4@create_dir:
 	lea	rcx, QWORD PTR buf$[rsp]
 	call	?ata_write_one@@YAEPEAEI@Z		; ata_write_one
 
-; 728  : 
-; 729  : 				unsigned char* dir_content = (unsigned char*)pmmngr_alloc();
+; 730  : 
+; 731  : 				unsigned char* dir_content = (unsigned char*)pmmngr_alloc();
 
 	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
 	mov	QWORD PTR dir_content$7[rsp], rax
 
-; 730  : 				memset(dir_content, 0, 4096);
+; 732  : 				memset(dir_content, 0, 4096);
 
 	mov	r8d, 4096				; 00001000H
 	xor	edx, edx
 	mov	rcx, QWORD PTR dir_content$7[rsp]
 	call	?memset@@YAXPEAXEI@Z			; memset
 
-; 731  : 				uint32_t sector_d = cluster_to_sector32 (first_cluster);
+; 733  : 				uint32_t sector_d = cluster_to_sector32 (first_cluster);
 
 	mov	eax, DWORD PTR first_cluster$[rsp]
 	mov	ecx, eax
 	call	?cluster_to_sector32@@YA_K_K@Z		; cluster_to_sector32
 	mov	DWORD PTR sector_d$8[rsp], eax
 
-; 732  : 				fat32_dir *dot_entry = (fat32_dir*)dir_content;
+; 734  : 				fat32_dir *dot_entry = (fat32_dir*)dir_content;
 
 	mov	rax, QWORD PTR dir_content$7[rsp]
 	mov	QWORD PTR dot_entry$5[rsp], rax
 
-; 733  : 				dot_entry->attrib = ATTRIBUTE_DIRECTORY;
+; 735  : 				dot_entry->attrib = ATTRIBUTE_DIRECTORY;
 
 	mov	rax, QWORD PTR dot_entry$5[rsp]
 	mov	BYTE PTR [rax+11], 16
 
-; 734  : 				dot_entry->time_created_ms = 2021;
+; 736  : 				dot_entry->time_created_ms = 2021;
 
 	mov	rax, QWORD PTR dot_entry$5[rsp]
 	mov	BYTE PTR [rax+13], 229			; 000000e5H
 
-; 735  : 				dot_entry->time_created = 2021;
+; 737  : 				dot_entry->time_created = 2021;
 
 	mov	eax, 2021				; 000007e5H
 	mov	rcx, QWORD PTR dot_entry$5[rsp]
 	mov	WORD PTR [rcx+14], ax
 
-; 736  : 				dot_entry->date_created = 2021;
+; 738  : 				dot_entry->date_created = 2021;
 
 	mov	eax, 2021				; 000007e5H
 	mov	rcx, QWORD PTR dot_entry$5[rsp]
 	mov	WORD PTR [rcx+16], ax
 
-; 737  : 				dot_entry->date_last_accessed = 2021;
+; 739  : 				dot_entry->date_last_accessed = 2021;
 
 	mov	eax, 2021				; 000007e5H
 	mov	rcx, QWORD PTR dot_entry$5[rsp]
 	mov	WORD PTR [rcx+18], ax
 
-; 738  : 				dot_entry->first_cluster_hi_bytes = (first_cluster >> 16) & 0xFFFF;
+; 740  : 				dot_entry->first_cluster_hi_bytes = (first_cluster >> 16) & 0xFFFF;
 
 	mov	eax, DWORD PTR first_cluster$[rsp]
 	shr	eax, 16
@@ -2214,67 +2214,67 @@ $LN4@create_dir:
 	mov	rcx, QWORD PTR dot_entry$5[rsp]
 	mov	WORD PTR [rcx+20], ax
 
-; 739  : 				dot_entry->last_mod_time = 2021;
+; 741  : 				dot_entry->last_mod_time = 2021;
 
 	mov	eax, 2021				; 000007e5H
 	mov	rcx, QWORD PTR dot_entry$5[rsp]
 	mov	WORD PTR [rcx+22], ax
 
-; 740  : 				dot_entry->last_mod_date = 2021;
+; 742  : 				dot_entry->last_mod_date = 2021;
 
 	mov	eax, 2021				; 000007e5H
 	mov	rcx, QWORD PTR dot_entry$5[rsp]
 	mov	WORD PTR [rcx+24], ax
 
-; 741  : 				dot_entry->first_cluster = first_cluster & 0xFFFF;
+; 743  : 				dot_entry->first_cluster = first_cluster & 0xFFFF;
 
 	mov	eax, DWORD PTR first_cluster$[rsp]
 	and	eax, 65535				; 0000ffffH
 	mov	rcx, QWORD PTR dot_entry$5[rsp]
 	mov	WORD PTR [rcx+26], ax
 
-; 742  : 				dot_entry->file_size = 0;
+; 744  : 				dot_entry->file_size = 0;
 
 	mov	rax, QWORD PTR dot_entry$5[rsp]
 	mov	DWORD PTR [rax+28], 0
 
-; 743  : 
-; 744  : 
-; 745  : 				fat32_dir* dot_dot_entry = (fat32_dir*)(dir_content + 32);
+; 745  : 
+; 746  : 
+; 747  : 				fat32_dir* dot_dot_entry = (fat32_dir*)(dir_content + 32);
 
 	mov	rax, QWORD PTR dir_content$7[rsp]
 	add	rax, 32					; 00000020H
 	mov	QWORD PTR dot_dot_entry$4[rsp], rax
 
-; 746  : 				dot_dot_entry->attrib = ATTRIBUTE_DIRECTORY;
+; 748  : 				dot_dot_entry->attrib = ATTRIBUTE_DIRECTORY;
 
 	mov	rax, QWORD PTR dot_dot_entry$4[rsp]
 	mov	BYTE PTR [rax+11], 16
 
-; 747  : 				dot_dot_entry->time_created_ms = 2021;
+; 749  : 				dot_dot_entry->time_created_ms = 2021;
 
 	mov	rax, QWORD PTR dot_dot_entry$4[rsp]
 	mov	BYTE PTR [rax+13], 229			; 000000e5H
 
-; 748  : 				dot_dot_entry->time_created = 2021;
+; 750  : 				dot_dot_entry->time_created = 2021;
 
 	mov	eax, 2021				; 000007e5H
 	mov	rcx, QWORD PTR dot_dot_entry$4[rsp]
 	mov	WORD PTR [rcx+14], ax
 
-; 749  : 				dot_dot_entry->date_created = 2021;
+; 751  : 				dot_dot_entry->date_created = 2021;
 
 	mov	eax, 2021				; 000007e5H
 	mov	rcx, QWORD PTR dot_dot_entry$4[rsp]
 	mov	WORD PTR [rcx+16], ax
 
-; 750  : 				dot_dot_entry->date_last_accessed = 2021;
+; 752  : 				dot_dot_entry->date_last_accessed = 2021;
 
 	mov	eax, 2021				; 000007e5H
 	mov	rcx, QWORD PTR dot_dot_entry$4[rsp]
 	mov	WORD PTR [rcx+18], ax
 
-; 751  : 				dot_dot_entry->first_cluster_hi_bytes = (root_dir_first_cluster >> 16) & 0xFFFF;
+; 753  : 				dot_dot_entry->first_cluster_hi_bytes = (root_dir_first_cluster >> 16) & 0xFFFF;
 
 	mov	eax, DWORD PTR ?root_dir_first_cluster@@3KA ; root_dir_first_cluster
 	shr	eax, 16
@@ -2282,32 +2282,32 @@ $LN4@create_dir:
 	mov	rcx, QWORD PTR dot_dot_entry$4[rsp]
 	mov	WORD PTR [rcx+20], ax
 
-; 752  : 				dot_dot_entry->last_mod_time = 2021;
+; 754  : 				dot_dot_entry->last_mod_time = 2021;
 
 	mov	eax, 2021				; 000007e5H
 	mov	rcx, QWORD PTR dot_dot_entry$4[rsp]
 	mov	WORD PTR [rcx+22], ax
 
-; 753  : 				dot_dot_entry->last_mod_date = 2021;
+; 755  : 				dot_dot_entry->last_mod_date = 2021;
 
 	mov	eax, 2021				; 000007e5H
 	mov	rcx, QWORD PTR dot_dot_entry$4[rsp]
 	mov	WORD PTR [rcx+24], ax
 
-; 754  : 				dot_dot_entry->first_cluster = root_dir_first_cluster & 0xFFFF;
+; 756  : 				dot_dot_entry->first_cluster = root_dir_first_cluster & 0xFFFF;
 
 	mov	eax, DWORD PTR ?root_dir_first_cluster@@3KA ; root_dir_first_cluster
 	and	eax, 65535				; 0000ffffH
 	mov	rcx, QWORD PTR dot_dot_entry$4[rsp]
 	mov	WORD PTR [rcx+26], ax
 
-; 755  : 				dot_dot_entry->file_size = 0;
+; 757  : 				dot_dot_entry->file_size = 0;
 
 	mov	rax, QWORD PTR dot_dot_entry$4[rsp]
 	mov	DWORD PTR [rax+28], 0
 
-; 756  : 
-; 757  : 				for (int i = 0; i < 8; i++) {
+; 758  : 
+; 759  : 				for (int i = 0; i < 8; i++) {
 
 	mov	DWORD PTR i$2[rsp], 0
 	jmp	SHORT $LN3@create_dir
@@ -2319,7 +2319,7 @@ $LN3@create_dir:
 	cmp	DWORD PTR i$2[rsp], 8
 	jge	SHORT $LN1@create_dir
 
-; 758  : 					ata_write_one (dir_content + (i * 512),sector_d + i);
+; 760  : 					ata_write_one (dir_content + (i * 512),sector_d + i);
 
 	mov	eax, DWORD PTR i$2[rsp]
 	mov	ecx, DWORD PTR sector_d$8[rsp]
@@ -2334,36 +2334,36 @@ $LN3@create_dir:
 	mov	edx, eax
 	call	?ata_write_one@@YAEPEAEI@Z		; ata_write_one
 
-; 759  : 				}
+; 761  : 				}
 
 	jmp	SHORT $LN2@create_dir
 $LN1@create_dir:
 
-; 760  : 				return;
+; 762  : 				return;
 
 	jmp	SHORT $LN12@create_dir
 $LN5@create_dir:
 
-; 761  : 			}
-; 762  : 			dirent++;
+; 763  : 			}
+; 764  : 			dirent++;
 
 	mov	rax, QWORD PTR dirent$1[rsp]
 	add	rax, 32					; 00000020H
 	mov	QWORD PTR dirent$1[rsp], rax
 
-; 763  : 		}
+; 765  : 		}
 
 	jmp	$LN7@create_dir
 $LN6@create_dir:
 
-; 764  : 	}
+; 766  : 	}
 
 	jmp	$LN10@create_dir
 $LN9@create_dir:
 $LN12@create_dir:
 
-; 765  : 
-; 766  : }
+; 767  : 
+; 768  : }
 
 	add	rsp, 632				; 00000278H
 	ret	0
@@ -2391,7 +2391,7 @@ buffer$ = 648
 length$ = 656
 ?fat32_create_file@@YAIPEADPEAEI@Z PROC			; fat32_create_file
 
-; 605  : uint32_t fat32_create_file  (char* filename, uint8_t *buffer, unsigned int length) {
+; 607  : uint32_t fat32_create_file  (char* filename, uint8_t *buffer, unsigned int length) {
 
 $LN18:
 	mov	DWORD PTR [rsp+24], r8d
@@ -2399,52 +2399,52 @@ $LN18:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 632				; 00000278H
 
-; 606  : 
-; 607  : 	/**
-; 608  : 	 * First we scan the FAT table for free cluster which will
-; 609  : 	 * be used as first cluster and store it in a temporary variable
-; 610  : 	 */
-; 611  : 	uint32_t first_cluster = 0;
+; 608  : 
+; 609  : 	/**
+; 610  : 	 * First we scan the FAT table for free cluster which will
+; 611  : 	 * be used as first cluster and store it in a temporary variable
+; 612  : 	 */
+; 613  : 	uint32_t first_cluster = 0;
 
 	mov	DWORD PTR first_cluster$[rsp], 0
 
-; 612  : 	uint32_t cluster_first = find_free_cluster ();
+; 614  : 	uint32_t cluster_first = find_free_cluster ();
 
 	call	?find_free_cluster@@YAIXZ		; find_free_cluster
 	mov	DWORD PTR cluster_first$[rsp], eax
 
-; 613  : 	first_cluster = cluster_first;
+; 615  : 	first_cluster = cluster_first;
 
 	mov	eax, DWORD PTR cluster_first$[rsp]
 	mov	DWORD PTR first_cluster$[rsp], eax
 
-; 614  : 	uint32_t status = alloc_cluster (cluster_first, 0x0FFFFFF8);
+; 616  : 	uint32_t status = alloc_cluster (cluster_first, 0x0FFFFFF8);
 
 	mov	edx, 268435448				; 0ffffff8H
 	mov	ecx, DWORD PTR cluster_first$[rsp]
 	call	?alloc_cluster@@YAIHI@Z			; alloc_cluster
 	mov	DWORD PTR status$[rsp], eax
 
-; 615  : 
-; 616  : 	//! Clear the cluster
-; 617  : 	clear_cluster (cluster_first);
+; 617  : 
+; 618  : 	//! Clear the cluster
+; 619  : 	clear_cluster (cluster_first);
 
 	mov	ecx, DWORD PTR cluster_first$[rsp]
 	call	?clear_cluster@@YAXI@Z			; clear_cluster
 
-; 618  : 
-; 619  : 	//! Now calculate the number of clusters required 
-; 620  : 	//! for the file
-; 621  : 	uint32_t required_cluster = 0;
+; 620  : 
+; 621  : 	//! Now calculate the number of clusters required 
+; 622  : 	//! for the file
+; 623  : 	uint32_t required_cluster = 0;
 
 	mov	DWORD PTR required_cluster$[rsp], 0
 
-; 622  : 	if (length > 4096) {
+; 624  : 	if (length > 4096) {
 
 	cmp	DWORD PTR length$[rsp], 4096		; 00001000H
 	jbe	SHORT $LN15@fat32_crea
 
-; 623  : 		for (int i = 0; i < length / 4096; i++) {
+; 625  : 		for (int i = 0; i < length / 4096; i++) {
 
 	mov	DWORD PTR i$5[rsp], 0
 	jmp	SHORT $LN14@fat32_crea
@@ -2460,29 +2460,29 @@ $LN14@fat32_crea:
 	cmp	DWORD PTR i$5[rsp], eax
 	jae	SHORT $LN12@fat32_crea
 
-; 624  : 			required_cluster++;
+; 626  : 			required_cluster++;
 
 	mov	eax, DWORD PTR required_cluster$[rsp]
 	inc	eax
 	mov	DWORD PTR required_cluster$[rsp], eax
 
-; 625  : 		}
+; 627  : 		}
 
 	jmp	SHORT $LN13@fat32_crea
 $LN12@fat32_crea:
 $LN15@fat32_crea:
 
-; 626  : 	}
-; 627  : 
-; 628  : 	//! Now allocate each clusters in the fat table
-; 629  : 	//! [Knowledge]: In FAT table if the file requires more cluster
-; 630  : 	//! than the file's first cluster points to next cluster
-; 631  : 	//! kind of linked list data structure
-; 632  :     uint32_t cluster = 0;
+; 628  : 	}
+; 629  : 
+; 630  : 	//! Now allocate each clusters in the fat table
+; 631  : 	//! [Knowledge]: In FAT table if the file requires more cluster
+; 632  : 	//! than the file's first cluster points to next cluster
+; 633  : 	//! kind of linked list data structure
+; 634  :     uint32_t cluster = 0;
 
 	mov	DWORD PTR cluster$[rsp], 0
 
-; 633  : 	for (int i = 0; i < required_cluster; i++) {
+; 635  : 	for (int i = 0; i < required_cluster; i++) {
 
 	mov	DWORD PTR i$3[rsp], 0
 	jmp	SHORT $LN11@fat32_crea
@@ -2495,58 +2495,58 @@ $LN11@fat32_crea:
 	cmp	DWORD PTR i$3[rsp], eax
 	jae	SHORT $LN9@fat32_crea
 
-; 634  : 		cluster = find_free_cluster ();
+; 636  : 		cluster = find_free_cluster ();
 
 	call	?find_free_cluster@@YAIXZ		; find_free_cluster
 	mov	DWORD PTR cluster$[rsp], eax
 
-; 635  : 		uint32_t stat = alloc_cluster (cluster_first, cluster);
+; 637  : 		uint32_t stat = alloc_cluster (cluster_first, cluster);
 
 	mov	edx, DWORD PTR cluster$[rsp]
 	mov	ecx, DWORD PTR cluster_first$[rsp]
 	call	?alloc_cluster@@YAIHI@Z			; alloc_cluster
 	mov	DWORD PTR stat$6[rsp], eax
 
-; 636  : 		clear_cluster (cluster);
+; 638  : 		clear_cluster (cluster);
 
 	mov	ecx, DWORD PTR cluster$[rsp]
 	call	?clear_cluster@@YAXI@Z			; clear_cluster
 
-; 637  : 		cluster_first = cluster;
+; 639  : 		cluster_first = cluster;
 
 	mov	eax, DWORD PTR cluster$[rsp]
 	mov	DWORD PTR cluster_first$[rsp], eax
 
-; 638  : 	}
+; 640  : 	}
 
 	jmp	SHORT $LN10@fat32_crea
 $LN9@fat32_crea:
 
-; 639  : 
-; 640  : 	//! the last cluster should be marked as EOC {0x0FFFFFF8}
-; 641  : 	uint32_t status2 = alloc_cluster (cluster, 0x0FFFFFF8);
+; 641  : 
+; 642  : 	//! the last cluster should be marked as EOC {0x0FFFFFF8}
+; 643  : 	uint32_t status2 = alloc_cluster (cluster, 0x0FFFFFF8);
 
 	mov	edx, 268435448				; 0ffffff8H
 	mov	ecx, DWORD PTR cluster$[rsp]
 	call	?alloc_cluster@@YAIHI@Z			; alloc_cluster
 	mov	DWORD PTR status2$[rsp], eax
 
-; 642  : 
-; 643  : 	//! Finally format the name 
-; 644  : 	//! for now Aurora's Xeneva support only short name MSDOS 8.3
-; 645  : 	char formated_name[11];
-; 646  : 	to_dos_file_name32 (filename, formated_name, 11);
+; 644  : 
+; 645  : 	//! Finally format the name 
+; 646  : 	//! for now Aurora's Xeneva support only short name MSDOS 8.3
+; 647  : 	char formated_name[11];
+; 648  : 	to_dos_file_name32 (filename, formated_name, 11);
 
 	mov	r8d, 11
 	lea	rdx, QWORD PTR formated_name$[rsp]
 	mov	rcx, QWORD PTR filename$[rsp]
 	call	?to_dos_file_name32@@YAXPEBDPEADI@Z	; to_dos_file_name32
 
-; 647  : 
-; 648  : 	//! now it's time to parse the root directory
-; 649  : 	unsigned char buf[512];
-; 650  : 	//! Root Directory Entries scanning goes here
-; 651  : 	for (int sector = 0; sector < sectors_per_cluster; sector++) {
+; 649  : 
+; 650  : 	//! now it's time to parse the root directory
+; 651  : 	unsigned char buf[512];
+; 652  : 	//! Root Directory Entries scanning goes here
+; 653  : 	for (int sector = 0; sector < sectors_per_cluster; sector++) {
 
 	mov	DWORD PTR sector$2[rsp], 0
 	jmp	SHORT $LN8@fat32_crea
@@ -2559,7 +2559,7 @@ $LN8@fat32_crea:
 	cmp	DWORD PTR sector$2[rsp], eax
 	jge	$LN6@fat32_crea
 
-; 652  : 		ata_read_28 (root_sector + sector,1, buf);	
+; 654  : 		ata_read_28 (root_sector + sector,1, buf);	
 
 	mov	eax, DWORD PTR sector$2[rsp]
 	mov	ecx, DWORD PTR ?root_sector@@3KA	; root_sector
@@ -2570,12 +2570,12 @@ $LN8@fat32_crea:
 	mov	ecx, eax
 	call	?ata_read_28@@YAEIGPEAE@Z		; ata_read_28
 
-; 653  : 		fat32_dir *dirent = (fat32_dir*)buf;
+; 655  : 		fat32_dir *dirent = (fat32_dir*)buf;
 
 	lea	rax, QWORD PTR buf$[rsp]
 	mov	QWORD PTR dirent$1[rsp], rax
 
-; 654  : 		for (int i = 0; i < 16; i++) {
+; 656  : 		for (int i = 0; i < 16; i++) {
 
 	mov	DWORD PTR i$4[rsp], 0
 	jmp	SHORT $LN5@fat32_crea
@@ -2587,9 +2587,9 @@ $LN5@fat32_crea:
 	cmp	DWORD PTR i$4[rsp], 16
 	jge	$LN3@fat32_crea
 
-; 655  : 		
-; 656  : 			//! scan for free directory entry
-; 657  : 			if (dirent->filename[0] == 0x00 || dirent->filename[0] == 0xE5){
+; 657  : 		
+; 658  : 			//! scan for free directory entry
+; 659  : 			if (dirent->filename[0] == 0x00 || dirent->filename[0] == 0xE5){
 
 	mov	eax, 1
 	imul	rax, 0
@@ -2605,15 +2605,15 @@ $LN5@fat32_crea:
 	jne	$LN2@fat32_crea
 $LN1@fat32_crea:
 
-; 658  : 				
-; 659  : 				memset(dirent, 0, sizeof(fat32_dir));
+; 660  : 				
+; 661  : 				memset(dirent, 0, sizeof(fat32_dir));
 
 	mov	r8d, 32					; 00000020H
 	xor	edx, edx
 	mov	rcx, QWORD PTR dirent$1[rsp]
 	call	?memset@@YAXPEAXEI@Z			; memset
 
-; 660  : 				memcpy (dirent->filename, formated_name, 11);
+; 662  : 				memcpy (dirent->filename, formated_name, 11);
 
 	mov	rax, QWORD PTR dirent$1[rsp]
 	mov	r8d, 11
@@ -2621,35 +2621,35 @@ $LN1@fat32_crea:
 	mov	rcx, rax
 	call	memcpy
 
-; 661  : 				dirent->attrib = ATTRIBUTE_ARCHIVE;
+; 663  : 				dirent->attrib = ATTRIBUTE_ARCHIVE;
 
 	mov	rax, QWORD PTR dirent$1[rsp]
 	mov	BYTE PTR [rax+11], 32			; 00000020H
 
-; 662  : 				dirent->time_created_ms = 2021;
+; 664  : 				dirent->time_created_ms = 2021;
 
 	mov	rax, QWORD PTR dirent$1[rsp]
 	mov	BYTE PTR [rax+13], 229			; 000000e5H
 
-; 663  : 				dirent->time_created = 2021;
+; 665  : 				dirent->time_created = 2021;
 
 	mov	eax, 2021				; 000007e5H
 	mov	rcx, QWORD PTR dirent$1[rsp]
 	mov	WORD PTR [rcx+14], ax
 
-; 664  : 				dirent->date_created = 2021;
+; 666  : 				dirent->date_created = 2021;
 
 	mov	eax, 2021				; 000007e5H
 	mov	rcx, QWORD PTR dirent$1[rsp]
 	mov	WORD PTR [rcx+16], ax
 
-; 665  : 				dirent->date_last_accessed = 2021;
+; 667  : 				dirent->date_last_accessed = 2021;
 
 	mov	eax, 2021				; 000007e5H
 	mov	rcx, QWORD PTR dirent$1[rsp]
 	mov	WORD PTR [rcx+18], ax
 
-; 666  : 				dirent->first_cluster_hi_bytes = (first_cluster >> 16) & 0xFFFF;
+; 668  : 				dirent->first_cluster_hi_bytes = (first_cluster >> 16) & 0xFFFF;
 
 	mov	eax, DWORD PTR first_cluster$[rsp]
 	shr	eax, 16
@@ -2657,33 +2657,33 @@ $LN1@fat32_crea:
 	mov	rcx, QWORD PTR dirent$1[rsp]
 	mov	WORD PTR [rcx+20], ax
 
-; 667  : 				dirent->last_mod_time = 2021;
+; 669  : 				dirent->last_mod_time = 2021;
 
 	mov	eax, 2021				; 000007e5H
 	mov	rcx, QWORD PTR dirent$1[rsp]
 	mov	WORD PTR [rcx+22], ax
 
-; 668  : 				dirent->last_mod_date = 2021;
+; 670  : 				dirent->last_mod_date = 2021;
 
 	mov	eax, 2021				; 000007e5H
 	mov	rcx, QWORD PTR dirent$1[rsp]
 	mov	WORD PTR [rcx+24], ax
 
-; 669  : 				dirent->first_cluster = first_cluster & 0xFFFF;
+; 671  : 				dirent->first_cluster = first_cluster & 0xFFFF;
 
 	mov	eax, DWORD PTR first_cluster$[rsp]
 	and	eax, 65535				; 0000ffffH
 	mov	rcx, QWORD PTR dirent$1[rsp]
 	mov	WORD PTR [rcx+26], ax
 
-; 670  : 				dirent->file_size = length;
+; 672  : 				dirent->file_size = length;
 
 	mov	rax, QWORD PTR dirent$1[rsp]
 	mov	ecx, DWORD PTR length$[rsp]
 	mov	DWORD PTR [rax+28], ecx
 
-; 671  : 				//! write the dir entry and go for writing the contents of the file
-; 672  : 				ata_write_one (buf, root_sector + sector);
+; 673  : 				//! write the dir entry and go for writing the contents of the file
+; 674  : 				ata_write_one (buf, root_sector + sector);
 
 	mov	eax, DWORD PTR sector$2[rsp]
 	mov	ecx, DWORD PTR ?root_sector@@3KA	; root_sector
@@ -2693,41 +2693,41 @@ $LN1@fat32_crea:
 	lea	rcx, QWORD PTR buf$[rsp]
 	call	?ata_write_one@@YAEPEAEI@Z		; ata_write_one
 
-; 673  : 				//! actuall file writing process begins here
-; 674  : 				fat32_write_content (buffer, first_cluster,length);
+; 675  : 				//! actuall file writing process begins here
+; 676  : 				fat32_write_content (buffer, first_cluster,length);
 
 	mov	r8d, DWORD PTR length$[rsp]
 	mov	edx, DWORD PTR first_cluster$[rsp]
 	mov	rcx, QWORD PTR buffer$[rsp]
 	call	?fat32_write_content@@YAXPEAEII@Z	; fat32_write_content
 
-; 675  : 				return 0;
+; 677  : 				return 0;
 
 	xor	eax, eax
 	jmp	SHORT $LN16@fat32_crea
 $LN2@fat32_crea:
 
-; 676  : 			}
-; 677  : 			dirent++;
+; 678  : 			}
+; 679  : 			dirent++;
 
 	mov	rax, QWORD PTR dirent$1[rsp]
 	add	rax, 32					; 00000020H
 	mov	QWORD PTR dirent$1[rsp], rax
 
-; 678  : 		}
+; 680  : 		}
 
 	jmp	$LN4@fat32_crea
 $LN3@fat32_crea:
 
-; 679  : 	
-; 680  : 	}
+; 681  : 	
+; 682  : 	}
 
 	jmp	$LN7@fat32_crea
 $LN6@fat32_crea:
 $LN16@fat32_crea:
 
-; 681  : 	//!free every allocated memories
-; 682  : }
+; 683  : 	//!free every allocated memories
+; 684  : }
 
 	add	rsp, 632				; 00000278H
 	ret	0
@@ -2743,23 +2743,23 @@ filename2$ = 48
 buf$ = 80
 ?list_fat_entries@@YAXXZ PROC				; list_fat_entries
 
-; 539  : void list_fat_entries () {
+; 541  : void list_fat_entries () {
 
 $LN9:
 	sub	rsp, 600				; 00000258H
 
-; 540  : 
-; 541  : 	printf ("Root Dir entries scanning\n");
+; 542  : 
+; 543  : 	printf ("Root Dir entries scanning\n");
 
 	lea	rcx, OFFSET FLAT:$SG3454
 	call	?printf@@YAXPEBDZZ			; printf
 
-; 542  : 	fat32_dir *dirent;
-; 543  : 	char filename2[32];
-; 544  : 	char format_name[11];
-; 545  : 
-; 546  : 	unsigned char buf[512];
-; 547  : 	for (int i = 0; i < sectors_per_cluster; i++) {
+; 544  : 	fat32_dir *dirent;
+; 545  : 	char filename2[32];
+; 546  : 	char format_name[11];
+; 547  : 
+; 548  : 	unsigned char buf[512];
+; 549  : 	for (int i = 0; i < sectors_per_cluster; i++) {
 
 	mov	DWORD PTR i$1[rsp], 0
 	jmp	SHORT $LN6@list_fat_e
@@ -2772,7 +2772,7 @@ $LN6@list_fat_e:
 	cmp	DWORD PTR i$1[rsp], eax
 	jge	$LN4@list_fat_e
 
-; 548  : 		ata_read_28 (root_sector + i, 1,buf);
+; 550  : 		ata_read_28 (root_sector + i, 1,buf);
 
 	mov	eax, DWORD PTR i$1[rsp]
 	mov	ecx, DWORD PTR ?root_sector@@3KA	; root_sector
@@ -2783,12 +2783,12 @@ $LN6@list_fat_e:
 	mov	ecx, eax
 	call	?ata_read_28@@YAEIGPEAE@Z		; ata_read_28
 
-; 549  : 		dirent = (fat32_dir*)buf;
+; 551  : 		dirent = (fat32_dir*)buf;
 
 	lea	rax, QWORD PTR buf$[rsp]
 	mov	QWORD PTR dirent$[rsp], rax
 
-; 550  : 		for (int j = 0; j < 16; j++) {
+; 552  : 		for (int j = 0; j < 16; j++) {
 
 	mov	DWORD PTR j$2[rsp], 0
 	jmp	SHORT $LN3@list_fat_e
@@ -2800,13 +2800,13 @@ $LN3@list_fat_e:
 	cmp	DWORD PTR j$2[rsp], 16
 	jge	SHORT $LN1@list_fat_e
 
-; 551  : 			convert_fat83_32(dirent,filename2);
+; 553  : 			convert_fat83_32(dirent,filename2);
 
 	lea	rdx, QWORD PTR filename2$[rsp]
 	mov	rcx, QWORD PTR dirent$[rsp]
 	call	?convert_fat83_32@@YAXPEAU_fat32_dir_@@PEAD@Z ; convert_fat83_32
 
-; 552  : 			printf ("Other file size -> %s, dirent attrib -> %x, count ->%d\n", filename2, *(uint8_t*)&buf[j], i);
+; 554  : 			printf ("Other file size -> %s, dirent attrib -> %x, count ->%d\n", filename2, *(uint8_t*)&buf[j], i);
 
 	movsxd	rax, DWORD PTR j$2[rsp]
 	movzx	eax, BYTE PTR buf$[rsp+rax]
@@ -2816,23 +2816,23 @@ $LN3@list_fat_e:
 	lea	rcx, OFFSET FLAT:$SG3469
 	call	?printf@@YAXPEBDZZ			; printf
 
-; 553  : 			dirent++;
+; 555  : 			dirent++;
 
 	mov	rax, QWORD PTR dirent$[rsp]
 	add	rax, 32					; 00000020H
 	mov	QWORD PTR dirent$[rsp], rax
 
-; 554  : 		}
+; 556  : 		}
 
 	jmp	SHORT $LN2@list_fat_e
 $LN1@list_fat_e:
 
-; 555  : 	}
+; 557  : 	}
 
 	jmp	$LN5@list_fat_e
 $LN4@list_fat_e:
 
-; 556  : }
+; 558  : }
 
 	add	rsp, 600				; 00000258H
 	ret	0
@@ -3260,9 +3260,9 @@ p$ = 40
 path$ = 48
 pathname$2 = 56
 cur_dir$ = 80
-ret$3 = 176
-$T4 = 272
-ret$ = 368
+ret$ = 176
+ret$3 = 272
+$T4 = 368
 $T5 = 464
 $T6 = 560
 $T7 = 656
@@ -3312,9 +3312,8 @@ $LN17:
 	cmp	QWORD PTR p$[rsp], 0
 	jne	$LN14@fat32_open
 
-; 349  : 
-; 350  : 		//! nope, must be in root directory, search it
-; 351  : 		cur_dir = fat32_locate_dir (path);
+; 349  : 		//! nope, must be in root directory, search it
+; 350  : 		cur_dir = fat32_locate_dir (path);
 
 	mov	rdx, QWORD PTR path$[rsp]
 	lea	rcx, QWORD PTR $T8[rsp]
@@ -3331,14 +3330,14 @@ $LN17:
 	mov	ecx, 96					; 00000060H
 	rep movsb
 
-; 352  : 
-; 353  : 		//! found file ?
-; 354  : 		if (cur_dir.flags == FS_FLAG_GENERAL) {
+; 351  : 
+; 352  : 		//! found file ?
+; 353  : 		if (cur_dir.flags == FS_FLAG_GENERAL) {
 
 	cmp	DWORD PTR cur_dir$[rsp+48], 2
 	jne	SHORT $LN13@fat32_open
 
-; 355  : 			return cur_dir;
+; 354  : 			return cur_dir;
 
 	lea	rax, QWORD PTR cur_dir$[rsp]
 	mov	rdi, QWORD PTR $T11[rsp]
@@ -3349,13 +3348,17 @@ $LN17:
 	jmp	$LN15@fat32_open
 $LN13@fat32_open:
 
-; 356  : 		}
-; 357  : 
-; 358  : 		//! unable to find
-; 359  : 		vfs_node_t ret;
-; 360  : 		ret.flags = FS_FLAG_INVALID;
+; 355  : 		}
+; 356  : 
+; 357  : 		//! unable to find
+; 358  : 		vfs_node_t ret;
+; 359  : 		ret.flags = FS_FLAG_INVALID;
 
 	mov	DWORD PTR ret$3[rsp+48], 3
+
+; 360  : 		ret.size = 0;
+
+	mov	DWORD PTR ret$3[rsp+32], 0
 
 ; 361  : 		return ret;
 
@@ -3458,13 +3461,13 @@ $LN8@fat32_open:
 	lea	rdx, QWORD PTR pathname$2[rsp]
 	lea	rcx, QWORD PTR $T9[rsp]
 	call	?fat32_locate_dir@@YA?AU_vfs_node_@@PEBD@Z ; fat32_locate_dir
-	lea	rcx, QWORD PTR $T5[rsp]
+	lea	rcx, QWORD PTR $T7[rsp]
 	mov	rdi, rcx
 	mov	rsi, rax
 	mov	ecx, 96					; 00000060H
 	rep movsb
 	lea	rax, QWORD PTR cur_dir$[rsp]
-	lea	rcx, QWORD PTR $T5[rsp]
+	lea	rcx, QWORD PTR $T7[rsp]
 	mov	rdi, rax
 	mov	rsi, rcx
 	mov	ecx, 96					; 00000060H
@@ -3483,23 +3486,23 @@ $LN5@fat32_open:
 ; 390  : 			//! search a sub directory instead for pathname
 ; 391  : 			cur_dir = fat32_locate_subdir (cur_dir, pathname);
 
-	lea	rax, QWORD PTR $T7[rsp]
+	lea	rax, QWORD PTR $T4[rsp]
 	lea	rcx, QWORD PTR cur_dir$[rsp]
 	mov	rdi, rax
 	mov	rsi, rcx
 	mov	ecx, 96					; 00000060H
 	rep movsb
 	lea	r8, QWORD PTR pathname$2[rsp]
-	lea	rdx, QWORD PTR $T7[rsp]
+	lea	rdx, QWORD PTR $T4[rsp]
 	lea	rcx, QWORD PTR $T10[rsp]
 	call	?fat32_locate_subdir@@YA?AU_vfs_node_@@U1@PEBD@Z ; fat32_locate_subdir
-	lea	rcx, QWORD PTR $T4[rsp]
+	lea	rcx, QWORD PTR $T5[rsp]
 	mov	rdi, rcx
 	mov	rsi, rax
 	mov	ecx, 96					; 00000060H
 	rep movsb
 	lea	rax, QWORD PTR cur_dir$[rsp]
-	lea	rcx, QWORD PTR $T4[rsp]
+	lea	rcx, QWORD PTR $T5[rsp]
 	mov	rdi, rax
 	mov	rsi, rcx
 	mov	ecx, 96					; 00000060H
@@ -3521,7 +3524,7 @@ $LN3@fat32_open:
 
 ; 397  : 
 ; 398  : 		//! found file?
-; 399  : 		if (cur_dir.flags == FS_FLAG_GENERAL)
+; 399  : 		if (cur_dir.flags == FS_FLAG_GENERAL){
 
 	cmp	DWORD PTR cur_dir$[rsp+48], 2
 	jne	SHORT $LN2@fat32_open
@@ -3537,9 +3540,10 @@ $LN3@fat32_open:
 	jmp	SHORT $LN15@fat32_open
 $LN2@fat32_open:
 
-; 401  : 
-; 402  : 		//! find next '\'
-; 403  : 		p=strchr(p+1, '/');
+; 401  : 		}
+; 402  : 
+; 403  : 		//! find next '\'
+; 404  : 		p=strchr(p+1, '/');
 
 	mov	rax, QWORD PTR p$[rsp]
 	inc	rax
@@ -3548,31 +3552,35 @@ $LN2@fat32_open:
 	call	?strchr@@YAPEADPEADH@Z			; strchr
 	mov	QWORD PTR p$[rsp], rax
 
-; 404  : 		if (p)
+; 405  : 		if (p)
 
 	cmp	QWORD PTR p$[rsp], 0
 	je	SHORT $LN1@fat32_open
 
-; 405  : 			p++;
+; 406  : 			p++;
 
 	mov	rax, QWORD PTR p$[rsp]
 	inc	rax
 	mov	QWORD PTR p$[rsp], rax
 $LN1@fat32_open:
 
-; 406  : 	}
+; 407  : 	}
 
 	jmp	$LN12@fat32_open
 $LN11@fat32_open:
 
-; 407  : 
-; 408  : 	//! unable to find
-; 409  : 	vfs_node_t ret;
-; 410  : 	ret.flags = FS_FLAG_INVALID;
+; 408  : 
+; 409  : 	//! unable to find
+; 410  : 	vfs_node_t ret;
+; 411  : 	ret.flags = FS_FLAG_INVALID;
 
 	mov	DWORD PTR ret$[rsp+48], 3
 
-; 411  : 	return ret;
+; 412  : 	ret.size = 0;
+
+	mov	DWORD PTR ret$[rsp+32], 0
+
+; 413  : 	return ret;
 
 	lea	rax, QWORD PTR ret$[rsp]
 	mov	rdi, QWORD PTR $T11[rsp]
@@ -3582,7 +3590,7 @@ $LN11@fat32_open:
 	mov	rax, QWORD PTR $T11[rsp]
 $LN15@fat32_open:
 
-; 412  : }
+; 414  : }
 
 	add	rsp, 1048				; 00000418H
 	pop	rdi

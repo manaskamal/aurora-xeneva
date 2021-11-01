@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -26,7 +26,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v110</PlatformToolset>
+    <PlatformToolset>v120</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
@@ -38,14 +38,14 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v110</PlatformToolset>
+    <PlatformToolset>v120</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v110</PlatformToolset>
+    <PlatformToolset>v120</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
@@ -150,6 +150,7 @@
     <ClCompile Include="source\QuCanvas\QuCanvasMngr.cpp" />
     <ClCompile Include="source\QuCanvas\QuScreenRectList.cpp" />
     <ClCompile Include="source\QuCanvas\QuScreenStack.cpp" />
+    <ClCompile Include="source\QuEffect\QuBlur.cpp" />
     <ClCompile Include="source\quince\main.cpp" />
     <ClCompile Include="source\quince\QuBmpImage.cpp" />
     <ClCompile Include="source\quince\QuCursor.cpp" />
@@ -168,6 +169,7 @@
     <ClInclude Include="include\QuCanvas\QuScreenStack.h" />
     <ClInclude Include="include\QuCode.h" />
     <ClInclude Include="include\QuCursor.h" />
+    <ClInclude Include="include\QuEffect\QuBlur.h" />
     <ClInclude Include="include\QuEvent.h" />
     <ClInclude Include="include\QuMessageStore.h" />
     <ClInclude Include="include\QuRect.h" />

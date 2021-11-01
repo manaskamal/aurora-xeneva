@@ -9,6 +9,7 @@
 //!=================================================
 
 #include <arch\x86_64\kstack.h>
+#include <string.h>
 
 unsigned int index = 0;
 
@@ -16,9 +17,10 @@ extern uint64_t allocate_kstack (uint64_t *cr3) {
 
 	uint64_t location = KSTACK_START ; //+ index;
 	for (int i = 0; i < (2*1024*1024)/4096; i++) {
-		map_page_ex (cr3,(uint64_t)pmmngr_alloc(),location + i * 4096);
+		void* p = pmmngr_alloc();
+		memset(p, 0, 4096);
+		map_page_ex (cr3,(uint64_t)p,location + i * 4096);
 	}
-
 	//index += 8192;
 	return (KSTACK_START + 2*1024*1024);
 }

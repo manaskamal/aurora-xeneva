@@ -96,8 +96,16 @@
 
 #define SET_ALPHA(color, alpha) (((color << 8) >> 8) | ((alpha << 24) & 0xff000000))
 
+#define _RED(color)  ((color & 0x00FF0000) / 0x10000)
+#define _GRE(color)  ((color & 0x0000FF00) / 0x100)
+#define _BLU(color)  ((color & 0x000000FF) / 0x1)
+#define _ALP(color)  ((color & 0xFF000000) / 0x1000000)
+
 
 
 extern uint32_t alpha_blend (uint32_t color1, uint32_t color2);
 
+extern uint32_t make_col (uint8_t red, uint8_t green, uint8_t blue);
+extern void radial_gradient (int g_w, int g_h, uint32_t c1, uint32_t c2, int x1, int y1, float r);
+extern void linear_gradient (int x1, int y1, int x2, int y2, uint32_t col1, uint32_t col2);
 #endif

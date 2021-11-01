@@ -25,6 +25,12 @@
     <Filter Include="source\ttf">
       <UniqueIdentifier>{47632ede-142b-4015-8a1b-493a7823396f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\cff">
+      <UniqueIdentifier>{9897d8e0-59cc-4150-a14e-79d984e91abd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\cff">
+      <UniqueIdentifier>{a19e95f8-bd2a-4d07-8c43-f05cae10264a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\canvas.cpp">
@@ -46,6 +52,12 @@
       <Filter>source\ttf</Filter>
     </ClCompile>
     <ClCompile Include="source\clientctx.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\cff\cff.cpp">
+      <Filter>source\cff</Filter>
+    </ClCompile>
+    <ClCompile Include="source\font.cpp">
       <Filter>source</Filter>
     </ClCompile>
   </ItemGroup>
@@ -78,6 +90,12 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="include\clientctx.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\cff\cff.h">
+      <Filter>include\cff</Filter>
+    </ClInclude>
+    <ClInclude Include="include\font.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>

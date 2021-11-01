@@ -206,7 +206,6 @@ void QuEventLoop() {
 		//*==========================================================================
 		//*==========================================================================
 		if (diff_time > 15){	
-			
 			QuRenderTime(time.seconds, time.minutes, time.hour);
 			next_tick = sys_get_system_tick();
 			frame_time = 0;

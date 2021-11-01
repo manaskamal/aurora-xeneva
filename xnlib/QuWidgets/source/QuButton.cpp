@@ -14,6 +14,7 @@
 #include <string.h>
 #include <color.h>
 #include <QuPanel.h>
+#include <font.h>
 
 //================================================================================
 // Default Button Colors
@@ -60,7 +61,6 @@ void QuButtonRefresh (QuWidget *wid, QuWindow* win) {
 			acrylic_draw_arr_string (win->x + wid->x + (wid->width/2) - ((strlen(but->text)*8)/2),
 				win->y + wid->y + (wid->height/2) - 12/2
 				,(char*)but->text, SILVER);
-
 			acrylic_draw_rect_unfilled (win->x + wid->x, win->y + wid->y,but->widget.width, but->widget.height, SILVER); 
 			acrylic_draw_rect_unfilled (win->x + wid->x, win->y + wid->y,but->widget.width + 1, but->widget.height + 1, DESKBLUE); 
 			but->clicked = false;

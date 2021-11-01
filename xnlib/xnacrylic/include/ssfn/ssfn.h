@@ -30,10 +30,11 @@
 #ifndef _SSFN_H_
 #define _SSFN_H_
 
-#include <stdint.h>
+
 #include <string.h>
-#include <stdlib.h>
-#include <sys\_term.h>
+#include <stdint.h>
+#include <limits.h>
+
 
 #ifdef  __cplusplus
 extern "C" {
@@ -41,9 +42,9 @@ extern "C" {
 
 /* if stdint.h was not included before us */
 //#ifndef uint8_t
-//typedef unsigned char       uint8_t;
-//typedef unsigned short int  uint16_t;
-//typedef unsigned int        uint32_t;
+typedef unsigned char       uint8_t;
+typedef unsigned short int  uint16_t;
+typedef unsigned int        uint32_t;
 //#endif
 
 /***** file format *****/
@@ -101,7 +102,7 @@ extern "C" {
 #define SSFN_VARIANT_LOCAL6     6
 #define SSFN_NUMVARIANTS        7
 
-#pragma pack(push,1)
+#pragma pack (push,1)
 /* main SSFN header */
 typedef struct {
     uint8_t     magic[4];               /* SSFN magic bytes */
@@ -123,7 +124,9 @@ typedef struct {
     uint32_t    characters_offs[SSFN_NUMVARIANTS];  /* offset of characters tables per variant relative to magic */
     uint32_t    kerning_offs;           /* kerning table offset relative to magic */
 } ssfn_font_t;
+
 #pragma pack(pop)
+
 /***** renderer API *****/
 #define SSFN_FAMILY_ANY      0xff       /* select the first loaded font */
 #define SSFN_FAMILY_BYNAME   0xfe       /* select font by its unique name */
@@ -171,10 +174,9 @@ typedef struct {
     uint16_t pitch;                     /* data buffer bytes per line */
     uint32_t *cmap;                     /* pointer to color map */
     uint8_t data[SSFN_DATA_MAX];        /* data buffer */
-} ssfn_glyph_t;
-#pragma pack(pop)
+}ssfn_glyph_t;
+
 /* renderer context */
-#pragma pack(push,1)
 typedef struct {
     const ssfn_font_t **fnt[5];         /* font registry */
     const ssfn_font_t *s;               /* explicitly selected font */
@@ -196,6 +198,7 @@ typedef struct {
     int g;                              /* shift value for grid size */
     int m, ix, u,uix,uax, lx,ly, mx,my; /* helper variables */
 } ssfn_t;
+
 #pragma pack(pop)
 /***** API function protoypes *****/
 
@@ -204,7 +207,7 @@ int ssfn_load(ssfn_t *ctx, const ssfn_font_t *font);                            
 int ssfn_select(ssfn_t *ctx, int family, char *name, int style, int size, int mode);    /* select font to use */
 int ssfn_variant(ssfn_t *ctx, int variant);                                             /* select glyph variant (optional) */
 uint32_t ssfn_utf8(char **str);                                                         /* decode UTF-8 sequence */
-ssfn_glyph_t *ssfn_render(ssfn_t *ctx, uint32_t unicode);       /* return allocated glyph bitmap */
+ ssfn_glyph_t *ssfn_render(ssfn_t *ctx, uint32_t unicode);       /* return allocated glyph bitmap */
 int ssfn_kern(ssfn_t *ctx, uint32_t unicode, uint32_t nextunicode, int *x, int *y);     /* get kerning values */
 int ssfn_bbox(ssfn_t *ctx, char *str, int usekern, int *w, int *h);                     /* get bounding box of a rendered string */
 int ssfn_mem(ssfn_t *ctx);                                                              /* return how much memory is used */
@@ -221,7 +224,18 @@ int ssfn_putc(uint32_t unicode);                                                
 #ifndef SSFN_NOIMPLEMENTATION
 /*** normal renderer (ca. 22k, fully featured with error checking) ***/
 
-
+# ifndef NULL
+#  define NULL (void*)0
+# endif
+# ifndef size_t
+  // typedef __SIZE_TYPE__ size_t;
+# endif
+# ifndef private
+#  define private __attribute__((__visibility__("hidden")))
+# endif
+# ifndef inline
+#  define inline __inline__
+# endif
 
 /* Clang does not have built-in versions of these but gcc has */
 # ifndef SSFN_memcmp
@@ -229,7 +243,7 @@ int ssfn_putc(uint32_t unicode);                                                
 #   define SSFN_memcmp __builtin_memcmp
 #  else
 #   define SSFN_memcmp memcmp
-  //  extern int memcmp (const void *__s1, const void *__s2, size_t __n);
+    //extern int memcmp (const void *__s1, const void *__s2, size_t __n);
 #  endif
 # endif
 
@@ -238,7 +252,7 @@ int ssfn_putc(uint32_t unicode);                                                
 #   define SSFN_memset __builtin_memset
 #  else
 #   define SSFN_memset memset
-  //  extern void *memset (void *__s, int __c, size_t __n);
+    //extern void *memset (void *__s, int __c, size_t __n);
 #  endif
 # endif
 
@@ -247,7 +261,7 @@ int ssfn_putc(uint32_t unicode);                                                
 #   define SSFN_realloc __builtin_realloc
 #  else
 #   define SSFN_realloc realloc
-    //extern void *realloc (void *__ptr, size_t __size);
+   // extern void *realloc (void *__ptr, size_t __size);
 #  endif
 # endif
 
@@ -789,29 +803,24 @@ int ssfn_load(ssfn_t *ctx, const ssfn_font_t *font)
         return SSFN_ERR_INVINP;
     }
     ctx->err = SSFN_OK;
-	
-    if(memcmp(font->magic, SSFN_COLLECTION, 4)) {
-		//sys_print_text ("Till Here\n");
+    if(!SSFN_memcmp(font->magic, SSFN_COLLECTION, 4)) {
         end = (ssfn_font_t*)((uint8_t*)font + font->size);
         for(ptr = (ssfn_font_t*)((uint8_t*)font + 8); ptr < end && !ctx->err; ptr = (ssfn_font_t*)((uint8_t*)ptr + ptr->size))
             ssfn_load(ctx, ptr);
     } else {
-        if(memcmp(font->magic, SSFN_MAGIC, 4) || memcmp((uint8_t*)font + font->size - 4, SSFN_ENDMAGIC, 4) ||
+        if(SSFN_memcmp(font->magic, SSFN_MAGIC, 4) || SSFN_memcmp((uint8_t*)font + font->size - 4, SSFN_ENDMAGIC, 4) ||
             font->family > SSFN_FAMILY_HAND || font->fragments_offs > font->size || font->characters_offs[0] > font->size ||
             font->kerning_offs > font->size || font->fragments_offs >= font->characters_offs[0] || font->quality > 8) {
                 ctx->err = SSFN_ERR_BADFILE;
-				
         } else {
             ctx->len[font->family]++;
-            ctx->fnt[font->family] = (const ssfn_font_t**)realloc(ctx->fnt[font->family], ctx->len[font->family]*sizeof(void*));
-			
+            ctx->fnt[font->family] = (const ssfn_font_t**)SSFN_realloc(ctx->fnt[font->family], ctx->len[font->family]*sizeof(void*));
             if(!ctx->fnt[font->family])
                 ctx->err = SSFN_ERR_ALLOC;
             else
                 ctx->fnt[font->family][ctx->len[font->family]-1] = font;
         }
     }
-	
     return ctx->err;
 }
 

@@ -14,9 +14,11 @@
 #include <stdlib.h>
 #include <sys\_term.h>
 #include <color.h>
+#include <QuEffect\QuBlur.h>
+#include <fastcpy.h>
 
 QuWallpaper *wallpaper;
-
+uint64_t loc;
 
 void QuWallpaperPixel (unsigned x, unsigned y, uint32_t color) {
 	uint32_t *lfb = (uint32_t*)wallpaper->buffer;      
@@ -99,6 +101,7 @@ void QuWallpaperDraw (Image *img) {
 			}
 		}
 	}
+
 }
 
 void QuWallpaperPresent () {
@@ -110,4 +113,5 @@ void QuWallpaperPresent () {
 			lfb[(0 + i) + (0 + j) * canvas_get_width()] = color_a;
 		}
 	}
+
 }
