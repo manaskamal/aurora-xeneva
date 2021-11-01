@@ -133,6 +133,7 @@
     <ClInclude Include="include\QuKeycodeHelper.h" />
     <ClInclude Include="include\QuMenubar.h" />
     <ClInclude Include="include\QuPanel.h" />
+    <ClInclude Include="include\QuPopupMenu.h" />
     <ClInclude Include="include\QuRect.h" />
     <ClInclude Include="include\QuScrollbar.h" />
     <ClInclude Include="include\QuSlider.h" />
@@ -150,6 +151,7 @@
     <ClCompile Include="source\QuKeycodeHelper.cpp" />
     <ClCompile Include="source\QuMenubar.cpp" />
     <ClCompile Include="source\QuPanel.cpp" />
+    <ClCompile Include="source\QuPopupMenu.cpp" />
     <ClCompile Include="source\QuScrollbar.cpp" />
     <ClCompile Include="source\QuSlider.cpp" />
     <ClCompile Include="source\QuTerminal.cpp" />

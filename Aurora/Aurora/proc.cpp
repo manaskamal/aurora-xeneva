@@ -92,8 +92,9 @@ uint64_t *create_user_stack (uint64_t* cr3) {
 	
 	/* 1 mb stack / process */
 	for (int i=0; i < (2*1024*1024)/4096; i++) {
-		uint64_t block = (uint64_t)pmmngr_alloc();
-		map_page_ex(cr3, block,location + i * 4096);
+		uint64_t *block = (uint64_t*)pmmngr_alloc();
+		memset (block, 0, 4096);
+		map_page_ex(cr3, (uint64_t)block,location + i * 4096);
 	}
  
 	//x64_write_cr3((size_t)old_cr3);
