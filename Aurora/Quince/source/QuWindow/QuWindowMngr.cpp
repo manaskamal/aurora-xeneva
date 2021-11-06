@@ -171,11 +171,11 @@ void QuWindowMngr_MoveFocusWindow (int x, int y) {
 	if (draggable_win->y < 0)
 		draggable_win->y = 0;
 
-	if (draggable_win->x + draggable_win->width >= canvas_get_width())
+	/*if (draggable_win->x + draggable_win->width >= canvas_get_width())
 		draggable_win->x  = canvas_get_width() - draggable_win->width;
 
 	if (draggable_win->y + draggable_win->height >= canvas_get_height())
-		draggable_win->y = canvas_get_height() - draggable_win->height;
+		draggable_win->y = canvas_get_height() - draggable_win->height;*/
 
 
 	QuMessage msg;

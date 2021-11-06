@@ -62,7 +62,7 @@ void QuCanvasRelease (uint16_t dest_pid, QuWindow *win) {
 
 
 
-void QuCanvasBlit (QuWindow* win,uint32_t *canvas, unsigned x, unsigned y, unsigned w, unsigned h) {
+void QuCanvasBlit (QuWindow* win,unsigned int *canvas, unsigned x, unsigned y, unsigned w, unsigned h) {
 	uint32_t* lfb = (uint32_t*)0x0000600000000000;
 	uint32_t* fb = (uint32_t*)0xFFFFF00000000000;
 	uint32_t* wallp = (uint32_t*)0x0000600000000000;   //0x0000060000000000;
@@ -77,10 +77,19 @@ void QuCanvasBlit (QuWindow* win,uint32_t *canvas, unsigned x, unsigned y, unsig
 	if (info->dirty) {
 		if (info->rect_count > 0) {
 			for (int k = 0; k < info->rect_count; k++) {
-				for (int i = 0; i < info->rect[k].h; i++) 
+				int wid = info->rect[k].w;
+				int he = info->rect[k].h;
+
+				if (info->rect[k].x + info->rect[k].w >= width)
+					wid  = width - info->rect[k].x;
+
+				if (info->rect[k].y + info->rect[k].h>= height)
+					he = height - info->rect[k].y;
+
+				for (int i = 0; i < he; i++) 
 					fastcpy (lfb + (info->rect[k].y + i) * width + info->rect[k].x,win->canvas + (info->rect[k].y + i) * width + info->rect[k].x, 
-					info->rect[k].w * 4);
-				canvas_screen_update(info->rect[k].x, info->rect[k].y, info->rect[k].w, info->rect[k].h);
+					wid * 4);
+				canvas_screen_update(info->rect[k].x, info->rect[k].y, wid, he);
 				//QuScreenRectAdd(info->rect[k].x, info->rect[k].y, info->rect[k].w, info->rect[k].h);
 			}
 
@@ -89,11 +98,19 @@ void QuCanvasBlit (QuWindow* win,uint32_t *canvas, unsigned x, unsigned y, unsig
 			QuMoveCursor(QuCursorGetNewX(), QuCursorGetNewY());
 #endif
 
-		} else {
-			for (int i = 0; i < win->height; i++) 
-				fastcpy (lfb + (win->y + i) * width + win->x,win->canvas + (win->y + i) * width + win->x, win->width * 4);
+		} else {	
+			int wid = win->width;
+			int he = win->height;
+			if (win->x + win->width >= width)
+				wid  = width - win->x;
 
-			QuScreenRectAdd(win->x, win->y, win->width, win->height);
+			if (win->y + win->height >= height)
+				he = height - win->y;
+
+			for (int i = 0; i < he; i++) 
+				fastcpy (lfb + (win->y + i) * width + win->x,win->canvas + (win->y + i) * width + win->x, wid * 4);
+
+			QuScreenRectAdd(win->x, win->y, wid, he);
 		}
 #ifdef SW_CURSOR
 		QuMoveCursor(QuCursorGetNewX(), QuCursorGetNewY());

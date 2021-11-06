@@ -60,8 +60,8 @@ struct tt_table {
 };
 
 struct tt_coord {
-	float x;
-	float y;
+	int x;
+	int y;
 };
 
 struct tt_edge {
@@ -79,7 +79,7 @@ struct tt_contour {
 };
 
 struct tt_intersection {
-	float x;
+	int x;
 	int affect;
 };
 
@@ -105,6 +105,7 @@ typedef struct _ttf_table_ {
 
 typedef struct _ttf_font_ {
 	unsigned char* data;
+	unsigned char* pos;
 	ttf_table_t head_ptr;
 	ttf_table_t cmap_ptr;
 	ttf_table_t glyf_ptr;
@@ -117,6 +118,7 @@ typedef struct _ttf_font_ {
 	int loca_type;
 	uint16_t  cmap_type;
 	float scale;
+	int height;
 }ttf_font;
 
 #pragma pack (push,1)
@@ -178,5 +180,6 @@ typedef struct _ttf_group_table12_ {
 
 
 extern ttf_font * ttf_load (unsigned char *data);
-extern int tt_draw_string(ttf_font * font, int x, int y, const char * s, uint32_t color);
+extern void tt_draw_string(ttf_font * font, int x, int y, const char * s, uint32_t color);
+extern void ttf_set_size (ttf_font *font, float size);
 #endif

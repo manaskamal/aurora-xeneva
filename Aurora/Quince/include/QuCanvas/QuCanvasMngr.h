@@ -32,7 +32,7 @@ extern uint32_t* QuCanvasCreate (uint16_t dest_pid);
 //! @param y - Y coord
 //! @param w - Width
 //! @param h - Height
-extern void QuCanvasBlit (QuWindow* win,uint32_t *canvas, unsigned x, unsigned y, unsigned w, unsigned h);
+extern void QuCanvasBlit (QuWindow* win,unsigned int *canvas, unsigned x, unsigned y, unsigned w, unsigned h);
 
 //! QuCanvasPutPixel -- Puts pixel on specific canvas
 //! @param canvas -- Canvas Address

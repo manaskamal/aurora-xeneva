@@ -32,7 +32,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v110</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
@@ -144,6 +144,7 @@
     <ClInclude Include="c++\string" />
     <ClInclude Include="ctype.h" />
     <ClInclude Include="endian.h" />
+    <ClInclude Include="errno.h" />
     <ClInclude Include="fastcpy.h" />
     <ClInclude Include="float.h" />
     <ClInclude Include="heap.h" />
@@ -180,6 +181,7 @@
     <ClCompile Include="c++\memory.cpp" />
     <ClCompile Include="c++\ostream.cpp" />
     <ClCompile Include="c++\_string.cpp" />
+    <ClCompile Include="errno.cpp" />
     <ClCompile Include="heap.cpp" />
     <ClCompile Include="initializer.cpp" />
     <ClCompile Include="math.cpp" />
@@ -188,6 +190,7 @@
     <ClCompile Include="sys\stdlib.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <NASM Include="setjmp.asm" />
     <NASM Include="sys\callback.asm">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <FileType>Document</FileType>

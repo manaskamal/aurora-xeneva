@@ -59,7 +59,7 @@ typedef struct _QU_WIN_ {
 	int y;
 	int w;
 	int h;
-	uint32_t*  canvas;
+	unsigned int*  canvas;
 	uint32_t*  win_info_data;
 	QuList* widgets;
 	QuList* controls;
@@ -83,7 +83,7 @@ typedef struct _QuWidget_ {
 
 extern void QuCreateWindow (int x, int y, int w,int h, uint32_t* info_data, char* title);
 extern void QuWindowEnableDecoration (bool value);
-extern void QuWindowSetCanvas (uint32_t* address);
+extern void QuWindowSetCanvas (unsigned int* address);
 extern QuWindow* QuGetWindow ();
 extern int QuWindowGetX();
 extern int QuWindowGetY();

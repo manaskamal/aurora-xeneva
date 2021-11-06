@@ -34,6 +34,7 @@ extern char* strrchr(const char*, int);
 extern size_t strspn(const char*, const char*);
 extern char* strtok (char*, const char*);
 extern char* strtok_r (char*, const char*, char **);
+extern char* strstr(const char* s1, const char* s2);
 
 #define index(str, chr) strchr(str, chr)
 #define rindex(str, chr) strrchr(str, chr)

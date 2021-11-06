@@ -39,7 +39,7 @@ void create_canvas () {
 	canvas->bpp = bpp;
 	canvas->scanline = scanline;
 	if (double_buffer)
-		canvas->address = (uint32_t*)0x0000600000000000;
+		canvas->address = (unsigned int*)0x0000600000000000;
 
 }
 
@@ -52,7 +52,7 @@ bool canvas_is_double_buffered() {
 	return double_buffer;
 }
 
-void canvas_set_address (uint32_t* address) {
+void canvas_set_address (unsigned int* address) {
 	if (double_buffer == false)
 		canvas->address = address;
 }
@@ -99,13 +99,13 @@ void canvas_screen_update (uint32_t x, uint32_t y, uint32_t w, uint32_t h) {
 
 
 void canvas_draw_pixel (uint32_t x, uint32_t y, uint32_t color) {
-	uint32_t *lfb =  canvas->address;      
+	unsigned int *lfb =  canvas->address;      
 	lfb[x + y * canvas_get_width()] = color;
 }
 
 
 uint32_t canvas_get_pixel (uint32_t x, uint32_t y) {
-	uint32_t* lfb =  canvas->address; 
+	unsigned int* lfb =  canvas->address; 
 	return lfb[x + y * canvas_get_scale()];
 }
 
@@ -117,7 +117,7 @@ void canvas_fill (uint32_t w, uint32_t h, uint32_t color) {
 }
 
 
-uint32_t* canvas_get_framebuffer () {
+unsigned int* canvas_get_framebuffer () {
 	return canvas->address;
 }
 

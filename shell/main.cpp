@@ -21,13 +21,12 @@
 #include <stdlib.h>
 #include <math.h>
 #include <canvas.h>
-#include <ssfn\ssfn.h>
+#include <setjmp.h>
 #include <ttf\ttf.h>
 
 #define SSFN_CONSOLEBITMAP_TRUECOLOR
 
 #define PI  3.14159265
-
 
 void main (int argc, char*argv[]) {
 	sys_print_text ("\n");
@@ -42,3 +41,4 @@ void main (int argc, char*argv[]) {
 		sys_wait();
 	}
 }
+

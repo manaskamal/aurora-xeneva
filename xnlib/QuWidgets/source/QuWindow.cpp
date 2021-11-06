@@ -101,7 +101,7 @@ void QuWindowEnableDecoration (bool value) {
 }
 
 
-void QuWindowSetCanvas (uint32_t* address) {
+void QuWindowSetCanvas (unsigned int* address) {
 	root_win->canvas = address;
 }
 

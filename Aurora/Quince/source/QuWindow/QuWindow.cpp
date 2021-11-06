@@ -24,7 +24,7 @@
 
 static bool UpdateToolbar = true;
 
-QuWindow* QuWindowCreate (int x, int y, uint16_t owner_id, uint32_t* canvas) {
+QuWindow* QuWindowCreate (int x, int y, uint16_t owner_id, unsigned int* canvas) {
 	QuWindow* win = (QuWindow*)malloc(sizeof(QuWindow));
 	win->x = x;
 	win->y = y;
@@ -48,7 +48,7 @@ void QuWindowSetSize (QuWindow* win, int width, int height) {
 	win->height = height;
 }
 
-void QuWindowSetCanvas(QuWindow* win, uint32_t *canvas) {
+void QuWindowSetCanvas(QuWindow* win, unsigned int *canvas) {
 	win->canvas = canvas;
 }
 

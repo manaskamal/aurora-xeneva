@@ -97,6 +97,7 @@
     </ClInclude>
     <ClInclude Include="fastcpy.h" />
     <ClInclude Include="setjmp.h" />
+    <ClInclude Include="errno.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="string.cpp" />
@@ -123,6 +124,7 @@
       <Filter>c++</Filter>
     </ClCompile>
     <ClCompile Include="stdio.cpp" />
+    <ClCompile Include="errno.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="sys">
@@ -138,5 +140,6 @@
       <Filter>sys</Filter>
     </NASM>
     <NASM Include="_fast_copy.asm" />
+    <NASM Include="setjmp.asm" />
   </ItemGroup>
 </Project>

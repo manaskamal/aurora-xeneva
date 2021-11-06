@@ -24,7 +24,7 @@
 #define QU_CHANNEL_ADDRESS   0xFFFFD00000000000  //Client Send address
 #define QU_CHANNEL_RECEIVER  0xFFFFFD0000000000  //Client receiver address
 
-uint32_t * QuCanvasAddress = NULL;
+unsigned int * QuCanvasAddress = NULL;
 uint16_t app_id = 0;
 
 void QuChannelPut (QuMessage *msg, uint16_t to_id) {
@@ -91,10 +91,12 @@ void QuRegisterApplication (char* title) {
 	QuCreateWindow (win_def_x, win_def_y, win_def_w, win_def_h, info_data, title);
 	QuWindowSetCanvas (QuCanvasAddress);
 	acrylic_initialize_font();
+
 }
 
 
 uint16_t QuGetAppId() {
 	return app_id;
 }
+
 

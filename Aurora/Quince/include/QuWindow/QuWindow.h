@@ -58,7 +58,7 @@ typedef struct _QuWindow_ {
 }QuWindow;
 
 
-extern QuWindow* QuWindowCreate (int x, int y, uint16_t owner_id, uint32_t* canvas);
+extern QuWindow* QuWindowCreate (int x, int y, uint16_t owner_id, unsigned int* canvas);
 extern void QuWindowSetSize (QuWindow* win, int width, int height);
 extern void QuWindowSetCanvas(QuWindow* win, unsigned int *canvas);
 extern void QuWindowSetVisible (QuWindow* win,bool visible);

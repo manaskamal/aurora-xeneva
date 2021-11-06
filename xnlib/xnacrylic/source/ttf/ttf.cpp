@@ -15,9 +15,53 @@
 #include <color.h>
 #include <sys\mmap.h>
 #include <canvas.h>
+#include <ctype.h>
+#include <acrylic.h>
 
-float edge_at (float y, const tt_edge *edge) {
-	float u = (y - edge->start.y)/ (edge->end.y - edge->start.y);
+
+void ttf_seek (ttf_font *font, off_t offset) {
+	font->pos = (font->data + offset);
+}
+
+long ttf_tell (ttf_font *font) {
+	return font->pos - font->data;
+}
+
+uint8_t ttf_read_8(ttf_font *font) {
+	return *(font->pos++);
+}
+
+uint32_t ttf_read_32 (ttf_font *font) {
+	int a = ttf_read_8 (font);
+	int b = ttf_read_8 (font);
+	int c = ttf_read_8 (font);
+	int d = ttf_read_8 (font);
+	if (a < 0 || b < 0 || c < 0 || d < 0) return 0;
+	return ((a & 0xFF) << 24) | 
+		((b & 0xFF) << 16) | 
+		((c & 0xFF) << 8) | 
+		((d & 0xFF) << 0);
+}
+
+uint32_t ttf_convert_32 (uint32_t a) {
+	return ((a & 0xFF) << 24) | 
+		((a & 0xFF) << 16) | 
+		((a & 0xFF) << 8) | 
+		((a & 0xFF) << 0);
+}
+
+uint16_t ttf_read_16 (ttf_font *font) {
+	int a = ttf_read_8 (font);
+	int b = ttf_read_8 (font);
+	if ( a < 0 || b < 0) return 0;
+	return (( a & 0xFF) << 8) | 
+		((b & 0xFF) << 0);
+}
+
+
+
+int edge_at (int y, const tt_edge *edge) {
+	int u = (y - edge->start.y)/ (edge->end.y - edge->start.y);
 	return edge->start.x + u * (edge->end.x - edge->start.x);
 }
 
@@ -48,7 +92,7 @@ void sort_intersections(size_t cnt, tt_intersection *intersections) {
 }
 
 
-size_t prune_edges (size_t edgeCount, float y, const tt_edge edges[], tt_intersection into[]) {
+size_t prune_edges (size_t edgeCount, int y, const tt_edge edges[], tt_intersection into[]) {
 	size_t outWriter = 0;
 	for (size_t i = 0; i < edgeCount; ++i) {
 		if (y > edges[i].end.y || y <= edges[i].start.y) continue;
@@ -59,8 +103,8 @@ size_t prune_edges (size_t edgeCount, float y, const tt_edge edges[], tt_interse
 	return outWriter;
 }
 
-void process_scanline (float _y, const tt_shape *shape, size_t subsample_width, float subsamples[], size_t cnt,
-					   const tt_intersection crosses[]) {
+void process_scanline (int _y, const tt_shape *shape, size_t subsample_width, int *subsamples, size_t cnt,
+					   const tt_intersection *crosses) {
 
 	int wind = 0;
 	size_t j = 0;
@@ -69,7 +113,7 @@ void process_scanline (float _y, const tt_shape *shape, size_t subsample_width, 
 			wind += crosses[j].affect;
 			j++;
 		}
-		float last = x;
+		int last = x;
 		while (j < cnt && (x+1) > crosses[j].x) {
 			if (wind != 0) {
 				subsamples[x - shape->startx] += crosses[j].x - last;
@@ -110,13 +154,13 @@ static inline uint32_t tt_alpha_blend_rgba(uint32_t bottom, uint32_t top) {
 }
 
 
-void paint_scanline(int y, const tt_shape * shape, float * subsamples, uint32_t color) {
+void paint_scanline(int y, const tt_shape * shape, int * subsamples, uint32_t color) {
 	for (int x = shape->startx < 0 ? 0 : shape->startx; x < shape->lastx && x  < canvas_get_width(); ++x) {
-		uint16_t na = (int)(255 * subsamples[x - shape->startx]) >> 2;
-		uint32_t nc = tt_apply_alpha(color, na);
+		uint16_t na = (255 * subsamples[x - shape->startx]) >> 2;
+		uint32_t nc = tt_apply_alpha(color,na);
 		//sys_print_text ("Painting scanline\n");
 		//GFX(ctx, x, y) = tt_alpha_blend_rgba(GFX(ctx, x, y), nc);
-		canvas_get_framebuffer()[x + y * canvas_get_width()] = color; //tt_alpha_blend_rgba(canvas_get_pixel(x, y), color);
+		canvas_get_framebuffer()[x + y * canvas_get_width()] = tt_alpha_blend_rgba(canvas_get_pixel(x,y),nc);
 		subsamples[x-shape->startx] = 0;
 	}
 }
@@ -127,21 +171,21 @@ void tt_path_paint(const tt_shape * shape, uint32_t color) {
 	memset(crosses, 0, sizeof(tt_intersection) * size);
 
 	size_t subsample_width = shape->lastx - shape->startx;
-	/*sys_print_text ("Shape startx-> %d\n", shape->startx);
-	sys_print_text ("Shape lastx-> %d\n", shape->lastx);
-	sys_print_text ("Subsample width -> %d\n",subsample_width);
-	sys_print_text ("Size -> %d\n", size);*/
-	float * subsamples = (float*)malloc(sizeof(float)*subsample_width);
-	memset(subsamples, 0,sizeof(float)*subsample_width);
-	
+	sys_print_text ("SubSample wid -> %d\n", subsample_width);
+	int * subsamples = (int*)malloc(sizeof(int)*subsample_width);
+	memset(subsamples, 0,sizeof(int)*subsample_width);
+	sys_print_text ("Painting\n");
+
 	int startY = shape->starty < 0 ? 0 : shape->starty;
 	int endY = shape->lasty <= canvas_get_height() ? shape->lasty : canvas_get_height();
+	sys_print_text ("StartY -> %d\n", startY);
+	sys_print_text ("LastY -> %d\n", endY);
 	for (int y = startY; y < endY; ++y) {
-		float _y = y + 0.0001;
+		int _y = y + 0.0001;
 		for (int l = 0; l < 4; ++l) {
 			size_t cnt;
 			if ((cnt = prune_edges(size, _y, shape->edges, crosses))) {
-			//	//sort_intersections(cnt, crosses);
+			    sort_intersections(cnt, crosses);
 				process_scanline(_y, shape, subsample_width, subsamples, cnt, crosses);
 			}
 			_y += 1.0/4.0;
@@ -154,27 +198,17 @@ void tt_path_paint(const tt_shape * shape, uint32_t color) {
 }
 
 
-uint32_t ttf_read_32 (uint32_t val) {
-	val = ((val << 8) & 0xFF00FF00) | ((val >> 8) & 0xFF00FF);
-	return (val << 16) | (val >> 16);
-}
-
-uint16_t ttf_read_16 (uint16_t val) {
-	return (val << 8) | (val >> 8);
-}
-
-
 int ttf_xadvance_for_glyph(ttf_font *font, unsigned int ind) {
-	uint16_t *data = (uint16_t*)(font->data + font->hhea_ptr.offset + 2 * 17);
-	uint16_t numLong = ttf_read_16 (*data);
+	ttf_seek(font, font->hhea_ptr.offset + 2 * 17);
+	uint16_t numLong = ttf_read_16 (font);
 
 	if (ind < numLong) {
-		uint16_t *data2 = (uint16_t*)(font->data + font->hmtx_ptr.offset + ind * 4);
-		return ttf_read_16(*data2);
+		ttf_seek (font, font->hmtx_ptr.offset + ind * 4);
+		return ttf_read_16(font);
 	}
 
-	uint16_t *data3 = (uint16_t*)(font->data + font->hmtx_ptr.offset + (numLong - 1) * 4);
-	return ttf_read_16(*data3);
+	ttf_seek (font, font->hmtx_ptr.offset + (numLong - 1) * 4);
+	return ttf_read_16(font);
 }
 
 
@@ -189,15 +223,15 @@ void ttf_set_size_px (ttf_font *font, float size) {
 
 off_t ttf_get_glyph_offset (ttf_font * font, unsigned int glyph) {
 	if (font->loca_type == 0) {
-		uint16_t *data = (uint16_t*)(font->data + font->loca_ptr.offset + glyph * 2);
-		return ttf_read_16(*data) * 2;
+		ttf_seek (font, font->loca_ptr.offset + glyph * 2);
+		return ttf_read_16(font) * 2;
 	} else {
-		uint32_t* data = (uint32_t*)(font->data + font->loca_ptr.offset + glyph * 4);
-		return ttf_read_32 (*data);
+		ttf_seek (font, font->loca_ptr.offset + glyph * 4);
+		return ttf_read_32 (font);
 	}
 }
 
-tt_contour * tt_contour_start (float x, float y) {
+tt_contour * tt_contour_start (int x, int y) {
 	tt_contour *shape = (tt_contour*)malloc(sizeof(tt_contour) + sizeof(tt_edge)* 2);
 	shape->edge_count = 0;
 	shape->next_alloc = 2;
@@ -262,7 +296,7 @@ tt_shape* tt_contour_finish (tt_contour* in) {
 
 
 
-tt_contour * tt_contour_line_to (tt_contour * shape, float x, float y) {
+tt_contour * tt_contour_line_to (tt_contour * shape, int x, int y) {
 	if (shape->flags & 1) {
 		shape->edges[shape->edge_count].end.x = x;
 		shape->edges[shape->edge_count].end.y = y;
@@ -286,7 +320,7 @@ tt_contour * tt_contour_line_to (tt_contour * shape, float x, float y) {
 	return shape;
 }
 
-tt_contour * ttf_contour_move_to (tt_contour *shape, float x, float y) {
+tt_contour * ttf_contour_move_to (tt_contour *shape, int x, int y) {
 	if (!(shape->flags & 1) && shape->edge_count) {
 		shape = tt_contour_line_to (shape, shape->edges[shape->last_start].start.x, shape->edges[shape->last_start].start.y);
 	}
@@ -302,116 +336,111 @@ tt_contour * ttf_contour_move_to (tt_contour *shape, float x, float y) {
 	return shape;
 }
 
-void ttf_midpoint (float x_0, float y_0, float cx, float cy, float x_1, float y_1, float t, float *outx, float *outy) {
-	float t2 = t * t;
-	float nt = 1.0 - t;
-	float nt2 = nt * nt;
+void ttf_midpoint (int x_0, int y_0, int cx, int cy, int x_1, int y_1, int t, int *outx, int *outy) {
+	int t2 = t * t;
+	int nt = 1.0 - t;
+	int nt2 = nt * nt;
 	*outx = nt2 * x_0 + 2 * t * nt * cx + t2 * x_1;
 	*outy = nt2 * y_0 + 2 * t * nt * cy + t2 * y_1;
 }
 
-tt_contour * ttf_draw_glyph_into (tt_contour* contour, ttf_font *font, float x_offset, float y_offset,
-								  unsigned int glyph) {
+
+
+
+tt_contour * ttf_draw_glyph_into (tt_contour* contour, ttf_font *font, int x_offset, int y_offset,
+								  unsigned int glyph, uint32_t color) {
 	 off_t glyf_offset = ttf_get_glyph_offset (font, glyph);
 
 	 if (ttf_get_glyph_offset (font, glyph + 1) == glyf_offset) return contour;
 
-	 int16_t *data = (int16_t*)(font->data + font->glyf_ptr.offset + glyf_offset);
-	 int16_t numContour = ttf_read_16(*data);
-     uint16_t *data1 = (uint16_t*)(font->data + font->glyf_ptr.offset + glyf_offset + 10);
+	 ttf_seek (font, font->glyf_ptr.offset + glyf_offset);
+	
+	 int16_t numContour = ttf_read_16(font);
+	 int16_t xMin = ttf_read_16 (font);
+	 int16_t yMin = ttf_read_16 (font);
+	 int16_t xMax = ttf_read_16 (font);
+	 int16_t yMax = ttf_read_16 (font);
+	 int h = yMax - yMin;
+	 if (font->height == 0)
+		 font->height = h * font->scale + 12;
+
+	 ttf_seek (font, font->glyf_ptr.offset + glyf_offset + 10);
+
 	 if (numContour > 0) {
 		 uint16_t endPt;
 		 for (int i = 0; i < numContour; i++) {
-			 endPt = ttf_read_16 (*data1);		
-			 data1++;
+			 endPt = ttf_read_16 (font);		
 		 }
 
-		 data1 = 0;
-		 data1 = (uint16_t*)(font->data + font->glyf_ptr.offset + glyf_offset + 10 + (numContour*sizeof(uint16_t)));
-		 uint16_t numInstr = ttf_read_16(*data1);
-		 data1++;
-		 uint8_t *instr = (uint8_t*)data1;
+		 uint16_t numInstr = ttf_read_16(font);
+		
 		 for (unsigned int i = 0; i < numInstr; ++i) 
-			 instr++;
+			 ttf_read_8 (font);
+
 		 tt_vertex *vertices = (tt_vertex*)malloc(sizeof(tt_vertex) * (endPt + 1));
 		 memset (vertices, 0, sizeof(tt_vertex) * (endPt + 1));
-		 for (int i = 0; i < endPt; ) {
-			 uint8_t v = *instr;
+		 for (int i = 0; i < endPt + 1; ) {
+			 uint8_t v = ttf_read_8 (font);
 			 vertices[i].flags = v;
-			/* if (v & (1<<0))
-				 sys_print_text ("On Curve\n");
-			 else if (v & (1<<1))
-				 sys_print_text ("x-Short Value\n");
-			 else if (v & (1<<2))
-				 sys_print_text ("y-Short Value\n");
-			 else if (v & (1<<3))
-				 sys_print_text ("Repeat\n");
-			 else if (v & (1<<4))
-				 sys_print_text ("Positive x-Short vector\n");
-			 else if (v & (1 <<5))
-				 sys_print_text ("Positive y-Short vector\n");*/
-			
 			 i++;
-			 instr++;
+			 if (v & 8) {
+				 uint8_t repC = ttf_read_8 (font);
+				 while (repC) {
+					 vertices[i].flags = v;
+					 repC--;
+					 i++;
+				 }
+			 }
 		 }
 		 int last_x = 0;
 		 int last_y = 0;
-		 int16_t *data2 = (int16_t*)instr;  //convert into signed 16 bit
-		 for (int i = 0; i < endPt ; i++) {
+		 for (int i = 0; i < endPt + 1 ; i++) {
 			 unsigned char flags = vertices[i].flags;
 			 if (flags & (1 << 1)) {
 				 //! x-coord bytes are 1 byte long
 				 if (flags & (1 << 4)) {
-					 vertices[i].x = last_x + *instr;
-					 instr++;
-					// sys_print_text ("Vertices -> %d\n", vertices[i].x);
+					 vertices[i].x = last_x + ttf_read_8 (font);
+					// sys_print_text ("Vertices x -> %d\n", vertices[i].x);
 				 }else {
-					 vertices[i].x = last_x - *instr;
-					 instr++;
-					 //sys_print_text ("Vertices -> %d\n", vertices[i].x);
+					 vertices[i].x = last_x - ttf_read_8 (font);
+					 //sys_print_text ("Vertices x -> %d\n", vertices[i].x);
 				 }
 			 }else {
 				 if (flags & (1 << 4)) {
 					 vertices[i].x = last_x;
-					 // sys_print_text ("Vertices -> %d\n", vertices[i].x);
+					// sys_print_text ("Vertices x -> %d\n", vertices[i].x);
 				 } else {
-					 int16_t diff = ttf_read_16 (*instr);
-					 instr++;
-					 instr++;
+					 int16_t diff = ttf_read_16 (font);
 					 vertices[i].x = last_x + diff; 
-					 // sys_print_text ("Vertices -> %d\n", vertices[i].x);
+					// sys_print_text ("Vertices x-> %d\n", vertices[i].x);
 				 }
 			 }
 			 last_x = vertices[i].x;
 			// instr++;
 		 }
 
-		 for (int i = 0; i < endPt; i++) {
+		 for (int i = 0; i < endPt + 1; i++) {
 			 unsigned char flags = vertices[i].flags;
 			 if (flags & (1 << 2)) {
 				 //! One byte 
 				 if (flags & (1 << 5)) {
-					 vertices[i].y = last_y + *instr;
-					// sys_print_text ("Vertices -> %d\n", vertices[i].y);
-					 instr++;
+					 vertices[i].y = last_y + ttf_read_8(font);
+					// sys_print_text ("Vertices y -> %d\n", vertices[i].y);
 				 }else {
-					 vertices[i].y = last_y - *instr; 
-					 instr++;
-					// sys_print_text ("Vertices -> %d\n", vertices[i].y);
+					 vertices[i].y = last_y - ttf_read_8 (font); 
+					// sys_print_text ("Vertices y -> %d\n", vertices[i].y);
 				 }
 			 } else {
 				 if (flags & (1 << 5)) {
 					 vertices[i].y = last_y;
 					/* if (vertices[i].y > 4294966000)
 						 vertices[i].y = 0;*/
-					// sys_print_text ("Vertices -> %d\n", vertices[i].y);
+					// sys_print_text ("Vertices y -> %d\n", vertices[i].y);
 				 } else {
 					// int16_t *data3 = (int16_t*)instr;
-					 int16_t diff = ttf_read_16 (*instr);
-					 instr++;
-					 instr++;
+					 int16_t diff = ttf_read_16 (font);
 					 vertices[i].y = last_y + diff; 
-					  //sys_print_text ("Vertices -> %d\n", vertices[i].y);
+					// sys_print_text ("Vertices y -> %d\n", vertices[i].y);
 					/* if (vertices[i].y > 4294966000)
 						 vertices[i].y = 0;
 					*/
@@ -422,137 +451,75 @@ tt_contour * ttf_draw_glyph_into (tt_contour* contour, ttf_font *font, float x_o
 		 }
 
 		 int move_next = 1;
-		 uint16_t *data3 = (uint16_t*)(font->data + font->glyf_ptr.offset + glyf_offset + 10);
-		 uint16_t  next_end = ttf_read_16 (*data3);
-		 data3++;
-
-		 float lx = 0, ly = 0, cx = 0, cy = 0, x = 0, y = 0;
-		 float sx = 0, sy = 0;
+		 ttf_seek (font, font->glyf_ptr.offset + glyf_offset + 10);
+		 uint16_t  next_end = ttf_read_16 (font);
+		
+		 int x, y,lx,ly,cx,cy = 0;
+		 int sx,sy=0;
 		 int wasControl = 0;
-
+		 int x_pos;
+		 int y_pos;
+		 bool draw_curve = false;
 		 for (int i = 0; i < endPt + 1; ++i) {
-			 x = ((float)vertices[i].x) * font->scale + x_offset;
-			 y = (-(float)vertices[i].y) * font->scale + y_offset;
+			 x = vertices[i].x * font->scale + x_offset;
+			 y =  (-vertices[i].y) * font->scale + y_offset;
 			 int isCurve = !(vertices[i].flags & (1 << 0));
+			
 			 if (move_next) {
-				 contour = ttf_contour_move_to (contour, x, y); 
-				 if (isCurve) {
-					 float px = (float)vertices[next_end].x * font->scale + x_offset;
-					 float py = (-(float)vertices[next_end].y) * font->scale + y_offset;
-					 if (vertices[next_end].flags & (1 << 0)) {
-						 sx = px;
-						 sy = py;
-						 lx = px;
-						 ly = py;
-					 } else {
-						 float dx = (px + x) / 2.0;
-						 float dy = (py + y) / 2.0;
-						 lx = dx;
-						 ly = dy;
-						 sx = dx;
-						 sy = dy;
-					 }
-					 cx = x;
-					 cy = y;
-					 wasControl = 1;
-				 } else {
-					 lx = x;
-					 ly = y;
-					 sx = x;
-					 sy = y;
-					 wasControl = 0;
-				 }
+				 x_pos = x;
+				 y_pos = y;
 				 move_next = 0;
-				
+				 canvas_draw_pixel (x, y,color);
 			 }else {
-				 if (isCurve) {
-					 if (wasControl) {
-						 float dx = (cx + x) / 2.0;
-						 float dy = (cy + y) / 2.0;
-						 for (int i = 1; i < 10; ++i) {
-							 float mx, my;
-							 ttf_midpoint (lx, ly, cx, cy, dx, dy, (float)i / 10.0, &mx, &my);
-							 contour = tt_contour_line_to(contour, mx, my);
-						 }
-						 contour = tt_contour_line_to (contour, dx, dy);
-						 lx = dx;
-						 ly = dy;
-					 }
-					 cx = x;
-					 cy = y;
-					 wasControl = 1;
-				 }else {
-					 if (wasControl) {
-						 for (int i = 1; i < 10; ++i) {
-							 float mx, my;
-							 ttf_midpoint(lx, ly, cx, cy, x, y, (float)i / 10.0, &mx, &my);
-							 contour = tt_contour_line_to(contour, mx, my);
-						 }
-					 }
-					 contour = tt_contour_line_to (contour, x, y);
-					 lx = x;
-					 ly = y;
-					 wasControl = 0;
-				 }
+				 acrylic_draw_line (x_pos, y_pos, x, y, color);
+				// acrylic_draw_line (x_pos, y_pos, x, y,WHITE);
+				 x_pos = x;
+				 y_pos = y;
+				 
 			 }
+			 
 			 if (i == next_end) {
-				 if (wasControl) {
-					 for (int i = 1; i < 10; ++i) {
-						 float mx, my;
-						 ttf_midpoint(lx,ly, cx, cy, sx, sy,(float)i / 10.0, &mx, &my);
-						 contour = tt_contour_line_to(contour, mx, my);
-					 }
-				 }
-				 contour = tt_contour_line_to (contour, sx, sy);
+				 next_end = ttf_read_16(font);
 				 move_next = 1;
-				 next_end = ttf_read_16(*data3);
-				 data3++;
 			 }
+
+			
 		 }
-		 free(vertices);
 
 	}else if (numContour < 0) {
 		while(1) {
-			uint16_t flags = ttf_read_16(*data1);
-			data1++;
-			uint16_t ind = ttf_read_16(*data1);
-			data1++;
+			uint16_t flags = ttf_read_16(font);
+			uint16_t ind = ttf_read_16(font);
 			int16_t x, y;
 			if (flags & (1 << 0)) {
-				x = ttf_read_16(*data1);
-				data1++;
-				y = ttf_read_16(*data1);
-				data1++;
+				x = ttf_read_16(font);
+				y = ttf_read_16(font);
 			}else {
-				uint8_t *data2 = (uint8_t*)data1;
-				x = *data2;
-				data2++;
-				y = *data2;
-				data2++;
+				x = ttf_read_8(font);
+				y = ttf_read_8(font);
 			}
 
-			float x_f = x_offset;
-			float y_f = y_offset;
+			int x_f = x_offset;
+			int y_f = y_offset;
 			if (flags & (1 << 1)) {
 				x_f = x_offset + x * font->scale;
 				y_f = y_offset - y * font->scale;
 			}
 
 			if (flags & (1 << 3)) {
-				data1++;
+				ttf_read_16(font);
 			}else if (flags & (1 << 6)) {
-				data1++;
-				data1++;
+				ttf_read_16(font);
+				ttf_read_16(font);
 			} else if (flags & (1 << 7)) {
-				data1++;
-				data1++;
-				data1++;
-				data1++;
+				ttf_read_16(font);
+				ttf_read_16(font);
+				ttf_read_16(font);
+				ttf_read_16(font);
 			} else {
-			    unsigned char *cvalue = (unsigned char*)data1;
-				long o = font->data - cvalue;
-				contour = ttf_draw_glyph_into (contour, font, x_f, y_f, ind);
-				//seek (font, 0);
+				long o = ttf_tell(font);
+				contour = ttf_draw_glyph_into (contour, font, x_f, y_f, ind, color);
+				ttf_seek (font, o);
 			}
 			if (!(flags & (1 << 5))) break;
 		}
@@ -564,13 +531,13 @@ tt_contour * ttf_draw_glyph_into (tt_contour* contour, ttf_font *font, float x_o
 
 int ttf_glyph_for_code (ttf_font *font, unsigned int code) {
 	if (font->cmap_type == 12) {
-		ttf_cmap_format12 *format = (ttf_cmap_format12*)(font->data + font->cmap_start);
-		uint32_t ngroups = ttf_read_32 (format->nGroups);
-		ttf_group_table12 *group = (ttf_group_table12*)(font->data + font->cmap_start + sizeof(ttf_cmap_format12));
+		ttf_seek (font, font->cmap_start + 4 + 8);
+		uint32_t ngroups = ttf_read_32 (font);
+
 		for (unsigned int i = 0; i < ngroups; ++i) {
-			uint32_t start = ttf_read_32 (group[i].startCharCode);
-			uint32_t end = ttf_read_32(group[i].endCharCode);
-			uint32_t index = ttf_read_32 (group[i].startGlyphCode);
+			uint32_t start = ttf_read_32 (font);
+			uint32_t end = ttf_read_32(font);
+			uint32_t index = ttf_read_32 (font);
 
 			if (code >= start && code <= end) {
 				return index + (code - start);
@@ -578,28 +545,28 @@ int ttf_glyph_for_code (ttf_font *font, unsigned int code) {
 		}
 	} else if (font->cmap_type == 4) {
 		if (code > 0xFFFF) return 0;
-		uint32_t *segc = (uint32_t*)(font->data + font->cmap_start + 6);
-		uint16_t segCount = ttf_read_16 (*segc) / 2;
+
+		ttf_seek (font, font->cmap_start + 6);
+		uint16_t segCount = ttf_read_16(font) / 2;
+
 		for (int i = 0; i < segCount; ++i) {
-			uint32_t *data = (uint32_t*)(font->data + font->cmap_start + 12 + 2 * i);
-			uint16_t endCode = ttf_read_16(*data);
+			ttf_seek (font, font->cmap_start + 12 + 2 * i);
+			uint16_t endCode = ttf_read_16(font);
 			if (endCode >= code) {
-				uint32_t *data2 = (uint32_t*)(font->data + font->cmap_start + 12 + 2 * segCount + 2 + 2 * i);
-				uint16_t startCode = ttf_read_16(*data2);
+				ttf_seek (font, font->cmap_start + 12 + 2 * segCount + 2 + 2 * i);
+				uint16_t startCode = ttf_read_16(font);
 				if (startCode > code) {
 					return 0;
 				}
-
-				uint32_t *data3 = (uint32_t*)(font->data + font->cmap_start + 12 + 4 * segCount + 2 + 2 * i);
-				int16_t idDelta = ttf_read_16(*data3);
-				uint32_t *data4 = (uint32_t*)(font->data + font->cmap_start + 12 + 6 * segCount + 2 + 2 * i);
-				uint16_t idRangeOffset = ttf_read_16(*data4);
+				ttf_seek (font, font->cmap_start + 12 + 4 * segCount + 2 + 2 * i);
+				int16_t idDelta = ttf_read_16 (font);
+				ttf_seek (font, font->cmap_start + 12 + 6 * segCount + 2 + 2 * i);
+				uint16_t idRangeOffset = ttf_read_16(font);
 				if (idRangeOffset == 0) {
 					return idDelta + code;
 				} else {
-					uint32_t *data5 = (uint32_t*)(font->data + font->cmap_start + 12 + 6 * segCount + 2 + 2 * i + 
-						idRangeOffset + (code - startCode) * 2);
-					uint16_t ret_index = ttf_read_16 (*data5);
+					ttf_seek (font, font->cmap_start + 12 + 6 * segCount + 2 + 2 * i + idRangeOffset + (code - startCode) * 2);
+					return ttf_read_16(font);
 				}
 			}
 		}
@@ -609,46 +576,40 @@ int ttf_glyph_for_code (ttf_font *font, unsigned int code) {
 }
 
 
-int tt_draw_string(ttf_font * font, int x, int y, const char * s, uint32_t color) {
-	tt_contour * contour = tt_contour_start(0, 0);
-
-	float x_offset = x;
+void tt_draw_string (ttf_font *font, int x, int y, const char* s, uint32_t color) {
+	tt_contour *con = tt_contour_start(x,y);
+	uint32_t state = 0;
 	uint32_t cp = 0;
-	uint32_t istate = 0;
 
-	for (const unsigned char * c = (const unsigned char*)s; *c; ++c) {
-		if (!decode(&istate, &cp, *c)) {
-			cp = *c;
-			unsigned int glyph = ttf_glyph_for_code(font, cp);
-			contour = ttf_draw_glyph_into(contour,font,x_offset,y,glyph);
-			x_offset += ttf_xadvance_for_glyph(font, glyph) * font->scale;
+	for (const unsigned char* c = (const unsigned char*)s; *c; ++c) {
+		if (!decode (&state, &cp, *c)) {
+			int code = ttf_glyph_for_code (font,cp);
+			con = ttf_draw_glyph_into (con, font, x,y,code, color);
+			x += ttf_xadvance_for_glyph(font, code) * font->scale;
 		}
 	}
-
-	if (contour->edge_count) {
-		tt_shape * shape = tt_contour_finish(contour);
-		tt_path_paint(shape, color);
-		free(shape);
-	}
-	free(contour);
-
-	return x_offset - x;
+	free (con);
 }
 
 ttf_font * ttf_load (unsigned char* data) {
 	ttf_font *font = (ttf_font*)malloc(sizeof(ttf_font));
 	font->data = data;
-	offset_table_t *poff = (offset_table_t*)data;
-	poff->apple_scaler_type = ttf_read_32(poff->apple_scaler_type);
-	uint16_t num_tables = ttf_read_16 (poff->num_tables);
-	table_dirent_t *tbl = (table_dirent_t*)(poff + 1);
+	font->pos = font->data;
+	font->height = 0;
 
-	for (int i = 0; i < num_tables; i++) {
-		uint32_t tag = ttf_read_32(tbl[i].tag);
-		uint32_t offset = ttf_read_32(tbl[i].offset);
-		uint32_t length = ttf_read_32(tbl[i].length);
+	uint32_t scaler_type  = ttf_read_32 (font);
+	uint16_t num_tables = ttf_read_16 (font);
+	uint16_t search_range = ttf_read_16 (font);
+	uint16_t entry_select = ttf_read_16 (font);
+	uint16_t range_shift = ttf_read_16 (font);
 
-		switch(tag) {
+	for (unsigned int i = 0; i < num_tables; i++) {
+		uint32_t tag = ttf_read_32 (font);
+		uint32_t checksum = ttf_read_32(font);
+		uint32_t offset = ttf_read_32 (font);
+		uint32_t length = ttf_read_32(font);
+
+		switch (tag) {
 		case TAG_HEAD:
 			font->head_ptr.offset = offset;
 			font->head_ptr.length = length;
@@ -680,79 +641,42 @@ ttf_font * ttf_load (unsigned char* data) {
 		}
 	}
 
-	ttf_head *head = (ttf_head*)(data + font->head_ptr.offset);
-	uint16_t unitsPerEm = ttf_read_16(head->unitsPerEm);
-	font->em_size = unitsPerEm; //unitsPerEm;
-	sys_print_text ("EM Size -> %d\n", font->em_size);
-	font->loca_type = head->indexToLocFormat;
-	sys_print_text ("Loca type -> %d\n", font->loca_type);
-	ttf_cmap_index *cmap_i = (ttf_cmap_index*)(data + font->cmap_ptr.offset);
-	ttf_cmap_subtable *cmap_sub_tab = (ttf_cmap_subtable*)(data + font->cmap_ptr.offset + sizeof(ttf_cmap_index));
-	int best_cmap_offset = 0;
-	int platform_spec_id = 0;
-	for (int i = 0;  i < ttf_read_16(cmap_i->numberSubTables); i++) {
-		uint16_t platform = ttf_read_16(cmap_sub_tab[i].platformId);
-		uint16_t type = ttf_read_16(cmap_sub_tab[i].platformSpecificId);
-		uint32_t offset = ttf_read_32(cmap_sub_tab[i].offset);
+	ttf_seek (font, font->head_ptr.offset + 18);
+	font->em_size = ttf_read_16 (font);
 
-		switch(platform) {
-		case PLATFORM_ID_UNICODE:
-			//currently unsupported
-			break;
-		case PLATFORM_ID_MACINTOSH:
-			//skip
-			break;
-		case PLATFORM_ID_MICROSOFT:
-			best_cmap_offset = offset;  //! Only use Microsofts platform id
-			switch(type) {
-			case 0:
-				platform_spec_id = type;
-				break;
-			case 1:
-				platform_spec_id = type;
-				break;
-			case 2:
-				platform_spec_id = type;
-				break;
-			case 3:
-				platform_spec_id = type;
-				break;
-			case 4:
-				platform_spec_id = type;
-				break;
-			case 5:
-			    platform_spec_id = type;
-				break;
-			case 10:
-				platform_spec_id = type;
-				break;
-			}
-			break;
+	ttf_seek (font, font->head_ptr.offset + 50);
+	font->loca_type = ttf_read_16 (font);
+	
+	ttf_seek (font, font->cmap_ptr.offset);
+
+	uint32_t best = 0;
+	int best_score = 0;
+	uint16_t cmap_version = ttf_read_16(font);
+	uint16_t cmap_size = ttf_read_16 (font);
+
+	for (unsigned int i = 0; i < cmap_size; ++i) {
+		uint16_t platform = ttf_read_16 (font);
+		uint16_t type = ttf_read_16 (font);
+		uint32_t offset = ttf_read_32 (font);
+
+		if ((platform == 3 || platform == 0) && type == 10) {
+			best = offset;
+			best_score = 4;
+		}else if (platform == 0 && type == 4) {
+			best = offset;
+			best_score = 4;
+		}else if (((platform == 0 && type == 3) || (platform == 3 && type == 1)) && best_score < 2) {
+			best = offset;
+			best_score = 2;
 		}
 	}
 
-	font->cmap_start = (off_t)(font->cmap_ptr.offset + best_cmap_offset);
+	ttf_set_size (font, 20);
 
-	uint16_t *format = (uint16_t*)(data + font->cmap_ptr.offset + best_cmap_offset);
-	uint16_t cmap_format = ttf_read_16 (*format);
-	font->cmap_type = cmap_format;
+	ttf_seek (font, font->cmap_ptr.offset + best);
 
-	ttf_set_size_px(font, 2.1f);
+	font->cmap_type = ttf_read_16 (font);
+	font->cmap_start = font->cmap_ptr.offset + best;
 
-	tt_contour *contour = tt_contour_start(0,0);
-	unsigned int glyph = ttf_glyph_for_code(font, 'P');
-
-	contour = ttf_draw_glyph_into(contour,font,0,0,glyph);
-//	x_offset += ttf_xadvance_for_glyph(font, glyph) * font->scale;
-	//		sys_print_text ("XOff-> %d\n", x_offset);
-	//	}
-	//}
-
-	sys_print_text ("Contour edgeC -> %d\n",contour->edge_count);
-	if (contour->edge_count) {
-		tt_shape * shape = tt_contour_finish(contour);
-		tt_path_paint(shape, WHITE);
-		free(shape);
-	}
 	return font;
 }

@@ -9,17 +9,17 @@
 ///!=================================================
 
 #include <font.h>
-#include <cff\cff.h>
+//#include <cff\cff.h>
 
 Font *system_font;
 
 
 void acrylic_initialize_font () {
-	system_font = LoadCFF("/Corbel.cff");
+	//system_font = LoadCFF("/Corbel.cff");
 }
 
 void acrylic_font_draw_string ( char* string, int x, int y, uint32_t color) {
-	CFFDrawString(system_font,string,x, y, color);
+	//CFFDrawString(system_font,string,x, y, color);
 }
 
 Font* acrylic_get_system_font () {

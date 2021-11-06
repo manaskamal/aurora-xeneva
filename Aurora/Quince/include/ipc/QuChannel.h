@@ -28,6 +28,7 @@ typedef struct _Qu_message_ {
 	uint32_t *p_value;
 	uint32_t *p_value2;
 	char *value;
+	unsigned char* value2;
 }QuMessage;
 
 

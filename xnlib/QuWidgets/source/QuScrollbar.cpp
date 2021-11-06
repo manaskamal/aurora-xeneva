@@ -83,8 +83,7 @@ void QuScrollbarMouseEvent (QuWidget* wid, QuWindow* win, int code,bool clicked,
 
 
 		}
-	}
-
+	
 	if (win->draggable_widget) { 
 				//scroll->thumb_y = y - scroll->thumb_drag_y;
 		if (scroll->type == QU_SCROLLBAR_HORIZONTAL) {
@@ -140,6 +139,7 @@ void QuScrollbarMouseEvent (QuWidget* wid, QuWindow* win, int code,bool clicked,
 				scroll->content->ScrollEvent (scroll->content,wid,win);
 			}
 		}
+	}
 	}
 
 }

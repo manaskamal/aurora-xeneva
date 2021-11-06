@@ -97,6 +97,7 @@ QuMenubar *QuCreateMenubar () {
 	mb->CtxMenus = QuListInit();
 	mb->focused = NULL;
 	mb->popup_enable = false;
+	mb->update_required = false;
 	return mb;
 }
 

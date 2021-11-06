@@ -20,24 +20,27 @@
 void QuBlur (unsigned char* input, unsigned char* output,int cx, int cy, int w, int h) {
 	int red, green, blue = 0;
 
-	int sum;
-	for (int i = 1; i <w; i++) {
-		for (int j = 1;j < h; j++) {
-			sum = input[(cx + i -1)*canvas_get_width()+(cy+j+1)] +
-				  input[(cx+i+0)*canvas_get_width()+(cy+j+1)] +
-				  input[(cx+i+1)*canvas_get_width()+(cy+j+1)] +
-				  input[(cx+i-1)*canvas_get_width()+(cy+j+0)] +
-				  input[(cx+i+0)*canvas_get_width()+(cy+j+0)] +
-				  input[(cx+i+1)*canvas_get_width()+(cy+j+0)] +
-				  input[(cx+i-1)*canvas_get_width()+(cy+j-1)] +
-				  input[(cx+i+0)*canvas_get_width()+(cy+j-1)] +
-				  input[(cx+i+1)*canvas_get_width()+(cy+j-1)] ;
+	uint64_t sum = 0;
+	for (int j = 0; j <h;j++) {
+		for (int i = 0;i < w;i++) {
 
-	        output[(cx+ i + 1)  *canvas_get_width() +(cy+j+1)]= sum /9;
-			
+			if (i < 1 || j < 1 || i + 1 == w || j + 1 == h)
+				continue;
+
+			sum = input[(cx + i -1)+(cy+j-1)*canvas_get_width()] +
+				  input[(cx+i+0)+(cy+j-1)*canvas_get_width()] +
+				  input[(cx+i+1)+(cy+j-1)*canvas_get_width()] +
+				  input[(cx+i-1)+(cy+j+0)*canvas_get_width()] +
+				  input[(cx+i+0)+(cy+j+0)*canvas_get_width()] +
+				  input[(cx+i+1)+(cy+j+0)*canvas_get_width()] +
+				  input[(cx+i-1)+(cy+j+1)*canvas_get_width()] +
+				  input[(cx+i+0)+(cy+j+1)*canvas_get_width()] +
+				  input[(cx+i+1)+(cy+j+1)*canvas_get_width()] ;
+
+			//SET_ALPHA(sum,0xFF);
+	        output[(cx + i) +(cy + j) *canvas_get_width() ]= sum/9;
 		}
 	
 	}
-
 
 }

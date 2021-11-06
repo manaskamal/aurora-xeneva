@@ -28,4 +28,8 @@ extern void acrylic_draw_image (Image *img, unsigned x, unsigned y);
 extern void acrylic_draw_string (unsigned x, unsigned y, char *text, uint32_t b_color, uint32_t f_color);
 extern void acrylic_draw_arr_font (unsigned x, unsigned y, char c, uint32_t color);
 extern void acrylic_draw_arr_string (unsigned x, unsigned y, char *text, uint32_t color);
+extern void acrylic_draw_line (int x0, int y0, int x1, int y1, uint32_t color);
+extern void acrylic_draw_circle (int xc, int yc, int x, int y, uint32_t color);
+extern void acrylic_circ_bres (int xc, int yc, int r, uint32_t color);
+extern void acrylic_draw_bezier (int x[], int y[], uint32_t color);
 #endif

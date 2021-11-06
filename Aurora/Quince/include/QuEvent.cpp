@@ -137,7 +137,7 @@ void QuEventLoop() {
 			render_disable = true;
 			uint16_t dest_id = q_msg.from_id; 
 			uint32_t* canvas = QuCanvasCreate(dest_id);
-			QuWindow * window = QuWindowCreate(x,y,dest_id, canvas);
+			QuWindow * window = QuWindowCreate(x,y,dest_id,canvas);
 
 
 			uint64_t info_location = QU_WIN_INFO_START + win_info_counter * 4096;

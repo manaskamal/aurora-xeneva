@@ -15,7 +15,7 @@
 #include <canvas.h>
 
 void QuinceDrawBmp (char* filename, unsigned x, unsigned y, QuBitmap *bmp){
-	 FILE f;
+	 UFILE f;
 	 int fd = sys_open_file (filename, &f);
 	 valloc(0x0000070000000000);
 	 unsigned char* data = (unsigned char*)0x0000070000000000;

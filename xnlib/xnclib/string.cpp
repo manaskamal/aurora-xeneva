@@ -400,6 +400,23 @@ size_t strspn(const char *s1, const char *s2)
 	return (match);
 }
 
+
+char* strstr(const char* s1, const char* s2) {
+	int count = 0;
+	int s2Len = strlen(s2);
+
+	for (count = 0; s1[0]; count++){
+		if (!strncmp(s1,s2,s2Len))
+			return ((char*)s1);
+		else
+			s1++;
+	}
+
+	return NULL;
+}
+
+
+
 static char* saveptr = NULL;
 char *strtok(char *string, const char *delim)
 {

@@ -14,6 +14,11 @@
 #include <color.h>
 #include <psf\psf.h>
 #include <arrayfont.h>
+#include <math.h>
+
+
+#define sign(x)  ((x < 0) ? -1 :((x > 0) ? 1 : 0))
+
 
 void acrylic_draw_rect_filled (unsigned x, unsigned y, unsigned w, unsigned h, uint32_t col) {
 	for (int i = 0; i < w; i++) {
@@ -93,3 +98,86 @@ void acrylic_draw_arr_string (unsigned x, unsigned y, char *text, uint32_t color
 		acrylic_draw_arr_font(x, y, *(text)++, color);
 }
 
+void acrylic_draw_line (int x1, int y1, int x2, int y2, uint32_t color) {
+	int dx = x2-x1;
+    int dy = y2-y1;
+    int dxabs = abs(dx);
+    int dyabs = abs(dy);
+    int sdx = sign(dx);
+    int sdy = sign(dy);
+    int x = 0;
+    int y = 0;
+    int px = x1;
+    int py = y1;
+
+    canvas_draw_pixel(px, py, color);
+    if (dxabs>=dyabs) {
+        for(int i=0;i<dxabs;i++){
+            y+=dyabs;
+            if (y>=dxabs)
+            {
+                y-=dxabs;
+                py+=sdy;
+            }
+            px+=sdx;
+            canvas_draw_pixel(px, py, color);
+        }
+    }
+    else {
+        for(int i=0;i<dyabs;i++)
+        {
+            x+=dxabs;
+            if (x>=dyabs)
+            {
+                x-=dyabs;
+                px+=sdx;
+            }
+            py+=sdy;
+            canvas_draw_pixel(px, py, color);
+        }
+    }
+}
+
+
+void acrylic_draw_circle (int xc, int yc, int x, int y, uint32_t color) {
+	canvas_draw_pixel (xc + x, yc + y, color);
+	canvas_draw_pixel (xc - x, yc + y, color);
+	canvas_draw_pixel (xc + x, yc - y, color);
+	canvas_draw_pixel (xc - x, yc - y, color);
+	canvas_draw_pixel (xc + y, yc + x, color);
+	canvas_draw_pixel (xc - y, yc + y, color);
+	canvas_draw_pixel (xc + y, yc-x, color);
+	canvas_draw_pixel (xc - y, yc - x, color);
+}
+
+
+void acrylic_circ_bres (int xc, int yc, int r, uint32_t color) {
+	int x = 0, y = r;
+	int d = 3 - 2 * r;
+
+	while (y >= x) {
+		acrylic_draw_circle (xc,yc, x, y,color);
+		x++;
+
+		if (d > 0) {
+			y--;
+			d = d + 4 * (x - y) + 10;
+		} else 
+			d = d + 4 * x + 6;
+
+		acrylic_draw_circle (xc, yc, x, y, color);
+	}
+}
+
+void acrylic_draw_bezier (int x[], int y[], uint32_t color) {
+
+	double xu = 0.0, yu = 0.0, u = 0.0;
+	int i = 0;
+	for (u = 0.0; u <= 1.0; u += 0.0001) {
+		xu = pow(1-u,3)*x[0]+3*u*pow(1-u,2)*x[1]+3*pow(u,2)*(1-u)*x[2]
+		    + pow(u,3)*x[3];
+		yu= pow(1-u,3)*y[0]+3*u*pow(1-u,2)*y[1]+3*pow(u,2)*(1-u)*y[2] +
+			pow(u,3)*y[3];
+		canvas_draw_pixel((uint32_t)xu, (uint32_t)yu,color);
+	}
+}

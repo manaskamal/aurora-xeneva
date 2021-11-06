@@ -23,10 +23,10 @@ typedef struct _file_ {
 	uint32_t  start_cluster;
 	uint32_t  flags; 
 	uint32_t  status;
-}FILE;
+}UFILE;
 
-extern "C" int sys_open_file (char* filename, FILE *stream);
-extern "C" void sys_read_file (int fd, unsigned char* buffer,FILE *f);
+extern "C" int sys_open_file (char* filename, UFILE *stream);
+extern "C" void sys_read_file (int fd, unsigned char* buffer,UFILE *f);
 
 
 #endif

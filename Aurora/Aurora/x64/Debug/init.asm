@@ -241,10 +241,8 @@ $LN5:
 	call	?create_kthread@@YAPEAU_thread_@@P6AXXZ_K1QEADE@Z ; create_kthread
 
 ; 170  : 
-; 171  : 	//create_process ("/autask.exe", "tsk", 0, NULL);
-; 172  : 	//! Misc programs goes here
-; 173  : 	//create_process ("/cnsl.exe", "cnsl", 0, NULL);
-; 174  : 	create_process ("/dwm2.exe", "dwm4", 0, NULL);
+; 171  : 	//! Misc programs goes here
+; 172  : 	create_process ("/dwm2.exe", "dwm4", 0, NULL);
 
 	xor	r9d, r9d
 	xor	r8d, r8d
@@ -252,37 +250,37 @@ $LN5:
 	lea	rcx, OFFSET FLAT:$SG7510
 	call	?create_process@@YAXPEBDPEADE1@Z	; create_process
 
-; 175  : 
-; 176  : 	//! Here start the scheduler (multitasking engine)
-; 177  : 	scheduler_start();
+; 173  : 
+; 174  : 	//! Here start the scheduler (multitasking engine)
+; 175  : 	scheduler_start();
 
 	call	?scheduler_start@@YAXXZ			; scheduler_start
 $LN2@kmain:
 
-; 178  : #endif
-; 179  : 
-; 180  : 	//! Loop forever
-; 181  : 	while(1) {
+; 176  : #endif
+; 177  : 
+; 178  : 	//! Loop forever
+; 179  : 	while(1) {
 
 	xor	eax, eax
 	cmp	eax, 1
 	je	SHORT $LN1@kmain
 
-; 182  : 		//!looping looping
-; 183  : 		x64_cli();
+; 180  : 		//!looping looping
+; 181  : 		x64_cli();
 
 	call	x64_cli
 
-; 184  : 		x64_hlt();
+; 182  : 		x64_hlt();
 
 	call	x64_hlt
 
-; 185  : 	}
+; 183  : 	}
 
 	jmp	SHORT $LN2@kmain
 $LN1@kmain:
 
-; 186  : }
+; 184  : }
 
 	add	rsp, 72					; 00000048H
 	ret	0

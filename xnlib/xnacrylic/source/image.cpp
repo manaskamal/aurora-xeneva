@@ -16,7 +16,7 @@
 
 Image* LoadImage (char* filename, unsigned char* data) {
 	Image *img = (Image*)malloc (sizeof(Image));
-	FILE f;
+	UFILE f;
 	int fd = sys_open_file (filename, &f);
 	sys_read_file (fd, data, &f);
 	img->width = 0;

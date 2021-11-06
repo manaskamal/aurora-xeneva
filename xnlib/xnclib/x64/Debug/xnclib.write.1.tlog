@@ -1,3 +1,5 @@
+^setjmp.asm
+E:\Xeneva Project\Xeneva\xnlib\xnclib\x64\Debug\setjmp.obj
 ^sys\callback.asm
 E:\Xeneva Project\Xeneva\xnlib\xnclib\x64\Debug\callback.obj
 ^_fast_copy.asm

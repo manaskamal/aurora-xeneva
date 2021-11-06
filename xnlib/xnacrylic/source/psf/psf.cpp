@@ -25,7 +25,7 @@ uint8_t *font_data = nullptr;
 void psf_register_font_lib (){
 	valloc(0xFFFFFFFFA0000000);
 	font_data = (uint8_t*)0xFFFFFFFFA0000000;
-	FILE file;
+	UFILE file;
 	int fd = sys_open_file ("/font.psf", &file);
 	sys_read_file (fd,font_data,&file);
 }

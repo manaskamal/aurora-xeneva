@@ -17,5 +17,4 @@
 
 extern "C" void sys_exit ();
 
-#define exit sys_exit
 #endif

@@ -8,8 +8,9 @@
 ///!===============================================
 
 #include <stdio.h>
+#include <sys\_file.h>
 
-int fprintf(_FILE f, const char* format, ...) {
+int fprintf(UFILE f, const char* format, ...) {
 	return -1;
 }
 
