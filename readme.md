@@ -41,7 +41,7 @@ Now, EFI-based bootloader called Xnldr is also included in the repository "uefi\
 
 #Screenshot
 ![alt text](https://github.com/manaskamal/aurora-xeneva/blob/master/images/xenevaFocus.jpg?raw=true)
-![alt text](https://github.com/manaskamal/aurora-xeneva/blob/master/images/RetroXe.jpg.jpg?raw=true)
+![alt text](https://github.com/manaskamal/aurora-xeneva/blob/master/images/RetroXe.jpg?raw=true)
 
 About Me:
 I am Manas Kamal Choudhury from Assam, India. I have been programming since class 6. I am self-taught.
