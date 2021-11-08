@@ -75,7 +75,7 @@ void PrintString (QuTerminal *text, char* string) {
 }
 
 int main (int argc, char* argv[]) {
-	QuRegisterApplication ("command~");
+	QuRegisterApplication ("Terminal~");
 	QuWindow* win = QuGetWindow();
 	QuWindowShowControls(win);
 	QuWindowAddControlEvent(QU_WIN_CONTROL_CLOSE, WindowClosed);

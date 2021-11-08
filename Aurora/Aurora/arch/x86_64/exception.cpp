@@ -142,7 +142,7 @@ void page_fault (size_t vector, void* param){
 	int resv = frame->error & 0x8;
 	int id = frame->error & 0x10;
  //
-	/*
+	
 	if (us){
 		panic ("Page Fault \n");
 		printf ("Faulting Address -> %x\n", vaddr);
@@ -157,7 +157,7 @@ void page_fault (size_t vector, void* param){
 		printf ("***User Priviledge fault***\n");
 		for(;;);
 	}else if (present){
-		
+		map_page((uint64_t)pmmngr_alloc(), (uint64_t)vaddr);
 	}else if (rw) {
 		panic ("Page Fault \n");
 		printf ("Faulting Address -> %x\n", vaddr);
@@ -197,8 +197,8 @@ void page_fault (size_t vector, void* param){
 		printf ("******Cause********\n");
 		printf ("*** Invalid Page ****\n");
 		for(;;);
-	}*/
-	map_page((uint64_t)pmmngr_alloc(), (uint64_t)vaddr);
+	}
+	//map_page((uint64_t)pmmngr_alloc(), (uint64_t)vaddr);
 }
 
 //! exception function -- fpu_fault

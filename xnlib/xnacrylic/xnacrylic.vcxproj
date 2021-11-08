@@ -135,7 +135,6 @@
     <ClCompile Include="source\font.cpp" />
     <ClCompile Include="source\image.cpp" />
     <ClCompile Include="source\psf\psf.cpp" />
-    <ClCompile Include="source\ttf\ttf.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\acrylic.h" />
@@ -147,8 +146,6 @@
     <ClInclude Include="include\image.h" />
     <ClInclude Include="include\jpg\jpeg_decoder.h" />
     <ClInclude Include="include\psf\psf.h" />
-    <ClInclude Include="include\ssfn\ssfn.h" />
-    <ClInclude Include="include\ttf\ttf.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

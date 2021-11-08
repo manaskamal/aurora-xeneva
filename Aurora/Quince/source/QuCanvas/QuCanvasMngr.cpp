@@ -79,6 +79,15 @@ void QuCanvasBlit (QuWindow* win,unsigned int *canvas, unsigned x, unsigned y, u
 			for (int k = 0; k < info->rect_count; k++) {
 				int wid = info->rect[k].w;
 				int he = info->rect[k].h;
+				int rx = info->rect[k].x;
+				int ry = info->rect[k].y;
+
+				if (rx < 0)
+					rx = 0;
+
+				if (ry < 0)
+					ry = 0;
+
 
 				if (info->rect[k].x + info->rect[k].w >= width)
 					wid  = width - info->rect[k].x;
@@ -87,9 +96,9 @@ void QuCanvasBlit (QuWindow* win,unsigned int *canvas, unsigned x, unsigned y, u
 					he = height - info->rect[k].y;
 
 				for (int i = 0; i < he; i++) 
-					fastcpy (lfb + (info->rect[k].y + i) * width + info->rect[k].x,win->canvas + (info->rect[k].y + i) * width + info->rect[k].x, 
+					fastcpy (lfb + (ry + i) * width + rx,win->canvas + (ry + i) * width + rx, 
 					wid * 4);
-				canvas_screen_update(info->rect[k].x, info->rect[k].y, wid, he);
+				canvas_screen_update(rx, ry, wid, he);
 				//QuScreenRectAdd(info->rect[k].x, info->rect[k].y, info->rect[k].w, info->rect[k].h);
 			}
 
@@ -101,6 +110,16 @@ void QuCanvasBlit (QuWindow* win,unsigned int *canvas, unsigned x, unsigned y, u
 		} else {	
 			int wid = win->width;
 			int he = win->height;
+			int winx = win->x;
+			int winy = win->y;
+
+			if (winx < 0)
+				winx = 0;
+
+			if (winy < 0)
+				winy = 0;
+
+
 			if (win->x + win->width >= width)
 				wid  = width - win->x;
 
@@ -108,9 +127,9 @@ void QuCanvasBlit (QuWindow* win,unsigned int *canvas, unsigned x, unsigned y, u
 				he = height - win->y;
 
 			for (int i = 0; i < he; i++) 
-				fastcpy (lfb + (win->y + i) * width + win->x,win->canvas + (win->y + i) * width + win->x, wid * 4);
+				fastcpy (lfb + (winy + i) * width + winx, win->canvas + (winy + i) * width + winx, wid * 4);
 
-			QuScreenRectAdd(win->x, win->y, wid, he);
+			QuScreenRectAdd(winx, winy, wid, he);
 		}
 #ifdef SW_CURSOR
 		QuMoveCursor(QuCursorGetNewX(), QuCursorGetNewY());

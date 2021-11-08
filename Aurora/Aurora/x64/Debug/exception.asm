@@ -67,13 +67,97 @@ $SG5912	DB	'Current task ->%s', 0aH, 00H
 	ORG $+5
 $SG5913	DB	'CS -> %x, SS -> %x', 0aH, 00H
 	ORG $+4
-$SG5936	DB	0aH, 'FPU Fault', 00H
-	ORG $+5
-$SG5944	DB	0aH, 'Alignment Check Fault at address ', 00H
-	ORG $+5
-$SG5952	DB	0aH, 'Machine Check Abort', 00H
+$SG5931	DB	'Page Fault ', 0aH, 00H
 	ORG $+3
-$SG5960	DB	0aH, 'SIMD FPU Fault', 00H
+$SG5932	DB	'Faulting Address -> %x', 0aH, 00H
+$SG5933	DB	'__PROCESSOR TRACE__', 0aH, 00H
+	ORG $+3
+$SG5934	DB	'RIP -> %x', 0aH, 00H
+	ORG $+5
+$SG5935	DB	'Stack -> %x', 0aH, 00H
+	ORG $+3
+$SG5936	DB	'RFLAGS -> %x', 0aH, 00H
+	ORG $+2
+$SG5937	DB	'Current thread -> %s', 0aH, 00H
+	ORG $+2
+$SG5938	DB	'Current Thread id -> %d', 0aH, 00H
+	ORG $+7
+$SG5939	DB	'CS -> %x, SS -> %x', 0aH, 00H
+	ORG $+4
+$SG5940	DB	'******Cause********', 0aH, 00H
+	ORG $+3
+$SG5941	DB	'***User Priviledge fault***', 0aH, 00H
+	ORG $+3
+$SG5951	DB	'Page Fault ', 0aH, 00H
+	ORG $+3
+$SG5952	DB	'Faulting Address -> %x', 0aH, 00H
+$SG5953	DB	'__PROCESSOR TRACE__', 0aH, 00H
+	ORG $+3
+$SG5954	DB	'RIP -> %x', 0aH, 00H
+	ORG $+5
+$SG5955	DB	'Stack -> %x', 0aH, 00H
+	ORG $+3
+$SG5956	DB	'RFLAGS -> %x', 0aH, 00H
+	ORG $+2
+$SG5957	DB	'Current thread -> %s', 0aH, 00H
+	ORG $+2
+$SG5958	DB	'Current Thread id -> %d', 0aH, 00H
+	ORG $+7
+$SG5959	DB	'CS -> %x, SS -> %x', 0aH, 00H
+	ORG $+4
+$SG5960	DB	'******Cause********', 0aH, 00H
+	ORG $+3
+$SG5961	DB	'*** R/W ***', 0aH, 00H
+	ORG $+3
+$SG5967	DB	'Page Fault ', 0aH, 00H
+	ORG $+3
+$SG5968	DB	'Faulting Address -> %x', 0aH, 00H
+$SG5969	DB	'__PROCESSOR TRACE__', 0aH, 00H
+	ORG $+3
+$SG5970	DB	'RIP -> %x', 0aH, 00H
+	ORG $+5
+$SG5971	DB	'Stack -> %x', 0aH, 00H
+	ORG $+3
+$SG5972	DB	'RFLAGS -> %x', 0aH, 00H
+	ORG $+2
+$SG5973	DB	'Current thread -> %s', 0aH, 00H
+	ORG $+2
+$SG5974	DB	'Current Thread id -> %d', 0aH, 00H
+	ORG $+7
+$SG5975	DB	'CS -> %x, SS -> %x', 0aH, 00H
+	ORG $+4
+$SG5976	DB	'******Cause********', 0aH, 00H
+	ORG $+3
+$SG5977	DB	'*** Reserved Page ***', 0aH, 00H
+	ORG $+1
+$SG5983	DB	'Page Fault ', 0aH, 00H
+	ORG $+3
+$SG5984	DB	'Faulting Address -> %x', 0aH, 00H
+$SG5985	DB	'__PROCESSOR TRACE__', 0aH, 00H
+	ORG $+3
+$SG5986	DB	'RIP -> %x', 0aH, 00H
+	ORG $+5
+$SG5987	DB	'Stack -> %x', 0aH, 00H
+	ORG $+3
+$SG5988	DB	'RFLAGS -> %x', 0aH, 00H
+	ORG $+2
+$SG5989	DB	'Current thread -> %s', 0aH, 00H
+	ORG $+2
+$SG5990	DB	'Current Thread id -> %d', 0aH, 00H
+	ORG $+7
+$SG5991	DB	'CS -> %x, SS -> %x', 0aH, 00H
+	ORG $+4
+$SG5992	DB	'******Cause********', 0aH, 00H
+	ORG $+3
+$SG5993	DB	'*** Invalid Page ****', 0aH, 00H
+	ORG $+1
+$SG6001	DB	0aH, 'FPU Fault', 00H
+	ORG $+5
+$SG6009	DB	0aH, 'Alignment Check Fault at address ', 00H
+	ORG $+5
+$SG6017	DB	0aH, 'Machine Check Abort', 00H
+	ORG $+3
+$SG6025	DB	0aH, 'SIMD FPU Fault', 00H
 CONST	ENDS
 PUBLIC	?exception_init@@YAXXZ				; exception_init
 PUBLIC	?panic@@YAXPEBDZZ				; panic
@@ -149,8 +233,8 @@ $pdata$?stack_fault@@YAX_KPEAX@Z DD imagerel $LN5
 $pdata$?general_protection_fault@@YAX_KPEAX@Z DD imagerel $LN5
 	DD	imagerel $LN5+177
 	DD	imagerel $unwind$?general_protection_fault@@YAX_KPEAX@Z
-$pdata$?page_fault@@YAX_KPEAX@Z DD imagerel $LN5
-	DD	imagerel $LN5+174
+$pdata$?page_fault@@YAX_KPEAX@Z DD imagerel $LN22
+	DD	imagerel $LN22+1085
 	DD	imagerel $unwind$?page_fault@@YAX_KPEAX@Z
 $pdata$?fpu_fault@@YAX_KPEAX@Z DD imagerel $LN5
 	DD	imagerel $LN5+38
@@ -227,7 +311,7 @@ $LN5:
 
 ; 230  : 	 panic("\nSIMD FPU Fault");
 
-	lea	rcx, OFFSET FLAT:$SG5960
+	lea	rcx, OFFSET FLAT:$SG6025
 	call	?panic@@YAXPEBDZZ			; panic
 $LN2@simd_fpu_f:
 
@@ -261,7 +345,7 @@ $LN5:
 
 ; 223  : 	panic("\nMachine Check Abort");
 
-	lea	rcx, OFFSET FLAT:$SG5952
+	lea	rcx, OFFSET FLAT:$SG6017
 	call	?panic@@YAXPEBDZZ			; panic
 $LN2@machine_ch:
 
@@ -295,7 +379,7 @@ $LN5:
 
 ; 216  : 	panic("\nAlignment Check Fault at address ");
 
-	lea	rcx, OFFSET FLAT:$SG5944
+	lea	rcx, OFFSET FLAT:$SG6009
 	call	?panic@@YAXPEBDZZ			; panic
 $LN2@alignment_:
 
@@ -329,7 +413,7 @@ $LN5:
 
 ; 208  : 	panic("\nFPU Fault");
 
-	lea	rcx, OFFSET FLAT:$SG5936
+	lea	rcx, OFFSET FLAT:$SG6001
 	call	?panic@@YAXPEBDZZ			; panic
 $LN2@fpu_fault:
 
@@ -347,9 +431,9 @@ _TEXT	ENDS
 ; File e:\xeneva project\xeneva\aurora\aurora\arch\x86_64\exception.cpp
 _TEXT	SEGMENT
 tv68 = 32
-present$ = 36
-rw$ = 40
-us$ = 44
+us$ = 36
+present$ = 40
+rw$ = 44
 resv$ = 48
 id$ = 52
 frame$ = 56
@@ -360,7 +444,7 @@ param$ = 104
 
 ; 134  : void page_fault (size_t vector, void* param){
 
-$LN5:
+$LN22:
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 88					; 00000058H
@@ -386,12 +470,12 @@ $LN5:
 	mov	rax, QWORD PTR [rax+8]
 	and	rax, 1
 	test	rax, rax
-	jne	SHORT $LN3@page_fault
+	jne	SHORT $LN20@page_fault
 	mov	DWORD PTR tv68[rsp], 1
-	jmp	SHORT $LN4@page_fault
-$LN3@page_fault:
+	jmp	SHORT $LN21@page_fault
+$LN20@page_fault:
 	mov	DWORD PTR tv68[rsp], 0
-$LN4@page_fault:
+$LN21@page_fault:
 	mov	eax, DWORD PTR tv68[rsp]
 	mov	DWORD PTR present$[rsp], eax
 
@@ -424,69 +508,358 @@ $LN4@page_fault:
 	mov	DWORD PTR id$[rsp], eax
 
 ; 144  :  //
-; 145  : 	/*
+; 145  : 	
 ; 146  : 	if (us){
+
+	cmp	DWORD PTR us$[rsp], 0
+	je	$LN17@page_fault
+
 ; 147  : 		panic ("Page Fault \n");
+
+	lea	rcx, OFFSET FLAT:$SG5931
+	call	?panic@@YAXPEBDZZ			; panic
+
 ; 148  : 		printf ("Faulting Address -> %x\n", vaddr);
+
+	mov	rdx, QWORD PTR vaddr$[rsp]
+	lea	rcx, OFFSET FLAT:$SG5932
+	call	?printf@@YAXPEBDZZ			; printf
+
 ; 149  : 		printf ("__PROCESSOR TRACE__\n");
+
+	lea	rcx, OFFSET FLAT:$SG5933
+	call	?printf@@YAXPEBDZZ			; printf
+
 ; 150  : 		printf ("RIP -> %x\n", frame->rip);
+
+	mov	rax, QWORD PTR frame$[rsp]
+	mov	rdx, QWORD PTR [rax+16]
+	lea	rcx, OFFSET FLAT:$SG5934
+	call	?printf@@YAXPEBDZZ			; printf
+
 ; 151  : 		printf ("Stack -> %x\n", frame->rsp);
+
+	mov	rax, QWORD PTR frame$[rsp]
+	mov	rdx, QWORD PTR [rax+40]
+	lea	rcx, OFFSET FLAT:$SG5935
+	call	?printf@@YAXPEBDZZ			; printf
+
 ; 152  : 		printf ("RFLAGS -> %x\n", frame->rflags);
+
+	mov	rax, QWORD PTR frame$[rsp]
+	mov	rdx, QWORD PTR [rax+32]
+	lea	rcx, OFFSET FLAT:$SG5936
+	call	?printf@@YAXPEBDZZ			; printf
+
 ; 153  : 		printf ("Current thread -> %s\n", get_current_thread()->name);
+
+	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
+	mov	rdx, QWORD PTR [rax+216]
+	lea	rcx, OFFSET FLAT:$SG5937
+	call	?printf@@YAXPEBDZZ			; printf
+
 ; 154  : 		printf ("Current Thread id -> %d\n", get_current_thread()->id);
+
+	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
+	movzx	eax, WORD PTR [rax+226]
+	mov	edx, eax
+	lea	rcx, OFFSET FLAT:$SG5938
+	call	?printf@@YAXPEBDZZ			; printf
+
 ; 155  : 		printf ("CS -> %x, SS -> %x\n", frame->cs, frame->ss);
+
+	mov	rax, QWORD PTR frame$[rsp]
+	mov	r8, QWORD PTR [rax+48]
+	mov	rax, QWORD PTR frame$[rsp]
+	mov	rdx, QWORD PTR [rax+24]
+	lea	rcx, OFFSET FLAT:$SG5939
+	call	?printf@@YAXPEBDZZ			; printf
+
 ; 156  : 		printf ("******Cause********\n");
+
+	lea	rcx, OFFSET FLAT:$SG5940
+	call	?printf@@YAXPEBDZZ			; printf
+
 ; 157  : 		printf ("***User Priviledge fault***\n");
+
+	lea	rcx, OFFSET FLAT:$SG5941
+	call	?printf@@YAXPEBDZZ			; printf
+$LN16@page_fault:
+
 ; 158  : 		for(;;);
+
+	jmp	SHORT $LN16@page_fault
+	jmp	$LN14@page_fault
+$LN17@page_fault:
+
 ; 159  : 	}else if (present){
-; 160  : 		
-; 161  : 	}else if (rw) {
-; 162  : 		panic ("Page Fault \n");
-; 163  : 		printf ("Faulting Address -> %x\n", vaddr);
-; 164  : 		printf ("__PROCESSOR TRACE__\n");
-; 165  : 		printf ("RIP -> %x\n", frame->rip);
-; 166  : 		printf ("Stack -> %x\n", frame->rsp);
-; 167  : 		printf ("RFLAGS -> %x\n", frame->rflags);
-; 168  : 		printf ("Current thread -> %s\n", get_current_thread()->name);
-; 169  : 		printf ("Current Thread id -> %d\n", get_current_thread()->id);
-; 170  : 		printf ("CS -> %x, SS -> %x\n", frame->cs, frame->ss);
-; 171  : 		printf ("******Cause********\n");
-; 172  : 		printf ("*** R/W ***\n");
-; 173  : 		for(;;);
-; 174  : 	}else if (resv) {
-; 175  : 		panic ("Page Fault \n");
-; 176  : 		printf ("Faulting Address -> %x\n", vaddr);
-; 177  : 		printf ("__PROCESSOR TRACE__\n");
-; 178  : 		printf ("RIP -> %x\n", frame->rip);
-; 179  : 		printf ("Stack -> %x\n", frame->rsp);
-; 180  : 		printf ("RFLAGS -> %x\n", frame->rflags);
-; 181  : 		printf ("Current thread -> %s\n", get_current_thread()->name);
-; 182  : 		printf ("Current Thread id -> %d\n", get_current_thread()->id);
-; 183  : 		printf ("CS -> %x, SS -> %x\n", frame->cs, frame->ss);
-; 184  : 		printf ("******Cause********\n");
-; 185  : 		printf ("*** Reserved Page ***\n");
-; 186  : 		for(;;);
-; 187  : 	}else if (id) {
-; 188  : 		panic ("Page Fault \n");
-; 189  : 		printf ("Faulting Address -> %x\n", vaddr);
-; 190  : 		printf ("__PROCESSOR TRACE__\n");
-; 191  : 		printf ("RIP -> %x\n", frame->rip);
-; 192  : 		printf ("Stack -> %x\n", frame->rsp);
-; 193  : 		printf ("RFLAGS -> %x\n", frame->rflags);
-; 194  : 		printf ("Current thread -> %s\n", get_current_thread()->name);
-; 195  : 		printf ("Current Thread id -> %d\n", get_current_thread()->id);
-; 196  : 		printf ("CS -> %x, SS -> %x\n", frame->cs, frame->ss);
-; 197  : 		printf ("******Cause********\n");
-; 198  : 		printf ("*** Invalid Page ****\n");
-; 199  : 		for(;;);
-; 200  : 	}*/
-; 201  : 	map_page((uint64_t)pmmngr_alloc(), (uint64_t)vaddr);
+
+	cmp	DWORD PTR present$[rsp], 0
+	je	SHORT $LN13@page_fault
+
+; 160  : 		map_page((uint64_t)pmmngr_alloc(), (uint64_t)vaddr);
 
 	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
 	mov	rdx, QWORD PTR vaddr$[rsp]
 	mov	rcx, rax
 	call	?map_page@@YA_N_K0@Z			; map_page
+	jmp	$LN12@page_fault
+$LN13@page_fault:
 
+; 161  : 	}else if (rw) {
+
+	cmp	DWORD PTR rw$[rsp], 0
+	je	$LN11@page_fault
+
+; 162  : 		panic ("Page Fault \n");
+
+	lea	rcx, OFFSET FLAT:$SG5951
+	call	?panic@@YAXPEBDZZ			; panic
+
+; 163  : 		printf ("Faulting Address -> %x\n", vaddr);
+
+	mov	rdx, QWORD PTR vaddr$[rsp]
+	lea	rcx, OFFSET FLAT:$SG5952
+	call	?printf@@YAXPEBDZZ			; printf
+
+; 164  : 		printf ("__PROCESSOR TRACE__\n");
+
+	lea	rcx, OFFSET FLAT:$SG5953
+	call	?printf@@YAXPEBDZZ			; printf
+
+; 165  : 		printf ("RIP -> %x\n", frame->rip);
+
+	mov	rax, QWORD PTR frame$[rsp]
+	mov	rdx, QWORD PTR [rax+16]
+	lea	rcx, OFFSET FLAT:$SG5954
+	call	?printf@@YAXPEBDZZ			; printf
+
+; 166  : 		printf ("Stack -> %x\n", frame->rsp);
+
+	mov	rax, QWORD PTR frame$[rsp]
+	mov	rdx, QWORD PTR [rax+40]
+	lea	rcx, OFFSET FLAT:$SG5955
+	call	?printf@@YAXPEBDZZ			; printf
+
+; 167  : 		printf ("RFLAGS -> %x\n", frame->rflags);
+
+	mov	rax, QWORD PTR frame$[rsp]
+	mov	rdx, QWORD PTR [rax+32]
+	lea	rcx, OFFSET FLAT:$SG5956
+	call	?printf@@YAXPEBDZZ			; printf
+
+; 168  : 		printf ("Current thread -> %s\n", get_current_thread()->name);
+
+	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
+	mov	rdx, QWORD PTR [rax+216]
+	lea	rcx, OFFSET FLAT:$SG5957
+	call	?printf@@YAXPEBDZZ			; printf
+
+; 169  : 		printf ("Current Thread id -> %d\n", get_current_thread()->id);
+
+	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
+	movzx	eax, WORD PTR [rax+226]
+	mov	edx, eax
+	lea	rcx, OFFSET FLAT:$SG5958
+	call	?printf@@YAXPEBDZZ			; printf
+
+; 170  : 		printf ("CS -> %x, SS -> %x\n", frame->cs, frame->ss);
+
+	mov	rax, QWORD PTR frame$[rsp]
+	mov	r8, QWORD PTR [rax+48]
+	mov	rax, QWORD PTR frame$[rsp]
+	mov	rdx, QWORD PTR [rax+24]
+	lea	rcx, OFFSET FLAT:$SG5959
+	call	?printf@@YAXPEBDZZ			; printf
+
+; 171  : 		printf ("******Cause********\n");
+
+	lea	rcx, OFFSET FLAT:$SG5960
+	call	?printf@@YAXPEBDZZ			; printf
+
+; 172  : 		printf ("*** R/W ***\n");
+
+	lea	rcx, OFFSET FLAT:$SG5961
+	call	?printf@@YAXPEBDZZ			; printf
+$LN10@page_fault:
+
+; 173  : 		for(;;);
+
+	jmp	SHORT $LN10@page_fault
+	jmp	$LN8@page_fault
+$LN11@page_fault:
+
+; 174  : 	}else if (resv) {
+
+	cmp	DWORD PTR resv$[rsp], 0
+	je	$LN7@page_fault
+
+; 175  : 		panic ("Page Fault \n");
+
+	lea	rcx, OFFSET FLAT:$SG5967
+	call	?panic@@YAXPEBDZZ			; panic
+
+; 176  : 		printf ("Faulting Address -> %x\n", vaddr);
+
+	mov	rdx, QWORD PTR vaddr$[rsp]
+	lea	rcx, OFFSET FLAT:$SG5968
+	call	?printf@@YAXPEBDZZ			; printf
+
+; 177  : 		printf ("__PROCESSOR TRACE__\n");
+
+	lea	rcx, OFFSET FLAT:$SG5969
+	call	?printf@@YAXPEBDZZ			; printf
+
+; 178  : 		printf ("RIP -> %x\n", frame->rip);
+
+	mov	rax, QWORD PTR frame$[rsp]
+	mov	rdx, QWORD PTR [rax+16]
+	lea	rcx, OFFSET FLAT:$SG5970
+	call	?printf@@YAXPEBDZZ			; printf
+
+; 179  : 		printf ("Stack -> %x\n", frame->rsp);
+
+	mov	rax, QWORD PTR frame$[rsp]
+	mov	rdx, QWORD PTR [rax+40]
+	lea	rcx, OFFSET FLAT:$SG5971
+	call	?printf@@YAXPEBDZZ			; printf
+
+; 180  : 		printf ("RFLAGS -> %x\n", frame->rflags);
+
+	mov	rax, QWORD PTR frame$[rsp]
+	mov	rdx, QWORD PTR [rax+32]
+	lea	rcx, OFFSET FLAT:$SG5972
+	call	?printf@@YAXPEBDZZ			; printf
+
+; 181  : 		printf ("Current thread -> %s\n", get_current_thread()->name);
+
+	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
+	mov	rdx, QWORD PTR [rax+216]
+	lea	rcx, OFFSET FLAT:$SG5973
+	call	?printf@@YAXPEBDZZ			; printf
+
+; 182  : 		printf ("Current Thread id -> %d\n", get_current_thread()->id);
+
+	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
+	movzx	eax, WORD PTR [rax+226]
+	mov	edx, eax
+	lea	rcx, OFFSET FLAT:$SG5974
+	call	?printf@@YAXPEBDZZ			; printf
+
+; 183  : 		printf ("CS -> %x, SS -> %x\n", frame->cs, frame->ss);
+
+	mov	rax, QWORD PTR frame$[rsp]
+	mov	r8, QWORD PTR [rax+48]
+	mov	rax, QWORD PTR frame$[rsp]
+	mov	rdx, QWORD PTR [rax+24]
+	lea	rcx, OFFSET FLAT:$SG5975
+	call	?printf@@YAXPEBDZZ			; printf
+
+; 184  : 		printf ("******Cause********\n");
+
+	lea	rcx, OFFSET FLAT:$SG5976
+	call	?printf@@YAXPEBDZZ			; printf
+
+; 185  : 		printf ("*** Reserved Page ***\n");
+
+	lea	rcx, OFFSET FLAT:$SG5977
+	call	?printf@@YAXPEBDZZ			; printf
+$LN6@page_fault:
+
+; 186  : 		for(;;);
+
+	jmp	SHORT $LN6@page_fault
+	jmp	$LN4@page_fault
+$LN7@page_fault:
+
+; 187  : 	}else if (id) {
+
+	cmp	DWORD PTR id$[rsp], 0
+	je	$LN3@page_fault
+
+; 188  : 		panic ("Page Fault \n");
+
+	lea	rcx, OFFSET FLAT:$SG5983
+	call	?panic@@YAXPEBDZZ			; panic
+
+; 189  : 		printf ("Faulting Address -> %x\n", vaddr);
+
+	mov	rdx, QWORD PTR vaddr$[rsp]
+	lea	rcx, OFFSET FLAT:$SG5984
+	call	?printf@@YAXPEBDZZ			; printf
+
+; 190  : 		printf ("__PROCESSOR TRACE__\n");
+
+	lea	rcx, OFFSET FLAT:$SG5985
+	call	?printf@@YAXPEBDZZ			; printf
+
+; 191  : 		printf ("RIP -> %x\n", frame->rip);
+
+	mov	rax, QWORD PTR frame$[rsp]
+	mov	rdx, QWORD PTR [rax+16]
+	lea	rcx, OFFSET FLAT:$SG5986
+	call	?printf@@YAXPEBDZZ			; printf
+
+; 192  : 		printf ("Stack -> %x\n", frame->rsp);
+
+	mov	rax, QWORD PTR frame$[rsp]
+	mov	rdx, QWORD PTR [rax+40]
+	lea	rcx, OFFSET FLAT:$SG5987
+	call	?printf@@YAXPEBDZZ			; printf
+
+; 193  : 		printf ("RFLAGS -> %x\n", frame->rflags);
+
+	mov	rax, QWORD PTR frame$[rsp]
+	mov	rdx, QWORD PTR [rax+32]
+	lea	rcx, OFFSET FLAT:$SG5988
+	call	?printf@@YAXPEBDZZ			; printf
+
+; 194  : 		printf ("Current thread -> %s\n", get_current_thread()->name);
+
+	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
+	mov	rdx, QWORD PTR [rax+216]
+	lea	rcx, OFFSET FLAT:$SG5989
+	call	?printf@@YAXPEBDZZ			; printf
+
+; 195  : 		printf ("Current Thread id -> %d\n", get_current_thread()->id);
+
+	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
+	movzx	eax, WORD PTR [rax+226]
+	mov	edx, eax
+	lea	rcx, OFFSET FLAT:$SG5990
+	call	?printf@@YAXPEBDZZ			; printf
+
+; 196  : 		printf ("CS -> %x, SS -> %x\n", frame->cs, frame->ss);
+
+	mov	rax, QWORD PTR frame$[rsp]
+	mov	r8, QWORD PTR [rax+48]
+	mov	rax, QWORD PTR frame$[rsp]
+	mov	rdx, QWORD PTR [rax+24]
+	lea	rcx, OFFSET FLAT:$SG5991
+	call	?printf@@YAXPEBDZZ			; printf
+
+; 197  : 		printf ("******Cause********\n");
+
+	lea	rcx, OFFSET FLAT:$SG5992
+	call	?printf@@YAXPEBDZZ			; printf
+
+; 198  : 		printf ("*** Invalid Page ****\n");
+
+	lea	rcx, OFFSET FLAT:$SG5993
+	call	?printf@@YAXPEBDZZ			; printf
+$LN2@page_fault:
+
+; 199  : 		for(;;);
+
+	jmp	SHORT $LN2@page_fault
+$LN3@page_fault:
+$LN4@page_fault:
+$LN8@page_fault:
+$LN12@page_fault:
+$LN14@page_fault:
+
+; 200  : 	}
+; 201  : 	//map_page((uint64_t)pmmngr_alloc(), (uint64_t)vaddr);
 ; 202  : }
 
 	add	rsp, 88					; 00000058H

@@ -1,8 +1,8 @@
-﻿Build started 06-11-2021 আবেলি 3:05:57.
+﻿Build started 07-11-2021 আবেলি 10:13:10.
      1>Project "E:\Xeneva Project\Xeneva\Aurora\Aurora\Aurora.vcxproj" on node 2 (Rebuild target(s)).
      1>_NASM:
          arch\x86_64\interrupts.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp389548a837be4535ae26d0f57924d891.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp8d3dc7b01d8442b0a3010d6ffae216f9.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\interrupts.obj"  "E:\Xeneva Project\Xeneva\Aurora\Aurora\arch\x86_64\interrupts.asm"
      1>E:\Xeneva Project\Xeneva\Aurora\Aurora\arch\x86_64\interrupts.asm(64): warning : label alone on a line without a colon might be in error
      1>E:\Xeneva Project\Xeneva\Aurora\Aurora\arch\x86_64\interrupts.asm(132): warning : signed dword immediate exceeds bounds
@@ -255,23 +255,23 @@
      1>E:\Xeneva Project\Xeneva\Aurora\Aurora\arch\x86_64\interrupts.asm(156): warning : signed dword immediate exceeds bounds
        _NASM:
          arch\x86_64\switch.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp21f9437d0bcc442eb660f650c3feefc3.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmpf17180905c5c44218544ef484eef9da1.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\switch.obj"  "E:\Xeneva Project\Xeneva\Aurora\Aurora\arch\x86_64\switch.asm"
        _NASM:
          arch\x86_64\user.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp4406bfde79ab4b7dad49641f463bf431.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmpccd1f5efde824275be94dd036f4afce7.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\user.obj"  "E:\Xeneva Project\Xeneva\Aurora\Aurora\arch\x86_64\user.asm"
        _NASM:
          arch\x86_64\_low_level.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp541b5abc18aa4186bf355f6fbc190e56.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp198001c163464f7caf828f7fa31440dc.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\_low_level.obj"  "E:\Xeneva Project\Xeneva\Aurora\Aurora\arch\x86_64\_low_level.asm"
        _NASM:
          drivers\svga\backdoor_stuff.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp6d660d3a38af44019b5f0c0342851a3e.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmpd8591b0708794cfe8e4f9afe854f7ff5.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\backdoor_stuff.obj"  "E:\Xeneva Project\Xeneva\Aurora\Aurora\drivers\svga\backdoor_stuff.asm"
        _NASM:
          _fast_cpy.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmpeaf31c84921d4caa808a34ec0b11dc79.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp0e7420027d4a409a841c30a78bdcd2b0.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\_fast_cpy.obj"  "E:\Xeneva Project\Xeneva\Aurora\Aurora\_fast_cpy.asm"
        ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\Aurora\include" /I"E:\Xeneva Project\Xeneva\Aurora\acpica\include" /Zi /nologo /W0 /WX- /Od /Oy /D ARCH_X64 /D USE_APIC /D ACPI_MACHINE_WIDTH=64 /D PROCESSOR_ARCHITECHTURE=X64 /D _MBCS /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /GR- /FAs /Fa"x64\Debug\\" /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt arch\x86_64\apic.cpp arch\x86_64\cpu.cpp arch\x86_64\exception.cpp arch\x86_64\ioapic.cpp arch\x86_64\kheap.cpp arch\x86_64\kstack.cpp arch\x86_64\map.cpp arch\x86_64\pic.cpp arch\x86_64\systable.cpp arch\x86_64\thread.cpp arch\x86_64\user64.cpp arch\x86_64\vmmngr.cpp atomic\mutex.cpp console.cpp drivers\ac97\ac97.cpp drivers\acpi\acpi.cpp drivers\ata.cpp drivers\hda\hda.cpp drivers\kybrd.cpp drivers\mouse.cpp drivers\net\amd_am79c973.cpp drivers\net\e1000.cpp drivers\net\rtl8139.cpp drivers\pci.cpp drivers\rtc.cpp drivers\svga\gmr.cpp drivers\svga\svga_screen.cpp drivers\svga\svga_screen_util.cpp drivers\svga\vmsvga.cpp drivers\svga\vm_backdoor.cpp drivers\usb\xhci.cpp drivers\vbox.cpp drivers\vga.cpp drvmngr.cpp fs\devfs.cpp fs\fat32.cpp fs\gpt.cpp fs\vfs.cpp hal.cpp hwcursor.cpp init.cpp ipc\dwm_ipc.cpp ipc\evntsh.cpp ipc\message.cpp mm.cpp net\arp.cpp net\ethernet.cpp net\nethw.cpp net\udp.cpp pe.cpp pmmngr.cpp proc.cpp procmngr.cpp screen.cpp serial.cpp stdio.cpp string.cpp sysserv\ioquery.cpp sysserv\sysfb.cpp sysserv\sysfile.cpp sysserv\sysmem.cpp sysserv\sysmouse.cpp sysserv\sysproc.cpp sysserv\systhread.cpp sysserv\systime.cpp sysserv\syswait.cpp sysserv\valloc.cpp utils\circ_buf.cpp utils\lnklist.cpp utils\pipe.cpp utils\ring.cpp
@@ -446,4 +446,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:28.01
+Time Elapsed 00:00:17.26

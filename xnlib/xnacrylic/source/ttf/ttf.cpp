@@ -60,142 +60,142 @@ uint16_t ttf_read_16 (ttf_font *font) {
 
 
 
-int edge_at (int y, const tt_edge *edge) {
-	int u = (y - edge->start.y)/ (edge->end.y - edge->start.y);
-	return edge->start.x + u * (edge->end.x - edge->start.x);
-}
-
-int edge_sorter_high_scanline (const void *a, const void* b) {
-	const tt_edge *left = (tt_edge*)a;
-	const tt_edge *right = (tt_edge*)b;
-	if (left->start.y < right->start.y) return - 1;
-	if (left->start.y > right->start.y) return 1;
-	return 0;
-}
-
-void sort_edges(size_t edgeCount, tt_edge edges[]) {
-	qsort(edges, edgeCount,sizeof(tt_edge),edge_sorter_high_scanline);
-}
-
-
-int intersection_sorter (const void* a, const void* b) {
-	const tt_intersection * left = (tt_intersection*)a;
-	const tt_intersection * right =(tt_intersection*) b;
-
-	if (left->x < right->x) return -1;
-	if (left->x > right->x) return 1;
-	return 0;
-}
-
-void sort_intersections(size_t cnt, tt_intersection *intersections) {
-	qsort(intersections, cnt, sizeof(tt_intersection), intersection_sorter);
-}
-
-
-size_t prune_edges (size_t edgeCount, int y, const tt_edge edges[], tt_intersection into[]) {
-	size_t outWriter = 0;
-	for (size_t i = 0; i < edgeCount; ++i) {
-		if (y > edges[i].end.y || y <= edges[i].start.y) continue;
-		into[outWriter].x = edge_at(y, &edges[i]);
-		into[outWriter].affect = edges[i].direction;
-		outWriter++;
-	}
-	return outWriter;
-}
-
-void process_scanline (int _y, const tt_shape *shape, size_t subsample_width, int *subsamples, size_t cnt,
-					   const tt_intersection *crosses) {
-
-	int wind = 0;
-	size_t j = 0;
-	for (int x = shape->startx; x < shape->lastx && j < cnt; ++x) {
-		while (j < cnt && x > crosses[j].x) {
-			wind += crosses[j].affect;
-			j++;
-		}
-		int last = x;
-		while (j < cnt && (x+1) > crosses[j].x) {
-			if (wind != 0) {
-				subsamples[x - shape->startx] += crosses[j].x - last;
-			}
-			last = crosses[j].x;
-			wind += crosses[j].affect;
-			j++;
-		}
-		if (wind != 0) {
-			subsamples[x - shape->startx] += (x+1) - last;
-		}
-	}
-}
-
-uint32_t tt_rgba (uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
-	return (a << 24U) | (r << 16) | (g << 8) | (b);
-}
-
-uint32_t tt_apply_alpha (uint32_t color, uint16_t alpha) {
-	uint8_t r = ((uint32_t)(_RED(color) * alpha + 0x80) * 0x101) >> 16UL;
-	uint8_t g = ((uint32_t)(_GRE(color) *alpha + 0x80) * 0x101) >> 16UL;
-	uint8_t b = ((uint32_t)(_BLU(color) * alpha + 0x80) * 0x101) >> 16UL;
-	uint32_t a = ((uint32_t)(_ALP(color) * alpha + 0x80) * 0x101) >> 16UL;
-	return tt_rgba(r,g,b,a);
-}
-
-static inline uint32_t tt_alpha_blend_rgba(uint32_t bottom, uint32_t top) {
-	if (_ALP(bottom) == 0) return top;
-	if (_ALP(top) == 255) return top;
-	if (_ALP(top) == 0) return bottom;
-	uint8_t a = _ALP(top);
-	uint16_t t = 0xFF ^ a;
-	uint8_t d_r = _RED(top) + (((uint32_t)(_RED(bottom) * t + 0x80) * 0x101) >> 16UL);
-	uint8_t d_g = _GRE(top) + (((uint32_t)(_GRE(bottom) * t + 0x80) * 0x101) >> 16UL);
-	uint8_t d_b = _BLU(top) + (((uint32_t)(_BLU(bottom) * t + 0x80) * 0x101) >> 16UL);
-	uint8_t d_a = _ALP(top) + (((uint32_t)(_ALP(bottom) * t + 0x80) * 0x101) >> 16UL);
-	return tt_rgba(d_r, d_g, d_b, d_a);
-}
-
-
-void paint_scanline(int y, const tt_shape * shape, int * subsamples, uint32_t color) {
-	for (int x = shape->startx < 0 ? 0 : shape->startx; x < shape->lastx && x  < canvas_get_width(); ++x) {
-		uint16_t na = (255 * subsamples[x - shape->startx]) >> 2;
-		uint32_t nc = tt_apply_alpha(color,na);
-		//sys_print_text ("Painting scanline\n");
-		//GFX(ctx, x, y) = tt_alpha_blend_rgba(GFX(ctx, x, y), nc);
-		canvas_get_framebuffer()[x + y * canvas_get_width()] = tt_alpha_blend_rgba(canvas_get_pixel(x,y),nc);
-		subsamples[x-shape->startx] = 0;
-	}
-}
-
-void tt_path_paint(const tt_shape * shape, uint32_t color) {
-	size_t size = shape->edge_count;
-	tt_intersection * crosses = (tt_intersection*)malloc(sizeof(tt_intersection) * size);
-	memset(crosses, 0, sizeof(tt_intersection) * size);
-
-	size_t subsample_width = shape->lastx - shape->startx;
-	sys_print_text ("SubSample wid -> %d\n", subsample_width);
-	int * subsamples = (int*)malloc(sizeof(int)*subsample_width);
-	memset(subsamples, 0,sizeof(int)*subsample_width);
-	sys_print_text ("Painting\n");
-
-	int startY = shape->starty < 0 ? 0 : shape->starty;
-	int endY = shape->lasty <= canvas_get_height() ? shape->lasty : canvas_get_height();
-	sys_print_text ("StartY -> %d\n", startY);
-	sys_print_text ("LastY -> %d\n", endY);
-	for (int y = startY; y < endY; ++y) {
-		int _y = y + 0.0001;
-		for (int l = 0; l < 4; ++l) {
-			size_t cnt;
-			if ((cnt = prune_edges(size, _y, shape->edges, crosses))) {
-			    sort_intersections(cnt, crosses);
-				process_scanline(_y, shape, subsample_width, subsamples, cnt, crosses);
-			}
-			_y += 1.0/4.0;
-		}
-		paint_scanline(y, shape, subsamples, color);
-	}
-
-	free(subsamples);
- 	free(crosses);
-}
+//int edge_at (int y, const tt_edge *edge) {
+//	int u = (y - edge->start.y)/ (edge->end.y - edge->start.y);
+//	return edge->start.x + u * (edge->end.x - edge->start.x);
+//}
+//
+//int edge_sorter_high_scanline (const void *a, const void* b) {
+//	const tt_edge *left = (tt_edge*)a;
+//	const tt_edge *right = (tt_edge*)b;
+//	if (left->start.y < right->start.y) return - 1;
+//	if (left->start.y > right->start.y) return 1;
+//	return 0;
+//}
+//
+//void sort_edges(size_t edgeCount, tt_edge edges[]) {
+//	qsort(edges, edgeCount,sizeof(tt_edge),edge_sorter_high_scanline);
+//}
+//
+//
+//int intersection_sorter (const void* a, const void* b) {
+//	const tt_intersection * left = (tt_intersection*)a;
+//	const tt_intersection * right =(tt_intersection*) b;
+//
+//	if (left->x < right->x) return -1;
+//	if (left->x > right->x) return 1;
+//	return 0;
+//}
+//
+//void sort_intersections(size_t cnt, tt_intersection *intersections) {
+//	qsort(intersections, cnt, sizeof(tt_intersection), intersection_sorter);
+//}
+//
+//
+//size_t prune_edges (size_t edgeCount, int y, const tt_edge edges[], tt_intersection into[]) {
+//	size_t outWriter = 0;
+//	for (size_t i = 0; i < edgeCount; ++i) {
+//		if (y > edges[i].end.y || y <= edges[i].start.y) continue;
+//		into[outWriter].x = edge_at(y, &edges[i]);
+//		into[outWriter].affect = edges[i].direction;
+//		outWriter++;
+//	}
+//	return outWriter;
+//}
+//
+//void process_scanline (int _y, const tt_shape *shape, size_t subsample_width, int *subsamples, size_t cnt,
+//					   const tt_intersection *crosses) {
+//
+//	int wind = 0;
+//	size_t j = 0;
+//	for (int x = shape->startx; x < shape->lastx && j < cnt; ++x) {
+//		while (j < cnt && x > crosses[j].x) {
+//			wind += crosses[j].affect;
+//			j++;
+//		}
+//		int last = x;
+//		while (j < cnt && (x+1) > crosses[j].x) {
+//			if (wind != 0) {
+//				subsamples[x - shape->startx] += crosses[j].x - last;
+//			}
+//			last = crosses[j].x;
+//			wind += crosses[j].affect;
+//			j++;
+//		}
+//		if (wind != 0) {
+//			subsamples[x - shape->startx] += (x+1) - last;
+//		}
+//	}
+//}
+//
+//uint32_t tt_rgba (uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+//	return (a << 24U) | (r << 16) | (g << 8) | (b);
+//}
+//
+//uint32_t tt_apply_alpha (uint32_t color, uint16_t alpha) {
+//	uint8_t r = ((uint32_t)(_RED(color) * alpha + 0x80) * 0x101) >> 16UL;
+//	uint8_t g = ((uint32_t)(_GRE(color) *alpha + 0x80) * 0x101) >> 16UL;
+//	uint8_t b = ((uint32_t)(_BLU(color) * alpha + 0x80) * 0x101) >> 16UL;
+//	uint32_t a = ((uint32_t)(_ALP(color) * alpha + 0x80) * 0x101) >> 16UL;
+//	return tt_rgba(r,g,b,a);
+//}
+//
+//static inline uint32_t tt_alpha_blend_rgba(uint32_t bottom, uint32_t top) {
+//	if (_ALP(bottom) == 0) return top;
+//	if (_ALP(top) == 255) return top;
+//	if (_ALP(top) == 0) return bottom;
+//	uint8_t a = _ALP(top);
+//	uint16_t t = 0xFF ^ a;
+//	uint8_t d_r = _RED(top) + (((uint32_t)(_RED(bottom) * t + 0x80) * 0x101) >> 16UL);
+//	uint8_t d_g = _GRE(top) + (((uint32_t)(_GRE(bottom) * t + 0x80) * 0x101) >> 16UL);
+//	uint8_t d_b = _BLU(top) + (((uint32_t)(_BLU(bottom) * t + 0x80) * 0x101) >> 16UL);
+//	uint8_t d_a = _ALP(top) + (((uint32_t)(_ALP(bottom) * t + 0x80) * 0x101) >> 16UL);
+//	return tt_rgba(d_r, d_g, d_b, d_a);
+//}
+//
+//
+//void paint_scanline(int y, const tt_shape * shape, int * subsamples, uint32_t color) {
+//	for (int x = shape->startx < 0 ? 0 : shape->startx; x < shape->lastx && x  < canvas_get_width(); ++x) {
+//		uint16_t na = (255 * subsamples[x - shape->startx]) >> 2;
+//		uint32_t nc = tt_apply_alpha(color,na);
+//		//sys_print_text ("Painting scanline\n");
+//		//GFX(ctx, x, y) = tt_alpha_blend_rgba(GFX(ctx, x, y), nc);
+//		canvas_get_framebuffer()[x + y * canvas_get_width()] = tt_alpha_blend_rgba(canvas_get_pixel(x,y),nc);
+//		subsamples[x-shape->startx] = 0;
+//	}
+//}
+//
+//void tt_path_paint(const tt_shape * shape, uint32_t color) {
+//	size_t size = shape->edge_count;
+//	tt_intersection * crosses = (tt_intersection*)malloc(sizeof(tt_intersection) * size);
+//	memset(crosses, 0, sizeof(tt_intersection) * size);
+//
+//	size_t subsample_width = shape->lastx - shape->startx;
+//	sys_print_text ("SubSample wid -> %d\n", subsample_width);
+//	int * subsamples = (int*)malloc(sizeof(int)*subsample_width);
+//	memset(subsamples, 0,sizeof(int)*subsample_width);
+//	sys_print_text ("Painting\n");
+//
+//	int startY = shape->starty < 0 ? 0 : shape->starty;
+//	int endY = shape->lasty <= canvas_get_height() ? shape->lasty : canvas_get_height();
+//	sys_print_text ("StartY -> %d\n", startY);
+//	sys_print_text ("LastY -> %d\n", endY);
+//	for (int y = startY; y < endY; ++y) {
+//		int _y = y + 0.0001;
+//		for (int l = 0; l < 4; ++l) {
+//			size_t cnt;
+//			if ((cnt = prune_edges(size, _y, shape->edges, crosses))) {
+//			    sort_intersections(cnt, crosses);
+//				process_scanline(_y, shape, subsample_width, subsamples, cnt, crosses);
+//			}
+//			_y += 1.0/4.0;
+//		}
+//		paint_scanline(y, shape, subsamples, color);
+//	}
+//
+//	free(subsamples);
+// 	free(crosses);
+//}
 
 
 int ttf_xadvance_for_glyph(ttf_font *font, unsigned int ind) {
@@ -214,6 +214,7 @@ int ttf_xadvance_for_glyph(ttf_font *font, unsigned int ind) {
 
 void ttf_set_size (ttf_font *font, float size) {
 	font->scale = size / font->em_size;
+	font->height = size ;
 }
 
 void ttf_set_size_px (ttf_font *font, float size) {
@@ -245,107 +246,120 @@ tt_contour * tt_contour_start (int x, int y) {
 }
 
 
-tt_shape* tt_contour_finish (tt_contour* in) {
-	size_t size = in->edge_count + 1;
-	tt_shape* tmp = (tt_shape*)malloc(sizeof(tt_shape) + sizeof(tt_edge)* size);
-	memcpy (tmp->edges, in->edges, sizeof(tt_edge) * in->edge_count);
+//tt_shape* tt_contour_finish (tt_contour* in) {
+//	size_t size = in->edge_count + 1;
+//	tt_shape* tmp = (tt_shape*)malloc(sizeof(tt_shape) + sizeof(tt_edge)* size);
+//	memcpy (tmp->edges, in->edges, sizeof(tt_edge) * in->edge_count);
+//
+//	if (in->flags & 1) {
+//		size--;
+//	}else {
+//		tmp->edges[in->edge_count].start.x = in->edges[in->edge_count-1].end.x;
+//		tmp->edges[in->edge_count].start.y = in->edges[in->edge_count-1].end.y;
+//		tmp->edges[in->edge_count].end.x = in->edges[in->last_start].start.x;
+//		tmp->edges[in->edge_count].end.y = in->edges[in->last_start].start.y;
+//	}
+//
+//	for (size_t i = 0; i < size; ++i) {
+//		if (tmp->edges[i].start.y < tmp->edges[i].end.y) {
+//			tmp->edges[i].direction = 1;
+//		}else {
+//			tmp->edges[i].direction = -1;
+//			tt_coord j = tmp->edges[i].start;
+//			tmp->edges[i].start = tmp->edges[i].end;
+//			tmp->edges[i].end = j;
+//		}
+//	}
+//
+//	tmp->edge_count = size;
+//	tmp->starty = INT_MAX;
+//	tmp->lasty = INT_MIN;
+//	tmp->startx = INT_MAX;
+//	tmp->lastx = INT_MIN;
+//	for (size_t i = 0; i < size; ++i) {
+//		if (tmp->edges[i].end.y + 1 > tmp->lasty) tmp->lasty = tmp->edges[i].end.y + 1;
+//		if (tmp->edges[i].start.y + 1 > tmp->lasty) tmp->lasty = tmp->edges[i].start.y + 1;
+//		if (tmp->edges[i].end.y < tmp->starty) tmp->starty = tmp->edges[i].end.y;
+//		if (tmp->edges[i].start.y < tmp->starty) tmp->starty = tmp->edges[i].start.y;
+//
+//		if (tmp->edges[i].end.x + 2 > tmp->lastx) tmp->lastx = tmp->edges[i].end.x + 2;
+//		if (tmp->edges[i].start.x + 2 > tmp->lastx) tmp->lastx = tmp->edges[i].start.x + 2;
+//		if (tmp->edges[i].end.x < tmp->startx) tmp->startx = tmp->edges[i].end.x;
+//		if (tmp->edges[i].start.x < tmp->startx) tmp->startx = tmp->edges[i].start.x;
+//
+//	}
+//
+//	if (tmp->lasty < tmp->starty) tmp->starty = tmp->lasty;
+//	if (tmp->lastx < tmp->startx) tmp->startx = tmp->lastx;
+//
+//	return tmp;
+//}
+//
+//
+//
+//tt_contour * tt_contour_line_to (tt_contour * shape, int x, int y) {
+//	if (shape->flags & 1) {
+//		shape->edges[shape->edge_count].end.x = x;
+//		shape->edges[shape->edge_count].end.y = y;
+//		shape->edge_count++;
+//		shape->flags &= ~1;
+//		
+//	}else {
+//		if (shape->edge_count + 1 == shape->next_alloc) {
+//			shape->next_alloc *= 2;
+//			shape = (tt_contour*)realloc (shape, sizeof(tt_contour) + sizeof(tt_edge) * (shape->next_alloc));
+//			
+//		}
+//		shape->edges[shape->edge_count].start.x = shape->edges[shape->edge_count-1].end.x;
+//		shape->edges[shape->edge_count].start.y = shape->edges[shape->edge_count-1].end.y;
+//		shape->edges[shape->edge_count].end.x = x;
+//		shape->edges[shape->edge_count].end.y = y;
+//		shape->edge_count++;
+//		shape->flags &= ~1;
+//		//sys_print_text ("Line to -> %x\n", shape);
+//	}
+//	return shape;
+//}
+//
+//tt_contour * ttf_contour_move_to (tt_contour *shape, int x, int y) {
+//	if (!(shape->flags & 1) && shape->edge_count) {
+//		shape = tt_contour_line_to (shape, shape->edges[shape->last_start].start.x, shape->edges[shape->last_start].start.y);
+//	}
+//	if (shape->edge_count + 1 == shape->next_alloc) {
+//		shape->next_alloc *= 2;
+//		shape = (tt_contour*)realloc(shape, sizeof(tt_contour) + sizeof(tt_edge) * (shape->next_alloc));
+//	}
+//
+//	shape->edges[shape->edge_count].start.x = x;
+//	shape->edges[shape->edge_count].start.y = y;
+//	shape->last_start = shape->edge_count;
+//	shape->flags |= 1;
+//	return shape;
+//}
+//
+//void ttf_midpoint (int x_0, int y_0, int cx, int cy, int x_1, int y_1, int t, int *outx, int *outy) {
+//	int t2 = t * t;
+//	int nt = 1.0 - t;
+//	int nt2 = nt * nt;
+//	*outx = nt2 * x_0 + 2 * t * nt * cx + t2 * x_1;
+//	*outy = nt2 * y_0 + 2 * t * nt * cy + t2 * y_1;
+//}
 
-	if (in->flags & 1) {
-		size--;
-	}else {
-		tmp->edges[in->edge_count].start.x = in->edges[in->edge_count-1].end.x;
-		tmp->edges[in->edge_count].start.y = in->edges[in->edge_count-1].end.y;
-		tmp->edges[in->edge_count].end.x = in->edges[in->last_start].start.x;
-		tmp->edges[in->edge_count].end.y = in->edges[in->last_start].start.y;
+
+void boundary_fill (int x, int y, uint32_t fillColor, uint32_t boundColor) {
+	
+	if (canvas_get_pixel (x,y) != boundColor && canvas_get_pixel(x,y) != fillColor) {
+		canvas_draw_pixel (x, y, fillColor);
+		boundary_fill(x + 1, y, fillColor, boundColor);
+		boundary_fill(x, y + 1, fillColor, boundColor);
+		boundary_fill(x - 1, y, fillColor, boundColor);
+		boundary_fill(x, y - 1, fillColor, boundColor);
+		boundary_fill(x - 1, y - 1, fillColor, boundColor);
+		boundary_fill(x - 1, y + 1, fillColor, boundColor);
+		boundary_fill(x + 1, y - 1, fillColor, boundColor);
+		boundary_fill(x + 1, y + 1, fillColor, boundColor);
 	}
-
-	for (size_t i = 0; i < size; ++i) {
-		if (tmp->edges[i].start.y < tmp->edges[i].end.y) {
-			tmp->edges[i].direction = 1;
-		}else {
-			tmp->edges[i].direction = -1;
-			tt_coord j = tmp->edges[i].start;
-			tmp->edges[i].start = tmp->edges[i].end;
-			tmp->edges[i].end = j;
-		}
-	}
-
-	tmp->edge_count = size;
-	tmp->starty = INT_MAX;
-	tmp->lasty = INT_MIN;
-	tmp->startx = INT_MAX;
-	tmp->lastx = INT_MIN;
-	for (size_t i = 0; i < size; ++i) {
-		if (tmp->edges[i].end.y + 1 > tmp->lasty) tmp->lasty = tmp->edges[i].end.y + 1;
-		if (tmp->edges[i].start.y + 1 > tmp->lasty) tmp->lasty = tmp->edges[i].start.y + 1;
-		if (tmp->edges[i].end.y < tmp->starty) tmp->starty = tmp->edges[i].end.y;
-		if (tmp->edges[i].start.y < tmp->starty) tmp->starty = tmp->edges[i].start.y;
-
-		if (tmp->edges[i].end.x + 2 > tmp->lastx) tmp->lastx = tmp->edges[i].end.x + 2;
-		if (tmp->edges[i].start.x + 2 > tmp->lastx) tmp->lastx = tmp->edges[i].start.x + 2;
-		if (tmp->edges[i].end.x < tmp->startx) tmp->startx = tmp->edges[i].end.x;
-		if (tmp->edges[i].start.x < tmp->startx) tmp->startx = tmp->edges[i].start.x;
-
-	}
-
-	if (tmp->lasty < tmp->starty) tmp->starty = tmp->lasty;
-	if (tmp->lastx < tmp->startx) tmp->startx = tmp->lastx;
-
-	return tmp;
 }
-
-
-
-tt_contour * tt_contour_line_to (tt_contour * shape, int x, int y) {
-	if (shape->flags & 1) {
-		shape->edges[shape->edge_count].end.x = x;
-		shape->edges[shape->edge_count].end.y = y;
-		shape->edge_count++;
-		shape->flags &= ~1;
-		
-	}else {
-		if (shape->edge_count + 1 == shape->next_alloc) {
-			shape->next_alloc *= 2;
-			shape = (tt_contour*)realloc (shape, sizeof(tt_contour) + sizeof(tt_edge) * (shape->next_alloc));
-			
-		}
-		shape->edges[shape->edge_count].start.x = shape->edges[shape->edge_count-1].end.x;
-		shape->edges[shape->edge_count].start.y = shape->edges[shape->edge_count-1].end.y;
-		shape->edges[shape->edge_count].end.x = x;
-		shape->edges[shape->edge_count].end.y = y;
-		shape->edge_count++;
-		shape->flags &= ~1;
-		//sys_print_text ("Line to -> %x\n", shape);
-	}
-	return shape;
-}
-
-tt_contour * ttf_contour_move_to (tt_contour *shape, int x, int y) {
-	if (!(shape->flags & 1) && shape->edge_count) {
-		shape = tt_contour_line_to (shape, shape->edges[shape->last_start].start.x, shape->edges[shape->last_start].start.y);
-	}
-	if (shape->edge_count + 1 == shape->next_alloc) {
-		shape->next_alloc *= 2;
-		shape = (tt_contour*)realloc(shape, sizeof(tt_contour) + sizeof(tt_edge) * (shape->next_alloc));
-	}
-
-	shape->edges[shape->edge_count].start.x = x;
-	shape->edges[shape->edge_count].start.y = y;
-	shape->last_start = shape->edge_count;
-	shape->flags |= 1;
-	return shape;
-}
-
-void ttf_midpoint (int x_0, int y_0, int cx, int cy, int x_1, int y_1, int t, int *outx, int *outy) {
-	int t2 = t * t;
-	int nt = 1.0 - t;
-	int nt2 = nt * nt;
-	*outx = nt2 * x_0 + 2 * t * nt * cx + t2 * x_1;
-	*outy = nt2 * y_0 + 2 * t * nt * cy + t2 * y_1;
-}
-
-
-
 
 tt_contour * ttf_draw_glyph_into (tt_contour* contour, ttf_font *font, int x_offset, int y_offset,
 								  unsigned int glyph, uint32_t color) {
@@ -361,8 +375,8 @@ tt_contour * ttf_draw_glyph_into (tt_contour* contour, ttf_font *font, int x_off
 	 int16_t xMax = ttf_read_16 (font);
 	 int16_t yMax = ttf_read_16 (font);
 	 int h = yMax - yMin;
-	 if (font->height == 0)
-		 font->height = h * font->scale + 12;
+	/* if (font->height == 0)
+		 font->height = h * font->scale + font->lineGap;*/
 
 	 ttf_seek (font, font->glyf_ptr.offset + glyf_offset + 10);
 
@@ -469,13 +483,12 @@ tt_contour * ttf_draw_glyph_into (tt_contour* contour, ttf_font *font, int x_off
 				 x_pos = x;
 				 y_pos = y;
 				 move_next = 0;
-				 canvas_draw_pixel (x, y,color);
+				 canvas_draw_pixel (x, y,GRAY);
 			 }else {
-				 acrylic_draw_line (x_pos, y_pos, x, y, color);
+				 acrylic_draw_line (x_pos, y_pos, x, y, GRAY);
 				// acrylic_draw_line (x_pos, y_pos, x, y,WHITE);
 				 x_pos = x;
 				 y_pos = y;
-				 
 			 }
 			 
 			 if (i == next_end) {
@@ -483,8 +496,8 @@ tt_contour * ttf_draw_glyph_into (tt_contour* contour, ttf_font *font, int x_off
 				 move_next = 1;
 			 }
 
-			
 		 }
+
 
 	}else if (numContour < 0) {
 		while(1) {
@@ -677,6 +690,5 @@ ttf_font * ttf_load (unsigned char* data) {
 
 	font->cmap_type = ttf_read_16 (font);
 	font->cmap_start = font->cmap_ptr.offset + best;
-
 	return font;
 }

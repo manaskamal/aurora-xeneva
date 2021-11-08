@@ -1,4 +1,4 @@
-﻿Build started 06-11-2021 আবেলি 4:54:32.
+﻿Build started 08-11-2021 ৰাতিপু 9:05:01.
      1>Project "E:\Xeneva Project\Xeneva\Aurora\Quince\Quince.vcxproj" on node 2 (Rebuild target(s)).
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\xnlib\xnclib" /I"E:\Xeneva Project\Xeneva\xnlib\xnacrylic\include" /I"E:\Xeneva Project\Xeneva\Aurora\Quince\include" /Zi /nologo /W3 /WX- /sdl- /Od /D ARCH_X64 /D HW_CURSOR /D _MBCS /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt include\QuEvent.cpp include\QuWindow\QuList.h source\ipc\QuChannel.cpp source\ipc\_ipc_mouse.cpp source\QuCanvas\QuCanvasMngr.cpp source\QuCanvas\QuScreenRectList.cpp source\QuCanvas\QuScreenStack.cpp source\QuEffect\QuBlur.cpp source\quince\main.cpp source\quince\QuBmpImage.cpp source\quince\QuCursor.cpp source\QuWidget\QuTaskbar.cpp source\QuWidget\QuWallpaper.cpp source\QuWindow\QuList.cpp source\QuWindow\QuWindow.cpp source\QuWindow\QuWindowMngr.cpp
@@ -36,14 +36,14 @@
          QuScreenStack.cpp
          QuScreenRectList.cpp
          QuCanvasMngr.cpp
-     1>source\QuCanvas\QuCanvasMngr.cpp(165): warning C4018: '<' : signed/unsigned mismatch
-     1>source\QuCanvas\QuCanvasMngr.cpp(166): warning C4018: '<' : signed/unsigned mismatch
-     1>source\QuCanvas\QuCanvasMngr.cpp(198): warning C4018: '<' : signed/unsigned mismatch
-     1>source\QuCanvas\QuCanvasMngr.cpp(224): warning C4267: 'argument' : conversion from 'size_t' to 'unsigned int', possible loss of data
-     1>source\QuCanvas\QuCanvasMngr.cpp(229): warning C4267: 'argument' : conversion from 'size_t' to 'unsigned int', possible loss of data
-     1>source\QuCanvas\QuCanvasMngr.cpp(234): warning C4267: 'argument' : conversion from 'size_t' to 'unsigned int', possible loss of data
-     1>source\QuCanvas\QuCanvasMngr.cpp(239): warning C4267: 'argument' : conversion from 'size_t' to 'unsigned int', possible loss of data
-     1>source\QuCanvas\QuCanvasMngr.cpp(244): warning C4267: 'argument' : conversion from 'size_t' to 'unsigned int', possible loss of data
+     1>source\QuCanvas\QuCanvasMngr.cpp(184): warning C4018: '<' : signed/unsigned mismatch
+     1>source\QuCanvas\QuCanvasMngr.cpp(185): warning C4018: '<' : signed/unsigned mismatch
+     1>source\QuCanvas\QuCanvasMngr.cpp(217): warning C4018: '<' : signed/unsigned mismatch
+     1>source\QuCanvas\QuCanvasMngr.cpp(243): warning C4267: 'argument' : conversion from 'size_t' to 'unsigned int', possible loss of data
+     1>source\QuCanvas\QuCanvasMngr.cpp(248): warning C4267: 'argument' : conversion from 'size_t' to 'unsigned int', possible loss of data
+     1>source\QuCanvas\QuCanvasMngr.cpp(253): warning C4267: 'argument' : conversion from 'size_t' to 'unsigned int', possible loss of data
+     1>source\QuCanvas\QuCanvasMngr.cpp(258): warning C4267: 'argument' : conversion from 'size_t' to 'unsigned int', possible loss of data
+     1>source\QuCanvas\QuCanvasMngr.cpp(263): warning C4267: 'argument' : conversion from 'size_t' to 'unsigned int', possible loss of data
          _ipc_mouse.cpp
          QuChannel.cpp
      1>source\ipc\QuChannel.cpp(36): warning C4244: '=' : conversion from 'uint16_t' to 'uint8_t', possible loss of data
@@ -81,4 +81,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:03.56
+Time Elapsed 00:00:03.12
