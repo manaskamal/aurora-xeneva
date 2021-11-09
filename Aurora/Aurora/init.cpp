@@ -28,7 +28,6 @@
 #include <drivers\usb\xhci.h>
 #include <drivers\net\e1000.h>
 #include <drivers\net\amd_am79c973.h>
-#include <drivers\net\rtl8139.h>
 #include <drivers\rtc.h>
 #include <drivers\acpi\acpi.h>
 #include <drivers\vbox.h>
@@ -83,15 +82,6 @@ typedef struct _wav_format_ {
 }wav;
 
 
-void timer_callback (size_t v, void* p) {
-	printf ("Timer fired\n");
-	interrupt_end(2);
-}
-
-struct test_bit {
-	unsigned char value_a;
-	unsigned char value_b;
-};
 //! the main entry point of the kernel
 //! @param info -- The boot information passed by
 //!                XNLDR 
@@ -110,10 +100,7 @@ void __cdecl operator delete (void* p) {
 	mfree(p);
 }
 
-void dummy_thread_2 () {
-	while(1) {
-	}
-}
+
 
 /**========================================
  ** the main entry routine -- _kmain
@@ -132,24 +119,22 @@ void _kmain (KERNEL_BOOT_INFO *info) {
 	//!Initialize kernel runtime drivers	
 	kybrd_init();
 	initialize_acpi (info->acpi_table_pointer);
-	initialize_rtc();  
-	hda_initialize();
-	e1000_initialize();  //<< receiver not working
-
-	
     ata_initialize();
-	initialize_gpt();
+	//initialize_gpt();
 	vfs_init();
 
 	initialize_screen(info);
-	svga_init (); 
+	
 	initialize_mouse();
     
 	message_init ();
 	dwm_ipc_init();
 
 	driver_mngr_initialize(info);
-
+	initialize_rtc();  
+	hda_initialize();  
+	e1000_initialize();   //<< receiver not working
+	//svga_init (); 
 #ifdef ARCH_X64
 
 	//================================================

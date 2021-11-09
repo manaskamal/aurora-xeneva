@@ -128,16 +128,17 @@ void create_process(const char* filename, char* procname, uint8_t priority, char
 	process->pid_t = pid;
 	//!open the process file-binary
 	char *fname = (char*)filename;
-	//printf ("filename -> %s\n", fname);
+
 	vfs_node_t *node = vfs_finddir (fname);
-	//printf ("[[[[[[Node Name -> %s]]]]]]\n", node->filename);
 
 	vfs_node_t file = openfs (node, fname);
+
+
 	if (file.status == FS_FLAG_INVALID) {
 		printf("Executable image not found\n");
 		return;
 	}
-	//printf ("File size -> %d\n", file.size);
+
 	//!open the binary file and read it
 	unsigned char* buf = (unsigned char*)pmmngr_alloc();   //18*1024
 	readfs_block(node,&file,buf);

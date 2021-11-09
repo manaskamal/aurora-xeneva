@@ -276,9 +276,6 @@
     <ClInclude Include="..\include\drivers\acpi\acpi.h">
       <Filter>include\drivers\acpi</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\drivers\net\rtl8139.h">
-      <Filter>include\drivers\net</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\serial.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -338,6 +335,9 @@
     </ClInclude>
     <ClInclude Include="..\include\drivers\term.h">
       <Filter>include\drivers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\limits.h">
+      <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -422,9 +422,6 @@
     <ClCompile Include="atomic\mutex.cpp">
       <Filter>source\atomic</Filter>
     </ClCompile>
-    <ClCompile Include="ipc\evntsh.cpp">
-      <Filter>source\ipc</Filter>
-    </ClCompile>
     <ClCompile Include="sysserv\syswait.cpp">
       <Filter>source\sysserv</Filter>
     </ClCompile>
@@ -454,9 +451,6 @@
     </ClCompile>
     <ClCompile Include="drivers\svga\svga_screen.cpp">
       <Filter>source\drivers\svga</Filter>
-    </ClCompile>
-    <ClCompile Include="drivers\vga.cpp">
-      <Filter>source\drivers</Filter>
     </ClCompile>
     <ClCompile Include="drivers\svga\svga_screen_util.cpp">
       <Filter>source\drivers\svga</Filter>
@@ -505,9 +499,6 @@
     </ClCompile>
     <ClCompile Include="drivers\acpi\acpi.cpp">
       <Filter>source\drivers\acpi</Filter>
-    </ClCompile>
-    <ClCompile Include="drivers\net\rtl8139.cpp">
-      <Filter>source\drivers\net</Filter>
     </ClCompile>
     <ClCompile Include="serial.cpp">
       <Filter>source</Filter>

@@ -584,6 +584,48 @@ int ffs(int i)
 }
 
 
+void *memmove (void* dest, const void* src, size_t bytes) {
+	/*unsigned dwords = (bytes >> 2);
+	
+	if (!dest || !src) {
+		return dest;
+	}
+
+	if (bytes) {
+		if (dest < src) {
+			if (!dwords || ((src - dest) < 4) || ((unsigned) src % 4) ||
+				((unsigned) dest % 4) || (bytes % 4)) {
+					memcpy (src, dest, bytes);
+			}
+			else {
+				memcpy (src, dest, dwords);
+			}
+		}
+
+*/
+	return 0;
+}
+
+
+#define SS (sizeof(size_t))
+#define ALIGN (sizeof(size_t)-1)
+#define ONES ((size_t)-1/UCHAR_MAX)
+#define HIGHS (ONES * (UCHAR_MAX/2+1))
+#define HASZERO(x) ((x)-ONES & ~(x) & HIGHS)
+
+void *memchr(const void *src, int c, size_t n)
+{
+	const unsigned char *s = (const unsigned char *)src;
+	c = (unsigned char)c;
+	for (; n && *s != c; s++, n--);
+	return n ? (void *)s : 0;
+}
+
+
+
+
+
+
 
 
 

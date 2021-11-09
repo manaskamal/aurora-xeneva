@@ -214,21 +214,6 @@ void next_task () {
 		}
 	}while (task->state != THREAD_STATE_READY);
 
-	//if (task->state == THREAD_STATE_BLOCKED) {
-	//	task = task->next;
-
-	//	if (task == NULL) {
-	//		task = task_list_head;
-	//	}
-	//	goto end;
-	//}
-
-	//if (task->next != NULL) {
-	//	task = task->next;
-	//} else {
-	//	task = task_list_head;
-	//}
-
 end:
 	current_thread = task;
 }

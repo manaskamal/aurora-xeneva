@@ -50,8 +50,8 @@ extern void bzero(void *, size_t);
 extern int ffs(int);
 extern int fls(int);
 extern size_t mbslen(const char*);
-
-
+extern void* memmove (void* dest, const void *src, size_t bytes);
+extern void *memchr(const void *src, int c, size_t n);
 
 #endif
 

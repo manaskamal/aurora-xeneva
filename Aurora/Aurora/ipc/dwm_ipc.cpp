@@ -18,7 +18,9 @@ static mutex_t *msg_mutex = create_mutex ();
 static mutex_t *msg_rcv_mutex = create_mutex();
 
 void dwm_ipc_init () {
-	map_page((uint64_t)pmmngr_alloc(),0xFFFFFD0000000000);
+	void* p = pmmngr_alloc();
+	memset(p, 0, 4096);
+	map_page((uint64_t)p,0xFFFFFD0000000000);
 }
 
 uint64_t* get_dwm_message_q_address () {

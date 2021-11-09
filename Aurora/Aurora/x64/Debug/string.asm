@@ -13,7 +13,6 @@ PUBLIC	?strncpy@@YAPEADPEADPEBD_K@Z			; strncpy
 PUBLIC	?strchr@@YAPEADPEADH@Z				; strchr
 PUBLIC	?memset@@YAXPEAXEI@Z				; memset
 PUBLIC	?memcmp@@YAHPEBX0_K@Z				; memcmp
-PUBLIC	?memmove@@YAPEAXPEAXPEBX_K@Z			; memmove
 pdata	SEGMENT
 $pdata$?strcmp@@YAHPEBD0@Z DD imagerel $LN7
 	DD	imagerel $LN7+122
@@ -61,36 +60,13 @@ xdata	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\string.cpp
 _TEXT	SEGMENT
-dest$ = 8
-src$ = 16
-n$ = 24
-?memmove@@YAPEAXPEAXPEBX_K@Z PROC			; memmove
-
-; 127  : void *memmove (void* dest, const void* src, size_t n) {
-
-	mov	QWORD PTR [rsp+24], r8
-	mov	QWORD PTR [rsp+16], rdx
-	mov	QWORD PTR [rsp+8], rcx
-
-; 128  : 	return 0;
-
-	xor	eax, eax
-
-; 129  : }
-
-	ret	0
-?memmove@@YAPEAXPEAXPEBX_K@Z ENDP			; memmove
-_TEXT	ENDS
-; Function compile flags: /Odtpy
-; File e:\xeneva project\xeneva\aurora\aurora\string.cpp
-_TEXT	SEGMENT
 count$ = 0
 first$ = 32
 second$ = 40
 length$ = 48
 ?memcmp@@YAHPEBX0_K@Z PROC				; memcmp
 
-; 27   : {
+; 28   : {
 
 $LN9:
 	mov	QWORD PTR [rsp+24], r8
@@ -98,9 +74,9 @@ $LN9:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 24
 
-; 28   : 
-; 29   : 	size_t count;
-; 30   : 	for (count = 0; count < length; count++)
+; 29   : 
+; 30   : 	size_t count;
+; 31   : 	for (count = 0; count < length; count++)
 
 	mov	QWORD PTR count$[rsp], 0
 	jmp	SHORT $LN6@memcmp
@@ -113,8 +89,8 @@ $LN6@memcmp:
 	cmp	QWORD PTR count$[rsp], rax
 	jae	SHORT $LN4@memcmp
 
-; 31   : 	{
-; 32   : 		if (((unsigned char*)first)[count] != ((unsigned char *) second)[count])
+; 32   : 	{
+; 33   : 		if (((unsigned char*)first)[count] != ((unsigned char *) second)[count])
 
 	mov	rax, QWORD PTR count$[rsp]
 	mov	rcx, QWORD PTR first$[rsp]
@@ -129,8 +105,8 @@ $LN6@memcmp:
 	cmp	eax, ecx
 	je	SHORT $LN3@memcmp
 
-; 33   : 		{
-; 34   : 			if (((unsigned char*)first)[count] < ((unsigned char *)second)[count])
+; 34   : 		{
+; 35   : 			if (((unsigned char*)first)[count] < ((unsigned char *)second)[count])
 
 	mov	rax, QWORD PTR count$[rsp]
 	mov	rcx, QWORD PTR first$[rsp]
@@ -145,40 +121,40 @@ $LN6@memcmp:
 	cmp	eax, ecx
 	jge	SHORT $LN2@memcmp
 
-; 35   : 			{
-; 36   : 				return (-1);
+; 36   : 			{
+; 37   : 				return (-1);
 
 	mov	eax, -1
 	jmp	SHORT $LN7@memcmp
 
-; 37   : 			}
-; 38   : 			else
+; 38   : 			}
+; 39   : 			else
 
 	jmp	SHORT $LN1@memcmp
 $LN2@memcmp:
 
-; 39   : 			{
-; 40   : 				return (1);
+; 40   : 			{
+; 41   : 				return (1);
 
 	mov	eax, 1
 	jmp	SHORT $LN7@memcmp
 $LN1@memcmp:
 $LN3@memcmp:
 
-; 41   : 			}
-; 42   : 		}
-; 43   : 	}
+; 42   : 			}
+; 43   : 		}
+; 44   : 	}
 
 	jmp	SHORT $LN5@memcmp
 $LN4@memcmp:
 
-; 44   : 
-; 45   : 	return (0); //return successful code
+; 45   : 
+; 46   : 	return (0); //return successful code
 
 	xor	eax, eax
 $LN7@memcmp:
 
-; 46   : }
+; 47   : }
 
 	add	rsp, 24
 	ret	0
@@ -194,7 +170,7 @@ val$ = 40
 len$ = 48
 ?memset@@YAXPEAXEI@Z PROC				; memset
 
-; 20   : void memset(void *targ, uint8_t val, uint32_t len){
+; 21   : void memset(void *targ, uint8_t val, uint32_t len){
 
 $LN5:
 	mov	DWORD PTR [rsp+24], r8d
@@ -202,13 +178,13 @@ $LN5:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 24
 
-; 21   : 	uint8_t *t = (uint8_t*) targ;
+; 22   : 	uint8_t *t = (uint8_t*) targ;
 
 	mov	rax, QWORD PTR targ$[rsp]
 	mov	QWORD PTR t$[rsp], rax
 $LN2@memset:
 
-; 22   : 	while (len--)
+; 23   : 	while (len--)
 
 	mov	eax, DWORD PTR len$[rsp]
 	mov	DWORD PTR tv66[rsp], eax
@@ -218,7 +194,7 @@ $LN2@memset:
 	cmp	DWORD PTR tv66[rsp], 0
 	je	SHORT $LN1@memset
 
-; 23   : 		*t++ = val;
+; 24   : 		*t++ = val;
 
 	mov	rax, QWORD PTR t$[rsp]
 	movzx	ecx, BYTE PTR val$[rsp]
@@ -229,7 +205,7 @@ $LN2@memset:
 	jmp	SHORT $LN2@memset
 $LN1@memset:
 
-; 24   : }
+; 25   : }
 
 	add	rsp, 24
 	ret	0
@@ -243,7 +219,7 @@ str$ = 32
 character$ = 40
 ?strchr@@YAPEADPEADH@Z PROC				; strchr
 
-; 116  : char* strchr (char* str, int character) {
+; 117  : char* strchr (char* str, int character) {
 
 $LN7:
 	mov	DWORD PTR [rsp+16], edx
@@ -251,23 +227,23 @@ $LN7:
 	sub	rsp, 24
 $LN4@strchr:
 
-; 117  : 
-; 118  : 	do {
-; 119  : 		if (*str == character)
+; 118  : 
+; 119  : 	do {
+; 120  : 		if (*str == character)
 
 	mov	rax, QWORD PTR str$[rsp]
 	movsx	eax, BYTE PTR [rax]
 	cmp	eax, DWORD PTR character$[rsp]
 	jne	SHORT $LN1@strchr
 
-; 120  : 			return (char*)str;
+; 121  : 			return (char*)str;
 
 	mov	rax, QWORD PTR str$[rsp]
 	jmp	SHORT $LN5@strchr
 $LN1@strchr:
 
-; 121  : 	}
-; 122  : 	while (*str++);
+; 122  : 	}
+; 123  : 	while (*str++);
 
 	mov	rax, QWORD PTR str$[rsp]
 	movsx	eax, BYTE PTR [rax]
@@ -278,13 +254,13 @@ $LN1@strchr:
 	cmp	DWORD PTR tv69[rsp], 0
 	jne	SHORT $LN4@strchr
 
-; 123  : 
-; 124  : 	return 0;
+; 124  : 
+; 125  : 	return 0;
 
 	xor	eax, eax
 $LN5@strchr:
 
-; 125  : }
+; 126  : }
 
 	add	rsp, 24
 	ret	0
@@ -299,7 +275,7 @@ sourceString$ = 40
 maxLength$ = 48
 ?strncpy@@YAPEADPEADPEBD_K@Z PROC			; strncpy
 
-; 88   : {
+; 89   : {
 
 $LN11:
 	mov	QWORD PTR [rsp+24], r8
@@ -307,9 +283,9 @@ $LN11:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 24
 
-; 89   : 	unsigned count;
-; 90   : 
-; 91   : 	if ((destString == (char*) NULL) || (sourceString == (char*) NULL))
+; 90   : 	unsigned count;
+; 91   : 
+; 92   : 	if ((destString == (char*) NULL) || (sourceString == (char*) NULL))
 
 	cmp	QWORD PTR destString$[rsp], 0
 	je	SHORT $LN7@strncpy
@@ -317,28 +293,28 @@ $LN11:
 	jne	SHORT $LN8@strncpy
 $LN7@strncpy:
 
-; 92   : 	{
-; 93   : 		return (destString = NULL);
+; 93   : 	{
+; 94   : 		return (destString = NULL);
 
 	mov	QWORD PTR destString$[rsp], 0
 	mov	rax, QWORD PTR destString$[rsp]
 	jmp	SHORT $LN9@strncpy
 $LN8@strncpy:
 
-; 94   : 	}
-; 95   : 
-; 96   : 	if (maxLength > MAX_STRING_LENGTH)
+; 95   : 	}
+; 96   : 
+; 97   : 	if (maxLength > MAX_STRING_LENGTH)
 
 	cmp	QWORD PTR maxLength$[rsp], 25
 	jbe	SHORT $LN6@strncpy
 
-; 97   : 		maxLength = MAX_STRING_LENGTH;
+; 98   : 		maxLength = MAX_STRING_LENGTH;
 
 	mov	QWORD PTR maxLength$[rsp], 25
 $LN6@strncpy:
 
-; 98   : 
-; 99   : 	for (count = 0; count < maxLength; count++ )
+; 99   : 
+; 100  : 	for (count = 0; count < maxLength; count++ )
 
 	mov	DWORD PTR count$[rsp], 0
 	jmp	SHORT $LN5@strncpy
@@ -351,8 +327,8 @@ $LN5@strncpy:
 	cmp	rax, QWORD PTR maxLength$[rsp]
 	jae	SHORT $LN3@strncpy
 
-; 100  : 	{
-; 101  : 		destString[count] = sourceString[count];
+; 101  : 	{
+; 102  : 		destString[count] = sourceString[count];
 
 	mov	eax, DWORD PTR count$[rsp]
 	mov	ecx, DWORD PTR count$[rsp]
@@ -361,8 +337,8 @@ $LN5@strncpy:
 	movzx	eax, BYTE PTR [r8+rax]
 	mov	BYTE PTR [rdx+rcx], al
 
-; 102  : 		 
-; 103  : 		if (sourceString[count] == '\0')
+; 103  : 		 
+; 104  : 		if (sourceString[count] == '\0')
 
 	mov	eax, DWORD PTR count$[rsp]
 	mov	rcx, QWORD PTR sourceString$[rsp]
@@ -370,38 +346,38 @@ $LN5@strncpy:
 	test	eax, eax
 	jne	SHORT $LN2@strncpy
 
-; 104  : 			break;
+; 105  : 			break;
 
 	jmp	SHORT $LN3@strncpy
 $LN2@strncpy:
 
-; 105  : 	}
+; 106  : 	}
 
 	jmp	SHORT $LN4@strncpy
 $LN3@strncpy:
 
-; 106  : 
-; 107  : 	if (count >= MAX_STRING_LENGTH)
+; 107  : 
+; 108  : 	if (count >= MAX_STRING_LENGTH)
 
 	cmp	DWORD PTR count$[rsp], 25
 	jb	SHORT $LN1@strncpy
 
-; 108  : 	{
-; 109  : 		return (destString = NULL);
+; 109  : 	{
+; 110  : 		return (destString = NULL);
 
 	mov	QWORD PTR destString$[rsp], 0
 	mov	rax, QWORD PTR destString$[rsp]
 	jmp	SHORT $LN9@strncpy
 $LN1@strncpy:
 
-; 110  : 	}
-; 111  : 
-; 112  : 	return (destString);
+; 111  : 	}
+; 112  : 
+; 113  : 	return (destString);
 
 	mov	rax, QWORD PTR destString$[rsp]
 $LN9@strncpy:
 
-; 113  : }
+; 114  : }
 
 	add	rsp, 24
 	ret	0
@@ -416,7 +392,7 @@ s2$ = 40
 n$ = 48
 ?strncmp@@YAHPEBD0_K@Z PROC				; strncmp
 
-; 79   : {
+; 80   : {
 
 $LN7:
 	mov	QWORD PTR [rsp+24], r8
@@ -425,7 +401,7 @@ $LN7:
 	sub	rsp, 24
 $LN2@strncmp:
 
-; 80   : 	while (n > 0 && *s1 != '\0' && *s1 == *s2) {
+; 81   : 	while (n > 0 && *s1 != '\0' && *s1 == *s2) {
 
 	cmp	QWORD PTR n$[rsp], 0
 	jbe	SHORT $LN1@strncmp
@@ -440,7 +416,7 @@ $LN2@strncmp:
 	cmp	eax, ecx
 	jne	SHORT $LN1@strncmp
 
-; 81   : 		n --, s1 ++, s2 ++;
+; 82   : 		n --, s1 ++, s2 ++;
 
 	mov	rax, QWORD PTR n$[rsp]
 	dec	rax
@@ -452,13 +428,13 @@ $LN2@strncmp:
 	inc	rax
 	mov	QWORD PTR s2$[rsp], rax
 
-; 82   : 	}
+; 83   : 	}
 
 	jmp	SHORT $LN2@strncmp
 $LN1@strncmp:
 
-; 83   : 
-; 84   : 	return (n==0)? 0: (size_t)((unsigned char)*s1 - (unsigned char)*s2);
+; 84   : 
+; 85   : 	return (n==0)? 0: (size_t)((unsigned char)*s1 - (unsigned char)*s2);
 
 	cmp	QWORD PTR n$[rsp], 0
 	jne	SHORT $LN5@strncmp
@@ -475,7 +451,7 @@ $LN5@strncmp:
 $LN6@strncmp:
 	mov	eax, DWORD PTR tv78[rsp]
 
-; 85   : }
+; 86   : }
 
 	add	rsp, 24
 	ret	0
@@ -489,18 +465,18 @@ len$ = 8
 str$ = 32
 ?strlen@@YA_KPEBD@Z PROC				; strlen
 
-; 71   : {
+; 72   : {
 
 $LN5:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 24
 
-; 72   : 	size_t len=0;
+; 73   : 	size_t len=0;
 
 	mov	QWORD PTR len$[rsp], 0
 $LN2@strlen:
 
-; 73   : 	while (str[len++]);
+; 74   : 	while (str[len++]);
 
 	mov	rax, QWORD PTR len$[rsp]
 	mov	rcx, QWORD PTR str$[rsp]
@@ -516,11 +492,11 @@ $LN2@strlen:
 	jmp	SHORT $LN2@strlen
 $LN1@strlen:
 
-; 74   : 	return len;
+; 75   : 	return len;
 
 	mov	rax, QWORD PTR len$[rsp]
 
-; 75   : }
+; 76   : }
 
 	add	rsp, 24
 	ret	0
@@ -535,20 +511,20 @@ s1$ = 32
 s2$ = 40
 ?strcpy@@YAPEADPEADPEBD@Z PROC				; strcpy
 
-; 64   : {
+; 65   : {
 
 $LN5:
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 24
 
-; 65   : 	char *s1_p = s1;
+; 66   : 	char *s1_p = s1;
 
 	mov	rax, QWORD PTR s1$[rsp]
 	mov	QWORD PTR s1_p$[rsp], rax
 $LN2@strcpy:
 
-; 66   : 	while (*s1++ = *s2++);
+; 67   : 	while (*s1++ = *s2++);
 
 	mov	rax, QWORD PTR s1$[rsp]
 	mov	rcx, QWORD PTR s2$[rsp]
@@ -568,11 +544,11 @@ $LN2@strcpy:
 	jmp	SHORT $LN2@strcpy
 $LN1@strcpy:
 
-; 67   : 	return s1_p;
+; 68   : 	return s1_p;
 
 	mov	rax, QWORD PTR s1_p$[rsp]
 
-; 68   : }
+; 69   : }
 
 	add	rsp, 24
 	ret	0
@@ -586,19 +562,19 @@ str1$ = 32
 str2$ = 40
 ?strcmp@@YAHPEBD0@Z PROC				; strcmp
 
-; 50   : {
+; 51   : {
 
 $LN7:
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 24
 
-; 51   : 	int res=0;
+; 52   : 	int res=0;
 
 	mov	DWORD PTR res$[rsp], 0
 $LN4@strcmp:
 
-; 52   : 	while (!(res = *(unsigned char*)str1 - *(unsigned char*)str2) && *str2)
+; 53   : 	while (!(res = *(unsigned char*)str1 - *(unsigned char*)str2) && *str2)
 
 	mov	rax, QWORD PTR str1$[rsp]
 	movzx	eax, BYTE PTR [rax]
@@ -613,7 +589,7 @@ $LN4@strcmp:
 	test	eax, eax
 	je	SHORT $LN3@strcmp
 
-; 53   : 		++str1, ++str2;
+; 54   : 		++str1, ++str2;
 
 	mov	rax, QWORD PTR str1$[rsp]
 	inc	rax
@@ -624,33 +600,33 @@ $LN4@strcmp:
 	jmp	SHORT $LN4@strcmp
 $LN3@strcmp:
 
-; 54   : 
-; 55   : 	if (res < 0)
+; 55   : 
+; 56   : 	if (res < 0)
 
 	cmp	DWORD PTR res$[rsp], 0
 	jge	SHORT $LN2@strcmp
 
-; 56   : 		res = -1;
+; 57   : 		res = -1;
 
 	mov	DWORD PTR res$[rsp], -1
 $LN2@strcmp:
 
-; 57   : 	if (res > 0)
+; 58   : 	if (res > 0)
 
 	cmp	DWORD PTR res$[rsp], 0
 	jle	SHORT $LN1@strcmp
 
-; 58   : 		res = 1;
+; 59   : 		res = 1;
 
 	mov	DWORD PTR res$[rsp], 1
 $LN1@strcmp:
 
-; 59   : 
-; 60   : 	return res;
+; 60   : 
+; 61   : 	return res;
 
 	mov	eax, DWORD PTR res$[rsp]
 
-; 61   : }
+; 62   : }
 
 	add	rsp, 24
 	ret	0

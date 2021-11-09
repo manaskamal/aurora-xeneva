@@ -119,7 +119,7 @@ void QuEditBoxFlush (QuEditBox *eb, QuWindow *win) {
 	char c = eb->buffer[eb->cursor_y * EDIT_BOX_WIDTH + eb->cursor_x];
 	//cc_draw_rect_filled(eb->xpos + 1, eb->ypos,8,13,WHITE);
 	if (c != '\n' && c != '\0')
-		cc_font_draw_char ((uint32_t*)eb->backstore,c,eb->xpos, eb->ypos, BLACK);
+		cc_draw_arr_font ((uint32_t*)eb->backstore,eb->xpos, eb->ypos,c, BLACK);
 	//QuPanelUpdate (win->x + eb->wid.x, win->y + eb->wid.y + 23+ eb->ypos, win->w, 14, false);
 }
 
@@ -131,7 +131,7 @@ void QuEditBoxSetChar (QuEditBox *eb, char s, uint32_t color) {
 		eb->cursor_x = 0;
 
 		eb->cursor_y++;
-		eb->ypos += acrylic_get_system_font()->height;
+		eb->ypos += 12;
 		
 		eb->xpos = 0;
 		return;
@@ -160,7 +160,7 @@ void QuEditBoxSetChar (QuEditBox *eb, char s, uint32_t color) {
 	eb->buffer[eb->cursor_y * EDIT_BOX_WIDTH + eb->cursor_x] = s;
 	QuEditBoxFlush(eb, QuGetWindow());
 	eb->cursor_x++;
-	eb->xpos += acrylic_get_system_font()->width;
+	eb->xpos += 8;
 	//eb->buffer[eb->cursor_y * EDIT_BOX_WIDTH + eb->cursor_x] = '_';
 	//QuEditBoxFlush(eb, QuGetWindow());
 }

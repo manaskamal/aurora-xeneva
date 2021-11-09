@@ -1,21 +1,21 @@
-﻿Build started 06-11-2021 ৰাতিপু 10:55:55.
+﻿Build started 08-11-2021 আবেলি 5:54:24.
      1>Project "E:\Xeneva Project\Xeneva\xnlib\xnclib\xnclib.vcxproj" on node 2 (Rebuild target(s)).
      1>_NASM:
          setjmp.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmpb1ffba438dab4293a9decd44154e1692.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp27a5539eb42d43379cae86e01c2a428d.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\setjmp.obj"  "E:\Xeneva Project\Xeneva\xnlib\xnclib\setjmp.asm"
        _NASM:
          sys\callback.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmpb8a63943b9a74a788e5d8063bafa0557.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmpef3361cc247b4bce802f58c555be08f2.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\callback.obj"  "E:\Xeneva Project\Xeneva\xnlib\xnclib\sys\callback.asm"
      1>E:\Xeneva Project\Xeneva\xnlib\xnclib\sys\callback.asm(98): warning : label alone on a line without a colon might be in error
        _NASM:
          _fast_copy.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp14b4cdea6f834410a5aee7279596055e.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmpd93bcaa479654652885d16bb63541b7f.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\_fast_copy.obj"  "E:\Xeneva Project\Xeneva\xnlib\xnclib\_fast_copy.asm"
        _NASM:
          crt0.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp4cd46f0e221647b6af330671d3a22f37.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp5bab3a5146c241b8b6797b5484d4d3df.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\crt0.obj"  "E:\Xeneva Project\Xeneva\xnlib\xnclib\crt0.asm"
        ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\xnlib\xnclib" /I"E:\Xeneva Project\Xeneva\xnlib\xnclib\c++" /Zi /nologo /W4 /WX- /sdl- /MP /Od /D ARCH_X64 /D _MBCS /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt c++\ios.cpp c++\iostream.cpp c++\istream.cpp c++\memory.cpp c++\ostream.cpp c++\_string.cpp errno.cpp heap.cpp initializer.cpp math.cpp stdio.cpp string.cpp sys\stdlib.cpp
@@ -61,8 +61,16 @@
      1>string.cpp(406): warning C4267: 'initializing' : conversion from 'size_t' to 'int', possible loss of data
      1>string.cpp(553): warning C4267: 'argument' : conversion from 'size_t' to 'uint32_t', possible loss of data
          stdio.cpp
-     1>stdio.cpp(13): warning C4100: 'format' : unreferenced formal parameter
-     1>stdio.cpp(13): warning C4100: 'f' : unreferenced formal parameter
+     1>stdio.cpp(15): warning C4100: 'format' : unreferenced formal parameter
+     1>stdio.cpp(15): warning C4100: 'f' : unreferenced formal parameter
+     1>stdio.cpp(23): warning C4100: 'mode' : unreferenced formal parameter
+     1>stdio.cpp(41): warning C4100: 'nmemb' : unreferenced formal parameter
+     1>stdio.cpp(49): warning C4244: 'return' : conversion from '__int64' to 'long', possible loss of data
+     1>stdio.cpp(88): warning C4100: 'arg' : unreferenced formal parameter
+     1>stdio.cpp(88): warning C4100: 'format' : unreferenced formal parameter
+     1>stdio.cpp(88): warning C4100: 'stream' : unreferenced formal parameter
+     1>stdio.cpp(93): warning C4100: 'string' : unreferenced formal parameter
+     1>stdio.cpp(93): warning C4100: 'str' : unreferenced formal parameter
          math.cpp
      1>math.cpp(76): warning C4305: '-=' : truncation from 'double' to 'float'
      1>math.cpp(78): warning C4305: '+=' : truncation from 'double' to 'float'
@@ -133,4 +141,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:17.09
+Time Elapsed 00:00:02.29

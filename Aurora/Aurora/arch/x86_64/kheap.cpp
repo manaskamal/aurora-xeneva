@@ -24,7 +24,9 @@ void initialize_kmemory (size_t sz) {
 	void* pos = (void*)0xFFFF800000000000;  //0xFFFFB00000000000;
 
 	for (size_t i=0; i < sz; i++) {
-		map_page ((uint64_t)pmmngr_alloc(),(uint64_t)pos);
+		void* p = (void*)pmmngr_alloc();
+		memset(p,0,4096);
+		map_page ((uint64_t)p,(uint64_t)pos);
 		pos = (void*)((size_t)pos + 0x1000);
 	}
 

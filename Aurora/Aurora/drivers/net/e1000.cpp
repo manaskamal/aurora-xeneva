@@ -136,7 +136,7 @@ void e1000_interrupt_handler (size_t v, void* p) {
 	} else if (icr & E1000_ICR_TRANSMIT) {
 		printf ("E1000 interrupt data transmit\n");
 	} else if (icr & E1000_ICR_LINK_CHANGE) {
-		//printf ("E1000 interrupt link change %s\n", (e1000_read_command(REG_STATUS) & STATUS_LINK_UP) ? "up" : "down");
+		printf ("E1000 interrupt link change %s\n", (e1000_read_command(REG_STATUS) & STATUS_LINK_UP) ? "up" : "down");
 	} else {
 		printf ("E1000 unknown interrupt\n");
 	}
@@ -265,7 +265,6 @@ void e1000_reset () {
 	e1000_write_command (REG_CTRL, (1<<31));
 	for (int i = 0; i < 1000; i++)
 		;
-
 	//! Reset the hardware guide from MINIX3
 	e1000_write_command (REG_CTRL, (1 << 26));
 	for (int i = 0; i < 1000; i++)
@@ -326,7 +325,7 @@ void e1000_initialize () {
 			printf ("E1000 legacy irq -> %d, pin -> %d\n", dev->device.nonBridge.interruptLine, dev->device.nonBridge.interruptPin);
 			write_config_8 (0,bus,dev_,func,0x3C, 10);
 			read_config_8 (0,bus, dev_, func, 0x3C,&dev->device.all.interruptLine);
-			interrupt_set (dev->device.nonBridge.interruptLine, e1000_interrupt_handler,dev->device.nonBridge.interruptLine);
+			interrupt_set (10, e1000_interrupt_handler,dev->device.nonBridge.interruptLine);
 		}
 	}
 	
@@ -334,7 +333,10 @@ void e1000_initialize () {
 	e1000_write_command (REG_IMC, UINT32_MAX);
 	e1000_read_command (REG_ICR);
 	e1000_reset();
-	e1000_write_command (REG_CTRL, ECTRL_SLU | (1<<8) | (1<<9) | (1<<11));
+	e1000_write_command (REG_CTRL, ECTRL_SLU | (2<<8));
+	uint32_t cmmd = e1000_read_command (REG_CTRL);
+	cmmd &= ~(1UL << 26UL);
+	cmmd &= ~(1UL << 31UL);
 	e1000_detect_eeprom();
 	
 

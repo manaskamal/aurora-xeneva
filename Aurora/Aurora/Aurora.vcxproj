@@ -211,7 +211,6 @@
     <ClInclude Include="..\include\drivers\mouse.h" />
     <ClInclude Include="..\include\drivers\net\amd_am79c973.h" />
     <ClInclude Include="..\include\drivers\net\e1000.h" />
-    <ClInclude Include="..\include\drivers\net\rtl8139.h" />
     <ClInclude Include="..\include\drivers\pci.h" />
     <ClInclude Include="..\include\drivers\rtc.h" />
     <ClInclude Include="..\include\drivers\svga\backdoor_def.h" />
@@ -244,6 +243,7 @@
     <ClInclude Include="..\include\ipc\message.h" />
     <ClInclude Include="..\include\ipc\pipe.h" />
     <ClInclude Include="..\include\ipc\signals.h" />
+    <ClInclude Include="..\include\limits.h" />
     <ClInclude Include="..\include\mm.h" />
     <ClInclude Include="..\include\net\arp.h" />
     <ClInclude Include="..\include\net\ethernet.h" />
@@ -291,7 +291,6 @@
     <ClCompile Include="drivers\mouse.cpp" />
     <ClCompile Include="drivers\net\amd_am79c973.cpp" />
     <ClCompile Include="drivers\net\e1000.cpp" />
-    <ClCompile Include="drivers\net\rtl8139.cpp" />
     <ClCompile Include="drivers\pci.cpp" />
     <ClCompile Include="drivers\rtc.cpp" />
     <ClCompile Include="drivers\svga\gmr.cpp" />
@@ -301,7 +300,6 @@
     <ClCompile Include="drivers\svga\vm_backdoor.cpp" />
     <ClCompile Include="drivers\usb\xhci.cpp" />
     <ClCompile Include="drivers\vbox.cpp" />
-    <ClCompile Include="drivers\vga.cpp" />
     <ClCompile Include="drvmngr.cpp" />
     <ClCompile Include="fs\devfs.cpp" />
     <ClCompile Include="fs\fat32.cpp" />
@@ -311,7 +309,6 @@
     <ClCompile Include="hwcursor.cpp" />
     <ClCompile Include="init.cpp" />
     <ClCompile Include="ipc\dwm_ipc.cpp" />
-    <ClCompile Include="ipc\evntsh.cpp" />
     <ClCompile Include="ipc\message.cpp" />
     <ClCompile Include="mm.cpp" />
     <ClCompile Include="net\arp.cpp" />

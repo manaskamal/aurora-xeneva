@@ -11,6 +11,7 @@
 
 #include <string.h>
 #include <_null.h>
+#include <limits.h>
 
 #define MAX_STRING_LENGTH 25
 
@@ -123,9 +124,4 @@ char* strchr (char* str, int character) {
 
 	return 0;
 }
-
-void *memmove (void* dest, const void* src, size_t n) {
-	return 0;
-}
-
 
