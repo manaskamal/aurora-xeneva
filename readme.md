@@ -68,6 +68,7 @@ iii> EFI-Based partition to store the Kernel {_'xnkrnl.exe'} and
 
 # Screenshot
 ![alt text](https://github.com/manaskamal/aurora-xeneva/blob/master/images/XenevaFullResolution.jpg?raw=true)
+_Aurora's Xeneva in 1920x1080 resolution
 
 # About Me:
 I am Manas Kamal Choudhury from Assam, India. I have been programming since class 6. I am self-taught.
