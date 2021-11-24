@@ -43,7 +43,7 @@ Nasm is used as the main assembler. Setup of nasm under Visual Studio is also re
 
 i> Nasm as the assembler <br>
 ii> Microsoft Visual Studio 2012 or later <br>
-iii> EFI-Based partition to store the Kernel {_'xnkrnl.exe'} and
+iii> EFI-Based partition to store the Kernel {_'xnkrnl.exe'_} and
      the bootloader {_'BOOTx64.efi' - stored in 'uefi directory under the repo'_}
 
 
