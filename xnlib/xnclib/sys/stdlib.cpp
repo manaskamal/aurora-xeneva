@@ -181,40 +181,6 @@ static void swap(void* a, void* b, size_t size) {
 	memcpy (b, temp, size);
 }
 
-void qsort(void* base, size_t num, size_t size, int (*comparator)(const void*, const void*)) {
-	if (num < 2) {
-		return;
-	}
-
-	size_t left = 1, right = num - 1;
-
-	while (left <= right) {
-		while ((left <= right) && (comparator(base, (const unsigned*)base + left * size) > 0)) {
-			++left;
-		}
-
-		while ((left < right) && (comparator (base, &base + right * size) <= 0)) {
-			--right;
-		}
-
-		if (left >= right) {
-			break;
-		}
-
-		swap(&base + left * size, &base + right * size, size);
-		++left;
-		--right;
-	}
-
-	right = left--;
-
-	swap(&base, &base + left *size, size);
-
-	qsort(base, left, size, comparator);
-
-	qsort (&base + right * size, num - right, size, comparator);
-}
-
 
 static char* chars = "0123456789ABCDEF";
 
@@ -507,3 +473,6 @@ strtoul(const char* nptr, char** endptr, int base)
 }
 
 
+//void qsort(void * base, size_t nmemb, size_t size, int (*compar)(const void *, const void *)) {
+//	
+//}

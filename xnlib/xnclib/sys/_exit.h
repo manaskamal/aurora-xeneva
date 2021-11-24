@@ -15,6 +15,12 @@
 
 #pragma once
 
-extern "C" void sys_exit ();
+#ifdef __cplusplus
+extern "C" {
+#endif
+void sys_exit ();
+#ifdef __cplusplus
+}
+#endif
 
 #endif

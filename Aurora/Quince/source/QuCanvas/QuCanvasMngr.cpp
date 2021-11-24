@@ -29,8 +29,9 @@
 #include <acrylic.h>
 #include <string.h>
 #include <fastcpy.h>
-#include <QuEffect\QuBlur.h>
 #include <QuWidget\QuWallpaper.h>
+#include <QuWidget\QuDock.h>
+
 
 #define QU_CANVAS_START   0x0000100000000000
 
@@ -48,7 +49,7 @@ void QuCanvasMngr_Initialize() {
 //!Creates a canvas
 uint32_t* QuCanvasCreate (uint16_t dest_pid) {
 	uint32_t pos = cursor_pos;
-	uint32_t size = canvas_get_width() * canvas_get_height() * 32;
+	uint32_t size = 500 * 500 * 32;
 	map_shared_memory(dest_pid,QU_CANVAS_START + pos,size);
 	cursor_pos += size;
 	return (uint32_t*)(QU_CANVAS_START + pos);
@@ -95,10 +96,12 @@ void QuCanvasBlit (QuWindow* win,unsigned int *canvas, unsigned x, unsigned y, u
 				if (info->rect[k].y + info->rect[k].h>= height)
 					he = height - info->rect[k].y;
 
-				for (int i = 0; i < he; i++) 
-					fastcpy (lfb + (ry + i) * width + rx,win->canvas + (ry + i) * width + rx, 
+				for (int i = 0; i < he; i++)  {
+					fastcpy (lfb + (win->y + ry + i) * width + (win->x + rx),win->canvas + (ry + i) * width + rx, 
 					wid * 4);
-				canvas_screen_update(rx, ry, wid, he);
+				}
+
+				canvas_screen_update(win->x + rx,win->y + ry, wid, he);
 				//QuScreenRectAdd(info->rect[k].x, info->rect[k].y, info->rect[k].w, info->rect[k].h);
 			}
 
@@ -107,7 +110,7 @@ void QuCanvasBlit (QuWindow* win,unsigned int *canvas, unsigned x, unsigned y, u
 			QuMoveCursor(QuCursorGetNewX(), QuCursorGetNewY());
 #endif
 
-		} else {	
+		} else if (info->rect_count == 0){	
 			int wid = win->width;
 			int he = win->height;
 			int winx = win->x;
@@ -127,14 +130,16 @@ void QuCanvasBlit (QuWindow* win,unsigned int *canvas, unsigned x, unsigned y, u
 				he = height - win->y;
 
 			for (int i = 0; i < he; i++) 
-				fastcpy (lfb + (winy + i) * width + winx, win->canvas + (winy + i) * width + winx, wid * 4);
+				fastcpy (lfb + (winy + i) * width + winx, win->canvas + (0 + i) * width + 0, wid * 4);
 
 			QuScreenRectAdd(winx, winy, wid, he);
+			QuTaskbarRepaint();
 		}
 #ifdef SW_CURSOR
 		QuMoveCursor(QuCursorGetNewX(), QuCursorGetNewY());
 #endif
 		info->dirty = false;
+		
 	}
 
 	if (win->mark_for_close) {
@@ -149,8 +154,25 @@ void QuCanvasBlit (QuWindow* win,unsigned int *canvas, unsigned x, unsigned y, u
 		/*QuMessage msg;
 		msg.type = QU_CANVAS_DESTROYED;
 		QuChannelPut(&msg, id);*/
-		sys_kill(id,2);
+		//sys_kill(id,2);
 	}
+
+
+	/*if (info->maximize) {
+		if (!win->maximize) {
+			win->maximize = true;
+	    	win->old_x = win->x;
+		    win->old_y = win->y;
+		    win->old_w = win->width;
+		    win->old_h = win->height;
+		    win->x = 0;
+		    win->y = 0;
+		    win->width = canvas_get_width();
+		    win->height = canvas_get_height();
+			info->dirty = 1;
+			info->rect_count = 0;
+		}
+	}*/
 
 }
 

@@ -53,38 +53,55 @@ void QuPanelSetBackground (QuPanel* panel,uint32_t color) {
 
 void QuPanelRefresh (QuWidget *wid, QuWindow* win) {
 	QuPanel *panel = (QuPanel*)wid;
-	acrylic_draw_rect_filled(win->x + wid->x, win->y + wid->y, wid->width, wid->height,panel->color);
+	acrylic_draw_rect_filled(wid->x,wid->y, wid->width, wid->height,panel->color);
 }
 
 
 void QuPanelUpdate(int x, int y, int w, int h, bool move) {
-	//if (canvas_is_double_buffered()){
+
 	uint32_t* lfb = (uint32_t*)QuGetWindow()->canvas;
 	uint32_t* dbl_canvas = (uint32_t*)0x0000600000000000;
 	int width = canvas_get_width();
 	int height = canvas_get_height();
-	//for (int i=0; i < w; i++) {
-	//	for (int j=0; j < h; j++){
-	//		uint32_t color = dbl_canvas[(x + i) + (y + j) * width];
-	//		lfb[(x + i) + (y + j) * width] = color;
-	//	}
-	//}
-	//}
+	
+	if (move) {
+		x = 0;
+		y = 0;
+	}
 
 	for (int i = 0; i < h; i++)
 		fastcpy (lfb + (y + i) * width + x,dbl_canvas + (y + i) * width + x, w * 4);
 	 
 	QuWinInfo *info = (QuWinInfo*)QuGetWindow()->win_info_data;
 	info->dirty = 1;
-	if (!move){
+	if (move){
+		info->rect_count = 0;
+	}else {
 		info->rect[info->rect_count].x = x;
 		info->rect[info->rect_count].y = y;
 		info->rect[info->rect_count].w = w;
 		info->rect[info->rect_count].h = h;
 		info->rect_count++;
 	}
-	if (move)
-		info->rect_count = 0;
+	
+}
+
+void QuPanelDirectCopy(uint32_t *data, int x, int y, int w, int h) {
+	uint32_t* lfb = (uint32_t*)QuGetWindow()->canvas;
+
+	int width = canvas_get_width();
+	int height = canvas_get_height();
+
+	for (int i = 0; i < h; i++)
+		fastcpy (lfb + (y + i) * width + x,data + (y + i) * width + x, w * 4);
+
+	QuWinInfo *info = (QuWinInfo*)QuGetWindow()->win_info_data;
+	info->dirty = 1;
+	info->rect[info->rect_count].x = x;
+	info->rect[info->rect_count].y = y;
+	info->rect[info->rect_count].w = w;
+	info->rect[info->rect_count].h = h;
+	info->rect_count++;
 }
 
 

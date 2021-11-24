@@ -30,7 +30,7 @@
 #include <QuEvent.h>
 #include <QuCursor.h>
 #include <ipc\_ipc_mouse.h>
-#include <QuWidget\QuTaskbar.h>
+#include <QuWidget\QuDock.h>
 #include <QuWidget\QuWallpaper.h>
 #include <QuWindow\QuWindowMngr.h>
 #include <QuCanvas\QuCanvasMngr.h>
@@ -39,18 +39,21 @@
 
 
 int main (int argc, char* argv[]) {
-	create_canvas ();
-	uint32_t w = canvas_get_width();
-	uint32_t h = canvas_get_height();
+	int svga_fd = sys_open_file ("/dev/svga", NULL);
+	uint32_t s_width = ioquery(svga_fd,SVGA_GET_WIDTH,NULL);
+	uint32_t s_height = ioquery(svga_fd, SVGA_GET_HEIGHT, NULL);
+	create_canvas (s_width,s_height);
+	int w = canvas_get_width();
+	int h = canvas_get_height();
   //  psf_register_font_lib();
 
-	//!Initialize Quince Wallpaper Manager  "a:coffee.jpg"
-	Image * img = QuWallpaperInit("/retro.jpg");
+	//!Initialize Quince Wallpaper Manager  "a:coffee.jpg"  "/bihu.jpg""/river.jpg"
+	Image * img = QuWallpaperInit("/river.jpg");
 	QuWallpaperDraw (img);
 	QuWallpaperPresent ();
 
 	//! Initialize Taskbar Manager
-	//QuTaskbarInit();
+	QuTaskbarInit();
 
 	//! Initialize the Window Manager
 	QuWindowMngr_Initialize();

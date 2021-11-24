@@ -118,11 +118,11 @@ finish_packet:
 		if (mouse_y < 0)
 			mouse_y = 0;
 
-		if (mouse_x > get_screen_width())
-			mouse_x = get_screen_width() - 7;
+		if (mouse_x + 24 > get_screen_width())
+			mouse_x = get_screen_width() - 24;
 
-		if (mouse_y > get_screen_height())
-			mouse_y = get_screen_height() - 7;
+		if (mouse_y + 24 > get_screen_height())
+			mouse_y = get_screen_height() - 24;
 
 		mouse_button_state = 0;
 

@@ -32,6 +32,7 @@ extern void sys_unblock_id (uint16_t id);
 extern void create_uthread (void (*entry) (void*), char* name);
 extern int  sys_open_file (char* filename, FILE *f);
 extern void sys_read_file (int fd, unsigned char* buffer, FILE *f);
+extern void sys_write_file (int fd, unsigned char* buffer, FILE *ufile);
 extern uint64_t sys_get_used_ram ();
 extern uint64_t sys_get_free_ram ();
 extern void sys_sleep (uint64_t ms);
@@ -45,5 +46,5 @@ extern uint32_t sys_get_system_tick ();
 extern void sys_kill (int pid, int signo);
 extern void sys_set_signal (int signo, sig_handler handler);
 extern void unmap_shared_memory (uint16_t dest_id, uint64_t pos, size_t size);
-
+extern void sys_attach_ttype (int id);
 #endif

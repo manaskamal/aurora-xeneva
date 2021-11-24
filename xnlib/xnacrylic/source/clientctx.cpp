@@ -103,4 +103,34 @@ void cc_font_draw_char (uint32_t* canvas, char string, int x, int y, uint32_t co
 
 
 
+void cc_draw_rect_filled (uint32_t* canvas,unsigned x, unsigned y, unsigned w, unsigned h, uint32_t col) {
+	for (int i = 0; i < w; i++) {
+		for (int j = 0; j < h; j++) {
+			cc_draw_pixel(canvas,x + i, y + j, col);
+		}	
+	}
+}
+
+void cc_draw_vertical_line (uint32_t *canvas,unsigned x, unsigned y, unsigned length, uint32_t color) {
+	cc_draw_rect_filled(canvas,x,y,1,length,color);
+}
+
+void cc_draw_horizontal_line (uint32_t *canvas,unsigned x, unsigned y, unsigned length, uint32_t color) {
+	cc_draw_rect_filled (canvas,x,y,length,1,color);
+}
+
+void cc_draw_rect_unfilled (uint32_t* canvas,int x, int y, int width, int height, uint32_t color) {
+	cc_draw_horizontal_line (canvas,x, y, width, color); //top
+	cc_draw_vertical_line(canvas,x, y+1, height -2, color); //left
+	cc_draw_horizontal_line(canvas,x, y + height - 1, width, color); //bottom
+	cc_draw_vertical_line (canvas,x + width - 1, y + 1, height - 2, color); //right
+}
+
+
+
+
+
+
+
+
 

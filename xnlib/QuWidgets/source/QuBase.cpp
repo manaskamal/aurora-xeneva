@@ -21,9 +21,6 @@
 #include <acrylic.h>
 #include <font.h>
 
-#define QU_CHANNEL_ADDRESS   0xFFFFD00000000000  //Client Send address
-#define QU_CHANNEL_RECEIVER  0xFFFFFD0000000000  //Client receiver address
-
 unsigned int * QuCanvasAddress = NULL;
 uint16_t app_id = 0;
 
@@ -86,7 +83,7 @@ void QuRegisterApplication (char* title) {
 	}
 	//sys_unblock_id(4);
 //	canvas_set_double_buffer(e);
-	create_canvas();
+	create_canvas(win_def_w, win_def_h);
 	canvas_set_address (QuCanvasAddress);
 	QuCreateWindow (win_def_x, win_def_y, win_def_w, win_def_h, info_data, title);
 	QuWindowSetCanvas (QuCanvasAddress);

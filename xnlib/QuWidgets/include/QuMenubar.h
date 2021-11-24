@@ -19,8 +19,11 @@ typedef struct _qu_menubar_h_ {
 	QuWidget wid;
 	QuList *CtxMenus;
 	QuContextMenu *focused;
+	QuContextMenu *last_focused;
 	bool update_required;
 	bool popup_enable;
+	int m_x;
+	int m_y;
 }QuMenubar;
 
 extern QuMenubar *QuCreateMenubar ();

@@ -132,10 +132,11 @@ void printf(const char* format, ...)
 			}
 			else if (*format == 'c')
 			{
-				int c = va_arg(args, int);
-				char buffer[sizeof(size_t) * 8 + 1];
-				sztoa(c, buffer, 10);
-				puts(buffer);
+				char c = va_arg(args, char);
+				//char buffer[sizeof(size_t) * 8 + 1];
+				//sztoa(c, buffer, 10);
+				//puts(buffer);
+				putc(c);
 			}
 			else if (*format == 'x')
 			{

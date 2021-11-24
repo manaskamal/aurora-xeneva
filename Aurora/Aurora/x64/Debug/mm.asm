@@ -5,17 +5,17 @@ include listing.inc
 INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
-PUBLIC	?mm_init@@YAXXZ					; mm_init
+PUBLIC	?mm_init@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z		; mm_init
 PUBLIC	?malloc@@YAPEAXI@Z				; malloc
 PUBLIC	?mfree@@YAXPEAX@Z				; mfree
-EXTRN	?vmmngr_x86_64_init@@YAXXZ:PROC			; vmmngr_x86_64_init
+EXTRN	?vmmngr_x86_64_init@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z:PROC ; vmmngr_x86_64_init
 EXTRN	?initialize_kmemory@@YAX_K@Z:PROC		; initialize_kmemory
 EXTRN	?alloc@@YAPEAX_K@Z:PROC				; alloc
 EXTRN	?free@@YAXPEAX@Z:PROC				; free
 pdata	SEGMENT
-$pdata$?mm_init@@YAXXZ DD imagerel $LN3
-	DD	imagerel $LN3+24
-	DD	imagerel $unwind$?mm_init@@YAXXZ
+$pdata$?mm_init@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z DD imagerel $LN3
+	DD	imagerel $LN3+34
+	DD	imagerel $unwind$?mm_init@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z
 $pdata$?malloc@@YAPEAXI@Z DD imagerel $LN3
 	DD	imagerel $LN3+24
 	DD	imagerel $unwind$?malloc@@YAPEAXI@Z
@@ -24,8 +24,8 @@ $pdata$?mfree@@YAXPEAX@Z DD imagerel $LN3
 	DD	imagerel $unwind$?mfree@@YAXPEAX@Z
 pdata	ENDS
 xdata	SEGMENT
-$unwind$?mm_init@@YAXXZ DD 010401H
-	DD	04204H
+$unwind$?mm_init@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z DD 010901H
+	DD	04209H
 $unwind$?malloc@@YAPEAXI@Z DD 010801H
 	DD	04208H
 $unwind$?mfree@@YAXPEAX@Z DD 010901H
@@ -93,17 +93,20 @@ _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\mm.cpp
 _TEXT	SEGMENT
-?mm_init@@YAXXZ PROC					; mm_init
+info$ = 48
+?mm_init@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z PROC		; mm_init
 
-; 14   : void mm_init () {
+; 14   : void mm_init (KERNEL_BOOT_INFO *info) {
 
 $LN3:
+	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 40					; 00000028H
 
 ; 15   : #ifdef ARCH_X64
-; 16   : 	vmmngr_x86_64_init ();
+; 16   : 	vmmngr_x86_64_init (info);
 
-	call	?vmmngr_x86_64_init@@YAXXZ		; vmmngr_x86_64_init
+	mov	rcx, QWORD PTR info$[rsp]
+	call	?vmmngr_x86_64_init@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z ; vmmngr_x86_64_init
 
 ; 17   : 	initialize_kmemory(16);
 
@@ -119,6 +122,6 @@ $LN3:
 
 	add	rsp, 40					; 00000028H
 	ret	0
-?mm_init@@YAXXZ ENDP					; mm_init
+?mm_init@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z ENDP		; mm_init
 _TEXT	ENDS
 END

@@ -23,6 +23,7 @@ typedef struct _terminal_ {
 	char text[TERM_WIDTH*TERM_HEIGHT];   //User should map and provide the buffer
 	int cursor_x;
 	int cursor_y;
+	int last_x;
 	int xpos;
 	int ypos;
 }QuTerminal;

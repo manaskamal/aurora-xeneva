@@ -185,6 +185,7 @@
     <ClCompile Include="heap.cpp" />
     <ClCompile Include="initializer.cpp" />
     <ClCompile Include="math.cpp" />
+    <ClCompile Include="qsort.cpp" />
     <ClCompile Include="stdio.cpp" />
     <ClCompile Include="string.cpp" />
     <ClCompile Include="sys\stdlib.cpp" />

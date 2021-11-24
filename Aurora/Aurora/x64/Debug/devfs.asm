@@ -6,8 +6,8 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 CONST	SEGMENT
-$SG2960	DB	'dev', 00H
-$SG2961	DB	'/dev', 00H
+$SG2963	DB	'dev', 00H
+$SG2964	DB	'/dev', 00H
 CONST	ENDS
 PUBLIC	?devfs_mount@@YAXXZ				; devfs_mount
 EXTRN	?strcpy@@YAPEADPEADPEBD@Z:PROC			; strcpy
@@ -35,14 +35,14 @@ $LN3:
 
 ; 17   : 	vfs_node_t *node = (vfs_node_t*)malloc(sizeof(vfs_node_t));
 
-	mov	ecx, 96					; 00000060H
+	mov	ecx, 104				; 00000068H
 	call	?malloc@@YAPEAXI@Z			; malloc
 	mov	QWORD PTR node$[rsp], rax
 
 ; 18   : 	strcpy(node->filename, "dev");
 
 	mov	rax, QWORD PTR node$[rsp]
-	lea	rdx, OFFSET FLAT:$SG2960
+	lea	rdx, OFFSET FLAT:$SG2963
 	mov	rcx, rax
 	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
 
@@ -79,32 +79,32 @@ $LN3:
 ; 25   : 	node->open = 0;
 
 	mov	rax, QWORD PTR node$[rsp]
-	mov	QWORD PTR [rax+56], 0
+	mov	QWORD PTR [rax+64], 0
 
 ; 26   : 	node->read = 0;
 
 	mov	rax, QWORD PTR node$[rsp]
-	mov	QWORD PTR [rax+64], 0
+	mov	QWORD PTR [rax+72], 0
 
 ; 27   : 	node->write = 0;
 
 	mov	rax, QWORD PTR node$[rsp]
-	mov	QWORD PTR [rax+72], 0
+	mov	QWORD PTR [rax+80], 0
 
 ; 28   : 	node->read_blk = 0;
 
 	mov	rax, QWORD PTR node$[rsp]
-	mov	QWORD PTR [rax+80], 0
+	mov	QWORD PTR [rax+88], 0
 
 ; 29   : 	node->ioquery = 0;
 
 	mov	rax, QWORD PTR node$[rsp]
-	mov	QWORD PTR [rax+88], 0
+	mov	QWORD PTR [rax+96], 0
 
 ; 30   : 	vfs_mount ("/dev", node);
 
 	mov	rdx, QWORD PTR node$[rsp]
-	lea	rcx, OFFSET FLAT:$SG2961
+	lea	rcx, OFFSET FLAT:$SG2964
 	call	?vfs_mount@@YAXPEADPEAU_vfs_node_@@@Z	; vfs_mount
 
 ; 31   : }

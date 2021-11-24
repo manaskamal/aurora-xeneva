@@ -11,13 +11,13 @@
 #include <stdint.h>
 #include <sys/mmap.h>
 #include <string.h>
-
+#include <sys\_term.h>
 
 void* free_list;
 //const int allocation_block_size = 64;
 LIST_ENTRY *last_header;
-uint64_t* alloc_end = NULL;
-uint64_t* start = NULL;
+void* alloc_end = NULL;
+void* start = NULL;
 
 void heap_initialize_allocator() {
 	//for (int i=0; i < 0xB00000/4096; i++) {
@@ -27,39 +27,51 @@ void heap_initialize_allocator() {
 	start = (uint64_t*)0x0000080000000000;
 
 	LIST_ENTRY *link = (LIST_ENTRY*)start;
+	link->is_free = true;
+	link->length = 0xB00000 - sizeof(LIST_ENTRY);// * (4096 - sizeof(LIST_ENTRY));
 	link->next = NULL;
 	link->prev = NULL;
-	link->is_free = true;
-	link->length = 0xA00000 * ( 4096 - sizeof(LIST_ENTRY)); 
 	last_header = link;
-	alloc_end = (uint64_t*)((ALLOCATOR_START + 0xA00000) * 4096);  
+	alloc_end = (void*)(0x0000080000000000 + 0xB00000);
 }
 
 void expand_allocator(int sz) {
-	int page_count = sz / 4096;
-
-	for (int i=0; i < page_count; i++) {
-		valloc((uint64_t)((size_t)alloc_end + i * 4096));
+	if (sz % 0x1000)  {
+		sz -= sz % 0x1000;
+		sz += 0x1000;
 	}
 
-	LIST_ENTRY *link = (LIST_ENTRY*)alloc_end;
-	link->is_free = true;
+
+	int page_count = sz / 0x1000;
+	LIST_ENTRY *link = (LIST_ENTRY*)alloc_end;	
+
+	for (int i=0; i < page_count; i++) {
+		valloc((uint64_t)alloc_end + i * 4096);
+		alloc_end = (void*)((size_t)alloc_end + 0x1000);
+	}
+	
+    link->is_free = true;
+	link->length = sz ;//- sizeof(LIST_ENTRY);
 	link->next = NULL;
 	link->prev = last_header;
+	last_header->next = link;
 	last_header = link;
 }
 
 void* _malloc (uint32_t size) {
 
 	LIST_ENTRY* list = (LIST_ENTRY*)start;
+	
 
 	while(true) {
 		if (list->is_free) {
 
 			if (list->length > size) {
-				uint64_t split_length = list->length - (size - sizeof(LIST_ENTRY));
+				uint64_t split_length = list->length - size - (sizeof(LIST_ENTRY));
 				size_t* new_addr = (size_t*)((size_t)list + size + sizeof(LIST_ENTRY));
 				LIST_ENTRY* new_list = (LIST_ENTRY*)new_addr;
+				new_list->is_free = true;
+				new_list->length = split_length;
 
 				if (list->next != 0)
 					list->next->prev = new_list;
@@ -67,11 +79,9 @@ void* _malloc (uint32_t size) {
 				new_list->next = list->next;
 				list->next = new_list;
 				list->is_free = false;
-				new_list->length = split_length;
 				list->length = size;
 				new_list->prev = list;
-				new_list->is_free = true;
-				if (last_header == list) last_header = new_list;
+				if (last_header == list) last_header = new_list;	
 				return (void*)((size_t)list + sizeof(LIST_ENTRY));
 			}
 
@@ -80,6 +90,7 @@ void* _malloc (uint32_t size) {
 				list->is_free = false;
 				return (void*)((size_t)list + sizeof(LIST_ENTRY));
 			}	
+
 		}
 
 
@@ -90,7 +101,6 @@ void* _malloc (uint32_t size) {
 
 	expand_allocator(size);
 	return _malloc(size);
-
 }
 
 

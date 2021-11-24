@@ -34,12 +34,6 @@
     <Filter Include="source\QuWindow">
       <UniqueIdentifier>{9be39a8e-513e-48ff-9dc5-619408f70aa1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="include\QuEffect">
-      <UniqueIdentifier>{2c457c0e-5379-4d92-b830-e343345db187}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="source\QuEffect">
-      <UniqueIdentifier>{1fe37184-c6f8-494f-aaf4-af9b8bc55aee}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\quince\main.cpp">
@@ -56,9 +50,6 @@
     </ClCompile>
     <ClCompile Include="source\quince\QuCursor.cpp">
       <Filter>source\quince</Filter>
-    </ClCompile>
-    <ClCompile Include="source\QuWidget\QuTaskbar.cpp">
-      <Filter>source\QuWidget</Filter>
     </ClCompile>
     <ClCompile Include="source\QuWidget\QuWallpaper.cpp">
       <Filter>source\QuWidget</Filter>
@@ -87,8 +78,8 @@
     <ClCompile Include="source\QuCanvas\QuScreenRectList.cpp">
       <Filter>source\QuCanvas</Filter>
     </ClCompile>
-    <ClCompile Include="source\QuEffect\QuBlur.cpp">
-      <Filter>source\QuEffect</Filter>
+    <ClCompile Include="source\QuWidget\QuDock.cpp">
+      <Filter>source\QuWidget</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -103,9 +94,6 @@
     </ClInclude>
     <ClInclude Include="include\QuCursor.h">
       <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="include\QuWidget\QuTaskbar.h">
-      <Filter>include\QuWidget</Filter>
     </ClInclude>
     <ClInclude Include="include\QuWidget\QuWallpaper.h">
       <Filter>include\QuWidget</Filter>
@@ -137,8 +125,8 @@
     <ClInclude Include="include\QuCanvas\QuScreenRectList.h">
       <Filter>include\QuCanvas</Filter>
     </ClInclude>
-    <ClInclude Include="include\QuEffect\QuBlur.h">
-      <Filter>include\QuEffect</Filter>
+    <ClInclude Include="include\QuWidget\QuDock.h">
+      <Filter>include\QuWidget</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

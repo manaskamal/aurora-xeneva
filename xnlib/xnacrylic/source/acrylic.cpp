@@ -181,3 +181,108 @@ void acrylic_draw_bezier (int x[], int y[], uint32_t color) {
 		canvas_draw_pixel((uint32_t)xu, (uint32_t)yu,color);
 	}
 }
+
+
+//!FX
+void acrylic_set_tint (float value, uint32_t* img,int w, int h, int x, int y) {
+	float div = 1/value;
+	for (int i = 0; i < w; i++){
+		for (int j = 0; j < h; j++) {
+
+			float r = GET_RED(img[x+i+y+j*canvas_get_scanline()]);
+			float g = GET_GREEN(img[x+i+y+j*canvas_get_scanline()]);
+			float b = GET_BLUE(img[x+i+y+j*canvas_get_scanline()]);
+
+			r *= div;
+			g *= div;
+			b *= div;
+
+			uint32_t color = make_col(r,g,b);
+			img[x+i+y+j*canvas_get_scanline()] = color;
+		}
+	}
+}
+
+void acrylic_set_tone (uint32_t color, uint32_t *img, int x, int y, int w, int h) {
+	for (int i = 0; i < w; i++){
+		for (int j = 0; j < h; j++) {
+
+			float r = GET_RED(img[x+i+y+j*canvas_get_scanline()]);
+			float g = GET_GREEN(img[x+i+y+j*canvas_get_scanline()]);
+			float b = GET_BLUE(img[x+i+y+j*canvas_get_scanline()]);
+			float a = GET_ALPHA(img[x+i+y+j*canvas_get_scanline()]);
+
+			r *= GET_RED(color);
+			g *= GET_GREEN(color);
+			b *= GET_BLUE(color);
+			a *= GET_ALPHA(color);
+
+			uint32_t color = make_col_a(r,g,b,a);
+
+			img[x+i+y+j*canvas_get_scanline()] = color;
+		}
+	}
+}
+
+void acrylic_box_blur (unsigned int* input, unsigned int* output, int cx, int cy, int w, int h) {
+
+	int r,g,b = 0;
+	int sum;
+	for (int j = 0; j < h; j++){
+		for (int i = 0; i < w; i++) {
+			if (i < 1 || j < 1 || i + 1 ==w || j + 1== h)
+				continue;
+
+			r += GET_RED(input[(cx + i -1)+(cy+j-1)*canvas_get_width()]);
+			g += GET_GREEN(input[(cx + i -1)+(cy+j-1)*canvas_get_width()]);
+			b += GET_BLUE(input[(cx + i -1)+(cy+j-1)*canvas_get_width()]);
+
+		    r += GET_RED(input[(cx+i+0)+(cy+j-1)*canvas_get_width()]);
+			g += GET_GREEN(input[(cx+i+0)+(cy+j-1)*canvas_get_width()]);
+			b += GET_BLUE(input[(cx+i+0)+(cy+j-1)*canvas_get_width()]);
+
+
+			r += GET_RED(input[(cx+i+1)+(cy+j-1)*canvas_get_width()]);
+			g += GET_GREEN(input[(cx+i+1)+(cy+j-1)*canvas_get_width()]);
+			b += GET_BLUE(input[(cx+i+1)+(cy+j-1)*canvas_get_width()]);
+
+		    r += GET_RED(input[(cx+i-1)+(cy+j+0)*canvas_get_width()]);
+			g += GET_GREEN(input[(cx+i-1)+(cy+j+0)*canvas_get_width()]);
+			b += GET_BLUE(input[(cx+i-1)+(cy+j+0)*canvas_get_width()]);
+
+			//CURRENT
+			r += GET_RED(input[(cx+i+0)+(cy+j+0)*canvas_get_width()]);
+			g += GET_GREEN(input[(cx+i+0)+(cy+j+0)*canvas_get_width()]);
+			b += GET_BLUE(input[(cx+i+0)+(cy+j+0)*canvas_get_width()]);
+
+
+		    r += GET_RED(input[(cx+i+1)+(cy+j+0)*canvas_get_width()]);
+			g += GET_GREEN(input[(cx+i+1)+(cy+j+0)*canvas_get_width()]);
+			b += GET_BLUE(input[(cx+i+1)+(cy+j+0)*canvas_get_width()]);
+
+			r += GET_RED(input[(cx+i-1)+(cy+j+1)*canvas_get_width()]);
+			g += GET_GREEN(input[(cx+i-1)+(cy+j+1)*canvas_get_width()]);
+			b += GET_BLUE(input[(cx+i-1)+(cy+j+1)*canvas_get_width()]);
+
+			r += GET_RED(input[(cx+i+0)+(cy+j+1)*canvas_get_width()]);
+			g += GET_GREEN(input[(cx+i+0)+(cy+j+1)*canvas_get_width()]);
+			b += GET_BLUE(input[(cx+i+0)+(cy+j+1)*canvas_get_width()]);
+
+			r += GET_RED(input[(cx+i+1)+(cy+j+1)*canvas_get_width()]);
+			g += GET_GREEN(input[(cx+i+1)+(cy+j+1)*canvas_get_width()]);
+			b += GET_BLUE(input[(cx+i+1)+(cy+j+1)*canvas_get_width()]);
+
+			//SET_ALPHA(sum,0xFF);
+			/*float r = GET_RED (sum);
+			float g = GET_GREEN (sum);
+			float b = GET_BLUE (sum);
+			float a = GET_ALPHA(sum);*/
+
+			uint32_t color = make_col (r/9,g/9,b/9);
+	        output[(cx + i - 1) +(cy + j - 1) *canvas_get_width() ] = color;
+
+
+		}
+	}
+
+}

@@ -29,7 +29,7 @@ extern size_t p_index (uint64_t addr);
 //*************************************************
 //! F U N C T I O N S   P R O T O T Y P E
 //*************************************************
-extern void vmmngr_x86_64_init ();
+extern void vmmngr_x86_64_init (KERNEL_BOOT_INFO *info);
 extern bool map_page (uint64_t physical_address, uint64_t virtual_address);
 extern bool map_page_ex (uint64_t *pml4i,uint64_t physical_address, uint64_t virtual_address);
 extern void unmap_page_ex(uint64_t* cr3, uint64_t virt_addr, bool free_physical);

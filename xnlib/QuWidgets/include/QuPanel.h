@@ -27,4 +27,5 @@ extern void QuPanelRefresh (QuWidget *wid, QuWindow *win);
 extern void QuPanelUpdateRequired (bool value);
 extern void QuPanelRepaint (int x, int y, int w, int h);
 extern void QuPanelSetBackground (QuPanel* panel,uint32_t color);
+extern void QuPanelDirectCopy(uint32_t *data, int x, int y, int w, int h);
 #endif

@@ -62,6 +62,8 @@ void QuEventLoop() {
 	int loops;
 	char fps_str[60];
 
+	int fd = 0;
+	sys_pipe (&fd, "quince");
 	while(1) {
 		message_receive(&msg);
 		_ipc_mouse_dispatch (&m_pack);
@@ -215,6 +217,6 @@ void QuEventLoop() {
 		QuScreenRectUpdate();
 		//}
 		//! Here We Prepare the frame that will be displayed
-		sys_sleep(16);
+		sys_sleep(2);
 	}
 }

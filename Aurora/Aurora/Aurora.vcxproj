@@ -235,6 +235,7 @@
     <ClInclude Include="..\include\fs\devfs.h" />
     <ClInclude Include="..\include\fs\fat32.h" />
     <ClInclude Include="..\include\fs\gpt.h" />
+    <ClInclude Include="..\include\fs\ttype.h" />
     <ClInclude Include="..\include\fs\vfs.h" />
     <ClInclude Include="..\include\hal.h" />
     <ClInclude Include="..\include\hwcursor.h" />
@@ -259,6 +260,7 @@
     <ClInclude Include="..\include\stdarg.h" />
     <ClInclude Include="..\include\stdint.h" />
     <ClInclude Include="..\include\stdio.h" />
+    <ClInclude Include="..\include\stream.h" />
     <ClInclude Include="..\include\string.h" />
     <ClInclude Include="..\include\sysserv.h" />
     <ClInclude Include="..\include\utils\circ_buf.h" />
@@ -304,6 +306,7 @@
     <ClCompile Include="fs\devfs.cpp" />
     <ClCompile Include="fs\fat32.cpp" />
     <ClCompile Include="fs\gpt.cpp" />
+    <ClCompile Include="fs\ttype.cpp" />
     <ClCompile Include="fs\vfs.cpp" />
     <ClCompile Include="hal.cpp" />
     <ClCompile Include="hwcursor.cpp" />
@@ -322,6 +325,7 @@
     <ClCompile Include="screen.cpp" />
     <ClCompile Include="serial.cpp" />
     <ClCompile Include="stdio.cpp" />
+    <ClCompile Include="stream.cpp" />
     <ClCompile Include="string.cpp" />
     <ClCompile Include="sysserv\ioquery.cpp" />
     <ClCompile Include="sysserv\sysfb.cpp" />

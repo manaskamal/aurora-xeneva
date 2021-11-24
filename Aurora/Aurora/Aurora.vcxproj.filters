@@ -339,6 +339,12 @@
     <ClInclude Include="..\include\limits.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\stream.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\fs\ttype.h">
+      <Filter>include\fs</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="init.cpp">
@@ -543,6 +549,12 @@
       <Filter>source\fs</Filter>
     </ClCompile>
     <ClCompile Include="fs\devfs.cpp">
+      <Filter>source\fs</Filter>
+    </ClCompile>
+    <ClCompile Include="stream.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="fs\ttype.cpp">
       <Filter>source\fs</Filter>
     </ClCompile>
   </ItemGroup>

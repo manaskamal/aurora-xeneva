@@ -9,41 +9,54 @@ PUBLIC	?valloc@@YAX_K@Z				; valloc
 EXTRN	?pmmngr_alloc@@YAPEAXXZ:PROC			; pmmngr_alloc
 EXTRN	x64_cli:PROC
 EXTRN	?map_page@@YA_N_K0@Z:PROC			; map_page
+EXTRN	?memset@@YAXPEAXEI@Z:PROC			; memset
 pdata	SEGMENT
 $pdata$?valloc@@YAX_K@Z DD imagerel $LN3
-	DD	imagerel $LN3+37
+	DD	imagerel $LN3+62
 	DD	imagerel $unwind$?valloc@@YAX_K@Z
 pdata	ENDS
 xdata	SEGMENT
 $unwind$?valloc@@YAX_K@Z DD 010901H
-	DD	04209H
+	DD	06209H
 xdata	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\sysserv\valloc.cpp
 _TEXT	SEGMENT
-pos$ = 48
+p$ = 32
+pos$ = 64
 ?valloc@@YAX_K@Z PROC					; valloc
 
-; 5    : void valloc (uint64_t pos) {
+; 8    : void valloc (uint64_t pos) {
 
 $LN3:
 	mov	QWORD PTR [rsp+8], rcx
-	sub	rsp, 40					; 00000028H
+	sub	rsp, 56					; 00000038H
 
-; 6    : 	x64_cli();
+; 9    : 	x64_cli();
 
 	call	x64_cli
 
-; 7    : 	map_page ((uint64_t)pmmngr_alloc(), pos);
+; 10   : 	void *p = pmmngr_alloc();
 
 	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
+	mov	QWORD PTR p$[rsp], rax
+
+; 11   : 	memset(p, 0, 4096);
+
+	mov	r8d, 4096				; 00001000H
+	xor	edx, edx
+	mov	rcx, QWORD PTR p$[rsp]
+	call	?memset@@YAXPEAXEI@Z			; memset
+
+; 12   : 	map_page ((uint64_t)p, pos);
+
 	mov	rdx, QWORD PTR pos$[rsp]
-	mov	rcx, rax
+	mov	rcx, QWORD PTR p$[rsp]
 	call	?map_page@@YA_N_K0@Z			; map_page
 
-; 8    : }
+; 13   : }
 
-	add	rsp, 40					; 00000028H
+	add	rsp, 56					; 00000038H
 	ret	0
 ?valloc@@YAX_K@Z ENDP					; valloc
 _TEXT	ENDS

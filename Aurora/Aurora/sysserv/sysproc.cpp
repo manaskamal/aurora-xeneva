@@ -41,3 +41,7 @@ void sys_set_signal (int signo, sig_handler handler) {
 	x64_cli();
 	//get_current_thread()->signals[signo] = handler;
 }
+
+void sys_attach_ttype (int id) {
+	get_current_thread()->ttype = id;
+}

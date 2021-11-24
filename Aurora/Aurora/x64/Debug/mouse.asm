@@ -33,9 +33,9 @@ mouse_cycle DB	01H DUP (?)
 ?old_message@@3U_dwm_message_@@A DB 01cH DUP (?)	; old_message
 _BSS	ENDS
 CONST	SEGMENT
-$SG6048	DB	'mouse', 00H
+$SG6068	DB	'mouse', 00H
 	ORG $+2
-$SG6049	DB	'/dev/mouse', 00H
+$SG6069	DB	'/dev/mouse', 00H
 CONST	ENDS
 PUBLIC	?initialize_mouse@@YAXXZ			; initialize_mouse
 PUBLIC	?mouse_wait@@YAXE@Z				; mouse_wait
@@ -94,7 +94,7 @@ $pdata$?left_button_up@@YAHXZ DD imagerel $LN5
 	DD	imagerel $LN5+76
 	DD	imagerel $unwind$?left_button_up@@YAHXZ
 $pdata$?mouse_handler@@YAX_KPEAX@Z DD imagerel $LN26
-	DD	imagerel $LN26+983
+	DD	imagerel $LN26+1009
 	DD	imagerel $unwind$?mouse_handler@@YAX_KPEAX@Z
 $pdata$?mouse_ioquery@@YAHPEAU_vfs_node_@@HPEAX@Z DD imagerel $LN9
 	DD	imagerel $LN9+97
@@ -123,7 +123,7 @@ $unwind$?mouse_read@@YAEXZ DD 010401H
 $unwind$?left_button_up@@YAHXZ DD 010401H
 	DD	02204H
 $unwind$?mouse_handler@@YAX_KPEAX@Z DD 010e01H
-	DD	0a20eH
+	DD	0c20eH
 $unwind$?mouse_ioquery@@YAHPEAU_vfs_node_@@HPEAX@Z DD 011201H
 	DD	06212H
 $unwind$?mouse_register_device@@YAXXZ DD 010401H
@@ -142,14 +142,14 @@ $LN3:
 
 ; 198  : 	vfs_node_t *node = (vfs_node_t*)malloc(sizeof(vfs_node_t));
 
-	mov	ecx, 96					; 00000060H
+	mov	ecx, 104				; 00000068H
 	call	?malloc@@YAPEAXI@Z			; malloc
 	mov	QWORD PTR node$[rsp], rax
 
 ; 199  : 	strcpy (node->filename, "mouse");
 
 	mov	rax, QWORD PTR node$[rsp]
-	lea	rdx, OFFSET FLAT:$SG6048
+	lea	rdx, OFFSET FLAT:$SG6068
 	mov	rcx, rax
 	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
 
@@ -186,33 +186,33 @@ $LN3:
 ; 206  : 	node->open = 0;
 
 	mov	rax, QWORD PTR node$[rsp]
-	mov	QWORD PTR [rax+56], 0
+	mov	QWORD PTR [rax+64], 0
 
 ; 207  : 	node->read = 0;
 
 	mov	rax, QWORD PTR node$[rsp]
-	mov	QWORD PTR [rax+64], 0
+	mov	QWORD PTR [rax+72], 0
 
 ; 208  : 	node->write = 0;
 
 	mov	rax, QWORD PTR node$[rsp]
-	mov	QWORD PTR [rax+72], 0
+	mov	QWORD PTR [rax+80], 0
 
 ; 209  : 	node->read_blk = 0;
 
 	mov	rax, QWORD PTR node$[rsp]
-	mov	QWORD PTR [rax+80], 0
+	mov	QWORD PTR [rax+88], 0
 
 ; 210  : 	node->ioquery = mouse_ioquery;
 
 	mov	rax, QWORD PTR node$[rsp]
 	lea	rcx, OFFSET FLAT:?mouse_ioquery@@YAHPEAU_vfs_node_@@HPEAX@Z ; mouse_ioquery
-	mov	QWORD PTR [rax+88], rcx
+	mov	QWORD PTR [rax+96], rcx
 
 ; 211  : 	vfs_mount ("/dev/mouse", node);
 
 	mov	rdx, QWORD PTR node$[rsp]
-	lea	rcx, OFFSET FLAT:$SG6049
+	lea	rcx, OFFSET FLAT:$SG6069
 	call	?vfs_mount@@YAXPEADPEAU_vfs_node_@@@Z	; vfs_mount
 
 ; 212  : }
@@ -304,12 +304,14 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 mouse_in$1 = 32
 status$ = 33
-tv76 = 36
-x$2 = 40
+x$2 = 36
+tv76 = 40
 y$3 = 44
-msg$4 = 48
-p$ = 96
-param$ = 104
+tv152 = 48
+tv157 = 52
+msg$4 = 56
+p$ = 112
+param$ = 120
 ?mouse_handler@@YAX_KPEAX@Z PROC			; mouse_handler
 
 ; 71   : void mouse_handler (size_t p, void* param) {
@@ -317,7 +319,7 @@ param$ = 104
 $LN26:
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
-	sub	rsp, 88					; 00000058H
+	sub	rsp, 104				; 00000068H
 
 ; 72   : 	x64_cli();
 
@@ -570,30 +572,38 @@ $LN9@mouse_hand:
 $LN8@mouse_hand:
 
 ; 120  : 
-; 121  : 		if (mouse_x > get_screen_width())
+; 121  : 		if (mouse_x + 24 > get_screen_width())
 
+	mov	eax, DWORD PTR ?mouse_x@@3HA		; mouse_x
+	add	eax, 24
+	mov	DWORD PTR tv152[rsp], eax
 	call	?get_screen_width@@YAIXZ		; get_screen_width
-	cmp	DWORD PTR ?mouse_x@@3HA, eax		; mouse_x
+	mov	ecx, DWORD PTR tv152[rsp]
+	cmp	ecx, eax
 	jbe	SHORT $LN7@mouse_hand
 
-; 122  : 			mouse_x = get_screen_width() - 7;
+; 122  : 			mouse_x = get_screen_width() - 24;
 
 	call	?get_screen_width@@YAIXZ		; get_screen_width
-	sub	eax, 7
+	sub	eax, 24
 	mov	DWORD PTR ?mouse_x@@3HA, eax		; mouse_x
 $LN7@mouse_hand:
 
 ; 123  : 
-; 124  : 		if (mouse_y > get_screen_height())
+; 124  : 		if (mouse_y + 24 > get_screen_height())
 
+	mov	eax, DWORD PTR ?mouse_y@@3HA		; mouse_y
+	add	eax, 24
+	mov	DWORD PTR tv157[rsp], eax
 	call	?get_screen_height@@YAIXZ		; get_screen_height
-	cmp	DWORD PTR ?mouse_y@@3HA, eax		; mouse_y
+	mov	ecx, DWORD PTR tv157[rsp]
+	cmp	ecx, eax
 	jbe	SHORT $LN6@mouse_hand
 
-; 125  : 			mouse_y = get_screen_height() - 7;
+; 125  : 			mouse_y = get_screen_height() - 24;
 
 	call	?get_screen_height@@YAIXZ		; get_screen_height
-	sub	eax, 7
+	sub	eax, 24
 	mov	DWORD PTR ?mouse_y@@3HA, eax		; mouse_y
 $LN6@mouse_hand:
 
@@ -786,7 +796,7 @@ $LN22@mouse_hand:
 
 ; 171  : }
 
-	add	rsp, 88					; 00000058H
+	add	rsp, 104				; 00000068H
 	ret	0
 ?mouse_handler@@YAX_KPEAX@Z ENDP			; mouse_handler
 _TEXT	ENDS

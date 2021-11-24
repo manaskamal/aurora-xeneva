@@ -11,9 +11,9 @@
 #include <mm.h>
 #include <arch\x86_64\mmngr\kheap.h>
 
-void mm_init () {
+void mm_init (KERNEL_BOOT_INFO *info) {
 #ifdef ARCH_X64
-	vmmngr_x86_64_init ();
+	vmmngr_x86_64_init (info);
 	initialize_kmemory(16);
 #elif  ARCH_ARM
 	//!initialize arm32 virtual memory manager

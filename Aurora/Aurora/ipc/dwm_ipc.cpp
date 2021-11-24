@@ -12,6 +12,7 @@
 #include <ipc\dwm_ipc.h>
 #include <atomic\mutex.h>
 #include <utils\lnklist.h>
+#include <utils\circ_buf.h>
 
 uint64_t dwm_queue[512];
 static mutex_t *msg_mutex = create_mutex ();

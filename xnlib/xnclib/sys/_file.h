@@ -25,8 +25,15 @@ typedef struct _file_ {
 	uint32_t  status;
 }UFILE;
 
-extern "C" int sys_open_file (char* filename, UFILE *stream);
-extern "C" void sys_read_file (int fd, unsigned char* buffer,UFILE *f);
+#ifdef __cplusplus
+extern "C" {
+#endif
+int sys_open_file (char* filename, UFILE *stream);
+void sys_read_file (int fd, unsigned char* buffer,UFILE *f);
+void sys_write_file (int fd, unsigned char* buffer, UFILE *f);
+#ifdef __cplusplus
+}
+#endif
 
 
 #endif

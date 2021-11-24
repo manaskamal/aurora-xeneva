@@ -12,7 +12,14 @@
 #ifndef __TERM_H__
 #define __TERM_H__
 
-
-extern "C" void sys_print_text (const char* text, ...);
+#ifdef __cplusplus
+extern "C" {
+#endif
+void sys_print_text (const char* text, ...);
+void sys_ttype_create (int* master_fd, int* slave_fd);
+void sys_attach_tty (int id);
+#ifdef __cplusplus
+}
+#endif
 
 #endif

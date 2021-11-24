@@ -10,13 +10,16 @@
 #ifndef __STDARG_H__
 #define __STDARG_H__
 
+
+/* va list parameter list */
+typedef unsigned char *va_list;
+
+
 #ifdef __cplusplus
 extern "C"
 {
 #endif
 
-/* va list parameter list */
-typedef unsigned char *va_list;
 
 
 /* width of stack == width of int */

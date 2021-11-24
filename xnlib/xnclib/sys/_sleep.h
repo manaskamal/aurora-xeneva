@@ -20,5 +20,12 @@
  *
  *===============================================
  */
-extern "C" void sys_sleep (unsigned long long ms);
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+void sys_sleep (unsigned long long ms);
+#ifdef __cplusplus
+}
+#endif
 #endif

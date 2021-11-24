@@ -50,6 +50,21 @@ uint32_t make_col (uint8_t red, uint8_t green, uint8_t blue) {
 
 }
 
+uint32_t make_col_a (uint8_t red, uint8_t green, uint8_t blue, uint8_t a) {
+	red = max(red, 0);
+	red = min(red, 255);
+	green = max(green, 0);
+	green = min(green, 255);
+	blue = max(blue, 0);
+	blue = min(blue, 255);
+	a = max(a,0);
+	a = min(a,255);
+
+	uint32_t ret =(a << 24) | (red << 16) | (green << 8) | (blue << 0);
+	return ret;
+
+}
+
 
 uint32_t trans_color (uint32_t c1, uint32_t c2, float d) {
 	if (d < 0) d = 0;

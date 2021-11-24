@@ -38,6 +38,7 @@ typedef struct _QuWinInfo_ {
 	bool dirty;
 	QuRect rect[256];
 	int rect_count;
+	bool maximize;
 }QuWindowInfo;
 
 typedef struct _QuWindow_ {
@@ -52,7 +53,11 @@ typedef struct _QuWindow_ {
 	bool mark_for_close;
 	unsigned int *canvas;
 	unsigned short owner_id;
-	bool decorate;
+	bool maximize;
+	int old_w;
+	int old_h;
+	int old_x;
+	int old_y;
 	uint8_t attr;
 	uint32_t *win_info_location;
 }QuWindow;

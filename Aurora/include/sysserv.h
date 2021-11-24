@@ -18,6 +18,8 @@
 #include <callback.h>
 #include <ipc\dwm_ipc.h>
 #include <arch\x86_64\mmngr\map.h>
+#include <fs\ttype.h>
+#include <ipc\pipe.h>
 
 
 //! List of available services in Aurora
@@ -35,10 +37,10 @@ static void* _syscalls[] = {
 	dwm_put_message, //10
 	dwm_dispatch_message, //11
 	sys_get_fb_mem, //12
-	sys_fb_update, //13
+	ttype_create, //13
 	sys_set_mouse_data, //14
 	sys_get_mouse_pack, //15
-	sys_move_cursor, //16
+	allocate_pipe, //16
 	sys_unblock_id, //17
 	create_uthread, //18
 	sys_open_file, //19
@@ -48,7 +50,7 @@ static void* _syscalls[] = {
 	sys_get_free_ram, //23
 	sys_sleep, //24
 	sys_exit, //25
-	sys_fb_move_cursor, //26
+	sys_attach_ttype, //26
 	fork, //27
 	exec, //28
 	map_memory, //29
@@ -59,6 +61,7 @@ static void* _syscalls[] = {
 	sys_kill, //34
 	sys_set_signal, //35
 	unmap_shared_memory, //36
+	sys_write_file, //37
 	0
 };
 

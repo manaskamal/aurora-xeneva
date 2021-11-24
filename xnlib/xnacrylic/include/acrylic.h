@@ -32,4 +32,9 @@ extern void acrylic_draw_line (int x0, int y0, int x1, int y1, uint32_t color);
 extern void acrylic_draw_circle (int xc, int yc, int x, int y, uint32_t color);
 extern void acrylic_circ_bres (int xc, int yc, int r, uint32_t color);
 extern void acrylic_draw_bezier (int x[], int y[], uint32_t color);
+
+//!AcrylicFX
+extern void acrylic_set_tint (float value, uint32_t* img,int w, int h, int x, int y);
+extern void acrylic_set_tone (uint32_t color, uint32_t *img, int x, int y, int w, int h);
+extern void acrylic_box_blur (unsigned int* input, unsigned int* output, int cx, int cy, int w, int h);
 #endif

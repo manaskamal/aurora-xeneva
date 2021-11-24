@@ -197,8 +197,37 @@ sys_get_used_ram:
 	syscall
 	ret
 
+global sys_write_file 
+sys_write_file:
+    mov r12, 37
+	mov r13, rcx
+	mov r14, rdx
+	mov r15, r8
+	syscall
+	ret
 
+global sys_ttype_create
+sys_ttype_create:
+    mov r12,13
+	mov r13, rcx
+	mov r14, rdx
+	syscall
+	ret
 
+global sys_attach_tty
+sys_attach_tty:
+    mov r12,26
+	mov r13,rcx
+	syscall
+	ret
+
+global sys_pipe
+sys_pipe:
+    mov r12, 16
+	mov r13, rcx
+	mov r14, rdx
+	syscall
+	ret
 
 
 

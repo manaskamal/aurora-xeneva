@@ -17,6 +17,7 @@
 #include <arch\x86_64\cpu.h>
 #include <fs\vfs.h>
 #include <mm.h>
+#include <stream.h>
 #include <pe.h>
 
 

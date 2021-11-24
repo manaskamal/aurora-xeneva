@@ -1,7 +1,7 @@
-﻿Build started 08-11-2021 ৰাতিপু 11:16:33.
+﻿Build started 24-11-2021 ৰাতিপু 9:31:40.
      1>Project "E:\Xeneva Project\Xeneva\Aurora\Quince\Quince.vcxproj" on node 2 (Rebuild target(s)).
      1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\xnlib\xnclib" /I"E:\Xeneva Project\Xeneva\xnlib\xnacrylic\include" /I"E:\Xeneva Project\Xeneva\Aurora\Quince\include" /Zi /nologo /W3 /WX- /sdl- /Od /D ARCH_X64 /D HW_CURSOR /D _MBCS /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt include\QuEvent.cpp include\QuWindow\QuList.h source\ipc\QuChannel.cpp source\ipc\_ipc_mouse.cpp source\QuCanvas\QuCanvasMngr.cpp source\QuCanvas\QuScreenRectList.cpp source\QuCanvas\QuScreenStack.cpp source\QuEffect\QuBlur.cpp source\quince\main.cpp source\quince\QuBmpImage.cpp source\quince\QuCursor.cpp source\QuWidget\QuTaskbar.cpp source\QuWidget\QuWallpaper.cpp source\QuWindow\QuList.cpp source\QuWindow\QuWindow.cpp source\QuWindow\QuWindowMngr.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\xnlib\xnclib" /I"E:\Xeneva Project\Xeneva\xnlib\xnacrylic\include" /I"E:\Xeneva Project\Xeneva\Aurora\Quince\include" /Zi /nologo /W3 /WX- /sdl- /Od /D ARCH_X64 /D HW_CURSOR /D _MBCS /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt include\QuEvent.cpp include\QuWindow\QuList.h source\ipc\QuChannel.cpp source\ipc\_ipc_mouse.cpp source\QuCanvas\QuCanvasMngr.cpp source\QuCanvas\QuScreenRectList.cpp source\QuCanvas\QuScreenStack.cpp source\quince\main.cpp source\quince\QuBmpImage.cpp source\quince\QuCursor.cpp source\QuWidget\QuDock.cpp source\QuWidget\QuWallpaper.cpp source\QuWindow\QuList.cpp source\QuWindow\QuWindow.cpp source\QuWindow\QuWindowMngr.cpp
      1>cl : Command line warning D9025: overriding '/sdl-' with '/GS-'
      1>cl : Command line warning D9002: ignoring unknown option '/arch:SSE'
          QuWindowMngr.cpp
@@ -9,48 +9,44 @@
      1>source\QuWindow\QuWindowMngr.cpp(73): warning C4018: '<' : signed/unsigned mismatch
      1>source\QuWindow\QuWindowMngr.cpp(117): warning C4018: '<' : signed/unsigned mismatch
      1>source\QuWindow\QuWindowMngr.cpp(130): warning C4018: '<' : signed/unsigned mismatch
-     1>source\QuWindow\QuWindowMngr.cpp(192): warning C4018: '<' : signed/unsigned mismatch
-     1>source\QuWindow\QuWindowMngr.cpp(206): warning C4018: '<' : signed/unsigned mismatch
-     1>source\QuWindow\QuWindowMngr.cpp(251): warning C4244: '=' : conversion from 'unsigned short' to 'uint8_t', possible loss of data
-     1>source\QuWindow\QuWindowMngr.cpp(271): warning C4018: '<' : signed/unsigned mismatch
+     1>source\QuWindow\QuWindowMngr.cpp(189): warning C4018: '<' : signed/unsigned mismatch
+     1>source\QuWindow\QuWindowMngr.cpp(203): warning C4018: '<' : signed/unsigned mismatch
+     1>source\QuWindow\QuWindowMngr.cpp(248): warning C4244: '=' : conversion from 'unsigned short' to 'uint8_t', possible loss of data
+     1>source\QuWindow\QuWindowMngr.cpp(268): warning C4018: '<' : signed/unsigned mismatch
          QuWindow.cpp
          QuList.cpp
          QuWallpaper.cpp
-     1>source\QuWidget\QuWallpaper.cpp(36): warning C4018: '<' : signed/unsigned mismatch
-     1>source\QuWidget\QuWallpaper.cpp(48): warning C4018: '<' : signed/unsigned mismatch
      1>source\QuWidget\QuWallpaper.cpp(49): warning C4018: '<' : signed/unsigned mismatch
-     1>source\QuWidget\QuWallpaper.cpp(69): warning C4018: '<' : signed/unsigned mismatch
+     1>source\QuWidget\QuWallpaper.cpp(50): warning C4018: '<' : signed/unsigned mismatch
      1>source\QuWidget\QuWallpaper.cpp(70): warning C4018: '<' : signed/unsigned mismatch
-     1>source\QuWidget\QuWallpaper.cpp(90): warning C4018: '<' : signed/unsigned mismatch
+     1>source\QuWidget\QuWallpaper.cpp(71): warning C4018: '<' : signed/unsigned mismatch
      1>source\QuWidget\QuWallpaper.cpp(91): warning C4018: '<' : signed/unsigned mismatch
-     1>source\QuWidget\QuWallpaper.cpp(110): warning C4018: '<' : signed/unsigned mismatch
+     1>source\QuWidget\QuWallpaper.cpp(92): warning C4018: '<' : signed/unsigned mismatch
      1>source\QuWidget\QuWallpaper.cpp(111): warning C4018: '<' : signed/unsigned mismatch
-         QuTaskbar.cpp
+     1>source\QuWidget\QuWallpaper.cpp(112): warning C4018: '<' : signed/unsigned mismatch
+         QuDock.cpp
+     1>source\QuWidget\QuDock.cpp(32): warning C4018: '<' : signed/unsigned mismatch
          QuCursor.cpp
          QuBmpImage.cpp
          main.cpp
-         QuBlur.cpp
-     1>source\QuEffect\QuBlur.cpp(41): warning C4244: '=' : conversion from 'uint64_t' to 'unsigned char', possible loss of data
-     1>source\QuEffect\QuBlur.cpp(21): warning C4101: 'red' : unreferenced local variable
-     1>source\QuEffect\QuBlur.cpp(21): warning C4101: 'green' : unreferenced local variable
          QuScreenStack.cpp
          QuScreenRectList.cpp
          QuCanvasMngr.cpp
-     1>source\QuCanvas\QuCanvasMngr.cpp(184): warning C4018: '<' : signed/unsigned mismatch
-     1>source\QuCanvas\QuCanvasMngr.cpp(185): warning C4018: '<' : signed/unsigned mismatch
-     1>source\QuCanvas\QuCanvasMngr.cpp(217): warning C4018: '<' : signed/unsigned mismatch
-     1>source\QuCanvas\QuCanvasMngr.cpp(243): warning C4267: 'argument' : conversion from 'size_t' to 'unsigned int', possible loss of data
-     1>source\QuCanvas\QuCanvasMngr.cpp(248): warning C4267: 'argument' : conversion from 'size_t' to 'unsigned int', possible loss of data
-     1>source\QuCanvas\QuCanvasMngr.cpp(253): warning C4267: 'argument' : conversion from 'size_t' to 'unsigned int', possible loss of data
-     1>source\QuCanvas\QuCanvasMngr.cpp(258): warning C4267: 'argument' : conversion from 'size_t' to 'unsigned int', possible loss of data
-     1>source\QuCanvas\QuCanvasMngr.cpp(263): warning C4267: 'argument' : conversion from 'size_t' to 'unsigned int', possible loss of data
+     1>source\QuCanvas\QuCanvasMngr.cpp(206): warning C4018: '<' : signed/unsigned mismatch
+     1>source\QuCanvas\QuCanvasMngr.cpp(207): warning C4018: '<' : signed/unsigned mismatch
+     1>source\QuCanvas\QuCanvasMngr.cpp(239): warning C4018: '<' : signed/unsigned mismatch
+     1>source\QuCanvas\QuCanvasMngr.cpp(265): warning C4267: 'argument' : conversion from 'size_t' to 'unsigned int', possible loss of data
+     1>source\QuCanvas\QuCanvasMngr.cpp(270): warning C4267: 'argument' : conversion from 'size_t' to 'unsigned int', possible loss of data
+     1>source\QuCanvas\QuCanvasMngr.cpp(275): warning C4267: 'argument' : conversion from 'size_t' to 'unsigned int', possible loss of data
+     1>source\QuCanvas\QuCanvasMngr.cpp(280): warning C4267: 'argument' : conversion from 'size_t' to 'unsigned int', possible loss of data
+     1>source\QuCanvas\QuCanvasMngr.cpp(285): warning C4267: 'argument' : conversion from 'size_t' to 'unsigned int', possible loss of data
          _ipc_mouse.cpp
          QuChannel.cpp
      1>source\ipc\QuChannel.cpp(36): warning C4244: '=' : conversion from 'uint16_t' to 'uint8_t', possible loss of data
      1>source\ipc\QuChannel.cpp(37): warning C4244: '=' : conversion from 'uint16_t' to 'uint8_t', possible loss of data
          QuList.h
          QuEvent.cpp
-     1>include\QuEvent.cpp(152): warning C4244: '=' : conversion from 'uint16_t' to 'uint8_t', possible loss of data
+     1>include\QuEvent.cpp(154): warning C4244: '=' : conversion from 'uint16_t' to 'uint8_t', possible loss of data
      1>include\QuEvent.cpp(62): warning C4101: 'loops' : unreferenced local variable
      1>include\QuEvent.cpp(63): warning C4101: 'fps_str' : unreferenced local variable
          Generating Code...
@@ -64,11 +60,10 @@
          x64\Debug\QuCanvasMngr.obj
          x64\Debug\QuScreenRectList.obj
          x64\Debug\QuScreenStack.obj
-         x64\Debug\QuBlur.obj
          x64\Debug\main.obj
          x64\Debug\QuBmpImage.obj
          x64\Debug\QuCursor.obj
-         x64\Debug\QuTaskbar.obj
+         x64\Debug\QuDock.obj
          x64\Debug\QuWallpaper.obj
          x64\Debug\QuList.obj
          x64\Debug\QuWindow.obj
@@ -81,4 +76,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:03.57
+Time Elapsed 00:00:04.17

@@ -150,11 +150,10 @@
     <ClCompile Include="source\QuCanvas\QuCanvasMngr.cpp" />
     <ClCompile Include="source\QuCanvas\QuScreenRectList.cpp" />
     <ClCompile Include="source\QuCanvas\QuScreenStack.cpp" />
-    <ClCompile Include="source\QuEffect\QuBlur.cpp" />
     <ClCompile Include="source\quince\main.cpp" />
     <ClCompile Include="source\quince\QuBmpImage.cpp" />
     <ClCompile Include="source\quince\QuCursor.cpp" />
-    <ClCompile Include="source\QuWidget\QuTaskbar.cpp" />
+    <ClCompile Include="source\QuWidget\QuDock.cpp" />
     <ClCompile Include="source\QuWidget\QuWallpaper.cpp" />
     <ClCompile Include="source\QuWindow\QuList.cpp" />
     <ClCompile Include="source\QuWindow\QuWindow.cpp" />
@@ -169,11 +168,10 @@
     <ClInclude Include="include\QuCanvas\QuScreenStack.h" />
     <ClInclude Include="include\QuCode.h" />
     <ClInclude Include="include\QuCursor.h" />
-    <ClInclude Include="include\QuEffect\QuBlur.h" />
     <ClInclude Include="include\QuEvent.h" />
     <ClInclude Include="include\QuMessageStore.h" />
     <ClInclude Include="include\QuRect.h" />
-    <ClInclude Include="include\QuWidget\QuTaskbar.h" />
+    <ClInclude Include="include\QuWidget\QuDock.h" />
     <ClInclude Include="include\QuWidget\QuWallpaper.h" />
     <ClInclude Include="include\QuWindow\QuWindow.h" />
     <ClInclude Include="include\QuWindow\QuWindowMngr.h" />

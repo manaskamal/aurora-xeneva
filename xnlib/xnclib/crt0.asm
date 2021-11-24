@@ -14,6 +14,10 @@ section .text
 [BITS 64]
 
 
+global __chkstk
+__chkstk:
+      ret
+
 global _start
 _start:
      mov rsi, rcx

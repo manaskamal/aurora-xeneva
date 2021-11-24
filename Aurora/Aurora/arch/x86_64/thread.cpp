@@ -113,6 +113,7 @@ thread_t* create_kthread (void (*entry) (void), uint64_t stack,uint64_t cr3, cha
 	t->fs = 0x10;
 	t->gs = 0x10;
 	t->kern_esp = stack;
+	t->ttype = 0;
 	t->_is_user = 0;
 	t->cr3 = cr3;
 	t->name = name;
@@ -120,7 +121,11 @@ thread_t* create_kthread (void (*entry) (void), uint64_t stack,uint64_t cr3, cha
 	t->quanta = 0;
 	t->priviledge = THREAD_LEVEL_KERNEL;
 	t->state = THREAD_STATE_READY;
-	t->priority = priority;
+	//t->priority = priority;
+	t->fd_current = 0;
+	t->stream = allocate_stream();
+	//t->master_fd = 0;
+	//t->slave_fd = 0;
 	/*
 	for (int i = 0; i < 38-1; i++)
 		t->signals[i] = 0;
@@ -164,13 +169,15 @@ thread_t* create_user_thread (void (*entry) (void*),uint64_t stack,uint64_t cr3,
 	t->name = name;
 	t->id = task_id++;
 	t->quanta = 0;
-	t->blocked_stack_resv = 0;
+	t->ttype = 0;
 	t->mouse_box = (uint64_t*)pmmngr_alloc();
 	map_page_ex((uint64_t*)t->cr3,(uint64_t)t->mouse_box,(uint64_t)0xFFFFFFFFB0000000);
 	t->_is_user = 1;
 	t->priviledge = THREAD_LEVEL_USER;
 	t->state = THREAD_STATE_READY;
 	t->priority = priority;
+	t->fd_current = 0;
+	t->stream = allocate_stream();
 	/*for (int i = 0; i < 38-1; i++)
 		t->signals[i] = 0;
 	t->signal_interrupt = false;*/

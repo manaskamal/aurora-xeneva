@@ -21,8 +21,9 @@ typedef struct _qu_popup_menu_ {
 	int m_x;
 	int m_y;
 	bool is_popup;
+	uint32_t *data;
+	void (*Action) (_qu_popup_menu_ *menu);
 }QuPopupMenu;
 
 extern QuPopupMenu* QuCreatePopupMenu(char* title);
-
 #endif

@@ -125,6 +125,7 @@
     </ClCompile>
     <ClCompile Include="stdio.cpp" />
     <ClCompile Include="errno.cpp" />
+    <ClCompile Include="qsort.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="sys">

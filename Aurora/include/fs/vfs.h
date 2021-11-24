@@ -41,6 +41,7 @@ typedef struct _vfs_node_ {
 	uint32_t  current;  //inode -- in unix term
 	uint32_t  flags; 
 	uint32_t  status;
+	void* device;
 	open_callback open;
 	read_callback read;
 	write_callback write;

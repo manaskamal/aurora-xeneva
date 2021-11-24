@@ -12,7 +12,7 @@ process_count DD 01H DUP (?)
 ?waked@@3_NA DB	01H DUP (?)				; waked
 _BSS	ENDS
 CONST	SEGMENT
-$SG3554	DB	'0', 00H
+$SG3574	DB	'0', 00H
 CONST	ENDS
 PUBLIC	?procmngr_add_process@@YAXPEAU_procmngr_queue_@@@Z ; procmngr_add_process
 PUBLIC	?procmngr_get_process@@YAPEAU_procmngr_queue_@@XZ ; procmngr_get_process
@@ -78,7 +78,7 @@ $LN3:
 	mov	rax, QWORD PTR queue$[rsp]
 	mov	rcx, QWORD PTR queue$[rsp]
 	add	rcx, 8
-	lea	r9, OFFSET FLAT:$SG3554
+	lea	r9, OFFSET FLAT:$SG3574
 	mov	r8b, 1
 	mov	rdx, rax
 	call	?create_process@@YAXPEBDPEADE1@Z	; create_process

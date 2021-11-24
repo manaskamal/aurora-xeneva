@@ -18,7 +18,14 @@ typedef struct __jmp_buf_tag {
 	unsigned long __ss[128/sizeof(long)];
 } jmp_buf;
 
-extern "C" int setjmp (jmp_buf);
-extern "C" void longjmp(jmp_buf, int);
+#ifdef __cplusplus
+extern "C" {
+#endif
+int setjmp (jmp_buf);
+void longjmp(jmp_buf, int);
+#ifdef __cplusplus
+}
+#endif
+
 
 #endif

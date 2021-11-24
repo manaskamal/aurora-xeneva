@@ -20,5 +20,11 @@
  **
  **********************************************************
  */
-extern "C" void create_uthread (void (*entry)(), char* name);
+#ifdef __cplusplus
+extern "C" {
+#endif
+void create_uthread (void (*entry)(), char* name);
+#ifdef __cplusplus
+}
+#endif
 #endif

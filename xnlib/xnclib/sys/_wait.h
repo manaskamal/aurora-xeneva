@@ -12,5 +12,12 @@
 #ifndef __WAIT_H__
 #define __WAIT_H__
 
-extern "C" void sys_wait ();
+#ifdef __cplusplus
+extern "C" {
+#endif
+void sys_wait ();
+#ifdef __cplusplus
+}
+#endif
+
 #endif

@@ -17,7 +17,7 @@
 #include <arch\x86_64\mmngr\vmmngr.h>
 #endif
 
-extern void mm_init ();
+extern void mm_init (KERNEL_BOOT_INFO *info);
 extern void* malloc (uint32_t size);
 extern void mfree (void* address);
 #endif

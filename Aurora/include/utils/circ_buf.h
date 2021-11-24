@@ -14,7 +14,7 @@
 #include <stdint.h>
 
 typedef struct _circ_buf_ {
-	char *buffer;
+	uint8_t *buffer;
 	size_t head;
 	size_t tail;
 	size_t max;
@@ -24,13 +24,13 @@ typedef struct _circ_buf_ {
 extern void advance_pointer (circ_buf_t *cbuf);
 extern void retreat_pointer (circ_buf_t *cbuf);
 extern void circ_buf_reset (circ_buf_t *cbuf);
-extern circ_buf_t *circ_buf_init (char* buffer, size_t size);
+extern circ_buf_t *circ_buf_init (unsigned char* buffer, size_t size);
 extern void circ_buf_free (circ_buf_t *cbuf);
 extern size_t circular_buf_size(circ_buf_t *cbuf);
 extern size_t circular_buf_capacity(circ_buf_t *cbuf);
-extern void circular_buf_put(circ_buf_t *cbuf, char data);
-extern int circular_buf_put2(circ_buf_t *cbuf, char data);
-extern int circular_buf_get(circ_buf_t *cbuf, char *data);
+extern void circular_buf_put(circ_buf_t *cbuf,int data);
+extern int circular_buf_put2(circ_buf_t *cbuf, int data);
+extern int circular_buf_get(circ_buf_t *cbuf, uint8_t *data);
 extern bool circular_buf_empty(circ_buf_t *cbuf);
 extern bool circular_buf_full(circ_buf_t *cbuf);
 

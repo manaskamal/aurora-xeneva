@@ -16,6 +16,9 @@
 #include <stdint.h>
 #include <sys\signal.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 /****************************************************************
  ** Creates a process
  **
@@ -24,20 +27,25 @@
  **
  ****************************************************************
  */
-extern "C" void create_process (const char* filename, char* procnm);
+void create_process (const char* filename, char* procnm);
 
 /****************************************************************
  ** GetCurrentPID () - returns the current process id 
  ****************************************************************
  **/
-extern "C" unsigned int get_current_pid ();
+unsigned int get_current_pid ();
 
 //! Unblocks a thread from a certain process
 //! @param id -- Process thread id
-extern "C" void sys_unblock_id (uint16_t id);
+void sys_unblock_id (uint16_t id);
 
-extern "C" void sys_kill (int pid, int signo);
-extern "C" void sys_set_signal (int signo, sig_handler handler);
+void sys_kill (int pid, int signo);
+void sys_set_signal (int signo, sig_handler handler);
 
-extern "C" uint64_t sys_get_used_ram ();
+uint64_t sys_get_used_ram ();
+
+#ifdef __cplusplus
+}
+#endif
+
 #endif

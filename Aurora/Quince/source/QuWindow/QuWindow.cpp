@@ -36,7 +36,7 @@ QuWindow* QuWindowCreate (int x, int y, uint16_t owner_id, unsigned int* canvas)
 	win->visible = true;
 	win->canvas = canvas; //NULL;
 	win->owner_id = owner_id;
-	win->decorate = true;
+	win->maximize = false;
 	win->mark_for_close = false;
 	win->attr = QU_WIN_FULL; //attr;
     QuWindowMngr_Add (win);

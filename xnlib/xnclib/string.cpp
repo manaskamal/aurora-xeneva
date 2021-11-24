@@ -15,11 +15,22 @@
 
 #define MAX_STRING_LENGTH 25
 
-void memset(void *targ, uint8_t val, uint32_t len){
+void* _cdecl memset(void *targ, unsigned char val, size_t len){
+	uint8_t *t = (uint8_t*) targ;
+	while (len--)
+		*t++ = val;
+
+	return t;
+}
+
+
+void memset(void *targ, unsigned char val, uint32_t len){
 	uint8_t *t = (uint8_t*) targ;
 	while (len--)
 		*t++ = val;
 }
+
+
 
 int memcmp(const void *vl, const void *vr, size_t n)
 {
@@ -28,7 +39,15 @@ int memcmp(const void *vl, const void *vr, size_t n)
 	return n ? *l-*r : 0;
 }
 
+
 void *memcpy(void *dest, void *src, size_t count) {
+	const char *sp = (const char*)src;
+	char *dp = (char*)dest;
+	for(; count != 0; count--) *dp++ = *sp++;
+	return dest;
+}
+
+void *memcpy(void *dest, void *src, uint32_t count) {
 	const char *sp = (const char*)src;
 	char *dp = (char*)dest;
 	for(; count != 0; count--) *dp++ = *sp++;
@@ -584,7 +603,7 @@ int ffs(int i)
 }
 
 
-void *memmove (void* dest, const void* src, size_t bytes) {
+void *memmove (void* dest, void const* src, unsigned __int64 bytes) {
 	/*unsigned dwords = (bytes >> 2);
 	
 	if (!dest || !src) {

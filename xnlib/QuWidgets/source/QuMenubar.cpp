@@ -12,6 +12,7 @@
 #include <color.h>
 #include <acrylic.h>
 #include <string.h>
+#include <sys\_term.h>
 #include <QuPanel.h>
 
 
@@ -19,23 +20,20 @@ void QuMenubarRefresh (QuWidget* wid, QuWindow *win) {
 	QuMenubar *mb = (QuMenubar*)wid;
 
 
-	acrylic_draw_rect_filled (win->x + wid->x, win->y + wid->y, wid->width, 20, SILVER);
+	acrylic_draw_rect_filled (wid->x,  wid->y, wid->width, 20, SILVER);
 
 	int x = 4;
 	for (int i = 0; i < mb->CtxMenus->pointer; i++) {
 		QuContextMenu *ctx = (QuContextMenu*)QuListGetAt(mb->CtxMenus, i);
-		if (mb->focused != NULL && mb->focused == ctx) {
-			acrylic_draw_rect_filled(win->x + wid->x + x + ((ctx->m_w/2)-2), win->y + wid->y,ctx->m_w,wid->height,BLUE);
-			acrylic_draw_arr_string (win->x + wid->x + x + (ctx->m_w/2), 
-			win->y + wid->y + (wid->height/2) - (12/2),ctx->title,WHITE);
-			
-			if (mb->popup_enable)
-				QuContextMenuAppend(ctx,wid,win);
+		/*if (mb->focused != NULL && mb->focused == ctx) {
+			acrylic_draw_rect_filled(wid->x + x + ((ctx->m_w/2)-2),  wid->y,ctx->m_w,wid->height,BLUE);
+			acrylic_draw_arr_string (wid->x + x + (ctx->m_w/2), 
+			 wid->y + (wid->height/2) - (12/2),ctx->title,WHITE);
 
-		} else {
-			acrylic_draw_arr_string (win->x + wid->x + x + (ctx->m_w/2), 
-				win->y + wid->y + (wid->height/2) - (12/2),ctx->title,LIGHTBLACK);
-		}
+		} else {*/
+			acrylic_draw_arr_string (wid->x + x + (ctx->m_w/2), 
+				 wid->y + (wid->height/2) - (12/2),ctx->title,LIGHTBLACK);
+		//}
 
 		if (ctx->m_x == 0 && ctx->m_y == 0){
 			ctx->m_x = x;
@@ -51,6 +49,7 @@ void QuMenubarMouseEvent (QuWidget *wid, QuWindow *win, int code, bool clicked, 
 	QuMenubar *mb = (QuMenubar*)wid;
 
 	if (code == QU_EVENT_MOUSE_ENTER) {
+		mb->focused = NULL;
 		for (int i = 0; i < mb->CtxMenus->pointer; i++) {
 			QuContextMenu *ctx = (QuContextMenu*)QuListGetAt(mb->CtxMenus, i);
 			if (ctx->m_x != 0) {
@@ -58,26 +57,47 @@ void QuMenubarMouseEvent (QuWidget *wid, QuWindow *win, int code, bool clicked, 
 					y > (win->y + wid->y + ctx->m_y) && y < (win->y + wid->y + ctx->m_y + ctx->m_h)) {
 						mb->focused = ctx;
 
-						//! Reverse the bit
-						if (clicked)
-							mb->popup_enable = !mb->popup_enable;
+						//! Make the difference between clicking and dragging
+						if (clicked && mb->m_x == x && mb->m_y == y) {
+							//!Make previous menu disappear
+							if (mb->last_focused != NULL && mb->last_focused != ctx) {
+								mb->last_focused->popup = true;
+								QuContextMenuAppend(mb->last_focused,wid,win);
+								mb->last_focused = NULL;
+							}
+							//Make new menu appear
+							QuContextMenuAppend(ctx,wid,win);
+							mb->last_focused = ctx;
+							win->current_ctx_menu = ctx;
+						}
+
 
 						QuMenubarRefresh(wid, win);
-						QuPanelUpdate (win->x + wid->x, win->y + wid->y, wid->width, wid->height,false);
+						QuPanelUpdate (wid->x,wid->y, wid->width, wid->height,false);
 						mb->update_required = true;
+						
 				}
 			}
 		}
+
 	}
 
 	if (code == QU_EVENT_MOUSE_LEAVE) {
-		mb->focused = NULL;
-		if (mb->update_required){
-			QuMenubarRefresh(wid, win);
-			QuPanelUpdate (win->x + wid->x, win->y + wid->y, wid->width, wid->height,false);
-			mb->update_required = false;
-		}
+		///*mb->focused = NULL;*/
+		//if (mb->update_required){
+		//	mb->popup_enable = false;
+		//	QuMenubarRefresh(wid, win);
+		//	QuPanelUpdate (wid->x,wid->y, wid->width, wid->height,false);
+		//	mb->update_required = false;
+		//}
 	}
+
+	/*
+	 * Store the mouse coord
+	 * next mouse events
+	 */
+	mb->m_x = x;
+	mb->m_y = y;
 }
 
 void QuMenubarKeyEvent (QuWidget *wid, QuWindow *win, int code) {
@@ -98,6 +118,8 @@ QuMenubar *QuCreateMenubar () {
 	mb->focused = NULL;
 	mb->popup_enable = false;
 	mb->update_required = false;
+	mb->last_focused = NULL;
+	QuGetWindow()->current_menubar = mb;
 	return mb;
 }
 

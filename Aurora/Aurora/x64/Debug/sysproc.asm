@@ -9,10 +9,12 @@ PUBLIC	?create__sys_process@@YAXPEBDPEAD@Z		; create__sys_process
 PUBLIC	?sys_exit@@YAXXZ				; sys_exit
 PUBLIC	?sys_kill@@YAXHH@Z				; sys_kill
 PUBLIC	?sys_set_signal@@YAXHP6AXH@Z@Z			; sys_set_signal
+PUBLIC	?sys_attach_ttype@@YAXH@Z			; sys_attach_ttype
 EXTRN	?strcpy@@YAPEADPEADPEBD@Z:PROC			; strcpy
 EXTRN	?pmmngr_alloc@@YAPEAXXZ:PROC			; pmmngr_alloc
 EXTRN	x64_cli:PROC
 EXTRN	x64_sti:PROC
+EXTRN	?get_current_thread@@YAPEAU_thread_@@XZ:PROC	; get_current_thread
 EXTRN	?force_sched@@YAXXZ:PROC			; force_sched
 EXTRN	?kill_process@@YAXXZ:PROC			; kill_process
 EXTRN	?kill_process_by_id@@YAXG@Z:PROC		; kill_process_by_id
@@ -31,6 +33,9 @@ $pdata$?sys_kill@@YAXHH@Z DD imagerel $LN3
 $pdata$?sys_set_signal@@YAXHP6AXH@Z@Z DD imagerel $LN3
 	DD	imagerel $LN3+23
 	DD	imagerel $unwind$?sys_set_signal@@YAXHP6AXH@Z@Z
+$pdata$?sys_attach_ttype@@YAXH@Z DD imagerel $LN3
+	DD	imagerel $LN3+40
+	DD	imagerel $unwind$?sys_attach_ttype@@YAXH@Z
 pdata	ENDS
 xdata	SEGMENT
 $unwind$?create__sys_process@@YAXPEBDPEAD@Z DD 010e01H
@@ -41,7 +46,36 @@ $unwind$?sys_kill@@YAXHH@Z DD 010c01H
 	DD	0420cH
 $unwind$?sys_set_signal@@YAXHP6AXH@Z@Z DD 010d01H
 	DD	0420dH
+$unwind$?sys_attach_ttype@@YAXH@Z DD 010801H
+	DD	06208H
 xdata	ENDS
+; Function compile flags: /Odtpy
+; File e:\xeneva project\xeneva\aurora\aurora\sysserv\sysproc.cpp
+_TEXT	SEGMENT
+tv66 = 32
+id$ = 64
+?sys_attach_ttype@@YAXH@Z PROC				; sys_attach_ttype
+
+; 45   : void sys_attach_ttype (int id) {
+
+$LN3:
+	mov	DWORD PTR [rsp+8], ecx
+	sub	rsp, 56					; 00000038H
+
+; 46   : 	get_current_thread()->ttype = id;
+
+	movsxd	rax, DWORD PTR id$[rsp]
+	mov	QWORD PTR tv66[rsp], rax
+	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
+	mov	rcx, QWORD PTR tv66[rsp]
+	mov	QWORD PTR [rax+232], rcx
+
+; 47   : }
+
+	add	rsp, 56					; 00000038H
+	ret	0
+?sys_attach_ttype@@YAXH@Z ENDP				; sys_attach_ttype
+_TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\sysserv\sysproc.cpp
 _TEXT	SEGMENT

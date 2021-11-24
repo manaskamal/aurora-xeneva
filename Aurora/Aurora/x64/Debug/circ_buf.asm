@@ -8,13 +8,13 @@ INCLUDELIB OLDNAMES
 PUBLIC	?advance_pointer@@YAXPEAU_circ_buf_@@@Z		; advance_pointer
 PUBLIC	?retreat_pointer@@YAXPEAU_circ_buf_@@@Z		; retreat_pointer
 PUBLIC	?circ_buf_reset@@YAXPEAU_circ_buf_@@@Z		; circ_buf_reset
-PUBLIC	?circ_buf_init@@YAPEAU_circ_buf_@@PEAD_K@Z	; circ_buf_init
+PUBLIC	?circ_buf_init@@YAPEAU_circ_buf_@@PEAE_K@Z	; circ_buf_init
 PUBLIC	?circ_buf_free@@YAXPEAU_circ_buf_@@@Z		; circ_buf_free
 PUBLIC	?circular_buf_size@@YA_KPEAU_circ_buf_@@@Z	; circular_buf_size
 PUBLIC	?circular_buf_capacity@@YA_KPEAU_circ_buf_@@@Z	; circular_buf_capacity
-PUBLIC	?circular_buf_put@@YAXPEAU_circ_buf_@@D@Z	; circular_buf_put
-PUBLIC	?circular_buf_put2@@YAHPEAU_circ_buf_@@D@Z	; circular_buf_put2
-PUBLIC	?circular_buf_get@@YAHPEAU_circ_buf_@@PEAD@Z	; circular_buf_get
+PUBLIC	?circular_buf_put@@YAXPEAU_circ_buf_@@H@Z	; circular_buf_put
+PUBLIC	?circular_buf_put2@@YAHPEAU_circ_buf_@@H@Z	; circular_buf_put2
+PUBLIC	?circular_buf_get@@YAHPEAU_circ_buf_@@PEAE@Z	; circular_buf_get
 PUBLIC	?circular_buf_empty@@YA_NPEAU_circ_buf_@@@Z	; circular_buf_empty
 PUBLIC	?circular_buf_full@@YA_NPEAU_circ_buf_@@@Z	; circular_buf_full
 EXTRN	?malloc@@YAPEAXI@Z:PROC				; malloc
@@ -23,24 +23,24 @@ pdata	SEGMENT
 $pdata$?advance_pointer@@YAXPEAU_circ_buf_@@@Z DD imagerel $LN6
 	DD	imagerel $LN6+145
 	DD	imagerel $unwind$?advance_pointer@@YAXPEAU_circ_buf_@@@Z
-$pdata$?circ_buf_init@@YAPEAU_circ_buf_@@PEAD_K@Z DD imagerel $LN3
+$pdata$?circ_buf_init@@YAPEAU_circ_buf_@@PEAE_K@Z DD imagerel $LN3
 	DD	imagerel $LN3+76
-	DD	imagerel $unwind$?circ_buf_init@@YAPEAU_circ_buf_@@PEAD_K@Z
+	DD	imagerel $unwind$?circ_buf_init@@YAPEAU_circ_buf_@@PEAE_K@Z
 $pdata$?circ_buf_free@@YAXPEAU_circ_buf_@@@Z DD imagerel $LN3
 	DD	imagerel $LN3+24
 	DD	imagerel $unwind$?circ_buf_free@@YAXPEAU_circ_buf_@@@Z
 $pdata$?circular_buf_size@@YA_KPEAU_circ_buf_@@@Z DD imagerel $LN6
 	DD	imagerel $LN6+122
 	DD	imagerel $unwind$?circular_buf_size@@YA_KPEAU_circ_buf_@@@Z
-$pdata$?circular_buf_put@@YAXPEAU_circ_buf_@@D@Z DD imagerel $LN3
+$pdata$?circular_buf_put@@YAXPEAU_circ_buf_@@H@Z DD imagerel $LN3
 	DD	imagerel $LN3+53
-	DD	imagerel $unwind$?circular_buf_put@@YAXPEAU_circ_buf_@@D@Z
-$pdata$?circular_buf_put2@@YAHPEAU_circ_buf_@@D@Z DD imagerel $LN4
+	DD	imagerel $unwind$?circular_buf_put@@YAXPEAU_circ_buf_@@H@Z
+$pdata$?circular_buf_put2@@YAHPEAU_circ_buf_@@H@Z DD imagerel $LN4
 	DD	imagerel $LN4+90
-	DD	imagerel $unwind$?circular_buf_put2@@YAHPEAU_circ_buf_@@D@Z
-$pdata$?circular_buf_get@@YAHPEAU_circ_buf_@@PEAD@Z DD imagerel $LN4
+	DD	imagerel $unwind$?circular_buf_put2@@YAHPEAU_circ_buf_@@H@Z
+$pdata$?circular_buf_get@@YAHPEAU_circ_buf_@@PEAE@Z DD imagerel $LN4
 	DD	imagerel $LN4+94
-	DD	imagerel $unwind$?circular_buf_get@@YAHPEAU_circ_buf_@@PEAD@Z
+	DD	imagerel $unwind$?circular_buf_get@@YAHPEAU_circ_buf_@@PEAE@Z
 $pdata$?circular_buf_empty@@YA_NPEAU_circ_buf_@@@Z DD imagerel $LN5
 	DD	imagerel $LN5+67
 	DD	imagerel $unwind$?circular_buf_empty@@YA_NPEAU_circ_buf_@@@Z
@@ -48,17 +48,17 @@ pdata	ENDS
 xdata	SEGMENT
 $unwind$?advance_pointer@@YAXPEAU_circ_buf_@@@Z DD 010901H
 	DD	02209H
-$unwind$?circ_buf_init@@YAPEAU_circ_buf_@@PEAD_K@Z DD 010e01H
+$unwind$?circ_buf_init@@YAPEAU_circ_buf_@@PEAE_K@Z DD 010e01H
 	DD	0620eH
 $unwind$?circ_buf_free@@YAXPEAU_circ_buf_@@@Z DD 010901H
 	DD	04209H
 $unwind$?circular_buf_size@@YA_KPEAU_circ_buf_@@@Z DD 010901H
 	DD	02209H
-$unwind$?circular_buf_put@@YAXPEAU_circ_buf_@@D@Z DD 010d01H
+$unwind$?circular_buf_put@@YAXPEAU_circ_buf_@@H@Z DD 010d01H
 	DD	0420dH
-$unwind$?circular_buf_put2@@YAHPEAU_circ_buf_@@D@Z DD 010d01H
+$unwind$?circular_buf_put2@@YAHPEAU_circ_buf_@@H@Z DD 010d01H
 	DD	0620dH
-$unwind$?circular_buf_get@@YAHPEAU_circ_buf_@@PEAD@Z DD 010e01H
+$unwind$?circular_buf_get@@YAHPEAU_circ_buf_@@PEAE@Z DD 010e01H
 	DD	0620eH
 $unwind$?circular_buf_empty@@YA_NPEAU_circ_buf_@@@Z DD 010901H
 	DD	02209H
@@ -126,7 +126,7 @@ _TEXT	SEGMENT
 r$ = 32
 cbuf$ = 64
 data$ = 72
-?circular_buf_get@@YAHPEAU_circ_buf_@@PEAD@Z PROC	; circular_buf_get
+?circular_buf_get@@YAHPEAU_circ_buf_@@PEAE@Z PROC	; circular_buf_get
 
 ; 94   : {
 
@@ -180,7 +180,7 @@ $LN1@circular_b:
 
 	add	rsp, 56					; 00000038H
 	ret	0
-?circular_buf_get@@YAHPEAU_circ_buf_@@PEAD@Z ENDP	; circular_buf_get
+?circular_buf_get@@YAHPEAU_circ_buf_@@PEAE@Z ENDP	; circular_buf_get
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\utils\circ_buf.cpp
@@ -188,12 +188,12 @@ _TEXT	SEGMENT
 r$ = 32
 cbuf$ = 64
 data$ = 72
-?circular_buf_put2@@YAHPEAU_circ_buf_@@D@Z PROC		; circular_buf_put2
+?circular_buf_put2@@YAHPEAU_circ_buf_@@H@Z PROC		; circular_buf_put2
 
 ; 80   : {
 
 $LN4:
-	mov	BYTE PTR [rsp+16], dl
+	mov	DWORD PTR [rsp+16], edx
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 56					; 00000038H
 
@@ -240,19 +240,19 @@ $LN1@circular_b:
 
 	add	rsp, 56					; 00000038H
 	ret	0
-?circular_buf_put2@@YAHPEAU_circ_buf_@@D@Z ENDP		; circular_buf_put2
+?circular_buf_put2@@YAHPEAU_circ_buf_@@H@Z ENDP		; circular_buf_put2
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\utils\circ_buf.cpp
 _TEXT	SEGMENT
 cbuf$ = 48
 data$ = 56
-?circular_buf_put@@YAXPEAU_circ_buf_@@D@Z PROC		; circular_buf_put
+?circular_buf_put@@YAXPEAU_circ_buf_@@H@Z PROC		; circular_buf_put
 
 ; 73   : {
 
 $LN3:
-	mov	BYTE PTR [rsp+16], dl
+	mov	DWORD PTR [rsp+16], edx
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 40					; 00000028H
 
@@ -275,7 +275,7 @@ $LN3:
 
 	add	rsp, 40					; 00000028H
 	ret	0
-?circular_buf_put@@YAXPEAU_circ_buf_@@D@Z ENDP		; circular_buf_put
+?circular_buf_put@@YAXPEAU_circ_buf_@@H@Z ENDP		; circular_buf_put
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\utils\circ_buf.cpp
@@ -404,9 +404,9 @@ _TEXT	SEGMENT
 cbuf$ = 32
 buffer$ = 64
 size$ = 72
-?circ_buf_init@@YAPEAU_circ_buf_@@PEAD_K@Z PROC		; circ_buf_init
+?circ_buf_init@@YAPEAU_circ_buf_@@PEAE_K@Z PROC		; circ_buf_init
 
-; 35   : circ_buf_t *circ_buf_init (char* buffer, size_t size) {
+; 35   : circ_buf_t *circ_buf_init (uint8_t* buffer, size_t size) {
 
 $LN3:
 	mov	QWORD PTR [rsp+16], rdx
@@ -445,7 +445,7 @@ $LN3:
 
 	add	rsp, 56					; 00000038H
 	ret	0
-?circ_buf_init@@YAPEAU_circ_buf_@@PEAD_K@Z ENDP		; circ_buf_init
+?circ_buf_init@@YAPEAU_circ_buf_@@PEAE_K@Z ENDP		; circ_buf_init
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\utils\circ_buf.cpp

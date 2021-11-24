@@ -16,6 +16,7 @@
 #include <utils\list.h>
 #include <ipc\signals.h>
 #include <fs\vfs.h>
+#include <stream.h>
 #include <mm.h>
 
 #define  THREAD_STATE_READY  1
@@ -93,12 +94,15 @@ typedef struct _thread_ {
 	uint16_t id;
 	uint8_t priviledge;
 	uint16_t quanta;
-	uint64_t blocked_stack_resv;
+	uint64_t ttype;
 	uint64_t* mouse_box;
 	uint64_t* qu_box;
 	uint8_t priority;
 	vfs_node_t *fd[60];   //file descriptor
 	int fd_current;
+	uint8_t master_fd;
+	uint8_t slave_fd;
+	stream_t *stream;
 	struct _thread_* next;
 	struct _thread_* prev;
 }thread_t;

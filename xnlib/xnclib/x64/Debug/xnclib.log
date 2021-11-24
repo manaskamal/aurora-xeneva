@@ -1,24 +1,24 @@
-﻿Build started 08-11-2021 আবেলি 5:54:24.
+﻿Build started 23-11-2021 আবেলি 11:18:06.
      1>Project "E:\Xeneva Project\Xeneva\xnlib\xnclib\xnclib.vcxproj" on node 2 (Rebuild target(s)).
      1>_NASM:
          setjmp.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp27a5539eb42d43379cae86e01c2a428d.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmpab5186e458db4da3a9fe437f1eaf0075.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\setjmp.obj"  "E:\Xeneva Project\Xeneva\xnlib\xnclib\setjmp.asm"
        _NASM:
          sys\callback.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmpef3361cc247b4bce802f58c555be08f2.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp15a01e75b7924a12a7f21035ab57953d.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\callback.obj"  "E:\Xeneva Project\Xeneva\xnlib\xnclib\sys\callback.asm"
      1>E:\Xeneva Project\Xeneva\xnlib\xnclib\sys\callback.asm(98): warning : label alone on a line without a colon might be in error
        _NASM:
          _fast_copy.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmpd93bcaa479654652885d16bb63541b7f.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmpdb059cef3d254b13ad4e0b1aa17eb6db.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\_fast_copy.obj"  "E:\Xeneva Project\Xeneva\xnlib\xnclib\_fast_copy.asm"
        _NASM:
          crt0.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp5bab3a5146c241b8b6797b5484d4d3df.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmpedb7513d1d294cd9a8c45932257bd0af.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\crt0.obj"  "E:\Xeneva Project\Xeneva\xnlib\xnclib\crt0.asm"
        ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\xnlib\xnclib" /I"E:\Xeneva Project\Xeneva\xnlib\xnclib\c++" /Zi /nologo /W4 /WX- /sdl- /MP /Od /D ARCH_X64 /D _MBCS /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt c++\ios.cpp c++\iostream.cpp c++\istream.cpp c++\memory.cpp c++\ostream.cpp c++\_string.cpp errno.cpp heap.cpp initializer.cpp math.cpp stdio.cpp string.cpp sys\stdlib.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\xnlib\xnclib" /I"E:\Xeneva Project\Xeneva\xnlib\xnclib\c++" /Zi /nologo /W4 /WX- /sdl- /MP /Od /D ARCH_X64 /D _MBCS /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt c++\ios.cpp c++\iostream.cpp c++\istream.cpp c++\memory.cpp c++\ostream.cpp c++\_string.cpp errno.cpp heap.cpp initializer.cpp math.cpp qsort.cpp stdio.cpp string.cpp sys\stdlib.cpp
      1>cl : Command line warning D9025: overriding '/sdl-' with '/GS-'
      1>cl : Command line warning D9002: ignoring unknown option '/arch:SSE'
      1>cl : Command line warning D9030: '/Gm' is incompatible with multiprocessing; ignoring /MP switch
@@ -44,22 +44,25 @@
      1>sys\stdlib.cpp(93): warning C4245: 'return' : conversion from 'int' to 'size_t', signed/unsigned mismatch
      1>sys\stdlib.cpp(119): warning C4267: 'argument' : conversion from 'size_t' to 'unsigned int', possible loss of data
      1>sys\stdlib.cpp(161): warning C4245: 'return' : conversion from 'int' to 'size_t', signed/unsigned mismatch
-     1>sys\stdlib.cpp(242): warning C4100: 'errno' : unreferenced formal parameter
-     1>sys\stdlib.cpp(248): warning C4100: 'name' : unreferenced formal parameter
-     1>sys\stdlib.cpp(359): warning C4267: 'return' : conversion from 'size_t' to 'int', possible loss of data
-     1>sys\stdlib.cpp(416): warning C4146: unary minus operator applied to unsigned type, result still unsigned
-     1>sys\stdlib.cpp(440): warning C4146: unary minus operator applied to unsigned type, result still unsigned
-     1>sys\stdlib.cpp(503): warning C4146: unary minus operator applied to unsigned type, result still unsigned
+     1>sys\stdlib.cpp(208): warning C4100: 'errno' : unreferenced formal parameter
+     1>sys\stdlib.cpp(214): warning C4100: 'name' : unreferenced formal parameter
+     1>sys\stdlib.cpp(325): warning C4267: 'return' : conversion from 'size_t' to 'int', possible loss of data
+     1>sys\stdlib.cpp(382): warning C4146: unary minus operator applied to unsigned type, result still unsigned
+     1>sys\stdlib.cpp(406): warning C4146: unary minus operator applied to unsigned type, result still unsigned
+     1>sys\stdlib.cpp(469): warning C4146: unary minus operator applied to unsigned type, result still unsigned
      1>E:\Xeneva Project\Xeneva\xnlib\xnclib\sys/utf.h(125): warning C4505: 'decode' : unreferenced local function has been removed
+     1>sys\stdlib.cpp(174): warning C4505: 'swap' : unreferenced local function has been removed
          string.cpp
-     1>string.cpp(221): warning C4267: 'initializing' : conversion from 'size_t' to 'int', possible loss of data
-     1>string.cpp(222): warning C4267: 'initializing' : conversion from 'size_t' to 'int', possible loss of data
-     1>string.cpp(336): warning C4267: '=' : conversion from 'size_t' to 'int', possible loss of data
-     1>string.cpp(353): warning C4100: 'error' : unreferenced formal parameter
-     1>string.cpp(388): warning C4267: 'initializing' : conversion from 'size_t' to 'int', possible loss of data
-     1>string.cpp(389): warning C4267: 'initializing' : conversion from 'size_t' to 'int', possible loss of data
-     1>string.cpp(406): warning C4267: 'initializing' : conversion from 'size_t' to 'int', possible loss of data
-     1>string.cpp(553): warning C4267: 'argument' : conversion from 'size_t' to 'uint32_t', possible loss of data
+     1>string.cpp(240): warning C4267: 'initializing' : conversion from 'size_t' to 'int', possible loss of data
+     1>string.cpp(241): warning C4267: 'initializing' : conversion from 'size_t' to 'int', possible loss of data
+     1>string.cpp(355): warning C4267: '=' : conversion from 'size_t' to 'int', possible loss of data
+     1>string.cpp(372): warning C4100: 'error' : unreferenced formal parameter
+     1>string.cpp(407): warning C4267: 'initializing' : conversion from 'size_t' to 'int', possible loss of data
+     1>string.cpp(408): warning C4267: 'initializing' : conversion from 'size_t' to 'int', possible loss of data
+     1>string.cpp(425): warning C4267: 'initializing' : conversion from 'size_t' to 'int', possible loss of data
+     1>string.cpp(606): warning C4100: 'bytes' : unreferenced formal parameter
+     1>string.cpp(606): warning C4100: 'src' : unreferenced formal parameter
+     1>string.cpp(606): warning C4100: 'dest' : unreferenced formal parameter
          stdio.cpp
      1>stdio.cpp(15): warning C4100: 'format' : unreferenced formal parameter
      1>stdio.cpp(15): warning C4100: 'f' : unreferenced formal parameter
@@ -71,6 +74,8 @@
      1>stdio.cpp(88): warning C4100: 'stream' : unreferenced formal parameter
      1>stdio.cpp(93): warning C4100: 'string' : unreferenced formal parameter
      1>stdio.cpp(93): warning C4100: 'str' : unreferenced formal parameter
+         qsort.cpp
+     1>qsort.cpp(55): warning C4267: 'argument' : conversion from 'size_t' to 'ssize_t', possible loss of data
          math.cpp
      1>math.cpp(76): warning C4305: '-=' : truncation from 'double' to 'float'
      1>math.cpp(78): warning C4305: '+=' : truncation from 'double' to 'float'
@@ -80,9 +85,8 @@
      1>initializer.cpp(20): warning C4267: 'argument' : conversion from 'size_t' to 'unsigned int', possible loss of data
      1>initializer.cpp(24): warning C4267: 'argument' : conversion from 'size_t' to 'unsigned int', possible loss of data
          heap.cpp
-     1>heap.cpp(56): warning C4127: conditional expression is constant
-     1>heap.cpp(114): warning C4244: 'argument' : conversion from 'uint64_t' to 'uint32_t', possible loss of data
-     1>heap.cpp(115): warning C4244: 'argument' : conversion from 'uint64_t' to 'uint32_t', possible loss of data
+     1>heap.cpp(66): warning C4127: conditional expression is constant
+     1>heap.cpp(124): warning C4244: 'argument' : conversion from 'uint64_t' to 'uint32_t', possible loss of data
          errno.cpp
          _string.cpp
          ostream.cpp
@@ -115,8 +119,8 @@
                      charT=char
                  ]
          Generating Code...
-     1>e:\xeneva project\xeneva\xnlib\xnclib\string.cpp(41): warning C4706: assignment within conditional expression
-     1>e:\xeneva project\xeneva\xnlib\xnclib\string.cpp(55): warning C4706: assignment within conditional expression
+     1>e:\xeneva project\xeneva\xnlib\xnclib\string.cpp(60): warning C4706: assignment within conditional expression
+     1>e:\xeneva project\xeneva\xnlib\xnclib\string.cpp(74): warning C4706: assignment within conditional expression
      1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V110\Microsoft.CppBuild.targets(1299,5): warning MSB8012: TargetPath(E:\Xeneva Project\Xeneva\Aurora\x64\Debug\xnclib.lib) does not match the Library's OutputFile property value (E:\Xeneva Project\Xeneva\xnlib\lib64\xnclib.lib). This may cause your project to build incorrectly. To correct this, please make sure that $(OutDir), $(TargetName) and $(TargetExt) property values match the value specified in %(Lib.OutputFile).
        Lib:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\Lib.exe /OUT:"E:\Xeneva Project\Xeneva\xnlib\lib64\xnclib.lib" /NOLOGO /NODEFAULTLIB /MACHINE:X64 x64\Debug\ios.obj
@@ -129,6 +133,7 @@
          x64\Debug\heap.obj
          x64\Debug\initializer.obj
          x64\Debug\math.obj
+         x64\Debug\qsort.obj
          x64\Debug\stdio.obj
          x64\Debug\string.obj
          x64\Debug\stdlib.obj
@@ -141,4 +146,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:02.29
+Time Elapsed 00:00:01.94

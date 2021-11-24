@@ -185,9 +185,6 @@ void QuWindowMngr_MoveFocusWindow (int x, int y) {
 	QuChannelPut(&msg, draggable_win->owner_id);
 	sys_unblock_id (draggable_win->owner_id);
 
-	//! to avoid tearing effect 
-	//! sleep for 1 ms
-	sys_sleep(1);
 
 	for (int i = 0; i < WindowList->pointer; i++) {
 		QuWindow* win = (QuWindow*)QuListGetAt (WindowList,i);

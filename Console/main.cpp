@@ -66,6 +66,7 @@ void QuActions (QuMessage *msg) {
 
 
 void WindowClosed (QuWinControl *control, QuWindow *win, bool bit) {
+	exit(0);
 }
 
 
@@ -87,16 +88,38 @@ int main (int argc, char* argv[]) {
 
 	QuWindowShow();
 
+	int master_fd, slave_fd;
+	sys_ttype_create (&master_fd, &slave_fd);
+	unsigned char* buf = (unsigned char*)malloc(32);
+	memset(buf,'M',32);
+	sys_write_file (master_fd, buf,NULL);
+
+	message_t msg;
+	unsigned char* buffer = (unsigned char*)malloc(32);
+	memset (buffer, 0, 32);
+
+	QuPanelUpdate (0,0,win->w, win->h,true);
 
 	QuMessage qmsg;
 	uint16_t app_id = QuGetAppId();
-	message_t msg;
 	while(1) {
         QuChannelGet(&qmsg);
 		if (qmsg.to_id == app_id)
 			QuActions(&qmsg);
 
+		sys_read_file (slave_fd,buffer,NULL);
 
+	    for (int i = 0; i < 32; i++) {
+			if (buffer[i] != 0) {
+				QuTermPrint(term,buffer[i],WHITE);
+				QuTermFlush(term, win);
+			}
+		}
+	
+		//	//
+		//}
+
+		
 		sys_wait();
 	}	
 	return 1;

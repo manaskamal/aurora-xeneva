@@ -21,6 +21,12 @@ QuPopupMenu *QuCreatePopupMenu (char* title) {
 	p->is_popup = false;
 	p->m_x = 0;
 	p->m_y = 0;
+	p->data = NULL;
+	p->Action = NULL;
 	return p;
 }
+
+
+
+
 

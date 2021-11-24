@@ -43,10 +43,13 @@
 #include <drvmngr.h>
 #include <procmngr.h>
 #include <serial.h>
+#include <stream.h>
+#include <fs\ttype.h>
 
 #include <net\arp.h>
 #include <net\ethernet.h>
 #include <net\nethw.h>
+#include <utils\circ_buf.h>
 
 #ifdef ARCH_X64
 #include <arch\x86_64\thread.h>
@@ -113,7 +116,8 @@ void __cdecl operator delete (void* p) {
 void _kmain (KERNEL_BOOT_INFO *info) {
 	hal_init ();
 	pmmngr_init (info);
-	mm_init(); 
+	mm_init(info); 
+	
 	initialize_serial();
 	console_initialize(info);
 	//!Initialize kernel runtime drivers	
@@ -126,15 +130,16 @@ void _kmain (KERNEL_BOOT_INFO *info) {
 	initialize_screen(info);
 	
 	initialize_mouse();
-    
+
 	message_init ();
 	dwm_ipc_init();
 
+	stream_init ();
 	driver_mngr_initialize(info);
 	initialize_rtc();  
 	hda_initialize();  
 	e1000_initialize();   //<< receiver not working
-	//svga_init (); 
+	svga_init (); 
 #ifdef ARCH_X64
 
 	//================================================
@@ -155,7 +160,7 @@ void _kmain (KERNEL_BOOT_INFO *info) {
 
 	//! Misc programs goes here
 	create_process ("/dwm2.exe", "dwm4", 0, NULL);
-
+	
 	//! Here start the scheduler (multitasking engine)
 	scheduler_start();
 #endif

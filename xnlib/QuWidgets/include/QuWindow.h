@@ -52,6 +52,7 @@ typedef struct _QuWinInfo_ {
 	bool dirty;
 	QuRect rect[256];
 	int rect_count;
+	bool maximize;
 }QuWinInfo;
 
 typedef struct _QU_WIN_ {
@@ -59,12 +60,18 @@ typedef struct _QU_WIN_ {
 	int y;
 	int w;
 	int h;
+	int oldx;
+	int oldy;
+	int oldw;
+	int oldh;
 	unsigned int*  canvas;
 	uint32_t*  win_info_data;
 	QuList* widgets;
 	QuList* controls;
 	_QuWidget_* focus_widget;
 	_QuWidget_ *draggable_widget;
+	void *current_ctx_menu;
+	void *current_menubar;
 	bool decorate;
 	char *title;
 }QuWindow;
@@ -102,4 +109,5 @@ extern void QuWindowSetProperty (uint8_t prop);
 extern void QuWindowShowControls (QuWindow *win);
 extern void QuWindowAddControlEvent (int type, void (*Event)(QuWinControl *control, QuWindow* win, bool bit));
 extern void QuWindowHandleKey (int code);
+extern void QuWindowRepaint();
 #endif

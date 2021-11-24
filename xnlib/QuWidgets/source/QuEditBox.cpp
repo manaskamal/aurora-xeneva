@@ -26,7 +26,7 @@
 void CopyToFB (QuWidget* wid, QuWindow* win, int x, int y, int w, int h, uint32_t *backstr) {
 	uint32_t *dbl_buffer = (uint32_t*)0x0000600000000000;
 	for (int i = 0; i < h; i++)
-		fastcpy (dbl_buffer + (win->y + wid->y + i) * canvas_get_width() + win->x + wid->x,
+		fastcpy (dbl_buffer + (wid->y + i) * canvas_get_width() + wid->x,
 		backstr + (y + i) * canvas_get_width() + x, w * 4);
 }
 
@@ -38,7 +38,7 @@ void QuEditBoxRefresh (QuWidget *wid, QuWindow *win) {
 			0 + eb->last_scroll_diffx,  
 			0 + eb->last_scroll_diffy,
 			wid->width - 15, wid->height - 15,(uint32_t*) eb->backstore);	
-	acrylic_draw_rect_unfilled (win->x + wid->x,win->y + wid->y, wid->width, wid->height, GRAY);
+	acrylic_draw_rect_unfilled (wid->x,wid->y, wid->width, wid->height, GRAY);
 }
 
 
@@ -70,7 +70,7 @@ void QuEditBoxScrollEvent (QuWidget *wid, QuWidget *scroll, QuWindow *win) {
 			wid->width - 15, wid->height - 15,(uint32_t*) eb->backstore);	
 	}
 
-	acrylic_draw_rect_unfilled (win->x + wid->x,win->y + wid->y, wid->width, wid->height, GRAY);
+	acrylic_draw_rect_unfilled (wid->x,wid->y, wid->width, wid->height, GRAY);
 
 	//QuPanelUpdate (win->x + wid->x, win->y + wid->y, wid->width - 15, wid->height - 15, false);
 }

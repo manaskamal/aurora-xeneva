@@ -84,7 +84,7 @@ process_t *find_process_by_id (uint32_t pid) {
 }
 /* Create stack for User process */
 uint64_t *create_user_stack (uint64_t* cr3) {
-#define USER_STACK 0x0000700000000000 
+#define USER_STACK   0x0000700000000000 
 	
 	/*uint64_t* old_cr3 = (uint64_t*)x64_read_cr3();
 	x64_write_cr3 ((size_t)cr3);*/
@@ -117,10 +117,21 @@ uint64_t* create_inc_stack (uint64_t* cr3) {
 	return (uint64_t*)(INC_STACK + 0x100000);
 }
 
+void allocate_fd (thread_t *t) {
+	vfs_node_t * stdin = vfs_finddir("/dev/stdin");
+	t->fd[t->fd_current] = stdin;
+	t->fd_current++;
+	vfs_node_t* stdout = vfs_finddir("/dev/stdout");
+	t->fd[t->fd_current] = stdout;
+	t->fd_current++;
+	vfs_node_t* stderr = vfs_finddir("/dev/stderr");
+	t->fd[t->fd_current] = stderr;
+	t->fd_current++;
 
-
+}
 
 void create_process(const char* filename, char* procname, uint8_t priority, char *strings) {
+	x64_cli();
 	//printf ("Creating processs -> %s\n", filename);
 	mutex_lock (process_mutex);
 	//!allocate a data-structure for process 
@@ -167,11 +178,12 @@ void create_process(const char* filename, char* procname, uint8_t priority, char
 		position++;
 	}
 
-
-	for (int i = 0; i < 0xB00000 / 4096; i++) {
-		map_page_ex (cr3, (uint64_t)pmmngr_alloc(), 0x0000080000000000 + i * 4096);
+	uint64_t pos = 0x0000080000000000;
+	for (int i = 0; i < 0xB01000 / 4096; i++) {
+		void* p = pmmngr_alloc();
+		memset (p, 0, 4096);
+		map_page_ex (cr3, (uint64_t)p, pos + i * 4096);
 	}
-
 	
 	//!allocate current process
 	process->name = procname;
@@ -186,10 +198,12 @@ void create_process(const char* filename, char* procname, uint8_t priority, char
 	process->heap_size = 0xB00000;
 	//! Create and thread and start scheduling when scheduler starts */
 	thread_t *t = create_user_thread(process->entry_point,stack,(uint64_t)cr3,procname,priority);
+	allocate_fd(t);
 	t->rcx = priority;
 	t->rdx = (uint64_t)strings;
 	//! add the process to process manager
 	process->thread_data_pointer = t;
+	
     add_process(process);
 	mutex_unlock (process_mutex);
 }

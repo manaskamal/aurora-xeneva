@@ -34,6 +34,11 @@
 #define QU_CANVAS_KEY_RELEASED 207
 #define QU_CANVAS_RESIZE 208
 #define QU_CANVAS_REPAINT 209
+#define QU_HANDLE_MENU  210
+
+
+#define QU_CHANNEL_ADDRESS   0xFFFFD00000000000  //Client Send address
+#define QU_CHANNEL_RECEIVER  0xFFFFFD0000000000  //Client receiver address
 
 
 typedef struct __QuMessage__ {

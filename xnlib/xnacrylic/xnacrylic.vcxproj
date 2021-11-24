@@ -134,6 +134,7 @@
     <ClCompile Include="source\color.cpp" />
     <ClCompile Include="source\font.cpp" />
     <ClCompile Include="source\image.cpp" />
+    <ClCompile Include="source\path2d.cpp" />
     <ClCompile Include="source\psf\psf.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -145,6 +146,7 @@
     <ClInclude Include="include\font.h" />
     <ClInclude Include="include\image.h" />
     <ClInclude Include="include\jpg\jpeg_decoder.h" />
+    <ClInclude Include="include\path2d.h" />
     <ClInclude Include="include\psf\psf.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

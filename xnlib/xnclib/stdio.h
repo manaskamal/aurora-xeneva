@@ -13,6 +13,10 @@
 #include <sys\_file.h>
 #include <stdarg.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 
 typedef struct _iobuf_ {
 	unsigned char* base;
@@ -35,17 +39,24 @@ typedef struct _iobuf_ {
 #define stdout FILE*
 #define stderr  FILE*
 
-extern int fprintf(FILE, const char *, ...);
-extern int printf(const char *, ...);
-extern FILE* fopen (const char* name, const char* mode);
-extern size_t fread (void* ptr, size_t size, size_t nmemb,FILE* stream);
-extern long ftell (FILE *fp);
-extern int fseek (FILE* fp, long int offset,  int pos);
-extern int fgetc (FILE *fp);
-extern int fgetc (FILE* fp);
-extern int fclose (FILE *fp);
-extern int fclose (FILE *fp);
+int fprintf(FILE, const char *, ...);
+int printf(const char *, ...);
+FILE* fopen (const char* name, const char* mode);
+size_t fread (void* ptr, size_t size, size_t nmemb,FILE* stream);
+long ftell (FILE *fp);
+int fseek (FILE* fp, long int offset,  int pos);
+int fgetc (FILE *fp);
+int fgetc (FILE* fp);
+int fclose (FILE *fp);
+int fclose (FILE *fp);
 
-extern int vfprintf(FILE *stream, const char* format, va_list arg);
-extern int sprintf(char *str, const char* string,...);
+int vfprintf(FILE *stream, const char* format, va_list arg);
+int sprintf(char *str, const char* string,...);
+
+
+#ifdef __cplusplus
+}
+#endif
+
+
 #endif

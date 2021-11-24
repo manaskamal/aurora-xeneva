@@ -114,8 +114,8 @@ void svga_init () {
 
 
 	svga_enable();
-	svga_set_mode (get_screen_width(),get_screen_height(),32);
-	//svga_set_mode (1920,1280,32);
+	//svga_set_mode (get_screen_width(),get_screen_height(),32);
+	svga_set_mode (1920,1080,32);
 	gmr_init();
 	memset(svga_dev.fb_mem,0x40,svga_dev.width*svga_dev.height*32);
 	svga_update(0,0,svga_dev.width,svga_dev.height);

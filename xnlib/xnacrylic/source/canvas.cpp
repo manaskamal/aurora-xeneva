@@ -22,10 +22,10 @@ canvas_t* canvas = NULL;
 bool double_buffer = true;
 int svga_fd = 0;
 
-void create_canvas () {
+void create_canvas (int width, int height) {
 	svga_fd = sys_open_file ("/dev/svga", NULL);
-	uint32_t width = ioquery(svga_fd,SVGA_GET_WIDTH,NULL);
-	uint32_t height = ioquery(svga_fd, SVGA_GET_HEIGHT, NULL);
+	uint32_t s_width = ioquery(svga_fd,SVGA_GET_WIDTH,NULL);
+	uint32_t s_height = ioquery(svga_fd, SVGA_GET_HEIGHT, NULL);
 	uint32_t bpp = ioquery(svga_fd, SVGA_GET_BPP, NULL);
 	uint16_t scanline = ioquery(svga_fd, SVGA_GET_SCANLINE, NULL);
 
@@ -34,8 +34,8 @@ void create_canvas () {
 			valloc(0x0000600000000000 + i * 4096);
 
 	canvas = (canvas_t*)malloc(sizeof(canvas_t));
-	canvas->width = width;
-	canvas->height = height;
+	canvas->width = s_width;
+	canvas->height = s_height;
 	canvas->bpp = bpp;
 	canvas->scanline = scanline;
 	if (double_buffer)

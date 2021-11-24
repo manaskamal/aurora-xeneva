@@ -58,12 +58,12 @@ static void clear(void* addr){
 }
 
 
-void vmmngr_x86_64_init () {
+void vmmngr_x86_64_init (KERNEL_BOOT_INFO *info) {
 	//! FIXME: pml4 address should be relocatable
 	//! FIXME: the address assigned should be 4 KB aligned
 	uint64_t * pml4 = (uint64_t*)pmmngr_alloc(); 
 	uint64_t* old_pml4 = (uint64_t*)x64_read_cr3();
-	root_cr3 = pml4;
+	//root_cr3 = pml4;
 	//! just copy the paging structure setuped by XNLDR 
 	//! for the kernel! also known as kernel address space
 	for (int i = 0; i < 512; i++) {
@@ -72,6 +72,38 @@ void vmmngr_x86_64_init () {
 	}
 
 	x64_write_cr3((size_t)pml4);
+	/*uint64_t *pml4 = (uint64_t*)pmmngr_alloc();
+	memset (pml4, 0, 4096);
+	uint64_t *pdpt = (uint64_t*)pmmngr_alloc();
+	memset (pdpt, 0, 4096);
+	uint64_t *pd = (uint64_t*)pmmngr_alloc();
+	memset (pd, 0, 4096);
+
+	pml4[0] = (uint64_t)pdpt | 3;
+	pdpt[0] = (uint64_t)&pd[0] | 3;
+	pdpt[1] = (uint64_t)&pd[512] | 3;
+	pdpt[2] = (uint64_t)&pd[1024] | 3;
+	pdpt[4] = (uint64_t)&pd[1536] | 3;
+*/
+	//for (int i = 0; i != 2048; ++i) {
+	//	pd[i] = i * 512 * 4096 | 3; 
+	//}
+	/*for (int i = 0; i < 2*1024*1024*1024/4096; i++)
+		map_page_ex(pml4,i*4096, i*4096);
+
+
+	for (int i = 0; i < 40 *1024 /4096; i++) {
+		pml4[pml4_index(0x0000000070000000 + i * 4096)] = old_pml4[pml4_index(0x0000000070000000 + i * 4096)];
+	}
+	for (int i=0; i < 0x200000/4096; i++)
+		pml4[pml4_index(0xFFFFA00000000000 + i * 4096) ] = old_pml4[pml4_index(0xFFFFA00000000000 + i * 4096) ];
+
+	for (int i=0; i < 0x100000/4096; i++)  {
+		pml4[pml4_index(0xFFFFC00000000000 + i * 4096)] = old_pml4[pml4_index(0xFFFFC00000000000 + i * 4096)];
+	}
+
+	x64_write_cr3((size_t)pml4);*/
+
 }
 
 
@@ -308,8 +340,8 @@ uint64_t *create_user_address_space ()
 	/*for (int i = 0; i < 512; i++) {
 		if ((old_pml4[i] & 1) == 1)
 			pml4_i[i] = old_pml4[i];
-	}
-*/
+	}*/
+
 	pml4_i[0] = old_pml4[0];
 	pml4_i[1] = old_pml4[1];
 	//!**Copy the kernel stack to new address space

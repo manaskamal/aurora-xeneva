@@ -56,8 +56,15 @@ typedef struct _qu_message_ {
 //! Standard Kernel Message Passing System is used by Mouse and Keyboard
 //!====================================================================
 
-extern "C" void message_send (unsigned short dest_id, message_t *msg);
-extern "C" void message_receive (message_t *msg);
+#ifdef __cplusplus
+extern "C" {
+#endif
+void message_send (unsigned short dest_id, message_t *msg);
+void message_receive (message_t *msg);
+void sys_pipe (int *fd, char* name);
+#ifdef __cplusplus
+}
+#endif
 
 
 #endif

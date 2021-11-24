@@ -338,13 +338,13 @@ $LN13@puts:
 
 ; 72   : 
 ; 73   : 			////!Scroll
-; 74   : 		/*	if (console_y + 1 > screen_height) {
+; 74   : 			/*if (console_y + 1 > screen_height) {
 ; 75   : 				for (int i = 16; i < screen_height * screen_width; i++) {
 ; 76   : 					fb[i] = fb[i + screen_width * 16];
 ; 77   : 				}
 ; 78   : 				console_y--;
-; 79   : 			}*/
-; 80   : 
+; 79   : 			}
+; 80   : */
 ; 81   : 			console_y += 16;
 
 	mov	eax, DWORD PTR console_y

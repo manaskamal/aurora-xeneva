@@ -24,8 +24,15 @@ typedef struct _sys_time_ {
 	uint8_t century;
 }sys_time;
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 //! System get current time
 //! @param time - pointer to memory location where time will be written
-extern "C" void sys_get_current_time (sys_time *time);
-extern "C" uint32_t sys_get_system_tick();
+void sys_get_current_time (sys_time *time);
+uint32_t sys_get_system_tick();
+
+#ifdef __cplusplus
+}
+#endif
 #endif

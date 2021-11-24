@@ -15,39 +15,40 @@ EXTRN	?valloc@@YAX_K@Z:PROC				; valloc
 EXTRN	?map_shared_memory@@YAXG_K0@Z:PROC		; map_shared_memory
 EXTRN	?get_thread_id@@YAGXZ:PROC			; get_thread_id
 EXTRN	?sys_get_fb_mem@@YAPEAIXZ:PROC			; sys_get_fb_mem
-EXTRN	?sys_fb_update@@YAXXZ:PROC			; sys_fb_update
 EXTRN	?sys_set_mouse_data@@YAXXZ:PROC			; sys_set_mouse_data
 EXTRN	?sys_get_mouse_pack@@YA_NPEAU_mouse_packet_@@@Z:PROC ; sys_get_mouse_pack
-EXTRN	?sys_move_cursor@@YAXIII@Z:PROC			; sys_move_cursor
 EXTRN	?sys_unblock_id@@YAXG@Z:PROC			; sys_unblock_id
 EXTRN	?create_uthread@@YAXP6AXPEAX@ZPEAD@Z:PROC	; create_uthread
 EXTRN	?sys_open_file@@YAHPEADPEAU_file_@@@Z:PROC	; sys_open_file
+EXTRN	?get_screen_width@@YAIXZ:PROC			; get_screen_width
+EXTRN	?get_screen_height@@YAIXZ:PROC			; get_screen_height
 EXTRN	?sys_read_file@@YAXHPEAEPEAU_file_@@@Z:PROC	; sys_read_file
+EXTRN	?get_screen_scanline@@YAGXZ:PROC		; get_screen_scanline
+EXTRN	?sys_write_file@@YAXHPEAEPEAU_file_@@@Z:PROC	; sys_write_file
 EXTRN	?sys_get_used_ram@@YA_KXZ:PROC			; sys_get_used_ram
 EXTRN	?sys_get_free_ram@@YA_KXZ:PROC			; sys_get_free_ram
 EXTRN	?sys_sleep@@YAX_K@Z:PROC			; sys_sleep
 EXTRN	?sys_exit@@YAXXZ:PROC				; sys_exit
-EXTRN	?sys_fb_move_cursor@@YAXII@Z:PROC		; sys_fb_move_cursor
 EXTRN	?fork@@YAIXZ:PROC				; fork
 EXTRN	?exec@@YAXPEBDI@Z:PROC				; exec
 EXTRN	?ioquery@@YAXHHPEAX@Z:PROC			; ioquery
-EXTRN	?get_screen_width@@YAIXZ:PROC			; get_screen_width
-EXTRN	?get_screen_height@@YAIXZ:PROC			; get_screen_height
 EXTRN	?sys_get_current_time@@YAXPEAU_sys_time_@@@Z:PROC ; sys_get_current_time
 EXTRN	?sys_get_system_tick@@YAIXZ:PROC		; sys_get_system_tick
-EXTRN	?get_screen_scanline@@YAGXZ:PROC		; get_screen_scanline
 EXTRN	?sys_kill@@YAXHH@Z:PROC				; sys_kill
 EXTRN	?sys_set_signal@@YAXHP6AXH@Z@Z:PROC		; sys_set_signal
 EXTRN	?unmap_shared_memory@@YAXG_K0@Z:PROC		; unmap_shared_memory
+EXTRN	?sys_attach_ttype@@YAXH@Z:PROC			; sys_attach_ttype
 EXTRN	?dwm_put_message@@YAXPEAU_dwm_message_@@@Z:PROC	; dwm_put_message
 EXTRN	?dwm_dispatch_message@@YAXPEAU_dwm_message_@@@Z:PROC ; dwm_dispatch_message
 EXTRN	?map_memory@@YAPEAX_KIE@Z:PROC			; map_memory
 EXTRN	?unmap_memory@@YAXPEAXI@Z:PROC			; unmap_memory
+EXTRN	?ttype_create@@YAXPEAH0@Z:PROC			; ttype_create
+EXTRN	?allocate_pipe@@YAXPEAHPEAD@Z:PROC		; allocate_pipe
 _BSS	SEGMENT
 funct	DQ	01H DUP (?)
 _BSS	ENDS
 CONST	SEGMENT
-$SG5993	DB	'System Call Fault!! Halting System', 0aH, 00H
+$SG6106	DB	'System Call Fault!! Halting System', 0aH, 00H
 CONST	ENDS
 _DATA	SEGMENT
 _syscalls DQ	FLAT:?printf@@YAXPEBDZZ
@@ -63,10 +64,10 @@ _syscalls DQ	FLAT:?printf@@YAXPEBDZZ
 	DQ	FLAT:?dwm_put_message@@YAXPEAU_dwm_message_@@@Z
 	DQ	FLAT:?dwm_dispatch_message@@YAXPEAU_dwm_message_@@@Z
 	DQ	FLAT:?sys_get_fb_mem@@YAPEAIXZ
-	DQ	FLAT:?sys_fb_update@@YAXXZ
+	DQ	FLAT:?ttype_create@@YAXPEAH0@Z
 	DQ	FLAT:?sys_set_mouse_data@@YAXXZ
 	DQ	FLAT:?sys_get_mouse_pack@@YA_NPEAU_mouse_packet_@@@Z
-	DQ	FLAT:?sys_move_cursor@@YAXIII@Z
+	DQ	FLAT:?allocate_pipe@@YAXPEAHPEAD@Z
 	DQ	FLAT:?sys_unblock_id@@YAXG@Z
 	DQ	FLAT:?create_uthread@@YAXP6AXPEAX@ZPEAD@Z
 	DQ	FLAT:?sys_open_file@@YAHPEADPEAU_file_@@@Z
@@ -76,7 +77,7 @@ _syscalls DQ	FLAT:?printf@@YAXPEBDZZ
 	DQ	FLAT:?sys_get_free_ram@@YA_KXZ
 	DQ	FLAT:?sys_sleep@@YAX_K@Z
 	DQ	FLAT:?sys_exit@@YAXXZ
-	DQ	FLAT:?sys_fb_move_cursor@@YAXII@Z
+	DQ	FLAT:?sys_attach_ttype@@YAXH@Z
 	DQ	FLAT:?fork@@YAIXZ
 	DQ	FLAT:?exec@@YAXPEBDI@Z
 	DQ	FLAT:?map_memory@@YAPEAX_KIE@Z
@@ -87,6 +88,7 @@ _syscalls DQ	FLAT:?printf@@YAXPEBDZZ
 	DQ	FLAT:?sys_kill@@YAXHH@Z
 	DQ	FLAT:?sys_set_signal@@YAXHP6AXH@Z@Z
 	DQ	FLAT:?unmap_shared_memory@@YAXG_K0@Z
+	DQ	FLAT:?sys_write_file@@YAXHPEAEPEAU_file_@@@Z
 	DQ	0000000000000000H
 _DATA	ENDS
 PUBLIC	x64_syscall_handler
@@ -128,7 +130,7 @@ $LN6:
 
 ; 21   : 		printf ("System Call Fault!! Halting System\n");
 
-	lea	rcx, OFFSET FLAT:$SG5993
+	lea	rcx, OFFSET FLAT:$SG6106
 	call	?printf@@YAXPEBDZZ			; printf
 $LN2@x64_syscal:
 
