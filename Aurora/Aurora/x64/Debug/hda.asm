@@ -18,53 +18,53 @@ _BSS	SEGMENT
 ?corbwp@@3GA DW	01H DUP (?)				; corbwp
 _BSS	ENDS
 CONST	SEGMENT
-$SG3399	DB	'HD-Audio Interrupt fired++', 0aH, 00H
+$SG3415	DB	'HD-Audio Interrupt fired++', 0aH, 00H
 	ORG $+4
-$SG3424	DB	'HD Audio: No supported RIRB size !!', 0aH, 00H
+$SG3440	DB	'HD Audio: No supported RIRB size !!', 0aH, 00H
 	ORG $+3
-$SG3489	DB	'Initializing output ->codec -> %d, nid -> %d', 0aH, 00H
+$SG3505	DB	'Initializing output ->codec -> %d, nid -> %d', 0aH, 00H
 	ORG $+2
-$SG3506	DB	'output', 00H
+$SG3522	DB	'output', 00H
 	ORG $+1
-$SG3508	DB	'input', 00H
+$SG3524	DB	'input', 00H
 	ORG $+2
-$SG3510	DB	'mixer', 00H
+$SG3526	DB	'mixer', 00H
 	ORG $+2
-$SG3512	DB	'selector', 00H
+$SG3528	DB	'selector', 00H
 	ORG $+3
-$SG3516	DB	'power', 00H
+$SG3532	DB	'power', 00H
 	ORG $+6
-$SG3514	DB	'pin complex', 00H
+$SG3530	DB	'pin complex', 00H
 	ORG $+4
-$SG3518	DB	'volume knob', 00H
+$SG3534	DB	'volume knob', 00H
 	ORG $+4
-$SG3520	DB	'beep generator', 00H
+$SG3536	DB	'beep generator', 00H
 	ORG $+1
-$SG3522	DB	'vendor defined', 00H
+$SG3538	DB	'vendor defined', 00H
 	ORG $+1
-$SG3524	DB	'unknown', 00H
-$SG3536	DB	'[HD-Audio]:Widget type Output in codec -> %d at node -> '
+$SG3540	DB	'unknown', 00H
+$SG3552	DB	'[HD-Audio]:Widget type Output in codec -> %d at node -> '
 	DB	'%d', 0aH, 00H
 	ORG $+4
-$SG3549	DB	'[HD_Audio]: Num Function Group -> %d, fg_start -> %d', 0aH
+$SG3565	DB	'[HD_Audio]: Num Function Group -> %d, fg_start -> %d', 0aH
 	DB	00H
 	ORG $+2
-$SG3551	DB	'[HD-Audio]:Widget device id -> %x, vendor id -> %x', 0aH
+$SG3567	DB	'[HD-Audio]:Widget device id -> %x, vendor id -> %x', 0aH
 	DB	00H
 	ORG $+4
-$SG3553	DB	'[HD-Audio]:Widget version -> %d.%d, r0%d', 0aH, 00H
+$SG3569	DB	'[HD-Audio]:Widget version -> %d.%d, r0%d', 0aH, 00H
 	ORG $+6
-$SG3575	DB	'Unable to put HD-Audio in reset mode', 0aH, 00H
+$SG3591	DB	'Unable to put HD-Audio in reset mode', 0aH, 00H
 	ORG $+2
-$SG3590	DB	'HD-Audio device stuck in reset', 0aH, 00H
-$SG3603	DB	'No HD-Audio was found', 0aH, 00H
+$SG3606	DB	'HD-Audio device stuck in reset', 0aH, 00H
+$SG3619	DB	'No HD-Audio was found', 0aH, 00H
 	ORG $+1
-$SG3605	DB	'HD Audio found vendor -> %x, device -> %x', 0aH, 00H
+$SG3621	DB	'HD Audio found vendor -> %x, device -> %x', 0aH, 00H
 	ORG $+5
-$SG3606	DB	'HD-Audio interrupt line -> %d', 0aH, 00H
+$SG3622	DB	'HD-Audio interrupt line -> %d', 0aH, 00H
 	ORG $+1
-$SG3612	DB	'HD-Audio 64-OK', 0aH, 00H
-$SG3619	DB	'IHD Audio Initialized successfully', 0aH, 00H
+$SG3628	DB	'HD-Audio 64-OK', 0aH, 00H
+$SG3635	DB	'IHD Audio Initialized successfully', 0aH, 00H
 CONST	ENDS
 PUBLIC	?hda_initialize@@YAXXZ				; hda_initialize
 PUBLIC	?_aud_outl_@@YAXHI@Z				; _aud_outl_
@@ -87,7 +87,7 @@ EXTRN	?interrupt_end@@YAXI@Z:PROC			; interrupt_end
 EXTRN	?pci_find_device_class@@YA_NEEPEATpci_device_info@@PEAH11@Z:PROC ; pci_find_device_class
 EXTRN	?pci_alloc_msi@@YA_NHHHP6AX_KPEAX@Z@Z:PROC	; pci_alloc_msi
 EXTRN	?pmmngr_alloc@@YAPEAXXZ:PROC			; pmmngr_alloc
-EXTRN	?map_page@@YA_N_K0@Z:PROC			; map_page
+EXTRN	?map_page@@YA_N_K0E@Z:PROC			; map_page
 EXTRN	?get_physical_address@@YAPEA_K_K@Z:PROC		; get_physical_address
 EXTRN	?memset@@YAXPEAXEI@Z:PROC			; memset
 EXTRN	?printf@@YAXPEBDZZ:PROC				; printf
@@ -133,7 +133,7 @@ $pdata$?codec_query@@YAIHHI@Z DD imagerel ?codec_query@@YAIHHI@Z
 	DD	imagerel ?codec_query@@YAIHHI@Z+132
 	DD	imagerel $unwind$?codec_query@@YAIHHI@Z
 $pdata$?hda_start_stream@@YAXXZ DD imagerel $LN9
-	DD	imagerel $LN9+333
+	DD	imagerel $LN9+336
 	DD	imagerel $unwind$?hda_start_stream@@YAXXZ
 $pdata$?hda_set_volume@@YAXE@Z DD imagerel $LN5
 	DD	imagerel $LN5+122
@@ -304,7 +304,7 @@ $LN21@hda_reset:
 
 ; 480  : 		printf ("Unable to put HD-Audio in reset mode\n");
 
-	lea	rcx, OFFSET FLAT:$SG3575
+	lea	rcx, OFFSET FLAT:$SG3591
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 481  : 		return;
@@ -407,7 +407,7 @@ $LN10@hda_reset:
 
 ; 500  : 		printf ("HD-Audio device stuck in reset\n");
 
-	lea	rcx, OFFSET FLAT:$SG3590
+	lea	rcx, OFFSET FLAT:$SG3606
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 501  : 		return;
@@ -527,7 +527,7 @@ codec$ = 96
 
 	mov	r8d, DWORD PTR fg_start$[rsp]
 	mov	edx, DWORD PTR num_fg$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3549
+	lea	rcx, OFFSET FLAT:$SG3565
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 426  : 
@@ -545,7 +545,7 @@ codec$ = 96
 	shr	eax, 16
 	mov	r8d, eax
 	mov	edx, DWORD PTR vendor_id$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3551
+	lea	rcx, OFFSET FLAT:$SG3567
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 429  : 	
@@ -567,7 +567,7 @@ codec$ = 96
 	shr	edx, 20
 	mov	r9d, eax
 	mov	r8d, ecx
-	lea	rcx, OFFSET FLAT:$SG3553
+	lea	rcx, OFFSET FLAT:$SG3569
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 432  : 
@@ -783,70 +783,70 @@ $LN18@widget_ini:
 
 ; 346  : 	case 0:  s = "output"; break;
 
-	lea	rax, OFFSET FLAT:$SG3506
+	lea	rax, OFFSET FLAT:$SG3522
 	mov	QWORD PTR s$[rsp], rax
 	jmp	SHORT $LN19@widget_ini
 $LN17@widget_ini:
 
 ; 347  : 	case 1:  s = "input"; break;
 
-	lea	rax, OFFSET FLAT:$SG3508
+	lea	rax, OFFSET FLAT:$SG3524
 	mov	QWORD PTR s$[rsp], rax
 	jmp	SHORT $LN19@widget_ini
 $LN16@widget_ini:
 
 ; 348  : 	case 2:  s = "mixer"; break;
 
-	lea	rax, OFFSET FLAT:$SG3510
+	lea	rax, OFFSET FLAT:$SG3526
 	mov	QWORD PTR s$[rsp], rax
 	jmp	SHORT $LN19@widget_ini
 $LN15@widget_ini:
 
 ; 349  : 	case 3:  s = "selector"; break;
 
-	lea	rax, OFFSET FLAT:$SG3512
+	lea	rax, OFFSET FLAT:$SG3528
 	mov	QWORD PTR s$[rsp], rax
 	jmp	SHORT $LN19@widget_ini
 $LN14@widget_ini:
 
 ; 350  : 	case 4:  s = "pin complex"; break;
 
-	lea	rax, OFFSET FLAT:$SG3514
+	lea	rax, OFFSET FLAT:$SG3530
 	mov	QWORD PTR s$[rsp], rax
 	jmp	SHORT $LN19@widget_ini
 $LN13@widget_ini:
 
 ; 351  : 	case 5:  s = "power"; break;
 
-	lea	rax, OFFSET FLAT:$SG3516
+	lea	rax, OFFSET FLAT:$SG3532
 	mov	QWORD PTR s$[rsp], rax
 	jmp	SHORT $LN19@widget_ini
 $LN12@widget_ini:
 
 ; 352  : 	case 6:  s = "volume knob"; break;
 
-	lea	rax, OFFSET FLAT:$SG3518
+	lea	rax, OFFSET FLAT:$SG3534
 	mov	QWORD PTR s$[rsp], rax
 	jmp	SHORT $LN19@widget_ini
 $LN11@widget_ini:
 
 ; 353  : 	case 7:  s = "beep generator"; break;
 
-	lea	rax, OFFSET FLAT:$SG3520
+	lea	rax, OFFSET FLAT:$SG3536
 	mov	QWORD PTR s$[rsp], rax
 	jmp	SHORT $LN19@widget_ini
 $LN10@widget_ini:
 
 ; 354  : 	case 16: s = "vendor defined"; break;
 
-	lea	rax, OFFSET FLAT:$SG3522
+	lea	rax, OFFSET FLAT:$SG3538
 	mov	QWORD PTR s$[rsp], rax
 	jmp	SHORT $LN19@widget_ini
 $LN9@widget_ini:
 
 ; 355  : 	default: s = "unknown"; break;
 
-	lea	rax, OFFSET FLAT:$SG3524
+	lea	rax, OFFSET FLAT:$SG3540
 	mov	QWORD PTR s$[rsp], rax
 $LN19@widget_ini:
 
@@ -1001,7 +1001,7 @@ $LN3@widget_ini:
 
 	mov	r8d, DWORD PTR nid$[rsp]
 	mov	edx, DWORD PTR codec$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3536
+	lea	rcx, OFFSET FLAT:$SG3552
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 395  : 			codec_query (codec, nid, VERB_SET_EAPD_BTL | eapd_btl | 0x2);
@@ -1172,7 +1172,7 @@ $LN3:
 	movzx	ecx, BYTE PTR [rcx]
 	mov	r8d, eax
 	mov	edx, ecx
-	lea	rcx, OFFSET FLAT:$SG3489
+	lea	rcx, OFFSET FLAT:$SG3505
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 313  : 
@@ -1262,7 +1262,7 @@ i$2 = 36
 bdl_base$ = 40
 bdl$ = 48
 dma_pos$ = 56
-tv75 = 64
+tv76 = 64
 ?hda_start_stream@@YAXXZ PROC				; hda_start_stream
 
 ; 251  : void hda_start_stream () {
@@ -1301,18 +1301,19 @@ $LN6@hda_start_:
 	cmp	DWORD PTR i$2[rsp], 1024		; 00000400H
 	jge	SHORT $LN4@hda_start_
 
-; 257  : 		map_page ((uint64_t)pmmngr_alloc(), 0x0000000080000000 + i * 4096);
+; 257  : 		map_page ((uint64_t)pmmngr_alloc(), 0x0000000080000000 + i * 4096,0);
 
 	mov	eax, DWORD PTR i$2[rsp]
 	imul	eax, 4096				; 00001000H
 	add	eax, -2147483648			; 80000000H
 	mov	eax, eax
-	mov	QWORD PTR tv75[rsp], rax
+	mov	QWORD PTR tv76[rsp], rax
 	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
-	mov	rcx, QWORD PTR tv75[rsp]
+	xor	r8d, r8d
+	mov	rcx, QWORD PTR tv76[rsp]
 	mov	rdx, rcx
 	mov	rcx, rax
-	call	?map_page@@YA_N_K0@Z			; map_page
+	call	?map_page@@YA_N_K0E@Z			; map_page
 	jmp	SHORT $LN5@hda_start_
 $LN4@hda_start_:
 
@@ -1810,7 +1811,7 @@ $LN2@setup_rirb:
 
 ; 140  : 		printf ("HD Audio: No supported RIRB size !!\n");
 
-	lea	rcx, OFFSET FLAT:$SG3424
+	lea	rcx, OFFSET FLAT:$SG3440
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 141  : 		_ihd_audio.rirb_entries = 256;
@@ -2107,7 +2108,7 @@ $LN3:
 
 ; 68   : 	printf ("HD-Audio Interrupt fired++\n");
 
-	lea	rcx, OFFSET FLAT:$SG3399
+	lea	rcx, OFFSET FLAT:$SG3415
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 69   : 	//apic_local_eoi();
@@ -2360,7 +2361,7 @@ $LN10:
 
 ; 529  : 		printf ("No HD-Audio was found\n");
 
-	lea	rcx, OFFSET FLAT:$SG3603
+	lea	rcx, OFFSET FLAT:$SG3619
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 530  : 		return;
@@ -2394,14 +2395,14 @@ $LN7@hda_initia:
 	movzx	ecx, WORD PTR pci_dev$[rsp]
 	mov	r8d, eax
 	mov	edx, ecx
-	lea	rcx, OFFSET FLAT:$SG3605
+	lea	rcx, OFFSET FLAT:$SG3621
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 539  : 	printf ("HD-Audio interrupt line -> %d\n", pci_dev.device.nonBridge.interruptLine);
 
 	movzx	eax, BYTE PTR pci_dev$[rsp+60]
 	mov	edx, eax
-	lea	rcx, OFFSET FLAT:$SG3606
+	lea	rcx, OFFSET FLAT:$SG3622
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 540  : 
@@ -2432,32 +2433,33 @@ $LN7@hda_initia:
 	mov	eax, eax
 	mov	QWORD PTR ?_ihd_audio@@3U_hd_audio_@@A, rax
 
-; 549  : 	_ihd_audio.corb = (uint32_t*)pmmngr_alloc(); //for 256 entries only 1 kb will be used
+; 549  : 	//map_page(_ihd_audio.mmio, _ihd_audio.mmio,0);
+; 550  : 	_ihd_audio.corb = (uint32_t*)pmmngr_alloc(); //for 256 entries only 1 kb will be used
 
 	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
 	mov	QWORD PTR ?_ihd_audio@@3U_hd_audio_@@A+8, rax
 
-; 550  : 	_ihd_audio.rirb = (uint64_t*)pmmngr_alloc(); //(ring_address + 1024);
+; 551  : 	_ihd_audio.rirb = (uint64_t*)pmmngr_alloc(); //(ring_address + 1024);
 
 	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
 	mov	QWORD PTR ?_ihd_audio@@3U_hd_audio_@@A+16, rax
 
-; 551  : 	memset (_ihd_audio.corb, 0, 4096);
+; 552  : 	memset (_ihd_audio.corb, 0, 4096);
 
 	mov	r8d, 4096				; 00001000H
 	xor	edx, edx
 	mov	rcx, QWORD PTR ?_ihd_audio@@3U_hd_audio_@@A+8
 	call	?memset@@YAXPEAXEI@Z			; memset
 
-; 552  : 	memset (_ihd_audio.rirb, 0, 4096);
+; 553  : 	memset (_ihd_audio.rirb, 0, 4096);
 
 	mov	r8d, 4096				; 00001000H
 	xor	edx, edx
 	mov	rcx, QWORD PTR ?_ihd_audio@@3U_hd_audio_@@A+16
 	call	?memset@@YAXPEAXEI@Z			; memset
 
-; 553  : 
-; 554  : 	if (_aud_inw_ (GCAP) & 1) {
+; 554  : 
+; 555  : 	if (_aud_inw_ (GCAP) & 1) {
 
 	xor	ecx, ecx
 	call	?_aud_inw_@@YAGH@Z			; _aud_inw_
@@ -2466,27 +2468,27 @@ $LN7@hda_initia:
 	test	eax, eax
 	je	SHORT $LN5@hda_initia
 
-; 555  : 		printf ("HD-Audio 64-OK\n");
+; 556  : 		printf ("HD-Audio 64-OK\n");
 
-	lea	rcx, OFFSET FLAT:$SG3612
+	lea	rcx, OFFSET FLAT:$SG3628
 	call	?printf@@YAXPEBDZZ			; printf
 $LN5@hda_initia:
 
-; 556  : 	}
-; 557  : 	
-; 558  : 	hda_reset();
+; 557  : 	}
+; 558  : 	
+; 559  : 	hda_reset();
 
 	call	?hda_reset@@YAXXZ			; hda_reset
 
-; 559  :     
-; 560  :    
-; 561  : 	uint16_t statests = _aud_inw_ (STATESTS);
+; 560  :     
+; 561  :    
+; 562  : 	uint16_t statests = _aud_inw_ (STATESTS);
 
 	mov	ecx, 14
 	call	?_aud_inw_@@YAGH@Z			; _aud_inw_
 	mov	WORD PTR statests$[rsp], ax
 
-; 562  : 	for (int i = 0; i < 15; i++) {
+; 563  : 	for (int i = 0; i < 15; i++) {
 
 	mov	DWORD PTR i$1[rsp], 0
 	jmp	SHORT $LN4@hda_initia
@@ -2498,7 +2500,7 @@ $LN4@hda_initia:
 	cmp	DWORD PTR i$1[rsp], 15
 	jge	SHORT $LN2@hda_initia
 
-; 563  : 		if (statests & (1 << i)){
+; 564  : 		if (statests & (1 << i)){
 
 	movzx	eax, WORD PTR statests$[rsp]
 	mov	ecx, DWORD PTR i$1[rsp]
@@ -2509,38 +2511,38 @@ $LN4@hda_initia:
 	test	eax, eax
 	je	SHORT $LN1@hda_initia
 
-; 564  : 			codec_enumerate_widgets(i);
+; 565  : 			codec_enumerate_widgets(i);
 
 	mov	ecx, DWORD PTR i$1[rsp]
 	call	?codec_enumerate_widgets@@YAXH@Z	; codec_enumerate_widgets
 $LN1@hda_initia:
 
-; 565  : 		}
-; 566  : 	} 
+; 566  : 		}
+; 567  : 	} 
 
 	jmp	SHORT $LN3@hda_initia
 $LN2@hda_initia:
 
-; 567  : 
 ; 568  : 
-; 569  : 	//! Initialize audio output
-; 570  : 	init_output();
+; 569  : 
+; 570  : 	//! Initialize audio output
+; 571  : 	init_output();
 
 	call	?init_output@@YAXXZ			; init_output
 
-; 571  : 
-; 572  :     x64_sti();
+; 572  : 
+; 573  :     x64_sti();
 
 	call	x64_sti
 
-; 573  :    
-; 574  : 	printf ("IHD Audio Initialized successfully\n");
+; 574  :    
+; 575  : 	printf ("IHD Audio Initialized successfully\n");
 
-	lea	rcx, OFFSET FLAT:$SG3619
+	lea	rcx, OFFSET FLAT:$SG3635
 	call	?printf@@YAXPEBDZZ			; printf
 $LN8@hda_initia:
 
-; 575  : }
+; 576  : }
 
 	add	rsp, 344				; 00000158H
 	ret	0

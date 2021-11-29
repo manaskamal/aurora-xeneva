@@ -229,6 +229,12 @@ sys_pipe:
 	syscall
 	ret
 
+global vfree
+vfree:
+    mov r12, 38
+	mov r13, rcx
+	syscall
+	ret
 
 
 

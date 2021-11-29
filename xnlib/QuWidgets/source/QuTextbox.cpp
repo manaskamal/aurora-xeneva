@@ -19,9 +19,9 @@
 void QuTextboxRefresh (QuWidget *wid, QuWindow *win) {
 	QuTextbox *tb = (QuTextbox*)wid;
 
-	acrylic_draw_rect_filled (win->x + wid->x, win->y + wid->y, wid->width, wid->height,WHITE);
-	acrylic_draw_rect_unfilled (win->x + wid->x, win->y + wid->y,wid->width, wid->height,SILVER);
-	acrylic_draw_arr_string (win->x + wid->x + 2,
+	acrylic_draw_rect_filled (win->ctx,win->x + wid->x, win->y + wid->y, wid->width, wid->height,WHITE);
+	acrylic_draw_rect_unfilled (win->ctx,win->x + wid->x, win->y + wid->y,wid->width, wid->height,SILVER);
+	acrylic_draw_arr_string (win->ctx,win->x + wid->x + 2,
 		win->y + wid->y + (wid->height/2) - 12/2,tb->text,BLACK);
 
 	/*if (tb->hover)  {
@@ -82,7 +82,7 @@ void QuEnterText (QuTextbox* tb, char* text) {
 }
 
 void QuTextboxInvalidate (QuTextbox *tb, QuWindow* win) {
-	QuPanelUpdate (win->x + tb->wid.x, win->y + tb->wid.y,tb->wid.width, tb->wid.height, false);
+	QuPanelUpdate (win,win->x + tb->wid.x, win->y + tb->wid.y,tb->wid.width, tb->wid.height, false);
 }
 
 void QuTextboxRefresh (QuTextbox *tb, QuWindow* win) {

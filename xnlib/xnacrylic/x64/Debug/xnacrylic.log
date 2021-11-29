@@ -1,68 +1,10 @@
-﻿Build started 23-11-2021 আবেলি 1:04:50.
+﻿Build started 25-11-2021 আবেলি 7:02:06.
      1>Project "E:\Xeneva Project\Xeneva\xnlib\xnacrylic\xnacrylic.vcxproj" on node 2 (Rebuild target(s)).
      1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\xnlib\xnclib" /I"E:\Xeneva Project\Xeneva\xnlib\xnacrylic\include" /Zi /nologo /W4 /WX- /sdl- /MP /Od /D ARCH_X64 /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt source\acrylic.cpp source\canvas.cpp source\clientctx.cpp source\color.cpp source\font.cpp source\image.cpp source\path2d.cpp source\psf\psf.cpp source\ttf\cmap.cpp source\ttf\glyf.cpp source\ttf\truetype.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\xnlib\xnclib" /I"E:\Xeneva Project\Xeneva\xnlib\xnacrylic\include" /Zi /nologo /W4 /WX- /sdl- /MP /Od /D ARCH_X64 /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt source\acrylic.cpp source\buffer.cpp source\canvas.cpp source\clientctx.cpp source\color.cpp source\font.cpp source\image.cpp source\path2d.cpp source\psf\psf.cpp
      1>cl : Command line warning D9025: overriding '/sdl-' with '/GS-'
      1>cl : Command line warning D9002: ignoring unknown option '/arch:SSE'
      1>cl : Command line warning D9030: '/Gm' is incompatible with multiprocessing; ignoring /MP switch
-         truetype.cpp
-     1>E:\Xeneva Project\Xeneva\xnlib\xnclib\sys\utf.h(53): warning C4310: cast truncates constant value
-     1>E:\Xeneva Project\Xeneva\xnlib\xnclib\sys\utf.h(57): warning C4310: cast truncates constant value
-     1>E:\Xeneva Project\Xeneva\xnlib\xnclib\sys\utf.h(58): warning C4310: cast truncates constant value
-     1>E:\Xeneva Project\Xeneva\xnlib\xnclib\sys\utf.h(62): warning C4310: cast truncates constant value
-     1>E:\Xeneva Project\Xeneva\xnlib\xnclib\sys\utf.h(63): warning C4310: cast truncates constant value
-     1>E:\Xeneva Project\Xeneva\xnlib\xnclib\sys\utf.h(64): warning C4310: cast truncates constant value
-     1>E:\Xeneva Project\Xeneva\xnlib\xnclib\sys\utf.h(68): warning C4310: cast truncates constant value
-     1>E:\Xeneva Project\Xeneva\xnlib\xnclib\sys\utf.h(69): warning C4310: cast truncates constant value
-     1>E:\Xeneva Project\Xeneva\xnlib\xnclib\sys\utf.h(70): warning C4310: cast truncates constant value
-     1>E:\Xeneva Project\Xeneva\xnlib\xnclib\sys\utf.h(71): warning C4310: cast truncates constant value
-     1>E:\Xeneva Project\Xeneva\xnlib\xnclib\sys\utf.h(104): warning C4244: '=' : conversion from 'unsigned int' to 'unsigned char', possible loss of data
-     1>E:\Xeneva Project\Xeneva\xnlib\xnclib\sys\utf.h(110): warning C4244: '=' : conversion from 'unsigned int' to 'unsigned char', possible loss of data
-     1>E:\Xeneva Project\Xeneva\xnlib\xnclib\sys\utf.h(115): warning C4244: '=' : conversion from 'unsigned int' to 'unsigned char', possible loss of data
-     1>E:\Xeneva Project\Xeneva\xnlib\xnclib\sys\utf.h(116): warning C4244: '=' : conversion from 'unsigned int' to 'unsigned char', possible loss of data
-     1>E:\Xeneva Project\Xeneva\xnlib\xnclib\sys\utf.h(117): warning C4244: '=' : conversion from 'unsigned int' to 'unsigned char', possible loss of data
-     1>source\ttf\truetype.cpp(57): warning C4244: 'argument' : conversion from 'double' to 'float', possible loss of data
-     1>source\ttf\truetype.cpp(78): warning C4189: 'cmap_version' : local variable is initialized but not referenced
-     1>source\ttf\truetype.cpp(114): warning C4018: '<' : signed/unsigned mismatch
-     1>source\ttf\truetype.cpp(116): warning C4189: 'checksum' : local variable is initialized but not referenced
-     1>source\ttf\truetype.cpp(169): warning C4244: 'initializing' : conversion from 'int' to 'float', possible loss of data
-     1>source\ttf\truetype.cpp(174): warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
-         glyf.cpp
-     1>E:\Xeneva Project\Xeneva\xnlib\xnacrylic\include\path2d.h(39): warning C4200: nonstandard extension used : zero-sized array in struct/union
-                 Cannot generate copy-ctor or copy-assignment operator when UDT contains a zero-sized array
-     1>source\ttf\glyf.cpp(46): warning C4244: 'return' : conversion from 'float' to 'int', possible loss of data
-     1>source\ttf\glyf.cpp(52): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
-     1>source\ttf\glyf.cpp(53): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
-     1>source\ttf\glyf.cpp(92): warning C4244: 'initializing' : conversion from 'int' to 'float', possible loss of data
-     1>source\ttf\glyf.cpp(84): warning C4100: '_y' : unreferenced formal parameter
-     1>source\ttf\glyf.cpp(112): warning C4244: 'initializing' : conversion from 'uint32_t' to 'uint8_t', possible loss of data
-     1>source\ttf\glyf.cpp(115): warning C4244: 'initializing' : conversion from 'uint32_t' to 'uint8_t', possible loss of data
-     1>source\ttf\glyf.cpp(123): warning C4244: 'initializing' : conversion from 'uint32_t' to 'uint8_t', possible loss of data
-     1>source\ttf\glyf.cpp(125): warning C4244: 'initializing' : conversion from 'uint32_t' to 'uint8_t', possible loss of data
-     1>source\ttf\glyf.cpp(126): warning C4244: 'initializing' : conversion from 'uint32_t' to 'uint8_t', possible loss of data
-     1>source\ttf\glyf.cpp(128): warning C4244: 'initializing' : conversion from 'uint32_t' to 'uint8_t', possible loss of data
-     1>source\ttf\glyf.cpp(134): warning C4018: '<' : signed/unsigned mismatch
-     1>source\ttf\glyf.cpp(135): warning C4244: 'initializing' : conversion from 'int' to 'uint16_t', possible loss of data
-     1>source\ttf\glyf.cpp(155): warning C4018: '<=' : signed/unsigned mismatch
-     1>source\ttf\glyf.cpp(158): warning C4244: 'initializing' : conversion from 'double' to 'float', possible loss of data
-     1>source\ttf\glyf.cpp(147): warning C4189: 'y' : local variable is initialized but not referenced
-     1>source\ttf\glyf.cpp(148): warning C4189: 'cnt' : local variable is initialized but not referenced
-     1>source\ttf\glyf.cpp(145): warning C4189: 'wind' : local variable is initialized but not referenced
-     1>source\ttf\glyf.cpp(146): warning C4189: 'j' : local variable is initialized but not referenced
-     1>source\ttf\glyf.cpp(300): warning C4244: 'initializing' : conversion from 'double' to 'float', possible loss of data
-     1>source\ttf\glyf.cpp(301): warning C4244: 'initializing' : conversion from 'double' to 'float', possible loss of data
-     1>source\ttf\glyf.cpp(324): warning C4244: 'initializing' : conversion from 'double' to 'float', possible loss of data
-     1>source\ttf\glyf.cpp(325): warning C4244: 'initializing' : conversion from 'double' to 'float', possible loss of data
-     1>source\ttf\glyf.cpp(328): warning C4244: 'argument' : conversion from 'double' to 'float', possible loss of data
-     1>source\ttf\glyf.cpp(343): warning C4244: 'argument' : conversion from 'double' to 'float', possible loss of data
-     1>source\ttf\glyf.cpp(359): warning C4244: 'argument' : conversion from 'double' to 'float', possible loss of data
-     1>source\ttf\glyf.cpp(195): warning C4189: 'xMin' : local variable is initialized but not referenced
-     1>source\ttf\glyf.cpp(198): warning C4189: 'yMax' : local variable is initialized but not referenced
-     1>source\ttf\glyf.cpp(197): warning C4189: 'xMax' : local variable is initialized but not referenced
-     1>source\ttf\glyf.cpp(196): warning C4189: 'yMin' : local variable is initialized but not referenced
-     1>source\ttf\glyf.cpp(279): warning C4189: 'fill' : local variable is initialized but not referenced
-     1>source\ttf\glyf.cpp(278): warning C4189: 'draw_curve' : local variable is initialized but not referenced
-         cmap.cpp
          psf.cpp
      1>source\psf\psf.cpp(41): warning C4018: '<' : signed/unsigned mismatch
      1>source\psf\psf.cpp(43): warning C4018: '<' : signed/unsigned mismatch
@@ -144,14 +86,14 @@
      1>source\color.cpp(91): warning C4018: '<' : signed/unsigned mismatch
      1>source\color.cpp(92): warning C4018: '<' : signed/unsigned mismatch
          clientctx.cpp
-     1>source\clientctx.cpp(61): warning C4189: 'd' : local variable is initialized but not referenced
-     1>source\clientctx.cpp(107): warning C4018: '<' : signed/unsigned mismatch
-     1>source\clientctx.cpp(108): warning C4018: '<' : signed/unsigned mismatch
          canvas.cpp
      1>source\canvas.cpp(30): warning C4244: 'initializing' : conversion from 'int' to 'uint16_t', possible loss of data
-     1>source\canvas.cpp(88): warning C4018: '<' : signed/unsigned mismatch
-     1>source\canvas.cpp(114): warning C4018: '<' : signed/unsigned mismatch
-     1>source\canvas.cpp(115): warning C4018: '<' : signed/unsigned mismatch
+     1>source\canvas.cpp(96): warning C4018: '<' : signed/unsigned mismatch
+     1>source\canvas.cpp(122): warning C4018: '<' : signed/unsigned mismatch
+     1>source\canvas.cpp(123): warning C4018: '<' : signed/unsigned mismatch
+         buffer.cpp
+     1>source\buffer.cpp(24): warning C4267: '+=' : conversion from 'size_t' to 'int', possible loss of data
+     1>source\buffer.cpp(33): warning C4267: '-=' : conversion from 'size_t' to 'int', possible loss of data
          acrylic.cpp
      1>source\acrylic.cpp(24): warning C4018: '<' : signed/unsigned mismatch
      1>source\acrylic.cpp(25): warning C4018: '<' : signed/unsigned mismatch
@@ -175,11 +117,10 @@
      1>e:\xeneva project\xeneva\xnlib\xnacrylic\include\jpg\jpeg_decoder.h(328): warning C4706: assignment within conditional expression
      1>e:\xeneva project\xeneva\xnlib\xnacrylic\include\jpg\jpeg_decoder.h(330): warning C4706: assignment within conditional expression
      1>e:\xeneva project\xeneva\xnlib\xnacrylic\include\jpg\jpeg_decoder.h(348): warning C4706: assignment within conditional expression
-     1>e:\xeneva project\xeneva\xnlib\xnacrylic\source\ttf\glyf.cpp(161): warning C4706: assignment within conditional expression
-     1>e:\xeneva project\xeneva\xnlib\xnacrylic\source\ttf\glyf.cpp(213): warning C4701: potentially uninitialized local variable 'endPt' used
      1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V110\Microsoft.CppBuild.targets(1299,5): warning MSB8012: TargetPath(E:\Xeneva Project\Xeneva\Aurora\x64\Debug\xnacrylic.lib) does not match the Library's OutputFile property value (E:\Xeneva Project\Xeneva\xnlib\lib64\xnacrylic.lib). This may cause your project to build incorrectly. To correct this, please make sure that $(OutDir), $(TargetName) and $(TargetExt) property values match the value specified in %(Lib.OutputFile).
        Lib:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\Lib.exe /OUT:"E:\Xeneva Project\Xeneva\xnlib\lib64\xnacrylic.lib" /NOLOGO /MACHINE:X64 x64\Debug\acrylic.obj
+         x64\Debug\buffer.obj
          x64\Debug\canvas.obj
          x64\Debug\clientctx.obj
          x64\Debug\color.obj
@@ -187,12 +128,9 @@
          x64\Debug\image.obj
          x64\Debug\path2d.obj
          x64\Debug\psf.obj
-         x64\Debug\cmap.obj
-         x64\Debug\glyf.obj
-         x64\Debug\truetype.obj
          xnacrylic.vcxproj -> E:\Xeneva Project\Xeneva\Aurora\x64\Debug\xnacrylic.lib
      1>Done Building Project "E:\Xeneva Project\Xeneva\xnlib\xnacrylic\xnacrylic.vcxproj" (Rebuild target(s)).
 
 Build succeeded.
 
-Time Elapsed 00:00:02.04
+Time Elapsed 00:00:01.44

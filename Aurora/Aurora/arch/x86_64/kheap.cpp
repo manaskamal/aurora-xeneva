@@ -14,7 +14,6 @@
 #include "pmmngr.h"
 
 
-
 void*  kmem_start;
 void*  kmem_end;
 kmem   *last_header;
@@ -26,14 +25,15 @@ void initialize_kmemory (size_t sz) {
 	for (size_t i=0; i < sz; i++) {
 		void* p = (void*)pmmngr_alloc();
 		memset(p,0,4096);
-		map_page ((uint64_t)p,(uint64_t)pos);
+		map_page ((uint64_t)p,(uint64_t)pos,0);
 		pos = (void*)((size_t)pos + 0x1000);
 	}
-
+	
     size_t kmem_length = sz * 0x1000;
 
 	kmem_start = (void*)0xFFFF800000000000;                   //0xFFFFB00000000000;
 	kmem_end = (void*)((size_t)kmem_start + kmem_length);
+	//printf ("Heap end -> %x\n", kmem_end);
 	kmem* start_seg = (kmem*)kmem_start;
 	start_seg->length = kmem_length - sizeof (kmem);
 	start_seg->next = NULL;
@@ -90,12 +90,13 @@ void expand_kmem (size_t length) {
 
 	size_t page_count = length / 0x1000;
 	kmem* new_seg = (kmem*)kmem_end;
-	
+	printf ("New Seg -> %x", new_seg);
+
 	for (size_t i = 0; i < page_count; i++) {
-		map_page ((uint64_t)pmmngr_alloc(), (uint64_t)kmem_end);
+		map_page ((uint64_t)pmmngr_alloc(), (uint64_t)kmem_end,0);
 		kmem_end = (void*)((size_t)kmem_end + 0x1000);
 	}
-
+	printf ("Kmem end -> %x\n", kmem_end);
 	new_seg->free = true;
 	new_seg->last = last_header;
 	last_header->next = new_seg;
@@ -108,7 +109,6 @@ void expand_kmem (size_t length) {
 
 
 void* alloc(size_t size) {
-	x64_cli();
 	if (size % 0x10 > 0) {
 		size -= (size % 0x10);
 		size += 0x10;
@@ -135,7 +135,6 @@ void* alloc(size_t size) {
 	}
 
 	expand_kmem(size);
-	x64_sti();
 	return alloc(size);
 }
 
@@ -145,4 +144,10 @@ void free (void* memory) {
    seg->free = true;
    seg->align_next();
    seg->align_prev();	
+}
+
+
+void kheap_print () {
+	printf ("Heap Start -> %x\n", kmem_start);
+	printf ("Heap End -> %x\n", kmem_end);
 }

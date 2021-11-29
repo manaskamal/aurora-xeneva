@@ -13,7 +13,7 @@
 
 void mm_init (KERNEL_BOOT_INFO *info) {
 #ifdef ARCH_X64
-	vmmngr_x86_64_init (info);
+	//vmmngr_x86_64_init (info);
 	initialize_kmemory(16);
 #elif  ARCH_ARM
 	//!initialize arm32 virtual memory manager

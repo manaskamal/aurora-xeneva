@@ -13,6 +13,8 @@
 #define __PSF_FONT_H__
 
 #include <stdint.h>
+#include <canvas.h>
+
 
 typedef struct {
     uint32_t magic;
@@ -27,6 +29,6 @@ typedef struct {
 }psf2_t;
 
 extern void psf_register_font_lib ();
-extern void psf_draw_string (const char *s,int pos_x, int pos_y, uint32_t f_color, uint32_t b_color);
+extern void psf_draw_string (canvas_t *canvas,const char *s,int pos_x, int pos_y, uint32_t f_color, uint32_t b_color);
 
 #endif

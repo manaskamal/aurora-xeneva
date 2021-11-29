@@ -6,19 +6,53 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 PUBLIC	?valloc@@YAX_K@Z				; valloc
+PUBLIC	?vfree@@YAX_K@Z					; vfree
 EXTRN	?pmmngr_alloc@@YAPEAXXZ:PROC			; pmmngr_alloc
 EXTRN	x64_cli:PROC
-EXTRN	?map_page@@YA_N_K0@Z:PROC			; map_page
+EXTRN	?map_page@@YA_N_K0E@Z:PROC			; map_page
+EXTRN	?unmap_page@@YAX_K@Z:PROC			; unmap_page
 EXTRN	?memset@@YAXPEAXEI@Z:PROC			; memset
 pdata	SEGMENT
 $pdata$?valloc@@YAX_K@Z DD imagerel $LN3
-	DD	imagerel $LN3+62
+	DD	imagerel $LN3+65
 	DD	imagerel $unwind$?valloc@@YAX_K@Z
+$pdata$?vfree@@YAX_K@Z DD imagerel $LN3
+	DD	imagerel $LN3+29
+	DD	imagerel $unwind$?vfree@@YAX_K@Z
 pdata	ENDS
 xdata	SEGMENT
 $unwind$?valloc@@YAX_K@Z DD 010901H
 	DD	06209H
+$unwind$?vfree@@YAX_K@Z DD 010901H
+	DD	04209H
 xdata	ENDS
+; Function compile flags: /Odtpy
+; File e:\xeneva project\xeneva\aurora\aurora\sysserv\valloc.cpp
+_TEXT	SEGMENT
+pos$ = 48
+?vfree@@YAX_K@Z PROC					; vfree
+
+; 15   : void vfree (uint64_t pos) {
+
+$LN3:
+	mov	QWORD PTR [rsp+8], rcx
+	sub	rsp, 40					; 00000028H
+
+; 16   : 	x64_cli();
+
+	call	x64_cli
+
+; 17   : 	unmap_page ((uint64_t)pos);
+
+	mov	rcx, QWORD PTR pos$[rsp]
+	call	?unmap_page@@YAX_K@Z			; unmap_page
+
+; 18   : }
+
+	add	rsp, 40					; 00000028H
+	ret	0
+?vfree@@YAX_K@Z ENDP					; vfree
+_TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\sysserv\valloc.cpp
 _TEXT	SEGMENT
@@ -48,11 +82,12 @@ $LN3:
 	mov	rcx, QWORD PTR p$[rsp]
 	call	?memset@@YAXPEAXEI@Z			; memset
 
-; 12   : 	map_page ((uint64_t)p, pos);
+; 12   : 	map_page ((uint64_t)p, pos, PAGING_USER);
 
+	mov	r8b, 4
 	mov	rdx, QWORD PTR pos$[rsp]
 	mov	rcx, QWORD PTR p$[rsp]
-	call	?map_page@@YA_N_K0@Z			; map_page
+	call	?map_page@@YA_N_K0E@Z			; map_page
 
 ; 13   : }
 

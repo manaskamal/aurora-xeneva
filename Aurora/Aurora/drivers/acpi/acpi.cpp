@@ -10,6 +10,7 @@
  */
 
 #include <drivers\acpi\acpi.h>
+#include <arch\x86_64\mmngr\vmmngr.h>
 #include <arch\x86_64\ioapic.h>
 #include <string.h>
 #include <pmmngr.h>
@@ -72,6 +73,7 @@ void fadt_handler (size_t v, void* p) {
 
 //! Initialize the acpi data structures
 void initialize_acpi (void* acpi_base) {
+	map_page((uint64_t)acpi_base, (uint64_t)acpi_base,0);
 	kern_acpi = (aurora_acpi*)pmmngr_alloc();
 	memset (kern_acpi, 0, sizeof(aurora_acpi));
 	acpiRsdp *rsdp = (acpiRsdp*)acpi_base;

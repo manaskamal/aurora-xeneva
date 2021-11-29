@@ -20,7 +20,7 @@ void map_shared_memory (uint16_t dest_id,uint64_t pos, size_t size) {
 
 	
 	for (int i = 0; i < size/4096; i++)
-		map_page ((uint64_t)pmmngr_alloc(),pos + i * 4096);
+		map_page ((uint64_t)pmmngr_alloc(),pos + i * 4096, PAGING_USER);
 
 	thread_t* t = thread_iterate_ready_list (dest_id);
 	if (t == NULL) {

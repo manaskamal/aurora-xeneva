@@ -23,11 +23,12 @@
 #define EDIT_BOX_WIDTH  74
 #define EDIT_BOX_HEIGHT 36
 
-void CopyToFB (QuWidget* wid, QuWindow* win, int x, int y, int w, int h, uint32_t *backstr) {
-	uint32_t *dbl_buffer = (uint32_t*)0x0000600000000000;
+void CopyToFB (QuWidget* wid, QuWindow* win, int x, int y, int w, int h, canvas_t* ctx) {
+	uint32_t *dbl_buffer = (uint32_t*)win->ctx->address;
+	uint32_t *backstr = (uint32_t*)ctx->address;
 	for (int i = 0; i < h; i++)
-		fastcpy (dbl_buffer + (wid->y + i) * canvas_get_width() + wid->x,
-		backstr + (y + i) * canvas_get_width() + x, w * 4);
+		fastcpy (dbl_buffer + (wid->y + i) * canvas_get_width(win->ctx) + wid->x,
+		backstr + (y + i) * canvas_get_width(win->ctx) + x, w * 4);
 }
 
 
@@ -37,8 +38,8 @@ void QuEditBoxRefresh (QuWidget *wid, QuWindow *win) {
 	CopyToFB (wid,win,
 			0 + eb->last_scroll_diffx,  
 			0 + eb->last_scroll_diffy,
-			wid->width - 15, wid->height - 15,(uint32_t*) eb->backstore);	
-	acrylic_draw_rect_unfilled (wid->x,wid->y, wid->width, wid->height, GRAY);
+			wid->width - 15, wid->height - 15,eb->ctx);	
+	acrylic_draw_rect_unfilled (win->ctx,wid->x,wid->y, wid->width, wid->height, GRAY);
 }
 
 
@@ -60,17 +61,17 @@ void QuEditBoxScrollEvent (QuWidget *wid, QuWidget *scroll, QuWindow *win) {
 		CopyToFB (wid,win,
 			0 + eb->last_scroll_diffx,  
 			0 + eb->last_scroll_diffy,
-			wid->width - 15, wid->height - 15,(uint32_t*) eb->backstore);	
+			wid->width - 15, wid->height - 15,eb->ctx);	
 	}
 
 	if (sb->type == QU_SCROLLBAR_VERTICAL) {
 		CopyToFB (wid,win,
 			0 + eb->last_scroll_diffx,
 			0 + eb->last_scroll_diffy,
-			wid->width - 15, wid->height - 15,(uint32_t*) eb->backstore);	
+			wid->width - 15, wid->height - 15,eb->ctx);	
 	}
 
-	acrylic_draw_rect_unfilled (wid->x,wid->y, wid->width, wid->height, GRAY);
+	acrylic_draw_rect_unfilled (win->ctx,wid->x,wid->y, wid->width, wid->height, GRAY);
 
 	//QuPanelUpdate (win->x + wid->x, win->y + wid->y, wid->width - 15, wid->height - 15, false);
 }
@@ -93,16 +94,8 @@ QuEditBox *QuCreateEditBox (int x, int y, int w, int h) {
 	//! this mappings should be moved to another object
 	//! called QuStringBuffer...  for now
 	//! let's create it here
-	uint64_t location = 0x0000070000000000; 
-	for (int i = 0; i < 1024 * 720 * 32 / 4096; i++) 
-		valloc (location + i * 4096);
-
-    eb->backstore = (uint8_t*)location;
-	uint64_t buff_loc = location + (1024*720*32);
-	for (int i = 0; i < 65535 / 4096; i++)
-		valloc (buff_loc + i * 4096);
-
-	eb->buffer = (uint8_t*)buff_loc;
+	eb->ctx = create_canvas(1024,720);
+	eb->buffer = (uint8_t*)malloc(65536);
 	
 	return eb;
 }
@@ -111,7 +104,7 @@ QuEditBox *QuCreateEditBox (int x, int y, int w, int h) {
 void QuEditBoxSetVisible (QuEditBox *eb) {
 	for (int i = 0; i < 1024; i++)
 		for (int j = 0; j < 720; j++)
-			cc_draw_pixel((uint32_t*)eb->backstore, 0 + i, 0 + j, LIGHTSILVER);
+			canvas_draw_pixel(eb->ctx, 0 + i, 0 + j, LIGHTSILVER);
 
 }
 
@@ -119,7 +112,7 @@ void QuEditBoxFlush (QuEditBox *eb, QuWindow *win) {
 	char c = eb->buffer[eb->cursor_y * EDIT_BOX_WIDTH + eb->cursor_x];
 	//cc_draw_rect_filled(eb->xpos + 1, eb->ypos,8,13,WHITE);
 	if (c != '\n' && c != '\0')
-		cc_draw_arr_font ((uint32_t*)eb->backstore,eb->xpos, eb->ypos,c, BLACK);
+		acrylic_draw_arr_font (eb->ctx,eb->xpos, eb->ypos,c, BLACK);
 	//QuPanelUpdate (win->x + eb->wid.x, win->y + eb->wid.y + 23+ eb->ypos, win->w, 14, false);
 }
 

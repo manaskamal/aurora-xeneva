@@ -14,7 +14,7 @@ EXTRN	?pmmngr_get_free_ram@@YA_KXZ:PROC		; pmmngr_get_free_ram
 EXTRN	?pmmngr_get_used_ram@@YA_KXZ:PROC		; pmmngr_get_used_ram
 EXTRN	x64_cli:PROC
 EXTRN	?pml4_index@@YA_K_K@Z:PROC			; pml4_index
-EXTRN	?map_page@@YA_N_K0@Z:PROC			; map_page
+EXTRN	?map_page@@YA_N_K0E@Z:PROC			; map_page
 EXTRN	?unmap_page_ex@@YAXPEA_K_K_N@Z:PROC		; unmap_page_ex
 EXTRN	?unmap_page@@YAX_K@Z:PROC			; unmap_page
 EXTRN	?get_current_thread@@YAPEAU_thread_@@XZ:PROC	; get_current_thread
@@ -22,7 +22,7 @@ EXTRN	?thread_iterate_ready_list@@YAPEAU_thread_@@G@Z:PROC ; thread_iterate_read
 EXTRN	?thread_iterate_block_list@@YAPEAU_thread_@@H@Z:PROC ; thread_iterate_block_list
 pdata	SEGMENT
 $pdata$?map_shared_memory@@YAXG_K0@Z DD imagerel $LN10
-	DD	imagerel $LN10+363
+	DD	imagerel $LN10+366
 	DD	imagerel $unwind$?map_shared_memory@@YAXG_K0@Z
 $pdata$?unmap_shared_memory@@YAXG_K0@Z DD imagerel $LN10
 	DD	imagerel $LN10+270
@@ -227,12 +227,12 @@ _TEXT	SEGMENT
 i$1 = 32
 i$2 = 36
 t$ = 40
-tv71 = 48
+tv72 = 48
 cr3$ = 56
 tv65 = 64
 current_cr3$ = 72
-tv84 = 80
-tv94 = 88
+tv85 = 80
+tv95 = 88
 dest_id$ = 112
 pos$ = 120
 size$ = 128
@@ -271,7 +271,7 @@ $LN7@map_shared:
 	cmp	rcx, rax
 	jae	SHORT $LN5@map_shared
 
-; 23   : 		map_page ((uint64_t)pmmngr_alloc(),pos + i * 4096);
+; 23   : 		map_page ((uint64_t)pmmngr_alloc(),pos + i * 4096, PAGING_USER);
 
 	mov	eax, DWORD PTR i$2[rsp]
 	imul	eax, 4096				; 00001000H
@@ -279,12 +279,13 @@ $LN7@map_shared:
 	mov	rcx, QWORD PTR pos$[rsp]
 	add	rcx, rax
 	mov	rax, rcx
-	mov	QWORD PTR tv71[rsp], rax
+	mov	QWORD PTR tv72[rsp], rax
 	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
-	mov	rcx, QWORD PTR tv71[rsp]
+	mov	r8b, 4
+	mov	rcx, QWORD PTR tv72[rsp]
 	mov	rdx, rcx
 	mov	rcx, rax
-	call	?map_page@@YA_N_K0@Z			; map_page
+	call	?map_page@@YA_N_K0E@Z			; map_page
 	jmp	SHORT $LN6@map_shared
 $LN5@map_shared:
 
@@ -332,12 +333,12 @@ $LN2@map_shared:
 	mov	DWORD PTR i$1[rsp], eax
 $LN3@map_shared:
 	movsxd	rax, DWORD PTR i$1[rsp]
-	mov	QWORD PTR tv84[rsp], rax
+	mov	QWORD PTR tv85[rsp], rax
 	xor	edx, edx
 	mov	rax, QWORD PTR size$[rsp]
 	mov	ecx, 4096				; 00001000H
 	div	rcx
-	mov	rcx, QWORD PTR tv84[rsp]
+	mov	rcx, QWORD PTR tv85[rsp]
 	cmp	rcx, rax
 	jae	SHORT $LN1@map_shared
 
@@ -351,7 +352,7 @@ $LN3@map_shared:
 	mov	rax, rcx
 	mov	rcx, rax
 	call	?pml4_index@@YA_K_K@Z			; pml4_index
-	mov	QWORD PTR tv94[rsp], rax
+	mov	QWORD PTR tv95[rsp], rax
 	mov	ecx, DWORD PTR i$1[rsp]
 	imul	ecx, 4096				; 00001000H
 	movsxd	rcx, ecx
@@ -361,7 +362,7 @@ $LN3@map_shared:
 	call	?pml4_index@@YA_K_K@Z			; pml4_index
 	mov	rcx, QWORD PTR cr3$[rsp]
 	mov	rdx, QWORD PTR current_cr3$[rsp]
-	mov	r8, QWORD PTR tv94[rsp]
+	mov	r8, QWORD PTR tv95[rsp]
 	mov	rdx, QWORD PTR [rdx+r8*8]
 	mov	QWORD PTR [rcx+rax*8], rdx
 	jmp	$LN2@map_shared

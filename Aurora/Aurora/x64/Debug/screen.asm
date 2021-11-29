@@ -17,19 +17,13 @@ PUBLIC	?get_framebuffer_addr@@YAPEAIXZ			; get_framebuffer_addr
 PUBLIC	?get_bpp@@YAIXZ					; get_bpp
 PUBLIC	?get_screen_scanline@@YAGXZ			; get_screen_scanline
 PUBLIC	?draw_pixel@@YAXIII@Z				; draw_pixel
-EXTRN	?pmmngr_alloc@@YAPEAXXZ:PROC			; pmmngr_alloc
-EXTRN	?map_page@@YA_N_K0@Z:PROC			; map_page
+EXTRN	?map_page@@YA_N_K0E@Z:PROC			; map_page
 pdata	SEGMENT
-$pdata$?initialize_screen@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z DD imagerel $LN3
-	DD	imagerel $LN3+109
-	DD	imagerel $unwind$?initialize_screen@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z
 $pdata$?screen_set_configuration@@YAXII@Z DD imagerel $LN6
-	DD	imagerel $LN6+149
+	DD	imagerel $LN6+152
 	DD	imagerel $unwind$?screen_set_configuration@@YAXII@Z
 pdata	ENDS
 xdata	SEGMENT
-$unwind$?initialize_screen@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z DD 010901H
-	DD	04209H
 $unwind$?screen_set_configuration@@YAXII@Z DD 010c01H
 	DD	0620cH
 xdata	ENDS
@@ -179,7 +173,7 @@ $LN3@screen_set:
 	cmp	DWORD PTR i$1[rsp], eax
 	jae	SHORT $LN1@screen_set
 
-; 44   : 		map_page ((uint64_t)display.buffer + i * 4096,0xFFFFF00000000000 + i * 4096);
+; 44   : 		map_page ((uint64_t)display.buffer + i * 4096,0xFFFFF00000000000 + i * 4096, PAGING_USER);
 
 	mov	eax, DWORD PTR i$1[rsp]
 	imul	eax, 4096				; 00001000H
@@ -192,8 +186,9 @@ $LN3@screen_set:
 	mov	rdx, QWORD PTR ?display@@3U__display__@@A+8
 	add	rdx, rcx
 	mov	rcx, rdx
+	mov	r8b, 4
 	mov	rdx, rax
-	call	?map_page@@YA_N_K0@Z			; map_page
+	call	?map_page@@YA_N_K0E@Z			; map_page
 	jmp	SHORT $LN2@screen_set
 $LN1@screen_set:
 
@@ -206,31 +201,29 @@ _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\screen.cpp
 _TEXT	SEGMENT
-info$ = 48
+info$ = 8
 ?initialize_screen@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z PROC	; initialize_screen
 
 ; 22   : void initialize_screen (KERNEL_BOOT_INFO *info){
 
-$LN3:
 	mov	QWORD PTR [rsp+8], rcx
-	sub	rsp, 40					; 00000028H
 
 ; 23   : 	display.buffer = info->graphics_framebuffer;
 
 	mov	rax, QWORD PTR info$[rsp]
-	mov	rax, QWORD PTR [rax+28]
+	mov	rax, QWORD PTR [rax+52]
 	mov	QWORD PTR ?display@@3U__display__@@A+8, rax
 
 ; 24   : 	display.width = info->X_Resolution;
 
 	mov	rax, QWORD PTR info$[rsp]
-	movzx	eax, WORD PTR [rax+44]
+	movzx	eax, WORD PTR [rax+68]
 	mov	DWORD PTR ?display@@3U__display__@@A, eax
 
 ; 25   : 	display.height = info->Y_Resolution;
 
 	mov	rax, QWORD PTR info$[rsp]
-	movzx	eax, WORD PTR [rax+46]
+	movzx	eax, WORD PTR [rax+70]
 	mov	DWORD PTR ?display@@3U__display__@@A+4, eax
 
 ; 26   : 	display.bpp = 32;
@@ -240,26 +233,19 @@ $LN3:
 ; 27   : 	display.scanline = info->pixels_per_line;
 
 	mov	rax, QWORD PTR info$[rsp]
-	movzx	eax, WORD PTR [rax+48]
+	movzx	eax, WORD PTR [rax+72]
 	mov	WORD PTR ?display@@3U__display__@@A+20, ax
 
 ; 28   : #ifdef ARCH_X64
 ; 29   : 	
 ; 30   : 
 ; 31   : 	//!map a shared page for fast IPC
-; 32   : 	map_page ((uint64_t)pmmngr_alloc(),0xFFFFD00000000000);
-
-	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
-	mov	rdx, -52776558133248			; ffffd00000000000H
-	mov	rcx, rax
-	call	?map_page@@YA_N_K0@Z			; map_page
-
+; 32   : 	//map_page ((uint64_t)pmmngr_alloc(),0xFFFFD00000000000, PAGING_USER);
 ; 33   : #endif
 ; 34   : 
 ; 35   : 
 ; 36   : }
 
-	add	rsp, 40					; 00000028H
 	ret	0
 ?initialize_screen@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z ENDP	; initialize_screen
 _TEXT	ENDS

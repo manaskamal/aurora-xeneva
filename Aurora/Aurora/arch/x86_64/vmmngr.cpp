@@ -58,59 +58,74 @@ static void clear(void* addr){
 }
 
 
-void vmmngr_x86_64_init (KERNEL_BOOT_INFO *info) {
-	//! FIXME: pml4 address should be relocatable
-	//! FIXME: the address assigned should be 4 KB aligned
-	uint64_t * pml4 = (uint64_t*)pmmngr_alloc(); 
-	uint64_t* old_pml4 = (uint64_t*)x64_read_cr3();
-	//root_cr3 = pml4;
-	//! just copy the paging structure setuped by XNLDR 
-	//! for the kernel! also known as kernel address space
-	for (int i = 0; i < 512; i++) {
-		if ((old_pml4[i] & 1) == 1)
-			pml4[i] = old_pml4[i];
-	}
+/**
+ * Initialize Virtual Memory Setup
+ */
+void vmmngr_x86_64_init () {
 
-	x64_write_cr3((size_t)pml4);
-	/*uint64_t *pml4 = (uint64_t*)pmmngr_alloc();
-	memset (pml4, 0, 4096);
+	uint64_t *cr3 = (uint64_t*)x64_read_cr3();
+	uint64_t *new_cr3 = (uint64_t*)pmmngr_alloc();    
 	uint64_t *pdpt = (uint64_t*)pmmngr_alloc();
-	memset (pdpt, 0, 4096);
 	uint64_t *pd = (uint64_t*)pmmngr_alloc();
+	uint64_t *pd2 = (uint64_t*)pmmngr_alloc();
+	uint64_t *pd3 = (uint64_t*)pmmngr_alloc();
+	uint64_t *pd4 = (uint64_t*)pmmngr_alloc();
+
+
+	memset (new_cr3, 0, 4096);
 	memset (pd, 0, 4096);
+	memset (pd2, 0, 4096);
+	memset (pd3, 0, 4096);
+	memset (pd4, 0, 4096);
 
-	pml4[0] = (uint64_t)pdpt | 3;
-	pdpt[0] = (uint64_t)&pd[0] | 3;
-	pdpt[1] = (uint64_t)&pd[512] | 3;
-	pdpt[2] = (uint64_t)&pd[1024] | 3;
-	pdpt[4] = (uint64_t)&pd[1536] | 3;
-*/
-	//for (int i = 0; i != 2048; ++i) {
-	//	pd[i] = i * 512 * 4096 | 3; 
-	//}
-	/*for (int i = 0; i < 2*1024*1024*1024/4096; i++)
-		map_page_ex(pml4,i*4096, i*4096);
+	//! Identity Map : first 4 GiB of RAM
+    new_cr3[0] = (uint64_t)pdpt | 0x3;
+	pdpt[0] =  (uintptr_t)&pd[0] | 0x3;
+	pdpt[1] = (uintptr_t)&pd2[0] | 0x3;
+	pdpt[2] = (uintptr_t)&pd3[0] | 0x3;
+	pdpt[3] = (uintptr_t)&pd4[0] | 0x3;
+
+	for (uint64_t i = 0; i != 2048; ++i)
+		pd[i] = i * 512 * 4096 | 0x83;
+
+	uint64_t pos = 1024*1024*1024;
+	for (uint64_t i = 0; i != 512; ++i)
+		pd2[i] = pos + i * 512 * 4096 | 0x83;
+
+	for (uint64_t i = 0; i != 512; ++i)
+		pd3[i] = 2*pos + i * 512 * 4096 | 0x83;
+
+	for (uint64_t i = 0; i != 512; ++i)
+		pd4[i] = 3*pos + i * 512 * 4096 | 0x83;
 
 
-	for (int i = 0; i < 40 *1024 /4096; i++) {
-		pml4[pml4_index(0x0000000070000000 + i * 4096)] = old_pml4[pml4_index(0x0000000070000000 + i * 4096)];
+
+	///! Copy all higher half mappings to new mapping
+	for (int i = 0; i < 512; ++i) {
+		if (i < 256) {
+			//new_cr3[i] = 0;
+			continue;
+		}
+		if (i == 511)
+			continue;
+
+		if (cr3[i] & PAGING_PRESENT) {
+			new_cr3[i] = cr3[i];
+		}else {
+			new_cr3[i] = 0;
+		}
+		
 	}
-	for (int i=0; i < 0x200000/4096; i++)
-		pml4[pml4_index(0xFFFFA00000000000 + i * 4096) ] = old_pml4[pml4_index(0xFFFFA00000000000 + i * 4096) ];
 
-	for (int i=0; i < 0x100000/4096; i++)  {
-		pml4[pml4_index(0xFFFFC00000000000 + i * 4096)] = old_pml4[pml4_index(0xFFFFC00000000000 + i * 4096)];
-	}
-
-	x64_write_cr3((size_t)pml4);*/
-
+	//! Switch to new mapping!!!
+	x64_write_cr3 ((size_t)new_cr3);
 }
 
 
 //! Map a page in current address space
-bool map_page (uint64_t physical_address, uint64_t virtual_address)
+bool map_page (uint64_t physical_address, uint64_t virtual_address, uint8_t attrib)
 {
-	size_t flags = PAGING_WRITABLE | PAGING_PRESENT | PAGING_USER;
+	size_t flags = PAGING_WRITABLE | PAGING_PRESENT | attrib;
 
 	const long i4 = (virtual_address >> 39) & 0x1FF;
 	const long i3 = (virtual_address >> 30) & 0x1FF;
@@ -153,11 +168,10 @@ bool map_page (uint64_t physical_address, uint64_t virtual_address)
 	}
 	
 	uint64_t* pml1 = (uint64_t*)(pml2[i2] & ~(4096 - 1));
-	//if (pml1[i1] & PAGING_PRESENT)
-	//{
-	//	printf ("Paging present\n");
-	//	return false;
-	//}
+	if (pml1[i1] & PAGING_PRESENT)
+	{
+		return false;
+	}
 
 	pml1[i1] = physical_address | flags;
 	flush_tlb ((void*)virtual_address);
@@ -210,7 +224,7 @@ bool vmmngr_update_flags (uint64_t virtual_address, size_t flags_){
 	uint64_t* pml1 = (uint64_t*)(pml2[i2] & ~(4096 - 1));
 	if (pml1[i1] & PAGING_PRESENT)
 	{
-		printf ("Address already present\n");
+		return false;
 	}
 
 	pml1[i1] = phys_addr | flags;
@@ -274,9 +288,9 @@ uint64_t* get_physical_address (uint64_t virt_addr) {
 
 
 
-bool map_page_ex (uint64_t *pml4i,uint64_t physical_address, uint64_t virtual_address){
+bool map_page_ex (uint64_t *pml4i,uint64_t physical_address, uint64_t virtual_address, uint8_t attrib){
 
-	size_t flags = PAGING_WRITABLE | PAGING_PRESENT | PAGING_USER;
+	size_t flags = PAGING_WRITABLE | PAGING_PRESENT | attrib;
 
 	const long i4 = (virtual_address >> 39) & 0x1FF;
 	const long i3 = (virtual_address >> 30) & 0x1FF;
@@ -315,8 +329,8 @@ bool map_page_ex (uint64_t *pml4i,uint64_t physical_address, uint64_t virtual_ad
 	uint64_t* pml1 = (uint64_t*)(pml2[i2] & ~(4096 - 1));
 
 	if (pml1[i1] & PAGING_PRESENT){
-		//printf ("Paging present\n");
-		//return false;
+		//printf ("Paging already present -> %x\n", virtual_address);
+		return false;
 	}
 
 	pml1[i1] = physical_address | flags;
@@ -332,42 +346,17 @@ bool map_page_ex (uint64_t *pml4i,uint64_t physical_address, uint64_t virtual_ad
 uint64_t *create_user_address_space ()
 {
 	
-	uint64_t* pml4_i = (uint64_t*)pmmngr_alloc(); 
-	uint64_t* old_pml4 = (uint64_t*)x64_read_cr3(); //root_cr3;
+	uint64_t *cr3 = (uint64_t*)x64_read_cr3();
+	uint64_t *new_cr3 = (uint64_t*)pmmngr_alloc();
+	new_cr3[0] = cr3[0];
+	new_cr3[pml4_index(0xFFFFC00000000000)] = cr3[pml4_index(0xFFFFC00000000000)];
+	new_cr3[pml4_index(0xFFFFA00000000000)] = cr3[pml4_index(0xFFFFA00000000000)];
+	new_cr3[pml4_index(0xFFFF800000000000)] = cr3[pml4_index(0xFFFF800000000000)];
+	new_cr3[pml4_index(0xFFFFE00000000000)] = cr3[pml4_index(0xFFFFE00000000000)];
+	new_cr3[pml4_index(0xFFFFD00000000000)] = cr3[pml4_index(0xFFFFE00000000000)];
 
-	memset (pml4_i, 0, 4096);
-	//! copy the 0 and 1 entries from old address space to new one
-	/*for (int i = 0; i < 512; i++) {
-		if ((old_pml4[i] & 1) == 1)
-			pml4_i[i] = old_pml4[i];
-	}*/
-
-	pml4_i[0] = old_pml4[0];
-	pml4_i[1] = old_pml4[1];
-	//!**Copy the kernel stack to new address space
-	for (int i=0; i < 0x200000/4096; i++)
-		pml4_i[pml4_index(0xFFFFA00000000000 + i *4096) ] = old_pml4[pml4_index(0xFFFFA00000000000 + i *4096) ];
-	
-	//! copy the entire kernel to new address space {180kb kernel size}
-	for (int i=0; i < 0x100000/4096; i++)  {
-		pml4_i[pml4_index(0xFFFFC00000000000 + i*4096)] = old_pml4[pml4_index(0xFFFFC00000000000 + i*4096)];
-	}
-
-	////
-	for (int i=0; i < get_screen_width() * get_screen_height() * 32 / 4096; i++) 
-		pml4_i[pml4_index(0xFFFFF00000000000 + i * 4096)] = old_pml4[pml4_index(0xFFFFF00000000000 + i * 4096)];
-	//
-	//////! copy the kernel heap area to new address space
-	for (int i=0; i < 0x200000/4096; i++) 
-		pml4_i[pml4_index(0xFFFF800000000000 + i*4096)] = old_pml4[pml4_index(0xFFFF800000000000 + i*4096)];
-	
-
-	pml4_i[pml4_index(0xFFFFFD0000000000)] = old_pml4[pml4_index(0xFFFFFD0000000000)];
-	pml4_i[pml4_index(0xFFFFD00000000000)] = old_pml4[pml4_index(0xFFFFD00000000000)];
-	//! copy the user stack area to new address space
-	//pml4_i[511] = *pml4_i | PAGING_PRESENT | PAGING_WRITABLE;
-	//! return the new address space governor
-	return pml4_i;
+	//map_page_ex (new_cr3,(uint64_t)new_cr3,(uint64_t)new_cr3, 0);
+	return new_cr3;
 }
 
 
@@ -393,4 +382,9 @@ uint64_t* get_free_page (size_t s, bool user) {
 		start+= 4096;
 	}
 	return 0;
+}
+
+
+uint64_t* vmmngr_get_kernel_pml4() {
+	return root_cr3;
 }

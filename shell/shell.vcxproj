@@ -140,7 +140,7 @@
       </GenerateDebugInformation>
       <OutputFile>D:\xshell.exe</OutputFile>
       <AdditionalLibraryDirectories>E:\Xeneva Project\Xeneva\xnlib\lib64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>xnclib.lib;xnacrylic.lib;</AdditionalDependencies>
+      <AdditionalDependencies>xnclib.lib;</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
       <EnableUAC>false</EnableUAC>
       <GenerateMapFile>true</GenerateMapFile>
@@ -151,7 +151,7 @@
       <Driver>Driver</Driver>
       <OptimizeReferences>false</OptimizeReferences>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
-      <EntryPointSymbol>_start</EntryPointSymbol>
+      <EntryPointSymbol>main</EntryPointSymbol>
       <BaseAddress>0x0000400000000000</BaseAddress>
       <RandomizedBaseAddress>
       </RandomizedBaseAddress>

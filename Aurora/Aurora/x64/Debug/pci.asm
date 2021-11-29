@@ -10,11 +10,11 @@ _BSS	SEGMENT
 ?v_i@@3HA DD	01H DUP (?)				; v_i
 _BSS	ENDS
 CONST	SEGMENT
-$SG3736	DB	'MSI-X found for this device', 0aH, 00H
+$SG3741	DB	'MSI-X found for this device', 0aH, 00H
 	ORG $+3
-$SG3738	DB	'MSI found for this device', 0aH, 00H
+$SG3743	DB	'MSI found for this device', 0aH, 00H
 	ORG $+5
-$SG3753	DB	'MSI interrupt for this device enabled msi reg -> %x', 0aH
+$SG3758	DB	'MSI interrupt for this device enabled msi reg -> %x', 0aH
 	DB	00H
 CONST	ENDS
 PUBLIC	?read_config_header@@YAXHHHPEATpci_device_info@@@Z ; read_config_header
@@ -1017,7 +1017,7 @@ $LN9@pci_alloc_:
 
 ; 314  : 				printf ("MSI-X found for this device\n");
 
-	lea	rcx, OFFSET FLAT:$SG3736
+	lea	rcx, OFFSET FLAT:$SG3741
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 315  : 				msi_reg = capptr;
@@ -1041,7 +1041,7 @@ $LN7@pci_alloc_:
 
 ; 320  : 				printf ("MSI found for this device\n");
 
-	lea	rcx, OFFSET FLAT:$SG3738
+	lea	rcx, OFFSET FLAT:$SG3743
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 321  : 				msi_reg = capptr;
@@ -1271,7 +1271,7 @@ $LN1@pci_alloc_:
 ; 359  : 			printf ("MSI interrupt for this device enabled msi reg -> %x\n", msi_reg);
 
 	mov	edx, DWORD PTR msi_reg$2[rsp]
-	lea	rcx, OFFSET FLAT:$SG3753
+	lea	rcx, OFFSET FLAT:$SG3758
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 360  : 			v_i++;

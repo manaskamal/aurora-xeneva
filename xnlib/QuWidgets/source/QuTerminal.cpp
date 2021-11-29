@@ -30,8 +30,8 @@ void QuTermScroll (QuTerminal *term) {
 		term->text[(TERM_HEIGHT-1)*TERM_WIDTH + i] = '\0';
 
 	QuTermFlush(term, QuGetWindow());
-	QuWindowShow();
-	QuPanelUpdate (0,0,  QuGetWindow()->w,  QuGetWindow()->h, false);
+	QuWindowShow(QuGetWindow());
+	QuPanelUpdate (QuGetWindow(),0,0,  QuGetWindow()->w,  QuGetWindow()->h, false);
 }
 
 
@@ -101,7 +101,7 @@ void QuTermMouse (QuWidget* wid, QuWindow *win, int code, bool clicked, int x, i
  */
 void QuTermRefresh (QuWidget* wid, QuWindow *win) {
 	QuTerminal *term = (QuTerminal*)wid;
-	acrylic_draw_rect_filled(wid->x,wid->y, wid->width, wid->height, BLACK);
+	acrylic_draw_rect_filled(win->ctx,wid->x,wid->y, wid->width, wid->height, BLACK);
 
 	char tmp_str[1];
 	int xoff = 0;
@@ -124,7 +124,7 @@ void QuTermRefresh (QuWidget* wid, QuWindow *win) {
 				continue;
 			}
 			if (tmp_str[0] != 0)
-				acrylic_draw_arr_font(wid->x + xpos,wid->y + 23 + ypos, tmp_str[0], WHITE);
+				acrylic_draw_arr_font(win->ctx,wid->x + xpos,wid->y + 23 + ypos, tmp_str[0], WHITE);
 			xoff++;
 			xpos += 8;
 		}
@@ -136,10 +136,10 @@ void QuTermRefresh (QuWidget* wid, QuWindow *win) {
 //! Flush the current line
 void QuTermFlush (QuTerminal *term, QuWindow* win) {
 	char c = term->text[term->cursor_y * TERM_WIDTH + term->cursor_x];
-	acrylic_draw_rect_filled(term->wid.x + term->xpos + 1,term->wid.y + 23 + term->ypos,8,13,BLACK);
+	acrylic_draw_rect_filled(win->ctx,term->wid.x + term->xpos + 1,term->wid.y + 23 + term->ypos,8,13,BLACK);
 	if (c != '\n' && c != '\0')
-		acrylic_draw_arr_font (term->wid.x + term->xpos,term->wid.y + 23 + term->ypos,c, WHITE);
-	QuPanelUpdate (term->wid.x, term->wid.y + 23+ term->ypos, win->w, 14, false);
+		acrylic_draw_arr_font (win->ctx,term->wid.x + term->xpos,term->wid.y + 23 + term->ypos,c, WHITE);
+	QuPanelUpdate (win,term->wid.x, term->wid.y + 23+ term->ypos, win->w, 14, false);
 }
 
 

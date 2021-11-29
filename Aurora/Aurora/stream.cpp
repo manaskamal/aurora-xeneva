@@ -18,7 +18,7 @@
 #include <fs\ttype.h>
 
 stream_t *allocate_stream () {
-	stream_t *st = (stream_t*)malloc (sizeof(stream_t));
+	stream_t *st = (stream_t*)pmmngr_alloc();   //malloc (sizeof(stream_t));
 	memset (st, 0, sizeof(stream_t));
 	return st;
 }

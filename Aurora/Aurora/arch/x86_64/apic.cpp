@@ -11,6 +11,8 @@
 
 #include <arch\x86_64\apic.h>
 #include <arch\x86_64\ioapic.h>
+#include <arch\x86_64\mmngr\vmmngr.h>
+#include <string.h>
 
 
 #define IA32_APIC_BASE_MSR  0x1B
@@ -156,11 +158,12 @@ static void disable_pic()
 void initialize_apic () {
 
 	//! Clear interrupts
-	x64_cli ();
 	disable_pic();
 
 	size_t apic_base;
 	apic_base = (size_t)0xFEE00000;
+
+	//map_page (0xFEE00000, 0xFEE00000,0);
 
 	apic = (void*)apic_base;
 
@@ -182,7 +185,7 @@ void initialize_apic () {
 	//!Register the time speed
 	write_apic_register (LAPIC_REGISTER_TMRDIV, 0xa);
 
-	//! timer initialized
+	/*! timer initialized*/
 	size_t timer_vector = 0x40;
 	setvect (timer_vector, apic_timer_interrupt);
 
@@ -194,9 +197,8 @@ void initialize_apic () {
 
 	//! Finally Intialize I/O APIC
 	size_t ioapic_base = (size_t)0xFEC00000;
-
+	//map_page (ioapic_base,ioapic_base,0);
 	ioapic_init (&ioapic_base);
 
-	x64_sti();
 }
 

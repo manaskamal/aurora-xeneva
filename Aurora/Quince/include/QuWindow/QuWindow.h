@@ -59,6 +59,7 @@ typedef struct _QuWindow_ {
 	int old_x;
 	int old_y;
 	uint8_t attr;
+	int id;
 	uint32_t *win_info_location;
 }QuWindow;
 

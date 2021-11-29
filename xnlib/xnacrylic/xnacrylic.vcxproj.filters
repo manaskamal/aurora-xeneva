@@ -42,6 +42,9 @@
     <ClCompile Include="source\path2d.cpp">
       <Filter>source</Filter>
     </ClCompile>
+    <ClCompile Include="source\buffer.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\canvas.h">
@@ -72,6 +75,9 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="include\path2d.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\buffer.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>

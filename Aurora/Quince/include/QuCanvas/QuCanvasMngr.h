@@ -12,6 +12,7 @@
 #define __QU_CANVAS_MNGR_H__
 
 #include <stdint.h>
+#include <canvas.h>
 #include <QuRect.h>
 #include <QuWindow\QuWindow.h>
 
@@ -23,7 +24,7 @@ extern void QuCanvasMngr_Initialize();
 //!                   process
 //!
 //! @param dest_pid -- Destination process id
-extern uint32_t* QuCanvasCreate (uint16_t dest_pid);
+extern uint32_t* QuCanvasCreate (uint16_t dest_pid, int w, int h);
 
 
 //! QuCanvasBlit -- Copy pixels from another buffer to Quince Internal Buffer
@@ -82,6 +83,8 @@ extern  void QuRenderTime (uint8_t sec, uint8_t min, uint8_t hr);
 extern void QuCanvasRelease (uint16_t dest_pid, QuWindow *win);
 
 extern  void QuCanvasUpdateAll ();
+
+extern canvas_t * QuGetCanvas();
 
 
 #endif

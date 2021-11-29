@@ -43,7 +43,7 @@ procmngr_queue* procmngr_get_process () {
 
 void procmngr_create_process (procmngr_queue *queue) {
 	x64_cli();
-	create_process (queue->path,queue->name,1, "0");
+	create_process (queue->path,queue->name);
 	x64_sti();
 }
 

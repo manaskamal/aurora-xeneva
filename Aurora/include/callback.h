@@ -21,6 +21,7 @@
 extern void wait();
 extern void create__sys_process (const char* name,char* procnm);
 extern void valloc (uint64_t pos);
+extern void vfree (uint64_t pos);
 extern void map_shared_memory (uint16_t dest_id,uint64_t pos, size_t size);
 extern uint16_t get_thread_id ();
 extern uint32_t* sys_get_fb_mem ();

@@ -23,7 +23,7 @@ uint64_t loc;
 
 void QuWallpaperPixel (unsigned x, unsigned y, uint32_t color) {
 	uint32_t *lfb = (uint32_t*)wallpaper->buffer;      
-	lfb[x + y * canvas_get_scale()] = color;
+	lfb[x + y * canvas_get_scale(QuGetCanvas())] = color;
 }
 
 
@@ -31,8 +31,8 @@ Image* QuWallpaperInit (char* filename) {
 
 	wallpaper = (QuWallpaper*)malloc (sizeof(QuWallpaper));
 
-	unsigned w = canvas_get_width  ();
-	unsigned h = canvas_get_height ();
+	unsigned w = canvas_get_width  (QuGetCanvas());
+	unsigned h = canvas_get_height (QuGetCanvas());
 
 	for (int i = 0; i < (1920 * 1080 * 32) / 4096; i++) 
 		valloc(0x0000060000000000 + i * 4096);
@@ -59,8 +59,8 @@ Image* QuWallpaperInit (char* filename) {
 void QuWallpaperChange (char* filename, uint32_t color) {
 	//wallpaper = (QuWallpaper*)malloc (sizeof(QuWallpaper));
 
-	unsigned w = canvas_get_width  ();
-	unsigned h = canvas_get_height ();
+	unsigned w = canvas_get_width  (QuGetCanvas());
+	unsigned h = canvas_get_height (QuGetCanvas());
     Image *img;
 
 	if (filename != NULL) {
@@ -110,8 +110,8 @@ void QuWallpaperPresent () {
 	uint32_t* wallp = (uint32_t*)wallpaper->buffer;
 	for (int i=0; i < wallpaper->w; i++) {
 		for (int j=0; j < wallpaper->h; j++){
-			uint32_t color_a = wallp[(0 + i) + (0 + j) * canvas_get_width()];
-			lfb[(0 + i) + (0 + j) * canvas_get_width()] = color_a;
+			uint32_t color_a = wallp[(0 + i) + (0 + j) * canvas_get_width(QuGetCanvas())];
+			lfb[(0 + i) + (0 + j) * canvas_get_width(QuGetCanvas())] = color_a;
 		}
 	}
 

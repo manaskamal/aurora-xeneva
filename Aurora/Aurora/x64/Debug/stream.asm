@@ -6,16 +6,16 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 CONST	SEGMENT
-$SG3581	DB	'stdin', 00H
+$SG3594	DB	'stdin', 00H
 	ORG $+2
-$SG3582	DB	'/dev/stdin', 00H
+$SG3595	DB	'/dev/stdin', 00H
 	ORG $+1
-$SG3586	DB	'stdout', 00H
+$SG3599	DB	'stdout', 00H
 	ORG $+5
-$SG3587	DB	'/dev/stdout', 00H
-$SG3591	DB	'stderr', 00H
+$SG3600	DB	'/dev/stdout', 00H
+$SG3604	DB	'stderr', 00H
 	ORG $+5
-$SG3592	DB	'/dev/stderr', 00H
+$SG3605	DB	'/dev/stderr', 00H
 CONST	ENDS
 PUBLIC	?allocate_stream@@YAPEAU_stream_@@XZ		; allocate_stream
 PUBLIC	?stream_init@@YAXXZ				; stream_init
@@ -27,6 +27,7 @@ PUBLIC	?stdout_read@@YAXPEAU_vfs_node_@@PEAEI@Z	; stdout_read
 PUBLIC	?stdout_write@@YAXPEAU_vfs_node_@@PEAEI@Z	; stdout_write
 PUBLIC	?stderr_read@@YAXPEAU_vfs_node_@@PEAEI@Z	; stderr_read
 PUBLIC	?stderr_write@@YAXPEAU_vfs_node_@@PEAEI@Z	; stderr_write
+EXTRN	?pmmngr_alloc@@YAPEAXXZ:PROC			; pmmngr_alloc
 EXTRN	?malloc@@YAPEAXI@Z:PROC				; malloc
 EXTRN	?mfree@@YAXPEAX@Z:PROC				; mfree
 EXTRN	?strcpy@@YAPEADPEADPEBD@Z:PROC			; strcpy
@@ -38,7 +39,7 @@ EXTRN	?get_current_thread@@YAPEAU_thread_@@XZ:PROC	; get_current_thread
 EXTRN	?get_ttype@@YAPEAU_tele_type_@@H@Z:PROC		; get_ttype
 pdata	SEGMENT
 $pdata$?allocate_stream@@YAPEAU_stream_@@XZ DD imagerel $LN3
-	DD	imagerel $LN3+47
+	DD	imagerel $LN3+42
 	DD	imagerel $unwind$?allocate_stream@@YAPEAU_stream_@@XZ
 $pdata$?stream_init@@YAXXZ DD imagerel $LN3
 	DD	imagerel $LN3+588
@@ -441,7 +442,7 @@ $LN3:
 ; 85   : 	strcpy(stdin->filename, "stdin");
 
 	mov	rax, QWORD PTR stdin$[rsp]
-	lea	rdx, OFFSET FLAT:$SG3581
+	lea	rdx, OFFSET FLAT:$SG3594
 	mov	rcx, rax
 	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
 
@@ -503,7 +504,7 @@ $LN3:
 ; 97   : 	vfs_mount ("/dev/stdin", stdin);
 
 	mov	rdx, QWORD PTR stdin$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3582
+	lea	rcx, OFFSET FLAT:$SG3595
 	call	?vfs_mount@@YAXPEADPEAU_vfs_node_@@@Z	; vfs_mount
 
 ; 98   : 
@@ -518,7 +519,7 @@ $LN3:
 ; 102  : 	strcpy(node->filename, "stdout");
 
 	mov	rax, QWORD PTR node$[rsp]
-	lea	rdx, OFFSET FLAT:$SG3586
+	lea	rdx, OFFSET FLAT:$SG3599
 	mov	rcx, rax
 	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
 
@@ -582,7 +583,7 @@ $LN3:
 ; 114  : 	vfs_mount ("/dev/stdout", node);
 
 	mov	rdx, QWORD PTR node$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3587
+	lea	rcx, OFFSET FLAT:$SG3600
 	call	?vfs_mount@@YAXPEADPEAU_vfs_node_@@@Z	; vfs_mount
 
 ; 115  : 
@@ -597,7 +598,7 @@ $LN3:
 ; 119  : 	strcpy(stderr->filename, "stderr");
 
 	mov	rax, QWORD PTR stderr$[rsp]
-	lea	rdx, OFFSET FLAT:$SG3591
+	lea	rdx, OFFSET FLAT:$SG3604
 	mov	rcx, rax
 	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
 
@@ -661,7 +662,7 @@ $LN3:
 ; 131  : 	vfs_mount ("/dev/stderr", stderr);
 
 	mov	rdx, QWORD PTR stderr$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3592
+	lea	rcx, OFFSET FLAT:$SG3605
 	call	?vfs_mount@@YAXPEADPEAU_vfs_node_@@@Z	; vfs_mount
 
 ; 132  : }
@@ -681,10 +682,9 @@ st$ = 32
 $LN3:
 	sub	rsp, 56					; 00000038H
 
-; 21   : 	stream_t *st = (stream_t*)malloc (sizeof(stream_t));
+; 21   : 	stream_t *st = (stream_t*)pmmngr_alloc();   //malloc (sizeof(stream_t));
 
-	mov	ecx, 96					; 00000060H
-	call	?malloc@@YAPEAXI@Z			; malloc
+	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
 	mov	QWORD PTR st$[rsp], rax
 
 ; 22   : 	memset (st, 0, sizeof(stream_t));

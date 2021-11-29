@@ -242,5 +242,5 @@ void initialize_mouse () {
 	interrupt_set (34, mouse_handler, 12);  //34
 
 	mouse_register_device ();
-	irq_mask(12, true);
+	//irq_mask(12, true);
 }

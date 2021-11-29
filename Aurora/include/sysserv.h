@@ -62,6 +62,7 @@ static void* _syscalls[] = {
 	sys_set_signal, //35
 	unmap_shared_memory, //36
 	sys_write_file, //37
+	vfree, //38
 	0
 };
 

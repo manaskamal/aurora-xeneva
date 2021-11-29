@@ -20,7 +20,7 @@ void QuMenubarRefresh (QuWidget* wid, QuWindow *win) {
 	QuMenubar *mb = (QuMenubar*)wid;
 
 
-	acrylic_draw_rect_filled (wid->x,  wid->y, wid->width, 20, SILVER);
+	acrylic_draw_rect_filled (win->ctx,wid->x,  wid->y, wid->width, 20, SILVER);
 
 	int x = 4;
 	for (int i = 0; i < mb->CtxMenus->pointer; i++) {
@@ -31,7 +31,7 @@ void QuMenubarRefresh (QuWidget* wid, QuWindow *win) {
 			 wid->y + (wid->height/2) - (12/2),ctx->title,WHITE);
 
 		} else {*/
-			acrylic_draw_arr_string (wid->x + x + (ctx->m_w/2), 
+			acrylic_draw_arr_string (win->ctx,wid->x + x + (ctx->m_w/2), 
 				 wid->y + (wid->height/2) - (12/2),ctx->title,LIGHTBLACK);
 		//}
 
@@ -73,7 +73,7 @@ void QuMenubarMouseEvent (QuWidget *wid, QuWindow *win, int code, bool clicked, 
 
 
 						QuMenubarRefresh(wid, win);
-						QuPanelUpdate (wid->x,wid->y, wid->width, wid->height,false);
+						QuPanelUpdate (win,wid->x,wid->y, wid->width, wid->height,false);
 						mb->update_required = true;
 						
 				}

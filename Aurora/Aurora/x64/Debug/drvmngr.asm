@@ -11,13 +11,13 @@ _BSS	SEGMENT
 driver_class_unique_id DD 01H DUP (?)
 _BSS	ENDS
 CONST	SEGMENT
-$SG3588	DB	'aurora_init_driver', 00H
+$SG3605	DB	'aurora_init_driver', 00H
 	ORG $+5
-$SG3590	DB	'aurora_close_driver', 00H
+$SG3607	DB	'aurora_close_driver', 00H
 	ORG $+4
-$SG3592	DB	'aurora_write', 00H
+$SG3609	DB	'aurora_write', 00H
 	ORG $+3
-$SG3600	DB	'sb16', 00H
+$SG3617	DB	'sb16', 00H
 CONST	ENDS
 PUBLIC	?driver_mngr_initialize@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z ; driver_mngr_initialize
 PUBLIC	?drv_mngr_write_driver@@YAXPEAE_K@Z		; drv_mngr_write_driver
@@ -272,30 +272,30 @@ $LN8:
 ; 58   : 	if (info->driver_entry1 != NULL) {  
 
 	mov	rax, QWORD PTR info$[rsp]
-	cmp	QWORD PTR [rax+98], 0
+	cmp	QWORD PTR [rax+122], 0
 	je	$LN5@driver_mng
 
 ; 59   : 		void* init_address = GetProcAddress (info->driver_entry1,"aurora_init_driver");
 
-	lea	rdx, OFFSET FLAT:$SG3588
+	lea	rdx, OFFSET FLAT:$SG3605
 	mov	rax, QWORD PTR info$[rsp]
-	mov	rcx, QWORD PTR [rax+98]
+	mov	rcx, QWORD PTR [rax+122]
 	call	?GetProcAddress@@YAPEAXPEAXPEBD@Z	; GetProcAddress
 	mov	QWORD PTR init_address$8[rsp], rax
 
 ; 60   : 		void* close_address = GetProcAddress (info->driver_entry1, "aurora_close_driver");
 
-	lea	rdx, OFFSET FLAT:$SG3590
+	lea	rdx, OFFSET FLAT:$SG3607
 	mov	rax, QWORD PTR info$[rsp]
-	mov	rcx, QWORD PTR [rax+98]
+	mov	rcx, QWORD PTR [rax+122]
 	call	?GetProcAddress@@YAPEAXPEAXPEBD@Z	; GetProcAddress
 	mov	QWORD PTR close_address$5[rsp], rax
 
 ; 61   : 		void* write_address = GetProcAddress(info->driver_entry1 ,"aurora_write");
 
-	lea	rdx, OFFSET FLAT:$SG3592
+	lea	rdx, OFFSET FLAT:$SG3609
 	mov	rax, QWORD PTR info$[rsp]
-	mov	rcx, QWORD PTR [rax+98]
+	mov	rcx, QWORD PTR [rax+122]
 	call	?GetProcAddress@@YAPEAXPEAXPEBD@Z	; GetProcAddress
 	mov	QWORD PTR write_address$3[rsp], rax
 
@@ -331,7 +331,7 @@ $LN8:
 	mov	eax, DWORD PTR uid$1[rsp]
 	imul	rax, 48					; 00000030H
 	lea	rcx, OFFSET FLAT:?drivers@@3PAU_aurora_driver_@@A ; drivers
-	lea	rdx, OFFSET FLAT:$SG3600
+	lea	rdx, OFFSET FLAT:$SG3617
 	mov	QWORD PTR [rcx+rax+8], rdx
 
 ; 68   : 		drivers[uid].present = true;

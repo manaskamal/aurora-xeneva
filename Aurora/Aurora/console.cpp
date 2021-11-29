@@ -12,6 +12,8 @@
 #include <console.h>
 #include <stdio.h>
 #include <string.h>
+#include <mm.h>
+#include <fs\vfs.h>
 
 //! default kernel console
 static uint16_t scanline = 0;
@@ -30,11 +32,23 @@ void console_initialize (PKERNEL_BOOT_INFO info) {
 	screen_width = info->X_Resolution;
 	screen_height = info->Y_Resolution;
 	fb = info->graphics_framebuffer;
-	psf_data = info->psf_font_data;
+
+	//psf_data = info->psf_font_data;
+
+	vfs_node_t *node = vfs_finddir ("/font.psf");
+
+	vfs_node_t file = openfs (node, "/font.psf");
+	uint8_t *buffer = (uint8_t*)malloc(file.size);
+	readfs(node, &file,buffer,file.size);
+	
+	psf_data = buffer;
 }
 
 //! Put a character to console output
 void putc (char c) {
+	if (psf_data == NULL)
+		return;
+
 	psf2_t *font = (psf2_t*)psf_data;
     int x,y,kx=0,line,mask,offs;
     int bpl=(font->width+7)/8;
@@ -63,25 +77,25 @@ void console_pixel(uint32_t col, unsigned x, unsigned y)
 
 //! Prints string to console output
 void puts(char *s){
-	
+	if (psf_data == NULL)
+		return;
+
 	psf2_t *font = (psf2_t*)psf_data;
     int x,y,line,mask,offs;
     int bpl=(font->width+7)/8;
     while(*s) {
 		if (*s == '\n') {
 
+            console_y += 16;
+			console_x = 0;
 			////!Scroll
-			/*if (console_y + 1 > screen_height) {
+			if (console_y + 1 > screen_height) {
 				for (int i = 16; i < screen_height * screen_width; i++) {
 					fb[i] = fb[i + screen_width * 16];
 				}
 				console_y--;
 			}
-*/
-			console_y += 16;
-			console_x = 0;
-			//!Scroll is needed
-			
+
 		} else if (*s == '\b') {
 			if (console_x > 0) {
 				console_x--;

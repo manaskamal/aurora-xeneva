@@ -8,13 +8,12 @@ INCLUDELIB OLDNAMES
 PUBLIC	?mm_init@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z		; mm_init
 PUBLIC	?malloc@@YAPEAXI@Z				; malloc
 PUBLIC	?mfree@@YAXPEAX@Z				; mfree
-EXTRN	?vmmngr_x86_64_init@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z:PROC ; vmmngr_x86_64_init
 EXTRN	?initialize_kmemory@@YAX_K@Z:PROC		; initialize_kmemory
 EXTRN	?alloc@@YAPEAX_K@Z:PROC				; alloc
 EXTRN	?free@@YAXPEAX@Z:PROC				; free
 pdata	SEGMENT
 $pdata$?mm_init@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z DD imagerel $LN3
-	DD	imagerel $LN3+34
+	DD	imagerel $LN3+24
 	DD	imagerel $unwind$?mm_init@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z
 $pdata$?malloc@@YAPEAXI@Z DD imagerel $LN3
 	DD	imagerel $LN3+24
@@ -103,11 +102,7 @@ $LN3:
 	sub	rsp, 40					; 00000028H
 
 ; 15   : #ifdef ARCH_X64
-; 16   : 	vmmngr_x86_64_init (info);
-
-	mov	rcx, QWORD PTR info$[rsp]
-	call	?vmmngr_x86_64_init@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z ; vmmngr_x86_64_init
-
+; 16   : 	//vmmngr_x86_64_init (info);
 ; 17   : 	initialize_kmemory(16);
 
 	mov	ecx, 16

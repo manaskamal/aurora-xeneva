@@ -24,9 +24,9 @@ path2d_t *acrylic_create_path (uint32_t color, float x, float y) {
 	return p;
 }
 
-void acrylic_path_move_to (path2d_t *p, float x, float y) {
+void acrylic_path_move_to (canvas_t *canvas,path2d_t *p, float x, float y) {
 	if (p->new_start != true && p->pos) {
-		acrylic_path_line_to(p, p->edges[p->lastpos].start.x, p->edges[p->lastpos].start.y);
+		acrylic_path_line_to(canvas,p, p->edges[p->lastpos].start.x, p->edges[p->lastpos].start.y);
 	}
 
 	if (p->pos + 1 == p->nextAlloc) {
@@ -40,11 +40,11 @@ void acrylic_path_move_to (path2d_t *p, float x, float y) {
 }
 
 
-void acrylic_path_line_to (path2d_t *p, float x, float y) {
+void acrylic_path_line_to (canvas_t *canvas,path2d_t *p, float x, float y) {
 	if (p->new_start) {
 		p->edges[p->pos].end.x = x;
 		p->edges[p->pos].end.y = y;
-		acrylic_draw_line(p->edges[p->pos].start.x,
+		acrylic_draw_line(canvas,p->edges[p->pos].start.x,
 			p->edges[p->pos].start.y,
 		    p->edges[p->pos].end.x,
 		    p->edges[p->pos].end.y,
@@ -60,7 +60,7 @@ void acrylic_path_line_to (path2d_t *p, float x, float y) {
 		p->edges[p->pos].start.y = p->edges[p->pos-1].end.y;
 		p->edges[p->pos].end.x = x;
 		p->edges[p->pos].end.y = y;
-		acrylic_draw_line(p->edges[p->pos].start.x,
+		acrylic_draw_line(canvas,p->edges[p->pos].start.x,
 			p->edges[p->pos].start.y,
 		    p->edges[p->pos].end.x,
 		    p->edges[p->pos].end.y,
@@ -71,7 +71,7 @@ void acrylic_path_line_to (path2d_t *p, float x, float y) {
 	
 }
 
-void acrylic_path_curve_to (path2d_t *p, float x1, float y1, float x2, float y2, float x3, float y3) {
+void acrylic_path_curve_to (canvas_t *canvas,path2d_t *p, float x1, float y1, float x2, float y2, float x3, float y3) {
 	int x_c[4];
 	int y_c[4];
 	p->edges[p->pos].start.x = p->edges[p->pos-1].end.x;
@@ -86,10 +86,10 @@ void acrylic_path_curve_to (path2d_t *p, float x1, float y1, float x2, float y2,
 	y_c[2] = y2;
 	x_c[3] = x3;
 	y_c[3] = y3;
-	acrylic_draw_bezier (x_c, y_c, p->color);
+	acrylic_draw_bezier (canvas,x_c, y_c, p->color);
 	p->pos++;
 }
-void acrylic_path_fill (path2d_t *p, uint32_t color) {
+void acrylic_path_fill (canvas_t *canvas,path2d_t *p, uint32_t color) {
 	int xi[512];
 	memset(xi,0,512);
 	float slope[512];
@@ -133,7 +133,7 @@ void acrylic_path_fill (path2d_t *p, uint32_t color) {
 				}
 			}
 			for (int i =0; i < k; i+=2) {
-				acrylic_draw_line(xi[i], j, xi[i+1]+1,j,color);
+				acrylic_draw_line(canvas,xi[i], j, xi[i+1]+1,j,color);
 			}
 		}
 	}

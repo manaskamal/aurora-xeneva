@@ -144,7 +144,7 @@ void page_fault (size_t vector, void* param){
  //
 	
 	if (us){
-		/*panic ("Page Fault \n");
+		panic ("Page Fault \n");
 		printf ("Faulting Address -> %x\n", vaddr);
 		printf ("__PROCESSOR TRACE__\n");
 		printf ("RIP -> %x\n", frame->rip);
@@ -155,11 +155,10 @@ void page_fault (size_t vector, void* param){
 		printf ("CS -> %x, SS -> %x\n", frame->cs, frame->ss);
 		printf ("******Cause********\n");
 		printf ("***User Priviledge fault***\n");
-		for(;;);*/
-		map_page((uint64_t)pmmngr_alloc(), (uint64_t)vaddr);
+		for(;;);
+		//map_page((uint64_t)pmmngr_alloc(), (uint64_t)vaddr,PAGING_USER);
 	}else if (present){
-		map_page((uint64_t)pmmngr_alloc(), (uint64_t)vaddr);
-	/*	panic ("Page Fault \n");
+		panic ("Page Fault \n");
 		printf ("Faulting Address -> %x\n", vaddr);
 		printf ("__PROCESSOR TRACE__\n");
 		printf ("RIP -> %x\n", frame->rip);
@@ -170,7 +169,7 @@ void page_fault (size_t vector, void* param){
 		printf ("CS -> %x, SS -> %x\n", frame->cs, frame->ss);
 		printf ("******Cause********\n");
 		printf ("*** Not Present ***\n");
-		for(;;);*/
+		for(;;);
 	}else if (rw) {
 		panic ("Page Fault \n");
 		printf ("Faulting Address -> %x\n", vaddr);
@@ -245,7 +244,6 @@ void machine_check_abort (size_t v, void* p){
  }
 
  void exception_init () {
-	 x64_cli ();
 	 setvect(0,divide_by_zero_fault);
 	 setvect(1,single_step_trap);
 	 setvect(2,nmi_trap);
@@ -264,7 +262,6 @@ void machine_check_abort (size_t v, void* p){
 	 setvect(17, alignment_check_fault);
 	 setvect(18, machine_check_abort);
 	 setvect(19, simd_fpu_fault);
-	 x64_sti();
  }
 
 

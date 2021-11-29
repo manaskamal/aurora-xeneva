@@ -22,7 +22,7 @@ typedef struct _qu_edit_box_ {
 	int xpos;
 	int ypos;
 	uint8_t *buffer;
-	uint8_t *backstore;
+	canvas_t *ctx;
 }QuEditBox;
 
 

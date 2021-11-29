@@ -36,15 +36,23 @@
 #include <QuCanvas\QuCanvasMngr.h>
 #include <sys\_exit.h>
 
+canvas_t *canvas = NULL;
+
+
+canvas_t *QuGetCanvas() {
+	return canvas;
+}
 
 
 int main (int argc, char* argv[]) {
 	int svga_fd = sys_open_file ("/dev/svga", NULL);
+
 	uint32_t s_width = ioquery(svga_fd,SVGA_GET_WIDTH,NULL);
 	uint32_t s_height = ioquery(svga_fd, SVGA_GET_HEIGHT, NULL);
-	create_canvas (s_width,s_height);
-	int w = canvas_get_width();
-	int h = canvas_get_height();
+
+	canvas = create_canvas (s_width,s_height);
+	int w = canvas_get_width(canvas);
+	int h = canvas_get_height(canvas);
   //  psf_register_font_lib();
 
 	//!Initialize Quince Wallpaper Manager  "a:coffee.jpg"  "/bihu.jpg""/river.jpg"
@@ -61,7 +69,7 @@ int main (int argc, char* argv[]) {
 	////! Initialize QuCanvas Manager
 	QuCanvasMngr_Initialize();
 
-	canvas_screen_update(0,0,w, h);
+	canvas_screen_update(canvas,0,0,w, h);
 
     //! Initialize Cursor Manager
 	QuCursorInit(0, 0, QU_CURSOR_ARROW);

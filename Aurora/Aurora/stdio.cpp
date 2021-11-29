@@ -136,7 +136,7 @@ void printf(const char* format, ...)
 				//char buffer[sizeof(size_t) * 8 + 1];
 				//sztoa(c, buffer, 10);
 				//puts(buffer);
-				putc(c);
+				puts((char*)c);
 			}
 			else if (*format == 'x')
 			{

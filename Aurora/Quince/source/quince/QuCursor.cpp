@@ -63,7 +63,7 @@ void QuCursorInit (unsigned x, unsigned y, int type) {
 	//! Store Current pixels
 	for (int w = 0; w < 24; w++) {
 		for (int h = 0; h < 24; h++) {
-			CursorBack[h * 24 + w] = canvas_get_pixel(x+ w,y+ h); //QuCanvasGetPixel((uint32_t*)0x0000600000000000, x, y); //
+			CursorBack[h * 24 + w] = canvas_get_pixel(QuGetCanvas(),x+ w,y+ h); //QuCanvasGetPixel((uint32_t*)0x0000600000000000, x, y); //
 		}
 	}
 
@@ -91,7 +91,7 @@ void QuPutBackStore (unsigned x, unsigned y) {
 	
 	  for (int w = 0; w < 24; w++) {
 		  for (int h = 0; h < 24; h++) {
-			  canvas_draw_pixel(x+w,y+h,CursorBack[h * 24+ w]);//CursorBack[h * 24+ w]
+			  canvas_draw_pixel(QuGetCanvas(),x+w,y+h,CursorBack[h * 24+ w]);//CursorBack[h * 24+ w]
 			 // QuCanvasPutPixel ((uint32_t*)0x0000600000000000, x, y, CursorBack[h * 24 + w]);
 		  }
 	  }
@@ -101,7 +101,7 @@ void QuPutBackStore (unsigned x, unsigned y) {
 void QuStoreBack (unsigned x, unsigned y) {
 	for (int w = 0; w < 24; w++) {
 		for (int h = 0; h < 24; h++) {
-			CursorBack[h * 24 + w] =  canvas_get_pixel(x + w, y + h);//QuCanvasGetPixel((uint32_t*)0x0000600000000000, x+ w,y+ h);
+			CursorBack[h * 24 + w] =  canvas_get_pixel(QuGetCanvas(),x + w, y + h);//QuCanvasGetPixel((uint32_t*)0x0000600000000000, x+ w,y+ h);
 		}
 	}
 }
@@ -126,7 +126,7 @@ void QuDrawCursor (QuBitmap *bmp, unsigned x, unsigned y) {
 			//rgb = rgb | 0xff000000;
 			//fb_row[100 + 100] = rgb;
 			if (rgb & 0xFF000000)
-				canvas_draw_pixel(x + k,y +  i,rgb);
+				canvas_draw_pixel(QuGetCanvas(),x + k,y +  i,rgb);
 		}
 	}
 }

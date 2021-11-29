@@ -37,7 +37,7 @@ void QuContextMenuAdd (QuContextMenu *ctx, QuPopupMenu *p) {
 void QuCtxMenuAllocateData (QuContextMenu *p, int w, int h) {
 	if (p->data)
 		return;
-	p->data = (uint32_t*)malloc(w*h*32);
+	p->ctx = create_canvas(w,h);
 }
 
 
@@ -57,7 +57,7 @@ void QuContextMenuAppend (QuContextMenu *ctx, QuWidget *mb, QuWindow* win) {
 	menu_h += 12;
 
 	if (ctx->popup) {
-		QuPanelDirectCopy(canvas_get_framebuffer(),mb->x + ctx->m_x + (ctx->m_w/2), 
+		QuPanelDirectCopy(win->ctx,mb->x + ctx->m_x + (ctx->m_w/2), 
 		mb->y + 20, menu_w, menu_h);
 		ctx->popup = false;
 		return;
@@ -66,16 +66,16 @@ void QuContextMenuAppend (QuContextMenu *ctx, QuWidget *mb, QuWindow* win) {
 	QuCtxMenuAllocateData(ctx,menu_w, menu_h);
 
 
-	cc_draw_rect_filled (ctx->data, mb->x + ctx->m_x + (ctx->m_w/2), 
+	acrylic_draw_rect_filled (ctx->ctx, mb->x + ctx->m_x + (ctx->m_w/2), 
 		 mb->y + 20, menu_w, menu_h,SILVER);
 
-	cc_draw_rect_unfilled (ctx->data, mb->x + ctx->m_x + (ctx->m_w/2), 
+	acrylic_draw_rect_unfilled (ctx->ctx, mb->x + ctx->m_x + (ctx->m_w/2), 
 		mb->y + 20, menu_w, menu_h,GRAY);
 	int m_y= 4;
 	int m_x = (ctx->m_w/2) + 1;
 	for (int i = 0; i < ctx->popup_list->pointer; i++) {
 		QuPopupMenu *popup = (QuPopupMenu*)QuListGetAt(ctx->popup_list, i);
-		cc_draw_arr_string (ctx->data, mb->x + ctx->m_x + (ctx->m_w/2) + 1, 
+		acrylic_draw_arr_string (ctx->ctx, mb->x + ctx->m_x + (ctx->m_w/2) + 1, 
 			mb->y + 20 + m_y, popup->title,BLACK);
 		
 		if (popup->m_x == 0 && popup->m_y == 0){
@@ -86,7 +86,7 @@ void QuContextMenuAppend (QuContextMenu *ctx, QuWidget *mb, QuWindow* win) {
 	}
 	
 	ctx->popup = true;
-	QuPanelDirectCopy(ctx->data,mb->x + ctx->m_x + (ctx->m_w/2), 
+	QuPanelDirectCopy(ctx->ctx,mb->x + ctx->m_x + (ctx->m_w/2), 
 		mb->y + 20, menu_w, menu_h);
 }
 

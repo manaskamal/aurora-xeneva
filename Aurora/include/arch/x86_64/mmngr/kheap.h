@@ -30,5 +30,5 @@ struct kmem {
 void initialize_kmemory (size_t sz);
 void* alloc(size_t sz);
 void free (void* memory);
-
+void kheap_print ();
 #endif

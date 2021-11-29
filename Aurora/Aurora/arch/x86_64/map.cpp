@@ -33,12 +33,12 @@ void *map_memory (uint64_t addr, uint32_t length,uint8_t attribute) {
 	if (addr == NULL) {
 		addr = (uint64_t)get_free_page (length, user);
 		if (length == 4096) {
-			map_page ((uint64_t)pmmngr_alloc(), addr);
+			map_page ((uint64_t)pmmngr_alloc(), addr,(user == true) ? PAGING_USER : 0);
 			return (void*)addr;
 		}
 
 		for (int i = 0; i < length / 4096; i++)
-				map_page ((uint64_t)pmmngr_alloc(),addr + i * 4096);
+				map_page ((uint64_t)pmmngr_alloc(),addr + i * 4096,(user == true) ? PAGING_USER : 0);
 
 
 	} 
@@ -46,12 +46,12 @@ void *map_memory (uint64_t addr, uint32_t length,uint8_t attribute) {
 	//! TODO: Check if there's already a mapped region, and relocate the mapping
 	else {
 		if (length == 4096) {
-			map_page ((uint64_t)pmmngr_alloc(), addr);
+			map_page ((uint64_t)pmmngr_alloc(), addr,(user == true) ? PAGING_USER : 0);
 			return (void*)addr;
 		}
 
 		for (int i = 0; i < length / 4096; i++)
-				map_page ((uint64_t)pmmngr_alloc(),addr + i * 4096);
+				map_page ((uint64_t)pmmngr_alloc(),addr + i * 4096,(user == true) ? PAGING_USER : 0);
 	}
 
 	//! MAP_GLOBAL flag will cause the map_memory to map the address

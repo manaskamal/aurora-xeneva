@@ -12,14 +12,14 @@ _BSS	SEGMENT
 ?float_to_string_output@@3PADA DB 020H DUP (?)		; float_to_string_output
 _BSS	ENDS
 CONST	SEGMENT
-$SG2905	DB	'0123456789ABCDEF', 00H
+$SG2921	DB	'0123456789ABCDEF', 00H
 	ORG $+3
-$SG3000	DB	'0', 00H
+$SG3016	DB	'0', 00H
 	ORG $+2
-$SG3045	DB	'.', 00H
+$SG3062	DB	'.', 00H
 CONST	ENDS
 _DATA	SEGMENT
-chars	DQ	FLAT:$SG2905
+chars	DQ	FLAT:$SG2921
 _DATA	ENDS
 PUBLIC	?sztoa@@YAPEAD_KPEADH@Z				; sztoa
 PUBLIC	?printf@@YAXPEBDZZ				; printf
@@ -30,14 +30,13 @@ PUBLIC	__real@41200000
 PUBLIC	__real@bf800000
 EXTRN	?strlen@@YA_KPEBD@Z:PROC			; strlen
 EXTRN	?puts@@YAXPEAD@Z:PROC				; puts
-EXTRN	?putc@@YAXD@Z:PROC				; putc
 EXTRN	_fltused:DWORD
 pdata	SEGMENT
 $pdata$?sztoa@@YAPEAD_KPEADH@Z DD imagerel $LN11
 	DD	imagerel $LN11+275
 	DD	imagerel $unwind$?sztoa@@YAPEAD_KPEADH@Z
 $pdata$?printf@@YAXPEBDZZ DD imagerel $LN25
-	DD	imagerel $LN25+887
+	DD	imagerel $LN25+891
 	DD	imagerel $unwind$?printf@@YAXPEBDZZ
 $pdata$?int_to_str@@YAPEBDH@Z DD imagerel $LN7
 	DD	imagerel $LN7+280
@@ -599,7 +598,7 @@ $LN14@printf:
 
 ; 130  : 					puts("0");
 
-	lea	rcx, OFFSET FLAT:$SG3000
+	lea	rcx, OFFSET FLAT:$SG3016
 	call	?puts@@YAXPEAD@Z			; puts
 	jmp	SHORT $LN14@printf
 $LN13@printf:
@@ -632,10 +631,11 @@ $LN19@printf:
 ; 136  : 				//char buffer[sizeof(size_t) * 8 + 1];
 ; 137  : 				//sztoa(c, buffer, 10);
 ; 138  : 				//puts(buffer);
-; 139  : 				putc(c);
+; 139  : 				puts((char*)c);
 
-	movzx	ecx, BYTE PTR c$1[rsp]
-	call	?putc@@YAXD@Z				; putc
+	movsx	rax, BYTE PTR c$1[rsp]
+	mov	rcx, rax
+	call	?puts@@YAXPEAD@Z			; puts
 	jmp	$LN10@printf
 $LN11@printf:
 
@@ -737,7 +737,7 @@ $LN5@printf:
 ; 160  : 			{
 ; 161  : 				puts(".");
 
-	lea	rcx, OFFSET FLAT:$SG3045
+	lea	rcx, OFFSET FLAT:$SG3062
 	call	?puts@@YAXPEAD@Z			; puts
 
 ; 162  : 			}

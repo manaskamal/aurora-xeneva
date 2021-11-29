@@ -15,7 +15,7 @@
 #include <arch\x86_64\mmngr\vmmngr.h>
 
 
-#define KSTACK_START   0xFFFFFB0000000000
+#define KSTACK_START   0xFFFFFB0000000000  //0x00000000E0200000  
 
 
 extern uint64_t allocate_kstack (uint64_t *cr3);

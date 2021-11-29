@@ -1,8 +1,8 @@
-﻿Build started 24-11-2021 ৰাতিপু 12:10:17.
+﻿Build started 28-11-2021 ৰাতিপু 3:26:55.
      1>Project "E:\Xeneva Project\Xeneva\shell\shell.vcxproj" on node 2 (Rebuild target(s)).
      1>_NASM:
          shl.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp5486cc0a1c6845b2ade021f367971173.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp9418902d4b104296a2055b2251bb26c3.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\shl.obj"  "E:\Xeneva Project\Xeneva\shell\shl.asm"
        ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\xnlib\xnclib" /I"E:\Xeneva Project\Xeneva\xnlib\xnclib\c++" /I"E:\Xeneva Project\Xeneva\xnlib\xnacrylic\include" /Zi /nologo /W1 /WX- /sdl- /Od /D ARCH_X64 /D SSFN_CONSOLEBITMAP_PALETTE /D SSFN_CONSOLEBITMAP_HICOLOR /D SSFN_CONSOLEBITMAP_TRUECOLOR /D SSFN_CONSOLEBITMAP_CLEARBG /D _MBCS /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt main.cpp
@@ -14,7 +14,7 @@
      1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V110\Microsoft.CppBuild.targets(1137,5): warning MSB8012: TargetPath(E:\Xeneva Project\Xeneva\Aurora\x64\Debug\shell.exe) does not match the Linker's OutputFile property value (D:\xshell.exe). This may cause your project to build incorrectly. To correct this, please make sure that $(OutDir), $(TargetName) and $(TargetExt) property values match the value specified in %(Link.OutputFile).
      1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V110\Microsoft.CppBuild.targets(1139,5): warning MSB8012: TargetName(shell) does not match the Linker's OutputFile property value (xshell). This may cause your project to build incorrectly. To correct this, please make sure that $(OutDir), $(TargetName) and $(TargetExt) property values match the value specified in %(Link.OutputFile).
        Link:
-         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:PROMPT /OUT:"D:\xshell.exe" /INCREMENTAL /NOLOGO /LIBPATH:"E:\Xeneva Project\Xeneva\xnlib\lib64" xnclib.lib xnacrylic.lib /NODEFAULTLIB /MANIFEST:NO /PDB:"E:\Xeneva Project\Xeneva\Aurora\x64\Debug\shell.pdb" /MAP /MAPINFO:EXPORTS /SUBSYSTEM:NATIVE /STACK:"0x100000" /LARGEADDRESSAWARE /Driver /OPT:NOREF /LTCG /TLBID:1 /ENTRY:"_start" /BASE:"0x0000400000000000" /FIXED:NO /IMPLIB:"E:\Xeneva Project\Xeneva\Aurora\x64\Debug\shell.lib" /MACHINE:X64 /ALIGN:512 x64\Debug\main.obj
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:PROMPT /OUT:"D:\xshell.exe" /INCREMENTAL /NOLOGO /LIBPATH:"E:\Xeneva Project\Xeneva\xnlib\lib64" xnclib.lib /NODEFAULTLIB /MANIFEST:NO /PDB:"E:\Xeneva Project\Xeneva\Aurora\x64\Debug\shell.pdb" /MAP /MAPINFO:EXPORTS /SUBSYSTEM:NATIVE /STACK:"0x100000" /LARGEADDRESSAWARE /Driver /OPT:NOREF /LTCG /TLBID:1 /ENTRY:"main" /BASE:"0x0000400000000000" /FIXED:NO /IMPLIB:"E:\Xeneva Project\Xeneva\Aurora\x64\Debug\shell.lib" /MACHINE:X64 /ALIGN:512 x64\Debug\main.obj
          x64\Debug\shl.obj
      1>LINK : warning LNK4075: ignoring '/INCREMENTAL' due to '/LTCG' specification
          LINK : /LTCG specified but no code generation required; remove /LTCG from the link command line to improve linker performance

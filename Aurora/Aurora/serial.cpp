@@ -18,7 +18,7 @@
 #define PORT  0x3f8
 
 void serial_handler (size_t v, void* p) {
-	printf ("Serial Handler\n");
+	//printf ("Serial Handler\n");
 	interrupt_end(4);
 }
 
@@ -46,7 +46,7 @@ int is_transmit_empty () {
 }
 
 void write_serial (char a) {
-	//while (is_transmit_empty() == 0);
+	while (is_transmit_empty() == 0);
 	x64_outportb (PORT, a);
 }
 

@@ -11,9 +11,6 @@ top	DQ	01H DUP (?)
 process_count DD 01H DUP (?)
 ?waked@@3_NA DB	01H DUP (?)				; waked
 _BSS	ENDS
-CONST	SEGMENT
-$SG3574	DB	'0', 00H
-CONST	ENDS
 PUBLIC	?procmngr_add_process@@YAXPEAU_procmngr_queue_@@@Z ; procmngr_add_process
 PUBLIC	?procmngr_get_process@@YAPEAU_procmngr_queue_@@XZ ; procmngr_get_process
 PUBLIC	?procmngr_start@@YAXXZ				; procmngr_start
@@ -27,7 +24,7 @@ EXTRN	?unblock_thread@@YAXPEAU_thread_@@@Z:PROC	; unblock_thread
 EXTRN	?get_current_thread@@YAPEAU_thread_@@XZ:PROC	; get_current_thread
 EXTRN	?force_sched@@YAXXZ:PROC			; force_sched
 EXTRN	?thread_iterate_block_list@@YAPEAU_thread_@@H@Z:PROC ; thread_iterate_block_list
-EXTRN	?create_process@@YAXPEBDPEADE1@Z:PROC		; create_process
+EXTRN	?create_process@@YAXPEBDPEAD@Z:PROC		; create_process
 pdata	SEGMENT
 $pdata$?procmngr_add_process@@YAXPEAU_procmngr_queue_@@@Z DD imagerel $LN3
 	DD	imagerel $LN3+63
@@ -42,7 +39,7 @@ $pdata$?procmngr_wakeup@@YAXXZ DD imagerel $LN5
 	DD	imagerel $LN5+60
 	DD	imagerel $unwind$?procmngr_wakeup@@YAXXZ
 $pdata$?procmngr_create_process@@YAXPEAU_procmngr_queue_@@@Z DD imagerel $LN3
-	DD	imagerel $LN3+56
+	DD	imagerel $LN3+46
 	DD	imagerel $unwind$?procmngr_create_process@@YAXPEAU_procmngr_queue_@@@Z
 pdata	ENDS
 xdata	SEGMENT
@@ -73,15 +70,13 @@ $LN3:
 
 	call	x64_cli
 
-; 46   : 	create_process (queue->path,queue->name,1, "0");
+; 46   : 	create_process (queue->path,queue->name);
 
 	mov	rax, QWORD PTR queue$[rsp]
 	mov	rcx, QWORD PTR queue$[rsp]
 	add	rcx, 8
-	lea	r9, OFFSET FLAT:$SG3574
-	mov	r8b, 1
 	mov	rdx, rax
-	call	?create_process@@YAXPEBDPEADE1@Z	; create_process
+	call	?create_process@@YAXPEBDPEAD@Z		; create_process
 
 ; 47   : 	x64_sti();
 

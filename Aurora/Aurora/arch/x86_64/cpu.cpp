@@ -178,21 +178,28 @@ void hal_x86_64_init () {
 	//! clear interrupts first
     x64_cli ();
 
-	//! initialize the global descriptor table
+	////! initialize the global descriptor table
 	gdt_initialize();
 
-	//! initialize the interrupt descriptor table
-	interrupt_initialize();
+	x64_sti();
+}
 
-	//! initialize all exception handlers
+
+void hal_x86_64_setup_int () {
+	x64_cli();
+
+	////! initialize the interrupt descriptor table
+	interrupt_initialize();
+	x64_sti();
+	////! initialize all exception handlers
 	exception_init ();
 
 #ifdef USE_PIC
-	initialize_pic(0x20, 0x28);
+	//initialize_pic(0x20, 0x28);
 #endif
 
 #ifdef USE_APIC
-	//!Initialize APIC
+	//!Initialize APIC   FIXME: Causes triple fault now
 	initialize_apic ();
 
 	unsigned int divisor =  1193181 / 100;
@@ -200,8 +207,8 @@ void hal_x86_64_init () {
 	x64_outportb(0x40, divisor);
 	x64_outportb(0x40, divisor >> 8);
 #endif
-
-	//!Enable EFER and SYSCALL Extension
+//
+//	//!Enable EFER and SYSCALL Extension
 	size_t efer = x64_read_msr(IA32_EFER);
 	efer |= (1<<11);
 	efer |= 1;
@@ -215,5 +222,5 @@ void hal_x86_64_init () {
 
 	//! initialize the syscall entries
 	initialize_syscall ();
-	x64_sti ();
+	//x64_sti ();
 }

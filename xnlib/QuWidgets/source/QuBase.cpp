@@ -11,7 +11,6 @@
 #include <QuBase.h>
 #include <sys\_process.h>
 #include <string.h>
-#include <QuWindow.h>
 #include <canvas.h>
 #include <sys\_ipc.h>
 #include <sys\_term.h>
@@ -21,11 +20,13 @@
 #include <acrylic.h>
 #include <font.h>
 
-unsigned int * QuCanvasAddress = NULL;
 uint16_t app_id = 0;
+QuWindow *max_window[50];
+int win_pointer = 0;
+
 
 void QuChannelPut (QuMessage *msg, uint16_t to_id) {
-	uint16_t from_id = app_id;
+	uint16_t from_id = get_current_pid(); //app_id;
 	void* channel_addr = (void*)QU_CHANNEL_ADDRESS;
 	QuMessage *msg_ = (QuMessage*)channel_addr;
 	msg->from_id = from_id;
@@ -43,7 +44,7 @@ send:
 
 void QuChannelGet (QuMessage *msg) {
 	QuMessage* data = (QuMessage*)QU_CHANNEL_RECEIVER;
-	uint16_t to_id = app_id;
+	uint16_t to_id = get_current_pid();//app_id;
 get:
 	if (data->to_id == to_id){
 		memcpy (msg, data, sizeof (QuMessage));
@@ -55,45 +56,56 @@ get:
 	}
 }
 
-void QuRegisterApplication (char* title) {
+void QuRegisterApplication (QuWindow *win) {
 	app_id = get_current_pid();
+    int window_id = 0;
+	uint32_t* info_data;
+	uint32_t* canvas_address = 0;
 
 	QuMessage qmsg;
 	qmsg.type = QU_CODE_WIN_CREATE;
 	qmsg.from_id = app_id;
 	qmsg.to_id = 2;
+	qmsg.dword = win->x;
+	qmsg.dword2 = win->y;
+	qmsg.dword3 = win->w;
+	qmsg.dword4 = win->h;
 	QuChannelPut(&qmsg, 2);
-
-	int win_def_x, win_def_y, win_def_w, win_def_h = 0;
-	uint32_t* info_data;
 	memset(&qmsg, 0, sizeof(QuMessage));
 	while(1) {
 		QuChannelGet(&qmsg);
 
 		if (qmsg.type == QU_CANVAS_READY) {
-			QuCanvasAddress = qmsg.p_value;
-			win_def_x = qmsg.dword;
-			win_def_y = qmsg.dword2;
-			win_def_w = qmsg.dword3;
-			win_def_h = qmsg.dword4;
+			canvas_address = qmsg.p_value;
+			window_id = qmsg.dword;
 			info_data = qmsg.p_value2;
-			//memset (&qmsg, 0, sizeof(qu_message_t));
+			memset (&qmsg, 0, sizeof(qu_message_t));
 			break;
 		}
 	}
-	//sys_unblock_id(4);
-//	canvas_set_double_buffer(e);
-	create_canvas(win_def_w, win_def_h);
-	canvas_set_address (QuCanvasAddress);
-	QuCreateWindow (win_def_x, win_def_y, win_def_w, win_def_h, info_data, title);
-	QuWindowSetCanvas (QuCanvasAddress);
-	acrylic_initialize_font();
 
+	win->winid = window_id;
+	win->win_info_data = info_data;
+	win->canvas = canvas_address;	
 }
 
 
 uint16_t QuGetAppId() {
-	return app_id;
+	return get_current_pid();
 }
 
+
+void QuApplicationRegisterWindow (QuWindow *win) {
+	max_window[win_pointer] = win;
+	win_pointer++;
+}
+
+
+QuWindow* QuApplicationWindowGet (int id) {
+	for (int i = 0; i < 50; i++) {
+		QuWindow* win = max_window[i];
+		if (win->winid == id)
+			return win;
+	}
+}
 

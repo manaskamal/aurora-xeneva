@@ -402,9 +402,9 @@ list$ = 32
 $LN3:
 	sub	rsp, 56					; 00000038H
 
-; 17   : 	list_t *list = (list_t*)malloc(4096);
+; 17   : 	list_t *list = (list_t*)malloc(sizeof(list_t));
 
-	mov	ecx, 4096				; 00001000H
+	mov	ecx, 16
 	call	?malloc@@YAPEAXI@Z			; malloc
 	mov	QWORD PTR list$[rsp], rax
 

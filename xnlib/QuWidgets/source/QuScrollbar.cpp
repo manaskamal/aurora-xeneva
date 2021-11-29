@@ -27,20 +27,20 @@ void QuScrollBarRefresh (QuWidget *wid, QuWindow* win) {
 	QuScrollBar *scroll = (QuScrollBar*)wid;
 	//! Check the type of scrollbar
 	if (scroll->type == QU_SCROLLBAR_VERTICAL) {
-		acrylic_draw_rect_filled (wid->x, wid->y, wid->width, wid->height,0xff787770);
+		acrylic_draw_rect_filled (win->ctx,wid->x, wid->y, wid->width, wid->height,0xff787770);
 
 		for (int i = 0; i < 14; i++)
-			acrylic_draw_vertical_line(wid->x + i,
+			acrylic_draw_vertical_line(win->ctx,wid->x + i,
 			wid->y + scroll->thumb_y,
 			scroll->thumb_sz,scrollbox_col[i]); 
 	}
 
 	///! Horizontal Scrollbar
 	if (scroll->type == QU_SCROLLBAR_HORIZONTAL) {
-		acrylic_draw_rect_filled (wid->x,wid->y, wid->width, 15,0xff787770);
+		acrylic_draw_rect_filled (win->ctx,wid->x,wid->y, wid->width, 15,0xff787770);
 
 		for (int i = 0; i < 14; i++)
-			acrylic_draw_horizontal_line(wid->x + scroll->thumb_x,
+			acrylic_draw_horizontal_line(win->ctx,wid->x + scroll->thumb_x,
 			wid->y + 1 + i,
 			scroll->thumb_sz,scrollbox_col[i]); 
 	}
@@ -101,11 +101,11 @@ void QuScrollbarMouseEvent (QuWidget* wid, QuWindow* win, int code,bool clicked,
 			QuScrollBarRefresh(wid, win);
 
 			if (scroll->content)
-				QuPanelUpdate(scroll->content->x,
+				QuPanelUpdate(win,scroll->content->x,
 				scroll->content->y, 
 				scroll->content->width, scroll->content->height, false);
 			else
-				QuPanelUpdate(wid->x , wid->y, wid->width, 15,false);
+				QuPanelUpdate(win,wid->x , wid->y, wid->width, 15,false);
 		}
 
 
@@ -126,11 +126,11 @@ void QuScrollbarMouseEvent (QuWidget* wid, QuWindow* win, int code,bool clicked,
 			QuScrollBarRefresh(wid, win);
 
 			if (scroll->content)
-				QuPanelUpdate(scroll->content->x, 
+				QuPanelUpdate(win,scroll->content->x, 
 					scroll->content->y, 
 					scroll->content->width, scroll->content->height, false);
 			else
-				QuPanelUpdate(wid->x + 1, wid->y, wid->width, wid->height,false);
+				QuPanelUpdate(win,wid->x + 1, wid->y, wid->width, wid->height,false);
 		}
 
 		//! Call the scroll event of the content

@@ -84,7 +84,7 @@ void QuEventLoop() {
 			mouse_x = m_pack.dword;
 			mouse_y = m_pack.dword2;
 			QuMoveCursor(mouse_x, mouse_y);
-			canvas_screen_update (m_pack.dword,m_pack.dword2, 24, 24);
+			canvas_screen_update (QuGetCanvas(),m_pack.dword,m_pack.dword2, 24, 24);
 			
 
 			_mouse_code_ = 0;
@@ -134,13 +134,18 @@ void QuEventLoop() {
 
 		//! Create Window Request
 		if (q_msg.type == QU_CODE_WIN_CREATE) {
+			int winx = q_msg.dword;
+			int winy = q_msg.dword2;
+			int winw = q_msg.dword3;
+			int winh = q_msg.dword4;
 
 			////!Stop the mouse
 			render_disable = true;
 			uint16_t dest_id = q_msg.from_id; 
-			uint32_t* canvas = QuCanvasCreate(dest_id);
-			QuWindow * window = QuWindowCreate(x,y,dest_id,canvas);
-
+			uint32_t* canvas = QuCanvasCreate(dest_id, winw, winh);
+			QuWindow * window = QuWindowCreate(winx,winy,dest_id,canvas);
+			window->width = winw;
+			window->height = winh;
 
 			uint64_t info_location = QU_WIN_INFO_START + win_info_counter * 4096;
 			map_shared_memory (dest_id,info_location ,8192);
@@ -153,10 +158,7 @@ void QuEventLoop() {
 			msg.from_id = get_current_pid();
 			msg.to_id = dest_id;
 			msg.p_value = canvas;
-			msg.dword = x;
-			msg.dword2 = y;
-			msg.dword3 = 500;
-			msg.dword4 = 500;
+			msg.dword = window->id;
 			msg.p_value2 = window->win_info_location;
 			QuChannelPut(&msg, dest_id);
 
@@ -204,15 +206,15 @@ void QuEventLoop() {
 		}
 
 
-	
 		//*==========================================================================
 		//*==========================================================================
 		if (diff_time > 15){	
-			QuRenderTime(time.seconds, time.minutes, time.hour);
+			QuWindowMngr_DrawAll();
 			next_tick = sys_get_system_tick();
 			frame_time = 0;
-		}
-		QuWindowMngr_DrawAll();	
+		}	
+        QuRenderTime(time.seconds, time.minutes, time.hour);
+
 
 		QuScreenRectUpdate();
 		//}

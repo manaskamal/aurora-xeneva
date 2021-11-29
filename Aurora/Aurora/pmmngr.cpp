@@ -6,16 +6,20 @@
  *  /PROJECT - Aurora v1.0 {Xeneva v1.0}
  *  /AUTHOR  - Manas Kamal Choudhury
  *
+ *  @Reference : Poncho OSDev S2 Series
  * ================================================
  */
 
 #include <pmmngr.h>
 #include <_null.h>
+#include <stdio.h>
+#include <efi.h>
 
 uint64_t free_memory;
 uint64_t reserved_memory;
 uint64_t used_memory;
 uint64_t ram_bitmap_index;
+uint64_t total_ram;
 
 
 //! A bitmap class
@@ -47,7 +51,7 @@ public:
 		uint8_t  bitIndex = index % 8;
 		uint8_t  bitIndexer = 0x80 >> bitIndex;
 
-		Buffer[byteIndex] &= -bitIndexer;
+		Buffer[byteIndex] &= ~bitIndexer;
 		if (value) {
 			Buffer[byteIndex] |= bitIndexer;
 		}
@@ -69,6 +73,7 @@ void pmmngr_init_bitmap (size_t bitmap_size, void* buffer) {
 	}
 }
 
+//! Reserve a page : mark it as unusable
 void pmmngr_lock_page ( void* addr) {
 
 	uint64_t index = (uint64_t)addr / 4096;
@@ -79,6 +84,13 @@ void pmmngr_lock_page ( void* addr) {
 	}
 }
 
+//! Reserve pages : mark it as unusable
+void pmmngr_lock_pages (void *addr, size_t size) {
+	for (int i = 0; i < size; i++) 
+		pmmngr_lock_page ((void*)((size_t)addr + i * 4096));
+}
+
+//! Unreserve a page : Mark it as usable
 void pmmngr_unreserve_page (void* addr) {
 
 	uint64_t index = (uint64_t)addr / 4096;
@@ -106,10 +118,26 @@ void pmmngr_init(KERNEL_BOOT_INFO *_info)
 	free_memory = memory_size;
 	uint64_t bitmap_size = memory_size / 4096 / 8 + 1;
 	ram_bitmap_index = 0;
+	total_ram = 0;
 
+	pmmngr_init_bitmap (bitmap_size, (void*) _info->phys_start); 
 
-	pmmngr_init_bitmap (bitmap_size, (void*)_info->phys_start);
-	void * p = (void*)pmmngr_alloc();
+	pmmngr_lock_pages ((void*)_info->phys_start,bitmap_size);
+
+	//Lock every EFI-Reserved memories here
+	uint64_t memmap_entries = _info->mem_map_size / _info->descriptor_size;
+
+	//! Currently uses EFI-Memory Maps to check reserved regions
+	for (int i = 0; i < memmap_entries; i++) {
+		EFI_MEMORY_DESCRIPTOR *efi_mem = (EFI_MEMORY_DESCRIPTOR*)((uint64_t)_info->map + i * _info->descriptor_size);
+		total_ram += efi_mem->num_pages * 4096;
+		if (efi_mem->type != 7) {
+			//! lock every pages
+			pmmngr_lock_pages ((void*)efi_mem->phys_start,efi_mem->num_pages);
+		}
+	}
+
+	void *unusable = pmmngr_alloc(); //0 is avoided
 }
 
 
@@ -129,9 +157,20 @@ void* pmmngr_alloc()
 		return (void*)(ram_bitmap_index * 4096);
 	}
 
+	printf ("No more available pages\n");
+	for(;;);
 	return NULL; //here we need to swap page to file
 }
 
+
+void* pmmngr_alloc_blocks (int size) {
+	void *first = pmmngr_alloc();
+	for (int i = 0; i < size / 4096; i++) {
+		pmmngr_alloc();
+	}
+
+	return first; //here we need to swap page to file
+}
 /**
  * Free block i.e make it available for use that address
  *
@@ -148,14 +187,22 @@ void pmmngr_free (void* addr)
 	}
 }
 
-
+//! Returns amount of free RAM
 uint64_t pmmngr_get_free_ram () {
 	return free_memory;
 }
 
+//! Return amount of used RAM
 uint64_t pmmngr_get_used_ram () {
 	return used_memory;
 }
+
+//! Return total RAM size
+uint64_t pmmngr_get_total_ram () {
+	return total_ram;
+}
+
+
 
 
 

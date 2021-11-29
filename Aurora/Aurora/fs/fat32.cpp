@@ -180,10 +180,8 @@ vfs_node_t fat32_locate_dir (const char* dir) {
 	vfs_node_t file;
 	unsigned char* buf;
 	fat32_dir *dirent;
-
 	char dos_file_name[11];
-	to_dos_file_name32 (dir, dos_file_name, 11);
-	//dos_file_name[11]=0;	
+	to_dos_file_name32 (dir, dos_file_name, 11);	
 	buf = (unsigned char*)pmmngr_alloc ();
 	for (unsigned int sector = 0; sector < sectors_per_cluster; sector++) {
 	
@@ -194,6 +192,11 @@ vfs_node_t fat32_locate_dir (const char* dir) {
 			
 			char name[11];
 			memcpy (name, dirent->filename, 11);
+
+			//!FIXME: Delay should not be present
+			for(int m = 0; m < 100; m++)
+				;
+
 			name[11] = 0;
 			if (strcmp (dos_file_name, name) == 0) {
 				strcpy (file.filename, dir);

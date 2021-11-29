@@ -85,6 +85,13 @@ x64_syscall_entry_compat:
 	 mov rsp, rdx
 	 sysret
 
+global test_sys
+test_sys:
+     mov r12, 0
+	 mov r13, rcx
+	 syscall
+	 ret
+
 
 ;;=====================================================
 ;;  User Space Entries

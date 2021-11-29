@@ -309,6 +309,7 @@ void e1000_initialize () {
 	i_net_dev = (e1000_dev*)malloc(sizeof(e1000_dev));
     
     i_net_dev->e1000_mem_base = dev->device.nonBridge.baseAddress[1] & ~0xf;
+
 	for (int i = 0; i < 6; i++) {
 		if ( dev->device.nonBridge.baseAddress[i] & 1){
 			  //TODO:Auto search  4
@@ -317,7 +318,6 @@ void e1000_initialize () {
 			break;
 		}
 	}
-
 	i_net_dev->e1000_irq = dev->device.nonBridge.interruptLine;
 	bool pci_status = pci_alloc_msi (func, dev_, bus, e1000_interrupt_handler);
 	if (!pci_status) {

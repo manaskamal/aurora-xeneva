@@ -254,7 +254,7 @@ void hda_start_stream () {
 	_aud_outw_(REG_O0_STLVI, 4 - 1);
 
 	for (int i = 0; i < 0x400000 / 4096; i++)
-		map_page ((uint64_t)pmmngr_alloc(), 0x0000000080000000 + i * 4096);
+		map_page ((uint64_t)pmmngr_alloc(), 0x0000000080000000 + i * 4096,0);
 
 	uint64_t bdl_base = (uint64_t)get_physical_address  ((uint64_t) 0x0000000080000000);
 	_aud_outl_ (REG_O0_BDLPL, bdl_base);
@@ -546,6 +546,7 @@ void hda_initialize () {
 	}
 
 	_ihd_audio.mmio = pci_dev.device.nonBridge.baseAddress[0] & ~3;
+	//map_page(_ihd_audio.mmio, _ihd_audio.mmio,0);
 	_ihd_audio.corb = (uint32_t*)pmmngr_alloc(); //for 256 entries only 1 kb will be used
 	_ihd_audio.rirb = (uint64_t*)pmmngr_alloc(); //(ring_address + 1024);
 	memset (_ihd_audio.corb, 0, 4096);

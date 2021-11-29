@@ -11,11 +11,11 @@ _BSS	SEGMENT
 _BSS	ENDS
 PUBLIC	?allocate_kstack@@YA_KPEA_K@Z			; allocate_kstack
 EXTRN	?pmmngr_alloc@@YAPEAXXZ:PROC			; pmmngr_alloc
-EXTRN	?map_page_ex@@YA_NPEA_K_K1@Z:PROC		; map_page_ex
+EXTRN	?map_page_ex@@YA_NPEA_K_K1E@Z:PROC		; map_page_ex
 EXTRN	?memset@@YAXPEAXEI@Z:PROC			; memset
 pdata	SEGMENT
 $pdata$?allocate_kstack@@YA_KPEA_K@Z DD imagerel $LN6
-	DD	imagerel $LN6+140
+	DD	imagerel $LN6+143
 	DD	imagerel $unwind$?allocate_kstack@@YA_KPEA_K@Z
 pdata	ENDS
 xdata	SEGMENT
@@ -38,7 +38,7 @@ $LN6:
 	sub	rsp, 72					; 00000048H
 
 ; 17   : 
-; 18   : 	uint64_t location = KSTACK_START ; //+ index;
+; 18   : 	uint64_t location = KSTACK_START; //+ index;
 
 	mov	rax, -5497558138880			; fffffb0000000000H
 	mov	QWORD PTR location$[rsp], rax
@@ -67,7 +67,7 @@ $LN3@allocate_k:
 	mov	rcx, QWORD PTR p$2[rsp]
 	call	?memset@@YAXPEAXEI@Z			; memset
 
-; 22   : 		map_page_ex (cr3,(uint64_t)p,location + i * 4096);
+; 22   : 		map_page_ex (cr3,(uint64_t)p,location + i * 4096, PAGING_USER);
 
 	mov	eax, DWORD PTR i$1[rsp]
 	imul	eax, 4096				; 00001000H
@@ -75,17 +75,18 @@ $LN3@allocate_k:
 	mov	rcx, QWORD PTR location$[rsp]
 	add	rcx, rax
 	mov	rax, rcx
+	mov	r9b, 4
 	mov	r8, rax
 	mov	rdx, QWORD PTR p$2[rsp]
 	mov	rcx, QWORD PTR cr3$[rsp]
-	call	?map_page_ex@@YA_NPEA_K_K1@Z		; map_page_ex
+	call	?map_page_ex@@YA_NPEA_K_K1E@Z		; map_page_ex
 
 ; 23   : 	}
 
 	jmp	SHORT $LN2@allocate_k
 $LN1@allocate_k:
 
-; 24   : 	//index += 8192;
+; 24   : 	//index += 2*1024*1024;
 ; 25   : 	return (KSTACK_START + 2*1024*1024);
 
 	mov	rax, -5497556041728			; fffffb0000200000H

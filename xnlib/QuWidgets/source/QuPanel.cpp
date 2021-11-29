@@ -31,12 +31,12 @@ void QuPanelMouseEvent (QuWidget *widget, QuWindow* win, int code, bool clicked,
 void QuPanelActionEvent (QuWidget *widget, QuWindow* win) {
 }
 
-QuPanel* QuCreatePanel () {
+QuPanel* QuCreatePanel (QuWindow *win) {
 	QuPanel* panel = (QuPanel*)malloc(sizeof(QuPanel));
 	panel->base.x = 0;
 	panel->base.y = 0;
-	panel->base.width = QuGetWindow()->w;
-	panel->base.height = QuGetWindow()->h;
+	panel->base.width = win->w;
+	panel->base.height = win->h;
 	panel->base.Refresh = QuPanelRefresh;
 	panel->base.MouseEvent = QuPanelMouseEvent;
 	panel->base.KeyEvent = 0;
@@ -53,17 +53,17 @@ void QuPanelSetBackground (QuPanel* panel,uint32_t color) {
 
 void QuPanelRefresh (QuWidget *wid, QuWindow* win) {
 	QuPanel *panel = (QuPanel*)wid;
-	acrylic_draw_rect_filled(wid->x,wid->y, wid->width, wid->height,panel->color);
+	acrylic_draw_rect_filled(win->ctx,wid->x,wid->y, wid->width, wid->height,panel->color);
 }
 
 
-void QuPanelUpdate(int x, int y, int w, int h, bool move) {
+void QuPanelUpdate(QuWindow *win,int x, int y, int w, int h, bool move) {
 
-	uint32_t* lfb = (uint32_t*)QuGetWindow()->canvas;
-	uint32_t* dbl_canvas = (uint32_t*)0x0000600000000000;
-	int width = canvas_get_width();
-	int height = canvas_get_height();
-	
+	uint32_t* lfb = win->canvas;
+	uint32_t* dbl_canvas = win->ctx->address;   //0x0000600000000000;
+	int width = canvas_get_width(win->ctx);
+	int height = canvas_get_height(win->ctx);
+
 	if (move) {
 		x = 0;
 		y = 0;
@@ -72,7 +72,7 @@ void QuPanelUpdate(int x, int y, int w, int h, bool move) {
 	for (int i = 0; i < h; i++)
 		fastcpy (lfb + (y + i) * width + x,dbl_canvas + (y + i) * width + x, w * 4);
 	 
-	QuWinInfo *info = (QuWinInfo*)QuGetWindow()->win_info_data;
+	QuWinInfo *info = (QuWinInfo*)win->win_info_data;
 	info->dirty = 1;
 	if (move){
 		info->rect_count = 0;
@@ -86,14 +86,14 @@ void QuPanelUpdate(int x, int y, int w, int h, bool move) {
 	
 }
 
-void QuPanelDirectCopy(uint32_t *data, int x, int y, int w, int h) {
+void QuPanelDirectCopy(canvas_t *canvas, int x, int y, int w, int h) {
 	uint32_t* lfb = (uint32_t*)QuGetWindow()->canvas;
 
-	int width = canvas_get_width();
-	int height = canvas_get_height();
+	int width = canvas_get_width(canvas);
+	int height = canvas_get_height(canvas);
 
 	for (int i = 0; i < h; i++)
-		fastcpy (lfb + (y + i) * width + x,data + (y + i) * width + x, w * 4);
+		fastcpy (lfb + (y + i) * width + x,canvas->address + (y + i) * width + x, w * 4);
 
 	QuWinInfo *info = (QuWinInfo*)QuGetWindow()->win_info_data;
 	info->dirty = 1;
@@ -108,8 +108,8 @@ void QuPanelDirectCopy(uint32_t *data, int x, int y, int w, int h) {
 void QuPanelRepaint (int x, int y, int w, int h) {
 	uint32_t* lfb = (uint32_t*)QuGetWindow()->canvas;
 	uint32_t* dbl_canvas = (uint32_t*)0x0000600000000000;
-	int width = canvas_get_width();
-	int height = canvas_get_height();
+	int width = canvas_get_width(QuGetWindow()->ctx);
+	int height = canvas_get_height(QuGetWindow()->ctx);
 	/*for (int i=0; i < w; i++) {
 		for (int j=0; j < h; j++){
 			uint32_t color = dbl_canvas[(x + i) + (y + j) * width];
@@ -133,8 +133,8 @@ void QuPanelContentUpdate(int x, int y, int w, int h) {
 	int height = canvas_get_height();*/
 	for (int i=0; i < w; i++) {
 		for (int j=0; j < h; j++){
-			uint32_t color = dbl_canvas[(x + i) + (y + j) * canvas_get_width()];
-			lfb[(x + i) + (y + j) * canvas_get_width()] = color;
+			uint32_t color = dbl_canvas[(x + i) + (y + j) * canvas_get_width(QuGetWindow()->ctx)];
+			lfb[(x + i) + (y + j) * canvas_get_width(QuGetWindow()->ctx)] = color;
 		}
 	}
 	panel_update = false;

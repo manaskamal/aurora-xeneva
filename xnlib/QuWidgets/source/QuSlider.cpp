@@ -20,23 +20,23 @@ void QuSliderRefresh (QuWidget *wid, QuWindow *win) {
 
 	//* The Vertical slider *//
 	if (slider->type == QU_SLIDER_VERTICAL) {
-		acrylic_draw_rect_filled (win->x + wid->x, win->y + wid->y, wid->width, wid->height, LIGHTSILVER);
-		acrylic_draw_rect_unfilled (win->x + wid->x, win->y + wid->y, wid->width, wid->height, GRAY);
+		acrylic_draw_rect_filled (win->ctx,win->x + wid->x, win->y + wid->y, wid->width, wid->height, LIGHTSILVER);
+		acrylic_draw_rect_unfilled (win->ctx,win->x + wid->x, win->y + wid->y, wid->width, wid->height, GRAY);
 
 		///!Progress
 		if (slider->progress != 0) {
 			/*acrylic_draw_rect_filled (win->x + wid->x + 1, win->y + wid->y + slider->progress,
 			9,(win->y + wid->y + wid->height) - (win->y + wid->y + slider->progress),DESKBLUE );*/
-			linear_gradient (win->x + wid->x + 1, win->y + wid->y + slider->progress,9,
+			linear_gradient (win->ctx,win->x + wid->x + 1, win->y + wid->y + slider->progress,9,
 				(win->y + wid->y + wid->height) - (win->y + wid->y + slider->progress), 
 				PALEGREEN, GREEN);
 		}
 
 		///!Slider Thumb
-		acrylic_draw_rect_filled (win->x + wid->x,   //X
+		acrylic_draw_rect_filled (win->ctx,win->x + wid->x,   //X
 			win->y + wid->y + slider->thumb_y  /*+ wid->height - 15*/,               //Y
 			wid->width, 15,LIGHTBLACK);
-		acrylic_draw_rect_unfilled (win->x + wid->x,   //X
+		acrylic_draw_rect_unfilled (win->ctx,win->x + wid->x,   //X
 			win->y + wid->y +slider->thumb_y /*+ wid->height - 15*/,               //Y
 			wid->width, 15,GRAY);
 	}
@@ -44,23 +44,23 @@ void QuSliderRefresh (QuWidget *wid, QuWindow *win) {
 
 	//* The Horizontal Slider *//
 	if (slider->type == QU_SLIDER_HORIZONTAL) {
-		acrylic_draw_rect_filled (win->x + wid->x, win->y + wid->y, wid->width, wid->height, LIGHTSILVER);
-		acrylic_draw_rect_unfilled (win->x + wid->x, win->y + wid->y, wid->width, wid->height, GRAY);
+		acrylic_draw_rect_filled (win->ctx,win->x + wid->x, win->y + wid->y, wid->width, wid->height, LIGHTSILVER);
+		acrylic_draw_rect_unfilled (win->ctx,win->x + wid->x, win->y + wid->y, wid->width, wid->height, GRAY);
 
 		///!Progress
 		if (slider->progress != 0){
 		/*	acrylic_draw_rect_filled (win->x + wid->x, win->y + wid->y + 1,
 			(win->x + wid->x + slider->progress) - (win->x + wid->x),9, DESKBLUE );*/
-			linear_gradient (win->x + wid->x, win->y + wid->y + 1,(win->x + wid->x + slider->progress) - (win->x + wid->x),
+			linear_gradient (win->ctx,win->x + wid->x, win->y + wid->y + 1,(win->x + wid->x + slider->progress) - (win->x + wid->x),
 				9,PALEGREEN, GREEN);
 
 		}
 
 		///!Slider Thumb
-		acrylic_draw_rect_filled (win->x + wid->x + slider->thumb_x,   //X
+		acrylic_draw_rect_filled (win->ctx,win->x + wid->x + slider->thumb_x,   //X
 			win->y + wid->y  /*+ wid->height - 15*/,               //Y
 			15, wid->height,LIGHTBLACK);
-		acrylic_draw_rect_unfilled (win->x + wid->x + slider->thumb_x,   //X
+		acrylic_draw_rect_unfilled (win->ctx,win->x + wid->x + slider->thumb_x,   //X
 			win->y + wid->y/*+ wid->height - 15*/,               //Y
 			15, wid->height,GRAY);
 	}
@@ -105,7 +105,7 @@ void QuSliderMouseEvent (QuWidget *wid, QuWindow *win, int code, bool clicked, i
 
 				slider->last_thumb_y = slider->thumb_y;
 				QuSliderRefresh(wid, win);
-				QuPanelUpdate(win->x + slider->wid.x - 12,win->y +  slider->wid.y, slider->wid.width + 12, slider->wid.height, false);
+				QuPanelUpdate(win,win->x + slider->wid.x - 12,win->y +  slider->wid.y, slider->wid.width + 12, slider->wid.height, false);
 			}
 
 			/* normal horizontal slider */
@@ -141,7 +141,7 @@ void QuSliderMouseEvent (QuWidget *wid, QuWindow *win, int code, bool clicked, i
 
 				//! Refresh
 				QuSliderRefresh(wid, win);
-				QuPanelUpdate(win->x + slider->wid.x,win->y +  slider->wid.y, slider->wid.width, slider->wid.height, false);
+				QuPanelUpdate(win,win->x + slider->wid.x,win->y +  slider->wid.y, slider->wid.width, slider->wid.height, false);
 
 			}
 		}

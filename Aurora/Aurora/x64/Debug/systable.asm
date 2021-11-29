@@ -12,18 +12,19 @@ EXTRN	?printf@@YAXPEBDZZ:PROC				; printf
 EXTRN	?wait@@YAXXZ:PROC				; wait
 EXTRN	?create__sys_process@@YAXPEBDPEAD@Z:PROC	; create__sys_process
 EXTRN	?valloc@@YAX_K@Z:PROC				; valloc
+EXTRN	?vfree@@YAX_K@Z:PROC				; vfree
 EXTRN	?map_shared_memory@@YAXG_K0@Z:PROC		; map_shared_memory
 EXTRN	?get_thread_id@@YAGXZ:PROC			; get_thread_id
 EXTRN	?sys_get_fb_mem@@YAPEAIXZ:PROC			; sys_get_fb_mem
 EXTRN	?sys_set_mouse_data@@YAXXZ:PROC			; sys_set_mouse_data
 EXTRN	?sys_get_mouse_pack@@YA_NPEAU_mouse_packet_@@@Z:PROC ; sys_get_mouse_pack
-EXTRN	?sys_unblock_id@@YAXG@Z:PROC			; sys_unblock_id
-EXTRN	?create_uthread@@YAXP6AXPEAX@ZPEAD@Z:PROC	; create_uthread
-EXTRN	?sys_open_file@@YAHPEADPEAU_file_@@@Z:PROC	; sys_open_file
 EXTRN	?get_screen_width@@YAIXZ:PROC			; get_screen_width
 EXTRN	?get_screen_height@@YAIXZ:PROC			; get_screen_height
-EXTRN	?sys_read_file@@YAXHPEAEPEAU_file_@@@Z:PROC	; sys_read_file
+EXTRN	?sys_unblock_id@@YAXG@Z:PROC			; sys_unblock_id
 EXTRN	?get_screen_scanline@@YAGXZ:PROC		; get_screen_scanline
+EXTRN	?create_uthread@@YAXP6AXPEAX@ZPEAD@Z:PROC	; create_uthread
+EXTRN	?sys_open_file@@YAHPEADPEAU_file_@@@Z:PROC	; sys_open_file
+EXTRN	?sys_read_file@@YAXHPEAEPEAU_file_@@@Z:PROC	; sys_read_file
 EXTRN	?sys_write_file@@YAXHPEAEPEAU_file_@@@Z:PROC	; sys_write_file
 EXTRN	?sys_get_used_ram@@YA_KXZ:PROC			; sys_get_used_ram
 EXTRN	?sys_get_free_ram@@YA_KXZ:PROC			; sys_get_free_ram
@@ -48,7 +49,7 @@ _BSS	SEGMENT
 funct	DQ	01H DUP (?)
 _BSS	ENDS
 CONST	SEGMENT
-$SG6106	DB	'System Call Fault!! Halting System', 0aH, 00H
+$SG6125	DB	'System Call Fault!! Halting System', 0aH, 00H
 CONST	ENDS
 _DATA	SEGMENT
 _syscalls DQ	FLAT:?printf@@YAXPEBDZZ
@@ -89,6 +90,7 @@ _syscalls DQ	FLAT:?printf@@YAXPEBDZZ
 	DQ	FLAT:?sys_set_signal@@YAXHP6AXH@Z@Z
 	DQ	FLAT:?unmap_shared_memory@@YAXG_K0@Z
 	DQ	FLAT:?sys_write_file@@YAXHPEAEPEAU_file_@@@Z
+	DQ	FLAT:?vfree@@YAX_K@Z
 	DQ	0000000000000000H
 _DATA	ENDS
 PUBLIC	x64_syscall_handler
@@ -130,7 +132,7 @@ $LN6:
 
 ; 21   : 		printf ("System Call Fault!! Halting System\n");
 
-	lea	rcx, OFFSET FLAT:$SG6106
+	lea	rcx, OFFSET FLAT:$SG6125
 	call	?printf@@YAXPEBDZZ			; printf
 $LN2@x64_syscal:
 

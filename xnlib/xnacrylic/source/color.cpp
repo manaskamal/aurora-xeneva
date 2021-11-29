@@ -82,7 +82,7 @@ float pifdist (int x1, int y1, int x2, int y2) {
 	return sqrtf (x * x + y * y);
 }
 
-void radial_gradient (int g_w, int g_h, uint32_t c1, uint32_t c2, int x1, int y1, float r) {
+void radial_gradient (canvas_t *canvas,int g_w, int g_h, uint32_t c1, uint32_t c2, int x1, int y1, float r) {
 	int x_step = g_w / 200.0;
 	int y_step = g_h / 200.0;
 	if (x_step < 1) x_step = 1;
@@ -93,19 +93,19 @@ void radial_gradient (int g_w, int g_h, uint32_t c1, uint32_t c2, int x1, int y1
 			uint32_t c = trans_color (c1, c2, pifdist(x1, y1, x, y) / r);
 			for (int i = 0; i < x_step; i++) {
 				for (int j = 0; j < y_step; j++) {
-					canvas_draw_pixel (x+i, y+j, c);
+					canvas_draw_pixel (canvas,x+i, y+j, c);
 				}
 			}
 		}
 	}
 }
 
-void linear_gradient (int x1, int y1, int x2, int y2, uint32_t col1, uint32_t col2) {
+void linear_gradient (canvas_t *canvas,int x1, int y1, int x2, int y2, uint32_t col1, uint32_t col2) {
 	float d= 0.0f;
 	for (int j = 0; j < y2; j++) {
 		for (int i= 0; i < x2; i++) {
 			uint32_t c = trans_color (col1, col2, d);
-			canvas_draw_pixel (x1+i, y1+j, c);
+			canvas_draw_pixel (canvas,x1+i, y1+j, c);
 		}
 		d+= 0.1f;
 	}

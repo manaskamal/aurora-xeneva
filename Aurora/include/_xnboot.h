@@ -22,9 +22,12 @@ typedef struct _KERNEL_BOOT_INFO_ {
 	uint64_t phys_start;
 	uint64_t phys_size;
 	uint64_t ram_size;
+	void *map;
+	uint64_t descriptor_size;
+	uint64_t mem_map_size;
 	uint32_t* graphics_framebuffer;
 	size_t   fb_size;
-	uint16_t   X_Resolution;
+	uint16_t  X_Resolution;
 	uint16_t   Y_Resolution;
 	uint16_t   pixels_per_line;
 	uint32_t redmask;

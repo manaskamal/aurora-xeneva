@@ -5,9 +5,6 @@ include listing.inc
 INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
-CONST	SEGMENT
-$SG2845	DB	'Serial Handler', 0aH, 00H
-CONST	ENDS
 PUBLIC	?initialize_serial@@YAXXZ			; initialize_serial
 PUBLIC	?write_serial@@YAXD@Z				; write_serial
 PUBLIC	?debug_serial@@YAXPEAD@Z			; debug_serial
@@ -18,19 +15,18 @@ EXTRN	x64_outportb:PROC
 EXTRN	?interrupt_end@@YAXI@Z:PROC			; interrupt_end
 EXTRN	?interrupt_set@@YAX_KP6AX0PEAX@ZE@Z:PROC	; interrupt_set
 EXTRN	?strlen@@YA_KPEBD@Z:PROC			; strlen
-EXTRN	?printf@@YAXPEBDZZ:PROC				; printf
 pdata	SEGMENT
 $pdata$?initialize_serial@@YAXXZ DD imagerel $LN4
 	DD	imagerel $LN4+160
 	DD	imagerel $unwind$?initialize_serial@@YAXXZ
-$pdata$?write_serial@@YAXD@Z DD imagerel $LN3
-	DD	imagerel $LN3+27
+$pdata$?write_serial@@YAXD@Z DD imagerel $LN5
+	DD	imagerel $LN5+38
 	DD	imagerel $unwind$?write_serial@@YAXD@Z
 $pdata$?debug_serial@@YAXPEAD@Z DD imagerel $LN6
 	DD	imagerel $LN6+85
 	DD	imagerel $unwind$?debug_serial@@YAXPEAD@Z
 $pdata$?serial_handler@@YAX_KPEAX@Z DD imagerel $LN3
-	DD	imagerel $LN3+41
+	DD	imagerel $LN3+29
 	DD	imagerel $unwind$?serial_handler@@YAX_KPEAX@Z
 $pdata$?is_transmit_empty@@YAHXZ DD imagerel $LN3
 	DD	imagerel $LN3+24
@@ -85,11 +81,7 @@ $LN3:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 40					; 00000028H
 
-; 21   : 	printf ("Serial Handler\n");
-
-	lea	rcx, OFFSET FLAT:$SG2845
-	call	?printf@@YAXPEBDZZ			; printf
-
+; 21   : 	//printf ("Serial Handler\n");
 ; 22   : 	interrupt_end(4);
 
 	mov	ecx, 4
@@ -155,11 +147,19 @@ a$ = 48
 
 ; 48   : void write_serial (char a) {
 
-$LN3:
+$LN5:
 	mov	BYTE PTR [rsp+8], cl
 	sub	rsp, 40					; 00000028H
+$LN2@write_seri:
 
-; 49   : 	//while (is_transmit_empty() == 0);
+; 49   : 	while (is_transmit_empty() == 0);
+
+	call	?is_transmit_empty@@YAHXZ		; is_transmit_empty
+	test	eax, eax
+	jne	SHORT $LN1@write_seri
+	jmp	SHORT $LN2@write_seri
+$LN1@write_seri:
+
 ; 50   : 	x64_outportb (PORT, a);
 
 	movzx	edx, BYTE PTR a$[rsp]

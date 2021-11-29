@@ -14,7 +14,7 @@
 
 
 list_t* initialize_list() {
-	list_t *list = (list_t*)malloc(4096);
+	list_t *list = (list_t*)malloc(sizeof(list_t));
 	list->entry_current = nullptr;
 	list->pointer = 0;
 	return list;

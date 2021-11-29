@@ -17,7 +17,7 @@ EXTRN	?memset@@YAXPEAXEI@Z:PROC			; memset
 EXTRN	memcpy:PROC
 EXTRN	?pmmngr_alloc@@YAPEAXXZ:PROC			; pmmngr_alloc
 EXTRN	x64_cli:PROC
-EXTRN	?map_page@@YA_N_K0@Z:PROC			; map_page
+EXTRN	?map_page@@YA_N_K0E@Z:PROC			; map_page
 EXTRN	?get_current_thread@@YAPEAU_thread_@@XZ:PROC	; get_current_thread
 EXTRN	?thread_iterate_ready_list@@YAPEAU_thread_@@G@Z:PROC ; thread_iterate_ready_list
 EXTRN	?thread_iterate_block_list@@YAPEAU_thread_@@H@Z:PROC ; thread_iterate_block_list
@@ -30,7 +30,7 @@ msg_rcv_mutex DQ 01H DUP (?)
 _BSS	ENDS
 pdata	SEGMENT
 $pdata$?dwm_ipc_init@@YAXXZ DD imagerel $LN3
-	DD	imagerel $LN3+57
+	DD	imagerel $LN3+60
 	DD	imagerel $unwind$?dwm_ipc_init@@YAXXZ
 $pdata$?dwm_put_message@@YAXPEAU_dwm_message_@@@Z DD imagerel $LN5
 	DD	imagerel $LN5+132
@@ -280,11 +280,12 @@ $LN3:
 	mov	rcx, QWORD PTR p$[rsp]
 	call	?memset@@YAXPEAXEI@Z			; memset
 
-; 24   : 	map_page((uint64_t)p,0xFFFFFD0000000000);
+; 24   : 	map_page((uint64_t)p,0xFFFFFD0000000000, 0);
 
+	xor	r8d, r8d
 	mov	rdx, -3298534883328			; fffffd0000000000H
 	mov	rcx, QWORD PTR p$[rsp]
-	call	?map_page@@YA_N_K0@Z			; map_page
+	call	?map_page@@YA_N_K0E@Z			; map_page
 
 ; 25   : }
 

@@ -36,14 +36,8 @@ typedef struct _data_ {
 	uint8_t ch[32];
 }data_t;
 
-void main (int argc, char*argv[]) {
-	sys_print_text ("\n");
-	sys_print_text ("Copyright (C) Manas Kamal Choudhury 2021\n");
-	sys_print_text ("Operating System : Aurora's Xeneva v1.0\n");
-	sys_print_text ("XNShell v1.0\n");
-	sys_print_text ("Shell created thread\n");
-
-	int fd;
+void main (/*int argc, char*argv[]*/) {
+	/*int fd;
 
 	unsigned char *data = (unsigned char*)malloc(sizeof(data_t));
 	data_t *d = (data_t*)data;
@@ -58,11 +52,10 @@ void main (int argc, char*argv[]) {
 	UFILE file;
 	file.size = 32;
 	file.flags = 0;
-	sys_write_file (fd,data,&file);
-	message_t msg;
+	sys_write_file (fd,data,&file);*/
+	///message_t msg;
 	while(1) {
-		sys_print_text ("Shell Loop\n");
-		sys_wait();
+		
 	}
 }
 

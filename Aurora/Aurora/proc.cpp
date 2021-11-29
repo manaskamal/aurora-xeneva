@@ -84,7 +84,7 @@ process_t *find_process_by_id (uint32_t pid) {
 }
 /* Create stack for User process */
 uint64_t *create_user_stack (uint64_t* cr3) {
-#define USER_STACK   0x0000700000000000 
+#define USER_STACK  0x0000700000000000 
 	
 	/*uint64_t* old_cr3 = (uint64_t*)x64_read_cr3();
 	x64_write_cr3 ((size_t)cr3);*/
@@ -94,7 +94,7 @@ uint64_t *create_user_stack (uint64_t* cr3) {
 	for (int i=0; i < (2*1024*1024)/4096; i++) {
 		uint64_t *block = (uint64_t*)pmmngr_alloc();
 		memset (block, 0, 4096);
-		map_page_ex(cr3, (uint64_t)block,location + i * 4096);
+		map_page_ex(cr3, (uint64_t)block,location + i * 4096, PAGING_USER);
 	}
  
 	//x64_write_cr3((size_t)old_cr3);
@@ -106,15 +106,17 @@ uint64_t *create_user_stack (uint64_t* cr3) {
  * Create incremental stack : Creates stack in same address space
  */
 uint64_t* create_inc_stack (uint64_t* cr3) {
-#define INC_STACK 0x0000010000000000
-	uint64_t location = INC_STACK + user_stack_index;
+#define INC_STACK 0x0000700000000000 
+	uint64_t location = INC_STACK ; //+ user_stack_index;
 
-	for (int i = 0; i < 0x100000 / 4096; i++) {
-		map_page_ex (cr3, (uint64_t)pmmngr_alloc(), location + i * 4096);
+	for (int i = 0; i < (2*1024*1024) / 4096; i++) {
+		void* p = pmmngr_alloc();
+		memset(p, 0, 4096);
+		map_page_ex(cr3,(uint64_t)p, location + i * 4096, PAGING_USER);
 	}
 
-	user_stack_index += 0x100000;
-	return (uint64_t*)(INC_STACK + 0x100000);
+	//user_stack_index += 0x100000;
+	return (uint64_t*)(INC_STACK + (2*1024*1024));
 }
 
 void allocate_fd (thread_t *t) {
@@ -130,29 +132,27 @@ void allocate_fd (thread_t *t) {
 
 }
 
-void create_process(const char* filename, char* procname, uint8_t priority, char *strings) {
-	x64_cli();
+void create_process(const char* filename, char* procname) {
+	
 	//printf ("Creating processs -> %s\n", filename);
-	mutex_lock (process_mutex);
+	//mutex_lock (process_mutex);
 	//!allocate a data-structure for process 
 	process_t *process = (process_t*)pmmngr_alloc();
 	process->pid_t = pid;
+
+
 	//!open the process file-binary
 	char *fname = (char*)filename;
-
-	vfs_node_t *node = vfs_finddir (fname);
-
-	vfs_node_t file = openfs (node, fname);
-
+    vfs_node_t *n = vfs_finddir (fname);
+	vfs_node_t file = openfs(n, fname);
 
 	if (file.status == FS_FLAG_INVALID) {
 		printf("Executable image not found\n");
 		return;
 	}
-
 	//!open the binary file and read it
 	unsigned char* buf = (unsigned char*)pmmngr_alloc();   //18*1024
-	readfs_block(node,&file,buf);
+	readfs_block(n,&file,buf);
 
 	IMAGE_DOS_HEADER* dos = (IMAGE_DOS_HEADER*)buf;
 	PIMAGE_NT_HEADERS nt = raw_offset<PIMAGE_NT_HEADERS>(dos, dos->e_lfanew);
@@ -163,28 +163,28 @@ void create_process(const char* filename, char* procname, uint8_t priority, char
 	ientry ent = (ientry)(nt->OptionalHeader.AddressOfEntryPoint + nt->OptionalHeader.ImageBase); //buffer
 	
 	//! create the user stack and address space
-    uint64_t *cr3 = create_user_address_space();
+    uint64_t *cr3 = create_user_address_space();	
 	uint64_t stack = (uint64_t)create_user_stack(cr3);
-	map_page_ex(cr3,(uint64_t)buf,_image_base_);
 
-	//! read rest of the image
+	map_page_ex(cr3,(uint64_t)buf,_image_base_, PAGING_USER);
+	////! read rest of the image
 	int position = 1;  //we already read 4096 bytes at first
-	while(file.eof != 1){
+
+	while (file.eof != 1){
 		unsigned char* block = (unsigned char*)pmmngr_alloc();
 		//read_blk(&file,block,file.id);
-		readfs_block (node, &file, block);
+		readfs_block (n, &file, block);
 		//fat32_read (&file,block);
-		map_page_ex(cr3,(uint64_t)block,_image_base_ + position * 4096);
+		map_page_ex(cr3,(uint64_t)block,_image_base_ + position * 4096, PAGING_USER);
 		position++;
 	}
 
-	uint64_t pos = 0x0000080000000000;
+	uint64_t pos = 0x0000080000000000;   //0x0000080000000000;
 	for (int i = 0; i < 0xB01000 / 4096; i++) {
 		void* p = pmmngr_alloc();
 		memset (p, 0, 4096);
-		map_page_ex (cr3, (uint64_t)p, pos + i * 4096);
+		map_page_ex(cr3,(uint64_t)p, pos + i * 4096, PAGING_USER);
 	}
-	
 	//!allocate current process
 	process->name = procname;
 	process->entry_point = ent;
@@ -197,15 +197,13 @@ void create_process(const char* filename, char* procname, uint8_t priority, char
 	process->user_heap_start = (void*)0x0000080000000000;
 	process->heap_size = 0xB00000;
 	//! Create and thread and start scheduling when scheduler starts */
-	thread_t *t = create_user_thread(process->entry_point,stack,(uint64_t)cr3,procname,priority);
-	allocate_fd(t);
-	t->rcx = priority;
-	t->rdx = (uint64_t)strings;
+	thread_t *t = create_user_thread(process->entry_point,stack,(uint64_t)cr3,procname,0);
+	printf ("stack -> %x\n",stack);
+	//allocate_fd(t);
 	//! add the process to process manager
 	process->thread_data_pointer = t;
-	
     add_process(process);
-	mutex_unlock (process_mutex);
+	//mutex_unlock (process_mutex);
 }
 
 //! Kill Process
@@ -321,7 +319,7 @@ void exec (const char* filename, uint32_t pid) {
 	uint64_t _image_base_ = nt->OptionalHeader.ImageBase;
 	ientry ent = (ientry)(nt->OptionalHeader.AddressOfEntryPoint + nt->OptionalHeader.ImageBase); //buffer
 
-	map_page((uint64_t)buffer,_image_base_);
+	map_page((uint64_t)buffer,_image_base_, PAGING_USER);
 	int position = 1;  //we already read 4096 bytes at first
 	//while(f.eof != 1){
 	//	unsigned char* block = (unsigned char*)pmmngr_alloc();

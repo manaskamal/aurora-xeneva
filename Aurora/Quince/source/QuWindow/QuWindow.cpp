@@ -23,6 +23,7 @@
 #define QUWIN_DEFAULT_HEIGHT  500
 
 static bool UpdateToolbar = true;
+static int winid = 1;
 
 QuWindow* QuWindowCreate (int x, int y, uint16_t owner_id, unsigned int* canvas) {
 	QuWindow* win = (QuWindow*)malloc(sizeof(QuWindow));
@@ -39,7 +40,9 @@ QuWindow* QuWindowCreate (int x, int y, uint16_t owner_id, unsigned int* canvas)
 	win->maximize = false;
 	win->mark_for_close = false;
 	win->attr = QU_WIN_FULL; //attr;
+	win->id = winid;
     QuWindowMngr_Add (win);
+	winid++;
 	return win;
 }
 

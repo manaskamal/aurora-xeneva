@@ -47,22 +47,22 @@ void QuButtonRefresh (QuWidget *wid, QuWindow* win) {
 
 	//!Draw the gradient colors
 	for (int i = 0; i < 30; i++)
-		acrylic_draw_horizontal_line (wid->x, wid->y + i,but->widget.width, button_colors[i]);
+		acrylic_draw_horizontal_line (win->ctx,wid->x, wid->y + i,but->widget.width, button_colors[i]);
 
 	//! Check for hover bit
 	if (!but->hover) {
-		acrylic_draw_arr_string (wid->x + (wid->width/2) - ((strlen(but->text)*8)/2),
+		acrylic_draw_arr_string (win->ctx,wid->x + (wid->width/2) - ((strlen(but->text)*8)/2),
 		wid->y + (wid->height/2) - 12/2
 		,(char*)but->text, WHITE);
 
 		//! check for clicked bit
 		if (but->clicked) {
-			acrylic_draw_rect_filled (wid->x,wid->y , but->widget.width, but->widget.height,LIGHTBLACK);
-			acrylic_draw_arr_string (wid->x + (wid->width/2) - ((strlen(but->text)*8)/2),
+			acrylic_draw_rect_filled (win->ctx,wid->x,wid->y , but->widget.width, but->widget.height,LIGHTBLACK);
+			acrylic_draw_arr_string (win->ctx,wid->x + (wid->width/2) - ((strlen(but->text)*8)/2),
 				 wid->y + (wid->height/2) - 12/2
 				,(char*)but->text, SILVER);
-			acrylic_draw_rect_unfilled (wid->x, wid->y,but->widget.width, but->widget.height, SILVER); 
-			acrylic_draw_rect_unfilled (wid->x, wid->y,but->widget.width + 1, but->widget.height + 1, DESKBLUE); 
+			acrylic_draw_rect_unfilled (win->ctx,wid->x, wid->y,but->widget.width, but->widget.height, SILVER); 
+			acrylic_draw_rect_unfilled (win->ctx,wid->x, wid->y,but->widget.width + 1, but->widget.height + 1, DESKBLUE); 
 			but->clicked = false;
 		}
 
@@ -72,11 +72,11 @@ void QuButtonRefresh (QuWidget *wid, QuWindow* win) {
 	 */
 	else if (but->hover)  {
 
-		acrylic_draw_arr_string ( wid->x + (wid->width/2) - ((strlen(but->text)*8)/2),
+		acrylic_draw_arr_string (win->ctx, wid->x + (wid->width/2) - ((strlen(but->text)*8)/2),
 		wid->y + (wid->height/2) - 12/2
 		,(char*)but->text, LIGHTSILVER);
-		acrylic_draw_rect_unfilled (wid->x,wid->y,but->widget.width, but->widget.height, SILVER); 
-		acrylic_draw_rect_unfilled (wid->x,wid->y,but->widget.width + 1, but->widget.height + 1, DESKBLUE); 
+		acrylic_draw_rect_unfilled (win->ctx,wid->x,wid->y,but->widget.width, but->widget.height, SILVER); 
+		acrylic_draw_rect_unfilled (win->ctx,wid->x,wid->y,but->widget.width + 1, but->widget.height + 1, DESKBLUE); 
 		but->hover = false;
 
 	}
@@ -101,14 +101,14 @@ void QuButtonMouseEvent (QuWidget *wid, QuWindow* win, int code, bool clicked, i
 		but->hover = true;
 	
 		QuButtonRefresh(wid, win);
-        QuPanelUpdate (but->widget.x,but->widget.y, but->widget.width, but->widget.height,false);
+        QuPanelUpdate (win,but->widget.x,but->widget.y, but->widget.width, but->widget.height,false);
 
 		/* Make the difference between clicking & dragging here */
 		if (clicked && but->m_x == x && but->m_y == y) {
 			but->clicked = true;
 			but->hover = false;
 			QuButtonRefresh(wid, win);
-			QuPanelUpdate (but->widget.x,but->widget.y, but->widget.width, but->widget.height, false);
+			QuPanelUpdate (win,but->widget.x,but->widget.y, but->widget.width, but->widget.height, false);
 			//but->default_state = true;
 		}
 		but->default_state = true;
@@ -133,7 +133,7 @@ void QuButtonMouseEvent (QuWidget *wid, QuWindow* win, int code, bool clicked, i
 			but->hover = false;
 			QuButtonRefresh(wid, win);
 			but->default_state = false;
-			QuPanelUpdate (but->widget.x,but->widget.y, but->widget.width, but->widget.height, false);
+			QuPanelUpdate (win,but->widget.x,but->widget.y, but->widget.width, but->widget.height, false);
 		}
 	}
 

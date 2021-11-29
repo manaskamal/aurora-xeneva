@@ -129,6 +129,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="source\acrylic.cpp" />
+    <ClCompile Include="source\buffer.cpp" />
     <ClCompile Include="source\canvas.cpp" />
     <ClCompile Include="source\clientctx.cpp" />
     <ClCompile Include="source\color.cpp" />
@@ -140,6 +141,7 @@
   <ItemGroup>
     <ClInclude Include="include\acrylic.h" />
     <ClInclude Include="include\arrayfont.h" />
+    <ClInclude Include="include\buffer.h" />
     <ClInclude Include="include\canvas.h" />
     <ClInclude Include="include\clientctx.h" />
     <ClInclude Include="include\color.h" />

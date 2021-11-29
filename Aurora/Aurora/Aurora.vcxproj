@@ -231,6 +231,7 @@
     <ClInclude Include="..\include\drivers\vga.h" />
     <ClInclude Include="..\include\drivers\vmmouse.h" />
     <ClInclude Include="..\include\drvmngr.h" />
+    <ClInclude Include="..\include\efi.h" />
     <ClInclude Include="..\include\error.h" />
     <ClInclude Include="..\include\fs\devfs.h" />
     <ClInclude Include="..\include\fs\fat32.h" />

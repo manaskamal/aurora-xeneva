@@ -11,7 +11,7 @@
 #define __QU_BASE_H__
 
 #include <stdint.h>
-
+#include <QuWindow.h>
 
 //! Codes that are being send to Quince
 #define QU_CODE_WIN_CREATE   100
@@ -69,6 +69,8 @@ typedef struct _QuObject_ {
 
 extern void QuChannelPut (QuMessage *msg, uint16_t to_id);
 extern void QuChannelGet (QuMessage *msg);
-extern void QuRegisterApplication (char* app_title);
+extern void QuRegisterApplication (QuWindow* win);
 extern uint16_t QuGetAppId();
+extern void QuApplicationRegisterWindow (QuWindow *win);
+extern QuWindow* QuApplicationWindowGet (int id);
 #endif

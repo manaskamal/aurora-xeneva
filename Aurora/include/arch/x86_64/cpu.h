@@ -188,4 +188,9 @@ extern void hal_x86_64_init ();
 //! setvect -- installs a interrupt vector
 extern void setvect(size_t vector, void (*function)(size_t vector, void* param));
 
+extern "C" void gdt_initialize();
+extern void  interrupt_initialize();
+extern void  interrupt_initialize();
+extern void exception_init ();
+extern void hal_x86_64_setup_int ();
 #endif

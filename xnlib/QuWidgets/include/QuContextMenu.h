@@ -27,6 +27,7 @@ typedef struct _qu_ctx_menu_ {
 	QuList *popup_list;
 	bool popup;
 	QuPopupMenu *current_popup;
+	canvas_t *ctx;
 }QuContextMenu;
 
 extern QuContextMenu *QuCreateContextMenu(char *title);

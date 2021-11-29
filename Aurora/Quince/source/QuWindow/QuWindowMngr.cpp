@@ -129,7 +129,7 @@ void QuWindowMngr_DrawAll () {
 void QuWindowMngr_DisplayWindow() {
 	for (int i = 0; i < WindowList->pointer; i++) {
 		QuWindow* _win = (QuWindow*)QuListGetAt(WindowList, i);
-			canvas_screen_update(_win->x, _win->y, _win->width, _win->height);	
+			canvas_screen_update(QuGetCanvas(),_win->x, _win->y, _win->width, _win->height);	
 		
 	} 
 }
@@ -182,6 +182,7 @@ void QuWindowMngr_MoveFocusWindow (int x, int y) {
 	msg.type = QU_CANVAS_MOVE;
 	msg.dword = draggable_win->x;
 	msg.dword2 = draggable_win->y;
+	msg.dword3 = draggable_win->id;
 	QuChannelPut(&msg, draggable_win->owner_id);
 	sys_unblock_id (draggable_win->owner_id);
 
@@ -246,6 +247,7 @@ void QuWindowMngr_SendEvent (QuWindow *win, int type, int x, int y, int code) {
 	msg.type = type;
 	msg.from_id = get_current_pid();
 	msg.to_id = win->owner_id;
+	msg.dword4 = win->id;
 	if (type == QU_CANVAS_MOUSE_MOVE) {
 		msg.dword = x;
 		msg.dword2 = y;

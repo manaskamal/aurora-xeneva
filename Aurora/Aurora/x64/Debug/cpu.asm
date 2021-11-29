@@ -6,18 +6,19 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 CONST	SEGMENT
-$SG2925	DB	'*** [x64_idt] x64_default_handler: Unhandled Exception *'
+$SG2930	DB	'*** [x64_idt] x64_default_handler: Unhandled Exception *'
 	DB	'** ', 0aH, 00H
 CONST	ENDS
 PUBLIC	?hal_x86_64_init@@YAXXZ				; hal_x86_64_init
 PUBLIC	?setvect@@YAX_KP6AX0PEAX@Z@Z			; setvect
+PUBLIC	gdt_initialize
+PUBLIC	?interrupt_initialize@@YAXXZ			; interrupt_initialize
+PUBLIC	?hal_x86_64_setup_int@@YAXXZ			; hal_x86_64_setup_int
 PUBLIC	load_default_sregs
 PUBLIC	?set_gdt_entry@@YAXAEAU_gdt@@_K1EE@Z		; set_gdt_entry
 PUBLIC	?save_sregs@@YAXXZ				; save_sregs
-PUBLIC	gdt_initialize
 PUBLIC	interrupt_dispatcher
 PUBLIC	?default_irq@@YAX_KPEAX@Z			; default_irq
-PUBLIC	?interrupt_initialize@@YAXXZ			; interrupt_initialize
 EXTRN	x64_cli:PROC
 EXTRN	x64_sti:PROC
 EXTRN	x64_outportb:PROC
@@ -25,8 +26,8 @@ EXTRN	x64_read_msr:PROC
 EXTRN	x64_write_msr:PROC
 EXTRN	x64_lgdt:PROC
 EXTRN	x64_sgdt:PROC
-EXTRN	?printf@@YAXPEBDZZ:PROC				; printf
 EXTRN	?exception_init@@YAXXZ:PROC			; exception_init
+EXTRN	?printf@@YAXPEBDZZ:PROC				; printf
 EXTRN	?initialize_syscall@@YAXXZ:PROC			; initialize_syscall
 EXTRN	?initialize_user_land@@YAX_K@Z:PROC		; initialize_user_land
 EXTRN	?initialize_apic@@YAXXZ:PROC			; initialize_apic
@@ -49,8 +50,17 @@ the_idt	DB	01000H DUP (?)
 _BSS	ENDS
 pdata	SEGMENT
 $pdata$?hal_x86_64_init@@YAXXZ DD imagerel $LN3
-	DD	imagerel $LN3+193
+	DD	imagerel $LN3+24
 	DD	imagerel $unwind$?hal_x86_64_init@@YAXXZ
+$pdata$gdt_initialize DD imagerel $LN3
+	DD	imagerel $LN3+81
+	DD	imagerel $unwind$gdt_initialize
+$pdata$?interrupt_initialize@@YAXXZ DD imagerel $LN12
+	DD	imagerel $LN12+535
+	DD	imagerel $unwind$?interrupt_initialize@@YAXXZ
+$pdata$?hal_x86_64_setup_int@@YAXXZ DD imagerel $LN3
+	DD	imagerel $LN3+188
+	DD	imagerel $unwind$?hal_x86_64_setup_int@@YAXXZ
 $pdata$load_default_sregs DD imagerel $LN3
 	DD	imagerel $LN3+90
 	DD	imagerel $unwind$load_default_sregs
@@ -63,9 +73,6 @@ $pdata$?fill_gdt@@YAXPEAU_gdt@@@Z DD imagerel ?fill_gdt@@YAXPEAU_gdt@@@Z
 $pdata$?save_sregs@@YAXXZ DD imagerel $LN6
 	DD	imagerel $LN6+67
 	DD	imagerel $unwind$?save_sregs@@YAXXZ
-$pdata$gdt_initialize DD imagerel $LN3
-	DD	imagerel $LN3+81
-	DD	imagerel $unwind$gdt_initialize
 $pdata$?register_irq@@YAXPEAU_idt@@PEAX@Z DD imagerel ?register_irq@@YAXPEAU_idt@@PEAX@Z
 	DD	imagerel ?register_irq@@YAXPEAU_idt@@PEAX@Z+93
 	DD	imagerel $unwind$?register_irq@@YAXPEAU_idt@@PEAX@Z
@@ -75,12 +82,15 @@ $pdata$interrupt_dispatcher DD imagerel $LN3
 $pdata$?default_irq@@YAX_KPEAX@Z DD imagerel $LN5
 	DD	imagerel $LN5+38
 	DD	imagerel $unwind$?default_irq@@YAX_KPEAX@Z
-$pdata$?interrupt_initialize@@YAXXZ DD imagerel $LN12
-	DD	imagerel $LN12+535
-	DD	imagerel $unwind$?interrupt_initialize@@YAXXZ
 pdata	ENDS
 xdata	SEGMENT
 $unwind$?hal_x86_64_init@@YAXXZ DD 010401H
+	DD	04204H
+$unwind$gdt_initialize DD 010401H
+	DD	04204H
+$unwind$?interrupt_initialize@@YAXXZ DD 020701H
+	DD	0a30107H
+$unwind$?hal_x86_64_setup_int@@YAXXZ DD 010401H
 	DD	06204H
 $unwind$load_default_sregs DD 010401H
 	DD	04204H
@@ -90,236 +100,13 @@ $unwind$?fill_gdt@@YAXPEAU_gdt@@@Z DD 010901H
 	DD	06209H
 $unwind$?save_sregs@@YAXXZ DD 010401H
 	DD	06204H
-$unwind$gdt_initialize DD 010401H
-	DD	04204H
 $unwind$?register_irq@@YAXPEAU_idt@@PEAX@Z DD 010e01H
 	DD	0220eH
 $unwind$interrupt_dispatcher DD 010e01H
 	DD	0420eH
 $unwind$?default_irq@@YAX_KPEAX@Z DD 010e01H
 	DD	0420eH
-$unwind$?interrupt_initialize@@YAXXZ DD 020701H
-	DD	0a30107H
 xdata	ENDS
-; Function compile flags: /Odtpy
-; File e:\xeneva project\xeneva\aurora\aurora\arch\x86_64\cpu.cpp
-_TEXT	SEGMENT
-n$1 = 48
-i$2 = 52
-i$3 = 56
-idtr$ = 64
-thegdt$ = 72
-tv168 = 80
-curr_gdt$ = 88
-m_ist$ = 104
-tss$ = 144
-bos$4 = 256
-?interrupt_initialize@@YAXXZ PROC			; interrupt_initialize
-
-; 141  : void  interrupt_initialize() {
-
-$LN12:
-	sub	rsp, 1304				; 00000518H
-
-; 142  :  
-; 143  : 
-; 144  : 	void* m_ist[4];
-; 145  : 	uint32_t tss[28];
-; 146  : 	for (int i = 0; i < 28; i++) tss[i] = 0xffffffff;
-
-	mov	DWORD PTR i$3[rsp], 0
-	jmp	SHORT $LN9@interrupt_
-$LN8@interrupt_:
-	mov	eax, DWORD PTR i$3[rsp]
-	inc	eax
-	mov	DWORD PTR i$3[rsp], eax
-$LN9@interrupt_:
-	cmp	DWORD PTR i$3[rsp], 28
-	jge	SHORT $LN7@interrupt_
-	movsxd	rax, DWORD PTR i$3[rsp]
-	mov	DWORD PTR tss$[rsp+rax*4], -1		; ffffffffH
-	jmp	SHORT $LN8@interrupt_
-$LN7@interrupt_:
-
-; 147  : 	for (int i = 0; i < 1; i++)
-
-	mov	DWORD PTR i$2[rsp], 0
-	jmp	SHORT $LN6@interrupt_
-$LN5@interrupt_:
-	mov	eax, DWORD PTR i$2[rsp]
-	inc	eax
-	mov	DWORD PTR i$2[rsp], eax
-$LN6@interrupt_:
-	cmp	DWORD PTR i$2[rsp], 1
-	jge	SHORT $LN4@interrupt_
-
-; 148  : 	{
-; 149  : 		uint8_t bos[1024];
-; 150  : 		m_ist[i] = bos + 1024;
-
-	lea	rax, QWORD PTR bos$4[rsp+1024]
-	movsxd	rcx, DWORD PTR i$2[rsp]
-	mov	QWORD PTR m_ist$[rsp+rcx*8], rax
-
-; 151  : 		tss[9+i*2] = reinterpret_cast<uint64_t>(m_ist[i]) & 0xffffffff;
-
-	movsxd	rax, DWORD PTR i$2[rsp]
-	mov	ecx, -1					; ffffffffH
-	mov	rax, QWORD PTR m_ist$[rsp+rax*8]
-	and	rax, rcx
-	mov	ecx, DWORD PTR i$2[rsp]
-	lea	ecx, DWORD PTR [rcx+rcx+9]
-	movsxd	rcx, ecx
-	mov	DWORD PTR tss$[rsp+rcx*4], eax
-
-; 152  : 		tss[9+i*2+1] = reinterpret_cast<uint64_t>(m_ist[i]) >> 32;
-
-	movsxd	rax, DWORD PTR i$2[rsp]
-	mov	rax, QWORD PTR m_ist$[rsp+rax*8]
-	shr	rax, 32					; 00000020H
-	mov	ecx, DWORD PTR i$2[rsp]
-	lea	ecx, DWORD PTR [rcx+rcx+10]
-	movsxd	rcx, ecx
-	mov	DWORD PTR tss$[rsp+rcx*4], eax
-
-; 153  : 	}
-
-	jmp	SHORT $LN5@interrupt_
-$LN4@interrupt_:
-
-; 154  : 	gdtr curr_gdt;
-; 155  : 	x64_sgdt(&curr_gdt);
-
-	lea	rcx, QWORD PTR curr_gdt$[rsp]
-	call	x64_sgdt
-
-; 156  : 	gdt_entry* thegdt = the_gdtr.gdtaddr; //curr_gdt.gdtaddr;
-
-	mov	rax, QWORD PTR the_gdtr+2
-	mov	QWORD PTR thegdt$[rsp], rax
-
-; 157  : 	set_gdt_entry(thegdt[GDT_ENTRY_TSS], reinterpret_cast<uint64_t>(tss) & UINT32_MAX, sizeof(tss), GDT_ACCESS_PRESENT | 0x9, 0);
-
-	lea	rax, QWORD PTR tss$[rsp]
-	mov	ecx, -1					; ffffffffH
-	and	rax, rcx
-	mov	ecx, 8
-	imul	rcx, 7
-	mov	rdx, QWORD PTR thegdt$[rsp]
-	add	rdx, rcx
-	mov	rcx, rdx
-	mov	BYTE PTR [rsp+32], 0
-	mov	r9b, 137				; 00000089H
-	mov	r8d, 112				; 00000070H
-	mov	rdx, rax
-	call	?set_gdt_entry@@YAXAEAU_gdt@@_K1EE@Z	; set_gdt_entry
-
-; 158  : 	*(uint64_t*)&thegdt[GDT_ENTRY_TSS + 1] = (reinterpret_cast<uint64_t>(tss) >> 32);
-
-	lea	rax, QWORD PTR tss$[rsp]
-	shr	rax, 32					; 00000020H
-	mov	ecx, 8
-	imul	rcx, 8
-	mov	rdx, QWORD PTR thegdt$[rsp]
-	mov	QWORD PTR [rdx+rcx], rax
-
-; 159  : 	x64_ltr(SEGVAL(GDT_ENTRY_TSS, 0));
-
-	mov	cx, 56					; 00000038H
-	call	x64_ltr
-
-; 160  : 
-; 161  : 
-; 162  : 	IDTR *idtr = (IDTR*)0xFFFFD80000000000;
-
-	mov	rax, -43980465111040			; ffffd80000000000H
-	mov	QWORD PTR idtr$[rsp], rax
-
-; 163  : 	idtr->idtaddr = the_idt;
-
-	mov	rax, QWORD PTR idtr$[rsp]
-	lea	rcx, OFFSET FLAT:the_idt
-	mov	QWORD PTR [rax+2], rcx
-
-; 164  : 	idtr->length = 256 * sizeof(IDT) - 1;
-
-	mov	eax, 4095				; 00000fffH
-	mov	rcx, QWORD PTR idtr$[rsp]
-	mov	WORD PTR [rcx], ax
-
-; 165  : 	x64_lidt(idtr);
-
-	mov	rcx, QWORD PTR idtr$[rsp]
-	call	x64_lidt
-
-; 166  : 	for (int n = 0; n < 256; n++)
-
-	mov	DWORD PTR n$1[rsp], 0
-	jmp	SHORT $LN3@interrupt_
-$LN2@interrupt_:
-	mov	eax, DWORD PTR n$1[rsp]
-	inc	eax
-	mov	DWORD PTR n$1[rsp], eax
-$LN3@interrupt_:
-	cmp	DWORD PTR n$1[rsp], 256			; 00000100H
-	jge	$LN1@interrupt_
-
-; 167  : 	{
-; 168  : 		the_idt[n].ist = 0;
-
-	movsxd	rax, DWORD PTR n$1[rsp]
-	imul	rax, 16
-	lea	rcx, OFFSET FLAT:the_idt
-	mov	BYTE PTR [rcx+rax+4], 0
-
-; 169  : 		the_idt[n].selector = SEGVAL(GDT_ENTRY_KERNEL_CODE, 0);
-
-	movsxd	rax, DWORD PTR n$1[rsp]
-	imul	rax, 16
-	lea	rcx, OFFSET FLAT:the_idt
-	mov	edx, 8
-	mov	WORD PTR [rcx+rax+2], dx
-
-; 170  : 		the_idt[n].zero = 0;
-
-	movsxd	rax, DWORD PTR n$1[rsp]
-	imul	rax, 16
-	lea	rcx, OFFSET FLAT:the_idt
-	mov	DWORD PTR [rcx+rax+12], 0
-
-; 171  : 		the_idt[n].type_attr = GDT_ACCESS_PRESENT | 0xE;
-
-	movsxd	rax, DWORD PTR n$1[rsp]
-	imul	rax, 16
-	lea	rcx, OFFSET FLAT:the_idt
-	mov	BYTE PTR [rcx+rax+5], 142		; 0000008eH
-
-; 172  : 		register_irq(&the_idt[n], default_irq_handlers[n]);
-
-	movsxd	rax, DWORD PTR n$1[rsp]
-	lea	rcx, OFFSET FLAT:default_irq_handlers
-	movsxd	rdx, DWORD PTR n$1[rsp]
-	imul	rdx, 16
-	lea	r8, OFFSET FLAT:the_idt
-	add	r8, rdx
-	mov	rdx, r8
-	mov	QWORD PTR tv168[rsp], rdx
-	mov	rdx, QWORD PTR [rcx+rax*8]
-	mov	rax, QWORD PTR tv168[rsp]
-	mov	rcx, rax
-	call	?register_irq@@YAXPEAU_idt@@PEAX@Z	; register_irq
-
-; 173  : 	}
-
-	jmp	$LN2@interrupt_
-$LN1@interrupt_:
-
-; 174  : }
-
-	add	rsp, 1304				; 00000518H
-	ret	0
-?interrupt_initialize@@YAXXZ ENDP			; interrupt_initialize
-_TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\arch\x86_64\cpu.cpp
 _TEXT	SEGMENT
@@ -340,7 +127,7 @@ $LN5:
 
 ; 135  : 	printf("*** [x64_idt] x64_default_handler: Unhandled Exception *** \n");
 
-	lea	rcx, OFFSET FLAT:$SG2925
+	lea	rcx, OFFSET FLAT:$SG2930
 	call	?printf@@YAXPEBDZZ			; printf
 $LN2@default_ir:
 
@@ -431,55 +218,6 @@ function$ = 40
 	add	rsp, 24
 	ret	0
 ?register_irq@@YAXPEAU_idt@@PEAX@Z ENDP			; register_irq
-_TEXT	ENDS
-; Function compile flags: /Odtpy
-; File e:\xeneva project\xeneva\aurora\aurora\arch\x86_64\cpu.cpp
-_TEXT	SEGMENT
-gdt_initialize PROC
-
-; 95   : {
-
-$LN3:
-	sub	rsp, 40					; 00000028H
-
-; 96   : 	x64_sgdt(&old_gdtr);
-
-	lea	rcx, OFFSET FLAT:old_gdtr
-	call	x64_sgdt
-
-; 97   : 	save_sregs();
-
-	call	?save_sregs@@YAXXZ			; save_sregs
-
-; 98   : 	fill_gdt(gdt);
-
-	lea	rcx, OFFSET FLAT:gdt
-	call	?fill_gdt@@YAXPEAU_gdt@@@Z		; fill_gdt
-
-; 99   : 	the_gdtr.gdtaddr = gdt;
-
-	lea	rax, OFFSET FLAT:gdt
-	mov	QWORD PTR the_gdtr+2, rax
-
-; 100  : 	the_gdtr.size = GDT_ENTRIES * sizeof(gdt_entry) - 1;
-
-	mov	eax, 71					; 00000047H
-	mov	WORD PTR the_gdtr, ax
-
-; 101  : 	x64_lgdt(&the_gdtr);
-
-	lea	rcx, OFFSET FLAT:the_gdtr
-	call	x64_lgdt
-
-; 102  : 	load_default_sregs();
-
-	call	load_default_sregs
-
-; 103  : }
-
-	add	rsp, 40					; 00000028H
-	ret	0
-gdt_initialize ENDP
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\arch\x86_64\cpu.cpp
@@ -800,6 +538,401 @@ _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\arch\x86_64\cpu.cpp
 _TEXT	SEGMENT
+divisor$ = 32
+efer$ = 40
+?hal_x86_64_setup_int@@YAXXZ PROC			; hal_x86_64_setup_int
+
+; 188  : void hal_x86_64_setup_int () {
+
+$LN3:
+	sub	rsp, 56					; 00000038H
+
+; 189  : 	x64_cli();
+
+	call	x64_cli
+
+; 190  : 
+; 191  : 	////! initialize the interrupt descriptor table
+; 192  : 	interrupt_initialize();
+
+	call	?interrupt_initialize@@YAXXZ		; interrupt_initialize
+
+; 193  : 	x64_sti();
+
+	call	x64_sti
+
+; 194  : 	////! initialize all exception handlers
+; 195  : 	exception_init ();
+
+	call	?exception_init@@YAXXZ			; exception_init
+
+; 196  : 
+; 197  : #ifdef USE_PIC
+; 198  : 	//initialize_pic(0x20, 0x28);
+; 199  : #endif
+; 200  : 
+; 201  : #ifdef USE_APIC
+; 202  : 	//!Initialize APIC   FIXME: Causes triple fault now
+; 203  : 	initialize_apic ();
+
+	call	?initialize_apic@@YAXXZ			; initialize_apic
+
+; 204  : 
+; 205  : 	unsigned int divisor =  1193181 / 100;
+
+	mov	DWORD PTR divisor$[rsp], 11931		; 00002e9bH
+
+; 206  : 	x64_outportb(0x43, 0x00 | 0x06 | 0x30 | 0x00);
+
+	mov	dl, 54					; 00000036H
+	mov	cx, 67					; 00000043H
+	call	x64_outportb
+
+; 207  : 	x64_outportb(0x40, divisor);
+
+	movzx	edx, BYTE PTR divisor$[rsp]
+	mov	cx, 64					; 00000040H
+	call	x64_outportb
+
+; 208  : 	x64_outportb(0x40, divisor >> 8);
+
+	mov	eax, DWORD PTR divisor$[rsp]
+	shr	eax, 8
+	movzx	edx, al
+	mov	cx, 64					; 00000040H
+	call	x64_outportb
+
+; 209  : #endif
+; 210  : //
+; 211  : //	//!Enable EFER and SYSCALL Extension
+; 212  : 	size_t efer = x64_read_msr(IA32_EFER);
+
+	mov	ecx, -1073741696			; c0000080H
+	call	x64_read_msr
+	mov	QWORD PTR efer$[rsp], rax
+
+; 213  : 	efer |= (1<<11);
+
+	mov	rax, QWORD PTR efer$[rsp]
+	bts	rax, 11
+	mov	QWORD PTR efer$[rsp], rax
+
+; 214  : 	efer |= 1;
+
+	mov	rax, QWORD PTR efer$[rsp]
+	or	rax, 1
+	mov	QWORD PTR efer$[rsp], rax
+
+; 215  : 	efer |= (1<<0);
+
+	mov	rax, QWORD PTR efer$[rsp]
+	or	rax, 1
+	mov	QWORD PTR efer$[rsp], rax
+
+; 216  : 	efer |= 1;
+
+	mov	rax, QWORD PTR efer$[rsp]
+	or	rax, 1
+	mov	QWORD PTR efer$[rsp], rax
+
+; 217  : 	x64_write_msr(IA32_EFER, efer);
+
+	mov	rdx, QWORD PTR efer$[rsp]
+	mov	ecx, -1073741696			; c0000080H
+	call	x64_write_msr
+
+; 218  : 	//! now start the interrupts
+; 219  : 
+; 220  : 	//! initialize the user land environment
+; 221  : 	initialize_user_land (64);
+
+	mov	ecx, 64					; 00000040H
+	call	?initialize_user_land@@YAX_K@Z		; initialize_user_land
+
+; 222  : 
+; 223  : 	//! initialize the syscall entries
+; 224  : 	initialize_syscall ();
+
+	call	?initialize_syscall@@YAXXZ		; initialize_syscall
+
+; 225  : 	//x64_sti ();
+; 226  : }
+
+	add	rsp, 56					; 00000038H
+	ret	0
+?hal_x86_64_setup_int@@YAXXZ ENDP			; hal_x86_64_setup_int
+_TEXT	ENDS
+; Function compile flags: /Odtpy
+; File e:\xeneva project\xeneva\aurora\aurora\arch\x86_64\cpu.cpp
+_TEXT	SEGMENT
+n$1 = 48
+i$2 = 52
+i$3 = 56
+idtr$ = 64
+thegdt$ = 72
+tv168 = 80
+curr_gdt$ = 88
+m_ist$ = 104
+tss$ = 144
+bos$4 = 256
+?interrupt_initialize@@YAXXZ PROC			; interrupt_initialize
+
+; 141  : void  interrupt_initialize() {
+
+$LN12:
+	sub	rsp, 1304				; 00000518H
+
+; 142  :  
+; 143  : 
+; 144  : 	void* m_ist[4];
+; 145  : 	uint32_t tss[28];
+; 146  : 	for (int i = 0; i < 28; i++) tss[i] = 0xffffffff;
+
+	mov	DWORD PTR i$3[rsp], 0
+	jmp	SHORT $LN9@interrupt_
+$LN8@interrupt_:
+	mov	eax, DWORD PTR i$3[rsp]
+	inc	eax
+	mov	DWORD PTR i$3[rsp], eax
+$LN9@interrupt_:
+	cmp	DWORD PTR i$3[rsp], 28
+	jge	SHORT $LN7@interrupt_
+	movsxd	rax, DWORD PTR i$3[rsp]
+	mov	DWORD PTR tss$[rsp+rax*4], -1		; ffffffffH
+	jmp	SHORT $LN8@interrupt_
+$LN7@interrupt_:
+
+; 147  : 	for (int i = 0; i < 1; i++)
+
+	mov	DWORD PTR i$2[rsp], 0
+	jmp	SHORT $LN6@interrupt_
+$LN5@interrupt_:
+	mov	eax, DWORD PTR i$2[rsp]
+	inc	eax
+	mov	DWORD PTR i$2[rsp], eax
+$LN6@interrupt_:
+	cmp	DWORD PTR i$2[rsp], 1
+	jge	SHORT $LN4@interrupt_
+
+; 148  : 	{
+; 149  : 		uint8_t bos[1024];
+; 150  : 		m_ist[i] = bos + 1024;
+
+	lea	rax, QWORD PTR bos$4[rsp+1024]
+	movsxd	rcx, DWORD PTR i$2[rsp]
+	mov	QWORD PTR m_ist$[rsp+rcx*8], rax
+
+; 151  : 		tss[9+i*2] = reinterpret_cast<uint64_t>(m_ist[i]) & 0xffffffff;
+
+	movsxd	rax, DWORD PTR i$2[rsp]
+	mov	ecx, -1					; ffffffffH
+	mov	rax, QWORD PTR m_ist$[rsp+rax*8]
+	and	rax, rcx
+	mov	ecx, DWORD PTR i$2[rsp]
+	lea	ecx, DWORD PTR [rcx+rcx+9]
+	movsxd	rcx, ecx
+	mov	DWORD PTR tss$[rsp+rcx*4], eax
+
+; 152  : 		tss[9+i*2+1] = reinterpret_cast<uint64_t>(m_ist[i]) >> 32;
+
+	movsxd	rax, DWORD PTR i$2[rsp]
+	mov	rax, QWORD PTR m_ist$[rsp+rax*8]
+	shr	rax, 32					; 00000020H
+	mov	ecx, DWORD PTR i$2[rsp]
+	lea	ecx, DWORD PTR [rcx+rcx+10]
+	movsxd	rcx, ecx
+	mov	DWORD PTR tss$[rsp+rcx*4], eax
+
+; 153  : 	}
+
+	jmp	SHORT $LN5@interrupt_
+$LN4@interrupt_:
+
+; 154  : 	gdtr curr_gdt;
+; 155  : 	x64_sgdt(&curr_gdt);
+
+	lea	rcx, QWORD PTR curr_gdt$[rsp]
+	call	x64_sgdt
+
+; 156  : 	gdt_entry* thegdt = the_gdtr.gdtaddr; //curr_gdt.gdtaddr;
+
+	mov	rax, QWORD PTR the_gdtr+2
+	mov	QWORD PTR thegdt$[rsp], rax
+
+; 157  : 	set_gdt_entry(thegdt[GDT_ENTRY_TSS], reinterpret_cast<uint64_t>(tss) & UINT32_MAX, sizeof(tss), GDT_ACCESS_PRESENT | 0x9, 0);
+
+	lea	rax, QWORD PTR tss$[rsp]
+	mov	ecx, -1					; ffffffffH
+	and	rax, rcx
+	mov	ecx, 8
+	imul	rcx, 7
+	mov	rdx, QWORD PTR thegdt$[rsp]
+	add	rdx, rcx
+	mov	rcx, rdx
+	mov	BYTE PTR [rsp+32], 0
+	mov	r9b, 137				; 00000089H
+	mov	r8d, 112				; 00000070H
+	mov	rdx, rax
+	call	?set_gdt_entry@@YAXAEAU_gdt@@_K1EE@Z	; set_gdt_entry
+
+; 158  : 	*(uint64_t*)&thegdt[GDT_ENTRY_TSS + 1] = (reinterpret_cast<uint64_t>(tss) >> 32);
+
+	lea	rax, QWORD PTR tss$[rsp]
+	shr	rax, 32					; 00000020H
+	mov	ecx, 8
+	imul	rcx, 8
+	mov	rdx, QWORD PTR thegdt$[rsp]
+	mov	QWORD PTR [rdx+rcx], rax
+
+; 159  : 	x64_ltr(SEGVAL(GDT_ENTRY_TSS, 0));
+
+	mov	cx, 56					; 00000038H
+	call	x64_ltr
+
+; 160  : 
+; 161  : 
+; 162  : 	IDTR *idtr = (IDTR*)0xFFFFD80000000000;
+
+	mov	rax, -43980465111040			; ffffd80000000000H
+	mov	QWORD PTR idtr$[rsp], rax
+
+; 163  : 	idtr->idtaddr = the_idt;
+
+	mov	rax, QWORD PTR idtr$[rsp]
+	lea	rcx, OFFSET FLAT:the_idt
+	mov	QWORD PTR [rax+2], rcx
+
+; 164  : 	idtr->length = 256 * sizeof(IDT) - 1;
+
+	mov	eax, 4095				; 00000fffH
+	mov	rcx, QWORD PTR idtr$[rsp]
+	mov	WORD PTR [rcx], ax
+
+; 165  : 	x64_lidt(idtr);
+
+	mov	rcx, QWORD PTR idtr$[rsp]
+	call	x64_lidt
+
+; 166  : 	for (int n = 0; n < 256; n++)
+
+	mov	DWORD PTR n$1[rsp], 0
+	jmp	SHORT $LN3@interrupt_
+$LN2@interrupt_:
+	mov	eax, DWORD PTR n$1[rsp]
+	inc	eax
+	mov	DWORD PTR n$1[rsp], eax
+$LN3@interrupt_:
+	cmp	DWORD PTR n$1[rsp], 256			; 00000100H
+	jge	$LN1@interrupt_
+
+; 167  : 	{
+; 168  : 		the_idt[n].ist = 0;
+
+	movsxd	rax, DWORD PTR n$1[rsp]
+	imul	rax, 16
+	lea	rcx, OFFSET FLAT:the_idt
+	mov	BYTE PTR [rcx+rax+4], 0
+
+; 169  : 		the_idt[n].selector = SEGVAL(GDT_ENTRY_KERNEL_CODE, 0);
+
+	movsxd	rax, DWORD PTR n$1[rsp]
+	imul	rax, 16
+	lea	rcx, OFFSET FLAT:the_idt
+	mov	edx, 8
+	mov	WORD PTR [rcx+rax+2], dx
+
+; 170  : 		the_idt[n].zero = 0;
+
+	movsxd	rax, DWORD PTR n$1[rsp]
+	imul	rax, 16
+	lea	rcx, OFFSET FLAT:the_idt
+	mov	DWORD PTR [rcx+rax+12], 0
+
+; 171  : 		the_idt[n].type_attr = GDT_ACCESS_PRESENT | 0xE;
+
+	movsxd	rax, DWORD PTR n$1[rsp]
+	imul	rax, 16
+	lea	rcx, OFFSET FLAT:the_idt
+	mov	BYTE PTR [rcx+rax+5], 142		; 0000008eH
+
+; 172  : 		register_irq(&the_idt[n], default_irq_handlers[n]);
+
+	movsxd	rax, DWORD PTR n$1[rsp]
+	lea	rcx, OFFSET FLAT:default_irq_handlers
+	movsxd	rdx, DWORD PTR n$1[rsp]
+	imul	rdx, 16
+	lea	r8, OFFSET FLAT:the_idt
+	add	r8, rdx
+	mov	rdx, r8
+	mov	QWORD PTR tv168[rsp], rdx
+	mov	rdx, QWORD PTR [rcx+rax*8]
+	mov	rax, QWORD PTR tv168[rsp]
+	mov	rcx, rax
+	call	?register_irq@@YAXPEAU_idt@@PEAX@Z	; register_irq
+
+; 173  : 	}
+
+	jmp	$LN2@interrupt_
+$LN1@interrupt_:
+
+; 174  : }
+
+	add	rsp, 1304				; 00000518H
+	ret	0
+?interrupt_initialize@@YAXXZ ENDP			; interrupt_initialize
+_TEXT	ENDS
+; Function compile flags: /Odtpy
+; File e:\xeneva project\xeneva\aurora\aurora\arch\x86_64\cpu.cpp
+_TEXT	SEGMENT
+gdt_initialize PROC
+
+; 95   : {
+
+$LN3:
+	sub	rsp, 40					; 00000028H
+
+; 96   : 	x64_sgdt(&old_gdtr);
+
+	lea	rcx, OFFSET FLAT:old_gdtr
+	call	x64_sgdt
+
+; 97   : 	save_sregs();
+
+	call	?save_sregs@@YAXXZ			; save_sregs
+
+; 98   : 	fill_gdt(gdt);
+
+	lea	rcx, OFFSET FLAT:gdt
+	call	?fill_gdt@@YAXPEAU_gdt@@@Z		; fill_gdt
+
+; 99   : 	the_gdtr.gdtaddr = gdt;
+
+	lea	rax, OFFSET FLAT:gdt
+	mov	QWORD PTR the_gdtr+2, rax
+
+; 100  : 	the_gdtr.size = GDT_ENTRIES * sizeof(gdt_entry) - 1;
+
+	mov	eax, 71					; 00000047H
+	mov	WORD PTR the_gdtr, ax
+
+; 101  : 	x64_lgdt(&the_gdtr);
+
+	lea	rcx, OFFSET FLAT:the_gdtr
+	call	x64_lgdt
+
+; 102  : 	load_default_sregs();
+
+	call	load_default_sregs
+
+; 103  : }
+
+	add	rsp, 40					; 00000028H
+	ret	0
+gdt_initialize ENDP
+_TEXT	ENDS
+; Function compile flags: /Odtpy
+; File e:\xeneva project\xeneva\aurora\aurora\arch\x86_64\cpu.cpp
+_TEXT	SEGMENT
 vector$ = 8
 function$ = 16
 ?setvect@@YAX_KP6AX0PEAX@Z@Z PROC			; setvect
@@ -824,14 +957,12 @@ _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\arch\x86_64\cpu.cpp
 _TEXT	SEGMENT
-divisor$ = 32
-efer$ = 40
 ?hal_x86_64_init@@YAXXZ PROC				; hal_x86_64_init
 
 ; 177  : void hal_x86_64_init () {
 
 $LN3:
-	sub	rsp, 56					; 00000038H
+	sub	rsp, 40					; 00000028H
 
 ; 178  : 	//! clear interrupts first
 ; 179  :     x64_cli ();
@@ -839,119 +970,19 @@ $LN3:
 	call	x64_cli
 
 ; 180  : 
-; 181  : 	//! initialize the global descriptor table
+; 181  : 	////! initialize the global descriptor table
 ; 182  : 	gdt_initialize();
 
 	call	gdt_initialize
 
 ; 183  : 
-; 184  : 	//! initialize the interrupt descriptor table
-; 185  : 	interrupt_initialize();
-
-	call	?interrupt_initialize@@YAXXZ		; interrupt_initialize
-
-; 186  : 
-; 187  : 	//! initialize all exception handlers
-; 188  : 	exception_init ();
-
-	call	?exception_init@@YAXXZ			; exception_init
-
-; 189  : 
-; 190  : #ifdef USE_PIC
-; 191  : 	initialize_pic(0x20, 0x28);
-; 192  : #endif
-; 193  : 
-; 194  : #ifdef USE_APIC
-; 195  : 	//!Initialize APIC
-; 196  : 	initialize_apic ();
-
-	call	?initialize_apic@@YAXXZ			; initialize_apic
-
-; 197  : 
-; 198  : 	unsigned int divisor =  1193181 / 100;
-
-	mov	DWORD PTR divisor$[rsp], 11931		; 00002e9bH
-
-; 199  : 	x64_outportb(0x43, 0x00 | 0x06 | 0x30 | 0x00);
-
-	mov	dl, 54					; 00000036H
-	mov	cx, 67					; 00000043H
-	call	x64_outportb
-
-; 200  : 	x64_outportb(0x40, divisor);
-
-	movzx	edx, BYTE PTR divisor$[rsp]
-	mov	cx, 64					; 00000040H
-	call	x64_outportb
-
-; 201  : 	x64_outportb(0x40, divisor >> 8);
-
-	mov	eax, DWORD PTR divisor$[rsp]
-	shr	eax, 8
-	movzx	edx, al
-	mov	cx, 64					; 00000040H
-	call	x64_outportb
-
-; 202  : #endif
-; 203  : 
-; 204  : 	//!Enable EFER and SYSCALL Extension
-; 205  : 	size_t efer = x64_read_msr(IA32_EFER);
-
-	mov	ecx, -1073741696			; c0000080H
-	call	x64_read_msr
-	mov	QWORD PTR efer$[rsp], rax
-
-; 206  : 	efer |= (1<<11);
-
-	mov	rax, QWORD PTR efer$[rsp]
-	bts	rax, 11
-	mov	QWORD PTR efer$[rsp], rax
-
-; 207  : 	efer |= 1;
-
-	mov	rax, QWORD PTR efer$[rsp]
-	or	rax, 1
-	mov	QWORD PTR efer$[rsp], rax
-
-; 208  : 	efer |= (1<<0);
-
-	mov	rax, QWORD PTR efer$[rsp]
-	or	rax, 1
-	mov	QWORD PTR efer$[rsp], rax
-
-; 209  : 	efer |= 1;
-
-	mov	rax, QWORD PTR efer$[rsp]
-	or	rax, 1
-	mov	QWORD PTR efer$[rsp], rax
-
-; 210  : 	x64_write_msr(IA32_EFER, efer);
-
-	mov	rdx, QWORD PTR efer$[rsp]
-	mov	ecx, -1073741696			; c0000080H
-	call	x64_write_msr
-
-; 211  : 	//! now start the interrupts
-; 212  : 
-; 213  : 	//! initialize the user land environment
-; 214  : 	initialize_user_land (64);
-
-	mov	ecx, 64					; 00000040H
-	call	?initialize_user_land@@YAX_K@Z		; initialize_user_land
-
-; 215  : 
-; 216  : 	//! initialize the syscall entries
-; 217  : 	initialize_syscall ();
-
-	call	?initialize_syscall@@YAXXZ		; initialize_syscall
-
-; 218  : 	x64_sti ();
+; 184  : 	x64_sti();
 
 	call	x64_sti
 
-; 219  : }
+; 185  : }
 
-	add	rsp, 56					; 00000038H
+	add	rsp, 40					; 00000028H
 	ret	0
 ?hal_x86_64_init@@YAXXZ ENDP				; hal_x86_64_init
 _TEXT	ENDS

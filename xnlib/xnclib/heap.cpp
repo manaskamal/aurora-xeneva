@@ -24,7 +24,7 @@ void heap_initialize_allocator() {
 	//	valloc(0x0000080000000000 + i * 4096);
 	//}
 
-	start = (uint64_t*)0x0000080000000000;
+	start = (uint64_t*)0x0000080000000000;     
 
 	LIST_ENTRY *link = (LIST_ENTRY*)start;
 	link->is_free = true;
@@ -32,7 +32,7 @@ void heap_initialize_allocator() {
 	link->next = NULL;
 	link->prev = NULL;
 	last_header = link;
-	alloc_end = (void*)(0x0000080000000000 + 0xB00000);
+	alloc_end = (void*)(0x0000080000000000 + 0xB00000);  //0x0000000200000000  //0x0000080000000000
 }
 
 void expand_allocator(int sz) {

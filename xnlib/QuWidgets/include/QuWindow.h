@@ -11,9 +11,9 @@
 #define __QU_WINDOW_H__
 
 #include <stdint.h>
-#include <QuBase.h>
 #include <QuRect.h>
 #include <QuUtils\QuList.h>
+#include <canvas.h>
 
 #define QU_WIN_CONFIG_AUTO_INVALIDATE 6
 #define QU_WIN_SET_SIZE 7
@@ -74,6 +74,8 @@ typedef struct _QU_WIN_ {
 	void *current_menubar;
 	bool decorate;
 	char *title;
+	int winid;
+	canvas_t *ctx;
 }QuWindow;
 
 typedef struct _QuWidget_ {
@@ -88,7 +90,8 @@ typedef struct _QuWidget_ {
 	void (*ScrollEvent) (struct _QuWidget_*, struct _QuWidget_*, QuWindow* win);
 }QuWidget;
 
-extern void QuCreateWindow (int x, int y, int w,int h, uint32_t* info_data, char* title);
+extern QuWindow* QuCreateWindow (int x, int y, int w,int h, char* title);
+extern void QuSetRootWindow (QuWindow *win);
 extern void QuWindowEnableDecoration (bool value);
 extern void QuWindowSetCanvas (unsigned int* address);
 extern QuWindow* QuGetWindow ();
@@ -97,9 +100,9 @@ extern int QuWindowGetY();
 extern int QuWindowGetWidth ();
 extern int QuWindowGetHeight ();
 extern void QuWindowSetBound (int width, int height);
-extern void QuWindowAdd (QuWidget* wid);
-extern void QuWindowShow();
-extern void QuWindowMove (int x, int y);
+extern void QuWindowAdd (QuWindow* win,QuWidget* wid);
+extern void QuWindowShow(QuWindow * win);
+extern void QuWindowMove (QuWindow* win,int x, int y);
 extern void QuWindowSetAutoInvalidation (bool value);
 extern void QuWindowSetAutoInvalidateRegion (int x, int y, int w, int h);
 extern void QuWindowSetSize (int width, int height);

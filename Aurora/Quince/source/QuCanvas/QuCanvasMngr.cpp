@@ -47,16 +47,16 @@ void QuCanvasMngr_Initialize() {
 }
 
 //!Creates a canvas
-uint32_t* QuCanvasCreate (uint16_t dest_pid) {
+uint32_t* QuCanvasCreate (uint16_t dest_pid, int w, int h) {
 	uint32_t pos = cursor_pos;
-	uint32_t size = 500 * 500 * 32;
+	uint32_t size = w * h * 32;
 	map_shared_memory(dest_pid,QU_CANVAS_START + pos,size);
 	cursor_pos += size;
 	return (uint32_t*)(QU_CANVAS_START + pos);
 }
 
 void QuCanvasRelease (uint16_t dest_pid, QuWindow *win) {
-	uint32_t size = canvas_get_width() * canvas_get_height() * 32;
+	uint32_t size = canvas_get_width(QuGetCanvas()) * canvas_get_height(QuGetCanvas()) * 32;
 	sys_unmap_sh_mem(dest_pid, (uint64_t)win->canvas, size);
 	cursor_pos -= size;
 }
@@ -67,8 +67,8 @@ void QuCanvasBlit (QuWindow* win,unsigned int *canvas, unsigned x, unsigned y, u
 	uint32_t* lfb = (uint32_t*)0x0000600000000000;
 	uint32_t* fb = (uint32_t*)0xFFFFF00000000000;
 	uint32_t* wallp = (uint32_t*)0x0000600000000000;   //0x0000060000000000;
-	int width = canvas_get_width();
-	int height = canvas_get_height();
+	int width = canvas_get_width(QuGetCanvas());
+	int height = canvas_get_height(QuGetCanvas());
 	int j = 0;
 
 	//! No Auto-invalidation window 
@@ -101,7 +101,7 @@ void QuCanvasBlit (QuWindow* win,unsigned int *canvas, unsigned x, unsigned y, u
 					wid * 4);
 				}
 
-				canvas_screen_update(win->x + rx,win->y + ry, wid, he);
+				canvas_screen_update(QuGetCanvas(),win->x + rx,win->y + ry, wid, he);
 				//QuScreenRectAdd(info->rect[k].x, info->rect[k].y, info->rect[k].w, info->rect[k].h);
 			}
 
@@ -151,9 +151,7 @@ void QuCanvasBlit (QuWindow* win,unsigned int *canvas, unsigned x, unsigned y, u
 		QuWindowMngr_Remove(win);
 		QuCanvasSetUpdateBit(true);
 		QuWindowMngr_DrawBehind(win);
-		/*QuMessage msg;
-		msg.type = QU_CANVAS_DESTROYED;
-		QuChannelPut(&msg, id);*/
+		
 		//sys_kill(id,2);
 	}
 
@@ -179,11 +177,11 @@ void QuCanvasBlit (QuWindow* win,unsigned int *canvas, unsigned x, unsigned y, u
 
 
 void QuCanvasPutPixel (uint32_t *canvas, unsigned x, unsigned y, uint32_t color) {
-	canvas[x + y * canvas_get_scale()] = color;
+	canvas[x + y * canvas_get_scale(QuGetCanvas())] = color;
 }
 
 uint32_t QuCanvasGetPixel (uint32_t *canvas, unsigned x, unsigned y) {
-	return canvas[x + y * canvas_get_scale()];
+	return canvas[x + y * canvas_get_scale(QuGetCanvas())];
 }
 
 
@@ -205,8 +203,8 @@ void QuCanvasUpdate (unsigned x, unsigned y, unsigned w, unsigned h) {
 //	int height = canvas_get_height();
 	for (int i=0; i < w; i++) {
 		for (int j=0; j < h; j++){
-			uint32_t color = wallp[(x + i) + (y + j) * canvas_get_scale()];
-			lfb[(x + i) + (y + j) * canvas_get_scale()] = color;
+			uint32_t color = wallp[(x + i) + (y + j) * canvas_get_scale(QuGetCanvas())];
+			lfb[(x + i) + (y + j) * canvas_get_scale(QuGetCanvas())] = color;
 			
 		}
 	}
@@ -234,8 +232,8 @@ void QuCanvasUpdateDirty() {
 	 uint32_t* lfb = (uint32_t*)0x0000600000000000;
 	uint32_t* fb = (uint32_t*)0xFFFFF00000000000;
 	uint32_t* wallp = (uint32_t*)0x0000600000000000;   //0x0000060000000000;
-	int width = canvas_get_width();
-	int height = canvas_get_height();
+	int width = canvas_get_width(QuGetCanvas());
+	int height = canvas_get_height(QuGetCanvas());
 	 for (int i = 0; i < QuWindowMngr_GetList()->pointer; i++) {
 		 QuWindow* win = (QuWindow*)QuListGetAt(QuWindowMngr_GetList(), i);
 		 QuWindowInfo *info = (QuWindowInfo*)win->win_info_location;
@@ -247,8 +245,8 @@ void QuCanvasUpdateDirty() {
 
 
  void QuRenderTime (uint8_t sec, uint8_t min, uint8_t hr) {
-    acrylic_draw_rect_filled (canvas_get_width() - 100, canvas_get_height() - 35,100,30,0x8C3E3E3E);
-	acrylic_draw_rect_unfilled (canvas_get_width() - 100, canvas_get_height() - 35, 100, 30,0xD9FFFFFF);
+    acrylic_draw_rect_filled (QuGetCanvas(),canvas_get_width(QuGetCanvas()) - 102, canvas_get_height(QuGetCanvas()) - 35,100-2,30,0xD9C0C0C0);
+	/*acrylic_draw_rect_unfilled (QuGetCanvas(),canvas_get_width(QuGetCanvas()) - 100, canvas_get_height(QuGetCanvas()) - 35, 100, 30,0xD9FFFFFF);*/
 
 	char _sec[2];
 	char _min[2];
@@ -259,31 +257,31 @@ void QuCanvasUpdateDirty() {
 	sztoa(hr,_hour, 10);
 
 
-	acrylic_draw_arr_string (canvas_get_width() - 100 + 100/2 - (strlen(_hour)*8)/2 - 16,
-		canvas_get_height() - 35 + 30/2 - 12/2,
+	acrylic_draw_arr_string (QuGetCanvas(),canvas_get_width(QuGetCanvas()) - 100 + 100/2 - (strlen(_hour)*8)/2 - 16,
+		canvas_get_height(QuGetCanvas()) - 35 + 30/2 - 12/2,
 		_hour, 
-		0xD9FFFFFF);
+		0xD9000000);
 
-	acrylic_draw_arr_string (canvas_get_width() - 100 + 100/2 - (strlen(":")*8)/2 - 9,
-		canvas_get_height() - 35 + 30/2 - 12/2,
+	acrylic_draw_arr_string (QuGetCanvas(),canvas_get_width(QuGetCanvas()) - 100 + 100/2 - (strlen(":")*8)/2 - 9,
+		canvas_get_height(QuGetCanvas()) - 35 + 30/2 - 12/2,
 		":", 
-		0xD9FFFFFF);
+		0xD9000000);
 
-	acrylic_draw_arr_string (canvas_get_width() - 100 + 100/2 - (strlen(_min)*8)/2,
-		canvas_get_height() - 35 + 30/2 - 12/2,
+	acrylic_draw_arr_string (QuGetCanvas(),canvas_get_width(QuGetCanvas()) - 100 + 100/2 - (strlen(_min)*8)/2,
+		canvas_get_height(QuGetCanvas()) - 35 + 30/2 - 12/2,
 		_min, 
-		0xD9FFFFFF);
+		0xD9000000);
 
-	acrylic_draw_arr_string (canvas_get_width() - 100 + 100/2 - (strlen(":")*8)/2 + 9,
-		canvas_get_height() - 35 + 30/2 - 12/2,
+	acrylic_draw_arr_string (QuGetCanvas(),canvas_get_width(QuGetCanvas()) - 100 + 100/2 - (strlen(":")*8)/2 + 9,
+		canvas_get_height(QuGetCanvas()) - 35 + 30/2 - 12/2,
 		":", 
-		0xD9FFFFFF);
+		0xD9000000);
 
-	acrylic_draw_arr_string (canvas_get_width() - 100 + 100/2 - (strlen(_sec)*8)/2 + 19,
-		canvas_get_height() - 35 + 30/2 - 12/2,
+	acrylic_draw_arr_string (QuGetCanvas(),canvas_get_width(QuGetCanvas()) - 100 + 100/2 - (strlen(_sec)*8)/2 + 19,
+		canvas_get_height(QuGetCanvas()) - 35 + 30/2 - 12/2,
 		_sec, 
-		0xD9FFFFFF);
+		0xD9000000);
 
-	canvas_screen_update(canvas_get_width() - 100, canvas_get_height() - 35,100,30);
+	canvas_screen_update(QuGetCanvas(),canvas_get_width(QuGetCanvas()) - 100, canvas_get_height(QuGetCanvas()) - 35,100,30);
 
  }

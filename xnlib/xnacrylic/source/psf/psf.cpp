@@ -31,7 +31,7 @@ void psf_register_font_lib (){
 }
 
 //! Put a character to console output
-void psf_draw_string (const char *s,int pos_x, int pos_y, uint32_t f_color, uint32_t b_color) {
+void psf_draw_string (canvas_t *canvas,const char *s,int pos_x, int pos_y, uint32_t f_color, uint32_t b_color) {
 	psf2_t *font = (psf2_t*)font_data;
     int x,y,kx=0,line,mask,offs;
     int bpl=(font->width+7)/8;
@@ -43,10 +43,10 @@ void psf_draw_string (const char *s,int pos_x, int pos_y, uint32_t f_color, uint
 		for(y=0;y<font->height;y++) {
 			line=offs; mask=1<<(font->width-1);
 			for(x=0;x<font->width;x++) {
-				canvas_get_framebuffer()[line + pos_x + pos_y* canvas_get_scale()/*canvas_get_width()*/ ]=((int)*glyph) & (mask)?f_color:b_color;
+				canvas_get_framebuffer(canvas)[line + pos_x + pos_y* canvas_get_scale(canvas)/*canvas_get_width()*/ ]=((int)*glyph) & (mask)?f_color:b_color;
 				mask>>=1; line+=1;
 			}
-			canvas_get_framebuffer()[line + pos_x + pos_y * canvas_get_scale()/*canvas_get_width()*/]=b_color; glyph+=bpl; offs+=canvas_get_scanline();
+			canvas_get_framebuffer(canvas)[line + pos_x + pos_y * canvas_get_scale(canvas)/*canvas_get_width()*/]=b_color; glyph+=bpl; offs+=canvas_get_scanline(canvas);
 		}
 		s++; 
 		pos_x++;

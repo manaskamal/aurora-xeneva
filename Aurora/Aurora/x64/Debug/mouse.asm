@@ -33,9 +33,9 @@ mouse_cycle DB	01H DUP (?)
 ?old_message@@3U_dwm_message_@@A DB 01cH DUP (?)	; old_message
 _BSS	ENDS
 CONST	SEGMENT
-$SG6068	DB	'mouse', 00H
+$SG6085	DB	'mouse', 00H
 	ORG $+2
-$SG6069	DB	'/dev/mouse', 00H
+$SG6086	DB	'/dev/mouse', 00H
 CONST	ENDS
 PUBLIC	?initialize_mouse@@YAXXZ			; initialize_mouse
 PUBLIC	?mouse_wait@@YAXE@Z				; mouse_wait
@@ -71,7 +71,7 @@ mouse	DQ	01H DUP (?)
 _BSS	ENDS
 pdata	SEGMENT
 $pdata$?initialize_mouse@@YAXXZ DD imagerel $LN3
-	DD	imagerel $LN3+195
+	DD	imagerel $LN3+186
 	DD	imagerel $unwind$?initialize_mouse@@YAXXZ
 pdata	ENDS
 ;	COMDAT pdata
@@ -149,7 +149,7 @@ $LN3:
 ; 199  : 	strcpy (node->filename, "mouse");
 
 	mov	rax, QWORD PTR node$[rsp]
-	lea	rdx, OFFSET FLAT:$SG6068
+	lea	rdx, OFFSET FLAT:$SG6085
 	mov	rcx, rax
 	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
 
@@ -212,7 +212,7 @@ $LN3:
 ; 211  : 	vfs_mount ("/dev/mouse", node);
 
 	mov	rdx, QWORD PTR node$[rsp]
-	lea	rcx, OFFSET FLAT:$SG6069
+	lea	rcx, OFFSET FLAT:$SG6086
 	call	?vfs_mount@@YAXPEADPEAU_vfs_node_@@@Z	; vfs_mount
 
 ; 212  : }
@@ -1145,12 +1145,7 @@ $LN3:
 
 	call	?mouse_register_device@@YAXXZ		; mouse_register_device
 
-; 245  : 	irq_mask(12, true);
-
-	mov	dl, 1
-	mov	cl, 12
-	call	?irq_mask@@YAXE_N@Z			; irq_mask
-
+; 245  : 	//irq_mask(12, true);
 ; 246  : }
 
 	add	rsp, 56					; 00000038H
