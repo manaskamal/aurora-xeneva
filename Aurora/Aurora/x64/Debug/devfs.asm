@@ -6,8 +6,8 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 CONST	SEGMENT
-$SG2979	DB	'dev', 00H
-$SG2980	DB	'/dev', 00H
+$SG2976	DB	'dev', 00H
+$SG2977	DB	'/dev', 00H
 CONST	ENDS
 PUBLIC	?devfs_mount@@YAXXZ				; devfs_mount
 EXTRN	?strcpy@@YAPEADPEADPEBD@Z:PROC			; strcpy
@@ -42,7 +42,7 @@ $LN3:
 ; 18   : 	strcpy(node->filename, "dev");
 
 	mov	rax, QWORD PTR node$[rsp]
-	lea	rdx, OFFSET FLAT:$SG2979
+	lea	rdx, OFFSET FLAT:$SG2976
 	mov	rcx, rax
 	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
 
@@ -104,7 +104,7 @@ $LN3:
 ; 30   : 	vfs_mount ("/dev", node);
 
 	mov	rdx, QWORD PTR node$[rsp]
-	lea	rcx, OFFSET FLAT:$SG2980
+	lea	rcx, OFFSET FLAT:$SG2977
 	call	?vfs_mount@@YAXPEADPEAU_vfs_node_@@@Z	; vfs_mount
 
 ; 31   : }

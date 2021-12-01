@@ -6,16 +6,16 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 CONST	SEGMENT
-$SG3594	DB	'stdin', 00H
+$SG3591	DB	'stdin', 00H
 	ORG $+2
-$SG3595	DB	'/dev/stdin', 00H
+$SG3592	DB	'/dev/stdin', 00H
 	ORG $+1
-$SG3599	DB	'stdout', 00H
+$SG3596	DB	'stdout', 00H
 	ORG $+5
-$SG3600	DB	'/dev/stdout', 00H
-$SG3604	DB	'stderr', 00H
+$SG3597	DB	'/dev/stdout', 00H
+$SG3601	DB	'stderr', 00H
 	ORG $+5
-$SG3605	DB	'/dev/stderr', 00H
+$SG3602	DB	'/dev/stderr', 00H
 CONST	ENDS
 PUBLIC	?allocate_stream@@YAPEAU_stream_@@XZ		; allocate_stream
 PUBLIC	?stream_init@@YAXXZ				; stream_init
@@ -442,7 +442,7 @@ $LN3:
 ; 85   : 	strcpy(stdin->filename, "stdin");
 
 	mov	rax, QWORD PTR stdin$[rsp]
-	lea	rdx, OFFSET FLAT:$SG3594
+	lea	rdx, OFFSET FLAT:$SG3591
 	mov	rcx, rax
 	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
 
@@ -504,7 +504,7 @@ $LN3:
 ; 97   : 	vfs_mount ("/dev/stdin", stdin);
 
 	mov	rdx, QWORD PTR stdin$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3595
+	lea	rcx, OFFSET FLAT:$SG3592
 	call	?vfs_mount@@YAXPEADPEAU_vfs_node_@@@Z	; vfs_mount
 
 ; 98   : 
@@ -519,7 +519,7 @@ $LN3:
 ; 102  : 	strcpy(node->filename, "stdout");
 
 	mov	rax, QWORD PTR node$[rsp]
-	lea	rdx, OFFSET FLAT:$SG3599
+	lea	rdx, OFFSET FLAT:$SG3596
 	mov	rcx, rax
 	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
 
@@ -583,7 +583,7 @@ $LN3:
 ; 114  : 	vfs_mount ("/dev/stdout", node);
 
 	mov	rdx, QWORD PTR node$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3600
+	lea	rcx, OFFSET FLAT:$SG3597
 	call	?vfs_mount@@YAXPEADPEAU_vfs_node_@@@Z	; vfs_mount
 
 ; 115  : 
@@ -598,7 +598,7 @@ $LN3:
 ; 119  : 	strcpy(stderr->filename, "stderr");
 
 	mov	rax, QWORD PTR stderr$[rsp]
-	lea	rdx, OFFSET FLAT:$SG3604
+	lea	rdx, OFFSET FLAT:$SG3601
 	mov	rcx, rax
 	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
 
@@ -662,7 +662,7 @@ $LN3:
 ; 131  : 	vfs_mount ("/dev/stderr", stderr);
 
 	mov	rdx, QWORD PTR stderr$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3605
+	lea	rcx, OFFSET FLAT:$SG3602
 	call	?vfs_mount@@YAXPEADPEAU_vfs_node_@@@Z	; vfs_mount
 
 ; 132  : }

@@ -18,11 +18,11 @@ EXTRN	?get_thread_id@@YAGXZ:PROC			; get_thread_id
 EXTRN	?sys_get_fb_mem@@YAPEAIXZ:PROC			; sys_get_fb_mem
 EXTRN	?sys_set_mouse_data@@YAXXZ:PROC			; sys_set_mouse_data
 EXTRN	?sys_get_mouse_pack@@YA_NPEAU_mouse_packet_@@@Z:PROC ; sys_get_mouse_pack
+EXTRN	?sys_unblock_id@@YAXG@Z:PROC			; sys_unblock_id
 EXTRN	?get_screen_width@@YAIXZ:PROC			; get_screen_width
 EXTRN	?get_screen_height@@YAIXZ:PROC			; get_screen_height
-EXTRN	?sys_unblock_id@@YAXG@Z:PROC			; sys_unblock_id
-EXTRN	?get_screen_scanline@@YAGXZ:PROC		; get_screen_scanline
 EXTRN	?create_uthread@@YAXP6AXPEAX@ZPEAD@Z:PROC	; create_uthread
+EXTRN	?get_screen_scanline@@YAGXZ:PROC		; get_screen_scanline
 EXTRN	?sys_open_file@@YAHPEADPEAU_file_@@@Z:PROC	; sys_open_file
 EXTRN	?sys_read_file@@YAXHPEAEPEAU_file_@@@Z:PROC	; sys_read_file
 EXTRN	?sys_write_file@@YAXHPEAEPEAU_file_@@@Z:PROC	; sys_write_file
@@ -49,7 +49,7 @@ _BSS	SEGMENT
 funct	DQ	01H DUP (?)
 _BSS	ENDS
 CONST	SEGMENT
-$SG6125	DB	'System Call Fault!! Halting System', 0aH, 00H
+$SG6122	DB	'System Call Fault!! Halting System', 0aH, 00H
 CONST	ENDS
 _DATA	SEGMENT
 _syscalls DQ	FLAT:?printf@@YAXPEBDZZ
@@ -132,7 +132,7 @@ $LN6:
 
 ; 21   : 		printf ("System Call Fault!! Halting System\n");
 
-	lea	rcx, OFFSET FLAT:$SG6125
+	lea	rcx, OFFSET FLAT:$SG6122
 	call	?printf@@YAXPEBDZZ			; printf
 $LN2@x64_syscal:
 

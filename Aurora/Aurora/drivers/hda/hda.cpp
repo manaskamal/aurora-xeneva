@@ -246,34 +246,6 @@ static uint32_t codec_query (int codec, int nid, uint32_t payload) {
 }
 
 
-//! Start a Stream !!! Errors are there, needs fixing
-//! not completed yet
-void hda_start_stream () {
-	_aud_outb_ (REG_O0_CTLU,0x10);
-	_aud_outl_ (REG_O0_CBL, 4 * 0x100000);
-	_aud_outw_(REG_O0_STLVI, 4 - 1);
-
-	for (int i = 0; i < 0x400000 / 4096; i++)
-		map_page ((uint64_t)pmmngr_alloc(), 0x0000000080000000 + i * 4096,0);
-
-	uint64_t bdl_base = (uint64_t)get_physical_address  ((uint64_t) 0x0000000080000000);
-	_aud_outl_ (REG_O0_BDLPL, bdl_base);
-	_aud_outl_ (REG_O0_BDLPU, bdl_base >> 32);
-	ihda_bdl_entry *bdl = (ihda_bdl_entry*)bdl_base;
-
-	for (int i = 0; i < 4; i++) {
-		bdl[i].paddr = (uint64_t)pmmngr_alloc();
-		bdl[i].length = 4096;
-		bdl[i].flags = 1;
-	}
-
-	uint64_t dma_pos = (uint64_t)pmmngr_alloc();
-	_aud_outl_(DPIBLBASE, dma_pos | 0x1);
-	_aud_outl_(DPIBUBASE, dma_pos >> 32);
-
-}
-
-
 //! Set volume, for output codec
 void hda_set_volume (uint8_t volume) {
 	int meta = 0xb000;
@@ -294,25 +266,65 @@ void hda_set_volume (uint8_t volume) {
  * Not completed
  */
 void init_output () {
-	uint32_t stream_format = 0;
-	stream_format |= (1<<0);
-	stream_format |= (1<<4);
-	codec_query (_ihd_audio.output->codec, _ihd_audio.output->nid, 
-		VERB_SET_STREAM_CHANNEL | stream_format);   //0x10
+	printf ("Initializing Output Codec -> %d, Node -> %d\n", _ihd_audio.output->codec, _ihd_audio.output->nid);
+	codec_query (_ihd_audio.output->codec, _ihd_audio.output->nid,
+		VERB_SET_STREAM_CHANNEL | 0x10);
 
-	_ihd_audio.output->sample_rate = 0;
+	//codec_query (_ihd_audio.output->codec, _ihd_audio.output->nid,VERB_SET_AMP_GAIN_MUTE | (0<<7));
+
+	_ihd_audio.output->sample_rate = SR_48_KHZ;
 	_ihd_audio.output->num_channels = 2;
 
-	uint16_t format = (4<<4) | _ihd_audio.output->sample_rate | 
-		(_ihd_audio.output->num_channels - 1);
+	//uint16_t format = BITS_16 | _ihd_audio.output->sample_rate | (_ihd_audio.output->num_channels - 1);
+	uint16_t format =   (0<<14) | (0<<11) | (0<<8) | (1<<4) | 1;
 
 	codec_query (_ihd_audio.output->codec, _ihd_audio.output->nid, VERB_SET_FORMAT | format);
 
-	hda_set_volume (100);
-	printf ("Initializing output ->codec -> %d, nid -> %d\n", _ihd_audio.output->codec, _ihd_audio.output->nid);
-
 }
 
+//! Start a Stream !!! Errors are there, needs fixing
+//! not completed yet
+void hda_start_stream () {
+	//_aud_outl_ (REG_O0_CTLL(_ihd_audio), ~0x2); //clear the run bit
+	uint32_t bdl_base = (uint32_t)(_ihd_audio.corb + 3072);  //pmmngr_alloc();   //get_physical_address  ((uint64_t) 0x0000000000000000);
+	ihda_bdl_entry *bdl = (ihda_bdl_entry*)bdl_base;  //(_ihd_audio.corb + 3072);
+	for (int i = 0; i < 4; i++) {
+		bdl->paddr = (uint32_t)get_physical_address((uint64_t)_ihd_audio.buffer + (i * 0x10000));
+		bdl->length = 0x10000;
+		bdl->flags = 1;
+		bdl++;
+	}
+
+
+	_aud_outb_ (REG_O0_CTLU(_ihd_audio), 0x10);
+    _aud_outl_ (REG_O0_BDLPL(_ihd_audio), bdl_base);
+	_aud_outl_ (REG_O0_BDLPU(_ihd_audio), bdl_base >> 32);
+
+    uint16_t format =   (0<<14) | (0<<11) | (0<<8) | (1<<4) | 1;
+	_aud_outw_ (REG_O0_FMT(_ihd_audio), format);
+
+
+	_aud_outl_ (REG_O0_CBL(_ihd_audio), 4*0x10000);
+	_aud_outw_(REG_O0_STLVI(_ihd_audio), 4-1);
+
+
+	uint32_t dma_pos_base = (uint32_t)(_ihd_audio.corb + 3072 + BDL_BYTES_ROUNDED);
+
+	uint64_t *dma_pos = (uint64_t*)dma_pos_base;
+	for (int i = 0; i < 8; i++) {
+		dma_pos[i] = 0;
+	}
+
+	_aud_outl_(DPIBLBASE, (uint32_t)dma_pos | 0x1);
+	_aud_outl_(DPIBUBASE, (uint32_t)dma_pos>> 32);
+
+	_aud_outl_ (INTCTL, (1<<2));
+
+	//init_output(); /* Not configured properly!!*/
+
+	_aud_outb_(REG_O0_STS(_ihd_audio), (1<<2) | (1<<3) | (1<<4));
+    _aud_outw_(REG_O0_CTLL(_ihd_audio),0x2);
+}
 
 /**
  *  Initializes widgets for a codec and node
@@ -358,7 +370,7 @@ void widget_init (int codec, int nid) {
 
 	amp_gain = codec_query(codec, nid, VERB_GET_AMP_GAIN_MUTE | 0x8000) << 8;
 	amp_gain |= codec_query(codec, nid, VERB_GET_AMP_GAIN_MUTE | 0xa000);
-
+	eapd_btl = codec_query (codec, nid, VERB_GET_EAPD_BTL);	
 	/*printf ("[HD-Audio]: widget %s at node %d; \n",
 		s, nid);*/
 
@@ -367,7 +379,7 @@ void widget_init (int codec, int nid) {
 		{
 			uint32_t pin_cap, ctl;
 			uint32_t conf = codec_query(codec, nid, VERB_GET_CONFIG_DEFAULT);
-			//printf ("pin config: %x\n", conf);
+		
 
 			pin_cap = codec_query (codec, nid, VERB_GET_PARAMETER | PARAM_PIN_CAP);
 
@@ -376,7 +388,7 @@ void widget_init (int codec, int nid) {
 			}
 
 			ctl = codec_query (codec, nid, VERB_GET_PIN_CONTROL);
-			//printf ("ctl: %x\n", ctl);
+			
 
 			ctl |= PIN_CTL_ENABLE_OUTPUT;
 			codec_query(codec, nid, VERB_SET_PIN_CONTROL | ctl);
@@ -391,7 +403,7 @@ void widget_init (int codec, int nid) {
 				_ihd_audio.output->nid = nid;
 				_ihd_audio.output->amp_gain_steps = (amp_cap >> 8) & 0x7f;
 			}
-			printf ("[HD-Audio]:Widget type Output in codec -> %d at node -> %d\n", codec, nid);
+			//printf ("HD-Audio: Found Output Widget at codec -> %d, nid -> %d\n", codec, nid);
 			codec_query (codec, nid, VERB_SET_EAPD_BTL | eapd_btl | 0x2);
 			break;
 		}
@@ -408,7 +420,7 @@ void widget_init (int codec, int nid) {
 
 
 //! Enumerate through the codec for available widgets
-static void codec_enumerate_widgets(int codec) {
+static int codec_enumerate_widgets(int codec) {
 
 	uint32_t param;
 	int num_fg, num_widgets;
@@ -451,7 +463,7 @@ static void codec_enumerate_widgets(int codec) {
 	}
 
 
-	//return output.nid ? 0 : -2;
+	return _ihd_audio.output->nid ? 0 : -1;
 }
 
 
@@ -542,35 +554,53 @@ void hda_initialize () {
 	bool pci_status = pci_alloc_msi (func, dev, bus, hda_handler);
 	if (!pci_status) {
 		//! fall to legacy interrupt handling mode
-		//interrupt_set (pci_dev.device.nonBridge.interruptLine, hda_handler, pci_dev.device.nonBridge.interruptLine);
+		interrupt_set (pci_dev.device.nonBridge.interruptLine, hda_handler, pci_dev.device.nonBridge.interruptLine);
 	}
+
 
 	_ihd_audio.mmio = pci_dev.device.nonBridge.baseAddress[0] & ~3;
 	//map_page(_ihd_audio.mmio, _ihd_audio.mmio,0);
-	_ihd_audio.corb = (uint32_t*)pmmngr_alloc(); //for 256 entries only 1 kb will be used
-	_ihd_audio.rirb = (uint64_t*)pmmngr_alloc(); //(ring_address + 1024);
+	_ihd_audio.corb = (uint32_t*)pmmngr_alloc_blocks(2); //pmmngr_alloc() //for 256 entries only 1 kb will be used
+	_ihd_audio.rirb = (uint64_t*)(_ihd_audio.corb + 1024);          //pmmngr_alloc(); //(ring_address + 1024);
 	memset (_ihd_audio.corb, 0, 4096);
 	memset (_ihd_audio.rirb, 0, 4096);
+
+	uint64_t pos = 0xFFFFE00000100000;
+	for (int i = 0; i < 4*0x10000 / 4096; i++) {
+		map_page ((uint64_t)pmmngr_alloc(),pos + i * 4096, 0);
+	}
+
+	_ihd_audio.buffer = (uint64_t*)0xFFFFE00000100000;
+	memset(_ihd_audio.buffer, 0, 4*0x10000);
 
 	if (_aud_inw_ (GCAP) & 1) {
 		printf ("HD-Audio 64-OK\n");
 	}
-	
+
+
 	hda_reset();
     
    
 	uint16_t statests = _aud_inw_ (STATESTS);
 	for (int i = 0; i < 15; i++) {
 		if (statests & (1 << i)){
-			codec_enumerate_widgets(i);
+			if (codec_enumerate_widgets(i)) {
+				break;
+			}
 		}
 	} 
 
+	uint16_t gcap = _aud_inw_(GCAP);
+	_ihd_audio.num_oss = HDA_GCAP_OSS(gcap);
+	_ihd_audio.num_iss = HDA_GCAP_ISS(gcap);
+	_ihd_audio.stream_0_x = 0x80 + (_ihd_audio.num_iss * 0x20);
+	_ihd_audio.stream_0_y = 0x80 + (_ihd_audio.num_iss * 0x20) + (_ihd_audio.num_oss * 0x20);
 
-	//! Initialize audio output
-	init_output();
+	//! Initialize audio output   
+	hda_start_stream();
+	hda_set_volume(100);
 
-    x64_sti();
-   
+
+     x64_sti();
 	printf ("IHD Audio Initialized successfully\n");
 }

@@ -14,13 +14,13 @@ _BSS	SEGMENT
 ?last@@3PEAU_tele_type_@@EA DQ 01H DUP (?)		; last
 _BSS	ENDS
 CONST	SEGMENT
-$SG3321	DB	'ttym', 00H
+$SG3318	DB	'ttym', 00H
 	ORG $+3
-$SG3323	DB	'/dev/', 00H
+$SG3320	DB	'/dev/', 00H
 	ORG $+2
-$SG3328	DB	'ttys', 00H
+$SG3325	DB	'ttys', 00H
 	ORG $+3
-$SG3330	DB	'/dev/', 00H
+$SG3327	DB	'/dev/', 00H
 CONST	ENDS
 _DATA	SEGMENT
 ?master_count@@3HA DD 01H				; master_count
@@ -646,7 +646,7 @@ $LN6:
 ; 114  : 	char master_name[10];
 ; 115  : 	strcpy(master_name, "ttym");
 
-	lea	rdx, OFFSET FLAT:$SG3321
+	lea	rdx, OFFSET FLAT:$SG3318
 	lea	rcx, QWORD PTR master_name$[rsp]
 	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
 
@@ -663,7 +663,7 @@ $LN6:
 ; 118  : 	char mname[10];
 ; 119  : 	strcpy (mname, "/dev/");
 
-	lea	rdx, OFFSET FLAT:$SG3323
+	lea	rdx, OFFSET FLAT:$SG3320
 	lea	rcx, QWORD PTR mname$[rsp]
 	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
 
@@ -765,7 +765,7 @@ $LN6:
 ; 140  : 	char slave_name[10];
 ; 141  : 	strcpy(slave_name, "ttys");
 
-	lea	rdx, OFFSET FLAT:$SG3328
+	lea	rdx, OFFSET FLAT:$SG3325
 	lea	rcx, QWORD PTR slave_name$[rsp]
 	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
 
@@ -782,7 +782,7 @@ $LN6:
 ; 144  : 	char sname[10];
 ; 145  : 	strcpy(sname, "/dev/");
 
-	lea	rdx, OFFSET FLAT:$SG3330
+	lea	rdx, OFFSET FLAT:$SG3327
 	lea	rcx, QWORD PTR sname$[rsp]
 	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
 

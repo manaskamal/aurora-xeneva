@@ -33,7 +33,7 @@
 #define INTCTL      0x20   //Interrupt Control
 #define INTSTS      0x24   //Interrupt Status
 #define WALCLK      0x30   //Wall Clock Counter
-#define SSYNC       0x38   //Stream Synchronization
+#define SSYNC       0x38   //Stream Synchronization 
 #define CORBLBASE   0x40   //CORB Lower Base Address
 #define CORBUBASE   0x44   //CORB Upper Base Address
 #define CORBWP      0x48   //CORB Write Pointer
@@ -68,14 +68,28 @@
 #define INTCTL_SIE_MASK  0x3fffffff
 #define INTCTL_SIE_SHIFT 0
 
-#define REG_O0_CTLL   0x100   ///< Output 0 - Control Lower
-#define REG_O0_CTLU   0x102   ///< Output 0 - Control Upper
-#define REG_O0_STS    0x103    ///< Output 0 - Status
-#define REG_O0_CBL    0x108   ///< Output 0 - Cyclic Buffer Length
-#define REG_O0_STLVI  0x10c    ///< Output 0 - Last Valid Index
-#define REG_O0_FMT    0x112    ///< Output 0 - Format
-#define REG_O0_BDLPL  0x118    ///< Output 0 - BDL Pointer Lower
-#define REG_O0_BDLPU  0x11c    ///< Output 0 - BDL Pointer Upper
+#define REG_O0_CTLL(hd)   (hd.stream_0_x)   ///< Output 0 - Control Lower
+#define REG_O0_CTLU(hd)   0x102   ///< Output 0 - Control Upper
+#define REG_O0_STS(hd)    (hd.stream_0_x + 0x3)    ///< Output 0 - Status
+#define REG_O0_CBL(hd)    (hd.stream_0_x + 0x8)  ///< Output 0 - Cyclic Buffer Length
+#define REG_O0_STLVI(hd)  (hd.stream_0_x + 0xC)    ///< Output 0 - Last Valid Index
+#define REG_O0_FMT(hd)   (hd.stream_0_x + 0x12)    ///< Output 0 - Format
+#define REG_O0_BDLPL(hd)  (hd.stream_0_x + 0x18)    ///< Output 0 - BDL Pointer Lower
+#define REG_O0_BDLPU(hd)  (hd.stream_0_x + 0x1C)    ///< Output 0 - BDL Pointer Upper
+
+#define HDA_GCAP_OSS_MASK  0xf000
+#define HDA_GCAP_OSS_SHIFT  12
+#define HDA_GCAP_ISS_SHIFT  8
+#define HDA_GCAP_ISS_MASK  0x0f00
+#define HDA_GCAP_BSS_SHIFT 3
+#define HDA_GCAP_BSS_MASK  0x00f8
+#define HDA_GCAP_NSD0_SHIFT  1
+#define HDA_GCAP_NSD0_MASK  0x0006
+
+#define HDA_GCAP_BSS(gcap)  (((gcap) & HDA_GCAP_BSS_MASK) >> HDA_GCAP_BSS_SHIFT)
+#define HDA_GCAP_ISS(gcap)  (((gcap) & HDA_GCAP_ISS_MASK) >> HDA_GCAP_ISS_SHIFT)
+#define HDA_GCAP_OSS(gcap)  (((gcap) & HDA_GCAP_OSS_MASK) >> HDA_GCAP_OSS_SHIFT)
+
 
 /* GCTL bits */
 enum reg_gctl {
@@ -204,6 +218,12 @@ typedef struct _hd_audio_ {
 	uint32_t corb_entries;
 	bool immediate_use;
 	hda_output *output;
+	uint16_t num_iss;  //Total number of Input Stream
+	uint16_t num_oss;  //Total number of Output Stream
+	int stream_0_x;  //first output stream 
+	int stream_0_y;  //first bidirectional stream
+	uint64_t *buffer; 
+	uint64_t *dma_pos; 
 }hd_audio;
 #pragma pack (pop)
 

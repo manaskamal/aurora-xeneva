@@ -10,28 +10,28 @@ _BSS	SEGMENT
 ?_ac97@@3U_ac97_@@A DB 028H DUP (?)			; _ac97
 _BSS	ENDS
 CONST	SEGMENT
-$SG3297	DB	'AC97 interrupt fired++', 0aH, 00H
-$SG3317	DB	'No AC97 device found', 0aH, 00H
+$SG3294	DB	'AC97 interrupt fired++', 0aH, 00H
+$SG3314	DB	'No AC97 device found', 0aH, 00H
 	ORG $+2
-$SG3318	DB	'AC97 Device found with device id -> %x, vendor id -> %x', 0aH
+$SG3315	DB	'AC97 Device found with device id -> %x, vendor id -> %x', 0aH
 	DB	00H
 	ORG $+7
-$SG3321	DB	'AC97 interrupt line -> %d', 0aH, 00H
+$SG3318	DB	'AC97 interrupt line -> %d', 0aH, 00H
 	ORG $+5
-$SG3322	DB	'AC97 NAMBAR -> %x, NABMBAR -> %x', 0aH, 00H
+$SG3319	DB	'AC97 NAMBAR -> %x, NABMBAR -> %x', 0aH, 00H
 	ORG $+6
-$SG3323	DB	'AC97 NAMBAR -> %x, NABMBAR -> %x', 0aH, 00H
+$SG3320	DB	'AC97 NAMBAR -> %x, NABMBAR -> %x', 0aH, 00H
 	ORG $+6
-$SG3325	DB	'AC97 channels: %d', 0aH, 00H
+$SG3322	DB	'AC97 channels: %d', 0aH, 00H
 	ORG $+5
-$SG3327	DB	'20 bit sound supported', 0aH, 00H
-$SG3330	DB	'Bit could not be cleared', 0aH, 00H
+$SG3324	DB	'20 bit sound supported', 0aH, 00H
+$SG3327	DB	'Bit could not be cleared', 0aH, 00H
 	ORG $+6
-$SG3331	DB	'AC97 Sample Rate -> %d Hz', 0aH, 00H
+$SG3328	DB	'AC97 Sample Rate -> %d Hz', 0aH, 00H
 	ORG $+5
-$SG3333	DB	'AC97 initialized', 0aH, 00H
+$SG3330	DB	'AC97 initialized', 0aH, 00H
 	ORG $+6
-$SG3338	DB	'VAL = %x', 0aH, 00H
+$SG3335	DB	'VAL = %x', 0aH, 00H
 CONST	ENDS
 PUBLIC	?ac97_initialize@@YAXXZ				; ac97_initialize
 PUBLIC	?ac97_start@@YAXPEAE@Z				; ac97_start
@@ -224,7 +224,7 @@ $LN3:
 
 ; 28   : 	printf ("AC97 interrupt fired++\n");
 
-	lea	rcx, OFFSET FLAT:$SG3297
+	lea	rcx, OFFSET FLAT:$SG3294
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 29   : 	apic_local_eoi();
@@ -305,7 +305,7 @@ $LN3:
 
 	movzx	eax, BYTE PTR val$[rsp]
 	mov	edx, eax
-	lea	rcx, OFFSET FLAT:$SG3338
+	lea	rcx, OFFSET FLAT:$SG3335
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 150  : 	x64_outportb (_ac97.nabmbar  + 0x0B, 0x1);
@@ -373,7 +373,7 @@ $LN6:
 
 ; 59   : 		printf ("No AC97 device found\n");
 
-	lea	rcx, OFFSET FLAT:$SG3317
+	lea	rcx, OFFSET FLAT:$SG3314
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 60   : 		return;
@@ -391,7 +391,7 @@ $LN3@ac97_initi:
 	movzx	ecx, WORD PTR [rcx+2]
 	mov	r8d, eax
 	mov	edx, ecx
-	lea	rcx, OFFSET FLAT:$SG3318
+	lea	rcx, OFFSET FLAT:$SG3315
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 64   : 
@@ -416,7 +416,7 @@ $LN3@ac97_initi:
 	mov	rax, QWORD PTR addr$[rsp]
 	movzx	eax, BYTE PTR [rax+60]
 	mov	edx, eax
-	lea	rcx, OFFSET FLAT:$SG3321
+	lea	rcx, OFFSET FLAT:$SG3318
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 68   : 
@@ -438,7 +438,7 @@ $LN3@ac97_initi:
 	movzx	ecx, WORD PTR ?_ac97@@3U_ac97_@@A
 	mov	r8d, eax
 	mov	edx, ecx
-	lea	rcx, OFFSET FLAT:$SG3322
+	lea	rcx, OFFSET FLAT:$SG3319
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 72   : 	printf ("AC97 NAMBAR -> %x, NABMBAR -> %x\n", addr->device.nonBridge.baseAddress[0],addr->device.nonBridge.baseAddress[1]);
@@ -451,7 +451,7 @@ $LN3@ac97_initi:
 	mov	r8d, DWORD PTR [rdx+rax+16]
 	mov	rax, QWORD PTR addr$[rsp]
 	mov	edx, DWORD PTR [rax+rcx+16]
-	lea	rcx, OFFSET FLAT:$SG3323
+	lea	rcx, OFFSET FLAT:$SG3320
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 73   : 
@@ -487,7 +487,7 @@ $LN3@ac97_initi:
 	and	eax, 3
 	lea	eax, DWORD PTR [rax+rax+2]
 	mov	edx, eax
-	lea	rcx, OFFSET FLAT:$SG3325
+	lea	rcx, OFFSET FLAT:$SG3322
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 81   : 	if (((cap >> 22) & 3) == 1)
@@ -500,7 +500,7 @@ $LN3@ac97_initi:
 
 ; 82   : 		printf ("20 bit sound supported\n");
 
-	lea	rcx, OFFSET FLAT:$SG3327
+	lea	rcx, OFFSET FLAT:$SG3324
 	call	?printf@@YAXPEBDZZ			; printf
 $LN2@ac97_initi:
 
@@ -551,7 +551,7 @@ $LN2@ac97_initi:
 
 ; 93   : 		printf ("Bit could not be cleared\n");
 
-	lea	rcx, OFFSET FLAT:$SG3330
+	lea	rcx, OFFSET FLAT:$SG3327
 	call	?printf@@YAXPEBDZZ			; printf
 $LN1@ac97_initi:
 
@@ -573,7 +573,7 @@ $LN1@ac97_initi:
 	call	x64_inportw
 	movzx	eax, ax
 	mov	edx, eax
-	lea	rcx, OFFSET FLAT:$SG3331
+	lea	rcx, OFFSET FLAT:$SG3328
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 100  : 
@@ -619,7 +619,7 @@ $LN1@ac97_initi:
 ; 137  : 
 ; 138  : 	printf("AC97 initialized\n");
 
-	lea	rcx, OFFSET FLAT:$SG3333
+	lea	rcx, OFFSET FLAT:$SG3330
 	call	?printf@@YAXPEBDZZ			; printf
 $LN4@ac97_initi:
 

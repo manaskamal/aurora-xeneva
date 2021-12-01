@@ -16,6 +16,12 @@ Virtual File System <br>
 System Calls <br>
 APIC & IOAPIC <br>
 
+
+# TODO
+HD-Audio : Setup output codecs, input stream & input codec<br>
+        _{Output Stream done}_
+
+        
 # Screenshot
 ![alt text](https://github.com/manaskamal/aurora-xeneva/blob/master/images/aurora_kernel.jpg?raw=true)
 

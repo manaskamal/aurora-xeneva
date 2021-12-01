@@ -158,6 +158,13 @@ void _kmain () {
 	printf ("CR3 -> %x\n", x64_read_cr3());
 	printf ("Total Used RAM -> %d MB / Total RAM -> %d MB\n", pmmngr_get_used_ram() / 1024 / 1024, pmmngr_get_total_ram() / 1024 / 1024);
 
+
+	uint64_t *new_cr3 = (uint64_t*)create_user_address_space();
+	x64_write_cr3((size_t)new_cr3);
+
+	printf ("Hello New CR3 switched\n");
+
+
 	/**
 	 * The Kernel's Virtual Memory is re-written
 	 * so the scheduler is not ready yet, it needs

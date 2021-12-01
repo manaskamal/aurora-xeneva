@@ -36,9 +36,9 @@ _BSS	SEGMENT
 current_thread DQ 01H DUP (?)
 _BSS	ENDS
 CONST	SEGMENT
-$SG3390	DB	'Idle', 00H
+$SG3387	DB	'Idle', 00H
 	ORG $+3
-$SG3391	DB	'Idle Thread address -> %x', 0aH, 00H
+$SG3388	DB	'Idle Thread address -> %x', 0aH, 00H
 CONST	ENDS
 PUBLIC	?initialize_scheduler@@YAXXZ			; initialize_scheduler
 PUBLIC	?scheduler_start@@YAXXZ				; scheduler_start
@@ -1688,7 +1688,7 @@ $LN3:
 
 	call	x64_read_cr3
 	mov	BYTE PTR [rsp+32], 1
-	lea	r9, OFFSET FLAT:$SG3390
+	lea	r9, OFFSET FLAT:$SG3387
 	mov	r8, rax
 	mov	rdx, -105553108922368			; ffffa00000701000H
 	lea	rcx, OFFSET FLAT:?idle_thread@@YAXXZ	; idle_thread
@@ -1703,7 +1703,7 @@ $LN3:
 ; 209  : 	printf ("Idle Thread address -> %x\n", idle_thread);
 
 	lea	rdx, OFFSET FLAT:?idle_thread@@YAXXZ	; idle_thread
-	lea	rcx, OFFSET FLAT:$SG3391
+	lea	rcx, OFFSET FLAT:$SG3388
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 210  : }

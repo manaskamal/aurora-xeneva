@@ -63,9 +63,9 @@ void svga_init () {
 	svga_dev.io_base =  svga_dev.pci_addr->device.nonBridge.baseAddress[0] & ~mask;         //pci_get_bar_addr (&svga_dev.pci_addr,0);
 	svga_dev.fb_mem =   (uint8_t*)(svga_dev.pci_addr->device.nonBridge.baseAddress[1] & ~0xf);  //(uint8_t*)pci_get_bar_addr (&svga_dev.pci_addr, 1);
 	svga_dev.fifo_mem = (uint32_t*)(svga_dev.pci_addr->device.nonBridge.baseAddress[2] & ~0xf);  //(uint32_t*)pci_get_bar_addr (&svga_dev.pci_addr, 2);
-	map_page (svga_dev.io_base, svga_dev.io_base, 0);
+	/*map_page (svga_dev.io_base, svga_dev.io_base, 0);
 	map_page ((uint64_t)svga_dev.fb_mem,(uint64_t)svga_dev.fb_mem,0);
-	map_page ((uint64_t)svga_dev.fifo_mem,(uint64_t) svga_dev.fifo_mem,0);
+	map_page ((uint64_t)svga_dev.fifo_mem,(uint64_t) svga_dev.fifo_mem,0);*/
 
 	svga_dev.device_version_id = SVGA_ID_2;
 	do {

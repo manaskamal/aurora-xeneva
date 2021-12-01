@@ -15,17 +15,17 @@ user_stack_index_2 DD 01H DUP (?)
 pid	DD	01H DUP (?)
 _BSS	ENDS
 CONST	SEGMENT
-$SG3787	DB	'/dev/stdin', 00H
+$SG3784	DB	'/dev/stdin', 00H
 	ORG $+5
-$SG3789	DB	'/dev/stdout', 00H
+$SG3786	DB	'/dev/stdout', 00H
 	ORG $+4
-$SG3791	DB	'/dev/stderr', 00H
+$SG3788	DB	'/dev/stderr', 00H
 	ORG $+4
-$SG3804	DB	'Executable image not found', 0aH, 00H
+$SG3801	DB	'Executable image not found', 0aH, 00H
 	ORG $+4
-$SG3841	DB	'stack -> %x', 0aH, 00H
+$SG3838	DB	'stack -> %x', 0aH, 00H
 	ORG $+3
-$SG3918	DB	'child', 00H
+$SG3915	DB	'child', 00H
 CONST	ENDS
 PUBLIC	?create_user_stack@@YAPEA_KPEA_K@Z		; create_user_stack
 PUBLIC	?create_inc_stack@@YAPEA_KPEA_K@Z		; create_inc_stack
@@ -379,7 +379,7 @@ $LN3:
 ; 335  : 	thread_t *t = create_user_thread(child_proc->entry_point,child_proc->stack,(uint64_t)child_proc->cr3,"child",1);
 
 	mov	BYTE PTR [rsp+32], 1
-	lea	r9, OFFSET FLAT:$SG3918
+	lea	r9, OFFSET FLAT:$SG3915
 	mov	rax, QWORD PTR child_proc$[rsp]
 	mov	r8, QWORD PTR [rax+40]
 	mov	rax, QWORD PTR child_proc$[rsp]
@@ -548,7 +548,7 @@ $LN3:
 
 ; 123  : 	vfs_node_t * stdin = vfs_finddir("/dev/stdin");
 
-	lea	rcx, OFFSET FLAT:$SG3787
+	lea	rcx, OFFSET FLAT:$SG3784
 	call	?vfs_finddir@@YAPEAU_vfs_node_@@PEAD@Z	; vfs_finddir
 	mov	QWORD PTR stdin$[rsp], rax
 
@@ -570,7 +570,7 @@ $LN3:
 
 ; 126  : 	vfs_node_t* stdout = vfs_finddir("/dev/stdout");
 
-	lea	rcx, OFFSET FLAT:$SG3789
+	lea	rcx, OFFSET FLAT:$SG3786
 	call	?vfs_finddir@@YAPEAU_vfs_node_@@PEAD@Z	; vfs_finddir
 	mov	QWORD PTR stdout$[rsp], rax
 
@@ -592,7 +592,7 @@ $LN3:
 
 ; 129  : 	vfs_node_t* stderr = vfs_finddir("/dev/stderr");
 
-	lea	rcx, OFFSET FLAT:$SG3791
+	lea	rcx, OFFSET FLAT:$SG3788
 	call	?vfs_finddir@@YAPEAU_vfs_node_@@PEAD@Z	; vfs_finddir
 	mov	QWORD PTR stderr$[rsp], rax
 
@@ -1513,7 +1513,7 @@ $LN9:
 
 ; 150  : 		printf("Executable image not found\n");
 
-	lea	rcx, OFFSET FLAT:$SG3804
+	lea	rcx, OFFSET FLAT:$SG3801
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 151  : 		return;
@@ -1764,7 +1764,7 @@ $LN1@create_pro:
 ; 201  : 	printf ("stack -> %x\n",stack);
 
 	mov	rdx, QWORD PTR stack$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3841
+	lea	rcx, OFFSET FLAT:$SG3838
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 202  : 	//allocate_fd(t);

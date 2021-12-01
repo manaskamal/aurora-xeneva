@@ -14,12 +14,12 @@ _BSS	SEGMENT
 ?last_header@@3PEAUkmem@@EA DQ 01H DUP (?)		; last_header
 _BSS	ENDS
 CONST	SEGMENT
-$SG2967	DB	'New Seg -> %x', 00H
+$SG2964	DB	'New Seg -> %x', 00H
 	ORG $+2
-$SG2976	DB	'Kmem end -> %x', 0aH, 00H
-$SG3005	DB	'Heap Start -> %x', 0aH, 00H
+$SG2973	DB	'Kmem end -> %x', 0aH, 00H
+$SG3002	DB	'Heap Start -> %x', 0aH, 00H
 	ORG $+6
-$SG3006	DB	'Heap End -> %x', 0aH, 00H
+$SG3003	DB	'Heap End -> %x', 0aH, 00H
 CONST	ENDS
 PUBLIC	?align_next@kmem@@QEAAXXZ			; kmem::align_next
 PUBLIC	?align_prev@kmem@@QEAAXXZ			; kmem::align_prev
@@ -134,7 +134,7 @@ $LN4@expand_kme:
 ; 93   : 	printf ("New Seg -> %x", new_seg);
 
 	mov	rdx, QWORD PTR new_seg$[rsp]
-	lea	rcx, OFFSET FLAT:$SG2967
+	lea	rcx, OFFSET FLAT:$SG2964
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 94   : 
@@ -173,7 +173,7 @@ $LN1@expand_kme:
 ; 99   : 	printf ("Kmem end -> %x\n", kmem_end);
 
 	mov	rdx, QWORD PTR ?kmem_end@@3PEAXEA	; kmem_end
-	lea	rcx, OFFSET FLAT:$SG2976
+	lea	rcx, OFFSET FLAT:$SG2973
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 100  : 	new_seg->free = true;
@@ -234,13 +234,13 @@ $LN3:
 ; 151  : 	printf ("Heap Start -> %x\n", kmem_start);
 
 	mov	rdx, QWORD PTR ?kmem_start@@3PEAXEA	; kmem_start
-	lea	rcx, OFFSET FLAT:$SG3005
+	lea	rcx, OFFSET FLAT:$SG3002
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 152  : 	printf ("Heap End -> %x\n", kmem_end);
 
 	mov	rdx, QWORD PTR ?kmem_end@@3PEAXEA	; kmem_end
-	lea	rcx, OFFSET FLAT:$SG3006
+	lea	rcx, OFFSET FLAT:$SG3003
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 153  : }

@@ -18,11 +18,29 @@
 // M E M O R Y   M A P 
 //================================================
 /*
- * FFFFC00000000000 - FFFFD00000000000   - Kernel
- * FFFF800000000000 - FFFF900000000000   - Kernel Heap
- * FFFFA00000200000 - FFFFB00000000000   - Paged Pool
- * 0000400000000000 - 0000500000000000   - User Space
+ * FFFFC00000000000 - FFFFCFFFFFFFFFFF   - Kernel
+ * FFFF800000000000 - FFFF8FFFFFFFFFFF   - Kernel Heap
+ * FFFFA00000000000 - FFFFA00000200000   - Kernel Stack
+ * FFFFE00000000000 - FFFFEFFFFFFFFFFF   - Kernel Required Datas
+ * 0000000000000000 - 00007FFFFFFFFFFF   - User Space
  */
+
+//!!!======================================================================================
+//!!! TODO --- Address Space Manager
+//!!! I/O Address Manager --- Allocates Virtual Memory for memory mapped I/O
+//!!! Address Space for User --- Currently it copies 4GB identity mappings from 
+//!!!                            kernel's address space, which needs to avoided
+//!!                             by only copying those addresses which needs to 
+//!!                             mapped in the new address space like, physical
+//!!                             addresses needed for page tables creation and
+//!!                             some memory mapped I/Os which are not mapped
+//!!                             in higher half section of kernel's address space
+//!!
+//!!  Pages Management --- Keeping tracks for allocated pages and free pages
+//!!  Randomization    --- This is an address space management concept, from where
+//!!                       random pages will be allocated from the given address space
+//!!--------------------------------------------------------------------------------------
+//!!======================================================================================
 
 #define KERNEL_BASE_ADDRESS  0xFFFFE00000000000
 #define USER_BASE_ADDRESS 0x0000400000000000
@@ -117,6 +135,9 @@ void vmmngr_x86_64_init () {
 		
 	}
 
+	//! Store the kernel's address space
+	root_cr3 = new_cr3;
+
 	//! Switch to new mapping!!!
 	x64_write_cr3 ((size_t)new_cr3);
 }
@@ -179,59 +200,6 @@ bool map_page (uint64_t physical_address, uint64_t virtual_address, uint8_t attr
 	return true;
 }
 
-
-bool vmmngr_update_flags (uint64_t virtual_address, size_t flags_){
-
-	uint64_t phys_addr = (uint64_t)get_physical_address (virtual_address);
-
-	size_t flags = PAGING_WRITABLE | PAGING_PRESENT | PAGING_USER;
-
-	const long i4 = (virtual_address >> 39) & 0x1FF;
-	const long i3 = (virtual_address >> 30) & 0x1FF;
-	const long i2 = (virtual_address >> 21) & 0x1FF;
-	const long i1 = (virtual_address >> 12) & 0x1FF;
-
-	uint64_t *pml4i = (uint64_t*)x64_read_cr3();
-	if (!(pml4i[i4] & PAGING_PRESENT))
-	{
-		const uint64_t page = (uint64_t)pmmngr_alloc();
-		pml4i[i4] = page | flags;
-		clear((void*)page);
-		flush_tlb((void*)page);
-		x64_mfence();
-	}
-	uint64_t* pml3 = (uint64_t*)(pml4i[i4] & ~(4096 - 1));
-	if (!(pml3[i3] & PAGING_PRESENT))
-	{
-		const uint64_t page = (uint64_t)pmmngr_alloc();
-		pml3[i3] = page | flags;
-		clear((void*)page);
-		flush_tlb((void*)page);
-		x64_mfence();
-		
-	}
-
-	uint64_t* pml2 = (uint64_t*)(pml3[i3] & ~(4096 - 1));
-	if (!(pml2[i2] & PAGING_PRESENT))
-	{
-		const uint64_t page = (uint64_t)pmmngr_alloc();
-		pml2[i2] = page | flags;
-		clear((void*)page);
-		flush_tlb((void*)page);
-		x64_mfence();
-		
-	}
-	uint64_t* pml1 = (uint64_t*)(pml2[i2] & ~(4096 - 1));
-	if (pml1[i1] & PAGING_PRESENT)
-	{
-		return false;
-	}
-
-	pml1[i1] = phys_addr | flags;
-	flush_tlb ((void*)virtual_address);
-	x64_mfence ();
-	return true;
-}
 
 void unmap_page(uint64_t virt_addr){
 	
@@ -343,19 +311,26 @@ bool map_page_ex (uint64_t *pml4i,uint64_t physical_address, uint64_t virtual_ad
 
 //! creates a new address space for user with same structure
 //! to kernel i.e clone kernel space
-uint64_t *create_user_address_space ()
-{
+uint64_t *create_user_address_space (){
 	
 	uint64_t *cr3 = (uint64_t*)x64_read_cr3();
 	uint64_t *new_cr3 = (uint64_t*)pmmngr_alloc();
+	memset(new_cr3, 0, 4096);
+
+	//! For now, copy the 4 GiB identity mapping from old pml4
+	//! but later, we should avoid this by mapping only those physical
+	//! addresses that are needed, like physical addresses allocated for 
+	//! paging tables creations and memory mapped I/O which are not
+	//! virtually allocated in higher half sections
 	new_cr3[0] = cr3[0];
+
+	//! Copy Kernel's Higher Half section
 	new_cr3[pml4_index(0xFFFFC00000000000)] = cr3[pml4_index(0xFFFFC00000000000)];
 	new_cr3[pml4_index(0xFFFFA00000000000)] = cr3[pml4_index(0xFFFFA00000000000)];
 	new_cr3[pml4_index(0xFFFF800000000000)] = cr3[pml4_index(0xFFFF800000000000)];
 	new_cr3[pml4_index(0xFFFFE00000000000)] = cr3[pml4_index(0xFFFFE00000000000)];
 	new_cr3[pml4_index(0xFFFFD00000000000)] = cr3[pml4_index(0xFFFFE00000000000)];
 
-	//map_page_ex (new_cr3,(uint64_t)new_cr3,(uint64_t)new_cr3, 0);
 	return new_cr3;
 }
 

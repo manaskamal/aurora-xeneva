@@ -7,11 +7,12 @@ INCLUDELIB OLDNAMES
 
 PUBLIC	_fltused
 CONST	SEGMENT
-$SG7536	DB	'CR3 -> %x', 0aH, 00H
+$SG7539	DB	'CR3 -> %x', 0aH, 00H
 	ORG $+5
-$SG7537	DB	'Total Used RAM -> %d MB / Total RAM -> %d MB', 0aH, 00H
+$SG7540	DB	'Total Used RAM -> %d MB / Total RAM -> %d MB', 0aH, 00H
 	ORG $+2
-$SG7544	DB	'Hello', 00H
+$SG7544	DB	'Hello New CR3 switched', 0aH, 00H
+$SG7551	DB	'Hello', 00H
 CONST	ENDS
 _DATA	SEGMENT
 _fltused DD	01H
@@ -24,6 +25,7 @@ PUBLIC	?_kmain@@YAXXZ					; _kmain
 EXTRN	x64_cli:PROC
 EXTRN	x64_hlt:PROC
 EXTRN	x64_read_cr3:PROC
+EXTRN	x64_write_cr3:PROC
 EXTRN	?hal_x86_64_setup_int@@YAXXZ:PROC		; hal_x86_64_setup_int
 EXTRN	?hal_init@@YAXXZ:PROC				; hal_init
 EXTRN	?pmmngr_init@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z:PROC ; pmmngr_init
@@ -32,6 +34,7 @@ EXTRN	?pmmngr_get_used_ram@@YA_KXZ:PROC		; pmmngr_get_used_ram
 EXTRN	?pmmngr_get_total_ram@@YA_KXZ:PROC		; pmmngr_get_total_ram
 EXTRN	?vmmngr_x86_64_init@@YAXXZ:PROC			; vmmngr_x86_64_init
 EXTRN	?map_page@@YA_N_K0E@Z:PROC			; map_page
+EXTRN	?create_user_address_space@@YAPEA_KXZ:PROC	; create_user_address_space
 EXTRN	?mm_init@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z:PROC	; mm_init
 EXTRN	?malloc@@YAPEAXI@Z:PROC				; malloc
 EXTRN	?mfree@@YAXPEAX@Z:PROC				; mfree
@@ -65,7 +68,7 @@ $pdata$??_U@YAPEAX_K@Z DD imagerel $LN3
 	DD	imagerel $LN3+23
 	DD	imagerel $unwind$??_U@YAPEAX_K@Z
 $pdata$?_kmain@@YAXXZ DD imagerel $LN7
-	DD	imagerel $LN7+368
+	DD	imagerel $LN7+400
 	DD	imagerel $unwind$?_kmain@@YAXXZ
 pdata	ENDS
 xdata	SEGMENT
@@ -84,6 +87,7 @@ _TEXT	SEGMENT
 info$ = 48
 st$ = 56
 tv76 = 64
+new_cr3$ = 72
 ?_kmain@@YAXXZ PROC					; _kmain
 
 ; 124  : void _kmain () {
@@ -199,7 +203,7 @@ $LN7:
 
 	call	x64_read_cr3
 	mov	rdx, rax
-	lea	rcx, OFFSET FLAT:$SG7536
+	lea	rcx, OFFSET FLAT:$SG7539
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 159  : 	printf ("Total Used RAM -> %d MB / Total RAM -> %d MB\n", pmmngr_get_used_ram() / 1024 / 1024, pmmngr_get_total_ram() / 1024 / 1024);
@@ -222,37 +226,56 @@ $LN7:
 	mov	rcx, QWORD PTR tv76[rsp]
 	mov	r8, rcx
 	mov	rdx, rax
-	lea	rcx, OFFSET FLAT:$SG7537
+	lea	rcx, OFFSET FLAT:$SG7540
+	call	?printf@@YAXPEBDZZ			; printf
+
+; 160  : 
+; 161  : 
+; 162  : 	uint64_t *new_cr3 = (uint64_t*)create_user_address_space();
+
+	call	?create_user_address_space@@YAPEA_KXZ	; create_user_address_space
+	mov	QWORD PTR new_cr3$[rsp], rax
+
+; 163  : 	x64_write_cr3((size_t)new_cr3);
+
+	mov	rcx, QWORD PTR new_cr3$[rsp]
+	call	x64_write_cr3
+
+; 164  : 
+; 165  : 	printf ("Hello New CR3 switched\n");
+
+	lea	rcx, OFFSET FLAT:$SG7544
 	call	?printf@@YAXPEBDZZ			; printf
 $LN4@kmain:
 
-; 160  : 
-; 161  : 	/**
-; 162  : 	 * The Kernel's Virtual Memory is re-written
-; 163  : 	 * so the scheduler is not ready yet, it needs
-; 164  : 	 * to be updated!! and many more new designs are 
-; 165  : 	 * coming soon...
-; 166  : 	 */
-; 167  : 	for(;;);
+; 166  : 
+; 167  : 
+; 168  : 	/**
+; 169  : 	 * The Kernel's Virtual Memory is re-written
+; 170  : 	 * so the scheduler is not ready yet, it needs
+; 171  : 	 * to be updated!! and many more new designs are 
+; 172  : 	 * coming soon...
+; 173  : 	 */
+; 174  : 	for(;;);
 
 	jmp	SHORT $LN4@kmain
 
-; 168  : 
-; 169  : 	//! DON'T REACH HERE!!!!
-; 170  : #ifdef ARCH_X64
-; 171  : 	//================================================
-; 172  : 	//! Initialize the scheduler here
-; 173  : 	//!===============================================
-; 174  : 	initialize_scheduler();
+; 175  : 
+; 176  : 	//! DON'T REACH HERE!!!!
+; 177  : #ifdef ARCH_X64
+; 178  : 	//================================================
+; 179  : 	//! Initialize the scheduler here
+; 180  : 	//!===============================================
+; 181  : 	initialize_scheduler();
 
 	call	?initialize_scheduler@@YAXXZ		; initialize_scheduler
 
-; 175  : 	uint64_t st = 0xFFFFA00000800000;
+; 182  : 	uint64_t st = 0xFFFFA00000800000;
 
 	mov	rax, -105553107877888			; ffffa00000800000H
 	mov	QWORD PTR st$[rsp], rax
 
-; 176  : 	map_page ((uint64_t)pmmngr_alloc(),st,0);
+; 183  : 	map_page ((uint64_t)pmmngr_alloc(),st,0);
 
 	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
 	xor	r8d, r8d
@@ -260,63 +283,63 @@ $LN4@kmain:
 	mov	rcx, rax
 	call	?map_page@@YA_N_K0E@Z			; map_page
 
-; 177  : 	create_kthread(test_thread2,st + 0x1000,(size_t)x64_read_cr3, "Hello", 1);
+; 184  : 	create_kthread(test_thread2,st + 0x1000,(size_t)x64_read_cr3, "Hello", 1);
 
 	mov	rax, QWORD PTR st$[rsp]
 	add	rax, 4096				; 00001000H
 	mov	BYTE PTR [rsp+32], 1
-	lea	r9, OFFSET FLAT:$SG7544
+	lea	r9, OFFSET FLAT:$SG7551
 	lea	r8, OFFSET FLAT:x64_read_cr3
 	mov	rdx, rax
 	lea	rcx, OFFSET FLAT:?test_thread2@@YAXXZ	; test_thread2
 	call	?create_kthread@@YAPEAU_thread_@@P6AXXZ_K1QEADE@Z ; create_kthread
 
-; 178  : 	//create_process ("/xshell.exe","shell");
-; 179  : 	//create_process ("/xshell.exe","shell");
-; 180  : 	//create_user_thread (add,(uint64_t)stack,(uint64_t)cr3,"Test",1);
-; 181  : 
-; 182  : 	//! Quince -- The Compositing window manager for Aurora kernel
-; 183  : 	//! always put quince in thread id -- > 2
-; 184  : 	//create_process ("/quince.exe","quince",0, NULL);
-; 185  : 
-; 186  : 	/**=====================================================
-; 187  : 	 ** Kernel threads handle some specific callbacks like
-; 188  : 	 ** procmngr handles process creation and termination
-; 189  : 	 **=====================================================
-; 190  : 	 */
-; 191  : 	//create_kthread (procmngr_start,(uint64_t)pmmngr_alloc(),x64_read_cr3(),"procmngr",0);
-; 192  : 	//! Misc programs goes here
-; 193  : 	//create_process ("/dwm2.exe", "dwm4", 0, NULL);
-; 194  : 	//! Here start the scheduler (multitasking engine)
-; 195  : 	scheduler_start();
+; 185  : 	//create_process ("/xshell.exe","shell");
+; 186  : 	//create_process ("/xshell.exe","shell");
+; 187  : 	//create_user_thread (add,(uint64_t)stack,(uint64_t)cr3,"Test",1);
+; 188  : 
+; 189  : 	//! Quince -- The Compositing window manager for Aurora kernel
+; 190  : 	//! always put quince in thread id -- > 2
+; 191  : 	//create_process ("/quince.exe","quince",0, NULL);
+; 192  : 
+; 193  : 	/**=====================================================
+; 194  : 	 ** Kernel threads handle some specific callbacks like
+; 195  : 	 ** procmngr handles process creation and termination
+; 196  : 	 **=====================================================
+; 197  : 	 */
+; 198  : 	//create_kthread (procmngr_start,(uint64_t)pmmngr_alloc(),x64_read_cr3(),"procmngr",0);
+; 199  : 	//! Misc programs goes here
+; 200  : 	//create_process ("/dwm2.exe", "dwm4", 0, NULL);
+; 201  : 	//! Here start the scheduler (multitasking engine)
+; 202  : 	scheduler_start();
 
 	call	?scheduler_start@@YAXXZ			; scheduler_start
 $LN2@kmain:
 
-; 196  : #endif
-; 197  : 
-; 198  : 	//! Loop forever
-; 199  : 	while(1) {
+; 203  : #endif
+; 204  : 
+; 205  : 	//! Loop forever
+; 206  : 	while(1) {
 
 	xor	eax, eax
 	cmp	eax, 1
 	je	SHORT $LN1@kmain
 
-; 200  : 		//!looping looping
-; 201  : 		x64_cli();
+; 207  : 		//!looping looping
+; 208  : 		x64_cli();
 
 	call	x64_cli
 
-; 202  : 		x64_hlt();
+; 209  : 		x64_hlt();
 
 	call	x64_hlt
 
-; 203  : 	}
+; 210  : 	}
 
 	jmp	SHORT $LN2@kmain
 $LN1@kmain:
 
-; 204  : }
+; 211  : }
 
 	add	rsp, 88					; 00000058H
 	ret	0
