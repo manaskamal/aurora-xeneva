@@ -96,7 +96,8 @@ void vmmngr_x86_64_init () {
 	memset (pd3, 0, 4096);
 	memset (pd4, 0, 4096);
 
-	//! Identity Map : first 4 GiB of RAM
+	////! Identity Map : first 4 GiB of RAM
+
     new_cr3[0] = (uint64_t)pdpt | 0x3;
 	pdpt[0] =  (uintptr_t)&pd[0] | 0x3;
 	pdpt[1] = (uintptr_t)&pd2[0] | 0x3;
@@ -117,8 +118,9 @@ void vmmngr_x86_64_init () {
 		pd4[i] = 3*pos + i * 512 * 4096 | 0x83;
 
 
-
-	///! Copy all higher half mappings to new mapping
+	/*new_cr3[0] = cr3[0];
+	new_cr3[1] = cr3[1];*/
+	//! Copy all higher half mappings to new mapping
 	for (int i = 0; i < 512; ++i) {
 		if (i < 256) {
 			//new_cr3[i] = 0;
@@ -189,17 +191,16 @@ bool map_page (uint64_t physical_address, uint64_t virtual_address, uint8_t attr
 	}
 	
 	uint64_t* pml1 = (uint64_t*)(pml2[i2] & ~(4096 - 1));
-	if (pml1[i1] & PAGING_PRESENT)
+	/*if (pml1[i1] & PAGING_PRESENT)
 	{
 		return false;
-	}
+	}*/
 
 	pml1[i1] = physical_address | flags;
 	flush_tlb ((void*)virtual_address);
 	x64_mfence ();
 	return true;
 }
-
 
 void unmap_page(uint64_t virt_addr){
 	
@@ -258,7 +259,12 @@ uint64_t* get_physical_address (uint64_t virt_addr) {
 
 bool map_page_ex (uint64_t *pml4i,uint64_t physical_address, uint64_t virtual_address, uint8_t attrib){
 
-	size_t flags = PAGING_WRITABLE | PAGING_PRESENT | attrib;
+
+	size_t flags = 0;
+	if (attrib == PAGING_USER)
+		flags  = PAGING_PRESENT | PAGING_WRITABLE | PAGING_USER;
+	else
+		flags = PAGING_PRESENT | PAGING_WRITABLE;
 
 	const long i4 = (virtual_address >> 39) & 0x1FF;
 	const long i3 = (virtual_address >> 30) & 0x1FF;
@@ -297,7 +303,6 @@ bool map_page_ex (uint64_t *pml4i,uint64_t physical_address, uint64_t virtual_ad
 	uint64_t* pml1 = (uint64_t*)(pml2[i2] & ~(4096 - 1));
 
 	if (pml1[i1] & PAGING_PRESENT){
-		//printf ("Paging already present -> %x\n", virtual_address);
 		return false;
 	}
 
@@ -315,7 +320,7 @@ uint64_t *create_user_address_space (){
 	
 	uint64_t *cr3 = (uint64_t*)x64_read_cr3();
 	uint64_t *new_cr3 = (uint64_t*)pmmngr_alloc();
-	memset(new_cr3, 0, 4096);
+
 
 	//! For now, copy the 4 GiB identity mapping from old pml4
 	//! but later, we should avoid this by mapping only those physical
@@ -323,14 +328,16 @@ uint64_t *create_user_address_space (){
 	//! paging tables creations and memory mapped I/O which are not
 	//! virtually allocated in higher half sections
 	new_cr3[0] = cr3[0];
-
 	//! Copy Kernel's Higher Half section
 	new_cr3[pml4_index(0xFFFFC00000000000)] = cr3[pml4_index(0xFFFFC00000000000)];
 	new_cr3[pml4_index(0xFFFFA00000000000)] = cr3[pml4_index(0xFFFFA00000000000)];
 	new_cr3[pml4_index(0xFFFF800000000000)] = cr3[pml4_index(0xFFFF800000000000)];
 	new_cr3[pml4_index(0xFFFFE00000000000)] = cr3[pml4_index(0xFFFFE00000000000)];
-	new_cr3[pml4_index(0xFFFFD00000000000)] = cr3[pml4_index(0xFFFFE00000000000)];
-
+	new_cr3[pml4_index(0xFFFFD00000000000)] = cr3[pml4_index(0xFFFFD00000000000)];
+	new_cr3[pml4_index(0xFFFFFD0000000000)] = cr3[pml4_index(0xFFFFFD0000000000)];
+	//! Mapped Framebuffer
+	for (int i = 0; i < get_fb_size() / 4096; i++)
+		new_cr3[pml4_index(0xFFFFD00000200000 + i * 4096)] = cr3[pml4_index(0xFFFFD00000200000 + i * 4096)]; 
 	return new_cr3;
 }
 

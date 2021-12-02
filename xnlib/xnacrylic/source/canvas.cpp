@@ -23,11 +23,12 @@ bool double_buffer = true;
 int svga_fd = 0;
 
 canvas_t *create_canvas (int width, int height) {
-	svga_fd = sys_open_file ("/dev/svga", NULL);
-	uint32_t s_width = ioquery(svga_fd,SVGA_GET_WIDTH,NULL);
-	uint32_t s_height = ioquery(svga_fd, SVGA_GET_HEIGHT, NULL);
-	uint32_t bpp = ioquery(svga_fd, SVGA_GET_BPP, NULL);
-	uint16_t scanline = ioquery(svga_fd, SVGA_GET_SCANLINE, NULL);
+	svga_fd = sys_open_file ("/dev/fb", NULL);
+	uint32_t s_width = ioquery(svga_fd,SCREEN_GETWIDTH,NULL);
+	uint32_t s_height = ioquery(svga_fd, SCREEN_GETHEIGHT, NULL);
+	uint32_t bpp = ioquery(svga_fd, SCREEN_GETBPP, NULL);
+	uint16_t scanline = ioquery(svga_fd, SCREEN_GET_SCANLINE, NULL);
+
 
 	canvas_t *canvas = (canvas_t*)malloc(sizeof(canvas_t));
 	uint32_t *address = NULL;
@@ -83,25 +84,17 @@ uint32_t canvas_get_height (canvas_t * canvas) {
 }
 
 void canvas_screen_update (canvas_t * canvas,uint32_t x, uint32_t y, uint32_t w, uint32_t h) {
-	uint32_t* lfb = (uint32_t*)0xFFFFF00000000000;
-	/*for (int i=0; i < w; i++) {	
-		for (int j=0; j < h; j++){
-			if (lfb[(x + i) + (y + j) * canvas_get_scale()] != canvas->address[(x + i) + (y + j) * canvas_get_scale()]) {
-			uint32_t color = canvas->address[(x + i) + (y + j) * canvas_get_scale()];
-			lfb[(x + i) + (y + j) * canvas_get_scale()] = color;
-			}
-		}
-	}*/
+	uint32_t* lfb = (uint32_t*)0xFFFFD00000200000;
 
 	for (int i = 0; i < h; i++)
 		fastcpy (lfb + (y + i) * canvas->width + x,canvas->address + (y + i) * canvas->width + x, w * 4);
 
-	svga_io_query_t query; // = (svga_io_query_t*)malloc(sizeof(svga_io_query_t));
-	query.value = x;
-	query.value2 = y;
-	query.value3 = w;
-	query.value4 = h;
-	ioquery(svga_fd, SVGA_UPDATE, &query);
+	//svga_io_query_t query; // = (svga_io_query_t*)malloc(sizeof(svga_io_query_t));
+	//query.value = x;
+	//query.value2 = y;
+	//query.value3 = w;
+	//query.value4 = h;
+	//ioquery(svga_fd, SVGA_UPDATE, &query);
 	//free(query);
 }
 

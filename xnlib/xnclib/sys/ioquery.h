@@ -28,10 +28,23 @@
 #define SVGA_UPDATE     0x205
 #define SVGA_MOVE_CURSOR  0x206
 #define SVGA_GET_SCANLINE 0x207
+#define SVGA_UPDATE_FB  0x208
 
 //! Mouse Code
 #define MOUSE_IOCODE_DISABLE   300
 #define MOUSE_IOCODE_ENABLE    301
+
+
+//! Standard codes for svga driver
+#define SCREEN_SETMODE     0x100
+#define SCREEN_GETWIDTH    0x101
+#define SCREEN_GETHEIGHT   0x102
+#define SCREEN_GETBPP      0x103
+#define SCREEN_SETBPP      0x104
+#define SCREEN_UPDATE      0x105
+#define SCREEN_MOVE_CURSOR  0x106
+#define SCREEN_GET_SCANLINE 0x107
+#define SCREEN_UPDATE_FB  0x108
 
 
 extern "C" int ioquery (int devid, int code, void* arg);

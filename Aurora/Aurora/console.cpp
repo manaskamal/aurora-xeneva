@@ -24,6 +24,19 @@ static int console_x = 0;
 static int console_y = 0;
 static uint8_t *psf_data = nullptr;
 
+
+void fb_write (_vfs_node_ *file, uint8_t* buffer, uint32_t length){
+	memcpy (fb,buffer,length);
+}
+
+int fb_io_query (vfs_node_t* node, int code, void* arg) {
+
+	return 1;
+}
+
+
+
+
 //! Initialize console device
 void console_initialize (PKERNEL_BOOT_INFO info) {
 	console_x = 0;
@@ -42,6 +55,7 @@ void console_initialize (PKERNEL_BOOT_INFO info) {
 	readfs(node, &file,buffer,file.size);
 	
 	psf_data = buffer;
+
 }
 
 //! Put a character to console output
@@ -119,4 +133,5 @@ void puts(char *s){
 
 	
 }
+
 

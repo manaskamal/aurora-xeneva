@@ -45,18 +45,20 @@ canvas_t *QuGetCanvas() {
 
 
 int main (int argc, char* argv[]) {
-	int svga_fd = sys_open_file ("/dev/svga", NULL);
-
+	int svga_fd = sys_open_file ("/dev/fb", NULL);
+	
 	uint32_t s_width = ioquery(svga_fd,SVGA_GET_WIDTH,NULL);
 	uint32_t s_height = ioquery(svga_fd, SVGA_GET_HEIGHT, NULL);
-
+	
 	canvas = create_canvas (s_width,s_height);
 	int w = canvas_get_width(canvas);
 	int h = canvas_get_height(canvas);
-  //  psf_register_font_lib();
+	acrylic_draw_rect_filled (canvas, 0,0,100,100,WHITE);
+	//canvas_screen_update(canvas, 0,0,100,100);
 
+  //  psf_register_font_lib();
 	//!Initialize Quince Wallpaper Manager  "a:coffee.jpg"  "/bihu.jpg""/river.jpg"
-	Image * img = QuWallpaperInit("/river.jpg");
+	Image * img = QuWallpaperInit("/bihu.jpg");
 	QuWallpaperDraw (img);
 	QuWallpaperPresent ();
 
@@ -77,7 +79,7 @@ int main (int argc, char* argv[]) {
 	int mouse_fd = sys_open_file ("/dev/mouse", NULL);
 
 	////!Start the mouse
-	ioquery (mouse_fd, MOUSE_IOCODE_ENABLE,NULL);
+//	ioquery (mouse_fd, MOUSE_IOCODE_ENABLE,NULL);
 	//! Execute the Event Loop
 	QuEventLoop();
 }

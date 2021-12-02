@@ -139,7 +139,7 @@ void QuCursorNewCoord (unsigned x, unsigned y) {
 void QuMoveCursor (unsigned x, unsigned y) {
 #ifdef SW_CURSOR
 	QuPutBackStore (QuOldX, QuOldY);
-	canvas_screen_update(QuOldX, QuOldY, 24,24);
+	canvas_screen_update(QuGetCanvas(),QuOldX, QuOldY, 24,24);
 	QuCursorCoord (x, y);
 	QuStoreBack (x, y);
 	QuDrawCursor (bmp, x, y);

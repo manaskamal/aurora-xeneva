@@ -36,6 +36,7 @@ typedef struct _svga_io_query_struct_ {
 	uint32_t value4;
 	uint32_t value5;
 	uint32_t value6;
+	void*    pointer;
 }svga_io_query_t;
 
 extern canvas_t * canvas_initialize (int width, int height);

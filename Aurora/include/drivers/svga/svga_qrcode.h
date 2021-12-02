@@ -21,4 +21,5 @@
 #define SVGA_UPDATE      0x205
 #define SVGA_MOVE_CURSOR  0x206
 #define SVGA_GET_SCANLINE 0x207
+#define SVGA_UPDATE_FB  0x208
 #endif

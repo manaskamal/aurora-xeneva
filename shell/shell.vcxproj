@@ -151,7 +151,7 @@
       <Driver>Driver</Driver>
       <OptimizeReferences>false</OptimizeReferences>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
-      <EntryPointSymbol>main</EntryPointSymbol>
+      <EntryPointSymbol>_start</EntryPointSymbol>
       <BaseAddress>0x0000400000000000</BaseAddress>
       <RandomizedBaseAddress>
       </RandomizedBaseAddress>

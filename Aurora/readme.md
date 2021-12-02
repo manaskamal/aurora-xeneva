@@ -10,7 +10,7 @@ At very beginning the name of the Kernel was _'Xeneva'_, but after some discussi
 The Kernel is mapped in Higher Half <br>
 Memory Management <br>
 Multitasking <br>
-Kernel inbuilt drivers {_"HDAudio"_, _"E1000"_, _"IDE_", _"SVGA"_, _"PS2 Mouse & Keybaord"_}<br>
+Kernel inbuilt drivers {_"HDAudio"_, _"E1000"_, _"IDE_", _"SVGA"('disabled')_, _"PS2 Mouse & Keybaord"_}<br>
 File System _'FAT32'_ <br>
 Virtual File System <br>
 System Calls <br>

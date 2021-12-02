@@ -76,7 +76,7 @@ void task_delete (thread_t* thread) {
 		thread->next->prev = thread->prev;
 	}
 
-	mfree (thread);
+	pmmngr_free (thread);
 }
 /*=========================================================================================*/
 /*=========================================================================================*/
@@ -87,7 +87,7 @@ void task_delete (thread_t* thread) {
  **/
 thread_t* create_kthread (void (*entry) (void), uint64_t stack,uint64_t cr3, char name[8], uint8_t priority)
 {
-	thread_t *t = (thread_t*)malloc(sizeof(thread_t));   //pmmngr_alloc();
+	thread_t *t = (thread_t*)pmmngr_alloc();
 	t->ss = 0x10;
 	t->rsp = (uint64_t*)stack;
 	t->rflags = 0x202;
@@ -123,7 +123,7 @@ thread_t* create_kthread (void (*entry) (void), uint64_t stack,uint64_t cr3, cha
 	t->state = THREAD_STATE_READY;
 	//t->priority = priority;
 	t->fd_current = 0;
-	t->stream = allocate_stream();
+	//t->stream = allocate_stream();
 	//t->master_fd = 0;
 	//t->slave_fd = 0;
 	/*
@@ -139,7 +139,7 @@ thread_t* create_kthread (void (*entry) (void), uint64_t stack,uint64_t cr3, cha
  */
 thread_t* create_user_thread (void (*entry) (void*),uint64_t stack,uint64_t cr3, char name[8], uint8_t priority)
 {
-	thread_t *t = (thread_t*)malloc(sizeof(thread_t));   //pmmngr_alloc();
+	thread_t *t = (thread_t*)pmmngr_alloc();
 	memset (t, 0, 4096);
 	t->ss = SEGVAL(GDT_ENTRY_USER_DATA,3);//0x23; 
 	t->rsp = (uint64_t*)stack;
@@ -171,8 +171,8 @@ thread_t* create_user_thread (void (*entry) (void*),uint64_t stack,uint64_t cr3,
 	t->id = task_id++;
 	t->quanta = 0;
 	t->ttype = 0;
-	//t->mouse_box = (uint64_t*)pmmngr_alloc();
-   // map_page_ex((uint64_t*)t->cr3,(uint64_t)t->mouse_box,(uint64_t)0xFFFFFFFFB0000000, PAGING_USER);
+	t->mouse_box = (uint64_t*)pmmngr_alloc();
+    map_page_ex((uint64_t*)t->cr3,(uint64_t)t->mouse_box,(uint64_t)0xFFFFFFFFB0000000, PAGING_USER);
 	t->_is_user = 1;
 	t->priviledge = THREAD_LEVEL_USER;
 	t->state = THREAD_STATE_READY;
@@ -190,7 +190,7 @@ thread_t* create_user_thread (void (*entry) (void*),uint64_t stack,uint64_t cr3,
 //! the main idle thread
 void idle_thread () {
 	while(1) {
-		//x64_hlt();
+		x64_hlt();
 	}
 }
 
@@ -203,10 +203,8 @@ void initialize_scheduler () {
 	scheduler_mutex = create_mutex ();
 	scheduler_enable = true;
 	scheduler_initialized = true;
-	map_page((uint64_t)pmmngr_alloc(),0xFFFFA00000700000, 0);
-	thread_t *idle_ = create_kthread (idle_thread,(uint64_t)0xFFFFA00000700000 + 0x1000,x64_read_cr3(),"Idle",1);
+	thread_t *idle_ = create_kthread (idle_thread,(uint64_t)pmmngr_alloc() + 4096,x64_read_cr3(),"Idle",1);
 	current_thread = idle_;
-	printf ("Idle Thread address -> %x\n", idle_thread);
 }
 
 void next_task () {
@@ -215,9 +213,8 @@ void next_task () {
 		if (task->state == THREAD_STATE_SLEEP) {
 			if (task->quanta == 0) {
 				task->state = THREAD_STATE_READY;
-			}else{
-				task->quanta--;
 			}
+			task->quanta--;
 		}
 		task = task->next;
 		if (task == NULL) {
@@ -240,7 +237,6 @@ void scheduler_isr (size_t v, void* param) {
 	//mutex_lock (scheduler_mutex);
    
 	if (save_context(current_thread,get_kernel_tss()) == 0) {
-		x64_cli();
 		current_thread->cr3 = x64_read_cr3();
 		if (current_thread->priviledge == THREAD_LEVEL_USER)
 			current_thread->kern_esp = get_kernel_tss()->rsp[0];
@@ -252,11 +248,11 @@ void scheduler_isr (size_t v, void* param) {
 #ifdef USE_PIC
 		interrupt_end (0);
 #endif
-		
 		if (current_thread->priviledge == THREAD_LEVEL_USER){
 			get_kernel_tss()->rsp[0] = current_thread->kern_esp;
 		}
-		x64_write_cr3 (current_thread->cr3);
+
+		//x64_write_cr3 (current_thread->cr3);
 		//mutex_unlock (scheduler_mutex);
 		execute_idle (current_thread,get_kernel_tss());
 	}

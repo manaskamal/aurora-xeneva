@@ -222,9 +222,6 @@
     <ClInclude Include="..\include\drivers\svga\svga_screen.h">
       <Filter>include\drivers\svga</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\drivers\vga.h">
-      <Filter>include\drivers</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\drivers\svga\svga_screen_util.h">
       <Filter>include\drivers\svga</Filter>
     </ClInclude>

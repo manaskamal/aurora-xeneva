@@ -30,7 +30,7 @@ msg_rcv_mutex DQ 01H DUP (?)
 _BSS	ENDS
 pdata	SEGMENT
 $pdata$?dwm_ipc_init@@YAXXZ DD imagerel $LN3
-	DD	imagerel $LN3+60
+	DD	imagerel $LN3+111
 	DD	imagerel $unwind$?dwm_ipc_init@@YAXXZ
 $pdata$?dwm_put_message@@YAXPEAU_dwm_message_@@@Z DD imagerel $LN5
 	DD	imagerel $LN5+132
@@ -110,11 +110,11 @@ text$yc	ENDS
 _TEXT	SEGMENT
 ?get_dwm_message_q_address@@YAPEA_KXZ PROC		; get_dwm_message_q_address
 
-; 28   : 	return 0;
+; 31   : 	return 0;
 
 	xor	eax, eax
 
-; 29   : }
+; 32   : }
 
 	ret	0
 ?get_dwm_message_q_address@@YAPEA_KXZ ENDP		; get_dwm_message_q_address
@@ -126,35 +126,35 @@ tmsg$ = 32
 msg$ = 64
 ?dwm_dispatch_message@@YAXPEAU_dwm_message_@@@Z PROC	; dwm_dispatch_message
 
-; 46   : void dwm_dispatch_message (dwm_message_t *msg) {
+; 49   : void dwm_dispatch_message (dwm_message_t *msg) {
 
 $LN4:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 56					; 00000038H
 
-; 47   : 	x64_cli();
+; 50   : 	x64_cli();
 
 	call	x64_cli
 
-; 48   : 	mutex_lock (msg_rcv_mutex);
+; 51   : 	mutex_lock (msg_rcv_mutex);
 
 	mov	rcx, QWORD PTR msg_rcv_mutex
 	call	?mutex_lock@@YAXPEAUmutex_t@@@Z		; mutex_lock
 
-; 49   : 	dwm_message_t *tmsg = (dwm_message_t*)get_current_thread()->mouse_box;
+; 52   : 	dwm_message_t *tmsg = (dwm_message_t*)get_current_thread()->mouse_box;
 
 	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
 	mov	rax, QWORD PTR [rax+240]
 	mov	QWORD PTR tmsg$[rsp], rax
 
-; 50   : 	if (tmsg->type != 0) {
+; 53   : 	if (tmsg->type != 0) {
 
 	mov	rax, QWORD PTR tmsg$[rsp]
 	movzx	eax, WORD PTR [rax]
 	test	eax, eax
 	je	SHORT $LN1@dwm_dispat
 
-; 51   : 		memcpy (msg,tmsg,sizeof(dwm_message_t));
+; 54   : 		memcpy (msg,tmsg,sizeof(dwm_message_t));
 
 	mov	r8d, 28
 	mov	rdx, QWORD PTR tmsg$[rsp]
@@ -162,9 +162,9 @@ $LN4:
 	call	memcpy
 $LN1@dwm_dispat:
 
-; 52   : 	}
-; 53   : 
-; 54   : 	memset (get_current_thread()->mouse_box, 0, 4096);
+; 55   : 	}
+; 56   : 
+; 57   : 	memset (get_current_thread()->mouse_box, 0, 4096);
 
 	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
 	mov	r8d, 4096				; 00001000H
@@ -172,12 +172,12 @@ $LN1@dwm_dispat:
 	mov	rcx, QWORD PTR [rax+240]
 	call	?memset@@YAXPEAXEI@Z			; memset
 
-; 55   : 	mutex_unlock (msg_rcv_mutex);
+; 58   : 	mutex_unlock (msg_rcv_mutex);
 
 	mov	rcx, QWORD PTR msg_rcv_mutex
 	call	?mutex_unlock@@YAXPEAUmutex_t@@@Z	; mutex_unlock
 
-; 56   : }
+; 59   : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -191,52 +191,52 @@ tmsg$ = 40
 msg$ = 64
 ?dwm_put_message@@YAXPEAU_dwm_message_@@@Z PROC		; dwm_put_message
 
-; 30   : void dwm_put_message (dwm_message_t *msg) {
+; 33   : void dwm_put_message (dwm_message_t *msg) {
 
 $LN5:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 56					; 00000038H
 
-; 31   : 	//x64_cli ();
-; 32   : 	mutex_lock (msg_mutex);
+; 34   : 	//x64_cli ();
+; 35   : 	mutex_lock (msg_mutex);
 
 	mov	rcx, QWORD PTR msg_mutex
 	call	?mutex_lock@@YAXPEAUmutex_t@@@Z		; mutex_lock
 
-; 33   : 	thread_t *t  = thread_iterate_ready_list (2);   //!ready list
+; 36   : 	thread_t *t  = thread_iterate_ready_list (2);   //!ready list
 
 	mov	cx, 2
 	call	?thread_iterate_ready_list@@YAPEAU_thread_@@G@Z ; thread_iterate_ready_list
 	mov	QWORD PTR t$[rsp], rax
 
-; 34   : 	if (t == NULL) {
+; 37   : 	if (t == NULL) {
 
 	cmp	QWORD PTR t$[rsp], 0
 	jne	SHORT $LN2@dwm_put_me
 
-; 35   : 		t = thread_iterate_block_list(2);
+; 38   : 		t = thread_iterate_block_list(2);
 
 	mov	ecx, 2
 	call	?thread_iterate_block_list@@YAPEAU_thread_@@H@Z ; thread_iterate_block_list
 	mov	QWORD PTR t$[rsp], rax
 $LN2@dwm_put_me:
 
-; 36   : 	}
-; 37   : 
-; 38   : 	dwm_message_t *tmsg = (dwm_message_t*)t->mouse_box;
+; 39   : 	}
+; 40   : 
+; 41   : 	dwm_message_t *tmsg = (dwm_message_t*)t->mouse_box;
 
 	mov	rax, QWORD PTR t$[rsp]
 	mov	rax, QWORD PTR [rax+240]
 	mov	QWORD PTR tmsg$[rsp], rax
 
-; 39   : 	if (tmsg->type == 0)
+; 42   : 	if (tmsg->type == 0)
 
 	mov	rax, QWORD PTR tmsg$[rsp]
 	movzx	eax, WORD PTR [rax]
 	test	eax, eax
 	jne	SHORT $LN1@dwm_put_me
 
-; 40   : 		memcpy (t->mouse_box,msg,sizeof(dwm_message_t));
+; 43   : 		memcpy (t->mouse_box,msg,sizeof(dwm_message_t));
 
 	mov	r8d, 28
 	mov	rdx, QWORD PTR msg$[rsp]
@@ -245,13 +245,13 @@ $LN2@dwm_put_me:
 	call	memcpy
 $LN1@dwm_put_me:
 
-; 41   : 	mutex_unlock (msg_mutex);
+; 44   : 	mutex_unlock (msg_mutex);
 
 	mov	rcx, QWORD PTR msg_mutex
 	call	?mutex_unlock@@YAXPEAUmutex_t@@@Z	; mutex_unlock
 
-; 42   : 
-; 43   : }
+; 45   : 
+; 46   : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -261,6 +261,7 @@ _TEXT	ENDS
 ; File e:\xeneva project\xeneva\aurora\aurora\ipc\dwm_ipc.cpp
 _TEXT	SEGMENT
 p$ = 32
+p2$ = 40
 ?dwm_ipc_init@@YAXXZ PROC				; dwm_ipc_init
 
 ; 21   : void dwm_ipc_init () {
@@ -280,14 +281,33 @@ $LN3:
 	mov	rcx, QWORD PTR p$[rsp]
 	call	?memset@@YAXPEAXEI@Z			; memset
 
-; 24   : 	map_page((uint64_t)p,0xFFFFFD0000000000, 0);
+; 24   : 	map_page((uint64_t)p,0xFFFFFD0000000000, PAGING_USER);
 
-	xor	r8d, r8d
+	mov	r8b, 4
 	mov	rdx, -3298534883328			; fffffd0000000000H
 	mov	rcx, QWORD PTR p$[rsp]
 	call	?map_page@@YA_N_K0E@Z			; map_page
 
-; 25   : }
+; 25   : 	void *p2 = pmmngr_alloc();
+
+	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
+	mov	QWORD PTR p2$[rsp], rax
+
+; 26   : 	memset(p2, 0, 4096);
+
+	mov	r8d, 4096				; 00001000H
+	xor	edx, edx
+	mov	rcx, QWORD PTR p2$[rsp]
+	call	?memset@@YAXPEAXEI@Z			; memset
+
+; 27   : 	map_page((uint64_t)p2,0xFFFFD00000000000,PAGING_USER);
+
+	mov	r8b, 4
+	mov	rdx, -52776558133248			; ffffd00000000000H
+	mov	rcx, QWORD PTR p2$[rsp]
+	call	?map_page@@YA_N_K0E@Z			; map_page
+
+; 28   : }
 
 	add	rsp, 56					; 00000038H
 	ret	0

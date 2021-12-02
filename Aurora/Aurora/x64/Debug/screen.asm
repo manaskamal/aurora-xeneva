@@ -7,8 +7,13 @@ INCLUDELIB OLDNAMES
 
 PUBLIC	?display@@3U__display__@@A			; display
 _BSS	SEGMENT
-?display@@3U__display__@@A DB 018H DUP (?)		; display
+?display@@3U__display__@@A DB 020H DUP (?)		; display
 _BSS	ENDS
+CONST	SEGMENT
+$SG3026	DB	'fb', 00H
+	ORG $+5
+$SG3027	DB	'/dev/fb', 00H
+CONST	ENDS
 PUBLIC	?initialize_screen@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z ; initialize_screen
 PUBLIC	?screen_set_configuration@@YAXII@Z		; screen_set_configuration
 PUBLIC	?get_screen_width@@YAIXZ			; get_screen_width
@@ -16,17 +21,140 @@ PUBLIC	?get_screen_height@@YAIXZ			; get_screen_height
 PUBLIC	?get_framebuffer_addr@@YAPEAIXZ			; get_framebuffer_addr
 PUBLIC	?get_bpp@@YAIXZ					; get_bpp
 PUBLIC	?get_screen_scanline@@YAGXZ			; get_screen_scanline
+PUBLIC	?get_fb_size@@YAIXZ				; get_fb_size
 PUBLIC	?draw_pixel@@YAXIII@Z				; draw_pixel
+PUBLIC	?screen_io_query@@YAHPEAU_vfs_node_@@HPEAX@Z	; screen_io_query
+EXTRN	?strcpy@@YAPEADPEADPEBD@Z:PROC			; strcpy
+EXTRN	?vfs_mount@@YAXPEADPEAU_vfs_node_@@@Z:PROC	; vfs_mount
 EXTRN	?map_page@@YA_N_K0E@Z:PROC			; map_page
+EXTRN	?malloc@@YAPEAXI@Z:PROC				; malloc
 pdata	SEGMENT
+$pdata$?initialize_screen@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z DD imagerel $LN3
+	DD	imagerel $LN3+292
+	DD	imagerel $unwind$?initialize_screen@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z
 $pdata$?screen_set_configuration@@YAXII@Z DD imagerel $LN6
-	DD	imagerel $LN6+152
+	DD	imagerel $LN6+142
 	DD	imagerel $unwind$?screen_set_configuration@@YAXII@Z
+$pdata$?screen_io_query@@YAHPEAU_vfs_node_@@HPEAX@Z DD imagerel $LN9
+	DD	imagerel $LN9+142
+	DD	imagerel $unwind$?screen_io_query@@YAHPEAU_vfs_node_@@HPEAX@Z
 pdata	ENDS
 xdata	SEGMENT
+$unwind$?initialize_screen@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z DD 010901H
+	DD	06209H
 $unwind$?screen_set_configuration@@YAXII@Z DD 010c01H
 	DD	0620cH
+$unwind$?screen_io_query@@YAHPEAU_vfs_node_@@HPEAX@Z DD 011201H
+	DD	04212H
 xdata	ENDS
+; Function compile flags: /Odtpy
+; File e:\xeneva project\xeneva\aurora\aurora\screen.cpp
+_TEXT	SEGMENT
+scanline$1 = 0
+tv64 = 4
+width$2 = 8
+height$3 = 12
+bpp$4 = 16
+node$ = 48
+code$ = 56
+arg$ = 64
+?screen_io_query@@YAHPEAU_vfs_node_@@HPEAX@Z PROC	; screen_io_query
+
+; 88   : int screen_io_query (vfs_node_t* node, int code, void* arg) {
+
+$LN9:
+	mov	QWORD PTR [rsp+24], r8
+	mov	DWORD PTR [rsp+16], edx
+	mov	QWORD PTR [rsp+8], rcx
+	sub	rsp, 40					; 00000028H
+
+; 89   : 	switch (code) {
+
+	mov	eax, DWORD PTR code$[rsp]
+	mov	DWORD PTR tv64[rsp], eax
+	cmp	DWORD PTR tv64[rsp], 257		; 00000101H
+	je	SHORT $LN4@screen_io_
+	cmp	DWORD PTR tv64[rsp], 258		; 00000102H
+	je	SHORT $LN3@screen_io_
+	cmp	DWORD PTR tv64[rsp], 259		; 00000103H
+	je	SHORT $LN2@screen_io_
+	cmp	DWORD PTR tv64[rsp], 263		; 00000107H
+	je	SHORT $LN1@screen_io_
+	jmp	SHORT $LN5@screen_io_
+$LN4@screen_io_:
+
+; 90   : 	case SCREEN_GETWIDTH:{
+; 91   : 		uint32_t width = display.width;
+
+	mov	eax, DWORD PTR ?display@@3U__display__@@A
+	mov	DWORD PTR width$2[rsp], eax
+
+; 92   : 		return width;
+
+	mov	eax, DWORD PTR width$2[rsp]
+	jmp	SHORT $LN7@screen_io_
+
+; 93   : 		break;
+
+	jmp	SHORT $LN5@screen_io_
+$LN3@screen_io_:
+
+; 94   : 	}
+; 95   : 	case SCREEN_GETHEIGHT:{
+; 96   : 		uint32_t height = display.height;
+
+	mov	eax, DWORD PTR ?display@@3U__display__@@A+4
+	mov	DWORD PTR height$3[rsp], eax
+
+; 97   : 		return height;
+
+	mov	eax, DWORD PTR height$3[rsp]
+	jmp	SHORT $LN7@screen_io_
+
+; 98   : 		break;
+
+	jmp	SHORT $LN5@screen_io_
+$LN2@screen_io_:
+
+; 99   : 	}
+; 100  : 	case SCREEN_GETBPP:{
+; 101  : 		uint32_t bpp = display.bpp;
+
+	mov	eax, DWORD PTR ?display@@3U__display__@@A+16
+	mov	DWORD PTR bpp$4[rsp], eax
+
+; 102  : 		return bpp;
+
+	mov	eax, DWORD PTR bpp$4[rsp]
+	jmp	SHORT $LN7@screen_io_
+
+; 103  : 		break;
+
+	jmp	SHORT $LN5@screen_io_
+$LN1@screen_io_:
+
+; 104  : 	 }
+; 105  : 	case SCREEN_GET_SCANLINE: {
+; 106  : 		uint16_t scanline = display.scanline;
+
+	movzx	eax, WORD PTR ?display@@3U__display__@@A+20
+	mov	WORD PTR scanline$1[rsp], ax
+
+; 107  : 		return scanline;
+
+	movzx	eax, WORD PTR scanline$1[rsp]
+$LN5@screen_io_:
+$LN7@screen_io_:
+
+; 108  : 		break;
+; 109  : 	}
+; 110  : 	}
+; 111  : }
+
+	add	rsp, 40					; 00000028H
+	ret	0
+?screen_io_query@@YAHPEAU_vfs_node_@@HPEAX@Z ENDP	; screen_io_query
+_TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\screen.cpp
 _TEXT	SEGMENT
@@ -35,13 +163,13 @@ y$ = 16
 color$ = 24
 ?draw_pixel@@YAXIII@Z PROC				; draw_pixel
 
-; 68   : void draw_pixel (unsigned x, unsigned y, uint32_t color ) {
+; 83   : void draw_pixel (unsigned x, unsigned y, uint32_t color ) {
 
 	mov	DWORD PTR [rsp+24], r8d
 	mov	DWORD PTR [rsp+16], edx
 	mov	DWORD PTR [rsp+8], ecx
 
-; 69   : 	display.buffer[x + y * display.width] = color;
+; 84   : 	display.buffer[x + y * display.width] = color;
 
 	mov	eax, DWORD PTR y$[rsp]
 	imul	eax, DWORD PTR ?display@@3U__display__@@A
@@ -53,7 +181,7 @@ color$ = 24
 	mov	edx, DWORD PTR color$[rsp]
 	mov	DWORD PTR [rcx+rax*4], edx
 
-; 70   : }
+; 85   : }
 
 	ret	0
 ?draw_pixel@@YAXIII@Z ENDP				; draw_pixel
@@ -61,13 +189,27 @@ _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\screen.cpp
 _TEXT	SEGMENT
+?get_fb_size@@YAIXZ PROC				; get_fb_size
+
+; 80   : 	return display.size;
+
+	mov	eax, DWORD PTR ?display@@3U__display__@@A+24
+
+; 81   : }
+
+	ret	0
+?get_fb_size@@YAIXZ ENDP				; get_fb_size
+_TEXT	ENDS
+; Function compile flags: /Odtpy
+; File e:\xeneva project\xeneva\aurora\aurora\screen.cpp
+_TEXT	SEGMENT
 ?get_screen_scanline@@YAGXZ PROC			; get_screen_scanline
 
-; 64   : 	return display.scanline;
+; 76   : 	return display.scanline;
 
 	movzx	eax, WORD PTR ?display@@3U__display__@@A+20
 
-; 65   : }
+; 77   : }
 
 	ret	0
 ?get_screen_scanline@@YAGXZ ENDP			; get_screen_scanline
@@ -77,11 +219,11 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 ?get_bpp@@YAIXZ PROC					; get_bpp
 
-; 60   : 	return display.bpp;
+; 72   : 	return display.bpp;
 
 	mov	eax, DWORD PTR ?display@@3U__display__@@A+16
 
-; 61   : }
+; 73   : }
 
 	ret	0
 ?get_bpp@@YAIXZ ENDP					; get_bpp
@@ -91,11 +233,11 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 ?get_framebuffer_addr@@YAPEAIXZ PROC			; get_framebuffer_addr
 
-; 56   : 	return display.buffer;
+; 68   : 	return display.buffer;
 
 	mov	rax, QWORD PTR ?display@@3U__display__@@A+8
 
-; 57   : }
+; 69   : }
 
 	ret	0
 ?get_framebuffer_addr@@YAPEAIXZ ENDP			; get_framebuffer_addr
@@ -105,11 +247,11 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 ?get_screen_height@@YAIXZ PROC				; get_screen_height
 
-; 52   : 	return display.height;
+; 64   : 	return display.height;
 
 	mov	eax, DWORD PTR ?display@@3U__display__@@A+4
 
-; 53   : }
+; 65   : }
 
 	ret	0
 ?get_screen_height@@YAIXZ ENDP				; get_screen_height
@@ -119,11 +261,11 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 ?get_screen_width@@YAIXZ PROC				; get_screen_width
 
-; 48   : 	return display.width;
+; 60   : 	return display.width;
 
 	mov	eax, DWORD PTR ?display@@3U__display__@@A
 
-; 49   : }
+; 61   : }
 
 	ret	0
 ?get_screen_width@@YAIXZ ENDP				; get_screen_width
@@ -136,26 +278,25 @@ width$ = 64
 height$ = 72
 ?screen_set_configuration@@YAXII@Z PROC			; screen_set_configuration
 
-; 38   : void screen_set_configuration (uint32_t width, uint32_t height) {
+; 50   : void screen_set_configuration (uint32_t width, uint32_t height) {
 
 $LN6:
 	mov	DWORD PTR [rsp+16], edx
 	mov	DWORD PTR [rsp+8], ecx
 	sub	rsp, 56					; 00000038H
 
-; 39   : 	display.width = width;
+; 51   : 	display.width = width;
 
 	mov	eax, DWORD PTR width$[rsp]
 	mov	DWORD PTR ?display@@3U__display__@@A, eax
 
-; 40   : 	display.height = height;
+; 52   : 	display.height = height;
 
 	mov	eax, DWORD PTR height$[rsp]
 	mov	DWORD PTR ?display@@3U__display__@@A+4, eax
 
-; 41   : 
-; 42   : 	//! Map a shared region for other processes to output
-; 43   : 	for (int i = 0; i < display.width * display.height * 32 / 4096; i++)
+; 53   : 	//! Map a shared region for other processes to output
+; 54   : 	for (int i = 0; i < display.size / 4096 ; i++)
 
 	mov	DWORD PTR i$1[rsp], 0
 	jmp	SHORT $LN3@screen_set
@@ -164,21 +305,19 @@ $LN2@screen_set:
 	inc	eax
 	mov	DWORD PTR i$1[rsp], eax
 $LN3@screen_set:
-	mov	eax, DWORD PTR ?display@@3U__display__@@A
-	imul	eax, DWORD PTR ?display@@3U__display__@@A+4
-	imul	eax, 32					; 00000020H
 	xor	edx, edx
+	mov	eax, DWORD PTR ?display@@3U__display__@@A+24
 	mov	ecx, 4096				; 00001000H
 	div	ecx
 	cmp	DWORD PTR i$1[rsp], eax
 	jae	SHORT $LN1@screen_set
 
-; 44   : 		map_page ((uint64_t)display.buffer + i * 4096,0xFFFFF00000000000 + i * 4096, PAGING_USER);
+; 55   : 		map_page ((uint64_t)display.buffer + i * 4096, 0xFFFFD00000200000 + i * 4096, PAGING_USER);
 
 	mov	eax, DWORD PTR i$1[rsp]
 	imul	eax, 4096				; 00001000H
 	cdqe
-	mov	rcx, 17592186044416			; 0000100000000000H
+	mov	rcx, 52776556036096			; 00002fffffe00000H
 	sub	rax, rcx
 	mov	ecx, DWORD PTR i$1[rsp]
 	imul	ecx, 4096				; 00001000H
@@ -192,7 +331,8 @@ $LN3@screen_set:
 	jmp	SHORT $LN2@screen_set
 $LN1@screen_set:
 
-; 45   : }
+; 56   : 
+; 57   : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -201,51 +341,129 @@ _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\screen.cpp
 _TEXT	SEGMENT
-info$ = 8
+svga$ = 32
+info$ = 64
 ?initialize_screen@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z PROC	; initialize_screen
 
-; 22   : void initialize_screen (KERNEL_BOOT_INFO *info){
+; 26   : void initialize_screen (KERNEL_BOOT_INFO *info){
 
+$LN3:
 	mov	QWORD PTR [rsp+8], rcx
+	sub	rsp, 56					; 00000038H
 
-; 23   : 	display.buffer = info->graphics_framebuffer;
+; 27   : 	display.buffer = info->graphics_framebuffer;
 
 	mov	rax, QWORD PTR info$[rsp]
 	mov	rax, QWORD PTR [rax+52]
 	mov	QWORD PTR ?display@@3U__display__@@A+8, rax
 
-; 24   : 	display.width = info->X_Resolution;
+; 28   : 	display.width = info->X_Resolution;
 
 	mov	rax, QWORD PTR info$[rsp]
 	movzx	eax, WORD PTR [rax+68]
 	mov	DWORD PTR ?display@@3U__display__@@A, eax
 
-; 25   : 	display.height = info->Y_Resolution;
+; 29   : 	display.height = info->Y_Resolution;
 
 	mov	rax, QWORD PTR info$[rsp]
 	movzx	eax, WORD PTR [rax+70]
 	mov	DWORD PTR ?display@@3U__display__@@A+4, eax
 
-; 26   : 	display.bpp = 32;
+; 30   : 	display.bpp = 32;
 
 	mov	DWORD PTR ?display@@3U__display__@@A+16, 32 ; 00000020H
 
-; 27   : 	display.scanline = info->pixels_per_line;
+; 31   : 	display.scanline = info->pixels_per_line;
 
 	mov	rax, QWORD PTR info$[rsp]
 	movzx	eax, WORD PTR [rax+72]
 	mov	WORD PTR ?display@@3U__display__@@A+20, ax
 
-; 28   : #ifdef ARCH_X64
-; 29   : 	
-; 30   : 
-; 31   : 	//!map a shared page for fast IPC
-; 32   : 	//map_page ((uint64_t)pmmngr_alloc(),0xFFFFD00000000000, PAGING_USER);
-; 33   : #endif
-; 34   : 
-; 35   : 
-; 36   : }
+; 32   : 	display.size = info->fb_size;
 
+	mov	rax, QWORD PTR info$[rsp]
+	mov	eax, DWORD PTR [rax+60]
+	mov	DWORD PTR ?display@@3U__display__@@A+24, eax
+
+; 33   : 
+; 34   : 	vfs_node_t * svga = (vfs_node_t*)malloc(sizeof(vfs_node_t));
+
+	mov	ecx, 104				; 00000068H
+	call	?malloc@@YAPEAXI@Z			; malloc
+	mov	QWORD PTR svga$[rsp], rax
+
+; 35   : 	strcpy (svga->filename, "fb");
+
+	mov	rax, QWORD PTR svga$[rsp]
+	lea	rdx, OFFSET FLAT:$SG3026
+	mov	rcx, rax
+	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
+
+; 36   : 	svga->size = 0;
+
+	mov	rax, QWORD PTR svga$[rsp]
+	mov	DWORD PTR [rax+32], 0
+
+; 37   : 	svga->eof = 0;
+
+	mov	rax, QWORD PTR svga$[rsp]
+	mov	DWORD PTR [rax+36], 0
+
+; 38   : 	svga->pos = 0;
+
+	mov	rax, QWORD PTR svga$[rsp]
+	mov	DWORD PTR [rax+40], 0
+
+; 39   : 	svga->current = 0;
+
+	mov	rax, QWORD PTR svga$[rsp]
+	mov	DWORD PTR [rax+44], 0
+
+; 40   : 	svga->flags = FS_FLAG_GENERAL;
+
+	mov	rax, QWORD PTR svga$[rsp]
+	mov	DWORD PTR [rax+48], 2
+
+; 41   : 	svga->status = 0;
+
+	mov	rax, QWORD PTR svga$[rsp]
+	mov	DWORD PTR [rax+52], 0
+
+; 42   : 	svga->open = 0;
+
+	mov	rax, QWORD PTR svga$[rsp]
+	mov	QWORD PTR [rax+64], 0
+
+; 43   : 	svga->read = 0;
+
+	mov	rax, QWORD PTR svga$[rsp]
+	mov	QWORD PTR [rax+72], 0
+
+; 44   : 	svga->write = 0;
+
+	mov	rax, QWORD PTR svga$[rsp]
+	mov	QWORD PTR [rax+80], 0
+
+; 45   : 	svga->read_blk = 0;
+
+	mov	rax, QWORD PTR svga$[rsp]
+	mov	QWORD PTR [rax+88], 0
+
+; 46   : 	svga->ioquery = screen_io_query;
+
+	mov	rax, QWORD PTR svga$[rsp]
+	lea	rcx, OFFSET FLAT:?screen_io_query@@YAHPEAU_vfs_node_@@HPEAX@Z ; screen_io_query
+	mov	QWORD PTR [rax+96], rcx
+
+; 47   : 	vfs_mount ("/dev/fb", svga);
+
+	mov	rdx, QWORD PTR svga$[rsp]
+	lea	rcx, OFFSET FLAT:$SG3027
+	call	?vfs_mount@@YAXPEADPEAU_vfs_node_@@@Z	; vfs_mount
+
+; 48   : }
+
+	add	rsp, 56					; 00000038H
 	ret	0
 ?initialize_screen@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z ENDP	; initialize_screen
 _TEXT	ENDS

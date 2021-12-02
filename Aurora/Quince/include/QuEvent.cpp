@@ -63,7 +63,6 @@ void QuEventLoop() {
 	char fps_str[60];
 
 	int fd = 0;
-	sys_pipe (&fd, "quince");
 	while(1) {
 		message_receive(&msg);
 		_ipc_mouse_dispatch (&m_pack);

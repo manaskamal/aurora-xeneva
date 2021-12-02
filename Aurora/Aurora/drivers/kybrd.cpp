@@ -23,15 +23,15 @@ void kybrd_handler(size_t v, void* p)
 	if (inportb(0x64) & 1)
 	{
 		int code = inportb(0x60);
-		/*if (is_scheduler_initialized()) {
+		if (is_scheduler_initialized()) {
 			message_t *msg = (message_t*)pmmngr_alloc();
 			msg->type = 3;
 		    msg->dword = code;
 		    message_send (2,msg);
 		    pmmngr_free (msg);
-		} else {*/
+		} else {
 			printf ("[Aurora]: Key Event occured!! \n");
-		//}
+		}
 
 		/*thread_t* thr = (thread_t*)thread_iterate_ready_list (1);
 	    if (thr != NULL){

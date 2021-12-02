@@ -16,6 +16,8 @@
 #include <pmmngr.h>
 #include <arch\x86_64\mmngr\vmmngr.h>
 
+
+
 #pragma pack (push, 1)
 typedef struct {
     uint32_t magic;

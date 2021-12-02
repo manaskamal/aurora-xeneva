@@ -13,6 +13,7 @@
 #include <string.h>
 #include <sys\_term.h>
 #include <sys\_sleep.h>
+#include <sys\mmap.h>
 #include <stdlib.h>
 
 //! QuChannel address
@@ -27,7 +28,6 @@ typedef struct _Msgstack_ {
 
 static QuMessageStack *msg_top = NULL;
 static uint32_t msg_count = 0;
-
 
 void QuChannelPut (QuMessage *msg, uint16_t to_id) {
 	uint16_t from_id = 2; //get_current_pid ();

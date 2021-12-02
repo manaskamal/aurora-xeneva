@@ -15,8 +15,8 @@
 #include <pmmngr.h>
 #include <arch\x86_64\cpu.h>
 
-#define PAGING_PRESENT  (1<<0)
-#define PAGING_WRITABLE (1<<1)
+#define PAGING_PRESENT  0x1
+#define PAGING_WRITABLE 0x2
 #define PAGING_USER     0x4
 
 extern size_t  pml4_index (uint64_t addr);

@@ -228,7 +228,6 @@
     <ClInclude Include="..\include\drivers\term.h" />
     <ClInclude Include="..\include\drivers\usb\xhci.h" />
     <ClInclude Include="..\include\drivers\vbox.h" />
-    <ClInclude Include="..\include\drivers\vga.h" />
     <ClInclude Include="..\include\drivers\vmmouse.h" />
     <ClInclude Include="..\include\drvmngr.h" />
     <ClInclude Include="..\include\efi.h" />

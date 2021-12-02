@@ -116,13 +116,15 @@ void svga_init () {
 
 
 	svga_enable();
-	//svga_set_mode (get_screen_width(),get_screen_height(),32);
-	svga_set_mode (1920,1080,32);
+	svga_set_mode (get_screen_width(),get_screen_height(),32);
+	//svga_set_mode (1920,1080,32);
 	gmr_init();
 	memset(svga_dev.fb_mem,0x40,svga_dev.width*svga_dev.height*32);
 	svga_update(0,0,svga_dev.width,svga_dev.height);
 	screen_set_configuration(svga_dev.width,svga_dev.height);
 	vm_backdoor_mouse_init (true);
+
+	printf ("SVGA initialized\n");
 }
 
 
@@ -367,14 +369,14 @@ void* svga_alloc_gmr (uint32 size, SVGAGuestPtr *ptr) {
 }
 
 void svga_update (uint32_t x, uint32_t y, uint32_t width, uint32_t height) {
-	debug_serial ("[Aurora]: SVGA Screen Update called\n");
+	//printf ("[Aurora]: SVGA Screen Update called\n");
 	SVGAFifoCmdUpdate *cmd = (SVGAFifoCmdUpdate*)svga_fifo_reserved_cmd (SVGA_CMD_UPDATE, sizeof (SVGAFifoCmdUpdate));
 	cmd->x = x;
 	cmd->y = y;
 	cmd->width = width;
 	cmd->height = height;
 	svga_fifo_commit_all ();
-	debug_serial ("[Aurora]: Update fifo completed\n");
+	//printf ("[Aurora]: Update fifo completed\n");
 }
 
 
@@ -643,11 +645,26 @@ int svga_io_query (vfs_node_t* node, int code, void* arg) {
 		return scanline;
 		break;
 	}
+	case SVGA_UPDATE_FB: {
+	/*	uint32_t* lfb = get_framebuffer_addr();*/
+		int x = query_struct->value;
+		int y = query_struct->value2;
+		int w = query_struct->value3;
+		int h = query_struct->value4;
+		//uint32_t *canv = (uint32_t*)query_struct->pointer;
+		
+	/*	for (int i = 0; i < h; i++)
+			memcpy (lfb + (y + i) * get_screen_width() + x,
+			canv + (y + i) * get_screen_width() + x, w * 4);
+*/
+		svga_update (x, y, w, h);
+	}
 	default: {
 		return 1;
 	}
 	}
 
+	x64_sti();
 	return 1;
 }
 

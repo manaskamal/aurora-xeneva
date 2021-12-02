@@ -93,7 +93,7 @@ uint64_t *create_user_stack (uint64_t* cr3) {
 	/* 1 mb stack / process */
 	for (int i=0; i < (2*1024*1024)/4096; i++) {
 		uint64_t *block = (uint64_t*)pmmngr_alloc();
-		memset (block, 0, 4096);
+	//	memset (block, 0, 4096);
 		map_page_ex(cr3, (uint64_t)block,location + i * 4096, PAGING_USER);
 	}
  
@@ -133,7 +133,7 @@ void allocate_fd (thread_t *t) {
 }
 
 void create_process(const char* filename, char* procname) {
-	
+	x64_cli();
 	//printf ("Creating processs -> %s\n", filename);
 	//mutex_lock (process_mutex);
 	//!allocate a data-structure for process 
@@ -182,7 +182,6 @@ void create_process(const char* filename, char* procname) {
 	uint64_t pos = 0x0000080000000000;   //0x0000080000000000;
 	for (int i = 0; i < 0xB01000 / 4096; i++) {
 		void* p = pmmngr_alloc();
-		memset (p, 0, 4096);
 		map_page_ex(cr3,(uint64_t)p, pos + i * 4096, PAGING_USER);
 	}
 	//!allocate current process
@@ -198,12 +197,12 @@ void create_process(const char* filename, char* procname) {
 	process->heap_size = 0xB00000;
 	//! Create and thread and start scheduling when scheduler starts */
 	thread_t *t = create_user_thread(process->entry_point,stack,(uint64_t)cr3,procname,0);
-	printf ("stack -> %x\n",stack);
 	//allocate_fd(t);
 	//! add the process to process manager
 	process->thread_data_pointer = t;
     add_process(process);
 	//mutex_unlock (process_mutex);
+	x64_sti();
 }
 
 //! Kill Process

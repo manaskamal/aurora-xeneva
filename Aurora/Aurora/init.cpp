@@ -105,9 +105,10 @@ void __cdecl operator delete (void* p) {
 	mfree(p);
 }
 
-extern "C" void test_sys (char* text);
+
 
 void test_thread2 () {
+	printf ("Multitasking started\n");
 	while(1) {
 		//printf ("Multitasking\n");
 	}
@@ -124,10 +125,11 @@ void test_thread2 () {
 void _kmain () {
 	KERNEL_BOOT_INFO *info = (KERNEL_BOOT_INFO*)0xFFFFE00000000000;
 
-	hal_init();
+	
 	//! Initialize the memory mappings
 	pmmngr_init (info);
-	vmmngr_x86_64_init();  
+	vmmngr_x86_64_init(); 
+	hal_init();
 	hal_x86_64_setup_int();	
 
     mm_init(info); 
@@ -137,6 +139,8 @@ void _kmain () {
 	vfs_init();
 	initialize_screen(info);
 	console_initialize(info);
+	
+	screen_set_configuration(info->X_Resolution,info->Y_Resolution);
 	initialize_rtc(); 
 
 	initialize_acpi (info->acpi_table_pointer);
@@ -147,57 +151,30 @@ void _kmain () {
 
 	message_init ();
 	dwm_ipc_init();
-    
 	stream_init ();
 	driver_mngr_initialize(info);
-
 	hda_initialize(); 
 	e1000_initialize();   //<< receiver not working
-	//svga_init (); 
-	
-	printf ("CR3 -> %x\n", x64_read_cr3());
-	printf ("Total Used RAM -> %d MB / Total RAM -> %d MB\n", pmmngr_get_used_ram() / 1024 / 1024, pmmngr_get_total_ram() / 1024 / 1024);
 
-
-	uint64_t *new_cr3 = (uint64_t*)create_user_address_space();
-	x64_write_cr3((size_t)new_cr3);
-
-	printf ("Hello New CR3 switched\n");
-
-
-	/**
-	 * The Kernel's Virtual Memory is re-written
-	 * so the scheduler is not ready yet, it needs
-	 * to be updated!! and many more new designs are 
-	 * coming soon...
-	 */
-	for(;;);
-
-	//! DON'T REACH HERE!!!!
 #ifdef ARCH_X64
 	//================================================
 	//! Initialize the scheduler here
 	//!===============================================
 	initialize_scheduler();
-	uint64_t st = 0xFFFFA00000800000;
-	map_page ((uint64_t)pmmngr_alloc(),st,0);
-	create_kthread(test_thread2,st + 0x1000,(size_t)x64_read_cr3, "Hello", 1);
-	//create_process ("/xshell.exe","shell");
-	//create_process ("/xshell.exe","shell");
-	//create_user_thread (add,(uint64_t)stack,(uint64_t)cr3,"Test",1);
+	create_process ("/xshell.exe","shell");
 
 	//! Quince -- The Compositing window manager for Aurora kernel
 	//! always put quince in thread id -- > 2
-	//create_process ("/quince.exe","quince",0, NULL);
+	create_process ("/quince.exe","quince");
 
 	/**=====================================================
 	 ** Kernel threads handle some specific callbacks like
 	 ** procmngr handles process creation and termination
 	 **=====================================================
 	 */
-	//create_kthread (procmngr_start,(uint64_t)pmmngr_alloc(),x64_read_cr3(),"procmngr",0);
+	create_kthread (procmngr_start,(uint64_t)pmmngr_alloc(),x64_read_cr3(),"procmngr",0);
 	//! Misc programs goes here
-	//create_process ("/dwm2.exe", "dwm4", 0, NULL);
+	create_process ("/dwm2.exe", "dwm4");
 	//! Here start the scheduler (multitasking engine)
 	scheduler_start();
 #endif

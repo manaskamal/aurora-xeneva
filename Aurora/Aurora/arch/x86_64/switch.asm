@@ -75,8 +75,8 @@ execute_idle:
 	cmove r8, r9
 	mov r9, [rcx + 0x10];
 	
-	;mov r10, [rcx + 0xC0]
-	;mov cr3, r10
+	mov r10, [rcx + 0xC0]
+	mov cr3, r10
 
 	mov rsp, [rcx + 0x08]
 	mov rdx, [rcx + 0x20]

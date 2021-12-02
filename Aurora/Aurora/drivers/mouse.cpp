@@ -142,8 +142,6 @@ finish_packet:
 		
 		//!Pass here the message stream to all waiting processes
 	
-		
-	
 		//mutex_lock (mouse);
 		dwm_message_t msg; // = (dwm_message_t*)pmmngr_alloc();
 		msg.type = 1;

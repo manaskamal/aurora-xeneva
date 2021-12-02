@@ -36,7 +36,19 @@ typedef struct _data_ {
 	uint8_t ch[32];
 }data_t;
 
-void main (/*int argc, char*argv[]*/) {
+void main (int argc, char*argv[]) {
+	sys_print_text ("Hello XSHELL\n");
+	sys_print_text ("I LOVE YOUUUU PRIYANSHI\n");
+	//int fd = sys_open_file ("/dev/fb",NULL);
+	//UFILE f;
+	//f.flags = 0;
+	//f.size = 100*100*32;
+	//uint8_t* buffer = (uint8_t*)0xFFFFD00000200000;  //malloc(100*100*32);
+	//for (int i = 0; i < 100; i++)
+	//	for (int j = 0; j < 100; j++)
+	//		buffer[0+i * 1280 + 0 + j] = 0xFFFFFFFF;
+
+	//sys_write_file (fd,buffer,&f);
 	/*int fd;
 
 	unsigned char *data = (unsigned char*)malloc(sizeof(data_t));
@@ -55,7 +67,7 @@ void main (/*int argc, char*argv[]*/) {
 	sys_write_file (fd,data,&file);*/
 	///message_t msg;
 	while(1) {
-		
+		sys_wait();
 	}
 }
 
