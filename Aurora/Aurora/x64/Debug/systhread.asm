@@ -43,32 +43,32 @@ t$ = 32
 ms$ = 64
 ?sys_sleep@@YAX_K@Z PROC				; sys_sleep
 
-; 50   : void sys_sleep (uint64_t ms) {
+; 49   : void sys_sleep (uint64_t ms) {
 
 $LN3:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 56					; 00000038H
 
-; 51   : 	x64_cli();
+; 50   : 	x64_cli();
 
 	call	x64_cli
 
-; 52   : 	thread_t* t = get_current_thread();
+; 51   : 	thread_t* t = get_current_thread();
 
 	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
 	mov	QWORD PTR t$[rsp], rax
 
-; 53   : 	sleep_thread (t, ms);
+; 52   : 	sleep_thread (t, ms);
 
 	mov	rdx, QWORD PTR ms$[rsp]
 	mov	rcx, QWORD PTR t$[rsp]
 	call	?sleep_thread@@YAXPEAU_thread_@@_K@Z	; sleep_thread
 
-; 54   : 	force_sched();
+; 53   : 	force_sched();
 
 	call	?force_sched@@YAXXZ			; force_sched
 
-; 55   : }
+; 54   : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -117,7 +117,7 @@ $LN9:
 	call	?create_user_address_space@@YAPEA_KXZ	; create_user_address_space
 	mov	QWORD PTR cr3$[rsp], rax
 
-; 32   : 	uint64_t stack = (uint64_t)create_inc_stack((uint64_t*)cr3);
+; 32   : 	uint64_t stack = (uint64_t)create_inc_stack(cr3);
 
 	mov	rcx, QWORD PTR cr3$[rsp]
 	call	?create_inc_stack@@YAPEA_KPEA_K@Z	; create_inc_stack
@@ -164,9 +164,9 @@ $LN6@create_uth:
 $LN4@create_uth:
 
 ; 37   : 
-; 38   : 	uint64_t pos = 0x0000030000000000;   //0x0000080000000000;
+; 38   : 	uint64_t pos = 0x0000080000000000;  ;   //0x0000080000000000;
 
-	mov	rax, 3298534883328			; 0000030000000000H
+	mov	rax, 8796093022208			; 0000080000000000H
 	mov	QWORD PTR pos$[rsp], rax
 
 ; 39   : 	for (int i = 0; i < 0xC01000 / 4096; i++) {
@@ -181,12 +181,12 @@ $LN3@create_uth:
 	cmp	DWORD PTR i$1[rsp], 3073		; 00000c01H
 	jge	SHORT $LN1@create_uth
 
-; 40   : 		cr3[pml4_index(0x0000030000000000 + i * 4096)] = old_cr3[pml4_index(0x0000030000000000 + i * 4096)];
+; 40   : 		cr3[pml4_index(0x0000080000000000 + i * 4096)] = old_cr3[pml4_index(0x0000080000000000 + i * 4096)];
 
 	mov	eax, DWORD PTR i$1[rsp]
 	imul	eax, 4096				; 00001000H
 	cdqe
-	mov	rcx, 3298534883328			; 0000030000000000H
+	mov	rcx, 8796093022208			; 0000080000000000H
 	add	rax, rcx
 	mov	rcx, rax
 	call	?pml4_index@@YA_K_K@Z			; pml4_index
@@ -194,7 +194,7 @@ $LN3@create_uth:
 	mov	ecx, DWORD PTR i$1[rsp]
 	imul	ecx, 4096				; 00001000H
 	movsxd	rcx, ecx
-	mov	rdx, 3298534883328			; 0000030000000000H
+	mov	rdx, 8796093022208			; 0000080000000000H
 	add	rcx, rdx
 	call	?pml4_index@@YA_K_K@Z			; pml4_index
 	mov	rcx, QWORD PTR cr3$[rsp]
@@ -209,8 +209,7 @@ $LN3@create_uth:
 $LN1@create_uth:
 
 ; 42   : 
-; 43   : 
-; 44   : 	thread_t * t = create_user_thread (entry, stack,(uint64_t)cr3,name, 1);	
+; 43   : 	thread_t * t = create_user_thread (entry, stack,(uint64_t)cr3,name, 1);	
 
 	mov	BYTE PTR [rsp+32], 1
 	mov	r9, QWORD PTR name$[rsp]
@@ -220,9 +219,9 @@ $LN1@create_uth:
 	call	?create_user_thread@@YAPEAU_thread_@@P6AXPEAX@Z_K2QEADE@Z ; create_user_thread
 	mov	QWORD PTR t$[rsp], rax
 
-; 45   : 	
-; 46   : 	//force_sched();
-; 47   : }
+; 44   : 	
+; 45   : 	//force_sched();
+; 46   : }
 
 	add	rsp, 120				; 00000078H
 	ret	0

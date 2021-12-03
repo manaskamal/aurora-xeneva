@@ -61,7 +61,6 @@ void QuEventLoop() {
 	uint32_t diff_time = 0;
 	int loops;
 	char fps_str[60];
-
 	int fd = 0;
 	while(1) {
 		message_receive(&msg);
@@ -203,7 +202,7 @@ void QuEventLoop() {
 		}
 
 		
-		 QuCursorFixDamage(mouse_x, mouse_y);
+		QuCursorFixDamage(mouse_x, mouse_y);
 		//*==========================================================================
 		//*==========================================================================
 		if (diff_time > 15){	
@@ -215,10 +214,11 @@ void QuEventLoop() {
 
        
 		QuUpdateCursor (mouse_x, mouse_y);
+		
 		QuScreenRectUpdate();
 		
 		//}
 		//! Here We Prepare the frame that will be displayed
-		sys_sleep(2);
+		sys_sleep(32);
 	}
 }

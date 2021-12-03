@@ -118,7 +118,7 @@ void QuCanvasBlit (QuWindow* win,unsigned int *canvas, unsigned x, unsigned y, u
 
 			if (winx < 0) {
 				win->x = 0;
-				winx = 0;
+				winx = win->x;
 			}
 
 			if (winy < 0) {
@@ -140,7 +140,7 @@ void QuCanvasBlit (QuWindow* win,unsigned int *canvas, unsigned x, unsigned y, u
 				fastcpy (lfb + (winy + i) * width + winx, win->canvas + (0 + i) * width + 0, wid * 4);
 
 			QuScreenRectAdd(winx, winy, wid, he);
-			QuTaskbarRepaint();
+		//	QuTaskbarRepaint();
 		}
 #ifdef SW_CURSOR
 	//	QuMoveCursor(QuCursorGetNewX(), QuCursorGetNewY());
@@ -206,8 +206,16 @@ void QuCanvasUpdate (unsigned x, unsigned y, unsigned w, unsigned h) {
 	
 	uint32_t* lfb = (uint32_t*)0x0000600000000000;
 	uint32_t* wallp = (uint32_t*)0x0000060000000000;
-//	int width = canvas_get_width();
-//	int height = canvas_get_height();
+	int width = canvas_get_width(QuGetCanvas());
+	int height = canvas_get_height(QuGetCanvas());
+
+	if (x + w >= width)
+		w = width - x;
+
+	if (y + h >= height - 40)
+		h = (height - 40) - y;
+
+
 	for (int i=0; i < w; i++) {
 		for (int j=0; j < h; j++){
 			uint32_t color = wallp[(x + i) + (y + j) * canvas_get_scale(QuGetCanvas())];

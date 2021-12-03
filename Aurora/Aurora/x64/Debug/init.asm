@@ -21,6 +21,10 @@ $SG7546	DB	'procmngr', 00H
 $SG7547	DB	'dwm4', 00H
 	ORG $+7
 $SG7548	DB	'/dwm2.exe', 00H
+	ORG $+2
+$SG7549	DB	'cnsl', 00H
+	ORG $+7
+$SG7550	DB	'/cnsl.exe', 00H
 CONST	ENDS
 _DATA	SEGMENT
 _fltused DD	01H
@@ -77,7 +81,7 @@ $pdata$?test_thread2@@YAXXZ DD imagerel $LN5
 	DD	imagerel $LN5+30
 	DD	imagerel $unwind$?test_thread2@@YAXXZ
 $pdata$?_kmain@@YAXXZ DD imagerel $LN5
-	DD	imagerel $LN5+319
+	DD	imagerel $LN5+338
 	DD	imagerel $unwind$?_kmain@@YAXXZ
 pdata	ENDS
 xdata	SEGMENT
@@ -265,36 +269,42 @@ $LN5:
 	lea	rcx, OFFSET FLAT:$SG7548
 	call	?create_process@@YAXPEBDPEAD@Z		; create_process
 
-; 178  : 	//! Here start the scheduler (multitasking engine)
-; 179  : 	scheduler_start();
+; 178  : 	create_process ("/cnsl.exe", "cnsl");
+
+	lea	rdx, OFFSET FLAT:$SG7549
+	lea	rcx, OFFSET FLAT:$SG7550
+	call	?create_process@@YAXPEBDPEAD@Z		; create_process
+
+; 179  : 	//! Here start the scheduler (multitasking engine)
+; 180  : 	scheduler_start();
 
 	call	?scheduler_start@@YAXXZ			; scheduler_start
 $LN2@kmain:
 
-; 180  : #endif
-; 181  : 
-; 182  : 	//! Loop forever
-; 183  : 	while(1) {
+; 181  : #endif
+; 182  : 
+; 183  : 	//! Loop forever
+; 184  : 	while(1) {
 
 	xor	eax, eax
 	cmp	eax, 1
 	je	SHORT $LN1@kmain
 
-; 184  : 		//!looping looping
-; 185  : 		x64_cli();
+; 185  : 		//!looping looping
+; 186  : 		x64_cli();
 
 	call	x64_cli
 
-; 186  : 		x64_hlt();
+; 187  : 		x64_hlt();
 
 	call	x64_hlt
 
-; 187  : 	}
+; 188  : 	}
 
 	jmp	SHORT $LN2@kmain
 $LN1@kmain:
 
-; 188  : }
+; 189  : }
 
 	add	rsp, 72					; 00000048H
 	ret	0

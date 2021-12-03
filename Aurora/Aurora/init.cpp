@@ -175,6 +175,7 @@ void _kmain () {
 	create_kthread (procmngr_start,(uint64_t)pmmngr_alloc(),x64_read_cr3(),"procmngr",0);
 	//! Misc programs goes here
 	create_process ("/dwm2.exe", "dwm4");
+	create_process ("/cnsl.exe", "cnsl");
 	//! Here start the scheduler (multitasking engine)
 	scheduler_start();
 #endif

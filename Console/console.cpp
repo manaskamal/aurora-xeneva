@@ -12,7 +12,7 @@
 #include <color.h>
 
 void ConsoleRefresh (QuWidget *wid, QuWindow *win) {
-	acrylic_draw_rect_filled(win->x + wid->x, win->y + wid->y, win->w, win->h, BLACK);
+	//acrylic_draw_rect_filled(win->x + wid->x, win->y + wid->y, win->w, win->h, BLACK);
 }
 
 ConsoleWidget* create_console (int x, int y, int w, int h) {

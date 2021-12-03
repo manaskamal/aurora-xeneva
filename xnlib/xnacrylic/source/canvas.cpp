@@ -86,6 +86,7 @@ uint32_t canvas_get_height (canvas_t * canvas) {
 void canvas_screen_update (canvas_t * canvas,uint32_t x, uint32_t y, uint32_t w, uint32_t h) {
 	uint32_t* lfb = (uint32_t*)0xFFFFD00000200000;
 
+
 	for (int i = 0; i < h; i++)
 		fastcpy (lfb + (y + i) * canvas->width + x,canvas->address + (y + i) * canvas->width + x, w * 4);
 

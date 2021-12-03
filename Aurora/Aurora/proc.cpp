@@ -111,7 +111,7 @@ uint64_t* create_inc_stack (uint64_t* cr3) {
 
 	for (int i = 0; i < (2*1024*1024) / 4096; i++) {
 		void* p = pmmngr_alloc();
-		memset(p, 0, 4096);
+		//memset(p, 0, 4096);
 		map_page_ex(cr3,(uint64_t)p, location + i * 4096, PAGING_USER);
 	}
 

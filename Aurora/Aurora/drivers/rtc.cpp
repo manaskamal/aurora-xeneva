@@ -12,6 +12,7 @@
 #include <drivers\rtc.h>
 #include <stdio.h>
 #include <ipc\message.h>
+#include <arch\x86_64\thread.h>
 
 //! send this message to task 4
 #define CLOCK_MESSAGE     10 
@@ -95,7 +96,6 @@ void rtc_clock_update(size_t s, void* p) {
 	msg.dword6 = month;
 	msg.dword7 = year;
 	message_send (4, &msg);*/
-
 	//!send a EOI to apic
 	interrupt_end(8);
 }

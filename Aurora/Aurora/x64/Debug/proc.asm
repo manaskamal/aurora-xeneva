@@ -79,7 +79,7 @@ $pdata$?create_user_stack@@YAPEA_KPEA_K@Z DD imagerel $LN6
 	DD	imagerel $LN6+125
 	DD	imagerel $unwind$?create_user_stack@@YAPEA_KPEA_K@Z
 $pdata$?create_inc_stack@@YAPEA_KPEA_K@Z DD imagerel $LN6
-	DD	imagerel $LN6+143
+	DD	imagerel $LN6+125
 	DD	imagerel $unwind$?create_inc_stack@@YAPEA_KPEA_K@Z
 $pdata$?create_process@@YAXPEBDPEAD@Z DD imagerel $LN9
 	DD	imagerel $LN9+802
@@ -1786,8 +1786,8 @@ _TEXT	ENDS
 ; File e:\xeneva project\xeneva\aurora\aurora\proc.cpp
 _TEXT	SEGMENT
 i$1 = 32
-p$2 = 40
-location$ = 48
+location$ = 40
+p$2 = 48
 cr3$ = 80
 ?create_inc_stack@@YAPEA_KPEA_K@Z PROC			; create_inc_stack
 
@@ -1821,13 +1821,7 @@ $LN3@create_inc:
 	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
 	mov	QWORD PTR p$2[rsp], rax
 
-; 114  : 		memset(p, 0, 4096);
-
-	mov	r8d, 4096				; 00001000H
-	xor	edx, edx
-	mov	rcx, QWORD PTR p$2[rsp]
-	call	?memset@@YAXPEAXEI@Z			; memset
-
+; 114  : 		//memset(p, 0, 4096);
 ; 115  : 		map_page_ex(cr3,(uint64_t)p, location + i * 4096, PAGING_USER);
 
 	mov	eax, DWORD PTR i$1[rsp]

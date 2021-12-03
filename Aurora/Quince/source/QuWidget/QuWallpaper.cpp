@@ -34,13 +34,13 @@ Image* QuWallpaperInit (char* filename) {
 	unsigned w = canvas_get_width  (QuGetCanvas());
 	unsigned h = canvas_get_height (QuGetCanvas());
 
-	for (int i = 0; i < (1920 * 1080 * 32) / 4096; i++) 
+	for (int i = 0; i < (w * h * 32) / 4096; i++) 
 		valloc(0x0000060000000000 + i * 4096);
 
 
 	wallpaper->buffer = (unsigned char*)0x0000060000000000;
-	wallpaper->w = 1920;
-	wallpaper->h = 1080;
+	wallpaper->w = w;
+	wallpaper->h = h;
     Image *img;
 	if (filename != NULL) {
 		img = LoadImage (filename,(uint8_t*) 0x0000060000000000);

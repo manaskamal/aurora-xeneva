@@ -32,13 +32,13 @@
 
 void QuActions (QuMessage *msg) {
 	if (msg->type == QU_CANVAS_MOVE) {
-		QuWindowMove(msg->dword, msg->dword2);
+		QuWindowMove(QuGetWindow(),msg->dword, msg->dword2);
 		memset(msg, 0, sizeof(QuMessage));
 	}
 
 	if (msg->type == QU_CANVAS_RESIZE) {
 		QuWindowSetBound(QuWindowGetWidth() + 20, QuWindowGetHeight() + 20);
-		acrylic_draw_rect_filled(msg->dword, msg->dword2, QuGetWindow()->w, QuGetWindow()->h, BLUE);
+		//acrylic_draw_rect_filled(QuGetCanvas(),msg->dword, msg->dword2, QuGetWindow()->w, QuGetWindow()->h, BLUE);
 		memset(msg, 0, sizeof(QuMessage));
 	}
 
@@ -76,29 +76,32 @@ void PrintString (QuTerminal *text, char* string) {
 }
 
 int main (int argc, char* argv[]) {
-	QuRegisterApplication ("Terminal~");
-	QuWindow* win = QuGetWindow();
+
+	QuWindow* win = QuCreateWindow(100,100,500,500,"Hello");
+	QuSetRootWindow (win);
+	canvas_t *canvas = canvas_initialize(win->w, win->h);
+	win->ctx = canvas;
 	QuWindowShowControls(win);
 	QuWindowAddControlEvent(QU_WIN_CONTROL_CLOSE, WindowClosed);
 
 	///! map a memory section for text 
 
 	QuTerminal *term = QuCreateTerminal(0,0,win->w, win->h);
-	QuWindowAdd((QuWidget*)term);	
+	QuWindowAdd(win,(QuWidget*)term);	
 
-	QuWindowShow();
+	QuWindowShow(win);
 
-	int master_fd, slave_fd;
-	sys_ttype_create (&master_fd, &slave_fd);
-	unsigned char* buf = (unsigned char*)malloc(32);
-	memset(buf,'M',32);
-	sys_write_file (master_fd, buf,NULL);
+	//int master_fd, slave_fd;
+	//sys_ttype_create (&master_fd, &slave_fd);
+	//unsigned char* buf = (unsigned char*)malloc(32);
+	//memset(buf,'M',32);
+	//sys_write_file (master_fd, buf,NULL);
 
-	message_t msg;
-	unsigned char* buffer = (unsigned char*)malloc(32);
-	memset (buffer, 0, 32);
+	//message_t msg;
+	//unsigned char* buffer = (unsigned char*)malloc(32);
+	//memset (buffer, 0, 32);
 
-	QuPanelUpdate (0,0,win->w, win->h,true);
+	//QuPanelUpdate (0,0,win->w, win->h,true);
 
 	QuMessage qmsg;
 	uint16_t app_id = QuGetAppId();
@@ -107,15 +110,15 @@ int main (int argc, char* argv[]) {
 		if (qmsg.to_id == app_id)
 			QuActions(&qmsg);
 
-		sys_read_file (slave_fd,buffer,NULL);
+	//	sys_read_file (slave_fd,buffer,NULL);
 
-	    for (int i = 0; i < 32; i++) {
+	   /* for (int i = 0; i < 32; i++) {
 			if (buffer[i] != 0) {
 				QuTermPrint(term,buffer[i],WHITE);
 				QuTermFlush(term, win);
 			}
 		}
-	
+	*/
 		//	//
 		//}
 
