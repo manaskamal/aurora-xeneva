@@ -65,7 +65,6 @@ void QuCanvasRelease (uint16_t dest_pid, QuWindow *win) {
 
 void QuCanvasBlit (QuWindow* win,unsigned int *canvas, unsigned x, unsigned y, unsigned w, unsigned h) {
 	uint32_t* lfb = (uint32_t*)0x0000600000000000;
-	uint32_t* fb = (uint32_t*)0xFFFFF00000000000;
 	uint32_t* wallp = (uint32_t*)0x0000600000000000;   //0x0000060000000000;
 	int width = canvas_get_width(QuGetCanvas());
 	int height = canvas_get_height(QuGetCanvas());
@@ -93,8 +92,9 @@ void QuCanvasBlit (QuWindow* win,unsigned int *canvas, unsigned x, unsigned y, u
 				if (info->rect[k].x + info->rect[k].w >= width)
 					wid  = width - info->rect[k].x;
 
-				if (info->rect[k].y + info->rect[k].h>= height)
-					he = height - info->rect[k].y;
+				if (info->rect[k].y + info->rect[k].h>= height - 40){
+					win->y = height - win->height;
+				}
 
 				for (int i = 0; i < he; i++)  {
 					fastcpy (lfb + (win->y + ry + i) * width + (win->x + rx),win->canvas + (ry + i) * width + rx, 
@@ -107,7 +107,7 @@ void QuCanvasBlit (QuWindow* win,unsigned int *canvas, unsigned x, unsigned y, u
 
 			info->rect_count = 0;
 #ifdef SW_CURSOR
-			QuMoveCursor(QuCursorGetNewX(), QuCursorGetNewY());
+			//QuMoveCursor(QuCursorGetNewX(), QuCursorGetNewY());
 #endif
 
 		} else if (info->rect_count == 0){	
@@ -116,18 +116,25 @@ void QuCanvasBlit (QuWindow* win,unsigned int *canvas, unsigned x, unsigned y, u
 			int winx = win->x;
 			int winy = win->y;
 
-			if (winx < 0)
+			if (winx < 0) {
+				win->x = 0;
 				winx = 0;
+			}
 
-			if (winy < 0)
+			if (winy < 0) {
+				win->y = 0;
 				winy = 0;
+			}
 
 
 			if (win->x + win->width >= width)
 				wid  = width - win->x;
 
-			if (win->y + win->height >= height)
-				he = height - win->y;
+			if (win->y + win->height >= (height - 40)){
+				win->y = (height - 40) - win->height;
+				winy = win->y;
+				he = (height - 40) - win->y;
+			}
 
 			for (int i = 0; i < he; i++) 
 				fastcpy (lfb + (winy + i) * width + winx, win->canvas + (0 + i) * width + 0, wid * 4);
@@ -136,7 +143,7 @@ void QuCanvasBlit (QuWindow* win,unsigned int *canvas, unsigned x, unsigned y, u
 			QuTaskbarRepaint();
 		}
 #ifdef SW_CURSOR
-		QuMoveCursor(QuCursorGetNewX(), QuCursorGetNewY());
+	//	QuMoveCursor(QuCursorGetNewX(), QuCursorGetNewY());
 #endif
 		info->dirty = false;
 		

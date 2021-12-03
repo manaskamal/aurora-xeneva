@@ -82,8 +82,6 @@ void QuEventLoop() {
 			QuCursorNewCoord(m_pack.dword, m_pack.dword2);
 			mouse_x = m_pack.dword;
 			mouse_y = m_pack.dword2;
-			QuMoveCursor(mouse_x, mouse_y);
-			canvas_screen_update (QuGetCanvas(),m_pack.dword,m_pack.dword2, 24, 24);
 			
 
 			_mouse_code_ = 0;
@@ -204,7 +202,8 @@ void QuEventLoop() {
 			memset (&q_msg, 0, sizeof(QuMessage));
 		}
 
-
+		
+		 QuCursorFixDamage(mouse_x, mouse_y);
 		//*==========================================================================
 		//*==========================================================================
 		if (diff_time > 15){	
@@ -214,8 +213,10 @@ void QuEventLoop() {
 		}	
         QuRenderTime(time.seconds, time.minutes, time.hour);
 
-
+       
+		QuUpdateCursor (mouse_x, mouse_y);
 		QuScreenRectUpdate();
+		
 		//}
 		//! Here We Prepare the frame that will be displayed
 		sys_sleep(2);

@@ -129,6 +129,14 @@ void QuDrawCursor (QuBitmap *bmp, unsigned x, unsigned y) {
 				canvas_draw_pixel(QuGetCanvas(),x + k,y +  i,rgb);
 		}
 	}
+	QuCursorCoord (x, y);
+	canvas_screen_update(QuGetCanvas(), x, y, 24, 24);
+	
+}
+
+void QuUpdateCursor (unsigned x, unsigned y) {
+	QuStoreBack (x, y);
+	QuDrawCursor (bmp,x, y);
 }
 
 void QuCursorNewCoord (unsigned x, unsigned y) {
@@ -136,14 +144,13 @@ void QuCursorNewCoord (unsigned x, unsigned y) {
 	QuNewY = y;
 }
 
-void QuMoveCursor (unsigned x, unsigned y) {
+void QuCursorFixDamage (unsigned x, unsigned y) {
 #ifdef SW_CURSOR
-	QuPutBackStore (QuOldX, QuOldY);
+	QuPutBackStore (QuOldX,QuOldY);
 	canvas_screen_update(QuGetCanvas(),QuOldX, QuOldY, 24,24);
-	QuCursorCoord (x, y);
-	QuStoreBack (x, y);
-	QuDrawCursor (bmp, x, y);
-	//canvas_screen_update(x, y, 24, 24);
+	
+	//QuDrawCursor (bmp, x, y);
+	//
 	QuNewX = x;
 	QuNewY = y;
 #endif

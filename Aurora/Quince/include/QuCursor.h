@@ -18,7 +18,9 @@
 
 
 extern void QuCursorInit (unsigned x, unsigned y, int type);
-extern void QuMoveCursor (unsigned x, unsigned y);
+//extern void QuMoveCursor (unsigned x, unsigned y);
+extern void QuCursorFixDamage (unsigned x, unsigned y);
+extern void QuUpdateCursor (unsigned x, unsigned y);
 extern void QuCursorCoord (unsigned x, unsigned y);
 extern unsigned QuCursorGetNewX();
 extern unsigned QuCursorGetNewY();
