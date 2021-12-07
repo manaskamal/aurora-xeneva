@@ -46,6 +46,7 @@ void QuMenubarRefresh (QuWidget* wid, QuWindow *win) {
 
 
 void QuMenubarMouseEvent (QuWidget *wid, QuWindow *win, int code, bool clicked, int x, int y) {
+	QuWinInfo *info = (QuWinInfo*)win->win_info_data;
 	QuMenubar *mb = (QuMenubar*)wid;
 
 	if (code == QU_EVENT_MOUSE_ENTER) {
@@ -53,8 +54,8 @@ void QuMenubarMouseEvent (QuWidget *wid, QuWindow *win, int code, bool clicked, 
 		for (int i = 0; i < mb->CtxMenus->pointer; i++) {
 			QuContextMenu *ctx = (QuContextMenu*)QuListGetAt(mb->CtxMenus, i);
 			if (ctx->m_x != 0) {
-				if (x > (win->x + wid->x + ctx->m_x) && x < (win->x + wid->x + ctx->m_x + ctx->m_w) &&
-					y > (win->y + wid->y + ctx->m_y) && y < (win->y + wid->y + ctx->m_y + ctx->m_h)) {
+				if (x > (info->x + wid->x + ctx->m_x) && x < (info->x + wid->x + ctx->m_x + ctx->m_w) &&
+					y > (info->y + wid->y + ctx->m_y) && y < (info->y + wid->y + ctx->m_y + ctx->m_h)) {
 						mb->focused = ctx;
 
 						//! Make the difference between clicking and dragging

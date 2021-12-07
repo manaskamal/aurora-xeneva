@@ -156,6 +156,7 @@ void _kmain () {
 	hda_initialize(); 
 	e1000_initialize();   //<< receiver not working
 
+	for(;;);
 #ifdef ARCH_X64
 	//================================================
 	//! Initialize the scheduler here

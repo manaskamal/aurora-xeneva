@@ -14,6 +14,7 @@
 #include <stdint.h>
 #include <QuWindow\QuList.h>
 #include <QuRect.h>
+#include <ipc\QuChannel.h>
 
 //! Window Attributes
 #define QU_WIN_MINIMIZABLE   1
@@ -36,14 +37,16 @@
 
 typedef struct _QuWinInfo_ {
 	bool dirty;
+	int x;
+	int y;
 	QuRect rect[256];
 	int rect_count;
 	bool maximize;
 }QuWindowInfo;
 
 typedef struct _QuWindow_ {
-	int x;
-	int y;
+	//int x;
+	//int y;
 	int width;
 	int height;
 	int drag_x;

@@ -142,9 +142,8 @@ void page_fault (size_t vector, void* param){
 	int resv = frame->error & 0x8;
 	int id = frame->error & 0x10;
  //
-	
 	if (us){
-		panic ("Page Fault \n");
+		/*panic ("Page Fault \n");
 		printf ("Faulting Address -> %x\n", vaddr);
 		printf ("__PROCESSOR TRACE__\n");
 		printf ("RIP -> %x\n", frame->rip);
@@ -155,10 +154,10 @@ void page_fault (size_t vector, void* param){
 		printf ("CS -> %x, SS -> %x\n", frame->cs, frame->ss);
 		printf ("******Cause********\n");
 		printf ("***User Priviledge fault***\n");
-		for(;;);
-		//map_page((uint64_t)pmmngr_alloc(), (uint64_t)vaddr,PAGING_USER);
+		for(;;);*/
+		map_page((uint64_t)pmmngr_alloc(), (uint64_t)vaddr,PAGING_USER);
 	}else if (present){
-		panic ("Page Fault \n");
+		/*panic ("Page Fault \n");
 		printf ("Faulting Address -> %x\n", vaddr);
 		printf ("__PROCESSOR TRACE__\n");
 		printf ("RIP -> %x\n", frame->rip);
@@ -169,7 +168,8 @@ void page_fault (size_t vector, void* param){
 		printf ("CS -> %x, SS -> %x\n", frame->cs, frame->ss);
 		printf ("******Cause********\n");
 		printf ("*** Not Present ***\n");
-		for(;;);
+		for(;;);*/
+		map_page((uint64_t)pmmngr_alloc(), (uint64_t)vaddr,PAGING_USER);
 	}else if (rw) {
 		panic ("Page Fault \n");
 		printf ("Faulting Address -> %x\n", vaddr);

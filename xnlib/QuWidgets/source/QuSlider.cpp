@@ -20,48 +20,48 @@ void QuSliderRefresh (QuWidget *wid, QuWindow *win) {
 
 	//* The Vertical slider *//
 	if (slider->type == QU_SLIDER_VERTICAL) {
-		acrylic_draw_rect_filled (win->ctx,win->x + wid->x, win->y + wid->y, wid->width, wid->height, LIGHTSILVER);
-		acrylic_draw_rect_unfilled (win->ctx,win->x + wid->x, win->y + wid->y, wid->width, wid->height, GRAY);
+		acrylic_draw_rect_filled (win->ctx,wid->x, wid->y, wid->width, wid->height, LIGHTSILVER);
+		acrylic_draw_rect_unfilled (win->ctx,wid->x,  wid->y, wid->width, wid->height, GRAY);
 
 		///!Progress
 		if (slider->progress != 0) {
 			/*acrylic_draw_rect_filled (win->x + wid->x + 1, win->y + wid->y + slider->progress,
 			9,(win->y + wid->y + wid->height) - (win->y + wid->y + slider->progress),DESKBLUE );*/
-			linear_gradient (win->ctx,win->x + wid->x + 1, win->y + wid->y + slider->progress,9,
-				(win->y + wid->y + wid->height) - (win->y + wid->y + slider->progress), 
+			linear_gradient (win->ctx,wid->x + 1,  wid->y + slider->progress,9,
+				( wid->y + wid->height) - (wid->y + slider->progress), 
 				PALEGREEN, GREEN);
 		}
 
 		///!Slider Thumb
-		acrylic_draw_rect_filled (win->ctx,win->x + wid->x,   //X
-			win->y + wid->y + slider->thumb_y  /*+ wid->height - 15*/,               //Y
+		acrylic_draw_rect_filled (win->ctx,wid->x,   //X
+			wid->y + slider->thumb_y  /*+ wid->height - 15*/,               //Y
 			wid->width, 15,LIGHTBLACK);
-		acrylic_draw_rect_unfilled (win->ctx,win->x + wid->x,   //X
-			win->y + wid->y +slider->thumb_y /*+ wid->height - 15*/,               //Y
+		acrylic_draw_rect_unfilled (win->ctx,wid->x,   //X
+			wid->y +slider->thumb_y /*+ wid->height - 15*/,               //Y
 			wid->width, 15,GRAY);
 	}
 
 
 	//* The Horizontal Slider *//
 	if (slider->type == QU_SLIDER_HORIZONTAL) {
-		acrylic_draw_rect_filled (win->ctx,win->x + wid->x, win->y + wid->y, wid->width, wid->height, LIGHTSILVER);
-		acrylic_draw_rect_unfilled (win->ctx,win->x + wid->x, win->y + wid->y, wid->width, wid->height, GRAY);
+		acrylic_draw_rect_filled (win->ctx, wid->x,  wid->y, wid->width, wid->height, LIGHTSILVER);
+		acrylic_draw_rect_unfilled (win->ctx,wid->x, wid->y, wid->width, wid->height, GRAY);
 
 		///!Progress
 		if (slider->progress != 0){
 		/*	acrylic_draw_rect_filled (win->x + wid->x, win->y + wid->y + 1,
 			(win->x + wid->x + slider->progress) - (win->x + wid->x),9, DESKBLUE );*/
-			linear_gradient (win->ctx,win->x + wid->x, win->y + wid->y + 1,(win->x + wid->x + slider->progress) - (win->x + wid->x),
+			linear_gradient (win->ctx,wid->x, wid->y + 1,(wid->x + slider->progress) - ( wid->x),
 				9,PALEGREEN, GREEN);
 
 		}
 
 		///!Slider Thumb
-		acrylic_draw_rect_filled (win->ctx,win->x + wid->x + slider->thumb_x,   //X
-			win->y + wid->y  /*+ wid->height - 15*/,               //Y
+		acrylic_draw_rect_filled (win->ctx,wid->x + slider->thumb_x,   //X
+			 wid->y  /*+ wid->height - 15*/,               //Y
 			15, wid->height,LIGHTBLACK);
-		acrylic_draw_rect_unfilled (win->ctx,win->x + wid->x + slider->thumb_x,   //X
-			win->y + wid->y/*+ wid->height - 15*/,               //Y
+		acrylic_draw_rect_unfilled (win->ctx,wid->x + slider->thumb_x,   //X
+			wid->y/*+ wid->height - 15*/,               //Y
 			15, wid->height,GRAY);
 	}
 }
@@ -71,6 +71,7 @@ void QuSliderRefresh (QuWidget *wid, QuWindow *win) {
  * QuSliderMouseEvent -- Called whenever mouse event occurs on this widget
  */
 void QuSliderMouseEvent (QuWidget *wid, QuWindow *win, int code, bool clicked, int x, int y) {
+	QuWinInfo *info = (QuWinInfo*)win->win_info_data;
 	QuSlider *slider = (QuSlider*)wid;
 
 	//! check for mouse enter code
@@ -79,7 +80,7 @@ void QuSliderMouseEvent (QuWidget *wid, QuWindow *win, int code, bool clicked, i
 
 			/* for vertical everything is upside down */
 			if (slider->type == QU_SLIDER_VERTICAL) {
-				slider->thumb_y = y - (win->y + wid->y + 15 / 2);
+				slider->thumb_y = y - (info->y + wid->y + 15 / 2);
 			    slider->progress = slider->thumb_y;
 
 				//! Update the current values
@@ -94,23 +95,23 @@ void QuSliderMouseEvent (QuWidget *wid, QuWindow *win, int code, bool clicked, i
 				}
 
 
-				if ((win->y + wid->y + slider->thumb_y) <= (win->y + wid->y)){
+				if ((info->y + wid->y + slider->thumb_y) <= (info->y + wid->y)){
 					slider->thumb_y = 0;
 				}
 
-				if ((win->y + wid->y + slider->thumb_y + 15) >= (win->y + wid->y + wid->height)){
-					slider->thumb_y = (win->y + wid->y + wid->height) - (win->y + wid->y + 15);
+				if ((info->y + wid->y + slider->thumb_y + 15) >= (info->y + wid->y + wid->height)){
+					slider->thumb_y = (info->y + wid->y + wid->height) - (info->y + wid->y + 15);
 					slider->progress = 0;
 				}
 
 				slider->last_thumb_y = slider->thumb_y;
 				QuSliderRefresh(wid, win);
-				QuPanelUpdate(win,win->x + slider->wid.x - 12,win->y +  slider->wid.y, slider->wid.width + 12, slider->wid.height, false);
+				QuPanelUpdate(win,slider->wid.x - 12,slider->wid.y, slider->wid.width + 12, slider->wid.height, false);
 			}
 
 			/* normal horizontal slider */
 			if (slider->type == QU_SLIDER_HORIZONTAL) {
-				slider->thumb_x = x - (win->x + wid->x + 15 / 2);
+				slider->thumb_x = x - (info->x + wid->x + 15 / 2);
 				slider->progress = slider->thumb_x;
 
 				/**
@@ -127,13 +128,13 @@ void QuSliderMouseEvent (QuWidget *wid, QuWindow *win, int code, bool clicked, i
 				}
 
 				//! Limit the slider's thumb here
-				if ((win->x + wid->x + slider->thumb_x) <= (win->x + wid->x)){
+				if ((info->x + wid->x + slider->thumb_x) <= (info->x + wid->x)){
 					slider->thumb_x = 0;
 					slider->progress = 0;
 				}
 
-				if ((win->x + wid->x + slider->thumb_x + 15) >= (win->x + wid->x + wid->width)) {
-					slider->thumb_x = (win->x + wid->x + wid->width) - (win->x + wid->x + 15);
+				if ((info->x + wid->x + slider->thumb_x + 15) >= (info->x + wid->x + wid->width)) {
+					slider->thumb_x = (info->x + wid->x + wid->width) - (info->x + wid->x + 15);
 				}
 
 				//! update the last thum pos
@@ -141,7 +142,7 @@ void QuSliderMouseEvent (QuWidget *wid, QuWindow *win, int code, bool clicked, i
 
 				//! Refresh
 				QuSliderRefresh(wid, win);
-				QuPanelUpdate(win,win->x + slider->wid.x,win->y +  slider->wid.y, slider->wid.width, slider->wid.height, false);
+				QuPanelUpdate(win,slider->wid.x,slider->wid.y, slider->wid.width, slider->wid.height, false);
 
 			}
 		}

@@ -68,9 +68,6 @@ void ac97_initialize () {
 
 	interrupt_set(addr->device.nonBridge.interruptLine, ac97_handler, addr->device.nonBridge.interruptLine);
 
-	printf ("AC97 NAMBAR -> %x, NABMBAR -> %x\n", _ac97.nambar, _ac97.nabmbar + 0x2C);
-	printf ("AC97 NAMBAR -> %x, NABMBAR -> %x\n", addr->device.nonBridge.baseAddress[0],addr->device.nonBridge.baseAddress[1]);
-
 
 	//! Reset
 	x64_outportd (_ac97.nabmbar + 0x2C, 0x3);
@@ -106,13 +103,14 @@ void ac97_initialize () {
 
 	//printf ("Buffers allocated\n");
 
-	//ac97_buffer_desc_t *desc = (ac97_buffer_desc_t*)pmmngr_alloc();
-	//for (int i = 0; i <32; i++) {
-	//	desc[i].buf = (uint32_t)buff;
-	//	desc[i].len = 0xFFFE;
-	//	desc[i].ioc = 1;
-	//	desc[i].bup = 0;
-	//}
+	uint32_t p = (uint32_t)pmmngr_alloc();
+	ac97_buffer_desc_t *desc = (ac97_buffer_desc_t*)p;
+	for (int i = 0; i <32; i++) {
+		desc[i].buf = (uint32_t)pmmngr_alloc();
+		desc[i].len = 65536;
+		desc[i].ioc = 1;
+		desc[i].bup = 0;
+	}
 
 	//desc[31].bup = 1;
 
@@ -132,8 +130,10 @@ void ac97_initialize () {
 
 
 	//// ("BDL Allocated address -> %x -> %x\n", bdl, (uint32_t)get_physical_address((uint64_t)bdl));
-	//x64_outportd (_ac97.nabmbar + 0x10, (uint32_t)desc);
-	//x64_outportb (_ac97.nabmbar + 0x15, 32);
+	x64_outportd (_ac97.nabmbar + 0x10, p);
+	x64_outportb (_ac97.nabmbar + 0x15, 32);
+
+	printf ("Descriptor address -> %x\n", x64_inportd(_ac97.nabmbar + 0x10));
 
 	printf("AC97 initialized\n");
 }

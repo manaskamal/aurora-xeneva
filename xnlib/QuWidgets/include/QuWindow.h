@@ -50,14 +50,16 @@ typedef struct _QuWinControl_ {
 
 typedef struct _QuWinInfo_ {
 	bool dirty;
+	int x;
+	int y;
 	QuRect rect[256];
 	int rect_count;
 	bool maximize;
 }QuWinInfo;
 
 typedef struct _QU_WIN_ {
-	int x;
-	int y;
+	int temp_x;
+	int temp_y;
 	int w;
 	int h;
 	int oldx;

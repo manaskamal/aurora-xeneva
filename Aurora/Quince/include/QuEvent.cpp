@@ -139,13 +139,16 @@ void QuEventLoop() {
 			render_disable = true;
 			uint16_t dest_id = q_msg.from_id; 
 			uint32_t* canvas = QuCanvasCreate(dest_id, winw, winh);
-			QuWindow * window = QuWindowCreate(winx,winy,dest_id,canvas);
+			QuWindow * window = QuWindowCreate(0,0,dest_id,canvas);
 			window->width = winw;
 			window->height = winh;
 
 			uint64_t info_location = QU_WIN_INFO_START + win_info_counter * 4096;
 			map_shared_memory (dest_id,info_location ,8192);
 			window->win_info_location = (uint32_t*)info_location;
+			QuWindowInfo *info = (QuWindowInfo*)window->win_info_location;
+			info->x = winx;
+			info->y = winy;
 			win_info_counter++;
 
 			//QuCanvasCommit(canvas, dest_id, window->x, window->y, window->width, window->height);
@@ -160,7 +163,7 @@ void QuEventLoop() {
 
 			QuWindowSetCanvas (window, canvas);
 
-			QuScreenRectAdd(window->x, window->y, window->width, window->height);
+			QuScreenRectAdd(info->x, info->y, window->width, window->height);
 			//QuCanvasSetUpdateBit(true);
 
 			x += 30;
@@ -178,10 +181,10 @@ void QuEventLoop() {
 				QuWindowSetSize (win,q_msg.dword2,q_msg.dword3);
 			}
 
-			if (q_msg.dword == QU_WIN_SET_POS) {
+			/*if (q_msg.dword == QU_WIN_SET_POS) {
 				win->x = q_msg.dword2;
 				win->y = q_msg.dword3;
-			}
+			}*/
 
 			if (q_msg.dword == QU_WIN_NON_DRAGGABLE) {
 				win->attr = QU_WIN_NON_DRAGGABLE;
@@ -219,6 +222,7 @@ void QuEventLoop() {
 		
 		//}
 		//! Here We Prepare the frame that will be displayed
-		sys_sleep(32);
+		//sys_sleep(16);
+		sys_wait();
 	}
 }

@@ -93,15 +93,15 @@ void QuCanvasBlit (QuWindow* win,unsigned int *canvas, unsigned x, unsigned y, u
 					wid  = width - info->rect[k].x;
 
 				if (info->rect[k].y + info->rect[k].h>= height - 40){
-					win->y = height - win->height;
+					info->y = height - win->height;
 				}
 
 				for (int i = 0; i < he; i++)  {
-					fastcpy (lfb + (win->y + ry + i) * width + (win->x + rx),win->canvas + (ry + i) * width + rx, 
+					fastcpy (lfb + (info->y + ry + i) * width + (info->x + rx),win->canvas + (ry + i) * width + rx, 
 					wid * 4);
 				}
 
-				canvas_screen_update(QuGetCanvas(),win->x + rx,win->y + ry, wid, he);
+				canvas_screen_update(QuGetCanvas(),info->x + rx,info->y + ry, wid, he);
 				//QuScreenRectAdd(info->rect[k].x, info->rect[k].y, info->rect[k].w, info->rect[k].h);
 			}
 
@@ -113,27 +113,27 @@ void QuCanvasBlit (QuWindow* win,unsigned int *canvas, unsigned x, unsigned y, u
 		} else if (info->rect_count == 0){	
 			int wid = win->width;
 			int he = win->height;
-			int winx = win->x;
-			int winy = win->y;
+			int winx = info->x;
+			int winy = info->y;
 
 			if (winx < 0) {
-				win->x = 0;
-				winx = win->x;
+				info->x = 0;
+				winx = info->x;
 			}
 
 			if (winy < 0) {
-				win->y = 0;
+				info->y = 0;
 				winy = 0;
 			}
 
 
-			if (win->x + win->width >= width)
-				wid  = width - win->x;
+			if (info->x + win->width >= width)
+				wid  = width - info->x;
 
-			if (win->y + win->height >= (height - 40)){
-				win->y = (height - 40) - win->height;
-				winy = win->y;
-				he = (height - 40) - win->y;
+			if (info->y + win->height >= (height - 40)){
+				info->y = (height - 40) - win->height;
+				winy = info->y;
+				he = (height - 40) - info->y;
 			}
 
 			for (int i = 0; i < he; i++) 
@@ -153,8 +153,8 @@ void QuCanvasBlit (QuWindow* win,unsigned int *canvas, unsigned x, unsigned y, u
 		//win->mark_for_close = false;
 		uint16_t id = win->owner_id;
 		QuCanvasRelease(win->owner_id, win);
-		QuCanvasUpdate(win->x, win->y, win->width, win->height);
-		QuScreenRectAdd(win->x, win->y, win->width, win->height);
+		QuCanvasUpdate(info->x, info->y, win->width, win->height);
+		QuScreenRectAdd(info->x, info->y, win->width, win->height);
 		QuWindowMngr_Remove(win);
 		QuCanvasSetUpdateBit(true);
 		QuWindowMngr_DrawBehind(win);

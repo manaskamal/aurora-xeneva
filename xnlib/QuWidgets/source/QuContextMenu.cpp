@@ -92,10 +92,11 @@ void QuContextMenuAppend (QuContextMenu *ctx, QuWidget *mb, QuWindow* win) {
 
 
 void QuContextMenuEventHandle(QuContextMenu *ctx, QuWidget *mb, QuWindow* win,int mouse_x, int mouse_y, bool clicked) {
+	QuWinInfo* info = (QuWinInfo*)win->win_info_data;
 	for (int i = 0; i < ctx->popup_list->pointer; i++) {
 		QuPopupMenu *popup = (QuPopupMenu*)QuListGetAt(ctx->popup_list, i);
-		if (mouse_x > QuGetWindow()->x + popup->m_x && mouse_x < (QuGetWindow()->x + popup->m_x + popup->m_w) &&
-			mouse_y > QuGetWindow()->y + popup->m_y && mouse_y < (QuGetWindow()->y + popup->m_y + popup->m_h)) {
+		if (mouse_x > info->x + popup->m_x && mouse_x < (info->x + popup->m_x + popup->m_w) &&
+			mouse_y > info->y + popup->m_y && mouse_y < (info->y + popup->m_y + popup->m_h)) {
 				if (clicked) {
 					//Fire the action and context menu disapper here once again
 					if (popup->Action) {

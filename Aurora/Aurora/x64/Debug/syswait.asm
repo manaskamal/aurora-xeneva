@@ -35,8 +35,8 @@ pdata	SEGMENT
 $pdata$?wait@@YAXXZ DD imagerel $LN3
 	DD	imagerel $LN3+53
 	DD	imagerel $unwind$?wait@@YAXXZ
-$pdata$?sys_unblock_id@@YAXG@Z DD imagerel $LN4
-	DD	imagerel $LN4+54
+$pdata$?sys_unblock_id@@YAXG@Z DD imagerel $LN5
+	DD	imagerel $LN5+71
 	DD	imagerel $unwind$?sys_unblock_id@@YAXG@Z
 pdata	ENDS
 CRT$XCU	SEGMENT
@@ -70,7 +70,7 @@ id$ = 64
 
 ; 32   : void sys_unblock_id (uint16_t id) {
 
-$LN4:
+$LN5:
 	mov	WORD PTR [rsp+8], cx
 	sub	rsp, 56					; 00000038H
 
@@ -78,30 +78,34 @@ $LN4:
 
 	call	x64_cli
 
-; 34   : 	//mutex_lock (unblock_lock);
-; 35   : 	//set_multi_task_enable (false);
-; 36   : 	thread_t* thr = (thread_t*)thread_iterate_block_list (id);
+; 34   : 	thread_t* thr = (thread_t*)thread_iterate_block_list (id);
 
 	movzx	eax, WORD PTR id$[rsp]
 	mov	ecx, eax
 	call	?thread_iterate_block_list@@YAPEAU_thread_@@H@Z ; thread_iterate_block_list
 	mov	QWORD PTR thr$[rsp], rax
 
-; 37   : 	if (thr != NULL){
+; 35   : 	if (thr != NULL){
 
 	cmp	QWORD PTR thr$[rsp], 0
-	je	SHORT $LN1@sys_unbloc
+	je	SHORT $LN2@sys_unbloc
 
-; 38   : 		//thr->state = THREAD_STATE_READY;
-; 39   : 		unblock_thread(thr);
+; 36   : 		if (thr->state == THREAD_STATE_BLOCKED)
+
+	mov	rax, QWORD PTR thr$[rsp]
+	movzx	eax, BYTE PTR [rax+224]
+	cmp	eax, 3
+	jne	SHORT $LN1@sys_unbloc
+
+; 37   : 			unblock_thread(thr);
 
 	mov	rcx, QWORD PTR thr$[rsp]
 	call	?unblock_thread@@YAXPEAU_thread_@@@Z	; unblock_thread
 $LN1@sys_unbloc:
+$LN2@sys_unbloc:
 
-; 40   : 	}
-; 41   : 	//set_multi_task_enable (true);
-; 42   : }
+; 38   : 	}
+; 39   : }
 
 	add	rsp, 56					; 00000038H
 	ret	0

@@ -18,20 +18,18 @@ $SG3315	DB	'AC97 Device found with device id -> %x, vendor id -> %x', 0aH
 	ORG $+7
 $SG3318	DB	'AC97 interrupt line -> %d', 0aH, 00H
 	ORG $+5
-$SG3319	DB	'AC97 NAMBAR -> %x, NABMBAR -> %x', 0aH, 00H
-	ORG $+6
-$SG3320	DB	'AC97 NAMBAR -> %x, NABMBAR -> %x', 0aH, 00H
-	ORG $+6
-$SG3322	DB	'AC97 channels: %d', 0aH, 00H
+$SG3320	DB	'AC97 channels: %d', 0aH, 00H
 	ORG $+5
-$SG3324	DB	'20 bit sound supported', 0aH, 00H
-$SG3327	DB	'Bit could not be cleared', 0aH, 00H
+$SG3322	DB	'20 bit sound supported', 0aH, 00H
+$SG3325	DB	'Bit could not be cleared', 0aH, 00H
 	ORG $+6
-$SG3328	DB	'AC97 Sample Rate -> %d Hz', 0aH, 00H
+$SG3326	DB	'AC97 Sample Rate -> %d Hz', 0aH, 00H
 	ORG $+5
-$SG3330	DB	'AC97 initialized', 0aH, 00H
+$SG3337	DB	'Descriptor address -> %x', 0aH, 00H
 	ORG $+6
-$SG3335	DB	'VAL = %x', 0aH, 00H
+$SG3338	DB	'AC97 initialized', 0aH, 00H
+	ORG $+6
+$SG3343	DB	'VAL = %x', 0aH, 00H
 CONST	ENDS
 PUBLIC	?ac97_initialize@@YAXXZ				; ac97_initialize
 PUBLIC	?ac97_start@@YAXPEAE@Z				; ac97_start
@@ -50,10 +48,11 @@ EXTRN	?apic_local_eoi@@YAXXZ:PROC			; apic_local_eoi
 EXTRN	?interrupt_set@@YAX_KP6AX0PEAX@ZE@Z:PROC	; interrupt_set
 EXTRN	?pci_find_device_class@@YA_NEEPEATpci_device_info@@PEAH11@Z:PROC ; pci_find_device_class
 EXTRN	?printf@@YAXPEBDZZ:PROC				; printf
+EXTRN	?pmmngr_alloc@@YAPEAXXZ:PROC			; pmmngr_alloc
 EXTRN	?malloc@@YAPEAXI@Z:PROC				; malloc
 pdata	SEGMENT
-$pdata$?ac97_initialize@@YAXXZ DD imagerel $LN6
-	DD	imagerel $LN6+613
+$pdata$?ac97_initialize@@YAXXZ DD imagerel $LN9
+	DD	imagerel $LN9+765
 	DD	imagerel $unwind$?ac97_initialize@@YAXXZ
 $pdata$?ac97_start@@YAXPEAE@Z DD imagerel $LN3
 	DD	imagerel $LN3+95
@@ -70,7 +69,7 @@ $pdata$?ac97_set_sample_rate@@YAXH@Z DD imagerel $LN3
 pdata	ENDS
 xdata	SEGMENT
 $unwind$?ac97_initialize@@YAXXZ DD 010401H
-	DD	0a204H
+	DD	0e204H
 $unwind$?ac97_start@@YAXPEAE@Z DD 010901H
 	DD	06209H
 $unwind$?ac97_handler@@YAX_KPEAX@Z DD 010e01H
@@ -305,7 +304,7 @@ $LN3:
 
 	movzx	eax, BYTE PTR val$[rsp]
 	mov	edx, eax
-	lea	rcx, OFFSET FLAT:$SG3335
+	lea	rcx, OFFSET FLAT:$SG3343
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 150  : 	x64_outportb (_ac97.nabmbar  + 0x0B, 0x1);
@@ -331,19 +330,22 @@ _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\drivers\ac97\ac97.cpp
 _TEXT	SEGMENT
-val$ = 48
-tick$ = 49
-cap$ = 52
-func$ = 56
-dev$ = 60
-bus$ = 64
-addr$ = 72
+i$1 = 48
+addr$ = 56
+tick$ = 64
+val$ = 65
+desc$ = 72
+p$ = 80
+cap$ = 84
+func$ = 88
+bus$ = 92
+dev$ = 96
 ?ac97_initialize@@YAXXZ PROC				; ac97_initialize
 
 ; 54   : void ac97_initialize () {
 
-$LN6:
-	sub	rsp, 88					; 00000058H
+$LN9:
+	sub	rsp, 120				; 00000078H
 
 ; 55   : 	
 ; 56   : 	pci_device_info *addr = (pci_device_info*)malloc(sizeof(pci_config_space));
@@ -369,7 +371,7 @@ $LN6:
 	call	?pci_find_device_class@@YA_NEEPEATpci_device_info@@PEAH11@Z ; pci_find_device_class
 	movzx	eax, al
 	test	eax, eax
-	jne	SHORT $LN3@ac97_initi
+	jne	SHORT $LN6@ac97_initi
 
 ; 59   : 		printf ("No AC97 device found\n");
 
@@ -378,8 +380,8 @@ $LN6:
 
 ; 60   : 		return;
 
-	jmp	$LN4@ac97_initi
-$LN3@ac97_initi:
+	jmp	$LN7@ac97_initi
+$LN6@ac97_initi:
 
 ; 61   : 	}
 ; 62   : 
@@ -431,33 +433,9 @@ $LN3@ac97_initi:
 	call	?interrupt_set@@YAX_KP6AX0PEAX@ZE@Z	; interrupt_set
 
 ; 70   : 
-; 71   : 	printf ("AC97 NAMBAR -> %x, NABMBAR -> %x\n", _ac97.nambar, _ac97.nabmbar + 0x2C);
-
-	movzx	eax, WORD PTR ?_ac97@@3U_ac97_@@A+2
-	add	eax, 44					; 0000002cH
-	movzx	ecx, WORD PTR ?_ac97@@3U_ac97_@@A
-	mov	r8d, eax
-	mov	edx, ecx
-	lea	rcx, OFFSET FLAT:$SG3319
-	call	?printf@@YAXPEBDZZ			; printf
-
-; 72   : 	printf ("AC97 NAMBAR -> %x, NABMBAR -> %x\n", addr->device.nonBridge.baseAddress[0],addr->device.nonBridge.baseAddress[1]);
-
-	mov	eax, 4
-	imul	rax, 1
-	mov	ecx, 4
-	imul	rcx, 0
-	mov	rdx, QWORD PTR addr$[rsp]
-	mov	r8d, DWORD PTR [rdx+rax+16]
-	mov	rax, QWORD PTR addr$[rsp]
-	mov	edx, DWORD PTR [rax+rcx+16]
-	lea	rcx, OFFSET FLAT:$SG3320
-	call	?printf@@YAXPEBDZZ			; printf
-
-; 73   : 
-; 74   : 
-; 75   : 	//! Reset
-; 76   : 	x64_outportd (_ac97.nabmbar + 0x2C, 0x3);
+; 71   : 
+; 72   : 	//! Reset
+; 73   : 	x64_outportd (_ac97.nabmbar + 0x2C, 0x3);
 
 	movzx	eax, WORD PTR ?_ac97@@3U_ac97_@@A+2
 	add	eax, 44					; 0000002cH
@@ -465,14 +443,14 @@ $LN3@ac97_initi:
 	movzx	ecx, ax
 	call	x64_outportd
 
-; 77   : 	x64_outportw (_ac97.nambar + PORT_NAM_RESET, 0 /* 42*/);
+; 74   : 	x64_outportw (_ac97.nambar + PORT_NAM_RESET, 0 /* 42*/);
 
 	xor	edx, edx
 	movzx	ecx, WORD PTR ?_ac97@@3U_ac97_@@A
 	call	x64_outportw
 
-; 78   : 
-; 79   : 	uint32_t cap = x64_inportd (_ac97.nabmbar + 0x30);
+; 75   : 
+; 76   : 	uint32_t cap = x64_inportd (_ac97.nabmbar + 0x30);
 
 	movzx	eax, WORD PTR ?_ac97@@3U_ac97_@@A+2
 	add	eax, 48					; 00000030H
@@ -480,34 +458,34 @@ $LN3@ac97_initi:
 	call	x64_inportd
 	mov	DWORD PTR cap$[rsp], eax
 
-; 80   : 	printf ("AC97 channels: %d\n", 2 + 2 * ((cap >> 20) & 3));
+; 77   : 	printf ("AC97 channels: %d\n", 2 + 2 * ((cap >> 20) & 3));
 
 	mov	eax, DWORD PTR cap$[rsp]
 	shr	eax, 20
 	and	eax, 3
 	lea	eax, DWORD PTR [rax+rax+2]
 	mov	edx, eax
-	lea	rcx, OFFSET FLAT:$SG3322
+	lea	rcx, OFFSET FLAT:$SG3320
 	call	?printf@@YAXPEBDZZ			; printf
 
-; 81   : 	if (((cap >> 22) & 3) == 1)
+; 78   : 	if (((cap >> 22) & 3) == 1)
 
 	mov	eax, DWORD PTR cap$[rsp]
 	shr	eax, 22
 	and	eax, 3
 	cmp	eax, 1
-	jne	SHORT $LN2@ac97_initi
+	jne	SHORT $LN5@ac97_initi
 
-; 82   : 		printf ("20 bit sound supported\n");
+; 79   : 		printf ("20 bit sound supported\n");
 
-	lea	rcx, OFFSET FLAT:$SG3324
+	lea	rcx, OFFSET FLAT:$SG3322
 	call	?printf@@YAXPEBDZZ			; printf
-$LN2@ac97_initi:
+$LN5@ac97_initi:
 
-; 83   : 
-; 84   : 	
-; 85   : 	//!reset output channel
-; 86   : 	uint8_t val = x64_inportb(_ac97.nabmbar + NABM_PCM_OUTPUT_BASE + NABM_OFFSET_BUFFER_CNT);
+; 80   : 
+; 81   : 	
+; 82   : 	//!reset output channel
+; 83   : 	uint8_t val = x64_inportb(_ac97.nabmbar + NABM_PCM_OUTPUT_BASE + NABM_OFFSET_BUFFER_CNT);
 
 	movzx	eax, WORD PTR ?_ac97@@3U_ac97_@@A+2
 	add	eax, 27
@@ -515,7 +493,7 @@ $LN2@ac97_initi:
 	call	x64_inportb
 	mov	BYTE PTR val$[rsp], al
 
-; 87   : 	x64_outportb(_ac97.nabmbar + NABM_OFFSET_BUFFER_CNT, (1<<0) | (1<<1));
+; 84   : 	x64_outportb(_ac97.nabmbar + NABM_OFFSET_BUFFER_CNT, (1<<0) | (1<<1));
 
 	movzx	eax, WORD PTR ?_ac97@@3U_ac97_@@A+2
 	add	eax, 11
@@ -523,7 +501,7 @@ $LN2@ac97_initi:
 	movzx	ecx, ax
 	call	x64_outportb
 
-; 88   : 	x64_outportb(_ac97.nabmbar + NABM_OFFSET_BUFFER_CNT, (1<<4));
+; 85   : 	x64_outportb(_ac97.nabmbar + NABM_OFFSET_BUFFER_CNT, (1<<4));
 
 	movzx	eax, WORD PTR ?_ac97@@3U_ac97_@@A+2
 	add	eax, 11
@@ -531,14 +509,14 @@ $LN2@ac97_initi:
 	movzx	ecx, ax
 	call	x64_outportb
 
-; 89   : 	//for (int i = 0; i < 2500; i++)
-; 90   : 	//	;
-; 91   : 	wait(2500);
+; 86   : 	//for (int i = 0; i < 2500; i++)
+; 87   : 	//	;
+; 88   : 	wait(2500);
 
 	mov	ecx, 2500				; 000009c4H
 	call	?wait@@YAXH@Z				; wait
 
-; 92   : 	if (x64_inportb(_ac97.nabmbar + NABM_OFFSET_BUFFER_CNT) & 2) {
+; 89   : 	if (x64_inportb(_ac97.nabmbar + NABM_OFFSET_BUFFER_CNT) & 2) {
 
 	movzx	eax, WORD PTR ?_ac97@@3U_ac97_@@A+2
 	add	eax, 11
@@ -547,25 +525,25 @@ $LN2@ac97_initi:
 	movzx	eax, al
 	and	eax, 2
 	test	eax, eax
-	je	SHORT $LN1@ac97_initi
+	je	SHORT $LN4@ac97_initi
 
-; 93   : 		printf ("Bit could not be cleared\n");
+; 90   : 		printf ("Bit could not be cleared\n");
 
-	lea	rcx, OFFSET FLAT:$SG3327
+	lea	rcx, OFFSET FLAT:$SG3325
 	call	?printf@@YAXPEBDZZ			; printf
-$LN1@ac97_initi:
+$LN4@ac97_initi:
 
-; 94   : 	}
-; 95   : 
-; 96   : 	ac97_set_volume(100, 100);
+; 91   : 	}
+; 92   : 
+; 93   : 	ac97_set_volume(100, 100);
 
 	mov	edx, 100				; 00000064H
 	mov	ecx, 100				; 00000064H
 	call	?ac97_set_volume@@YAXHH@Z		; ac97_set_volume
 
-; 97   : 
-; 98   : 
-; 99   : 	printf ("AC97 Sample Rate -> %d Hz\n",  x64_inportw (_ac97.nambar +0x2A));
+; 94   : 
+; 95   : 
+; 96   : 	printf ("AC97 Sample Rate -> %d Hz\n",  x64_inportw (_ac97.nambar +0x2A));
 
 	movzx	eax, WORD PTR ?_ac97@@3U_ac97_@@A
 	add	eax, 42					; 0000002aH
@@ -573,59 +551,140 @@ $LN1@ac97_initi:
 	call	x64_inportw
 	movzx	eax, ax
 	mov	edx, eax
-	lea	rcx, OFFSET FLAT:$SG3328
+	lea	rcx, OFFSET FLAT:$SG3326
 	call	?printf@@YAXPEBDZZ			; printf
 
-; 100  : 
-; 101  : 	bool tick = false;
+; 97   : 
+; 98   : 	bool tick = false;
 
 	mov	BYTE PTR tick$[rsp], 0
 
-; 102  : 	
-; 103  : 	//size_t *buffer_1 = (size_t*)malloc(40960 * 2);
-; 104  : 	//size_t *buffer_2 = (size_t*)malloc(40960 * 2);
-; 105  : 	//size_t *buffer_3 = (size_t*)malloc(40960 * 2);
-; 106  : 
-; 107  : 	//printf ("Buffers allocated\n");
-; 108  : 
-; 109  : 	//ac97_buffer_desc_t *desc = (ac97_buffer_desc_t*)pmmngr_alloc();
-; 110  : 	//for (int i = 0; i <32; i++) {
-; 111  : 	//	desc[i].buf = (uint32_t)buff;
-; 112  : 	//	desc[i].len = 0xFFFE;
-; 113  : 	//	desc[i].ioc = 1;
-; 114  : 	//	desc[i].bup = 0;
-; 115  : 	//}
+; 99   : 	
+; 100  : 	//size_t *buffer_1 = (size_t*)malloc(40960 * 2);
+; 101  : 	//size_t *buffer_2 = (size_t*)malloc(40960 * 2);
+; 102  : 	//size_t *buffer_3 = (size_t*)malloc(40960 * 2);
+; 103  : 
+; 104  : 	//printf ("Buffers allocated\n");
+; 105  : 
+; 106  : 	uint32_t p = (uint32_t)pmmngr_alloc();
+
+	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
+	mov	DWORD PTR p$[rsp], eax
+
+; 107  : 	ac97_buffer_desc_t *desc = (ac97_buffer_desc_t*)p;
+
+	mov	eax, DWORD PTR p$[rsp]
+	mov	QWORD PTR desc$[rsp], rax
+
+; 108  : 	for (int i = 0; i <32; i++) {
+
+	mov	DWORD PTR i$1[rsp], 0
+	jmp	SHORT $LN3@ac97_initi
+$LN2@ac97_initi:
+	mov	eax, DWORD PTR i$1[rsp]
+	inc	eax
+	mov	DWORD PTR i$1[rsp], eax
+$LN3@ac97_initi:
+	cmp	DWORD PTR i$1[rsp], 32			; 00000020H
+	jge	SHORT $LN1@ac97_initi
+
+; 109  : 		desc[i].buf = (uint32_t)pmmngr_alloc();
+
+	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
+	movsxd	rcx, DWORD PTR i$1[rsp]
+	mov	rdx, QWORD PTR desc$[rsp]
+	mov	DWORD PTR [rdx+rcx*8], eax
+
+; 110  : 		desc[i].len = 65536;
+
+	movsxd	rax, DWORD PTR i$1[rsp]
+	xor	ecx, ecx
+	mov	rdx, QWORD PTR desc$[rsp]
+	mov	WORD PTR [rdx+rax*8+4], cx
+
+; 111  : 		desc[i].ioc = 1;
+
+	movsxd	rax, DWORD PTR i$1[rsp]
+	mov	ecx, 32768				; 00008000H
+	mov	rdx, QWORD PTR desc$[rsp]
+	movzx	eax, WORD PTR [rdx+rax*8+6]
+	or	ax, cx
+	movsxd	rcx, DWORD PTR i$1[rsp]
+	mov	rdx, QWORD PTR desc$[rsp]
+	mov	WORD PTR [rdx+rcx*8+6], ax
+
+; 112  : 		desc[i].bup = 0;
+
+	movsxd	rax, DWORD PTR i$1[rsp]
+	mov	ecx, 49151				; 0000bfffH
+	mov	rdx, QWORD PTR desc$[rsp]
+	movzx	eax, WORD PTR [rdx+rax*8+6]
+	and	ax, cx
+	movsxd	rcx, DWORD PTR i$1[rsp]
+	mov	rdx, QWORD PTR desc$[rsp]
+	mov	WORD PTR [rdx+rcx*8+6], ax
+
+; 113  : 	}
+
+	jmp	$LN2@ac97_initi
+$LN1@ac97_initi:
+
+; 114  : 
+; 115  : 	//desc[31].bup = 1;
 ; 116  : 
-; 117  : 	//desc[31].bup = 1;
-; 118  : 
-; 119  : 	//for (int i = 0; i < 65535; i++) {
-; 120  : 	//	data_1++ = buffer;
-; 121  : 	//}
-; 122  : 
-; 123  : 	//uint16_t* data_2 = (uint16_t*)get_physical_address(buffer_2);
-; 124  : 	//for (int i = 0; i < 65535; i++) {
-; 125  : 	//	*data_2++ = 0;
-; 126  : 	//}
-; 127  : 
-; 128  : 	//uint16_t* data_3 = (uint16_t*)get_physical_address(buffer_3);
-; 129  : 	//for (int i = 0; i < 65535; i++) {
-; 130  : 	//	*data_3++ = 0;
-; 131  : 	//}
-; 132  : 
-; 133  : 
-; 134  : 	//// ("BDL Allocated address -> %x -> %x\n", bdl, (uint32_t)get_physical_address((uint64_t)bdl));
-; 135  : 	//x64_outportd (_ac97.nabmbar + 0x10, (uint32_t)desc);
-; 136  : 	//x64_outportb (_ac97.nabmbar + 0x15, 32);
+; 117  : 	//for (int i = 0; i < 65535; i++) {
+; 118  : 	//	data_1++ = buffer;
+; 119  : 	//}
+; 120  : 
+; 121  : 	//uint16_t* data_2 = (uint16_t*)get_physical_address(buffer_2);
+; 122  : 	//for (int i = 0; i < 65535; i++) {
+; 123  : 	//	*data_2++ = 0;
+; 124  : 	//}
+; 125  : 
+; 126  : 	//uint16_t* data_3 = (uint16_t*)get_physical_address(buffer_3);
+; 127  : 	//for (int i = 0; i < 65535; i++) {
+; 128  : 	//	*data_3++ = 0;
+; 129  : 	//}
+; 130  : 
+; 131  : 
+; 132  : 	//// ("BDL Allocated address -> %x -> %x\n", bdl, (uint32_t)get_physical_address((uint64_t)bdl));
+; 133  : 	x64_outportd (_ac97.nabmbar + 0x10, p);
+
+	movzx	eax, WORD PTR ?_ac97@@3U_ac97_@@A+2
+	add	eax, 16
+	mov	edx, DWORD PTR p$[rsp]
+	movzx	ecx, ax
+	call	x64_outportd
+
+; 134  : 	x64_outportb (_ac97.nabmbar + 0x15, 32);
+
+	movzx	eax, WORD PTR ?_ac97@@3U_ac97_@@A+2
+	add	eax, 21
+	mov	dl, 32					; 00000020H
+	movzx	ecx, ax
+	call	x64_outportb
+
+; 135  : 
+; 136  : 	printf ("Descriptor address -> %x\n", x64_inportd(_ac97.nabmbar + 0x10));
+
+	movzx	eax, WORD PTR ?_ac97@@3U_ac97_@@A+2
+	add	eax, 16
+	movzx	ecx, ax
+	call	x64_inportd
+	mov	edx, eax
+	lea	rcx, OFFSET FLAT:$SG3337
+	call	?printf@@YAXPEBDZZ			; printf
+
 ; 137  : 
 ; 138  : 	printf("AC97 initialized\n");
 
-	lea	rcx, OFFSET FLAT:$SG3330
+	lea	rcx, OFFSET FLAT:$SG3338
 	call	?printf@@YAXPEBDZZ			; printf
-$LN4@ac97_initi:
+$LN7@ac97_initi:
 
 ; 139  : }
 
-	add	rsp, 88					; 00000058H
+	add	rsp, 120				; 00000078H
 	ret	0
 ?ac97_initialize@@YAXXZ ENDP				; ac97_initialize
 _TEXT	ENDS

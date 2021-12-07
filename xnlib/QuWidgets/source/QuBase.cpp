@@ -34,9 +34,10 @@ void QuChannelPut (QuMessage *msg, uint16_t to_id) {
 send:
 	if (msg_->type == 0){
 		memcpy (channel_addr, msg, (sizeof(QuMessage)));
+		sys_unblock_id(2);
 		return;
 	}else {
-		sys_sleep(2);
+		//sys_sleep(2);
 		goto send;
 	}
 	
@@ -49,6 +50,7 @@ get:
 	if (data->to_id == to_id){
 		memcpy (msg, data, sizeof (QuMessage));
 		memset (data, 0, 4096);
+		sys_unblock_id (2);
 		return;
 	}else {
 		//sys_wait();
@@ -66,8 +68,8 @@ void QuRegisterApplication (QuWindow *win) {
 	qmsg.type = QU_CODE_WIN_CREATE;
 	qmsg.from_id = app_id;
 	qmsg.to_id = 2;
-	qmsg.dword = win->x;
-	qmsg.dword2 = win->y;
+	qmsg.dword = win->temp_x;
+	qmsg.dword2 = win->temp_y;
 	qmsg.dword3 = win->w;
 	qmsg.dword4 = win->h;
 	QuChannelPut(&qmsg, 2);

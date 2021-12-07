@@ -38,6 +38,9 @@ EXTRN	x64_inportb:PROC
 EXTRN	x64_outportb:PROC
 EXTRN	?interrupt_end@@YAXI@Z:PROC			; interrupt_end
 EXTRN	?interrupt_set@@YAX_KP6AX0PEAX@ZE@Z:PROC	; interrupt_set
+EXTRN	?unblock_thread@@YAXPEAU_thread_@@@Z:PROC	; unblock_thread
+EXTRN	?is_multi_task_enable@@YA_NXZ:PROC		; is_multi_task_enable
+EXTRN	?thread_iterate_block_list@@YAPEAU_thread_@@H@Z:PROC ; thread_iterate_block_list
 _BSS	SEGMENT
 bcd	DB	01H DUP (?)
 _BSS	ENDS
@@ -57,8 +60,8 @@ $pdata$?is_updating_rtc@@YAHXZ DD imagerel $LN3
 $pdata$?rtc_read_datetime@@YAXXZ DD imagerel $LN6
 	DD	imagerel $LN6+455
 	DD	imagerel $unwind$?rtc_read_datetime@@YAXXZ
-$pdata$?rtc_clock_update@@YAX_KPEAX@Z DD imagerel $LN6
-	DD	imagerel $LN6+84
+$pdata$?rtc_clock_update@@YAX_KPEAX@Z DD imagerel $LN9
+	DD	imagerel $LN9+146
 	DD	imagerel $unwind$?rtc_clock_update@@YAX_KPEAX@Z
 pdata	ENDS
 xdata	SEGMENT
@@ -80,13 +83,14 @@ xdata	ENDS
 _TEXT	SEGMENT
 tv69 = 32
 ready$ = 33
+t$1 = 40
 s$ = 64
 p$ = 72
 ?rtc_clock_update@@YAX_KPEAX@Z PROC			; rtc_clock_update
 
 ; 84   : void rtc_clock_update(size_t s, void* p) {
 
-$LN6:
+$LN9:
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 56					; 00000038H
@@ -98,12 +102,12 @@ $LN6:
 	movzx	eax, al
 	and	eax, 16
 	test	eax, eax
-	je	SHORT $LN4@rtc_clock_
+	je	SHORT $LN7@rtc_clock_
 	mov	BYTE PTR tv69[rsp], 1
-	jmp	SHORT $LN5@rtc_clock_
-$LN4@rtc_clock_:
+	jmp	SHORT $LN8@rtc_clock_
+$LN7@rtc_clock_:
 	mov	BYTE PTR tv69[rsp], 0
-$LN5@rtc_clock_:
+$LN8@rtc_clock_:
 	movzx	eax, BYTE PTR tv69[rsp]
 	mov	BYTE PTR ready$[rsp], al
 
@@ -111,12 +115,12 @@ $LN5@rtc_clock_:
 
 	movzx	eax, BYTE PTR ready$[rsp]
 	test	eax, eax
-	je	SHORT $LN1@rtc_clock_
+	je	SHORT $LN4@rtc_clock_
 
 ; 87   : 		rtc_read_datetime();
 
 	call	?rtc_read_datetime@@YAXXZ		; rtc_read_datetime
-$LN1@rtc_clock_:
+$LN4@rtc_clock_:
 
 ; 88   : 	}
 ; 89   : 
@@ -129,13 +133,48 @@ $LN1@rtc_clock_:
 ; 96   : 	msg.dword6 = month;
 ; 97   : 	msg.dword7 = year;
 ; 98   : 	message_send (4, &msg);*/
-; 99   : 	//!send a EOI to apic
-; 100  : 	interrupt_end(8);
+; 99   : 	if (is_multi_task_enable()) {
+
+	call	?is_multi_task_enable@@YA_NXZ		; is_multi_task_enable
+	movzx	eax, al
+	test	eax, eax
+	je	SHORT $LN3@rtc_clock_
+
+; 100  : 		thread_t *t = thread_iterate_block_list(2);
+
+	mov	ecx, 2
+	call	?thread_iterate_block_list@@YAPEAU_thread_@@H@Z ; thread_iterate_block_list
+	mov	QWORD PTR t$1[rsp], rax
+
+; 101  : 		if (t != NULL) {
+
+	cmp	QWORD PTR t$1[rsp], 0
+	je	SHORT $LN2@rtc_clock_
+
+; 102  : 			if (t->state == THREAD_STATE_BLOCKED)
+
+	mov	rax, QWORD PTR t$1[rsp]
+	movzx	eax, BYTE PTR [rax+224]
+	cmp	eax, 3
+	jne	SHORT $LN1@rtc_clock_
+
+; 103  : 				unblock_thread(t);
+
+	mov	rcx, QWORD PTR t$1[rsp]
+	call	?unblock_thread@@YAXPEAU_thread_@@@Z	; unblock_thread
+$LN1@rtc_clock_:
+$LN2@rtc_clock_:
+$LN3@rtc_clock_:
+
+; 104  : 		}
+; 105  : 	}
+; 106  : 	//!send a EOI to apic
+; 107  : 	interrupt_end(8);
 
 	mov	ecx, 8
 	call	?interrupt_end@@YAXI@Z			; interrupt_end
 
-; 101  : }
+; 108  : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -436,11 +475,11 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 ?rtc_get_month@@YAEXZ PROC				; rtc_get_month
 
-; 153  : 	return month;
+; 160  : 	return month;
 
 	movzx	eax, BYTE PTR ?month@@3EA		; month
 
-; 154  : }
+; 161  : }
 
 	ret	0
 ?rtc_get_month@@YAEXZ ENDP				; rtc_get_month
@@ -450,11 +489,11 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 ?rtc_get_century@@YAEXZ PROC				; rtc_get_century
 
-; 133  : 	return century;
+; 140  : 	return century;
 
 	movzx	eax, BYTE PTR ?century@@3EA		; century
 
-; 134  : }
+; 141  : }
 
 	ret	0
 ?rtc_get_century@@YAEXZ ENDP				; rtc_get_century
@@ -464,11 +503,11 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 ?rtc_get_minutes@@YAEXZ PROC				; rtc_get_minutes
 
-; 137  : 	return minute;
+; 144  : 	return minute;
 
 	movzx	eax, BYTE PTR ?minute@@3EA		; minute
 
-; 138  : }
+; 145  : }
 
 	ret	0
 ?rtc_get_minutes@@YAEXZ ENDP				; rtc_get_minutes
@@ -478,11 +517,11 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 ?rtc_get_hour@@YAEXZ PROC				; rtc_get_hour
 
-; 149  : 	return hour;
+; 156  : 	return hour;
 
 	movzx	eax, BYTE PTR ?hour@@3EA		; hour
 
-; 150  : }
+; 157  : }
 
 	ret	0
 ?rtc_get_hour@@YAEXZ ENDP				; rtc_get_hour
@@ -492,11 +531,11 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 ?rtc_get_day@@YAEXZ PROC				; rtc_get_day
 
-; 145  : 	return day;
+; 152  : 	return day;
 
 	movzx	eax, BYTE PTR ?day@@3EA			; day
 
-; 146  : }
+; 153  : }
 
 	ret	0
 ?rtc_get_day@@YAEXZ ENDP				; rtc_get_day
@@ -506,11 +545,11 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 ?rtc_get_second@@YAEXZ PROC				; rtc_get_second
 
-; 141  : 	return second;
+; 148  : 	return second;
 
 	movzx	eax, BYTE PTR ?second@@3EA		; second
 
-; 142  : }
+; 149  : }
 
 	ret	0
 ?rtc_get_second@@YAEXZ ENDP				; rtc_get_second
@@ -520,11 +559,11 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 ?rtc_get_year@@YAEXZ PROC				; rtc_get_year
 
-; 129  : 	return year;
+; 136  : 	return year;
 
 	movzx	eax, BYTE PTR ?year@@3EA		; year
 
-; 130  : }
+; 137  : }
 
 	ret	0
 ?rtc_get_year@@YAEXZ ENDP				; rtc_get_year
@@ -536,43 +575,43 @@ status$ = 32
 tv81 = 36
 ?initialize_rtc@@YAXXZ PROC				; initialize_rtc
 
-; 103  : void initialize_rtc () {
+; 110  : void initialize_rtc () {
 
 $LN5:
 	sub	rsp, 56					; 00000038H
 
-; 104  : 
-; 105  : 	unsigned char status = get_rtc_register (0x0B);
+; 111  : 
+; 112  : 	unsigned char status = get_rtc_register (0x0B);
 
 	mov	ecx, 11
 	call	?get_rtc_register@@YAEH@Z		; get_rtc_register
 	mov	BYTE PTR status$[rsp], al
 
-; 106  : 	status |= 0x02;
+; 113  : 	status |= 0x02;
 
 	movzx	eax, BYTE PTR status$[rsp]
 	or	eax, 2
 	mov	BYTE PTR status$[rsp], al
 
-; 107  : 	status |= 0x10;
+; 114  : 	status |= 0x10;
 
 	movzx	eax, BYTE PTR status$[rsp]
 	or	eax, 16
 	mov	BYTE PTR status$[rsp], al
 
-; 108  : 	status &= ~0x20;
+; 115  : 	status &= ~0x20;
 
 	movzx	eax, BYTE PTR status$[rsp]
 	and	eax, -33				; ffffffffffffffdfH
 	mov	BYTE PTR status$[rsp], al
 
-; 109  : 	status &= ~0x40;
+; 116  : 	status &= ~0x40;
 
 	movzx	eax, BYTE PTR status$[rsp]
 	and	eax, -65				; ffffffffffffffbfH
 	mov	BYTE PTR status$[rsp], al
 
-; 110  : 	bcd = !(status & 0x04);
+; 117  : 	bcd = !(status & 0x04);
 
 	movzx	eax, BYTE PTR status$[rsp]
 	and	eax, 4
@@ -586,41 +625,41 @@ $LN4@initialize:
 	movzx	eax, BYTE PTR tv81[rsp]
 	mov	BYTE PTR bcd, al
 
-; 111  : 
-; 112  : 	//! Write status to rtc
-; 113  : 	x64_outportb (0x70, 0x0B);
+; 118  : 
+; 119  : 	//! Write status to rtc
+; 120  : 	x64_outportb (0x70, 0x0B);
 
 	mov	dl, 11
 	mov	cx, 112					; 00000070H
 	call	x64_outportb
 
-; 114  : 	x64_outportb (0x71, status);
+; 121  : 	x64_outportb (0x71, status);
 
 	movzx	edx, BYTE PTR status$[rsp]
 	mov	cx, 113					; 00000071H
 	call	x64_outportb
 
-; 115  : 
-; 116  : 	//! Read status from RTC
-; 117  : 	get_rtc_register (0x0C);
+; 122  : 
+; 123  : 	//! Read status from RTC
+; 124  : 	get_rtc_register (0x0C);
 
 	mov	ecx, 12
 	call	?get_rtc_register@@YAEH@Z		; get_rtc_register
 
-; 118  : 
-; 119  : 	//!register interrupt
-; 120  : 	interrupt_set (8,rtc_clock_update, 8);
+; 125  : 
+; 126  : 	//!register interrupt
+; 127  : 	interrupt_set (8,rtc_clock_update, 8);
 
 	mov	r8b, 8
 	lea	rdx, OFFSET FLAT:?rtc_clock_update@@YAX_KPEAX@Z ; rtc_clock_update
 	mov	ecx, 8
 	call	?interrupt_set@@YAX_KP6AX0PEAX@ZE@Z	; interrupt_set
 
-; 121  : 
-; 122  : #ifdef USE_PIC
-; 123  : 	irq_mask(8,false);
-; 124  : #endif
-; 125  : }
+; 128  : 
+; 129  : #ifdef USE_PIC
+; 130  : 	irq_mask(8,false);
+; 131  : #endif
+; 132  : }
 
 	add	rsp, 56					; 00000038H
 	ret	0

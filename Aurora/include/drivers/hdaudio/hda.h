@@ -70,9 +70,9 @@
 
 #define REG_O0_CTLL(hd)   (hd.stream_0_x)   ///< Output 0 - Control Lower
 #define REG_O0_CTLU(hd)   0x102   ///< Output 0 - Control Upper
-#define REG_O0_STS(hd)    (hd.stream_0_x + 0x3)    ///< Output 0 - Status
-#define REG_O0_CBL(hd)    (hd.stream_0_x + 0x8)  ///< Output 0 - Cyclic Buffer Length
-#define REG_O0_STLVI(hd)  (hd.stream_0_x + 0xC)    ///< Output 0 - Last Valid Index
+#define REG_O0_STS(hd)    (hd.stream_0_x + 0x03)    ///< Output 0 - Status
+#define REG_O0_CBL(hd)    (hd.stream_0_x + 0x08)  ///< Output 0 - Cyclic Buffer Length
+#define REG_O0_STLVI(hd)  (hd.stream_0_x + 0x0C)    ///< Output 0 - Last Valid Index
 #define REG_O0_FMT(hd)   (hd.stream_0_x + 0x12)    ///< Output 0 - Format
 #define REG_O0_BDLPL(hd)  (hd.stream_0_x + 0x18)    ///< Output 0 - BDL Pointer Lower
 #define REG_O0_BDLPU(hd)  (hd.stream_0_x + 0x1C)    ///< Output 0 - BDL Pointer Upper
@@ -147,6 +147,7 @@ enum codec_verbs {
     VERB_SET_EAPD_BTL       = 0x70c00,
     VERB_GET_POWER_STATE    = 0xf0500,
     VERB_SET_POWER_STATE    = 0x70500,
+	VERB_SET_BEEP_GEN       = 0x70A00,
 };
 
 enum codec_parameters {

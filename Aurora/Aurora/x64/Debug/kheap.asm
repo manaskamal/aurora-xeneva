@@ -14,12 +14,9 @@ _BSS	SEGMENT
 ?last_header@@3PEAUkmem@@EA DQ 01H DUP (?)		; last_header
 _BSS	ENDS
 CONST	SEGMENT
-$SG2964	DB	'New Seg -> %x', 00H
-	ORG $+2
-$SG2973	DB	'Kmem end -> %x', 0aH, 00H
-$SG3002	DB	'Heap Start -> %x', 0aH, 00H
+$SG3000	DB	'Heap Start -> %x', 0aH, 00H
 	ORG $+6
-$SG3003	DB	'Heap End -> %x', 0aH, 00H
+$SG3001	DB	'Heap End -> %x', 0aH, 00H
 CONST	ENDS
 PUBLIC	?align_next@kmem@@QEAAXXZ			; kmem::align_next
 PUBLIC	?align_prev@kmem@@QEAAXXZ			; kmem::align_prev
@@ -52,7 +49,7 @@ $pdata$?kheap_print@@YAXXZ DD imagerel $LN3
 	DD	imagerel $LN3+47
 	DD	imagerel $unwind$?kheap_print@@YAXXZ
 $pdata$?expand_kmem@@YAX_K@Z DD imagerel $LN7
-	DD	imagerel $LN7+329
+	DD	imagerel $LN7+293
 	DD	imagerel $unwind$?expand_kmem@@YAX_K@Z
 pdata	ENDS
 xdata	SEGMENT
@@ -130,14 +127,8 @@ $LN4@expand_kme:
 	mov	rax, QWORD PTR ?kmem_end@@3PEAXEA	; kmem_end
 	mov	QWORD PTR new_seg$[rsp], rax
 
-; 92   : 	printf ("New Seg -> %x", new_seg);
-
-	mov	rdx, QWORD PTR new_seg$[rsp]
-	lea	rcx, OFFSET FLAT:$SG2964
-	call	?printf@@YAXPEBDZZ			; printf
-
-; 93   : 
-; 94   : 	for (size_t i = 0; i < page_count; i++) {
+; 92   : 
+; 93   : 	for (size_t i = 0; i < page_count; i++) {
 
 	mov	QWORD PTR i$1[rsp], 0
 	jmp	SHORT $LN3@expand_kme
@@ -150,7 +141,7 @@ $LN3@expand_kme:
 	cmp	QWORD PTR i$1[rsp], rax
 	jae	SHORT $LN1@expand_kme
 
-; 95   : 		map_page ((uint64_t)pmmngr_alloc(), (uint64_t)kmem_end,0);
+; 94   : 		map_page ((uint64_t)pmmngr_alloc(), (uint64_t)kmem_end,0);
 
 	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
 	xor	r8d, r8d
@@ -158,63 +149,58 @@ $LN3@expand_kme:
 	mov	rcx, rax
 	call	?map_page@@YA_N_K0E@Z			; map_page
 
-; 96   : 		kmem_end = (void*)((size_t)kmem_end + 0x1000);
+; 95   : 		kmem_end = (void*)((size_t)kmem_end + 0x1000);
 
 	mov	rax, QWORD PTR ?kmem_end@@3PEAXEA	; kmem_end
 	add	rax, 4096				; 00001000H
 	mov	QWORD PTR ?kmem_end@@3PEAXEA, rax	; kmem_end
 
-; 97   : 	}
+; 96   : 	}
 
 	jmp	SHORT $LN2@expand_kme
 $LN1@expand_kme:
 
-; 98   : 	printf ("Kmem end -> %x\n", kmem_end);
-
-	mov	rdx, QWORD PTR ?kmem_end@@3PEAXEA	; kmem_end
-	lea	rcx, OFFSET FLAT:$SG2973
-	call	?printf@@YAXPEBDZZ			; printf
-
-; 99   : 	new_seg->free = true;
+; 97   : 
+; 98   : 	new_seg->free = true;
 
 	mov	rax, QWORD PTR new_seg$[rsp]
 	mov	BYTE PTR [rax+24], 1
 
-; 100  : 	new_seg->last = last_header;
+; 99   : 	new_seg->last = last_header;
 
 	mov	rax, QWORD PTR new_seg$[rsp]
 	mov	rcx, QWORD PTR ?last_header@@3PEAUkmem@@EA ; last_header
 	mov	QWORD PTR [rax+16], rcx
 
-; 101  : 	last_header->next = new_seg;
+; 100  : 	last_header->next = new_seg;
 
 	mov	rax, QWORD PTR ?last_header@@3PEAUkmem@@EA ; last_header
 	mov	rcx, QWORD PTR new_seg$[rsp]
 	mov	QWORD PTR [rax+8], rcx
 
-; 102  : 	last_header = new_seg;
+; 101  : 	last_header = new_seg;
 
 	mov	rax, QWORD PTR new_seg$[rsp]
 	mov	QWORD PTR ?last_header@@3PEAUkmem@@EA, rax ; last_header
 
-; 103  : 	new_seg->next = NULL;
+; 102  : 	new_seg->next = NULL;
 
 	mov	rax, QWORD PTR new_seg$[rsp]
 	mov	QWORD PTR [rax+8], 0
 
-; 104  : 	new_seg->length = length - sizeof (kmem);
+; 103  : 	new_seg->length = length - sizeof (kmem);
 
 	mov	rax, QWORD PTR length$[rsp]
 	sub	rax, 32					; 00000020H
 	mov	rcx, QWORD PTR new_seg$[rsp]
 	mov	QWORD PTR [rcx], rax
 
-; 105  : 	new_seg->align_next ();
+; 104  : 	new_seg->align_next ();
 
 	mov	rcx, QWORD PTR new_seg$[rsp]
 	call	?align_next@kmem@@QEAAXXZ		; kmem::align_next
 
-; 106  : }
+; 105  : }
 
 	add	rsp, 72					; 00000048H
 	ret	0
@@ -225,24 +211,24 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 ?kheap_print@@YAXXZ PROC				; kheap_print
 
-; 149  : void kheap_print () {
+; 148  : void kheap_print () {
 
 $LN3:
 	sub	rsp, 40					; 00000028H
 
-; 150  : 	printf ("Heap Start -> %x\n", kmem_start);
+; 149  : 	printf ("Heap Start -> %x\n", kmem_start);
 
 	mov	rdx, QWORD PTR ?kmem_start@@3PEAXEA	; kmem_start
-	lea	rcx, OFFSET FLAT:$SG3002
+	lea	rcx, OFFSET FLAT:$SG3000
 	call	?printf@@YAXPEBDZZ			; printf
 
-; 151  : 	printf ("Heap End -> %x\n", kmem_end);
+; 150  : 	printf ("Heap End -> %x\n", kmem_end);
 
 	mov	rdx, QWORD PTR ?kmem_end@@3PEAXEA	; kmem_end
-	lea	rcx, OFFSET FLAT:$SG3003
+	lea	rcx, OFFSET FLAT:$SG3001
 	call	?printf@@YAXPEBDZZ			; printf
 
-; 152  : }
+; 151  : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -255,35 +241,35 @@ seg$ = 32
 memory$ = 64
 ?free@@YAXPEAX@Z PROC					; free
 
-; 140  : void free (void* memory) {
+; 139  : void free (void* memory) {
 
 $LN3:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 56					; 00000038H
 
-; 141  : 	//x64_cli();
-; 142  :    kmem* seg = (kmem*)memory - 1;
+; 140  : 	//x64_cli();
+; 141  :    kmem* seg = (kmem*)memory - 1;
 
 	mov	rax, QWORD PTR memory$[rsp]
 	sub	rax, 32					; 00000020H
 	mov	QWORD PTR seg$[rsp], rax
 
-; 143  :    seg->free = true;
+; 142  :    seg->free = true;
 
 	mov	rax, QWORD PTR seg$[rsp]
 	mov	BYTE PTR [rax+24], 1
 
-; 144  :    seg->align_next();
+; 143  :    seg->align_next();
 
 	mov	rcx, QWORD PTR seg$[rsp]
 	call	?align_next@kmem@@QEAAXXZ		; kmem::align_next
 
-; 145  :    seg->align_prev();	
+; 144  :    seg->align_prev();	
 
 	mov	rcx, QWORD PTR seg$[rsp]
 	call	?align_prev@kmem@@QEAAXXZ		; kmem::align_prev
 
-; 146  : }
+; 145  : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -296,13 +282,13 @@ current_seg$ = 32
 size$ = 64
 ?alloc@@YAPEAX_K@Z PROC					; alloc
 
-; 110  : void* alloc(size_t size) {
+; 109  : void* alloc(size_t size) {
 
 $LN11:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 56					; 00000038H
 
-; 111  : 	if (size % 0x10 > 0) {
+; 110  : 	if (size % 0x10 > 0) {
 
 	xor	edx, edx
 	mov	rax, QWORD PTR size$[rsp]
@@ -312,7 +298,7 @@ $LN11:
 	test	rax, rax
 	jbe	SHORT $LN8@alloc
 
-; 112  : 		size -= (size % 0x10);
+; 111  : 		size -= (size % 0x10);
 
 	xor	edx, edx
 	mov	rax, QWORD PTR size$[rsp]
@@ -324,16 +310,16 @@ $LN11:
 	mov	rax, rcx
 	mov	QWORD PTR size$[rsp], rax
 
-; 113  : 		size += 0x10;
+; 112  : 		size += 0x10;
 
 	mov	rax, QWORD PTR size$[rsp]
 	add	rax, 16
 	mov	QWORD PTR size$[rsp], rax
 $LN8@alloc:
 
-; 114  : 	}
-; 115  : 
-; 116  : 	if (size == 0) return NULL;
+; 113  : 	}
+; 114  : 
+; 115  : 	if (size == 0) return NULL;
 
 	cmp	QWORD PTR size$[rsp], 0
 	jne	SHORT $LN7@alloc
@@ -341,66 +327,66 @@ $LN8@alloc:
 	jmp	$LN9@alloc
 $LN7@alloc:
 
-; 117  : 
-; 118  : 	kmem* current_seg = (kmem*) kmem_start;
+; 116  : 
+; 117  : 	kmem* current_seg = (kmem*) kmem_start;
 
 	mov	rax, QWORD PTR ?kmem_start@@3PEAXEA	; kmem_start
 	mov	QWORD PTR current_seg$[rsp], rax
 $LN6@alloc:
 
-; 119  : 	while (true) {
+; 118  : 	while (true) {
 
 	xor	eax, eax
 	cmp	eax, 1
 	je	$LN5@alloc
 
-; 120  : 		if (current_seg->free) {
+; 119  : 		if (current_seg->free) {
 
 	mov	rax, QWORD PTR current_seg$[rsp]
 	movzx	eax, BYTE PTR [rax+24]
 	test	eax, eax
 	je	SHORT $LN4@alloc
 
-; 121  : 			if (current_seg->length > size) {
+; 120  : 			if (current_seg->length > size) {
 
 	mov	rax, QWORD PTR current_seg$[rsp]
 	mov	rcx, QWORD PTR size$[rsp]
 	cmp	QWORD PTR [rax], rcx
 	jbe	SHORT $LN3@alloc
 
-; 122  : 				current_seg->split (size);
+; 121  : 				current_seg->split (size);
 
 	mov	rdx, QWORD PTR size$[rsp]
 	mov	rcx, QWORD PTR current_seg$[rsp]
 	call	?split@kmem@@QEAAPEAU1@_K@Z		; kmem::split
 
-; 123  : 				current_seg->free = false;
+; 122  : 				current_seg->free = false;
 
 	mov	rax, QWORD PTR current_seg$[rsp]
 	mov	BYTE PTR [rax+24], 0
 
-; 124  : 				return (void*)((uint64_t)current_seg + sizeof (kmem));
+; 123  : 				return (void*)((uint64_t)current_seg + sizeof (kmem));
 
 	mov	rax, QWORD PTR current_seg$[rsp]
 	add	rax, 32					; 00000020H
 	jmp	SHORT $LN9@alloc
 $LN3@alloc:
 
-; 125  : 			}
-; 126  : 
-; 127  : 			if (current_seg->length == size) {
+; 124  : 			}
+; 125  : 
+; 126  : 			if (current_seg->length == size) {
 
 	mov	rax, QWORD PTR current_seg$[rsp]
 	mov	rcx, QWORD PTR size$[rsp]
 	cmp	QWORD PTR [rax], rcx
 	jne	SHORT $LN2@alloc
 
-; 128  : 				current_seg->free = false;
+; 127  : 				current_seg->free = false;
 
 	mov	rax, QWORD PTR current_seg$[rsp]
 	mov	BYTE PTR [rax+24], 0
 
-; 129  : 				return (void*)((uint64_t)current_seg + sizeof (kmem));
+; 128  : 				return (void*)((uint64_t)current_seg + sizeof (kmem));
 
 	mov	rax, QWORD PTR current_seg$[rsp]
 	add	rax, 32					; 00000020H
@@ -408,9 +394,9 @@ $LN3@alloc:
 $LN2@alloc:
 $LN4@alloc:
 
-; 130  : 			}
-; 131  : 		}
-; 132  : 		if (current_seg->next == NULL) break;
+; 129  : 			}
+; 130  : 		}
+; 131  : 		if (current_seg->next == NULL) break;
 
 	mov	rax, QWORD PTR current_seg$[rsp]
 	cmp	QWORD PTR [rax+8], 0
@@ -418,30 +404,30 @@ $LN4@alloc:
 	jmp	SHORT $LN5@alloc
 $LN1@alloc:
 
-; 133  : 		current_seg = current_seg->next;
+; 132  : 		current_seg = current_seg->next;
 
 	mov	rax, QWORD PTR current_seg$[rsp]
 	mov	rax, QWORD PTR [rax+8]
 	mov	QWORD PTR current_seg$[rsp], rax
 
-; 134  : 	}
+; 133  : 	}
 
 	jmp	$LN6@alloc
 $LN5@alloc:
 
-; 135  : 
-; 136  : 	expand_kmem(size);
+; 134  : 
+; 135  : 	expand_kmem(size);
 
 	mov	rcx, QWORD PTR size$[rsp]
 	call	?expand_kmem@@YAX_K@Z			; expand_kmem
 
-; 137  : 	return alloc(size);
+; 136  : 	return alloc(size);
 
 	mov	rcx, QWORD PTR size$[rsp]
 	call	?alloc@@YAPEAX_K@Z			; alloc
 $LN9@alloc:
 
-; 138  : }
+; 137  : }
 
 	add	rsp, 56					; 00000038H
 	ret	0

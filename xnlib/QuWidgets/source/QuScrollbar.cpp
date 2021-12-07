@@ -49,6 +49,7 @@ void QuScrollBarRefresh (QuWidget *wid, QuWindow* win) {
 
 //! MouseEvent func -- Called when mouse event occurs for this particular widget
 void QuScrollbarMouseEvent (QuWidget* wid, QuWindow* win, int code,bool clicked, int x, int y) {
+	QuWinInfo *info = (QuWinInfo*)win->win_info_data;
 	QuScrollBar *scroll = (QuScrollBar*)wid;
 	bool update = false;
 
@@ -56,7 +57,7 @@ void QuScrollbarMouseEvent (QuWidget* wid, QuWindow* win, int code,bool clicked,
 		/* For Horizontal Scrollbar */
 		if (scroll->type == QU_SCROLLBAR_HORIZONTAL) {
 			if (clicked){
-				scroll->thumb_x = x - (win->x + wid->x + scroll->thumb_sz/2);//scroll->thumb_x;
+				scroll->thumb_x = x - (info->x + wid->x + scroll->thumb_sz/2);//scroll->thumb_x;
 				scroll->scroll_xoff = scroll->thumb_x;
 				win->draggable_widget = (QuWidget*)scroll;
 			}
@@ -73,7 +74,7 @@ void QuScrollbarMouseEvent (QuWidget* wid, QuWindow* win, int code,bool clicked,
 		/** Vertical Scrollbar */
 		if (scroll->type == QU_SCROLLBAR_VERTICAL){
 			if (clicked) {
-				scroll->thumb_y = y - (win->y + wid->y + scroll->thumb_sz / 2);
+				scroll->thumb_y = y - (info->y + wid->y + scroll->thumb_sz / 2);
 				scroll->scroll_yoff = scroll->thumb_y;
 				win->draggable_widget = (QuWidget*)scroll;
 			}
@@ -87,12 +88,12 @@ void QuScrollbarMouseEvent (QuWidget* wid, QuWindow* win, int code,bool clicked,
 	if (win->draggable_widget) { 
 				//scroll->thumb_y = y - scroll->thumb_drag_y;
 		if (scroll->type == QU_SCROLLBAR_HORIZONTAL) {
-			if (win->x + wid->x + scroll->thumb_x + scroll->thumb_sz >= win->x + wid->width/*win->w*/)  {
-				scroll->thumb_x = (win->x + wid->x + wid->width) - (win->x + wid->x + scroll->thumb_sz);
+			if (info->x + wid->x + scroll->thumb_x + scroll->thumb_sz >= info->x + wid->width/*win->w*/)  {
+				scroll->thumb_x = (info->x + wid->x + wid->width) - (info->x + wid->x + scroll->thumb_sz);
 				scroll->scroll_xoff = scroll->thumb_x;
 			}
 
-			if ((win->x + wid->x + scroll->thumb_x) < win->x + wid->x)  {
+			if ((info->x + wid->x + scroll->thumb_x) < info->x + wid->x)  {
 				scroll->thumb_x = 0;
 				scroll->scroll_xoff = 0;
 			}
@@ -111,13 +112,13 @@ void QuScrollbarMouseEvent (QuWidget* wid, QuWindow* win, int code,bool clicked,
 
 		if (scroll->type == QU_SCROLLBAR_VERTICAL) {
 
-			if ((win->y + wid->y + scroll->thumb_y + scroll->thumb_sz) >= (win->y + wid->y + wid->height)){
-				scroll->thumb_y = (wid->y + wid->height )- (win->y + wid->y + scroll->thumb_sz);
+			if ((info->y + wid->y + scroll->thumb_y + scroll->thumb_sz) >= (info->y + wid->y + wid->height)){
+				scroll->thumb_y = (wid->y + wid->height )- (info->y + wid->y + scroll->thumb_sz);
 				scroll->scroll_yoff = scroll->thumb_y;
 			}
 
 			//! if scroll thumb < window y pos
-			if ((win->y + wid->y + scroll->thumb_y) <= (win->y + wid->y)) {
+			if ((info->y + wid->y + scroll->thumb_y) <= (info->y + wid->y)) {
 				scroll->thumb_y = 0;
 				scroll->scroll_yoff = 0;
 			}

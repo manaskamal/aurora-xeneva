@@ -83,7 +83,7 @@ void QuPanelUpdate(QuWindow *win,int x, int y, int w, int h, bool move) {
 		info->rect[info->rect_count].h = h;
 		info->rect_count++;
 	}
-	
+	sys_unblock_id(2);
 }
 
 void QuPanelDirectCopy(canvas_t *canvas, int x, int y, int w, int h) {
@@ -102,6 +102,7 @@ void QuPanelDirectCopy(canvas_t *canvas, int x, int y, int w, int h) {
 	info->rect[info->rect_count].w = w;
 	info->rect[info->rect_count].h = h;
 	info->rect_count++;
+	sys_unblock_id(2);
 }
 
 

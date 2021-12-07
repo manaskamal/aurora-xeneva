@@ -14,6 +14,7 @@
 #include <sys\_term.h>
 #include <sys\_sleep.h>
 #include <sys\mmap.h>
+#include <sys\_wait.h>
 #include <stdlib.h>
 
 //! QuChannel address
@@ -39,10 +40,10 @@ send:
 	if (tom->type == 0) {
 		memcpy (channel_addr, msg, (sizeof(QuMessage)));
 		//sys_unblock_id (to_id);
+		sys_wait();
 		return;
 	}else {
-
-	//	//sys_sleep (16);
+		sys_wait();
 		goto send;
 	}
 

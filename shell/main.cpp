@@ -37,8 +37,8 @@ typedef struct _data_ {
 }data_t;
 
 void main (int argc, char*argv[]) {
-	sys_print_text ("Hello XSHELL\n");
-	sys_print_text ("I LOVE YOUUUU PRIYANSHI\n");
+	sys_print_text ("Starting Xeneva.....\n");
+	sys_print_text ("Starting Window Manager...\n");
 	//int fd = sys_open_file ("/dev/fb",NULL);
 	//UFILE f;
 	//f.flags = 0;

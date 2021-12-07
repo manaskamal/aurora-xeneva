@@ -129,7 +129,8 @@ void QuWindowMngr_DrawAll () {
 void QuWindowMngr_DisplayWindow() {
 	for (int i = 0; i < WindowList->pointer; i++) {
 		QuWindow* _win = (QuWindow*)QuListGetAt(WindowList, i);
-			canvas_screen_update(QuGetCanvas(),_win->x, _win->y, _win->width, _win->height);	
+		QuWindowInfo *info = (QuWindowInfo*)_win->win_info_location;
+			canvas_screen_update(QuGetCanvas(),info->x, info->y, _win->width, _win->height);	
 		
 	} 
 }
@@ -143,33 +144,26 @@ bool QuWindowMngr_GetUpdateBit() {
 	return UpdateWindows;
 }
 
-int QuWindowMngr_CheckOverlap(QuWindow* win1, QuWindow *win2) {
-	if ((win1->x > win2->x + win2->width + 70) || (win1->x + win1->width + 70 < win2->x))
-		return 0;
-
-	if ((win1->y > win2->y + win2->height + 70) || (win1->y + win1->height + 70 < win2->y))
-		return 0;
-
-	return 1;
-}
 
 
 void QuWindowMngr_MoveFocusWindow (int x, int y) {
-	QuCanvasAddDirty(draggable_win->x, draggable_win->y, draggable_win->width, draggable_win->height);
+	QuWindowInfo* info = (QuWindowInfo*)draggable_win->win_info_location;
+
+	QuCanvasAddDirty(info->x, info->y, draggable_win->width, draggable_win->height);
 	//!Store Old Coordinates
 
-	int oldx = draggable_win->x, oldy = draggable_win->y, oldh = draggable_win->height,
+	int oldx = info->x, oldy = info->y, oldh = draggable_win->height,
 		oldw = draggable_win->width;
 
-	draggable_win->x = x - draggable_win->drag_x;
-	draggable_win->y = y - draggable_win->drag_y;
+	info->x = x - draggable_win->drag_x;
+	info->y = y - draggable_win->drag_y;
 
 	
-	if (draggable_win->x < 0)
-		draggable_win->x = 0;
+	if (info->x < 0)
+		info->x = 0;
 
-	if (draggable_win->y < 0)
-		draggable_win->y = 0;
+	if (info->y < 0)
+		info->y = 0;
 
 	/*if (draggable_win->x + draggable_win->width >= canvas_get_width())
 		draggable_win->x  = canvas_get_width() - draggable_win->width;
@@ -178,14 +172,14 @@ void QuWindowMngr_MoveFocusWindow (int x, int y) {
 		draggable_win->y = canvas_get_height() - draggable_win->height;*/
 
 
-	QuMessage msg;
+	/*QuMessage msg;
 	msg.type = QU_CANVAS_MOVE;
 	msg.dword = draggable_win->x;
 	msg.dword2 = draggable_win->y;
 	msg.dword3 = draggable_win->id;
 	QuChannelPut(&msg, draggable_win->owner_id);
 	sys_unblock_id (draggable_win->owner_id);
-
+*/
 
 	for (int i = 0; i < WindowList->pointer; i++) {
 		QuWindow* win = (QuWindow*)QuListGetAt (WindowList,i);
@@ -203,18 +197,18 @@ void QuWindowMngr_HandleMouse (int x, int y, uint8_t button, int mouse_code) {
 	QuWindow* win;
 	for (int i = 0; i < WindowList->pointer; i++) {
 		win = (QuWindow*)QuListGetAt(WindowList, i);
-
-		if (!(x >= win->x && x < (win->x + win->width) &&
-			y >= win->y && y < (win->y + win->height))) 
+		QuWindowInfo *info = (QuWindowInfo *)win->win_info_location;
+		if (!(x >= info->x && x < (info->x + win->width) &&
+			y >= info->y && y < (info->y + win->height))) 
 			continue;
 		
 		
 		if (button && !last_mouse_button) {
 			//! Only a limited portion is available for dragging purpose
-			if (y >= win->y && y < (win->y + 23)) {  
+			if (y >= info->y && y < (info->y + 23)) {  
 				draggable_win = win;
-				draggable_win->drag_x = x - draggable_win->x;
-				draggable_win->drag_y = y - draggable_win->y;
+				draggable_win->drag_x = x - info->x;
+				draggable_win->drag_y = y - info->y;
 		        QuWindowMngr_MoveFront(win);
 		        break;
 			}

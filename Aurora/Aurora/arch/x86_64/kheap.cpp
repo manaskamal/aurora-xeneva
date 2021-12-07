@@ -89,13 +89,12 @@ void expand_kmem (size_t length) {
 
 	size_t page_count = length / 0x1000;
 	kmem* new_seg = (kmem*)kmem_end;
-	printf ("New Seg -> %x", new_seg);
 
 	for (size_t i = 0; i < page_count; i++) {
 		map_page ((uint64_t)pmmngr_alloc(), (uint64_t)kmem_end,0);
 		kmem_end = (void*)((size_t)kmem_end + 0x1000);
 	}
-	printf ("Kmem end -> %x\n", kmem_end);
+
 	new_seg->free = true;
 	new_seg->last = last_header;
 	last_header->next = new_seg;

@@ -96,6 +96,13 @@ void rtc_clock_update(size_t s, void* p) {
 	msg.dword6 = month;
 	msg.dword7 = year;
 	message_send (4, &msg);*/
+	if (is_multi_task_enable()) {
+		thread_t *t = thread_iterate_block_list(2);
+		if (t != NULL) {
+			if (t->state == THREAD_STATE_BLOCKED)
+				unblock_thread(t);
+		}
+	}
 	//!send a EOI to apic
 	interrupt_end(8);
 }

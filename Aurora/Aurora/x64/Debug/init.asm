@@ -7,24 +7,24 @@ INCLUDELIB OLDNAMES
 
 PUBLIC	_fltused
 CONST	SEGMENT
-$SG7533	DB	'Multitasking started', 0aH, 00H
+$SG7534	DB	'Multitasking started', 0aH, 00H
 	ORG $+2
-$SG7541	DB	'shell', 00H
+$SG7545	DB	'shell', 00H
 	ORG $+2
-$SG7542	DB	'/xshell.exe', 00H
-$SG7543	DB	'quince', 00H
+$SG7546	DB	'/xshell.exe', 00H
+$SG7547	DB	'quince', 00H
 	ORG $+5
-$SG7544	DB	'/quince.exe', 00H
+$SG7548	DB	'/quince.exe', 00H
 	ORG $+4
-$SG7546	DB	'procmngr', 00H
+$SG7550	DB	'procmngr', 00H
 	ORG $+3
-$SG7547	DB	'dwm4', 00H
+$SG7551	DB	'dwm4', 00H
 	ORG $+7
-$SG7548	DB	'/dwm2.exe', 00H
+$SG7552	DB	'/dwm2.exe', 00H
 	ORG $+2
-$SG7549	DB	'cnsl', 00H
+$SG7553	DB	'cnsl', 00H
 	ORG $+7
-$SG7550	DB	'/cnsl.exe', 00H
+$SG7554	DB	'/cnsl.exe', 00H
 CONST	ENDS
 _DATA	SEGMENT
 _fltused DD	01H
@@ -80,8 +80,8 @@ $pdata$??_U@YAPEAX_K@Z DD imagerel $LN3
 $pdata$?test_thread2@@YAXXZ DD imagerel $LN5
 	DD	imagerel $LN5+30
 	DD	imagerel $unwind$?test_thread2@@YAXXZ
-$pdata$?_kmain@@YAXXZ DD imagerel $LN5
-	DD	imagerel $LN5+338
+$pdata$?_kmain@@YAXXZ DD imagerel $LN7
+	DD	imagerel $LN7+340
 	DD	imagerel $unwind$?_kmain@@YAXXZ
 pdata	ENDS
 xdata	SEGMENT
@@ -105,7 +105,7 @@ tv84 = 56
 
 ; 125  : void _kmain () {
 
-$LN5:
+$LN7:
 	sub	rsp, 72					; 00000048H
 
 ; 126  : 	KERNEL_BOOT_INFO *info = (KERNEL_BOOT_INFO*)0xFFFFE00000000000;
@@ -218,8 +218,12 @@ $LN5:
 ; 157  : 	e1000_initialize();   //<< receiver not working
 
 	call	?e1000_initialize@@YAXXZ		; e1000_initialize
+$LN4@kmain:
 
-; 158  : 
+; 158  : 	for(;;);
+
+	jmp	SHORT $LN4@kmain
+
 ; 159  : #ifdef ARCH_X64
 ; 160  : 	//================================================
 ; 161  : 	//! Initialize the scheduler here
@@ -230,8 +234,8 @@ $LN5:
 
 ; 164  : 	create_process ("/xshell.exe","shell");
 
-	lea	rdx, OFFSET FLAT:$SG7541
-	lea	rcx, OFFSET FLAT:$SG7542
+	lea	rdx, OFFSET FLAT:$SG7545
+	lea	rcx, OFFSET FLAT:$SG7546
 	call	?create_process@@YAXPEBDPEAD@Z		; create_process
 
 ; 165  : 
@@ -239,8 +243,8 @@ $LN5:
 ; 167  : 	//! always put quince in thread id -- > 2
 ; 168  : 	create_process ("/quince.exe","quince");
 
-	lea	rdx, OFFSET FLAT:$SG7543
-	lea	rcx, OFFSET FLAT:$SG7544
+	lea	rdx, OFFSET FLAT:$SG7547
+	lea	rcx, OFFSET FLAT:$SG7548
 	call	?create_process@@YAXPEBDPEAD@Z		; create_process
 
 ; 169  : 
@@ -255,7 +259,7 @@ $LN5:
 	mov	QWORD PTR tv84[rsp], rax
 	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
 	mov	BYTE PTR [rsp+32], 0
-	lea	r9, OFFSET FLAT:$SG7546
+	lea	r9, OFFSET FLAT:$SG7550
 	mov	rcx, QWORD PTR tv84[rsp]
 	mov	r8, rcx
 	mov	rdx, rax
@@ -265,14 +269,14 @@ $LN5:
 ; 176  : 	//! Misc programs goes here
 ; 177  : 	create_process ("/dwm2.exe", "dwm4");
 
-	lea	rdx, OFFSET FLAT:$SG7547
-	lea	rcx, OFFSET FLAT:$SG7548
+	lea	rdx, OFFSET FLAT:$SG7551
+	lea	rcx, OFFSET FLAT:$SG7552
 	call	?create_process@@YAXPEBDPEAD@Z		; create_process
 
 ; 178  : 	create_process ("/cnsl.exe", "cnsl");
 
-	lea	rdx, OFFSET FLAT:$SG7549
-	lea	rcx, OFFSET FLAT:$SG7550
+	lea	rdx, OFFSET FLAT:$SG7553
+	lea	rcx, OFFSET FLAT:$SG7554
 	call	?create_process@@YAXPEBDPEAD@Z		; create_process
 
 ; 179  : 	//! Here start the scheduler (multitasking engine)
@@ -322,7 +326,7 @@ $LN5:
 
 ; 111  : 	printf ("Multitasking started\n");
 
-	lea	rcx, OFFSET FLAT:$SG7533
+	lea	rcx, OFFSET FLAT:$SG7534
 	call	?printf@@YAXPEBDZZ			; printf
 $LN2@test_threa:
 

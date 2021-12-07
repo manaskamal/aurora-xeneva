@@ -41,6 +41,10 @@ void dwm_put_message (dwm_message_t *msg) {
 	dwm_message_t *tmsg = (dwm_message_t*)t->mouse_box;
 	if (tmsg->type == 0)
 		memcpy (t->mouse_box,msg,sizeof(dwm_message_t));
+
+	if (t->state == THREAD_STATE_BLOCKED)
+		unblock_thread(t);
+
 	mutex_unlock (msg_mutex);
 
 }

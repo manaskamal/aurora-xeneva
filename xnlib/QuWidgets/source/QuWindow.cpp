@@ -79,8 +79,8 @@ void QuWindowAddControlEvent (int type, void (*Event)(QuWinControl *control, QuW
 
 QuWindow* QuCreateWindow (int x, int y, int w, int h, char* title) {
 	QuWindow* win = (QuWindow*)malloc(sizeof(QuWindow));
-	win->x = x;
-	win->y = y;
+	win->temp_x = x;
+	win->temp_y = y;
 	win->w = w;
 	win->h = h;	
 	win->widgets = QuListInit();
@@ -115,12 +115,14 @@ QuWindow* QuGetWindow () {
 }
 
 int QuWindowGetX() {
-	return root_win->x;
+	QuWinInfo *info = (QuWinInfo*)root_win->win_info_data;
+	return info->x;
 }
 
 
 int QuWindowGetY() {
-	return root_win->y;
+	QuWinInfo *info = (QuWinInfo*)root_win->win_info_data;
+	return info->y;
 }
 
 int QuWindowGetWidth () {
@@ -156,7 +158,7 @@ void QuWindowShowControls (QuWindow *win) {
  * @param win -- Reference to the window, which needs to draw
  */
 void QuWindowShow(QuWindow *win) {
-
+	QuWinInfo *info = (QuWinInfo*)win->win_info_data;
 	/**
 	 * Draw every widgets in stacking order 
 	 */
@@ -195,17 +197,18 @@ void QuWindowShow(QuWindow *win) {
 	/**
 	 * Update the content to main canvas of the window
 	 */
-	QuPanelUpdate(win,win->x,win->y, win->w, win->h, true);
+	QuPanelUpdate(win,info->x,info->y, win->w, win->h, true);
 }
 
 
 void QuWindowMove (QuWindow *win,int x, int y) {
-	win->x = x;
-	win->y = y;
+	/*win->x = x;
+	win->y = y;*/
 }
 
 
 void QuWindowRepaint() {
+	QuWinInfo *info = (QuWinInfo*)root_win->win_info_data;
 	for (int i = 0; i < root_win->widgets->pointer; i++) {
 		QuWidget* wid = (QuWidget*)QuListGetAt(root_win->widgets, i);
 		wid->Refresh(wid, root_win);
@@ -213,7 +216,7 @@ void QuWindowRepaint() {
 
 	if (root_win->decorate) {
 	for (int i = 0; i < 23; i++)
-		acrylic_draw_horizontal_line(root_win->ctx, root_win->x, root_win->y + i,root_win->w,title_bar_colors[i]);
+		acrylic_draw_horizontal_line(root_win->ctx, info->x, info->y + i,root_win->w,title_bar_colors[i]);
 
 
 	uint32_t buttons_color = WHITE;
@@ -222,13 +225,13 @@ void QuWindowRepaint() {
 		to->ControlRedraw(to,root_win, false);
 	}
 
-	acrylic_draw_arr_string (root_win->ctx,root_win->x + root_win->w/2 - (strlen(root_win->title)*8)/2,
-		root_win->y + 3, 
+	acrylic_draw_arr_string (root_win->ctx,info->x + root_win->w/2 - (strlen(root_win->title)*8)/2,
+		info->y + 3, 
 		root_win->title, WHITE);
-	acrylic_draw_rect_unfilled (root_win->ctx,root_win->x, root_win->y, root_win->w, root_win->h, SILVER);
+	acrylic_draw_rect_unfilled (root_win->ctx,info->x, info->y, root_win->w, root_win->h, SILVER);
 	}
 
-	QuPanelUpdate(root_win,root_win->x, root_win->y, root_win->w, root_win->h, false);
+	QuPanelUpdate(root_win,info->x, info->y, root_win->w, root_win->h, false);
 }
 
 
@@ -244,13 +247,14 @@ void QuWindowSetSize (int width, int height) {
 }
 
 void QuWindowSetPos (int x, int y) {
-	root_win->x = x;
-	root_win->y = y;
+	QuWinInfo *info = (QuWinInfo*)root_win->win_info_data;
+	info->x = x;
+	info->y = y;
 	QuMessage msg;
 	msg.type = QU_CODE_WIN_CONFIG;
 	msg.dword = QU_WIN_SET_POS;
-	msg.dword2 = root_win->x;
-	msg.dword3 = root_win->y;
+	msg.dword2 = info->x;
+	msg.dword3 = info->y;
 	QuChannelPut(&msg, 2);
 }
 
@@ -263,15 +267,16 @@ void QuWindowSetProperty (uint8_t prop) {
 
 
 void QuWindowHandleMouse (int mouse_x, int mouse_y, int code) {
+	QuWinInfo *info = (QuWinInfo*)root_win->win_info_data;
 	bool clicked = false;
 	bool control_click = false;
 
-	if (mouse_x > root_win->x && mouse_x < (root_win->x + root_win->w) &&
-		mouse_y > root_win->y + 23 && mouse_y < (root_win->y + root_win->h)) {
+	if (mouse_x > info->x && mouse_x < (info->x + root_win->w) &&
+		mouse_y > info->y + 23 && mouse_y < (info->y + root_win->h)) {
 			for (int i = 0; i < root_win->widgets->pointer; i++) {
 				QuWidget *wid = (QuWidget*)QuListGetAt(root_win->widgets, i);
-				if (mouse_x > (root_win->x + wid->x) && mouse_x < (root_win->x + wid->x + wid->width) &&
-					mouse_y > (root_win->y + wid->y) && mouse_y < (root_win->y + wid->y + wid->height)) {
+				if (mouse_x > (info->x + wid->x) && mouse_x < (info->x + wid->x + wid->width) &&
+					mouse_y > (info->y + wid->y) && mouse_y < (info->y + wid->y + wid->height)) {
 
 						//! Make the difference between left click and dragging here
 						if (code == QU_CANVAS_MOUSE_LCLICKED /*&& old_mouse_x == mouse_x && old_mouse_y == mouse_y*/){
@@ -300,8 +305,8 @@ void QuWindowHandleMouse (int mouse_x, int mouse_y, int code) {
 
 	for (int i = 0; i < root_win->controls->pointer; i++) {
 		QuWinControl *control = (QuWinControl*)QuListGetAt(root_win->controls, i);
-		if (mouse_x > (root_win->x + control->x) && mouse_x < (root_win->x + control->x + control->w) &&
-			mouse_y > (root_win->y + control->y) && mouse_y < (root_win->y + control->y + control->h)) {
+		if (mouse_x > (info->x + control->x) && mouse_x < (info->x + control->x + control->w) &&
+			mouse_y > (info->y + control->y) && mouse_y < (info->y + control->y + control->h)) {
 
 				if (code == QU_CANVAS_MOUSE_LCLICKED /*&& old_mouse_x == mouse_x && old_mouse_y == mouse_y*/)
 					control_click = true;

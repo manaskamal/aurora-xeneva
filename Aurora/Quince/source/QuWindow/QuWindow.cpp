@@ -27,8 +27,8 @@ static int winid = 1;
 
 QuWindow* QuWindowCreate (int x, int y, uint16_t owner_id, unsigned int* canvas) {
 	QuWindow* win = (QuWindow*)malloc(sizeof(QuWindow));
-	win->x = x;
-	win->y = y;
+	//win->x = x;
+	//win->y = y;
 	win->drag_x = 0;
 	win->drag_y = 0;
 	win->draggable = false;
@@ -61,8 +61,8 @@ void QuWindowSetVisible (QuWindow* win,bool visible) {
 
 
 void QuWindowDraw (QuWindow* win) {
-
-	QuCanvasBlit (win,win->canvas, win->x, win->y, win->width,win->height);	
+	QuWindowInfo* info = (QuWindowInfo*)win->win_info_location;
+	QuCanvasBlit (win,win->canvas, info->x, info->y, win->width,win->height);	
 }
 
 void QuWindowUpdateTitlebar (bool value) {
