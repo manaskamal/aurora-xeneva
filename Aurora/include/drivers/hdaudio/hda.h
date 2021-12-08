@@ -69,7 +69,7 @@
 #define INTCTL_SIE_SHIFT 0
 
 #define REG_O0_CTLL(hd)   (hd.stream_0_x)   ///< Output 0 - Control Lower
-#define REG_O0_CTLU(hd)   0x102   ///< Output 0 - Control Upper
+#define REG_O0_CTLU(hd)   (hd.stream_0_x + 0x02)   ///< Output 0 - Control Upper
 #define REG_O0_STS(hd)    (hd.stream_0_x + 0x03)    ///< Output 0 - Status
 #define REG_O0_CBL(hd)    (hd.stream_0_x + 0x08)  ///< Output 0 - Cyclic Buffer Length
 #define REG_O0_STLVI(hd)  (hd.stream_0_x + 0x0C)    ///< Output 0 - Last Valid Index
@@ -148,6 +148,10 @@ enum codec_verbs {
     VERB_GET_POWER_STATE    = 0xf0500,
     VERB_SET_POWER_STATE    = 0x70500,
 	VERB_SET_BEEP_GEN       = 0x70A00,
+	VERB_GET_CONV_CHANNEL_COUNT = 0xF2D00,
+	VERB_SET_CONV_CHANNEL_COUNT = 0x72D00,
+	VERB_GET_VOLUME_CONTROL = 0xF0F00,
+	VERB_SET_VOLUME_CONTROL = 0x70F00,
 };
 
 enum codec_parameters {
@@ -210,6 +214,11 @@ typedef struct _hda_output_ {
 } hda_output;
 
 
+typedef struct _hda_vol_knob_ {
+	uint8_t codec;
+	uint16_t nid;
+}hda_volume;
+
 #pragma pack (push, 1)
 typedef struct _hd_audio_ {
 	size_t mmio;
@@ -219,6 +228,7 @@ typedef struct _hd_audio_ {
 	uint32_t corb_entries;
 	bool immediate_use;
 	hda_output *output;
+	hda_volume *vol;
 	uint16_t num_iss;  //Total number of Input Stream
 	uint16_t num_oss;  //Total number of Output Stream
 	int stream_0_x;  //first output stream 
@@ -236,5 +246,6 @@ typedef struct _rirb_ {
 
 //! Initialize the High-Definition Audio Controller
 extern void hda_initialize ();
-
+extern void hda_set_volume (uint8_t volume);
+extern void hda_audio_add_pcm (void *data, size_t length);
 #endif

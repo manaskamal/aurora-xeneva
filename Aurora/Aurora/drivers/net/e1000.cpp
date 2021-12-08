@@ -146,7 +146,7 @@ void e1000_interrupt_handler (size_t v, void* p) {
 
 void e1000_rx_init () {
 
-	i_net_dev->rx_desc_base = (uint8_t*)pmmngr_alloc();
+	i_net_dev->rx_desc_base = (uint64_t*)pmmngr_alloc();
 
 	for (int i = 0; i < E1000_NUM_RX_DESC; i++) {
 		i_net_dev->rx_desc[i] = (e1000_rx_desc*)(i_net_dev->rx_desc_base + (i * 16));
@@ -154,8 +154,8 @@ void e1000_rx_init () {
 		i_net_dev->rx_desc[i]->status = 0;
 	}
 
-	e1000_write_command (REG_RXDESCKHI, (uint32_t)((uint64_t)i_net_dev->rx_desc_base >> 32));
-	e1000_write_command (REG_RXDESCLO,(uint32_t)((uint64_t)i_net_dev->rx_desc_base & 0xFFFFFFFF));
+	e1000_write_command (REG_RXDESCKHI, ((uint32_t)i_net_dev->rx_desc_base >> 32));
+	e1000_write_command (REG_RXDESCLO,(uint32_t)i_net_dev->rx_desc_base);
 
     printf ("E1000 RX Descriptor HI -> %x, LO -> %x\n", e1000_read_command(REG_RXDESCKHI), e1000_read_command(REG_RXDESCLO));
 	e1000_write_command (REG_RXDESCLEN, E1000_NUM_RX_DESC * 16);
@@ -179,7 +179,7 @@ void e1000_rx_init () {
 
 void e1000_tx_init () {
 
-	i_net_dev->tx_desc_base = (uint8_t*)pmmngr_alloc();
+	i_net_dev->tx_desc_base = (uint64_t*)pmmngr_alloc();
 
 	for (int i = 0; i < E1000_NUM_TX_DESC; i++) {
 		i_net_dev->tx_desc[i] = (e1000_tx_desc*)(i_net_dev->tx_desc_base + (i * 16));
@@ -187,8 +187,8 @@ void e1000_tx_init () {
 		i_net_dev->tx_desc[i]->cmd = 0;
 		i_net_dev->tx_desc[i]->status = 0;
 	}
-	e1000_write_command (REG_TXDESCHI, (uint32_t)((uint64_t)i_net_dev->tx_desc_base >> 32));
-	e1000_write_command (REG_TXDESCLO, (uint32_t)((uint64_t)i_net_dev->tx_desc_base & 0xFFFFFFFF));
+	e1000_write_command (REG_TXDESCHI, ((uint32_t)i_net_dev->tx_desc_base >> 32));
+	e1000_write_command (REG_TXDESCLO, (uint32_t)i_net_dev->tx_desc_base);
 	printf ("E1000 TX_DESC_HI -> %x, LO -> %x\n", e1000_read_command(REG_TXDESCHI), e1000_read_command(REG_TXDESCLO));
 
 	e1000_write_command (REG_TXDESCLEN, (uint32_t)E1000_NUM_TX_DESC * 16);

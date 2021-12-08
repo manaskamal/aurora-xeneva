@@ -171,8 +171,8 @@ typedef struct _e1000_dev_ {
 	bool eerprom_exists;
 	uint32_t e1000_irq;
 	uint8_t mac[6];
-	uint8_t *rx_desc_base;
-	uint8_t* tx_desc_base;
+	uint64_t *rx_desc_base;
+	uint64_t* tx_desc_base;
 	uint16_t tx_tail;
 	uint16_t rx_tail;
 	e1000_rx_desc *rx_desc[E1000_NUM_RX_DESC];

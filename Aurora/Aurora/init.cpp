@@ -155,7 +155,6 @@ void _kmain () {
 	driver_mngr_initialize(info);
 	hda_initialize(); 
 	e1000_initialize();   //<< receiver not working
-
 	for(;;);
 #ifdef ARCH_X64
 	//================================================

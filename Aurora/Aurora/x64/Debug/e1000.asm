@@ -26,24 +26,24 @@ $SG3453	DB	'down', 00H
 $SG3454	DB	'E1000 interrupt link change %s', 0aH, 00H
 $SG3456	DB	'E1000 unknown interrupt', 0aH, 00H
 	ORG $+7
-$SG3470	DB	'E1000 RX Descriptor HI -> %x, LO -> %x', 0aH, 00H
-$SG3484	DB	'E1000 TX_DESC_HI -> %x, LO -> %x', 0aH, 00H
+$SG3468	DB	'E1000 RX Descriptor HI -> %x, LO -> %x', 0aH, 00H
+$SG3480	DB	'E1000 TX_DESC_HI -> %x, LO -> %x', 0aH, 00H
 	ORG $+6
-$SG3494	DB	'CUR Tx tail -> %d', 0aH, 00H
+$SG3490	DB	'CUR Tx tail -> %d', 0aH, 00H
 	ORG $+5
-$SG3499	DB	'TX Next tail -> %d', 0aH, 00H
+$SG3495	DB	'TX Next tail -> %d', 0aH, 00H
 	ORG $+4
-$SG3504	DB	'Transmit status ->%x', 0aH, 00H
+$SG3500	DB	'Transmit status ->%x', 0aH, 00H
 	ORG $+2
-$SG3505	DB	'Transmitted', 0aH, 00H
+$SG3501	DB	'Transmitted', 0aH, 00H
 	ORG $+3
-$SG3516	DB	'E1000 New Packet received #3', 0aH, 00H
+$SG3512	DB	'E1000 New Packet received #3', 0aH, 00H
 	ORG $+2
-$SG3551	DB	'Intel Ethernet not found', 0aH, 00H
+$SG3547	DB	'Intel Ethernet not found', 0aH, 00H
 	ORG $+6
-$SG3562	DB	'E1000 legacy irq -> %d, pin -> %d', 0aH, 00H
+$SG3558	DB	'E1000 legacy irq -> %d, pin -> %d', 0aH, 00H
 	ORG $+5
-$SG3573	DB	'e1000 setup completed', 0aH, 00H
+$SG3569	DB	'e1000 setup completed', 0aH, 00H
 CONST	ENDS
 PUBLIC	?e1000_initialize@@YAXXZ			; e1000_initialize
 PUBLIC	?e1000_send_packet@@YAXPEAX_K@Z			; e1000_send_packet
@@ -101,10 +101,10 @@ $pdata$?e1000_interrupt_handler@@YAX_KPEAX@Z DD imagerel $LN16
 	DD	imagerel $LN16+475
 	DD	imagerel $unwind$?e1000_interrupt_handler@@YAX_KPEAX@Z
 $pdata$?e1000_rx_init@@YAXXZ DD imagerel $LN6
-	DD	imagerel $LN6+393
+	DD	imagerel $LN6+384
 	DD	imagerel $unwind$?e1000_rx_init@@YAXXZ
 $pdata$?e1000_tx_init@@YAXXZ DD imagerel $LN6
-	DD	imagerel $LN6+334
+	DD	imagerel $LN6+325
 	DD	imagerel $unwind$?e1000_tx_init@@YAXXZ
 $pdata$?e1000_setup_interrupt@@YAXXZ DD imagerel $LN3
 	DD	imagerel $LN3+46
@@ -430,7 +430,7 @@ $LN3@e1000_hand:
 
 ; 258  : 		printf ("E1000 New Packet received #3\n");
 
-	lea	rcx, OFFSET FLAT:$SG3516
+	lea	rcx, OFFSET FLAT:$SG3512
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 259  : 		break;
@@ -487,7 +487,7 @@ _TEXT	ENDS
 ; File e:\xeneva project\xeneva\aurora\aurora\drivers\net\e1000.cpp
 _TEXT	SEGMENT
 i$1 = 32
-tv133 = 36
+tv131 = 36
 ?e1000_tx_init@@YAXXZ PROC				; e1000_tx_init
 
 ; 180  : void e1000_tx_init () {
@@ -496,7 +496,7 @@ $LN6:
 	sub	rsp, 56					; 00000038H
 
 ; 181  : 
-; 182  : 	i_net_dev->tx_desc_base = (uint8_t*)pmmngr_alloc();
+; 182  : 	i_net_dev->tx_desc_base = (uint64_t*)pmmngr_alloc();
 
 	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
 	mov	rcx, QWORD PTR ?i_net_dev@@3PEAU_e1000_dev_@@EA ; i_net_dev
@@ -521,7 +521,8 @@ $LN3@e1000_tx_i:
 	imul	eax, 16
 	cdqe
 	mov	rcx, QWORD PTR ?i_net_dev@@3PEAU_e1000_dev_@@EA ; i_net_dev
-	add	rax, QWORD PTR [rcx+40]
+	mov	rcx, QWORD PTR [rcx+40]
+	lea	rax, QWORD PTR [rcx+rax*8]
 	movsxd	rcx, DWORD PTR i$1[rsp]
 	mov	rdx, QWORD PTR ?i_net_dev@@3PEAU_e1000_dev_@@EA ; i_net_dev
 	mov	QWORD PTR [rdx+rcx*8+312], rax
@@ -552,22 +553,19 @@ $LN3@e1000_tx_i:
 	jmp	$LN2@e1000_tx_i
 $LN1@e1000_tx_i:
 
-; 190  : 	e1000_write_command (REG_TXDESCHI, (uint32_t)((uint64_t)i_net_dev->tx_desc_base >> 32));
+; 190  : 	e1000_write_command (REG_TXDESCHI, ((uint32_t)i_net_dev->tx_desc_base >> 32));
 
 	mov	rax, QWORD PTR ?i_net_dev@@3PEAU_e1000_dev_@@EA ; i_net_dev
-	mov	rax, QWORD PTR [rax+40]
-	shr	rax, 32					; 00000020H
+	mov	eax, DWORD PTR [rax+40]
+	shr	eax, 32					; 00000020H
 	mov	edx, eax
 	mov	cx, 14340				; 00003804H
 	call	?e1000_write_command@@YAXGI@Z		; e1000_write_command
 
-; 191  : 	e1000_write_command (REG_TXDESCLO, (uint32_t)((uint64_t)i_net_dev->tx_desc_base & 0xFFFFFFFF));
+; 191  : 	e1000_write_command (REG_TXDESCLO, (uint32_t)i_net_dev->tx_desc_base);
 
 	mov	rax, QWORD PTR ?i_net_dev@@3PEAU_e1000_dev_@@EA ; i_net_dev
-	mov	ecx, -1					; ffffffffH
-	mov	rax, QWORD PTR [rax+40]
-	and	rax, rcx
-	mov	edx, eax
+	mov	edx, DWORD PTR [rax+40]
 	mov	cx, 14336				; 00003800H
 	call	?e1000_write_command@@YAXGI@Z		; e1000_write_command
 
@@ -575,13 +573,13 @@ $LN1@e1000_tx_i:
 
 	mov	cx, 14336				; 00003800H
 	call	?e1000_read_command@@YAIG@Z		; e1000_read_command
-	mov	DWORD PTR tv133[rsp], eax
+	mov	DWORD PTR tv131[rsp], eax
 	mov	cx, 14340				; 00003804H
 	call	?e1000_read_command@@YAIG@Z		; e1000_read_command
-	mov	ecx, DWORD PTR tv133[rsp]
+	mov	ecx, DWORD PTR tv131[rsp]
 	mov	r8d, ecx
 	mov	edx, eax
-	lea	rcx, OFFSET FLAT:$SG3484
+	lea	rcx, OFFSET FLAT:$SG3480
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 193  : 
@@ -629,7 +627,7 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 rctl$ = 32
 i$1 = 36
-tv129 = 40
+tv95 = 40
 ?e1000_rx_init@@YAXXZ PROC				; e1000_rx_init
 
 ; 147  : void e1000_rx_init () {
@@ -638,7 +636,7 @@ $LN6:
 	sub	rsp, 56					; 00000038H
 
 ; 148  : 
-; 149  : 	i_net_dev->rx_desc_base = (uint8_t*)pmmngr_alloc();
+; 149  : 	i_net_dev->rx_desc_base = (uint64_t*)pmmngr_alloc();
 
 	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
 	mov	rcx, QWORD PTR ?i_net_dev@@3PEAU_e1000_dev_@@EA ; i_net_dev
@@ -663,7 +661,8 @@ $LN3@e1000_rx_i:
 	imul	eax, 16
 	cdqe
 	mov	rcx, QWORD PTR ?i_net_dev@@3PEAU_e1000_dev_@@EA ; i_net_dev
-	add	rax, QWORD PTR [rcx+32]
+	mov	rcx, QWORD PTR [rcx+32]
+	lea	rax, QWORD PTR [rcx+rax*8]
 	movsxd	rcx, DWORD PTR i$1[rsp]
 	mov	rdx, QWORD PTR ?i_net_dev@@3PEAU_e1000_dev_@@EA ; i_net_dev
 	mov	QWORD PTR [rdx+rcx*8+56], rax
@@ -689,22 +688,19 @@ $LN3@e1000_rx_i:
 $LN1@e1000_rx_i:
 
 ; 156  : 
-; 157  : 	e1000_write_command (REG_RXDESCKHI, (uint32_t)((uint64_t)i_net_dev->rx_desc_base >> 32));
+; 157  : 	e1000_write_command (REG_RXDESCKHI, ((uint32_t)i_net_dev->rx_desc_base >> 32));
 
 	mov	rax, QWORD PTR ?i_net_dev@@3PEAU_e1000_dev_@@EA ; i_net_dev
-	mov	rax, QWORD PTR [rax+32]
-	shr	rax, 32					; 00000020H
+	mov	eax, DWORD PTR [rax+32]
+	shr	eax, 32					; 00000020H
 	mov	edx, eax
 	mov	cx, 10244				; 00002804H
 	call	?e1000_write_command@@YAXGI@Z		; e1000_write_command
 
-; 158  : 	e1000_write_command (REG_RXDESCLO,(uint32_t)((uint64_t)i_net_dev->rx_desc_base & 0xFFFFFFFF));
+; 158  : 	e1000_write_command (REG_RXDESCLO,(uint32_t)i_net_dev->rx_desc_base);
 
 	mov	rax, QWORD PTR ?i_net_dev@@3PEAU_e1000_dev_@@EA ; i_net_dev
-	mov	ecx, -1					; ffffffffH
-	mov	rax, QWORD PTR [rax+32]
-	and	rax, rcx
-	mov	edx, eax
+	mov	edx, DWORD PTR [rax+32]
 	mov	cx, 10240				; 00002800H
 	call	?e1000_write_command@@YAXGI@Z		; e1000_write_command
 
@@ -713,13 +709,13 @@ $LN1@e1000_rx_i:
 
 	mov	cx, 10240				; 00002800H
 	call	?e1000_read_command@@YAIG@Z		; e1000_read_command
-	mov	DWORD PTR tv129[rsp], eax
+	mov	DWORD PTR tv95[rsp], eax
 	mov	cx, 10244				; 00002804H
 	call	?e1000_read_command@@YAIG@Z		; e1000_read_command
-	mov	ecx, DWORD PTR tv129[rsp]
+	mov	ecx, DWORD PTR tv95[rsp]
 	mov	r8d, ecx
 	mov	edx, eax
-	lea	rcx, OFFSET FLAT:$SG3470
+	lea	rcx, OFFSET FLAT:$SG3468
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 161  : 	e1000_write_command (REG_RXDESCLEN, E1000_NUM_RX_DESC * 16);
@@ -1563,7 +1559,7 @@ $LN8:
 ; 215  : 	printf ("CUR Tx tail -> %d\n", cur);
 
 	mov	edx, DWORD PTR cur$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3494
+	lea	rcx, OFFSET FLAT:$SG3490
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 216  : 	i_net_dev->tx_tail++;
@@ -1677,7 +1673,7 @@ $LN4@e1000_send:
 	div	ecx
 	mov	eax, edx
 	mov	edx, eax
-	lea	rcx, OFFSET FLAT:$SG3499
+	lea	rcx, OFFSET FLAT:$SG3495
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 237  : 	x64_sti();
@@ -1704,12 +1700,12 @@ $LN3@e1000_send:
 	movzx	eax, BYTE PTR [rax+12]
 	movzx	eax, al
 	mov	edx, eax
-	lea	rcx, OFFSET FLAT:$SG3504
+	lea	rcx, OFFSET FLAT:$SG3500
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 241  : 			printf ("Transmitted\n");
 
-	lea	rcx, OFFSET FLAT:$SG3505
+	lea	rcx, OFFSET FLAT:$SG3501
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 242  : 			break;
@@ -1775,7 +1771,7 @@ $LN17:
 
 ; 304  : 		printf ("Intel Ethernet not found\n");
 
-	lea	rcx, OFFSET FLAT:$SG3551
+	lea	rcx, OFFSET FLAT:$SG3547
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 305  : 		return;
@@ -1889,7 +1885,7 @@ $LN11@e1000_init:
 	movzx	ecx, BYTE PTR [rcx+60]
 	mov	r8d, eax
 	mov	edx, ecx
-	lea	rcx, OFFSET FLAT:$SG3562
+	lea	rcx, OFFSET FLAT:$SG3558
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 326  : 			write_config_8 (0,bus,dev_,func,0x3C, 10);
@@ -2094,7 +2090,7 @@ $LN1@e1000_init:
 ; 378  : 	}
 ; 379  : 	printf ("e1000 setup completed\n");
 
-	lea	rcx, OFFSET FLAT:$SG3573
+	lea	rcx, OFFSET FLAT:$SG3569
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 380  : 	x64_sti();

@@ -7,24 +7,24 @@ INCLUDELIB OLDNAMES
 
 PUBLIC	_fltused
 CONST	SEGMENT
-$SG7534	DB	'Multitasking started', 0aH, 00H
+$SG7554	DB	'Multitasking started', 0aH, 00H
 	ORG $+2
-$SG7545	DB	'shell', 00H
+$SG7565	DB	'shell', 00H
 	ORG $+2
-$SG7546	DB	'/xshell.exe', 00H
-$SG7547	DB	'quince', 00H
+$SG7566	DB	'/xshell.exe', 00H
+$SG7567	DB	'quince', 00H
 	ORG $+5
-$SG7548	DB	'/quince.exe', 00H
+$SG7568	DB	'/quince.exe', 00H
 	ORG $+4
-$SG7550	DB	'procmngr', 00H
+$SG7570	DB	'procmngr', 00H
 	ORG $+3
-$SG7551	DB	'dwm4', 00H
+$SG7571	DB	'dwm4', 00H
 	ORG $+7
-$SG7552	DB	'/dwm2.exe', 00H
+$SG7572	DB	'/dwm2.exe', 00H
 	ORG $+2
-$SG7553	DB	'cnsl', 00H
+$SG7573	DB	'cnsl', 00H
 	ORG $+7
-$SG7554	DB	'/cnsl.exe', 00H
+$SG7574	DB	'/cnsl.exe', 00H
 CONST	ENDS
 _DATA	SEGMENT
 _fltused DD	01H
@@ -234,8 +234,8 @@ $LN4@kmain:
 
 ; 164  : 	create_process ("/xshell.exe","shell");
 
-	lea	rdx, OFFSET FLAT:$SG7545
-	lea	rcx, OFFSET FLAT:$SG7546
+	lea	rdx, OFFSET FLAT:$SG7565
+	lea	rcx, OFFSET FLAT:$SG7566
 	call	?create_process@@YAXPEBDPEAD@Z		; create_process
 
 ; 165  : 
@@ -243,8 +243,8 @@ $LN4@kmain:
 ; 167  : 	//! always put quince in thread id -- > 2
 ; 168  : 	create_process ("/quince.exe","quince");
 
-	lea	rdx, OFFSET FLAT:$SG7547
-	lea	rcx, OFFSET FLAT:$SG7548
+	lea	rdx, OFFSET FLAT:$SG7567
+	lea	rcx, OFFSET FLAT:$SG7568
 	call	?create_process@@YAXPEBDPEAD@Z		; create_process
 
 ; 169  : 
@@ -259,7 +259,7 @@ $LN4@kmain:
 	mov	QWORD PTR tv84[rsp], rax
 	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
 	mov	BYTE PTR [rsp+32], 0
-	lea	r9, OFFSET FLAT:$SG7550
+	lea	r9, OFFSET FLAT:$SG7570
 	mov	rcx, QWORD PTR tv84[rsp]
 	mov	r8, rcx
 	mov	rdx, rax
@@ -269,14 +269,14 @@ $LN4@kmain:
 ; 176  : 	//! Misc programs goes here
 ; 177  : 	create_process ("/dwm2.exe", "dwm4");
 
-	lea	rdx, OFFSET FLAT:$SG7551
-	lea	rcx, OFFSET FLAT:$SG7552
+	lea	rdx, OFFSET FLAT:$SG7571
+	lea	rcx, OFFSET FLAT:$SG7572
 	call	?create_process@@YAXPEBDPEAD@Z		; create_process
 
 ; 178  : 	create_process ("/cnsl.exe", "cnsl");
 
-	lea	rdx, OFFSET FLAT:$SG7553
-	lea	rcx, OFFSET FLAT:$SG7554
+	lea	rdx, OFFSET FLAT:$SG7573
+	lea	rcx, OFFSET FLAT:$SG7574
 	call	?create_process@@YAXPEBDPEAD@Z		; create_process
 
 ; 179  : 	//! Here start the scheduler (multitasking engine)
@@ -326,7 +326,7 @@ $LN5:
 
 ; 111  : 	printf ("Multitasking started\n");
 
-	lea	rcx, OFFSET FLAT:$SG7534
+	lea	rcx, OFFSET FLAT:$SG7554
 	call	?printf@@YAXPEBDZZ			; printf
 $LN2@test_threa:
 
