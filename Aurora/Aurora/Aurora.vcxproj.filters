@@ -345,6 +345,9 @@
     <ClInclude Include="..\include\efi.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\drivers\hdaudio\sound_data.h">
+      <Filter>include\drivers\hdaudio</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="init.cpp">

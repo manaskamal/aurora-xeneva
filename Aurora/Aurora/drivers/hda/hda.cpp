@@ -11,6 +11,7 @@
 
 #include <drivers\hdaudio\hda.h>
 #include <stdio.h>
+#include <drivers\hdaudio\sound_data.h>
 #include <string.h>
 
 //! static datas
@@ -252,16 +253,24 @@ static uint32_t codec_query (int codec, int nid, uint32_t payload) {
 
 //! Set volume, for output codec
 void hda_set_volume (uint8_t volume) {
-	if (_ihd_audio.vol->nid != 0) {
-		codec_query (_ihd_audio.vol->codec, _ihd_audio.vol->nid, VERB_SET_VOLUME_CONTROL |(1<<0));
-		uint32_t vol = codec_query (_ihd_audio.vol->codec, _ihd_audio.vol->nid, VERB_GET_VOLUME_CONTROL);
-		printf ("Volume Currenty Setuped is -> %d\n", vol);
-	} 
 	int meta = 0xb000;
+	if (volume == 0)
+		volume = 0x80;  //mute bit
+	else
+		volume = volume * 127 / 255;
+	//codec_query (_ihd_audio.output->codec, _ihd_audio.output->nid, VERB_SET_AMP_GAIN_MUTE | 0xb000 | volume);
+		
+	codec_query (_ihd_audio.output->codec, 2, 0x39000 | volume);
+	codec_query (_ihd_audio.output->codec, 2, 0x3A000 | volume );
+	codec_query (_ihd_audio.output->codec, 3, 0x39000 | volume);
+	codec_query (_ihd_audio.output->codec, 3, 0x3A000 | volume);
+	codec_query (_ihd_audio.output->codec, 4, 0x39000 | volume);
+	codec_query (_ihd_audio.output->codec, 4, 0x3A000 | volume);
+	codec_query (_ihd_audio.output->codec, 5, 0x39000 | volume);
+	codec_query (_ihd_audio.output->codec, 5, 0x3A000 | volume);
+	codec_query (_ihd_audio.output->codec, 6, 0x39000 | volume);
+	codec_query (_ihd_audio.output->codec, 6, 0x3A000 | volume);
 
-	printf ("Volume -> %d\n", volume);
-	codec_query (_ihd_audio.output->codec, _ihd_audio.output->nid, VERB_SET_AMP_GAIN_MUTE | meta | volume);
-	
 }
 
 
@@ -272,28 +281,53 @@ void init_output () {
 	printf ("Initializing Output Codec -> %d, Node -> %d\n", _ihd_audio.output->codec, _ihd_audio.output->nid);
 
 
-	uint16_t format =   (0<<14)  | (1<<4) | 1;
-	codec_query (_ihd_audio.output->codec, _ihd_audio.output->nid, VERB_SET_FORMAT | format);
-	codec_query (_ihd_audio.output->codec, _ihd_audio.output->nid, VERB_SET_STREAM_CHANNEL |  0x10);
 
+
+	uint16_t format =  (0<<14)  | (1<<4) | 1;
+	codec_query (_ihd_audio.output->codec, 2, VERB_SET_FORMAT | format);
+	codec_query (_ihd_audio.output->codec, 3, VERB_SET_FORMAT | format);
+	codec_query (_ihd_audio.output->codec, 4, VERB_SET_FORMAT | format);
+	codec_query (_ihd_audio.output->codec, 5, VERB_SET_FORMAT | format);
+	codec_query (_ihd_audio.output->codec, 6, VERB_SET_FORMAT | format);
+
+	codec_query (_ihd_audio.output->codec, 2, VERB_SET_STREAM_CHANNEL | 0x10);
+	codec_query (_ihd_audio.output->codec, 3, VERB_SET_STREAM_CHANNEL | 0x10);
+	codec_query (_ihd_audio.output->codec, 4, VERB_SET_STREAM_CHANNEL | 0x10);
+	codec_query (_ihd_audio.output->codec, 5, VERB_SET_STREAM_CHANNEL | 0x10);
+	codec_query (_ihd_audio.output->codec, 6, VERB_SET_STREAM_CHANNEL | 0x10);
+
+    uint32_t stream = codec_query (_ihd_audio.output->codec, _ihd_audio.output->nid, 0xF0600);
 
 	_ihd_audio.output->sample_rate = SR_48_KHZ;
 	_ihd_audio.output->num_channels = 2;
 
 
-	uint32_t eapd_btl = codec_query (_ihd_audio.output->codec, _ihd_audio.output->nid, VERB_GET_EAPD_BTL);	
-	codec_query (_ihd_audio.output->codec, _ihd_audio.output->nid,VERB_SET_EAPD_BTL | eapd_btl | 0x2);
+	uint32_t eapd_btl1 = codec_query (_ihd_audio.output->codec, 2, VERB_GET_EAPD_BTL);	
+	codec_query (_ihd_audio.output->codec, 2,VERB_SET_EAPD_BTL |eapd_btl1 | 0x2);
+	uint32_t eapd_btl2 = codec_query (_ihd_audio.output->codec, 3, VERB_GET_EAPD_BTL);	
+	codec_query (_ihd_audio.output->codec, 3,VERB_SET_EAPD_BTL |eapd_btl2 | 0x2);
+	uint32_t eapd_btl3 = codec_query (_ihd_audio.output->codec, 4, VERB_GET_EAPD_BTL);	
+	codec_query (_ihd_audio.output->codec, 4,VERB_SET_EAPD_BTL |eapd_btl3 | 0x2);
+	uint32_t eapd_btl4 = codec_query (_ihd_audio.output->codec, 5, VERB_GET_EAPD_BTL);	
+	codec_query (_ihd_audio.output->codec, 5,VERB_SET_EAPD_BTL |eapd_btl4 | 0x2);
+	uint32_t eapd_btl5 = codec_query (_ihd_audio.output->codec, 6, VERB_GET_EAPD_BTL);	
+	codec_query (_ihd_audio.output->codec, 6,VERB_SET_EAPD_BTL |eapd_btl5 | 0x2);
 
 	//!Set Pin control : enable the output bit
 	uint32_t ctl = codec_query(_ihd_audio.output->codec, _ihd_audio.output->nid, VERB_GET_PIN_CONTROL);
 	ctl |= (1<<6);
 	ctl |= (1<<7);
 
-	codec_query (_ihd_audio.output->codec, _ihd_audio.output->nid, VERB_SET_PIN_CONTROL | 0xC0);
+	codec_query (_ihd_audio.output->codec, 2, VERB_SET_PIN_CONTROL | 0xc0);
+	codec_query (_ihd_audio.output->codec, 3, VERB_SET_PIN_CONTROL | 0xc0);
+	codec_query (_ihd_audio.output->codec, 4, VERB_SET_PIN_CONTROL | 0xc0);
+	codec_query (_ihd_audio.output->codec, 5, VERB_SET_PIN_CONTROL | 0xc0);
+	codec_query (_ihd_audio.output->codec, 6, VERB_SET_PIN_CONTROL | 0xc0);
 
-	codec_query(_ihd_audio.output->codec, _ihd_audio.output->nid, VERB_SET_POWER_STATE | 0x0000);
-	//_aud_outl_(SSYNC,1);
+	//codec_query(_ihd_audio.output->codec, _ihd_audio.output->nid, VERB_SET_POWER_STATE | 0x0000);
+	//_aud_outl_(SSYNC,(1<<4));
 
+	//uint16_t format = (0<<14)  | (1<<4) | 1;  // (0<<14) | (0<<11) | (0<<8) | (1<<4) | 1;
 }
 
 //! Start a Stream !!! Errors are there, needs fixing
@@ -304,16 +338,19 @@ void hda_init_output_stream () {
 		;
 
 	_aud_outl_ (REG_O0_CTLL(_ihd_audio), 0);
-	uint64_t bdl_base = (uint64_t)(_ihd_audio.corb + 3072);  //pmmngr_alloc();   //get_physical_address  ((uint64_t) 0x0000000000000000);
+	for (int i = 0; i < 1000; i++)
+		;
+	uint64_t bdl_base = (uint64_t)pmmngr_alloc();   //get_physical_address  ((uint64_t) 0x0000000000000000);
 	ihda_bdl_entry *bdl = (ihda_bdl_entry*)bdl_base;  //(_ihd_audio.corb + 3072);
 	for (int i = 0; i < 4; i++) {
-		bdl[i].paddr = (uint64_t)get_physical_address((uint64_t)_ihd_audio.buffer + i * 0x10000);
+		bdl[i].paddr = (uint64_t)get_physical_address((uint64_t)_ihd_audio.buffer);
 		bdl[i].length = 0x10000;
-		bdl[i].flags = 1;
+		bdl[i].flags = 0;
 	}
 
-	_aud_outl_ (REG_O0_CTLU(_ihd_audio),0x10); 
-	//_aud_outl_ (REG_O0_CTLL(_ihd_audio), (0<<20)); 0x10
+	_aud_outl_ (REG_O0_CTLL(_ihd_audio),(1<<20)); 
+	_aud_outl_ (REG_O0_CTLU(_ihd_audio),(1<<20));
+
 	_aud_outl_ (REG_O0_CBL(_ihd_audio), 4*0x10000);
 	_aud_outw_(REG_O0_STLVI(_ihd_audio), 4-1);
 
@@ -357,7 +394,9 @@ void widget_init (int codec, int nid) {
 	amp_cap = codec_query (codec, nid, VERB_GET_PARAMETER | PARAM_OUT_AMP_CAP);
 	eapd_btl = codec_query (codec, nid, VERB_GET_EAPD_BTL);
 
-
+	/*if (widget_cap & WIDGET_CAP_POWER_CNTRL) {
+		codec_query(codec, nid, VERB_SET_POWER_STATE | 0x0);
+	}*/
 
 	uint32_t amp_gain;
 	const char* s;
@@ -375,62 +414,104 @@ void widget_init (int codec, int nid) {
 	default: s = "unknown"; break;
 
 	}
+	amp_gain = codec_query(codec, nid, VERB_GET_AMP_GAIN_MUTE | 0x8000) << 8;
+	amp_gain |= codec_query(codec, nid, VERB_GET_AMP_GAIN_MUTE | 0xa000);
 
-	amp_gain = codec_query(codec, nid, PARAM_OUT_AMP_CAP);
 	eapd_btl = codec_query (codec, nid, VERB_GET_EAPD_BTL);	
 	
 	switch (type) {
 	case WIDGET_PIN:
 		{
-			uint32_t pin_cap, ctl;
-			pin_cap = codec_query(codec,nid,VERB_GET_PARAMETER | PARAM_PIN_CAP);
-			if ((pin_cap & PIN_CAP_OUTPUT) == 0) {
-				return;
-			}
+			/*uint32_t pin_cap = codec_query (codec, nid, VERB_GET_PARAMETER | PARAM_PIN_CAP);
+			if (pin_cap & PIN_CAP_OUTPUT) {
+				printf ("Pin is output\n");
+				uint32_t ctl = codec_query (codec, nid, VERB_GET_PIN_CONTROL);
+				codec_query (codec, nid, VERB_SET_PIN_CONTROL | 0);
+				codec_query (codec, nid, VERB_SET_EAPD_BTL | 0);
+			
+			uint32_t num_conn = codec_query (codec, nid, VERB_GET_PARAMETER | PARAM_CONN_LIST_LEN);
+			uint32_t sel = 0;
+			printf ("\nPin Connection: ");
+			for (int i = 0;  i < (num_conn & 0x7f); i++) {
+				uint32_t conn;
+				bool range;
+				int idx, shift;
 
-
-			uint32_t value = codec_query (codec, nid, VERB_GET_PARAMETER | PARAM_CONN_LIST_LEN);
-			int con_list_len = value & 0x07;
-			for (uint8_t i = 0; i * 4 < con_list_len; i++) {
-				uint32_t value = codec_query (codec, nid, VERB_GET_CONN_LIST | i);
-				for (int j = 0; i + j < con_list_len && j < 4; j++) {
-					int node_id = (value >> (8 * j)) & 0xff;
-					printf ("Output Node -> %d\n", node_id);
-					if (node_id > 0) {
-						/*if (_ihd_audio.output->nid == 0) {
-							_ihd_audio.output->codec = codec;
-							_ihd_audio.output->nid = node_id;
-						
-						}	*/
-						break;
-					}
+				if (num_conn & 0x80) {
+					idx = i & ~3;
+					shift = 8 * (i & 3);
+				}else {
+					idx = i & ~1;
+					shift = 8 * (i & 1);
 				}
+
+				conn = codec_query (codec, nid, VERB_GET_CONN_LIST | idx);
+				conn >>= shift;
+				
+				if (num_conn & 0x80) {
+					range = conn & 0x8000;
+					conn &= 0x7fff;
+				}else {
+					range = conn & 0x80;
+					conn &= 0x7f;
+				}
+
+				printf ("%d\n", conn);
+				uint16_t format =  (0<<14)  | (1<<4) | 1;
+	            codec_query (codec, conn, VERB_SET_FORMAT | format);
+	            codec_query (codec, conn, VERB_SET_STREAM_CHANNEL |  (1<<4) | (1<<0));
+				codec_query (codec, conn, VERB_SET_AMP_GAIN_MUTE | 0xb000 | 0x80);
+				codec_query (codec, conn, VERB_SET_PIN_CONTROL | 0);
+				codec_query (codec, conn, VERB_SET_EAPD_BTL | 0);
+			    codec_query(codec, conn, VERB_SET_POWER_STATE | 0x0);
 			}
-			ctl = codec_query(codec, nid, VERB_GET_PIN_CONTROL);
-			ctl |= (1<<6);
-			ctl |= (1<<7);
-			codec_query (codec, nid, VERB_SET_PIN_CONTROL | 0xC0);
-			codec_query (codec, nid, VERB_SET_EAPD_BTL | eapd_btl | 0x2);
+
+			sel = codec_query(codec, nid, VERB_GET_CONN_SELECT);
+			printf ("[current: %d]\n", sel);
+			}
+		*/
+			
+		
 			break;
 		}
-	case WIDGET_OUTPUT:
+	case WIDGET_OUTPUT:{
 		if (!_ihd_audio.output->nid) {
 			_ihd_audio.output->codec = codec;
 			_ihd_audio.output->nid = nid;
+			_ihd_audio.output->amp_gain_steps = (amp_cap >> 8) & 0x7f;
 		}
-		codec_query (codec, nid, VERB_SET_EAPD_BTL | eapd_btl | 0x2);
-		break;
 
-	case WIDGET_VOLUME_KNOB :
+		//codec_query (codec, nid, VERB_SET_AMP_GAIN_MUTE | (1<<7) | (1<<12) | (1<<13) | (1<<14) | (1<<15));
+		bool mute_bit = amp_cap >> 31;
+	/*	if (mute_bit) {
+			printf ("Output Codec is mute capable\n");
+		}*/
+		//codec_query (codec, nid, VERB_SET_AMP_GAIN_MUTE | 0x80);
+		uint32_t eapd_ = codec_query (codec,nid, VERB_GET_EAPD_BTL);	
+		codec_query (codec, nid,VERB_SET_EAPD_BTL | eapd_ | 0x2);
+		break;
+		}
+
+	case WIDGET_VOLUME_KNOB :{
 		_ihd_audio.vol->codec = codec;
 		_ihd_audio.vol->nid = nid;
-		codec_query (codec, nid, VERB_SET_POWER_STATE | 0x0000);
-		break;
+		codec_query(codec, nid, VERB_SET_POWER_STATE | 0x0);
 
+		codec_query (codec, nid, 0x70F00 | (1<<7) | (0 & 0xff));
+		uint32_t vol = codec_query(codec, nid, 0xF0F00);
+		printf ("Volume Knob Widget-> vol -> %d, direct -> %d\n", vol & 0xffff, (vol >> 7) & 0xf);
+
+		break;
+		}
+	case WIDGET_MIXER:
+		printf ("Mixer found\n");
+		break;
 	default:
 		return;
 
 	}
+
+	
 }
 
 
@@ -445,33 +526,36 @@ static int codec_enumerate_widgets(int codec) {
 
 	param = codec_query (codec, 0, VERB_GET_PARAMETER | PARAM_NODE_COUNT);
 
-	num_fg = param & 0xff;
-	fg_start = (param >> 16) & 0xff;
+	num_fg = param & 0x000000ff;
+	fg_start = (param & 0x00ff0000) >> 16;
 
 
 	printf ("[HD_Audio]: Num Function Group -> %d, fg_start -> %d\n", num_fg, fg_start);
 
 	uint32_t vendor_id = codec_query (codec, 0, VERB_GET_PARAMETER | PARAM_VENDOR_ID);
-	printf ("[HD-Audio]:Widget device id -> %x, vendor id -> %x\n", vendor_id , (vendor_id >> 16 ));
+	printf ("[HD-Audio]:Widget device id -> %x, vendor id -> %x\n", vendor_id & 0xffff , (vendor_id >> 16 ));
 	
 	uint32_t rev_id = codec_query (codec, 0, VERB_GET_PARAMETER | PARAM_REV_ID);
 	printf ("[HD-Audio]:Widget version -> %d.%d, r0%d\n", rev_id>>20, rev_id>>16, rev_id>>8);
 
 	
 	for (i = 0; i < num_fg; i++) {
+
 		param = codec_query (codec, fg_start + i, 
 			VERB_GET_PARAMETER | PARAM_NODE_COUNT);
 
 		num_widgets = param & 0xff;
 		widgets_start = (param >> 16) & 0xff;
-		printf ("Widget start -> %d\n", widgets_start);
-
+		printf ("Widget start -> %d, num widhets -> %d\n", widgets_start, num_widgets);
+		
 		param = codec_query (codec, fg_start + i, VERB_GET_PARAMETER | PARAM_FN_GROUP_TYPE);
-		param &= 0x7f;
-		if (param != FN_GROUP_AUDIO) 
+		param &= 0x000000ff;
+		if (param != FN_GROUP_AUDIO) {
+			printf ("FG not audio group\n");
 			continue;
+		}
 
-		codec_query (codec, fg_start + i, VERB_SET_POWER_STATE | 0x0);
+		//codec_query (codec, fg_start + i, VERB_SET_POWER_STATE | 0x0);
 
 		for (int j = 0; j < num_widgets; j++) {
 			widget_init (codec, widgets_start + j);
@@ -488,61 +572,23 @@ static int codec_enumerate_widgets(int codec) {
 
 //! Reset the HD Audio Controller
 void hda_reset() {
-	_aud_outb_(CORBCTL, 0);
-	_aud_outb_(RIRBCTL, 0);
-	//_aud_outw_(RIRBWP, 0);
-
-	_aud_outl_ (DPIBLBASE, 0x0);
-	_aud_outl_ (DPIBUBASE, 0x0);
+	_aud_outl_(CORBCTL, 0);
+	_aud_outl_(RIRBCTL, 0);
+	_aud_outw_(RIRBWP, 0);
+	while ((_aud_inl_(CORBCTL) & CORBCTL_CORBRUN) ||
+		(_aud_inl_(RIRBCTL) & RIRBCTL_RIRBRUN));
 
 	_aud_outl_(GCTL, 0);
-	uint32_t gctl;
-	for(int i = 0; i < 1000; i++){
-		gctl = _aud_inl_(GCTL);
-		if (!(gctl & 0x00000001))
-			break;
-		for (int j = 0; j < 10; j++)
-			;		
-	}
+	while ((_aud_inl_(GCTL) & GCTL_RESET));
 
-	if (gctl & 0x00000001) {
-		printf ("Unable to put HD-Audio in reset mode\n");
-		return;
-	}
+	_aud_outl_ (GCTL, GCTL_RESET);
+	while ((_aud_inl_(GCTL) & GCTL_RESET) == 0);
 
-	for (int i = 0; i < 1000; i++)
-		;
+	_aud_outw_(WAKEEN, 0xffff);
+	_aud_outl_(INTCTL, 0x8000000ff);
 
-	gctl = _aud_inl_(GCTL);
-	_aud_outl_ (GCTL, gctl | 0x00000001);
-	
-	int count = 10000;
-	do {
-		gctl = _aud_inl_(GCTL);
-		if (gctl & 0x00000001)
-			break;
-		for (int i = 0; i < 10; i++)
-			;
-	}while (--count);
-
-	if (!(gctl & 0x00000001)){
-		printf ("HD-Audio device stuck in reset\n");
-		return;
-	}
-
-	
-	if((_aud_inw_(ICIS) & 1)==0){
-		//printf ("ICIS ICB bit is clear\n");
-	}
-	
-	_ihd_audio.immediate_use = false;
-    _aud_outw_(WAKEEN, 0x01);
-	for (int i = 0; i < 10000; i++)
-		;
-
-	//! Setup CORB and RIRB
-	setup_corb ();
-	setup_rirb ();
+	setup_corb();
+	setup_rirb();
 }
 
 //! Start Output
@@ -570,7 +616,7 @@ void hda_initialize () {
 		return;
 	}
 
-
+	x64_cli();
 	_ihd_audio.output = (hda_output*)pmmngr_alloc();
 	_ihd_audio.vol = (hda_volume*)pmmngr_alloc();
 	memset (_ihd_audio.output, 0, 4096);
@@ -587,8 +633,8 @@ void hda_initialize () {
 
 
 	_ihd_audio.mmio = pci_dev.device.nonBridge.baseAddress[0] & ~3;
-	_ihd_audio.corb = (uint32_t*)pmmngr_alloc_blocks(2); //pmmngr_alloc() //for 256 entries only 1 kb will be used
-	_ihd_audio.rirb = (uint64_t*)(_ihd_audio.corb + 1024);          //pmmngr_alloc(); //(ring_address + 1024);
+	_ihd_audio.corb = (uint32_t*)pmmngr_alloc(); //for 256 entries only 1 kb will be used
+	_ihd_audio.rirb = (uint64_t*)pmmngr_alloc(); //(ring_address + 1024);
 	memset (_ihd_audio.corb, 0, 4096);
 	memset (_ihd_audio.rirb, 0, 4096);
 
@@ -598,7 +644,8 @@ void hda_initialize () {
 	}
 
 	_ihd_audio.buffer = (uint64_t*)0xFFFFE00000100000;
-	memset (_ihd_audio.buffer, 0, 4*0x10000);
+
+	//memset (_ihd_audio.buffer, 0, 4*0x10000);
 	if (_aud_inw_ (GCAP) & 1) {
 		printf ("HD-Audio 64-OK\n");
 	}
@@ -606,35 +653,38 @@ void hda_initialize () {
 
 	hda_reset();
 
-	
-
-     uint16_t statests = _aud_inw_ (STATESTS);
-	for (int i = 0; i < 15; i++) {
-		if (statests & (1 << i)){
-			printf ("Codecs -> %d\n", i);
-			if (codec_enumerate_widgets(i)) {
-				break;
-			}
-		}
-	}  
-	
-	
-
      uint16_t gcap = _aud_inw_(GCAP);
 	_ihd_audio.num_oss = HDA_GCAP_OSS(gcap);
 	_ihd_audio.num_iss = HDA_GCAP_ISS(gcap);
 	_ihd_audio.stream_0_x = 0x80 + (_ihd_audio.num_iss * 0x20);
 	_ihd_audio.stream_0_y = 0x80 + (_ihd_audio.num_iss * 0x20) + (_ihd_audio.num_oss * 0x20);
-   
+	
+	
+    
+	
+
+	uint16_t statests = _aud_inw_ (STATESTS);
+	for (int i = 0; i < 15; i++) {
+		if (statests & (1 >> i)){
+			if (codec_enumerate_widgets(i)) {
+				break;
+			}
+		}
+	} 
 	
 	init_output();
-	hda_set_volume(0);
-  
 	hda_init_output_stream();
+	//
 	hda_output_start();
+	hda_set_volume (0); //mute
+	
+
+	
+	x64_sti();
 	printf ("IHD Audio Initialized successfully\n");
 }
 
 //! Transfer PCM Audio Data to internal buffer of HD-Audio
-void hda_audio_add_pcm (void *data, size_t length) {
+void hda_audio_add_pcm () {
+	memcpy (_ihd_audio.buffer, (void*)sounddata_data,sounddata_length);
 }

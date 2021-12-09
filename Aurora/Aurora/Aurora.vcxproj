@@ -207,6 +207,7 @@
     <ClInclude Include="..\include\drivers\acpi\acpi.h" />
     <ClInclude Include="..\include\drivers\ata.h" />
     <ClInclude Include="..\include\drivers\hdaudio\hda.h" />
+    <ClInclude Include="..\include\drivers\hdaudio\sound_data.h" />
     <ClInclude Include="..\include\drivers\kybrd.h" />
     <ClInclude Include="..\include\drivers\mouse.h" />
     <ClInclude Include="..\include\drivers\net\amd_am79c973.h" />
