@@ -18,8 +18,7 @@ APIC & IOAPIC <br>
 
 
 # TODO
-HD-Audio : Setup output codecs, input stream & input codec<br>
-        _{Output Stream done & sound coming}_
+HD-Audio : _Input Stream & ADC Codecs_
 
         
 # Screenshot
