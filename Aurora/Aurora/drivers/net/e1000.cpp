@@ -306,6 +306,13 @@ void e1000_initialize () {
 	}
 
 	x64_cli ();
+
+	uint16_t command = 0;
+	read_config_16 (0,bus,dev_,func,0x4,&command);
+	if (((command >> 10) & 0xff) != 0) {
+		printf ("E1000 INterrupt Disabled in PCI ConfigSpace\n");
+	}
+
 	i_net_dev = (e1000_dev*)malloc(sizeof(e1000_dev));
     
     i_net_dev->e1000_mem_base = dev->device.nonBridge.baseAddress[1] & ~0xf;
@@ -320,6 +327,9 @@ void e1000_initialize () {
 	}
 	i_net_dev->e1000_irq = dev->device.nonBridge.interruptLine;
 	bool pci_status = pci_alloc_msi (func, dev_, bus, e1000_interrupt_handler);
+	if (pci_status) {
+		printf ("E1000 Supports MSI\n");
+	}
 	if (!pci_status) {
 		if (dev->device.nonBridge.interruptLine != 255) {
 			printf ("E1000 legacy irq -> %d, pin -> %d\n", dev->device.nonBridge.interruptLine, dev->device.nonBridge.interruptPin);

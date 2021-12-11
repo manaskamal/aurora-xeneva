@@ -16,8 +16,11 @@ extern "C"
 {
 #endif
 
+#ifndef _VALIST
+#define _VALIST
 typedef unsigned char *_va_list_;
 typedef unsigned char * va_list;
+#endif
 
 #ifdef __cplusplus
 }

@@ -9,8 +9,8 @@
  * ============================================================
  */
 
-#ifndef __ACPI_H__
-#define __ACPI_H__
+#ifndef __ACPI_XE_H__
+#define __ACPI_XE_H__
 
 
 #include <stdint.h>
@@ -308,12 +308,12 @@ typedef struct _apic_interrupt_override_
 	uint16_t flags;
 }apic_interrupt_override;
 
-typedef struct _acpi_table_srat_
+typedef struct _acpi_table_srat_x_
 {
 	acpiSysDescHeader  Header;         /* Common ACPI Table Header */
 	uint32_t           TableRevision;  /* Must be value '1' */
 	uint64_t           Reserved;       /* Reserved, must be zero */
-}acpi_table_srat;
+}acpi_table_srat_xe;
 
 
 typedef struct _acpi_sub_tab_

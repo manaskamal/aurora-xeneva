@@ -11,9 +11,10 @@
 
 #ifndef __STRING_H__
 #define __STRING_H__
-#pragma once
+
 
 #include <stdint.h>
+
 
 //!=====================================================
 //! S T R I N G   G L O B A L   F U N C T I O N S
@@ -28,9 +29,11 @@ extern char* strchr (char* str, int character);
 //!=====================================================
 //! M E M O R Y  G L O B A L   F U N C T I O N S
 //!=====================================================
-extern void  memset(void *targ, uint8_t val, uint32_t len);
-extern "C" void memcpy(void *targ, void *src, uint32_t len);
-extern int memcmp(const void *first, const void *second, size_t length);
+extern void memset(void *targ, uint8_t val, uint32_t len);
+extern "C" void  memcpy(void *targ, void *src, uint32_t len);
+extern  int memcmp(const void *first, const void *second, size_t length);
 extern void* memmove (void*, const void*, size_t);
+
+
 
 #endif

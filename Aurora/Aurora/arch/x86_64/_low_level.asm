@@ -291,10 +291,10 @@ cache_flush:
 ;======================================
 ; STACK FUNCTIONS
 ;======================================
-global x64_get_stack
-x64_get_stack:
-      mov rax, rsp
-	  ret
+;global x64_get_stack
+;x64_get_stack:
+      ;mov rax, rsp
+	 ; ret
 
 global x64_hlt
 x64_hlt:

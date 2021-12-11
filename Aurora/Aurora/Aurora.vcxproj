@@ -117,12 +117,12 @@
     <ClCompile>
       <WarningLevel>TurnOffAllWarnings</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>E:\Xeneva Project\Xeneva\Aurora\include;E:\Xeneva Project\Xeneva\Aurora\acpica\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>E:\Xeneva Project\Xeneva\Aurora\include;E:\Xeneva Project\Misc\acpica-win-20120620\source\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <SDLCheck>
       </SDLCheck>
       <OmitFramePointers>true</OmitFramePointers>
-      <PreprocessorDefinitions>ARCH_X64;USE_APIC;ACPI_MACHINE_WIDTH=64;PROCESSOR_ARCHITECHTURE=X64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>ARCH_X64;USE_APIC;ACPI_LIBRARY;ACPI_FULL_DEBUG;_WINDOWS;PROCESSOR_ARCHITECTURE=x64;ACPI_MACHINE_WIDTH=64;WIN64;X64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <IgnoreStandardIncludePath>true</IgnoreStandardIncludePath>
       <ExceptionHandling>false</ExceptionHandling>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
@@ -132,6 +132,7 @@
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions</EnableEnhancedInstructionSet>
       <AssemblerOutput>AssemblyAndSourceCode</AssemblerOutput>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <CallingConvention>Cdecl</CallingConvention>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>
@@ -157,7 +158,7 @@
       <DataExecutionPrevention>
       </DataExecutionPrevention>
       <AdditionalOptions>/filealign:0x1000 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalLibraryDirectories>E:\Xeneva Project\Xeneva\Aurora\x64\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>E:\Xeneva Project\Xeneva\Aurora;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -207,7 +208,6 @@
     <ClInclude Include="..\include\drivers\acpi\acpi.h" />
     <ClInclude Include="..\include\drivers\ata.h" />
     <ClInclude Include="..\include\drivers\hdaudio\hda.h" />
-    <ClInclude Include="..\include\drivers\hdaudio\sound_data.h" />
     <ClInclude Include="..\include\drivers\kybrd.h" />
     <ClInclude Include="..\include\drivers\mouse.h" />
     <ClInclude Include="..\include\drivers\net\amd_am79c973.h" />
@@ -288,6 +288,7 @@
     <ClCompile Include="console.cpp" />
     <ClCompile Include="drivers\ac97\ac97.cpp" />
     <ClCompile Include="drivers\acpi\acpi.cpp" />
+    <ClCompile Include="drivers\acpi\xenevaosi.cpp" />
     <ClCompile Include="drivers\ata.cpp" />
     <ClCompile Include="drivers\hda\hda.cpp" />
     <ClCompile Include="drivers\kybrd.cpp" />

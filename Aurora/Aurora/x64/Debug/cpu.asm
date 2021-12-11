@@ -568,7 +568,7 @@ $LN3:
 
 ; 196  : 
 ; 197  : #ifdef USE_PIC
-; 198  : 	//initialize_pic(0x20, 0x28);
+; 198  : 	initialize_pic(0x20, 0x28);
 ; 199  : #endif
 ; 200  : 
 ; 201  : #ifdef USE_APIC

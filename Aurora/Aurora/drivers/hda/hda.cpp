@@ -11,7 +11,6 @@
 
 #include <drivers\hdaudio\hda.h>
 #include <stdio.h>
-#include <drivers\hdaudio\sound_data.h>
 #include <string.h>
 
 //! static datas
@@ -63,12 +62,21 @@ uint8_t _aud_inb_ (int reg) {
 
 /**
  * Interrupt handler for intel hd audio
- * currently not implemented 
  */
 void hda_handler (size_t v, void* p) {
-	printf ("HD-Audio Interrupt fired++\n");
+	uint32_t isr = _aud_inl_(INTSTS);
+	uint8_t sts = _aud_inb_(REG_O0_STS(_ihd_audio));
+
+
+	if (sts & 0x4) {
+		//printf ("[HD-Audio]: Output stream 1 buffer completed\n");
+		//hda_output_stop();
+	}
+
+	_aud_outl_(INTSTS, isr);
+	_aud_outb_ (REG_O0_STS(_ihd_audio),sts);
 	//apic_local_eoi();
-	interrupt_end(0);
+	interrupt_end(1);
 }
 
 
@@ -256,8 +264,8 @@ void hda_set_volume (uint8_t volume) {
 	int meta = 0xb000;
 	if (volume == 0)
 		volume = 0x80;  //mute bit
-	else
-		volume = volume * 127 / 255;
+	/*else
+		volume = volume * 127 / 255;*/
 	//codec_query (_ihd_audio.output->codec, _ihd_audio.output->nid, VERB_SET_AMP_GAIN_MUTE | 0xb000 | volume);
 		
 	codec_query (_ihd_audio.output->codec, 2, 0x39000 | volume);
@@ -342,17 +350,20 @@ void hda_init_output_stream () {
 		;
 	uint64_t bdl_base = (uint64_t)pmmngr_alloc();   //get_physical_address  ((uint64_t) 0x0000000000000000);
 	ihda_bdl_entry *bdl = (ihda_bdl_entry*)bdl_base;  //(_ihd_audio.corb + 3072);
-	for (int i = 0; i < 4; i++) {
-		bdl[i].paddr = (uint64_t)get_physical_address((uint64_t)_ihd_audio.buffer);
-		bdl[i].length = 0x10000;
-		bdl[i].flags = 0;
+	int j = 0;
+	for (j = 0; j < 16; j++) {
+		bdl[j].paddr = (uint64_t)get_physical_address((uint64_t)_ihd_audio.buffer + j * 0x10000);
+		bdl[j].length = 0x10000;
+		bdl[j].flags = 1;
 	}
+
+	//bdl[j].flags = 1;
 
 	_aud_outl_ (REG_O0_CTLL(_ihd_audio),(1<<20)); 
 	_aud_outl_ (REG_O0_CTLU(_ihd_audio),(1<<20));
 
-	_aud_outl_ (REG_O0_CBL(_ihd_audio), 4*0x10000);
-	_aud_outw_(REG_O0_STLVI(_ihd_audio), 4-1);
+	_aud_outl_ (REG_O0_CBL(_ihd_audio),16*0x10000);
+	_aud_outw_(REG_O0_STLVI(_ihd_audio), 16-1);
 
 	_aud_outl_ (REG_O0_BDLPL(_ihd_audio), bdl_base);
 	_aud_outl_ (REG_O0_BDLPU(_ihd_audio), bdl_base >> 32);
@@ -360,7 +371,7 @@ void hda_init_output_stream () {
 	uint16_t format = (0<<14)  | (1<<4) | 1;  // (0<<14) | (0<<11) | (0<<8) | (1<<4) | 1;
 	_aud_outw_ (REG_O0_FMT(_ihd_audio), format);
 
-	//_aud_outb_(REG_O0_STS(_ihd_audio), (1<<2) | (1<<3) | (1<<4));
+	_aud_outb_(REG_O0_STS(_ihd_audio), (1<<2) | (1<<3) | (1<<4));
 
 	uint64_t* dma_pos = (uint64_t*)pmmngr_alloc();
 	for (int i = 0; i < 8; i++) {
@@ -369,6 +380,7 @@ void hda_init_output_stream () {
 
 	_aud_outl_ (DPIBLBASE, (uint32_t)dma_pos | 0x1);
 	_aud_outl_ (DPIBUBASE, (uint32_t)dma_pos >> 32);
+
 }
 
 /**
@@ -585,15 +597,17 @@ void hda_reset() {
 	while ((_aud_inl_(GCTL) & GCTL_RESET) == 0);
 
 	_aud_outw_(WAKEEN, 0xffff);
-	_aud_outl_(INTCTL, 0x8000000ff);
-
+	_aud_outl_(INTCTL,0x800000ff);
 	setup_corb();
 	setup_rirb();
 }
 
 //! Start Output
 void hda_output_start () {
+	//_aud_outb_(REG_O0_STS(_ihd_audio), (1<<2) | (1<<3) | (1<<4));
+
 	uint32_t value = _aud_inl_(REG_O0_CTLL(_ihd_audio));
+	value |= 0x4;
 	value |= 0x2;
     _aud_outw_(REG_O0_CTLL(_ihd_audio),value);
 }
@@ -608,6 +622,8 @@ void hda_output_stop () {
  * Initialize the HD Audio Controller
  */
 void hda_initialize () {
+
+
 	pci_device_info pci_dev;
 	int bus, dev, func;
 
@@ -616,7 +632,25 @@ void hda_initialize () {
 		return;
 	}
 
-	x64_cli();
+	uint16_t command = 0;
+	read_config_16 (0,bus,dev,func,0x4,&command);
+	if (((command >> 10) & 0xff) != 0) {
+		printf ("[HD-Audio]: Interrupt disabled in PCI Config_Space %x\n", command);
+	}
+
+	command |= 0<<10;
+	command |= 0x2;
+	write_config_16 (0,bus,dev,func, 0x4,command);
+
+	uint16_t command2 = 0;
+	read_config_16 (0,bus,dev,func,0x4,&command2);
+
+
+
+	if (((command2 >> 10) & 0xff) != 0) {
+		printf ("[HD-Audio ##2]: Interrupt disabled in PCI Config_Space\n");
+	}
+
 	_ihd_audio.output = (hda_output*)pmmngr_alloc();
 	_ihd_audio.vol = (hda_volume*)pmmngr_alloc();
 	memset (_ihd_audio.output, 0, 4096);
@@ -624,11 +658,13 @@ void hda_initialize () {
 	printf ("HD Audio found vendor -> %x, device -> %x\n", pci_dev.device.vendorID, pci_dev.device.deviceID);
 	printf ("HD-Audio interrupt line -> %d\n", pci_dev.device.nonBridge.interruptLine);
 
-
 	bool pci_status = pci_alloc_msi (func, dev, bus, hda_handler);
+	if (pci_status) 
+		printf ("[HD-Audio]: Supports MSI\n");
 	if (!pci_status) {
-		//! fall to legacy interrupt handling mode
-		interrupt_set (10, hda_handler, pci_dev.device.nonBridge.interruptLine);
+		printf ("Using Legacy interrupt line -> %d pin -> %d\n", pci_dev.device.nonBridge.interruptLine, 
+			pci_dev.device.nonBridge.interruptPin);
+		interrupt_set (11, hda_handler,11);
 	}
 
 
@@ -639,13 +675,12 @@ void hda_initialize () {
 	memset (_ihd_audio.rirb, 0, 4096);
 
 	uint64_t pos = 0xFFFFE00000100000;
-	for (int i = 0; i < 4*0x10000 / 4096; i++) {
+	for (int i = 0; i < 16*0x10000 / 4096; i++) {
 		map_page ((uint64_t)pmmngr_alloc(),pos + i * 4096, 0);
 	}
 
 	_ihd_audio.buffer = (uint64_t*)0xFFFFE00000100000;
-
-	//memset (_ihd_audio.buffer, 0, 4*0x10000);
+	memset (_ihd_audio.buffer, 0, 16*0x10000);
 	if (_aud_inw_ (GCAP) & 1) {
 		printf ("HD-Audio 64-OK\n");
 	}
@@ -674,17 +709,18 @@ void hda_initialize () {
 	
 	init_output();
 	hda_init_output_stream();
-	//
-	hda_output_start();
-	hda_set_volume (0); //mute
 	
-
-	
-	x64_sti();
 	printf ("IHD Audio Initialized successfully\n");
+
+
 }
 
 //! Transfer PCM Audio Data to internal buffer of HD-Audio
-void hda_audio_add_pcm () {
-	memcpy (_ihd_audio.buffer, (void*)sounddata_data,sounddata_length);
+void hda_audio_add_pcm (unsigned char *data, uint32_t length) {
+	memcpy (_ihd_audio.buffer, data,length);
+}
+
+void hda_audio_play () {
+	hda_output_start();
+	hda_set_volume (119); //mute
 }

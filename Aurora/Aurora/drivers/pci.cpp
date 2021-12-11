@@ -303,57 +303,62 @@ bool pci_alloc_msi (int func, int dev, int bus, void (*fn)(size_t, void* p)) {
 	uint32_t status = 0;
 	read_config_32_ext (0,bus, dev, func, 0x4,&status);
 	status >>= 16;
-	if (status & (1<<4)) {
+	if ((status >> 4) & 1) {
 		uint32_t capptr = 0, cap_reg = 0, msi_reg = 0; 
 		read_config_32_ext (0,bus, dev, func, 0x34, &capptr);
 		/*capptr &= 0xFF;
 		capptr /= 4;*/
 		while (capptr != 0) {
 			read_config_32_ext (0,bus, dev, func, capptr, &cap_reg);
-			if ((cap_reg & 0xFF) == PCI_CAPABILITY_MSIX) {
+			if ((cap_reg & 0xff) == PCI_CAPABILITY_MSIX) {
 				printf ("MSI-X found for this device\n");
 				msi_reg = capptr;
 				break;
 			}
 
-			if ((cap_reg & 0xFF) == PCI_CAPABILITY_MSI) {
+			if ((cap_reg & 0xff)  == PCI_CAPABILITY_MSI) {
 				printf ("MSI found for this device\n");
 				msi_reg = capptr;
 				//break;
 			}
-			capptr = (cap_reg >> 8) & 0xFF;   //((cap_reg >> 8) & 0xFF) / 4;
+			capptr = ((cap_reg >> 8) & 0xff);   //((cap_reg >> 8) & 0xFF) / 4;
 		}
 
 		if (msi_reg == 0)
 			return false;
+
 		uint32_t vector = 60 + v_i;
 		setvect (vector, fn);
 
 		uint64_t msi_data = 0;
-		uint64_t msi_addr = pci_get_msi_addr (&msi_data, vector, 0,1,0);
-
+		uint64_t msi_addr = pci_get_msi_addr (&msi_data, vector, 0,0,0);
+		printf ("MSI-DATA -> %x\n", msi_data);
 		uint64_t internal_ptr = 0;
 		read_config_32_ext (0, bus, dev, func, 32,&cap_reg);
 		if ((cap_reg & 0xFF) == 0x11) { 
 			//!MSI-X interrupt handling not implemented yet
 		} else {
-			uint32_t msgctrl = (cap_reg >> 16);
+			uint64_t msgctrl = cap_reg >> 16;
+			printf ("MSG Control -> %x\n", msgctrl);
 			bool mask_cap = ((msgctrl & (1<<8)) != 0);
 			bool bits64_cap = ((msgctrl & (1<<7)) != 0);
 			uint32_t requested_vecs= (msgctrl >> 1) & 0x7;
 
 			//! write msg and data
-			write_config_32 (bus, dev, func, msi_reg + 1, msi_addr & UINT32_MAX);
+			write_config_32 (bus, dev, func, msi_reg + 1, (uint32_t)msi_addr);
 			uint32_t data_offset = 2;
 			if (bits64_cap) {
+				printf ("MSI 64BIT Capable\n");
 				write_config_32(bus, dev, func, msi_reg + 2, msi_addr >> 32);
 				++data_offset;
 			}
+			write_config_32(bus,dev,func,msi_reg + data_offset,msi_data);
 			if (mask_cap){
+				printf ("MSI Mask Capable\n");
 				write_config_32 (bus, dev, func, msi_reg + 4, 0);
 			}
 			//!Enable MSI
-			msgctrl |= 1;
+			msgctrl |= 0x1;
 			cap_reg = (cap_reg & UINT16_MAX) | (msgctrl << 16);
 			write_config_32 (bus, dev, func, msi_reg, cap_reg);
 			printf ("MSI interrupt for this device enabled msi reg -> %x\n", msi_reg);

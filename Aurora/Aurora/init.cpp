@@ -44,6 +44,7 @@
 #include <procmngr.h>
 #include <serial.h>
 #include <stream.h>
+
 #include <fs\ttype.h>
 
 #include <net\arp.h>
@@ -114,6 +115,7 @@ void test_thread2 () {
 	}
 }
  
+
 /**========================================
  ** the main entry routine -- _kmain
  **
@@ -148,14 +150,31 @@ void _kmain () {
 	//!Initialize kernel runtime drivers	
 	kybrd_init();
 	initialize_mouse();
+	
 
+	for (int i = 0; i < 2*1024*1024/4096; i++)
+		map_page((uint64_t)pmmngr_alloc(), 0xFFFFF00000A00000 + i * 4096, 0);
+
+	unsigned char* buffer = (unsigned char*)0xFFFFF00000A00000;
+
+	vfs_node_t *root = vfs_finddir ("/");
+	vfs_node_t file = openfs (root, "/start1.wav");
+	printf ("Wave file opened size -> %d MB\n", file.size / 1024 / 1024);
+	readfs (root, &file, buffer, file.size);
+	unsigned char* buffer2 = (unsigned char*)(buffer + 44);
 	message_init ();
 	dwm_ipc_init();
 	stream_init ();
 	driver_mngr_initialize(info);
 	hda_initialize(); 
+
+	hda_audio_add_pcm (buffer2, file.size);
+	hda_audio_play();
 	e1000_initialize();   //<< receiver not working
-	for(;;);
+	printf ("[HD-Audio]: Playing Start1.wav\n");
+	printf ("[HD-Audio]: Volume - 119\n");
+	printf ("Used RAM -> %d MB, Free RAM -> %d MB\n", pmmngr_get_used_ram() /1024 / 1024, pmmngr_get_free_ram() / 1024 / 1024);
+	
 #ifdef ARCH_X64
 	//================================================
 	//! Initialize the scheduler here

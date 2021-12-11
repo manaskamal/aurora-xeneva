@@ -307,6 +307,8 @@ extern void  write_config_16 (uint16_t segment,int bus, int dev, int function, i
 extern void  read_config_32 (uint16_t segment, int bus, int dev, int function, int reg, uint32_t data);
 extern void read_config_8 (uint16_t segment,int bus, int dev, int function, int reg, unsigned char* data);
 extern void write_config_8 (uint16_t segment,int bus, int dev, int func, int reg, unsigned char data);
+extern void  read_config_32_ext (uint16_t segment,int bus, int dev, int function, int reg, uint32_t *data);
+extern void write_config_32 (int bus, int dev, int func, int reg, unsigned data);
 
 extern bool pci_find_device (uint16_t vendor_id, uint16_t device_id, pci_address *addr_out);
 extern void pci_set_mem_enable (const pci_address *addr, bool enabe);

@@ -111,10 +111,10 @@ extern "C" void *AcpiOsMapMemory(ACPI_PHYSICAL_ADDRESS PhysicalAddress, ACPI_SIZ
 	void* addr = get_free_page(Length, false);
 	if (Length > 4096) {
 		for (int i=0; i < Length / 4096;i++) {
-			map_page (PhysicalAddress, (uint64_t)addr + i * 4096);
+			map_page (PhysicalAddress, (uint64_t)addr + i * 4096,0);
 		}
 	}else {
-		map_page (PhysicalAddress, (uint64_t)addr);
+		map_page (PhysicalAddress, (uint64_t)addr, 0);
 	}
 	return addr;
 }

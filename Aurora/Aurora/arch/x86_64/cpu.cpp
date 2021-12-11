@@ -195,7 +195,7 @@ void hal_x86_64_setup_int () {
 	exception_init ();
 
 #ifdef USE_PIC
-	//initialize_pic(0x20, 0x28);
+	initialize_pic(0x20, 0x28);
 #endif
 
 #ifdef USE_APIC

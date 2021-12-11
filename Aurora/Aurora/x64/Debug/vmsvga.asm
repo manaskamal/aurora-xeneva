@@ -10,49 +10,49 @@ _BSS	SEGMENT
 ?svga_dev@@3U_svga_drive_@@A DB 0100060H DUP (?)	; svga_dev
 _BSS	ENDS
 CONST	SEGMENT
-$SG5791	DB	'No VMware SVGA device found', 0aH, 00H
+$SG5804	DB	'No VMware SVGA device found', 0aH, 00H
 	ORG $+3
-$SG5801	DB	'[VMware SVGA]: negotiating SVGA device version!', 0aH, 00H
+$SG5814	DB	'[VMware SVGA]: negotiating SVGA device version!', 0aH, 00H
 	ORG $+7
-$SG5805	DB	'[VMware SVGA]: FIFO size is very small, probably incorre'
+$SG5818	DB	'[VMware SVGA]: FIFO size is very small, probably incorre'
 	DB	'ct', 0aH, 00H
-$SG6116	DB	'svga', 00H
+$SG6129	DB	'svga', 00H
 	ORG $+7
-$SG5803	DB	'[VMware SVGA]: FrameBuffer size is very small, probably '
+$SG5816	DB	'[VMware SVGA]: FrameBuffer size is very small, probably '
 	DB	'incorrect', 0aH, 00H
 	ORG $+5
-$SG5809	DB	'Irq of svga -> %d', 0aH, 00H
+$SG5822	DB	'Irq of svga -> %d', 0aH, 00H
 	ORG $+5
-$SG5810	DB	'SVGA initialized', 0aH, 00H
+$SG5823	DB	'SVGA initialized', 0aH, 00H
 	ORG $+6
-$SG5815	DB	'HW3D supported', 0aH, 00H
-$SG5817	DB	'SVGA IRQMask', 0aH, 00H
+$SG5828	DB	'HW3D supported', 0aH, 00H
+$SG5830	DB	'SVGA IRQMask', 0aH, 00H
 	ORG $+2
-$SG5822	DB	'SVGA IRQ appears to be present but broken %d', 0aH, 00H
+$SG5835	DB	'SVGA IRQ appears to be present but broken %d', 0aH, 00H
 	ORG $+2
-$SG5836	DB	'[Aurora]: Actual Fifo Reserve function called', 0aH, 00H
+$SG5849	DB	'[Aurora]: Actual Fifo Reserve function called', 0aH, 00H
 	ORG $+1
-$SG5841	DB	'[Aurora]: Fifo memory acquired', 0aH, 00H
-$SG5844	DB	'[VMware SVGA]: FIFO command too large bytes', 0aH, 00H
+$SG5854	DB	'[Aurora]: Fifo memory acquired', 0aH, 00H
+$SG5857	DB	'[VMware SVGA]: FIFO command too large bytes', 0aH, 00H
 	ORG $+3
-$SG5847	DB	'[VMware SVGA]: FIFO command length not 32-bit aligned', 0aH
+$SG5860	DB	'[VMware SVGA]: FIFO command length not 32-bit aligned', 0aH
 	DB	00H
 	ORG $+1
-$SG5849	DB	'[VMware SVGA]: FIFO reserve before FIFO commit', 0aH, 00H
-$SG5856	DB	'[Aurora]: Stop -> %d', 0aH, 00H
+$SG5862	DB	'[VMware SVGA]: FIFO reserve before FIFO commit', 0aH, 00H
+$SG5869	DB	'[Aurora]: Stop -> %d', 0aH, 00H
 	ORG $+2
-$SG5858	DB	'[Aurora]: Debug Step[1]', 0aH, 00H
+$SG5871	DB	'[Aurora]: Debug Step[1]', 0aH, 00H
 	ORG $+7
-$SG5884	DB	'[VMware SVGA]: FIFO commit before FIFO reserve', 0aH, 00H
-$SG5908	DB	'[Aurora]: Fifo Reserved function called', 0aH, 00H
+$SG5897	DB	'[VMware SVGA]: FIFO commit before FIFO reserve', 0aH, 00H
+$SG5921	DB	'[Aurora]: Fifo Reserved function called', 0aH, 00H
 	ORG $+7
-$SG6065	DB	'SVGA interrupted', 0aH, 00H
+$SG6078	DB	'SVGA interrupted', 0aH, 00H
 	ORG $+6
-$SG6068	DB	'Irq flags -> %d', 0aH, 00H
+$SG6081	DB	'Irq flags -> %d', 0aH, 00H
 	ORG $+7
-$SG6070	DB	'[VMware SVGA]: spurious SVGA IRQ', 0aH, 00H
+$SG6083	DB	'[VMware SVGA]: spurious SVGA IRQ', 0aH, 00H
 	ORG $+6
-$SG6117	DB	'/dev/svga', 00H
+$SG6130	DB	'/dev/svga', 00H
 CONST	ENDS
 PUBLIC	?svga_read_reg@@YAII@Z				; svga_read_reg
 PUBLIC	?svga_write_reg@@YAXII@Z			; svga_write_reg
@@ -663,7 +663,7 @@ $LN3:
 ; 673  : 	strcpy (svga->filename, "svga");
 
 	mov	rax, QWORD PTR svga$[rsp]
-	lea	rdx, OFFSET FLAT:$SG6116
+	lea	rdx, OFFSET FLAT:$SG6129
 	mov	rcx, rax
 	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
 
@@ -726,7 +726,7 @@ $LN3:
 ; 685  : 	vfs_mount ("/dev/svga", svga);
 
 	mov	rdx, QWORD PTR svga$[rsp]
-	lea	rcx, OFFSET FLAT:$SG6117
+	lea	rcx, OFFSET FLAT:$SG6130
 	call	?vfs_mount@@YAXPEADPEAU_vfs_node_@@@Z	; vfs_mount
 
 ; 686  : }
@@ -1116,7 +1116,7 @@ $LN4:
 
 ; 584  : 	printf ("SVGA interrupted\n");
 
-	lea	rcx, OFFSET FLAT:$SG6065
+	lea	rcx, OFFSET FLAT:$SG6078
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 585  : 
@@ -1141,7 +1141,7 @@ $LN4:
 ; 589  : 	printf ("Irq flags -> %d\n", irq_flags);
 
 	mov	edx, DWORD PTR irq_flags$[rsp]
-	lea	rcx, OFFSET FLAT:$SG6068
+	lea	rcx, OFFSET FLAT:$SG6081
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 590  : 	svga_dev.irq.count++;
@@ -1163,7 +1163,7 @@ $LN4:
 
 ; 594  : 		printf ("[VMware SVGA]: spurious SVGA IRQ\n");	
 
-	lea	rcx, OFFSET FLAT:$SG6070
+	lea	rcx, OFFSET FLAT:$SG6083
 	call	?printf@@YAXPEBDZZ			; printf
 $LN1@svga_inter:
 
@@ -1906,7 +1906,7 @@ $LN3:
 
 ; 314  : 	debug_serial ("[Aurora]: Fifo Reserved function called\n");
 
-	lea	rcx, OFFSET FLAT:$SG5908
+	lea	rcx, OFFSET FLAT:$SG5921
 	call	?debug_serial@@YAXPEAD@Z		; debug_serial
 
 ; 315  : 	uint32_t*cmd = (uint32_t*)svga_fifo_reserve (bytes + sizeof type);
@@ -2025,7 +2025,7 @@ $LN16:
 
 ; 267  : 		printf ("[VMware SVGA]: FIFO commit before FIFO reserve\n");
 
-	lea	rcx, OFFSET FLAT:$SG5884
+	lea	rcx, OFFSET FLAT:$SG5897
 	call	?printf@@YAXPEBDZZ			; printf
 $LN11@svga_fifo_:
 
@@ -2281,7 +2281,7 @@ $LN23:
 
 ; 189  : 	debug_serial ("[Aurora]: Actual Fifo Reserve function called\n");
 
-	lea	rcx, OFFSET FLAT:$SG5836
+	lea	rcx, OFFSET FLAT:$SG5849
 	call	?debug_serial@@YAXPEAD@Z		; debug_serial
 
 ; 190  : 	volatile uint32_t *fifo = svga_dev.fifo_mem;
@@ -2315,7 +2315,7 @@ $LN23:
 
 ; 194  : 	debug_serial ("[Aurora]: Fifo memory acquired\n");
 
-	lea	rcx, OFFSET FLAT:$SG5841
+	lea	rcx, OFFSET FLAT:$SG5854
 	call	?debug_serial@@YAXPEAD@Z		; debug_serial
 
 ; 195  : 	bool reserveable = svga_has_fifo_cap (SVGA_FIFO_CAP_RESERVE);
@@ -2333,7 +2333,7 @@ $LN23:
 
 ; 198  : 		debug_serial ("[VMware SVGA]: FIFO command too large bytes\n");
 
-	lea	rcx, OFFSET FLAT:$SG5844
+	lea	rcx, OFFSET FLAT:$SG5857
 	call	?debug_serial@@YAXPEAD@Z		; debug_serial
 $LN20@svga_fifo_:
 
@@ -2352,7 +2352,7 @@ $LN20@svga_fifo_:
 
 ; 203  : 		debug_serial ("[VMware SVGA]: FIFO command length not 32-bit aligned\n");
 
-	lea	rcx, OFFSET FLAT:$SG5847
+	lea	rcx, OFFSET FLAT:$SG5860
 	call	?debug_serial@@YAXPEAD@Z		; debug_serial
 $LN19@svga_fifo_:
 
@@ -2366,7 +2366,7 @@ $LN19@svga_fifo_:
 
 ; 208  : 		debug_serial ("[VMware SVGA]: FIFO reserve before FIFO commit\n");
 
-	lea	rcx, OFFSET FLAT:$SG5849
+	lea	rcx, OFFSET FLAT:$SG5862
 	call	?debug_serial@@YAXPEAD@Z		; debug_serial
 $LN18@svga_fifo_:
 
@@ -2404,7 +2404,7 @@ $LN17@svga_fifo_:
 
 ; 218  : 		debug_serial("[Aurora]: Stop -> %d\n");
 
-	lea	rcx, OFFSET FLAT:$SG5856
+	lea	rcx, OFFSET FLAT:$SG5869
 	call	?debug_serial@@YAXPEAD@Z		; debug_serial
 
 ; 219  : 		if (next_cmd >= stop) {
@@ -2415,7 +2415,7 @@ $LN17@svga_fifo_:
 
 ; 220  : 			debug_serial ("[Aurora]: Debug Step[1]\n");
 
-	lea	rcx, OFFSET FLAT:$SG5858
+	lea	rcx, OFFSET FLAT:$SG5871
 	call	?debug_serial@@YAXPEAD@Z		; debug_serial
 
 ; 221  : 			if (next_cmd + bytes < max ||
@@ -2830,7 +2830,7 @@ $LN8:
 
 ; 141  : 			printf ("HW3D supported\n");
 
-	lea	rcx, OFFSET FLAT:$SG5815
+	lea	rcx, OFFSET FLAT:$SG5828
 	call	?printf@@YAXPEBDZZ			; printf
 $LN5@svga_enabl:
 
@@ -2865,7 +2865,7 @@ $LN5@svga_enabl:
 
 ; 150  : 		printf ("SVGA IRQMask\n");
 
-	lea	rcx, OFFSET FLAT:$SG5817
+	lea	rcx, OFFSET FLAT:$SG5830
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 151  : 		svga_dev.irq.pending = 0;
@@ -2911,7 +2911,7 @@ $LN2@svga_enabl:
 ; 160  : 			printf ("SVGA IRQ appears to be present but broken %d\n", svga_dev.irq.pending);
 
 	mov	edx, DWORD PTR ?svga_dev@@3U_svga_drive_@@A+1048660
-	lea	rcx, OFFSET FLAT:$SG5822
+	lea	rcx, OFFSET FLAT:$SG5835
 	call	?printf@@YAXPEBDZZ			; printf
 $LN1@svga_enabl:
 $LN4@svga_enabl:
@@ -2965,7 +2965,7 @@ $LN16:
 
 ; 55   : 		printf ("No VMware SVGA device found\n");
 
-	lea	rcx, OFFSET FLAT:$SG5791
+	lea	rcx, OFFSET FLAT:$SG5804
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 56   : 		return;
@@ -3080,7 +3080,7 @@ $LN8@svga_init:
 
 ; 81   : 		printf ("[VMware SVGA]: negotiating SVGA device version!\n");
 
-	lea	rcx, OFFSET FLAT:$SG5801
+	lea	rcx, OFFSET FLAT:$SG5814
 	call	?printf@@YAXPEBDZZ			; printf
 $LN5@svga_init:
 
@@ -3112,7 +3112,7 @@ $LN5@svga_init:
 
 ; 89   : 		printf ("[VMware SVGA]: FrameBuffer size is very small, probably incorrect\n");
 
-	lea	rcx, OFFSET FLAT:$SG5803
+	lea	rcx, OFFSET FLAT:$SG5816
 	call	?printf@@YAXPEBDZZ			; printf
 $LN4@svga_init:
 
@@ -3125,7 +3125,7 @@ $LN4@svga_init:
 
 ; 93   : 		printf ("[VMware SVGA]: FIFO size is very small, probably incorrect\n");
 
-	lea	rcx, OFFSET FLAT:$SG5805
+	lea	rcx, OFFSET FLAT:$SG5818
 	call	?printf@@YAXPEBDZZ			; printf
 $LN3@svga_init:
 
@@ -3174,7 +3174,7 @@ $LN2@svga_init:
 
 	movzx	eax, BYTE PTR irq$1[rsp]
 	mov	edx, eax
-	lea	rcx, OFFSET FLAT:$SG5809
+	lea	rcx, OFFSET FLAT:$SG5822
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 106  : 		outportd (svga_dev.io_base + SVGA_IRQSTATUS_PORT, 0xff);
@@ -3255,7 +3255,7 @@ $LN1@svga_init:
 ; 126  : 
 ; 127  : 	printf ("SVGA initialized\n");
 
-	lea	rcx, OFFSET FLAT:$SG5810
+	lea	rcx, OFFSET FLAT:$SG5823
 	call	?printf@@YAXPEBDZZ			; printf
 $LN12@svga_init:
 

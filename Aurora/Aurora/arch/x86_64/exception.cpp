@@ -132,7 +132,7 @@ void general_protection_fault (size_t v, void* p){
 //! it get fired and new page swapping process should be allocated
 
 void page_fault (size_t vector, void* param){
-	x64_cli();
+	//x64_cli();
 	interrupt_stack_frame *frame = (interrupt_stack_frame*)param;
 	void* vaddr = (void*)x64_read_cr2();
 
@@ -142,6 +142,12 @@ void page_fault (size_t vector, void* param){
 	int resv = frame->error & 0x8;
 	int id = frame->error & 0x10;
  //
+	bool blocked = false;
+	if (is_scheduler_initialized()){
+		block_thread(get_current_thread());
+		blocked = true;
+	}
+
 	if (us){
 		/*panic ("Page Fault \n");
 		printf ("Faulting Address -> %x\n", vaddr);
@@ -210,6 +216,9 @@ void page_fault (size_t vector, void* param){
 		printf ("*** Invalid Page ****\n");
 		for(;;);
 	}
+
+	if (blocked)
+		unblock_thread(get_current_thread());
 	//map_page((uint64_t)pmmngr_alloc(), (uint64_t)vaddr);
 }
 

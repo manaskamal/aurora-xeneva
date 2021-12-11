@@ -133,6 +133,7 @@ void pmmngr_init(KERNEL_BOOT_INFO *_info)
 		total_ram += efi_mem->num_pages * 4096;
 		if (efi_mem->type != 7) {
 			//! lock every pages
+			free_memory -= 4096;
 			pmmngr_lock_pages ((void*)efi_mem->phys_start,efi_mem->num_pages);
 		}
 	}
@@ -157,6 +158,8 @@ void* pmmngr_alloc()
 		return (void*)(ram_bitmap_index * 4096);
 	}
 
+
+	printf ("Used RAM -> %d MB, Free RAM -> %d MB\n", used_memory /1024 / 1024, free_memory / 1024 / 1024);
 	printf ("No more available pages\n");
 	for(;;);
 	return NULL; //here we need to swap page to file
