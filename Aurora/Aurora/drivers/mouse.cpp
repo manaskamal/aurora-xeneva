@@ -32,6 +32,9 @@ volatile int32_t mouse_button = 0;
 static mutex_t  *mouse = create_mutex();
 dwm_message_t old_message;
 
+/**
+ *  mouse_wait -- Delays the code execution
+ */
 void  mouse_wait (uint8_t a_type){
 	uint32_t _timer_out_ = 100000;
 	if (a_type == 0) {
@@ -51,6 +54,9 @@ void  mouse_wait (uint8_t a_type){
 	}
 }
 
+/*
+ * mouse_write - Writes a data to Mouse Port
+ */
 void mouse_write (uint8_t write) {
 	mouse_wait (1);
 	outportb (0x64, 0xD4);
@@ -58,6 +64,9 @@ void mouse_write (uint8_t write) {
 	outportb (0x60, write);
 }
 
+/*
+ * mouse_read - Reads data from mouse port
+ */
 uint8_t mouse_read () {
 	mouse_wait (0);
 	return inportb (0x60);
@@ -68,9 +77,16 @@ int left_button_up() {
 	return prev_button[0] && !curr_button[0];
 }
 
+
+/**
+ * mouse_handler -- ISR for mouse 
+ * 
+ * it simply get the mouse data and prepare's
+ * a message packet then redirects it to the
+ * window manager
+ */
 void mouse_handler (size_t p, void* param) {
-	x64_cli();
-	set_multi_task_enable (false);
+
 	uint8_t status = inportb (MOUSE_STATUS);
 	while ((status & MOUSE_BBIT) && (status & MOUSE_F_BIT)) {
 		int8_t mouse_in = inportb (MOUSE_PORT);
@@ -163,9 +179,7 @@ read_next:
 		break;
 	}
 
-	set_multi_task_enable(true);
 	interrupt_end(12);
-	x64_sti();
 }
 
 
@@ -209,6 +223,10 @@ void mouse_register_device () {
 	vfs_mount ("/dev/mouse", node);
 }
 
+
+/**
+ * initialize_mouse -- Start the mouse driver
+ */
 void initialize_mouse () {
 	mouse_cycle = 0;
 	mouse_x = 0;
@@ -240,5 +258,4 @@ void initialize_mouse () {
 	interrupt_set (34, mouse_handler, 12);  //34
 
 	mouse_register_device ();
-	//irq_mask(12, true);
 }

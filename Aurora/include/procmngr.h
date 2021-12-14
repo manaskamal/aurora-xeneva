@@ -15,11 +15,14 @@
 #include <stdint.h>
 #include <stdio.h>
 
-
+#define PROCESS_CREATE 1
+#define PROCESS_DESTROY 2
 //!procmngr queue
 typedef struct _procmngr_queue_ {
     char name[8];
     char path[50];
+	uint8_t type;
+	uint16_t id;
 	struct _procmngr_queue_ *link;
 }procmngr_queue;
 

@@ -39,12 +39,9 @@ void QuChannelPut (QuMessage *msg, uint16_t to_id) {
 send:
 	if (tom->type == 0) {
 		memcpy (channel_addr, msg, (sizeof(QuMessage)));
-		//sys_unblock_id (to_id);
-		sys_wait();
+		sys_unblock_id (to_id);
+		//sys_wait();
 		return;
-	}else {
-		sys_wait();
-		goto send;
 	}
 
 }

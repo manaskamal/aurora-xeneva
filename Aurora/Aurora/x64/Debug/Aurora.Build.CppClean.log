@@ -126,6 +126,8 @@ E:\XENEVA PROJECT\XENEVA\AURORA\AURORA\X64\DEBUG\XHCI.OBJ
 E:\XENEVA PROJECT\XENEVA\AURORA\AURORA\X64\DEBUG\XHCI.ASM
 E:\XENEVA PROJECT\XENEVA\AURORA\AURORA\X64\DEBUG\APIC.OBJ
 E:\XENEVA PROJECT\XENEVA\AURORA\AURORA\X64\DEBUG\APIC.ASM
+E:\XENEVA PROJECT\XENEVA\AURORA\AURORA\X64\DEBUG\BLOCK.OBJ
+E:\XENEVA PROJECT\XENEVA\AURORA\AURORA\X64\DEBUG\BLOCK.ASM
 E:\XENEVA PROJECT\XENEVA\AURORA\AURORA\X64\DEBUG\CPU.OBJ
 E:\XENEVA PROJECT\XENEVA\AURORA\AURORA\X64\DEBUG\CPU.ASM
 E:\XENEVA PROJECT\XENEVA\AURORA\AURORA\X64\DEBUG\EXCEPTION.OBJ
@@ -155,6 +157,7 @@ E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\amd_am79c973.obj
 E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\apic.obj
 E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\arp.obj
 E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\ata.obj
+E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\block.obj
 E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\circ_buf.obj
 E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\console.obj
 E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\cpu.obj

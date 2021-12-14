@@ -14,7 +14,10 @@
 
 // keyboard controller ---------------------------------------
 
-
+/**
+ * kybrd_handler -- Handles Key Events and redirects it to
+ *                  Window Manager
+ */
 void kybrd_handler(size_t v, void* p)
 {
 	static bool _extended = false;
@@ -47,6 +50,12 @@ void kybrd_handler(size_t v, void* p)
 	return;
 }
 
+
+
+/**
+ * kybrd_init -- Initialize the keyboard
+ * it installs the irq_1 handler with keyboard handler function
+ */
 void kybrd_init () {
 	interrupt_set (1,kybrd_handler,1);
 }

@@ -76,7 +76,7 @@ void task_delete (thread_t* thread) {
 		thread->next->prev = thread->prev;
 	}
 
-	pmmngr_free (thread);
+	//pmmngr_free (thread);
 }
 /*=========================================================================================*/
 /*=========================================================================================*/
@@ -203,7 +203,7 @@ void initialize_scheduler () {
 	scheduler_mutex = create_mutex ();
 	scheduler_enable = true;
 	scheduler_initialized = true;
-	thread_t *idle_ = create_kthread (idle_thread,(uint64_t)pmmngr_alloc() + 4096,x64_read_cr3(),"Idle",1);
+	thread_t *idle_ = create_kthread (idle_thread,(uint64_t)pmmngr_alloc(),x64_read_cr3(),"Idle",1);
 	current_thread = idle_;
 }
 
@@ -248,6 +248,7 @@ void scheduler_isr (size_t v, void* param) {
 #ifdef USE_PIC
 		interrupt_end (0);
 #endif
+		
 		if (current_thread->priviledge == THREAD_LEVEL_USER){
 			get_kernel_tss()->rsp[0] = current_thread->kern_esp;
 		}

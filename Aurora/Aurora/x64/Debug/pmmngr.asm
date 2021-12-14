@@ -40,10 +40,10 @@ PUBLIC	?pmmngr_unreserve_page@@YAXPEAX@Z		; pmmngr_unreserve_page
 EXTRN	?printf@@YAXPEBDZZ:PROC				; printf
 pdata	SEGMENT
 $pdata$?pmmngr_init@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z DD imagerel $LN7
-	DD	imagerel $LN7+323
+	DD	imagerel $LN7+350
 	DD	imagerel $unwind$?pmmngr_init@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z
 $pdata$?pmmngr_alloc@@YAPEAXXZ DD imagerel $LN9
-	DD	imagerel $LN9+255
+	DD	imagerel $LN9+258
 	DD	imagerel $unwind$?pmmngr_alloc@@YAPEAXXZ
 $pdata$?pmmngr_alloc_blocks@@YAPEAXH@Z DD imagerel $LN6
 	DD	imagerel $LN6+77
@@ -228,11 +228,11 @@ $LN2@pmmngr_loc:
 	sub	rax, 4096				; 00001000H
 	mov	QWORD PTR ?free_memory@@3_KA, rax	; free_memory
 
-; 83   : 		used_memory += 4096;
+; 83   : 		reserved_memory += 4096;
 
-	mov	rax, QWORD PTR ?used_memory@@3_KA	; used_memory
+	mov	rax, QWORD PTR ?reserved_memory@@3_KA	; reserved_memory
 	add	rax, 4096				; 00001000H
-	mov	QWORD PTR ?used_memory@@3_KA, rax	; used_memory
+	mov	QWORD PTR ?reserved_memory@@3_KA, rax	; reserved_memory
 $LN1@pmmngr_loc:
 $LN3@pmmngr_loc:
 
@@ -361,7 +361,7 @@ $LN2@Set:
 	sar	eax, cl
 	mov	BYTE PTR bitIndexer$[rsp], al
 
-; 53   : 
+; 53   : 	
 ; 54   : 		Buffer[byteIndex] &= ~bitIndexer;
 
 	mov	rax, QWORD PTR this$[rsp]
@@ -382,7 +382,7 @@ $LN2@Set:
 	test	eax, eax
 	je	SHORT $LN1@Set
 
-; 56   : 			Buffer[byteIndex] |= bitIndexer;
+; 56   : 			Buffer[byteIndex] |= bitIndexer;	
 
 	mov	rax, QWORD PTR this$[rsp]
 	mov	rax, QWORD PTR [rax+8]
@@ -398,9 +398,9 @@ $LN1@Set:
 
 ; 57   : 		}
 ; 58   : 
-; 59   : 		return false;
+; 59   : 		return true;
 
-	xor	al, al
+	mov	al, 1
 $LN3@Set:
 
 ; 60   : 	}
@@ -502,11 +502,11 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 ?pmmngr_get_total_ram@@YA_KXZ PROC			; pmmngr_get_total_ram
 
-; 205  : 	return total_ram;
+; 209  : 	return total_ram;
 
 	mov	rax, QWORD PTR ?total_ram@@3_KA		; total_ram
 
-; 206  : }
+; 210  : }
 
 	ret	0
 ?pmmngr_get_total_ram@@YA_KXZ ENDP			; pmmngr_get_total_ram
@@ -516,11 +516,11 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 ?pmmngr_get_used_ram@@YA_KXZ PROC			; pmmngr_get_used_ram
 
-; 200  : 	return used_memory;
+; 204  : 	return used_memory;
 
 	mov	rax, QWORD PTR ?used_memory@@3_KA	; used_memory
 
-; 201  : }
+; 205  : }
 
 	ret	0
 ?pmmngr_get_used_ram@@YA_KXZ ENDP			; pmmngr_get_used_ram
@@ -530,11 +530,11 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 ?pmmngr_get_free_ram@@YA_KXZ PROC			; pmmngr_get_free_ram
 
-; 195  : 	return free_memory;
+; 199  : 	return free_memory;
 
 	mov	rax, QWORD PTR ?free_memory@@3_KA	; free_memory
 
-; 196  : }
+; 200  : }
 
 	ret	0
 ?pmmngr_get_free_ram@@YA_KXZ ENDP			; pmmngr_get_free_ram
@@ -546,13 +546,13 @@ index$ = 32
 addr$ = 64
 ?pmmngr_free@@YAXPEAX@Z PROC				; pmmngr_free
 
-; 183  : {
+; 186  : {
 
 $LN6:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 56					; 00000038H
 
-; 184  : 	uint64_t index = (uint64_t)addr / 4096;
+; 187  : 	uint64_t index = (uint64_t)addr / 4096;
 
 	xor	edx, edx
 	mov	rax, QWORD PTR addr$[rsp]
@@ -560,7 +560,7 @@ $LN6:
 	div	rcx
 	mov	QWORD PTR index$[rsp], rax
 
-; 185  : 	if (ram_bitmap[index] == false) return;
+; 188  : 	if (ram_bitmap[index] == false) return;
 
 	mov	rdx, QWORD PTR index$[rsp]
 	lea	rcx, OFFSET FLAT:?ram_bitmap@@3VBitmap@@A ; ram_bitmap
@@ -571,7 +571,7 @@ $LN6:
 	jmp	SHORT $LN4@pmmngr_fre
 $LN3@pmmngr_fre:
 
-; 186  : 	if (ram_bitmap.Set (index, false)) {
+; 189  : 	if (ram_bitmap.Set (index, false)) {
 
 	xor	r8d, r8d
 	mov	rdx, QWORD PTR index$[rsp]
@@ -581,19 +581,20 @@ $LN3@pmmngr_fre:
 	test	eax, eax
 	je	SHORT $LN2@pmmngr_fre
 
-; 187  : 		free_memory += 4096;
+; 190  : 
+; 191  : 		free_memory += 4096;
 
 	mov	rax, QWORD PTR ?free_memory@@3_KA	; free_memory
 	add	rax, 4096				; 00001000H
 	mov	QWORD PTR ?free_memory@@3_KA, rax	; free_memory
 
-; 188  : 		used_memory -= 4096;
+; 192  : 		used_memory -= 4096;
 
 	mov	rax, QWORD PTR ?used_memory@@3_KA	; used_memory
 	sub	rax, 4096				; 00001000H
 	mov	QWORD PTR ?used_memory@@3_KA, rax	; used_memory
 
-; 189  : 		if (ram_bitmap_index > index) ram_bitmap_index = index;
+; 193  : 		if (ram_bitmap_index > index) ram_bitmap_index = index;
 
 	mov	rax, QWORD PTR index$[rsp]
 	cmp	QWORD PTR ?ram_bitmap_index@@3_KA, rax	; ram_bitmap_index
@@ -604,8 +605,8 @@ $LN1@pmmngr_fre:
 $LN2@pmmngr_fre:
 $LN4@pmmngr_fre:
 
-; 190  : 	}
-; 191  : }
+; 194  : 	}
+; 195  : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -666,18 +667,18 @@ first$ = 40
 size$ = 64
 ?pmmngr_alloc_blocks@@YAPEAXH@Z PROC			; pmmngr_alloc_blocks
 
-; 169  : void* pmmngr_alloc_blocks (int size) {
+; 172  : void* pmmngr_alloc_blocks (int size) {
 
 $LN6:
 	mov	DWORD PTR [rsp+8], ecx
 	sub	rsp, 56					; 00000038H
 
-; 170  : 	void *first = pmmngr_alloc();
+; 173  : 	void *first = pmmngr_alloc();
 
 	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
 	mov	QWORD PTR first$[rsp], rax
 
-; 171  : 	for (int i = 0; i < size / 4096; i++) {
+; 174  : 	for (int i = 0; i < size / 4096; i++) {
 
 	mov	DWORD PTR i$1[rsp], 0
 	jmp	SHORT $LN3@pmmngr_all
@@ -694,21 +695,21 @@ $LN3@pmmngr_all:
 	cmp	DWORD PTR i$1[rsp], eax
 	jge	SHORT $LN1@pmmngr_all
 
-; 172  : 		pmmngr_alloc();
+; 175  : 		pmmngr_alloc();
 
 	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
 
-; 173  : 	}
+; 176  : 	}
 
 	jmp	SHORT $LN2@pmmngr_all
 $LN1@pmmngr_all:
 
-; 174  : 
-; 175  : 	return first; //here we need to swap page to file
+; 177  : 
+; 178  : 	return first; //here we need to swap page to file
 
 	mov	rax, QWORD PTR first$[rsp]
 
-; 176  : }
+; 179  : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -720,24 +721,13 @@ _TEXT	SEGMENT
 tv78 = 32
 ?pmmngr_alloc@@YAPEAXXZ PROC				; pmmngr_alloc
 
-; 152  : {
+; 154  : {
 
 $LN9:
 	sub	rsp, 56					; 00000038H
 
-; 153  : 	free_memory -= 4096 * 1;
-
-	mov	rax, QWORD PTR ?free_memory@@3_KA	; free_memory
-	sub	rax, 4096				; 00001000H
-	mov	QWORD PTR ?free_memory@@3_KA, rax	; free_memory
-
-; 154  : 	used_memory += 4096 * 1;
-
-	mov	rax, QWORD PTR ?used_memory@@3_KA	; used_memory
-	add	rax, 4096				; 00001000H
-	mov	QWORD PTR ?used_memory@@3_KA, rax	; used_memory
-
-; 155  : 	for (; ram_bitmap_index < ram_bitmap.Size * 8; ram_bitmap_index++) {
+; 155  : 	
+; 156  : 	for (; ram_bitmap_index < ram_bitmap.Size * 8; ram_bitmap_index++) {
 
 	jmp	SHORT $LN6@pmmngr_all
 $LN5@pmmngr_all:
@@ -750,7 +740,7 @@ $LN6@pmmngr_all:
 	cmp	QWORD PTR ?ram_bitmap_index@@3_KA, rax	; ram_bitmap_index
 	jae	SHORT $LN4@pmmngr_all
 
-; 156  : 		if (ram_bitmap[ram_bitmap_index] == true) continue;
+; 157  : 		if (ram_bitmap[ram_bitmap_index] == true) continue;
 
 	mov	rdx, QWORD PTR ?ram_bitmap_index@@3_KA	; ram_bitmap_index
 	lea	rcx, OFFSET FLAT:?ram_bitmap@@3VBitmap@@A ; ram_bitmap
@@ -761,27 +751,39 @@ $LN6@pmmngr_all:
 	jmp	SHORT $LN5@pmmngr_all
 $LN3@pmmngr_all:
 
-; 157  : 		pmmngr_lock_page ((void*)(ram_bitmap_index * 4096));
+; 158  : 		pmmngr_lock_page ((void*)(ram_bitmap_index * 4096));
 
 	mov	rax, QWORD PTR ?ram_bitmap_index@@3_KA	; ram_bitmap_index
 	imul	rax, 4096				; 00001000H
 	mov	rcx, rax
 	call	?pmmngr_lock_page@@YAXPEAX@Z		; pmmngr_lock_page
 
-; 158  : 		return (void*)(ram_bitmap_index * 4096);
+; 159  : 		free_memory -= 4096 * 1;
+
+	mov	rax, QWORD PTR ?free_memory@@3_KA	; free_memory
+	sub	rax, 4096				; 00001000H
+	mov	QWORD PTR ?free_memory@@3_KA, rax	; free_memory
+
+; 160  : 		used_memory += 4096 * 1;
+
+	mov	rax, QWORD PTR ?used_memory@@3_KA	; used_memory
+	add	rax, 4096				; 00001000H
+	mov	QWORD PTR ?used_memory@@3_KA, rax	; used_memory
+
+; 161  : 		return (void*)(ram_bitmap_index * 4096);
 
 	mov	rax, QWORD PTR ?ram_bitmap_index@@3_KA	; ram_bitmap_index
 	imul	rax, 4096				; 00001000H
 	jmp	SHORT $LN7@pmmngr_all
 
-; 159  : 	}
+; 162  : 	}
 
-	jmp	SHORT $LN5@pmmngr_all
+	jmp	$LN5@pmmngr_all
 $LN4@pmmngr_all:
 
-; 160  : 
-; 161  : 
-; 162  : 	printf ("Used RAM -> %d MB, Free RAM -> %d MB\n", used_memory /1024 / 1024, free_memory / 1024 / 1024);
+; 163  : 
+; 164  : 	
+; 165  : 	printf ("Used RAM -> %d MB, Free RAM -> %d MB\n", used_memory /1024 / 1024, free_memory / 1024 / 1024);
 
 	xor	edx, edx
 	mov	rax, QWORD PTR ?free_memory@@3_KA	; free_memory
@@ -804,22 +806,22 @@ $LN4@pmmngr_all:
 	lea	rcx, OFFSET FLAT:$SG2801
 	call	?printf@@YAXPEBDZZ			; printf
 
-; 163  : 	printf ("No more available pages\n");
+; 166  : 	printf ("No more available pages\n");
 
 	lea	rcx, OFFSET FLAT:$SG2802
 	call	?printf@@YAXPEBDZZ			; printf
 $LN2@pmmngr_all:
 
-; 164  : 	for(;;);
+; 167  : 	for(;;);
 
 	jmp	SHORT $LN2@pmmngr_all
 
-; 165  : 	return NULL; //here we need to swap page to file
+; 168  : 	return NULL; //here we need to swap page to file
 
 	xor	eax, eax
 $LN7@pmmngr_all:
 
-; 166  : }
+; 169  : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -966,12 +968,21 @@ $LN1@pmmngr_ini:
 $LN2@pmmngr_ini:
 
 ; 140  : 
-; 141  : 	void *unusable = pmmngr_alloc(); //0 is avoided
+; 141  : 	total_ram -= reserved_memory;
+
+	mov	rax, QWORD PTR ?reserved_memory@@3_KA	; reserved_memory
+	mov	rcx, QWORD PTR ?total_ram@@3_KA		; total_ram
+	sub	rcx, rax
+	mov	rax, rcx
+	mov	QWORD PTR ?total_ram@@3_KA, rax		; total_ram
+
+; 142  : 
+; 143  : 	void *unusable = pmmngr_alloc(); //0 is avoided
 
 	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
 	mov	QWORD PTR unusable$[rsp], rax
 
-; 142  : }
+; 144  : }
 
 	add	rsp, 88					; 00000058H
 	ret	0

@@ -225,19 +225,16 @@ void unmap_page_ex(uint64_t* cr3, uint64_t virt_addr, bool free_physical){
 	
 	const long i1 = pml4_index(virt_addr);
 
-	uint64_t *pml4 = cr3;
-	uint64_t *pdpt = (uint64_t*)(pml4[pml4_index(virt_addr)] & ~(4096 - 1));
+	uint64_t *pml4_ = cr3;
+	uint64_t *pdpt = (uint64_t*)(pml4_[pml4_index(virt_addr)] & ~(4096 - 1));
 	uint64_t *pd = (uint64_t*)(pdpt[pdp_index(virt_addr)] & ~(4096 - 1));
 	uint64_t *pt = (uint64_t*)(pd[pd_index(virt_addr)] & ~(4096 - 1));
 	uint64_t *page = (uint64_t*)(pt[pt_index(virt_addr)] & ~(4096 - 1));
 
-	uint64_t *pml = cr3;
-	if (pml[i1] & PAGING_PRESENT){
-		pml[i1] = 0;
-	}
-
 	if (free_physical)
 		pmmngr_free(page);
+
+	pmmngr_free(pml4_);
 }
 
 
@@ -329,8 +326,11 @@ uint64_t *create_user_address_space (){
 	//! virtually allocated in higher half sections
 	new_cr3[0] = cr3[0];
 	//! Copy Kernel's Higher Half section
+
 	new_cr3[pml4_index(0xFFFFC00000000000)] = cr3[pml4_index(0xFFFFC00000000000)];
+
 	new_cr3[pml4_index(0xFFFFA00000000000)] = cr3[pml4_index(0xFFFFA00000000000)];
+
 	new_cr3[pml4_index(0xFFFF800000000000)] = cr3[pml4_index(0xFFFF800000000000)];
 	new_cr3[pml4_index(0xFFFFE00000000000)] = cr3[pml4_index(0xFFFFE00000000000)];
 	new_cr3[pml4_index(0xFFFFD00000000000)] = cr3[pml4_index(0xFFFFD00000000000)];
@@ -338,6 +338,7 @@ uint64_t *create_user_address_space (){
 	//! Mapped Framebuffer
 	for (int i = 0; i < get_fb_size() / 4096; i++)
 		new_cr3[pml4_index(0xFFFFD00000200000 + i * 4096)] = cr3[pml4_index(0xFFFFD00000200000 + i * 4096)]; 
+
 	return new_cr3;
 }
 

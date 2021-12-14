@@ -244,10 +244,13 @@ typedef struct _rirb_ {
 }hda_rirb;
 
 
+
 //! Initialize the High-Definition Audio Controller
 extern void hda_initialize ();
+extern uint32_t codec_query (int codec, int nid, uint32_t payload);
 extern void hda_set_volume (uint8_t volume);
 extern void hda_audio_add_pcm (unsigned char *data, uint32_t length);
 extern void hda_audio_play ();
 extern void hda_output_stop ();
+
 #endif

@@ -21,21 +21,20 @@ static mutex_t * wait_lock = create_mutex();
 static mutex_t *unblock_lock = create_mutex();
 void wait () {
 	x64_cli();
-	set_multi_task_enable (false);
 	thread_t *t = get_current_thread ();
 	block_thread (t);
-	set_multi_task_enable (true);
 	force_sched();
-	//for(;;);
 }
 
 void sys_unblock_id (uint16_t id) {
-	x64_cli ();
+	x64_cli();
 	thread_t* thr = (thread_t*)thread_iterate_block_list (id);
 	if (thr != NULL){
-		if (thr->state == THREAD_STATE_BLOCKED)
+		if (thr->state == THREAD_STATE_BLOCKED) {
 			unblock_thread(thr);
+		}
 	}
+	x64_sti();
 }
 
 

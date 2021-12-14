@@ -7,34 +7,28 @@ INCLUDELIB OLDNAMES
 
 PUBLIC	_fltused
 CONST	SEGMENT
-$SG7569	DB	'Multitasking started', 0aH, 00H
+$SG7574	DB	'Multitasking started', 0aH, 00H
 	ORG $+2
-$SG7585	DB	'/', 00H
+$SG7588	DB	'/', 00H
 	ORG $+6
-$SG7588	DB	'/start1.wav', 00H
-	ORG $+4
-$SG7589	DB	'Wave file opened size -> %d MB', 0aH, 00H
-$SG7592	DB	'[HD-Audio]: Playing Start1.wav', 0aH, 00H
-$SG7593	DB	'[HD-Audio]: Volume - 119', 0aH, 00H
+$SG7591	DB	'/start.wav', 00H
+	ORG $+1
+$SG7594	DB	'shell', 00H
 	ORG $+6
-$SG7594	DB	'Used RAM -> %d MB, Free RAM -> %d MB', 0aH, 00H
-	ORG $+2
-$SG7595	DB	'shell', 00H
-	ORG $+2
-$SG7596	DB	'/xshell.exe', 00H
-$SG7597	DB	'quince', 00H
+$SG7595	DB	'/xshell.exe', 00H
+$SG7596	DB	'quince', 00H
 	ORG $+5
-$SG7598	DB	'/quince.exe', 00H
+$SG7597	DB	'/quince.exe', 00H
 	ORG $+4
-$SG7600	DB	'procmngr', 00H
+$SG7599	DB	'procmngr', 00H
 	ORG $+3
-$SG7601	DB	'dwm4', 00H
+$SG7600	DB	'dwm4', 00H
 	ORG $+7
-$SG7602	DB	'/dwm2.exe', 00H
+$SG7601	DB	'/dwm2.exe', 00H
 	ORG $+2
-$SG7603	DB	'cnsl', 00H
+$SG7602	DB	'cnsl', 00H
 	ORG $+7
-$SG7604	DB	'/cnsl.exe', 00H
+$SG7603	DB	'/cnsl.exe', 00H
 CONST	ENDS
 _DATA	SEGMENT
 _fltused DD	01H
@@ -51,8 +45,6 @@ EXTRN	?hal_x86_64_setup_int@@YAXXZ:PROC		; hal_x86_64_setup_int
 EXTRN	?hal_init@@YAXXZ:PROC				; hal_init
 EXTRN	?pmmngr_init@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z:PROC ; pmmngr_init
 EXTRN	?pmmngr_alloc@@YAPEAXXZ:PROC			; pmmngr_alloc
-EXTRN	?pmmngr_get_free_ram@@YA_KXZ:PROC		; pmmngr_get_free_ram
-EXTRN	?pmmngr_get_used_ram@@YA_KXZ:PROC		; pmmngr_get_used_ram
 EXTRN	?vmmngr_x86_64_init@@YAXXZ:PROC			; vmmngr_x86_64_init
 EXTRN	?map_page@@YA_N_K0E@Z:PROC			; map_page
 EXTRN	?mm_init@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z:PROC	; mm_init
@@ -64,8 +56,6 @@ EXTRN	?kybrd_init@@YAXXZ:PROC				; kybrd_init
 EXTRN	?initialize_mouse@@YAXXZ:PROC			; initialize_mouse
 EXTRN	?ata_initialize@@YAXXZ:PROC			; ata_initialize
 EXTRN	?hda_initialize@@YAXXZ:PROC			; hda_initialize
-EXTRN	?hda_audio_add_pcm@@YAXPEAEI@Z:PROC		; hda_audio_add_pcm
-EXTRN	?hda_audio_play@@YAXXZ:PROC			; hda_audio_play
 EXTRN	?e1000_initialize@@YAXXZ:PROC			; e1000_initialize
 EXTRN	?initialize_rtc@@YAXXZ:PROC			; initialize_rtc
 EXTRN	?initialize_acpi@@YAXPEAX@Z:PROC		; initialize_acpi
@@ -99,7 +89,7 @@ $pdata$?test_thread2@@YAXXZ DD imagerel $LN5
 	DD	imagerel $LN5+30
 	DD	imagerel $unwind$?test_thread2@@YAXXZ
 $pdata$?_kmain@@YAXXZ DD imagerel $LN8
-	DD	imagerel $LN8+744
+	DD	imagerel $LN8+573
 	DD	imagerel $unwind$?_kmain@@YAXXZ
 pdata	ENDS
 xdata	SEGMENT
@@ -112,7 +102,7 @@ $unwind$??_U@YAPEAX_K@Z DD 010901H
 $unwind$?test_thread2@@YAXXZ DD 010401H
 	DD	04204H
 $unwind$?_kmain@@YAXXZ DD 040a01H
-	DD	037010aH
+	DD	035010aH
 	DD	060027003H
 xdata	ENDS
 ; Function compile flags: /Odtpy
@@ -120,15 +110,13 @@ xdata	ENDS
 _TEXT	SEGMENT
 i$1 = 48
 info$ = 56
-root$ = 64
-buffer$ = 72
-buffer2$ = 80
-tv154 = 88
-tv140 = 96
-tv82 = 104
-file$ = 112
-$T2 = 224
-$T3 = 328
+node$ = 64
+buffer2$ = 72
+tv82 = 80
+tv136 = 88
+file$ = 96
+$T2 = 208
+$T3 = 312
 ?_kmain@@YAXXZ PROC					; _kmain
 
 ; 127  : void _kmain () {
@@ -136,7 +124,7 @@ $T3 = 328
 $LN8:
 	push	rsi
 	push	rdi
-	sub	rsp, 440				; 000001b8H
+	sub	rsp, 424				; 000001a8H
 
 ; 128  : 	KERNEL_BOOT_INFO *info = (KERNEL_BOOT_INFO*)0xFFFFE00000000000;
 
@@ -224,8 +212,7 @@ $LN8:
 	call	?initialize_mouse@@YAXXZ		; initialize_mouse
 
 ; 153  : 	
-; 154  : 
-; 155  : 	for (int i = 0; i < 2*1024*1024/4096; i++)
+; 154  : 	for (int i = 0; i < 2*1024*1024/4096; i++)
 
 	mov	DWORD PTR i$1[rsp], 0
 	jmp	SHORT $LN5@kmain
@@ -237,12 +224,12 @@ $LN5@kmain:
 	cmp	DWORD PTR i$1[rsp], 512			; 00000200H
 	jge	SHORT $LN3@kmain
 
-; 156  : 		map_page((uint64_t)pmmngr_alloc(), 0xFFFFF00000A00000 + i * 4096, 0);
+; 155  : 		map_page((uint64_t)pmmngr_alloc(),0xFFFFF00000000000 + i * 4096, 0);
 
 	mov	eax, DWORD PTR i$1[rsp]
 	imul	eax, 4096				; 00001000H
 	cdqe
-	mov	rcx, 17592175558656			; 00000fffff600000H
+	mov	rcx, 17592186044416			; 0000100000000000H
 	sub	rax, rcx
 	mov	QWORD PTR tv82[rsp], rax
 	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
@@ -254,23 +241,17 @@ $LN5@kmain:
 	jmp	SHORT $LN4@kmain
 $LN3@kmain:
 
-; 157  : 
-; 158  : 	unsigned char* buffer = (unsigned char*)0xFFFFF00000A00000;
+; 156  : 
+; 157  : 	vfs_node_t *node = vfs_finddir("/");
 
-	mov	rax, -17592175558656			; fffff00000a00000H
-	mov	QWORD PTR buffer$[rsp], rax
-
-; 159  : 
-; 160  : 	vfs_node_t *root = vfs_finddir ("/");
-
-	lea	rcx, OFFSET FLAT:$SG7585
+	lea	rcx, OFFSET FLAT:$SG7588
 	call	?vfs_finddir@@YAPEAU_vfs_node_@@PEAD@Z	; vfs_finddir
-	mov	QWORD PTR root$[rsp], rax
+	mov	QWORD PTR node$[rsp], rax
 
-; 161  : 	vfs_node_t file = openfs (root, "/start1.wav");
+; 158  : 	vfs_node_t file = openfs (node, "/start.wav");
 
-	lea	r8, OFFSET FLAT:$SG7588
-	mov	rdx, QWORD PTR root$[rsp]
+	lea	r8, OFFSET FLAT:$SG7591
+	mov	rdx, QWORD PTR node$[rsp]
 	lea	rcx, QWORD PTR $T3[rsp]
 	call	?openfs@@YA?AU_vfs_node_@@PEAU1@PEAD@Z	; openfs
 	lea	rcx, QWORD PTR $T2[rsp]
@@ -285,190 +266,137 @@ $LN3@kmain:
 	mov	ecx, 104				; 00000068H
 	rep movsb
 
-; 162  : 	printf ("Wave file opened size -> %d MB\n", file.size / 1024 / 1024);
+; 159  : 	unsigned char* buffer2 = (unsigned char*)0xFFFFF00000000000;
 
-	xor	edx, edx
-	mov	eax, DWORD PTR file$[rsp+32]
-	mov	ecx, 1024				; 00000400H
-	div	ecx
-	xor	edx, edx
-	mov	ecx, 1024				; 00000400H
-	div	ecx
-	mov	edx, eax
-	lea	rcx, OFFSET FLAT:$SG7589
-	call	?printf@@YAXPEBDZZ			; printf
-
-; 163  : 	readfs (root, &file, buffer, file.size);
-
-	mov	r9d, DWORD PTR file$[rsp+32]
-	mov	r8, QWORD PTR buffer$[rsp]
-	lea	rdx, QWORD PTR file$[rsp]
-	mov	rcx, QWORD PTR root$[rsp]
-	call	?readfs@@YAXPEAU_vfs_node_@@0PEAEI@Z	; readfs
-
-; 164  : 	unsigned char* buffer2 = (unsigned char*)(buffer + 44);
-
-	mov	rax, QWORD PTR buffer$[rsp]
-	add	rax, 44					; 0000002cH
+	mov	rax, -17592186044416			; fffff00000000000H
 	mov	QWORD PTR buffer2$[rsp], rax
 
-; 165  : 	message_init ();
+; 160  : 
+; 161  : 	readfs (node,&file,buffer2,file.size);
+
+	mov	r9d, DWORD PTR file$[rsp+32]
+	mov	r8, QWORD PTR buffer2$[rsp]
+	lea	rdx, QWORD PTR file$[rsp]
+	mov	rcx, QWORD PTR node$[rsp]
+	call	?readfs@@YAXPEAU_vfs_node_@@0PEAEI@Z	; readfs
+
+; 162  : 
+; 163  : 
+; 164  : 	message_init ();
 
 	call	?message_init@@YAXXZ			; message_init
 
-; 166  : 	dwm_ipc_init();
+; 165  : 	dwm_ipc_init();
 
 	call	?dwm_ipc_init@@YAXXZ			; dwm_ipc_init
 
-; 167  : 	stream_init ();
+; 166  : 	stream_init ();
 
 	call	?stream_init@@YAXXZ			; stream_init
 
-; 168  : 	driver_mngr_initialize(info);
+; 167  : 	driver_mngr_initialize(info);
 
 	mov	rcx, QWORD PTR info$[rsp]
 	call	?driver_mngr_initialize@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z ; driver_mngr_initialize
 
-; 169  : 	hda_initialize(); 
+; 168  : 	hda_initialize(); 
 
 	call	?hda_initialize@@YAXXZ			; hda_initialize
 
-; 170  : 
-; 171  : 	hda_audio_add_pcm (buffer2, file.size);
-
-	mov	edx, DWORD PTR file$[rsp+32]
-	mov	rcx, QWORD PTR buffer2$[rsp]
-	call	?hda_audio_add_pcm@@YAXPEAEI@Z		; hda_audio_add_pcm
-
-; 172  : 	hda_audio_play();
-
-	call	?hda_audio_play@@YAXXZ			; hda_audio_play
-
-; 173  : 	e1000_initialize();   //<< receiver not working
+; 169  : 
+; 170  : 	e1000_initialize();   //<< receiver not working
 
 	call	?e1000_initialize@@YAXXZ		; e1000_initialize
 
-; 174  : 	printf ("[HD-Audio]: Playing Start1.wav\n");
-
-	lea	rcx, OFFSET FLAT:$SG7592
-	call	?printf@@YAXPEBDZZ			; printf
-
-; 175  : 	printf ("[HD-Audio]: Volume - 119\n");
-
-	lea	rcx, OFFSET FLAT:$SG7593
-	call	?printf@@YAXPEBDZZ			; printf
-
-; 176  : 	printf ("Used RAM -> %d MB, Free RAM -> %d MB\n", pmmngr_get_used_ram() /1024 / 1024, pmmngr_get_free_ram() / 1024 / 1024);
-
-	call	?pmmngr_get_free_ram@@YA_KXZ		; pmmngr_get_free_ram
-	xor	edx, edx
-	mov	ecx, 1024				; 00000400H
-	div	rcx
-	xor	edx, edx
-	mov	ecx, 1024				; 00000400H
-	div	rcx
-	mov	QWORD PTR tv140[rsp], rax
-	call	?pmmngr_get_used_ram@@YA_KXZ		; pmmngr_get_used_ram
-	xor	edx, edx
-	mov	ecx, 1024				; 00000400H
-	div	rcx
-	xor	edx, edx
-	mov	ecx, 1024				; 00000400H
-	div	rcx
-	mov	rcx, QWORD PTR tv140[rsp]
-	mov	r8, rcx
-	mov	rdx, rax
-	lea	rcx, OFFSET FLAT:$SG7594
-	call	?printf@@YAXPEBDZZ			; printf
-
-; 177  : 	
-; 178  : #ifdef ARCH_X64
-; 179  : 	//================================================
-; 180  : 	//! Initialize the scheduler here
-; 181  : 	//!===============================================
-; 182  : 	initialize_scheduler();
+; 171  : 	//svga_init();
+; 172  : #ifdef ARCH_X64
+; 173  : 	//================================================
+; 174  : 	//! Initialize the scheduler here
+; 175  : 	//!===============================================
+; 176  : 	initialize_scheduler();
 
 	call	?initialize_scheduler@@YAXXZ		; initialize_scheduler
 
-; 183  : 	create_process ("/xshell.exe","shell");
+; 177  : 	create_process ("/xshell.exe","shell");
 
-	lea	rdx, OFFSET FLAT:$SG7595
-	lea	rcx, OFFSET FLAT:$SG7596
+	lea	rdx, OFFSET FLAT:$SG7594
+	lea	rcx, OFFSET FLAT:$SG7595
 	call	?create_process@@YAXPEBDPEAD@Z		; create_process
 
-; 184  : 
-; 185  : 	//! Quince -- The Compositing window manager for Aurora kernel
-; 186  : 	//! always put quince in thread id -- > 2
-; 187  : 	create_process ("/quince.exe","quince");
+; 178  : 
+; 179  : 	//! Quince -- The Compositing window manager for Aurora kernel
+; 180  : 	//! always put quince in thread id -- > 2
+; 181  : 	create_process ("/quince.exe","quince");
 
-	lea	rdx, OFFSET FLAT:$SG7597
-	lea	rcx, OFFSET FLAT:$SG7598
+	lea	rdx, OFFSET FLAT:$SG7596
+	lea	rcx, OFFSET FLAT:$SG7597
 	call	?create_process@@YAXPEBDPEAD@Z		; create_process
 
-; 188  : 
-; 189  : 	/**=====================================================
-; 190  : 	 ** Kernel threads handle some specific callbacks like
-; 191  : 	 ** procmngr handles process creation and termination
-; 192  : 	 **=====================================================
-; 193  : 	 */
-; 194  : 	create_kthread (procmngr_start,(uint64_t)pmmngr_alloc(),x64_read_cr3(),"procmngr",0);
+; 182  : 
+; 183  : 	/**=====================================================
+; 184  : 	 ** Kernel threads handle some specific callbacks like
+; 185  : 	 ** procmngr handles process creation and termination
+; 186  : 	 **=====================================================
+; 187  : 	 */
+; 188  : 	create_kthread (procmngr_start,(uint64_t)pmmngr_alloc() + 4096,x64_read_cr3(),"procmngr",0);
 
 	call	x64_read_cr3
-	mov	QWORD PTR tv154[rsp], rax
+	mov	QWORD PTR tv136[rsp], rax
 	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
+	add	rax, 4096				; 00001000H
 	mov	BYTE PTR [rsp+32], 0
-	lea	r9, OFFSET FLAT:$SG7600
-	mov	rcx, QWORD PTR tv154[rsp]
+	lea	r9, OFFSET FLAT:$SG7599
+	mov	rcx, QWORD PTR tv136[rsp]
 	mov	r8, rcx
 	mov	rdx, rax
 	lea	rcx, OFFSET FLAT:?procmngr_start@@YAXXZ	; procmngr_start
 	call	?create_kthread@@YAPEAU_thread_@@P6AXXZ_K1QEADE@Z ; create_kthread
 
-; 195  : 	//! Misc programs goes here
-; 196  : 	create_process ("/dwm2.exe", "dwm4");
+; 189  : 	//! Misc programs goes here
+; 190  : 	create_process ("/dwm2.exe", "dwm4");
 
-	lea	rdx, OFFSET FLAT:$SG7601
-	lea	rcx, OFFSET FLAT:$SG7602
+	lea	rdx, OFFSET FLAT:$SG7600
+	lea	rcx, OFFSET FLAT:$SG7601
 	call	?create_process@@YAXPEBDPEAD@Z		; create_process
 
-; 197  : 	create_process ("/cnsl.exe", "cnsl");
+; 191  : 	create_process ("/cnsl.exe", "cnsl");
 
-	lea	rdx, OFFSET FLAT:$SG7603
-	lea	rcx, OFFSET FLAT:$SG7604
+	lea	rdx, OFFSET FLAT:$SG7602
+	lea	rcx, OFFSET FLAT:$SG7603
 	call	?create_process@@YAXPEBDPEAD@Z		; create_process
 
-; 198  : 	//! Here start the scheduler (multitasking engine)
-; 199  : 	scheduler_start();
+; 192  : 	//! Here start the scheduler (multitasking engine)
+; 193  : 	scheduler_start();
 
 	call	?scheduler_start@@YAXXZ			; scheduler_start
 $LN2@kmain:
 
-; 200  : #endif
-; 201  : 
-; 202  : 	//! Loop forever
-; 203  : 	while(1) {
+; 194  : #endif
+; 195  : 
+; 196  : 	//! Loop forever
+; 197  : 	while(1) {
 
 	xor	eax, eax
 	cmp	eax, 1
 	je	SHORT $LN1@kmain
 
-; 204  : 		//!looping looping
-; 205  : 		x64_cli();
+; 198  : 		//!looping looping
+; 199  : 		x64_cli();
 
 	call	x64_cli
 
-; 206  : 		x64_hlt();
+; 200  : 		x64_hlt();
 
 	call	x64_hlt
 
-; 207  : 	}
+; 201  : 	}
 
 	jmp	SHORT $LN2@kmain
 $LN1@kmain:
 
-; 208  : }
+; 202  : }
 
-	add	rsp, 440				; 000001b8H
+	add	rsp, 424				; 000001a8H
 	pop	rdi
 	pop	rsi
 	ret	0
@@ -486,7 +414,7 @@ $LN5:
 
 ; 112  : 	printf ("Multitasking started\n");
 
-	lea	rcx, OFFSET FLAT:$SG7569
+	lea	rcx, OFFSET FLAT:$SG7574
 	call	?printf@@YAXPEBDZZ			; printf
 $LN2@test_threa:
 

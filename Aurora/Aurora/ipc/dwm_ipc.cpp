@@ -31,7 +31,10 @@ uint64_t* get_dwm_message_q_address () {
 	return 0;
 }
 void dwm_put_message (dwm_message_t *msg) {
-	//x64_cli ();
+
+	if (!is_multi_task_enable())
+		return;
+
 	mutex_lock (msg_mutex);
 	thread_t *t  = thread_iterate_ready_list (2);   //!ready list
 	if (t == NULL) {
@@ -42,8 +45,9 @@ void dwm_put_message (dwm_message_t *msg) {
 	if (tmsg->type == 0)
 		memcpy (t->mouse_box,msg,sizeof(dwm_message_t));
 
-	if (t->state == THREAD_STATE_BLOCKED)
+	if (t->state == THREAD_STATE_BLOCKED){
 		unblock_thread(t);
+	}
 
 	mutex_unlock (msg_mutex);
 

@@ -1,4 +1,4 @@
-﻿Build started 07-12-2021 ৰাতিপু 7:40:47.
+﻿Build started 14-12-2021 ৰাতিপু 10:12:16.
      1>Project "E:\Xeneva Project\Xeneva\Aurora\Quince\Quince.vcxproj" on node 2 (Rebuild target(s)).
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\xnlib\xnclib" /I"E:\Xeneva Project\Xeneva\xnlib\xnacrylic\include" /I"E:\Xeneva Project\Xeneva\Aurora\Quince\include" /Zi /nologo /W3 /WX- /sdl- /Od /D ARCH_X64 /D SW_CURSOR /D _MBCS /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt include\QuEvent.cpp include\QuWindow\QuList.h source\ipc\QuChannel.cpp source\ipc\_ipc_mouse.cpp source\QuCanvas\QuCanvasMngr.cpp source\QuCanvas\QuScreenRectList.cpp source\QuCanvas\QuScreenStack.cpp source\quince\main.cpp source\quince\QuBmpImage.cpp source\quince\QuCursor.cpp source\QuWidget\QuDock.cpp source\QuWidget\QuWallpaper.cpp source\QuWindow\QuList.cpp source\QuWindow\QuWindow.cpp source\QuWindow\QuWindowMngr.cpp
@@ -6,13 +6,13 @@
      1>cl : Command line warning D9002: ignoring unknown option '/arch:SSE'
          QuWindowMngr.cpp
      1>source\QuWindow\QuWindowMngr.cpp(53): warning C4018: '<' : signed/unsigned mismatch
-     1>source\QuWindow\QuWindowMngr.cpp(73): warning C4018: '<' : signed/unsigned mismatch
-     1>source\QuWindow\QuWindowMngr.cpp(117): warning C4018: '<' : signed/unsigned mismatch
-     1>source\QuWindow\QuWindowMngr.cpp(130): warning C4018: '<' : signed/unsigned mismatch
-     1>source\QuWindow\QuWindowMngr.cpp(184): warning C4018: '<' : signed/unsigned mismatch
-     1>source\QuWindow\QuWindowMngr.cpp(198): warning C4018: '<' : signed/unsigned mismatch
-     1>source\QuWindow\QuWindowMngr.cpp(243): warning C4244: '=' : conversion from 'unsigned short' to 'uint8_t', possible loss of data
-     1>source\QuWindow\QuWindowMngr.cpp(264): warning C4018: '<' : signed/unsigned mismatch
+     1>source\QuWindow\QuWindowMngr.cpp(72): warning C4018: '<' : signed/unsigned mismatch
+     1>source\QuWindow\QuWindowMngr.cpp(116): warning C4018: '<' : signed/unsigned mismatch
+     1>source\QuWindow\QuWindowMngr.cpp(129): warning C4018: '<' : signed/unsigned mismatch
+     1>source\QuWindow\QuWindowMngr.cpp(183): warning C4018: '<' : signed/unsigned mismatch
+     1>source\QuWindow\QuWindowMngr.cpp(197): warning C4018: '<' : signed/unsigned mismatch
+     1>source\QuWindow\QuWindowMngr.cpp(242): warning C4244: '=' : conversion from 'unsigned short' to 'uint8_t', possible loss of data
+     1>source\QuWindow\QuWindowMngr.cpp(262): warning C4018: '<' : signed/unsigned mismatch
          QuWindow.cpp
          QuList.cpp
          QuWallpaper.cpp
@@ -33,27 +33,29 @@
          QuScreenStack.cpp
          QuScreenRectList.cpp
          QuCanvasMngr.cpp
-     1>source\QuCanvas\QuCanvasMngr.cpp(212): warning C4018: '>=' : signed/unsigned mismatch
-     1>source\QuCanvas\QuCanvasMngr.cpp(215): warning C4018: '>=' : signed/unsigned mismatch
-     1>source\QuCanvas\QuCanvasMngr.cpp(219): warning C4018: '<' : signed/unsigned mismatch
+     1>source\QuCanvas\QuCanvasMngr.cpp(161): warning C4244: '=' : conversion from 'uint16_t' to 'uint8_t', possible loss of data
+     1>source\QuCanvas\QuCanvasMngr.cpp(213): warning C4018: '>=' : signed/unsigned mismatch
+     1>source\QuCanvas\QuCanvasMngr.cpp(216): warning C4018: '>=' : signed/unsigned mismatch
      1>source\QuCanvas\QuCanvasMngr.cpp(220): warning C4018: '<' : signed/unsigned mismatch
-     1>source\QuCanvas\QuCanvasMngr.cpp(252): warning C4018: '<' : signed/unsigned mismatch
-     1>source\QuCanvas\QuCanvasMngr.cpp(278): warning C4267: 'argument' : conversion from 'size_t' to 'unsigned int', possible loss of data
-     1>source\QuCanvas\QuCanvasMngr.cpp(283): warning C4267: 'argument' : conversion from 'size_t' to 'unsigned int', possible loss of data
-     1>source\QuCanvas\QuCanvasMngr.cpp(288): warning C4267: 'argument' : conversion from 'size_t' to 'unsigned int', possible loss of data
-     1>source\QuCanvas\QuCanvasMngr.cpp(293): warning C4267: 'argument' : conversion from 'size_t' to 'unsigned int', possible loss of data
-     1>source\QuCanvas\QuCanvasMngr.cpp(298): warning C4267: 'argument' : conversion from 'size_t' to 'unsigned int', possible loss of data
+     1>source\QuCanvas\QuCanvasMngr.cpp(221): warning C4018: '<' : signed/unsigned mismatch
+     1>source\QuCanvas\QuCanvasMngr.cpp(253): warning C4018: '<' : signed/unsigned mismatch
+     1>source\QuCanvas\QuCanvasMngr.cpp(279): warning C4267: 'argument' : conversion from 'size_t' to 'unsigned int', possible loss of data
+     1>source\QuCanvas\QuCanvasMngr.cpp(284): warning C4267: 'argument' : conversion from 'size_t' to 'unsigned int', possible loss of data
+     1>source\QuCanvas\QuCanvasMngr.cpp(289): warning C4267: 'argument' : conversion from 'size_t' to 'unsigned int', possible loss of data
+     1>source\QuCanvas\QuCanvasMngr.cpp(294): warning C4267: 'argument' : conversion from 'size_t' to 'unsigned int', possible loss of data
+     1>source\QuCanvas\QuCanvasMngr.cpp(299): warning C4267: 'argument' : conversion from 'size_t' to 'unsigned int', possible loss of data
          _ipc_mouse.cpp
          QuChannel.cpp
      1>source\ipc\QuChannel.cpp(37): warning C4244: '=' : conversion from 'uint16_t' to 'uint8_t', possible loss of data
      1>source\ipc\QuChannel.cpp(38): warning C4244: '=' : conversion from 'uint16_t' to 'uint8_t', possible loss of data
+     1>source\ipc\QuChannel.cpp(39): warning C4102: 'send' : unreferenced label
          QuList.h
          QuEvent.cpp
-     1>include\QuEvent.cpp(158): warning C4244: '=' : conversion from 'uint16_t' to 'uint8_t', possible loss of data
+     1>include\QuEvent.cpp(161): warning C4244: '=' : conversion from 'uint16_t' to 'uint8_t', possible loss of data
      1>include\QuEvent.cpp(62): warning C4101: 'loops' : unreferenced local variable
      1>include\QuEvent.cpp(63): warning C4101: 'fps_str' : unreferenced local variable
          Generating Code...
-     1>e:\xeneva project\xeneva\aurora\quince\source\quwindow\quwindowmngr.cpp(79): warning C4715: 'QuWindowMngrFindByID' : not all control paths return a value
+     1>e:\xeneva project\xeneva\aurora\quince\source\quwindow\quwindowmngr.cpp(78): warning C4715: 'QuWindowMngrFindByID' : not all control paths return a value
      1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V110\Microsoft.CppBuild.targets(1137,5): warning MSB8012: TargetPath(E:\Xeneva Project\Xeneva\Aurora\x64\Debug\Quince.exe) does not match the Linker's OutputFile property value (D:\quince.exe). This may cause your project to build incorrectly. To correct this, please make sure that $(OutDir), $(TargetName) and $(TargetExt) property values match the value specified in %(Link.OutputFile).
        Link:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:PROMPT /OUT:"D:\quince.exe" /INCREMENTAL /NOLOGO /LIBPATH:"E:\Xeneva Project\Xeneva\xnlib\lib64" xnclib.lib xnacrylic.lib /NODEFAULTLIB /MANIFEST:NO /PDB:"E:\Xeneva Project\Xeneva\Aurora\x64\Debug\Quince.pdb" /MAP /MAPINFO:EXPORTS /SUBSYSTEM:NATIVE /STACK:"0x100000" /LARGEADDRESSAWARE /Driver /OPT:NOREF /LTCG /TLBID:1 /ENTRY:"_start" /BASE:"0x0000400000000000" /FIXED:NO /IMPLIB:"E:\Xeneva Project\Xeneva\Aurora\x64\Debug\Quince.lib" /MACHINE:X64 /ALIGN:512 x64\Debug\QuEvent.obj
@@ -79,4 +81,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:02.85
+Time Elapsed 00:00:03.21

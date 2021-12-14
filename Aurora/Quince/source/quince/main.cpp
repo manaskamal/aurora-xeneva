@@ -54,7 +54,7 @@ int main (int argc, char* argv[]) {
 	int w = canvas_get_width(canvas);
 	int h = canvas_get_height(canvas);
 	acrylic_draw_rect_filled (canvas, 0,0,100,100,WHITE);
-	//canvas_screen_update(canvas, 0,0,100,100);
+	canvas_screen_update(canvas, 0,0,100,100);
 
   //  psf_register_font_lib();
 	//!Initialize Quince Wallpaper Manager  "a:coffee.jpg"  "/bihu.jpg""/river.jpg"

@@ -19,7 +19,7 @@
 #include <mm.h>
 #include <stream.h>
 #include <pe.h>
-
+#include <ipc\signals.h>
 
 typedef void (*main_thread) (void*);
 

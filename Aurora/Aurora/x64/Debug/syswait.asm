@@ -8,10 +8,10 @@ INCLUDELIB OLDNAMES
 PUBLIC	?wait@@YAXXZ					; wait
 PUBLIC	?sys_unblock_id@@YAXG@Z				; sys_unblock_id
 EXTRN	x64_cli:PROC
+EXTRN	x64_sti:PROC
 EXTRN	?block_thread@@YAXPEAU_thread_@@@Z:PROC		; block_thread
 EXTRN	?unblock_thread@@YAXPEAU_thread_@@@Z:PROC	; unblock_thread
 EXTRN	?get_current_thread@@YAPEAU_thread_@@XZ:PROC	; get_current_thread
-EXTRN	?set_multi_task_enable@@YAX_N@Z:PROC		; set_multi_task_enable
 EXTRN	?force_sched@@YAXXZ:PROC			; force_sched
 EXTRN	?thread_iterate_block_list@@YAPEAU_thread_@@H@Z:PROC ; thread_iterate_block_list
 EXTRN	?create_mutex@@YAPEAUmutex_t@@XZ:PROC		; create_mutex
@@ -33,10 +33,10 @@ $pdata$??__Eunblock_lock@@YAXXZ DD imagerel ??__Eunblock_lock@@YAXXZ
 pdata	ENDS
 pdata	SEGMENT
 $pdata$?wait@@YAXXZ DD imagerel $LN3
-	DD	imagerel $LN3+53
+	DD	imagerel $LN3+39
 	DD	imagerel $unwind$?wait@@YAXXZ
 $pdata$?sys_unblock_id@@YAXG@Z DD imagerel $LN5
-	DD	imagerel $LN5+71
+	DD	imagerel $LN5+76
 	DD	imagerel $unwind$?sys_unblock_id@@YAXG@Z
 pdata	ENDS
 CRT$XCU	SEGMENT
@@ -68,44 +68,49 @@ thr$ = 32
 id$ = 64
 ?sys_unblock_id@@YAXG@Z PROC				; sys_unblock_id
 
-; 32   : void sys_unblock_id (uint16_t id) {
+; 29   : void sys_unblock_id (uint16_t id) {
 
 $LN5:
 	mov	WORD PTR [rsp+8], cx
 	sub	rsp, 56					; 00000038H
 
-; 33   : 	x64_cli ();
+; 30   : 	x64_cli();
 
 	call	x64_cli
 
-; 34   : 	thread_t* thr = (thread_t*)thread_iterate_block_list (id);
+; 31   : 	thread_t* thr = (thread_t*)thread_iterate_block_list (id);
 
 	movzx	eax, WORD PTR id$[rsp]
 	mov	ecx, eax
 	call	?thread_iterate_block_list@@YAPEAU_thread_@@H@Z ; thread_iterate_block_list
 	mov	QWORD PTR thr$[rsp], rax
 
-; 35   : 	if (thr != NULL){
+; 32   : 	if (thr != NULL){
 
 	cmp	QWORD PTR thr$[rsp], 0
 	je	SHORT $LN2@sys_unbloc
 
-; 36   : 		if (thr->state == THREAD_STATE_BLOCKED)
+; 33   : 		if (thr->state == THREAD_STATE_BLOCKED) {
 
 	mov	rax, QWORD PTR thr$[rsp]
 	movzx	eax, BYTE PTR [rax+224]
 	cmp	eax, 3
 	jne	SHORT $LN1@sys_unbloc
 
-; 37   : 			unblock_thread(thr);
+; 34   : 			unblock_thread(thr);
 
 	mov	rcx, QWORD PTR thr$[rsp]
 	call	?unblock_thread@@YAXPEAU_thread_@@@Z	; unblock_thread
 $LN1@sys_unbloc:
 $LN2@sys_unbloc:
 
-; 38   : 	}
-; 39   : }
+; 35   : 		}
+; 36   : 	}
+; 37   : 	x64_sti();
+
+	call	x64_sti
+
+; 38   : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -126,32 +131,21 @@ $LN3:
 
 	call	x64_cli
 
-; 24   : 	set_multi_task_enable (false);
-
-	xor	ecx, ecx
-	call	?set_multi_task_enable@@YAX_N@Z		; set_multi_task_enable
-
-; 25   : 	thread_t *t = get_current_thread ();
+; 24   : 	thread_t *t = get_current_thread ();
 
 	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
 	mov	QWORD PTR t$[rsp], rax
 
-; 26   : 	block_thread (t);
+; 25   : 	block_thread (t);
 
 	mov	rcx, QWORD PTR t$[rsp]
 	call	?block_thread@@YAXPEAU_thread_@@@Z	; block_thread
 
-; 27   : 	set_multi_task_enable (true);
-
-	mov	cl, 1
-	call	?set_multi_task_enable@@YAX_N@Z		; set_multi_task_enable
-
-; 28   : 	force_sched();
+; 26   : 	force_sched();
 
 	call	?force_sched@@YAXXZ			; force_sched
 
-; 29   : 	//for(;;);
-; 30   : }
+; 27   : }
 
 	add	rsp, 56					; 00000038H
 	ret	0

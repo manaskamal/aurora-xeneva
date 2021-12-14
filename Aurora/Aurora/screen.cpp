@@ -31,7 +31,7 @@ void initialize_screen (KERNEL_BOOT_INFO *info){
 	display.scanline = info->pixels_per_line;
 	display.size = info->fb_size;
 
-	vfs_node_t * svga = (vfs_node_t*)malloc(sizeof(vfs_node_t));
+	vfs_node_t * svga = (vfs_node_t*)pmmngr_alloc(); //malloc(sizeof(vfs_node_t));
 	strcpy (svga->filename, "fb");
 	svga->size = 0;
 	svga->eof = 0;

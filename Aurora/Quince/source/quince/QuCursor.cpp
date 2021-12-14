@@ -14,6 +14,7 @@
 #include <canvas.h>
 #include <bmp_image.h>
 #include <stdlib.h>
+#include <sys\_file.h>
 #include <sys\mmap.h>
 #include <sys\ioquery.h>
 #include <string.h>
@@ -23,6 +24,7 @@ unsigned char* MouseData = NULL;
 unsigned QuOldX, QuOldY = 0;
 unsigned QuNewX, QuNewY = 0;
 QuBitmap *bmp;
+int fd = 0;
 
 void QuHwDrawCursor (unsigned x, unsigned y, uint32_t color) {
 	uint32_t *lfb =  (uint32_t*)0x0000070000001000;      
@@ -58,6 +60,7 @@ void QuHwCursorPrepare () {
 
 
 void QuCursorInit (unsigned x, unsigned y, int type) {
+	//fd = sys_open_file ("/dev/svga",NULL);
 	bmp = (QuBitmap*)malloc(sizeof(QuBitmap));
 	CursorBack = (uint32_t*)malloc(8192);
 	//! Store Current pixels
@@ -76,7 +79,7 @@ void QuCursorInit (unsigned x, unsigned y, int type) {
 
 #ifdef HW_CURSOR
 	QuHwCursorPrepare();
-	QuMoveCursor(0,0);
+	QuUpdateCursor(0,0);
 #endif
 }
 
@@ -135,8 +138,14 @@ void QuDrawCursor (QuBitmap *bmp, unsigned x, unsigned y) {
 }
 
 void QuUpdateCursor (unsigned x, unsigned y) {
+#ifdef SW_CURSOR
 	QuStoreBack (x, y);
+	QuDrawCursor(bmp,x,y);
+#endif
+
+#ifdef HW_CUROSR
 	QuDrawCursor (bmp,x, y);
+#endif
 }
 
 void QuCursorNewCoord (unsigned x, unsigned y) {
@@ -160,7 +169,7 @@ void QuCursorFixDamage (unsigned x, unsigned y) {
 	ioq.value = x;
 	ioq.value2 = y;
 	ioq.value6 = QU_CURSOR_ARROW;
-	ioquery(canvas_get_fd(), SVGA_MOVE_CURSOR, &ioq);
+	ioquery(fd, SVGA_MOVE_CURSOR, &ioq);
 #endif
 }
 

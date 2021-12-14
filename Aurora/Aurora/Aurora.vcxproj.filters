@@ -345,6 +345,9 @@
     <ClInclude Include="..\include\efi.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\arch\x86_64\block.h">
+      <Filter>include\arch\x86_64</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="init.cpp">
@@ -559,6 +562,9 @@
     </ClCompile>
     <ClCompile Include="drivers\acpi\xenevaosi.cpp">
       <Filter>source\drivers\acpi</Filter>
+    </ClCompile>
+    <ClCompile Include="arch\x86_64\block.cpp">
+      <Filter>source\arch\x86_64</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

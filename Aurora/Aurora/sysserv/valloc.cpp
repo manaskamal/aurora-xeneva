@@ -1,6 +1,8 @@
 #ifdef ARCH_X64
 #include <arch\x86_64\mmngr\vmmngr.h>
+#include <arch\x86_64\thread.h>
 #endif
+
 #include <string.h>
 #include <stdio.h>
 

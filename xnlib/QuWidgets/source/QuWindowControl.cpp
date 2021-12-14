@@ -92,12 +92,14 @@ void QuCloseButtonDraw (QuWinControl *control, QuWindow *win, bool clicked) {
 	if (clicked) {
 		
 		if (control->type == QU_WIN_CONTROL_CLOSE) {
+			if (control->ControlEvent)
+				control->ControlEvent(control, win, clicked);
+
+
 			QuMessage msg;
 			msg.type = QU_CODE_WIN_CLOSE;
 			QuChannelPut(&msg, 2);
 			memset(&msg, 0, sizeof(QuMessage));
-			if (control->ControlEvent)
-				control->ControlEvent(control, win, clicked);
 			
 		}
 		

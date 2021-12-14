@@ -15,9 +15,9 @@
 #include <stdio.h>
 #include <efi.h>
 
-uint64_t free_memory;
+uint64_t free_memory = 0;
 uint64_t reserved_memory;
-uint64_t used_memory;
+uint64_t used_memory = 0;
 uint64_t ram_bitmap_index;
 uint64_t total_ram;
 
@@ -50,13 +50,13 @@ public:
 		uint64_t byteIndex = index / 8;
 		uint8_t  bitIndex = index % 8;
 		uint8_t  bitIndexer = 0x80 >> bitIndex;
-
+	
 		Buffer[byteIndex] &= ~bitIndexer;
 		if (value) {
-			Buffer[byteIndex] |= bitIndexer;
+			Buffer[byteIndex] |= bitIndexer;	
 		}
 
-		return false;
+		return true;
 	}
 };
 
@@ -80,7 +80,7 @@ void pmmngr_lock_page ( void* addr) {
 	if (ram_bitmap[index] == true) return;
 	if (ram_bitmap.Set (index, true)) {
 		free_memory -= 4096;
-		used_memory += 4096;
+		reserved_memory += 4096;
 	}
 }
 
@@ -138,6 +138,8 @@ void pmmngr_init(KERNEL_BOOT_INFO *_info)
 		}
 	}
 
+	total_ram -= reserved_memory;
+
 	void *unusable = pmmngr_alloc(); //0 is avoided
 }
 
@@ -150,15 +152,16 @@ void pmmngr_init(KERNEL_BOOT_INFO *_info)
  */
 void* pmmngr_alloc()
 {
-	free_memory -= 4096 * 1;
-	used_memory += 4096 * 1;
+	
 	for (; ram_bitmap_index < ram_bitmap.Size * 8; ram_bitmap_index++) {
 		if (ram_bitmap[ram_bitmap_index] == true) continue;
 		pmmngr_lock_page ((void*)(ram_bitmap_index * 4096));
+		free_memory -= 4096 * 1;
+		used_memory += 4096 * 1;
 		return (void*)(ram_bitmap_index * 4096);
 	}
 
-
+	
 	printf ("Used RAM -> %d MB, Free RAM -> %d MB\n", used_memory /1024 / 1024, free_memory / 1024 / 1024);
 	printf ("No more available pages\n");
 	for(;;);
@@ -184,6 +187,7 @@ void pmmngr_free (void* addr)
 	uint64_t index = (uint64_t)addr / 4096;
 	if (ram_bitmap[index] == false) return;
 	if (ram_bitmap.Set (index, false)) {
+
 		free_memory += 4096;
 		used_memory -= 4096;
 		if (ram_bitmap_index > index) ram_bitmap_index = index;

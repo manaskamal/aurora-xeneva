@@ -142,9 +142,7 @@ void QuCanvasBlit (QuWindow* win,unsigned int *canvas, unsigned x, unsigned y, u
 			QuScreenRectAdd(winx, winy, wid, he);
 		//	QuTaskbarRepaint();
 		}
-#ifdef SW_CURSOR
-	//	QuMoveCursor(QuCursorGetNewX(), QuCursorGetNewY());
-#endif
+
 		info->dirty = false;
 		
 	}
@@ -159,7 +157,10 @@ void QuCanvasBlit (QuWindow* win,unsigned int *canvas, unsigned x, unsigned y, u
 		QuCanvasSetUpdateBit(true);
 		QuWindowMngr_DrawBehind(win);
 		
-		//sys_kill(id,2);
+		QuMessage msg;
+		msg.to_id = id;
+		msg.type = QU_CANVAS_DESTROYED;
+		QuChannelPut(&msg,id);
 	}
 
 

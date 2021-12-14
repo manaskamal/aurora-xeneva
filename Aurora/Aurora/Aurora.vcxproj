@@ -189,6 +189,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\include\arch\x86_64\apic.h" />
+    <ClInclude Include="..\include\arch\x86_64\block.h" />
     <ClInclude Include="..\include\arch\x86_64\cpu.h" />
     <ClInclude Include="..\include\arch\x86_64\exception.h" />
     <ClInclude Include="..\include\arch\x86_64\ioapic.h" />
@@ -273,6 +274,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="arch\x86_64\apic.cpp" />
+    <ClCompile Include="arch\x86_64\block.cpp" />
     <ClCompile Include="arch\x86_64\cpu.cpp" />
     <ClCompile Include="arch\x86_64\exception.cpp" />
     <ClCompile Include="arch\x86_64\ioapic.cpp" />

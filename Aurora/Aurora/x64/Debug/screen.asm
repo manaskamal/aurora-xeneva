@@ -10,9 +10,9 @@ _BSS	SEGMENT
 ?display@@3U__display__@@A DB 020H DUP (?)		; display
 _BSS	ENDS
 CONST	SEGMENT
-$SG3026	DB	'fb', 00H
+$SG3025	DB	'fb', 00H
 	ORG $+5
-$SG3027	DB	'/dev/fb', 00H
+$SG3026	DB	'/dev/fb', 00H
 CONST	ENDS
 PUBLIC	?initialize_screen@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z ; initialize_screen
 PUBLIC	?screen_set_configuration@@YAXII@Z		; screen_set_configuration
@@ -26,11 +26,11 @@ PUBLIC	?draw_pixel@@YAXIII@Z				; draw_pixel
 PUBLIC	?screen_io_query@@YAHPEAU_vfs_node_@@HPEAX@Z	; screen_io_query
 EXTRN	?strcpy@@YAPEADPEADPEBD@Z:PROC			; strcpy
 EXTRN	?vfs_mount@@YAXPEADPEAU_vfs_node_@@@Z:PROC	; vfs_mount
+EXTRN	?pmmngr_alloc@@YAPEAXXZ:PROC			; pmmngr_alloc
 EXTRN	?map_page@@YA_N_K0E@Z:PROC			; map_page
-EXTRN	?malloc@@YAPEAXI@Z:PROC				; malloc
 pdata	SEGMENT
 $pdata$?initialize_screen@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z DD imagerel $LN3
-	DD	imagerel $LN3+292
+	DD	imagerel $LN3+287
 	DD	imagerel $unwind$?initialize_screen@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z
 $pdata$?screen_set_configuration@@YAXII@Z DD imagerel $LN6
 	DD	imagerel $LN6+142
@@ -386,16 +386,15 @@ $LN3:
 	mov	DWORD PTR ?display@@3U__display__@@A+24, eax
 
 ; 33   : 
-; 34   : 	vfs_node_t * svga = (vfs_node_t*)malloc(sizeof(vfs_node_t));
+; 34   : 	vfs_node_t * svga = (vfs_node_t*)pmmngr_alloc(); //malloc(sizeof(vfs_node_t));
 
-	mov	ecx, 104				; 00000068H
-	call	?malloc@@YAPEAXI@Z			; malloc
+	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
 	mov	QWORD PTR svga$[rsp], rax
 
 ; 35   : 	strcpy (svga->filename, "fb");
 
 	mov	rax, QWORD PTR svga$[rsp]
-	lea	rdx, OFFSET FLAT:$SG3026
+	lea	rdx, OFFSET FLAT:$SG3025
 	mov	rcx, rax
 	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
 
@@ -458,7 +457,7 @@ $LN3:
 ; 47   : 	vfs_mount ("/dev/fb", svga);
 
 	mov	rdx, QWORD PTR svga$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3027
+	lea	rcx, OFFSET FLAT:$SG3026
 	call	?vfs_mount@@YAXPEADPEAU_vfs_node_@@@Z	; vfs_mount
 
 ; 48   : }

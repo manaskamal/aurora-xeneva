@@ -17,8 +17,8 @@ EXTRN	?get_screen_width@@YAIXZ:PROC			; get_screen_width
 EXTRN	?get_screen_height@@YAIXZ:PROC			; get_screen_height
 EXTRN	?map_shared_memory@@YAXG_K0@Z:PROC		; map_shared_memory
 EXTRN	?get_thread_id@@YAGXZ:PROC			; get_thread_id
-EXTRN	?get_screen_scanline@@YAGXZ:PROC		; get_screen_scanline
 EXTRN	?sys_get_fb_mem@@YAPEAIXZ:PROC			; sys_get_fb_mem
+EXTRN	?get_screen_scanline@@YAGXZ:PROC		; get_screen_scanline
 EXTRN	?sys_set_mouse_data@@YAXXZ:PROC			; sys_set_mouse_data
 EXTRN	?sys_get_mouse_pack@@YA_NPEAU_mouse_packet_@@@Z:PROC ; sys_get_mouse_pack
 EXTRN	?sys_unblock_id@@YAXG@Z:PROC			; sys_unblock_id
@@ -49,7 +49,7 @@ _BSS	SEGMENT
 funct	DQ	01H DUP (?)
 _BSS	ENDS
 CONST	SEGMENT
-$SG6138	DB	'System Call Fault!! Halting System', 0aH, 00H
+$SG6137	DB	'System Call Fault!! Halting System', 0aH, 00H
 CONST	ENDS
 _DATA	SEGMENT
 _syscalls DQ	FLAT:?printf@@YAXPEBDZZ
@@ -132,7 +132,7 @@ $LN6:
 
 ; 21   : 		printf ("System Call Fault!! Halting System\n");
 
-	lea	rcx, OFFSET FLAT:$SG6138
+	lea	rcx, OFFSET FLAT:$SG6137
 	call	?printf@@YAXPEBDZZ			; printf
 $LN2@x64_syscal:
 

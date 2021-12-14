@@ -56,7 +56,6 @@ void QuWindowMngr_Remove (QuWindow *win) {
 			QuListRemove(WindowList, i);
 		}
 	}
-	
 
 	focus_win = NULL;
 	draggable_win = NULL;
@@ -249,7 +248,6 @@ void QuWindowMngr_SendEvent (QuWindow *win, int type, int x, int y, int code) {
 	}else if (type == QU_CANVAS_KEY_PRESSED) {
 		msg.dword = code;
 	}
-
 	QuChannelPut(&msg,win->owner_id);
 	sys_unblock_id(win->owner_id);
 }

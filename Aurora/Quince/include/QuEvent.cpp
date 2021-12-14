@@ -81,8 +81,7 @@ void QuEventLoop() {
 			QuCursorNewCoord(m_pack.dword, m_pack.dword2);
 			mouse_x = m_pack.dword;
 			mouse_y = m_pack.dword2;
-			
-
+		
 			_mouse_code_ = 0;
 			mouse_down = false;
 			//! Mouse Clicked Bit
@@ -116,6 +115,9 @@ void QuEventLoop() {
 		 */
 		if (msg.type == 3) {
 			//! Send the key event
+			if (msg.dword == KEY_A) {
+				create_process ("/cnsl.exe", "hello");
+			}
 			if (QuWindowMngrGetFocused() != NULL) {
 				QuWindowMngr_SendEvent (QuWindowMngrGetFocused(), QU_CANVAS_KEY_PRESSED,NULL, NULL,msg.dword);
 			}
@@ -135,6 +137,7 @@ void QuEventLoop() {
 			int winw = q_msg.dword3;
 			int winh = q_msg.dword4;
 
+			sys_print_text ("Creating window \n");
 			////!Stop the mouse
 			render_disable = true;
 			uint16_t dest_id = q_msg.from_id; 
@@ -208,11 +211,9 @@ void QuEventLoop() {
 		QuCursorFixDamage(mouse_x, mouse_y);
 		//*==========================================================================
 		//*==========================================================================
-		if (diff_time > 15){	
-			QuWindowMngr_DrawAll();
-			next_tick = sys_get_system_tick();
-			frame_time = 0;
-		}	
+	
+		QuWindowMngr_DrawAll();
+	
         QuRenderTime(time.seconds, time.minutes, time.hour);
 
        

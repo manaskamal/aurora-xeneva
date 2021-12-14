@@ -116,23 +116,25 @@ void stack_fault (size_t v, void* p){
 //! exception function --- general protection fault
 //   general protection fault is responsible for displaying processor security based error
 void general_protection_fault (size_t v, void* p){
-	x64_cli();
+	//x64_cli();
 	interrupt_stack_frame *frame = (interrupt_stack_frame*)p;
-	panic ("Genral Protection Fault\n");
+	/*panic ("Genral Protection Fault\n");
 	printf ("__PROCESSOR TRACE__\n");
 	printf ("RIP -> %x\n",frame->rip);
 	printf ("Stack -> %x\n", frame->rsp);
 	printf ("RFLAGS -> %x\n", frame->rflags);
 	printf ("Current task ->%s\n", get_current_thread()->name);
 	printf ("CS -> %x, SS -> %x\n", frame->cs, frame->ss);
-    for(;;);
+	printf ("CURRENT TASK STATE -> %d\n", get_current_thread()->state);
+    for(;;);*/
+	block_thread(get_current_thread());
+	force_sched();
 }
 
 //! Most important for good performance is page fault! whenever any memory related errors occurs
 //! it get fired and new page swapping process should be allocated
 
 void page_fault (size_t vector, void* param){
-	//x64_cli();
 	interrupt_stack_frame *frame = (interrupt_stack_frame*)param;
 	void* vaddr = (void*)x64_read_cr2();
 
@@ -143,13 +145,14 @@ void page_fault (size_t vector, void* param){
 	int id = frame->error & 0x10;
  //
 	bool blocked = false;
-	if (is_scheduler_initialized()){
+	/*if (is_scheduler_initialized() && get_current_thread()->id != 2) {
 		block_thread(get_current_thread());
 		blocked = true;
-	}
+	}*/
 
 	if (us){
-		/*panic ("Page Fault \n");
+		if (get_current_thread()->id != 2) {
+		panic ("Page Fault \n");
 		printf ("Faulting Address -> %x\n", vaddr);
 		printf ("__PROCESSOR TRACE__\n");
 		printf ("RIP -> %x\n", frame->rip);
@@ -160,10 +163,13 @@ void page_fault (size_t vector, void* param){
 		printf ("CS -> %x, SS -> %x\n", frame->cs, frame->ss);
 		printf ("******Cause********\n");
 		printf ("***User Priviledge fault***\n");
-		for(;;);*/
+		for(;;);
+		}
+		
 		map_page((uint64_t)pmmngr_alloc(), (uint64_t)vaddr,PAGING_USER);
 	}else if (present){
-		/*panic ("Page Fault \n");
+		if (get_current_thread()->id != 2) {
+		panic ("Page Fault \n");
 		printf ("Faulting Address -> %x\n", vaddr);
 		printf ("__PROCESSOR TRACE__\n");
 		printf ("RIP -> %x\n", frame->rip);
@@ -174,7 +180,9 @@ void page_fault (size_t vector, void* param){
 		printf ("CS -> %x, SS -> %x\n", frame->cs, frame->ss);
 		printf ("******Cause********\n");
 		printf ("*** Not Present ***\n");
-		for(;;);*/
+		for(;;);
+		}
+	
 		map_page((uint64_t)pmmngr_alloc(), (uint64_t)vaddr,PAGING_USER);
 	}else if (rw) {
 		panic ("Page Fault \n");
@@ -217,8 +225,6 @@ void page_fault (size_t vector, void* param){
 		for(;;);
 	}
 
-	if (blocked)
-		unblock_thread(get_current_thread());
 	//map_page((uint64_t)pmmngr_alloc(), (uint64_t)vaddr);
 }
 

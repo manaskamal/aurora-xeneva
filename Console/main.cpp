@@ -43,10 +43,8 @@ void QuActions (QuMessage *msg) {
 	}
 
 	if (msg->type == QU_CANVAS_DESTROYED) {
-		memset(msg, 0, sizeof(QuMessage));
-	}
-
-	if (msg->type == QU_CANVAS_REPAINT) {
+		sys_print_text ("QuCanvasMessageReceived by console\n");
+		exit(0);
 		memset(msg, 0, sizeof(QuMessage));
 	}
 
@@ -76,19 +74,19 @@ void PrintString (QuTerminal *text, char* string) {
 }
 
 int main (int argc, char* argv[]) {
-
-	QuWindow* win = QuCreateWindow(100,100,500,500,"Hello");
+	QuWindow* win = QuCreateWindow(0,0,500,500,"Hello");
 	QuSetRootWindow (win);
+	
 	canvas_t *canvas = canvas_initialize(win->w, win->h);
 	win->ctx = canvas;
 	QuWindowShowControls(win);
-	QuWindowAddControlEvent(QU_WIN_CONTROL_CLOSE, WindowClosed);
+	//QuWindowAddControlEvent(QU_WIN_CONTROL_CLOSE, WindowClosed);
 
-	///! map a memory section for text 
+	//! map a memory section for text 
 
-	QuTerminal *term = QuCreateTerminal(0,0,win->w, win->h);
-	QuWindowAdd(win,(QuWidget*)term);	
-
+	/*QuTerminal *term = QuCreateTerminal(0,0,win->w, win->h);
+	QuWindowAdd(win,(QuWidget*)term);
+*/
 	QuWindowShow(win);
 
 	//int master_fd, slave_fd;
@@ -105,8 +103,11 @@ int main (int argc, char* argv[]) {
 
 	QuMessage qmsg;
 	uint16_t app_id = QuGetAppId();
+	sys_print_text ("Console app id -> %d\n", app_id);
 	while(1) {
+		//sys_print_text("Waiting\n");
         QuChannelGet(&qmsg);
+		
 		if (qmsg.to_id == app_id)
 			QuActions(&qmsg);
 
@@ -121,8 +122,6 @@ int main (int argc, char* argv[]) {
 	*/
 		//	//
 		//}
-
-		
 		sys_wait();
 	}	
 	return 1;

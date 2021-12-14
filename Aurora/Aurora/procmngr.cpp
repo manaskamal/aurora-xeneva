@@ -17,7 +17,6 @@
 
 static procmngr_queue *top = NULL;
 static int process_count = 0;
-#define PROCESS_CREATE 10
 bool waked = false;
 
 void procmngr_add_process (procmngr_queue *queue) {
@@ -28,13 +27,18 @@ void procmngr_add_process (procmngr_queue *queue) {
 	process_count++;
 }
 
+void procmngr_remove_process (uint16_t id) {
+	x64_cli();
+	kill_process_by_id (id);
+	x64_sti();
+}
+
 procmngr_queue* procmngr_get_process () {
 	procmngr_queue *temp = NULL;
 	if (top != NULL) {
 		temp = top;
 		top = top->link;
 		temp->link = NULL;
-		pmmngr_free(temp);
 		process_count--;
 		return temp;
 	}
@@ -44,6 +48,7 @@ procmngr_queue* procmngr_get_process () {
 void procmngr_create_process (procmngr_queue *queue) {
 	x64_cli();
 	create_process (queue->path,queue->name);
+	pmmngr_free (queue);
 	x64_sti();
 }
 
@@ -65,7 +70,14 @@ void procmngr_start () {
 		if (process_count > 0) {
 			for (int i = 0; i < process_count; i++) {
 				queue = procmngr_get_process ();
-				procmngr_create_process (queue);
+				if (queue->type == PROCESS_CREATE)
+					procmngr_create_process (queue);
+
+				if (queue->type == PROCESS_DESTROY) {
+					procmngr_remove_process(queue->id);
+					pmmngr_free(queue);
+				}
+
 			}
 		}
 

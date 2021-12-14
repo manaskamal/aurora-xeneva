@@ -133,7 +133,6 @@ void allocate_fd (thread_t *t) {
 }
 
 void create_process(const char* filename, char* procname) {
-	x64_cli();
 	//printf ("Creating processs -> %s\n", filename);
 	//mutex_lock (process_mutex);
 	//!allocate a data-structure for process 
@@ -202,7 +201,6 @@ void create_process(const char* filename, char* procname) {
 	process->thread_data_pointer = t;
     add_process(process);
 	//mutex_unlock (process_mutex);
-	x64_sti();
 }
 
 //! Kill Process
@@ -226,13 +224,13 @@ void kill_process () {
 
 	remove_process (proc);
 	task_delete (remove_thread);
+	pmmngr_free(remove_thread);
 	mutex_unlock (kill_mutex);
 }
 
 //! Kill Process
 void kill_process_by_id (uint16_t id) {
 	x64_cli();
-	mutex_lock (kill_mutex);
 	bool was_blocked = false;
 	thread_t * remove_thread = thread_iterate_ready_list(id);
 	if (remove_thread == NULL) {
@@ -240,23 +238,31 @@ void kill_process_by_id (uint16_t id) {
 		was_blocked = true;
 	}
 	process_t *proc = find_process_by_thread (remove_thread);
-	
-	uint64_t  init_stack = proc->stack - 0x100000;
 
+	uint64_t  init_stack = proc->stack - 0x100000;
+	uint64_t image_base = proc->image_base;
+	size_t image_size = proc->image_size;
+
+	uint64_t *cr3 = (uint64_t*)remove_thread->cr3;
+
+	if (was_blocked)
+		unblock_thread(remove_thread);
+	remove_thread->state = THREAD_STATE_BLOCKED;
+	task_delete (remove_thread);
+	pmmngr_free(remove_thread);
+	remove_process (proc);
+
+	
 	//!unmap the runtime stack
 	for (int i = 0; i < 0x100000 / 4096; i++) {
-		unmap_page_ex ((uint64_t*)remove_thread->cr3,init_stack + i * 4096, true);
+		unmap_page_ex (cr3,init_stack + i * 4096, true);
 	}
 
 	//!unmap the binary image
-	for (int i = 0; i < proc->image_size / 4096; i++) {
-		uint64_t virtual_addr = proc->image_base + (i * 4096);
-		unmap_page_ex ((uint64_t*)remove_thread->cr3, virtual_addr, true);
+	for (int i = 0; i < image_size / 4096; i++) {
+		uint64_t virtual_addr = image_base + (i * 4096);
+		unmap_page_ex (cr3, virtual_addr, true);
 	}
-
-	task_delete (remove_thread);
-	remove_process (proc);
-	mutex_unlock (kill_mutex);
 }
 
 

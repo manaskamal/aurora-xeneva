@@ -63,9 +63,7 @@ void svga_init () {
 	svga_dev.io_base =  svga_dev.pci_addr->device.nonBridge.baseAddress[0] & ~mask;         //pci_get_bar_addr (&svga_dev.pci_addr,0);
 	svga_dev.fb_mem =   (uint8_t*)(svga_dev.pci_addr->device.nonBridge.baseAddress[1] & ~0xf);  //(uint8_t*)pci_get_bar_addr (&svga_dev.pci_addr, 1);
 	svga_dev.fifo_mem = (uint32_t*)(svga_dev.pci_addr->device.nonBridge.baseAddress[2] & ~0xf);  //(uint32_t*)pci_get_bar_addr (&svga_dev.pci_addr, 2);
-	/*map_page (svga_dev.io_base, svga_dev.io_base, 0);
-	map_page ((uint64_t)svga_dev.fb_mem,(uint64_t)svga_dev.fb_mem,0);
-	map_page ((uint64_t)svga_dev.fifo_mem,(uint64_t) svga_dev.fifo_mem,0);*/
+	
 
 	svga_dev.device_version_id = SVGA_ID_2;
 	do {
@@ -121,7 +119,7 @@ void svga_init () {
 	gmr_init();
 	memset(svga_dev.fb_mem,0x40,svga_dev.width*svga_dev.height*32);
 	svga_update(0,0,svga_dev.width,svga_dev.height);
-	screen_set_configuration(svga_dev.width,svga_dev.height);
+	//screen_set_configuration(svga_dev.width,svga_dev.height);
 	vm_backdoor_mouse_init (true);
 
 	printf ("SVGA initialized\n");
@@ -369,14 +367,12 @@ void* svga_alloc_gmr (uint32 size, SVGAGuestPtr *ptr) {
 }
 
 void svga_update (uint32_t x, uint32_t y, uint32_t width, uint32_t height) {
-	//printf ("[Aurora]: SVGA Screen Update called\n");
 	SVGAFifoCmdUpdate *cmd = (SVGAFifoCmdUpdate*)svga_fifo_reserved_cmd (SVGA_CMD_UPDATE, sizeof (SVGAFifoCmdUpdate));
 	cmd->x = x;
 	cmd->y = y;
 	cmd->width = width;
 	cmd->height = height;
 	svga_fifo_commit_all ();
-	//printf ("[Aurora]: Update fifo completed\n");
 }
 
 
@@ -623,11 +619,12 @@ int svga_io_query (vfs_node_t* node, int code, void* arg) {
 		return bpp;
 		break;
 	 }
-	case SVGA_UPDATE:{
+	case SVGA_UPDATE:{	
 		uint32_t xcoord = query_struct->value;
 		uint32_t ycoord = query_struct->value2;
 		uint32_t width = query_struct->value3;
 		uint32_t height = query_struct->value4;
+	
 		svga_update(xcoord, ycoord, width, height);
 		break;
 	}
@@ -645,26 +642,10 @@ int svga_io_query (vfs_node_t* node, int code, void* arg) {
 		return scanline;
 		break;
 	}
-	case SVGA_UPDATE_FB: {
-	/*	uint32_t* lfb = get_framebuffer_addr();*/
-		int x = query_struct->value;
-		int y = query_struct->value2;
-		int w = query_struct->value3;
-		int h = query_struct->value4;
-		//uint32_t *canv = (uint32_t*)query_struct->pointer;
-		
-	/*	for (int i = 0; i < h; i++)
-			memcpy (lfb + (y + i) * get_screen_width() + x,
-			canv + (y + i) * get_screen_width() + x, w * 4);
-*/
-		svga_update (x, y, w, h);
-	}
-	default: {
+	default: 
 		return 1;
+	
 	}
-	}
-
-	x64_sti();
 	return 1;
 }
 
