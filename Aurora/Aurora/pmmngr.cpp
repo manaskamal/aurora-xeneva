@@ -156,12 +156,16 @@ void* pmmngr_alloc()
 	for (; ram_bitmap_index < ram_bitmap.Size * 8; ram_bitmap_index++) {
 		if (ram_bitmap[ram_bitmap_index] == true) continue;
 		pmmngr_lock_page ((void*)(ram_bitmap_index * 4096));
-		free_memory -= 4096 * 1;
 		used_memory += 4096 * 1;
 		return (void*)(ram_bitmap_index * 4096);
 	}
 
-	
+	for (int index = 0; index  < ram_bitmap.Size * 8; index++) {
+		if (ram_bitmap[index] == true) continue;
+		pmmngr_lock_page ((void*)(index * 4096));
+		used_memory += 4096 * 1;
+		return (void*)(index * 4096);
+	}
 	printf ("Used RAM -> %d MB, Free RAM -> %d MB\n", used_memory /1024 / 1024, free_memory / 1024 / 1024);
 	printf ("No more available pages\n");
 	for(;;);
@@ -187,10 +191,11 @@ void pmmngr_free (void* addr)
 	uint64_t index = (uint64_t)addr / 4096;
 	if (ram_bitmap[index] == false) return;
 	if (ram_bitmap.Set (index, false)) {
-
 		free_memory += 4096;
-		used_memory -= 4096;
-		if (ram_bitmap_index > index) ram_bitmap_index = index;
+		used_memory -= 4096;	
+		if (ram_bitmap_index > index) {
+			ram_bitmap_index = index;
+		}
 	}
 }
 

@@ -233,9 +233,6 @@ void QuWindowMngr_HandleMouseUp (int x, int y) {
 
 
 void QuWindowMngr_SendEvent (QuWindow *win, int type, int x, int y, int code) {
-	if (!StreamEvent)
-		return;
-
 	QuMessage msg;
 	msg.type = type;
 	msg.from_id = get_current_pid();
@@ -249,7 +246,7 @@ void QuWindowMngr_SendEvent (QuWindow *win, int type, int x, int y, int code) {
 		msg.dword = code;
 	}
 	QuChannelPut(&msg,win->owner_id);
-	sys_unblock_id(win->owner_id);
+	//sys_unblock_id(win->owner_id);
 }
 
 void QuWindowMngr_EventStreamEnable (bool value) {

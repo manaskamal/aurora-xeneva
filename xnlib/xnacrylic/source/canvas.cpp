@@ -142,6 +142,10 @@ int canvas_get_fd () {
 	return svga_fd;
 }
 
+void canvas_close (canvas_t *canvas) {
+	acrylic_free_buffer(canvas->address,canvas->ctx_width *canvas->ctx_height * 32);
+}
+
 
 
 

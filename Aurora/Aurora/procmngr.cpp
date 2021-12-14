@@ -28,9 +28,7 @@ void procmngr_add_process (procmngr_queue *queue) {
 }
 
 void procmngr_remove_process (uint16_t id) {
-	x64_cli();
 	kill_process_by_id (id);
-	x64_sti();
 }
 
 procmngr_queue* procmngr_get_process () {
@@ -39,7 +37,6 @@ procmngr_queue* procmngr_get_process () {
 		temp = top;
 		top = top->link;
 		temp->link = NULL;
-		process_count--;
 		return temp;
 	}
 	return NULL;
@@ -54,36 +51,41 @@ void procmngr_create_process (procmngr_queue *queue) {
 
 
 void procmngr_wakeup () {
-	thread_t *proc_thr = (thread_t*)thread_iterate_block_list (3);
+	x64_cli();
+	thread_t *proc_thr = thread_iterate_block_list (3);
 	if (proc_thr != NULL) {
-		if (!waked) {
-			waked = true;
-			unblock_thread (proc_thr);
-		}
+		unblock_thread (proc_thr);
+	}else {
+		proc_thr = thread_iterate_ready_list(3);
+		printf ("Proc mngr is already awake-> %x\n", proc_thr);
+		block_thread(proc_thr);
+		force_sched();
 	}
+	x64_sti();
 }
 
 
 void procmngr_start () {
 	procmngr_queue *queue;
 	while (1) {
-		if (process_count > 0) {
-			for (int i = 0; i < process_count; i++) {
-				queue = procmngr_get_process ();
-				if (queue->type == PROCESS_CREATE)
-					procmngr_create_process (queue);
+		for (int i = 0; i < process_count; i++) {
+			queue = procmngr_get_process ();
+			if (queue->type == PROCESS_CREATE) {
+				procmngr_create_process (queue);
+				break;
+			}
 
-				if (queue->type == PROCESS_DESTROY) {
-					procmngr_remove_process(queue->id);
-					pmmngr_free(queue);
-				}
-
+			if (queue->type == PROCESS_DESTROY) {
+				procmngr_remove_process(queue->id);
+				pmmngr_free(queue);
+				break;
 			}
 		}
 
-		waked = false;
-		block_thread(get_current_thread());
-		force_sched();
-		//sleep_thread(get_current_thread(),1000);
+		process_count = 0;
+
+	    block_thread(get_current_thread());
+	    force_sched();
 	}
+	
 }

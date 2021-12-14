@@ -35,6 +35,7 @@
 #include <canvas.h>
 #include <color.h>
 #include <sys\_sleep.h>
+#include <QuWidget\QuDock.h>
 #include <acrylic.h>
 
 
@@ -215,7 +216,7 @@ void QuEventLoop() {
 		QuWindowMngr_DrawAll();
 	
         QuRenderTime(time.seconds, time.minutes, time.hour);
-
+		QuRamWidget();
        
 		QuUpdateCursor (mouse_x, mouse_y);
 		

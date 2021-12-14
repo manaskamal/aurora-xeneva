@@ -158,6 +158,7 @@ finish_packet:
 		
 		//!Pass here the message stream to all waiting processes
 	
+		x64_cli();
 		//mutex_lock (mouse);
 		dwm_message_t msg; // = (dwm_message_t*)pmmngr_alloc();
 		msg.type = 1;
@@ -167,6 +168,7 @@ finish_packet:
 		msg.dword5 = mouse_byte[1];
 		msg.dword6 = -mouse_byte[2];
 		dwm_put_message (&msg);
+		x64_sti();
 		//pmmngr_free (msg);
 		//mutex_unlock (mouse);
     /*	if (left_button_up()) {

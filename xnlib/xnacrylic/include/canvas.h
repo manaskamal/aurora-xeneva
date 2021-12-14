@@ -55,4 +55,5 @@ extern unsigned int* canvas_get_framebuffer (canvas_t * canvas);
 extern uint16_t canvas_get_scanline (canvas_t * canvas);
 extern uint32_t canvas_get_scale(canvas_t * canvas);
 extern int canvas_get_fd ();
+extern void canvas_close (canvas_t *canvas);
 #endif

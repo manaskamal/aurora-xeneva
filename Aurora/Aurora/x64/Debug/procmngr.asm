@@ -11,12 +11,16 @@ top	DQ	01H DUP (?)
 process_count DD 01H DUP (?)
 ?waked@@3_NA DB	01H DUP (?)				; waked
 _BSS	ENDS
+CONST	SEGMENT
+$SG3595	DB	'Proc mngr is already awake-> %x', 0aH, 00H
+CONST	ENDS
 PUBLIC	?procmngr_add_process@@YAXPEAU_procmngr_queue_@@@Z ; procmngr_add_process
 PUBLIC	?procmngr_get_process@@YAPEAU_procmngr_queue_@@XZ ; procmngr_get_process
 PUBLIC	?procmngr_start@@YAXXZ				; procmngr_start
 PUBLIC	?procmngr_wakeup@@YAXXZ				; procmngr_wakeup
 PUBLIC	?procmngr_remove_process@@YAXG@Z		; procmngr_remove_process
 PUBLIC	?procmngr_create_process@@YAXPEAU_procmngr_queue_@@@Z ; procmngr_create_process
+EXTRN	?printf@@YAXPEBDZZ:PROC				; printf
 EXTRN	?pmmngr_free@@YAXPEAX@Z:PROC			; pmmngr_free
 EXTRN	x64_cli:PROC
 EXTRN	x64_sti:PROC
@@ -24,6 +28,7 @@ EXTRN	?block_thread@@YAXPEAU_thread_@@@Z:PROC		; block_thread
 EXTRN	?unblock_thread@@YAXPEAU_thread_@@@Z:PROC	; unblock_thread
 EXTRN	?get_current_thread@@YAPEAU_thread_@@XZ:PROC	; get_current_thread
 EXTRN	?force_sched@@YAXXZ:PROC			; force_sched
+EXTRN	?thread_iterate_ready_list@@YAPEAU_thread_@@G@Z:PROC ; thread_iterate_ready_list
 EXTRN	?thread_iterate_block_list@@YAPEAU_thread_@@H@Z:PROC ; thread_iterate_block_list
 EXTRN	?create_process@@YAXPEBDPEAD@Z:PROC		; create_process
 EXTRN	?kill_process_by_id@@YAXG@Z:PROC		; kill_process_by_id
@@ -32,16 +37,16 @@ $pdata$?procmngr_add_process@@YAXPEAU_procmngr_queue_@@@Z DD imagerel $LN3
 	DD	imagerel $LN3+63
 	DD	imagerel $unwind$?procmngr_add_process@@YAXPEAU_procmngr_queue_@@@Z
 $pdata$?procmngr_get_process@@YAPEAU_procmngr_queue_@@XZ DD imagerel $LN4
-	DD	imagerel $LN4+90
+	DD	imagerel $LN4+76
 	DD	imagerel $unwind$?procmngr_get_process@@YAPEAU_procmngr_queue_@@XZ
-$pdata$?procmngr_start@@YAXXZ DD imagerel $LN11
-	DD	imagerel $LN11+165
+$pdata$?procmngr_start@@YAXXZ DD imagerel $LN10
+	DD	imagerel $LN10+163
 	DD	imagerel $unwind$?procmngr_start@@YAXXZ
 $pdata$?procmngr_wakeup@@YAXXZ DD imagerel $LN5
-	DD	imagerel $LN5+60
+	DD	imagerel $LN5+100
 	DD	imagerel $unwind$?procmngr_wakeup@@YAXXZ
 $pdata$?procmngr_remove_process@@YAXG@Z DD imagerel $LN3
-	DD	imagerel $LN3+34
+	DD	imagerel $LN3+24
 	DD	imagerel $unwind$?procmngr_remove_process@@YAXG@Z
 $pdata$?procmngr_create_process@@YAXPEAU_procmngr_queue_@@@Z DD imagerel $LN3
 	DD	imagerel $LN3+56
@@ -67,17 +72,17 @@ _TEXT	SEGMENT
 queue$ = 48
 ?procmngr_create_process@@YAXPEAU_procmngr_queue_@@@Z PROC ; procmngr_create_process
 
-; 48   : void procmngr_create_process (procmngr_queue *queue) {
+; 45   : void procmngr_create_process (procmngr_queue *queue) {
 
 $LN3:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 40					; 00000028H
 
-; 49   : 	x64_cli();
+; 46   : 	x64_cli();
 
 	call	x64_cli
 
-; 50   : 	create_process (queue->path,queue->name);
+; 47   : 	create_process (queue->path,queue->name);
 
 	mov	rax, QWORD PTR queue$[rsp]
 	mov	rcx, QWORD PTR queue$[rsp]
@@ -85,16 +90,16 @@ $LN3:
 	mov	rdx, rax
 	call	?create_process@@YAXPEBDPEAD@Z		; create_process
 
-; 51   : 	pmmngr_free (queue);
+; 48   : 	pmmngr_free (queue);
 
 	mov	rcx, QWORD PTR queue$[rsp]
 	call	?pmmngr_free@@YAXPEAX@Z			; pmmngr_free
 
-; 52   : 	x64_sti();
+; 49   : 	x64_sti();
 
 	call	x64_sti
 
-; 53   : }
+; 50   : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -112,20 +117,12 @@ $LN3:
 	mov	WORD PTR [rsp+8], cx
 	sub	rsp, 40					; 00000028H
 
-; 31   : 	x64_cli();
-
-	call	x64_cli
-
-; 32   : 	kill_process_by_id (id);
+; 31   : 	kill_process_by_id (id);
 
 	movzx	ecx, WORD PTR id$[rsp]
 	call	?kill_process_by_id@@YAXG@Z		; kill_process_by_id
 
-; 33   : 	x64_sti();
-
-	call	x64_sti
-
-; 34   : }
+; 32   : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -137,42 +134,64 @@ _TEXT	SEGMENT
 proc_thr$ = 32
 ?procmngr_wakeup@@YAXXZ PROC				; procmngr_wakeup
 
-; 56   : void procmngr_wakeup () {
+; 53   : void procmngr_wakeup () {
 
 $LN5:
 	sub	rsp, 56					; 00000038H
 
-; 57   : 	thread_t *proc_thr = (thread_t*)thread_iterate_block_list (3);
+; 54   : 	x64_cli();
+
+	call	x64_cli
+
+; 55   : 	thread_t *proc_thr = thread_iterate_block_list (3);
 
 	mov	ecx, 3
 	call	?thread_iterate_block_list@@YAPEAU_thread_@@H@Z ; thread_iterate_block_list
 	mov	QWORD PTR proc_thr$[rsp], rax
 
-; 58   : 	if (proc_thr != NULL) {
+; 56   : 	if (proc_thr != NULL) {
 
 	cmp	QWORD PTR proc_thr$[rsp], 0
 	je	SHORT $LN2@procmngr_w
 
-; 59   : 		if (!waked) {
-
-	movzx	eax, BYTE PTR ?waked@@3_NA		; waked
-	test	eax, eax
-	jne	SHORT $LN1@procmngr_w
-
-; 60   : 			waked = true;
-
-	mov	BYTE PTR ?waked@@3_NA, 1		; waked
-
-; 61   : 			unblock_thread (proc_thr);
+; 57   : 		unblock_thread (proc_thr);
 
 	mov	rcx, QWORD PTR proc_thr$[rsp]
 	call	?unblock_thread@@YAXPEAU_thread_@@@Z	; unblock_thread
-$LN1@procmngr_w:
+
+; 58   : 	}else {
+
+	jmp	SHORT $LN1@procmngr_w
 $LN2@procmngr_w:
 
-; 62   : 		}
+; 59   : 		proc_thr = thread_iterate_ready_list(3);
+
+	mov	cx, 3
+	call	?thread_iterate_ready_list@@YAPEAU_thread_@@G@Z ; thread_iterate_ready_list
+	mov	QWORD PTR proc_thr$[rsp], rax
+
+; 60   : 		printf ("Proc mngr is already awake-> %x\n", proc_thr);
+
+	mov	rdx, QWORD PTR proc_thr$[rsp]
+	lea	rcx, OFFSET FLAT:$SG3595
+	call	?printf@@YAXPEBDZZ			; printf
+
+; 61   : 		block_thread(proc_thr);
+
+	mov	rcx, QWORD PTR proc_thr$[rsp]
+	call	?block_thread@@YAXPEAU_thread_@@@Z	; block_thread
+
+; 62   : 		force_sched();
+
+	call	?force_sched@@YAXXZ			; force_sched
+$LN1@procmngr_w:
+
 ; 63   : 	}
-; 64   : }
+; 64   : 	x64_sti();
+
+	call	x64_sti
+
+; 65   : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -185,25 +204,20 @@ i$1 = 32
 queue$ = 40
 ?procmngr_start@@YAXXZ PROC				; procmngr_start
 
-; 67   : void procmngr_start () {
+; 68   : void procmngr_start () {
 
-$LN11:
+$LN10:
 	sub	rsp, 56					; 00000038H
-$LN8@procmngr_s:
+$LN7@procmngr_s:
 
-; 68   : 	procmngr_queue *queue;
-; 69   : 	while (1) {
+; 69   : 	procmngr_queue *queue;
+; 70   : 	while (1) {
 
 	xor	eax, eax
 	cmp	eax, 1
-	je	$LN7@procmngr_s
+	je	$LN6@procmngr_s
 
-; 70   : 		if (process_count > 0) {
-
-	cmp	DWORD PTR process_count, 0
-	jle	SHORT $LN6@procmngr_s
-
-; 71   : 			for (int i = 0; i < process_count; i++) {
+; 71   : 		for (int i = 0; i < process_count; i++) {
 
 	mov	DWORD PTR i$1[rsp], 0
 	jmp	SHORT $LN5@procmngr_s
@@ -216,75 +230,82 @@ $LN5@procmngr_s:
 	cmp	DWORD PTR i$1[rsp], eax
 	jge	SHORT $LN3@procmngr_s
 
-; 72   : 				queue = procmngr_get_process ();
+; 72   : 			queue = procmngr_get_process ();
 
 	call	?procmngr_get_process@@YAPEAU_procmngr_queue_@@XZ ; procmngr_get_process
 	mov	QWORD PTR queue$[rsp], rax
 
-; 73   : 				if (queue->type == PROCESS_CREATE)
+; 73   : 			if (queue->type == PROCESS_CREATE) {
 
 	mov	rax, QWORD PTR queue$[rsp]
 	movzx	eax, BYTE PTR [rax+58]
 	cmp	eax, 1
 	jne	SHORT $LN2@procmngr_s
 
-; 74   : 					procmngr_create_process (queue);
+; 74   : 				procmngr_create_process (queue);
 
 	mov	rcx, QWORD PTR queue$[rsp]
 	call	?procmngr_create_process@@YAXPEAU_procmngr_queue_@@@Z ; procmngr_create_process
+
+; 75   : 				break;
+
+	jmp	SHORT $LN3@procmngr_s
 $LN2@procmngr_s:
 
-; 75   : 
-; 76   : 				if (queue->type == PROCESS_DESTROY) {
+; 76   : 			}
+; 77   : 
+; 78   : 			if (queue->type == PROCESS_DESTROY) {
 
 	mov	rax, QWORD PTR queue$[rsp]
 	movzx	eax, BYTE PTR [rax+58]
 	cmp	eax, 2
 	jne	SHORT $LN1@procmngr_s
 
-; 77   : 					procmngr_remove_process(queue->id);
+; 79   : 				procmngr_remove_process(queue->id);
 
 	mov	rax, QWORD PTR queue$[rsp]
 	movzx	ecx, WORD PTR [rax+60]
 	call	?procmngr_remove_process@@YAXG@Z	; procmngr_remove_process
 
-; 78   : 					pmmngr_free(queue);
+; 80   : 				pmmngr_free(queue);
 
 	mov	rcx, QWORD PTR queue$[rsp]
 	call	?pmmngr_free@@YAXPEAX@Z			; pmmngr_free
+
+; 81   : 				break;
+
+	jmp	SHORT $LN3@procmngr_s
 $LN1@procmngr_s:
 
-; 79   : 				}
-; 80   : 
-; 81   : 			}
+; 82   : 			}
+; 83   : 		}
 
 	jmp	SHORT $LN4@procmngr_s
 $LN3@procmngr_s:
-$LN6@procmngr_s:
 
-; 82   : 		}
-; 83   : 
-; 84   : 		waked = false;
+; 84   : 
+; 85   : 		process_count = 0;
 
-	mov	BYTE PTR ?waked@@3_NA, 0		; waked
+	mov	DWORD PTR process_count, 0
 
-; 85   : 		block_thread(get_current_thread());
+; 86   : 
+; 87   : 	    block_thread(get_current_thread());
 
 	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
 	mov	rcx, rax
 	call	?block_thread@@YAXPEAU_thread_@@@Z	; block_thread
 
-; 86   : 		force_sched();
+; 88   : 	    force_sched();
 
 	call	?force_sched@@YAXXZ			; force_sched
 
-; 87   : 		//sleep_thread(get_current_thread(),1000);
-; 88   : 	}
+; 89   : 	}
 
-	jmp	$LN8@procmngr_s
-$LN7@procmngr_s:
+	jmp	$LN7@procmngr_s
+$LN6@procmngr_s:
 
-; 89   : }
+; 90   : 	
+; 91   : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -296,55 +317,49 @@ _TEXT	SEGMENT
 temp$ = 0
 ?procmngr_get_process@@YAPEAU_procmngr_queue_@@XZ PROC	; procmngr_get_process
 
-; 36   : procmngr_queue* procmngr_get_process () {
+; 34   : procmngr_queue* procmngr_get_process () {
 
 $LN4:
 	sub	rsp, 24
 
-; 37   : 	procmngr_queue *temp = NULL;
+; 35   : 	procmngr_queue *temp = NULL;
 
 	mov	QWORD PTR temp$[rsp], 0
 
-; 38   : 	if (top != NULL) {
+; 36   : 	if (top != NULL) {
 
 	cmp	QWORD PTR top, 0
 	je	SHORT $LN1@procmngr_g
 
-; 39   : 		temp = top;
+; 37   : 		temp = top;
 
 	mov	rax, QWORD PTR top
 	mov	QWORD PTR temp$[rsp], rax
 
-; 40   : 		top = top->link;
+; 38   : 		top = top->link;
 
 	mov	rax, QWORD PTR top
 	mov	rax, QWORD PTR [rax+64]
 	mov	QWORD PTR top, rax
 
-; 41   : 		temp->link = NULL;
+; 39   : 		temp->link = NULL;
 
 	mov	rax, QWORD PTR temp$[rsp]
 	mov	QWORD PTR [rax+64], 0
 
-; 42   : 		process_count--;
-
-	mov	eax, DWORD PTR process_count
-	dec	eax
-	mov	DWORD PTR process_count, eax
-
-; 43   : 		return temp;
+; 40   : 		return temp;
 
 	mov	rax, QWORD PTR temp$[rsp]
 	jmp	SHORT $LN2@procmngr_g
 $LN1@procmngr_g:
 
-; 44   : 	}
-; 45   : 	return NULL;
+; 41   : 	}
+; 42   : 	return NULL;
 
 	xor	eax, eax
 $LN2@procmngr_g:
 
-; 46   : }
+; 43   : }
 
 	add	rsp, 24
 	ret	0

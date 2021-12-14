@@ -156,10 +156,9 @@ void _kmain () {
 
 	vfs_node_t *node = vfs_finddir("/");
 	vfs_node_t file = openfs (node, "/start.wav");
-	unsigned char* buffer2 = (unsigned char*)0xFFFFF00000000000;
-
+	unsigned char* buffer = (unsigned char*)0xFFFFF00000000000;
+	unsigned char* buffer2 = (unsigned char*)(buffer + 44);
 	readfs (node,&file,buffer2,file.size);
-
 
 	message_init ();
 	dwm_ipc_init();
@@ -168,14 +167,18 @@ void _kmain () {
 	hda_initialize(); 
 
 	e1000_initialize();   //<< receiver not working
+	
 	//svga_init();
+
+	hda_audio_add_pcm(buffer2, file.size);
+
 #ifdef ARCH_X64
 	//================================================
 	//! Initialize the scheduler here
 	//!===============================================
 	initialize_scheduler();
-	create_process ("/xshell.exe","shell");
 
+	create_process ("/xshell.exe","shell");
 	//! Quince -- The Compositing window manager for Aurora kernel
 	//! always put quince in thread id -- > 2
 	create_process ("/quince.exe","quince");
@@ -185,11 +188,12 @@ void _kmain () {
 	 ** procmngr handles process creation and termination
 	 **=====================================================
 	 */
-	create_kthread (procmngr_start,(uint64_t)pmmngr_alloc() + 4096,x64_read_cr3(),"procmngr",0);
 	//! Misc programs goes here
 	create_process ("/dwm2.exe", "dwm4");
 	create_process ("/cnsl.exe", "cnsl");
 	//! Here start the scheduler (multitasking engine)
+	
+	hda_audio_play();
 	scheduler_start();
 #endif
 

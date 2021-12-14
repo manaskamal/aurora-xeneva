@@ -93,7 +93,7 @@ uint64_t *create_user_stack (uint64_t* cr3) {
 	/* 1 mb stack / process */
 	for (int i=0; i < (2*1024*1024)/4096; i++) {
 		uint64_t *block = (uint64_t*)pmmngr_alloc();
-	//	memset (block, 0, 4096);
+		memset (block, 0, 4096);
 		map_page_ex(cr3, (uint64_t)block,location + i * 4096, PAGING_USER);
 	}
  
@@ -111,7 +111,7 @@ uint64_t* create_inc_stack (uint64_t* cr3) {
 
 	for (int i = 0; i < (2*1024*1024) / 4096; i++) {
 		void* p = pmmngr_alloc();
-		//memset(p, 0, 4096);
+		memset(p, 0, 4096);
 		map_page_ex(cr3,(uint64_t)p, location + i * 4096, PAGING_USER);
 	}
 
@@ -133,8 +133,7 @@ void allocate_fd (thread_t *t) {
 }
 
 void create_process(const char* filename, char* procname) {
-	//printf ("Creating processs -> %s\n", filename);
-	//mutex_lock (process_mutex);
+
 	//!allocate a data-structure for process 
 	process_t *process = (process_t*)pmmngr_alloc();
 	process->pid_t = pid;
@@ -206,26 +205,35 @@ void create_process(const char* filename, char* procname) {
 //! Kill Process
 void kill_process () {
 	x64_cli();
-	mutex_lock (kill_mutex);
 	thread_t * remove_thread = get_current_thread();
 	process_t *proc = find_process_by_thread (remove_thread);
 	uint64_t  init_stack = proc->stack - 0x100000;
+	uint64_t image_base = proc->image_base;
+	uint64_t heap_base = (uint64_t)proc->user_heap_start;
+	uint64_t *cr3 = (uint64_t*)remove_thread->cr3;
+	
+	remove_process (proc);
+	task_delete (remove_thread);
+	pmmngr_free(remove_thread);
 
+	//!unmap the binary image
+	for (uint32_t i = 0; i < proc->image_size / 4096; i++) {
+	//	uint64_t virtual_addr = proc->image_base + (i * 4096);
+		unmap_page (image_base + i * 4096);
+	}
+	
 	//!unmap the runtime stack
 	for (int i = 0; i < 0x100000 / 4096; i++) {
 		unmap_page (init_stack + i * 4096);
 	}
 
-	//!unmap the binary image
-	for (int i = 0; i < proc->image_size / 4096; i++) {
-		uint64_t virtual_addr = proc->image_base + (i * 4096);
-		unmap_page (virtual_addr);
+	//!unmap user heap
+	for (int i = 0; i < 0xB01000 / 4096; i++) {
+		unmap_page(heap_base + i * 4096);
 	}
 
-	remove_process (proc);
-	task_delete (remove_thread);
-	pmmngr_free(remove_thread);
-	mutex_unlock (kill_mutex);
+
+	pmmngr_free (cr3);
 }
 
 //! Kill Process
@@ -242,7 +250,7 @@ void kill_process_by_id (uint16_t id) {
 	uint64_t  init_stack = proc->stack - 0x100000;
 	uint64_t image_base = proc->image_base;
 	size_t image_size = proc->image_size;
-
+	uint64_t heap_base = (uint64_t)proc->user_heap_start;
 	uint64_t *cr3 = (uint64_t*)remove_thread->cr3;
 
 	if (was_blocked)
@@ -263,6 +271,13 @@ void kill_process_by_id (uint16_t id) {
 		uint64_t virtual_addr = image_base + (i * 4096);
 		unmap_page_ex (cr3, virtual_addr, true);
 	}
+
+	//!unmap user heap
+	for (int i = 0; i < 0xB01000 / 4096; i++) {
+		unmap_page_ex(cr3,heap_base + i * 4096, true);
+	}
+
+	pmmngr_free(cr3);
 }
 
 

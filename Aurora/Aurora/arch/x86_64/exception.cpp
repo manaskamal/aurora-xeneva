@@ -24,7 +24,14 @@ void panic(const char* msg,...) {
 
 void divide_by_zero_fault(size_t vector, void* param) {
 	x64_cli();
+	interrupt_stack_frame *frame = (interrupt_stack_frame*)param;
 	panic ("\nDivide by 0");
+
+	printf ("__PROCESSOR_DATA__\n");
+	printf ("RIP -> %x\n", frame->rip);
+	printf ("RSP -> %x\n", frame->rsp);
+	printf ("RFLAGS -> %x\n",frame->rflags);
+
 	for(;;);
 }
 
@@ -151,7 +158,7 @@ void page_fault (size_t vector, void* param){
 	}*/
 
 	if (us){
-		if (get_current_thread()->id != 2) {
+		/*if (get_current_thread()->id != 2) {
 		panic ("Page Fault \n");
 		printf ("Faulting Address -> %x\n", vaddr);
 		printf ("__PROCESSOR TRACE__\n");
@@ -164,11 +171,11 @@ void page_fault (size_t vector, void* param){
 		printf ("******Cause********\n");
 		printf ("***User Priviledge fault***\n");
 		for(;;);
-		}
+		}*/
 		
 		map_page((uint64_t)pmmngr_alloc(), (uint64_t)vaddr,PAGING_USER);
 	}else if (present){
-		if (get_current_thread()->id != 2) {
+		/*if (get_current_thread()->id != 2) {
 		panic ("Page Fault \n");
 		printf ("Faulting Address -> %x\n", vaddr);
 		printf ("__PROCESSOR TRACE__\n");
@@ -181,7 +188,7 @@ void page_fault (size_t vector, void* param){
 		printf ("******Cause********\n");
 		printf ("*** Not Present ***\n");
 		for(;;);
-		}
+		}*/
 	
 		map_page((uint64_t)pmmngr_alloc(), (uint64_t)vaddr,PAGING_USER);
 	}else if (rw) {

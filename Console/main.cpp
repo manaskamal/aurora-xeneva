@@ -43,7 +43,7 @@ void QuActions (QuMessage *msg) {
 	}
 
 	if (msg->type == QU_CANVAS_DESTROYED) {
-		sys_print_text ("QuCanvasMessageReceived by console\n");
+		canvas_close(QuGetWindow()->ctx);
 		exit(0);
 		memset(msg, 0, sizeof(QuMessage));
 	}
@@ -84,9 +84,9 @@ int main (int argc, char* argv[]) {
 
 	//! map a memory section for text 
 
-	/*QuTerminal *term = QuCreateTerminal(0,0,win->w, win->h);
+	QuTerminal *term = QuCreateTerminal(0,0,win->w, win->h);
 	QuWindowAdd(win,(QuWidget*)term);
-*/
+
 	QuWindowShow(win);
 
 	//int master_fd, slave_fd;
@@ -103,7 +103,6 @@ int main (int argc, char* argv[]) {
 
 	QuMessage qmsg;
 	uint16_t app_id = QuGetAppId();
-	sys_print_text ("Console app id -> %d\n", app_id);
 	while(1) {
 		//sys_print_text("Waiting\n");
         QuChannelGet(&qmsg);

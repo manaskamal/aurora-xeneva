@@ -237,4 +237,12 @@ vfree:
 	ret
 
 
+global sys_get_free_ram 
+sys_get_free_ram: 
+    mov r12, 23
+	syscall
+	ret
+
+
+
 

@@ -12,10 +12,9 @@ _BSS	ENDS
 PUBLIC	?allocate_kstack@@YA_KPEA_K@Z			; allocate_kstack
 EXTRN	?pmmngr_alloc@@YAPEAXXZ:PROC			; pmmngr_alloc
 EXTRN	?map_page_ex@@YA_NPEA_K_K1E@Z:PROC		; map_page_ex
-EXTRN	?memset@@YAXPEAXEI@Z:PROC			; memset
 pdata	SEGMENT
 $pdata$?allocate_kstack@@YA_KPEA_K@Z DD imagerel $LN6
-	DD	imagerel $LN6+143
+	DD	imagerel $LN6+125
 	DD	imagerel $unwind$?allocate_kstack@@YA_KPEA_K@Z
 pdata	ENDS
 xdata	SEGMENT
@@ -26,8 +25,8 @@ xdata	ENDS
 ; File e:\xeneva project\xeneva\aurora\aurora\arch\x86_64\kstack.cpp
 _TEXT	SEGMENT
 i$1 = 32
-p$2 = 40
-location$ = 48
+location$ = 40
+p$2 = 48
 cr3$ = 80
 ?allocate_kstack@@YA_KPEA_K@Z PROC			; allocate_kstack
 
@@ -60,14 +59,7 @@ $LN3@allocate_k:
 	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
 	mov	QWORD PTR p$2[rsp], rax
 
-; 21   : 		memset (p, 0, 4096);
-
-	mov	r8d, 4096				; 00001000H
-	xor	edx, edx
-	mov	rcx, QWORD PTR p$2[rsp]
-	call	?memset@@YAXPEAXEI@Z			; memset
-
-; 22   : 		map_page_ex (cr3,(uint64_t)p,location + i * 4096, 0);
+; 21   : 		map_page_ex (cr3,(uint64_t)p,location + i * 4096, 0);
 
 	mov	eax, DWORD PTR i$1[rsp]
 	imul	eax, 4096				; 00001000H
@@ -81,17 +73,17 @@ $LN3@allocate_k:
 	mov	rcx, QWORD PTR cr3$[rsp]
 	call	?map_page_ex@@YA_NPEA_K_K1E@Z		; map_page_ex
 
-; 23   : 	}
+; 22   : 	}
 
 	jmp	SHORT $LN2@allocate_k
 $LN1@allocate_k:
 
-; 24   : 	//index += 2*1024*1024;
-; 25   : 	return (KSTACK_START + 2*1024*1024);
+; 23   : 	//index += 2*1024*1024;
+; 24   : 	return (KSTACK_START + 2*1024*1024);
 
 	mov	rax, -5497556041728			; fffffb0000200000H
 
-; 26   : }
+; 25   : }
 
 	add	rsp, 72					; 00000048H
 	ret	0

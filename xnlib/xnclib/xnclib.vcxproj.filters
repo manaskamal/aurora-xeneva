@@ -98,6 +98,9 @@
     <ClInclude Include="fastcpy.h" />
     <ClInclude Include="setjmp.h" />
     <ClInclude Include="errno.h" />
+    <ClInclude Include="sys\_xeneva.h">
+      <Filter>sys</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="string.cpp" />

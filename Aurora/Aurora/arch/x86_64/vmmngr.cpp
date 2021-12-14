@@ -206,17 +206,17 @@ void unmap_page(uint64_t virt_addr){
 	
 	const long i1 = pml4_index(virt_addr);
 
-	uint64_t *pml4 = (uint64_t*)x64_read_cr3();
-	uint64_t *pdpt = (uint64_t*)(pml4[pml4_index(virt_addr)] & ~(4096 - 1));
+	uint64_t *pml4_ = (uint64_t*)x64_read_cr3();
+	uint64_t *pdpt = (uint64_t*)(pml4_[pml4_index(virt_addr)] & ~(4096 - 1));
 	uint64_t *pd = (uint64_t*)(pdpt[pdp_index(virt_addr)] & ~(4096 - 1));
 	uint64_t *pt = (uint64_t*)(pd[pd_index(virt_addr)] & ~(4096 - 1));
 	uint64_t *page = (uint64_t*)(pt[pt_index(virt_addr)] & ~(4096 - 1));
-
-	uint64_t *pml = (uint64_t*)x64_read_cr3();
-	if (pml[i1] & PAGING_PRESENT){
-		pml[i1] = 0;
+	
+	if ((pt[pt_index(virt_addr)] & PAGING_PRESENT) != 0) {
+		pt[pt_index(virt_addr)] = 0;
+		
 	}
-
+	
 	pmmngr_free(page);
 }
 
@@ -231,10 +231,12 @@ void unmap_page_ex(uint64_t* cr3, uint64_t virt_addr, bool free_physical){
 	uint64_t *pt = (uint64_t*)(pd[pd_index(virt_addr)] & ~(4096 - 1));
 	uint64_t *page = (uint64_t*)(pt[pt_index(virt_addr)] & ~(4096 - 1));
 
+	if ((pt[pt_index(virt_addr)] & PAGING_PRESENT) != 0)
+		pt[pt_index(virt_addr)] = 0;
+
 	if (free_physical)
 		pmmngr_free(page);
 
-	pmmngr_free(pml4_);
 }
 
 

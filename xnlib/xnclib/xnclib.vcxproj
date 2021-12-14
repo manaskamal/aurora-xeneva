@@ -172,6 +172,7 @@
     <ClInclude Include="sys\_thread.h" />
     <ClInclude Include="sys\_time.h" />
     <ClInclude Include="sys\_wait.h" />
+    <ClInclude Include="sys\_xeneva.h" />
     <ClInclude Include="values.h" />
   </ItemGroup>
   <ItemGroup>

@@ -66,9 +66,8 @@ void main (int argc, char*argv[]) {
 	file.flags = 0;
 	sys_write_file (fd,data,&file);*/
 	///message_t msg;
-	exit(0);
 	while(1) {
-		sys_wait();
+		//sys_wait();
 	}
 }
 

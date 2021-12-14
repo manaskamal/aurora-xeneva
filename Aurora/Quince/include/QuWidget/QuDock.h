@@ -17,5 +17,5 @@
 //! Initialize Quince Taskbar
 extern void QuTaskbarInit ();
 extern void QuTaskbarRepaint ();
-
+extern void QuRamWidget ();
 #endif
