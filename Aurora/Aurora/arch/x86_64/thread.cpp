@@ -12,6 +12,7 @@
 #include <arch\x86_64\thread.h>
 #include <arch\x86_64\user64.h>
 #include <arch\x86_64\kstack.h>
+#include <timer.h>
 #include <stdio.h>
 #include <atomic\mutex.h>
 #include <utils\lnklist.h>
@@ -171,8 +172,8 @@ thread_t* create_user_thread (void (*entry) (void*),uint64_t stack,uint64_t cr3,
 	t->id = task_id++;
 	t->quanta = 0;
 	t->ttype = 0;
-	t->mouse_box = (uint64_t*)pmmngr_alloc();
-    map_page_ex((uint64_t*)t->cr3,(uint64_t)t->mouse_box,(uint64_t)0xFFFFFFFFB0000000, PAGING_USER);
+	t->msg_box = (uint64_t*)pmmngr_alloc();
+	map_page_ex((uint64_t*)t->cr3,(uint64_t)t->msg_box,(uint64_t)0xFFFFFFFFB0000000, PAGING_USER);
 	t->_is_user = 1;
 	t->priviledge = THREAD_LEVEL_USER;
 	t->state = THREAD_STATE_READY;
@@ -241,7 +242,13 @@ void scheduler_isr (size_t v, void* param) {
 		if (current_thread->priviledge == THREAD_LEVEL_USER)
 			current_thread->kern_esp = get_kernel_tss()->rsp[0];
 		next_task();
+
+		/*
+		  Here increase the system tick and
+		  fire the timer
+		  */
 		system_tick++;
+		timer_fire();
 #ifdef USE_APIC
 	    apic_local_eoi();
 #endif

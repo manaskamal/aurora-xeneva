@@ -164,7 +164,7 @@ void acpi_parse_madt () {
 		switch (apic_header->type) {
 		case ACPI_APICTYPE_LAPIC: {
 			acpiLocalApic *lapic = (acpiLocalApic*)apic_header;
-			printf ("[ACPI]: Madt entry -> LAPIC id -> %d\n", lapic->lapicId);
+			printf ("[ACPI]: Madt entry -> LAPIC id -> %d, address -> %x\n", lapic->lapicId, lapic->procId);
 			break;
 		}							 
 		case ACPI_APICTYPE_IOAPIC:{

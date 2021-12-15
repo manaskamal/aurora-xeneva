@@ -67,8 +67,9 @@ $SG3356	DB	'[ACPI]: Sci Interrupt -> %d', 0aH, 00H
 $SG3359	DB	'S5Block found', 0aH, 00H
 	ORG $+1
 $SG3362	DB	'[ACPI]: SLP_typA -> %x, SLP_typB -> %x', 0aH, 00H
-$SG3383	DB	'[ACPI]: Madt entry -> LAPIC id -> %d', 0aH, 00H
-	ORG $+2
+$SG3383	DB	'[ACPI]: Madt entry -> LAPIC id -> %d, address -> %x', 0aH
+	DB	00H
+	ORG $+3
 $SG3387	DB	'[ACPI]: Madt entry -> I/O APIC address -> %x, GSI -> %d', 0aH
 	DB	00H
 	ORG $+7
@@ -118,7 +119,7 @@ $pdata$?initialize_acpi@@YAXPEAX@Z DD imagerel $LN25
 	DD	imagerel $LN25+1146
 	DD	imagerel $unwind$?initialize_acpi@@YAXPEAX@Z
 $pdata$?acpi_parse_madt@@YAXXZ DD imagerel $LN11
-	DD	imagerel $LN11+278
+	DD	imagerel $LN11+293
 	DD	imagerel $unwind$?acpi_parse_madt@@YAXXZ
 $pdata$?acpi_system_reboot@@YAXXZ DD imagerel $LN3
 	DD	imagerel $LN3+92
@@ -760,9 +761,9 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 tv76 = 32
 apic_header$ = 40
-io_apic$1 = 48
-over$2 = 56
-lapic$3 = 64
+lapic$1 = 48
+io_apic$2 = 56
+over$3 = 64
 ?acpi_parse_madt@@YAXXZ PROC				; acpi_parse_madt
 
 ; 160  : void acpi_parse_madt () {
@@ -801,20 +802,23 @@ $LN8@acpi_parse:
 	je	SHORT $LN3@acpi_parse
 	cmp	BYTE PTR tv76[rsp], 2
 	je	SHORT $LN2@acpi_parse
-	jmp	SHORT $LN1@acpi_parse
+	jmp	$LN1@acpi_parse
 $LN4@acpi_parse:
 
 ; 165  : 		case ACPI_APICTYPE_LAPIC: {
 ; 166  : 			acpiLocalApic *lapic = (acpiLocalApic*)apic_header;
 
 	mov	rax, QWORD PTR apic_header$[rsp]
-	mov	QWORD PTR lapic$3[rsp], rax
+	mov	QWORD PTR lapic$1[rsp], rax
 
-; 167  : 			printf ("[ACPI]: Madt entry -> LAPIC id -> %d\n", lapic->lapicId);
+; 167  : 			printf ("[ACPI]: Madt entry -> LAPIC id -> %d, address -> %x\n", lapic->lapicId, lapic->procId);
 
-	mov	rax, QWORD PTR lapic$3[rsp]
-	movzx	eax, BYTE PTR [rax+3]
-	mov	edx, eax
+	mov	rax, QWORD PTR lapic$1[rsp]
+	movzx	eax, BYTE PTR [rax+2]
+	mov	rcx, QWORD PTR lapic$1[rsp]
+	movzx	ecx, BYTE PTR [rcx+3]
+	mov	r8d, eax
+	mov	edx, ecx
 	lea	rcx, OFFSET FLAT:$SG3383
 	call	?printf@@YAXPEBDZZ			; printf
 
@@ -828,13 +832,13 @@ $LN3@acpi_parse:
 ; 171  : 			acpiIoApic *io_apic = (acpiIoApic*)apic_header;
 
 	mov	rax, QWORD PTR apic_header$[rsp]
-	mov	QWORD PTR io_apic$1[rsp], rax
+	mov	QWORD PTR io_apic$2[rsp], rax
 
 ; 172  : 			printf ("[ACPI]: Madt entry -> I/O APIC address -> %x, GSI -> %d\n",io_apic->ioApicAddr, io_apic->gsiBase );
 
-	mov	rax, QWORD PTR io_apic$1[rsp]
+	mov	rax, QWORD PTR io_apic$2[rsp]
 	mov	r8d, DWORD PTR [rax+8]
-	mov	rax, QWORD PTR io_apic$1[rsp]
+	mov	rax, QWORD PTR io_apic$2[rsp]
 	mov	edx, DWORD PTR [rax+4]
 	lea	rcx, OFFSET FLAT:$SG3387
 	call	?printf@@YAXPEBDZZ			; printf
@@ -849,14 +853,14 @@ $LN2@acpi_parse:
 ; 176  : 			apic_interrupt_override* over = (apic_interrupt_override*)apic_header;
 
 	mov	rax, QWORD PTR apic_header$[rsp]
-	mov	QWORD PTR over$2[rsp], rax
+	mov	QWORD PTR over$3[rsp], rax
 
 ; 177  : 			printf ("[ACPI]: Interrupt Source Override, GSI -> %d, SRC -> %d\n", over->interrupt, over->source);
 
-	mov	rax, QWORD PTR over$2[rsp]
+	mov	rax, QWORD PTR over$3[rsp]
 	movzx	eax, BYTE PTR [rax+3]
 	mov	r8d, eax
-	mov	rax, QWORD PTR over$2[rsp]
+	mov	rax, QWORD PTR over$3[rsp]
 	mov	edx, DWORD PTR [rax+4]
 	lea	rcx, OFFSET FLAT:$SG3391
 	call	?printf@@YAXPEBDZZ			; printf

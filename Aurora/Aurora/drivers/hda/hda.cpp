@@ -74,6 +74,7 @@ void hda_handler (size_t v, void* p) {
 
 	if (sts & 0x4) {
 		//printf ("[HD-Audio]: Output stream 1 buffer completed\n");
+		hda_output_stop();
 	}
 
 	_aud_outl_(INTSTS, isr);

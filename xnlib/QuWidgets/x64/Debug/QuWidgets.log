@@ -1,4 +1,4 @@
-﻿Build started 13-12-2021 আবেলি 5:57:40.
+﻿Build started 16-12-2021 ৰাতিপু 1:27:39.
      1>Project "E:\Xeneva Project\Xeneva\xnlib\QuWidgets\QuWidgets.vcxproj" on node 2 (Rebuild target(s)).
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\xnlib\xnclib" /I"E:\Xeneva Project\Xeneva\xnlib\QuWidgets\include" /I"E:\Xeneva Project\Xeneva\xnlib\xnacrylic\include" /Zi /nologo /W4 /WX- /sdl- /MP /Od /D ARCH_X64 /D _MBCS /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt source\QuBase.cpp source\QuButton.cpp source\QuContextMenu.cpp source\QuEditBox.cpp source\QuKeycodeHelper.cpp source\QuMenubar.cpp source\QuPanel.cpp source\QuPopupMenu.cpp source\QuScrollbar.cpp source\QuSlider.cpp source\QuTerminal.cpp source\QuTextbox.cpp source\QuUtils\QuList.cpp source\QuWindow.cpp source\QuWindowControl.cpp
@@ -95,6 +95,7 @@
      1>source\QuBase.cpp(32): warning C4244: '=' : conversion from 'uint16_t' to 'uint8_t', possible loss of data
      1>source\QuBase.cpp(33): warning C4244: '=' : conversion from 'uint16_t' to 'uint8_t', possible loss of data
      1>source\QuBase.cpp(48): warning C4244: 'initializing' : conversion from 'unsigned int' to 'uint16_t', possible loss of data
+     1>source\QuBase.cpp(49): warning C4102: 'get' : unreferenced label
      1>source\QuBase.cpp(62): warning C4244: '=' : conversion from 'unsigned int' to 'uint16_t', possible loss of data
      1>source\QuBase.cpp(69): warning C4244: '=' : conversion from 'uint16_t' to 'uint8_t', possible loss of data
      1>source\QuBase.cpp(77): warning C4127: conditional expression is constant
@@ -123,4 +124,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:01.44
+Time Elapsed 00:00:02.76

@@ -15,7 +15,9 @@
 #include <sys\_thread.h>
 #include <sys\_term.h>
 #include <sys\_file.h>
+#include <sys\_xeneva.h>
 #include <sys\mmap.h>
+#include <sys\ioquery.h>
 #include <canvas.h>
 #include <acrylic.h>
 #include <color.h>
@@ -28,6 +30,7 @@
 #include <sys\_exit.h>
 #include "console.h"
 #include <QuScrollbar.h>
+#include <sys\postbox.h>
 
 
 void QuActions (QuMessage *msg) {
@@ -73,6 +76,19 @@ void PrintString (QuTerminal *text, char* string) {
 		QuTermPrint(text,*(string)++,WHITE);
 }
 
+bool blinked = false;
+void blink_cursor () {
+	if (!blinked) {
+		acrylic_draw_rect_filled(QuGetWindow()->ctx, 1,23,10,20,SILVER);
+		blinked = true;
+	}else {
+		acrylic_draw_rect_filled(QuGetWindow()->ctx, 1,23,10,20,BLACK);
+		blinked = false;
+	}
+
+	QuPanelUpdate(QuGetWindow(),1,23,10,20,false);
+}
+
 int main (int argc, char* argv[]) {
 	QuWindow* win = QuCreateWindow(0,0,500,500,"Hello");
 	QuSetRootWindow (win);
@@ -100,16 +116,23 @@ int main (int argc, char* argv[]) {
 	//memset (buffer, 0, 32);
 
 	//QuPanelUpdate (0,0,win->w, win->h,true);
+	int timer_id = sys_create_timer (1000, get_current_pid());
+
+
 
 	QuMessage qmsg;
 	uint16_t app_id = QuGetAppId();
-	while(1) {
-		//sys_print_text("Waiting\n");
-        QuChannelGet(&qmsg);
-		
+	postmsg_t msg;
+	while(1) { 
+		post_box_receive_msg(&msg);
+		if (msg.type == SYSTEM_MESSAGE_TIMER_EVENT) {
+			blink_cursor();
+			memset(&msg, 0, sizeof(postmsg_t));
+		}
+
+		QuChannelGet(&qmsg);
 		if (qmsg.to_id == app_id)
 			QuActions(&qmsg);
-
 	//	sys_read_file (slave_fd,buffer,NULL);
 
 	   /* for (int i = 0; i < 32; i++) {

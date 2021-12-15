@@ -18,15 +18,22 @@
 extern "C" {
 #endif
 
-	/**
-	  sys_get_used_ram -- returns the amount of used ram in bytes
-	  */
-	uint32_t sys_get_used_ram ();
+	///**
+	//  sys_get_used_ram -- returns the amount of used ram in bytes
+	//  */
+	//uint32_t sys_get_used_ram ();
 
 	/**
 	  sys_get_free_ram -- returns the amount of free ram in bytes
 	  */
 	uint32_t sys_get_free_ram ();
+
+
+    int sys_create_timer (uint32_t interval, uint16_t id);
+	
+	void sys_destroy_timer (int utimer_id);
+
+
 
 
 #ifdef __cplusplus

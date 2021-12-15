@@ -95,7 +95,7 @@ typedef struct _thread_ {
 	uint8_t priviledge;
 	uint16_t quanta;
 	uint64_t ttype;
-	uint64_t* mouse_box;
+	uint64_t* msg_box;
 	uint64_t* qu_box;
 	uint8_t priority;
 	vfs_node_t *fd[60];   //file descriptor

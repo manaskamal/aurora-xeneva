@@ -52,9 +52,6 @@ get:
 		memset (data, 0, 4096);
 		sys_unblock_id (2);
 		return;
-	} else {
-		sys_wait();
-		goto get;
 	}
 }
 

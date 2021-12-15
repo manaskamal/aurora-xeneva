@@ -63,6 +63,8 @@ void QuEventLoop() {
 	int loops;
 	char fps_str[60];
 	int fd = 0;
+	//! Just play the startup sound
+	int snd_fd = sys_open_file ("/dev/snd", NULL);
 	while(1) {
 		message_receive(&msg);
 		_ipc_mouse_dispatch (&m_pack);
@@ -118,6 +120,11 @@ void QuEventLoop() {
 			//! Send the key event
 			if (msg.dword == KEY_A) {
 				create_process ("/cnsl.exe", "hello");
+			}
+
+			//!Just for fun, now
+			if (msg.dword == KEY_S) {
+				//ioquery (snd_fd, 12,NULL);
 			}
 			if (QuWindowMngrGetFocused() != NULL) {
 				QuWindowMngr_SendEvent (QuWindowMngrGetFocused(), QU_CANVAS_KEY_PRESSED,NULL, NULL,msg.dword);

@@ -242,9 +242,9 @@
     <ClInclude Include="..\include\hal.h" />
     <ClInclude Include="..\include\hwcursor.h" />
     <ClInclude Include="..\include\ipc\dwm_ipc.h" />
-    <ClInclude Include="..\include\ipc\evntsh.h" />
     <ClInclude Include="..\include\ipc\message.h" />
     <ClInclude Include="..\include\ipc\pipe.h" />
+    <ClInclude Include="..\include\ipc\postbox.h" />
     <ClInclude Include="..\include\ipc\signals.h" />
     <ClInclude Include="..\include\limits.h" />
     <ClInclude Include="..\include\mm.h" />
@@ -259,12 +259,14 @@
     <ClInclude Include="..\include\procmngr.h" />
     <ClInclude Include="..\include\screen.h" />
     <ClInclude Include="..\include\serial.h" />
+    <ClInclude Include="..\include\sound.h" />
     <ClInclude Include="..\include\stdarg.h" />
     <ClInclude Include="..\include\stdint.h" />
     <ClInclude Include="..\include\stdio.h" />
     <ClInclude Include="..\include\stream.h" />
     <ClInclude Include="..\include\string.h" />
     <ClInclude Include="..\include\sysserv.h" />
+    <ClInclude Include="..\include\timer.h" />
     <ClInclude Include="..\include\utils\circ_buf.h" />
     <ClInclude Include="..\include\utils\lnklist.h" />
     <ClInclude Include="..\include\utils\ring.h" />
@@ -317,6 +319,7 @@
     <ClCompile Include="init.cpp" />
     <ClCompile Include="ipc\dwm_ipc.cpp" />
     <ClCompile Include="ipc\message.cpp" />
+    <ClCompile Include="ipc\postbox.cpp" />
     <ClCompile Include="mm.cpp" />
     <ClCompile Include="net\arp.cpp" />
     <ClCompile Include="net\ethernet.cpp" />
@@ -328,6 +331,7 @@
     <ClCompile Include="procmngr.cpp" />
     <ClCompile Include="screen.cpp" />
     <ClCompile Include="serial.cpp" />
+    <ClCompile Include="sound.cpp" />
     <ClCompile Include="stdio.cpp" />
     <ClCompile Include="stream.cpp" />
     <ClCompile Include="string.cpp" />
@@ -341,6 +345,7 @@
     <ClCompile Include="sysserv\systime.cpp" />
     <ClCompile Include="sysserv\syswait.cpp" />
     <ClCompile Include="sysserv\valloc.cpp" />
+    <ClCompile Include="timer.cpp" />
     <ClCompile Include="utils\circ_buf.cpp" />
     <ClCompile Include="utils\lnklist.cpp" />
     <ClCompile Include="utils\pipe.cpp" />

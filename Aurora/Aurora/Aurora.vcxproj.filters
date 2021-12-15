@@ -189,9 +189,6 @@
     <ClInclude Include="..\include\atomic\mutex.h">
       <Filter>include\atomic</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\ipc\evntsh.h">
-      <Filter>include\ipc</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\callback.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -347,6 +344,15 @@
     </ClInclude>
     <ClInclude Include="..\include\arch\x86_64\block.h">
       <Filter>include\arch\x86_64</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\sound.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\ipc\postbox.h">
+      <Filter>include\ipc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\timer.h">
+      <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -565,6 +571,15 @@
     </ClCompile>
     <ClCompile Include="arch\x86_64\block.cpp">
       <Filter>source\arch\x86_64</Filter>
+    </ClCompile>
+    <ClCompile Include="sound.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="ipc\postbox.cpp">
+      <Filter>source\ipc</Filter>
+    </ClCompile>
+    <ClCompile Include="timer.cpp">
+      <Filter>source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -159,6 +159,7 @@
     <ClInclude Include="string.h" />
     <ClInclude Include="sys\ioquery.h" />
     <ClInclude Include="sys\mmap.h" />
+    <ClInclude Include="sys\postbox.h" />
     <ClInclude Include="sys\signal.h" />
     <ClInclude Include="sys\types.h" />
     <ClInclude Include="sys\utf.h" />
@@ -189,6 +190,7 @@
     <ClCompile Include="qsort.cpp" />
     <ClCompile Include="stdio.cpp" />
     <ClCompile Include="string.cpp" />
+    <ClCompile Include="sys\postbox.cpp" />
     <ClCompile Include="sys\stdlib.cpp" />
   </ItemGroup>
   <ItemGroup>

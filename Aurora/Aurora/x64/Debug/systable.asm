@@ -6,6 +6,8 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 PUBLIC	funct
+EXTRN	?create_timer@@YAHIG@Z:PROC			; create_timer
+EXTRN	?destroy_timer@@YAXH@Z:PROC			; destroy_timer
 EXTRN	?message_send@@YAXGPEAU_message_@@@Z:PROC	; message_send
 EXTRN	?message_receive@@YAXPEAU_message_@@@Z:PROC	; message_receive
 EXTRN	?printf@@YAXPEBDZZ:PROC				; printf
@@ -13,14 +15,8 @@ EXTRN	?wait@@YAXXZ:PROC				; wait
 EXTRN	?create__sys_process@@YAXPEBDPEAD@Z:PROC	; create__sys_process
 EXTRN	?valloc@@YAX_K@Z:PROC				; valloc
 EXTRN	?vfree@@YAX_K@Z:PROC				; vfree
-EXTRN	?get_screen_width@@YAIXZ:PROC			; get_screen_width
-EXTRN	?get_screen_height@@YAIXZ:PROC			; get_screen_height
 EXTRN	?map_shared_memory@@YAXG_K0@Z:PROC		; map_shared_memory
 EXTRN	?get_thread_id@@YAGXZ:PROC			; get_thread_id
-EXTRN	?sys_get_fb_mem@@YAPEAIXZ:PROC			; sys_get_fb_mem
-EXTRN	?get_screen_scanline@@YAGXZ:PROC		; get_screen_scanline
-EXTRN	?sys_set_mouse_data@@YAXXZ:PROC			; sys_set_mouse_data
-EXTRN	?sys_get_mouse_pack@@YA_NPEAU_mouse_packet_@@@Z:PROC ; sys_get_mouse_pack
 EXTRN	?sys_unblock_id@@YAXG@Z:PROC			; sys_unblock_id
 EXTRN	?create_uthread@@YAXP6AXPEAX@ZPEAD@Z:PROC	; create_uthread
 EXTRN	?sys_open_file@@YAHPEADPEAU_file_@@@Z:PROC	; sys_open_file
@@ -39,8 +35,6 @@ EXTRN	?sys_kill@@YAXHH@Z:PROC				; sys_kill
 EXTRN	?sys_set_signal@@YAXHP6AXH@Z@Z:PROC		; sys_set_signal
 EXTRN	?unmap_shared_memory@@YAXG_K0@Z:PROC		; unmap_shared_memory
 EXTRN	?sys_attach_ttype@@YAXH@Z:PROC			; sys_attach_ttype
-EXTRN	?dwm_put_message@@YAXPEAU_dwm_message_@@@Z:PROC	; dwm_put_message
-EXTRN	?dwm_dispatch_message@@YAXPEAU_dwm_message_@@@Z:PROC ; dwm_dispatch_message
 EXTRN	?map_memory@@YAPEAX_KIE@Z:PROC			; map_memory
 EXTRN	?unmap_memory@@YAXPEAXI@Z:PROC			; unmap_memory
 EXTRN	?ttype_create@@YAXPEAH0@Z:PROC			; ttype_create
@@ -49,31 +43,31 @@ _BSS	SEGMENT
 funct	DQ	01H DUP (?)
 _BSS	ENDS
 CONST	SEGMENT
-$SG6137	DB	'System Call Fault!! Halting System', 0aH, 00H
+$SG6158	DB	'System Call Fault!! Halting System', 0aH, 00H
 CONST	ENDS
 _DATA	SEGMENT
 _syscalls DQ	FLAT:?printf@@YAXPEBDZZ
 	DQ	FLAT:?wait@@YAXXZ
 	DQ	FLAT:?create__sys_process@@YAXPEBDPEAD@Z
-	DQ	FLAT:?get_screen_width@@YAIXZ
-	DQ	FLAT:?get_screen_height@@YAIXZ
+	DQ	0000000000000000H
+	DQ	0000000000000000H
 	DQ	FLAT:?valloc@@YAX_K@Z
 	DQ	FLAT:?message_send@@YAXGPEAU_message_@@@Z
 	DQ	FLAT:?message_receive@@YAXPEAU_message_@@@Z
 	DQ	FLAT:?map_shared_memory@@YAXG_K0@Z
 	DQ	FLAT:?get_thread_id@@YAGXZ
-	DQ	FLAT:?dwm_put_message@@YAXPEAU_dwm_message_@@@Z
-	DQ	FLAT:?dwm_dispatch_message@@YAXPEAU_dwm_message_@@@Z
-	DQ	FLAT:?sys_get_fb_mem@@YAPEAIXZ
+	DQ	FLAT:?create_timer@@YAHIG@Z
+	DQ	FLAT:?destroy_timer@@YAXH@Z
+	DQ	0000000000000000H
 	DQ	FLAT:?ttype_create@@YAXPEAH0@Z
-	DQ	FLAT:?sys_set_mouse_data@@YAXXZ
-	DQ	FLAT:?sys_get_mouse_pack@@YA_NPEAU_mouse_packet_@@@Z
+	DQ	0000000000000000H
+	DQ	0000000000000000H
 	DQ	FLAT:?allocate_pipe@@YAXPEAHPEAD@Z
 	DQ	FLAT:?sys_unblock_id@@YAXG@Z
 	DQ	FLAT:?create_uthread@@YAXP6AXPEAX@ZPEAD@Z
 	DQ	FLAT:?sys_open_file@@YAHPEADPEAU_file_@@@Z
 	DQ	FLAT:?sys_read_file@@YAXHPEAEPEAU_file_@@@Z
-	DQ	FLAT:?get_screen_scanline@@YAGXZ
+	DQ	0000000000000000H
 	DQ	FLAT:?sys_get_used_ram@@YA_KXZ
 	DQ	FLAT:?sys_get_free_ram@@YA_KXZ
 	DQ	FLAT:?sys_sleep@@YAX_K@Z
@@ -132,7 +126,7 @@ $LN6:
 
 ; 21   : 		printf ("System Call Fault!! Halting System\n");
 
-	lea	rcx, OFFSET FLAT:$SG6137
+	lea	rcx, OFFSET FLAT:$SG6158
 	call	?printf@@YAXPEBDZZ			; printf
 $LN2@x64_syscal:
 

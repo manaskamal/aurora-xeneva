@@ -15,10 +15,11 @@ File System _'FAT32'_ <br>
 Virtual File System <br>
 System Calls <br>
 APIC & IOAPIC <br>
+Global Timer
 
 
 # TODO
-HD-Audio : _Input Stream & ADC Codecs_
+HD-Audio : _Input Stream & ADC Converter_
 
         
 # Screenshot

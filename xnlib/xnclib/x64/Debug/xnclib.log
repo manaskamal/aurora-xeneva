@@ -1,24 +1,24 @@
-﻿Build started 14-12-2021 আবেলি 5:19:24.
+﻿Build started 16-12-2021 ৰাতিপু 1:16:32.
      1>Project "E:\Xeneva Project\Xeneva\xnlib\xnclib\xnclib.vcxproj" on node 2 (Rebuild target(s)).
      1>_NASM:
          setjmp.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp11c372fd310a4660a62bfae8b24e9f75.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp13c81f6cbb864ad0b6c90eab2ac3fd70.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\setjmp.obj"  "E:\Xeneva Project\Xeneva\xnlib\xnclib\setjmp.asm"
        _NASM:
          sys\callback.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmpda697d88cc2242049973db3ea7666988.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmpde38ebe7b6d64d07910d54b6af2b03b5.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\callback.obj"  "E:\Xeneva Project\Xeneva\xnlib\xnclib\sys\callback.asm"
      1>E:\Xeneva Project\Xeneva\xnlib\xnclib\sys\callback.asm(98): warning : label alone on a line without a colon might be in error
        _NASM:
          _fast_copy.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmpb2781e7ebf9e448bb1c0c3b886a151eb.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp6e80efd644054d66b0849625462ff749.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\_fast_copy.obj"  "E:\Xeneva Project\Xeneva\xnlib\xnclib\_fast_copy.asm"
        _NASM:
          crt0.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp417a112dec8f44208d16e7be7d5e987e.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmpb1d5a91acc684d729f8d55546c4040f2.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\crt0.obj"  "E:\Xeneva Project\Xeneva\xnlib\xnclib\crt0.asm"
        ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\xnlib\xnclib" /I"E:\Xeneva Project\Xeneva\xnlib\xnclib\c++" /Zi /nologo /W4 /WX- /sdl- /MP /Od /D ARCH_X64 /D _MBCS /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt c++\ios.cpp c++\iostream.cpp c++\istream.cpp c++\memory.cpp c++\ostream.cpp c++\_string.cpp errno.cpp heap.cpp initializer.cpp math.cpp qsort.cpp stdio.cpp string.cpp sys\stdlib.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\xnlib\xnclib" /I"E:\Xeneva Project\Xeneva\xnlib\xnclib\c++" /Zi /nologo /W4 /WX- /sdl- /MP /Od /D ARCH_X64 /D _MBCS /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt c++\ios.cpp c++\iostream.cpp c++\istream.cpp c++\memory.cpp c++\ostream.cpp c++\_string.cpp errno.cpp heap.cpp initializer.cpp math.cpp qsort.cpp stdio.cpp string.cpp sys\postbox.cpp sys\stdlib.cpp
      1>cl : Command line warning D9025: overriding '/sdl-' with '/GS-'
      1>cl : Command line warning D9002: ignoring unknown option '/arch:SSE'
      1>cl : Command line warning D9030: '/Gm' is incompatible with multiprocessing; ignoring /MP switch
@@ -52,6 +52,8 @@
      1>sys\stdlib.cpp(469): warning C4146: unary minus operator applied to unsigned type, result still unsigned
      1>E:\Xeneva Project\Xeneva\xnlib\xnclib\sys/utf.h(125): warning C4505: 'decode' : unreferenced local function has been removed
      1>sys\stdlib.cpp(174): warning C4505: 'swap' : unreferenced local function has been removed
+         postbox.cpp
+     1>sys\postbox.cpp(30): warning C4244: 'initializing' : conversion from 'unsigned int' to 'uint16_t', possible loss of data
          string.cpp
      1>string.cpp(240): warning C4267: 'initializing' : conversion from 'size_t' to 'int', possible loss of data
      1>string.cpp(241): warning C4267: 'initializing' : conversion from 'size_t' to 'int', possible loss of data
@@ -136,6 +138,7 @@
          x64\Debug\qsort.obj
          x64\Debug\stdio.obj
          x64\Debug\string.obj
+         x64\Debug\postbox.obj
          x64\Debug\stdlib.obj
          x64\Debug\setjmp.obj
          x64\Debug\_fast_copy.obj
@@ -146,4 +149,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:04.20
+Time Elapsed 00:00:05.11

@@ -44,6 +44,7 @@
 #include <procmngr.h>
 #include <serial.h>
 #include <stream.h>
+#include <sound.h>
 
 #include <fs\ttype.h>
 
@@ -165,12 +166,12 @@ void _kmain () {
 	stream_init ();
 	driver_mngr_initialize(info);
 	hda_initialize(); 
+    hda_audio_add_pcm(buffer2, file.size);
 
 	e1000_initialize();   //<< receiver not working
 	
 	//svga_init();
-
-	hda_audio_add_pcm(buffer2, file.size);
+	sound_initialize();
 
 #ifdef ARCH_X64
 	//================================================
@@ -193,7 +194,6 @@ void _kmain () {
 	create_process ("/cnsl.exe", "cnsl");
 	//! Here start the scheduler (multitasking engine)
 	
-	hda_audio_play();
 	scheduler_start();
 #endif
 

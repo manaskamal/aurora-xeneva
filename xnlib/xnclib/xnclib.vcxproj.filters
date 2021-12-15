@@ -101,6 +101,9 @@
     <ClInclude Include="sys\_xeneva.h">
       <Filter>sys</Filter>
     </ClInclude>
+    <ClInclude Include="sys\postbox.h">
+      <Filter>sys</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="string.cpp" />
@@ -129,6 +132,9 @@
     <ClCompile Include="stdio.cpp" />
     <ClCompile Include="errno.cpp" />
     <ClCompile Include="qsort.cpp" />
+    <ClCompile Include="sys\postbox.cpp">
+      <Filter>sys</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="sys">

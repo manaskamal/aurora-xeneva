@@ -143,7 +143,7 @@ $LN4:
 	mov	rcx, QWORD PTR msg_rcv_mutex
 	call	?mutex_lock@@YAXPEAUmutex_t@@@Z		; mutex_lock
 
-; 60   : 	dwm_message_t *tmsg = (dwm_message_t*)get_current_thread()->mouse_box;
+; 60   : 	dwm_message_t *tmsg = (dwm_message_t*)get_current_thread()->msg_box;
 
 	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
 	mov	rax, QWORD PTR [rax+240]
@@ -166,7 +166,7 @@ $LN1@dwm_dispat:
 
 ; 63   : 	}
 ; 64   : 
-; 65   : 	memset (get_current_thread()->mouse_box, 0, 4096);
+; 65   : 	memset (get_current_thread()->msg_box, 0, 4096);
 
 	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
 	mov	r8d, 4096				; 00001000H
@@ -238,7 +238,7 @@ $LN3@dwm_put_me:
 
 ; 42   : 	}
 ; 43   : 
-; 44   : 	dwm_message_t *tmsg = (dwm_message_t*)t->mouse_box;
+; 44   : 	dwm_message_t *tmsg = (dwm_message_t*)t->msg_box;
 
 	mov	rax, QWORD PTR t$[rsp]
 	mov	rax, QWORD PTR [rax+240]
@@ -251,7 +251,7 @@ $LN3@dwm_put_me:
 	test	eax, eax
 	jne	SHORT $LN2@dwm_put_me
 
-; 46   : 		memcpy (t->mouse_box,msg,sizeof(dwm_message_t));
+; 46   : 		memcpy (t->msg_box,msg,sizeof(dwm_message_t));
 
 	mov	r8d, 28
 	mov	rdx, QWORD PTR msg$[rsp]

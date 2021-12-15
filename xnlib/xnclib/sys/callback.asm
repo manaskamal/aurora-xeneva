@@ -244,5 +244,20 @@ sys_get_free_ram:
 	ret
 
 
+global sys_create_timer
+sys_create_timer:
+    mov r12, 10
+	mov r13, rcx
+	mov r14, rdx
+	syscall
+	ret
+
+global sys_destroy_timer
+sys_destroy_timer:
+    mov r12, 11
+	mov r13, rcx
+	syscall
+	ret
+
 
 
