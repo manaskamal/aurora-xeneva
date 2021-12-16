@@ -8,6 +8,8 @@ INCLUDELIB OLDNAMES
 PUBLIC	funct
 EXTRN	?create_timer@@YAHIG@Z:PROC			; create_timer
 EXTRN	?destroy_timer@@YAXH@Z:PROC			; destroy_timer
+EXTRN	?pause_timer@@YAXH@Z:PROC			; pause_timer
+EXTRN	?start_timer@@YAXH@Z:PROC			; start_timer
 EXTRN	?message_send@@YAXGPEAU_message_@@@Z:PROC	; message_send
 EXTRN	?message_receive@@YAXPEAU_message_@@@Z:PROC	; message_receive
 EXTRN	?printf@@YAXPEBDZZ:PROC				; printf
@@ -43,7 +45,7 @@ _BSS	SEGMENT
 funct	DQ	01H DUP (?)
 _BSS	ENDS
 CONST	SEGMENT
-$SG6158	DB	'System Call Fault!! Halting System', 0aH, 00H
+$SG6165	DB	'System Call Fault!! Halting System', 0aH, 00H
 CONST	ENDS
 _DATA	SEGMENT
 _syscalls DQ	FLAT:?printf@@YAXPEBDZZ
@@ -60,8 +62,8 @@ _syscalls DQ	FLAT:?printf@@YAXPEBDZZ
 	DQ	FLAT:?destroy_timer@@YAXH@Z
 	DQ	0000000000000000H
 	DQ	FLAT:?ttype_create@@YAXPEAH0@Z
-	DQ	0000000000000000H
-	DQ	0000000000000000H
+	DQ	FLAT:?start_timer@@YAXH@Z
+	DQ	FLAT:?pause_timer@@YAXH@Z
 	DQ	FLAT:?allocate_pipe@@YAXPEAHPEAD@Z
 	DQ	FLAT:?sys_unblock_id@@YAXG@Z
 	DQ	FLAT:?create_uthread@@YAXP6AXPEAX@ZPEAD@Z
@@ -126,7 +128,7 @@ $LN6:
 
 ; 21   : 		printf ("System Call Fault!! Halting System\n");
 
-	lea	rcx, OFFSET FLAT:$SG6158
+	lea	rcx, OFFSET FLAT:$SG6165
 	call	?printf@@YAXPEBDZZ			; printf
 $LN2@x64_syscal:
 

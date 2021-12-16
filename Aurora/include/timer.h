@@ -18,6 +18,7 @@ typedef struct _timer_ {
 	uint32_t interval;
 	uint16_t task_id;
 	uint32_t utimer_id;
+	bool start;
 	struct _timer_ *next;
 	struct _timer_ *prev;
 }timer_t;
@@ -40,6 +41,19 @@ extern int create_timer (uint32_t interval, uint16_t id);
   */
 extern void destroy_timer (int utimer_id);
 
+/*
+  pause_timer -- pauses the timer
+  @param utimer_id -- Unique timer id to pause
+  */
+extern void pause_timer (int utimer_id);
+
+/*
+  start_timer - start the timer
+
+  @param utimer_id -- Unique timer id to start
+  */
+extern void start_timer (int utimer_id);
+
 
 /**
    timer_fire -- this routine is called by the scheduler
@@ -48,5 +62,12 @@ extern void destroy_timer (int utimer_id);
   */
 extern void timer_fire ();
 
+
+/*
+ find_timer_id -- find a timer by a given task id
+ @param id -- task id
+ @return -- unique timer id of the timer, if found
+ */
+extern int find_timer_id (uint16_t id);
 
 #endif

@@ -1,4 +1,4 @@
-﻿Build started 15-12-2021 ৰাতিপু 12:39:16.
+﻿Build started 16-12-2021 আবেলি 9:16:43.
      1>Project "E:\Xeneva Project\Xeneva\xnlib\xnacrylic\xnacrylic.vcxproj" on node 2 (Rebuild target(s)).
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\xnlib\xnclib" /I"E:\Xeneva Project\Xeneva\xnlib\xnacrylic\include" /Zi /nologo /W4 /WX- /sdl- /MP /Od /D ARCH_X64 /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt source\acrylic.cpp source\buffer.cpp source\canvas.cpp source\clientctx.cpp source\color.cpp source\font.cpp source\image.cpp source\path2d.cpp source\psf\psf.cpp
@@ -109,7 +109,27 @@
      1>source\acrylic.cpp(212): warning C4244: 'initializing' : conversion from 'uint32_t' to 'float', possible loss of data
      1>source\acrylic.cpp(213): warning C4244: 'initializing' : conversion from 'uint32_t' to 'float', possible loss of data
      1>source\acrylic.cpp(220): warning C4244: 'argument' : conversion from 'float' to 'uint8_t', possible loss of data
-     1>source\acrylic.cpp(281): warning C4244: 'argument' : conversion from 'int' to 'uint8_t', possible loss of data
+     1>source\acrylic.cpp(236): warning C4333: '>>' : right shift by too large amount, data loss
+     1>source\acrylic.cpp(237): warning C4333: '>>' : right shift by too large amount, data loss
+     1>source\acrylic.cpp(240): warning C4333: '>>' : right shift by too large amount, data loss
+     1>source\acrylic.cpp(241): warning C4333: '>>' : right shift by too large amount, data loss
+     1>source\acrylic.cpp(245): warning C4333: '>>' : right shift by too large amount, data loss
+     1>source\acrylic.cpp(246): warning C4333: '>>' : right shift by too large amount, data loss
+     1>source\acrylic.cpp(249): warning C4333: '>>' : right shift by too large amount, data loss
+     1>source\acrylic.cpp(250): warning C4333: '>>' : right shift by too large amount, data loss
+     1>source\acrylic.cpp(254): warning C4333: '>>' : right shift by too large amount, data loss
+     1>source\acrylic.cpp(255): warning C4333: '>>' : right shift by too large amount, data loss
+     1>source\acrylic.cpp(259): warning C4333: '>>' : right shift by too large amount, data loss
+     1>source\acrylic.cpp(260): warning C4333: '>>' : right shift by too large amount, data loss
+     1>source\acrylic.cpp(263): warning C4333: '>>' : right shift by too large amount, data loss
+     1>source\acrylic.cpp(264): warning C4333: '>>' : right shift by too large amount, data loss
+     1>source\acrylic.cpp(267): warning C4333: '>>' : right shift by too large amount, data loss
+     1>source\acrylic.cpp(268): warning C4333: '>>' : right shift by too large amount, data loss
+     1>source\acrylic.cpp(271): warning C4333: '>>' : right shift by too large amount, data loss
+     1>source\acrylic.cpp(272): warning C4333: '>>' : right shift by too large amount, data loss
+     1>source\acrylic.cpp(281): warning C4244: 'argument' : conversion from 'float' to 'uint8_t', possible loss of data
+     1>source\acrylic.cpp(282): warning C4244: '=' : conversion from 'uint32_t' to 'unsigned char', possible loss of data
+     1>source\acrylic.cpp(227): warning C4100: 'canvas' : unreferenced formal parameter
      1>source\acrylic.cpp(230): warning C4101: 'sum' : unreferenced local variable
          Generating Code...
      1>e:\xeneva project\xeneva\xnlib\xnacrylic\source\acrylic.cpp(236): warning C4700: uninitialized local variable 'r' used
@@ -133,4 +153,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:01.81
+Time Elapsed 00:00:00.84

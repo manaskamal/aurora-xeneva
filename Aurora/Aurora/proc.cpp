@@ -11,6 +11,7 @@
 
 #include <proc.h>
 #include <atomic\mutex.h>
+#include <timer.h>
 #include <fs\fat32.h>
 #include <_null.h>
 
@@ -212,6 +213,14 @@ void kill_process () {
 	uint64_t heap_base = (uint64_t)proc->user_heap_start;
 	uint64_t *cr3 = (uint64_t*)remove_thread->cr3;
 	
+	int timer = find_timer_id (remove_thread->id);
+
+	/** destroy the timer */
+	if (timer != -1) {
+		destroy_timer (timer);
+	}
+
+
 	remove_process (proc);
 	task_delete (remove_thread);
 	pmmngr_free(remove_thread);

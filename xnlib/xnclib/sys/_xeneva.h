@@ -21,7 +21,7 @@ extern "C" {
 	///**
 	//  sys_get_used_ram -- returns the amount of used ram in bytes
 	//  */
-	//uint32_t sys_get_used_ram ();
+	uint32_t sys_get_used_ram ();
 
 	/**
 	  sys_get_free_ram -- returns the amount of free ram in bytes
@@ -33,7 +33,9 @@ extern "C" {
 	
 	void sys_destroy_timer (int utimer_id);
 
+	void sys_start_timer (int utimer_id);
 
+	void sys_pause_timer (int utimer_id);
 
 
 #ifdef __cplusplus

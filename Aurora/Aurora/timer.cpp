@@ -12,6 +12,7 @@
 #include <timer.h>
 #include <_null.h>
 #include <pmmngr.h>
+#include <stdio.h>
 #include <ipc\postbox.h>
 
 timer_t *timer_head = NULL;
@@ -60,17 +61,46 @@ void timer_delete (timer_t* new_timer) {
   @param id -- the caller thread id
   @return -- a unique id of the timer
   */
-int create_timer (uint32_t interval, uint16_t id) {
+int create_timer (uint32_t interval, uint16_t id) {	
+	utimer_id++;
 	timer_t *t = (timer_t*)pmmngr_alloc();
 	t->timer_count = 0;
 	t->task_id = id;
 	t->interval = interval;
 	t->utimer_id = utimer_id;
+	t->start = false;
 	timer_insert (t);
-	utimer_id++;
 	return utimer_id;
 }
 
+
+/*
+  pause_timer -- pauses the timer
+  @param utimer_id -- Unique timer id to pause
+  */
+void pause_timer (int utimer_id) {
+	for (timer_t *t = timer_head; t != NULL; t = t->next) {
+		if (t->utimer_id == utimer_id) {
+			t->start = false;
+			break;
+		}
+	}
+}
+
+
+/*
+  start_timer - start the timer
+
+  @param utimer_id -- Unique timer id to start
+  */
+void start_timer (int utimer_id ) {
+	for (timer_t *t = timer_head; t != NULL; t = t->next) {
+		if (t->utimer_id == utimer_id) {
+			t->start = true;
+			break;
+		}
+	}
+}
 
 /*
   destroy_timer -- Destroy a specific timer
@@ -79,12 +109,29 @@ int create_timer (uint32_t interval, uint16_t id) {
   */
 void destroy_timer (int utimer_id) {
 	for (timer_t *t = timer_head; t != NULL; t = t->next) {
-		if (t->utimer_id = utimer_id) {
+		if (t->utimer_id == utimer_id) {
 			timer_delete (t);
+			utimer_id--;
 			break;
 		}
 	}
-	utimer_id--;
+	
+}
+
+/*
+ find_timer_id -- find a timer by a given task id
+ @param id -- task id
+ @return -- unique timer id of the timer, if found
+ */
+int find_timer_id (uint16_t id) {
+	for (timer_t *t = timer_head; t != NULL; t = t->next) {
+		if (t->task_id == id) {
+			return t->utimer_id;
+			break;
+		}
+	}
+
+	return -1;
 }
 
 
@@ -96,16 +143,16 @@ void destroy_timer (int utimer_id) {
 void timer_fire () {
 	if (timer_head != NULL) {
 		for (timer_t *t = timer_head; t != NULL; t = t->next) {
-			if (t->timer_count == t->interval ) {
-				postmsg_t msg;
-			    msg.type = SYSTEM_MESSAGE_TIMER_EVENT;
-			    msg.to_id = t->task_id;
-			    post_box_put_msg (&msg,t->task_id);
-			    t->timer_count = 0;
-		    }
-			t->timer_count++;
+			if (t->start) {
+				if (t->timer_count == t->interval ) {
+					postmsg_t msg;
+			        msg.type = SYSTEM_MESSAGE_TIMER_EVENT;
+			        msg.to_id = t->task_id;
+			        post_box_put_msg (&msg,t->task_id);
+			        t->timer_count = 0;
+		         }
+			     t->timer_count++;
+			}
 		}
 	}
-
-
 }

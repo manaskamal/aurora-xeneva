@@ -260,4 +260,18 @@ sys_destroy_timer:
 	ret
 
 
+global sys_start_timer
+sys_start_timer:
+    mov r12, 14
+	mov r13, rcx
+	syscall
+	ret
+
+global sys_pause_timer
+sys_pause_timer:
+    mov r12, 15
+	mov r13, rcx
+	syscall
+	ret
+
 

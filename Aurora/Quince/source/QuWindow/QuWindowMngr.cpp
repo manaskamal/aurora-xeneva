@@ -27,6 +27,7 @@
 
 QuList* WindowList = NULL;
 QuWindow * focus_win = NULL;
+QuWindow * prev_focused = NULL;
 QuWindow * draggable_win = NULL;
 QuWindow * top_window = NULL;
 bool UpdateWindows = false;
@@ -45,6 +46,7 @@ void QuWindowMngr_Add (QuWindow *window) {
 	focus_win = window;
 	draggable_win = window;
 	top_window = window;
+	prev_focused = window;
 }
 
 
@@ -60,6 +62,7 @@ void QuWindowMngr_Remove (QuWindow *win) {
 	focus_win = NULL;
 	draggable_win = NULL;
 	top_window = NULL;
+	prev_focused = NULL;
 }
 
 
@@ -89,8 +92,15 @@ QuWindow* QuWindowMngrGetFocused () {
 
 
 void QuWindowMngr_MoveFront (QuWindow *win) {
-	if (focus_win == win)
+	if (top_window == win)
 		return;
+
+	if (prev_focused != NULL) {
+	QuMessage msg;
+	msg.type = QU_CANVAS_FOCUS_LOST;
+	msg.to_id = prev_focused->owner_id;
+	QuChannelPut (&msg, prev_focused->owner_id);
+	}
 
 
 	if (top_window != win || top_window == NULL){
@@ -100,7 +110,21 @@ void QuWindowMngr_MoveFront (QuWindow *win) {
 		//QuWindowUpdateTitlebar(true);
 	}
 
-	focus_win = win;
+	//if (prev_focused != NULL) {
+	//	QuMessage msg;
+	//	msg.type = QU_CANVAS_FOCUS_LOST;
+	//	msg.to_id = prev_focused->owner_id;
+	//	QuChannelPut (&msg, prev_focused->owner_id);
+	//}
+
+    focus_win = win;
+
+	QuMessage msg;
+	msg.type = QU_CANVAS_FOCUS_GAIN;
+	msg.to_id = focus_win->owner_id;
+	QuChannelPut (&msg, focus_win->owner_id);
+
+	prev_focused = focus_win;
 }
 
 bool QuWindowMngr_CheckTop (QuWindow *win) {
@@ -170,15 +194,6 @@ void QuWindowMngr_MoveFocusWindow (int x, int y) {
 	if (draggable_win->y + draggable_win->height >= canvas_get_height())
 		draggable_win->y = canvas_get_height() - draggable_win->height;*/
 
-
-	/*QuMessage msg;
-	msg.type = QU_CANVAS_MOVE;
-	msg.dword = draggable_win->x;
-	msg.dword2 = draggable_win->y;
-	msg.dword3 = draggable_win->id;
-	QuChannelPut(&msg, draggable_win->owner_id);
-	sys_unblock_id (draggable_win->owner_id);
-*/
 
 	for (int i = 0; i < WindowList->pointer; i++) {
 		QuWindow* win = (QuWindow*)QuListGetAt (WindowList,i);

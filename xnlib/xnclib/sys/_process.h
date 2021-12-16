@@ -42,7 +42,6 @@ void sys_unblock_id (uint16_t id);
 void sys_kill (int pid, int signo);
 void sys_set_signal (int signo, sig_handler handler);
 
-uint64_t sys_get_used_ram ();
 
 #ifdef __cplusplus
 }

@@ -33,15 +33,23 @@
 #include <sys\postbox.h>
 
 
+int timer_id = 0;
+
+bool focus_lost = false;
 void QuActions (QuMessage *msg) {
 	if (msg->type == QU_CANVAS_MOVE) {
 		QuWindowMove(QuGetWindow(),msg->dword, msg->dword2);
 		memset(msg, 0, sizeof(QuMessage));
 	}
 
-	if (msg->type == QU_CANVAS_RESIZE) {
-		QuWindowSetBound(QuWindowGetWidth() + 20, QuWindowGetHeight() + 20);
-		//acrylic_draw_rect_filled(QuGetCanvas(),msg->dword, msg->dword2, QuGetWindow()->w, QuGetWindow()->h, BLUE);
+	if (msg->type == QU_CANVAS_FOCUS_LOST) {
+		focus_lost = true;
+		sys_pause_timer (timer_id);
+		memset(msg, 0, sizeof(QuMessage));
+	}
+
+	if (msg->type == QU_CANVAS_FOCUS_GAIN) {
+		sys_start_timer(timer_id);
 		memset(msg, 0, sizeof(QuMessage));
 	}
 
@@ -79,14 +87,14 @@ void PrintString (QuTerminal *text, char* string) {
 bool blinked = false;
 void blink_cursor () {
 	if (!blinked) {
-		acrylic_draw_rect_filled(QuGetWindow()->ctx, 1,23,10,20,SILVER);
+		acrylic_draw_rect_filled(QuGetWindow()->ctx, 1,23,10,15,SILVER);
 		blinked = true;
 	}else {
-		acrylic_draw_rect_filled(QuGetWindow()->ctx, 1,23,10,20,BLACK);
+		acrylic_draw_rect_filled(QuGetWindow()->ctx, 1,23,10,15,BLACK);
 		blinked = false;
 	}
 
-	QuPanelUpdate(QuGetWindow(),1,23,10,20,false);
+	QuPanelUpdate(QuGetWindow(),0,0,QuGetWindow()->w,QuGetWindow()->h,true);
 }
 
 int main (int argc, char* argv[]) {
@@ -116,8 +124,9 @@ int main (int argc, char* argv[]) {
 	//memset (buffer, 0, 32);
 
 	//QuPanelUpdate (0,0,win->w, win->h,true);
-	int timer_id = sys_create_timer (1000, get_current_pid());
-
+	timer_id = sys_create_timer (1000, get_current_pid());
+	sys_print_text ("Console Timer id -> %d\n", timer_id);
+	sys_start_timer(timer_id);
 
 
 	QuMessage qmsg;

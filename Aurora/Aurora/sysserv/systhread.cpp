@@ -24,25 +24,21 @@ void create_uthread (void (*entry) (void*), char* name) {
 	/*
 	 * Not implemented properly
 	 *
-	 * when syscalls occurs it causes page fault 
+	 * TODO: Update the process structure and add an
+	 * entry for the new user thread!!
 	 */  
 	uint64_t *old_cr3 = (uint64_t*)x64_read_cr3();
 
 	uint64_t* cr3 = create_user_address_space();
 	uint64_t stack = (uint64_t)create_inc_stack(cr3);
 	
-	for (int i = 0; i < 10*1024*1024/4096; i++) {
-		cr3[pml4_index(0x0000400000000000 + i * 4096)] = old_cr3[pml4_index(0x0000400000000000 + i * 4096)];
-	}
+	/* Copy the Image Base of the current process */
+	cr3[pml4_index(0x0000400000000000)] = old_cr3[pml4_index(0x0000400000000000)];
+	/* Copy the Heap of the current process */
+	cr3[pml4_index(0x0000080000000000)] = old_cr3[pml4_index(0x0000080000000000)];
 
-	uint64_t pos = 0x0000080000000000;  ;   //0x0000080000000000;
-	for (int i = 0; i < 0xC01000 / 4096; i++) {
-		cr3[pml4_index(0x0000080000000000 + i * 4096)] = old_cr3[pml4_index(0x0000080000000000 + i * 4096)];
-	}
-
+	/* Create the new user thread */
 	thread_t * t = create_user_thread (entry, stack,(uint64_t)cr3,name, 1);	
-	
-	//force_sched();
 }
 
 

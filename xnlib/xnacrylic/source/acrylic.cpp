@@ -224,53 +224,53 @@ void acrylic_set_tone (canvas_t * canvas,uint32_t color, uint32_t *img, int x, i
 	}
 }
 
-void acrylic_box_blur (canvas_t * canvas,unsigned int* input, unsigned int* output, int cx, int cy, int w, int h) {
+void acrylic_box_blur (canvas_t * canvas,unsigned char* input, unsigned char* output, int cx, int cy, int w, int h) {
 
-	int r,g,b = 0;
+	float r,g,b = 0;
 	int sum;
 	for (int j = 0; j < h; j++){
 		for (int i = 0; i < w; i++) {
 			if (i < 1 || j < 1 || i + 1 ==w || j + 1== h)
 				continue;
 
-			r += GET_RED(input[(cx + i -1)+(cy+j-1)*canvas_get_width(canvas)]);
-			g += GET_GREEN(input[(cx + i -1)+(cy+j-1)*canvas_get_width(canvas)]);
-			b += GET_BLUE(input[(cx + i -1)+(cy+j-1)*canvas_get_width(canvas)]);
+			r += GET_RED(input[(cx + i -1)+(cy+j-1)*w]);
+			g += GET_GREEN(input[(cx + i -1)+(cy+j-1)*w]);
+			b += GET_BLUE(input[(cx + i -1)+(cy+j-1)*w]);
 
-		    r += GET_RED(input[(cx+i+0)+(cy+j-1)*canvas_get_width(canvas)]);
-			g += GET_GREEN(input[(cx+i+0)+(cy+j-1)*canvas_get_width(canvas)]);
-			b += GET_BLUE(input[(cx+i+0)+(cy+j-1)*canvas_get_width(canvas)]);
+		    r += GET_RED(input[(cx+i+0)+(cy+j-1)*w]);
+			g += GET_GREEN(input[(cx+i+0)+(cy+j-1)*w]);
+			b += GET_BLUE(input[(cx+i+0)+(cy+j-1)*w]);
 
 
-			r += GET_RED(input[(cx+i+1)+(cy+j-1)*canvas_get_width(canvas)]);
-			g += GET_GREEN(input[(cx+i+1)+(cy+j-1)*canvas_get_width(canvas)]);
-			b += GET_BLUE(input[(cx+i+1)+(cy+j-1)*canvas_get_width(canvas)]);
+			r += GET_RED(input[(cx+i+1)+(cy+j-1)*w]);
+			g += GET_GREEN(input[(cx+i+1)+(cy+j-1)*w]);
+			b += GET_BLUE(input[(cx+i+1)+(cy+j-1)*w]);
 
-		    r += GET_RED(input[(cx+i-1)+(cy+j+0)*canvas_get_width(canvas)]);
-			g += GET_GREEN(input[(cx+i-1)+(cy+j+0)*canvas_get_width(canvas)]);
-			b += GET_BLUE(input[(cx+i-1)+(cy+j+0)*canvas_get_width(canvas)]);
+		    r += GET_RED(input[(cx+i-1)+(cy+j+0)*w]);
+			g += GET_GREEN(input[(cx+i-1)+(cy+j+0)*w]);
+			b += GET_BLUE(input[(cx+i-1)+(cy+j+0)*w]);
 
 			//CURRENT
-			r += GET_RED(input[(cx+i+0)+(cy+j+0)*canvas_get_width(canvas)]);
-			g += GET_GREEN(input[(cx+i+0)+(cy+j+0)*canvas_get_width(canvas)]);
-			b += GET_BLUE(input[(cx+i+0)+(cy+j+0)*canvas_get_width(canvas)]);
+			r += GET_RED(input[(cx+i+0)+(cy+j+0)*w]);
+			g += GET_GREEN(input[(cx+i+0)+(cy+j+0)*w]);
+			b += GET_BLUE(input[(cx+i+0)+(cy+j+0)*w]);
 
 
-		    r += GET_RED(input[(cx+i+1)+(cy+j+0)*canvas_get_width(canvas)]);
-			g += GET_GREEN(input[(cx+i+1)+(cy+j+0)*canvas_get_width(canvas)]);
-			b += GET_BLUE(input[(cx+i+1)+(cy+j+0)*canvas_get_width(canvas)]);
+		    r += GET_RED(input[(cx+i+1)+(cy+j+0)*w]);
+			g += GET_GREEN(input[(cx+i+1)+(cy+j+0)*w]);
+			b += GET_BLUE(input[(cx+i+1)+(cy+j+0)*w]);
 
-			r += GET_RED(input[(cx+i-1)+(cy+j+1)*canvas_get_width(canvas)]);
-			g += GET_GREEN(input[(cx+i-1)+(cy+j+1)*canvas_get_width(canvas)]);
-			b += GET_BLUE(input[(cx+i-1)+(cy+j+1)*canvas_get_width(canvas)]);
+			r += GET_RED(input[(cx+i-1)+(cy+j+1)*w]);
+			g += GET_GREEN(input[(cx+i-1)+(cy+j+1)*w]);
+			b += GET_BLUE(input[(cx+i-1)+(cy+j+1)*w]);
 
-			r += GET_RED(input[(cx+i+0)+(cy+j+1)*canvas_get_width(canvas)]);
-			g += GET_GREEN(input[(cx+i+0)+(cy+j+1)*canvas_get_width(canvas)]);
-			b += GET_BLUE(input[(cx+i+0)+(cy+j+1)*canvas_get_width(canvas)]);
+			r += GET_RED(input[(cx+i+0)+(cy+j+1)*w]);
+			g += GET_GREEN(input[(cx+i+0)+(cy+j+1)*w]);
+			b += GET_BLUE(input[(cx+i+0)+(cy+j+1)*w]);
 
-			r += GET_RED(input[(cx+i+1)+(cy+j+1)*canvas_get_width(canvas)]);
-			g += GET_GREEN(input[(cx+i+1)+(cy+j+1)*canvas_get_width(canvas)]);
-			b += GET_BLUE(input[(cx+i+1)+(cy+j+1)*canvas_get_width(canvas)]);
+			r += GET_RED(input[(cx+i+1)+(cy+j+1)*w]);
+			g += GET_GREEN(input[(cx+i+1)+(cy+j+1)*w]);
+			b += GET_BLUE(input[(cx+i+1)+(cy+j+1)*w]);
 
 			//SET_ALPHA(sum,0xFF);
 			/*float r = GET_RED (sum);
@@ -279,7 +279,7 @@ void acrylic_box_blur (canvas_t * canvas,unsigned int* input, unsigned int* outp
 			float a = GET_ALPHA(sum);*/
 
 			uint32_t color = make_col (r/9,g/9,b/9);
-	        output[(cx + i - 1) +(cy + j - 1) *canvas_get_width(canvas) ] = color;
+	        output[(cx + i) +(cy + j) *w] = color;
 
 
 		}

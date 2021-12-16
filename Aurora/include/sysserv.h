@@ -39,8 +39,8 @@ static void* _syscalls[] = {
 	destroy_timer, //11
 	0, //12
 	ttype_create, //13
-	0, //14
-	0, //15
+	start_timer , //14
+	pause_timer, //15
 	allocate_pipe, //16
 	sys_unblock_id, //17
 	create_uthread, //18

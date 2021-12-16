@@ -145,8 +145,7 @@ void QuEventLoop() {
 			int winw = q_msg.dword3;
 			int winh = q_msg.dword4;
 
-			sys_print_text ("Creating window \n");
-			////!Stop the mouse
+			//!Stop the mouse
 			render_disable = true;
 			uint16_t dest_id = q_msg.from_id; 
 			uint32_t* canvas = QuCanvasCreate(dest_id, winw, winh);
@@ -162,7 +161,7 @@ void QuEventLoop() {
 			info->y = winy;
 			win_info_counter++;
 
-			//QuCanvasCommit(canvas, dest_id, window->x, window->y, window->width, window->height);
+			
 			QuMessage msg;
 			msg.type = QU_CANVAS_READY;
 			msg.from_id = get_current_pid();
