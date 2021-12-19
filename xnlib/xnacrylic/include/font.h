@@ -12,7 +12,7 @@
 #define __FONT_H__
 
 #include <stdint.h>
-
+#include <canvas.h>
 
 typedef struct _font_ {
 	uint8_t *data;
@@ -20,10 +20,10 @@ typedef struct _font_ {
 	int size;
 	uint8_t width;
 	uint8_t height;
-	uint32_t* offsetTable;
 }Font;
 
 extern void acrylic_initialize_font ();
-extern void acrylic_font_draw_string ( char* string, int x, int y, uint32_t color);
+extern void acrylic_font_set_size (uint32_t sz);
+extern void acrylic_font_draw_string (canvas_t *canvas, char* string, int x, int y, uint32_t sz,uint32_t color);
 extern Font* acrylic_get_system_font ();
 #endif

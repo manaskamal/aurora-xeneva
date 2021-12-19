@@ -55,7 +55,6 @@ void console_initialize (PKERNEL_BOOT_INFO info) {
 	readfs(node, &file,buffer,file.size);
 	
 	psf_data = buffer;
-
 }
 
 //! Put a character to console output

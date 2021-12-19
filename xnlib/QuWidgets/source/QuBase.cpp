@@ -49,7 +49,7 @@ void QuChannelGet (QuMessage *msg) {
 get:
 	if (data->to_id == to_id){
 		memcpy (msg, data, sizeof (QuMessage));
-		memset (data, 0, 4096);
+		memset ((void*)QU_CHANNEL_RECEIVER, 0, sizeof(QuMessage));
 		sys_unblock_id (2);
 		return;
 	}
@@ -86,6 +86,7 @@ void QuRegisterApplication (QuWindow *win) {
 	win->winid = window_id;
 	win->win_info_data = info_data;
 	win->canvas = canvas_address;	
+	acrylic_initialize_font();
 }
 
 

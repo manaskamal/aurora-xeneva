@@ -1,4 +1,4 @@
-﻿Build started 16-12-2021 ৰাতিপু 1:27:39.
+﻿Build started 19-12-2021 আবেলি 11:52:54.
      1>Project "E:\Xeneva Project\Xeneva\xnlib\QuWidgets\QuWidgets.vcxproj" on node 2 (Rebuild target(s)).
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\xnlib\xnclib" /I"E:\Xeneva Project\Xeneva\xnlib\QuWidgets\include" /I"E:\Xeneva Project\Xeneva\xnlib\xnacrylic\include" /Zi /nologo /W4 /WX- /sdl- /MP /Od /D ARCH_X64 /D _MBCS /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt source\QuBase.cpp source\QuButton.cpp source\QuContextMenu.cpp source\QuEditBox.cpp source\QuKeycodeHelper.cpp source\QuMenubar.cpp source\QuPanel.cpp source\QuPopupMenu.cpp source\QuScrollbar.cpp source\QuSlider.cpp source\QuTerminal.cpp source\QuTextbox.cpp source\QuUtils\QuList.cpp source\QuWindow.cpp source\QuWindowControl.cpp
@@ -7,22 +7,22 @@
      1>cl : Command line warning D9030: '/Gm' is incompatible with multiprocessing; ignoring /MP switch
          QuWindowControl.cpp
          QuWindow.cpp
-     1>source\QuWindow.cpp(70): warning C4018: '<' : signed/unsigned mismatch
-     1>source\QuWindow.cpp(165): warning C4018: '<' : signed/unsigned mismatch
-     1>source\QuWindow.cpp(183): warning C4018: '<' : signed/unsigned mismatch
-     1>source\QuWindow.cpp(191): warning C4267: 'argument' : conversion from 'size_t' to 'unsigned int', possible loss of data
-     1>source\QuWindow.cpp(182): warning C4189: 'buttons_color' : local variable is initialized but not referenced
-     1>source\QuWindow.cpp(204): warning C4100: 'y' : unreferenced formal parameter
-     1>source\QuWindow.cpp(204): warning C4100: 'x' : unreferenced formal parameter
-     1>source\QuWindow.cpp(204): warning C4100: 'win' : unreferenced formal parameter
-     1>source\QuWindow.cpp(212): warning C4018: '<' : signed/unsigned mismatch
-     1>source\QuWindow.cpp(223): warning C4018: '<' : signed/unsigned mismatch
-     1>source\QuWindow.cpp(230): warning C4267: 'argument' : conversion from 'size_t' to 'unsigned int', possible loss of data
-     1>source\QuWindow.cpp(222): warning C4189: 'buttons_color' : local variable is initialized but not referenced
-     1>source\QuWindow.cpp(261): warning C4100: 'prop' : unreferenced formal parameter
-     1>source\QuWindow.cpp(276): warning C4018: '<' : signed/unsigned mismatch
-     1>source\QuWindow.cpp(306): warning C4018: '<' : signed/unsigned mismatch
-     1>source\QuWindow.cpp(329): warning C4018: '<' : signed/unsigned mismatch
+     1>source\QuWindow.cpp(71): warning C4018: '<' : signed/unsigned mismatch
+     1>source\QuWindow.cpp(166): warning C4018: '<' : signed/unsigned mismatch
+     1>source\QuWindow.cpp(184): warning C4018: '<' : signed/unsigned mismatch
+     1>source\QuWindow.cpp(183): warning C4189: 'buttons_color' : local variable is initialized but not referenced
+     1>source\QuWindow.cpp(207): warning C4100: 'y' : unreferenced formal parameter
+     1>source\QuWindow.cpp(207): warning C4100: 'x' : unreferenced formal parameter
+     1>source\QuWindow.cpp(207): warning C4100: 'win' : unreferenced formal parameter
+     1>source\QuWindow.cpp(215): warning C4018: '<' : signed/unsigned mismatch
+     1>source\QuWindow.cpp(226): warning C4018: '<' : signed/unsigned mismatch
+     1>source\QuWindow.cpp(233): warning C4267: 'argument' : conversion from 'size_t' to 'unsigned int', possible loss of data
+     1>source\QuWindow.cpp(225): warning C4189: 'buttons_color' : local variable is initialized but not referenced
+     1>source\QuWindow.cpp(264): warning C4100: 'prop' : unreferenced formal parameter
+     1>source\QuWindow.cpp(279): warning C4018: '<' : signed/unsigned mismatch
+     1>source\QuWindow.cpp(309): warning C4018: '<' : signed/unsigned mismatch
+     1>source\QuWindow.cpp(332): warning C4018: '<' : signed/unsigned mismatch
+     1>source\QuWindow.cpp(341): warning C4100: 'bit' : unreferenced formal parameter
          QuList.cpp
          QuTextbox.cpp
      1>E:\Xeneva Project\Xeneva\xnlib\xnclib\ctype.h(33): warning C4005: 'isascii' : macro redefinition
@@ -96,12 +96,12 @@
      1>source\QuBase.cpp(33): warning C4244: '=' : conversion from 'uint16_t' to 'uint8_t', possible loss of data
      1>source\QuBase.cpp(48): warning C4244: 'initializing' : conversion from 'unsigned int' to 'uint16_t', possible loss of data
      1>source\QuBase.cpp(49): warning C4102: 'get' : unreferenced label
-     1>source\QuBase.cpp(62): warning C4244: '=' : conversion from 'unsigned int' to 'uint16_t', possible loss of data
-     1>source\QuBase.cpp(69): warning C4244: '=' : conversion from 'uint16_t' to 'uint8_t', possible loss of data
-     1>source\QuBase.cpp(77): warning C4127: conditional expression is constant
-     1>source\QuBase.cpp(96): warning C4244: 'return' : conversion from 'unsigned int' to 'uint16_t', possible loss of data
+     1>source\QuBase.cpp(59): warning C4244: '=' : conversion from 'unsigned int' to 'uint16_t', possible loss of data
+     1>source\QuBase.cpp(66): warning C4244: '=' : conversion from 'uint16_t' to 'uint8_t', possible loss of data
+     1>source\QuBase.cpp(74): warning C4127: conditional expression is constant
+     1>source\QuBase.cpp(94): warning C4244: 'return' : conversion from 'unsigned int' to 'uint16_t', possible loss of data
          Generating Code...
-     1>e:\xeneva project\xeneva\xnlib\quwidgets\source\qubase.cpp(112): warning C4715: 'QuApplicationWindowGet' : not all control paths return a value
+     1>e:\xeneva project\xeneva\xnlib\quwidgets\source\qubase.cpp(110): warning C4715: 'QuApplicationWindowGet' : not all control paths return a value
      1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V110\Microsoft.CppBuild.targets(1299,5): warning MSB8012: TargetPath(E:\Xeneva Project\Xeneva\Aurora\x64\Debug\QuWidgets.lib) does not match the Library's OutputFile property value (E:\Xeneva Project\Xeneva\xnlib\lib64\QuWidgets.lib). This may cause your project to build incorrectly. To correct this, please make sure that $(OutDir), $(TargetName) and $(TargetExt) property values match the value specified in %(Lib.OutputFile).
        Lib:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\Lib.exe /OUT:"E:\Xeneva Project\Xeneva\xnlib\lib64\QuWidgets.lib" /NOLOGO /MACHINE:X64 x64\Debug\QuBase.obj
@@ -124,4 +124,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:02.76
+Time Elapsed 00:00:01.40

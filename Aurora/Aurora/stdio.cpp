@@ -124,10 +124,16 @@ void printf(const char* format, ...)
 				}
 				size_t i = va_arg(args, size_t);
 				char buffer[sizeof(size_t) * 8 + 1];
-				sztoa(i, buffer, 10);
-				size_t len = strlen(buffer);
-				while (len++ < width)
-					puts("0");
+			//	size_t len
+				if (i < 0) {
+					i = +i;
+					sztoa (i,buffer,10);
+				}else {
+					sztoa(i, buffer, 10);
+					size_t len = strlen(buffer);
+				}
+			/*	while (len++ < width)
+					puts("0");*/
 				puts(buffer);
 			}
 			else if (*format == 'c')

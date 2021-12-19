@@ -5,9 +5,6 @@ include listing.inc
 INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
-CONST	SEGMENT
-$SG3666	DB	'munmap called -> %x, length -> %d', 0aH, 00H
-CONST	ENDS
 PUBLIC	?map_memory@@YAPEAX_KIE@Z			; map_memory
 PUBLIC	?unmap_memory@@YAXPEAXI@Z			; unmap_memory
 EXTRN	?pmmngr_alloc@@YAPEAXXZ:PROC			; pmmngr_alloc
@@ -15,14 +12,13 @@ EXTRN	x64_cli:PROC
 EXTRN	?map_page@@YA_N_K0E@Z:PROC			; map_page
 EXTRN	?unmap_page@@YAX_K@Z:PROC			; unmap_page
 EXTRN	?get_free_page@@YAPEA_K_K_N@Z:PROC		; get_free_page
-EXTRN	?printf@@YAXPEBDZZ:PROC				; printf
 EXTRN	?get_current_process@@YAPEAU_process_@@XZ:PROC	; get_current_process
 pdata	SEGMENT
 $pdata$?map_memory@@YAPEAX_KIE@Z DD imagerel $LN22
 	DD	imagerel $LN22+498
 	DD	imagerel $unwind$?map_memory@@YAPEAX_KIE@Z
 $pdata$?unmap_memory@@YAXPEAXI@Z DD imagerel $LN8
-	DD	imagerel $LN8+157
+	DD	imagerel $LN8+135
 	DD	imagerel $unwind$?unmap_memory@@YAXPEAXI@Z
 pdata	ENDS
 xdata	SEGMENT
@@ -51,44 +47,37 @@ $LN8:
 
 	call	x64_cli
 
-; 76   : 	printf ("munmap called -> %x, length -> %d\n", addr, length);
-
-	mov	r8d, DWORD PTR length$[rsp]
-	mov	rdx, QWORD PTR addr$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3666
-	call	?printf@@YAXPEBDZZ			; printf
-
-; 77   : 	/*
-; 78   : 	 * Before unmapping the object, we should get the object
-; 79   : 	 * and write it to a file if object is not null
-; 80   : 	 * but for now object manager is not implemented,
-; 81   : 	 * kept for future use
-; 82   : 	 */
-; 83   : 
-; 84   : 	uint64_t address = (uint64_t)addr;
+; 76   : 	/*
+; 77   : 	 * Before unmapping the object, we should get the object
+; 78   : 	 * and write it to a file if object is not null
+; 79   : 	 * but for now object manager is not implemented,
+; 80   : 	 * kept for future use
+; 81   : 	 */
+; 82   : 
+; 83   : 	uint64_t address = (uint64_t)addr;
 
 	mov	rax, QWORD PTR addr$[rsp]
 	mov	QWORD PTR address$[rsp], rax
 
-; 85   : 
-; 86   : 	if (length == 4096) 
+; 84   : 
+; 85   : 	if (length == 4096) 
 
 	cmp	DWORD PTR length$[rsp], 4096		; 00001000H
 	jne	SHORT $LN5@unmap_memo
 
-; 87   : 		unmap_page (address);
+; 86   : 		unmap_page (address);
 
 	mov	rcx, QWORD PTR address$[rsp]
 	call	?unmap_page@@YAX_K@Z			; unmap_page
 $LN5@unmap_memo:
 
-; 88   : 
-; 89   : 	if (length > 4096) {
+; 87   : 
+; 88   : 	if (length > 4096) {
 
 	cmp	DWORD PTR length$[rsp], 4096		; 00001000H
 	jbe	SHORT $LN4@unmap_memo
 
-; 90   : 		for (int i = 0; i < length / 4096; i++) {
+; 89   : 		for (int i = 0; i < length / 4096; i++) {
 
 	mov	DWORD PTR i$1[rsp], 0
 	jmp	SHORT $LN3@unmap_memo
@@ -104,7 +93,7 @@ $LN3@unmap_memo:
 	cmp	DWORD PTR i$1[rsp], eax
 	jae	SHORT $LN1@unmap_memo
 
-; 91   : 			unmap_page (address + i * 4096);
+; 90   : 			unmap_page (address + i * 4096);
 
 	mov	eax, DWORD PTR i$1[rsp]
 	imul	eax, 4096				; 00001000H
@@ -115,14 +104,14 @@ $LN3@unmap_memo:
 	mov	rcx, rax
 	call	?unmap_page@@YAX_K@Z			; unmap_page
 
-; 92   : 		}
+; 91   : 		}
 
 	jmp	SHORT $LN2@unmap_memo
 $LN1@unmap_memo:
 $LN4@unmap_memo:
 
-; 93   : 	}
-; 94   : }
+; 92   : 	}
+; 93   : }
 
 	add	rsp, 56					; 00000038H
 	ret	0

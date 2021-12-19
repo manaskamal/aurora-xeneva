@@ -17,6 +17,7 @@
 #include <string.h>
 #include <sys\mmap.h>
 #include <sys\_xeneva.h>
+#include <font.h>
 
 int pos_x = 20;
 
@@ -30,7 +31,7 @@ void QuTaskbarInit () {
 
 
 void QuTaskbarRepaint () {
-	uint32_t color = 0x8CC0C0C0;  //D9
+	uint32_t color = 0x8C4D4C47;  //D9
 	uint32_t *wallp = (uint32_t*)0x0000060000000000;
 	for (int i = 0; i < canvas_get_width(QuGetCanvas()); i++){
 		for (int j = 0; j < 40; j++) {
@@ -53,9 +54,10 @@ void QuRamWidget () {
 	uint32_t u_r = sys_get_used_ram() / 1024 / 1024;
 
 	sztoa (u_r, used_ram, 10);
-
-	acrylic_draw_rect_filled (QuGetCanvas(), 20,canvas_get_height(QuGetCanvas()) -40,100,40,0x8CC0C0C0);
-	acrylic_draw_arr_string (QuGetCanvas(),20,canvas_get_height(QuGetCanvas()) -40,used_ram,BLACK);
-	acrylic_draw_arr_string (QuGetCanvas(),80,canvas_get_height(QuGetCanvas()) -40,"MB", BLACK);
+	
+	acrylic_font_set_size(16);
+	acrylic_draw_rect_filled (QuGetCanvas(), 20,canvas_get_height(QuGetCanvas()) -40,100,40,0x8C4D4C47);
+	acrylic_draw_arr_string (QuGetCanvas(),20,canvas_get_height(QuGetCanvas()) -40,used_ram,WHITE);
+	acrylic_draw_arr_string (QuGetCanvas(),60,canvas_get_height(QuGetCanvas()) -40,"MB", WHITE);
 	canvas_screen_update(QuGetCanvas(),0, canvas_get_height(QuGetCanvas()) -40,200, 40);
 }

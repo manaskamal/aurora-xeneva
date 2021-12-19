@@ -224,65 +224,54 @@ void acrylic_set_tone (canvas_t * canvas,uint32_t color, uint32_t *img, int x, i
 	}
 }
 
-void acrylic_box_blur (canvas_t * canvas,unsigned char* input, unsigned char* output, int cx, int cy, int w, int h) {
+void acrylic_box_blur (canvas_t * canvas,unsigned int* input, unsigned int* output, int cx, int cy, int w, int h) {
 
-	float r,g,b = 0;
-	int sum;
+	int sum = 0;
 	for (int j = 0; j < h; j++){
 		for (int i = 0; i < w; i++) {
 			if (i < 1 || j < 1 || i + 1 ==w || j + 1== h)
 				continue;
 
-			r += GET_RED(input[(cx + i -1)+(cy+j-1)*w]);
-			g += GET_GREEN(input[(cx + i -1)+(cy+j-1)*w]);
-			b += GET_BLUE(input[(cx + i -1)+(cy+j-1)*w]);
-
-		    r += GET_RED(input[(cx+i+0)+(cy+j-1)*w]);
-			g += GET_GREEN(input[(cx+i+0)+(cy+j-1)*w]);
-			b += GET_BLUE(input[(cx+i+0)+(cy+j-1)*w]);
-
-
-			r += GET_RED(input[(cx+i+1)+(cy+j-1)*w]);
-			g += GET_GREEN(input[(cx+i+1)+(cy+j-1)*w]);
-			b += GET_BLUE(input[(cx+i+1)+(cy+j-1)*w]);
-
-		    r += GET_RED(input[(cx+i-1)+(cy+j+0)*w]);
-			g += GET_GREEN(input[(cx+i-1)+(cy+j+0)*w]);
-			b += GET_BLUE(input[(cx+i-1)+(cy+j+0)*w]);
-
-			//CURRENT
-			r += GET_RED(input[(cx+i+0)+(cy+j+0)*w]);
-			g += GET_GREEN(input[(cx+i+0)+(cy+j+0)*w]);
-			b += GET_BLUE(input[(cx+i+0)+(cy+j+0)*w]);
+			sum = input[(cx + i - 1) + (cy + j + 1) * canvas_get_width(canvas)] + 
+				input [(cx + i  + 0) + (cy + j + 1) * canvas_get_width(canvas)] + 
+				input [(cx + i + 1) + (cy + j + 1) * canvas_get_width(canvas)] + 
+				input [(cx + i - 1) + (cy + j + 0) * canvas_get_width(canvas)] + 
+				input [(cx + i + 0) + (cy + j + 0) * canvas_get_width(canvas)] + 
+				input [(cx + i + 1) + (cy + j + 0) * canvas_get_width(canvas)] + 
+				input [(cx + i - 1) + (cy + j - 1) * canvas_get_width(canvas)] + 
+				input [(cx + i + 0) + (cy + j - 1) * canvas_get_width(canvas)] + 
+				input [(cx + i + 1) + (cy + j - 1) * canvas_get_width(canvas)];
 
 
-		    r += GET_RED(input[(cx+i+1)+(cy+j+0)*w]);
-			g += GET_GREEN(input[(cx+i+1)+(cy+j+0)*w]);
-			b += GET_BLUE(input[(cx+i+1)+(cy+j+0)*w]);
-
-			r += GET_RED(input[(cx+i-1)+(cy+j+1)*w]);
-			g += GET_GREEN(input[(cx+i-1)+(cy+j+1)*w]);
-			b += GET_BLUE(input[(cx+i-1)+(cy+j+1)*w]);
-
-			r += GET_RED(input[(cx+i+0)+(cy+j+1)*w]);
-			g += GET_GREEN(input[(cx+i+0)+(cy+j+1)*w]);
-			b += GET_BLUE(input[(cx+i+0)+(cy+j+1)*w]);
-
-			r += GET_RED(input[(cx+i+1)+(cy+j+1)*w]);
-			g += GET_GREEN(input[(cx+i+1)+(cy+j+1)*w]);
-			b += GET_BLUE(input[(cx+i+1)+(cy+j+1)*w]);
-
-			//SET_ALPHA(sum,0xFF);
-			/*float r = GET_RED (sum);
-			float g = GET_GREEN (sum);
-			float b = GET_BLUE (sum);
-			float a = GET_ALPHA(sum);*/
-
-			uint32_t color = make_col (r/9,g/9,b/9);
-	        output[(cx + i) +(cy + j) *w] = color;
+			
+	        output[(cx + i -1) +(cy + j - 1) *canvas_get_width(canvas)] = sum/9;
 
 
 		}
+	}
+
+}
+
+
+void acrylic_blit_alpha (canvas_t * canvas,unsigned int* dest, unsigned int* src, int x, int y, int w, int h) {
+	uint8_t * dest_row_start = (uint8_t*)dest + (y * w * canvas_get_scanline(canvas)) + (x * canvas_get_scanline(canvas));
+	uint8_t* row_start = (uint8_t*)src+ (y * w * canvas_get_scanline(canvas)) +  (x * canvas_get_scanline(canvas));
+
+	for (int i = 0; i < h; i++) {
+		uint8_t *dest_px = dest_row_start;
+		uint8_t *row_px = row_start;
+
+		for (int j = 0; j < w; j++) {
+			*dest_px = (*dest_px + *row_px++) / 2;
+			dest_px++;
+			*dest_px = (*dest_px + *row_px++) / 2;
+			dest_px++;
+			*dest_px = (*dest_px + *row_px++) / 2;
+			dest_px++;
+		}
+
+		dest_row_start += (w * canvas_get_scanline(canvas));
+		row_start += (w * canvas_get_scanline(canvas));
 	}
 
 }

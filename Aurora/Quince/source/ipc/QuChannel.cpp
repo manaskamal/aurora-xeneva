@@ -86,8 +86,9 @@ void QuChannelGet (QuMessage *msg) {
 	uint16_t to_id = get_current_pid ();
 	if (data->to_id == to_id){
 		memcpy (msg, data, sizeof(QuMessage));
-		memset (addr, 0, 4096);
+		memset(addr, 0, 4096);
 	}
+	
 }
 
 

@@ -23,6 +23,7 @@
 #include <psf\psf.h>
 #include <acrylic.h>
 #include <image.h>
+#include <font.h>
 #include <jpg\jpeg_decoder.h>
 
 //! Quince Own library
@@ -53,15 +54,14 @@ int main (int argc, char* argv[]) {
 	canvas = create_canvas (s_width,s_height);
 	int w = canvas_get_width(canvas);
 	int h = canvas_get_height(canvas);
-	acrylic_draw_rect_filled (canvas, 0,0,100,100,WHITE);
-	canvas_screen_update(canvas, 0,0,100,100);
+	
+	acrylic_initialize_font();
 
-  //  psf_register_font_lib();
 	//!Initialize Quince Wallpaper Manager  "a:coffee.jpg"  "/bihu.jpg""/river.jpg"
 	Image * img = QuWallpaperInit("/river.jpg");
 	QuWallpaperDraw (img);
 	QuWallpaperPresent ();
-
+ 
 	//! Initialize Taskbar Manager
 	QuTaskbarInit();
 

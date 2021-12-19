@@ -98,7 +98,7 @@
       <OutputFile>D:\quince.exe</OutputFile>
       <AdditionalLibraryDirectories>E:\Xeneva Project\Xeneva\xnlib\lib64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
-      <AdditionalDependencies>xnclib.lib; xnacrylic.lib;</AdditionalDependencies>
+      <AdditionalDependencies>xnclib.lib; xnacrylic.lib;freetype.lib;</AdditionalDependencies>
       <EnableUAC>false</EnableUAC>
       <GenerateMapFile>true</GenerateMapFile>
       <MapExports>true</MapExports>

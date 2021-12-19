@@ -36,5 +36,6 @@ extern void acrylic_draw_bezier (canvas_t * canvas,int x[], int y[], uint32_t co
 //!AcrylicFX
 extern void acrylic_set_tint (canvas_t * canvas,float value, uint32_t* img,int w, int h, int x, int y);
 extern void acrylic_set_tone (canvas_t * canvas,uint32_t color, uint32_t *img, int x, int y, int w, int h);
-extern void acrylic_box_blur (canvas_t * canvas,unsigned char* input, unsigned char* output, int cx, int cy, int w, int h);
+extern void acrylic_box_blur (canvas_t * canvas,unsigned int* input, unsigned int* output, int cx, int cy, int w, int h);
+extern void acrylic_blit_alpha (canvas_t * canvas,unsigned int* dest, unsigned int* src, int x, int y, int w, int h);
 #endif

@@ -16,9 +16,11 @@ setjmp:
 	 mov [rcx + 16], r12
 	 mov [rcx + 24], r13
 	 mov [rcx + 32], r14
-	 mov [rcx + r15],r15
+	 mov [rcx + 40],r15
+	 pop r15
 	 mov rdx, rsp
 	 mov [rcx + 48], rdx
+	 push r15
 	 mov rdx,[rsp]
 	 mov [rcx + 56], rdx
 	 xor eax, eax

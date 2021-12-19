@@ -81,7 +81,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>E:\Xeneva Project\Xeneva\xnlib\xnclib;E:\Xeneva Project\Xeneva\xnlib\xnacrylic\include;E:\Xeneva Project\Xeneva\xnlib\QuWidgets\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>E:\Xeneva Project\Xeneva\xnlib\xnclib;E:\Xeneva Project\Xeneva\xnlib\xnacrylic\include;E:\Xeneva Project\Xeneva\xnlib\QuWidgets\include;E:\os_dev\freetype2-master\freetype2-master\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>ARCH_X64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <IgnoreStandardIncludePath>true</IgnoreStandardIncludePath>
       <ExceptionHandling>false</ExceptionHandling>
@@ -95,7 +95,7 @@
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <OutputFile>D:\cnsl.exe</OutputFile>
       <AdditionalLibraryDirectories>E:\Xeneva Project\Xeneva\xnlib\lib64;</AdditionalLibraryDirectories>
-      <AdditionalDependencies>xnclib.lib;xnacrylic.lib;QuWidgets.lib;</AdditionalDependencies>
+      <AdditionalDependencies>xnclib.lib;xnacrylic.lib;QuWidgets.lib;freetype.lib;</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
       <EnableUAC>false</EnableUAC>
       <GenerateMapFile>true</GenerateMapFile>

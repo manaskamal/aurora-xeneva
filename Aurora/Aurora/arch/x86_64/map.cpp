@@ -73,7 +73,6 @@ void *map_memory (uint64_t addr, uint32_t length,uint8_t attribute) {
  */
 void unmap_memory (void* addr, uint32_t length) {
 	x64_cli();
-	printf ("munmap called -> %x, length -> %d\n", addr, length);
 	/*
 	 * Before unmapping the object, we should get the object
 	 * and write it to a file if object is not null

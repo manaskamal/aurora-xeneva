@@ -35,7 +35,6 @@ void dwm_put_message (dwm_message_t *msg) {
 	if (!is_multi_task_enable())
 		return;
 
-	mutex_lock (msg_mutex);
 	thread_t *t  = thread_iterate_ready_list (2);   //!ready list
 	if (t == NULL) {
 		t = thread_iterate_block_list(2);
@@ -48,9 +47,6 @@ void dwm_put_message (dwm_message_t *msg) {
 	if (t->state == THREAD_STATE_BLOCKED){
 		unblock_thread(t);
 	}
-
-	mutex_unlock (msg_mutex);
-
 }
 
 

@@ -50,7 +50,7 @@ iii> EFI-Based partition to store the Kernel {_'xnkrnl.exe'_} and
 
 
 # Screenshot
-![alt text](https://github.com/manaskamal/aurora-xeneva/blob/master/images/XenevaFullResolution.jpg?raw=true)
+![alt text](https://github.com/manaskamal/aurora-xeneva/blob/master/images/xeneva_new_ui.jpg?raw=true)
                              _Aurora's Xeneva in 1920x1080 resolution_
 
 # About Me:

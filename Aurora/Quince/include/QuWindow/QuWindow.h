@@ -42,6 +42,8 @@ typedef struct _QuWinInfo_ {
 	QuRect rect[256];
 	int rect_count;
 	bool maximize;
+	bool minimize;
+	bool alpha;
 }QuWindowInfo;
 
 typedef struct _QuWindow_ {

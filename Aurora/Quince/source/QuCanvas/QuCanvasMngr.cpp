@@ -96,9 +96,12 @@ void QuCanvasBlit (QuWindow* win,unsigned int *canvas, unsigned x, unsigned y, u
 					info->y = height - win->height;
 				}
 
-				for (int i = 0; i < he; i++)  {
-					fastcpy (lfb + (info->y + ry + i) * width + (info->x + rx),win->canvas + (ry + i) * width + rx, 
-					wid * 4);
+				if (info->alpha) {
+				}else {
+					for (int i = 0; i < he; i++)  {
+						fastcpy (lfb + (info->y + ry + i) * width + (info->x + rx),win->canvas + (ry + i) * width + rx, 
+							wid * 4);
+					}
 				}
 
 				//canvas_screen_update(QuGetCanvas(),info->x + rx,info->y + ry, wid, he);
@@ -137,8 +140,12 @@ void QuCanvasBlit (QuWindow* win,unsigned int *canvas, unsigned x, unsigned y, u
 			}
 
 			
-			for (int i = 0; i < he; i++) 
-				fastcpy (lfb + (winy + i) * width + winx, win->canvas + (0 + i) * width + 0, wid * 4);
+			for (int i = 0; i < he; i++)  {
+				fastcpy (lfb + (winy + i) * width + winx,win->canvas + (0 + i) * width + 0,
+				wid * 4);
+	
+			}
+		
 
 			QuScreenRectAdd(winx, winy, wid, he);
 		//	QuTaskbarRepaint();
@@ -268,10 +275,17 @@ void QuCanvasUpdateDirty() {
 	char _sec[2];
 	char _min[2];
 	char _hour[2];
+	memset (_sec, 0, 2);
+	memset (_min, 0, 2);
+	memset (_hour, 0, 2);
+
+	if (hr > 12) {
+		hr = hr - 12;
+	}
 
 	sztoa(sec,_sec,10);
 	sztoa(min,_min, 10);
-	sztoa(hr - 12,_hour, 10);
+	sztoa(hr,_hour, 10);
 
 
 	acrylic_draw_arr_string (QuGetCanvas(),canvas_get_width(QuGetCanvas()) - 100 + 100/2 - (strlen(_hour)*8)/2 - 16,

@@ -1,27 +1,29 @@
-﻿Build started 16-12-2021 ৰাতিপু 10:22:13.
+﻿Build started 19-12-2021 আবেলি 11:26:43.
      1>Project "E:\Xeneva Project\Xeneva\xnlib\xnclib\xnclib.vcxproj" on node 2 (Rebuild target(s)).
      1>_NASM:
          setjmp.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmpe132c83f2f1b4191acec0480da3517f1.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp08c902ae2fc646b2afdd358aba0c0943.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\setjmp.obj"  "E:\Xeneva Project\Xeneva\xnlib\xnclib\setjmp.asm"
        _NASM:
          sys\callback.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp2bce4e95baca4a5c83145ffcdd125c6f.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmpcc7ff72045ad45d6b4a0f232ab9992e7.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\callback.obj"  "E:\Xeneva Project\Xeneva\xnlib\xnclib\sys\callback.asm"
      1>E:\Xeneva Project\Xeneva\xnlib\xnclib\sys\callback.asm(98): warning : label alone on a line without a colon might be in error
        _NASM:
          _fast_copy.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp2e0973bb522d43eab8993b330ba148a3.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp9808a96210a042b2afb5b77ade449408.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\_fast_copy.obj"  "E:\Xeneva Project\Xeneva\xnlib\xnclib\_fast_copy.asm"
        _NASM:
          crt0.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmpce99a3fafe024c8da32faa48c901e1ac.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp7ec7922682bd47f5ad73cc7a25b59934.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\crt0.obj"  "E:\Xeneva Project\Xeneva\xnlib\xnclib\crt0.asm"
        ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\xnlib\xnclib" /I"E:\Xeneva Project\Xeneva\xnlib\xnclib\c++" /Zi /nologo /W4 /WX- /sdl- /MP /Od /D ARCH_X64 /D _MBCS /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt c++\ios.cpp c++\iostream.cpp c++\istream.cpp c++\memory.cpp c++\ostream.cpp c++\_string.cpp errno.cpp heap.cpp initializer.cpp math.cpp qsort.cpp stdio.cpp string.cpp sys\postbox.cpp sys\stdlib.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\xnlib\xnclib" /I"E:\Xeneva Project\Xeneva\xnlib\xnclib\c++" /Zi /nologo /W4 /WX- /sdl- /MP /Od /D ARCH_X64 /D _MBCS /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt c++\ios.cpp c++\iostream.cpp c++\istream.cpp c++\memory.cpp c++\ostream.cpp c++\_string.cpp errno.cpp heap.cpp initializer.cpp math.cpp qsort.cpp stdio.cpp string.cpp sys\postbox.cpp sys\stdlib.cpp sys\_xeneva.cpp
      1>cl : Command line warning D9025: overriding '/sdl-' with '/GS-'
      1>cl : Command line warning D9002: ignoring unknown option '/arch:SSE'
      1>cl : Command line warning D9030: '/Gm' is incompatible with multiprocessing; ignoring /MP switch
+         _xeneva.cpp
+     1>sys\_xeneva.cpp(30): warning C4018: '<' : signed/unsigned mismatch
          stdlib.cpp
      1>E:\Xeneva Project\Xeneva\xnlib\xnclib\ctype.h(33): warning C4005: 'isascii' : macro redefinition
                  E:\Xeneva Project\Xeneva\xnlib\xnclib\ctype.h(22) : see previous definition of 'isascii'
@@ -87,8 +89,13 @@
      1>initializer.cpp(20): warning C4267: 'argument' : conversion from 'size_t' to 'unsigned int', possible loss of data
      1>initializer.cpp(24): warning C4267: 'argument' : conversion from 'size_t' to 'unsigned int', possible loss of data
          heap.cpp
-     1>heap.cpp(66): warning C4127: conditional expression is constant
-     1>heap.cpp(124): warning C4244: 'argument' : conversion from 'uint64_t' to 'uint32_t', possible loss of data
+     1>heap.cpp(59): warning C4018: '>' : signed/unsigned mismatch
+     1>heap.cpp(75): warning C4244: '=' : conversion from 'int' to 'char', possible loss of data
+     1>heap.cpp(249): warning C4018: '<' : signed/unsigned mismatch
+     1>heap.cpp(372): warning C4189: 'test' : local variable is initialized but not referenced
+     1>heap.cpp(448): warning C4018: '<' : signed/unsigned mismatch
+     1>heap.cpp(488): warning C4244: '=' : conversion from 'unsigned __int64' to 'int', possible loss of data
+     1>heap.cpp(517): warning C4018: '>' : signed/unsigned mismatch
          errno.cpp
          _string.cpp
          ostream.cpp
@@ -140,6 +147,7 @@
          x64\Debug\string.obj
          x64\Debug\postbox.obj
          x64\Debug\stdlib.obj
+         x64\Debug\_xeneva.obj
          x64\Debug\setjmp.obj
          x64\Debug\_fast_copy.obj
          x64\Debug\callback.obj
@@ -149,4 +157,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:19.34
+Time Elapsed 00:00:02.40

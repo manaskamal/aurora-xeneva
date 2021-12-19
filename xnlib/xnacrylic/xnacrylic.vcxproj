@@ -79,7 +79,7 @@
     <ClCompile>
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>E:\Xeneva Project\Xeneva\xnlib\xnclib;E:\Xeneva Project\Xeneva\xnlib\xnacrylic\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>E:\Xeneva Project\Xeneva\xnlib\xnclib;E:\Xeneva Project\Xeneva\xnlib\xnacrylic\include;E:\os_dev\freetype2-master\freetype2-master\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <SDLCheck>false</SDLCheck>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <PreprocessorDefinitions>ARCH_X64</PreprocessorDefinitions>
@@ -131,7 +131,6 @@
     <ClCompile Include="source\acrylic.cpp" />
     <ClCompile Include="source\buffer.cpp" />
     <ClCompile Include="source\canvas.cpp" />
-    <ClCompile Include="source\clientctx.cpp" />
     <ClCompile Include="source\color.cpp" />
     <ClCompile Include="source\font.cpp" />
     <ClCompile Include="source\image.cpp" />

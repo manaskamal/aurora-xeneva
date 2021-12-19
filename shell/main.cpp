@@ -39,6 +39,7 @@ typedef struct _data_ {
 void main (int argc, char*argv[]) {
 	sys_print_text ("Starting Xeneva.....\n");
 	sys_print_text ("Starting Window Manager...\n");
+
 	//int fd = sys_open_file ("/dev/fb",NULL);
 	//UFILE f;
 	//f.flags = 0;

@@ -41,21 +41,21 @@ int atoi (const char* s) {
 }
 
 
-void* malloc (uint32_t s) {
-	return _malloc(s);
-}
-
-void free (void* ptr) {
-	return _free(ptr);
-}
-
-void* realloc (void* address, unsigned int new_size) {
-	return _realloc(address, new_size);
-}
-
-void* calloc (unsigned long long num, unsigned long long size) {
-	return _calloc(num, size);
-}
+//void* malloc (uint32_t s) {
+//	return _malloc(s);
+//}
+//
+//void free (void* ptr) {
+//	return _free(ptr);
+//}
+//
+//void* realloc (void* address, unsigned int new_size) {
+//	return _realloc(address, new_size);
+//}
+//
+//void* calloc (unsigned long long num, unsigned long long size) {
+//	return _calloc(num, size);
+//}
 
 int mblen (const char* s, size_t n) {
 	if (!s)

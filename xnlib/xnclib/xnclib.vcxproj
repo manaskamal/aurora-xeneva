@@ -159,6 +159,7 @@
     <ClInclude Include="string.h" />
     <ClInclude Include="sys\ioquery.h" />
     <ClInclude Include="sys\mmap.h" />
+    <ClInclude Include="sys\pe.h" />
     <ClInclude Include="sys\postbox.h" />
     <ClInclude Include="sys\signal.h" />
     <ClInclude Include="sys\types.h" />
@@ -192,6 +193,7 @@
     <ClCompile Include="string.cpp" />
     <ClCompile Include="sys\postbox.cpp" />
     <ClCompile Include="sys\stdlib.cpp" />
+    <ClCompile Include="sys\_xeneva.cpp" />
   </ItemGroup>
   <ItemGroup>
     <NASM Include="setjmp.asm" />

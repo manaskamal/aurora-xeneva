@@ -55,6 +55,8 @@ typedef struct _QuWinInfo_ {
 	QuRect rect[256];
 	int rect_count;
 	bool maximize;
+	bool minimize;
+	bool alpha;
 }QuWinInfo;
 
 typedef struct _QU_WIN_ {
@@ -115,4 +117,5 @@ extern void QuWindowShowControls (QuWindow *win);
 extern void QuWindowAddControlEvent (int type, void (*Event)(QuWinControl *control, QuWindow* win, bool bit));
 extern void QuWindowHandleKey (int code);
 extern void QuWindowRepaint();
+extern void QuWindowSetTransparency (bool bit);
 #endif

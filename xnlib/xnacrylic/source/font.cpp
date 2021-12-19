@@ -9,19 +9,79 @@
 ///!=================================================
 
 #include <font.h>
+#include <sys\_file.h>
+#include <sys\mmap.h>
+#include <sys\_term.h>
+#include <ft2build.h>
+#include <canvas.h>
+#include FT_FREETYPE_H
 //#include <cff\cff.h>
 
-Font *system_font;
-
+Font system_font;
+static FT_Library lib = 0;
+static FT_Error err;
+static FT_Face face;
+static FT_GlyphSlot slot;
+ // = (FT_Face)malloc(sizeof(FT_Face));
 
 void acrylic_initialize_font () {
-	//system_font = LoadCFF("/Corbel.cff");
+	UFILE f;
+	int fd = sys_open_file("/roboto.ttf", &f);
+	for (int i = 0; i < 1024*1024/4096; i++)
+		valloc(0xFFFFFFFFC0000000 + i * 4096);
+
+	unsigned char* buff = (unsigned char*)0xFFFFFFFFC0000000;
+	sys_read_file (fd,buff,&f);
+	system_font.data = buff;
+	system_font.name = "roboto";
+	system_font.size = f.size;
+	
+	err = FT_Init_FreeType (&lib);
+	err = FT_New_Memory_Face(lib,system_font.data,system_font.size,0,&face);
+	err = FT_Set_Pixel_Sizes(face,0,32);
+	slot = face->glyph;
+	
 }
 
-void acrylic_font_draw_string ( char* string, int x, int y, uint32_t color) {
-	//CFFDrawString(system_font,string,x, y, color);
+
+void acrylic_font_set_size (uint32_t sz) {
+	err = FT_Set_Pixel_Sizes(face,0,sz);
+}
+
+void acrylic_font_draw_string (canvas_t *canvas, char* string, int penx, int peny, uint32_t sz, uint32_t color) {
+	
+	int w = face->glyph->metrics.width;
+	int h = face->glyph->metrics.height;
+	
+	while(*string) {
+		err = FT_Load_Glyph(face, FT_Get_Char_Index(face,*string), FT_LOAD_RENDER);
+		if (err)
+			continue;
+
+		int x_v = penx + face->glyph->bitmap_left;
+		int y_v = peny - face->glyph->bitmap_top;
+
+		for (int i = x_v, p = 0; i < x_v + face->glyph->bitmap.width; i++, p++) {
+			for (int j = y_v,q = 0; j < y_v + face->glyph->bitmap.rows; j++, q++) {
+				if (face->glyph->bitmap.buffer[q * face->glyph->bitmap.width + p] > 0)
+					canvas_get_framebuffer(canvas)[i + j * canvas_get_width(canvas)] = color;
+			}
+		}
+		penx += face->glyph->advance.x >> 6;
+		peny += face->glyph->advance.y >> 6;
+		*string++;
+	}
+
+	//FT_Done_Face(face);
+	//sys_print_text ("Freeing freetype\n");
+	//FT_Done_FreeType(lib);
 }
 
 Font* acrylic_get_system_font () {
-	return system_font;
+	return &system_font;
+}
+
+void acrylic_close_font () {
+	for (int i = 0; i < system_font.size/4096; i++)
+		vfree(0xFFFFFFFFB0000000 + i * 4096);
 }

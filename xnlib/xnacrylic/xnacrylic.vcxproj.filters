@@ -16,6 +16,9 @@
     <Filter Include="include\jpg">
       <UniqueIdentifier>{607bee2c-14d2-4ac4-bd25-935033aeff09}</UniqueIdentifier>
     </Filter>
+    <Filter Include="source\ttf">
+      <UniqueIdentifier>{f88e63b1-6da9-4039-a874-8e859e4e44d1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\canvas.cpp">
@@ -31,9 +34,6 @@
       <Filter>source</Filter>
     </ClCompile>
     <ClCompile Include="source\color.cpp">
-      <Filter>source</Filter>
-    </ClCompile>
-    <ClCompile Include="source\clientctx.cpp">
       <Filter>source</Filter>
     </ClCompile>
     <ClCompile Include="source\font.cpp">
