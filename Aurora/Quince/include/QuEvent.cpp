@@ -119,7 +119,7 @@ void QuEventLoop() {
 		if (msg.type == 3) {
 			//! Send the key event
 			if (msg.dword == KEY_A) {
-				create_process ("/dwm2.exe", "hello");
+				create_process ("/dwm3.exe", "hello");
 			}
 
 			//!Just for fun, now

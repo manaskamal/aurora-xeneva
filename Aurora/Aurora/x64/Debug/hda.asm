@@ -47,7 +47,7 @@ $SG3618	DB	'[HD-Audio]:Widget device id -> %x, vendor id -> %x', 0aH
 	ORG $+4
 $SG3620	DB	'[HD-Audio]:Widget version -> %d.%d, r0%d', 0aH, 00H
 	ORG $+6
-$SG3624	DB	'Widget start -> %d, num widhets -> %d', 0aH, 00H
+$SG3624	DB	'Widget start -> %d, num widgets -> %d', 0aH, 00H
 	ORG $+1
 $SG3626	DB	'FG not audio group', 0aH, 00H
 	ORG $+4
@@ -509,7 +509,7 @@ $LN7@codec_enum:
 	and	eax, 255				; 000000ffH
 	mov	DWORD PTR widgets_start$[rsp], eax
 
-; 473  : 		printf ("Widget start -> %d, num widhets -> %d\n", widgets_start, num_widgets);
+; 473  : 		printf ("Widget start -> %d, num widgets -> %d\n", widgets_start, num_widgets);
 
 	mov	r8d, DWORD PTR num_widgets$[rsp]
 	mov	edx, DWORD PTR widgets_start$[rsp]

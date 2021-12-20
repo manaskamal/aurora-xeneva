@@ -14,15 +14,15 @@
 #include <sys\_term.h>
 #include <ft2build.h>
 #include <canvas.h>
+#include <color.h>
 #include FT_FREETYPE_H
-//#include <cff\cff.h>
+
 
 Font system_font;
 static FT_Library lib = 0;
 static FT_Error err;
 static FT_Face face;
 static FT_GlyphSlot slot;
- // = (FT_Face)malloc(sizeof(FT_Face));
 
 void acrylic_initialize_font () {
 	UFILE f;
@@ -71,17 +71,23 @@ void acrylic_font_draw_string (canvas_t *canvas, char* string, int penx, int pen
 		peny += face->glyph->advance.y >> 6;
 		*string++;
 	}
-
-	//FT_Done_Face(face);
-	//sys_print_text ("Freeing freetype\n");
-	//FT_Done_FreeType(lib);
 }
 
 Font* acrylic_get_system_font () {
 	return &system_font;
 }
 
+int acrylic_font_get_width() {
+	return system_font.width;
+}
+
+int acrylic_font_get_height() {
+	return system_font.height;
+}
+
 void acrylic_close_font () {
+	FT_Done_Face(face);
+	FT_Done_FreeType(lib);
 	for (int i = 0; i < system_font.size/4096; i++)
-		vfree(0xFFFFFFFFB0000000 + i * 4096);
+		vfree(0xFFFFFFFFC0000000 + i * 4096);
 }

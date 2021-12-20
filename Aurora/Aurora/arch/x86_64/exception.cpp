@@ -158,38 +158,8 @@ void page_fault (size_t vector, void* param){
 	}*/
 
 	if (us){
-		if (get_current_thread()->id != 2) {
-		panic ("Page Fault \n");
-		printf ("Faulting Address -> %x\n", vaddr);
-		printf ("__PROCESSOR TRACE__\n");
-		printf ("RIP -> %x\n", frame->rip);
-		printf ("Stack -> %x\n", frame->rsp);
-		printf ("RFLAGS -> %x\n", frame->rflags);
-		printf ("Current thread -> %s\n", get_current_thread()->name);
-		printf ("Current Thread id -> %d\n", get_current_thread()->id);
-		printf ("CS -> %x, SS -> %x\n", frame->cs, frame->ss);
-		printf ("******Cause********\n");
-		printf ("***User Priviledge fault***\n");
-		for(;;);
-		}
-		
 		map_page((uint64_t)pmmngr_alloc(), (uint64_t)vaddr,PAGING_USER);
 	}else if (present){
-		if (get_current_thread()->id != 2) {
-		panic ("Page Fault \n");
-		printf ("Faulting Address -> %x\n", vaddr);
-		printf ("__PROCESSOR TRACE__\n");
-		printf ("RIP -> %x\n", frame->rip);
-		printf ("Stack -> %x\n", frame->rsp);
-		printf ("RFLAGS -> %x\n", frame->rflags);
-		printf ("Current thread -> %s\n", get_current_thread()->name);
-		printf ("Current Thread id -> %d\n", get_current_thread()->id);
-		printf ("CS -> %x, SS -> %x\n", frame->cs, frame->ss);
-		printf ("******Cause********\n");
-		printf ("*** Not Present ***\n");
-		for(;;);
-		}
-	
 		map_page((uint64_t)pmmngr_alloc(), (uint64_t)vaddr,PAGING_USER);
 	}else if (rw) {
 		panic ("Page Fault \n");

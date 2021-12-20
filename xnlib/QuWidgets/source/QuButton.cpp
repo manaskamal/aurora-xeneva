@@ -51,16 +51,22 @@ void QuButtonRefresh (QuWidget *wid, QuWindow* win) {
 
 	//! Check for hover bit
 	if (!but->hover) {
-		acrylic_draw_arr_string (win->ctx,wid->x + (wid->width/2) - ((strlen(but->text)*8)/2),
+		/*acrylic_draw_arr_string (win->ctx,wid->x + (wid->width/2) - ((strlen(but->text)*8)/2),
 		wid->y + (wid->height/2) - 12/2
-		,(char*)but->text, WHITE);
+		,(char*)but->text, WHITE);*/
+		acrylic_font_set_size(13);
+		acrylic_font_draw_string (win->ctx,(char*)but->text,wid->x + (wid->width/2) - 13,
+				 wid->y + (wid->height/2),16, SILVER);
 
 		//! check for clicked bit
 		if (but->clicked) {
 			acrylic_draw_rect_filled (win->ctx,wid->x,wid->y , but->widget.width, but->widget.height,LIGHTBLACK);
-			acrylic_draw_arr_string (win->ctx,wid->x + (wid->width/2) - ((strlen(but->text)*8)/2),
+		/*	acrylic_draw_arr_string (win->ctx,wid->x + (wid->width/2) - ((strlen(but->text)*8)/2),
 				 wid->y + (wid->height/2) - 12/2
-				,(char*)but->text, SILVER);
+				,(char*)but->text, SILVER);*/
+			acrylic_font_set_size(13);
+			acrylic_font_draw_string (win->ctx,(char*)but->text,wid->x + (wid->width/2) - 13,
+				 wid->y + (wid->height/2),16, SILVER);
 			acrylic_draw_rect_unfilled (win->ctx,wid->x, wid->y,but->widget.width, but->widget.height, SILVER); 
 			acrylic_draw_rect_unfilled (win->ctx,wid->x, wid->y,but->widget.width + 1, but->widget.height + 1, DESKBLUE); 
 			but->clicked = false;
@@ -72,9 +78,12 @@ void QuButtonRefresh (QuWidget *wid, QuWindow* win) {
 	 */
 	else if (but->hover)  {
 
-		acrylic_draw_arr_string (win->ctx, wid->x + (wid->width/2) - ((strlen(but->text)*8)/2),
+		/*acrylic_draw_arr_string (win->ctx, wid->x + (wid->width/2) - ((strlen(but->text)*8)/2),
 		wid->y + (wid->height/2) - 12/2
-		,(char*)but->text, LIGHTSILVER);
+		,(char*)but->text, LIGHTSILVER);*/
+		acrylic_font_set_size(13);
+		acrylic_font_draw_string (win->ctx,(char*)but->text,wid->x + (wid->width/2) -  13,
+				 wid->y + (wid->height/2),16, SILVER);
 		acrylic_draw_rect_unfilled (win->ctx,wid->x,wid->y,but->widget.width, but->widget.height, SILVER); 
 		acrylic_draw_rect_unfilled (win->ctx,wid->x,wid->y,but->widget.width + 1, but->widget.height + 1, DESKBLUE); 
 		but->hover = false;

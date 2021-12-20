@@ -190,8 +190,8 @@ void QuWindowShow(QuWindow *win) {
 		//! Finally draw the title in the midle of titlebar
 		/*acrylic_draw_arr_string (win->ctx,win->w/2 - (strlen(win->title)*8)/2,
 			3, win->title, WHITE);*/
-		acrylic_font_set_size(18);
-		acrylic_font_draw_string(win->ctx,win->title,win->w/2 - 18,18,0,WHITE);
+		acrylic_font_set_size(15);
+		acrylic_font_draw_string(win->ctx,win->title,win->w/2 - 15,15,0,WHITE);
 	
 		///! Draw a boundary
 		acrylic_draw_rect_unfilled (win->ctx,0, 0, win->w, win->h, SILVER);

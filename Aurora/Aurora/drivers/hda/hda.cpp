@@ -470,7 +470,7 @@ static int codec_enumerate_widgets(int codec) {
 
 		num_widgets = param & 0xff;
 		widgets_start = (param >> 16) & 0xff;
-		printf ("Widget start -> %d, num widhets -> %d\n", widgets_start, num_widgets);
+		printf ("Widget start -> %d, num widgets -> %d\n", widgets_start, num_widgets);
 		
 		param = codec_query (codec, fg_start + i, VERB_GET_PARAMETER | PARAM_FN_GROUP_TYPE);
 		param &= 0x000000ff;

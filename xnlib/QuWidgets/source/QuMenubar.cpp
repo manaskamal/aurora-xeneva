@@ -14,6 +14,7 @@
 #include <string.h>
 #include <sys\_term.h>
 #include <QuPanel.h>
+#include <font.h>
 
 
 void QuMenubarRefresh (QuWidget* wid, QuWindow *win) {
@@ -31,8 +32,12 @@ void QuMenubarRefresh (QuWidget* wid, QuWindow *win) {
 			 wid->y + (wid->height/2) - (12/2),ctx->title,WHITE);
 
 		} else {*/
-			acrylic_draw_arr_string (win->ctx,wid->x + x + (ctx->m_w/2), 
-				 wid->y + (wid->height/2) - (12/2),ctx->title,LIGHTBLACK);
+		/*	acrylic_draw_arr_string (win->ctx,wid->x + x + (ctx->m_w/2), 
+				 wid->y + (wid->height/2) - (12/2),ctx->title,LIGHTBLACK);*/
+			acrylic_font_set_size(15);
+			acrylic_font_draw_string (win->ctx,ctx->title,wid->x + x + 15/*(ctx->m_w/2)*/, 
+				 wid->y + 15/*(wid->height/2)- 15*/,15,LIGHTBLACK);
+
 		//}
 
 		if (ctx->m_x == 0 && ctx->m_y == 0){

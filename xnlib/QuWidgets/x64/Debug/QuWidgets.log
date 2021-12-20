@@ -1,4 +1,4 @@
-﻿Build started 19-12-2021 আবেলি 11:52:54.
+﻿Build started 20-12-2021 আবেলি 12:26:36.
      1>Project "E:\Xeneva Project\Xeneva\xnlib\QuWidgets\QuWidgets.vcxproj" on node 2 (Rebuild target(s)).
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\xnlib\xnclib" /I"E:\Xeneva Project\Xeneva\xnlib\QuWidgets\include" /I"E:\Xeneva Project\Xeneva\xnlib\xnacrylic\include" /Zi /nologo /W4 /WX- /sdl- /MP /Od /D ARCH_X64 /D _MBCS /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt source\QuBase.cpp source\QuButton.cpp source\QuContextMenu.cpp source\QuEditBox.cpp source\QuKeycodeHelper.cpp source\QuMenubar.cpp source\QuPanel.cpp source\QuPopupMenu.cpp source\QuScrollbar.cpp source\QuSlider.cpp source\QuTerminal.cpp source\QuTextbox.cpp source\QuUtils\QuList.cpp source\QuWindow.cpp source\QuWindowControl.cpp
@@ -38,13 +38,13 @@
          QuTerminal.cpp
      1>E:\Xeneva Project\Xeneva\xnlib\xnclib\ctype.h(33): warning C4005: 'isascii' : macro redefinition
                  E:\Xeneva Project\Xeneva\xnlib\xnclib\ctype.h(22) : see previous definition of 'isascii'
-     1>source\QuTerminal.cpp(38): warning C4100: 'color' : unreferenced formal parameter
-     1>source\QuTerminal.cpp(93): warning C4100: 'y' : unreferenced formal parameter
-     1>source\QuTerminal.cpp(93): warning C4100: 'x' : unreferenced formal parameter
-     1>source\QuTerminal.cpp(93): warning C4100: 'clicked' : unreferenced formal parameter
-     1>source\QuTerminal.cpp(93): warning C4100: 'code' : unreferenced formal parameter
-     1>source\QuTerminal.cpp(93): warning C4100: 'win' : unreferenced formal parameter
-     1>source\QuTerminal.cpp(93): warning C4100: 'wid' : unreferenced formal parameter
+     1>source\QuTerminal.cpp(39): warning C4100: 'color' : unreferenced formal parameter
+     1>source\QuTerminal.cpp(94): warning C4100: 'y' : unreferenced formal parameter
+     1>source\QuTerminal.cpp(94): warning C4100: 'x' : unreferenced formal parameter
+     1>source\QuTerminal.cpp(94): warning C4100: 'clicked' : unreferenced formal parameter
+     1>source\QuTerminal.cpp(94): warning C4100: 'code' : unreferenced formal parameter
+     1>source\QuTerminal.cpp(94): warning C4100: 'win' : unreferenced formal parameter
+     1>source\QuTerminal.cpp(94): warning C4100: 'wid' : unreferenced formal parameter
          QuSlider.cpp
          QuScrollbar.cpp
      1>source\QuScrollbar.cpp(54): warning C4189: 'update' : local variable is initialized but not referenced
@@ -63,12 +63,12 @@
      1>source\QuPanel.cpp(93): warning C4189: 'height' : local variable is initialized but not referenced
      1>source\QuPanel.cpp(113): warning C4189: 'height' : local variable is initialized but not referenced
          QuMenubar.cpp
-     1>source\QuMenubar.cpp(26): warning C4018: '<' : signed/unsigned mismatch
-     1>source\QuMenubar.cpp(43): warning C4267: '+=' : conversion from 'size_t' to 'int', possible loss of data
-     1>source\QuMenubar.cpp(54): warning C4018: '<' : signed/unsigned mismatch
-     1>source\QuMenubar.cpp(104): warning C4100: 'code' : unreferenced formal parameter
-     1>source\QuMenubar.cpp(104): warning C4100: 'win' : unreferenced formal parameter
-     1>source\QuMenubar.cpp(104): warning C4100: 'wid' : unreferenced formal parameter
+     1>source\QuMenubar.cpp(27): warning C4018: '<' : signed/unsigned mismatch
+     1>source\QuMenubar.cpp(48): warning C4267: '+=' : conversion from 'size_t' to 'int', possible loss of data
+     1>source\QuMenubar.cpp(59): warning C4018: '<' : signed/unsigned mismatch
+     1>source\QuMenubar.cpp(109): warning C4100: 'code' : unreferenced formal parameter
+     1>source\QuMenubar.cpp(109): warning C4100: 'win' : unreferenced formal parameter
+     1>source\QuMenubar.cpp(109): warning C4100: 'wid' : unreferenced formal parameter
          QuKeycodeHelper.cpp
      1>E:\Xeneva Project\Xeneva\xnlib\xnclib\ctype.h(33): warning C4005: 'isascii' : macro redefinition
                  E:\Xeneva Project\Xeneva\xnlib\xnclib\ctype.h(22) : see previous definition of 'isascii'
@@ -87,9 +87,6 @@
      1>source\QuContextMenu.cpp(76): warning C4018: '<' : signed/unsigned mismatch
      1>source\QuContextMenu.cpp(96): warning C4018: '<' : signed/unsigned mismatch
          QuButton.cpp
-     1>source\QuButton.cpp(56): warning C4267: 'argument' : conversion from 'size_t' to 'unsigned int', possible loss of data
-     1>source\QuButton.cpp(63): warning C4267: 'argument' : conversion from 'size_t' to 'unsigned int', possible loss of data
-     1>source\QuButton.cpp(77): warning C4267: 'argument' : conversion from 'size_t' to 'unsigned int', possible loss of data
          QuBase.cpp
      1>source\QuBase.cpp(29): warning C4244: 'initializing' : conversion from 'unsigned int' to 'uint16_t', possible loss of data
      1>source\QuBase.cpp(32): warning C4244: '=' : conversion from 'uint16_t' to 'uint8_t', possible loss of data
@@ -124,4 +121,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:01.40
+Time Elapsed 00:00:05.88

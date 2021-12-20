@@ -13,6 +13,7 @@
 #include <ctype.h>
 #include <acrylic.h>
 #include <QuPanel.h>
+#include <font.h>
 #include <color.h>
 #include <string.h>
 #include <QuKeycodeHelper.h>
@@ -137,8 +138,9 @@ void QuTermRefresh (QuWidget* wid, QuWindow *win) {
 void QuTermFlush (QuTerminal *term, QuWindow* win) {
 	char c = term->text[term->cursor_y * TERM_WIDTH + term->cursor_x];
 	acrylic_draw_rect_filled(win->ctx,term->wid.x + term->xpos + 1,term->wid.y + 23 + term->ypos,8,13,BLACK);
-	if (c != '\n' && c != '\0')
+	if (c != '\n' && c != '\0') {
 		acrylic_draw_arr_font (win->ctx,term->wid.x + term->xpos,term->wid.y + 23 + term->ypos,c, WHITE);
+	}
 	QuPanelUpdate (win,term->wid.x, term->wid.y + 23+ term->ypos, win->w, 14, false);
 }
 
