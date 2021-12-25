@@ -160,6 +160,7 @@ void QuWindowShowControls (QuWindow *win) {
  */
 void QuWindowShow(QuWindow *win) {
 	QuWinInfo *info = (QuWinInfo*)win->win_info_data;
+
 	/**
 	 * Draw every widgets in stacking order 
 	 */
@@ -188,10 +189,9 @@ void QuWindowShow(QuWindow *win) {
 
 
 		//! Finally draw the title in the midle of titlebar
-		/*acrylic_draw_arr_string (win->ctx,win->w/2 - (strlen(win->title)*8)/2,
-			3, win->title, WHITE);*/
-		acrylic_font_set_size(15);
-		acrylic_font_draw_string(win->ctx,win->title,win->w/2 - 15,15,0,WHITE);
+		acrylic_font_set_size(13);
+		int title_length = acrylic_font_get_length(win->title);
+		acrylic_font_draw_string(win->ctx,win->title,win->w/2 - title_length/2,15,0,WHITE);
 	
 		///! Draw a boundary
 		acrylic_draw_rect_unfilled (win->ctx,0, 0, win->w, win->h, SILVER);
@@ -253,12 +253,16 @@ void QuWindowSetPos (int x, int y) {
 	QuWinInfo *info = (QuWinInfo*)root_win->win_info_data;
 	info->x = x;
 	info->y = y;
-	QuMessage msg;
-	msg.type = QU_CODE_WIN_CONFIG;
-	msg.dword = QU_WIN_SET_POS;
-	msg.dword2 = info->x;
-	msg.dword3 = info->y;
-	QuChannelPut(&msg, 2);
+}
+
+void QuWindowSetIcon (int icon_type) {
+	QuWindow *win = root_win;
+	QuMessage *msg = (QuMessage*)malloc(sizeof(QuMessage));
+	msg->type = QU_CODE_WIN_CONFIG;
+	msg->dword = QU_WIN_SET_ICON;
+	msg->dword2 = icon_type;
+	QuChannelPut(msg,2);
+	free(msg);
 }
 
 void QuWindowSetProperty (uint8_t prop) {

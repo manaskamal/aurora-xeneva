@@ -27,7 +27,7 @@ extern "C" {
  **
  ****************************************************************
  */
-void create_process (const char* filename, char* procnm);
+int create_process (const char* filename, char* procnm);
 
 /****************************************************************
  ** GetCurrentPID () - returns the current process id 

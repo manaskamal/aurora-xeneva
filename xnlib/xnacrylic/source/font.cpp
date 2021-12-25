@@ -1,7 +1,7 @@
 ///!
 ///!  Copyright (C) Manas Kamal Choudhury 2021
 ///!
-///!  font.h -- Font Registry class
+///!  font.h -- Font Registry class (currently handles true type fonts)
 ///!
 ///!  /PROJECT - Aurora's Xeneva
 ///!  /AUTHOR  - Manas Kamal Choudhury
@@ -13,6 +13,7 @@
 #include <sys\mmap.h>
 #include <sys\_term.h>
 #include <ft2build.h>
+#include <freetype\ftglyph.h>
 #include <canvas.h>
 #include <color.h>
 #include FT_FREETYPE_H
@@ -24,6 +25,9 @@ static FT_Error err;
 static FT_Face face;
 static FT_GlyphSlot slot;
 
+/**
+ * acrylic_initialize_font -- initializes font library
+ */
 void acrylic_initialize_font () {
 	UFILE f;
 	int fd = sys_open_file("/roboto.ttf", &f);
@@ -45,18 +49,27 @@ void acrylic_initialize_font () {
 
 
 void acrylic_font_set_size (uint32_t sz) {
-	err = FT_Set_Pixel_Sizes(face,0,sz);
+	err = FT_Set_Pixel_Sizes(face,0,sz / 72.f * 96);
 }
 
 void acrylic_font_draw_string (canvas_t *canvas, char* string, int penx, int peny, uint32_t sz, uint32_t color) {
 	
 	int w = face->glyph->metrics.width;
 	int h = face->glyph->metrics.height;
-	
+	FT_Bool use_kerning = FT_HAS_KERNING(face);
+	uint32_t previous = 0;
+	FT_UInt glyph_index;
 	while(*string) {
-		err = FT_Load_Glyph(face, FT_Get_Char_Index(face,*string), FT_LOAD_RENDER);
+		glyph_index = FT_Get_Char_Index(face,*string);
+		err = FT_Load_Glyph(face, glyph_index, FT_LOAD_RENDER);
 		if (err)
 			continue;
+
+		if (use_kerning && previous && glyph_index) {
+			FT_Vector delta;
+			FT_Get_Kerning(face, previous,glyph_index, FT_KERNING_DEFAULT, &delta);
+			penx += delta.x >> 6;
+		}
 
 		int x_v = penx + face->glyph->bitmap_left;
 		int y_v = peny - face->glyph->bitmap_top;
@@ -69,7 +82,8 @@ void acrylic_font_draw_string (canvas_t *canvas, char* string, int penx, int pen
 		}
 		penx += face->glyph->advance.x >> 6;
 		peny += face->glyph->advance.y >> 6;
-		*string++;
+		previous = glyph_index;
+		string++;
 	}
 }
 
@@ -77,12 +91,30 @@ Font* acrylic_get_system_font () {
 	return &system_font;
 }
 
-int acrylic_font_get_width() {
-	return system_font.width;
+int acrylic_font_get_length(char *string) {
+	size_t penx = 0;
+	int string_width = 0;
+	while(*string) {
+		err = FT_Load_Char(face,*string, FT_LOAD_ADVANCE_ONLY);
+		if (err)
+			continue;
+		penx += face->glyph->advance.x >> 6;
+		string++;
+	}
+	return penx;
 }
 
-int acrylic_font_get_height() {
-	return system_font.height;
+int acrylic_font_get_height(char* string) {
+	size_t peny = 0;
+	int string_width = 0;
+	while(*string) {
+		err = FT_Load_Char(face,*string, FT_LOAD_ADVANCE_ONLY);
+		if (err)
+			continue;
+		peny += face->glyph->advance.y >> 6;
+		string++;
+	}
+	return peny;
 }
 
 void acrylic_close_font () {

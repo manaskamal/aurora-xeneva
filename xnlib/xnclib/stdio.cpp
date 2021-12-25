@@ -9,6 +9,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <sys\_term.h>
 #include <sys\_file.h>
 
@@ -16,7 +17,11 @@ int fprintf(UFILE f, const char* format, ...) {
 	return -1;
 }
 
-int printf(const char *, ...){
+int printf(const char *buf, ...){
+	unsigned char* buffer = (unsigned char*)malloc(32);
+	memcpy(buffer, (void*)buf,strlen(buf));
+	sys_write_file(1,buffer,NULL);
+	free(buffer);
 	return -1;
 }
 

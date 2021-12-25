@@ -28,4 +28,5 @@ typedef struct _tele_type_ {
 
 extern void ttype_create (int* master_fd, int* slave_fd);
 extern ttype_t * get_ttype (int id);
+extern void ttype_dup_master (int task_id, int master_fd);
 #endif

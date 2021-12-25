@@ -3,11 +3,18 @@
  *
  *  screen.h -- Screen Interface for Aurora
  *
+ *  Screen Interface manages every graphics devices registered to the
+ *  system, it can be simple VESA, GOP or other hardware accelerated
+ *  graphics card. Screen interface maps the framebuffer to specific
+ *  virtual address and provides interfaces for application to draw 
+ *  pixel
+ *
  *  /PROJECT - Aurora {Xeneva}
  *  /AUTHOR  - Manas Kamal Choudhury
  *
  *==============================================
  */
+
 
 #ifndef __SCREEN_H__
 #define __SCREEN_H__
@@ -16,7 +23,7 @@
 #include <stdint.h>
 #include <stdio.h>
 
-//! Standard codes for screen driver
+//! Standard codes for screen driver features
 #define SCREEN_SETMODE     0x100
 #define SCREEN_GETWIDTH    0x101
 #define SCREEN_GETHEIGHT   0x102
@@ -39,14 +46,64 @@ typedef struct __display__ {
 }display_t;
 
 //!Simple Display Interface for User mode applications
+
+/**
+ * initialize_screen -- initialize the screen
+ * @param info -- the boot information pointer passed by xnldr
+ */
 extern void initialize_screen (KERNEL_BOOT_INFO *info);
+
+/**
+ * screen_set_configuration -- simply set the mode of the screen
+ * and map the virtual address space to be used
+ * @param width -- mode width
+ * @param height -- mode height
+ */
 extern void screen_set_configuration (uint32_t width, uint32_t height);
+
+/**
+ * get_screen_width -- returns the current width of the screen
+ * @return -- width of the screen
+ */
 extern uint32_t  get_screen_width ();
+
+/**
+ * get_screen_height -- returns the current height of the screen
+ * @return -- height of the screen
+ */
 extern uint32_t  get_screen_height ();
+
+/**
+ * get_framebuffer_addr -- returns the current framebuffer address of
+ * the screen
+ * @return -- framebuffer address
+ */
 extern uint32_t *get_framebuffer_addr();
+
+/**
+ * get_bpp -- returns the current bits per pixel
+ * @return -- bits/pixel of the screen
+ */
 extern uint32_t  get_bpp ();
+
+/**
+ * get_screen_scanline -- return the current pixles per line of the screen
+ * @return -- scanline of the screen
+ */
 extern uint16_t get_screen_scanline ();
+
+/**
+ * get_fb_size -- returns the current framebuffer size of the screen in (bytes)
+ * @return -- framebuffer size
+ */
 extern uint32_t get_fb_size();
+
+/**
+ * draw_pixel -- low level pixel drawing interface
+ * @param x -- x position of the pixel
+ * @param y -- y position of the pixel
+ * @param color -- color of the pixel
+ */
 extern void draw_pixel(unsigned x, unsigned y, uint32_t color);
 
 #endif

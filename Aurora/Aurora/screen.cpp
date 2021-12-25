@@ -3,6 +3,12 @@
  *
  *  screen.h -- Screen Interface for Aurora
  *
+ *  Screen Interface manages every graphics devices registered to the
+ *  system, it can be simple VESA, GOP or other hardware accelerated
+ *  graphics card. Screen interface maps the framebuffer to specific
+ *  virtual address and provides interfaces for application to draw 
+ *  pixel
+ *
  *  /PROJECT - Aurora {Xeneva}
  *  /AUTHOR  - Manas Kamal Choudhury
  *
@@ -23,6 +29,10 @@ display_t display;
 int screen_io_query (vfs_node_t* node, int code, void* arg);
 
 
+/**
+ * initialize_screen -- initialize the screen
+ * @param info -- the boot information pointer passed by xnldr
+ */
 void initialize_screen (KERNEL_BOOT_INFO *info){
 	display.buffer = info->graphics_framebuffer;
 	display.width = info->X_Resolution;
@@ -31,7 +41,10 @@ void initialize_screen (KERNEL_BOOT_INFO *info){
 	display.scanline = info->pixels_per_line;
 	display.size = info->fb_size;
 
-	vfs_node_t * svga = (vfs_node_t*)pmmngr_alloc(); //malloc(sizeof(vfs_node_t));
+	/**
+	 * register the device node for screen interface
+	 */
+	vfs_node_t * svga = (vfs_node_t*)pmmngr_alloc(); 
 	strcpy (svga->filename, "fb");
 	svga->size = 0;
 	svga->eof = 0;
@@ -47,6 +60,13 @@ void initialize_screen (KERNEL_BOOT_INFO *info){
 	vfs_mount ("/dev/fb", svga);
 }
 
+
+/**
+ * screen_set_configuration -- simply set the mode of the screen
+ * and map the virtual address space to be used
+ * @param width -- mode width
+ * @param height -- mode height
+ */
 void screen_set_configuration (uint32_t width, uint32_t height) {
 	display.width = width;
 	display.height = height;
@@ -56,35 +76,72 @@ void screen_set_configuration (uint32_t width, uint32_t height) {
 
 }
 
+/**
+ * get_screen_width -- returns the current width of the screen
+ * @return -- width of the screen
+ */
 uint32_t get_screen_width () {
 	return display.width;
 }
 
+/**
+ * get_screen_height -- returns the current height of the screen
+ * @return -- height of the screen
+ */
 uint32_t get_screen_height () {
 	return display.height;
 }
 
+/**
+ * get_framebuffer_addr -- returns the current framebuffer address of
+ * the screen
+ * @return -- framebuffer address
+ */
 uint32_t * get_framebuffer_addr () {
 	return display.buffer;
 }
 
+/**
+ * get_bpp -- returns the current bits per pixel
+ * @return -- bits/pixel of the screen
+ */
 uint32_t get_bpp () {
 	return display.bpp;
 }
 
+/**
+ * get_screen_scanline -- return the current pixles per line of the screen
+ * @return -- scanline of the screen
+ */
 uint16_t get_screen_scanline () {
 	return display.scanline;
 }
 
+/**
+ * get_fb_size -- returns the current framebuffer size of the screen in (bytes)
+ * @return -- framebuffer size
+ */
 uint32_t get_fb_size () {
 	return display.size;
 }
 
+/**
+ * draw_pixel -- low level pixel drawing interface
+ * @param x -- x position of the pixel
+ * @param y -- y position of the pixel
+ * @param color -- color of the pixel
+ */
 void draw_pixel (unsigned x, unsigned y, uint32_t color ) {
 	display.buffer[x + y * display.width] = color;
 }
 
-
+/**
+ * screen_io_query -- system call interface for more device feature
+ * callbacks
+ * @param node -- virtual file system object pointer
+ * @param code -- code of the feature
+ * @param arg -- extra arguments to use
+ */
 int screen_io_query (vfs_node_t* node, int code, void* arg) {
 	switch (code) {
 	case SCREEN_GETWIDTH:{

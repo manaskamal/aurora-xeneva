@@ -79,7 +79,8 @@ void ttype_slave_read (vfs_node_t *file, uint8_t* buffer,uint32_t length) {
 	for (int i = 0; i < 32; i++)
 		buffer[i] = type->in_buffer[i];
 	
-	memset(type->in_buffer, 0, 32);
+	if (buffer[1] != 0)
+		memset(type->in_buffer, 0, 32);
 }
 
 void ttype_slave_write (vfs_node_t *file, uint8_t* buffer, uint32_t length) {
@@ -185,4 +186,18 @@ void ttype_create (int* master_fd, int* slave_fd) {
 	slave_count++;
 	*master_fd = m_fd;
 	*slave_fd = s_fd;
+}
+
+void ttype_dup_master (int task_id, int master_fd) {
+	x64_cli();
+	vfs_node_t *node = get_current_thread()->fd[master_fd];
+	thread_t *dest = thread_iterate_ready_list(task_id);
+	if (dest == NULL) {
+		dest = thread_iterate_block_list(task_id);
+	}
+	if (dest != NULL) {
+		dest->fd[1] = node;
+		dest->fd[2] = node;
+	}
+	dest->master_fd = 1;
 }

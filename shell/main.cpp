@@ -39,7 +39,6 @@ typedef struct _data_ {
 void main (int argc, char*argv[]) {
 	sys_print_text ("Starting Xeneva.....\n");
 	sys_print_text ("Starting Window Manager...\n");
-
 	//int fd = sys_open_file ("/dev/fb",NULL);
 	//UFILE f;
 	//f.flags = 0;
@@ -67,6 +66,7 @@ void main (int argc, char*argv[]) {
 	file.flags = 0;
 	sys_write_file (fd,data,&file);*/
 	///message_t msg;
+
 	while(1) {
 		//sys_wait();
 	}

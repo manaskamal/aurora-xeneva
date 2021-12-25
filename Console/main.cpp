@@ -29,6 +29,7 @@
 #include <QuTerminal.h>
 #include <sys\_exit.h>
 #include "console.h"
+#include <QuIcon.h>
 #include <QuScrollbar.h>
 #include <stdlib.h>
 #include <sys\postbox.h>
@@ -103,6 +104,8 @@ int main (int argc, char* argv[]) {
 	canvas_t *canvas = canvas_initialize(win->w, win->h);
 	win->ctx = canvas;
 	QuWindowShowControls(win);
+
+	QuWindowSetIcon(SYSTEM_ICON_CONSOLE);
 	
 	//! map a memory section for text 
 
@@ -116,32 +119,18 @@ int main (int argc, char* argv[]) {
 	acrylic_font_set_size(18);
 	acrylic_font_draw_string(win->ctx, "Copyright (C) Manas Kamal Choudhury",10,win->h / 2 + 25,32,GRAY);
 	QuPanelUpdate(win,0,0,win->w, win->h, true);
-	//sys_print_text ("Update\n");
-    
-	//int master_fd, slave_fd;
-	//sys_ttype_create (&master_fd, &slave_fd);
-	//unsigned char* buf = (unsigned char*)malloc(32);
-	//memset(buf,'M',32);
-	//sys_write_file (master_fd, buf,NULL);
 
-	//message_t msg;
-	//unsigned char* buffer = (unsigned char*)malloc(32);
-	//memset (buffer, 0, 32);
+	int master_fd, slave_fd;
+	sys_ttype_create (&master_fd, &slave_fd);
 
-	//QuPanelUpdate (0,0,win->w, win->h,true);
-
-
-	//UFILE f;
-	//int fd = sys_open_file("/Forte.ttf", &f);
-	//for (int i = 0; i < 1024*1024/4096; i++)
-	//	valloc(0xFFFFFFFFB0000000 + i * 4096);
-
-	//unsigned char* buff = (unsigned char*)0xFFFFFFFFB0000000;
-	//sys_read_file (fd,buff,&f);
+	unsigned char* buffer = (unsigned char*)malloc(32);
+	memset (buffer, 0, 32);
 
 	timer_id = sys_create_timer (1000, get_current_pid());
 	sys_start_timer(timer_id);
 
+	/*int child_id = create_process("/dock.exe", "dock");
+	sys_ttype_dup(child_id, master_fd);*/
 
 	QuMessage qmsg;
 	uint16_t app_id = QuGetAppId();
@@ -156,15 +145,16 @@ int main (int argc, char* argv[]) {
 		QuChannelGet(&qmsg);
 		if (qmsg.to_id == app_id)
 			QuActions(&qmsg);
-	//	sys_read_file (slave_fd,buffer,NULL);
 
-	   /* for (int i = 0; i < 32; i++) {
+		sys_read_file (slave_fd,buffer,NULL);
+
+	    for (int i = 0; i < 32; i++) {
 			if (buffer[i] != 0) {
 				QuTermPrint(term,buffer[i],WHITE);
 				QuTermFlush(term, win);
 			}
 		}
-	*/
+	
 		//	//
 		//}
 		sys_wait();

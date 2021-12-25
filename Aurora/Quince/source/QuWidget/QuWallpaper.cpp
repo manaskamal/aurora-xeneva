@@ -108,7 +108,7 @@ void QuWallpaperDraw (Image *img) {
 void QuWallpaperPresent () {
 	uint32_t* lfb = (uint32_t*)0x0000600000000000;
 	uint32_t* wallp = (uint32_t*)wallpaper->buffer;
-
+	
 	for (int i=0; i < wallpaper->w; i++) {
 		for (int j=0; j < wallpaper->h; j++){
 			uint32_t color_a = wallp[(0 + i) + (0 + j) * canvas_get_width(QuGetCanvas())];

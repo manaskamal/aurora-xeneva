@@ -44,6 +44,11 @@ uint32_t button_hover_colors[30] = {0x7359584f, 0x735f5d53, 0x7358564e, 0x735755
  */
 void QuButtonRefresh (QuWidget *wid, QuWindow* win) {
 	QuButton *but = (QuButton*)wid;
+	acrylic_font_set_size(13);
+	if (!but->title_length) {
+		but->title_length = acrylic_font_get_length((char*)but->text);
+		but->title_height = acrylic_font_get_height((char*)but->text);
+	}
 
 	//!Draw the gradient colors
 	for (int i = 0; i < 30; i++)
@@ -51,22 +56,14 @@ void QuButtonRefresh (QuWidget *wid, QuWindow* win) {
 
 	//! Check for hover bit
 	if (!but->hover) {
-		/*acrylic_draw_arr_string (win->ctx,wid->x + (wid->width/2) - ((strlen(but->text)*8)/2),
-		wid->y + (wid->height/2) - 12/2
-		,(char*)but->text, WHITE);*/
-		acrylic_font_set_size(13);
-		acrylic_font_draw_string (win->ctx,(char*)but->text,wid->x + (wid->width/2) - 13,
-				 wid->y + (wid->height/2),16, SILVER);
+		acrylic_font_draw_string (win->ctx,(char*)but->text,wid->x + (wid->width/2) - but->title_length/2,
+				 wid->y + (wid->height/2) + but->title_height/2,16, SILVER);
 
 		//! check for clicked bit
 		if (but->clicked) {
 			acrylic_draw_rect_filled (win->ctx,wid->x,wid->y , but->widget.width, but->widget.height,LIGHTBLACK);
-		/*	acrylic_draw_arr_string (win->ctx,wid->x + (wid->width/2) - ((strlen(but->text)*8)/2),
-				 wid->y + (wid->height/2) - 12/2
-				,(char*)but->text, SILVER);*/
-			acrylic_font_set_size(13);
-			acrylic_font_draw_string (win->ctx,(char*)but->text,wid->x + (wid->width/2) - 13,
-				 wid->y + (wid->height/2),16, SILVER);
+			acrylic_font_draw_string (win->ctx,(char*)but->text,wid->x + (wid->width/2) - but->title_length/2,
+				wid->y + (wid->height/2) + but->title_height/2,16, SILVER);
 			acrylic_draw_rect_unfilled (win->ctx,wid->x, wid->y,but->widget.width, but->widget.height, SILVER); 
 			acrylic_draw_rect_unfilled (win->ctx,wid->x, wid->y,but->widget.width + 1, but->widget.height + 1, DESKBLUE); 
 			but->clicked = false;
@@ -81,9 +78,8 @@ void QuButtonRefresh (QuWidget *wid, QuWindow* win) {
 		/*acrylic_draw_arr_string (win->ctx, wid->x + (wid->width/2) - ((strlen(but->text)*8)/2),
 		wid->y + (wid->height/2) - 12/2
 		,(char*)but->text, LIGHTSILVER);*/
-		acrylic_font_set_size(13);
-		acrylic_font_draw_string (win->ctx,(char*)but->text,wid->x + (wid->width/2) -  13,
-				 wid->y + (wid->height/2),16, SILVER);
+		acrylic_font_draw_string (win->ctx,(char*)but->text,wid->x + (wid->width/2) -  but->title_length/2,
+				 wid->y + (wid->height/2) + but->title_height/2,16, SILVER);
 		acrylic_draw_rect_unfilled (win->ctx,wid->x,wid->y,but->widget.width, but->widget.height, SILVER); 
 		acrylic_draw_rect_unfilled (win->ctx,wid->x,wid->y,but->widget.width + 1, but->widget.height + 1, DESKBLUE); 
 		but->hover = false;
@@ -193,7 +189,7 @@ QuButton * QuCreateButton(int x, int y) {
  *=======================================================
  */
 void QuButtonSetText (QuButton* but, const char* text) {
-	but->text = text;
+	but->text = text; 
 }
 
 

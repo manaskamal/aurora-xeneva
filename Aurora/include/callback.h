@@ -19,7 +19,7 @@
 //!This is an interface layer between system service callbacks
 //! wait sys
 extern void wait();
-extern void create__sys_process (const char* name,char* procnm);
+extern int create__sys_process (const char* name,char* procnm);
 extern void valloc (uint64_t pos);
 extern void vfree (uint64_t pos);
 extern void map_shared_memory (uint16_t dest_id,uint64_t pos, size_t size);

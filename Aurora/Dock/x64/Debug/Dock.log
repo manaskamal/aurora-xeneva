@@ -1,0 +1,17 @@
+﻿Build started 25-12-2021 আবেলি 11:53:33.
+     1>Project "E:\Xeneva Project\Xeneva\Aurora\Dock\Dock.vcxproj" on node 2 (Rebuild target(s)).
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\xnlib\xnclib" /I"E:\Xeneva Project\Xeneva\xnlib\xnacrylic\include" /I"E:\Xeneva Project\Xeneva\xnlib\QuWidgets\include" /Zi /nologo /W3 /WX- /Od /D ARCH_X64 /D _MBCS /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt main.cpp
+     1>cl : Command line warning D9002: ignoring unknown option '/arch:SSE'
+         main.cpp
+     1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V110\Microsoft.CppBuild.targets(1137,5): warning MSB8012: TargetPath(E:\Xeneva Project\Xeneva\Aurora\x64\Debug\Dock.exe) does not match the Linker's OutputFile property value (D:\dock.exe). This may cause your project to build incorrectly. To correct this, please make sure that $(OutDir), $(TargetName) and $(TargetExt) property values match the value specified in %(Link.OutputFile).
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:PROMPT /OUT:"D:\dock.exe" /INCREMENTAL /NOLOGO /LIBPATH:"E:\Xeneva Project\Xeneva\xnlib\lib64" xnclib.lib xnacrylic.lib QuWidgets.lib /NODEFAULTLIB /MANIFEST:NO /PDB:"E:\Xeneva Project\Xeneva\Aurora\x64\Debug\Dock.pdb" /MAP /MAPINFO:EXPORTS /SUBSYSTEM:NATIVE /STACK:"0x100000" /LARGEADDRESSAWARE /Driver /OPT:NOREF /LTCG /TLBID:1 /ENTRY:"_start" /BASE:"0x0000400000000000" /FIXED:NO /NXCOMPAT /IMPLIB:"E:\Xeneva Project\Xeneva\Aurora\x64\Debug\Dock.lib" /MACHINE:X64 /ALIGN:512 x64\Debug\main.obj
+     1>LINK : warning LNK4075: ignoring '/INCREMENTAL' due to '/LTCG' specification
+         LINK : /LTCG specified but no code generation required; remove /LTCG from the link command line to improve linker performance
+         Dock.vcxproj -> E:\Xeneva Project\Xeneva\Aurora\x64\Debug\Dock.exe
+     1>Done Building Project "E:\Xeneva Project\Xeneva\Aurora\Dock\Dock.vcxproj" (Rebuild target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:00.53

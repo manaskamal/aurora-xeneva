@@ -108,13 +108,6 @@ void __cdecl operator delete (void* p) {
 }
 
 
-
-void test_thread2 () {
-	printf ("Multitasking started\n");
-	while(1) {
-		//printf ("Multitasking\n");
-	}
-}
  
 
 /**========================================
@@ -127,18 +120,12 @@ void test_thread2 () {
  */
 void _kmain () {
 	KERNEL_BOOT_INFO *info = (KERNEL_BOOT_INFO*)0xFFFFE00000000000;
-	info->printf_gui ("We are inside Aurora Kernel\n");
 	//! Initialize the memory mappings
 	pmmngr_init (info);
-	info->printf_gui ("Initialized Physical Memory Manager\n");
 	vmmngr_x86_64_init(); 
-	info->printf_gui ("Virtual Memory Initialized\n");
 	hal_init();
-	info->printf_gui ("Hal Initialized\n");
 	hal_x86_64_setup_int();	
-	info->printf_gui ("Interrupt APIC initialized\n");
     mm_init(info); 
-	info->printf_gui ("MM initialized\n");
 	initialize_serial();
 
 	ata_initialize();
@@ -150,7 +137,7 @@ void _kmain () {
 	initialize_rtc(); 
 
 	initialize_acpi (info->acpi_table_pointer);
-	
+
 	//!Initialize kernel runtime drivers	
 	kybrd_init();
 	initialize_mouse();
@@ -195,6 +182,7 @@ void _kmain () {
 	//! Misc programs goes here
 	//create_process ("/dwm2.exe", "dwm4");
 	create_process ("/cnsl.exe", "cnsl");
+
 	//! Here start the scheduler (multitasking engine)
 	
 	scheduler_start();

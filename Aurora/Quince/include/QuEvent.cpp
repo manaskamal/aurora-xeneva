@@ -16,6 +16,8 @@
 #include <sys\_time.h>
 #include <sys\_kybrd.h>
 #include <sys\_process.h>
+#include <sys\_xeneva.h>
+#include <font.h>
 #include <sys\ioquery.h>
 #include <stdlib.h>
 
@@ -125,6 +127,25 @@ void QuEventLoop() {
 			//!Just for fun, now
 			if (msg.dword == KEY_S) {
 				//ioquery (snd_fd, 12,NULL);
+				acrylic_box_blur(QuGetCanvas(), QuGetCanvas()->address,QuGetCanvas()->address,0,0,1280,1024);
+				acrylic_box_blur(QuGetCanvas(), QuGetCanvas()->address,QuGetCanvas()->address,0,0,1280,1024);
+				acrylic_box_blur(QuGetCanvas(), QuGetCanvas()->address,QuGetCanvas()->address,0,0,1280,1024);
+				acrylic_box_blur(QuGetCanvas(), QuGetCanvas()->address,QuGetCanvas()->address,0,0,1280,1024);
+				acrylic_box_blur(QuGetCanvas(), QuGetCanvas()->address,QuGetCanvas()->address,0,0,1280,1024);
+				acrylic_box_blur(QuGetCanvas(), QuGetCanvas()->address,QuGetCanvas()->address,0,0,1280,1024);
+
+				acrylic_font_set_size(32);
+				int length = acrylic_font_get_length("Xeneva v1.0");
+				int h1 = acrylic_font_get_height("Xeneva v1.0");
+				acrylic_font_draw_string(QuGetCanvas(), "Xeneva v1.0", 1280/2 - length/2,
+					1024/2 - h1/2, 64, WHITE);  //1024 - 200 - 64
+				acrylic_font_set_size(25);
+				int length2 = acrylic_font_get_length ("Copyright (C) Manas Kamal Choudhury");
+				int h2 = acrylic_font_get_height ("Copyright (C) Manas Kamal Choudhury");
+				acrylic_font_draw_string(QuGetCanvas(), "Copyright (C) Manas Kamal Choudhury", 1280/2 - length2/2, 1024 - h2 - 64,44, SILVER);
+				canvas_screen_update(QuGetCanvas(),0,0,1280,1024);
+				for(;;);
+
 			}
 			if (QuWindowMngrGetFocused() != NULL) {
 				QuWindowMngr_SendEvent (QuWindowMngrGetFocused(), QU_CANVAS_KEY_PRESSED,NULL, NULL,msg.dword);
@@ -187,14 +208,22 @@ void QuEventLoop() {
 		if (q_msg.type == QU_CODE_WIN_CONFIG) {
 			uint16_t from_id = q_msg.from_id;
 			QuWindow* win = (QuWindow*)QuWindowMngrFindByID(from_id);
+			
 			if (q_msg.dword == QU_WIN_SET_SIZE) {
 				QuWindowSetSize (win,q_msg.dword2,q_msg.dword3);
 			}
 
-			/*if (q_msg.dword == QU_WIN_SET_POS) {
-				win->x = q_msg.dword2;
-				win->y = q_msg.dword3;
-			}*/
+			if (q_msg.dword == QU_WIN_SET_ICON) {
+				QuDockEntry *dock = (QuDockEntry*)malloc(sizeof(QuDockEntry));
+				if(q_msg.dword2 == SYSTEM_ICON_CONSOLE)
+					dock->icon_path = "/cnsl.bmp";
+				else if (q_msg.dword2 == SYSTEM_ICON_APPLICATION)
+					dock->icon_path = "/app.bmp";
+
+				dock->title = "app0/";  //TODO:Get the Window title
+				QuDockAdd(dock);
+				QuDockRepaint();
+			}
 
 			if (q_msg.dword == QU_WIN_NON_DRAGGABLE) {
 				win->attr = QU_WIN_NON_DRAGGABLE;
@@ -222,7 +251,7 @@ void QuEventLoop() {
 		QuWindowMngr_DrawAll();
 	
         QuRenderTime(time.seconds, time.minutes, time.hour);
-		QuRamWidget();
+		//QuRamWidget();
        
 		QuUpdateCursor (mouse_x, mouse_y);
 		

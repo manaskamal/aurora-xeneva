@@ -130,6 +130,8 @@
     <ClInclude Include="include\QuContextMenu.h" />
     <ClInclude Include="include\QuEditbox.h" />
     <ClInclude Include="include\QuEventCode.h" />
+    <ClInclude Include="include\QuIcon.h" />
+    <ClInclude Include="include\QuImage\QuBmpImage.h" />
     <ClInclude Include="include\QuKeycodeHelper.h" />
     <ClInclude Include="include\QuMenubar.h" />
     <ClInclude Include="include\QuPanel.h" />
@@ -148,6 +150,8 @@
     <ClCompile Include="source\QuButton.cpp" />
     <ClCompile Include="source\QuContextMenu.cpp" />
     <ClCompile Include="source\QuEditBox.cpp" />
+    <ClCompile Include="source\QuIcon.cpp" />
+    <ClCompile Include="source\QuImage\QuBmpImage.cpp" />
     <ClCompile Include="source\QuKeycodeHelper.cpp" />
     <ClCompile Include="source\QuMenubar.cpp" />
     <ClCompile Include="source\QuPanel.cpp" />

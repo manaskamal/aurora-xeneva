@@ -46,7 +46,7 @@ static void* _syscalls[] = {
 	create_uthread, //18
 	sys_open_file, //19
 	sys_read_file, //20
-	0, //21
+	ttype_dup_master, //21
 	sys_get_used_ram, //22
 	sys_get_free_ram, //23
 	sys_sleep, //24

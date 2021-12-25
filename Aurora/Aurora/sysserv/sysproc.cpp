@@ -2,9 +2,10 @@
 #include <procmngr.h>
 
 
-void create__sys_process (const char* name, char* procnm) {
+int create__sys_process (const char* name, char* procnm) {
 	x64_cli();
-	create_process (name, procnm);
+	int id = create_process (name, procnm);
+	return id;
 }
 
 //!Exit System call

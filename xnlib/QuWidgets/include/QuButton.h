@@ -28,6 +28,8 @@ typedef struct _QuButton_ {
 	bool swap_bit;
 	int  m_x;
 	int  m_y;
+	int  title_length;
+	int title_height;
 }QuButton;
 
 

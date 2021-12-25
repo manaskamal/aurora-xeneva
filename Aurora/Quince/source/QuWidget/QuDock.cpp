@@ -18,21 +18,51 @@
 #include <sys\mmap.h>
 #include <sys\_xeneva.h>
 #include <font.h>
+#include <QuWindow\QuList.h>
+#include <QuImage\QuBmpImage.h>
+#include <sys\_file.h>
 
-int pos_x = 20;
+int pos_x = 0;
 
-void QuTaskbarInit () {
+QuList *dock_list;
+void QuDockInit () {
+	dock_list = QuListInit();
+	QuDockRepaint();
+}
 
+void QuDockAdd (QuDockEntry *entry) {
+	QuListAdd(dock_list,entry);
+	UFILE file;
+	int fd = sys_open_file(entry->icon_path,&file);
+	unsigned char* image_data = (unsigned char*)malloc(file.size);
+	sys_read_file (fd,image_data,&file);
+	entry->icon_data = image_data;
+}
 
-	QuTaskbarRepaint();
+void QuDockRemove (QuDockEntry *entry) {
+	int index =0; 
+	for(index = 0; index < dock_list->pointer; index++){
+		QuDockEntry *_ent = (QuDockEntry*)QuListGetAt(dock_list,index);
+		if(_ent == entry)
+			break;
+	}
+
+	if(index != -1)
+		QuListRemove(dock_list,index);
+	pos_x -= 50;
 }
 
 
-
-
-void QuTaskbarRepaint () {
-	uint32_t color = 0x8C4D4C47;  //D9
+void QuDockRepaint () {
+	uint32_t color = 0x8C4D4C47;  //8C
 	uint32_t *wallp = (uint32_t*)0x0000060000000000;
+
+	//Blur 4 times for good glass effect
+	acrylic_box_blur (QuGetCanvas(),wallp, wallp,0,canvas_get_height(QuGetCanvas()) -40,canvas_get_width(QuGetCanvas())-2,40);
+	acrylic_box_blur (QuGetCanvas(),wallp, wallp,0,canvas_get_height(QuGetCanvas()) -40,canvas_get_width(QuGetCanvas())-2,40);
+	acrylic_box_blur (QuGetCanvas(),wallp, wallp,0,canvas_get_height(QuGetCanvas()) -40,canvas_get_width(QuGetCanvas())-2,40);
+	acrylic_box_blur (QuGetCanvas(),wallp, wallp,0,canvas_get_height(QuGetCanvas()) -40,canvas_get_width(QuGetCanvas())-2,40);
+
 	for (int i = 0; i < canvas_get_width(QuGetCanvas()); i++){
 		for (int j = 0; j < 40; j++) {
 			uint32 alpha = wallp[(0 + i) + (canvas_get_height(QuGetCanvas()) - 40 +j) * canvas_get_width(QuGetCanvas())];
@@ -40,9 +70,16 @@ void QuTaskbarRepaint () {
 			canvas_draw_pixel(QuGetCanvas(),0 + i, (canvas_get_height(QuGetCanvas()) - 40 + j),col);
 		}
 	}
-//	acrylic_draw_rect_filled (0 + (600/2), canvas_get_height() - 50,600,50,LIGHTBLACK);
-//	acrylic_draw_rect_unfilled (QuGetCanvas(),0, canvas_get_height(QuGetCanvas()) - 40,canvas_get_width(QuGetCanvas())-2, 40,BLACK);
-	
+
+	int xpos = 0;
+	for (int i = 0; i < dock_list->pointer; i++) {
+		QuDockEntry *entry = (QuDockEntry*)QuListGetAt(dock_list, i);
+		QuBmpImage *bmp = QuGetBMP(entry->icon_data);
+		QuDrawBMP(QuGetCanvas(),bmp,xpos,canvas_get_height(QuGetCanvas())- 40);
+		xpos += 50;
+	}
+
+
 	canvas_screen_update(QuGetCanvas(),0, canvas_get_height(QuGetCanvas()) -40,canvas_get_width(QuGetCanvas())-2, 40);
 }
 

@@ -25,7 +25,10 @@ process_t *process_head = NULL;
 process_t *process_last = NULL;
 static int pid = 0;
 
-//! Adds a process to the process list
+/**
+ * add_process -- Adds a process to the process list
+ * @param proc -- process address
+ */
 void add_process (process_t *proc) {
 	mutex_lock (add_mutex);
 	proc->next = NULL;
@@ -43,7 +46,10 @@ void add_process (process_t *proc) {
 	mutex_unlock (add_mutex);
 }
 
-//! removes a process from the process list
+/**
+ * remove_process -- removes a process from the process list
+ * @param proc -- process address
+ */
 void remove_process (process_t *proc) {
 	
 	if (process_head == NULL)
@@ -65,7 +71,10 @@ void remove_process (process_t *proc) {
 }
 
 
-//! Finds a process by its thread address
+/**
+ * find_process_by_thread -- Finds a process by its thread address
+ * @param thread -- thread address
+ */
 process_t *find_process_by_thread (thread_t *thread) {
 	for (process_t *proc = process_head; proc != NULL; proc = proc->next) {
 		if (proc->thread_data_pointer == thread) {
@@ -74,7 +83,10 @@ process_t *find_process_by_thread (thread_t *thread) {
 	}
 }
 
-//! Finds a process by its pid
+/**
+ * find_process_by_id -- Finds a process by its pid
+ * @param pid -- process id
+ */
 process_t *find_process_by_id (uint32_t pid) {
 	for (process_t *proc = process_head; proc != NULL; proc = proc->next) {
 		if (proc->pid_t == pid) {
@@ -83,23 +95,23 @@ process_t *find_process_by_id (uint32_t pid) {
 	}
 	return NULL;
 }
-/* Create stack for User process */
+
+/**
+ * create_user_stack -- Create stack for User process 
+ * @param cr3 -- top level paging structure address
+ */
 uint64_t *create_user_stack (uint64_t* cr3) {
 #define USER_STACK  0x0000700000000000 
 	
-	/*uint64_t* old_cr3 = (uint64_t*)x64_read_cr3();
-	x64_write_cr3 ((size_t)cr3);*/
 	uint64_t location = USER_STACK;
 	
-	/* 1 mb stack / process */
+	/* 2 mb stack / process */
 	for (int i=0; i < (2*1024*1024)/4096; i++) {
 		uint64_t *block = (uint64_t*)pmmngr_alloc();
 		memset (block, 0, 4096);
 		map_page_ex(cr3, (uint64_t)block,location + i * 4096, PAGING_USER);
 	}
- 
-	//x64_write_cr3((size_t)old_cr3);
-	
+
 	return (uint64_t*)(USER_STACK + (2*1024*1024));
 }
 
@@ -133,7 +145,14 @@ void allocate_fd (thread_t *t) {
 
 }
 
-void create_process(const char* filename, char* procname) {
+/**
+ * create_process -- creates a thread with executable image entry point
+ * address
+ * @param filename -- executable file path
+ * @param procname -- processname
+ * @return -- created thread id
+ */
+int create_process(const char* filename, char* procname) {
 
 	//!allocate a data-structure for process 
 	process_t *process = (process_t*)pmmngr_alloc();
@@ -147,10 +166,10 @@ void create_process(const char* filename, char* procname) {
 
 	if (file.status == FS_FLAG_INVALID) {
 		printf("Executable image not found\n");
-		return;
+		return -1;
 	}
 	//!open the binary file and read it
-	unsigned char* buf = (unsigned char*)pmmngr_alloc();   //18*1024
+	unsigned char* buf = (unsigned char*)pmmngr_alloc();   
 	readfs_block(n,&file,buf);
 
 	IMAGE_DOS_HEADER* dos = (IMAGE_DOS_HEADER*)buf;
@@ -201,9 +220,12 @@ void create_process(const char* filename, char* procname) {
 	process->thread_data_pointer = t;
     add_process(process);
 	//mutex_unlock (process_mutex);
+	return t->id;
 }
 
-//! Kill Process
+/**
+ * kill_process -- kills the running process
+ */
 void kill_process () {
 	x64_cli();
 	thread_t * remove_thread = get_current_thread();
@@ -245,7 +267,10 @@ void kill_process () {
 	pmmngr_free (cr3);
 }
 
-//! Kill Process
+/**
+ * kill_process_by_id -- kills a process by its id
+ * @param id -- id of the thread to be killed
+ */
 void kill_process_by_id (uint16_t id) {
 	x64_cli();
 	bool was_blocked = false;

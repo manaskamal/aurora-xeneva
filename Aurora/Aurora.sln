@@ -21,6 +21,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "QuWidgets", "..\xnlib\QuWid
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Console", "..\Console\Console.vcxproj", "{BA495388-0A3B-4E57-AB30-52C9F9E43845}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Dock", "Dock\Dock.vcxproj", "{D09FD324-FF92-4D86-A5F1-C6D657CB521A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Mixed Platforms = Debug|Mixed Platforms
@@ -133,6 +135,16 @@ Global
 		{BA495388-0A3B-4E57-AB30-52C9F9E43845}.Release|Win32.ActiveCfg = Release|Win32
 		{BA495388-0A3B-4E57-AB30-52C9F9E43845}.Release|Win32.Build.0 = Release|Win32
 		{BA495388-0A3B-4E57-AB30-52C9F9E43845}.Release|x64.ActiveCfg = Release|Win32
+		{D09FD324-FF92-4D86-A5F1-C6D657CB521A}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{D09FD324-FF92-4D86-A5F1-C6D657CB521A}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{D09FD324-FF92-4D86-A5F1-C6D657CB521A}.Debug|Win32.ActiveCfg = Debug|Win32
+		{D09FD324-FF92-4D86-A5F1-C6D657CB521A}.Debug|Win32.Build.0 = Debug|Win32
+		{D09FD324-FF92-4D86-A5F1-C6D657CB521A}.Debug|x64.ActiveCfg = Debug|x64
+		{D09FD324-FF92-4D86-A5F1-C6D657CB521A}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{D09FD324-FF92-4D86-A5F1-C6D657CB521A}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{D09FD324-FF92-4D86-A5F1-C6D657CB521A}.Release|Win32.ActiveCfg = Release|Win32
+		{D09FD324-FF92-4D86-A5F1-C6D657CB521A}.Release|Win32.Build.0 = Release|Win32
+		{D09FD324-FF92-4D86-A5F1-C6D657CB521A}.Release|x64.ActiveCfg = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

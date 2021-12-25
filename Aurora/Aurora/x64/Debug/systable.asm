@@ -6,15 +6,11 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 PUBLIC	funct
-EXTRN	?create_timer@@YAHIG@Z:PROC			; create_timer
-EXTRN	?destroy_timer@@YAXH@Z:PROC			; destroy_timer
-EXTRN	?pause_timer@@YAXH@Z:PROC			; pause_timer
-EXTRN	?start_timer@@YAXH@Z:PROC			; start_timer
 EXTRN	?message_send@@YAXGPEAU_message_@@@Z:PROC	; message_send
 EXTRN	?message_receive@@YAXPEAU_message_@@@Z:PROC	; message_receive
 EXTRN	?printf@@YAXPEBDZZ:PROC				; printf
 EXTRN	?wait@@YAXXZ:PROC				; wait
-EXTRN	?create__sys_process@@YAXPEBDPEAD@Z:PROC	; create__sys_process
+EXTRN	?create__sys_process@@YAHPEBDPEAD@Z:PROC	; create__sys_process
 EXTRN	?valloc@@YAX_K@Z:PROC				; valloc
 EXTRN	?vfree@@YAX_K@Z:PROC				; vfree
 EXTRN	?map_shared_memory@@YAXG_K0@Z:PROC		; map_shared_memory
@@ -40,17 +36,22 @@ EXTRN	?sys_attach_ttype@@YAXH@Z:PROC			; sys_attach_ttype
 EXTRN	?map_memory@@YAPEAX_KIE@Z:PROC			; map_memory
 EXTRN	?unmap_memory@@YAXPEAXI@Z:PROC			; unmap_memory
 EXTRN	?ttype_create@@YAXPEAH0@Z:PROC			; ttype_create
+EXTRN	?ttype_dup_master@@YAXHH@Z:PROC			; ttype_dup_master
 EXTRN	?allocate_pipe@@YAXPEAHPEAD@Z:PROC		; allocate_pipe
+EXTRN	?create_timer@@YAHIG@Z:PROC			; create_timer
+EXTRN	?destroy_timer@@YAXH@Z:PROC			; destroy_timer
+EXTRN	?pause_timer@@YAXH@Z:PROC			; pause_timer
+EXTRN	?start_timer@@YAXH@Z:PROC			; start_timer
 _BSS	SEGMENT
 funct	DQ	01H DUP (?)
 _BSS	ENDS
 CONST	SEGMENT
-$SG6165	DB	'System Call Fault!! Halting System', 0aH, 00H
+$SG6135	DB	'System Call Fault!! Halting System', 0aH, 00H
 CONST	ENDS
 _DATA	SEGMENT
 _syscalls DQ	FLAT:?printf@@YAXPEBDZZ
 	DQ	FLAT:?wait@@YAXXZ
-	DQ	FLAT:?create__sys_process@@YAXPEBDPEAD@Z
+	DQ	FLAT:?create__sys_process@@YAHPEBDPEAD@Z
 	DQ	0000000000000000H
 	DQ	0000000000000000H
 	DQ	FLAT:?valloc@@YAX_K@Z
@@ -69,7 +70,7 @@ _syscalls DQ	FLAT:?printf@@YAXPEBDZZ
 	DQ	FLAT:?create_uthread@@YAXP6AXPEAX@ZPEAD@Z
 	DQ	FLAT:?sys_open_file@@YAHPEADPEAU_file_@@@Z
 	DQ	FLAT:?sys_read_file@@YAXHPEAEPEAU_file_@@@Z
-	DQ	0000000000000000H
+	DQ	FLAT:?ttype_dup_master@@YAXHH@Z
 	DQ	FLAT:?sys_get_used_ram@@YA_KXZ
 	DQ	FLAT:?sys_get_free_ram@@YA_KXZ
 	DQ	FLAT:?sys_sleep@@YAX_K@Z
@@ -128,7 +129,7 @@ $LN6:
 
 ; 21   : 		printf ("System Call Fault!! Halting System\n");
 
-	lea	rcx, OFFSET FLAT:$SG6165
+	lea	rcx, OFFSET FLAT:$SG6135
 	call	?printf@@YAXPEBDZZ			; printf
 $LN2@x64_syscal:
 

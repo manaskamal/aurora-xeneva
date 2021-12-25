@@ -32,5 +32,6 @@ void QuScreenRectUpdate  () {
 	for (int i = 0; i < scr_rect_count; i++) {
 		canvas_screen_update (QuGetCanvas(),scr_rect[i].x, scr_rect[i].y, scr_rect[i].w, scr_rect[i].h);
 	}
+
 	scr_rect_count = 0;
 }

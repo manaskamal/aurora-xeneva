@@ -32,9 +32,9 @@ extern "C" void force_sched_apic ();
 
 
 bool  scheduler_enable = false;
-mutex_t * block_mutex;
-mutex_t * scheduler_mutex;
-bool  scheduler_initialized = false;
+mutex_t * block_mutex;   //currently unused
+mutex_t * scheduler_mutex;  //currently unused
+bool  scheduler_initialized = false;    
 uint16_t task_id = 0;
 
 list_t *blocked_list;
@@ -44,6 +44,13 @@ thread_t *task_list_last = NULL;
 uint32_t system_tick;
 extern "C" thread_t *current_thread = NULL;
 
+
+
+
+/**
+ * Insert a thread to thread list
+ * @param new_task -- new thread address
+ */
 void thread_insert (thread_t* new_task ) {
 	new_task->next = NULL;
 	new_task->prev = NULL;
@@ -59,7 +66,10 @@ void thread_insert (thread_t* new_task ) {
 	task_list_last = new_task;
 }
 
-
+/**
+ * remove a thread from thread list
+ * @param thread -- thread address to remove
+ */
 void task_delete (thread_t* thread) {
 
 	if (task_list_head == NULL)
@@ -85,6 +95,11 @@ void task_delete (thread_t* thread) {
 
 /**
  * ! Creates a kernel mode thread
+ *  @param entry -- Entry point address
+ *  @param stack -- Stack address
+ *  @param cr3 -- the top most page map level address
+ *  @param name -- name of the thread
+ *  @param priority -- (currently unused) thread's priority
  **/
 thread_t* create_kthread (void (*entry) (void), uint64_t stack,uint64_t cr3, char name[8], uint8_t priority)
 {
@@ -124,28 +139,27 @@ thread_t* create_kthread (void (*entry) (void), uint64_t stack,uint64_t cr3, cha
 	t->state = THREAD_STATE_READY;
 	//t->priority = priority;
 	t->fd_current = 0;
-	//t->stream = allocate_stream();
-	//t->master_fd = 0;
-	//t->slave_fd = 0;
-	/*
-	for (int i = 0; i < 38-1; i++)
-		t->signals[i] = 0;
-	t->signal_interrupt = false;*/
+	
 	thread_insert(t);
 	return t;
 }
 
 /**
  *  Creates a user mode thread
+ *  @param entry -- Entry point address
+ *  @param stack -- Stack address
+ *  @param cr3 -- the top most page map level address
+ *  @param name -- name of the thread
+ *  @param priority -- (currently unused) thread's priority
  */
 thread_t* create_user_thread (void (*entry) (void*),uint64_t stack,uint64_t cr3, char name[8], uint8_t priority)
 {
 	thread_t *t = (thread_t*)pmmngr_alloc();
 	memset (t, 0, 4096);
-	t->ss = SEGVAL(GDT_ENTRY_USER_DATA,3);//0x23; 
+	t->ss = SEGVAL(GDT_ENTRY_USER_DATA,3); 
 	t->rsp = (uint64_t*)stack;
 	t->rflags = 0x286;
-	t->cs = SEGVAL (GDT_ENTRY_USER_CODE,3);// 0x2b;
+	t->cs = SEGVAL (GDT_ENTRY_USER_CODE,3);
 	t->rip = (uint64_t)entry;
 	t->rax = 0;
 	t->rbx = 10;
@@ -162,7 +176,10 @@ thread_t* create_user_thread (void (*entry) (void*),uint64_t stack,uint64_t cr3,
 	t->r13 = 0;
 	t->r14 = 0;
 	t->r15 = 0;
+
+	/** Kernel stack is important for syscall or interruption in the system **/
 	t->kern_esp = (uint64_t)allocate_kstack((uint64_t*)cr3);
+
 	t->ds = 0x23;
 	t->es = 0x23;
 	t->fs = 0x23;
@@ -173,16 +190,16 @@ thread_t* create_user_thread (void (*entry) (void*),uint64_t stack,uint64_t cr3,
 	t->quanta = 0;
 	t->ttype = 0;
 	t->msg_box = (uint64_t*)pmmngr_alloc();
+
+	/** Map the thread's msg box to a virtual address, from where the process will receive system messages **/
 	map_page_ex((uint64_t*)t->cr3,(uint64_t)t->msg_box,(uint64_t)0xFFFFFFFFB0000000, PAGING_USER);
+
 	t->_is_user = 1;
 	t->priviledge = THREAD_LEVEL_USER;
 	t->state = THREAD_STATE_READY;
 	t->priority = priority;
 	t->fd_current = 0;
 	t->stream = allocate_stream();
-	/*for (int i = 0; i < 38-1; i++)
-		t->signals[i] = 0;
-	t->signal_interrupt = false;*/
 	thread_insert (t);
 	return t;
 }
@@ -204,10 +221,23 @@ void initialize_scheduler () {
 	scheduler_mutex = create_mutex ();
 	scheduler_enable = true;
 	scheduler_initialized = true;
+
+	/** Here create the first thread, the idle thread which never gets
+	    blocked nor get destroyed untill the system turns off **/
 	thread_t *idle_ = create_kthread (idle_thread,(uint64_t)pmmngr_alloc(),x64_read_cr3(),"Idle",1);
 	current_thread = idle_;
 }
 
+
+/**
+ *  next_task() -- switches ready stated tasks for execution
+ *  this function gets called from the sceduler isr to check and
+ *  get the next ready stated task from the thread list. Also this
+ *  function manages the sleep stated task for decreasing its sleep
+ *  counts
+ * 
+ *  @output  current_thread = next ready stated thread
+ */
 void next_task () {
 	thread_t* task = current_thread;
 	do {
@@ -226,6 +256,8 @@ void next_task () {
 end:
 	current_thread = task;
 }
+
+
 /** ===============================================
  **  Scheduler Isr | Scheduler Isr
  ** ===============================================
@@ -233,14 +265,24 @@ end:
 void scheduler_isr (size_t v, void* param) {
 	x64_cli();
 	interrupt_stack_frame *frame = (interrupt_stack_frame*)param;
+
+	/* check for enable bit, if yes than proceed for 
+	   multitasking */
 	if (scheduler_enable == false)
 		goto sched_end;
+
 	//mutex_lock (scheduler_mutex);
    
+	/** save currently running thread contexts */
 	if (save_context(current_thread,get_kernel_tss()) == 0) {
 		current_thread->cr3 = x64_read_cr3();
+
+		/* check if the thread is user mode thread, if yes
+		   than store the kernel esp */
 		if (current_thread->priviledge == THREAD_LEVEL_USER)
 			current_thread->kern_esp = get_kernel_tss()->rsp[0];
+
+		/* now get the next runnable task from the thread list */
 		next_task();
 
 		/*
@@ -256,6 +298,9 @@ void scheduler_isr (size_t v, void* param) {
 		interrupt_end (0);
 #endif
 		
+		/** now return to the new task last stored instruction */
+
+
 		if (current_thread->priviledge == THREAD_LEVEL_USER){
 			get_kernel_tss()->rsp[0] = current_thread->kern_esp;
 		}
@@ -379,13 +424,17 @@ void unblock_thread (thread_t *t) {
 }
 
 
+/**
+ * sleep_thread (t,ms) -- cause a thread to sleep for a given msec
+ * @param t -- thread address
+ * @param ms -- millisecond
+ */
 void sleep_thread (thread_t *t, uint64_t ms) {
 	t->quanta = ms;
-	//printf ("Sleeping thread -> %d\n", t->quanta);
 	t->state = THREAD_STATE_SLEEP;
 }
 
-//! returns currently running thread
+//! get_current_thread() -- returns currently running thread
 thread_t * get_current_thread () {
 	return current_thread;
 }
@@ -399,10 +448,17 @@ void force_sched () {
 #endif
 }
 
+/**
+ * is_scheduler_initialized() -- check and return
+ * the scheduler_initialized bit
+ */
 bool is_scheduler_initialized () {
 	return scheduler_initialized;
 }
 
+/**
+ * sched_get_tick -- return system tick incremented
+ */
 uint32_t sched_get_tick() {
 	return system_tick;
 }

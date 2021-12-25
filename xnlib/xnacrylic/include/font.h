@@ -26,6 +26,7 @@ extern void acrylic_initialize_font ();
 extern void acrylic_font_set_size (uint32_t sz);
 extern void acrylic_font_draw_string (canvas_t *canvas, char* string, int x, int y, uint32_t sz,uint32_t color);
 extern Font* acrylic_get_system_font ();
-extern int acrylic_font_get_width();
-extern int acrylic_font_get_height();
+extern void acrylic_font_get_centering(char* string, int *c_w, int *c_h);
+extern int acrylic_font_get_length (char* string);
+extern int acrylic_font_get_height (char* string);
 #endif

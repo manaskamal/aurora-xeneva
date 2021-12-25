@@ -29,6 +29,7 @@
 #define QU_WIN_CONFIG_AUTO_INVALIDATE 6
 #define QU_WIN_SET_SIZE  7
 #define QU_WIN_AUTO_INVALIDATE_RGN 8
+#define QU_WIN_SET_ICON 9
 #define QU_WIN_SET_POS  14
 
 
@@ -44,6 +45,7 @@ typedef struct _QuWinInfo_ {
 	bool maximize;
 	bool minimize;
 	bool alpha;
+	char data[50];
 }QuWindowInfo;
 
 typedef struct _QuWindow_ {

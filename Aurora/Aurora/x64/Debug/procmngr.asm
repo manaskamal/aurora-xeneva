@@ -12,7 +12,7 @@ process_count DD 01H DUP (?)
 ?waked@@3_NA DB	01H DUP (?)				; waked
 _BSS	ENDS
 CONST	SEGMENT
-$SG3595	DB	'Proc mngr is already awake-> %x', 0aH, 00H
+$SG3562	DB	'Proc mngr is already awake-> %x', 0aH, 00H
 CONST	ENDS
 PUBLIC	?procmngr_add_process@@YAXPEAU_procmngr_queue_@@@Z ; procmngr_add_process
 PUBLIC	?procmngr_get_process@@YAPEAU_procmngr_queue_@@XZ ; procmngr_get_process
@@ -30,7 +30,7 @@ EXTRN	?get_current_thread@@YAPEAU_thread_@@XZ:PROC	; get_current_thread
 EXTRN	?force_sched@@YAXXZ:PROC			; force_sched
 EXTRN	?thread_iterate_ready_list@@YAPEAU_thread_@@G@Z:PROC ; thread_iterate_ready_list
 EXTRN	?thread_iterate_block_list@@YAPEAU_thread_@@H@Z:PROC ; thread_iterate_block_list
-EXTRN	?create_process@@YAXPEBDPEAD@Z:PROC		; create_process
+EXTRN	?create_process@@YAHPEBDPEAD@Z:PROC		; create_process
 EXTRN	?kill_process_by_id@@YAXG@Z:PROC		; kill_process_by_id
 pdata	SEGMENT
 $pdata$?procmngr_add_process@@YAXPEAU_procmngr_queue_@@@Z DD imagerel $LN3
@@ -88,7 +88,7 @@ $LN3:
 	mov	rcx, QWORD PTR queue$[rsp]
 	add	rcx, 8
 	mov	rdx, rax
-	call	?create_process@@YAXPEBDPEAD@Z		; create_process
+	call	?create_process@@YAHPEBDPEAD@Z		; create_process
 
 ; 48   : 	pmmngr_free (queue);
 
@@ -173,7 +173,7 @@ $LN2@procmngr_w:
 ; 60   : 		printf ("Proc mngr is already awake-> %x\n", proc_thr);
 
 	mov	rdx, QWORD PTR proc_thr$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3595
+	lea	rcx, OFFSET FLAT:$SG3562
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 61   : 		block_thread(proc_thr);

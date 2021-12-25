@@ -274,4 +274,12 @@ sys_pause_timer:
 	syscall
 	ret
 
+global sys_ttype_dup
+sys_ttype_dup:
+    mov r12, 21
+	mov r13, rcx
+	mov r14, rdx
+	syscall
+	ret
+
 

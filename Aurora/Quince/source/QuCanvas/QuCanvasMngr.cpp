@@ -139,13 +139,10 @@ void QuCanvasBlit (QuWindow* win,unsigned int *canvas, unsigned x, unsigned y, u
 				he = (height - 40) - info->y;
 			}
 
-			
 			for (int i = 0; i < he; i++)  {
 				fastcpy (lfb + (winy + i) * width + winx,win->canvas + (0 + i) * width + 0,
-				wid * 4);
-	
+						wid * 4);	
 			}
-		
 
 			QuScreenRectAdd(winx, winy, wid, he);
 		//	QuTaskbarRepaint();

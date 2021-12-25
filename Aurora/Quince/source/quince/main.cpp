@@ -58,12 +58,12 @@ int main (int argc, char* argv[]) {
 	acrylic_initialize_font();
 
 	//!Initialize Quince Wallpaper Manager  "a:coffee.jpg"  "/bihu.jpg""/river.jpg"
-	Image * img = QuWallpaperInit("/river.jpg");
+	Image * img = QuWallpaperInit("/xmass.jpg");
 	QuWallpaperDraw (img);
 	QuWallpaperPresent ();
  
 	//! Initialize Taskbar Manager
-	QuTaskbarInit();
+	QuDockInit();
 
 	//! Initialize the Window Manager
 	QuWindowMngr_Initialize();

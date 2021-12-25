@@ -1,7 +1,7 @@
-﻿Build started 20-12-2021 আবেলি 12:50:55.
+﻿Build started 25-12-2021 আবেলি 2:33:55.
      1>Project "E:\Xeneva Project\Xeneva\Aurora\Quince\Quince.vcxproj" on node 2 (Rebuild target(s)).
      1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\xnlib\xnclib" /I"E:\Xeneva Project\Xeneva\xnlib\xnacrylic\include" /I"E:\Xeneva Project\Xeneva\Aurora\Quince\include" /Zi /nologo /W3 /WX- /sdl- /Od /D ARCH_X64 /D SW_CURSOR /D _MBCS /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt include\QuEvent.cpp include\QuWindow\QuList.h source\ipc\QuChannel.cpp source\ipc\_ipc_mouse.cpp source\QuCanvas\QuCanvasMngr.cpp source\QuCanvas\QuScreenRectList.cpp source\QuCanvas\QuScreenStack.cpp source\quince\main.cpp source\quince\QuBmpImage.cpp source\quince\QuCursor.cpp source\QuWidget\QuDock.cpp source\QuWidget\QuWallpaper.cpp source\QuWindow\QuList.cpp source\QuWindow\QuWindow.cpp source\QuWindow\QuWindowMngr.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\xnlib\xnclib" /I"E:\Xeneva Project\Xeneva\xnlib\xnacrylic\include" /I"E:\Xeneva Project\Xeneva\Aurora\Quince\include" /I"E:\Xeneva Project\Xeneva\xnlib\QuWidgets\include" /Zi /nologo /W3 /WX- /sdl- /Od /D ARCH_X64 /D SW_CURSOR /D _MBCS /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt include\QuEvent.cpp include\QuWindow\QuList.h source\ipc\QuChannel.cpp source\ipc\_ipc_mouse.cpp source\QuCanvas\QuCanvasMngr.cpp source\QuCanvas\QuScreenRectList.cpp source\QuCanvas\QuScreenStack.cpp source\quince\main.cpp source\quince\QuBmpImage.cpp source\quince\QuCursor.cpp source\QuWidget\QuDock.cpp source\QuWidget\QuWallpaper.cpp source\QuWindow\QuList.cpp source\QuWindow\QuWindow.cpp source\QuWindow\QuWindowMngr.cpp
      1>cl : Command line warning D9025: overriding '/sdl-' with '/GS-'
      1>cl : Command line warning D9002: ignoring unknown option '/arch:SSE'
          QuWindowMngr.cpp
@@ -28,38 +28,40 @@
      1>source\QuWidget\QuWallpaper.cpp(112): warning C4018: '<' : signed/unsigned mismatch
      1>source\QuWidget\QuWallpaper.cpp(113): warning C4018: '<' : signed/unsigned mismatch
          QuDock.cpp
-     1>source\QuWidget\QuDock.cpp(36): warning C4018: '<' : signed/unsigned mismatch
+     1>source\QuWidget\QuDock.cpp(44): warning C4018: '<' : signed/unsigned mismatch
+     1>source\QuWidget\QuDock.cpp(66): warning C4018: '<' : signed/unsigned mismatch
+     1>source\QuWidget\QuDock.cpp(75): warning C4018: '<' : signed/unsigned mismatch
          QuCursor.cpp
          QuBmpImage.cpp
          main.cpp
          QuScreenStack.cpp
          QuScreenRectList.cpp
          QuCanvasMngr.cpp
-     1>source\QuCanvas\QuCanvasMngr.cpp(169): warning C4244: '=' : conversion from 'uint16_t' to 'uint8_t', possible loss of data
+     1>source\QuCanvas\QuCanvasMngr.cpp(166): warning C4244: '=' : conversion from 'uint16_t' to 'uint8_t', possible loss of data
+     1>source\QuCanvas\QuCanvasMngr.cpp(218): warning C4018: '>=' : signed/unsigned mismatch
      1>source\QuCanvas\QuCanvasMngr.cpp(221): warning C4018: '>=' : signed/unsigned mismatch
-     1>source\QuCanvas\QuCanvasMngr.cpp(224): warning C4018: '>=' : signed/unsigned mismatch
-     1>source\QuCanvas\QuCanvasMngr.cpp(228): warning C4018: '<' : signed/unsigned mismatch
-     1>source\QuCanvas\QuCanvasMngr.cpp(229): warning C4018: '<' : signed/unsigned mismatch
-     1>source\QuCanvas\QuCanvasMngr.cpp(261): warning C4018: '<' : signed/unsigned mismatch
-     1>source\QuCanvas\QuCanvasMngr.cpp(294): warning C4267: 'argument' : conversion from 'size_t' to 'unsigned int', possible loss of data
-     1>source\QuCanvas\QuCanvasMngr.cpp(299): warning C4267: 'argument' : conversion from 'size_t' to 'unsigned int', possible loss of data
-     1>source\QuCanvas\QuCanvasMngr.cpp(304): warning C4267: 'argument' : conversion from 'size_t' to 'unsigned int', possible loss of data
-     1>source\QuCanvas\QuCanvasMngr.cpp(309): warning C4267: 'argument' : conversion from 'size_t' to 'unsigned int', possible loss of data
-     1>source\QuCanvas\QuCanvasMngr.cpp(314): warning C4267: 'argument' : conversion from 'size_t' to 'unsigned int', possible loss of data
+     1>source\QuCanvas\QuCanvasMngr.cpp(225): warning C4018: '<' : signed/unsigned mismatch
+     1>source\QuCanvas\QuCanvasMngr.cpp(226): warning C4018: '<' : signed/unsigned mismatch
+     1>source\QuCanvas\QuCanvasMngr.cpp(258): warning C4018: '<' : signed/unsigned mismatch
+     1>source\QuCanvas\QuCanvasMngr.cpp(291): warning C4267: 'argument' : conversion from 'size_t' to 'unsigned int', possible loss of data
+     1>source\QuCanvas\QuCanvasMngr.cpp(296): warning C4267: 'argument' : conversion from 'size_t' to 'unsigned int', possible loss of data
+     1>source\QuCanvas\QuCanvasMngr.cpp(301): warning C4267: 'argument' : conversion from 'size_t' to 'unsigned int', possible loss of data
+     1>source\QuCanvas\QuCanvasMngr.cpp(306): warning C4267: 'argument' : conversion from 'size_t' to 'unsigned int', possible loss of data
+     1>source\QuCanvas\QuCanvasMngr.cpp(311): warning C4267: 'argument' : conversion from 'size_t' to 'unsigned int', possible loss of data
          _ipc_mouse.cpp
          QuChannel.cpp
      1>source\ipc\QuChannel.cpp(37): warning C4244: '=' : conversion from 'uint16_t' to 'uint8_t', possible loss of data
      1>source\ipc\QuChannel.cpp(38): warning C4244: '=' : conversion from 'uint16_t' to 'uint8_t', possible loss of data
          QuList.h
          QuEvent.cpp
-     1>include\QuEvent.cpp(168): warning C4244: '=' : conversion from 'uint16_t' to 'uint8_t', possible loss of data
-     1>include\QuEvent.cpp(63): warning C4101: 'loops' : unreferenced local variable
-     1>include\QuEvent.cpp(64): warning C4101: 'fps_str' : unreferenced local variable
+     1>include\QuEvent.cpp(189): warning C4244: '=' : conversion from 'uint16_t' to 'uint8_t', possible loss of data
+     1>include\QuEvent.cpp(65): warning C4101: 'loops' : unreferenced local variable
+     1>include\QuEvent.cpp(66): warning C4101: 'fps_str' : unreferenced local variable
          Generating Code...
      1>e:\xeneva project\xeneva\aurora\quince\source\quwindow\quwindowmngr.cpp(81): warning C4715: 'QuWindowMngrFindByID' : not all control paths return a value
      1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V110\Microsoft.CppBuild.targets(1137,5): warning MSB8012: TargetPath(E:\Xeneva Project\Xeneva\Aurora\x64\Debug\Quince.exe) does not match the Linker's OutputFile property value (D:\quince.exe). This may cause your project to build incorrectly. To correct this, please make sure that $(OutDir), $(TargetName) and $(TargetExt) property values match the value specified in %(Link.OutputFile).
        Link:
-         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:PROMPT /OUT:"D:\quince.exe" /INCREMENTAL /NOLOGO /LIBPATH:"E:\Xeneva Project\Xeneva\xnlib\lib64" xnclib.lib xnacrylic.lib freetype.lib /NODEFAULTLIB /MANIFEST:NO /PDB:"E:\Xeneva Project\Xeneva\Aurora\x64\Debug\Quince.pdb" /MAP /MAPINFO:EXPORTS /SUBSYSTEM:NATIVE /STACK:"0x100000" /LARGEADDRESSAWARE /Driver /OPT:NOREF /LTCG /TLBID:1 /ENTRY:"_start" /BASE:"0x0000400000000000" /FIXED:NO /IMPLIB:"E:\Xeneva Project\Xeneva\Aurora\x64\Debug\Quince.lib" /MACHINE:X64 /ALIGN:512 x64\Debug\QuEvent.obj
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:PROMPT /OUT:"D:\quince.exe" /INCREMENTAL /NOLOGO /LIBPATH:"E:\Xeneva Project\Xeneva\xnlib\lib64" xnclib.lib xnacrylic.lib freetype.lib QuWidgets.lib /NODEFAULTLIB /MANIFEST:NO /PDB:"E:\Xeneva Project\Xeneva\Aurora\x64\Debug\Quince.pdb" /MAP /MAPINFO:EXPORTS /SUBSYSTEM:NATIVE /STACK:"0x100000" /LARGEADDRESSAWARE /Driver /OPT:NOREF /LTCG /TLBID:1 /ENTRY:"_start" /BASE:"0x0000400000000000" /FIXED:NO /IMPLIB:"E:\Xeneva Project\Xeneva\Aurora\x64\Debug\Quince.lib" /MACHINE:X64 /ALIGN:512 x64\Debug\QuEvent.obj
          x64\Debug\QuList.obj
          x64\Debug\QuChannel.obj
          x64\Debug\_ipc_mouse.obj
@@ -83,4 +85,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:06.95
+Time Elapsed 00:00:06.00

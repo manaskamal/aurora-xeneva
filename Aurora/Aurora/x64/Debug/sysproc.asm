@@ -5,7 +5,7 @@ include listing.inc
 INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
-PUBLIC	?create__sys_process@@YAXPEBDPEAD@Z		; create__sys_process
+PUBLIC	?create__sys_process@@YAHPEBDPEAD@Z		; create__sys_process
 PUBLIC	?sys_exit@@YAXXZ				; sys_exit
 PUBLIC	?sys_kill@@YAXHH@Z				; sys_kill
 PUBLIC	?sys_set_signal@@YAXHP6AXH@Z@Z			; sys_set_signal
@@ -13,13 +13,13 @@ PUBLIC	?sys_attach_ttype@@YAXH@Z			; sys_attach_ttype
 EXTRN	x64_cli:PROC
 EXTRN	?get_current_thread@@YAPEAU_thread_@@XZ:PROC	; get_current_thread
 EXTRN	?force_sched@@YAXXZ:PROC			; force_sched
-EXTRN	?create_process@@YAXPEBDPEAD@Z:PROC		; create_process
+EXTRN	?create_process@@YAHPEBDPEAD@Z:PROC		; create_process
 EXTRN	?kill_process@@YAXXZ:PROC			; kill_process
 EXTRN	?kill_process_by_id@@YAXG@Z:PROC		; kill_process_by_id
 pdata	SEGMENT
-$pdata$?create__sys_process@@YAXPEBDPEAD@Z DD imagerel $LN3
-	DD	imagerel $LN3+39
-	DD	imagerel $unwind$?create__sys_process@@YAXPEBDPEAD@Z
+$pdata$?create__sys_process@@YAHPEBDPEAD@Z DD imagerel $LN3
+	DD	imagerel $LN3+47
+	DD	imagerel $unwind$?create__sys_process@@YAHPEBDPEAD@Z
 $pdata$?sys_exit@@YAXXZ DD imagerel $LN3
 	DD	imagerel $LN3+24
 	DD	imagerel $unwind$?sys_exit@@YAXXZ
@@ -34,8 +34,8 @@ $pdata$?sys_attach_ttype@@YAXH@Z DD imagerel $LN3
 	DD	imagerel $unwind$?sys_attach_ttype@@YAXH@Z
 pdata	ENDS
 xdata	SEGMENT
-$unwind$?create__sys_process@@YAXPEBDPEAD@Z DD 010e01H
-	DD	0420eH
+$unwind$?create__sys_process@@YAHPEBDPEAD@Z DD 010e01H
+	DD	0620eH
 $unwind$?sys_exit@@YAXXZ DD 010401H
 	DD	04204H
 $unwind$?sys_kill@@YAXHH@Z DD 010c01H
@@ -52,13 +52,13 @@ tv66 = 32
 id$ = 64
 ?sys_attach_ttype@@YAXH@Z PROC				; sys_attach_ttype
 
-; 40   : void sys_attach_ttype (int id) {
+; 41   : void sys_attach_ttype (int id) {
 
 $LN3:
 	mov	DWORD PTR [rsp+8], ecx
 	sub	rsp, 56					; 00000038H
 
-; 41   : 	get_current_thread()->ttype = id;
+; 42   : 	get_current_thread()->ttype = id;
 
 	movsxd	rax, DWORD PTR id$[rsp]
 	mov	QWORD PTR tv66[rsp], rax
@@ -66,7 +66,7 @@ $LN3:
 	mov	rcx, QWORD PTR tv66[rsp]
 	mov	QWORD PTR [rax+232], rcx
 
-; 42   : }
+; 43   : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -79,19 +79,19 @@ signo$ = 48
 handler$ = 56
 ?sys_set_signal@@YAXHP6AXH@Z@Z PROC			; sys_set_signal
 
-; 35   : void sys_set_signal (int signo, sig_handler handler) {
+; 36   : void sys_set_signal (int signo, sig_handler handler) {
 
 $LN3:
 	mov	QWORD PTR [rsp+16], rdx
 	mov	DWORD PTR [rsp+8], ecx
 	sub	rsp, 40					; 00000028H
 
-; 36   : 	x64_cli();
+; 37   : 	x64_cli();
 
 	call	x64_cli
 
-; 37   : 	//get_current_thread()->signals[signo] = handler;
-; 38   : }
+; 38   : 	//get_current_thread()->signals[signo] = handler;
+; 39   : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -104,35 +104,35 @@ pid$ = 48
 signo$ = 56
 ?sys_kill@@YAXHH@Z PROC					; sys_kill
 
-; 18   : void sys_kill (int pid, int signo) {
+; 19   : void sys_kill (int pid, int signo) {
 
 $LN3:
 	mov	DWORD PTR [rsp+16], edx
 	mov	DWORD PTR [rsp+8], ecx
 	sub	rsp, 40					; 00000028H
 
-; 19   : 	//x64_cli();
-; 20   : 	/*thread_t * t = (thread_t*)thread_iterate_ready_list(pid);
-; 21   : 	if (t == NULL) {
-; 22   : 		t = (thread_t*)thread_iterate_block_list(pid);
-; 23   : 	}
-; 24   : 
-; 25   : 	if (t == NULL)
-; 26   : 		return;
-; 27   : 
-; 28   : 	t->signal_interrupt = true;*/
-; 29   : 
-; 30   : 	kill_process_by_id(pid);
+; 20   : 	//x64_cli();
+; 21   : 	/*thread_t * t = (thread_t*)thread_iterate_ready_list(pid);
+; 22   : 	if (t == NULL) {
+; 23   : 		t = (thread_t*)thread_iterate_block_list(pid);
+; 24   : 	}
+; 25   : 
+; 26   : 	if (t == NULL)
+; 27   : 		return;
+; 28   : 
+; 29   : 	t->signal_interrupt = true;*/
+; 30   : 
+; 31   : 	kill_process_by_id(pid);
 
 	movzx	ecx, WORD PTR pid$[rsp]
 	call	?kill_process_by_id@@YAXG@Z		; kill_process_by_id
 
-; 31   : 	force_sched();
+; 32   : 	force_sched();
 
 	call	?force_sched@@YAXXZ			; force_sched
 
-; 32   : 	//! For now, no signals are supported, just kill the process
-; 33   : }
+; 33   : 	//! For now, no signals are supported, just kill the process
+; 34   : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -143,24 +143,24 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 ?sys_exit@@YAXXZ PROC					; sys_exit
 
-; 11   : void sys_exit () {
+; 12   : void sys_exit () {
 
 $LN3:
 	sub	rsp, 40					; 00000028H
 
-; 12   : 	x64_cli();	
+; 13   : 	x64_cli();	
 
 	call	x64_cli
 
-; 13   : 	kill_process();
+; 14   : 	kill_process();
 
 	call	?kill_process@@YAXXZ			; kill_process
 
-; 14   : 	force_sched();
+; 15   : 	force_sched();
 
 	call	?force_sched@@YAXXZ			; force_sched
 
-; 15   : }
+; 16   : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -169,31 +169,37 @@ _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\sysserv\sysproc.cpp
 _TEXT	SEGMENT
-name$ = 48
-procnm$ = 56
-?create__sys_process@@YAXPEBDPEAD@Z PROC		; create__sys_process
+id$ = 32
+name$ = 64
+procnm$ = 72
+?create__sys_process@@YAHPEBDPEAD@Z PROC		; create__sys_process
 
-; 5    : void create__sys_process (const char* name, char* procnm) {
+; 5    : int create__sys_process (const char* name, char* procnm) {
 
 $LN3:
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
-	sub	rsp, 40					; 00000028H
+	sub	rsp, 56					; 00000038H
 
 ; 6    : 	x64_cli();
 
 	call	x64_cli
 
-; 7    : 	create_process (name, procnm);
+; 7    : 	int id = create_process (name, procnm);
 
 	mov	rdx, QWORD PTR procnm$[rsp]
 	mov	rcx, QWORD PTR name$[rsp]
-	call	?create_process@@YAXPEBDPEAD@Z		; create_process
+	call	?create_process@@YAHPEBDPEAD@Z		; create_process
+	mov	DWORD PTR id$[rsp], eax
 
-; 8    : }
+; 8    : 	return id;
 
-	add	rsp, 40					; 00000028H
+	mov	eax, DWORD PTR id$[rsp]
+
+; 9    : }
+
+	add	rsp, 56					; 00000038H
 	ret	0
-?create__sys_process@@YAXPEBDPEAD@Z ENDP		; create__sys_process
+?create__sys_process@@YAHPEBDPEAD@Z ENDP		; create__sys_process
 _TEXT	ENDS
 END

@@ -31,6 +31,6 @@ void post_box_receive_msg (postmsg_t *msg) {
 	postmsg_t *tmsg = (postmsg_t*)0xFFFFFFFFB0000000;
 	if (tmsg->type != 0 && tmsg->to_id == app_id) {
 		memcpy (msg,tmsg,sizeof(postmsg_t));
-		memset ((void*)0xFFFFFFFFB0000000, 0, 4096);
+		memset ((void*)0xFFFFFFFFB0000000, 0, sizeof(postmsg_t));
 	}
 }

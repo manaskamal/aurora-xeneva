@@ -14,8 +14,17 @@
 
 #include <stdint.h>
 
+typedef struct _qu_dock_ {
+	char *icon_path;
+	char* title;
+	unsigned char* icon_data;
+}QuDockEntry;
+
+
 //! Initialize Quince Taskbar
-extern void QuTaskbarInit ();
-extern void QuTaskbarRepaint ();
+extern void QuDockInit ();
+extern void QuDockRepaint ();
+extern void QuDockAdd (QuDockEntry *entry);
+extern void QuDockRemove (QuDockEntry *entry);
 extern void QuRamWidget ();
 #endif

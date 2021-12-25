@@ -14,6 +14,20 @@
 
 #include <stdint.h>
 
+/**
+ * SYSTEM DEFINED ICONS 
+ */
+#define SYSTEM_ICON_XENEVA   1
+#define SYSTEM_ICON_CONSOLE  2
+#define SYSTEM_ICON_FILE     3
+#define SYSTEM_ICON_FILE_MANAGER 4
+#define SYSTEM_ICON_FOLDER 5
+#define SYSTEM_ICON_SEARCH 6
+#define SYSTEM_ICON_SETTINGS 7
+#define SYSTEM_ICON_BATTERY 8
+#define SYSTEM_ICON_NETWORK 9
+#define SYSTEM_ICON_APPLICATION 10
+
 #ifdef __cplusplus
 extern "C" {
 #endif

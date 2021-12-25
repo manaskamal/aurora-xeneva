@@ -18,6 +18,7 @@
 #define QU_WIN_CONFIG_AUTO_INVALIDATE 6
 #define QU_WIN_SET_SIZE 7
 #define QU_WIN_AUTO_INVALIDATE_RGN 8
+#define QU_WIN_SET_ICON 9
 #define QU_WIN_SET_POS  14
 
 //! Window Attributes
@@ -57,6 +58,7 @@ typedef struct _QuWinInfo_ {
 	bool maximize;
 	bool minimize;
 	bool alpha;
+	char data[50];
 }QuWinInfo;
 
 typedef struct _QU_WIN_ {
@@ -118,4 +120,5 @@ extern void QuWindowAddControlEvent (int type, void (*Event)(QuWinControl *contr
 extern void QuWindowHandleKey (int code);
 extern void QuWindowRepaint();
 extern void QuWindowSetTransparency (bool bit);
+extern void QuWindowSetIcon (int icon_type);
 #endif

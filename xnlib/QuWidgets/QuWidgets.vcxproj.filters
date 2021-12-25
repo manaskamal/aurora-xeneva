@@ -13,6 +13,12 @@
     <Filter Include="source\QuUtils">
       <UniqueIdentifier>{9b7814b3-dcc0-400e-b6f4-5e4e51df1e8a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\QuImage">
+      <UniqueIdentifier>{f536bc17-fa08-4202-ad79-4d8f7bc05c44}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\QuImage">
+      <UniqueIdentifier>{7ea765bf-1d82-402f-bb20-4440a72c7e60}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\QuBase.h">
@@ -66,6 +72,12 @@
     <ClInclude Include="include\QuPopupMenu.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="include\QuIcon.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\QuImage\QuBmpImage.h">
+      <Filter>include\QuImage</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\QuBase.cpp">
@@ -112,6 +124,12 @@
     </ClCompile>
     <ClCompile Include="source\QuPopupMenu.cpp">
       <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\QuIcon.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\QuImage\QuBmpImage.cpp">
+      <Filter>source\QuImage</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

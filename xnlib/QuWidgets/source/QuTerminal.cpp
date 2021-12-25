@@ -46,7 +46,7 @@ void QuTermPrint (QuTerminal *term, char s, uint32_t color) {
 			QuTermScroll(term);
 		else {
 			term->cursor_y++;
-			term->ypos += 13;
+			term->ypos += 13; //acrylic_font_get_height(" ");
 		}
 		term->last_x = term->xpos;
 		term->xpos = 0;
@@ -63,7 +63,7 @@ void QuTermPrint (QuTerminal *term, char s, uint32_t color) {
 			term->xpos = 0;
 		}else {
 			term->cursor_x--;
-			term->xpos -= 8;
+			term->xpos -= 8; //acrylic_font_get_length(" ");
 		}
 
 		term->text[term->cursor_y * TERM_WIDTH + term->cursor_x] = '_';
@@ -82,7 +82,7 @@ void QuTermPrint (QuTerminal *term, char s, uint32_t color) {
 	term->text[term->cursor_y * TERM_WIDTH + term->cursor_x] = s;
 	QuTermFlush(term, QuGetWindow());
 	term->cursor_x++;
-	term->xpos += 8;
+	term->xpos += 8; //acrylic_font_get_length(" ");
 	term->text[term->cursor_y * TERM_WIDTH + term->cursor_x] = '_';
 	QuTermFlush(term, QuGetWindow());
 	
@@ -140,6 +140,7 @@ void QuTermFlush (QuTerminal *term, QuWindow* win) {
 	acrylic_draw_rect_filled(win->ctx,term->wid.x + term->xpos + 1,term->wid.y + 23 + term->ypos,8,13,BLACK);
 	if (c != '\n' && c != '\0') {
 		acrylic_draw_arr_font (win->ctx,term->wid.x + term->xpos,term->wid.y + 23 + term->ypos,c, WHITE);
+		//acrylic_font_draw_string (win->ctx,&c,term->wid.x + term->xpos,term->wid.y + 23 + term->ypos,13,WHITE);
 	}
 	QuPanelUpdate (win,term->wid.x, term->wid.y + 23+ term->ypos, win->w, 14, false);
 }
