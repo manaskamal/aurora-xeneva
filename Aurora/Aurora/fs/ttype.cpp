@@ -1,17 +1,40 @@
-///!
-///!  Copyright (C) Manas Kamal Choudhury 2021
-///!
-///!  ttype.h -- Tele type device file
-///!
-///!  /PROJECT - Aurora's Xeneva v1.0
-///!  /AUTHOR  - Manas Kamal Choudhury 2021
-///!  
-///!=================================================
 
+/**
+ * BSD 2-Clause License
+ *
+ * Copyright (c) 2021, Manas Kamal Choudhury
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer.
+ *
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * /PROJECT - Aurora's Xeneva v1.0
+ * @ttype.cpp -- tele type driver
+ *
+ **/
 #include <fs\ttype.h>
 #include <mm.h>
 #include <stdio.h>
 #include <arch\x86_64\thread.h>
+
 
 
 int master_count = 1;
@@ -65,22 +88,28 @@ void ttype_master_read (vfs_node_t *file, uint8_t* buffer,uint32_t length) {
 }
 
 void ttype_master_write (vfs_node_t *file, uint8_t* buffer, uint32_t length) {
-	
 	vfs_node_t *node = get_current_thread()->fd[get_current_thread()->master_fd];
 	ttype_t *type = (ttype_t*)node->device;
 	for (int i = 0; i < 32; i++)
 		type->in_buffer[i] = buffer[i];
+	
+	thread_t *dest = thread_iterate_ready_list(type->pid);
+	if (dest == NULL)
+		dest = thread_iterate_block_list(type->pid);
 
+	if (dest != NULL && dest->state == THREAD_STATE_BLOCKED)
+		unblock_thread(dest);
 }
 
 void ttype_slave_read (vfs_node_t *file, uint8_t* buffer,uint32_t length) {
 	vfs_node_t *node = get_current_thread()->fd[get_current_thread()->slave_fd];
 	ttype_t *type = (ttype_t*)node->device;
-	for (int i = 0; i < 32; i++)
+	for (int i = 0; i < 32; i++) {
 		buffer[i] = type->in_buffer[i];
-	
-	if (buffer[1] != 0)
-		memset(type->in_buffer, 0, 32);
+		//type->in_buffer[i] = 0;
+	}
+	/*if (buffer[1] != 0)*/
+	memset(type->in_buffer, 0, 32);
 }
 
 void ttype_slave_write (vfs_node_t *file, uint8_t* buffer, uint32_t length) {
@@ -103,8 +132,10 @@ ttype_t * get_ttype (int id) {
 void ttype_create (int* master_fd, int* slave_fd) {
 	ttype_t *tty= (ttype_t*)pmmngr_alloc();
 	memset (tty, 0, 4096);
+	memset (tty->in_buffer, 0, 32);
+	memset (tty->out_buffer, 0, 32);
 	tty->id = slave_count;
-
+	tty->pid = get_current_thread()->id;
 	///! Create the namings
 	char m_value[2];
 	char s_value[2];

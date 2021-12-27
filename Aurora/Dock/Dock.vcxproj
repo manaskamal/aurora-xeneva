@@ -130,7 +130,7 @@
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <OutputFile>D:\dock.exe</OutputFile>
       <AdditionalLibraryDirectories>E:\Xeneva Project\Xeneva\xnlib\lib64;</AdditionalLibraryDirectories>
-      <AdditionalDependencies>xnclib.lib;xnacrylic.lib;QuWidgets.lib;</AdditionalDependencies>
+      <AdditionalDependencies>xnclib.lib;</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
       <EnableUAC>false</EnableUAC>
       <GenerateMapFile>true</GenerateMapFile>

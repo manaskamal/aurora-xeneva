@@ -28,7 +28,10 @@
 
 
 int main (int argc, char*argv[]) {
+	printf ("Copyright (C) Manas Kamal Choudhury\n");
+	printf ("Dock v1.0\n");
 	while(1) {
 		sys_wait();
+		//sys_sleep(100);
 	}
 }

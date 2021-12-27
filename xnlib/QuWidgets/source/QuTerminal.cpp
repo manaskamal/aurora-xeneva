@@ -17,6 +17,7 @@
 #include <color.h>
 #include <string.h>
 #include <QuKeycodeHelper.h>
+#include <sys\_term.h>
 
 
 #define TERM_WIDTH 74

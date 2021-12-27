@@ -1,0 +1,36 @@
+Aurora Kernel TODO:
+==============================
+
+Drivers
+----------------------------------
+NVMe
+AHCI
+E1000 Network Driver(MUST)
+USB 3.0 (xHCI)
+USB Mass-Storage
+FAT32 Write support
+HDAudio -Codec - Realtek
+USB Camera (WebCam)
+Bluetooth
+Wifi 
+Intel UHD Graphics
+ACPI/AML 
+
+Processor Related:
+============================
+SMP Support
+MSI/MSI-X allocation
+Kernel Memory Security
+Address Randomizer
+Kernel Memory Unmap after initialization
+Network Stack
+
+
+User-Space Related
+================================
+Audio Mixer
+High-Quality Window Manager
+
+
+
+

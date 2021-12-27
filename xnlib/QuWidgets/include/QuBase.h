@@ -1,11 +1,34 @@
-///!   Copyright (C) Manas Kamal Choudhury 2021
-///!
-///!   QuBase -- Quince Base Object
-///! 
-///!   /PROJECT - Aurora's Xeneva
-///!   /AUTHOR  - Manas Kamal Choudhury
-///!
-///!===============================================
+/**
+ * BSD 2-Clause License
+ *
+ * Copyright (c) 2021, Manas Kamal Choudhury
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer.
+ *
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ *   /PROJECT - Aurora's Xeneva v1.0
+ *   @QuBase.h -- QuWidget Library initializer
+ *
+ **/
 
 #ifndef __QU_BASE_H__
 #define __QU_BASE_H__
@@ -41,7 +64,10 @@
 #define QU_CHANNEL_ADDRESS   0xFFFFD00000000000  //Client Send address
 #define QU_CHANNEL_RECEIVER  0xFFFFFD0000000000  //Client receiver address
 
-
+/**
+ * QuMessage : Message format that get transferred
+ * to and from Server / Client
+ */
 typedef struct __QuMessage__ {
 	uint8_t type;
 	uint8_t to_id;
@@ -68,10 +94,32 @@ typedef struct _QuObject_ {
 	int h;
 }QuObject;
 
+/**
+ * QuChannelPut -- Put a message for Window Manager
+ * @param msg -- Message address
+ * @param to_id -- Window Manager id
+ */
 extern void QuChannelPut (QuMessage *msg, uint16_t to_id);
+
+/**
+ * QuChannelGet -- Get a message from Window Manager
+ * @param msg -- Message address
+ */
 extern void QuChannelGet (QuMessage *msg);
+
+/**
+ * QuRegisterApplication -- Register current application as GUI
+ * @param win -- Window Address
+ */
 extern void QuRegisterApplication (QuWindow* win);
+
+/**
+ * QuGetAppId -- Returns current application id
+ * @return -- current application id
+ */
 extern uint16_t QuGetAppId();
+
+
 extern void QuApplicationRegisterWindow (QuWindow *win);
 extern QuWindow* QuApplicationWindowGet (int id);
 #endif

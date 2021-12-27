@@ -1,13 +1,34 @@
-/** 
- *  Copyright (C) Manas Kamal Choudhury 2021
+/**
+ * BSD 2-Clause License
  *
- *  init.cpp -- Initialization of the kernel Aurora
+ * Copyright (c) 2021, Manas Kamal Choudhury
+ * All rights reserved.
  *
- *  /PROJECT - Aurora v1.0
- *  /AUTHOR  - Manas Kamal Choudhury
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
  *
- *======================================================
- */
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer.
+ *
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * /PROJECT - Aurora's Xeneva v1.0
+ * @init.cpp -- Main kernel entry 
+ *
+ **/
 
 #include <_xnboot.h>
 #include <hal.h>
@@ -60,39 +81,10 @@
 #include <arch\x86_64\pic.h>
 #endif
 
-typedef struct _wav_riff_ {
-	char chunk_id[4];
-	uint32_t chunk_size;
-	char format[4];
-}riff_t;
 
-typedef struct _wav_fmt_ {
-	char sub_chunk_1_id[4];
-	uint32_t subchunk1_size;
-	uint16_t audio_format;
-	uint16_t num_channel;
-	uint32_t sample_rate;
-	uint32_t byte_rate;
-	uint16_t block_align;
-	uint16_t bits_per_sample;
-}fmt_t;
-
-typedef struct _wav_data_ {
-	char sub_chunk2id[4];
-	uint32_t subchunk2size;
-}data_t;
-
-typedef struct _wav_format_ {
-	riff_t riff;
-	fmt_t fmt;
-	data_t data;
-}wav;
-
-
-//! the main entry point of the kernel
-//! @param info -- The boot information passed by
-//!                XNLDR 
-
+/**
+ * Runtime setup
+ */
 extern "C" int _fltused = 1;
 
 void* __cdecl ::operator new(size_t size) {
@@ -108,16 +100,10 @@ void __cdecl operator delete (void* p) {
 }
 
 
- 
 
 /**========================================
  ** the main entry routine -- _kmain
- **
- ** @param info -- Boot time information 
- **                passed to kernel by
- **                Xnldr
- **========================================
- */
+ **/
 void _kmain () {
 	KERNEL_BOOT_INFO *info = (KERNEL_BOOT_INFO*)0xFFFFE00000000000;
 	//! Initialize the memory mappings

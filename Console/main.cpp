@@ -16,6 +16,7 @@
 #include <sys\_term.h>
 #include <sys\_file.h>
 #include <sys\_xeneva.h>
+#include <sys\_kybrd.h>
 #include <sys\mmap.h>
 #include <sys\ioquery.h>
 #include <canvas.h>
@@ -38,8 +39,10 @@
 #include  FT_FREETYPE_H
 
 int timer_id = 0;
-
+int master_fd, slave_fd;
 bool focus_lost = false;
+
+
 void QuActions (QuMessage *msg) {
 	if (msg->type == QU_CANVAS_MOVE) {
 		QuWindowMove(QuGetWindow(),msg->dword, msg->dword2);
@@ -120,33 +123,36 @@ int main (int argc, char* argv[]) {
 	acrylic_font_draw_string(win->ctx, "Copyright (C) Manas Kamal Choudhury",10,win->h / 2 + 25,32,GRAY);
 	QuPanelUpdate(win,0,0,win->w, win->h, true);
 
-	int master_fd, slave_fd;
 	sys_ttype_create (&master_fd, &slave_fd);
 
 	unsigned char* buffer = (unsigned char*)malloc(32);
 	memset (buffer, 0, 32);
 
-	timer_id = sys_create_timer (1000, get_current_pid());
-	sys_start_timer(timer_id);
+	/*timer_id = sys_create_timer (1000, get_current_pid());
+	sys_start_timer(timer_id);*/
 
-	/*int child_id = create_process("/dock.exe", "dock");
-	sys_ttype_dup(child_id, master_fd);*/
+	int child_id = create_process("/dock.exe", "dock");
+	//sys_ttype_dup(child_id, master_fd);
+
+	UFILE slave;
+	slave.size = 4096;
+	slave.flags = 0;
 
 	QuMessage qmsg;
 	uint16_t app_id = QuGetAppId();
 	postmsg_t msg;
 	while(1) { 
-		post_box_receive_msg(&msg);
-		if (msg.type == SYSTEM_MESSAGE_TIMER_EVENT) {
-			blink_cursor();
-			memset(&msg, 0, sizeof(postmsg_t));
-		}
+		//post_box_receive_msg(&msg);
+		//if (msg.type == SYSTEM_MESSAGE_TIMER_EVENT) {
+		//	//blink_cursor();
+		//	memset(&msg, 0, sizeof(postmsg_t));
+		//}
 
 		QuChannelGet(&qmsg);
 		if (qmsg.to_id == app_id)
 			QuActions(&qmsg);
 
-		sys_read_file (slave_fd,buffer,NULL);
+		sys_read_file (slave_fd,buffer,&slave);
 
 	    for (int i = 0; i < 32; i++) {
 			if (buffer[i] != 0) {

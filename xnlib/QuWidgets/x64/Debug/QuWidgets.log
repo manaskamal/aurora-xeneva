@@ -1,4 +1,4 @@
-﻿Build started 25-12-2021 আবেলি 10:04:12.
+﻿Build started 26-12-2021 আবেলি 7:06:02.
      1>Project "E:\Xeneva Project\Xeneva\xnlib\QuWidgets\QuWidgets.vcxproj" on node 2 (Rebuild target(s)).
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\xnlib\xnclib" /I"E:\Xeneva Project\Xeneva\xnlib\QuWidgets\include" /I"E:\Xeneva Project\Xeneva\xnlib\xnacrylic\include" /Zi /nologo /W4 /WX- /sdl- /MP /Od /D ARCH_X64 /D _MBCS /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt source\QuBase.cpp source\QuButton.cpp source\QuContextMenu.cpp source\QuEditBox.cpp source\QuIcon.cpp source\QuImage\QuBmpImage.cpp source\QuKeycodeHelper.cpp source\QuMenubar.cpp source\QuPanel.cpp source\QuPopupMenu.cpp source\QuScrollbar.cpp source\QuSlider.cpp source\QuTerminal.cpp source\QuTextbox.cpp source\QuUtils\QuList.cpp source\QuWindow.cpp source\QuWindowControl.cpp
@@ -39,13 +39,13 @@
          QuTerminal.cpp
      1>E:\Xeneva Project\Xeneva\xnlib\xnclib\ctype.h(33): warning C4005: 'isascii' : macro redefinition
                  E:\Xeneva Project\Xeneva\xnlib\xnclib\ctype.h(22) : see previous definition of 'isascii'
-     1>source\QuTerminal.cpp(39): warning C4100: 'color' : unreferenced formal parameter
-     1>source\QuTerminal.cpp(94): warning C4100: 'y' : unreferenced formal parameter
-     1>source\QuTerminal.cpp(94): warning C4100: 'x' : unreferenced formal parameter
-     1>source\QuTerminal.cpp(94): warning C4100: 'clicked' : unreferenced formal parameter
-     1>source\QuTerminal.cpp(94): warning C4100: 'code' : unreferenced formal parameter
-     1>source\QuTerminal.cpp(94): warning C4100: 'win' : unreferenced formal parameter
-     1>source\QuTerminal.cpp(94): warning C4100: 'wid' : unreferenced formal parameter
+     1>source\QuTerminal.cpp(40): warning C4100: 'color' : unreferenced formal parameter
+     1>source\QuTerminal.cpp(95): warning C4100: 'y' : unreferenced formal parameter
+     1>source\QuTerminal.cpp(95): warning C4100: 'x' : unreferenced formal parameter
+     1>source\QuTerminal.cpp(95): warning C4100: 'clicked' : unreferenced formal parameter
+     1>source\QuTerminal.cpp(95): warning C4100: 'code' : unreferenced formal parameter
+     1>source\QuTerminal.cpp(95): warning C4100: 'win' : unreferenced formal parameter
+     1>source\QuTerminal.cpp(95): warning C4100: 'wid' : unreferenced formal parameter
          QuSlider.cpp
          QuScrollbar.cpp
      1>source\QuScrollbar.cpp(54): warning C4189: 'update' : local variable is initialized but not referenced
@@ -138,4 +138,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:04.77
+Time Elapsed 00:00:03.58
