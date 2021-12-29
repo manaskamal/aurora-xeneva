@@ -184,7 +184,7 @@ $LN4@message_re:
 	movzx	eax, WORD PTR [rax+58]
 	mov	DWORD PTR tv68[rsp], eax
 	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
-	movzx	eax, WORD PTR [rax+226]
+	movzx	eax, WORD PTR [rax+234]
 	mov	ecx, DWORD PTR tv68[rsp]
 	cmp	ecx, eax
 	jne	SHORT $LN1@message_re

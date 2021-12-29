@@ -6,9 +6,9 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 CONST	SEGMENT
-$SG3528	DB	'fb', 00H
+$SG3532	DB	'fb', 00H
 	ORG $+5
-$SG3529	DB	'/dev/snd', 00H
+$SG3533	DB	'/dev/snd', 00H
 CONST	ENDS
 PUBLIC	?sound_initialize@@YAXXZ			; sound_initialize
 PUBLIC	?snd_io_query@@YAHPEAU_vfs_node_@@HPEAX@Z	; snd_io_query
@@ -94,7 +94,7 @@ $LN3:
 ; 33   : 	strcpy (snd->filename, "fb");
 
 	mov	rax, QWORD PTR snd$[rsp]
-	lea	rdx, OFFSET FLAT:$SG3528
+	lea	rdx, OFFSET FLAT:$SG3532
 	mov	rcx, rax
 	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
 
@@ -157,7 +157,7 @@ $LN3:
 ; 45   : 	vfs_mount ("/dev/snd", snd);
 
 	mov	rdx, QWORD PTR snd$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3529
+	lea	rcx, OFFSET FLAT:$SG3533
 	call	?vfs_mount@@YAXPEADPEAU_vfs_node_@@@Z	; vfs_mount
 
 ; 46   : }

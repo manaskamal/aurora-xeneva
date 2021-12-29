@@ -13,6 +13,7 @@
 #include <_null.h>
 #include <pmmngr.h>
 #include <stdio.h>
+#include <arch\x86_64\cpu.h>
 #include <ipc\postbox.h>
 
 timer_t *timer_head = NULL;
@@ -141,6 +142,7 @@ int find_timer_id (uint16_t id) {
 				 
   */
 void timer_fire () {
+	x64_cli();
 	if (timer_head != NULL) {
 		for (timer_t *t = timer_head; t != NULL; t = t->next) {
 			if (t->start) {

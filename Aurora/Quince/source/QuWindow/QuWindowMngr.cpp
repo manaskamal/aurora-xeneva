@@ -194,7 +194,6 @@ void QuWindowMngr_MoveFocusWindow (int x, int y) {
 	if (draggable_win->y + draggable_win->height >= canvas_get_height())
 		draggable_win->y = canvas_get_height() - draggable_win->height;*/
 
-
 	for (int i = 0; i < WindowList->pointer; i++) {
 		QuWindow* win = (QuWindow*)QuListGetAt (WindowList,i);
 		//if (win == draggable_win) continue;

@@ -13,6 +13,7 @@
 #include <arch\x86_64\exception.h>
 #include <arch\x86_64\user64.h>
 #include <arch\x86_64\pic.h>
+#include <stdio.h>
 #include <arch\x86_64\apic.h>
 
 
@@ -223,4 +224,15 @@ void hal_x86_64_setup_int () {
 	//! initialize the syscall entries
 	initialize_syscall ();
 	//x64_sti ();
+}
+
+void hal_x86_64_feature_check () {
+	size_t a, b, c, d;
+	x64_cpuid(1, &a, &b, &c, &d, 0);
+	if ((d & (1<<25)) != 0) {
+		printf ("x86_64:SSE supported\n");
+		if ((d & (1<<24)) != 0) {
+			printf ("x86_64:fxsave & fxrstor supported\n");
+		}
+	}
 }

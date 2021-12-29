@@ -6,9 +6,9 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 CONST	SEGMENT
-$SG3405	DB	'Ethernet Protocol Received ->> ARP type', 0aH, 00H
+$SG3409	DB	'Ethernet Protocol Received ->> ARP type', 0aH, 00H
 	ORG $+7
-$SG3407	DB	'Ethernet Protocol Received packet ->> IP Packet', 0aH, 00H
+$SG3411	DB	'Ethernet Protocol Received packet ->> IP Packet', 0aH, 00H
 CONST	ENDS
 PUBLIC	?ethernet_send_packet@@YAHPEAE0HG@Z		; ethernet_send_packet
 PUBLIC	?ethernet_handle_packet@@YAXPEAU_ethernet_frame_@@H@Z ; ethernet_handle_packet
@@ -73,7 +73,7 @@ $LN5:
 
 ; 49   : 		printf ("Ethernet Protocol Received ->> ARP type\n");
 
-	lea	rcx, OFFSET FLAT:$SG3405
+	lea	rcx, OFFSET FLAT:$SG3409
 	call	?printf@@YAXPEBDZZ			; printf
 $LN2@ethernet_h:
 
@@ -92,7 +92,7 @@ $LN2@ethernet_h:
 
 ; 55   : 		printf ("Ethernet Protocol Received packet ->> IP Packet\n");
 
-	lea	rcx, OFFSET FLAT:$SG3407
+	lea	rcx, OFFSET FLAT:$SG3411
 	call	?printf@@YAXPEBDZZ			; printf
 $LN1@ethernet_h:
 

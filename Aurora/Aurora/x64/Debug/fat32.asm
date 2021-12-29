@@ -32,21 +32,21 @@ _BSS	SEGMENT
 ?root_dir_cache@@3PEAEEA DQ 01H DUP (?)			; root_dir_cache
 _BSS	ENDS
 CONST	SEGMENT
-$SG3339	DB	'%s             %d bytes', 0aH, 00H
+$SG3343	DB	'%s             %d bytes', 0aH, 00H
 	ORG $+7
-$SG3347	DB	'%s             %d bytes', 0aH, 00H
+$SG3351	DB	'%s             %d bytes', 0aH, 00H
 	ORG $+3
-$SG3589	DB	'/', 00H
+$SG3593	DB	'/', 00H
 	ORG $+2
-$SG3474	DB	'Root Dir entries scanning', 0aH, 00H
+$SG3478	DB	'Root Dir entries scanning', 0aH, 00H
 	ORG $+1
-$SG3590	DB	'/', 00H
+$SG3594	DB	'/', 00H
 	ORG $+2
-$SG3489	DB	'Other file size -> %s, dirent attrib -> %x, count ->%d', 0aH
+$SG3493	DB	'Other file size -> %s, dirent attrib -> %x, count ->%d', 0aH
 	DB	00H
-$SG3571	DB	'Empty entry found', 0aH, 00H
+$SG3575	DB	'Empty entry found', 0aH, 00H
 	ORG $+5
-$SG3591	DB	'File System registered', 0aH, 00H
+$SG3595	DB	'File System registered', 0aH, 00H
 CONST	ENDS
 PUBLIC	?initialize_fat32@@YAXXZ			; initialize_fat32
 PUBLIC	?fat32_open@@YA?AU_vfs_node_@@PEAU1@PEAD@Z	; fat32_open
@@ -1768,7 +1768,7 @@ $LN6@fat32_list:
 	mov	rax, QWORD PTR dir$[rsp]
 	mov	r8d, DWORD PTR [rax+28]
 	lea	rdx, QWORD PTR filename$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3339
+	lea	rcx, OFFSET FLAT:$SG3343
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 326  : 		dir++;
@@ -1812,7 +1812,7 @@ $LN3@fat32_list:
 	mov	rax, QWORD PTR dir2$[rsp]
 	mov	r8d, DWORD PTR [rax+28]
 	lea	rdx, QWORD PTR filename2$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3347
+	lea	rcx, OFFSET FLAT:$SG3351
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 334  : 		dir2++;
@@ -1852,7 +1852,7 @@ $LN3:
 ; 776  : 	strcpy (fsys->filename, "/");
 
 	mov	rax, QWORD PTR fsys$[rsp]
-	lea	rdx, OFFSET FLAT:$SG3589
+	lea	rdx, OFFSET FLAT:$SG3593
 	mov	rcx, rax
 	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
 
@@ -1917,12 +1917,12 @@ $LN3:
 ; 788  : 	vfs_mount ("/", fsys);
 
 	mov	rdx, QWORD PTR fsys$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3590
+	lea	rcx, OFFSET FLAT:$SG3594
 	call	?vfs_mount@@YAXPEADPEAU_vfs_node_@@@Z	; vfs_mount
 
 ; 789  : 	printf ("File System registered\n");
 
-	lea	rcx, OFFSET FLAT:$SG3591
+	lea	rcx, OFFSET FLAT:$SG3595
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 790  : }
@@ -2063,7 +2063,7 @@ $LN4@create_dir:
 
 ; 717  : 				printf ("Empty entry found\n");
 
-	lea	rcx, OFFSET FLAT:$SG3571
+	lea	rcx, OFFSET FLAT:$SG3575
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 718  : 				memset(dirent, 0, sizeof(fat32_dir));
@@ -2751,7 +2751,7 @@ $LN9:
 ; 545  : 
 ; 546  : 	printf ("Root Dir entries scanning\n");
 
-	lea	rcx, OFFSET FLAT:$SG3474
+	lea	rcx, OFFSET FLAT:$SG3478
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 547  : 	fat32_dir *dirent;
@@ -2813,7 +2813,7 @@ $LN3@list_fat_e:
 	mov	r9d, DWORD PTR i$1[rsp]
 	mov	r8d, eax
 	lea	rdx, QWORD PTR filename2$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3489
+	lea	rcx, OFFSET FLAT:$SG3493
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 558  : 			dirent++;

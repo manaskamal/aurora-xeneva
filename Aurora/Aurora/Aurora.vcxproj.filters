@@ -61,9 +61,6 @@
     <Filter Include="source\drivers\svga">
       <UniqueIdentifier>{d3178b2a-86db-46a4-82ab-bd88c9e146c5}</UniqueIdentifier>
     </Filter>
-    <Filter Include="source\drivers\ac97">
-      <UniqueIdentifier>{88aab75d-68cc-4c62-a4f3-7d01c5865c63}</UniqueIdentifier>
-    </Filter>
     <Filter Include="include\drivers\ac97">
       <UniqueIdentifier>{2cc0df7d-60c8-4062-b400-dc5b78561d68}</UniqueIdentifier>
     </Filter>
@@ -488,9 +485,6 @@
     <ClCompile Include="arch\x86_64\map.cpp">
       <Filter>source\arch\x86_64</Filter>
     </ClCompile>
-    <ClCompile Include="drivers\ac97\ac97.cpp">
-      <Filter>source\drivers\ac97</Filter>
-    </ClCompile>
     <ClCompile Include="drivers\hda\hda.cpp">
       <Filter>source\drivers\hdaudio</Filter>
     </ClCompile>
@@ -504,9 +498,6 @@
       <Filter>source\drivers\usb</Filter>
     </ClCompile>
     <ClCompile Include="drivers\net\e1000.cpp">
-      <Filter>source\drivers\net</Filter>
-    </ClCompile>
-    <ClCompile Include="drivers\net\amd_am79c973.cpp">
       <Filter>source\drivers\net</Filter>
     </ClCompile>
     <ClCompile Include="arch\x86_64\pic.cpp">

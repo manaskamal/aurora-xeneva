@@ -18,9 +18,12 @@ int fprintf(UFILE f, const char* format, ...) {
 }
 
 int printf(const char *buf, ...){
-	unsigned char* buffer = (unsigned char*)malloc(32);
-	memcpy(buffer, (void*)buf,strlen(buf));
-	sys_write_file(1,buffer,NULL);
+	unsigned char* buffer = (unsigned char*)malloc(4096);
+	memcpy(buffer, (void*)buf,4096);
+	UFILE file;
+	file.size = 4096;
+	file.flags = 0;
+	sys_write_file(1,buffer,&file);
 	free(buffer);
 	return -1;
 }

@@ -10,6 +10,7 @@
 
 #include <QuCursor.h>
 #include <QuCanvas\QuCanvasMngr.h>
+#include <QuCanvas\QuScreenRectList.h>
 #include <stdint.h>
 #include <canvas.h>
 #include <bmp_image.h>
@@ -133,8 +134,8 @@ void QuDrawCursor (QuBitmap *bmp, unsigned x, unsigned y) {
 		}
 	}
 	QuCursorCoord (x, y);
-	canvas_screen_update(QuGetCanvas(), x, y, 24, 24);
-	
+	//canvas_screen_update(QuGetCanvas(), x, y, 24, 24);
+	QuScreenRectAdd(x, y, 24, 24);
 }
 
 void QuUpdateCursor (unsigned x, unsigned y) {
@@ -156,8 +157,8 @@ void QuCursorNewCoord (unsigned x, unsigned y) {
 void QuCursorFixDamage (unsigned x, unsigned y) {
 #ifdef SW_CURSOR
 	QuPutBackStore (QuOldX,QuOldY);
-	canvas_screen_update(QuGetCanvas(),QuOldX, QuOldY, 24,24);
-	
+	//canvas_screen_update(QuGetCanvas(),QuOldX, QuOldY, 24,24);
+	QuScreenRectAdd(QuOldX, QuOldY, 24, 24);
 	//QuDrawCursor (bmp, x, y);
 	//
 	QuNewX = x;

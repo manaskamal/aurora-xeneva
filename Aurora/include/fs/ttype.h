@@ -41,8 +41,13 @@ typedef struct _tele_type_ {
 	uint8_t id;
 	char m_path[32];
 	char s_path[32];
-	unsigned char in_buffer[32];
-	unsigned char out_buffer[32];
+	/*unsigned char in_buffer[512];
+	unsigned char out_buffer[512];*/
+	circ_buf_t *in_buffer;
+	circ_buf_t *out_buffer;
+	bool consumed;
+	uint16_t blocked_pid;
+	uint32_t written;
 	uint16_t pid;
 	struct _tele_type_ *next;
 	struct _tele_type_ *prev;

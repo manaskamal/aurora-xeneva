@@ -21,9 +21,9 @@ console_y DD	01H DUP (?)
 psf_data DQ	01H DUP (?)
 _BSS	ENDS
 CONST	SEGMENT
-$SG3030	DB	'/font.psf', 00H
+$SG3031	DB	'/font.psf', 00H
 	ORG $+6
-$SG3033	DB	'/font.psf', 00H
+$SG3034	DB	'/font.psf', 00H
 CONST	ENDS
 PUBLIC	?console_initialize@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z ; console_initialize
 PUBLIC	?puts@@YAXPEAD@Z				; puts
@@ -760,14 +760,14 @@ $LN3:
 ; 50   : 
 ; 51   : 	vfs_node_t *node = vfs_finddir ("/font.psf");
 
-	lea	rcx, OFFSET FLAT:$SG3030
+	lea	rcx, OFFSET FLAT:$SG3031
 	call	?vfs_finddir@@YAPEAU_vfs_node_@@PEAD@Z	; vfs_finddir
 	mov	QWORD PTR node$[rsp], rax
 
 ; 52   : 
 ; 53   : 	vfs_node_t file = openfs (node, "/font.psf");
 
-	lea	r8, OFFSET FLAT:$SG3033
+	lea	r8, OFFSET FLAT:$SG3034
 	mov	rdx, QWORD PTR node$[rsp]
 	lea	rcx, QWORD PTR $T2[rsp]
 	call	?openfs@@YA?AU_vfs_node_@@PEAU1@PEAD@Z	; openfs

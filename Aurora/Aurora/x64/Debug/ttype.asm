@@ -14,14 +14,13 @@ _BSS	SEGMENT
 ?last@@3PEAU_tele_type_@@EA DQ 01H DUP (?)		; last
 _BSS	ENDS
 CONST	SEGMENT
-$SG3282	DB	'Master Writing', 0aH, 00H
-$SG3335	DB	'ttym', 00H
+$SG3341	DB	'ttym', 00H
 	ORG $+3
-$SG3337	DB	'/dev/', 00H
+$SG3343	DB	'/dev/', 00H
 	ORG $+2
-$SG3342	DB	'ttys', 00H
+$SG3348	DB	'ttys', 00H
 	ORG $+3
-$SG3344	DB	'/dev/', 00H
+$SG3350	DB	'/dev/', 00H
 CONST	ENDS
 _DATA	SEGMENT
 ?master_count@@3HA DD 01H				; master_count
@@ -40,45 +39,49 @@ EXTRN	?strcpy@@YAPEADPEADPEBD@Z:PROC			; strcpy
 EXTRN	?strlen@@YA_KPEBD@Z:PROC			; strlen
 EXTRN	?memset@@YAXPEAXEI@Z:PROC			; memset
 EXTRN	?vfs_mount@@YAXPEADPEAU_vfs_node_@@@Z:PROC	; vfs_mount
+EXTRN	?circ_buf_init@@YAPEAU_circ_buf_@@PEAE_K@Z:PROC	; circ_buf_init
+EXTRN	?circular_buf_put@@YAXPEAU_circ_buf_@@H@Z:PROC	; circular_buf_put
+EXTRN	?circular_buf_get@@YAHPEAU_circ_buf_@@PEAE@Z:PROC ; circular_buf_get
 EXTRN	?pmmngr_alloc@@YAPEAXXZ:PROC			; pmmngr_alloc
 EXTRN	?pmmngr_free@@YAXPEAX@Z:PROC			; pmmngr_free
 EXTRN	x64_cli:PROC
 EXTRN	?malloc@@YAPEAXI@Z:PROC				; malloc
 EXTRN	?sztoa@@YAPEAD_KPEADH@Z:PROC			; sztoa
-EXTRN	?printf@@YAXPEBDZZ:PROC				; printf
+EXTRN	?block_thread@@YAXPEAU_thread_@@@Z:PROC		; block_thread
 EXTRN	?unblock_thread@@YAXPEAU_thread_@@@Z:PROC	; unblock_thread
 EXTRN	?get_current_thread@@YAPEAU_thread_@@XZ:PROC	; get_current_thread
+EXTRN	?force_sched@@YAXXZ:PROC			; force_sched
 EXTRN	?thread_iterate_ready_list@@YAPEAU_thread_@@G@Z:PROC ; thread_iterate_ready_list
 EXTRN	?thread_iterate_block_list@@YAPEAU_thread_@@H@Z:PROC ; thread_iterate_block_list
 pdata	SEGMENT
 $pdata$?ttype_create@@YAXPEAH0@Z DD imagerel $LN6
-	DD	imagerel $LN6+1128
+	DD	imagerel $LN6+1263
 	DD	imagerel $unwind$?ttype_create@@YAXPEAH0@Z
 $pdata$?get_ttype@@YAPEAU_tele_type_@@H@Z DD imagerel $LN8
-	DD	imagerel $LN8+81
+	DD	imagerel $LN8+78
 	DD	imagerel $unwind$?get_ttype@@YAPEAU_tele_type_@@H@Z
 $pdata$?ttype_dup_master@@YAXHH@Z DD imagerel $LN5
 	DD	imagerel $LN5+156
 	DD	imagerel $unwind$?ttype_dup_master@@YAXHH@Z
 $pdata$?ttype_delete@@YAXPEAU_tele_type_@@@Z DD imagerel $LN8
-	DD	imagerel $LN8+173
+	DD	imagerel $LN8+146
 	DD	imagerel $unwind$?ttype_delete@@YAXPEAU_tele_type_@@@Z
-$pdata$?ttype_master_read@@YAXPEAU_vfs_node_@@PEAEI@Z DD imagerel $LN6
-	DD	imagerel $LN6+136
+$pdata$?ttype_master_read@@YAXPEAU_vfs_node_@@PEAEI@Z DD imagerel $LN3
+	DD	imagerel $LN3+78
 	DD	imagerel $unwind$?ttype_master_read@@YAXPEAU_vfs_node_@@PEAEI@Z
-$pdata$?ttype_master_write@@YAXPEAU_vfs_node_@@PEAEI@Z DD imagerel $LN8
-	DD	imagerel $LN8+237
+$pdata$?ttype_master_write@@YAXPEAU_vfs_node_@@PEAEI@Z DD imagerel $LN10
+	DD	imagerel $LN10+331
 	DD	imagerel $unwind$?ttype_master_write@@YAXPEAU_vfs_node_@@PEAEI@Z
-$pdata$?ttype_slave_read@@YAXPEAU_vfs_node_@@PEAEI@Z DD imagerel $LN6
-	DD	imagerel $LN6+161
+$pdata$?ttype_slave_read@@YAXPEAU_vfs_node_@@PEAEI@Z DD imagerel $LN9
+	DD	imagerel $LN9+260
 	DD	imagerel $unwind$?ttype_slave_read@@YAXPEAU_vfs_node_@@PEAEI@Z
-$pdata$?ttype_slave_write@@YAXPEAU_vfs_node_@@PEAEI@Z DD imagerel $LN6
-	DD	imagerel $LN6+136
+$pdata$?ttype_slave_write@@YAXPEAU_vfs_node_@@PEAEI@Z DD imagerel $LN3
+	DD	imagerel $LN3+78
 	DD	imagerel $unwind$?ttype_slave_write@@YAXPEAU_vfs_node_@@PEAEI@Z
 pdata	ENDS
 xdata	SEGMENT
 $unwind$?ttype_create@@YAXPEAH0@Z DD 021101H
-	DD	0150111H
+	DD	0170111H
 $unwind$?get_ttype@@YAPEAU_tele_type_@@H@Z DD 010801H
 	DD	02208H
 $unwind$?ttype_dup_master@@YAXHH@Z DD 010c01H
@@ -90,70 +93,48 @@ $unwind$?ttype_master_read@@YAXPEAU_vfs_node_@@PEAEI@Z DD 011301H
 $unwind$?ttype_master_write@@YAXPEAU_vfs_node_@@PEAEI@Z DD 011301H
 	DD	0a213H
 $unwind$?ttype_slave_read@@YAXPEAU_vfs_node_@@PEAEI@Z DD 011301H
-	DD	08213H
+	DD	0a213H
 $unwind$?ttype_slave_write@@YAXPEAU_vfs_node_@@PEAEI@Z DD 011301H
 	DD	08213H
 xdata	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\fs\ttype.cpp
 _TEXT	SEGMENT
-i$1 = 32
-tv64 = 40
-node$ = 48
-type$ = 56
+tv64 = 32
+node$ = 40
+type$ = 48
 file$ = 80
 buffer$ = 88
 length$ = 96
 ?ttype_slave_write@@YAXPEAU_vfs_node_@@PEAEI@Z PROC	; ttype_slave_write
 
-; 116  : void ttype_slave_write (vfs_node_t *file, uint8_t* buffer, uint32_t length) {
+; 202  : void ttype_slave_write (vfs_node_t *file, uint8_t* buffer, uint32_t length) {
 
-$LN6:
+$LN3:
 	mov	DWORD PTR [rsp+24], r8d
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 72					; 00000048H
 
-; 117  : 	vfs_node_t *node = get_current_thread()->fd[get_current_thread()->slave_fd];
+; 203  : 	vfs_node_t *node = get_current_thread()->fd[get_current_thread()->slave_fd];
 
 	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
 	mov	QWORD PTR tv64[rsp], rax
 	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
-	movzx	eax, BYTE PTR [rax+749]
+	movzx	eax, BYTE PTR [rax+757]
 	mov	rcx, QWORD PTR tv64[rsp]
-	mov	rax, QWORD PTR [rcx+rax*8+264]
+	mov	rax, QWORD PTR [rcx+rax*8+272]
 	mov	QWORD PTR node$[rsp], rax
 
-; 118  : 	ttype_t *type = (ttype_t*)node->device;
+; 204  : 	ttype_t *type = (ttype_t*)node->device;
 
 	mov	rax, QWORD PTR node$[rsp]
 	mov	rax, QWORD PTR [rax+56]
 	mov	QWORD PTR type$[rsp], rax
 
-; 119  : 	for (int i = 0; i < 32; i++)
-
-	mov	DWORD PTR i$1[rsp], 0
-	jmp	SHORT $LN3@ttype_slav
-$LN2@ttype_slav:
-	mov	eax, DWORD PTR i$1[rsp]
-	inc	eax
-	mov	DWORD PTR i$1[rsp], eax
-$LN3@ttype_slav:
-	cmp	DWORD PTR i$1[rsp], 32			; 00000020H
-	jge	SHORT $LN1@ttype_slav
-
-; 120  : 		type->out_buffer[i] = buffer[i];
-
-	movsxd	rax, DWORD PTR i$1[rsp]
-	movsxd	rcx, DWORD PTR i$1[rsp]
-	mov	rdx, QWORD PTR type$[rsp]
-	mov	r8, QWORD PTR buffer$[rsp]
-	movzx	eax, BYTE PTR [r8+rax]
-	mov	BYTE PTR [rdx+rcx+97], al
-	jmp	SHORT $LN2@ttype_slav
-$LN1@ttype_slav:
-
-; 121  : }
+; 205  : 	/*for (int i = 0; i < 32; i++)
+; 206  : 		type->out_buffer[i] = buffer[i];*/
+; 207  : }
 
 	add	rsp, 72					; 00000048H
 	ret	0
@@ -164,77 +145,140 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 i$1 = 32
 type$ = 40
-tv64 = 48
-node$ = 56
-file$ = 80
-buffer$ = 88
-length$ = 96
+dest$2 = 48
+tv64 = 56
+node$ = 64
+file$ = 96
+buffer$ = 104
+length$ = 112
 ?ttype_slave_read@@YAXPEAU_vfs_node_@@PEAEI@Z PROC	; ttype_slave_read
 
-; 105  : void ttype_slave_read (vfs_node_t *file, uint8_t* buffer,uint32_t length) {
+; 170  : void ttype_slave_read (vfs_node_t *file, uint8_t* buffer,uint32_t length) {
 
-$LN6:
+$LN9:
 	mov	DWORD PTR [rsp+24], r8d
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
-	sub	rsp, 72					; 00000048H
+	sub	rsp, 88					; 00000058H
 
-; 106  : 	vfs_node_t *node = get_current_thread()->fd[get_current_thread()->slave_fd];
+; 171  : 	x64_cli();
+
+	call	x64_cli
+
+; 172  : 
+; 173  : 	/* get the ttype */
+; 174  : 	vfs_node_t *node = get_current_thread()->fd[get_current_thread()->slave_fd];
 
 	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
 	mov	QWORD PTR tv64[rsp], rax
 	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
-	movzx	eax, BYTE PTR [rax+749]
+	movzx	eax, BYTE PTR [rax+757]
 	mov	rcx, QWORD PTR tv64[rsp]
-	mov	rax, QWORD PTR [rcx+rax*8+264]
+	mov	rax, QWORD PTR [rcx+rax*8+272]
 	mov	QWORD PTR node$[rsp], rax
 
-; 107  : 	ttype_t *type = (ttype_t*)node->device;
+; 175  : 	ttype_t *type = (ttype_t*)node->device;
 
 	mov	rax, QWORD PTR node$[rsp]
 	mov	rax, QWORD PTR [rax+56]
 	mov	QWORD PTR type$[rsp], rax
 
-; 108  : 	for (int i = 0; i < 32; i++) {
+; 176  : 
+; 177  : 	//! lets read everything that has been written 
+; 178  : 	//! by child, be carefull we only read that much
+; 179  : 	//! that have been written by child process
+; 180  : 	for (int i = 0; i < type->written; i++) {
 
 	mov	DWORD PTR i$1[rsp], 0
-	jmp	SHORT $LN3@ttype_slav
-$LN2@ttype_slav:
+	jmp	SHORT $LN6@ttype_slav
+$LN5@ttype_slav:
 	mov	eax, DWORD PTR i$1[rsp]
 	inc	eax
 	mov	DWORD PTR i$1[rsp], eax
-$LN3@ttype_slav:
-	cmp	DWORD PTR i$1[rsp], 32			; 00000020H
-	jge	SHORT $LN1@ttype_slav
+$LN6@ttype_slav:
+	mov	rax, QWORD PTR type$[rsp]
+	mov	eax, DWORD PTR [rax+92]
+	cmp	DWORD PTR i$1[rsp], eax
+	jae	SHORT $LN4@ttype_slav
 
-; 109  : 		buffer[i] = type->in_buffer[i];
+; 181  : 		circular_buf_get(type->in_buffer,&buffer[i]);
 
 	movsxd	rax, DWORD PTR i$1[rsp]
-	movsxd	rcx, DWORD PTR i$1[rsp]
-	mov	rdx, QWORD PTR buffer$[rsp]
-	mov	r8, QWORD PTR type$[rsp]
-	movzx	eax, BYTE PTR [r8+rax+65]
-	mov	BYTE PTR [rdx+rcx], al
+	mov	rcx, QWORD PTR buffer$[rsp]
+	add	rcx, rax
+	mov	rax, rcx
+	mov	rdx, rax
+	mov	rax, QWORD PTR type$[rsp]
+	mov	rcx, QWORD PTR [rax+72]
+	call	?circular_buf_get@@YAHPEAU_circ_buf_@@PEAE@Z ; circular_buf_get
 
-; 110  : 		//type->in_buffer[i] = 0;
-; 111  : 	}
+; 182  : 	}
 
-	jmp	SHORT $LN2@ttype_slav
-$LN1@ttype_slav:
+	jmp	SHORT $LN5@ttype_slav
+$LN4@ttype_slav:
 
-; 112  : 	/*if (buffer[1] != 0)*/
-; 113  : 	memset(type->in_buffer, 0, 32);
+; 183  : 
+; 184  : 	//! resate the written count, so that child process
+; 185  : 	//! can write its next data
+; 186  : 	type->written = 0;
 
 	mov	rax, QWORD PTR type$[rsp]
-	add	rax, 65					; 00000041H
-	mov	r8d, 32					; 00000020H
-	xor	edx, edx
-	mov	rcx, rax
-	call	?memset@@YAXPEAXEI@Z			; memset
+	mov	DWORD PTR [rax+92], 0
 
-; 114  : }
+; 187  : 
+; 188  : 	//! check if child process is blocked
+; 189  : 	if (type->blocked_pid > 0) {
 
-	add	rsp, 72					; 00000048H
+	mov	rax, QWORD PTR type$[rsp]
+	movzx	eax, WORD PTR [rax+90]
+	test	eax, eax
+	jle	SHORT $LN3@ttype_slav
+
+; 190  : 		//! yes, than simply unblock it
+; 191  : 		thread_t *dest = thread_iterate_ready_list(type->blocked_pid);
+
+	mov	rax, QWORD PTR type$[rsp]
+	movzx	ecx, WORD PTR [rax+90]
+	call	?thread_iterate_ready_list@@YAPEAU_thread_@@G@Z ; thread_iterate_ready_list
+	mov	QWORD PTR dest$2[rsp], rax
+
+; 192  : 		if (dest == NULL)
+
+	cmp	QWORD PTR dest$2[rsp], 0
+	jne	SHORT $LN2@ttype_slav
+
+; 193  : 			dest = thread_iterate_block_list(type->blocked_pid);
+
+	mov	rax, QWORD PTR type$[rsp]
+	movzx	eax, WORD PTR [rax+90]
+	mov	ecx, eax
+	call	?thread_iterate_block_list@@YAPEAU_thread_@@H@Z ; thread_iterate_block_list
+	mov	QWORD PTR dest$2[rsp], rax
+$LN2@ttype_slav:
+
+; 194  : 
+; 195  : 		if (dest != NULL && dest->state == THREAD_STATE_BLOCKED)
+
+	cmp	QWORD PTR dest$2[rsp], 0
+	je	SHORT $LN1@ttype_slav
+	mov	rax, QWORD PTR dest$2[rsp]
+	movzx	eax, BYTE PTR [rax+232]
+	cmp	eax, 3
+	jne	SHORT $LN1@ttype_slav
+
+; 196  : 			unblock_thread(dest);
+
+	mov	rcx, QWORD PTR dest$2[rsp]
+	call	?unblock_thread@@YAXPEAU_thread_@@@Z	; unblock_thread
+$LN1@ttype_slav:
+$LN3@ttype_slav:
+
+; 197  : 	}
+; 198  : 
+; 199  : 	
+; 200  : }
+
+	add	rsp, 88					; 00000058H
 	ret	0
 ?ttype_slave_read@@YAXPEAU_vfs_node_@@PEAEI@Z ENDP	; ttype_slave_read
 _TEXT	ENDS
@@ -244,147 +288,139 @@ _TEXT	SEGMENT
 i$1 = 32
 dest$ = 40
 type$ = 48
-tv65 = 56
+tv64 = 56
 node$ = 64
 file$ = 96
 buffer$ = 104
 length$ = 112
 ?ttype_master_write@@YAXPEAU_vfs_node_@@PEAEI@Z PROC	; ttype_master_write
 
-; 90   : void ttype_master_write (vfs_node_t *file, uint8_t* buffer, uint32_t length) {
+; 115  : void ttype_master_write (vfs_node_t *file, uint8_t* buffer, uint32_t length) {
 
-$LN8:
+$LN10:
 	mov	DWORD PTR [rsp+24], r8d
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 88					; 00000058H
 
-; 91   : 	printf ("Master Writing\n");
+; 116  : 	x64_cli();
 
-	lea	rcx, OFFSET FLAT:$SG3282
-	call	?printf@@YAXPEBDZZ			; printf
+	call	x64_cli
 
-; 92   : 	vfs_node_t *node = get_current_thread()->fd[get_current_thread()->master_fd];
-
-	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
-	mov	QWORD PTR tv65[rsp], rax
-	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
-	movzx	eax, BYTE PTR [rax+748]
-	mov	rcx, QWORD PTR tv65[rsp]
-	mov	rax, QWORD PTR [rcx+rax*8+264]
-	mov	QWORD PTR node$[rsp], rax
-
-; 93   : 	ttype_t *type = (ttype_t*)node->device;
-
-	mov	rax, QWORD PTR node$[rsp]
-	mov	rax, QWORD PTR [rax+56]
-	mov	QWORD PTR type$[rsp], rax
-
-; 94   : 	for (int i = 0; i < 32; i++)
-
-	mov	DWORD PTR i$1[rsp], 0
-	jmp	SHORT $LN5@ttype_mast
-$LN4@ttype_mast:
-	mov	eax, DWORD PTR i$1[rsp]
-	inc	eax
-	mov	DWORD PTR i$1[rsp], eax
-$LN5@ttype_mast:
-	cmp	DWORD PTR i$1[rsp], 32			; 00000020H
-	jge	SHORT $LN3@ttype_mast
-
-; 95   : 		type->in_buffer[i] = buffer[i];
-
-	movsxd	rax, DWORD PTR i$1[rsp]
-	movsxd	rcx, DWORD PTR i$1[rsp]
-	mov	rdx, QWORD PTR type$[rsp]
-	mov	r8, QWORD PTR buffer$[rsp]
-	movzx	eax, BYTE PTR [r8+rax]
-	mov	BYTE PTR [rdx+rcx+65], al
-	jmp	SHORT $LN4@ttype_mast
-$LN3@ttype_mast:
-
-; 96   : 	
-; 97   : 	thread_t *dest = thread_iterate_ready_list(type->pid);
-
-	mov	rax, QWORD PTR type$[rsp]
-	movzx	ecx, WORD PTR [rax+130]
-	call	?thread_iterate_ready_list@@YAPEAU_thread_@@G@Z ; thread_iterate_ready_list
-	mov	QWORD PTR dest$[rsp], rax
-
-; 98   : 	if (dest == NULL)
-
-	cmp	QWORD PTR dest$[rsp], 0
-	jne	SHORT $LN2@ttype_mast
-
-; 99   : 		dest = thread_iterate_block_list(type->pid);
-
-	mov	rax, QWORD PTR type$[rsp]
-	movzx	eax, WORD PTR [rax+130]
-	mov	ecx, eax
-	call	?thread_iterate_block_list@@YAPEAU_thread_@@H@Z ; thread_iterate_block_list
-	mov	QWORD PTR dest$[rsp], rax
-$LN2@ttype_mast:
-
-; 100  : 
-; 101  : 	if (dest != NULL && dest->state == THREAD_STATE_BLOCKED)
-
-	cmp	QWORD PTR dest$[rsp], 0
-	je	SHORT $LN1@ttype_mast
-	mov	rax, QWORD PTR dest$[rsp]
-	movzx	eax, BYTE PTR [rax+224]
-	cmp	eax, 3
-	jne	SHORT $LN1@ttype_mast
-
-; 102  : 		unblock_thread(dest);
-
-	mov	rcx, QWORD PTR dest$[rsp]
-	call	?unblock_thread@@YAXPEAU_thread_@@@Z	; unblock_thread
-$LN1@ttype_mast:
-
-; 103  : }
-
-	add	rsp, 88					; 00000058H
-	ret	0
-?ttype_master_write@@YAXPEAU_vfs_node_@@PEAEI@Z ENDP	; ttype_master_write
-_TEXT	ENDS
-; Function compile flags: /Odtpy
-; File e:\xeneva project\xeneva\aurora\aurora\fs\ttype.cpp
-_TEXT	SEGMENT
-i$1 = 32
-tv64 = 40
-node$ = 48
-type$ = 56
-file$ = 80
-buffer$ = 88
-length$ = 96
-?ttype_master_read@@YAXPEAU_vfs_node_@@PEAEI@Z PROC	; ttype_master_read
-
-; 81   : void ttype_master_read (vfs_node_t *file, uint8_t* buffer,uint32_t length) {
-
-$LN6:
-	mov	DWORD PTR [rsp+24], r8d
-	mov	QWORD PTR [rsp+16], rdx
-	mov	QWORD PTR [rsp+8], rcx
-	sub	rsp, 72					; 00000048H
-
-; 82   : 	//!Read it from out buffer
-; 83   : 	vfs_node_t *node = get_current_thread()->fd[get_current_thread()->master_fd];
+; 117  : 
+; 118  : 	//! get the master node from the child process
+; 119  : 	vfs_node_t *node = get_current_thread()->fd[get_current_thread()->master_fd];
 
 	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
 	mov	QWORD PTR tv64[rsp], rax
 	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
-	movzx	eax, BYTE PTR [rax+748]
+	movzx	eax, BYTE PTR [rax+756]
 	mov	rcx, QWORD PTR tv64[rsp]
-	mov	rax, QWORD PTR [rcx+rax*8+264]
+	mov	rax, QWORD PTR [rcx+rax*8+272]
 	mov	QWORD PTR node$[rsp], rax
 
-; 84   : 	ttype_t *type = (ttype_t*)node->device;
+; 120  : 	ttype_t *type = (ttype_t*)node->device;
 
 	mov	rax, QWORD PTR node$[rsp]
 	mov	rax, QWORD PTR [rax+56]
 	mov	QWORD PTR type$[rsp], rax
 
-; 85   : 	for (int i = 0; i < 32; i++)
+; 121  : 
+; 122  : 	//! first of all, get the registered terminal emulator
+; 123  : 	//! id, we need to unblock it, if it is blocked by default
+; 124  : 	thread_t *dest = thread_iterate_ready_list(type->pid);
+
+	mov	rax, QWORD PTR type$[rsp]
+	movzx	ecx, WORD PTR [rax+96]
+	call	?thread_iterate_ready_list@@YAPEAU_thread_@@G@Z ; thread_iterate_ready_list
+	mov	QWORD PTR dest$[rsp], rax
+
+; 125  : 	if (dest == NULL)
+
+	cmp	QWORD PTR dest$[rsp], 0
+	jne	SHORT $LN7@ttype_mast
+
+; 126  : 		dest = thread_iterate_block_list(type->pid);
+
+	mov	rax, QWORD PTR type$[rsp]
+	movzx	eax, WORD PTR [rax+96]
+	mov	ecx, eax
+	call	?thread_iterate_block_list@@YAPEAU_thread_@@H@Z ; thread_iterate_block_list
+	mov	QWORD PTR dest$[rsp], rax
+$LN7@ttype_mast:
+
+; 127  : 
+; 128  : 	//! check, if another data is already written to the
+; 129  : 	//! buffer
+; 130  : 	if (type->written > 0)  {
+
+	mov	rax, QWORD PTR type$[rsp]
+	cmp	DWORD PTR [rax+92], 0
+	jbe	SHORT $LN6@ttype_mast
+
+; 131  : 		//! yes, the buffer is in use, let's wait for the
+; 132  : 		//! buffer usage to be finished
+; 133  : 		type->blocked_pid = get_current_thread()->id;
+
+	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
+	mov	rcx, QWORD PTR type$[rsp]
+	movzx	eax, WORD PTR [rax+234]
+	mov	WORD PTR [rcx+90], ax
+
+; 134  : 
+; 135  : 		//! unblock the terminal emulator if it is blocked cause
+; 136  : 		//! it will get the ttype buffer usage to be finished
+; 137  : 		if (dest != NULL && dest->state == THREAD_STATE_BLOCKED)
+
+	cmp	QWORD PTR dest$[rsp], 0
+	je	SHORT $LN5@ttype_mast
+	mov	rax, QWORD PTR dest$[rsp]
+	movzx	eax, BYTE PTR [rax+232]
+	cmp	eax, 3
+	jne	SHORT $LN5@ttype_mast
+
+; 138  : 			unblock_thread(dest);
+
+	mov	rcx, QWORD PTR dest$[rsp]
+	call	?unblock_thread@@YAXPEAU_thread_@@@Z	; unblock_thread
+$LN5@ttype_mast:
+
+; 139  : 
+; 140  : 		//! block the current thread, till the buffer usage get over
+; 141  : 		block_thread(get_current_thread());
+
+	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
+	mov	rcx, rax
+	call	?block_thread@@YAXPEAU_thread_@@@Z	; block_thread
+
+; 142  : 		force_sched();
+
+	call	?force_sched@@YAXXZ			; force_sched
+$LN6@ttype_mast:
+
+; 143  : 	}
+; 144  : 
+; 145  : 
+; 146  :      //! unblock the terminal emulator, cause - new text is available to 
+; 147  : 	//! be processed
+; 148  : 	if (dest != NULL && dest->state == THREAD_STATE_BLOCKED)
+
+	cmp	QWORD PTR dest$[rsp], 0
+	je	SHORT $LN4@ttype_mast
+	mov	rax, QWORD PTR dest$[rsp]
+	movzx	eax, BYTE PTR [rax+232]
+	cmp	eax, 3
+	jne	SHORT $LN4@ttype_mast
+
+; 149  : 		unblock_thread(dest);
+
+	mov	rcx, QWORD PTR dest$[rsp]
+	call	?unblock_thread@@YAXPEAU_thread_@@@Z	; unblock_thread
+$LN4@ttype_mast:
+
+; 150  : 
+; 151  : 	//! so finally we now use the type buffer to store our text data
+; 152  : 	for (int i = 0; i < length; i++) {
 
 	mov	DWORD PTR i$1[rsp], 0
 	jmp	SHORT $LN3@ttype_mast
@@ -393,22 +429,84 @@ $LN2@ttype_mast:
 	inc	eax
 	mov	DWORD PTR i$1[rsp], eax
 $LN3@ttype_mast:
-	cmp	DWORD PTR i$1[rsp], 32			; 00000020H
-	jge	SHORT $LN1@ttype_mast
+	mov	eax, DWORD PTR length$[rsp]
+	cmp	DWORD PTR i$1[rsp], eax
+	jae	SHORT $LN1@ttype_mast
 
-; 86   : 		buffer[i] = type->out_buffer[i];
+; 153  : 		circular_buf_put(type->in_buffer,buffer[i]);
 
 	movsxd	rax, DWORD PTR i$1[rsp]
-	movsxd	rcx, DWORD PTR i$1[rsp]
-	mov	rdx, QWORD PTR buffer$[rsp]
-	mov	r8, QWORD PTR type$[rsp]
-	movzx	eax, BYTE PTR [r8+rax+97]
-	mov	BYTE PTR [rdx+rcx], al
+	mov	rcx, QWORD PTR buffer$[rsp]
+	movzx	eax, BYTE PTR [rcx+rax]
+	mov	edx, eax
+	mov	rax, QWORD PTR type$[rsp]
+	mov	rcx, QWORD PTR [rax+72]
+	call	?circular_buf_put@@YAXPEAU_circ_buf_@@H@Z ; circular_buf_put
+
+; 154  : 		type->written++; //increament the written count, cause we only
+
+	mov	rax, QWORD PTR type$[rsp]
+	mov	eax, DWORD PTR [rax+92]
+	inc	eax
+	mov	rcx, QWORD PTR type$[rsp]
+	mov	DWORD PTR [rcx+92], eax
+
+; 155  : 		// read that much of text, that actually get written
+; 156  : 	}
+
 	jmp	SHORT $LN2@ttype_mast
 $LN1@ttype_mast:
 
-; 87   : 
-; 88   : }
+; 157  : 
+; 158  : 
+; 159  : 	
+; 160  : 
+; 161  : }
+
+	add	rsp, 88					; 00000058H
+	ret	0
+?ttype_master_write@@YAXPEAU_vfs_node_@@PEAEI@Z ENDP	; ttype_master_write
+_TEXT	ENDS
+; Function compile flags: /Odtpy
+; File e:\xeneva project\xeneva\aurora\aurora\fs\ttype.cpp
+_TEXT	SEGMENT
+tv64 = 32
+node$ = 40
+type$ = 48
+file$ = 80
+buffer$ = 88
+length$ = 96
+?ttype_master_read@@YAXPEAU_vfs_node_@@PEAEI@Z PROC	; ttype_master_read
+
+; 100  : void ttype_master_read (vfs_node_t *file, uint8_t* buffer,uint32_t length) {
+
+$LN3:
+	mov	DWORD PTR [rsp+24], r8d
+	mov	QWORD PTR [rsp+16], rdx
+	mov	QWORD PTR [rsp+8], rcx
+	sub	rsp, 72					; 00000048H
+
+; 101  : 	//!Read it from out buffer
+; 102  : 	vfs_node_t *node = get_current_thread()->fd[get_current_thread()->master_fd];
+
+	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
+	mov	QWORD PTR tv64[rsp], rax
+	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
+	movzx	eax, BYTE PTR [rax+756]
+	mov	rcx, QWORD PTR tv64[rsp]
+	mov	rax, QWORD PTR [rcx+rax*8+272]
+	mov	QWORD PTR node$[rsp], rax
+
+; 103  : 	ttype_t *type = (ttype_t*)node->device;
+
+	mov	rax, QWORD PTR node$[rsp]
+	mov	rax, QWORD PTR [rax+56]
+	mov	QWORD PTR type$[rsp], rax
+
+; 104  : 	/*for (int i = 0; i < 32; i++)
+; 105  : 		buffer[i] = type->out_buffer[i];*/
+; 106  : 
+; 107  : }
 
 	add	rsp, 72					; 00000048H
 	ret	0
@@ -420,87 +518,87 @@ _TEXT	SEGMENT
 tty$ = 48
 ?ttype_delete@@YAXPEAU_tele_type_@@@Z PROC		; ttype_delete
 
-; 61   : void ttype_delete (ttype_t* tty) {
+; 74   : void ttype_delete (ttype_t* tty) {
 
 $LN8:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 40					; 00000028H
 
-; 62   : 
-; 63   : 	if (root == NULL)
+; 75   : 
+; 76   : 	if (root == NULL)
 
 	cmp	QWORD PTR ?root@@3PEAU_tele_type_@@EA, 0 ; root
 	jne	SHORT $LN5@ttype_dele
 
-; 64   : 		return;
+; 77   : 		return;
 
-	jmp	$LN6@ttype_dele
+	jmp	SHORT $LN6@ttype_dele
 $LN5@ttype_dele:
 
-; 65   : 
-; 66   : 	if (tty == root) {
+; 78   : 
+; 79   : 	if (tty == root) {
 
 	mov	rax, QWORD PTR ?root@@3PEAU_tele_type_@@EA ; root
 	cmp	QWORD PTR tty$[rsp], rax
 	jne	SHORT $LN4@ttype_dele
 
-; 67   : 		root = root->next;
+; 80   : 		root = root->next;
 
 	mov	rax, QWORD PTR ?root@@3PEAU_tele_type_@@EA ; root
-	mov	rax, QWORD PTR [rax+136]
+	mov	rax, QWORD PTR [rax+104]
 	mov	QWORD PTR ?root@@3PEAU_tele_type_@@EA, rax ; root
 
-; 68   : 	} else {
+; 81   : 	} else {
 
 	jmp	SHORT $LN3@ttype_dele
 $LN4@ttype_dele:
 
-; 69   : 		tty->prev->next = tty->next;
+; 82   : 		tty->prev->next = tty->next;
 
 	mov	rax, QWORD PTR tty$[rsp]
-	mov	rax, QWORD PTR [rax+144]
+	mov	rax, QWORD PTR [rax+112]
 	mov	rcx, QWORD PTR tty$[rsp]
-	mov	rcx, QWORD PTR [rcx+136]
-	mov	QWORD PTR [rax+136], rcx
+	mov	rcx, QWORD PTR [rcx+104]
+	mov	QWORD PTR [rax+104], rcx
 $LN3@ttype_dele:
 
-; 70   : 	}
-; 71   : 
-; 72   : 	if (tty == last) {
+; 83   : 	}
+; 84   : 
+; 85   : 	if (tty == last) {
 
 	mov	rax, QWORD PTR ?last@@3PEAU_tele_type_@@EA ; last
 	cmp	QWORD PTR tty$[rsp], rax
 	jne	SHORT $LN2@ttype_dele
 
-; 73   : 		last = tty->prev;
+; 86   : 		last = tty->prev;
 
 	mov	rax, QWORD PTR tty$[rsp]
-	mov	rax, QWORD PTR [rax+144]
+	mov	rax, QWORD PTR [rax+112]
 	mov	QWORD PTR ?last@@3PEAU_tele_type_@@EA, rax ; last
 
-; 74   : 	} else {
+; 87   : 	} else {
 
 	jmp	SHORT $LN1@ttype_dele
 $LN2@ttype_dele:
 
-; 75   : 		tty->next->prev = tty->prev;
+; 88   : 		tty->next->prev = tty->prev;
 
 	mov	rax, QWORD PTR tty$[rsp]
-	mov	rax, QWORD PTR [rax+136]
+	mov	rax, QWORD PTR [rax+104]
 	mov	rcx, QWORD PTR tty$[rsp]
-	mov	rcx, QWORD PTR [rcx+144]
-	mov	QWORD PTR [rax+144], rcx
+	mov	rcx, QWORD PTR [rcx+112]
+	mov	QWORD PTR [rax+112], rcx
 $LN1@ttype_dele:
 
-; 76   : 	}
-; 77   : 
-; 78   : 	pmmngr_free (tty);
+; 89   : 	}
+; 90   : 
+; 91   : 	pmmngr_free (tty);
 
 	mov	rcx, QWORD PTR tty$[rsp]
 	call	?pmmngr_free@@YAXPEAX@Z			; pmmngr_free
 $LN6@ttype_dele:
 
-; 79   : }
+; 92   : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -512,61 +610,61 @@ _TEXT	SEGMENT
 tty$ = 8
 ?ttype_insert@@YAXPEAU_tele_type_@@@Z PROC		; ttype_insert
 
-; 46   : void ttype_insert (ttype_t* tty ) {
+; 59   : void ttype_insert (ttype_t* tty ) {
 
 	mov	QWORD PTR [rsp+8], rcx
 
-; 47   : 	tty->next = NULL;
+; 60   : 	tty->next = NULL;
 
 	mov	rax, QWORD PTR tty$[rsp]
-	mov	QWORD PTR [rax+136], 0
+	mov	QWORD PTR [rax+104], 0
 
-; 48   : 	tty->prev = NULL;
+; 61   : 	tty->prev = NULL;
 
 	mov	rax, QWORD PTR tty$[rsp]
-	mov	QWORD PTR [rax+144], 0
+	mov	QWORD PTR [rax+112], 0
 
-; 49   : 
-; 50   : 	if (root == NULL) {
+; 62   : 
+; 63   : 	if (root == NULL) {
 
 	cmp	QWORD PTR ?root@@3PEAU_tele_type_@@EA, 0 ; root
 	jne	SHORT $LN2@ttype_inse
 
-; 51   : 		last = tty;
+; 64   : 		last = tty;
 
 	mov	rax, QWORD PTR tty$[rsp]
 	mov	QWORD PTR ?last@@3PEAU_tele_type_@@EA, rax ; last
 
-; 52   : 		root = tty;
+; 65   : 		root = tty;
 
 	mov	rax, QWORD PTR tty$[rsp]
 	mov	QWORD PTR ?root@@3PEAU_tele_type_@@EA, rax ; root
 
-; 53   : 	} else {
+; 66   : 	} else {
 
 	jmp	SHORT $LN1@ttype_inse
 $LN2@ttype_inse:
 
-; 54   : 		last->next = tty;
+; 67   : 		last->next = tty;
 
 	mov	rax, QWORD PTR ?last@@3PEAU_tele_type_@@EA ; last
 	mov	rcx, QWORD PTR tty$[rsp]
-	mov	QWORD PTR [rax+136], rcx
+	mov	QWORD PTR [rax+104], rcx
 
-; 55   : 		tty->prev = last;
+; 68   : 		tty->prev = last;
 
 	mov	rax, QWORD PTR tty$[rsp]
 	mov	rcx, QWORD PTR ?last@@3PEAU_tele_type_@@EA ; last
-	mov	QWORD PTR [rax+144], rcx
+	mov	QWORD PTR [rax+112], rcx
 $LN1@ttype_inse:
 
-; 56   : 	}
-; 57   : 	last = tty;
+; 69   : 	}
+; 70   : 	last = tty;
 
 	mov	rax, QWORD PTR tty$[rsp]
 	mov	QWORD PTR ?last@@3PEAU_tele_type_@@EA, rax ; last
 
-; 58   : }
+; 71   : }
 
 	ret	0
 ?ttype_insert@@YAXPEAU_tele_type_@@@Z ENDP		; ttype_insert
@@ -580,72 +678,72 @@ task_id$ = 64
 master_fd$ = 72
 ?ttype_dup_master@@YAXHH@Z PROC				; ttype_dup_master
 
-; 223  : void ttype_dup_master (int task_id, int master_fd) {
+; 323  : void ttype_dup_master (int task_id, int master_fd) {
 
 $LN5:
 	mov	DWORD PTR [rsp+16], edx
 	mov	DWORD PTR [rsp+8], ecx
 	sub	rsp, 56					; 00000038H
 
-; 224  : 	x64_cli();
+; 324  : 	x64_cli();
 
 	call	x64_cli
 
-; 225  : 	vfs_node_t *node = get_current_thread()->fd[master_fd];
+; 325  : 	vfs_node_t *node = get_current_thread()->fd[master_fd];
 
 	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
 	movsxd	rcx, DWORD PTR master_fd$[rsp]
-	mov	rax, QWORD PTR [rax+rcx*8+264]
+	mov	rax, QWORD PTR [rax+rcx*8+272]
 	mov	QWORD PTR node$[rsp], rax
 
-; 226  : 	thread_t *dest = thread_iterate_ready_list(task_id);
+; 326  : 	thread_t *dest = thread_iterate_ready_list(task_id);
 
 	movzx	ecx, WORD PTR task_id$[rsp]
 	call	?thread_iterate_ready_list@@YAPEAU_thread_@@G@Z ; thread_iterate_ready_list
 	mov	QWORD PTR dest$[rsp], rax
 
-; 227  : 	if (dest == NULL) {
+; 327  : 	if (dest == NULL) {
 
 	cmp	QWORD PTR dest$[rsp], 0
 	jne	SHORT $LN2@ttype_dup_
 
-; 228  : 		dest = thread_iterate_block_list(task_id);
+; 328  : 		dest = thread_iterate_block_list(task_id);
 
 	mov	ecx, DWORD PTR task_id$[rsp]
 	call	?thread_iterate_block_list@@YAPEAU_thread_@@H@Z ; thread_iterate_block_list
 	mov	QWORD PTR dest$[rsp], rax
 $LN2@ttype_dup_:
 
-; 229  : 	}
-; 230  : 	if (dest != NULL) {
+; 329  : 	}
+; 330  : 	if (dest != NULL) {
 
 	cmp	QWORD PTR dest$[rsp], 0
 	je	SHORT $LN1@ttype_dup_
 
-; 231  : 		dest->fd[1] = node;
+; 331  : 		dest->fd[1] = node;
 
 	mov	eax, 8
 	imul	rax, 1
 	mov	rcx, QWORD PTR dest$[rsp]
 	mov	rdx, QWORD PTR node$[rsp]
-	mov	QWORD PTR [rcx+rax+264], rdx
+	mov	QWORD PTR [rcx+rax+272], rdx
 
-; 232  : 		dest->fd[2] = node;
+; 332  : 		dest->fd[2] = node;
 
 	mov	eax, 8
 	imul	rax, 2
 	mov	rcx, QWORD PTR dest$[rsp]
 	mov	rdx, QWORD PTR node$[rsp]
-	mov	QWORD PTR [rcx+rax+264], rdx
+	mov	QWORD PTR [rcx+rax+272], rdx
 $LN1@ttype_dup_:
 
-; 233  : 	}
-; 234  : 	dest->master_fd = 1;
+; 333  : 	}
+; 334  : 	dest->master_fd = 1;
 
 	mov	rax, QWORD PTR dest$[rsp]
-	mov	BYTE PTR [rax+748], 1
+	mov	BYTE PTR [rax+756], 1
 
-; 235  : }
+; 335  : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -658,56 +756,56 @@ tty$1 = 0
 id$ = 32
 ?get_ttype@@YAPEAU_tele_type_@@H@Z PROC			; get_ttype
 
-; 123  : ttype_t * get_ttype (int id) {
+; 209  : ttype_t * get_ttype (int id) {
 
 $LN8:
 	mov	DWORD PTR [rsp+8], ecx
 	sub	rsp, 24
 
-; 124  : 	if (root != NULL){
+; 210  : 	if (root != NULL){
 
 	cmp	QWORD PTR ?root@@3PEAU_tele_type_@@EA, 0 ; root
 	je	SHORT $LN5@get_ttype
 
-; 125  : 		for (ttype_t* tty = root; tty != NULL; tty = tty->next) {
+; 211  : 		for (ttype_t* tty = root; tty != NULL; tty = tty->next) {
 
 	mov	rax, QWORD PTR ?root@@3PEAU_tele_type_@@EA ; root
 	mov	QWORD PTR tty$1[rsp], rax
 	jmp	SHORT $LN4@get_ttype
 $LN3@get_ttype:
 	mov	rax, QWORD PTR tty$1[rsp]
-	mov	rax, QWORD PTR [rax+136]
+	mov	rax, QWORD PTR [rax+104]
 	mov	QWORD PTR tty$1[rsp], rax
 $LN4@get_ttype:
 	cmp	QWORD PTR tty$1[rsp], 0
 	je	SHORT $LN2@get_ttype
 
-; 126  : 			if (tty->id == id) 
+; 212  : 			if (tty->id == id) 
 
 	mov	rax, QWORD PTR tty$1[rsp]
 	movzx	eax, BYTE PTR [rax]
 	cmp	eax, DWORD PTR id$[rsp]
 	jne	SHORT $LN1@get_ttype
 
-; 127  : 				return tty;
+; 213  : 				return tty;
 
 	mov	rax, QWORD PTR tty$1[rsp]
 	jmp	SHORT $LN6@get_ttype
 $LN1@get_ttype:
 
-; 128  : 		}
+; 214  : 		}
 
 	jmp	SHORT $LN3@get_ttype
 $LN2@get_ttype:
 $LN5@get_ttype:
 
-; 129  : 	}
-; 130  : 	return NULL;
+; 215  : 	}
+; 216  : 	return NULL;
 
 	xor	eax, eax
 $LN6@get_ttype:
 
-; 131  : }
+; 217  : }
 
 	add	rsp, 24
 	ret	0
@@ -716,79 +814,114 @@ _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\fs\ttype.cpp
 _TEXT	SEGMENT
-sn$ = 32
-mn$ = 40
-i$1 = 48
+mn$ = 32
+i$1 = 40
+sn$ = 48
 tty$ = 56
-s_value$ = 64
+m_value$ = 64
 s_fd$ = 68
-m_fd$ = 72
-m_value$ = 76
+s_value$ = 72
+m_fd$ = 76
 master_name$ = 80
 slave_name$ = 96
 sname$ = 112
 mname$ = 128
-tv215 = 144
-tv226 = 152
-master_fd$ = 176
-slave_fd$ = 184
+outbuffer$ = 144
+tv235 = 152
+tv224 = 160
+inbuffer$ = 168
+master_fd$ = 192
+slave_fd$ = 200
 ?ttype_create@@YAXPEAH0@Z PROC				; ttype_create
 
-; 133  : void ttype_create (int* master_fd, int* slave_fd) {
+; 219  : void ttype_create (int* master_fd, int* slave_fd) {
 
 $LN6:
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
-	sub	rsp, 168				; 000000a8H
+	sub	rsp, 184				; 000000b8H
 
-; 134  : 	ttype_t *tty= (ttype_t*)pmmngr_alloc();
+; 220  : 	ttype_t *tty= (ttype_t*)pmmngr_alloc();
 
 	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
 	mov	QWORD PTR tty$[rsp], rax
 
-; 135  : 	memset (tty, 0, 4096);
+; 221  : 	memset (tty, 0, 4096);
 
 	mov	r8d, 4096				; 00001000H
 	xor	edx, edx
 	mov	rcx, QWORD PTR tty$[rsp]
 	call	?memset@@YAXPEAXEI@Z			; memset
 
-; 136  : 	memset (tty->in_buffer, 0, 32);
+; 222  : 
+; 223  : 	uint8_t* inbuffer = (uint8_t*)pmmngr_alloc();
 
-	mov	rax, QWORD PTR tty$[rsp]
-	add	rax, 65					; 00000041H
-	mov	r8d, 32					; 00000020H
+	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
+	mov	QWORD PTR inbuffer$[rsp], rax
+
+; 224  : 	memset(inbuffer, 0, 4096);
+
+	mov	r8d, 4096				; 00001000H
 	xor	edx, edx
-	mov	rcx, rax
+	mov	rcx, QWORD PTR inbuffer$[rsp]
 	call	?memset@@YAXPEAXEI@Z			; memset
 
-; 137  : 	memset (tty->out_buffer, 0, 32);
+; 225  : 	uint8_t* outbuffer = (uint8_t*)pmmngr_alloc();
 
-	mov	rax, QWORD PTR tty$[rsp]
-	add	rax, 97					; 00000061H
-	mov	r8d, 32					; 00000020H
+	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
+	mov	QWORD PTR outbuffer$[rsp], rax
+
+; 226  : 	memset(outbuffer, 0, 4096);
+
+	mov	r8d, 4096				; 00001000H
 	xor	edx, edx
-	mov	rcx, rax
+	mov	rcx, QWORD PTR outbuffer$[rsp]
 	call	?memset@@YAXPEAXEI@Z			; memset
 
-; 138  : 	tty->id = slave_count;
+; 227  : 
+; 228  : 	tty->in_buffer = circ_buf_init(inbuffer,4095);
+
+	mov	edx, 4095				; 00000fffH
+	mov	rcx, QWORD PTR inbuffer$[rsp]
+	call	?circ_buf_init@@YAPEAU_circ_buf_@@PEAE_K@Z ; circ_buf_init
+	mov	rcx, QWORD PTR tty$[rsp]
+	mov	QWORD PTR [rcx+72], rax
+
+; 229  : 	tty->out_buffer = circ_buf_init(outbuffer, 4095);
+
+	mov	edx, 4095				; 00000fffH
+	mov	rcx, QWORD PTR outbuffer$[rsp]
+	call	?circ_buf_init@@YAPEAU_circ_buf_@@PEAE_K@Z ; circ_buf_init
+	mov	rcx, QWORD PTR tty$[rsp]
+	mov	QWORD PTR [rcx+80], rax
+
+; 230  : 
+; 231  : 	tty->id = slave_count;
 
 	mov	rax, QWORD PTR tty$[rsp]
 	movzx	ecx, BYTE PTR ?slave_count@@3HA
 	mov	BYTE PTR [rax], cl
 
-; 139  : 	tty->pid = get_current_thread()->id;
+; 232  : 
+; 233  : 	//! tty->pid -- stores the current terminal emulator id
+; 234  : 	tty->pid = get_current_thread()->id;
 
 	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
 	mov	rcx, QWORD PTR tty$[rsp]
-	movzx	eax, WORD PTR [rax+226]
-	mov	WORD PTR [rcx+130], ax
+	movzx	eax, WORD PTR [rax+234]
+	mov	WORD PTR [rcx+96], ax
 
-; 140  : 	///! Create the namings
-; 141  : 	char m_value[2];
-; 142  : 	char s_value[2];
-; 143  : 
-; 144  : 	sztoa(master_count, m_value,10);
+; 235  : 	tty->written = 0;
+
+	mov	rax, QWORD PTR tty$[rsp]
+	mov	DWORD PTR [rax+92], 0
+
+; 236  : 
+; 237  : 	///! Create the namings
+; 238  : 	char m_value[2];
+; 239  : 	char s_value[2];
+; 240  : 
+; 241  : 	sztoa(master_count, m_value,10);
 
 	movsxd	rax, DWORD PTR ?master_count@@3HA	; master_count
 	mov	r8d, 10
@@ -796,7 +929,7 @@ $LN6:
 	mov	rcx, rax
 	call	?sztoa@@YAPEAD_KPEADH@Z			; sztoa
 
-; 145  : 	sztoa(slave_count, s_value,10);
+; 242  : 	sztoa(slave_count, s_value,10);
 
 	movsxd	rax, DWORD PTR ?slave_count@@3HA	; slave_count
 	mov	r8d, 10
@@ -804,15 +937,15 @@ $LN6:
 	mov	rcx, rax
 	call	?sztoa@@YAPEAD_KPEADH@Z			; sztoa
 
-; 146  : 
-; 147  : 	char master_name[10];
-; 148  : 	strcpy(master_name, "ttym");
+; 243  : 
+; 244  : 	char master_name[10];
+; 245  : 	strcpy(master_name, "ttym");
 
-	lea	rdx, OFFSET FLAT:$SG3335
+	lea	rdx, OFFSET FLAT:$SG3341
 	lea	rcx, QWORD PTR master_name$[rsp]
 	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
 
-; 149  : 	strcpy (master_name + strlen(master_name)-1, m_value);
+; 246  : 	strcpy (master_name + strlen(master_name)-1, m_value);
 
 	lea	rcx, QWORD PTR master_name$[rsp]
 	call	?strlen@@YA_KPEBD@Z			; strlen
@@ -821,15 +954,15 @@ $LN6:
 	mov	rcx, rax
 	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
 
-; 150  : 	
-; 151  : 	char mname[10];
-; 152  : 	strcpy (mname, "/dev/");
+; 247  : 	
+; 248  : 	char mname[10];
+; 249  : 	strcpy (mname, "/dev/");
 
-	lea	rdx, OFFSET FLAT:$SG3337
+	lea	rdx, OFFSET FLAT:$SG3343
 	lea	rcx, QWORD PTR mname$[rsp]
 	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
 
-; 153  : 	strcpy (mname + strlen(mname)-1, master_name);
+; 250  : 	strcpy (mname + strlen(mname)-1, master_name);
 
 	lea	rcx, QWORD PTR mname$[rsp]
 	call	?strlen@@YA_KPEBD@Z			; strlen
@@ -838,100 +971,100 @@ $LN6:
 	mov	rcx, rax
 	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
 
-; 154  : 	
-; 155  : 
-; 156  : 	///! Master node
-; 157  : 	vfs_node_t *mn = (vfs_node_t*)malloc(sizeof(vfs_node_t));
+; 251  : 	
+; 252  : 
+; 253  : 	///! Master node
+; 254  : 	vfs_node_t *mn = (vfs_node_t*)malloc(sizeof(vfs_node_t));
 
 	mov	ecx, 104				; 00000068H
 	call	?malloc@@YAPEAXI@Z			; malloc
 	mov	QWORD PTR mn$[rsp], rax
 
-; 158  : 	strcpy(mn->filename, master_name);
+; 255  : 	strcpy(mn->filename, master_name);
 
 	mov	rax, QWORD PTR mn$[rsp]
 	lea	rdx, QWORD PTR master_name$[rsp]
 	mov	rcx, rax
 	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
 
-; 159  : 	mn->size = 0;
+; 256  : 	mn->size = 0;
 
 	mov	rax, QWORD PTR mn$[rsp]
 	mov	DWORD PTR [rax+32], 0
 
-; 160  : 	mn->eof = 0;
+; 257  : 	mn->eof = 0;
 
 	mov	rax, QWORD PTR mn$[rsp]
 	mov	DWORD PTR [rax+36], 0
 
-; 161  : 	mn->pos = 0;
+; 258  : 	mn->pos = 0;
 
 	mov	rax, QWORD PTR mn$[rsp]
 	mov	DWORD PTR [rax+40], 0
 
-; 162  : 	mn->current = 0;
+; 259  : 	mn->current = 0;
 
 	mov	rax, QWORD PTR mn$[rsp]
 	mov	DWORD PTR [rax+44], 0
 
-; 163  : 	mn->flags = FS_FLAG_GENERAL;
+; 260  : 	mn->flags = FS_FLAG_GENERAL;
 
 	mov	rax, QWORD PTR mn$[rsp]
 	mov	DWORD PTR [rax+48], 2
 
-; 164  : 	mn->status = 0;
+; 261  : 	mn->status = 0;
 
 	mov	rax, QWORD PTR mn$[rsp]
 	mov	DWORD PTR [rax+52], 0
 
-; 165  : 	mn->open = 0;
+; 262  : 	mn->open = 0;
 
 	mov	rax, QWORD PTR mn$[rsp]
 	mov	QWORD PTR [rax+64], 0
 
-; 166  : 	mn->device = tty;
+; 263  : 	mn->device = tty;
 
 	mov	rax, QWORD PTR mn$[rsp]
 	mov	rcx, QWORD PTR tty$[rsp]
 	mov	QWORD PTR [rax+56], rcx
 
-; 167  : 	mn->read = ttype_master_read;
+; 264  : 	mn->read = ttype_master_read;
 
 	mov	rax, QWORD PTR mn$[rsp]
 	lea	rcx, OFFSET FLAT:?ttype_master_read@@YAXPEAU_vfs_node_@@PEAEI@Z ; ttype_master_read
 	mov	QWORD PTR [rax+72], rcx
 
-; 168  : 	mn->write = ttype_master_write;
+; 265  : 	mn->write = ttype_master_write;
 
 	mov	rax, QWORD PTR mn$[rsp]
 	lea	rcx, OFFSET FLAT:?ttype_master_write@@YAXPEAU_vfs_node_@@PEAEI@Z ; ttype_master_write
 	mov	QWORD PTR [rax+80], rcx
 
-; 169  : 	mn->read_blk = 0;
+; 266  : 	mn->read_blk = 0;
 
 	mov	rax, QWORD PTR mn$[rsp]
 	mov	QWORD PTR [rax+88], 0
 
-; 170  : 	mn->ioquery = 0;
+; 267  : 	mn->ioquery = 0;
 
 	mov	rax, QWORD PTR mn$[rsp]
 	mov	QWORD PTR [rax+96], 0
 
-; 171  : 	vfs_mount (mname, mn);
+; 268  : 	vfs_mount (mname, mn);
 
 	mov	rdx, QWORD PTR mn$[rsp]
 	lea	rcx, QWORD PTR mname$[rsp]
 	call	?vfs_mount@@YAXPEADPEAU_vfs_node_@@@Z	; vfs_mount
 
-; 172  : 
-; 173  : 	char slave_name[10];
-; 174  : 	strcpy(slave_name, "ttys");
+; 269  : 
+; 270  : 	char slave_name[10];
+; 271  : 	strcpy(slave_name, "ttys");
 
-	lea	rdx, OFFSET FLAT:$SG3342
+	lea	rdx, OFFSET FLAT:$SG3348
 	lea	rcx, QWORD PTR slave_name$[rsp]
 	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
 
-; 175  : 	strcpy (slave_name + strlen(slave_name)-1,s_value);
+; 272  : 	strcpy (slave_name + strlen(slave_name)-1,s_value);
 
 	lea	rcx, QWORD PTR slave_name$[rsp]
 	call	?strlen@@YA_KPEBD@Z			; strlen
@@ -940,15 +1073,15 @@ $LN6:
 	mov	rcx, rax
 	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
 
-; 176  : 
-; 177  : 	char sname[10];
-; 178  : 	strcpy(sname, "/dev/");
+; 273  : 
+; 274  : 	char sname[10];
+; 275  : 	strcpy(sname, "/dev/");
 
-	lea	rdx, OFFSET FLAT:$SG3344
+	lea	rdx, OFFSET FLAT:$SG3350
 	lea	rcx, QWORD PTR sname$[rsp]
 	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
 
-; 179  : 	strcpy (sname + strlen(sname)-1, slave_name);
+; 276  : 	strcpy (sname + strlen(sname)-1, slave_name);
 
 	lea	rcx, QWORD PTR sname$[rsp]
 	call	?strlen@@YA_KPEBD@Z			; strlen
@@ -957,91 +1090,91 @@ $LN6:
 	mov	rcx, rax
 	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
 
-; 180  : 
-; 181  : 	vfs_node_t *sn = (vfs_node_t*)malloc(sizeof(vfs_node_t));
+; 277  : 
+; 278  : 	vfs_node_t *sn = (vfs_node_t*)malloc(sizeof(vfs_node_t));
 
 	mov	ecx, 104				; 00000068H
 	call	?malloc@@YAPEAXI@Z			; malloc
 	mov	QWORD PTR sn$[rsp], rax
 
-; 182  : 	strcpy(sn->filename, slave_name);
+; 279  : 	strcpy(sn->filename, slave_name);
 
 	mov	rax, QWORD PTR sn$[rsp]
 	lea	rdx, QWORD PTR slave_name$[rsp]
 	mov	rcx, rax
 	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
 
-; 183  : 	sn->size = 0;
+; 280  : 	sn->size = 0;
 
 	mov	rax, QWORD PTR sn$[rsp]
 	mov	DWORD PTR [rax+32], 0
 
-; 184  : 	sn->eof = 0;
+; 281  : 	sn->eof = 0;
 
 	mov	rax, QWORD PTR sn$[rsp]
 	mov	DWORD PTR [rax+36], 0
 
-; 185  : 	sn->pos = 0;
+; 282  : 	sn->pos = 0;
 
 	mov	rax, QWORD PTR sn$[rsp]
 	mov	DWORD PTR [rax+40], 0
 
-; 186  : 	sn->current = 0;
+; 283  : 	sn->current = 0;
 
 	mov	rax, QWORD PTR sn$[rsp]
 	mov	DWORD PTR [rax+44], 0
 
-; 187  : 	sn->flags = FS_FLAG_GENERAL;
+; 284  : 	sn->flags = FS_FLAG_GENERAL;
 
 	mov	rax, QWORD PTR sn$[rsp]
 	mov	DWORD PTR [rax+48], 2
 
-; 188  : 	sn->status = 0;
+; 285  : 	sn->status = 0;
 
 	mov	rax, QWORD PTR sn$[rsp]
 	mov	DWORD PTR [rax+52], 0
 
-; 189  : 	sn->open = 0;
+; 286  : 	sn->open = 0;
 
 	mov	rax, QWORD PTR sn$[rsp]
 	mov	QWORD PTR [rax+64], 0
 
-; 190  : 	sn->device = tty;
+; 287  : 	sn->device = tty;
 
 	mov	rax, QWORD PTR sn$[rsp]
 	mov	rcx, QWORD PTR tty$[rsp]
 	mov	QWORD PTR [rax+56], rcx
 
-; 191  : 	sn->read = ttype_slave_read;
+; 288  : 	sn->read = ttype_slave_read;
 
 	mov	rax, QWORD PTR sn$[rsp]
 	lea	rcx, OFFSET FLAT:?ttype_slave_read@@YAXPEAU_vfs_node_@@PEAEI@Z ; ttype_slave_read
 	mov	QWORD PTR [rax+72], rcx
 
-; 192  : 	sn->write = ttype_slave_write;
+; 289  : 	sn->write = ttype_slave_write;
 
 	mov	rax, QWORD PTR sn$[rsp]
 	lea	rcx, OFFSET FLAT:?ttype_slave_write@@YAXPEAU_vfs_node_@@PEAEI@Z ; ttype_slave_write
 	mov	QWORD PTR [rax+80], rcx
 
-; 193  : 	sn->read_blk = 0;
+; 290  : 	sn->read_blk = 0;
 
 	mov	rax, QWORD PTR sn$[rsp]
 	mov	QWORD PTR [rax+88], 0
 
-; 194  : 	sn->ioquery = 0;
+; 291  : 	sn->ioquery = 0;
 
 	mov	rax, QWORD PTR sn$[rsp]
 	mov	QWORD PTR [rax+96], 0
 
-; 195  : 	vfs_mount (sname, sn);
+; 292  : 	vfs_mount (sname, sn);
 
 	mov	rdx, QWORD PTR sn$[rsp]
 	lea	rcx, QWORD PTR sname$[rsp]
 	call	?vfs_mount@@YAXPEADPEAU_vfs_node_@@@Z	; vfs_mount
 
-; 196  : 
-; 197  : 	for (int i = 0; i < 32; i++) {
+; 293  : 
+; 294  : 	for (int i = 0; i < 32; i++) {
 
 	mov	DWORD PTR i$1[rsp], 0
 	jmp	SHORT $LN3@ttype_crea
@@ -1053,7 +1186,7 @@ $LN3@ttype_crea:
 	cmp	DWORD PTR i$1[rsp], 32			; 00000020H
 	jge	SHORT $LN1@ttype_crea
 
-; 198  : 		tty->m_path[i] = mname[i];
+; 295  : 		tty->m_path[i] = mname[i];
 
 	movsxd	rax, DWORD PTR i$1[rsp]
 	movsxd	rcx, DWORD PTR i$1[rsp]
@@ -1061,7 +1194,7 @@ $LN3@ttype_crea:
 	movzx	eax, BYTE PTR mname$[rsp+rax]
 	mov	BYTE PTR [rdx+rcx+1], al
 
-; 199  : 		tty->s_path[i] = sname[i];
+; 296  : 		tty->s_path[i] = sname[i];
 
 	movsxd	rax, DWORD PTR i$1[rsp]
 	movsxd	rcx, DWORD PTR i$1[rsp]
@@ -1069,110 +1202,127 @@ $LN3@ttype_crea:
 	movzx	eax, BYTE PTR sname$[rsp+rax]
 	mov	BYTE PTR [rdx+rcx+33], al
 
-; 200  : 	}
+; 297  : 	}
 
 	jmp	SHORT $LN2@ttype_crea
 $LN1@ttype_crea:
 
-; 201  : 		
-; 202  : 
-; 203  : 	//! Allocate fd for master
-; 204  : 	int m_fd = get_current_thread()->fd_current;
+; 298  : 		
+; 299  : 
+; 300  : 	//! Allocate fd for master
+; 301  : 	int m_fd = get_current_thread()->fd_current;
 
 	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
-	mov	eax, DWORD PTR [rax+744]
+	mov	eax, DWORD PTR [rax+752]
 	mov	DWORD PTR m_fd$[rsp], eax
 
-; 205  : 	get_current_thread()->fd[m_fd] = mn;
+; 302  : 	get_current_thread()->fd[m_fd] = mn;
 
 	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
 	movsxd	rcx, DWORD PTR m_fd$[rsp]
 	mov	rdx, QWORD PTR mn$[rsp]
-	mov	QWORD PTR [rax+rcx*8+264], rdx
+	mov	QWORD PTR [rax+rcx*8+272], rdx
 
-; 206  : 	get_current_thread()->fd_current++;
+; 303  : 	get_current_thread()->fd_current++;
 
 	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
-	add	rax, 744				; 000002e8H
-	mov	QWORD PTR tv215[rsp], rax
-	mov	rax, QWORD PTR tv215[rsp]
+	add	rax, 752				; 000002f0H
+	mov	QWORD PTR tv224[rsp], rax
+	mov	rax, QWORD PTR tv224[rsp]
 	mov	eax, DWORD PTR [rax]
 	inc	eax
-	mov	rcx, QWORD PTR tv215[rsp]
+	mov	rcx, QWORD PTR tv224[rsp]
 	mov	DWORD PTR [rcx], eax
 
-; 207  : 
-; 208  : 	//! Allocate fd for slave
-; 209  : 	int s_fd = get_current_thread()->fd_current;
+; 304  : 
+; 305  : 	//! Allocate fd for slave
+; 306  : 	int s_fd = get_current_thread()->fd_current;
 
 	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
-	mov	eax, DWORD PTR [rax+744]
+	mov	eax, DWORD PTR [rax+752]
 	mov	DWORD PTR s_fd$[rsp], eax
 
-; 210  : 	get_current_thread()->fd[s_fd] = sn;
+; 307  : 	get_current_thread()->fd[s_fd] = sn;
 
 	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
 	movsxd	rcx, DWORD PTR s_fd$[rsp]
 	mov	rdx, QWORD PTR sn$[rsp]
-	mov	QWORD PTR [rax+rcx*8+264], rdx
+	mov	QWORD PTR [rax+rcx*8+272], rdx
 
-; 211  : 	get_current_thread()->fd_current++;
+; 308  : 	get_current_thread()->fd_current++;
 
 	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
-	add	rax, 744				; 000002e8H
-	mov	QWORD PTR tv226[rsp], rax
-	mov	rax, QWORD PTR tv226[rsp]
+	add	rax, 752				; 000002f0H
+	mov	QWORD PTR tv235[rsp], rax
+	mov	rax, QWORD PTR tv235[rsp]
 	mov	eax, DWORD PTR [rax]
 	inc	eax
-	mov	rcx, QWORD PTR tv226[rsp]
+	mov	rcx, QWORD PTR tv235[rsp]
 	mov	DWORD PTR [rcx], eax
 
-; 212  : 
-; 213  : 	get_current_thread()->master_fd = m_fd;
+; 309  : 
+; 310  : 	get_current_thread()->master_fd = m_fd;
 
 	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
 	movzx	ecx, BYTE PTR m_fd$[rsp]
-	mov	BYTE PTR [rax+748], cl
+	mov	BYTE PTR [rax+756], cl
 
-; 214  : 	get_current_thread()->slave_fd = s_fd;
+; 311  : 	get_current_thread()->slave_fd = s_fd;
 
 	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
 	movzx	ecx, BYTE PTR s_fd$[rsp]
-	mov	BYTE PTR [rax+749], cl
+	mov	BYTE PTR [rax+757], cl
 
-; 215  : 
-; 216  : 	ttype_insert (tty);
+; 312  : 
+; 313  : 	get_current_thread()->fd[1] = mn;
+
+	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
+	mov	ecx, 8
+	imul	rcx, 1
+	mov	rdx, QWORD PTR mn$[rsp]
+	mov	QWORD PTR [rax+rcx+272], rdx
+
+; 314  : 	get_current_thread()->fd[2] = mn;
+
+	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
+	mov	ecx, 8
+	imul	rcx, 2
+	mov	rdx, QWORD PTR mn$[rsp]
+	mov	QWORD PTR [rax+rcx+272], rdx
+
+; 315  : 
+; 316  : 	ttype_insert (tty);
 
 	mov	rcx, QWORD PTR tty$[rsp]
 	call	?ttype_insert@@YAXPEAU_tele_type_@@@Z	; ttype_insert
 
-; 217  : 	master_count++;
+; 317  : 	master_count++;
 
 	mov	eax, DWORD PTR ?master_count@@3HA	; master_count
 	inc	eax
 	mov	DWORD PTR ?master_count@@3HA, eax	; master_count
 
-; 218  : 	slave_count++;
+; 318  : 	slave_count++;
 
 	mov	eax, DWORD PTR ?slave_count@@3HA	; slave_count
 	inc	eax
 	mov	DWORD PTR ?slave_count@@3HA, eax	; slave_count
 
-; 219  : 	*master_fd = m_fd;
+; 319  : 	*master_fd = m_fd;
 
 	mov	rax, QWORD PTR master_fd$[rsp]
 	mov	ecx, DWORD PTR m_fd$[rsp]
 	mov	DWORD PTR [rax], ecx
 
-; 220  : 	*slave_fd = s_fd;
+; 320  : 	*slave_fd = s_fd;
 
 	mov	rax, QWORD PTR slave_fd$[rsp]
 	mov	ecx, DWORD PTR s_fd$[rsp]
 	mov	DWORD PTR [rax], ecx
 
-; 221  : }
+; 321  : }
 
-	add	rsp, 168				; 000000a8H
+	add	rsp, 184				; 000000b8H
 	ret	0
 ?ttype_create@@YAXPEAH0@Z ENDP				; ttype_create
 _TEXT	ENDS

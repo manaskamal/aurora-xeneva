@@ -70,7 +70,8 @@ typedef struct _thread_ {
 	uint64_t gs;         //0xB8
 	uint64_t cr3;        //0xC0     [0x08]
 	uint64_t kern_esp;   //0xC8     [0x10]
-	bool _is_user;       //0xD0
+	void* fx_state;  //0xD0
+	bool _is_user;       
 	char* name;
 	uint8_t state;
 	uint16_t id;

@@ -1,4 +1,3 @@
-
 /**
  * BSD 2-Clause License
  *
@@ -30,18 +29,32 @@
  * @ttype.cpp -- tele type driver
  *
  **/
+
 #include <fs\ttype.h>
 #include <mm.h>
 #include <stdio.h>
 #include <arch\x86_64\thread.h>
 
 
+/**
+ * DESIGN: Terminal emulator process creates a ttype object
+ * which provides to file descriptor -- master and slave
+ * master accept text from child processes while slave 
+ * is for terminal to handle incoming text, if a new process
+ * is created from inside terminal, the terminal automatically
+ * copies the master to childs stdout, stderr. If child writes
+ * to stdout or stderr it get transferred to master fd which is
+ * transferred to slave fd of terminal emulator and finally
+ * terminal emulator displays the text of written by child process
+ * to screen
+ */
 
 int master_count = 1;
 int slave_count = 1;
 
 ttype_t *root = NULL;
 ttype_t *last = NULL;
+
 
 void ttype_insert (ttype_t* tty ) {
 	tty->next = NULL;
@@ -78,45 +91,119 @@ void ttype_delete (ttype_t* tty) {
 	pmmngr_free (tty);
 }
 
+/**
+ * ttype_master_read -- not implemented
+ * @param file -- file node
+ * @param buffer -- buffer to be used
+ * @param length -- length to be used
+ */
 void ttype_master_read (vfs_node_t *file, uint8_t* buffer,uint32_t length) {
 	//!Read it from out buffer
 	vfs_node_t *node = get_current_thread()->fd[get_current_thread()->master_fd];
 	ttype_t *type = (ttype_t*)node->device;
-	for (int i = 0; i < 32; i++)
-		buffer[i] = type->out_buffer[i];
+	/*for (int i = 0; i < 32; i++)
+		buffer[i] = type->out_buffer[i];*/
 
 }
 
+/**
+ * ttype_master_write -- child process writes text here using its stdout, stderr
+ * @param file -- file node
+ * @param buffer -- actual text buffer needs to be transferred
+ * @param length -- length of the text
+ */
 void ttype_master_write (vfs_node_t *file, uint8_t* buffer, uint32_t length) {
+	x64_cli();
+
+	//! get the master node from the child process
 	vfs_node_t *node = get_current_thread()->fd[get_current_thread()->master_fd];
 	ttype_t *type = (ttype_t*)node->device;
-	for (int i = 0; i < 32; i++)
-		type->in_buffer[i] = buffer[i];
-	
+
+	//! first of all, get the registered terminal emulator
+	//! id, we need to unblock it, if it is blocked by default
 	thread_t *dest = thread_iterate_ready_list(type->pid);
 	if (dest == NULL)
 		dest = thread_iterate_block_list(type->pid);
 
+	//! check, if another data is already written to the
+	//! buffer
+	if (type->written > 0)  {
+		//! yes, the buffer is in use, let's wait for the
+		//! buffer usage to be finished
+		type->blocked_pid = get_current_thread()->id;
+
+		//! unblock the terminal emulator if it is blocked cause
+		//! it will get the ttype buffer usage to be finished
+		if (dest != NULL && dest->state == THREAD_STATE_BLOCKED)
+			unblock_thread(dest);
+
+		//! block the current thread, till the buffer usage get over
+		block_thread(get_current_thread());
+		force_sched();
+	}
+
+
+     //! unblock the terminal emulator, cause - new text is available to 
+	//! be processed
 	if (dest != NULL && dest->state == THREAD_STATE_BLOCKED)
 		unblock_thread(dest);
+
+	//! so finally we now use the type buffer to store our text data
+	for (int i = 0; i < length; i++) {
+		circular_buf_put(type->in_buffer,buffer[i]);
+		type->written++; //increament the written count, cause we only
+		// read that much of text, that actually get written
+	}
+
+
+	
+
 }
 
+/**
+ * ttype_slave_read -- terminal emulator reads child process stdout and stderr from 
+ * this interface
+ * @param file -- file node
+ * @param buffer -- memory location to store child process texts
+ * @param length -- length to be used
+ */
 void ttype_slave_read (vfs_node_t *file, uint8_t* buffer,uint32_t length) {
+	x64_cli();
+
+	/* get the ttype */
 	vfs_node_t *node = get_current_thread()->fd[get_current_thread()->slave_fd];
 	ttype_t *type = (ttype_t*)node->device;
-	for (int i = 0; i < 32; i++) {
-		buffer[i] = type->in_buffer[i];
-		//type->in_buffer[i] = 0;
+
+	//! lets read everything that has been written 
+	//! by child, be carefull we only read that much
+	//! that have been written by child process
+	for (int i = 0; i < type->written; i++) {
+		circular_buf_get(type->in_buffer,&buffer[i]);
 	}
-	/*if (buffer[1] != 0)*/
-	memset(type->in_buffer, 0, 32);
+
+	//! resate the written count, so that child process
+	//! can write its next data
+	type->written = 0;
+
+	//! check if child process is blocked
+	if (type->blocked_pid > 0) {
+		//! yes, than simply unblock it
+		thread_t *dest = thread_iterate_ready_list(type->blocked_pid);
+		if (dest == NULL)
+			dest = thread_iterate_block_list(type->blocked_pid);
+
+		if (dest != NULL && dest->state == THREAD_STATE_BLOCKED)
+			unblock_thread(dest);
+	}
+
+	
 }
 
 void ttype_slave_write (vfs_node_t *file, uint8_t* buffer, uint32_t length) {
 	vfs_node_t *node = get_current_thread()->fd[get_current_thread()->slave_fd];
 	ttype_t *type = (ttype_t*)node->device;
-	for (int i = 0; i < 32; i++)
-		type->out_buffer[i] = buffer[i];
+	/*for (int i = 0; i < 32; i++)
+		type->out_buffer[i] = buffer[i];*/
 }
 
 ttype_t * get_ttype (int id) {
@@ -132,10 +219,21 @@ ttype_t * get_ttype (int id) {
 void ttype_create (int* master_fd, int* slave_fd) {
 	ttype_t *tty= (ttype_t*)pmmngr_alloc();
 	memset (tty, 0, 4096);
-	memset (tty->in_buffer, 0, 32);
-	memset (tty->out_buffer, 0, 32);
+
+	uint8_t* inbuffer = (uint8_t*)pmmngr_alloc();
+	memset(inbuffer, 0, 4096);
+	uint8_t* outbuffer = (uint8_t*)pmmngr_alloc();
+	memset(outbuffer, 0, 4096);
+
+	tty->in_buffer = circ_buf_init(inbuffer,4095);
+	tty->out_buffer = circ_buf_init(outbuffer, 4095);
+
 	tty->id = slave_count;
+
+	//! tty->pid -- stores the current terminal emulator id
 	tty->pid = get_current_thread()->id;
+	tty->written = 0;
+
 	///! Create the namings
 	char m_value[2];
 	char s_value[2];
@@ -211,6 +309,9 @@ void ttype_create (int* master_fd, int* slave_fd) {
 
 	get_current_thread()->master_fd = m_fd;
 	get_current_thread()->slave_fd = s_fd;
+
+	get_current_thread()->fd[1] = mn;
+	get_current_thread()->fd[2] = mn;
 
 	ttype_insert (tty);
 	master_count++;

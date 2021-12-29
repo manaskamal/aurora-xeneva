@@ -146,7 +146,7 @@ $LN4:
 ; 56   : 	dwm_message_t *tmsg = (dwm_message_t*)get_current_thread()->msg_box;
 
 	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
-	mov	rax, QWORD PTR [rax+240]
+	mov	rax, QWORD PTR [rax+248]
 	mov	QWORD PTR tmsg$[rsp], rax
 
 ; 57   : 	if (tmsg->type != 0) {
@@ -171,7 +171,7 @@ $LN1@dwm_dispat:
 	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
 	mov	r8d, 4096				; 00001000H
 	xor	edx, edx
-	mov	rcx, QWORD PTR [rax+240]
+	mov	rcx, QWORD PTR [rax+248]
 	call	?memset@@YAXPEAXEI@Z			; memset
 
 ; 62   : 	mutex_unlock (msg_rcv_mutex);
@@ -236,7 +236,7 @@ $LN3@dwm_put_me:
 ; 43   : 	dwm_message_t *tmsg = (dwm_message_t*)t->msg_box;
 
 	mov	rax, QWORD PTR t$[rsp]
-	mov	rax, QWORD PTR [rax+240]
+	mov	rax, QWORD PTR [rax+248]
 	mov	QWORD PTR tmsg$[rsp], rax
 
 ; 44   : 	if (tmsg->type == 0)
@@ -251,7 +251,7 @@ $LN3@dwm_put_me:
 	mov	r8d, 28
 	mov	rdx, QWORD PTR msg$[rsp]
 	mov	rax, QWORD PTR t$[rsp]
-	mov	rcx, QWORD PTR [rax+240]
+	mov	rcx, QWORD PTR [rax+248]
 	call	memcpy
 $LN2@dwm_put_me:
 
@@ -259,7 +259,7 @@ $LN2@dwm_put_me:
 ; 47   : 	if (t->state == THREAD_STATE_BLOCKED){
 
 	mov	rax, QWORD PTR t$[rsp]
-	movzx	eax, BYTE PTR [rax+224]
+	movzx	eax, BYTE PTR [rax+232]
 	cmp	eax, 3
 	jne	SHORT $LN1@dwm_put_me
 

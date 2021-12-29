@@ -28,10 +28,12 @@
 
 
 int main (int argc, char*argv[]) {
-	printf ("Copyright (C) Manas Kamal Choudhury\n");
-	printf ("Dock v1.0\n");
+	printf (" Copyright (C) Manas Kamal Choudhury\n");
+	printf (" Hello World\n");
+	printf (" I Love you aloot mere priyanshi\n");
+	printf (" Uuuuummmmmmaaaaaahhhh mele jaaan\n");
+	printf ("This is everything you need\n");
 	while(1) {
 		sys_wait();
-		//sys_sleep(100);
 	}
 }

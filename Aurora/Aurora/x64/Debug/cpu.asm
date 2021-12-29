@@ -6,14 +6,19 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 CONST	SEGMENT
-$SG2930	DB	'*** [x64_idt] x64_default_handler: Unhandled Exception *'
+$SG2934	DB	'*** [x64_idt] x64_default_handler: Unhandled Exception *'
 	DB	'** ', 0aH, 00H
+	ORG $+3
+$SG2978	DB	'x86_64:SSE supported', 0aH, 00H
+	ORG $+2
+$SG2980	DB	'x86_64:fxsave & fxrstor supported', 0aH, 00H
 CONST	ENDS
 PUBLIC	?hal_x86_64_init@@YAXXZ				; hal_x86_64_init
 PUBLIC	?setvect@@YAX_KP6AX0PEAX@Z@Z			; setvect
 PUBLIC	gdt_initialize
 PUBLIC	?interrupt_initialize@@YAXXZ			; interrupt_initialize
 PUBLIC	?hal_x86_64_setup_int@@YAXXZ			; hal_x86_64_setup_int
+PUBLIC	?hal_x86_64_feature_check@@YAXXZ		; hal_x86_64_feature_check
 PUBLIC	load_default_sregs
 PUBLIC	?set_gdt_entry@@YAXAEAU_gdt@@_K1EE@Z		; set_gdt_entry
 PUBLIC	?save_sregs@@YAXXZ				; save_sregs
@@ -24,6 +29,7 @@ EXTRN	x64_sti:PROC
 EXTRN	x64_outportb:PROC
 EXTRN	x64_read_msr:PROC
 EXTRN	x64_write_msr:PROC
+EXTRN	x64_cpuid:PROC
 EXTRN	x64_lgdt:PROC
 EXTRN	x64_sgdt:PROC
 EXTRN	?exception_init@@YAXXZ:PROC			; exception_init
@@ -61,6 +67,9 @@ $pdata$?interrupt_initialize@@YAXXZ DD imagerel $LN12
 $pdata$?hal_x86_64_setup_int@@YAXXZ DD imagerel $LN3
 	DD	imagerel $LN3+188
 	DD	imagerel $unwind$?hal_x86_64_setup_int@@YAXXZ
+$pdata$?hal_x86_64_feature_check@@YAXXZ DD imagerel $LN5
+	DD	imagerel $LN5+109
+	DD	imagerel $unwind$?hal_x86_64_feature_check@@YAXXZ
 $pdata$load_default_sregs DD imagerel $LN3
 	DD	imagerel $LN3+90
 	DD	imagerel $unwind$load_default_sregs
@@ -92,6 +101,8 @@ $unwind$?interrupt_initialize@@YAXXZ DD 020701H
 	DD	0a30107H
 $unwind$?hal_x86_64_setup_int@@YAXXZ DD 010401H
 	DD	06204H
+$unwind$?hal_x86_64_feature_check@@YAXXZ DD 010401H
+	DD	0a204H
 $unwind$load_default_sregs DD 010401H
 	DD	04204H
 $unwind$?set_gdt_entry@@YAXAEAU_gdt@@EE@Z DD 011201H
@@ -114,28 +125,28 @@ vect$ = 48
 param$ = 56
 ?default_irq@@YAX_KPEAX@Z PROC				; default_irq
 
-; 133  : void default_irq(size_t vect, void* param){
+; 134  : void default_irq(size_t vect, void* param){
 
 $LN5:
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 40					; 00000028H
 
-; 134  : 	x64_cli();
+; 135  : 	x64_cli();
 
 	call	x64_cli
 
-; 135  : 	printf("*** [x64_idt] x64_default_handler: Unhandled Exception *** \n");
+; 136  : 	printf("*** [x64_idt] x64_default_handler: Unhandled Exception *** \n");
 
-	lea	rcx, OFFSET FLAT:$SG2930
+	lea	rcx, OFFSET FLAT:$SG2934
 	call	?printf@@YAXPEBDZZ			; printf
 $LN2@default_ir:
 
-; 136  : 	for(;;);
+; 137  : 	for(;;);
 
 	jmp	SHORT $LN2@default_ir
 
-; 137  : }
+; 138  : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -148,14 +159,14 @@ num$ = 48
 frame$ = 56
 interrupt_dispatcher PROC
 
-; 127  : {	
+; 128  : {	
 
 $LN3:
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 40					; 00000028H
 
-; 128  : 	interrupts_handlers[num](num, frame);
+; 129  : 	interrupts_handlers[num](num, frame);
 
 	lea	rax, OFFSET FLAT:interrupts_handlers
 	mov	rdx, QWORD PTR frame$[rsp]
@@ -163,8 +174,8 @@ $LN3:
 	mov	r8, QWORD PTR num$[rsp]
 	call	QWORD PTR [rax+r8*8]
 
-; 129  : 	return;
-; 130  : }
+; 130  : 	return;
+; 131  : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -178,25 +189,25 @@ entry$ = 32
 function$ = 40
 ?register_irq@@YAXPEAU_idt@@PEAX@Z PROC			; register_irq
 
-; 114  : {
+; 115  : {
 
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 24
 
-; 115  : 	size_t faddr = (size_t)function;
+; 116  : 	size_t faddr = (size_t)function;
 
 	mov	rax, QWORD PTR function$[rsp]
 	mov	QWORD PTR faddr$[rsp], rax
 
-; 116  : 	entry->offset_1 = faddr & UINT16_MAX;
+; 117  : 	entry->offset_1 = faddr & UINT16_MAX;
 
 	mov	rax, QWORD PTR faddr$[rsp]
 	and	rax, 65535				; 0000ffffH
 	mov	rcx, QWORD PTR entry$[rsp]
 	mov	WORD PTR [rcx], ax
 
-; 117  : 	entry->offset_2 = (faddr >> 16) & UINT16_MAX;
+; 118  : 	entry->offset_2 = (faddr >> 16) & UINT16_MAX;
 
 	mov	rax, QWORD PTR faddr$[rsp]
 	shr	rax, 16
@@ -204,7 +215,7 @@ function$ = 40
 	mov	rcx, QWORD PTR entry$[rsp]
 	mov	WORD PTR [rcx+6], ax
 
-; 118  : 	entry->offset_3 = (faddr >> 32) & UINT32_MAX;
+; 119  : 	entry->offset_3 = (faddr >> 32) & UINT32_MAX;
 
 	mov	rax, QWORD PTR faddr$[rsp]
 	shr	rax, 32					; 00000020H
@@ -213,7 +224,7 @@ function$ = 40
 	mov	rcx, QWORD PTR entry$[rsp]
 	mov	DWORD PTR [rcx+8], eax
 
-; 119  : }
+; 120  : }
 
 	add	rsp, 24
 	ret	0
@@ -225,12 +236,12 @@ _TEXT	SEGMENT
 reg$1 = 32
 ?save_sregs@@YAXXZ PROC					; save_sregs
 
-; 77   : {
+; 78   : {
 
 $LN6:
 	sub	rsp, 56					; 00000038H
 
-; 78   : 	for (uint_fast8_t reg = 0; reg < 8; ++reg)
+; 79   : 	for (uint_fast8_t reg = 0; reg < 8; ++reg)
 
 	mov	BYTE PTR reg$1[rsp], 0
 	jmp	SHORT $LN3@save_sregs
@@ -243,7 +254,7 @@ $LN3@save_sregs:
 	cmp	eax, 8
 	jge	SHORT $LN1@save_sregs
 
-; 79   : 		oldsregs[reg] = x64_get_segment_register(reg);
+; 80   : 		oldsregs[reg] = x64_get_segment_register(reg);
 
 	movzx	eax, BYTE PTR reg$1[rsp]
 	mov	ecx, eax
@@ -254,7 +265,7 @@ $LN3@save_sregs:
 	jmp	SHORT $LN2@save_sregs
 $LN1@save_sregs:
 
-; 80   : }
+; 81   : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -266,12 +277,12 @@ _TEXT	SEGMENT
 thegdt$ = 64
 ?fill_gdt@@YAXPEAU_gdt@@@Z PROC				; fill_gdt
 
-; 60   : {
+; 61   : {
 
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 56					; 00000038H
 
-; 61   : 	set_gdt_entry(thegdt[GDT_ENTRY_NULL], 0, 0, 0, 0);    //0x00
+; 62   : 	set_gdt_entry(thegdt[GDT_ENTRY_NULL], 0, 0, 0, 0);    //0x00
 
 	mov	eax, 8
 	imul	rax, 0
@@ -285,8 +296,8 @@ thegdt$ = 64
 	mov	rcx, rax
 	call	?set_gdt_entry@@YAXAEAU_gdt@@_K1EE@Z	; set_gdt_entry
 
-; 62   : 	//Kernel Code segment: STAR.SYSCALL_CS
-; 63   : 	set_gdt_entry(thegdt[GDT_ENTRY_KERNEL_CODE], GDT_ACCESS_PRIVL(0) | GDT_ACCESS_RW | GDT_ACCESS_EX, GDT_FLAG_64BT);  //0x08
+; 63   : 	//Kernel Code segment: STAR.SYSCALL_CS
+; 64   : 	set_gdt_entry(thegdt[GDT_ENTRY_KERNEL_CODE], GDT_ACCESS_PRIVL(0) | GDT_ACCESS_RW | GDT_ACCESS_EX, GDT_FLAG_64BT);  //0x08
 
 	mov	eax, 8
 	imul	rax, 1
@@ -298,8 +309,8 @@ thegdt$ = 64
 	mov	rcx, rax
 	call	?set_gdt_entry@@YAXAEAU_gdt@@EE@Z	; set_gdt_entry
 
-; 64   : 	//Kernel Data segment
-; 65   : 	set_gdt_entry(thegdt[GDT_ENTRY_KERNEL_DATA], GDT_ACCESS_PRIVL(0) | GDT_ACCESS_RW, GDT_FLAG_32BT);    //0x10
+; 65   : 	//Kernel Data segment
+; 66   : 	set_gdt_entry(thegdt[GDT_ENTRY_KERNEL_DATA], GDT_ACCESS_PRIVL(0) | GDT_ACCESS_RW, GDT_FLAG_32BT);    //0x10
 
 	mov	eax, 8
 	imul	rax, 2
@@ -311,8 +322,8 @@ thegdt$ = 64
 	mov	rcx, rax
 	call	?set_gdt_entry@@YAXAEAU_gdt@@EE@Z	; set_gdt_entry
 
-; 66   : 	//User Code segment (32 bit): STAR.SYSRET_CS
-; 67   : 	set_gdt_entry(thegdt[GDT_ENTRY_USER_CODE32], GDT_ACCESS_PRIVL(3) | GDT_ACCESS_RW | GDT_ACCESS_EX, GDT_FLAG_32BT);  //0x18
+; 67   : 	//User Code segment (32 bit): STAR.SYSRET_CS
+; 68   : 	set_gdt_entry(thegdt[GDT_ENTRY_USER_CODE32], GDT_ACCESS_PRIVL(3) | GDT_ACCESS_RW | GDT_ACCESS_EX, GDT_FLAG_32BT);  //0x18
 
 	mov	eax, 8
 	imul	rax, 3
@@ -324,8 +335,8 @@ thegdt$ = 64
 	mov	rcx, rax
 	call	?set_gdt_entry@@YAXAEAU_gdt@@EE@Z	; set_gdt_entry
 
-; 68   : 	//User Data segment
-; 69   : 	set_gdt_entry(thegdt[GDT_ENTRY_USER_DATA], GDT_ACCESS_PRIVL(3) | GDT_ACCESS_RW, GDT_FLAG_32BT);    //0x20
+; 69   : 	//User Data segment
+; 70   : 	set_gdt_entry(thegdt[GDT_ENTRY_USER_DATA], GDT_ACCESS_PRIVL(3) | GDT_ACCESS_RW, GDT_FLAG_32BT);    //0x20
 
 	mov	eax, 8
 	imul	rax, 4
@@ -337,8 +348,8 @@ thegdt$ = 64
 	mov	rcx, rax
 	call	?set_gdt_entry@@YAXAEAU_gdt@@EE@Z	; set_gdt_entry
 
-; 70   : 	//User Code segment (64 bit)
-; 71   : 	set_gdt_entry(thegdt[GDT_ENTRY_USER_CODE], GDT_ACCESS_PRIVL(3) | GDT_ACCESS_RW | GDT_ACCESS_EX, GDT_FLAG_64BT);   //0x28  | 3 -- 0x2B
+; 71   : 	//User Code segment (64 bit)
+; 72   : 	set_gdt_entry(thegdt[GDT_ENTRY_USER_CODE], GDT_ACCESS_PRIVL(3) | GDT_ACCESS_RW | GDT_ACCESS_EX, GDT_FLAG_64BT);   //0x28  | 3 -- 0x2B
 
 	mov	eax, 8
 	imul	rax, 5
@@ -350,8 +361,8 @@ thegdt$ = 64
 	mov	rcx, rax
 	call	?set_gdt_entry@@YAXAEAU_gdt@@EE@Z	; set_gdt_entry
 
-; 72   : 	//Kernel Code segment (32 bit)
-; 73   : 	set_gdt_entry(thegdt[GDT_ENTRY_KERNEL_CODE32], GDT_ACCESS_PRIVL(3) | GDT_ACCESS_RW | GDT_ACCESS_EX , GDT_FLAG_32BT);  //0x30
+; 73   : 	//Kernel Code segment (32 bit)
+; 74   : 	set_gdt_entry(thegdt[GDT_ENTRY_KERNEL_CODE32], GDT_ACCESS_PRIVL(3) | GDT_ACCESS_RW | GDT_ACCESS_EX , GDT_FLAG_32BT);  //0x30
 
 	mov	eax, 8
 	imul	rax, 6
@@ -363,7 +374,7 @@ thegdt$ = 64
 	mov	rcx, rax
 	call	?set_gdt_entry@@YAXAEAU_gdt@@EE@Z	; set_gdt_entry
 
-; 74   : }
+; 75   : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -377,26 +388,26 @@ access$ = 72
 flags$ = 80
 ?set_gdt_entry@@YAXAEAU_gdt@@EE@Z PROC			; set_gdt_entry
 
-; 53   : {
+; 54   : {
 
 	mov	BYTE PTR [rsp+24], r8b
 	mov	BYTE PTR [rsp+16], dl
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 56					; 00000038H
 
-; 54   : 	access |= GDT_ACCESS_PRESENT | GDT_ACCESS_TYPE;
+; 55   : 	access |= GDT_ACCESS_PRESENT | GDT_ACCESS_TYPE;
 
 	movzx	eax, BYTE PTR access$[rsp]
 	or	eax, 144				; 00000090H
 	mov	BYTE PTR access$[rsp], al
 
-; 55   : 	flags |= GDT_FLAG_GRAN;
+; 56   : 	flags |= GDT_FLAG_GRAN;
 
 	movzx	eax, BYTE PTR flags$[rsp]
 	or	eax, 8
 	mov	BYTE PTR flags$[rsp], al
 
-; 56   : 	set_gdt_entry(entry, 0, SIZE_MAX, access, flags);
+; 57   : 	set_gdt_entry(entry, 0, SIZE_MAX, access, flags);
 
 	movzx	eax, BYTE PTR flags$[rsp]
 	mov	BYTE PTR [rsp+32], al
@@ -406,7 +417,7 @@ flags$ = 80
 	mov	rcx, QWORD PTR entry$[rsp]
 	call	?set_gdt_entry@@YAXAEAU_gdt@@_K1EE@Z	; set_gdt_entry
 
-; 57   : }
+; 58   : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -422,21 +433,21 @@ access$ = 32
 flags$ = 40
 ?set_gdt_entry@@YAXAEAU_gdt@@_K1EE@Z PROC		; set_gdt_entry
 
-; 43   : {
+; 44   : {
 
 	mov	BYTE PTR [rsp+32], r9b
 	mov	QWORD PTR [rsp+24], r8
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
 
-; 44   : 	entry.base_low = base & 0xFFFF;
+; 45   : 	entry.base_low = base & 0xFFFF;
 
 	mov	rax, QWORD PTR base$[rsp]
 	and	rax, 65535				; 0000ffffH
 	mov	rcx, QWORD PTR entry$[rsp]
 	mov	WORD PTR [rcx+2], ax
 
-; 45   : 	entry.base_mid = (base >> 16) & 0xFF;
+; 46   : 	entry.base_mid = (base >> 16) & 0xFF;
 
 	mov	rax, QWORD PTR base$[rsp]
 	shr	rax, 16
@@ -444,7 +455,7 @@ flags$ = 40
 	mov	rcx, QWORD PTR entry$[rsp]
 	mov	BYTE PTR [rcx+4], al
 
-; 46   : 	entry.base_high = (base >> 24) & 0xFF;
+; 47   : 	entry.base_high = (base >> 24) & 0xFF;
 
 	mov	rax, QWORD PTR base$[rsp]
 	shr	rax, 24
@@ -452,20 +463,20 @@ flags$ = 40
 	mov	rcx, QWORD PTR entry$[rsp]
 	mov	BYTE PTR [rcx+7], al
 
-; 47   : 	entry.limit_low = limit & 0xFFFF;
+; 48   : 	entry.limit_low = limit & 0xFFFF;
 
 	mov	rax, QWORD PTR limit$[rsp]
 	and	rax, 65535				; 0000ffffH
 	mov	rcx, QWORD PTR entry$[rsp]
 	mov	WORD PTR [rcx], ax
 
-; 48   : 	entry.access = access;
+; 49   : 	entry.access = access;
 
 	mov	rax, QWORD PTR entry$[rsp]
 	movzx	ecx, BYTE PTR access$[rsp]
 	mov	BYTE PTR [rax+5], cl
 
-; 49   : 	entry.flags_limit = (flags << 4) | ((limit >> 16) & 0xF);
+; 50   : 	entry.flags_limit = (flags << 4) | ((limit >> 16) & 0xF);
 
 	movzx	eax, BYTE PTR flags$[rsp]
 	shl	eax, 4
@@ -477,7 +488,7 @@ flags$ = 40
 	mov	rcx, QWORD PTR entry$[rsp]
 	mov	BYTE PTR [rcx+6], al
 
-; 50   : }
+; 51   : }
 
 	ret	0
 ?set_gdt_entry@@YAXAEAU_gdt@@_K1EE@Z ENDP		; set_gdt_entry
@@ -487,49 +498,49 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 load_default_sregs PROC
 
-; 83   : {
+; 84   : {
 
 $LN3:
 	sub	rsp, 40					; 00000028H
 
-; 84   : 	x64_set_segment_register(SREG_CS, SEGVAL(GDT_ENTRY_KERNEL_CODE, 0));		
+; 85   : 	x64_set_segment_register(SREG_CS, SEGVAL(GDT_ENTRY_KERNEL_CODE, 0));		
 
 	mov	dx, 8
 	xor	ecx, ecx
 	call	x64_set_segment_register
 
-; 85   : 	x64_set_segment_register(SREG_DS, SEGVAL(GDT_ENTRY_KERNEL_DATA, 0));
+; 86   : 	x64_set_segment_register(SREG_DS, SEGVAL(GDT_ENTRY_KERNEL_DATA, 0));
 
 	mov	dx, 16
 	mov	ecx, 1
 	call	x64_set_segment_register
 
-; 86   : 	x64_set_segment_register(SREG_ES, SEGVAL(GDT_ENTRY_KERNEL_DATA, 0));
+; 87   : 	x64_set_segment_register(SREG_ES, SEGVAL(GDT_ENTRY_KERNEL_DATA, 0));
 
 	mov	dx, 16
 	mov	ecx, 2
 	call	x64_set_segment_register
 
-; 87   : 	x64_set_segment_register(SREG_SS, SEGVAL(GDT_ENTRY_KERNEL_DATA, 0));
+; 88   : 	x64_set_segment_register(SREG_SS, SEGVAL(GDT_ENTRY_KERNEL_DATA, 0));
 
 	mov	dx, 16
 	mov	ecx, 5
 	call	x64_set_segment_register
 
-; 88   : 	//Per CPU data
-; 89   : 	x64_set_segment_register(SREG_FS, SEGVAL(GDT_ENTRY_KERNEL_DATA, 0));
+; 89   : 	//Per CPU data
+; 90   : 	x64_set_segment_register(SREG_FS, SEGVAL(GDT_ENTRY_KERNEL_DATA, 0));
 
 	mov	dx, 16
 	mov	ecx, 3
 	call	x64_set_segment_register
 
-; 90   : 	x64_set_segment_register(SREG_GS, SEGVAL(GDT_ENTRY_KERNEL_DATA, 0));
+; 91   : 	x64_set_segment_register(SREG_GS, SEGVAL(GDT_ENTRY_KERNEL_DATA, 0));
 
 	mov	dx, 16
 	mov	ecx, 4
 	call	x64_set_segment_register
 
-; 91   : }
+; 92   : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -538,63 +549,123 @@ _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\arch\x86_64\cpu.cpp
 _TEXT	SEGMENT
+d$ = 48
+c$ = 56
+b$ = 64
+a$ = 72
+?hal_x86_64_feature_check@@YAXXZ PROC			; hal_x86_64_feature_check
+
+; 229  : void hal_x86_64_feature_check () {
+
+$LN5:
+	sub	rsp, 88					; 00000058H
+
+; 230  : 	size_t a, b, c, d;
+; 231  : 	x64_cpuid(1, &a, &b, &c, &d, 0);
+
+	mov	QWORD PTR [rsp+40], 0
+	lea	rax, QWORD PTR d$[rsp]
+	mov	QWORD PTR [rsp+32], rax
+	lea	r9, QWORD PTR c$[rsp]
+	lea	r8, QWORD PTR b$[rsp]
+	lea	rdx, QWORD PTR a$[rsp]
+	mov	ecx, 1
+	call	x64_cpuid
+
+; 232  : 	if ((d & (1<<25)) != 0) {
+
+	mov	rax, QWORD PTR d$[rsp]
+	and	rax, 33554432				; 02000000H
+	test	rax, rax
+	je	SHORT $LN2@hal_x86_64
+
+; 233  : 		printf ("x86_64:SSE supported\n");
+
+	lea	rcx, OFFSET FLAT:$SG2978
+	call	?printf@@YAXPEBDZZ			; printf
+
+; 234  : 		if ((d & (1<<24)) != 0) {
+
+	mov	rax, QWORD PTR d$[rsp]
+	and	rax, 16777216				; 01000000H
+	test	rax, rax
+	je	SHORT $LN1@hal_x86_64
+
+; 235  : 			printf ("x86_64:fxsave & fxrstor supported\n");
+
+	lea	rcx, OFFSET FLAT:$SG2980
+	call	?printf@@YAXPEBDZZ			; printf
+$LN1@hal_x86_64:
+$LN2@hal_x86_64:
+
+; 236  : 		}
+; 237  : 	}
+; 238  : }
+
+	add	rsp, 88					; 00000058H
+	ret	0
+?hal_x86_64_feature_check@@YAXXZ ENDP			; hal_x86_64_feature_check
+_TEXT	ENDS
+; Function compile flags: /Odtpy
+; File e:\xeneva project\xeneva\aurora\aurora\arch\x86_64\cpu.cpp
+_TEXT	SEGMENT
 divisor$ = 32
 efer$ = 40
 ?hal_x86_64_setup_int@@YAXXZ PROC			; hal_x86_64_setup_int
 
-; 188  : void hal_x86_64_setup_int () {
+; 189  : void hal_x86_64_setup_int () {
 
 $LN3:
 	sub	rsp, 56					; 00000038H
 
-; 189  : 	x64_cli();
+; 190  : 	x64_cli();
 
 	call	x64_cli
 
-; 190  : 
-; 191  : 	////! initialize the interrupt descriptor table
-; 192  : 	interrupt_initialize();
+; 191  : 
+; 192  : 	////! initialize the interrupt descriptor table
+; 193  : 	interrupt_initialize();
 
 	call	?interrupt_initialize@@YAXXZ		; interrupt_initialize
 
-; 193  : 	x64_sti();
+; 194  : 	x64_sti();
 
 	call	x64_sti
 
-; 194  : 	////! initialize all exception handlers
-; 195  : 	exception_init ();
+; 195  : 	////! initialize all exception handlers
+; 196  : 	exception_init ();
 
 	call	?exception_init@@YAXXZ			; exception_init
 
-; 196  : 
-; 197  : #ifdef USE_PIC
-; 198  : 	initialize_pic(0x20, 0x28);
-; 199  : #endif
-; 200  : 
-; 201  : #ifdef USE_APIC
-; 202  : 	//!Initialize APIC   FIXME: Causes triple fault now
-; 203  : 	initialize_apic ();
+; 197  : 
+; 198  : #ifdef USE_PIC
+; 199  : 	initialize_pic(0x20, 0x28);
+; 200  : #endif
+; 201  : 
+; 202  : #ifdef USE_APIC
+; 203  : 	//!Initialize APIC   FIXME: Causes triple fault now
+; 204  : 	initialize_apic ();
 
 	call	?initialize_apic@@YAXXZ			; initialize_apic
 
-; 204  : 
-; 205  : 	unsigned int divisor =  1193181 / 100;
+; 205  : 
+; 206  : 	unsigned int divisor =  1193181 / 100;
 
 	mov	DWORD PTR divisor$[rsp], 11931		; 00002e9bH
 
-; 206  : 	x64_outportb(0x43, 0x00 | 0x06 | 0x30 | 0x00);
+; 207  : 	x64_outportb(0x43, 0x00 | 0x06 | 0x30 | 0x00);
 
 	mov	dl, 54					; 00000036H
 	mov	cx, 67					; 00000043H
 	call	x64_outportb
 
-; 207  : 	x64_outportb(0x40, divisor);
+; 208  : 	x64_outportb(0x40, divisor);
 
 	movzx	edx, BYTE PTR divisor$[rsp]
 	mov	cx, 64					; 00000040H
 	call	x64_outportb
 
-; 208  : 	x64_outportb(0x40, divisor >> 8);
+; 209  : 	x64_outportb(0x40, divisor >> 8);
 
 	mov	eax, DWORD PTR divisor$[rsp]
 	shr	eax, 8
@@ -602,61 +673,61 @@ $LN3:
 	mov	cx, 64					; 00000040H
 	call	x64_outportb
 
-; 209  : #endif
-; 210  : //
-; 211  : //	//!Enable EFER and SYSCALL Extension
-; 212  : 	size_t efer = x64_read_msr(IA32_EFER);
+; 210  : #endif
+; 211  : //
+; 212  : //	//!Enable EFER and SYSCALL Extension
+; 213  : 	size_t efer = x64_read_msr(IA32_EFER);
 
 	mov	ecx, -1073741696			; c0000080H
 	call	x64_read_msr
 	mov	QWORD PTR efer$[rsp], rax
 
-; 213  : 	efer |= (1<<11);
+; 214  : 	efer |= (1<<11);
 
 	mov	rax, QWORD PTR efer$[rsp]
 	bts	rax, 11
 	mov	QWORD PTR efer$[rsp], rax
 
-; 214  : 	efer |= 1;
+; 215  : 	efer |= 1;
 
 	mov	rax, QWORD PTR efer$[rsp]
 	or	rax, 1
 	mov	QWORD PTR efer$[rsp], rax
 
-; 215  : 	efer |= (1<<0);
+; 216  : 	efer |= (1<<0);
 
 	mov	rax, QWORD PTR efer$[rsp]
 	or	rax, 1
 	mov	QWORD PTR efer$[rsp], rax
 
-; 216  : 	efer |= 1;
+; 217  : 	efer |= 1;
 
 	mov	rax, QWORD PTR efer$[rsp]
 	or	rax, 1
 	mov	QWORD PTR efer$[rsp], rax
 
-; 217  : 	x64_write_msr(IA32_EFER, efer);
+; 218  : 	x64_write_msr(IA32_EFER, efer);
 
 	mov	rdx, QWORD PTR efer$[rsp]
 	mov	ecx, -1073741696			; c0000080H
 	call	x64_write_msr
 
-; 218  : 	//! now start the interrupts
-; 219  : 
-; 220  : 	//! initialize the user land environment
-; 221  : 	initialize_user_land (64);
+; 219  : 	//! now start the interrupts
+; 220  : 
+; 221  : 	//! initialize the user land environment
+; 222  : 	initialize_user_land (64);
 
 	mov	ecx, 64					; 00000040H
 	call	?initialize_user_land@@YAX_K@Z		; initialize_user_land
 
-; 222  : 
-; 223  : 	//! initialize the syscall entries
-; 224  : 	initialize_syscall ();
+; 223  : 
+; 224  : 	//! initialize the syscall entries
+; 225  : 	initialize_syscall ();
 
 	call	?initialize_syscall@@YAXXZ		; initialize_syscall
 
-; 225  : 	//x64_sti ();
-; 226  : }
+; 226  : 	//x64_sti ();
+; 227  : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -677,16 +748,16 @@ tss$ = 144
 bos$4 = 256
 ?interrupt_initialize@@YAXXZ PROC			; interrupt_initialize
 
-; 141  : void  interrupt_initialize() {
+; 142  : void  interrupt_initialize() {
 
 $LN12:
 	sub	rsp, 1304				; 00000518H
 
-; 142  :  
-; 143  : 
-; 144  : 	void* m_ist[4];
-; 145  : 	uint32_t tss[28];
-; 146  : 	for (int i = 0; i < 28; i++) tss[i] = 0xffffffff;
+; 143  :  
+; 144  : 
+; 145  : 	void* m_ist[4];
+; 146  : 	uint32_t tss[28];
+; 147  : 	for (int i = 0; i < 28; i++) tss[i] = 0xffffffff;
 
 	mov	DWORD PTR i$3[rsp], 0
 	jmp	SHORT $LN9@interrupt_
@@ -702,7 +773,7 @@ $LN9@interrupt_:
 	jmp	SHORT $LN8@interrupt_
 $LN7@interrupt_:
 
-; 147  : 	for (int i = 0; i < 1; i++)
+; 148  : 	for (int i = 0; i < 1; i++)
 
 	mov	DWORD PTR i$2[rsp], 0
 	jmp	SHORT $LN6@interrupt_
@@ -714,15 +785,15 @@ $LN6@interrupt_:
 	cmp	DWORD PTR i$2[rsp], 1
 	jge	SHORT $LN4@interrupt_
 
-; 148  : 	{
-; 149  : 		uint8_t bos[1024];
-; 150  : 		m_ist[i] = bos + 1024;
+; 149  : 	{
+; 150  : 		uint8_t bos[1024];
+; 151  : 		m_ist[i] = bos + 1024;
 
 	lea	rax, QWORD PTR bos$4[rsp+1024]
 	movsxd	rcx, DWORD PTR i$2[rsp]
 	mov	QWORD PTR m_ist$[rsp+rcx*8], rax
 
-; 151  : 		tss[9+i*2] = reinterpret_cast<uint64_t>(m_ist[i]) & 0xffffffff;
+; 152  : 		tss[9+i*2] = reinterpret_cast<uint64_t>(m_ist[i]) & 0xffffffff;
 
 	movsxd	rax, DWORD PTR i$2[rsp]
 	mov	ecx, -1					; ffffffffH
@@ -733,7 +804,7 @@ $LN6@interrupt_:
 	movsxd	rcx, ecx
 	mov	DWORD PTR tss$[rsp+rcx*4], eax
 
-; 152  : 		tss[9+i*2+1] = reinterpret_cast<uint64_t>(m_ist[i]) >> 32;
+; 153  : 		tss[9+i*2+1] = reinterpret_cast<uint64_t>(m_ist[i]) >> 32;
 
 	movsxd	rax, DWORD PTR i$2[rsp]
 	mov	rax, QWORD PTR m_ist$[rsp+rax*8]
@@ -743,23 +814,23 @@ $LN6@interrupt_:
 	movsxd	rcx, ecx
 	mov	DWORD PTR tss$[rsp+rcx*4], eax
 
-; 153  : 	}
+; 154  : 	}
 
 	jmp	SHORT $LN5@interrupt_
 $LN4@interrupt_:
 
-; 154  : 	gdtr curr_gdt;
-; 155  : 	x64_sgdt(&curr_gdt);
+; 155  : 	gdtr curr_gdt;
+; 156  : 	x64_sgdt(&curr_gdt);
 
 	lea	rcx, QWORD PTR curr_gdt$[rsp]
 	call	x64_sgdt
 
-; 156  : 	gdt_entry* thegdt = the_gdtr.gdtaddr; //curr_gdt.gdtaddr;
+; 157  : 	gdt_entry* thegdt = the_gdtr.gdtaddr; //curr_gdt.gdtaddr;
 
 	mov	rax, QWORD PTR the_gdtr+2
 	mov	QWORD PTR thegdt$[rsp], rax
 
-; 157  : 	set_gdt_entry(thegdt[GDT_ENTRY_TSS], reinterpret_cast<uint64_t>(tss) & UINT32_MAX, sizeof(tss), GDT_ACCESS_PRESENT | 0x9, 0);
+; 158  : 	set_gdt_entry(thegdt[GDT_ENTRY_TSS], reinterpret_cast<uint64_t>(tss) & UINT32_MAX, sizeof(tss), GDT_ACCESS_PRESENT | 0x9, 0);
 
 	lea	rax, QWORD PTR tss$[rsp]
 	mov	ecx, -1					; ffffffffH
@@ -775,7 +846,7 @@ $LN4@interrupt_:
 	mov	rdx, rax
 	call	?set_gdt_entry@@YAXAEAU_gdt@@_K1EE@Z	; set_gdt_entry
 
-; 158  : 	*(uint64_t*)&thegdt[GDT_ENTRY_TSS + 1] = (reinterpret_cast<uint64_t>(tss) >> 32);
+; 159  : 	*(uint64_t*)&thegdt[GDT_ENTRY_TSS + 1] = (reinterpret_cast<uint64_t>(tss) >> 32);
 
 	lea	rax, QWORD PTR tss$[rsp]
 	shr	rax, 32					; 00000020H
@@ -784,36 +855,36 @@ $LN4@interrupt_:
 	mov	rdx, QWORD PTR thegdt$[rsp]
 	mov	QWORD PTR [rdx+rcx], rax
 
-; 159  : 	x64_ltr(SEGVAL(GDT_ENTRY_TSS, 0));
+; 160  : 	x64_ltr(SEGVAL(GDT_ENTRY_TSS, 0));
 
 	mov	cx, 56					; 00000038H
 	call	x64_ltr
 
-; 160  : 
 ; 161  : 
-; 162  : 	IDTR *idtr = (IDTR*)0xFFFFD80000000000;
+; 162  : 
+; 163  : 	IDTR *idtr = (IDTR*)0xFFFFD80000000000;
 
 	mov	rax, -43980465111040			; ffffd80000000000H
 	mov	QWORD PTR idtr$[rsp], rax
 
-; 163  : 	idtr->idtaddr = the_idt;
+; 164  : 	idtr->idtaddr = the_idt;
 
 	mov	rax, QWORD PTR idtr$[rsp]
 	lea	rcx, OFFSET FLAT:the_idt
 	mov	QWORD PTR [rax+2], rcx
 
-; 164  : 	idtr->length = 256 * sizeof(IDT) - 1;
+; 165  : 	idtr->length = 256 * sizeof(IDT) - 1;
 
 	mov	eax, 4095				; 00000fffH
 	mov	rcx, QWORD PTR idtr$[rsp]
 	mov	WORD PTR [rcx], ax
 
-; 165  : 	x64_lidt(idtr);
+; 166  : 	x64_lidt(idtr);
 
 	mov	rcx, QWORD PTR idtr$[rsp]
 	call	x64_lidt
 
-; 166  : 	for (int n = 0; n < 256; n++)
+; 167  : 	for (int n = 0; n < 256; n++)
 
 	mov	DWORD PTR n$1[rsp], 0
 	jmp	SHORT $LN3@interrupt_
@@ -825,15 +896,15 @@ $LN3@interrupt_:
 	cmp	DWORD PTR n$1[rsp], 256			; 00000100H
 	jge	$LN1@interrupt_
 
-; 167  : 	{
-; 168  : 		the_idt[n].ist = 0;
+; 168  : 	{
+; 169  : 		the_idt[n].ist = 0;
 
 	movsxd	rax, DWORD PTR n$1[rsp]
 	imul	rax, 16
 	lea	rcx, OFFSET FLAT:the_idt
 	mov	BYTE PTR [rcx+rax+4], 0
 
-; 169  : 		the_idt[n].selector = SEGVAL(GDT_ENTRY_KERNEL_CODE, 0);
+; 170  : 		the_idt[n].selector = SEGVAL(GDT_ENTRY_KERNEL_CODE, 0);
 
 	movsxd	rax, DWORD PTR n$1[rsp]
 	imul	rax, 16
@@ -841,21 +912,21 @@ $LN3@interrupt_:
 	mov	edx, 8
 	mov	WORD PTR [rcx+rax+2], dx
 
-; 170  : 		the_idt[n].zero = 0;
+; 171  : 		the_idt[n].zero = 0;
 
 	movsxd	rax, DWORD PTR n$1[rsp]
 	imul	rax, 16
 	lea	rcx, OFFSET FLAT:the_idt
 	mov	DWORD PTR [rcx+rax+12], 0
 
-; 171  : 		the_idt[n].type_attr = GDT_ACCESS_PRESENT | 0xE;
+; 172  : 		the_idt[n].type_attr = GDT_ACCESS_PRESENT | 0xE;
 
 	movsxd	rax, DWORD PTR n$1[rsp]
 	imul	rax, 16
 	lea	rcx, OFFSET FLAT:the_idt
 	mov	BYTE PTR [rcx+rax+5], 142		; 0000008eH
 
-; 172  : 		register_irq(&the_idt[n], default_irq_handlers[n]);
+; 173  : 		register_irq(&the_idt[n], default_irq_handlers[n]);
 
 	movsxd	rax, DWORD PTR n$1[rsp]
 	lea	rcx, OFFSET FLAT:default_irq_handlers
@@ -870,12 +941,12 @@ $LN3@interrupt_:
 	mov	rcx, rax
 	call	?register_irq@@YAXPEAU_idt@@PEAX@Z	; register_irq
 
-; 173  : 	}
+; 174  : 	}
 
 	jmp	$LN2@interrupt_
 $LN1@interrupt_:
 
-; 174  : }
+; 175  : }
 
 	add	rsp, 1304				; 00000518H
 	ret	0
@@ -886,45 +957,45 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 gdt_initialize PROC
 
-; 95   : {
+; 96   : {
 
 $LN3:
 	sub	rsp, 40					; 00000028H
 
-; 96   : 	x64_sgdt(&old_gdtr);
+; 97   : 	x64_sgdt(&old_gdtr);
 
 	lea	rcx, OFFSET FLAT:old_gdtr
 	call	x64_sgdt
 
-; 97   : 	save_sregs();
+; 98   : 	save_sregs();
 
 	call	?save_sregs@@YAXXZ			; save_sregs
 
-; 98   : 	fill_gdt(gdt);
+; 99   : 	fill_gdt(gdt);
 
 	lea	rcx, OFFSET FLAT:gdt
 	call	?fill_gdt@@YAXPEAU_gdt@@@Z		; fill_gdt
 
-; 99   : 	the_gdtr.gdtaddr = gdt;
+; 100  : 	the_gdtr.gdtaddr = gdt;
 
 	lea	rax, OFFSET FLAT:gdt
 	mov	QWORD PTR the_gdtr+2, rax
 
-; 100  : 	the_gdtr.size = GDT_ENTRIES * sizeof(gdt_entry) - 1;
+; 101  : 	the_gdtr.size = GDT_ENTRIES * sizeof(gdt_entry) - 1;
 
 	mov	eax, 71					; 00000047H
 	mov	WORD PTR the_gdtr, ax
 
-; 101  : 	x64_lgdt(&the_gdtr);
+; 102  : 	x64_lgdt(&the_gdtr);
 
 	lea	rcx, OFFSET FLAT:the_gdtr
 	call	x64_lgdt
 
-; 102  : 	load_default_sregs();
+; 103  : 	load_default_sregs();
 
 	call	load_default_sregs
 
-; 103  : }
+; 104  : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -937,19 +1008,19 @@ vector$ = 8
 function$ = 16
 ?setvect@@YAX_KP6AX0PEAX@Z@Z PROC			; setvect
 
-; 122  : {
+; 123  : {
 
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
 
-; 123  : 	interrupts_handlers[vector] = function;
+; 124  : 	interrupts_handlers[vector] = function;
 
 	lea	rax, OFFSET FLAT:interrupts_handlers
 	mov	rcx, QWORD PTR vector$[rsp]
 	mov	rdx, QWORD PTR function$[rsp]
 	mov	QWORD PTR [rax+rcx*8], rdx
 
-; 124  : };
+; 125  : };
 
 	ret	0
 ?setvect@@YAX_KP6AX0PEAX@Z@Z ENDP			; setvect
@@ -959,28 +1030,28 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 ?hal_x86_64_init@@YAXXZ PROC				; hal_x86_64_init
 
-; 177  : void hal_x86_64_init () {
+; 178  : void hal_x86_64_init () {
 
 $LN3:
 	sub	rsp, 40					; 00000028H
 
-; 178  : 	//! clear interrupts first
-; 179  :     x64_cli ();
+; 179  : 	//! clear interrupts first
+; 180  :     x64_cli ();
 
 	call	x64_cli
 
-; 180  : 
-; 181  : 	////! initialize the global descriptor table
-; 182  : 	gdt_initialize();
+; 181  : 
+; 182  : 	////! initialize the global descriptor table
+; 183  : 	gdt_initialize();
 
 	call	gdt_initialize
 
-; 183  : 
-; 184  : 	x64_sti();
+; 184  : 
+; 185  : 	x64_sti();
 
 	call	x64_sti
 
-; 185  : }
+; 186  : }
 
 	add	rsp, 40					; 00000028H
 	ret	0

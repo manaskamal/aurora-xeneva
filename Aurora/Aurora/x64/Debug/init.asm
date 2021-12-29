@@ -6,31 +6,41 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 PUBLIC	_fltused
+PUBLIC	?ap_address@@3PEAXEA				; ap_address
+_BSS	SEGMENT
+?ap_address@@3PEAXEA DQ 01H DUP (?)			; ap_address
+_BSS	ENDS
 CONST	SEGMENT
-$SG7523	DB	'/', 00H
+$SG7529	DB	'/', 00H
 	ORG $+6
-$SG7526	DB	'/start.wav', 00H
+$SG7534	DB	'/apstart.bin', 00H
+	ORG $+3
+$SG7535	DB	'AP_Adress setup -> %x', 0aH, 00H
 	ORG $+1
-$SG7531	DB	'shell', 00H
+$SG7543	DB	'/start.wav', 00H
+	ORG $+1
+$SG7548	DB	'shell', 00H
 	ORG $+6
-$SG7532	DB	'/xshell.exe', 00H
-$SG7533	DB	'quince', 00H
+$SG7549	DB	'/xshell.exe', 00H
+$SG7550	DB	'quince', 00H
 	ORG $+5
-$SG7534	DB	'/quince.exe', 00H
-$SG7535	DB	'cnsl', 00H
+$SG7551	DB	'/quince.exe', 00H
+$SG7552	DB	'cnsl', 00H
 	ORG $+7
-$SG7536	DB	'/cnsl.exe', 00H
+$SG7553	DB	'/cnsl.exe', 00H
 CONST	ENDS
 _DATA	SEGMENT
 _fltused DD	01H
 _DATA	ENDS
 PUBLIC	??2@YAPEAX_K@Z					; operator new
 PUBLIC	??3@YAXPEAX@Z					; operator delete
+PUBLIC	?get_ap_address@@YAPEAXXZ			; get_ap_address
 PUBLIC	??_U@YAPEAX_K@Z					; operator new[]
 PUBLIC	?_kmain@@YAXXZ					; _kmain
 EXTRN	x64_cli:PROC
 EXTRN	x64_hlt:PROC
 EXTRN	?hal_x86_64_setup_int@@YAXXZ:PROC		; hal_x86_64_setup_int
+EXTRN	?hal_x86_64_feature_check@@YAXXZ:PROC		; hal_x86_64_feature_check
 EXTRN	?hal_init@@YAXXZ:PROC				; hal_init
 EXTRN	?pmmngr_init@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z:PROC ; pmmngr_init
 EXTRN	?pmmngr_alloc@@YAPEAXXZ:PROC			; pmmngr_alloc
@@ -40,6 +50,7 @@ EXTRN	?mm_init@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z:PROC	; mm_init
 EXTRN	?malloc@@YAPEAXI@Z:PROC				; malloc
 EXTRN	?mfree@@YAXPEAX@Z:PROC				; mfree
 EXTRN	?console_initialize@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z:PROC ; console_initialize
+EXTRN	?printf@@YAXPEBDZZ:PROC				; printf
 EXTRN	?kybrd_init@@YAXXZ:PROC				; kybrd_init
 EXTRN	?initialize_mouse@@YAXXZ:PROC			; initialize_mouse
 EXTRN	?ata_initialize@@YAXXZ:PROC			; ata_initialize
@@ -74,7 +85,7 @@ $pdata$??_U@YAPEAX_K@Z DD imagerel $LN3
 	DD	imagerel $LN3+23
 	DD	imagerel $unwind$??_U@YAPEAX_K@Z
 $pdata$?_kmain@@YAXXZ DD imagerel $LN8
-	DD	imagerel $LN8+528
+	DD	imagerel $LN8+684
 	DD	imagerel $unwind$?_kmain@@YAXXZ
 pdata	ENDS
 xdata	SEGMENT
@@ -85,7 +96,7 @@ $unwind$??3@YAXPEAX@Z DD 010901H
 $unwind$??_U@YAPEAX_K@Z DD 010901H
 	DD	04209H
 $unwind$?_kmain@@YAXXZ DD 040a01H
-	DD	033010aH
+	DD	05d010aH
 	DD	060027003H
 xdata	ENDS
 ; Function compile flags: /Odtpy
@@ -94,74 +105,79 @@ _TEXT	SEGMENT
 i$1 = 32
 info$ = 40
 node$ = 48
-buffer2$ = 56
-tv82 = 64
+ap$ = 56
+buffer2$ = 64
 buffer$ = 72
-file$ = 80
-$T2 = 192
-$T3 = 296
+tv128 = 80
+file$ = 96
+apfile$ = 208
+$T2 = 320
+$T3 = 424
+$T4 = 528
+$T5 = 632
 ?_kmain@@YAXXZ PROC					; _kmain
 
-; 107  : void _kmain () {
+; 111  : void _kmain () {
 
 $LN8:
 	push	rsi
 	push	rdi
-	sub	rsp, 408				; 00000198H
+	sub	rsp, 744				; 000002e8H
 
-; 108  : 	KERNEL_BOOT_INFO *info = (KERNEL_BOOT_INFO*)0xFFFFE00000000000;
+; 112  : 	KERNEL_BOOT_INFO *info = (KERNEL_BOOT_INFO*)0xFFFFE00000000000;
 
 	mov	rax, -35184372088832			; ffffe00000000000H
 	mov	QWORD PTR info$[rsp], rax
 
-; 109  : 	//! Initialize the memory mappings
-; 110  : 	pmmngr_init (info);
+; 113  : 	//! Initialize the memory mappings
+; 114  : 	pmmngr_init (info);
 
 	mov	rcx, QWORD PTR info$[rsp]
 	call	?pmmngr_init@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z ; pmmngr_init
 
-; 111  : 	vmmngr_x86_64_init(); 
+; 115  : 	vmmngr_x86_64_init(); 
 
 	call	?vmmngr_x86_64_init@@YAXXZ		; vmmngr_x86_64_init
 
-; 112  : 	hal_init();
+; 116  : 	hal_init();
 
 	call	?hal_init@@YAXXZ			; hal_init
 
-; 113  : 	hal_x86_64_setup_int();	
+; 117  : 	hal_x86_64_setup_int();	
 
 	call	?hal_x86_64_setup_int@@YAXXZ		; hal_x86_64_setup_int
 
-; 114  :     mm_init(info); 
+; 118  :     mm_init(info); 
 
 	mov	rcx, QWORD PTR info$[rsp]
 	call	?mm_init@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z	; mm_init
 
-; 115  : 	initialize_serial();
+; 119  : 	
+; 120  : 	initialize_serial();
 
 	call	?initialize_serial@@YAXXZ		; initialize_serial
 
-; 116  : 
-; 117  : 	ata_initialize();
+; 121  : 
+; 122  : 	ata_initialize();
 
 	call	?ata_initialize@@YAXXZ			; ata_initialize
 
-; 118  : 	vfs_init();
+; 123  : 	vfs_init();
 
 	call	?vfs_init@@YAXXZ			; vfs_init
 
-; 119  : 	initialize_screen(info);
+; 124  : 	initialize_screen(info);
 
 	mov	rcx, QWORD PTR info$[rsp]
 	call	?initialize_screen@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z ; initialize_screen
 
-; 120  : 	console_initialize(info);
+; 125  : 	console_initialize(info);
 
 	mov	rcx, QWORD PTR info$[rsp]
 	call	?console_initialize@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z ; console_initialize
 
-; 121  : 	
-; 122  : 	screen_set_configuration(info->X_Resolution,info->Y_Resolution);
+; 126  : 	
+; 127  : 	screen_set_configuration(info->X_Resolution,info->Y_Resolution);
 
 	mov	rax, QWORD PTR info$[rsp]
 	movzx	eax, WORD PTR [rax+70]
@@ -170,29 +186,85 @@ $LN8:
 	mov	edx, eax
 	call	?screen_set_configuration@@YAXII@Z	; screen_set_configuration
 
-; 123  : 	initialize_rtc(); 
+; 128  : 	initialize_rtc(); 
 
 	call	?initialize_rtc@@YAXXZ			; initialize_rtc
 
-; 124  : 
-; 125  : 	initialize_acpi (info->acpi_table_pointer);
+; 129  : 
+; 130  : 	vfs_node_t *node = vfs_finddir("/");
+
+	lea	rcx, OFFSET FLAT:$SG7529
+	call	?vfs_finddir@@YAPEAU_vfs_node_@@PEAD@Z	; vfs_finddir
+	mov	QWORD PTR node$[rsp], rax
+
+; 131  : 	unsigned char* ap = (unsigned char*)pmmngr_alloc();
+
+	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
+	mov	QWORD PTR ap$[rsp], rax
+
+; 132  : 	vfs_node_t apfile = openfs(node, "/apstart.bin");
+
+	lea	r8, OFFSET FLAT:$SG7534
+	mov	rdx, QWORD PTR node$[rsp]
+	lea	rcx, QWORD PTR $T4[rsp]
+	call	?openfs@@YA?AU_vfs_node_@@PEAU1@PEAD@Z	; openfs
+	lea	rcx, QWORD PTR $T3[rsp]
+	mov	rdi, rcx
+	mov	rsi, rax
+	mov	ecx, 104				; 00000068H
+	rep movsb
+	lea	rax, QWORD PTR apfile$[rsp]
+	lea	rcx, QWORD PTR $T3[rsp]
+	mov	rdi, rax
+	mov	rsi, rcx
+	mov	ecx, 104				; 00000068H
+	rep movsb
+
+; 133  : 	readfs (node,&apfile,ap,70);
+
+	mov	r9d, 70					; 00000046H
+	mov	r8, QWORD PTR ap$[rsp]
+	lea	rdx, QWORD PTR apfile$[rsp]
+	mov	rcx, QWORD PTR node$[rsp]
+	call	?readfs@@YAXPEAU_vfs_node_@@0PEAEI@Z	; readfs
+
+; 134  : 	ap_address = ap;
+
+	mov	rax, QWORD PTR ap$[rsp]
+	mov	QWORD PTR ?ap_address@@3PEAXEA, rax	; ap_address
+
+; 135  : 	printf ("AP_Adress setup -> %x\n", ap_address);
+
+	mov	rdx, QWORD PTR ?ap_address@@3PEAXEA	; ap_address
+	lea	rcx, OFFSET FLAT:$SG7535
+	call	?printf@@YAXPEBDZZ			; printf
+
+; 136  : 	
+; 137  : 
+; 138  : 	initialize_acpi (info->acpi_table_pointer);
 
 	mov	rax, QWORD PTR info$[rsp]
 	mov	rcx, QWORD PTR [rax+90]
 	call	?initialize_acpi@@YAXPEAX@Z		; initialize_acpi
 
-; 126  : 
-; 127  : 	//!Initialize kernel runtime drivers	
-; 128  : 	kybrd_init();
+; 139  : 	hal_x86_64_feature_check();
+
+	call	?hal_x86_64_feature_check@@YAXXZ	; hal_x86_64_feature_check
+
+; 140  : 
+; 141  : 	//!Initialize kernel runtime drivers	
+; 142  : 	kybrd_init();
 
 	call	?kybrd_init@@YAXXZ			; kybrd_init
 
-; 129  : 	initialize_mouse();
+; 143  : 	initialize_mouse();
 
 	call	?initialize_mouse@@YAXXZ		; initialize_mouse
 
-; 130  : 	
-; 131  : 	for (int i = 0; i < 2*1024*1024/4096; i++)
+; 144  : 
+; 145  : 
+; 146  : 	
+; 147  : 	for (int i = 0; i < 2*1024*1024/4096; i++)
 
 	mov	DWORD PTR i$1[rsp], 0
 	jmp	SHORT $LN5@kmain
@@ -204,35 +276,30 @@ $LN5@kmain:
 	cmp	DWORD PTR i$1[rsp], 512			; 00000200H
 	jge	SHORT $LN3@kmain
 
-; 132  : 		map_page((uint64_t)pmmngr_alloc(),0xFFFFF00000000000 + i * 4096, 0);
+; 148  : 		map_page((uint64_t)pmmngr_alloc(),0xFFFFF00000000000 + i * 4096, 0);
 
 	mov	eax, DWORD PTR i$1[rsp]
 	imul	eax, 4096				; 00001000H
 	cdqe
 	mov	rcx, 17592186044416			; 0000100000000000H
 	sub	rax, rcx
-	mov	QWORD PTR tv82[rsp], rax
+	mov	QWORD PTR tv128[rsp], rax
 	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
 	xor	r8d, r8d
-	mov	rcx, QWORD PTR tv82[rsp]
+	mov	rcx, QWORD PTR tv128[rsp]
 	mov	rdx, rcx
 	mov	rcx, rax
 	call	?map_page@@YA_N_K0E@Z			; map_page
 	jmp	SHORT $LN4@kmain
 $LN3@kmain:
 
-; 133  : 
-; 134  : 	vfs_node_t *node = vfs_finddir("/");
+; 149  : 
+; 150  : 	
+; 151  : 	vfs_node_t file = openfs (node, "/start.wav");
 
-	lea	rcx, OFFSET FLAT:$SG7523
-	call	?vfs_finddir@@YAPEAU_vfs_node_@@PEAD@Z	; vfs_finddir
-	mov	QWORD PTR node$[rsp], rax
-
-; 135  : 	vfs_node_t file = openfs (node, "/start.wav");
-
-	lea	r8, OFFSET FLAT:$SG7526
+	lea	r8, OFFSET FLAT:$SG7543
 	mov	rdx, QWORD PTR node$[rsp]
-	lea	rcx, QWORD PTR $T3[rsp]
+	lea	rcx, QWORD PTR $T5[rsp]
 	call	?openfs@@YA?AU_vfs_node_@@PEAU1@PEAD@Z	; openfs
 	lea	rcx, QWORD PTR $T2[rsp]
 	mov	rdi, rcx
@@ -246,18 +313,18 @@ $LN3@kmain:
 	mov	ecx, 104				; 00000068H
 	rep movsb
 
-; 136  : 	unsigned char* buffer = (unsigned char*)0xFFFFF00000000000;
+; 152  : 	unsigned char* buffer = (unsigned char*)0xFFFFF00000000000;
 
 	mov	rax, -17592186044416			; fffff00000000000H
 	mov	QWORD PTR buffer$[rsp], rax
 
-; 137  : 	unsigned char* buffer2 = (unsigned char*)(buffer + 44);
+; 153  : 	unsigned char* buffer2 = (unsigned char*)(buffer + 44);
 
 	mov	rax, QWORD PTR buffer$[rsp]
 	add	rax, 44					; 0000002cH
 	mov	QWORD PTR buffer2$[rsp], rax
 
-; 138  : 	readfs (node,&file,buffer2,file.size);
+; 154  : 	readfs (node,&file,buffer2,file.size);
 
 	mov	r9d, DWORD PTR file$[rsp+32]
 	mov	r8, QWORD PTR buffer2$[rsp]
@@ -265,117 +332,117 @@ $LN3@kmain:
 	mov	rcx, QWORD PTR node$[rsp]
 	call	?readfs@@YAXPEAU_vfs_node_@@0PEAEI@Z	; readfs
 
-; 139  : 
-; 140  : 	message_init ();
+; 155  : 
+; 156  : 	message_init ();
 
 	call	?message_init@@YAXXZ			; message_init
 
-; 141  : 	dwm_ipc_init();
+; 157  : 	dwm_ipc_init();
 
 	call	?dwm_ipc_init@@YAXXZ			; dwm_ipc_init
 
-; 142  : 	stream_init ();
+; 158  : 	stream_init ();
 
 	call	?stream_init@@YAXXZ			; stream_init
 
-; 143  : 	driver_mngr_initialize(info);
+; 159  : 	driver_mngr_initialize(info);
 
 	mov	rcx, QWORD PTR info$[rsp]
 	call	?driver_mngr_initialize@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z ; driver_mngr_initialize
 
-; 144  : 	hda_initialize(); 
+; 160  : 	hda_initialize(); 
 
 	call	?hda_initialize@@YAXXZ			; hda_initialize
 
-; 145  :     hda_audio_add_pcm(buffer2, file.size);
+; 161  :     hda_audio_add_pcm(buffer2, file.size);
 
 	mov	edx, DWORD PTR file$[rsp+32]
 	mov	rcx, QWORD PTR buffer2$[rsp]
 	call	?hda_audio_add_pcm@@YAXPEAEI@Z		; hda_audio_add_pcm
 
-; 146  : 
-; 147  : 	e1000_initialize();   //<< receiver not working
+; 162  : 
+; 163  : 	e1000_initialize();   //<< receiver not working
 
 	call	?e1000_initialize@@YAXXZ		; e1000_initialize
 
-; 148  : 	
-; 149  : 	//svga_init();
-; 150  : 	sound_initialize();
+; 164  : 	
+; 165  : 	//svga_init();
+; 166  : 	sound_initialize();
 
 	call	?sound_initialize@@YAXXZ		; sound_initialize
 
-; 151  : 
-; 152  : #ifdef ARCH_X64
-; 153  : 	//================================================
-; 154  : 	//! Initialize the scheduler here
-; 155  : 	//!===============================================
-; 156  : 	initialize_scheduler();
+; 167  : 
+; 168  : #ifdef ARCH_X64
+; 169  : 	//================================================
+; 170  : 	//! Initialize the scheduler here
+; 171  : 	//!===============================================
+; 172  : 	initialize_scheduler();
 
 	call	?initialize_scheduler@@YAXXZ		; initialize_scheduler
 
-; 157  : 
-; 158  : 	create_process ("/xshell.exe","shell");
+; 173  : 
+; 174  : 	create_process ("/xshell.exe","shell");
 
-	lea	rdx, OFFSET FLAT:$SG7531
-	lea	rcx, OFFSET FLAT:$SG7532
+	lea	rdx, OFFSET FLAT:$SG7548
+	lea	rcx, OFFSET FLAT:$SG7549
 	call	?create_process@@YAHPEBDPEAD@Z		; create_process
 
-; 159  : 	//! Quince -- The Compositing window manager for Aurora kernel
-; 160  : 	//! always put quince in thread id -- > 2
-; 161  : 	create_process ("/quince.exe","quince");
+; 175  : 	//! Quince -- The Compositing window manager for Aurora kernel
+; 176  : 	//! always put quince in thread id -- > 2
+; 177  : 	create_process ("/quince.exe","quince");
 
-	lea	rdx, OFFSET FLAT:$SG7533
-	lea	rcx, OFFSET FLAT:$SG7534
+	lea	rdx, OFFSET FLAT:$SG7550
+	lea	rcx, OFFSET FLAT:$SG7551
 	call	?create_process@@YAHPEBDPEAD@Z		; create_process
 
-; 162  : 
-; 163  : 	/**=====================================================
-; 164  : 	 ** Kernel threads handle some specific callbacks like
-; 165  : 	 ** procmngr handles process creation and termination
-; 166  : 	 **=====================================================
-; 167  : 	 */
-; 168  : 	//! Misc programs goes here
-; 169  : 	//create_process ("/dwm2.exe", "dwm4");
-; 170  : 	create_process ("/cnsl.exe", "cnsl");
+; 178  : 
+; 179  : 	/**=====================================================
+; 180  : 	 ** Kernel threads handle some specific callbacks like
+; 181  : 	 ** procmngr handles process creation and termination
+; 182  : 	 **=====================================================
+; 183  : 	 */
+; 184  : 	//! Misc programs goes here
+; 185  : 	//create_process ("/dwm2.exe", "dwm4");
+; 186  : 	create_process ("/cnsl.exe", "cnsl");
 
-	lea	rdx, OFFSET FLAT:$SG7535
-	lea	rcx, OFFSET FLAT:$SG7536
+	lea	rdx, OFFSET FLAT:$SG7552
+	lea	rcx, OFFSET FLAT:$SG7553
 	call	?create_process@@YAHPEBDPEAD@Z		; create_process
 
-; 171  : 
-; 172  : 	//! Here start the scheduler (multitasking engine)
-; 173  : 	
-; 174  : 	scheduler_start();
+; 187  : 
+; 188  : 	//! Here start the scheduler (multitasking engine)
+; 189  : 	
+; 190  : 	scheduler_start();
 
 	call	?scheduler_start@@YAXXZ			; scheduler_start
 $LN2@kmain:
 
-; 175  : #endif
-; 176  : 
-; 177  : 	//! Loop forever
-; 178  : 	while(1) {
+; 191  : #endif
+; 192  : 
+; 193  : 	//! Loop forever
+; 194  : 	while(1) {
 
 	xor	eax, eax
 	cmp	eax, 1
 	je	SHORT $LN1@kmain
 
-; 179  : 		//!looping looping
-; 180  : 		x64_cli();
+; 195  : 		//!looping looping
+; 196  : 		x64_cli();
 
 	call	x64_cli
 
-; 181  : 		x64_hlt();
+; 197  : 		x64_hlt();
 
 	call	x64_hlt
 
-; 182  : 	}
+; 198  : 	}
 
 	jmp	SHORT $LN2@kmain
 $LN1@kmain:
 
-; 183  : }
+; 199  : }
 
-	add	rsp, 408				; 00000198H
+	add	rsp, 744				; 000002e8H
 	pop	rdi
 	pop	rsi
 	ret	0
@@ -403,6 +470,20 @@ $LN3:
 	add	rsp, 40					; 00000028H
 	ret	0
 ??_U@YAPEAX_K@Z ENDP					; operator new[]
+_TEXT	ENDS
+; Function compile flags: /Odtpy
+; File e:\xeneva project\xeneva\aurora\aurora\init.cpp
+_TEXT	SEGMENT
+?get_ap_address@@YAPEAXXZ PROC				; get_ap_address
+
+; 106  : 	return ap_address;
+
+	mov	rax, QWORD PTR ?ap_address@@3PEAXEA	; ap_address
+
+; 107  : }
+
+	ret	0
+?get_ap_address@@YAPEAXXZ ENDP				; get_ap_address
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\init.cpp

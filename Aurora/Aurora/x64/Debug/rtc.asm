@@ -154,7 +154,7 @@ $LN4@rtc_clock_:
 ; 102  : 			if (t->state == THREAD_STATE_BLOCKED)
 
 	mov	rax, QWORD PTR t$1[rsp]
-	movzx	eax, BYTE PTR [rax+224]
+	movzx	eax, BYTE PTR [rax+232]
 	cmp	eax, 3
 	jne	SHORT $LN1@rtc_clock_
 

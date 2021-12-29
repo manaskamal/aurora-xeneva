@@ -25,7 +25,7 @@ $pdata$?sys_exit@@YAXXZ DD imagerel $LN3
 	DD	imagerel $LN3+24
 	DD	imagerel $unwind$?sys_exit@@YAXXZ
 $pdata$?sys_kill@@YAXHH@Z DD imagerel $LN3
-	DD	imagerel $LN3+32
+	DD	imagerel $LN3+37
 	DD	imagerel $unwind$?sys_kill@@YAXHH@Z
 $pdata$?sys_set_signal@@YAXHP6AXH@Z@Z DD imagerel $LN3
 	DD	imagerel $LN3+23
@@ -53,21 +53,21 @@ tv66 = 32
 id$ = 64
 ?sys_attach_ttype@@YAXH@Z PROC				; sys_attach_ttype
 
-; 43   : void sys_attach_ttype (int id) {
+; 88   : void sys_attach_ttype (int id) {
 
 $LN3:
 	mov	DWORD PTR [rsp+8], ecx
 	sub	rsp, 56					; 00000038H
 
-; 44   : 	get_current_thread()->ttype = id;
+; 89   : 	get_current_thread()->ttype = id;
 
 	movsxd	rax, DWORD PTR id$[rsp]
 	mov	QWORD PTR tv66[rsp], rax
 	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
 	mov	rcx, QWORD PTR tv66[rsp]
-	mov	QWORD PTR [rax+232], rcx
+	mov	QWORD PTR [rax+240], rcx
 
-; 45   : }
+; 90   : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -80,19 +80,19 @@ signo$ = 48
 handler$ = 56
 ?sys_set_signal@@YAXHP6AXH@Z@Z PROC			; sys_set_signal
 
-; 38   : void sys_set_signal (int signo, sig_handler handler) {
+; 79   : void sys_set_signal (int signo, sig_handler handler) {
 
 $LN3:
 	mov	QWORD PTR [rsp+16], rdx
 	mov	DWORD PTR [rsp+8], ecx
 	sub	rsp, 40					; 00000028H
 
-; 39   : 	x64_cli();
+; 80   : 	x64_cli();
 
 	call	x64_cli
 
-; 40   : 	//get_current_thread()->signals[signo] = handler;
-; 41   : }
+; 81   : 	//get_current_thread()->signals[signo] = handler;
+; 82   : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -105,35 +105,28 @@ pid$ = 48
 signo$ = 56
 ?sys_kill@@YAXHH@Z PROC					; sys_kill
 
-; 21   : void sys_kill (int pid, int signo) {
+; 67   : void sys_kill (int pid, int signo) {
 
 $LN3:
 	mov	DWORD PTR [rsp+16], edx
 	mov	DWORD PTR [rsp+8], ecx
 	sub	rsp, 40					; 00000028H
 
-; 22   : 	//x64_cli();
-; 23   : 	/*thread_t * t = (thread_t*)thread_iterate_ready_list(pid);
-; 24   : 	if (t == NULL) {
-; 25   : 		t = (thread_t*)thread_iterate_block_list(pid);
-; 26   : 	}
-; 27   : 
-; 28   : 	if (t == NULL)
-; 29   : 		return;
-; 30   : 
-; 31   : 	t->signal_interrupt = true;*/
-; 32   : 
-; 33   : 	kill_process_by_id(pid);
+; 68   : 	x64_cli();
+
+	call	x64_cli
+
+; 69   : 	kill_process_by_id(pid);
 
 	movzx	ecx, WORD PTR pid$[rsp]
 	call	?kill_process_by_id@@YAXG@Z		; kill_process_by_id
 
-; 34   : 	force_sched();
+; 70   : 	force_sched();
 
 	call	?force_sched@@YAXXZ			; force_sched
 
-; 35   : 	//! For now, no signals are supported, just kill the process
-; 36   : }
+; 71   : 	//! For now, no signals are supported, just kill the process
+; 72   : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -144,24 +137,24 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 ?sys_exit@@YAXXZ PROC					; sys_exit
 
-; 14   : void sys_exit () {
+; 55   : void sys_exit () {
 
 $LN3:
 	sub	rsp, 40					; 00000028H
 
-; 15   : 	x64_cli();	
+; 56   : 	x64_cli();	
 
 	call	x64_cli
 
-; 16   : 	kill_process();
+; 57   : 	kill_process();
 
 	call	?kill_process@@YAXXZ			; kill_process
 
-; 17   : 	force_sched();
+; 58   : 	force_sched();
 
 	call	?force_sched@@YAXXZ			; force_sched
 
-; 18   : }
+; 59   : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -176,41 +169,41 @@ name$ = 64
 procnm$ = 72
 ?create__sys_process@@YAHPEBDPEAD@Z PROC		; create__sys_process
 
-; 5    : int create__sys_process (const char* name, char* procnm) {
+; 43   : int create__sys_process (const char* name, char* procnm) {
 
 $LN3:
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 56					; 00000038H
 
-; 6    : 	x64_cli();
+; 44   : 	x64_cli();
 
 	call	x64_cli
 
-; 7    : 	int id = create_process (name, procnm);
+; 45   : 	int id = create_process (name, procnm);
 
 	mov	rdx, QWORD PTR procnm$[rsp]
 	mov	rcx, QWORD PTR name$[rsp]
 	call	?create_process@@YAHPEBDPEAD@Z		; create_process
 	mov	DWORD PTR id$[rsp], eax
 
-; 8    : 	int master_fd = get_current_thread()->master_fd;
+; 46   : 	int master_fd = get_current_thread()->master_fd;
 
 	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
-	movzx	eax, BYTE PTR [rax+748]
+	movzx	eax, BYTE PTR [rax+756]
 	mov	DWORD PTR master_fd$[rsp], eax
 
-; 9    : 	ttype_dup_master(id, master_fd);
+; 47   : 	ttype_dup_master(id, master_fd);
 
 	mov	edx, DWORD PTR master_fd$[rsp]
 	mov	ecx, DWORD PTR id$[rsp]
 	call	?ttype_dup_master@@YAXHH@Z		; ttype_dup_master
 
-; 10   : 	return id;
+; 48   : 	return id;
 
 	mov	eax, DWORD PTR id$[rsp]
 
-; 11   : }
+; 49   : }
 
 	add	rsp, 56					; 00000038H
 	ret	0

@@ -290,14 +290,12 @@
     <ClCompile Include="arch\x86_64\vmmngr.cpp" />
     <ClCompile Include="atomic\mutex.cpp" />
     <ClCompile Include="console.cpp" />
-    <ClCompile Include="drivers\ac97\ac97.cpp" />
     <ClCompile Include="drivers\acpi\acpi.cpp" />
     <ClCompile Include="drivers\acpi\xenevaosi.cpp" />
     <ClCompile Include="drivers\ata.cpp" />
     <ClCompile Include="drivers\hda\hda.cpp" />
     <ClCompile Include="drivers\kybrd.cpp" />
     <ClCompile Include="drivers\mouse.cpp" />
-    <ClCompile Include="drivers\net\amd_am79c973.cpp" />
     <ClCompile Include="drivers\net\e1000.cpp" />
     <ClCompile Include="drivers\pci.cpp" />
     <ClCompile Include="drivers\rtc.cpp" />

@@ -6,16 +6,16 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 CONST	SEGMENT
-$SG3604	DB	'stdin', 00H
+$SG3609	DB	'stdin', 00H
 	ORG $+2
-$SG3605	DB	'/dev/stdin', 00H
+$SG3610	DB	'/dev/stdin', 00H
 	ORG $+1
-$SG3609	DB	'stdout', 00H
+$SG3614	DB	'stdout', 00H
 	ORG $+5
-$SG3610	DB	'/dev/stdout', 00H
-$SG3614	DB	'stderr', 00H
+$SG3615	DB	'/dev/stdout', 00H
+$SG3619	DB	'stderr', 00H
 	ORG $+5
-$SG3615	DB	'/dev/stderr', 00H
+$SG3620	DB	'/dev/stderr', 00H
 CONST	ENDS
 PUBLIC	?allocate_stream@@YAPEAU_stream_@@XZ		; allocate_stream
 PUBLIC	?stream_init@@YAXXZ				; stream_init
@@ -60,13 +60,13 @@ $pdata$?stdout_read@@YAXPEAU_vfs_node_@@PEAEI@Z DD imagerel $LN3
 	DD	imagerel $LN3+69
 	DD	imagerel $unwind$?stdout_read@@YAXPEAU_vfs_node_@@PEAEI@Z
 $pdata$?stdout_write@@YAXPEAU_vfs_node_@@PEAEI@Z DD imagerel $LN5
-	DD	imagerel $LN5+141
+	DD	imagerel $LN5+138
 	DD	imagerel $unwind$?stdout_write@@YAXPEAU_vfs_node_@@PEAEI@Z
 $pdata$?stderr_read@@YAXPEAU_vfs_node_@@PEAEI@Z DD imagerel $LN3
 	DD	imagerel $LN3+69
 	DD	imagerel $unwind$?stderr_read@@YAXPEAU_vfs_node_@@PEAEI@Z
 $pdata$?stderr_write@@YAXPEAU_vfs_node_@@PEAEI@Z DD imagerel $LN5
-	DD	imagerel $LN5+141
+	DD	imagerel $LN5+138
 	DD	imagerel $unwind$?stderr_write@@YAXPEAU_vfs_node_@@PEAEI@Z
 pdata	ENDS
 xdata	SEGMENT
@@ -117,7 +117,7 @@ $LN5:
 ; 70   : 	memcpy (p->stream->err, buffer, 32);
 
 	mov	rax, QWORD PTR p$[rsp]
-	mov	rax, QWORD PTR [rax+752]
+	mov	rax, QWORD PTR [rax+760]
 	add	rax, 64					; 00000040H
 	mov	r8d, 32					; 00000020H
 	mov	rdx, QWORD PTR buffer$[rsp]
@@ -127,13 +127,13 @@ $LN5:
 ; 71   : 	if (p->ttype) {
 
 	mov	rax, QWORD PTR p$[rsp]
-	cmp	QWORD PTR [rax+232], 0
+	cmp	QWORD PTR [rax+240], 0
 	je	SHORT $LN2@stderr_wri
 
 ; 72   : 		ttype_t *t = get_ttype(p->ttype);
 
 	mov	rax, QWORD PTR p$[rsp]
-	mov	ecx, DWORD PTR [rax+232]
+	mov	ecx, DWORD PTR [rax+240]
 	call	?get_ttype@@YAPEAU_tele_type_@@H@Z	; get_ttype
 	mov	QWORD PTR t$1[rsp], rax
 
@@ -144,11 +144,10 @@ $LN5:
 
 ; 74   : 			memcpy (t->in_buffer,buffer, 32);
 
-	mov	rax, QWORD PTR t$1[rsp]
-	add	rax, 65					; 00000041H
 	mov	r8d, 32					; 00000020H
 	mov	rdx, QWORD PTR buffer$[rsp]
-	mov	rcx, rax
+	mov	rax, QWORD PTR t$1[rsp]
+	mov	rcx, QWORD PTR [rax+72]
 	call	memcpy
 $LN1@stderr_wri:
 $LN2@stderr_wri:
@@ -186,7 +185,7 @@ $LN3:
 ; 65   : 	memcpy (buffer, p->stream->err, 32);
 
 	mov	rax, QWORD PTR p$[rsp]
-	mov	rax, QWORD PTR [rax+752]
+	mov	rax, QWORD PTR [rax+760]
 	add	rax, 64					; 00000040H
 	mov	r8d, 32					; 00000020H
 	mov	rdx, rax
@@ -225,7 +224,7 @@ $LN5:
 ; 55   : 	memcpy(p->stream->out,buffer, 32);
 
 	mov	rax, QWORD PTR p$[rsp]
-	mov	rax, QWORD PTR [rax+752]
+	mov	rax, QWORD PTR [rax+760]
 	add	rax, 32					; 00000020H
 	mov	r8d, 32					; 00000020H
 	mov	rdx, QWORD PTR buffer$[rsp]
@@ -235,13 +234,13 @@ $LN5:
 ; 56   : 	if (p->ttype) {
 
 	mov	rax, QWORD PTR p$[rsp]
-	cmp	QWORD PTR [rax+232], 0
+	cmp	QWORD PTR [rax+240], 0
 	je	SHORT $LN2@stdout_wri
 
 ; 57   : 		ttype_t *t = get_ttype(p->ttype);
 
 	mov	rax, QWORD PTR p$[rsp]
-	mov	ecx, DWORD PTR [rax+232]
+	mov	ecx, DWORD PTR [rax+240]
 	call	?get_ttype@@YAPEAU_tele_type_@@H@Z	; get_ttype
 	mov	QWORD PTR t$1[rsp], rax
 
@@ -252,11 +251,10 @@ $LN5:
 
 ; 59   : 			memcpy (t->in_buffer,buffer, 32);
 
-	mov	rax, QWORD PTR t$1[rsp]
-	add	rax, 65					; 00000041H
 	mov	r8d, 32					; 00000020H
 	mov	rdx, QWORD PTR buffer$[rsp]
-	mov	rcx, rax
+	mov	rax, QWORD PTR t$1[rsp]
+	mov	rcx, QWORD PTR [rax+72]
 	call	memcpy
 $LN1@stdout_wri:
 $LN2@stdout_wri:
@@ -293,7 +291,7 @@ $LN3:
 ; 50   : 	memcpy (buffer, p->stream->out,32);
 
 	mov	rax, QWORD PTR p$[rsp]
-	mov	rax, QWORD PTR [rax+752]
+	mov	rax, QWORD PTR [rax+760]
 	add	rax, 32					; 00000020H
 	mov	r8d, 32					; 00000020H
 	mov	rdx, rax
@@ -442,7 +440,7 @@ $LN3:
 ; 85   : 	strcpy(stdin->filename, "stdin");
 
 	mov	rax, QWORD PTR stdin$[rsp]
-	lea	rdx, OFFSET FLAT:$SG3604
+	lea	rdx, OFFSET FLAT:$SG3609
 	mov	rcx, rax
 	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
 
@@ -504,7 +502,7 @@ $LN3:
 ; 97   : 	vfs_mount ("/dev/stdin", stdin);
 
 	mov	rdx, QWORD PTR stdin$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3605
+	lea	rcx, OFFSET FLAT:$SG3610
 	call	?vfs_mount@@YAXPEADPEAU_vfs_node_@@@Z	; vfs_mount
 
 ; 98   : 
@@ -519,7 +517,7 @@ $LN3:
 ; 102  : 	strcpy(node->filename, "stdout");
 
 	mov	rax, QWORD PTR node$[rsp]
-	lea	rdx, OFFSET FLAT:$SG3609
+	lea	rdx, OFFSET FLAT:$SG3614
 	mov	rcx, rax
 	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
 
@@ -583,7 +581,7 @@ $LN3:
 ; 114  : 	vfs_mount ("/dev/stdout", node);
 
 	mov	rdx, QWORD PTR node$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3610
+	lea	rcx, OFFSET FLAT:$SG3615
 	call	?vfs_mount@@YAXPEADPEAU_vfs_node_@@@Z	; vfs_mount
 
 ; 115  : 
@@ -598,7 +596,7 @@ $LN3:
 ; 119  : 	strcpy(stderr->filename, "stderr");
 
 	mov	rax, QWORD PTR stderr$[rsp]
-	lea	rdx, OFFSET FLAT:$SG3614
+	lea	rdx, OFFSET FLAT:$SG3619
 	mov	rcx, rax
 	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
 
@@ -662,7 +660,7 @@ $LN3:
 ; 131  : 	vfs_mount ("/dev/stderr", stderr);
 
 	mov	rdx, QWORD PTR stderr$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3615
+	lea	rcx, OFFSET FLAT:$SG3620
 	call	?vfs_mount@@YAXPEADPEAU_vfs_node_@@@Z	; vfs_mount
 
 ; 132  : }

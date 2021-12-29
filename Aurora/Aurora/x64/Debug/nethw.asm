@@ -10,10 +10,10 @@ _BSS	SEGMENT
 ?hw@@3PEAU_net_hw_@@EA DQ 01H DUP (?)			; hw
 _BSS	ENDS
 CONST	SEGMENT
-$SG2931	DB	'MAC:', 00H
+$SG2932	DB	'MAC:', 00H
 	ORG $+3
-$SG2936	DB	':%x', 00H
-$SG2937	DB	0aH, 00H
+$SG2937	DB	':%x', 00H
+$SG2938	DB	0aH, 00H
 CONST	ENDS
 PUBLIC	?nethw_set_mac@@YAXPEAE@Z			; nethw_set_mac
 PUBLIC	?nethw_get_mac@@YAXPEAE@Z			; nethw_get_mac
@@ -443,7 +443,7 @@ $LN6:
 
 ; 23   : 	printf ("MAC:");
 
-	lea	rcx, OFFSET FLAT:$SG2931
+	lea	rcx, OFFSET FLAT:$SG2932
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 24   : 	for (int i = 0; i < 6; i++)
@@ -464,14 +464,14 @@ $LN3@nethw_set_:
 	mov	rcx, QWORD PTR mac$[rsp]
 	movzx	eax, BYTE PTR [rcx+rax]
 	mov	edx, eax
-	lea	rcx, OFFSET FLAT:$SG2936
+	lea	rcx, OFFSET FLAT:$SG2937
 	call	?printf@@YAXPEBDZZ			; printf
 	jmp	SHORT $LN2@nethw_set_
 $LN1@nethw_set_:
 
 ; 26   : 	printf ("\n");
 
-	lea	rcx, OFFSET FLAT:$SG2937
+	lea	rcx, OFFSET FLAT:$SG2938
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 27   : }

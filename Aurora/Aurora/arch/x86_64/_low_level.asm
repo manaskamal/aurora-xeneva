@@ -10,6 +10,7 @@
 ;; ===========================================================
 ;;
 
+
 section .text
 [BITS 64]
 
@@ -305,5 +306,12 @@ global x64_atom_exchange
 x64_atom_exchange:
      xchg rcx, rdx
 	 hlt
+	 ret
+
+
+global x64_sse_test
+x64_sse_test:
+     mov rbx, 10
+     movaps xmm0, [rbx]
 	 ret
 

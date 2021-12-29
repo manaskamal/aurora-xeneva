@@ -15,14 +15,14 @@ user_stack_index_2 DD 01H DUP (?)
 pid	DD	01H DUP (?)
 _BSS	ENDS
 CONST	SEGMENT
-$SG3779	DB	'/dev/stdin', 00H
+$SG3784	DB	'/dev/stdin', 00H
 	ORG $+5
-$SG3781	DB	'/dev/stdout', 00H
+$SG3786	DB	'/dev/stdout', 00H
 	ORG $+4
-$SG3783	DB	'/dev/stderr', 00H
+$SG3788	DB	'/dev/stderr', 00H
 	ORG $+4
-$SG3796	DB	'Executable image not found', 0aH, 00H
-$SG3928	DB	'child', 00H
+$SG3801	DB	'Executable image not found', 0aH, 00H
+$SG3933	DB	'child', 00H
 CONST	ENDS
 PUBLIC	?create_user_stack@@YAPEA_KPEA_K@Z		; create_user_stack
 PUBLIC	?create_inc_stack@@YAPEA_KPEA_K@Z		; create_inc_stack
@@ -379,7 +379,7 @@ $LN3:
 ; 389  : 	thread_t *t = create_user_thread(child_proc->entry_point,child_proc->stack,(uint64_t)child_proc->cr3,"child",1);
 
 	mov	BYTE PTR [rsp+32], 1
-	lea	r9, OFFSET FLAT:$SG3928
+	lea	r9, OFFSET FLAT:$SG3933
 	mov	rax, QWORD PTR child_proc$[rsp]
 	mov	r8, QWORD PTR [rax+40]
 	mov	rax, QWORD PTR child_proc$[rsp]
@@ -548,69 +548,69 @@ $LN3:
 
 ; 136  : 	vfs_node_t * stdin = vfs_finddir("/dev/stdin");
 
-	lea	rcx, OFFSET FLAT:$SG3779
+	lea	rcx, OFFSET FLAT:$SG3784
 	call	?vfs_finddir@@YAPEAU_vfs_node_@@PEAD@Z	; vfs_finddir
 	mov	QWORD PTR stdin$[rsp], rax
 
 ; 137  : 	t->fd[t->fd_current] = stdin;
 
 	mov	rax, QWORD PTR t$[rsp]
-	movsxd	rax, DWORD PTR [rax+744]
+	movsxd	rax, DWORD PTR [rax+752]
 	mov	rcx, QWORD PTR t$[rsp]
 	mov	rdx, QWORD PTR stdin$[rsp]
-	mov	QWORD PTR [rcx+rax*8+264], rdx
+	mov	QWORD PTR [rcx+rax*8+272], rdx
 
 ; 138  : 	t->fd_current++;
 
 	mov	rax, QWORD PTR t$[rsp]
-	mov	eax, DWORD PTR [rax+744]
+	mov	eax, DWORD PTR [rax+752]
 	inc	eax
 	mov	rcx, QWORD PTR t$[rsp]
-	mov	DWORD PTR [rcx+744], eax
+	mov	DWORD PTR [rcx+752], eax
 
 ; 139  : 	vfs_node_t* stdout = vfs_finddir("/dev/stdout");
 
-	lea	rcx, OFFSET FLAT:$SG3781
+	lea	rcx, OFFSET FLAT:$SG3786
 	call	?vfs_finddir@@YAPEAU_vfs_node_@@PEAD@Z	; vfs_finddir
 	mov	QWORD PTR stdout$[rsp], rax
 
 ; 140  : 	t->fd[t->fd_current] = stdout;
 
 	mov	rax, QWORD PTR t$[rsp]
-	movsxd	rax, DWORD PTR [rax+744]
+	movsxd	rax, DWORD PTR [rax+752]
 	mov	rcx, QWORD PTR t$[rsp]
 	mov	rdx, QWORD PTR stdout$[rsp]
-	mov	QWORD PTR [rcx+rax*8+264], rdx
+	mov	QWORD PTR [rcx+rax*8+272], rdx
 
 ; 141  : 	t->fd_current++;
 
 	mov	rax, QWORD PTR t$[rsp]
-	mov	eax, DWORD PTR [rax+744]
+	mov	eax, DWORD PTR [rax+752]
 	inc	eax
 	mov	rcx, QWORD PTR t$[rsp]
-	mov	DWORD PTR [rcx+744], eax
+	mov	DWORD PTR [rcx+752], eax
 
 ; 142  : 	vfs_node_t* stderr = vfs_finddir("/dev/stderr");
 
-	lea	rcx, OFFSET FLAT:$SG3783
+	lea	rcx, OFFSET FLAT:$SG3788
 	call	?vfs_finddir@@YAPEAU_vfs_node_@@PEAD@Z	; vfs_finddir
 	mov	QWORD PTR stderr$[rsp], rax
 
 ; 143  : 	t->fd[t->fd_current] = stderr;
 
 	mov	rax, QWORD PTR t$[rsp]
-	movsxd	rax, DWORD PTR [rax+744]
+	movsxd	rax, DWORD PTR [rax+752]
 	mov	rcx, QWORD PTR t$[rsp]
 	mov	rdx, QWORD PTR stderr$[rsp]
-	mov	QWORD PTR [rcx+rax*8+264], rdx
+	mov	QWORD PTR [rcx+rax*8+272], rdx
 
 ; 144  : 	t->fd_current++;
 
 	mov	rax, QWORD PTR t$[rsp]
-	mov	eax, DWORD PTR [rax+744]
+	mov	eax, DWORD PTR [rax+752]
 	inc	eax
 	mov	rcx, QWORD PTR t$[rsp]
-	mov	DWORD PTR [rcx+744], eax
+	mov	DWORD PTR [rcx+752], eax
 
 ; 145  : 
 ; 146  : }
@@ -1227,7 +1227,7 @@ $LN10@kill_proce:
 ; 292  : 	remove_thread->state = THREAD_STATE_BLOCKED;
 
 	mov	rax, QWORD PTR remove_thread$[rsp]
-	mov	BYTE PTR [rax+224], 3
+	mov	BYTE PTR [rax+232], 3
 
 ; 293  : 	task_delete (remove_thread);
 
@@ -1429,7 +1429,7 @@ $LN13:
 ; 238  : 	int timer = find_timer_id (remove_thread->id);
 
 	mov	rax, QWORD PTR remove_thread$[rsp]
-	movzx	ecx, WORD PTR [rax+226]
+	movzx	ecx, WORD PTR [rax+234]
 	call	?find_timer_id@@YAHG@Z			; find_timer_id
 	mov	DWORD PTR timer$[rsp], eax
 
@@ -1664,7 +1664,7 @@ $LN9:
 
 ; 168  : 		printf("Executable image not found\n");
 
-	lea	rcx, OFFSET FLAT:$SG3796
+	lea	rcx, OFFSET FLAT:$SG3801
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 169  : 		return -1;
@@ -1923,7 +1923,7 @@ $LN1@create_pro:
 ; 223  : 	return t->id;
 
 	mov	rax, QWORD PTR t$[rsp]
-	movzx	eax, WORD PTR [rax+226]
+	movzx	eax, WORD PTR [rax+234]
 $LN7@create_pro:
 
 ; 224  : }

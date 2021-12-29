@@ -10,11 +10,11 @@ _BSS	SEGMENT
 ?g_screen@@3U_screen_console_@@A DB 048H DUP (?)	; g_screen
 _BSS	ENDS
 CONST	SEGMENT
-$SG5616	DB	'GMR Pages -> %x', 0aH, 00H
+$SG5620	DB	'GMR Pages -> %x', 0aH, 00H
 	ORG $+7
-$SG5619	DB	'Tile buffer -> %x', 0aH, 00H
+$SG5623	DB	'Tile buffer -> %x', 0aH, 00H
 	ORG $+5
-$SG5652	DB	'Drawing rect', 0aH, 00H
+$SG5656	DB	'Drawing rect', 0aH, 00H
 CONST	ENDS
 PUBLIC	?svga_screen_console_init@@YAXI@Z		; svga_screen_console_init
 PUBLIC	?svga_screen_console_set@@YAXIHH@Z		; svga_screen_console_set
@@ -225,7 +225,7 @@ $LN5:
 ; 68   : 
 ; 69   : 								   printf ("Drawing rect\n");
 
-	lea	rcx, OFFSET FLAT:$SG5652
+	lea	rcx, OFFSET FLAT:$SG5656
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 70   : 	if (g_screen.tile_usage.type != TILE_FILL || g_screen.tile_usage.color != color) {
@@ -338,7 +338,7 @@ $LN3:
 ; 24   : 	printf ("GMR Pages -> %x\n", gmr_pages);
 
 	mov	edx, DWORD PTR gmr_pages$[rsp]
-	lea	rcx, OFFSET FLAT:$SG5616
+	lea	rcx, OFFSET FLAT:$SG5620
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 25   : 	g_screen.tile_ptr.gmrId = gmr_id;
@@ -360,7 +360,7 @@ $LN3:
 ; 28   : 	printf ("Tile buffer -> %x\n", g_screen.tile_buffer);
 
 	mov	rdx, QWORD PTR ?g_screen@@3U_screen_console_@@A+32
-	lea	rcx, OFFSET FLAT:$SG5619
+	lea	rcx, OFFSET FLAT:$SG5623
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 29   : }

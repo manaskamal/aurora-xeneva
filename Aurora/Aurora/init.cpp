@@ -100,7 +100,11 @@ void __cdecl operator delete (void* p) {
 }
 
 
+void *ap_address = 0;
 
+void* get_ap_address () {
+	return ap_address;
+}
 /**========================================
  ** the main entry routine -- _kmain
  **/
@@ -112,6 +116,7 @@ void _kmain () {
 	hal_init();
 	hal_x86_64_setup_int();	
     mm_init(info); 
+	
 	initialize_serial();
 
 	ata_initialize();
@@ -122,16 +127,27 @@ void _kmain () {
 	screen_set_configuration(info->X_Resolution,info->Y_Resolution);
 	initialize_rtc(); 
 
+	vfs_node_t *node = vfs_finddir("/");
+	unsigned char* ap = (unsigned char*)pmmngr_alloc();
+	vfs_node_t apfile = openfs(node, "/apstart.bin");
+	readfs (node,&apfile,ap,70);
+	ap_address = ap;
+	printf ("AP_Adress setup -> %x\n", ap_address);
+	
+
 	initialize_acpi (info->acpi_table_pointer);
+	hal_x86_64_feature_check();
 
 	//!Initialize kernel runtime drivers	
 	kybrd_init();
 	initialize_mouse();
+
+
 	
 	for (int i = 0; i < 2*1024*1024/4096; i++)
 		map_page((uint64_t)pmmngr_alloc(),0xFFFFF00000000000 + i * 4096, 0);
 
-	vfs_node_t *node = vfs_finddir("/");
+	
 	vfs_node_t file = openfs (node, "/start.wav");
 	unsigned char* buffer = (unsigned char*)0xFFFFF00000000000;
 	unsigned char* buffer2 = (unsigned char*)(buffer + 44);

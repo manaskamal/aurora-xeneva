@@ -23,6 +23,7 @@ PUBLIC	?timer_insert@@YAXPEAU_timer_@@@Z		; timer_insert
 PUBLIC	?timer_delete@@YAXPEAU_timer_@@@Z		; timer_delete
 EXTRN	?pmmngr_alloc@@YAPEAXXZ:PROC			; pmmngr_alloc
 EXTRN	?pmmngr_free@@YAXPEAX@Z:PROC			; pmmngr_free
+EXTRN	x64_cli:PROC
 EXTRN	?post_box_put_msg@@YAXPEAU_post_box_message_@@G@Z:PROC ; post_box_put_msg
 pdata	SEGMENT
 $pdata$?create_timer@@YAHIG@Z DD imagerel $LN3
@@ -38,7 +39,7 @@ $pdata$?start_timer@@YAXH@Z DD imagerel $LN7
 	DD	imagerel $LN7+70
 	DD	imagerel $unwind$?start_timer@@YAXH@Z
 $pdata$?timer_fire@@YAXXZ DD imagerel $LN9
-	DD	imagerel $LN9+161
+	DD	imagerel $LN9+166
 	DD	imagerel $unwind$?timer_fire@@YAXXZ
 $pdata$?find_timer_id@@YAHG@Z DD imagerel $LN7
 	DD	imagerel $LN7+81
@@ -69,42 +70,42 @@ _TEXT	SEGMENT
 new_timer$ = 48
 ?timer_delete@@YAXPEAU_timer_@@@Z PROC			; timer_delete
 
-; 37   : void timer_delete (timer_t* new_timer) {
+; 38   : void timer_delete (timer_t* new_timer) {
 
 $LN8:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 40					; 00000028H
 
-; 38   : 
-; 39   : 	if (timer_head == NULL)
+; 39   : 
+; 40   : 	if (timer_head == NULL)
 
 	cmp	QWORD PTR ?timer_head@@3PEAU_timer_@@EA, 0 ; timer_head
 	jne	SHORT $LN5@timer_dele
 
-; 40   : 		return;
+; 41   : 		return;
 
 	jmp	SHORT $LN6@timer_dele
 $LN5@timer_dele:
 
-; 41   : 
-; 42   : 	if (new_timer == timer_head) {
+; 42   : 
+; 43   : 	if (new_timer == timer_head) {
 
 	mov	rax, QWORD PTR ?timer_head@@3PEAU_timer_@@EA ; timer_head
 	cmp	QWORD PTR new_timer$[rsp], rax
 	jne	SHORT $LN4@timer_dele
 
-; 43   : 		timer_head = timer_head->next;
+; 44   : 		timer_head = timer_head->next;
 
 	mov	rax, QWORD PTR ?timer_head@@3PEAU_timer_@@EA ; timer_head
 	mov	rax, QWORD PTR [rax+24]
 	mov	QWORD PTR ?timer_head@@3PEAU_timer_@@EA, rax ; timer_head
 
-; 44   : 	} else {
+; 45   : 	} else {
 
 	jmp	SHORT $LN3@timer_dele
 $LN4@timer_dele:
 
-; 45   : 		new_timer->prev->next = new_timer->next;
+; 46   : 		new_timer->prev->next = new_timer->next;
 
 	mov	rax, QWORD PTR new_timer$[rsp]
 	mov	rax, QWORD PTR [rax+32]
@@ -113,26 +114,26 @@ $LN4@timer_dele:
 	mov	QWORD PTR [rax+24], rcx
 $LN3@timer_dele:
 
-; 46   : 	}
-; 47   : 
-; 48   : 	if (new_timer == timer_last) {
+; 47   : 	}
+; 48   : 
+; 49   : 	if (new_timer == timer_last) {
 
 	mov	rax, QWORD PTR ?timer_last@@3PEAU_timer_@@EA ; timer_last
 	cmp	QWORD PTR new_timer$[rsp], rax
 	jne	SHORT $LN2@timer_dele
 
-; 49   : 		timer_last = new_timer->prev;
+; 50   : 		timer_last = new_timer->prev;
 
 	mov	rax, QWORD PTR new_timer$[rsp]
 	mov	rax, QWORD PTR [rax+32]
 	mov	QWORD PTR ?timer_last@@3PEAU_timer_@@EA, rax ; timer_last
 
-; 50   : 	} else {
+; 51   : 	} else {
 
 	jmp	SHORT $LN1@timer_dele
 $LN2@timer_dele:
 
-; 51   : 		new_timer->next->prev = new_timer->prev;
+; 52   : 		new_timer->next->prev = new_timer->prev;
 
 	mov	rax, QWORD PTR new_timer$[rsp]
 	mov	rax, QWORD PTR [rax+24]
@@ -141,14 +142,14 @@ $LN2@timer_dele:
 	mov	QWORD PTR [rax+32], rcx
 $LN1@timer_dele:
 
-; 52   : 	}
-; 53   : 	pmmngr_free(new_timer);
+; 53   : 	}
+; 54   : 	pmmngr_free(new_timer);
 
 	mov	rcx, QWORD PTR new_timer$[rsp]
 	call	?pmmngr_free@@YAXPEAX@Z			; pmmngr_free
 $LN6@timer_dele:
 
-; 54   : }
+; 55   : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -160,61 +161,61 @@ _TEXT	SEGMENT
 new_timer$ = 8
 ?timer_insert@@YAXPEAU_timer_@@@Z PROC			; timer_insert
 
-; 22   : void timer_insert (timer_t* new_timer ) {
+; 23   : void timer_insert (timer_t* new_timer ) {
 
 	mov	QWORD PTR [rsp+8], rcx
 
-; 23   : 	new_timer->next = NULL;
+; 24   : 	new_timer->next = NULL;
 
 	mov	rax, QWORD PTR new_timer$[rsp]
 	mov	QWORD PTR [rax+24], 0
 
-; 24   : 	new_timer->prev = NULL;
+; 25   : 	new_timer->prev = NULL;
 
 	mov	rax, QWORD PTR new_timer$[rsp]
 	mov	QWORD PTR [rax+32], 0
 
-; 25   : 
-; 26   : 	if (timer_head == NULL) {
+; 26   : 
+; 27   : 	if (timer_head == NULL) {
 
 	cmp	QWORD PTR ?timer_head@@3PEAU_timer_@@EA, 0 ; timer_head
 	jne	SHORT $LN2@timer_inse
 
-; 27   : 		timer_last = new_timer;
+; 28   : 		timer_last = new_timer;
 
 	mov	rax, QWORD PTR new_timer$[rsp]
 	mov	QWORD PTR ?timer_last@@3PEAU_timer_@@EA, rax ; timer_last
 
-; 28   : 		timer_head = new_timer;
+; 29   : 		timer_head = new_timer;
 
 	mov	rax, QWORD PTR new_timer$[rsp]
 	mov	QWORD PTR ?timer_head@@3PEAU_timer_@@EA, rax ; timer_head
 
-; 29   : 	} else {
+; 30   : 	} else {
 
 	jmp	SHORT $LN1@timer_inse
 $LN2@timer_inse:
 
-; 30   : 		timer_last->next = new_timer;
+; 31   : 		timer_last->next = new_timer;
 
 	mov	rax, QWORD PTR ?timer_last@@3PEAU_timer_@@EA ; timer_last
 	mov	rcx, QWORD PTR new_timer$[rsp]
 	mov	QWORD PTR [rax+24], rcx
 
-; 31   : 		new_timer->prev = timer_last;
+; 32   : 		new_timer->prev = timer_last;
 
 	mov	rax, QWORD PTR new_timer$[rsp]
 	mov	rcx, QWORD PTR ?timer_last@@3PEAU_timer_@@EA ; timer_last
 	mov	QWORD PTR [rax+32], rcx
 $LN1@timer_inse:
 
-; 32   : 	}
-; 33   : 	timer_last = new_timer;
+; 33   : 	}
+; 34   : 	timer_last = new_timer;
 
 	mov	rax, QWORD PTR new_timer$[rsp]
 	mov	QWORD PTR ?timer_last@@3PEAU_timer_@@EA, rax ; timer_last
 
-; 34   : }
+; 35   : }
 
 	ret	0
 ?timer_insert@@YAXPEAU_timer_@@@Z ENDP			; timer_insert
@@ -226,13 +227,13 @@ t$1 = 0
 id$ = 32
 ?find_timer_id@@YAHG@Z PROC				; find_timer_id
 
-; 126  : int find_timer_id (uint16_t id) {
+; 127  : int find_timer_id (uint16_t id) {
 
 $LN7:
 	mov	WORD PTR [rsp+8], cx
 	sub	rsp, 24
 
-; 127  : 	for (timer_t *t = timer_head; t != NULL; t = t->next) {
+; 128  : 	for (timer_t *t = timer_head; t != NULL; t = t->next) {
 
 	mov	rax, QWORD PTR ?timer_head@@3PEAU_timer_@@EA ; timer_head
 	mov	QWORD PTR t$1[rsp], rax
@@ -245,7 +246,7 @@ $LN4@find_timer:
 	cmp	QWORD PTR t$1[rsp], 0
 	je	SHORT $LN2@find_timer
 
-; 128  : 		if (t->task_id == id) {
+; 129  : 		if (t->task_id == id) {
 
 	mov	rax, QWORD PTR t$1[rsp]
 	movzx	eax, WORD PTR [rax+8]
@@ -253,30 +254,30 @@ $LN4@find_timer:
 	cmp	eax, ecx
 	jne	SHORT $LN1@find_timer
 
-; 129  : 			return t->utimer_id;
+; 130  : 			return t->utimer_id;
 
 	mov	rax, QWORD PTR t$1[rsp]
 	mov	eax, DWORD PTR [rax+12]
 	jmp	SHORT $LN5@find_timer
 
-; 130  : 			break;
+; 131  : 			break;
 
 	jmp	SHORT $LN2@find_timer
 $LN1@find_timer:
 
-; 131  : 		}
-; 132  : 	}
+; 132  : 		}
+; 133  : 	}
 
 	jmp	SHORT $LN3@find_timer
 $LN2@find_timer:
 
-; 133  : 
-; 134  : 	return -1;
+; 134  : 
+; 135  : 	return -1;
 
 	mov	eax, -1
 $LN5@find_timer:
 
-; 135  : }
+; 136  : }
 
 	add	rsp, 24
 	ret	0
@@ -289,17 +290,21 @@ t$1 = 32
 msg$2 = 40
 ?timer_fire@@YAXXZ PROC					; timer_fire
 
-; 143  : void timer_fire () {
+; 144  : void timer_fire () {
 
 $LN9:
 	sub	rsp, 88					; 00000058H
 
-; 144  : 	if (timer_head != NULL) {
+; 145  : 	x64_cli();
+
+	call	x64_cli
+
+; 146  : 	if (timer_head != NULL) {
 
 	cmp	QWORD PTR ?timer_head@@3PEAU_timer_@@EA, 0 ; timer_head
 	je	$LN6@timer_fire
 
-; 145  : 		for (timer_t *t = timer_head; t != NULL; t = t->next) {
+; 147  : 		for (timer_t *t = timer_head; t != NULL; t = t->next) {
 
 	mov	rax, QWORD PTR ?timer_head@@3PEAU_timer_@@EA ; timer_head
 	mov	QWORD PTR t$1[rsp], rax
@@ -312,14 +317,14 @@ $LN5@timer_fire:
 	cmp	QWORD PTR t$1[rsp], 0
 	je	SHORT $LN3@timer_fire
 
-; 146  : 			if (t->start) {
+; 148  : 			if (t->start) {
 
 	mov	rax, QWORD PTR t$1[rsp]
 	movzx	eax, BYTE PTR [rax+16]
 	test	eax, eax
 	je	SHORT $LN2@timer_fire
 
-; 147  : 				if (t->timer_count == t->interval ) {
+; 149  : 				if (t->timer_count == t->interval ) {
 
 	mov	rax, QWORD PTR t$1[rsp]
 	mov	rcx, QWORD PTR t$1[rsp]
@@ -327,33 +332,33 @@ $LN5@timer_fire:
 	cmp	DWORD PTR [rax], ecx
 	jne	SHORT $LN1@timer_fire
 
-; 148  : 					postmsg_t msg;
-; 149  : 			        msg.type = SYSTEM_MESSAGE_TIMER_EVENT;
+; 150  : 					postmsg_t msg;
+; 151  : 			        msg.type = SYSTEM_MESSAGE_TIMER_EVENT;
 
 	mov	eax, 1
 	mov	WORD PTR msg$2[rsp], ax
 
-; 150  : 			        msg.to_id = t->task_id;
+; 152  : 			        msg.to_id = t->task_id;
 
 	mov	rax, QWORD PTR t$1[rsp]
 	movzx	eax, WORD PTR [rax+8]
 	mov	WORD PTR msg$2[rsp+28], ax
 
-; 151  : 			        post_box_put_msg (&msg,t->task_id);
+; 153  : 			        post_box_put_msg (&msg,t->task_id);
 
 	mov	rax, QWORD PTR t$1[rsp]
 	movzx	edx, WORD PTR [rax+8]
 	lea	rcx, QWORD PTR msg$2[rsp]
 	call	?post_box_put_msg@@YAXPEAU_post_box_message_@@G@Z ; post_box_put_msg
 
-; 152  : 			        t->timer_count = 0;
+; 154  : 			        t->timer_count = 0;
 
 	mov	rax, QWORD PTR t$1[rsp]
 	mov	DWORD PTR [rax], 0
 $LN1@timer_fire:
 
-; 153  : 		         }
-; 154  : 			     t->timer_count++;
+; 155  : 		         }
+; 156  : 			     t->timer_count++;
 
 	mov	rax, QWORD PTR t$1[rsp]
 	mov	eax, DWORD PTR [rax]
@@ -362,15 +367,15 @@ $LN1@timer_fire:
 	mov	DWORD PTR [rcx], eax
 $LN2@timer_fire:
 
-; 155  : 			}
-; 156  : 		}
+; 157  : 			}
+; 158  : 		}
 
 	jmp	SHORT $LN4@timer_fire
 $LN3@timer_fire:
 $LN6@timer_fire:
 
-; 157  : 	}
-; 158  : }
+; 159  : 	}
+; 160  : }
 
 	add	rsp, 88					; 00000058H
 	ret	0
@@ -383,13 +388,13 @@ t$1 = 0
 utimer_id$ = 32
 ?start_timer@@YAXH@Z PROC				; start_timer
 
-; 96   : void start_timer (int utimer_id ) {
+; 97   : void start_timer (int utimer_id ) {
 
 $LN7:
 	mov	DWORD PTR [rsp+8], ecx
 	sub	rsp, 24
 
-; 97   : 	for (timer_t *t = timer_head; t != NULL; t = t->next) {
+; 98   : 	for (timer_t *t = timer_head; t != NULL; t = t->next) {
 
 	mov	rax, QWORD PTR ?timer_head@@3PEAU_timer_@@EA ; timer_head
 	mov	QWORD PTR t$1[rsp], rax
@@ -402,30 +407,30 @@ $LN4@start_time:
 	cmp	QWORD PTR t$1[rsp], 0
 	je	SHORT $LN2@start_time
 
-; 98   : 		if (t->utimer_id == utimer_id) {
+; 99   : 		if (t->utimer_id == utimer_id) {
 
 	mov	rax, QWORD PTR t$1[rsp]
 	mov	ecx, DWORD PTR utimer_id$[rsp]
 	cmp	DWORD PTR [rax+12], ecx
 	jne	SHORT $LN1@start_time
 
-; 99   : 			t->start = true;
+; 100  : 			t->start = true;
 
 	mov	rax, QWORD PTR t$1[rsp]
 	mov	BYTE PTR [rax+16], 1
 
-; 100  : 			break;
+; 101  : 			break;
 
 	jmp	SHORT $LN2@start_time
 $LN1@start_time:
 
-; 101  : 		}
-; 102  : 	}
+; 102  : 		}
+; 103  : 	}
 
 	jmp	SHORT $LN3@start_time
 $LN2@start_time:
 
-; 103  : }
+; 104  : }
 
 	add	rsp, 24
 	ret	0
@@ -438,13 +443,13 @@ t$1 = 0
 utimer_id$ = 32
 ?pause_timer@@YAXH@Z PROC				; pause_timer
 
-; 81   : void pause_timer (int utimer_id) {
+; 82   : void pause_timer (int utimer_id) {
 
 $LN7:
 	mov	DWORD PTR [rsp+8], ecx
 	sub	rsp, 24
 
-; 82   : 	for (timer_t *t = timer_head; t != NULL; t = t->next) {
+; 83   : 	for (timer_t *t = timer_head; t != NULL; t = t->next) {
 
 	mov	rax, QWORD PTR ?timer_head@@3PEAU_timer_@@EA ; timer_head
 	mov	QWORD PTR t$1[rsp], rax
@@ -457,30 +462,30 @@ $LN4@pause_time:
 	cmp	QWORD PTR t$1[rsp], 0
 	je	SHORT $LN2@pause_time
 
-; 83   : 		if (t->utimer_id == utimer_id) {
+; 84   : 		if (t->utimer_id == utimer_id) {
 
 	mov	rax, QWORD PTR t$1[rsp]
 	mov	ecx, DWORD PTR utimer_id$[rsp]
 	cmp	DWORD PTR [rax+12], ecx
 	jne	SHORT $LN1@pause_time
 
-; 84   : 			t->start = false;
+; 85   : 			t->start = false;
 
 	mov	rax, QWORD PTR t$1[rsp]
 	mov	BYTE PTR [rax+16], 0
 
-; 85   : 			break;
+; 86   : 			break;
 
 	jmp	SHORT $LN2@pause_time
 $LN1@pause_time:
 
-; 86   : 		}
-; 87   : 	}
+; 87   : 		}
+; 88   : 	}
 
 	jmp	SHORT $LN3@pause_time
 $LN2@pause_time:
 
-; 88   : }
+; 89   : }
 
 	add	rsp, 24
 	ret	0
@@ -493,13 +498,13 @@ t$1 = 32
 utimer_id$ = 64
 ?destroy_timer@@YAXH@Z PROC				; destroy_timer
 
-; 110  : void destroy_timer (int utimer_id) {
+; 111  : void destroy_timer (int utimer_id) {
 
 $LN7:
 	mov	DWORD PTR [rsp+8], ecx
 	sub	rsp, 56					; 00000038H
 
-; 111  : 	for (timer_t *t = timer_head; t != NULL; t = t->next) {
+; 112  : 	for (timer_t *t = timer_head; t != NULL; t = t->next) {
 
 	mov	rax, QWORD PTR ?timer_head@@3PEAU_timer_@@EA ; timer_head
 	mov	QWORD PTR t$1[rsp], rax
@@ -512,37 +517,37 @@ $LN4@destroy_ti:
 	cmp	QWORD PTR t$1[rsp], 0
 	je	SHORT $LN2@destroy_ti
 
-; 112  : 		if (t->utimer_id == utimer_id) {
+; 113  : 		if (t->utimer_id == utimer_id) {
 
 	mov	rax, QWORD PTR t$1[rsp]
 	mov	ecx, DWORD PTR utimer_id$[rsp]
 	cmp	DWORD PTR [rax+12], ecx
 	jne	SHORT $LN1@destroy_ti
 
-; 113  : 			timer_delete (t);
+; 114  : 			timer_delete (t);
 
 	mov	rcx, QWORD PTR t$1[rsp]
 	call	?timer_delete@@YAXPEAU_timer_@@@Z	; timer_delete
 
-; 114  : 			utimer_id--;
+; 115  : 			utimer_id--;
 
 	mov	eax, DWORD PTR utimer_id$[rsp]
 	dec	eax
 	mov	DWORD PTR utimer_id$[rsp], eax
 
-; 115  : 			break;
+; 116  : 			break;
 
 	jmp	SHORT $LN2@destroy_ti
 $LN1@destroy_ti:
 
-; 116  : 		}
-; 117  : 	}
+; 117  : 		}
+; 118  : 	}
 
 	jmp	SHORT $LN3@destroy_ti
 $LN2@destroy_ti:
 
-; 118  : 	
-; 119  : }
+; 119  : 	
+; 120  : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -556,62 +561,62 @@ interval$ = 64
 id$ = 72
 ?create_timer@@YAHIG@Z PROC				; create_timer
 
-; 64   : int create_timer (uint32_t interval, uint16_t id) {	
+; 65   : int create_timer (uint32_t interval, uint16_t id) {	
 
 $LN3:
 	mov	WORD PTR [rsp+16], dx
 	mov	DWORD PTR [rsp+8], ecx
 	sub	rsp, 56					; 00000038H
 
-; 65   : 	utimer_id++;
+; 66   : 	utimer_id++;
 
 	mov	eax, DWORD PTR ?utimer_id@@3IA		; utimer_id
 	inc	eax
 	mov	DWORD PTR ?utimer_id@@3IA, eax		; utimer_id
 
-; 66   : 	timer_t *t = (timer_t*)pmmngr_alloc();
+; 67   : 	timer_t *t = (timer_t*)pmmngr_alloc();
 
 	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
 	mov	QWORD PTR t$[rsp], rax
 
-; 67   : 	t->timer_count = 0;
+; 68   : 	t->timer_count = 0;
 
 	mov	rax, QWORD PTR t$[rsp]
 	mov	DWORD PTR [rax], 0
 
-; 68   : 	t->task_id = id;
+; 69   : 	t->task_id = id;
 
 	mov	rax, QWORD PTR t$[rsp]
 	movzx	ecx, WORD PTR id$[rsp]
 	mov	WORD PTR [rax+8], cx
 
-; 69   : 	t->interval = interval;
+; 70   : 	t->interval = interval;
 
 	mov	rax, QWORD PTR t$[rsp]
 	mov	ecx, DWORD PTR interval$[rsp]
 	mov	DWORD PTR [rax+4], ecx
 
-; 70   : 	t->utimer_id = utimer_id;
+; 71   : 	t->utimer_id = utimer_id;
 
 	mov	rax, QWORD PTR t$[rsp]
 	mov	ecx, DWORD PTR ?utimer_id@@3IA		; utimer_id
 	mov	DWORD PTR [rax+12], ecx
 
-; 71   : 	t->start = false;
+; 72   : 	t->start = false;
 
 	mov	rax, QWORD PTR t$[rsp]
 	mov	BYTE PTR [rax+16], 0
 
-; 72   : 	timer_insert (t);
+; 73   : 	timer_insert (t);
 
 	mov	rcx, QWORD PTR t$[rsp]
 	call	?timer_insert@@YAXPEAU_timer_@@@Z	; timer_insert
 
-; 73   : 	return utimer_id;
+; 74   : 	return utimer_id;
 
 	mov	eax, DWORD PTR ?utimer_id@@3IA		; utimer_id
 
-; 74   : }
+; 75   : }
 
 	add	rsp, 56					; 00000038H
 	ret	0

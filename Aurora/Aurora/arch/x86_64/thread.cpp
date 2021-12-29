@@ -25,6 +25,7 @@
 extern "C" void x64_hlt();
 extern "C" void force_sched_pic ();
 extern "C" void force_sched_apic ();
+extern "C" void x64_sse_test ();
 /** ============================================
  ** Global initializers
  ** ============================================
@@ -43,9 +44,6 @@ thread_t *task_list_last = NULL;
 
 uint32_t system_tick;
 extern "C" thread_t *current_thread = NULL;
-
-
-
 
 /**
  * Insert a thread to thread list
@@ -139,7 +137,8 @@ thread_t* create_kthread (void (*entry) (void), uint64_t stack,uint64_t cr3, cha
 	t->state = THREAD_STATE_READY;
 	//t->priority = priority;
 	t->fd_current = 0;
-	
+	t->fx_state = (uint32_t*)pmmngr_alloc();
+	printf ("FX State addr-> %x\n", t->fx_state);
 	thread_insert(t);
 	return t;
 }
@@ -190,7 +189,6 @@ thread_t* create_user_thread (void (*entry) (void*),uint64_t stack,uint64_t cr3,
 	t->quanta = 0;
 	t->ttype = 0;
 	t->msg_box = (uint64_t*)pmmngr_alloc();
-
 	/** Map the thread's msg box to a virtual address, from where the process will receive system messages **/
 	map_page_ex((uint64_t*)t->cr3,(uint64_t)t->msg_box,(uint64_t)0xFFFFFFFFB0000000, PAGING_USER);
 
@@ -462,3 +460,4 @@ bool is_scheduler_initialized () {
 uint32_t sched_get_tick() {
 	return system_tick;
 }
+

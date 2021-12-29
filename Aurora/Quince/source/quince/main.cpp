@@ -78,6 +78,7 @@ int main (int argc, char* argv[]) {
 
 	int mouse_fd = sys_open_file ("/dev/mouse", NULL);
 
+
 	////!Start the mouse
 //	ioquery (mouse_fd, MOUSE_IOCODE_ENABLE,NULL);
 	//! Execute the Event Loop

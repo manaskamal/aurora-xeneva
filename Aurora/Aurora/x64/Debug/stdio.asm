@@ -12,12 +12,12 @@ _BSS	SEGMENT
 ?float_to_string_output@@3PADA DB 020H DUP (?)		; float_to_string_output
 _BSS	ENDS
 CONST	SEGMENT
-$SG2918	DB	'0123456789ABCDEF', 00H
+$SG2919	DB	'0123456789ABCDEF', 00H
 	ORG $+3
-$SG3057	DB	'.', 00H
+$SG3058	DB	'.', 00H
 CONST	ENDS
 _DATA	SEGMENT
-chars	DQ	FLAT:$SG2918
+chars	DQ	FLAT:$SG2919
 _DATA	ENDS
 PUBLIC	?sztoa@@YAPEAD_KPEADH@Z				; sztoa
 PUBLIC	?printf@@YAXPEBDZZ				; printf
@@ -739,7 +739,7 @@ $LN5@printf:
 ; 166  : 			{
 ; 167  : 				puts(".");
 
-	lea	rcx, OFFSET FLAT:$SG3057
+	lea	rcx, OFFSET FLAT:$SG3058
 	call	?puts@@YAXPEAD@Z			; puts
 
 ; 168  : 			}

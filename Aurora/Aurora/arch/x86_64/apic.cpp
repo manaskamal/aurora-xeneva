@@ -13,7 +13,9 @@
 #include <arch\x86_64\ioapic.h>
 #include <arch\x86_64\mmngr\vmmngr.h>
 #include <string.h>
-
+#include <fs\vfs.h>
+#include <hal.h>
+#include <stdio.h>
 
 #define IA32_APIC_BASE_MSR  0x1B
 #define IA32_APIC_BASE_MSR_BSP  0x100
@@ -202,3 +204,34 @@ void initialize_apic () {
 
 }
 
+
+uint64_t icr_dest (uint32_t processor ) {
+	if (x2apic)
+		return ((uint64_t)processor << 32);
+	else
+		return ((uint64_t)processor << 56);
+}
+
+bool icr_busy () {
+	return (read_apic_register (LAPIC_REGISTER_ICR) & (1 << 12)) != 0;
+}
+
+
+
+void initialize_cpu (uint32_t processor) {
+
+	uint64_t* address = (uint64_t*)pmmngr_alloc();
+	void* ap_data = get_ap_address();
+	memcpy (address, ap_data, 70);
+
+	write_apic_register (LAPIC_REGISTER_ICR, icr_dest(processor) | 0x4500);
+	while (icr_busy());
+
+	//!startup ipi
+	size_t startup_ipi = icr_dest (processor) | 0x4600 | ((size_t)address >> 12);
+	write_apic_register (LAPIC_REGISTER_ICR, startup_ipi);
+	while (icr_busy());
+	for (int i = 0; i < 100; i++)
+		;
+
+}

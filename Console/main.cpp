@@ -72,6 +72,8 @@ void QuActions (QuMessage *msg) {
 	}
 
 	if (msg->type == QU_CANVAS_KEY_PRESSED) {
+		if (msg->dword == KEY_N) 
+			create_process("/dock.exe","dwm33");
 		QuWindowHandleKey(msg->dword);
 		memset(msg, 0, sizeof(QuMessage));
 	}
@@ -125,8 +127,8 @@ int main (int argc, char* argv[]) {
 
 	sys_ttype_create (&master_fd, &slave_fd);
 
-	unsigned char* buffer = (unsigned char*)malloc(32);
-	memset (buffer, 0, 32);
+	unsigned char* buffer = (unsigned char*)malloc(4096);
+	memset (buffer, 0, 4096);
 
 	/*timer_id = sys_create_timer (1000, get_current_pid());
 	sys_start_timer(timer_id);*/
@@ -142,11 +144,11 @@ int main (int argc, char* argv[]) {
 	uint16_t app_id = QuGetAppId();
 	postmsg_t msg;
 	while(1) { 
-		//post_box_receive_msg(&msg);
-		//if (msg.type == SYSTEM_MESSAGE_TIMER_EVENT) {
-		//	//blink_cursor();
-		//	memset(&msg, 0, sizeof(postmsg_t));
-		//}
+	/*	post_box_receive_msg(&msg);
+		if (msg.type == SYSTEM_MESSAGE_TIMER_EVENT) {
+			blink_cursor();
+			memset(&msg, 0, sizeof(postmsg_t));
+		}*/
 
 		QuChannelGet(&qmsg);
 		if (qmsg.to_id == app_id)
@@ -154,16 +156,22 @@ int main (int argc, char* argv[]) {
 
 		sys_read_file (slave_fd,buffer,&slave);
 
-	    for (int i = 0; i < 32; i++) {
+	    for (int i = 0; i < 4096; i++) {
 			if (buffer[i] != 0) {
 				QuTermPrint(term,buffer[i],WHITE);
 				QuTermFlush(term, win);
+				QuPanelUpdate(win,0,0,win->w, win->h, true);
+				if (buffer[i] == '\n') {
+					memset(buffer, 0, 4096);
+					break;
+				}
 			}
 		}
-	
-		//	//
-		//}
-		sys_wait();
+
+		sys_read_file(slave_fd, buffer, &slave);
+		if (buffer[0] == 0) {
+			sys_wait();
+		}
 	}	
 	return 1;
 }
