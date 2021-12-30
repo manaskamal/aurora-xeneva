@@ -85,7 +85,7 @@ $pdata$??_U@YAPEAX_K@Z DD imagerel $LN3
 	DD	imagerel $LN3+23
 	DD	imagerel $unwind$??_U@YAPEAX_K@Z
 $pdata$?_kmain@@YAXXZ DD imagerel $LN8
-	DD	imagerel $LN8+684
+	DD	imagerel $LN8+686
 	DD	imagerel $unwind$?_kmain@@YAXXZ
 pdata	ENDS
 xdata	SEGMENT
@@ -208,21 +208,21 @@ $LN8:
 	mov	rdx, QWORD PTR node$[rsp]
 	lea	rcx, QWORD PTR $T4[rsp]
 	call	?openfs@@YA?AU_vfs_node_@@PEAU1@PEAD@Z	; openfs
-	lea	rcx, QWORD PTR $T3[rsp]
+	lea	rcx, QWORD PTR $T2[rsp]
 	mov	rdi, rcx
 	mov	rsi, rax
 	mov	ecx, 104				; 00000068H
 	rep movsb
 	lea	rax, QWORD PTR apfile$[rsp]
-	lea	rcx, QWORD PTR $T3[rsp]
+	lea	rcx, QWORD PTR $T2[rsp]
 	mov	rdi, rax
 	mov	rsi, rcx
 	mov	ecx, 104				; 00000068H
 	rep movsb
 
-; 133  : 	readfs (node,&apfile,ap,70);
+; 133  : 	readfs (node,&apfile,ap,apfile.size);
 
-	mov	r9d, 70					; 00000046H
+	mov	r9d, DWORD PTR apfile$[rsp+32]
 	mov	r8, QWORD PTR ap$[rsp]
 	lea	rdx, QWORD PTR apfile$[rsp]
 	mov	rcx, QWORD PTR node$[rsp]
@@ -301,13 +301,13 @@ $LN3@kmain:
 	mov	rdx, QWORD PTR node$[rsp]
 	lea	rcx, QWORD PTR $T5[rsp]
 	call	?openfs@@YA?AU_vfs_node_@@PEAU1@PEAD@Z	; openfs
-	lea	rcx, QWORD PTR $T2[rsp]
+	lea	rcx, QWORD PTR $T3[rsp]
 	mov	rdi, rcx
 	mov	rsi, rax
 	mov	ecx, 104				; 00000068H
 	rep movsb
 	lea	rax, QWORD PTR file$[rsp]
-	lea	rcx, QWORD PTR $T2[rsp]
+	lea	rcx, QWORD PTR $T3[rsp]
 	mov	rdi, rax
 	mov	rsi, rcx
 	mov	ecx, 104				; 00000068H

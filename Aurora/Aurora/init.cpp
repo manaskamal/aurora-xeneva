@@ -130,7 +130,7 @@ void _kmain () {
 	vfs_node_t *node = vfs_finddir("/");
 	unsigned char* ap = (unsigned char*)pmmngr_alloc();
 	vfs_node_t apfile = openfs(node, "/apstart.bin");
-	readfs (node,&apfile,ap,70);
+	readfs (node,&apfile,ap,apfile.size);
 	ap_address = ap;
 	printf ("AP_Adress setup -> %x\n", ap_address);
 	

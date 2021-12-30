@@ -222,7 +222,7 @@ void initialize_cpu (uint32_t processor) {
 
 	uint64_t* address = (uint64_t*)pmmngr_alloc();
 	void* ap_data = get_ap_address();
-	memcpy (address, ap_data, 70);
+	memcpy (address, ap_data, 4096);
 
 	write_apic_register (LAPIC_REGISTER_ICR, icr_dest(processor) | 0x4500);
 	while (icr_busy());

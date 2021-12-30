@@ -459,9 +459,9 @@ $LN10:
 	call	?get_ap_address@@YAPEAXXZ		; get_ap_address
 	mov	QWORD PTR ap_data$[rsp], rax
 
-; 225  : 	memcpy (address, ap_data, 70);
+; 225  : 	memcpy (address, ap_data, 4096);
 
-	mov	r8d, 70					; 00000046H
+	mov	r8d, 4096				; 00001000H
 	mov	rdx, QWORD PTR ap_data$[rsp]
 	mov	rcx, QWORD PTR address$[rsp]
 	call	memcpy

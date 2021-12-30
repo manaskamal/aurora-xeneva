@@ -74,7 +74,7 @@ void QuCanvasBlit (QuWindow* win,unsigned int *canvas, unsigned x, unsigned y, u
 	//! this is a normal window, it must contains dirty areas
 	//! go through dirty areas and draw it
 	QuWindowInfo *info = (QuWindowInfo*)win->win_info_location;
-	/**if (info->dirty) {
+	if (info->dirty) {
 		if (info->rect_count > 0) {
 			for (int k = 0; k < info->rect_count; k++) {
 				int wid = info->rect[k].w;
@@ -104,8 +104,8 @@ void QuCanvasBlit (QuWindow* win,unsigned int *canvas, unsigned x, unsigned y, u
 					}
 				}
 
-				canvas_screen_update(QuGetCanvas(),info->x + rx,info->y + ry, wid, he);
-				//QuScreenRectAdd(info->x + rx,info->y + ry, wid, he);
+				//canvas_screen_update(QuGetCanvas(),info->x + rx,info->y + ry, wid, he);
+				QuScreenRectAdd(info->x + rx,info->y + ry, wid, he);
 			}
 
 			info->rect_count = 0;
@@ -113,7 +113,7 @@ void QuCanvasBlit (QuWindow* win,unsigned int *canvas, unsigned x, unsigned y, u
 			//QuMoveCursor(QuCursorGetNewX(), QuCursorGetNewY());
 #endif
 
-		} else if (info->rect_count == 0){**/
+		} else if (info->rect_count == 0){
 			int wid = win->width;
 			int he = win->height;
 			int winx = info->x;
@@ -155,10 +155,10 @@ void QuCanvasBlit (QuWindow* win,unsigned int *canvas, unsigned x, unsigned y, u
                
 
 			QuScreenRectAdd(winx, winy, wid, he);
-		//}
+		}
 
-		//info->dirty = false;
-	//}
+		info->dirty = false;
+	}
 
 	if (win->mark_for_close) {
 		//win->mark_for_close = false;

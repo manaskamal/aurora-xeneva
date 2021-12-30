@@ -29,10 +29,8 @@
 
 int main (int argc, char*argv[]) {
 	printf (" Copyright (C) Manas Kamal Choudhury\n");
-	printf (" Hello World\n");
-	printf (" I Love you aloot mere priyanshi\n");
-	printf (" Uuuuummmmmmaaaaaahhhh mele jaaan\n");
-	printf ("This is everything you need\n");
+	printf (" Simple CLI-Based Application test\n");
+	printf ("STDIO --> STDOUT & STDERR Test app\n");
 	while(1) {
 		sys_wait();
 	}

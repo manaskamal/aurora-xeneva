@@ -6,7 +6,6 @@
 ;;------------------------------------------------------
 section .text
 [BITS 16]
-
 ap_trampoline:
          cli
 	 xor ax, ax
@@ -19,9 +18,14 @@ ap_trampoline:
          push dword gdt_address
          push word gdt_limit
          lgdt [esp]
+         add esp, 6
 
-	 hlt
+         mov eax, cr0
+         or  eax, 1
+         mov cr0, eax
 
+         hlt
+         jmp 0x18:ap_32  ;;FIXME: GDT Issue
 
 gdt_address:
 	; NULL selector
@@ -36,3 +40,37 @@ gdt_address:
 	dq 0x00cf92000000ffff
 
 gdt_limit equ 39
+
+
+[BITS 32]
+ap_32:
+      ; set up 32-bit data/stack segments
+      mov ax, 0x20
+      mov ds, ax
+      mov ss, ax
+
+      ;enable PAE paging (bit 5 of cr4)
+      mov eax, cr4
+      or  eax, 1 << 5
+      mov cr4, eax
+
+      ;enable long mode (bit 8 of EFER) and NXE bit (bit 11)
+      mov ecx, 0xc0000080
+      rdmsr
+      or  eax, 1<<8
+      or  eax, 1<<11
+      wrmsr
+
+      hlt
+
+      ;set up cr4
+      ;mov eax, dword [pml4_address]
+      ;mov cr3, eax
+
+      ;enable paging (bit 31 of cr0) and write protection (bit 16)
+      ;mov eax, cr0
+     ; or  eax, 1<<31
+      ;or  eax, 1<<16
+      ;mov cr0, eax
+
+      
