@@ -1,7 +1,7 @@
 /**
  * BSD 2-Clause License
  *
- * Copyright (c) 2021, Manas Kamal Choudhury
+ * Copyright (c) 2022, Manas Kamal Choudhury
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,8 +26,46 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * /PROJECT - Aurora's Xeneva v1.0
- * @PriyanshiWM.h -- Priyanshi Compositor Source
+ * @priwm.h -- priyanshi's window manager header
  *
  **/
 
-#include "PriyanshiWM.h"
+#include "priwm.h"
+#include <stdint.h>
+
+#include <sys/_wait.h>
+#include <sys/_xeneva.h>
+#include <sys/_file.h>
+#include <sys/ioquery.h>
+#include <acrylic.h>
+#include <canvas.h>
+#include <font.h>
+#include <color.h>
+#include <sys/_term.h>
+
+canvas_t* canvas;
+
+int main (int argc, char* argv[]) {
+	int svga_fd = sys_open_file ("/dev/fb", NULL);
+	
+	uint32_t s_width = ioquery(svga_fd,SCREEN_GETWIDTH,NULL);
+	uint32_t s_height = ioquery(svga_fd, SCREEN_GETHEIGHT, NULL);
+	
+	canvas = create_canvas (s_width,s_height);
+	int w = canvas_get_width(canvas);
+	int h = canvas_get_height(canvas);
+	
+	acrylic_initialize_font();
+
+	acrylic_draw_rect_filled (canvas, 0,0,s_width, s_height, WHITE);
+	acrylic_font_set_size (20);
+	int length = acrylic_font_get_length ("PriWM 1.0");
+	int height = acrylic_font_get_height ("PriWM 1.0");
+	acrylic_font_draw_string (canvas, "PriWM 1.0", s_width / 2 - length / 2, s_height / 2 - height / 2,20,BLACK);
+
+	canvas_screen_update(canvas, 0, 0, s_width, s_height);
+
+	while (1) {
+		sys_wait();
+	}
+}

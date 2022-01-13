@@ -22,12 +22,9 @@ $SG7688	DB	'/start.wav', 00H
 $SG7693	DB	'shell', 00H
 	ORG $+6
 $SG7694	DB	'/xshell.exe', 00H
-$SG7695	DB	'quince', 00H
-	ORG $+5
-$SG7696	DB	'/quince.exe', 00H
-$SG7697	DB	'cnsl', 00H
-	ORG $+7
-$SG7698	DB	'/cnsl.exe', 00H
+$SG7695	DB	'priwm', 00H
+	ORG $+6
+$SG7696	DB	'/priwm.exe', 00H
 CONST	ENDS
 _DATA	SEGMENT
 _fltused DD	01H
@@ -86,7 +83,7 @@ $pdata$??_U@YAPEAX_K@Z DD imagerel $LN3
 	DD	imagerel $LN3+24
 	DD	imagerel $unwind$??_U@YAPEAX_K@Z
 $pdata$?_kmain@@YAXXZ DD imagerel $LN8
-	DD	imagerel $LN8+691
+	DD	imagerel $LN8+672
 	DD	imagerel $unwind$?_kmain@@YAXXZ
 pdata	ENDS
 xdata	SEGMENT
@@ -392,7 +389,7 @@ $LN3@kmain:
 
 ; 174  : 	//! Quince -- The Compositing window manager for Aurora kernel
 ; 175  : 	//! always put quince in thread id -- > 2
-; 176  : 	create_process ("/quince.exe","quince");
+; 176  : 	create_process ("/priwm.exe","priwm");
 
 	lea	rdx, OFFSET FLAT:$SG7695
 	lea	rcx, OFFSET FLAT:$SG7696
@@ -406,12 +403,7 @@ $LN3@kmain:
 ; 182  : 	 */
 ; 183  : 	//! Misc programs goes here
 ; 184  : 	//create_process ("/dwm2.exe", "dwm4");
-; 185  : 	create_process ("/cnsl.exe", "cnsl");
-
-	lea	rdx, OFFSET FLAT:$SG7697
-	lea	rcx, OFFSET FLAT:$SG7698
-	call	?create_process@@YAHPEBDPEAD@Z		; create_process
-
+; 185  : 	//create_process ("/cnsl.exe", "cnsl");
 ; 186  : 
 ; 187  : 	//! Here start the scheduler (multitasking engine)
 ; 188  : 	

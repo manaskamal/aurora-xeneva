@@ -173,7 +173,7 @@ void _kmain () {
 	create_process ("/xshell.exe","shell");
 	//! Quince -- The Compositing window manager for Aurora kernel
 	//! always put quince in thread id -- > 2
-	create_process ("/quince.exe","quince");
+	create_process ("/priwm.exe","priwm");
 
 	/**=====================================================
 	 ** Kernel threads handle some specific callbacks like
@@ -182,7 +182,7 @@ void _kmain () {
 	 */
 	//! Misc programs goes here
 	//create_process ("/dwm2.exe", "dwm4");
-	create_process ("/cnsl.exe", "cnsl");
+	//create_process ("/cnsl.exe", "cnsl");
 
 	//! Here start the scheduler (multitasking engine)
 	

@@ -143,26 +143,29 @@ void draw_pixel (unsigned x, unsigned y, uint32_t color ) {
  * @param arg -- extra arguments to use
  */
 int screen_io_query (vfs_node_t* node, int code, void* arg) {
+	int ret = 0;
 	switch (code) {
 	case SCREEN_GETWIDTH:{
 		uint32_t width = display.width;
-		return width;
+		ret = width;
 		break;
 	}
 	case SCREEN_GETHEIGHT:{
 		uint32_t height = display.height;
-		return height;
+		ret = height;
 		break;
 	}
 	case SCREEN_GETBPP:{
 		uint32_t bpp = display.bpp;
-		return bpp;
+		ret =  bpp;
 		break;
 	 }
 	case SCREEN_GET_SCANLINE: {
 		uint16_t scanline = display.scanline;
-		return scanline;
+		ret =  scanline;
 		break;
 	}
 	}
+
+	return ret;
 }

@@ -36,7 +36,7 @@ $pdata$?screen_set_configuration@@YAXII@Z DD imagerel $LN6
 	DD	imagerel $LN6+142
 	DD	imagerel $unwind$?screen_set_configuration@@YAXII@Z
 $pdata$?screen_io_query@@YAHPEAU_vfs_node_@@HPEAX@Z DD imagerel $LN9
-	DD	imagerel $LN9+142
+	DD	imagerel $LN9+164
 	DD	imagerel $unwind$?screen_io_query@@YAHPEAU_vfs_node_@@HPEAX@Z
 pdata	ENDS
 xdata	SEGMENT
@@ -51,10 +51,11 @@ xdata	ENDS
 ; File e:\xeneva project\xeneva\aurora\aurora\screen.cpp
 _TEXT	SEGMENT
 scanline$1 = 0
-tv64 = 4
-width$2 = 8
-height$3 = 12
-bpp$4 = 16
+ret$ = 4
+tv64 = 8
+width$2 = 12
+height$3 = 16
+bpp$4 = 20
 node$ = 48
 code$ = 56
 arg$ = 64
@@ -68,7 +69,11 @@ $LN9:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 40					; 00000028H
 
-; 146  : 	switch (code) {
+; 146  : 	int ret = 0;
+
+	mov	DWORD PTR ret$[rsp], 0
+
+; 147  : 	switch (code) {
 
 	mov	eax, DWORD PTR code$[rsp]
 	mov	DWORD PTR tv64[rsp], eax
@@ -83,73 +88,78 @@ $LN9:
 	jmp	SHORT $LN5@screen_io_
 $LN4@screen_io_:
 
-; 147  : 	case SCREEN_GETWIDTH:{
-; 148  : 		uint32_t width = display.width;
+; 148  : 	case SCREEN_GETWIDTH:{
+; 149  : 		uint32_t width = display.width;
 
 	mov	eax, DWORD PTR ?display@@3U__display__@@A
 	mov	DWORD PTR width$2[rsp], eax
 
-; 149  : 		return width;
+; 150  : 		ret = width;
 
 	mov	eax, DWORD PTR width$2[rsp]
-	jmp	SHORT $LN7@screen_io_
+	mov	DWORD PTR ret$[rsp], eax
 
-; 150  : 		break;
+; 151  : 		break;
 
 	jmp	SHORT $LN5@screen_io_
 $LN3@screen_io_:
 
-; 151  : 	}
-; 152  : 	case SCREEN_GETHEIGHT:{
-; 153  : 		uint32_t height = display.height;
+; 152  : 	}
+; 153  : 	case SCREEN_GETHEIGHT:{
+; 154  : 		uint32_t height = display.height;
 
 	mov	eax, DWORD PTR ?display@@3U__display__@@A+4
 	mov	DWORD PTR height$3[rsp], eax
 
-; 154  : 		return height;
+; 155  : 		ret = height;
 
 	mov	eax, DWORD PTR height$3[rsp]
-	jmp	SHORT $LN7@screen_io_
+	mov	DWORD PTR ret$[rsp], eax
 
-; 155  : 		break;
+; 156  : 		break;
 
 	jmp	SHORT $LN5@screen_io_
 $LN2@screen_io_:
 
-; 156  : 	}
-; 157  : 	case SCREEN_GETBPP:{
-; 158  : 		uint32_t bpp = display.bpp;
+; 157  : 	}
+; 158  : 	case SCREEN_GETBPP:{
+; 159  : 		uint32_t bpp = display.bpp;
 
 	mov	eax, DWORD PTR ?display@@3U__display__@@A+16
 	mov	DWORD PTR bpp$4[rsp], eax
 
-; 159  : 		return bpp;
+; 160  : 		ret =  bpp;
 
 	mov	eax, DWORD PTR bpp$4[rsp]
-	jmp	SHORT $LN7@screen_io_
+	mov	DWORD PTR ret$[rsp], eax
 
-; 160  : 		break;
+; 161  : 		break;
 
 	jmp	SHORT $LN5@screen_io_
 $LN1@screen_io_:
 
-; 161  : 	 }
-; 162  : 	case SCREEN_GET_SCANLINE: {
-; 163  : 		uint16_t scanline = display.scanline;
+; 162  : 	 }
+; 163  : 	case SCREEN_GET_SCANLINE: {
+; 164  : 		uint16_t scanline = display.scanline;
 
 	movzx	eax, WORD PTR ?display@@3U__display__@@A+20
 	mov	WORD PTR scanline$1[rsp], ax
 
-; 164  : 		return scanline;
+; 165  : 		ret =  scanline;
 
 	movzx	eax, WORD PTR scanline$1[rsp]
+	mov	DWORD PTR ret$[rsp], eax
 $LN5@screen_io_:
-$LN7@screen_io_:
 
-; 165  : 		break;
-; 166  : 	}
+; 166  : 		break;
 ; 167  : 	}
-; 168  : }
+; 168  : 	}
+; 169  : 
+; 170  : 	return ret;
+
+	mov	eax, DWORD PTR ret$[rsp]
+
+; 171  : }
 
 	add	rsp, 40					; 00000028H
 	ret	0

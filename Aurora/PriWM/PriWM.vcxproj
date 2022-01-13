@@ -19,9 +19,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{716F7BCF-DD40-47AD-AB8B-A27D2C6FE070}</ProjectGuid>
-    <RootNamespace>PriyanshiCompositor</RootNamespace>
-    <ProjectName>PriyanshiWM</ProjectName>
+    <ProjectGuid>{70F4467B-DAA1-43AF-89FB-4381A1554801}</ProjectGuid>
+    <RootNamespace>PriWM</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -82,8 +81,8 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>E:\Xeneva Project\Xeneva\xnlib\xnclib;E:\Xeneva Project\Xeneva\xnlib\xnacrylic\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <SDLCheck>false</SDLCheck>
-      <AdditionalIncludeDirectories>E:\Xeneva Project\Xeneva\xnlib\xnclib;E:\Xeneva Project\Xeneva\xnlib\xnacrylic\include;E:\Xeneva Project\Xeneva\xnlib\QuWidgets\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>ARCH_X64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <IgnoreStandardIncludePath>true</IgnoreStandardIncludePath>
       <ExceptionHandling>false</ExceptionHandling>
@@ -98,7 +97,7 @@
       </GenerateDebugInformation>
       <OutputFile>D:\priwm.exe</OutputFile>
       <AdditionalLibraryDirectories>E:\Xeneva Project\Xeneva\xnlib\lib64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>xnclib.lib; xnacrylic.lib;freetype.lib;QuWidgets.lib;</AdditionalDependencies>
+      <AdditionalDependencies>xnclib.lib; xnacrylic.lib;freetype.lib;</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
       <EnableUAC>false</EnableUAC>
       <GenerateMapFile>true</GenerateMapFile>
@@ -143,10 +142,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="PriyanshiWM.h" />
+    <ClInclude Include="priwm.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="PriyanshiWM.cpp" />
+    <ClCompile Include="priwm.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
