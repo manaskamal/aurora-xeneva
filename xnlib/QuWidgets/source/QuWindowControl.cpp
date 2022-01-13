@@ -55,17 +55,21 @@ void QuMaximizeButtonDraw (QuWinControl *control, QuWindow *win, bool clicked) {
 		control->hover = false;
 		control->restore = true;
 	}
+
 	if (clicked) {
 		/*QuWinInfo *info = (QuWinInfo*)win->win_info_data;
-		info->maximize = !info->maximize;
-		win->oldx = win->x;
-		win->oldy = win->y;
+		info->maximize = true;
+		win->maximized = true;
+		win->oldx = info->x;
+		win->oldy = info->y;
 		win->oldw = win->w;
 		win->oldh = win->h;
-		win->x = 0;
-		win->y = 0;
-		win->w = canvas_get_width();
-		win->h = canvas_get_height();*/
+		win->w = win->ctx->width;
+		win->h = win->ctx->height - 40;
+		QuMessage msg;
+		msg.type = QU_CODE_WIN_MAXIMIZE;
+		QuChannelPut(&msg, 2);
+		memset(&msg, 0, sizeof(QuMessage));*/
 	}
 }
 
@@ -104,4 +108,16 @@ void QuCloseButtonDraw (QuWinControl *control, QuWindow *win, bool clicked) {
 		}
 		
 	}
+}
+
+void QuMinimizeButtonRearrange (QuWinControl *ctrl, QuWindow *win) {
+	ctrl->x = win->w - 43;
+}
+
+void QuMaximizeButtonRearrange (QuWinControl *ctrl, QuWindow* win) {
+	ctrl->x = win->w - 28;
+}
+
+void QuCloseButtonRearrange (QuWinControl *ctrl, QuWindow* win) {
+	ctrl->x = win->w - 13;
 }

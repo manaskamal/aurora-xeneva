@@ -34,16 +34,50 @@
 #define AURORA_MAX_DRIVERS  256
 
 //! The driver parameter to pass
-#pragma pack (push)
+#pragma pack (push,1)
+
+typedef struct _pci_p_ {
+	bool (*pci_find_device_class_p) (uint8_t class_code, uint8_t sub_class, pci_device_info *addr_out, int *bus, int *dev, int *func);
+	bool (*pci_find_device_id_p) (uint16_t device_id, uint16_t vendor_id, pci_device_info *addr_out);
+	void (*pci_enable_bus_master_p) (int bus, int dev, int func);
+    void (*pci_enable_interrupt_p) (int bus, int dev, int func);
+	void (*read_config_16_p) (uint16_t segment,int bus, int dev, int function, int reg, unsigned short *data );
+	void (*write_config_16_p) (uint16_t segment,int bus, int dev, int function, int reg, unsigned short data );
+	void (*read_config_32_p) (uint16_t segment, int bus, int dev, int function, int reg, uint32_t data);
+	void (*read_config_8_p) (uint16_t segment,int bus, int dev, int function, int reg, unsigned char* data);
+	void (*write_config_8_p) (uint16_t segment,int bus, int dev, int func, int reg, unsigned char data);
+	void (*read_config_32_ext_p) (uint16_t segment,int bus, int dev, int function, int reg, uint32_t *data);
+	void (*write_config_32_p) (int bus, int dev, int func, int reg, unsigned data);
+}pci_p_t;
+
+typedef struct _mem_ {
+	void* (*malloc_p) (size_t size);
+	uint64_t* (*get_phys_address_p) (uint64_t virt_address);
+	void (*mfree_p) (void* addr);
+	void* (*pmmngr_alloc_p) ();
+	void* (*pmmngr_alloc_blocks_p) (int size);
+	void  (*pmmngr_free_p) (void* addr);
+	bool  (*map_page_p) (uint64_t physical_address, uint64_t virtual_address, uint8_t attrib);
+	void (*unmap_page_p) (uint64_t virt_addr);
+	uint64_t* (*get_free_page_p) (size_t s, bool user);
+}mem_t;
+
+typedef struct _cpu_ {
+	void (*interrupt_eoi_p) (uint32_t irq);
+	void (*interrupt_set_p) (size_t vector, void (*fn)(size_t, void* p),uint8_t irq);
+	uint8_t (*inportb_p) (uint16_t port);
+	uint16_t (*inportw_p) (uint16_t port);
+	uint32_t (*inportd_p) (uint16_t port);
+	void (*outportb_p) (uint16_t port, uint8_t data);
+    void (*outportw_p) (uint16_t port, uint16_t data);
+    void (*outportd_p) (uint16_t port, uint32_t data);
+}cpu_t;
+
 typedef struct _driver_param_ {
 	void (*kdebug) (const char* str, ...);
-	void (*interrupt_eoi) (uint32_t irq);
-	void (*interrupt_set) (size_t vector, void (*fn)(size_t, void* p),uint8_t irq);
-	bool (*pci_find_device) (uint16_t vendor_id, uint16_t device_id, pci_address *addr);
-	uint32_t (*pci_get_bar) (const pci_address *addr, int index);
-	void (*pci_set_mem_enable) (const pci_address *addr, bool enable);
-	void* (*malloc) (size_t size);
-	uint64_t* (*get_phys_address) (uint64_t virt_address);
+	mem_t *mem;
+	cpu_t *cpu;
+	pci_p_t *pci;
 }driver_param_t;
 #pragma pack (pop)
 

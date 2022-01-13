@@ -202,7 +202,6 @@ thread_t* create_user_thread (void (*entry) (void*),uint64_t stack,uint64_t cr3,
 	return t;
 }
 
-
 //! the main idle thread
 void idle_thread () {
 	while(1) {

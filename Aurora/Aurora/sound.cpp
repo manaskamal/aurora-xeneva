@@ -29,7 +29,7 @@ int snd_io_query (vfs_node_t* node, int code, void* arg) {
 }
 //! For now simply make interface to hdaudio!!
 void sound_initialize () {
-	vfs_node_t * snd = (vfs_node_t*)pmmngr_alloc(); //malloc(sizeof(vfs_node_t));
+	vfs_node_t * snd = (vfs_node_t*)malloc(sizeof(vfs_node_t));
 	strcpy (snd->filename, "fb");
 	snd->size = 0;
 	snd->eof = 0;

@@ -13,6 +13,7 @@
 #include <pmmngr.h>
 #include <_null.h>
 #include <stdio.h>
+#include <arch\x86_64\cpu.h>
 #include <efi.h>
 
 uint64_t free_memory = 0;
@@ -166,8 +167,10 @@ void* pmmngr_alloc()
 		used_memory += 4096 * 1;
 		return (void*)(index * 4096);
 	}
+	x64_cli();
 	printf ("Used RAM -> %d MB, Free RAM -> %d MB\n", used_memory /1024 / 1024, free_memory / 1024 / 1024);
 	printf ("No more available pages\n");
+	x64_hlt();
 	for(;;);
 	return NULL; //here we need to swap page to file
 }

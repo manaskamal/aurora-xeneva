@@ -17,7 +17,7 @@
 
 #include <screen.h>
 #include <fs\vfs.h>
-#include <mm.h>
+#include <arch\x86_64\mmngr\kheap.h>
 
 //! Architecture specific
 #ifdef ARCH_X64

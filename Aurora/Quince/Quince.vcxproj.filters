@@ -63,12 +63,6 @@
     <ClCompile Include="source\QuWindow\QuWindowMngr.cpp">
       <Filter>source\QuWindow</Filter>
     </ClCompile>
-    <ClCompile Include="source\QuWindow\QuList.cpp">
-      <Filter>source\QuWindow</Filter>
-    </ClCompile>
-    <ClCompile Include="include\QuWindow\QuList.h">
-      <Filter>include\QuWindow</Filter>
-    </ClCompile>
     <ClCompile Include="source\QuWindow\QuWindow.cpp">
       <Filter>source\QuWindow</Filter>
     </ClCompile>

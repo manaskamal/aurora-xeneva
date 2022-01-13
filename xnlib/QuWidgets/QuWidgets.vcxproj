@@ -142,10 +142,12 @@
     <ClInclude Include="include\QuTerminal.h" />
     <ClInclude Include="include\QuTextbox.h" />
     <ClInclude Include="include\QuUtils\QuList.h" />
+    <ClInclude Include="include\QuView.h" />
     <ClInclude Include="include\QuWindow.h" />
     <ClInclude Include="include\QuWindowControl.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="include\QuView.cpp" />
     <ClCompile Include="source\QuBase.cpp" />
     <ClCompile Include="source\QuButton.cpp" />
     <ClCompile Include="source\QuContextMenu.cpp" />

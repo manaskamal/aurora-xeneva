@@ -9,7 +9,7 @@
 ///!===================================================
 
 
-#include <QuWindow\QuList.h>
+#include <QuUtils\QuList.h>
 #include <QuWindow\QuWindowMngr.h>
 #include <QuCursor.h>
 #include <stdlib.h>
@@ -30,8 +30,7 @@ QuWindow * focus_win = NULL;
 QuWindow * prev_focused = NULL;
 QuWindow * draggable_win = NULL;
 QuWindow * top_window = NULL;
-bool UpdateWindows = false;
-bool StreamEvent = true;
+QuWindow * resz_window = NULL;
 uint8_t last_mouse_button = 0;
 
 #define abs(a)  (((a) < 0)?-(a):(a))
@@ -41,6 +40,10 @@ void QuWindowMngr_Initialize () {
 }
 
 
+/**
+ * QuWindowMngr_Add -- Adds a new window to window list
+ * @param window -- new window address
+ */
 void QuWindowMngr_Add (QuWindow *window) {
 	QuListAdd (WindowList, window);
 	focus_win = window;
@@ -50,12 +53,16 @@ void QuWindowMngr_Add (QuWindow *window) {
 }
 
 
-
+/**
+ * QuWindowMngr_Remove -- Removes a window fro window list
+ * @param win -- Window address to remove
+ */
 void QuWindowMngr_Remove (QuWindow *win) {
 	for (int i = 0; i < WindowList->pointer; i++) {
 		QuWindow *_win = (QuWindow*)QuListGetAt(WindowList,i);
 		if (_win == win) {
 			QuListRemove(WindowList, i);
+			break;
 		}
 	}
 
@@ -63,14 +70,22 @@ void QuWindowMngr_Remove (QuWindow *win) {
 	draggable_win = NULL;
 	top_window = NULL;
 	prev_focused = NULL;
+	resz_window = NULL;
 }
 
-
+/**
+ * QuWindowMngr_GetList -- Returns the window list
+ * @return -- Window List to return
+ */
 QuList *QuWindowMngr_GetList () {
 	return WindowList;
 }
 
-
+/**
+ * QuWindowMngrFindByID -- Finds a window by task id
+ * @param id -- task id
+ * @return win -- Resulted window to be returned
+ */
 QuWindow* QuWindowMngrFindByID (uint16_t id) {
 	for (int i = 0; i < WindowList->pointer; i++) {
 		QuWindow* win = (QuWindow*)QuListGetAt(WindowList, i);
@@ -80,6 +95,10 @@ QuWindow* QuWindowMngrFindByID (uint16_t id) {
 	}
 }
 
+/**
+ * QuWindowMngrSetFocus -- Set a window as focused window
+ * @param win -- Window to be focused
+ */
 void QuWindowMngrSetFocus (QuWindow* win) {
 	if (focus_win == win)
 		return;
@@ -88,6 +107,10 @@ void QuWindowMngrSetFocus (QuWindow* win) {
 
 QuWindow* QuWindowMngrGetFocused () {
 	return focus_win;
+}
+
+QuWindow* QuWindowMngrGetDraggable() {
+	return draggable_win;
 }
 
 
@@ -102,20 +125,11 @@ void QuWindowMngr_MoveFront (QuWindow *win) {
 	QuChannelPut (&msg, prev_focused->owner_id);
 	}
 
-
-	if (top_window != win || top_window == NULL){
+	if (top_window != win || top_window == NULL) {
 		QuWindowMngr_Remove(win);
 		QuWindowMngr_Add(win);
 		top_window = win;
-		//QuWindowUpdateTitlebar(true);
 	}
-
-	//if (prev_focused != NULL) {
-	//	QuMessage msg;
-	//	msg.type = QU_CANVAS_FOCUS_LOST;
-	//	msg.to_id = prev_focused->owner_id;
-	//	QuChannelPut (&msg, prev_focused->owner_id);
-	//}
 
     focus_win = win;
 
@@ -127,53 +141,27 @@ void QuWindowMngr_MoveFront (QuWindow *win) {
 	prev_focused = focus_win;
 }
 
-bool QuWindowMngr_CheckTop (QuWindow *win) {
-	QuWindow* win_ = (QuWindow*)QuListGetAt(WindowList, 1);
-	if (win_ == win)
-		return true;
-	return false;
-}
 
 void QuWindowMngr_DrawAll () {	
-     QuCanvasUpdateDirty();
-	//if (WindowList->pointer > 0) {
-		for (int i = 0; i < WindowList->pointer; i++) {
-			QuWindow* _win = (QuWindow*)QuListGetAt(WindowList, i);
-			QuWindowDraw (_win);
-		}
-	//} 
-		
-}
-
-/*
- * Some specific clients will say to render whole frame in every frame update
- * this functions will only needed for that specific purpose
- */
-void QuWindowMngr_DisplayWindow() {
-	for (int i = 0; i < WindowList->pointer; i++) {
+	QuCanvasUpdateDirty();
+	for (int i =  0; i < WindowList->pointer;  i++) {
 		QuWindow* _win = (QuWindow*)QuListGetAt(WindowList, i);
-		QuWindowInfo *info = (QuWindowInfo*)_win->win_info_location;
-			canvas_screen_update(QuGetCanvas(),info->x, info->y, _win->width, _win->height);	
-		
+		QuWindowDraw (_win);
 	} 
 }
 
 
-void QuWindowMngr_UpdateWindow (bool value) {
-	UpdateWindows = value;
-}
-
-bool QuWindowMngr_GetUpdateBit() {
-	return UpdateWindows;
-}
-
 
 
 void QuWindowMngr_MoveFocusWindow (int x, int y) {
-	QuWindowInfo* info = (QuWindowInfo*)draggable_win->win_info_location;
+	if (draggable_win == NULL)
+		return;
 
-	QuCanvasAddDirty(info->x, info->y, draggable_win->width, draggable_win->height);
-	//!Store Old Coordinates
+	QuWindowInfo* info = (QuWindowInfo*)draggable_win->win_info_location;
+	QuCanvasAddDirty(info->x - 5, info->y - 5, draggable_win->width + 5, draggable_win->height + 5);
+
+	if (resz_window)
+		resz_window = NULL;
 
 	int oldx = info->x, oldy = info->y, oldh = draggable_win->height,
 		oldw = draggable_win->width;
@@ -194,28 +182,51 @@ void QuWindowMngr_MoveFocusWindow (int x, int y) {
 	if (draggable_win->y + draggable_win->height >= canvas_get_height())
 		draggable_win->y = canvas_get_height() - draggable_win->height;*/
 
+	//!Store Old Coordinates
 	for (int i = 0; i < WindowList->pointer; i++) {
-		QuWindow* win = (QuWindow*)QuListGetAt (WindowList,i);
-		//if (win == draggable_win) continue;
-		QuWindowInfo *w_info = (QuWindowInfo*)win->win_info_location;
+		QuWindow* win_ = (QuWindow*)QuListGetAt (WindowList,i);
+		//if (win_ == win) continue;
+		QuWindowInfo *w_info = (QuWindowInfo*)win_->win_info_location;
 		w_info->dirty = 1;
 		w_info->rect_count=0;
 	}
 
 }
 
+void QuWindowMngr_ResizeWindow(int x, int y) {
+	if (resz_window == NULL)
+		return;
+
+	QuWindowInfo *info = (QuWindowInfo*)resz_window->win_info_location;
+	QuCanvasAddDirty(info->x - 5, info->y - 5, resz_window->width + 5, resz_window->height + 5);
+
+	resz_window->width = x - resz_window->resz_h;
+	resz_window->height = y - resz_window->resz_v;
+
+	for (int i = 0; i < WindowList->pointer; i++)  {
+		QuWindow *win = (QuWindow*)QuListGetAt(WindowList, i);
+		QuWindowInfo* info = (QuWindowInfo*)win->win_info_location;
+		info->dirty =1;
+		info->rect_count= 0;
+	}
+
+	QuMessage msg;
+	msg.type = QU_CANVAS_RESIZE;
+	msg.dword = resz_window->width;
+	msg.dword2 = resz_window->height;
+	QuChannelPut(&msg, resz_window->owner_id);
+}
 
 void QuWindowMngr_HandleMouse (int x, int y, uint8_t button, int mouse_code) {	
 	//if (WindowList->pointer > 0){
-	QuWindow* win;
-	for (int i = 0; i < WindowList->pointer; i++) {
-		win = (QuWindow*)QuListGetAt(WindowList, i);
+	for (int i = WindowList->pointer - 1; i >= 0; i--) {
+		QuWindow* win = (QuWindow*)QuListGetAt(WindowList, i);
 		QuWindowInfo *info = (QuWindowInfo *)win->win_info_location;
+
 		if (!(x >= info->x && x < (info->x + win->width) &&
 			y >= info->y && y < (info->y + win->height))) 
 			continue;
-		
-		
+
 		if (button && !last_mouse_button) {
 			//! Only a limited portion is available for dragging purpose
 			if (y >= info->y && y < (info->y + 23)) {  
@@ -225,12 +236,22 @@ void QuWindowMngr_HandleMouse (int x, int y, uint8_t button, int mouse_code) {
 		        QuWindowMngr_MoveFront(win);
 		        break;
 			}
-		//}
+
+			if (y >= (info->y + win->height - 10) && y < (info->y + win->height + 10)) {
+				if (focus_win == win) {
+					resz_window = win;
+					resz_window->resz_h = x - resz_window->width;
+					resz_window->resz_v = y - resz_window->height;	
+				}
+				break;
+			}
 		}
 	}
 
-	if (!button) 
+	if (!button)  {
 		draggable_win = NULL;
+		resz_window = NULL;
+	}
 
 	/*if (draggable_win && button) {
 		QuWindowMngr_MoveFocusWindow(x, y);
@@ -243,6 +264,11 @@ void QuWindowMngr_HandleMouseUp (int x, int y) {
 	if (draggable_win) {
 		QuWindowMngr_MoveFocusWindow(x, y);
 	}
+	if (resz_window) {
+		QuWindowMngr_ResizeWindow(x, y);
+	}
+
+	
 }
 
 
@@ -260,13 +286,7 @@ void QuWindowMngr_SendEvent (QuWindow *win, int type, int x, int y, int code) {
 		msg.dword = code;
 	}
 	QuChannelPut(&msg,win->owner_id);
-	//sys_unblock_id(win->owner_id);
 }
-
-void QuWindowMngr_EventStreamEnable (bool value) {
-	StreamEvent = value;
-}
-
 
 
 void QuWindowMngr_DrawBehind (QuWindow *current_win) {
@@ -276,4 +296,36 @@ void QuWindowMngr_DrawBehind (QuWindow *current_win) {
 		info->dirty = 1;
 		info->rect_count = 0;
 	}
+}
+
+bool QuWindowMngr_GetIntersections(QuWindow* win, QuWindow* current) {
+	QuWindowInfo *wininfo = (QuWindowInfo*)win->win_info_location;
+	QuWindowInfo *curinfo = (QuWindowInfo*)current->win_info_location;
+
+	if ((wininfo->x > curinfo->x + current->width ) || (wininfo->x  + win->width < curinfo->x))
+		return 0;
+	if ((wininfo->y > curinfo->y + current->height) || (wininfo->y + win->height < curinfo->y))
+		return 0;
+	return 1;
+}
+
+QuRect * QuWindowMngr_RectOverlap (QuWindow *win1, QuWindow *win2) {
+	QuRect * ret = (QuRect*)malloc(sizeof(QuRect));
+	QuWindowInfo *win1info = (QuWindowInfo*)win1->win_info_location;
+	QuWindowInfo *win2info = (QuWindowInfo*)win2->win_info_location;
+
+	if (win1info->x + win1->width > win2info->x + win2->width) {
+		ret->w = win2info->x + win2->width - max(win1info->x, win2info->x);
+	}else {
+		ret->w = win1info->x + win1->width - max(win1info->x, win2info->x);
+	}
+
+	ret->x = max(win1info->x, win2info->x);
+	if (win1info->y + win1->height > win2info->y + win2->height) {
+		ret->h = win2info->y + win2->height - max(win1info->y, win2info->y);
+	}else {
+		ret->h = win1info->y + win1->height - max(win1info->y, win2info->y);
+	}
+	ret->y = max(win1info->y, win2info->y); 
+	return ret;
 }

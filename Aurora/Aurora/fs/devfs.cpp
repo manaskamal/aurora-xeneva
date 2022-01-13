@@ -10,7 +10,7 @@
 
 #include <fs\devfs.h>
 #include <fs\vfs.h>
-#include <mm.h>
+#include <arch\x86_64\mmngr\kheap.h>
 
 
 void devfs_mount () {

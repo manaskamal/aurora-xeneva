@@ -10,7 +10,7 @@
  */
 
 #include <net\udp.h>
-#include <mm.h>
+#include <arch\x86_64\mmngr\kheap.h>
 #include <net\ethernet.h>
 #include <net\nethw.h>
 #include <string.h>

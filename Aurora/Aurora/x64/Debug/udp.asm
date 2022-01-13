@@ -6,17 +6,17 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 CONST	SEGMENT
-$SG2983	DB	'UDP Packet sent', 0aH, 00H
+$SG2998	DB	'UDP Packet sent', 0aH, 00H
 CONST	ENDS
 PUBLIC	?udp_send_packet@@YAXPEAEGGPEAXH@Z		; udp_send_packet
-EXTRN	?malloc@@YAPEAXI@Z:PROC				; malloc
-EXTRN	?htons@@YAGG@Z:PROC				; htons
 EXTRN	?memset@@YAXPEAXEI@Z:PROC			; memset
 EXTRN	memcpy:PROC
 EXTRN	?printf@@YAXPEBDZZ:PROC				; printf
+EXTRN	?malloc@@YAPEAX_K@Z:PROC			; malloc
+EXTRN	?htons@@YAGG@Z:PROC				; htons
 pdata	SEGMENT
 $pdata$?udp_send_packet@@YAXPEAEGGPEAXH@Z DD imagerel $LN3
-	DD	imagerel $LN3+181
+	DD	imagerel $LN3+185
 	DD	imagerel $unwind$?udp_send_packet@@YAXPEAEGGPEAXH@Z
 pdata	ENDS
 xdata	SEGMENT
@@ -52,8 +52,9 @@ $LN3:
 
 ; 21   : 	udp_packet_t *packet = (udp_packet_t*)malloc(length);
 
-	mov	ecx, DWORD PTR length$[rsp]
-	call	?malloc@@YAPEAXI@Z			; malloc
+	movsxd	rax, DWORD PTR length$[rsp]
+	mov	rcx, rax
+	call	?malloc@@YAPEAX_K@Z			; malloc
 	mov	QWORD PTR packet$[rsp], rax
 
 ; 22   : 	memset(packet, 0, sizeof(udp_packet_t));
@@ -102,7 +103,7 @@ $LN3:
 
 ; 29   : 	printf ("UDP Packet sent\n");
 
-	lea	rcx, OFFSET FLAT:$SG2983
+	lea	rcx, OFFSET FLAT:$SG2998
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 30   : 	//not completed

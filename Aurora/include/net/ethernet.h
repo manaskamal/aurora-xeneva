@@ -13,7 +13,7 @@
 #define __ETHERNET_H__
 
 #include <stdint.h>
-#include <mm.h>
+#include <arch\x86_64\mmngr\kheap.h>
 
 #define ETHERNET_TYPE_ARP  0x0806
 #define ETHERNET_TYPE_IP   0x0800

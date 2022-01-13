@@ -12,7 +12,7 @@
 #include <utils\ring.h>
 #include <string.h>
 #include <pmmngr.h>
-#include <mm.h>
+#include <arch\x86_64\mmngr\kheap.h>
 
 void initialize_ring (ring_t * ring) {
 	ring->current = 0;
@@ -91,7 +91,7 @@ bool ring_delete_first (ring_t* ring, void* data) {
 		if (current->next->data == data) {
 			element_t * temp = current->next;
 			take_out (ring, current);
-			mfree(temp);
+			free(temp);
 			return (true);
 		}
 		current = current->next;

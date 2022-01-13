@@ -12,8 +12,13 @@
 #include <color.h>
 
 void ConsoleRefresh (QuWidget *wid, QuWindow *win) {
-	//acrylic_draw_rect_filled(win->x + wid->x, win->y + wid->y, win->w, win->h, BLACK);
+	acrylic_draw_rect_filled(win->ctx,0,0, win->w, win->h, BLACK);
 }
+
+
+void ConsoleMouseEvent (QuWidget *wid,QuWindow* win,int code, bool clicked,int x, int y){
+}
+
 
 ConsoleWidget* create_console (int x, int y, int w, int h) {
 	ConsoleWidget *con = (ConsoleWidget*)malloc (sizeof(ConsoleWidget));
@@ -22,7 +27,7 @@ ConsoleWidget* create_console (int x, int y, int w, int h) {
 	con->wid.width = w;
 	con->wid.height = h;
 	con->wid.KeyEvent = 0;
-	con->wid.MouseEvent = 0;
+	con->wid.MouseEvent = ConsoleMouseEvent;
 	con->wid.ActionEvent = 0;
 	con->wid.Refresh = ConsoleRefresh;
 	con->cursor_x = 0;

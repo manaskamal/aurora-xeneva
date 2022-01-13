@@ -94,7 +94,7 @@ QuEditBox *QuCreateEditBox (int x, int y, int w, int h) {
 	//! this mappings should be moved to another object
 	//! called QuStringBuffer...  for now
 	//! let's create it here
-	eb->ctx = create_canvas(1024,720);
+	eb->ctx = create_canvas(1280,1024);
 	eb->buffer = (uint8_t*)malloc(65536);
 	
 	return eb;

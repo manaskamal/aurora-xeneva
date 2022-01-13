@@ -14,13 +14,13 @@ _BSS	SEGMENT
 ?last@@3PEAU_tele_type_@@EA DQ 01H DUP (?)		; last
 _BSS	ENDS
 CONST	SEGMENT
-$SG3341	DB	'ttym', 00H
+$SG3356	DB	'ttym', 00H
 	ORG $+3
-$SG3343	DB	'/dev/', 00H
+$SG3358	DB	'/dev/', 00H
 	ORG $+2
-$SG3348	DB	'ttys', 00H
+$SG3363	DB	'ttys', 00H
 	ORG $+3
-$SG3350	DB	'/dev/', 00H
+$SG3365	DB	'/dev/', 00H
 CONST	ENDS
 _DATA	SEGMENT
 ?master_count@@3HA DD 01H				; master_count
@@ -45,8 +45,8 @@ EXTRN	?circular_buf_get@@YAHPEAU_circ_buf_@@PEAE@Z:PROC ; circular_buf_get
 EXTRN	?pmmngr_alloc@@YAPEAXXZ:PROC			; pmmngr_alloc
 EXTRN	?pmmngr_free@@YAXPEAX@Z:PROC			; pmmngr_free
 EXTRN	x64_cli:PROC
-EXTRN	?malloc@@YAPEAXI@Z:PROC				; malloc
 EXTRN	?sztoa@@YAPEAD_KPEADH@Z:PROC			; sztoa
+EXTRN	?malloc@@YAPEAX_K@Z:PROC			; malloc
 EXTRN	?block_thread@@YAXPEAU_thread_@@@Z:PROC		; block_thread
 EXTRN	?unblock_thread@@YAXPEAU_thread_@@@Z:PROC	; unblock_thread
 EXTRN	?get_current_thread@@YAPEAU_thread_@@XZ:PROC	; get_current_thread
@@ -941,7 +941,7 @@ $LN6:
 ; 244  : 	char master_name[10];
 ; 245  : 	strcpy(master_name, "ttym");
 
-	lea	rdx, OFFSET FLAT:$SG3341
+	lea	rdx, OFFSET FLAT:$SG3356
 	lea	rcx, QWORD PTR master_name$[rsp]
 	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
 
@@ -958,7 +958,7 @@ $LN6:
 ; 248  : 	char mname[10];
 ; 249  : 	strcpy (mname, "/dev/");
 
-	lea	rdx, OFFSET FLAT:$SG3343
+	lea	rdx, OFFSET FLAT:$SG3358
 	lea	rcx, QWORD PTR mname$[rsp]
 	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
 
@@ -977,7 +977,7 @@ $LN6:
 ; 254  : 	vfs_node_t *mn = (vfs_node_t*)malloc(sizeof(vfs_node_t));
 
 	mov	ecx, 104				; 00000068H
-	call	?malloc@@YAPEAXI@Z			; malloc
+	call	?malloc@@YAPEAX_K@Z			; malloc
 	mov	QWORD PTR mn$[rsp], rax
 
 ; 255  : 	strcpy(mn->filename, master_name);
@@ -1060,7 +1060,7 @@ $LN6:
 ; 270  : 	char slave_name[10];
 ; 271  : 	strcpy(slave_name, "ttys");
 
-	lea	rdx, OFFSET FLAT:$SG3348
+	lea	rdx, OFFSET FLAT:$SG3363
 	lea	rcx, QWORD PTR slave_name$[rsp]
 	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
 
@@ -1077,7 +1077,7 @@ $LN6:
 ; 274  : 	char sname[10];
 ; 275  : 	strcpy(sname, "/dev/");
 
-	lea	rdx, OFFSET FLAT:$SG3350
+	lea	rdx, OFFSET FLAT:$SG3365
 	lea	rcx, QWORD PTR sname$[rsp]
 	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
 
@@ -1094,7 +1094,7 @@ $LN6:
 ; 278  : 	vfs_node_t *sn = (vfs_node_t*)malloc(sizeof(vfs_node_t));
 
 	mov	ecx, 104				; 00000068H
-	call	?malloc@@YAPEAXI@Z			; malloc
+	call	?malloc@@YAPEAX_K@Z			; malloc
 	mov	QWORD PTR sn$[rsp], rax
 
 ; 279  : 	strcpy(sn->filename, slave_name);

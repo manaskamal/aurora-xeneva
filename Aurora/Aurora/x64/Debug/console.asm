@@ -21,9 +21,9 @@ console_y DD	01H DUP (?)
 psf_data DQ	01H DUP (?)
 _BSS	ENDS
 CONST	SEGMENT
-$SG3031	DB	'/font.psf', 00H
+$SG3046	DB	'/font.psf', 00H
 	ORG $+6
-$SG3034	DB	'/font.psf', 00H
+$SG3049	DB	'/font.psf', 00H
 CONST	ENDS
 PUBLIC	?console_initialize@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z ; console_initialize
 PUBLIC	?puts@@YAXPEAD@Z				; puts
@@ -32,13 +32,13 @@ PUBLIC	?fb_write@@YAXPEAU_vfs_node_@@PEAEI@Z		; fb_write
 PUBLIC	?fb_io_query@@YAHPEAU_vfs_node_@@HPEAX@Z	; fb_io_query
 PUBLIC	?console_pixel@@YAXIII@Z			; console_pixel
 EXTRN	memcpy:PROC
-EXTRN	?malloc@@YAPEAXI@Z:PROC				; malloc
+EXTRN	?malloc@@YAPEAX_K@Z:PROC			; malloc
 EXTRN	?vfs_finddir@@YAPEAU_vfs_node_@@PEAD@Z:PROC	; vfs_finddir
 EXTRN	?openfs@@YA?AU_vfs_node_@@PEAU1@PEAD@Z:PROC	; openfs
 EXTRN	?readfs@@YAXPEAU_vfs_node_@@0PEAEI@Z:PROC	; readfs
 pdata	SEGMENT
 $pdata$?console_initialize@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z DD imagerel $LN3
-	DD	imagerel $LN3+260
+	DD	imagerel $LN3+262
 	DD	imagerel $unwind$?console_initialize@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z
 $pdata$?puts@@YAXPEAD@Z DD imagerel $LN25
 	DD	imagerel $LN25+739
@@ -760,14 +760,14 @@ $LN3:
 ; 50   : 
 ; 51   : 	vfs_node_t *node = vfs_finddir ("/font.psf");
 
-	lea	rcx, OFFSET FLAT:$SG3031
+	lea	rcx, OFFSET FLAT:$SG3046
 	call	?vfs_finddir@@YAPEAU_vfs_node_@@PEAD@Z	; vfs_finddir
 	mov	QWORD PTR node$[rsp], rax
 
 ; 52   : 
 ; 53   : 	vfs_node_t file = openfs (node, "/font.psf");
 
-	lea	r8, OFFSET FLAT:$SG3034
+	lea	r8, OFFSET FLAT:$SG3049
 	mov	rdx, QWORD PTR node$[rsp]
 	lea	rcx, QWORD PTR $T2[rsp]
 	call	?openfs@@YA?AU_vfs_node_@@PEAU1@PEAD@Z	; openfs
@@ -785,8 +785,9 @@ $LN3:
 
 ; 54   : 	uint8_t *buffer = (uint8_t*)malloc(file.size);
 
-	mov	ecx, DWORD PTR file$[rsp+32]
-	call	?malloc@@YAPEAXI@Z			; malloc
+	mov	eax, DWORD PTR file$[rsp+32]
+	mov	ecx, eax
+	call	?malloc@@YAPEAX_K@Z			; malloc
 	mov	QWORD PTR buffer$[rsp], rax
 
 ; 55   : 	readfs(node, &file,buffer,file.size);

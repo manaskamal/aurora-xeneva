@@ -17,5 +17,7 @@
 extern void QuMinimizeButtonDraw (QuWinControl *control, QuWindow *win, bool clicked);
 extern void QuMaximizeButtonDraw (QuWinControl *control, QuWindow *win, bool clicked);
 extern void QuCloseButtonDraw (QuWinControl *control, QuWindow *win, bool clicked);
-
+extern void QuMinimizeButtonRearrange (QuWinControl *ctrl, QuWindow *win);
+extern void QuMaximizeButtonRearrange (QuWinControl *ctrl, QuWindow* win);
+extern void QuCloseButtonRearrange (QuWinControl *ctrl, QuWindow* win);
 #endif

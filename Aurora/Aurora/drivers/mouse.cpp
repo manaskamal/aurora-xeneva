@@ -258,6 +258,6 @@ void initialize_mouse () {
 	mouse_read ();
 
 	interrupt_set (34, mouse_handler, 12);  //34
-
+	printf ("mouse interrupt setupped\n");
 	mouse_register_device ();
 }

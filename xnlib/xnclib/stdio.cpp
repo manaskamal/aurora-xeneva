@@ -17,13 +17,69 @@ int fprintf(UFILE f, const char* format, ...) {
 	return -1;
 }
 
-int printf(const char *buf, ...){
+
+int printf(const char *format, ...){
 	unsigned char* buffer = (unsigned char*)malloc(4096);
-	memcpy(buffer, (void*)buf,4096);
-	UFILE file;
-	file.size = 4096;
-	file.flags = 0;
-	sys_write_file(1,buffer,&file);
+	size_t loc = 0;
+	size_t i;
+	va_list args;
+	va_start(args,format);
+
+	for (i = 0; i <= strlen(format); i++, loc++) {
+		switch(format[i]) {
+		case '%' :
+			switch (format[i+1]) {
+			case 'c': {
+				char c = va_arg(args,char);
+				buffer[loc] = c;
+				i++;
+				break;
+					  }
+
+			case 'd':
+			case 'i': {
+				int c = va_arg(args,int);
+				char s[32];
+				itoa_s (c, 10, s);
+				strcpy ((char*)&buffer[loc],s);
+				loc += strlen(s)-2;
+				i++;
+				break;
+					  }
+
+			case 'X':
+			case 'x': {
+				int c = va_arg(args, int);
+				char s[32];
+				itoa_s(c, 16, s);
+				strcpy ((char*)&buffer[loc], s);
+				i++;
+				loc += strlen(s)-2;
+				break;
+					  }
+			case 's': {
+				int c = (int&)va_arg(args,char);
+				char s[32];
+				strcpy (s, (const char*)c);
+				strcpy ((char*)&buffer[loc], s);
+				i++;
+				loc += strlen(s)-2;
+				break;
+				}
+			default: {
+				va_end(args);
+				return 1;
+			}
+			}
+			break;
+		default:
+			buffer[loc] = format[i];
+			break;
+		}
+	}
+
+	va_end(args);
+	_term_putchar_(buffer);
 	free(buffer);
 	return -1;
 }

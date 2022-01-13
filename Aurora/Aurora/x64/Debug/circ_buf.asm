@@ -17,8 +17,8 @@ PUBLIC	?circular_buf_put2@@YAHPEAU_circ_buf_@@H@Z	; circular_buf_put2
 PUBLIC	?circular_buf_get@@YAHPEAU_circ_buf_@@PEAE@Z	; circular_buf_get
 PUBLIC	?circular_buf_empty@@YA_NPEAU_circ_buf_@@@Z	; circular_buf_empty
 PUBLIC	?circular_buf_full@@YA_NPEAU_circ_buf_@@@Z	; circular_buf_full
-EXTRN	?malloc@@YAPEAXI@Z:PROC				; malloc
-EXTRN	?mfree@@YAXPEAX@Z:PROC				; mfree
+EXTRN	?malloc@@YAPEAX_K@Z:PROC			; malloc
+EXTRN	?free@@YAXPEAX@Z:PROC				; free
 pdata	SEGMENT
 $pdata$?advance_pointer@@YAXPEAU_circ_buf_@@@Z DD imagerel $LN6
 	DD	imagerel $LN6+145
@@ -387,10 +387,10 @@ $LN3:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 40					; 00000028H
 
-; 45   : 	mfree(cbuf);
+; 45   : 	free(cbuf);
 
 	mov	rcx, QWORD PTR cbuf$[rsp]
-	call	?mfree@@YAXPEAX@Z			; mfree
+	call	?free@@YAXPEAX@Z			; free
 
 ; 46   : }
 
@@ -416,7 +416,7 @@ $LN3:
 ; 36   : 	circ_buf_t *cbuf = (circ_buf_t*)malloc(sizeof(circ_buf_t));
 
 	mov	ecx, 40					; 00000028H
-	call	?malloc@@YAPEAXI@Z			; malloc
+	call	?malloc@@YAPEAX_K@Z			; malloc
 	mov	QWORD PTR cbuf$[rsp], rax
 
 ; 37   : 	cbuf->buffer = buffer;

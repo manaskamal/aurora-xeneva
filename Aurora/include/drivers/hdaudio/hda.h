@@ -14,7 +14,7 @@
 
 #include <stdint.h>
 #include <drivers\pci.h>
-#include <mm.h>
+#include <arch\x86_64\mmngr\kheap.h>
 #include <hal.h>
 
 

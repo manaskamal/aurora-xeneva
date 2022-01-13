@@ -9,7 +9,7 @@
 ///!!==============================================
 
 #include <ipc\pipe.h>
-#include <mm.h>
+#include <arch\x86_64\mmngr\kheap.h>
 #include <arch\x86_64\thread.h>
 #include <stdio.h>
 

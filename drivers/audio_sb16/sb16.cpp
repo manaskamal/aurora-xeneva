@@ -137,35 +137,38 @@ void sb16_dma_start (uint64_t addr, uint32_t length) {
 	dma_unmask_channel(channel);
 }
 
+extern "C" int _declspec(dllexport) test_num () {
+	return 102;
+}
 //! Audio Write -- Uses sb16 play audio methods
 extern "C" void _declspec(dllexport) aurora_write (unsigned char* sound_buffer, size_t length) {
 
-	uint64_t phys_addr = (uint64_t)(uint64_t)_param.get_phys_address((uint64_t)sound_buffer);
-	driver_debug("Physical Address for sb16 -> %x\n", phys_addr);
-	//!sb16 reset the dsp first
-	sb16_reset_dsp ();
-	
-	//! set up master volume
-	x64_outportb(0x22C, 0xD1);
+	//uint64_t phys_addr = (uint64_t)(uint64_t)_param.get_phys_address((uint64_t)sound_buffer);
+	//driver_debug("Physical Address for sb16 -> %x\n", phys_addr);
+	////!sb16 reset the dsp first
+	//sb16_reset_dsp ();
+	//
+	////! set up master volume
+	//x64_outportb(0x22C, 0xD1);
 
-	sb16_set_sample_rate (44100);
+	//sb16_set_sample_rate (44100);
 
-	sb16_dma_start (phys_addr, length);
+	//sb16_dma_start (phys_addr, length);
 
-	uint8_t command = 0xB0;
+	//uint8_t command = 0xB0;
 
-	uint16_t sample_count = length / sizeof(int16_t);
-	sample_count /= 2;
+	//uint16_t sample_count = length / sizeof(int16_t);
+	//sample_count /= 2;
 
-	sample_count -= 1;
+	//sample_count -= 1;
 
-	driver_debug ("Sample Count -> %d\n", sample_count);
-	sb16_write_dsp (command);
-	sb16_write_dsp (SIGNED_AUDIO | STERIO_MODE);
-	sb16_write_dsp ((uint8_t)sample_count);
-	sb16_write_dsp ((uint8_t)(sample_count >> 8));
+	//driver_debug ("Sample Count -> %d\n", sample_count);
+	//sb16_write_dsp (command);
+	//sb16_write_dsp (SIGNED_AUDIO | STERIO_MODE);
+	//sb16_write_dsp ((uint8_t)sample_count);
+	//sb16_write_dsp ((uint8_t)(sample_count >> 8));
 
-	driver_debug ("Aurora sound playing started\n");
+	//driver_debug ("Aurora sound playing started\n");
 
 }
 //! Aurora Close Driver interface
@@ -179,8 +182,8 @@ extern "C" void _declspec(dllexport) aurora_close_driver () {
 //! Perform every initializing action here
 extern "C" int _declspec(dllexport) _cdecl aurora_init_driver (driver_param_t *param) {
 	driver_debug = param->kdebug;
-	interrupt_eoi = param->irq_eoi;
-	_param = *param;
+	//interrupt_eoi = param->irq_eoi;
+	/*_param = *param;
 	sb16_reset_dsp ();
 
 	if (!_sb16){
@@ -193,10 +196,14 @@ extern "C" int _declspec(dllexport) _cdecl aurora_init_driver (driver_param_t *p
 	sb16_version_minor = sb16_read_dsp ();
 
 	driver_debug ("[SB16]: Sound Blaster 16 card found version %d.%d\n",sb16_version_major,sb16_version_minor);
-	sb16_set_irq_register (5);
-	param->interrupt_set(5, sb16_handler,5);
-	driver_debug ("[SB16]: Sound Blaster 16 initialized\n");
-
-	//! DRIVER RETURN CODE
+	sb16_set_irq_register (5);*/
+	//param->interrupt_set(5, sb16_handler,5);
+	int bus, dev_, func;
+	pci_device_info info;
+	if (!param->pci->pci_find_device_class_p (0x02,0x00,&info,&bus, &dev_, &func)) {
+		param->kdebug("[DRIVER DLL] -> ethernet not found\n");
+		for(;;);
+	}
+	param->kdebug("[DRIVER DLL] ->ethernet founddddddd\n");
 	return 1;
 }

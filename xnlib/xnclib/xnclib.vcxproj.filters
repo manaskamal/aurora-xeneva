@@ -141,6 +141,9 @@
     <ClCompile Include="sys\_xeneva.cpp">
       <Filter>sys</Filter>
     </ClCompile>
+    <ClCompile Include="_term.cpp">
+      <Filter>sys</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="sys">

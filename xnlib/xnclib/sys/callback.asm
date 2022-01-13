@@ -207,7 +207,7 @@ sys_set_signal:
 
 global sys_unmap_sh_mem 
 sys_unmap_sh_mem:
-    mov r12, 26
+    mov r12, 36
 	mov r13, rcx
 	mov r14, rdx
 	mov r15, r8

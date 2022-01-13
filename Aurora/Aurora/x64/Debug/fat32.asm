@@ -32,21 +32,21 @@ _BSS	SEGMENT
 ?root_dir_cache@@3PEAEEA DQ 01H DUP (?)			; root_dir_cache
 _BSS	ENDS
 CONST	SEGMENT
-$SG3343	DB	'%s             %d bytes', 0aH, 00H
+$SG3358	DB	'%s             %d bytes', 0aH, 00H
 	ORG $+7
-$SG3351	DB	'%s             %d bytes', 0aH, 00H
+$SG3366	DB	'%s             %d bytes', 0aH, 00H
 	ORG $+3
-$SG3593	DB	'/', 00H
+$SG3608	DB	'/', 00H
 	ORG $+2
-$SG3478	DB	'Root Dir entries scanning', 0aH, 00H
+$SG3493	DB	'Root Dir entries scanning', 0aH, 00H
 	ORG $+1
-$SG3594	DB	'/', 00H
+$SG3609	DB	'/', 00H
 	ORG $+2
-$SG3493	DB	'Other file size -> %s, dirent attrib -> %x, count ->%d', 0aH
+$SG3508	DB	'Other file size -> %s, dirent attrib -> %x, count ->%d', 0aH
 	DB	00H
-$SG3575	DB	'Empty entry found', 0aH, 00H
+$SG3590	DB	'Empty entry found', 0aH, 00H
 	ORG $+5
-$SG3595	DB	'File System registered', 0aH, 00H
+$SG3610	DB	'File System registered', 0aH, 00H
 CONST	ENDS
 PUBLIC	?initialize_fat32@@YAXXZ			; initialize_fat32
 PUBLIC	?fat32_open@@YA?AU_vfs_node_@@PEAU1@PEAD@Z	; fat32_open
@@ -81,7 +81,7 @@ EXTRN	?ata_read_28@@YAEIGPEAE@Z:PROC			; ata_read_28
 EXTRN	?ata_write_one@@YAEPEAEI@Z:PROC			; ata_write_one
 EXTRN	?pmmngr_alloc@@YAPEAXXZ:PROC			; pmmngr_alloc
 EXTRN	?pmmngr_free@@YAXPEAX@Z:PROC			; pmmngr_free
-EXTRN	?malloc@@YAPEAXI@Z:PROC				; malloc
+EXTRN	?malloc@@YAPEAX_K@Z:PROC			; malloc
 EXTRN	?putc@@YAXD@Z:PROC				; putc
 pdata	SEGMENT
 $pdata$?initialize_fat32@@YAXXZ DD imagerel $LN9
@@ -595,7 +595,7 @@ $LN3:
 ; 507  : 	unsigned char *buf = (unsigned char*)malloc(512);
 
 	mov	ecx, 512				; 00000200H
-	call	?malloc@@YAPEAXI@Z			; malloc
+	call	?malloc@@YAPEAX_K@Z			; malloc
 	mov	QWORD PTR buf$[rsp], rax
 
 ; 508  : 	ata_read_28 (fat_sector,1,buf);
@@ -672,7 +672,7 @@ $LN3:
 ; 496  : 	unsigned char *buf = (unsigned char*)malloc(512);
 
 	mov	ecx, 512				; 00000200H
-	call	?malloc@@YAPEAXI@Z			; malloc
+	call	?malloc@@YAPEAX_K@Z			; malloc
 	mov	QWORD PTR buf$[rsp], rax
 
 ; 497  : 	ata_read_28 (fat_sector,1,buf);
@@ -754,7 +754,7 @@ $LN3:
 ; 480  : 	unsigned char *buf = (unsigned char*)malloc(512);
 
 	mov	ecx, 512				; 00000200H
-	call	?malloc@@YAPEAXI@Z			; malloc
+	call	?malloc@@YAPEAX_K@Z			; malloc
 	mov	QWORD PTR buf$[rsp], rax
 
 ; 481  : 	ata_read_28 (fat_sector,1,buf);
@@ -871,7 +871,7 @@ $LN4@find_free_:
 ; 462  : 		unsigned char *buf = (unsigned char*)malloc(512);
 
 	mov	ecx, 512				; 00000200H
-	call	?malloc@@YAPEAXI@Z			; malloc
+	call	?malloc@@YAPEAX_K@Z			; malloc
 	mov	QWORD PTR buf$4[rsp], rax
 
 ; 463  : 		ata_read_28 (fat_sector,1,buf);
@@ -1768,7 +1768,7 @@ $LN6@fat32_list:
 	mov	rax, QWORD PTR dir$[rsp]
 	mov	r8d, DWORD PTR [rax+28]
 	lea	rdx, QWORD PTR filename$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3343
+	lea	rcx, OFFSET FLAT:$SG3358
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 326  : 		dir++;
@@ -1812,7 +1812,7 @@ $LN3@fat32_list:
 	mov	rax, QWORD PTR dir2$[rsp]
 	mov	r8d, DWORD PTR [rax+28]
 	lea	rdx, QWORD PTR filename2$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3351
+	lea	rcx, OFFSET FLAT:$SG3366
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 334  : 		dir2++;
@@ -1846,13 +1846,13 @@ $LN3:
 ; 775  : 	vfs_node_t *fsys = (vfs_node_t*)malloc(sizeof(vfs_node_t));
 
 	mov	ecx, 104				; 00000068H
-	call	?malloc@@YAPEAXI@Z			; malloc
+	call	?malloc@@YAPEAX_K@Z			; malloc
 	mov	QWORD PTR fsys$[rsp], rax
 
 ; 776  : 	strcpy (fsys->filename, "/");
 
 	mov	rax, QWORD PTR fsys$[rsp]
-	lea	rdx, OFFSET FLAT:$SG3593
+	lea	rdx, OFFSET FLAT:$SG3608
 	mov	rcx, rax
 	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
 
@@ -1917,12 +1917,12 @@ $LN3:
 ; 788  : 	vfs_mount ("/", fsys);
 
 	mov	rdx, QWORD PTR fsys$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3594
+	lea	rcx, OFFSET FLAT:$SG3609
 	call	?vfs_mount@@YAXPEADPEAU_vfs_node_@@@Z	; vfs_mount
 
 ; 789  : 	printf ("File System registered\n");
 
-	lea	rcx, OFFSET FLAT:$SG3595
+	lea	rcx, OFFSET FLAT:$SG3610
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 790  : }
@@ -2063,7 +2063,7 @@ $LN4@create_dir:
 
 ; 717  : 				printf ("Empty entry found\n");
 
-	lea	rcx, OFFSET FLAT:$SG3575
+	lea	rcx, OFFSET FLAT:$SG3590
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 718  : 				memset(dirent, 0, sizeof(fat32_dir));
@@ -2751,7 +2751,7 @@ $LN9:
 ; 545  : 
 ; 546  : 	printf ("Root Dir entries scanning\n");
 
-	lea	rcx, OFFSET FLAT:$SG3478
+	lea	rcx, OFFSET FLAT:$SG3493
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 547  : 	fat32_dir *dirent;
@@ -2813,7 +2813,7 @@ $LN3@list_fat_e:
 	mov	r9d, DWORD PTR i$1[rsp]
 	mov	r8d, eax
 	lea	rdx, QWORD PTR filename2$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3493
+	lea	rcx, OFFSET FLAT:$SG3508
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 558  : 			dirent++;

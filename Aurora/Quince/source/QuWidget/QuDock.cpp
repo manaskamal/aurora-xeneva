@@ -18,7 +18,7 @@
 #include <sys\mmap.h>
 #include <sys\_xeneva.h>
 #include <font.h>
-#include <QuWindow\QuList.h>
+#include <QuUtils\QuList.h>
 #include <QuImage\QuBmpImage.h>
 #include <sys\_file.h>
 

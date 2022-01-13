@@ -6,16 +6,16 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 CONST	SEGMENT
-$SG3609	DB	'stdin', 00H
+$SG3624	DB	'stdin', 00H
 	ORG $+2
-$SG3610	DB	'/dev/stdin', 00H
+$SG3625	DB	'/dev/stdin', 00H
 	ORG $+1
-$SG3614	DB	'stdout', 00H
+$SG3628	DB	'stdout', 00H
 	ORG $+5
-$SG3615	DB	'/dev/stdout', 00H
-$SG3619	DB	'stderr', 00H
+$SG3629	DB	'/dev/stdout', 00H
+$SG3632	DB	'stderr', 00H
 	ORG $+5
-$SG3620	DB	'/dev/stderr', 00H
+$SG3633	DB	'/dev/stderr', 00H
 CONST	ENDS
 PUBLIC	?allocate_stream@@YAPEAU_stream_@@XZ		; allocate_stream
 PUBLIC	?stream_init@@YAXXZ				; stream_init
@@ -27,14 +27,14 @@ PUBLIC	?stdout_read@@YAXPEAU_vfs_node_@@PEAEI@Z	; stdout_read
 PUBLIC	?stdout_write@@YAXPEAU_vfs_node_@@PEAEI@Z	; stdout_write
 PUBLIC	?stderr_read@@YAXPEAU_vfs_node_@@PEAEI@Z	; stderr_read
 PUBLIC	?stderr_write@@YAXPEAU_vfs_node_@@PEAEI@Z	; stderr_write
-EXTRN	?pmmngr_alloc@@YAPEAXXZ:PROC			; pmmngr_alloc
-EXTRN	?malloc@@YAPEAXI@Z:PROC				; malloc
-EXTRN	?mfree@@YAXPEAX@Z:PROC				; mfree
 EXTRN	?strcpy@@YAPEADPEADPEBD@Z:PROC			; strcpy
 EXTRN	?strlen@@YA_KPEBD@Z:PROC			; strlen
 EXTRN	?memset@@YAXPEAXEI@Z:PROC			; memset
 EXTRN	memcpy:PROC
 EXTRN	?vfs_mount@@YAXPEADPEAU_vfs_node_@@@Z:PROC	; vfs_mount
+EXTRN	?pmmngr_alloc@@YAPEAXXZ:PROC			; pmmngr_alloc
+EXTRN	?malloc@@YAPEAX_K@Z:PROC			; malloc
+EXTRN	?free@@YAXPEAX@Z:PROC				; free
 EXTRN	?get_current_thread@@YAPEAU_thread_@@XZ:PROC	; get_current_thread
 EXTRN	?get_ttype@@YAPEAU_tele_type_@@H@Z:PROC		; get_ttype
 pdata	SEGMENT
@@ -42,7 +42,7 @@ $pdata$?allocate_stream@@YAPEAU_stream_@@XZ DD imagerel $LN3
 	DD	imagerel $LN3+42
 	DD	imagerel $unwind$?allocate_stream@@YAPEAU_stream_@@XZ
 $pdata$?stream_init@@YAXXZ DD imagerel $LN3
-	DD	imagerel $LN3+588
+	DD	imagerel $LN3+578
 	DD	imagerel $unwind$?stream_init@@YAXXZ
 $pdata$?deallocate_stream@@YAXPEAU_stream_@@@Z DD imagerel $LN3
 	DD	imagerel $LN3+24
@@ -404,10 +404,10 @@ $LN3:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 40					; 00000028H
 
-; 28   : 	mfree(st);
+; 28   : 	free(st);
 
 	mov	rcx, QWORD PTR st$[rsp]
-	call	?mfree@@YAXPEAX@Z			; mfree
+	call	?free@@YAXPEAX@Z			; free
 
 ; 29   : }
 
@@ -434,13 +434,13 @@ $LN3:
 ; 84   : 	vfs_node_t *stdin = (vfs_node_t*)malloc(sizeof(vfs_node_t));
 
 	mov	ecx, 104				; 00000068H
-	call	?malloc@@YAPEAXI@Z			; malloc
+	call	?malloc@@YAPEAX_K@Z			; malloc
 	mov	QWORD PTR stdin$[rsp], rax
 
 ; 85   : 	strcpy(stdin->filename, "stdin");
 
 	mov	rax, QWORD PTR stdin$[rsp]
-	lea	rdx, OFFSET FLAT:$SG3609
+	lea	rdx, OFFSET FLAT:$SG3624
 	mov	rcx, rax
 	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
 
@@ -502,22 +502,21 @@ $LN3:
 ; 97   : 	vfs_mount ("/dev/stdin", stdin);
 
 	mov	rdx, QWORD PTR stdin$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3610
+	lea	rcx, OFFSET FLAT:$SG3625
 	call	?vfs_mount@@YAXPEADPEAU_vfs_node_@@@Z	; vfs_mount
 
 ; 98   : 
 ; 99   : 	///! Standard output 
 ; 100  : 	///! node
-; 101  : 	vfs_node_t *node = (vfs_node_t*)malloc(sizeof(vfs_node_t));
+; 101  : 	vfs_node_t *node = (vfs_node_t*)pmmngr_alloc();//malloc(sizeof(vfs_node_t));
 
-	mov	ecx, 104				; 00000068H
-	call	?malloc@@YAPEAXI@Z			; malloc
+	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
 	mov	QWORD PTR node$[rsp], rax
 
 ; 102  : 	strcpy(node->filename, "stdout");
 
 	mov	rax, QWORD PTR node$[rsp]
-	lea	rdx, OFFSET FLAT:$SG3614
+	lea	rdx, OFFSET FLAT:$SG3628
 	mov	rcx, rax
 	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
 
@@ -581,22 +580,21 @@ $LN3:
 ; 114  : 	vfs_mount ("/dev/stdout", node);
 
 	mov	rdx, QWORD PTR node$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3615
+	lea	rcx, OFFSET FLAT:$SG3629
 	call	?vfs_mount@@YAXPEADPEAU_vfs_node_@@@Z	; vfs_mount
 
 ; 115  : 
 ; 116  : 	///! Standard Error 
 ; 117  : 	///! node
-; 118  : 	vfs_node_t *stderr = (vfs_node_t*)malloc(sizeof(vfs_node_t));
+; 118  : 	vfs_node_t *stderr = (vfs_node_t*)pmmngr_alloc(); //malloc(sizeof(vfs_node_t));
 
-	mov	ecx, 104				; 00000068H
-	call	?malloc@@YAPEAXI@Z			; malloc
+	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
 	mov	QWORD PTR stderr$[rsp], rax
 
 ; 119  : 	strcpy(stderr->filename, "stderr");
 
 	mov	rax, QWORD PTR stderr$[rsp]
-	lea	rdx, OFFSET FLAT:$SG3619
+	lea	rdx, OFFSET FLAT:$SG3632
 	mov	rcx, rax
 	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
 
@@ -660,7 +658,7 @@ $LN3:
 ; 131  : 	vfs_mount ("/dev/stderr", stderr);
 
 	mov	rdx, QWORD PTR stderr$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3620
+	lea	rcx, OFFSET FLAT:$SG3633
 	call	?vfs_mount@@YAXPEADPEAU_vfs_node_@@@Z	; vfs_mount
 
 ; 132  : }

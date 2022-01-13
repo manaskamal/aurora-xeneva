@@ -10,7 +10,7 @@
 
 #include <fs\vfs.h>
 #include <stdio.h>
-#include <mm.h>
+#include <arch\x86_64\mmngr\kheap.h>
 #include <utils\gtree.h>
 #include <fs\fat32.h>
 #include <fs\devfs.h>

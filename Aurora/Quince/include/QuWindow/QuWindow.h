@@ -12,9 +12,11 @@
 #define __QU_WINDOW_H__
 
 #include <stdint.h>
-#include <QuWindow\QuList.h>
+#include <QuUtils\QuList.h>
 #include <QuRect.h>
 #include <ipc\QuChannel.h>
+#include <canvas.h>
+#include <QuWidget\QuDock.h>
 
 //! Window Attributes
 #define QU_WIN_MINIMIZABLE   1
@@ -55,12 +57,12 @@ typedef struct _QuWindow_ {
 	int height;
 	int drag_x;
 	int drag_y;
-	bool draggable;
+	int resz_v;
+	int resz_h;
 	bool visible;
 	bool mark_for_close;
 	unsigned int *canvas;
 	unsigned short owner_id;
-	bool maximize;
 	int old_w;
 	int old_h;
 	int old_x;
@@ -68,6 +70,8 @@ typedef struct _QuWindow_ {
 	uint8_t attr;
 	int id;
 	uint32_t *win_info_location;
+	canvas_t *drop_shadow;
+	QuDockEntry *dock;
 }QuWindow;
 
 

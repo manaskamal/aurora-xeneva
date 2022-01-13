@@ -15,7 +15,7 @@ _BSS	SEGMENT
 ?arp_table_curr@@3HA DD 01H DUP (?)			; arp_table_curr
 _BSS	ENDS
 CONST	SEGMENT
-$SG3006	DB	'Address Resolution Protocol Initialized', 0aH, 00H
+$SG3021	DB	'Address Resolution Protocol Initialized', 0aH, 00H
 CONST	ENDS
 _DATA	SEGMENT
 ?broadcast_mac_address@@3PAEA DB 0ffH			; broadcast_mac_address
@@ -29,13 +29,13 @@ PUBLIC	?arp_initialize@@YAXXZ				; arp_initialize
 PUBLIC	?arp_send_packet@@YAXPEAE0@Z			; arp_send_packet
 PUBLIC	?arp_broadcast@@YAXXZ				; arp_broadcast
 PUBLIC	?arp_lookup_add@@YAXPEAE0@Z			; arp_lookup_add
-EXTRN	?malloc@@YAPEAXI@Z:PROC				; malloc
-EXTRN	?ethernet_send_packet@@YAHPEAE0HG@Z:PROC	; ethernet_send_packet
-EXTRN	?nethw_get_mac@@YAXPEAE@Z:PROC			; nethw_get_mac
-EXTRN	?htons@@YAGG@Z:PROC				; htons
 EXTRN	?memset@@YAXPEAXEI@Z:PROC			; memset
 EXTRN	memcpy:PROC
 EXTRN	?printf@@YAXPEBDZZ:PROC				; printf
+EXTRN	?malloc@@YAPEAX_K@Z:PROC			; malloc
+EXTRN	?ethernet_send_packet@@YAHPEAE0HG@Z:PROC	; ethernet_send_packet
+EXTRN	?nethw_get_mac@@YAXPEAE@Z:PROC			; nethw_get_mac
+EXTRN	?htons@@YAGG@Z:PROC				; htons
 pdata	SEGMENT
 $pdata$?arp_initialize@@YAXXZ DD imagerel $LN3
 	DD	imagerel $LN3+89
@@ -139,7 +139,7 @@ $LN3:
 ; 72   : 	arp_packet_t *pack = (arp_packet_t*)malloc(sizeof(arp_packet_t));
 
 	mov	ecx, 28
-	call	?malloc@@YAPEAXI@Z			; malloc
+	call	?malloc@@YAPEAX_K@Z			; malloc
 	mov	QWORD PTR pack$[rsp], rax
 
 ; 73   : 	pack->hw_type = 0x0100;
@@ -295,7 +295,7 @@ $LN3:
 ; 26   : 	arp_packet_t *arp_packet = (arp_packet_t*)malloc(sizeof(arp_packet_t));
 
 	mov	ecx, 28
-	call	?malloc@@YAPEAXI@Z			; malloc
+	call	?malloc@@YAPEAX_K@Z			; malloc
 	mov	QWORD PTR arp_packet$[rsp], rax
 
 ; 27   : 
@@ -419,7 +419,7 @@ $LN3:
 ; 60   : 	arp_table = (arp_table_entry_t*)malloc(512);
 
 	mov	ecx, 512				; 00000200H
-	call	?malloc@@YAPEAXI@Z			; malloc
+	call	?malloc@@YAPEAX_K@Z			; malloc
 	mov	QWORD PTR ?arp_table@@3PEAU_arp_table_@@EA, rax ; arp_table
 
 ; 61   : 	uint8_t broadcast_ip[4];
@@ -447,7 +447,7 @@ $LN3:
 
 ; 67   : 	printf ("Address Resolution Protocol Initialized\n");
 
-	lea	rcx, OFFSET FLAT:$SG3006
+	lea	rcx, OFFSET FLAT:$SG3021
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 68   : }

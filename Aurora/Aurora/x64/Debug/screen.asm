@@ -10,9 +10,9 @@ _BSS	SEGMENT
 ?display@@3U__display__@@A DB 020H DUP (?)		; display
 _BSS	ENDS
 CONST	SEGMENT
-$SG3026	DB	'fb', 00H
+$SG3041	DB	'fb', 00H
 	ORG $+5
-$SG3027	DB	'/dev/fb', 00H
+$SG3042	DB	'/dev/fb', 00H
 CONST	ENDS
 PUBLIC	?initialize_screen@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z ; initialize_screen
 PUBLIC	?screen_set_configuration@@YAXII@Z		; screen_set_configuration
@@ -397,7 +397,7 @@ $LN3:
 ; 48   : 	strcpy (svga->filename, "fb");
 
 	mov	rax, QWORD PTR svga$[rsp]
-	lea	rdx, OFFSET FLAT:$SG3026
+	lea	rdx, OFFSET FLAT:$SG3041
 	mov	rcx, rax
 	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
 
@@ -460,7 +460,7 @@ $LN3:
 ; 60   : 	vfs_mount ("/dev/fb", svga);
 
 	mov	rdx, QWORD PTR svga$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3027
+	lea	rcx, OFFSET FLAT:$SG3042
 	call	?vfs_mount@@YAXPEADPEAU_vfs_node_@@@Z	; vfs_mount
 
 ; 61   : }

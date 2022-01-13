@@ -6,7 +6,7 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 CONST	SEGMENT
-$SG3281	DB	'[Aurora]: Key Event occured!! ', 0aH, 00H
+$SG3296	DB	'[Aurora]: Key Event occured!! ', 0aH, 00H
 CONST	ENDS
 PUBLIC	?kybrd_init@@YAXXZ				; kybrd_init
 PUBLIC	?kybrd_handler@@YAX_KPEAX@Z			; kybrd_handler
@@ -114,7 +114,7 @@ $LN2@kybrd_hand:
 
 ; 36   : 			printf ("[Aurora]: Key Event occured!! \n");
 
-	lea	rcx, OFFSET FLAT:$SG3281
+	lea	rcx, OFFSET FLAT:$SG3296
 	call	?printf@@YAXPEBDZZ			; printf
 $LN1@kybrd_hand:
 $LN3@kybrd_hand:

@@ -6,13 +6,13 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 CONST	SEGMENT
-$SG2977	DB	'dev', 00H
-$SG2978	DB	'/dev', 00H
+$SG3008	DB	'dev', 00H
+$SG3009	DB	'/dev', 00H
 CONST	ENDS
 PUBLIC	?devfs_mount@@YAXXZ				; devfs_mount
 EXTRN	?strcpy@@YAPEADPEADPEBD@Z:PROC			; strcpy
 EXTRN	?vfs_mount@@YAXPEADPEAU_vfs_node_@@@Z:PROC	; vfs_mount
-EXTRN	?malloc@@YAPEAXI@Z:PROC				; malloc
+EXTRN	?malloc@@YAPEAX_K@Z:PROC			; malloc
 pdata	SEGMENT
 $pdata$?devfs_mount@@YAXXZ DD imagerel $LN3
 	DD	imagerel $LN3+198
@@ -36,13 +36,13 @@ $LN3:
 ; 17   : 	vfs_node_t *node = (vfs_node_t*)malloc(sizeof(vfs_node_t));
 
 	mov	ecx, 104				; 00000068H
-	call	?malloc@@YAPEAXI@Z			; malloc
+	call	?malloc@@YAPEAX_K@Z			; malloc
 	mov	QWORD PTR node$[rsp], rax
 
 ; 18   : 	strcpy(node->filename, "dev");
 
 	mov	rax, QWORD PTR node$[rsp]
-	lea	rdx, OFFSET FLAT:$SG2977
+	lea	rdx, OFFSET FLAT:$SG3008
 	mov	rcx, rax
 	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
 
@@ -104,7 +104,7 @@ $LN3:
 ; 30   : 	vfs_mount ("/dev", node);
 
 	mov	rdx, QWORD PTR node$[rsp]
-	lea	rcx, OFFSET FLAT:$SG2978
+	lea	rcx, OFFSET FLAT:$SG3009
 	call	?vfs_mount@@YAXPEADPEAU_vfs_node_@@@Z	; vfs_mount
 
 ; 31   : }

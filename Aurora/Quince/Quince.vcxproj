@@ -144,7 +144,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="include\QuEvent.cpp" />
-    <ClCompile Include="include\QuWindow\QuList.h" />
     <ClCompile Include="source\ipc\QuChannel.cpp" />
     <ClCompile Include="source\ipc\_ipc_mouse.cpp" />
     <ClCompile Include="source\QuCanvas\QuCanvasMngr.cpp" />
@@ -155,7 +154,6 @@
     <ClCompile Include="source\quince\QuCursor.cpp" />
     <ClCompile Include="source\QuWidget\QuDock.cpp" />
     <ClCompile Include="source\QuWidget\QuWallpaper.cpp" />
-    <ClCompile Include="source\QuWindow\QuList.cpp" />
     <ClCompile Include="source\QuWindow\QuWindow.cpp" />
     <ClCompile Include="source\QuWindow\QuWindowMngr.cpp" />
   </ItemGroup>

@@ -23,6 +23,8 @@
 #define TERM_WIDTH 74
 #define TERM_HEIGHT 26
 
+void QuTermRefresh (QuWidget* wid, QuWindow *win);
+
 
 void QuTermScroll (QuTerminal *term) {
 	for (int i = 0; i < TERM_HEIGHT; i++)
@@ -31,9 +33,9 @@ void QuTermScroll (QuTerminal *term) {
 	for (int i = 0; i < TERM_WIDTH; i++)
 		term->text[(TERM_HEIGHT-1)*TERM_WIDTH + i] = '\0';
 
-	QuTermFlush(term, QuGetWindow());
 	QuWindowShow(QuGetWindow());
-	QuPanelUpdate (QuGetWindow(),0,0,  QuGetWindow()->w,  QuGetWindow()->h, false);
+    QuTermFlush(term, QuGetWindow());
+	QuPanelUpdate (QuGetWindow(),0,0,  QuGetWindow()->w,  QuGetWindow()->h, true);
 }
 
 
@@ -125,8 +127,10 @@ void QuTermRefresh (QuWidget* wid, QuWindow *win) {
 				xoff++;
 				continue;
 			}
-			if (tmp_str[0] != 0)
+			if (tmp_str[0] != 0) {
+				//acrylic_draw_rect_filled(win->ctx,wid->x,wid->y + 23 + ypos, wid->width, 14, BLACK);
 				acrylic_draw_arr_font(win->ctx,wid->x + xpos,wid->y + 23 + ypos, tmp_str[0], WHITE);
+			}
 			xoff++;
 			xpos += 8;
 		}

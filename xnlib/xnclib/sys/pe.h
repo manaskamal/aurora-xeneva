@@ -223,11 +223,6 @@ static const enum PeMachineType   MACHINE_NATIVE = IMAGE_FILE_MACHINE_I386;
 #define IMAGE_IMPORT_LOOKUP_TABLE_FLAG  IMAGE_IMPORT_LOOKUP_TABLE_FLAG_PE32
 
 
-typedef void ( *ientry)(void*);
-
-extern void load_pe_file (unsigned char* buffer, int size);
-extern ientry get_entry_point ();
-extern uint64_t get_image_base();
 extern void* GetProcAddress(void *image, const char* procname);
 //=====================================================================
 //   E N D   O F   P E    H E A D E R                                ||

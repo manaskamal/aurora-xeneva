@@ -20,9 +20,9 @@ _BSS	SEGMENT
 ?ram_bitmap@@3VBitmap@@A DB 010H DUP (?)		; ram_bitmap
 _BSS	ENDS
 CONST	SEGMENT
-$SG2808	DB	'Used RAM -> %d MB, Free RAM -> %d MB', 0aH, 00H
+$SG2967	DB	'Used RAM -> %d MB, Free RAM -> %d MB', 0aH, 00H
 	ORG $+2
-$SG2809	DB	'No more available pages', 0aH, 00H
+$SG2968	DB	'No more available pages', 0aH, 00H
 CONST	ENDS
 PUBLIC	?pmmngr_init@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z	; pmmngr_init
 PUBLIC	?pmmngr_alloc@@YAPEAXXZ				; pmmngr_alloc
@@ -38,12 +38,14 @@ PUBLIC	?pmmngr_init_bitmap@@YAX_KPEAX@Z		; pmmngr_init_bitmap
 PUBLIC	?pmmngr_lock_page@@YAXPEAX@Z			; pmmngr_lock_page
 PUBLIC	?pmmngr_unreserve_page@@YAXPEAX@Z		; pmmngr_unreserve_page
 EXTRN	?printf@@YAXPEBDZZ:PROC				; printf
+EXTRN	x64_cli:PROC
+EXTRN	x64_hlt:PROC
 pdata	SEGMENT
 $pdata$?pmmngr_init@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z DD imagerel $LN7
 	DD	imagerel $LN7+350
 	DD	imagerel $unwind$?pmmngr_init@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z
 $pdata$?pmmngr_alloc@@YAPEAXXZ DD imagerel $LN13
-	DD	imagerel $LN13+368
+	DD	imagerel $LN13+378
 	DD	imagerel $unwind$?pmmngr_alloc@@YAPEAXXZ
 $pdata$?pmmngr_alloc_blocks@@YAPEAXH@Z DD imagerel $LN6
 	DD	imagerel $LN6+77
@@ -113,14 +115,14 @@ index$ = 32
 addr$ = 64
 ?pmmngr_unreserve_page@@YAXPEAX@Z PROC			; pmmngr_unreserve_page
 
-; 94   : void pmmngr_unreserve_page (void* addr) {
+; 95   : void pmmngr_unreserve_page (void* addr) {
 
 $LN6:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 56					; 00000038H
 
-; 95   : 
-; 96   : 	uint64_t index = (uint64_t)addr / 4096;
+; 96   : 
+; 97   : 	uint64_t index = (uint64_t)addr / 4096;
 
 	xor	edx, edx
 	mov	rax, QWORD PTR addr$[rsp]
@@ -128,7 +130,7 @@ $LN6:
 	div	rcx
 	mov	QWORD PTR index$[rsp], rax
 
-; 97   : 	if (ram_bitmap[index] == false) return;
+; 98   : 	if (ram_bitmap[index] == false) return;
 
 	mov	rdx, QWORD PTR index$[rsp]
 	lea	rcx, OFFSET FLAT:?ram_bitmap@@3VBitmap@@A ; ram_bitmap
@@ -139,7 +141,7 @@ $LN6:
 	jmp	SHORT $LN4@pmmngr_unr
 $LN3@pmmngr_unr:
 
-; 98   : 	if (ram_bitmap.Set(index, false)) {
+; 99   : 	if (ram_bitmap.Set(index, false)) {
 
 	xor	r8d, r8d
 	mov	rdx, QWORD PTR index$[rsp]
@@ -149,19 +151,19 @@ $LN3@pmmngr_unr:
 	test	eax, eax
 	je	SHORT $LN2@pmmngr_unr
 
-; 99   : 		free_memory += 4096;
+; 100  : 		free_memory += 4096;
 
 	mov	rax, QWORD PTR ?free_memory@@3_KA	; free_memory
 	add	rax, 4096				; 00001000H
 	mov	QWORD PTR ?free_memory@@3_KA, rax	; free_memory
 
-; 100  : 		reserved_memory -= 4096;
+; 101  : 		reserved_memory -= 4096;
 
 	mov	rax, QWORD PTR ?reserved_memory@@3_KA	; reserved_memory
 	sub	rax, 4096				; 00001000H
 	mov	QWORD PTR ?reserved_memory@@3_KA, rax	; reserved_memory
 
-; 101  : 		if (ram_bitmap_index > index) ram_bitmap_index = index;
+; 102  : 		if (ram_bitmap_index > index) ram_bitmap_index = index;
 
 	mov	rax, QWORD PTR index$[rsp]
 	cmp	QWORD PTR ?ram_bitmap_index@@3_KA, rax	; ram_bitmap_index
@@ -172,8 +174,8 @@ $LN1@pmmngr_unr:
 $LN2@pmmngr_unr:
 $LN4@pmmngr_unr:
 
-; 102  : 	}
-; 103  : }
+; 103  : 	}
+; 104  : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -186,14 +188,14 @@ index$ = 32
 addr$ = 64
 ?pmmngr_lock_page@@YAXPEAX@Z PROC			; pmmngr_lock_page
 
-; 77   : void pmmngr_lock_page ( void* addr) {
+; 78   : void pmmngr_lock_page ( void* addr) {
 
 $LN5:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 56					; 00000038H
 
-; 78   : 
-; 79   : 	uint64_t index = (uint64_t)addr / 4096;
+; 79   : 
+; 80   : 	uint64_t index = (uint64_t)addr / 4096;
 
 	xor	edx, edx
 	mov	rax, QWORD PTR addr$[rsp]
@@ -201,7 +203,7 @@ $LN5:
 	div	rcx
 	mov	QWORD PTR index$[rsp], rax
 
-; 80   : 	if (ram_bitmap[index] == true) return;
+; 81   : 	if (ram_bitmap[index] == true) return;
 
 	mov	rdx, QWORD PTR index$[rsp]
 	lea	rcx, OFFSET FLAT:?ram_bitmap@@3VBitmap@@A ; ram_bitmap
@@ -212,7 +214,7 @@ $LN5:
 	jmp	SHORT $LN3@pmmngr_loc
 $LN2@pmmngr_loc:
 
-; 81   : 	if (ram_bitmap.Set (index, true)) {
+; 82   : 	if (ram_bitmap.Set (index, true)) {
 
 	mov	r8b, 1
 	mov	rdx, QWORD PTR index$[rsp]
@@ -222,13 +224,13 @@ $LN2@pmmngr_loc:
 	test	eax, eax
 	je	SHORT $LN1@pmmngr_loc
 
-; 82   : 		free_memory -= 4096;
+; 83   : 		free_memory -= 4096;
 
 	mov	rax, QWORD PTR ?free_memory@@3_KA	; free_memory
 	sub	rax, 4096				; 00001000H
 	mov	QWORD PTR ?free_memory@@3_KA, rax	; free_memory
 
-; 83   : 		reserved_memory += 4096;
+; 84   : 		reserved_memory += 4096;
 
 	mov	rax, QWORD PTR ?reserved_memory@@3_KA	; reserved_memory
 	add	rax, 4096				; 00001000H
@@ -236,8 +238,8 @@ $LN2@pmmngr_loc:
 $LN1@pmmngr_loc:
 $LN3@pmmngr_loc:
 
-; 84   : 	}
-; 85   : }
+; 85   : 	}
+; 86   : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -251,26 +253,26 @@ bitmap_size$ = 32
 buffer$ = 40
 ?pmmngr_init_bitmap@@YAX_KPEAX@Z PROC			; pmmngr_init_bitmap
 
-; 66   : void pmmngr_init_bitmap (size_t bitmap_size, void* buffer) {
+; 67   : void pmmngr_init_bitmap (size_t bitmap_size, void* buffer) {
 
 $LN6:
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 24
 
-; 67   : 
-; 68   : 	ram_bitmap.Size = bitmap_size;
+; 68   : 
+; 69   : 	ram_bitmap.Size = bitmap_size;
 
 	mov	rax, QWORD PTR bitmap_size$[rsp]
 	mov	QWORD PTR ?ram_bitmap@@3VBitmap@@A, rax
 
-; 69   : 	ram_bitmap.Buffer = (uint8_t*)buffer;
+; 70   : 	ram_bitmap.Buffer = (uint8_t*)buffer;
 
 	mov	rax, QWORD PTR buffer$[rsp]
 	mov	QWORD PTR ?ram_bitmap@@3VBitmap@@A+8, rax
 
-; 70   : 
-; 71   : 	for (int i = 0; i < bitmap_size ; i++) {
+; 71   : 
+; 72   : 	for (int i = 0; i < bitmap_size ; i++) {
 
 	mov	DWORD PTR i$1[rsp], 0
 	jmp	SHORT $LN3@pmmngr_ini
@@ -283,18 +285,18 @@ $LN3@pmmngr_ini:
 	cmp	rax, QWORD PTR bitmap_size$[rsp]
 	jae	SHORT $LN1@pmmngr_ini
 
-; 72   : 		*(uint8_t*)(ram_bitmap.Buffer + i) = 0;
+; 73   : 		*(uint8_t*)(ram_bitmap.Buffer + i) = 0;
 
 	movsxd	rax, DWORD PTR i$1[rsp]
 	mov	rcx, QWORD PTR ?ram_bitmap@@3VBitmap@@A+8
 	mov	BYTE PTR [rcx+rax], 0
 
-; 73   : 	}
+; 74   : 	}
 
 	jmp	SHORT $LN2@pmmngr_ini
 $LN1@pmmngr_ini:
 
-; 74   : }
+; 75   : }
 
 	add	rsp, 24
 	ret	0
@@ -313,7 +315,7 @@ index$ = 40
 value$ = 48
 ?Set@Bitmap@@QEAA_N_K_N@Z PROC				; Bitmap::Set, COMDAT
 
-; 46   : 	bool Set(uint64_t index, bool value) {
+; 47   : 	bool Set(uint64_t index, bool value) {
 
 $LN5:
 	mov	BYTE PTR [rsp+24], r8b
@@ -321,8 +323,8 @@ $LN5:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 24
 
-; 47   : 		
-; 48   : 		if (index > Size * 8) return false;
+; 48   : 		
+; 49   : 		if (index > Size * 8) return false;
 
 	mov	rax, QWORD PTR this$[rsp]
 	mov	rax, QWORD PTR [rax]
@@ -333,8 +335,8 @@ $LN5:
 	jmp	$LN3@Set
 $LN2@Set:
 
-; 49   : 
-; 50   : 		uint64_t byteIndex = index / 8;
+; 50   : 
+; 51   : 		uint64_t byteIndex = index / 8;
 
 	xor	edx, edx
 	mov	rax, QWORD PTR index$[rsp]
@@ -342,7 +344,7 @@ $LN2@Set:
 	div	rcx
 	mov	QWORD PTR byteIndex$[rsp], rax
 
-; 51   : 		uint8_t  bitIndex = index % 8;
+; 52   : 		uint8_t  bitIndex = index % 8;
 
 	xor	edx, edx
 	mov	rax, QWORD PTR index$[rsp]
@@ -351,7 +353,7 @@ $LN2@Set:
 	mov	rax, rdx
 	mov	BYTE PTR bitIndex$[rsp], al
 
-; 52   : 		uint8_t  bitIndexer = 0x80 >> bitIndex;
+; 53   : 		uint8_t  bitIndexer = 0x80 >> bitIndex;
 
 	movzx	eax, BYTE PTR bitIndex$[rsp]
 	mov	ecx, 128				; 00000080H
@@ -361,8 +363,8 @@ $LN2@Set:
 	sar	eax, cl
 	mov	BYTE PTR bitIndexer$[rsp], al
 
-; 53   : 	
-; 54   : 		Buffer[byteIndex] &= ~bitIndexer;
+; 54   : 	
+; 55   : 		Buffer[byteIndex] &= ~bitIndexer;
 
 	mov	rax, QWORD PTR this$[rsp]
 	mov	rax, QWORD PTR [rax+8]
@@ -376,13 +378,13 @@ $LN2@Set:
 	mov	rdx, QWORD PTR byteIndex$[rsp]
 	mov	BYTE PTR [rcx+rdx], al
 
-; 55   : 		if (value) {
+; 56   : 		if (value) {
 
 	movzx	eax, BYTE PTR value$[rsp]
 	test	eax, eax
 	je	SHORT $LN1@Set
 
-; 56   : 			Buffer[byteIndex] |= bitIndexer;	
+; 57   : 			Buffer[byteIndex] |= bitIndexer;	
 
 	mov	rax, QWORD PTR this$[rsp]
 	mov	rax, QWORD PTR [rax+8]
@@ -396,14 +398,14 @@ $LN2@Set:
 	mov	BYTE PTR [rcx+rdx], al
 $LN1@Set:
 
-; 57   : 		}
-; 58   : 
-; 59   : 		return true;
+; 58   : 		}
+; 59   : 
+; 60   : 		return true;
 
 	mov	al, 1
 $LN3@Set:
 
-; 60   : 	}
+; 61   : 	}
 
 	add	rsp, 24
 	ret	0
@@ -421,15 +423,15 @@ this$ = 32
 index$ = 40
 ??ABitmap@@QEAA_N_K@Z PROC				; Bitmap::operator[], COMDAT
 
-; 32   : 	bool operator[](uint64_t index) {
+; 33   : 	bool operator[](uint64_t index) {
 
 $LN5:
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 24
 
-; 33   : 		
-; 34   : 		if (index > Size * 8) return false;
+; 34   : 		
+; 35   : 		if (index > Size * 8) return false;
 
 	mov	rax, QWORD PTR this$[rsp]
 	mov	rax, QWORD PTR [rax]
@@ -440,7 +442,7 @@ $LN5:
 	jmp	SHORT $LN3@operator
 $LN2@operator:
 
-; 35   : 		uint64_t byteIndex = index / 8;
+; 36   : 		uint64_t byteIndex = index / 8;
 
 	xor	edx, edx
 	mov	rax, QWORD PTR index$[rsp]
@@ -448,7 +450,7 @@ $LN2@operator:
 	div	rcx
 	mov	QWORD PTR byteIndex$[rsp], rax
 
-; 36   : 		uint8_t  bitIndex = index % 8;
+; 37   : 		uint8_t  bitIndex = index % 8;
 
 	xor	edx, edx
 	mov	rax, QWORD PTR index$[rsp]
@@ -457,7 +459,7 @@ $LN2@operator:
 	mov	rax, rdx
 	mov	BYTE PTR bitIndex$[rsp], al
 
-; 37   : 		uint8_t  bitIndexer = 0x80 >> bitIndex;
+; 38   : 		uint8_t  bitIndexer = 0x80 >> bitIndex;
 
 	movzx	eax, BYTE PTR bitIndex$[rsp]
 	mov	ecx, 128				; 00000080H
@@ -467,8 +469,8 @@ $LN2@operator:
 	sar	eax, cl
 	mov	BYTE PTR bitIndexer$[rsp], al
 
-; 38   : 
-; 39   : 		if ((Buffer[byteIndex] & bitIndexer) > 0) {
+; 39   : 
+; 40   : 		if ((Buffer[byteIndex] & bitIndexer) > 0) {
 
 	mov	rax, QWORD PTR this$[rsp]
 	mov	rax, QWORD PTR [rax+8]
@@ -479,19 +481,19 @@ $LN2@operator:
 	test	eax, eax
 	jle	SHORT $LN1@operator
 
-; 40   : 			return true;
+; 41   : 			return true;
 
 	mov	al, 1
 	jmp	SHORT $LN3@operator
 $LN1@operator:
 
-; 41   : 		}
-; 42   : 		return false;
+; 42   : 		}
+; 43   : 		return false;
 
 	xor	al, al
 $LN3@operator:
 
-; 43   : 	}
+; 44   : 	}
 
 	add	rsp, 24
 	ret	0
@@ -502,11 +504,11 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 ?pmmngr_get_total_ram@@YA_KXZ PROC			; pmmngr_get_total_ram
 
-; 214  : 	return total_ram;
+; 217  : 	return total_ram;
 
 	mov	rax, QWORD PTR ?total_ram@@3_KA		; total_ram
 
-; 215  : }
+; 218  : }
 
 	ret	0
 ?pmmngr_get_total_ram@@YA_KXZ ENDP			; pmmngr_get_total_ram
@@ -516,11 +518,11 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 ?pmmngr_get_used_ram@@YA_KXZ PROC			; pmmngr_get_used_ram
 
-; 209  : 	return used_memory;
+; 212  : 	return used_memory;
 
 	mov	rax, QWORD PTR ?used_memory@@3_KA	; used_memory
 
-; 210  : }
+; 213  : }
 
 	ret	0
 ?pmmngr_get_used_ram@@YA_KXZ ENDP			; pmmngr_get_used_ram
@@ -530,11 +532,11 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 ?pmmngr_get_free_ram@@YA_KXZ PROC			; pmmngr_get_free_ram
 
-; 204  : 	return free_memory;
+; 207  : 	return free_memory;
 
 	mov	rax, QWORD PTR ?free_memory@@3_KA	; free_memory
 
-; 205  : }
+; 208  : }
 
 	ret	0
 ?pmmngr_get_free_ram@@YA_KXZ ENDP			; pmmngr_get_free_ram
@@ -546,13 +548,13 @@ index$ = 32
 addr$ = 64
 ?pmmngr_free@@YAXPEAX@Z PROC				; pmmngr_free
 
-; 190  : {
+; 193  : {
 
 $LN6:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 56					; 00000038H
 
-; 191  : 	uint64_t index = (uint64_t)addr / 4096;
+; 194  : 	uint64_t index = (uint64_t)addr / 4096;
 
 	xor	edx, edx
 	mov	rax, QWORD PTR addr$[rsp]
@@ -560,7 +562,7 @@ $LN6:
 	div	rcx
 	mov	QWORD PTR index$[rsp], rax
 
-; 192  : 	if (ram_bitmap[index] == false) return;
+; 195  : 	if (ram_bitmap[index] == false) return;
 
 	mov	rdx, QWORD PTR index$[rsp]
 	lea	rcx, OFFSET FLAT:?ram_bitmap@@3VBitmap@@A ; ram_bitmap
@@ -571,7 +573,7 @@ $LN6:
 	jmp	SHORT $LN4@pmmngr_fre
 $LN3@pmmngr_fre:
 
-; 193  : 	if (ram_bitmap.Set (index, false)) {
+; 196  : 	if (ram_bitmap.Set (index, false)) {
 
 	xor	r8d, r8d
 	mov	rdx, QWORD PTR index$[rsp]
@@ -581,25 +583,25 @@ $LN3@pmmngr_fre:
 	test	eax, eax
 	je	SHORT $LN2@pmmngr_fre
 
-; 194  : 		free_memory += 4096;
+; 197  : 		free_memory += 4096;
 
 	mov	rax, QWORD PTR ?free_memory@@3_KA	; free_memory
 	add	rax, 4096				; 00001000H
 	mov	QWORD PTR ?free_memory@@3_KA, rax	; free_memory
 
-; 195  : 		used_memory -= 4096;	
+; 198  : 		used_memory -= 4096;	
 
 	mov	rax, QWORD PTR ?used_memory@@3_KA	; used_memory
 	sub	rax, 4096				; 00001000H
 	mov	QWORD PTR ?used_memory@@3_KA, rax	; used_memory
 
-; 196  : 		if (ram_bitmap_index > index) {
+; 199  : 		if (ram_bitmap_index > index) {
 
 	mov	rax, QWORD PTR index$[rsp]
 	cmp	QWORD PTR ?ram_bitmap_index@@3_KA, rax	; ram_bitmap_index
 	jbe	SHORT $LN1@pmmngr_fre
 
-; 197  : 			ram_bitmap_index = index;
+; 200  : 			ram_bitmap_index = index;
 
 	mov	rax, QWORD PTR index$[rsp]
 	mov	QWORD PTR ?ram_bitmap_index@@3_KA, rax	; ram_bitmap_index
@@ -607,9 +609,9 @@ $LN1@pmmngr_fre:
 $LN2@pmmngr_fre:
 $LN4@pmmngr_fre:
 
-; 198  : 		}
-; 199  : 	}
-; 200  : }
+; 201  : 		}
+; 202  : 	}
+; 203  : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -623,14 +625,14 @@ addr$ = 64
 size$ = 72
 ?pmmngr_lock_pages@@YAXPEAX_K@Z PROC			; pmmngr_lock_pages
 
-; 88   : void pmmngr_lock_pages (void *addr, size_t size) {
+; 89   : void pmmngr_lock_pages (void *addr, size_t size) {
 
 $LN6:
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 56					; 00000038H
 
-; 89   : 	for (int i = 0; i < size; i++) 
+; 90   : 	for (int i = 0; i < size; i++) 
 
 	mov	DWORD PTR i$1[rsp], 0
 	jmp	SHORT $LN3@pmmngr_loc
@@ -643,7 +645,7 @@ $LN3@pmmngr_loc:
 	cmp	rax, QWORD PTR size$[rsp]
 	jae	SHORT $LN1@pmmngr_loc
 
-; 90   : 		pmmngr_lock_page ((void*)((size_t)addr + i * 4096));
+; 91   : 		pmmngr_lock_page ((void*)((size_t)addr + i * 4096));
 
 	mov	eax, DWORD PTR i$1[rsp]
 	imul	eax, 4096				; 00001000H
@@ -656,7 +658,7 @@ $LN3@pmmngr_loc:
 	jmp	SHORT $LN2@pmmngr_loc
 $LN1@pmmngr_loc:
 
-; 91   : }
+; 92   : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -670,18 +672,18 @@ first$ = 40
 size$ = 64
 ?pmmngr_alloc_blocks@@YAPEAXH@Z PROC			; pmmngr_alloc_blocks
 
-; 176  : void* pmmngr_alloc_blocks (int size) {
+; 179  : void* pmmngr_alloc_blocks (int size) {
 
 $LN6:
 	mov	DWORD PTR [rsp+8], ecx
 	sub	rsp, 56					; 00000038H
 
-; 177  : 	void *first = pmmngr_alloc();
+; 180  : 	void *first = pmmngr_alloc();
 
 	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
 	mov	QWORD PTR first$[rsp], rax
 
-; 178  : 	for (int i = 0; i < size / 4096; i++) {
+; 181  : 	for (int i = 0; i < size / 4096; i++) {
 
 	mov	DWORD PTR i$1[rsp], 0
 	jmp	SHORT $LN3@pmmngr_all
@@ -698,21 +700,21 @@ $LN3@pmmngr_all:
 	cmp	DWORD PTR i$1[rsp], eax
 	jge	SHORT $LN1@pmmngr_all
 
-; 179  : 		pmmngr_alloc();
+; 182  : 		pmmngr_alloc();
 
 	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
 
-; 180  : 	}
+; 183  : 	}
 
 	jmp	SHORT $LN2@pmmngr_all
 $LN1@pmmngr_all:
 
-; 181  : 
-; 182  : 	return first; //here we need to swap page to file
+; 184  : 
+; 185  : 	return first; //here we need to swap page to file
 
 	mov	rax, QWORD PTR first$[rsp]
 
-; 183  : }
+; 186  : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -725,13 +727,13 @@ index$1 = 32
 tv93 = 40
 ?pmmngr_alloc@@YAPEAXXZ PROC				; pmmngr_alloc
 
-; 154  : {
+; 155  : {
 
 $LN13:
 	sub	rsp, 56					; 00000038H
 
-; 155  : 	
-; 156  : 	for (; ram_bitmap_index < ram_bitmap.Size * 8; ram_bitmap_index++) {
+; 156  : 	
+; 157  : 	for (; ram_bitmap_index < ram_bitmap.Size * 8; ram_bitmap_index++) {
 
 	jmp	SHORT $LN10@pmmngr_all
 $LN9@pmmngr_all:
@@ -744,7 +746,7 @@ $LN10@pmmngr_all:
 	cmp	QWORD PTR ?ram_bitmap_index@@3_KA, rax	; ram_bitmap_index
 	jae	SHORT $LN8@pmmngr_all
 
-; 157  : 		if (ram_bitmap[ram_bitmap_index] == true) continue;
+; 158  : 		if (ram_bitmap[ram_bitmap_index] == true) continue;
 
 	mov	rdx, QWORD PTR ?ram_bitmap_index@@3_KA	; ram_bitmap_index
 	lea	rcx, OFFSET FLAT:?ram_bitmap@@3VBitmap@@A ; ram_bitmap
@@ -755,32 +757,32 @@ $LN10@pmmngr_all:
 	jmp	SHORT $LN9@pmmngr_all
 $LN7@pmmngr_all:
 
-; 158  : 		pmmngr_lock_page ((void*)(ram_bitmap_index * 4096));
+; 159  : 		pmmngr_lock_page ((void*)(ram_bitmap_index * 4096));
 
 	mov	rax, QWORD PTR ?ram_bitmap_index@@3_KA	; ram_bitmap_index
 	imul	rax, 4096				; 00001000H
 	mov	rcx, rax
 	call	?pmmngr_lock_page@@YAXPEAX@Z		; pmmngr_lock_page
 
-; 159  : 		used_memory += 4096 * 1;
+; 160  : 		used_memory += 4096 * 1;
 
 	mov	rax, QWORD PTR ?used_memory@@3_KA	; used_memory
 	add	rax, 4096				; 00001000H
 	mov	QWORD PTR ?used_memory@@3_KA, rax	; used_memory
 
-; 160  : 		return (void*)(ram_bitmap_index * 4096);
+; 161  : 		return (void*)(ram_bitmap_index * 4096);
 
 	mov	rax, QWORD PTR ?ram_bitmap_index@@3_KA	; ram_bitmap_index
 	imul	rax, 4096				; 00001000H
 	jmp	$LN11@pmmngr_all
 
-; 161  : 	}
+; 162  : 	}
 
 	jmp	$LN9@pmmngr_all
 $LN8@pmmngr_all:
 
-; 162  : 
-; 163  : 	for (int index = 0; index  < ram_bitmap.Size * 8; index++) {
+; 163  : 
+; 164  : 	for (int index = 0; index  < ram_bitmap.Size * 8; index++) {
 
 	mov	DWORD PTR index$1[rsp], 0
 	jmp	SHORT $LN6@pmmngr_all
@@ -795,7 +797,7 @@ $LN6@pmmngr_all:
 	cmp	rax, rcx
 	jae	SHORT $LN4@pmmngr_all
 
-; 164  : 		if (ram_bitmap[index] == true) continue;
+; 165  : 		if (ram_bitmap[index] == true) continue;
 
 	movsxd	rax, DWORD PTR index$1[rsp]
 	mov	rdx, rax
@@ -807,7 +809,7 @@ $LN6@pmmngr_all:
 	jmp	SHORT $LN5@pmmngr_all
 $LN3@pmmngr_all:
 
-; 165  : 		pmmngr_lock_page ((void*)(index * 4096));
+; 166  : 		pmmngr_lock_page ((void*)(index * 4096));
 
 	mov	eax, DWORD PTR index$1[rsp]
 	imul	eax, 4096				; 00001000H
@@ -815,25 +817,29 @@ $LN3@pmmngr_all:
 	mov	rcx, rax
 	call	?pmmngr_lock_page@@YAXPEAX@Z		; pmmngr_lock_page
 
-; 166  : 		used_memory += 4096 * 1;
+; 167  : 		used_memory += 4096 * 1;
 
 	mov	rax, QWORD PTR ?used_memory@@3_KA	; used_memory
 	add	rax, 4096				; 00001000H
 	mov	QWORD PTR ?used_memory@@3_KA, rax	; used_memory
 
-; 167  : 		return (void*)(index * 4096);
+; 168  : 		return (void*)(index * 4096);
 
 	mov	eax, DWORD PTR index$1[rsp]
 	imul	eax, 4096				; 00001000H
 	cdqe
 	jmp	SHORT $LN11@pmmngr_all
 
-; 168  : 	}
+; 169  : 	}
 
 	jmp	SHORT $LN5@pmmngr_all
 $LN4@pmmngr_all:
 
-; 169  : 	printf ("Used RAM -> %d MB, Free RAM -> %d MB\n", used_memory /1024 / 1024, free_memory / 1024 / 1024);
+; 170  : 	x64_cli();
+
+	call	x64_cli
+
+; 171  : 	printf ("Used RAM -> %d MB, Free RAM -> %d MB\n", used_memory /1024 / 1024, free_memory / 1024 / 1024);
 
 	xor	edx, edx
 	mov	rax, QWORD PTR ?free_memory@@3_KA	; free_memory
@@ -853,25 +859,29 @@ $LN4@pmmngr_all:
 	mov	rcx, QWORD PTR tv93[rsp]
 	mov	r8, rcx
 	mov	rdx, rax
-	lea	rcx, OFFSET FLAT:$SG2808
+	lea	rcx, OFFSET FLAT:$SG2967
 	call	?printf@@YAXPEBDZZ			; printf
 
-; 170  : 	printf ("No more available pages\n");
+; 172  : 	printf ("No more available pages\n");
 
-	lea	rcx, OFFSET FLAT:$SG2809
+	lea	rcx, OFFSET FLAT:$SG2968
 	call	?printf@@YAXPEBDZZ			; printf
+
+; 173  : 	x64_hlt();
+
+	call	x64_hlt
 $LN2@pmmngr_all:
 
-; 171  : 	for(;;);
+; 174  : 	for(;;);
 
 	jmp	SHORT $LN2@pmmngr_all
 
-; 172  : 	return NULL; //here we need to swap page to file
+; 175  : 	return NULL; //here we need to swap page to file
 
 	xor	eax, eax
 $LN11@pmmngr_all:
 
-; 173  : }
+; 176  : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -889,26 +899,26 @@ unusable$ = 72
 _info$ = 96
 ?pmmngr_init@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z PROC	; pmmngr_init
 
-; 114  : {
+; 115  : {
 
 $LN7:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 88					; 00000058H
 
-; 115  : 	//! scan for memory above 1MB and set up the current pointer
-; 116  : 
-; 117  : 	uint64_t memory_size = _info->ram_size;
+; 116  : 	//! scan for memory above 1MB and set up the current pointer
+; 117  : 
+; 118  : 	uint64_t memory_size = _info->ram_size;
 
 	mov	rax, QWORD PTR _info$[rsp]
 	mov	rax, QWORD PTR [rax+20]
 	mov	QWORD PTR memory_size$[rsp], rax
 
-; 118  : 	free_memory = memory_size;
+; 119  : 	free_memory = memory_size;
 
 	mov	rax, QWORD PTR memory_size$[rsp]
 	mov	QWORD PTR ?free_memory@@3_KA, rax	; free_memory
 
-; 119  : 	uint64_t bitmap_size = memory_size / 4096 / 8 + 1;
+; 120  : 	uint64_t bitmap_size = memory_size / 4096 / 8 + 1;
 
 	xor	edx, edx
 	mov	rax, QWORD PTR memory_size$[rsp]
@@ -920,33 +930,33 @@ $LN7:
 	inc	rax
 	mov	QWORD PTR bitmap_size$[rsp], rax
 
-; 120  : 	ram_bitmap_index = 0;
+; 121  : 	ram_bitmap_index = 0;
 
 	mov	QWORD PTR ?ram_bitmap_index@@3_KA, 0	; ram_bitmap_index
 
-; 121  : 	total_ram = 0;
+; 122  : 	total_ram = 0;
 
 	mov	QWORD PTR ?total_ram@@3_KA, 0		; total_ram
 
-; 122  : 
-; 123  : 	pmmngr_init_bitmap (bitmap_size, (void*) _info->phys_start); 
+; 123  : 
+; 124  : 	pmmngr_init_bitmap (bitmap_size, (void*) _info->phys_start); 
 
 	mov	rax, QWORD PTR _info$[rsp]
 	mov	rdx, QWORD PTR [rax+4]
 	mov	rcx, QWORD PTR bitmap_size$[rsp]
 	call	?pmmngr_init_bitmap@@YAX_KPEAX@Z	; pmmngr_init_bitmap
 
-; 124  : 
-; 125  : 	pmmngr_lock_pages ((void*)_info->phys_start,bitmap_size);
+; 125  : 
+; 126  : 	pmmngr_lock_pages ((void*)_info->phys_start,bitmap_size);
 
 	mov	rdx, QWORD PTR bitmap_size$[rsp]
 	mov	rax, QWORD PTR _info$[rsp]
 	mov	rcx, QWORD PTR [rax+4]
 	call	?pmmngr_lock_pages@@YAXPEAX_K@Z		; pmmngr_lock_pages
 
-; 126  : 
-; 127  : 	//Lock every EFI-Reserved memories here
-; 128  : 	uint64_t memmap_entries = _info->mem_map_size / _info->descriptor_size;
+; 127  : 
+; 128  : 	//Lock every EFI-Reserved memories here
+; 129  : 	uint64_t memmap_entries = _info->mem_map_size / _info->descriptor_size;
 
 	xor	edx, edx
 	mov	rax, QWORD PTR _info$[rsp]
@@ -955,9 +965,9 @@ $LN7:
 	div	QWORD PTR [rcx+36]
 	mov	QWORD PTR memmap_entries$[rsp], rax
 
-; 129  : 
-; 130  : 	//! Currently uses EFI-Memory Maps to check reserved regions
-; 131  : 	for (int i = 0; i < memmap_entries; i++) {
+; 130  : 
+; 131  : 	//! Currently uses EFI-Memory Maps to check reserved regions
+; 132  : 	for (int i = 0; i < memmap_entries; i++) {
 
 	mov	DWORD PTR i$1[rsp], 0
 	jmp	SHORT $LN4@pmmngr_ini
@@ -970,7 +980,7 @@ $LN4@pmmngr_ini:
 	cmp	rax, QWORD PTR memmap_entries$[rsp]
 	jae	SHORT $LN2@pmmngr_ini
 
-; 132  : 		EFI_MEMORY_DESCRIPTOR *efi_mem = (EFI_MEMORY_DESCRIPTOR*)((uint64_t)_info->map + i * _info->descriptor_size);
+; 133  : 		EFI_MEMORY_DESCRIPTOR *efi_mem = (EFI_MEMORY_DESCRIPTOR*)((uint64_t)_info->map + i * _info->descriptor_size);
 
 	movsxd	rax, DWORD PTR i$1[rsp]
 	mov	rcx, QWORD PTR _info$[rsp]
@@ -979,7 +989,7 @@ $LN4@pmmngr_ini:
 	add	rax, QWORD PTR [rcx+28]
 	mov	QWORD PTR efi_mem$2[rsp], rax
 
-; 133  : 		total_ram += efi_mem->num_pages * 4096;
+; 134  : 		total_ram += efi_mem->num_pages * 4096;
 
 	mov	rax, QWORD PTR efi_mem$2[rsp]
 	mov	rax, QWORD PTR [rax+24]
@@ -989,20 +999,20 @@ $LN4@pmmngr_ini:
 	mov	rax, rcx
 	mov	QWORD PTR ?total_ram@@3_KA, rax		; total_ram
 
-; 134  : 		if (efi_mem->type != 7) {
+; 135  : 		if (efi_mem->type != 7) {
 
 	mov	rax, QWORD PTR efi_mem$2[rsp]
 	cmp	DWORD PTR [rax], 7
 	je	SHORT $LN1@pmmngr_ini
 
-; 135  : 			//! lock every pages
-; 136  : 			free_memory -= 4096;
+; 136  : 			//! lock every pages
+; 137  : 			free_memory -= 4096;
 
 	mov	rax, QWORD PTR ?free_memory@@3_KA	; free_memory
 	sub	rax, 4096				; 00001000H
 	mov	QWORD PTR ?free_memory@@3_KA, rax	; free_memory
 
-; 137  : 			pmmngr_lock_pages ((void*)efi_mem->phys_start,efi_mem->num_pages);
+; 138  : 			pmmngr_lock_pages ((void*)efi_mem->phys_start,efi_mem->num_pages);
 
 	mov	rax, QWORD PTR efi_mem$2[rsp]
 	mov	rdx, QWORD PTR [rax+24]
@@ -1011,14 +1021,14 @@ $LN4@pmmngr_ini:
 	call	?pmmngr_lock_pages@@YAXPEAX_K@Z		; pmmngr_lock_pages
 $LN1@pmmngr_ini:
 
-; 138  : 		}
-; 139  : 	}
+; 139  : 		}
+; 140  : 	}
 
 	jmp	$LN3@pmmngr_ini
 $LN2@pmmngr_ini:
 
-; 140  : 
-; 141  : 	total_ram -= reserved_memory;
+; 141  : 
+; 142  : 	total_ram -= reserved_memory;
 
 	mov	rax, QWORD PTR ?reserved_memory@@3_KA	; reserved_memory
 	mov	rcx, QWORD PTR ?total_ram@@3_KA		; total_ram
@@ -1026,13 +1036,13 @@ $LN2@pmmngr_ini:
 	mov	rax, rcx
 	mov	QWORD PTR ?total_ram@@3_KA, rax		; total_ram
 
-; 142  : 
-; 143  : 	void *unusable = pmmngr_alloc(); //0 is avoided
+; 143  : 
+; 144  : 	void *unusable = pmmngr_alloc(); //0 is avoided
 
 	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
 	mov	QWORD PTR unusable$[rsp], rax
 
-; 144  : }
+; 145  : }
 
 	add	rsp, 88					; 00000058H
 	ret	0

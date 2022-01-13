@@ -6,19 +6,19 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 CONST	SEGMENT
-$SG3532	DB	'fb', 00H
+$SG3564	DB	'fb', 00H
 	ORG $+5
-$SG3533	DB	'/dev/snd', 00H
+$SG3565	DB	'/dev/snd', 00H
 CONST	ENDS
 PUBLIC	?sound_initialize@@YAXXZ			; sound_initialize
 PUBLIC	?snd_io_query@@YAHPEAU_vfs_node_@@HPEAX@Z	; snd_io_query
 EXTRN	?strcpy@@YAPEADPEADPEBD@Z:PROC			; strcpy
 EXTRN	?vfs_mount@@YAXPEADPEAU_vfs_node_@@@Z:PROC	; vfs_mount
-EXTRN	?pmmngr_alloc@@YAPEAXXZ:PROC			; pmmngr_alloc
+EXTRN	?malloc@@YAPEAX_K@Z:PROC			; malloc
 EXTRN	?hda_audio_play@@YAXXZ:PROC			; hda_audio_play
 pdata	SEGMENT
 $pdata$?sound_initialize@@YAXXZ DD imagerel $LN3
-	DD	imagerel $LN3+196
+	DD	imagerel $LN3+201
 	DD	imagerel $unwind$?sound_initialize@@YAXXZ
 $pdata$?snd_io_query@@YAHPEAU_vfs_node_@@HPEAX@Z DD imagerel $LN6
 	DD	imagerel $LN6+50
@@ -86,15 +86,16 @@ snd$ = 32
 $LN3:
 	sub	rsp, 56					; 00000038H
 
-; 32   : 	vfs_node_t * snd = (vfs_node_t*)pmmngr_alloc(); //malloc(sizeof(vfs_node_t));
+; 32   : 	vfs_node_t * snd = (vfs_node_t*)malloc(sizeof(vfs_node_t));
 
-	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
+	mov	ecx, 104				; 00000068H
+	call	?malloc@@YAPEAX_K@Z			; malloc
 	mov	QWORD PTR snd$[rsp], rax
 
 ; 33   : 	strcpy (snd->filename, "fb");
 
 	mov	rax, QWORD PTR snd$[rsp]
-	lea	rdx, OFFSET FLAT:$SG3532
+	lea	rdx, OFFSET FLAT:$SG3564
 	mov	rcx, rax
 	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
 
@@ -157,7 +158,7 @@ $LN3:
 ; 45   : 	vfs_mount ("/dev/snd", snd);
 
 	mov	rdx, QWORD PTR snd$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3533
+	lea	rcx, OFFSET FLAT:$SG3565
 	call	?vfs_mount@@YAXPEADPEAU_vfs_node_@@@Z	; vfs_mount
 
 ; 46   : }

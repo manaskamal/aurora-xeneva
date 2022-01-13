@@ -33,9 +33,11 @@ mouse_cycle DB	01H DUP (?)
 ?old_message@@3U_dwm_message_@@A DB 01cH DUP (?)	; old_message
 _BSS	ENDS
 CONST	SEGMENT
-$SG6069	DB	'mouse', 00H
+$SG6061	DB	'mouse', 00H
 	ORG $+2
-$SG6070	DB	'/dev/mouse', 00H
+$SG6062	DB	'/dev/mouse', 00H
+	ORG $+5
+$SG6066	DB	'mouse interrupt setupped', 0aH, 00H
 CONST	ENDS
 PUBLIC	?initialize_mouse@@YAXXZ			; initialize_mouse
 PUBLIC	?mouse_wait@@YAXE@Z				; mouse_wait
@@ -56,8 +58,9 @@ EXTRN	?irq_mask@@YAXE_N@Z:PROC			; irq_mask
 EXTRN	?strcpy@@YAPEADPEADPEBD@Z:PROC			; strcpy
 EXTRN	?memset@@YAXPEAXEI@Z:PROC			; memset
 EXTRN	memcpy:PROC
+EXTRN	?printf@@YAXPEBDZZ:PROC				; printf
 EXTRN	?vfs_mount@@YAXPEADPEAU_vfs_node_@@@Z:PROC	; vfs_mount
-EXTRN	?malloc@@YAPEAXI@Z:PROC				; malloc
+EXTRN	?malloc@@YAPEAX_K@Z:PROC			; malloc
 EXTRN	?get_screen_width@@YAIXZ:PROC			; get_screen_width
 EXTRN	?get_screen_height@@YAIXZ:PROC			; get_screen_height
 EXTRN	?dwm_put_message@@YAXPEAU_dwm_message_@@@Z:PROC	; dwm_put_message
@@ -70,7 +73,7 @@ mouse	DQ	01H DUP (?)
 _BSS	ENDS
 pdata	SEGMENT
 $pdata$?initialize_mouse@@YAXXZ DD imagerel $LN3
-	DD	imagerel $LN3+186
+	DD	imagerel $LN3+198
 	DD	imagerel $unwind$?initialize_mouse@@YAXXZ
 pdata	ENDS
 ;	COMDAT pdata
@@ -142,13 +145,13 @@ $LN3:
 ; 212  : 	vfs_node_t *node = (vfs_node_t*)malloc(sizeof(vfs_node_t));
 
 	mov	ecx, 104				; 00000068H
-	call	?malloc@@YAPEAXI@Z			; malloc
+	call	?malloc@@YAPEAX_K@Z			; malloc
 	mov	QWORD PTR node$[rsp], rax
 
 ; 213  : 	strcpy (node->filename, "mouse");
 
 	mov	rax, QWORD PTR node$[rsp]
-	lea	rdx, OFFSET FLAT:$SG6069
+	lea	rdx, OFFSET FLAT:$SG6061
 	mov	rcx, rax
 	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
 
@@ -211,7 +214,7 @@ $LN3:
 ; 225  : 	vfs_mount ("/dev/mouse", node);
 
 	mov	rdx, QWORD PTR node$[rsp]
-	lea	rcx, OFFSET FLAT:$SG6070
+	lea	rcx, OFFSET FLAT:$SG6062
 	call	?vfs_mount@@YAXPEADPEAU_vfs_node_@@@Z	; vfs_mount
 
 ; 226  : }
@@ -1128,7 +1131,11 @@ $LN3:
 	mov	ecx, 34					; 00000022H
 	call	?interrupt_set@@YAX_KP6AX0PEAX@ZE@Z	; interrupt_set
 
-; 261  : 
+; 261  : 	printf ("mouse interrupt setupped\n");
+
+	lea	rcx, OFFSET FLAT:$SG6066
+	call	?printf@@YAXPEBDZZ			; printf
+
 ; 262  : 	mouse_register_device ();
 
 	call	?mouse_register_device@@YAXXZ		; mouse_register_device

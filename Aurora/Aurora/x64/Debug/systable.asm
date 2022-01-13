@@ -45,6 +45,9 @@ EXTRN	?start_timer@@YAXH@Z:PROC			; start_timer
 _BSS	SEGMENT
 funct	DQ	01H DUP (?)
 _BSS	ENDS
+CONST	SEGMENT
+$SG6136	DB	'System Call Fault!! Halting System', 0aH, 00H
+CONST	ENDS
 _DATA	SEGMENT
 _syscalls DQ	FLAT:?printf@@YAXPEBDZZ
 	DQ	FLAT:?wait@@YAXXZ
@@ -87,9 +90,6 @@ _syscalls DQ	FLAT:?printf@@YAXPEBDZZ
 	DQ	FLAT:?vfree@@YAX_K@Z
 	DQ	0000000000000000H
 _DATA	ENDS
-CONST	SEGMENT
-$SG6144	DB	'System Call Fault!! Halting System', 0aH, 00H
-CONST	ENDS
 PUBLIC	x64_syscall_handler
 pdata	SEGMENT
 $pdata$x64_syscall_handler DD imagerel $LN6
@@ -129,7 +129,7 @@ $LN6:
 
 ; 21   : 		printf ("System Call Fault!! Halting System\n");
 
-	lea	rcx, OFFSET FLAT:$SG6144
+	lea	rcx, OFFSET FLAT:$SG6136
 	call	?printf@@YAXPEBDZZ			; printf
 $LN2@x64_syscal:
 

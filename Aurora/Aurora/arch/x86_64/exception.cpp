@@ -82,6 +82,7 @@ void invalid_opcode_fault (size_t v, void* p){
 	printf ("CS -> %x\n", frame->cs);
 	printf ("SS -> %x\n", frame->ss);
 	printf ("Current task -> %s\n", get_current_thread()->name);
+	printf ("Current task id -> %d\n", get_current_thread()->id);
 	for(;;);
 }
 

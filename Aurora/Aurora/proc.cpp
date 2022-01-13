@@ -119,7 +119,7 @@ uint64_t *create_user_stack (uint64_t* cr3) {
  * Create incremental stack : Creates stack in same address space
  */
 uint64_t* create_inc_stack (uint64_t* cr3) {
-#define INC_STACK 0x0000700000000000 
+#define INC_STACK 0x0000010000000000 
 	uint64_t location = INC_STACK ; //+ user_stack_index;
 
 	for (int i = 0; i < (2*1024*1024) / 4096; i++) {

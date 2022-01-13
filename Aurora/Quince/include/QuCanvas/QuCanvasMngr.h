@@ -63,24 +63,11 @@ extern void QuCanvasUpdate (unsigned x, unsigned y, unsigned w, unsigned h);
 //! @param -- Null
 extern void QuCanvasUpdateDirty();
 
-//! QuCanvasSetUpdateBit -- Set the update for Screen update
-//! @param value -- boolean value
-extern void QuCanvasSetUpdateBit(bool value);
-
-//! QuCanvasGetUpdateBit -- Checks the update bit
-extern bool QuCanvasGetUpdateBit();
-
-extern void QuCanvasCopyToFB(unsigned x, unsigned y, unsigned w, unsigned h);
-
-extern void QuCanvasQuery(unsigned x, unsigned y, unsigned w, unsigned h);
-
-extern void QuCanvasQuickPaint (uint32_t* canvas,int x, int y, int w,int h);
-
-extern void QuCanvasUpdateDirtyFB();
-
 extern  void QuRenderTime (uint8_t sec, uint8_t min, uint8_t hr);
 
 extern void QuCanvasRelease (uint16_t dest_pid, QuWindow *win);
+
+extern void QuCanvasRemap (uint16_t dest_pid, void *canvas, int w, int h);
 
 extern  void QuCanvasUpdateAll ();
 

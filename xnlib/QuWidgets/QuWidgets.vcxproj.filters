@@ -78,6 +78,9 @@
     <ClInclude Include="include\QuImage\QuBmpImage.h">
       <Filter>include\QuImage</Filter>
     </ClInclude>
+    <ClInclude Include="include\QuView.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\QuBase.cpp">
@@ -130,6 +133,9 @@
     </ClCompile>
     <ClCompile Include="source\QuImage\QuBmpImage.cpp">
       <Filter>source\QuImage</Filter>
+    </ClCompile>
+    <ClCompile Include="include\QuView.cpp">
+      <Filter>source</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

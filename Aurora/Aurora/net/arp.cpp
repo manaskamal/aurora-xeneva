@@ -13,7 +13,7 @@
 #include <net\ethernet.h>
 #include <net\nethw.h>
 #include <string.h>
-#include <mm.h>
+#include <arch\x86_64\mmngr\kheap.h>
 #include <stdio.h>
 
 arp_table_entry_t *arp_table;

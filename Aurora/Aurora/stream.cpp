@@ -9,13 +9,13 @@
 ///!====================================================
 
 #include <stream.h>
-#include <mm.h>
 #include <string.h>
 #include <fs\vfs.h>
 #include <_null.h>
 #include <arch\x86_64\thread.h>
 #include <proc.h>
 #include <fs\ttype.h>
+#include <arch\x86_64\mmngr\kheap.h>
 
 stream_t *allocate_stream () {
 	stream_t *st = (stream_t*)pmmngr_alloc();   //malloc (sizeof(stream_t));
@@ -25,7 +25,7 @@ stream_t *allocate_stream () {
 
 
 void deallocate_stream (stream_t *st) {
-	mfree(st);
+	free(st);
 }
 
 
@@ -98,7 +98,7 @@ void stream_init () {
 
 	///! Standard output 
 	///! node
-	vfs_node_t *node = (vfs_node_t*)malloc(sizeof(vfs_node_t));
+	vfs_node_t *node = (vfs_node_t*)pmmngr_alloc();//malloc(sizeof(vfs_node_t));
 	strcpy(node->filename, "stdout");
 	node->size = 0;
 	node->eof = 0;
@@ -115,7 +115,7 @@ void stream_init () {
 
 	///! Standard Error 
 	///! node
-	vfs_node_t *stderr = (vfs_node_t*)malloc(sizeof(vfs_node_t));
+	vfs_node_t *stderr = (vfs_node_t*)pmmngr_alloc(); //malloc(sizeof(vfs_node_t));
 	strcpy(stderr->filename, "stderr");
 	stderr->size = 0;
 	stderr->eof = 0;

@@ -46,6 +46,7 @@ bool focus_lost = false;
 void QuActions (QuMessage *msg) {
 	if (msg->type == QU_CANVAS_MOVE) {
 		QuWindowMove(QuGetWindow(),msg->dword, msg->dword2);
+		QuWinInfo *info = (QuWinInfo*)QuGetWindow()->win_info_data;
 		memset(msg, 0, sizeof(QuMessage));
 	}
 
@@ -71,10 +72,29 @@ void QuActions (QuMessage *msg) {
 		memset(msg, 0, sizeof(QuMessage));
 	}
 
+	if (msg->type == QU_CANVAS_REPAINT) {
+		QuWinInfo *info = (QuWinInfo*)QuGetWindow()->win_info_data;
+		if (QuGetWindow()->maximized  == true && 
+			info->maximize == false) {
+			QuGetWindow()->w = QuGetWindow()->oldw;
+			QuGetWindow()->h = QuGetWindow()->oldh;
+			QuGetWindow()->maximized = false;
+		}
+		QuWindowRepaint(QuGetWindow());
+		memset(msg, 0, sizeof(QuMessage));
+	}
+
 	if (msg->type == QU_CANVAS_KEY_PRESSED) {
 		if (msg->dword == KEY_N) 
 			create_process("/dock.exe","dwm33");
 		QuWindowHandleKey(msg->dword);
+		memset(msg, 0, sizeof(QuMessage));
+	}
+
+	if (msg->type == QU_CANVAS_RESIZE) {
+		QuGetWindow()->w = msg->dword;
+		QuGetWindow()->h = msg->dword2;
+		QuWindowRepaint(QuGetWindow());
 		memset(msg, 0, sizeof(QuMessage));
 	}
 	
@@ -103,7 +123,7 @@ void blink_cursor () {
 
 
 int main (int argc, char* argv[]) {
-	QuWindow* win = QuCreateWindow(300,300,500,500,"Console");
+	QuWindow* win = QuCreateWindow(300,300,600,500,"Console");
 	QuSetRootWindow (win);
 
 	canvas_t *canvas = canvas_initialize(win->w, win->h);
@@ -123,6 +143,7 @@ int main (int argc, char* argv[]) {
 	acrylic_font_draw_string(win->ctx, "Console v1.0",10, win->h / 2 - strlen("Console")/2,32,SILVER);
 	acrylic_font_set_size(18);
 	acrylic_font_draw_string(win->ctx, "Copyright (C) Manas Kamal Choudhury",10,win->h / 2 + 25,32,GRAY);
+
 	QuPanelUpdate(win,0,0,win->w, win->h, true);
 
 	sys_ttype_create (&master_fd, &slave_fd);
@@ -157,11 +178,11 @@ int main (int argc, char* argv[]) {
 		sys_read_file (slave_fd,buffer,&slave);
 
 	    for (int i = 0; i < 4096; i++) {
-			if (buffer[i] != 0) {
+			if (buffer[0] != 0) {
 				QuTermPrint(term,buffer[i],WHITE);
-				QuTermFlush(term, win);
-				QuPanelUpdate(win,0,0,win->w, win->h, true);
 				if (buffer[i] == '\n') {
+					QuTermFlush(term, win);
+					QuPanelUpdate(win,0,0,win->w, win->h, true);
 					memset(buffer, 0, 4096);
 					break;
 				}

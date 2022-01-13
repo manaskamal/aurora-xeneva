@@ -28,17 +28,18 @@ void create_uthread (void (*entry) (void*), char* name) {
 	 * entry for the new user thread!!
 	 */  
 	uint64_t *old_cr3 = (uint64_t*)x64_read_cr3();
+	uint64_t *new_cr3 = create_user_address_space();
 
-	uint64_t* cr3 = create_user_address_space();
-	uint64_t stack = (uint64_t)create_inc_stack(cr3);
-	
-	/* Copy the Image Base of the current process */
-	cr3[pml4_index(0x0000400000000000)] = old_cr3[pml4_index(0x0000400000000000)];
-	/* Copy the Heap of the current process */
-	cr3[pml4_index(0x0000080000000000)] = old_cr3[pml4_index(0x0000080000000000)];
+	for (int i = 0; i < 256; i++) {
+		new_cr3[i] = old_cr3[i];
+	}
+
+	uint64_t stack = (uint64_t)create_inc_stack(new_cr3);
+
+
 
 	/* Create the new user thread */
-	thread_t * t = create_user_thread (entry, stack,(uint64_t)cr3,name, 1);	
+	thread_t * t = create_user_thread(entry,stack,(uint64_t)new_cr3,name,1);
 }
 
 

@@ -10,7 +10,7 @@
  */
 
 #include <utils\lnklist.h>
-#include <mm.h>
+#include <arch\x86_64\mmngr\kheap.h>
 
 
 list_t* initialize_list() {
@@ -80,7 +80,7 @@ void* list_remove(list_t* list, unsigned int index) {
 	if (index == 0)
 		list->entry_current = current_node->next;
 
-	mfree(current_node);
+	free(current_node);
 
 	list->pointer--;
 

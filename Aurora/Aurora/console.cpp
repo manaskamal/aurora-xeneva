@@ -12,7 +12,7 @@
 #include <console.h>
 #include <stdio.h>
 #include <string.h>
-#include <mm.h>
+#include <arch\x86_64\mmngr\kheap.h>
 #include <fs\vfs.h>
 
 //! default kernel console

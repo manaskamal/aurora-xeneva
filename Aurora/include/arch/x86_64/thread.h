@@ -18,7 +18,7 @@
 #include <ipc\signals.h>
 #include <fs\vfs.h>
 #include <stream.h>
-#include <mm.h>
+#include <arch\x86_64\mmngr\kheap.h>
 
 
 //! ====Thread States======================================================

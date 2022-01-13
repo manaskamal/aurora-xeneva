@@ -196,6 +196,7 @@ bool map_page (uint64_t physical_address, uint64_t virtual_address, uint8_t attr
 	uint64_t* pml1 = (uint64_t*)(pml2[i2] & ~(4096 - 1));
 	if (pml1[i1] & PAGING_PRESENT)
 	{
+		pmmngr_free((void*)physical_address);
 		return false;
 	}
 

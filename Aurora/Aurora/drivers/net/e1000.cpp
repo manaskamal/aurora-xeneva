@@ -13,7 +13,7 @@
 #include <drivers\net\e1000.h>
 #include <pmmngr.h>
 #include <stdio.h>
-#include <mm.h>
+#include <arch\x86_64\mmngr\kheap.h>
 #include <console.h>
 #include <net\nethw.h>
 #include <string.h>

@@ -16,6 +16,7 @@
 #include <clientctx.h>
 #include <QuPanel.h>
 #include <QuMenubar.h>
+#include <font.h>
 
 QuContextMenu *QuCreateContextMenu(char *title) {
 	QuContextMenu *ctx = (QuContextMenu*)malloc(sizeof(QuContextMenu));
@@ -64,25 +65,28 @@ void QuContextMenuAppend (QuContextMenu *ctx, QuWidget *mb, QuWindow* win) {
 	}
 
 	QuCtxMenuAllocateData(ctx,menu_w, menu_h);
-
+	acrylic_font_set_size(10);
 
 	acrylic_draw_rect_filled (ctx->ctx, mb->x + ctx->m_x + (ctx->m_w/2), 
 		 mb->y + 20, menu_w, menu_h,SILVER);
 
 	acrylic_draw_rect_unfilled (ctx->ctx, mb->x + ctx->m_x + (ctx->m_w/2), 
 		mb->y + 20, menu_w, menu_h,GRAY);
-	int m_y= 4;
+	int m_y= 16;
 	int m_x = (ctx->m_w/2) + 1;
+	
 	for (int i = 0; i < ctx->popup_list->pointer; i++) {
 		QuPopupMenu *popup = (QuPopupMenu*)QuListGetAt(ctx->popup_list, i);
-		acrylic_draw_arr_string (ctx->ctx, mb->x + ctx->m_x + (ctx->m_w/2) + 1, 
-			mb->y + 20 + m_y, popup->title,BLACK);
-		
+		/*acrylic_draw_arr_string (ctx->ctx, mb->x + ctx->m_x + (ctx->m_w/2) + 1, 
+			mb->y + 20 + m_y, popup->title,BLACK);*/
+		acrylic_font_draw_string(ctx->ctx,popup->title,mb->x + ctx->m_x + (ctx->m_w/2) + 1, 
+			mb->y + 20 + m_y,12,BLACK);
+		int f_h = acrylic_font_get_height(popup->title);
 		if (popup->m_x == 0 && popup->m_y == 0){
 			popup->m_x = mb->x + ctx->m_x + m_x; 
 			popup->m_y = mb->y + 20 + m_y;
 		}
-        m_y += 15;
+        m_y += 16;
 	}
 	
 	ctx->popup = true;

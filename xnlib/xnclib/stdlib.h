@@ -53,7 +53,7 @@ void exit (int errno);
 int vsprintf(char *str, const char *format, va_list ap);
 long strtol(const char* nptr, char** endptr, int base);
 unsigned long strtoul(const char* nptr, char** endptr, int base);
-
+void itoa_s(int i,unsigned base,char* buf);
 
 #ifdef __cplusplus
 }

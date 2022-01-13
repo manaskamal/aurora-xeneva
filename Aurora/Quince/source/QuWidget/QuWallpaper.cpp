@@ -76,7 +76,7 @@ void QuWallpaperChange (char* filename, uint32_t color) {
 
 //	QuWallpaperDraw(img);
 	QuWallpaperPresent();
-	QuCanvasSetUpdateBit(true);
+//	QuCanvasSetUpdateBit(true);
 }
 
 

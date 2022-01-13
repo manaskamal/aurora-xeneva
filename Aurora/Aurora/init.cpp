@@ -33,7 +33,6 @@
 #include <_xnboot.h>
 #include <hal.h>
 #include <pmmngr.h>
-#include <mm.h>
 #include <console.h>
 #include <stdio.h>
 #include <drivers\kybrd.h>
@@ -66,6 +65,7 @@
 #include <serial.h>
 #include <stream.h>
 #include <sound.h>
+#include <ipc\pri_loop.h>
 
 #include <fs\ttype.h>
 
@@ -96,7 +96,7 @@ void* __cdecl operator new[] (size_t size) {
 }
 
 void __cdecl operator delete (void* p) {
-	mfree(p);
+	free(p);
 }
 
 
@@ -115,8 +115,8 @@ void _kmain () {
 	vmmngr_x86_64_init(); 
 	hal_init();
 	hal_x86_64_setup_int();	
-    mm_init(info); 
-	
+	initialize_kmemory(16);
+
 	initialize_serial();
 
 	ata_initialize();
@@ -141,8 +141,6 @@ void _kmain () {
 	//!Initialize kernel runtime drivers	
 	kybrd_init();
 	initialize_mouse();
-
-
 	
 	for (int i = 0; i < 2*1024*1024/4096; i++)
 		map_page((uint64_t)pmmngr_alloc(),0xFFFFF00000000000 + i * 4096, 0);
@@ -156,6 +154,7 @@ void _kmain () {
 	message_init ();
 	dwm_ipc_init();
 	stream_init ();
+	pri_loop_init();
 	driver_mngr_initialize(info);
 	hda_initialize(); 
     hda_audio_add_pcm(buffer2, file.size);

@@ -14,18 +14,18 @@ _BSS	SEGMENT
 ?last_header@@3PEAUkmem@@EA DQ 01H DUP (?)		; last_header
 _BSS	ENDS
 CONST	SEGMENT
-$SG3001	DB	'Heap Start -> %x', 0aH, 00H
+$SG3000	DB	'Heap Start -> %x', 0aH, 00H
 	ORG $+6
-$SG3002	DB	'Heap End -> %x', 0aH, 00H
+$SG3001	DB	'Heap End -> %x', 0aH, 00H
 CONST	ENDS
 PUBLIC	?align_next@kmem@@QEAAXXZ			; kmem::align_next
 PUBLIC	?align_prev@kmem@@QEAAXXZ			; kmem::align_prev
 PUBLIC	?split@kmem@@QEAAPEAU1@_K@Z			; kmem::split
 PUBLIC	?initialize_kmemory@@YAX_K@Z			; initialize_kmemory
-PUBLIC	?alloc@@YAPEAX_K@Z				; alloc
+PUBLIC	?malloc@@YAPEAX_K@Z				; malloc
 PUBLIC	?free@@YAXPEAX@Z				; free
-PUBLIC	?kheap_print@@YAXXZ				; kheap_print
 PUBLIC	?expand_kmem@@YAX_K@Z				; expand_kmem
+PUBLIC	?kheap_print@@YAXXZ				; kheap_print
 EXTRN	?pmmngr_alloc@@YAPEAXXZ:PROC			; pmmngr_alloc
 EXTRN	?map_page@@YA_N_K0E@Z:PROC			; map_page
 EXTRN	?printf@@YAXPEBDZZ:PROC				; printf
@@ -39,18 +39,18 @@ $pdata$?split@kmem@@QEAAPEAU1@_K@Z DD imagerel $LN6
 $pdata$?initialize_kmemory@@YAX_K@Z DD imagerel $LN6
 	DD	imagerel $LN6+246
 	DD	imagerel $unwind$?initialize_kmemory@@YAX_K@Z
-$pdata$?alloc@@YAPEAX_K@Z DD imagerel $LN11
+$pdata$?malloc@@YAPEAX_K@Z DD imagerel $LN11
 	DD	imagerel $LN11+274
-	DD	imagerel $unwind$?alloc@@YAPEAX_K@Z
+	DD	imagerel $unwind$?malloc@@YAPEAX_K@Z
 $pdata$?free@@YAXPEAX@Z DD imagerel $LN3
 	DD	imagerel $LN3+57
 	DD	imagerel $unwind$?free@@YAXPEAX@Z
-$pdata$?kheap_print@@YAXXZ DD imagerel $LN3
-	DD	imagerel $LN3+47
-	DD	imagerel $unwind$?kheap_print@@YAXXZ
 $pdata$?expand_kmem@@YAX_K@Z DD imagerel $LN7
 	DD	imagerel $LN7+293
 	DD	imagerel $unwind$?expand_kmem@@YAX_K@Z
+$pdata$?kheap_print@@YAXXZ DD imagerel $LN3
+	DD	imagerel $LN3+47
+	DD	imagerel $unwind$?kheap_print@@YAXXZ
 pdata	ENDS
 xdata	SEGMENT
 $unwind$?align_prev@kmem@@QEAAXXZ DD 010901H
@@ -59,15 +59,43 @@ $unwind$?split@kmem@@QEAAPEAU1@_K@Z DD 010e01H
 	DD	0220eH
 $unwind$?initialize_kmemory@@YAX_K@Z DD 010901H
 	DD	0a209H
-$unwind$?alloc@@YAPEAX_K@Z DD 010901H
+$unwind$?malloc@@YAPEAX_K@Z DD 010901H
 	DD	06209H
 $unwind$?free@@YAXPEAX@Z DD 010901H
 	DD	06209H
-$unwind$?kheap_print@@YAXXZ DD 010401H
-	DD	04204H
 $unwind$?expand_kmem@@YAX_K@Z DD 010901H
 	DD	08209H
+$unwind$?kheap_print@@YAXXZ DD 010401H
+	DD	04204H
 xdata	ENDS
+; Function compile flags: /Odtpy
+; File e:\xeneva project\xeneva\aurora\aurora\arch\x86_64\kheap.cpp
+_TEXT	SEGMENT
+?kheap_print@@YAXXZ PROC				; kheap_print
+
+; 148  : void kheap_print () {
+
+$LN3:
+	sub	rsp, 40					; 00000028H
+
+; 149  : 	printf ("Heap Start -> %x\n", kmem_start);
+
+	mov	rdx, QWORD PTR ?kmem_start@@3PEAXEA	; kmem_start
+	lea	rcx, OFFSET FLAT:$SG3000
+	call	?printf@@YAXPEBDZZ			; printf
+
+; 150  : 	printf ("Heap End -> %x\n", kmem_end);
+
+	mov	rdx, QWORD PTR ?kmem_end@@3PEAXEA	; kmem_end
+	lea	rcx, OFFSET FLAT:$SG3001
+	call	?printf@@YAXPEBDZZ			; printf
+
+; 151  : }
+
+	add	rsp, 40					; 00000028H
+	ret	0
+?kheap_print@@YAXXZ ENDP				; kheap_print
+_TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\arch\x86_64\kheap.cpp
 _TEXT	SEGMENT
@@ -209,34 +237,6 @@ _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\arch\x86_64\kheap.cpp
 _TEXT	SEGMENT
-?kheap_print@@YAXXZ PROC				; kheap_print
-
-; 148  : void kheap_print () {
-
-$LN3:
-	sub	rsp, 40					; 00000028H
-
-; 149  : 	printf ("Heap Start -> %x\n", kmem_start);
-
-	mov	rdx, QWORD PTR ?kmem_start@@3PEAXEA	; kmem_start
-	lea	rcx, OFFSET FLAT:$SG3001
-	call	?printf@@YAXPEBDZZ			; printf
-
-; 150  : 	printf ("Heap End -> %x\n", kmem_end);
-
-	mov	rdx, QWORD PTR ?kmem_end@@3PEAXEA	; kmem_end
-	lea	rcx, OFFSET FLAT:$SG3002
-	call	?printf@@YAXPEBDZZ			; printf
-
-; 151  : }
-
-	add	rsp, 40					; 00000028H
-	ret	0
-?kheap_print@@YAXXZ ENDP				; kheap_print
-_TEXT	ENDS
-; Function compile flags: /Odtpy
-; File e:\xeneva project\xeneva\aurora\aurora\arch\x86_64\kheap.cpp
-_TEXT	SEGMENT
 seg$ = 32
 memory$ = 64
 ?free@@YAXPEAX@Z PROC					; free
@@ -280,9 +280,9 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 current_seg$ = 32
 size$ = 64
-?alloc@@YAPEAX_K@Z PROC					; alloc
+?malloc@@YAPEAX_K@Z PROC				; malloc
 
-; 109  : void* alloc(size_t size) {
+; 109  : void* malloc(size_t size) {
 
 $LN11:
 	mov	QWORD PTR [rsp+8], rcx
@@ -296,7 +296,7 @@ $LN11:
 	div	rcx
 	mov	rax, rdx
 	test	rax, rax
-	jbe	SHORT $LN8@alloc
+	jbe	SHORT $LN8@malloc
 
 ; 111  : 		size -= (size % 0x10);
 
@@ -315,44 +315,44 @@ $LN11:
 	mov	rax, QWORD PTR size$[rsp]
 	add	rax, 16
 	mov	QWORD PTR size$[rsp], rax
-$LN8@alloc:
+$LN8@malloc:
 
 ; 113  : 	}
 ; 114  : 
 ; 115  : 	if (size == 0) return NULL;
 
 	cmp	QWORD PTR size$[rsp], 0
-	jne	SHORT $LN7@alloc
+	jne	SHORT $LN7@malloc
 	xor	eax, eax
-	jmp	$LN9@alloc
-$LN7@alloc:
+	jmp	$LN9@malloc
+$LN7@malloc:
 
 ; 116  : 
 ; 117  : 	kmem* current_seg = (kmem*) kmem_start;
 
 	mov	rax, QWORD PTR ?kmem_start@@3PEAXEA	; kmem_start
 	mov	QWORD PTR current_seg$[rsp], rax
-$LN6@alloc:
+$LN6@malloc:
 
 ; 118  : 	while (true) {
 
 	xor	eax, eax
 	cmp	eax, 1
-	je	$LN5@alloc
+	je	$LN5@malloc
 
 ; 119  : 		if (current_seg->free) {
 
 	mov	rax, QWORD PTR current_seg$[rsp]
 	movzx	eax, BYTE PTR [rax+24]
 	test	eax, eax
-	je	SHORT $LN4@alloc
+	je	SHORT $LN4@malloc
 
 ; 120  : 			if (current_seg->length > size) {
 
 	mov	rax, QWORD PTR current_seg$[rsp]
 	mov	rcx, QWORD PTR size$[rsp]
 	cmp	QWORD PTR [rax], rcx
-	jbe	SHORT $LN3@alloc
+	jbe	SHORT $LN3@malloc
 
 ; 121  : 				current_seg->split (size);
 
@@ -369,8 +369,8 @@ $LN6@alloc:
 
 	mov	rax, QWORD PTR current_seg$[rsp]
 	add	rax, 32					; 00000020H
-	jmp	SHORT $LN9@alloc
-$LN3@alloc:
+	jmp	SHORT $LN9@malloc
+$LN3@malloc:
 
 ; 124  : 			}
 ; 125  : 
@@ -379,7 +379,7 @@ $LN3@alloc:
 	mov	rax, QWORD PTR current_seg$[rsp]
 	mov	rcx, QWORD PTR size$[rsp]
 	cmp	QWORD PTR [rax], rcx
-	jne	SHORT $LN2@alloc
+	jne	SHORT $LN2@malloc
 
 ; 127  : 				current_seg->free = false;
 
@@ -390,9 +390,9 @@ $LN3@alloc:
 
 	mov	rax, QWORD PTR current_seg$[rsp]
 	add	rax, 32					; 00000020H
-	jmp	SHORT $LN9@alloc
-$LN2@alloc:
-$LN4@alloc:
+	jmp	SHORT $LN9@malloc
+$LN2@malloc:
+$LN4@malloc:
 
 ; 129  : 			}
 ; 130  : 		}
@@ -400,9 +400,9 @@ $LN4@alloc:
 
 	mov	rax, QWORD PTR current_seg$[rsp]
 	cmp	QWORD PTR [rax+8], 0
-	jne	SHORT $LN1@alloc
-	jmp	SHORT $LN5@alloc
-$LN1@alloc:
+	jne	SHORT $LN1@malloc
+	jmp	SHORT $LN5@malloc
+$LN1@malloc:
 
 ; 132  : 		current_seg = current_seg->next;
 
@@ -412,8 +412,8 @@ $LN1@alloc:
 
 ; 133  : 	}
 
-	jmp	$LN6@alloc
-$LN5@alloc:
+	jmp	$LN6@malloc
+$LN5@malloc:
 
 ; 134  : 
 ; 135  : 	expand_kmem(size);
@@ -421,17 +421,17 @@ $LN5@alloc:
 	mov	rcx, QWORD PTR size$[rsp]
 	call	?expand_kmem@@YAX_K@Z			; expand_kmem
 
-; 136  : 	return alloc(size);
+; 136  : 	return malloc(size);
 
 	mov	rcx, QWORD PTR size$[rsp]
-	call	?alloc@@YAPEAX_K@Z			; alloc
-$LN9@alloc:
+	call	?malloc@@YAPEAX_K@Z			; malloc
+$LN9@malloc:
 
 ; 137  : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
-?alloc@@YAPEAX_K@Z ENDP					; alloc
+?malloc@@YAPEAX_K@Z ENDP				; malloc
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\arch\x86_64\kheap.cpp

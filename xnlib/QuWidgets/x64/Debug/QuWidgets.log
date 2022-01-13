@@ -1,29 +1,26 @@
-﻿Build started 26-12-2021 আবেলি 7:06:02.
+﻿Build started 13-01-2022 ৰাতিপু 12:12:21.
      1>Project "E:\Xeneva Project\Xeneva\xnlib\QuWidgets\QuWidgets.vcxproj" on node 2 (Rebuild target(s)).
      1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\xnlib\xnclib" /I"E:\Xeneva Project\Xeneva\xnlib\QuWidgets\include" /I"E:\Xeneva Project\Xeneva\xnlib\xnacrylic\include" /Zi /nologo /W4 /WX- /sdl- /MP /Od /D ARCH_X64 /D _MBCS /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt source\QuBase.cpp source\QuButton.cpp source\QuContextMenu.cpp source\QuEditBox.cpp source\QuIcon.cpp source\QuImage\QuBmpImage.cpp source\QuKeycodeHelper.cpp source\QuMenubar.cpp source\QuPanel.cpp source\QuPopupMenu.cpp source\QuScrollbar.cpp source\QuSlider.cpp source\QuTerminal.cpp source\QuTextbox.cpp source\QuUtils\QuList.cpp source\QuWindow.cpp source\QuWindowControl.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\xnlib\xnclib" /I"E:\Xeneva Project\Xeneva\xnlib\QuWidgets\include" /I"E:\Xeneva Project\Xeneva\xnlib\xnacrylic\include" /Zi /nologo /W4 /WX- /sdl- /MP /Od /D ARCH_X64 /D _MBCS /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt include\QuView.cpp source\QuBase.cpp source\QuButton.cpp source\QuContextMenu.cpp source\QuEditBox.cpp source\QuIcon.cpp source\QuImage\QuBmpImage.cpp source\QuKeycodeHelper.cpp source\QuMenubar.cpp source\QuPanel.cpp source\QuPopupMenu.cpp source\QuScrollbar.cpp source\QuSlider.cpp source\QuTerminal.cpp source\QuTextbox.cpp source\QuUtils\QuList.cpp source\QuWindow.cpp source\QuWindowControl.cpp
      1>cl : Command line warning D9025: overriding '/sdl-' with '/GS-'
      1>cl : Command line warning D9002: ignoring unknown option '/arch:SSE'
      1>cl : Command line warning D9030: '/Gm' is incompatible with multiprocessing; ignoring /MP switch
          QuWindowControl.cpp
          QuWindow.cpp
-     1>source\QuWindow.cpp(71): warning C4018: '<' : signed/unsigned mismatch
-     1>source\QuWindow.cpp(167): warning C4018: '<' : signed/unsigned mismatch
-     1>source\QuWindow.cpp(185): warning C4018: '<' : signed/unsigned mismatch
-     1>source\QuWindow.cpp(184): warning C4189: 'buttons_color' : local variable is initialized but not referenced
-     1>source\QuWindow.cpp(207): warning C4100: 'y' : unreferenced formal parameter
-     1>source\QuWindow.cpp(207): warning C4100: 'x' : unreferenced formal parameter
-     1>source\QuWindow.cpp(207): warning C4100: 'win' : unreferenced formal parameter
-     1>source\QuWindow.cpp(215): warning C4018: '<' : signed/unsigned mismatch
-     1>source\QuWindow.cpp(226): warning C4018: '<' : signed/unsigned mismatch
-     1>source\QuWindow.cpp(233): warning C4267: 'argument' : conversion from 'size_t' to 'unsigned int', possible loss of data
-     1>source\QuWindow.cpp(225): warning C4189: 'buttons_color' : local variable is initialized but not referenced
-     1>source\QuWindow.cpp(259): warning C4189: 'win' : local variable is initialized but not referenced
-     1>source\QuWindow.cpp(268): warning C4100: 'prop' : unreferenced formal parameter
-     1>source\QuWindow.cpp(283): warning C4018: '<' : signed/unsigned mismatch
-     1>source\QuWindow.cpp(313): warning C4018: '<' : signed/unsigned mismatch
-     1>source\QuWindow.cpp(336): warning C4018: '<' : signed/unsigned mismatch
-     1>source\QuWindow.cpp(345): warning C4100: 'bit' : unreferenced formal parameter
+     1>source\QuWindow.cpp(74): warning C4018: '<' : signed/unsigned mismatch
+     1>source\QuWindow.cpp(171): warning C4018: '<' : signed/unsigned mismatch
+     1>source\QuWindow.cpp(189): warning C4018: '<' : signed/unsigned mismatch
+     1>source\QuWindow.cpp(188): warning C4189: 'buttons_color' : local variable is initialized but not referenced
+     1>source\QuWindow.cpp(211): warning C4100: 'y' : unreferenced formal parameter
+     1>source\QuWindow.cpp(211): warning C4100: 'x' : unreferenced formal parameter
+     1>source\QuWindow.cpp(211): warning C4100: 'win' : unreferenced formal parameter
+     1>source\QuWindow.cpp(218): warning C4018: '<' : signed/unsigned mismatch
+     1>source\QuWindow.cpp(244): warning C4189: 'win' : local variable is initialized but not referenced
+     1>source\QuWindow.cpp(253): warning C4100: 'prop' : unreferenced formal parameter
+     1>source\QuWindow.cpp(268): warning C4018: '<' : signed/unsigned mismatch
+     1>source\QuWindow.cpp(298): warning C4018: '<' : signed/unsigned mismatch
+     1>source\QuWindow.cpp(321): warning C4018: '<' : signed/unsigned mismatch
+     1>source\QuWindow.cpp(330): warning C4100: 'bit' : unreferenced formal parameter
          QuList.cpp
          QuTextbox.cpp
      1>E:\Xeneva Project\Xeneva\xnlib\xnclib\ctype.h(33): warning C4005: 'isascii' : macro redefinition
@@ -39,13 +36,13 @@
          QuTerminal.cpp
      1>E:\Xeneva Project\Xeneva\xnlib\xnclib\ctype.h(33): warning C4005: 'isascii' : macro redefinition
                  E:\Xeneva Project\Xeneva\xnlib\xnclib\ctype.h(22) : see previous definition of 'isascii'
-     1>source\QuTerminal.cpp(40): warning C4100: 'color' : unreferenced formal parameter
-     1>source\QuTerminal.cpp(95): warning C4100: 'y' : unreferenced formal parameter
-     1>source\QuTerminal.cpp(95): warning C4100: 'x' : unreferenced formal parameter
-     1>source\QuTerminal.cpp(95): warning C4100: 'clicked' : unreferenced formal parameter
-     1>source\QuTerminal.cpp(95): warning C4100: 'code' : unreferenced formal parameter
-     1>source\QuTerminal.cpp(95): warning C4100: 'win' : unreferenced formal parameter
-     1>source\QuTerminal.cpp(95): warning C4100: 'wid' : unreferenced formal parameter
+     1>source\QuTerminal.cpp(42): warning C4100: 'color' : unreferenced formal parameter
+     1>source\QuTerminal.cpp(97): warning C4100: 'y' : unreferenced formal parameter
+     1>source\QuTerminal.cpp(97): warning C4100: 'x' : unreferenced formal parameter
+     1>source\QuTerminal.cpp(97): warning C4100: 'clicked' : unreferenced formal parameter
+     1>source\QuTerminal.cpp(97): warning C4100: 'code' : unreferenced formal parameter
+     1>source\QuTerminal.cpp(97): warning C4100: 'win' : unreferenced formal parameter
+     1>source\QuTerminal.cpp(97): warning C4100: 'wid' : unreferenced formal parameter
          QuSlider.cpp
          QuScrollbar.cpp
      1>source\QuScrollbar.cpp(54): warning C4189: 'update' : local variable is initialized but not referenced
@@ -97,10 +94,11 @@
      1>source\QuEditBox.cpp(111): warning C4100: 'win' : unreferenced formal parameter
      1>source\QuEditBox.cpp(120): warning C4100: 'color' : unreferenced formal parameter
          QuContextMenu.cpp
-     1>source\QuContextMenu.cpp(23): warning C4267: '=' : conversion from 'size_t' to 'int', possible loss of data
-     1>source\QuContextMenu.cpp(49): warning C4018: '<' : signed/unsigned mismatch
-     1>source\QuContextMenu.cpp(76): warning C4018: '<' : signed/unsigned mismatch
-     1>source\QuContextMenu.cpp(96): warning C4018: '<' : signed/unsigned mismatch
+     1>source\QuContextMenu.cpp(24): warning C4267: '=' : conversion from 'size_t' to 'int', possible loss of data
+     1>source\QuContextMenu.cpp(50): warning C4018: '<' : signed/unsigned mismatch
+     1>source\QuContextMenu.cpp(78): warning C4018: '<' : signed/unsigned mismatch
+     1>source\QuContextMenu.cpp(84): warning C4189: 'f_h' : local variable is initialized but not referenced
+     1>source\QuContextMenu.cpp(100): warning C4018: '<' : signed/unsigned mismatch
          QuButton.cpp
          QuBase.cpp
      1>source\QuBase.cpp(29): warning C4244: 'initializing' : conversion from 'unsigned int' to 'uint16_t', possible loss of data
@@ -112,11 +110,13 @@
      1>source\QuBase.cpp(66): warning C4244: '=' : conversion from 'uint16_t' to 'uint8_t', possible loss of data
      1>source\QuBase.cpp(74): warning C4127: conditional expression is constant
      1>source\QuBase.cpp(94): warning C4244: 'return' : conversion from 'unsigned int' to 'uint16_t', possible loss of data
+         QuView.cpp
          Generating Code...
      1>e:\xeneva project\xeneva\xnlib\quwidgets\source\qubase.cpp(110): warning C4715: 'QuApplicationWindowGet' : not all control paths return a value
      1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V110\Microsoft.CppBuild.targets(1299,5): warning MSB8012: TargetPath(E:\Xeneva Project\Xeneva\Aurora\x64\Debug\QuWidgets.lib) does not match the Library's OutputFile property value (E:\Xeneva Project\Xeneva\xnlib\lib64\QuWidgets.lib). This may cause your project to build incorrectly. To correct this, please make sure that $(OutDir), $(TargetName) and $(TargetExt) property values match the value specified in %(Lib.OutputFile).
        Lib:
-         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\Lib.exe /OUT:"E:\Xeneva Project\Xeneva\xnlib\lib64\QuWidgets.lib" /NOLOGO /MACHINE:X64 x64\Debug\QuBase.obj
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\Lib.exe /OUT:"E:\Xeneva Project\Xeneva\xnlib\lib64\QuWidgets.lib" /NOLOGO /MACHINE:X64 x64\Debug\QuView.obj
+         x64\Debug\QuBase.obj
          x64\Debug\QuButton.obj
          x64\Debug\QuContextMenu.obj
          x64\Debug\QuEditBox.obj
@@ -138,4 +138,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:03.58
+Time Elapsed 00:00:07.99

@@ -22,6 +22,7 @@
 void ioquery (int device_id, int code, void* arg) {
 	x64_cli();
 	vfs_node_t *node = get_current_thread()->fd[device_id];
-	vfs_ioquery(node, code, arg);
+	if (node) 
+		vfs_ioquery(node, code, arg);
 	return;
 }

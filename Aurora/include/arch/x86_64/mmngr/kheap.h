@@ -20,15 +20,14 @@ struct kmem {
 	size_t length;
 	kmem* next;
 	kmem* last;
-	bool  free;
-	void  align_next ();
-	void  align_prev ();
-	kmem  *split (size_t length);
+	bool free;
+	void align_next ();
+	void align_prev();
+	kmem* split (size_t length);
 };
 
-
 void initialize_kmemory (size_t sz);
-void* alloc(size_t sz);
-void free (void* memory);
-void kheap_print ();
+void* malloc(size_t sz);
+void free(void* memory);
+
 #endif

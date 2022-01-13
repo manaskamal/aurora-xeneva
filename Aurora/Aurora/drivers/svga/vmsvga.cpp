@@ -21,7 +21,7 @@
 #include <serial.h>
 #include <string.h>
 #include <hwcursor.h>
-#include <mm.h>
+#include <arch\x86_64\mmngr\kheap.h>
 #include <fs/vfs.h>
 
 svga_device svga_dev;

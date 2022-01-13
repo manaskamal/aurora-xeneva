@@ -194,6 +194,7 @@
     <ClCompile Include="sys\postbox.cpp" />
     <ClCompile Include="sys\stdlib.cpp" />
     <ClCompile Include="sys\_xeneva.cpp" />
+    <ClCompile Include="_term.cpp" />
   </ItemGroup>
   <ItemGroup>
     <NASM Include="setjmp.asm" />

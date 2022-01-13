@@ -15,14 +15,14 @@ user_stack_index_2 DD 01H DUP (?)
 pid	DD	01H DUP (?)
 _BSS	ENDS
 CONST	SEGMENT
-$SG3784	DB	'/dev/stdin', 00H
+$SG3799	DB	'/dev/stdin', 00H
 	ORG $+5
-$SG3786	DB	'/dev/stdout', 00H
+$SG3801	DB	'/dev/stdout', 00H
 	ORG $+4
-$SG3788	DB	'/dev/stderr', 00H
+$SG3803	DB	'/dev/stderr', 00H
 	ORG $+4
-$SG3801	DB	'Executable image not found', 0aH, 00H
-$SG3933	DB	'child', 00H
+$SG3816	DB	'Executable image not found', 0aH, 00H
+$SG3948	DB	'child', 00H
 CONST	ENDS
 PUBLIC	?create_user_stack@@YAPEA_KPEA_K@Z		; create_user_stack
 PUBLIC	?create_inc_stack@@YAPEA_KPEA_K@Z		; create_inc_stack
@@ -56,13 +56,13 @@ EXTRN	?map_page_ex@@YA_NPEA_K_K1E@Z:PROC		; map_page_ex
 EXTRN	?unmap_page_ex@@YAXPEA_K_K_N@Z:PROC		; unmap_page_ex
 EXTRN	?create_user_address_space@@YAPEA_KXZ:PROC	; create_user_address_space
 EXTRN	?unmap_page@@YAX_K@Z:PROC			; unmap_page
+EXTRN	?printf@@YAXPEBDZZ:PROC				; printf
 EXTRN	?create_user_thread@@YAPEAU_thread_@@P6AXPEAX@Z_K2QEADE@Z:PROC ; create_user_thread
 EXTRN	?unblock_thread@@YAXPEAU_thread_@@@Z:PROC	; unblock_thread
 EXTRN	?get_current_thread@@YAPEAU_thread_@@XZ:PROC	; get_current_thread
 EXTRN	?thread_iterate_ready_list@@YAPEAU_thread_@@G@Z:PROC ; thread_iterate_ready_list
 EXTRN	?thread_iterate_block_list@@YAPEAU_thread_@@H@Z:PROC ; thread_iterate_block_list
 EXTRN	?task_delete@@YAXPEAU_thread_@@@Z:PROC		; task_delete
-EXTRN	?printf@@YAXPEBDZZ:PROC				; printf
 EXTRN	?load_pe_file@@YAXPEAEH@Z:PROC			; load_pe_file
 EXTRN	?create_mutex@@YAPEAUmutex_t@@XZ:PROC		; create_mutex
 EXTRN	?mutex_lock@@YAXPEAUmutex_t@@@Z:PROC		; mutex_lock
@@ -379,7 +379,7 @@ $LN3:
 ; 389  : 	thread_t *t = create_user_thread(child_proc->entry_point,child_proc->stack,(uint64_t)child_proc->cr3,"child",1);
 
 	mov	BYTE PTR [rsp+32], 1
-	lea	r9, OFFSET FLAT:$SG3933
+	lea	r9, OFFSET FLAT:$SG3948
 	mov	rax, QWORD PTR child_proc$[rsp]
 	mov	r8, QWORD PTR [rax+40]
 	mov	rax, QWORD PTR child_proc$[rsp]
@@ -548,7 +548,7 @@ $LN3:
 
 ; 136  : 	vfs_node_t * stdin = vfs_finddir("/dev/stdin");
 
-	lea	rcx, OFFSET FLAT:$SG3784
+	lea	rcx, OFFSET FLAT:$SG3799
 	call	?vfs_finddir@@YAPEAU_vfs_node_@@PEAD@Z	; vfs_finddir
 	mov	QWORD PTR stdin$[rsp], rax
 
@@ -570,7 +570,7 @@ $LN3:
 
 ; 139  : 	vfs_node_t* stdout = vfs_finddir("/dev/stdout");
 
-	lea	rcx, OFFSET FLAT:$SG3786
+	lea	rcx, OFFSET FLAT:$SG3801
 	call	?vfs_finddir@@YAPEAU_vfs_node_@@PEAD@Z	; vfs_finddir
 	mov	QWORD PTR stdout$[rsp], rax
 
@@ -592,7 +592,7 @@ $LN3:
 
 ; 142  : 	vfs_node_t* stderr = vfs_finddir("/dev/stderr");
 
-	lea	rcx, OFFSET FLAT:$SG3788
+	lea	rcx, OFFSET FLAT:$SG3803
 	call	?vfs_finddir@@YAPEAU_vfs_node_@@PEAD@Z	; vfs_finddir
 	mov	QWORD PTR stderr$[rsp], rax
 
@@ -1664,7 +1664,7 @@ $LN9:
 
 ; 168  : 		printf("Executable image not found\n");
 
-	lea	rcx, OFFSET FLAT:$SG3801
+	lea	rcx, OFFSET FLAT:$SG3816
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 169  : 		return -1;
@@ -1949,10 +1949,10 @@ $LN6:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 72					; 00000048H
 
-; 122  : #define INC_STACK 0x0000700000000000 
+; 122  : #define INC_STACK 0x0000010000000000 
 ; 123  : 	uint64_t location = INC_STACK ; //+ user_stack_index;
 
-	mov	rax, 123145302310912			; 0000700000000000H
+	mov	rax, 1099511627776			; 0000010000000000H
 	mov	QWORD PTR location$[rsp], rax
 
 ; 124  : 
@@ -2003,7 +2003,7 @@ $LN1@create_inc:
 ; 131  : 	//user_stack_index += 0x100000;
 ; 132  : 	return (uint64_t*)(INC_STACK + (2*1024*1024));
 
-	mov	rax, 123145304408064			; 0000700000200000H
+	mov	rax, 1099513724928			; 0000010000200000H
 
 ; 133  : }
 

@@ -18,6 +18,7 @@
 #include <color.h>
 #include <sys\_term.h>
 #include <sys\mmap.h>
+#include <string.h>
 
 #define QUWIN_DEFAULT_WIDTH   500
 #define QUWIN_DEFAULT_HEIGHT  500
@@ -27,20 +28,23 @@ static int winid = 1;
 
 QuWindow* QuWindowCreate (int x, int y, uint16_t owner_id, unsigned int* canvas) {
 	QuWindow* win = (QuWindow*)malloc(sizeof(QuWindow));
+	memset(win, 0, sizeof(QuWindow));
 	//win->x = x;
 	//win->y = y;
 	win->drag_x = 0;
 	win->drag_y = 0;
-	win->draggable = false;
 	win->width = QUWIN_DEFAULT_WIDTH;
 	win->height = QUWIN_DEFAULT_HEIGHT;
 	win->visible = true;
 	win->canvas = canvas; //NULL;
 	win->owner_id = owner_id;
-	win->maximize = false;
 	win->mark_for_close = false;
+	win->resz_h = 0;
+	win->resz_v = 0;
 	win->attr = QU_WIN_FULL; //attr;
 	win->id = winid;
+	win->drop_shadow = NULL;
+	win->dock = NULL;
     QuWindowMngr_Add (win);
 	winid++;
 	return win;

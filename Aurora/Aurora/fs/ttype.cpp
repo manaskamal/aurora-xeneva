@@ -31,7 +31,7 @@
  **/
 
 #include <fs\ttype.h>
-#include <mm.h>
+#include <arch\x86_64\mmngr\kheap.h>
 #include <stdio.h>
 #include <arch\x86_64\thread.h>
 

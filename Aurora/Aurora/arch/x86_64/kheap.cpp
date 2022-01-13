@@ -106,7 +106,7 @@ void expand_kmem (size_t length) {
 
 
 
-void* alloc(size_t size) {
+void* malloc(size_t size) {
 	if (size % 0x10 > 0) {
 		size -= (size % 0x10);
 		size += 0x10;
@@ -133,7 +133,7 @@ void* alloc(size_t size) {
 	}
 
 	expand_kmem(size);
-	return alloc(size);
+	return malloc(size);
 }
 
 void free (void* memory) {

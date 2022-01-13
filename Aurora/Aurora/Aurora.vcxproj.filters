@@ -123,9 +123,6 @@
     <ClInclude Include="..\include\pmmngr.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\mm.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\arch\x86_64\mmngr\vmmngr.h">
       <Filter>include\arch\x86_64\mmngr</Filter>
     </ClInclude>
@@ -351,6 +348,9 @@
     <ClInclude Include="..\include\timer.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\ipc\pri_loop.h">
+      <Filter>include\ipc</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="init.cpp">
@@ -372,9 +372,6 @@
       <Filter>source</Filter>
     </ClCompile>
     <ClCompile Include="pmmngr.cpp">
-      <Filter>source</Filter>
-    </ClCompile>
-    <ClCompile Include="mm.cpp">
       <Filter>source</Filter>
     </ClCompile>
     <ClCompile Include="arch\x86_64\vmmngr.cpp">
@@ -571,6 +568,9 @@
     </ClCompile>
     <ClCompile Include="timer.cpp">
       <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="ipc\pri_loop.cpp">
+      <Filter>source\ipc</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

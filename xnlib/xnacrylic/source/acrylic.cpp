@@ -257,10 +257,12 @@ void acrylic_box_blur (canvas_t * canvas,unsigned int* input, unsigned int* outp
 							uint8_t red = GET_RED(color);
 							uint8_t green = GET_GREEN(color);
 							uint8_t blue = GET_BLUE(color);
-					
+							uint8_t alpha = GET_ALPHA(color);
+
 							redTotal += red;
 							greenTotal += green;
 							blueTotal += blue;
+							alphaTotal += alpha;
 					}
 				}
 			}
@@ -268,8 +270,9 @@ void acrylic_box_blur (canvas_t * canvas,unsigned int* input, unsigned int* outp
 			uint8_t red = redTotal / 9;
 			uint8_t green = greenTotal /9;
 			uint8_t blue = blueTotal / 9;
+			uint8_t alpha = alphaTotal / 9;
 
-			output[(cy + j ) *canvas_get_width(canvas) + (cx + i)] = make_col(red,green,blue);
+			output[(cy + j ) *canvas_get_width(canvas) + (cx + i)] = make_col_a(red,green,blue, alpha);
 		}
 	}
 }

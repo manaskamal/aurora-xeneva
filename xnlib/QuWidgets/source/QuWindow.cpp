@@ -49,6 +49,7 @@ QuWinControl* QuCreateControl (unsigned x, unsigned y, unsigned w, unsigned h, u
 void QuWindowAddMinimizeButton (QuWindow *win) {
 	QuWinControl *minimize = QuCreateControl(win->w - 43,2, 11,18, QU_WIN_CONTROL_MINIMIZE);
 	minimize->ControlRedraw = QuMinimizeButtonDraw;
+	minimize->ControlRearrange = QuMinimizeButtonRearrange;
 	QuListAdd (win->controls, minimize);
 }
 
@@ -56,6 +57,7 @@ void QuWindowAddMaximizeButton (QuWindow *win) {
 	QuWinControl *maximize = QuCreateControl (win->w - 28, 2, 11, 18, 
 		QU_WIN_CONTROL_MAXIMIZE);
 	maximize->ControlRedraw = QuMaximizeButtonDraw;
+	maximize->ControlRearrange = QuMaximizeButtonRearrange;
 	QuListAdd (win->controls, maximize);
 }
 
@@ -63,6 +65,7 @@ void QuWindowAddCloseButton(QuWindow *win) {
 	QuWinControl *close = QuCreateControl (win->w - 13, 2, 11, 18,
 		QU_WIN_CONTROL_CLOSE);
 	close->ControlRedraw = QuCloseButtonDraw;
+	close->ControlRearrange = QuCloseButtonRearrange;
 	QuListAdd (win->controls, close);
 }
 
@@ -93,6 +96,7 @@ QuWindow* QuCreateWindow (int x, int y, int w, int h, char* title) {
 	win->draggable_widget = NULL;
 	win->current_ctx_menu = NULL;
 	win->winid = 0;
+	win->maximized = false;
 	QuRegisterApplication(win);
 	win->ctx = NULL;
 	return win;
@@ -162,7 +166,7 @@ void QuWindowShow(QuWindow *win) {
 	QuWinInfo *info = (QuWinInfo*)win->win_info_data;
 
 	/**
-	 * Draw every widgets in stacking order 
+	* Draw every widgets in stacking order 
 	 */
 	for (int i = 0; i < win->widgets->pointer; i++) {
 		QuWidget* wid = (QuWidget*)QuListGetAt(win->widgets, i);
@@ -200,7 +204,7 @@ void QuWindowShow(QuWindow *win) {
 	/**
 	 * Update the content to main canvas of the window
 	 */
-	QuPanelUpdate(win,info->x,info->y, win->w, win->h, true);
+	QuPanelUpdate(win,info->x,info->y, win->w + 10, win->h + 10, true);
 }
 
 
@@ -210,31 +214,12 @@ void QuWindowMove (QuWindow *win,int x, int y) {
 }
 
 
-void QuWindowRepaint() {
-	QuWinInfo *info = (QuWinInfo*)root_win->win_info_data;
-	for (int i = 0; i < root_win->widgets->pointer; i++) {
-		QuWidget* wid = (QuWidget*)QuListGetAt(root_win->widgets, i);
-		wid->Refresh(wid, root_win);
+void QuWindowRepaint(QuWindow * win) {
+	for (int i = 0; i < win->controls->pointer; i++) {
+			QuWinControl *to = (QuWinControl*)QuListGetAt(win->controls, i);
+			to->ControlRearrange(to,win);
 	}
-
-	if (root_win->decorate) {
-	for (int i = 0; i < 23; i++)
-		acrylic_draw_horizontal_line(root_win->ctx, info->x, info->y + i,root_win->w,title_bar_colors[i]);
-
-
-	uint32_t buttons_color = WHITE;
-	for (int i = 0; i < root_win->controls->pointer; i++) {
-		QuWinControl *to = (QuWinControl*)QuListGetAt(root_win->controls, i);
-		to->ControlRedraw(to,root_win, false);
-	}
-
-	acrylic_draw_arr_string (root_win->ctx,info->x + root_win->w/2 - (strlen(root_win->title)*8)/2,
-		info->y + 3, 
-		root_win->title, WHITE);
-	acrylic_draw_rect_unfilled (root_win->ctx,info->x, info->y, root_win->w, root_win->h, SILVER);
-	}
-
-	QuPanelUpdate(root_win,info->x, info->y, root_win->w, root_win->h, false);
+	QuWindowShow(win);
 }
 
 

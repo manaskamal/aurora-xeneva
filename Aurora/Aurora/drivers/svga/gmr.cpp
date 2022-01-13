@@ -12,7 +12,7 @@
 #include <drivers\svga\gmr.h>
 #include <drivers\svga\vmsvga.h>
 #include <pmmngr.h>
-#include <mm.h>
+#include <arch\x86_64\mmngr\kheap.h>
 
 gmr_state gmr;
 

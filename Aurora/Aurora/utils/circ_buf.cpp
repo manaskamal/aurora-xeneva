@@ -9,7 +9,7 @@
 ///!===============================================
 
 #include <utils\circ_buf.h>
-#include <mm.h>
+#include <arch\x86_64\mmngr\kheap.h>
 
 void advance_pointer (circ_buf_t *cbuf) {
 	if (cbuf->full)
@@ -42,7 +42,7 @@ circ_buf_t *circ_buf_init (uint8_t* buffer, size_t size) {
 }
 
 void circ_buf_free (circ_buf_t *cbuf) {
-	mfree(cbuf);
+	free(cbuf);
 }
 
 size_t circular_buf_size(circ_buf_t *cbuf)

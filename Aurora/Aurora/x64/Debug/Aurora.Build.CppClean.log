@@ -64,8 +64,7 @@ E:\XENEVA PROJECT\XENEVA\AURORA\AURORA\X64\DEBUG\MESSAGE.OBJ
 E:\XENEVA PROJECT\XENEVA\AURORA\AURORA\X64\DEBUG\MESSAGE.ASM
 E:\XENEVA PROJECT\XENEVA\AURORA\AURORA\X64\DEBUG\POSTBOX.OBJ
 E:\XENEVA PROJECT\XENEVA\AURORA\AURORA\X64\DEBUG\POSTBOX.ASM
-E:\XENEVA PROJECT\XENEVA\AURORA\AURORA\X64\DEBUG\MM.OBJ
-E:\XENEVA PROJECT\XENEVA\AURORA\AURORA\X64\DEBUG\MM.ASM
+E:\XENEVA PROJECT\XENEVA\AURORA\AURORA\X64\DEBUG\PRI_LOOP.ASM
 E:\XENEVA PROJECT\XENEVA\AURORA\AURORA\X64\DEBUG\ARP.OBJ
 E:\XENEVA PROJECT\XENEVA\AURORA\AURORA\X64\DEBUG\ARP.ASM
 E:\XENEVA PROJECT\XENEVA\AURORA\AURORA\X64\DEBUG\ETHERNET.OBJ
@@ -151,8 +150,6 @@ E:\XENEVA PROJECT\XENEVA\AURORA\AURORA\X64\DEBUG\USER64.ASM
 E:\XENEVA PROJECT\XENEVA\AURORA\AURORA\X64\DEBUG\VMMNGR.OBJ
 E:\XENEVA PROJECT\XENEVA\AURORA\AURORA\X64\DEBUG\VMMNGR.ASM
 E:\XENEVA PROJECT\XENEVA\AURORA\AURORA\X64\DEBUG\VC110.PDB
-D:\EFI\XENEVA\XNKRNL.EXE
-D:\EFI\XENEVA\XNKRNL.MAP
 E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\acpi.obj
 E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\apic.obj
 E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\arp.obj
@@ -182,7 +179,6 @@ E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\kybrd.obj
 E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\lnklist.obj
 E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\map.obj
 E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\message.obj
-E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\mm.obj
 E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\mouse.obj
 E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\mutex.obj
 E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\nethw.obj
@@ -233,9 +229,10 @@ E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\CL.read.2.tlog
 E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\CL.read.3.tlog
 E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\CL.read.4.tlog
 E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\CL.read.5.tlog
+E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\CL.read.6.tlog
+E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\CL.read.7.tlog
+E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\CL.read.8.tlog
+E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\CL.read.9.tlog
 E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\CL.write.1.tlog
-E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\link.command.1.tlog
-E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\link.read.1.tlog
-E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\link.write.1.tlog
 E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\vc110.idb
 E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\vc110.pdb

@@ -14,6 +14,7 @@
 #include <string.h>
 #include <drivers\net\e1000.h>
 #include <stdio.h>
+#include <arch\x86_64\mmngr\kheap.h>
 
 //! Send a packet
 int ethernet_send_packet (uint8_t* dst_mac_addr, uint8_t *data, int len, uint16_t protocol) {
@@ -37,7 +38,7 @@ int ethernet_send_packet (uint8_t* dst_mac_addr, uint8_t *data, int len, uint16_
 
 	//!Send packet
 	e1000_send_packet (frame, sizeof(ethernet_frame_t) + len);
-	mfree (frame);
+	free (frame);
 	return len;
 }
 

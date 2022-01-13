@@ -76,7 +76,7 @@ void* QuListRemove(QuList* list, unsigned int index) {
 	if (index == 0)
 		list->entry_current = current_node->next;
 
-	//dfree(current_node);
+	free(current_node);
 
 	list->pointer--;
 

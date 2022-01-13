@@ -51,8 +51,6 @@ extern "C" {
 
 	void sys_pause_timer (int utimer_id);
 
-	void* GetProcAddress(void *image, const char* procname);
-
 #ifdef __cplusplus
 }
 #endif

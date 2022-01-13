@@ -1,27 +1,28 @@
-﻿Build started 29-12-2021 আবেলি 5:58:49.
+﻿Build started 12-01-2022 আবেলি 8:19:23.
      1>Project "E:\Xeneva Project\Xeneva\xnlib\xnclib\xnclib.vcxproj" on node 2 (Rebuild target(s)).
      1>_NASM:
          setjmp.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmpbb2be0f35f2f4ec7a9f0c50c4732336a.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmpd98a2e51080c4edbbbb1ac8e15c318d8.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\setjmp.obj"  "E:\Xeneva Project\Xeneva\xnlib\xnclib\setjmp.asm"
        _NASM:
          sys\callback.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp46142933652a4f90a3941a8a519255f3.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmpd2a954e794614bed9505a102d3012929.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\callback.obj"  "E:\Xeneva Project\Xeneva\xnlib\xnclib\sys\callback.asm"
      1>E:\Xeneva Project\Xeneva\xnlib\xnclib\sys\callback.asm(121): warning : label alone on a line without a colon might be in error
        _NASM:
          _fast_copy.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmpcfc664681b394a2ca1767f979ebc8536.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp5eb000310356421fb880717d83be1482.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\_fast_copy.obj"  "E:\Xeneva Project\Xeneva\xnlib\xnclib\_fast_copy.asm"
        _NASM:
          crt0.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp4dadce38bb7d4a23b72b8364cc02f214.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmpe0ea565ba813435883551a4a73e3ae6e.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\crt0.obj"  "E:\Xeneva Project\Xeneva\xnlib\xnclib\crt0.asm"
        ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\xnlib\xnclib" /I"E:\Xeneva Project\Xeneva\xnlib\xnclib\c++" /Zi /nologo /W4 /WX- /sdl- /MP /Od /D ARCH_X64 /D _MBCS /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt c++\ios.cpp c++\iostream.cpp c++\istream.cpp c++\memory.cpp c++\ostream.cpp c++\_string.cpp errno.cpp heap.cpp initializer.cpp math.cpp qsort.cpp stdio.cpp string.cpp sys\postbox.cpp sys\stdlib.cpp sys\_xeneva.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\xnlib\xnclib" /I"E:\Xeneva Project\Xeneva\xnlib\xnclib\c++" /Zi /nologo /W4 /WX- /sdl- /MP /Od /D ARCH_X64 /D _MBCS /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt c++\ios.cpp c++\iostream.cpp c++\istream.cpp c++\memory.cpp c++\ostream.cpp c++\_string.cpp errno.cpp heap.cpp initializer.cpp math.cpp qsort.cpp stdio.cpp string.cpp sys\postbox.cpp sys\stdlib.cpp sys\_xeneva.cpp _term.cpp
      1>cl : Command line warning D9025: overriding '/sdl-' with '/GS-'
      1>cl : Command line warning D9002: ignoring unknown option '/arch:SSE'
      1>cl : Command line warning D9030: '/Gm' is incompatible with multiprocessing; ignoring /MP switch
+         _term.cpp
          _xeneva.cpp
      1>sys\_xeneva.cpp(30): warning C4018: '<' : signed/unsigned mismatch
          stdlib.cpp
@@ -70,14 +71,14 @@
          stdio.cpp
      1>stdio.cpp(16): warning C4100: 'format' : unreferenced formal parameter
      1>stdio.cpp(16): warning C4100: 'f' : unreferenced formal parameter
-     1>stdio.cpp(31): warning C4100: 'mode' : unreferenced formal parameter
-     1>stdio.cpp(49): warning C4100: 'nmemb' : unreferenced formal parameter
-     1>stdio.cpp(57): warning C4244: 'return' : conversion from '__int64' to 'long', possible loss of data
-     1>stdio.cpp(96): warning C4100: 'arg' : unreferenced formal parameter
-     1>stdio.cpp(96): warning C4100: 'format' : unreferenced formal parameter
-     1>stdio.cpp(96): warning C4100: 'stream' : unreferenced formal parameter
-     1>stdio.cpp(101): warning C4100: 'string' : unreferenced formal parameter
-     1>stdio.cpp(101): warning C4100: 'str' : unreferenced formal parameter
+     1>stdio.cpp(87): warning C4100: 'mode' : unreferenced formal parameter
+     1>stdio.cpp(105): warning C4100: 'nmemb' : unreferenced formal parameter
+     1>stdio.cpp(113): warning C4244: 'return' : conversion from '__int64' to 'long', possible loss of data
+     1>stdio.cpp(152): warning C4100: 'arg' : unreferenced formal parameter
+     1>stdio.cpp(152): warning C4100: 'format' : unreferenced formal parameter
+     1>stdio.cpp(152): warning C4100: 'stream' : unreferenced formal parameter
+     1>stdio.cpp(157): warning C4100: 'string' : unreferenced formal parameter
+     1>stdio.cpp(157): warning C4100: 'str' : unreferenced formal parameter
          qsort.cpp
      1>qsort.cpp(55): warning C4267: 'argument' : conversion from 'size_t' to 'ssize_t', possible loss of data
          math.cpp
@@ -148,6 +149,7 @@
          x64\Debug\postbox.obj
          x64\Debug\stdlib.obj
          x64\Debug\_xeneva.obj
+         x64\Debug\_term.obj
          x64\Debug\setjmp.obj
          x64\Debug\_fast_copy.obj
          x64\Debug\callback.obj
@@ -157,4 +159,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:05.08
+Time Elapsed 00:00:01.78

@@ -10,7 +10,7 @@
 
 #include <QuCanvas\QuCanvasMngr.h>
 #include <QuCode.h>
-#include <QuWindow\QuList.h>
+#include <QuUtils\QuList.h>
 #include <canvas.h>
 #include <sys\mmap.h>
 #include <ipc\QuChannel.h>
@@ -32,35 +32,98 @@
 #include <QuWidget\QuWallpaper.h>
 #include <QuWidget\QuDock.h>
 
-
 #define QU_CANVAS_START   0x0000100000000000
 
 uint32_t cursor_pos = 0;
 bool update_bit = false;
 QuRect dirty_rect[512];
+QuList *canvas_list;
 int dirty_r_count;
+
+typedef struct _QuCanvasArea_ {
+	uint16_t owner_id;
+	uint64_t pos;
+	uint32_t size;
+	bool free;
+}QuCanvasArea;
 
 void QuCanvasMngr_Initialize() {
 	memset(dirty_rect, 0, 512);
 	dirty_r_count = 0;
-	//dirty_list = QuListInit();
+	canvas_list = QuListInit();
 }
 
 //!Creates a canvas
 uint32_t* QuCanvasCreate (uint16_t dest_pid, int w, int h) {
-	uint32_t pos = cursor_pos;
+	
+	uint32_t pos;
+	uint64_t addr = 0;
 	uint32_t size = w * h * 32;
-	map_shared_memory(dest_pid,QU_CANVAS_START + pos,size);
-	cursor_pos += size;
-	return (uint32_t*)(QU_CANVAS_START + pos);
+	for (int i = 0; i < canvas_list->pointer; i++) {
+		QuCanvasArea *ar = (QuCanvasArea*)QuListGetAt(canvas_list,i);
+		if (ar->free) {
+			addr = ar->pos;
+			map_shared_memory(dest_pid,addr,size);
+			//sys_print_text ("Reusing CA-> %x, %d\n", addr,ar->size);
+			ar->free = false;
+			ar->owner_id = dest_pid;
+			break;
+		}
+		pos += ar->size;
+	}
+	uint32_t screen_res = canvas_get_width(QuGetCanvas()) * canvas_get_height(QuGetCanvas()) * 32;
+	uint32_t diff = screen_res - size;
+	if (addr == NULL) {
+		QuCanvasArea *area = (QuCanvasArea*)malloc(sizeof(QuCanvasArea));
+		map_shared_memory(dest_pid,QU_CANVAS_START + pos,size);
+		area->pos = QU_CANVAS_START + pos;
+		area->size = size + diff;
+		area->owner_id = dest_pid;
+		addr = area->pos;
+		QuListAdd(canvas_list,area);
+	}
+	return (uint32_t*)(addr);
 }
 
 void QuCanvasRelease (uint16_t dest_pid, QuWindow *win) {
-	uint32_t size = canvas_get_width(QuGetCanvas()) * canvas_get_height(QuGetCanvas()) * 32;
+	QuCanvasArea *area = NULL;
+	int i = 0;
+	for (i = 0; i < canvas_list->pointer; i++) {
+		area = (QuCanvasArea*)QuListGetAt(canvas_list,i);
+		if (area->owner_id == dest_pid) 
+			break;
+	}
+	uint32_t size = area->size;
 	sys_unmap_sh_mem(dest_pid, (uint64_t)win->canvas, size);
-	cursor_pos -= size;
+	area->free = true;
 }
 
+
+void QuCanvasRemap (uint16_t dest_pid, void *canvas, int w, int h) {
+	QuCanvasArea *area = NULL;
+	uint64_t pos = 0;
+	uint32_t size = w * h * 32;
+	for (int i = 0; i < canvas_list->pointer; i++) {
+		area = (QuCanvasArea*)QuListGetAt(canvas_list,i);
+		if (area->owner_id == dest_pid && area->size== size) 
+			return;
+		pos += area->size;
+	}
+
+	for (int i = 0; i < canvas_list->pointer; i++) {
+		area = (QuCanvasArea*)QuListGetAt(canvas_list,i);
+		sys_unmap_sh_mem(dest_pid,(uint64_t)canvas, area->size);
+		area->free = true;
+		break;
+	}
+	QuCanvasArea *area_n = (QuCanvasArea*)malloc(sizeof(QuCanvasArea));
+	area_n->free = false;
+	area_n->size = size;
+	area_n->pos = QU_CANVAS_START + pos;
+	area_n->owner_id = dest_pid;
+	map_shared_memory (dest_pid, (uint64_t)area_n->pos,size);
+	QuListAdd(canvas_list,area_n);
+}
 
 
 void QuCanvasBlit (QuWindow* win,unsigned int *canvas, unsigned x, unsigned y, unsigned w, unsigned h) {
@@ -88,15 +151,24 @@ void QuCanvasBlit (QuWindow* win,unsigned int *canvas, unsigned x, unsigned y, u
 				if (ry < 0)
 					ry = 0;
 
+				
+				if (info->rect[k].x + info->rect[k].w >= win->width)
+					wid  = win->width - info->rect[k].x;
 
-				if (info->rect[k].x + info->rect[k].w >= width)
-					wid  = width - info->rect[k].x;
-
-				if (info->rect[k].y + info->rect[k].h>= height - 40){
-					info->y = height - win->height;
+				if (info->rect[k].y + info->rect[k].h>= win->height){
+					info->rect[k].y = win->height - info->rect[k].y;
 				}
 
+				if (info->x + info->rect[k].x + info->rect[k].w > width)
+					wid  = width - (info->x + info->rect[k].x);
+
+
 				if (info->alpha) {
+					for(int j = 0; j < he; j++)
+						for(int i = 0; i < wid; i++)
+							*(uint32_t*)(lfb + (info->y + ry + j)* width + (info->x + rx + i)) =
+							alpha_blend(*(uint32_t*)(lfb + (info->y + ry + j)* width+ (info->x + rx + i)),
+							*(uint32_t*)(win->canvas + (ry + j)*width + (rx + i)));
 				}else {
 					for (int i = 0; i < he; i++)  {
 						fastcpy (lfb + (info->y + ry + i) * width + (info->x + rx),win->canvas + (ry + i) * width + rx, 
@@ -104,29 +176,24 @@ void QuCanvasBlit (QuWindow* win,unsigned int *canvas, unsigned x, unsigned y, u
 					}
 				}
 
-				//canvas_screen_update(QuGetCanvas(),info->x + rx,info->y + ry, wid, he);
 				QuScreenRectAdd(info->x + rx,info->y + ry, wid, he);
 			}
 
 			info->rect_count = 0;
-#ifdef SW_CURSOR
-			//QuMoveCursor(QuCursorGetNewX(), QuCursorGetNewY());
-#endif
-
 		} else if (info->rect_count == 0){
 			int wid = win->width;
 			int he = win->height;
 			int winx = info->x;
 			int winy = info->y;
 
-			if (winx < 0) {
-				info->x = 0;
+			if (winx - 5 < 0) {
+				info->x = 5;
 				winx = info->x;
 			}
 
-			if (winy < 0) {
-				info->y = 0;
-				winy = 0;
+			if (winy - 5 < 0) {
+				info->y = 5;
+				winy = 5;
 			}
 
 
@@ -139,7 +206,15 @@ void QuCanvasBlit (QuWindow* win,unsigned int *canvas, unsigned x, unsigned y, u
 				he = (height - 40) - info->y;
 			}
 
+			if (win->drop_shadow && QuWindowMngrGetFocused() == win) {
+				for(int j = 0; j < he + 5; j++)
+                 for(int i = 0; i < wid + 5; i++)
+					 *(uint32_t*)(lfb + (winy - 5 + j)* width + (winx - 5 + i)) =alpha_blend(*(uint32_t*)(lfb + (winy - 5 + j)* width+ (winx - 5 + i)),
+					 *(uint32_t*)(win->drop_shadow->address + 
+					 j*width + i));
+			}
 
+			
 			if (info->alpha) {
 				for(int j = 0; j < he; j++)
                  for(int i = 0; i < wid; i++)
@@ -150,48 +225,37 @@ void QuCanvasBlit (QuWindow* win,unsigned int *canvas, unsigned x, unsigned y, u
 				for (int i = 0; i < he; i++)  {
 					fastcpy (lfb + (winy + i) * width + winx,win->canvas + (0 + i) * width + 0,
 						wid * 4);	
-				}
+			    }
 			}
                
-
-			QuScreenRectAdd(winx, winy, wid, he);
+			QuScreenRectAdd(winx - 5, winy - 5, wid + 5, he + 5);
 		}
 
 		info->dirty = false;
 	}
 
 	if (win->mark_for_close) {
-		//win->mark_for_close = false;
+		QuDockRemove(win->dock);
+		QuDockRepaint();
+
 		uint16_t id = win->owner_id;
 		QuCanvasRelease(win->owner_id, win);
-		QuCanvasUpdate(info->x, info->y, win->width, win->height);
-		QuScreenRectAdd(info->x, info->y, win->width, win->height);
+		QuCanvasUpdate(info->x - 5, info->y - 5, win->width + 5, win->height + 5);
+		QuScreenRectAdd(info->x - 5,info->y - 5, win->width + 5, win->height + 5);	
+		//sys_unmap_sh_mem(id, (uint64_t)win->win_info_location, 8192);	
+
 		QuWindowMngr_Remove(win);
-		QuCanvasSetUpdateBit(true);
+		//QuCanvasSetUpdateBit(true);
 		QuWindowMngr_DrawBehind(win);
 		
+	
+
 		QuMessage msg;
 		msg.to_id = id;
 		msg.type = QU_CANVAS_DESTROYED;
 		QuChannelPut(&msg,id);
 	}
 
-
-	/*if (info->maximize) {
-		if (!win->maximize) {
-			win->maximize = true;
-	    	win->old_x = win->x;
-		    win->old_y = win->y;
-		    win->old_w = win->width;
-		    win->old_h = win->height;
-		    win->x = 0;
-		    win->y = 0;
-		    win->width = canvas_get_width();
-		    win->height = canvas_get_height();
-			info->dirty = 1;
-			info->rect_count = 0;
-		}
-	}*/
 
 }
 
@@ -248,28 +312,8 @@ void QuCanvasUpdateDirty() {
 	dirty_r_count = 0;
 }
 
- void QuCanvasSetUpdateBit(bool value) {
-	 update_bit = value;
- }
-
- bool QuCanvasGetUpdateBit() {
-	 return update_bit;
- }
 
 
- void QuCanvasUpdateAll () {
-	 uint32_t* lfb = (uint32_t*)0x0000600000000000;
-	uint32_t* fb = (uint32_t*)0xFFFFF00000000000;
-	uint32_t* wallp = (uint32_t*)0x0000600000000000;   //0x0000060000000000;
-	int width = canvas_get_width(QuGetCanvas());
-	int height = canvas_get_height(QuGetCanvas());
-	 for (int i = 0; i < QuWindowMngr_GetList()->pointer; i++) {
-		 QuWindow* win = (QuWindow*)QuListGetAt(QuWindowMngr_GetList(), i);
-		 QuWindowInfo *info = (QuWindowInfo*)win->win_info_location;
-		 info->dirty = 1;
-		 info->rect_count = 0;
-	 }
- }
 
 
 
@@ -318,6 +362,6 @@ void QuCanvasUpdateDirty() {
 		_sec, 
 		0xD9000000);
 
-	canvas_screen_update(QuGetCanvas(),canvas_get_width(QuGetCanvas()) - 100, canvas_get_height(QuGetCanvas()) - 35,100,30);
+	canvas_screen_update(QuGetCanvas(),canvas_get_width(QuGetCanvas()) - 102, canvas_get_height(QuGetCanvas()) - 35,100,30);
 
  }

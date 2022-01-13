@@ -34,7 +34,7 @@ void QuMenubarRefresh (QuWidget* wid, QuWindow *win) {
 		} else {*/
 		/*	acrylic_draw_arr_string (win->ctx,wid->x + x + (ctx->m_w/2), 
 				 wid->y + (wid->height/2) - (12/2),ctx->title,LIGHTBLACK);*/
-			acrylic_font_set_size(15);
+			acrylic_font_set_size(12);
 			uint32_t text_length = acrylic_font_get_length(ctx->title);
 			acrylic_font_draw_string (win->ctx,ctx->title,wid->x + x + text_length/2/*(ctx->m_w/2)*/, 
 				 wid->y + 15/*(wid->height/2)- 15*/,15,LIGHTBLACK);

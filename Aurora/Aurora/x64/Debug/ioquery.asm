@@ -10,8 +10,8 @@ EXTRN	?vfs_ioquery@@YAHPEAU_vfs_node_@@HPEAX@Z:PROC	; vfs_ioquery
 EXTRN	x64_cli:PROC
 EXTRN	?get_current_thread@@YAPEAU_thread_@@XZ:PROC	; get_current_thread
 pdata	SEGMENT
-$pdata$?ioquery@@YAXHHPEAX@Z DD imagerel $LN3
-	DD	imagerel $LN3+69
+$pdata$?ioquery@@YAXHHPEAX@Z DD imagerel $LN4
+	DD	imagerel $LN4+77
 	DD	imagerel $unwind$?ioquery@@YAXHHPEAX@Z
 pdata	ENDS
 xdata	SEGMENT
@@ -29,7 +29,7 @@ arg$ = 80
 
 ; 22   : void ioquery (int device_id, int code, void* arg) {
 
-$LN3:
+$LN4:
 	mov	QWORD PTR [rsp+24], r8
 	mov	DWORD PTR [rsp+16], edx
 	mov	DWORD PTR [rsp+8], ecx
@@ -46,15 +46,21 @@ $LN3:
 	mov	rax, QWORD PTR [rax+rcx*8+272]
 	mov	QWORD PTR node$[rsp], rax
 
-; 25   : 	vfs_ioquery(node, code, arg);
+; 25   : 	if (node) 
+
+	cmp	QWORD PTR node$[rsp], 0
+	je	SHORT $LN1@ioquery
+
+; 26   : 		vfs_ioquery(node, code, arg);
 
 	mov	r8, QWORD PTR arg$[rsp]
 	mov	edx, DWORD PTR code$[rsp]
 	mov	rcx, QWORD PTR node$[rsp]
 	call	?vfs_ioquery@@YAHPEAU_vfs_node_@@HPEAX@Z ; vfs_ioquery
+$LN1@ioquery:
 
-; 26   : 	return;
-; 27   : }
+; 27   : 	return;
+; 28   : }
 
 	add	rsp, 56					; 00000038H
 	ret	0

@@ -12,7 +12,7 @@
 #include <drivers\usb\xhci.h>
 #include <drivers\pci.h>
 #include <stdio.h>
-#include <mm.h>
+#include <arch\x86_64\mmngr\kheap.h>
 
 xhci *xusb_dev;
 

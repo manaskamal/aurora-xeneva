@@ -47,6 +47,7 @@ typedef struct _QuWinControl_ {
 	bool restore;
 	void (*ControlRedraw)(_QuWinControl_ *ctrl, _QU_WIN_ *win, bool bit);
 	void (*ControlEvent) (_QuWinControl_ *ctrl, _QU_WIN_ *win, bool bit);
+	void (*ControlRearrange) (_QuWinControl_ *ctrl, _QU_WIN_ *win);
 }QuWinControl;
 
 typedef struct _QuWinInfo_ {
@@ -79,6 +80,7 @@ typedef struct _QU_WIN_ {
 	void *current_ctx_menu;
 	void *current_menubar;
 	bool decorate;
+	bool maximized;
 	char *title;
 	int winid;
 	canvas_t *ctx;
@@ -118,7 +120,7 @@ extern void QuWindowSetProperty (uint8_t prop);
 extern void QuWindowShowControls (QuWindow *win);
 extern void QuWindowAddControlEvent (int type, void (*Event)(QuWinControl *control, QuWindow* win, bool bit));
 extern void QuWindowHandleKey (int code);
-extern void QuWindowRepaint();
+extern void QuWindowRepaint(QuWindow* win);
 extern void QuWindowSetTransparency (bool bit);
 extern void QuWindowSetIcon (int icon_type);
 #endif

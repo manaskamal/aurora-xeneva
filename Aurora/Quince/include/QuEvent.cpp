@@ -40,7 +40,6 @@
 #include <QuWidget\QuDock.h>
 #include <acrylic.h>
 
-
 int x = 0;
 int y = 20;
 bool mouse_down = false;
@@ -51,7 +50,7 @@ static int _mouse_code_ = 0;
 static bool render_disable = false;
 static int mouse_x, mouse_y = 0;
 static int win_info_counter = 0;
-
+bool alt_modifier = false;
 
 //! Event Loop
 void QuEventLoop() {
@@ -66,7 +65,8 @@ void QuEventLoop() {
 	char fps_str[60];
 	int fd = 0;
 	//! Just play the startup sound
-	int snd_fd = sys_open_file ("/dev/snd", NULL);
+	//int snd_fd = sys_open_file ("/dev/snd", NULL);
+	//ioquery(snd_fd,12,NULL);
 	while(1) {
 		message_receive(&msg);
 		_ipc_mouse_dispatch (&m_pack);
@@ -124,29 +124,11 @@ void QuEventLoop() {
 				create_process ("/dwm3.exe", "hello");
 			}
 
-			//!Just for fun, now
-			if (msg.dword == KEY_S) {
-				//ioquery (snd_fd, 12,NULL);
-				acrylic_box_blur(QuGetCanvas(), QuGetCanvas()->address,QuGetCanvas()->address,0,0,1280,1024);
-				acrylic_box_blur(QuGetCanvas(), QuGetCanvas()->address,QuGetCanvas()->address,0,0,1280,1024);
-				acrylic_box_blur(QuGetCanvas(), QuGetCanvas()->address,QuGetCanvas()->address,0,0,1280,1024);
-				acrylic_box_blur(QuGetCanvas(), QuGetCanvas()->address,QuGetCanvas()->address,0,0,1280,1024);
-				acrylic_box_blur(QuGetCanvas(), QuGetCanvas()->address,QuGetCanvas()->address,0,0,1280,1024);
-				acrylic_box_blur(QuGetCanvas(), QuGetCanvas()->address,QuGetCanvas()->address,0,0,1280,1024);
 
-				acrylic_font_set_size(32);
-				int length = acrylic_font_get_length("Xeneva v1.0");
-				int h1 = acrylic_font_get_height("Xeneva v1.0");
-				acrylic_font_draw_string(QuGetCanvas(), "Xeneva v1.0", 1280/2 - length/2,
-					1024/2 - h1/2, 64, WHITE);  //1024 - 200 - 64
-				acrylic_font_set_size(25);
-				int length2 = acrylic_font_get_length ("Copyright (C) Manas Kamal Choudhury");
-				int h2 = acrylic_font_get_height ("Copyright (C) Manas Kamal Choudhury");
-				acrylic_font_draw_string(QuGetCanvas(), "Copyright (C) Manas Kamal Choudhury", 1280/2 - length2/2, 1024 - h2 - 64,44, SILVER);
-				canvas_screen_update(QuGetCanvas(),0,0,1280,1024);
-				for(;;);
-
+			if (msg.dword == KEY_D) {
+				create_process ("/dwm2.exe", "snake");
 			}
+		
 			if (QuWindowMngrGetFocused() != NULL) {
 				QuWindowMngr_SendEvent (QuWindowMngrGetFocused(), QU_CANVAS_KEY_PRESSED,NULL, NULL,msg.dword);
 			}
@@ -167,7 +149,6 @@ void QuEventLoop() {
 			int winh = q_msg.dword4;
 
 			//!Stop the mouse
-			render_disable = true;
 			uint16_t dest_id = q_msg.from_id; 
 			uint32_t* canvas = QuCanvasCreate(dest_id, winw, winh);
 			QuWindow * window = QuWindowCreate(0,0,dest_id,canvas);
@@ -182,7 +163,7 @@ void QuEventLoop() {
 			info->y = winy;
 			win_info_counter++;
 
-			
+				
 			QuMessage msg;
 			msg.type = QU_CANVAS_READY;
 			msg.from_id = get_current_pid();
@@ -221,6 +202,7 @@ void QuEventLoop() {
 					dock->icon_path = "/app.bmp";
 
 				dock->title = "app0/";  //TODO:Get the Window title
+				win->dock = dock;
 				QuDockAdd(dock);
 				QuDockRepaint();
 			}
@@ -232,15 +214,16 @@ void QuEventLoop() {
 			memset (&q_msg, 0, sizeof(QuMessage));
 		}
 
-
 		if (q_msg.type == QU_CODE_WIN_CLOSE) {
 			uint16_t from_id = q_msg.from_id;
 			QuWindow* win = (QuWindow*)QuWindowMngrFindByID(from_id);
-			sys_unmap_sh_mem(from_id, (uint64_t)win->win_info_location, 8192);	
-			win_info_counter--;
+			//win_info_counter--;
 			win->mark_for_close = true;
-			QuCanvasSetUpdateBit(true);
 			memset (&q_msg, 0, sizeof(QuMessage));
+		}
+
+		if (q_msg.type == QU_CODE_WIN_MAXIMIZE) {
+			memset (&q_msg,0, sizeof(QuMessage));
 		}
 
 		
@@ -259,7 +242,6 @@ void QuEventLoop() {
 		
 		//}
 		//! Here We Prepare the frame that will be displayed
-		//sys_sleep(16);
-		sys_wait();
+		sys_sleep(16);
 	}
 }
