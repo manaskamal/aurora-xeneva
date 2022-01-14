@@ -142,9 +142,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="list.h" />
     <ClInclude Include="priwm.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="list.cpp" />
     <ClCompile Include="priwm.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

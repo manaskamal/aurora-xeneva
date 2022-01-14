@@ -33,6 +33,7 @@
 #ifndef __PRI_WM_H__
 #define __PRI_WM_H__
 
+#include <stdint.h>
 
 typedef struct _pri_rect_ {
 	int x;
@@ -41,6 +42,99 @@ typedef struct _pri_rect_ {
 	int h;
 }pri_rect_t;
 
+#pragma pack (push, 1)
+typedef struct _bmp_{
+	unsigned short type;   //0x4d42
+	unsigned int size;
+	unsigned short resv1;
+	unsigned short resv2;
+	unsigned int off_bits;
+} bitmap_img;
 
 
+typedef struct _info_ {
+	unsigned int biSize;
+	long biWidth;
+	long biHeight;
+	unsigned short biPlanes;
+	unsigned short biBitCount;
+	unsigned int biCompression;
+	unsigned int biSizeImage;
+	long biXPelsPerMeter;
+	long biYPelsPerMeter;
+	unsigned int biClrUsed;
+	unsigned int biClrImportant;
+} bitmap_info;
+
+#pragma pack(pop)
+
+typedef struct _image_ {
+	unsigned char* image_data;
+	int width;
+	int height;
+}pri_bmp_image;
+
+
+
+//! MOUSE CODES
+#define MOUSE_MOVE  1
+typedef struct _dwm_message_ {
+	uint16_t type;
+	uint32_t dword;
+	uint32_t dword2;
+	uint32_t dword3;
+	uint32_t dword4;
+	uint32_t dword5;
+	uint32_t dword6;
+}mouse_message_t;
+
+/*
+ * backing store structure
+ */
+typedef struct _backing_store_ {
+	uint32_t *addr;
+	uint32_t size;
+	uint16_t owner_id;
+	bool free;
+}backing_store_t;
+
+typedef struct _shared_win_struct_ {
+	uint32_t *win_info_location;
+	bool free;
+	uint16_t owner_id;
+}shared_win_t;
+
+/** ============================================
+ ** Window is composed of two strucutre
+ **  
+ **     --------------------------------
+ **    |        PRI_WIN_INFO            |
+ **    |--------------------------------|
+ **    |  PRI_WINDOW SERVER/CLIENT      |
+ **    |________________________________|
+ **/
+/**
+ * pri_win_info_t -- window internal datas
+ * that are being shared between clients and
+ * server
+ */
+typedef struct _pri_win_info_ {
+	pri_rect_t rect[256];
+	int rect_count;
+	bool dirty;
+	int x;
+	int y;
+	int width;
+	int height;
+}pri_win_info_t;
+
+/**
+ * pri_window_t -- window structure
+ */
+typedef struct _pri_win_ {
+	uint8_t attribute;
+	uint16_t owner_id;
+	uint32_t *backing_store;
+	uint32_t *pri_win_info_loc;
+}pri_window_t;
 #endif
