@@ -46,6 +46,12 @@
 #define SCREEN_GET_SCANLINE 0x107
 #define SCREEN_UPDATE_FB  0x108
 
+/* Pri Loop codes */
+#define PRI_LOOP_CREATE    401
+#define PRI_LOOP_DESTROY   402
+#define PRI_LOOP_PUT_EVENT 403
+#define PRI_LOOP_GET_EVENT 404
+
 
 extern "C" int ioquery (int devid, int code, void* arg);
 

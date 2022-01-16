@@ -3,9 +3,13 @@
   <ItemGroup>
     <ClInclude Include="priwm.h" />
     <ClInclude Include="list.h" />
+    <ClInclude Include="pri_event.h" />
+    <ClInclude Include="pri_dirty_clip.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="priwm.cpp" />
     <ClCompile Include="list.cpp" />
+    <ClCompile Include="pri_event.cpp" />
+    <ClCompile Include="pri_dirty_clip.cpp" />
   </ItemGroup>
 </Project>

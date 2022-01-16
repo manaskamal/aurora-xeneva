@@ -25,6 +25,10 @@ $SG7694	DB	'/xshell.exe', 00H
 $SG7695	DB	'priwm', 00H
 	ORG $+6
 $SG7696	DB	'/priwm.exe', 00H
+	ORG $+1
+$SG7697	DB	'snake', 00H
+	ORG $+6
+$SG7698	DB	'/snake.exe', 00H
 CONST	ENDS
 _DATA	SEGMENT
 _fltused DD	01H
@@ -72,6 +76,8 @@ EXTRN	?driver_mngr_initialize@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z:PROC ; driver_mngr_
 EXTRN	?initialize_serial@@YAXXZ:PROC			; initialize_serial
 EXTRN	?sound_initialize@@YAXXZ:PROC			; sound_initialize
 EXTRN	?pri_loop_init@@YAXXZ:PROC			; pri_loop_init
+EXTRN	?arp_initialize@@YAXXZ:PROC			; arp_initialize
+EXTRN	?arp_broadcast@@YAXXZ:PROC			; arp_broadcast
 pdata	SEGMENT
 $pdata$??2@YAPEAX_K@Z DD imagerel $LN3
 	DD	imagerel $LN3+24
@@ -83,7 +89,7 @@ $pdata$??_U@YAPEAX_K@Z DD imagerel $LN3
 	DD	imagerel $LN3+24
 	DD	imagerel $unwind$??_U@YAPEAX_K@Z
 $pdata$?_kmain@@YAXXZ DD imagerel $LN8
-	DD	imagerel $LN8+672
+	DD	imagerel $LN8+701
 	DD	imagerel $unwind$?_kmain@@YAXXZ
 pdata	ENDS
 xdata	SEGMENT
@@ -354,7 +360,7 @@ $LN3@kmain:
 
 	call	?hda_initialize@@YAXXZ			; hda_initialize
 
-; 160  :     hda_audio_add_pcm(buffer2, file.size);
+; 160  : 	hda_audio_add_pcm(buffer2, file.size);
 
 	mov	edx, DWORD PTR file$[rsp+32]
 	mov	rcx, QWORD PTR buffer2$[rsp]
@@ -365,77 +371,89 @@ $LN3@kmain:
 
 	call	?e1000_initialize@@YAXXZ		; e1000_initialize
 
-; 163  : 	
-; 164  : 	//svga_init();
-; 165  : 	sound_initialize();
+; 163  : 	arp_initialize();
+
+	call	?arp_initialize@@YAXXZ			; arp_initialize
+
+; 164  : 	arp_broadcast();
+
+	call	?arp_broadcast@@YAXXZ			; arp_broadcast
+
+; 165  : 	//svga_init();
+; 166  : 	sound_initialize();
 
 	call	?sound_initialize@@YAXXZ		; sound_initialize
 
-; 166  : 
-; 167  : #ifdef ARCH_X64
-; 168  : 	//================================================
-; 169  : 	//! Initialize the scheduler here
-; 170  : 	//!===============================================
-; 171  : 	initialize_scheduler();
+; 167  : 
+; 168  : #ifdef ARCH_X64
+; 169  : 	//================================================
+; 170  : 	//! Initialize the scheduler here
+; 171  : 	//!===============================================
+; 172  : 	initialize_scheduler();
 
 	call	?initialize_scheduler@@YAXXZ		; initialize_scheduler
 
-; 172  : 
-; 173  : 	create_process ("/xshell.exe","shell");
+; 173  : 
+; 174  : 	create_process ("/xshell.exe","shell");
 
 	lea	rdx, OFFSET FLAT:$SG7693
 	lea	rcx, OFFSET FLAT:$SG7694
 	call	?create_process@@YAHPEBDPEAD@Z		; create_process
 
-; 174  : 	//! Quince -- The Compositing window manager for Aurora kernel
-; 175  : 	//! always put quince in thread id -- > 2
-; 176  : 	create_process ("/priwm.exe","priwm");
+; 175  : 	//! Quince -- The Compositing window manager for Aurora kernel
+; 176  : 	//! always put quince in thread id -- > 2
+; 177  : 	create_process ("/priwm.exe","priwm");
 
 	lea	rdx, OFFSET FLAT:$SG7695
 	lea	rcx, OFFSET FLAT:$SG7696
 	call	?create_process@@YAHPEBDPEAD@Z		; create_process
 
-; 177  : 
-; 178  : 	/**=====================================================
-; 179  : 	 ** Kernel threads handle some specific callbacks like
-; 180  : 	 ** procmngr handles process creation and termination
-; 181  : 	 **=====================================================
-; 182  : 	 */
-; 183  : 	//! Misc programs goes here
-; 184  : 	//create_process ("/dwm2.exe", "dwm4");
-; 185  : 	//create_process ("/cnsl.exe", "cnsl");
-; 186  : 
-; 187  : 	//! Here start the scheduler (multitasking engine)
-; 188  : 	
-; 189  : 	scheduler_start();
+; 178  : 
+; 179  : 	/**=====================================================
+; 180  : 	 ** Kernel threads handle some specific callbacks like
+; 181  : 	 ** procmngr handles process creation and termination
+; 182  : 	 **=====================================================
+; 183  : 	 */
+; 184  : 	//! Misc programs goes here
+; 185  : 	//create_process ("/dwm2.exe", "dwm4");
+; 186  : 	//create_process ("/cnsl.exe", "cnsl");
+; 187  : 	create_process ("/snake.exe", "snake");
+
+	lea	rdx, OFFSET FLAT:$SG7697
+	lea	rcx, OFFSET FLAT:$SG7698
+	call	?create_process@@YAHPEBDPEAD@Z		; create_process
+
+; 188  : 	//! Here start the scheduler (multitasking engine)
+; 189  : 	
+; 190  : 	scheduler_start();
 
 	call	?scheduler_start@@YAXXZ			; scheduler_start
 $LN2@kmain:
 
-; 190  : #endif
-; 191  : 
-; 192  : 	//! Loop forever
-; 193  : 	while(1) {
+; 191  : #endif
+; 192  : 
+; 193  : 	//! Loop forever
+; 194  : 	while(1) {
 
 	xor	eax, eax
 	cmp	eax, 1
 	je	SHORT $LN1@kmain
 
-; 194  : 		//!looping looping
-; 195  : 		x64_cli();
+; 195  : 		//!looping looping
+; 196  : 		x64_cli();
 
 	call	x64_cli
 
-; 196  : 		x64_hlt();
+; 197  : 		x64_hlt();
 
 	call	x64_hlt
 
-; 197  : 	}
+; 198  : 	}
 
 	jmp	SHORT $LN2@kmain
 $LN1@kmain:
 
-; 198  : }
+; 199  : }
 
 	add	rsp, 744				; 000002e8H
 	pop	rdi

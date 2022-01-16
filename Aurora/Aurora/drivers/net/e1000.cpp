@@ -21,6 +21,8 @@
 
 e1000_dev *i_net_dev = NULL;
 
+#define INTS ((1<<2) | (1<<6) | (1<<7) | (1<<1) | (1<<0) | (1<<17) | (1<<4) | (1<<16))
+
 uint32_t e1000_read_command (uint16_t p_address) {
 	if (i_net_dev->e1000_base != 0) {
 		x64_outportd (i_net_dev->e1000_base,p_address);
@@ -102,8 +104,8 @@ bool e1000_read_mac_address () {
 }
 
 void e1000_interrupt_handler (size_t v, void* p) {
-//	printf ("E1000 Interrupt fired\n");
-	//apic_local_eoi();
+	x64_cli();
+
 	uint32_t icr = e1000_read_command (REG_ICR);
 
 	//e1000_write_command (REG_IMASK, 0x1);
@@ -141,64 +143,64 @@ void e1000_interrupt_handler (size_t v, void* p) {
 		printf ("E1000 unknown interrupt\n");
 	}
 	interrupt_end(i_net_dev->e1000_irq);
+	x64_sti();
 }
 	
 
 void e1000_rx_init () {
 
 	i_net_dev->rx_desc_base = (uint64_t*)pmmngr_alloc();
+	uint64_t rx_desc_base = (uint64_t)i_net_dev->rx_desc_base;
+	uint64_t *buffer_allocation = (uint64_t*)pmmngr_alloc_blocks(16);
 
 	for (int i = 0; i < E1000_NUM_RX_DESC; i++) {
 		i_net_dev->rx_desc[i] = (e1000_rx_desc*)(i_net_dev->rx_desc_base + (i * 16));
-		i_net_dev->rx_desc[i]->addr = (uint64_t)pmmngr_alloc();   //malloc(8192+16);
+		i_net_dev->rx_desc[i]->addr = (uint64_t)(buffer_allocation + i * 2048);;   
 		i_net_dev->rx_desc[i]->status = 0;
 	}
 
-	e1000_write_command (REG_RXDESCKHI, ((uint32_t)i_net_dev->rx_desc_base >> 32));
-	e1000_write_command (REG_RXDESCLO,(uint32_t)i_net_dev->rx_desc_base);
+	e1000_write_command (REG_RXDESCKHI, rx_desc_base >> 32);
+	e1000_write_command (REG_RXDESCLO, rx_desc_base & UINT32_MAX);
 
-    printf ("E1000 RX Descriptor HI -> %x, LO -> %x\n", e1000_read_command(REG_RXDESCKHI), e1000_read_command(REG_RXDESCLO));
-	e1000_write_command (REG_RXDESCLEN, E1000_NUM_RX_DESC * 16);
+	e1000_write_command (REG_RXDESCLEN, E1000_NUM_RX_DESC * sizeof(e1000_rx_desc));
 
 	e1000_write_command(REG_RXDESCHEAD, 0);
-	e1000_write_command(REG_RXDESCTAIL, E1000_NUM_RX_DESC);
+	e1000_write_command(REG_RXDESCTAIL, E1000_NUM_RX_DESC - 1);
+	
 	i_net_dev->rx_tail = 0;
 
-	uint32_t rctl = e1000_read_command (REG_RCTRL);
-	rctl |= RCTL_EN;
-	rctl &= ~RCTL_SBP;
-	rctl |= RCTL_BAM;
-	rctl &= ~RCTL_BSIZE_4096;
-	rctl |= RCTL_BSIZE_2048;
-	rctl &= ~0x02000000;
-	rctl |= RCTL_SECRC;
-	e1000_write_command (REG_RCTRL, rctl);
-
+	e1000_write_command (REG_RCTRL, RCTL_EN | (1<<2) | 
+		(1<<4) | (1<<15) | (1<<25) | (0<<16) | (1<<26));
 }
 
 
 void e1000_tx_init () {
 
 	i_net_dev->tx_desc_base = (uint64_t*)pmmngr_alloc();
-
+	uint64_t base_address = (uint64_t)i_net_dev->tx_desc_base;
 	for (int i = 0; i < E1000_NUM_TX_DESC; i++) {
 		i_net_dev->tx_desc[i] = (e1000_tx_desc*)(i_net_dev->tx_desc_base + (i * 16));
-		i_net_dev->tx_desc[i]->addr = 0;
-		i_net_dev->tx_desc[i]->cmd = 0;
-		i_net_dev->tx_desc[i]->status = 0;
+		i_net_dev->tx_desc[i]->addr = (uint64_t)pmmngr_alloc();
+		i_net_dev->tx_desc[i]->cmd = (1<<0);
 	}
-	e1000_write_command (REG_TXDESCHI, ((uint32_t)i_net_dev->tx_desc_base >> 32));
-	e1000_write_command (REG_TXDESCLO, (uint32_t)i_net_dev->tx_desc_base);
-	printf ("E1000 TX_DESC_HI -> %x, LO -> %x\n", e1000_read_command(REG_TXDESCHI), e1000_read_command(REG_TXDESCLO));
+	e1000_write_command (REG_TXDESCHI, base_address >> 32);
+	e1000_write_command (REG_TXDESCLO, base_address & UINT32_MAX);
 
-	e1000_write_command (REG_TXDESCLEN, (uint32_t)E1000_NUM_TX_DESC * 16);
+	e1000_write_command (REG_TXDESCLEN, E1000_NUM_TX_DESC * 16);
 
 	e1000_write_command (REG_TXDESCHEAD, 0);
 	e1000_write_command (REG_TXDESCTAIL,0);
 	i_net_dev->tx_tail = 0;
 
+	uint32_t tctl = e1000_read_command (REG_TCTRL);
+	tctl &= ~(0xFF << 4);
+	tctl |= (15<<4);
 
-	e1000_write_command (REG_TCTRL, TCTL_EN | TCTL_PSP | TCTL_RTLC );
+	tctl |= TCTL_EN;
+	tctl |= TCTL_PSP;
+	tctl |= (1<<24);
+	e1000_write_command(REG_TCTRL,tctl);
+
 }
 
 void e1000_setup_interrupt () {
@@ -305,8 +307,6 @@ void e1000_initialize () {
 		return;
 	}
 
-	x64_cli ();
-
 	uint16_t command = 0;
 	read_config_16 (0,bus,dev_,func,0x4,&command);
 	if (((command >> 10) & 0xff) != 0) {
@@ -338,47 +338,60 @@ void e1000_initialize () {
 			interrupt_set (10, e1000_interrupt_handler,dev->device.nonBridge.interruptLine);
 		}
 	}
+
 	
 
-	e1000_write_command (REG_IMC, UINT32_MAX);
-	e1000_read_command (REG_ICR);
-	e1000_reset();
-	e1000_write_command (REG_CTRL, ECTRL_SLU | (2<<8));
-	uint32_t cmmd = e1000_read_command (REG_CTRL);
-	cmmd &= ~(1UL << 26UL);
-	cmmd &= ~(1UL << 31UL);
-	e1000_detect_eeprom();
 	
+	e1000_write_command (REG_RCTRL, 0);
+	e1000_write_command (REG_TCTRL, TCTL_PSP);
+	e1000_read_command (REG_STATUS);
+	for (int i = 0; i < 10000; i++)
+		;
 
-	for (int i = 0; i < 128; i++)
-		e1000_write_command (REG_MTA + (i * 4), 0);
+	uint32_t ctrl = e1000_read_command(REG_CTRL);
+	ctrl |= CTRL_RST;
+	e1000_write_command(REG_CTRL, ctrl);
+	for (int i = 0; i < 20000; i++)
+		;
 
-	//!Initialize all statistical counters as per spec section 14.3
-	for (int i = 0; i < 64; i++) {
-		e1000_write_command (REG_CRCERRS + (i * 4), 0);
+	e1000_write_command (REG_IMC, 0xFFFFFFFF);
+	e1000_write_command (REG_ICR, 0xFFFFFFFF);
+	e1000_read_command (REG_STATUS);
+
+	e1000_write_command(0x0028, 0x002C8001);
+	e1000_write_command(0x002c, 0x0100);
+	e1000_write_command(0x0030, 0x8808);
+	e1000_write_command(0x0170, 0xFFFF);
+
+	/* Link up */
+	uint32_t status = e1000_read_command (REG_CTRL);
+	status |= CTRL_SLU;
+	status |= (2<<8);
+	status &= ~CTRL_LRST;
+	status &= ~CTRL_PHY_RST;
+	e1000_write_command(REG_CTRL, status);
+
+	for (int i = 0; i < 128; ++i) {
+		e1000_write_command (REG_MTA + i * 4, 0);
 	}
-	
-	//printf ("Scanning MSI support for e1000\n");
-	//pci_print_capabilities(func, dev_, bus);
+
+	for (int i = 0; i < 64; ++i) {
+		e1000_read_command (0x4000 + i * 4);
+	}
+
 
 	e1000_rx_init ();
 	e1000_tx_init ();
 
-	e1000_write_command (0x000E0, 0);
-	e1000_write_command (0x00C8, (1<<0) | (1<<1) | (1<<2) | (1<<3) | 
-		(1<<4) | (1<<6) | (1<<7) | (1<<9) | (1<<10) | (1<<13) | (1<<14) | (1<<15) | (1<<16) | 
-		(1<<17) | (1<<20) | (1<<21) | (1<<22) | (1<<24) | (1<<25));
-	e1000_write_command (REG_IMASK,  E1000_IMS_LSC | 
-		                            E1000_IMS_RXO |
-									E1000_IMS_RXT |
-									E1000_IMS_TXQE |
-									E1000_IMS_TXDW);
+	e1000_write_command (REG_RDTR, 0);
+	e1000_write_command (REG_ITR, 500);
+	e1000_read_command (REG_STATUS);
 
 
-	//e1000_setup_interrupt ();
+	e1000_write_command (REG_IMASK, INTS);
 
-    e1000_read_command (0xC0);
-	
+	for (int i = 0; i < 10000; i++)
+		;
 	//! Initialize the Network Manager (NetHW)
 	nethw_initialize ();
 
@@ -387,5 +400,4 @@ void e1000_initialize () {
 	    nethw_set_mac (i_net_dev->mac);
 	}
 	printf ("e1000 setup completed\n");
-	x64_sti();
 }

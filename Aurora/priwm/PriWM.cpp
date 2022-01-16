@@ -32,6 +32,8 @@
 
 #include "priwm.h"
 #include "list.h"
+#include "pri_event.h"
+#include "pri_dirty_clip.h"
 
 #include <stdint.h>
 #include <string.h>
@@ -49,16 +51,20 @@
 #include <sys/_ipc.h>
 #include <sys/_sleep.h>
 #include <sys/_time.h>
+#include <sys/_process.h>
+#include <fastcpy.h>
 
 /* backing store & shared win start address */
 #define BACKING_STORE_START   0x0000100000000000
 #define SHARED_WIN_START      0x00000A0000000000
+#define PRI_WM_RECEIVER       0xFFFFD00000000000
 
 /* global variables */
 canvas_t* canvas;
 pri_bmp_image *arrow_cursor;
 pri_bmp_image *spin_cursor;
 uint32_t* cursor_back;
+int pri_loop_fd;
 
 /* mouse coordinations */
 uint32_t mouse_x, mouse_y;
@@ -70,6 +76,60 @@ list_t *window_list;
 list_t *backing_store_list;
 list_t *shared_win_space_list;
 
+
+
+/**
+ * pri_create_rect -- create a new rectangle
+ * @param x -- x coordinate (related to device)
+ * @param y -- y coordinate
+ * @param w -- width of the rect
+ * @param h -- height of the rect
+ */
+pri_rect_t *pri_create_rect (int x, int y, int w, int h) {
+	pri_rect_t* r = (pri_rect_t*)malloc(sizeof(pri_rect_t));
+	r->x = x;
+	r->y = y;
+	r->w = w;
+	r->h = h;
+	return r;
+}
+
+/**
+ * pri_add_clip -- add a clip rect
+ * @param x -- x coordinate (related to device)
+ * @param y -- y coordinate
+ * @param w -- width of the rect
+ * @param h -- height of the rect
+ */
+void pri_add_clip (int x, int y, int w, int h) {
+	pri_rect_t* r= pri_create_rect(x, y, w, h);
+	pri_add_dirty_clip(r);
+}
+
+/**
+ * pri_wm_get_message -- pops out a message from its
+ * receiver
+ * @param event -- pointer to store current message
+ */
+pri_event_t* pri_wm_get_message () {
+	pri_event_t *event;
+	if (pri_get_gift_count() > 0) {
+		event = pri_get_event();
+	}
+   void* addr = (void*)PRI_WM_RECEIVER;	 
+   pri_event_t* data = (pri_event_t*)addr;
+   uint16_t to_id = get_current_pid ();
+
+   if (data->type != 0){
+	   pri_event_t *ev = (pri_event_t*)malloc(sizeof(pri_event_t));
+	   memset(ev, 0, sizeof(pri_event_t));
+	   memcpy (ev, data, sizeof(pri_event_t));
+	   push_event_gift (ev);
+	   memset(addr, 0, 4096);
+   }
+
+   return event;
+}
 
 
 /**
@@ -113,7 +173,7 @@ void* create_new_backing_store (uint16_t owner_id, int size) {
 	new_back_store->size = size;
 	new_back_store->free = false;
 	new_back_store->owner_id = owner_id;
-	list_add (backing_store_list, new_back_store);
+	list_add (backing_store_list, new_back_store);	
 	return addr;
 }
 
@@ -169,7 +229,7 @@ uint32_t* create_new_shared_win (uint16_t owner_id) {
 			cursor_pos += 8192;
 	}
 
-	uint32_t *addr = (uint32_t)SHARED_WIN_START;
+	uint32_t *addr = (uint32_t*)SHARED_WIN_START;
 	addr += cursor_pos;
 	shared_win_t* sh = (shared_win_t*)malloc(sizeof(shared_win_t));
 	sh->free = false;
@@ -311,9 +371,6 @@ void cursor_draw_back (unsigned x, unsigned y) {
 			canvas_draw_pixel(canvas,x+w,y+h,cursor_back[h * 24+ w]);
 		}
 	}
-
-	//! flash the content to the framebuffer
-	canvas_screen_update(canvas, x, y, 24, 24);
 }
 
 /* initialize the window list */
@@ -376,16 +433,45 @@ void window_remove (pri_window_t *win) {
 void compose_frame () {
 	/* draw previously stored occluded area by cursor */
 	cursor_draw_back(prev_x, prev_y);
+	pri_add_clip(prev_x, prev_y, 24, 24);
 	/* now store the new occluded area by cursor */
 	cursor_store_back(mouse_x, mouse_y);
 
 	//----Here goes composing of all window buffers ---//
+	for (int i = 0; i < window_list->pointer; i++) {
+		pri_window_t *win = (pri_window_t*)list_get_at(window_list, i);
+		if (win != NULL) {
+			pri_win_info_t *info = (pri_win_info_t*)win->pri_win_info_loc;
+			int winx = info->x;
+			int winy = info->y;
+			int wid = info->width;
+			int he = info->height;
 
+			for (int i = 0; i < he; i++)  {
+				fastcpy (canvas->address + (winy + i) * canvas->width + winx,win->backing_store + (0 + i) * canvas->width + 0,
+					wid * 4);	
+			}
+
+			/* add the clip region */
+			pri_add_clip (winx, winy, wid, he);
+		}
+
+	}
 
 	/* draw the new cursor on the backing store */
 	draw_cursor (canvas, arrow_cursor, mouse_x, mouse_y); 
-	/* finally blit the cursor to framebuffer from backing store */
-	canvas_screen_update(canvas, mouse_x, mouse_y, 24,24);
+	pri_add_clip(mouse_x, mouse_y, 24, 24);
+
+
+	/** finally blit every dirty area to framebuffer **/
+	for (int i = 0; i < pri_get_dirty_count(); i++) {
+		pri_rect_t *r = pri_get_dirty_rect();
+		if (r != NULL) {
+			canvas_screen_update(canvas, r->x, r->y, r->w, r->h);
+			free(r);
+		}
+	}
+	
 	/*store current mouse coord as prev coord */
 	prev_x = mouse_x;
 	prev_y = mouse_y;
@@ -435,14 +521,14 @@ int main (int argc, char* argv[]) {
 	canvas_screen_update(canvas, 0, 0, s_width, s_height);
     cursor_store_back(0, 0);
 
-
+	pri_loop_fd = sys_open_file ("/dev/pri_loop",NULL);
 	uint32_t frame_tick;
 	uint32_t diff_tick;
+	pri_event_t *event;
 	mouse_message_t mouse;
 	while (1) {
 		mouse_get (&mouse);
-
-        frame_tick = sys_get_system_tick();
+		event = pri_wm_get_message ();
 
 		/**
 		 * mouse movement
@@ -450,13 +536,35 @@ int main (int argc, char* argv[]) {
 		if (mouse.type == MOUSE_MOVE) {
 			mouse_x = mouse.dword;
 			mouse_y = mouse.dword2;
-			
 			memset(&mouse, 0, sizeof(mouse_message_t));
 		}
 
+		
+		/* PRI_WIN_CREATE -- handles window 
+		 * creation message */
+		if (event->type == PRI_WIN_CREATE) {
+			/* create the new window */
+			int x = event->dword;
+			int y = event->dword2;
+			int w = event->dword3;
+			int h = event->dword4;
+			uint8_t attribute = event->dword5;
+			pri_window_t *win = window_create (x,y,w,h,attribute,event->from_id);
+
+			/* Send the new gift message to client */
+			pri_event_t e;
+			e.type = DAISY_GIFT_CANVAS;
+			e.p_value = win->backing_store;
+			e.p_value2 = win->pri_win_info_loc;
+			e.to_id = event->from_id;
+			ioquery(pri_loop_fd,PRI_LOOP_PUT_EVENT, &e);
+			free(event);
+		}
+
+        frame_tick = sys_get_system_tick();
+
 		//1 draw everything
 		compose_frame();
-
 
 		diff_tick = sys_get_system_tick();
 		int delta = diff_tick - frame_tick;

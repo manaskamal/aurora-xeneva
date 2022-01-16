@@ -1,0 +1,26 @@
+﻿Build started 14-01-2022 আবেলি 10:47:21.
+     1>Project "E:\Xeneva Project\Xeneva\xnlib\daisy\daisy.vcxproj" on node 2 (Rebuild target(s)).
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\xnlib\xnacrylic\include" /I"E:\Xeneva Project\Xeneva\xnlib\xnclib" /Zi /nologo /W4 /WX- /sdl- /MP /Od /D ARCH_X64 /D _MBCS /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt daisy.cpp daisy_event_stack.cpp daisy_priwm_window.cpp daisy_window.cpp
+     1>cl : Command line warning D9025: overriding '/sdl-' with '/GS-'
+     1>cl : Command line warning D9002: ignoring unknown option '/arch:SSE'
+     1>cl : Command line warning D9030: '/Gm' is incompatible with multiprocessing; ignoring /MP switch
+         daisy_window.cpp
+     1>daisy_window.cpp(53): warning C4127: conditional expression is constant
+         daisy_priwm_window.cpp
+         daisy_event_stack.cpp
+         daisy.cpp
+     1>daisy.cpp(98): warning C4244: '=' : conversion from 'unsigned int' to 'uint8_t', possible loss of data
+         Generating Code...
+     1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V110\Microsoft.CppBuild.targets(1299,5): warning MSB8012: TargetPath(E:\Xeneva Project\Xeneva\Aurora\x64\Debug\daisy.lib) does not match the Library's OutputFile property value (E:\Xeneva Project\Xeneva\xnlib\lib64\daisy.lib). This may cause your project to build incorrectly. To correct this, please make sure that $(OutDir), $(TargetName) and $(TargetExt) property values match the value specified in %(Lib.OutputFile).
+       Lib:
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\Lib.exe /OUT:"E:\Xeneva Project\Xeneva\xnlib\lib64\daisy.lib" /NOLOGO /MACHINE:X64 x64\Debug\daisy.obj
+         x64\Debug\daisy_event_stack.obj
+         x64\Debug\daisy_priwm_window.obj
+         x64\Debug\daisy_window.obj
+         daisy.vcxproj -> E:\Xeneva Project\Xeneva\Aurora\x64\Debug\daisy.lib
+     1>Done Building Project "E:\Xeneva Project\Xeneva\xnlib\daisy\daisy.vcxproj" (Rebuild target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:00.58

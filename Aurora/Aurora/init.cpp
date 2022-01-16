@@ -157,10 +157,11 @@ void _kmain () {
 	pri_loop_init();
 	driver_mngr_initialize(info);
 	hda_initialize(); 
-    hda_audio_add_pcm(buffer2, file.size);
+	hda_audio_add_pcm(buffer2, file.size);
 
 	e1000_initialize();   //<< receiver not working
-	
+	arp_initialize();
+	arp_broadcast();
 	//svga_init();
 	sound_initialize();
 
@@ -183,7 +184,7 @@ void _kmain () {
 	//! Misc programs goes here
 	//create_process ("/dwm2.exe", "dwm4");
 	//create_process ("/cnsl.exe", "cnsl");
-
+	create_process ("/snake.exe", "snake");
 	//! Here start the scheduler (multitasking engine)
 	
 	scheduler_start();

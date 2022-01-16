@@ -27,6 +27,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "snake", "..\apps\snake\snak
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PriWM", "PriWM\PriWM.vcxproj", "{70F4467B-DAA1-43AF-89FB-4381A1554801}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "daisy", "..\xnlib\daisy\daisy.vcxproj", "{6465155A-3DD9-429C-B040-ADF30FD01265}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Mixed Platforms = Debug|Mixed Platforms
@@ -169,6 +171,16 @@ Global
 		{70F4467B-DAA1-43AF-89FB-4381A1554801}.Release|Win32.ActiveCfg = Release|Win32
 		{70F4467B-DAA1-43AF-89FB-4381A1554801}.Release|Win32.Build.0 = Release|Win32
 		{70F4467B-DAA1-43AF-89FB-4381A1554801}.Release|x64.ActiveCfg = Release|Win32
+		{6465155A-3DD9-429C-B040-ADF30FD01265}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{6465155A-3DD9-429C-B040-ADF30FD01265}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{6465155A-3DD9-429C-B040-ADF30FD01265}.Debug|Win32.ActiveCfg = Debug|Win32
+		{6465155A-3DD9-429C-B040-ADF30FD01265}.Debug|Win32.Build.0 = Debug|Win32
+		{6465155A-3DD9-429C-B040-ADF30FD01265}.Debug|x64.ActiveCfg = Debug|x64
+		{6465155A-3DD9-429C-B040-ADF30FD01265}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{6465155A-3DD9-429C-B040-ADF30FD01265}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{6465155A-3DD9-429C-B040-ADF30FD01265}.Release|Win32.ActiveCfg = Release|Win32
+		{6465155A-3DD9-429C-B040-ADF30FD01265}.Release|Win32.Build.0 = Release|Win32
+		{6465155A-3DD9-429C-B040-ADF30FD01265}.Release|x64.ActiveCfg = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

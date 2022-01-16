@@ -21,7 +21,7 @@
 #define E1000_82577LM      0x10EA
 
 #define REG_CTRL    0x0000
-#define REG_STATUS  0x0008
+#define REG_STATUS  0x00008
 #define REG_EEPROM  0x0014
 #define REG_CTRL_EXT  0x0018
 #define REG_IMASK 0x00D0
@@ -81,6 +81,15 @@
 #define RCTL_DPF                        (1 << 22)   // Discard Pause Frames
 #define RCTL_PMCF                       (1 << 23)   // Pass MAC Control Frames
 #define RCTL_SECRC                      (1 << 26)   // Strip Ethernet CRC
+#define RCTL_BSEX                       0x02000000
+#define REG_IAM  0x000E0 /* Interrupt Acknowledge Auto Mask */
+
+#define CTRL_PHY_RST (1UL << 31UL)
+#define CTRL_RST     (1UL << 26UL)
+#define CTRL_SLU     (1UL << 6UL)
+#define CTRL_LRST    (1UL << 3UL)
+
+
  
 // Buffer Sizes
 #define RCTL_BSIZE_256                  (3 << 16)

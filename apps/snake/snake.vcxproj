@@ -81,7 +81,7 @@
     <ClCompile>
       <WarningLevel>Level1</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>E:\Xeneva Project\Xeneva\xnlib\QuWidgets\include;E:\Xeneva Project\Xeneva\xnlib\xnclib;E:\Xeneva Project\Xeneva\xnlib\xnacrylic\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>E:\Xeneva Project\Xeneva\xnlib\daisy;E:\Xeneva Project\Xeneva\xnlib\xnclib;E:\Xeneva Project\Xeneva\xnlib\xnacrylic\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <SDLCheck>false</SDLCheck>
       <PreprocessorDefinitions>ARCH_X64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <IgnoreStandardIncludePath>true</IgnoreStandardIncludePath>
@@ -97,7 +97,7 @@
       </GenerateDebugInformation>
       <OutputFile>D:\snake.exe</OutputFile>
       <AdditionalLibraryDirectories>E:\Xeneva Project\Xeneva\xnlib\lib64</AdditionalLibraryDirectories>
-      <AdditionalDependencies>xnclib.lib;xnacrylic.lib;QuWidgets.lib;freetype.lib;</AdditionalDependencies>
+      <AdditionalDependencies>xnclib.lib;xnacrylic.lib;daisy.lib;freetype.lib;</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
       <EnableUAC>false</EnableUAC>
       <GenerateMapFile>true</GenerateMapFile>

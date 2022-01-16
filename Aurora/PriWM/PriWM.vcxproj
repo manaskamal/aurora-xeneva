@@ -144,10 +144,14 @@
   <ItemGroup>
     <ClInclude Include="list.h" />
     <ClInclude Include="priwm.h" />
+    <ClInclude Include="pri_dirty_clip.h" />
+    <ClInclude Include="pri_event.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="list.cpp" />
     <ClCompile Include="priwm.cpp" />
+    <ClCompile Include="pri_dirty_clip.cpp" />
+    <ClCompile Include="pri_event.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

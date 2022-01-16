@@ -35,6 +35,16 @@
 
 #include <stdint.h>
 
+/* Messages sends from client to server */
+#define PRI_WIN_CREATE  100
+#define PRI_WIN_MARK_FOR_CLOSE 102
+
+/* Messages that are being send to client by server */
+#define DAISY_WIN_MOVE  200
+#define DAISY_CURSOR_MOVED 201
+#define DAISY_GIFT_CANVAS 202
+#define DAISY_GIFT_SHARED_WIN 203
+
 typedef struct _pri_rect_ {
 	int x;
 	int y;

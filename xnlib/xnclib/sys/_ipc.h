@@ -49,6 +49,27 @@ typedef struct _qu_message_ {
 	char *value;
 }qu_message_t;
 
+/*
+ * pri_event_t -- event message structure
+ */
+typedef struct _pri_event_ {
+	uint8_t type;
+	uint8_t to_id;
+	uint8_t from_id;
+	uint32_t dword;
+	uint32_t dword2;
+	uint32_t dword3;
+	uint32_t dword4;
+	uint32_t dword5;
+	uint32_t dword6;
+	uint32_t dword7;
+	uint32_t dword8;
+	uint32_t *p_value;
+	uint32_t *p_value2;
+	char *value;
+	unsigned char* value2;
+}pri_event_t;
+
 //*********************************************************************
 //! Standard Kernel Message Passing System. little lazy
 //! more advanced ipc is the shared ipc system, it's fast
