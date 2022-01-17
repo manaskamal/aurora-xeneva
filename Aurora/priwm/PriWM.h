@@ -147,4 +147,14 @@ typedef struct _pri_win_ {
 	uint32_t *backing_store;
 	uint32_t *pri_win_info_loc;
 }pri_window_t;
+
+/*
+ * pri_wallpaper_t -- wallpaper structure
+ */
+typedef struct _pri_wallp_ {
+	uint8_t *buffer;
+	int w;
+	int h;
+}pri_wallpaper_t;
+
 #endif

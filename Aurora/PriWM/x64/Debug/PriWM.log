@@ -1,20 +1,25 @@
-﻿Build started 17-01-2022 ৰাতিপু 1:37:18.
+﻿Build started 17-01-2022 আবেলি 6:44:59.
      1>Project "E:\Xeneva Project\Xeneva\Aurora\PriWM\PriWM.vcxproj" on node 2 (Rebuild target(s)).
      1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\xnlib\xnclib" /I"E:\Xeneva Project\Xeneva\xnlib\xnacrylic\include" /Zi /nologo /W3 /WX- /sdl- /Od /D ARCH_X64 /D _MBCS /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt list.cpp priwm.cpp pri_dirty_clip.cpp pri_event.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\xnlib\xnclib" /I"E:\Xeneva Project\Xeneva\xnlib\xnacrylic\include" /Zi /nologo /W3 /WX- /sdl- /Od /D ARCH_X64 /D _MBCS /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt list.cpp priwm.cpp pri_dirty_clip.cpp pri_event.cpp pri_wallp_dirty_clip.cpp
      1>cl : Command line warning D9025: overriding '/sdl-' with '/GS-'
      1>cl : Command line warning D9002: ignoring unknown option '/arch:SSE'
+         pri_wallp_dirty_clip.cpp
          pri_event.cpp
          pri_dirty_clip.cpp
          priwm.cpp
-     1>priwm.cpp(147): warning C4018: '<' : signed/unsigned mismatch
-     1>priwm.cpp(186): warning C4018: '<' : signed/unsigned mismatch
-     1>priwm.cpp(205): warning C4018: '<' : signed/unsigned mismatch
-     1>priwm.cpp(221): warning C4018: '<' : signed/unsigned mismatch
-     1>priwm.cpp(248): warning C4018: '<' : signed/unsigned mismatch
-     1>priwm.cpp(416): warning C4018: '<' : signed/unsigned mismatch
-     1>priwm.cpp(441): warning C4018: '<' : signed/unsigned mismatch
-     1>priwm.cpp(467): warning C4018: '<' : signed/unsigned mismatch
+     1>priwm.cpp(149): warning C4018: '<' : signed/unsigned mismatch
+     1>priwm.cpp(188): warning C4018: '<' : signed/unsigned mismatch
+     1>priwm.cpp(207): warning C4018: '<' : signed/unsigned mismatch
+     1>priwm.cpp(223): warning C4018: '<' : signed/unsigned mismatch
+     1>priwm.cpp(250): warning C4018: '<' : signed/unsigned mismatch
+     1>priwm.cpp(385): warning C4018: '<' : signed/unsigned mismatch
+     1>priwm.cpp(425): warning C4018: '<' : signed/unsigned mismatch
+     1>priwm.cpp(426): warning C4018: '<' : signed/unsigned mismatch
+     1>priwm.cpp(518): warning C4018: '<' : signed/unsigned mismatch
+     1>priwm.cpp(555): warning C4018: '<' : signed/unsigned mismatch
+     1>priwm.cpp(563): warning C4018: '<' : signed/unsigned mismatch
+     1>priwm.cpp(589): warning C4018: '<' : signed/unsigned mismatch
          list.cpp
          Generating Code...
      1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V110\Microsoft.CppBuild.targets(1137,5): warning MSB8012: TargetPath(E:\Xeneva Project\Xeneva\Aurora\x64\Debug\PriWM.exe) does not match the Linker's OutputFile property value (D:\priwm.exe). This may cause your project to build incorrectly. To correct this, please make sure that $(OutDir), $(TargetName) and $(TargetExt) property values match the value specified in %(Link.OutputFile).
@@ -23,6 +28,7 @@
          x64\Debug\priwm.obj
          x64\Debug\pri_dirty_clip.obj
          x64\Debug\pri_event.obj
+         x64\Debug\pri_wallp_dirty_clip.obj
      1>LINK : warning LNK4075: ignoring '/INCREMENTAL' due to '/LTCG' specification
             Creating library E:\Xeneva Project\Xeneva\Aurora\x64\Debug\PriWM.lib and object E:\Xeneva Project\Xeneva\Aurora\x64\Debug\PriWM.exp
          LINK : /LTCG specified but no code generation required; remove /LTCG from the link command line to improve linker performance
@@ -31,4 +37,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:04.11
+Time Elapsed 00:00:03.10

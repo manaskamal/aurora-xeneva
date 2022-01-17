@@ -19,7 +19,7 @@
 
 int main (int argc, char* argv[]) {
 	daisy_application();
-	daisy_window_t *win = daisy_window_create (100,100,500,500,NULL);
+	daisy_window_t *win = daisy_window_create (100,100,500,300,NULL);
 	for (int i = 0; i < 500; i++)
 		for (int j = 0; j < 500; j++)
 			win->backing_store[i * win->ctx->width + j] = BLUE;

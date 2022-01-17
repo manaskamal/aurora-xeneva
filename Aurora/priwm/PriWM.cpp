@@ -34,6 +34,7 @@
 #include "list.h"
 #include "pri_event.h"
 #include "pri_dirty_clip.h"
+#include "pri_wallp_dirty_clip.h"
 
 #include <stdint.h>
 #include <string.h>
@@ -61,6 +62,7 @@
 
 /* global variables */
 canvas_t* canvas;
+pri_wallpaper_t *wallpaper;
 pri_bmp_image *arrow_cursor;
 pri_bmp_image *spin_cursor;
 uint32_t* cursor_back;
@@ -373,6 +375,106 @@ void cursor_draw_back (unsigned x, unsigned y) {
 	}
 }
 
+/**
+ * pri_load_wallpaper -- loads an wallpaper to pri_wallpaper
+ * @param filename -- file path of the wallpaper
+ */
+Image *pri_load_wallpaper (char *filename) {
+	wallpaper = (pri_wallpaper_t*)malloc(sizeof(pri_wallpaper_t));
+
+	for (int i = 0; i < (canvas->width * canvas->height * 32) / 4096; i++) 
+		valloc(0x0000060000000000 + i * 4096);
+
+	Image *img = LoadImage (filename, (uint8_t*)0x0000060000000000);
+	wallpaper->buffer = (uint8_t*)0x0000060000000000;
+	
+	/* finally call the jpeg decoder and draw the
+	 * image to wallpapers backing store
+	 */
+	if (img != NULL) {
+		CallJpegDecoder(img);
+		wallpaper->w = img->width;
+		wallpaper->h = img->height;
+	}
+
+	return img;
+}
+
+/*
+ * pri_wallp_pixel -- draws the pixels from wallpaper buffer
+ * to wallpaper backing store
+ * @param x -- x coordination to start from
+ * @param y -- y coordination to start from
+ */
+void pri_wallp_pixel (unsigned x, unsigned y, uint32_t color) {
+	uint32_t *lfb = (uint32_t*)wallpaper->buffer;      
+	lfb[x + y * canvas_get_width(canvas)] = color;
+}
+
+/**
+ * pri_wallpaper_draw -- draw the wallpaper to backing store
+ * @param img -- img to draw 
+ */
+void pri_wallpaper_draw (Image *img) {
+	unsigned x = 0;
+	unsigned y = 0;
+	if (img->data != NULL){
+		uint8_t* data = img->image;
+		uint32_t w = img->width;
+		uint32_t h = img->height;
+		for (int i = 0; i < h; i++) {
+			for (int k = 0; k < w; k++) {
+				int j = k + i * w;
+				uint8_t r = data[j * 3];        
+				uint8_t g = data[j * 3 + 1];        
+				uint8_t b = data[j * 3 + 2];       
+				//uint8_t a = data[j * 3 + 3];
+				uint32_t rgba =  ((r<<16) | (g<<8) | (b)) & 0x00ffffff;  //0xFF000000 | (r << 16) | (g << 8) | b;
+				rgba = rgba | 0xff000000;
+				pri_wallp_pixel(x + k, y + i,rgba);
+				j++;
+			}
+		}
+	}
+}
+
+
+
+/**
+ * pri_wallpaper_present -- present the wallpaper to screen
+ */
+void pri_wallpaper_present () {
+	uint32_t* lfb = (uint32_t*)canvas->address;
+	uint32_t* wallp = (uint32_t*)wallpaper->buffer;
+	/* draw the entire wallpaper */
+	for (int i=0; i < wallpaper->w; i++) {
+		for (int j=0; j < wallpaper->h; j++){
+			uint32_t color_a = wallp[(0 + i) + (0 + j) * canvas_get_width(canvas)];
+			lfb[(0 + i) + (0 + j) * canvas_get_width(canvas)] = color_a;
+		}
+	}
+}
+
+/**
+ * pri_wallpaper_present_rect -- present the wallpaper to screen in
+ * a specific geometry
+ * @param x -- x coordinate
+ * @param y -- y coordinate
+ * @param w -- width of the rect
+ * @param h -- height of the rect
+ */
+void pri_wallpaper_present_rect (int x, int y, int w, int h) {
+	uint32_t* lfb = (uint32_t*)canvas->address;
+	uint32_t* wallp = (uint32_t*)wallpaper->buffer;
+
+	/* draw the entire wallpaper */
+	for (int j=0; j < h; j++){
+		fastcpy (canvas->address + (y + j) * canvas->width + x,wallp + (y + j) * canvas->width + x,
+					w * 32);	
+	}
+}
+
+
 /* initialize the window list */
 void window_list_init () {
 	window_list = list_init ();
@@ -425,7 +527,19 @@ void window_remove (pri_window_t *win) {
 	free(win);
 }
 
-
+/**
+ * pri_window_move -- moves a window to a new location
+ * @param win -- window to move
+ * @param x -- new x location relative to device coord
+ * @param y -- new y location relative to device coord
+ */
+void pri_window_move (pri_window_t *win, int x, int y) {
+	pri_win_info_t* info = (pri_win_info_t*)win->pri_win_info_loc;
+	pri_rect_t *r = pri_create_rect(info->x, info->y, info->width, info->height);
+	pri_wallp_add_dirty_clip(r);
+	info->x = x;
+	info->y = y;
+}
 /**
  * compose_frame -- draw everything in an optimized waythat needs 
  * to be displayed on the screen
@@ -436,6 +550,14 @@ void compose_frame () {
 	pri_add_clip(prev_x, prev_y, 24, 24);
 	/* now store the new occluded area by cursor */
 	cursor_store_back(mouse_x, mouse_y);
+
+	//!--Here goes the drawing of all wallpaper dirty areas
+	for (int i = 0; i < pri_wallp_get_dirty_count(); i++) {
+		pri_rect_t *r = pri_wallp_get_dirty_rect();
+		pri_wallpaper_present_rect(r->x, r->y, r->w, r->h);
+		pri_add_clip(r->x, r->y, r->w, r->h);
+		free(r);
+	}
 
 	//----Here goes composing of all window buffers ---//
 	for (int i = 0; i < window_list->pointer; i++) {
@@ -499,7 +621,10 @@ int main (int argc, char* argv[]) {
 	cursor_init ();
 	load_cursor ("/cursor.bmp",(unsigned char*)0x0000070000000000, arrow_cursor);
 	load_cursor ("/spin.bmp", (unsigned char*)0x0000070000001000, spin_cursor);
+	Image* wallp = pri_load_wallpaper ("/leaf.jpg");
+	pri_wallpaper_draw(wallp);
 	
+
 	/* initialize window list */
 	window_list_init();
 	backing_store_list = list_init();
@@ -514,13 +639,14 @@ int main (int argc, char* argv[]) {
 	 * and display the priwm version name
 	 */
 	acrylic_draw_rect_filled (canvas, 0,0,s_width, s_height, LIGHTBLACK);
+	pri_wallpaper_present();
 	acrylic_font_set_size (64);
 	int length = acrylic_font_get_length("Priyanshi Compz");
 	int height = acrylic_font_get_height("Priyanshi Compz");
 	acrylic_font_draw_string (canvas, "Priyanshi Compz",s_width / 2 - length / 2,s_height/ 2 - height / 2,64,SILVER);
 	canvas_screen_update(canvas, 0, 0, s_width, s_height);
     cursor_store_back(0, 0);
-
+   
 	pri_loop_fd = sys_open_file ("/dev/pri_loop",NULL);
 	uint32_t frame_tick;
 	uint32_t diff_tick;
@@ -536,6 +662,7 @@ int main (int argc, char* argv[]) {
 		if (mouse.type == MOUSE_MOVE) {
 			mouse_x = mouse.dword;
 			mouse_y = mouse.dword2;
+
 			memset(&mouse, 0, sizeof(mouse_message_t));
 		}
 
