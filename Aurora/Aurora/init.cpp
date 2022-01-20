@@ -142,14 +142,16 @@ void _kmain () {
 	kybrd_init();
 	initialize_mouse();
 	
-	for (int i = 0; i < 2*1024*1024/4096; i++)
-		map_page((uint64_t)pmmngr_alloc(),0xFFFFF00000000000 + i * 4096, 0);
+	/*vfs_node_t file = openfs (node, "/start.wav");
 
-	
-	vfs_node_t file = openfs (node, "/start.wav");
+	for (int i = 0; i < file.size/4096; i++) {
+		void *p = pmmngr_alloc();
+		memset(p, 0, 4096);
+		map_page((uint64_t)p,0xFFFFF00000000000 + i * 4096, 0);
+	}
 	unsigned char* buffer = (unsigned char*)0xFFFFF00000000000;
 	unsigned char* buffer2 = (unsigned char*)(buffer + 44);
-	readfs (node,&file,buffer2,file.size);
+	readfs (node,&file,buffer2,file.size);*/
 
 	message_init ();
 	dwm_ipc_init();
@@ -157,7 +159,7 @@ void _kmain () {
 	pri_loop_init();
 	driver_mngr_initialize(info);
 	hda_initialize(); 
-	hda_audio_add_pcm(buffer2, file.size);
+	//hda_audio_add_pcm(buffer2, file.size);
 
 	e1000_initialize();   //<< receiver not working
 	arp_initialize();
@@ -183,8 +185,8 @@ void _kmain () {
 	 */
 	//! Misc programs goes here
 	//create_process ("/dwm2.exe", "dwm4");
-	//create_process ("/cnsl.exe", "cnsl");
 	create_process ("/snake.exe", "snake");
+	create_process ("/dock.exe", "cnsl");
 	//! Here start the scheduler (multitasking engine)
 	
 	scheduler_start();

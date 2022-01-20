@@ -26,11 +26,13 @@
 #include <stdio.h>
 #include <sys\_process.h>
 #include <sys\_term.h>
+#include <daisy.h>
+#include <daisy_window.h>
 
 typedef int (*test_num) ();
 
 int main (int argc, char*argv[]) {
-	printf ("Copyright (C) Manas Kamal Choudhury 2020-2022\n");
+	/*printf ("Copyright (C) Manas Kamal Choudhury 2020-2022\n");
 	printf ("Dock v1.0 -- Console testing app\n");
 
 	UFILE uf;
@@ -40,8 +42,17 @@ int main (int argc, char*argv[]) {
 
 	test_num tn = (test_num)GetProcAddress(buffer,"test_num");
 	int n = tn();
-	printf ("DLL Returned -> %d\n", n);
-	while(1) {
+	printf ("DLL Returned -> %d\n", n);*/
+	/*while(1) {
 		sys_wait();
+	}*/
+	daisy_application();
+	daisy_window_t *win = daisy_window_create (10,10,500,300,NULL);
+	daisy_win_info_t *info = daisy_get_window_info(win);
+	daisy_window_set_title(win, "dock");
+	daisy_window_show(win);
+	while(1) {
+		pri_event_t *e = daisy_get_gifts();
+		daisy_window_service_event(win,e);
 	}
 }

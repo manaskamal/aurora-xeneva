@@ -40,6 +40,10 @@
 #include <sys/ioquery.h>
 #include <sys/_term.h>
 #include <sys/_process.h>
+#include <sys/_sleep.h>
+#include <fastcpy.h>
+#include <acrylic.h>
+#include <font.h>
 
 int event_fd;
 
@@ -56,6 +60,7 @@ void daisy_application () {
 	   to this application */
 	event_fd = sys_open_file ("/dev/pri_loop", NULL);
 	ioquery (event_fd, PRI_LOOP_CREATE, NULL);
+	acrylic_initialize_font();
 }
 
 
@@ -95,6 +100,14 @@ pri_event_t *daisy_get_gifts () {
  */
 void priwm_send_event (pri_event_t *event) {
 	void* address = (void*)PRI_WM_RECEIVER;
-	event->from_id = get_current_pid();
-	memcpy (address, event, sizeof(pri_event_t));
+	pri_event_t *data = (pri_event_t*)address;
+check:
+	if (data->type != 0) {
+		sys_sleep(16);
+		goto check;
+	} else {
+		event->from_id = get_current_pid();
+		memcpy (address, event, sizeof(pri_event_t));
+	}
 }
+

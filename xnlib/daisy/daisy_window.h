@@ -34,7 +34,10 @@
 #define __DAISY_WINDOW_H__
 
 #include "daisy.h"
+#include "daisy_widget.h"
+#include "list.h"
 #include <canvas.h>
+
 
 typedef struct _pri_rect_ {
 	int x;
@@ -48,6 +51,10 @@ typedef struct _daisy_win_ {
 	uint32_t *backing_store;
 	uint32_t *shared_win;
 	canvas_t *ctx; 
+	int mouse_button_last;
+	char *title;
+	list_t *widgets;
+	void (*paint) (_daisy_win_ *win);
 }daisy_window_t;
 
 typedef struct _daisy_win_info_ {
@@ -76,4 +83,49 @@ extern daisy_window_t* daisy_window_create (int x, int y, int w, int h, uint8_t 
  * @param win -- desired window
  */
 extern daisy_win_info_t * daisy_get_window_info (daisy_window_t* win);
+
+/**
+ * daisy_window_move -- move the window to a new location
+ * @param x -- new x location
+ * @param y -- new y location
+ */
+extern void daisy_window_move (int x, int y);
+
+/**
+ * daisy_window_service_event -- services system messages
+ * @param e -- event message
+ */
+extern void daisy_window_service_event (daisy_window_t *win,pri_event_t *e);
+
+/**
+ * daisy_window_update -- updates the content of double buffered canvas to 
+ * real window framebuffer (backing store)
+ * @param win -- window to update
+ * @param x -- x coordinate
+ * @param y -- y coordinate
+ * @param w -- width of the bound box to use for update
+ * @param h -- height of the bound box to use for update
+ */
+extern void daisy_window_update (daisy_window_t *win,int x, int y, int w, int h);
+
+/**
+ * daisy_window_show -- make the final window visible
+ * @param win -- window to make visible
+ */
+extern void daisy_window_show (daisy_window_t *win);
+
+/**
+ * daisy_window_set_title -- set a suitable title to the window
+ * @param win -- reference window
+ * @param title -- title to use
+ */
+extern void daisy_window_set_title (daisy_window_t *win,char* title);
+
+/**
+ * daisy_window_add_widget -- add a widget to daisy window
+ * @param win -- reference window
+ * @param widget -- widget to add
+ */
+extern void daisy_window_add_widget (daisy_window_t *win,daisy_widget_t *widget);
+
 #endif

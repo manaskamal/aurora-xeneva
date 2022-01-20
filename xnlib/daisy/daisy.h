@@ -40,6 +40,7 @@
 /* Messages sends from client to server */
 #define PRI_WIN_CREATE  100
 #define PRI_WIN_MARK_FOR_CLOSE 102
+#define PRI_WIN_MOVE 103
 
 /* Messages that are being send to client by server */
 #define DAISY_WIN_MOVE  200

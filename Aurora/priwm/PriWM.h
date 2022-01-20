@@ -34,10 +34,12 @@
 #define __PRI_WM_H__
 
 #include <stdint.h>
+#include <canvas.h>
 
 /* Messages sends from client to server */
 #define PRI_WIN_CREATE  100
 #define PRI_WIN_MARK_FOR_CLOSE 102
+#define PRI_WIN_MOVE 103
 
 /* Messages that are being send to client by server */
 #define DAISY_WIN_MOVE  200
@@ -146,6 +148,11 @@ typedef struct _pri_win_ {
 	uint16_t owner_id;
 	uint32_t *backing_store;
 	uint32_t *pri_win_info_loc;
+	int drag_x;
+	int drag_y;
+	int resz_h;
+	int resz_v;
+	canvas_t *shadow;
 }pri_window_t;
 
 /*

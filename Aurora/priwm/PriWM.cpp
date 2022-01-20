@@ -67,18 +67,25 @@ pri_bmp_image *arrow_cursor;
 pri_bmp_image *spin_cursor;
 uint32_t* cursor_back;
 int pri_loop_fd;
+bool _window_update_all_ = false;
 
 /* mouse coordinations */
 uint32_t mouse_x, mouse_y;
 uint32_t prev_x = 0, prev_y = 0;
-
+int last_mouse_button = 0;
 
 /* data structures */
 list_t *window_list;
 list_t *backing_store_list;
 list_t *shared_win_space_list;
 
-
+/**
+ * window bits
+ */
+pri_window_t *focused_win = NULL;
+pri_window_t *top_window = NULL;
+pri_window_t *dragg_win = NULL;
+pri_window_t *resz_win = NULL;
 
 /**
  * pri_create_rect -- create a new rectangle
@@ -233,6 +240,7 @@ uint32_t* create_new_shared_win (uint16_t owner_id) {
 
 	uint32_t *addr = (uint32_t*)SHARED_WIN_START;
 	addr += cursor_pos;
+	map_shared_memory (owner_id, (uint64_t)addr, 8192);
 	shared_win_t* sh = (shared_win_t*)malloc(sizeof(shared_win_t));
 	sh->free = false;
 	sh->owner_id = owner_id;
@@ -527,6 +535,57 @@ void window_remove (pri_window_t *win) {
 	free(win);
 }
 
+
+/**
+ * pri_win_find_by_id -- find a window by its owner id
+ * @param owner_id -- owner id to search for
+ */
+pri_window_t * pri_win_find_by_id (uint16_t owner_id) {
+	for (int i = 0; i < window_list->pointer; i++) {
+		pri_window_t *win = (pri_window_t*)list_get_at(window_list, i);
+		if (win != NULL && win->owner_id == owner_id)
+			return win;
+	}
+
+	return NULL;
+}
+
+/**
+ * pri_window_make_top -- brings a window to top
+ * @param win -- window to make top
+ */
+void pri_window_make_top (pri_window_t *win) {
+	int i = 0;
+	for (i = 0; i < window_list->pointer; i++) {
+		pri_window_t* _win = (pri_window_t*)list_get_at(window_list, i);
+		if (_win == win)
+			break;
+	}
+
+	list_remove (window_list,i);
+	list_add(window_list, win);
+}
+
+/**
+ * pri_window_set_focused -- make window focused
+ * @param win -- window to make focused
+ */
+void pri_window_set_focused (pri_window_t * win) {
+	/* check if it is already focused */
+	if (focused_win == win)
+		return;
+
+	/* here we need to notify old focused window
+	   that focus has been changed to focus lost */
+	focused_win = win;
+	/*
+	 * here notify the new window that focus is gained
+	 */
+	//! now let us bring the focus window in top
+	pri_window_make_top(win);
+}
+
+
 /**
  * pri_window_move -- moves a window to a new location
  * @param win -- window to move
@@ -534,12 +593,32 @@ void window_remove (pri_window_t *win) {
  * @param y -- new y location relative to device coord
  */
 void pri_window_move (pri_window_t *win, int x, int y) {
+	if (focused_win != win) 
+		pri_window_set_focused(win);
+
 	pri_win_info_t* info = (pri_win_info_t*)win->pri_win_info_loc;
 	pri_rect_t *r = pri_create_rect(info->x, info->y, info->width, info->height);
 	pri_wallp_add_dirty_clip(r);
 	info->x = x;
 	info->y = y;
 }
+
+/**
+ * pri_window_resize -- resize a window to new dimension
+ * @param win -- window to resize
+ * @param n_w -- new width of the window
+ * @param n_h -- new height of the window
+ */
+void pri_window_resize (pri_window_t *win, int n_w,int n_h) {
+	pri_win_info_t* info = (pri_win_info_t*)win->pri_win_info_loc;
+	pri_rect_t *r = pri_create_rect(info->x, info->y, info->width + 100, info->height + 100);
+	pri_wallp_add_dirty_clip(r);
+	info->width = n_w;
+	info->height = n_h;
+	// (--BUGGY---)
+}
+
+
 /**
  * compose_frame -- draw everything in an optimized waythat needs 
  * to be displayed on the screen
@@ -548,8 +627,7 @@ void compose_frame () {
 	/* draw previously stored occluded area by cursor */
 	cursor_draw_back(prev_x, prev_y);
 	pri_add_clip(prev_x, prev_y, 24, 24);
-	/* now store the new occluded area by cursor */
-	cursor_store_back(mouse_x, mouse_y);
+	
 
 	//!--Here goes the drawing of all wallpaper dirty areas
 	for (int i = 0; i < pri_wallp_get_dirty_count(); i++) {
@@ -569,17 +647,38 @@ void compose_frame () {
 			int wid = info->width;
 			int he = info->height;
 
+			/* calculate desktop bounds */
+			if (winx - 5 < 0) {
+				info->x = 5;
+				winx = info->x;
+			}
+
+			if (winy - 5 < 0) {
+				info->y = 5;
+				winy = 5;
+			}
+
+
+			if (info->x + info->width >= canvas->width)
+				wid  = canvas->width - info->x;
+
+			if (info->y + info->height >= canvas->height){
+				he = canvas->height - info->y;
+			}
+
+
 			for (int i = 0; i < he; i++)  {
 				fastcpy (canvas->address + (winy + i) * canvas->width + winx,win->backing_store + (0 + i) * canvas->width + 0,
-					wid * 4);	
+				wid * 4);	
 			}
 
 			/* add the clip region */
 			pri_add_clip (winx, winy, wid, he);
 		}
-
 	}
-
+	
+	/* now store the new occluded area by cursor */
+	cursor_store_back(mouse_x, mouse_y);
 	/* draw the new cursor on the backing store */
 	draw_cursor (canvas, arrow_cursor, mouse_x, mouse_y); 
 	pri_add_clip(mouse_x, mouse_y, 24, 24);
@@ -599,6 +698,84 @@ void compose_frame () {
 	prev_y = mouse_y;
 }
 
+/**
+ * pri_win_send_mouse_event -- sends mouse event to focused
+ * @param x -- mouse_x
+ * @param y -- mouse_y
+ * @param button -- mouse button click
+ */
+void pri_win_send_mouse_event (pri_window_t* win,int x, int y, int button) {
+	pri_event_t e;
+	e.type = DAISY_CURSOR_MOVED;
+	e.dword = x;
+	e.dword2 = y;
+	e.dword3 = button;
+	e.to_id = win->owner_id;
+	ioquery(pri_loop_fd,PRI_LOOP_PUT_EVENT, &e);
+}
+
+
+/**
+ * pri_win_check_draggable -- checks if a window is draggable or not
+ * @param x -- mouse x coordinate
+ * @param y -- mouse y coordinate
+ * @param button -- button state
+ */
+void pri_win_check_draggable (int x, int y, int button) {
+
+	/** loop through the window list **/
+	for (int i = window_list->pointer - 1; i >= 0; i--) {
+		pri_window_t* win = (pri_window_t*)list_get_at(window_list, i);
+		pri_win_info_t *info = (pri_win_info_t*)win->pri_win_info_loc;
+
+		/** Bound check the mouse cursor **/
+		if (!(x >= info->x && x < (info->x + info->width) &&
+			y >= info->y && y < (info->y + info->height))) 
+			continue;
+
+		/**  check if button is depressed or not **/
+		if (button && !last_mouse_button) {
+			//! Only a limited portion is available for dragging purpose
+			if (y >= info->y && y < (info->y + 23)) {  
+				pri_window_set_focused(win);
+				dragg_win = win;
+				dragg_win->drag_x = x - info->x;
+				dragg_win->drag_y = y - info->y;
+		        break;
+			}
+
+			if (y >= (info->y + info->height - 10) && y < (info->y + info->height + 10)) {
+				resz_win = win;
+				resz_win->resz_h = x - info->width;
+				resz_win->resz_v = y - info->height;	
+				break;
+			}
+		}
+	}
+	 /**  check if a draggable window is present or not **/
+	if (dragg_win) {
+		pri_win_info_t *wininfo = (pri_win_info_t*)dragg_win->pri_win_info_loc;
+		int posx = x - dragg_win->drag_x;
+		int posy = y - dragg_win->drag_y;
+		pri_window_move(dragg_win,posx, posy);
+	}
+
+	/** check if a resizable window is present or not **/
+	if (resz_win) {
+		int n_width = x - resz_win->resz_h;
+		int n_height = y - resz_win->resz_v;
+		pri_window_resize(resz_win, n_width, n_height);
+	}
+
+	/** button released **/
+	if (!button)  {
+		dragg_win = NULL;
+		resz_win = NULL;
+	}
+	
+	/* store the last mouse_button */
+	last_mouse_button = button;
+}
 
 
 /*
@@ -641,9 +818,9 @@ int main (int argc, char* argv[]) {
 	acrylic_draw_rect_filled (canvas, 0,0,s_width, s_height, LIGHTBLACK);
 	pri_wallpaper_present();
 	acrylic_font_set_size (64);
-	int length = acrylic_font_get_length("Priyanshi Compz");
+	/*int length = acrylic_font_get_length("Priyanshi Compz");
 	int height = acrylic_font_get_height("Priyanshi Compz");
-	acrylic_font_draw_string (canvas, "Priyanshi Compz",s_width / 2 - length / 2,s_height/ 2 - height / 2,64,SILVER);
+	acrylic_font_draw_string (canvas, "Priyanshi Compz",s_width / 2 - length / 2,s_height/ 2 - height / 2,64,SILVER);*/
 	canvas_screen_update(canvas, 0, 0, s_width, s_height);
     cursor_store_back(0, 0);
    
@@ -652,6 +829,7 @@ int main (int argc, char* argv[]) {
 	uint32_t diff_tick;
 	pri_event_t *event;
 	mouse_message_t mouse;
+
 	while (1) {
 		mouse_get (&mouse);
 		event = pri_wm_get_message ();
@@ -662,11 +840,18 @@ int main (int argc, char* argv[]) {
 		if (mouse.type == MOUSE_MOVE) {
 			mouse_x = mouse.dword;
 			mouse_y = mouse.dword2;
+			int button = mouse.dword4;
+
+			pri_win_check_draggable(mouse_x, mouse_y,button); 
+			/* send the mouse event to focused window */
+			if (focused_win) {
+				pri_win_send_mouse_event(focused_win, mouse_x,mouse_y, 0);
+			}
 
 			memset(&mouse, 0, sizeof(mouse_message_t));
 		}
 
-		
+               		
 		/* PRI_WIN_CREATE -- handles window 
 		 * creation message */
 		if (event->type == PRI_WIN_CREATE) {
@@ -678,6 +863,8 @@ int main (int argc, char* argv[]) {
 			uint8_t attribute = event->dword5;
 			pri_window_t *win = window_create (x,y,w,h,attribute,event->from_id);
 
+			pri_window_set_focused(win);
+
 			/* Send the new gift message to client */
 			pri_event_t e;
 			e.type = DAISY_GIFT_CANVAS;
@@ -687,6 +874,21 @@ int main (int argc, char* argv[]) {
 			ioquery(pri_loop_fd,PRI_LOOP_PUT_EVENT, &e);
 			free(event);
 		}
+
+		/**
+		 *	PRI_WIN_MOVE -- moves a window to new
+		 *  location
+		 */
+		if (event->type == PRI_WIN_MOVE) {
+			int x = event->dword;
+			int y = event->dword2;
+			pri_window_t *win = pri_win_find_by_id(event->from_id);
+			if (win != NULL) {
+				pri_window_move (win, x, y);
+			}
+			free(event);
+		}
+
 
         frame_tick = sys_get_system_tick();
 

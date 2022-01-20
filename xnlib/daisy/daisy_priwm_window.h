@@ -45,5 +45,11 @@
  */
 extern void _daisy_priwm_create_window_ (int x, int y, int w, int h, uint8_t attribute);
 
+/**
+ * _daisy_priwm_window_move_ --moves a window to a new location
+ * @param x -- x coordination
+ * @param y -- y coordination
+ */
+extern void _daisy_priwm_window_move_ (int x, int y);
 
 #endif

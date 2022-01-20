@@ -32,9 +32,12 @@
 
 #include "daisy_window.h"
 #include "daisy_priwm_window.h"
+#include "daisy_window_painter.h"
+#include "daisy_widget.h"
 #include <stdlib.h>
 #include <sys/_sleep.h>
 #include <sys/_term.h>
+#include <fastcpy.h>
 
 /**
  * daisy_window_create -- create a new daisy window
@@ -49,7 +52,7 @@ daisy_window_t* daisy_window_create (int x, int y, int w, int h, uint8_t attribu
 	_daisy_priwm_create_window_ (x, y, w, h, attribute);
 	win->ctx = create_canvas (w, h);
 	win->attribute = attribute;
-	
+	win->mouse_button_last = 0;
 	while(1) {
 		pri_event_t *e = daisy_get_gifts();
 		if (e != NULL) {
@@ -61,6 +64,9 @@ daisy_window_t* daisy_window_create (int x, int y, int w, int h, uint8_t attribu
 		}
 	}
 
+	win->paint = daisy_window_paint;
+	win->title = NULL;
+	win->widgets = list_init();
 	return win;
 }
 
@@ -71,5 +77,89 @@ daisy_window_t* daisy_window_create (int x, int y, int w, int h, uint8_t attribu
 daisy_win_info_t * daisy_get_window_info (daisy_window_t* win) {
 	daisy_win_info_t *info = (daisy_win_info_t*)win->shared_win;
 	return info;
+}
+
+
+/**
+ * daisy_window_move -- move the window to a new location
+ * @param x -- new x location
+ * @param y -- new y location
+ */
+void daisy_window_move (int x, int y) {
+	_daisy_priwm_window_move_(x, y);
+}
+
+/**
+ * daisy_window_handle_mouse -- handles mouse events within the
+ * window
+ * @param x -- mouse_x coordinate
+ * @param y -- mouse_y coordinate
+ * @param button -- button bit
+ */
+void daisy_window_handle_mouse (daisy_window_t *win,int x, int y, int button) {
+	/**  loop through all widgets and check there
+	 **  bounds with current mouse location if they intersect **/
+
+}
+/**
+ * daisy_window_service_event -- services system messages
+ * @param e -- event message
+ */
+void daisy_window_service_event (daisy_window_t *win,pri_event_t *e){
+	if (e != NULL) {
+		if (e->type == DAISY_CURSOR_MOVED) {
+			daisy_window_handle_mouse(win,e->dword, e->dword2, e->dword3);
+			free(e);
+		}
+	}
+}
+
+
+/**
+ * daisy_window_update -- updates the content of double buffered canvas to 
+ * real window framebuffer (backing store)
+ * @param win -- window to update
+ * @param x -- x coordinate
+ * @param y -- y coordinate
+ * @param w -- width of the bound box to use for update
+ * @param h -- height of the bound box to use for update
+ */
+void daisy_window_update (daisy_window_t *win,int x, int y, int w, int h) {
+	uint32_t* lfb = win->backing_store;
+	uint32_t* dbl_canvas = win->ctx->address;   
+	int width = canvas_get_width(win->ctx);
+	int height = canvas_get_height(win->ctx);
+
+	for (int i = 0; i < h; i++)
+		fastcpy (lfb + (y + i) * width + x,dbl_canvas + (y + i) * width + x, w * 4);
+}
+
+
+/**
+ * daisy_window_show -- make the final window visible
+ * @param win -- window to make visible
+ */
+void daisy_window_show (daisy_window_t *win) {
+	daisy_win_info_t *info = daisy_get_window_info(win);
+	win->paint(win);
+	daisy_window_update (win, 0,0,info->width, info->height);
+}
+
+/**
+ * daisy_window_set_title -- set a suitable title to the window
+ * @param win -- reference window
+ * @param title -- title to use
+ */
+void daisy_window_set_title (daisy_window_t *win,char* title) {
+	win->title = title;
+}
+
+/**
+ * daisy_window_add_widget -- add a widget to daisy window
+ * @param win -- reference window
+ * @param widget -- widget to add
+ */
+void daisy_window_add_widget (daisy_window_t *win,daisy_widget_t *widget) {
+	list_add (win->widgets,widget);
 }
 

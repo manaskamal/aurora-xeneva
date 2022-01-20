@@ -1,6 +1,7 @@
 #include <daisy.h>
 #include <daisy_priwm_window.h>
 #include <daisy_window.h>
+#include <daisy_widget_panel.h>
 
 #include <sys\_file.h>
 #include <acrylic.h>
@@ -15,16 +16,21 @@
 #include <color.h>
 #include <sys\_term.h>
 
-
+//uint32_t colors[23] = {0xFF9EA09F, 0xFFA8A8A8, 0xFFB5B7B7, 0xFFC0C5C3, 0xFFCACFCE,0xD3D5D4,0xD3D5D4,0xD3D5D4,0xD3D5D4,0xD3D5D4
+//,0xD3D5D4,0xD3D5D4,0xD3D5D4,0xD3D5D4,0xD3D5D4,0xD3D5D4,0xD3D5D4,0xD3D5D4,0xD3D5D4,0xD3D5D4,0xD3D5D4,0xD3D5D4,0xD3D5D4};
 
 int main (int argc, char* argv[]) {
 	daisy_application();
 	daisy_window_t *win = daisy_window_create (100,100,500,300,NULL);
-	for (int i = 0; i < 500; i++)
-		for (int j = 0; j < 500; j++)
-			win->backing_store[i * win->ctx->width + j] = BLUE;
+	daisy_win_info_t *info = daisy_get_window_info(win);
+	daisy_window_set_title (win, "Snake");
+	
+	daisy_widget_panel_t *panel = daisy_widget_create_panel(win,LIGHTSILVER);
+	daisy_window_add_widget (win,(daisy_widget_t*)panel);
 
+	daisy_window_show(win);
 	while(1) {
 		pri_event_t *e = daisy_get_gifts();
+		daisy_window_service_event(win,e);
 	}
 }

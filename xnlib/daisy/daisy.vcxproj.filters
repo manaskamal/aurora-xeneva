@@ -5,11 +5,18 @@
     <ClInclude Include="daisy_event_stack.h" />
     <ClInclude Include="daisy_priwm_window.h" />
     <ClInclude Include="daisy_window.h" />
+    <ClInclude Include="daisy_window_painter.h" />
+    <ClInclude Include="daisy_widget.h" />
+    <ClInclude Include="list.h" />
+    <ClInclude Include="daisy_widget_panel.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="daisy.cpp" />
     <ClCompile Include="daisy_event_stack.cpp" />
     <ClCompile Include="daisy_priwm_window.cpp" />
     <ClCompile Include="daisy_window.cpp" />
+    <ClCompile Include="daisy_window_painter.cpp" />
+    <ClCompile Include="list.cpp" />
+    <ClCompile Include="daisy_widget_panel.cpp" />
   </ItemGroup>
 </Project>
