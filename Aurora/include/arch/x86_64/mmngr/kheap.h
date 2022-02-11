@@ -16,15 +16,16 @@
 #include <arch\x86_64\mmngr\vmmngr.h>
 #include <stdio.h>
 
-struct kmem {
-	size_t length;
-	kmem* next;
-	kmem* last;
+#define HEAP_MAGIC   0x12112002
+
+typedef struct _kmem_ {
+	uint32_t magic;
 	bool free;
-	void align_next ();
-	void align_prev();
-	kmem* split (size_t length);
-};
+	size_t length;
+	struct _kmem_* next;
+	struct _kmem_* prev;
+}heap_t;
+
 
 void initialize_kmemory (size_t sz);
 void* malloc(size_t sz);

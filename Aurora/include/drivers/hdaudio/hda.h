@@ -252,5 +252,9 @@ extern void hda_set_volume (uint8_t volume);
 extern void hda_audio_add_pcm (unsigned char *data, uint32_t length);
 extern void hda_audio_play ();
 extern void hda_output_stop ();
+/**
+ * Interrupt handler for intel hd audio
+ */
+extern void hda_handler (size_t v, void* p);
 
 #endif

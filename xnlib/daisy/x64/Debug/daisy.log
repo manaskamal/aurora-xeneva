@@ -1,7 +1,7 @@
-﻿Build started 21-01-2022 ৰাতিপু 12:40:26.
+﻿Build started 24-01-2022 ৰাতিপু 10:50:24.
      1>Project "E:\Xeneva Project\Xeneva\xnlib\daisy\daisy.vcxproj" on node 2 (Rebuild target(s)).
      1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\xnlib\xnacrylic\include" /I"E:\Xeneva Project\Xeneva\xnlib\xnclib" /Zi /nologo /W4 /WX- /sdl- /MP /Od /D ARCH_X64 /D _MBCS /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt daisy.cpp daisy_event_stack.cpp daisy_priwm_window.cpp daisy_widget_panel.cpp daisy_window.cpp daisy_window_painter.cpp list.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\xnlib\xnacrylic\include" /I"E:\Xeneva Project\Xeneva\xnlib\xnclib" /Zi /nologo /W4 /WX- /sdl- /MP /Od /D ARCH_X64 /D _MBCS /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt daisy.cpp daisy_event_stack.cpp daisy_priwm_window.cpp daisy_widget_button.cpp daisy_widget_panel.cpp daisy_window.cpp daisy_window_painter.cpp list.cpp
      1>cl : Command line warning D9025: overriding '/sdl-' with '/GS-'
      1>cl : Command line warning D9002: ignoring unknown option '/arch:SSE'
      1>cl : Command line warning D9030: '/Gm' is incompatible with multiprocessing; ignoring /MP switch
@@ -10,12 +10,15 @@
      1>daisy_window_painter.cpp(60): warning C4018: '<' : signed/unsigned mismatch
          daisy_window.cpp
      1>daisy_window.cpp(56): warning C4127: conditional expression is constant
-     1>daisy_window.cpp(99): warning C4100: 'button' : unreferenced formal parameter
-     1>daisy_window.cpp(99): warning C4100: 'y' : unreferenced formal parameter
-     1>daisy_window.cpp(99): warning C4100: 'x' : unreferenced formal parameter
-     1>daisy_window.cpp(99): warning C4100: 'win' : unreferenced formal parameter
-     1>daisy_window.cpp(131): warning C4189: 'height' : local variable is initialized but not referenced
+     1>daisy_window.cpp(104): warning C4018: '<' : signed/unsigned mismatch
+     1>daisy_window.cpp(109): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
+     1>daisy_window.cpp(140): warning C4189: 'height' : local variable is initialized but not referenced
          daisy_widget_panel.cpp
+     1>daisy_widget_panel.cpp(52): warning C4018: '<' : signed/unsigned mismatch
+     1>daisy_widget_panel.cpp(63): warning C4018: '<' : signed/unsigned mismatch
+     1>daisy_widget_panel.cpp(111): warning C4018: '<' : signed/unsigned mismatch
+         daisy_widget_button.cpp
+     1>daisy_widget_button.cpp(60): warning C4100: 'clicked' : unreferenced formal parameter
          daisy_priwm_window.cpp
          daisy_event_stack.cpp
          daisy.cpp
@@ -26,6 +29,7 @@
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\Lib.exe /OUT:"E:\Xeneva Project\Xeneva\xnlib\lib64\daisy.lib" /NOLOGO /MACHINE:X64 x64\Debug\daisy.obj
          x64\Debug\daisy_event_stack.obj
          x64\Debug\daisy_priwm_window.obj
+         x64\Debug\daisy_widget_button.obj
          x64\Debug\daisy_widget_panel.obj
          x64\Debug\daisy_window.obj
          x64\Debug\daisy_window_painter.obj
@@ -35,4 +39,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:01.73
+Time Elapsed 00:00:00.69

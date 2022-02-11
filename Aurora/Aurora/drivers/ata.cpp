@@ -10,6 +10,7 @@
  */
 
 #include <drivers\ata.h>
+#include <drivers\pci.h>
 
 uint8_t ata_pm = 0;
 uint8_t ide_buf[512];
@@ -17,6 +18,7 @@ uint8_t ata_drive;
 uint8_t ata_slave_drive;
 char    ata_device_name[40];
 
+extern void debug_print(const char *text, ...);
 
 void   ide_select_drive (uint8_t bus, uint8_t i)
 {
@@ -133,7 +135,7 @@ pm_stat_read:
 void  ide_400ns_delay (uint16_t io)
 {
 	
-	for (int i = 0; i < 4; i++)
+	for (int i = 0; i < 40; i++)
 	{
 		uint8_t data = inportb(io + ATA_REG_ALTSTATUS);
 	}
@@ -473,6 +475,7 @@ void  ata_probe ()
 		}
 
 		printf("[ATA]: Primary-Master Device: %s\n", ata_device_name);
+		printf("[ATA]: Primary-Master Device Size -> %d GB\n", *((unsigned int*)(ide_buf + 200)) / 1024 / 1024 / 1024);
 		ata_drive = (ATA_PRIMARY << 1) | ATA_MASTER;
 	}
 
@@ -493,7 +496,18 @@ void  ata_probe ()
 void ata_initialize (){
 
 	x64_cli();
-
+	pci_device_info info;
+	int bus; int dev; int func;
+	if (!pci_find_device_class (0x01,0x01,&info,&bus,&dev,&func)) {
+		debug_print ("******************************************\n");
+		debug_print ("System error!!!!\n");
+		debug_print ("Xeneva initialization failed\n");
+		debug_print ("Storage IDE mode error, halting system\n");
+		debug_print ("******************************************\n");
+		for(;;);
+	}
+	pci_enable_bus_master (bus,dev,func);
+	
 	interrupt_set(35, ide_primary_irq, 14);
 
 	interrupt_set(36, ide_secondary_irq,15);

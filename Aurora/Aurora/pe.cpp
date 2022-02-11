@@ -19,7 +19,7 @@ ientry ent;
 uint64_t image_base;
 //! Loads a pe file and extracts its
 //! informations
-void load_pe_file (unsigned char* buffer, int size) {
+void load_pe_file (uint64_t* buffer, int size) {
 
 	IMAGE_DOS_HEADER* dos = (IMAGE_DOS_HEADER*)buffer;
 	PIMAGE_NT_HEADERS nt = raw_offset<PIMAGE_NT_HEADERS>(dos, dos->e_lfanew);

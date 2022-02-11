@@ -15,6 +15,7 @@
 #include <arch\x86_64\pic.h>
 #include <stdio.h>
 #include <arch\x86_64\apic.h>
+#include <arch\x86_64\ioapic.h>
 
 
 //! Global Descriptor Table functions
@@ -28,6 +29,8 @@ extern "C" void x64_lidt(void* location);
 extern "C" void x64_sidt(void* location);
 extern "C" void x64_lgdt(void* location);
 extern "C" void x64_sgdt(void* location);
+
+extern void debug_print(const char *text, ...);
 
 //! Global Variables GDT
 static const size_t GDT_ENTRIES = GDT_ENTRY_MAX;
@@ -186,29 +189,30 @@ void hal_x86_64_init () {
 }
 
 
+static int pit_tick = 0;
+void pit_handler_callback (size_t p, void* param) {
+	apic_local_eoi();
+}
+
+
 void hal_x86_64_setup_int () {
 	x64_cli();
 
 	////! initialize the interrupt descriptor table
 	interrupt_initialize();
+	debug_print ("IDT initialized\n");
 	x64_sti();
 	////! initialize all exception handlers
 	exception_init ();
 
-#ifdef USE_PIC
-	initialize_pic(0x20, 0x28);
-#endif
+	debug_print ("Exception initialized\n");
+	
 
-#ifdef USE_APIC
 	//!Initialize APIC   FIXME: Causes triple fault now
 	initialize_apic ();
+	
+	debug_print ("APIC initialized\n");
 
-	unsigned int divisor =  1193181 / 100;
-	x64_outportb(0x43, 0x00 | 0x06 | 0x30 | 0x00);
-	x64_outportb(0x40, divisor);
-	x64_outportb(0x40, divisor >> 8);
-#endif
-//
 //	//!Enable EFER and SYSCALL Extension
 	size_t efer = x64_read_msr(IA32_EFER);
 	efer |= (1<<11);
@@ -218,13 +222,21 @@ void hal_x86_64_setup_int () {
 	x64_write_msr(IA32_EFER, efer);
 	//! now start the interrupts
 
+	debug_print ("EFER.SYSCALL enabled\n");
 	//! initialize the user land environment
 	initialize_user_land (64);
 
+	debug_print ("User Land Initialized\n");
 	//! initialize the syscall entries
 	initialize_syscall ();
-	//x64_sti ();
+
+	debug_print ("System call initialized\n");
+
+	//apic_initialize_timer();
+    x64_sti ();
+	
 }
+
 
 void hal_x86_64_feature_check () {
 	size_t a, b, c, d;

@@ -31,9 +31,9 @@ PUBLIC	?get_ttype@@YAPEAU_tele_type_@@H@Z		; get_ttype
 PUBLIC	?ttype_dup_master@@YAXHH@Z			; ttype_dup_master
 PUBLIC	?ttype_insert@@YAXPEAU_tele_type_@@@Z		; ttype_insert
 PUBLIC	?ttype_delete@@YAXPEAU_tele_type_@@@Z		; ttype_delete
-PUBLIC	?ttype_master_read@@YAXPEAU_vfs_node_@@PEAEI@Z	; ttype_master_read
+PUBLIC	?ttype_master_read@@YAXPEAU_vfs_node_@@PEA_KI@Z	; ttype_master_read
 PUBLIC	?ttype_master_write@@YAXPEAU_vfs_node_@@PEAEI@Z	; ttype_master_write
-PUBLIC	?ttype_slave_read@@YAXPEAU_vfs_node_@@PEAEI@Z	; ttype_slave_read
+PUBLIC	?ttype_slave_read@@YAXPEAU_vfs_node_@@PEA_KI@Z	; ttype_slave_read
 PUBLIC	?ttype_slave_write@@YAXPEAU_vfs_node_@@PEAEI@Z	; ttype_slave_write
 EXTRN	?strcpy@@YAPEADPEADPEBD@Z:PROC			; strcpy
 EXTRN	?strlen@@YA_KPEBD@Z:PROC			; strlen
@@ -66,15 +66,15 @@ $pdata$?ttype_dup_master@@YAXHH@Z DD imagerel $LN5
 $pdata$?ttype_delete@@YAXPEAU_tele_type_@@@Z DD imagerel $LN8
 	DD	imagerel $LN8+146
 	DD	imagerel $unwind$?ttype_delete@@YAXPEAU_tele_type_@@@Z
-$pdata$?ttype_master_read@@YAXPEAU_vfs_node_@@PEAEI@Z DD imagerel $LN3
+$pdata$?ttype_master_read@@YAXPEAU_vfs_node_@@PEA_KI@Z DD imagerel $LN3
 	DD	imagerel $LN3+78
-	DD	imagerel $unwind$?ttype_master_read@@YAXPEAU_vfs_node_@@PEAEI@Z
+	DD	imagerel $unwind$?ttype_master_read@@YAXPEAU_vfs_node_@@PEA_KI@Z
 $pdata$?ttype_master_write@@YAXPEAU_vfs_node_@@PEAEI@Z DD imagerel $LN10
 	DD	imagerel $LN10+331
 	DD	imagerel $unwind$?ttype_master_write@@YAXPEAU_vfs_node_@@PEAEI@Z
-$pdata$?ttype_slave_read@@YAXPEAU_vfs_node_@@PEAEI@Z DD imagerel $LN9
-	DD	imagerel $LN9+260
-	DD	imagerel $unwind$?ttype_slave_read@@YAXPEAU_vfs_node_@@PEAEI@Z
+$pdata$?ttype_slave_read@@YAXPEAU_vfs_node_@@PEA_KI@Z DD imagerel $LN9
+	DD	imagerel $LN9+258
+	DD	imagerel $unwind$?ttype_slave_read@@YAXPEAU_vfs_node_@@PEA_KI@Z
 $pdata$?ttype_slave_write@@YAXPEAU_vfs_node_@@PEAEI@Z DD imagerel $LN3
 	DD	imagerel $LN3+78
 	DD	imagerel $unwind$?ttype_slave_write@@YAXPEAU_vfs_node_@@PEAEI@Z
@@ -88,11 +88,11 @@ $unwind$?ttype_dup_master@@YAXHH@Z DD 010c01H
 	DD	0620cH
 $unwind$?ttype_delete@@YAXPEAU_tele_type_@@@Z DD 010901H
 	DD	04209H
-$unwind$?ttype_master_read@@YAXPEAU_vfs_node_@@PEAEI@Z DD 011301H
+$unwind$?ttype_master_read@@YAXPEAU_vfs_node_@@PEA_KI@Z DD 011301H
 	DD	08213H
 $unwind$?ttype_master_write@@YAXPEAU_vfs_node_@@PEAEI@Z DD 011301H
 	DD	0a213H
-$unwind$?ttype_slave_read@@YAXPEAU_vfs_node_@@PEAEI@Z DD 011301H
+$unwind$?ttype_slave_read@@YAXPEAU_vfs_node_@@PEA_KI@Z DD 011301H
 	DD	0a213H
 $unwind$?ttype_slave_write@@YAXPEAU_vfs_node_@@PEAEI@Z DD 011301H
 	DD	08213H
@@ -151,9 +151,9 @@ node$ = 64
 file$ = 96
 buffer$ = 104
 length$ = 112
-?ttype_slave_read@@YAXPEAU_vfs_node_@@PEAEI@Z PROC	; ttype_slave_read
+?ttype_slave_read@@YAXPEAU_vfs_node_@@PEA_KI@Z PROC	; ttype_slave_read
 
-; 170  : void ttype_slave_read (vfs_node_t *file, uint8_t* buffer,uint32_t length) {
+; 170  : void ttype_slave_read (vfs_node_t *file, uint64_t* buffer,uint32_t length) {
 
 $LN9:
 	mov	DWORD PTR [rsp+24], r8d
@@ -201,12 +201,11 @@ $LN6@ttype_slav:
 	cmp	DWORD PTR i$1[rsp], eax
 	jae	SHORT $LN4@ttype_slav
 
-; 181  : 		circular_buf_get(type->in_buffer,&buffer[i]);
+; 181  : 		circular_buf_get(type->in_buffer,(uint8_t*)&buffer[i]);
 
 	movsxd	rax, DWORD PTR i$1[rsp]
 	mov	rcx, QWORD PTR buffer$[rsp]
-	add	rcx, rax
-	mov	rax, rcx
+	lea	rax, QWORD PTR [rcx+rax*8]
 	mov	rdx, rax
 	mov	rax, QWORD PTR type$[rsp]
 	mov	rcx, QWORD PTR [rax+72]
@@ -280,7 +279,7 @@ $LN3@ttype_slav:
 
 	add	rsp, 88					; 00000058H
 	ret	0
-?ttype_slave_read@@YAXPEAU_vfs_node_@@PEAEI@Z ENDP	; ttype_slave_read
+?ttype_slave_read@@YAXPEAU_vfs_node_@@PEA_KI@Z ENDP	; ttype_slave_read
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\fs\ttype.cpp
@@ -476,9 +475,9 @@ type$ = 48
 file$ = 80
 buffer$ = 88
 length$ = 96
-?ttype_master_read@@YAXPEAU_vfs_node_@@PEAEI@Z PROC	; ttype_master_read
+?ttype_master_read@@YAXPEAU_vfs_node_@@PEA_KI@Z PROC	; ttype_master_read
 
-; 100  : void ttype_master_read (vfs_node_t *file, uint8_t* buffer,uint32_t length) {
+; 100  : void ttype_master_read (vfs_node_t *file, uint64_t* buffer,uint32_t length) {
 
 $LN3:
 	mov	DWORD PTR [rsp+24], r8d
@@ -510,7 +509,7 @@ $LN3:
 
 	add	rsp, 72					; 00000048H
 	ret	0
-?ttype_master_read@@YAXPEAU_vfs_node_@@PEAEI@Z ENDP	; ttype_master_read
+?ttype_master_read@@YAXPEAU_vfs_node_@@PEA_KI@Z ENDP	; ttype_master_read
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\fs\ttype.cpp
@@ -1031,7 +1030,7 @@ $LN6:
 ; 264  : 	mn->read = ttype_master_read;
 
 	mov	rax, QWORD PTR mn$[rsp]
-	lea	rcx, OFFSET FLAT:?ttype_master_read@@YAXPEAU_vfs_node_@@PEAEI@Z ; ttype_master_read
+	lea	rcx, OFFSET FLAT:?ttype_master_read@@YAXPEAU_vfs_node_@@PEA_KI@Z ; ttype_master_read
 	mov	QWORD PTR [rax+72], rcx
 
 ; 265  : 	mn->write = ttype_master_write;
@@ -1148,7 +1147,7 @@ $LN6:
 ; 288  : 	sn->read = ttype_slave_read;
 
 	mov	rax, QWORD PTR sn$[rsp]
-	lea	rcx, OFFSET FLAT:?ttype_slave_read@@YAXPEAU_vfs_node_@@PEAEI@Z ; ttype_slave_read
+	lea	rcx, OFFSET FLAT:?ttype_slave_read@@YAXPEAU_vfs_node_@@PEA_KI@Z ; ttype_slave_read
 	mov	QWORD PTR [rax+72], rcx
 
 ; 289  : 	sn->write = ttype_slave_write;

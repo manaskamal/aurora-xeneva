@@ -15,7 +15,7 @@ _BSS	SEGMENT
 ?arp_table_curr@@3HA DD 01H DUP (?)			; arp_table_curr
 _BSS	ENDS
 CONST	SEGMENT
-$SG3021	DB	'Address Resolution Protocol Initialized', 0aH, 00H
+$SG3020	DB	'Address Resolution Protocol Initialized', 0aH, 00H
 CONST	ENDS
 _DATA	SEGMENT
 ?broadcast_mac_address@@3PAEA DB 0ffH			; broadcast_mac_address
@@ -306,33 +306,33 @@ $LN3:
 	mov	rcx, rax
 	call	?nethw_get_mac@@YAXPEAE@Z		; nethw_get_mac
 
-; 29   : 	arp_packet->src_protocol_addr[0] = 10;
+; 29   : 	arp_packet->src_protocol_addr[0] = 192;
 
 	mov	eax, 1
 	imul	rax, 0
 	mov	rcx, QWORD PTR arp_packet$[rsp]
-	mov	BYTE PTR [rcx+rax+14], 10
+	mov	BYTE PTR [rcx+rax+14], 192		; 000000c0H
 
-; 30   : 	arp_packet->src_protocol_addr[1] = 0;
+; 30   : 	arp_packet->src_protocol_addr[1] = 168;
 
 	mov	eax, 1
 	imul	rax, 1
 	mov	rcx, QWORD PTR arp_packet$[rsp]
-	mov	BYTE PTR [rcx+rax+14], 0
+	mov	BYTE PTR [rcx+rax+14], 168		; 000000a8H
 
-; 31   : 	arp_packet->src_protocol_addr[2] = 2;
+; 31   : 	arp_packet->src_protocol_addr[2] = 1;
 
 	mov	eax, 1
 	imul	rax, 2
 	mov	rcx, QWORD PTR arp_packet$[rsp]
-	mov	BYTE PTR [rcx+rax+14], 2
+	mov	BYTE PTR [rcx+rax+14], 1
 
-; 32   : 	arp_packet->src_protocol_addr[3] = 14;
+; 32   : 	arp_packet->src_protocol_addr[3] = 22;
 
 	mov	eax, 1
 	imul	rax, 3
 	mov	rcx, QWORD PTR arp_packet$[rsp]
-	mov	BYTE PTR [rcx+rax+14], 14
+	mov	BYTE PTR [rcx+rax+14], 22
 
 ; 33   : 
 ; 34   : 	memcpy (arp_packet->dst_hw_addr, dst_hardware_addr, 6);
@@ -447,7 +447,7 @@ $LN3:
 
 ; 67   : 	printf ("Address Resolution Protocol Initialized\n");
 
-	lea	rcx, OFFSET FLAT:$SG3021
+	lea	rcx, OFFSET FLAT:$SG3020
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 68   : }

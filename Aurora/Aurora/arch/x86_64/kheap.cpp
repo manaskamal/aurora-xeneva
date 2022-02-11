@@ -13,139 +13,111 @@
 #include <arch\x86_64\mmngr\kheap.h>
 #include "pmmngr.h"
 
+#define HEAP_START   0xFFFF800000000000
 
-void*  kmem_start;
-void*  kmem_end;
-kmem   *last_header;
+heap_t *first_heap;
+void*  last = NULL;
+heap_t *last_heap;
 
 void initialize_kmemory (size_t sz) {
 
-	void* pos = (void*)0xFFFF800000000000;  //0xFFFFB00000000000;
+	if (sz < 4096) {
+		if (sz % 0x1000) {
+			sz -= sz % 0x1000;
+			sz += 0x1000;
+		}
+	}
 
-	for (size_t i=0; i < sz; i++) {
-		void* p = (void*)pmmngr_alloc();
-		map_page ((uint64_t)p,(uint64_t)pos,0);
-		pos = (void*)((size_t)pos + 0x1000);
+
+	size_t pos = HEAP_START;  //0xFFFFB00000000000;
+
+	for (size_t i=0; i < sz / 4096; i++) {
+		map_page ((uint64_t)pmmngr_alloc(),(uint64_t)pos,0);
+		pos = pos + 4096;
 	}
 	
-    size_t kmem_length = sz * 0x1000;
-
-	kmem_start = (void*)0xFFFF800000000000;                   //0xFFFFB00000000000;
-	kmem_end = (void*)((size_t)kmem_start + kmem_length);
-	//printf ("Heap end -> %x\n", kmem_end);
-	kmem* start_seg = (kmem*)kmem_start;
-	start_seg->length = kmem_length - sizeof (kmem);
-	start_seg->next = NULL;
-	start_seg->last = NULL;
-	start_seg->free = true;
-	last_header = start_seg;
-
+	first_heap = (heap_t*)HEAP_START;
+	first_heap->length = sz;
+	first_heap->magic = HEAP_MAGIC;
+	first_heap->free = true;
+	first_heap->next = NULL;
+	first_heap->prev = NULL;
+	last = (void*)pos;
+	last_heap = first_heap;
 }
 
-void kmem::align_next () {
-	if (next == NULL) return;
-	if (!next->free) return;
 
-	if (next == last_header) last_header = this;
+heap_t *split_heap (heap_t* heap, uint32_t req_size) {
+	unsigned int new_length = heap->length - req_size;
+	void* new_addr = (void*)(heap + req_size);
 
-	if (next->next != NULL) {
-		next->next->last = this;
+	heap_t *new_heap = (heap_t*)new_addr;
+	new_heap->free = true;
+	new_heap->length = new_length;
+	new_heap->magic = HEAP_MAGIC;
+	new_heap->next = heap->next;
+	new_heap->prev = heap;
+
+	heap->length = req_size;
+	heap->next = new_heap;
+	return heap;
+}
+
+
+void heap_expand (size_t sz) {
+	if (sz % 0x1000) {
+		sz -= sz % 0x1000;
+		sz += 0x1000;
 	}
 
-	length = length + next->length * sizeof(kmem);
-	next = next->next;
-}
+	size_t page_count = sz / 0x1000;
 
-
-void kmem::align_prev () {
-	if (last != NULL && last->free) last->align_next();
-}
-
-
-kmem* kmem::split(size_t split_length) {
-	if (split_length < 0x10) return NULL;
-	int64_t split_seg_length = length - split_length - (sizeof(kmem));
-	if (split_seg_length < 0x10) return NULL;
-
-	kmem* new_split = (kmem*) ((size_t)this + split_length + sizeof (kmem));
-	next->last = new_split;
-	new_split->next = next;
-	next = new_split;
-	new_split->last = this;
-	new_split->length = split_seg_length;
-	new_split->free = free;
-	length = split_length;
-
-	if (last_header == this) last_header = new_split;
-	return new_split;
-}
-
-
-void expand_kmem (size_t length) {
-	if (length % 0x1000) {
-		length -=  length % 0x1000;
-		length += 0x1000;
+	void* last_store = last;
+	for (int i = 0; i < page_count; i++) {
+		map_page ((uint64_t)pmmngr_alloc(), (uint64_t)last, 0);
+		last = (void*)((size_t)last + 0x1000);
 	}
 
-	size_t page_count = length / 0x1000;
-	kmem* new_seg = (kmem*)kmem_end;
-
-	for (size_t i = 0; i < page_count; i++) {
-		map_page ((uint64_t)pmmngr_alloc(), (uint64_t)kmem_end,0);
-		kmem_end = (void*)((size_t)kmem_end + 0x1000);
-	}
-
-	new_seg->free = true;
-	new_seg->last = last_header;
-	last_header->next = new_seg;
-	last_header = new_seg;
-	new_seg->next = NULL;
-	new_seg->length = length - sizeof (kmem);
-	new_seg->align_next ();
+	heap_t *heap = (heap_t*)last_store;
+	heap->free = true;
+	heap->length = sz;
+	heap->magic = HEAP_MAGIC;
+	heap->next = NULL;
+	heap->prev = last_heap;
+	last_heap->next = heap;
+	last_heap = heap;
 }
 
 
 
-void* malloc(size_t size) {
-	if (size % 0x10 > 0) {
-		size -= (size % 0x10);
-		size += 0x10;
-	}
-
-	if (size == 0) return NULL;
-
-	kmem* current_seg = (kmem*) kmem_start;
-	while (true) {
-		if (current_seg->free) {
-			if (current_seg->length > size) {
-				current_seg->split (size);
-				current_seg->free = false;
-				return (void*)((uint64_t)current_seg + sizeof (kmem));
+void* malloc(size_t sz) {
+	for (heap_t *heap = first_heap; heap != NULL; heap = heap->next) {
+		if (heap->free) {
+			if (heap->length == sz) {
+				heap->free = false;
+				return (void*)(heap + sizeof(heap_t));
 			}
 
-			if (current_seg->length == size) {
-				current_seg->free = false;
-				return (void*)((uint64_t)current_seg + sizeof (kmem));
+			if (sz < heap->length) {
+				heap_t *return_h = split_heap (heap,sz);
+				return_h->free = false;
+				return (void*)(return_h + sizeof(heap_t));
 			}
 		}
-		if (current_seg->next == NULL) break;
-		current_seg = current_seg->next;
 	}
 
-	expand_kmem(size);
-	return malloc(size);
+	heap_expand(sz);
+	return malloc(sz);
 }
 
 void free (void* memory) {
 	//x64_cli();
-   kmem* seg = (kmem*)memory - 1;
-   seg->free = true;
-   seg->align_next();
-   seg->align_prev();	
+	heap_t *heap = (heap_t*)memory - sizeof(heap_t);
+	heap->free = true;
 }
 
 
 void kheap_print () {
-	printf ("Heap Start -> %x\n", kmem_start);
-	printf ("Heap End -> %x\n", kmem_end);
+	printf ("Heap Start -> %x\n", first_heap);
+	printf ("Heap End -> %x\n", last_heap);
 }

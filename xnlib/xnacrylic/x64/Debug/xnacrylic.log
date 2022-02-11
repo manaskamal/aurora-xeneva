@@ -1,4 +1,4 @@
-﻿Build started 02-01-2022 আবেলি 10:37:52.
+﻿Build started 11-02-2022 আবেলি 5:48:26.
      1>Project "E:\Xeneva Project\Xeneva\xnlib\xnacrylic\xnacrylic.vcxproj" on node 2 (Rebuild target(s)).
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\xnlib\xnclib" /I"E:\Xeneva Project\Xeneva\xnlib\xnacrylic\include" /I"E:\os_dev\freetype2-master\freetype2-master\include" /Zi /nologo /W4 /WX- /sdl- /MP /Od /D ARCH_X64 /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt source\acrylic.cpp source\buffer.cpp source\canvas.cpp source\color.cpp source\font.cpp source\image.cpp source\path2d.cpp source\psf\psf.cpp
@@ -141,4 +141,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:01.90
+Time Elapsed 00:00:00.77

@@ -95,7 +95,7 @@
     <Link>
       <GenerateDebugInformation>
       </GenerateDebugInformation>
-      <OutputFile>D:\priwm.exe</OutputFile>
+      <OutputFile>F:\priwm.exe</OutputFile>
       <AdditionalLibraryDirectories>E:\Xeneva Project\Xeneva\xnlib\lib64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>xnclib.lib; xnacrylic.lib;freetype.lib;</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>

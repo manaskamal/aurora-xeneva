@@ -18,6 +18,8 @@
 
 static char* chars = "0123456789ABCDEF";
 
+extern void debug_print(const char *text, ...);
+
 char* sztoa(size_t value, char* str, int base)
 {
 	if (base < 2 || base > 16)
@@ -103,6 +105,12 @@ char* ftoa(float value, uint8_t decimal_places) {
 
 void printf(const char* format, ...)
 {
+
+	if (!is_console_initialized()) {
+		debug_print (format);
+		return;
+	}
+
 	_va_list_ args;
 	va_start(args, format);
 

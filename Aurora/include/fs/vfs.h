@@ -27,8 +27,8 @@ struct _vfs_node_;
 
 
 typedef _vfs_node_ (*open_callback) (_vfs_node_ *node, char* path);
-typedef void (*read_callback) (_vfs_node_ *file, uint8_t* buffer,uint32_t length);
-typedef void (*read_block_callback) (_vfs_node_ *file, uint8_t* buffer);
+typedef void (*read_callback) (_vfs_node_ *file, uint64_t* buffer,uint32_t length);
+typedef void (*read_block_callback) (_vfs_node_ *file, uint64_t* buffer);
 typedef void (*write_callback) (_vfs_node_ *file, uint8_t* buffer, uint32_t length);
 typedef int (*ioquery_callback) (_vfs_node_ *file, int code, void *arg);
 
@@ -71,8 +71,8 @@ extern void vfs_init ();
 extern vfs_node_t* vfs_finddir (char *path);
 extern void vfs_mount (char *path, vfs_node_t *node);
 extern vfs_node_t openfs (vfs_node_t *node, char* path);
-extern void readfs (vfs_node_t *node, vfs_node_t *file, uint8_t* buffer, uint32_t length);
+extern void readfs (vfs_node_t *node, vfs_node_t *file, uint64_t* buffer, uint32_t length);
 extern void writefs (vfs_node_t *node, vfs_node_t *file, uint8_t *buffer, uint32_t length);
-extern void readfs_block (vfs_node_t* node, vfs_node_t *file,  uint8_t *buffer);
+extern void readfs_block (vfs_node_t* node, vfs_node_t *file,  uint64_t *buffer);
 extern int  vfs_ioquery (vfs_node_t *node, int code, void* arg);
 #endif

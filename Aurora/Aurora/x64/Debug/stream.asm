@@ -6,16 +6,16 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 CONST	SEGMENT
-$SG3624	DB	'stdin', 00H
+$SG3623	DB	'stdin', 00H
 	ORG $+2
-$SG3625	DB	'/dev/stdin', 00H
+$SG3624	DB	'/dev/stdin', 00H
 	ORG $+1
-$SG3628	DB	'stdout', 00H
+$SG3627	DB	'stdout', 00H
 	ORG $+5
-$SG3629	DB	'/dev/stdout', 00H
-$SG3632	DB	'stderr', 00H
+$SG3628	DB	'/dev/stdout', 00H
+$SG3631	DB	'stderr', 00H
 	ORG $+5
-$SG3633	DB	'/dev/stderr', 00H
+$SG3632	DB	'/dev/stderr', 00H
 CONST	ENDS
 PUBLIC	?allocate_stream@@YAPEAU_stream_@@XZ		; allocate_stream
 PUBLIC	?stream_init@@YAXXZ				; stream_init
@@ -23,9 +23,9 @@ PUBLIC	?deallocate_stream@@YAXPEAU_stream_@@@Z		; deallocate_stream
 PUBLIC	?stdout@@YAXPEAU_stream_@@PEAD@Z		; stdout
 PUBLIC	?stdin@@YAXPEAU_stream_@@PEAD@Z			; stdin
 PUBLIC	?stderr@@YAXPEAU_stream_@@PEAD@Z		; stderr
-PUBLIC	?stdout_read@@YAXPEAU_vfs_node_@@PEAEI@Z	; stdout_read
+PUBLIC	?stdout_read@@YAXPEAU_vfs_node_@@PEA_KI@Z	; stdout_read
 PUBLIC	?stdout_write@@YAXPEAU_vfs_node_@@PEAEI@Z	; stdout_write
-PUBLIC	?stderr_read@@YAXPEAU_vfs_node_@@PEAEI@Z	; stderr_read
+PUBLIC	?stderr_read@@YAXPEAU_vfs_node_@@PEA_KI@Z	; stderr_read
 PUBLIC	?stderr_write@@YAXPEAU_vfs_node_@@PEAEI@Z	; stderr_write
 EXTRN	?strcpy@@YAPEADPEADPEBD@Z:PROC			; strcpy
 EXTRN	?strlen@@YA_KPEBD@Z:PROC			; strlen
@@ -56,15 +56,15 @@ $pdata$?stdin@@YAXPEAU_stream_@@PEAD@Z DD imagerel $LN3
 $pdata$?stderr@@YAXPEAU_stream_@@PEAD@Z DD imagerel $LN3
 	DD	imagerel $LN3+47
 	DD	imagerel $unwind$?stderr@@YAXPEAU_stream_@@PEAD@Z
-$pdata$?stdout_read@@YAXPEAU_vfs_node_@@PEAEI@Z DD imagerel $LN3
+$pdata$?stdout_read@@YAXPEAU_vfs_node_@@PEA_KI@Z DD imagerel $LN3
 	DD	imagerel $LN3+69
-	DD	imagerel $unwind$?stdout_read@@YAXPEAU_vfs_node_@@PEAEI@Z
+	DD	imagerel $unwind$?stdout_read@@YAXPEAU_vfs_node_@@PEA_KI@Z
 $pdata$?stdout_write@@YAXPEAU_vfs_node_@@PEAEI@Z DD imagerel $LN5
 	DD	imagerel $LN5+138
 	DD	imagerel $unwind$?stdout_write@@YAXPEAU_vfs_node_@@PEAEI@Z
-$pdata$?stderr_read@@YAXPEAU_vfs_node_@@PEAEI@Z DD imagerel $LN3
+$pdata$?stderr_read@@YAXPEAU_vfs_node_@@PEA_KI@Z DD imagerel $LN3
 	DD	imagerel $LN3+69
-	DD	imagerel $unwind$?stderr_read@@YAXPEAU_vfs_node_@@PEAEI@Z
+	DD	imagerel $unwind$?stderr_read@@YAXPEAU_vfs_node_@@PEA_KI@Z
 $pdata$?stderr_write@@YAXPEAU_vfs_node_@@PEAEI@Z DD imagerel $LN5
 	DD	imagerel $LN5+138
 	DD	imagerel $unwind$?stderr_write@@YAXPEAU_vfs_node_@@PEAEI@Z
@@ -82,11 +82,11 @@ $unwind$?stdin@@YAXPEAU_stream_@@PEAD@Z DD 010e01H
 	DD	0420eH
 $unwind$?stderr@@YAXPEAU_stream_@@PEAD@Z DD 010e01H
 	DD	0420eH
-$unwind$?stdout_read@@YAXPEAU_vfs_node_@@PEAEI@Z DD 011301H
+$unwind$?stdout_read@@YAXPEAU_vfs_node_@@PEA_KI@Z DD 011301H
 	DD	06213H
 $unwind$?stdout_write@@YAXPEAU_vfs_node_@@PEAEI@Z DD 011301H
 	DD	06213H
-$unwind$?stderr_read@@YAXPEAU_vfs_node_@@PEAEI@Z DD 011301H
+$unwind$?stderr_read@@YAXPEAU_vfs_node_@@PEA_KI@Z DD 011301H
 	DD	06213H
 $unwind$?stderr_write@@YAXPEAU_vfs_node_@@PEAEI@Z DD 011301H
 	DD	06213H
@@ -167,9 +167,9 @@ p$ = 32
 file$ = 64
 buffer$ = 72
 length$ = 80
-?stderr_read@@YAXPEAU_vfs_node_@@PEAEI@Z PROC		; stderr_read
+?stderr_read@@YAXPEAU_vfs_node_@@PEA_KI@Z PROC		; stderr_read
 
-; 63   : void stderr_read (vfs_node_t *file, uint8_t* buffer,uint32_t length) {
+; 63   : void stderr_read (vfs_node_t *file, uint64_t* buffer,uint32_t length) {
 
 $LN3:
 	mov	DWORD PTR [rsp+24], r8d
@@ -196,7 +196,7 @@ $LN3:
 
 	add	rsp, 56					; 00000038H
 	ret	0
-?stderr_read@@YAXPEAU_vfs_node_@@PEAEI@Z ENDP		; stderr_read
+?stderr_read@@YAXPEAU_vfs_node_@@PEA_KI@Z ENDP		; stderr_read
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\stream.cpp
@@ -273,9 +273,9 @@ p$ = 32
 file$ = 64
 buffer$ = 72
 length$ = 80
-?stdout_read@@YAXPEAU_vfs_node_@@PEAEI@Z PROC		; stdout_read
+?stdout_read@@YAXPEAU_vfs_node_@@PEA_KI@Z PROC		; stdout_read
 
-; 48   : void stdout_read (vfs_node_t *file, uint8_t* buffer,uint32_t length) {
+; 48   : void stdout_read (vfs_node_t *file, uint64_t* buffer,uint32_t length) {
 
 $LN3:
 	mov	DWORD PTR [rsp+24], r8d
@@ -302,7 +302,7 @@ $LN3:
 
 	add	rsp, 56					; 00000038H
 	ret	0
-?stdout_read@@YAXPEAU_vfs_node_@@PEAEI@Z ENDP		; stdout_read
+?stdout_read@@YAXPEAU_vfs_node_@@PEA_KI@Z ENDP		; stdout_read
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\stream.cpp
@@ -440,7 +440,7 @@ $LN3:
 ; 85   : 	strcpy(stdin->filename, "stdin");
 
 	mov	rax, QWORD PTR stdin$[rsp]
-	lea	rdx, OFFSET FLAT:$SG3624
+	lea	rdx, OFFSET FLAT:$SG3623
 	mov	rcx, rax
 	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
 
@@ -502,7 +502,7 @@ $LN3:
 ; 97   : 	vfs_mount ("/dev/stdin", stdin);
 
 	mov	rdx, QWORD PTR stdin$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3625
+	lea	rcx, OFFSET FLAT:$SG3624
 	call	?vfs_mount@@YAXPEADPEAU_vfs_node_@@@Z	; vfs_mount
 
 ; 98   : 
@@ -516,7 +516,7 @@ $LN3:
 ; 102  : 	strcpy(node->filename, "stdout");
 
 	mov	rax, QWORD PTR node$[rsp]
-	lea	rdx, OFFSET FLAT:$SG3628
+	lea	rdx, OFFSET FLAT:$SG3627
 	mov	rcx, rax
 	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
 
@@ -558,7 +558,7 @@ $LN3:
 ; 110  : 	node->read = stdout_read;
 
 	mov	rax, QWORD PTR node$[rsp]
-	lea	rcx, OFFSET FLAT:?stdout_read@@YAXPEAU_vfs_node_@@PEAEI@Z ; stdout_read
+	lea	rcx, OFFSET FLAT:?stdout_read@@YAXPEAU_vfs_node_@@PEA_KI@Z ; stdout_read
 	mov	QWORD PTR [rax+72], rcx
 
 ; 111  : 	node->write = stdout_write;
@@ -580,7 +580,7 @@ $LN3:
 ; 114  : 	vfs_mount ("/dev/stdout", node);
 
 	mov	rdx, QWORD PTR node$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3629
+	lea	rcx, OFFSET FLAT:$SG3628
 	call	?vfs_mount@@YAXPEADPEAU_vfs_node_@@@Z	; vfs_mount
 
 ; 115  : 
@@ -594,7 +594,7 @@ $LN3:
 ; 119  : 	strcpy(stderr->filename, "stderr");
 
 	mov	rax, QWORD PTR stderr$[rsp]
-	lea	rdx, OFFSET FLAT:$SG3632
+	lea	rdx, OFFSET FLAT:$SG3631
 	mov	rcx, rax
 	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
 
@@ -636,7 +636,7 @@ $LN3:
 ; 127  : 	stderr->read = stderr_read;
 
 	mov	rax, QWORD PTR stderr$[rsp]
-	lea	rcx, OFFSET FLAT:?stderr_read@@YAXPEAU_vfs_node_@@PEAEI@Z ; stderr_read
+	lea	rcx, OFFSET FLAT:?stderr_read@@YAXPEAU_vfs_node_@@PEA_KI@Z ; stderr_read
 	mov	QWORD PTR [rax+72], rcx
 
 ; 128  : 	stderr->write = stderr_write;
@@ -658,7 +658,7 @@ $LN3:
 ; 131  : 	vfs_mount ("/dev/stderr", stderr);
 
 	mov	rdx, QWORD PTR stderr$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3633
+	lea	rcx, OFFSET FLAT:$SG3632
 	call	?vfs_mount@@YAXPEADPEAU_vfs_node_@@@Z	; vfs_mount
 
 ; 132  : }

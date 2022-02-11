@@ -225,7 +225,7 @@ static const enum PeMachineType   MACHINE_NATIVE = IMAGE_FILE_MACHINE_I386;
 
 typedef void ( *ientry)(void*);
 
-extern void load_pe_file (unsigned char* buffer, int size);
+extern void load_pe_file (uint64_t* buffer, int size);
 extern ientry get_entry_point ();
 extern uint64_t get_image_base();
 extern void* GetProcAddress(void *image, const char* procname);

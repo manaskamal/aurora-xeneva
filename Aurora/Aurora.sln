@@ -29,6 +29,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PriWM", "PriWM\PriWM.vcxpro
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "daisy", "..\xnlib\daisy\daisy.vcxproj", "{6465155A-3DD9-429C-B040-ADF30FD01265}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "usb", "..\drivers\usb\usb.vcxproj", "{5E30EB11-517C-49D0-9D3A-49FDA9D17E94}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Mixed Platforms = Debug|Mixed Platforms
@@ -181,6 +183,16 @@ Global
 		{6465155A-3DD9-429C-B040-ADF30FD01265}.Release|Win32.ActiveCfg = Release|Win32
 		{6465155A-3DD9-429C-B040-ADF30FD01265}.Release|Win32.Build.0 = Release|Win32
 		{6465155A-3DD9-429C-B040-ADF30FD01265}.Release|x64.ActiveCfg = Release|Win32
+		{5E30EB11-517C-49D0-9D3A-49FDA9D17E94}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{5E30EB11-517C-49D0-9D3A-49FDA9D17E94}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{5E30EB11-517C-49D0-9D3A-49FDA9D17E94}.Debug|Win32.ActiveCfg = Debug|Win32
+		{5E30EB11-517C-49D0-9D3A-49FDA9D17E94}.Debug|Win32.Build.0 = Debug|Win32
+		{5E30EB11-517C-49D0-9D3A-49FDA9D17E94}.Debug|x64.ActiveCfg = Debug|x64
+		{5E30EB11-517C-49D0-9D3A-49FDA9D17E94}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{5E30EB11-517C-49D0-9D3A-49FDA9D17E94}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{5E30EB11-517C-49D0-9D3A-49FDA9D17E94}.Release|Win32.ActiveCfg = Release|Win32
+		{5E30EB11-517C-49D0-9D3A-49FDA9D17E94}.Release|Win32.Build.0 = Release|Win32
+		{5E30EB11-517C-49D0-9D3A-49FDA9D17E94}.Release|x64.ActiveCfg = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

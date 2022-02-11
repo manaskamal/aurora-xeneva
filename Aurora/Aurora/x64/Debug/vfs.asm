@@ -12,27 +12,27 @@ _BSS	SEGMENT
 ?dev_entry@@3PEAU_vfs_entry_@@EA DQ 01H DUP (?)		; dev_entry
 _BSS	ENDS
 CONST	SEGMENT
-$SG3287	DB	'dev', 00H
-$SG3306	DB	'dev', 00H
-$SG3323	DB	'dev', 00H
-$SG3332	DB	'dev', 00H
-$SG3336	DB	'[VFS]: /dev directory is already present', 00H
+$SG3286	DB	'dev', 00H
+$SG3305	DB	'dev', 00H
+$SG3322	DB	'dev', 00H
+$SG3331	DB	'dev', 00H
+$SG3335	DB	'[VFS]: /dev directory is already present', 00H
 	ORG $+3
-$SG3356	DB	'dev', 00H
-$SG3361	DB	'[VFS]: %s is already mounted in /dev directory', 0aH, 00H
-$SG3378	DB	'[VFS]: Mounting filesystem to root failed, already in us'
+$SG3355	DB	'dev', 00H
+$SG3360	DB	'[VFS]: %s is already mounted in /dev directory', 0aH, 00H
+$SG3377	DB	'[VFS]: Mounting filesystem to root failed, already in us'
 	DB	'e', 0aH, 00H
 	ORG $+1
-$SG3395	DB	'dev', 00H
-$SG3403	DB	'Already mounted, with name %s', 0aH, 00H
+$SG3394	DB	'dev', 00H
+$SG3402	DB	'Already mounted, with name %s', 0aH, 00H
 CONST	ENDS
 PUBLIC	?vfs_init@@YAXXZ				; vfs_init
 PUBLIC	?vfs_finddir@@YAPEAU_vfs_node_@@PEAD@Z		; vfs_finddir
 PUBLIC	?vfs_mount@@YAXPEADPEAU_vfs_node_@@@Z		; vfs_mount
 PUBLIC	?openfs@@YA?AU_vfs_node_@@PEAU1@PEAD@Z		; openfs
-PUBLIC	?readfs@@YAXPEAU_vfs_node_@@0PEAEI@Z		; readfs
+PUBLIC	?readfs@@YAXPEAU_vfs_node_@@0PEA_KI@Z		; readfs
 PUBLIC	?writefs@@YAXPEAU_vfs_node_@@0PEAEI@Z		; writefs
-PUBLIC	?readfs_block@@YAXPEAU_vfs_node_@@0PEAE@Z	; readfs_block
+PUBLIC	?readfs_block@@YAXPEAU_vfs_node_@@0PEA_K@Z	; readfs_block
 PUBLIC	?vfs_ioquery@@YAHPEAU_vfs_node_@@HPEAX@Z	; vfs_ioquery
 PUBLIC	?devfs_get_node@@YAPEAU_vfs_node_@@PEAD@Z	; devfs_get_node
 PUBLIC	?vfs_add_devfs@@YAXPEADPEAU_vfs_node_@@@Z	; vfs_add_devfs
@@ -57,15 +57,15 @@ $pdata$?vfs_mount@@YAXPEADPEAU_vfs_node_@@@Z DD imagerel $LN24
 $pdata$?openfs@@YA?AU_vfs_node_@@PEAU1@PEAD@Z DD imagerel $LN4
 	DD	imagerel $LN4+129
 	DD	imagerel $unwind$?openfs@@YA?AU_vfs_node_@@PEAU1@PEAD@Z
-$pdata$?readfs@@YAXPEAU_vfs_node_@@0PEAEI@Z DD imagerel $LN4
+$pdata$?readfs@@YAXPEAU_vfs_node_@@0PEA_KI@Z DD imagerel $LN4
 	DD	imagerel $LN4+60
-	DD	imagerel $unwind$?readfs@@YAXPEAU_vfs_node_@@0PEAEI@Z
+	DD	imagerel $unwind$?readfs@@YAXPEAU_vfs_node_@@0PEA_KI@Z
 $pdata$?writefs@@YAXPEAU_vfs_node_@@0PEAEI@Z DD imagerel $LN4
 	DD	imagerel $LN4+60
 	DD	imagerel $unwind$?writefs@@YAXPEAU_vfs_node_@@0PEAEI@Z
-$pdata$?readfs_block@@YAXPEAU_vfs_node_@@0PEAE@Z DD imagerel $LN4
+$pdata$?readfs_block@@YAXPEAU_vfs_node_@@0PEA_K@Z DD imagerel $LN4
 	DD	imagerel $LN4+50
-	DD	imagerel $unwind$?readfs_block@@YAXPEAU_vfs_node_@@0PEAE@Z
+	DD	imagerel $unwind$?readfs_block@@YAXPEAU_vfs_node_@@0PEA_K@Z
 $pdata$?vfs_ioquery@@YAHPEAU_vfs_node_@@HPEAX@Z DD imagerel $LN4
 	DD	imagerel $LN4+53
 	DD	imagerel $unwind$?vfs_ioquery@@YAHPEAU_vfs_node_@@HPEAX@Z
@@ -86,11 +86,11 @@ $unwind$?vfs_mount@@YAXPEADPEAU_vfs_node_@@@Z DD 010e01H
 $unwind$?openfs@@YA?AU_vfs_node_@@PEAU1@PEAD@Z DD 041801H
 	DD	01f0118H
 	DD	060107011H
-$unwind$?readfs@@YAXPEAU_vfs_node_@@0PEAEI@Z DD 011801H
+$unwind$?readfs@@YAXPEAU_vfs_node_@@0PEA_KI@Z DD 011801H
 	DD	04218H
 $unwind$?writefs@@YAXPEAU_vfs_node_@@0PEAEI@Z DD 011801H
 	DD	04218H
-$unwind$?readfs_block@@YAXPEAU_vfs_node_@@0PEAE@Z DD 011301H
+$unwind$?readfs_block@@YAXPEAU_vfs_node_@@0PEA_K@Z DD 011301H
 	DD	04213H
 $unwind$?vfs_ioquery@@YAHPEAU_vfs_node_@@HPEAX@Z DD 011201H
 	DD	04212H
@@ -139,7 +139,7 @@ $LN24:
 ; 171  : 	
 ; 172  : 	if (strcmp(p, "dev") && strlen(path) == 5) {
 
-	lea	rdx, OFFSET FLAT:$SG3332
+	lea	rdx, OFFSET FLAT:$SG3331
 	mov	rcx, QWORD PTR p$[rsp]
 	call	?strcmp@@YAHPEBD0@Z			; strcmp
 	test	eax, eax
@@ -162,7 +162,7 @@ $LN24:
 
 ; 175  : 			printf ("[VFS]: /dev directory is already present");
 
-	lea	rcx, OFFSET FLAT:$SG3336
+	lea	rcx, OFFSET FLAT:$SG3335
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 176  : 			return;   //Already a root filesystem is present
@@ -298,7 +298,7 @@ $LN11@vfs_add_de:
 ; 205  : 			//!is this last value in the path && pathname is not "dev"?
 ; 206  : 			if (!(strcmp (pathname, "dev") == 0)){
 
-	lea	rdx, OFFSET FLAT:$SG3356
+	lea	rdx, OFFSET FLAT:$SG3355
 	lea	rcx, QWORD PTR pathname$4[rsp]
 	call	?strcmp@@YAHPEBD0@Z			; strcmp
 	test	eax, eax
@@ -376,7 +376,7 @@ $LN17@vfs_add_de:
 	mov	rax, QWORD PTR ent$[rsp]
 	mov	rax, QWORD PTR [rax]
 	mov	rdx, rax
-	lea	rcx, OFFSET FLAT:$SG3361
+	lea	rcx, OFFSET FLAT:$SG3360
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 222  : 			return;
@@ -549,7 +549,7 @@ $LN19@devfs_get_:
 ; 90   : 
 ; 91   : 	if (strcmp(pathname, "dev") && strlen(path) == 5) {
 
-	lea	rdx, OFFSET FLAT:$SG3287
+	lea	rdx, OFFSET FLAT:$SG3286
 	lea	rcx, QWORD PTR pathname$[rsp]
 	call	?strcmp@@YAHPEBD0@Z			; strcmp
 	test	eax, eax
@@ -671,7 +671,7 @@ $LN7@devfs_get_:
 
 ; 114  : 			if (!(strcmp(pathname, "dev")==0)){
 
-	lea	rdx, OFFSET FLAT:$SG3306
+	lea	rdx, OFFSET FLAT:$SG3305
 	lea	rcx, QWORD PTR pathname$2[rsp]
 	call	?strcmp@@YAHPEBD0@Z			; strcmp
 	test	eax, eax
@@ -816,9 +816,9 @@ _TEXT	SEGMENT
 node$ = 48
 file$ = 56
 buffer$ = 64
-?readfs_block@@YAXPEAU_vfs_node_@@0PEAE@Z PROC		; readfs_block
+?readfs_block@@YAXPEAU_vfs_node_@@0PEA_K@Z PROC		; readfs_block
 
-; 40   : void readfs_block (vfs_node_t* node, vfs_node_t* file, uint8_t *buffer) {
+; 40   : void readfs_block (vfs_node_t* node, vfs_node_t* file, uint64_t *buffer) {
 
 $LN4:
 	mov	QWORD PTR [rsp+24], r8
@@ -844,7 +844,7 @@ $LN1@readfs_blo:
 
 	add	rsp, 40					; 00000028H
 	ret	0
-?readfs_block@@YAXPEAU_vfs_node_@@0PEAE@Z ENDP		; readfs_block
+?readfs_block@@YAXPEAU_vfs_node_@@0PEA_K@Z ENDP		; readfs_block
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\fs\vfs.cpp
@@ -892,9 +892,9 @@ node$ = 48
 file$ = 56
 buffer$ = 64
 length$ = 72
-?readfs@@YAXPEAU_vfs_node_@@0PEAEI@Z PROC		; readfs
+?readfs@@YAXPEAU_vfs_node_@@0PEA_KI@Z PROC		; readfs
 
-; 27   : void readfs (vfs_node_t *node, vfs_node_t* file, uint8_t* buffer, uint32_t length) {
+; 27   : void readfs (vfs_node_t *node, vfs_node_t* file, uint64_t* buffer, uint32_t length) {
 
 $LN4:
 	mov	DWORD PTR [rsp+32], r9d
@@ -922,7 +922,7 @@ $LN1@readfs:
 
 	add	rsp, 40					; 00000028H
 	ret	0
-?readfs@@YAXPEAU_vfs_node_@@0PEAEI@Z ENDP		; readfs
+?readfs@@YAXPEAU_vfs_node_@@0PEA_KI@Z ENDP		; readfs
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\fs\vfs.cpp
@@ -1026,7 +1026,7 @@ $LN24:
 
 ; 246  : 			printf ("[VFS]: Mounting filesystem to root failed, already in use\n");
 
-	lea	rcx, OFFSET FLAT:$SG3378
+	lea	rcx, OFFSET FLAT:$SG3377
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 247  : 			return;   //Already a root filesystem is present
@@ -1143,7 +1143,7 @@ $LN14@vfs_mount:
 ; 272  : 
 ; 273  : 		if (strcmp(pathname, "dev") == 0) {
 
-	lea	rdx, OFFSET FLAT:$SG3395
+	lea	rdx, OFFSET FLAT:$SG3394
 	lea	rcx, QWORD PTR pathname$4[rsp]
 	call	?strcmp@@YAHPEBD0@Z			; strcmp
 	test	eax, eax
@@ -1257,7 +1257,7 @@ $LN17@vfs_mount:
 	mov	rax, QWORD PTR ent$[rsp]
 	mov	rax, QWORD PTR [rax]
 	mov	rdx, rax
-	lea	rcx, OFFSET FLAT:$SG3403
+	lea	rcx, OFFSET FLAT:$SG3402
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 297  : 			return;
@@ -1430,7 +1430,7 @@ $LN4@vfs_finddi:
 ; 154  : 
 ; 155  : 	if (strcmp (pathname,"dev") == 0) {
 
-	lea	rdx, OFFSET FLAT:$SG3323
+	lea	rdx, OFFSET FLAT:$SG3322
 	lea	rcx, QWORD PTR pathname$[rsp]
 	call	?strcmp@@YAHPEBD0@Z			; strcmp
 	test	eax, eax

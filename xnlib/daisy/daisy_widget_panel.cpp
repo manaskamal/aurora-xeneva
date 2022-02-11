@@ -33,6 +33,7 @@
 #include "daisy_widget_panel.h"
 #include <stdlib.h>
 #include <acrylic.h>
+#include <color.h>
 
 
 /**
@@ -44,6 +45,29 @@ void daisy_widget_panel_refresh (daisy_widget_t *widget, daisy_window_t *win) {
 	daisy_widget_panel_t *panel = (daisy_widget_panel_t*)widget;
 	acrylic_draw_rect_filled (win->ctx,panel->base.x, panel->base.y, panel->base.width, panel->base.height,
 		panel->color);
+
+	acrylic_draw_rect_unfilled (win->ctx,panel->base.x, panel->base.y, panel->base.width, panel->base.height,BLACK);
+
+	/* draw every child widget */
+	for (int i = 0; i < panel->childs->pointer; i++) {
+		daisy_widget_t *widget = (daisy_widget_t*)list_get_at(panel->childs, i);
+		widget->refresh(widget,win);
+	}
+}
+
+void daisy_widget_panel_mouse_event (daisy_widget_t *widget, daisy_window_t* win, int button, bool clicked, int x, int y) {
+	daisy_widget_panel_t *panel = (daisy_widget_panel_t*)widget;
+	daisy_win_info_t *info = daisy_get_window_info(win);
+
+	/* redirect the mouse event to every child object */
+	for (int i = 0; i < panel->childs->pointer; i++) {
+		daisy_widget_t *widget = (daisy_widget_t*)list_get_at(panel->childs,i);
+		if (x > info->x + widget->x && x < (info->x + widget->x + widget->width) &&
+			y > info->y + widget->y && y < (info->y + widget->y + widget->height)) {
+				if (widget->mouse_event)
+					widget->mouse_event(widget, win,button,clicked,x, y);
+		}
+	}
 }
 
 
@@ -61,12 +85,33 @@ daisy_widget_panel_t *daisy_widget_create_panel (daisy_window_t* win, uint32_t c
 	panel->base.height = info->height - 23;
 	panel->base.action_event = 0;
 	panel->base.key_event = 0;
-	panel->base.mouse_event = 0;
+	panel->base.mouse_event = daisy_widget_panel_mouse_event;
 	panel->base.refresh = daisy_widget_panel_refresh;
 	panel->base.scroll_event = 0;
 	panel->color = color;
+	panel->childs = list_init();
 	return panel;
 }
 
+
+/**
+ * daisy_widget_panel_add -- add a widget to panel
+ * @param panel -- reference panel
+ * @param widget -- widget to add
+ */
+void daisy_widget_panel_add (daisy_widget_panel_t *panel, daisy_widget_t *widget) {
+	list_add (panel->childs, widget);
+}
+
+/**
+ * daisy_widget_panel_destroy -- destroys a panel widget
+ * @param panel -- reference panel
+ */
+void daisy_widget_panel_destroy (daisy_widget_panel_t *panel) {
+	for (int i = 0; i < panel->childs->pointer; i++) {
+		daisy_widget_t *widget = (daisy_widget_t*)list_remove(panel->childs, i);
+		free(widget);
+	}
+}
 
 

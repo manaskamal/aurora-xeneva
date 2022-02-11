@@ -97,7 +97,7 @@ void ttype_delete (ttype_t* tty) {
  * @param buffer -- buffer to be used
  * @param length -- length to be used
  */
-void ttype_master_read (vfs_node_t *file, uint8_t* buffer,uint32_t length) {
+void ttype_master_read (vfs_node_t *file, uint64_t* buffer,uint32_t length) {
 	//!Read it from out buffer
 	vfs_node_t *node = get_current_thread()->fd[get_current_thread()->master_fd];
 	ttype_t *type = (ttype_t*)node->device;
@@ -167,7 +167,7 @@ void ttype_master_write (vfs_node_t *file, uint8_t* buffer, uint32_t length) {
  * @param buffer -- memory location to store child process texts
  * @param length -- length to be used
  */
-void ttype_slave_read (vfs_node_t *file, uint8_t* buffer,uint32_t length) {
+void ttype_slave_read (vfs_node_t *file, uint64_t* buffer,uint32_t length) {
 	x64_cli();
 
 	/* get the ttype */
@@ -178,7 +178,7 @@ void ttype_slave_read (vfs_node_t *file, uint8_t* buffer,uint32_t length) {
 	//! by child, be carefull we only read that much
 	//! that have been written by child process
 	for (int i = 0; i < type->written; i++) {
-		circular_buf_get(type->in_buffer,&buffer[i]);
+		circular_buf_get(type->in_buffer,(uint8_t*)&buffer[i]);
 	}
 
 	//! resate the written count, so that child process

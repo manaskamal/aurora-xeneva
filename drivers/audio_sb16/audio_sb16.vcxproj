@@ -97,7 +97,7 @@
     <Link>
       <GenerateDebugInformation>
       </GenerateDebugInformation>
-      <OutputFile>D:\EFI\XENEVA\sb16.dll</OutputFile>
+      <OutputFile>F:\EFI\XENEVA\sb16.dll</OutputFile>
       <AdditionalOptions>/ALIGN:512 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>libdriver.lib</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>

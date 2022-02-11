@@ -18,7 +18,7 @@ EXTRN	?get_thread_id@@YAGXZ:PROC			; get_thread_id
 EXTRN	?sys_unblock_id@@YAXG@Z:PROC			; sys_unblock_id
 EXTRN	?create_uthread@@YAXP6AXPEAX@ZPEAD@Z:PROC	; create_uthread
 EXTRN	?sys_open_file@@YAHPEADPEAU_file_@@@Z:PROC	; sys_open_file
-EXTRN	?sys_read_file@@YAXHPEAEPEAU_file_@@@Z:PROC	; sys_read_file
+EXTRN	?sys_read_file@@YAXHPEA_KPEAU_file_@@@Z:PROC	; sys_read_file
 EXTRN	?sys_write_file@@YAXHPEAEPEAU_file_@@@Z:PROC	; sys_write_file
 EXTRN	?sys_get_used_ram@@YA_KXZ:PROC			; sys_get_used_ram
 EXTRN	?sys_get_free_ram@@YA_KXZ:PROC			; sys_get_free_ram
@@ -46,7 +46,7 @@ _BSS	SEGMENT
 funct	DQ	01H DUP (?)
 _BSS	ENDS
 CONST	SEGMENT
-$SG6136	DB	'System Call Fault!! Halting System', 0aH, 00H
+$SG6141	DB	'System Call Fault!! Halting System', 0aH, 00H
 CONST	ENDS
 _DATA	SEGMENT
 _syscalls DQ	FLAT:?printf@@YAXPEBDZZ
@@ -69,7 +69,7 @@ _syscalls DQ	FLAT:?printf@@YAXPEBDZZ
 	DQ	FLAT:?sys_unblock_id@@YAXG@Z
 	DQ	FLAT:?create_uthread@@YAXP6AXPEAX@ZPEAD@Z
 	DQ	FLAT:?sys_open_file@@YAHPEADPEAU_file_@@@Z
-	DQ	FLAT:?sys_read_file@@YAXHPEAEPEAU_file_@@@Z
+	DQ	FLAT:?sys_read_file@@YAXHPEA_KPEAU_file_@@@Z
 	DQ	FLAT:?ttype_dup_master@@YAXHH@Z
 	DQ	FLAT:?sys_get_used_ram@@YA_KXZ
 	DQ	FLAT:?sys_get_free_ram@@YA_KXZ
@@ -129,7 +129,7 @@ $LN6:
 
 ; 21   : 		printf ("System Call Fault!! Halting System\n");
 
-	lea	rcx, OFFSET FLAT:$SG6136
+	lea	rcx, OFFSET FLAT:$SG6141
 	call	?printf@@YAXPEBDZZ			; printf
 $LN2@x64_syscal:
 

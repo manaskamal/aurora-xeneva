@@ -137,6 +137,7 @@
     <ClInclude Include="daisy_event_stack.h" />
     <ClInclude Include="daisy_priwm_window.h" />
     <ClInclude Include="daisy_widget.h" />
+    <ClInclude Include="daisy_widget_button.h" />
     <ClInclude Include="daisy_widget_panel.h" />
     <ClInclude Include="daisy_window.h" />
     <ClInclude Include="daisy_window_painter.h" />
@@ -146,6 +147,7 @@
     <ClCompile Include="daisy.cpp" />
     <ClCompile Include="daisy_event_stack.cpp" />
     <ClCompile Include="daisy_priwm_window.cpp" />
+    <ClCompile Include="daisy_widget_button.cpp" />
     <ClCompile Include="daisy_widget_panel.cpp" />
     <ClCompile Include="daisy_window.cpp" />
     <ClCompile Include="daisy_window_painter.cpp" />

@@ -26,10 +26,10 @@ void arp_send_packet (uint8_t *dst_hardware_addr, uint8_t* dst_protocol_addr) {
 	arp_packet_t *arp_packet = (arp_packet_t*)malloc(sizeof(arp_packet_t));
 
 	nethw_get_mac (arp_packet->src_hw_addr);
-	arp_packet->src_protocol_addr[0] = 10;
-	arp_packet->src_protocol_addr[1] = 0;
-	arp_packet->src_protocol_addr[2] = 2;
-	arp_packet->src_protocol_addr[3] = 14;
+	arp_packet->src_protocol_addr[0] = 192;
+	arp_packet->src_protocol_addr[1] = 168;
+	arp_packet->src_protocol_addr[2] = 1;
+	arp_packet->src_protocol_addr[3] = 22;
 
 	memcpy (arp_packet->dst_hw_addr, dst_hardware_addr, 6);
 	memcpy (arp_packet->dst_protocol_addr, dst_protocol_addr, 4);

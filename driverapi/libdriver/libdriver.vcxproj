@@ -32,7 +32,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v110</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
@@ -129,12 +129,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="include\cpu.h" />
+    <ClInclude Include="include\limits.h" />
     <ClInclude Include="include\pci.h" />
     <ClInclude Include="include\stdint.h" />
+    <ClInclude Include="include\string.h" />
     <ClInclude Include="include\sys.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="entry.cpp" />
+    <ClCompile Include="string.cpp" />
   </ItemGroup>
   <ItemGroup>
     <NASM Include="callback.asm">

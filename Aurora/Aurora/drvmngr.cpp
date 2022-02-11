@@ -70,12 +70,15 @@ driver_param_t * create_driver_parameter () {
 	m->pmmngr_free_p = pmmngr_free;
 	m->unmap_page_p = unmap_page;
 
+	fs_t *fs = (fs_t*)pmmngr_alloc();
+	fs->vfs_mount_p = vfs_mount;
 
 	driver_param_t* param = (driver_param_t*)pmmngr_alloc();
 	param->mem = m;
 	param->cpu = cpu;
 	param->pci = pci;
 	param->kdebug = printf;
+	param->fs = fs;
 	return param;
 }
 //!Driver Manager initializer
@@ -99,6 +102,24 @@ void driver_mngr_initialize (KERNEL_BOOT_INFO *info) {
 		drivers[uid].aurora_close_driver = c;
 		drivers[uid].aurora_write = w;
 	}
+
+	//!First of all register the pre-boot driver classes
+	if (info->driver_entry2 != NULL) {  
+		void* init_address = GetProcAddress (info->driver_entry2,"aurora_init_driver");
+		void* close_address = GetProcAddress (info->driver_entry2, "aurora_close_driver");
+		void* write_address = GetProcAddress(info->driver_entry2 ,"aurora_write");
+		init i = (init)init_address;
+		close c = (close)close_address;
+		write w = (write)write_address;
+	    uint32_t uid = request_driver_class_uid();
+		drivers[uid].class_type = DRIVER_CLASS_AUDIO;
+		drivers[uid].name = "usb";
+		drivers[uid].present = true;
+		drivers[uid].aurora_init_driver = i;
+		drivers[uid].aurora_close_driver = c;
+		drivers[uid].aurora_write = w;
+	}
+
 
 	for (int i = 0; i < 256; i++) { 
 		if (drivers[i].present)

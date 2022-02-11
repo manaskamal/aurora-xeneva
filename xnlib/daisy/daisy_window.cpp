@@ -97,9 +97,18 @@ void daisy_window_move (int x, int y) {
  * @param button -- button bit
  */
 void daisy_window_handle_mouse (daisy_window_t *win,int x, int y, int button) {
+	daisy_win_info_t *info = daisy_get_window_info(win);
+
 	/**  loop through all widgets and check there
 	 **  bounds with current mouse location if they intersect **/
-
+	for (int i = 0; i < win->widgets->pointer; i++) {
+		daisy_widget_t *widget = (daisy_widget_t*)list_get_at(win->widgets,i);
+		if (x > info->x + widget->x && x < (info->x + widget->x + widget->width) &&
+			y > info->y + widget->y && y < (info->y + widget->y + widget->height)) {
+				if (widget->mouse_event)
+					widget->mouse_event(widget,win,button,button,x,y);
+		}
+	}
 }
 /**
  * daisy_window_service_event -- services system messages

@@ -138,7 +138,7 @@
     <Link>
       <GenerateDebugInformation>
       </GenerateDebugInformation>
-      <OutputFile>D:\xshell.exe</OutputFile>
+      <OutputFile>F:\xshell.exe</OutputFile>
       <AdditionalLibraryDirectories>E:\Xeneva Project\Xeneva\xnlib\lib64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>xnclib.lib;</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>

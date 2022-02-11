@@ -284,11 +284,11 @@ void cursor_init () {
  * @param filename -- cursor file path
  * @param bmp -- bmp library to use
  */
-void load_cursor (char* filename, unsigned char* addr,pri_bmp_image *bmp) {
+void load_cursor (char* filename, uint64_t* addr,pri_bmp_image *bmp) {
 	UFILE file;
 	int fd = sys_open_file (filename, &file);
 
-	unsigned char* buffer = (unsigned char*)addr;
+	uint64_t* buffer = addr;
 	sys_read_file (fd, buffer, &file);
 
 	bitmap_img* file_header = (bitmap_img*)buffer;
@@ -393,7 +393,7 @@ Image *pri_load_wallpaper (char *filename) {
 	for (int i = 0; i < (canvas->width * canvas->height * 32) / 4096; i++) 
 		valloc(0x0000060000000000 + i * 4096);
 
-	Image *img = LoadImage (filename, (uint8_t*)0x0000060000000000);
+	Image *img = LoadImage (filename, (uint64_t*)0x0000060000000000);
 	wallpaper->buffer = (uint8_t*)0x0000060000000000;
 	
 	/* finally call the jpeg decoder and draw the
@@ -671,7 +671,6 @@ void compose_frame () {
 				fastcpy (canvas->address + (winy + i) * canvas->width + winx,win->backing_store + (0 + i) * canvas->width + 0,
 				wid * 4);	
 			}
-
 			/* add the clip region */
 			pri_add_clip (winx, winy, wid, he);
 		}
@@ -782,22 +781,24 @@ void pri_win_check_draggable (int x, int y, int button) {
  * main -- the main entry point of priwm
  */
 int main (int argc, char* argv[]) {
+	sys_print_text ("PRIWM: Loading Framebuffer\n");
 	int svga_fd = sys_open_file ("/dev/fb", NULL);
 	
 	uint32_t s_width = ioquery(svga_fd,SCREEN_GETWIDTH,NULL);
 	uint32_t s_height = ioquery(svga_fd, SCREEN_GETHEIGHT, NULL);
-	
+	sys_print_text ("PRIWM: Framebuffer loaded\n");
 	/*
 	 * create the main backing store
 	 */
 	canvas = create_canvas (s_width,s_height);
 	int w = canvas_get_width(canvas);
 	int h = canvas_get_height(canvas);
-
+	sys_print_text ("PRIWM: Canvas Created w-> %d, h-> %d\n", w, h);
 	//! load cursor library
+	for(;;);
 	cursor_init ();
-	load_cursor ("/cursor.bmp",(unsigned char*)0x0000070000000000, arrow_cursor);
-	load_cursor ("/spin.bmp", (unsigned char*)0x0000070000001000, spin_cursor);
+	load_cursor ("/cursor.bmp",(uint64_t*)0x0000070000000000, arrow_cursor);
+	load_cursor ("/spin.bmp", (uint64_t*)0x0000070000001000, spin_cursor);
 	Image* wallp = pri_load_wallpaper ("/leaf.jpg");
 	pri_wallpaper_draw(wallp);
 	
@@ -834,6 +835,10 @@ int main (int argc, char* argv[]) {
 		mouse_get (&mouse);
 		event = pri_wm_get_message ();
 
+		frame_tick = sys_get_system_tick();
+		//1 draw everything
+		compose_frame();
+
 		/**
 		 * mouse movement
 		 */
@@ -845,7 +850,7 @@ int main (int argc, char* argv[]) {
 			pri_win_check_draggable(mouse_x, mouse_y,button); 
 			/* send the mouse event to focused window */
 			if (focused_win) {
-				pri_win_send_mouse_event(focused_win, mouse_x,mouse_y, 0);
+				pri_win_send_mouse_event(focused_win, mouse_x,mouse_y, button);
 			}
 
 			memset(&mouse, 0, sizeof(mouse_message_t));
@@ -889,11 +894,6 @@ int main (int argc, char* argv[]) {
 			free(event);
 		}
 
-
-        frame_tick = sys_get_system_tick();
-
-		//1 draw everything
-		compose_frame();
 
 		diff_tick = sys_get_system_tick();
 		int delta = diff_tick - frame_tick;

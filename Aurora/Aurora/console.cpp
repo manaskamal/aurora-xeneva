@@ -14,6 +14,7 @@
 #include <string.h>
 #include <arch\x86_64\mmngr\kheap.h>
 #include <fs\vfs.h>
+#include <fs\fat32.h>
 
 //! default kernel console
 static uint16_t scanline = 0;
@@ -22,7 +23,8 @@ static uint16_t screen_height = 0;
 static uint32_t *fb = nullptr;
 static int console_x = 0;
 static int console_y = 0;
-static uint8_t *psf_data = nullptr;
+static uint64_t *psf_data = nullptr;
+static bool _console_initialized_ = false;
 
 
 void fb_write (_vfs_node_ *file, uint8_t* buffer, uint32_t length){
@@ -48,13 +50,14 @@ void console_initialize (PKERNEL_BOOT_INFO info) {
 
 	//psf_data = info->psf_font_data;
 
-	vfs_node_t *node = vfs_finddir ("/font.psf");
-
-	vfs_node_t file = openfs (node, "/font.psf");
-	uint8_t *buffer = (uint8_t*)malloc(file.size);
-	readfs(node, &file,buffer,file.size);
-	
+	uint64_t* buffer = (uint64_t*)pmmngr_alloc_blocks(2);
+	memset(buffer, 0, 2*4096);
+	vfs_node_t file = fat32_open(NULL, "/font.psf");
+	fat32_read_file (&file,buffer,file.size);
+	//vfs_node_t node =
 	psf_data = buffer;
+	_console_initialized_ = true;
+	printf ("Font finally loaded\n");
 }
 
 //! Put a character to console output
@@ -134,3 +137,6 @@ void puts(char *s){
 }
 
 
+bool is_console_initialized () {
+	return _console_initialized_;
+}

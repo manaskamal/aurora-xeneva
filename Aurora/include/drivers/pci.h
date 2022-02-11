@@ -317,5 +317,6 @@ extern bool pci_find_device_id (uint16_t device_id, uint16_t vendor_id, pci_devi
 extern bool pci_alloc_msi (int func, int dev, int bus, void (*fn)(size_t, void* p));
 extern void pci_enable_bus_master (int bus, int dev, int func);
 extern void pci_enable_interrupt (int bus, int dev, int func);
+extern void pci_enable_mem_space (int bus, int dev, int func);
 extern bool pcie_supported ();
 #endif

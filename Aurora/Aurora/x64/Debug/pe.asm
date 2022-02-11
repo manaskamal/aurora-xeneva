@@ -11,7 +11,7 @@ _BSS	SEGMENT
 ?ent@@3P6AXPEAX@ZEA DQ 01H DUP (?)			; ent
 ?image_base@@3_KA DQ 01H DUP (?)			; image_base
 _BSS	ENDS
-PUBLIC	?load_pe_file@@YAXPEAEH@Z			; load_pe_file
+PUBLIC	?load_pe_file@@YAXPEA_KH@Z			; load_pe_file
 PUBLIC	?get_entry_point@@YAP6AXPEAX@ZXZ		; get_entry_point
 PUBLIC	?get_image_base@@YA_KXZ				; get_image_base
 PUBLIC	?GetProcAddress@@YAPEAXPEAXPEBD@Z		; GetProcAddress
@@ -23,15 +23,15 @@ PUBLIC	??$raw_offset@PEADPEAX@@YAPEADPEAXH@Z		; raw_offset<char * __ptr64,void *
 PUBLIC	??$raw_offset@PEAXPEAX@@YAPEAXPEAXH@Z		; raw_offset<void * __ptr64,void * __ptr64>
 EXTRN	?strcmp@@YAHPEBD0@Z:PROC			; strcmp
 pdata	SEGMENT
-$pdata$?load_pe_file@@YAXPEAEH@Z DD imagerel $LN3
+$pdata$?load_pe_file@@YAXPEA_KH@Z DD imagerel $LN3
 	DD	imagerel $LN3+94
-	DD	imagerel $unwind$?load_pe_file@@YAXPEAEH@Z
+	DD	imagerel $unwind$?load_pe_file@@YAXPEA_KH@Z
 $pdata$?GetProcAddress@@YAPEAXPEAXPEBD@Z DD imagerel $LN10
 	DD	imagerel $LN10+386
 	DD	imagerel $unwind$?GetProcAddress@@YAPEAXPEAXPEBD@Z
 pdata	ENDS
 xdata	SEGMENT
-$unwind$?load_pe_file@@YAXPEAEH@Z DD 010d01H
+$unwind$?load_pe_file@@YAXPEA_KH@Z DD 010d01H
 	DD	0620dH
 $unwind$?GetProcAddress@@YAPEAXPEAXPEBD@Z DD 010e01H
 	DD	0e20eH
@@ -402,9 +402,9 @@ nt$ = 32
 dos$ = 40
 buffer$ = 64
 size$ = 72
-?load_pe_file@@YAXPEAEH@Z PROC				; load_pe_file
+?load_pe_file@@YAXPEA_KH@Z PROC				; load_pe_file
 
-; 22   : void load_pe_file (unsigned char* buffer, int size) {
+; 22   : void load_pe_file (uint64_t* buffer, int size) {
 
 $LN3:
 	mov	DWORD PTR [rsp+16], edx
@@ -454,6 +454,6 @@ $LN3:
 
 	add	rsp, 56					; 00000038H
 	ret	0
-?load_pe_file@@YAXPEAEH@Z ENDP				; load_pe_file
+?load_pe_file@@YAXPEA_KH@Z ENDP				; load_pe_file
 _TEXT	ENDS
 END

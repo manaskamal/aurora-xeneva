@@ -207,12 +207,11 @@ bool pci_find_device_class (uint8_t class_code, uint8_t sub_class, pci_device_in
 		for (int bus = 0; bus < 256; bus++) {
 			for (int dev = 0; dev < 32; dev++) {
 				for (int func = 0; func < 8; func++) {
-					
 					if (!acpi_pcie_supported()) {
 						read_config_32 (0,bus, dev, func, 0, config.header[0]);
 						read_config_header (bus, dev, func, &config);
-
-						if (config.device.classCode == class_code &&  config.device.subClassCode == sub_class) {
+						
+						if (config.device.classCode == class_code && config.device.subClassCode == sub_class) {
 							 *addr_out = config;
 							 *bus_ = bus;
 					         *dev_ = dev;
@@ -385,12 +384,20 @@ void pci_enable_interrupt (int bus, int dev, int func) {
     write_config_16 (0,bus, dev,func,0x4,command_reg);
 }
 
+void pci_enable_mem_space (int bus, int dev, int func) {
+	uint16_t command_reg = 0;
+	read_config_16 (0,bus,dev, func, 0x4, &command_reg);
+	command_reg |= (1<<1);
+	write_config_16(0,bus,dev,func,0x4,command_reg);
+}
+
 
 bool pcie_supported () {
-	if (!acpi_pcie_supported ())
+	/*if (!acpi_pcie_supported ())
 		return false;
 	else 
-		return true;
+		return true;*/
+	return false;
 }
 
 

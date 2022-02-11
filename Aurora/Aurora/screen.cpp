@@ -57,7 +57,16 @@ void initialize_screen (KERNEL_BOOT_INFO *info){
 	svga->write = 0;
 	svga->read_blk = 0;
 	svga->ioquery = screen_io_query;
+	printf ("VFS Node created\n");
 	vfs_mount ("/dev/fb", svga);
+	printf ("VFS DEV FB Registered\n");
+
+	/* clear the screen */
+	for (int w = 0; w < info->X_Resolution; w++) {
+		for (int h = 0; h < info->Y_Resolution; h++) {
+			info->graphics_framebuffer[w + h * info->X_Resolution] = 0x00000000;
+		}
+	}
 }
 
 

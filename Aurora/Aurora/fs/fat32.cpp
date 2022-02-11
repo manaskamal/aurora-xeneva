@@ -18,6 +18,8 @@
 #include <arch\x86_64\mmngr\kheap.h>
 #include <console.h>
 #include <fs/vfs.h>
+#include <drivers\ahci.h>
+#include <drivers\ahci_disk.h>
 
 
 unsigned int part_lba;  //partition_begin_lba
@@ -90,14 +92,16 @@ static uint32_t read_32 (uint8_t* buff, size_t offset) {
 
 void initialize_fat32 () {
 
-	unsigned char *buf = (unsigned char*)pmmngr_alloc();
-	ata_read_28 (2048,1,buf); //partition_begin_lba = 2048
+	uint64_t *buf = (uint64_t*)pmmngr_alloc();
+	//ata_read_28 (2048,1,buf); //partition_begin_lba = 2048
+	ahci_disk_read (ahci_disk_get_port(),2048,1,buf);
+
 
 	BPB *fat32_data = (BPB*)buf;
 
 	part_lba = 2048;
 
-#if 0
+
 	printf ("FAT32 BOOT PARAMETER BLOCK\n");
 	printf ("Bytes/Sector -> %d\n", fat32_data->bytes_per_sector);
 	printf ("Sectors/Cluster -> %d\n", fat32_data->sectors_per_cluster);
@@ -105,12 +109,12 @@ void initialize_fat32 () {
 	printf ("Number Of FATs -> %d\n", fat32_data->num_fats);
 	printf ("Root Base Cluster -> %d\n", fat32_data->info.FAT32.root_dir_cluster);
 	printf ("Sector/FAT32 -> %d\n", fat32_data->info.FAT32.sect_per_fat32);
-#endif
+
 	for (int i=0; i <12; i++) {
-		putc(fat32_data->info.FAT32.vol_label[i]);
+		printf("%c",fat32_data->info.FAT32.vol_label[i]);
 	}
 	for (int i=0; i <9; i++) {
-		putc(fat32_data->info.FAT32.sys_id[i]);
+		printf("%c",fat32_data->info.FAT32.sys_id[i]);
 	}
 
 
@@ -135,22 +139,29 @@ uint32_t fat32_read_fat (uint32_t cluster_index) {
 	auto fat_offset = cluster_index * 4;
 	uint64_t fat_sector = fat_begin_lba + (fat_offset / 512);
 	size_t ent_offset = fat_offset  % 512;
-	unsigned char buf[512];
-	ata_read_28 (fat_sector,1,buf);
-	uint32_t value = *(uint32_t*) &buf[ent_offset];
+	uint64_t *buf_area = (uint64_t*)pmmngr_alloc();
+	memset(buf_area,0,4096);
+	//ata_read_28 (fat_sector,1,buf);
+	ahci_disk_read (ahci_disk_get_port(),fat_sector,1,buf_area);
+	unsigned char *buf = (unsigned char*)buf_area;
+	uint32_t value = *(uint32_t*)&buf[ent_offset];
+	pmmngr_free(buf_area);
 	return value & 0x0FFFFFFF;
 }
 
 
 
-void fat32_read (vfs_node_t *file, unsigned char* buf) {
+void fat32_read (vfs_node_t *file, uint64_t* buf) {
+	
+	auto lba = cluster_to_sector32 (file->current); 
 
-	auto lba = cluster_to_sector32 (file->current); 	
+	//for (int i = 0; i < sectors_per_cluster; i++) {
+	//	//ata_read_28 (lba+i,1,buffer);
+	//	ahci_disk_read(ahci_disk_get_port(), lba+i, 1,buf);
+	//	buf += 512;
+	//}
+	ahci_disk_read(ahci_disk_get_port(), lba, sectors_per_cluster,buf);
 
-	for (int i = 0; i < sectors_per_cluster; i++) {
-		ata_read_28 (lba+i,1,buf);
-		buf += 512;
-	}
 	uint32_t value = fat32_read_fat (file->current);
 	if (value  >= 0x0FFFFFF8) {
 	    file->eof = 1;
@@ -166,36 +177,34 @@ void fat32_read (vfs_node_t *file, unsigned char* buf) {
 }
 
 
-void fat32_read_file (vfs_node_t *file, unsigned char* buf, uint32_t count) {
-	for (int i=0; i < count; i+= 8) {
-		fat32_read(file,buf);
+void fat32_read_file (vfs_node_t *file, uint64_t* buffer, uint32_t count) {
+	for (int i=0; i < count; i += 8) {
 		if(file->eof) {
 			break;
-		}
-		buf += 4096;
+		}	
+		fat32_read(file,buffer);
+		
+		//buffer += 4096;
 	}
 }
 
 vfs_node_t fat32_locate_dir (const char* dir) {
 	vfs_node_t file;
-	unsigned char* buf;
+	uint64_t* buf;
 	fat32_dir *dirent;
 	char dos_file_name[11];
 	to_dos_file_name32 (dir, dos_file_name, 11);	
-	buf = (unsigned char*)pmmngr_alloc ();
+	buf = (uint64_t*)pmmngr_alloc ();
 	for (unsigned int sector = 0; sector < sectors_per_cluster; sector++) {
 	
 		memset (buf, 0, 4096);
-		ata_read_28 (root_sector + sector,1, buf);
+		//ata_read_28 (root_sector + sector,1, buf);
+		ahci_disk_read(ahci_disk_get_port(),root_sector + sector,1,buf);
 		dirent = (fat32_dir*)buf;
 		for (int i=0; i < 16; i++) {
 			
 			char name[11];
 			memcpy (name, dirent->filename, 11);
-
-			//!FIXME: Delay should not be present
-			for(int m = 0; m < 100; m++)
-				;
 
 			name[11] = 0;
 			if (strcmp (dos_file_name, name) == 0) {
@@ -215,7 +224,6 @@ vfs_node_t fat32_locate_dir (const char* dir) {
 			}
 			dirent++;
 		}
-		pmmngr_free(buf);		
 	}
 
 	file.status = FS_FLAG_INVALID;
@@ -232,7 +240,7 @@ vfs_node_t fat32_locate_subdir (vfs_node_t kfile, const char* filename) {
 	char dos_file_name[11];
 	to_dos_file_name32 (filename, dos_file_name, 11);
 	//dos_file_name[11] = 0;
-	unsigned char* buf = (unsigned char*)pmmngr_alloc();
+	uint64_t* buf = (uint64_t*)pmmngr_alloc();
 	if (kfile.flags != FS_FLAG_INVALID) {
 		
 		//! read the directory
@@ -314,11 +322,15 @@ void convert_fat83_32(fat32_dir *root, char *filename)
 }
 
 void fat32_list_files() {
-	unsigned char buf[512];
-	unsigned char buf2[512];
+	uint64_t *buf = (uint64_t*)pmmngr_alloc();
+	uint64_t *buf2 = (uint64_t*)pmmngr_alloc();
+	memset(buf, 0, 4096);
+	memset(buf2, 0, 4096);
 	char filename[32];
-	ata_read_28(root_sector, 1, buf);
-	ata_read_28(root_sector + 1, 1, buf2);
+	//ata_read_28(root_sector, 1, buf);
+	//ata_read_28(root_sector + 1, 1, buf2);
+	ahci_disk_read(ahci_disk_get_port(),root_sector, 1, buf);
+	ahci_disk_read(ahci_disk_get_port(), root_sector + 1, 1, buf2);
 	fat32_dir *dir = (fat32_dir*)buf;
 	for (int i=0; i < 16; i++) {
 		convert_fat83_32(dir,filename);

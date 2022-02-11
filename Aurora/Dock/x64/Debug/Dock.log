@@ -1,4 +1,4 @@
-﻿Build started 21-01-2022 ৰাতিপু 12:01:01.
+﻿Build started 21-01-2022 আবেলি 2:39:32.
      1>Project "E:\Xeneva Project\Xeneva\Aurora\Dock\Dock.vcxproj" on node 2 (Rebuild target(s)).
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\xnlib\xnclib" /I"E:\Xeneva Project\Xeneva\xnlib\xnacrylic\include" /I"E:\Xeneva Project\Xeneva\xnlib\QuWidgets\include" /I"E:\Xeneva Project\Xeneva\xnlib\daisy" /Zi /nologo /W3 /WX- /Od /D ARCH_X64 /D _MBCS /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt main.cpp
@@ -8,11 +8,10 @@
        Link:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:PROMPT /OUT:"D:\dock.exe" /INCREMENTAL /NOLOGO /LIBPATH:"E:\Xeneva Project\Xeneva\xnlib\lib64" xnclib.lib daisy.lib xnacrylic.lib freetype.lib /NODEFAULTLIB /MANIFEST:NO /PDB:"E:\Xeneva Project\Xeneva\Aurora\x64\Debug\Dock.pdb" /MAP /MAPINFO:EXPORTS /SUBSYSTEM:NATIVE /STACK:"0x100000" /LARGEADDRESSAWARE /Driver /OPT:NOREF /LTCG /TLBID:1 /ENTRY:"_start" /BASE:"0x0000400000000000" /FIXED:NO /NXCOMPAT /IMPLIB:"E:\Xeneva Project\Xeneva\Aurora\x64\Debug\Dock.lib" /MACHINE:X64 /ALIGN:512 x64\Debug\main.obj
      1>LINK : warning LNK4075: ignoring '/INCREMENTAL' due to '/LTCG' specification
-            Creating library E:\Xeneva Project\Xeneva\Aurora\x64\Debug\Dock.lib and object E:\Xeneva Project\Xeneva\Aurora\x64\Debug\Dock.exp
          LINK : /LTCG specified but no code generation required; remove /LTCG from the link command line to improve linker performance
          Dock.vcxproj -> E:\Xeneva Project\Xeneva\Aurora\x64\Debug\Dock.exe
      1>Done Building Project "E:\Xeneva Project\Xeneva\Aurora\Dock\Dock.vcxproj" (Rebuild target(s)).
 
 Build succeeded.
 
-Time Elapsed 00:00:03.98
+Time Elapsed 00:00:00.40

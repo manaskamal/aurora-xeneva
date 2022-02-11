@@ -12,9 +12,9 @@ _BSS	SEGMENT
 ?last_loop@@3PEAU_pri_loop_box_@@EA DQ 01H DUP (?)	; last_loop
 _BSS	ENDS
 CONST	SEGMENT
-$SG3304	DB	'pri_loop', 00H
+$SG3303	DB	'pri_loop', 00H
 	ORG $+7
-$SG3305	DB	'/dev/pri_loop', 00H
+$SG3304	DB	'/dev/pri_loop', 00H
 CONST	ENDS
 PUBLIC	?pri_loop_init@@YAXXZ				; pri_loop_init
 PUBLIC	?pri_loop_create@@YAXXZ				; pri_loop_create
@@ -607,7 +607,7 @@ $LN3:
 ; 174  : 	strcpy (node->filename, "pri_loop");
 
 	mov	rax, QWORD PTR node$[rsp]
-	lea	rdx, OFFSET FLAT:$SG3304
+	lea	rdx, OFFSET FLAT:$SG3303
 	mov	rcx, rax
 	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
 
@@ -670,7 +670,7 @@ $LN3:
 ; 186  : 	vfs_mount ("/dev/pri_loop", node);
 
 	mov	rdx, QWORD PTR node$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3305
+	lea	rcx, OFFSET FLAT:$SG3304
 	call	?vfs_mount@@YAXPEADPEAU_vfs_node_@@@Z	; vfs_mount
 
 ; 187  : }

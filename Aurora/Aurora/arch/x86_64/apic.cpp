@@ -16,6 +16,7 @@
 #include <fs\vfs.h>
 #include <hal.h>
 #include <stdio.h>
+#include <arch\x86_64\pic.h>
 
 #define IA32_APIC_BASE_MSR  0x1B
 #define IA32_APIC_BASE_MSR_BSP  0x100
@@ -30,6 +31,8 @@
 
 static bool x2apic = false;
 static void* apic = nullptr;
+
+extern void debug_print(const char *text, ...);
 
 //! Reads APIC register
 uint64_t read_apic_register(uint16_t reg){
@@ -96,12 +99,6 @@ static void io_wait(){
 }
 
 
-//! Interrupt Vector Functions for APIC
-void  apic_timer_interrupt (size_t p, void* param) {
-	apic_local_eoi();
-}
-
-
 void apic_spurious_interrupt (size_t p, void* param) {
 }
 
@@ -125,42 +122,18 @@ void apic_spurious_interrupt (size_t p, void* param) {
 #define ICW4_BUF_SLAVE  0x08
 #define ICW4_BUF_MASTER 0x0C
 #define ICW4_SFNM  0x10
-static void disable_pic()
-{
-	static const int offset1 = 0x20;
-	static const int offset2 = 0x28;
-	
-	x64_outportb(PIC1_COMMAND, ICW1_INIT | ICW1_ICW4);
-	io_wait();
-	x64_outportb(PIC2_COMMAND, ICW1_INIT | ICW1_ICW4);
-	io_wait();
-	x64_outportb(PIC1_DATA, offset1);
-	io_wait();
-	x64_outportb(PIC2_DATA, offset2);
-	io_wait();
-	x64_outportb(PIC1_DATA, 4);
-	io_wait();
-	x64_outportb(PIC2_DATA, 2);
-	io_wait();
 
-	x64_outportb(PIC1_DATA, ICW4_8086);
-	io_wait();
-	x64_outportb(PIC2_DATA, ICW4_8086);
-	io_wait();
-
-	x64_outportb(PIC1_DATA, 0xFF);
-	io_wait();
-	x64_outportb(PIC2_DATA, 0xFF);
-	//! handle spurious interrupt
-	setvect(offset1 + 7, apic_spurious_interrupt);
-	setvect(offset2 + 7, apic_spurious_interrupt);
+static int apic_timer_count = 0;
+//! Interrupt Vector Functions for APIC
+void  apic_timer_interrupt (size_t p, void* param) {
+	apic_timer_count++;
+	apic_local_eoi();
 }
+
+
 
 //! Initialize our APIC
 void initialize_apic () {
-
-	//! Clear interrupts
-	disable_pic();
 
 	size_t apic_base;
 	apic_base = (size_t)0xFEE00000;
@@ -176,16 +149,13 @@ void initialize_apic () {
 
 	apic_base |= IA32_APIC_BASE_MSR_ENABLE;
 	x64_write_msr (IA32_APIC_BASE_MSR, apic_base);
-	setvect (0xFF, &apic_spurious_interrupt);
+	setvect (0xFF, apic_spurious_interrupt);
 	write_apic_register (LAPIC_REGISTER_SVR, read_apic_register (LAPIC_REGISTER_SVR) | 
 		                                     IA32_APIC_SVR_ENABLE | 0xFF);
 
-	for (unsigned n = 0; n < LAPIC_REGISTER_LVT_ERROR - LAPIC_REGISTER_LVT_TIMER; ++n) {
-		write_apic_register (LAPIC_REGISTER_LVT_TIMER + n, read_apic_register (LAPIC_REGISTER_LVT_TIMER + n) | IA32_APIC_LVT_MASK);
-	}
 
 	//!Register the time speed
-	write_apic_register (LAPIC_REGISTER_TMRDIV, 0xa);
+	write_apic_register (LAPIC_REGISTER_TMRDIV, 0xa);  //0xa
 
 	/*! timer initialized*/
 	size_t timer_vector = 0x40;
@@ -194,14 +164,24 @@ void initialize_apic () {
 	size_t timer_reg = (1 << 17) | timer_vector;
 	write_apic_register (LAPIC_REGISTER_LVT_TIMER, timer_reg);
 	io_wait ();
-	write_apic_register (LAPIC_REGISTER_TMRINITCNT, 0x1000);
+	write_apic_register (LAPIC_REGISTER_TMRINITCNT,78);  //100
+	
 
+	x64_outportb(PIC1_DATA, 0xFF);
+	io_wait();
+	x64_outportb(PIC2_DATA, 0xFF);
 
 	//! Finally Intialize I/O APIC
-	size_t ioapic_base = (size_t)0xFEC00000;
 	//map_page (ioapic_base,ioapic_base,0);
-	ioapic_init (&ioapic_base);
+	ioapic_init ((void*)0xfec00000);
 
+}
+
+
+void timer_sleep(uint32_t ms) {
+	uint32_t tick = ms + apic_timer_count;
+	while (tick > apic_timer_count)
+		;
 }
 
 

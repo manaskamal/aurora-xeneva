@@ -169,7 +169,7 @@ int create_process(const char* filename, char* procname) {
 		return -1;
 	}
 	//!open the binary file and read it
-	unsigned char* buf = (unsigned char*)pmmngr_alloc();   
+	uint64_t* buf = (uint64_t*)pmmngr_alloc();   
 	readfs_block(n,&file,buf);
 
 	IMAGE_DOS_HEADER* dos = (IMAGE_DOS_HEADER*)buf;
@@ -189,7 +189,7 @@ int create_process(const char* filename, char* procname) {
 	int position = 1;  //we already read 4096 bytes at first
 
 	while (file.eof != 1){
-		unsigned char* block = (unsigned char*)pmmngr_alloc();
+		uint64_t* block = (uint64_t*)pmmngr_alloc();
 		//read_blk(&file,block,file.id);
 		readfs_block (n, &file, block);
 		//fat32_read (&file,block);

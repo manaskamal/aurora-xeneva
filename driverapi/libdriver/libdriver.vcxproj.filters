@@ -18,9 +18,15 @@
     <ClInclude Include="include\sys.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="include\limits.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\string.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="entry.cpp" />
+    <ClCompile Include="string.cpp" />
   </ItemGroup>
   <ItemGroup>
     <NASM Include="callback.asm" />

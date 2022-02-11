@@ -92,7 +92,7 @@ int sys_open_file (char* filename, FILE *ufile) {
  * @param buffer -- buffer to write the content to
  * @param ufile -- user mode file structure
  */
-void sys_read_file (int fd, unsigned char* buffer, FILE *ufile) {
+void sys_read_file (int fd, uint64_t* buffer, FILE *ufile) {
 	x64_cli ();
 	vfs_node_t file;
 	file.size = ufile->size;

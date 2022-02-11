@@ -10,14 +10,14 @@ _BSS	SEGMENT
 ?pipe_count@@3HA DD 01H DUP (?)				; pipe_count
 _BSS	ENDS
 CONST	SEGMENT
-$SG3304	DB	'pipe', 00H
+$SG3305	DB	'pipe', 00H
 	ORG $+3
-$SG3306	DB	'/dev/', 00H
+$SG3307	DB	'/dev/', 00H
 CONST	ENDS
 PUBLIC	?pipe_create@@YAPEAU_pipe_@@XZ			; pipe_create
 PUBLIC	?allocate_pipe@@YAXPEAHPEAD@Z			; allocate_pipe
 PUBLIC	?pipe_write@@YAXPEAU_vfs_node_@@PEAEI@Z		; pipe_write
-PUBLIC	?pipe_read@@YAXPEAU_vfs_node_@@PEAEI@Z		; pipe_read
+PUBLIC	?pipe_read@@YAXPEAU_vfs_node_@@PEA_KI@Z		; pipe_read
 EXTRN	?circ_buf_init@@YAPEAU_circ_buf_@@PEAE_K@Z:PROC	; circ_buf_init
 EXTRN	?circular_buf_put@@YAXPEAU_circ_buf_@@H@Z:PROC	; circular_buf_put
 EXTRN	?circular_buf_get@@YAHPEAU_circ_buf_@@PEAE@Z:PROC ; circular_buf_get
@@ -38,9 +38,9 @@ $pdata$?allocate_pipe@@YAXPEAHPEAD@Z DD imagerel $LN5
 $pdata$?pipe_write@@YAXPEAU_vfs_node_@@PEAEI@Z DD imagerel $LN6
 	DD	imagerel $LN6+99
 	DD	imagerel $unwind$?pipe_write@@YAXPEAU_vfs_node_@@PEAEI@Z
-$pdata$?pipe_read@@YAXPEAU_vfs_node_@@PEAEI@Z DD imagerel $LN6
-	DD	imagerel $LN6+102
-	DD	imagerel $unwind$?pipe_read@@YAXPEAU_vfs_node_@@PEAEI@Z
+$pdata$?pipe_read@@YAXPEAU_vfs_node_@@PEA_KI@Z DD imagerel $LN6
+	DD	imagerel $LN6+100
+	DD	imagerel $unwind$?pipe_read@@YAXPEAU_vfs_node_@@PEA_KI@Z
 pdata	ENDS
 xdata	SEGMENT
 $unwind$?pipe_create@@YAPEAU_pipe_@@XZ DD 010401H
@@ -49,7 +49,7 @@ $unwind$?allocate_pipe@@YAXPEAHPEAD@Z DD 010e01H
 	DD	0c20eH
 $unwind$?pipe_write@@YAXPEAU_vfs_node_@@PEAEI@Z DD 011301H
 	DD	06213H
-$unwind$?pipe_read@@YAXPEAU_vfs_node_@@PEAEI@Z DD 011301H
+$unwind$?pipe_read@@YAXPEAU_vfs_node_@@PEA_KI@Z DD 011301H
 	DD	06213H
 xdata	ENDS
 ; Function compile flags: /Odtpy
@@ -60,9 +60,9 @@ p$ = 40
 file$ = 64
 buffer$ = 72
 length$ = 80
-?pipe_read@@YAXPEAU_vfs_node_@@PEAEI@Z PROC		; pipe_read
+?pipe_read@@YAXPEAU_vfs_node_@@PEA_KI@Z PROC		; pipe_read
 
-; 30   : void pipe_read (vfs_node_t *file, uint8_t* buffer,uint32_t length) {
+; 30   : void pipe_read (vfs_node_t *file, uint64_t* buffer,uint32_t length) {
 
 $LN6:
 	mov	DWORD PTR [rsp+24], r8d
@@ -89,12 +89,11 @@ $LN3@pipe_read:
 	cmp	DWORD PTR i$1[rsp], eax
 	jae	SHORT $LN1@pipe_read
 
-; 33   : 		circular_buf_get (p->buf,&buffer[i]);
+; 33   : 		circular_buf_get (p->buf,(uint8_t*)&buffer[i]);
 
 	movsxd	rax, DWORD PTR i$1[rsp]
 	mov	rcx, QWORD PTR buffer$[rsp]
-	add	rcx, rax
-	mov	rax, rcx
+	lea	rax, QWORD PTR [rcx+rax*8]
 	mov	rdx, rax
 	mov	rax, QWORD PTR p$[rsp]
 	mov	rcx, QWORD PTR [rax]
@@ -106,7 +105,7 @@ $LN1@pipe_read:
 
 	add	rsp, 56					; 00000038H
 	ret	0
-?pipe_read@@YAXPEAU_vfs_node_@@PEAEI@Z ENDP		; pipe_read
+?pipe_read@@YAXPEAU_vfs_node_@@PEA_KI@Z ENDP		; pipe_read
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\utils\pipe.cpp
@@ -224,7 +223,7 @@ $LN2@allocate_p:
 
 ; 59   : 		strcpy(pipe_name, "pipe");
 
-	lea	rdx, OFFSET FLAT:$SG3304
+	lea	rdx, OFFSET FLAT:$SG3305
 	lea	rcx, QWORD PTR pipe_name$[rsp]
 	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
 
@@ -244,7 +243,7 @@ $LN1@allocate_p:
 ; 64   : 	char path_name[10];
 ; 65   : 	strcpy(path_name, "/dev/");
 
-	lea	rdx, OFFSET FLAT:$SG3306
+	lea	rdx, OFFSET FLAT:$SG3307
 	lea	rcx, QWORD PTR path_name$[rsp]
 	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
 
@@ -316,7 +315,7 @@ $LN1@allocate_p:
 ; 79   : 	readn->read = pipe_read;
 
 	mov	rax, QWORD PTR readn$[rsp]
-	lea	rcx, OFFSET FLAT:?pipe_read@@YAXPEAU_vfs_node_@@PEAEI@Z ; pipe_read
+	lea	rcx, OFFSET FLAT:?pipe_read@@YAXPEAU_vfs_node_@@PEA_KI@Z ; pipe_read
 	mov	QWORD PTR [rax+72], rcx
 
 ; 80   : 	readn->write = pipe_write;

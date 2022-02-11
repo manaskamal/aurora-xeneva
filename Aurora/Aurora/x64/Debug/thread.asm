@@ -36,8 +36,7 @@ _BSS	SEGMENT
 current_thread DQ 01H DUP (?)
 _BSS	ENDS
 CONST	SEGMENT
-$SG3377	DB	'FX State addr-> %x', 0aH, 00H
-$SG3406	DB	'Idle', 00H
+$SG3408	DB	'Idle', 00H
 CONST	ENDS
 PUBLIC	?initialize_scheduler@@YAXXZ			; initialize_scheduler
 PUBLIC	?scheduler_start@@YAXXZ				; scheduler_start
@@ -65,11 +64,11 @@ EXTRN	?memset@@YAXPEAXEI@Z:PROC			; memset
 EXTRN	?allocate_stream@@YAPEAU_stream_@@XZ:PROC	; allocate_stream
 EXTRN	?pmmngr_alloc@@YAPEAXXZ:PROC			; pmmngr_alloc
 EXTRN	x64_cli:PROC
+EXTRN	x64_sti:PROC
 EXTRN	x64_hlt:PROC
 EXTRN	x64_read_cr3:PROC
 EXTRN	?setvect@@YAX_KP6AX0PEAX@Z@Z:PROC		; setvect
 EXTRN	?map_page_ex@@YA_NPEA_K_K1E@Z:PROC		; map_page_ex
-EXTRN	?printf@@YAXPEBDZZ:PROC				; printf
 EXTRN	save_context:PROC
 EXTRN	execute_idle:PROC
 EXTRN	get_kernel_tss:PROC
@@ -87,13 +86,13 @@ $pdata$?initialize_scheduler@@YAXXZ DD imagerel $LN3
 	DD	imagerel $LN3+126
 	DD	imagerel $unwind$?initialize_scheduler@@YAXXZ
 $pdata$?scheduler_start@@YAXXZ DD imagerel $LN3
-	DD	imagerel $LN3+51
+	DD	imagerel $LN3+56
 	DD	imagerel $unwind$?scheduler_start@@YAXXZ
 $pdata$?create_user_thread@@YAPEAU_thread_@@P6AXPEAX@Z_K2QEADE@Z DD imagerel $LN3
 	DD	imagerel $LN3+676
 	DD	imagerel $unwind$?create_user_thread@@YAPEAU_thread_@@P6AXPEAX@Z_K2QEADE@Z
 $pdata$?create_kthread@@YAPEAU_thread_@@P6AXXZ_K1QEADE@Z DD imagerel $LN3
-	DD	imagerel $LN3+605
+	DD	imagerel $LN3+581
 	DD	imagerel $unwind$?create_kthread@@YAPEAU_thread_@@P6AXXZ_K1QEADE@Z
 $pdata$?block_thread@@YAXPEAU_thread_@@@Z DD imagerel $LN3
 	DD	imagerel $LN3+53
@@ -175,26 +174,25 @@ $LN8:
 	mov	rax, QWORD PTR param$[rsp]
 	mov	QWORD PTR frame$[rsp], rax
 
-; 265  : 
-; 266  : 	/* check for enable bit, if yes than proceed for 
-; 267  : 	   multitasking */
-; 268  : 	if (scheduler_enable == false)
+; 265  : 	/* check for enable bit, if yes than proceed for 
+; 266  : 	   multitasking */
+; 267  : 	if (scheduler_enable == false)
 
 	movzx	eax, BYTE PTR ?scheduler_enable@@3_NA	; scheduler_enable
 	test	eax, eax
 	jne	SHORT $LN5@scheduler_
 
-; 269  : 		goto sched_end;
+; 268  : 		goto sched_end;
 
 	jmp	$LN4@scheduler_
 	jmp	$sched_end$9
 $LN5@scheduler_:
 
-; 270  : 
-; 271  : 	//mutex_lock (scheduler_mutex);
-; 272  :    
-; 273  : 	/** save currently running thread contexts */
-; 274  : 	if (save_context(current_thread,get_kernel_tss()) == 0) {
+; 269  : 
+; 270  : 	//mutex_lock (scheduler_mutex);
+; 271  :    
+; 272  : 	/** save currently running thread contexts */
+; 273  : 	if (save_context(current_thread,get_kernel_tss()) == 0) {
 
 	call	get_kernel_tss
 	mov	rdx, rax
@@ -203,23 +201,23 @@ $LN5@scheduler_:
 	test	eax, eax
 	jne	$LN3@scheduler_
 
-; 275  : 		current_thread->cr3 = x64_read_cr3();
+; 274  : 		current_thread->cr3 = x64_read_cr3();
 
 	call	x64_read_cr3
 	mov	rcx, QWORD PTR current_thread
 	mov	QWORD PTR [rcx+192], rax
 
-; 276  : 
-; 277  : 		/* check if the thread is user mode thread, if yes
-; 278  : 		   than store the kernel esp */
-; 279  : 		if (current_thread->priviledge == THREAD_LEVEL_USER)
+; 275  : 
+; 276  : 		/* check if the thread is user mode thread, if yes
+; 277  : 		   than store the kernel esp */
+; 278  : 		if (current_thread->priviledge == THREAD_LEVEL_USER)
 
 	mov	rax, QWORD PTR current_thread
 	movzx	eax, BYTE PTR [rax+236]
 	cmp	eax, 2
 	jne	SHORT $LN2@scheduler_
 
-; 280  : 			current_thread->kern_esp = get_kernel_tss()->rsp[0];
+; 279  : 			current_thread->kern_esp = get_kernel_tss()->rsp[0];
 
 	call	get_kernel_tss
 	mov	ecx, 8
@@ -229,48 +227,48 @@ $LN5@scheduler_:
 	mov	QWORD PTR [rdx+200], rax
 $LN2@scheduler_:
 
-; 281  : 
-; 282  : 		/* now get the next runnable task from the thread list */
-; 283  : 		next_task();
+; 280  : 
+; 281  : 		/* now get the next runnable task from the thread list */
+; 282  : 		next_task();
 
 	call	?next_task@@YAXXZ			; next_task
 
-; 284  : 
-; 285  : 		/*
-; 286  : 		  Here increase the system tick and
-; 287  : 		  fire the timer
-; 288  : 		  */
-; 289  : 		system_tick++;
+; 283  : 
+; 284  : 		/*
+; 285  : 		  Here increase the system tick and
+; 286  : 		  fire the timer
+; 287  : 		  */
+; 288  : 		system_tick++;
 
 	mov	eax, DWORD PTR ?system_tick@@3IA	; system_tick
 	inc	eax
 	mov	DWORD PTR ?system_tick@@3IA, eax	; system_tick
 
-; 290  : 		timer_fire();
+; 289  : 		timer_fire();
 
 	call	?timer_fire@@YAXXZ			; timer_fire
 
-; 291  : #ifdef USE_APIC
-; 292  : 	    apic_local_eoi();
+; 290  : #ifdef USE_APIC
+; 291  : 	    apic_local_eoi();
 
 	call	?apic_local_eoi@@YAXXZ			; apic_local_eoi
 
-; 293  : #endif
-; 294  : #ifdef USE_PIC
-; 295  : 		interrupt_end (0);
-; 296  : #endif
-; 297  : 		
-; 298  : 		/** now return to the new task last stored instruction */
+; 292  : #endif
+; 293  : #ifdef USE_PIC
+; 294  : 		interrupt_end (0);
+; 295  : #endif
+; 296  : 		
+; 297  : 		/** now return to the new task last stored instruction */
+; 298  : 
 ; 299  : 
-; 300  : 
-; 301  : 		if (current_thread->priviledge == THREAD_LEVEL_USER){
+; 300  : 		if (current_thread->priviledge == THREAD_LEVEL_USER){
 
 	mov	rax, QWORD PTR current_thread
 	movzx	eax, BYTE PTR [rax+236]
 	cmp	eax, 2
 	jne	SHORT $LN1@scheduler_
 
-; 302  : 			get_kernel_tss()->rsp[0] = current_thread->kern_esp;
+; 301  : 			get_kernel_tss()->rsp[0] = current_thread->kern_esp;
 
 	call	get_kernel_tss
 	mov	ecx, 8
@@ -280,11 +278,11 @@ $LN2@scheduler_:
 	mov	QWORD PTR [rax+rcx+4], rdx
 $LN1@scheduler_:
 
-; 303  : 		}
-; 304  : 
-; 305  : 		//x64_write_cr3 (current_thread->cr3);
-; 306  : 		//mutex_unlock (scheduler_mutex);
-; 307  : 		execute_idle (current_thread,get_kernel_tss());
+; 302  : 		}
+; 303  : 
+; 304  : 		//x64_write_cr3 (current_thread->cr3);
+; 305  : 		//mutex_unlock (scheduler_mutex);
+; 306  : 		execute_idle (current_thread,get_kernel_tss());
 
 	call	get_kernel_tss
 	mov	rdx, rax
@@ -294,21 +292,21 @@ $LN3@scheduler_:
 $LN4@scheduler_:
 $sched_end$9:
 
-; 308  : 	}
-; 309  : 
-; 310  : sched_end:
-; 311  : #ifdef USE_APIC
-; 312  : 	apic_local_eoi();
+; 307  : 	}
+; 308  : 
+; 309  : sched_end:
+; 310  : #ifdef USE_APIC
+; 311  : 	apic_local_eoi();
 
 	call	?apic_local_eoi@@YAXXZ			; apic_local_eoi
 
-; 313  : #endif
-; 314  : #ifdef USE_PIC
-; 315  : 	interrupt_end(0);
-; 316  : #endif
-; 317  : 	//x64_sti();
-; 318  : 	
-; 319  : }
+; 312  : #endif
+; 313  : #ifdef USE_PIC
+; 314  : 	interrupt_end(0);
+; 315  : #endif
+; 316  : 	//x64_sti();
+; 317  : 	
+; 318  : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -1338,13 +1336,7 @@ $LN3:
 	mov	rcx, QWORD PTR t$[rsp]
 	mov	QWORD PTR [rcx+208], rax
 
-; 141  : 	printf ("FX State addr-> %x\n", t->fx_state);
-
-	mov	rax, QWORD PTR t$[rsp]
-	mov	rdx, QWORD PTR [rax+208]
-	lea	rcx, OFFSET FLAT:$SG3377
-	call	?printf@@YAXPEBDZZ			; printf
-
+; 141  : 	//printf ("FX State addr-> %x\n", t->fx_state);
 ; 142  : 	thread_insert(t);
 
 	mov	rcx, QWORD PTR t$[rsp]
@@ -1628,26 +1620,30 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 ?scheduler_start@@YAXXZ PROC				; scheduler_start
 
-; 323  : void scheduler_start () {
+; 322  : void scheduler_start () {
 
 $LN3:
 	sub	rsp, 40					; 00000028H
 
-; 324  : 	x64_cli();
+; 323  : 	x64_cli();
 
 	call	x64_cli
 
-; 325  : #ifdef USE_APIC
-; 326  : 	setvect(0x40, scheduler_isr);
+; 324  : #ifdef USE_APIC
+; 325  : 	setvect(0x40, scheduler_isr);
 
 	lea	rdx, OFFSET FLAT:?scheduler_isr@@YAX_KPEAX@Z ; scheduler_isr
 	mov	ecx, 64					; 00000040H
 	call	?setvect@@YAX_KP6AX0PEAX@Z@Z		; setvect
 
-; 327  : #endif
-; 328  : #ifdef USE_PIC
-; 329  : 	interrupt_set(0,scheduler_isr,0);
-; 330  : #endif
+; 326  : #endif
+; 327  : #ifdef USE_PIC
+; 328  : 	interrupt_set(0,scheduler_isr,0);
+; 329  : #endif
+; 330  : 	x64_sti();
+
+	call	x64_sti
+
 ; 331  : 	execute_idle(current_thread,get_kernel_tss());
 
 	call	get_kernel_tss
@@ -1705,7 +1701,7 @@ $LN3:
 	mov	QWORD PTR tv70[rsp], rax
 	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
 	mov	BYTE PTR [rsp+32], 1
-	lea	r9, OFFSET FLAT:$SG3406
+	lea	r9, OFFSET FLAT:$SG3408
 	mov	rcx, QWORD PTR tv70[rsp]
 	mov	r8, rcx
 	mov	rdx, rax

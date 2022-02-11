@@ -45,7 +45,7 @@ void stderr (stream_t* st, char* err) {
 }
 
 
-void stdout_read (vfs_node_t *file, uint8_t* buffer,uint32_t length) {
+void stdout_read (vfs_node_t *file, uint64_t* buffer,uint32_t length) {
 	thread_t *p = get_current_thread();
 	memcpy (buffer, p->stream->out,32);
 }
@@ -60,7 +60,7 @@ void stdout_write (vfs_node_t *file, uint8_t* buffer, uint32_t length) {
 	}
 }
 
-void stderr_read (vfs_node_t *file, uint8_t* buffer,uint32_t length) {
+void stderr_read (vfs_node_t *file, uint64_t* buffer,uint32_t length) {
 	thread_t *p = get_current_thread();
 	memcpy (buffer, p->stream->err, 32);
 }

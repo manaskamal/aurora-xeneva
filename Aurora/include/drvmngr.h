@@ -18,6 +18,7 @@
 #include <drivers\pci.h>
 #include <arch\x86_64\apic.h>
 #include <_xnboot.h>
+#include <fs\vfs.h>
 
 //! Basic Driver classes to register driver
 #define DRIVER_CLASS_AUDIO  1
@@ -73,11 +74,16 @@ typedef struct _cpu_ {
     void (*outportd_p) (uint16_t port, uint32_t data);
 }cpu_t;
 
+typedef struct _vfs_p_ {
+	void (*vfs_mount_p) (char *path, vfs_node_t *node);
+}fs_t;
+
 typedef struct _driver_param_ {
 	void (*kdebug) (const char* str, ...);
 	mem_t *mem;
 	cpu_t *cpu;
 	pci_p_t *pci;
+	fs_t    *fs;
 }driver_param_t;
 #pragma pack (pop)
 

@@ -44,6 +44,7 @@
 #include <drivers\svga\gmr.h>
 #include <drivers\ac97\ac97.h>
 #include <drivers\hdaudio\hda.h>
+#include <drivers\ahci_disk.h>
 #include <drivers\vga.h>
 #include <drivers\usb\xhci.h>
 #include <drivers\net\e1000.h>
@@ -51,6 +52,7 @@
 #include <drivers\rtc.h>
 #include <drivers\acpi\acpi.h>
 #include <drivers\vbox.h>
+#include <drivers\ahci.h>
 #include <ipc\evntsh.h>
 #include <ipc\message.h>
 #include <ipc\dwm_ipc.h>
@@ -99,85 +101,81 @@ void __cdecl operator delete (void* p) {
 	free(p);
 }
 
+void (*debug) (const char* text, ...);
+
+void debug_print (const char* text, ...) {
+	debug(text);
+}
+
+void multi_task_test() {
+	debug ("Hello Multitasking\n");
+	while(1) {
+		debug("Hello Multitasking\n");
+		sleep_thread(get_current_thread(),1000);
+	}
+}
 
 void *ap_address = 0;
 
 void* get_ap_address () {
 	return ap_address;
 }
+
+struct xX {
+	uint32_t dword;
+	void* pointer[1];
+};
 /**========================================
  ** the main entry routine -- _kmain
  **/
 void _kmain () {
 	KERNEL_BOOT_INFO *info = (KERNEL_BOOT_INFO*)0xFFFFE00000000000;
+	debug = info->printf_gui;
 	//! Initialize the memory mappings
 	pmmngr_init (info);
 	vmmngr_x86_64_init(); 
 	hal_init();
 	hal_x86_64_setup_int();	
-	initialize_kmemory(16);
-
+	initialize_kmemory(0x100000);
+	
+	initialize_acpi (info->acpi_table_pointer);
 	initialize_serial();
 
-	ata_initialize();
+	ahci_initialize();
+	printf ("Initializing HDA\n");
+	//hda_initialize();
 	vfs_init();
 	initialize_screen(info);
 	console_initialize(info);
 	
 	screen_set_configuration(info->X_Resolution,info->Y_Resolution);
 	initialize_rtc(); 
-
-	vfs_node_t *node = vfs_finddir("/");
-	unsigned char* ap = (unsigned char*)pmmngr_alloc();
-	vfs_node_t apfile = openfs(node, "/apstart.bin");
-	readfs (node,&apfile,ap,apfile.size);
-	ap_address = ap;
-	printf ("AP_Adress setup -> %x\n", ap_address);
 	
-
-	initialize_acpi (info->acpi_table_pointer);
 	hal_x86_64_feature_check();
-
-	//!Initialize kernel runtime drivers	
-	kybrd_init();
-	initialize_mouse();
 	
-	/*vfs_node_t file = openfs (node, "/start.wav");
 
-	for (int i = 0; i < file.size/4096; i++) {
-		void *p = pmmngr_alloc();
-		memset(p, 0, 4096);
-		map_page((uint64_t)p,0xFFFFF00000000000 + i * 4096, 0);
-	}
-	unsigned char* buffer = (unsigned char*)0xFFFFF00000000000;
-	unsigned char* buffer2 = (unsigned char*)(buffer + 44);
-	readfs (node,&file,buffer2,file.size);*/
-
+	initialize_mouse();
+	kybrd_init();
 	message_init ();
 	dwm_ipc_init();
 	stream_init ();
 	pri_loop_init();
-	driver_mngr_initialize(info);
-	hda_initialize(); 
-	//hda_audio_add_pcm(buffer2, file.size);
-
+	
+	 
 	e1000_initialize();   //<< receiver not working
-	arp_initialize();
-	arp_broadcast();
 	//svga_init();
-	sound_initialize();
-
+	//sound_initialize();
+	driver_mngr_initialize(info);
 #ifdef ARCH_X64
 	//================================================
 	//! Initialize the scheduler here
 	//!===============================================
 	initialize_scheduler();
-
 	create_process ("/xshell.exe","shell");
 	//! Quince -- The Compositing window manager for Aurora kernel
 	//! always put quince in thread id -- > 2
 	create_process ("/priwm.exe","priwm");
-
+	create_process ("/priwm.exe","priwm2");
 	/**=====================================================
 	 ** Kernel threads handle some specific callbacks like
 	 ** procmngr handles process creation and termination
@@ -185,10 +183,9 @@ void _kmain () {
 	 */
 	//! Misc programs goes here
 	//create_process ("/dwm2.exe", "dwm4");
-	create_process ("/snake.exe", "snake");
-	create_process ("/dock.exe", "cnsl");
+	//create_process ("/snake.exe", "snake");
+	//create_process ("/snake.exe", "cnsl");
 	//! Here start the scheduler (multitasking engine)
-	
 	scheduler_start();
 #endif
 

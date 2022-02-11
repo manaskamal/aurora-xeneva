@@ -95,8 +95,8 @@ typedef struct _fat32_dir_
 
 extern void initialize_fat32 ();
 extern vfs_node_t fat32_open (vfs_node_t *node,char* filename);
-extern void fat32_read_file (vfs_node_t *file, unsigned char* buf, uint32_t count);
-extern void fat32_read (vfs_node_t *file, unsigned char* buf);
+extern void fat32_read_file (vfs_node_t *file, uint64_t* buf, uint32_t count);
+extern void fat32_read (vfs_node_t *file, uint64_t* buf);
 extern vfs_node_t fat32_locate_dir (const char* dir);
 extern void scan_free_cluster (bool write);
 extern void list_fat_entries ();

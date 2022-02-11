@@ -137,7 +137,7 @@
     <Link>
       <GenerateDebugInformation>
       </GenerateDebugInformation>
-      <OutputFile>D:\EFI\XENEVA\xnkrnl.exe</OutputFile>
+      <OutputFile>F:\EFI\XENEVA\xnkrnl.exe</OutputFile>
       <AdditionalDependencies>
       </AdditionalDependencies>
       <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
@@ -207,6 +207,8 @@
     <ClInclude Include="..\include\ctype.h" />
     <ClInclude Include="..\include\drivers\ac97\ac97.h" />
     <ClInclude Include="..\include\drivers\acpi\acpi.h" />
+    <ClInclude Include="..\include\drivers\ahci.h" />
+    <ClInclude Include="..\include\drivers\ahci_disk.h" />
     <ClInclude Include="..\include\drivers\ata.h" />
     <ClInclude Include="..\include\drivers\hdaudio\hda.h" />
     <ClInclude Include="..\include\drivers\kybrd.h" />
@@ -214,6 +216,7 @@
     <ClInclude Include="..\include\drivers\net\amd_am79c973.h" />
     <ClInclude Include="..\include\drivers\net\e1000.h" />
     <ClInclude Include="..\include\drivers\pci.h" />
+    <ClInclude Include="..\include\drivers\pciata.h" />
     <ClInclude Include="..\include\drivers\rtc.h" />
     <ClInclude Include="..\include\drivers\svga\backdoor_def.h" />
     <ClInclude Include="..\include\drivers\svga\gmr.h" />
@@ -292,12 +295,15 @@
     <ClCompile Include="console.cpp" />
     <ClCompile Include="drivers\acpi\acpi.cpp" />
     <ClCompile Include="drivers\acpi\xenevaosi.cpp" />
+    <ClCompile Include="drivers\ahci.cpp" />
+    <ClCompile Include="drivers\ahci_disk.cpp" />
     <ClCompile Include="drivers\ata.cpp" />
     <ClCompile Include="drivers\hda\hda.cpp" />
     <ClCompile Include="drivers\kybrd.cpp" />
     <ClCompile Include="drivers\mouse.cpp" />
     <ClCompile Include="drivers\net\e1000.cpp" />
     <ClCompile Include="drivers\pci.cpp" />
+    <ClCompile Include="drivers\pciata.cpp" />
     <ClCompile Include="drivers\rtc.cpp" />
     <ClCompile Include="drivers\svga\gmr.cpp" />
     <ClCompile Include="drivers\svga\svga_screen.cpp" />

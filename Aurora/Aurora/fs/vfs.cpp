@@ -24,7 +24,7 @@ vfs_node_t openfs (vfs_node_t *node, char* path) {
 	}
 }
 
-void readfs (vfs_node_t *node, vfs_node_t* file, uint8_t* buffer, uint32_t length) {
+void readfs (vfs_node_t *node, vfs_node_t* file, uint64_t* buffer, uint32_t length) {
 	if (node) {
 		node->read (file, buffer, length);
 	}
@@ -37,7 +37,7 @@ void writefs (vfs_node_t *node, vfs_node_t* file, uint8_t *buffer, uint32_t leng
 	}
 }
 
-void readfs_block (vfs_node_t* node, vfs_node_t* file, uint8_t *buffer) {
+void readfs_block (vfs_node_t* node, vfs_node_t* file, uint64_t *buffer) {
 	if (node) {
 		node->read_blk (file, buffer);
 	}

@@ -143,32 +143,32 @@ extern "C" int _declspec(dllexport) test_num () {
 //! Audio Write -- Uses sb16 play audio methods
 extern "C" void _declspec(dllexport) aurora_write (unsigned char* sound_buffer, size_t length) {
 
-	//uint64_t phys_addr = (uint64_t)(uint64_t)_param.get_phys_address((uint64_t)sound_buffer);
-	//driver_debug("Physical Address for sb16 -> %x\n", phys_addr);
-	////!sb16 reset the dsp first
-	//sb16_reset_dsp ();
-	//
-	////! set up master volume
-	//x64_outportb(0x22C, 0xD1);
+	uint64_t phys_addr = (uint64_t)(uint64_t)_param.get_phys_address((uint64_t)sound_buffer);
+	driver_debug("Physical Address for sb16 -> %x\n", phys_addr);
+	//!sb16 reset the dsp first
+	sb16_reset_dsp ();
+	
+	//! set up master volume
+	x64_outportb(0x22C, 0xD1);
 
-	//sb16_set_sample_rate (44100);
+	sb16_set_sample_rate (44100);
 
-	//sb16_dma_start (phys_addr, length);
+	sb16_dma_start (phys_addr, length);
 
-	//uint8_t command = 0xB0;
+	uint8_t command = 0xB0;
 
-	//uint16_t sample_count = length / sizeof(int16_t);
-	//sample_count /= 2;
+	uint16_t sample_count = length / sizeof(int16_t);
+	sample_count /= 2;
 
-	//sample_count -= 1;
+	sample_count -= 1;
 
-	//driver_debug ("Sample Count -> %d\n", sample_count);
-	//sb16_write_dsp (command);
-	//sb16_write_dsp (SIGNED_AUDIO | STERIO_MODE);
-	//sb16_write_dsp ((uint8_t)sample_count);
-	//sb16_write_dsp ((uint8_t)(sample_count >> 8));
+	driver_debug ("Sample Count -> %d\n", sample_count);
+	sb16_write_dsp (command);
+	sb16_write_dsp (SIGNED_AUDIO | STERIO_MODE);
+	sb16_write_dsp ((uint8_t)sample_count);
+	sb16_write_dsp ((uint8_t)(sample_count >> 8));
 
-	//driver_debug ("Aurora sound playing started\n");
+	driver_debug ("Aurora sound playing started\n");
 
 }
 //! Aurora Close Driver interface
@@ -178,12 +178,35 @@ extern "C" void _declspec(dllexport) aurora_close_driver () {
 	//[CODE]
 }
 
+
+/**  Mouse IOQuery function **/
+int ioctl (vfs_node_t *node, int code, void* arg) {
+	switch (code) {
+		case 302:
+			return 25;
+			break;
+		default:
+			break;
+	}
+
+	return 1;
+}
+
+
+char *strcpy(char *s1, const char *s2)
+{
+	char *s1_p = s1;
+	while (*s1++ = *s2++);
+	return s1_p;
+}
+
+
 //! Aurora Init Driver interface
 //! Perform every initializing action here
 extern "C" int _declspec(dllexport) _cdecl aurora_init_driver (driver_param_t *param) {
 	driver_debug = param->kdebug;
 	//interrupt_eoi = param->irq_eoi;
-	/*_param = *param;
+	_param = *param;
 	sb16_reset_dsp ();
 
 	if (!_sb16){
@@ -200,10 +223,25 @@ extern "C" int _declspec(dllexport) _cdecl aurora_init_driver (driver_param_t *p
 	//param->interrupt_set(5, sb16_handler,5);
 	int bus, dev_, func;
 	pci_device_info info;
-	if (!param->pci->pci_find_device_class_p (0x02,0x00,&info,&bus, &dev_, &func)) {
+	/*if (!param->pci->pci_find_device_class_p (0x02,0x00,&info,&bus, &dev_, &func)) {
 		param->kdebug("[DRIVER DLL] -> ethernet not found\n");
 		for(;;);
 	}
+*/
+	vfs_node_t *node = (vfs_node_t*)param->mem->malloc_p(sizeof(vfs_node_t));
+	strcpy (node->filename, "sb16");
+	node->size = 0;
+	node->eof = 0;
+	node->pos = 0;
+	node->current = 0;
+	node->flags = 0x2;
+	node->status = 0;
+	node->open = 0;
+	node->read = 0;
+	node->write = 0;
+	node->read_blk = 0;
+	node->ioquery = ioctl;
+	param->fs->vfs_mount_p("/dev/sb16", node);
 	param->kdebug("[DRIVER DLL] ->ethernet founddddddd\n");
 	return 1;
 }

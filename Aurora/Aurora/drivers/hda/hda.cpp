@@ -70,10 +70,9 @@ uint8_t _aud_inb_ (int reg) {
 void hda_handler (size_t v, void* p) {
 	uint32_t isr = _aud_inl_(INTSTS);
 	uint8_t sts = _aud_inb_(REG_O0_STS(_ihd_audio));
-
-
+	printf ("HDA interrupt\n");
 	if (sts & 0x4) {
-		//printf ("[HD-Audio]: Output stream 1 buffer completed\n");
+		printf ("[HD-Audio]: Output stream 1 buffer completed\n");
 		hda_output_stop();
 	}
 
@@ -156,21 +155,19 @@ void setup_rirb() {
 	}
 
 	_aud_outb_(RIRBSIZE,reg);
-
 	/* Set RIRB Base address */
 	rirb_base = (uint64_t)_ihd_audio.rirb;
 	_aud_outl_(RIRBLBASE, rirb_base);
 	_aud_outl_(RIRBUBASE, rirb_base >> 32);
-
+	
 	_aud_outw_ (RIRBWP, 0x8000);
-
 	_aud_outw_(RINTCNT, _ihd_audio.rirb_entries / 2);
-
 	_aud_outb_ (RIRBCTL,0x1);
 	/* Start DMA Engine */
 	uint32_t rirbctl = _aud_inb_ (RIRBCTL);
 	rirbctl |= 0x2;
 	_aud_outb_ (RIRBCTL,rirbctl);
+	printf ("RIRB DMA Engine started\n");
 
 }
 
@@ -306,7 +303,7 @@ void hda_init_output_stream () {
 	_aud_outl_ (REG_O0_BDLPL(_ihd_audio), bdl_base);
 	_aud_outl_ (REG_O0_BDLPU(_ihd_audio), bdl_base >> 32);
 
-	uint16_t format = (0<<14)  | (1<<4) | 1;  // (0<<14) | (0<<11) | (0<<8) | (1<<4) | 1;
+	uint16_t format = 1  | (1<<4) | (0<<14); // (0<<14) | (0<<11) | (0<<8) | (1<<4) | 1;
 	_aud_outw_ (REG_O0_FMT(_ihd_audio), format);
 
 	_aud_outb_(REG_O0_STS(_ihd_audio), (1<<2) | (1<<3) | (1<<4));
@@ -326,7 +323,7 @@ void hda_init_output_stream () {
  * for now it uses Sigmatel registers
  */
 void hda_init_output () {
-	uint16_t format =  (0<<14)  | (1<<4) | 1;
+	uint16_t format =  1 | (1<<4) | (0<<14);
 	codec_query (_ihd_audio.output->codec, 2, VERB_SET_FORMAT | format);
 	codec_query (_ihd_audio.output->codec, 3, VERB_SET_FORMAT | format);
 	codec_query (_ihd_audio.output->codec, 4, VERB_SET_FORMAT | format);
@@ -563,9 +560,9 @@ void hda_initialize () {
 	if (pci_status) 
 		printf ("[HD-Audio]: Supports MSI\n");
 	if (!pci_status) {
-		interrupt_set (11, hda_handler,11);
+		printf ("[HD-Audio]: INterrupt int -> %d\n", pci_dev.device.nonBridge.interruptLine);
+		interrupt_set (10, hda_handler,10);
 	}
-
 
 	_ihd_audio.mmio = pci_dev.device.nonBridge.baseAddress[0] & ~3;
 	_ihd_audio.corb = (uint32_t*)pmmngr_alloc(); 
@@ -577,7 +574,7 @@ void hda_initialize () {
 	//! Allocate the main audio buffer area
 	//! for now, only allocate 1MB of area, at a fixed location
 	uint64_t pos = 0xFFFFE00000100000;
-	for (int i = 0; i < 16*0x10000 / 4096; i++) {
+	for (int i = 0; i < 16*0x10000/ 4096; i++) {
 		map_page ((uint64_t)pmmngr_alloc(),pos + i * 4096, 0);
 	}
 
@@ -599,17 +596,21 @@ void hda_initialize () {
 	_ihd_audio.stream_0_y = 0x80 + (_ihd_audio.num_iss * 0x20) + (_ihd_audio.num_oss * 0x20);
 	
 
+	bool device_found = false;
 	uint16_t statests = _aud_inw_ (STATESTS);
 	for (int i = 0; i < 15; i++) {
 		if (statests & (1 >> i)){
 			if (codec_enumerate_widgets(i)) {
+				printf ("HDA Device found at index ->%d\n", i);
 				break;
 			}
 		}
 	} 
 	
+
 	hda_init_output();
 	hda_init_output_stream();
+	
 	
 	printf ("IHD-Audio Initialized successfully\n");
 
@@ -619,6 +620,8 @@ void hda_initialize () {
 
 //! Transfer PCM Audio Data to internal buffer of HD-Audio
 void hda_audio_add_pcm (unsigned char *data, uint32_t length) {
+	if (length > 16*0x10000)
+		length = 16*0x10000;
 	memcpy (_ihd_audio.buffer, data,length);
 }
 

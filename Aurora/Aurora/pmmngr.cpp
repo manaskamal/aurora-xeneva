@@ -139,6 +139,7 @@ void pmmngr_init(KERNEL_BOOT_INFO *_info)
 		}
 	}
 
+
 	total_ram -= reserved_memory;
 
 	void *unusable = pmmngr_alloc(); //0 is avoided

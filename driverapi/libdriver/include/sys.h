@@ -25,6 +25,33 @@
 #define AURORA_DRIVER_DATA_SIZE_ERR 7
 #define AURORA_DRIVER_ERR_UNKNOWN 8
 
+
+struct _vfs_node_;
+
+
+typedef _vfs_node_ (*open_callback) (_vfs_node_ *node, char* path);
+typedef void (*read_callback) (_vfs_node_ *file, uint8_t* buffer,uint32_t length);
+typedef void (*read_block_callback) (_vfs_node_ *file, uint8_t* buffer);
+typedef void (*write_callback) (_vfs_node_ *file, uint8_t* buffer, uint32_t length);
+typedef int (*ioquery_callback) (_vfs_node_ *file, int code, void *arg);
+
+//! The File Node -- everything is file
+typedef struct _vfs_node_ {
+	char filename[32];
+	uint32_t  size;
+	uint32_t  eof;
+	uint32_t  pos;
+	uint32_t  current;  //inode -- in unix term
+	uint32_t  flags; 
+	uint32_t  status;
+	void* device;
+	open_callback open;
+	read_callback read;
+	write_callback write;
+	read_block_callback read_blk;
+	ioquery_callback ioquery;
+}vfs_node_t;
+
 #pragma pack (push,1)
 
 typedef struct _pci_p_ {
@@ -64,11 +91,16 @@ typedef struct _cpu_ {
     void (*outportd_p) (uint16_t port, uint32_t data);
 }cpu_t;
 
+typedef struct _vfs_p_ {
+	void (*vfs_mount_p) (char *path, vfs_node_t *node);
+}fs_t;
+
 typedef struct _driver_param_ {
 	void (*kdebug) (const char* str, ...);
 	mem_t *mem;
 	cpu_t *cpu;
 	pci_p_t* pci;
+	fs_t *fs;
 }driver_param_t;
 
 #pragma pack(pop)

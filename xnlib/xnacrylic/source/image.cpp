@@ -14,7 +14,7 @@
 #include <sys\_term.h>
 
 
-Image* LoadImage (char* filename, unsigned char* data) {
+Image* LoadImage (char* filename, uint64_t* data) {
 	Image *img = (Image*)malloc (sizeof(Image));
 	UFILE f;
 	int fd = sys_open_file (filename, &f);
@@ -36,7 +36,7 @@ void FillImageInfo (Image *img, uint32_t w, uint32_t h) {
 
 		
 void  CallJpegDecoder (Image *img) {
-	Jpeg::Decoder *decoder = new Jpeg::Decoder(img->data, img->size, malloc, free);
+	Jpeg::Decoder *decoder = new Jpeg::Decoder((uint8_t*)img->data, img->size, malloc, free);
 	if (decoder->GetResult() != Jpeg::Decoder::OK) {
 		sys_print_text ("Decoder error\n");
 	   return;

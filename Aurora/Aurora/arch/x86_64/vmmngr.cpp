@@ -46,6 +46,18 @@
 #define USER_BASE_ADDRESS 0x0000020000000000   //0x0000400000000000
 uint64_t* root_cr3;
 
+static void* make_canonical_i(size_t addr)
+{
+	if (addr & ((size_t)1 << 47))
+		addr |= 0xFFFF000000000000;
+	return (void*)addr;
+}
+
+static void* make_canonical(void* addr)
+{
+	return make_canonical_i((size_t)addr);
+}
+
 size_t  pml4_index (uint64_t addr){
 	return (addr >> 39) & 0x1ff;
 }
@@ -83,40 +95,8 @@ void vmmngr_x86_64_init () {
 
 	uint64_t *cr3 = (uint64_t*)x64_read_cr3();
 	uint64_t *new_cr3 = (uint64_t*)pmmngr_alloc();    
-	//uint64_t *pdpt = (uint64_t*)pmmngr_alloc();
-	//uint64_t *pd = (uint64_t*)pmmngr_alloc();
-	//uint64_t *pd2 = (uint64_t*)pmmngr_alloc();
-	//uint64_t *pd3 = (uint64_t*)pmmngr_alloc();
-	//uint64_t *pd4 = (uint64_t*)pmmngr_alloc();
-
 
 	memset (new_cr3, 0, 4096);
-	//memset (pd, 0, 4096);
-	//memset (pd2, 0, 4096);
-	//memset (pd3, 0, 4096);
-	//memset (pd4, 0, 4096);
-
-	//////! Identity Map : first 4 GiB of RAM
-
- //   new_cr3[0] = (uint64_t)pdpt | 0x3;
-	//pdpt[0] =  (uintptr_t)&pd[0] | 0x3;
-	//pdpt[1] = (uintptr_t)&pd2[0] | 0x3;
-	//pdpt[2] = (uintptr_t)&pd3[0] | 0x3;
-	//pdpt[3] = (uintptr_t)&pd4[0] | 0x3;
-
-	//for (uint64_t i = 0; i != 2048; ++i)
-	//	pd[i] = i * 512 * 4096 | 0x83;
-
-	//uint64_t pos = 1024*1024*1024;
-	//for (uint64_t i = 0; i != 512; ++i)
-	//	pd2[i] = pos + i * 512 * 4096 | 0x83;
-
-	//for (uint64_t i = 0; i != 512; ++i)
-	//	pd3[i] = 2*pos + i * 512 * 4096 | 0x83;
-
-	//for (uint64_t i = 0; i != 512; ++i)
-	//	pd4[i] = 3*pos + i * 512 * 4096 | 0x83;
-
 
 	new_cr3[0] = cr3[0];
 	new_cr3[1] = cr3[1];
@@ -137,7 +117,7 @@ void vmmngr_x86_64_init () {
 		}
 		
 	}
-
+	
 	//! Store the kernel's address space
 	root_cr3 = new_cr3;
 

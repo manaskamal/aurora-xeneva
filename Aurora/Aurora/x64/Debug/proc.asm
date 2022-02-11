@@ -15,14 +15,14 @@ user_stack_index_2 DD 01H DUP (?)
 pid	DD	01H DUP (?)
 _BSS	ENDS
 CONST	SEGMENT
-$SG3799	DB	'/dev/stdin', 00H
+$SG3800	DB	'/dev/stdin', 00H
 	ORG $+5
-$SG3801	DB	'/dev/stdout', 00H
+$SG3802	DB	'/dev/stdout', 00H
 	ORG $+4
-$SG3803	DB	'/dev/stderr', 00H
+$SG3804	DB	'/dev/stderr', 00H
 	ORG $+4
-$SG3816	DB	'Executable image not found', 0aH, 00H
-$SG3948	DB	'child', 00H
+$SG3817	DB	'Executable image not found', 0aH, 00H
+$SG3949	DB	'child', 00H
 CONST	ENDS
 PUBLIC	?create_user_stack@@YAPEA_KPEA_K@Z		; create_user_stack
 PUBLIC	?create_inc_stack@@YAPEA_KPEA_K@Z		; create_inc_stack
@@ -44,7 +44,7 @@ EXTRN	?memset@@YAXPEAXEI@Z:PROC			; memset
 EXTRN	memcpy:PROC
 EXTRN	?vfs_finddir@@YAPEAU_vfs_node_@@PEAD@Z:PROC	; vfs_finddir
 EXTRN	?openfs@@YA?AU_vfs_node_@@PEAU1@PEAD@Z:PROC	; openfs
-EXTRN	?readfs_block@@YAXPEAU_vfs_node_@@0PEAE@Z:PROC	; readfs_block
+EXTRN	?readfs_block@@YAXPEAU_vfs_node_@@0PEA_K@Z:PROC	; readfs_block
 EXTRN	?pmmngr_alloc@@YAPEAXXZ:PROC			; pmmngr_alloc
 EXTRN	?pmmngr_free@@YAXPEAX@Z:PROC			; pmmngr_free
 EXTRN	x64_cli:PROC
@@ -63,7 +63,7 @@ EXTRN	?get_current_thread@@YAPEAU_thread_@@XZ:PROC	; get_current_thread
 EXTRN	?thread_iterate_ready_list@@YAPEAU_thread_@@G@Z:PROC ; thread_iterate_ready_list
 EXTRN	?thread_iterate_block_list@@YAPEAU_thread_@@H@Z:PROC ; thread_iterate_block_list
 EXTRN	?task_delete@@YAXPEAU_thread_@@@Z:PROC		; task_delete
-EXTRN	?load_pe_file@@YAXPEAEH@Z:PROC			; load_pe_file
+EXTRN	?load_pe_file@@YAXPEA_KH@Z:PROC			; load_pe_file
 EXTRN	?create_mutex@@YAPEAUmutex_t@@XZ:PROC		; create_mutex
 EXTRN	?mutex_lock@@YAXPEAUmutex_t@@@Z:PROC		; mutex_lock
 EXTRN	?mutex_unlock@@YAXPEAUmutex_t@@@Z:PROC		; mutex_unlock
@@ -379,7 +379,7 @@ $LN3:
 ; 389  : 	thread_t *t = create_user_thread(child_proc->entry_point,child_proc->stack,(uint64_t)child_proc->cr3,"child",1);
 
 	mov	BYTE PTR [rsp+32], 1
-	lea	r9, OFFSET FLAT:$SG3948
+	lea	r9, OFFSET FLAT:$SG3949
 	mov	rax, QWORD PTR child_proc$[rsp]
 	mov	r8, QWORD PTR [rax+40]
 	mov	rax, QWORD PTR child_proc$[rsp]
@@ -548,7 +548,7 @@ $LN3:
 
 ; 136  : 	vfs_node_t * stdin = vfs_finddir("/dev/stdin");
 
-	lea	rcx, OFFSET FLAT:$SG3799
+	lea	rcx, OFFSET FLAT:$SG3800
 	call	?vfs_finddir@@YAPEAU_vfs_node_@@PEAD@Z	; vfs_finddir
 	mov	QWORD PTR stdin$[rsp], rax
 
@@ -570,7 +570,7 @@ $LN3:
 
 ; 139  : 	vfs_node_t* stdout = vfs_finddir("/dev/stdout");
 
-	lea	rcx, OFFSET FLAT:$SG3801
+	lea	rcx, OFFSET FLAT:$SG3802
 	call	?vfs_finddir@@YAPEAU_vfs_node_@@PEAD@Z	; vfs_finddir
 	mov	QWORD PTR stdout$[rsp], rax
 
@@ -592,7 +592,7 @@ $LN3:
 
 ; 142  : 	vfs_node_t* stderr = vfs_finddir("/dev/stderr");
 
-	lea	rcx, OFFSET FLAT:$SG3803
+	lea	rcx, OFFSET FLAT:$SG3804
 	call	?vfs_finddir@@YAPEAU_vfs_node_@@PEAD@Z	; vfs_finddir
 	mov	QWORD PTR stderr$[rsp], rax
 
@@ -1664,7 +1664,7 @@ $LN9:
 
 ; 168  : 		printf("Executable image not found\n");
 
-	lea	rcx, OFFSET FLAT:$SG3816
+	lea	rcx, OFFSET FLAT:$SG3817
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 169  : 		return -1;
@@ -1675,7 +1675,7 @@ $LN6@create_pro:
 
 ; 170  : 	}
 ; 171  : 	//!open the binary file and read it
-; 172  : 	unsigned char* buf = (unsigned char*)pmmngr_alloc();   
+; 172  : 	uint64_t* buf = (uint64_t*)pmmngr_alloc();   
 
 	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
 	mov	QWORD PTR buf$[rsp], rax
@@ -1685,7 +1685,7 @@ $LN6@create_pro:
 	mov	r8, QWORD PTR buf$[rsp]
 	lea	rdx, QWORD PTR file$[rsp]
 	mov	rcx, QWORD PTR n$[rsp]
-	call	?readfs_block@@YAXPEAU_vfs_node_@@0PEAE@Z ; readfs_block
+	call	?readfs_block@@YAXPEAU_vfs_node_@@0PEA_K@Z ; readfs_block
 
 ; 174  : 
 ; 175  : 	IMAGE_DOS_HEADER* dos = (IMAGE_DOS_HEADER*)buf;
@@ -1708,7 +1708,7 @@ $LN6@create_pro:
 
 	mov	edx, DWORD PTR file$[rsp+32]
 	mov	rcx, QWORD PTR buf$[rsp]
-	call	?load_pe_file@@YAXPEAEH@Z		; load_pe_file
+	call	?load_pe_file@@YAXPEA_KH@Z		; load_pe_file
 
 ; 180  : 	uint64_t _image_base_ = nt->OptionalHeader.ImageBase;
 
@@ -1758,7 +1758,7 @@ $LN5@create_pro:
 	cmp	DWORD PTR file$[rsp+36], 1
 	je	SHORT $LN4@create_pro
 
-; 192  : 		unsigned char* block = (unsigned char*)pmmngr_alloc();
+; 192  : 		uint64_t* block = (uint64_t*)pmmngr_alloc();
 
 	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
 	mov	QWORD PTR block$2[rsp], rax
@@ -1769,7 +1769,7 @@ $LN5@create_pro:
 	mov	r8, QWORD PTR block$2[rsp]
 	lea	rdx, QWORD PTR file$[rsp]
 	mov	rcx, QWORD PTR n$[rsp]
-	call	?readfs_block@@YAXPEAU_vfs_node_@@0PEAE@Z ; readfs_block
+	call	?readfs_block@@YAXPEAU_vfs_node_@@0PEA_K@Z ; readfs_block
 
 ; 195  : 		//fat32_read (&file,block);
 ; 196  : 		map_page_ex(cr3,(uint64_t)block,_image_base_ + position * 4096, PAGING_USER);

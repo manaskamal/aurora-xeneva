@@ -165,8 +165,8 @@ void acpi_parse_madt () {
 		case ACPI_APICTYPE_LAPIC: {
 			acpiLocalApic *lapic = (acpiLocalApic*)apic_header;
 			printf ("[ACPI]: Madt entry -> LAPIC id -> %d, address -> %x\n", lapic->lapicId, lapic->procId);
-			if (lapic->lapicId != 0)
-				initialize_cpu(lapic->lapicId);
+			/*if (lapic->lapicId != 0)
+				initialize_cpu(lapic->lapicId);*/
 			break;
 		}							 
 		case ACPI_APICTYPE_IOAPIC:{
@@ -180,7 +180,6 @@ void acpi_parse_madt () {
 			break;
 		}
 		default:{
-			printf ("[ACPI]: Madt entry type = %d\n", apic_header->type);
 			break;
 		}
 		}
@@ -232,11 +231,12 @@ uint8_t* search_s5 (acpiDsdt* header) {
 
 //! Checks for PCIe support
 bool acpi_pcie_supported () {
-	if (!kern_acpi->mcfg) {
-		return false;
-	} 
-	//! for now let's use pci legacy mode
-	return true;
+	//if (!kern_acpi->mcfg) {
+	//	return false;
+	//} 
+	////! for now let's use pci legacy mode
+	//return true;
+	return false;
 }
 
 //! Get MCFG table

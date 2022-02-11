@@ -32,7 +32,7 @@ extern void sys_move_cursor (uint32_t visible, uint32_t x,uint32_t y);
 extern void sys_unblock_id (uint16_t id);
 extern void create_uthread (void (*entry) (void*), char* name);
 extern int  sys_open_file (char* filename, FILE *f);
-extern void sys_read_file (int fd, unsigned char* buffer, FILE *f);
+extern void sys_read_file (int fd, uint64_t* buffer, FILE *f);
 extern void sys_write_file (int fd, unsigned char* buffer, FILE *ufile);
 extern uint64_t sys_get_used_ram ();
 extern uint64_t sys_get_free_ram ();

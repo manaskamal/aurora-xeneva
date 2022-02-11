@@ -11,6 +11,8 @@
 
 #include <arch\x86_64\ioapic.h>
 
+extern void debug_print(const char *text, ...);
+
 //! Read I/O Apic register
 static uint32_t read_ioapic_register(void* apic_base, const uint8_t offset)
 {
@@ -101,7 +103,8 @@ void ioapic_init(void* address)
 {
 	uint32_t ver = read_ioapic_register(address, IOAPIC_REG_VER);
 	uint32_t intr_num = (ver >> 16) & 0xFF;
-	for(size_t n = 0; n <= 255; ++n)
+	debug_print ("IOAPIC INTR NUM -> %d\n", intr_num);
+	for(size_t n = 0; n <= intr_num; ++n)
 	{
 		uint32_t reg = IOAPIC_REG_RED_TBL_BASE + n * 2;
 		write_ioapic_register(address, reg, read_ioapic_register(address, reg) |(1<<16));

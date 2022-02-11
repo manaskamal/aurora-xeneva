@@ -351,6 +351,15 @@
     <ClInclude Include="..\include\ipc\pri_loop.h">
       <Filter>include\ipc</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\drivers\ahci.h">
+      <Filter>include\drivers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\drivers\ahci_disk.h">
+      <Filter>include\drivers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\drivers\pciata.h">
+      <Filter>include\drivers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="init.cpp">
@@ -571,6 +580,15 @@
     </ClCompile>
     <ClCompile Include="ipc\pri_loop.cpp">
       <Filter>source\ipc</Filter>
+    </ClCompile>
+    <ClCompile Include="drivers\ahci.cpp">
+      <Filter>source\drivers</Filter>
+    </ClCompile>
+    <ClCompile Include="drivers\ahci_disk.cpp">
+      <Filter>source\drivers</Filter>
+    </ClCompile>
+    <ClCompile Include="drivers\pciata.cpp">
+      <Filter>source\drivers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

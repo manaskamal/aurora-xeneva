@@ -6,16 +6,16 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 CONST	SEGMENT
-$SG3516	DB	'dev', 00H
+$SG3515	DB	'dev', 00H
 CONST	ENDS
 PUBLIC	?sys_open_file@@YAHPEADPEAU_file_@@@Z		; sys_open_file
-PUBLIC	?sys_read_file@@YAXHPEAEPEAU_file_@@@Z		; sys_read_file
+PUBLIC	?sys_read_file@@YAXHPEA_KPEAU_file_@@@Z		; sys_read_file
 PUBLIC	?sys_write_file@@YAXHPEAEPEAU_file_@@@Z		; sys_write_file
 EXTRN	?strcmp@@YAHPEBD0@Z:PROC			; strcmp
 EXTRN	?strchr@@YAPEADPEADH@Z:PROC			; strchr
 EXTRN	?vfs_finddir@@YAPEAU_vfs_node_@@PEAD@Z:PROC	; vfs_finddir
 EXTRN	?openfs@@YA?AU_vfs_node_@@PEAU1@PEAD@Z:PROC	; openfs
-EXTRN	?readfs@@YAXPEAU_vfs_node_@@0PEAEI@Z:PROC	; readfs
+EXTRN	?readfs@@YAXPEAU_vfs_node_@@0PEA_KI@Z:PROC	; readfs
 EXTRN	?writefs@@YAXPEAU_vfs_node_@@0PEAEI@Z:PROC	; writefs
 EXTRN	x64_cli:PROC
 EXTRN	?get_current_thread@@YAPEAU_thread_@@XZ:PROC	; get_current_thread
@@ -23,9 +23,9 @@ pdata	SEGMENT
 $pdata$?sys_open_file@@YAHPEADPEAU_file_@@@Z DD imagerel $LN12
 	DD	imagerel $LN12+535
 	DD	imagerel $unwind$?sys_open_file@@YAHPEADPEAU_file_@@@Z
-$pdata$?sys_read_file@@YAXHPEAEPEAU_file_@@@Z DD imagerel $LN6
+$pdata$?sys_read_file@@YAXHPEA_KPEAU_file_@@@Z DD imagerel $LN6
 	DD	imagerel $LN6+286
-	DD	imagerel $unwind$?sys_read_file@@YAXHPEAEPEAU_file_@@@Z
+	DD	imagerel $unwind$?sys_read_file@@YAXHPEA_KPEAU_file_@@@Z
 $pdata$?sys_write_file@@YAXHPEAEPEAU_file_@@@Z DD imagerel $LN6
 	DD	imagerel $LN6+286
 	DD	imagerel $unwind$?sys_write_file@@YAXHPEAEPEAU_file_@@@Z
@@ -34,7 +34,7 @@ xdata	SEGMENT
 $unwind$?sys_open_file@@YAHPEADPEAU_file_@@@Z DD 041301H
 	DD	0350113H
 	DD	0600b700cH
-$unwind$?sys_read_file@@YAXHPEAEPEAU_file_@@@Z DD 021501H
+$unwind$?sys_read_file@@YAXHPEA_KPEAU_file_@@@Z DD 021501H
 	DD	0150115H
 $unwind$?sys_write_file@@YAXHPEAEPEAU_file_@@@Z DD 021501H
 	DD	0150115H
@@ -181,9 +181,9 @@ file$ = 48
 fd$ = 176
 buffer$ = 184
 ufile$ = 192
-?sys_read_file@@YAXHPEAEPEAU_file_@@@Z PROC		; sys_read_file
+?sys_read_file@@YAXHPEA_KPEAU_file_@@@Z PROC		; sys_read_file
 
-; 95   : void sys_read_file (int fd, unsigned char* buffer, FILE *ufile) {
+; 95   : void sys_read_file (int fd, uint64_t* buffer, FILE *ufile) {
 
 $LN6:
 	mov	QWORD PTR [rsp+24], r8
@@ -283,7 +283,7 @@ $LN3@sys_read_f:
 	mov	r8, QWORD PTR buffer$[rsp]
 	lea	rdx, QWORD PTR file$[rsp]
 	mov	rcx, QWORD PTR node$[rsp]
-	call	?readfs@@YAXPEAU_vfs_node_@@0PEAEI@Z	; readfs
+	call	?readfs@@YAXPEAU_vfs_node_@@0PEA_KI@Z	; readfs
 
 ; 116  : 	}else {
 
@@ -296,7 +296,7 @@ $LN2@sys_read_f:
 	mov	r8, QWORD PTR buffer$[rsp]
 	mov	rdx, QWORD PTR node$[rsp]
 	mov	rcx, QWORD PTR node$[rsp]
-	call	?readfs@@YAXPEAU_vfs_node_@@0PEAEI@Z	; readfs
+	call	?readfs@@YAXPEAU_vfs_node_@@0PEA_KI@Z	; readfs
 $LN1@sys_read_f:
 $LN4@sys_read_f:
 
@@ -305,7 +305,7 @@ $LN4@sys_read_f:
 
 	add	rsp, 168				; 000000a8H
 	ret	0
-?sys_read_file@@YAXHPEAEPEAU_file_@@@Z ENDP		; sys_read_file
+?sys_read_file@@YAXHPEA_KPEAU_file_@@@Z ENDP		; sys_read_file
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\sysserv\sysfile.cpp
@@ -458,7 +458,7 @@ $LN3@sys_open_f:
 ; 71   : 
 ; 72   : 	if (!(strcmp(pathname, "dev") == 0)) {
 
-	lea	rdx, OFFSET FLAT:$SG3516
+	lea	rdx, OFFSET FLAT:$SG3515
 	lea	rcx, QWORD PTR pathname$[rsp]
 	call	?strcmp@@YAHPEBD0@Z			; strcmp
 	test	eax, eax

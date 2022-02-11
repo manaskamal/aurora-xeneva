@@ -38,7 +38,11 @@
 
 
 extern void pic_interrupt_eoi (unsigned int intno);
-extern void initialize_pic ( uint8_t base0, uint8_t base1);
+extern void initialize_pic ();
 extern void pic_set_mask (uint8_t irq);
 extern void pic_clear_mask (unsigned char irq);
+/*
+ * pit_sleep_ms -- sleep for some milliseconds
+ */
+extern void pit_sleep_ms(uint32_t ms);
 #endif

@@ -95,7 +95,7 @@
     <Link>
       <GenerateDebugInformation>
       </GenerateDebugInformation>
-      <OutputFile>D:\snake.exe</OutputFile>
+      <OutputFile>F:\snake.exe</OutputFile>
       <AdditionalLibraryDirectories>E:\Xeneva Project\Xeneva\xnlib\lib64</AdditionalLibraryDirectories>
       <AdditionalDependencies>xnclib.lib;xnacrylic.lib;daisy.lib;freetype.lib;</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>

@@ -27,10 +27,10 @@ pipe_t* pipe_create () {
 }
 
 
-void pipe_read (vfs_node_t *file, uint8_t* buffer,uint32_t length) {
+void pipe_read (vfs_node_t *file, uint64_t* buffer,uint32_t length) {
 	pipe_t *p = (pipe_t*)file->device;
 	for (int i = 0; i < length; i++)
-		circular_buf_get (p->buf,&buffer[i]);
+		circular_buf_get (p->buf,(uint8_t*)&buffer[i]);
 }
 
 

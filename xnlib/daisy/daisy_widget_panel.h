@@ -36,6 +36,7 @@
 #include "daisy_widget.h"
 #include "daisy_window.h"
 #include "daisy.h"
+#include "list.h"
 
 /**
  * daisy_widget_panel_t -- panel widget 
@@ -43,6 +44,7 @@
 typedef struct _daisy_widget_panel_ {
 	daisy_widget_t base;
 	uint32_t color;
+	list_t *childs;
 }daisy_widget_panel_t;
 
 
@@ -52,4 +54,19 @@ typedef struct _daisy_widget_panel_ {
  * @param height -- height of the panel
  */
 extern daisy_widget_panel_t *daisy_widget_create_panel (daisy_window_t* win, uint32_t color);
+
+/**
+ * daisy_widget_panel_add -- add a widget to panel
+ * @param panel -- reference panel
+ * @param widget -- widget to add
+ */
+extern void daisy_widget_panel_add (daisy_widget_panel_t *panel, daisy_widget_t *widget);
+
+/**
+ * daisy_widget_panel_destroy -- destroys a panel widget
+ * @param panel -- reference panel
+ */
+extern void daisy_widget_panel_destroy (daisy_widget_panel_t *panel);
+
+
 #endif

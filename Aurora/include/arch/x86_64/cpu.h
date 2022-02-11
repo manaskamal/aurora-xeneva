@@ -194,4 +194,5 @@ extern void  interrupt_initialize();
 extern void exception_init ();
 extern void hal_x86_64_setup_int ();
 extern void hal_x86_64_feature_check ();
+
 #endif

@@ -30,8 +30,8 @@ extern "C" void x64_sse_test ();
  ** Global initializers
  ** ============================================
  **/
-
-
+extern void debug_print (const char* text, ...);
+ 
 bool  scheduler_enable = false;
 mutex_t * block_mutex;   //currently unused
 mutex_t * scheduler_mutex;  //currently unused
@@ -138,7 +138,7 @@ thread_t* create_kthread (void (*entry) (void), uint64_t stack,uint64_t cr3, cha
 	//t->priority = priority;
 	t->fd_current = 0;
 	t->fx_state = (uint32_t*)pmmngr_alloc();
-	printf ("FX State addr-> %x\n", t->fx_state);
+	//printf ("FX State addr-> %x\n", t->fx_state);
 	thread_insert(t);
 	return t;
 }
@@ -262,7 +262,6 @@ end:
 void scheduler_isr (size_t v, void* param) {
 	x64_cli();
 	interrupt_stack_frame *frame = (interrupt_stack_frame*)param;
-
 	/* check for enable bit, if yes than proceed for 
 	   multitasking */
 	if (scheduler_enable == false)
@@ -328,6 +327,7 @@ void scheduler_start () {
 #ifdef USE_PIC
 	interrupt_set(0,scheduler_isr,0);
 #endif
+	x64_sti();
 	execute_idle(current_thread,get_kernel_tss());
 }
 

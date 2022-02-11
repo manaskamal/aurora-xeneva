@@ -6,6 +6,7 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 _BSS	SEGMENT
+apic_timer_count DD 01H DUP (?)
 x2apic	DB	01H DUP (?)
 	ALIGN	8
 
@@ -16,10 +17,11 @@ PUBLIC	?apic_local_eoi@@YAXXZ				; apic_local_eoi
 PUBLIC	?read_apic_register@@YA_KG@Z			; read_apic_register
 PUBLIC	?write_apic_register@@YAXG_K@Z			; write_apic_register
 PUBLIC	?initialize_cpu@@YAXI@Z				; initialize_cpu
+PUBLIC	?timer_sleep@@YAXI@Z				; timer_sleep
 PUBLIC	??$raw_offset@PECIPEAX@@YAPECIPEAXH@Z		; raw_offset<unsigned int volatile * __ptr64,void * __ptr64>
 PUBLIC	?x2apic_supported@@YA_NXZ			; x2apic_supported
-PUBLIC	?apic_timer_interrupt@@YAX_KPEAX@Z		; apic_timer_interrupt
 PUBLIC	?apic_spurious_interrupt@@YAX_KPEAX@Z		; apic_spurious_interrupt
+PUBLIC	?apic_timer_interrupt@@YAX_KPEAX@Z		; apic_timer_interrupt
 PUBLIC	?icr_dest@@YA_KI@Z				; icr_dest
 PUBLIC	?icr_busy@@YA_NXZ				; icr_busy
 EXTRN	x64_outportb:PROC
@@ -33,8 +35,8 @@ EXTRN	?pmmngr_alloc@@YAPEAXXZ:PROC			; pmmngr_alloc
 EXTRN	memcpy:PROC
 EXTRN	?get_ap_address@@YAPEAXXZ:PROC			; get_ap_address
 pdata	SEGMENT
-$pdata$?initialize_apic@@YAXXZ DD imagerel $LN7
-	DD	imagerel $LN7+321
+$pdata$?initialize_apic@@YAXXZ DD imagerel $LN4
+	DD	imagerel $LN4+269
 	DD	imagerel $unwind$?initialize_apic@@YAXXZ
 $pdata$?apic_local_eoi@@YAXXZ DD imagerel $LN3
 	DD	imagerel $LN3+20
@@ -48,6 +50,9 @@ $pdata$?write_apic_register@@YAXG_K@Z DD imagerel $LN6
 $pdata$?initialize_cpu@@YAXI@Z DD imagerel $LN10
 	DD	imagerel $LN10+184
 	DD	imagerel $unwind$?initialize_cpu@@YAXI@Z
+$pdata$?timer_sleep@@YAXI@Z DD imagerel $LN5
+	DD	imagerel $LN5+43
+	DD	imagerel $unwind$?timer_sleep@@YAXI@Z
 $pdata$?x2apic_supported@@YA_NXZ DD imagerel $LN5
 	DD	imagerel $LN5+92
 	DD	imagerel $unwind$?x2apic_supported@@YA_NXZ
@@ -55,18 +60,15 @@ $pdata$?io_wait@@YAXXZ DD imagerel ?io_wait@@YAXXZ
 	DD	imagerel ?io_wait@@YAXXZ+44
 	DD	imagerel $unwind$?io_wait@@YAXXZ
 $pdata$?apic_timer_interrupt@@YAX_KPEAX@Z DD imagerel $LN3
-	DD	imagerel $LN3+24
+	DD	imagerel $LN3+38
 	DD	imagerel $unwind$?apic_timer_interrupt@@YAX_KPEAX@Z
-$pdata$?disable_pic@@YAXXZ DD imagerel ?disable_pic@@YAXXZ
-	DD	imagerel ?disable_pic@@YAXXZ+198
-	DD	imagerel $unwind$?disable_pic@@YAXXZ
 $pdata$?icr_busy@@YA_NXZ DD imagerel $LN5
 	DD	imagerel $LN5+52
 	DD	imagerel $unwind$?icr_busy@@YA_NXZ
 pdata	ENDS
 xdata	SEGMENT
 $unwind$?initialize_apic@@YAXXZ DD 010401H
-	DD	0a204H
+	DD	08204H
 $unwind$?apic_local_eoi@@YAXXZ DD 010401H
 	DD	04204H
 $unwind$?read_apic_register@@YA_KG@Z DD 010901H
@@ -75,14 +77,14 @@ $unwind$?write_apic_register@@YAXG_K@Z DD 010e01H
 	DD	0a20eH
 $unwind$?initialize_cpu@@YAXI@Z DD 010801H
 	DD	08208H
+$unwind$?timer_sleep@@YAXI@Z DD 010801H
+	DD	02208H
 $unwind$?x2apic_supported@@YA_NXZ DD 010401H
 	DD	0c204H
 $unwind$?io_wait@@YAXXZ DD 010401H
 	DD	02204H
 $unwind$?apic_timer_interrupt@@YAX_KPEAX@Z DD 010e01H
 	DD	0420eH
-$unwind$?disable_pic@@YAXXZ DD 010401H
-	DD	04204H
 $unwind$?icr_busy@@YA_NXZ DD 010401H
 	DD	06204H
 xdata	ENDS
@@ -92,12 +94,12 @@ _TEXT	SEGMENT
 tv68 = 32
 ?icr_busy@@YA_NXZ PROC					; icr_busy
 
-; 215  : bool icr_busy () {
+; 195  : bool icr_busy () {
 
 $LN5:
 	sub	rsp, 56					; 00000038H
 
-; 216  : 	return (read_apic_register (LAPIC_REGISTER_ICR) & (1 << 12)) != 0;
+; 196  : 	return (read_apic_register (LAPIC_REGISTER_ICR) & (1 << 12)) != 0;
 
 	mov	cx, 48					; 00000030H
 	call	?read_apic_register@@YA_KG@Z		; read_apic_register
@@ -111,7 +113,7 @@ $LN3@icr_busy:
 $LN4@icr_busy:
 	movzx	eax, BYTE PTR tv68[rsp]
 
-; 217  : }
+; 197  : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -123,184 +125,38 @@ _TEXT	SEGMENT
 processor$ = 8
 ?icr_dest@@YA_KI@Z PROC					; icr_dest
 
-; 208  : uint64_t icr_dest (uint32_t processor ) {
+; 188  : uint64_t icr_dest (uint32_t processor ) {
 
 	mov	DWORD PTR [rsp+8], ecx
 
-; 209  : 	if (x2apic)
+; 189  : 	if (x2apic)
 
 	movzx	eax, BYTE PTR x2apic
 	test	eax, eax
 	je	SHORT $LN2@icr_dest
 
-; 210  : 		return ((uint64_t)processor << 32);
+; 190  : 		return ((uint64_t)processor << 32);
 
 	mov	eax, DWORD PTR processor$[rsp]
 	shl	rax, 32					; 00000020H
 	jmp	SHORT $LN3@icr_dest
 
-; 211  : 	else
+; 191  : 	else
 
 	jmp	SHORT $LN1@icr_dest
 $LN2@icr_dest:
 
-; 212  : 		return ((uint64_t)processor << 56);
+; 192  : 		return ((uint64_t)processor << 56);
 
 	mov	eax, DWORD PTR processor$[rsp]
 	shl	rax, 56					; 00000038H
 $LN1@icr_dest:
 $LN3@icr_dest:
 
-; 213  : }
+; 193  : }
 
 	fatret	0
 ?icr_dest@@YA_KI@Z ENDP					; icr_dest
-_TEXT	ENDS
-; Function compile flags: /Odtpy
-; File e:\xeneva project\xeneva\aurora\aurora\arch\x86_64\apic.cpp
-_TEXT	SEGMENT
-?disable_pic@@YAXXZ PROC				; disable_pic
-
-; 129  : {
-
-	sub	rsp, 40					; 00000028H
-
-; 130  : 	static const int offset1 = 0x20;
-; 131  : 	static const int offset2 = 0x28;
-; 132  : 	
-; 133  : 	x64_outportb(PIC1_COMMAND, ICW1_INIT | ICW1_ICW4);
-
-	mov	dl, 17
-	mov	cx, 32					; 00000020H
-	call	x64_outportb
-
-; 134  : 	io_wait();
-
-	call	?io_wait@@YAXXZ				; io_wait
-
-; 135  : 	x64_outportb(PIC2_COMMAND, ICW1_INIT | ICW1_ICW4);
-
-	mov	dl, 17
-	mov	cx, 160					; 000000a0H
-	call	x64_outportb
-
-; 136  : 	io_wait();
-
-	call	?io_wait@@YAXXZ				; io_wait
-
-; 137  : 	x64_outportb(PIC1_DATA, offset1);
-
-	mov	dl, 32					; 00000020H
-	mov	cx, 33					; 00000021H
-	call	x64_outportb
-
-; 138  : 	io_wait();
-
-	call	?io_wait@@YAXXZ				; io_wait
-
-; 139  : 	x64_outportb(PIC2_DATA, offset2);
-
-	mov	dl, 40					; 00000028H
-	mov	cx, 161					; 000000a1H
-	call	x64_outportb
-
-; 140  : 	io_wait();
-
-	call	?io_wait@@YAXXZ				; io_wait
-
-; 141  : 	x64_outportb(PIC1_DATA, 4);
-
-	mov	dl, 4
-	mov	cx, 33					; 00000021H
-	call	x64_outportb
-
-; 142  : 	io_wait();
-
-	call	?io_wait@@YAXXZ				; io_wait
-
-; 143  : 	x64_outportb(PIC2_DATA, 2);
-
-	mov	dl, 2
-	mov	cx, 161					; 000000a1H
-	call	x64_outportb
-
-; 144  : 	io_wait();
-
-	call	?io_wait@@YAXXZ				; io_wait
-
-; 145  : 
-; 146  : 	x64_outportb(PIC1_DATA, ICW4_8086);
-
-	mov	dl, 1
-	mov	cx, 33					; 00000021H
-	call	x64_outportb
-
-; 147  : 	io_wait();
-
-	call	?io_wait@@YAXXZ				; io_wait
-
-; 148  : 	x64_outportb(PIC2_DATA, ICW4_8086);
-
-	mov	dl, 1
-	mov	cx, 161					; 000000a1H
-	call	x64_outportb
-
-; 149  : 	io_wait();
-
-	call	?io_wait@@YAXXZ				; io_wait
-
-; 150  : 
-; 151  : 	x64_outportb(PIC1_DATA, 0xFF);
-
-	mov	dl, 255					; 000000ffH
-	mov	cx, 33					; 00000021H
-	call	x64_outportb
-
-; 152  : 	io_wait();
-
-	call	?io_wait@@YAXXZ				; io_wait
-
-; 153  : 	x64_outportb(PIC2_DATA, 0xFF);
-
-	mov	dl, 255					; 000000ffH
-	mov	cx, 161					; 000000a1H
-	call	x64_outportb
-
-; 154  : 	//! handle spurious interrupt
-; 155  : 	setvect(offset1 + 7, apic_spurious_interrupt);
-
-	lea	rdx, OFFSET FLAT:?apic_spurious_interrupt@@YAX_KPEAX@Z ; apic_spurious_interrupt
-	mov	ecx, 39					; 00000027H
-	call	?setvect@@YAX_KP6AX0PEAX@Z@Z		; setvect
-
-; 156  : 	setvect(offset2 + 7, apic_spurious_interrupt);
-
-	lea	rdx, OFFSET FLAT:?apic_spurious_interrupt@@YAX_KPEAX@Z ; apic_spurious_interrupt
-	mov	ecx, 47					; 0000002fH
-	call	?setvect@@YAX_KP6AX0PEAX@Z@Z		; setvect
-
-; 157  : }
-
-	add	rsp, 40					; 00000028H
-	ret	0
-?disable_pic@@YAXXZ ENDP				; disable_pic
-_TEXT	ENDS
-; Function compile flags: /Odtpy
-; File e:\xeneva project\xeneva\aurora\aurora\arch\x86_64\apic.cpp
-_TEXT	SEGMENT
-p$ = 8
-param$ = 16
-?apic_spurious_interrupt@@YAX_KPEAX@Z PROC		; apic_spurious_interrupt
-
-; 105  : void apic_spurious_interrupt (size_t p, void* param) {
-
-	mov	QWORD PTR [rsp+16], rdx
-	mov	QWORD PTR [rsp+8], rcx
-
-; 106  : }
-
-	ret	0
-?apic_spurious_interrupt@@YAX_KPEAX@Z ENDP		; apic_spurious_interrupt
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\arch\x86_64\apic.cpp
@@ -309,18 +165,24 @@ p$ = 48
 param$ = 56
 ?apic_timer_interrupt@@YAX_KPEAX@Z PROC			; apic_timer_interrupt
 
-; 100  : void  apic_timer_interrupt (size_t p, void* param) {
+; 128  : void  apic_timer_interrupt (size_t p, void* param) {
 
 $LN3:
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 40					; 00000028H
 
-; 101  : 	apic_local_eoi();
+; 129  : 	apic_timer_count++;
+
+	mov	eax, DWORD PTR apic_timer_count
+	inc	eax
+	mov	DWORD PTR apic_timer_count, eax
+
+; 130  : 	apic_local_eoi();
 
 	call	?apic_local_eoi@@YAXXZ			; apic_local_eoi
 
-; 102  : }
+; 131  : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -329,20 +191,37 @@ _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\arch\x86_64\apic.cpp
 _TEXT	SEGMENT
+p$ = 8
+param$ = 16
+?apic_spurious_interrupt@@YAX_KPEAX@Z PROC		; apic_spurious_interrupt
+
+; 102  : void apic_spurious_interrupt (size_t p, void* param) {
+
+	mov	QWORD PTR [rsp+16], rdx
+	mov	QWORD PTR [rsp+8], rcx
+
+; 103  : }
+
+	ret	0
+?apic_spurious_interrupt@@YAX_KPEAX@Z ENDP		; apic_spurious_interrupt
+_TEXT	ENDS
+; Function compile flags: /Odtpy
+; File e:\xeneva project\xeneva\aurora\aurora\arch\x86_64\apic.cpp
+_TEXT	SEGMENT
 counter$ = 0
 ?io_wait@@YAXXZ PROC					; io_wait
 
-; 93   : static void io_wait(){
+; 96   : static void io_wait(){
 
 	sub	rsp, 24
 
-; 94   : 	volatile size_t counter = 0;
+; 97   : 	volatile size_t counter = 0;
 
 	mov	QWORD PTR counter$[rsp], 0
 	jmp	SHORT $LN3@io_wait
 $LN2@io_wait:
 
-; 95   : 	for(; counter < 1000; ++counter);
+; 98   : 	for(; counter < 1000; ++counter);
 
 	mov	rax, QWORD PTR counter$[rsp]
 	inc	rax
@@ -354,7 +233,7 @@ $LN3@io_wait:
 	jmp	SHORT $LN2@io_wait
 $LN1@io_wait:
 
-; 96   : }
+; 99   : }
 
 	add	rsp, 24
 	ret	0
@@ -370,14 +249,14 @@ b$ = 72
 a$ = 80
 ?x2apic_supported@@YA_NXZ PROC				; x2apic_supported
 
-; 86   : bool x2apic_supported(){
+; 89   : bool x2apic_supported(){
 
 $LN5:
 	sub	rsp, 104				; 00000068H
 
-; 87   : 
-; 88   : 	size_t a, b, c, d;
-; 89   : 	x64_cpuid(0x1, &a, &b, &c, &d);
+; 90   : 
+; 91   : 	size_t a, b, c, d;
+; 92   : 	x64_cpuid(0x1, &a, &b, &c, &d);
 
 	mov	QWORD PTR [rsp+40], 0
 	lea	rax, QWORD PTR d$[rsp]
@@ -388,7 +267,7 @@ $LN5:
 	mov	ecx, 1
 	call	x64_cpuid
 
-; 90   : 	return (c & (1 << 21)) != 0;
+; 93   : 	return (c & (1 << 21)) != 0;
 
 	mov	rax, QWORD PTR c$[rsp]
 	and	rax, 2097152				; 00200000H
@@ -401,7 +280,7 @@ $LN3@x2apic_sup:
 $LN4@x2apic_sup:
 	movzx	eax, BYTE PTR tv72[rsp]
 
-; 91   : }
+; 94   : }
 
 	add	rsp, 104				; 00000068H
 	ret	0
@@ -435,6 +314,45 @@ _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\arch\x86_64\apic.cpp
 _TEXT	SEGMENT
+tick$ = 0
+ms$ = 32
+?timer_sleep@@YAXI@Z PROC				; timer_sleep
+
+; 181  : void timer_sleep(uint32_t ms) {
+
+$LN5:
+	mov	DWORD PTR [rsp+8], ecx
+	sub	rsp, 24
+
+; 182  : 	uint32_t tick = ms + apic_timer_count;
+
+	mov	eax, DWORD PTR apic_timer_count
+	mov	ecx, DWORD PTR ms$[rsp]
+	add	ecx, eax
+	mov	eax, ecx
+	mov	DWORD PTR tick$[rsp], eax
+$LN2@timer_slee:
+
+; 183  : 	while (tick > apic_timer_count)
+
+	mov	eax, DWORD PTR apic_timer_count
+	cmp	DWORD PTR tick$[rsp], eax
+	jbe	SHORT $LN1@timer_slee
+
+; 184  : 		;
+
+	jmp	SHORT $LN2@timer_slee
+$LN1@timer_slee:
+
+; 185  : }
+
+	add	rsp, 24
+	ret	0
+?timer_sleep@@YAXI@Z ENDP				; timer_sleep
+_TEXT	ENDS
+; Function compile flags: /Odtpy
+; File e:\xeneva project\xeneva\aurora\aurora\arch\x86_64\apic.cpp
+_TEXT	SEGMENT
 i$1 = 32
 address$ = 40
 ap_data$ = 48
@@ -442,32 +360,32 @@ startup_ipi$ = 56
 processor$ = 80
 ?initialize_cpu@@YAXI@Z PROC				; initialize_cpu
 
-; 221  : void initialize_cpu (uint32_t processor) {
+; 201  : void initialize_cpu (uint32_t processor) {
 
 $LN10:
 	mov	DWORD PTR [rsp+8], ecx
 	sub	rsp, 72					; 00000048H
 
-; 222  : 
-; 223  : 	uint64_t* address = (uint64_t*)pmmngr_alloc();
+; 202  : 
+; 203  : 	uint64_t* address = (uint64_t*)pmmngr_alloc();
 
 	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
 	mov	QWORD PTR address$[rsp], rax
 
-; 224  : 	void* ap_data = get_ap_address();
+; 204  : 	void* ap_data = get_ap_address();
 
 	call	?get_ap_address@@YAPEAXXZ		; get_ap_address
 	mov	QWORD PTR ap_data$[rsp], rax
 
-; 225  : 	memcpy (address, ap_data, 4096);
+; 205  : 	memcpy (address, ap_data, 4096);
 
 	mov	r8d, 4096				; 00001000H
 	mov	rdx, QWORD PTR ap_data$[rsp]
 	mov	rcx, QWORD PTR address$[rsp]
 	call	memcpy
 
-; 226  : 
-; 227  : 	write_apic_register (LAPIC_REGISTER_ICR, icr_dest(processor) | 0x4500);
+; 206  : 
+; 207  : 	write_apic_register (LAPIC_REGISTER_ICR, icr_dest(processor) | 0x4500);
 
 	mov	ecx, DWORD PTR processor$[rsp]
 	call	?icr_dest@@YA_KI@Z			; icr_dest
@@ -477,7 +395,7 @@ $LN10:
 	call	?write_apic_register@@YAXG_K@Z		; write_apic_register
 $LN7@initialize:
 
-; 228  : 	while (icr_busy());
+; 208  : 	while (icr_busy());
 
 	call	?icr_busy@@YA_NXZ			; icr_busy
 	movzx	eax, al
@@ -486,9 +404,9 @@ $LN7@initialize:
 	jmp	SHORT $LN7@initialize
 $LN6@initialize:
 
-; 229  : 
-; 230  : 	//!startup ipi
-; 231  : 	size_t startup_ipi = icr_dest (processor) | 0x4600 | ((size_t)address >> 12);
+; 209  : 
+; 210  : 	//!startup ipi
+; 211  : 	size_t startup_ipi = icr_dest (processor) | 0x4600 | ((size_t)address >> 12);
 
 	mov	ecx, DWORD PTR processor$[rsp]
 	call	?icr_dest@@YA_KI@Z			; icr_dest
@@ -498,14 +416,14 @@ $LN6@initialize:
 	or	rax, rcx
 	mov	QWORD PTR startup_ipi$[rsp], rax
 
-; 232  : 	write_apic_register (LAPIC_REGISTER_ICR, startup_ipi);
+; 212  : 	write_apic_register (LAPIC_REGISTER_ICR, startup_ipi);
 
 	mov	rdx, QWORD PTR startup_ipi$[rsp]
 	mov	cx, 48					; 00000030H
 	call	?write_apic_register@@YAXG_K@Z		; write_apic_register
 $LN5@initialize:
 
-; 233  : 	while (icr_busy());
+; 213  : 	while (icr_busy());
 
 	call	?icr_busy@@YA_NXZ			; icr_busy
 	movzx	eax, al
@@ -514,7 +432,7 @@ $LN5@initialize:
 	jmp	SHORT $LN5@initialize
 $LN4@initialize:
 
-; 234  : 	for (int i = 0; i < 100; i++)
+; 214  : 	for (int i = 0; i < 100; i++)
 
 	mov	DWORD PTR i$1[rsp], 0
 	jmp	SHORT $LN3@initialize
@@ -526,13 +444,13 @@ $LN3@initialize:
 	cmp	DWORD PTR i$1[rsp], 100			; 00000064H
 	jge	SHORT $LN1@initialize
 
-; 235  : 		;
+; 215  : 		;
 
 	jmp	SHORT $LN2@initialize
 $LN1@initialize:
 
-; 236  : 
-; 237  : }
+; 216  : 
+; 217  : }
 
 	add	rsp, 72					; 00000048H
 	ret	0
@@ -551,48 +469,48 @@ reg$ = 96
 value$ = 104
 ?write_apic_register@@YAXG_K@Z PROC			; write_apic_register
 
-; 54   : void write_apic_register(uint16_t reg, uint64_t value){
+; 57   : void write_apic_register(uint16_t reg, uint64_t value){
 
 $LN6:
 	mov	QWORD PTR [rsp+16], rdx
 	mov	WORD PTR [rsp+8], cx
 	sub	rsp, 88					; 00000058H
 
-; 55   : 
-; 56   : 	if (x2apic){
+; 58   : 
+; 59   : 	if (x2apic){
 
 	movzx	eax, BYTE PTR x2apic
 	test	eax, eax
 	je	SHORT $LN3@write_apic
 
-; 57   : 
-; 58   : 		size_t msr = IA32_X2APIC_REGISTER_BASE_MSR + reg;
+; 60   : 
+; 61   : 		size_t msr = IA32_X2APIC_REGISTER_BASE_MSR + reg;
 
 	movzx	eax, WORD PTR reg$[rsp]
 	add	eax, 2048				; 00000800H
 	cdqe
 	mov	QWORD PTR msr$3[rsp], rax
 
-; 59   : 		x64_write_msr(msr, value);
+; 62   : 		x64_write_msr(msr, value);
 
 	mov	rdx, QWORD PTR value$[rsp]
 	mov	rcx, QWORD PTR msr$3[rsp]
 	call	x64_write_msr
 
-; 60   : 	} else {
+; 63   : 	} else {
 
 	jmp	$LN2@write_apic
 $LN3@write_apic:
 
-; 61   : 
-; 62   : 		if (reg == LAPIC_REGISTER_ICR){
+; 64   : 
+; 65   : 		if (reg == LAPIC_REGISTER_ICR){
 
 	movzx	eax, WORD PTR reg$[rsp]
 	cmp	eax, 48					; 00000030H
 	jne	SHORT $LN1@write_apic
 
-; 63   : 
-; 64   : 			volatile uint32_t* reg_addr = raw_offset<volatile uint32_t*>(apic, reg << 4);
+; 66   : 
+; 67   : 			volatile uint32_t* reg_addr = raw_offset<volatile uint32_t*>(apic, reg << 4);
 
 	movzx	eax, WORD PTR reg$[rsp]
 	shl	eax, 4
@@ -601,7 +519,7 @@ $LN3@write_apic:
 	call	??$raw_offset@PECIPEAX@@YAPECIPEAXH@Z	; raw_offset<unsigned int volatile * __ptr64,void * __ptr64>
 	mov	QWORD PTR reg_addr$5[rsp], rax
 
-; 65   : 			volatile uint32_t* reg_next_addr = raw_offset<volatile uint32_t*>(apic, (reg + 1) << 4);
+; 68   : 			volatile uint32_t* reg_next_addr = raw_offset<volatile uint32_t*>(apic, (reg + 1) << 4);
 
 	movzx	eax, WORD PTR reg$[rsp]
 	inc	eax
@@ -611,7 +529,7 @@ $LN3@write_apic:
 	call	??$raw_offset@PECIPEAX@@YAPECIPEAXH@Z	; raw_offset<unsigned int volatile * __ptr64,void * __ptr64>
 	mov	QWORD PTR reg_next_addr$4[rsp], rax
 
-; 66   : 			uint32_t low_part = value & UINT32_MAX;
+; 69   : 			uint32_t low_part = value & UINT32_MAX;
 
 	mov	eax, -1					; ffffffffH
 	mov	rcx, QWORD PTR value$[rsp]
@@ -619,31 +537,31 @@ $LN3@write_apic:
 	mov	rax, rcx
 	mov	DWORD PTR low_part$2[rsp], eax
 
-; 67   : 			uint32_t high_part = (value >> 32);
+; 70   : 			uint32_t high_part = (value >> 32);
 
 	mov	rax, QWORD PTR value$[rsp]
 	shr	rax, 32					; 00000020H
 	mov	DWORD PTR high_part$1[rsp], eax
 
-; 68   : 			*reg_next_addr = high_part;
+; 71   : 			*reg_next_addr = high_part;
 
 	mov	rax, QWORD PTR reg_next_addr$4[rsp]
 	mov	ecx, DWORD PTR high_part$1[rsp]
 	mov	DWORD PTR [rax], ecx
 
-; 69   : 			x64_mfence();
+; 72   : 			x64_mfence();
 
 	call	x64_mfence
 
-; 70   : 			*reg_addr = low_part;
+; 73   : 			*reg_addr = low_part;
 
 	mov	rax, QWORD PTR reg_addr$5[rsp]
 	mov	ecx, DWORD PTR low_part$2[rsp]
 	mov	DWORD PTR [rax], ecx
 $LN1@write_apic:
 
-; 71   : 		}
-; 72   : 		volatile uint32_t* reg_addr = raw_offset<volatile uint32_t*>(apic, reg << 4);
+; 74   : 		}
+; 75   : 		volatile uint32_t* reg_addr = raw_offset<volatile uint32_t*>(apic, reg << 4);
 
 	movzx	eax, WORD PTR reg$[rsp]
 	shl	eax, 4
@@ -652,15 +570,15 @@ $LN1@write_apic:
 	call	??$raw_offset@PECIPEAX@@YAPECIPEAXH@Z	; raw_offset<unsigned int volatile * __ptr64,void * __ptr64>
 	mov	QWORD PTR reg_addr$6[rsp], rax
 
-; 73   : 		*reg_addr = value;
+; 76   : 		*reg_addr = value;
 
 	mov	rax, QWORD PTR reg_addr$6[rsp]
 	mov	ecx, DWORD PTR value$[rsp]
 	mov	DWORD PTR [rax], ecx
 $LN2@write_apic:
 
-; 74   : 	}
-; 75   : }
+; 77   : 	}
+; 78   : }
 
 	add	rsp, 88					; 00000058H
 	ret	0
@@ -676,45 +594,45 @@ reg_addr$4 = 56
 reg$ = 80
 ?read_apic_register@@YA_KG@Z PROC			; read_apic_register
 
-; 35   : uint64_t read_apic_register(uint16_t reg){
+; 38   : uint64_t read_apic_register(uint16_t reg){
 
 $LN6:
 	mov	WORD PTR [rsp+8], cx
 	sub	rsp, 72					; 00000048H
 
-; 36   : 
-; 37   : 	if (x2apic){
+; 39   : 
+; 40   : 	if (x2apic){
 
 	movzx	eax, BYTE PTR x2apic
 	test	eax, eax
 	je	SHORT $LN3@read_apic_
 
-; 38   : 		size_t msr = IA32_X2APIC_REGISTER_BASE_MSR + reg;
+; 41   : 		size_t msr = IA32_X2APIC_REGISTER_BASE_MSR + reg;
 
 	movzx	eax, WORD PTR reg$[rsp]
 	add	eax, 2048				; 00000800H
 	cdqe
 	mov	QWORD PTR msr$1[rsp], rax
 
-; 39   : 		return x64_read_msr(msr);
+; 42   : 		return x64_read_msr(msr);
 
 	mov	rcx, QWORD PTR msr$1[rsp]
 	call	x64_read_msr
 	jmp	$LN4@read_apic_
 
-; 40   : 	} else{
+; 43   : 	} else{
 
 	jmp	$LN2@read_apic_
 $LN3@read_apic_:
 
-; 41   : 
-; 42   : 		if (reg == LAPIC_REGISTER_ICR){
+; 44   : 
+; 45   : 		if (reg == LAPIC_REGISTER_ICR){
 
 	movzx	eax, WORD PTR reg$[rsp]
 	cmp	eax, 48					; 00000030H
 	jne	SHORT $LN1@read_apic_
 
-; 43   : 			volatile uint32_t* reg_addr = raw_offset<volatile uint32_t*>(apic, reg << 4);
+; 46   : 			volatile uint32_t* reg_addr = raw_offset<volatile uint32_t*>(apic, reg << 4);
 
 	movzx	eax, WORD PTR reg$[rsp]
 	shl	eax, 4
@@ -723,7 +641,7 @@ $LN3@read_apic_:
 	call	??$raw_offset@PECIPEAX@@YAPECIPEAXH@Z	; raw_offset<unsigned int volatile * __ptr64,void * __ptr64>
 	mov	QWORD PTR reg_addr$2[rsp], rax
 
-; 44   : 			volatile uint32_t* reg_next_addr = raw_offset<volatile uint32_t*>(apic, (reg+1) << 4);
+; 47   : 			volatile uint32_t* reg_next_addr = raw_offset<volatile uint32_t*>(apic, (reg+1) << 4);
 
 	movzx	eax, WORD PTR reg$[rsp]
 	inc	eax
@@ -733,7 +651,7 @@ $LN3@read_apic_:
 	call	??$raw_offset@PECIPEAX@@YAPECIPEAXH@Z	; raw_offset<unsigned int volatile * __ptr64,void * __ptr64>
 	mov	QWORD PTR reg_next_addr$3[rsp], rax
 
-; 45   : 			return *reg_addr | ((uint64_t)*reg_next_addr << 32);
+; 48   : 			return *reg_addr | ((uint64_t)*reg_next_addr << 32);
 
 	mov	rax, QWORD PTR reg_addr$2[rsp]
 	mov	eax, DWORD PTR [rax]
@@ -746,8 +664,8 @@ $LN3@read_apic_:
 	jmp	SHORT $LN4@read_apic_
 $LN1@read_apic_:
 
-; 46   : 		}
-; 47   : 		volatile uint32_t* reg_addr = raw_offset<volatile uint32_t*>(apic, reg << 4);
+; 49   : 		}
+; 50   : 		volatile uint32_t* reg_addr = raw_offset<volatile uint32_t*>(apic, reg << 4);
 
 	movzx	eax, WORD PTR reg$[rsp]
 	shl	eax, 4
@@ -756,7 +674,7 @@ $LN1@read_apic_:
 	call	??$raw_offset@PECIPEAX@@YAPECIPEAXH@Z	; raw_offset<unsigned int volatile * __ptr64,void * __ptr64>
 	mov	QWORD PTR reg_addr$4[rsp], rax
 
-; 48   : 		return *reg_addr;
+; 51   : 		return *reg_addr;
 
 	mov	rax, QWORD PTR reg_addr$4[rsp]
 	mov	eax, DWORD PTR [rax]
@@ -764,8 +682,8 @@ $LN1@read_apic_:
 $LN2@read_apic_:
 $LN4@read_apic_:
 
-; 49   : 	}
-; 50   : }
+; 52   : 	}
+; 53   : }
 
 	add	rsp, 72					; 00000048H
 	ret	0
@@ -776,19 +694,19 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 ?apic_local_eoi@@YAXXZ PROC				; apic_local_eoi
 
-; 79   : extern void apic_local_eoi(){
+; 82   : extern void apic_local_eoi(){
 
 $LN3:
 	sub	rsp, 40					; 00000028H
 
-; 80   : 
-; 81   : 	write_apic_register(LAPIC_REGISTER_EOI, 0);
+; 83   : 
+; 84   : 	write_apic_register(LAPIC_REGISTER_EOI, 0);
 
 	xor	edx, edx
 	mov	cx, 11
 	call	?write_apic_register@@YAXG_K@Z		; write_apic_register
 
-; 82   : }
+; 85   : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -797,80 +715,72 @@ _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\arch\x86_64\apic.cpp
 _TEXT	SEGMENT
-n$1 = 32
-apic_base$ = 40
-timer_vector$ = 48
-timer_reg$ = 56
-ioapic_base$ = 64
+apic_base$ = 32
+timer_vector$ = 40
+timer_reg$ = 48
 ?initialize_apic@@YAXXZ PROC				; initialize_apic
 
-; 160  : void initialize_apic () {
+; 136  : void initialize_apic () {
 
-$LN7:
-	sub	rsp, 88					; 00000058H
+$LN4:
+	sub	rsp, 72					; 00000048H
 
-; 161  : 
-; 162  : 	//! Clear interrupts
-; 163  : 	disable_pic();
-
-	call	?disable_pic@@YAXXZ			; disable_pic
-
-; 164  : 
-; 165  : 	size_t apic_base;
-; 166  : 	apic_base = (size_t)0xFEE00000;
+; 137  : 
+; 138  : 	size_t apic_base;
+; 139  : 	apic_base = (size_t)0xFEE00000;
 
 	mov	eax, -18874368				; fee00000H
 	mov	QWORD PTR apic_base$[rsp], rax
 
-; 167  : 
-; 168  : 	//map_page (0xFEE00000, 0xFEE00000,0);
-; 169  : 
-; 170  : 	apic = (void*)apic_base;
+; 140  : 
+; 141  : 	//map_page (0xFEE00000, 0xFEE00000,0);
+; 142  : 
+; 143  : 	apic = (void*)apic_base;
 
 	mov	rax, QWORD PTR apic_base$[rsp]
 	mov	QWORD PTR apic, rax
 
-; 171  : 
-; 172  : 	if (x2apic_supported() ) {
+; 144  : 
+; 145  : 	if (x2apic_supported() ) {
 
 	call	?x2apic_supported@@YA_NXZ		; x2apic_supported
 	movzx	eax, al
 	test	eax, eax
-	je	SHORT $LN4@initialize
+	je	SHORT $LN1@initialize
 
-; 173  : 		x2apic = true;
+; 146  : 		x2apic = true;
 
 	mov	BYTE PTR x2apic, 1
 
-; 174  : 		apic_base |= IA32_APIC_BASE_MSR_X2APIC;
+; 147  : 		apic_base |= IA32_APIC_BASE_MSR_X2APIC;
 
 	mov	rax, QWORD PTR apic_base$[rsp]
 	bts	rax, 10
 	mov	QWORD PTR apic_base$[rsp], rax
-$LN4@initialize:
+$LN1@initialize:
 
-; 175  : 	}
-; 176  : 
-; 177  : 	apic_base |= IA32_APIC_BASE_MSR_ENABLE;
+; 148  : 	}
+; 149  : 
+; 150  : 	apic_base |= IA32_APIC_BASE_MSR_ENABLE;
 
 	mov	rax, QWORD PTR apic_base$[rsp]
 	bts	rax, 11
 	mov	QWORD PTR apic_base$[rsp], rax
 
-; 178  : 	x64_write_msr (IA32_APIC_BASE_MSR, apic_base);
+; 151  : 	x64_write_msr (IA32_APIC_BASE_MSR, apic_base);
 
 	mov	rdx, QWORD PTR apic_base$[rsp]
 	mov	ecx, 27
 	call	x64_write_msr
 
-; 179  : 	setvect (0xFF, &apic_spurious_interrupt);
+; 152  : 	setvect (0xFF, apic_spurious_interrupt);
 
 	lea	rdx, OFFSET FLAT:?apic_spurious_interrupt@@YAX_KPEAX@Z ; apic_spurious_interrupt
 	mov	ecx, 255				; 000000ffH
 	call	?setvect@@YAX_KP6AX0PEAX@Z@Z		; setvect
 
-; 180  : 	write_apic_register (LAPIC_REGISTER_SVR, read_apic_register (LAPIC_REGISTER_SVR) | 
-; 181  : 		                                     IA32_APIC_SVR_ENABLE | 0xFF);
+; 153  : 	write_apic_register (LAPIC_REGISTER_SVR, read_apic_register (LAPIC_REGISTER_SVR) | 
+; 154  : 		                                     IA32_APIC_SVR_ENABLE | 0xFF);
 
 	mov	cx, 15
 	call	?read_apic_register@@YA_KG@Z		; read_apic_register
@@ -880,97 +790,80 @@ $LN4@initialize:
 	mov	cx, 15
 	call	?write_apic_register@@YAXG_K@Z		; write_apic_register
 
-; 182  : 
-; 183  : 	for (unsigned n = 0; n < LAPIC_REGISTER_LVT_ERROR - LAPIC_REGISTER_LVT_TIMER; ++n) {
-
-	mov	DWORD PTR n$1[rsp], 0
-	jmp	SHORT $LN3@initialize
-$LN2@initialize:
-	mov	eax, DWORD PTR n$1[rsp]
-	inc	eax
-	mov	DWORD PTR n$1[rsp], eax
-$LN3@initialize:
-	cmp	DWORD PTR n$1[rsp], 5
-	jae	SHORT $LN1@initialize
-
-; 184  : 		write_apic_register (LAPIC_REGISTER_LVT_TIMER + n, read_apic_register (LAPIC_REGISTER_LVT_TIMER + n) | IA32_APIC_LVT_MASK);
-
-	mov	eax, DWORD PTR n$1[rsp]
-	add	eax, 50					; 00000032H
-	movzx	ecx, ax
-	call	?read_apic_register@@YA_KG@Z		; read_apic_register
-	bts	rax, 16
-	mov	ecx, DWORD PTR n$1[rsp]
-	add	ecx, 50					; 00000032H
-	mov	rdx, rax
-	call	?write_apic_register@@YAXG_K@Z		; write_apic_register
-
-; 185  : 	}
-
-	jmp	SHORT $LN2@initialize
-$LN1@initialize:
-
-; 186  : 
-; 187  : 	//!Register the time speed
-; 188  : 	write_apic_register (LAPIC_REGISTER_TMRDIV, 0xa);
+; 155  : 
+; 156  : 
+; 157  : 	//!Register the time speed
+; 158  : 	write_apic_register (LAPIC_REGISTER_TMRDIV, 0xa);  //0xa
 
 	mov	edx, 10
 	mov	cx, 62					; 0000003eH
 	call	?write_apic_register@@YAXG_K@Z		; write_apic_register
 
-; 189  : 
-; 190  : 	/*! timer initialized*/
-; 191  : 	size_t timer_vector = 0x40;
+; 159  : 
+; 160  : 	/*! timer initialized*/
+; 161  : 	size_t timer_vector = 0x40;
 
 	mov	QWORD PTR timer_vector$[rsp], 64	; 00000040H
 
-; 192  : 	setvect (timer_vector, apic_timer_interrupt);
+; 162  : 	setvect (timer_vector, apic_timer_interrupt);
 
 	lea	rdx, OFFSET FLAT:?apic_timer_interrupt@@YAX_KPEAX@Z ; apic_timer_interrupt
 	mov	rcx, QWORD PTR timer_vector$[rsp]
 	call	?setvect@@YAX_KP6AX0PEAX@Z@Z		; setvect
 
-; 193  : 
-; 194  : 	size_t timer_reg = (1 << 17) | timer_vector;
+; 163  : 
+; 164  : 	size_t timer_reg = (1 << 17) | timer_vector;
 
 	mov	rax, QWORD PTR timer_vector$[rsp]
 	bts	rax, 17
 	mov	QWORD PTR timer_reg$[rsp], rax
 
-; 195  : 	write_apic_register (LAPIC_REGISTER_LVT_TIMER, timer_reg);
+; 165  : 	write_apic_register (LAPIC_REGISTER_LVT_TIMER, timer_reg);
 
 	mov	rdx, QWORD PTR timer_reg$[rsp]
 	mov	cx, 50					; 00000032H
 	call	?write_apic_register@@YAXG_K@Z		; write_apic_register
 
-; 196  : 	io_wait ();
+; 166  : 	io_wait ();
 
 	call	?io_wait@@YAXXZ				; io_wait
 
-; 197  : 	write_apic_register (LAPIC_REGISTER_TMRINITCNT, 0x1000);
+; 167  : 	write_apic_register (LAPIC_REGISTER_TMRINITCNT,78);  //100
 
-	mov	edx, 4096				; 00001000H
+	mov	edx, 78					; 0000004eH
 	mov	cx, 56					; 00000038H
 	call	?write_apic_register@@YAXG_K@Z		; write_apic_register
 
-; 198  : 
-; 199  : 
-; 200  : 	//! Finally Intialize I/O APIC
-; 201  : 	size_t ioapic_base = (size_t)0xFEC00000;
+; 168  : 	
+; 169  : 
+; 170  : 	x64_outportb(PIC1_DATA, 0xFF);
 
-	mov	eax, -20971520				; fec00000H
-	mov	QWORD PTR ioapic_base$[rsp], rax
+	mov	dl, 255					; 000000ffH
+	mov	cx, 33					; 00000021H
+	call	x64_outportb
 
-; 202  : 	//map_page (ioapic_base,ioapic_base,0);
-; 203  : 	ioapic_init (&ioapic_base);
+; 171  : 	io_wait();
 
-	lea	rcx, QWORD PTR ioapic_base$[rsp]
+	call	?io_wait@@YAXXZ				; io_wait
+
+; 172  : 	x64_outportb(PIC2_DATA, 0xFF);
+
+	mov	dl, 255					; 000000ffH
+	mov	cx, 161					; 000000a1H
+	call	x64_outportb
+
+; 173  : 
+; 174  : 	//! Finally Intialize I/O APIC
+; 175  : 	//map_page (ioapic_base,ioapic_base,0);
+; 176  : 	ioapic_init ((void*)0xfec00000);
+
+	mov	ecx, -20971520				; fffffffffec00000H
 	call	?ioapic_init@@YAXPEAX@Z			; ioapic_init
 
-; 204  : 
-; 205  : }
+; 177  : 
+; 178  : }
 
-	add	rsp, 88					; 00000058H
+	add	rsp, 72					; 00000048H
 	ret	0
 ?initialize_apic@@YAXXZ ENDP				; initialize_apic
 _TEXT	ENDS

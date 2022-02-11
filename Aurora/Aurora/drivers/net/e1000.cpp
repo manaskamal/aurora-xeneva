@@ -110,10 +110,11 @@ void e1000_interrupt_handler (size_t v, void* p) {
 
 	//e1000_write_command (REG_IMASK, 0x1);
 	if (icr & E1000_ICR_RECEIVE) {
-		printf ("E1000 recevied\n");
+		
 		uint32_t head = inportd (REG_RXDESCHEAD);
 
 		while (i_net_dev->rx_tail != head){
+			printf ("E1000 recevied\n");
 			size_t size = i_net_dev->rx_desc[i_net_dev->rx_tail]->length;
 			uint8_t status = i_net_dev->rx_desc[i_net_dev->rx_tail]->status;
 
@@ -135,13 +136,15 @@ void e1000_interrupt_handler (size_t v, void* p) {
 			e1000_write_command (REG_RXDESCTAIL, i_net_dev->rx_tail);
 		}
 
-	} else if (icr & E1000_ICR_TRANSMIT) {
+	}else if (icr & E1000_ICR_TRANSMIT) {
 		printf ("E1000 interrupt data transmit\n");
 	} else if (icr & E1000_ICR_LINK_CHANGE) {
-		printf ("E1000 interrupt link change %s\n", (e1000_read_command(REG_STATUS) & STATUS_LINK_UP) ? "up" : "down");
+		printf ("E1000 interrupt link change %s\n", (e1000_read_command(REG_STATUS) & (1<<1)) ? "up" : "down");
 	} else {
 		printf ("E1000 unknown interrupt\n");
 	}
+
+	e1000_write_command (REG_ICR, 1);
 	interrupt_end(i_net_dev->e1000_irq);
 	x64_sti();
 }
@@ -150,22 +153,25 @@ void e1000_interrupt_handler (size_t v, void* p) {
 void e1000_rx_init () {
 
 	i_net_dev->rx_desc_base = (uint64_t*)pmmngr_alloc();
+	memset (i_net_dev->rx_desc_base, 0, 4096);
 	uint64_t rx_desc_base = (uint64_t)i_net_dev->rx_desc_base;
 	uint64_t *buffer_allocation = (uint64_t*)pmmngr_alloc_blocks(16);
 
 	for (int i = 0; i < E1000_NUM_RX_DESC; i++) {
 		i_net_dev->rx_desc[i] = (e1000_rx_desc*)(i_net_dev->rx_desc_base + (i * 16));
-		i_net_dev->rx_desc[i]->addr = (uint64_t)(buffer_allocation + i * 2048);;   
+		i_net_dev->rx_desc[i]->addr = (uint64_t)(buffer_allocation + i * 2048);   
 		i_net_dev->rx_desc[i]->status = 0;
 	}
 
-	e1000_write_command (REG_RXDESCKHI, rx_desc_base >> 32);
-	e1000_write_command (REG_RXDESCLO, rx_desc_base & UINT32_MAX);
 
-	e1000_write_command (REG_RXDESCLEN, E1000_NUM_RX_DESC * sizeof(e1000_rx_desc));
+
+	e1000_write_command (REG_RXDESCLEN, E1000_NUM_RX_DESC * 16);
 
 	e1000_write_command(REG_RXDESCHEAD, 0);
 	e1000_write_command(REG_RXDESCTAIL, E1000_NUM_RX_DESC - 1);
+
+	e1000_write_command (REG_RXDESCKHI, rx_desc_base >> 32);
+	e1000_write_command (REG_RXDESCLO, rx_desc_base & UINT32_MAX);
 	
 	i_net_dev->rx_tail = 0;
 
@@ -184,7 +190,7 @@ void e1000_tx_init () {
 		i_net_dev->tx_desc[i]->cmd = (1<<0);
 	}
 	e1000_write_command (REG_TXDESCHI, base_address >> 32);
-	e1000_write_command (REG_TXDESCLO, base_address & UINT32_MAX);
+	e1000_write_command (REG_TXDESCLO, base_address);
 
 	e1000_write_command (REG_TXDESCLEN, E1000_NUM_TX_DESC * 16);
 
@@ -194,7 +200,7 @@ void e1000_tx_init () {
 
 	uint32_t tctl = e1000_read_command (REG_TCTRL);
 	tctl &= ~(0xFF << 4);
-	tctl |= (15<<4);
+	//tctl |= (15<<4);
 
 	tctl |= TCTL_EN;
 	tctl |= TCTL_PSP;
@@ -210,7 +216,6 @@ void e1000_setup_interrupt () {
 }
 
 void e1000_send_packet (void* data, size_t size) {
-	x64_cli();
 	uint32_t cur, head;
 	
 	cur = e1000_read_command (REG_TXDESCTAIL) % E1000_NUM_TX_DESC; //i_net_dev->tx_tail;
@@ -230,13 +235,11 @@ void e1000_send_packet (void* data, size_t size) {
 
 	
 
-	i_net_dev->tx_desc[cur]->cmd = CMD_EOP | CMD_IFCS | CMD_RS | CMD_RPS | CMD_IDE;
+	i_net_dev->tx_desc[cur]->cmd = CMD_EOP | CMD_IFCS | CMD_RS; // | CMD_RPS | CMD_IDE;
 	i_net_dev->tx_desc[cur]->length = size;
-	i_net_dev->tx_desc[cur]->addr = (uint64_t)pmmngr_alloc(); //(i_net_dev->tx_desc_base + (cur * 2048));
-	e1000_write_command(REG_TXDESCTAIL, i_net_dev->tx_tail);
 	memcpy ((void*)i_net_dev->tx_desc[cur]->addr, data, size);
+	e1000_write_command(REG_TXDESCTAIL, i_net_dev->tx_tail);
 	printf ("TX Next tail -> %d\n", e1000_read_command (REG_TXDESCTAIL) % E1000_NUM_TX_DESC);
-	x64_sti();
 	for(;;) {
 		if (i_net_dev->tx_desc[cur]->status) {
 			printf ("Transmit status ->%x\n", i_net_dev->tx_desc[cur]->status);
@@ -339,7 +342,7 @@ void e1000_initialize () {
 		}
 	}
 
-	
+	pci_enable_bus_master (bus,dev_,func);
 
 	
 	e1000_write_command (REG_RCTRL, 0);
