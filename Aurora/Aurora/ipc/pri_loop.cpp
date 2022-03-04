@@ -33,18 +33,21 @@
 #include <ipc\pri_loop.h>
 #include <arch\x86_64\mmngr\kheap.h>
 #include <arch\x86_64\thread.h>
+#include <serial.h>
 #include <fs\vfs.h>
 
 pri_loop_box_t *first_loop = NULL;
 pri_loop_box_t *last_loop = NULL;
-
 /**
  * pri_loop_create -- create a new pri_loop_box 
  */
 void pri_loop_create () {
 	pri_loop_box_t *loop = (pri_loop_box_t*)malloc(sizeof(pri_loop_box_t));
-	loop->address = pmmngr_alloc();
+	loop->address = malloc(sizeof(pri_event_t));//pmmngr_alloc();
+	memset(loop->address,0, sizeof(pri_event_t));
 	loop->owner_id = get_current_thread()->id;
+	loop->pending_msg_count = 0;
+	loop->message_pending = 0;
 	loop->next = NULL;
 	loop->prev = NULL;
 
@@ -77,7 +80,7 @@ void pri_loop_destroy (pri_loop_box_t *box) {
 	} else {
 		box->next->prev = box->prev;
 	}
-	pmmngr_free(box);
+	free(box); //pmmngr_free(box);
 }
 
 /** 
@@ -86,24 +89,30 @@ void pri_loop_destroy (pri_loop_box_t *box) {
  */
 void pri_put_message (pri_event_t *event) {
 	x64_cli();
-
+	bool hunged = false;
 	uint16_t owner_id = event->to_id;
 	for (pri_loop_box_t *loop = first_loop; loop != NULL; loop = loop->next) {
 		if (loop->owner_id == owner_id) {
+			if (loop->pending_msg_count > 2) {
+				hunged = true;
+				break;
+			}
 			memcpy (loop->address, event, sizeof(pri_event_t));
 			loop->message_pending = 1;
+			loop->pending_msg_count++;
 			break;
 		}
 	}
 
 	//! check if the destination thread is blocked or not
 	//! if blocked, wake it up, cause new message is pending
-	thread_t *thread = thread_iterate_ready_list(owner_id);
+	thread_t *thread = thread_iterate_ready_list(owner_id);	
 	if (thread == NULL) 
 		thread = thread_iterate_block_list(owner_id);
-	if (thread != NULL && thread->state == THREAD_STATE_BLOCKED)
+	if (thread != NULL && thread->state == THREAD_STATE_BLOCKED) {
 		unblock_thread(thread);
-
+	}
+ret:
 	return;
 }
 
@@ -119,7 +128,11 @@ void pri_get_message (pri_event_t *event) {
 		if (loop->owner_id == owner_id) {
 			if (loop->message_pending){
 				memcpy (event,loop->address, sizeof(pri_event_t));
-				loop->message_pending = false;
+				memset (loop->address, 0, sizeof(pri_event_t));
+				loop->pending_msg_count--;
+				if (loop->pending_msg_count == 0) {
+					loop->message_pending = false;
+				}
 			} 
 			break;
 		}

@@ -12,19 +12,19 @@ _BSS	SEGMENT
 ?dev_entry@@3PEAU_vfs_entry_@@EA DQ 01H DUP (?)		; dev_entry
 _BSS	ENDS
 CONST	SEGMENT
-$SG3286	DB	'dev', 00H
-$SG3305	DB	'dev', 00H
-$SG3322	DB	'dev', 00H
-$SG3331	DB	'dev', 00H
-$SG3335	DB	'[VFS]: /dev directory is already present', 00H
+$SG3294	DB	'dev', 00H
+$SG3313	DB	'dev', 00H
+$SG3330	DB	'dev', 00H
+$SG3339	DB	'dev', 00H
+$SG3343	DB	'[VFS]: /dev directory is already present', 00H
 	ORG $+3
-$SG3355	DB	'dev', 00H
-$SG3360	DB	'[VFS]: %s is already mounted in /dev directory', 0aH, 00H
-$SG3377	DB	'[VFS]: Mounting filesystem to root failed, already in us'
+$SG3363	DB	'dev', 00H
+$SG3368	DB	'[VFS]: %s is already mounted in /dev directory', 0aH, 00H
+$SG3385	DB	'[VFS]: Mounting filesystem to root failed, already in us'
 	DB	'e', 0aH, 00H
 	ORG $+1
-$SG3394	DB	'dev', 00H
-$SG3402	DB	'Already mounted, with name %s', 0aH, 00H
+$SG3402	DB	'dev', 00H
+$SG3410	DB	'Already mounted, with name %s', 0aH, 00H
 CONST	ENDS
 PUBLIC	?vfs_init@@YAXXZ				; vfs_init
 PUBLIC	?vfs_finddir@@YAPEAU_vfs_node_@@PEAD@Z		; vfs_finddir
@@ -139,7 +139,7 @@ $LN24:
 ; 171  : 	
 ; 172  : 	if (strcmp(p, "dev") && strlen(path) == 5) {
 
-	lea	rdx, OFFSET FLAT:$SG3331
+	lea	rdx, OFFSET FLAT:$SG3339
 	mov	rcx, QWORD PTR p$[rsp]
 	call	?strcmp@@YAHPEBD0@Z			; strcmp
 	test	eax, eax
@@ -162,7 +162,7 @@ $LN24:
 
 ; 175  : 			printf ("[VFS]: /dev directory is already present");
 
-	lea	rcx, OFFSET FLAT:$SG3335
+	lea	rcx, OFFSET FLAT:$SG3343
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 176  : 			return;   //Already a root filesystem is present
@@ -298,7 +298,7 @@ $LN11@vfs_add_de:
 ; 205  : 			//!is this last value in the path && pathname is not "dev"?
 ; 206  : 			if (!(strcmp (pathname, "dev") == 0)){
 
-	lea	rdx, OFFSET FLAT:$SG3355
+	lea	rdx, OFFSET FLAT:$SG3363
 	lea	rcx, QWORD PTR pathname$4[rsp]
 	call	?strcmp@@YAHPEBD0@Z			; strcmp
 	test	eax, eax
@@ -376,7 +376,7 @@ $LN17@vfs_add_de:
 	mov	rax, QWORD PTR ent$[rsp]
 	mov	rax, QWORD PTR [rax]
 	mov	rdx, rax
-	lea	rcx, OFFSET FLAT:$SG3360
+	lea	rcx, OFFSET FLAT:$SG3368
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 222  : 			return;
@@ -549,7 +549,7 @@ $LN19@devfs_get_:
 ; 90   : 
 ; 91   : 	if (strcmp(pathname, "dev") && strlen(path) == 5) {
 
-	lea	rdx, OFFSET FLAT:$SG3286
+	lea	rdx, OFFSET FLAT:$SG3294
 	lea	rcx, QWORD PTR pathname$[rsp]
 	call	?strcmp@@YAHPEBD0@Z			; strcmp
 	test	eax, eax
@@ -671,7 +671,7 @@ $LN7@devfs_get_:
 
 ; 114  : 			if (!(strcmp(pathname, "dev")==0)){
 
-	lea	rdx, OFFSET FLAT:$SG3305
+	lea	rdx, OFFSET FLAT:$SG3313
 	lea	rcx, QWORD PTR pathname$2[rsp]
 	call	?strcmp@@YAHPEBD0@Z			; strcmp
 	test	eax, eax
@@ -1026,7 +1026,7 @@ $LN24:
 
 ; 246  : 			printf ("[VFS]: Mounting filesystem to root failed, already in use\n");
 
-	lea	rcx, OFFSET FLAT:$SG3377
+	lea	rcx, OFFSET FLAT:$SG3385
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 247  : 			return;   //Already a root filesystem is present
@@ -1143,7 +1143,7 @@ $LN14@vfs_mount:
 ; 272  : 
 ; 273  : 		if (strcmp(pathname, "dev") == 0) {
 
-	lea	rdx, OFFSET FLAT:$SG3394
+	lea	rdx, OFFSET FLAT:$SG3402
 	lea	rcx, QWORD PTR pathname$4[rsp]
 	call	?strcmp@@YAHPEBD0@Z			; strcmp
 	test	eax, eax
@@ -1257,7 +1257,7 @@ $LN17@vfs_mount:
 	mov	rax, QWORD PTR ent$[rsp]
 	mov	rax, QWORD PTR [rax]
 	mov	rdx, rax
-	lea	rcx, OFFSET FLAT:$SG3402
+	lea	rcx, OFFSET FLAT:$SG3410
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 297  : 			return;
@@ -1430,7 +1430,7 @@ $LN4@vfs_finddi:
 ; 154  : 
 ; 155  : 	if (strcmp (pathname,"dev") == 0) {
 
-	lea	rdx, OFFSET FLAT:$SG3322
+	lea	rdx, OFFSET FLAT:$SG3330
 	lea	rcx, QWORD PTR pathname$[rsp]
 	call	?strcmp@@YAHPEBD0@Z			; strcmp
 	test	eax, eax

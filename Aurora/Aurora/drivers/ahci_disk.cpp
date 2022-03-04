@@ -99,25 +99,18 @@ void ahci_disk_read (HBA_PORT *port, uint64_t lba, uint32_t count, uint64_t *buf
 
 	cmd_list->cfl = sizeof(FIS_REG_H2D)/sizeof(uint32_t);
 	cmd_list->w = 0;
-	cmd_list->prdtl = (uint16_t)((count-1)>>4)+1;
+	cmd_list->prdtl = 1;
 	
 	uint32_t command_slot = ahci_disk_find_slot(port);
 
 	HBA_CMD_TABLE *tbl = (HBA_CMD_TABLE*)cmd_list[command_slot].ctba;
 	int i=0;
-	for (i = 0; i < cmd_list->prdtl -1; i++){
-		tbl->prdt[i].data_base_address = buffer_whole & 0xffffffff;
-		tbl->prdt[i].dbau = buffer_whole >> 32;
-		tbl->prdt[i].data_byte_count = 8*1024-1;
-		tbl->prdt[i].i = 1;
-		buffer += 4*1024;;
-		buffer_whole = (uint32_t)buffer;
-		count -= 16;
-	}
-	tbl->prdt[i].data_base_address = buffer_whole & 0xffffffff;
-	tbl->prdt[i].dbau = buffer_whole >> 32;
-	tbl->prdt[i].data_byte_count = (count<<9) - 1;
-	tbl->prdt[i].i = 1;
+	//for (i = 0; i < cmd_list->prdtl; i++){
+	tbl->prdt[0].data_base_address = buffer_whole & 0xffffffff;
+	tbl->prdt[0].dbau = buffer_whole >> 32;
+	tbl->prdt[0].data_byte_count = 512 * count -1;
+	tbl->prdt[0].i = 1;
+
 
 	FIS_REG_H2D *fis = (FIS_REG_H2D*)tbl->cmd_fis;
 	fis->fis_type = FIS_TYPE_REG_H2D;
@@ -203,9 +196,9 @@ void ahci_disk_write (HBA_PORT *port, uint64_t lba, uint32_t count, uint64_t *bu
 	if (spin==1000000)
 		printf ("[AHCI]:Port Hung\n");
 
-	port->ci = 1<<0;
+	port->ci = 1<<command_slot;
 	while(1) {
-		if ((port->ci & (1<<0)) == 0) 
+		if ((port->ci & (1<<command_slot)) == 0) 
 			break;
 		/*if (port->is & (1<<30)) 
 			break;*/
@@ -265,9 +258,9 @@ void ahci_disk_identify (HBA_PORT *port, uint64_t lba, uint32_t count, uint64_t 
 	if (spin==1000000)
 		printf ("[AHCI]:Port Hung\n");
 
-	port->ci = 1<<0;
+	port->ci = 1<<command_slot;
 	while(1) {
-		if ((port->ci & (1<<0)) == 0) 
+		if ((port->ci & (1<<command_slot)) == 0) 
 			break;
 		/*if (port->is & (1<<30)) 
 			break;*/

@@ -53,6 +53,8 @@
 #include <sys/_sleep.h>
 #include <sys/_time.h>
 #include <sys/_process.h>
+#include <sys/_kybrd.h>
+#include <sys/pe.h>
 #include <fastcpy.h>
 
 /* backing store & shared win start address */
@@ -78,6 +80,7 @@ int last_mouse_button = 0;
 list_t *window_list;
 list_t *backing_store_list;
 list_t *shared_win_space_list;
+list_t *desktop_component_list;
 
 /**
  * window bits
@@ -111,8 +114,7 @@ pri_rect_t *pri_create_rect (int x, int y, int w, int h) {
  * @param h -- height of the rect
  */
 void pri_add_clip (int x, int y, int w, int h) {
-	pri_rect_t* r= pri_create_rect(x, y, w, h);
-	pri_add_dirty_clip(r);
+	pri_add_dirty_clip(x, y, w, h);
 }
 
 /**
@@ -120,24 +122,15 @@ void pri_add_clip (int x, int y, int w, int h) {
  * receiver
  * @param event -- pointer to store current message
  */
-pri_event_t* pri_wm_get_message () {
-	pri_event_t *event;
-	if (pri_get_gift_count() > 0) {
-		event = pri_get_event();
-	}
+void pri_wm_get_message (pri_event_t *ev) {
    void* addr = (void*)PRI_WM_RECEIVER;	 
    pri_event_t* data = (pri_event_t*)addr;
    uint16_t to_id = get_current_pid ();
 
    if (data->type != 0){
-	   pri_event_t *ev = (pri_event_t*)malloc(sizeof(pri_event_t));
-	   memset(ev, 0, sizeof(pri_event_t));
 	   memcpy (ev, data, sizeof(pri_event_t));
-	   push_event_gift (ev);
 	   memset(addr, 0, 4096);
    }
-
-   return event;
 }
 
 
@@ -284,12 +277,12 @@ void cursor_init () {
  * @param filename -- cursor file path
  * @param bmp -- bmp library to use
  */
-void load_cursor (char* filename, uint64_t* addr,pri_bmp_image *bmp) {
+void load_cursor (char* filename, uint8_t* addr,pri_bmp_image *bmp) {
 	UFILE file;
 	int fd = sys_open_file (filename, &file);
 
-	uint64_t* buffer = addr;
-	sys_read_file (fd, buffer, &file);
+	sys_read_file (fd, addr, &file);
+	uint8_t* buffer = (uint8_t*)addr;
 
 	bitmap_img* file_header = (bitmap_img*)buffer;
 	unsigned int offset = file_header->off_bits;
@@ -383,31 +376,6 @@ void cursor_draw_back (unsigned x, unsigned y) {
 	}
 }
 
-/**
- * pri_load_wallpaper -- loads an wallpaper to pri_wallpaper
- * @param filename -- file path of the wallpaper
- */
-Image *pri_load_wallpaper (char *filename) {
-	wallpaper = (pri_wallpaper_t*)malloc(sizeof(pri_wallpaper_t));
-
-	for (int i = 0; i < (canvas->width * canvas->height * 32) / 4096; i++) 
-		valloc(0x0000060000000000 + i * 4096);
-
-	Image *img = LoadImage (filename, (uint64_t*)0x0000060000000000);
-	wallpaper->buffer = (uint8_t*)0x0000060000000000;
-	
-	/* finally call the jpeg decoder and draw the
-	 * image to wallpapers backing store
-	 */
-	if (img != NULL) {
-		CallJpegDecoder(img);
-		wallpaper->w = img->width;
-		wallpaper->h = img->height;
-	}
-
-	return img;
-}
-
 /*
  * pri_wallp_pixel -- draws the pixels from wallpaper buffer
  * to wallpaper backing store
@@ -418,6 +386,49 @@ void pri_wallp_pixel (unsigned x, unsigned y, uint32_t color) {
 	uint32_t *lfb = (uint32_t*)wallpaper->buffer;      
 	lfb[x + y * canvas_get_width(canvas)] = color;
 }
+
+/**
+ * pri_load_wallpaper -- loads an wallpaper to pri_wallpaper
+ * @param filename -- file path of the wallpaper
+ */
+Image *pri_load_wallpaper (char *filename) {
+	wallpaper = (pri_wallpaper_t*)malloc(sizeof(pri_wallpaper_t));
+
+	for (int i = 0; i < (canvas->width * canvas->height * 32) / 4096; i++) 
+		valloc(0x0000060000000000 + i * 4096);
+
+	Image *img = LoadImage (filename, (uint8_t*)0x0000060000000000);
+	wallpaper->buffer = (uint8_t*)0x0000060000000000;
+	wallpaper->img = img;
+	/* finally call the jpeg decoder and draw the
+	 * image to wallpapers backing store
+	 */
+	if (img != NULL) {
+		CallJpegDecoder(img);
+		wallpaper->w = img->width;
+		wallpaper->h = img->height;
+	}
+
+	
+	return img;
+}
+
+
+/**
+ * pri_wallpaper_change -- change the wallpaper 
+ * @param wallp -- pointer to the system wallpaper structure
+ * @param filename -- path and file name of the new wallpaper
+ */
+void pri_wallpaper_change (pri_wallpaper_t *wallp,char* filename) {
+	UFILE f;
+	int fd = sys_open_file (filename, &f);
+	sys_read_file (fd,wallp->buffer, &f);
+	wallp->img->width = 0;
+	wallp->img->height = 0;
+	wallp->img->size = f.size;
+	CallJpegDecoder(wallp->img);
+}
+
 
 /**
  * pri_wallpaper_draw -- draw the wallpaper to backing store
@@ -444,6 +455,7 @@ void pri_wallpaper_draw (Image *img) {
 			}
 		}
 	}
+
 }
 
 
@@ -489,6 +501,55 @@ void window_list_init () {
 }
 
 /**
+ * desktop_component_list_init -- initialize the desktop
+ * component list
+ */
+void desktop_component_list_init () {
+	desktop_component_list = list_init();
+}
+
+
+/**
+ * pri_add_desktop_component -- adds a desktop component to the 
+ * component list 
+ * @param id -- process id
+ */
+void pri_add_desktop_component (uint16_t id) {
+	desktop_component_t *component = (desktop_component_t*)malloc(sizeof(desktop_component_t));
+	component->process_id = id;
+	list_add(desktop_component_list, component);
+}
+
+/**
+ * pri_notify_win_create -- notifies desktop components about 
+ * new window
+ */
+void pri_notify_win_create (char *win_title, uint16_t win_id) {
+	pri_event_t e;
+	memset(&e, 0, sizeof(pri_event_t));
+	e.type = DAISY_NEW_WINDOW_INFO;
+	e.dword = win_id;
+	strcpy(e.char_values, win_title);
+	e.to_id = 3;
+	e.from_id = get_current_pid();
+	ioquery(pri_loop_fd, PRI_LOOP_PUT_EVENT, &e);
+
+}
+
+/*
+ * pri_remove_desktop_component -- removes a desktop component
+ * from component list
+ * @param id -- process id to remove
+ */
+void pri_remove_desktop_component (uint16_t id) {
+	for (int i = 0; i < desktop_component_list->pointer; i++) {
+		desktop_component_t *component = (desktop_component_t*)list_get_at(desktop_component_list, i);
+		if (component)
+			list_remove(desktop_component_list, i);
+	}
+}
+
+/**
  * window_create -- create a new window and allocate its resources
  * @param x -- x coordinate
  * @param y -- y coordinate
@@ -498,12 +559,16 @@ void window_list_init () {
  * @param owner_id -- owner thread id of the window
  * @return win -- newly created window pointer
  */
-pri_window_t * window_create (int x, int y, int w, int h, uint8_t attr, uint16_t owner_id) {
+pri_window_t * window_create (int x, int y, int w, int h, uint8_t attr, uint16_t owner_id, char* title) {
 	pri_window_t *win = (pri_window_t*)malloc(sizeof(pri_window_t));
 	win->attribute = attr;
 	win->backing_store = (uint32_t*)create_new_backing_store(owner_id, w*h*4);
 	win->owner_id = owner_id;
 	win->pri_win_info_loc = create_new_shared_win(owner_id);
+	win->title = title;
+	win->anim = false;
+	win->anim_x = 0;
+	win->anim_y = 0;
 	pri_win_info_t *info = (pri_win_info_t*)win->pri_win_info_loc;
 	info->x = x;
 	info->y = y;
@@ -570,7 +635,7 @@ void pri_window_make_top (pri_window_t *win) {
  * pri_window_set_focused -- make window focused
  * @param win -- window to make focused
  */
-void pri_window_set_focused (pri_window_t * win) {
+void pri_window_set_focused (pri_window_t * win, bool notify) {
 	/* check if it is already focused */
 	if (focused_win == win)
 		return;
@@ -578,6 +643,17 @@ void pri_window_set_focused (pri_window_t * win) {
 	/* here we need to notify old focused window
 	   that focus has been changed to focus lost */
 	focused_win = win;
+
+	/* Notify the dock about focus change event */
+	if (notify) {
+		pri_event_t e;
+		e.type = DAISY_NOTIFY_WIN_FOCUS_CHANGED;
+		e.dword = focused_win->owner_id;
+		e.to_id = 3;
+		e.from_id = get_current_pid();
+		ioquery(pri_loop_fd, PRI_LOOP_PUT_EVENT, &e);
+	}
+
 	/*
 	 * here notify the new window that focus is gained
 	 */
@@ -593,14 +669,19 @@ void pri_window_set_focused (pri_window_t * win) {
  * @param y -- new y location relative to device coord
  */
 void pri_window_move (pri_window_t *win, int x, int y) {
+	if (win->attribute & PRI_WIN_STATIC)
+		return;
+
 	if (focused_win != win) 
-		pri_window_set_focused(win);
+		pri_window_set_focused(win, true);
 
 	pri_win_info_t* info = (pri_win_info_t*)win->pri_win_info_loc;
+
 	pri_rect_t *r = pri_create_rect(info->x, info->y, info->width, info->height);
 	pri_wallp_add_dirty_clip(r);
 	info->x = x;
 	info->y = y;
+	_window_update_all_ = true;
 }
 
 /**
@@ -628,6 +709,8 @@ void compose_frame () {
 	cursor_draw_back(prev_x, prev_y);
 	pri_add_clip(prev_x, prev_y, 24, 24);
 	
+	bool animation_on = false;
+	int window_opacity = 255;
 
 	//!--Here goes the drawing of all wallpaper dirty areas
 	for (int i = 0; i < pri_wallp_get_dirty_count(); i++) {
@@ -640,23 +723,91 @@ void compose_frame () {
 	//----Here goes composing of all window buffers ---//
 	for (int i = 0; i < window_list->pointer; i++) {
 		pri_window_t *win = (pri_window_t*)list_get_at(window_list, i);
-		if (win != NULL) {
-			pri_win_info_t *info = (pri_win_info_t*)win->pri_win_info_loc;
-			int winx = info->x;
-			int winy = info->y;
+		pri_win_info_t *info = (pri_win_info_t*)win->pri_win_info_loc;
+
+		if (win != NULL && win->anim)
+			_window_update_all_ = true;
+		/*  only update those portion that has been modified for smoothness */
+		if (win != NULL && info->rect_count > 0) {
+			//for (int k = 0; k < info->rect_count; k++) {
+			//	int wid = info->rect[k].w;
+			//	int he = info->rect[k].h;
+			//	int rx = info->rect[k].x;
+			//	int ry = info->rect[k].y;
+
+			//	if (rx < 0)
+			//		rx = 0;
+			//	if (ry < 0)
+			//		ry = 0;
+			//	
+			//	if (info->rect[k].x + info->rect[k].w >= canvas->width)
+			//		wid  = canvas->width - info->rect[k].x;
+
+			//	if (info->rect[k].y + info->rect[k].h>= canvas->height){
+			//		info->rect[k].y = canvas->height - info->rect[k].y;
+			//	}
+
+			//	if (info->x + info->rect[k].x + info->rect[k].w > canvas->width)
+			//		wid  = canvas->width - (info->x + info->rect[k].x);
+
+			//	for (int i = 0; i < he; i++)  {
+			//		fastcpy (canvas->address + (info->y + ry + i) * canvas->width + (info->x + rx),win->backing_store + (ry + i) * canvas->width + rx, 
+			//				wid * 4);
+			//	}
+
+			//	/* finally add a clip area */
+			//	pri_add_clip(info->x + rx,info->y + ry, wid,he);
+			//	info->rect_count = 0;
+			//	_window_update_all_ = false;
+			//}
+			info->rect_count = 0;
+			_window_update_all_ = true;
+		}
+
+		/* update entire window */
+		if (win != NULL && _window_update_all_) {
+			int winx = 0;
+			int winy = 0;
+
+			if (win->anim) {
+				winx = win->anim_x; //info->x;
+			    winy = win->anim_y; //info->y;
+				if (win->anim_x == info->x && win->anim_y == info->y){
+					win->anim = false;
+					animation_on = false;
+				}else {
+					if (win->anim_dir == PRI_WIN_ANIM_POSITIVE) {
+						win->anim_x += 2;
+						win->anim_y += 2;
+					}else if (win->anim_dir == PRI_WIN_ANIM_NEGATIVE) {
+						win->anim_y -= 1;
+					}
+					if (win->anim_x + 1 != info->x && win->anim_y + 1 != info->y)  {
+						pri_wallp_add_dirty_clip(pri_create_rect(winx,winy,info->width,info->height));
+						pri_add_clip(winx,winy,info->width,info->height);
+					}
+					animation_on = true;
+				}
+			} else {
+				winx = info->x;
+				winy = info->y;
+			}
+
 			int wid = info->width;
 			int he = info->height;
-
+			int bkstore_xoff = 0;
+			int bkstore_yoff = 0;
 			/* calculate desktop bounds */
-			if (winx - 5 < 0) {
+			if (info->x < 0) {
 				info->x = 5;
 				winx = info->x;
 			}
 
-			if (winy - 5 < 0) {
+			if (info->y < 0) {
 				info->y = 5;
-				winy = 5;
+				winy = info->y;
 			}
+
 
 
 			if (info->x + info->width >= canvas->width)
@@ -684,14 +835,11 @@ void compose_frame () {
 
 
 	/** finally blit every dirty area to framebuffer **/
-	for (int i = 0; i < pri_get_dirty_count(); i++) {
-		pri_rect_t *r = pri_get_dirty_rect();
-		if (r != NULL) {
-			canvas_screen_update(canvas, r->x, r->y, r->w, r->h);
-			free(r);
-		}
-	}
+	pri_dirty_rect_screen_update(canvas);
 	
+	if (_window_update_all_ && ! animation_on)
+		_window_update_all_ = false;
+
 	/*store current mouse coord as prev coord */
 	prev_x = mouse_x;
 	prev_y = mouse_y;
@@ -705,6 +853,7 @@ void compose_frame () {
  */
 void pri_win_send_mouse_event (pri_window_t* win,int x, int y, int button) {
 	pri_event_t e;
+	memset(&e, 0, sizeof(pri_event_t));
 	e.type = DAISY_CURSOR_MOVED;
 	e.dword = x;
 	e.dword2 = y;
@@ -713,6 +862,18 @@ void pri_win_send_mouse_event (pri_window_t* win,int x, int y, int button) {
 	ioquery(pri_loop_fd,PRI_LOOP_PUT_EVENT, &e);
 }
 
+/**
+ * pri_win_send_key_event -- sends key event to focused
+ * @param code -- keyboard code
+ */
+void pri_win_send_key_event (pri_window_t* win,int code) {
+	pri_event_t e;
+	memset(&e, 0, sizeof(pri_event_t));
+	e.type = DAISY_KEY_EVENT;
+	e.dword = code;
+	e.to_id = win->owner_id;
+	ioquery(pri_loop_fd,PRI_LOOP_PUT_EVENT, &e);
+}
 
 /**
  * pri_win_check_draggable -- checks if a window is draggable or not
@@ -736,19 +897,20 @@ void pri_win_check_draggable (int x, int y, int button) {
 		if (button && !last_mouse_button) {
 			//! Only a limited portion is available for dragging purpose
 			if (y >= info->y && y < (info->y + 23)) {  
-				pri_window_set_focused(win);
+				pri_window_set_focused(win, true);
 				dragg_win = win;
 				dragg_win->drag_x = x - info->x;
 				dragg_win->drag_y = y - info->y;
 		        break;
 			}
 
-			if (y >= (info->y + info->height - 10) && y < (info->y + info->height + 10)) {
+			/*RESIZEING of WINDOW is disabled for now*/
+			/*if (y >= (info->y + info->height - 10) && y < (info->y + info->height + 10)) {
 				resz_win = win;
 				resz_win->resz_h = x - info->width;
 				resz_win->resz_v = y - info->height;	
 				break;
-			}
+			}*/
 		}
 	}
 	 /**  check if a draggable window is present or not **/
@@ -759,12 +921,13 @@ void pri_win_check_draggable (int x, int y, int button) {
 		pri_window_move(dragg_win,posx, posy);
 	}
 
-	/** check if a resizable window is present or not **/
-	if (resz_win) {
+	/** check if a resizable window is present or not,
+	    RESIZEING of WINDOW is disabled for now **/
+	/*if (resz_win) {
 		int n_width = x - resz_win->resz_h;
 		int n_height = y - resz_win->resz_v;
 		pri_window_resize(resz_win, n_width, n_height);
-	}
+	}*/
 
 	/** button released **/
 	if (!button)  {
@@ -795,11 +958,12 @@ int main (int argc, char* argv[]) {
 	int h = canvas_get_height(canvas);
 	sys_print_text ("PRIWM: Canvas Created w-> %d, h-> %d\n", w, h);
 	//! load cursor library
-	for(;;);
+
+
 	cursor_init ();
-	load_cursor ("/cursor.bmp",(uint64_t*)0x0000070000000000, arrow_cursor);
-	load_cursor ("/spin.bmp", (uint64_t*)0x0000070000001000, spin_cursor);
-	Image* wallp = pri_load_wallpaper ("/leaf.jpg");
+	load_cursor ("/cursor.bmp",(uint8_t*)0x0000070000000000, arrow_cursor);
+	load_cursor ("/spin.bmp", (uint8_t*)0x0000070000001000, spin_cursor);
+	Image* wallp = pri_load_wallpaper ("/gwallp.jpg");
 	pri_wallpaper_draw(wallp);
 	
 
@@ -807,10 +971,11 @@ int main (int argc, char* argv[]) {
 	window_list_init();
 	backing_store_list = list_init();
 	shared_win_space_list = list_init();
+
 	/*
-	 * initialize font 
+	 * initialize desktop component list
 	 */
-	acrylic_initialize_font();
+	desktop_component_list_init();
 
 	/*
 	 * clear the backing store to light black
@@ -818,24 +983,20 @@ int main (int argc, char* argv[]) {
 	 */
 	acrylic_draw_rect_filled (canvas, 0,0,s_width, s_height, LIGHTBLACK);
 	pri_wallpaper_present();
-	acrylic_font_set_size (64);
-	/*int length = acrylic_font_get_length("Priyanshi Compz");
-	int height = acrylic_font_get_height("Priyanshi Compz");
-	acrylic_font_draw_string (canvas, "Priyanshi Compz",s_width / 2 - length / 2,s_height/ 2 - height / 2,64,SILVER);*/
 	canvas_screen_update(canvas, 0, 0, s_width, s_height);
     cursor_store_back(0, 0);
-   
+    
 	pri_loop_fd = sys_open_file ("/dev/pri_loop",NULL);
 	uint32_t frame_tick;
 	uint32_t diff_tick;
-	pri_event_t *event;
+	pri_event_t event;
 	mouse_message_t mouse;
-
+	message_t key_msg;
 	while (1) {
 		mouse_get (&mouse);
-		event = pri_wm_get_message ();
-
-		frame_tick = sys_get_system_tick();
+		pri_wm_get_message (&event);
+		message_receive(&key_msg);
+		//frame_tick = sys_get_system_tick();
 		//1 draw everything
 		compose_frame();
 
@@ -846,60 +1007,144 @@ int main (int argc, char* argv[]) {
 			mouse_x = mouse.dword;
 			mouse_y = mouse.dword2;
 			int button = mouse.dword4;
-
+			int button2 = mouse.dword4;
 			pri_win_check_draggable(mouse_x, mouse_y,button); 
 			/* send the mouse event to focused window */
 			if (focused_win) {
-				pri_win_send_mouse_event(focused_win, mouse_x,mouse_y, button);
+				pri_win_send_mouse_event(focused_win, mouse_x,mouse_y, button2);
 			}
 
 			memset(&mouse, 0, sizeof(mouse_message_t));
 		}
 
+		if(key_msg.type == KEY_PRESSED) {
+			if (focused_win) {
+				pri_win_send_key_event(focused_win, key_msg.dword);
+			}
+			if (key_msg.dword == KEY_A) {
+				create_process("/snake.exe", "snake");
+			}
+			if (key_msg.dword == KEY_W) {
+				pri_wallpaper_change(wallpaper,"/leaf.jpg");
+				pri_wallpaper_draw(wallpaper->img);
+				pri_wallpaper_present();
+				 cursor_store_back(mouse_x, mouse_y);
+				canvas_screen_update(canvas,0,0,s_width,s_height);
+				_window_update_all_ = true;
+			}
+
+			if (key_msg.dword == KEY_I) {
+				pri_wallpaper_change(wallpaper,"/gwallp.jpg");
+				pri_wallpaper_draw(wallpaper->img);
+				pri_wallpaper_present();
+				 cursor_store_back(mouse_x, mouse_y);
+				canvas_screen_update(canvas,0,0,s_width,s_height);
+				_window_update_all_ = true;
+			}
+
+			memset(&key_msg, 0, sizeof(message_t));
+		}
+
                		
 		/* PRI_WIN_CREATE -- handles window 
 		 * creation message */
-		if (event->type == PRI_WIN_CREATE) {
+		if (event.type == PRI_WIN_CREATE) {
 			/* create the new window */
-			int x = event->dword;
-			int y = event->dword2;
-			int w = event->dword3;
-			int h = event->dword4;
-			uint8_t attribute = event->dword5;
-			pri_window_t *win = window_create (x,y,w,h,attribute,event->from_id);
+			int x = event.dword;
+			int y = event.dword2;
+			int w = event.dword3;
+			int h = event.dword4;
+			uint8_t attribute = event.dword5;
+			char *title = (char*)malloc(100) ;
+			memset(title,0,100);
 
-			pri_window_set_focused(win);
+			strcpy(title,event.char_values);
+
+			pri_window_t *win = window_create (x,y,w,h,attribute,event.from_id, title);
+			if (event.from_id != 3) {
+				win->anim = true;
+				win->anim_x = x - 30;
+				win->anim_y = y - 30;
+				if (win->anim_x <= 0)
+					win->anim_x = 0;
+				if (win->anim_y <= 0)
+					win->anim_y = 0;
+				win->anim_dir = PRI_WIN_ANIM_POSITIVE;
+			}
+
+			if (event.from_id == 3){
+				win->anim = true;
+				win->anim_x = 0;
+				win->anim_y = s_height;
+				win->anim_dir = PRI_WIN_ANIM_NEGATIVE;
+			}
+
+
+			pri_notify_win_create(win->title, win->owner_id);
+
+			pri_window_set_focused(win, false);
 
 			/* Send the new gift message to client */
 			pri_event_t e;
 			e.type = DAISY_GIFT_CANVAS;
 			e.p_value = win->backing_store;
 			e.p_value2 = win->pri_win_info_loc;
-			e.to_id = event->from_id;
+			e.to_id = event.from_id;
 			ioquery(pri_loop_fd,PRI_LOOP_PUT_EVENT, &e);
-			free(event);
+
+			memset (&event, 0, sizeof(pri_event_t));
+		}
+
+		/**
+		 * PRI_CHANGE_WALLPAPER -- changes wallpaper
+		 */
+		if (event.type == PRI_CHANGE_WALLPAPER) {
+			char* filename = (char*)malloc(100);
+			memset(filename, 0, 100);
+			strcpy(filename,event.char_values);
+			pri_wallpaper_change(wallpaper,filename);
+			pri_wallpaper_draw(wallpaper->img);
+			pri_wallpaper_present();
+			cursor_store_back(mouse_x, mouse_y);
+			canvas_screen_update(canvas,0,0,s_width,s_height);
+			_window_update_all_ = true;
+
+			free(filename);
+
+			memset(&event, 0, sizeof(pri_event_t));
+		}
+
+
+		/* PRI_WIN_READY -- this messages are from clients
+		 * telling the window manager that it's ready to 
+		 * show up on the screen */
+		if (event.type == PRI_WIN_READY) {
+			_window_update_all_ = true;
+			memset (&event, 0, sizeof(pri_event_t));
 		}
 
 		/**
 		 *	PRI_WIN_MOVE -- moves a window to new
 		 *  location
 		 */
-		if (event->type == PRI_WIN_MOVE) {
-			int x = event->dword;
-			int y = event->dword2;
-			pri_window_t *win = pri_win_find_by_id(event->from_id);
+		if (event.type == PRI_WIN_MOVE) {
+			int x = event.dword;
+			int y = event.dword2;
+			pri_window_t *win = pri_win_find_by_id(event.from_id);
 			if (win != NULL) {
 				pri_window_move (win, x, y);
 			}
-			free(event);
+			memset(&event, 0, sizeof(pri_event_t));
 		}
 
 
-		diff_tick = sys_get_system_tick();
-		int delta = diff_tick - frame_tick;
-		if (delta < 1000/60) {
+
+		//diff_tick = sys_get_system_tick();
+		//int delta = diff_tick - frame_tick;
+		//if (delta < 1000/60) {
 			//! it will sleep for 16 ms
-			sys_sleep (1000/60 - delta);
-		}
+			//sys_sleep (1000/60 - delta);
+		//}
+		sys_sleep(16);
 	}
 }

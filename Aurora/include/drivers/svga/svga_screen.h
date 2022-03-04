@@ -15,7 +15,7 @@
 #include <drivers\svga\vmsvga.h>
 #include <drivers\svga\svga_reg.h>
 
-
+#ifdef HW_SVGA
 extern void svga_screen_init ();
 extern void svga_screen_create (SVGAScreenObject *screen);
 extern void svga_screen_define (const SVGAScreenObject *screen);
@@ -31,5 +31,6 @@ extern void svga_screen_annotate_fill (SVGAColorBGRX color);
 extern void svga_annotate_copy (const SVGASignedPoint *srcOrigin, uint32_t srcScreen);
 
 extern void svga_paint_screen (uint32_t color, int x, int y,int width, int height);
+#endif
 
 #endif

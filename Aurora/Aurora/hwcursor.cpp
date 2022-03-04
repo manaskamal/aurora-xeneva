@@ -11,6 +11,8 @@
 #include <hwcursor.h>
 #include <_null.h>
 
+#ifdef HW_SVGA
+
 #define CA 0xFF000000
 #define CB 0xFFFFFFFF
 #define CD 0x00000000
@@ -72,3 +74,5 @@ void hw_move_cursor (uint32_t *mouse_image, uint32_t xcoord, uint32_t ycoord) {
 	svga_fifo_commit_all();
 	
 }
+
+#endif

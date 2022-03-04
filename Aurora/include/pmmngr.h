@@ -39,11 +39,19 @@ extern void* pmmngr_alloc_blocks (int size);
  */
 extern void pmmngr_lock_pages (void *addr, size_t size);
 
+//! Reserve a page : mark it as unusable
+extern void pmmngr_lock_page ( void* addr);
+
 /**
  * Free a page
  * @param addr -- Address to free
  */
 extern void pmmngr_free (void* addr);
+
+/**
+ * pmmngr_free_block -- free a list of blocks
+ */
+extern void pmmngr_free_blocks (void* addr, int count);
 
 /**
  * Returns the total amount of free ram

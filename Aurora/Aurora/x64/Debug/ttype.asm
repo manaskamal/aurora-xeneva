@@ -14,13 +14,13 @@ _BSS	SEGMENT
 ?last@@3PEAU_tele_type_@@EA DQ 01H DUP (?)		; last
 _BSS	ENDS
 CONST	SEGMENT
-$SG3356	DB	'ttym', 00H
+$SG3365	DB	'ttym', 00H
 	ORG $+3
-$SG3358	DB	'/dev/', 00H
+$SG3367	DB	'/dev/', 00H
 	ORG $+2
-$SG3363	DB	'ttys', 00H
+$SG3372	DB	'ttys', 00H
 	ORG $+3
-$SG3365	DB	'/dev/', 00H
+$SG3374	DB	'/dev/', 00H
 CONST	ENDS
 _DATA	SEGMENT
 ?master_count@@3HA DD 01H				; master_count
@@ -55,7 +55,7 @@ EXTRN	?thread_iterate_ready_list@@YAPEAU_thread_@@G@Z:PROC ; thread_iterate_read
 EXTRN	?thread_iterate_block_list@@YAPEAU_thread_@@H@Z:PROC ; thread_iterate_block_list
 pdata	SEGMENT
 $pdata$?ttype_create@@YAXPEAH0@Z DD imagerel $LN6
-	DD	imagerel $LN6+1263
+	DD	imagerel $LN6+1268
 	DD	imagerel $unwind$?ttype_create@@YAXPEAH0@Z
 $pdata$?get_ttype@@YAPEAU_tele_type_@@H@Z DD imagerel $LN8
 	DD	imagerel $LN8+78
@@ -826,8 +826,8 @@ slave_name$ = 96
 sname$ = 112
 mname$ = 128
 outbuffer$ = 144
-tv235 = 152
-tv224 = 160
+tv236 = 152
+tv225 = 160
 inbuffer$ = 168
 master_fd$ = 192
 slave_fd$ = 200
@@ -840,14 +840,15 @@ $LN6:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 184				; 000000b8H
 
-; 220  : 	ttype_t *tty= (ttype_t*)pmmngr_alloc();
+; 220  : 	ttype_t *tty= (ttype_t*)malloc(sizeof(ttype_t)); //pmmngr_alloc();
 
-	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
+	mov	ecx, 120				; 00000078H
+	call	?malloc@@YAPEAX_K@Z			; malloc
 	mov	QWORD PTR tty$[rsp], rax
 
-; 221  : 	memset (tty, 0, 4096);
+; 221  : 	memset (tty, 0, sizeof(ttype_t));
 
-	mov	r8d, 4096				; 00001000H
+	mov	r8d, 120				; 00000078H
 	xor	edx, edx
 	mov	rcx, QWORD PTR tty$[rsp]
 	call	?memset@@YAXPEAXEI@Z			; memset
@@ -858,7 +859,7 @@ $LN6:
 	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
 	mov	QWORD PTR inbuffer$[rsp], rax
 
-; 224  : 	memset(inbuffer, 0, 4096);
+; 224  : 	memset(inbuffer, 0,4096);
 
 	mov	r8d, 4096				; 00001000H
 	xor	edx, edx
@@ -940,7 +941,7 @@ $LN6:
 ; 244  : 	char master_name[10];
 ; 245  : 	strcpy(master_name, "ttym");
 
-	lea	rdx, OFFSET FLAT:$SG3356
+	lea	rdx, OFFSET FLAT:$SG3365
 	lea	rcx, QWORD PTR master_name$[rsp]
 	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
 
@@ -957,7 +958,7 @@ $LN6:
 ; 248  : 	char mname[10];
 ; 249  : 	strcpy (mname, "/dev/");
 
-	lea	rdx, OFFSET FLAT:$SG3358
+	lea	rdx, OFFSET FLAT:$SG3367
 	lea	rcx, QWORD PTR mname$[rsp]
 	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
 
@@ -1059,7 +1060,7 @@ $LN6:
 ; 270  : 	char slave_name[10];
 ; 271  : 	strcpy(slave_name, "ttys");
 
-	lea	rdx, OFFSET FLAT:$SG3363
+	lea	rdx, OFFSET FLAT:$SG3372
 	lea	rcx, QWORD PTR slave_name$[rsp]
 	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
 
@@ -1076,7 +1077,7 @@ $LN6:
 ; 274  : 	char sname[10];
 ; 275  : 	strcpy(sname, "/dev/");
 
-	lea	rdx, OFFSET FLAT:$SG3365
+	lea	rdx, OFFSET FLAT:$SG3374
 	lea	rcx, QWORD PTR sname$[rsp]
 	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
 
@@ -1226,11 +1227,11 @@ $LN1@ttype_crea:
 
 	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
 	add	rax, 752				; 000002f0H
-	mov	QWORD PTR tv224[rsp], rax
-	mov	rax, QWORD PTR tv224[rsp]
+	mov	QWORD PTR tv225[rsp], rax
+	mov	rax, QWORD PTR tv225[rsp]
 	mov	eax, DWORD PTR [rax]
 	inc	eax
-	mov	rcx, QWORD PTR tv224[rsp]
+	mov	rcx, QWORD PTR tv225[rsp]
 	mov	DWORD PTR [rcx], eax
 
 ; 304  : 
@@ -1252,11 +1253,11 @@ $LN1@ttype_crea:
 
 	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
 	add	rax, 752				; 000002f0H
-	mov	QWORD PTR tv235[rsp], rax
-	mov	rax, QWORD PTR tv235[rsp]
+	mov	QWORD PTR tv236[rsp], rax
+	mov	rax, QWORD PTR tv236[rsp]
 	mov	eax, DWORD PTR [rax]
 	inc	eax
-	mov	rcx, QWORD PTR tv235[rsp]
+	mov	rcx, QWORD PTR tv236[rsp]
 	mov	DWORD PTR [rcx], eax
 
 ; 309  : 

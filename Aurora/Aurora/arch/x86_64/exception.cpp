@@ -165,6 +165,7 @@ void page_fault (size_t vector, void* param){
 	}else if (rw) {
 		panic ("Page Fault \n");
 		printf ("Faulting Address -> %x\n", vaddr);
+		printf ("Physical Address -> %x\n", get_physical_address((uint64_t)vaddr));
 		printf ("__PROCESSOR TRACE__\n");
 		printf ("RIP -> %x\n", frame->rip);
 		printf ("Stack -> %x\n", frame->rsp);

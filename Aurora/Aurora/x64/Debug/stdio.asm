@@ -11,23 +11,24 @@ _BSS	SEGMENT
 ?integer_buffer@@3PADA DB 020H DUP (?)			; integer_buffer
 ?float_to_string_output@@3PADA DB 020H DUP (?)		; float_to_string_output
 _BSS	ENDS
-CONST	SEGMENT
-$SG2921	DB	'0123456789ABCDEF', 00H
-	ORG $+3
-$SG3063	DB	'.', 00H
-CONST	ENDS
 _DATA	SEGMENT
-chars	DQ	FLAT:$SG2921
+chars	DQ	FLAT:$SG2932
 _DATA	ENDS
+CONST	SEGMENT
+$SG3073	DB	'.', 00H
+	ORG $+6
+$SG2932	DB	'0123456789ABCDEF', 00H
+CONST	ENDS
 PUBLIC	?sztoa@@YAPEAD_KPEADH@Z				; sztoa
 PUBLIC	?printf@@YAXPEBDZZ				; printf
+PUBLIC	?ftoa@@YAPEADME@Z				; ftoa
 PUBLIC	?atow@@YAXPEADPEBD@Z				; atow
 PUBLIC	?int_to_str@@YAPEBDH@Z				; int_to_str
-PUBLIC	?ftoa@@YAPEADME@Z				; ftoa
 PUBLIC	__real@41200000
 PUBLIC	__real@bf800000
 EXTRN	?strlen@@YA_KPEBD@Z:PROC			; strlen
 EXTRN	?puts@@YAXPEAD@Z:PROC				; puts
+EXTRN	?putc@@YAXD@Z:PROC				; putc
 EXTRN	?is_console_initialized@@YA_NXZ:PROC		; is_console_initialized
 EXTRN	?debug_print@@YAXPEBDZZ:PROC			; debug_print
 EXTRN	_fltused:DWORD
@@ -36,14 +37,14 @@ $pdata$?sztoa@@YAPEAD_KPEADH@Z DD imagerel $LN11
 	DD	imagerel $LN11+275
 	DD	imagerel $unwind$?sztoa@@YAPEAD_KPEADH@Z
 $pdata$?printf@@YAXPEBDZZ DD imagerel $LN26
-	DD	imagerel $LN26+894
+	DD	imagerel $LN26+890
 	DD	imagerel $unwind$?printf@@YAXPEBDZZ
-$pdata$?int_to_str@@YAPEBDH@Z DD imagerel $LN7
-	DD	imagerel $LN7+280
-	DD	imagerel $unwind$?int_to_str@@YAPEBDH@Z
 $pdata$?ftoa@@YAPEADME@Z DD imagerel $LN9
 	DD	imagerel $LN9+311
 	DD	imagerel $unwind$?ftoa@@YAPEADME@Z
+$pdata$?int_to_str@@YAPEBDH@Z DD imagerel $LN7
+	DD	imagerel $LN7+280
+	DD	imagerel $unwind$?int_to_str@@YAPEBDH@Z
 pdata	ENDS
 ;	COMDAT __real@bf800000
 CONST	SEGMENT
@@ -58,177 +59,11 @@ $unwind$?sztoa@@YAPEAD_KPEADH@Z DD 011301H
 	DD	04213H
 $unwind$?printf@@YAXPEBDZZ DD 021b01H
 	DD	023011bH
-$unwind$?int_to_str@@YAPEBDH@Z DD 010801H
-	DD	04208H
 $unwind$?ftoa@@YAPEADME@Z DD 010e01H
 	DD	0820eH
+$unwind$?int_to_str@@YAPEBDH@Z DD 010801H
+	DD	04208H
 xdata	ENDS
-; Function compile flags: /Odtpy
-; File e:\xeneva project\xeneva\aurora\aurora\stdio.cpp
-_TEXT	SEGMENT
-i$1 = 32
-new_value$ = 36
-float_ptr$ = 40
-int_ptr$ = 48
-value$ = 80
-decimal_places$ = 88
-?ftoa@@YAPEADME@Z PROC					; ftoa
-
-; 74   : char* ftoa(float value, uint8_t decimal_places) {
-
-$LN9:
-	mov	BYTE PTR [rsp+16], dl
-	movss	DWORD PTR [rsp+8], xmm0
-	sub	rsp, 72					; 00000048H
-
-; 75   : 	char* int_ptr = (char*)int_to_str((int)value);
-
-	cvttss2si eax, DWORD PTR value$[rsp]
-	mov	ecx, eax
-	call	?int_to_str@@YAPEBDH@Z			; int_to_str
-	mov	QWORD PTR int_ptr$[rsp], rax
-
-; 76   : 	char* float_ptr = float_to_string_output;
-
-	lea	rax, OFFSET FLAT:?float_to_string_output@@3PADA ; float_to_string_output
-	mov	QWORD PTR float_ptr$[rsp], rax
-
-; 77   : 
-; 78   : 	if (value < 0) {
-
-	xorps	xmm0, xmm0
-	comiss	xmm0, DWORD PTR value$[rsp]
-	jbe	SHORT $LN6@ftoa
-
-; 79   : 		value *= -1;
-
-	movss	xmm0, DWORD PTR value$[rsp]
-	mulss	xmm0, DWORD PTR __real@bf800000
-	movss	DWORD PTR value$[rsp], xmm0
-$LN6@ftoa:
-$LN5@ftoa:
-
-; 80   : 	}
-; 81   : 
-; 82   : 
-; 83   : 	while (*int_ptr != 0) {
-
-	mov	rax, QWORD PTR int_ptr$[rsp]
-	movsx	eax, BYTE PTR [rax]
-	test	eax, eax
-	je	SHORT $LN4@ftoa
-
-; 84   : 		*float_ptr = *int_ptr;
-
-	mov	rax, QWORD PTR float_ptr$[rsp]
-	mov	rcx, QWORD PTR int_ptr$[rsp]
-	movzx	ecx, BYTE PTR [rcx]
-	mov	BYTE PTR [rax], cl
-
-; 85   : 		int_ptr++;
-
-	mov	rax, QWORD PTR int_ptr$[rsp]
-	inc	rax
-	mov	QWORD PTR int_ptr$[rsp], rax
-
-; 86   : 		float_ptr++;
-
-	mov	rax, QWORD PTR float_ptr$[rsp]
-	inc	rax
-	mov	QWORD PTR float_ptr$[rsp], rax
-
-; 87   : 	}
-
-	jmp	SHORT $LN5@ftoa
-$LN4@ftoa:
-
-; 88   : 
-; 89   : 	*float_ptr = '.';
-
-	mov	rax, QWORD PTR float_ptr$[rsp]
-	mov	BYTE PTR [rax], 46			; 0000002eH
-
-; 90   : 	float_ptr++;
-
-	mov	rax, QWORD PTR float_ptr$[rsp]
-	inc	rax
-	mov	QWORD PTR float_ptr$[rsp], rax
-
-; 91   : 
-; 92   : 	float new_value = value - (int)value;
-
-	cvttss2si eax, DWORD PTR value$[rsp]
-	cvtsi2ss xmm0, eax
-	movss	xmm1, DWORD PTR value$[rsp]
-	subss	xmm1, xmm0
-	movaps	xmm0, xmm1
-	movss	DWORD PTR new_value$[rsp], xmm0
-
-; 93   : 
-; 94   : 	for (uint8_t i = 0; i < decimal_places; i++) {
-
-	mov	BYTE PTR i$1[rsp], 0
-	jmp	SHORT $LN3@ftoa
-$LN2@ftoa:
-	movzx	eax, BYTE PTR i$1[rsp]
-	inc	al
-	mov	BYTE PTR i$1[rsp], al
-$LN3@ftoa:
-	movzx	eax, BYTE PTR i$1[rsp]
-	movzx	ecx, BYTE PTR decimal_places$[rsp]
-	cmp	eax, ecx
-	jge	SHORT $LN1@ftoa
-
-; 95   : 		new_value *= 10;
-
-	movss	xmm0, DWORD PTR new_value$[rsp]
-	mulss	xmm0, DWORD PTR __real@41200000
-	movss	DWORD PTR new_value$[rsp], xmm0
-
-; 96   : 		*float_ptr = (int)new_value + 48;
-
-	cvttss2si eax, DWORD PTR new_value$[rsp]
-	add	eax, 48					; 00000030H
-	mov	rcx, QWORD PTR float_ptr$[rsp]
-	mov	BYTE PTR [rcx], al
-
-; 97   : 		new_value -= (int)new_value;
-
-	cvttss2si eax, DWORD PTR new_value$[rsp]
-	cvtsi2ss xmm0, eax
-	movss	xmm1, DWORD PTR new_value$[rsp]
-	subss	xmm1, xmm0
-	movaps	xmm0, xmm1
-	movss	DWORD PTR new_value$[rsp], xmm0
-
-; 98   : 		float_ptr++;
-
-	mov	rax, QWORD PTR float_ptr$[rsp]
-	inc	rax
-	mov	QWORD PTR float_ptr$[rsp], rax
-
-; 99   : 	}
-
-	jmp	SHORT $LN2@ftoa
-$LN1@ftoa:
-
-; 100  : 
-; 101  : 	*float_ptr = 0;
-
-	mov	rax, QWORD PTR float_ptr$[rsp]
-	mov	BYTE PTR [rax], 0
-
-; 102  : 
-; 103  : 	return float_to_string_output;
-
-	lea	rax, OFFSET FLAT:?float_to_string_output@@3PADA ; float_to_string_output
-
-; 104  : }
-
-	add	rsp, 72					; 00000048H
-	ret	0
-?ftoa@@YAPEADME@Z ENDP					; ftoa
-_TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\stdio.cpp
 _TEXT	SEGMENT
@@ -424,6 +259,172 @@ $LN1@atow:
 
 	ret	0
 ?atow@@YAXPEADPEBD@Z ENDP				; atow
+_TEXT	ENDS
+; Function compile flags: /Odtpy
+; File e:\xeneva project\xeneva\aurora\aurora\stdio.cpp
+_TEXT	SEGMENT
+i$1 = 32
+new_value$ = 36
+float_ptr$ = 40
+int_ptr$ = 48
+value$ = 80
+decimal_places$ = 88
+?ftoa@@YAPEADME@Z PROC					; ftoa
+
+; 74   : char* ftoa(float value, uint8_t decimal_places) {
+
+$LN9:
+	mov	BYTE PTR [rsp+16], dl
+	movss	DWORD PTR [rsp+8], xmm0
+	sub	rsp, 72					; 00000048H
+
+; 75   : 	char* int_ptr = (char*)int_to_str((int)value);
+
+	cvttss2si eax, DWORD PTR value$[rsp]
+	mov	ecx, eax
+	call	?int_to_str@@YAPEBDH@Z			; int_to_str
+	mov	QWORD PTR int_ptr$[rsp], rax
+
+; 76   : 	char* float_ptr = float_to_string_output;
+
+	lea	rax, OFFSET FLAT:?float_to_string_output@@3PADA ; float_to_string_output
+	mov	QWORD PTR float_ptr$[rsp], rax
+
+; 77   : 
+; 78   : 	if (value < 0) {
+
+	xorps	xmm0, xmm0
+	comiss	xmm0, DWORD PTR value$[rsp]
+	jbe	SHORT $LN6@ftoa
+
+; 79   : 		value *= -1;
+
+	movss	xmm0, DWORD PTR value$[rsp]
+	mulss	xmm0, DWORD PTR __real@bf800000
+	movss	DWORD PTR value$[rsp], xmm0
+$LN6@ftoa:
+$LN5@ftoa:
+
+; 80   : 	}
+; 81   : 
+; 82   : 
+; 83   : 	while (*int_ptr != 0) {
+
+	mov	rax, QWORD PTR int_ptr$[rsp]
+	movsx	eax, BYTE PTR [rax]
+	test	eax, eax
+	je	SHORT $LN4@ftoa
+
+; 84   : 		*float_ptr = *int_ptr;
+
+	mov	rax, QWORD PTR float_ptr$[rsp]
+	mov	rcx, QWORD PTR int_ptr$[rsp]
+	movzx	ecx, BYTE PTR [rcx]
+	mov	BYTE PTR [rax], cl
+
+; 85   : 		int_ptr++;
+
+	mov	rax, QWORD PTR int_ptr$[rsp]
+	inc	rax
+	mov	QWORD PTR int_ptr$[rsp], rax
+
+; 86   : 		float_ptr++;
+
+	mov	rax, QWORD PTR float_ptr$[rsp]
+	inc	rax
+	mov	QWORD PTR float_ptr$[rsp], rax
+
+; 87   : 	}
+
+	jmp	SHORT $LN5@ftoa
+$LN4@ftoa:
+
+; 88   : 
+; 89   : 	*float_ptr = '.';
+
+	mov	rax, QWORD PTR float_ptr$[rsp]
+	mov	BYTE PTR [rax], 46			; 0000002eH
+
+; 90   : 	float_ptr++;
+
+	mov	rax, QWORD PTR float_ptr$[rsp]
+	inc	rax
+	mov	QWORD PTR float_ptr$[rsp], rax
+
+; 91   : 
+; 92   : 	float new_value = value - (int)value;
+
+	cvttss2si eax, DWORD PTR value$[rsp]
+	cvtsi2ss xmm0, eax
+	movss	xmm1, DWORD PTR value$[rsp]
+	subss	xmm1, xmm0
+	movaps	xmm0, xmm1
+	movss	DWORD PTR new_value$[rsp], xmm0
+
+; 93   : 
+; 94   : 	for (uint8_t i = 0; i < decimal_places; i++) {
+
+	mov	BYTE PTR i$1[rsp], 0
+	jmp	SHORT $LN3@ftoa
+$LN2@ftoa:
+	movzx	eax, BYTE PTR i$1[rsp]
+	inc	al
+	mov	BYTE PTR i$1[rsp], al
+$LN3@ftoa:
+	movzx	eax, BYTE PTR i$1[rsp]
+	movzx	ecx, BYTE PTR decimal_places$[rsp]
+	cmp	eax, ecx
+	jge	SHORT $LN1@ftoa
+
+; 95   : 		new_value *= 10;
+
+	movss	xmm0, DWORD PTR new_value$[rsp]
+	mulss	xmm0, DWORD PTR __real@41200000
+	movss	DWORD PTR new_value$[rsp], xmm0
+
+; 96   : 		*float_ptr = (int)new_value + 48;
+
+	cvttss2si eax, DWORD PTR new_value$[rsp]
+	add	eax, 48					; 00000030H
+	mov	rcx, QWORD PTR float_ptr$[rsp]
+	mov	BYTE PTR [rcx], al
+
+; 97   : 		new_value -= (int)new_value;
+
+	cvttss2si eax, DWORD PTR new_value$[rsp]
+	cvtsi2ss xmm0, eax
+	movss	xmm1, DWORD PTR new_value$[rsp]
+	subss	xmm1, xmm0
+	movaps	xmm0, xmm1
+	movss	DWORD PTR new_value$[rsp], xmm0
+
+; 98   : 		float_ptr++;
+
+	mov	rax, QWORD PTR float_ptr$[rsp]
+	inc	rax
+	mov	QWORD PTR float_ptr$[rsp], rax
+
+; 99   : 	}
+
+	jmp	SHORT $LN2@ftoa
+$LN1@ftoa:
+
+; 100  : 
+; 101  : 	*float_ptr = 0;
+
+	mov	rax, QWORD PTR float_ptr$[rsp]
+	mov	BYTE PTR [rax], 0
+
+; 102  : 
+; 103  : 	return float_to_string_output;
+
+	lea	rax, OFFSET FLAT:?float_to_string_output@@3PADA ; float_to_string_output
+
+; 104  : }
+
+	add	rsp, 72					; 00000048H
+	ret	0
+?ftoa@@YAPEADME@Z ENDP					; ftoa
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\stdio.cpp
@@ -655,11 +656,10 @@ $LN19@printf:
 ; 150  : 				//char buffer[sizeof(size_t) * 8 + 1];
 ; 151  : 				//sztoa(c, buffer, 10);
 ; 152  : 				//puts(buffer);
-; 153  : 				puts((char*)c);
+; 153  : 				putc(c);
 
-	movsx	rax, BYTE PTR c$1[rsp]
-	mov	rcx, rax
-	call	?puts@@YAXPEAD@Z			; puts
+	movzx	ecx, BYTE PTR c$1[rsp]
+	call	?putc@@YAXD@Z				; putc
 	jmp	$LN10@printf
 $LN11@printf:
 
@@ -761,7 +761,7 @@ $LN5@printf:
 ; 174  : 			{
 ; 175  : 				puts(".");
 
-	lea	rcx, OFFSET FLAT:$SG3063
+	lea	rcx, OFFSET FLAT:$SG3073
 	call	?puts@@YAXPEAD@Z			; puts
 
 ; 176  : 			}

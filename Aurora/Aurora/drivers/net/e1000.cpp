@@ -15,7 +15,6 @@
 #include <stdio.h>
 #include <arch\x86_64\mmngr\kheap.h>
 #include <console.h>
-#include <net\nethw.h>
 #include <string.h>
 
 
@@ -139,7 +138,7 @@ void e1000_interrupt_handler (size_t v, void* p) {
 	}else if (icr & E1000_ICR_TRANSMIT) {
 		printf ("E1000 interrupt data transmit\n");
 	} else if (icr & E1000_ICR_LINK_CHANGE) {
-		printf ("E1000 interrupt link change %s\n", (e1000_read_command(REG_STATUS) & (1<<1)) ? "up" : "down");
+		//printf ("E1000 interrupt link change %s\n", (e1000_read_command(REG_STATUS) & (1<<1)) ? "up" : "down");
 	} else {
 		printf ("E1000 unknown interrupt\n");
 	}
@@ -395,12 +394,10 @@ void e1000_initialize () {
 
 	for (int i = 0; i < 10000; i++)
 		;
-	//! Initialize the Network Manager (NetHW)
-	nethw_initialize ();
 
 	if (e1000_read_mac_address()) {
 		//! Set the MAC address code
-	    nethw_set_mac (i_net_dev->mac);
+		printf ("MAC Address read successfully\n");
 	}
 	printf ("e1000 setup completed\n");
 }

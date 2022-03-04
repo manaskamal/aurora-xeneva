@@ -14,9 +14,9 @@ _BSS	SEGMENT
 ?last_heap@@3PEAU_kmem_@@EA DQ 01H DUP (?)		; last_heap
 _BSS	ENDS
 CONST	SEGMENT
-$SG2971	DB	'Heap Start -> %x', 0aH, 00H
+$SG2979	DB	'Heap Start -> %x', 0aH, 00H
 	ORG $+6
-$SG2972	DB	'Heap End -> %x', 0aH, 00H
+$SG2980	DB	'Heap End -> %x', 0aH, 00H
 CONST	ENDS
 PUBLIC	?initialize_kmemory@@YAX_K@Z			; initialize_kmemory
 PUBLIC	?malloc@@YAPEAX_K@Z				; malloc
@@ -74,13 +74,13 @@ $LN3:
 ; 121  : 	printf ("Heap Start -> %x\n", first_heap);
 
 	mov	rdx, QWORD PTR ?first_heap@@3PEAU_kmem_@@EA ; first_heap
-	lea	rcx, OFFSET FLAT:$SG2971
+	lea	rcx, OFFSET FLAT:$SG2979
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 122  : 	printf ("Heap End -> %x\n", last_heap);
 
 	mov	rdx, QWORD PTR ?last_heap@@3PEAU_kmem_@@EA ; last_heap
-	lea	rcx, OFFSET FLAT:$SG2972
+	lea	rcx, OFFSET FLAT:$SG2980
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 123  : }

@@ -34,6 +34,8 @@
 #ifndef _BACKDOOR_DEF_H_
 #define _BACKDOOR_DEF_H_
 
+#ifdef HW_SVGA
+
 #define BDOOR_MAGIC 0x564D5868
 
 #define BDOOR_PORT 0x5658
@@ -122,5 +124,8 @@
 
 #define IS_BDOOR_PMC(index)  (((index) | 3) == 0x10003)
 #define BDOOR_CMD(ecx)       ((ecx) & 0xffff)
+
+#endif
+
 
 #endif /* _BACKDOOR_DEF_H_ */

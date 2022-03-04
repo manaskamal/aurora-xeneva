@@ -35,8 +35,6 @@ typedef struct _process_ {
 	uint64_t* cr3;
 	uint64_t image_base;
 	uint64_t stack;
-	void*    user_heap_start;
-	size_t   heap_size;
 	struct _process_ *next;
 	struct _process_ *prev;
 	struct _process_ *parent;
@@ -80,7 +78,6 @@ extern void kill_process_by_id (uint16_t id);
  */
 extern uint32_t get_num_process ();
 
-extern void process_map_addresses (uint64_t addr, size_t length, uint64_t *c_address_space, process_t* c_process);
 
 /** 
  * get_current_process -- returns the current active process
@@ -99,4 +96,6 @@ extern process_t *find_process_by_id (uint32_t pid);
  * @param thread -- thread address
  */
 extern process_t *find_process_by_thread (thread_t *thread);
+
+extern void process_list_initialize ();
 #endif

@@ -106,7 +106,8 @@ void linear_gradient (canvas_t *canvas,int x1, int y1, int x2, int y2, uint32_t 
 		for (int i= 0; i < x2; i++) {
 			uint32_t c = trans_color (col1, col2, d);
 			canvas_draw_pixel (canvas,x1+i, y1+j, c);
+		
 		}
-		d+= 0.1f;
+			d+= 0.1f;
 	}
 }

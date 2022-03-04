@@ -16,12 +16,13 @@ typedef struct _IMAGE_ {
 	uint32_t width;
 	uint32_t height;
 	uint32_t size;
-	uint64_t* data;
+	uint8_t* data;
 	uint8_t* image;
+	int file_desc;
 }Image;
 
 
-extern Image* LoadImage (char* filename, uint64_t* address);
+extern Image* LoadImage (char* filename, uint8_t* address);
 extern void FillImageInfo (Image *img, uint32_t w, uint32_t h);
 extern void CallJpegDecoder (Image *img);
 extern void ImageResizeBilinear (uint8_t* src,int src_w, int src_h, int new_w, int new_h, uint8_t* new_img);

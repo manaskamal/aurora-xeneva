@@ -12,6 +12,8 @@
 #include <drivers\svga\svga_screen.h>
 #include <stdio.h>
 
+#ifdef HW_SVGA
+
 extern svga_device svga_dev;
 
 void svga_screen_init () {
@@ -133,3 +135,5 @@ void svga_paint_screen (uint32_t color, int x_, int y_, int width, int height) {
 	}
 	svga_update(x_, y_, width,height);
 }
+
+#endif

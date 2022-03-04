@@ -6,7 +6,7 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 CONST	SEGMENT
-$SG3295	DB	'[Aurora]:Key Pressed', 0aH, 00H
+$SG3304	DB	'[Aurora]:Key Pressed', 0aH, 00H
 CONST	ENDS
 PUBLIC	?kybrd_init@@YAXXZ				; kybrd_init
 PUBLIC	?kybrd_handler@@YAX_KPEAX@Z			; kybrd_handler
@@ -14,12 +14,16 @@ EXTRN	?inportb@@YAEG@Z:PROC				; inportb
 EXTRN	?interrupt_end@@YAXI@Z:PROC			; interrupt_end
 EXTRN	?interrupt_set@@YAX_KP6AX0PEAX@ZE@Z:PROC	; interrupt_set
 EXTRN	?printf@@YAXPEBDZZ:PROC				; printf
+EXTRN	?pmmngr_alloc@@YAPEAXXZ:PROC			; pmmngr_alloc
+EXTRN	?pmmngr_free@@YAXPEAX@Z:PROC			; pmmngr_free
+EXTRN	?is_scheduler_initialized@@YA_NXZ:PROC		; is_scheduler_initialized
+EXTRN	?message_send@@YAXGPEAU_message_@@@Z:PROC	; message_send
 pdata	SEGMENT
 $pdata$?kybrd_init@@YAXXZ DD imagerel $LN3
 	DD	imagerel $LN3+29
 	DD	imagerel $unwind$?kybrd_init@@YAXXZ
-$pdata$?kybrd_handler@@YAX_KPEAX@Z DD imagerel $LN4
-	DD	imagerel $LN4+84
+$pdata$?kybrd_handler@@YAX_KPEAX@Z DD imagerel $LN6
+	DD	imagerel $LN6+157
 	DD	imagerel $unwind$?kybrd_handler@@YAX_KPEAX@Z
 pdata	ENDS
 xdata	SEGMENT
@@ -31,15 +35,16 @@ xdata	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\drivers\kybrd.cpp
 _TEXT	SEGMENT
-code$ = 32
-code$1 = 36
+code$1 = 32
+code$ = 36
+msg$2 = 40
 v$ = 64
 p$ = 72
 ?kybrd_handler@@YAX_KPEAX@Z PROC			; kybrd_handler
 
 ; 22   : {
 
-$LN4:
+$LN6:
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 56					; 00000038H
@@ -57,7 +62,7 @@ $LN4:
 	movzx	eax, al
 	and	eax, 1
 	test	eax, eax
-	je	SHORT $LN1@kybrd_hand
+	je	SHORT $LN3@kybrd_hand
 
 ; 27   : 	{
 ; 28   : 		
@@ -68,21 +73,55 @@ $LN4:
 	movzx	eax, al
 	mov	DWORD PTR code$1[rsp], eax
 
-; 30   : 		/*if (is_scheduler_initialized()) {
+; 30   : 		if (is_scheduler_initialized()) {
+
+	call	?is_scheduler_initialized@@YA_NXZ	; is_scheduler_initialized
+	movzx	eax, al
+	test	eax, eax
+	je	SHORT $LN2@kybrd_hand
+
 ; 31   : 			message_t *msg = (message_t*)pmmngr_alloc();
+
+	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
+	mov	QWORD PTR msg$2[rsp], rax
+
 ; 32   : 			msg->type = 3;
+
+	mov	eax, 3
+	mov	rcx, QWORD PTR msg$2[rsp]
+	mov	WORD PTR [rcx+56], ax
+
 ; 33   : 		    msg->dword = code;
+
+	mov	rax, QWORD PTR msg$2[rsp]
+	mov	ecx, DWORD PTR code$1[rsp]
+	mov	DWORD PTR [rax], ecx
+
 ; 34   : 		    message_send (2,msg);
+
+	mov	rdx, QWORD PTR msg$2[rsp]
+	mov	cx, 2
+	call	?message_send@@YAXGPEAU_message_@@@Z	; message_send
+
 ; 35   : 		    pmmngr_free (msg);
-; 36   : 		} else {*/
+
+	mov	rcx, QWORD PTR msg$2[rsp]
+	call	?pmmngr_free@@YAXPEAX@Z			; pmmngr_free
+
+; 36   : 		} else {
+
+	jmp	SHORT $LN1@kybrd_hand
+$LN2@kybrd_hand:
+
 ; 37   : 			printf ("[Aurora]:Key Pressed\n");
 
-	lea	rcx, OFFSET FLAT:$SG3295
+	lea	rcx, OFFSET FLAT:$SG3304
 	call	?printf@@YAXPEBDZZ			; printf
 $LN1@kybrd_hand:
-$end$5:
+$LN3@kybrd_hand:
+$end$7:
 
-; 38   : 		//}
+; 38   : 		}
 ; 39   : 
 ; 40   : 		/*thread_t* thr = (thread_t*)thread_iterate_ready_list (1);
 ; 41   : 	    if (thr != NULL){

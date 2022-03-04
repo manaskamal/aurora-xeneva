@@ -14,61 +14,93 @@
 #include <sys\_exit.h>
 #include <sys\_ipc.h>
 #include <sys\_file.h>
+#include <sys\pe.h>
 #include <sys\_process.h>
 #include <sys\ioquery.h>
 #include <sys\mmap.h>
 #include <string.h>
 #include <stdlib.h>
 #include <math.h>
-#include <canvas.h>
 #include <setjmp.h>
 
-#define SSFN_CONSOLEBITMAP_TRUECOLOR
+#include "sndsrv.h"
 
-#define PI  3.14159265
+int pri_event_fd = 0;
 
-typedef struct _data_ {
-	uint8_t i;
-	uint8_t j;
-	uint8_t k;
-	uint32_t data4;
-	uint8_t *p;
-	uint8_t ch[32];
-}data_t;
+/**
+ * snd_share_buffer -- shares the sound buffer to desired app
+ * @param to_id -- requested application id
+ */
+void snd_share_buffer (int to_id) {
+	sys_copy_mem(to_id,0x000000E000000000,8 * 1024 * 1024);
 
+	pri_event_t e;
+	memset(&e, 0, sizeof(pri_event_t));
+	e.type = SND_SRV_BUFFER_READY;
+	e.to_id = to_id;
+	e.p_value = (uint32_t*)0x000000E000000000;
+	e.dword = (8*1024*1024); //size
+	e.from_id = get_current_pid();
+	ioquery(pri_event_fd,PRI_LOOP_PUT_EVENT,&e);
+}
+
+
+/*
+ * main -- main entry point
+ * @param argc -- system argument
+ * @param argv -- system argument 2
+ */
 void main (int argc, char*argv[]) {
-	sys_print_text ("Starting Xeneva.....\n");
-	sys_print_text ("Starting Window Manager...\n");
-	//int fd = sys_open_file ("/dev/fb",NULL);
-	//UFILE f;
-	//f.flags = 0;
-	//f.size = 100*100*32;
-	//uint8_t* buffer = (uint8_t*)0xFFFFD00000200000;  //malloc(100*100*32);
-	//for (int i = 0; i < 100; i++)
-	//	for (int j = 0; j < 100; j++)
-	//		buffer[0+i * 1280 + 0 + j] = 0xFFFFFFFF;
 
-	//sys_write_file (fd,buffer,&f);
-	/*int fd;
+	sys_print_text ("Sound Service v0.1\n");
+	sys_print_text ("Copyright (C) Manas Kamal Choudhury 2022\n");
 
-	unsigned char *data = (unsigned char*)malloc(sizeof(data_t));
-	data_t *d = (data_t*)data;
-	d->i = 10;
-	d->j = 11;
-	d->data4 = 1280;
-	d->k = 12;
-	d->p = (uint8_t*)0x0000D00000000000;
-	memset(d->ch, 0, 32);
-	strcpy ((char*)d->ch,"Hello");
-	sys_pipe(&fd,NULL);
+	/*int snd_fd = sys_open_file ("/dev/snd",NULL);
+	pri_event_fd = sys_open_file ("/dev/pri_loop", NULL);
+	ioquery (pri_event_fd, PRI_LOOP_CREATE, NULL);
+
+	for (int i = 0; i < 8 * 1024 * 1024 / 4096; i++) {
+		valloc(0x000000E000000000 + i * 4096);
+		uint64_t* p = (uint64_t*)(0x000000E000000000 + i * 4096);
+	}
+	memset((void*)0x000000E000000000,0,8*1024*1024);
 	UFILE file;
-	file.size = 32;
-	file.flags = 0;
-	sys_write_file (fd,data,&file);*/
-	///message_t msg;
+	file.flags = NULL;
+	file.size = 0x100000;
 
+	uint32_t *buffer_p = (uint32_t*)0x000000E000000000;
+	uint32_t *buffer_p_current = (uint32_t*)buffer_p;
+	pri_event_t e;*/
 	while(1) {
-		//sys_wait();
+		/*ioquery(pri_event_fd, PRI_LOOP_GET_EVENT,&e);
+		if (e.type != 0) {
+
+			if (e.type == SND_SRV_REQUEST_BUFFER) {
+				snd_share_buffer(e.from_id);
+				memset(&e, 0, sizeof(pri_event_t));
+			}
+
+			if (e.type == SND_SRV_ADD_PCM) {
+				sys_print_text ("PCM Data Added\n");
+				sys_write_file (snd_fd,(unsigned char*)buffer_p,&file);
+				memset(&e, 0, sizeof(pri_event_t));
+			}
+
+			if (e.type == SND_SRV_REQUEST_NEXT) {
+				sys_write_file (snd_fd,(unsigned char*)(buffer_p + 0x100000),&file);
+				buffer_p += 0x100000;
+				memset(&e, 0, sizeof(pri_event_t));
+			}
+
+			if (e.type == SND_SRV_PLAY_AUDIO) {
+				ioquery (snd_fd,SOUND_PLAY,NULL);
+				memset(&e, 0, sizeof(pri_event_t));
+			}
+
+
+		}
+		sys_wait();*/
+		sys_wait();
 	}
 }
 

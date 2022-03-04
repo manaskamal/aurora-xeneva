@@ -13,6 +13,7 @@
 #include <screen.h>
 #include <ipc\dwm_ipc.h>
 #include <arch\x86_64\thread.h>
+#include <pmmngr.h>
 
 //================================================
 // M E M O R Y   M A P 
@@ -98,14 +99,14 @@ void vmmngr_x86_64_init () {
 
 	memset (new_cr3, 0, 4096);
 
-	new_cr3[0] = cr3[0];
+	/*new_cr3[0] = cr3[0];
 	new_cr3[1] = cr3[1];
-	new_cr3[2] = cr3[2];
+	new_cr3[2] = cr3[2];*/
 	//! Copy all higher half mappings to new mapping
 	for (int i = 0; i < 512; ++i) {
 		if (i < 256) {
-			//new_cr3[i] = 0;
-			continue;
+			new_cr3[i] = cr3[i];
+			//continue;
 		}
 		if (i == 511)
 			continue;
@@ -117,7 +118,7 @@ void vmmngr_x86_64_init () {
 		}
 		
 	}
-	
+
 	//! Store the kernel's address space
 	root_cr3 = new_cr3;
 
@@ -125,6 +126,26 @@ void vmmngr_x86_64_init () {
 	x64_write_cr3 ((size_t)new_cr3);
 
 	x64_write_msr (0x277, 0x0007040600070406);
+
+	uint64_t pos = 0xFFFFC00000000000;
+	for (int i = 0; i < 1024*1024/4096; i++) {
+		uint64_t* phys = get_physical_address(pos + i * 4096);
+		if (phys) {
+			pmmngr_lock_page(phys);
+		}
+	}
+
+	pos = 0xFFFFA00000000000;
+	for (int i = 0; i < 1024*1024/ 4096; i++) {
+		uint64_t* phys = get_physical_address(pos + i * 4096);
+		if (phys) {
+			pmmngr_lock_page(phys);
+		}
+	}
+
+	pmmngr_lock_page(get_physical_address(0xFFFFD80000000000));
+	pmmngr_lock_page(get_physical_address(0xFFFFE00000000000));
+
 }
 
 
@@ -215,10 +236,11 @@ void unmap_page_ex(uint64_t* cr3, uint64_t virt_addr, bool free_physical){
 	uint64_t *pt = (uint64_t*)(pd[pd_index(virt_addr)] & ~(4096 - 1));
 	uint64_t *page = (uint64_t*)(pt[pt_index(virt_addr)] & ~(4096 - 1));
 
-	if ((pt[pt_index(virt_addr)] & PAGING_PRESENT) != 0)
+	if ((pt[pt_index(virt_addr)] & PAGING_PRESENT) != 0) {
 		pt[pt_index(virt_addr)] = 0;
+	}
 
-	if (free_physical)
+	if (free_physical && page != 0) 
 		pmmngr_free(page);
 
 }

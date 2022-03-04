@@ -35,17 +35,25 @@
 
 #include <stdint.h>
 #include <canvas.h>
+#include <acrylic.h>
+
 
 /* Messages sends from client to server */
 #define PRI_WIN_CREATE  100
 #define PRI_WIN_MARK_FOR_CLOSE 102
 #define PRI_WIN_MOVE 103
+#define PRI_WIN_READY 104
+#define PRI_REGISTER_DESKTOP_COMPONENT 105
+#define PRI_CHANGE_WALLPAPER 106
 
 /* Messages that are being send to client by server */
 #define DAISY_WIN_MOVE  200
 #define DAISY_CURSOR_MOVED 201
 #define DAISY_GIFT_CANVAS 202
 #define DAISY_GIFT_SHARED_WIN 203
+#define DAISY_KEY_EVENT  204
+#define DAISY_NEW_WINDOW_INFO 205
+#define DAISY_NOTIFY_WIN_FOCUS_CHANGED 206
 
 typedef struct _pri_rect_ {
 	int x;
@@ -90,6 +98,7 @@ typedef struct _image_ {
 
 //! MOUSE CODES
 #define MOUSE_MOVE  1
+#define KEY_PRESSED 3
 typedef struct _dwm_message_ {
 	uint16_t type;
 	uint32_t dword;
@@ -140,10 +149,18 @@ typedef struct _pri_win_info_ {
 	int height;
 }pri_win_info_t;
 
+
+#define PRI_WIN_MOVABLE  0x1
+#define PRI_WIN_STATIC   0x2
+#define PRI_WIN_ALWAYS_ON_TOP  0x3
+
+#define PRI_WIN_ANIM_POSITIVE 0x1
+#define PRI_WIN_ANIM_NEGATIVE 0x2
 /**
  * pri_window_t -- window structure
  */
 typedef struct _pri_win_ {
+	bool anim;
 	uint8_t attribute;
 	uint16_t owner_id;
 	uint32_t *backing_store;
@@ -152,7 +169,11 @@ typedef struct _pri_win_ {
 	int drag_y;
 	int resz_h;
 	int resz_v;
+	int anim_x;
+	int anim_y;
+	int anim_dir;
 	canvas_t *shadow;
+	char* title;
 }pri_window_t;
 
 /*
@@ -162,6 +183,13 @@ typedef struct _pri_wallp_ {
 	uint8_t *buffer;
 	int w;
 	int h;
+	Image *img;
 }pri_wallpaper_t;
 
+/*
+ * desktop component structure
+ */
+typedef struct _desktop_component_ {
+	uint16_t process_id;
+}desktop_component_t;
 #endif

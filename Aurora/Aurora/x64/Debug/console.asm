@@ -22,9 +22,9 @@ psf_data DQ	01H DUP (?)
 _console_initialized_ DB 01H DUP (?)
 _BSS	ENDS
 CONST	SEGMENT
-$SG3161	DB	'/font.psf', 00H
+$SG3169	DB	'/font.psf', 00H
 	ORG $+6
-$SG3162	DB	'Font finally loaded', 0aH, 00H
+$SG3170	DB	'Font finally loaded', 0aH, 00H
 CONST	ENDS
 PUBLIC	?console_initialize@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z ; console_initialize
 PUBLIC	?puts@@YAXPEAD@Z				; puts
@@ -155,11 +155,11 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 ?is_console_initialized@@YA_NXZ PROC			; is_console_initialized
 
-; 141  : 	return _console_initialized_;
+; 167  : 	return _console_initialized_;
 
 	movzx	eax, BYTE PTR _console_initialized_
 
-; 142  : }
+; 168  : }
 
 	ret	0
 ?is_console_initialized@@YA_NXZ ENDP			; is_console_initialized
@@ -773,23 +773,22 @@ $LN3:
 
 ; 50   : 
 ; 51   : 	//psf_data = info->psf_font_data;
-; 52   : 
-; 53   : 	uint64_t* buffer = (uint64_t*)pmmngr_alloc_blocks(2);
+; 52   : 	uint64_t* buffer = (uint64_t*)pmmngr_alloc_blocks(2);
 
 	mov	ecx, 2
 	call	?pmmngr_alloc_blocks@@YAPEAXH@Z		; pmmngr_alloc_blocks
 	mov	QWORD PTR buffer$[rsp], rax
 
-; 54   : 	memset(buffer, 0, 2*4096);
+; 53   : 	memset(buffer, 0, 8192);
 
 	mov	r8d, 8192				; 00002000H
 	xor	edx, edx
 	mov	rcx, QWORD PTR buffer$[rsp]
 	call	?memset@@YAXPEAXEI@Z			; memset
 
-; 55   : 	vfs_node_t file = fat32_open(NULL, "/font.psf");
+; 54   : 	vfs_node_t file = fat32_open(NULL, "/font.psf");
 
-	lea	r8, OFFSET FLAT:$SG3161
+	lea	r8, OFFSET FLAT:$SG3169
 	xor	edx, edx
 	lea	rcx, QWORD PTR $T2[rsp]
 	call	?fat32_open@@YA?AU_vfs_node_@@PEAU1@PEAD@Z ; fat32_open
@@ -805,28 +804,29 @@ $LN3:
 	mov	ecx, 104				; 00000068H
 	rep movsb
 
-; 56   : 	fat32_read_file (&file,buffer,file.size);
+; 55   : 	fat32_read_file (&file,buffer,file.size);
 
 	mov	r8d, DWORD PTR file$[rsp+32]
 	mov	rdx, QWORD PTR buffer$[rsp]
 	lea	rcx, QWORD PTR file$[rsp]
 	call	?fat32_read_file@@YAXPEAU_vfs_node_@@PEA_KI@Z ; fat32_read_file
 
-; 57   : 	//vfs_node_t node =
-; 58   : 	psf_data = buffer;
+; 56   : 	//vfs_node_t node =
+; 57   : 	psf_data = buffer;
 
 	mov	rax, QWORD PTR buffer$[rsp]
 	mov	QWORD PTR psf_data, rax
 
-; 59   : 	_console_initialized_ = true;
+; 58   : 	_console_initialized_ = true;
 
 	mov	BYTE PTR _console_initialized_, 1
 
-; 60   : 	printf ("Font finally loaded\n");
+; 59   : 	printf ("Font finally loaded\n");
 
-	lea	rcx, OFFSET FLAT:$SG3162
+	lea	rcx, OFFSET FLAT:$SG3170
 	call	?printf@@YAXPEBDZZ			; printf
 
+; 60   : 	//for(;;);
 ; 61   : }
 
 	add	rsp, 376				; 00000178H

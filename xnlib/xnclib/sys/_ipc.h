@@ -68,6 +68,7 @@ typedef struct _pri_event_ {
 	uint32_t *p_value2;
 	char *value;
 	unsigned char* value2;
+	char char_values[100];
 }pri_event_t;
 
 //*********************************************************************

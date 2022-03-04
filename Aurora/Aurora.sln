@@ -7,7 +7,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "audio_sb16", "..\drivers\au
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libdriver", "..\driverapi\libdriver\libdriver.vcxproj", "{6C94A58C-066E-4017-BB9A-29D6150010CA}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "shell", "..\shell\shell.vcxproj", "{F1CADE48-6095-4DA5-86F6-60157309395E}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sndsrv", "..\shell\shell.vcxproj", "{F1CADE48-6095-4DA5-86F6-60157309395E}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "xnclib", "..\xnlib\xnclib\xnclib.vcxproj", "{C516DF8B-54FB-4D10-B4F7-7E22BDB20336}"
 EndProject
@@ -30,6 +30,8 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "daisy", "..\xnlib\daisy\daisy.vcxproj", "{6465155A-3DD9-429C-B040-ADF30FD01265}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "usb", "..\drivers\usb\usb.vcxproj", "{5E30EB11-517C-49D0-9D3A-49FDA9D17E94}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "xnsnd", "..\xnlib\xnsnd\xnsnd.vcxproj", "{1EDAE603-A628-45D2-A034-0326DD1158AA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -193,6 +195,16 @@ Global
 		{5E30EB11-517C-49D0-9D3A-49FDA9D17E94}.Release|Win32.ActiveCfg = Release|Win32
 		{5E30EB11-517C-49D0-9D3A-49FDA9D17E94}.Release|Win32.Build.0 = Release|Win32
 		{5E30EB11-517C-49D0-9D3A-49FDA9D17E94}.Release|x64.ActiveCfg = Release|Win32
+		{1EDAE603-A628-45D2-A034-0326DD1158AA}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{1EDAE603-A628-45D2-A034-0326DD1158AA}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{1EDAE603-A628-45D2-A034-0326DD1158AA}.Debug|Win32.ActiveCfg = Debug|Win32
+		{1EDAE603-A628-45D2-A034-0326DD1158AA}.Debug|Win32.Build.0 = Debug|Win32
+		{1EDAE603-A628-45D2-A034-0326DD1158AA}.Debug|x64.ActiveCfg = Debug|x64
+		{1EDAE603-A628-45D2-A034-0326DD1158AA}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{1EDAE603-A628-45D2-A034-0326DD1158AA}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{1EDAE603-A628-45D2-A034-0326DD1158AA}.Release|Win32.ActiveCfg = Release|Win32
+		{1EDAE603-A628-45D2-A034-0326DD1158AA}.Release|Win32.Build.0 = Release|Win32
+		{1EDAE603-A628-45D2-A034-0326DD1158AA}.Release|x64.ActiveCfg = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

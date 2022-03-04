@@ -34,7 +34,7 @@
 #include <stdlib.h>
 #include <acrylic.h>
 #include <color.h>
-
+#include <sys/_term.h>
 
 /**
  * daisy_widget_panel_refresh -- repaints the widget

@@ -10,18 +10,18 @@ _BSS	SEGMENT
 ?v_i@@3HA DD	01H DUP (?)				; v_i
 _BSS	ENDS
 CONST	SEGMENT
-$SG3764	DB	'MSI-X found for this device', 0aH, 00H
+$SG3765	DB	'MSI-X found for this device', 0aH, 00H
 	ORG $+3
-$SG3766	DB	'MSI found for this device', 0aH, 00H
+$SG3767	DB	'MSI found for this device', 0aH, 00H
 	ORG $+5
-$SG3771	DB	'MSI-DATA -> %x', 0aH, 00H
-$SG3776	DB	'MSG Control -> %x', 0aH, 00H
+$SG3772	DB	'MSI-DATA -> %x', 0aH, 00H
+$SG3777	DB	'MSG Control -> %x', 0aH, 00H
 	ORG $+5
-$SG3783	DB	'MSI 64BIT Capable', 0aH, 00H
+$SG3784	DB	'MSI 64BIT Capable', 0aH, 00H
 	ORG $+5
-$SG3785	DB	'MSI Mask Capable', 0aH, 00H
+$SG3786	DB	'MSI Mask Capable', 0aH, 00H
 	ORG $+6
-$SG3786	DB	'MSI interrupt for this device enabled msi reg -> %x', 0aH
+$SG3787	DB	'MSI interrupt for this device enabled msi reg -> %x', 0aH
 	DB	00H
 CONST	ENDS
 PUBLIC	?read_config_header@@YAXHHHPEATpci_device_info@@@Z ; read_config_header
@@ -890,7 +890,7 @@ $LN9@pci_alloc_:
 
 ; 313  : 				printf ("MSI-X found for this device\n");
 
-	lea	rcx, OFFSET FLAT:$SG3764
+	lea	rcx, OFFSET FLAT:$SG3765
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 314  : 				msi_reg = capptr;
@@ -914,7 +914,7 @@ $LN7@pci_alloc_:
 
 ; 319  : 				printf ("MSI found for this device\n");
 
-	lea	rcx, OFFSET FLAT:$SG3766
+	lea	rcx, OFFSET FLAT:$SG3767
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 320  : 				msi_reg = capptr;
@@ -982,7 +982,7 @@ $LN5@pci_alloc_:
 ; 334  : 		printf ("MSI-DATA -> %x\n", msi_data);
 
 	mov	rdx, QWORD PTR msi_data$9[rsp]
-	lea	rcx, OFFSET FLAT:$SG3771
+	lea	rcx, OFFSET FLAT:$SG3772
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 335  : 		uint64_t internal_ptr = 0;
@@ -1023,7 +1023,7 @@ $LN4@pci_alloc_:
 ; 341  : 			printf ("MSG Control -> %x\n", msgctrl);
 
 	mov	rdx, QWORD PTR msgctrl$7[rsp]
-	lea	rcx, OFFSET FLAT:$SG3776
+	lea	rcx, OFFSET FLAT:$SG3777
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 342  : 			bool mask_cap = ((msgctrl & (1<<8)) != 0);
@@ -1087,7 +1087,7 @@ $LN16@pci_alloc_:
 
 ; 350  : 				printf ("MSI 64BIT Capable\n");
 
-	lea	rcx, OFFSET FLAT:$SG3783
+	lea	rcx, OFFSET FLAT:$SG3784
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 351  : 				write_config_32(bus, dev, func, msi_reg + 2, msi_addr >> 32);
@@ -1133,7 +1133,7 @@ $LN2@pci_alloc_:
 
 ; 356  : 				printf ("MSI Mask Capable\n");
 
-	lea	rcx, OFFSET FLAT:$SG3785
+	lea	rcx, OFFSET FLAT:$SG3786
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 357  : 				write_config_32 (bus, dev, func, msi_reg + 4, 0);
@@ -1179,7 +1179,7 @@ $LN1@pci_alloc_:
 ; 363  : 			printf ("MSI interrupt for this device enabled msi reg -> %x\n", msi_reg);
 
 	mov	edx, DWORD PTR msi_reg$2[rsp]
-	lea	rcx, OFFSET FLAT:$SG3786
+	lea	rcx, OFFSET FLAT:$SG3787
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 364  : 			v_i++;

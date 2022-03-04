@@ -101,7 +101,7 @@ void task_delete (thread_t* thread) {
  **/
 thread_t* create_kthread (void (*entry) (void), uint64_t stack,uint64_t cr3, char name[8], uint8_t priority)
 {
-	thread_t *t = (thread_t*)pmmngr_alloc();
+	thread_t *t = (thread_t*)malloc(sizeof(thread_t));//pmmngr_alloc();
 	t->ss = 0x10;
 	t->rsp = (uint64_t*)stack;
 	t->rflags = 0x202;
@@ -153,7 +153,7 @@ thread_t* create_kthread (void (*entry) (void), uint64_t stack,uint64_t cr3, cha
  */
 thread_t* create_user_thread (void (*entry) (void*),uint64_t stack,uint64_t cr3, char name[8], uint8_t priority)
 {
-	thread_t *t = (thread_t*)pmmngr_alloc();
+	thread_t *t = (thread_t*)malloc(sizeof(thread_t));//pmmngr_alloc();
 	memset (t, 0, 4096);
 	t->ss = SEGVAL(GDT_ENTRY_USER_DATA,3); 
 	t->rsp = (uint64_t*)stack;
@@ -197,7 +197,6 @@ thread_t* create_user_thread (void (*entry) (void*),uint64_t stack,uint64_t cr3,
 	t->state = THREAD_STATE_READY;
 	t->priority = priority;
 	t->fd_current = 0;
-	t->stream = allocate_stream();
 	thread_insert (t);
 	return t;
 }
@@ -218,7 +217,7 @@ void initialize_scheduler () {
 	scheduler_mutex = create_mutex ();
 	scheduler_enable = true;
 	scheduler_initialized = true;
-
+	task_id = 0;
 	/** Here create the first thread, the idle thread which never gets
 	    blocked nor get destroyed untill the system turns off **/
 	thread_t *idle_ = create_kthread (idle_thread,(uint64_t)pmmngr_alloc(),x64_read_cr3(),"Idle",1);

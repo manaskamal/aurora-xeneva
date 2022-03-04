@@ -36,6 +36,6 @@ extern void printf(const char* format, ...);
 extern int putchar (int);
 extern int getchar ();
 extern void *memmove (void* dest, const void* src, size_t n);
-
+extern char* ftoa(float value, uint8_t decimal_places);
 
 #endif

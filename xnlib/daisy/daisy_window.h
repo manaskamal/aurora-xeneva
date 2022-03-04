@@ -38,6 +38,16 @@
 #include "list.h"
 #include <canvas.h>
 
+/* Window Properties */
+#define DAISY_WIN_MOVABLE  0x1
+#define DAISY_WIN_STATIC   0x2
+#define DAISY_WIN_ALWAYS_ON_TOP  0x3
+#define DAISY_WIN_MINIMIZABLE  0x4
+#define DAISY_WIN_MAXIMIZABLE  0x5
+#define DAISY_WIN_CLOSABLE  0x6
+
+#define DAISY_WIN_NORMAL  DAISY_WIN_MOVABLE
+#define DAISY_WIN_UNMOVABLE  DAISY_WIN_STATIC
 
 typedef struct _pri_rect_ {
 	int x;
@@ -54,6 +64,9 @@ typedef struct _daisy_win_ {
 	int mouse_button_last;
 	char *title;
 	list_t *widgets;
+	bool first_time;
+	uint32_t color;
+	daisy_widget_t * focused_widget;
 	void (*paint) (_daisy_win_ *win);
 }daisy_window_t;
 
@@ -76,7 +89,7 @@ typedef struct _daisy_win_info_ {
  * @param h -- height of the window
  * @param attribute -- attributes of the window
  */
-extern daisy_window_t* daisy_window_create (int x, int y, int w, int h, uint8_t attribute);
+extern daisy_window_t* daisy_window_create (int x, int y, int w, int h, uint8_t attribute, char* title);
 
 /**
  * daisy_get_window_info -- get windows informations
@@ -128,4 +141,27 @@ extern void daisy_window_set_title (daisy_window_t *win,char* title);
  */
 extern void daisy_window_add_widget (daisy_window_t *win,daisy_widget_t *widget);
 
+/** 
+ * daisy_update_rect_area -- updates only selected regions of the given window
+ * @param win -- window to be updated
+ * @param x -- X coordinate
+ * @param y -- Y coordinate
+ * @param w -- Width of the rectangle
+ * @param h -- Height of the rectangle
+ */
+extern void daisy_window_update_rect_area (daisy_window_t *win,uint32_t x, uint32_t y, uint32_t w, uint32_t h);
+
+
+extern void daisy_window_set_back_color (daisy_window_t *win, uint32_t color);
+
+extern uint32_t daisy_window_get_back_color (daisy_window_t *win);
+
+/**
+ * daisy_window_handle_mouse -- handles mouse events within the
+ * window
+ * @param x -- mouse_x coordinate
+ * @param y -- mouse_y coordinate
+ * @param button -- button bit
+ */
+extern void daisy_window_handle_mouse (daisy_window_t *win,int x, int y, int button);
 #endif

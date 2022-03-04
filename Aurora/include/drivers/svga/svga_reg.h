@@ -34,7 +34,7 @@
 
 #include <stdint.h>
 
-
+#ifdef HW_SVGA
 /*
  * PCI device IDs.
  */
@@ -1556,5 +1556,7 @@ struct {
     */
 }
 SVGAFifoCmdRemapGMR2;
+
+#endif
 
 #endif

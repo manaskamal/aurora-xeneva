@@ -1,0 +1,20 @@
+﻿Build started 26-02-2022 আবেলি 1:42:33.
+     1>Project "E:\Xeneva Project\Xeneva\xnlib\xnsnd\xnsnd.vcxproj" on node 2 (Rebuild target(s)).
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\xnlib\daisy" /I"E:\Xeneva Project\Xeneva\xnlib\xnclib" /Zi /nologo /W4 /WX- /sdl- /MP /Od /D ARCH_X64 /D _MBCS /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt xnsnd.cpp
+     1>cl : Command line warning D9025: overriding '/sdl-' with '/GS-'
+     1>cl : Command line warning D9002: ignoring unknown option '/arch:SSE'
+         xnsnd.cpp
+     1>xnsnd.cpp(13): warning C4100: 'event_fd' : unreferenced formal parameter
+     1>xnsnd.cpp(39): warning C4100: 'length' : unreferenced formal parameter
+     1>xnsnd.cpp(39): warning C4100: 'data' : unreferenced formal parameter
+     1>xnsnd.cpp(49): warning C4244: '=' : conversion from 'unsigned int' to 'uint8_t', possible loss of data
+     1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V110\Microsoft.CppBuild.targets(1299,5): warning MSB8012: TargetPath(E:\Xeneva Project\Xeneva\Aurora\x64\Debug\xnsnd.lib) does not match the Library's OutputFile property value (E:\Xeneva Project\Xeneva\xnlib\lib64\xnsnd.lib). This may cause your project to build incorrectly. To correct this, please make sure that $(OutDir), $(TargetName) and $(TargetExt) property values match the value specified in %(Lib.OutputFile).
+       Lib:
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\Lib.exe /OUT:"E:\Xeneva Project\Xeneva\xnlib\lib64\xnsnd.lib" /NOLOGO /NODEFAULTLIB /MACHINE:X64 x64\Debug\xnsnd.obj
+         xnsnd.vcxproj -> E:\Xeneva Project\Xeneva\Aurora\x64\Debug\xnsnd.lib
+     1>Done Building Project "E:\Xeneva Project\Xeneva\xnlib\xnsnd\xnsnd.vcxproj" (Rebuild target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:00.33

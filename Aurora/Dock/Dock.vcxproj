@@ -112,7 +112,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>E:\Xeneva Project\Xeneva\xnlib\xnclib;E:\Xeneva Project\Xeneva\xnlib\xnacrylic\include;E:\Xeneva Project\Xeneva\xnlib\QuWidgets\include;E:\Xeneva Project\Xeneva\xnlib\daisy;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>E:\Xeneva Project\Xeneva\xnlib\xnclib;E:\Xeneva Project\Xeneva\xnlib\xnacrylic\include;E:\Xeneva Project\Xeneva\xnlib\daisy;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OmitFramePointers>
       </OmitFramePointers>
       <PreprocessorDefinitions>ARCH_X64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -128,7 +128,7 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>false</GenerateDebugInformation>
-      <OutputFile>D:\dock.exe</OutputFile>
+      <OutputFile>F:\dock.exe</OutputFile>
       <AdditionalLibraryDirectories>E:\Xeneva Project\Xeneva\xnlib\lib64;</AdditionalLibraryDirectories>
       <AdditionalDependencies>xnclib.lib; daisy.lib; xnacrylic.lib;freetype.lib</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
@@ -176,7 +176,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="dock_base.cpp" />
+    <ClCompile Include="dock_button.cpp" />
     <ClCompile Include="main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="dock_base.h" />
+    <ClInclude Include="dock_button.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

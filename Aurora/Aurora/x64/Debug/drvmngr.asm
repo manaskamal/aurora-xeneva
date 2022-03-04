@@ -11,19 +11,19 @@ _BSS	SEGMENT
 driver_class_unique_id DD 01H DUP (?)
 _BSS	ENDS
 CONST	SEGMENT
-$SG3853	DB	'aurora_init_driver', 00H
+$SG3859	DB	'aurora_init_driver', 00H
 	ORG $+5
-$SG3855	DB	'aurora_close_driver', 00H
-$SG3880	DB	'usb', 00H
-$SG3857	DB	'aurora_write', 00H
+$SG3861	DB	'aurora_close_driver', 00H
+$SG3886	DB	'usb', 00H
+$SG3863	DB	'aurora_write', 00H
 	ORG $+3
-$SG3865	DB	'sb16', 00H
+$SG3871	DB	'sb16', 00H
 	ORG $+3
-$SG3868	DB	'aurora_init_driver', 00H
+$SG3874	DB	'aurora_init_driver', 00H
 	ORG $+5
-$SG3870	DB	'aurora_close_driver', 00H
+$SG3876	DB	'aurora_close_driver', 00H
 	ORG $+4
-$SG3872	DB	'aurora_write', 00H
+$SG3878	DB	'aurora_write', 00H
 CONST	ENDS
 PUBLIC	?driver_mngr_initialize@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z ; driver_mngr_initialize
 PUBLIC	?drv_mngr_write_driver@@YAXPEAE_K@Z		; drv_mngr_write_driver
@@ -503,7 +503,7 @@ $LN9:
 
 ; 91   : 		void* init_address = GetProcAddress (info->driver_entry1,"aurora_init_driver");
 
-	lea	rdx, OFFSET FLAT:$SG3853
+	lea	rdx, OFFSET FLAT:$SG3859
 	mov	rax, QWORD PTR info$[rsp]
 	mov	rcx, QWORD PTR [rax+122]
 	call	?GetProcAddress@@YAPEAXPEAXPEBD@Z	; GetProcAddress
@@ -511,7 +511,7 @@ $LN9:
 
 ; 92   : 		void* close_address = GetProcAddress (info->driver_entry1, "aurora_close_driver");
 
-	lea	rdx, OFFSET FLAT:$SG3855
+	lea	rdx, OFFSET FLAT:$SG3861
 	mov	rax, QWORD PTR info$[rsp]
 	mov	rcx, QWORD PTR [rax+122]
 	call	?GetProcAddress@@YAPEAXPEAXPEBD@Z	; GetProcAddress
@@ -519,7 +519,7 @@ $LN9:
 
 ; 93   : 		void* write_address = GetProcAddress(info->driver_entry1 ,"aurora_write");
 
-	lea	rdx, OFFSET FLAT:$SG3857
+	lea	rdx, OFFSET FLAT:$SG3863
 	mov	rax, QWORD PTR info$[rsp]
 	mov	rcx, QWORD PTR [rax+122]
 	call	?GetProcAddress@@YAPEAXPEAXPEBD@Z	; GetProcAddress
@@ -557,7 +557,7 @@ $LN9:
 	mov	eax, DWORD PTR uid$2[rsp]
 	imul	rax, 48					; 00000030H
 	lea	rcx, OFFSET FLAT:?drivers@@3PAU_aurora_driver_@@A ; drivers
-	lea	rdx, OFFSET FLAT:$SG3865
+	lea	rdx, OFFSET FLAT:$SG3871
 	mov	QWORD PTR [rcx+rax+8], rdx
 
 ; 100  : 		drivers[uid].present = true;
@@ -603,7 +603,7 @@ $LN6@driver_mng:
 
 ; 108  : 		void* init_address = GetProcAddress (info->driver_entry2,"aurora_init_driver");
 
-	lea	rdx, OFFSET FLAT:$SG3868
+	lea	rdx, OFFSET FLAT:$SG3874
 	mov	rax, QWORD PTR info$[rsp]
 	mov	rcx, QWORD PTR [rax+130]
 	call	?GetProcAddress@@YAPEAXPEAXPEBD@Z	; GetProcAddress
@@ -611,7 +611,7 @@ $LN6@driver_mng:
 
 ; 109  : 		void* close_address = GetProcAddress (info->driver_entry2, "aurora_close_driver");
 
-	lea	rdx, OFFSET FLAT:$SG3870
+	lea	rdx, OFFSET FLAT:$SG3876
 	mov	rax, QWORD PTR info$[rsp]
 	mov	rcx, QWORD PTR [rax+130]
 	call	?GetProcAddress@@YAPEAXPEAXPEBD@Z	; GetProcAddress
@@ -619,7 +619,7 @@ $LN6@driver_mng:
 
 ; 110  : 		void* write_address = GetProcAddress(info->driver_entry2 ,"aurora_write");
 
-	lea	rdx, OFFSET FLAT:$SG3872
+	lea	rdx, OFFSET FLAT:$SG3878
 	mov	rax, QWORD PTR info$[rsp]
 	mov	rcx, QWORD PTR [rax+130]
 	call	?GetProcAddress@@YAPEAXPEAXPEBD@Z	; GetProcAddress
@@ -657,7 +657,7 @@ $LN6@driver_mng:
 	mov	eax, DWORD PTR uid$1[rsp]
 	imul	rax, 48					; 00000030H
 	lea	rcx, OFFSET FLAT:?drivers@@3PAU_aurora_driver_@@A ; drivers
-	lea	rdx, OFFSET FLAT:$SG3880
+	lea	rdx, OFFSET FLAT:$SG3886
 	mov	QWORD PTR [rcx+rax+8], rdx
 
 ; 117  : 		drivers[uid].present = true;

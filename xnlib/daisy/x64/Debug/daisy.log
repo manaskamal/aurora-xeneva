@@ -1,7 +1,7 @@
-﻿Build started 24-01-2022 ৰাতিপু 10:50:24.
+﻿Build started 02-03-2022 আবেলি 10:34:10.
      1>Project "E:\Xeneva Project\Xeneva\xnlib\daisy\daisy.vcxproj" on node 2 (Rebuild target(s)).
      1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\xnlib\xnacrylic\include" /I"E:\Xeneva Project\Xeneva\xnlib\xnclib" /Zi /nologo /W4 /WX- /sdl- /MP /Od /D ARCH_X64 /D _MBCS /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt daisy.cpp daisy_event_stack.cpp daisy_priwm_window.cpp daisy_widget_button.cpp daisy_widget_panel.cpp daisy_window.cpp daisy_window_painter.cpp list.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\xnlib\xnacrylic\include" /I"E:\Xeneva Project\Xeneva\xnlib\xnclib" /Zi /nologo /W4 /WX- /sdl- /MP /Od /D ARCH_X64 /D _MBCS /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt daisy.cpp daisy_event_stack.cpp daisy_priwm_window.cpp daisy_scroll_view.cpp daisy_widget_button.cpp daisy_widget_label.cpp daisy_widget_list.cpp daisy_widget_onoff.cpp daisy_widget_panel.cpp daisy_widget_scrollbar.cpp daisy_widget_slider.cpp daisy_window.cpp daisy_window_painter.cpp list.cpp
      1>cl : Command line warning D9025: overriding '/sdl-' with '/GS-'
      1>cl : Command line warning D9002: ignoring unknown option '/arch:SSE'
      1>cl : Command line warning D9030: '/Gm' is incompatible with multiprocessing; ignoring /MP switch
@@ -9,28 +9,64 @@
          daisy_window_painter.cpp
      1>daisy_window_painter.cpp(60): warning C4018: '<' : signed/unsigned mismatch
          daisy_window.cpp
-     1>daisy_window.cpp(56): warning C4127: conditional expression is constant
-     1>daisy_window.cpp(104): warning C4018: '<' : signed/unsigned mismatch
-     1>daisy_window.cpp(109): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
-     1>daisy_window.cpp(140): warning C4189: 'height' : local variable is initialized but not referenced
+     1>daisy_window.cpp(57): warning C4127: conditional expression is constant
+     1>daisy_window.cpp(107): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
+     1>daisy_window.cpp(111): warning C4018: '<' : signed/unsigned mismatch
+     1>daisy_window.cpp(116): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
+     1>daisy_window.cpp(161): warning C4189: 'height' : local variable is initialized but not referenced
+         daisy_widget_slider.cpp
+     1>daisy_widget_slider.cpp(108): warning C4100: 'clicked' : unreferenced formal parameter
+         daisy_widget_scrollbar.cpp
+     1>daisy_widget_scrollbar.cpp(87): warning C4100: 'clicked' : unreferenced formal parameter
          daisy_widget_panel.cpp
      1>daisy_widget_panel.cpp(52): warning C4018: '<' : signed/unsigned mismatch
      1>daisy_widget_panel.cpp(63): warning C4018: '<' : signed/unsigned mismatch
      1>daisy_widget_panel.cpp(111): warning C4018: '<' : signed/unsigned mismatch
+         daisy_widget_onoff.cpp
+     1>daisy_widget_onoff.cpp(70): warning C4100: 'clicked' : unreferenced formal parameter
+         daisy_widget_list.cpp
+     1>daisy_widget_list.cpp(53): warning C4389: '!=' : signed/unsigned mismatch
+     1>daisy_widget_list.cpp(54): warning C4018: '<' : signed/unsigned mismatch
+     1>daisy_widget_list.cpp(56): warning C4189: 'font_h' : local variable is initialized but not referenced
+     1>daisy_widget_list.cpp(74): warning C4100: 'y' : unreferenced formal parameter
+     1>daisy_widget_list.cpp(74): warning C4100: 'x' : unreferenced formal parameter
+     1>daisy_widget_list.cpp(74): warning C4100: 'clicked' : unreferenced formal parameter
+     1>daisy_widget_list.cpp(74): warning C4100: 'button' : unreferenced formal parameter
+     1>daisy_widget_list.cpp(74): warning C4100: 'win' : unreferenced formal parameter
+     1>daisy_widget_list.cpp(74): warning C4100: 'widget' : unreferenced formal parameter
+     1>daisy_widget_list.cpp(83): warning C4100: 'win' : unreferenced formal parameter
+         daisy_widget_label.cpp
+     1>daisy_widget_label.cpp(64): warning C4100: 'y' : unreferenced formal parameter
+     1>daisy_widget_label.cpp(64): warning C4100: 'x' : unreferenced formal parameter
+     1>daisy_widget_label.cpp(64): warning C4100: 'clicked' : unreferenced formal parameter
+     1>daisy_widget_label.cpp(64): warning C4100: 'button' : unreferenced formal parameter
+     1>daisy_widget_label.cpp(64): warning C4100: 'win' : unreferenced formal parameter
+     1>daisy_widget_label.cpp(64): warning C4100: 'widget' : unreferenced formal parameter
          daisy_widget_button.cpp
-     1>daisy_widget_button.cpp(60): warning C4100: 'clicked' : unreferenced formal parameter
+     1>daisy_widget_button.cpp(76): warning C4100: 'clicked' : unreferenced formal parameter
+         daisy_scroll_view.cpp
+     1>daisy_scroll_view.cpp(54): warning C4189: 'sc_y' : local variable is initialized but not referenced
+     1>daisy_scroll_view.cpp(82): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
+     1>daisy_scroll_view.cpp(78): warning C4100: 'clicked' : unreferenced formal parameter
          daisy_priwm_window.cpp
          daisy_event_stack.cpp
          daisy.cpp
-     1>daisy.cpp(109): warning C4244: '=' : conversion from 'unsigned int' to 'uint8_t', possible loss of data
+     1>daisy.cpp(70): warning C4100: 'wait' : unreferenced formal parameter
+     1>daisy.cpp(114): warning C4244: '=' : conversion from 'unsigned int' to 'uint8_t', possible loss of data
          Generating Code...
      1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V110\Microsoft.CppBuild.targets(1299,5): warning MSB8012: TargetPath(E:\Xeneva Project\Xeneva\Aurora\x64\Debug\daisy.lib) does not match the Library's OutputFile property value (E:\Xeneva Project\Xeneva\xnlib\lib64\daisy.lib). This may cause your project to build incorrectly. To correct this, please make sure that $(OutDir), $(TargetName) and $(TargetExt) property values match the value specified in %(Lib.OutputFile).
        Lib:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\Lib.exe /OUT:"E:\Xeneva Project\Xeneva\xnlib\lib64\daisy.lib" /NOLOGO /MACHINE:X64 x64\Debug\daisy.obj
          x64\Debug\daisy_event_stack.obj
          x64\Debug\daisy_priwm_window.obj
+         x64\Debug\daisy_scroll_view.obj
          x64\Debug\daisy_widget_button.obj
+         x64\Debug\daisy_widget_label.obj
+         x64\Debug\daisy_widget_list.obj
+         x64\Debug\daisy_widget_onoff.obj
          x64\Debug\daisy_widget_panel.obj
+         x64\Debug\daisy_widget_scrollbar.obj
+         x64\Debug\daisy_widget_slider.obj
          x64\Debug\daisy_window.obj
          x64\Debug\daisy_window_painter.obj
          x64\Debug\list.obj
@@ -39,4 +75,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:00.69
+Time Elapsed 00:00:00.95

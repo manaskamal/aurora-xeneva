@@ -41,12 +41,17 @@
 #define PRI_WIN_CREATE  100
 #define PRI_WIN_MARK_FOR_CLOSE 102
 #define PRI_WIN_MOVE 103
+#define PRI_WIN_READY 104
+#define PRI_REGISTER_DESKTOP_COMPONENT 105
 
 /* Messages that are being send to client by server */
 #define DAISY_WIN_MOVE  200
 #define DAISY_CURSOR_MOVED 201
 #define DAISY_GIFT_CANVAS 202
 #define DAISY_GIFT_SHARED_WIN 203
+#define DAISY_KEY_EVENT 204
+#define DAISY_NEW_WINDOW_INFO 205
+#define DAISY_NOTIFY_WIN_FOCUS_CHANGED 206
 
 
 /**
@@ -59,12 +64,18 @@ extern void daisy_application ();
 /**
  * daisy_get_gifts -- polls for events
  */
-extern pri_event_t *daisy_get_gifts ();
+extern pri_event_t *daisy_get_gifts (bool wait);
 
 /**
  * priwm_send_event -- sends an event to priwm
  * @param event -- event structure to send
  */
 void priwm_send_event (pri_event_t *event);
+
+
+/**
+ * daisy_get_event_fd -- returns event file descriptor
+ */
+extern int daisy_get_event_fd ();
 
 #endif

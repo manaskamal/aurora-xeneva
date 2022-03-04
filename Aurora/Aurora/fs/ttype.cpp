@@ -217,11 +217,11 @@ ttype_t * get_ttype (int id) {
 }
 
 void ttype_create (int* master_fd, int* slave_fd) {
-	ttype_t *tty= (ttype_t*)pmmngr_alloc();
-	memset (tty, 0, 4096);
+	ttype_t *tty= (ttype_t*)malloc(sizeof(ttype_t)); //pmmngr_alloc();
+	memset (tty, 0, sizeof(ttype_t));
 
 	uint8_t* inbuffer = (uint8_t*)pmmngr_alloc();
-	memset(inbuffer, 0, 4096);
+	memset(inbuffer, 0,4096);
 	uint8_t* outbuffer = (uint8_t*)pmmngr_alloc();
 	memset(outbuffer, 0, 4096);
 

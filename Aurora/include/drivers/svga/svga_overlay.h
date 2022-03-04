@@ -32,6 +32,8 @@
 #ifndef _SVGA_OVERLAY_H_
 #define _SVGA_OVERLAY_H_
 
+#ifdef HW_SVGA
+
 #include "svga_reg.h"
 
 /*
@@ -197,5 +199,7 @@ VMwareVideoGetAttributes(const SVGAOverlayFormat format,    // IN
 
     return true;
 }
+
+#endif
 
 #endif // _SVGA_OVERLAY_H_

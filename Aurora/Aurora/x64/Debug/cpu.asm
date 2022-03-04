@@ -9,24 +9,24 @@ _BSS	SEGMENT
 pit_tick DD	01H DUP (?)
 _BSS	ENDS
 CONST	SEGMENT
-$SG2955	DB	'*** [x64_idt] x64_default_handler: Unhandled Exception *'
+$SG2956	DB	'*** [x64_idt] x64_default_handler: Unhandled Exception *'
 	DB	'** ', 0aH, 00H
 	ORG $+3
-$SG2995	DB	'IDT initialized', 0aH, 00H
+$SG2996	DB	'IDT initialized', 0aH, 00H
 	ORG $+7
-$SG2996	DB	'Exception initialized', 0aH, 00H
+$SG2997	DB	'Exception initialized', 0aH, 00H
 	ORG $+1
-$SG2997	DB	'APIC initialized', 0aH, 00H
+$SG2998	DB	'APIC initialized', 0aH, 00H
 	ORG $+6
-$SG2999	DB	'EFER.SYSCALL enabled', 0aH, 00H
+$SG3000	DB	'EFER.SYSCALL enabled', 0aH, 00H
 	ORG $+2
-$SG3000	DB	'User Land Initialized', 0aH, 00H
+$SG3001	DB	'User Land Initialized', 0aH, 00H
 	ORG $+1
-$SG3001	DB	'System call initialized', 0aH, 00H
+$SG3002	DB	'System call initialized', 0aH, 00H
 	ORG $+7
-$SG3009	DB	'x86_64:SSE supported', 0aH, 00H
+$SG3010	DB	'x86_64:SSE supported', 0aH, 00H
 	ORG $+2
-$SG3011	DB	'x86_64:fxsave & fxrstor supported', 0aH, 00H
+$SG3012	DB	'x86_64:fxsave & fxrstor supported', 0aH, 00H
 CONST	ENDS
 PUBLIC	?hal_x86_64_init@@YAXXZ				; hal_x86_64_init
 PUBLIC	?setvect@@YAX_KP6AX0PEAX@Z@Z			; setvect
@@ -186,7 +186,7 @@ $LN5:
 
 ; 139  : 	printf("*** [x64_idt] x64_default_handler: Unhandled Exception *** \n");
 
-	lea	rcx, OFFSET FLAT:$SG2955
+	lea	rcx, OFFSET FLAT:$SG2956
 	call	?printf@@YAXPEBDZZ			; printf
 $LN2@default_ir:
 
@@ -629,7 +629,7 @@ $LN5:
 
 ; 245  : 		printf ("x86_64:SSE supported\n");
 
-	lea	rcx, OFFSET FLAT:$SG3009
+	lea	rcx, OFFSET FLAT:$SG3010
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 246  : 		if ((d & (1<<24)) != 0) {
@@ -641,7 +641,7 @@ $LN5:
 
 ; 247  : 			printf ("x86_64:fxsave & fxrstor supported\n");
 
-	lea	rcx, OFFSET FLAT:$SG3011
+	lea	rcx, OFFSET FLAT:$SG3012
 	call	?printf@@YAXPEBDZZ			; printf
 $LN1@hal_x86_64:
 $LN2@hal_x86_64:
@@ -677,7 +677,7 @@ $LN3:
 
 ; 203  : 	debug_print ("IDT initialized\n");
 
-	lea	rcx, OFFSET FLAT:$SG2995
+	lea	rcx, OFFSET FLAT:$SG2996
 	call	?debug_print@@YAXPEBDZZ			; debug_print
 
 ; 204  : 	x64_sti();
@@ -692,7 +692,7 @@ $LN3:
 ; 207  : 
 ; 208  : 	debug_print ("Exception initialized\n");
 
-	lea	rcx, OFFSET FLAT:$SG2996
+	lea	rcx, OFFSET FLAT:$SG2997
 	call	?debug_print@@YAXPEBDZZ			; debug_print
 
 ; 209  : 	
@@ -705,7 +705,7 @@ $LN3:
 ; 213  : 	
 ; 214  : 	debug_print ("APIC initialized\n");
 
-	lea	rcx, OFFSET FLAT:$SG2997
+	lea	rcx, OFFSET FLAT:$SG2998
 	call	?debug_print@@YAXPEBDZZ			; debug_print
 
 ; 215  : 
@@ -750,7 +750,7 @@ $LN3:
 ; 224  : 
 ; 225  : 	debug_print ("EFER.SYSCALL enabled\n");
 
-	lea	rcx, OFFSET FLAT:$SG2999
+	lea	rcx, OFFSET FLAT:$SG3000
 	call	?debug_print@@YAXPEBDZZ			; debug_print
 
 ; 226  : 	//! initialize the user land environment
@@ -762,7 +762,7 @@ $LN3:
 ; 228  : 
 ; 229  : 	debug_print ("User Land Initialized\n");
 
-	lea	rcx, OFFSET FLAT:$SG3000
+	lea	rcx, OFFSET FLAT:$SG3001
 	call	?debug_print@@YAXPEBDZZ			; debug_print
 
 ; 230  : 	//! initialize the syscall entries
@@ -773,7 +773,7 @@ $LN3:
 ; 232  : 
 ; 233  : 	debug_print ("System call initialized\n");
 
-	lea	rcx, OFFSET FLAT:$SG3001
+	lea	rcx, OFFSET FLAT:$SG3002
 	call	?debug_print@@YAXPEBDZZ			; debug_print
 
 ; 234  : 

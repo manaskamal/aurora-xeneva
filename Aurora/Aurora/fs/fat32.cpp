@@ -152,17 +152,20 @@ uint32_t fat32_read_fat (uint32_t cluster_index) {
 
 
 void fat32_read (vfs_node_t *file, uint64_t* buf) {
-	
+	//printf ("Buffer -> %x\n", buf);
 	auto lba = cluster_to_sector32 (file->current); 
 
 	//for (int i = 0; i < sectors_per_cluster; i++) {
-	//	//ata_read_28 (lba+i,1,buffer);
-	//	ahci_disk_read(ahci_disk_get_port(), lba+i, 1,buf);
-	//	buf += 512;
+		//ata_read_28 (lba+i,1,buffer);
+		
+	//	printf ("Buff -> %x\n", buf);
+		//buf += 512;
 	//}
-	ahci_disk_read(ahci_disk_get_port(), lba, sectors_per_cluster,buf);
+	ahci_disk_read(ahci_disk_get_port(), lba, 8,buf);
+	//printf ("Buff ->%x\n", buf);
 
 	uint32_t value = fat32_read_fat (file->current);
+	//printf ("FAT Value ->%x\n", value);
 	if (value  >= 0x0FFFFFF8) {
 	    file->eof = 1;
 		return;
@@ -178,13 +181,15 @@ void fat32_read (vfs_node_t *file, uint64_t* buf) {
 
 
 void fat32_read_file (vfs_node_t *file, uint64_t* buffer, uint32_t count) {
-	for (int i=0; i < count; i += 8) {
-		if(file->eof) {
+	/*while(file->eof != 1) {
+		fat32_read (file,buffer);
+		buffer += 4096;
+	}*/
+	for (int i=0; i < count; i+= 8) {
+		fat32_read (file, buffer);
+		if (file->eof) 
 			break;
-		}	
-		fat32_read(file,buffer);
-		
-		//buffer += 4096;
+		buffer += 4096;
 	}
 }
 
@@ -330,7 +335,7 @@ void fat32_list_files() {
 	//ata_read_28(root_sector, 1, buf);
 	//ata_read_28(root_sector + 1, 1, buf2);
 	ahci_disk_read(ahci_disk_get_port(),root_sector, 1, buf);
-	ahci_disk_read(ahci_disk_get_port(), root_sector + 1, 1, buf2);
+	ahci_disk_read(ahci_disk_get_port(), root_sector + 1, 1,buf2);
 	fat32_dir *dir = (fat32_dir*)buf;
 	for (int i=0; i < 16; i++) {
 		convert_fat83_32(dir,filename);

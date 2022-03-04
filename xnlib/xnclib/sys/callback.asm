@@ -305,4 +305,13 @@ sys_ttype_dup:
 	syscall
 	ret
 
+global sys_copy_mem
+sys_copy_mem:
+    mov r12, 3
+	mov r13, rcx
+	mov r14, rdx
+	mov r15, r8
+	syscall
+	ret
+
 

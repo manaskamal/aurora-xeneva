@@ -34,14 +34,15 @@ void acrylic_initialize_font () {
 	for (int i = 0; i < 1024*1024/4096; i++)
 		valloc(0xFFFFFFFFC0000000 + i * 4096);
 
-	uint64_t* buff = (uint64_t*)0xFFFFFFFFC0000000;
+	uint8_t* buff = (uint8_t*)0xFFFFFFFFC0000000;
 	sys_read_file (fd,buff,&f);
-	system_font.data = buff;
+	uint8_t* buffer = (uint8_t*)buff;
+	system_font.data = buffer;
 	system_font.name = "roboto";
 	system_font.size = f.size;
 	
 	err = FT_Init_FreeType (&lib);
-	err = FT_New_Memory_Face(lib,(uint8_t*)system_font.data,system_font.size,0,&face);
+	err = FT_New_Memory_Face(lib,system_font.data,system_font.size,0,&face);
 	err = FT_Set_Pixel_Sizes(face,0,32);
 	slot = face->glyph;
 	

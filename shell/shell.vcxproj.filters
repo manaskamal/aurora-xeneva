@@ -6,4 +6,7 @@
   <ItemGroup>
     <NASM Include="shl.asm" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="sndsrv.h" />
+  </ItemGroup>
 </Project>

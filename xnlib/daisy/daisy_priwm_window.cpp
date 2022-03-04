@@ -34,6 +34,7 @@
 #include "daisy.h"
 #include <sys/_term.h>
 #include <stdlib.h>
+#include <string.h>
 
 /**
  * _daisy_priwm_create_window_ -- creates a new window in server side
@@ -43,7 +44,7 @@
  * @param h -- height of the window
  * @param attribute -- window attributes
  */
-void _daisy_priwm_create_window_ (int x, int y, int w, int h, uint8_t attribute) {
+void _daisy_priwm_create_window_ (int x, int y, int w, int h, uint8_t attribute, char* title) {
 	pri_event_t e;
 	e.type = PRI_WIN_CREATE;
 	e.dword = x;
@@ -51,6 +52,8 @@ void _daisy_priwm_create_window_ (int x, int y, int w, int h, uint8_t attribute)
 	e.dword3 = w;
 	e.dword4 = h;
 	e.dword5 = attribute;
+	memset(e.char_values,0, 100);
+	strcpy (e.char_values,title);
 	priwm_send_event(&e);
 }
 

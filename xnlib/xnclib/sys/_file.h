@@ -29,7 +29,7 @@ typedef struct _file_ {
 extern "C" {
 #endif
 int sys_open_file (char* filename, UFILE *stream);
-void sys_read_file (int fd, uint64_t* buffer,UFILE *f);
+void sys_read_file (int fd, unsigned char* buffer,UFILE *f);
 void sys_write_file (int fd, unsigned char* buffer, UFILE *f);
 #ifdef __cplusplus
 }

@@ -34,6 +34,7 @@
 #define __PRI_DIRTY_CLIP_H__
 
 #include "priwm.h"
+#include <canvas.h>
 
 typedef struct _pri_dirty_clip_ {
 	pri_rect_t *rect;
@@ -44,14 +45,13 @@ typedef struct _pri_dirty_clip_ {
  * pri_add_dirty_clip -- adds a dirty clip rect
  * @param r -- rect to add
  */
-extern void pri_add_dirty_clip (pri_rect_t *r);
+extern void pri_add_dirty_clip (int x, int y, int w, int h);
 
 /**
- * pri_get_dirty_rect -- pops a dirty rect from 
- * the list
- * @return -- dirty rectangle
+ * pri_dirty_rect_screen_update -- update every dirty areas
+ * @param canvas -- offscreen canvas
  */
-extern pri_rect_t * pri_get_dirty_rect();
+void  pri_dirty_rect_screen_update(canvas_t *canvas);
 
 /**
  * pri_get_dirty_count -- get total dirty area

@@ -12,6 +12,8 @@
 #ifndef __GMR_H__
 #define __GMR_H__
 
+#ifdef HW_SVGA
+
 #include <arch\x86_64\mmngr\kheap.h>
 #include <drivers\svga\svga_reg.h>
 #include <drivers\svga\vmsvga.h>
@@ -40,4 +42,6 @@ extern void gmr_define (uint32_t gmr_id, SVGAGuestMemDescriptor *desc_array, uin
 extern ppn gmr_define_contiguous (uint32_t gmr_id, uint32_t num_pages);
 extern ppn gmr_define_even_pages (uint32_t gmr_id, uint32_t num_pages);
 extern void gmr_free_all();
+#endif
+
 #endif

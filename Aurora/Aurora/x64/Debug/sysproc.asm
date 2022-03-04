@@ -16,10 +16,9 @@ EXTRN	?force_sched@@YAXXZ:PROC			; force_sched
 EXTRN	?create_process@@YAHPEBDPEAD@Z:PROC		; create_process
 EXTRN	?kill_process@@YAXXZ:PROC			; kill_process
 EXTRN	?kill_process_by_id@@YAXG@Z:PROC		; kill_process_by_id
-EXTRN	?ttype_dup_master@@YAXHH@Z:PROC			; ttype_dup_master
 pdata	SEGMENT
 $pdata$?create__sys_process@@YAHPEBDPEAD@Z DD imagerel $LN3
-	DD	imagerel $LN3+76
+	DD	imagerel $LN3+47
 	DD	imagerel $unwind$?create__sys_process@@YAHPEBDPEAD@Z
 $pdata$?sys_exit@@YAXXZ DD imagerel $LN3
 	DD	imagerel $LN3+24
@@ -164,7 +163,6 @@ _TEXT	ENDS
 ; File e:\xeneva project\xeneva\aurora\aurora\sysserv\sysproc.cpp
 _TEXT	SEGMENT
 id$ = 32
-master_fd$ = 36
 name$ = 64
 procnm$ = 72
 ?create__sys_process@@YAHPEBDPEAD@Z PROC		; create__sys_process
@@ -187,18 +185,8 @@ $LN3:
 	call	?create_process@@YAHPEBDPEAD@Z		; create_process
 	mov	DWORD PTR id$[rsp], eax
 
-; 46   : 	int master_fd = get_current_thread()->master_fd;
-
-	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
-	movzx	eax, BYTE PTR [rax+756]
-	mov	DWORD PTR master_fd$[rsp], eax
-
-; 47   : 	ttype_dup_master(id, master_fd);
-
-	mov	edx, DWORD PTR master_fd$[rsp]
-	mov	ecx, DWORD PTR id$[rsp]
-	call	?ttype_dup_master@@YAXHH@Z		; ttype_dup_master
-
+; 46   : 	/*int master_fd = get_current_thread()->master_fd;
+; 47   : 	ttype_dup_master(id, master_fd);*/
 ; 48   : 	return id;
 
 	mov	eax, DWORD PTR id$[rsp]

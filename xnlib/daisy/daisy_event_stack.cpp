@@ -32,6 +32,7 @@
 
 #include "daisy_event_stack.h"
 #include <stdlib.h>
+#include <sys/_term.h>
 
 static daisy_gift_t *_top = NULL;
 static uint32_t _gift_count = 0;

@@ -34,6 +34,7 @@
 
 #include <stdint.h>
 
+#ifdef HW_SVGA
 /*
  * Namespace IDs for the escape command
  */
@@ -86,5 +87,7 @@ struct {
       int32 x, y;
    } monitorPosition;
 } SVGAEscapeHintFullscreen;
+
+#endif
 
 #endif /* _SVGA_ESCAPE_H_ */

@@ -18,6 +18,8 @@
 #include <stdio.h>
 #include <drivers\svga\rgba_arrow.h>
 
+#ifdef HW_SVGA
+
 void sys_set_mouse_data () {
 	x64_cli();
 	/*
@@ -50,5 +52,7 @@ void sys_move_cursor (uint32_t visible, uint32_t x,uint32_t y) {
 	x64_cli ();
 	svga_move_cursor (visible, x, y, SVGA_ID_INVALID);
 }
+
+#endif
 
 

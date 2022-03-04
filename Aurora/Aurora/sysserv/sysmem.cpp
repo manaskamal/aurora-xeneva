@@ -33,6 +33,19 @@ void map_shared_memory (uint16_t dest_id,uint64_t pos, size_t size) {
 	}
 }
 
+void copy_memory (uint16_t dest_id, uint64_t pos, size_t size) {
+	x64_cli();
+	thread_t* t = thread_iterate_ready_list (dest_id);
+	if (t == NULL) {
+		t = thread_iterate_block_list(dest_id);
+	}
+	uint64_t *current_cr3 = (uint64_t*)get_current_thread()->cr3;
+	uint64_t *cr3 = (uint64_t*)t->cr3;
+
+	for (int i = 0; i < size/4096; i++) {
+		cr3[pml4_index(pos + i * 4096)] = current_cr3[pml4_index(pos + i * 4096)];
+	}
+}
 
 void unmap_shared_memory (uint16_t dest_id, uint64_t pos, size_t size) {
 	x64_cli ();

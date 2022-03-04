@@ -86,7 +86,6 @@ int left_button_up() {
  * window manager
  */
 void mouse_handler (size_t p, void* param) {
-
 	uint8_t status = inportb (MOUSE_STATUS);
 	while ((status & MOUSE_BBIT) && (status & MOUSE_F_BIT)) {
 		int8_t mouse_in = inportb (MOUSE_PORT);
@@ -144,7 +143,7 @@ finish_packet:
 
 		if (mouse_byte[0] & 0x01) {    //0x01 for PS/2
 			curr_button[0] = 1;
-			mouse_button_state |= 1;
+			mouse_button_state = 1;
 		}else
 			curr_button[0] = 0;
 

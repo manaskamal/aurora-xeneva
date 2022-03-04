@@ -16,7 +16,6 @@ PUBLIC	?initialize_apic@@YAXXZ				; initialize_apic
 PUBLIC	?apic_local_eoi@@YAXXZ				; apic_local_eoi
 PUBLIC	?read_apic_register@@YA_KG@Z			; read_apic_register
 PUBLIC	?write_apic_register@@YAXG_K@Z			; write_apic_register
-PUBLIC	?initialize_cpu@@YAXI@Z				; initialize_cpu
 PUBLIC	?timer_sleep@@YAXI@Z				; timer_sleep
 PUBLIC	??$raw_offset@PECIPEAX@@YAPECIPEAXH@Z		; raw_offset<unsigned int volatile * __ptr64,void * __ptr64>
 PUBLIC	?x2apic_supported@@YA_NXZ			; x2apic_supported
@@ -31,12 +30,9 @@ EXTRN	x64_mfence:PROC
 EXTRN	x64_cpuid:PROC
 EXTRN	?setvect@@YAX_KP6AX0PEAX@Z@Z:PROC		; setvect
 EXTRN	?ioapic_init@@YAXPEAX@Z:PROC			; ioapic_init
-EXTRN	?pmmngr_alloc@@YAPEAXXZ:PROC			; pmmngr_alloc
-EXTRN	memcpy:PROC
-EXTRN	?get_ap_address@@YAPEAXXZ:PROC			; get_ap_address
 pdata	SEGMENT
 $pdata$?initialize_apic@@YAXXZ DD imagerel $LN4
-	DD	imagerel $LN4+269
+	DD	imagerel $LN4+279
 	DD	imagerel $unwind$?initialize_apic@@YAXXZ
 $pdata$?apic_local_eoi@@YAXXZ DD imagerel $LN3
 	DD	imagerel $LN3+20
@@ -47,9 +43,6 @@ $pdata$?read_apic_register@@YA_KG@Z DD imagerel $LN6
 $pdata$?write_apic_register@@YAXG_K@Z DD imagerel $LN6
 	DD	imagerel $LN6+231
 	DD	imagerel $unwind$?write_apic_register@@YAXG_K@Z
-$pdata$?initialize_cpu@@YAXI@Z DD imagerel $LN10
-	DD	imagerel $LN10+184
-	DD	imagerel $unwind$?initialize_cpu@@YAXI@Z
 $pdata$?timer_sleep@@YAXI@Z DD imagerel $LN5
 	DD	imagerel $LN5+43
 	DD	imagerel $unwind$?timer_sleep@@YAXI@Z
@@ -75,8 +68,6 @@ $unwind$?read_apic_register@@YA_KG@Z DD 010901H
 	DD	08209H
 $unwind$?write_apic_register@@YAXG_K@Z DD 010e01H
 	DD	0a20eH
-$unwind$?initialize_cpu@@YAXI@Z DD 010801H
-	DD	08208H
 $unwind$?timer_sleep@@YAXI@Z DD 010801H
 	DD	02208H
 $unwind$?x2apic_supported@@YA_NXZ DD 010401H
@@ -349,112 +340,6 @@ $LN1@timer_slee:
 	add	rsp, 24
 	ret	0
 ?timer_sleep@@YAXI@Z ENDP				; timer_sleep
-_TEXT	ENDS
-; Function compile flags: /Odtpy
-; File e:\xeneva project\xeneva\aurora\aurora\arch\x86_64\apic.cpp
-_TEXT	SEGMENT
-i$1 = 32
-address$ = 40
-ap_data$ = 48
-startup_ipi$ = 56
-processor$ = 80
-?initialize_cpu@@YAXI@Z PROC				; initialize_cpu
-
-; 201  : void initialize_cpu (uint32_t processor) {
-
-$LN10:
-	mov	DWORD PTR [rsp+8], ecx
-	sub	rsp, 72					; 00000048H
-
-; 202  : 
-; 203  : 	uint64_t* address = (uint64_t*)pmmngr_alloc();
-
-	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
-	mov	QWORD PTR address$[rsp], rax
-
-; 204  : 	void* ap_data = get_ap_address();
-
-	call	?get_ap_address@@YAPEAXXZ		; get_ap_address
-	mov	QWORD PTR ap_data$[rsp], rax
-
-; 205  : 	memcpy (address, ap_data, 4096);
-
-	mov	r8d, 4096				; 00001000H
-	mov	rdx, QWORD PTR ap_data$[rsp]
-	mov	rcx, QWORD PTR address$[rsp]
-	call	memcpy
-
-; 206  : 
-; 207  : 	write_apic_register (LAPIC_REGISTER_ICR, icr_dest(processor) | 0x4500);
-
-	mov	ecx, DWORD PTR processor$[rsp]
-	call	?icr_dest@@YA_KI@Z			; icr_dest
-	or	rax, 17664				; 00004500H
-	mov	rdx, rax
-	mov	cx, 48					; 00000030H
-	call	?write_apic_register@@YAXG_K@Z		; write_apic_register
-$LN7@initialize:
-
-; 208  : 	while (icr_busy());
-
-	call	?icr_busy@@YA_NXZ			; icr_busy
-	movzx	eax, al
-	test	eax, eax
-	je	SHORT $LN6@initialize
-	jmp	SHORT $LN7@initialize
-$LN6@initialize:
-
-; 209  : 
-; 210  : 	//!startup ipi
-; 211  : 	size_t startup_ipi = icr_dest (processor) | 0x4600 | ((size_t)address >> 12);
-
-	mov	ecx, DWORD PTR processor$[rsp]
-	call	?icr_dest@@YA_KI@Z			; icr_dest
-	or	rax, 17920				; 00004600H
-	mov	rcx, QWORD PTR address$[rsp]
-	shr	rcx, 12
-	or	rax, rcx
-	mov	QWORD PTR startup_ipi$[rsp], rax
-
-; 212  : 	write_apic_register (LAPIC_REGISTER_ICR, startup_ipi);
-
-	mov	rdx, QWORD PTR startup_ipi$[rsp]
-	mov	cx, 48					; 00000030H
-	call	?write_apic_register@@YAXG_K@Z		; write_apic_register
-$LN5@initialize:
-
-; 213  : 	while (icr_busy());
-
-	call	?icr_busy@@YA_NXZ			; icr_busy
-	movzx	eax, al
-	test	eax, eax
-	je	SHORT $LN4@initialize
-	jmp	SHORT $LN5@initialize
-$LN4@initialize:
-
-; 214  : 	for (int i = 0; i < 100; i++)
-
-	mov	DWORD PTR i$1[rsp], 0
-	jmp	SHORT $LN3@initialize
-$LN2@initialize:
-	mov	eax, DWORD PTR i$1[rsp]
-	inc	eax
-	mov	DWORD PTR i$1[rsp], eax
-$LN3@initialize:
-	cmp	DWORD PTR i$1[rsp], 100			; 00000064H
-	jge	SHORT $LN1@initialize
-
-; 215  : 		;
-
-	jmp	SHORT $LN2@initialize
-$LN1@initialize:
-
-; 216  : 
-; 217  : }
-
-	add	rsp, 72					; 00000048H
-	ret	0
-?initialize_cpu@@YAXI@Z ENDP				; initialize_cpu
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\arch\x86_64\apic.cpp
@@ -732,7 +617,10 @@ $LN4:
 	mov	eax, -18874368				; fee00000H
 	mov	QWORD PTR apic_base$[rsp], rax
 
-; 140  : 
+; 140  : 	apic_timer_count = 0;
+
+	mov	DWORD PTR apic_timer_count, 0
+
 ; 141  : 	//map_page (0xFEE00000, 0xFEE00000,0);
 ; 142  : 
 ; 143  : 	apic = (void*)apic_base;
@@ -828,9 +716,9 @@ $LN1@initialize:
 
 	call	?io_wait@@YAXXZ				; io_wait
 
-; 167  : 	write_apic_register (LAPIC_REGISTER_TMRINITCNT,78);  //100
+; 167  : 	write_apic_register (LAPIC_REGISTER_TMRINITCNT,72);  //100
 
-	mov	edx, 78					; 0000004eH
+	mov	edx, 72					; 00000048H
 	mov	cx, 56					; 00000038H
 	call	?write_apic_register@@YAXG_K@Z		; write_apic_register
 

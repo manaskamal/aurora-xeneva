@@ -91,6 +91,9 @@
 #define HDA_GCAP_OSS(gcap)  (((gcap) & HDA_GCAP_OSS_MASK) >> HDA_GCAP_OSS_SHIFT)
 
 
+#define HDA_BUFFER_SIZE  512
+#define HDA_SAMPLES_PER_BUFFER   (HDA_BUFFER_SIZE/2)
+
 /* GCTL bits */
 enum reg_gctl {
 	GCTL_RESET = (1 << 0),
@@ -125,7 +128,7 @@ typedef struct _output_ {
 
 
 #define BDL_SIZE 4
-#define BUFFER_SIZE  0x10000
+#define BUFFER_SIZE  0x200
 
 #define BDL_BYTES_ROUNDED   \
 	((BDL_SIZE * sizeof(ihda_bdl_entry) + 127) & ~127)
@@ -235,6 +238,7 @@ typedef struct _hd_audio_ {
 	int stream_0_y;  //first bidirectional stream
 	uint64_t *buffer; 
 	uint64_t *dma_pos; 
+	int buffer_completed;
 }hd_audio;
 #pragma pack (pop)
 
@@ -249,12 +253,20 @@ typedef struct _rirb_ {
 extern void hda_initialize ();
 extern uint32_t codec_query (int codec, int nid, uint32_t payload);
 extern void hda_set_volume (uint8_t volume);
-extern void hda_audio_add_pcm (unsigned char *data, uint32_t length);
+extern void hda_audio_add_pcm (unsigned char *data, size_t buffer_num,uint32_t length);
 extern void hda_audio_play ();
 extern void hda_output_stop ();
 /**
  * Interrupt handler for intel hd audio
  */
 extern void hda_handler (size_t v, void* p);
+extern bool is_hdaudio_initialized();
+extern void hda_audio_add_data_prop (unsigned char* data, uint32_t file_size);
+
+/**
+ * hda_get_buffer_number -- returns the current number of buffers,
+ * completed
+ */
+extern int hda_get_buffer_number ();
 
 #endif

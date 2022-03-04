@@ -12,6 +12,8 @@
 #ifndef __VMSVGA_H__
 #define __VMSVGA_H__
 
+#ifdef HW_SVGA
+
 #include <stdint.h>
 #include <hal.h>
 #include <drivers\pci.h>
@@ -104,4 +106,6 @@ extern void svga_sync_to_fence (uint32_t fence);
 extern uint32_t svga_insert_fence ();
 extern void svga_wait_for_irq () ;
 extern uint32_t* svga_get_fb_mem ();
+#endif
+
 #endif

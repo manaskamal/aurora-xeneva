@@ -45,6 +45,9 @@ extern void apic_local_eoi();
 //!APIC REGISTER R/W
 extern uint64_t read_apic_register(uint16_t reg);
 extern void write_apic_register(uint16_t reg, uint64_t value);
+
+#ifdef SMP
 extern void initialize_cpu (uint32_t processor);
+#endif
 extern void timer_sleep(uint32_t ms);
 #endif

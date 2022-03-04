@@ -67,31 +67,36 @@ void daisy_application () {
 /**
  * daisy_get_gifts -- polls for events
  */
-pri_event_t *daisy_get_gifts () {
-	pri_event_t *ev = NULL;;
+pri_event_t *daisy_get_gifts (bool wait) {
+	pri_event_t *ev = NULL;
 	bool needs_processing = false;
-	if (daisy_get_gift_count() > 0) {
-		ev = daisy_gift_get_event();
-		needs_processing = true;
-	}
+	
 
 	pri_event_t *e = (pri_event_t*)malloc(sizeof(pri_event_t));
 	memset (e, 0, sizeof(pri_event_t));
 	ioquery (event_fd, PRI_LOOP_GET_EVENT, e);
 	if (e->type != 0) {
 		daisy_push_gift (e);
-	} else {
-		free (e);
-		/* check if the daisy_msg_stack is empty and
-		   no event is also pending in pri_loop box,
-		   if yes than wait for a message */
-		if (!needs_processing) {
-			sys_wait();  
-		}
+	} 
+
+	if (daisy_get_gift_count() > 0) {
+		ev = daisy_gift_get_event();
+		needs_processing = true;
+	}
+
+	if (e->type == 0) {
+		free(e);
+	}
+	/* check if the daisy_msg_stack is empty and
+       no event is also pending in pri_loop box,
+	   if yes than wait for a message */
+	if (!needs_processing) {
+		sys_wait();  
 	}
 
 	return ev;
 }
+
 
 
 /**
@@ -109,5 +114,13 @@ check:
 		event->from_id = get_current_pid();
 		memcpy (address, event, sizeof(pri_event_t));
 	}
+}
+
+
+/**
+ * daisy_get_event_fd -- returns event file descriptor
+ */
+int daisy_get_event_fd () {
+	return event_fd;
 }
 

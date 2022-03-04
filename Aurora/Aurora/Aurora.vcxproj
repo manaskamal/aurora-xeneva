@@ -122,7 +122,7 @@
       <SDLCheck>
       </SDLCheck>
       <OmitFramePointers>true</OmitFramePointers>
-      <PreprocessorDefinitions>ARCH_X64;USE_APIC;ACPI_LIBRARY;ACPI_FULL_DEBUG;_WINDOWS;PROCESSOR_ARCHITECTURE=x64;ACPI_MACHINE_WIDTH=64;WIN64;X64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>ARCH_X64;USE_APIC;X64; _DEBUG_ON_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <IgnoreStandardIncludePath>true</IgnoreStandardIncludePath>
       <ExceptionHandling>false</ExceptionHandling>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
@@ -157,7 +157,7 @@
       <FixedBaseAddress>false</FixedBaseAddress>
       <DataExecutionPrevention>
       </DataExecutionPrevention>
-      <AdditionalOptions>/filealign:0x1000 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/ALIGN:512 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalLibraryDirectories>E:\Xeneva Project\Xeneva\Aurora;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
@@ -213,7 +213,6 @@
     <ClInclude Include="..\include\drivers\hdaudio\hda.h" />
     <ClInclude Include="..\include\drivers\kybrd.h" />
     <ClInclude Include="..\include\drivers\mouse.h" />
-    <ClInclude Include="..\include\drivers\net\amd_am79c973.h" />
     <ClInclude Include="..\include\drivers\net\e1000.h" />
     <ClInclude Include="..\include\drivers\pci.h" />
     <ClInclude Include="..\include\drivers\pciata.h" />
@@ -231,7 +230,6 @@
     <ClInclude Include="..\include\drivers\svga\vmmouse_defs.h" />
     <ClInclude Include="..\include\drivers\svga\vmsvga.h" />
     <ClInclude Include="..\include\drivers\term.h" />
-    <ClInclude Include="..\include\drivers\usb\xhci.h" />
     <ClInclude Include="..\include\drivers\vbox.h" />
     <ClInclude Include="..\include\drivers\vmmouse.h" />
     <ClInclude Include="..\include\drvmngr.h" />
@@ -251,10 +249,6 @@
     <ClInclude Include="..\include\ipc\pri_loop.h" />
     <ClInclude Include="..\include\ipc\signals.h" />
     <ClInclude Include="..\include\limits.h" />
-    <ClInclude Include="..\include\net\arp.h" />
-    <ClInclude Include="..\include\net\ethernet.h" />
-    <ClInclude Include="..\include\net\nethw.h" />
-    <ClInclude Include="..\include\net\udp.h" />
     <ClInclude Include="..\include\objctmngr.h" />
     <ClInclude Include="..\include\pe.h" />
     <ClInclude Include="..\include\pmmngr.h" />
@@ -266,7 +260,6 @@
     <ClInclude Include="..\include\stdarg.h" />
     <ClInclude Include="..\include\stdint.h" />
     <ClInclude Include="..\include\stdio.h" />
-    <ClInclude Include="..\include\stream.h" />
     <ClInclude Include="..\include\string.h" />
     <ClInclude Include="..\include\sysserv.h" />
     <ClInclude Include="..\include\timer.h" />
@@ -294,7 +287,6 @@
     <ClCompile Include="atomic\mutex.cpp" />
     <ClCompile Include="console.cpp" />
     <ClCompile Include="drivers\acpi\acpi.cpp" />
-    <ClCompile Include="drivers\acpi\xenevaosi.cpp" />
     <ClCompile Include="drivers\ahci.cpp" />
     <ClCompile Include="drivers\ahci_disk.cpp" />
     <ClCompile Include="drivers\ata.cpp" />
@@ -310,7 +302,6 @@
     <ClCompile Include="drivers\svga\svga_screen_util.cpp" />
     <ClCompile Include="drivers\svga\vmsvga.cpp" />
     <ClCompile Include="drivers\svga\vm_backdoor.cpp" />
-    <ClCompile Include="drivers\usb\xhci.cpp" />
     <ClCompile Include="drivers\vbox.cpp" />
     <ClCompile Include="drvmngr.cpp" />
     <ClCompile Include="fs\devfs.cpp" />
@@ -325,10 +316,6 @@
     <ClCompile Include="ipc\message.cpp" />
     <ClCompile Include="ipc\postbox.cpp" />
     <ClCompile Include="ipc\pri_loop.cpp" />
-    <ClCompile Include="net\arp.cpp" />
-    <ClCompile Include="net\ethernet.cpp" />
-    <ClCompile Include="net\nethw.cpp" />
-    <ClCompile Include="net\udp.cpp" />
     <ClCompile Include="pe.cpp" />
     <ClCompile Include="pmmngr.cpp" />
     <ClCompile Include="proc.cpp" />
@@ -337,7 +324,6 @@
     <ClCompile Include="serial.cpp" />
     <ClCompile Include="sound.cpp" />
     <ClCompile Include="stdio.cpp" />
-    <ClCompile Include="stream.cpp" />
     <ClCompile Include="string.cpp" />
     <ClCompile Include="sysserv\ioquery.cpp" />
     <ClCompile Include="sysserv\sysfb.cpp" />

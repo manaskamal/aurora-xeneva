@@ -6,6 +6,7 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 PUBLIC	?map_shared_memory@@YAXG_K0@Z			; map_shared_memory
+PUBLIC	?copy_memory@@YAXG_K0@Z				; copy_memory
 PUBLIC	?unmap_shared_memory@@YAXG_K0@Z			; unmap_shared_memory
 PUBLIC	?sys_get_used_ram@@YA_KXZ			; sys_get_used_ram
 PUBLIC	?sys_get_free_ram@@YA_KXZ			; sys_get_free_ram
@@ -24,6 +25,9 @@ pdata	SEGMENT
 $pdata$?map_shared_memory@@YAXG_K0@Z DD imagerel $LN8
 	DD	imagerel $LN8+317
 	DD	imagerel $unwind$?map_shared_memory@@YAXG_K0@Z
+$pdata$?copy_memory@@YAXG_K0@Z DD imagerel $LN7
+	DD	imagerel $LN7+251
+	DD	imagerel $unwind$?copy_memory@@YAXG_K0@Z
 $pdata$?unmap_shared_memory@@YAXG_K0@Z DD imagerel $LN7
 	DD	imagerel $LN7+213
 	DD	imagerel $unwind$?unmap_shared_memory@@YAXG_K0@Z
@@ -37,6 +41,8 @@ pdata	ENDS
 xdata	SEGMENT
 $unwind$?map_shared_memory@@YAXG_K0@Z DD 011301H
 	DD	0c213H
+$unwind$?copy_memory@@YAXG_K0@Z DD 011301H
+	DD	0a213H
 $unwind$?unmap_shared_memory@@YAXG_K0@Z DD 011301H
 	DD	08213H
 $unwind$?sys_get_used_ram@@YA_KXZ DD 010401H
@@ -49,20 +55,20 @@ xdata	ENDS
 _TEXT	SEGMENT
 ?sys_get_free_ram@@YA_KXZ PROC				; sys_get_free_ram
 
-; 58   : uint64_t sys_get_free_ram () {
+; 71   : uint64_t sys_get_free_ram () {
 
 $LN3:
 	sub	rsp, 40					; 00000028H
 
-; 59   : 	x64_cli ();
+; 72   : 	x64_cli ();
 
 	call	x64_cli
 
-; 60   : 	return pmmngr_get_free_ram ();
+; 73   : 	return pmmngr_get_free_ram ();
 
 	call	?pmmngr_get_free_ram@@YA_KXZ		; pmmngr_get_free_ram
 
-; 61   : }
+; 74   : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -73,20 +79,20 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 ?sys_get_used_ram@@YA_KXZ PROC				; sys_get_used_ram
 
-; 53   : uint64_t sys_get_used_ram () {
+; 66   : uint64_t sys_get_used_ram () {
 
 $LN3:
 	sub	rsp, 40					; 00000028H
 
-; 54   : 	x64_cli ();
+; 67   : 	x64_cli ();
 
 	call	x64_cli
 
-; 55   : 	return pmmngr_get_used_ram ();
+; 68   : 	return pmmngr_get_used_ram ();
 
 	call	?pmmngr_get_used_ram@@YA_KXZ		; pmmngr_get_used_ram
 
-; 56   : }
+; 69   : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -104,7 +110,7 @@ pos$ = 88
 size$ = 96
 ?unmap_shared_memory@@YAXG_K0@Z PROC			; unmap_shared_memory
 
-; 37   : void unmap_shared_memory (uint16_t dest_id, uint64_t pos, size_t size) {
+; 50   : void unmap_shared_memory (uint16_t dest_id, uint64_t pos, size_t size) {
 
 $LN7:
 	mov	QWORD PTR [rsp+24], r8
@@ -112,23 +118,23 @@ $LN7:
 	mov	WORD PTR [rsp+8], cx
 	sub	rsp, 72					; 00000048H
 
-; 38   : 	x64_cli ();
+; 51   : 	x64_cli ();
 
 	call	x64_cli
 
-; 39   : 
-; 40   : 	thread_t* t = thread_iterate_ready_list (dest_id);
+; 52   : 
+; 53   : 	thread_t* t = thread_iterate_ready_list (dest_id);
 
 	movzx	ecx, WORD PTR dest_id$[rsp]
 	call	?thread_iterate_ready_list@@YAPEAU_thread_@@G@Z ; thread_iterate_ready_list
 	mov	QWORD PTR t$[rsp], rax
 
-; 41   : 	if (t == NULL) {
+; 54   : 	if (t == NULL) {
 
 	cmp	QWORD PTR t$[rsp], 0
 	jne	SHORT $LN4@unmap_shar
 
-; 42   : 		t = thread_iterate_block_list(dest_id);
+; 55   : 		t = thread_iterate_block_list(dest_id);
 
 	movzx	eax, WORD PTR dest_id$[rsp]
 	mov	ecx, eax
@@ -136,15 +142,15 @@ $LN7:
 	mov	QWORD PTR t$[rsp], rax
 $LN4@unmap_shar:
 
-; 43   : 	}
-; 44   : 	uint64_t *cr3 = (uint64_t*)t->cr3;
+; 56   : 	}
+; 57   : 	uint64_t *cr3 = (uint64_t*)t->cr3;
 
 	mov	rax, QWORD PTR t$[rsp]
 	mov	rax, QWORD PTR [rax+192]
 	mov	QWORD PTR cr3$[rsp], rax
 
-; 45   : 
-; 46   : 	for (int i = 0; i < size/4096; i++) {
+; 58   : 
+; 59   : 	for (int i = 0; i < size/4096; i++) {
 
 	mov	DWORD PTR i$1[rsp], 0
 	jmp	SHORT $LN3@unmap_shar
@@ -163,7 +169,7 @@ $LN3@unmap_shar:
 	cmp	rcx, rax
 	jae	SHORT $LN1@unmap_shar
 
-; 47   : 		unmap_page (pos + i * 4096);
+; 60   : 		unmap_page (pos + i * 4096);
 
 	mov	eax, DWORD PTR i$1[rsp]
 	imul	eax, 4096				; 00001000H
@@ -174,7 +180,7 @@ $LN3@unmap_shar:
 	mov	rcx, rax
 	call	?unmap_page@@YAX_K@Z			; unmap_page
 
-; 48   : 		unmap_page_ex(cr3,pos + i * 4096, false);
+; 61   : 		unmap_page_ex(cr3,pos + i * 4096, false);
 
 	mov	eax, DWORD PTR i$1[rsp]
 	imul	eax, 4096				; 00001000H
@@ -187,16 +193,129 @@ $LN3@unmap_shar:
 	mov	rcx, QWORD PTR cr3$[rsp]
 	call	?unmap_page_ex@@YAXPEA_K_K_N@Z		; unmap_page_ex
 
-; 49   : 	}
+; 62   : 	}
 
 	jmp	SHORT $LN2@unmap_shar
 $LN1@unmap_shar:
 
-; 50   : }
+; 63   : }
 
 	add	rsp, 72					; 00000048H
 	ret	0
 ?unmap_shared_memory@@YAXG_K0@Z ENDP			; unmap_shared_memory
+_TEXT	ENDS
+; Function compile flags: /Odtpy
+; File e:\xeneva project\xeneva\aurora\aurora\sysserv\sysmem.cpp
+_TEXT	SEGMENT
+i$1 = 32
+t$ = 40
+tv74 = 48
+cr3$ = 56
+current_cr3$ = 64
+tv84 = 72
+dest_id$ = 96
+pos$ = 104
+size$ = 112
+?copy_memory@@YAXG_K0@Z PROC				; copy_memory
+
+; 36   : void copy_memory (uint16_t dest_id, uint64_t pos, size_t size) {
+
+$LN7:
+	mov	QWORD PTR [rsp+24], r8
+	mov	QWORD PTR [rsp+16], rdx
+	mov	WORD PTR [rsp+8], cx
+	sub	rsp, 88					; 00000058H
+
+; 37   : 	x64_cli();
+
+	call	x64_cli
+
+; 38   : 	thread_t* t = thread_iterate_ready_list (dest_id);
+
+	movzx	ecx, WORD PTR dest_id$[rsp]
+	call	?thread_iterate_ready_list@@YAPEAU_thread_@@G@Z ; thread_iterate_ready_list
+	mov	QWORD PTR t$[rsp], rax
+
+; 39   : 	if (t == NULL) {
+
+	cmp	QWORD PTR t$[rsp], 0
+	jne	SHORT $LN4@copy_memor
+
+; 40   : 		t = thread_iterate_block_list(dest_id);
+
+	movzx	eax, WORD PTR dest_id$[rsp]
+	mov	ecx, eax
+	call	?thread_iterate_block_list@@YAPEAU_thread_@@H@Z ; thread_iterate_block_list
+	mov	QWORD PTR t$[rsp], rax
+$LN4@copy_memor:
+
+; 41   : 	}
+; 42   : 	uint64_t *current_cr3 = (uint64_t*)get_current_thread()->cr3;
+
+	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
+	mov	rax, QWORD PTR [rax+192]
+	mov	QWORD PTR current_cr3$[rsp], rax
+
+; 43   : 	uint64_t *cr3 = (uint64_t*)t->cr3;
+
+	mov	rax, QWORD PTR t$[rsp]
+	mov	rax, QWORD PTR [rax+192]
+	mov	QWORD PTR cr3$[rsp], rax
+
+; 44   : 
+; 45   : 	for (int i = 0; i < size/4096; i++) {
+
+	mov	DWORD PTR i$1[rsp], 0
+	jmp	SHORT $LN3@copy_memor
+$LN2@copy_memor:
+	mov	eax, DWORD PTR i$1[rsp]
+	inc	eax
+	mov	DWORD PTR i$1[rsp], eax
+$LN3@copy_memor:
+	movsxd	rax, DWORD PTR i$1[rsp]
+	mov	QWORD PTR tv74[rsp], rax
+	xor	edx, edx
+	mov	rax, QWORD PTR size$[rsp]
+	mov	ecx, 4096				; 00001000H
+	div	rcx
+	mov	rcx, QWORD PTR tv74[rsp]
+	cmp	rcx, rax
+	jae	SHORT $LN1@copy_memor
+
+; 46   : 		cr3[pml4_index(pos + i * 4096)] = current_cr3[pml4_index(pos + i * 4096)];
+
+	mov	eax, DWORD PTR i$1[rsp]
+	imul	eax, 4096				; 00001000H
+	cdqe
+	mov	rcx, QWORD PTR pos$[rsp]
+	add	rcx, rax
+	mov	rax, rcx
+	mov	rcx, rax
+	call	?pml4_index@@YA_K_K@Z			; pml4_index
+	mov	QWORD PTR tv84[rsp], rax
+	mov	ecx, DWORD PTR i$1[rsp]
+	imul	ecx, 4096				; 00001000H
+	movsxd	rcx, ecx
+	mov	rdx, QWORD PTR pos$[rsp]
+	add	rdx, rcx
+	mov	rcx, rdx
+	call	?pml4_index@@YA_K_K@Z			; pml4_index
+	mov	rcx, QWORD PTR cr3$[rsp]
+	mov	rdx, QWORD PTR current_cr3$[rsp]
+	mov	r8, QWORD PTR tv84[rsp]
+	mov	rdx, QWORD PTR [rdx+r8*8]
+	mov	QWORD PTR [rcx+rax*8], rdx
+
+; 47   : 	}
+
+	jmp	$LN2@copy_memor
+$LN1@copy_memor:
+
+; 48   : }
+
+	add	rsp, 88					; 00000058H
+	ret	0
+?copy_memory@@YAXG_K0@Z ENDP				; copy_memory
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\sysserv\sysmem.cpp

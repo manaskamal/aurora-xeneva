@@ -15,6 +15,8 @@
 #include <drivers\vmmouse.h>
 #include <stdio.h>
 
+#ifdef HW_SVGA
+
 extern "C" uint32_t vm_backdoor_in (uint32_t rcx, uint32_t rdx);
 extern "C" uint32_t vm_backdoor_get_ecx(void);
 extern "C" uint32_t vm_backdoor_get_edx();
@@ -72,3 +74,5 @@ bool vmbackdoor_mouse_get_packet (vm_mouse_packet  *packet) {
 bool vmbackdoor_mouse_aware () {
 	return vmware_aware;
 }
+
+#endif

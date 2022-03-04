@@ -33,6 +33,7 @@
 #include <drivers/ahci.h>
 #include <drivers/ahci_disk.h>
 #include <drivers/pci.h>
+#include <drivers/hdaudio/hda.h>
 #include <pmmngr.h>
 #include <stdio.h>
 
@@ -126,6 +127,9 @@ void ahci_interrupt_handler (size_t v, void* p) {
 		}
 	}
 
+	if (is_hdaudio_initialized())
+		hda_handler(v,p);
+	
 	hba->is = is;
 	interrupt_end(0);
 }

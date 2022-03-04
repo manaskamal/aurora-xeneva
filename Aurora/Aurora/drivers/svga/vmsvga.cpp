@@ -24,6 +24,8 @@
 #include <arch\x86_64\mmngr\kheap.h>
 #include <fs/vfs.h>
 
+#ifdef HW_SVGA
+
 svga_device svga_dev;
 
 
@@ -665,3 +667,5 @@ void svga_register_file () {
 	svga->ioquery = svga_io_query;
 	vfs_mount ("/dev/svga", svga);
 }
+
+#endif

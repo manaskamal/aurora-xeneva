@@ -34,6 +34,7 @@
 
 #include "svga_reg.h"
 
+#ifdef HW_SVGA
 
 /*
  * 3D Hardware Version
@@ -1892,5 +1893,8 @@ typedef union {
    int32  i;
    float  f;
 } SVGA3dDevCapResult;
+
+#endif
+
 
 #endif /* _SVGA3D_REG_H_ */

@@ -13,6 +13,7 @@
 #include <stdio.h>
 #include <ipc\message.h>
 #include <arch\x86_64\thread.h>
+#include <ipc\pri_loop.h>
 
 //! send this message to task 4
 #define CLOCK_MESSAGE     10 
@@ -87,7 +88,8 @@ void rtc_clock_update(size_t s, void* p) {
 		rtc_read_datetime();
 	}
 
-	/*message_t msg;
+	
+	pri_event_t msg;
 	msg.type = CLOCK_MESSAGE;
 	msg.dword = second;
 	msg.dword2 = minute;
@@ -95,9 +97,12 @@ void rtc_clock_update(size_t s, void* p) {
 	msg.dword5 = day;
 	msg.dword6 = month;
 	msg.dword7 = year;
-	message_send (4, &msg);*/
+	msg.to_id = 3; //the dock bar
+
+	pri_put_message(&msg);
+
 	if (is_multi_task_enable()) {
-		thread_t *t = thread_iterate_block_list(2);
+		thread_t *t = thread_iterate_block_list(3);
 		if (t != NULL) {
 			if (t->state == THREAD_STATE_BLOCKED)
 				unblock_thread(t);

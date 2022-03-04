@@ -83,6 +83,7 @@
 #include <arch\x86_64\pic.h>
 #endif
 
+#include "efi.h"
 
 /**
  * Runtime setup
@@ -107,24 +108,7 @@ void debug_print (const char* text, ...) {
 	debug(text);
 }
 
-void multi_task_test() {
-	debug ("Hello Multitasking\n");
-	while(1) {
-		debug("Hello Multitasking\n");
-		sleep_thread(get_current_thread(),1000);
-	}
-}
 
-void *ap_address = 0;
-
-void* get_ap_address () {
-	return ap_address;
-}
-
-struct xX {
-	uint32_t dword;
-	void* pointer[1];
-};
 /**========================================
  ** the main entry routine -- _kmain
  **/
@@ -137,54 +121,58 @@ void _kmain () {
 	hal_init();
 	hal_x86_64_setup_int();	
 	initialize_kmemory(0x100000);
+
 	
 	initialize_acpi (info->acpi_table_pointer);
 	initialize_serial();
 
+	_debug_print_("Welcome to Xeneva Operating System! \r\n");
+	_debug_print_("Debug Output!!! \r\n");
+
+	
+
 	ahci_initialize();
-	printf ("Initializing HDA\n");
 	//hda_initialize();
 	vfs_init();
-	initialize_screen(info);
+
+
+    initialize_screen(info);
 	console_initialize(info);
-	
+
 	screen_set_configuration(info->X_Resolution,info->Y_Resolution);
 	initialize_rtc(); 
 	
-	hal_x86_64_feature_check();
-	
-
 	initialize_mouse();
 	kybrd_init();
 	message_init ();
 	dwm_ipc_init();
-	stream_init ();
 	pri_loop_init();
 	
-	 
 	e1000_initialize();   //<< receiver not working
 	//svga_init();
 	//sound_initialize();
 	driver_mngr_initialize(info);
+	process_list_initialize();
+
 #ifdef ARCH_X64
 	//================================================
 	//! Initialize the scheduler here
 	//!===============================================
 	initialize_scheduler();
-	create_process ("/xshell.exe","shell");
-	//! Quince -- The Compositing window manager for Aurora kernel
-	//! always put quince in thread id -- > 2
+
+	printf ("Scheduler Initialized\n");
+
+	/* start the sound service manager at id 1 */
+	create_process ("/sndsrv.exe","shell");
+
+	/* start the compositing window manager at id 2 */
 	create_process ("/priwm.exe","priwm");
-	create_process ("/priwm.exe","priwm2");
-	/**=====================================================
-	 ** Kernel threads handle some specific callbacks like
-	 ** procmngr handles process creation and termination
-	 **=====================================================
-	 */
+
+	create_process ("/dock.exe", "dock");
+
 	//! Misc programs goes here
-	//create_process ("/dwm2.exe", "dwm4");
-	//create_process ("/snake.exe", "snake");
-	//create_process ("/snake.exe", "cnsl");
+   // create_process ("/snake.exe", "snake");
+
 	//! Here start the scheduler (multitasking engine)
 	scheduler_start();
 #endif

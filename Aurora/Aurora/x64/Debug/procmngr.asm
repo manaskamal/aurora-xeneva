@@ -12,7 +12,7 @@ process_count DD 01H DUP (?)
 ?waked@@3_NA DB	01H DUP (?)				; waked
 _BSS	ENDS
 CONST	SEGMENT
-$SG3578	DB	'Proc mngr is already awake-> %x', 0aH, 00H
+$SG3579	DB	'Proc mngr is already awake-> %x', 0aH, 00H
 CONST	ENDS
 PUBLIC	?procmngr_add_process@@YAXPEAU_procmngr_queue_@@@Z ; procmngr_add_process
 PUBLIC	?procmngr_get_process@@YAPEAU_procmngr_queue_@@XZ ; procmngr_get_process
@@ -173,7 +173,7 @@ $LN2@procmngr_w:
 ; 60   : 		printf ("Proc mngr is already awake-> %x\n", proc_thr);
 
 	mov	rdx, QWORD PTR proc_thr$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3578
+	lea	rcx, OFFSET FLAT:$SG3579
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 61   : 		block_thread(proc_thr);

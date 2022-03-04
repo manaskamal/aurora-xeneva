@@ -10,9 +10,9 @@ _BSS	SEGMENT
 ?pipe_count@@3HA DD 01H DUP (?)				; pipe_count
 _BSS	ENDS
 CONST	SEGMENT
-$SG3305	DB	'pipe', 00H
+$SG3312	DB	'pipe', 00H
 	ORG $+3
-$SG3307	DB	'/dev/', 00H
+$SG3314	DB	'/dev/', 00H
 CONST	ENDS
 PUBLIC	?pipe_create@@YAPEAU_pipe_@@XZ			; pipe_create
 PUBLIC	?allocate_pipe@@YAXPEAHPEAD@Z			; allocate_pipe
@@ -223,7 +223,7 @@ $LN2@allocate_p:
 
 ; 59   : 		strcpy(pipe_name, "pipe");
 
-	lea	rdx, OFFSET FLAT:$SG3305
+	lea	rdx, OFFSET FLAT:$SG3312
 	lea	rcx, QWORD PTR pipe_name$[rsp]
 	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
 
@@ -243,7 +243,7 @@ $LN1@allocate_p:
 ; 64   : 	char path_name[10];
 ; 65   : 	strcpy(path_name, "/dev/");
 
-	lea	rdx, OFFSET FLAT:$SG3307
+	lea	rdx, OFFSET FLAT:$SG3314
 	lea	rcx, QWORD PTR path_name$[rsp]
 	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
 

@@ -12,6 +12,8 @@
 #ifndef __SVGA_QRCODE_H__
 #define __SVGA_QRCODE_H__
 
+#ifdef HW_SVGA
+
 //! Standard codes for svga driver
 #define SVGA_SETMODE     0x200
 #define SVGA_GETWIDTH    0x201
@@ -22,4 +24,7 @@
 #define SVGA_MOVE_CURSOR  0x206
 #define SVGA_GET_SCANLINE 0x207
 #define SVGA_UPDATE_FB  0x208
+#endif
+
+
 #endif

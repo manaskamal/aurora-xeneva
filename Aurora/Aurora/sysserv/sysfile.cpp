@@ -61,12 +61,23 @@ int sys_open_file (char* filename, FILE *ufile) {
 
 	pathname[i] = 0;
 
-    int fd = -1;
+    int fd = 0;
 	vfs_node_t *node = vfs_finddir(filename);
+	bool fd_found = false;
 	if (node) {
-		get_current_thread()->fd[get_current_thread()->fd_current] = node;
-		fd = get_current_thread()->fd_current;
-		get_current_thread()->fd_current++;
+		for (int i = 0; i < 60; i++) {
+			vfs_node_t *_node = get_current_thread()->fd[i];
+			if (_node == node) {
+				fd = i;
+				fd_found = true;
+				break;
+			}
+		}
+		if (!fd_found){
+			get_current_thread()->fd[get_current_thread()->fd_current] = node;
+			fd = get_current_thread()->fd_current;
+			get_current_thread()->fd_current++;
+		}
 	}
 
 	if (!(strcmp(pathname, "dev") == 0)) {
@@ -92,7 +103,7 @@ int sys_open_file (char* filename, FILE *ufile) {
  * @param buffer -- buffer to write the content to
  * @param ufile -- user mode file structure
  */
-void sys_read_file (int fd, uint64_t* buffer, FILE *ufile) {
+void sys_read_file (int fd, uint8_t* buffer, FILE *ufile) {
 	x64_cli ();
 	vfs_node_t file;
 	file.size = ufile->size;
@@ -112,9 +123,20 @@ void sys_read_file (int fd, uint64_t* buffer, FILE *ufile) {
 		return;
 
 	if (ufile->flags > 0){
-		readfs(node,&file,buffer,file.size);
+		for (int i = 0; i < file.size; i += 8) {
+			if (file.eof) 
+				break;
+			uint64_t* buff = (uint64_t*)pmmngr_alloc();
+			memset(buff, 0, 4096);
+			readfs_block (node,&file,buff);
+			memcpy (buffer,buff,4096);
+			buffer += 4096;
+			pmmngr_free(buff);
+			
+		}
+
 	}else {
-		readfs(node, node, buffer, file.size);
+		readfs(node, node, (uint64_t*)buffer, file.size);
 	}
 }
 
@@ -126,7 +148,6 @@ void sys_read_file (int fd, uint64_t* buffer, FILE *ufile) {
  */
 void sys_write_file (int fd, unsigned char* buffer, FILE *ufile) {
 	x64_cli();
-
 	vfs_node_t file;
 	file.size = ufile->size;
 	file.eof = ufile->eof;
@@ -141,11 +162,13 @@ void sys_write_file (int fd, unsigned char* buffer, FILE *ufile) {
 	file.ioquery  = 0;
 
 	vfs_node_t *node = get_current_thread()->fd[fd];
-	if (node == NULL)
+	if (node == NULL) {
 		return;
+	}
 
-	if (ufile->flags)
+	if (ufile->flags) {
 		writefs(node, &file,buffer,file.size);
-	else
+	}else {
 		writefs(node, node, buffer,file.size);
+	}
 }

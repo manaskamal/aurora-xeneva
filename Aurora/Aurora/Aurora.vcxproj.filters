@@ -70,12 +70,6 @@
     <Filter Include="source\drivers\hdaudio">
       <UniqueIdentifier>{8c9a931b-8e99-4bcf-8973-e448723d3f09}</UniqueIdentifier>
     </Filter>
-    <Filter Include="include\drivers\usb">
-      <UniqueIdentifier>{eef06587-64de-4b0e-84d1-57a9863441dd}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="source\drivers\usb">
-      <UniqueIdentifier>{c93c4f49-ff9d-4c76-8309-53456705e9ec}</UniqueIdentifier>
-    </Filter>
     <Filter Include="include\drivers\net">
       <UniqueIdentifier>{73372792-6f5c-4785-87af-39b06acbb1d5}</UniqueIdentifier>
     </Filter>
@@ -87,12 +81,6 @@
     </Filter>
     <Filter Include="include\drivers\acpi">
       <UniqueIdentifier>{75e84212-373b-4d3f-8558-e31d9db0b8b2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="include\net">
-      <UniqueIdentifier>{8e0e2a55-af13-43d8-b27a-51044595d738}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="source\net">
-      <UniqueIdentifier>{52f7101f-b3ad-4133-81e9-88520926a5f8}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -249,13 +237,7 @@
     <ClInclude Include="..\include\objctmngr.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\drivers\usb\xhci.h">
-      <Filter>include\drivers\usb</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\drivers\net\e1000.h">
-      <Filter>include\drivers\net</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\drivers\net\amd_am79c973.h">
       <Filter>include\drivers\net</Filter>
     </ClInclude>
     <ClInclude Include="..\include\arch\x86_64\pic.h">
@@ -266,18 +248,6 @@
     </ClInclude>
     <ClInclude Include="..\include\serial.h">
       <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\net\arp.h">
-      <Filter>include\net</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\net\ethernet.h">
-      <Filter>include\net</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\net\nethw.h">
-      <Filter>include\net</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\net\udp.h">
-      <Filter>include\net</Filter>
     </ClInclude>
     <ClInclude Include="..\include\arch\x86_64\multiproc.h">
       <Filter>include\arch\x86_64</Filter>
@@ -325,9 +295,6 @@
       <Filter>include\drivers</Filter>
     </ClInclude>
     <ClInclude Include="..\include\limits.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\stream.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\fs\ttype.h">
@@ -500,9 +467,6 @@
     <ClCompile Include="procmngr.cpp">
       <Filter>source</Filter>
     </ClCompile>
-    <ClCompile Include="drivers\usb\xhci.cpp">
-      <Filter>source\drivers\usb</Filter>
-    </ClCompile>
     <ClCompile Include="drivers\net\e1000.cpp">
       <Filter>source\drivers\net</Filter>
     </ClCompile>
@@ -515,23 +479,8 @@
     <ClCompile Include="serial.cpp">
       <Filter>source</Filter>
     </ClCompile>
-    <ClCompile Include="net\ethernet.cpp">
-      <Filter>source\net</Filter>
-    </ClCompile>
-    <ClCompile Include="net\nethw.cpp">
-      <Filter>source\net</Filter>
-    </ClCompile>
-    <ClCompile Include="net\arp.cpp">
-      <Filter>source\net</Filter>
-    </ClCompile>
-    <ClCompile Include="net\udp.cpp">
-      <Filter>source\net</Filter>
-    </ClCompile>
     <ClCompile Include="sysserv\ioquery.cpp">
       <Filter>source\sysserv</Filter>
-    </ClCompile>
-    <ClCompile Include="hwcursor.cpp">
-      <Filter>source</Filter>
     </ClCompile>
     <ClCompile Include="sysserv\systime.cpp">
       <Filter>source\sysserv</Filter>
@@ -557,14 +506,8 @@
     <ClCompile Include="fs\devfs.cpp">
       <Filter>source\fs</Filter>
     </ClCompile>
-    <ClCompile Include="stream.cpp">
-      <Filter>source</Filter>
-    </ClCompile>
     <ClCompile Include="fs\ttype.cpp">
       <Filter>source\fs</Filter>
-    </ClCompile>
-    <ClCompile Include="drivers\acpi\xenevaosi.cpp">
-      <Filter>source\drivers\acpi</Filter>
     </ClCompile>
     <ClCompile Include="arch\x86_64\block.cpp">
       <Filter>source\arch\x86_64</Filter>
@@ -589,6 +532,9 @@
     </ClCompile>
     <ClCompile Include="drivers\pciata.cpp">
       <Filter>source\drivers</Filter>
+    </ClCompile>
+    <ClCompile Include="hwcursor.cpp">
+      <Filter>source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

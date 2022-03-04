@@ -43,7 +43,7 @@
  * @param h -- height of the window
  * @param attribute -- window attributes
  */
-extern void _daisy_priwm_create_window_ (int x, int y, int w, int h, uint8_t attribute);
+extern void _daisy_priwm_create_window_ (int x, int y, int w, int h, uint8_t attribute, char* title);
 
 /**
  * _daisy_priwm_window_move_ --moves a window to a new location

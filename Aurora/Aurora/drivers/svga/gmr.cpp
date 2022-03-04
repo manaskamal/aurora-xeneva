@@ -14,6 +14,8 @@
 #include <pmmngr.h>
 #include <arch\x86_64\mmngr\kheap.h>
 
+#ifdef HW_SVGA
+
 gmr_state gmr;
 
 void gmr_init () {
@@ -141,3 +143,5 @@ void gmr_free_all(void)
       gmr_define(id, NULL, 0);
    }
 }
+
+#endif

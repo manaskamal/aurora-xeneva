@@ -8,7 +8,6 @@ INCLUDELIB OLDNAMES
 PUBLIC	funct
 EXTRN	?message_send@@YAXGPEAU_message_@@@Z:PROC	; message_send
 EXTRN	?message_receive@@YAXPEAU_message_@@@Z:PROC	; message_receive
-EXTRN	?printf@@YAXPEBDZZ:PROC				; printf
 EXTRN	?wait@@YAXXZ:PROC				; wait
 EXTRN	?create__sys_process@@YAHPEBDPEAD@Z:PROC	; create__sys_process
 EXTRN	?valloc@@YAX_K@Z:PROC				; valloc
@@ -18,7 +17,7 @@ EXTRN	?get_thread_id@@YAGXZ:PROC			; get_thread_id
 EXTRN	?sys_unblock_id@@YAXG@Z:PROC			; sys_unblock_id
 EXTRN	?create_uthread@@YAXP6AXPEAX@ZPEAD@Z:PROC	; create_uthread
 EXTRN	?sys_open_file@@YAHPEADPEAU_file_@@@Z:PROC	; sys_open_file
-EXTRN	?sys_read_file@@YAXHPEA_KPEAU_file_@@@Z:PROC	; sys_read_file
+EXTRN	?sys_read_file@@YAXHPEAEPEAU_file_@@@Z:PROC	; sys_read_file
 EXTRN	?sys_write_file@@YAXHPEAEPEAU_file_@@@Z:PROC	; sys_write_file
 EXTRN	?sys_get_used_ram@@YA_KXZ:PROC			; sys_get_used_ram
 EXTRN	?sys_get_free_ram@@YA_KXZ:PROC			; sys_get_free_ram
@@ -33,6 +32,7 @@ EXTRN	?sys_kill@@YAXHH@Z:PROC				; sys_kill
 EXTRN	?sys_set_signal@@YAXHP6AXH@Z@Z:PROC		; sys_set_signal
 EXTRN	?unmap_shared_memory@@YAXG_K0@Z:PROC		; unmap_shared_memory
 EXTRN	?sys_attach_ttype@@YAXH@Z:PROC			; sys_attach_ttype
+EXTRN	?copy_memory@@YAXG_K0@Z:PROC			; copy_memory
 EXTRN	?map_memory@@YAPEAX_KIE@Z:PROC			; map_memory
 EXTRN	?unmap_memory@@YAXPEAXI@Z:PROC			; unmap_memory
 EXTRN	?ttype_create@@YAXPEAH0@Z:PROC			; ttype_create
@@ -42,17 +42,18 @@ EXTRN	?create_timer@@YAHIG@Z:PROC			; create_timer
 EXTRN	?destroy_timer@@YAXH@Z:PROC			; destroy_timer
 EXTRN	?pause_timer@@YAXH@Z:PROC			; pause_timer
 EXTRN	?start_timer@@YAXH@Z:PROC			; start_timer
+EXTRN	?printf@@YAXPEBDZZ:PROC				; printf
 _BSS	SEGMENT
 funct	DQ	01H DUP (?)
 _BSS	ENDS
 CONST	SEGMENT
-$SG6141	DB	'System Call Fault!! Halting System', 0aH, 00H
+$SG3599	DB	'System Call Fault!! Halting System', 0aH, 00H
 CONST	ENDS
 _DATA	SEGMENT
 _syscalls DQ	FLAT:?printf@@YAXPEBDZZ
 	DQ	FLAT:?wait@@YAXXZ
 	DQ	FLAT:?create__sys_process@@YAHPEBDPEAD@Z
-	DQ	0000000000000000H
+	DQ	FLAT:?copy_memory@@YAXG_K0@Z
 	DQ	0000000000000000H
 	DQ	FLAT:?valloc@@YAX_K@Z
 	DQ	FLAT:?message_send@@YAXGPEAU_message_@@@Z
@@ -69,7 +70,7 @@ _syscalls DQ	FLAT:?printf@@YAXPEBDZZ
 	DQ	FLAT:?sys_unblock_id@@YAXG@Z
 	DQ	FLAT:?create_uthread@@YAXP6AXPEAX@ZPEAD@Z
 	DQ	FLAT:?sys_open_file@@YAHPEADPEAU_file_@@@Z
-	DQ	FLAT:?sys_read_file@@YAXHPEA_KPEAU_file_@@@Z
+	DQ	FLAT:?sys_read_file@@YAXHPEAEPEAU_file_@@@Z
 	DQ	FLAT:?ttype_dup_master@@YAXHH@Z
 	DQ	FLAT:?sys_get_used_ram@@YA_KXZ
 	DQ	FLAT:?sys_get_free_ram@@YA_KXZ
@@ -129,7 +130,7 @@ $LN6:
 
 ; 21   : 		printf ("System Call Fault!! Halting System\n");
 
-	lea	rcx, OFFSET FLAT:$SG6141
+	lea	rcx, OFFSET FLAT:$SG3599
 	call	?printf@@YAXPEBDZZ			; printf
 $LN2@x64_syscal:
 

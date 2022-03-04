@@ -38,6 +38,11 @@
 #include <sys/_term.h>
 
 
+/**
+ * daisy_button_refresh -- button refresh handler
+ * @param widget -- pointer to self
+ * @param win -- pointer to root window
+ */
 void daisy_button_refresh (daisy_widget_t *widget, daisy_window_t* win) {
 	daisy_widget_button_t * button = (daisy_widget_button_t*)widget;
 	uint32_t fill_color = SILVER;
@@ -55,8 +60,19 @@ void daisy_button_refresh (daisy_widget_t *widget, daisy_window_t* win) {
 		acrylic_font_draw_string (win->ctx,button->text,button->base.x + button->base.width/2 - mid_w/2,
 			button->base.y + button->base.height/2 - mid_h/2,11,BLACK);
 	}
+
 }
 
+
+/**
+ * daisy_button_mouse_event -- button event handler
+ * @param widget -- pointer to self
+ * @param win -- pointer to root window
+ * @param button -- mouse button code
+ * @param clicked -- boolean value for clicked/not clicked
+ * @param x -- mouse x coordinate
+ * @param y -- mouse y coordinate
+ */
 void daisy_button_mouse_event (daisy_widget_t *widget, daisy_window_t *win, int button, bool clicked, int x, int y) {
 	daisy_widget_button_t *button_w = (daisy_widget_button_t*)widget;
 
@@ -64,12 +80,13 @@ void daisy_button_mouse_event (daisy_widget_t *widget, daisy_window_t *win, int 
 		button_w->last_mouse_y == y) {
 		button_w->clicked = true;
 		daisy_button_refresh(widget,win);
-		daisy_window_update (win,widget->x,widget->y,widget->width,widget->height);
+		daisy_window_update_rect_area (win,widget->x,widget->y,widget->width,widget->height);
+		win->focused_widget = widget;
 	}else {
 		if (button_w->clicked) {
 			button_w->clicked = false;
 			daisy_button_refresh(widget,win);
-			daisy_window_update (win,widget->x,widget->y,widget->width,widget->height);
+			daisy_window_update_rect_area (win,widget->x,widget->y,widget->width,widget->height);
 		}
 	}
 
@@ -77,6 +94,8 @@ void daisy_button_mouse_event (daisy_widget_t *widget, daisy_window_t *win, int 
 	button_w->last_mouse_x = x;
 	button_w->last_mouse_y = y;
 }
+
+
 /**
  * daisy_widget_create_button -- create a button widget
  * @param width -- width of the button

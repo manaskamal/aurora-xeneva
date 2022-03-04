@@ -33,6 +33,7 @@
 #ifndef _VMMOUSE_DEFS_H_
 #define _VMMOUSE_DEFS_H_
 
+#ifdef HW_SVGA
 /*
  * Command related defines
  */
@@ -67,5 +68,8 @@
 #define VMMOUSE_LEFT_BUTTON             0x20
 #define VMMOUSE_RIGHT_BUTTON            0x10
 #define VMMOUSE_MIDDLE_BUTTON           0x08
+
+#endif
+
 
 #endif

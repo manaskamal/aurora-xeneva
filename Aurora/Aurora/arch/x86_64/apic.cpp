@@ -137,7 +137,7 @@ void initialize_apic () {
 
 	size_t apic_base;
 	apic_base = (size_t)0xFEE00000;
-
+	apic_timer_count = 0;
 	//map_page (0xFEE00000, 0xFEE00000,0);
 
 	apic = (void*)apic_base;
@@ -164,7 +164,7 @@ void initialize_apic () {
 	size_t timer_reg = (1 << 17) | timer_vector;
 	write_apic_register (LAPIC_REGISTER_LVT_TIMER, timer_reg);
 	io_wait ();
-	write_apic_register (LAPIC_REGISTER_TMRINITCNT,78);  //100
+	write_apic_register (LAPIC_REGISTER_TMRINITCNT,72);  //100
 	
 
 	x64_outportb(PIC1_DATA, 0xFF);
@@ -197,7 +197,7 @@ bool icr_busy () {
 }
 
 
-
+#ifdef SMP
 void initialize_cpu (uint32_t processor) {
 
 	uint64_t* address = (uint64_t*)pmmngr_alloc();
@@ -215,3 +215,4 @@ void initialize_cpu (uint32_t processor) {
 		;
 
 }
+#endif

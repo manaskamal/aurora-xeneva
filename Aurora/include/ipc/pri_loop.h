@@ -59,6 +59,7 @@ typedef struct _pri_event_ {
 	uint32_t *p_value2;
 	char *value;
 	unsigned char* value2;
+	char char_values[100];
 }pri_event_t;
 
 /**
@@ -68,6 +69,7 @@ typedef struct _pri_loop_box_ {
 	void* address;
 	uint16_t owner_id;
 	bool message_pending;
+	uint16_t pending_msg_count;
 	struct _pri_loop_box_ *next;
 	struct _pri_loop_box_ *prev;
 }pri_loop_box_t;
@@ -76,4 +78,10 @@ typedef struct _pri_loop_box_ {
  * pri_loop_init -- initialize pri_loop_manager
  */
 extern void pri_loop_init ();
+
+/** 
+ * pri_put_message -- put a message to specific pri_loop_box
+ * @param event -- event message to put
+ */
+extern void pri_put_message (pri_event_t *event);
 #endif

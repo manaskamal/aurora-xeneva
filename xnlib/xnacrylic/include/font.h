@@ -15,7 +15,7 @@
 #include <canvas.h>
 
 typedef struct _font_ {
-	uint64_t *data;
+	uint8_t *data;
 	char *name;
 	int size;
 	uint32_t width;

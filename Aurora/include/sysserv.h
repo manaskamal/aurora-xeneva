@@ -50,7 +50,7 @@ static void* _syscalls[] = {
 	printf,            //0
 	wait,              //1
 	create__sys_process, //2
-	0,    //3
+	copy_memory,    //3
 	0, ///4
 	valloc,            ///5
 	message_send,      //6

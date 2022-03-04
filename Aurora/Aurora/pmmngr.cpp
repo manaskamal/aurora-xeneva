@@ -14,6 +14,7 @@
 #include <_null.h>
 #include <stdio.h>
 #include <arch\x86_64\cpu.h>
+#include <serial.h>
 #include <efi.h>
 
 uint64_t free_memory = 0;
@@ -140,6 +141,12 @@ void pmmngr_init(KERNEL_BOOT_INFO *_info)
 	}
 
 
+	pmmngr_lock_pages(_info->graphics_framebuffer,_info->fb_size / 4096);
+
+	uint64_t pos = 0x1005D000;
+	for (int i = 0; i < 12*1024 / 4096; i++)
+		pmmngr_lock_page((void*)(pos + i * 4096));
+
 	total_ram -= reserved_memory;
 
 	void *unusable = pmmngr_alloc(); //0 is avoided
@@ -159,15 +166,17 @@ void* pmmngr_alloc()
 		if (ram_bitmap[ram_bitmap_index] == true) continue;
 		pmmngr_lock_page ((void*)(ram_bitmap_index * 4096));
 		used_memory += 4096 * 1;
+	/*	if (is_serial_initialized())
+			_debug_print_("Pmmngr Allocated ->%x \r\n",ram_bitmap_index * 4096);*/
 		return (void*)(ram_bitmap_index * 4096);
 	}
 
-	for (int index = 0; index  < ram_bitmap.Size * 8; index++) {
+	/*for (int index = 0; index  < ram_bitmap.Size * 8; index++) {
 		if (ram_bitmap[index] == true) continue;
 		pmmngr_lock_page ((void*)(index * 4096));
 		used_memory += 4096 * 1;
 		return (void*)(index * 4096);
-	}
+	}*/
 	x64_cli();
 	printf ("Used RAM -> %d MB, Free RAM -> %d MB\n", used_memory /1024 / 1024, free_memory / 1024 / 1024);
 	printf ("No more available pages\n");
@@ -200,6 +209,17 @@ void pmmngr_free (void* addr)
 		if (ram_bitmap_index > index) {
 			ram_bitmap_index = index;
 		}
+	}
+}
+
+/**
+ * pmmngr_free_block -- free a list of blocks
+ */
+void pmmngr_free_blocks (void* addr, int count) {
+	uint64_t * address = (uint64_t*)addr;
+	for (uint32_t i = 0; i < count; i++) {
+		pmmngr_free (address);
+		address += 0x1000;
 	}
 }
 

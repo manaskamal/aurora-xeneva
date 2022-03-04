@@ -14,6 +14,7 @@
 #include <drivers\svga\svga_screen.h>
 #include <string.h>
 
+#ifdef HW_SVGA
 
 svga_screen_console g_screen;
 
@@ -76,3 +77,5 @@ void svga_screen_console_rect (int left, int top,
 
 	svga_draw_tile_rect (left, top, right, bottom);
 }
+
+#endif

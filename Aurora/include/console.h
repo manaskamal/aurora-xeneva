@@ -38,8 +38,8 @@ extern void console_initialize (PKERNEL_BOOT_INFO info);
 //! print string to console
 extern void puts (char* str);
 
-//! print character to console output
-extern void putc (char c);
+//! Prints a char to console output
+extern void putc(char s);
 
 //! returns true if the console is initialized
 extern bool is_console_initialized ();

@@ -16,6 +16,8 @@
 #include <drivers\svga\vmsvga.h>
 #include <drivers\svga\gmr.h>
 
+#ifdef HW_SVGA
+
 #define TILE_SIZE   64
 #define TILE_BUFFER_PIXELS  (TILE_SIZE * TILE_SIZE)
 #define TILE_BUFFER_BYTES   (TILE_BUFFER_PIXELS * sizeof(uint32))
@@ -58,4 +60,6 @@ typedef struct _screen_console_ {
 extern void svga_screen_console_init (uint32_t gmr_id);
 extern void svga_screen_console_set (uint32_t screen_id, int width, int height);
 extern void svga_screen_console_rect (int left, int top, int right, int bottom, uint32_t col);
+#endif
+
 #endif

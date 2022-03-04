@@ -39,7 +39,6 @@ void dwm_put_message (dwm_message_t *msg) {
 	if (t == NULL) {
 		t = thread_iterate_block_list(2);
 	}
-
 	dwm_message_t *tmsg = (dwm_message_t*)t->msg_box;
 	if (tmsg->type == 0)
 		memcpy (t->msg_box,msg,sizeof(dwm_message_t));

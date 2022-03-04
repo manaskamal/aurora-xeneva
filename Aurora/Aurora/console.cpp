@@ -49,15 +49,15 @@ void console_initialize (PKERNEL_BOOT_INFO info) {
 	fb = info->graphics_framebuffer;
 
 	//psf_data = info->psf_font_data;
-
 	uint64_t* buffer = (uint64_t*)pmmngr_alloc_blocks(2);
-	memset(buffer, 0, 2*4096);
+	memset(buffer, 0, 8192);
 	vfs_node_t file = fat32_open(NULL, "/font.psf");
 	fat32_read_file (&file,buffer,file.size);
 	//vfs_node_t node =
 	psf_data = buffer;
 	_console_initialized_ = true;
 	printf ("Font finally loaded\n");
+	//for(;;);
 }
 
 //! Put a character to console output
@@ -135,6 +135,32 @@ void puts(char *s){
 
 	
 }
+
+
+////! Prints a char to console output
+//void putc(char s){
+//	if (psf_data == NULL)
+//		return;
+//
+//	psf2_t *font = (psf2_t*)psf_data;
+//    int x,y,line,mask,offs;
+//    int bpl=(font->width+7)/8;
+// 
+//	unsigned char *glyph = (unsigned char*)psf_data + font->headersize + 
+//			(s>0&&s<font->numglyph?s:0)*font->bytesperglyph;
+//	offs = console_x * (font->width + 1);// * 4);
+//	for(y=0;y<font->height;y++) {
+//		line=offs; mask=1<<(font->width-1);
+//		for(x=0;x<font->width;x++) {
+//			fb[line  + console_y * screen_width ]=((int)*glyph) & (mask)?0xFFFFFF:0;
+//				mask>>=1; line+=1;
+//			}
+//			fb[line  + console_y * screen_width]=0; glyph+=bpl; offs+=scanline;
+//	}
+//	console_x++;
+//}
+
+    
 
 
 bool is_console_initialized () {

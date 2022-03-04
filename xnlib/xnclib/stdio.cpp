@@ -105,7 +105,7 @@ FILE *fopen (const char* name, const char* mode) {
 size_t fread (void* ptr, size_t size, size_t nmemb,FILE* stream) {
 	stream->base = (unsigned char*)ptr;
 	stream->ptr = stream->base;
-	sys_read_file (stream->fd,(unsigned char*)ptr,stream->stream);
+	sys_read_file (stream->fd,(uint8_t*)ptr,stream->stream);
 	return size;
 }
 

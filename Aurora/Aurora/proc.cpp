@@ -16,11 +16,9 @@
 #include <_null.h>
 
 
-static int user_stack_index = 0;
-static int user_stack_index_2 = 0;
-static mutex_t *process_mutex = create_mutex();
-static mutex_t *kill_mutex = create_mutex();
-static mutex_t *add_mutex = create_mutex();
+//static mutex_t *process_mutex = create_mutex();
+//static mutex_t *kill_mutex = create_mutex();
+//static mutex_t *add_mutex = create_mutex();
 process_t *process_head = NULL;
 process_t *process_last = NULL;
 static int pid = 0;
@@ -30,7 +28,7 @@ static int pid = 0;
  * @param proc -- process address
  */
 void add_process (process_t *proc) {
-	mutex_lock (add_mutex);
+	//mutex_lock (add_mutex);
 	proc->next = NULL;
 	proc->prev = NULL;
 
@@ -43,7 +41,7 @@ void add_process (process_t *proc) {
 		process_last = proc;
 	}
 	pid++;
-	mutex_unlock (add_mutex);
+	//mutex_unlock (add_mutex);
 }
 
 /**
@@ -153,7 +151,6 @@ void allocate_fd (thread_t *t) {
  * @return -- created thread id
  */
 int create_process(const char* filename, char* procname) {
-
 	//!allocate a data-structure for process 
 	process_t *process = (process_t*)pmmngr_alloc();
 	process->pid_t = pid;
@@ -162,7 +159,8 @@ int create_process(const char* filename, char* procname) {
 	//!open the process file-binary
 	char *fname = (char*)filename;
     vfs_node_t *n = vfs_finddir (fname);
-	vfs_node_t file = openfs(n, fname);
+	//vfs_node_t file = openfs (n,fname);
+	vfs_node_t file = fat32_open(NULL, fname);
 
 	if (file.status == FS_FLAG_INVALID) {
 		printf("Executable image not found\n");
@@ -170,16 +168,18 @@ int create_process(const char* filename, char* procname) {
 	}
 	//!open the binary file and read it
 	uint64_t* buf = (uint64_t*)pmmngr_alloc();   
-	readfs_block(n,&file,buf);
+	//readfs_block(n,&file,buf);
+	fat32_read (&file,buf);
+	
 
 	IMAGE_DOS_HEADER* dos = (IMAGE_DOS_HEADER*)buf;
 	PIMAGE_NT_HEADERS nt = raw_offset<PIMAGE_NT_HEADERS>(dos, dos->e_lfanew);
 
 	//!extract the informations
-    load_pe_file(buf,file.size);
+   // load_pe_file(buf,file.size);
 	uint64_t _image_base_ = nt->OptionalHeader.ImageBase;
 	ientry ent = (ientry)(nt->OptionalHeader.AddressOfEntryPoint + nt->OptionalHeader.ImageBase); //buffer
-	
+
 	//! create the user stack and address space
     uint64_t *cr3 = create_user_address_space();	
 	uint64_t stack = (uint64_t)create_user_stack(cr3);
@@ -188,20 +188,17 @@ int create_process(const char* filename, char* procname) {
 	////! read rest of the image
 	int position = 1;  //we already read 4096 bytes at first
 
+
 	while (file.eof != 1){
 		uint64_t* block = (uint64_t*)pmmngr_alloc();
 		//read_blk(&file,block,file.id);
-		readfs_block (n, &file, block);
-		//fat32_read (&file,block);
+		//readfs_block (n, &file, block);
+		fat32_read (&file,block);
 		map_page_ex(cr3,(uint64_t)block,_image_base_ + position * 4096, PAGING_USER);
 		position++;
 	}
 
-	uint64_t pos = 0x0000080000000000;   //0x0000080000000000;
-	for (int i = 0; i < 0xB01000 / 4096; i++) {
-		void* p = pmmngr_alloc();
-		map_page_ex(cr3,(uint64_t)p, pos + i * 4096, PAGING_USER);
-	}
+
 	//!allocate current process
 	process->name = procname;
 	process->entry_point = ent;
@@ -211,15 +208,13 @@ int create_process(const char* filename, char* procname) {
 	process->stack = stack;
 	process->image_size = nt->OptionalHeader.SizeOfImage;
 	process->parent = NULL;
-	process->user_heap_start = (void*)0x0000080000000000;
-	process->heap_size = 0xB00000;
 	//! Create and thread and start scheduling when scheduler starts */
-	thread_t *t = create_user_thread(process->entry_point,stack,(uint64_t)cr3,procname,0);
+	thread_t *t = create_user_thread(ent,stack,(uint64_t)cr3,procname,0);
 	//allocate_fd(t);
 	//! add the process to process manager
 	process->thread_data_pointer = t;
     add_process(process);
-	//mutex_unlock (process_mutex);
+
 	return t->id;
 }
 
@@ -232,7 +227,7 @@ void kill_process () {
 	process_t *proc = find_process_by_thread (remove_thread);
 	uint64_t  init_stack = proc->stack - 0x100000;
 	uint64_t image_base = proc->image_base;
-	uint64_t heap_base = (uint64_t)proc->user_heap_start;
+	//uint64_t heap_base = (uint64_t)proc->user_heap_start;
 	uint64_t *cr3 = (uint64_t*)remove_thread->cr3;
 	
 	int timer = find_timer_id (remove_thread->id);
@@ -259,9 +254,9 @@ void kill_process () {
 	}
 
 	//!unmap user heap
-	for (int i = 0; i < 0xB01000 / 4096; i++) {
+	/*for (int i = 0; i < 0xB01000 / 4096; i++) {
 		unmap_page(heap_base + i * 4096);
-	}
+	}*/
 
 
 	pmmngr_free (cr3);
@@ -284,7 +279,7 @@ void kill_process_by_id (uint16_t id) {
 	uint64_t  init_stack = proc->stack - 0x100000;
 	uint64_t image_base = proc->image_base;
 	size_t image_size = proc->image_size;
-	uint64_t heap_base = (uint64_t)proc->user_heap_start;
+	//uint64_t heap_base = (uint64_t)proc->user_heap_start;
 	uint64_t *cr3 = (uint64_t*)remove_thread->cr3;
 
 	if (was_blocked)
@@ -307,9 +302,9 @@ void kill_process_by_id (uint16_t id) {
 	}
 
 	//!unmap user heap
-	for (int i = 0; i < 0xB01000 / 4096; i++) {
+	/*for (int i = 0; i < 0xB01000 / 4096; i++) {
 		unmap_page_ex(cr3,heap_base + i * 4096, true);
-	}
+	}*/
 
 	pmmngr_free(cr3);
 }
@@ -399,18 +394,15 @@ uint32_t get_num_process () {
 	return num_process;
 }
 
-void process_map_addresses (uint64_t addr, uint64_t length, uint64_t *current_address_space, process_t *c_proc) {
-	uint64_t *c_cr3 = 0;
-	for (process_t * current_proc = process_head; current_proc != NULL; current_proc = current_proc->next) {
-		if (current_proc == c_proc) 
-			continue;
-		c_cr3 = (uint64_t*)current_proc->thread_data_pointer->cr3;
-		c_cr3[pml4_index(addr)] = current_address_space[pml4_index(addr)];
-	}
-}
 
 process_t * get_current_process () {
 	thread_t * p_thread = get_current_thread();
 	process_t *c_proc = find_process_by_thread (p_thread);
 	return c_proc;
+}
+
+void process_list_initialize () {
+	pid = 0;
+	process_head = NULL;
+	process_last = NULL;
 }

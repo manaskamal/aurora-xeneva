@@ -85,7 +85,6 @@ typedef struct _thread_ {
 	int fd_current;
 	uint8_t master_fd;
 	uint8_t slave_fd;
-	stream_t *stream;
 	struct _thread_* next;
 	struct _thread_* prev;
 }thread_t;
