@@ -52,13 +52,13 @@ tv66 = 32
 id$ = 64
 ?sys_attach_ttype@@YAXH@Z PROC				; sys_attach_ttype
 
-; 88   : void sys_attach_ttype (int id) {
+; 89   : void sys_attach_ttype (int id) {
 
 $LN3:
 	mov	DWORD PTR [rsp+8], ecx
 	sub	rsp, 56					; 00000038H
 
-; 89   : 	get_current_thread()->ttype = id;
+; 90   : 	get_current_thread()->ttype = id;
 
 	movsxd	rax, DWORD PTR id$[rsp]
 	mov	QWORD PTR tv66[rsp], rax
@@ -66,7 +66,7 @@ $LN3:
 	mov	rcx, QWORD PTR tv66[rsp]
 	mov	QWORD PTR [rax+240], rcx
 
-; 90   : }
+; 91   : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -79,19 +79,19 @@ signo$ = 48
 handler$ = 56
 ?sys_set_signal@@YAXHP6AXH@Z@Z PROC			; sys_set_signal
 
-; 79   : void sys_set_signal (int signo, sig_handler handler) {
+; 80   : void sys_set_signal (int signo, sig_handler handler) {
 
 $LN3:
 	mov	QWORD PTR [rsp+16], rdx
 	mov	DWORD PTR [rsp+8], ecx
 	sub	rsp, 40					; 00000028H
 
-; 80   : 	x64_cli();
+; 81   : 	x64_cli();
 
 	call	x64_cli
 
-; 81   : 	//get_current_thread()->signals[signo] = handler;
-; 82   : }
+; 82   : 	//get_current_thread()->signals[signo] = handler;
+; 83   : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -104,28 +104,28 @@ pid$ = 48
 signo$ = 56
 ?sys_kill@@YAXHH@Z PROC					; sys_kill
 
-; 67   : void sys_kill (int pid, int signo) {
+; 68   : void sys_kill (int pid, int signo) {
 
 $LN3:
 	mov	DWORD PTR [rsp+16], edx
 	mov	DWORD PTR [rsp+8], ecx
 	sub	rsp, 40					; 00000028H
 
-; 68   : 	x64_cli();
+; 69   : 	x64_cli();
 
 	call	x64_cli
 
-; 69   : 	kill_process_by_id(pid);
+; 70   : 	kill_process_by_id(pid);
 
 	movzx	ecx, WORD PTR pid$[rsp]
 	call	?kill_process_by_id@@YAXG@Z		; kill_process_by_id
 
-; 70   : 	force_sched();
+; 71   : 	force_sched();
 
 	call	?force_sched@@YAXXZ			; force_sched
 
-; 71   : 	//! For now, no signals are supported, just kill the process
-; 72   : }
+; 72   : 	//! For now, no signals are supported, just kill the process
+; 73   : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -136,24 +136,24 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 ?sys_exit@@YAXXZ PROC					; sys_exit
 
-; 55   : void sys_exit () {
+; 56   : void sys_exit () {
 
 $LN3:
 	sub	rsp, 40					; 00000028H
 
-; 56   : 	x64_cli();	
+; 57   : 	x64_cli();	
 
 	call	x64_cli
 
-; 57   : 	kill_process();
+; 58   : 	kill_process();
 
 	call	?kill_process@@YAXXZ			; kill_process
 
-; 58   : 	force_sched();
+; 59   : 	force_sched();
 
 	call	?force_sched@@YAXXZ			; force_sched
 
-; 59   : }
+; 60   : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -167,31 +167,31 @@ name$ = 64
 procnm$ = 72
 ?create__sys_process@@YAHPEBDPEAD@Z PROC		; create__sys_process
 
-; 43   : int create__sys_process (const char* name, char* procnm) {
+; 44   : int create__sys_process (const char* name, char* procnm) {
 
 $LN3:
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 56					; 00000038H
 
-; 44   : 	x64_cli();
+; 45   : 	x64_cli();
 
 	call	x64_cli
 
-; 45   : 	int id = create_process (name, procnm);
+; 46   : 	int id = create_process (name, procnm);
 
 	mov	rdx, QWORD PTR procnm$[rsp]
 	mov	rcx, QWORD PTR name$[rsp]
 	call	?create_process@@YAHPEBDPEAD@Z		; create_process
 	mov	DWORD PTR id$[rsp], eax
 
-; 46   : 	/*int master_fd = get_current_thread()->master_fd;
-; 47   : 	ttype_dup_master(id, master_fd);*/
-; 48   : 	return id;
+; 47   : 	/*int master_fd = get_current_thread()->master_fd;
+; 48   : 	ttype_dup_master(id, master_fd);*/
+; 49   : 	return id;
 
 	mov	eax, DWORD PTR id$[rsp]
 
-; 49   : }
+; 50   : }
 
 	add	rsp, 56					; 00000038H
 	ret	0

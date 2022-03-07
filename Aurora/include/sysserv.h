@@ -43,11 +43,12 @@
 #include <fs\ttype.h>
 #include <ipc\pipe.h>
 #include <timer.h>
+#include <serial.h>
 
 
 //! List of available services in Aurora
 static void* _syscalls[] = {
-	printf,            //0
+	_debug_print_,            //0
 	wait,              //1
 	create__sys_process, //2
 	copy_memory,    //3

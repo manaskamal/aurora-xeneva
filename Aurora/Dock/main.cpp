@@ -62,6 +62,8 @@ void dock_paint_time (canvas_t *ctx,int x, int y,uint32_t hour, uint32_t min, ui
 int main (int argc, char*argv[]) {
 	daisy_application();
 
+	sys_print_text ("initializing dock \r\n");
+
 	int svga_fd = sys_open_file ("/dev/fb", NULL);
 	uint32_t s_width = ioquery(svga_fd,SCREEN_GETWIDTH,NULL);
 	uint32_t s_height = ioquery(svga_fd, SCREEN_GETHEIGHT, NULL);
@@ -93,7 +95,7 @@ int main (int argc, char*argv[]) {
 
 	daisy_window_show(win);
 
-
+	sys_print_text ("Dock running \r\n");
 	dock_button_t *prev_focused_button = NULL;
 	int pri_event_fd = daisy_get_event_fd();
 

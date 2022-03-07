@@ -17,52 +17,20 @@ EXTRN	?unblock_thread@@YAXPEAU_thread_@@@Z:PROC	; unblock_thread
 EXTRN	?get_current_thread@@YAPEAU_thread_@@XZ:PROC	; get_current_thread
 EXTRN	?thread_iterate_ready_list@@YAPEAU_thread_@@G@Z:PROC ; thread_iterate_ready_list
 EXTRN	?thread_iterate_block_list@@YAPEAU_thread_@@H@Z:PROC ; thread_iterate_block_list
-EXTRN	?create_mutex@@YAPEAUmutex_t@@XZ:PROC		; create_mutex
-EXTRN	?mutex_lock@@YAXPEAUmutex_t@@@Z:PROC		; mutex_lock
-EXTRN	?mutex_unlock@@YAXPEAUmutex_t@@@Z:PROC		; mutex_unlock
 _BSS	SEGMENT
-ipc_mutex_msg DQ 01H DUP (?)
-ipc_rcv_msg DQ	01H DUP (?)
 top	DQ	01H DUP (?)
 _BSS	ENDS
 pdata	SEGMENT
 $pdata$?message_send@@YAXGPEAU_message_@@@Z DD imagerel $LN5
-	DD	imagerel $LN5+182
+	DD	imagerel $LN5+158
 	DD	imagerel $unwind$?message_send@@YAXGPEAU_message_@@@Z
-$pdata$?message_receive@@YAXPEAU_message_@@@Z DD imagerel $LN7
-	DD	imagerel $LN7+169
+$pdata$?message_receive@@YAXPEAU_message_@@@Z DD imagerel $LN6
+	DD	imagerel $LN6+143
 	DD	imagerel $unwind$?message_receive@@YAXPEAU_message_@@@Z
-pdata	ENDS
-;	COMDAT pdata
-pdata	SEGMENT
-$pdata$??__Eipc_mutex_msg@@YAXXZ DD imagerel ??__Eipc_mutex_msg@@YAXXZ
-	DD	imagerel ??__Eipc_mutex_msg@@YAXXZ+21
-	DD	imagerel $unwind$??__Eipc_mutex_msg@@YAXXZ
-pdata	ENDS
-;	COMDAT pdata
-pdata	SEGMENT
-$pdata$??__Eipc_rcv_msg@@YAXXZ DD imagerel ??__Eipc_rcv_msg@@YAXXZ
-	DD	imagerel ??__Eipc_rcv_msg@@YAXXZ+21
-	DD	imagerel $unwind$??__Eipc_rcv_msg@@YAXXZ
-pdata	ENDS
-pdata	SEGMENT
 $pdata$?is_message_queue_empty@@YA_NXZ DD imagerel $LN5
 	DD	imagerel $LN5+39
 	DD	imagerel $unwind$?is_message_queue_empty@@YA_NXZ
 pdata	ENDS
-CRT$XCU	SEGMENT
-ipc_mutex_msg$initializer$ DQ FLAT:??__Eipc_mutex_msg@@YAXXZ
-CRT$XCU	ENDS
-;	COMDAT xdata
-xdata	SEGMENT
-$unwind$??__Eipc_rcv_msg@@YAXXZ DD 010401H
-	DD	04204H
-xdata	ENDS
-;	COMDAT xdata
-xdata	SEGMENT
-$unwind$??__Eipc_mutex_msg@@YAXXZ DD 010401H
-	DD	04204H
-xdata	ENDS
 xdata	SEGMENT
 $unwind$?message_send@@YAXGPEAU_message_@@@Z DD 010e01H
 	DD	0820eH
@@ -71,21 +39,18 @@ $unwind$?message_receive@@YAXPEAU_message_@@@Z DD 010901H
 $unwind$?is_message_queue_empty@@YA_NXZ DD 010401H
 	DD	02204H
 xdata	ENDS
-CRT$XCU	SEGMENT
-ipc_rcv_msg$initializer$ DQ FLAT:??__Eipc_rcv_msg@@YAXXZ
-CRT$XCU	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\ipc\message.cpp
 _TEXT	SEGMENT
 tv65 = 0
 ?is_message_queue_empty@@YA_NXZ PROC			; is_message_queue_empty
 
-; 27   : bool is_message_queue_empty () {
+; 25   : bool is_message_queue_empty () {
 
 $LN5:
 	sub	rsp, 24
 
-; 28   : 	return top == NULL;
+; 26   : 	return top == NULL;
 
 	cmp	QWORD PTR top, 0
 	jne	SHORT $LN3@is_message
@@ -96,7 +61,7 @@ $LN3@is_message:
 $LN4@is_message:
 	movzx	eax, BYTE PTR tv65[rsp]
 
-; 29   : }
+; 27   : }
 
 	add	rsp, 24
 	ret	0
@@ -104,103 +69,67 @@ $LN4@is_message:
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\ipc\message.cpp
-;	COMDAT ??__Eipc_rcv_msg@@YAXXZ
-text$yc	SEGMENT
-??__Eipc_rcv_msg@@YAXXZ PROC				; `dynamic initializer for 'ipc_rcv_msg'', COMDAT
-
-; 20   : static mutex_t *ipc_rcv_msg = create_mutex();
-
-	sub	rsp, 40					; 00000028H
-	call	?create_mutex@@YAPEAUmutex_t@@XZ	; create_mutex
-	mov	QWORD PTR ipc_rcv_msg, rax
-	add	rsp, 40					; 00000028H
-	ret	0
-??__Eipc_rcv_msg@@YAXXZ ENDP				; `dynamic initializer for 'ipc_rcv_msg''
-text$yc	ENDS
-; Function compile flags: /Odtpy
-; File e:\xeneva project\xeneva\aurora\aurora\ipc\message.cpp
-;	COMDAT ??__Eipc_mutex_msg@@YAXXZ
-text$yc	SEGMENT
-??__Eipc_mutex_msg@@YAXXZ PROC				; `dynamic initializer for 'ipc_mutex_msg'', COMDAT
-
-; 19   : static mutex_t *ipc_mutex_msg = create_mutex();
-
-	sub	rsp, 40					; 00000028H
-	call	?create_mutex@@YAPEAUmutex_t@@XZ	; create_mutex
-	mov	QWORD PTR ipc_mutex_msg, rax
-	add	rsp, 40					; 00000028H
-	ret	0
-??__Eipc_mutex_msg@@YAXXZ ENDP				; `dynamic initializer for 'ipc_mutex_msg''
-text$yc	ENDS
-; Function compile flags: /Odtpy
-; File e:\xeneva project\xeneva\aurora\aurora\ipc\message.cpp
 _TEXT	SEGMENT
-tv68 = 32
+tv67 = 32
 temp$ = 40
 msg$ = 64
 ?message_receive@@YAXPEAU_message_@@@Z PROC		; message_receive
 
-; 60   : void message_receive (message_t* msg) {
+; 57   : void message_receive (message_t* msg) {
 
-$LN7:
+$LN6:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 56					; 00000038H
 
-; 61   : 	x64_cli ();
+; 58   : 	x64_cli ();
 
 	call	x64_cli
 
-; 62   : 	mutex_lock(ipc_rcv_msg);
-
-	mov	rcx, QWORD PTR ipc_rcv_msg
-	call	?mutex_lock@@YAXPEAUmutex_t@@@Z		; mutex_lock
-
-; 63   : 
-; 64   : 	kernel_message_queue_t *temp;
-; 65   : 
-; 66   : 	if (top == NULL) 
+; 59   : 
+; 60   : 	kernel_message_queue_t *temp;
+; 61   : 
+; 62   : 	if (top == NULL) 
 
 	cmp	QWORD PTR top, 0
-	jne	SHORT $LN4@message_re
+	jne	SHORT $LN3@message_re
 
-; 67   : 		goto end;
+; 63   : 		return;
 
-	jmp	SHORT $LN3@message_re
-	jmp	SHORT $end$8
+	jmp	SHORT $LN4@message_re
 
-; 68   : 	else {
+; 64   : 	else {
 
 	jmp	SHORT $LN2@message_re
-$LN4@message_re:
+$LN3@message_re:
 
-; 69   : 		temp = top;
+; 65   : 		temp = top;
 
 	mov	rax, QWORD PTR top
 	mov	QWORD PTR temp$[rsp], rax
 
-; 70   : 		if (temp->msg.dest_id == get_current_thread()->id) {
+; 66   : 		if (temp->msg.dest_id == get_current_thread()->id) {
 
 	mov	rax, QWORD PTR temp$[rsp]
 	movzx	eax, WORD PTR [rax+58]
-	mov	DWORD PTR tv68[rsp], eax
+	mov	DWORD PTR tv67[rsp], eax
 	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
 	movzx	eax, WORD PTR [rax+234]
-	mov	ecx, DWORD PTR tv68[rsp]
+	mov	ecx, DWORD PTR tv67[rsp]
 	cmp	ecx, eax
 	jne	SHORT $LN1@message_re
 
-; 71   : 			top = top->link;
+; 67   : 			top = top->link;
 
 	mov	rax, QWORD PTR top
 	mov	rax, QWORD PTR [rax+112]
 	mov	QWORD PTR top, rax
 
-; 72   : 			temp->link = NULL;
+; 68   : 			temp->link = NULL;
 
 	mov	rax, QWORD PTR temp$[rsp]
 	mov	QWORD PTR [rax+112], 0
 
-; 73   : 			memcpy (msg, &temp->msg,sizeof(message_t));
+; 69   : 			memcpy (msg, &temp->msg,sizeof(message_t));
 
 	mov	rax, QWORD PTR temp$[rsp]
 	mov	r8d, 112				; 00000070H
@@ -208,25 +137,18 @@ $LN4@message_re:
 	mov	rcx, QWORD PTR msg$[rsp]
 	call	memcpy
 
-; 74   : 			pmmngr_free(temp);
+; 70   : 			pmmngr_free(temp);
 
 	mov	rcx, QWORD PTR temp$[rsp]
 	call	?pmmngr_free@@YAXPEAX@Z			; pmmngr_free
 $LN1@message_re:
 $LN2@message_re:
-$LN3@message_re:
-$end$8:
+$LN4@message_re:
 
-; 75   : 		}
-; 76   : 	}
-; 77   : 
-; 78   : end:
-; 79   : 	mutex_unlock(ipc_rcv_msg);
-
-	mov	rcx, QWORD PTR ipc_rcv_msg
-	call	?mutex_unlock@@YAXPEAUmutex_t@@@Z	; mutex_unlock
-
-; 80   : }
+; 71   : 		}
+; 72   : 	}
+; 73   : 
+; 74   : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -242,69 +164,65 @@ dest_id$ = 80
 msg$ = 88
 ?message_send@@YAXGPEAU_message_@@@Z PROC		; message_send
 
-; 33   : void message_send (uint16_t dest_id, message_t *msg) {
+; 31   : void message_send (uint16_t dest_id, message_t *msg) {
 
 $LN5:
 	mov	QWORD PTR [rsp+16], rdx
 	mov	WORD PTR [rsp+8], cx
 	sub	rsp, 72					; 00000048H
 
-; 34   : 	x64_cli ();
+; 32   : 	x64_cli ();
 
 	call	x64_cli
 
-; 35   : 	mutex_lock (ipc_mutex_msg);
-
-	mov	rcx, QWORD PTR ipc_mutex_msg
-	call	?mutex_lock@@YAXPEAUmutex_t@@@Z		; mutex_lock
-
-; 36   : 	thread_t * dest_thread = thread_iterate_ready_list (dest_id);
+; 33   : 
+; 34   : 	thread_t * dest_thread = thread_iterate_ready_list (dest_id);
 
 	movzx	ecx, WORD PTR dest_id$[rsp]
 	call	?thread_iterate_ready_list@@YAPEAU_thread_@@G@Z ; thread_iterate_ready_list
 	mov	QWORD PTR dest_thread$[rsp], rax
 
-; 37   : 	if (!dest_thread) {
+; 35   : 	if (!dest_thread) {
 
 	cmp	QWORD PTR dest_thread$[rsp], 0
 	jne	SHORT $LN2@message_se
 
-; 38   : 		thread_t * blocked_thread = thread_iterate_block_list (dest_id);
+; 36   : 		thread_t * blocked_thread = thread_iterate_block_list (dest_id);
 
 	movzx	eax, WORD PTR dest_id$[rsp]
 	mov	ecx, eax
 	call	?thread_iterate_block_list@@YAPEAU_thread_@@H@Z ; thread_iterate_block_list
 	mov	QWORD PTR blocked_thread$1[rsp], rax
 
-; 39   : 		if (blocked_thread  != NULL){
+; 37   : 		if (blocked_thread  != NULL){
 
 	cmp	QWORD PTR blocked_thread$1[rsp], 0
 	je	SHORT $LN1@message_se
 
-; 40   : 			unblock_thread (blocked_thread);
+; 38   : 			unblock_thread (blocked_thread);
 
 	mov	rcx, QWORD PTR blocked_thread$1[rsp]
 	call	?unblock_thread@@YAXPEAU_thread_@@@Z	; unblock_thread
 $LN1@message_se:
 $LN2@message_se:
 
-; 41   : 		}
-; 42   : 	}
-; 43   : 
-; 44   : 	msg->dest_id = dest_id;
+; 39   : 		}
+; 40   : 	}
+; 41   : 
+; 42   : 	msg->dest_id = dest_id;
 
 	mov	rax, QWORD PTR msg$[rsp]
 	movzx	ecx, WORD PTR dest_id$[rsp]
 	mov	WORD PTR [rax+58], cx
 
-; 45   : 	//!Actuall Message model
-; 46   : 	kernel_message_queue_t * temp = (kernel_message_queue_t*)pmmngr_alloc();
+; 43   : 	//!Actuall Message model
+; 44   : 	kernel_message_queue_t * temp = (kernel_message_queue_t*)pmmngr_alloc();
 
 	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
 	mov	QWORD PTR temp$[rsp], rax
 
-; 47   : 
-; 48   : 	memcpy (&temp->msg, msg, sizeof(message_t));
+; 45   : 
+; 46   : 	memcpy (&temp->msg, msg, sizeof(message_t));
 
 	mov	rax, QWORD PTR temp$[rsp]
 	mov	r8d, 112				; 00000070H
@@ -312,25 +230,19 @@ $LN2@message_se:
 	mov	rcx, rax
 	call	memcpy
 
-; 49   : 	temp->link = top;
+; 47   : 	temp->link = top;
 
 	mov	rax, QWORD PTR temp$[rsp]
 	mov	rcx, QWORD PTR top
 	mov	QWORD PTR [rax+112], rcx
 
-; 50   : 	top = temp;
+; 48   : 	top = temp;
 
 	mov	rax, QWORD PTR temp$[rsp]
 	mov	QWORD PTR top, rax
-$end$6:
 
-; 51   : end:
-; 52   : 	mutex_unlock (ipc_mutex_msg);
-
-	mov	rcx, QWORD PTR ipc_mutex_msg
-	call	?mutex_unlock@@YAXPEAUmutex_t@@@Z	; mutex_unlock
-
-; 53   : }
+; 49   : 
+; 50   : }
 
 	add	rsp, 72					; 00000048H
 	ret	0
@@ -341,8 +253,8 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 ?message_init@@YAXXZ PROC				; message_init
 
-; 24   : 	//queue->prev == NULL;
-; 25   : }
+; 22   : 	//queue->prev == NULL;
+; 23   : }
 
 	ret	0
 ?message_init@@YAXXZ ENDP				; message_init

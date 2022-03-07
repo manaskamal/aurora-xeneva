@@ -11,7 +11,7 @@
 
 #include <utils\lnklist.h>
 #include <arch\x86_64\mmngr\kheap.h>
-
+#include <serial.h>
 
 list_t* initialize_list() {
 	list_t *list = (list_t*)malloc(sizeof(list_t));

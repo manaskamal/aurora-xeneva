@@ -56,7 +56,6 @@
 #include <ipc\evntsh.h>
 #include <ipc\message.h>
 #include <ipc\dwm_ipc.h>
-#include <fs\fat32.h>
 #include <fs\gpt.h>
 #include <fs\vfs.h>
 #include <screen.h>
@@ -84,6 +83,9 @@
 #endif
 
 #include "efi.h"
+#include <fs\fat\fat_dir.h>
+#include <fs\fat\fat.h>
+#include <fs\fat\fat_f.h>
 
 /**
  * Runtime setup
@@ -120,28 +122,23 @@ void _kmain () {
 	vmmngr_x86_64_init(); 
 	hal_init();
 	hal_x86_64_setup_int();	
+	initialize_serial();
+
 	initialize_kmemory(0x100000);
 
 	
 	initialize_acpi (info->acpi_table_pointer);
-	initialize_serial();
-
-	_debug_print_("Welcome to Xeneva Operating System! \r\n");
-	_debug_print_("Debug Output!!! \r\n");
-
-	
 
 	ahci_initialize();
 	//hda_initialize();
 	vfs_init();
-
 
     initialize_screen(info);
 	console_initialize(info);
 
 	screen_set_configuration(info->X_Resolution,info->Y_Resolution);
 	initialize_rtc(); 
-	
+
 	initialize_mouse();
 	kybrd_init();
 	message_init ();
@@ -169,9 +166,6 @@ void _kmain () {
 	create_process ("/priwm.exe","priwm");
 
 	create_process ("/dock.exe", "dock");
-
-	//! Misc programs goes here
-   // create_process ("/snake.exe", "snake");
 
 	//! Here start the scheduler (multitasking engine)
 	scheduler_start();

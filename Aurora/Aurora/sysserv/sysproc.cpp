@@ -33,6 +33,7 @@
 #include <proc.h>
 #include <procmngr.h>
 #include <fs\ttype.h>
+#include <drivers\mouse.h>
 
 /**
  * create__sys_process -- creates a process and returns its id

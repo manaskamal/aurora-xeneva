@@ -37,7 +37,6 @@
 #include <string.h>
 #include <drivers/ata.h>
 #include <drivers/hdaudio/hda.h>
-#include <fs/fat32.h>
 
 HBA_PORT *sata_drive_port = NULL;
 
@@ -150,31 +149,22 @@ void ahci_disk_read (HBA_PORT *port, uint64_t lba, uint32_t count, uint64_t *buf
  * @param buffer -- memory buffer
  */
 void ahci_disk_write (HBA_PORT *port, uint64_t lba, uint32_t count, uint64_t *buffer) {
-	//port->is = (uint32_t)-1;
 	int spin = 0;
 	HBA_CMD_HEADER *cmd_list = (HBA_CMD_HEADER*)port->clb;
 	uint64_t buffer_whole = (uint64_t)buffer;
 
 	cmd_list->cfl = sizeof(FIS_REG_H2D)/sizeof(uint32_t);
 	cmd_list->w = 1;
-	cmd_list->prdtl = (uint16_t)((count-1)>>4)+1;
+	cmd_list->prdtl = 1;
 	
 	uint32_t command_slot = ahci_disk_find_slot(port);
 
 	HBA_CMD_TABLE *tbl = (HBA_CMD_TABLE*)cmd_list[command_slot].ctba;
 	int i=0;
-	for (i = 0; i < cmd_list->prdtl; i++){
-		tbl->prdt[i].data_base_address = buffer_whole & 0xffffffff;
-		tbl->prdt[i].dbau = buffer_whole >> 32;
-		tbl->prdt[i].data_byte_count = (512 * count) - 1;
-		tbl->prdt[i].i = 1;
-		buffer += 512*count;
-		buffer_whole = (uint32_t)buffer;
-	}
-	tbl->prdt[i].data_base_address = buffer_whole & 0xffffffff;
-	tbl->prdt[i].dbau = buffer_whole >> 32;
-	tbl->prdt[i].data_byte_count = (512 * count) - 1;
-	tbl->prdt[i].i = 1;
+	tbl->prdt[0].data_base_address = buffer_whole & 0xffffffff;
+	tbl->prdt[0].dbau = buffer_whole >> 32;
+	tbl->prdt[0].data_byte_count = 512 * count -1;
+	tbl->prdt[0].i = 1;
 
 	FIS_REG_H2D *fis = (FIS_REG_H2D*)tbl->cmd_fis;
 	fis->fis_type = FIS_TYPE_REG_H2D;

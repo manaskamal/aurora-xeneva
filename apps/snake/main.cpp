@@ -76,7 +76,6 @@ int main (int argc, char* argv[]) {
 	daisy_sv_add_component(sv,(daisy_widget_t*)list);
 	
 	daisy_window_show(win);
-
 	int pri_event_fd = daisy_get_event_fd();
 	pri_event_t e;
 	while(1) {
@@ -89,6 +88,8 @@ int main (int argc, char* argv[]) {
 				memset(&e, 0, sizeof(pri_event_t));
 			}
 		}
+
+
 		sys_wait();
 	}
 }

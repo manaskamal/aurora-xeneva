@@ -1,4 +1,4 @@
-﻿Build started 04-03-2022 আবেলি 2:32:48.
+﻿Build started 05-03-2022 আবেলি 11:05:14.
      1>Project "E:\Xeneva Project\Xeneva\Aurora\Dock\Dock.vcxproj" on node 2 (Rebuild target(s)).
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\xnlib\xnclib" /I"E:\Xeneva Project\Xeneva\xnlib\xnacrylic\include" /I"E:\Xeneva Project\Xeneva\xnlib\daisy" /Zi /nologo /W3 /WX- /Od /D ARCH_X64 /D _MBCS /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt dock_base.cpp dock_button.cpp main.cpp
@@ -7,8 +7,8 @@
      1>main.cpp(55): warning C4267: 'argument' : conversion from 'size_t' to 'unsigned int', possible loss of data
      1>main.cpp(56): warning C4267: 'argument' : conversion from 'size_t' to 'unsigned int', possible loss of data
      1>main.cpp(57): warning C4267: 'argument' : conversion from 'size_t' to 'unsigned int', possible loss of data
-     1>main.cpp(131): warning C4018: '<' : signed/unsigned mismatch
-     1>main.cpp(159): warning C4018: '<' : signed/unsigned mismatch
+     1>main.cpp(133): warning C4018: '<' : signed/unsigned mismatch
+     1>main.cpp(161): warning C4018: '<' : signed/unsigned mismatch
          dock_button.cpp
          dock_base.cpp
      1>dock_base.cpp(51): warning C4018: '<' : signed/unsigned mismatch
@@ -26,4 +26,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:02.36
+Time Elapsed 00:00:03.54

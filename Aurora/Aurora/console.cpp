@@ -14,7 +14,7 @@
 #include <string.h>
 #include <arch\x86_64\mmngr\kheap.h>
 #include <fs\vfs.h>
-#include <fs\fat32.h>
+#include <fs\fat\fat.h>
 
 //! default kernel console
 static uint16_t scanline = 0;

@@ -12,6 +12,7 @@
 
 #include <arch\x86_64\mmngr\kheap.h>
 #include "pmmngr.h"
+#include <serial.h>
 
 #define HEAP_START   0xFFFF800000000000
 
@@ -44,6 +45,12 @@ void initialize_kmemory (size_t sz) {
 	first_heap->prev = NULL;
 	last = (void*)pos;
 	last_heap = first_heap;
+
+#ifdef _DEBUG_ON_
+	if (is_serial_initialized())
+		_debug_print_ ("[KHeap]: Initialized -> size -> %d MB \r\n", sz / 1024/ 1024);
+#endif
+
 }
 
 
@@ -51,6 +58,10 @@ heap_t *split_heap (heap_t* heap, uint32_t req_size) {
 	unsigned int new_length = heap->length - req_size;
 	void* new_addr = (void*)(heap + req_size);
 
+#ifdef _DEBUG_ON_
+	if (is_serial_initialized())
+		_debug_print_("[KHeap]: Splited heap ->old address -> %x, new address - %x \r\n", heap,new_addr);
+#endif
 	heap_t *new_heap = (heap_t*)new_addr;
 	new_heap->free = true;
 	new_heap->length = new_length;
@@ -86,6 +97,14 @@ void heap_expand (size_t sz) {
 	heap->prev = last_heap;
 	last_heap->next = heap;
 	last_heap = heap;
+
+#ifdef _DEBUG_ON_
+	if (is_serial_initialized()) {
+		_debug_print_ ("[KHeap]: New block created address:- %x, length -%d bytes \r\n",heap,heap->length);
+		_debug_print_ ("[KHeap]: Heap Expanded by %d bytes \r\n", page_count * 4096);
+	}
+#endif
+
 }
 
 

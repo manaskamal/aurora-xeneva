@@ -12,7 +12,7 @@
 #include <stdio.h>
 #include <arch\x86_64\mmngr\kheap.h>
 #include <utils\gtree.h>
-#include <fs\fat32.h>
+#include <fs\fat\fat.h>
 #include <fs\devfs.h>
 
 vfs_entry *root_entry = NULL;   // for '/' directory

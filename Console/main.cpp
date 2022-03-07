@@ -1,198 +1,48 @@
 ///! Copyright (C) Manas Kamal Choudhury 2021
 ///!
-///! main.cpp -- AuTaskbar Program
+///! main.cpp -- console
 ///!
 ///!  /PROJECT - Aurora's Xeneva
 ///!  /AUTHOR  - Manas Kamal Choudhury
 ///!
 ///!================================================
-#include <QuBase.h>
-#include <QuWindow.h>
-#include <string.h>
-#include <sys\_sleep.h>
-#include <sys\_process.h>
-#include <sys\_wait.h>
-#include <sys\_thread.h>
-#include <sys\_term.h>
-#include <sys\_file.h>
-#include <sys\_xeneva.h>
-#include <sys\_kybrd.h>
-#include <sys\mmap.h>
-#include <sys\ioquery.h>
-#include <canvas.h>
-#include <acrylic.h>
+
 #include <color.h>
-#include <QuPanel.h>
-#include <psf\psf.h>
-#include <QuButton.h>
-#include <sys\_ipc.h>
-#include <sys\_time.h>
-#include <QuTerminal.h>
-#include <sys\_exit.h>
-#include "console.h"
-#include <QuIcon.h>
-#include <QuScrollbar.h>
-#include <stdlib.h>
-#include <sys\postbox.h>
-#include <font.h>
-#include <ft2build.h>
-#include  FT_FREETYPE_H
+#include <acrylic.h>
+#include <sys/ioquery.h>
+#include <sys/_wait.h>
+#include <string.h>
 
-int timer_id = 0;
-int master_fd, slave_fd;
-bool focus_lost = false;
-
-
-void QuActions (QuMessage *msg) {
-	if (msg->type == QU_CANVAS_MOVE) {
-		QuWindowMove(QuGetWindow(),msg->dword, msg->dword2);
-		QuWinInfo *info = (QuWinInfo*)QuGetWindow()->win_info_data;
-		memset(msg, 0, sizeof(QuMessage));
-	}
-
-	if (msg->type == QU_CANVAS_FOCUS_LOST) {
-		focus_lost = true;
-		sys_pause_timer (timer_id);
-		memset(msg, 0, sizeof(QuMessage));
-	}
-
-	if (msg->type == QU_CANVAS_FOCUS_GAIN) {
-		sys_start_timer(timer_id);
-		memset(msg, 0, sizeof(QuMessage));
-	}
-
-	if (msg->type == QU_CANVAS_DESTROYED) {
-		canvas_close(QuGetWindow()->ctx);
-		exit(0);
-		memset(msg, 0, sizeof(QuMessage));
-	}
-
-	if (msg->type == QU_CANVAS_MOUSE_MOVE) {
-		QuWindowHandleMouse(msg->dword, msg->dword2, msg->dword3);
-		memset(msg, 0, sizeof(QuMessage));
-	}
-
-	if (msg->type == QU_CANVAS_REPAINT) {
-		QuWinInfo *info = (QuWinInfo*)QuGetWindow()->win_info_data;
-		if (QuGetWindow()->maximized  == true && 
-			info->maximize == false) {
-			QuGetWindow()->w = QuGetWindow()->oldw;
-			QuGetWindow()->h = QuGetWindow()->oldh;
-			QuGetWindow()->maximized = false;
-		}
-		QuWindowRepaint(QuGetWindow());
-		memset(msg, 0, sizeof(QuMessage));
-	}
-
-	if (msg->type == QU_CANVAS_KEY_PRESSED) {
-		if (msg->dword == KEY_N) 
-			create_process("/dock.exe","dwm33");
-		QuWindowHandleKey(msg->dword);
-		memset(msg, 0, sizeof(QuMessage));
-	}
-
-	if (msg->type == QU_CANVAS_RESIZE) {
-		QuGetWindow()->w = msg->dword;
-		QuGetWindow()->h = msg->dword2;
-		QuWindowRepaint(QuGetWindow());
-		memset(msg, 0, sizeof(QuMessage));
-	}
-	
-	//QuPanelContentUpdate(QuGetWindow()->x, QuGetWindow()->y, QuGetWindow()->w, QuGetWindow()->h);
-
-}
-
-
-void PrintString (QuTerminal *text, char* string) {
-	while(*string)
-		QuTermPrint(text,*(string)++,WHITE);
-}
-
-bool blinked = false;
-void blink_cursor () {
-	if (!blinked) {
-		acrylic_draw_rect_filled(QuGetWindow()->ctx, 1,23,10,15,SILVER);
-		blinked = true;
-	}else {
-		acrylic_draw_rect_filled(QuGetWindow()->ctx, 1,23,10,15,BLACK);
-		blinked = false;
-	}
-
-	QuPanelUpdate(QuGetWindow(),0,0,QuGetWindow()->w,QuGetWindow()->h,true);
-}
+#include <daisy.h>
+#include <daisy_window.h>
+#include <daisy_widget_panel.h>
 
 
 int main (int argc, char* argv[]) {
-	QuWindow* win = QuCreateWindow(300,300,600,500,"Console");
-	QuSetRootWindow (win);
+	daisy_application();
 
-	canvas_t *canvas = canvas_initialize(win->w, win->h);
-	win->ctx = canvas;
-	QuWindowShowControls(win);
-
-	QuWindowSetIcon(SYSTEM_ICON_CONSOLE);
+	daisy_window_t *win = daisy_window_create (100,200,500,300,DAISY_WIN_NORMAL,"Console");
+	daisy_win_info_t *info = daisy_get_window_info(win);
 	
-	//! map a memory section for text 
+	daisy_widget_panel_t *panel = daisy_widget_create_panel(win,BLACK);
+	daisy_window_add_widget (win,(daisy_widget_t*)panel);
+	daisy_window_set_back_color(win,panel->color);
 
-	QuTerminal *term = QuCreateTerminal(0,0,win->w, win->h);
-	QuWindowAdd(win,(QuWidget*)term);
+	daisy_window_add_widget(win,(daisy_widget_t*)panel);
 
-	QuWindowShow(win);
+	daisy_window_show(win);
 
-	acrylic_font_set_size(32);
-	acrylic_font_draw_string(win->ctx, "Console v1.0",10, win->h / 2 - strlen("Console")/2,32,SILVER);
-	acrylic_font_set_size(18);
-	acrylic_font_draw_string(win->ctx, "Copyright (C) Manas Kamal Choudhury",10,win->h / 2 + 25,32,GRAY);
-
-	QuPanelUpdate(win,0,0,win->w, win->h, true);
-
-	sys_ttype_create (&master_fd, &slave_fd);
-
-	unsigned char* buffer = (unsigned char*)malloc(4096);
-	memset (buffer, 0, 4096);
-
-	/*timer_id = sys_create_timer (1000, get_current_pid());
-	sys_start_timer(timer_id);*/
-
-	int child_id = create_process("/dock.exe", "dock");
-	//sys_ttype_dup(child_id, master_fd);
-
-	UFILE slave;
-	slave.size = 4096;
-	slave.flags = 0;
-
-	QuMessage qmsg;
-	uint16_t app_id = QuGetAppId();
-	postmsg_t msg;
+	int event_fd = daisy_get_event_fd();
+	pri_event_t e;
 	while(1) { 
-	/*	post_box_receive_msg(&msg);
-		if (msg.type == SYSTEM_MESSAGE_TIMER_EVENT) {
-			blink_cursor();
-			memset(&msg, 0, sizeof(postmsg_t));
-		}*/
-
-		QuChannelGet(&qmsg);
-		if (qmsg.to_id == app_id)
-			QuActions(&qmsg);
-
-		sys_read_file (slave_fd,buffer,&slave);
-
-	    for (int i = 0; i < 4096; i++) {
-			if (buffer[0] != 0) {
-				QuTermPrint(term,buffer[i],WHITE);
-				if (buffer[i] == '\n') {
-					QuTermFlush(term, win);
-					QuPanelUpdate(win,0,0,win->w, win->h, true);
-					memset(buffer, 0, 4096);
-					break;
-				}
+		ioquery (event_fd,PRI_LOOP_GET_EVENT,&e);
+		if (e.type != 0) {
+			if (e.type == DAISY_CURSOR_MOVED) {
+				daisy_window_handle_mouse(win,e.dword, e.dword2, e.dword3);
+				memset(&e, 0, sizeof(pri_event_t));
 			}
 		}
-
-		sys_read_file(slave_fd, buffer, &slave);
-		if (buffer[0] == 0) {
-			sys_wait();
-		}
+		sys_wait();
 	}	
 	return 1;
 }

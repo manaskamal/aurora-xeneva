@@ -236,7 +236,10 @@
     <ClInclude Include="..\include\efi.h" />
     <ClInclude Include="..\include\error.h" />
     <ClInclude Include="..\include\fs\devfs.h" />
-    <ClInclude Include="..\include\fs\fat32.h" />
+    <ClInclude Include="..\include\fs\fat\fat.h" />
+    <ClInclude Include="..\include\fs\fat\fat_f.h" />
+    <ClInclude Include="..\include\fs\fat\fat_util.h" />
+    <ClInclude Include="..\include\fs\fat\fat_dir.h" />
     <ClInclude Include="..\include\fs\gpt.h" />
     <ClInclude Include="..\include\fs\ttype.h" />
     <ClInclude Include="..\include\fs\vfs.h" />
@@ -305,7 +308,10 @@
     <ClCompile Include="drivers\vbox.cpp" />
     <ClCompile Include="drvmngr.cpp" />
     <ClCompile Include="fs\devfs.cpp" />
-    <ClCompile Include="fs\fat32.cpp" />
+    <ClCompile Include="fs\fat\fat.cpp" />
+    <ClCompile Include="fs\fat\fat_f.cpp" />
+    <ClCompile Include="fs\fat\fat_util.cpp" />
+    <ClCompile Include="fs\fat\fat_dir.cpp" />
     <ClCompile Include="fs\gpt.cpp" />
     <ClCompile Include="fs\ttype.cpp" />
     <ClCompile Include="fs\vfs.cpp" />

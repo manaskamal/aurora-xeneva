@@ -16,8 +16,6 @@
 #include <arch\x86_64\mmngr\kheap.h>
 #endif
 
-static mutex_t *ipc_mutex_msg = create_mutex();
-static mutex_t *ipc_rcv_msg = create_mutex();
 static kernel_message_queue_t *top;
 //! Kernel Message service initialize
 void message_init () {
@@ -32,7 +30,7 @@ bool is_message_queue_empty () {
 //!simply find the process id and send the message
 void message_send (uint16_t dest_id, message_t *msg) {
 	x64_cli ();
-	mutex_lock (ipc_mutex_msg);
+
 	thread_t * dest_thread = thread_iterate_ready_list (dest_id);
 	if (!dest_thread) {
 		thread_t * blocked_thread = thread_iterate_block_list (dest_id);
@@ -48,8 +46,7 @@ void message_send (uint16_t dest_id, message_t *msg) {
 	memcpy (&temp->msg, msg, sizeof(message_t));
 	temp->link = top;
 	top = temp;
-end:
-	mutex_unlock (ipc_mutex_msg);
+
 }
 
 
@@ -59,12 +56,11 @@ end:
 //! data 
 void message_receive (message_t* msg) {
 	x64_cli ();
-	mutex_lock(ipc_rcv_msg);
 
 	kernel_message_queue_t *temp;
 
 	if (top == NULL) 
-		goto end;
+		return;
 	else {
 		temp = top;
 		if (temp->msg.dest_id == get_current_thread()->id) {
@@ -75,6 +71,4 @@ void message_receive (message_t* msg) {
 		}
 	}
 
-end:
-	mutex_unlock(ipc_rcv_msg);
 }

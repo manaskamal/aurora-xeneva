@@ -10,14 +10,14 @@ _BSS	SEGMENT
 ?sata_drive_port@@3PEAU_hba_port_@@EA DQ 01H DUP (?)	; sata_drive_port
 _BSS	ENDS
 CONST	SEGMENT
-$SG3988	DB	'[AHCI]:Port Hung', 0aH, 00H
+$SG3783	DB	'[AHCI]:Port Hung', 0aH, 00H
 	ORG $+6
-$SG4021	DB	'[AHCI]:Port Hung', 0aH, 00H
+$SG3811	DB	'[AHCI]:Port Hung', 0aH, 00H
 	ORG $+6
-$SG4054	DB	'[AHCI]:Port Hung', 0aH, 00H
+$SG3844	DB	'[AHCI]:Port Hung', 0aH, 00H
 	ORG $+6
-$SG4073	DB	'[AHCI]: Port Supports cold presence %d', 0aH, 00H
-$SG4090	DB	'[AHCI]: Model -> %s', 0aH, 00H
+$SG3863	DB	'[AHCI]: Port Supports cold presence %d', 0aH, 00H
+$SG3880	DB	'[AHCI]: Model -> %s', 0aH, 00H
 CONST	ENDS
 PUBLIC	?ahci_disk_initialize@@YAXPEAU_hba_port_@@@Z	; ahci_disk_initialize
 PUBLIC	?ahci_disk_write@@YAXPEAU_hba_port_@@_KIPEA_K@Z	; ahci_disk_write
@@ -34,8 +34,8 @@ pdata	SEGMENT
 $pdata$?ahci_disk_initialize@@YAXPEAU_hba_port_@@@Z DD imagerel $LN10
 	DD	imagerel $LN10+776
 	DD	imagerel $unwind$?ahci_disk_initialize@@YAXPEAU_hba_port_@@@Z
-$pdata$?ahci_disk_write@@YAXPEAU_hba_port_@@_KIPEA_K@Z DD imagerel $LN12
-	DD	imagerel $LN12+1001
+$pdata$?ahci_disk_write@@YAXPEAU_hba_port_@@_KIPEA_K@Z DD imagerel $LN9
+	DD	imagerel $LN9+713
 	DD	imagerel $unwind$?ahci_disk_write@@YAXPEAU_hba_port_@@_KIPEA_K@Z
 $pdata$?ahci_disk_read@@YAXPEAU_hba_port_@@_KIPEA_K@Z DD imagerel $LN9
 	DD	imagerel $LN9+713
@@ -77,7 +77,7 @@ count$ = 128
 buffer$ = 136
 ?ahci_disk_identify@@YAXPEAU_hba_port_@@_KIPEA_K@Z PROC	; ahci_disk_identify
 
-; 215  : void ahci_disk_identify (HBA_PORT *port, uint64_t lba, uint32_t count, uint64_t *buffer) {
+; 205  : void ahci_disk_identify (HBA_PORT *port, uint64_t lba, uint32_t count, uint64_t *buffer) {
 
 $LN12:
 	mov	QWORD PTR [rsp+32], r9
@@ -86,23 +86,23 @@ $LN12:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 104				; 00000068H
 
-; 216  : 	int spin = 0;
+; 206  : 	int spin = 0;
 
 	mov	DWORD PTR spin$[rsp], 0
 
-; 217  : 	HBA_CMD_HEADER *cmd_list = (HBA_CMD_HEADER*)port->clb;
+; 207  : 	HBA_CMD_HEADER *cmd_list = (HBA_CMD_HEADER*)port->clb;
 
 	mov	rax, QWORD PTR port$[rsp]
 	mov	eax, DWORD PTR [rax]
 	mov	QWORD PTR cmd_list$[rsp], rax
 
-; 218  : 	uint64_t buffer_whole = (uint64_t)buffer;
+; 208  : 	uint64_t buffer_whole = (uint64_t)buffer;
 
 	mov	rax, QWORD PTR buffer$[rsp]
 	mov	QWORD PTR buffer_whole$[rsp], rax
 
-; 219  : 
-; 220  : 	cmd_list->cfl = sizeof(FIS_REG_H2D)/sizeof(uint32_t);
+; 209  : 
+; 210  : 	cmd_list->cfl = sizeof(FIS_REG_H2D)/sizeof(uint32_t);
 
 	mov	rax, QWORD PTR cmd_list$[rsp]
 	movzx	eax, BYTE PTR [rax]
@@ -111,7 +111,7 @@ $LN12:
 	mov	rcx, QWORD PTR cmd_list$[rsp]
 	mov	BYTE PTR [rcx], al
 
-; 221  : 	cmd_list->w = 0;
+; 211  : 	cmd_list->w = 0;
 
 	mov	rax, QWORD PTR cmd_list$[rsp]
 	movzx	eax, BYTE PTR [rax]
@@ -119,7 +119,7 @@ $LN12:
 	mov	rcx, QWORD PTR cmd_list$[rsp]
 	mov	BYTE PTR [rcx], al
 
-; 222  : 	cmd_list->prdtl = (uint16_t)((count-1)>>4)+1;
+; 212  : 	cmd_list->prdtl = (uint16_t)((count-1)>>4)+1;
 
 	mov	eax, DWORD PTR count$[rsp]
 	dec	eax
@@ -129,15 +129,15 @@ $LN12:
 	mov	rcx, QWORD PTR cmd_list$[rsp]
 	mov	WORD PTR [rcx+2], ax
 
-; 223  : 
-; 224  : 	uint32_t command_slot = ahci_disk_find_slot(port);
+; 213  : 
+; 214  : 	uint32_t command_slot = ahci_disk_find_slot(port);
 
 	mov	rcx, QWORD PTR port$[rsp]
 	call	?ahci_disk_find_slot@@YAIPEAU_hba_port_@@@Z ; ahci_disk_find_slot
 	mov	DWORD PTR command_slot$[rsp], eax
 
-; 225  : 
-; 226  : 	HBA_CMD_TABLE *tbl = (HBA_CMD_TABLE*)cmd_list[command_slot].ctba;
+; 215  : 
+; 216  : 	HBA_CMD_TABLE *tbl = (HBA_CMD_TABLE*)cmd_list[command_slot].ctba;
 
 	mov	eax, DWORD PTR command_slot$[rsp]
 	imul	rax, 32					; 00000020H
@@ -145,11 +145,11 @@ $LN12:
 	mov	eax, DWORD PTR [rcx+rax+8]
 	mov	QWORD PTR tbl$[rsp], rax
 
-; 227  : 	int i=0;
+; 217  : 	int i=0;
 
 	mov	DWORD PTR i$[rsp], 0
 
-; 228  : 	for (i = 0; i < cmd_list->prdtl; i++){
+; 218  : 	for (i = 0; i < cmd_list->prdtl; i++){
 
 	mov	DWORD PTR i$[rsp], 0
 	jmp	SHORT $LN9@ahci_disk_
@@ -163,7 +163,7 @@ $LN9@ahci_disk_:
 	cmp	DWORD PTR i$[rsp], eax
 	jge	$LN7@ahci_disk_
 
-; 229  : 		tbl->prdt[i].data_base_address = buffer_whole & 0xffffffff;
+; 219  : 		tbl->prdt[i].data_base_address = buffer_whole & 0xffffffff;
 
 	mov	eax, -1					; ffffffffH
 	mov	rcx, QWORD PTR buffer_whole$[rsp]
@@ -174,7 +174,7 @@ $LN9@ahci_disk_:
 	mov	rdx, QWORD PTR tbl$[rsp]
 	mov	DWORD PTR [rdx+rcx+128], eax
 
-; 230  : 		tbl->prdt[i].dbau = buffer_whole >> 32;
+; 220  : 		tbl->prdt[i].dbau = buffer_whole >> 32;
 
 	mov	rax, QWORD PTR buffer_whole$[rsp]
 	shr	rax, 32					; 00000020H
@@ -183,7 +183,7 @@ $LN9@ahci_disk_:
 	mov	rdx, QWORD PTR tbl$[rsp]
 	mov	DWORD PTR [rdx+rcx+132], eax
 
-; 231  : 		tbl->prdt[i].data_byte_count = (512 * count) - 1;
+; 221  : 		tbl->prdt[i].data_byte_count = (512 * count) - 1;
 
 	mov	eax, DWORD PTR count$[rsp]
 	imul	eax, 512				; 00000200H
@@ -201,7 +201,7 @@ $LN9@ahci_disk_:
 	mov	rdx, QWORD PTR tbl$[rsp]
 	mov	DWORD PTR [rdx+rcx+140], eax
 
-; 232  : 		tbl->prdt[i].i = 1;
+; 222  : 		tbl->prdt[i].i = 1;
 
 	movsxd	rax, DWORD PTR i$[rsp]
 	imul	rax, 16
@@ -213,7 +213,7 @@ $LN9@ahci_disk_:
 	mov	rdx, QWORD PTR tbl$[rsp]
 	mov	DWORD PTR [rdx+rcx+140], eax
 
-; 233  : 		buffer += 512*count;
+; 223  : 		buffer += 512*count;
 
 	mov	eax, DWORD PTR count$[rsp]
 	imul	eax, 512				; 00000200H
@@ -222,17 +222,17 @@ $LN9@ahci_disk_:
 	lea	rax, QWORD PTR [rcx+rax*8]
 	mov	QWORD PTR buffer$[rsp], rax
 
-; 234  : 		buffer_whole = (uint32_t)buffer;
+; 224  : 		buffer_whole = (uint32_t)buffer;
 
 	mov	eax, DWORD PTR buffer$[rsp]
 	mov	QWORD PTR buffer_whole$[rsp], rax
 
-; 235  : 	}
+; 225  : 	}
 
 	jmp	$LN8@ahci_disk_
 $LN7@ahci_disk_:
 
-; 236  : 	tbl->prdt[i].data_base_address = buffer_whole & 0xffffffff;
+; 226  : 	tbl->prdt[i].data_base_address = buffer_whole & 0xffffffff;
 
 	mov	eax, -1					; ffffffffH
 	mov	rcx, QWORD PTR buffer_whole$[rsp]
@@ -243,7 +243,7 @@ $LN7@ahci_disk_:
 	mov	rdx, QWORD PTR tbl$[rsp]
 	mov	DWORD PTR [rdx+rcx+128], eax
 
-; 237  : 	tbl->prdt[i].dbau = buffer_whole >> 32;
+; 227  : 	tbl->prdt[i].dbau = buffer_whole >> 32;
 
 	mov	rax, QWORD PTR buffer_whole$[rsp]
 	shr	rax, 32					; 00000020H
@@ -252,7 +252,7 @@ $LN7@ahci_disk_:
 	mov	rdx, QWORD PTR tbl$[rsp]
 	mov	DWORD PTR [rdx+rcx+132], eax
 
-; 238  : 	tbl->prdt[i].data_byte_count = (512 * count) - 1;
+; 228  : 	tbl->prdt[i].data_byte_count = (512 * count) - 1;
 
 	mov	eax, DWORD PTR count$[rsp]
 	imul	eax, 512				; 00000200H
@@ -270,7 +270,7 @@ $LN7@ahci_disk_:
 	mov	rdx, QWORD PTR tbl$[rsp]
 	mov	DWORD PTR [rdx+rcx+140], eax
 
-; 239  : 	tbl->prdt[i].i = 1;
+; 229  : 	tbl->prdt[i].i = 1;
 
 	movsxd	rax, DWORD PTR i$[rsp]
 	imul	rax, 16
@@ -282,18 +282,18 @@ $LN7@ahci_disk_:
 	mov	rdx, QWORD PTR tbl$[rsp]
 	mov	DWORD PTR [rdx+rcx+140], eax
 
-; 240  : 
-; 241  : 	FIS_REG_H2D *fis = (FIS_REG_H2D*)tbl->cmd_fis;
+; 230  : 
+; 231  : 	FIS_REG_H2D *fis = (FIS_REG_H2D*)tbl->cmd_fis;
 
 	mov	rax, QWORD PTR tbl$[rsp]
 	mov	QWORD PTR fis$[rsp], rax
 
-; 242  : 	fis->fis_type = FIS_TYPE_REG_H2D;
+; 232  : 	fis->fis_type = FIS_TYPE_REG_H2D;
 
 	mov	rax, QWORD PTR fis$[rsp]
 	mov	BYTE PTR [rax], 39			; 00000027H
 
-; 243  : 	fis->c = 1;
+; 233  : 	fis->c = 1;
 
 	mov	rax, QWORD PTR fis$[rsp]
 	movzx	eax, BYTE PTR [rax+1]
@@ -301,19 +301,19 @@ $LN7@ahci_disk_:
 	mov	rcx, QWORD PTR fis$[rsp]
 	mov	BYTE PTR [rcx+1], al
 
-; 244  : 	fis->command = ATA_CMD_IDENTIFY;
+; 234  : 	fis->command = ATA_CMD_IDENTIFY;
 
 	mov	rax, QWORD PTR fis$[rsp]
 	mov	BYTE PTR [rax+2], 236			; 000000ecH
 
-; 245  : 	fis->lba0 = lba & 0xff;
+; 235  : 	fis->lba0 = lba & 0xff;
 
 	mov	rax, QWORD PTR lba$[rsp]
 	and	rax, 255				; 000000ffH
 	mov	rcx, QWORD PTR fis$[rsp]
 	mov	BYTE PTR [rcx+4], al
 
-; 246  : 	fis->lba1 = (lba>>8) & 0xff;
+; 236  : 	fis->lba1 = (lba>>8) & 0xff;
 
 	mov	rax, QWORD PTR lba$[rsp]
 	shr	rax, 8
@@ -321,7 +321,7 @@ $LN7@ahci_disk_:
 	mov	rcx, QWORD PTR fis$[rsp]
 	mov	BYTE PTR [rcx+5], al
 
-; 247  : 	fis->lba2 = (lba>>16) & 0xff;
+; 237  : 	fis->lba2 = (lba>>16) & 0xff;
 
 	mov	rax, QWORD PTR lba$[rsp]
 	shr	rax, 16
@@ -329,12 +329,12 @@ $LN7@ahci_disk_:
 	mov	rcx, QWORD PTR fis$[rsp]
 	mov	BYTE PTR [rcx+6], al
 
-; 248  : 	fis->device = 1<<6;
+; 238  : 	fis->device = 1<<6;
 
 	mov	rax, QWORD PTR fis$[rsp]
 	mov	BYTE PTR [rax+7], 64			; 00000040H
 
-; 249  : 	fis->lba3 = (lba>>24) & 0xff;
+; 239  : 	fis->lba3 = (lba>>24) & 0xff;
 
 	mov	rax, QWORD PTR lba$[rsp]
 	shr	rax, 24
@@ -342,7 +342,7 @@ $LN7@ahci_disk_:
 	mov	rcx, QWORD PTR fis$[rsp]
 	mov	BYTE PTR [rcx+8], al
 
-; 250  : 	fis->lba4 = (lba>>32) & 0xff;
+; 240  : 	fis->lba4 = (lba>>32) & 0xff;
 
 	mov	rax, QWORD PTR lba$[rsp]
 	shr	rax, 32					; 00000020H
@@ -350,7 +350,7 @@ $LN7@ahci_disk_:
 	mov	rcx, QWORD PTR fis$[rsp]
 	mov	BYTE PTR [rcx+9], al
 
-; 251  : 	fis->lba5 = (lba>>40) & 0xff;
+; 241  : 	fis->lba5 = (lba>>40) & 0xff;
 
 	mov	rax, QWORD PTR lba$[rsp]
 	shr	rax, 40					; 00000028H
@@ -358,14 +358,14 @@ $LN7@ahci_disk_:
 	mov	rcx, QWORD PTR fis$[rsp]
 	mov	BYTE PTR [rcx+10], al
 
-; 252  : 	fis->countl = count & 0xff;
+; 242  : 	fis->countl = count & 0xff;
 
 	mov	eax, DWORD PTR count$[rsp]
 	and	eax, 255				; 000000ffH
 	mov	rcx, QWORD PTR fis$[rsp]
 	mov	BYTE PTR [rcx+12], al
 
-; 253  : 	fis->counth = (count >> 8) & 0xff;
+; 243  : 	fis->counth = (count >> 8) & 0xff;
 
 	mov	eax, DWORD PTR count$[rsp]
 	shr	eax, 8
@@ -374,8 +374,8 @@ $LN7@ahci_disk_:
 	mov	BYTE PTR [rcx+13], al
 $LN6@ahci_disk_:
 
-; 254  : 
-; 255  : 	while((port->tfd & (ATA_SR_BSY  | ATA_SR_DRQ)) && spin < 1000000) {
+; 244  : 
+; 245  : 	while((port->tfd & (ATA_SR_BSY  | ATA_SR_DRQ)) && spin < 1000000) {
 
 	mov	rax, QWORD PTR port$[rsp]
 	mov	eax, DWORD PTR [rax+32]
@@ -385,30 +385,30 @@ $LN6@ahci_disk_:
 	cmp	DWORD PTR spin$[rsp], 1000000		; 000f4240H
 	jge	SHORT $LN5@ahci_disk_
 
-; 256  : 		spin++;
+; 246  : 		spin++;
 
 	mov	eax, DWORD PTR spin$[rsp]
 	inc	eax
 	mov	DWORD PTR spin$[rsp], eax
 
-; 257  : 	}
+; 247  : 	}
 
 	jmp	SHORT $LN6@ahci_disk_
 $LN5@ahci_disk_:
 
-; 258  : 	if (spin==1000000)
+; 248  : 	if (spin==1000000)
 
 	cmp	DWORD PTR spin$[rsp], 1000000		; 000f4240H
 	jne	SHORT $LN4@ahci_disk_
 
-; 259  : 		printf ("[AHCI]:Port Hung\n");
+; 249  : 		printf ("[AHCI]:Port Hung\n");
 
-	lea	rcx, OFFSET FLAT:$SG4054
+	lea	rcx, OFFSET FLAT:$SG3844
 	call	?printf@@YAXPEBDZZ			; printf
 $LN4@ahci_disk_:
 
-; 260  : 
-; 261  : 	port->ci = 1<<command_slot;
+; 250  : 
+; 251  : 	port->ci = 1<<command_slot;
 
 	mov	eax, DWORD PTR command_slot$[rsp]
 	mov	ecx, 1
@@ -420,13 +420,13 @@ $LN4@ahci_disk_:
 	mov	DWORD PTR [rcx+56], eax
 $LN3@ahci_disk_:
 
-; 262  : 	while(1) {
+; 252  : 	while(1) {
 
 	xor	eax, eax
 	cmp	eax, 1
 	je	SHORT $LN2@ahci_disk_
 
-; 263  : 		if ((port->ci & (1<<command_slot)) == 0) 
+; 253  : 		if ((port->ci & (1<<command_slot)) == 0) 
 
 	mov	eax, DWORD PTR command_slot$[rsp]
 	mov	ecx, 1
@@ -441,19 +441,19 @@ $LN3@ahci_disk_:
 	test	eax, eax
 	jne	SHORT $LN1@ahci_disk_
 
-; 264  : 			break;
+; 254  : 			break;
 
 	jmp	SHORT $LN2@ahci_disk_
 $LN1@ahci_disk_:
 
-; 265  : 		/*if (port->is & (1<<30)) 
-; 266  : 			break;*/
-; 267  : 	}
+; 255  : 		/*if (port->is & (1<<30)) 
+; 256  : 			break;*/
+; 257  : 	}
 
 	jmp	SHORT $LN3@ahci_disk_
 $LN2@ahci_disk_:
 
-; 268  : }
+; 258  : }
 
 	add	rsp, 104				; 00000068H
 	ret	0
@@ -467,13 +467,13 @@ slots$ = 4
 port$ = 32
 ?ahci_disk_find_slot@@YAIPEAU_hba_port_@@@Z PROC	; ahci_disk_find_slot
 
-; 77   : uint32_t ahci_disk_find_slot (HBA_PORT *port) {
+; 76   : uint32_t ahci_disk_find_slot (HBA_PORT *port) {
 
 $LN7:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 24
 
-; 78   : 	uint32_t slots = (port->sact | port->ci);
+; 77   : 	uint32_t slots = (port->sact | port->ci);
 
 	mov	rax, QWORD PTR port$[rsp]
 	mov	rcx, QWORD PTR port$[rsp]
@@ -482,7 +482,7 @@ $LN7:
 	or	eax, ecx
 	mov	DWORD PTR slots$[rsp], eax
 
-; 79   : 	for (int i = 0; i < 32; i++) {
+; 78   : 	for (int i = 0; i < 32; i++) {
 
 	mov	DWORD PTR i$1[rsp], 0
 	jmp	SHORT $LN4@ahci_disk_
@@ -494,32 +494,32 @@ $LN4@ahci_disk_:
 	cmp	DWORD PTR i$1[rsp], 32			; 00000020H
 	jge	SHORT $LN2@ahci_disk_
 
-; 80   : 		if ((slots & 1) == 0)
+; 79   : 		if ((slots & 1) == 0)
 
 	mov	eax, DWORD PTR slots$[rsp]
 	and	eax, 1
 	test	eax, eax
 	jne	SHORT $LN1@ahci_disk_
 
-; 81   : 			return i;
+; 80   : 			return i;
 
 	mov	eax, DWORD PTR i$1[rsp]
 	jmp	SHORT $LN5@ahci_disk_
 $LN1@ahci_disk_:
 
-; 82   : 		slots >>= 1;
+; 81   : 		slots >>= 1;
 
 	mov	eax, DWORD PTR slots$[rsp]
 	shr	eax, 1
 	mov	DWORD PTR slots$[rsp], eax
 
-; 83   : 	}
+; 82   : 	}
 
 	jmp	SHORT $LN3@ahci_disk_
 $LN2@ahci_disk_:
 $LN5@ahci_disk_:
 
-; 84   : }
+; 83   : }
 
 	add	rsp, 24
 	ret	0
@@ -530,11 +530,11 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 ?ahci_disk_get_port@@YAPEAU_hba_port_@@XZ PROC		; ahci_disk_get_port
 
-; 349  : 	return sata_drive_port;
+; 339  : 	return sata_drive_port;
 
 	mov	rax, QWORD PTR ?sata_drive_port@@3PEAU_hba_port_@@EA ; sata_drive_port
 
-; 350  : }
+; 340  : }
 
 	ret	0
 ?ahci_disk_get_port@@YAPEAU_hba_port_@@XZ ENDP		; ahci_disk_get_port
@@ -545,12 +545,12 @@ _TEXT	SEGMENT
 port$ = 8
 ?ahci_disk_start_cmd@@YAXPEAU_hba_port_@@@Z PROC	; ahci_disk_start_cmd
 
-; 64   : void ahci_disk_start_cmd (HBA_PORT *port) {
+; 63   : void ahci_disk_start_cmd (HBA_PORT *port) {
 
 	mov	QWORD PTR [rsp+8], rcx
 $LN2@ahci_disk_:
 
-; 65   : 	while (port->cmd & PX_CMD_CR)
+; 64   : 	while (port->cmd & PX_CMD_CR)
 
 	mov	rax, QWORD PTR port$[rsp]
 	mov	eax, DWORD PTR [rax+24]
@@ -558,12 +558,12 @@ $LN2@ahci_disk_:
 	test	eax, eax
 	je	SHORT $LN1@ahci_disk_
 
-; 66   : 		;
+; 65   : 		;
 
 	jmp	SHORT $LN2@ahci_disk_
 $LN1@ahci_disk_:
 
-; 67   : 	port->cmd |= PX_CMD_FRE;
+; 66   : 	port->cmd |= PX_CMD_FRE;
 
 	mov	rax, QWORD PTR port$[rsp]
 	mov	eax, DWORD PTR [rax+24]
@@ -571,7 +571,7 @@ $LN1@ahci_disk_:
 	mov	rcx, QWORD PTR port$[rsp]
 	mov	DWORD PTR [rcx+24], eax
 
-; 68   : 	port->cmd |= PX_CMD_START;
+; 67   : 	port->cmd |= PX_CMD_START;
 
 	mov	rax, QWORD PTR port$[rsp]
 	mov	eax, DWORD PTR [rax+24]
@@ -579,7 +579,7 @@ $LN1@ahci_disk_:
 	mov	rcx, QWORD PTR port$[rsp]
 	mov	DWORD PTR [rcx+24], eax
 
-; 69   : }
+; 68   : }
 
 	ret	0
 ?ahci_disk_start_cmd@@YAXPEAU_hba_port_@@@Z ENDP	; ahci_disk_start_cmd
@@ -590,11 +590,11 @@ _TEXT	SEGMENT
 port$ = 8
 ?ahci_disk_stop_cmd@@YAXPEAU_hba_port_@@@Z PROC		; ahci_disk_stop_cmd
 
-; 48   : void ahci_disk_stop_cmd (HBA_PORT *port) {
+; 47   : void ahci_disk_stop_cmd (HBA_PORT *port) {
 
 	mov	QWORD PTR [rsp+8], rcx
 
-; 49   : 	port->cmd &= ~PX_CMD_START;
+; 48   : 	port->cmd &= ~PX_CMD_START;
 
 	mov	rax, QWORD PTR port$[rsp]
 	mov	eax, DWORD PTR [rax+24]
@@ -602,7 +602,7 @@ port$ = 8
 	mov	rcx, QWORD PTR port$[rsp]
 	mov	DWORD PTR [rcx+24], eax
 
-; 50   : 	port->cmd &= ~PX_CMD_FRE;
+; 49   : 	port->cmd &= ~PX_CMD_FRE;
 
 	mov	rax, QWORD PTR port$[rsp]
 	mov	eax, DWORD PTR [rax+24]
@@ -612,13 +612,13 @@ port$ = 8
 $LN7@ahci_disk_:
 $LN4@ahci_disk_:
 
-; 51   : 	while(1) {
+; 50   : 	while(1) {
 
 	xor	eax, eax
 	cmp	eax, 1
 	je	SHORT $LN3@ahci_disk_
 
-; 52   : 		if (port->cmd & PX_CMD_FR)
+; 51   : 		if (port->cmd & PX_CMD_FR)
 
 	mov	rax, QWORD PTR port$[rsp]
 	mov	eax, DWORD PTR [rax+24]
@@ -626,12 +626,12 @@ $LN4@ahci_disk_:
 	test	eax, eax
 	je	SHORT $LN2@ahci_disk_
 
-; 53   : 			continue;
+; 52   : 			continue;
 
 	jmp	SHORT $LN4@ahci_disk_
 $LN2@ahci_disk_:
 
-; 54   : 		if (port->cmd & PX_CMD_CR)
+; 53   : 		if (port->cmd & PX_CMD_CR)
 
 	mov	rax, QWORD PTR port$[rsp]
 	mov	eax, DWORD PTR [rax+24]
@@ -639,21 +639,21 @@ $LN2@ahci_disk_:
 	test	eax, eax
 	je	SHORT $LN1@ahci_disk_
 
-; 55   : 			continue;
+; 54   : 			continue;
 
 	jmp	SHORT $LN7@ahci_disk_
 $LN1@ahci_disk_:
 
-; 56   : 		break;
+; 55   : 		break;
 
 	jmp	SHORT $LN3@ahci_disk_
 
-; 57   : 	}
+; 56   : 	}
 
 	jmp	SHORT $LN4@ahci_disk_
 $LN3@ahci_disk_:
 
-; 58   : }
+; 57   : }
 
 	fatret	0
 ?ahci_disk_stop_cmd@@YAXPEAU_hba_port_@@@Z ENDP		; ahci_disk_stop_cmd
@@ -676,7 +676,7 @@ count$ = 128
 buffer$ = 136
 ?ahci_disk_read@@YAXPEAU_hba_port_@@_KIPEA_K@Z PROC	; ahci_disk_read
 
-; 94   : void ahci_disk_read (HBA_PORT *port, uint64_t lba, uint32_t count, uint64_t *buffer) {
+; 93   : void ahci_disk_read (HBA_PORT *port, uint64_t lba, uint32_t count, uint64_t *buffer) {
 
 $LN9:
 	mov	QWORD PTR [rsp+32], r9
@@ -685,24 +685,24 @@ $LN9:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 104				; 00000068H
 
-; 95   : 	//port->is = (uint32_t)-1;
-; 96   : 	int spin = 0;
+; 94   : 	//port->is = (uint32_t)-1;
+; 95   : 	int spin = 0;
 
 	mov	DWORD PTR spin$[rsp], 0
 
-; 97   : 	HBA_CMD_HEADER *cmd_list = (HBA_CMD_HEADER*)port->clb;
+; 96   : 	HBA_CMD_HEADER *cmd_list = (HBA_CMD_HEADER*)port->clb;
 
 	mov	rax, QWORD PTR port$[rsp]
 	mov	eax, DWORD PTR [rax]
 	mov	QWORD PTR cmd_list$[rsp], rax
 
-; 98   : 	uint64_t buffer_whole = (uint64_t)buffer;
+; 97   : 	uint64_t buffer_whole = (uint64_t)buffer;
 
 	mov	rax, QWORD PTR buffer$[rsp]
 	mov	QWORD PTR buffer_whole$[rsp], rax
 
-; 99   : 
-; 100  : 	cmd_list->cfl = sizeof(FIS_REG_H2D)/sizeof(uint32_t);
+; 98   : 
+; 99   : 	cmd_list->cfl = sizeof(FIS_REG_H2D)/sizeof(uint32_t);
 
 	mov	rax, QWORD PTR cmd_list$[rsp]
 	movzx	eax, BYTE PTR [rax]
@@ -711,7 +711,7 @@ $LN9:
 	mov	rcx, QWORD PTR cmd_list$[rsp]
 	mov	BYTE PTR [rcx], al
 
-; 101  : 	cmd_list->w = 0;
+; 100  : 	cmd_list->w = 0;
 
 	mov	rax, QWORD PTR cmd_list$[rsp]
 	movzx	eax, BYTE PTR [rax]
@@ -719,21 +719,21 @@ $LN9:
 	mov	rcx, QWORD PTR cmd_list$[rsp]
 	mov	BYTE PTR [rcx], al
 
-; 102  : 	cmd_list->prdtl = 1;
+; 101  : 	cmd_list->prdtl = 1;
 
 	mov	eax, 1
 	mov	rcx, QWORD PTR cmd_list$[rsp]
 	mov	WORD PTR [rcx+2], ax
 
-; 103  : 	
-; 104  : 	uint32_t command_slot = ahci_disk_find_slot(port);
+; 102  : 	
+; 103  : 	uint32_t command_slot = ahci_disk_find_slot(port);
 
 	mov	rcx, QWORD PTR port$[rsp]
 	call	?ahci_disk_find_slot@@YAIPEAU_hba_port_@@@Z ; ahci_disk_find_slot
 	mov	DWORD PTR command_slot$[rsp], eax
 
-; 105  : 
-; 106  : 	HBA_CMD_TABLE *tbl = (HBA_CMD_TABLE*)cmd_list[command_slot].ctba;
+; 104  : 
+; 105  : 	HBA_CMD_TABLE *tbl = (HBA_CMD_TABLE*)cmd_list[command_slot].ctba;
 
 	mov	eax, DWORD PTR command_slot$[rsp]
 	imul	rax, 32					; 00000020H
@@ -741,12 +741,12 @@ $LN9:
 	mov	eax, DWORD PTR [rcx+rax+8]
 	mov	QWORD PTR tbl$[rsp], rax
 
-; 107  : 	int i=0;
+; 106  : 	int i=0;
 
 	mov	DWORD PTR i$[rsp], 0
 
-; 108  : 	//for (i = 0; i < cmd_list->prdtl; i++){
-; 109  : 	tbl->prdt[0].data_base_address = buffer_whole & 0xffffffff;
+; 107  : 	//for (i = 0; i < cmd_list->prdtl; i++){
+; 108  : 	tbl->prdt[0].data_base_address = buffer_whole & 0xffffffff;
 
 	mov	eax, -1					; ffffffffH
 	mov	rcx, QWORD PTR buffer_whole$[rsp]
@@ -757,7 +757,7 @@ $LN9:
 	mov	rdx, QWORD PTR tbl$[rsp]
 	mov	DWORD PTR [rdx+rcx+128], eax
 
-; 110  : 	tbl->prdt[0].dbau = buffer_whole >> 32;
+; 109  : 	tbl->prdt[0].dbau = buffer_whole >> 32;
 
 	mov	rax, QWORD PTR buffer_whole$[rsp]
 	shr	rax, 32					; 00000020H
@@ -766,7 +766,7 @@ $LN9:
 	mov	rdx, QWORD PTR tbl$[rsp]
 	mov	DWORD PTR [rdx+rcx+132], eax
 
-; 111  : 	tbl->prdt[0].data_byte_count = 512 * count -1;
+; 110  : 	tbl->prdt[0].data_byte_count = 512 * count -1;
 
 	mov	eax, DWORD PTR count$[rsp]
 	imul	eax, 512				; 00000200H
@@ -784,7 +784,7 @@ $LN9:
 	mov	rdx, QWORD PTR tbl$[rsp]
 	mov	DWORD PTR [rdx+rcx+140], eax
 
-; 112  : 	tbl->prdt[0].i = 1;
+; 111  : 	tbl->prdt[0].i = 1;
 
 	mov	eax, 16
 	imul	rax, 0
@@ -796,19 +796,19 @@ $LN9:
 	mov	rdx, QWORD PTR tbl$[rsp]
 	mov	DWORD PTR [rdx+rcx+140], eax
 
+; 112  : 
 ; 113  : 
-; 114  : 
-; 115  : 	FIS_REG_H2D *fis = (FIS_REG_H2D*)tbl->cmd_fis;
+; 114  : 	FIS_REG_H2D *fis = (FIS_REG_H2D*)tbl->cmd_fis;
 
 	mov	rax, QWORD PTR tbl$[rsp]
 	mov	QWORD PTR fis$[rsp], rax
 
-; 116  : 	fis->fis_type = FIS_TYPE_REG_H2D;
+; 115  : 	fis->fis_type = FIS_TYPE_REG_H2D;
 
 	mov	rax, QWORD PTR fis$[rsp]
 	mov	BYTE PTR [rax], 39			; 00000027H
 
-; 117  : 	fis->c = 1;
+; 116  : 	fis->c = 1;
 
 	mov	rax, QWORD PTR fis$[rsp]
 	movzx	eax, BYTE PTR [rax+1]
@@ -816,19 +816,19 @@ $LN9:
 	mov	rcx, QWORD PTR fis$[rsp]
 	mov	BYTE PTR [rcx+1], al
 
-; 118  : 	fis->command = ATA_CMD_READ_DMA_EXT;
+; 117  : 	fis->command = ATA_CMD_READ_DMA_EXT;
 
 	mov	rax, QWORD PTR fis$[rsp]
 	mov	BYTE PTR [rax+2], 37			; 00000025H
 
-; 119  : 	fis->lba0 = lba & 0xff;
+; 118  : 	fis->lba0 = lba & 0xff;
 
 	mov	rax, QWORD PTR lba$[rsp]
 	and	rax, 255				; 000000ffH
 	mov	rcx, QWORD PTR fis$[rsp]
 	mov	BYTE PTR [rcx+4], al
 
-; 120  : 	fis->lba1 = (lba>>8) & 0xff;
+; 119  : 	fis->lba1 = (lba>>8) & 0xff;
 
 	mov	rax, QWORD PTR lba$[rsp]
 	shr	rax, 8
@@ -836,7 +836,7 @@ $LN9:
 	mov	rcx, QWORD PTR fis$[rsp]
 	mov	BYTE PTR [rcx+5], al
 
-; 121  : 	fis->lba2 = (lba>>16) & 0xff;
+; 120  : 	fis->lba2 = (lba>>16) & 0xff;
 
 	mov	rax, QWORD PTR lba$[rsp]
 	shr	rax, 16
@@ -844,12 +844,12 @@ $LN9:
 	mov	rcx, QWORD PTR fis$[rsp]
 	mov	BYTE PTR [rcx+6], al
 
-; 122  : 	fis->device = 1<<6;
+; 121  : 	fis->device = 1<<6;
 
 	mov	rax, QWORD PTR fis$[rsp]
 	mov	BYTE PTR [rax+7], 64			; 00000040H
 
-; 123  : 	fis->lba3 = (lba>>24) & 0xff;
+; 122  : 	fis->lba3 = (lba>>24) & 0xff;
 
 	mov	rax, QWORD PTR lba$[rsp]
 	shr	rax, 24
@@ -857,7 +857,7 @@ $LN9:
 	mov	rcx, QWORD PTR fis$[rsp]
 	mov	BYTE PTR [rcx+8], al
 
-; 124  : 	fis->lba4 = (lba>>32) & 0xff;
+; 123  : 	fis->lba4 = (lba>>32) & 0xff;
 
 	mov	rax, QWORD PTR lba$[rsp]
 	shr	rax, 32					; 00000020H
@@ -865,7 +865,7 @@ $LN9:
 	mov	rcx, QWORD PTR fis$[rsp]
 	mov	BYTE PTR [rcx+9], al
 
-; 125  : 	fis->lba5 = (lba>>40) & 0xff;
+; 124  : 	fis->lba5 = (lba>>40) & 0xff;
 
 	mov	rax, QWORD PTR lba$[rsp]
 	shr	rax, 40					; 00000028H
@@ -873,14 +873,14 @@ $LN9:
 	mov	rcx, QWORD PTR fis$[rsp]
 	mov	BYTE PTR [rcx+10], al
 
-; 126  : 	fis->countl = count & 0xff;
+; 125  : 	fis->countl = count & 0xff;
 
 	mov	eax, DWORD PTR count$[rsp]
 	and	eax, 255				; 000000ffH
 	mov	rcx, QWORD PTR fis$[rsp]
 	mov	BYTE PTR [rcx+12], al
 
-; 127  : 	fis->counth = (count >> 8) & 0xff;
+; 126  : 	fis->counth = (count >> 8) & 0xff;
 
 	mov	eax, DWORD PTR count$[rsp]
 	shr	eax, 8
@@ -889,8 +889,8 @@ $LN9:
 	mov	BYTE PTR [rcx+13], al
 $LN6@ahci_disk_:
 
-; 128  : 
-; 129  : 	while((port->tfd & (ATA_SR_BSY  | ATA_SR_DRQ)) && spin < 1000000) {
+; 127  : 
+; 128  : 	while((port->tfd & (ATA_SR_BSY  | ATA_SR_DRQ)) && spin < 1000000) {
 
 	mov	rax, QWORD PTR port$[rsp]
 	mov	eax, DWORD PTR [rax+32]
@@ -900,30 +900,30 @@ $LN6@ahci_disk_:
 	cmp	DWORD PTR spin$[rsp], 1000000		; 000f4240H
 	jge	SHORT $LN5@ahci_disk_
 
-; 130  : 		spin++;
+; 129  : 		spin++;
 
 	mov	eax, DWORD PTR spin$[rsp]
 	inc	eax
 	mov	DWORD PTR spin$[rsp], eax
 
-; 131  : 	}
+; 130  : 	}
 
 	jmp	SHORT $LN6@ahci_disk_
 $LN5@ahci_disk_:
 
-; 132  : 	if (spin==1000000)
+; 131  : 	if (spin==1000000)
 
 	cmp	DWORD PTR spin$[rsp], 1000000		; 000f4240H
 	jne	SHORT $LN4@ahci_disk_
 
-; 133  : 		printf ("[AHCI]:Port Hung\n");
+; 132  : 		printf ("[AHCI]:Port Hung\n");
 
-	lea	rcx, OFFSET FLAT:$SG3988
+	lea	rcx, OFFSET FLAT:$SG3783
 	call	?printf@@YAXPEBDZZ			; printf
 $LN4@ahci_disk_:
 
-; 134  : 
-; 135  : 	port->ci = 1<<command_slot;
+; 133  : 
+; 134  : 	port->ci = 1<<command_slot;
 
 	mov	eax, DWORD PTR command_slot$[rsp]
 	mov	ecx, 1
@@ -935,13 +935,13 @@ $LN4@ahci_disk_:
 	mov	DWORD PTR [rcx+56], eax
 $LN3@ahci_disk_:
 
-; 136  : 	while(1) {
+; 135  : 	while(1) {
 
 	xor	eax, eax
 	cmp	eax, 1
 	je	SHORT $LN2@ahci_disk_
 
-; 137  : 		if ((port->ci & (1<<command_slot)) == 0) 
+; 136  : 		if ((port->ci & (1<<command_slot)) == 0) 
 
 	mov	eax, DWORD PTR command_slot$[rsp]
 	mov	ecx, 1
@@ -956,19 +956,19 @@ $LN3@ahci_disk_:
 	test	eax, eax
 	jne	SHORT $LN1@ahci_disk_
 
-; 138  : 			break;
+; 137  : 			break;
 
 	jmp	SHORT $LN2@ahci_disk_
 $LN1@ahci_disk_:
 
-; 139  : 		/*if (port->is & (1<<30)) 
-; 140  : 			break;*/
-; 141  : 	}
+; 138  : 		/*if (port->is & (1<<30)) 
+; 139  : 			break;*/
+; 140  : 	}
 
 	jmp	SHORT $LN3@ahci_disk_
 $LN2@ahci_disk_:
 
-; 142  : }
+; 141  : }
 
 	add	rsp, 104				; 00000068H
 	ret	0
@@ -977,48 +977,47 @@ _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\drivers\ahci_disk.cpp
 _TEXT	SEGMENT
-i$ = 32
-fis$ = 40
+fis$ = 32
+spin$ = 40
+command_slot$ = 44
 tbl$ = 48
-spin$ = 56
-command_slot$ = 60
-cmd_list$ = 64
+cmd_list$ = 56
+tv282 = 64
+tv277 = 68
 buffer_whole$ = 72
-tv365 = 80
-tv360 = 84
+i$ = 80
 port$ = 112
 lba$ = 120
 count$ = 128
 buffer$ = 136
 ?ahci_disk_write@@YAXPEAU_hba_port_@@_KIPEA_K@Z PROC	; ahci_disk_write
 
-; 152  : void ahci_disk_write (HBA_PORT *port, uint64_t lba, uint32_t count, uint64_t *buffer) {
+; 151  : void ahci_disk_write (HBA_PORT *port, uint64_t lba, uint32_t count, uint64_t *buffer) {
 
-$LN12:
+$LN9:
 	mov	QWORD PTR [rsp+32], r9
 	mov	DWORD PTR [rsp+24], r8d
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 104				; 00000068H
 
-; 153  : 	//port->is = (uint32_t)-1;
-; 154  : 	int spin = 0;
+; 152  : 	int spin = 0;
 
 	mov	DWORD PTR spin$[rsp], 0
 
-; 155  : 	HBA_CMD_HEADER *cmd_list = (HBA_CMD_HEADER*)port->clb;
+; 153  : 	HBA_CMD_HEADER *cmd_list = (HBA_CMD_HEADER*)port->clb;
 
 	mov	rax, QWORD PTR port$[rsp]
 	mov	eax, DWORD PTR [rax]
 	mov	QWORD PTR cmd_list$[rsp], rax
 
-; 156  : 	uint64_t buffer_whole = (uint64_t)buffer;
+; 154  : 	uint64_t buffer_whole = (uint64_t)buffer;
 
 	mov	rax, QWORD PTR buffer$[rsp]
 	mov	QWORD PTR buffer_whole$[rsp], rax
 
-; 157  : 
-; 158  : 	cmd_list->cfl = sizeof(FIS_REG_H2D)/sizeof(uint32_t);
+; 155  : 
+; 156  : 	cmd_list->cfl = sizeof(FIS_REG_H2D)/sizeof(uint32_t);
 
 	mov	rax, QWORD PTR cmd_list$[rsp]
 	movzx	eax, BYTE PTR [rax]
@@ -1027,7 +1026,7 @@ $LN12:
 	mov	rcx, QWORD PTR cmd_list$[rsp]
 	mov	BYTE PTR [rcx], al
 
-; 159  : 	cmd_list->w = 1;
+; 157  : 	cmd_list->w = 1;
 
 	mov	rax, QWORD PTR cmd_list$[rsp]
 	movzx	eax, BYTE PTR [rax]
@@ -1035,25 +1034,21 @@ $LN12:
 	mov	rcx, QWORD PTR cmd_list$[rsp]
 	mov	BYTE PTR [rcx], al
 
-; 160  : 	cmd_list->prdtl = (uint16_t)((count-1)>>4)+1;
+; 158  : 	cmd_list->prdtl = 1;
 
-	mov	eax, DWORD PTR count$[rsp]
-	dec	eax
-	shr	eax, 4
-	movzx	eax, ax
-	inc	eax
+	mov	eax, 1
 	mov	rcx, QWORD PTR cmd_list$[rsp]
 	mov	WORD PTR [rcx+2], ax
 
-; 161  : 	
-; 162  : 	uint32_t command_slot = ahci_disk_find_slot(port);
+; 159  : 	
+; 160  : 	uint32_t command_slot = ahci_disk_find_slot(port);
 
 	mov	rcx, QWORD PTR port$[rsp]
 	call	?ahci_disk_find_slot@@YAIPEAU_hba_port_@@@Z ; ahci_disk_find_slot
 	mov	DWORD PTR command_slot$[rsp], eax
 
-; 163  : 
-; 164  : 	HBA_CMD_TABLE *tbl = (HBA_CMD_TABLE*)cmd_list[command_slot].ctba;
+; 161  : 
+; 162  : 	HBA_CMD_TABLE *tbl = (HBA_CMD_TABLE*)cmd_list[command_slot].ctba;
 
 	mov	eax, DWORD PTR command_slot$[rsp]
 	imul	rax, 32					; 00000020H
@@ -1061,155 +1056,72 @@ $LN12:
 	mov	eax, DWORD PTR [rcx+rax+8]
 	mov	QWORD PTR tbl$[rsp], rax
 
-; 165  : 	int i=0;
+; 163  : 	int i=0;
 
 	mov	DWORD PTR i$[rsp], 0
 
-; 166  : 	for (i = 0; i < cmd_list->prdtl; i++){
-
-	mov	DWORD PTR i$[rsp], 0
-	jmp	SHORT $LN9@ahci_disk_
-$LN8@ahci_disk_:
-	mov	eax, DWORD PTR i$[rsp]
-	inc	eax
-	mov	DWORD PTR i$[rsp], eax
-$LN9@ahci_disk_:
-	mov	rax, QWORD PTR cmd_list$[rsp]
-	movzx	eax, WORD PTR [rax+2]
-	cmp	DWORD PTR i$[rsp], eax
-	jge	$LN7@ahci_disk_
-
-; 167  : 		tbl->prdt[i].data_base_address = buffer_whole & 0xffffffff;
+; 164  : 	tbl->prdt[0].data_base_address = buffer_whole & 0xffffffff;
 
 	mov	eax, -1					; ffffffffH
 	mov	rcx, QWORD PTR buffer_whole$[rsp]
 	and	rcx, rax
 	mov	rax, rcx
-	movsxd	rcx, DWORD PTR i$[rsp]
-	imul	rcx, 16
+	mov	ecx, 16
+	imul	rcx, 0
 	mov	rdx, QWORD PTR tbl$[rsp]
 	mov	DWORD PTR [rdx+rcx+128], eax
 
-; 168  : 		tbl->prdt[i].dbau = buffer_whole >> 32;
+; 165  : 	tbl->prdt[0].dbau = buffer_whole >> 32;
 
 	mov	rax, QWORD PTR buffer_whole$[rsp]
 	shr	rax, 32					; 00000020H
-	movsxd	rcx, DWORD PTR i$[rsp]
-	imul	rcx, 16
+	mov	ecx, 16
+	imul	rcx, 0
 	mov	rdx, QWORD PTR tbl$[rsp]
 	mov	DWORD PTR [rdx+rcx+132], eax
 
-; 169  : 		tbl->prdt[i].data_byte_count = (512 * count) - 1;
+; 166  : 	tbl->prdt[0].data_byte_count = 512 * count -1;
 
 	mov	eax, DWORD PTR count$[rsp]
 	imul	eax, 512				; 00000200H
 	dec	eax
-	movsxd	rcx, DWORD PTR i$[rsp]
-	imul	rcx, 16
+	mov	ecx, 16
+	imul	rcx, 0
 	and	eax, 4194303				; 003fffffH
 	mov	rdx, QWORD PTR tbl$[rsp]
 	mov	ecx, DWORD PTR [rdx+rcx+140]
 	and	ecx, -4194304				; ffc00000H
 	or	ecx, eax
 	mov	eax, ecx
-	movsxd	rcx, DWORD PTR i$[rsp]
-	imul	rcx, 16
+	mov	ecx, 16
+	imul	rcx, 0
 	mov	rdx, QWORD PTR tbl$[rsp]
 	mov	DWORD PTR [rdx+rcx+140], eax
 
-; 170  : 		tbl->prdt[i].i = 1;
+; 167  : 	tbl->prdt[0].i = 1;
 
-	movsxd	rax, DWORD PTR i$[rsp]
-	imul	rax, 16
+	mov	eax, 16
+	imul	rax, 0
 	mov	rcx, QWORD PTR tbl$[rsp]
 	mov	eax, DWORD PTR [rcx+rax+140]
 	bts	eax, 31
-	movsxd	rcx, DWORD PTR i$[rsp]
-	imul	rcx, 16
+	mov	ecx, 16
+	imul	rcx, 0
 	mov	rdx, QWORD PTR tbl$[rsp]
 	mov	DWORD PTR [rdx+rcx+140], eax
 
-; 171  : 		buffer += 512*count;
-
-	mov	eax, DWORD PTR count$[rsp]
-	imul	eax, 512				; 00000200H
-	mov	eax, eax
-	mov	rcx, QWORD PTR buffer$[rsp]
-	lea	rax, QWORD PTR [rcx+rax*8]
-	mov	QWORD PTR buffer$[rsp], rax
-
-; 172  : 		buffer_whole = (uint32_t)buffer;
-
-	mov	eax, DWORD PTR buffer$[rsp]
-	mov	QWORD PTR buffer_whole$[rsp], rax
-
-; 173  : 	}
-
-	jmp	$LN8@ahci_disk_
-$LN7@ahci_disk_:
-
-; 174  : 	tbl->prdt[i].data_base_address = buffer_whole & 0xffffffff;
-
-	mov	eax, -1					; ffffffffH
-	mov	rcx, QWORD PTR buffer_whole$[rsp]
-	and	rcx, rax
-	mov	rax, rcx
-	movsxd	rcx, DWORD PTR i$[rsp]
-	imul	rcx, 16
-	mov	rdx, QWORD PTR tbl$[rsp]
-	mov	DWORD PTR [rdx+rcx+128], eax
-
-; 175  : 	tbl->prdt[i].dbau = buffer_whole >> 32;
-
-	mov	rax, QWORD PTR buffer_whole$[rsp]
-	shr	rax, 32					; 00000020H
-	movsxd	rcx, DWORD PTR i$[rsp]
-	imul	rcx, 16
-	mov	rdx, QWORD PTR tbl$[rsp]
-	mov	DWORD PTR [rdx+rcx+132], eax
-
-; 176  : 	tbl->prdt[i].data_byte_count = (512 * count) - 1;
-
-	mov	eax, DWORD PTR count$[rsp]
-	imul	eax, 512				; 00000200H
-	dec	eax
-	movsxd	rcx, DWORD PTR i$[rsp]
-	imul	rcx, 16
-	and	eax, 4194303				; 003fffffH
-	mov	rdx, QWORD PTR tbl$[rsp]
-	mov	ecx, DWORD PTR [rdx+rcx+140]
-	and	ecx, -4194304				; ffc00000H
-	or	ecx, eax
-	mov	eax, ecx
-	movsxd	rcx, DWORD PTR i$[rsp]
-	imul	rcx, 16
-	mov	rdx, QWORD PTR tbl$[rsp]
-	mov	DWORD PTR [rdx+rcx+140], eax
-
-; 177  : 	tbl->prdt[i].i = 1;
-
-	movsxd	rax, DWORD PTR i$[rsp]
-	imul	rax, 16
-	mov	rcx, QWORD PTR tbl$[rsp]
-	mov	eax, DWORD PTR [rcx+rax+140]
-	bts	eax, 31
-	movsxd	rcx, DWORD PTR i$[rsp]
-	imul	rcx, 16
-	mov	rdx, QWORD PTR tbl$[rsp]
-	mov	DWORD PTR [rdx+rcx+140], eax
-
-; 178  : 
-; 179  : 	FIS_REG_H2D *fis = (FIS_REG_H2D*)tbl->cmd_fis;
+; 168  : 
+; 169  : 	FIS_REG_H2D *fis = (FIS_REG_H2D*)tbl->cmd_fis;
 
 	mov	rax, QWORD PTR tbl$[rsp]
 	mov	QWORD PTR fis$[rsp], rax
 
-; 180  : 	fis->fis_type = FIS_TYPE_REG_H2D;
+; 170  : 	fis->fis_type = FIS_TYPE_REG_H2D;
 
 	mov	rax, QWORD PTR fis$[rsp]
 	mov	BYTE PTR [rax], 39			; 00000027H
 
-; 181  : 	fis->c = 1;
+; 171  : 	fis->c = 1;
 
 	mov	rax, QWORD PTR fis$[rsp]
 	movzx	eax, BYTE PTR [rax+1]
@@ -1217,19 +1129,19 @@ $LN7@ahci_disk_:
 	mov	rcx, QWORD PTR fis$[rsp]
 	mov	BYTE PTR [rcx+1], al
 
-; 182  : 	fis->command = ATA_CMD_WRITE_DMA_EXT;
+; 172  : 	fis->command = ATA_CMD_WRITE_DMA_EXT;
 
 	mov	rax, QWORD PTR fis$[rsp]
 	mov	BYTE PTR [rax+2], 53			; 00000035H
 
-; 183  : 	fis->lba0 = lba & 0xff;
+; 173  : 	fis->lba0 = lba & 0xff;
 
 	mov	rax, QWORD PTR lba$[rsp]
 	and	rax, 255				; 000000ffH
 	mov	rcx, QWORD PTR fis$[rsp]
 	mov	BYTE PTR [rcx+4], al
 
-; 184  : 	fis->lba1 = (lba>>8) & 0xff;
+; 174  : 	fis->lba1 = (lba>>8) & 0xff;
 
 	mov	rax, QWORD PTR lba$[rsp]
 	shr	rax, 8
@@ -1237,7 +1149,7 @@ $LN7@ahci_disk_:
 	mov	rcx, QWORD PTR fis$[rsp]
 	mov	BYTE PTR [rcx+5], al
 
-; 185  : 	fis->lba2 = (lba>>16) & 0xff;
+; 175  : 	fis->lba2 = (lba>>16) & 0xff;
 
 	mov	rax, QWORD PTR lba$[rsp]
 	shr	rax, 16
@@ -1245,12 +1157,12 @@ $LN7@ahci_disk_:
 	mov	rcx, QWORD PTR fis$[rsp]
 	mov	BYTE PTR [rcx+6], al
 
-; 186  : 	fis->device = 1<<6;
+; 176  : 	fis->device = 1<<6;
 
 	mov	rax, QWORD PTR fis$[rsp]
 	mov	BYTE PTR [rax+7], 64			; 00000040H
 
-; 187  : 	fis->lba3 = (lba>>24) & 0xff;
+; 177  : 	fis->lba3 = (lba>>24) & 0xff;
 
 	mov	rax, QWORD PTR lba$[rsp]
 	shr	rax, 24
@@ -1258,7 +1170,7 @@ $LN7@ahci_disk_:
 	mov	rcx, QWORD PTR fis$[rsp]
 	mov	BYTE PTR [rcx+8], al
 
-; 188  : 	fis->lba4 = (lba>>32) & 0xff;
+; 178  : 	fis->lba4 = (lba>>32) & 0xff;
 
 	mov	rax, QWORD PTR lba$[rsp]
 	shr	rax, 32					; 00000020H
@@ -1266,7 +1178,7 @@ $LN7@ahci_disk_:
 	mov	rcx, QWORD PTR fis$[rsp]
 	mov	BYTE PTR [rcx+9], al
 
-; 189  : 	fis->lba5 = (lba>>40) & 0xff;
+; 179  : 	fis->lba5 = (lba>>40) & 0xff;
 
 	mov	rax, QWORD PTR lba$[rsp]
 	shr	rax, 40					; 00000028H
@@ -1274,14 +1186,14 @@ $LN7@ahci_disk_:
 	mov	rcx, QWORD PTR fis$[rsp]
 	mov	BYTE PTR [rcx+10], al
 
-; 190  : 	fis->countl = count & 0xff;
+; 180  : 	fis->countl = count & 0xff;
 
 	mov	eax, DWORD PTR count$[rsp]
 	and	eax, 255				; 000000ffH
 	mov	rcx, QWORD PTR fis$[rsp]
 	mov	BYTE PTR [rcx+12], al
 
-; 191  : 	fis->counth = (count >> 8) & 0xff;
+; 181  : 	fis->counth = (count >> 8) & 0xff;
 
 	mov	eax, DWORD PTR count$[rsp]
 	shr	eax, 8
@@ -1290,8 +1202,8 @@ $LN7@ahci_disk_:
 	mov	BYTE PTR [rcx+13], al
 $LN6@ahci_disk_:
 
-; 192  : 
-; 193  : 	while((port->tfd & (ATA_SR_BSY  | ATA_SR_DRQ)) && spin < 1000000) {
+; 182  : 
+; 183  : 	while((port->tfd & (ATA_SR_BSY  | ATA_SR_DRQ)) && spin < 1000000) {
 
 	mov	rax, QWORD PTR port$[rsp]
 	mov	eax, DWORD PTR [rax+32]
@@ -1301,54 +1213,54 @@ $LN6@ahci_disk_:
 	cmp	DWORD PTR spin$[rsp], 1000000		; 000f4240H
 	jge	SHORT $LN5@ahci_disk_
 
-; 194  : 		spin++;
+; 184  : 		spin++;
 
 	mov	eax, DWORD PTR spin$[rsp]
 	inc	eax
 	mov	DWORD PTR spin$[rsp], eax
 
-; 195  : 	}
+; 185  : 	}
 
 	jmp	SHORT $LN6@ahci_disk_
 $LN5@ahci_disk_:
 
-; 196  : 	if (spin==1000000)
+; 186  : 	if (spin==1000000)
 
 	cmp	DWORD PTR spin$[rsp], 1000000		; 000f4240H
 	jne	SHORT $LN4@ahci_disk_
 
-; 197  : 		printf ("[AHCI]:Port Hung\n");
+; 187  : 		printf ("[AHCI]:Port Hung\n");
 
-	lea	rcx, OFFSET FLAT:$SG4021
+	lea	rcx, OFFSET FLAT:$SG3811
 	call	?printf@@YAXPEBDZZ			; printf
 $LN4@ahci_disk_:
 
-; 198  : 
-; 199  : 	port->ci = 1<<command_slot;
+; 188  : 
+; 189  : 	port->ci = 1<<command_slot;
 
 	mov	eax, DWORD PTR command_slot$[rsp]
 	mov	ecx, 1
-	mov	DWORD PTR tv360[rsp], ecx
+	mov	DWORD PTR tv277[rsp], ecx
 	movzx	ecx, al
-	mov	eax, DWORD PTR tv360[rsp]
+	mov	eax, DWORD PTR tv277[rsp]
 	shl	eax, cl
 	mov	rcx, QWORD PTR port$[rsp]
 	mov	DWORD PTR [rcx+56], eax
 $LN3@ahci_disk_:
 
-; 200  : 	while(1) {
+; 190  : 	while(1) {
 
 	xor	eax, eax
 	cmp	eax, 1
 	je	SHORT $LN2@ahci_disk_
 
-; 201  : 		if ((port->ci & (1<<command_slot)) == 0) 
+; 191  : 		if ((port->ci & (1<<command_slot)) == 0) 
 
 	mov	eax, DWORD PTR command_slot$[rsp]
 	mov	ecx, 1
-	mov	DWORD PTR tv365[rsp], ecx
+	mov	DWORD PTR tv282[rsp], ecx
 	movzx	ecx, al
-	mov	eax, DWORD PTR tv365[rsp]
+	mov	eax, DWORD PTR tv282[rsp]
 	shl	eax, cl
 	mov	rcx, QWORD PTR port$[rsp]
 	mov	ecx, DWORD PTR [rcx+56]
@@ -1357,19 +1269,19 @@ $LN3@ahci_disk_:
 	test	eax, eax
 	jne	SHORT $LN1@ahci_disk_
 
-; 202  : 			break;
+; 192  : 			break;
 
 	jmp	SHORT $LN2@ahci_disk_
 $LN1@ahci_disk_:
 
-; 203  : 		/*if (port->is & (1<<30)) 
-; 204  : 			break;*/
-; 205  : 	}
+; 193  : 		/*if (port->is & (1<<30)) 
+; 194  : 			break;*/
+; 195  : 	}
 
 	jmp	SHORT $LN3@ahci_disk_
 $LN2@ahci_disk_:
 
-; 206  : }
+; 196  : }
 
 	add	rsp, 104				; 00000068H
 	ret	0
@@ -1391,37 +1303,37 @@ ata_device_name$ = 96
 port$ = 160
 ?ahci_disk_initialize@@YAXPEAU_hba_port_@@@Z PROC	; ahci_disk_initialize
 
-; 275  : void ahci_disk_initialize (HBA_PORT *port) {
+; 265  : void ahci_disk_initialize (HBA_PORT *port) {
 
 $LN10:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 152				; 00000098H
 
-; 276  : 
-; 277  : 	/* stop the DMA engine */
-; 278  : 	ahci_disk_stop_cmd(port);
+; 266  : 
+; 267  : 	/* stop the DMA engine */
+; 268  : 	ahci_disk_stop_cmd(port);
 
 	mov	rcx, QWORD PTR port$[rsp]
 	call	?ahci_disk_stop_cmd@@YAXPEAU_hba_port_@@@Z ; ahci_disk_stop_cmd
 
-; 279  : 
-; 280  : 	sata_drive_port = port;
+; 269  : 
+; 270  : 	sata_drive_port = port;
 
 	mov	rax, QWORD PTR port$[rsp]
 	mov	QWORD PTR ?sata_drive_port@@3PEAU_hba_port_@@EA, rax ; sata_drive_port
 
-; 281  : 
-; 282  : 
-; 283  : 
-; 284  : 	uint64_t phys;
-; 285  : 
-; 286  : 	/* Allocate command list */
-; 287  : 	phys = (uint64_t)pmmngr_alloc();
+; 271  : 
+; 272  : 
+; 273  : 
+; 274  : 	uint64_t phys;
+; 275  : 
+; 276  : 	/* Allocate command list */
+; 277  : 	phys = (uint64_t)pmmngr_alloc();
 
 	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
 	mov	QWORD PTR phys$[rsp], rax
 
-; 288  : 	port->clb = phys & 0xffffffff;
+; 278  : 	port->clb = phys & 0xffffffff;
 
 	mov	eax, -1					; ffffffffH
 	mov	rcx, QWORD PTR phys$[rsp]
@@ -1430,34 +1342,34 @@ $LN10:
 	mov	rcx, QWORD PTR port$[rsp]
 	mov	DWORD PTR [rcx], eax
 
-; 289  : 	port->clbu = phys >> 32;
+; 279  : 	port->clbu = phys >> 32;
 
 	mov	rax, QWORD PTR phys$[rsp]
 	shr	rax, 32					; 00000020H
 	mov	rcx, QWORD PTR port$[rsp]
 	mov	DWORD PTR [rcx+4], eax
 
-; 290  : 
-; 291  : 	HBA_CMD_HEADER *cmd_list = (HBA_CMD_HEADER*)phys;
+; 280  : 
+; 281  : 	HBA_CMD_HEADER *cmd_list = (HBA_CMD_HEADER*)phys;
 
 	mov	rax, QWORD PTR phys$[rsp]
 	mov	QWORD PTR cmd_list$[rsp], rax
 
-; 292  : 	memset((void*)phys, 0, 4096);
+; 282  : 	memset((void*)phys, 0, 4096);
 
 	mov	r8d, 4096				; 00001000H
 	xor	edx, edx
 	mov	rcx, QWORD PTR phys$[rsp]
 	call	?memset@@YAXPEAXEI@Z			; memset
 
-; 293  : 
-; 294  : 	/* Allocate FIS */
-; 295  : 	phys = (uint64_t)pmmngr_alloc();
+; 283  : 
+; 284  : 	/* Allocate FIS */
+; 285  : 	phys = (uint64_t)pmmngr_alloc();
 
 	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
 	mov	QWORD PTR phys$[rsp], rax
 
-; 296  : 	port->fb = phys & 0xffffffff;
+; 286  : 	port->fb = phys & 0xffffffff;
 
 	mov	eax, -1					; ffffffffH
 	mov	rcx, QWORD PTR phys$[rsp]
@@ -1466,51 +1378,51 @@ $LN10:
 	mov	rcx, QWORD PTR port$[rsp]
 	mov	DWORD PTR [rcx+8], eax
 
-; 297  : 	port->fbu = (phys >> 32);
+; 287  : 	port->fbu = (phys >> 32);
 
 	mov	rax, QWORD PTR phys$[rsp]
 	shr	rax, 32					; 00000020H
 	mov	rcx, QWORD PTR port$[rsp]
 	mov	DWORD PTR [rcx+12], eax
 
-; 298  : 
-; 299  : 	HBA_FIS *fis_dev = (HBA_FIS*)phys;
+; 288  : 
+; 289  : 	HBA_FIS *fis_dev = (HBA_FIS*)phys;
 
 	mov	rax, QWORD PTR phys$[rsp]
 	mov	QWORD PTR fis_dev$[rsp], rax
 
-; 300  : 	memset((void*)phys, 0, 4096);
+; 290  : 	memset((void*)phys, 0, 4096);
 
 	mov	r8d, 4096				; 00001000H
 	xor	edx, edx
 	mov	rcx, QWORD PTR phys$[rsp]
 	call	?memset@@YAXPEAXEI@Z			; memset
 
-; 301  : 
-; 302  : 	uint8_t cold_presence = port->cmd & (1<<20);
+; 291  : 
+; 292  : 	uint8_t cold_presence = port->cmd & (1<<20);
 
 	mov	rax, QWORD PTR port$[rsp]
 	mov	eax, DWORD PTR [rax+24]
 	and	eax, 1048576				; 00100000H
 	mov	BYTE PTR cold_presence$[rsp], al
 
-; 303  : 	if (cold_presence) {
+; 293  : 	if (cold_presence) {
 
 	movzx	eax, BYTE PTR cold_presence$[rsp]
 	test	eax, eax
 	je	SHORT $LN7@ahci_disk_
 
-; 304  : 		printf ("[AHCI]: Port Supports cold presence %d\n",cold_presence);
+; 294  : 		printf ("[AHCI]: Port Supports cold presence %d\n",cold_presence);
 
 	movzx	eax, BYTE PTR cold_presence$[rsp]
 	mov	edx, eax
-	lea	rcx, OFFSET FLAT:$SG4073
+	lea	rcx, OFFSET FLAT:$SG3863
 	call	?printf@@YAXPEBDZZ			; printf
 $LN7@ahci_disk_:
 
-; 305  : 	}
-; 306  : 
-; 307  : 	for (int i = 0; i < 31; i++) {
+; 295  : 	}
+; 296  : 
+; 297  : 	for (int i = 0; i < 31; i++) {
 
 	mov	DWORD PTR i$1[rsp], 0
 	jmp	SHORT $LN6@ahci_disk_
@@ -1522,7 +1434,7 @@ $LN6@ahci_disk_:
 	cmp	DWORD PTR i$1[rsp], 31
 	jge	$LN4@ahci_disk_
 
-; 308  : 		cmd_list[i].prdtl = 1;
+; 298  : 		cmd_list[i].prdtl = 1;
 
 	movsxd	rax, DWORD PTR i$1[rsp]
 	imul	rax, 32					; 00000020H
@@ -1530,12 +1442,12 @@ $LN6@ahci_disk_:
 	mov	rdx, QWORD PTR cmd_list$[rsp]
 	mov	WORD PTR [rdx+rax+2], cx
 
-; 309  : 		phys = (uint64_t)pmmngr_alloc();
+; 299  : 		phys = (uint64_t)pmmngr_alloc();
 
 	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
 	mov	QWORD PTR phys$[rsp], rax
 
-; 310  : 		cmd_list[i].ctba = phys & 0xffffffff;
+; 300  : 		cmd_list[i].ctba = phys & 0xffffffff;
 
 	mov	eax, -1					; ffffffffH
 	mov	rcx, QWORD PTR phys$[rsp]
@@ -1546,7 +1458,7 @@ $LN6@ahci_disk_:
 	mov	rdx, QWORD PTR cmd_list$[rsp]
 	mov	DWORD PTR [rdx+rcx+8], eax
 
-; 311  : 		cmd_list[i].ctbau = phys >> 32;
+; 301  : 		cmd_list[i].ctbau = phys >> 32;
 
 	mov	rax, QWORD PTR phys$[rsp]
 	shr	rax, 32					; 00000020H
@@ -1555,7 +1467,7 @@ $LN6@ahci_disk_:
 	mov	rdx, QWORD PTR cmd_list$[rsp]
 	mov	DWORD PTR [rdx+rcx+12], eax
 
-; 312  : 		cmd_list[i].p = 1;
+; 302  : 		cmd_list[i].p = 1;
 
 	movsxd	rax, DWORD PTR i$1[rsp]
 	imul	rax, 32					; 00000020H
@@ -1567,7 +1479,7 @@ $LN6@ahci_disk_:
 	mov	rdx, QWORD PTR cmd_list$[rsp]
 	mov	BYTE PTR [rdx+rcx], al
 
-; 313  : 		cmd_list[i].cfl = 0x10;
+; 303  : 		cmd_list[i].cfl = 0x10;
 
 	movsxd	rax, DWORD PTR i$1[rsp]
 	imul	rax, 32					; 00000020H
@@ -1580,26 +1492,26 @@ $LN6@ahci_disk_:
 	mov	rdx, QWORD PTR cmd_list$[rsp]
 	mov	BYTE PTR [rdx+rcx], al
 
-; 314  : 		memset((void*)phys, 0, 4096);
+; 304  : 		memset((void*)phys, 0, 4096);
 
 	mov	r8d, 4096				; 00001000H
 	xor	edx, edx
 	mov	rcx, QWORD PTR phys$[rsp]
 	call	?memset@@YAXPEAXEI@Z			; memset
 
-; 315  : 	}
+; 305  : 	}
 
 	jmp	$LN5@ahci_disk_
 $LN4@ahci_disk_:
 
-; 316  : 
-; 317  : 	port->serr = 0xffffffff;
+; 306  : 
+; 307  : 	port->serr = 0xffffffff;
 
 	mov	rax, QWORD PTR port$[rsp]
 	mov	DWORD PTR [rax+48], -1			; ffffffffH
 
-; 318  : 
-; 319  : 	port->cmd &= ~HBA_PX_CMD_ICC;
+; 308  : 
+; 309  : 	port->cmd &= ~HBA_PX_CMD_ICC;
 
 	mov	rax, QWORD PTR port$[rsp]
 	mov	eax, DWORD PTR [rax+24]
@@ -1607,7 +1519,7 @@ $LN4@ahci_disk_:
 	mov	rcx, QWORD PTR port$[rsp]
 	mov	DWORD PTR [rcx+24], eax
 
-; 320  : 	port->cmd |= PX_CMD_POD | PX_CMD_SUD | HBA_PX_CMD_ICC_ACTIVE;
+; 310  : 	port->cmd |= PX_CMD_POD | PX_CMD_SUD | HBA_PX_CMD_ICC_ACTIVE;
 
 	mov	rax, QWORD PTR port$[rsp]
 	mov	eax, DWORD PTR [rax+24]
@@ -1615,44 +1527,44 @@ $LN4@ahci_disk_:
 	mov	rcx, QWORD PTR port$[rsp]
 	mov	DWORD PTR [rcx+24], eax
 
-; 321  : 
-; 322  : 
-; 323  : 	port->ie = (1<<0) | (1<<1) | (1<<2) | (1<<3) | (1<<4) | (1<<5) | (1<<6) |
-; 324  : 		(1<<7) | (1<<22) | (1<<23) | (1<<24) | (1<<26) | (1<<27) | (1<<28) | 
-; 325  : 		(1<<29) | (1<<30) | (1<<31);
+; 311  : 
+; 312  : 
+; 313  : 	port->ie = (1<<0) | (1<<1) | (1<<2) | (1<<3) | (1<<4) | (1<<5) | (1<<6) |
+; 314  : 		(1<<7) | (1<<22) | (1<<23) | (1<<24) | (1<<26) | (1<<27) | (1<<28) | 
+; 315  : 		(1<<29) | (1<<30) | (1<<31);
 
 	mov	rax, QWORD PTR port$[rsp]
 	mov	DWORD PTR [rax+20], -37748481		; fdc000ffH
 
-; 326  : 
-; 327  : 	/* start the command DMA engine */
-; 328  : 	ahci_disk_start_cmd(port);
+; 316  : 
+; 317  : 	/* start the command DMA engine */
+; 318  : 	ahci_disk_start_cmd(port);
 
 	mov	rcx, QWORD PTR port$[rsp]
 	call	?ahci_disk_start_cmd@@YAXPEAU_hba_port_@@@Z ; ahci_disk_start_cmd
 
-; 329  : 
-; 330  : 	uint8_t current_slot = port->cmd & (1<<8);
+; 319  : 
+; 320  : 	uint8_t current_slot = port->cmd & (1<<8);
 
 	mov	rax, QWORD PTR port$[rsp]
 	mov	eax, DWORD PTR [rax+24]
 	and	eax, 256				; 00000100H
 	mov	BYTE PTR current_slot$[rsp], al
 
-; 331  : 
-; 332  : 	uint64_t *addr = (uint64_t*)pmmngr_alloc();
+; 321  : 
+; 322  : 	uint64_t *addr = (uint64_t*)pmmngr_alloc();
 
 	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
 	mov	QWORD PTR addr$[rsp], rax
 
-; 333  : 	memset(addr,0,4096);
+; 323  : 	memset(addr,0,4096);
 
 	mov	r8d, 4096				; 00001000H
 	xor	edx, edx
 	mov	rcx, QWORD PTR addr$[rsp]
 	call	?memset@@YAXPEAXEI@Z			; memset
 
-; 334  : 	ahci_disk_identify(port,0,1,addr);
+; 324  : 	ahci_disk_identify(port,0,1,addr);
 
 	mov	r9, QWORD PTR addr$[rsp]
 	mov	r8d, 1
@@ -1660,13 +1572,13 @@ $LN4@ahci_disk_:
 	mov	rcx, QWORD PTR port$[rsp]
 	call	?ahci_disk_identify@@YAXPEAU_hba_port_@@_KIPEA_K@Z ; ahci_disk_identify
 
-; 335  : 	char ata_device_name[40];
-; 336  : 	uint8_t *ide_buf = (uint8_t*)addr;
+; 325  : 	char ata_device_name[40];
+; 326  : 	uint8_t *ide_buf = (uint8_t*)addr;
 
 	mov	rax, QWORD PTR addr$[rsp]
 	mov	QWORD PTR ide_buf$[rsp], rax
 
-; 337  : 	for (int i= 0; i < 40; i += 2)
+; 327  : 	for (int i= 0; i < 40; i += 2)
 
 	mov	DWORD PTR i$2[rsp], 0
 	jmp	SHORT $LN3@ahci_disk_
@@ -1678,8 +1590,8 @@ $LN3@ahci_disk_:
 	cmp	DWORD PTR i$2[rsp], 40			; 00000028H
 	jge	SHORT $LN1@ahci_disk_
 
-; 338  : 	{
-; 339  : 		ata_device_name[i] = ide_buf[54 + i + 1];
+; 328  : 	{
+; 329  : 		ata_device_name[i] = ide_buf[54 + i + 1];
 
 	mov	eax, DWORD PTR i$2[rsp]
 	add	eax, 55					; 00000037H
@@ -1689,7 +1601,7 @@ $LN3@ahci_disk_:
 	movzx	eax, BYTE PTR [rdx+rax]
 	mov	BYTE PTR ata_device_name$[rsp+rcx], al
 
-; 340  : 		ata_device_name[i + 1] = ide_buf[54 + i];
+; 330  : 		ata_device_name[i + 1] = ide_buf[54 + i];
 
 	mov	eax, DWORD PTR i$2[rsp]
 	add	eax, 54					; 00000036H
@@ -1701,18 +1613,18 @@ $LN3@ahci_disk_:
 	movzx	eax, BYTE PTR [rdx+rax]
 	mov	BYTE PTR ata_device_name$[rsp+rcx], al
 
-; 341  : 	}
+; 331  : 	}
 
 	jmp	SHORT $LN2@ahci_disk_
 $LN1@ahci_disk_:
 
-; 342  : 	printf ("[AHCI]: Model -> %s\n", ata_device_name);
+; 332  : 	printf ("[AHCI]: Model -> %s\n", ata_device_name);
 
 	lea	rdx, QWORD PTR ata_device_name$[rsp]
-	lea	rcx, OFFSET FLAT:$SG4090
+	lea	rcx, OFFSET FLAT:$SG3880
 	call	?printf@@YAXPEBDZZ			; printf
 
-; 343  : }
+; 333  : }
 
 	add	rsp, 152				; 00000098H
 	ret	0

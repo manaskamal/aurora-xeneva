@@ -12,7 +12,7 @@
 #include <proc.h>
 #include <atomic\mutex.h>
 #include <timer.h>
-#include <fs\fat32.h>
+#include <fs\fat\fat.h>
 #include <_null.h>
 
 
@@ -151,6 +151,8 @@ void allocate_fd (thread_t *t) {
  * @return -- created thread id
  */
 int create_process(const char* filename, char* procname) {
+	x64_cli();
+
 	//!allocate a data-structure for process 
 	process_t *process = (process_t*)pmmngr_alloc();
 	process->pid_t = pid;
@@ -215,6 +217,7 @@ int create_process(const char* filename, char* procname) {
 	process->thread_data_pointer = t;
     add_process(process);
 
+	x64_sti();
 	return t->id;
 }
 

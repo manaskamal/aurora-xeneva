@@ -82,6 +82,12 @@
     <Filter Include="include\drivers\acpi">
       <UniqueIdentifier>{75e84212-373b-4d3f-8558-e31d9db0b8b2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\fs\fat">
+      <UniqueIdentifier>{aa1476be-066b-4f8c-99b9-30ccfb8644ee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\fs\fat">
+      <UniqueIdentifier>{67d83d60-c70a-4de7-a1e3-632d99613939}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\stdint.h">
@@ -131,9 +137,6 @@
     </ClInclude>
     <ClInclude Include="..\include\drivers\ata.h">
       <Filter>include\drivers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\fs\fat32.h">
-      <Filter>include\fs</Filter>
     </ClInclude>
     <ClInclude Include="..\include\ctype.h">
       <Filter>include</Filter>
@@ -327,6 +330,18 @@
     <ClInclude Include="..\include\drivers\pciata.h">
       <Filter>include\drivers</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\fs\fat\fat.h">
+      <Filter>include\fs\fat</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\fs\fat\fat_util.h">
+      <Filter>include\fs\fat</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\fs\fat\fat_dir.h">
+      <Filter>include\fs\fat</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\fs\fat\fat_f.h">
+      <Filter>include\fs\fat</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="init.cpp">
@@ -370,9 +385,6 @@
     </ClCompile>
     <ClCompile Include="drivers\ata.cpp">
       <Filter>source\drivers</Filter>
-    </ClCompile>
-    <ClCompile Include="fs\fat32.cpp">
-      <Filter>source\fs</Filter>
     </ClCompile>
     <ClCompile Include="arch\x86_64\kheap.cpp">
       <Filter>source\arch\x86_64</Filter>
@@ -535,6 +547,18 @@
     </ClCompile>
     <ClCompile Include="hwcursor.cpp">
       <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="fs\fat\fat.cpp">
+      <Filter>source\fs\fat</Filter>
+    </ClCompile>
+    <ClCompile Include="fs\fat\fat_util.cpp">
+      <Filter>source\fs\fat</Filter>
+    </ClCompile>
+    <ClCompile Include="fs\fat\fat_dir.cpp">
+      <Filter>source\fs\fat</Filter>
+    </ClCompile>
+    <ClCompile Include="fs\fat\fat_f.cpp">
+      <Filter>source\fs\fat</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

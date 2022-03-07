@@ -11,7 +11,6 @@
  */
 
 #include <arch\x86_64\mmngr\map.h>
-#include <fs\fat32.h>
 #include <proc.h>
 
 /**

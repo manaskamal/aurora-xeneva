@@ -33,8 +33,6 @@ extern "C" void x64_sse_test ();
 extern void debug_print (const char* text, ...);
  
 bool  scheduler_enable = false;
-mutex_t * block_mutex;   //currently unused
-mutex_t * scheduler_mutex;  //currently unused
 bool  scheduler_initialized = false;    
 uint16_t task_id = 0;
 
@@ -213,8 +211,6 @@ void idle_thread () {
 //! data structure
 void initialize_scheduler () {
 	blocked_list = initialize_list();
-	block_mutex = create_mutex();
-	scheduler_mutex = create_mutex ();
 	scheduler_enable = true;
 	scheduler_initialized = true;
 	task_id = 0;

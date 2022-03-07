@@ -1,8 +1,8 @@
-﻿Build started 04-03-2022 আবেলি 2:33:28.
+﻿Build started 07-03-2022 আবেলি 4:27:34.
      1>Project "E:\Xeneva Project\Xeneva\Aurora\Aurora\Aurora.vcxproj" on node 2 (Rebuild target(s)).
      1>_NASM:
          arch\x86_64\interrupts.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmpee1afbdc50f645d9ada0a22b086a145c.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp8a15335efc9a4cd38ba143c51d18a343.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\interrupts.obj"  "E:\Xeneva Project\Xeneva\Aurora\Aurora\arch\x86_64\interrupts.asm"
      1>E:\Xeneva Project\Xeneva\Aurora\Aurora\arch\x86_64\interrupts.asm(64): warning : label alone on a line without a colon might be in error
      1>E:\Xeneva Project\Xeneva\Aurora\Aurora\arch\x86_64\interrupts.asm(132): warning : signed dword immediate exceeds bounds
@@ -255,26 +255,26 @@
      1>E:\Xeneva Project\Xeneva\Aurora\Aurora\arch\x86_64\interrupts.asm(156): warning : signed dword immediate exceeds bounds
        _NASM:
          arch\x86_64\switch.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp5d8861dae5e54fd9a8906e169c2aa439.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp9cf9a154d7a440c29dcc65797357a1a5.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\switch.obj"  "E:\Xeneva Project\Xeneva\Aurora\Aurora\arch\x86_64\switch.asm"
        _NASM:
          arch\x86_64\user.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmpc4e7b4b3c5954179b39b0c0d816eebf5.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmpf57b277c95524e1781ef3203571ce45f.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\user.obj"  "E:\Xeneva Project\Xeneva\Aurora\Aurora\arch\x86_64\user.asm"
        _NASM:
          arch\x86_64\_low_level.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp5cd668dbc9184dc8841c9c16ac5f23df.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp2afb0527d7d442dd8ef380d9d552c41e.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\_low_level.obj"  "E:\Xeneva Project\Xeneva\Aurora\Aurora\arch\x86_64\_low_level.asm"
        _NASM:
          drivers\svga\backdoor_stuff.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp3e64b58995da499f9b05a2e3f8d1861d.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp10cedcb79c1b4ea69ed6695a2bfec357.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\backdoor_stuff.obj"  "E:\Xeneva Project\Xeneva\Aurora\Aurora\drivers\svga\backdoor_stuff.asm"
        _NASM:
          _fast_cpy.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmpf94ef06ce978464485dbc88f034204a3.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp53ceee8004ce4f54ba614e8f58ad1d69.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\_fast_cpy.obj"  "E:\Xeneva Project\Xeneva\Aurora\Aurora\_fast_cpy.asm"
        ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I..\include /Zi /nologo /W0 /WX- /Od /Oy /D ARCH_X64 /D USE_APIC /D X64 /D _DEBUG_ON_ /D _MBCS /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /GR- /FAs /Fa"x64\Debug\\" /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt arch\x86_64\apic.cpp arch\x86_64\block.cpp arch\x86_64\cpu.cpp arch\x86_64\exception.cpp arch\x86_64\ioapic.cpp arch\x86_64\kheap.cpp arch\x86_64\kstack.cpp arch\x86_64\map.cpp arch\x86_64\pic.cpp arch\x86_64\systable.cpp arch\x86_64\thread.cpp arch\x86_64\user64.cpp arch\x86_64\vmmngr.cpp atomic\mutex.cpp console.cpp drivers\acpi\acpi.cpp drivers\ahci.cpp drivers\ahci_disk.cpp drivers\ata.cpp drivers\hda\hda.cpp drivers\kybrd.cpp drivers\mouse.cpp drivers\net\e1000.cpp drivers\pci.cpp drivers\pciata.cpp drivers\rtc.cpp drivers\svga\gmr.cpp drivers\svga\svga_screen.cpp drivers\svga\svga_screen_util.cpp drivers\svga\vmsvga.cpp drivers\svga\vm_backdoor.cpp drivers\vbox.cpp drvmngr.cpp fs\devfs.cpp fs\fat32.cpp fs\gpt.cpp fs\ttype.cpp fs\vfs.cpp hal.cpp hwcursor.cpp init.cpp ipc\dwm_ipc.cpp ipc\message.cpp ipc\postbox.cpp ipc\pri_loop.cpp pe.cpp pmmngr.cpp proc.cpp procmngr.cpp screen.cpp serial.cpp sound.cpp stdio.cpp string.cpp sysserv\ioquery.cpp sysserv\sysfb.cpp sysserv\sysfile.cpp sysserv\sysmem.cpp sysserv\sysmouse.cpp sysserv\sysproc.cpp sysserv\systhread.cpp sysserv\systime.cpp sysserv\syswait.cpp sysserv\valloc.cpp timer.cpp utils\circ_buf.cpp utils\lnklist.cpp utils\pipe.cpp utils\ring.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I..\include /Zi /nologo /W0 /WX- /Od /Oy /D ARCH_X64 /D USE_APIC /D X64 /D _DEBUG_ON_ /D _MBCS /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /GR- /FAs /Fa"x64\Debug\\" /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt arch\x86_64\apic.cpp arch\x86_64\block.cpp arch\x86_64\cpu.cpp arch\x86_64\exception.cpp arch\x86_64\ioapic.cpp arch\x86_64\kheap.cpp arch\x86_64\kstack.cpp arch\x86_64\map.cpp arch\x86_64\pic.cpp arch\x86_64\systable.cpp arch\x86_64\thread.cpp arch\x86_64\user64.cpp arch\x86_64\vmmngr.cpp atomic\mutex.cpp console.cpp drivers\acpi\acpi.cpp drivers\ahci.cpp drivers\ahci_disk.cpp drivers\ata.cpp drivers\hda\hda.cpp drivers\kybrd.cpp drivers\mouse.cpp drivers\net\e1000.cpp drivers\pci.cpp drivers\pciata.cpp drivers\rtc.cpp drivers\svga\gmr.cpp drivers\svga\svga_screen.cpp drivers\svga\svga_screen_util.cpp drivers\svga\vmsvga.cpp drivers\svga\vm_backdoor.cpp drivers\vbox.cpp drvmngr.cpp fs\devfs.cpp fs\fat\fat.cpp fs\fat\fat_f.cpp fs\fat\fat_util.cpp fs\fat\fat_dir.cpp fs\gpt.cpp fs\ttype.cpp fs\vfs.cpp hal.cpp hwcursor.cpp init.cpp ipc\dwm_ipc.cpp ipc\message.cpp ipc\postbox.cpp ipc\pri_loop.cpp pe.cpp pmmngr.cpp proc.cpp procmngr.cpp screen.cpp serial.cpp sound.cpp stdio.cpp string.cpp sysserv\ioquery.cpp sysserv\sysfb.cpp sysserv\sysfile.cpp sysserv\sysmem.cpp sysserv\sysmouse.cpp sysserv\sysproc.cpp sysserv\systhread.cpp sysserv\systime.cpp sysserv\syswait.cpp sysserv\valloc.cpp timer.cpp utils\circ_buf.cpp utils\lnklist.cpp utils\pipe.cpp utils\ring.cpp
      1>cl : Command line warning D9002: ignoring unknown option '/arch:SSE'
          ring.cpp
          pipe.cpp
@@ -312,14 +312,17 @@
          vfs.cpp
          ttype.cpp
          gpt.cpp
-         fat32.cpp
+         fat_dir.cpp
+         fat_util.cpp
+         fat_f.cpp
+         fat.cpp
          devfs.cpp
          drvmngr.cpp
+         Generating Code...
+         Compiling...
          vbox.cpp
          vm_backdoor.cpp
          vmsvga.cpp
-         Generating Code...
-         Compiling...
          svga_screen_util.cpp
          svga_screen.cpp
          gmr.cpp
@@ -337,11 +340,11 @@
          console.cpp
          mutex.cpp
          vmmngr.cpp
+         Generating Code...
+         Compiling...
          user64.cpp
          thread.cpp
          systable.cpp
-         Generating Code...
-         Compiling...
          pic.cpp
          map.cpp
          kstack.cpp
@@ -389,7 +392,10 @@
          x64\Debug\vbox.obj
          x64\Debug\drvmngr.obj
          x64\Debug\devfs.obj
-         x64\Debug\fat32.obj
+         x64\Debug\fat.obj
+         x64\Debug\fat_f.obj
+         x64\Debug\fat_util.obj
+         x64\Debug\fat_dir.obj
          x64\Debug\gpt.obj
          x64\Debug\ttype.obj
          x64\Debug\vfs.obj
@@ -434,11 +440,10 @@
          LINK : /LTCG specified but no code generation required; remove /LTCG from the link command line to improve linker performance
      1>mouse.obj : warning LNK4210: .CRT section exists; there may be unhandled static initializers or terminators
      1>dwm_ipc.obj : warning LNK4210: .CRT section exists; there may be unhandled static initializers or terminators
-     1>message.obj : warning LNK4210: .CRT section exists; there may be unhandled static initializers or terminators
      1>syswait.obj : warning LNK4210: .CRT section exists; there may be unhandled static initializers or terminators
          Aurora.vcxproj -> E:\Xeneva Project\Xeneva\Aurora\x64\Debug\Aurora.exe
      1>Done Building Project "E:\Xeneva Project\Xeneva\Aurora\Aurora\Aurora.vcxproj" (Rebuild target(s)).
 
 Build succeeded.
 
-Time Elapsed 00:00:05.45
+Time Elapsed 00:00:08.56

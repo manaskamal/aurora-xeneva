@@ -1,4 +1,4 @@
-﻿Build started 24-01-2022 আবেলি 10:44:15.
+﻿Build started 06-03-2022 আবেলি 11:58:21.
      1>Project "E:\Xeneva Project\Xeneva\drivers\audio_sb16\audio_sb16.vcxproj" on node 2 (Rebuild target(s)).
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\driverapi\libdriver\include" /Zi /nologo /W4 /WX- /sdl- /Od /Oy- /D ARCH_X86 /D _WINDLL /D _MBCS /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt dma.cpp sb16.cpp
@@ -13,6 +13,10 @@
      1>sb16.cpp(144): warning C4100: 'sound_buffer' : unreferenced formal parameter
      1>sb16.cpp(183): warning C4100: 'arg' : unreferenced formal parameter
      1>sb16.cpp(183): warning C4100: 'node' : unreferenced formal parameter
+     1>sb16.cpp(224): warning C4101: 'dev_' : unreferenced local variable
+     1>sb16.cpp(224): warning C4101: 'bus' : unreferenced local variable
+     1>sb16.cpp(225): warning C4101: 'info' : unreferenced local variable
+     1>sb16.cpp(224): warning C4101: 'func' : unreferenced local variable
          dma.cpp
      1>dma.cpp(34): warning C4100: 'dma' : unreferenced formal parameter
      1>dma.cpp(41): warning C4100: 'dma' : unreferenced formal parameter
@@ -34,4 +38,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:00.50
+Time Elapsed 00:00:01.51

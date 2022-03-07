@@ -1,4 +1,4 @@
-﻿Build started 03-03-2022 আবেলি 10:59:41.
+﻿Build started 05-03-2022 আবেলি 11:55:50.
      1>Project "E:\Xeneva Project\Xeneva\Aurora\PriWM\PriWM.vcxproj" on node 2 (Rebuild target(s)).
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\xnlib\xnclib" /I"E:\Xeneva Project\Xeneva\xnlib\xnacrylic\include" /Zi /nologo /W3 /WX- /sdl- /Od /D ARCH_X64 /D _MBCS /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt list.cpp priwm.cpp pri_dirty_clip.cpp pri_event.cpp pri_wallp_dirty_clip.cpp
@@ -25,10 +25,10 @@
      1>priwm.cpp(724): warning C4018: '<' : signed/unsigned mismatch
      1>priwm.cpp(813): warning C4018: '>=' : signed/unsigned mismatch
      1>priwm.cpp(816): warning C4018: '>=' : signed/unsigned mismatch
-     1>priwm.cpp(861): warning C4244: '=' : conversion from 'uint16_t' to 'uint8_t', possible loss of data
-     1>priwm.cpp(874): warning C4244: '=' : conversion from 'uint16_t' to 'uint8_t', possible loss of data
-     1>priwm.cpp(991): warning C4101: 'diff_tick' : unreferenced local variable
-     1>priwm.cpp(990): warning C4101: 'frame_tick' : unreferenced local variable
+     1>priwm.cpp(860): warning C4244: '=' : conversion from 'uint16_t' to 'uint8_t', possible loss of data
+     1>priwm.cpp(873): warning C4244: '=' : conversion from 'uint16_t' to 'uint8_t', possible loss of data
+     1>priwm.cpp(990): warning C4101: 'diff_tick' : unreferenced local variable
+     1>priwm.cpp(989): warning C4101: 'frame_tick' : unreferenced local variable
          list.cpp
          Generating Code...
      1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V110\Microsoft.CppBuild.targets(1137,5): warning MSB8012: TargetPath(E:\Xeneva Project\Xeneva\Aurora\x64\Debug\PriWM.exe) does not match the Linker's OutputFile property value (F:\priwm.exe). This may cause your project to build incorrectly. To correct this, please make sure that $(OutDir), $(TargetName) and $(TargetExt) property values match the value specified in %(Link.OutputFile).
@@ -45,4 +45,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:02.43
+Time Elapsed 00:00:02.87

@@ -128,6 +128,8 @@ void initialize_rtc () {
 	//! Read status from RTC
 	get_rtc_register (0x0C);
 
+	rtc_read_datetime();
+
 	//!register interrupt
 	interrupt_set (8,rtc_clock_update, 8);
 

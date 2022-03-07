@@ -47,7 +47,7 @@ bcd	DB	01H DUP (?)
 _BSS	ENDS
 pdata	SEGMENT
 $pdata$?initialize_rtc@@YAXXZ DD imagerel $LN5
-	DD	imagerel $LN5+167
+	DD	imagerel $LN5+172
 	DD	imagerel $unwind$?initialize_rtc@@YAXXZ
 $pdata$?get_rtc_register@@YAEH@Z DD imagerel $LN3
 	DD	imagerel $LN3+36
@@ -515,11 +515,11 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 ?rtc_get_month@@YAEXZ PROC				; rtc_get_month
 
-; 165  : 	return month;
+; 167  : 	return month;
 
 	movzx	eax, BYTE PTR ?month@@3EA		; month
 
-; 166  : }
+; 168  : }
 
 	ret	0
 ?rtc_get_month@@YAEXZ ENDP				; rtc_get_month
@@ -529,11 +529,11 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 ?rtc_get_century@@YAEXZ PROC				; rtc_get_century
 
-; 145  : 	return century;
+; 147  : 	return century;
 
 	movzx	eax, BYTE PTR ?century@@3EA		; century
 
-; 146  : }
+; 148  : }
 
 	ret	0
 ?rtc_get_century@@YAEXZ ENDP				; rtc_get_century
@@ -543,11 +543,11 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 ?rtc_get_minutes@@YAEXZ PROC				; rtc_get_minutes
 
-; 149  : 	return minute;
+; 151  : 	return minute;
 
 	movzx	eax, BYTE PTR ?minute@@3EA		; minute
 
-; 150  : }
+; 152  : }
 
 	ret	0
 ?rtc_get_minutes@@YAEXZ ENDP				; rtc_get_minutes
@@ -557,11 +557,11 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 ?rtc_get_hour@@YAEXZ PROC				; rtc_get_hour
 
-; 161  : 	return hour;
+; 163  : 	return hour;
 
 	movzx	eax, BYTE PTR ?hour@@3EA		; hour
 
-; 162  : }
+; 164  : }
 
 	ret	0
 ?rtc_get_hour@@YAEXZ ENDP				; rtc_get_hour
@@ -571,11 +571,11 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 ?rtc_get_day@@YAEXZ PROC				; rtc_get_day
 
-; 157  : 	return day;
+; 159  : 	return day;
 
 	movzx	eax, BYTE PTR ?day@@3EA			; day
 
-; 158  : }
+; 160  : }
 
 	ret	0
 ?rtc_get_day@@YAEXZ ENDP				; rtc_get_day
@@ -585,11 +585,11 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 ?rtc_get_second@@YAEXZ PROC				; rtc_get_second
 
-; 153  : 	return second;
+; 155  : 	return second;
 
 	movzx	eax, BYTE PTR ?second@@3EA		; second
 
-; 154  : }
+; 156  : }
 
 	ret	0
 ?rtc_get_second@@YAEXZ ENDP				; rtc_get_second
@@ -599,11 +599,11 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 ?rtc_get_year@@YAEXZ PROC				; rtc_get_year
 
-; 141  : 	return year;
+; 143  : 	return year;
 
 	movzx	eax, BYTE PTR ?year@@3EA		; year
 
-; 142  : }
+; 144  : }
 
 	ret	0
 ?rtc_get_year@@YAEXZ ENDP				; rtc_get_year
@@ -687,19 +687,24 @@ $LN4@initialize:
 	call	?get_rtc_register@@YAEH@Z		; get_rtc_register
 
 ; 130  : 
-; 131  : 	//!register interrupt
-; 132  : 	interrupt_set (8,rtc_clock_update, 8);
+; 131  : 	rtc_read_datetime();
+
+	call	?rtc_read_datetime@@YAXXZ		; rtc_read_datetime
+
+; 132  : 
+; 133  : 	//!register interrupt
+; 134  : 	interrupt_set (8,rtc_clock_update, 8);
 
 	mov	r8b, 8
 	lea	rdx, OFFSET FLAT:?rtc_clock_update@@YAX_KPEAX@Z ; rtc_clock_update
 	mov	ecx, 8
 	call	?interrupt_set@@YAX_KP6AX0PEAX@ZE@Z	; interrupt_set
 
-; 133  : 
-; 134  : #ifdef USE_PIC
-; 135  : 	irq_mask(8,false);
-; 136  : #endif
-; 137  : }
+; 135  : 
+; 136  : #ifdef USE_PIC
+; 137  : 	irq_mask(8,false);
+; 138  : #endif
+; 139  : }
 
 	add	rsp, 56					; 00000038H
 	ret	0

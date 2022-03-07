@@ -96,6 +96,8 @@ void ahci_control_hand_os (HBA_MEM *mem) {
  * ahci_interrupt_handler -- handles AHCI interrupts
  */
 void ahci_interrupt_handler (size_t v, void* p) {
+	x64_cli();
+
 	HBA_MEM *hba = (HBA_MEM*)hbabar;
 	uint32_t is = hba->is;
 #if 0
@@ -132,6 +134,8 @@ void ahci_interrupt_handler (size_t v, void* p) {
 	
 	hba->is = is;
 	interrupt_end(0);
+
+	x64_sti();
 }
 
 /* 

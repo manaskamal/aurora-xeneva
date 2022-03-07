@@ -143,30 +143,30 @@ extern "C" int _declspec(dllexport) test_num () {
 //! Audio Write -- Uses sb16 play audio methods
 extern "C" void _declspec(dllexport) aurora_write (unsigned char* sound_buffer, size_t length) {
 
-	uint64_t phys_addr = (uint64_t)(uint64_t)_param.get_phys_address((uint64_t)sound_buffer);
-	driver_debug("Physical Address for sb16 -> %x\n", phys_addr);
+//	uint64_t phys_addr = (uint64_t)(uint64_t)_param.get_phys_address((uint64_t)sound_buffer);
+	//driver_debug("Physical Address for sb16 -> %x\n", phys_addr);
 	//!sb16 reset the dsp first
-	sb16_reset_dsp ();
-	
-	//! set up master volume
-	x64_outportb(0x22C, 0xD1);
+	//sb16_reset_dsp ();
+	//
+	////! set up master volume
+	//x64_outportb(0x22C, 0xD1);
 
-	sb16_set_sample_rate (44100);
+	//sb16_set_sample_rate (44100);
 
-	sb16_dma_start (phys_addr, length);
+	//sb16_dma_start (phys_addr, length);
 
-	uint8_t command = 0xB0;
+	//uint8_t command = 0xB0;
 
-	uint16_t sample_count = length / sizeof(int16_t);
-	sample_count /= 2;
+	//uint16_t sample_count = length / sizeof(int16_t);
+	//sample_count /= 2;
 
-	sample_count -= 1;
+	//sample_count -= 1;
 
-	driver_debug ("Sample Count -> %d\n", sample_count);
-	sb16_write_dsp (command);
-	sb16_write_dsp (SIGNED_AUDIO | STERIO_MODE);
-	sb16_write_dsp ((uint8_t)sample_count);
-	sb16_write_dsp ((uint8_t)(sample_count >> 8));
+	//driver_debug ("Sample Count -> %d\n", sample_count);
+	//sb16_write_dsp (command);
+	//sb16_write_dsp (SIGNED_AUDIO | STERIO_MODE);
+	//sb16_write_dsp ((uint8_t)sample_count);
+	//sb16_write_dsp ((uint8_t)(sample_count >> 8));
 
 	driver_debug ("Aurora sound playing started\n");
 
@@ -219,7 +219,7 @@ extern "C" int _declspec(dllexport) _cdecl aurora_init_driver (driver_param_t *p
 	sb16_version_minor = sb16_read_dsp ();
 
 	driver_debug ("[SB16]: Sound Blaster 16 card found version %d.%d\n",sb16_version_major,sb16_version_minor);
-	sb16_set_irq_register (5);*/
+//	sb16_set_irq_register (5);*/
 	//param->interrupt_set(5, sb16_handler,5);
 	int bus, dev_, func;
 	pci_device_info info;

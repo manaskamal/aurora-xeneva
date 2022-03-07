@@ -14,6 +14,7 @@
 #include <sys\_exit.h>
 #include <sys\_ipc.h>
 #include <sys\_file.h>
+#include <sys\_sleep.h>
 #include <sys\pe.h>
 #include <sys\_process.h>
 #include <sys\ioquery.h>

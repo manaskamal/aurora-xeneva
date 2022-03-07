@@ -14,9 +14,19 @@ _BSS	SEGMENT
 ?last_heap@@3PEAU_kmem_@@EA DQ 01H DUP (?)		; last_heap
 _BSS	ENDS
 CONST	SEGMENT
-$SG2979	DB	'Heap Start -> %x', 0aH, 00H
+$SG2941	DB	'[KHeap]: Initialized -> size -> %d MB ', 0dH, 0aH, 00H
+	ORG $+7
+$SG2950	DB	'[KHeap]: Splited heap ->old address -> %x, new address -'
+	DB	' %x ', 0dH, 0aH, 00H
+	ORG $+1
+$SG2970	DB	'[KHeap]: New block created address:- %x, length -%d byte'
+	DB	's ', 0dH, 0aH, 00H
+	ORG $+3
+$SG2971	DB	'[KHeap]: Heap Expanded by %d bytes ', 0dH, 0aH, 00H
+	ORG $+2
+$SG2995	DB	'Heap Start -> %x', 0aH, 00H
 	ORG $+6
-$SG2980	DB	'Heap End -> %x', 0aH, 00H
+$SG2996	DB	'Heap End -> %x', 0aH, 00H
 CONST	ENDS
 PUBLIC	?initialize_kmemory@@YAX_K@Z			; initialize_kmemory
 PUBLIC	?malloc@@YAPEAX_K@Z				; malloc
@@ -27,9 +37,11 @@ PUBLIC	?kheap_print@@YAXXZ				; kheap_print
 EXTRN	?pmmngr_alloc@@YAPEAXXZ:PROC			; pmmngr_alloc
 EXTRN	?map_page@@YA_N_K0E@Z:PROC			; map_page
 EXTRN	?printf@@YAXPEBDZZ:PROC				; printf
+EXTRN	?_debug_print_@@YAXPEADZZ:PROC			; _debug_print_
+EXTRN	?is_serial_initialized@@YA_NXZ:PROC		; is_serial_initialized
 pdata	SEGMENT
-$pdata$?initialize_kmemory@@YAX_K@Z DD imagerel $LN8
-	DD	imagerel $LN8+311
+$pdata$?initialize_kmemory@@YAX_K@Z DD imagerel $LN9
+	DD	imagerel $LN9+363
 	DD	imagerel $unwind$?initialize_kmemory@@YAX_K@Z
 $pdata$?malloc@@YAPEAX_K@Z DD imagerel $LN9
 	DD	imagerel $LN9+183
@@ -37,11 +49,11 @@ $pdata$?malloc@@YAPEAX_K@Z DD imagerel $LN9
 $pdata$?free@@YAXPEAX@Z DD imagerel $LN3
 	DD	imagerel $LN3+37
 	DD	imagerel $unwind$?free@@YAXPEAX@Z
-$pdata$?split_heap@@YAPEAU_kmem_@@PEAU1@I@Z DD imagerel $LN3
-	DD	imagerel $LN3+170
+$pdata$?split_heap@@YAPEAU_kmem_@@PEAU1@I@Z DD imagerel $LN4
+	DD	imagerel $LN4+206
 	DD	imagerel $unwind$?split_heap@@YAPEAU_kmem_@@PEAU1@I@Z
-$pdata$?heap_expand@@YAX_K@Z DD imagerel $LN7
-	DD	imagerel $LN7+297
+$pdata$?heap_expand@@YAX_K@Z DD imagerel $LN8
+	DD	imagerel $LN8+362
 	DD	imagerel $unwind$?heap_expand@@YAX_K@Z
 $pdata$?kheap_print@@YAXXZ DD imagerel $LN3
 	DD	imagerel $LN3+47
@@ -55,7 +67,7 @@ $unwind$?malloc@@YAPEAX_K@Z DD 010901H
 $unwind$?free@@YAXPEAX@Z DD 010901H
 	DD	02209H
 $unwind$?split_heap@@YAPEAU_kmem_@@PEAU1@I@Z DD 010d01H
-	DD	0420dH
+	DD	0820dH
 $unwind$?heap_expand@@YAX_K@Z DD 010901H
 	DD	08209H
 $unwind$?kheap_print@@YAXXZ DD 010401H
@@ -66,24 +78,24 @@ xdata	ENDS
 _TEXT	SEGMENT
 ?kheap_print@@YAXXZ PROC				; kheap_print
 
-; 120  : void kheap_print () {
+; 139  : void kheap_print () {
 
 $LN3:
 	sub	rsp, 40					; 00000028H
 
-; 121  : 	printf ("Heap Start -> %x\n", first_heap);
+; 140  : 	printf ("Heap Start -> %x\n", first_heap);
 
 	mov	rdx, QWORD PTR ?first_heap@@3PEAU_kmem_@@EA ; first_heap
-	lea	rcx, OFFSET FLAT:$SG2979
+	lea	rcx, OFFSET FLAT:$SG2995
 	call	?printf@@YAXPEBDZZ			; printf
 
-; 122  : 	printf ("Heap End -> %x\n", last_heap);
+; 141  : 	printf ("Heap End -> %x\n", last_heap);
 
 	mov	rdx, QWORD PTR ?last_heap@@3PEAU_kmem_@@EA ; last_heap
-	lea	rcx, OFFSET FLAT:$SG2980
+	lea	rcx, OFFSET FLAT:$SG2996
 	call	?printf@@YAXPEBDZZ			; printf
 
-; 123  : }
+; 142  : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -99,13 +111,13 @@ last_store$ = 56
 sz$ = 80
 ?heap_expand@@YAX_K@Z PROC				; heap_expand
 
-; 67   : void heap_expand (size_t sz) {
+; 78   : void heap_expand (size_t sz) {
 
-$LN7:
+$LN8:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 72					; 00000048H
 
-; 68   : 	if (sz % 0x1000) {
+; 79   : 	if (sz % 0x1000) {
 
 	xor	edx, edx
 	mov	rax, QWORD PTR sz$[rsp]
@@ -113,9 +125,9 @@ $LN7:
 	div	rcx
 	mov	rax, rdx
 	test	rax, rax
-	je	SHORT $LN4@heap_expan
+	je	SHORT $LN5@heap_expan
 
-; 69   : 		sz -= sz % 0x1000;
+; 80   : 		sz -= sz % 0x1000;
 
 	xor	edx, edx
 	mov	rax, QWORD PTR sz$[rsp]
@@ -127,16 +139,16 @@ $LN7:
 	mov	rax, rcx
 	mov	QWORD PTR sz$[rsp], rax
 
-; 70   : 		sz += 0x1000;
+; 81   : 		sz += 0x1000;
 
 	mov	rax, QWORD PTR sz$[rsp]
 	add	rax, 4096				; 00001000H
 	mov	QWORD PTR sz$[rsp], rax
-$LN4@heap_expan:
+$LN5@heap_expan:
 
-; 71   : 	}
-; 72   : 
-; 73   : 	size_t page_count = sz / 0x1000;
+; 82   : 	}
+; 83   : 
+; 84   : 	size_t page_count = sz / 0x1000;
 
 	xor	edx, edx
 	mov	rax, QWORD PTR sz$[rsp]
@@ -144,26 +156,26 @@ $LN4@heap_expan:
 	div	rcx
 	mov	QWORD PTR page_count$[rsp], rax
 
-; 74   : 
-; 75   : 	void* last_store = last;
+; 85   : 
+; 86   : 	void* last_store = last;
 
 	mov	rax, QWORD PTR ?last@@3PEAXEA		; last
 	mov	QWORD PTR last_store$[rsp], rax
 
-; 76   : 	for (int i = 0; i < page_count; i++) {
+; 87   : 	for (int i = 0; i < page_count; i++) {
 
 	mov	DWORD PTR i$1[rsp], 0
-	jmp	SHORT $LN3@heap_expan
-$LN2@heap_expan:
+	jmp	SHORT $LN4@heap_expan
+$LN3@heap_expan:
 	mov	eax, DWORD PTR i$1[rsp]
 	inc	eax
 	mov	DWORD PTR i$1[rsp], eax
-$LN3@heap_expan:
+$LN4@heap_expan:
 	movsxd	rax, DWORD PTR i$1[rsp]
 	cmp	rax, QWORD PTR page_count$[rsp]
-	jae	SHORT $LN1@heap_expan
+	jae	SHORT $LN2@heap_expan
 
-; 77   : 		map_page ((uint64_t)pmmngr_alloc(), (uint64_t)last, 0);
+; 88   : 		map_page ((uint64_t)pmmngr_alloc(), (uint64_t)last, 0);
 
 	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
 	xor	r8d, r8d
@@ -171,62 +183,91 @@ $LN3@heap_expan:
 	mov	rcx, rax
 	call	?map_page@@YA_N_K0E@Z			; map_page
 
-; 78   : 		last = (void*)((size_t)last + 0x1000);
+; 89   : 		last = (void*)((size_t)last + 0x1000);
 
 	mov	rax, QWORD PTR ?last@@3PEAXEA		; last
 	add	rax, 4096				; 00001000H
 	mov	QWORD PTR ?last@@3PEAXEA, rax		; last
 
-; 79   : 	}
+; 90   : 	}
 
-	jmp	SHORT $LN2@heap_expan
-$LN1@heap_expan:
+	jmp	SHORT $LN3@heap_expan
+$LN2@heap_expan:
 
-; 80   : 
-; 81   : 	heap_t *heap = (heap_t*)last_store;
+; 91   : 
+; 92   : 	heap_t *heap = (heap_t*)last_store;
 
 	mov	rax, QWORD PTR last_store$[rsp]
 	mov	QWORD PTR heap$[rsp], rax
 
-; 82   : 	heap->free = true;
+; 93   : 	heap->free = true;
 
 	mov	rax, QWORD PTR heap$[rsp]
 	mov	BYTE PTR [rax+4], 1
 
-; 83   : 	heap->length = sz;
+; 94   : 	heap->length = sz;
 
 	mov	rax, QWORD PTR heap$[rsp]
 	mov	rcx, QWORD PTR sz$[rsp]
 	mov	QWORD PTR [rax+8], rcx
 
-; 84   : 	heap->magic = HEAP_MAGIC;
+; 95   : 	heap->magic = HEAP_MAGIC;
 
 	mov	rax, QWORD PTR heap$[rsp]
 	mov	DWORD PTR [rax], 303112194		; 12112002H
 
-; 85   : 	heap->next = NULL;
+; 96   : 	heap->next = NULL;
 
 	mov	rax, QWORD PTR heap$[rsp]
 	mov	QWORD PTR [rax+16], 0
 
-; 86   : 	heap->prev = last_heap;
+; 97   : 	heap->prev = last_heap;
 
 	mov	rax, QWORD PTR heap$[rsp]
 	mov	rcx, QWORD PTR ?last_heap@@3PEAU_kmem_@@EA ; last_heap
 	mov	QWORD PTR [rax+24], rcx
 
-; 87   : 	last_heap->next = heap;
+; 98   : 	last_heap->next = heap;
 
 	mov	rax, QWORD PTR ?last_heap@@3PEAU_kmem_@@EA ; last_heap
 	mov	rcx, QWORD PTR heap$[rsp]
 	mov	QWORD PTR [rax+16], rcx
 
-; 88   : 	last_heap = heap;
+; 99   : 	last_heap = heap;
 
 	mov	rax, QWORD PTR heap$[rsp]
 	mov	QWORD PTR ?last_heap@@3PEAU_kmem_@@EA, rax ; last_heap
 
-; 89   : }
+; 100  : 
+; 101  : #ifdef _DEBUG_ON_
+; 102  : 	if (is_serial_initialized()) {
+
+	call	?is_serial_initialized@@YA_NXZ		; is_serial_initialized
+	movzx	eax, al
+	test	eax, eax
+	je	SHORT $LN1@heap_expan
+
+; 103  : 		_debug_print_ ("[KHeap]: New block created address:- %x, length -%d bytes \r\n",heap,heap->length);
+
+	mov	rax, QWORD PTR heap$[rsp]
+	mov	r8, QWORD PTR [rax+8]
+	mov	rdx, QWORD PTR heap$[rsp]
+	lea	rcx, OFFSET FLAT:$SG2970
+	call	?_debug_print_@@YAXPEADZZ		; _debug_print_
+
+; 104  : 		_debug_print_ ("[KHeap]: Heap Expanded by %d bytes \r\n", page_count * 4096);
+
+	mov	rax, QWORD PTR page_count$[rsp]
+	imul	rax, 4096				; 00001000H
+	mov	rdx, rax
+	lea	rcx, OFFSET FLAT:$SG2971
+	call	?_debug_print_@@YAXPEADZZ		; _debug_print_
+$LN1@heap_expan:
+
+; 105  : 	}
+; 106  : #endif
+; 107  : 
+; 108  : }
 
 	add	rsp, 72					; 00000048H
 	ret	0
@@ -235,21 +276,21 @@ _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\arch\x86_64\kheap.cpp
 _TEXT	SEGMENT
-new_length$ = 0
-new_heap$ = 8
-new_addr$ = 16
-heap$ = 48
-req_size$ = 56
+new_length$ = 32
+new_heap$ = 40
+new_addr$ = 48
+heap$ = 80
+req_size$ = 88
 ?split_heap@@YAPEAU_kmem_@@PEAU1@I@Z PROC		; split_heap
 
-; 50   : heap_t *split_heap (heap_t* heap, uint32_t req_size) {
+; 57   : heap_t *split_heap (heap_t* heap, uint32_t req_size) {
 
-$LN3:
+$LN4:
 	mov	DWORD PTR [rsp+16], edx
 	mov	QWORD PTR [rsp+8], rcx
-	sub	rsp, 40					; 00000028H
+	sub	rsp, 72					; 00000048H
 
-; 51   : 	unsigned int new_length = heap->length - req_size;
+; 58   : 	unsigned int new_length = heap->length - req_size;
 
 	mov	eax, DWORD PTR req_size$[rsp]
 	mov	rcx, QWORD PTR heap$[rsp]
@@ -258,7 +299,7 @@ $LN3:
 	mov	rax, rcx
 	mov	DWORD PTR new_length$[rsp], eax
 
-; 52   : 	void* new_addr = (void*)(heap + req_size);
+; 59   : 	void* new_addr = (void*)(heap + req_size);
 
 	mov	eax, DWORD PTR req_size$[rsp]
 	imul	rax, 32					; 00000020H
@@ -267,61 +308,78 @@ $LN3:
 	mov	rax, rcx
 	mov	QWORD PTR new_addr$[rsp], rax
 
-; 53   : 
-; 54   : 	heap_t *new_heap = (heap_t*)new_addr;
+; 60   : 
+; 61   : #ifdef _DEBUG_ON_
+; 62   : 	if (is_serial_initialized())
+
+	call	?is_serial_initialized@@YA_NXZ		; is_serial_initialized
+	movzx	eax, al
+	test	eax, eax
+	je	SHORT $LN1@split_heap
+
+; 63   : 		_debug_print_("[KHeap]: Splited heap ->old address -> %x, new address - %x \r\n", heap,new_addr);
+
+	mov	r8, QWORD PTR new_addr$[rsp]
+	mov	rdx, QWORD PTR heap$[rsp]
+	lea	rcx, OFFSET FLAT:$SG2950
+	call	?_debug_print_@@YAXPEADZZ		; _debug_print_
+$LN1@split_heap:
+
+; 64   : #endif
+; 65   : 	heap_t *new_heap = (heap_t*)new_addr;
 
 	mov	rax, QWORD PTR new_addr$[rsp]
 	mov	QWORD PTR new_heap$[rsp], rax
 
-; 55   : 	new_heap->free = true;
+; 66   : 	new_heap->free = true;
 
 	mov	rax, QWORD PTR new_heap$[rsp]
 	mov	BYTE PTR [rax+4], 1
 
-; 56   : 	new_heap->length = new_length;
+; 67   : 	new_heap->length = new_length;
 
 	mov	eax, DWORD PTR new_length$[rsp]
 	mov	rcx, QWORD PTR new_heap$[rsp]
 	mov	QWORD PTR [rcx+8], rax
 
-; 57   : 	new_heap->magic = HEAP_MAGIC;
+; 68   : 	new_heap->magic = HEAP_MAGIC;
 
 	mov	rax, QWORD PTR new_heap$[rsp]
 	mov	DWORD PTR [rax], 303112194		; 12112002H
 
-; 58   : 	new_heap->next = heap->next;
+; 69   : 	new_heap->next = heap->next;
 
 	mov	rax, QWORD PTR new_heap$[rsp]
 	mov	rcx, QWORD PTR heap$[rsp]
 	mov	rcx, QWORD PTR [rcx+16]
 	mov	QWORD PTR [rax+16], rcx
 
-; 59   : 	new_heap->prev = heap;
+; 70   : 	new_heap->prev = heap;
 
 	mov	rax, QWORD PTR new_heap$[rsp]
 	mov	rcx, QWORD PTR heap$[rsp]
 	mov	QWORD PTR [rax+24], rcx
 
-; 60   : 
-; 61   : 	heap->length = req_size;
+; 71   : 
+; 72   : 	heap->length = req_size;
 
 	mov	eax, DWORD PTR req_size$[rsp]
 	mov	rcx, QWORD PTR heap$[rsp]
 	mov	QWORD PTR [rcx+8], rax
 
-; 62   : 	heap->next = new_heap;
+; 73   : 	heap->next = new_heap;
 
 	mov	rax, QWORD PTR heap$[rsp]
 	mov	rcx, QWORD PTR new_heap$[rsp]
 	mov	QWORD PTR [rax+16], rcx
 
-; 63   : 	return heap;
+; 74   : 	return heap;
 
 	mov	rax, QWORD PTR heap$[rsp]
 
-; 64   : }
+; 75   : }
 
-	add	rsp, 40					; 00000028H
+	add	rsp, 72					; 00000048H
 	ret	0
 ?split_heap@@YAPEAU_kmem_@@PEAU1@I@Z ENDP		; split_heap
 _TEXT	ENDS
@@ -332,25 +390,25 @@ heap$ = 0
 memory$ = 32
 ?free@@YAXPEAX@Z PROC					; free
 
-; 113  : void free (void* memory) {
+; 132  : void free (void* memory) {
 
 $LN3:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 24
 
-; 114  : 	//x64_cli();
-; 115  : 	heap_t *heap = (heap_t*)memory - sizeof(heap_t);
+; 133  : 	//x64_cli();
+; 134  : 	heap_t *heap = (heap_t*)memory - sizeof(heap_t);
 
 	mov	rax, QWORD PTR memory$[rsp]
 	sub	rax, 1024				; 00000400H
 	mov	QWORD PTR heap$[rsp], rax
 
-; 116  : 	heap->free = true;
+; 135  : 	heap->free = true;
 
 	mov	rax, QWORD PTR heap$[rsp]
 	mov	BYTE PTR [rax+4], 1
 
-; 117  : }
+; 136  : }
 
 	add	rsp, 24
 	ret	0
@@ -364,13 +422,13 @@ return_h$2 = 40
 sz$ = 64
 ?malloc@@YAPEAX_K@Z PROC				; malloc
 
-; 93   : void* malloc(size_t sz) {
+; 112  : void* malloc(size_t sz) {
 
 $LN9:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 56					; 00000038H
 
-; 94   : 	for (heap_t *heap = first_heap; heap != NULL; heap = heap->next) {
+; 113  : 	for (heap_t *heap = first_heap; heap != NULL; heap = heap->next) {
 
 	mov	rax, QWORD PTR ?first_heap@@3PEAU_kmem_@@EA ; first_heap
 	mov	QWORD PTR heap$1[rsp], rax
@@ -383,54 +441,54 @@ $LN6@malloc:
 	cmp	QWORD PTR heap$1[rsp], 0
 	je	SHORT $LN4@malloc
 
-; 95   : 		if (heap->free) {
+; 114  : 		if (heap->free) {
 
 	mov	rax, QWORD PTR heap$1[rsp]
 	movzx	eax, BYTE PTR [rax+4]
 	test	eax, eax
 	je	SHORT $LN3@malloc
 
-; 96   : 			if (heap->length == sz) {
+; 115  : 			if (heap->length == sz) {
 
 	mov	rax, QWORD PTR heap$1[rsp]
 	mov	rcx, QWORD PTR sz$[rsp]
 	cmp	QWORD PTR [rax+8], rcx
 	jne	SHORT $LN2@malloc
 
-; 97   : 				heap->free = false;
+; 116  : 				heap->free = false;
 
 	mov	rax, QWORD PTR heap$1[rsp]
 	mov	BYTE PTR [rax+4], 0
 
-; 98   : 				return (void*)(heap + sizeof(heap_t));
+; 117  : 				return (void*)(heap + sizeof(heap_t));
 
 	mov	rax, QWORD PTR heap$1[rsp]
 	add	rax, 1024				; 00000400H
 	jmp	SHORT $LN7@malloc
 $LN2@malloc:
 
-; 99   : 			}
-; 100  : 
-; 101  : 			if (sz < heap->length) {
+; 118  : 			}
+; 119  : 
+; 120  : 			if (sz < heap->length) {
 
 	mov	rax, QWORD PTR heap$1[rsp]
 	mov	rax, QWORD PTR [rax+8]
 	cmp	QWORD PTR sz$[rsp], rax
 	jae	SHORT $LN1@malloc
 
-; 102  : 				heap_t *return_h = split_heap (heap,sz);
+; 121  : 				heap_t *return_h = split_heap (heap,sz);
 
 	mov	edx, DWORD PTR sz$[rsp]
 	mov	rcx, QWORD PTR heap$1[rsp]
 	call	?split_heap@@YAPEAU_kmem_@@PEAU1@I@Z	; split_heap
 	mov	QWORD PTR return_h$2[rsp], rax
 
-; 103  : 				return_h->free = false;
+; 122  : 				return_h->free = false;
 
 	mov	rax, QWORD PTR return_h$2[rsp]
 	mov	BYTE PTR [rax+4], 0
 
-; 104  : 				return (void*)(return_h + sizeof(heap_t));
+; 123  : 				return (void*)(return_h + sizeof(heap_t));
 
 	mov	rax, QWORD PTR return_h$2[rsp]
 	add	rax, 1024				; 00000400H
@@ -438,26 +496,26 @@ $LN2@malloc:
 $LN1@malloc:
 $LN3@malloc:
 
-; 105  : 			}
-; 106  : 		}
-; 107  : 	}
+; 124  : 			}
+; 125  : 		}
+; 126  : 	}
 
 	jmp	$LN5@malloc
 $LN4@malloc:
 
-; 108  : 
-; 109  : 	heap_expand(sz);
+; 127  : 
+; 128  : 	heap_expand(sz);
 
 	mov	rcx, QWORD PTR sz$[rsp]
 	call	?heap_expand@@YAX_K@Z			; heap_expand
 
-; 110  : 	return malloc(sz);
+; 129  : 	return malloc(sz);
 
 	mov	rcx, QWORD PTR sz$[rsp]
 	call	?malloc@@YAPEAX_K@Z			; malloc
 $LN7@malloc:
 
-; 111  : }
+; 130  : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -471,19 +529,19 @@ i$1 = 40
 sz$ = 64
 ?initialize_kmemory@@YAX_K@Z PROC			; initialize_kmemory
 
-; 22   : void initialize_kmemory (size_t sz) {
+; 23   : void initialize_kmemory (size_t sz) {
 
-$LN8:
+$LN9:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 56					; 00000038H
 
-; 23   : 
-; 24   : 	if (sz < 4096) {
+; 24   : 
+; 25   : 	if (sz < 4096) {
 
 	cmp	QWORD PTR sz$[rsp], 4096		; 00001000H
-	jae	SHORT $LN5@initialize
+	jae	SHORT $LN6@initialize
 
-; 25   : 		if (sz % 0x1000) {
+; 26   : 		if (sz % 0x1000) {
 
 	xor	edx, edx
 	mov	rax, QWORD PTR sz$[rsp]
@@ -491,9 +549,9 @@ $LN8:
 	div	rcx
 	mov	rax, rdx
 	test	rax, rax
-	je	SHORT $LN4@initialize
+	je	SHORT $LN5@initialize
 
-; 26   : 			sz -= sz % 0x1000;
+; 27   : 			sz -= sz % 0x1000;
 
 	xor	edx, edx
 	mov	rax, QWORD PTR sz$[rsp]
@@ -505,41 +563,41 @@ $LN8:
 	mov	rax, rcx
 	mov	QWORD PTR sz$[rsp], rax
 
-; 27   : 			sz += 0x1000;
+; 28   : 			sz += 0x1000;
 
 	mov	rax, QWORD PTR sz$[rsp]
 	add	rax, 4096				; 00001000H
 	mov	QWORD PTR sz$[rsp], rax
-$LN4@initialize:
 $LN5@initialize:
+$LN6@initialize:
 
-; 28   : 		}
-; 29   : 	}
-; 30   : 
+; 29   : 		}
+; 30   : 	}
 ; 31   : 
-; 32   : 	size_t pos = HEAP_START;  //0xFFFFB00000000000;
+; 32   : 
+; 33   : 	size_t pos = HEAP_START;  //0xFFFFB00000000000;
 
 	mov	rax, -140737488355328			; ffff800000000000H
 	mov	QWORD PTR pos$[rsp], rax
 
-; 33   : 
-; 34   : 	for (size_t i=0; i < sz / 4096; i++) {
+; 34   : 
+; 35   : 	for (size_t i=0; i < sz / 4096; i++) {
 
 	mov	QWORD PTR i$1[rsp], 0
-	jmp	SHORT $LN3@initialize
-$LN2@initialize:
+	jmp	SHORT $LN4@initialize
+$LN3@initialize:
 	mov	rax, QWORD PTR i$1[rsp]
 	inc	rax
 	mov	QWORD PTR i$1[rsp], rax
-$LN3@initialize:
+$LN4@initialize:
 	xor	edx, edx
 	mov	rax, QWORD PTR sz$[rsp]
 	mov	ecx, 4096				; 00001000H
 	div	rcx
 	cmp	QWORD PTR i$1[rsp], rax
-	jae	SHORT $LN1@initialize
+	jae	SHORT $LN2@initialize
 
-; 35   : 		map_page ((uint64_t)pmmngr_alloc(),(uint64_t)pos,0);
+; 36   : 		map_page ((uint64_t)pmmngr_alloc(),(uint64_t)pos,0);
 
 	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
 	xor	r8d, r8d
@@ -547,60 +605,85 @@ $LN3@initialize:
 	mov	rcx, rax
 	call	?map_page@@YA_N_K0E@Z			; map_page
 
-; 36   : 		pos = pos + 4096;
+; 37   : 		pos = pos + 4096;
 
 	mov	rax, QWORD PTR pos$[rsp]
 	add	rax, 4096				; 00001000H
 	mov	QWORD PTR pos$[rsp], rax
 
-; 37   : 	}
+; 38   : 	}
 
-	jmp	SHORT $LN2@initialize
-$LN1@initialize:
+	jmp	SHORT $LN3@initialize
+$LN2@initialize:
 
-; 38   : 	
-; 39   : 	first_heap = (heap_t*)HEAP_START;
+; 39   : 	
+; 40   : 	first_heap = (heap_t*)HEAP_START;
 
 	mov	rax, -140737488355328			; ffff800000000000H
 	mov	QWORD PTR ?first_heap@@3PEAU_kmem_@@EA, rax ; first_heap
 
-; 40   : 	first_heap->length = sz;
+; 41   : 	first_heap->length = sz;
 
 	mov	rax, QWORD PTR ?first_heap@@3PEAU_kmem_@@EA ; first_heap
 	mov	rcx, QWORD PTR sz$[rsp]
 	mov	QWORD PTR [rax+8], rcx
 
-; 41   : 	first_heap->magic = HEAP_MAGIC;
+; 42   : 	first_heap->magic = HEAP_MAGIC;
 
 	mov	rax, QWORD PTR ?first_heap@@3PEAU_kmem_@@EA ; first_heap
 	mov	DWORD PTR [rax], 303112194		; 12112002H
 
-; 42   : 	first_heap->free = true;
+; 43   : 	first_heap->free = true;
 
 	mov	rax, QWORD PTR ?first_heap@@3PEAU_kmem_@@EA ; first_heap
 	mov	BYTE PTR [rax+4], 1
 
-; 43   : 	first_heap->next = NULL;
+; 44   : 	first_heap->next = NULL;
 
 	mov	rax, QWORD PTR ?first_heap@@3PEAU_kmem_@@EA ; first_heap
 	mov	QWORD PTR [rax+16], 0
 
-; 44   : 	first_heap->prev = NULL;
+; 45   : 	first_heap->prev = NULL;
 
 	mov	rax, QWORD PTR ?first_heap@@3PEAU_kmem_@@EA ; first_heap
 	mov	QWORD PTR [rax+24], 0
 
-; 45   : 	last = (void*)pos;
+; 46   : 	last = (void*)pos;
 
 	mov	rax, QWORD PTR pos$[rsp]
 	mov	QWORD PTR ?last@@3PEAXEA, rax		; last
 
-; 46   : 	last_heap = first_heap;
+; 47   : 	last_heap = first_heap;
 
 	mov	rax, QWORD PTR ?first_heap@@3PEAU_kmem_@@EA ; first_heap
 	mov	QWORD PTR ?last_heap@@3PEAU_kmem_@@EA, rax ; last_heap
 
-; 47   : }
+; 48   : 
+; 49   : #ifdef _DEBUG_ON_
+; 50   : 	if (is_serial_initialized())
+
+	call	?is_serial_initialized@@YA_NXZ		; is_serial_initialized
+	movzx	eax, al
+	test	eax, eax
+	je	SHORT $LN1@initialize
+
+; 51   : 		_debug_print_ ("[KHeap]: Initialized -> size -> %d MB \r\n", sz / 1024/ 1024);
+
+	xor	edx, edx
+	mov	rax, QWORD PTR sz$[rsp]
+	mov	ecx, 1024				; 00000400H
+	div	rcx
+	xor	edx, edx
+	mov	ecx, 1024				; 00000400H
+	div	rcx
+	mov	rdx, rax
+	lea	rcx, OFFSET FLAT:$SG2941
+	call	?_debug_print_@@YAXPEADZZ		; _debug_print_
+$LN1@initialize:
+
+; 52   : #endif
+; 53   : 
+; 54   : }
 
 	add	rsp, 56					; 00000038H
 	ret	0

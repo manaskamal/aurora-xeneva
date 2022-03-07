@@ -817,7 +817,6 @@ void compose_frame () {
 				he = canvas->height - info->y;
 			}
 
-
 			for (int i = 0; i < he; i++)  {
 				fastcpy (canvas->address + (winy + i) * canvas->width + winx,win->backing_store + (0 + i) * canvas->width + 0,
 				wid * 4);	
@@ -944,19 +943,19 @@ void pri_win_check_draggable (int x, int y, int button) {
  * main -- the main entry point of priwm
  */
 int main (int argc, char* argv[]) {
-	sys_print_text ("PRIWM: Loading Framebuffer\n");
+	sys_print_text ("PRIWM: Loading Framebuffer \r\n");
 	int svga_fd = sys_open_file ("/dev/fb", NULL);
 	
 	uint32_t s_width = ioquery(svga_fd,SCREEN_GETWIDTH,NULL);
 	uint32_t s_height = ioquery(svga_fd, SCREEN_GETHEIGHT, NULL);
-	sys_print_text ("PRIWM: Framebuffer loaded\n");
+	sys_print_text ("PRIWM: Framebuffer loaded \r\n");
 	/*
 	 * create the main backing store
 	 */
 	canvas = create_canvas (s_width,s_height);
 	int w = canvas_get_width(canvas);
 	int h = canvas_get_height(canvas);
-	sys_print_text ("PRIWM: Canvas Created w-> %d, h-> %d\n", w, h);
+	sys_print_text ("PRIWM: Canvas Created w-> %d, h-> %d \r\n", w, h);
 	//! load cursor library
 
 

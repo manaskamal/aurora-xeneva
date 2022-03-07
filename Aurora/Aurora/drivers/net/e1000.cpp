@@ -16,6 +16,7 @@
 #include <arch\x86_64\mmngr\kheap.h>
 #include <console.h>
 #include <string.h>
+#include <serial.h>
 
 
 e1000_dev *i_net_dev = NULL;
@@ -113,7 +114,7 @@ void e1000_interrupt_handler (size_t v, void* p) {
 		uint32_t head = inportd (REG_RXDESCHEAD);
 
 		while (i_net_dev->rx_tail != head){
-			printf ("E1000 recevied\n");
+			_debug_print_ ("E1000 recevied \r\n");
 			size_t size = i_net_dev->rx_desc[i_net_dev->rx_tail]->length;
 			uint8_t status = i_net_dev->rx_desc[i_net_dev->rx_tail]->status;
 
@@ -123,7 +124,7 @@ void e1000_interrupt_handler (size_t v, void* p) {
 			
 			size -= 4;
 
-			printf ("E1000 Bytes received -> %d bytes, status 0x%x\n", size, status);
+			_debug_print_ ("E1000 Bytes received -> %d bytes, status 0x%x \r\n", size, status);
 
 			i_net_dev->rx_tail++;
 			i_net_dev->rx_tail %= E1000_NUM_RX_DESC;
@@ -136,11 +137,11 @@ void e1000_interrupt_handler (size_t v, void* p) {
 		}
 
 	}else if (icr & E1000_ICR_TRANSMIT) {
-		printf ("E1000 interrupt data transmit\n");
+		_debug_print_ ("E1000 interrupt data transmit \r\n");
 	} else if (icr & E1000_ICR_LINK_CHANGE) {
-		//printf ("E1000 interrupt link change %s\n", (e1000_read_command(REG_STATUS) & (1<<1)) ? "up" : "down");
+		_debug_print_ ("E1000 interrupt link change %s \r\n", (e1000_read_command(REG_STATUS) & (1<<1)) ? "up" : "down");
 	} else {
-		printf ("E1000 unknown interrupt\n");
+		_debug_print_ ("E1000 unknown interrupt \r\n");
 	}
 
 	e1000_write_command (REG_ICR, 1);
@@ -154,11 +155,10 @@ void e1000_rx_init () {
 	i_net_dev->rx_desc_base = (uint64_t*)pmmngr_alloc();
 	memset (i_net_dev->rx_desc_base, 0, 4096);
 	uint64_t rx_desc_base = (uint64_t)i_net_dev->rx_desc_base;
-	uint64_t *buffer_allocation = (uint64_t*)pmmngr_alloc_blocks(16);
 
 	for (int i = 0; i < E1000_NUM_RX_DESC; i++) {
 		i_net_dev->rx_desc[i] = (e1000_rx_desc*)(i_net_dev->rx_desc_base + (i * 16));
-		i_net_dev->rx_desc[i]->addr = (uint64_t)(buffer_allocation + i * 2048);   
+		i_net_dev->rx_desc[i]->addr = (uint64_t)pmmngr_alloc();   
 		i_net_dev->rx_desc[i]->status = 0;
 	}
 
@@ -170,12 +170,12 @@ void e1000_rx_init () {
 	e1000_write_command(REG_RXDESCTAIL, E1000_NUM_RX_DESC - 1);
 
 	e1000_write_command (REG_RXDESCKHI, rx_desc_base >> 32);
-	e1000_write_command (REG_RXDESCLO, rx_desc_base & UINT32_MAX);
+	e1000_write_command (REG_RXDESCLO, rx_desc_base);
 	
 	i_net_dev->rx_tail = 0;
 
 	e1000_write_command (REG_RCTRL, RCTL_EN | (1<<2) | 
-		(1<<4) | (1<<15) | (1<<25) | (0<<16) | (1<<26));
+		(1<<4) | (1<<15) | (1<<25) | (3<<16) | (1<<26));
 }
 
 
@@ -305,14 +305,14 @@ void e1000_initialize () {
 	int func, dev_, bus = 0;
 	pci_device_info *dev = (pci_device_info*)pmmngr_alloc();
 	if (!pci_find_device_class (0x02,0x00, dev,&bus, &dev_, &func)) {
-		printf ("Intel Ethernet not found\n");
+		_debug_print_ ("Intel Ethernet not found\n");
 		return;
 	}
 
 	uint16_t command = 0;
 	read_config_16 (0,bus,dev_,func,0x4,&command);
 	if (((command >> 10) & 0xff) != 0) {
-		printf ("E1000 INterrupt Disabled in PCI ConfigSpace\n");
+		_debug_print_ ("E1000 INterrupt Disabled in PCI ConfigSpace\n");
 	}
 
 	i_net_dev = (e1000_dev*)malloc(sizeof(e1000_dev));
@@ -330,11 +330,11 @@ void e1000_initialize () {
 	i_net_dev->e1000_irq = dev->device.nonBridge.interruptLine;
 	bool pci_status = pci_alloc_msi (func, dev_, bus, e1000_interrupt_handler);
 	if (pci_status) {
-		printf ("E1000 Supports MSI\n");
+		_debug_print_ ("E1000 Supports MSI\n");
 	}
 	if (!pci_status) {
 		if (dev->device.nonBridge.interruptLine != 255) {
-			printf ("E1000 legacy irq -> %d, pin -> %d\n", dev->device.nonBridge.interruptLine, dev->device.nonBridge.interruptPin);
+			_debug_print_("E1000 legacy irq -> %d, pin -> %d\n", dev->device.nonBridge.interruptLine, dev->device.nonBridge.interruptPin);
 			write_config_8 (0,bus,dev_,func,0x3C, 10);
 			read_config_8 (0,bus, dev_, func, 0x3C,&dev->device.all.interruptLine);
 			interrupt_set (10, e1000_interrupt_handler,dev->device.nonBridge.interruptLine);
@@ -397,7 +397,7 @@ void e1000_initialize () {
 
 	if (e1000_read_mac_address()) {
 		//! Set the MAC address code
-		printf ("MAC Address read successfully\n");
+		_debug_print_ ("MAC Address read successfully\n");
 	}
-	printf ("e1000 setup completed\n");
+	_debug_print_ ("e1000 setup completed\n");
 }
