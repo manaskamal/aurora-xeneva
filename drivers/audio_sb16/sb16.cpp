@@ -201,22 +201,29 @@ char *strcpy(char *s1, const char *s2)
 }
 
 
+
+extern "C" _declspec(dllimport) void message();
+
+extern "C" int _declspec(dllexport) _cdecl return_int() {
+	message();
+	return 100;
+}
 //! Aurora Init Driver interface
 //! Perform every initializing action here
 extern "C" int _declspec(dllexport) _cdecl aurora_init_driver (driver_param_t *param) {
 	driver_debug = param->kdebug;
 	//interrupt_eoi = param->irq_eoi;
 	_param = *param;
-	sb16_reset_dsp ();
-
-	if (!_sb16){
+	//sb16_reset_dsp ();
+	message();
+	/*if (!_sb16){
 		driver_debug ("[SB16]: Not present\n");
 		return 0;
 	}
 
 	sb16_write_dsp (0xE1);
 	sb16_version_major = sb16_read_dsp ();
-	sb16_version_minor = sb16_read_dsp ();
+	sb16_version_minor = sb16_read_dsp ();*/
 
 	driver_debug ("[SB16]: Sound Blaster 16 card found version %d.%d\n",sb16_version_major,sb16_version_minor);
 //	sb16_set_irq_register (5);*/

@@ -36,7 +36,8 @@
 #include <string.h>
 #include <stdio.h>
 #include <proc.h>
-
+#include <arch\x86_64\cpu.h>
+#include <hal.h>
 /**
  * sys_open_file -- opens a file 
  * @param filename -- file path 
@@ -138,7 +139,9 @@ void sys_read_file (int fd, uint8_t* buffer, FILE *ufile) {
 	}else {
 		readfs(node, node, (uint64_t*)buffer, file.size);
 	}
+
 }
+
 
 /**
  * sys_write_file -- Writes to an opened file

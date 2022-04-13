@@ -15,6 +15,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <va_list.h>
+#include <pmmngr.h>
 #include <stdarg.h>
 
 #define PORT  0x3f8
@@ -26,13 +27,13 @@ void serial_handler (size_t v, void* p) {
 }
 
 void initialize_serial() {
-	x64_outportb (PORT + 1, 0x00);
-	x64_outportb (PORT + 3, 0x80);
-	x64_outportb (PORT + 0, 0x03);
-	x64_outportb (PORT + 1, 0x00);
-	x64_outportb (PORT + 3, 0x03);
-	x64_outportb (PORT + 2, 0xC7);
-	x64_outportb (PORT + 4, 0x0B);
+	x64_outportb (p2v(PORT + 1), 0x00);
+	x64_outportb (p2v(PORT + 3), 0x80);
+	x64_outportb (p2v(PORT + 0), 0x03);
+	x64_outportb (p2v(PORT + 1), 0x00);
+	x64_outportb (p2v(PORT + 3), 0x03);
+	x64_outportb (p2v(PORT + 2), 0xC7);
+	x64_outportb (p2v(PORT + 4), 0x0B);
 	
 
 	//x64_outportb (PORT + 4, 0x0F);
@@ -41,12 +42,12 @@ void initialize_serial() {
 }
 
 int is_transmit_empty () {
-	return x64_inportb (PORT + 5) & 0x20;
+	return x64_inportb (p2v(PORT + 5)) & 0x20;
 }
 
 void write_serial (char a) {
 	while (is_transmit_empty() == 0);
-	x64_outportb (PORT, a);
+	x64_outportb (p2v(PORT), a);
 }
 
 void debug_serial (char* string) {

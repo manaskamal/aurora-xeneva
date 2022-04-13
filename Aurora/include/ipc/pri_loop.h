@@ -84,4 +84,16 @@ extern void pri_loop_init ();
  * @param event -- event message to put
  */
 extern void pri_put_message (pri_event_t *event);
+
+/*
+ * pri_loop_destroy -- removes a pri_loop_box from the list
+ * @param box -- box to remove
+ */
+extern void pri_loop_destroy (pri_loop_box_t *box);
+
+/*
+ * pri_loop_destroy_by_id -- removes a pri_loop_box from the list by its id
+ * @param id -- id of the box to be removed
+ */
+extern void pri_loop_destroy_by_id (uint16_t id);
 #endif

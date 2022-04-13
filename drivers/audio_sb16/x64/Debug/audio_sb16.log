@@ -1,4 +1,4 @@
-﻿Build started 06-03-2022 আবেলি 11:58:21.
+﻿Build started 07-04-2022 আবেলি 8:11:49.
      1>Project "E:\Xeneva Project\Xeneva\drivers\audio_sb16\audio_sb16.vcxproj" on node 2 (Rebuild target(s)).
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\driverapi\libdriver\include" /Zi /nologo /W4 /WX- /sdl- /Od /Oy- /D ARCH_X86 /D _WINDLL /D _MBCS /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt dma.cpp sb16.cpp
@@ -13,10 +13,10 @@
      1>sb16.cpp(144): warning C4100: 'sound_buffer' : unreferenced formal parameter
      1>sb16.cpp(183): warning C4100: 'arg' : unreferenced formal parameter
      1>sb16.cpp(183): warning C4100: 'node' : unreferenced formal parameter
-     1>sb16.cpp(224): warning C4101: 'dev_' : unreferenced local variable
-     1>sb16.cpp(224): warning C4101: 'bus' : unreferenced local variable
-     1>sb16.cpp(225): warning C4101: 'info' : unreferenced local variable
-     1>sb16.cpp(224): warning C4101: 'func' : unreferenced local variable
+     1>sb16.cpp(231): warning C4101: 'dev_' : unreferenced local variable
+     1>sb16.cpp(231): warning C4101: 'bus' : unreferenced local variable
+     1>sb16.cpp(232): warning C4101: 'info' : unreferenced local variable
+     1>sb16.cpp(231): warning C4101: 'func' : unreferenced local variable
          dma.cpp
      1>dma.cpp(34): warning C4100: 'dma' : unreferenced formal parameter
      1>dma.cpp(41): warning C4100: 'dma' : unreferenced formal parameter
@@ -26,7 +26,7 @@
      1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V110\Microsoft.CppBuild.targets(1137,5): warning MSB8012: TargetPath(E:\Xeneva Project\Xeneva\Aurora\x64\Debug\audio_sb16.dll) does not match the Linker's OutputFile property value (F:\EFI\XENEVA\sb16.dll). This may cause your project to build incorrectly. To correct this, please make sure that $(OutDir), $(TargetName) and $(TargetExt) property values match the value specified in %(Link.OutputFile).
      1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V110\Microsoft.CppBuild.targets(1139,5): warning MSB8012: TargetName(audio_sb16) does not match the Linker's OutputFile property value (sb16). This may cause your project to build incorrectly. To correct this, please make sure that $(OutDir), $(TargetName) and $(TargetExt) property values match the value specified in %(Link.OutputFile).
        Link:
-         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:PROMPT /OUT:"F:\EFI\XENEVA\sb16.dll" /INCREMENTAL /NOLOGO /LIBPATH:"E:\Xeneva Project\Xeneva\xnlib\lib64" libdriver.lib /NODEFAULTLIB /MANIFEST:NO /PDB:"E:\Xeneva Project\Xeneva\Aurora\x64\Debug\audio_sb16.pdb" /MAP /MAPINFO:EXPORTS /SUBSYSTEM:NATIVE /LARGEADDRESSAWARE /OPT:NOREF /LTCG /TLBID:1 /ENTRY:"aurora_init_driver" /BASE:"0xFFFFE00000000000" /DYNAMICBASE:NO /FIXED:NO /NXCOMPAT:NO /IMPLIB:"E:\Xeneva Project\Xeneva\Aurora\x64\Debug\audio_sb16.lib" /MACHINE:X64 /ALIGN:512 /DLL x64\Debug\dma.obj
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:PROMPT /OUT:"F:\EFI\XENEVA\sb16.dll" /INCREMENTAL /NOLOGO /LIBPATH:"E:\Xeneva Project\Xeneva\xnlib\lib64" /LIBPATH:"E:\Xeneva Project\Xeneva\Aurora\x64\Debug" /ALLOWBIND libdriver.lib Aurora.lib /NODEFAULTLIB /MANIFEST:NO /PDB:"E:\Xeneva Project\Xeneva\Aurora\x64\Debug\audio_sb16.pdb" /MAP /MAPINFO:EXPORTS /SUBSYSTEM:NATIVE /LARGEADDRESSAWARE /OPT:NOREF /LTCG /TLBID:1 /ENTRY:"aurora_init_driver" /BASE:"0xFFFFE00000000000" /DYNAMICBASE:NO /FIXED:NO /NXCOMPAT:NO /IMPLIB:"E:\Xeneva Project\Xeneva\Aurora\x64\Debug\audio_sb16.lib" /MACHINE:X64 /ALIGN:512 /DLL x64\Debug\dma.obj
          x64\Debug\sb16.obj
      1>LINK : warning LNK4108: /ALIGN specified without /DRIVER; image may not run
      1>LINK : warning LNK4075: ignoring '/INCREMENTAL' due to '/LTCG' specification
@@ -38,4 +38,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:01.51
+Time Elapsed 00:00:00.47

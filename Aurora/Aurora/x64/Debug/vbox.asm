@@ -10,11 +10,11 @@ _BSS	SEGMENT
 ?vbox_mouse@@3PEAU_vbox_mouse_absolute_@@EA DQ 01H DUP (?) ; vbox_mouse
 _BSS	ENDS
 CONST	SEGMENT
-$SG3335	DB	'Virtual Box Guest Driver not found', 0aH, 00H
+$SG3363	DB	'Virtual Box Guest Driver not found', 0aH, 00H
 	ORG $+4
-$SG3336	DB	'Initialize Virtual Box Driver', 0aH, 00H
+$SG3364	DB	'Initialize Virtual Box Driver', 0aH, 00H
 	ORG $+1
-$SG3349	DB	'Virtual Box Driver initialized -> %d', 0aH, 00H
+$SG3377	DB	'Virtual Box Driver initialized -> %d', 0aH, 00H
 CONST	ENDS
 PUBLIC	?initialize_guest_vbox@@YAXXZ			; initialize_guest_vbox
 PUBLIC	?vbox_handler@@YAX_KPEAX@Z			; vbox_handler
@@ -159,7 +159,7 @@ $LN4:
 
 ; 39   : 		printf ("Virtual Box Guest Driver not found\n");
 
-	lea	rcx, OFFSET FLAT:$SG3335
+	lea	rcx, OFFSET FLAT:$SG3363
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 40   : 		return;
@@ -178,7 +178,7 @@ $LN1@initialize:
 
 ; 44   : 	printf ("Initialize Virtual Box Driver\n");
 
-	lea	rcx, OFFSET FLAT:$SG3336
+	lea	rcx, OFFSET FLAT:$SG3364
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 45   : 	vbox_port = addr.device.nonBridge.baseAddress[0] & 0xFFFFFFFC;
@@ -378,7 +378,7 @@ $LN1@initialize:
 
 	mov	rax, QWORD PTR guest_info$[rsp]
 	mov	edx, DWORD PTR [rax+12]
-	lea	rcx, OFFSET FLAT:$SG3349
+	lea	rcx, OFFSET FLAT:$SG3377
 	call	?printf@@YAXPEBDZZ			; printf
 
 ; 90   : 	vbox_vmmdev[3] =  0xFFFFFFFF;

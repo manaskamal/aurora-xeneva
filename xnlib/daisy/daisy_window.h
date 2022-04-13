@@ -66,6 +66,7 @@ typedef struct _daisy_win_ {
 	list_t *widgets;
 	bool first_time;
 	uint32_t color;
+	uint8_t theme;
 	daisy_widget_t * focused_widget;
 	void (*paint) (_daisy_win_ *win);
 }daisy_window_t;
@@ -164,4 +165,19 @@ extern uint32_t daisy_window_get_back_color (daisy_window_t *win);
  * @param button -- button bit
  */
 extern void daisy_window_handle_mouse (daisy_window_t *win,int x, int y, int button);
+
+/**
+ * daisy_window_set_theme -- sets a graphical theme for the UI
+ * @param win -- pointer to the window object
+ * @param theme -- theme id
+ */
+extern void daisy_window_set_theme (daisy_window_t *win, uint8_t theme);
+
+/**
+ * daisy_window_destroy -- destroys a window and its childs
+ * @param win -- window to be destroyed
+ */
+extern void daisy_window_destroy (daisy_window_t *win);
+
+
 #endif

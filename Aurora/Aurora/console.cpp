@@ -15,6 +15,7 @@
 #include <arch\x86_64\mmngr\kheap.h>
 #include <fs\vfs.h>
 #include <fs\fat\fat.h>
+#include <screen.h>
 
 //! default kernel console
 static uint16_t scanline = 0;
@@ -46,7 +47,7 @@ void console_initialize (PKERNEL_BOOT_INFO info) {
 	scanline = info->pixels_per_line;
 	screen_width = info->X_Resolution;
 	screen_height = info->Y_Resolution;
-	fb = info->graphics_framebuffer;
+	fb =  get_framebuffer_addr();//info->graphics_framebuffer;
 
 	//psf_data = info->psf_font_data;
 	uint64_t* buffer = (uint64_t*)pmmngr_alloc_blocks(2);

@@ -83,6 +83,7 @@ void screen_set_configuration (uint32_t width, uint32_t height) {
 	for (int i = 0; i < display.size / 4096 ; i++)
 		map_page ((uint64_t)display.buffer + i * 4096, 0xFFFFD00000200000 + i * 4096, PAGING_USER);
 
+	display.buffer = (uint32_t*)0xFFFFD00000200000;
 }
 
 /**

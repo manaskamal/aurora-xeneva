@@ -65,6 +65,11 @@ void daisy_label_mouse_event (daisy_widget_t *widget, daisy_window_t *win, int b
 }
 
 
+void daisy_label_destroy (daisy_widget_t *widget) {
+	daisy_widget_label_t *label = (daisy_widget_label_t*)widget;
+	free(label);
+}
+
 /**
  * daisy_widget_create_button -- create a button widget
  * @param width -- width of the button
@@ -81,6 +86,7 @@ daisy_widget_label_t *daisy_widget_create_label (daisy_window_t* win) {
 	label->base.key_event = 0;
 	label->base.mouse_event = daisy_label_mouse_event;
 	label->base.refresh = daisy_label_refresh;
+	label->base.destroy = daisy_label_destroy;
 	label->base.scroll_event = 0;
 	label->text = NULL;
 	label->font_size = 14;

@@ -45,20 +45,21 @@
  */
 void daisy_button_refresh (daisy_widget_t *widget, daisy_window_t* win) {
 	daisy_widget_button_t * button = (daisy_widget_button_t*)widget;
-	uint32_t fill_color = SILVER;
+	uint32_t fill_color = 0xFFD8D4D4;
 	if (button->clicked) {
-		fill_color = GRAY;
+		fill_color = 0xFFB6AFAF;
 	}
 
 	acrylic_draw_rect_filled (win->ctx, button->base.x, button->base.y, button->base.width, button->base.height,fill_color);
-	acrylic_draw_rect_unfilled (win->ctx,button->base.x, button->base.y, button->base.width + 1, button->base.height + 1,BLACK);
+	acrylic_draw_rect_unfilled (win->ctx,button->base.x, button->base.y, button->base.width, button->base.height,LIGHTBLACK);
+
 	
 	if (button->text) {
 		acrylic_font_set_size (11);
 		int mid_w = acrylic_font_get_length (button->text);
 		int mid_h = acrylic_font_get_height (button->text);
 		acrylic_font_draw_string (win->ctx,button->text,button->base.x + button->base.width/2 - mid_w/2,
-			button->base.y + button->base.height/2 - mid_h/2,11,BLACK);
+			button->base.y + button->base.height/2 - mid_h/2,11,0xFF716D6D);
 	}
 
 }
@@ -81,7 +82,12 @@ void daisy_button_mouse_event (daisy_widget_t *widget, daisy_window_t *win, int 
 		button_w->clicked = true;
 		daisy_button_refresh(widget,win);
 		daisy_window_update_rect_area (win,widget->x,widget->y,widget->width,widget->height);
+
 		win->focused_widget = widget;
+
+		if (button_w->base.action_event)
+			button_w->base.action_event(widget,win);
+
 	}else {
 		if (button_w->clicked) {
 			button_w->clicked = false;
@@ -95,6 +101,11 @@ void daisy_button_mouse_event (daisy_widget_t *widget, daisy_window_t *win, int 
 	button_w->last_mouse_y = y;
 }
 
+
+void daisy_widget_button_destroy (daisy_widget_t *widget) {
+	daisy_widget_button_t *button = (daisy_widget_button_t*)widget;
+	free(button);
+}
 
 /**
  * daisy_widget_create_button -- create a button widget
@@ -112,6 +123,7 @@ daisy_widget_button_t *daisy_widget_create_button (daisy_window_t* win, char* te
 	button->base.key_event = 0;
 	button->base.mouse_event = daisy_button_mouse_event;
 	button->base.refresh = daisy_button_refresh;
+	button->base.destroy = daisy_widget_button_destroy;
 	button->base.scroll_event = 0;
 	button->text = text;
 	button->last_mouse_button = 0;

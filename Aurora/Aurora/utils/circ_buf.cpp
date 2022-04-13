@@ -69,7 +69,7 @@ size_t circular_buf_capacity(circ_buf_t *cbuf)
 	return cbuf->max;
 }
 
-void circular_buf_put(circ_buf_t *cbuf, int data)
+void circular_buf_put(circ_buf_t *cbuf, uint8_t data)
 {
 	cbuf->buffer[cbuf->head] = data;
 

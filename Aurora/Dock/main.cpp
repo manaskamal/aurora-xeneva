@@ -52,6 +52,8 @@ void dock_paint_time (canvas_t *ctx,int x, int y,uint32_t hour, uint32_t min, ui
 	sztoa(min,_min, 10);
 	sztoa(hour,_hour, 10);
 
+	//sys_print_text ("Hour -> %d, Min -> %d \r\n", hour,min);
+	
 	acrylic_draw_arr_string(ctx,x + strlen(_hour)*8/2 + 2,y + 16/2,_hour,BLACK);
 	acrylic_draw_arr_string(ctx,x + strlen(_min)*8/2 + 2*8 + 1,y + 16/2,_min,BLACK);
 	acrylic_draw_arr_string(ctx,x + strlen(_sec)*8/2 + 5*8  + 1, y + 16/2, _sec,BLACK);
@@ -96,6 +98,9 @@ int main (int argc, char*argv[]) {
 	daisy_window_show(win);
 
 	sys_print_text ("Dock running \r\n");
+
+	create_process ("/lnch.exe", "lnch");
+
 	dock_button_t *prev_focused_button = NULL;
 	int pri_event_fd = daisy_get_event_fd();
 
@@ -168,6 +173,30 @@ int main (int argc, char*argv[]) {
 							prev_focused_button->focused = false;
 						buttons->focused = true;
 						prev_focused_button = buttons;
+						_repaint_dock_ = true;
+						break;
+					}
+				}
+
+				if (_repaint_dock_) {
+					dock_repaint(dock);
+					daisy_window_update_rect_area(win, 0, 0, info->width, 30);
+				}
+
+				memset(&e, 0, sizeof(pri_event_t));
+			}
+
+
+			if (e.type == DAISY_NOTIFY_WIN_REMOVE) {
+				bool _repaint_dock_ = false;
+				sys_print_text ("DOCK Received REMOVE msg \r\n");
+				for (int i = 0; i < dock->dock_buttons->pointer; i++) {
+					dock_button_t *buttons = (dock_button_t*)list_get_at(dock->dock_buttons, i);
+					if (buttons->win_id == e.dword) {
+						dock->buttons_xoff -= buttons->width - 10;
+						list_remove (dock->dock_buttons, i);
+						prev_focused_button = NULL;
+						free(buttons);
 						_repaint_dock_ = true;
 						break;
 					}

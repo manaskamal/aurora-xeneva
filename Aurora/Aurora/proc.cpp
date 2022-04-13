@@ -14,11 +14,10 @@
 #include <timer.h>
 #include <fs\fat\fat.h>
 #include <_null.h>
+#include <serial.h>
+#include <ipc\pri_loop.h>
 
 
-//static mutex_t *process_mutex = create_mutex();
-//static mutex_t *kill_mutex = create_mutex();
-//static mutex_t *add_mutex = create_mutex();
 process_t *process_head = NULL;
 process_t *process_last = NULL;
 static int pid = 0;
@@ -151,16 +150,16 @@ void allocate_fd (thread_t *t) {
  * @return -- created thread id
  */
 int create_process(const char* filename, char* procname) {
-	x64_cli();
-
 	//!allocate a data-structure for process 
-	process_t *process = (process_t*)pmmngr_alloc();
+	process_t *process = (process_t*)malloc(sizeof(process_t)); //pmmngr_alloc();
+	memset(process, 0,sizeof(process_t));
 	process->pid_t = pid;
+	process->mmap_sz = 0;
 
 
 	//!open the process file-binary
 	char *fname = (char*)filename;
-    vfs_node_t *n = vfs_finddir (fname);
+   
 	//vfs_node_t file = openfs (n,fname);
 	vfs_node_t file = fat32_open(NULL, fname);
 
@@ -184,6 +183,7 @@ int create_process(const char* filename, char* procname) {
 
 	//! create the user stack and address space
     uint64_t *cr3 = create_user_address_space();	
+
 	uint64_t stack = (uint64_t)create_user_stack(cr3);
 
 	map_page_ex(cr3,(uint64_t)buf,_image_base_, PAGING_USER);
@@ -202,6 +202,7 @@ int create_process(const char* filename, char* procname) {
 
 
 	//!allocate current process
+	//strcpy (process->name,procname);
 	process->name = procname;
 	process->entry_point = ent;
 
@@ -209,6 +210,7 @@ int create_process(const char* filename, char* procname) {
 	process->image_base = _image_base_;
 	process->stack = stack;
 	process->image_size = nt->OptionalHeader.SizeOfImage;
+	_debug_print_ ("PROCESS CREATION IMAGE SIZE -> %d bytes \r\n", process->image_size);
 	process->parent = NULL;
 	//! Create and thread and start scheduling when scheduler starts */
 	thread_t *t = create_user_thread(ent,stack,(uint64_t)cr3,procname,0);
@@ -217,7 +219,6 @@ int create_process(const char* filename, char* procname) {
 	process->thread_data_pointer = t;
     add_process(process);
 
-	x64_sti();
 	return t->id;
 }
 
@@ -227,10 +228,10 @@ int create_process(const char* filename, char* procname) {
 void kill_process () {
 	x64_cli();
 	thread_t * remove_thread = get_current_thread();
+	uint16_t t_id = remove_thread->id;
 	process_t *proc = find_process_by_thread (remove_thread);
 	uint64_t  init_stack = proc->stack - 0x100000;
 	uint64_t image_base = proc->image_base;
-	//uint64_t heap_base = (uint64_t)proc->user_heap_start;
 	uint64_t *cr3 = (uint64_t*)remove_thread->cr3;
 	
 	int timer = find_timer_id (remove_thread->id);
@@ -241,9 +242,18 @@ void kill_process () {
 	}
 
 
+	/*uint64_t virt = USER_BASE_ADDRESS;
+	for (int i = 0; i < proc->mmap_sz + 1; i++) {
+		unmap_page (virt);
+		virt = virt + i * 4096;
+	}*/
+		
+
 	remove_process (proc);
 	task_delete (remove_thread);
 	pmmngr_free(remove_thread);
+	pmmngr_free(remove_thread->msg_box);
+	pri_loop_destroy_by_id (t_id);
 
 	//!unmap the binary image
 	for (uint32_t i = 0; i < proc->image_size / 4096; i++) {
@@ -256,11 +266,8 @@ void kill_process () {
 		unmap_page (init_stack + i * 4096);
 	}
 
-	//!unmap user heap
-	/*for (int i = 0; i < 0xB01000 / 4096; i++) {
-		unmap_page(heap_base + i * 4096);
-	}*/
 
+	_debug_print_ ("Used Pmmngr -> %d MB / Total -> %d MB \r\n", pmmngr_get_used_ram () / 1024 / 1024, pmmngr_get_total_ram() / 1024 / 1024);
 
 	pmmngr_free (cr3);
 }

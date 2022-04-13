@@ -42,8 +42,8 @@ pri_loop_box_t *last_loop = NULL;
  * pri_loop_create -- create a new pri_loop_box 
  */
 void pri_loop_create () {
-	pri_loop_box_t *loop = (pri_loop_box_t*)malloc(sizeof(pri_loop_box_t));
-	loop->address = malloc(sizeof(pri_event_t));//pmmngr_alloc();
+	pri_loop_box_t *loop = (pri_loop_box_t*)pmmngr_alloc();  //malloc(sizeof(pri_loop_box_t));
+	loop->address = pmmngr_alloc();//malloc(sizeof(pri_event_t));
 	memset(loop->address,0, sizeof(pri_event_t));
 	loop->owner_id = get_current_thread()->id;
 	loop->pending_msg_count = 0;
@@ -80,7 +80,25 @@ void pri_loop_destroy (pri_loop_box_t *box) {
 	} else {
 		box->next->prev = box->prev;
 	}
-	free(box); //pmmngr_free(box);
+
+	pmmngr_free(box->address);
+	pmmngr_free(box);
+	
+}
+
+/*
+ * pri_loop_destroy_by_id -- removes a pri_loop_box from the list by its id
+ * @param id -- id of the box to be removed
+ */
+void pri_loop_destroy_by_id (uint16_t id) {
+	for (pri_loop_box_t *loop = first_loop; loop != NULL; loop = loop->next) {
+		if (loop->owner_id == id) {
+			pri_loop_destroy (loop);
+			break;
+		}
+	}
+
+	return;
 }
 
 /** 
@@ -93,10 +111,8 @@ void pri_put_message (pri_event_t *event) {
 	uint16_t owner_id = event->to_id;
 	for (pri_loop_box_t *loop = first_loop; loop != NULL; loop = loop->next) {
 		if (loop->owner_id == owner_id) {
-			if (loop->pending_msg_count > 2) {
-				hunged = true;
+			if (loop->message_pending)
 				break;
-			}
 			memcpy (loop->address, event, sizeof(pri_event_t));
 			loop->message_pending = 1;
 			loop->pending_msg_count++;
@@ -113,6 +129,7 @@ void pri_put_message (pri_event_t *event) {
 		unblock_thread(thread);
 	}
 ret:
+	x64_sti();
 	return;
 }
 
@@ -137,6 +154,8 @@ void pri_get_message (pri_event_t *event) {
 			break;
 		}
 	}
+
+	x64_sti();
 	return;
 }
 

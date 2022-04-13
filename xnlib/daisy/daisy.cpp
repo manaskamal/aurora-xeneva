@@ -124,3 +124,27 @@ int daisy_get_event_fd () {
 	return event_fd;
 }
 
+/**
+ * daisy_application_exit -- exits an application
+ * @param exitcode -- exitcode 
+ */
+void daisy_application_exit (int exitcode) {
+	pri_event_t e;
+	e.type = PRI_WIN_MARK_FOR_CLOSE;
+	e.from_id = get_current_pid();
+	priwm_send_event(&e);
+
+	while(1) {
+		ioquery (event_fd,PRI_LOOP_GET_EVENT,&e);
+		if (e.type != 0) {
+			if (e.type == DAISY_WINDOW_CLOSED) {
+				acrylic_font_destroy();
+
+				ioquery(event_fd, PRI_LOOP_DESTROY,NULL);
+				memset(&e, 0, sizeof(pri_event_t));
+				exit(exitcode);
+			}
+		}
+	}
+}
+

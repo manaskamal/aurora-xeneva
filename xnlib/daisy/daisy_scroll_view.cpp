@@ -117,6 +117,11 @@ void daisy_sv_scroll_event (daisy_widget_t *widget, daisy_widget_t* scrollbar, d
 }
 
 
+void daisy_sv_destroy (daisy_widget_t* widget) {
+	daisy_scroll_view_t *sv = (daisy_scroll_view_t*)widget;
+	free(sv);
+}
+
 /**
  * daisy_widget_create_scroll_view -- creates new scroll view
  * @return scroll -- scroll view created
@@ -129,6 +134,7 @@ daisy_scroll_view_t * daisy_widget_create_scroll_view () {
 	scroll->base.mouse_event = daisy_sv_mouse_event;
 	scroll->base.refresh = daisy_sv_refresh;
 	scroll->base.scroll_event = daisy_sv_scroll_event;
+	scroll->base.destroy = daisy_sv_destroy;
 	scroll->base.x = 0;
 	scroll->base.y = 23;
 	scroll->base.action_event = 0;

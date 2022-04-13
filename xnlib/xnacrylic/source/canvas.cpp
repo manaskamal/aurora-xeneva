@@ -36,7 +36,7 @@ canvas_t *create_canvas (int width, int height) {
 	canvas_t *canvas = (canvas_t*)malloc(sizeof(canvas_t));
 	uint32_t *address = NULL;
 	if (double_buffer)
-		address = acrylic_allocate_buffer(width * height * 32);
+		address = acrylic_allocate_buffer(width * height * 4);
 		/*for (int i = 0; i < (width * height * 32) / 4096; i++)
 			valloc(0x0000600000000000 + i * 4096);*/
 
@@ -143,7 +143,7 @@ int canvas_get_fd () {
 }
 
 void canvas_close (canvas_t *canvas) {
-	acrylic_free_buffer(canvas->address,canvas->ctx_width *canvas->ctx_height * 32);
+	acrylic_free_buffer(canvas->address,canvas->ctx_width * canvas->ctx_height * 4);
 }
 
 

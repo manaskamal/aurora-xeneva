@@ -88,7 +88,6 @@ void initialize_acpi (void* acpi_base) {
 		strncpy (sig, header->signature, 4);
 		sig[4] = '\0';
 
-
 		if (!strncmp(sig, ACPI_SIG_FADT, strlen(ACPI_SIG_FADT))) {
 			kern_acpi->fadt = (acpiFadt*) header;
 			printf ("[ACPI]: Fadt table found\n");
@@ -102,8 +101,46 @@ void initialize_acpi (void* acpi_base) {
 
 		else if (!strncmp(sig, ACPI_SIG_SRAT, strlen(ACPI_SIG_SRAT))) {
 			printf ("[ACPI]: Srat table found\n");
+			acpi_table_srat_xe* srat = (acpi_table_srat_xe*)header;
+			printf ("[ACPI]: Srat -> %d length -> %d\n", srat->Header.revision, srat->Header.length);
+			acpi_sub_table *sub = (acpi_sub_table*)&srat[1];
+			while (raw_diff(sub,srat) < srat->Header.length) {
+				switch (sub->type) {
+				case acpi_srat_type_memory_affinity: {
+					printf ("[ACPI]: Srat memory affinity found \n");
+					acpi_srat_mem_affinity *mem_affinity = (acpi_srat_mem_affinity*)sub;
+					printf ("Mem start -> %x \n", mem_affinity->base_address);
+					printf ("Mem end -> %x \n", (mem_affinity->base_address + mem_affinity->length)*4096);
+					printf ("Mem Length -> %d MB \n", (mem_affinity->length / 1024 / 1024));
+					printf ("Numa Domain -> %d \n", mem_affinity->proximity_domain);
+					printf ("Mem LLength -> %d\n", mem_affinity->header.length);
+					break;
+				}case acpi_srat_type_cpu_affinity:
+					printf ("[ACPI]: Srat cpu affinity found \n");
+					break;
+				case acpi_srat_type_generic_affinity:
+					printf ("[ACPI]: Generic affinity found \n");
+					break;
+				case acpi_srat_type_gicc_affinity:
+					printf ("[ACPI]: GICC affinity found \n");
+					break;
+				case acpi_srat_type_gic_its_affinity:
+					printf ("[ACPI]: GIC ITS Affinity found \n");
+					break;
+				case acpi_srat_type_x2apic_cpu_affinity:
+					printf ("[ACPI]: X2APIC CPU Affinity found \n");
+					break;
+				case acpi_srat_type_reserved:
+					printf ("[ACPI]: Srat type reserved \n");
+					break;
+				}
+				sub = raw_offset<acpi_sub_table*>(sub, sub->length);					
+			}
 		}
 
+		else if (!strncmp(sig, ACPI_SIG_SLIT, strlen(ACPI_SIG_SLIT))) {
+			printf ("[ACPI]: Slit table found \n");
+		}
 		else if (!strncmp(sig, ACPI_SIG_MCFG, strlen(ACPI_SIG_MCFG))) {
 			//printf ("[ACPI]: Mcfg table found\n");
 			kern_acpi->mcfg = (acpiMcfg*) header;

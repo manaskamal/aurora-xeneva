@@ -218,6 +218,7 @@ typedef unsigned long long IMAGE_IMPORT_LOOKUP_TABLE_PE32P, *PIMAGE_IMPORT_LOOKU
 
 typedef struct _IMAGE_NT_HEADERS_PE32PLUS IMAGE_NT_HEADERS, *PIMAGE_NT_HEADERS;
 typedef IMAGE_IMPORT_LOOKUP_TABLE_PE32  IMAGE_IMPORT_LOOKUP_TABLE, *PIMAGE_IMPORT_LOOKUP_TABLE;
+typedef IMAGE_IMPORT_LOOKUP_TABLE_PE32P IMAGE_IMPORT_LOOKUP_TABLE_PE32P, *PIMAGE_IMPORT_LOOKUP_TABLE_PE32P;
 static const enum PeOptionalMagic MAGIC_NATIVE =  MAGIC_PE32;
 static const enum PeMachineType   MACHINE_NATIVE = IMAGE_FILE_MACHINE_I386;
 #define IMAGE_IMPORT_LOOKUP_TABLE_FLAG  IMAGE_IMPORT_LOOKUP_TABLE_FLAG_PE32
@@ -229,6 +230,8 @@ extern void load_pe_file (uint64_t* buffer, int size);
 extern ientry get_entry_point ();
 extern uint64_t get_image_base();
 extern void* GetProcAddress(void *image, const char* procname);
+extern void IterateImportTable (void* image, void* exporter);
+extern "C" __declspec(dllexport) void message();
 //=====================================================================
 //   E N D   O F   P E    H E A D E R                                ||
 //=====================================================================

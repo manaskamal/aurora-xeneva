@@ -12,5 +12,5 @@ shl_print:
 
 global shl_test
 shl_test:
-
+    sti
     ret

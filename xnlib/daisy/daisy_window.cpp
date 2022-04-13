@@ -37,8 +37,10 @@
 #include <stdlib.h>
 #include <sys/_sleep.h>
 #include <sys/_term.h>
+#include <sys/_process.h>
 #include <fastcpy.h>
 #include <string.h>
+#include <canvas.h>
 
 /**
  * daisy_window_create -- create a new daisy window
@@ -70,6 +72,7 @@ daisy_window_t* daisy_window_create (int x, int y, int w, int h, uint8_t attribu
 	win->title = title;
 	win->widgets = list_init();
 	win->first_time = true;
+	win->theme = DAISY_THEME_DEFAULT;
 	return win;
 }
 
@@ -92,6 +95,14 @@ void daisy_window_move (int x, int y) {
 	_daisy_priwm_window_move_(x, y);
 }
 
+/**
+ * daisy_window_set_theme -- sets a graphical theme for the UI
+ * @param win -- pointer to the window object
+ * @param theme -- theme id
+ */
+void daisy_window_set_theme (daisy_window_t *win, uint8_t theme) {
+	win->theme = theme;
+}
 /**
  * daisy_window_handle_mouse -- handles mouse events within the
  * window
@@ -177,6 +188,7 @@ void daisy_window_show (daisy_window_t *win) {
 	if (win->first_time) {
 		pri_event_t ev;
 		ev.type = PRI_WIN_READY;
+		ev.from_id = get_current_pid();
 		priwm_send_event (&ev);
 		win->first_time = false;
 	}
@@ -224,6 +236,23 @@ void daisy_window_set_back_color (daisy_window_t *win, uint32_t color) {
 
 uint32_t daisy_window_get_back_color (daisy_window_t *win) {
 	return win->color;
+}
+
+/**
+ * daisy_window_destroy -- destroys a window and its childs
+ * @param win -- window to be destroyed
+ */
+void daisy_window_destroy (daisy_window_t *win) {
+	for (int i = 0; i < win->widgets->pointer; i++) {
+		daisy_widget_t *widget = (daisy_widget_t*)list_remove(win->widgets, i);
+		widget->destroy(widget);
+	}
+
+	free(win->widgets);
+	canvas_close(win->ctx);
+	free(win->ctx);
+	free(win);
+	
 }
 
 

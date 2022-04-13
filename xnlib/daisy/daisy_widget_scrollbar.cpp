@@ -145,6 +145,11 @@ void daisy_scrollbar_mouse_event (daisy_widget_t *widget, daisy_window_t *win, i
 
 }
 
+void daisy_scrollbar_destroy (daisy_widget_t *widget) {
+	daisy_widget_scrollbar_t *sc = (daisy_widget_scrollbar_t*)widget;
+	free(sc);
+}
+
 /**
  * daisy_widget_create_scrollbar -- creates a scrollbar for
  * a scrollable view
@@ -162,6 +167,7 @@ daisy_widget_scrollbar_t *daisy_widget_create_scrollbar (int scroll_type) {
 	scrollbar->base.mouse_event = daisy_scrollbar_mouse_event;
 	scrollbar->base.refresh = daisy_scrollbar_refresh;
 	scrollbar->base.scroll_event = 0;
+	scrollbar->base.destroy = daisy_scrollbar_destroy;
 	scrollbar->scrollable_view = 0;
 	scrollbar->type = scroll_type;
 	scrollbar->thumb_sz = 30;

@@ -68,5 +68,14 @@ extern uint64_t pmmngr_get_used_ram ();
  */
 extern uint64_t pmmngr_get_total_ram ();
 
+extern void pmmngr_move_higher_half ();
+
+extern uint64_t pmmngr_get_ram_bitmap_size();
+
+extern uint64_t p2v (uint64_t addr);
+
+extern uint64_t v2p (uint64_t vaddr);
+
+extern bool is_higher_half();
 
 #endif

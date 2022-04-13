@@ -15,7 +15,7 @@
 #include <pmmngr.h>
 #include <drivers\hdaudio\hda.h>
 #include <ipc\pri_loop.h>
-
+#include <_null.h>
 
 #define PLAY_STARTUP  12
 #define SOUND_LOOP_ENABLE  13

@@ -15,9 +15,9 @@ _sound_loop_prop_ DB 01H DUP (?)
 ?dsp_last@@3PEAU_dsp_@@EA DQ 01H DUP (?)		; dsp_last
 _BSS	ENDS
 CONST	SEGMENT
-$SG3680	DB	'snd', 00H
+$SG3713	DB	'snd', 00H
 	ORG $+4
-$SG3681	DB	'/dev/snd', 00H
+$SG3714	DB	'/dev/snd', 00H
 CONST	ENDS
 PUBLIC	?sound_initialize@@YAXXZ			; sound_initialize
 PUBLIC	?sound_request_next@@YAXPEAE@Z			; sound_request_next
@@ -501,7 +501,7 @@ $LN3:
 ; 133  : 	strcpy (snd->filename, "snd");
 
 	mov	rax, QWORD PTR snd$[rsp]
-	lea	rdx, OFFSET FLAT:$SG3680
+	lea	rdx, OFFSET FLAT:$SG3713
 	mov	rcx, rax
 	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
 
@@ -565,7 +565,7 @@ $LN3:
 ; 145  : 	vfs_mount ("/dev/snd", snd);
 
 	mov	rdx, QWORD PTR snd$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3681
+	lea	rcx, OFFSET FLAT:$SG3714
 	call	?vfs_mount@@YAXPEADPEAU_vfs_node_@@@Z	; vfs_mount
 
 ; 146  : }

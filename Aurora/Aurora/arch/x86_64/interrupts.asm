@@ -61,7 +61,7 @@ and rax, 0x3
 cmp rax, 0
 je  .next
 swapgs
-.next
+.next:
 ret
 
 

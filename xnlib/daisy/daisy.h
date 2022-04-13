@@ -52,7 +52,14 @@
 #define DAISY_KEY_EVENT 204
 #define DAISY_NEW_WINDOW_INFO 205
 #define DAISY_NOTIFY_WIN_FOCUS_CHANGED 206
+#define DAISY_NOTIFY_WIN_REMOVE 207
+#define DAISY_WINDOW_CLOSED 208
 
+
+/* Daisy applications UI theme */
+#define DAISY_THEME_DEFAULT  0x1
+#define DAISY_THEME_90S      0x2
+#define DAISY_THEME_DARK     0x3
 
 /**
  * daisy_register_for_gifts -- register a new pri_loop box
@@ -77,5 +84,11 @@ void priwm_send_event (pri_event_t *event);
  * daisy_get_event_fd -- returns event file descriptor
  */
 extern int daisy_get_event_fd ();
+
+/**
+ * daisy_application_exit -- exits an application
+ * @param exitcode -- exitcode 
+ */
+extern void daisy_application_exit (int exitcode);
 
 #endif

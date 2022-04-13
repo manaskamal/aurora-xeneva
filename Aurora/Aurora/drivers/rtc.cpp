@@ -83,6 +83,8 @@ void rtc_read_datetime() {
 //! RTC clock interrupt handler
 //! it updates current time from RTC clock
 void rtc_clock_update(size_t s, void* p) {
+	x64_cli ();
+
 	bool ready = get_rtc_register(0x0C) & 0x10;
 	if (ready) {
 		rtc_read_datetime();
@@ -101,18 +103,16 @@ void rtc_clock_update(size_t s, void* p) {
 
 	pri_put_message(&msg);
 
-	if (is_multi_task_enable()) {
-		thread_t *t = thread_iterate_block_list(3);
-		if (t != NULL) {
-			if (t->state == THREAD_STATE_BLOCKED)
-				unblock_thread(t);
-		}
-	}
+
+	x64_sti();
 	//!send a EOI to apic
 	interrupt_end(8);
 }
 
 void initialize_rtc () {
+
+	century = year = month = day = 0;
+    hour = minute = second = 0;
 
 	unsigned char status = get_rtc_register (0x0B);
 	status |= 0x02;

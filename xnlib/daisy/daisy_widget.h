@@ -51,6 +51,7 @@ typedef struct _daisy_widget_ {
 	void (*key_event) (struct _daisy_widget_*, _daisy_win_ *win, int button);
 	void (*action_event) (struct _daisy_widget_*,_daisy_win_* win);
 	void (*scroll_event) (struct _daisy_widget_*, struct _daisy_widget_*, _daisy_win_* win);
+	void (*destroy) (struct _daisy_widget_*);
 }daisy_widget_t;
 
 #endif

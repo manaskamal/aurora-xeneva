@@ -16,7 +16,6 @@ EXTRN	?pmmngr_get_used_ram@@YA_KXZ:PROC		; pmmngr_get_used_ram
 EXTRN	x64_cli:PROC
 EXTRN	?pml4_index@@YA_K_K@Z:PROC			; pml4_index
 EXTRN	?map_page@@YA_N_K0E@Z:PROC			; map_page
-EXTRN	?unmap_page_ex@@YAXPEA_K_K_N@Z:PROC		; unmap_page_ex
 EXTRN	?unmap_page@@YAX_K@Z:PROC			; unmap_page
 EXTRN	?get_current_thread@@YAPEAU_thread_@@XZ:PROC	; get_current_thread
 EXTRN	?thread_iterate_ready_list@@YAPEAU_thread_@@G@Z:PROC ; thread_iterate_ready_list
@@ -29,7 +28,7 @@ $pdata$?copy_memory@@YAXG_K0@Z DD imagerel $LN7
 	DD	imagerel $LN7+251
 	DD	imagerel $unwind$?copy_memory@@YAXG_K0@Z
 $pdata$?unmap_shared_memory@@YAXG_K0@Z DD imagerel $LN7
-	DD	imagerel $LN7+213
+	DD	imagerel $LN7+174
 	DD	imagerel $unwind$?unmap_shared_memory@@YAXG_K0@Z
 $pdata$?sys_get_used_ram@@YA_KXZ DD imagerel $LN3
 	DD	imagerel $LN3+19
@@ -55,20 +54,20 @@ xdata	ENDS
 _TEXT	SEGMENT
 ?sys_get_free_ram@@YA_KXZ PROC				; sys_get_free_ram
 
-; 71   : uint64_t sys_get_free_ram () {
+; 72   : uint64_t sys_get_free_ram () {
 
 $LN3:
 	sub	rsp, 40					; 00000028H
 
-; 72   : 	x64_cli ();
+; 73   : 	x64_cli ();
 
 	call	x64_cli
 
-; 73   : 	return pmmngr_get_free_ram ();
+; 74   : 	return pmmngr_get_free_ram ();
 
 	call	?pmmngr_get_free_ram@@YA_KXZ		; pmmngr_get_free_ram
 
-; 74   : }
+; 75   : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -79,20 +78,20 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 ?sys_get_used_ram@@YA_KXZ PROC				; sys_get_used_ram
 
-; 66   : uint64_t sys_get_used_ram () {
+; 67   : uint64_t sys_get_used_ram () {
 
 $LN3:
 	sub	rsp, 40					; 00000028H
 
-; 67   : 	x64_cli ();
+; 68   : 	x64_cli ();
 
 	call	x64_cli
 
-; 68   : 	return pmmngr_get_used_ram ();
+; 69   : 	return pmmngr_get_used_ram ();
 
 	call	?pmmngr_get_used_ram@@YA_KXZ		; pmmngr_get_used_ram
 
-; 69   : }
+; 70   : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -110,7 +109,7 @@ pos$ = 88
 size$ = 96
 ?unmap_shared_memory@@YAXG_K0@Z PROC			; unmap_shared_memory
 
-; 50   : void unmap_shared_memory (uint16_t dest_id, uint64_t pos, size_t size) {
+; 51   : void unmap_shared_memory (uint16_t dest_id, uint64_t pos, size_t size) {
 
 $LN7:
 	mov	QWORD PTR [rsp+24], r8
@@ -118,23 +117,23 @@ $LN7:
 	mov	WORD PTR [rsp+8], cx
 	sub	rsp, 72					; 00000048H
 
-; 51   : 	x64_cli ();
+; 52   : 	x64_cli ();
 
 	call	x64_cli
 
-; 52   : 
-; 53   : 	thread_t* t = thread_iterate_ready_list (dest_id);
+; 53   : 
+; 54   : 	thread_t* t = thread_iterate_ready_list (dest_id);
 
 	movzx	ecx, WORD PTR dest_id$[rsp]
 	call	?thread_iterate_ready_list@@YAPEAU_thread_@@G@Z ; thread_iterate_ready_list
 	mov	QWORD PTR t$[rsp], rax
 
-; 54   : 	if (t == NULL) {
+; 55   : 	if (t == NULL) {
 
 	cmp	QWORD PTR t$[rsp], 0
 	jne	SHORT $LN4@unmap_shar
 
-; 55   : 		t = thread_iterate_block_list(dest_id);
+; 56   : 		t = thread_iterate_block_list(dest_id);
 
 	movzx	eax, WORD PTR dest_id$[rsp]
 	mov	ecx, eax
@@ -142,15 +141,15 @@ $LN7:
 	mov	QWORD PTR t$[rsp], rax
 $LN4@unmap_shar:
 
-; 56   : 	}
-; 57   : 	uint64_t *cr3 = (uint64_t*)t->cr3;
+; 57   : 	}
+; 58   : 	uint64_t *cr3 = (uint64_t*)t->cr3;
 
 	mov	rax, QWORD PTR t$[rsp]
 	mov	rax, QWORD PTR [rax+192]
 	mov	QWORD PTR cr3$[rsp], rax
 
-; 58   : 
-; 59   : 	for (int i = 0; i < size/4096; i++) {
+; 59   : 
+; 60   : 	for (int i = 0; i < size/4096; i++) {
 
 	mov	DWORD PTR i$1[rsp], 0
 	jmp	SHORT $LN3@unmap_shar
@@ -169,7 +168,7 @@ $LN3@unmap_shar:
 	cmp	rcx, rax
 	jae	SHORT $LN1@unmap_shar
 
-; 60   : 		unmap_page (pos + i * 4096);
+; 61   : 		unmap_page (pos + i * 4096);
 
 	mov	eax, DWORD PTR i$1[rsp]
 	imul	eax, 4096				; 00001000H
@@ -180,25 +179,13 @@ $LN3@unmap_shar:
 	mov	rcx, rax
 	call	?unmap_page@@YAX_K@Z			; unmap_page
 
-; 61   : 		unmap_page_ex(cr3,pos + i * 4096, false);
-
-	mov	eax, DWORD PTR i$1[rsp]
-	imul	eax, 4096				; 00001000H
-	cdqe
-	mov	rcx, QWORD PTR pos$[rsp]
-	add	rcx, rax
-	mov	rax, rcx
-	xor	r8d, r8d
-	mov	rdx, rax
-	mov	rcx, QWORD PTR cr3$[rsp]
-	call	?unmap_page_ex@@YAXPEA_K_K_N@Z		; unmap_page_ex
-
-; 62   : 	}
+; 62   : 		//unmap_page_ex(cr3,pos + i * 4096, false);
+; 63   : 	}
 
 	jmp	SHORT $LN2@unmap_shar
 $LN1@unmap_shar:
 
-; 63   : }
+; 64   : }
 
 	add	rsp, 72					; 00000048H
 	ret	0
@@ -218,7 +205,7 @@ pos$ = 104
 size$ = 112
 ?copy_memory@@YAXG_K0@Z PROC				; copy_memory
 
-; 36   : void copy_memory (uint16_t dest_id, uint64_t pos, size_t size) {
+; 37   : void copy_memory (uint16_t dest_id, uint64_t pos, size_t size) {
 
 $LN7:
 	mov	QWORD PTR [rsp+24], r8
@@ -226,22 +213,22 @@ $LN7:
 	mov	WORD PTR [rsp+8], cx
 	sub	rsp, 88					; 00000058H
 
-; 37   : 	x64_cli();
+; 38   : 	x64_cli();
 
 	call	x64_cli
 
-; 38   : 	thread_t* t = thread_iterate_ready_list (dest_id);
+; 39   : 	thread_t* t = thread_iterate_ready_list (dest_id);
 
 	movzx	ecx, WORD PTR dest_id$[rsp]
 	call	?thread_iterate_ready_list@@YAPEAU_thread_@@G@Z ; thread_iterate_ready_list
 	mov	QWORD PTR t$[rsp], rax
 
-; 39   : 	if (t == NULL) {
+; 40   : 	if (t == NULL) {
 
 	cmp	QWORD PTR t$[rsp], 0
 	jne	SHORT $LN4@copy_memor
 
-; 40   : 		t = thread_iterate_block_list(dest_id);
+; 41   : 		t = thread_iterate_block_list(dest_id);
 
 	movzx	eax, WORD PTR dest_id$[rsp]
 	mov	ecx, eax
@@ -249,21 +236,21 @@ $LN7:
 	mov	QWORD PTR t$[rsp], rax
 $LN4@copy_memor:
 
-; 41   : 	}
-; 42   : 	uint64_t *current_cr3 = (uint64_t*)get_current_thread()->cr3;
+; 42   : 	}
+; 43   : 	uint64_t *current_cr3 = (uint64_t*)get_current_thread()->cr3;
 
 	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
 	mov	rax, QWORD PTR [rax+192]
 	mov	QWORD PTR current_cr3$[rsp], rax
 
-; 43   : 	uint64_t *cr3 = (uint64_t*)t->cr3;
+; 44   : 	uint64_t *cr3 = (uint64_t*)t->cr3;
 
 	mov	rax, QWORD PTR t$[rsp]
 	mov	rax, QWORD PTR [rax+192]
 	mov	QWORD PTR cr3$[rsp], rax
 
-; 44   : 
-; 45   : 	for (int i = 0; i < size/4096; i++) {
+; 45   : 
+; 46   : 	for (int i = 0; i < size/4096; i++) {
 
 	mov	DWORD PTR i$1[rsp], 0
 	jmp	SHORT $LN3@copy_memor
@@ -282,7 +269,7 @@ $LN3@copy_memor:
 	cmp	rcx, rax
 	jae	SHORT $LN1@copy_memor
 
-; 46   : 		cr3[pml4_index(pos + i * 4096)] = current_cr3[pml4_index(pos + i * 4096)];
+; 47   : 		cr3[pml4_index(pos + i * 4096)] = current_cr3[pml4_index(pos + i * 4096)];
 
 	mov	eax, DWORD PTR i$1[rsp]
 	imul	eax, 4096				; 00001000H
@@ -306,12 +293,12 @@ $LN3@copy_memor:
 	mov	rdx, QWORD PTR [rdx+r8*8]
 	mov	QWORD PTR [rcx+rax*8], rdx
 
-; 47   : 	}
+; 48   : 	}
 
 	jmp	$LN2@copy_memor
 $LN1@copy_memor:
 
-; 48   : }
+; 49   : }
 
 	add	rsp, 88					; 00000058H
 	ret	0
@@ -332,7 +319,7 @@ pos$ = 120
 size$ = 128
 ?map_shared_memory@@YAXG_K0@Z PROC			; map_shared_memory
 
-; 19   : void map_shared_memory (uint16_t dest_id,uint64_t pos, size_t size) {
+; 20   : void map_shared_memory (uint16_t dest_id,uint64_t pos, size_t size) {
 
 $LN8:
 	mov	QWORD PTR [rsp+24], r8
@@ -340,23 +327,23 @@ $LN8:
 	mov	WORD PTR [rsp+8], cx
 	sub	rsp, 104				; 00000068H
 
-; 20   : 	x64_cli ();
+; 21   : 	x64_cli ();
 
 	call	x64_cli
 
-; 21   : 
-; 22   : 	thread_t* t = thread_iterate_ready_list (dest_id);
+; 22   : 
+; 23   : 	thread_t* t = thread_iterate_ready_list (dest_id);
 
 	movzx	ecx, WORD PTR dest_id$[rsp]
 	call	?thread_iterate_ready_list@@YAPEAU_thread_@@G@Z ; thread_iterate_ready_list
 	mov	QWORD PTR t$[rsp], rax
 
-; 23   : 	if (t == NULL) {
+; 24   : 	if (t == NULL) {
 
 	cmp	QWORD PTR t$[rsp], 0
 	jne	SHORT $LN5@map_shared
 
-; 24   : 		t = thread_iterate_block_list(dest_id);
+; 25   : 		t = thread_iterate_block_list(dest_id);
 
 	movzx	eax, WORD PTR dest_id$[rsp]
 	mov	ecx, eax
@@ -364,21 +351,21 @@ $LN8:
 	mov	QWORD PTR t$[rsp], rax
 $LN5@map_shared:
 
-; 25   : 	}
-; 26   : 	uint64_t *current_cr3 = (uint64_t*)get_current_thread()->cr3;
+; 26   : 	}
+; 27   : 	uint64_t *current_cr3 = (uint64_t*)get_current_thread()->cr3;
 
 	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
 	mov	rax, QWORD PTR [rax+192]
 	mov	QWORD PTR current_cr3$[rsp], rax
 
-; 27   : 	uint64_t *cr3 = (uint64_t*)t->cr3;
+; 28   : 	uint64_t *cr3 = (uint64_t*)t->cr3;
 
 	mov	rax, QWORD PTR t$[rsp]
 	mov	rax, QWORD PTR [rax+192]
 	mov	QWORD PTR cr3$[rsp], rax
 
-; 28   : 
-; 29   : 	for (int i = 0; i < size/4096; i++) {
+; 29   : 
+; 30   : 	for (int i = 0; i < size/4096; i++) {
 
 	mov	DWORD PTR i$1[rsp], 0
 	jmp	SHORT $LN4@map_shared
@@ -397,7 +384,7 @@ $LN4@map_shared:
 	cmp	rcx, rax
 	jae	$LN2@map_shared
 
-; 30   : 	   if (map_page ((uint64_t)pmmngr_alloc(),pos + i * 4096, PAGING_USER)) {
+; 31   : 	   if (map_page ((uint64_t)pmmngr_alloc(),pos + i * 4096, PAGING_USER)) {
 
 	mov	eax, DWORD PTR i$1[rsp]
 	imul	eax, 4096				; 00001000H
@@ -416,7 +403,7 @@ $LN4@map_shared:
 	test	eax, eax
 	je	SHORT $LN1@map_shared
 
-; 31   : 		   cr3[pml4_index(pos + i * 4096)] = current_cr3[pml4_index(pos + i * 4096)];
+; 32   : 		   cr3[pml4_index(pos + i * 4096)] = current_cr3[pml4_index(pos + i * 4096)];
 
 	mov	eax, DWORD PTR i$1[rsp]
 	imul	eax, 4096				; 00001000H
@@ -441,13 +428,13 @@ $LN4@map_shared:
 	mov	QWORD PTR [rcx+rax*8], rdx
 $LN1@map_shared:
 
-; 32   : 	   }
-; 33   : 	}
+; 33   : 	   }
+; 34   : 	}
 
 	jmp	$LN3@map_shared
 $LN2@map_shared:
 
-; 34   : }
+; 35   : }
 
 	add	rsp, 104				; 00000068H
 	ret	0

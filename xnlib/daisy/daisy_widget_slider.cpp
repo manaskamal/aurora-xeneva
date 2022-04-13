@@ -180,6 +180,12 @@ void daisy_slider_mouse_event (daisy_widget_t *wid, daisy_window_t *win, int but
 }
 
 
+void daisy_widget_slider_destroy (daisy_widget_t *widget) {
+	daisy_widget_slider_t *slider = (daisy_widget_slider_t*)widget;
+	free(slider);
+}
+
+
 /**
  * daisy_widget_create_slider -- creates a slider widget
  * @param slider_type -- type of the slider (DAISY_SLIDER_HORIZONTAL, 
@@ -198,6 +204,7 @@ daisy_widget_slider_t *daisy_widget_create_slider (int slider_type) {
 	slider->base.action_event = 0;
 	slider->base.refresh = daisy_slider_refresh;
 	slider->base.scroll_event = 0;
+	slider->base.destroy = daisy_widget_slider_destroy;
 	slider->max = 0;
 	slider->min = 0;
 	slider->progress = 0;

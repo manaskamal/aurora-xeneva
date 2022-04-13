@@ -34,20 +34,19 @@ PUBLIC	?set_rtc_register@@YAXGE@Z			; set_rtc_register
 PUBLIC	?is_updating_rtc@@YAHXZ				; is_updating_rtc
 PUBLIC	?rtc_read_datetime@@YAXXZ			; rtc_read_datetime
 PUBLIC	?rtc_clock_update@@YAX_KPEAX@Z			; rtc_clock_update
+EXTRN	x64_cli:PROC
+EXTRN	x64_sti:PROC
 EXTRN	x64_inportb:PROC
 EXTRN	x64_outportb:PROC
 EXTRN	?interrupt_end@@YAXI@Z:PROC			; interrupt_end
 EXTRN	?interrupt_set@@YAX_KP6AX0PEAX@ZE@Z:PROC	; interrupt_set
-EXTRN	?unblock_thread@@YAXPEAU_thread_@@@Z:PROC	; unblock_thread
-EXTRN	?is_multi_task_enable@@YA_NXZ:PROC		; is_multi_task_enable
-EXTRN	?thread_iterate_block_list@@YAPEAU_thread_@@H@Z:PROC ; thread_iterate_block_list
 EXTRN	?pri_put_message@@YAXPEAU_pri_event_@@@Z:PROC	; pri_put_message
 _BSS	SEGMENT
 bcd	DB	01H DUP (?)
 _BSS	ENDS
 pdata	SEGMENT
 $pdata$?initialize_rtc@@YAXXZ DD imagerel $LN5
-	DD	imagerel $LN5+172
+	DD	imagerel $LN5+251
 	DD	imagerel $unwind$?initialize_rtc@@YAXXZ
 $pdata$?get_rtc_register@@YAEH@Z DD imagerel $LN3
 	DD	imagerel $LN3+36
@@ -61,8 +60,8 @@ $pdata$?is_updating_rtc@@YAHXZ DD imagerel $LN3
 $pdata$?rtc_read_datetime@@YAXXZ DD imagerel $LN6
 	DD	imagerel $LN6+455
 	DD	imagerel $unwind$?rtc_read_datetime@@YAXXZ
-$pdata$?rtc_clock_update@@YAX_KPEAX@Z DD imagerel $LN9
-	DD	imagerel $LN9+238
+$pdata$?rtc_clock_update@@YAX_KPEAX@Z DD imagerel $LN6
+	DD	imagerel $LN6+186
 	DD	imagerel $unwind$?rtc_clock_update@@YAX_KPEAX@Z
 pdata	ENDS
 xdata	SEGMENT
@@ -84,7 +83,6 @@ xdata	ENDS
 _TEXT	SEGMENT
 tv69 = 32
 ready$ = 33
-t$1 = 40
 msg$ = 48
 s$ = 240
 p$ = 248
@@ -92,129 +90,104 @@ p$ = 248
 
 ; 85   : void rtc_clock_update(size_t s, void* p) {
 
-$LN9:
+$LN6:
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 232				; 000000e8H
 
-; 86   : 	bool ready = get_rtc_register(0x0C) & 0x10;
+; 86   : 	x64_cli ();
+
+	call	x64_cli
+
+; 87   : 
+; 88   : 	bool ready = get_rtc_register(0x0C) & 0x10;
 
 	mov	ecx, 12
 	call	?get_rtc_register@@YAEH@Z		; get_rtc_register
 	movzx	eax, al
 	and	eax, 16
 	test	eax, eax
-	je	SHORT $LN7@rtc_clock_
+	je	SHORT $LN4@rtc_clock_
 	mov	BYTE PTR tv69[rsp], 1
-	jmp	SHORT $LN8@rtc_clock_
-$LN7@rtc_clock_:
+	jmp	SHORT $LN5@rtc_clock_
+$LN4@rtc_clock_:
 	mov	BYTE PTR tv69[rsp], 0
-$LN8@rtc_clock_:
+$LN5@rtc_clock_:
 	movzx	eax, BYTE PTR tv69[rsp]
 	mov	BYTE PTR ready$[rsp], al
 
-; 87   : 	if (ready) {
+; 89   : 	if (ready) {
 
 	movzx	eax, BYTE PTR ready$[rsp]
 	test	eax, eax
-	je	SHORT $LN4@rtc_clock_
+	je	SHORT $LN1@rtc_clock_
 
-; 88   : 		rtc_read_datetime();
+; 90   : 		rtc_read_datetime();
 
 	call	?rtc_read_datetime@@YAXXZ		; rtc_read_datetime
-$LN4@rtc_clock_:
+$LN1@rtc_clock_:
 
-; 89   : 	}
-; 90   : 
-; 91   : 	
-; 92   : 	pri_event_t msg;
-; 93   : 	msg.type = CLOCK_MESSAGE;
+; 91   : 	}
+; 92   : 
+; 93   : 	
+; 94   : 	pri_event_t msg;
+; 95   : 	msg.type = CLOCK_MESSAGE;
 
 	mov	BYTE PTR msg$[rsp], 10
 
-; 94   : 	msg.dword = second;
+; 96   : 	msg.dword = second;
 
 	movzx	eax, BYTE PTR ?second@@3EA		; second
 	mov	DWORD PTR msg$[rsp+4], eax
 
-; 95   : 	msg.dword2 = minute;
+; 97   : 	msg.dword2 = minute;
 
 	movzx	eax, BYTE PTR ?minute@@3EA		; minute
 	mov	DWORD PTR msg$[rsp+8], eax
 
-; 96   : 	msg.dword3 = hour;
+; 98   : 	msg.dword3 = hour;
 
 	movzx	eax, BYTE PTR ?hour@@3EA		; hour
 	mov	DWORD PTR msg$[rsp+12], eax
 
-; 97   : 	msg.dword5 = day;
+; 99   : 	msg.dword5 = day;
 
 	movzx	eax, BYTE PTR ?day@@3EA			; day
 	mov	DWORD PTR msg$[rsp+20], eax
 
-; 98   : 	msg.dword6 = month;
+; 100  : 	msg.dword6 = month;
 
 	movzx	eax, BYTE PTR ?month@@3EA		; month
 	mov	DWORD PTR msg$[rsp+24], eax
 
-; 99   : 	msg.dword7 = year;
+; 101  : 	msg.dword7 = year;
 
 	movzx	eax, BYTE PTR ?year@@3EA		; year
 	mov	DWORD PTR msg$[rsp+28], eax
 
-; 100  : 	msg.to_id = 3; //the dock bar
+; 102  : 	msg.to_id = 3; //the dock bar
 
 	mov	BYTE PTR msg$[rsp+1], 3
 
-; 101  : 
-; 102  : 	pri_put_message(&msg);
+; 103  : 
+; 104  : 	pri_put_message(&msg);
 
 	lea	rcx, QWORD PTR msg$[rsp]
 	call	?pri_put_message@@YAXPEAU_pri_event_@@@Z ; pri_put_message
 
-; 103  : 
-; 104  : 	if (is_multi_task_enable()) {
+; 105  : 
+; 106  : 
+; 107  : 	x64_sti();
 
-	call	?is_multi_task_enable@@YA_NXZ		; is_multi_task_enable
-	movzx	eax, al
-	test	eax, eax
-	je	SHORT $LN3@rtc_clock_
+	call	x64_sti
 
-; 105  : 		thread_t *t = thread_iterate_block_list(3);
-
-	mov	ecx, 3
-	call	?thread_iterate_block_list@@YAPEAU_thread_@@H@Z ; thread_iterate_block_list
-	mov	QWORD PTR t$1[rsp], rax
-
-; 106  : 		if (t != NULL) {
-
-	cmp	QWORD PTR t$1[rsp], 0
-	je	SHORT $LN2@rtc_clock_
-
-; 107  : 			if (t->state == THREAD_STATE_BLOCKED)
-
-	mov	rax, QWORD PTR t$1[rsp]
-	movzx	eax, BYTE PTR [rax+232]
-	cmp	eax, 3
-	jne	SHORT $LN1@rtc_clock_
-
-; 108  : 				unblock_thread(t);
-
-	mov	rcx, QWORD PTR t$1[rsp]
-	call	?unblock_thread@@YAXPEAU_thread_@@@Z	; unblock_thread
-$LN1@rtc_clock_:
-$LN2@rtc_clock_:
-$LN3@rtc_clock_:
-
-; 109  : 		}
-; 110  : 	}
-; 111  : 	//!send a EOI to apic
-; 112  : 	interrupt_end(8);
+; 108  : 	//!send a EOI to apic
+; 109  : 	interrupt_end(8);
 
 	mov	ecx, 8
 	call	?interrupt_end@@YAXI@Z			; interrupt_end
 
-; 113  : }
+; 110  : }
 
 	add	rsp, 232				; 000000e8H
 	ret	0
@@ -615,10 +588,29 @@ status$ = 32
 tv81 = 36
 ?initialize_rtc@@YAXXZ PROC				; initialize_rtc
 
-; 115  : void initialize_rtc () {
+; 112  : void initialize_rtc () {
 
 $LN5:
 	sub	rsp, 56					; 00000038H
+
+; 113  : 
+; 114  : 	century = year = month = day = 0;
+
+	mov	BYTE PTR ?day@@3EA, 0			; day
+	movzx	eax, BYTE PTR ?day@@3EA			; day
+	mov	BYTE PTR ?month@@3EA, al		; month
+	movzx	eax, BYTE PTR ?month@@3EA		; month
+	mov	BYTE PTR ?year@@3EA, al			; year
+	movzx	eax, BYTE PTR ?year@@3EA		; year
+	mov	BYTE PTR ?century@@3EA, al		; century
+
+; 115  :     hour = minute = second = 0;
+
+	mov	BYTE PTR ?second@@3EA, 0		; second
+	movzx	eax, BYTE PTR ?second@@3EA		; second
+	mov	BYTE PTR ?minute@@3EA, al		; minute
+	movzx	eax, BYTE PTR ?minute@@3EA		; minute
+	mov	BYTE PTR ?hour@@3EA, al			; hour
 
 ; 116  : 
 ; 117  : 	unsigned char status = get_rtc_register (0x0B);

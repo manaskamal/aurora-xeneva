@@ -35,6 +35,7 @@ typedef struct _process_ {
 	uint64_t* cr3;
 	uint64_t image_base;
 	uint64_t stack;
+	uint64_t mmap_sz;
 	struct _process_ *next;
 	struct _process_ *prev;
 	struct _process_ *parent;

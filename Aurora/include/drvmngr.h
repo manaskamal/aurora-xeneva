@@ -52,7 +52,7 @@ typedef struct _pci_p_ {
 }pci_p_t;
 
 typedef struct _mem_ {
-	void* (*malloc_p) (size_t size);
+	void* (*malloc_p) (unsigned int size);
 	uint64_t* (*get_phys_address_p) (uint64_t virt_address);
 	void (*mfree_p) (void* addr);
 	void* (*pmmngr_alloc_p) ();

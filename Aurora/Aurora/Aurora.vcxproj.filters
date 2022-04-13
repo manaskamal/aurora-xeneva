@@ -342,6 +342,9 @@
     <ClInclude Include="..\include\fs\fat\fat_f.h">
       <Filter>include\fs\fat</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\termios.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="init.cpp">
@@ -520,9 +523,6 @@
     </ClCompile>
     <ClCompile Include="fs\ttype.cpp">
       <Filter>source\fs</Filter>
-    </ClCompile>
-    <ClCompile Include="arch\x86_64\block.cpp">
-      <Filter>source\arch\x86_64</Filter>
     </ClCompile>
     <ClCompile Include="sound.cpp">
       <Filter>source</Filter>

@@ -70,6 +70,7 @@ pri_bmp_image *spin_cursor;
 uint32_t* cursor_back;
 int pri_loop_fd;
 bool _window_update_all_ = false;
+bool _window_broadcast_mouse_ = true;
 
 /* mouse coordinations */
 uint32_t mouse_x, mouse_y;
@@ -454,6 +455,12 @@ void pri_wallpaper_draw (Image *img) {
 				j++;
 			}
 		}
+	} else {
+		for (int i = 0; i < canvas->width; i++) {
+			for (int j = 0; j < canvas->height; j++) {
+				pri_wallp_pixel(0 + i, 0 + j, LIGHTBLACK);
+			}
+		}
 	}
 
 }
@@ -534,6 +541,34 @@ void pri_notify_win_create (char *win_title, uint16_t win_id) {
 	e.from_id = get_current_pid();
 	ioquery(pri_loop_fd, PRI_LOOP_PUT_EVENT, &e);
 
+}
+
+/**
+ * pri_notify_win_destroyed -- notifies desktop components about 
+ * window being destroyed
+ */
+void pri_notify_win_destroyed (uint16_t win_id) {
+	pri_event_t e;
+	memset(&e, 0, sizeof(pri_event_t));
+	e.type = DAISY_NOTIFY_WIN_REMOVE;
+	e.dword = win_id;
+	e.to_id = 3;
+	e.from_id = get_current_pid();
+	ioquery(pri_loop_fd, PRI_LOOP_PUT_EVENT, &e);
+	sys_print_text ("Notified \r\n");
+}
+
+
+/**
+ * pri_send_quit -- notify the window owner to quit
+ */
+void pri_send_quit (uint16_t owner_id) {
+	pri_event_t e;
+	memset(&e, 0, sizeof(pri_event_t));
+	e.type = DAISY_WINDOW_CLOSED;
+	e.to_id = owner_id;
+	e.from_id = get_current_pid();
+	ioquery(pri_loop_fd, PRI_LOOP_PUT_EVENT, &e);
 }
 
 /*
@@ -677,7 +712,19 @@ void pri_window_move (pri_window_t *win, int x, int y) {
 
 	pri_win_info_t* info = (pri_win_info_t*)win->pri_win_info_loc;
 
-	pri_rect_t *r = pri_create_rect(info->x, info->y, info->width, info->height);
+	int wx = info->x;
+	int wy = info->y;
+	int ww = info->width;
+	int wh = info->height;
+
+	if (info->x + info->width >= canvas->width)
+		ww = canvas->width - info->x;
+
+	if (info->y + info->height >= canvas->height){
+		wh = canvas->height - info->y;
+	}
+
+	pri_rect_t *r = pri_create_rect(wx, wy,ww, wh);
 	pri_wallp_add_dirty_clip(r);
 	info->x = x;
 	info->y = y;
@@ -914,6 +961,7 @@ void pri_win_check_draggable (int x, int y, int button) {
 	}
 	 /**  check if a draggable window is present or not **/
 	if (dragg_win) {
+		_window_broadcast_mouse_ = false;
 		pri_win_info_t *wininfo = (pri_win_info_t*)dragg_win->pri_win_info_loc;
 		int posx = x - dragg_win->drag_x;
 		int posy = y - dragg_win->drag_y;
@@ -932,6 +980,7 @@ void pri_win_check_draggable (int x, int y, int button) {
 	if (!button)  {
 		dragg_win = NULL;
 		resz_win = NULL;
+		_window_broadcast_mouse_ = true;
 	}
 	
 	/* store the last mouse_button */
@@ -962,7 +1011,7 @@ int main (int argc, char* argv[]) {
 	cursor_init ();
 	load_cursor ("/cursor.bmp",(uint8_t*)0x0000070000000000, arrow_cursor);
 	load_cursor ("/spin.bmp", (uint8_t*)0x0000070000001000, spin_cursor);
-	Image* wallp = pri_load_wallpaper ("/gwallp.jpg");
+	Image* wallp = pri_load_wallpaper ("/madhu.jpg");
 	pri_wallpaper_draw(wallp);
 	
 
@@ -1009,7 +1058,7 @@ int main (int argc, char* argv[]) {
 			int button2 = mouse.dword4;
 			pri_win_check_draggable(mouse_x, mouse_y,button); 
 			/* send the mouse event to focused window */
-			if (focused_win) {
+			if (focused_win && _window_broadcast_mouse_) {
 				pri_win_send_mouse_event(focused_win, mouse_x,mouse_y, button2);
 			}
 
@@ -1020,9 +1069,7 @@ int main (int argc, char* argv[]) {
 			if (focused_win) {
 				pri_win_send_key_event(focused_win, key_msg.dword);
 			}
-			if (key_msg.dword == KEY_A) {
-				create_process("/snake.exe", "snake");
-			}
+			
 			if (key_msg.dword == KEY_W) {
 				pri_wallpaper_change(wallpaper,"/leaf.jpg");
 				pri_wallpaper_draw(wallpaper->img);
@@ -1033,7 +1080,7 @@ int main (int argc, char* argv[]) {
 			}
 
 			if (key_msg.dword == KEY_I) {
-				pri_wallpaper_change(wallpaper,"/gwallp.jpg");
+				pri_wallpaper_change(wallpaper,"/winne1.jpg");
 				pri_wallpaper_draw(wallpaper->img);
 				pri_wallpaper_present();
 				 cursor_store_back(mouse_x, mouse_y);
@@ -1041,6 +1088,10 @@ int main (int argc, char* argv[]) {
 				_window_update_all_ = true;
 			}
 
+			if (key_msg.dword == KEY_M) {
+				uint64_t mb = sys_get_used_ram();
+				sys_print_text ("USED Ram -> %d MB \r\n", mb / 1024 / 1024);
+			}
 			memset(&key_msg, 0, sizeof(message_t));
 		}
 
@@ -1079,8 +1130,6 @@ int main (int argc, char* argv[]) {
 			}
 
 
-			pri_notify_win_create(win->title, win->owner_id);
-
 			pri_window_set_focused(win, false);
 
 			/* Send the new gift message to client */
@@ -1118,7 +1167,17 @@ int main (int argc, char* argv[]) {
 		 * telling the window manager that it's ready to 
 		 * show up on the screen */
 		if (event.type == PRI_WIN_READY) {
+			pri_window_t *win = NULL;
+			for (int i = 0; i < window_list->pointer; i++) {
+				win = (pri_window_t*)list_get_at(window_list,i);
+				if (win->owner_id == event.from_id) {
+					break;
+				}
+			}
+
 			_window_update_all_ = true;
+
+			pri_notify_win_create(win->title, win->owner_id);
 			memset (&event, 0, sizeof(pri_event_t));
 		}
 
@@ -1133,6 +1192,38 @@ int main (int argc, char* argv[]) {
 			if (win != NULL) {
 				pri_window_move (win, x, y);
 			}
+			memset(&event, 0, sizeof(pri_event_t));
+		}
+
+
+		if (event.type == PRI_WIN_MARK_FOR_CLOSE) {
+			int x = 0;
+			int y = 0;
+			int w = 0;
+			int h = 0;
+			uint16_t owner_id = event.from_id;
+			pri_notify_win_destroyed(owner_id);
+			for (int i = 0; i < window_list->pointer; i++) {
+				pri_window_t *win = (pri_window_t*)list_get_at(window_list, i);
+				if (win->owner_id == event.from_id)  {
+					pri_win_info_t *info = (pri_win_info_t*)win->pri_win_info_loc;
+					x = info->x;
+					y = info->y;
+					w = info->width;
+					h = info->height;
+					sys_unmap_sh_mem(win->owner_id,(uint64_t)win->backing_store,w*h*4);
+					sys_unmap_sh_mem(win->owner_id,(uint64_t)win->pri_win_info_loc,8192);
+					list_remove(window_list, i);
+					free(win);
+					
+					break;
+				}
+			}
+
+			pri_send_quit(owner_id);
+			if (x != 0 && y != 0 && w != 0 && h != 0) 
+				pri_wallp_add_dirty_clip(pri_create_rect(x,y,w,h));
+
 			memset(&event, 0, sizeof(pri_event_t));
 		}
 

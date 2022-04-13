@@ -88,6 +88,11 @@ void daisy_list_scroll_event (daisy_widget_t *widget, daisy_widget_t* scrollview
 }
 
 
+void daisy_list_destroy (daisy_widget_t *widget) {
+	daisy_widget_list_t *list = (daisy_widget_list_t*)widget;
+	free(list);
+}
+
 /**
  * daisy_widget_create_list -- creates a new list widget
  */
@@ -102,6 +107,7 @@ daisy_widget_list_t *daisy_widget_create_list (daisy_scroll_view_t *sv) {
 	list->base.mouse_event = daisy_list_mouse_event;
 	list->base.scroll_event = daisy_list_scroll_event;
 	list->base.refresh = daisy_list_refresh;
+	list->base.destroy = daisy_list_destroy;
 	list->num_list_items = 0;
 	list->sv = sv;
 	list->elements = list_init();

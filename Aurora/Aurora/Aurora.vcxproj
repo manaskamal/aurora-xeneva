@@ -118,11 +118,11 @@
       <WarningLevel>TurnOffAllWarnings</WarningLevel>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <SDLCheck>
       </SDLCheck>
       <OmitFramePointers>true</OmitFramePointers>
-      <PreprocessorDefinitions>ARCH_X64;USE_APIC;X64; _DEBUG_ON_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>ARCH_X64;USE_APIC;X64;_DEBUG_ON_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <IgnoreStandardIncludePath>true</IgnoreStandardIncludePath>
       <ExceptionHandling>false</ExceptionHandling>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
@@ -133,10 +133,10 @@
       <AssemblerOutput>AssemblyAndSourceCode</AssemblerOutput>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <CallingConvention>Cdecl</CallingConvention>
+      <PrecompiledHeaderFile />
     </ClCompile>
     <Link>
-      <GenerateDebugInformation>
-      </GenerateDebugInformation>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
       <OutputFile>F:\EFI\XENEVA\xnkrnl.exe</OutputFile>
       <AdditionalDependencies>
       </AdditionalDependencies>
@@ -158,7 +158,7 @@
       <DataExecutionPrevention>
       </DataExecutionPrevention>
       <AdditionalOptions>/ALIGN:512 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalLibraryDirectories>E:\Xeneva Project\Xeneva\Aurora;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>E:\Xeneva Project\Xeneva\Aurora;</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -265,6 +265,7 @@
     <ClInclude Include="..\include\stdio.h" />
     <ClInclude Include="..\include\string.h" />
     <ClInclude Include="..\include\sysserv.h" />
+    <ClInclude Include="..\include\termios.h" />
     <ClInclude Include="..\include\timer.h" />
     <ClInclude Include="..\include\utils\circ_buf.h" />
     <ClInclude Include="..\include\utils\lnklist.h" />
@@ -275,7 +276,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="arch\x86_64\apic.cpp" />
-    <ClCompile Include="arch\x86_64\block.cpp" />
     <ClCompile Include="arch\x86_64\cpu.cpp" />
     <ClCompile Include="arch\x86_64\exception.cpp" />
     <ClCompile Include="arch\x86_64\ioapic.cpp" />

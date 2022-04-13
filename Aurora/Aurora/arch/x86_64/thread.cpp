@@ -36,9 +36,12 @@ bool  scheduler_enable = false;
 bool  scheduler_initialized = false;    
 uint16_t task_id = 0;
 
-list_t *blocked_list;
+//list_t *blocked_list;
 thread_t *task_list_head = NULL;
 thread_t *task_list_last = NULL;
+
+thread_t *blocked_thr_head = NULL;
+thread_t *blocked_thr_last = NULL;
 
 uint32_t system_tick;
 extern "C" thread_t *current_thread = NULL;
@@ -85,6 +88,47 @@ void task_delete (thread_t* thread) {
 
 	//pmmngr_free (thread);
 }
+
+
+/**
+ * Insert a thread to thread list
+ * @param new_task -- new thread address
+ */
+void thread_insert_block (thread_t* new_task ) {
+	new_task->next = NULL;
+	new_task->prev = NULL;
+
+	if (blocked_thr_head == NULL) {
+		blocked_thr_last = new_task;
+		blocked_thr_head = new_task;
+	} else {
+		blocked_thr_last->next = new_task;
+		new_task->prev = blocked_thr_last;
+	}
+	blocked_thr_last = new_task;
+}
+
+/**
+ * remove a thread from thread list
+ * @param thread -- thread address to remove
+ */
+void thread_delete_block (thread_t* thread) {
+
+	if (blocked_thr_head == NULL)
+		return;
+
+	if (thread == blocked_thr_head) {
+		blocked_thr_head = blocked_thr_head->next;
+	} else {
+		thread->prev->next = thread->next;
+	}
+
+	if (thread == blocked_thr_last) {
+		blocked_thr_last = thread->prev;
+	} else {
+		thread->next->prev = thread->prev;
+	}
+}
 /*=========================================================================================*/
 /*=========================================================================================*/
 /*=========================================================================================*/
@@ -100,6 +144,7 @@ void task_delete (thread_t* thread) {
 thread_t* create_kthread (void (*entry) (void), uint64_t stack,uint64_t cr3, char name[8], uint8_t priority)
 {
 	thread_t *t = (thread_t*)malloc(sizeof(thread_t));//pmmngr_alloc();
+	memset(t, 0, sizeof(thread_t));
 	t->ss = 0x10;
 	t->rsp = (uint64_t*)stack;
 	t->rflags = 0x202;
@@ -152,7 +197,7 @@ thread_t* create_kthread (void (*entry) (void), uint64_t stack,uint64_t cr3, cha
 thread_t* create_user_thread (void (*entry) (void*),uint64_t stack,uint64_t cr3, char name[8], uint8_t priority)
 {
 	thread_t *t = (thread_t*)malloc(sizeof(thread_t));//pmmngr_alloc();
-	memset (t, 0, 4096);
+	memset (t, 0, sizeof(thread_t));
 	t->ss = SEGVAL(GDT_ENTRY_USER_DATA,3); 
 	t->rsp = (uint64_t*)stack;
 	t->rflags = 0x286;
@@ -181,7 +226,7 @@ thread_t* create_user_thread (void (*entry) (void*),uint64_t stack,uint64_t cr3,
 	t->es = 0x23;
 	t->fs = 0x23;
 	t->gs = 0x23;
-	t->cr3 = cr3;
+	t->cr3 = v2p(cr3);
 	t->name = name;
 	t->id = task_id++;
 	t->quanta = 0;
@@ -202,7 +247,7 @@ thread_t* create_user_thread (void (*entry) (void*),uint64_t stack,uint64_t cr3,
 //! the main idle thread
 void idle_thread () {
 	while(1) {
-		x64_hlt();
+		//x64_hlt();
 	}
 }
 
@@ -210,13 +255,13 @@ void idle_thread () {
 //! Initialize the scheduler engine and its core
 //! data structure
 void initialize_scheduler () {
-	blocked_list = initialize_list();
+	//blocked_list = initialize_list();
 	scheduler_enable = true;
 	scheduler_initialized = true;
 	task_id = 0;
 	/** Here create the first thread, the idle thread which never gets
 	    blocked nor get destroyed untill the system turns off **/
-	thread_t *idle_ = create_kthread (idle_thread,(uint64_t)pmmngr_alloc(),x64_read_cr3(),"Idle",1);
+	thread_t *idle_ = create_kthread (idle_thread,(uint64_t)p2v((uint64_t)pmmngr_alloc()),x64_read_cr3(),"Idle",1);
 	current_thread = idle_;
 }
 
@@ -263,7 +308,6 @@ void scheduler_isr (size_t v, void* param) {
 		goto sched_end;
 
 	//mutex_lock (scheduler_mutex);
-   
 	/** save currently running thread contexts */
 	if (save_context(current_thread,get_kernel_tss()) == 0) {
 		current_thread->cr3 = x64_read_cr3();
@@ -351,18 +395,18 @@ bool is_multi_task_enable () {
 void block_thread (thread_t *thread) {
 	thread->state = THREAD_STATE_BLOCKED;
 	task_delete (thread);
-	list_add (blocked_list,thread);
+	//list_add (blocked_list,thread);
+	thread_insert_block(thread);
 }
 
 
 
 //! Iterate through block list and find a specific thread
 thread_t* thread_iterate_block_list (int id) {
-	if (blocked_list->pointer >0)
-		for (int i = 0; i < blocked_list->pointer; i++) {
-			thread_t*  t = (thread_t*)list_get_at (blocked_list,i);
-			if (t->id == id) {
-				return t;
+	if (blocked_thr_head != NULL)
+		for (thread_t *thr = blocked_thr_head; thr != NULL; thr = thr->next) {
+			if (thr->id == id) {
+				return thr;
 		}
 	}
 	return NULL;
@@ -391,12 +435,10 @@ uint16_t thread_get_id_by_name (char* name) {
 	if (id > 0)
 		return id;
 	else{
-		if (blocked_list->pointer >0)
-			for (int i = 0; i < blocked_list->pointer; i++) {
-				thread_t*  t = (thread_t*)list_get_at (blocked_list,i);
-				if (t->name == name) {
-					return t->id;
-				}
+		if (blocked_thr_head != NULL)
+			for (thread_t *thr = blocked_thr_head; thr != NULL; thr = thr->next) {
+				if (thr->name == name) 
+					return thr->id;
 			}
 	}
 
@@ -407,12 +449,11 @@ uint16_t thread_get_id_by_name (char* name) {
 void unblock_thread (thread_t *t) {
 	x64_cli();
 	t->state = THREAD_STATE_READY;
-	thread_insert (t);
-	for (int i = 0; i < blocked_list->pointer; i++) {
-		thread_t *thr = (thread_t*)list_get_at(blocked_list,i);
+	for (thread_t *thr = blocked_thr_head; thr != NULL; thr = thr->next) {
 		if (thr == t) 
-			list_remove (blocked_list,i);
+			thread_delete_block(thr);
 	}
+	thread_insert (t);
 }
 
 

@@ -14,7 +14,7 @@ EXTRN	?pmmngr_alloc@@YAPEAXXZ:PROC			; pmmngr_alloc
 EXTRN	?map_page_ex@@YA_NPEA_K_K1E@Z:PROC		; map_page_ex
 pdata	SEGMENT
 $pdata$?allocate_kstack@@YA_KPEA_K@Z DD imagerel $LN6
-	DD	imagerel $LN6+125
+	DD	imagerel $LN6+122
 	DD	imagerel $unwind$?allocate_kstack@@YA_KPEA_K@Z
 pdata	ENDS
 xdata	SEGMENT
@@ -42,7 +42,7 @@ $LN6:
 	mov	rax, -5497558138880			; fffffb0000000000H
 	mov	QWORD PTR location$[rsp], rax
 
-; 19   : 	for (int i = 0; i < (2*1024*1024)/4096; i++) {
+; 19   : 	for (int i = 0; i < 8192/4096; i++) {
 
 	mov	DWORD PTR i$1[rsp], 0
 	jmp	SHORT $LN3@allocate_k
@@ -51,7 +51,7 @@ $LN2@allocate_k:
 	inc	eax
 	mov	DWORD PTR i$1[rsp], eax
 $LN3@allocate_k:
-	cmp	DWORD PTR i$1[rsp], 512			; 00000200H
+	cmp	DWORD PTR i$1[rsp], 2
 	jge	SHORT $LN1@allocate_k
 
 ; 20   : 		void* p = pmmngr_alloc();
@@ -79,9 +79,9 @@ $LN3@allocate_k:
 $LN1@allocate_k:
 
 ; 23   : 	//index += 2*1024*1024;
-; 24   : 	return (KSTACK_START + 2*1024*1024);
+; 24   : 	return (KSTACK_START + 8192);
 
-	mov	rax, -5497556041728			; fffffb0000200000H
+	mov	rax, -5497558130688			; fffffb0000002000H
 
 ; 25   : }
 

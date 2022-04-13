@@ -34,7 +34,7 @@
 #include <arch\x86_64\mmngr\kheap.h>
 #include <stdio.h>
 #include <arch\x86_64\thread.h>
-
+#include <serial.h>
 
 /**
  * DESIGN: Terminal emulator process creates a ttype object
@@ -63,6 +63,7 @@ void ttype_insert (ttype_t* tty ) {
 	if (root == NULL) {
 		last = tty;
 		root = tty;
+		//_debug_print_ ("**TTY ROOT WAS NULL \r\n");
 	} else {
 		last->next = tty;
 		tty->prev = last;
@@ -116,44 +117,44 @@ void ttype_master_write (vfs_node_t *file, uint8_t* buffer, uint32_t length) {
 	x64_cli();
 
 	//! get the master node from the child process
-	vfs_node_t *node = get_current_thread()->fd[get_current_thread()->master_fd];
-	ttype_t *type = (ttype_t*)node->device;
+	//vfs_node_t *node = get_current_thread()->fd[get_current_thread()->master_fd];
+	//ttype_t *type = (ttype_t*)node->device;
 
 	//! first of all, get the registered terminal emulator
 	//! id, we need to unblock it, if it is blocked by default
-	thread_t *dest = thread_iterate_ready_list(type->pid);
+	/*thread_t *dest = thread_iterate_ready_list(type->pid);
 	if (dest == NULL)
-		dest = thread_iterate_block_list(type->pid);
+		dest = thread_iterate_block_list(type->pid);*/
 
 	//! check, if another data is already written to the
 	//! buffer
-	if (type->written > 0)  {
+	//if (type->written > 0)  {
 		//! yes, the buffer is in use, let's wait for the
 		//! buffer usage to be finished
-		type->blocked_pid = get_current_thread()->id;
+		//type->blocked_pid = get_current_thread()->id;
 
 		//! unblock the terminal emulator if it is blocked cause
 		//! it will get the ttype buffer usage to be finished
-		if (dest != NULL && dest->state == THREAD_STATE_BLOCKED)
-			unblock_thread(dest);
+		//if (dest != NULL && dest->state == THREAD_STATE_BLOCKED)
+		//	unblock_thread(dest);
 
-		//! block the current thread, till the buffer usage get over
-		block_thread(get_current_thread());
-		force_sched();
-	}
+		////! block the current thread, till the buffer usage get over
+		//block_thread(get_current_thread());
+		//force_sched();
+	//}
 
 
      //! unblock the terminal emulator, cause - new text is available to 
 	//! be processed
-	if (dest != NULL && dest->state == THREAD_STATE_BLOCKED)
-		unblock_thread(dest);
+	//if (dest != NULL && dest->state == THREAD_STATE_BLOCKED)
+	//	unblock_thread(dest);
 
-	//! so finally we now use the type buffer to store our text data
-	for (int i = 0; i < length; i++) {
-		circular_buf_put(type->in_buffer,buffer[i]);
-		type->written++; //increament the written count, cause we only
-		// read that much of text, that actually get written
-	}
+	////! so finally we now use the type buffer to store our text data
+	//for (int i = 0; i < length; i++) {
+	//	circular_buf_put(type->in_buffer,buffer[i]);
+	//	//type->written++; //increament the written count, cause we only
+	//	// read that much of text, that actually get written
+	//}
 
 
 	
@@ -171,30 +172,30 @@ void ttype_slave_read (vfs_node_t *file, uint64_t* buffer,uint32_t length) {
 	x64_cli();
 
 	/* get the ttype */
-	vfs_node_t *node = get_current_thread()->fd[get_current_thread()->slave_fd];
-	ttype_t *type = (ttype_t*)node->device;
+	/*vfs_node_t *node = get_current_thread()->fd[get_current_thread()->slave_fd];
+	ttype_t *type = (ttype_t*)node->device;*/
 
 	//! lets read everything that has been written 
 	//! by child, be carefull we only read that much
 	//! that have been written by child process
-	for (int i = 0; i < type->written; i++) {
-		circular_buf_get(type->in_buffer,(uint8_t*)&buffer[i]);
-	}
+	//for (int i = 0; i < type->written; i++) {
+	//	circular_buf_get(type->in_buffer,(uint8_t*)&buffer[i]);
+	//}
 
 	//! resate the written count, so that child process
 	//! can write its next data
-	type->written = 0;
+	//type->written = 0;
 
 	//! check if child process is blocked
-	if (type->blocked_pid > 0) {
+	//if (type->blocked_pid > 0) {
 		//! yes, than simply unblock it
-		thread_t *dest = thread_iterate_ready_list(type->blocked_pid);
+	/*	thread_t *dest = thread_iterate_ready_list(type->blocked_pid);
 		if (dest == NULL)
 			dest = thread_iterate_block_list(type->blocked_pid);
 
 		if (dest != NULL && dest->state == THREAD_STATE_BLOCKED)
-			unblock_thread(dest);
-	}
+			unblock_thread(dest);*/
+	//}
 
 	
 }
@@ -216,43 +217,40 @@ ttype_t * get_ttype (int id) {
 	return NULL;
 }
 
-void ttype_create (int* master_fd, int* slave_fd) {
-	ttype_t *tty= (ttype_t*)malloc(sizeof(ttype_t)); //pmmngr_alloc();
-	memset (tty, 0, sizeof(ttype_t));
+int ttype_create (int* master_fd, int* slave_fd) {
+	x64_cli();
 
-	uint8_t* inbuffer = (uint8_t*)pmmngr_alloc();
-	memset(inbuffer, 0,4096);
-	uint8_t* outbuffer = (uint8_t*)pmmngr_alloc();
+	/** The malloc needs fixings, that's why there
+	 ** are limited number of pty
+	 **/
+	/*if (master_count > 3)
+		return -1;*/
+
+	ttype_t *tty= (ttype_t*)malloc(sizeof(ttype_t));  //pmmngr_alloc();
+
+	void* inbuffer = pmmngr_alloc();
+	memset(inbuffer, 0, 4096);
+	void* outbuffer = pmmngr_alloc();
 	memset(outbuffer, 0, 4096);
 
-	tty->in_buffer = circ_buf_init(inbuffer,4095);
-	tty->out_buffer = circ_buf_init(outbuffer, 4095);
-
+	tty->in_buffer = circ_buf_init((uint8_t*)inbuffer,4095);
+	tty->out_buffer = circ_buf_init((uint8_t*)outbuffer, 4095);
+	//
 	tty->id = slave_count;
 
 	//! tty->pid -- stores the current terminal emulator id
-	tty->pid = get_current_thread()->id;
-	tty->written = 0;
 
-	///! Create the namings
-	char m_value[2];
-	char s_value[2];
-
-	sztoa(master_count, m_value,10);
-	sztoa(slave_count, s_value,10);
-
-	char master_name[10];
-	strcpy(master_name, "ttym");
-	strcpy (master_name + strlen(master_name)-1, m_value);
-	
+	//! Create the namings
 	char mname[10];
 	strcpy (mname, "/dev/");
-	strcpy (mname + strlen(mname)-1, master_name);
-	
+	strcpy (mname+5, "ttym");
+	sztoa (master_count,mname+9,10);
 
-	///! Master node
-	vfs_node_t *mn = (vfs_node_t*)malloc(sizeof(vfs_node_t));
-	strcpy(mn->filename, master_name);
+
+
+	//////! Master node
+	vfs_node_t *mn = (vfs_node_t*)malloc(sizeof(vfs_node_t));  //pmmngr_alloc();
+	strcpy(mn->filename, mname+5);
 	mn->size = 0;
 	mn->eof = 0;
 	mn->pos = 0;
@@ -265,18 +263,16 @@ void ttype_create (int* master_fd, int* slave_fd) {
 	mn->write = ttype_master_write;
 	mn->read_blk = 0;
 	mn->ioquery = 0;
-	vfs_mount (mname, mn);
 
-	char slave_name[10];
-	strcpy(slave_name, "ttys");
-	strcpy (slave_name + strlen(slave_name)-1,s_value);
+	_debug_print_ ("[TTY]: Master node mounted at -> %s  \r\n", mname);
 
 	char sname[10];
-	strcpy(sname, "/dev/");
-	strcpy (sname + strlen(sname)-1, slave_name);
+	strcpy (sname, "/dev/");
+	strcpy (sname+5, "ttys");
+	sztoa (slave_count,sname+9,10);
 
 	vfs_node_t *sn = (vfs_node_t*)malloc(sizeof(vfs_node_t));
-	strcpy(sn->filename, slave_name);
+	strcpy(sn->filename, sname);
 	sn->size = 0;
 	sn->eof = 0;
 	sn->pos = 0;
@@ -291,11 +287,36 @@ void ttype_create (int* master_fd, int* slave_fd) {
 	sn->ioquery = 0;
 	vfs_mount (sname, sn);
 
-	for (int i = 0; i < 32; i++) {
+	_debug_print_ ("[TTY]: Slave node mounted at %s \r\n", sname);
+	
+	/*for (int i = 0; i < 32; i++) {
 		tty->m_path[i] = mname[i];
 		tty->s_path[i] = sname[i];
-	}
+	}*/
 		
+	tty->controlling_pid = 0;
+	tty->foreground_pid = 0;
+
+	tty->term.c_iflag = ICRNL | BRKINT;
+	tty->term.c_oflag = ONLCR | OPOST;
+	tty->term.c_lflag = ECHO | ECHOE | ECHOK | ICANON | ISIG | IEXTEN;
+	tty->term.c_cflag = CREAD | CS8;
+	tty->term.c_cc[VEOF] = 4;
+	tty->term.c_cc[VEOL] = 0;
+	tty->term.c_cc[VERASE] = 0x7f;
+	tty->term.c_cc[VINTR] = 3;
+	tty->term.c_cc[VKILL] = 21;
+	tty->term.c_cc[VMIN] = 1;
+	tty->term.c_cc[VQUIT] = 28;
+	tty->term.c_cc[VSTART] = 17;
+	tty->term.c_cc[VSTOP] = 19;
+	tty->term.c_cc[VSUSP] = 26;
+	tty->term.c_cc[VTIME] = 0;
+	tty->term.c_cc[VLNEXT] = 22;
+	tty->term.c_cc[VWERASE] = 23;
+
+	tty->size.ws_col = 25;
+	tty->size.ws_row = 80;
 
 	//! Allocate fd for master
 	int m_fd = get_current_thread()->fd_current;
@@ -313,11 +334,19 @@ void ttype_create (int* master_fd, int* slave_fd) {
 	get_current_thread()->fd[1] = mn;
 	get_current_thread()->fd[2] = mn;
 
+	//tty->master_fd = 0; //m_fd;
+	//tty->slave_fd = 0; //s_fd;
+
+	//_debug_print_ ("TTY Created \r\n");
+
+	_debug_print_ ("Used RAM -> %d MB/ Total RAM %d MB\r\n", pmmngr_get_used_ram() / 1024 / 1024, pmmngr_get_total_ram() / 1024 / 1024);
+
 	ttype_insert (tty);
 	master_count++;
 	slave_count++;
 	*master_fd = m_fd;
 	*slave_fd = s_fd;
+	return 0;
 }
 
 void ttype_dup_master (int task_id, int master_fd) {
@@ -332,4 +361,12 @@ void ttype_dup_master (int task_id, int master_fd) {
 		dest->fd[2] = node;
 	}
 	dest->master_fd = 1;
+}
+
+
+void ttype_init () {
+	root = NULL;
+	last = NULL;
+	master_count = 1;
+	slave_count = 1;
 }

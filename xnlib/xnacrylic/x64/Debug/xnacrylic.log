@@ -1,4 +1,4 @@
-﻿Build started 03-03-2022 আবেলি 9:27:37.
+﻿Build started 16-03-2022 আবেলি 12:54:21.
      1>Project "E:\Xeneva Project\Xeneva\xnlib\xnacrylic\xnacrylic.vcxproj" on node 2 (Rebuild target(s)).
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\xnlib\xnclib" /I"E:\Xeneva Project\Xeneva\xnlib\xnacrylic\include" /I"E:\os_dev\freetype2-master\freetype2-master\include" /Zi /nologo /W4 /WX- /sdl- /MP /Od /D ARCH_X64 /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt source\acrylic.cpp source\buffer.cpp source\canvas.cpp source\color.cpp source\font.cpp source\image.cpp source\path2d.cpp source\psf\psf.cpp
@@ -73,16 +73,16 @@
      1>E:\Xeneva Project\Xeneva\xnlib\xnacrylic\include\jpg\jpeg_decoder.h(580): warning C4127: conditional expression is constant
      1>source\image.cpp(100): warning C4244: '=' : conversion from 'unsigned int' to 'uint8_t', possible loss of data
          font.cpp
-     1>source\font.cpp(53): warning C4244: 'argument' : conversion from 'float' to 'FT_UInt', possible loss of data
-     1>source\font.cpp(78): warning C4018: '<' : signed/unsigned mismatch
-     1>source\font.cpp(79): warning C4018: '<' : signed/unsigned mismatch
-     1>source\font.cpp(56): warning C4100: 'sz' : unreferenced formal parameter
-     1>source\font.cpp(58): warning C4189: 'w' : local variable is initialized but not referenced
-     1>source\font.cpp(59): warning C4189: 'h' : local variable is initialized but not referenced
-     1>source\font.cpp(105): warning C4267: 'return' : conversion from 'size_t' to 'int', possible loss of data
-     1>source\font.cpp(97): warning C4189: 'string_width' : local variable is initialized but not referenced
-     1>source\font.cpp(118): warning C4267: 'return' : conversion from 'size_t' to 'int', possible loss of data
-     1>source\font.cpp(110): warning C4189: 'string_width' : local variable is initialized but not referenced
+     1>source\font.cpp(61): warning C4244: 'argument' : conversion from 'float' to 'FT_UInt', possible loss of data
+     1>source\font.cpp(86): warning C4018: '<' : signed/unsigned mismatch
+     1>source\font.cpp(87): warning C4018: '<' : signed/unsigned mismatch
+     1>source\font.cpp(64): warning C4100: 'sz' : unreferenced formal parameter
+     1>source\font.cpp(66): warning C4189: 'w' : local variable is initialized but not referenced
+     1>source\font.cpp(67): warning C4189: 'h' : local variable is initialized but not referenced
+     1>source\font.cpp(113): warning C4267: 'return' : conversion from 'size_t' to 'int', possible loss of data
+     1>source\font.cpp(105): warning C4189: 'string_width' : local variable is initialized but not referenced
+     1>source\font.cpp(126): warning C4267: 'return' : conversion from 'size_t' to 'int', possible loss of data
+     1>source\font.cpp(118): warning C4189: 'string_width' : local variable is initialized but not referenced
          color.cpp
      1>source\color.cpp(75): warning C4244: 'argument' : conversion from 'float' to 'uint8_t', possible loss of data
      1>source\color.cpp(80): warning C4244: 'initializing' : conversion from 'int' to 'float', possible loss of data
@@ -141,4 +141,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:02.05
+Time Elapsed 00:00:02.32

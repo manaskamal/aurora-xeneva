@@ -11,17 +11,28 @@ _BSS	SEGMENT
 ?ent@@3P6AXPEAX@ZEA DQ 01H DUP (?)			; ent
 ?image_base@@3_KA DQ 01H DUP (?)			; image_base
 _BSS	ENDS
+CONST	SEGMENT
+$SG3283	DB	'Import table va -> %d, size -> %d ', 0aH, 00H
+	ORG $+4
+$SG3284	DB	'Import table va -> %d, size -> %d ', 0aH, 00H
+CONST	ENDS
 PUBLIC	?load_pe_file@@YAXPEA_KH@Z			; load_pe_file
 PUBLIC	?get_entry_point@@YAP6AXPEAX@ZXZ		; get_entry_point
 PUBLIC	?get_image_base@@YA_KXZ				; get_image_base
 PUBLIC	?GetProcAddress@@YAPEAXPEAXPEBD@Z		; GetProcAddress
+PUBLIC	?IterateImportTable@@YAXPEAX0@Z			; IterateImportTable
 PUBLIC	??$raw_offset@PEAU_IMAGE_NT_HEADERS_PE32PLUS@@PEAU_IMAGE_DOS_HEADER_@@@@YAPEAU_IMAGE_NT_HEADERS_PE32PLUS@@PEAU_IMAGE_DOS_HEADER_@@H@Z ; raw_offset<_IMAGE_NT_HEADERS_PE32PLUS * __ptr64,_IMAGE_DOS_HEADER_ * __ptr64>
 PUBLIC	??$raw_offset@PEAU_IMAGE_EXPORT_DIRECTORY@@PEAX@@YAPEAU_IMAGE_EXPORT_DIRECTORY@@PEAXH@Z ; raw_offset<_IMAGE_EXPORT_DIRECTORY * __ptr64,void * __ptr64>
 PUBLIC	??$raw_offset@PEAIPEAX@@YAPEAIPEAXH@Z		; raw_offset<unsigned int * __ptr64,void * __ptr64>
 PUBLIC	??$raw_offset@PEAGPEAX@@YAPEAGPEAXH@Z		; raw_offset<unsigned short * __ptr64,void * __ptr64>
 PUBLIC	??$raw_offset@PEADPEAX@@YAPEADPEAXH@Z		; raw_offset<char * __ptr64,void * __ptr64>
 PUBLIC	??$raw_offset@PEAXPEAX@@YAPEAXPEAXH@Z		; raw_offset<void * __ptr64,void * __ptr64>
+PUBLIC	??$raw_offset@PEAU_IMAGE_IMPORT_DIRECTORY@@PEAX@@YAPEAU_IMAGE_IMPORT_DIRECTORY@@PEAXH@Z ; raw_offset<_IMAGE_IMPORT_DIRECTORY * __ptr64,void * __ptr64>
+PUBLIC	??$raw_offset@PEBDPEAX@@YAPEBDPEAXH@Z		; raw_offset<char const * __ptr64,void * __ptr64>
+PUBLIC	??$raw_offset@PEA_KPEAX@@YAPEA_KPEAXH@Z		; raw_offset<unsigned __int64 * __ptr64,void * __ptr64>
+PUBLIC	??$raw_offset@PEAU_IMAGE_IMPORT_HINT_TABLE@@PEAX@@YAPEAU_IMAGE_IMPORT_HINT_TABLE@@PEAXH@Z ; raw_offset<_IMAGE_IMPORT_HINT_TABLE * __ptr64,void * __ptr64>
 EXTRN	?strcmp@@YAHPEBD0@Z:PROC			; strcmp
+EXTRN	?printf@@YAXPEBDZZ:PROC				; printf
 pdata	SEGMENT
 $pdata$?load_pe_file@@YAXPEA_KH@Z DD imagerel $LN3
 	DD	imagerel $LN3+94
@@ -29,13 +40,118 @@ $pdata$?load_pe_file@@YAXPEA_KH@Z DD imagerel $LN3
 $pdata$?GetProcAddress@@YAPEAXPEAXPEBD@Z DD imagerel $LN10
 	DD	imagerel $LN10+386
 	DD	imagerel $unwind$?GetProcAddress@@YAPEAXPEAXPEBD@Z
+$pdata$?IterateImportTable@@YAXPEAX0@Z DD imagerel $LN11
+	DD	imagerel $LN11+441
+	DD	imagerel $unwind$?IterateImportTable@@YAXPEAX0@Z
 pdata	ENDS
 xdata	SEGMENT
 $unwind$?load_pe_file@@YAXPEA_KH@Z DD 010d01H
 	DD	0620dH
 $unwind$?GetProcAddress@@YAPEAXPEAXPEBD@Z DD 010e01H
 	DD	0e20eH
+$unwind$?IterateImportTable@@YAXPEAX0@Z DD 010e01H
+	DD	0e20eH
 xdata	ENDS
+; Function compile flags: /Odtpy
+; File e:\xeneva project\xeneva\aurora\include\stdint.h
+;	COMDAT ??$raw_offset@PEAU_IMAGE_IMPORT_HINT_TABLE@@PEAX@@YAPEAU_IMAGE_IMPORT_HINT_TABLE@@PEAXH@Z
+_TEXT	SEGMENT
+p1$ = 8
+offset$ = 16
+??$raw_offset@PEAU_IMAGE_IMPORT_HINT_TABLE@@PEAX@@YAPEAU_IMAGE_IMPORT_HINT_TABLE@@PEAXH@Z PROC ; raw_offset<_IMAGE_IMPORT_HINT_TABLE * __ptr64,void * __ptr64>, COMDAT
+
+; 183  : 	{
+
+	mov	DWORD PTR [rsp+16], edx
+	mov	QWORD PTR [rsp+8], rcx
+
+; 184  : 		return (T) ((size_t)p1 + offset);
+
+	movsxd	rax, DWORD PTR offset$[rsp]
+	mov	rcx, QWORD PTR p1$[rsp]
+	add	rcx, rax
+	mov	rax, rcx
+
+; 185  : 	};
+
+	ret	0
+??$raw_offset@PEAU_IMAGE_IMPORT_HINT_TABLE@@PEAX@@YAPEAU_IMAGE_IMPORT_HINT_TABLE@@PEAXH@Z ENDP ; raw_offset<_IMAGE_IMPORT_HINT_TABLE * __ptr64,void * __ptr64>
+_TEXT	ENDS
+; Function compile flags: /Odtpy
+; File e:\xeneva project\xeneva\aurora\include\stdint.h
+;	COMDAT ??$raw_offset@PEA_KPEAX@@YAPEA_KPEAXH@Z
+_TEXT	SEGMENT
+p1$ = 8
+offset$ = 16
+??$raw_offset@PEA_KPEAX@@YAPEA_KPEAXH@Z PROC		; raw_offset<unsigned __int64 * __ptr64,void * __ptr64>, COMDAT
+
+; 183  : 	{
+
+	mov	DWORD PTR [rsp+16], edx
+	mov	QWORD PTR [rsp+8], rcx
+
+; 184  : 		return (T) ((size_t)p1 + offset);
+
+	movsxd	rax, DWORD PTR offset$[rsp]
+	mov	rcx, QWORD PTR p1$[rsp]
+	add	rcx, rax
+	mov	rax, rcx
+
+; 185  : 	};
+
+	ret	0
+??$raw_offset@PEA_KPEAX@@YAPEA_KPEAXH@Z ENDP		; raw_offset<unsigned __int64 * __ptr64,void * __ptr64>
+_TEXT	ENDS
+; Function compile flags: /Odtpy
+; File e:\xeneva project\xeneva\aurora\include\stdint.h
+;	COMDAT ??$raw_offset@PEBDPEAX@@YAPEBDPEAXH@Z
+_TEXT	SEGMENT
+p1$ = 8
+offset$ = 16
+??$raw_offset@PEBDPEAX@@YAPEBDPEAXH@Z PROC		; raw_offset<char const * __ptr64,void * __ptr64>, COMDAT
+
+; 183  : 	{
+
+	mov	DWORD PTR [rsp+16], edx
+	mov	QWORD PTR [rsp+8], rcx
+
+; 184  : 		return (T) ((size_t)p1 + offset);
+
+	movsxd	rax, DWORD PTR offset$[rsp]
+	mov	rcx, QWORD PTR p1$[rsp]
+	add	rcx, rax
+	mov	rax, rcx
+
+; 185  : 	};
+
+	ret	0
+??$raw_offset@PEBDPEAX@@YAPEBDPEAXH@Z ENDP		; raw_offset<char const * __ptr64,void * __ptr64>
+_TEXT	ENDS
+; Function compile flags: /Odtpy
+; File e:\xeneva project\xeneva\aurora\include\stdint.h
+;	COMDAT ??$raw_offset@PEAU_IMAGE_IMPORT_DIRECTORY@@PEAX@@YAPEAU_IMAGE_IMPORT_DIRECTORY@@PEAXH@Z
+_TEXT	SEGMENT
+p1$ = 8
+offset$ = 16
+??$raw_offset@PEAU_IMAGE_IMPORT_DIRECTORY@@PEAX@@YAPEAU_IMAGE_IMPORT_DIRECTORY@@PEAXH@Z PROC ; raw_offset<_IMAGE_IMPORT_DIRECTORY * __ptr64,void * __ptr64>, COMDAT
+
+; 183  : 	{
+
+	mov	DWORD PTR [rsp+16], edx
+	mov	QWORD PTR [rsp+8], rcx
+
+; 184  : 		return (T) ((size_t)p1 + offset);
+
+	movsxd	rax, DWORD PTR offset$[rsp]
+	mov	rcx, QWORD PTR p1$[rsp]
+	add	rcx, rax
+	mov	rax, rcx
+
+; 185  : 	};
+
+	ret	0
+??$raw_offset@PEAU_IMAGE_IMPORT_DIRECTORY@@PEAX@@YAPEAU_IMAGE_IMPORT_DIRECTORY@@PEAXH@Z ENDP ; raw_offset<_IMAGE_IMPORT_DIRECTORY * __ptr64,void * __ptr64>
+_TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\include\stdint.h
 ;	COMDAT ??$raw_offset@PEAXPEAX@@YAPEAXPEAXH@Z
@@ -185,6 +301,197 @@ offset$ = 16
 
 	ret	0
 ??$raw_offset@PEAU_IMAGE_NT_HEADERS_PE32PLUS@@PEAU_IMAGE_DOS_HEADER_@@@@YAPEAU_IMAGE_NT_HEADERS_PE32PLUS@@PEAU_IMAGE_DOS_HEADER_@@H@Z ENDP ; raw_offset<_IMAGE_NT_HEADERS_PE32PLUS * __ptr64,_IMAGE_DOS_HEADER_ * __ptr64>
+_TEXT	ENDS
+; Function compile flags: /Odtpy
+; File e:\xeneva project\xeneva\aurora\aurora\pe.cpp
+_TEXT	SEGMENT
+datadir$ = 32
+n$1 = 40
+iat$2 = 48
+importdir$ = 56
+dos_header$ = 64
+nt_headers$ = 72
+fname$3 = 80
+procaddr$4 = 88
+hint$5 = 96
+func$6 = 104
+image$ = 128
+exporter$ = 136
+?IterateImportTable@@YAXPEAX0@Z PROC			; IterateImportTable
+
+; 77   : void IterateImportTable (void* image, void *exporter) {
+
+$LN11:
+	mov	QWORD PTR [rsp+16], rdx
+	mov	QWORD PTR [rsp+8], rcx
+	sub	rsp, 120				; 00000078H
+
+; 78   : 	PIMAGE_DOS_HEADER dos_header = (PIMAGE_DOS_HEADER)image;
+
+	mov	rax, QWORD PTR image$[rsp]
+	mov	QWORD PTR dos_header$[rsp], rax
+
+; 79   : 	PIMAGE_NT_HEADERS nt_headers = raw_offset<PIMAGE_NT_HEADERS>(dos_header, dos_header->e_lfanew);
+
+	mov	rax, QWORD PTR dos_header$[rsp]
+	movzx	eax, WORD PTR [rax+60]
+	mov	edx, eax
+	mov	rcx, QWORD PTR dos_header$[rsp]
+	call	??$raw_offset@PEAU_IMAGE_NT_HEADERS_PE32PLUS@@PEAU_IMAGE_DOS_HEADER_@@@@YAPEAU_IMAGE_NT_HEADERS_PE32PLUS@@PEAU_IMAGE_DOS_HEADER_@@H@Z ; raw_offset<_IMAGE_NT_HEADERS_PE32PLUS * __ptr64,_IMAGE_DOS_HEADER_ * __ptr64>
+	mov	QWORD PTR nt_headers$[rsp], rax
+
+; 80   : 	if (IMAGE_DATA_DIRECTORY_IMPORT + 1 > nt_headers->OptionalHeader.NumberOfRvaAndSizes)
+
+	mov	rax, QWORD PTR nt_headers$[rsp]
+	cmp	DWORD PTR [rax+132], 2
+	jae	SHORT $LN8@IterateImp
+
+; 81   : 		return;
+
+	jmp	$LN9@IterateImp
+$LN8@IterateImp:
+
+; 82   : 	IMAGE_DATA_DIRECTORY& datadir = nt_headers->OptionalHeader.DataDirectory[IMAGE_DATA_DIRECTORY_IMPORT];
+
+	mov	eax, 8
+	imul	rax, 1
+	mov	rcx, QWORD PTR nt_headers$[rsp]
+	lea	rax, QWORD PTR [rcx+rax+136]
+	mov	QWORD PTR datadir$[rsp], rax
+
+; 83   : 	if (datadir.VirtualAddress == 0 || datadir.Size == 0) {
+
+	mov	rax, QWORD PTR datadir$[rsp]
+	cmp	DWORD PTR [rax], 0
+	je	SHORT $LN6@IterateImp
+	mov	rax, QWORD PTR datadir$[rsp]
+	cmp	DWORD PTR [rax+4], 0
+	jne	SHORT $LN7@IterateImp
+$LN6@IterateImp:
+
+; 84   : 		printf ("Import table va -> %d, size -> %d \n", datadir.VirtualAddress, datadir.Size);
+
+	mov	rax, QWORD PTR datadir$[rsp]
+	mov	r8d, DWORD PTR [rax+4]
+	mov	rax, QWORD PTR datadir$[rsp]
+	mov	edx, DWORD PTR [rax]
+	lea	rcx, OFFSET FLAT:$SG3283
+	call	?printf@@YAXPEBDZZ			; printf
+
+; 85   : 		return;
+
+	jmp	$LN9@IterateImp
+$LN7@IterateImp:
+
+; 86   : 	}
+; 87   : 	printf ("Import table va -> %d, size -> %d \n", datadir.VirtualAddress, datadir.Size);
+
+	mov	rax, QWORD PTR datadir$[rsp]
+	mov	r8d, DWORD PTR [rax+4]
+	mov	rax, QWORD PTR datadir$[rsp]
+	mov	edx, DWORD PTR [rax]
+	lea	rcx, OFFSET FLAT:$SG3284
+	call	?printf@@YAXPEBDZZ			; printf
+
+; 88   : 	PIMAGE_IMPORT_DIRECTORY importdir = raw_offset<PIMAGE_IMPORT_DIRECTORY>(image, datadir.VirtualAddress);
+
+	mov	rax, QWORD PTR datadir$[rsp]
+	mov	edx, DWORD PTR [rax]
+	mov	rcx, QWORD PTR image$[rsp]
+	call	??$raw_offset@PEAU_IMAGE_IMPORT_DIRECTORY@@PEAX@@YAPEAU_IMAGE_IMPORT_DIRECTORY@@PEAXH@Z ; raw_offset<_IMAGE_IMPORT_DIRECTORY * __ptr64,void * __ptr64>
+	mov	QWORD PTR importdir$[rsp], rax
+
+; 89   : 	for (size_t n = 0; importdir[n].ThunkTableRva; ++n) {
+
+	mov	QWORD PTR n$1[rsp], 0
+	jmp	SHORT $LN5@IterateImp
+$LN4@IterateImp:
+	mov	rax, QWORD PTR n$1[rsp]
+	inc	rax
+	mov	QWORD PTR n$1[rsp], rax
+$LN5@IterateImp:
+	mov	rax, QWORD PTR n$1[rsp]
+	imul	rax, 20
+	mov	rcx, QWORD PTR importdir$[rsp]
+	cmp	DWORD PTR [rcx+rax+16], 0
+	je	$LN3@IterateImp
+
+; 90   : 		const char* func = raw_offset<const char*>(image, importdir[n].NameRva);
+
+	mov	rax, QWORD PTR n$1[rsp]
+	imul	rax, 20
+	mov	rcx, QWORD PTR importdir$[rsp]
+	mov	edx, DWORD PTR [rcx+rax+12]
+	mov	rcx, QWORD PTR image$[rsp]
+	call	??$raw_offset@PEBDPEAX@@YAPEBDPEAXH@Z	; raw_offset<char const * __ptr64,void * __ptr64>
+	mov	QWORD PTR func$6[rsp], rax
+
+; 91   : 		PIMAGE_IMPORT_LOOKUP_TABLE_PE32P iat = raw_offset<PIMAGE_IMPORT_LOOKUP_TABLE_PE32P>(image, importdir[n].ThunkTableRva);
+
+	mov	rax, QWORD PTR n$1[rsp]
+	imul	rax, 20
+	mov	rcx, QWORD PTR importdir$[rsp]
+	mov	edx, DWORD PTR [rcx+rax+16]
+	mov	rcx, QWORD PTR image$[rsp]
+	call	??$raw_offset@PEA_KPEAX@@YAPEA_KPEAXH@Z	; raw_offset<unsigned __int64 * __ptr64,void * __ptr64>
+	mov	QWORD PTR iat$2[rsp], rax
+$LN2@IterateImp:
+
+; 92   : 		while (*iat) {
+
+	mov	rax, QWORD PTR iat$2[rsp]
+	cmp	QWORD PTR [rax], 0
+	je	SHORT $LN1@IterateImp
+
+; 93   : 			PIMAGE_IMPORT_HINT_TABLE hint = raw_offset<PIMAGE_IMPORT_HINT_TABLE>(image, *iat);
+
+	mov	rax, QWORD PTR iat$2[rsp]
+	mov	edx, DWORD PTR [rax]
+	mov	rcx, QWORD PTR image$[rsp]
+	call	??$raw_offset@PEAU_IMAGE_IMPORT_HINT_TABLE@@PEAX@@YAPEAU_IMAGE_IMPORT_HINT_TABLE@@PEAXH@Z ; raw_offset<_IMAGE_IMPORT_HINT_TABLE * __ptr64,void * __ptr64>
+	mov	QWORD PTR hint$5[rsp], rax
+
+; 94   : 			const char* fname = hint->name;
+
+	mov	rax, QWORD PTR hint$5[rsp]
+	add	rax, 2
+	mov	QWORD PTR fname$3[rsp], rax
+
+; 95   : 			void* procaddr = GetProcAddress((void*)0xFFFFC00000000000, fname);
+
+	mov	rdx, QWORD PTR fname$3[rsp]
+	mov	rcx, -70368744177664			; ffffc00000000000H
+	call	?GetProcAddress@@YAPEAXPEAXPEBD@Z	; GetProcAddress
+	mov	QWORD PTR procaddr$4[rsp], rax
+
+; 96   : 			*iat = (uint64_t)procaddr;
+
+	mov	rax, QWORD PTR iat$2[rsp]
+	mov	rcx, QWORD PTR procaddr$4[rsp]
+	mov	QWORD PTR [rax], rcx
+
+; 97   : 			++iat;
+
+	mov	rax, QWORD PTR iat$2[rsp]
+	add	rax, 8
+	mov	QWORD PTR iat$2[rsp], rax
+
+; 98   : 		}
+
+	jmp	SHORT $LN2@IterateImp
+$LN1@IterateImp:
+
+; 99   : 	}
+
+	jmp	$LN4@IterateImp
+$LN3@IterateImp:
+$LN9@IterateImp:
+
+; 100  : }
+
+	add	rsp, 120				; 00000078H
+	ret	0
+?IterateImportTable@@YAXPEAX0@Z ENDP			; IterateImportTable
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\pe.cpp

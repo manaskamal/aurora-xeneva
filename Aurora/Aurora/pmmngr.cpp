@@ -14,6 +14,7 @@
 #include <_null.h>
 #include <stdio.h>
 #include <arch\x86_64\cpu.h>
+#include <arch\x86_64\mmngr\vmmngr.h>
 #include <serial.h>
 #include <efi.h>
 
@@ -22,7 +23,8 @@ uint64_t reserved_memory;
 uint64_t used_memory = 0;
 uint64_t ram_bitmap_index;
 uint64_t total_ram;
-
+uint64_t bitmap_size = 0;
+bool higher_half = false;
 
 //! A bitmap class
 class Bitmap {
@@ -106,52 +108,104 @@ void pmmngr_unreserve_page (void* addr) {
 
 
 
-
 /**
  * Initialize the physical memory manager
  *
  * @param _info == Kernel boot information passed by xnldr
  */
-void pmmngr_init(KERNEL_BOOT_INFO *_info)
+void pmmngr_init(KERNEL_BOOT_INFO *info)
 {
-	//! scan for memory above 1MB and set up the current pointer
-
-	uint64_t memory_size = _info->ram_size;
-	free_memory = memory_size;
-	uint64_t bitmap_size = memory_size / 4096 / 8 + 1;
-	ram_bitmap_index = 0;
+	free_memory = 0;
+	bitmap_size = 0;
 	total_ram = 0;
+	ram_bitmap_index = 0;
 
-	pmmngr_init_bitmap (bitmap_size, (void*) _info->phys_start); 
+	uint64_t memmap_entries = info->mem_map_size / info->descriptor_size;
+	void* bitmap_area = 0;
 
-	pmmngr_lock_pages ((void*)_info->phys_start,bitmap_size);
-
-	//Lock every EFI-Reserved memories here
-	uint64_t memmap_entries = _info->mem_map_size / _info->descriptor_size;
-
-	//! Currently uses EFI-Memory Maps to check reserved regions
-	for (int i = 0; i < memmap_entries; i++) {
-		EFI_MEMORY_DESCRIPTOR *efi_mem = (EFI_MEMORY_DESCRIPTOR*)((uint64_t)_info->map + i * _info->descriptor_size);
+	/* Scan a suitable area for the bitmap */
+	for (size_t i = 0; i < memmap_entries; i++) {
+		EFI_MEMORY_DESCRIPTOR *efi_mem = (EFI_MEMORY_DESCRIPTOR*)((uint64_t)info->map + i * info->descriptor_size);
 		total_ram += efi_mem->num_pages * 4096;
-		if (efi_mem->type != 7) {
-			//! lock every pages
-			free_memory -= 4096;
-			pmmngr_lock_pages ((void*)efi_mem->phys_start,efi_mem->num_pages);
+		if (efi_mem->type == 7) {
+			if (((efi_mem->num_pages * 4096) > 0x100000) && bitmap_area == 0) {
+				bitmap_area = (void*)efi_mem->phys_start;
+			}
+			uint64_t size_in_mb_kb = 0;
+			char* unit = "B";
+			if ((efi_mem->num_pages * 4096 / 1024 / 1024) == 0) {
+				size_in_mb_kb = efi_mem->num_pages * 4096 / 1024;
+				unit = "KB";
+			}
+			else {
+				size_in_mb_kb = (efi_mem->num_pages * 4096 / 1024 / 1024);
+				unit = "MB";
+			}
+			info->printf_gui("[aurora]: usable memory -> %x length -> %d %s\n", efi_mem->phys_start, size_in_mb_kb, unit);
 		}
 	}
 
+	info->printf_gui("[aurora]: total memory -> %d GB \n", (total_ram/ 1024 / 1024 / 1024));
+	uint64_t bitmap_size = total_ram / 4096 / 8 + 1;
 
-	pmmngr_lock_pages(_info->graphics_framebuffer,_info->fb_size / 4096);
+	pmmngr_init_bitmap(bitmap_size, bitmap_area);
 
-	uint64_t pos = 0x1005D000;
-	for (int i = 0; i < 12*1024 / 4096; i++)
-		pmmngr_lock_page((void*)(pos + i * 4096));
+	info->printf_gui("[aurora]: bitmap initialized %d bytes\n", bitmap_size);
+	pmmngr_lock_pages((void*)bitmap_area, bitmap_size);
 
-	total_ram -= reserved_memory;
+	/* No lock all pages, that are not for use */
+	for (size_t i = 0; i < memmap_entries; i++) {
+		EFI_MEMORY_DESCRIPTOR *efi_mem = (EFI_MEMORY_DESCRIPTOR*)((uint64_t)info->map + i * info->descriptor_size);
+		total_ram += efi_mem->num_pages;
+		if (efi_mem->type != 7) {
+			pmmngr_lock_pages((void*)efi_mem->phys_start, efi_mem->num_pages);
+		}
+	}
 
-	void *unusable = pmmngr_alloc(); //0 is avoided
+	pmmngr_lock_page((void*)0x0);
+
+	/* also lock the early used physical blocks for 
+	 * kernel and kernel stack */
+	uint32_t allocated_count = info->reserved_mem_count;
+	uint64_t* allocated_stack = (uint64_t*)info->allocated_stack;
+	while (allocated_count) {
+		uint64_t address = *allocated_stack--;
+	    pmmngr_lock_page((void*)address);
+		allocated_count--;
+	}
+
+	/* Will be used for SMP AP initialisation code */
+	uint64_t *address = (uint64_t*)0xA000;
+	pmmngr_lock_page((void*)0xA000);
+	memset(address, 0, 4096);
+	//memcpy(address, info->apcode, 4096);
+
+	info->printf_gui("[aurora]:pmmngr initialized\n");
 }
 
+void pmmngr_move_higher_half () {
+	ram_bitmap.Buffer = (uint8_t*)p2v((uint64_t)ram_bitmap.Buffer);
+	higher_half = true;
+}
+
+
+uint64_t p2v (uint64_t addr) {
+	if (higher_half)
+		return (PHYSICAL_MEMORY_BASE + addr);
+	else
+		return addr;
+}
+
+uint64_t v2p (uint64_t vaddr) {
+	if (higher_half)
+		return (vaddr - PHYSICAL_MEMORY_BASE);
+	else 
+		return vaddr;
+}
+
+bool is_higher_half() {
+	return higher_half;
+}
 
 /**
  * Allocates numbers of blocks for use
@@ -166,7 +220,7 @@ void* pmmngr_alloc()
 		if (ram_bitmap[ram_bitmap_index] == true) continue;
 		pmmngr_lock_page ((void*)(ram_bitmap_index * 4096));
 		used_memory += 4096 * 1;
-	/*	if (is_serial_initialized())
+		/*if (is_serial_initialized())
 			_debug_print_("Pmmngr Allocated ->%x \r\n",ram_bitmap_index * 4096);*/
 		return (void*)(ram_bitmap_index * 4096);
 	}
@@ -205,7 +259,7 @@ void pmmngr_free (void* addr)
 	if (ram_bitmap[index] == false) return;
 	if (ram_bitmap.Set (index, false)) {
 		free_memory += 4096;
-		used_memory -= 4096;	
+		used_memory -= 4096 * 1;	
 		if (ram_bitmap_index > index) {
 			ram_bitmap_index = index;
 		}
@@ -236,6 +290,11 @@ uint64_t pmmngr_get_used_ram () {
 //! Return total RAM size
 uint64_t pmmngr_get_total_ram () {
 	return total_ram;
+}
+
+
+uint64_t pmmngr_get_ram_bitmap_size() {
+	return bitmap_size;
 }
 
 

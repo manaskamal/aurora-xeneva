@@ -37,6 +37,7 @@
 #include <string.h>
 #include <drivers/ata.h>
 #include <drivers/hdaudio/hda.h>
+#include <serial.h>
 
 HBA_PORT *sata_drive_port = NULL;
 
@@ -129,15 +130,22 @@ void ahci_disk_read (HBA_PORT *port, uint64_t lba, uint32_t count, uint64_t *buf
 		spin++;
 	}
 	if (spin==1000000)
-		printf ("[AHCI]:Port Hung\n");
+		_debug_print_ ("[AHCI]:Port Hung\n");
+
 
 	port->ci = 1<<command_slot;
 	while(1) {
 		if ((port->ci & (1<<command_slot)) == 0) 
 			break;
-		/*if (port->is & (1<<30)) 
-			break;*/
+		if (port->is & (1<<30))  {
+			_debug_print_ ("[AHCI]: Port error \r\n");
+			break;
+		}
 	}
+
+	while (port->tfd & (ATA_SR_BSY | ATA_SR_DRQ))
+		;
+
 }
 
 
@@ -190,8 +198,10 @@ void ahci_disk_write (HBA_PORT *port, uint64_t lba, uint32_t count, uint64_t *bu
 	while(1) {
 		if ((port->ci & (1<<command_slot)) == 0) 
 			break;
-		/*if (port->is & (1<<30)) 
-			break;*/
+		if (port->is & (1<<30))  {
+			_debug_print_ ("[AHCI]: Port error \r\n");
+			break;
+		}
 	}
 }
 
@@ -330,6 +340,7 @@ void ahci_disk_initialize (HBA_PORT *port) {
 		ata_device_name[i + 1] = ide_buf[54 + i];
 	}
 	printf ("[AHCI]: Model -> %s\n", ata_device_name);
+
 }
 
 /**

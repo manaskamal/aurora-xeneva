@@ -14,17 +14,8 @@
 #include <ipc\dwm_ipc.h>
 #include <arch\x86_64\thread.h>
 #include <pmmngr.h>
+#include <serial.h>
 
-//================================================
-// M E M O R Y   M A P 
-//================================================
-/*
- * FFFFC00000000000 - FFFFCFFFFFFFFFFF   - Kernel
- * FFFF800000000000 - FFFF8FFFFFFFFFFF   - Kernel Heap
- * FFFFA00000000000 - FFFFA00000200000   - Kernel Stack
- * FFFFE00000000000 - FFFFEFFFFFFFFFFF   - Kernel Required Datas
- * 0000000000000000 - 00007FFFFFFFFFFF   - User Space
- */
 
 //!!!======================================================================================
 //!!! TODO --- Address Space Manager
@@ -43,8 +34,8 @@
 //!!--------------------------------------------------------------------------------------
 //!!======================================================================================
 
-#define KERNEL_BASE_ADDRESS  0xFFFFE00000000000
-#define USER_BASE_ADDRESS 0x0000020000000000   //0x0000400000000000
+
+
 uint64_t* root_cr3;
 
 static void* make_canonical_i(size_t addr)
@@ -99,15 +90,8 @@ void vmmngr_x86_64_init () {
 
 	memset (new_cr3, 0, 4096);
 
-	/*new_cr3[0] = cr3[0];
-	new_cr3[1] = cr3[1];
-	new_cr3[2] = cr3[2];*/
 	//! Copy all higher half mappings to new mapping
 	for (int i = 0; i < 512; ++i) {
-		if (i < 256) {
-			new_cr3[i] = cr3[i];
-			//continue;
-		}
 		if (i == 511)
 			continue;
 
@@ -119,82 +103,72 @@ void vmmngr_x86_64_init () {
 		
 	}
 
+	uint64_t* pdpt = (uint64_t*)pmmngr_alloc();
+	memset(pdpt, 0, 4096);
+
+	new_cr3[pml4_index(PHYSICAL_MEMORY_BASE)] = (uint64_t)pdpt | PAGING_PRESENT | PAGING_WRITABLE;
+
+	for (size_t i = 0; i < 512; i++)
+		pdpt[pdp_index(PHYSICAL_MEMORY_BASE) + i] = i * 512 * 512 * 4096 | 0x80 | PAGING_PRESENT | PAGING_WRITABLE;
+
 	//! Store the kernel's address space
 	root_cr3 = new_cr3;
 
 	//! Switch to new mapping!!!
 	x64_write_cr3 ((size_t)new_cr3);
 
-	x64_write_msr (0x277, 0x0007040600070406);
-
-	uint64_t pos = 0xFFFFC00000000000;
-	for (int i = 0; i < 1024*1024/4096; i++) {
-		uint64_t* phys = get_physical_address(pos + i * 4096);
-		if (phys) {
-			pmmngr_lock_page(phys);
-		}
-	}
-
-	pos = 0xFFFFA00000000000;
-	for (int i = 0; i < 1024*1024/ 4096; i++) {
-		uint64_t* phys = get_physical_address(pos + i * 4096);
-		if (phys) {
-			pmmngr_lock_page(phys);
-		}
-	}
-
-	pmmngr_lock_page(get_physical_address(0xFFFFD80000000000));
-	pmmngr_lock_page(get_physical_address(0xFFFFE00000000000));
+	pmmngr_move_higher_half();
 
 }
 
 
 //! Map a page in current address space
-bool map_page (uint64_t physical_address, uint64_t virtual_address, uint8_t attrib)
-{
+bool map_page (uint64_t physical_address, uint64_t virtual_address, uint8_t attrib){
 	size_t flags = PAGING_WRITABLE | PAGING_PRESENT | attrib;
-
+	
 	const long i4 = (virtual_address >> 39) & 0x1FF;
 	const long i3 = (virtual_address >> 30) & 0x1FF;
 	const long i2 = (virtual_address >> 21) & 0x1FF;
 	const long i1 = (virtual_address >> 12) & 0x1FF;
 
-	uint64_t *pml4i = (uint64_t*)x64_read_cr3();
+	uint64_t *pml4i = (uint64_t*)p2v(x64_read_cr3());
+
 	if (!(pml4i[i4] & PAGING_PRESENT))
 	{
+		
 		const uint64_t page = (uint64_t)pmmngr_alloc();
 		pml4i[i4] = page | flags;
-		clear((void*)page);
+		clear((void*)p2v(page));
 		flush_tlb((void*)page);
 		x64_mfence();
 	}
-	uint64_t* pml3 = (uint64_t*)(pml4i[i4] & ~(4096 - 1));
+	uint64_t* pml3 = (uint64_t*)(p2v(pml4i[i4]) & ~(4096 - 1));
 	
 	if (!(pml3[i3] & PAGING_PRESENT))
 	{
 		
 		const uint64_t page = (uint64_t)pmmngr_alloc();
 		pml3[i3] = page | flags;
-		clear((void*)page);
+		clear((void*)p2v(page));
 		flush_tlb((void*)page);
 		x64_mfence();
 		
 	}
     
 	
-	uint64_t* pml2 = (uint64_t*)(pml3[i3] & ~(4096 - 1));
+	uint64_t* pml2 = (uint64_t*)(p2v(pml3[i3]) & ~(4096 - 1));
 	
 	if (!(pml2[i2] & PAGING_PRESENT))
 	{
 		const uint64_t page = (uint64_t)pmmngr_alloc();
 		pml2[i2] = page | flags;
-		clear((void*)page);
+		clear((void*)p2v(page));
 		flush_tlb((void*)page);
 		x64_mfence();
 		
 	}
 	
-	uint64_t* pml1 = (uint64_t*)(pml2[i2] & ~(4096 - 1));
+	uint64_t* pml1 = (uint64_t*)(p2v(pml2[i2]) & ~(4096 - 1));
 	if (pml1[i1] & PAGING_PRESENT)
 	{
 		pmmngr_free((void*)physical_address);
@@ -207,6 +181,7 @@ bool map_page (uint64_t physical_address, uint64_t virtual_address, uint8_t attr
 	return true;
 }
 
+
 void unmap_page(uint64_t virt_addr){
 	
 	const long i1 = pml4_index(virt_addr);
@@ -218,11 +193,11 @@ void unmap_page(uint64_t virt_addr){
 	uint64_t *page = (uint64_t*)(pt[pt_index(virt_addr)] & ~(4096 - 1));
 	
 	if ((pt[pt_index(virt_addr)] & PAGING_PRESENT) != 0) {
-		pmmngr_free(page);
+		
 		pt[pt_index(virt_addr)] = 0;
 	}
-	
-	
+	if (page != 0)
+		pmmngr_free(page);
 }
 
 
@@ -242,6 +217,30 @@ void unmap_page_ex(uint64_t* cr3, uint64_t virt_addr, bool free_physical){
 
 	if (free_physical && page != 0) 
 		pmmngr_free(page);
+
+}
+
+
+void vmmngr_free_pages(uint64_t virt_addr, bool free_physical, size_t s){
+	
+	const long i1 = pml4_index(virt_addr);
+
+	for (int i = 0; i < s /  4096; i++) {
+		uint64_t *pml4_ = (uint64_t*)x64_read_cr3();
+		uint64_t *pdpt = (uint64_t*)(pml4_[pml4_index(virt_addr)] & ~(4096 - 1));
+		uint64_t *pd = (uint64_t*)(pdpt[pdp_index(virt_addr)] & ~(4096 - 1));
+		uint64_t *pt = (uint64_t*)(pd[pd_index(virt_addr)] & ~(4096 - 1));
+		uint64_t *page = (uint64_t*)(pt[pt_index(virt_addr)] & ~(4096 - 1));
+
+		if ((pt[pt_index(virt_addr)] & PAGING_PRESENT) != 0) {
+			pt[pt_index(virt_addr)] = 0;
+		}
+
+		if (free_physical && page != 0) 
+			pmmngr_free(page);
+
+		virt_addr = virt_addr + i * 4096;
+	}
 
 }
 
@@ -279,35 +278,36 @@ bool map_page_ex (uint64_t *pml4i,uint64_t physical_address, uint64_t virtual_ad
 	if (!(pml4i[i4] & PAGING_PRESENT)){
 		const uint64_t page = (uint64_t)pmmngr_alloc();
 		pml4i[i4] = page | flags;
-		clear((void*)page);
+		clear((void*)p2v(page));
 		flush_tlb((void*)page);
 		x64_mfence();
 	}
-	uint64_t* pml3 = (uint64_t*)(pml4i[i4] & ~(4096 - 1));
+	uint64_t* pml3 = (uint64_t*)(p2v(pml4i[i4]) & ~(4096 - 1));
 
 	if (!(pml3[i3] & PAGING_PRESENT)){
 		const uint64_t page = (uint64_t)pmmngr_alloc();
 		pml3[i3] = page | flags;
-		clear((void*)page);
+		clear((void*)p2v(page));
 		flush_tlb((void*)page);
 		x64_mfence();
 		
 	}
 
-	uint64_t* pml2 = (uint64_t*)(pml3[i3] & ~(4096 - 1));
+	uint64_t* pml2 = (uint64_t*)(p2v(pml3[i3]) & ~(4096 - 1));
 	if (!(pml2[i2] & PAGING_PRESENT)){
 
 		const uint64_t page = (uint64_t)pmmngr_alloc();
 		pml2[i2] = page | flags;
-		clear((void*)page);
+		clear((void*)p2v(page));
 		flush_tlb((void*)page);
 		x64_mfence();
 		
 	}
 
-	uint64_t* pml1 = (uint64_t*)(pml2[i2] & ~(4096 - 1));
+	uint64_t* pml1 = (uint64_t*)(p2v(pml2[i2]) & ~(4096 - 1));
 
 	if (pml1[i1] & PAGING_PRESENT){
+		pmmngr_free((void*)physical_address);
 		return false;
 	}
 
@@ -323,8 +323,8 @@ bool map_page_ex (uint64_t *pml4i,uint64_t physical_address, uint64_t virtual_ad
 //! to kernel i.e clone kernel space
 uint64_t *create_user_address_space (){
 	
-	uint64_t *cr3 = (uint64_t*)x64_read_cr3();
-	uint64_t *new_cr3 = (uint64_t*)pmmngr_alloc();
+	uint64_t *cr3 = (uint64_t*)root_cr3; //x64_read_cr3();
+	uint64_t *new_cr3 = (uint64_t*)p2v((size_t)pmmngr_alloc());
 	memset(new_cr3,0,4096);
 
 	//! For now, copy the 4 GiB identity mapping from old pml4
@@ -333,19 +333,19 @@ uint64_t *create_user_address_space (){
 	//! paging tables creations and memory mapped I/O which are not
 	//! virtually allocated in higher half sections
 	new_cr3[0] = cr3[0];
+	new_cr3[1] = cr3[1];
+	new_cr3[2] = cr3[2];
+	new_cr3[3] = cr3[3];
+
 	//! Copy Kernel's Higher Half section
-
-	new_cr3[pml4_index(0xFFFFC00000000000)] = cr3[pml4_index(0xFFFFC00000000000)];
-
-	new_cr3[pml4_index(0xFFFFA00000000000)] = cr3[pml4_index(0xFFFFA00000000000)];
-
-	new_cr3[pml4_index(0xFFFF800000000000)] = cr3[pml4_index(0xFFFF800000000000)];
-	new_cr3[pml4_index(0xFFFFE00000000000)] = cr3[pml4_index(0xFFFFE00000000000)];
-	new_cr3[pml4_index(0xFFFFD00000000000)] = cr3[pml4_index(0xFFFFD00000000000)];
-	new_cr3[pml4_index(0xFFFFFD0000000000)] = cr3[pml4_index(0xFFFFFD0000000000)];
-	//! Mapped Framebuffer
-	for (int i = 0; i < get_fb_size() / 4096; i++)
-		new_cr3[pml4_index(0xFFFFD00000200000 + i * 4096)] = cr3[pml4_index(0xFFFFD00000200000 + i * 4096)]; 
+	for (int i = 0; i < 512; i++) {
+		if (i < 256)
+			continue;
+		if ((cr3[i] & PAGING_PRESENT))
+			new_cr3[i] = cr3[i];
+		else
+			new_cr3[i] = 0;
+	}
 
 	return new_cr3;
 }
@@ -360,17 +360,27 @@ uint64_t* get_free_page (size_t s, bool user) {
 		start = KERNEL_BASE_ADDRESS;
 
 	uint64_t* end = 0;
-	uint64_t *pml4 = (uint64_t*)x64_read_cr3();
-	for (int i = 0; i < s; i++) {
-		uint64_t *pdpt = (uint64_t*)(pml4[pml4_index(start)] & ~(4096 - 1));
-	    uint64_t *pd = (uint64_t*)(pdpt[pdp_index(start)] & ~(4096 - 1));
-		uint64_t *pt = (uint64_t*)(pd[pd_index(start)] & ~(4096 - 1));
-		uint64_t *page = (uint64_t*)(pt[pt_index(start)] & ~(4096 - 1));
-
-		if ((pt[pt_index(start)] & PAGING_PRESENT) == 0){
+	uint64_t *pml4 = (uint64_t*)p2v(x64_read_cr3());
+	
+	/* Walk through every page tables */
+	for (;;) {
+		if (!(pml4[pml4_index(start)] & PAGING_PRESENT))
 			return (uint64_t*)start;
-		}
-		start+= 4096;
+
+		uint64_t *pdpt = (uint64_t*)(p2v(pml4[pml4_index(start)]) & ~(4096 - 1));
+		if (!(pdpt[pdp_index(start)] & PAGING_PRESENT))
+			return (uint64_t*)start;
+
+		uint64_t *pd = (uint64_t*)(p2v(pdpt[pdp_index(start)]) & ~(4096 - 1));
+		if (!(pd[pd_index(start)] & PAGING_PRESENT))
+			return (uint64_t*)start;
+
+		uint64_t *pt = (uint64_t*)(p2v(pd[pd_index(start)]) & ~(4096 - 1));
+
+		if (!(pt[pt_index(start)] & PAGING_PRESENT))
+			return (uint64_t*)start;
+		
+		start += 4096;
 	}
 	return 0;
 }

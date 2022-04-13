@@ -28,7 +28,7 @@ extern circ_buf_t *circ_buf_init (unsigned char* buffer, size_t size);
 extern void circ_buf_free (circ_buf_t *cbuf);
 extern size_t circular_buf_size(circ_buf_t *cbuf);
 extern size_t circular_buf_capacity(circ_buf_t *cbuf);
-extern void circular_buf_put(circ_buf_t *cbuf,int data);
+extern void circular_buf_put(circ_buf_t *cbuf,uint8_t data);
 extern int circular_buf_put2(circ_buf_t *cbuf, int data);
 extern int circular_buf_get(circ_buf_t *cbuf, uint8_t *data);
 extern bool circular_buf_empty(circ_buf_t *cbuf);

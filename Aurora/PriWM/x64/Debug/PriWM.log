@@ -1,4 +1,4 @@
-﻿Build started 05-03-2022 আবেলি 11:55:50.
+﻿Build started 17-03-2022 আবেলি 7:59:35.
      1>Project "E:\Xeneva Project\Xeneva\Aurora\PriWM\PriWM.vcxproj" on node 2 (Rebuild target(s)).
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\xnlib\xnclib" /I"E:\Xeneva Project\Xeneva\xnlib\xnacrylic\include" /Zi /nologo /W3 /WX- /sdl- /Od /D ARCH_X64 /D _MBCS /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt list.cpp priwm.cpp pri_dirty_clip.cpp pri_event.cpp pri_wallp_dirty_clip.cpp
@@ -9,26 +9,33 @@
          pri_dirty_clip.cpp
      1>pri_dirty_clip.cpp(59): warning C4018: '<' : signed/unsigned mismatch
          priwm.cpp
-     1>priwm.cpp(149): warning C4018: '<' : signed/unsigned mismatch
-     1>priwm.cpp(188): warning C4018: '<' : signed/unsigned mismatch
-     1>priwm.cpp(207): warning C4018: '<' : signed/unsigned mismatch
-     1>priwm.cpp(223): warning C4018: '<' : signed/unsigned mismatch
-     1>priwm.cpp(251): warning C4018: '<' : signed/unsigned mismatch
-     1>priwm.cpp(397): warning C4018: '<' : signed/unsigned mismatch
-     1>priwm.cpp(444): warning C4018: '<' : signed/unsigned mismatch
+     1>priwm.cpp(150): warning C4018: '<' : signed/unsigned mismatch
+     1>priwm.cpp(189): warning C4018: '<' : signed/unsigned mismatch
+     1>priwm.cpp(208): warning C4018: '<' : signed/unsigned mismatch
+     1>priwm.cpp(224): warning C4018: '<' : signed/unsigned mismatch
+     1>priwm.cpp(252): warning C4018: '<' : signed/unsigned mismatch
+     1>priwm.cpp(398): warning C4018: '<' : signed/unsigned mismatch
      1>priwm.cpp(445): warning C4018: '<' : signed/unsigned mismatch
-     1>priwm.cpp(545): warning C4018: '<' : signed/unsigned mismatch
-     1>priwm.cpp(591): warning C4018: '<' : signed/unsigned mismatch
-     1>priwm.cpp(609): warning C4018: '<' : signed/unsigned mismatch
-     1>priwm.cpp(624): warning C4018: '<' : signed/unsigned mismatch
-     1>priwm.cpp(716): warning C4018: '<' : signed/unsigned mismatch
-     1>priwm.cpp(724): warning C4018: '<' : signed/unsigned mismatch
-     1>priwm.cpp(813): warning C4018: '>=' : signed/unsigned mismatch
-     1>priwm.cpp(816): warning C4018: '>=' : signed/unsigned mismatch
-     1>priwm.cpp(860): warning C4244: '=' : conversion from 'uint16_t' to 'uint8_t', possible loss of data
-     1>priwm.cpp(873): warning C4244: '=' : conversion from 'uint16_t' to 'uint8_t', possible loss of data
-     1>priwm.cpp(990): warning C4101: 'diff_tick' : unreferenced local variable
-     1>priwm.cpp(989): warning C4101: 'frame_tick' : unreferenced local variable
+     1>priwm.cpp(446): warning C4018: '<' : signed/unsigned mismatch
+     1>priwm.cpp(459): warning C4018: '<' : signed/unsigned mismatch
+     1>priwm.cpp(460): warning C4018: '<' : signed/unsigned mismatch
+     1>priwm.cpp(569): warning C4244: '=' : conversion from 'uint16_t' to 'uint8_t', possible loss of data
+     1>priwm.cpp(580): warning C4018: '<' : signed/unsigned mismatch
+     1>priwm.cpp(626): warning C4018: '<' : signed/unsigned mismatch
+     1>priwm.cpp(644): warning C4018: '<' : signed/unsigned mismatch
+     1>priwm.cpp(659): warning C4018: '<' : signed/unsigned mismatch
+     1>priwm.cpp(720): warning C4018: '>=' : signed/unsigned mismatch
+     1>priwm.cpp(723): warning C4018: '>=' : signed/unsigned mismatch
+     1>priwm.cpp(763): warning C4018: '<' : signed/unsigned mismatch
+     1>priwm.cpp(771): warning C4018: '<' : signed/unsigned mismatch
+     1>priwm.cpp(860): warning C4018: '>=' : signed/unsigned mismatch
+     1>priwm.cpp(863): warning C4018: '>=' : signed/unsigned mismatch
+     1>priwm.cpp(907): warning C4244: '=' : conversion from 'uint16_t' to 'uint8_t', possible loss of data
+     1>priwm.cpp(920): warning C4244: '=' : conversion from 'uint16_t' to 'uint8_t', possible loss of data
+     1>priwm.cpp(1171): warning C4018: '<' : signed/unsigned mismatch
+     1>priwm.cpp(1206): warning C4018: '<' : signed/unsigned mismatch
+     1>priwm.cpp(1039): warning C4101: 'diff_tick' : unreferenced local variable
+     1>priwm.cpp(1038): warning C4101: 'frame_tick' : unreferenced local variable
          list.cpp
          Generating Code...
      1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V110\Microsoft.CppBuild.targets(1137,5): warning MSB8012: TargetPath(E:\Xeneva Project\Xeneva\Aurora\x64\Debug\PriWM.exe) does not match the Linker's OutputFile property value (F:\priwm.exe). This may cause your project to build incorrectly. To correct this, please make sure that $(OutDir), $(TargetName) and $(TargetExt) property values match the value specified in %(Link.OutputFile).
@@ -45,4 +52,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:02.87
+Time Elapsed 00:00:01.07

@@ -48,6 +48,14 @@ void acrylic_initialize_font () {
 	
 }
 
+/**
+ * acrylic_font_destroy -- destroys font
+ */
+void acrylic_font_destroy () {
+	for (int i = 0; i < 1024*1024/4096; i++)
+		vfree(0xFFFFFFFFC0000000 + i * 4096);
+}
+
 
 void acrylic_font_set_size (uint32_t sz) {
 	err = FT_Set_Pixel_Sizes(face,0,sz / 72.f * 96);

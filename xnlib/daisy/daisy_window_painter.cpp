@@ -45,20 +45,51 @@
 void daisy_window_paint (daisy_window_t *win) {
 	daisy_win_info_t *info = (daisy_win_info_t*)win->shared_win;
 
-	/* draws a rectangle for the title bar */
-	acrylic_draw_rect_filled (win->ctx, 0,0,info->width, 23, WHITE);
-	/* draws a rectangular outline for the title bar */
-	acrylic_draw_rect_unfilled (win->ctx, 0,0,info->width,23,LIGHTBLACK);
+	if (win->theme == DAISY_THEME_DEFAULT) {
 
-	/*set the font size */
-	if (win->title) {
-		acrylic_font_set_size(11);
-		acrylic_font_draw_string (win->ctx,win->title,10,15,12,GRAY);
-	}
+		/* draws a rectangle for the title bar */
+		acrylic_draw_rect_filled (win->ctx, 0,0,info->width, 23, WHITE);
+		/* draws a rectangular outline for the title bar */
+		acrylic_draw_rect_unfilled (win->ctx, 0,0,info->width,23,LIGHTBLACK);
 
-	/* draw every widgets */
-	for (int i = 0; i < win->widgets->pointer; i++) {
-		daisy_widget_t *widget = (daisy_widget_t*)list_get_at(win->widgets, i);
-		widget->refresh(widget,win);
+		/*set the font size */
+		if (win->title) {
+			acrylic_font_set_size(11);
+			acrylic_font_draw_string (win->ctx,win->title,10,15,12,GRAY);
+		}
+
+		/* draw every widgets */
+		for (int i = 0; i < win->widgets->pointer; i++) {
+			daisy_widget_t *widget = (daisy_widget_t*)list_get_at(win->widgets, i);
+			widget->refresh(widget,win);
+		}
+	} else if (win->theme == DAISY_THEME_90S) {
+			/* draws a rectangle for the title bar */
+		acrylic_draw_rect_filled (win->ctx, 0,0,info->width, 23, 0xFFBDB9B9);  //
+
+		acrylic_draw_horizontal_line (win->ctx,0,1,info->width,WHITE);
+		//acrylic_draw_horizontal_line (win->ctx, 0,2,info->width,WHITE);
+
+		acrylic_draw_rect_filled (win->ctx,2,3,info->width-2,23-3,DESKBLUE);
+
+		/* draws a rectangular outline for the title bar */
+		acrylic_draw_rect_unfilled (win->ctx, 0,0,info->width,23,LIGHTBLACK);
+
+		/*set the font size */
+		if (win->title) {
+			acrylic_font_set_size(11);
+			acrylic_font_draw_string (win->ctx,win->title,10,15,12,WHITE);
+		}
+
+		/* draw every widgets */
+		for (int i = 0; i < win->widgets->pointer; i++) {
+			daisy_widget_t *widget = (daisy_widget_t*)list_get_at(win->widgets, i);
+			widget->refresh(widget,win);
+		}
+
+		/* Draw the Window Border */
+		acrylic_draw_horizontal_line (win->ctx, 0, info->height-1, info->width,0xFFBDB9B9);
+		acrylic_draw_vertical_line (win->ctx, info->width-1,0, info->height,0xFFBDB9B9);
+		acrylic_draw_vertical_line (win->ctx,1,23, info->height-23,0xFFBDB9B9);
 	}
 }

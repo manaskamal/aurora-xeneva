@@ -6,11 +6,11 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 _BSS	SEGMENT
-apic_timer_count DD 01H DUP (?)
 x2apic	DB	01H DUP (?)
 	ALIGN	8
 
 apic	DQ	01H DUP (?)
+apic_timer_count DD 01H DUP (?)
 _BSS	ENDS
 PUBLIC	?initialize_apic@@YAXXZ				; initialize_apic
 PUBLIC	?apic_local_eoi@@YAXXZ				; apic_local_eoi
@@ -716,9 +716,9 @@ $LN1@initialize:
 
 	call	?io_wait@@YAXXZ				; io_wait
 
-; 167  : 	write_apic_register (LAPIC_REGISTER_TMRINITCNT,72);  //100
+; 167  : 	write_apic_register (LAPIC_REGISTER_TMRINITCNT,76);  //100 , 500
 
-	mov	edx, 72					; 00000048H
+	mov	edx, 76					; 0000004cH
 	mov	cx, 56					; 00000038H
 	call	?write_apic_register@@YAXG_K@Z		; write_apic_register
 

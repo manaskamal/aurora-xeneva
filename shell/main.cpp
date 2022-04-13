@@ -17,6 +17,7 @@
 #include <sys\_sleep.h>
 #include <sys\pe.h>
 #include <sys\_process.h>
+#include <sys\_xeneva.h>
 #include <sys\ioquery.h>
 #include <sys\mmap.h>
 #include <string.h>
@@ -27,6 +28,8 @@
 #include "sndsrv.h"
 
 int pri_event_fd = 0;
+
+extern "C" void shl_test();
 
 /**
  * snd_share_buffer -- shares the sound buffer to desired app
@@ -53,8 +56,14 @@ void snd_share_buffer (int to_id) {
  */
 void main (int argc, char*argv[]) {
 
-	sys_print_text ("Sound Service v0.1\n");
-	sys_print_text ("Copyright (C) Manas Kamal Choudhury 2022\n");
+	sys_print_text ("Sound Service v0.1 \r\n");
+	sys_print_text ("Copyright (C) Manas Kamal Choudhury 2022 \r\n");
+
+	uint64_t mem = sys_get_used_ram();
+	sys_print_text ("PhysicaL MEMORY MB -> %d MB \r\n", mem / 1024 / 1024);
+
+	void *p = malloc(4096 *2);
+	memset(p, 0, 4096*2);
 
 	/*int snd_fd = sys_open_file ("/dev/snd",NULL);
 	pri_event_fd = sys_open_file ("/dev/pri_loop", NULL);
@@ -72,6 +81,7 @@ void main (int argc, char*argv[]) {
 	uint32_t *buffer_p = (uint32_t*)0x000000E000000000;
 	uint32_t *buffer_p_current = (uint32_t*)buffer_p;
 	pri_event_t e;*/
+	//exit(0);
 	while(1) {
 		/*ioquery(pri_event_fd, PRI_LOOP_GET_EVENT,&e);
 		if (e.type != 0) {
@@ -100,7 +110,7 @@ void main (int argc, char*argv[]) {
 
 
 		}
-		sys_wait();*/
+		*/
 		sys_wait();
 	}
 }

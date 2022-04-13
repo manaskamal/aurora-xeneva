@@ -20,7 +20,8 @@
 void *map_memory (uint64_t addr, uint32_t length,uint8_t attribute) {
 	x64_cli();
 	process_t * c_proc = get_current_process();
-
+	if (c_proc)
+		c_proc->mmap_sz += length / 4096;
 	//!Attribute check
 	bool user = false;
 	if (attribute & ATTRIBUTE_USER)
@@ -72,6 +73,11 @@ void *map_memory (uint64_t addr, uint32_t length,uint8_t attribute) {
  */
 void unmap_memory (void* addr, uint32_t length) {
 	x64_cli();
+	process_t *c_proc = get_current_process();
+	if (c_proc) {
+		if (c_proc->mmap_sz > 0)
+			c_proc->mmap_sz -= length / 4096;
+	}
 	/*
 	 * Before unmapping the object, we should get the object
 	 * and write it to a file if object is not null
@@ -89,6 +95,8 @@ void unmap_memory (void* addr, uint32_t length) {
 			unmap_page (address + i * 4096);
 		}
 	}
+
+
 }
 
 

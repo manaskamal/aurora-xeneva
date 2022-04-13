@@ -60,7 +60,7 @@ driver_param_t * create_driver_parameter () {
 	pci->write_config_8_p = write_config_8;
 
 	mem_t *m = (mem_t*)pmmngr_alloc();
-	m->get_free_page_p = get_free_page;
+	/*m->get_free_page_p = get_free_page;
 	m->get_phys_address_p = get_physical_address;
 	m->malloc_p = malloc;
 	m->map_page_p = map_page;
@@ -68,7 +68,7 @@ driver_param_t * create_driver_parameter () {
 	m->pmmngr_alloc_blocks_p = pmmngr_alloc_blocks;
 	m->pmmngr_alloc_p = pmmngr_alloc;
 	m->pmmngr_free_p = pmmngr_free;
-	m->unmap_page_p = unmap_page;
+	m->unmap_page_p = unmap_page;*/
 
 	fs_t *fs = (fs_t*)pmmngr_alloc();
 	fs->vfs_mount_p = vfs_mount;

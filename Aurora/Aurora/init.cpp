@@ -110,33 +110,41 @@ void debug_print (const char* text, ...) {
 	debug(text);
 }
 
+void message() {
+	printf ("Hello Message\n");
+}
+
+typedef int (*return_int)();
 
 /**========================================
  ** the main entry routine -- _kmain
  **/
-void _kmain () {
-	KERNEL_BOOT_INFO *info = (KERNEL_BOOT_INFO*)0xFFFFE00000000000;
+void _kmain (KERNEL_BOOT_INFO *info) {
 	debug = info->printf_gui;
 	//! Initialize the memory mappings
 	pmmngr_init (info);
 	vmmngr_x86_64_init(); 
+	heap_initialize();
 	hal_init();
 	hal_x86_64_setup_int();	
 	initialize_serial();
 
-	initialize_kmemory(0x100000);
-
-	
 	initialize_acpi (info->acpi_table_pointer);
 
+	/*IterateImportTable(info->driver_entry1, info->driver_entry3);
+	void* address = GetProcAddress(info->driver_entry1, "return_int");
+	return_int i = (return_int)address;
+	i();
+	for(;;);*/
 	ahci_initialize();
 	//hda_initialize();
+
 	vfs_init();
 
     initialize_screen(info);
-	console_initialize(info);
-
 	screen_set_configuration(info->X_Resolution,info->Y_Resolution);
+	console_initialize(info);
+	
 	initialize_rtc(); 
 
 	initialize_mouse();
@@ -148,8 +156,9 @@ void _kmain () {
 	e1000_initialize();   //<< receiver not working
 	//svga_init();
 	//sound_initialize();
-	driver_mngr_initialize(info);
+	//driver_mngr_initialize(info);
 	process_list_initialize();
+	ttype_init();
 
 #ifdef ARCH_X64
 	//================================================
@@ -159,14 +168,15 @@ void _kmain () {
 
 	printf ("Scheduler Initialized\n");
 
+	x64_cli();
 	/* start the sound service manager at id 1 */
 	create_process ("/sndsrv.exe","shell");
 
 	/* start the compositing window manager at id 2 */
-	create_process ("/priwm.exe","priwm");
+	//create_process ("/priwm.exe","priwm");
 
-	create_process ("/dock.exe", "dock");
-
+	//create_process ("/dock.exe", "dock");
+	x64_sti();
 	//! Here start the scheduler (multitasking engine)
 	scheduler_start();
 #endif

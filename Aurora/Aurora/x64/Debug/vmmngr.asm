@@ -23,41 +23,44 @@ PUBLIC	?unmap_page@@YAX_K@Z				; unmap_page
 PUBLIC	?get_physical_address@@YAPEA_K_K@Z		; get_physical_address
 PUBLIC	?get_free_page@@YAPEA_K_K_N@Z			; get_free_page
 PUBLIC	?vmmngr_get_kernel_pml4@@YAPEA_KXZ		; vmmngr_get_kernel_pml4
+PUBLIC	?vmmngr_free_pages@@YAX_K_N0@Z			; vmmngr_free_pages
 EXTRN	?pmmngr_alloc@@YAPEAXXZ:PROC			; pmmngr_alloc
-EXTRN	?pmmngr_lock_page@@YAXPEAX@Z:PROC		; pmmngr_lock_page
 EXTRN	?pmmngr_free@@YAXPEAX@Z:PROC			; pmmngr_free
-EXTRN	x64_write_msr:PROC
+EXTRN	?pmmngr_move_higher_half@@YAXXZ:PROC		; pmmngr_move_higher_half
+EXTRN	?p2v@@YA_K_K@Z:PROC				; p2v
 EXTRN	x64_mfence:PROC
 EXTRN	x64_read_cr3:PROC
 EXTRN	x64_write_cr3:PROC
 EXTRN	flush_tlb:PROC
 EXTRN	?memset@@YAXPEAXEI@Z:PROC			; memset
-EXTRN	?get_fb_size@@YAIXZ:PROC			; get_fb_size
 pdata	SEGMENT
-$pdata$?vmmngr_x86_64_init@@YAXXZ DD imagerel $LN18
-	DD	imagerel $LN18+493
+$pdata$?vmmngr_x86_64_init@@YAXXZ DD imagerel $LN12
+	DD	imagerel $LN12+379
 	DD	imagerel $unwind$?vmmngr_x86_64_init@@YAXXZ
 $pdata$?map_page@@YA_N_K0E@Z DD imagerel $LN7
-	DD	imagerel $LN7+572
+	DD	imagerel $LN7+619
 	DD	imagerel $unwind$?map_page@@YA_N_K0E@Z
 $pdata$?map_page_ex@@YA_NPEA_K_K1E@Z DD imagerel $LN9
-	DD	imagerel $LN9+587
+	DD	imagerel $LN9+639
 	DD	imagerel $unwind$?map_page_ex@@YA_NPEA_K_K1E@Z
 $pdata$?unmap_page_ex@@YAXPEA_K_K_N@Z DD imagerel $LN5
 	DD	imagerel $LN5+246
 	DD	imagerel $unwind$?unmap_page_ex@@YAXPEA_K_K_N@Z
-$pdata$?create_user_address_space@@YAPEA_KXZ DD imagerel $LN6
-	DD	imagerel $LN6+570
+$pdata$?create_user_address_space@@YAPEA_KXZ DD imagerel $LN9
+	DD	imagerel $LN9+321
 	DD	imagerel $unwind$?create_user_address_space@@YAPEA_KXZ
-$pdata$?unmap_page@@YAX_K@Z DD imagerel $LN4
-	DD	imagerel $LN4+219
+$pdata$?unmap_page@@YAX_K@Z DD imagerel $LN5
+	DD	imagerel $LN5+227
 	DD	imagerel $unwind$?unmap_page@@YAX_K@Z
 $pdata$?get_physical_address@@YAPEA_K_K@Z DD imagerel $LN4
 	DD	imagerel $LN4+171
 	DD	imagerel $unwind$?get_physical_address@@YAPEA_K_K@Z
-$pdata$?get_free_page@@YAPEA_K_K_N@Z DD imagerel $LN9
-	DD	imagerel $LN9+316
+$pdata$?get_free_page@@YAPEA_K_K_N@Z DD imagerel $LN11
+	DD	imagerel $LN11+378
 	DD	imagerel $unwind$?get_free_page@@YAPEA_K_K_N@Z
+$pdata$?vmmngr_free_pages@@YAX_K_N0@Z DD imagerel $LN8
+	DD	imagerel $LN8+340
+	DD	imagerel $unwind$?vmmngr_free_pages@@YAX_K_N0@Z
 $pdata$?clear@@YAXPEAX@Z DD imagerel ?clear@@YAXPEAX@Z
 	DD	imagerel ?clear@@YAXPEAX@Z+74
 	DD	imagerel $unwind$?clear@@YAXPEAX@Z
@@ -72,13 +75,15 @@ $unwind$?map_page_ex@@YA_NPEA_K_K1E@Z DD 011801H
 $unwind$?unmap_page_ex@@YAXPEA_K_K_N@Z DD 011301H
 	DD	0a213H
 $unwind$?create_user_address_space@@YAPEA_KXZ DD 010401H
-	DD	0e204H
+	DD	08204H
 $unwind$?unmap_page@@YAX_K@Z DD 010901H
 	DD	0a209H
 $unwind$?get_physical_address@@YAPEA_K_K@Z DD 010901H
 	DD	0a209H
 $unwind$?get_free_page@@YAPEA_K_K_N@Z DD 010d01H
-	DD	0e20dH
+	DD	0c20dH
+$unwind$?vmmngr_free_pages@@YAX_K_N0@Z DD 011201H
+	DD	0c212H
 $unwind$?clear@@YAXPEAX@Z DD 010901H
 	DD	02209H
 xdata	ENDS
@@ -90,17 +95,17 @@ t$ = 8
 addr$ = 32
 ?clear@@YAXPEAX@Z PROC					; clear
 
-; 84   : static void clear(void* addr){
+; 75   : static void clear(void* addr){
 
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 24
 
-; 85   : 	uint64_t* t = (uint64_t*)addr;
+; 76   : 	uint64_t* t = (uint64_t*)addr;
 
 	mov	rax, QWORD PTR addr$[rsp]
 	mov	QWORD PTR t$[rsp], rax
 
-; 86   : 	for (size_t n = 0; n < 4096 / sizeof(uint64_t); ++n){
+; 77   : 	for (size_t n = 0; n < 4096 / sizeof(uint64_t); ++n){
 
 	mov	QWORD PTR n$1[rsp], 0
 	jmp	SHORT $LN3@clear
@@ -112,18 +117,18 @@ $LN3@clear:
 	cmp	QWORD PTR n$1[rsp], 512			; 00000200H
 	jae	SHORT $LN1@clear
 
-; 87   : 		t[n] = 0;
+; 78   : 		t[n] = 0;
 
 	mov	rax, QWORD PTR t$[rsp]
 	mov	rcx, QWORD PTR n$1[rsp]
 	mov	QWORD PTR [rax+rcx*8], 0
 
-; 88   : 	}
+; 79   : 	}
 
 	jmp	SHORT $LN2@clear
 $LN1@clear:
 
-; 89   : }
+; 80   : }
 
 	add	rsp, 24
 	ret	0
@@ -132,13 +137,163 @@ _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\arch\x86_64\vmmngr.cpp
 _TEXT	SEGMENT
+i$1 = 32
+i1$ = 36
+pt$2 = 40
+page$3 = 48
+tv68 = 56
+pml4_$4 = 64
+pdpt$5 = 72
+pd$6 = 80
+virt_addr$ = 112
+free_physical$ = 120
+s$ = 128
+?vmmngr_free_pages@@YAX_K_N0@Z PROC			; vmmngr_free_pages
+
+; 224  : void vmmngr_free_pages(uint64_t virt_addr, bool free_physical, size_t s){
+
+$LN8:
+	mov	QWORD PTR [rsp+24], r8
+	mov	BYTE PTR [rsp+16], dl
+	mov	QWORD PTR [rsp+8], rcx
+	sub	rsp, 104				; 00000068H
+
+; 225  : 	
+; 226  : 	const long i1 = pml4_index(virt_addr);
+
+	mov	rcx, QWORD PTR virt_addr$[rsp]
+	call	?pml4_index@@YA_K_K@Z			; pml4_index
+	mov	DWORD PTR i1$[rsp], eax
+
+; 227  : 
+; 228  : 	for (int i = 0; i < s /  4096; i++) {
+
+	mov	DWORD PTR i$1[rsp], 0
+	jmp	SHORT $LN5@vmmngr_fre
+$LN4@vmmngr_fre:
+	mov	eax, DWORD PTR i$1[rsp]
+	inc	eax
+	mov	DWORD PTR i$1[rsp], eax
+$LN5@vmmngr_fre:
+	movsxd	rax, DWORD PTR i$1[rsp]
+	mov	QWORD PTR tv68[rsp], rax
+	xor	edx, edx
+	mov	rax, QWORD PTR s$[rsp]
+	mov	ecx, 4096				; 00001000H
+	div	rcx
+	mov	rcx, QWORD PTR tv68[rsp]
+	cmp	rcx, rax
+	jae	$LN3@vmmngr_fre
+
+; 229  : 		uint64_t *pml4_ = (uint64_t*)x64_read_cr3();
+
+	call	x64_read_cr3
+	mov	QWORD PTR pml4_$4[rsp], rax
+
+; 230  : 		uint64_t *pdpt = (uint64_t*)(pml4_[pml4_index(virt_addr)] & ~(4096 - 1));
+
+	mov	rcx, QWORD PTR virt_addr$[rsp]
+	call	?pml4_index@@YA_K_K@Z			; pml4_index
+	mov	rcx, QWORD PTR pml4_$4[rsp]
+	mov	rax, QWORD PTR [rcx+rax*8]
+	and	rax, -4096				; fffffffffffff000H
+	mov	QWORD PTR pdpt$5[rsp], rax
+
+; 231  : 		uint64_t *pd = (uint64_t*)(pdpt[pdp_index(virt_addr)] & ~(4096 - 1));
+
+	mov	rcx, QWORD PTR virt_addr$[rsp]
+	call	?pdp_index@@YA_K_K@Z			; pdp_index
+	mov	rcx, QWORD PTR pdpt$5[rsp]
+	mov	rax, QWORD PTR [rcx+rax*8]
+	and	rax, -4096				; fffffffffffff000H
+	mov	QWORD PTR pd$6[rsp], rax
+
+; 232  : 		uint64_t *pt = (uint64_t*)(pd[pd_index(virt_addr)] & ~(4096 - 1));
+
+	mov	rcx, QWORD PTR virt_addr$[rsp]
+	call	?pd_index@@YA_K_K@Z			; pd_index
+	mov	rcx, QWORD PTR pd$6[rsp]
+	mov	rax, QWORD PTR [rcx+rax*8]
+	and	rax, -4096				; fffffffffffff000H
+	mov	QWORD PTR pt$2[rsp], rax
+
+; 233  : 		uint64_t *page = (uint64_t*)(pt[pt_index(virt_addr)] & ~(4096 - 1));
+
+	mov	rcx, QWORD PTR virt_addr$[rsp]
+	call	?pt_index@@YA_K_K@Z			; pt_index
+	mov	rcx, QWORD PTR pt$2[rsp]
+	mov	rax, QWORD PTR [rcx+rax*8]
+	and	rax, -4096				; fffffffffffff000H
+	mov	QWORD PTR page$3[rsp], rax
+
+; 234  : 
+; 235  : 		if ((pt[pt_index(virt_addr)] & PAGING_PRESENT) != 0) {
+
+	mov	rcx, QWORD PTR virt_addr$[rsp]
+	call	?pt_index@@YA_K_K@Z			; pt_index
+	mov	rcx, QWORD PTR pt$2[rsp]
+	mov	rax, QWORD PTR [rcx+rax*8]
+	and	rax, 1
+	test	rax, rax
+	je	SHORT $LN2@vmmngr_fre
+
+; 236  : 			pt[pt_index(virt_addr)] = 0;
+
+	mov	rcx, QWORD PTR virt_addr$[rsp]
+	call	?pt_index@@YA_K_K@Z			; pt_index
+	mov	rcx, QWORD PTR pt$2[rsp]
+	mov	QWORD PTR [rcx+rax*8], 0
+$LN2@vmmngr_fre:
+
+; 237  : 		}
+; 238  : 
+; 239  : 		if (free_physical && page != 0) 
+
+	movzx	eax, BYTE PTR free_physical$[rsp]
+	test	eax, eax
+	je	SHORT $LN1@vmmngr_fre
+	cmp	QWORD PTR page$3[rsp], 0
+	je	SHORT $LN1@vmmngr_fre
+
+; 240  : 			pmmngr_free(page);
+
+	mov	rcx, QWORD PTR page$3[rsp]
+	call	?pmmngr_free@@YAXPEAX@Z			; pmmngr_free
+$LN1@vmmngr_fre:
+
+; 241  : 
+; 242  : 		virt_addr = virt_addr + i * 4096;
+
+	mov	eax, DWORD PTR i$1[rsp]
+	imul	eax, 4096				; 00001000H
+	cdqe
+	mov	rcx, QWORD PTR virt_addr$[rsp]
+	add	rcx, rax
+	mov	rax, rcx
+	mov	QWORD PTR virt_addr$[rsp], rax
+
+; 243  : 	}
+
+	jmp	$LN4@vmmngr_fre
+$LN3@vmmngr_fre:
+
+; 244  : 
+; 245  : }
+
+	add	rsp, 104				; 00000068H
+	ret	0
+?vmmngr_free_pages@@YAX_K_N0@Z ENDP			; vmmngr_free_pages
+_TEXT	ENDS
+; Function compile flags: /Odtpy
+; File e:\xeneva project\xeneva\aurora\aurora\arch\x86_64\vmmngr.cpp
+_TEXT	SEGMENT
 ?vmmngr_get_kernel_pml4@@YAPEA_KXZ PROC			; vmmngr_get_kernel_pml4
 
-; 380  : 	return root_cr3;
+; 390  : 	return root_cr3;
 
 	mov	rax, QWORD PTR ?root_cr3@@3PEA_KEA	; root_cr3
 
-; 381  : }
+; 391  : }
 
 	ret	0
 ?vmmngr_get_kernel_pml4@@YAPEA_KXZ ENDP			; vmmngr_get_kernel_pml4
@@ -147,24 +302,22 @@ _TEXT	ENDS
 ; File e:\xeneva project\xeneva\aurora\aurora\arch\x86_64\vmmngr.cpp
 _TEXT	SEGMENT
 start$ = 32
-i$1 = 40
-pt$2 = 48
-pdpt$3 = 56
-pml4$ = 64
-pd$4 = 72
-page$ = 80
-end$ = 88
-page$5 = 96
-s$ = 128
-user$ = 136
+pml4$ = 40
+pdpt$1 = 48
+pd$2 = 56
+pt$3 = 64
+page$ = 72
+end$ = 80
+s$ = 112
+user$ = 120
 ?get_free_page@@YAPEA_K_K_N@Z PROC			; get_free_page
 
 ; 354  : uint64_t* get_free_page (size_t s, bool user) {
 
-$LN9:
+$LN11:
 	mov	BYTE PTR [rsp+16], dl
 	mov	QWORD PTR [rsp+8], rcx
-	sub	rsp, 120				; 00000078H
+	sub	rsp, 104				; 00000068H
 
 ; 355  : 	uint64_t* page = 0;
 
@@ -178,7 +331,7 @@ $LN9:
 
 	movzx	eax, BYTE PTR user$[rsp]
 	test	eax, eax
-	je	SHORT $LN6@get_free_p
+	je	SHORT $LN8@get_free_p
 
 ; 358  : 		start = USER_BASE_ADDRESS;
 
@@ -187,111 +340,148 @@ $LN9:
 
 ; 359  : 	else
 
-	jmp	SHORT $LN5@get_free_p
-$LN6@get_free_p:
+	jmp	SHORT $LN7@get_free_p
+$LN8@get_free_p:
 
 ; 360  : 		start = KERNEL_BASE_ADDRESS;
 
 	mov	rax, -35184372088832			; ffffe00000000000H
 	mov	QWORD PTR start$[rsp], rax
-$LN5@get_free_p:
+$LN7@get_free_p:
 
 ; 361  : 
 ; 362  : 	uint64_t* end = 0;
 
 	mov	QWORD PTR end$[rsp], 0
 
-; 363  : 	uint64_t *pml4 = (uint64_t*)x64_read_cr3();
+; 363  : 	uint64_t *pml4 = (uint64_t*)p2v(x64_read_cr3());
 
 	call	x64_read_cr3
+	mov	rcx, rax
+	call	?p2v@@YA_K_K@Z				; p2v
 	mov	QWORD PTR pml4$[rsp], rax
+$LN6@get_free_p:
 
-; 364  : 	for (int i = 0; i < s; i++) {
-
-	mov	DWORD PTR i$1[rsp], 0
-	jmp	SHORT $LN4@get_free_p
-$LN3@get_free_p:
-	mov	eax, DWORD PTR i$1[rsp]
-	inc	eax
-	mov	DWORD PTR i$1[rsp], eax
-$LN4@get_free_p:
-	movsxd	rax, DWORD PTR i$1[rsp]
-	cmp	rax, QWORD PTR s$[rsp]
-	jae	$LN2@get_free_p
-
-; 365  : 		uint64_t *pdpt = (uint64_t*)(pml4[pml4_index(start)] & ~(4096 - 1));
+; 364  : 	
+; 365  : 	/* Walk through every page tables */
+; 366  : 	for (;;) {
+; 367  : 		if (!(pml4[pml4_index(start)] & PAGING_PRESENT))
 
 	mov	rcx, QWORD PTR start$[rsp]
 	call	?pml4_index@@YA_K_K@Z			; pml4_index
 	mov	rcx, QWORD PTR pml4$[rsp]
 	mov	rax, QWORD PTR [rcx+rax*8]
-	and	rax, -4096				; fffffffffffff000H
-	mov	QWORD PTR pdpt$3[rsp], rax
+	and	rax, 1
+	test	rax, rax
+	jne	SHORT $LN4@get_free_p
 
-; 366  : 	    uint64_t *pd = (uint64_t*)(pdpt[pdp_index(start)] & ~(4096 - 1));
+; 368  : 			return (uint64_t*)start;
+
+	mov	rax, QWORD PTR start$[rsp]
+	jmp	$LN9@get_free_p
+$LN4@get_free_p:
+
+; 369  : 
+; 370  : 		uint64_t *pdpt = (uint64_t*)(p2v(pml4[pml4_index(start)]) & ~(4096 - 1));
+
+	mov	rcx, QWORD PTR start$[rsp]
+	call	?pml4_index@@YA_K_K@Z			; pml4_index
+	mov	rcx, QWORD PTR pml4$[rsp]
+	mov	rcx, QWORD PTR [rcx+rax*8]
+	call	?p2v@@YA_K_K@Z				; p2v
+	and	rax, -4096				; fffffffffffff000H
+	mov	QWORD PTR pdpt$1[rsp], rax
+
+; 371  : 		if (!(pdpt[pdp_index(start)] & PAGING_PRESENT))
 
 	mov	rcx, QWORD PTR start$[rsp]
 	call	?pdp_index@@YA_K_K@Z			; pdp_index
-	mov	rcx, QWORD PTR pdpt$3[rsp]
+	mov	rcx, QWORD PTR pdpt$1[rsp]
 	mov	rax, QWORD PTR [rcx+rax*8]
-	and	rax, -4096				; fffffffffffff000H
-	mov	QWORD PTR pd$4[rsp], rax
+	and	rax, 1
+	test	rax, rax
+	jne	SHORT $LN3@get_free_p
 
-; 367  : 		uint64_t *pt = (uint64_t*)(pd[pd_index(start)] & ~(4096 - 1));
+; 372  : 			return (uint64_t*)start;
+
+	mov	rax, QWORD PTR start$[rsp]
+	jmp	$LN9@get_free_p
+$LN3@get_free_p:
+
+; 373  : 
+; 374  : 		uint64_t *pd = (uint64_t*)(p2v(pdpt[pdp_index(start)]) & ~(4096 - 1));
+
+	mov	rcx, QWORD PTR start$[rsp]
+	call	?pdp_index@@YA_K_K@Z			; pdp_index
+	mov	rcx, QWORD PTR pdpt$1[rsp]
+	mov	rcx, QWORD PTR [rcx+rax*8]
+	call	?p2v@@YA_K_K@Z				; p2v
+	and	rax, -4096				; fffffffffffff000H
+	mov	QWORD PTR pd$2[rsp], rax
+
+; 375  : 		if (!(pd[pd_index(start)] & PAGING_PRESENT))
 
 	mov	rcx, QWORD PTR start$[rsp]
 	call	?pd_index@@YA_K_K@Z			; pd_index
-	mov	rcx, QWORD PTR pd$4[rsp]
+	mov	rcx, QWORD PTR pd$2[rsp]
 	mov	rax, QWORD PTR [rcx+rax*8]
-	and	rax, -4096				; fffffffffffff000H
-	mov	QWORD PTR pt$2[rsp], rax
+	and	rax, 1
+	test	rax, rax
+	jne	SHORT $LN2@get_free_p
 
-; 368  : 		uint64_t *page = (uint64_t*)(pt[pt_index(start)] & ~(4096 - 1));
+; 376  : 			return (uint64_t*)start;
+
+	mov	rax, QWORD PTR start$[rsp]
+	jmp	SHORT $LN9@get_free_p
+$LN2@get_free_p:
+
+; 377  : 
+; 378  : 		uint64_t *pt = (uint64_t*)(p2v(pd[pd_index(start)]) & ~(4096 - 1));
+
+	mov	rcx, QWORD PTR start$[rsp]
+	call	?pd_index@@YA_K_K@Z			; pd_index
+	mov	rcx, QWORD PTR pd$2[rsp]
+	mov	rcx, QWORD PTR [rcx+rax*8]
+	call	?p2v@@YA_K_K@Z				; p2v
+	and	rax, -4096				; fffffffffffff000H
+	mov	QWORD PTR pt$3[rsp], rax
+
+; 379  : 
+; 380  : 		if (!(pt[pt_index(start)] & PAGING_PRESENT))
 
 	mov	rcx, QWORD PTR start$[rsp]
 	call	?pt_index@@YA_K_K@Z			; pt_index
-	mov	rcx, QWORD PTR pt$2[rsp]
-	mov	rax, QWORD PTR [rcx+rax*8]
-	and	rax, -4096				; fffffffffffff000H
-	mov	QWORD PTR page$5[rsp], rax
-
-; 369  : 
-; 370  : 		if ((pt[pt_index(start)] & PAGING_PRESENT) == 0){
-
-	mov	rcx, QWORD PTR start$[rsp]
-	call	?pt_index@@YA_K_K@Z			; pt_index
-	mov	rcx, QWORD PTR pt$2[rsp]
+	mov	rcx, QWORD PTR pt$3[rsp]
 	mov	rax, QWORD PTR [rcx+rax*8]
 	and	rax, 1
 	test	rax, rax
 	jne	SHORT $LN1@get_free_p
 
-; 371  : 			return (uint64_t*)start;
+; 381  : 			return (uint64_t*)start;
 
 	mov	rax, QWORD PTR start$[rsp]
-	jmp	SHORT $LN7@get_free_p
+	jmp	SHORT $LN9@get_free_p
 $LN1@get_free_p:
 
-; 372  : 		}
-; 373  : 		start+= 4096;
+; 382  : 		
+; 383  : 		start += 4096;
 
 	mov	rax, QWORD PTR start$[rsp]
 	add	rax, 4096				; 00001000H
 	mov	QWORD PTR start$[rsp], rax
 
-; 374  : 	}
+; 384  : 	}
 
-	jmp	$LN3@get_free_p
-$LN2@get_free_p:
+	jmp	$LN6@get_free_p
 
-; 375  : 	return 0;
+; 385  : 	return 0;
 
 	xor	eax, eax
-$LN7@get_free_p:
+$LN9@get_free_p:
 
-; 376  : }
+; 386  : }
 
-	add	rsp, 120				; 00000078H
+	add	rsp, 104				; 00000068H
 	ret	0
 ?get_free_page@@YAPEA_K_K_N@Z ENDP			; get_free_page
 _TEXT	ENDS
@@ -307,25 +497,25 @@ pt$ = 72
 virt_addr$ = 96
 ?get_physical_address@@YAPEA_K_K@Z PROC			; get_physical_address
 
-; 250  : uint64_t* get_physical_address (uint64_t virt_addr) {
+; 249  : uint64_t* get_physical_address (uint64_t virt_addr) {
 
 $LN4:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 88					; 00000058H
 
-; 251  : 	const long i1 = pml4_index(virt_addr);
+; 250  : 	const long i1 = pml4_index(virt_addr);
 
 	mov	rcx, QWORD PTR virt_addr$[rsp]
 	call	?pml4_index@@YA_K_K@Z			; pml4_index
 	mov	DWORD PTR i1$[rsp], eax
 
-; 252  : 
-; 253  : 	uint64_t *pml4 = (uint64_t*)x64_read_cr3();
+; 251  : 
+; 252  : 	uint64_t *pml4 = (uint64_t*)x64_read_cr3();
 
 	call	x64_read_cr3
 	mov	QWORD PTR pml4$[rsp], rax
 
-; 254  : 	uint64_t *pdpt = (uint64_t*)(pml4[pml4_index(virt_addr)] & ~(4096 - 1));
+; 253  : 	uint64_t *pdpt = (uint64_t*)(pml4[pml4_index(virt_addr)] & ~(4096 - 1));
 
 	mov	rcx, QWORD PTR virt_addr$[rsp]
 	call	?pml4_index@@YA_K_K@Z			; pml4_index
@@ -334,7 +524,7 @@ $LN4:
 	and	rax, -4096				; fffffffffffff000H
 	mov	QWORD PTR pdpt$[rsp], rax
 
-; 255  : 	uint64_t *pd = (uint64_t*)(pdpt[pdp_index(virt_addr)] & ~(4096 - 1));
+; 254  : 	uint64_t *pd = (uint64_t*)(pdpt[pdp_index(virt_addr)] & ~(4096 - 1));
 
 	mov	rcx, QWORD PTR virt_addr$[rsp]
 	call	?pdp_index@@YA_K_K@Z			; pdp_index
@@ -343,7 +533,7 @@ $LN4:
 	and	rax, -4096				; fffffffffffff000H
 	mov	QWORD PTR pd$[rsp], rax
 
-; 256  : 	uint64_t *pt = (uint64_t*)(pd[pd_index(virt_addr)] & ~(4096 - 1));
+; 255  : 	uint64_t *pt = (uint64_t*)(pd[pd_index(virt_addr)] & ~(4096 - 1));
 
 	mov	rcx, QWORD PTR virt_addr$[rsp]
 	call	?pd_index@@YA_K_K@Z			; pd_index
@@ -352,7 +542,7 @@ $LN4:
 	and	rax, -4096				; fffffffffffff000H
 	mov	QWORD PTR pt$[rsp], rax
 
-; 257  : 	uint64_t *page = (uint64_t*)(pt[pt_index(virt_addr)] & ~(4096 - 1));
+; 256  : 	uint64_t *page = (uint64_t*)(pt[pt_index(virt_addr)] & ~(4096 - 1));
 
 	mov	rcx, QWORD PTR virt_addr$[rsp]
 	call	?pt_index@@YA_K_K@Z			; pt_index
@@ -361,18 +551,18 @@ $LN4:
 	and	rax, -4096				; fffffffffffff000H
 	mov	QWORD PTR page$[rsp], rax
 
-; 258  : 
-; 259  : 	if (page != NULL)
+; 257  : 
+; 258  : 	if (page != NULL)
 
 	cmp	QWORD PTR page$[rsp], 0
 	je	SHORT $LN1@get_physic
 
-; 260  : 		return page;
+; 259  : 		return page;
 
 	mov	rax, QWORD PTR page$[rsp]
 $LN1@get_physic:
 
-; 261  : }
+; 260  : }
 
 	add	rsp, 88					; 00000058H
 	ret	0
@@ -383,33 +573,33 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 i1$ = 32
 pt$ = 40
-pml4_$ = 48
-pdpt$ = 56
-pd$ = 64
-page$ = 72
+page$ = 48
+pml4_$ = 56
+pdpt$ = 64
+pd$ = 72
 virt_addr$ = 96
 ?unmap_page@@YAX_K@Z PROC				; unmap_page
 
-; 210  : void unmap_page(uint64_t virt_addr){
+; 185  : void unmap_page(uint64_t virt_addr){
 
-$LN4:
+$LN5:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 88					; 00000058H
 
-; 211  : 	
-; 212  : 	const long i1 = pml4_index(virt_addr);
+; 186  : 	
+; 187  : 	const long i1 = pml4_index(virt_addr);
 
 	mov	rcx, QWORD PTR virt_addr$[rsp]
 	call	?pml4_index@@YA_K_K@Z			; pml4_index
 	mov	DWORD PTR i1$[rsp], eax
 
-; 213  : 
-; 214  : 	uint64_t *pml4_ = (uint64_t*)x64_read_cr3();
+; 188  : 
+; 189  : 	uint64_t *pml4_ = (uint64_t*)x64_read_cr3();
 
 	call	x64_read_cr3
 	mov	QWORD PTR pml4_$[rsp], rax
 
-; 215  : 	uint64_t *pdpt = (uint64_t*)(pml4_[pml4_index(virt_addr)] & ~(4096 - 1));
+; 190  : 	uint64_t *pdpt = (uint64_t*)(pml4_[pml4_index(virt_addr)] & ~(4096 - 1));
 
 	mov	rcx, QWORD PTR virt_addr$[rsp]
 	call	?pml4_index@@YA_K_K@Z			; pml4_index
@@ -418,7 +608,7 @@ $LN4:
 	and	rax, -4096				; fffffffffffff000H
 	mov	QWORD PTR pdpt$[rsp], rax
 
-; 216  : 	uint64_t *pd = (uint64_t*)(pdpt[pdp_index(virt_addr)] & ~(4096 - 1));
+; 191  : 	uint64_t *pd = (uint64_t*)(pdpt[pdp_index(virt_addr)] & ~(4096 - 1));
 
 	mov	rcx, QWORD PTR virt_addr$[rsp]
 	call	?pdp_index@@YA_K_K@Z			; pdp_index
@@ -427,7 +617,7 @@ $LN4:
 	and	rax, -4096				; fffffffffffff000H
 	mov	QWORD PTR pd$[rsp], rax
 
-; 217  : 	uint64_t *pt = (uint64_t*)(pd[pd_index(virt_addr)] & ~(4096 - 1));
+; 192  : 	uint64_t *pt = (uint64_t*)(pd[pd_index(virt_addr)] & ~(4096 - 1));
 
 	mov	rcx, QWORD PTR virt_addr$[rsp]
 	call	?pd_index@@YA_K_K@Z			; pd_index
@@ -436,7 +626,7 @@ $LN4:
 	and	rax, -4096				; fffffffffffff000H
 	mov	QWORD PTR pt$[rsp], rax
 
-; 218  : 	uint64_t *page = (uint64_t*)(pt[pt_index(virt_addr)] & ~(4096 - 1));
+; 193  : 	uint64_t *page = (uint64_t*)(pt[pt_index(virt_addr)] & ~(4096 - 1));
 
 	mov	rcx, QWORD PTR virt_addr$[rsp]
 	call	?pt_index@@YA_K_K@Z			; pt_index
@@ -445,8 +635,8 @@ $LN4:
 	and	rax, -4096				; fffffffffffff000H
 	mov	QWORD PTR page$[rsp], rax
 
-; 219  : 	
-; 220  : 	if ((pt[pt_index(virt_addr)] & PAGING_PRESENT) != 0) {
+; 194  : 	
+; 195  : 	if ((pt[pt_index(virt_addr)] & PAGING_PRESENT) != 0) {
 
 	mov	rcx, QWORD PTR virt_addr$[rsp]
 	call	?pt_index@@YA_K_K@Z			; pt_index
@@ -454,25 +644,30 @@ $LN4:
 	mov	rax, QWORD PTR [rcx+rax*8]
 	and	rax, 1
 	test	rax, rax
-	je	SHORT $LN1@unmap_page
+	je	SHORT $LN2@unmap_page
 
-; 221  : 		pmmngr_free(page);
-
-	mov	rcx, QWORD PTR page$[rsp]
-	call	?pmmngr_free@@YAXPEAX@Z			; pmmngr_free
-
-; 222  : 		pt[pt_index(virt_addr)] = 0;
+; 196  : 		
+; 197  : 		pt[pt_index(virt_addr)] = 0;
 
 	mov	rcx, QWORD PTR virt_addr$[rsp]
 	call	?pt_index@@YA_K_K@Z			; pt_index
 	mov	rcx, QWORD PTR pt$[rsp]
 	mov	QWORD PTR [rcx+rax*8], 0
+$LN2@unmap_page:
+
+; 198  : 	}
+; 199  : 	if (page != 0)
+
+	cmp	QWORD PTR page$[rsp], 0
+	je	SHORT $LN1@unmap_page
+
+; 200  : 		pmmngr_free(page);
+
+	mov	rcx, QWORD PTR page$[rsp]
+	call	?pmmngr_free@@YAXPEAX@Z			; pmmngr_free
 $LN1@unmap_page:
 
-; 223  : 	}
-; 224  : 	
-; 225  : 	
-; 226  : }
+; 201  : }
 
 	add	rsp, 88					; 00000058H
 	ret	0
@@ -484,29 +679,24 @@ _TEXT	SEGMENT
 i$1 = 32
 new_cr3$ = 40
 cr3$ = 48
-tv85 = 56
-tv133 = 64
-tv141 = 72
-tv93 = 80
-tv149 = 88
-tv77 = 96
-tv164 = 104
 ?create_user_address_space@@YAPEA_KXZ PROC		; create_user_address_space
 
 ; 324  : uint64_t *create_user_address_space (){
 
-$LN6:
-	sub	rsp, 120				; 00000078H
+$LN9:
+	sub	rsp, 72					; 00000048H
 
 ; 325  : 	
-; 326  : 	uint64_t *cr3 = (uint64_t*)x64_read_cr3();
+; 326  : 	uint64_t *cr3 = (uint64_t*)root_cr3; //x64_read_cr3();
 
-	call	x64_read_cr3
+	mov	rax, QWORD PTR ?root_cr3@@3PEA_KEA	; root_cr3
 	mov	QWORD PTR cr3$[rsp], rax
 
-; 327  : 	uint64_t *new_cr3 = (uint64_t*)pmmngr_alloc();
+; 327  : 	uint64_t *new_cr3 = (uint64_t*)p2v((size_t)pmmngr_alloc());
 
 	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
+	mov	rcx, rax
+	call	?p2v@@YA_K_K@Z				; p2v
 	mov	QWORD PTR new_cr3$[rsp], rax
 
 ; 328  : 	memset(new_cr3,0,4096);
@@ -533,128 +723,97 @@ $LN6:
 	mov	rax, QWORD PTR [r8+rax]
 	mov	QWORD PTR [rdx+rcx], rax
 
-; 336  : 	//! Copy Kernel's Higher Half section
-; 337  : 
-; 338  : 	new_cr3[pml4_index(0xFFFFC00000000000)] = cr3[pml4_index(0xFFFFC00000000000)];
+; 336  : 	new_cr3[1] = cr3[1];
 
-	mov	rcx, -70368744177664			; ffffc00000000000H
-	call	?pml4_index@@YA_K_K@Z			; pml4_index
-	mov	QWORD PTR tv77[rsp], rax
-	mov	rcx, -70368744177664			; ffffc00000000000H
-	call	?pml4_index@@YA_K_K@Z			; pml4_index
-	mov	rcx, QWORD PTR new_cr3$[rsp]
-	mov	rdx, QWORD PTR cr3$[rsp]
-	mov	r8, QWORD PTR tv77[rsp]
-	mov	rdx, QWORD PTR [rdx+r8*8]
-	mov	QWORD PTR [rcx+rax*8], rdx
+	mov	eax, 8
+	imul	rax, 1
+	mov	ecx, 8
+	imul	rcx, 1
+	mov	rdx, QWORD PTR new_cr3$[rsp]
+	mov	r8, QWORD PTR cr3$[rsp]
+	mov	rax, QWORD PTR [r8+rax]
+	mov	QWORD PTR [rdx+rcx], rax
+
+; 337  : 	new_cr3[2] = cr3[2];
+
+	mov	eax, 8
+	imul	rax, 2
+	mov	ecx, 8
+	imul	rcx, 2
+	mov	rdx, QWORD PTR new_cr3$[rsp]
+	mov	r8, QWORD PTR cr3$[rsp]
+	mov	rax, QWORD PTR [r8+rax]
+	mov	QWORD PTR [rdx+rcx], rax
+
+; 338  : 	new_cr3[3] = cr3[3];
+
+	mov	eax, 8
+	imul	rax, 3
+	mov	ecx, 8
+	imul	rcx, 3
+	mov	rdx, QWORD PTR new_cr3$[rsp]
+	mov	r8, QWORD PTR cr3$[rsp]
+	mov	rax, QWORD PTR [r8+rax]
+	mov	QWORD PTR [rdx+rcx], rax
 
 ; 339  : 
-; 340  : 	new_cr3[pml4_index(0xFFFFA00000000000)] = cr3[pml4_index(0xFFFFA00000000000)];
-
-	mov	rcx, -105553116266496			; ffffa00000000000H
-	call	?pml4_index@@YA_K_K@Z			; pml4_index
-	mov	QWORD PTR tv85[rsp], rax
-	mov	rcx, -105553116266496			; ffffa00000000000H
-	call	?pml4_index@@YA_K_K@Z			; pml4_index
-	mov	rcx, QWORD PTR new_cr3$[rsp]
-	mov	rdx, QWORD PTR cr3$[rsp]
-	mov	r8, QWORD PTR tv85[rsp]
-	mov	rdx, QWORD PTR [rdx+r8*8]
-	mov	QWORD PTR [rcx+rax*8], rdx
-
-; 341  : 
-; 342  : 	new_cr3[pml4_index(0xFFFF800000000000)] = cr3[pml4_index(0xFFFF800000000000)];
-
-	mov	rcx, -140737488355328			; ffff800000000000H
-	call	?pml4_index@@YA_K_K@Z			; pml4_index
-	mov	QWORD PTR tv93[rsp], rax
-	mov	rcx, -140737488355328			; ffff800000000000H
-	call	?pml4_index@@YA_K_K@Z			; pml4_index
-	mov	rcx, QWORD PTR new_cr3$[rsp]
-	mov	rdx, QWORD PTR cr3$[rsp]
-	mov	r8, QWORD PTR tv93[rsp]
-	mov	rdx, QWORD PTR [rdx+r8*8]
-	mov	QWORD PTR [rcx+rax*8], rdx
-
-; 343  : 	new_cr3[pml4_index(0xFFFFE00000000000)] = cr3[pml4_index(0xFFFFE00000000000)];
-
-	mov	rcx, -35184372088832			; ffffe00000000000H
-	call	?pml4_index@@YA_K_K@Z			; pml4_index
-	mov	QWORD PTR tv133[rsp], rax
-	mov	rcx, -35184372088832			; ffffe00000000000H
-	call	?pml4_index@@YA_K_K@Z			; pml4_index
-	mov	rcx, QWORD PTR new_cr3$[rsp]
-	mov	rdx, QWORD PTR cr3$[rsp]
-	mov	r8, QWORD PTR tv133[rsp]
-	mov	rdx, QWORD PTR [rdx+r8*8]
-	mov	QWORD PTR [rcx+rax*8], rdx
-
-; 344  : 	new_cr3[pml4_index(0xFFFFD00000000000)] = cr3[pml4_index(0xFFFFD00000000000)];
-
-	mov	rcx, -52776558133248			; ffffd00000000000H
-	call	?pml4_index@@YA_K_K@Z			; pml4_index
-	mov	QWORD PTR tv141[rsp], rax
-	mov	rcx, -52776558133248			; ffffd00000000000H
-	call	?pml4_index@@YA_K_K@Z			; pml4_index
-	mov	rcx, QWORD PTR new_cr3$[rsp]
-	mov	rdx, QWORD PTR cr3$[rsp]
-	mov	r8, QWORD PTR tv141[rsp]
-	mov	rdx, QWORD PTR [rdx+r8*8]
-	mov	QWORD PTR [rcx+rax*8], rdx
-
-; 345  : 	new_cr3[pml4_index(0xFFFFFD0000000000)] = cr3[pml4_index(0xFFFFFD0000000000)];
-
-	mov	rcx, -3298534883328			; fffffd0000000000H
-	call	?pml4_index@@YA_K_K@Z			; pml4_index
-	mov	QWORD PTR tv149[rsp], rax
-	mov	rcx, -3298534883328			; fffffd0000000000H
-	call	?pml4_index@@YA_K_K@Z			; pml4_index
-	mov	rcx, QWORD PTR new_cr3$[rsp]
-	mov	rdx, QWORD PTR cr3$[rsp]
-	mov	r8, QWORD PTR tv149[rsp]
-	mov	rdx, QWORD PTR [rdx+r8*8]
-	mov	QWORD PTR [rcx+rax*8], rdx
-
-; 346  : 	//! Mapped Framebuffer
-; 347  : 	for (int i = 0; i < get_fb_size() / 4096; i++)
+; 340  : 	//! Copy Kernel's Higher Half section
+; 341  : 	for (int i = 0; i < 512; i++) {
 
 	mov	DWORD PTR i$1[rsp], 0
-	jmp	SHORT $LN3@create_use
-$LN2@create_use:
+	jmp	SHORT $LN6@create_use
+$LN5@create_use:
 	mov	eax, DWORD PTR i$1[rsp]
 	inc	eax
 	mov	DWORD PTR i$1[rsp], eax
+$LN6@create_use:
+	cmp	DWORD PTR i$1[rsp], 512			; 00000200H
+	jge	SHORT $LN4@create_use
+
+; 342  : 		if (i < 256)
+
+	cmp	DWORD PTR i$1[rsp], 256			; 00000100H
+	jge	SHORT $LN3@create_use
+
+; 343  : 			continue;
+
+	jmp	SHORT $LN5@create_use
 $LN3@create_use:
-	call	?get_fb_size@@YAIXZ			; get_fb_size
-	xor	edx, edx
-	mov	ecx, 4096				; 00001000H
-	div	ecx
-	cmp	DWORD PTR i$1[rsp], eax
-	jae	SHORT $LN1@create_use
 
-; 348  : 		new_cr3[pml4_index(0xFFFFD00000200000 + i * 4096)] = cr3[pml4_index(0xFFFFD00000200000 + i * 4096)]; 
+; 344  : 		if ((cr3[i] & PAGING_PRESENT))
 
-	mov	eax, DWORD PTR i$1[rsp]
-	imul	eax, 4096				; 00001000H
-	cdqe
-	mov	rcx, 52776556036096			; 00002fffffe00000H
-	sub	rax, rcx
-	mov	rcx, rax
-	call	?pml4_index@@YA_K_K@Z			; pml4_index
-	mov	QWORD PTR tv164[rsp], rax
-	mov	ecx, DWORD PTR i$1[rsp]
-	imul	ecx, 4096				; 00001000H
-	movsxd	rcx, ecx
-	mov	rdx, 52776556036096			; 00002fffffe00000H
-	sub	rcx, rdx
-	call	?pml4_index@@YA_K_K@Z			; pml4_index
+	movsxd	rax, DWORD PTR i$1[rsp]
+	mov	rcx, QWORD PTR cr3$[rsp]
+	mov	rax, QWORD PTR [rcx+rax*8]
+	and	rax, 1
+	test	rax, rax
+	je	SHORT $LN2@create_use
+
+; 345  : 			new_cr3[i] = cr3[i];
+
+	movsxd	rax, DWORD PTR i$1[rsp]
+	movsxd	rcx, DWORD PTR i$1[rsp]
+	mov	rdx, QWORD PTR new_cr3$[rsp]
+	mov	r8, QWORD PTR cr3$[rsp]
+	mov	rax, QWORD PTR [r8+rax*8]
+	mov	QWORD PTR [rdx+rcx*8], rax
+
+; 346  : 		else
+
+	jmp	SHORT $LN1@create_use
+$LN2@create_use:
+
+; 347  : 			new_cr3[i] = 0;
+
+	movsxd	rax, DWORD PTR i$1[rsp]
 	mov	rcx, QWORD PTR new_cr3$[rsp]
-	mov	rdx, QWORD PTR cr3$[rsp]
-	mov	r8, QWORD PTR tv164[rsp]
-	mov	rdx, QWORD PTR [rdx+r8*8]
-	mov	QWORD PTR [rcx+rax*8], rdx
-	jmp	SHORT $LN2@create_use
+	mov	QWORD PTR [rcx+rax*8], 0
 $LN1@create_use:
+
+; 348  : 	}
+
+	jmp	SHORT $LN5@create_use
+$LN4@create_use:
 
 ; 349  : 
 ; 350  : 	return new_cr3;
@@ -663,7 +822,7 @@ $LN1@create_use:
 
 ; 351  : }
 
-	add	rsp, 120				; 00000078H
+	add	rsp, 72					; 00000048H
 	ret	0
 ?create_user_address_space@@YAPEA_KXZ ENDP		; create_user_address_space
 _TEXT	ENDS
@@ -681,7 +840,7 @@ virt_addr$ = 104
 free_physical$ = 112
 ?unmap_page_ex@@YAXPEA_K_K_N@Z PROC			; unmap_page_ex
 
-; 229  : void unmap_page_ex(uint64_t* cr3, uint64_t virt_addr, bool free_physical){
+; 204  : void unmap_page_ex(uint64_t* cr3, uint64_t virt_addr, bool free_physical){
 
 $LN5:
 	mov	BYTE PTR [rsp+24], r8b
@@ -689,20 +848,20 @@ $LN5:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 88					; 00000058H
 
-; 230  : 	
-; 231  : 	const long i1 = pml4_index(virt_addr);
+; 205  : 	
+; 206  : 	const long i1 = pml4_index(virt_addr);
 
 	mov	rcx, QWORD PTR virt_addr$[rsp]
 	call	?pml4_index@@YA_K_K@Z			; pml4_index
 	mov	DWORD PTR i1$[rsp], eax
 
-; 232  : 
-; 233  : 	uint64_t *pml4_ = cr3;
+; 207  : 
+; 208  : 	uint64_t *pml4_ = cr3;
 
 	mov	rax, QWORD PTR cr3$[rsp]
 	mov	QWORD PTR pml4_$[rsp], rax
 
-; 234  : 	uint64_t *pdpt = (uint64_t*)(pml4_[pml4_index(virt_addr)] & ~(4096 - 1));
+; 209  : 	uint64_t *pdpt = (uint64_t*)(pml4_[pml4_index(virt_addr)] & ~(4096 - 1));
 
 	mov	rcx, QWORD PTR virt_addr$[rsp]
 	call	?pml4_index@@YA_K_K@Z			; pml4_index
@@ -711,7 +870,7 @@ $LN5:
 	and	rax, -4096				; fffffffffffff000H
 	mov	QWORD PTR pdpt$[rsp], rax
 
-; 235  : 	uint64_t *pd = (uint64_t*)(pdpt[pdp_index(virt_addr)] & ~(4096 - 1));
+; 210  : 	uint64_t *pd = (uint64_t*)(pdpt[pdp_index(virt_addr)] & ~(4096 - 1));
 
 	mov	rcx, QWORD PTR virt_addr$[rsp]
 	call	?pdp_index@@YA_K_K@Z			; pdp_index
@@ -720,7 +879,7 @@ $LN5:
 	and	rax, -4096				; fffffffffffff000H
 	mov	QWORD PTR pd$[rsp], rax
 
-; 236  : 	uint64_t *pt = (uint64_t*)(pd[pd_index(virt_addr)] & ~(4096 - 1));
+; 211  : 	uint64_t *pt = (uint64_t*)(pd[pd_index(virt_addr)] & ~(4096 - 1));
 
 	mov	rcx, QWORD PTR virt_addr$[rsp]
 	call	?pd_index@@YA_K_K@Z			; pd_index
@@ -729,7 +888,7 @@ $LN5:
 	and	rax, -4096				; fffffffffffff000H
 	mov	QWORD PTR pt$[rsp], rax
 
-; 237  : 	uint64_t *page = (uint64_t*)(pt[pt_index(virt_addr)] & ~(4096 - 1));
+; 212  : 	uint64_t *page = (uint64_t*)(pt[pt_index(virt_addr)] & ~(4096 - 1));
 
 	mov	rcx, QWORD PTR virt_addr$[rsp]
 	call	?pt_index@@YA_K_K@Z			; pt_index
@@ -738,8 +897,8 @@ $LN5:
 	and	rax, -4096				; fffffffffffff000H
 	mov	QWORD PTR page$[rsp], rax
 
-; 238  : 
-; 239  : 	if ((pt[pt_index(virt_addr)] & PAGING_PRESENT) != 0) {
+; 213  : 
+; 214  : 	if ((pt[pt_index(virt_addr)] & PAGING_PRESENT) != 0) {
 
 	mov	rcx, QWORD PTR virt_addr$[rsp]
 	call	?pt_index@@YA_K_K@Z			; pt_index
@@ -749,7 +908,7 @@ $LN5:
 	test	rax, rax
 	je	SHORT $LN2@unmap_page
 
-; 240  : 		pt[pt_index(virt_addr)] = 0;
+; 215  : 		pt[pt_index(virt_addr)] = 0;
 
 	mov	rcx, QWORD PTR virt_addr$[rsp]
 	call	?pt_index@@YA_K_K@Z			; pt_index
@@ -757,9 +916,9 @@ $LN5:
 	mov	QWORD PTR [rcx+rax*8], 0
 $LN2@unmap_page:
 
-; 241  : 	}
-; 242  : 
-; 243  : 	if (free_physical && page != 0) 
+; 216  : 	}
+; 217  : 
+; 218  : 	if (free_physical && page != 0) 
 
 	movzx	eax, BYTE PTR free_physical$[rsp]
 	test	eax, eax
@@ -767,14 +926,14 @@ $LN2@unmap_page:
 	cmp	QWORD PTR page$[rsp], 0
 	je	SHORT $LN1@unmap_page
 
-; 244  : 		pmmngr_free(page);
+; 219  : 		pmmngr_free(page);
 
 	mov	rcx, QWORD PTR page$[rsp]
 	call	?pmmngr_free@@YAXPEAX@Z			; pmmngr_free
 $LN1@unmap_page:
 
-; 245  : 
-; 246  : }
+; 220  : 
+; 221  : }
 
 	add	rsp, 88					; 00000058H
 	ret	0
@@ -800,7 +959,7 @@ virtual_address$ = 144
 attrib$ = 152
 ?map_page_ex@@YA_NPEA_K_K1E@Z PROC			; map_page_ex
 
-; 265  : bool map_page_ex (uint64_t *pml4i,uint64_t physical_address, uint64_t virtual_address, uint8_t attrib){
+; 264  : bool map_page_ex (uint64_t *pml4i,uint64_t physical_address, uint64_t virtual_address, uint8_t attrib){
 
 $LN9:
 	mov	BYTE PTR [rsp+32], r9b
@@ -809,63 +968,63 @@ $LN9:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 120				; 00000078H
 
+; 265  : 
 ; 266  : 
-; 267  : 
-; 268  : 	size_t flags = 0;
+; 267  : 	size_t flags = 0;
 
 	mov	QWORD PTR flags$[rsp], 0
 
-; 269  : 	if (attrib == PAGING_USER)
+; 268  : 	if (attrib == PAGING_USER)
 
 	movzx	eax, BYTE PTR attrib$[rsp]
 	cmp	eax, 4
 	jne	SHORT $LN6@map_page_e
 
-; 270  : 		flags  = PAGING_PRESENT | PAGING_WRITABLE | PAGING_USER;
+; 269  : 		flags  = PAGING_PRESENT | PAGING_WRITABLE | PAGING_USER;
 
 	mov	QWORD PTR flags$[rsp], 7
 
-; 271  : 	else
+; 270  : 	else
 
 	jmp	SHORT $LN5@map_page_e
 $LN6@map_page_e:
 
-; 272  : 		flags = PAGING_PRESENT | PAGING_WRITABLE;
+; 271  : 		flags = PAGING_PRESENT | PAGING_WRITABLE;
 
 	mov	QWORD PTR flags$[rsp], 3
 $LN5@map_page_e:
 
-; 273  : 
-; 274  : 	const long i4 = (virtual_address >> 39) & 0x1FF;
+; 272  : 
+; 273  : 	const long i4 = (virtual_address >> 39) & 0x1FF;
 
 	mov	rax, QWORD PTR virtual_address$[rsp]
 	shr	rax, 39					; 00000027H
 	and	rax, 511				; 000001ffH
 	mov	DWORD PTR i4$[rsp], eax
 
-; 275  : 	const long i3 = (virtual_address >> 30) & 0x1FF;
+; 274  : 	const long i3 = (virtual_address >> 30) & 0x1FF;
 
 	mov	rax, QWORD PTR virtual_address$[rsp]
 	shr	rax, 30
 	and	rax, 511				; 000001ffH
 	mov	DWORD PTR i3$[rsp], eax
 
-; 276  : 	const long i2 = (virtual_address >> 21) & 0x1FF;
+; 275  : 	const long i2 = (virtual_address >> 21) & 0x1FF;
 
 	mov	rax, QWORD PTR virtual_address$[rsp]
 	shr	rax, 21
 	and	rax, 511				; 000001ffH
 	mov	DWORD PTR i2$[rsp], eax
 
-; 277  : 	const long i1 = (virtual_address >> 12) & 0x1FF;
+; 276  : 	const long i1 = (virtual_address >> 12) & 0x1FF;
 
 	mov	rax, QWORD PTR virtual_address$[rsp]
 	shr	rax, 12
 	and	rax, 511				; 000001ffH
 	mov	DWORD PTR i1$[rsp], eax
 
-; 278  : 
-; 279  : 	if (!(pml4i[i4] & PAGING_PRESENT)){
+; 277  : 
+; 278  : 	if (!(pml4i[i4] & PAGING_PRESENT)){
 
 	movsxd	rax, DWORD PTR i4$[rsp]
 	mov	rcx, QWORD PTR pml4i$[rsp]
@@ -874,12 +1033,12 @@ $LN5@map_page_e:
 	test	rax, rax
 	jne	SHORT $LN4@map_page_e
 
-; 280  : 		const uint64_t page = (uint64_t)pmmngr_alloc();
+; 279  : 		const uint64_t page = (uint64_t)pmmngr_alloc();
 
 	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
 	mov	QWORD PTR page$1[rsp], rax
 
-; 281  : 		pml4i[i4] = page | flags;
+; 280  : 		pml4i[i4] = page | flags;
 
 	mov	rax, QWORD PTR flags$[rsp]
 	mov	rcx, QWORD PTR page$1[rsp]
@@ -889,32 +1048,35 @@ $LN5@map_page_e:
 	mov	rdx, QWORD PTR pml4i$[rsp]
 	mov	QWORD PTR [rdx+rcx*8], rax
 
-; 282  : 		clear((void*)page);
+; 281  : 		clear((void*)p2v(page));
 
 	mov	rcx, QWORD PTR page$1[rsp]
+	call	?p2v@@YA_K_K@Z				; p2v
+	mov	rcx, rax
 	call	?clear@@YAXPEAX@Z			; clear
 
-; 283  : 		flush_tlb((void*)page);
+; 282  : 		flush_tlb((void*)page);
 
 	mov	rcx, QWORD PTR page$1[rsp]
 	call	flush_tlb
 
-; 284  : 		x64_mfence();
+; 283  : 		x64_mfence();
 
 	call	x64_mfence
 $LN4@map_page_e:
 
-; 285  : 	}
-; 286  : 	uint64_t* pml3 = (uint64_t*)(pml4i[i4] & ~(4096 - 1));
+; 284  : 	}
+; 285  : 	uint64_t* pml3 = (uint64_t*)(p2v(pml4i[i4]) & ~(4096 - 1));
 
 	movsxd	rax, DWORD PTR i4$[rsp]
 	mov	rcx, QWORD PTR pml4i$[rsp]
-	mov	rax, QWORD PTR [rcx+rax*8]
+	mov	rcx, QWORD PTR [rcx+rax*8]
+	call	?p2v@@YA_K_K@Z				; p2v
 	and	rax, -4096				; fffffffffffff000H
 	mov	QWORD PTR pml3$[rsp], rax
 
-; 287  : 
-; 288  : 	if (!(pml3[i3] & PAGING_PRESENT)){
+; 286  : 
+; 287  : 	if (!(pml3[i3] & PAGING_PRESENT)){
 
 	movsxd	rax, DWORD PTR i3$[rsp]
 	mov	rcx, QWORD PTR pml3$[rsp]
@@ -923,12 +1085,12 @@ $LN4@map_page_e:
 	test	rax, rax
 	jne	SHORT $LN3@map_page_e
 
-; 289  : 		const uint64_t page = (uint64_t)pmmngr_alloc();
+; 288  : 		const uint64_t page = (uint64_t)pmmngr_alloc();
 
 	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
 	mov	QWORD PTR page$3[rsp], rax
 
-; 290  : 		pml3[i3] = page | flags;
+; 289  : 		pml3[i3] = page | flags;
 
 	mov	rax, QWORD PTR flags$[rsp]
 	mov	rcx, QWORD PTR page$3[rsp]
@@ -938,33 +1100,36 @@ $LN4@map_page_e:
 	mov	rdx, QWORD PTR pml3$[rsp]
 	mov	QWORD PTR [rdx+rcx*8], rax
 
-; 291  : 		clear((void*)page);
+; 290  : 		clear((void*)p2v(page));
 
 	mov	rcx, QWORD PTR page$3[rsp]
+	call	?p2v@@YA_K_K@Z				; p2v
+	mov	rcx, rax
 	call	?clear@@YAXPEAX@Z			; clear
 
-; 292  : 		flush_tlb((void*)page);
+; 291  : 		flush_tlb((void*)page);
 
 	mov	rcx, QWORD PTR page$3[rsp]
 	call	flush_tlb
 
-; 293  : 		x64_mfence();
+; 292  : 		x64_mfence();
 
 	call	x64_mfence
 $LN3@map_page_e:
 
-; 294  : 		
-; 295  : 	}
-; 296  : 
-; 297  : 	uint64_t* pml2 = (uint64_t*)(pml3[i3] & ~(4096 - 1));
+; 293  : 		
+; 294  : 	}
+; 295  : 
+; 296  : 	uint64_t* pml2 = (uint64_t*)(p2v(pml3[i3]) & ~(4096 - 1));
 
 	movsxd	rax, DWORD PTR i3$[rsp]
 	mov	rcx, QWORD PTR pml3$[rsp]
-	mov	rax, QWORD PTR [rcx+rax*8]
+	mov	rcx, QWORD PTR [rcx+rax*8]
+	call	?p2v@@YA_K_K@Z				; p2v
 	and	rax, -4096				; fffffffffffff000H
 	mov	QWORD PTR pml2$[rsp], rax
 
-; 298  : 	if (!(pml2[i2] & PAGING_PRESENT)){
+; 297  : 	if (!(pml2[i2] & PAGING_PRESENT)){
 
 	movsxd	rax, DWORD PTR i2$[rsp]
 	mov	rcx, QWORD PTR pml2$[rsp]
@@ -973,13 +1138,13 @@ $LN3@map_page_e:
 	test	rax, rax
 	jne	SHORT $LN2@map_page_e
 
-; 299  : 
-; 300  : 		const uint64_t page = (uint64_t)pmmngr_alloc();
+; 298  : 
+; 299  : 		const uint64_t page = (uint64_t)pmmngr_alloc();
 
 	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
 	mov	QWORD PTR page$2[rsp], rax
 
-; 301  : 		pml2[i2] = page | flags;
+; 300  : 		pml2[i2] = page | flags;
 
 	mov	rax, QWORD PTR flags$[rsp]
 	mov	rcx, QWORD PTR page$2[rsp]
@@ -989,34 +1154,37 @@ $LN3@map_page_e:
 	mov	rdx, QWORD PTR pml2$[rsp]
 	mov	QWORD PTR [rdx+rcx*8], rax
 
-; 302  : 		clear((void*)page);
+; 301  : 		clear((void*)p2v(page));
 
 	mov	rcx, QWORD PTR page$2[rsp]
+	call	?p2v@@YA_K_K@Z				; p2v
+	mov	rcx, rax
 	call	?clear@@YAXPEAX@Z			; clear
 
-; 303  : 		flush_tlb((void*)page);
+; 302  : 		flush_tlb((void*)page);
 
 	mov	rcx, QWORD PTR page$2[rsp]
 	call	flush_tlb
 
-; 304  : 		x64_mfence();
+; 303  : 		x64_mfence();
 
 	call	x64_mfence
 $LN2@map_page_e:
 
-; 305  : 		
-; 306  : 	}
-; 307  : 
-; 308  : 	uint64_t* pml1 = (uint64_t*)(pml2[i2] & ~(4096 - 1));
+; 304  : 		
+; 305  : 	}
+; 306  : 
+; 307  : 	uint64_t* pml1 = (uint64_t*)(p2v(pml2[i2]) & ~(4096 - 1));
 
 	movsxd	rax, DWORD PTR i2$[rsp]
 	mov	rcx, QWORD PTR pml2$[rsp]
-	mov	rax, QWORD PTR [rcx+rax*8]
+	mov	rcx, QWORD PTR [rcx+rax*8]
+	call	?p2v@@YA_K_K@Z				; p2v
 	and	rax, -4096				; fffffffffffff000H
 	mov	QWORD PTR pml1$[rsp], rax
 
-; 309  : 
-; 310  : 	if (pml1[i1] & PAGING_PRESENT){
+; 308  : 
+; 309  : 	if (pml1[i1] & PAGING_PRESENT){
 
 	movsxd	rax, DWORD PTR i1$[rsp]
 	mov	rcx, QWORD PTR pml1$[rsp]
@@ -1024,6 +1192,11 @@ $LN2@map_page_e:
 	and	rax, 1
 	test	rax, rax
 	je	SHORT $LN1@map_page_e
+
+; 310  : 		pmmngr_free((void*)physical_address);
+
+	mov	rcx, QWORD PTR physical_address$[rsp]
+	call	?pmmngr_free@@YAXPEAX@Z			; pmmngr_free
 
 ; 311  : 		return false;
 
@@ -1083,7 +1256,7 @@ virtual_address$ = 136
 attrib$ = 144
 ?map_page@@YA_N_K0E@Z PROC				; map_page
 
-; 154  : {
+; 126  : bool map_page (uint64_t physical_address, uint64_t virtual_address, uint8_t attrib){
 
 $LN7:
 	mov	BYTE PTR [rsp+24], r8b
@@ -1091,49 +1264,52 @@ $LN7:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 120				; 00000078H
 
-; 155  : 	size_t flags = PAGING_WRITABLE | PAGING_PRESENT | attrib;
+; 127  : 	size_t flags = PAGING_WRITABLE | PAGING_PRESENT | attrib;
 
 	movzx	eax, BYTE PTR attrib$[rsp]
 	or	eax, 3
 	cdqe
 	mov	QWORD PTR flags$[rsp], rax
 
-; 156  : 
-; 157  : 	const long i4 = (virtual_address >> 39) & 0x1FF;
+; 128  : 	
+; 129  : 	const long i4 = (virtual_address >> 39) & 0x1FF;
 
 	mov	rax, QWORD PTR virtual_address$[rsp]
 	shr	rax, 39					; 00000027H
 	and	rax, 511				; 000001ffH
 	mov	DWORD PTR i4$[rsp], eax
 
-; 158  : 	const long i3 = (virtual_address >> 30) & 0x1FF;
+; 130  : 	const long i3 = (virtual_address >> 30) & 0x1FF;
 
 	mov	rax, QWORD PTR virtual_address$[rsp]
 	shr	rax, 30
 	and	rax, 511				; 000001ffH
 	mov	DWORD PTR i3$[rsp], eax
 
-; 159  : 	const long i2 = (virtual_address >> 21) & 0x1FF;
+; 131  : 	const long i2 = (virtual_address >> 21) & 0x1FF;
 
 	mov	rax, QWORD PTR virtual_address$[rsp]
 	shr	rax, 21
 	and	rax, 511				; 000001ffH
 	mov	DWORD PTR i2$[rsp], eax
 
-; 160  : 	const long i1 = (virtual_address >> 12) & 0x1FF;
+; 132  : 	const long i1 = (virtual_address >> 12) & 0x1FF;
 
 	mov	rax, QWORD PTR virtual_address$[rsp]
 	shr	rax, 12
 	and	rax, 511				; 000001ffH
 	mov	DWORD PTR i1$[rsp], eax
 
-; 161  : 
-; 162  : 	uint64_t *pml4i = (uint64_t*)x64_read_cr3();
+; 133  : 
+; 134  : 	uint64_t *pml4i = (uint64_t*)p2v(x64_read_cr3());
 
 	call	x64_read_cr3
+	mov	rcx, rax
+	call	?p2v@@YA_K_K@Z				; p2v
 	mov	QWORD PTR pml4i$[rsp], rax
 
-; 163  : 	if (!(pml4i[i4] & PAGING_PRESENT))
+; 135  : 
+; 136  : 	if (!(pml4i[i4] & PAGING_PRESENT))
 
 	movsxd	rax, DWORD PTR i4$[rsp]
 	mov	rcx, QWORD PTR pml4i$[rsp]
@@ -1142,13 +1318,14 @@ $LN7:
 	test	rax, rax
 	jne	SHORT $LN4@map_page
 
-; 164  : 	{
-; 165  : 		const uint64_t page = (uint64_t)pmmngr_alloc();
+; 137  : 	{
+; 138  : 		
+; 139  : 		const uint64_t page = (uint64_t)pmmngr_alloc();
 
 	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
 	mov	QWORD PTR page$1[rsp], rax
 
-; 166  : 		pml4i[i4] = page | flags;
+; 140  : 		pml4i[i4] = page | flags;
 
 	mov	rax, QWORD PTR flags$[rsp]
 	mov	rcx, QWORD PTR page$1[rsp]
@@ -1158,32 +1335,35 @@ $LN7:
 	mov	rdx, QWORD PTR pml4i$[rsp]
 	mov	QWORD PTR [rdx+rcx*8], rax
 
-; 167  : 		clear((void*)page);
+; 141  : 		clear((void*)p2v(page));
 
 	mov	rcx, QWORD PTR page$1[rsp]
+	call	?p2v@@YA_K_K@Z				; p2v
+	mov	rcx, rax
 	call	?clear@@YAXPEAX@Z			; clear
 
-; 168  : 		flush_tlb((void*)page);
+; 142  : 		flush_tlb((void*)page);
 
 	mov	rcx, QWORD PTR page$1[rsp]
 	call	flush_tlb
 
-; 169  : 		x64_mfence();
+; 143  : 		x64_mfence();
 
 	call	x64_mfence
 $LN4@map_page:
 
-; 170  : 	}
-; 171  : 	uint64_t* pml3 = (uint64_t*)(pml4i[i4] & ~(4096 - 1));
+; 144  : 	}
+; 145  : 	uint64_t* pml3 = (uint64_t*)(p2v(pml4i[i4]) & ~(4096 - 1));
 
 	movsxd	rax, DWORD PTR i4$[rsp]
 	mov	rcx, QWORD PTR pml4i$[rsp]
-	mov	rax, QWORD PTR [rcx+rax*8]
+	mov	rcx, QWORD PTR [rcx+rax*8]
+	call	?p2v@@YA_K_K@Z				; p2v
 	and	rax, -4096				; fffffffffffff000H
 	mov	QWORD PTR pml3$[rsp], rax
 
-; 172  : 	
-; 173  : 	if (!(pml3[i3] & PAGING_PRESENT))
+; 146  : 	
+; 147  : 	if (!(pml3[i3] & PAGING_PRESENT))
 
 	movsxd	rax, DWORD PTR i3$[rsp]
 	mov	rcx, QWORD PTR pml3$[rsp]
@@ -1192,14 +1372,14 @@ $LN4@map_page:
 	test	rax, rax
 	jne	SHORT $LN3@map_page
 
-; 174  : 	{
-; 175  : 		
-; 176  : 		const uint64_t page = (uint64_t)pmmngr_alloc();
+; 148  : 	{
+; 149  : 		
+; 150  : 		const uint64_t page = (uint64_t)pmmngr_alloc();
 
 	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
 	mov	QWORD PTR page$3[rsp], rax
 
-; 177  : 		pml3[i3] = page | flags;
+; 151  : 		pml3[i3] = page | flags;
 
 	mov	rax, QWORD PTR flags$[rsp]
 	mov	rcx, QWORD PTR page$3[rsp]
@@ -1209,35 +1389,38 @@ $LN4@map_page:
 	mov	rdx, QWORD PTR pml3$[rsp]
 	mov	QWORD PTR [rdx+rcx*8], rax
 
-; 178  : 		clear((void*)page);
+; 152  : 		clear((void*)p2v(page));
 
 	mov	rcx, QWORD PTR page$3[rsp]
+	call	?p2v@@YA_K_K@Z				; p2v
+	mov	rcx, rax
 	call	?clear@@YAXPEAX@Z			; clear
 
-; 179  : 		flush_tlb((void*)page);
+; 153  : 		flush_tlb((void*)page);
 
 	mov	rcx, QWORD PTR page$3[rsp]
 	call	flush_tlb
 
-; 180  : 		x64_mfence();
+; 154  : 		x64_mfence();
 
 	call	x64_mfence
 $LN3@map_page:
 
-; 181  : 		
-; 182  : 	}
-; 183  :     
-; 184  : 	
-; 185  : 	uint64_t* pml2 = (uint64_t*)(pml3[i3] & ~(4096 - 1));
+; 155  : 		
+; 156  : 	}
+; 157  :     
+; 158  : 	
+; 159  : 	uint64_t* pml2 = (uint64_t*)(p2v(pml3[i3]) & ~(4096 - 1));
 
 	movsxd	rax, DWORD PTR i3$[rsp]
 	mov	rcx, QWORD PTR pml3$[rsp]
-	mov	rax, QWORD PTR [rcx+rax*8]
+	mov	rcx, QWORD PTR [rcx+rax*8]
+	call	?p2v@@YA_K_K@Z				; p2v
 	and	rax, -4096				; fffffffffffff000H
 	mov	QWORD PTR pml2$[rsp], rax
 
-; 186  : 	
-; 187  : 	if (!(pml2[i2] & PAGING_PRESENT))
+; 160  : 	
+; 161  : 	if (!(pml2[i2] & PAGING_PRESENT))
 
 	movsxd	rax, DWORD PTR i2$[rsp]
 	mov	rcx, QWORD PTR pml2$[rsp]
@@ -1246,13 +1429,13 @@ $LN3@map_page:
 	test	rax, rax
 	jne	SHORT $LN2@map_page
 
-; 188  : 	{
-; 189  : 		const uint64_t page = (uint64_t)pmmngr_alloc();
+; 162  : 	{
+; 163  : 		const uint64_t page = (uint64_t)pmmngr_alloc();
 
 	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
 	mov	QWORD PTR page$2[rsp], rax
 
-; 190  : 		pml2[i2] = page | flags;
+; 164  : 		pml2[i2] = page | flags;
 
 	mov	rax, QWORD PTR flags$[rsp]
 	mov	rcx, QWORD PTR page$2[rsp]
@@ -1262,33 +1445,36 @@ $LN3@map_page:
 	mov	rdx, QWORD PTR pml2$[rsp]
 	mov	QWORD PTR [rdx+rcx*8], rax
 
-; 191  : 		clear((void*)page);
+; 165  : 		clear((void*)p2v(page));
 
 	mov	rcx, QWORD PTR page$2[rsp]
+	call	?p2v@@YA_K_K@Z				; p2v
+	mov	rcx, rax
 	call	?clear@@YAXPEAX@Z			; clear
 
-; 192  : 		flush_tlb((void*)page);
+; 166  : 		flush_tlb((void*)page);
 
 	mov	rcx, QWORD PTR page$2[rsp]
 	call	flush_tlb
 
-; 193  : 		x64_mfence();
+; 167  : 		x64_mfence();
 
 	call	x64_mfence
 $LN2@map_page:
 
-; 194  : 		
-; 195  : 	}
-; 196  : 	
-; 197  : 	uint64_t* pml1 = (uint64_t*)(pml2[i2] & ~(4096 - 1));
+; 168  : 		
+; 169  : 	}
+; 170  : 	
+; 171  : 	uint64_t* pml1 = (uint64_t*)(p2v(pml2[i2]) & ~(4096 - 1));
 
 	movsxd	rax, DWORD PTR i2$[rsp]
 	mov	rcx, QWORD PTR pml2$[rsp]
-	mov	rax, QWORD PTR [rcx+rax*8]
+	mov	rcx, QWORD PTR [rcx+rax*8]
+	call	?p2v@@YA_K_K@Z				; p2v
 	and	rax, -4096				; fffffffffffff000H
 	mov	QWORD PTR pml1$[rsp], rax
 
-; 198  : 	if (pml1[i1] & PAGING_PRESENT)
+; 172  : 	if (pml1[i1] & PAGING_PRESENT)
 
 	movsxd	rax, DWORD PTR i1$[rsp]
 	mov	rcx, QWORD PTR pml1$[rsp]
@@ -1297,21 +1483,21 @@ $LN2@map_page:
 	test	rax, rax
 	je	SHORT $LN1@map_page
 
-; 199  : 	{
-; 200  : 		pmmngr_free((void*)physical_address);
+; 173  : 	{
+; 174  : 		pmmngr_free((void*)physical_address);
 
 	mov	rcx, QWORD PTR physical_address$[rsp]
 	call	?pmmngr_free@@YAXPEAX@Z			; pmmngr_free
 
-; 201  : 		return false;
+; 175  : 		return false;
 
 	xor	al, al
 	jmp	SHORT $LN5@map_page
 $LN1@map_page:
 
-; 202  : 	}
-; 203  : 
-; 204  : 	pml1[i1] = physical_address | flags;
+; 176  : 	}
+; 177  : 
+; 178  : 	pml1[i1] = physical_address | flags;
 
 	mov	rax, QWORD PTR flags$[rsp]
 	mov	rcx, QWORD PTR physical_address$[rsp]
@@ -1321,21 +1507,21 @@ $LN1@map_page:
 	mov	rdx, QWORD PTR pml1$[rsp]
 	mov	QWORD PTR [rdx+rcx*8], rax
 
-; 205  : 	flush_tlb ((void*)virtual_address);
+; 179  : 	flush_tlb ((void*)virtual_address);
 
 	mov	rcx, QWORD PTR virtual_address$[rsp]
 	call	flush_tlb
 
-; 206  : 	x64_mfence ();
+; 180  : 	x64_mfence ();
 
 	call	x64_mfence
 
-; 207  : 	return true;
+; 181  : 	return true;
 
 	mov	al, 1
 $LN5@map_page:
 
-; 208  : }
+; 182  : }
 
 	add	rsp, 120				; 00000078H
 	ret	0
@@ -1345,94 +1531,73 @@ _TEXT	ENDS
 ; File e:\xeneva project\xeneva\aurora\aurora\arch\x86_64\vmmngr.cpp
 _TEXT	SEGMENT
 i$1 = 32
-i$2 = 36
-i$3 = 40
-new_cr3$ = 48
-cr3$ = 56
-pos$ = 64
-phys$4 = 72
-phys$5 = 80
+new_cr3$ = 40
+i$2 = 48
+pdpt$ = 56
+cr3$ = 64
+tv95 = 72
+tv140 = 80
 ?vmmngr_x86_64_init@@YAXXZ PROC				; vmmngr_x86_64_init
 
-; 95   : void vmmngr_x86_64_init () {
+; 86   : void vmmngr_x86_64_init () {
 
-$LN18:
+$LN12:
 	sub	rsp, 104				; 00000068H
 
-; 96   : 
-; 97   : 	uint64_t *cr3 = (uint64_t*)x64_read_cr3();
+; 87   : 
+; 88   : 	uint64_t *cr3 = (uint64_t*)x64_read_cr3();
 
 	call	x64_read_cr3
 	mov	QWORD PTR cr3$[rsp], rax
 
-; 98   : 	uint64_t *new_cr3 = (uint64_t*)pmmngr_alloc();    
+; 89   : 	uint64_t *new_cr3 = (uint64_t*)pmmngr_alloc();    
 
 	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
 	mov	QWORD PTR new_cr3$[rsp], rax
 
-; 99   : 
-; 100  : 	memset (new_cr3, 0, 4096);
+; 90   : 
+; 91   : 	memset (new_cr3, 0, 4096);
 
 	mov	r8d, 4096				; 00001000H
 	xor	edx, edx
 	mov	rcx, QWORD PTR new_cr3$[rsp]
 	call	?memset@@YAXPEAXEI@Z			; memset
 
-; 101  : 
-; 102  : 	/*new_cr3[0] = cr3[0];
-; 103  : 	new_cr3[1] = cr3[1];
-; 104  : 	new_cr3[2] = cr3[2];*/
-; 105  : 	//! Copy all higher half mappings to new mapping
-; 106  : 	for (int i = 0; i < 512; ++i) {
+; 92   : 
+; 93   : 	//! Copy all higher half mappings to new mapping
+; 94   : 	for (int i = 0; i < 512; ++i) {
 
 	mov	DWORD PTR i$1[rsp], 0
-	jmp	SHORT $LN15@vmmngr_x86
-$LN14@vmmngr_x86:
+	jmp	SHORT $LN9@vmmngr_x86
+$LN8@vmmngr_x86:
 	mov	eax, DWORD PTR i$1[rsp]
 	inc	eax
 	mov	DWORD PTR i$1[rsp], eax
-$LN15@vmmngr_x86:
+$LN9@vmmngr_x86:
 	cmp	DWORD PTR i$1[rsp], 512			; 00000200H
-	jge	SHORT $LN13@vmmngr_x86
+	jge	SHORT $LN7@vmmngr_x86
 
-; 107  : 		if (i < 256) {
-
-	cmp	DWORD PTR i$1[rsp], 256			; 00000100H
-	jge	SHORT $LN12@vmmngr_x86
-
-; 108  : 			new_cr3[i] = cr3[i];
-
-	movsxd	rax, DWORD PTR i$1[rsp]
-	movsxd	rcx, DWORD PTR i$1[rsp]
-	mov	rdx, QWORD PTR new_cr3$[rsp]
-	mov	r8, QWORD PTR cr3$[rsp]
-	mov	rax, QWORD PTR [r8+rax*8]
-	mov	QWORD PTR [rdx+rcx*8], rax
-$LN12@vmmngr_x86:
-
-; 109  : 			//continue;
-; 110  : 		}
-; 111  : 		if (i == 511)
+; 95   : 		if (i == 511)
 
 	cmp	DWORD PTR i$1[rsp], 511			; 000001ffH
-	jne	SHORT $LN11@vmmngr_x86
+	jne	SHORT $LN6@vmmngr_x86
 
-; 112  : 			continue;
+; 96   : 			continue;
 
-	jmp	SHORT $LN14@vmmngr_x86
-$LN11@vmmngr_x86:
+	jmp	SHORT $LN8@vmmngr_x86
+$LN6@vmmngr_x86:
 
-; 113  : 
-; 114  : 		if (cr3[i] & PAGING_PRESENT) {
+; 97   : 
+; 98   : 		if (cr3[i] & PAGING_PRESENT) {
 
 	movsxd	rax, DWORD PTR i$1[rsp]
 	mov	rcx, QWORD PTR cr3$[rsp]
 	mov	rax, QWORD PTR [rcx+rax*8]
 	and	rax, 1
 	test	rax, rax
-	je	SHORT $LN10@vmmngr_x86
+	je	SHORT $LN5@vmmngr_x86
 
-; 115  : 			new_cr3[i] = cr3[i];
+; 99   : 			new_cr3[i] = cr3[i];
 
 	movsxd	rax, DWORD PTR i$1[rsp]
 	movsxd	rcx, DWORD PTR i$1[rsp]
@@ -1441,157 +1606,104 @@ $LN11@vmmngr_x86:
 	mov	rax, QWORD PTR [r8+rax*8]
 	mov	QWORD PTR [rdx+rcx*8], rax
 
-; 116  : 		}else {
+; 100  : 		}else {
 
-	jmp	SHORT $LN9@vmmngr_x86
-$LN10@vmmngr_x86:
+	jmp	SHORT $LN4@vmmngr_x86
+$LN5@vmmngr_x86:
 
-; 117  : 			new_cr3[i] = 0;
+; 101  : 			new_cr3[i] = 0;
 
 	movsxd	rax, DWORD PTR i$1[rsp]
 	mov	rcx, QWORD PTR new_cr3$[rsp]
 	mov	QWORD PTR [rcx+rax*8], 0
-$LN9@vmmngr_x86:
+$LN4@vmmngr_x86:
 
-; 118  : 		}
-; 119  : 		
-; 120  : 	}
+; 102  : 		}
+; 103  : 		
+; 104  : 	}
 
-	jmp	$LN14@vmmngr_x86
-$LN13@vmmngr_x86:
+	jmp	SHORT $LN8@vmmngr_x86
+$LN7@vmmngr_x86:
 
-; 121  : 
-; 122  : 	//! Store the kernel's address space
-; 123  : 	root_cr3 = new_cr3;
+; 105  : 
+; 106  : 	uint64_t* pdpt = (uint64_t*)pmmngr_alloc();
+
+	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
+	mov	QWORD PTR pdpt$[rsp], rax
+
+; 107  : 	memset(pdpt, 0, 4096);
+
+	mov	r8d, 4096				; 00001000H
+	xor	edx, edx
+	mov	rcx, QWORD PTR pdpt$[rsp]
+	call	?memset@@YAXPEAXEI@Z			; memset
+
+; 108  : 
+; 109  : 	new_cr3[pml4_index(PHYSICAL_MEMORY_BASE)] = (uint64_t)pdpt | PAGING_PRESENT | PAGING_WRITABLE;
+
+	mov	rax, QWORD PTR pdpt$[rsp]
+	or	rax, 1
+	or	rax, 2
+	mov	QWORD PTR tv95[rsp], rax
+	mov	rcx, -140737488355328			; ffff800000000000H
+	call	?pml4_index@@YA_K_K@Z			; pml4_index
+	mov	rcx, QWORD PTR new_cr3$[rsp]
+	mov	rdx, QWORD PTR tv95[rsp]
+	mov	QWORD PTR [rcx+rax*8], rdx
+
+; 110  : 
+; 111  : 	for (size_t i = 0; i < 512; i++)
+
+	mov	QWORD PTR i$2[rsp], 0
+	jmp	SHORT $LN3@vmmngr_x86
+$LN2@vmmngr_x86:
+	mov	rax, QWORD PTR i$2[rsp]
+	inc	rax
+	mov	QWORD PTR i$2[rsp], rax
+$LN3@vmmngr_x86:
+	cmp	QWORD PTR i$2[rsp], 512			; 00000200H
+	jae	SHORT $LN1@vmmngr_x86
+
+; 112  : 		pdpt[pdp_index(PHYSICAL_MEMORY_BASE) + i] = i * 512 * 512 * 4096 | 0x80 | PAGING_PRESENT | PAGING_WRITABLE;
+
+	mov	rax, QWORD PTR i$2[rsp]
+	imul	rax, 512				; 00000200H
+	imul	rax, 512				; 00000200H
+	imul	rax, 4096				; 00001000H
+	bts	rax, 7
+	or	rax, 1
+	or	rax, 2
+	mov	QWORD PTR tv140[rsp], rax
+	mov	rcx, -140737488355328			; ffff800000000000H
+	call	?pdp_index@@YA_K_K@Z			; pdp_index
+	add	rax, QWORD PTR i$2[rsp]
+	mov	rcx, QWORD PTR pdpt$[rsp]
+	mov	rdx, QWORD PTR tv140[rsp]
+	mov	QWORD PTR [rcx+rax*8], rdx
+	jmp	SHORT $LN2@vmmngr_x86
+$LN1@vmmngr_x86:
+
+; 113  : 
+; 114  : 	//! Store the kernel's address space
+; 115  : 	root_cr3 = new_cr3;
 
 	mov	rax, QWORD PTR new_cr3$[rsp]
 	mov	QWORD PTR ?root_cr3@@3PEA_KEA, rax	; root_cr3
 
-; 124  : 
-; 125  : 	//! Switch to new mapping!!!
-; 126  : 	x64_write_cr3 ((size_t)new_cr3);
+; 116  : 
+; 117  : 	//! Switch to new mapping!!!
+; 118  : 	x64_write_cr3 ((size_t)new_cr3);
 
 	mov	rcx, QWORD PTR new_cr3$[rsp]
 	call	x64_write_cr3
 
-; 127  : 
-; 128  : 	x64_write_msr (0x277, 0x0007040600070406);
+; 119  : 
+; 120  : 	pmmngr_move_higher_half();
 
-	mov	rdx, 1974748653749254			; 0007040600070406H
-	mov	ecx, 631				; 00000277H
-	call	x64_write_msr
+	call	?pmmngr_move_higher_half@@YAXXZ		; pmmngr_move_higher_half
 
-; 129  : 
-; 130  : 	uint64_t pos = 0xFFFFC00000000000;
-
-	mov	rax, -70368744177664			; ffffc00000000000H
-	mov	QWORD PTR pos$[rsp], rax
-
-; 131  : 	for (int i = 0; i < 1024*1024/4096; i++) {
-
-	mov	DWORD PTR i$2[rsp], 0
-	jmp	SHORT $LN8@vmmngr_x86
-$LN7@vmmngr_x86:
-	mov	eax, DWORD PTR i$2[rsp]
-	inc	eax
-	mov	DWORD PTR i$2[rsp], eax
-$LN8@vmmngr_x86:
-	cmp	DWORD PTR i$2[rsp], 256			; 00000100H
-	jge	SHORT $LN6@vmmngr_x86
-
-; 132  : 		uint64_t* phys = get_physical_address(pos + i * 4096);
-
-	mov	eax, DWORD PTR i$2[rsp]
-	imul	eax, 4096				; 00001000H
-	cdqe
-	mov	rcx, QWORD PTR pos$[rsp]
-	add	rcx, rax
-	mov	rax, rcx
-	mov	rcx, rax
-	call	?get_physical_address@@YAPEA_K_K@Z	; get_physical_address
-	mov	QWORD PTR phys$4[rsp], rax
-
-; 133  : 		if (phys) {
-
-	cmp	QWORD PTR phys$4[rsp], 0
-	je	SHORT $LN5@vmmngr_x86
-
-; 134  : 			pmmngr_lock_page(phys);
-
-	mov	rcx, QWORD PTR phys$4[rsp]
-	call	?pmmngr_lock_page@@YAXPEAX@Z		; pmmngr_lock_page
-$LN5@vmmngr_x86:
-
-; 135  : 		}
-; 136  : 	}
-
-	jmp	SHORT $LN7@vmmngr_x86
-$LN6@vmmngr_x86:
-
-; 137  : 
-; 138  : 	pos = 0xFFFFA00000000000;
-
-	mov	rax, -105553116266496			; ffffa00000000000H
-	mov	QWORD PTR pos$[rsp], rax
-
-; 139  : 	for (int i = 0; i < 1024*1024/ 4096; i++) {
-
-	mov	DWORD PTR i$3[rsp], 0
-	jmp	SHORT $LN4@vmmngr_x86
-$LN3@vmmngr_x86:
-	mov	eax, DWORD PTR i$3[rsp]
-	inc	eax
-	mov	DWORD PTR i$3[rsp], eax
-$LN4@vmmngr_x86:
-	cmp	DWORD PTR i$3[rsp], 256			; 00000100H
-	jge	SHORT $LN2@vmmngr_x86
-
-; 140  : 		uint64_t* phys = get_physical_address(pos + i * 4096);
-
-	mov	eax, DWORD PTR i$3[rsp]
-	imul	eax, 4096				; 00001000H
-	cdqe
-	mov	rcx, QWORD PTR pos$[rsp]
-	add	rcx, rax
-	mov	rax, rcx
-	mov	rcx, rax
-	call	?get_physical_address@@YAPEA_K_K@Z	; get_physical_address
-	mov	QWORD PTR phys$5[rsp], rax
-
-; 141  : 		if (phys) {
-
-	cmp	QWORD PTR phys$5[rsp], 0
-	je	SHORT $LN1@vmmngr_x86
-
-; 142  : 			pmmngr_lock_page(phys);
-
-	mov	rcx, QWORD PTR phys$5[rsp]
-	call	?pmmngr_lock_page@@YAXPEAX@Z		; pmmngr_lock_page
-$LN1@vmmngr_x86:
-
-; 143  : 		}
-; 144  : 	}
-
-	jmp	SHORT $LN3@vmmngr_x86
-$LN2@vmmngr_x86:
-
-; 145  : 
-; 146  : 	pmmngr_lock_page(get_physical_address(0xFFFFD80000000000));
-
-	mov	rcx, -43980465111040			; ffffd80000000000H
-	call	?get_physical_address@@YAPEA_K_K@Z	; get_physical_address
-	mov	rcx, rax
-	call	?pmmngr_lock_page@@YAXPEAX@Z		; pmmngr_lock_page
-
-; 147  : 	pmmngr_lock_page(get_physical_address(0xFFFFE00000000000));
-
-	mov	rcx, -35184372088832			; ffffe00000000000H
-	call	?get_physical_address@@YAPEA_K_K@Z	; get_physical_address
-	mov	rcx, rax
-	call	?pmmngr_lock_page@@YAXPEAX@Z		; pmmngr_lock_page
-
-; 148  : 
-; 149  : }
+; 121  : 
+; 122  : }
 
 	add	rsp, 104				; 00000068H
 	ret	0
@@ -1603,16 +1715,16 @@ _TEXT	SEGMENT
 addr$ = 8
 ?p_index@@YA_K_K@Z PROC					; p_index
 
-; 78   : size_t p_index (uint64_t addr){
+; 69   : size_t p_index (uint64_t addr){
 
 	mov	QWORD PTR [rsp+8], rcx
 
-; 79   : 	return (addr & 0x7ff);
+; 70   : 	return (addr & 0x7ff);
 
 	mov	rax, QWORD PTR addr$[rsp]
 	and	rax, 2047				; 000007ffH
 
-; 80   : }
+; 71   : }
 
 	ret	0
 ?p_index@@YA_K_K@Z ENDP					; p_index
@@ -1623,17 +1735,17 @@ _TEXT	SEGMENT
 addr$ = 8
 ?pt_index@@YA_K_K@Z PROC				; pt_index
 
-; 74   : size_t pt_index (uint64_t addr){
+; 65   : size_t pt_index (uint64_t addr){
 
 	mov	QWORD PTR [rsp+8], rcx
 
-; 75   : 	return (addr >> 12) & 0x1ff;
+; 66   : 	return (addr >> 12) & 0x1ff;
 
 	mov	rax, QWORD PTR addr$[rsp]
 	shr	rax, 12
 	and	rax, 511				; 000001ffH
 
-; 76   : }
+; 67   : }
 
 	ret	0
 ?pt_index@@YA_K_K@Z ENDP				; pt_index
@@ -1644,17 +1756,17 @@ _TEXT	SEGMENT
 addr$ = 8
 ?pd_index@@YA_K_K@Z PROC				; pd_index
 
-; 70   : size_t pd_index (uint64_t addr){
+; 61   : size_t pd_index (uint64_t addr){
 
 	mov	QWORD PTR [rsp+8], rcx
 
-; 71   : 	return (addr >> 21) & 0x1ff;
+; 62   : 	return (addr >> 21) & 0x1ff;
 
 	mov	rax, QWORD PTR addr$[rsp]
 	shr	rax, 21
 	and	rax, 511				; 000001ffH
 
-; 72   : }
+; 63   : }
 
 	ret	0
 ?pd_index@@YA_K_K@Z ENDP				; pd_index
@@ -1665,17 +1777,17 @@ _TEXT	SEGMENT
 addr$ = 8
 ?pdp_index@@YA_K_K@Z PROC				; pdp_index
 
-; 66   : size_t pdp_index (uint64_t addr){
+; 57   : size_t pdp_index (uint64_t addr){
 
 	mov	QWORD PTR [rsp+8], rcx
 
-; 67   : 	return (addr >> 30) & 0x1ff;
+; 58   : 	return (addr >> 30) & 0x1ff;
 
 	mov	rax, QWORD PTR addr$[rsp]
 	shr	rax, 30
 	and	rax, 511				; 000001ffH
 
-; 68   : }
+; 59   : }
 
 	ret	0
 ?pdp_index@@YA_K_K@Z ENDP				; pdp_index
@@ -1686,17 +1798,17 @@ _TEXT	SEGMENT
 addr$ = 8
 ?pml4_index@@YA_K_K@Z PROC				; pml4_index
 
-; 62   : size_t  pml4_index (uint64_t addr){
+; 53   : size_t  pml4_index (uint64_t addr){
 
 	mov	QWORD PTR [rsp+8], rcx
 
-; 63   : 	return (addr >> 39) & 0x1ff;
+; 54   : 	return (addr >> 39) & 0x1ff;
 
 	mov	rax, QWORD PTR addr$[rsp]
 	shr	rax, 39					; 00000027H
 	and	rax, 511				; 000001ffH
 
-; 64   : }
+; 55   : }
 
 	ret	0
 ?pml4_index@@YA_K_K@Z ENDP				; pml4_index

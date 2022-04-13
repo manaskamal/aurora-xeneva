@@ -29,4 +29,8 @@ extern Font* acrylic_get_system_font ();
 extern void acrylic_font_get_centering(char* string, int *c_w, int *c_h);
 extern int acrylic_font_get_length (char* string);
 extern int acrylic_font_get_height (char* string);
+/**
+ * acrylic_font_destroy -- destroys font
+ */
+extern void acrylic_font_destroy ();
 #endif

@@ -99,7 +99,7 @@
       </GenerateDebugInformation>
       <OutputFile>F:\EFI\XENEVA\sb16.dll</OutputFile>
       <AdditionalOptions>/ALIGN:512 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>libdriver.lib</AdditionalDependencies>
+      <AdditionalDependencies>libdriver.lib; Aurora.lib;</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
       <EnableUAC>false</EnableUAC>
       <GenerateMapFile>true</GenerateMapFile>
@@ -117,7 +117,10 @@
       <FixedBaseAddress>false</FixedBaseAddress>
       <DataExecutionPrevention>false</DataExecutionPrevention>
       <NoEntryPoint>false</NoEntryPoint>
-      <AdditionalLibraryDirectories>E:\Xeneva Project\Xeneva\xnlib\lib64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>E:\Xeneva Project\Xeneva\xnlib\lib64;E:\Xeneva Project\Xeneva\Aurora\x64\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <PreventDllBinding>true</PreventDllBinding>
+      <ForceFileOutput>
+      </ForceFileOutput>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

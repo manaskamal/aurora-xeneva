@@ -13,6 +13,7 @@
 #include <arch\x86_64\thread.h>
 #include <drivers\svga\vmsvga.h>
 #include <screen.h>
+#include <serial.h>
 
 void panic(const char* msg,...) {
 	printf ("***ARCH x86_64 : Exception Occured ***\n");
@@ -126,7 +127,7 @@ void stack_fault (size_t v, void* p){
 void general_protection_fault (size_t v, void* p){
 	//x64_cli();
 	interrupt_stack_frame *frame = (interrupt_stack_frame*)p;
-	/*panic ("Genral Protection Fault\n");
+	panic ("Genral Protection Fault\n");
 	printf ("__PROCESSOR TRACE__\n");
 	printf ("RIP -> %x\n",frame->rip);
 	printf ("Stack -> %x\n", frame->rsp);
@@ -134,7 +135,7 @@ void general_protection_fault (size_t v, void* p){
 	printf ("Current task ->%s\n", get_current_thread()->name);
 	printf ("CS -> %x, SS -> %x\n", frame->cs, frame->ss);
 	printf ("CURRENT TASK STATE -> %d\n", get_current_thread()->state);
-    for(;;);*/
+    for(;;);
 	block_thread(get_current_thread());
 	force_sched();
 }
@@ -151,59 +152,32 @@ void page_fault (size_t vector, void* param){
 	int us = frame->error & 0x4;
 	int resv = frame->error & 0x8;
 	int id = frame->error & 0x10;
- //
-	bool blocked = false;
-	/*if (is_scheduler_initialized() && get_current_thread()->id != 2) {
-		block_thread(get_current_thread());
-		blocked = true;
-	}*/
 
+	panic ("Page Fault \n");
+	printf ("Faulting Address -> %x\n", vaddr);
+	printf ("__PROCESSOR TRACE__\n");
+	printf ("RIP -> %x\n", frame->rip);
+	printf ("Stack -> %x\n", frame->rsp);
+	printf ("RFLAGS -> %x\n", frame->rflags);
+	printf ("Current thread -> %s\n", get_current_thread()->name);
+	printf ("Current Thread id -> %d\n", get_current_thread()->id);
+	printf ("CS -> %x, SS -> %x\n", frame->cs, frame->ss);
+	printf ("******Cause********\n");
 	if (us){
-		map_page((uint64_t)pmmngr_alloc(), (uint64_t)vaddr,PAGING_USER);
+		//map_page((uint64_t)pmmngr_alloc(), (uint64_t)vaddr,PAGING_USER);
+		printf ("***** User Priviledge not set ******** \n");
 	}else if (present){
-		map_page((uint64_t)pmmngr_alloc(), (uint64_t)vaddr,PAGING_USER);
+		//map_page((uint64_t)pmmngr_alloc(), (uint64_t)vaddr,PAGING_USER);
+		printf ("**** Not present ****\n");
 	}else if (rw) {
-		panic ("Page Fault \n");
-		printf ("Faulting Address -> %x\n", vaddr);
-		printf ("Physical Address -> %x\n", get_physical_address((uint64_t)vaddr));
-		printf ("__PROCESSOR TRACE__\n");
-		printf ("RIP -> %x\n", frame->rip);
-		printf ("Stack -> %x\n", frame->rsp);
-		printf ("RFLAGS -> %x\n", frame->rflags);
-		printf ("Current thread -> %s\n", get_current_thread()->name);
-		printf ("Current Thread id -> %d\n", get_current_thread()->id);
-		printf ("CS -> %x, SS -> %x\n", frame->cs, frame->ss);
-		printf ("******Cause********\n");
 		printf ("*** R/W ***\n");
-		for(;;);
 	}else if (resv) {
-		panic ("Page Fault \n");
-		printf ("Faulting Address -> %x\n", vaddr);
-		printf ("__PROCESSOR TRACE__\n");
-		printf ("RIP -> %x\n", frame->rip);
-		printf ("Stack -> %x\n", frame->rsp);
-		printf ("RFLAGS -> %x\n", frame->rflags);
-		printf ("Current thread -> %s\n", get_current_thread()->name);
-		printf ("Current Thread id -> %d\n", get_current_thread()->id);
-		printf ("CS -> %x, SS -> %x\n", frame->cs, frame->ss);
-		printf ("******Cause********\n");
 		printf ("*** Reserved Page ***\n");
-		for(;;);
 	}else if (id) {
-		panic ("Page Fault \n");
-		printf ("Faulting Address -> %x\n", vaddr);
-		printf ("__PROCESSOR TRACE__\n");
-		printf ("RIP -> %x\n", frame->rip);
-		printf ("Stack -> %x\n", frame->rsp);
-		printf ("RFLAGS -> %x\n", frame->rflags);
-		printf ("Current thread -> %s\n", get_current_thread()->name);
-		printf ("Current Thread id -> %d\n", get_current_thread()->id);
-		printf ("CS -> %x, SS -> %x\n", frame->cs, frame->ss);
-		printf ("******Cause********\n");
 		printf ("*** Invalid Page ****\n");
-		for(;;);
 	}
 
+	for(;;);
 	//map_page((uint64_t)pmmngr_alloc(), (uint64_t)vaddr);
 }
 

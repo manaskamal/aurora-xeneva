@@ -18,6 +18,7 @@
 #include <drivers\vmmouse.h>
 #include <atomic\mutex.h>
 #include <fs\vfs.h>
+#include <serial.h>
 
 static uint8_t mouse_cycle = 0;
 static uint8_t mouse_byte[4];
@@ -29,7 +30,6 @@ uint8_t prev_button[3];
 uint8_t curr_button[3];
 uint32_t mouse_button_state;
 volatile int32_t mouse_button = 0;
-static mutex_t  *mouse = create_mutex();
 dwm_message_t old_message;
 
 /**
@@ -158,7 +158,6 @@ finish_packet:
 		//!Pass here the message stream to all waiting processes
 	
 		x64_cli();
-		//mutex_lock (mouse);
 		dwm_message_t msg; // = (dwm_message_t*)pmmngr_alloc();
 		msg.type = 1;
 		msg.dword = mouse_x;

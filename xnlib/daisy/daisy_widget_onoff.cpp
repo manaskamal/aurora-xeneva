@@ -91,6 +91,11 @@ void daisy_onoff_mouse_event (daisy_widget_t *widget, daisy_window_t *win, int b
 	onoff->last_m_y = y;
 }
 
+void daisy_widget_onoff_destroy (daisy_widget_t* widget) {
+	daisy_widget_onoff_t *onoff = (daisy_widget_onoff_t*)widget;
+	free(onoff);
+}
+
 /**
  * daisy_widget_create_onoff -- creates onoff widget
  */
@@ -104,6 +109,7 @@ daisy_widget_onoff_t * daisy_widget_create_onoff () {
 	onoff->base.mouse_event = daisy_onoff_mouse_event;
 	onoff->base.key_event = 0;
 	onoff->base.scroll_event = 0;
+	onoff->base.destroy = daisy_widget_onoff_destroy;
 	onoff->base.refresh = daisy_onoff_refresh;
 	onoff->on = false;
 	onoff->last_m_x = 0;

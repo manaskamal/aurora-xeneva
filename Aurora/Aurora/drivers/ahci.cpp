@@ -36,6 +36,7 @@
 #include <drivers/hdaudio/hda.h>
 #include <pmmngr.h>
 #include <stdio.h>
+#include <serial.h>
 
 #define SATA_SIG_ATA   0x00000101
 #define SATA_SIG_ATAPI 0xEB140101
@@ -109,21 +110,23 @@ void ahci_interrupt_handler (size_t v, void* p) {
 			printf ("[AHCI]: Interrupt from %d port\n", i);
 #endif
 			uint32_t port_is = hba->port[i].is;
+
 #if 0
 			if ((hba->port[i].is & (1<<2))) {
-				printf ("[AHCI]: DMA Setup FIS Interrupt\n");
+				_debug_print_ ("[AHCI]: DMA Setup FIS Interrupt \r\n");
 			}else if ((hba->port[i].is & (1<<1))) {
-				printf ("[AHCI]: PIO Setup FIS Interrupt\n");
+				_debug_print_ ("[AHCI]: PIO Setup FIS Interrupt \r\n");
 			}else if (hba->port[i].is & (1<<0)) {
-				printf ("[AHCI]: D2H Fis received\n");
+				_debug_print_ ("[AHCI]: D2H Fis received \r\n");
 			}else if (hba->port[i].is & (1<<30)) {
-				printf ("[AHCI]: Task File Error Status\n");
+				_debug_print_ ("[AHCI]: Task File Error Status \r\n");
 			}else if (hba->port[i].is & (1<<29)) {
-				printf ("[AHCI]: Host Bus Fetal Error Status\n");
+				_debug_print_ ("[AHCI]: Host Bus Fetal Error Status \r\n");
 			}else if (hba->port[i].is & (1<<4)) {
-				printf ("[AHCI]: Unknown FIS interrupt status\n");
+				_debug_print_ ("[AHCI]: Unknown FIS interrupt status \r\n");
 			}
 #endif
+
 			hba->port[i].is = port_is;
 			break;
 		}
@@ -200,15 +203,15 @@ void ahci_initialize () {
 	hba->ghc |= 0x2;
 
 	uint32_t num_command_slots  = hba->cap >> 8 & 0xff;
-	printf ("[AHCI]: Num Command Slots -> %d\n", num_command_slots);
+	_debug_print_ ("[AHCI]: Num Command Slots -> %d\n", num_command_slots);
 
 	uint8_t support_spin = hba->cap & (1<<27);
 	if (support_spin) {
-		printf ("[AHCI]: Support Staggered spin-up %d\n", support_spin);
+		_debug_print_ ("[AHCI]: Support Staggered spin-up %d\n", support_spin);
 	}
 
 	if (hba->cap & (1<<16))
-		printf ("[AHCI]: FIS-Based Switching supported\n");
+		_debug_print_ ("[AHCI]: FIS-Based Switching supported\n");
 	uint32_t pi = hba->pi;
 	int i = 0;
 	while (i < 32) {

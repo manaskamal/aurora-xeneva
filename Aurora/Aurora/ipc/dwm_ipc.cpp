@@ -15,8 +15,6 @@
 #include <utils\circ_buf.h>
 
 uint64_t dwm_queue[512];
-static mutex_t *msg_mutex = create_mutex ();
-static mutex_t *msg_rcv_mutex = create_mutex();
 
 void dwm_ipc_init () {
 	void* p = pmmngr_alloc();
@@ -31,7 +29,6 @@ uint64_t* get_dwm_message_q_address () {
 	return 0;
 }
 void dwm_put_message (dwm_message_t *msg) {
-
 	if (!is_multi_task_enable())
 		return;
 
@@ -42,21 +39,15 @@ void dwm_put_message (dwm_message_t *msg) {
 	dwm_message_t *tmsg = (dwm_message_t*)t->msg_box;
 	if (tmsg->type == 0)
 		memcpy (t->msg_box,msg,sizeof(dwm_message_t));
-
-	if (t->state == THREAD_STATE_BLOCKED){
-		unblock_thread(t);
-	}
 }
 
 
 void dwm_dispatch_message (dwm_message_t *msg) {
 	x64_cli();
-	mutex_lock (msg_rcv_mutex);
 	dwm_message_t *tmsg = (dwm_message_t*)get_current_thread()->msg_box;
 	if (tmsg->type != 0) {
 		memcpy (msg,tmsg,sizeof(dwm_message_t));
+		memset (get_current_thread()->msg_box, 0, 4096);
 	}
-
-	memset (get_current_thread()->msg_box, 0, 4096);
-	mutex_unlock (msg_rcv_mutex);
+	
 }

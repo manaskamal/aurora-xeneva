@@ -54,6 +54,8 @@
 #define DAISY_KEY_EVENT  204
 #define DAISY_NEW_WINDOW_INFO 205
 #define DAISY_NOTIFY_WIN_FOCUS_CHANGED 206
+#define DAISY_NOTIFY_WIN_REMOVE 207
+#define DAISY_WINDOW_CLOSED 208
 
 typedef struct _pri_rect_ {
 	int x;

@@ -17,8 +17,6 @@
 #include <atomic\mutex.h>
 #endif
 
-static mutex_t * wait_lock = create_mutex();
-static mutex_t *unblock_lock = create_mutex();
 void wait () {
 	x64_cli();
 	thread_t *t = get_current_thread ();
@@ -34,7 +32,6 @@ void sys_unblock_id (uint16_t id) {
 			unblock_thread(thr);
 		}
 	}
-	x64_sti();
 }
 
 

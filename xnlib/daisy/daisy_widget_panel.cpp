@@ -71,6 +71,18 @@ void daisy_widget_panel_mouse_event (daisy_widget_t *widget, daisy_window_t* win
 }
 
 
+void daisy_widget_panel_destroy (daisy_widget_t *widget) {
+	daisy_widget_panel_t *panel = (daisy_widget_panel_t*)widget;
+	if (panel->childs->pointer > 0) {
+		for (int i = 0; i < panel->childs->pointer; i++) {
+			daisy_widget_t *widget = (daisy_widget_t*)list_remove(panel->childs, i);
+			widget->destroy (widget);
+		}
+	}
+	free(panel->childs);
+	free(panel);
+}
+
 /**
  * daisy_widget_create_panel -- create panel widget
  * @param width -- width of the panel
@@ -87,6 +99,7 @@ daisy_widget_panel_t *daisy_widget_create_panel (daisy_window_t* win, uint32_t c
 	panel->base.key_event = 0;
 	panel->base.mouse_event = daisy_widget_panel_mouse_event;
 	panel->base.refresh = daisy_widget_panel_refresh;
+	panel->base.destroy = daisy_widget_panel_destroy;
 	panel->base.scroll_event = 0;
 	panel->color = color;
 	panel->childs = list_init();
@@ -103,15 +116,6 @@ void daisy_widget_panel_add (daisy_widget_panel_t *panel, daisy_widget_t *widget
 	list_add (panel->childs, widget);
 }
 
-/**
- * daisy_widget_panel_destroy -- destroys a panel widget
- * @param panel -- reference panel
- */
-void daisy_widget_panel_destroy (daisy_widget_panel_t *panel) {
-	for (int i = 0; i < panel->childs->pointer; i++) {
-		daisy_widget_t *widget = (daisy_widget_t*)list_remove(panel->childs, i);
-		free(widget);
-	}
-}
+
 
 

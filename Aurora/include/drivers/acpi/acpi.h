@@ -126,7 +126,6 @@ typedef struct _acpiSysDesc
 	unsigned oemRevision;
 	unsigned creatorId;
 	unsigned creatorRevision;
-
 } acpiSysDescHeader;
 
 
@@ -318,8 +317,8 @@ typedef struct _acpi_table_srat_x_
 
 typedef struct _acpi_sub_tab_
 {
-	uint8_t    length;
 	uint8_t    type;
+	uint8_t    length;
 }acpi_sub_table;
 
 #pragma pack (pop)
@@ -333,6 +332,20 @@ enum acpi_srat_type
 	acpi_srat_type_generic_affinity =    5,   //! ACPI 6.3
 	acpi_srat_type_reserved =            6    //! 5 and greater are reserved
 };
+
+#pragma pack(push,1)
+typedef struct _acpi_srat_mem_affinity_
+{
+	acpi_sub_table header;
+	uint32_t proximity_domain;
+	uint16_t reserved;
+	uint64_t base_address;
+	uint64_t length;
+	uint32_t reserved1;
+	uint32_t flags;
+	uint64_t reserved2;
+}acpi_srat_mem_affinity;
+#pragma pack(pop)
 
 #define APIC_TYPE_INTERRUPT_OVERRIDE 2
 
