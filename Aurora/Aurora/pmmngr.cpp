@@ -14,7 +14,7 @@
 #include <_null.h>
 #include <stdio.h>
 #include <arch\x86_64\cpu.h>
-#include <arch\x86_64\mmngr\vmmngr.h>
+#include <arch\x86_64\mmngr\paging.h>
 #include <serial.h>
 #include <efi.h>
 
@@ -67,7 +67,7 @@ public:
 Bitmap ram_bitmap;
 
 
-void pmmngr_init_bitmap (size_t bitmap_size, void* buffer) {
+void AuPmmngrInitBitmap (size_t bitmap_size, void* buffer) {
 
 	ram_bitmap.Size = bitmap_size;
 	ram_bitmap.Buffer = (uint8_t*)buffer;
@@ -78,7 +78,7 @@ void pmmngr_init_bitmap (size_t bitmap_size, void* buffer) {
 }
 
 //! Reserve a page : mark it as unusable
-void pmmngr_lock_page ( void* addr) {
+void AuPmmngrLockPage ( void* addr) {
 
 	uint64_t index = (uint64_t)addr / 4096;
 	if (ram_bitmap[index] == true) return;
@@ -89,13 +89,13 @@ void pmmngr_lock_page ( void* addr) {
 }
 
 //! Reserve pages : mark it as unusable
-void pmmngr_lock_pages (void *addr, size_t size) {
+void AuPmmngrLockPages (void *addr, size_t size) {
 	for (int i = 0; i < size; i++) 
-		pmmngr_lock_page ((void*)((size_t)addr + i * 4096));
+		AuPmmngrLockPage ((void*)((size_t)addr + i * 4096));
 }
 
 //! Unreserve a page : Mark it as usable
-void pmmngr_unreserve_page (void* addr) {
+void AuPmmngrUnreservePage (void* addr) {
 
 	uint64_t index = (uint64_t)addr / 4096;
 	if (ram_bitmap[index] == false) return;
@@ -113,7 +113,7 @@ void pmmngr_unreserve_page (void* addr) {
  *
  * @param _info == Kernel boot information passed by xnldr
  */
-void pmmngr_init(KERNEL_BOOT_INFO *info)
+void AuPmmngrInit(KERNEL_BOOT_INFO *info)
 {
 	free_memory = 0;
 	bitmap_size = 0;
@@ -148,21 +148,21 @@ void pmmngr_init(KERNEL_BOOT_INFO *info)
 	info->printf_gui("[aurora]: total memory -> %d GB \n", (total_ram/ 1024 / 1024 / 1024));
 	uint64_t bitmap_size = total_ram / 4096 / 8 + 1;
 
-	pmmngr_init_bitmap(bitmap_size, bitmap_area);
+	AuPmmngrInitBitmap(bitmap_size, bitmap_area);
 
 	info->printf_gui("[aurora]: bitmap initialized %d bytes\n", bitmap_size);
-	pmmngr_lock_pages((void*)bitmap_area, bitmap_size);
+	AuPmmngrLockPages((void*)bitmap_area, bitmap_size);
 
 	/* No lock all pages, that are not for use */
 	for (size_t i = 0; i < memmap_entries; i++) {
 		EFI_MEMORY_DESCRIPTOR *efi_mem = (EFI_MEMORY_DESCRIPTOR*)((uint64_t)info->map + i * info->descriptor_size);
 		total_ram += efi_mem->num_pages;
 		if (efi_mem->type != 7) {
-			pmmngr_lock_pages((void*)efi_mem->phys_start, efi_mem->num_pages);
+			AuPmmngrLockPages((void*)efi_mem->phys_start, efi_mem->num_pages);
 		}
 	}
 
-	pmmngr_lock_page((void*)0x0);
+	AuPmmngrLockPage((void*)0x0);
 
 	/* also lock the early used physical blocks for 
 	 * kernel and kernel stack */
@@ -170,20 +170,24 @@ void pmmngr_init(KERNEL_BOOT_INFO *info)
 	uint64_t* allocated_stack = (uint64_t*)info->allocated_stack;
 	while (allocated_count) {
 		uint64_t address = *allocated_stack--;
-	    pmmngr_lock_page((void*)address);
+		AuPmmngrLockPage((void*)address);
 		allocated_count--;
 	}
 
 	/* Will be used for SMP AP initialisation code */
 	uint64_t *address = (uint64_t*)0xA000;
-	pmmngr_lock_page((void*)0xA000);
+	AuPmmngrLockPage((void*)0xA000);
 	memset(address, 0, 4096);
 	//memcpy(address, info->apcode, 4096);
 
 	info->printf_gui("[aurora]:pmmngr initialized\n");
 }
 
-void pmmngr_move_higher_half () {
+/*
+ * pmmngr_move_higher_half -- moves the kernel to higher half
+ * of memory 
+ */
+void AuPmmngrMoveHigher () {
 	ram_bitmap.Buffer = (uint8_t*)p2v((uint64_t)ram_bitmap.Buffer);
 	higher_half = true;
 }
@@ -213,24 +217,16 @@ bool is_higher_half() {
  * @param blocks -- number of blocks to return,
  *                  assume that 1 blocks = 4096 bytes
  */
-void* pmmngr_alloc()
+void* AuPmmngrAlloc()
 {
 	
 	for (; ram_bitmap_index < ram_bitmap.Size * 8; ram_bitmap_index++) {
 		if (ram_bitmap[ram_bitmap_index] == true) continue;
-		pmmngr_lock_page ((void*)(ram_bitmap_index * 4096));
+		AuPmmngrLockPage((void*)(ram_bitmap_index * 4096));
 		used_memory += 4096 * 1;
-		/*if (is_serial_initialized())
-			_debug_print_("Pmmngr Allocated ->%x \r\n",ram_bitmap_index * 4096);*/
 		return (void*)(ram_bitmap_index * 4096);
 	}
 
-	/*for (int index = 0; index  < ram_bitmap.Size * 8; index++) {
-		if (ram_bitmap[index] == true) continue;
-		pmmngr_lock_page ((void*)(index * 4096));
-		used_memory += 4096 * 1;
-		return (void*)(index * 4096);
-	}*/
 	x64_cli();
 	printf ("Used RAM -> %d MB, Free RAM -> %d MB\n", used_memory /1024 / 1024, free_memory / 1024 / 1024);
 	printf ("No more available pages\n");
@@ -240,10 +236,10 @@ void* pmmngr_alloc()
 }
 
 
-void* pmmngr_alloc_blocks (int size) {
-	void *first = pmmngr_alloc();
+void* AuPmmngrAllocBlocks(int size) {
+	void *first = AuPmmngrAlloc();
 	for (int i = 0; i < size / 4096; i++) {
-		pmmngr_alloc();
+		AuPmmngrAlloc();
 	}
 
 	return first; //here we need to swap page to file
@@ -253,7 +249,7 @@ void* pmmngr_alloc_blocks (int size) {
  *
  * @param blocks -- number of blocks to free
  */
-void pmmngr_free (void* addr)
+void AuPmmngrFree (void* addr)
 {
 	uint64_t index = (uint64_t)addr / 4096;
 	if (ram_bitmap[index] == false) return;
@@ -269,10 +265,10 @@ void pmmngr_free (void* addr)
 /**
  * pmmngr_free_block -- free a list of blocks
  */
-void pmmngr_free_blocks (void* addr, int count) {
+void AuPmmngrFreeBlocks(void* addr, int count) {
 	uint64_t * address = (uint64_t*)addr;
 	for (uint32_t i = 0; i < count; i++) {
-		pmmngr_free (address);
+		AuPmmngrFree(address);
 		address += 0x1000;
 	}
 }

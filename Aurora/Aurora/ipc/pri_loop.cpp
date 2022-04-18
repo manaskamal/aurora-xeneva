@@ -42,8 +42,8 @@ pri_loop_box_t *last_loop = NULL;
  * pri_loop_create -- create a new pri_loop_box 
  */
 void pri_loop_create () {
-	pri_loop_box_t *loop = (pri_loop_box_t*)pmmngr_alloc();  //malloc(sizeof(pri_loop_box_t));
-	loop->address = pmmngr_alloc();//malloc(sizeof(pri_event_t));
+	pri_loop_box_t *loop = (pri_loop_box_t*)AuPmmngrAlloc();  //malloc(sizeof(pri_loop_box_t));
+	loop->address = AuPmmngrAlloc();//malloc(sizeof(pri_event_t));
 	memset(loop->address,0, sizeof(pri_event_t));
 	loop->owner_id = get_current_thread()->id;
 	loop->pending_msg_count = 0;
@@ -81,8 +81,8 @@ void pri_loop_destroy (pri_loop_box_t *box) {
 		box->next->prev = box->prev;
 	}
 
-	pmmngr_free(box->address);
-	pmmngr_free(box);
+	AuPmmngrFree(box->address);
+	AuPmmngrFree(box);
 	
 }
 
@@ -215,5 +215,5 @@ void pri_loop_init () {
 	node->write = 0;
 	node->read_blk = 0;
 	node->ioquery = pri_loop_ioquery;
-	vfs_mount ("/dev/pri_loop", node);
+	vfs_mount ("/dev/pri_loop", node, 0);
 }

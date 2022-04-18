@@ -10,9 +10,9 @@ _BSS	SEGMENT
 ?pipe_count@@3HA DD 01H DUP (?)				; pipe_count
 _BSS	ENDS
 CONST	SEGMENT
-$SG3359	DB	'pipe', 00H
+$SG3422	DB	'pipe', 00H
 	ORG $+3
-$SG3361	DB	'/dev/', 00H
+$SG3424	DB	'/dev/', 00H
 CONST	ENDS
 PUBLIC	?pipe_create@@YAPEAU_pipe_@@XZ			; pipe_create
 PUBLIC	?allocate_pipe@@YAXPEAHPEAD@Z			; allocate_pipe
@@ -23,8 +23,8 @@ EXTRN	?circular_buf_put@@YAXPEAU_circ_buf_@@E@Z:PROC	; circular_buf_put
 EXTRN	?circular_buf_get@@YAHPEAU_circ_buf_@@PEAE@Z:PROC ; circular_buf_get
 EXTRN	?strcpy@@YAPEADPEADPEBD@Z:PROC			; strcpy
 EXTRN	?strlen@@YA_KPEBD@Z:PROC			; strlen
-EXTRN	?vfs_mount@@YAXPEADPEAU_vfs_node_@@@Z:PROC	; vfs_mount
-EXTRN	?pmmngr_alloc@@YAPEAXXZ:PROC			; pmmngr_alloc
+EXTRN	?vfs_mount@@YAXPEADPEAU_vfs_node_@@PEAU_vfs_entry_@@@Z:PROC ; vfs_mount
+EXTRN	?AuPmmngrAlloc@@YAPEAXXZ:PROC			; AuPmmngrAlloc
 EXTRN	?malloc@@YAPEAX_K@Z:PROC			; malloc
 EXTRN	?get_current_thread@@YAPEAU_thread_@@XZ:PROC	; get_current_thread
 EXTRN	?sztoa@@YAPEAD_KPEADH@Z:PROC			; sztoa
@@ -33,7 +33,7 @@ $pdata$?pipe_create@@YAPEAU_pipe_@@XZ DD imagerel $LN3
 	DD	imagerel $LN3+91
 	DD	imagerel $unwind$?pipe_create@@YAPEAU_pipe_@@XZ
 $pdata$?allocate_pipe@@YAXPEAHPEAD@Z DD imagerel $LN5
-	DD	imagerel $LN5+471
+	DD	imagerel $LN5+465
 	DD	imagerel $unwind$?allocate_pipe@@YAXPEAHPEAD@Z
 $pdata$?pipe_write@@YAXPEAU_vfs_node_@@PEAEI@Z DD imagerel $LN6
 	DD	imagerel $LN6+97
@@ -222,7 +222,7 @@ $LN2@allocate_p:
 
 ; 59   : 		strcpy(pipe_name, "pipe");
 
-	lea	rdx, OFFSET FLAT:$SG3359
+	lea	rdx, OFFSET FLAT:$SG3422
 	lea	rcx, QWORD PTR pipe_name$[rsp]
 	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
 
@@ -242,7 +242,7 @@ $LN1@allocate_p:
 ; 64   : 	char path_name[10];
 ; 65   : 	strcpy(path_name, "/dev/");
 
-	lea	rdx, OFFSET FLAT:$SG3361
+	lea	rdx, OFFSET FLAT:$SG3424
 	lea	rcx, QWORD PTR path_name$[rsp]
 	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
 
@@ -278,7 +278,7 @@ $LN1@allocate_p:
 ; 72   : 	readn->eof = 0;
 
 	mov	rax, QWORD PTR readn$[rsp]
-	mov	DWORD PTR [rax+36], 0
+	mov	BYTE PTR [rax+36], 0
 
 ; 73   : 	readn->pos = 0;
 
@@ -293,12 +293,12 @@ $LN1@allocate_p:
 ; 75   : 	readn->flags = FS_FLAG_GENERAL;
 
 	mov	rax, QWORD PTR readn$[rsp]
-	mov	DWORD PTR [rax+48], 2
+	mov	BYTE PTR [rax+48], 2
 
 ; 76   : 	readn->status = 0;
 
 	mov	rax, QWORD PTR readn$[rsp]
-	mov	DWORD PTR [rax+52], 0
+	mov	BYTE PTR [rax+49], 0
 
 ; 77   : 	readn->open = 0;
 
@@ -333,11 +333,12 @@ $LN1@allocate_p:
 	mov	rax, QWORD PTR readn$[rsp]
 	mov	QWORD PTR [rax+96], 0
 
-; 83   : 	vfs_mount (path_name, readn);
+; 83   : 	vfs_mount (path_name, readn, 0);
 
+	xor	r8d, r8d
 	mov	rdx, QWORD PTR readn$[rsp]
 	lea	rcx, QWORD PTR path_name$[rsp]
-	call	?vfs_mount@@YAXPEADPEAU_vfs_node_@@@Z	; vfs_mount
+	call	?vfs_mount@@YAXPEADPEAU_vfs_node_@@PEAU_vfs_entry_@@@Z ; vfs_mount
 
 ; 84   : 
 ; 85   : 	thread_t * t = get_current_thread();
@@ -348,25 +349,25 @@ $LN1@allocate_p:
 ; 86   : 	t->fd[t->fd_current] = readn;
 
 	mov	rax, QWORD PTR t$[rsp]
-	movsxd	rax, DWORD PTR [rax+752]
+	movsxd	rax, DWORD PTR [rax+1256]
 	mov	rcx, QWORD PTR t$[rsp]
 	mov	rdx, QWORD PTR readn$[rsp]
-	mov	QWORD PTR [rcx+rax*8+272], rdx
+	mov	QWORD PTR [rcx+rax*8+776], rdx
 
 ; 87   : 	*fd = t->fd_current;
 
 	mov	rax, QWORD PTR fd$[rsp]
 	mov	rcx, QWORD PTR t$[rsp]
-	mov	ecx, DWORD PTR [rcx+752]
+	mov	ecx, DWORD PTR [rcx+1256]
 	mov	DWORD PTR [rax], ecx
 
 ; 88   : 	t->fd_current++;
 
 	mov	rax, QWORD PTR t$[rsp]
-	mov	eax, DWORD PTR [rax+752]
+	mov	eax, DWORD PTR [rax+1256]
 	inc	eax
 	mov	rcx, QWORD PTR t$[rsp]
-	mov	DWORD PTR [rcx+752], eax
+	mov	DWORD PTR [rcx+1256], eax
 
 ; 89   : 	
 ; 90   : 	pipe_count++;
@@ -394,9 +395,9 @@ circ$ = 48
 $LN3:
 	sub	rsp, 72					; 00000048H
 
-; 20   : 	unsigned char *p = (unsigned char*)pmmngr_alloc();  //Main Buffer
+; 20   : 	unsigned char *p = (unsigned char*)AuPmmngrAlloc();  //Main Buffer
 
-	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
+	call	?AuPmmngrAlloc@@YAPEAXXZ		; AuPmmngrAlloc
 	mov	QWORD PTR p$[rsp], rax
 
 ; 21   : 	circ_buf_t *circ = circ_buf_init((unsigned char*)p,4096);
@@ -406,9 +407,9 @@ $LN3:
 	call	?circ_buf_init@@YAPEAU_circ_buf_@@PEAE_K@Z ; circ_buf_init
 	mov	QWORD PTR circ$[rsp], rax
 
-; 22   : 	pipe_t *pipe = (pipe_t*)pmmngr_alloc();
+; 22   : 	pipe_t *pipe = (pipe_t*)AuPmmngrAlloc();
 
-	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
+	call	?AuPmmngrAlloc@@YAPEAXXZ		; AuPmmngrAlloc
 	mov	QWORD PTR pipe$[rsp], rax
 
 ; 23   : 	pipe->buf = circ;

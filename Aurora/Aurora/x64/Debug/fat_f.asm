@@ -6,13 +6,13 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 CONST	SEGMENT
-$SG3453	DB	'FAT32: Creating a file ', 0dH, 0aH, 00H
+$SG3516	DB	'FAT32: Creating a file ', 0dH, 0aH, 00H
 	ORG $+6
-$SG3472	DB	'FAT32: file created at entry-> %d ', 0dH, 0aH, 00H
+$SG3535	DB	'FAT32: file created at entry-> %d ', 0dH, 0aH, 00H
 	ORG $+3
-$SG3496	DB	'[FAT32]: cluster -> %d flushed to disk ', 0dH, 0aH, 00H
+$SG3559	DB	'[FAT32]: cluster -> %d flushed to disk ', 0dH, 0aH, 00H
 	ORG $+6
-$SG3511	DB	'[FAT32]: Writing to file, required clusters -> %d ', 0dH
+$SG3574	DB	'[FAT32]: Writing to file, required clusters -> %d ', 0dH
 	DB	0aH, 00H
 CONST	ENDS
 PUBLIC	?fat32_make_file@@YAPEAU_vfs_node_@@IPEADI@Z	; fat32_make_file
@@ -26,8 +26,8 @@ EXTRN	?fat32_find_free_cluster@@YAIXZ:PROC		; fat32_find_free_cluster
 EXTRN	?fat32_alloc_cluster@@YAXHI@Z:PROC		; fat32_alloc_cluster
 EXTRN	?fat32_get_root_cluster@@YAIXZ:PROC		; fat32_get_root_cluster
 EXTRN	?fat32_get_sector_per_cluster@@YA_KXZ:PROC	; fat32_get_sector_per_cluster
-EXTRN	?pmmngr_alloc@@YAPEAXXZ:PROC			; pmmngr_alloc
-EXTRN	?pmmngr_free@@YAXPEAX@Z:PROC			; pmmngr_free
+EXTRN	?AuPmmngrAlloc@@YAPEAXXZ:PROC			; AuPmmngrAlloc
+EXTRN	?AuPmmngrFree@@YAXPEAX@Z:PROC			; AuPmmngrFree
 EXTRN	?malloc@@YAPEAX_K@Z:PROC			; malloc
 EXTRN	?free@@YAXPEAX@Z:PROC				; free
 EXTRN	?ahci_disk_write@@YAXPEAU_hba_port_@@_KIPEA_K@Z:PROC ; ahci_disk_write
@@ -41,7 +41,7 @@ EXTRN	?fat32_format_date@@YAGXZ:PROC			; fat32_format_date
 EXTRN	?fat32_format_time@@YAGXZ:PROC			; fat32_format_time
 pdata	SEGMENT
 $pdata$?fat32_make_file@@YAPEAU_vfs_node_@@IPEADI@Z DD imagerel $LN14
-	DD	imagerel $LN14+853
+	DD	imagerel $LN14+844
 	DD	imagerel $unwind$?fat32_make_file@@YAPEAU_vfs_node_@@IPEADI@Z
 $pdata$?fat32_write_file@@YAXPEAU_vfs_node_@@PEAEI@Z DD imagerel $LN10
 	DD	imagerel $LN10+252
@@ -126,9 +126,9 @@ $LN11@fat32_writ:
 
 ; 145  : 	}
 ; 146  : 
-; 147  : 	uint64_t* ahci_buff = (uint64_t*)pmmngr_alloc();
+; 147  : 	uint64_t* ahci_buff = (uint64_t*)AuPmmngrAlloc();
 
-	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
+	call	?AuPmmngrAlloc@@YAPEAXXZ		; AuPmmngrAlloc
 	mov	QWORD PTR ahci_buff$[rsp], rax
 
 ; 148  : 	memset(ahci_buff, 0, 4096);
@@ -193,7 +193,7 @@ $LN3@fat32_writ:
 ; 157  : 			_debug_print_ ("[FAT32]: cluster -> %d flushed to disk \r\n", cluster);
 
 	mov	edx, DWORD PTR cluster$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3496
+	lea	rcx, OFFSET FLAT:$SG3559
 	call	?_debug_print_@@YAXPEADZZ		; _debug_print_
 $LN4@fat32_writ:
 
@@ -229,10 +229,10 @@ $LN2@fat32_writ:
 $LN5@fat32_writ:
 
 ; 164  : 
-; 165  : 	pmmngr_free(ahci_buff);
+; 165  : 	AuPmmngrFree(ahci_buff);
 
 	mov	rcx, QWORD PTR ahci_buff$[rsp]
-	call	?pmmngr_free@@YAXPEAX@Z			; pmmngr_free
+	call	?AuPmmngrFree@@YAXPEAX@Z		; AuPmmngrFree
 
 ; 166  : }
 
@@ -309,7 +309,7 @@ $LN7@fat32_writ:
 ; 183  : 	_debug_print_ ("[FAT32]: Writing to file, required clusters -> %d \r\n", required_cluster);
 
 	mov	edx, DWORD PTR required_cluster$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3511
+	lea	rcx, OFFSET FLAT:$SG3574
 	call	?_debug_print_@@YAXPEADZZ		; _debug_print_
 
 ; 184  : 
@@ -428,9 +428,9 @@ $LN14:
 
 ; 64   : 
 ; 65   : 
-; 66   : 	uint64_t* buff = (uint64_t*)pmmngr_alloc();
+; 66   : 	uint64_t* buff = (uint64_t*)AuPmmngrAlloc();
 
-	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
+	call	?AuPmmngrAlloc@@YAPEAXXZ		; AuPmmngrAlloc
 	mov	QWORD PTR buff$[rsp], rax
 
 ; 67   : 	memset(buff, 0, 4096);
@@ -448,7 +448,7 @@ $LN14:
 ; 70   : 
 ; 71   : 	_debug_print_ ("FAT32: Creating a file \r\n");
 
-	lea	rcx, OFFSET FLAT:$SG3453
+	lea	rcx, OFFSET FLAT:$SG3516
 	call	?_debug_print_@@YAXPEADZZ		; _debug_print_
 
 ; 72   : 
@@ -661,10 +661,10 @@ $LN3@fat32_make:
 	mov	rcx, rax
 	call	?ahci_disk_write@@YAXPEAU_hba_port_@@_KIPEA_K@Z ; ahci_disk_write
 
-; 106  : 			    pmmngr_free(buffer);
+; 106  : 				AuPmmngrFree(buffer);
 
 	mov	rcx, QWORD PTR buffer$5[rsp]
-	call	?pmmngr_free@@YAXPEAX@Z			; pmmngr_free
+	call	?AuPmmngrFree@@YAXPEAX@Z		; AuPmmngrFree
 
 ; 107  : 
 ; 108  : 				strcpy (file->filename,fname);
@@ -684,7 +684,7 @@ $LN3@fat32_make:
 ; 110  : 				file->eof = 0;
 
 	mov	rax, QWORD PTR file$[rsp]
-	mov	DWORD PTR [rax+36], 0
+	mov	BYTE PTR [rax+36], 0
 
 ; 111  : 				file->pos = 0;
 
@@ -701,17 +701,17 @@ $LN3@fat32_make:
 ; 113  : 				file->flags = FS_FLAG_GENERAL;
 
 	mov	rax, QWORD PTR file$[rsp]
-	mov	DWORD PTR [rax+48], 2
+	mov	BYTE PTR [rax+48], 2
 
 ; 114  : 				file->status = FS_STATUS_FOUND;
 
 	mov	rax, QWORD PTR file$[rsp]
-	mov	DWORD PTR [rax+52], 4
+	mov	BYTE PTR [rax+49], 4
 
 ; 115  : 				_debug_print_ ("FAT32: file created at entry-> %d \r\n",i);
 
 	mov	edx, DWORD PTR i$3[rsp]
-	lea	rcx, OFFSET FLAT:$SG3472
+	lea	rcx, OFFSET FLAT:$SG3535
 	call	?_debug_print_@@YAXPEADZZ		; _debug_print_
 
 ; 116  : 			    return file;

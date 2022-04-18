@@ -33,11 +33,11 @@ mouse_cycle DB	01H DUP (?)
 ?old_message@@3U_dwm_message_@@A DB 01cH DUP (?)	; old_message
 _BSS	ENDS
 CONST	SEGMENT
-$SG3548	DB	'mouse', 00H
+$SG3611	DB	'mouse', 00H
 	ORG $+2
-$SG3549	DB	'/dev/mouse', 00H
+$SG3612	DB	'/dev/mouse', 00H
 	ORG $+5
-$SG3553	DB	'mouse interrupt setupped', 0aH, 00H
+$SG3616	DB	'mouse interrupt setupped', 0aH, 00H
 CONST	ENDS
 PUBLIC	?initialize_mouse@@YAXXZ			; initialize_mouse
 PUBLIC	?mouse_wait@@YAXE@Z				; mouse_wait
@@ -50,16 +50,16 @@ PUBLIC	?mouse_register_device@@YAXXZ			; mouse_register_device
 EXTRN	x64_cli:PROC
 EXTRN	x64_sti:PROC
 EXTRN	x64_inportb:PROC
-EXTRN	?inportb@@YAEG@Z:PROC				; inportb
-EXTRN	?outportb@@YAXGE@Z:PROC				; outportb
-EXTRN	?interrupt_end@@YAXI@Z:PROC			; interrupt_end
-EXTRN	?interrupt_set@@YAX_KP6AX0PEAX@ZE@Z:PROC	; interrupt_set
-EXTRN	?irq_mask@@YAXE_N@Z:PROC			; irq_mask
+EXTRN	inportb:PROC
+EXTRN	outportb:PROC
+EXTRN	AuInterruptEnd:PROC
+EXTRN	AuInterruptSet:PROC
+EXTRN	?AuIrqMask@@YAXE_N@Z:PROC			; AuIrqMask
 EXTRN	?strcpy@@YAPEADPEADPEBD@Z:PROC			; strcpy
 EXTRN	?memset@@YAXPEAXEI@Z:PROC			; memset
 EXTRN	memcpy:PROC
-EXTRN	?printf@@YAXPEBDZZ:PROC				; printf
-EXTRN	?vfs_mount@@YAXPEADPEAU_vfs_node_@@@Z:PROC	; vfs_mount
+EXTRN	printf:PROC
+EXTRN	?vfs_mount@@YAXPEADPEAU_vfs_node_@@PEAU_vfs_entry_@@@Z:PROC ; vfs_mount
 EXTRN	?malloc@@YAPEAX_K@Z:PROC			; malloc
 EXTRN	?get_screen_width@@YAIXZ:PROC			; get_screen_width
 EXTRN	?get_screen_height@@YAIXZ:PROC			; get_screen_height
@@ -90,7 +90,7 @@ $pdata$?mouse_ioquery@@YAHPEAU_vfs_node_@@HPEAX@Z DD imagerel $LN9
 	DD	imagerel $LN9+97
 	DD	imagerel $unwind$?mouse_ioquery@@YAHPEAU_vfs_node_@@HPEAX@Z
 $pdata$?mouse_register_device@@YAXXZ DD imagerel $LN3
-	DD	imagerel $LN3+201
+	DD	imagerel $LN3+195
 	DD	imagerel $unwind$?mouse_register_device@@YAXXZ
 pdata	ENDS
 xdata	SEGMENT
@@ -131,7 +131,7 @@ $LN3:
 ; 211  : 	strcpy (node->filename, "mouse");
 
 	mov	rax, QWORD PTR node$[rsp]
-	lea	rdx, OFFSET FLAT:$SG3548
+	lea	rdx, OFFSET FLAT:$SG3611
 	mov	rcx, rax
 	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
 
@@ -143,7 +143,7 @@ $LN3:
 ; 213  : 	node->eof = 0;
 
 	mov	rax, QWORD PTR node$[rsp]
-	mov	DWORD PTR [rax+36], 0
+	mov	BYTE PTR [rax+36], 0
 
 ; 214  : 	node->pos = 0;
 
@@ -158,12 +158,12 @@ $LN3:
 ; 216  : 	node->flags = FS_FLAG_GENERAL;
 
 	mov	rax, QWORD PTR node$[rsp]
-	mov	DWORD PTR [rax+48], 2
+	mov	BYTE PTR [rax+48], 2
 
 ; 217  : 	node->status = 0;
 
 	mov	rax, QWORD PTR node$[rsp]
-	mov	DWORD PTR [rax+52], 0
+	mov	BYTE PTR [rax+49], 0
 
 ; 218  : 	node->open = 0;
 
@@ -191,11 +191,12 @@ $LN3:
 	lea	rcx, OFFSET FLAT:?mouse_ioquery@@YAHPEAU_vfs_node_@@HPEAX@Z ; mouse_ioquery
 	mov	QWORD PTR [rax+96], rcx
 
-; 223  : 	vfs_mount ("/dev/mouse", node);
+; 223  : 	vfs_mount ("/dev/mouse", node, 0);
 
+	xor	r8d, r8d
 	mov	rdx, QWORD PTR node$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3549
-	call	?vfs_mount@@YAXPEADPEAU_vfs_node_@@@Z	; vfs_mount
+	lea	rcx, OFFSET FLAT:$SG3612
+	call	?vfs_mount@@YAXPEADPEAU_vfs_node_@@PEAU_vfs_entry_@@@Z ; vfs_mount
 
 ; 224  : }
 
@@ -234,11 +235,11 @@ $LN9:
 $LN4@mouse_ioqu:
 
 ; 189  : 		case MOUSE_IOCODE_DISABLE:
-; 190  : 			irq_mask(12,true);
+; 190  : 			AuIrqMask(12,true);
 
 	mov	dl, 1
 	mov	cl, 12
-	call	?irq_mask@@YAXE_N@Z			; irq_mask
+	call	?AuIrqMask@@YAXE_N@Z			; AuIrqMask
 
 ; 191  : 			break;
 
@@ -246,11 +247,11 @@ $LN4@mouse_ioqu:
 $LN3@mouse_ioqu:
 
 ; 192  : 		case MOUSE_IOCODE_ENABLE:
-; 193  : 			irq_mask(12, false);
+; 193  : 			AuIrqMask(12, false);
 
 	xor	edx, edx
 	mov	cl, 12
-	call	?irq_mask@@YAXE_N@Z			; irq_mask
+	call	?AuIrqMask@@YAXE_N@Z			; AuIrqMask
 
 ; 194  : 			break;
 
@@ -306,7 +307,7 @@ $LN26:
 ; 89   : 	uint8_t status = inportb (MOUSE_STATUS);
 
 	mov	cx, 100					; 00000064H
-	call	?inportb@@YAEG@Z			; inportb
+	call	inportb
 	mov	BYTE PTR status$[rsp], al
 $LN23@mouse_hand:
 
@@ -324,7 +325,7 @@ $LN23@mouse_hand:
 ; 91   : 		int8_t mouse_in = inportb (MOUSE_PORT);
 
 	mov	cx, 96					; 00000060H
-	call	?inportb@@YAEG@Z			; inportb
+	call	inportb
 	mov	BYTE PTR mouse_in$1[rsp], al
 
 ; 92   : 		switch (mouse_cycle) {
@@ -756,10 +757,10 @@ $read_next$28:
 $LN22@mouse_hand:
 
 ; 181  : 
-; 182  : 	interrupt_end(12);
+; 182  : 	AuInterruptEnd(12);
 
 	mov	ecx, 12
-	call	?interrupt_end@@YAXI@Z			; interrupt_end
+	call	AuInterruptEnd
 
 ; 183  : }
 
@@ -823,7 +824,7 @@ $LN3:
 ; 72   : 	return inportb (0x60);
 
 	mov	cx, 96					; 00000060H
-	call	?inportb@@YAEG@Z			; inportb
+	call	inportb
 
 ; 73   : }
 
@@ -852,7 +853,7 @@ $LN3:
 
 	mov	dl, 212					; 000000d4H
 	mov	cx, 100					; 00000064H
-	call	?outportb@@YAXGE@Z			; outportb
+	call	outportb
 
 ; 63   : 	mouse_wait (1);
 
@@ -863,7 +864,7 @@ $LN3:
 
 	movzx	edx, BYTE PTR write$[rsp]
 	mov	cx, 96					; 00000060H
-	call	?outportb@@YAXGE@Z			; outportb
+	call	outportb
 
 ; 65   : }
 
@@ -1012,7 +1013,7 @@ $LN3:
 
 	mov	dl, 168					; 000000a8H
 	mov	cx, 100					; 00000064H
-	call	?outportb@@YAXGE@Z			; outportb
+	call	outportb
 
 ; 239  : 
 ; 240  : 	mouse_wait(1);
@@ -1024,7 +1025,7 @@ $LN3:
 
 	mov	dl, 32					; 00000020H
 	mov	cx, 100					; 00000064H
-	call	?outportb@@YAXGE@Z			; outportb
+	call	outportb
 
 ; 242  : 
 ; 243  : 	mouse_wait (0);
@@ -1035,7 +1036,7 @@ $LN3:
 ; 244  : 	status = (inportb (0x60) | 2);
 
 	mov	cx, 96					; 00000060H
-	call	?inportb@@YAEG@Z			; inportb
+	call	inportb
 	movzx	eax, al
 	or	eax, 2
 	mov	BYTE PTR status$[rsp], al
@@ -1050,7 +1051,7 @@ $LN3:
 
 	mov	dl, 96					; 00000060H
 	mov	cx, 100					; 00000064H
-	call	?outportb@@YAXGE@Z			; outportb
+	call	outportb
 
 ; 248  : 
 ; 249  : 	mouse_wait (1);
@@ -1062,7 +1063,7 @@ $LN3:
 
 	movzx	edx, BYTE PTR status$[rsp]
 	mov	cx, 96					; 00000060H
-	call	?outportb@@YAXGE@Z			; outportb
+	call	outportb
 
 ; 251  : 
 ; 252  : 	mouse_write (0xF6);
@@ -1085,17 +1086,17 @@ $LN3:
 	call	?mouse_read@@YAEXZ			; mouse_read
 
 ; 257  : 
-; 258  : 	interrupt_set (34, mouse_handler, 12);  //34
+; 258  : 	AuInterruptSet (34, mouse_handler, 12);  //34
 
 	mov	r8b, 12
 	lea	rdx, OFFSET FLAT:?mouse_handler@@YAX_KPEAX@Z ; mouse_handler
 	mov	ecx, 34					; 00000022H
-	call	?interrupt_set@@YAX_KP6AX0PEAX@ZE@Z	; interrupt_set
+	call	AuInterruptSet
 
 ; 259  : 	printf ("mouse interrupt setupped\n");
 
-	lea	rcx, OFFSET FLAT:$SG3553
-	call	?printf@@YAXPEBDZZ			; printf
+	lea	rcx, OFFSET FLAT:$SG3616
+	call	printf
 
 ; 260  : 	mouse_register_device ();
 

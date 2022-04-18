@@ -15,6 +15,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <ctype.h>
+#include <utils\lnklist.h>
 
 
 #define  FS_FLAG_DIRECTORY  0x1
@@ -36,11 +37,11 @@ typedef int (*ioquery_callback) (_vfs_node_ *file, int code, void *arg);
 typedef struct _vfs_node_ {
 	char filename[32];
 	uint32_t  size;
-	uint32_t  eof;
+	uint8_t  eof;
 	uint32_t  pos;
 	uint32_t  current;  //inode -- in unix term
-	uint32_t  flags; 
-	uint32_t  status;
+	uint8_t  flags; 
+	uint8_t  status;
 	void* device;
 	open_callback open;
 	read_callback read;
@@ -52,8 +53,7 @@ typedef struct _vfs_node_ {
 //! Entry structure
 typedef struct _vfs_entry_ {
 	vfs_node_t *node;
-	_vfs_entry_ *next;
-	_vfs_entry_ *prev;
+	list_t *childs;
 }vfs_entry;
 
 //! User mode file structure
@@ -69,7 +69,16 @@ typedef struct _file_ {
 
 extern void vfs_init ();
 extern vfs_node_t* vfs_finddir (char *path);
-extern void vfs_mount (char *path, vfs_node_t *node);
+/*
+ * vfs_mkdir -- creates a virtual directory
+ * @param path -- path to use
+ * @param dir -- directory file
+ * @param dir_node -- dir node
+ */
+extern void vfs_mkdir (char* path, vfs_node_t* dir, vfs_entry* dir_node);
+extern vfs_entry * vfs_mkentry();
+extern void vfs_mount (char *path, vfs_node_t *node, vfs_entry* ent);
+extern void vfs_lsdir (char* path);
 extern vfs_node_t openfs (vfs_node_t *node, char* path);
 extern void readfs (vfs_node_t *node, vfs_node_t *file, uint64_t* buffer, uint32_t length);
 extern void writefs (vfs_node_t *node, vfs_node_t *file, uint8_t *buffer, uint32_t length);

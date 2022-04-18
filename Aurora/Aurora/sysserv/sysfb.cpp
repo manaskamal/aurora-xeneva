@@ -10,7 +10,7 @@
  */
 
 #include <stdint.h>
-#include <arch\x86_64\mmngr\vmmngr.h>
+#include <arch\x86_64\mmngr\paging.h>
 #include <drivers\svga\vmsvga.h>
 #include <hwcursor.h>
 #include <screen.h>

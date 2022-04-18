@@ -33,7 +33,7 @@
 #include <stdint.h>
 #include <_null.h>
 #include <string.h>
-#include <arch\x86_64\mmngr\vmmngr.h>
+#include <arch\x86_64\mmngr\paging.h>
 #include <pmmngr.h>
 
 /* Meta data magic */
@@ -54,7 +54,7 @@ typedef struct _meta_data_ {
 * x86_64_kmalloc_initialize -- initialize
 * kernel malloc library with two pages
 */
-extern void heap_initialize();
+extern void AuHeapInitialize();
 
 /*
 * au_request_page -- request contiguous 4k virtual pages

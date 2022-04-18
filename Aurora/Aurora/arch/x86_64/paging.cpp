@@ -9,7 +9,7 @@
  *===============================================
  */
 
-#include <arch\x86_64\mmngr\vmmngr.h>
+#include <arch\x86_64\mmngr\paging.h>
 #include <screen.h>
 #include <ipc\dwm_ipc.h>
 #include <arch\x86_64\thread.h>
@@ -81,12 +81,13 @@ static void clear(void* addr){
 
 
 /**
- * Initialize Virtual Memory Setup
+ * AuPagingInit -- initialize the
+ * paging system
  */
-void vmmngr_x86_64_init () {
+void AuPagingInit() {
 
 	uint64_t *cr3 = (uint64_t*)x64_read_cr3();
-	uint64_t *new_cr3 = (uint64_t*)pmmngr_alloc();    
+	uint64_t *new_cr3 = (uint64_t*)AuPmmngrAlloc();    
 
 	memset (new_cr3, 0, 4096);
 
@@ -103,7 +104,7 @@ void vmmngr_x86_64_init () {
 		
 	}
 
-	uint64_t* pdpt = (uint64_t*)pmmngr_alloc();
+	uint64_t* pdpt = (uint64_t*)AuPmmngrAlloc();
 	memset(pdpt, 0, 4096);
 
 	new_cr3[pml4_index(PHYSICAL_MEMORY_BASE)] = (uint64_t)pdpt | PAGING_PRESENT | PAGING_WRITABLE;
@@ -117,13 +118,13 @@ void vmmngr_x86_64_init () {
 	//! Switch to new mapping!!!
 	x64_write_cr3 ((size_t)new_cr3);
 
-	pmmngr_move_higher_half();
+	AuPmmngrMoveHigher();
 
 }
 
 
 //! Map a page in current address space
-bool map_page (uint64_t physical_address, uint64_t virtual_address, uint8_t attrib){
+bool AuMapPage(uint64_t physical_address, uint64_t virtual_address, uint8_t attrib){
 	size_t flags = PAGING_WRITABLE | PAGING_PRESENT | attrib;
 	
 	const long i4 = (virtual_address >> 39) & 0x1FF;
@@ -136,7 +137,7 @@ bool map_page (uint64_t physical_address, uint64_t virtual_address, uint8_t attr
 	if (!(pml4i[i4] & PAGING_PRESENT))
 	{
 		
-		const uint64_t page = (uint64_t)pmmngr_alloc();
+		const uint64_t page = (uint64_t)AuPmmngrAlloc();
 		pml4i[i4] = page | flags;
 		clear((void*)p2v(page));
 		flush_tlb((void*)page);
@@ -147,7 +148,7 @@ bool map_page (uint64_t physical_address, uint64_t virtual_address, uint8_t attr
 	if (!(pml3[i3] & PAGING_PRESENT))
 	{
 		
-		const uint64_t page = (uint64_t)pmmngr_alloc();
+		const uint64_t page = (uint64_t)AuPmmngrAlloc();
 		pml3[i3] = page | flags;
 		clear((void*)p2v(page));
 		flush_tlb((void*)page);
@@ -160,7 +161,7 @@ bool map_page (uint64_t physical_address, uint64_t virtual_address, uint8_t attr
 	
 	if (!(pml2[i2] & PAGING_PRESENT))
 	{
-		const uint64_t page = (uint64_t)pmmngr_alloc();
+		const uint64_t page = (uint64_t)AuPmmngrAlloc();
 		pml2[i2] = page | flags;
 		clear((void*)p2v(page));
 		flush_tlb((void*)page);
@@ -171,8 +172,8 @@ bool map_page (uint64_t physical_address, uint64_t virtual_address, uint8_t attr
 	uint64_t* pml1 = (uint64_t*)(p2v(pml2[i2]) & ~(4096 - 1));
 	if (pml1[i1] & PAGING_PRESENT)
 	{
-		pmmngr_free((void*)physical_address);
-		return false;
+		//pmmngr_free((void*)physical_address);
+		//return false;
 	}
 
 	pml1[i1] = physical_address | flags;
@@ -182,7 +183,7 @@ bool map_page (uint64_t physical_address, uint64_t virtual_address, uint8_t attr
 }
 
 
-void unmap_page(uint64_t virt_addr){
+void AuUnmapPage(uint64_t virt_addr){
 	
 	const long i1 = pml4_index(virt_addr);
 
@@ -197,11 +198,11 @@ void unmap_page(uint64_t virt_addr){
 		pt[pt_index(virt_addr)] = 0;
 	}
 	if (page != 0)
-		pmmngr_free(page);
+		AuPmmngrFree(page);
 }
 
 
-void unmap_page_ex(uint64_t* cr3, uint64_t virt_addr, bool free_physical){
+void AuUnmapPageEx(uint64_t* cr3, uint64_t virt_addr, bool free_physical){
 	
 	const long i1 = pml4_index(virt_addr);
 
@@ -216,16 +217,16 @@ void unmap_page_ex(uint64_t* cr3, uint64_t virt_addr, bool free_physical){
 	}
 
 	if (free_physical && page != 0) 
-		pmmngr_free(page);
+		AuPmmngrFree(page);
 
 }
 
 
-void vmmngr_free_pages(uint64_t virt_addr, bool free_physical, size_t s){
+void AuFreePages(uint64_t virt_addr, bool free_physical, size_t s){
 	
 	const long i1 = pml4_index(virt_addr);
 
-	for (int i = 0; i < s /  4096; i++) {
+	for (int i = 0; i < (s /  4096) + 1; i++) {
 		uint64_t *pml4_ = (uint64_t*)x64_read_cr3();
 		uint64_t *pdpt = (uint64_t*)(pml4_[pml4_index(virt_addr)] & ~(4096 - 1));
 		uint64_t *pd = (uint64_t*)(pdpt[pdp_index(virt_addr)] & ~(4096 - 1));
@@ -237,7 +238,7 @@ void vmmngr_free_pages(uint64_t virt_addr, bool free_physical, size_t s){
 		}
 
 		if (free_physical && page != 0) 
-			pmmngr_free(page);
+			AuPmmngrFree(page);
 
 		virt_addr = virt_addr + i * 4096;
 	}
@@ -246,7 +247,7 @@ void vmmngr_free_pages(uint64_t virt_addr, bool free_physical, size_t s){
 
 
 //! returns a physical address from virtual address
-uint64_t* get_physical_address (uint64_t virt_addr) {
+uint64_t* AuGetPhysicalAddress (uint64_t virt_addr) {
 	const long i1 = pml4_index(virt_addr);
 
 	uint64_t *pml4 = (uint64_t*)x64_read_cr3();
@@ -261,7 +262,7 @@ uint64_t* get_physical_address (uint64_t virt_addr) {
 
 
 
-bool map_page_ex (uint64_t *pml4i,uint64_t physical_address, uint64_t virtual_address, uint8_t attrib){
+bool AuMapPageEx (uint64_t *pml4i,uint64_t physical_address, uint64_t virtual_address, uint8_t attrib){
 
 
 	size_t flags = 0;
@@ -276,7 +277,7 @@ bool map_page_ex (uint64_t *pml4i,uint64_t physical_address, uint64_t virtual_ad
 	const long i1 = (virtual_address >> 12) & 0x1FF;
 
 	if (!(pml4i[i4] & PAGING_PRESENT)){
-		const uint64_t page = (uint64_t)pmmngr_alloc();
+		const uint64_t page = (uint64_t)AuPmmngrAlloc();
 		pml4i[i4] = page | flags;
 		clear((void*)p2v(page));
 		flush_tlb((void*)page);
@@ -285,7 +286,7 @@ bool map_page_ex (uint64_t *pml4i,uint64_t physical_address, uint64_t virtual_ad
 	uint64_t* pml3 = (uint64_t*)(p2v(pml4i[i4]) & ~(4096 - 1));
 
 	if (!(pml3[i3] & PAGING_PRESENT)){
-		const uint64_t page = (uint64_t)pmmngr_alloc();
+		const uint64_t page = (uint64_t)AuPmmngrAlloc();
 		pml3[i3] = page | flags;
 		clear((void*)p2v(page));
 		flush_tlb((void*)page);
@@ -296,7 +297,7 @@ bool map_page_ex (uint64_t *pml4i,uint64_t physical_address, uint64_t virtual_ad
 	uint64_t* pml2 = (uint64_t*)(p2v(pml3[i3]) & ~(4096 - 1));
 	if (!(pml2[i2] & PAGING_PRESENT)){
 
-		const uint64_t page = (uint64_t)pmmngr_alloc();
+		const uint64_t page = (uint64_t)AuPmmngrAlloc();
 		pml2[i2] = page | flags;
 		clear((void*)p2v(page));
 		flush_tlb((void*)page);
@@ -307,7 +308,7 @@ bool map_page_ex (uint64_t *pml4i,uint64_t physical_address, uint64_t virtual_ad
 	uint64_t* pml1 = (uint64_t*)(p2v(pml2[i2]) & ~(4096 - 1));
 
 	if (pml1[i1] & PAGING_PRESENT){
-		pmmngr_free((void*)physical_address);
+		AuPmmngrFree((void*)physical_address);
 		return false;
 	}
 
@@ -321,10 +322,10 @@ bool map_page_ex (uint64_t *pml4i,uint64_t physical_address, uint64_t virtual_ad
 
 //! creates a new address space for user with same structure
 //! to kernel i.e clone kernel space
-uint64_t *create_user_address_space (){
+uint64_t *AuCreateAddressSpace (){
 	
 	uint64_t *cr3 = (uint64_t*)root_cr3; //x64_read_cr3();
-	uint64_t *new_cr3 = (uint64_t*)p2v((size_t)pmmngr_alloc());
+	uint64_t *new_cr3 = (uint64_t*)p2v((size_t)AuPmmngrAlloc());
 	memset(new_cr3,0,4096);
 
 	//! For now, copy the 4 GiB identity mapping from old pml4
@@ -334,8 +335,6 @@ uint64_t *create_user_address_space (){
 	//! virtually allocated in higher half sections
 	new_cr3[0] = cr3[0];
 	new_cr3[1] = cr3[1];
-	new_cr3[2] = cr3[2];
-	new_cr3[3] = cr3[3];
 
 	//! Copy Kernel's Higher Half section
 	for (int i = 0; i < 512; i++) {
@@ -351,7 +350,7 @@ uint64_t *create_user_address_space (){
 }
 
 
-uint64_t* get_free_page (size_t s, bool user) {
+uint64_t* AuGetFreePage (size_t s, bool user) {
 	uint64_t* page = 0;
 	uint64_t start = 0;
 	if (user)
@@ -386,6 +385,6 @@ uint64_t* get_free_page (size_t s, bool user) {
 }
 
 
-uint64_t* vmmngr_get_kernel_pml4() {
+uint64_t* AuGetRootPageTable() {
 	return root_cr3;
 }

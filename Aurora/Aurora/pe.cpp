@@ -10,7 +10,7 @@
  *=============================================================================
  */
 
-#include <arch\x86_64\mmngr\vmmngr.h>
+#include <arch\x86_64\mmngr\paging.h>
 #include <pe.h>
 #include <stdio.h>
 
@@ -74,7 +74,12 @@ void* GetProcAddress(void *image, const char* procname){
 	return nullptr;
 }
 
-void IterateImportTable (void* image, void *exporter) {
+/*
+ * LinkLibrary -- Links a dll library to its executable
+ * @param image -- dll image
+ * @param exporter -- executable image
+ */
+void LinkLibrary (void* image, void *exporter) {
 	PIMAGE_DOS_HEADER dos_header = (PIMAGE_DOS_HEADER)image;
 	PIMAGE_NT_HEADERS nt_headers = raw_offset<PIMAGE_NT_HEADERS>(dos_header, dos_header->e_lfanew);
 	if (IMAGE_DATA_DIRECTORY_IMPORT + 1 > nt_headers->OptionalHeader.NumberOfRvaAndSizes)

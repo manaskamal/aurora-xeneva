@@ -1009,11 +1009,12 @@ int main (int argc, char* argv[]) {
 
 
 	cursor_init ();
+	sys_print_text ("Reading cursor files \n");
 	load_cursor ("/cursor.bmp",(uint8_t*)0x0000070000000000, arrow_cursor);
 	load_cursor ("/spin.bmp", (uint8_t*)0x0000070000001000, spin_cursor);
-	Image* wallp = pri_load_wallpaper ("/madhu.jpg");
+	Image* wallp = pri_load_wallpaper ("/winne1.jpg");
 	pri_wallpaper_draw(wallp);
-	
+	sys_print_text ("PRIWM: Wallpaper and cursors loaded \n");
 
 	/* initialize window list */
 	window_list_init();
@@ -1031,8 +1032,18 @@ int main (int argc, char* argv[]) {
 	 */
 	acrylic_draw_rect_filled (canvas, 0,0,s_width, s_height, LIGHTBLACK);
 	pri_wallpaper_present();
+
+
 	canvas_screen_update(canvas, 0, 0, s_width, s_height);
+
+	acrylic_initialize_font();
+	acrylic_font_set_size(64);
+	acrylic_font_draw_string(canvas, "PRIWM",1024,300,64,BLUE); 
+	canvas_screen_update(canvas, 0, 0, s_width, s_height);
+
     cursor_store_back(0, 0);
+
+
     
 	pri_loop_fd = sys_open_file ("/dev/pri_loop",NULL);
 	uint32_t frame_tick;
@@ -1091,6 +1102,10 @@ int main (int argc, char* argv[]) {
 			if (key_msg.dword == KEY_M) {
 				uint64_t mb = sys_get_used_ram();
 				sys_print_text ("USED Ram -> %d MB \r\n", mb / 1024 / 1024);
+			}
+
+			if (key_msg.dword == KEY_A) {
+				create_process("/cnsl.exe", "cnsl");
 			}
 			memset(&key_msg, 0, sizeof(message_t));
 		}

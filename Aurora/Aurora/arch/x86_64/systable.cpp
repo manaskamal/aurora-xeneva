@@ -24,7 +24,7 @@ extern "C" void x64_syscall_handler (int a) {
 
 	switch (idx) {
 	case 0:
-		funct = (uint64_t*)_debug_print_;
+		funct = (uint64_t*)printf;
 		break;
 	case 1:
 		funct = (uint64_t*)wait;

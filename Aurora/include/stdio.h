@@ -16,6 +16,7 @@
 #include <string.h>
 #include <_null.h>
 #include <stdint.h>
+#include <aurora.h>
 
 #define EOF (-1)
 
@@ -32,7 +33,7 @@
 typedef unsigned fpos_t;
 
 extern char* sztoa(size_t value, char* str, int base);
-extern void printf(const char* format, ...);
+AU_EXTERN AU_EXPORT void printf(const char* format, ...);
 extern int putchar (int);
 extern int getchar ();
 extern void *memmove (void* dest, const void* src, size_t n);

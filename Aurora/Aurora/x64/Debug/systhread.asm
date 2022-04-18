@@ -10,7 +10,7 @@ PUBLIC	?create_uthread@@YAXP6AXPEAX@ZPEAD@Z		; create_uthread
 PUBLIC	?sys_sleep@@YAX_K@Z				; sys_sleep
 EXTRN	x64_cli:PROC
 EXTRN	x64_read_cr3:PROC
-EXTRN	?create_user_address_space@@YAPEA_KXZ:PROC	; create_user_address_space
+EXTRN	?AuCreateAddressSpace@@YAPEA_KXZ:PROC		; AuCreateAddressSpace
 EXTRN	?create_user_thread@@YAPEAU_thread_@@P6AXPEAX@Z_K2QEADE@Z:PROC ; create_user_thread
 EXTRN	?get_current_thread@@YAPEAU_thread_@@XZ:PROC	; get_current_thread
 EXTRN	?force_sched@@YAXXZ:PROC			; force_sched
@@ -107,9 +107,9 @@ $LN6:
 	call	x64_read_cr3
 	mov	QWORD PTR old_cr3$[rsp], rax
 
-; 31   : 	uint64_t *new_cr3 = create_user_address_space();
+; 31   : 	uint64_t *new_cr3 = AuCreateAddressSpace();
 
-	call	?create_user_address_space@@YAPEA_KXZ	; create_user_address_space
+	call	?AuCreateAddressSpace@@YAPEA_KXZ	; AuCreateAddressSpace
 	mov	QWORD PTR new_cr3$[rsp], rax
 
 ; 32   : 
@@ -183,7 +183,7 @@ $LN3:
 ; 18   : 	return get_current_thread()->id;
 
 	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
-	movzx	eax, WORD PTR [rax+234]
+	movzx	eax, WORD PTR [rax+738]
 
 ; 19   : }
 

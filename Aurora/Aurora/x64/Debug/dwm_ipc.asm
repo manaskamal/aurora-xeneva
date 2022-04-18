@@ -15,9 +15,9 @@ PUBLIC	?dwm_dispatch_message@@YAXPEAU_dwm_message_@@@Z	; dwm_dispatch_message
 PUBLIC	?get_dwm_message_q_address@@YAPEA_KXZ		; get_dwm_message_q_address
 EXTRN	?memset@@YAXPEAXEI@Z:PROC			; memset
 EXTRN	memcpy:PROC
-EXTRN	?pmmngr_alloc@@YAPEAXXZ:PROC			; pmmngr_alloc
+EXTRN	?AuPmmngrAlloc@@YAPEAXXZ:PROC			; AuPmmngrAlloc
 EXTRN	x64_cli:PROC
-EXTRN	?map_page@@YA_N_K0E@Z:PROC			; map_page
+EXTRN	AuMapPage:PROC
 EXTRN	?get_current_thread@@YAPEAU_thread_@@XZ:PROC	; get_current_thread
 EXTRN	?is_multi_task_enable@@YA_NXZ:PROC		; is_multi_task_enable
 EXTRN	?thread_iterate_ready_list@@YAPEAU_thread_@@G@Z:PROC ; thread_iterate_ready_list
@@ -75,7 +75,7 @@ $LN4:
 ; 47   : 	dwm_message_t *tmsg = (dwm_message_t*)get_current_thread()->msg_box;
 
 	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
-	mov	rax, QWORD PTR [rax+248]
+	mov	rax, QWORD PTR [rax+752]
 	mov	QWORD PTR tmsg$[rsp], rax
 
 ; 48   : 	if (tmsg->type != 0) {
@@ -97,7 +97,7 @@ $LN4:
 	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
 	mov	r8d, 4096				; 00001000H
 	xor	edx, edx
-	mov	rcx, QWORD PTR [rax+248]
+	mov	rcx, QWORD PTR [rax+752]
 	call	?memset@@YAXPEAXEI@Z			; memset
 $LN1@dwm_dispat:
 
@@ -158,7 +158,7 @@ $LN2@dwm_put_me:
 ; 39   : 	dwm_message_t *tmsg = (dwm_message_t*)t->msg_box;
 
 	mov	rax, QWORD PTR t$[rsp]
-	mov	rax, QWORD PTR [rax+248]
+	mov	rax, QWORD PTR [rax+752]
 	mov	QWORD PTR tmsg$[rsp], rax
 
 ; 40   : 	if (tmsg->type == 0)
@@ -173,7 +173,7 @@ $LN2@dwm_put_me:
 	mov	r8d, 28
 	mov	rdx, QWORD PTR msg$[rsp]
 	mov	rax, QWORD PTR t$[rsp]
-	mov	rcx, QWORD PTR [rax+248]
+	mov	rcx, QWORD PTR [rax+752]
 	call	memcpy
 $LN1@dwm_put_me:
 $LN4@dwm_put_me:
@@ -196,9 +196,9 @@ p2$ = 40
 $LN3:
 	sub	rsp, 56					; 00000038H
 
-; 20   : 	void* p = pmmngr_alloc();
+; 20   : 	void* p = AuPmmngrAlloc();
 
-	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
+	call	?AuPmmngrAlloc@@YAPEAXXZ		; AuPmmngrAlloc
 	mov	QWORD PTR p$[rsp], rax
 
 ; 21   : 	memset(p, 0, 4096);
@@ -208,16 +208,16 @@ $LN3:
 	mov	rcx, QWORD PTR p$[rsp]
 	call	?memset@@YAXPEAXEI@Z			; memset
 
-; 22   : 	map_page((uint64_t)p,0xFFFFFD0000000000, PAGING_USER);
+; 22   : 	AuMapPage((uint64_t)p,0xFFFFFD0000000000, PAGING_USER);
 
 	mov	r8b, 4
 	mov	rdx, -3298534883328			; fffffd0000000000H
 	mov	rcx, QWORD PTR p$[rsp]
-	call	?map_page@@YA_N_K0E@Z			; map_page
+	call	AuMapPage
 
-; 23   : 	void *p2 = pmmngr_alloc();
+; 23   : 	void *p2 = AuPmmngrAlloc();
 
-	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
+	call	?AuPmmngrAlloc@@YAPEAXXZ		; AuPmmngrAlloc
 	mov	QWORD PTR p2$[rsp], rax
 
 ; 24   : 	memset(p2, 0, 4096);
@@ -227,12 +227,12 @@ $LN3:
 	mov	rcx, QWORD PTR p2$[rsp]
 	call	?memset@@YAXPEAXEI@Z			; memset
 
-; 25   : 	map_page((uint64_t)p2,0xFFFFD00000000000,PAGING_USER);
+; 25   : 	AuMapPage((uint64_t)p2,0xFFFFD00000000000,PAGING_USER);
 
 	mov	r8b, 4
 	mov	rdx, -52776558133248			; ffffd00000000000H
 	mov	rcx, QWORD PTR p2$[rsp]
-	call	?map_page@@YA_N_K0E@Z			; map_page
+	call	AuMapPage
 
 ; 26   : }
 

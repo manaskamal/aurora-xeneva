@@ -6,16 +6,16 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 CONST	SEGMENT
-$SG3351	DB	'[Aurora]:Key Pressed', 0aH, 00H
+$SG3414	DB	'[Aurora]:Key Pressed', 0aH, 00H
 CONST	ENDS
 PUBLIC	?kybrd_init@@YAXXZ				; kybrd_init
 PUBLIC	?kybrd_handler@@YAX_KPEAX@Z			; kybrd_handler
-EXTRN	?inportb@@YAEG@Z:PROC				; inportb
-EXTRN	?interrupt_end@@YAXI@Z:PROC			; interrupt_end
-EXTRN	?interrupt_set@@YAX_KP6AX0PEAX@ZE@Z:PROC	; interrupt_set
-EXTRN	?printf@@YAXPEBDZZ:PROC				; printf
-EXTRN	?pmmngr_alloc@@YAPEAXXZ:PROC			; pmmngr_alloc
-EXTRN	?pmmngr_free@@YAXPEAX@Z:PROC			; pmmngr_free
+EXTRN	inportb:PROC
+EXTRN	AuInterruptEnd:PROC
+EXTRN	AuInterruptSet:PROC
+EXTRN	printf:PROC
+EXTRN	?AuPmmngrAlloc@@YAPEAXXZ:PROC			; AuPmmngrAlloc
+EXTRN	?AuPmmngrFree@@YAXPEAX@Z:PROC			; AuPmmngrFree
 EXTRN	?is_scheduler_initialized@@YA_NXZ:PROC		; is_scheduler_initialized
 EXTRN	?message_send@@YAXGPEAU_message_@@@Z:PROC	; message_send
 pdata	SEGMENT
@@ -58,7 +58,7 @@ $LN6:
 ; 26   : 	if (inportb(0x64) & 1)
 
 	mov	cx, 100					; 00000064H
-	call	?inportb@@YAEG@Z			; inportb
+	call	inportb
 	movzx	eax, al
 	and	eax, 1
 	test	eax, eax
@@ -69,7 +69,7 @@ $LN6:
 ; 29   : 		int code = inportb(0x60);
 
 	mov	cx, 96					; 00000060H
-	call	?inportb@@YAEG@Z			; inportb
+	call	inportb
 	movzx	eax, al
 	mov	DWORD PTR code$1[rsp], eax
 
@@ -80,9 +80,9 @@ $LN6:
 	test	eax, eax
 	je	SHORT $LN2@kybrd_hand
 
-; 31   : 			message_t *msg = (message_t*)pmmngr_alloc();
+; 31   : 			message_t *msg = (message_t*)AuPmmngrAlloc();
 
-	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
+	call	?AuPmmngrAlloc@@YAPEAXXZ		; AuPmmngrAlloc
 	mov	QWORD PTR msg$2[rsp], rax
 
 ; 32   : 			msg->type = 3;
@@ -103,10 +103,10 @@ $LN6:
 	mov	cx, 2
 	call	?message_send@@YAXGPEAU_message_@@@Z	; message_send
 
-; 35   : 		    pmmngr_free (msg);
+; 35   : 			AuPmmngrFree (msg);
 
 	mov	rcx, QWORD PTR msg$2[rsp]
-	call	?pmmngr_free@@YAXPEAX@Z			; pmmngr_free
+	call	?AuPmmngrFree@@YAXPEAX@Z		; AuPmmngrFree
 
 ; 36   : 		} else {
 
@@ -115,8 +115,8 @@ $LN2@kybrd_hand:
 
 ; 37   : 			printf ("[Aurora]:Key Pressed\n");
 
-	lea	rcx, OFFSET FLAT:$SG3351
-	call	?printf@@YAXPEBDZZ			; printf
+	lea	rcx, OFFSET FLAT:$SG3414
+	call	printf
 $LN1@kybrd_hand:
 $LN3@kybrd_hand:
 $end$7:
@@ -133,10 +133,10 @@ $end$7:
 ; 47   : 
 ; 48   :  end:
 ; 49   : 	//! tell apic we are done!!!
-; 50   : 	interrupt_end(1);
+; 50   : 	AuInterruptEnd(1);
 
 	mov	ecx, 1
-	call	?interrupt_end@@YAXI@Z			; interrupt_end
+	call	AuInterruptEnd
 
 ; 51   : 	return;
 ; 52   : }
@@ -155,12 +155,12 @@ _TEXT	SEGMENT
 $LN3:
 	sub	rsp, 40					; 00000028H
 
-; 61   : 	interrupt_set (1,kybrd_handler,1);
+; 61   : 	AuInterruptSet (1,kybrd_handler,1);
 
 	mov	r8b, 1
 	lea	rdx, OFFSET FLAT:?kybrd_handler@@YAX_KPEAX@Z ; kybrd_handler
 	mov	ecx, 1
-	call	?interrupt_set@@YAX_KP6AX0PEAX@ZE@Z	; interrupt_set
+	call	AuInterruptSet
 
 ; 62   : }
 

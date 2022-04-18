@@ -28,11 +28,11 @@ void kybrd_handler(size_t v, void* p)
 		
 		int code = inportb(0x60);
 		if (is_scheduler_initialized()) {
-			message_t *msg = (message_t*)pmmngr_alloc();
+			message_t *msg = (message_t*)AuPmmngrAlloc();
 			msg->type = 3;
 		    msg->dword = code;
 		    message_send (2,msg);
-		    pmmngr_free (msg);
+			AuPmmngrFree (msg);
 		} else {
 			printf ("[Aurora]:Key Pressed\n");
 		}
@@ -47,7 +47,7 @@ void kybrd_handler(size_t v, void* p)
 
  end:
 	//! tell apic we are done!!!
-	interrupt_end(1);
+	AuInterruptEnd(1);
 	return;
 }
 
@@ -58,5 +58,5 @@ void kybrd_handler(size_t v, void* p)
  * it installs the irq_1 handler with keyboard handler function
  */
 void kybrd_init () {
-	interrupt_set (1,kybrd_handler,1);
+	AuInterruptSet (1,kybrd_handler,1);
 }

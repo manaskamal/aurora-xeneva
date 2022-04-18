@@ -117,9 +117,6 @@
     <ClInclude Include="..\include\pmmngr.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\arch\x86_64\mmngr\vmmngr.h">
-      <Filter>include\arch\x86_64\mmngr</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\console.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -267,9 +264,6 @@
     <ClInclude Include="..\include\hwcursor.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\drivers\vbox.h">
-      <Filter>include\drivers</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\arch\x86_64\kstack.h">
       <Filter>include\arch\x86_64</Filter>
     </ClInclude>
@@ -345,6 +339,12 @@
     <ClInclude Include="..\include\termios.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\aurora.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\arch\x86_64\mmngr\paging.h">
+      <Filter>include\arch\x86_64\mmngr</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="init.cpp">
@@ -367,9 +367,6 @@
     </ClCompile>
     <ClCompile Include="pmmngr.cpp">
       <Filter>source</Filter>
-    </ClCompile>
-    <ClCompile Include="arch\x86_64\vmmngr.cpp">
-      <Filter>source\arch\x86_64</Filter>
     </ClCompile>
     <ClCompile Include="console.cpp">
       <Filter>source</Filter>
@@ -500,9 +497,6 @@
     <ClCompile Include="sysserv\systime.cpp">
       <Filter>source\sysserv</Filter>
     </ClCompile>
-    <ClCompile Include="drivers\vbox.cpp">
-      <Filter>source\drivers</Filter>
-    </ClCompile>
     <ClCompile Include="arch\x86_64\kstack.cpp">
       <Filter>source\arch\x86_64</Filter>
     </ClCompile>
@@ -559,6 +553,9 @@
     </ClCompile>
     <ClCompile Include="fs\fat\fat_f.cpp">
       <Filter>source\fs\fat</Filter>
+    </ClCompile>
+    <ClCompile Include="arch\x86_64\paging.cpp">
+      <Filter>source\arch\x86_64</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

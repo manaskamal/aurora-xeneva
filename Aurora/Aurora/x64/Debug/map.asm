@@ -7,11 +7,11 @@ INCLUDELIB OLDNAMES
 
 PUBLIC	?map_memory@@YAPEAX_KIE@Z			; map_memory
 PUBLIC	?unmap_memory@@YAXPEAXI@Z			; unmap_memory
-EXTRN	?pmmngr_alloc@@YAPEAXXZ:PROC			; pmmngr_alloc
+EXTRN	?AuPmmngrAlloc@@YAPEAXXZ:PROC			; AuPmmngrAlloc
 EXTRN	x64_cli:PROC
-EXTRN	?map_page@@YA_N_K0E@Z:PROC			; map_page
-EXTRN	?unmap_page@@YAX_K@Z:PROC			; unmap_page
-EXTRN	?get_free_page@@YAPEA_K_K_N@Z:PROC		; get_free_page
+EXTRN	AuMapPage:PROC
+EXTRN	AuUnmapPage:PROC
+EXTRN	AuGetFreePage:PROC
 EXTRN	?get_current_process@@YAPEAU_process_@@XZ:PROC	; get_current_process
 pdata	SEGMENT
 $pdata$?map_memory@@YAPEAX_KIE@Z DD imagerel $LN23
@@ -99,10 +99,10 @@ $LN7@unmap_memo:
 	cmp	DWORD PTR length$[rsp], 4096		; 00001000H
 	jne	SHORT $LN5@unmap_memo
 
-; 91   : 		unmap_page (address);
+; 91   : 		AuUnmapPage(address);
 
 	mov	rcx, QWORD PTR address$[rsp]
-	call	?unmap_page@@YAX_K@Z			; unmap_page
+	call	AuUnmapPage
 $LN5@unmap_memo:
 
 ; 92   : 
@@ -127,7 +127,7 @@ $LN3@unmap_memo:
 	cmp	DWORD PTR i$1[rsp], eax
 	jae	SHORT $LN1@unmap_memo
 
-; 95   : 			unmap_page (address + i * 4096);
+; 95   : 			AuUnmapPage(address + i * 4096);
 
 	mov	eax, DWORD PTR i$1[rsp]
 	imul	eax, 4096				; 00001000H
@@ -136,7 +136,7 @@ $LN3@unmap_memo:
 	add	rcx, rax
 	mov	rax, rcx
 	mov	rcx, rax
-	call	?unmap_page@@YAX_K@Z			; unmap_page
+	call	AuUnmapPage
 
 ; 96   : 		}
 
@@ -232,12 +232,12 @@ $LN11@map_memory:
 	cmp	QWORD PTR addr$[rsp], 0
 	jne	$LN10@map_memory
 
-; 34   : 		addr = (uint64_t)get_free_page (length, user);
+; 34   : 		addr = (uint64_t)AuGetFreePage(length, user);
 
 	mov	eax, DWORD PTR length$[rsp]
 	movzx	edx, BYTE PTR user$[rsp]
 	mov	ecx, eax
-	call	?get_free_page@@YAPEA_K_K_N@Z		; get_free_page
+	call	AuGetFreePage
 	mov	QWORD PTR addr$[rsp], rax
 
 ; 35   : 		if (length == 4096) {
@@ -245,7 +245,7 @@ $LN11@map_memory:
 	cmp	DWORD PTR length$[rsp], 4096		; 00001000H
 	jne	SHORT $LN9@map_memory
 
-; 36   : 			map_page ((uint64_t)pmmngr_alloc(), addr,(user == true) ? PAGING_USER : 0);
+; 36   : 			AuMapPage((uint64_t)AuPmmngrAlloc(), addr,(user == true) ? PAGING_USER : 0);
 
 	movzx	eax, BYTE PTR user$[rsp]
 	cmp	eax, 1
@@ -255,11 +255,11 @@ $LN11@map_memory:
 $LN15@map_memory:
 	mov	DWORD PTR tv83[rsp], 0
 $LN16@map_memory:
-	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
+	call	?AuPmmngrAlloc@@YAPEAXXZ		; AuPmmngrAlloc
 	movzx	r8d, BYTE PTR tv83[rsp]
 	mov	rdx, QWORD PTR addr$[rsp]
 	mov	rcx, rax
-	call	?map_page@@YA_N_K0E@Z			; map_page
+	call	AuMapPage
 
 ; 37   : 			return (void*)addr;
 
@@ -285,7 +285,7 @@ $LN8@map_memory:
 	cmp	DWORD PTR i$1[rsp], eax
 	jae	SHORT $LN6@map_memory
 
-; 41   : 				map_page ((uint64_t)pmmngr_alloc(),addr + i * 4096,(user == true) ? PAGING_USER : 0);
+; 41   : 			AuMapPage((uint64_t)AuPmmngrAlloc(),addr + i * 4096,(user == true) ? PAGING_USER : 0);
 
 	movzx	eax, BYTE PTR user$[rsp]
 	cmp	eax, 1
@@ -302,12 +302,12 @@ $LN18@map_memory:
 	add	rcx, rax
 	mov	rax, rcx
 	mov	QWORD PTR tv131[rsp], rax
-	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
+	call	?AuPmmngrAlloc@@YAPEAXXZ		; AuPmmngrAlloc
 	movzx	r8d, BYTE PTR tv94[rsp]
 	mov	rcx, QWORD PTR tv131[rsp]
 	mov	rdx, rcx
 	mov	rcx, rax
-	call	?map_page@@YA_N_K0E@Z			; map_page
+	call	AuMapPage
 	jmp	SHORT $LN7@map_memory
 $LN6@map_memory:
 
@@ -326,7 +326,7 @@ $LN10@map_memory:
 	cmp	DWORD PTR length$[rsp], 4096		; 00001000H
 	jne	SHORT $LN4@map_memory
 
-; 49   : 			map_page ((uint64_t)pmmngr_alloc(), addr,(user == true) ? PAGING_USER : 0);
+; 49   : 			AuMapPage((uint64_t)AuPmmngrAlloc(), addr,(user == true) ? PAGING_USER : 0);
 
 	movzx	eax, BYTE PTR user$[rsp]
 	cmp	eax, 1
@@ -336,11 +336,11 @@ $LN10@map_memory:
 $LN19@map_memory:
 	mov	DWORD PTR tv138[rsp], 0
 $LN20@map_memory:
-	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
+	call	?AuPmmngrAlloc@@YAPEAXXZ		; AuPmmngrAlloc
 	movzx	r8d, BYTE PTR tv138[rsp]
 	mov	rdx, QWORD PTR addr$[rsp]
 	mov	rcx, rax
-	call	?map_page@@YA_N_K0E@Z			; map_page
+	call	AuMapPage
 
 ; 50   : 			return (void*)addr;
 
@@ -366,7 +366,7 @@ $LN3@map_memory:
 	cmp	DWORD PTR i$2[rsp], eax
 	jae	SHORT $LN1@map_memory
 
-; 54   : 				map_page ((uint64_t)pmmngr_alloc(),addr + i * 4096,(user == true) ? PAGING_USER : 0);
+; 54   : 			AuMapPage((uint64_t)AuPmmngrAlloc(),addr + i * 4096,(user == true) ? PAGING_USER : 0);
 
 	movzx	eax, BYTE PTR user$[rsp]
 	cmp	eax, 1
@@ -383,12 +383,12 @@ $LN22@map_memory:
 	add	rcx, rax
 	mov	rax, rcx
 	mov	QWORD PTR tv154[rsp], rax
-	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
+	call	?AuPmmngrAlloc@@YAPEAXXZ		; AuPmmngrAlloc
 	movzx	r8d, BYTE PTR tv149[rsp]
 	mov	rcx, QWORD PTR tv154[rsp]
 	mov	rdx, rcx
 	mov	rcx, rax
-	call	?map_page@@YA_N_K0E@Z			; map_page
+	call	AuMapPage
 	jmp	SHORT $LN2@map_memory
 $LN1@map_memory:
 $LN5@map_memory:

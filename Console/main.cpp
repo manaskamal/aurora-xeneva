@@ -23,6 +23,7 @@
 
 
 int main (int argc, char* argv[]) {
+	sys_print_text("Starting console app\n");
 	daisy_application();
 
 	daisy_window_t *win = daisy_window_create (100,200,500,300,DAISY_WIN_NORMAL,"Console");
@@ -38,6 +39,7 @@ int main (int argc, char* argv[]) {
 	console_t *con = create_console_widget(1,23,info->width - 1, info->height -23);
 	daisy_widget_panel_add(panel,(daisy_widget_t*)con);
 
+	sys_print_text ("Showing window \n");
 	daisy_window_show(win);
 
 	int slave_fd, master_fd;

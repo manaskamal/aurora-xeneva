@@ -10,18 +10,18 @@ _BSS	SEGMENT
 ?v_i@@3HA DD	01H DUP (?)				; v_i
 _BSS	ENDS
 CONST	SEGMENT
-$SG3781	DB	'MSI-X found for this device', 0aH, 00H
+$SG3809	DB	'MSI-X found for this device', 0aH, 00H
 	ORG $+3
-$SG3783	DB	'MSI found for this device', 0aH, 00H
+$SG3811	DB	'MSI found for this device', 0aH, 00H
 	ORG $+5
-$SG3788	DB	'MSI-DATA -> %x', 0aH, 00H
-$SG3793	DB	'MSG Control -> %x', 0aH, 00H
+$SG3816	DB	'MSI-DATA -> %x', 0aH, 00H
+$SG3821	DB	'MSG Control -> %x', 0aH, 00H
 	ORG $+5
-$SG3800	DB	'MSI 64BIT Capable', 0aH, 00H
+$SG3828	DB	'MSI 64BIT Capable', 0aH, 00H
 	ORG $+5
-$SG3802	DB	'MSI Mask Capable', 0aH, 00H
+$SG3830	DB	'MSI Mask Capable', 0aH, 00H
 	ORG $+6
-$SG3803	DB	'MSI interrupt for this device enabled msi reg -> %x', 0aH
+$SG3831	DB	'MSI interrupt for this device enabled msi reg -> %x', 0aH
 	DB	00H
 CONST	ENDS
 PUBLIC	?read_config_header@@YAXHHHPEATpci_device_info@@@Z ; read_config_header
@@ -53,10 +53,10 @@ EXTRN	x64_inportd:PROC
 EXTRN	x64_outportw:PROC
 EXTRN	x64_outportd:PROC
 EXTRN	?setvect@@YAX_KP6AX0PEAX@Z@Z:PROC		; setvect
-EXTRN	?inportd@@YAIG@Z:PROC				; inportd
-EXTRN	?outportb@@YAXGE@Z:PROC				; outportb
-EXTRN	?outportd@@YAXGI@Z:PROC				; outportd
-EXTRN	?printf@@YAXPEBDZZ:PROC				; printf
+EXTRN	inportd:PROC
+EXTRN	outportb:PROC
+EXTRN	outportd:PROC
+EXTRN	printf:PROC
 EXTRN	?acpi_pcie_supported@@YA_NXZ:PROC		; acpi_pcie_supported
 EXTRN	?acpi_get_mcfg@@YAPEAUacpiMcfg@@XZ:PROC		; acpi_get_mcfg
 pdata	SEGMENT
@@ -512,12 +512,12 @@ $LN3:
 	call	?pci_config_pack_address@@YAIPEBU_pci_address_@@G@Z ; pci_config_pack_address
 	mov	edx, eax
 	mov	cx, 3320				; 00000cf8H
-	call	?outportd@@YAXGI@Z			; outportd
+	call	outportd
 
 ; 42   : 	return inportd (PCI_REG_CONFIG_DATA);
 
 	mov	cx, 3324				; 00000cfcH
-	call	?inportd@@YAIG@Z			; inportd
+	call	inportd
 
 ; 43   : }
 
@@ -890,8 +890,8 @@ $LN9@pci_alloc_:
 
 ; 313  : 				printf ("MSI-X found for this device\n");
 
-	lea	rcx, OFFSET FLAT:$SG3781
-	call	?printf@@YAXPEBDZZ			; printf
+	lea	rcx, OFFSET FLAT:$SG3809
+	call	printf
 
 ; 314  : 				msi_reg = capptr;
 
@@ -914,8 +914,8 @@ $LN7@pci_alloc_:
 
 ; 319  : 				printf ("MSI found for this device\n");
 
-	lea	rcx, OFFSET FLAT:$SG3783
-	call	?printf@@YAXPEBDZZ			; printf
+	lea	rcx, OFFSET FLAT:$SG3811
+	call	printf
 
 ; 320  : 				msi_reg = capptr;
 
@@ -982,8 +982,8 @@ $LN5@pci_alloc_:
 ; 334  : 		printf ("MSI-DATA -> %x\n", msi_data);
 
 	mov	rdx, QWORD PTR msi_data$9[rsp]
-	lea	rcx, OFFSET FLAT:$SG3788
-	call	?printf@@YAXPEBDZZ			; printf
+	lea	rcx, OFFSET FLAT:$SG3816
+	call	printf
 
 ; 335  : 		uint64_t internal_ptr = 0;
 
@@ -1023,8 +1023,8 @@ $LN4@pci_alloc_:
 ; 341  : 			printf ("MSG Control -> %x\n", msgctrl);
 
 	mov	rdx, QWORD PTR msgctrl$7[rsp]
-	lea	rcx, OFFSET FLAT:$SG3793
-	call	?printf@@YAXPEBDZZ			; printf
+	lea	rcx, OFFSET FLAT:$SG3821
+	call	printf
 
 ; 342  : 			bool mask_cap = ((msgctrl & (1<<8)) != 0);
 
@@ -1087,8 +1087,8 @@ $LN16@pci_alloc_:
 
 ; 350  : 				printf ("MSI 64BIT Capable\n");
 
-	lea	rcx, OFFSET FLAT:$SG3800
-	call	?printf@@YAXPEBDZZ			; printf
+	lea	rcx, OFFSET FLAT:$SG3828
+	call	printf
 
 ; 351  : 				write_config_32(bus, dev, func, msi_reg + 2, msi_addr >> 32);
 
@@ -1133,8 +1133,8 @@ $LN2@pci_alloc_:
 
 ; 356  : 				printf ("MSI Mask Capable\n");
 
-	lea	rcx, OFFSET FLAT:$SG3802
-	call	?printf@@YAXPEBDZZ			; printf
+	lea	rcx, OFFSET FLAT:$SG3830
+	call	printf
 
 ; 357  : 				write_config_32 (bus, dev, func, msi_reg + 4, 0);
 
@@ -1179,8 +1179,8 @@ $LN1@pci_alloc_:
 ; 363  : 			printf ("MSI interrupt for this device enabled msi reg -> %x\n", msi_reg);
 
 	mov	edx, DWORD PTR msi_reg$2[rsp]
-	lea	rcx, OFFSET FLAT:$SG3803
-	call	?printf@@YAXPEBDZZ			; printf
+	lea	rcx, OFFSET FLAT:$SG3831
+	call	printf
 
 ; 364  : 			v_i++;
 
@@ -1957,7 +1957,7 @@ $LN6:
 
 	mov	edx, DWORD PTR address$1[rsp]
 	mov	cx, 3320				; 00000cf8H
-	call	?outportd@@YAXGI@Z			; outportd
+	call	outportd
 
 ; 88   : 		outportb (PCI_DATA_PORT + (reg % 4), data);
 
@@ -1970,7 +1970,7 @@ $LN6:
 	add	eax, 3324				; 00000cfcH
 	movzx	edx, BYTE PTR data$[rsp]
 	movzx	ecx, ax
-	call	?outportb@@YAXGE@Z			; outportb
+	call	outportb
 
 ; 89   : 	}else {
 

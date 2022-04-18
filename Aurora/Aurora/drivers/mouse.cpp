@@ -179,7 +179,7 @@ read_next:
 		break;
 	}
 
-	interrupt_end(12);
+	AuInterruptEnd(12);
 }
 
 
@@ -187,10 +187,10 @@ read_next:
 int mouse_ioquery (vfs_node_t *node, int code, void* arg) {
 	switch (code) {
 		case MOUSE_IOCODE_DISABLE:
-			irq_mask(12,true);
+			AuIrqMask(12,true);
 			break;
 		case MOUSE_IOCODE_ENABLE:
-			irq_mask(12, false);
+			AuIrqMask(12, false);
 			break;
 		case 302:
 			return 10;
@@ -220,7 +220,7 @@ void mouse_register_device () {
 	node->write = 0;
 	node->read_blk = 0;
 	node->ioquery = mouse_ioquery;
-	vfs_mount ("/dev/mouse", node);
+	vfs_mount ("/dev/mouse", node, 0);
 }
 
 
@@ -255,7 +255,7 @@ void initialize_mouse () {
 	mouse_write (0xF4);
 	mouse_read ();
 
-	interrupt_set (34, mouse_handler, 12);  //34
+	AuInterruptSet (34, mouse_handler, 12);  //34
 	printf ("mouse interrupt setupped\n");
 	mouse_register_device ();
 }

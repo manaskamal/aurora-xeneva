@@ -10,8 +10,8 @@ _BSS	SEGMENT
 ?index@@3IA DD	01H DUP (?)				; index
 _BSS	ENDS
 PUBLIC	?allocate_kstack@@YA_KPEA_K@Z			; allocate_kstack
-EXTRN	?pmmngr_alloc@@YAPEAXXZ:PROC			; pmmngr_alloc
-EXTRN	?map_page_ex@@YA_NPEA_K_K1E@Z:PROC		; map_page_ex
+EXTRN	?AuPmmngrAlloc@@YAPEAXXZ:PROC			; AuPmmngrAlloc
+EXTRN	?AuMapPageEx@@YA_NPEA_K_K1E@Z:PROC		; AuMapPageEx
 pdata	SEGMENT
 $pdata$?allocate_kstack@@YA_KPEA_K@Z DD imagerel $LN6
 	DD	imagerel $LN6+122
@@ -54,12 +54,12 @@ $LN3@allocate_k:
 	cmp	DWORD PTR i$1[rsp], 2
 	jge	SHORT $LN1@allocate_k
 
-; 20   : 		void* p = pmmngr_alloc();
+; 20   : 		void* p = AuPmmngrAlloc();
 
-	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
+	call	?AuPmmngrAlloc@@YAPEAXXZ		; AuPmmngrAlloc
 	mov	QWORD PTR p$2[rsp], rax
 
-; 21   : 		map_page_ex (cr3,(uint64_t)p,location + i * 4096, 0);
+; 21   : 		AuMapPageEx (cr3,(uint64_t)p,location + i * 4096, 0);
 
 	mov	eax, DWORD PTR i$1[rsp]
 	imul	eax, 4096				; 00001000H
@@ -71,7 +71,7 @@ $LN3@allocate_k:
 	mov	r8, rax
 	mov	rdx, QWORD PTR p$2[rsp]
 	mov	rcx, QWORD PTR cr3$[rsp]
-	call	?map_page_ex@@YA_NPEA_K_K1E@Z		; map_page_ex
+	call	?AuMapPageEx@@YA_NPEA_K_K1E@Z		; AuMapPageEx
 
 ; 22   : 	}
 

@@ -6,9 +6,9 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 CONST	SEGMENT
-$SG3735	DB	'***Process killed ', 0dH, 0aH, 00H
+$SG3798	DB	'***Process killed ', 0dH, 0aH, 00H
 	ORG $+3
-$SG3736	DB	'*** Current used RAM -> %d MB / total -> %d MB ', 0dH, 0aH
+$SG3799	DB	'*** Current used RAM -> %d MB / total -> %d MB ', 0dH, 0aH
 	DB	00H
 CONST	ENDS
 PUBLIC	?create__sys_process@@YAHPEBDPEAD@Z		; create__sys_process
@@ -73,7 +73,7 @@ $LN3:
 	mov	QWORD PTR tv66[rsp], rax
 	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
 	mov	rcx, QWORD PTR tv66[rsp]
-	mov	QWORD PTR [rax+240], rcx
+	mov	QWORD PTR [rax+744], rcx
 
 ; 94   : }
 
@@ -161,7 +161,7 @@ $LN3:
 
 ; 60   : 	_debug_print_ ("***Process killed \r\n");
 
-	lea	rcx, OFFSET FLAT:$SG3735
+	lea	rcx, OFFSET FLAT:$SG3798
 	call	?_debug_print_@@YAXPEADZZ		; _debug_print_
 
 ; 61   : 	_debug_print_ ("*** Current used RAM -> %d MB / total -> %d MB \r\n", pmmngr_get_used_ram() / 1024 / 1024, pmmngr_get_total_ram() / 1024 / 1024);
@@ -184,7 +184,7 @@ $LN3:
 	mov	rcx, QWORD PTR tv67[rsp]
 	mov	r8, rcx
 	mov	rdx, rax
-	lea	rcx, OFFSET FLAT:$SG3736
+	lea	rcx, OFFSET FLAT:$SG3799
 	call	?_debug_print_@@YAXPEADZZ		; _debug_print_
 
 ; 62   : 	force_sched();

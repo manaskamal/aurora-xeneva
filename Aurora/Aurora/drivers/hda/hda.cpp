@@ -86,7 +86,7 @@ void hda_handler (size_t v, void* p) {
 	_aud_outl_(INTSTS, isr);
 	_aud_outb_ (REG_O0_STS(_ihd_audio),sts);
 	//apic_local_eoi();
-	interrupt_end(1);
+	AuInterruptEnd(1);
 }
 
 
@@ -290,11 +290,11 @@ void hda_init_output_stream () {
 	_aud_outl_ (REG_O0_CTLL(_ihd_audio), 0);
 	for (int i = 0; i < 1000; i++)
 		;
-	uint64_t bdl_base = (uint64_t)pmmngr_alloc();   //get_physical_address  ((uint64_t) 0x0000000000000000);
+	uint64_t bdl_base = (uint64_t)AuPmmngrAlloc();   //get_physical_address  ((uint64_t) 0x0000000000000000);
 	ihda_bdl_entry *bdl = (ihda_bdl_entry*)bdl_base;  //(_ihd_audio.corb + 3072);
 	int j = 0;
 	for (j = 0; j < BDL_SIZE; j++) {
-		bdl[j].paddr = (uint64_t)get_physical_address((uint64_t)_ihd_audio.buffer + j * 512);
+		bdl[j].paddr = (uint64_t)AuGetPhysicalAddress((uint64_t)_ihd_audio.buffer + j * 512);
 		bdl[j].length = 512;
 		bdl[j].flags = 0;
 	}
@@ -315,7 +315,7 @@ void hda_init_output_stream () {
 
 	_aud_outb_(REG_O0_STS(_ihd_audio), (1<<2) | (1<<3) | (1<<4));
 
-	uint64_t* dma_pos = (uint64_t*)pmmngr_alloc();
+	uint64_t* dma_pos = (uint64_t*)AuPmmngrAlloc();
 	for (int i = 0; i < 8; i++) {
 		dma_pos[i] = 0;
 	}
@@ -560,8 +560,8 @@ void hda_initialize () {
 	pci_enable_interrupt(bus,dev,func);
 
 
-	_ihd_audio.output = (hda_output*)pmmngr_alloc();
-	_ihd_audio.vol = (hda_volume*)pmmngr_alloc();
+	_ihd_audio.output = (hda_output*)AuPmmngrAlloc();
+	_ihd_audio.vol = (hda_volume*)AuPmmngrAlloc();
 	memset (_ihd_audio.output, 0, 4096);
 
 
@@ -570,23 +570,23 @@ void hda_initialize () {
 		printf ("[HD-Audio]: Supports MSI\n");
 	if (!pci_status) {
 		printf ("[HD-Audio]: INterrupt int -> %d\n", pci_dev.device.nonBridge.interruptLine);
-		interrupt_set (10, hda_handler,10);
+		AuInterruptSet(10, hda_handler,10);
 	}
 
 	_ihd_audio.mmio = pci_dev.device.nonBridge.baseAddress[0] & ~3;
-	_ihd_audio.corb = (uint32_t*)pmmngr_alloc(); 
-	_ihd_audio.rirb = (uint64_t*)pmmngr_alloc(); 
+	_ihd_audio.corb = (uint32_t*)AuPmmngrAlloc(); 
+	_ihd_audio.rirb = (uint64_t*)AuPmmngrAlloc(); 
 	memset (_ihd_audio.corb, 0, 4096);
 	memset (_ihd_audio.rirb, 0, 4096);
 
 
 	//! Allocate the main audio buffer area
-	uint64_t pos = 0xFFFFE00000100000;
-	for (int i = 0; i < BDL_SIZE*HDA_BUFFER_SIZE/ 4096; i++) {
-		map_page ((uint64_t)pmmngr_alloc(),pos + i * 4096, 0);
+	uint64_t pos = 0xFFFFF00000100000;
+	for (int i = 0; i < (BDL_SIZE*HDA_BUFFER_SIZE/ 4096)+1; i++) {
+		AuMapPage ((uint64_t)AuPmmngrAlloc(),pos + i * 4096, 0);
 	}
 
-	_ihd_audio.buffer = (uint64_t*)0xFFFFE00000100000;
+	_ihd_audio.buffer = (uint64_t*)0xFFFFF00000100000;
 	memset (_ihd_audio.buffer, 100, BDL_SIZE*HDA_BUFFER_SIZE);
 
 

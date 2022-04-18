@@ -14,7 +14,7 @@
 #define __MAP_H__
 
 #include <stdint.h>
-#include <arch\x86_64\mmngr\vmmngr.h>
+#include <arch\x86_64\mmngr\paging.h>
 
 //! local and global mapping are same as MAP_PRIVATE | MAP_SHARED
 //! in unix systems

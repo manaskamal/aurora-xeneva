@@ -64,7 +64,7 @@ void remove_process (process_t *proc) {
 		proc->next->prev = proc->prev;
 	}
 	pid--;
-	pmmngr_free (proc);
+	AuPmmngrFree(proc);
 }
 
 
@@ -104,9 +104,9 @@ uint64_t *create_user_stack (uint64_t* cr3) {
 	
 	/* 2 mb stack / process */
 	for (int i=0; i < (2*1024*1024)/4096; i++) {
-		uint64_t *block = (uint64_t*)pmmngr_alloc();
+		uint64_t *block = (uint64_t*)AuPmmngrAlloc();
 		memset (block, 0, 4096);
-		map_page_ex(cr3, (uint64_t)block,location + i * 4096, PAGING_USER);
+		AuMapPageEx(cr3, (uint64_t)block,location + i * 4096, PAGING_USER);
 	}
 
 	return (uint64_t*)(USER_STACK + (2*1024*1024));
@@ -120,9 +120,9 @@ uint64_t* create_inc_stack (uint64_t* cr3) {
 	uint64_t location = INC_STACK ; //+ user_stack_index;
 
 	for (int i = 0; i < (2*1024*1024) / 4096; i++) {
-		void* p = pmmngr_alloc();
+		void* p = AuPmmngrAlloc();
 		memset(p, 0, 4096);
-		map_page_ex(cr3,(uint64_t)p, location + i * 4096, PAGING_USER);
+		AuMapPageEx(cr3,(uint64_t)p, location + i * 4096, PAGING_USER);
 	}
 
 	//user_stack_index += 0x100000;
@@ -168,7 +168,7 @@ int create_process(const char* filename, char* procname) {
 		return -1;
 	}
 	//!open the binary file and read it
-	uint64_t* buf = (uint64_t*)pmmngr_alloc();   
+	uint64_t* buf = (uint64_t*)AuPmmngrAlloc();   
 	//readfs_block(n,&file,buf);
 	fat32_read (&file,buf);
 	
@@ -182,21 +182,21 @@ int create_process(const char* filename, char* procname) {
 	ientry ent = (ientry)(nt->OptionalHeader.AddressOfEntryPoint + nt->OptionalHeader.ImageBase); //buffer
 
 	//! create the user stack and address space
-    uint64_t *cr3 = create_user_address_space();	
+	uint64_t *cr3 = AuCreateAddressSpace();	
 
 	uint64_t stack = (uint64_t)create_user_stack(cr3);
 
-	map_page_ex(cr3,(uint64_t)buf,_image_base_, PAGING_USER);
+	AuMapPageEx(cr3,(uint64_t)buf,_image_base_, PAGING_USER);
 	////! read rest of the image
 	int position = 1;  //we already read 4096 bytes at first
 
 
 	while (file.eof != 1){
-		uint64_t* block = (uint64_t*)pmmngr_alloc();
+		uint64_t* block = (uint64_t*)AuPmmngrAlloc();
 		//read_blk(&file,block,file.id);
 		//readfs_block (n, &file, block);
 		fat32_read (&file,block);
-		map_page_ex(cr3,(uint64_t)block,_image_base_ + position * 4096, PAGING_USER);
+		AuMapPageEx(cr3,(uint64_t)block,_image_base_ + position * 4096, PAGING_USER);
 		position++;
 	}
 
@@ -251,25 +251,25 @@ void kill_process () {
 
 	remove_process (proc);
 	task_delete (remove_thread);
-	pmmngr_free(remove_thread);
-	pmmngr_free(remove_thread->msg_box);
+	AuPmmngrFree(remove_thread);
+	AuPmmngrFree(remove_thread->msg_box);
 	pri_loop_destroy_by_id (t_id);
 
 	//!unmap the binary image
 	for (uint32_t i = 0; i < proc->image_size / 4096; i++) {
 	//	uint64_t virtual_addr = proc->image_base + (i * 4096);
-		unmap_page (image_base + i * 4096);
+		AuUnmapPage(image_base + i * 4096);
 	}
 	
 	//!unmap the runtime stack
 	for (int i = 0; i < 0x100000 / 4096; i++) {
-		unmap_page (init_stack + i * 4096);
+		AuUnmapPage(init_stack + i * 4096);
 	}
 
 
 	_debug_print_ ("Used Pmmngr -> %d MB / Total -> %d MB \r\n", pmmngr_get_used_ram () / 1024 / 1024, pmmngr_get_total_ram() / 1024 / 1024);
 
-	pmmngr_free (cr3);
+	AuPmmngrFree(cr3);
 }
 
 /**
@@ -296,19 +296,19 @@ void kill_process_by_id (uint16_t id) {
 		unblock_thread(remove_thread);
 	remove_thread->state = THREAD_STATE_BLOCKED;
 	task_delete (remove_thread);
-	pmmngr_free(remove_thread);
+	AuPmmngrFree(remove_thread);
 	remove_process (proc);
 
 	
 	//!unmap the runtime stack
 	for (int i = 0; i < 0x100000 / 4096; i++) {
-		unmap_page_ex (cr3,init_stack + i * 4096, true);
+		AuUnmapPageEx(cr3,init_stack + i * 4096, true);
 	}
 
 	//!unmap the binary image
 	for (int i = 0; i < image_size / 4096; i++) {
 		uint64_t virtual_addr = image_base + (i * 4096);
-		unmap_page_ex (cr3, virtual_addr, true);
+		AuUnmapPageEx(cr3, virtual_addr, true);
 	}
 
 	//!unmap user heap
@@ -316,17 +316,17 @@ void kill_process_by_id (uint16_t id) {
 		unmap_page_ex(cr3,heap_base + i * 4096, true);
 	}*/
 
-	pmmngr_free(cr3);
+	AuPmmngrFree(cr3);
 }
 
 
 uint32_t fork () {
-	process_t *child_process = (process_t*)pmmngr_alloc();
+	process_t *child_process = (process_t*)AuPmmngrAlloc();
 	
 	thread_t * p_thread = get_current_thread();
 	process_t *parent = find_process_by_thread (p_thread);
 
-	uint64_t *child_cr3 = (uint64_t*)pmmngr_alloc(); //create_user_address_space();
+	uint64_t *child_cr3 = (uint64_t*)AuPmmngrAlloc(); //create_user_address_space();
 	uint64_t *parent_cr3 = parent->cr3;
 
 	for (int i = 0; i < 512; i++)
@@ -351,16 +351,16 @@ void exec (const char* filename, uint32_t pid) {
 	/*FILE f = open (filename);
 	if (f.status == FILE_FLAG_INVALID)
 		return;*/
-	unsigned char* buffer = (unsigned char*)pmmngr_alloc();
+	unsigned char* buffer = (unsigned char*)AuPmmngrAlloc();
 /*	read_blk (&f, buffer, f.id);
 */
 	//! Create new mappings for exec
-	uint64_t* new_cr3 = create_user_address_space();
+	uint64_t* new_cr3 = AuCreateAddressSpace();
 	//! copy the new mappings to child_cr3
 	memcpy ((void*)c_cr3, new_cr3, 4096);
 	//! deallocate the new mappings
 	memset((void*)new_cr3, 0, 4096);
-	pmmngr_free(new_cr3);
+	AuPmmngrFree(new_cr3);
 
 
 	//!After reading we can change cr3
@@ -378,7 +378,7 @@ void exec (const char* filename, uint32_t pid) {
 	uint64_t _image_base_ = nt->OptionalHeader.ImageBase;
 	ientry ent = (ientry)(nt->OptionalHeader.AddressOfEntryPoint + nt->OptionalHeader.ImageBase); //buffer
 
-	map_page((uint64_t)buffer,_image_base_, PAGING_USER);
+	AuMapPage((uint64_t)buffer,_image_base_, PAGING_USER);
 	int position = 1;  //we already read 4096 bytes at first
 	//while(f.eof != 1){
 	//	unsigned char* block = (unsigned char*)pmmngr_alloc();

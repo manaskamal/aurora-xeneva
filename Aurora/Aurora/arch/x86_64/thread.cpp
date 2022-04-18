@@ -180,8 +180,11 @@ thread_t* create_kthread (void (*entry) (void), uint64_t stack,uint64_t cr3, cha
 	t->state = THREAD_STATE_READY;
 	//t->priority = priority;
 	t->fd_current = 0;
-	t->fx_state = (uint32_t*)pmmngr_alloc();
-	//printf ("FX State addr-> %x\n", t->fx_state);
+	//t->fx_state = (char*)malloc(512);
+	memset(t->fx_state, 0, 512);
+	/*((fx_state_t*)t->fx_state)->mxcsr = 0x1f80;
+	((fx_state_t*)t->fx_state)->mxcsrMask = 0xffbf;
+	((fx_state_t*)t->fx_state)->fcw = 0x33f;*/
 	thread_insert(t);
 	return t;
 }
@@ -231,10 +234,13 @@ thread_t* create_user_thread (void (*entry) (void*),uint64_t stack,uint64_t cr3,
 	t->id = task_id++;
 	t->quanta = 0;
 	t->ttype = 0;
-	t->msg_box = (uint64_t*)pmmngr_alloc();
+	t->msg_box = (uint64_t*)AuPmmngrAlloc();
 	/** Map the thread's msg box to a virtual address, from where the process will receive system messages **/
-	map_page_ex((uint64_t*)t->cr3,(uint64_t)t->msg_box,(uint64_t)0xFFFFFFFFB0000000, PAGING_USER);
-
+	AuMapPageEx((uint64_t*)t->cr3,(uint64_t)t->msg_box,(uint64_t)0xFFFFFFFFB0000000, PAGING_USER);
+	memset(t->fx_state, 0, 512);
+	/*((fx_state_t*)t->fx_state)->mxcsr = 0x1f80;
+	((fx_state_t*)t->fx_state)->mxcsrMask = 0xffbf;
+	((fx_state_t*)t->fx_state)->fcw = 0x33f;*/
 	t->_is_user = 1;
 	t->priviledge = THREAD_LEVEL_USER;
 	t->state = THREAD_STATE_READY;
@@ -261,7 +267,7 @@ void initialize_scheduler () {
 	task_id = 0;
 	/** Here create the first thread, the idle thread which never gets
 	    blocked nor get destroyed untill the system turns off **/
-	thread_t *idle_ = create_kthread (idle_thread,(uint64_t)p2v((uint64_t)pmmngr_alloc()),x64_read_cr3(),"Idle",1);
+	thread_t *idle_ = create_kthread (idle_thread,(uint64_t)p2v((uint64_t)AuPmmngrAlloc() + 4096),x64_read_cr3(),"Idle",1);
 	current_thread = idle_;
 }
 
@@ -312,6 +318,9 @@ void scheduler_isr (size_t v, void* param) {
 	if (save_context(current_thread,get_kernel_tss()) == 0) {
 		current_thread->cr3 = x64_read_cr3();
 
+		if(is_cpu_fxsave_supported()) {
+			x64_fxsave((uint8_t*)&current_thread->fx_state);
+		}
 		/* check if the thread is user mode thread, if yes
 		   than store the kernel esp */
 		if (current_thread->priviledge == THREAD_LEVEL_USER)
@@ -334,11 +343,14 @@ void scheduler_isr (size_t v, void* param) {
 #endif
 		
 		/** now return to the new task last stored instruction */
+		if (is_cpu_fxsave_supported())
+			x64_fxrstor((uint8_t*)&current_thread->fx_state);
 
 
 		if (current_thread->priviledge == THREAD_LEVEL_USER){
 			get_kernel_tss()->rsp[0] = current_thread->kern_esp;
 		}
+
 
 		//x64_write_cr3 (current_thread->cr3);
 		//mutex_unlock (scheduler_mutex);

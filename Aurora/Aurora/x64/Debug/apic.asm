@@ -681,9 +681,9 @@ $LN1@initialize:
 ; 155  : 
 ; 156  : 
 ; 157  : 	//!Register the time speed
-; 158  : 	write_apic_register (LAPIC_REGISTER_TMRDIV, 0xa);  //0xa
+; 158  : 	write_apic_register (LAPIC_REGISTER_TMRDIV, 0x3);  //0xa
 
-	mov	edx, 10
+	mov	edx, 3
 	mov	cx, 62					; 0000003eH
 	call	?write_apic_register@@YAXG_K@Z		; write_apic_register
 
@@ -716,9 +716,9 @@ $LN1@initialize:
 
 	call	?io_wait@@YAXXZ				; io_wait
 
-; 167  : 	write_apic_register (LAPIC_REGISTER_TMRINITCNT,76);  //100 , 500
+; 167  : 	write_apic_register (LAPIC_REGISTER_TMRINITCNT,1000);  //100 , 500
 
-	mov	edx, 76					; 0000004cH
+	mov	edx, 1000				; 000003e8H
 	mov	cx, 56					; 00000038H
 	call	?write_apic_register@@YAXG_K@Z		; write_apic_register
 

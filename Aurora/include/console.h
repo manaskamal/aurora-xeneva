@@ -14,7 +14,7 @@
 
 #include <_xnboot.h>
 #include <pmmngr.h>
-#include <arch\x86_64\mmngr\vmmngr.h>
+#include <arch\x86_64\mmngr\paging.h>
 
 
 

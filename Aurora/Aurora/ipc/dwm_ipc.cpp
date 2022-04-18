@@ -17,12 +17,12 @@
 uint64_t dwm_queue[512];
 
 void dwm_ipc_init () {
-	void* p = pmmngr_alloc();
+	void* p = AuPmmngrAlloc();
 	memset(p, 0, 4096);
-	map_page((uint64_t)p,0xFFFFFD0000000000, PAGING_USER);
-	void *p2 = pmmngr_alloc();
+	AuMapPage((uint64_t)p,0xFFFFFD0000000000, PAGING_USER);
+	void *p2 = AuPmmngrAlloc();
 	memset(p2, 0, 4096);
-	map_page((uint64_t)p2,0xFFFFD00000000000,PAGING_USER);
+	AuMapPage((uint64_t)p2,0xFFFFD00000000000,PAGING_USER);
 }
 
 uint64_t* get_dwm_message_q_address () {

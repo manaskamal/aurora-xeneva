@@ -21,8 +21,8 @@ PUBLIC	?timer_fire@@YAXXZ				; timer_fire
 PUBLIC	?find_timer_id@@YAHG@Z				; find_timer_id
 PUBLIC	?timer_insert@@YAXPEAU_timer_@@@Z		; timer_insert
 PUBLIC	?timer_delete@@YAXPEAU_timer_@@@Z		; timer_delete
-EXTRN	?pmmngr_alloc@@YAPEAXXZ:PROC			; pmmngr_alloc
-EXTRN	?pmmngr_free@@YAXPEAX@Z:PROC			; pmmngr_free
+EXTRN	?AuPmmngrAlloc@@YAPEAXXZ:PROC			; AuPmmngrAlloc
+EXTRN	?AuPmmngrFree@@YAXPEAX@Z:PROC			; AuPmmngrFree
 EXTRN	x64_cli:PROC
 EXTRN	?post_box_put_msg@@YAXPEAU_post_box_message_@@G@Z:PROC ; post_box_put_msg
 pdata	SEGMENT
@@ -143,10 +143,10 @@ $LN2@timer_dele:
 $LN1@timer_dele:
 
 ; 53   : 	}
-; 54   : 	pmmngr_free(new_timer);
+; 54   : 	AuPmmngrFree(new_timer);
 
 	mov	rcx, QWORD PTR new_timer$[rsp]
-	call	?pmmngr_free@@YAXPEAX@Z			; pmmngr_free
+	call	?AuPmmngrFree@@YAXPEAX@Z		; AuPmmngrFree
 $LN6@timer_dele:
 
 ; 55   : }
@@ -574,9 +574,9 @@ $LN3:
 	inc	eax
 	mov	DWORD PTR ?utimer_id@@3IA, eax		; utimer_id
 
-; 67   : 	timer_t *t = (timer_t*)pmmngr_alloc();
+; 67   : 	timer_t *t = (timer_t*)AuPmmngrAlloc();
 
-	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
+	call	?AuPmmngrAlloc@@YAPEAXXZ		; AuPmmngrAlloc
 	mov	QWORD PTR t$[rsp], rax
 
 ; 68   : 	t->timer_count = 0;

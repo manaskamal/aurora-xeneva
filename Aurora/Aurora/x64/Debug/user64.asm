@@ -10,15 +10,15 @@ _BSS	SEGMENT
 ?tss@@3PEAU_tss@@EA DQ 01H DUP (?)			; tss
 _BSS	ENDS
 CONST	SEGMENT
-$SG2840	DB	'Syscalled occured', 0aH, 00H
+$SG2868	DB	'Syscalled occured', 0aH, 00H
 	ORG $+5
-$SG2841	DB	'Loaded kernel stack is %x', 0aH, 00H
+$SG2869	DB	'Loaded kernel stack is %x', 0aH, 00H
 CONST	ENDS
 PUBLIC	?initialize_syscall@@YAXXZ			; initialize_syscall
 PUBLIC	?initialize_user_land@@YAX_K@Z			; initialize_user_land
 PUBLIC	get_kernel_tss
 PUBLIC	syscall_debug
-EXTRN	?printf@@YAXPEBDZZ:PROC				; printf
+EXTRN	printf:PROC
 EXTRN	x64_write_msr:PROC
 EXTRN	x64_sgdt:PROC
 EXTRN	syscall_entry:PROC
@@ -56,14 +56,14 @@ $LN3:
 
 ; 63   : 	printf ("Syscalled occured\n");
 
-	lea	rcx, OFFSET FLAT:$SG2840
-	call	?printf@@YAXPEBDZZ			; printf
+	lea	rcx, OFFSET FLAT:$SG2868
+	call	printf
 
 ; 64   : 	printf ("Loaded kernel stack is %x\n", rcx);
 
 	mov	rdx, QWORD PTR rcx$[rsp]
-	lea	rcx, OFFSET FLAT:$SG2841
-	call	?printf@@YAXPEBDZZ			; printf
+	lea	rcx, OFFSET FLAT:$SG2869
+	call	printf
 
 ; 65   : 	//for(;;);
 ; 66   : }

@@ -10,10 +10,10 @@ _BSS	SEGMENT
 funct	DQ	01H DUP (?)
 _BSS	ENDS
 CONST	SEGMENT
-$SG3686	DB	'System Call Fault!! Halting System', 0aH, 00H
+$SG3749	DB	'System Call Fault!! Halting System', 0aH, 00H
 CONST	ENDS
 PUBLIC	x64_syscall_handler
-EXTRN	?printf@@YAXPEBDZZ:PROC				; printf
+EXTRN	printf:PROC
 EXTRN	?message_send@@YAXGPEAU_message_@@@Z:PROC	; message_send
 EXTRN	?message_receive@@YAXPEAU_message_@@@Z:PROC	; message_receive
 EXTRN	?wait@@YAXXZ:PROC				; wait
@@ -50,7 +50,6 @@ EXTRN	?create_timer@@YAHIG@Z:PROC			; create_timer
 EXTRN	?destroy_timer@@YAXH@Z:PROC			; destroy_timer
 EXTRN	?pause_timer@@YAXH@Z:PROC			; pause_timer
 EXTRN	?start_timer@@YAXH@Z:PROC			; start_timer
-EXTRN	?_debug_print_@@YAXPEADZZ:PROC			; _debug_print_
 EXTRN	__ImageBase:BYTE
 pdata	SEGMENT
 $pdata$x64_syscall_handler DD imagerel $LN48
@@ -91,8 +90,8 @@ $LN48:
 
 ; 21   : 		printf ("System Call Fault!! Halting System\n");
 
-	lea	rcx, OFFSET FLAT:$SG3686
-	call	?printf@@YAXPEBDZZ			; printf
+	lea	rcx, OFFSET FLAT:$SG3749
+	call	printf
 $LN43@x64_syscal:
 
 ; 22   : 		for(;;);  //Loop forever for now
@@ -116,9 +115,9 @@ $LN44@x64_syscal:
 $LN39@x64_syscal:
 
 ; 26   : 	case 0:
-; 27   : 		funct = (uint64_t*)_debug_print_;
+; 27   : 		funct = (uint64_t*)printf;
 
-	lea	rax, OFFSET FLAT:?_debug_print_@@YAXPEADZZ ; _debug_print_
+	lea	rax, OFFSET FLAT:printf
 	mov	QWORD PTR funct, rax
 
 ; 28   : 		break;

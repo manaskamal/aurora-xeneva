@@ -23,7 +23,7 @@ static bool _serial_initialized_ = false;
 
 void serial_handler (size_t v, void* p) {
 	printf ("Serial Handler\n");
-	interrupt_end(4);
+	AuInterruptEnd(4);
 }
 
 void initialize_serial() {

@@ -38,6 +38,8 @@ __declspec(align(4)) static gdt_entry gdt[GDT_ENTRIES];
 __declspec(align(4)) static gdtr the_gdtr, old_gdtr;
 static uint16_t oldsregs[8];
 
+static bool _fxsave = false;
+static bool _xsave = false;
 
 //!==========================================================================================
 //! G L O B A L     D E S C R I P T O R    T A B L E 
@@ -178,7 +180,7 @@ void  interrupt_initialize() {
 }
 
 //! the main entry point for HAL of x86_64 arch
-void hal_x86_64_init () {
+void x86_64_gdt_init () {
 	//! clear interrupts first
     x64_cli ();
 
@@ -195,7 +197,7 @@ void pit_handler_callback (size_t p, void* param) {
 }
 
 
-void hal_x86_64_setup_int () {
+void x86_64_init_cpu () {
 	x64_cli();
 
 	////! initialize the interrupt descriptor table
@@ -232,19 +234,51 @@ void hal_x86_64_setup_int () {
 
 	debug_print ("System call initialized\n");
 
+	hal_cpu_feature_enable();
 	//apic_initialize_timer();
     x64_sti ();
 	
 }
 
 
-void hal_x86_64_feature_check () {
+void hal_cpu_feature_enable () {
+	uint64_t cr0 = x64_read_cr0();
+	cr0 &= ~(1<<2);
+	cr0 |= (1<<1);
+	x64_write_cr0(cr0);
+
 	size_t a, b, c, d;
 	x64_cpuid(1, &a, &b, &c, &d, 0);
-	if ((d & (1<<25)) != 0) {
-		printf ("x86_64:SSE supported\n");
-		if ((d & (1<<24)) != 0) {
-			printf ("x86_64:fxsave & fxrstor supported\n");
-		}
+	if ((c & (1<<26)) != 0) {
+			/* Enable XCR0 register */
+		uint64_t cr4 = x64_read_cr4();
+		cr4 |= (1 << 18);
+		x64_write_cr4(cr4);
 	}
+
+	if ((d & (1 << 25)) != 0){
+		size_t cr4 = x64_read_cr4();
+		
+
+		if ((d & (1 << 24)) != 0) {
+			cr4 |= (1 << 9);
+			printf("FXSAVE enabled\n");
+			_fxsave = true;
+		}
+		cr4 |= (1 << 10);
+		x64_write_cr4(cr4);
+	}
+	else if ((d & (1 << 26)) != 0) {
+		printf("[aurora]: SSE2 is supported \n");
+	}
+	else if ((c & (1 << 0)) != 0)
+		printf("[aurora]: SSE3 is supported \n");
+}
+
+bool is_cpu_fxsave_supported () {
+	return _fxsave;
+}
+
+bool is_cpu_xsave_supported () {
+	return _xsave;
 }

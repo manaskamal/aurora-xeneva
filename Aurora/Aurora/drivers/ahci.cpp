@@ -136,7 +136,7 @@ void ahci_interrupt_handler (size_t v, void* p) {
 		hda_handler(v,p);
 	
 	hba->is = is;
-	interrupt_end(0);
+	AuInterruptEnd(0);
 
 	x64_sti();
 }
@@ -145,7 +145,7 @@ void ahci_interrupt_handler (size_t v, void* p) {
  * ahci_initialize -- initialize the AHCI Controller
  */
 void ahci_initialize () {
-	pci_device_info *info = (pci_device_info*)pmmngr_alloc();
+	pci_device_info *info = (pci_device_info*)AuPmmngrAlloc();
 	int bus,dev,func;
 	bool ahci_not_found = false;
 
@@ -174,7 +174,7 @@ void ahci_initialize () {
 
 	uint8_t int_line = info->device.nonBridge.interruptLine;
 	if (info->device.nonBridge.interruptLine < 255) {
-		interrupt_set(11, ahci_interrupt_handler, 11);
+		AuInterruptSet(11, ahci_interrupt_handler, 11);
 	}
 
 	printf ("AHCI/SATA found at dev -> %d, func -> %d, bus -> %d\n", dev, func, bus);

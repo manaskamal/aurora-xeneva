@@ -31,14 +31,14 @@ void *map_memory (uint64_t addr, uint32_t length,uint8_t attribute) {
 	//! cause, null parameter will cause map_memory to look for free
 	//! memory in process's address space
 	if (addr == NULL) {
-		addr = (uint64_t)get_free_page (length, user);
+		addr = (uint64_t)AuGetFreePage(length, user);
 		if (length == 4096) {
-			map_page ((uint64_t)pmmngr_alloc(), addr,(user == true) ? PAGING_USER : 0);
+			AuMapPage((uint64_t)AuPmmngrAlloc(), addr,(user == true) ? PAGING_USER : 0);
 			return (void*)addr;
 		}
 
 		for (int i = 0; i < length / 4096; i++)
-				map_page ((uint64_t)pmmngr_alloc(),addr + i * 4096,(user == true) ? PAGING_USER : 0);
+			AuMapPage((uint64_t)AuPmmngrAlloc(),addr + i * 4096,(user == true) ? PAGING_USER : 0);
 
 
 	} 
@@ -46,12 +46,12 @@ void *map_memory (uint64_t addr, uint32_t length,uint8_t attribute) {
 	//! TODO: Check if there's already a mapped region, and relocate the mapping
 	else {
 		if (length == 4096) {
-			map_page ((uint64_t)pmmngr_alloc(), addr,(user == true) ? PAGING_USER : 0);
+			AuMapPage((uint64_t)AuPmmngrAlloc(), addr,(user == true) ? PAGING_USER : 0);
 			return (void*)addr;
 		}
 
 		for (int i = 0; i < length / 4096; i++)
-				map_page ((uint64_t)pmmngr_alloc(),addr + i * 4096,(user == true) ? PAGING_USER : 0);
+			AuMapPage((uint64_t)AuPmmngrAlloc(),addr + i * 4096,(user == true) ? PAGING_USER : 0);
 	}
 
 	//! MAP_GLOBAL flag will cause the map_memory to map the address
@@ -88,11 +88,11 @@ void unmap_memory (void* addr, uint32_t length) {
 	uint64_t address = (uint64_t)addr;
 
 	if (length == 4096) 
-		unmap_page (address);
+		AuUnmapPage(address);
 
 	if (length > 4096) {
 		for (int i = 0; i < length / 4096; i++) {
-			unmap_page (address + i * 4096);
+			AuUnmapPage(address + i * 4096);
 		}
 	}
 

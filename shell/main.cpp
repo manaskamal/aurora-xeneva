@@ -111,7 +111,7 @@ void main (int argc, char*argv[]) {
 
 		}
 		*/
-		sys_wait();
+		//sys_wait();
 	}
 }
 

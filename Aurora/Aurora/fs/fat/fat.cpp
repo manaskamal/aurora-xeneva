@@ -69,7 +69,7 @@ uint64_t  cluster_to_sector32 (uint64_t cluster){
  */
 void initialize_fat32 () {
 
-	uint64_t *buf = (uint64_t*)pmmngr_alloc();
+	uint64_t *buf = (uint64_t*)AuPmmngrAlloc();
 	//ata_read_28 (2048,1,buf); //partition_begin_lba = 2048
 	ahci_disk_read (ahci_disk_get_port(),2048,1,buf);
 
@@ -121,13 +121,13 @@ uint32_t fat32_read_fat (uint32_t cluster_index) {
 	auto fat_offset = cluster_index * 4;
 	uint64_t fat_sector = fat_begin_lba + (fat_offset / 512);
 	size_t ent_offset = fat_offset  % 512;
-	uint64_t *buf_area = (uint64_t*)pmmngr_alloc();
+	uint64_t *buf_area = (uint64_t*)AuPmmngrAlloc();
 	memset(buf_area,0,4096);
 	//ata_read_28 (fat_sector,1,buf);
 	ahci_disk_read (ahci_disk_get_port(),fat_sector,1,buf_area);
 	unsigned char *buf = (unsigned char*)buf_area;
 	uint32_t value = *(uint32_t*)&buf[ent_offset];
-	pmmngr_free(buf_area);
+	AuPmmngrFree(buf_area);
 	return value & 0x0FFFFFFF;
 }
 
@@ -142,13 +142,13 @@ uint32_t fat32_find_free_cluster () {
 		auto fat_offset = i * 4;
 		uint64_t fat_sector = fat_begin_lba + (fat_offset / 512);
 		size_t ent_offset = fat_offset  % 512;
-		uint64_t *buffer = (uint64_t*)pmmngr_alloc();
+		uint64_t *buffer = (uint64_t*)AuPmmngrAlloc();
 		memset(buffer,0,4096);
 		ahci_disk_read(ahci_disk_get_port(),fat_sector,1,buffer);
 		uint8_t* buf = (uint8_t*)buffer;
 		uint32_t value = *(uint32_t*)&buf[ent_offset];
 
-		pmmngr_free(buffer);
+		AuPmmngrFree(buffer);
 		//! Found a free cluster return the value
 		if (value == 0x00) {
 			return i;
@@ -166,7 +166,7 @@ void fat32_alloc_cluster (int position, uint32_t n_value) {
 	auto fat_offset = position * 4;
 	uint64_t fat_sector = fat_begin_lba + (fat_offset / 512);
 	size_t ent_offset = fat_offset  % 512;
-	uint64_t *buffer = (uint64_t*)pmmngr_alloc();
+	uint64_t *buffer = (uint64_t*)AuPmmngrAlloc();
 	memset(buffer,0,4096);
 	ahci_disk_read(ahci_disk_get_port(),fat_sector,1,buffer);
 
@@ -176,7 +176,7 @@ void fat32_alloc_cluster (int position, uint32_t n_value) {
 
 	uint32_t value2 = *(uint32_t*)&buf[ent_offset];
 	ahci_disk_write(ahci_disk_get_port(),fat_sector,1,buffer);
-	pmmngr_free(buffer);
+	AuPmmngrFree(buffer);
 }
 
 /**
@@ -184,12 +184,12 @@ void fat32_alloc_cluster (int position, uint32_t n_value) {
  * @param cluster -- cluster to clear
  */
 void fat32_clear_cluster (uint32_t cluster) {
-	uint64_t *buffer = (uint64_t*)pmmngr_alloc();
+	uint64_t *buffer = (uint64_t*)AuPmmngrAlloc();
 	memset (buffer, 0, 4096);
 	//update_cluster (buffer,cluster);
 	uint32_t sector = cluster_to_sector32 (cluster);
 	ahci_disk_write (ahci_disk_get_port(),sector,sectors_per_cluster,buffer);
-	pmmngr_free (buffer);
+	AuPmmngrFree(buffer);
 }
 
 /**
@@ -249,7 +249,7 @@ vfs_node_t fat32_locate_dir (const char* dir) {
 	fat32_dir *dirent;
 	char dos_file_name[11];
 	fat32_to_dos_file_name (dir, dos_file_name, 11);	
-	buf = (uint64_t*)pmmngr_alloc ();
+	buf = (uint64_t*)AuPmmngrAlloc();
 	for (unsigned int sector = 0; sector < sectors_per_cluster; sector++) {
 	
 		memset (buf, 0, 4096);
@@ -274,7 +274,7 @@ vfs_node_t fat32_locate_dir (const char* dir) {
 				else
 					file.flags = FS_FLAG_GENERAL;
 				
-				pmmngr_free(buf);
+				AuPmmngrFree(buf);
 				return file;
 			}
 			dirent++;
@@ -300,7 +300,7 @@ vfs_node_t fat32_locate_subdir (vfs_node_t kfile, const char* filename) {
 	char dos_file_name[11];
 	fat32_to_dos_file_name (filename, dos_file_name, 11);
 	//dos_file_name[11] = 0;
-	uint64_t* buf = (uint64_t*)pmmngr_alloc();
+	uint64_t* buf = (uint64_t*)AuPmmngrAlloc();
 	if (kfile.flags != FS_FLAG_INVALID) {
 		
 		//! read the directory
@@ -334,6 +334,7 @@ vfs_node_t fat32_locate_subdir (vfs_node_t kfile, const char* filename) {
 					else
 						file.flags = FS_FLAG_GENERAL;
 
+					AuPmmngrFree(buf);
 					//!return file
 					return file;
 				}
@@ -346,6 +347,7 @@ vfs_node_t fat32_locate_subdir (vfs_node_t kfile, const char* filename) {
 		}
 	}
 
+	AuPmmngrFree(buf);
 	file.flags = FS_FLAG_INVALID;
 	return file;
 }
@@ -478,14 +480,14 @@ void fat32_self_register () {
 	fsys->eof = 0;
 	fsys->pos = 0;
 	fsys->current = 0;
-	fsys->flags = FS_FLAG_DIRECTORY;
+	fsys->flags = FS_FLAG_GENERAL;
 	fsys->status = 0;
 	fsys->open = fat32_open;
 	fsys->read = fat32_read_file;
 	fsys->write = 0;
 	fsys->read_blk = fat32_read;
 	fsys->ioquery = 0;
-	vfs_mount ("/", fsys);
+	vfs_mount ("/", fsys, 0);
 	printf ("File System registered\n");
 }
 

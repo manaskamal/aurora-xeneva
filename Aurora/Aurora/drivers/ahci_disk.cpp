@@ -284,7 +284,7 @@ void ahci_disk_initialize (HBA_PORT *port) {
 	uint64_t phys;
 
 	/* Allocate command list */
-	phys = (uint64_t)pmmngr_alloc();
+	phys = (uint64_t)AuPmmngrAlloc();
 	port->clb = phys & 0xffffffff;
 	port->clbu = phys >> 32;
 
@@ -292,7 +292,7 @@ void ahci_disk_initialize (HBA_PORT *port) {
 	memset((void*)phys, 0, 4096);
 
 	/* Allocate FIS */
-	phys = (uint64_t)pmmngr_alloc();
+	phys = (uint64_t)AuPmmngrAlloc();
 	port->fb = phys & 0xffffffff;
 	port->fbu = (phys >> 32);
 
@@ -306,7 +306,7 @@ void ahci_disk_initialize (HBA_PORT *port) {
 
 	for (int i = 0; i < 31; i++) {
 		cmd_list[i].prdtl = 1;
-		phys = (uint64_t)pmmngr_alloc();
+		phys = (uint64_t)AuPmmngrAlloc();
 		cmd_list[i].ctba = phys & 0xffffffff;
 		cmd_list[i].ctbau = phys >> 32;
 		cmd_list[i].p = 1;
@@ -329,7 +329,7 @@ void ahci_disk_initialize (HBA_PORT *port) {
 
 	uint8_t current_slot = port->cmd & (1<<8);
 
-	uint64_t *addr = (uint64_t*)pmmngr_alloc();
+	uint64_t *addr = (uint64_t*)AuPmmngrAlloc();
 	memset(addr,0,4096);
 	ahci_disk_identify(port,0,1,addr);
 	char ata_device_name[40];

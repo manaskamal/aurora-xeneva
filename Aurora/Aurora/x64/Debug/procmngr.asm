@@ -12,7 +12,7 @@ process_count DD 01H DUP (?)
 ?waked@@3_NA DB	01H DUP (?)				; waked
 _BSS	ENDS
 CONST	SEGMENT
-$SG3631	DB	'Proc mngr is already awake-> %x', 0aH, 00H
+$SG3694	DB	'Proc mngr is already awake-> %x', 0aH, 00H
 CONST	ENDS
 PUBLIC	?procmngr_add_process@@YAXPEAU_procmngr_queue_@@@Z ; procmngr_add_process
 PUBLIC	?procmngr_get_process@@YAPEAU_procmngr_queue_@@XZ ; procmngr_get_process
@@ -20,8 +20,8 @@ PUBLIC	?procmngr_start@@YAXXZ				; procmngr_start
 PUBLIC	?procmngr_wakeup@@YAXXZ				; procmngr_wakeup
 PUBLIC	?procmngr_remove_process@@YAXG@Z		; procmngr_remove_process
 PUBLIC	?procmngr_create_process@@YAXPEAU_procmngr_queue_@@@Z ; procmngr_create_process
-EXTRN	?printf@@YAXPEBDZZ:PROC				; printf
-EXTRN	?pmmngr_free@@YAXPEAX@Z:PROC			; pmmngr_free
+EXTRN	printf:PROC
+EXTRN	?AuPmmngrFree@@YAXPEAX@Z:PROC			; AuPmmngrFree
 EXTRN	x64_cli:PROC
 EXTRN	x64_sti:PROC
 EXTRN	?block_thread@@YAXPEAU_thread_@@@Z:PROC		; block_thread
@@ -90,10 +90,10 @@ $LN3:
 	mov	rdx, rax
 	call	?create_process@@YAHPEBDPEAD@Z		; create_process
 
-; 48   : 	pmmngr_free (queue);
+; 48   : 	AuPmmngrFree(queue);
 
 	mov	rcx, QWORD PTR queue$[rsp]
-	call	?pmmngr_free@@YAXPEAX@Z			; pmmngr_free
+	call	?AuPmmngrFree@@YAXPEAX@Z		; AuPmmngrFree
 
 ; 49   : 	x64_sti();
 
@@ -173,8 +173,8 @@ $LN2@procmngr_w:
 ; 60   : 		printf ("Proc mngr is already awake-> %x\n", proc_thr);
 
 	mov	rdx, QWORD PTR proc_thr$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3631
-	call	?printf@@YAXPEBDZZ			; printf
+	lea	rcx, OFFSET FLAT:$SG3694
+	call	printf
 
 ; 61   : 		block_thread(proc_thr);
 
@@ -267,10 +267,10 @@ $LN2@procmngr_s:
 	movzx	ecx, WORD PTR [rax+60]
 	call	?procmngr_remove_process@@YAXG@Z	; procmngr_remove_process
 
-; 80   : 				pmmngr_free(queue);
+; 80   : 				AuPmmngrFree(queue);
 
 	mov	rcx, QWORD PTR queue$[rsp]
-	call	?pmmngr_free@@YAXPEAX@Z			; pmmngr_free
+	call	?AuPmmngrFree@@YAXPEAX@Z		; AuPmmngrFree
 
 ; 81   : 				break;
 

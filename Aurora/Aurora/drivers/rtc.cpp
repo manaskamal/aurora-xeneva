@@ -106,7 +106,7 @@ void rtc_clock_update(size_t s, void* p) {
 
 	x64_sti();
 	//!send a EOI to apic
-	interrupt_end(8);
+	AuInterruptEnd(8);
 }
 
 void initialize_rtc () {
@@ -131,7 +131,7 @@ void initialize_rtc () {
 	rtc_read_datetime();
 
 	//!register interrupt
-	interrupt_set (8,rtc_clock_update, 8);
+	AuInterruptSet(8,rtc_clock_update, 8);
 
 #ifdef USE_PIC
 	irq_mask(8,false);

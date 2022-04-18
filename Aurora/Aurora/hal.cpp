@@ -14,7 +14,7 @@
 #include <arch\x86_64\ioapic.h>
 #endif
 
-void hal_set_vect (size_t vector, void (*function)(size_t vector, void* param)) {
+void AuHalSetVect (size_t vector, void (*function)(size_t vector, void* param)) {
 #ifdef ARCH_X64
 	//! initialize x86_64 hal initializer
 	setvect (vector,function);
@@ -29,12 +29,13 @@ void hal_set_vect (size_t vector, void (*function)(size_t vector, void* param)) 
 
 
 //! Architecture specific hal initializer
-void hal_init () {
+void AuHalInitialize () {
 
 	//! Check processor type
 #ifdef ARCH_X64
 	//! initialize x86_64 hal initializer
-	hal_x86_64_init ();
+	x86_64_gdt_init ();
+	x86_64_init_cpu();
 #elif  ARCH_ARM
 	//! initialize arm32 hal initializer
 	hal_arm_init ();
@@ -119,7 +120,7 @@ void  outportd (uint16_t port, uint32_t data) {
 }
 
 //! Architecture specific
-void interrupt_end (uint32_t irq) { 
+void AuInterruptEnd (uint32_t irq) { 
 #ifdef ARCH_X64
 #ifdef USE_PIC
 	pic_interrupt_eoi(irq);
@@ -134,7 +135,7 @@ void interrupt_end (uint32_t irq) {
 #endif
 }
 
-void interrupt_set (size_t vector, void (*fn)(size_t, void* p),uint8_t irq){
+void AuInterruptSet (size_t vector, void (*fn)(size_t, void* p),uint8_t irq){
 #ifdef ARCH_X64
 #ifdef USE_PIC
 	setvect(32 + vector, fn);
@@ -151,7 +152,7 @@ void interrupt_set (size_t vector, void (*fn)(size_t, void* p),uint8_t irq){
 }
 	
 
-void irq_mask (uint8_t irq, bool value) {
+void AuIrqMask (uint8_t irq, bool value) {
 #ifdef USE_APIC
 	ioapic_mask_irq(irq, value);
 #elif USE_PIC

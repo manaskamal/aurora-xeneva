@@ -21,7 +21,7 @@
 
 //! Architecture specific
 #ifdef ARCH_X64
-#include <arch\x86_64\mmngr\vmmngr.h>
+#include <arch\x86_64\mmngr\paging.h>
 #endif
 
 display_t display;
@@ -44,7 +44,7 @@ void initialize_screen (KERNEL_BOOT_INFO *info){
 	/**
 	 * register the device node for screen interface
 	 */
-	vfs_node_t * svga = (vfs_node_t*)pmmngr_alloc(); 
+	vfs_node_t * svga = (vfs_node_t*)AuPmmngrAlloc(); 
 	strcpy (svga->filename, "fb");
 	svga->size = 0;
 	svga->eof = 0;
@@ -58,7 +58,7 @@ void initialize_screen (KERNEL_BOOT_INFO *info){
 	svga->read_blk = 0;
 	svga->ioquery = screen_io_query;
 	printf ("VFS Node created\n");
-	vfs_mount ("/dev/fb", svga);
+	vfs_mount ("/dev/fb", svga, 0);
 	printf ("VFS DEV FB Registered\n");
 
 	/* clear the screen */
@@ -81,7 +81,7 @@ void screen_set_configuration (uint32_t width, uint32_t height) {
 	display.height = height;
 	//! Map a shared region for other processes to output
 	for (int i = 0; i < display.size / 4096 ; i++)
-		map_page ((uint64_t)display.buffer + i * 4096, 0xFFFFD00000200000 + i * 4096, PAGING_USER);
+		AuMapPage((uint64_t)display.buffer + i * 4096, 0xFFFFD00000200000 + i * 4096, PAGING_USER);
 
 	display.buffer = (uint32_t*)0xFFFFD00000200000;
 }

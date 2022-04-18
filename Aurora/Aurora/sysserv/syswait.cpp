@@ -10,7 +10,7 @@
  */
 
 #ifdef ARCH_X64
-#include <arch\x86_64\mmngr\vmmngr.h>
+#include <arch\x86_64\mmngr\paging.h>
 #include <arch\x86_64\thread.h>
 #include <stdio.h>
 #include <arch\x86_64\user64.h>

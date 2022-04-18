@@ -35,10 +35,10 @@ meta_data_t *last_block = NULL;
 
 
 /*
- * x86_64_kmalloc_initialize -- initialize
+ * AuHeapInitialize -- initialize
  * kernel malloc library with two pages
  */
-void heap_initialize() {
+void AuHeapInitialize() {
 	uint64_t* page = au_request_page(4);
 	memset(page, 0, (4*4096));
 	/* setup the first meta data block */
@@ -198,10 +198,10 @@ void* kcalloc(size_t n_item, size_t size) {
  * @param pages -- number of pages needs to be mapped
  */
 uint64_t* au_request_page(int pages) {
-	uint64_t* page = get_free_page(0,false);
+	uint64_t* page = AuGetFreePage(0,false);
 	uint64_t page_ = (uint64_t)page;
 	for (size_t i = 0; i < pages; i++) {
-		map_page((uint64_t)pmmngr_alloc(), (uint64_t)(page_ + i * 4096), 0);
+		AuMapPage((uint64_t)AuPmmngrAlloc(), (uint64_t)(page_ + i * 4096), 0);
 		
 	}
 	return (uint64_t*)page;
@@ -214,5 +214,5 @@ uint64_t* au_request_page(int pages) {
  * @param pages --pages -- number of pages
  */
 void au_free_page(void* ptr, int pages) {
-	vmmngr_free_pages((uint64_t)ptr,true,pages);
+	AuFreePages((uint64_t)ptr,true,pages);
 }

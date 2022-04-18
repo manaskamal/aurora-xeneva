@@ -7,14 +7,13 @@ INCLUDELIB OLDNAMES
 
 PUBLIC	?valloc@@YAX_K@Z				; valloc
 PUBLIC	?vfree@@YAX_K@Z					; vfree
-EXTRN	?pmmngr_alloc@@YAPEAXXZ:PROC			; pmmngr_alloc
+EXTRN	?AuPmmngrAlloc@@YAPEAXXZ:PROC			; AuPmmngrAlloc
 EXTRN	x64_cli:PROC
-EXTRN	?map_page@@YA_N_K0E@Z:PROC			; map_page
-EXTRN	?unmap_page@@YAX_K@Z:PROC			; unmap_page
-EXTRN	?memset@@YAXPEAXEI@Z:PROC			; memset
+EXTRN	AuMapPage:PROC
+EXTRN	AuUnmapPage:PROC
 pdata	SEGMENT
 $pdata$?valloc@@YAX_K@Z DD imagerel $LN3
-	DD	imagerel $LN3+60
+	DD	imagerel $LN3+42
 	DD	imagerel $unwind$?valloc@@YAX_K@Z
 $pdata$?vfree@@YAX_K@Z DD imagerel $LN3
 	DD	imagerel $LN3+29
@@ -32,22 +31,22 @@ _TEXT	SEGMENT
 pos$ = 48
 ?vfree@@YAX_K@Z PROC					; vfree
 
-; 16   : void vfree (uint64_t pos) {
+; 15   : void vfree (uint64_t pos) {
 
 $LN3:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 40					; 00000028H
 
-; 17   : 	x64_cli();
+; 16   : 	x64_cli();
 
 	call	x64_cli
 
-; 18   : 	unmap_page ((uint64_t)pos);
+; 17   : 	AuUnmapPage((uint64_t)pos);
 
 	mov	rcx, QWORD PTR pos$[rsp]
-	call	?unmap_page@@YAX_K@Z			; unmap_page
+	call	AuUnmapPage
 
-; 19   : }
+; 18   : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -66,26 +65,19 @@ $LN3:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 56					; 00000038H
 
-; 11   : 	void *p = pmmngr_alloc();
+; 11   : 	void *p = AuPmmngrAlloc();
 
-	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
+	call	?AuPmmngrAlloc@@YAPEAXXZ		; AuPmmngrAlloc
 	mov	QWORD PTR p$[rsp], rax
 
-; 12   : 	memset(p, 0, 4096);
-
-	mov	r8d, 4096				; 00001000H
-	xor	edx, edx
-	mov	rcx, QWORD PTR p$[rsp]
-	call	?memset@@YAXPEAXEI@Z			; memset
-
-; 13   : 	map_page ((uint64_t)p, pos, PAGING_USER);
+; 12   : 	AuMapPage((uint64_t)p, pos, PAGING_USER);
 
 	mov	r8b, 4
 	mov	rdx, QWORD PTR pos$[rsp]
 	mov	rcx, QWORD PTR p$[rsp]
-	call	?map_page@@YA_N_K0E@Z			; map_page
+	call	AuMapPage
 
-; 14   : }
+; 13   : }
 
 	add	rsp, 56					; 00000038H
 	ret	0

@@ -10,12 +10,12 @@ _BSS	SEGMENT
 ?display@@3U__display__@@A DB 020H DUP (?)		; display
 _BSS	ENDS
 CONST	SEGMENT
-$SG3095	DB	'fb', 00H
+$SG3158	DB	'fb', 00H
 	ORG $+5
-$SG3096	DB	'VFS Node created', 0aH, 00H
+$SG3159	DB	'VFS Node created', 0aH, 00H
 	ORG $+6
-$SG3097	DB	'/dev/fb', 00H
-$SG3098	DB	'VFS DEV FB Registered', 0aH, 00H
+$SG3160	DB	'/dev/fb', 00H
+$SG3161	DB	'VFS DEV FB Registered', 0aH, 00H
 CONST	ENDS
 PUBLIC	?initialize_screen@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z ; initialize_screen
 PUBLIC	?screen_set_configuration@@YAXII@Z		; screen_set_configuration
@@ -28,13 +28,13 @@ PUBLIC	?get_fb_size@@YAIXZ				; get_fb_size
 PUBLIC	?draw_pixel@@YAXIII@Z				; draw_pixel
 PUBLIC	?screen_io_query@@YAHPEAU_vfs_node_@@HPEAX@Z	; screen_io_query
 EXTRN	?strcpy@@YAPEADPEADPEBD@Z:PROC			; strcpy
-EXTRN	?printf@@YAXPEBDZZ:PROC				; printf
-EXTRN	?vfs_mount@@YAXPEADPEAU_vfs_node_@@@Z:PROC	; vfs_mount
-EXTRN	?pmmngr_alloc@@YAPEAXXZ:PROC			; pmmngr_alloc
-EXTRN	?map_page@@YA_N_K0E@Z:PROC			; map_page
+EXTRN	printf:PROC
+EXTRN	?vfs_mount@@YAXPEADPEAU_vfs_node_@@PEAU_vfs_entry_@@@Z:PROC ; vfs_mount
+EXTRN	?AuPmmngrAlloc@@YAPEAXXZ:PROC			; AuPmmngrAlloc
+EXTRN	AuMapPage:PROC
 pdata	SEGMENT
 $pdata$?initialize_screen@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z DD imagerel $LN9
-	DD	imagerel $LN9+429
+	DD	imagerel $LN9+423
 	DD	imagerel $unwind$?initialize_screen@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z
 $pdata$?screen_set_configuration@@YAXII@Z DD imagerel $LN6
 	DD	imagerel $LN6+159
@@ -326,7 +326,7 @@ $LN3@screen_set:
 	cmp	DWORD PTR i$1[rsp], eax
 	jae	SHORT $LN1@screen_set
 
-; 84   : 		map_page ((uint64_t)display.buffer + i * 4096, 0xFFFFD00000200000 + i * 4096, PAGING_USER);
+; 84   : 		AuMapPage((uint64_t)display.buffer + i * 4096, 0xFFFFD00000200000 + i * 4096, PAGING_USER);
 
 	mov	eax, DWORD PTR i$1[rsp]
 	imul	eax, 4096				; 00001000H
@@ -341,7 +341,7 @@ $LN3@screen_set:
 	mov	rcx, rdx
 	mov	r8b, 4
 	mov	rdx, rax
-	call	?map_page@@YA_N_K0E@Z			; map_page
+	call	AuMapPage
 	jmp	SHORT $LN2@screen_set
 $LN1@screen_set:
 
@@ -410,15 +410,15 @@ $LN9:
 ; 44   : 	/**
 ; 45   : 	 * register the device node for screen interface
 ; 46   : 	 */
-; 47   : 	vfs_node_t * svga = (vfs_node_t*)pmmngr_alloc(); 
+; 47   : 	vfs_node_t * svga = (vfs_node_t*)AuPmmngrAlloc(); 
 
-	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
+	call	?AuPmmngrAlloc@@YAPEAXXZ		; AuPmmngrAlloc
 	mov	QWORD PTR svga$[rsp], rax
 
 ; 48   : 	strcpy (svga->filename, "fb");
 
 	mov	rax, QWORD PTR svga$[rsp]
-	lea	rdx, OFFSET FLAT:$SG3095
+	lea	rdx, OFFSET FLAT:$SG3158
 	mov	rcx, rax
 	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
 
@@ -430,7 +430,7 @@ $LN9:
 ; 50   : 	svga->eof = 0;
 
 	mov	rax, QWORD PTR svga$[rsp]
-	mov	DWORD PTR [rax+36], 0
+	mov	BYTE PTR [rax+36], 0
 
 ; 51   : 	svga->pos = 0;
 
@@ -445,12 +445,12 @@ $LN9:
 ; 53   : 	svga->flags = FS_FLAG_GENERAL;
 
 	mov	rax, QWORD PTR svga$[rsp]
-	mov	DWORD PTR [rax+48], 2
+	mov	BYTE PTR [rax+48], 2
 
 ; 54   : 	svga->status = 0;
 
 	mov	rax, QWORD PTR svga$[rsp]
-	mov	DWORD PTR [rax+52], 0
+	mov	BYTE PTR [rax+49], 0
 
 ; 55   : 	svga->open = 0;
 
@@ -480,19 +480,20 @@ $LN9:
 
 ; 60   : 	printf ("VFS Node created\n");
 
-	lea	rcx, OFFSET FLAT:$SG3096
-	call	?printf@@YAXPEBDZZ			; printf
+	lea	rcx, OFFSET FLAT:$SG3159
+	call	printf
 
-; 61   : 	vfs_mount ("/dev/fb", svga);
+; 61   : 	vfs_mount ("/dev/fb", svga, 0);
 
+	xor	r8d, r8d
 	mov	rdx, QWORD PTR svga$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3097
-	call	?vfs_mount@@YAXPEADPEAU_vfs_node_@@@Z	; vfs_mount
+	lea	rcx, OFFSET FLAT:$SG3160
+	call	?vfs_mount@@YAXPEADPEAU_vfs_node_@@PEAU_vfs_entry_@@@Z ; vfs_mount
 
 ; 62   : 	printf ("VFS DEV FB Registered\n");
 
-	lea	rcx, OFFSET FLAT:$SG3098
-	call	?printf@@YAXPEBDZZ			; printf
+	lea	rcx, OFFSET FLAT:$SG3161
+	call	printf
 
 ; 63   : 
 ; 64   : 	/* clear the screen */

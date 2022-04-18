@@ -33,12 +33,15 @@ canvas_t *create_canvas (int width, int height) {
 
 	svga_fd2 = sys_open_file ("/dev/svga", NULL);
 
+	sys_print_text ("Creating canvas \n");
 	canvas_t *canvas = (canvas_t*)malloc(sizeof(canvas_t));
 	uint32_t *address = NULL;
-	if (double_buffer)
+	if (double_buffer) {
+		sys_print_text ("Allocating double buffer \n");
 		address = acrylic_allocate_buffer(width * height * 4);
 		/*for (int i = 0; i < (width * height * 32) / 4096; i++)
 			valloc(0x0000600000000000 + i * 4096);*/
+	}
 
 	canvas->width = s_width;
 	canvas->height = s_height;

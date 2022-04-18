@@ -12,15 +12,15 @@ _BSS	SEGMENT
 ?float_to_string_output@@3PADA DB 020H DUP (?)		; float_to_string_output
 _BSS	ENDS
 _DATA	SEGMENT
-chars	DQ	FLAT:$SG2968
+chars	DQ	FLAT:$SG2992
 _DATA	ENDS
 CONST	SEGMENT
-$SG3109	DB	'.', 00H
+$SG3133	DB	'.', 00H
 	ORG $+6
-$SG2968	DB	'0123456789ABCDEF', 00H
+$SG2992	DB	'0123456789ABCDEF', 00H
 CONST	ENDS
 PUBLIC	?sztoa@@YAPEAD_KPEADH@Z				; sztoa
-PUBLIC	?printf@@YAXPEBDZZ				; printf
+PUBLIC	printf
 PUBLIC	?ftoa@@YAPEADME@Z				; ftoa
 PUBLIC	?atow@@YAXPEADPEBD@Z				; atow
 PUBLIC	?int_to_str@@YAPEBDH@Z				; int_to_str
@@ -36,9 +36,9 @@ pdata	SEGMENT
 $pdata$?sztoa@@YAPEAD_KPEADH@Z DD imagerel $LN11
 	DD	imagerel $LN11+275
 	DD	imagerel $unwind$?sztoa@@YAPEAD_KPEADH@Z
-$pdata$?printf@@YAXPEBDZZ DD imagerel $LN26
+$pdata$printf DD imagerel $LN26
 	DD	imagerel $LN26+890
-	DD	imagerel $unwind$?printf@@YAXPEBDZZ
+	DD	imagerel $unwind$printf
 $pdata$?ftoa@@YAPEADME@Z DD imagerel $LN9
 	DD	imagerel $LN9+311
 	DD	imagerel $unwind$?ftoa@@YAPEADME@Z
@@ -57,7 +57,7 @@ CONST	ENDS
 xdata	SEGMENT
 $unwind$?sztoa@@YAPEAD_KPEADH@Z DD 011301H
 	DD	04213H
-$unwind$?printf@@YAXPEBDZZ DD 021b01H
+$unwind$printf DD 021b01H
 	DD	023011bH
 $unwind$?ftoa@@YAPEADME@Z DD 010e01H
 	DD	0820eH
@@ -443,7 +443,7 @@ len$10 = 104
 buffer$11 = 112
 buffer$12 = 192
 format$ = 288
-?printf@@YAXPEBDZZ PROC					; printf
+printf	PROC
 
 ; 107  : {
 
@@ -761,7 +761,7 @@ $LN5@printf:
 ; 174  : 			{
 ; 175  : 				puts(".");
 
-	lea	rcx, OFFSET FLAT:$SG3109
+	lea	rcx, OFFSET FLAT:$SG3133
 	call	?puts@@YAXPEAD@Z			; puts
 
 ; 176  : 			}
@@ -841,7 +841,7 @@ $LN24@printf:
 
 	add	rsp, 280				; 00000118H
 	ret	0
-?printf@@YAXPEBDZZ ENDP					; printf
+printf	ENDP
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\stdio.cpp

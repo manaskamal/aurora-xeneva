@@ -10,8 +10,8 @@ PUBLIC	?message_send@@YAXGPEAU_message_@@@Z		; message_send
 PUBLIC	?message_receive@@YAXPEAU_message_@@@Z		; message_receive
 PUBLIC	?is_message_queue_empty@@YA_NXZ			; is_message_queue_empty
 EXTRN	memcpy:PROC
-EXTRN	?pmmngr_alloc@@YAPEAXXZ:PROC			; pmmngr_alloc
-EXTRN	?pmmngr_free@@YAXPEAX@Z:PROC			; pmmngr_free
+EXTRN	?AuPmmngrAlloc@@YAPEAXXZ:PROC			; AuPmmngrAlloc
+EXTRN	?AuPmmngrFree@@YAXPEAX@Z:PROC			; AuPmmngrFree
 EXTRN	x64_cli:PROC
 EXTRN	?unblock_thread@@YAXPEAU_thread_@@@Z:PROC	; unblock_thread
 EXTRN	?get_current_thread@@YAPEAU_thread_@@XZ:PROC	; get_current_thread
@@ -113,7 +113,7 @@ $LN3@message_re:
 	movzx	eax, WORD PTR [rax+58]
 	mov	DWORD PTR tv67[rsp], eax
 	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
-	movzx	eax, WORD PTR [rax+234]
+	movzx	eax, WORD PTR [rax+738]
 	mov	ecx, DWORD PTR tv67[rsp]
 	cmp	ecx, eax
 	jne	SHORT $LN1@message_re
@@ -137,10 +137,10 @@ $LN3@message_re:
 	mov	rcx, QWORD PTR msg$[rsp]
 	call	memcpy
 
-; 70   : 			pmmngr_free(temp);
+; 70   : 			AuPmmngrFree(temp);
 
 	mov	rcx, QWORD PTR temp$[rsp]
-	call	?pmmngr_free@@YAXPEAX@Z			; pmmngr_free
+	call	?AuPmmngrFree@@YAXPEAX@Z		; AuPmmngrFree
 $LN1@message_re:
 $LN2@message_re:
 $LN4@message_re:
@@ -216,9 +216,9 @@ $LN2@message_se:
 	mov	WORD PTR [rax+58], cx
 
 ; 43   : 	//!Actuall Message model
-; 44   : 	kernel_message_queue_t * temp = (kernel_message_queue_t*)pmmngr_alloc();
+; 44   : 	kernel_message_queue_t * temp = (kernel_message_queue_t*)AuPmmngrAlloc();
 
-	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
+	call	?AuPmmngrAlloc@@YAPEAXXZ		; AuPmmngrAlloc
 	mov	QWORD PTR temp$[rsp], rax
 
 ; 45   : 

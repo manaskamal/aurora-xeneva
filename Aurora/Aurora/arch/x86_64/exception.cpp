@@ -9,14 +9,14 @@
  */
 
 #include <arch\x86_64\exception.h>
-#include <arch\x86_64\mmngr\vmmngr.h>
+#include <arch\x86_64\mmngr\paging.h>
 #include <arch\x86_64\thread.h>
 #include <drivers\svga\vmsvga.h>
 #include <screen.h>
 #include <serial.h>
 
 void panic(const char* msg,...) {
-	printf ("***ARCH x86_64 : Exception Occured ***\n");
+	printf ("***ARCH x86_64 : Kernel Panic!!! ***\n");
 	printf ("[Aurora Kernel]: We are sorry to say that, a processor invalid exception has occured\n");
 	printf ("[Aurora Kernel]: please inform it to the master of the kernel\n");
 	printf ("[Aurora Kernel]: Below is the code of exception\n");
@@ -207,7 +207,40 @@ void machine_check_abort (size_t v, void* p){
 //! exception function -- simd related fault handler
  void simd_fpu_fault (size_t v, void* p){
 	 x64_cli();
+	 interrupt_stack_frame *frame = (interrupt_stack_frame*)p;
 	 panic("\nSIMD FPU Fault");
+	 printf ("\n__CPU Informations__ \n");
+	 printf (" RIP -> %x \n", frame->rip);
+	 printf (" RSP -> %x \n", frame->rsp);
+	 printf (" RFLAGS -> %x \n", frame->rflags);
+	 printf (" Current thread -> %s\n", get_current_thread()->name);
+	 printf (" MXCSR bit  -- ");
+	 fx_state_t* state = (fx_state_t*)get_current_thread()->fx_state;
+	 uint32_t mxcsr = state->mxcsr;
+	 if (mxcsr & 0x0001)
+		 printf ("Invalid operation flag \n");
+	 else if (mxcsr & 0x0002)
+		 printf ("Denormal flag \n");
+	 else if (mxcsr & 0x0004)
+		 printf ("Divide-by-zero flag\n");
+	 else if (mxcsr & 0x0008)
+		 printf ("Overflow flag\n");
+	 else if (mxcsr & 0x0010)
+		 printf ("Underflow flag\n");
+	 else if (mxcsr & 0x0020)
+		 printf ("Precision flag\n");
+	 else if (mxcsr & 0x0040)
+		 printf ("Denormals are zeros\n");
+	 else if (mxcsr & 0x0080)
+		 printf ("Invalid operation mask\n");
+	 else if (mxcsr & 0x0100)
+		 printf ("Denormal mask\n");
+	 else if (mxcsr & 0x0200)
+		 printf ("Divide-by-zero mask\n");
+	 else if (mxcsr & 0x0400)
+		 printf ("Overflow mask\n");
+	 else if (mxcsr & 0x0800)
+		 printf ("Underflow mask\n");
 	 for(;;);
  }
 

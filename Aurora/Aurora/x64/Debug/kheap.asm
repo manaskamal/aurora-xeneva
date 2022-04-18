@@ -11,7 +11,7 @@ _BSS	SEGMENT
 ?first_block@@3PEAU_meta_data_@@EA DQ 01H DUP (?)	; first_block
 ?last_block@@3PEAU_meta_data_@@EA DQ 01H DUP (?)	; last_block
 _BSS	ENDS
-PUBLIC	?heap_initialize@@YAXXZ				; heap_initialize
+PUBLIC	?AuHeapInitialize@@YAXXZ			; AuHeapInitialize
 PUBLIC	?au_request_page@@YAPEA_KH@Z			; au_request_page
 PUBLIC	?au_free_page@@YAXPEAXH@Z			; au_free_page
 PUBLIC	?malloc@@YAPEAX_K@Z				; malloc
@@ -22,14 +22,14 @@ PUBLIC	?krealloc@@YAPEAXPEAX_K@Z			; krealloc
 PUBLIC	?kcalloc@@YAPEAX_K0@Z				; kcalloc
 EXTRN	?memset@@YAXPEAXEI@Z:PROC			; memset
 EXTRN	memcpy:PROC
-EXTRN	?pmmngr_alloc@@YAPEAXXZ:PROC			; pmmngr_alloc
-EXTRN	?map_page@@YA_N_K0E@Z:PROC			; map_page
-EXTRN	?get_free_page@@YAPEA_K_K_N@Z:PROC		; get_free_page
-EXTRN	?vmmngr_free_pages@@YAX_K_N0@Z:PROC		; vmmngr_free_pages
+EXTRN	?AuPmmngrAlloc@@YAPEAXXZ:PROC			; AuPmmngrAlloc
+EXTRN	AuMapPage:PROC
+EXTRN	AuGetFreePage:PROC
+EXTRN	AuFreePages:PROC
 pdata	SEGMENT
-$pdata$?heap_initialize@@YAXXZ DD imagerel $LN3
+$pdata$?AuHeapInitialize@@YAXXZ DD imagerel $LN3
 	DD	imagerel $LN3+165
-	DD	imagerel $unwind$?heap_initialize@@YAXXZ
+	DD	imagerel $unwind$?AuHeapInitialize@@YAXXZ
 $pdata$?au_request_page@@YAPEA_KH@Z DD imagerel $LN6
 	DD	imagerel $LN6+132
 	DD	imagerel $unwind$?au_request_page@@YAPEA_KH@Z
@@ -56,7 +56,7 @@ $pdata$?kcalloc@@YAPEAX_K0@Z DD imagerel $LN4
 	DD	imagerel $unwind$?kcalloc@@YAPEAX_K0@Z
 pdata	ENDS
 xdata	SEGMENT
-$unwind$?heap_initialize@@YAXXZ DD 010401H
+$unwind$?AuHeapInitialize@@YAXXZ DD 010401H
 	DD	08204H
 $unwind$?au_request_page@@YAPEA_KH@Z DD 010801H
 	DD	08208H
@@ -689,13 +689,13 @@ $LN3:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 40					; 00000028H
 
-; 217  : 	vmmngr_free_pages((uint64_t)ptr,true,pages);
+; 217  : 	AuFreePages((uint64_t)ptr,true,pages);
 
 	movsxd	rax, DWORD PTR pages$[rsp]
 	mov	r8, rax
 	mov	dl, 1
 	mov	rcx, QWORD PTR ptr$[rsp]
-	call	?vmmngr_free_pages@@YAX_K_N0@Z		; vmmngr_free_pages
+	call	AuFreePages
 
 ; 218  : }
 
@@ -719,11 +719,11 @@ $LN6:
 	mov	DWORD PTR [rsp+8], ecx
 	sub	rsp, 72					; 00000048H
 
-; 201  : 	uint64_t* page = get_free_page(0,false);
+; 201  : 	uint64_t* page = AuGetFreePage(0,false);
 
 	xor	edx, edx
 	xor	ecx, ecx
-	call	?get_free_page@@YAPEA_K_K_N@Z		; get_free_page
+	call	AuGetFreePage
 	mov	QWORD PTR page$[rsp], rax
 
 ; 202  : 	uint64_t page_ = (uint64_t)page;
@@ -744,7 +744,7 @@ $LN3@au_request:
 	cmp	QWORD PTR i$1[rsp], rax
 	jae	SHORT $LN1@au_request
 
-; 204  : 		map_page((uint64_t)pmmngr_alloc(), (uint64_t)(page_ + i * 4096), 0);
+; 204  : 		AuMapPage((uint64_t)AuPmmngrAlloc(), (uint64_t)(page_ + i * 4096), 0);
 
 	mov	rax, QWORD PTR i$1[rsp]
 	imul	rax, 4096				; 00001000H
@@ -752,12 +752,12 @@ $LN3@au_request:
 	add	rcx, rax
 	mov	rax, rcx
 	mov	QWORD PTR tv73[rsp], rax
-	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
+	call	?AuPmmngrAlloc@@YAPEAXXZ		; AuPmmngrAlloc
 	xor	r8d, r8d
 	mov	rcx, QWORD PTR tv73[rsp]
 	mov	rdx, rcx
 	mov	rcx, rax
-	call	?map_page@@YA_N_K0E@Z			; map_page
+	call	AuMapPage
 
 ; 205  : 		
 ; 206  : 	}
@@ -781,9 +781,9 @@ _TEXT	SEGMENT
 meta$ = 32
 page$ = 40
 desc_addr$ = 48
-?heap_initialize@@YAXXZ PROC				; heap_initialize
+?AuHeapInitialize@@YAXXZ PROC				; AuHeapInitialize
 
-; 41   : void heap_initialize() {
+; 41   : void AuHeapInitialize() {
 
 $LN3:
 	sub	rsp, 72					; 00000048H
@@ -859,6 +859,6 @@ $LN3:
 
 	add	rsp, 72					; 00000048H
 	ret	0
-?heap_initialize@@YAXXZ ENDP				; heap_initialize
+?AuHeapInitialize@@YAXXZ ENDP				; AuHeapInitialize
 _TEXT	ENDS
 END

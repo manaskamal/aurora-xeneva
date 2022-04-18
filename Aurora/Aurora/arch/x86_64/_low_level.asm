@@ -110,6 +110,11 @@ x64_write_cr3:
       mov cr3, rcx
 	  ret
 
+global x64_write_cr4
+x64_write_cr4:
+      mov cr4, rcx
+	  ret
+
 ;----------------------------------------------------------
 ; Segments functions
 ;----------------------------------------------------------
@@ -314,4 +319,21 @@ x64_sse_test:
      mov rbx, 10
      movaps xmm0, [rbx]
 	 ret
+
+;;-----------------------------------
+;;   FXSAVE/ FXRSTOR
+;;------------------------------------
+global x64_fxsave
+x64_fxsave:
+      and cl, 0xF0
+	  add rcx, 0x10
+      fxsave64 [rcx]
+	  ret
+
+global x64_fxrstor
+x64_fxrstor:
+      and cl, 0xF0
+	  add rcx, 0x10
+      fxrstor64 [rcx]
+	  ret
 

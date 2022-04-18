@@ -28,7 +28,7 @@ void create_uthread (void (*entry) (void*), char* name) {
 	 * entry for the new user thread!!
 	 */  
 	uint64_t *old_cr3 = (uint64_t*)x64_read_cr3();
-	uint64_t *new_cr3 = create_user_address_space();
+	uint64_t *new_cr3 = AuCreateAddressSpace();
 
 	for (int i = 0; i < 256; i++) {
 		new_cr3[i] = old_cr3[i];

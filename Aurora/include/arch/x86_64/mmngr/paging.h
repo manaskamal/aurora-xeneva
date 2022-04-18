@@ -14,6 +14,7 @@
 
 #include <pmmngr.h>
 #include <arch\x86_64\cpu.h>
+#include <aurora.h>
 
 #define PAGING_PRESENT  0x1
 #define PAGING_WRITABLE 0x2
@@ -33,16 +34,15 @@ extern size_t p_index (uint64_t addr);
 //*************************************************
 //! F U N C T I O N S   P R O T O T Y P E
 //*************************************************
-extern void vmmngr_x86_64_init ();
-extern bool map_page (uint64_t physical_address, uint64_t virtual_address, uint8_t attrib);
-extern bool map_page_ex (uint64_t *pml4i,uint64_t physical_address, uint64_t virtual_address, uint8_t attrib);
-//! Map a page in current address space
-extern bool map_page2 (uint64_t physical_address, uint64_t virtual_address, uint8_t attrib);
-extern void unmap_page_ex(uint64_t* cr3, uint64_t virt_addr, bool free_physical);
-extern uint64_t *create_user_address_space ();
-extern void unmap_page(uint64_t virt_addr);
-extern uint64_t* get_physical_address (uint64_t virt_addr);
-extern uint64_t* get_free_page (size_t s, bool user);
-extern uint64_t* vmmngr_get_kernel_pml4();
-extern void vmmngr_free_pages(uint64_t virt_addr, bool free_physical, size_t s);
+extern void AuPagingInit();
+AU_EXTERN AU_EXPORT bool AuMapPage (uint64_t physical_address, uint64_t virtual_address, uint8_t attrib);
+extern bool AuMapPageEx(uint64_t *pml4i,uint64_t physical_address, uint64_t virtual_address, uint8_t attrib);
+extern void AuUnmapPageEx(uint64_t* cr3, uint64_t virt_addr, bool free_physical);
+AU_EXTERN AU_EXPORT void AuUnmapPage(uint64_t virt_addr);
+extern uint64_t *AuCreateAddressSpace();
+
+extern uint64_t* AuGetPhysicalAddress(uint64_t virt_addr);
+AU_EXTERN AU_EXPORT uint64_t* AuGetFreePage(size_t s, bool user);
+extern  uint64_t* AuGetRootPageTable();
+AU_EXTERN AU_EXPORT void AuFreePages(uint64_t virt_addr, bool free_physical, size_t s);
 #endif

@@ -17,9 +17,9 @@ int pipe_count = 0;
 
 
 pipe_t* pipe_create () {
-	unsigned char *p = (unsigned char*)pmmngr_alloc();  //Main Buffer
+	unsigned char *p = (unsigned char*)AuPmmngrAlloc();  //Main Buffer
 	circ_buf_t *circ = circ_buf_init((unsigned char*)p,4096);
-	pipe_t *pipe = (pipe_t*)pmmngr_alloc();
+	pipe_t *pipe = (pipe_t*)AuPmmngrAlloc();
 	pipe->buf = circ;
 	pipe->readers = 0;
 	pipe->writers = 0;
@@ -80,7 +80,7 @@ void allocate_pipe (int *fd, char* name) {
 	readn->write = pipe_write;
 	readn->read_blk = 0;
 	readn->ioquery = 0;
-	vfs_mount (path_name, readn);
+	vfs_mount (path_name, readn, 0);
 
 	thread_t * t = get_current_thread();
 	t->fd[t->fd_current] = readn;

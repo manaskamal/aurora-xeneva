@@ -9,7 +9,7 @@
  **/
 
 #ifdef ARCH_X64
-#include <arch\x86_64\mmngr\vmmngr.h>
+#include <arch\x86_64\mmngr\paging.h>
 #include <arch\x86_64\thread.h>
 #include <_null.h>
 #include <serial.h>
@@ -27,11 +27,10 @@ void map_shared_memory (uint16_t dest_id,uint64_t pos, size_t size) {
 	uint64_t *current_cr3 = (uint64_t*)get_current_thread()->cr3;
 	uint64_t *cr3 = (uint64_t*)t->cr3;
 
-	for (int i = 0; i < size/4096; i++) {
-	   if (map_page ((uint64_t)pmmngr_alloc(),pos + i * 4096, PAGING_USER)) {
-		   cr3[pml4_index(pos + i * 4096)] = current_cr3[pml4_index(pos + i * 4096)];
-	   }
+	for (size_t i = 0; i < size/4096; i++) {
+		AuMapPage((uint64_t)AuPmmngrAlloc(),pos + i * 4096, PAGING_USER);
 	}
+	cr3[pml4_index(pos)] = current_cr3[pml4_index(pos)];
 }
 
 void copy_memory (uint16_t dest_id, uint64_t pos, size_t size) {
@@ -58,7 +57,7 @@ void unmap_shared_memory (uint16_t dest_id, uint64_t pos, size_t size) {
 	uint64_t *cr3 = (uint64_t*)t->cr3;
 
 	for (int i = 0; i < size/4096; i++) {
-		unmap_page (pos + i * 4096);
+		AuUnmapPage(pos + i * 4096);
 		//unmap_page_ex(cr3,pos + i * 4096, false);
 	}
 }

@@ -6,22 +6,22 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 CONST	SEGMENT
-$SG2988	DB	'[GPT]: Initializing gpt partition tables....', 0aH, 00H
+$SG3016	DB	'[GPT]: Initializing gpt partition tables....', 0aH, 00H
 	ORG $+2
-$SG2992	DB	'[GPT]: Signature %s', 0aH, 00H
+$SG3020	DB	'[GPT]: Signature %s', 0aH, 00H
 	ORG $+3
-$SG2993	DB	'[GPT]: Revision %x', 0aH, 00H
+$SG3021	DB	'[GPT]: Revision %x', 0aH, 00H
 	ORG $+4
-$SG2994	DB	'[GPT]: Total partition entries %d', 0aH, 00H
+$SG3022	DB	'[GPT]: Total partition entries %d', 0aH, 00H
 	ORG $+5
-$SG2995	DB	'[GPT]: Partition table lba -> %d', 0aH, 00H
+$SG3023	DB	'[GPT]: Partition table lba -> %d', 0aH, 00H
 	ORG $+6
-$SG2997	DB	'[GPT]: SizeOf(GPTPartitionTable) -> %d', 0aH, 00H
+$SG3025	DB	'[GPT]: SizeOf(GPTPartitionTable) -> %d', 0aH, 00H
 CONST	ENDS
 PUBLIC	?initialize_gpt@@YAXXZ				; initialize_gpt
 EXTRN	?memset@@YAXPEAXEI@Z:PROC			; memset
-EXTRN	?printf@@YAXPEBDZZ:PROC				; printf
-EXTRN	?pmmngr_free@@YAXPEAX@Z:PROC			; pmmngr_free
+EXTRN	printf:PROC
+EXTRN	?AuPmmngrFree@@YAXPEAX@Z:PROC			; AuPmmngrFree
 EXTRN	?ata_read_28@@YAEIGPEAE@Z:PROC			; ata_read_28
 pdata	SEGMENT
 $pdata$?initialize_gpt@@YAXXZ DD imagerel $LN6
@@ -50,8 +50,8 @@ $LN6:
 
 ; 22   : 	printf ("[GPT]: Initializing gpt partition tables....\n");
 
-	lea	rcx, OFFSET FLAT:$SG2988
-	call	?printf@@YAXPEBDZZ			; printf
+	lea	rcx, OFFSET FLAT:$SG3016
+	call	printf
 
 ; 23   : 	uint8_t buffer[512];
 ; 24   : 	memset(buffer,0,512);
@@ -80,35 +80,35 @@ $LN6:
 
 	mov	rax, QWORD PTR gpt_h$[rsp]
 	mov	rdx, rax
-	lea	rcx, OFFSET FLAT:$SG2992
-	call	?printf@@YAXPEBDZZ			; printf
+	lea	rcx, OFFSET FLAT:$SG3020
+	call	printf
 
 ; 31   : 	printf ("[GPT]: Revision %x\n", gpt_h->reserved);
 
 	mov	rax, QWORD PTR gpt_h$[rsp]
 	mov	edx, DWORD PTR [rax+20]
-	lea	rcx, OFFSET FLAT:$SG2993
-	call	?printf@@YAXPEBDZZ			; printf
+	lea	rcx, OFFSET FLAT:$SG3021
+	call	printf
 
 ; 32   : 	printf ("[GPT]: Total partition entries %d\n", gpt_h->num_partition_entries);
 
 	mov	rax, QWORD PTR gpt_h$[rsp]
 	mov	edx, DWORD PTR [rax+80]
-	lea	rcx, OFFSET FLAT:$SG2994
-	call	?printf@@YAXPEBDZZ			; printf
+	lea	rcx, OFFSET FLAT:$SG3022
+	call	printf
 
 ; 33   : 	printf ("[GPT]: Partition table lba -> %d\n", gpt_h->partition_table_lba);
 
 	mov	rax, QWORD PTR gpt_h$[rsp]
 	mov	rdx, QWORD PTR [rax+72]
-	lea	rcx, OFFSET FLAT:$SG2995
-	call	?printf@@YAXPEBDZZ			; printf
+	lea	rcx, OFFSET FLAT:$SG3023
+	call	printf
 
 ; 34   : 	printf ("[GPT]: SizeOf(GPTPartitionTable) -> %d\n", sizeof(gpt_partition_t));
 
 	mov	edx, 128				; 00000080H
-	lea	rcx, OFFSET FLAT:$SG2997
-	call	?printf@@YAXPEBDZZ			; printf
+	lea	rcx, OFFSET FLAT:$SG3025
+	call	printf
 
 ; 35   : 	uint8_t buf[512];
 ; 36   : 	//memset (buf, 0, 4096);
@@ -155,10 +155,10 @@ $LN3@initialize:
 $LN1@initialize:
 
 ; 44   : 
-; 45   : 	pmmngr_free(buf);
+; 45   : 	AuPmmngrFree(buf);
 
 	lea	rcx, QWORD PTR buf$[rsp]
-	call	?pmmngr_free@@YAXPEAX@Z			; pmmngr_free
+	call	?AuPmmngrFree@@YAXPEAX@Z		; AuPmmngrFree
 
 ; 46   : }
 

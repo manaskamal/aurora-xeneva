@@ -10,7 +10,7 @@
  */
 
 #include <drivers\acpi\acpi.h>
-#include <arch\x86_64\mmngr\vmmngr.h>
+#include <arch\x86_64\mmngr\paging.h>
 #include <arch\x86_64\ioapic.h>
 #include <string.h>
 #include <pmmngr.h>
@@ -22,40 +22,40 @@
 #define SCI_EN (1<<0)
 #define SLP_EN (1<<13)
 
-aurora_acpi *kern_acpi = nullptr;
+aurora_acpi kern_acpi;
 
 
 void acpi_power_button_enable () {
-	x64_outportw (kern_acpi->fadt->pm1aEventBlock, (1<<5));
-	x64_outportw (kern_acpi->fadt->pm1aEventBlock, (1<<8));
-	x64_outportw (kern_acpi->fadt->pm1aEventBlock, (1<<5));
-	x64_outportw (kern_acpi->fadt->pm1aEventBlock, POWER_BUTTON_ENABLE);
-	x64_outportw (kern_acpi->fadt->pm1aEventBlock, (1<<9));
+	x64_outportw (kern_acpi.fadt->pm1aEventBlock, (1<<5));
+	x64_outportw (kern_acpi.fadt->pm1aEventBlock, (1<<8));
+	x64_outportw (kern_acpi.fadt->pm1aEventBlock, (1<<5));
+	x64_outportw (kern_acpi.fadt->pm1aEventBlock, POWER_BUTTON_ENABLE);
+	x64_outportw (kern_acpi.fadt->pm1aEventBlock, (1<<9));
 }
 
 //! Enable ACPI 
 void acpi_enable () {
-	if (!kern_acpi->fadt || !kern_acpi->fadt->pm1aCtrlBlock) {
+	if (!kern_acpi.fadt || !kern_acpi.fadt->pm1aCtrlBlock) {
 		printf ("[ACPI]: data structures are incomplete\n");
 		return;
 	}
-	uint16_t word = x64_inportw(kern_acpi->fadt->pm1aCtrlBlock);
+	uint16_t word = x64_inportw(kern_acpi.fadt->pm1aCtrlBlock);
 	if ((word & ACPI_PMCTRL_SCI_EN) == 1) {
 		printf ("[ACPI]: Already enabled\n");
 		return;
 	}
-	x64_outportb (kern_acpi->fadt->sciCmdPort, kern_acpi->fadt->acpiEnable);
-	uint16_t word_1 = x64_inportw(kern_acpi->fadt->pm1aCtrlBlock);	
-	printf ("PM1aCTRLBlock -> %x\n", kern_acpi->fadt->pm1aCtrlBlock);
+	x64_outportb (kern_acpi.fadt->sciCmdPort, kern_acpi.fadt->acpiEnable);
+	uint16_t word_1 = x64_inportw(kern_acpi.fadt->pm1aCtrlBlock);	
+	printf ("PM1aCTRLBlock -> %x\n", kern_acpi.fadt->pm1aCtrlBlock);
 	if ((word_1 & ACPI_PMCTRL_SCI_EN) == 1){
 
 		printf ("[ACPI]: Enabled successfully\n");
 
 	}
 
-	if (kern_acpi->fadt->pm1bCtrlBlock){
+	if (kern_acpi.fadt->pm1bCtrlBlock){
 		printf ("[ACPI]: Verifying pm1bCtrlBlock \n");
-		uint16_t word_3 = x64_inportw(kern_acpi->fadt->pm1bCtrlBlock);
+		uint16_t word_3 = x64_inportw(kern_acpi.fadt->pm1bCtrlBlock);
 		if ((word_3 & ACPI_PMCTRL_SCI_EN) == 1){
 			printf ("[ACPI]: Enabled successfully\n");
 		}
@@ -68,14 +68,12 @@ void acpi_enable () {
 
 void fadt_handler (size_t v, void* p) {
 	printf ("[ACPI]: Fadt interrupt fired\n");
-	interrupt_end(9);
+	AuInterruptEnd(9);
 }
 
 //! Initialize the acpi data structures
 void initialize_acpi (void* acpi_base) {
-	//map_page((uint64_t)acpi_base, (uint64_t)acpi_base,0);
-	kern_acpi = (aurora_acpi*)pmmngr_alloc();
-	memset (kern_acpi, 0, sizeof(aurora_acpi));
+	memset (&kern_acpi, 0, sizeof(aurora_acpi));
 	acpiRsdp *rsdp = (acpiRsdp*)acpi_base;
 	acpiRsdt *rsdt = (acpiRsdt*)rsdp->rsdtAddr;
 	acpiXsdt *xsdt = (acpiXsdt*)rsdp->xsdtAddr;
@@ -89,12 +87,12 @@ void initialize_acpi (void* acpi_base) {
 		sig[4] = '\0';
 
 		if (!strncmp(sig, ACPI_SIG_FADT, strlen(ACPI_SIG_FADT))) {
-			kern_acpi->fadt = (acpiFadt*) header;
+			kern_acpi.fadt = (acpiFadt*) header;
 			printf ("[ACPI]: Fadt table found\n");
 		}
 		 
 		else if (!strncmp(sig, ACPI_SIG_APIC, strlen("CIPA"))) {
-			kern_acpi->madt = (acpiMadt*) header;
+			kern_acpi.madt = (acpiMadt*) header;
 			printf ("[ACPI]: Madt table found\n");
 			acpi_parse_madt ();
 		}
@@ -143,9 +141,9 @@ void initialize_acpi (void* acpi_base) {
 		}
 		else if (!strncmp(sig, ACPI_SIG_MCFG, strlen(ACPI_SIG_MCFG))) {
 			//printf ("[ACPI]: Mcfg table found\n");
-			kern_acpi->mcfg = (acpiMcfg*) header;
-			acpiMcfgAlloc *allocs = mem_after<acpiMcfgAlloc*>(kern_acpi->mcfg);
-			for (; raw_diff(allocs, kern_acpi->mcfg) < kern_acpi->mcfg->header.length; ++allocs) {
+			kern_acpi.mcfg = (acpiMcfg*) header;
+			acpiMcfgAlloc *allocs = mem_after<acpiMcfgAlloc*>(kern_acpi.mcfg);
+			for (; raw_diff(allocs, kern_acpi.mcfg) < kern_acpi.mcfg->header.length; ++allocs) {
 				printf ("PCIe Start bus num -> %d, End bus num -> %d, base address-> %x\n", allocs->startBusNum, allocs->endBusNum,
 					allocs->baseAddress);
 			}
@@ -159,19 +157,19 @@ void initialize_acpi (void* acpi_base) {
 
 	}
 
-	if (kern_acpi->fadt && kern_acpi->fadt->facsAddr) {
+	if (kern_acpi.fadt && kern_acpi.fadt->facsAddr) {
 
-		kern_acpi->facs = (acpiFacs*)kern_acpi->fadt->facsAddr;
+		kern_acpi.facs = (acpiFacs*)kern_acpi.fadt->facsAddr;
 
 	}
 
-	if (kern_acpi->fadt && kern_acpi->fadt->dsdtAddr) {
+	if (kern_acpi.fadt && kern_acpi.fadt->dsdtAddr) {
 
-		kern_acpi->dsdt = (acpiDsdt*)kern_acpi->fadt->dsdtAddr;
-		printf ("[ACPI]: Dsdt found -> %x\n", kern_acpi->dsdt);
-		printf ("[ACPI]: Sci Interrupt -> %d\n", kern_acpi->fadt->sciInt);
-		interrupt_set(kern_acpi->fadt->sciInt,fadt_handler, kern_acpi->fadt->sciInt);
-		uint8_t* S5Block = search_s5(kern_acpi->dsdt);
+		kern_acpi.dsdt = (acpiDsdt*)kern_acpi.fadt->dsdtAddr;
+		printf ("[ACPI]: Dsdt found -> %x\n", kern_acpi.dsdt);
+		printf ("[ACPI]: Sci Interrupt -> %d\n", kern_acpi.fadt->sciInt);
+		AuInterruptSet(kern_acpi.fadt->sciInt,fadt_handler, kern_acpi.fadt->sciInt);
+		uint8_t* S5Block = search_s5(kern_acpi.dsdt);
 		if (S5Block != NULL) {
 			printf ("S5Block found\n");
 			S5Block += 4;
@@ -179,14 +177,14 @@ void initialize_acpi (void* acpi_base) {
 			
 			if (*S5Block == 0x0A)
 				S5Block++;
-			kern_acpi->slp_typa = *S5Block;
+			kern_acpi.slp_typa = *S5Block;
 			S5Block++;
 
 			if ( *S5Block == 0x0A)
 				S5Block++;
 
-			kern_acpi->slp_typb = *S5Block;
-			printf ("[ACPI]: SLP_typA -> %x, SLP_typB -> %x\n", kern_acpi->slp_typa, kern_acpi->slp_typb);
+			kern_acpi.slp_typb = *S5Block;
+			printf ("[ACPI]: SLP_typA -> %x, SLP_typB -> %x\n", kern_acpi.slp_typa, kern_acpi.slp_typb);
 		}
 	}
 	acpi_enable ();
@@ -195,9 +193,9 @@ void initialize_acpi (void* acpi_base) {
 
 //! Parse the MADT Table
 void acpi_parse_madt () {
-	acpiApicHeader *apic_header = (acpiApicHeader*)kern_acpi->madt->entry;
+	acpiApicHeader *apic_header = (acpiApicHeader*)kern_acpi.madt->entry;
 
-	while (raw_diff(apic_header, kern_acpi->madt) < kern_acpi->madt->header.length) {
+	while (raw_diff(apic_header, kern_acpi.madt) < kern_acpi.madt->header.length) {
 		switch (apic_header->type) {
 		case ACPI_APICTYPE_LAPIC: {
 			acpiLocalApic *lapic = (acpiLocalApic*)apic_header;
@@ -227,21 +225,21 @@ void acpi_parse_madt () {
 
 
 void acpi_system_reboot () {
-	printf ("[ACPI]: Reset Address -> %x, Reset value -> %x\n", kern_acpi->fadt->resetReg.address, kern_acpi->fadt->resetValue);
-	x64_outportw (kern_acpi->fadt->resetReg.address, kern_acpi->fadt->resetValue);
+	printf ("[ACPI]: Reset Address -> %x, Reset value -> %x\n", kern_acpi.fadt->resetReg.address, kern_acpi.fadt->resetValue);
+	x64_outportw (kern_acpi.fadt->resetReg.address, kern_acpi.fadt->resetValue);
 }
 
 void acpi_shutdown () {
 	x64_cli();
-	x64_outportd (kern_acpi->fadt->sciCmdPort, 0);
-	if (kern_acpi->fadt->pm1aCtrlBlock != NULL) {
-		x64_outportw (kern_acpi->fadt->pm1aCtrlBlock, kern_acpi->slp_typa | SLP_EN);
+	x64_outportd (kern_acpi.fadt->sciCmdPort, 0);
+	if (kern_acpi.fadt->pm1aCtrlBlock != NULL) {
+		x64_outportw (kern_acpi.fadt->pm1aCtrlBlock, kern_acpi.slp_typa | SLP_EN);
 		printf ("Shutdown step1 complete\n");
 	}
 
-	if (kern_acpi->fadt->pm1bCtrlBlock){
-		printf ("[ACPI] pm1bCtrlBlock -> %x\n", kern_acpi->fadt->pm1bCtrlBlock);
-		x64_outportw (kern_acpi->fadt->pm1bCtrlBlock,  (kern_acpi->slp_typb << 0) | SLP_EN);
+	if (kern_acpi.fadt->pm1bCtrlBlock){
+		printf ("[ACPI] pm1bCtrlBlock -> %x\n", kern_acpi.fadt->pm1bCtrlBlock);
+		x64_outportw (kern_acpi.fadt->pm1bCtrlBlock,  (kern_acpi.slp_typb << 0) | SLP_EN);
 	} 
 
 	printf ("\nShutdown step2 complete\n");
@@ -278,5 +276,5 @@ bool acpi_pcie_supported () {
 
 //! Get MCFG table
 acpiMcfg *acpi_get_mcfg () {
-	return kern_acpi->mcfg;
+	return kern_acpi.mcfg;
 }

@@ -45,7 +45,7 @@ procmngr_queue* procmngr_get_process () {
 void procmngr_create_process (procmngr_queue *queue) {
 	x64_cli();
 	create_process (queue->path,queue->name);
-	pmmngr_free (queue);
+	AuPmmngrFree(queue);
 	x64_sti();
 }
 
@@ -77,7 +77,7 @@ void procmngr_start () {
 
 			if (queue->type == PROCESS_DESTROY) {
 				procmngr_remove_process(queue->id);
-				pmmngr_free(queue);
+				AuPmmngrFree(queue);
 				break;
 			}
 		}

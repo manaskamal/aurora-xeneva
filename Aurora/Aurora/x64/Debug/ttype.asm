@@ -14,18 +14,18 @@ _BSS	SEGMENT
 ?last@@3PEAU_tele_type_@@EA DQ 01H DUP (?)		; last
 _BSS	ENDS
 CONST	SEGMENT
-$SG3427	DB	'/dev/', 00H
+$SG3490	DB	'/dev/', 00H
 	ORG $+2
-$SG3428	DB	'ttym', 00H
+$SG3491	DB	'ttym', 00H
 	ORG $+3
-$SG3432	DB	'[TTY]: Master node mounted at -> %s  ', 0dH, 0aH, 00H
-$SG3434	DB	'/dev/', 00H
+$SG3495	DB	'[TTY]: Master node mounted at -> %s  ', 0dH, 0aH, 00H
+$SG3497	DB	'/dev/', 00H
 	ORG $+2
-$SG3435	DB	'ttys', 00H
+$SG3498	DB	'ttys', 00H
 	ORG $+3
-$SG3439	DB	'[TTY]: Slave node mounted at %s ', 0dH, 0aH, 00H
+$SG3502	DB	'[TTY]: Slave node mounted at %s ', 0dH, 0aH, 00H
 	ORG $+5
-$SG3442	DB	'Used RAM -> %d MB/ Total RAM %d MB', 0dH, 0aH, 00H
+$SG3505	DB	'Used RAM -> %d MB/ Total RAM %d MB', 0dH, 0aH, 00H
 CONST	ENDS
 _DATA	SEGMENT
 ?master_count@@3HA DD 01H				; master_count
@@ -43,10 +43,10 @@ PUBLIC	?ttype_slave_read@@YAXPEAU_vfs_node_@@PEA_KI@Z	; ttype_slave_read
 PUBLIC	?ttype_slave_write@@YAXPEAU_vfs_node_@@PEAEI@Z	; ttype_slave_write
 EXTRN	?strcpy@@YAPEADPEADPEBD@Z:PROC			; strcpy
 EXTRN	?memset@@YAXPEAXEI@Z:PROC			; memset
-EXTRN	?vfs_mount@@YAXPEADPEAU_vfs_node_@@@Z:PROC	; vfs_mount
+EXTRN	?vfs_mount@@YAXPEADPEAU_vfs_node_@@PEAU_vfs_entry_@@@Z:PROC ; vfs_mount
 EXTRN	?circ_buf_init@@YAPEAU_circ_buf_@@PEAE_K@Z:PROC	; circ_buf_init
-EXTRN	?pmmngr_alloc@@YAPEAXXZ:PROC			; pmmngr_alloc
-EXTRN	?pmmngr_free@@YAXPEAX@Z:PROC			; pmmngr_free
+EXTRN	?AuPmmngrAlloc@@YAPEAXXZ:PROC			; AuPmmngrAlloc
+EXTRN	?AuPmmngrFree@@YAXPEAX@Z:PROC			; AuPmmngrFree
 EXTRN	?pmmngr_get_used_ram@@YA_KXZ:PROC		; pmmngr_get_used_ram
 EXTRN	?pmmngr_get_total_ram@@YA_KXZ:PROC		; pmmngr_get_total_ram
 EXTRN	x64_cli:PROC
@@ -58,7 +58,7 @@ EXTRN	?thread_iterate_block_list@@YAPEAU_thread_@@H@Z:PROC ; thread_iterate_bloc
 EXTRN	?_debug_print_@@YAXPEADZZ:PROC			; _debug_print_
 pdata	SEGMENT
 $pdata$?ttype_create@@YAHPEAH0@Z DD imagerel $LN3
-	DD	imagerel $LN3+1441
+	DD	imagerel $LN3+1426
 	DD	imagerel $unwind$?ttype_create@@YAHPEAH0@Z
 $pdata$?get_ttype@@YAPEAU_tele_type_@@H@Z DD imagerel $LN8
 	DD	imagerel $LN8+78
@@ -124,9 +124,9 @@ $LN3:
 	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
 	mov	QWORD PTR tv64[rsp], rax
 	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
-	movzx	eax, BYTE PTR [rax+757]
+	movzx	eax, BYTE PTR [rax+1261]
 	mov	rcx, QWORD PTR tv64[rsp]
-	mov	rax, QWORD PTR [rcx+rax*8+272]
+	mov	rax, QWORD PTR [rcx+rax*8+776]
 	mov	QWORD PTR node$[rsp], rax
 
 ; 205  : 	ttype_t *type = (ttype_t*)node->device;
@@ -292,9 +292,9 @@ $LN3:
 	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
 	mov	QWORD PTR tv64[rsp], rax
 	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
-	movzx	eax, BYTE PTR [rax+756]
+	movzx	eax, BYTE PTR [rax+1260]
 	mov	rcx, QWORD PTR tv64[rsp]
-	mov	rax, QWORD PTR [rcx+rax*8+272]
+	mov	rax, QWORD PTR [rcx+rax*8+776]
 	mov	QWORD PTR node$[rsp], rax
 
 ; 104  : 	ttype_t *type = (ttype_t*)node->device;
@@ -392,10 +392,10 @@ $LN1@ttype_dele:
 
 ; 90   : 	}
 ; 91   : 
-; 92   : 	pmmngr_free (tty);
+; 92   : 	AuPmmngrFree(tty);
 
 	mov	rcx, QWORD PTR tty$[rsp]
-	call	?pmmngr_free@@YAXPEAX@Z			; pmmngr_free
+	call	?AuPmmngrFree@@YAXPEAX@Z		; AuPmmngrFree
 $LN6@ttype_dele:
 
 ; 93   : }
@@ -494,7 +494,7 @@ $LN5:
 
 	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
 	movsxd	rcx, DWORD PTR master_fd$[rsp]
-	mov	rax, QWORD PTR [rax+rcx*8+272]
+	mov	rax, QWORD PTR [rax+rcx*8+776]
 	mov	QWORD PTR node$[rsp], rax
 
 ; 355  : 	thread_t *dest = thread_iterate_ready_list(task_id);
@@ -527,7 +527,7 @@ $LN2@ttype_dup_:
 	imul	rax, 1
 	mov	rcx, QWORD PTR dest$[rsp]
 	mov	rdx, QWORD PTR node$[rsp]
-	mov	QWORD PTR [rcx+rax+272], rdx
+	mov	QWORD PTR [rcx+rax+776], rdx
 
 ; 361  : 		dest->fd[2] = node;
 
@@ -535,14 +535,14 @@ $LN2@ttype_dup_:
 	imul	rax, 2
 	mov	rcx, QWORD PTR dest$[rsp]
 	mov	rdx, QWORD PTR node$[rsp]
-	mov	QWORD PTR [rcx+rax+272], rdx
+	mov	QWORD PTR [rcx+rax+776], rdx
 $LN1@ttype_dup_:
 
 ; 362  : 	}
 ; 363  : 	dest->master_fd = 1;
 
 	mov	rax, QWORD PTR dest$[rsp]
-	mov	BYTE PTR [rax+756], 1
+	mov	BYTE PTR [rax+1260], 1
 
 ; 364  : }
 
@@ -623,10 +623,10 @@ m_fd$ = 60
 sname$ = 64
 mname$ = 80
 inbuffer$ = 96
-tv262 = 104
-tv251 = 112
+tv263 = 104
+tv252 = 112
 outbuffer$ = 120
-tv278 = 128
+tv279 = 128
 master_fd$ = 160
 slave_fd$ = 168
 ?ttype_create@@YAHPEAH0@Z PROC				; ttype_create
@@ -656,9 +656,9 @@ $LN3:
 	mov	QWORD PTR tty$[rsp], rax
 
 ; 230  : 
-; 231  : 	void* inbuffer = pmmngr_alloc();
+; 231  : 	void* inbuffer = AuPmmngrAlloc();
 
-	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
+	call	?AuPmmngrAlloc@@YAPEAXXZ		; AuPmmngrAlloc
 	mov	QWORD PTR inbuffer$[rsp], rax
 
 ; 232  : 	memset(inbuffer, 0, 4096);
@@ -668,9 +668,9 @@ $LN3:
 	mov	rcx, QWORD PTR inbuffer$[rsp]
 	call	?memset@@YAXPEAXEI@Z			; memset
 
-; 233  : 	void* outbuffer = pmmngr_alloc();
+; 233  : 	void* outbuffer = AuPmmngrAlloc();
 
-	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
+	call	?AuPmmngrAlloc@@YAPEAXXZ		; AuPmmngrAlloc
 	mov	QWORD PTR outbuffer$[rsp], rax
 
 ; 234  : 	memset(outbuffer, 0, 4096);
@@ -711,14 +711,14 @@ $LN3:
 ; 244  : 	char mname[10];
 ; 245  : 	strcpy (mname, "/dev/");
 
-	lea	rdx, OFFSET FLAT:$SG3427
+	lea	rdx, OFFSET FLAT:$SG3490
 	lea	rcx, QWORD PTR mname$[rsp]
 	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
 
 ; 246  : 	strcpy (mname+5, "ttym");
 
 	lea	rax, QWORD PTR mname$[rsp+5]
-	lea	rdx, OFFSET FLAT:$SG3428
+	lea	rdx, OFFSET FLAT:$SG3491
 	mov	rcx, rax
 	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
 
@@ -755,7 +755,7 @@ $LN3:
 ; 255  : 	mn->eof = 0;
 
 	mov	rax, QWORD PTR mn$[rsp]
-	mov	DWORD PTR [rax+36], 0
+	mov	BYTE PTR [rax+36], 0
 
 ; 256  : 	mn->pos = 0;
 
@@ -770,12 +770,12 @@ $LN3:
 ; 258  : 	mn->flags = FS_FLAG_GENERAL;
 
 	mov	rax, QWORD PTR mn$[rsp]
-	mov	DWORD PTR [rax+48], 2
+	mov	BYTE PTR [rax+48], 2
 
 ; 259  : 	mn->status = 0;
 
 	mov	rax, QWORD PTR mn$[rsp]
-	mov	DWORD PTR [rax+52], 0
+	mov	BYTE PTR [rax+49], 0
 
 ; 260  : 	mn->open = 0;
 
@@ -814,21 +814,21 @@ $LN3:
 ; 267  : 	_debug_print_ ("[TTY]: Master node mounted at -> %s  \r\n", mname);
 
 	lea	rdx, QWORD PTR mname$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3432
+	lea	rcx, OFFSET FLAT:$SG3495
 	call	?_debug_print_@@YAXPEADZZ		; _debug_print_
 
 ; 268  : 
 ; 269  : 	char sname[10];
 ; 270  : 	strcpy (sname, "/dev/");
 
-	lea	rdx, OFFSET FLAT:$SG3434
+	lea	rdx, OFFSET FLAT:$SG3497
 	lea	rcx, QWORD PTR sname$[rsp]
 	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
 
 ; 271  : 	strcpy (sname+5, "ttys");
 
 	lea	rax, QWORD PTR sname$[rsp+5]
-	lea	rdx, OFFSET FLAT:$SG3435
+	lea	rdx, OFFSET FLAT:$SG3498
 	mov	rcx, rax
 	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
 
@@ -862,7 +862,7 @@ $LN3:
 ; 277  : 	sn->eof = 0;
 
 	mov	rax, QWORD PTR sn$[rsp]
-	mov	DWORD PTR [rax+36], 0
+	mov	BYTE PTR [rax+36], 0
 
 ; 278  : 	sn->pos = 0;
 
@@ -877,12 +877,12 @@ $LN3:
 ; 280  : 	sn->flags = FS_FLAG_GENERAL;
 
 	mov	rax, QWORD PTR sn$[rsp]
-	mov	DWORD PTR [rax+48], 2
+	mov	BYTE PTR [rax+48], 2
 
 ; 281  : 	sn->status = 0;
 
 	mov	rax, QWORD PTR sn$[rsp]
-	mov	DWORD PTR [rax+52], 0
+	mov	BYTE PTR [rax+49], 0
 
 ; 282  : 	sn->open = 0;
 
@@ -917,17 +917,18 @@ $LN3:
 	mov	rax, QWORD PTR sn$[rsp]
 	mov	QWORD PTR [rax+96], 0
 
-; 288  : 	vfs_mount (sname, sn);
+; 288  : 	vfs_mount (sname, sn, 0);
 
+	xor	r8d, r8d
 	mov	rdx, QWORD PTR sn$[rsp]
 	lea	rcx, QWORD PTR sname$[rsp]
-	call	?vfs_mount@@YAXPEADPEAU_vfs_node_@@@Z	; vfs_mount
+	call	?vfs_mount@@YAXPEADPEAU_vfs_node_@@PEAU_vfs_entry_@@@Z ; vfs_mount
 
 ; 289  : 
 ; 290  : 	_debug_print_ ("[TTY]: Slave node mounted at %s \r\n", sname);
 
 	lea	rdx, QWORD PTR sname$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3439
+	lea	rcx, OFFSET FLAT:$SG3502
 	call	?_debug_print_@@YAXPEADZZ		; _debug_print_
 
 ; 291  : 	
@@ -1078,7 +1079,7 @@ $LN3:
 ; 322  : 	int m_fd = get_current_thread()->fd_current;
 
 	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
-	mov	eax, DWORD PTR [rax+752]
+	mov	eax, DWORD PTR [rax+1256]
 	mov	DWORD PTR m_fd$[rsp], eax
 
 ; 323  : 	get_current_thread()->fd[m_fd] = mn;
@@ -1086,17 +1087,17 @@ $LN3:
 	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
 	movsxd	rcx, DWORD PTR m_fd$[rsp]
 	mov	rdx, QWORD PTR mn$[rsp]
-	mov	QWORD PTR [rax+rcx*8+272], rdx
+	mov	QWORD PTR [rax+rcx*8+776], rdx
 
 ; 324  : 	get_current_thread()->fd_current++;
 
 	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
-	add	rax, 752				; 000002f0H
-	mov	QWORD PTR tv251[rsp], rax
-	mov	rax, QWORD PTR tv251[rsp]
+	add	rax, 1256				; 000004e8H
+	mov	QWORD PTR tv252[rsp], rax
+	mov	rax, QWORD PTR tv252[rsp]
 	mov	eax, DWORD PTR [rax]
 	inc	eax
-	mov	rcx, QWORD PTR tv251[rsp]
+	mov	rcx, QWORD PTR tv252[rsp]
 	mov	DWORD PTR [rcx], eax
 
 ; 325  : 
@@ -1104,7 +1105,7 @@ $LN3:
 ; 327  : 	int s_fd = get_current_thread()->fd_current;
 
 	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
-	mov	eax, DWORD PTR [rax+752]
+	mov	eax, DWORD PTR [rax+1256]
 	mov	DWORD PTR s_fd$[rsp], eax
 
 ; 328  : 	get_current_thread()->fd[s_fd] = sn;
@@ -1112,17 +1113,17 @@ $LN3:
 	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
 	movsxd	rcx, DWORD PTR s_fd$[rsp]
 	mov	rdx, QWORD PTR sn$[rsp]
-	mov	QWORD PTR [rax+rcx*8+272], rdx
+	mov	QWORD PTR [rax+rcx*8+776], rdx
 
 ; 329  : 	get_current_thread()->fd_current++;
 
 	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
-	add	rax, 752				; 000002f0H
-	mov	QWORD PTR tv262[rsp], rax
-	mov	rax, QWORD PTR tv262[rsp]
+	add	rax, 1256				; 000004e8H
+	mov	QWORD PTR tv263[rsp], rax
+	mov	rax, QWORD PTR tv263[rsp]
 	mov	eax, DWORD PTR [rax]
 	inc	eax
-	mov	rcx, QWORD PTR tv262[rsp]
+	mov	rcx, QWORD PTR tv263[rsp]
 	mov	DWORD PTR [rcx], eax
 
 ; 330  : 
@@ -1130,13 +1131,13 @@ $LN3:
 
 	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
 	movzx	ecx, BYTE PTR m_fd$[rsp]
-	mov	BYTE PTR [rax+756], cl
+	mov	BYTE PTR [rax+1260], cl
 
 ; 332  : 	get_current_thread()->slave_fd = s_fd;
 
 	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
 	movzx	ecx, BYTE PTR s_fd$[rsp]
-	mov	BYTE PTR [rax+757], cl
+	mov	BYTE PTR [rax+1261], cl
 
 ; 333  : 
 ; 334  : 	get_current_thread()->fd[1] = mn;
@@ -1145,7 +1146,7 @@ $LN3:
 	mov	ecx, 8
 	imul	rcx, 1
 	mov	rdx, QWORD PTR mn$[rsp]
-	mov	QWORD PTR [rax+rcx+272], rdx
+	mov	QWORD PTR [rax+rcx+776], rdx
 
 ; 335  : 	get_current_thread()->fd[2] = mn;
 
@@ -1153,7 +1154,7 @@ $LN3:
 	mov	ecx, 8
 	imul	rcx, 2
 	mov	rdx, QWORD PTR mn$[rsp]
-	mov	QWORD PTR [rax+rcx+272], rdx
+	mov	QWORD PTR [rax+rcx+776], rdx
 
 ; 336  : 
 ; 337  : 	//tty->master_fd = 0; //m_fd;
@@ -1170,7 +1171,7 @@ $LN3:
 	xor	edx, edx
 	mov	ecx, 1024				; 00000400H
 	div	rcx
-	mov	QWORD PTR tv278[rsp], rax
+	mov	QWORD PTR tv279[rsp], rax
 	call	?pmmngr_get_used_ram@@YA_KXZ		; pmmngr_get_used_ram
 	xor	edx, edx
 	mov	ecx, 1024				; 00000400H
@@ -1178,10 +1179,10 @@ $LN3:
 	xor	edx, edx
 	mov	ecx, 1024				; 00000400H
 	div	rcx
-	mov	rcx, QWORD PTR tv278[rsp]
+	mov	rcx, QWORD PTR tv279[rsp]
 	mov	r8, rcx
 	mov	rdx, rax
-	lea	rcx, OFFSET FLAT:$SG3442
+	lea	rcx, OFFSET FLAT:$SG3505
 	call	?_debug_print_@@YAXPEADZZ		; _debug_print_
 
 ; 343  : 

@@ -196,12 +196,13 @@
     <ClInclude Include="..\include\arch\x86_64\kstack.h" />
     <ClInclude Include="..\include\arch\x86_64\mmngr\kheap.h" />
     <ClInclude Include="..\include\arch\x86_64\mmngr\map.h" />
-    <ClInclude Include="..\include\arch\x86_64\mmngr\vmmngr.h" />
+    <ClInclude Include="..\include\arch\x86_64\mmngr\paging.h" />
     <ClInclude Include="..\include\arch\x86_64\multiproc.h" />
     <ClInclude Include="..\include\arch\x86_64\pic.h" />
     <ClInclude Include="..\include\arch\x86_64\thread.h" />
     <ClInclude Include="..\include\arch\x86_64\user64.h" />
     <ClInclude Include="..\include\atomic\mutex.h" />
+    <ClInclude Include="..\include\aurora.h" />
     <ClInclude Include="..\include\callback.h" />
     <ClInclude Include="..\include\console.h" />
     <ClInclude Include="..\include\ctype.h" />
@@ -230,7 +231,6 @@
     <ClInclude Include="..\include\drivers\svga\vmmouse_defs.h" />
     <ClInclude Include="..\include\drivers\svga\vmsvga.h" />
     <ClInclude Include="..\include\drivers\term.h" />
-    <ClInclude Include="..\include\drivers\vbox.h" />
     <ClInclude Include="..\include\drivers\vmmouse.h" />
     <ClInclude Include="..\include\drvmngr.h" />
     <ClInclude Include="..\include\efi.h" />
@@ -286,7 +286,7 @@
     <ClCompile Include="arch\x86_64\systable.cpp" />
     <ClCompile Include="arch\x86_64\thread.cpp" />
     <ClCompile Include="arch\x86_64\user64.cpp" />
-    <ClCompile Include="arch\x86_64\vmmngr.cpp" />
+    <ClCompile Include="arch\x86_64\paging.cpp" />
     <ClCompile Include="atomic\mutex.cpp" />
     <ClCompile Include="console.cpp" />
     <ClCompile Include="drivers\acpi\acpi.cpp" />
@@ -305,7 +305,6 @@
     <ClCompile Include="drivers\svga\svga_screen_util.cpp" />
     <ClCompile Include="drivers\svga\vmsvga.cpp" />
     <ClCompile Include="drivers\svga\vm_backdoor.cpp" />
-    <ClCompile Include="drivers\vbox.cpp" />
     <ClCompile Include="drvmngr.cpp" />
     <ClCompile Include="fs\devfs.cpp" />
     <ClCompile Include="fs\fat\fat.cpp" />

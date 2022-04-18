@@ -10,18 +10,18 @@ _BSS	SEGMENT
 ?sata_drive_port@@3PEAU_hba_port_@@EA DQ 01H DUP (?)	; sata_drive_port
 _BSS	ENDS
 CONST	SEGMENT
-$SG3839	DB	'[AHCI]:Port Hung', 0aH, 00H
+$SG3863	DB	'[AHCI]:Port Hung', 0aH, 00H
 	ORG $+6
-$SG3845	DB	'[AHCI]: Port error ', 0dH, 0aH, 00H
+$SG3869	DB	'[AHCI]: Port error ', 0dH, 0aH, 00H
 	ORG $+2
-$SG3872	DB	'[AHCI]:Port Hung', 0aH, 00H
+$SG3896	DB	'[AHCI]:Port Hung', 0aH, 00H
 	ORG $+6
-$SG3878	DB	'[AHCI]: Port error ', 0dH, 0aH, 00H
+$SG3902	DB	'[AHCI]: Port error ', 0dH, 0aH, 00H
 	ORG $+2
-$SG3907	DB	'[AHCI]:Port Hung', 0aH, 00H
+$SG3931	DB	'[AHCI]:Port Hung', 0aH, 00H
 	ORG $+6
-$SG3926	DB	'[AHCI]: Port Supports cold presence %d', 0aH, 00H
-$SG3943	DB	'[AHCI]: Model -> %s', 0aH, 00H
+$SG3950	DB	'[AHCI]: Port Supports cold presence %d', 0aH, 00H
+$SG3967	DB	'[AHCI]: Model -> %s', 0aH, 00H
 CONST	ENDS
 PUBLIC	?ahci_disk_initialize@@YAXPEAU_hba_port_@@@Z	; ahci_disk_initialize
 PUBLIC	?ahci_disk_write@@YAXPEAU_hba_port_@@_KIPEA_K@Z	; ahci_disk_write
@@ -31,9 +31,9 @@ PUBLIC	?ahci_disk_start_cmd@@YAXPEAU_hba_port_@@@Z	; ahci_disk_start_cmd
 PUBLIC	?ahci_disk_get_port@@YAPEAU_hba_port_@@XZ	; ahci_disk_get_port
 PUBLIC	?ahci_disk_find_slot@@YAIPEAU_hba_port_@@@Z	; ahci_disk_find_slot
 PUBLIC	?ahci_disk_identify@@YAXPEAU_hba_port_@@_KIPEA_K@Z ; ahci_disk_identify
-EXTRN	?pmmngr_alloc@@YAPEAXXZ:PROC			; pmmngr_alloc
+EXTRN	?AuPmmngrAlloc@@YAPEAXXZ:PROC			; AuPmmngrAlloc
 EXTRN	?memset@@YAXPEAXEI@Z:PROC			; memset
-EXTRN	?printf@@YAXPEBDZZ:PROC				; printf
+EXTRN	printf:PROC
 EXTRN	?_debug_print_@@YAXPEADZZ:PROC			; _debug_print_
 pdata	SEGMENT
 $pdata$?ahci_disk_initialize@@YAXPEAU_hba_port_@@@Z DD imagerel $LN10
@@ -408,8 +408,8 @@ $LN5@ahci_disk_:
 
 ; 259  : 		printf ("[AHCI]:Port Hung\n");
 
-	lea	rcx, OFFSET FLAT:$SG3907
-	call	?printf@@YAXPEBDZZ			; printf
+	lea	rcx, OFFSET FLAT:$SG3931
+	call	printf
 $LN4@ahci_disk_:
 
 ; 260  : 
@@ -923,7 +923,7 @@ $LN8@ahci_disk_:
 
 ; 133  : 		_debug_print_ ("[AHCI]:Port Hung\n");
 
-	lea	rcx, OFFSET FLAT:$SG3839
+	lea	rcx, OFFSET FLAT:$SG3863
 	call	?_debug_print_@@YAXPEADZZ		; _debug_print_
 $LN7@ahci_disk_:
 
@@ -977,7 +977,7 @@ $LN4@ahci_disk_:
 
 ; 141  : 			_debug_print_ ("[AHCI]: Port error \r\n");
 
-	lea	rcx, OFFSET FLAT:$SG3845
+	lea	rcx, OFFSET FLAT:$SG3869
 	call	?_debug_print_@@YAXPEADZZ		; _debug_print_
 
 ; 142  : 			break;
@@ -1270,8 +1270,8 @@ $LN6@ahci_disk_:
 
 ; 195  : 		printf ("[AHCI]:Port Hung\n");
 
-	lea	rcx, OFFSET FLAT:$SG3872
-	call	?printf@@YAXPEBDZZ			; printf
+	lea	rcx, OFFSET FLAT:$SG3896
+	call	printf
 $LN5@ahci_disk_:
 
 ; 196  : 
@@ -1323,7 +1323,7 @@ $LN2@ahci_disk_:
 
 ; 202  : 			_debug_print_ ("[AHCI]: Port error \r\n");
 
-	lea	rcx, OFFSET FLAT:$SG3878
+	lea	rcx, OFFSET FLAT:$SG3902
 	call	?_debug_print_@@YAXPEADZZ		; _debug_print_
 
 ; 203  : 			break;
@@ -1384,9 +1384,9 @@ $LN10:
 ; 284  : 	uint64_t phys;
 ; 285  : 
 ; 286  : 	/* Allocate command list */
-; 287  : 	phys = (uint64_t)pmmngr_alloc();
+; 287  : 	phys = (uint64_t)AuPmmngrAlloc();
 
-	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
+	call	?AuPmmngrAlloc@@YAPEAXXZ		; AuPmmngrAlloc
 	mov	QWORD PTR phys$[rsp], rax
 
 ; 288  : 	port->clb = phys & 0xffffffff;
@@ -1420,9 +1420,9 @@ $LN10:
 
 ; 293  : 
 ; 294  : 	/* Allocate FIS */
-; 295  : 	phys = (uint64_t)pmmngr_alloc();
+; 295  : 	phys = (uint64_t)AuPmmngrAlloc();
 
-	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
+	call	?AuPmmngrAlloc@@YAPEAXXZ		; AuPmmngrAlloc
 	mov	QWORD PTR phys$[rsp], rax
 
 ; 296  : 	port->fb = phys & 0xffffffff;
@@ -1472,8 +1472,8 @@ $LN10:
 
 	movzx	eax, BYTE PTR cold_presence$[rsp]
 	mov	edx, eax
-	lea	rcx, OFFSET FLAT:$SG3926
-	call	?printf@@YAXPEBDZZ			; printf
+	lea	rcx, OFFSET FLAT:$SG3950
+	call	printf
 $LN7@ahci_disk_:
 
 ; 305  : 	}
@@ -1498,9 +1498,9 @@ $LN6@ahci_disk_:
 	mov	rdx, QWORD PTR cmd_list$[rsp]
 	mov	WORD PTR [rdx+rax+2], cx
 
-; 309  : 		phys = (uint64_t)pmmngr_alloc();
+; 309  : 		phys = (uint64_t)AuPmmngrAlloc();
 
-	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
+	call	?AuPmmngrAlloc@@YAPEAXXZ		; AuPmmngrAlloc
 	mov	QWORD PTR phys$[rsp], rax
 
 ; 310  : 		cmd_list[i].ctba = phys & 0xffffffff;
@@ -1608,9 +1608,9 @@ $LN4@ahci_disk_:
 	mov	BYTE PTR current_slot$[rsp], al
 
 ; 331  : 
-; 332  : 	uint64_t *addr = (uint64_t*)pmmngr_alloc();
+; 332  : 	uint64_t *addr = (uint64_t*)AuPmmngrAlloc();
 
-	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
+	call	?AuPmmngrAlloc@@YAPEAXXZ		; AuPmmngrAlloc
 	mov	QWORD PTR addr$[rsp], rax
 
 ; 333  : 	memset(addr,0,4096);
@@ -1677,8 +1677,8 @@ $LN1@ahci_disk_:
 ; 342  : 	printf ("[AHCI]: Model -> %s\n", ata_device_name);
 
 	lea	rdx, QWORD PTR ata_device_name$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3943
-	call	?printf@@YAXPEBDZZ			; printf
+	lea	rcx, OFFSET FLAT:$SG3967
+	call	printf
 
 ; 343  : 
 ; 344  : }

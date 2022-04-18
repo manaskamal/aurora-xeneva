@@ -137,8 +137,23 @@ struct interrupt_stack_frame {
 	size_t  rsp;
 	size_t  ss;
 };
-
 #pragma pack (pop)
+
+#pragma pack(push,1)
+typedef struct _fx_state_ {
+	uint16_t fcw;
+	uint16_t fsw;
+	uint8_t ftw;
+	uint8_t zero;
+	uint16_t fop;
+	uint64_t rip;
+	uint64_t rdp;
+	uint32_t mxcsr;
+	uint32_t mxcsrMask;
+	uint8_t  st[8][16];
+	uint8_t  xmm[16][16];
+}fx_state_t;
+#pragma pack(pop)
 
 //!=======================================================
 //! G L O B A L     F U N C T I O N S
@@ -172,6 +187,7 @@ extern "C" size_t x64_read_cr3();
 extern "C" size_t x64_read_cr4();
 extern "C" void x64_write_cr0(size_t);
 extern "C" void x64_write_cr3(size_t);
+extern "C" void x64_write_cr4(size_t);
 
 //!GDT &  IDT Function
 extern "C" void x64_lgdt(void* location);
@@ -183,8 +199,14 @@ extern "C" void cache_flush ();
 
 extern "C" void x64_atom_exchange (size_t r1, size_t r2);
 
+//!------------------------------------
+//!  FXSAVE/FXRSTOR
+//!------------------------------------
+extern "C" void x64_fxsave(uint8_t* location);
+extern "C" void x64_fxrstor(uint8_t* location);
+
 //! init -- initializer of x86_64 hal subsystem
-extern void hal_x86_64_init ();
+extern void x86_64_gdt_init ();
 //! setvect -- installs a interrupt vector
 extern void setvect(size_t vector, void (*function)(size_t vector, void* param));
 
@@ -192,7 +214,8 @@ extern "C" void gdt_initialize();
 extern void  interrupt_initialize();
 extern void  interrupt_initialize();
 extern void exception_init ();
-extern void hal_x86_64_setup_int ();
-extern void hal_x86_64_feature_check ();
-
+extern void x86_64_init_cpu ();
+extern void hal_cpu_feature_enable ();
+extern bool is_cpu_fxsave_supported ();
+extern bool is_cpu_xsave_supported ();
 #endif

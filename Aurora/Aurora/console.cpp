@@ -50,7 +50,7 @@ void console_initialize (PKERNEL_BOOT_INFO info) {
 	fb =  get_framebuffer_addr();//info->graphics_framebuffer;
 
 	//psf_data = info->psf_font_data;
-	uint64_t* buffer = (uint64_t*)pmmngr_alloc_blocks(2);
+	uint64_t* buffer = (uint64_t*)AuPmmngrAllocBlocks(2);
 	memset(buffer, 0, 8192);
 	vfs_node_t file = fat32_open(NULL, "/font.psf");
 	fat32_read_file (&file,buffer,file.size);

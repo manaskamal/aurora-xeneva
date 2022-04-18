@@ -145,20 +145,20 @@ void e1000_interrupt_handler (size_t v, void* p) {
 	}
 
 	e1000_write_command (REG_ICR, 1);
-	interrupt_end(i_net_dev->e1000_irq);
+	AuInterruptEnd(i_net_dev->e1000_irq);
 	x64_sti();
 }
 	
 
 void e1000_rx_init () {
 
-	i_net_dev->rx_desc_base = (uint64_t*)pmmngr_alloc();
+	i_net_dev->rx_desc_base = (uint64_t*)AuPmmngrAlloc();
 	memset (i_net_dev->rx_desc_base, 0, 4096);
 	uint64_t rx_desc_base = (uint64_t)i_net_dev->rx_desc_base;
 
 	for (int i = 0; i < E1000_NUM_RX_DESC; i++) {
 		i_net_dev->rx_desc[i] = (e1000_rx_desc*)(i_net_dev->rx_desc_base + (i * 16));
-		i_net_dev->rx_desc[i]->addr = (uint64_t)pmmngr_alloc();   
+		i_net_dev->rx_desc[i]->addr = (uint64_t)AuPmmngrAlloc();   
 		i_net_dev->rx_desc[i]->status = 0;
 	}
 
@@ -181,11 +181,11 @@ void e1000_rx_init () {
 
 void e1000_tx_init () {
 
-	i_net_dev->tx_desc_base = (uint64_t*)pmmngr_alloc();
+	i_net_dev->tx_desc_base = (uint64_t*)AuPmmngrAlloc();
 	uint64_t base_address = (uint64_t)i_net_dev->tx_desc_base;
 	for (int i = 0; i < E1000_NUM_TX_DESC; i++) {
 		i_net_dev->tx_desc[i] = (e1000_tx_desc*)(i_net_dev->tx_desc_base + (i * 16));
-		i_net_dev->tx_desc[i]->addr = (uint64_t)pmmngr_alloc();
+		i_net_dev->tx_desc[i]->addr = (uint64_t)AuPmmngrAlloc();
 		i_net_dev->tx_desc[i]->cmd = (1<<0);
 	}
 	e1000_write_command (REG_TXDESCHI, base_address >> 32);
@@ -303,7 +303,7 @@ void e1000_reset () {
 
 void e1000_initialize () {
 	int func, dev_, bus = 0;
-	pci_device_info *dev = (pci_device_info*)pmmngr_alloc();
+	pci_device_info *dev = (pci_device_info*)AuPmmngrAlloc();
 	if (!pci_find_device_class (0x02,0x00, dev,&bus, &dev_, &func)) {
 		_debug_print_ ("Intel Ethernet not found\n");
 		return;
@@ -337,7 +337,7 @@ void e1000_initialize () {
 			_debug_print_("E1000 legacy irq -> %d, pin -> %d\n", dev->device.nonBridge.interruptLine, dev->device.nonBridge.interruptPin);
 			write_config_8 (0,bus,dev_,func,0x3C, 10);
 			read_config_8 (0,bus, dev_, func, 0x3C,&dev->device.all.interruptLine);
-			interrupt_set (10, e1000_interrupt_handler,dev->device.nonBridge.interruptLine);
+			AuInterruptSet(10, e1000_interrupt_handler,dev->device.nonBridge.interruptLine);
 		}
 	}
 

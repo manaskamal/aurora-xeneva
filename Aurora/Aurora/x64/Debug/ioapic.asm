@@ -6,7 +6,7 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 CONST	SEGMENT
-$SG2844	DB	'IOAPIC INTR NUM -> %d', 0aH, 00H
+$SG2871	DB	'IOAPIC INTR NUM -> %d', 0aH, 00H
 CONST	ENDS
 PUBLIC	?ioapic_init@@YAXPEAX@Z				; ioapic_init
 PUBLIC	?ioapic_register_irq@@YAX_KP6AX0PEAX@ZE@Z	; ioapic_register_irq
@@ -503,7 +503,7 @@ $LN6:
 ; 106  : 	debug_print ("IOAPIC INTR NUM -> %d\n", intr_num);
 
 	mov	edx, DWORD PTR intr_num$[rsp]
-	lea	rcx, OFFSET FLAT:$SG2844
+	lea	rcx, OFFSET FLAT:$SG2871
 	call	?debug_print@@YAXPEBDZZ			; debug_print
 
 ; 107  : 	for(size_t n = 0; n <= intr_num; ++n)

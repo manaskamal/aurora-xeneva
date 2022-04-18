@@ -11,7 +11,7 @@
 
 #include <arch\x86_64\apic.h>
 #include <arch\x86_64\ioapic.h>
-#include <arch\x86_64\mmngr\vmmngr.h>
+#include <arch\x86_64\mmngr\paging.h>
 #include <string.h>
 #include <fs\vfs.h>
 #include <hal.h>
@@ -155,7 +155,7 @@ void initialize_apic () {
 
 
 	//!Register the time speed
-	write_apic_register (LAPIC_REGISTER_TMRDIV, 0xa);  //0xa
+	write_apic_register (LAPIC_REGISTER_TMRDIV, 0x3);  //0xa
 
 	/*! timer initialized*/
 	size_t timer_vector = 0x40;
@@ -164,7 +164,7 @@ void initialize_apic () {
 	size_t timer_reg = (1 << 17) | timer_vector;
 	write_apic_register (LAPIC_REGISTER_LVT_TIMER, timer_reg);
 	io_wait ();
-	write_apic_register (LAPIC_REGISTER_TMRINITCNT,76);  //100 , 500
+	write_apic_register (LAPIC_REGISTER_TMRINITCNT,1000);  //100 , 500
 	
 
 	x64_outportb(PIC1_DATA, 0xFF);

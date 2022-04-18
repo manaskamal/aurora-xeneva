@@ -15,9 +15,9 @@ _sound_loop_prop_ DB 01H DUP (?)
 ?dsp_last@@3PEAU_dsp_@@EA DQ 01H DUP (?)		; dsp_last
 _BSS	ENDS
 CONST	SEGMENT
-$SG3713	DB	'snd', 00H
+$SG3776	DB	'snd', 00H
 	ORG $+4
-$SG3714	DB	'/dev/snd', 00H
+$SG3777	DB	'/dev/snd', 00H
 CONST	ENDS
 PUBLIC	?sound_initialize@@YAXXZ			; sound_initialize
 PUBLIC	?sound_request_next@@YAXPEAE@Z			; sound_request_next
@@ -29,14 +29,14 @@ PUBLIC	?sound_write@@YAXPEAU_vfs_node_@@PEAEI@Z	; sound_write
 EXTRN	?strcpy@@YAPEADPEADPEBD@Z:PROC			; strcpy
 EXTRN	?memset@@YAXPEAXEI@Z:PROC			; memset
 EXTRN	memcpy:PROC
-EXTRN	?vfs_mount@@YAXPEADPEAU_vfs_node_@@@Z:PROC	; vfs_mount
-EXTRN	?pmmngr_alloc@@YAPEAXXZ:PROC			; pmmngr_alloc
-EXTRN	?pmmngr_free@@YAXPEAX@Z:PROC			; pmmngr_free
+EXTRN	?vfs_mount@@YAXPEADPEAU_vfs_node_@@PEAU_vfs_entry_@@@Z:PROC ; vfs_mount
+EXTRN	?AuPmmngrAlloc@@YAPEAXXZ:PROC			; AuPmmngrAlloc
+EXTRN	?AuPmmngrFree@@YAXPEAX@Z:PROC			; AuPmmngrFree
 EXTRN	?malloc@@YAPEAX_K@Z:PROC			; malloc
 EXTRN	?hda_audio_play@@YAXXZ:PROC			; hda_audio_play
 pdata	SEGMENT
 $pdata$?sound_initialize@@YAXXZ DD imagerel $LN3
-	DD	imagerel $LN3+226
+	DD	imagerel $LN3+220
 	DD	imagerel $unwind$?sound_initialize@@YAXXZ
 $pdata$?sound_request_next@@YAXPEAE@Z DD imagerel $LN9
 	DD	imagerel $LN9+139
@@ -209,9 +209,9 @@ $LN3:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 56					; 00000038H
 
-; 81   : 	dsp_t *dsp = (dsp_t*)pmmngr_alloc();
+; 81   : 	dsp_t *dsp = (dsp_t*)AuPmmngrAlloc();
 
-	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
+	call	?AuPmmngrAlloc@@YAPEAXXZ		; AuPmmngrAlloc
 	mov	QWORD PTR dsp$[rsp], rax
 
 ; 82   : 	memset(dsp,0,4096);
@@ -318,10 +318,10 @@ $LN1@dsp_delete:
 
 ; 72   : 	}
 ; 73   : 
-; 74   : 	pmmngr_free (dsp);
+; 74   : 	AuPmmngrFree (dsp);
 
 	mov	rcx, QWORD PTR dsp$[rsp]
-	call	?pmmngr_free@@YAXPEAX@Z			; pmmngr_free
+	call	?AuPmmngrFree@@YAXPEAX@Z		; AuPmmngrFree
 $LN6@dsp_delete:
 
 ; 75   : }
@@ -501,7 +501,7 @@ $LN3:
 ; 133  : 	strcpy (snd->filename, "snd");
 
 	mov	rax, QWORD PTR snd$[rsp]
-	lea	rdx, OFFSET FLAT:$SG3713
+	lea	rdx, OFFSET FLAT:$SG3776
 	mov	rcx, rax
 	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
 
@@ -513,7 +513,7 @@ $LN3:
 ; 135  : 	snd->eof = 0;
 
 	mov	rax, QWORD PTR snd$[rsp]
-	mov	DWORD PTR [rax+36], 0
+	mov	BYTE PTR [rax+36], 0
 
 ; 136  : 	snd->pos = 0;
 
@@ -528,12 +528,12 @@ $LN3:
 ; 138  : 	snd->flags = FS_FLAG_GENERAL;
 
 	mov	rax, QWORD PTR snd$[rsp]
-	mov	DWORD PTR [rax+48], 2
+	mov	BYTE PTR [rax+48], 2
 
 ; 139  : 	snd->status = 0;
 
 	mov	rax, QWORD PTR snd$[rsp]
-	mov	DWORD PTR [rax+52], 0
+	mov	BYTE PTR [rax+49], 0
 
 ; 140  : 	snd->open = 0;
 
@@ -562,11 +562,12 @@ $LN3:
 	lea	rcx, OFFSET FLAT:?snd_io_query@@YAHPEAU_vfs_node_@@HPEAX@Z ; snd_io_query
 	mov	QWORD PTR [rax+96], rcx
 
-; 145  : 	vfs_mount ("/dev/snd", snd);
+; 145  : 	vfs_mount ("/dev/snd", snd, 0);
 
+	xor	r8d, r8d
 	mov	rdx, QWORD PTR snd$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3714
-	call	?vfs_mount@@YAXPEADPEAU_vfs_node_@@@Z	; vfs_mount
+	lea	rcx, OFFSET FLAT:$SG3777
+	call	?vfs_mount@@YAXPEADPEAU_vfs_node_@@PEAU_vfs_entry_@@@Z ; vfs_mount
 
 ; 146  : }
 

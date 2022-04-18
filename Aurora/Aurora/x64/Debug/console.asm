@@ -22,9 +22,9 @@ psf_data DQ	01H DUP (?)
 _console_initialized_ DB 01H DUP (?)
 _BSS	ENDS
 CONST	SEGMENT
-$SG3242	DB	'/font.psf', 00H
+$SG3305	DB	'/font.psf', 00H
 	ORG $+6
-$SG3243	DB	'Font finally loaded', 0aH, 00H
+$SG3306	DB	'Font finally loaded', 0aH, 00H
 CONST	ENDS
 PUBLIC	?console_initialize@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z ; console_initialize
 PUBLIC	?puts@@YAXPEAD@Z				; puts
@@ -33,10 +33,10 @@ PUBLIC	?is_console_initialized@@YA_NXZ			; is_console_initialized
 PUBLIC	?fb_write@@YAXPEAU_vfs_node_@@PEAEI@Z		; fb_write
 PUBLIC	?fb_io_query@@YAHPEAU_vfs_node_@@HPEAX@Z	; fb_io_query
 PUBLIC	?console_pixel@@YAXIII@Z			; console_pixel
-EXTRN	?pmmngr_alloc_blocks@@YAPEAXH@Z:PROC		; pmmngr_alloc_blocks
+EXTRN	?AuPmmngrAllocBlocks@@YAPEAXH@Z:PROC		; AuPmmngrAllocBlocks
 EXTRN	?memset@@YAXPEAXEI@Z:PROC			; memset
 EXTRN	memcpy:PROC
-EXTRN	?printf@@YAXPEBDZZ:PROC				; printf
+EXTRN	printf:PROC
 EXTRN	?fat32_open@@YA?AU_vfs_node_@@PEAU1@PEAD@Z:PROC	; fat32_open
 EXTRN	?fat32_read_file@@YAXPEAU_vfs_node_@@PEA_KI@Z:PROC ; fat32_read_file
 EXTRN	?get_framebuffer_addr@@YAPEAIXZ:PROC		; get_framebuffer_addr
@@ -773,10 +773,10 @@ $LN3:
 
 ; 51   : 
 ; 52   : 	//psf_data = info->psf_font_data;
-; 53   : 	uint64_t* buffer = (uint64_t*)pmmngr_alloc_blocks(2);
+; 53   : 	uint64_t* buffer = (uint64_t*)AuPmmngrAllocBlocks(2);
 
 	mov	ecx, 2
-	call	?pmmngr_alloc_blocks@@YAPEAXH@Z		; pmmngr_alloc_blocks
+	call	?AuPmmngrAllocBlocks@@YAPEAXH@Z		; AuPmmngrAllocBlocks
 	mov	QWORD PTR buffer$[rsp], rax
 
 ; 54   : 	memset(buffer, 0, 8192);
@@ -788,7 +788,7 @@ $LN3:
 
 ; 55   : 	vfs_node_t file = fat32_open(NULL, "/font.psf");
 
-	lea	r8, OFFSET FLAT:$SG3242
+	lea	r8, OFFSET FLAT:$SG3305
 	xor	edx, edx
 	lea	rcx, QWORD PTR $T2[rsp]
 	call	?fat32_open@@YA?AU_vfs_node_@@PEAU1@PEAD@Z ; fat32_open
@@ -823,8 +823,8 @@ $LN3:
 
 ; 60   : 	printf ("Font finally loaded\n");
 
-	lea	rcx, OFFSET FLAT:$SG3243
-	call	?printf@@YAXPEBDZZ			; printf
+	lea	rcx, OFFSET FLAT:$SG3306
+	call	printf
 
 ; 61   : 	//for(;;);
 ; 62   : }

@@ -42,5 +42,5 @@ void initialize_gpt () {
 		raw_byte_index++;
 	}
 
-	pmmngr_free(buf);
+	AuPmmngrFree(buf);
 }

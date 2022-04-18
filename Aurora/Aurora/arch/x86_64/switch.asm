@@ -29,24 +29,6 @@ save_context:
 	mov [rcx + 0x90], r14
 	mov [rcx + 0x98], r15
 
-	
-	mov rdx, [rcx + 0xD0]
-	movaps [rdx + 0x00], xmm0
-	movaps [rdx + 0x10], xmm1
-	movaps [rdx + 0x20], xmm2
-	movaps [rdx + 0x30], xmm3
-	movaps [rdx + 0x40], xmm4
-	movaps [rdx + 0x50], xmm5
-	movaps [rdx + 0x60], xmm6
-	movaps [rdx + 0x70], xmm7
-	;movaps [rdx + 0x80], xmm8
-	;movaps [rdx + 0x90], xmm9
-	;movaps [rdx + 0xA0], xmm10
-	;movaps [rdx + 0xB0], xmm11
-	;movaps [rdx + 0xC0], xmm12
-	;movaps [rdx + 0xD0], xmm13
-	;movaps [rdx + 0xE0], xmm14
-	;movaps [rdx + 0xF0], xmm15
 
 	pushfq  
 	pop rax
@@ -89,24 +71,6 @@ execute_idle:
 	
 	;mov qword[fs:0x20], r8
 
-	mov rdx, [rcx + 0xD0]
-	movaps xmm0, [rdx + 0x00]
-	movaps xmm1, [rdx + 0x10] 
-	movaps xmm2, [rdx + 0x20] 
-	movaps xmm3, [rdx + 0x30] 
-	movaps xmm4, [rdx + 0x40] 
-	movaps xmm5, [rdx + 0x50] 
-	movaps xmm6, [rdx + 0x60] 
-	movaps xmm7, [rdx + 0x70]
-	;movaps xmm8, [rdx + 0x80] 
-	;movaps xmm9, [rdx + 0x90] 
-	;movaps xmm10, [rdx + 0xA0] 
-	;movaps xmm11, [rdx + 0xB0] 
-	;movaps xmm12, [rdx + 0xC0] 
-	;movaps xmm13, [rdx + 0xD0] 
-	;movaps xmm14, [rdx + 0xE0]
-	;movaps xmm15, [rdx + 0xF0] 
-	
 	; returning
     mov r9, 1
 	cmp r8, 0

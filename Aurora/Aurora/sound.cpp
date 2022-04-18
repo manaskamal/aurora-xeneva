@@ -71,14 +71,14 @@ void dsp_delete (dsp_t* dsp) {
 		dsp->next->prev = dsp->prev;
 	}
 
-	pmmngr_free (dsp);
+	AuPmmngrFree (dsp);
 }
 /**
  * sound_create_client -- create a client node
  * @param node -- virtual file system node
  */
 void sound_create_client (vfs_node_t *node) {
-	dsp_t *dsp = (dsp_t*)pmmngr_alloc();
+	dsp_t *dsp = (dsp_t*)AuPmmngrAlloc();
 	memset(dsp,0,4096);
 	node->device = dsp;
 	dsp_insert (dsp);
@@ -142,7 +142,7 @@ void sound_initialize () {
 	snd->write = sound_write;
 	snd->read_blk = 0;
 	snd->ioquery = snd_io_query;
-	vfs_mount ("/dev/snd", snd);
+	vfs_mount ("/dev/snd", snd, 0);
 }
 
 

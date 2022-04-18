@@ -127,12 +127,12 @@ void sys_read_file (int fd, uint8_t* buffer, FILE *ufile) {
 		for (int i = 0; i < file.size; i += 8) {
 			if (file.eof) 
 				break;
-			uint64_t* buff = (uint64_t*)pmmngr_alloc();
+			uint64_t* buff = (uint64_t*)AuPmmngrAlloc();
 			memset(buff, 0, 4096);
 			readfs_block (node,&file,buff);
 			memcpy (buffer,buff,4096);
 			buffer += 4096;
-			pmmngr_free(buff);
+			AuPmmngrFree(buff);
 			
 		}
 

@@ -9,8 +9,8 @@ _BSS	SEGMENT
 _serial_initialized_ DB 01H DUP (?)
 _BSS	ENDS
 CONST	SEGMENT
-$SG2950	DB	'Serial Handler', 0aH, 00H
-$SG3043	DB	'.', 00H
+$SG2978	DB	'Serial Handler', 0aH, 00H
+$SG3071	DB	'.', 00H
 CONST	ENDS
 PUBLIC	?initialize_serial@@YAXXZ			; initialize_serial
 PUBLIC	?write_serial@@YAXD@Z				; write_serial
@@ -21,10 +21,10 @@ PUBLIC	?serial_handler@@YAX_KPEAX@Z			; serial_handler
 PUBLIC	?is_transmit_empty@@YAHXZ			; is_transmit_empty
 EXTRN	x64_inportb:PROC
 EXTRN	x64_outportb:PROC
-EXTRN	?interrupt_end@@YAXI@Z:PROC			; interrupt_end
+EXTRN	AuInterruptEnd:PROC
 EXTRN	?strlen@@YA_KPEBD@Z:PROC			; strlen
 EXTRN	?sztoa@@YAPEAD_KPEADH@Z:PROC			; sztoa
-EXTRN	?printf@@YAXPEBDZZ:PROC				; printf
+EXTRN	printf:PROC
 EXTRN	?ftoa@@YAPEADME@Z:PROC				; ftoa
 EXTRN	?p2v@@YA_K_K@Z:PROC				; p2v
 EXTRN	_fltused:DWORD
@@ -103,13 +103,13 @@ $LN3:
 
 ; 25   : 	printf ("Serial Handler\n");
 
-	lea	rcx, OFFSET FLAT:$SG2950
-	call	?printf@@YAXPEBDZZ			; printf
+	lea	rcx, OFFSET FLAT:$SG2978
+	call	printf
 
-; 26   : 	interrupt_end(4);
+; 26   : 	AuInterruptEnd(4);
 
 	mov	ecx, 4
-	call	?interrupt_end@@YAXI@Z			; interrupt_end
+	call	AuInterruptEnd
 
 ; 27   : }
 
@@ -446,7 +446,7 @@ $LN5@debug_prin:
 ; 119  : 			{
 ; 120  : 				debug_serial(".");
 
-	lea	rcx, OFFSET FLAT:$SG3043
+	lea	rcx, OFFSET FLAT:$SG3071
 	call	?debug_serial@@YAXPEAD@Z		; debug_serial
 
 ; 121  : 			}

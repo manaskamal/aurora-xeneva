@@ -51,7 +51,7 @@ void timer_delete (timer_t* new_timer) {
 	} else {
 		new_timer->next->prev = new_timer->prev;
 	}
-	pmmngr_free(new_timer);
+	AuPmmngrFree(new_timer);
 }
 
 
@@ -64,7 +64,7 @@ void timer_delete (timer_t* new_timer) {
   */
 int create_timer (uint32_t interval, uint16_t id) {	
 	utimer_id++;
-	timer_t *t = (timer_t*)pmmngr_alloc();
+	timer_t *t = (timer_t*)AuPmmngrAlloc();
 	t->timer_count = 0;
 	t->task_id = id;
 	t->interval = interval;

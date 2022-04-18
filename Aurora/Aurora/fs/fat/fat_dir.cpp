@@ -58,7 +58,7 @@ extern uint16_t fat32_format_time ();
  * fat32_find_free_dir_entry -- finds free directory entry in root dir
  */
 void fat32_find_free_dir_entry (uint32_t cluster) {
-	uint64_t* buffer = (uint64_t*)pmmngr_alloc();
+	uint64_t* buffer = (uint64_t*)AuPmmngrAlloc();
 	memset(buffer, 0, 4096);
 
 	ahci_disk_read (ahci_disk_get_port(),cluster_to_sector32(cluster),fat32_get_sector_per_cluster(),buffer);
@@ -87,7 +87,7 @@ vfs_node_t *fat32_make_dir (uint32_t parent_clust, char* filename) {
 	memset(file, 0, sizeof(vfs_node_t));
 
 
-	uint64_t* buff = (uint64_t*)pmmngr_alloc();
+	uint64_t* buff = (uint64_t*)AuPmmngrAlloc();
 	memset(buff, 0, 4096);
 
 	bool is_parent_root = false;
@@ -126,7 +126,7 @@ search:
 				dirent->date_last_accessed = 0;
 				dirent->file_size = 0;
 
-				uint64_t* entrybuf = (uint64_t*)pmmngr_alloc();
+				uint64_t* entrybuf = (uint64_t*)AuPmmngrAlloc();
 				memset(entrybuf, 0, 4096);
 				uint8_t* entry = (uint8_t*)entrybuf;
 
@@ -167,8 +167,8 @@ search:
 
 				ahci_disk_write (ahci_disk_get_port(),cluster_to_sector32(cluster),fat32_get_sector_per_cluster(),entrybuf);
 			    ahci_disk_write (ahci_disk_get_port(),cluster_to_sector32(parent_clust) + j,1,buff);
-			    pmmngr_free(entry);
-			    pmmngr_free(buffer);
+			    AuPmmngrFree(entry);
+			    AuPmmngrFree(buffer);
 
 				strcpy (file->filename,fname);
 				file->size = dirent->file_size;
@@ -204,7 +204,7 @@ vfs_node_t *fat32_open_dir (uint32_t parent_clust, char* filename) {
 	memset(file, 0, sizeof(vfs_node_t));
 
 
-	uint64_t* buff = (uint64_t*)pmmngr_alloc();
+	uint64_t* buff = (uint64_t*)AuPmmngrAlloc();
 	memset(buff, 0, 4096);
 
 	bool is_parent_root = false;
@@ -238,7 +238,7 @@ search:
 				file->current = dirent->first_cluster;
 				file->flags = FS_FLAG_DIRECTORY;
 				file->status = FS_STATUS_FOUND;
-				pmmngr_free(buff);
+				AuPmmngrFree(buff);
 				_debug_print_ ("FAT32: Directory opened at entry-> %d \r\n",i);
 			    return file;
 			}

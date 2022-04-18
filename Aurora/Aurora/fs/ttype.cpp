@@ -89,7 +89,7 @@ void ttype_delete (ttype_t* tty) {
 		tty->next->prev = tty->prev;
 	}
 
-	pmmngr_free (tty);
+	AuPmmngrFree(tty);
 }
 
 /**
@@ -228,9 +228,9 @@ int ttype_create (int* master_fd, int* slave_fd) {
 
 	ttype_t *tty= (ttype_t*)malloc(sizeof(ttype_t));  //pmmngr_alloc();
 
-	void* inbuffer = pmmngr_alloc();
+	void* inbuffer = AuPmmngrAlloc();
 	memset(inbuffer, 0, 4096);
-	void* outbuffer = pmmngr_alloc();
+	void* outbuffer = AuPmmngrAlloc();
 	memset(outbuffer, 0, 4096);
 
 	tty->in_buffer = circ_buf_init((uint8_t*)inbuffer,4095);
@@ -285,7 +285,7 @@ int ttype_create (int* master_fd, int* slave_fd) {
 	sn->write = ttype_slave_write;
 	sn->read_blk = 0;
 	sn->ioquery = 0;
-	vfs_mount (sname, sn);
+	vfs_mount (sname, sn, 0);
 
 	_debug_print_ ("[TTY]: Slave node mounted at %s \r\n", sname);
 	

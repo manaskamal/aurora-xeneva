@@ -10,46 +10,46 @@ _BSS	SEGMENT
 ?i_net_dev@@3PEAU_e1000_dev_@@EA DQ 01H DUP (?)		; i_net_dev
 _BSS	ENDS
 CONST	SEGMENT
-$SG3480	DB	'EEPROM exist', 0aH, 00H
+$SG3504	DB	'EEPROM exist', 0aH, 00H
 	ORG $+2
-$SG3483	DB	'Applying memory map', 0aH, 00H
+$SG3507	DB	'Applying memory map', 0aH, 00H
 	ORG $+3
-$SG3504	DB	'E1000 recevied ', 0dH, 0aH, 00H
+$SG3528	DB	'E1000 recevied ', 0dH, 0aH, 00H
 	ORG $+2
-$SG3516	DB	'up', 00H
+$SG3540	DB	'up', 00H
 	ORG $+1
-$SG3508	DB	'E1000 Bytes received -> %d bytes, status 0x%x ', 0dH, 0aH
+$SG3532	DB	'E1000 Bytes received -> %d bytes, status 0x%x ', 0dH, 0aH
 	DB	00H
 	ORG $+7
-$SG3513	DB	'E1000 interrupt data transmit ', 0dH, 0aH, 00H
+$SG3537	DB	'E1000 interrupt data transmit ', 0dH, 0aH, 00H
 	ORG $+3
-$SG3517	DB	'down', 00H
+$SG3541	DB	'down', 00H
 	ORG $+7
-$SG3518	DB	'E1000 interrupt link change %s ', 0dH, 0aH, 00H
+$SG3542	DB	'E1000 interrupt link change %s ', 0dH, 0aH, 00H
 	ORG $+6
-$SG3520	DB	'E1000 unknown interrupt ', 0dH, 0aH, 00H
+$SG3544	DB	'E1000 unknown interrupt ', 0dH, 0aH, 00H
 	ORG $+5
-$SG3552	DB	'CUR Tx tail -> %d', 0aH, 00H
+$SG3576	DB	'CUR Tx tail -> %d', 0aH, 00H
 	ORG $+5
-$SG3556	DB	'TX Next tail -> %d', 0aH, 00H
+$SG3580	DB	'TX Next tail -> %d', 0aH, 00H
 	ORG $+4
-$SG3561	DB	'Transmit status ->%x', 0aH, 00H
+$SG3585	DB	'Transmit status ->%x', 0aH, 00H
 	ORG $+2
-$SG3562	DB	'Transmitted', 0aH, 00H
+$SG3586	DB	'Transmitted', 0aH, 00H
 	ORG $+3
-$SG3573	DB	'E1000 New Packet received #3', 0aH, 00H
+$SG3597	DB	'E1000 New Packet received #3', 0aH, 00H
 	ORG $+2
-$SG3608	DB	'Intel Ethernet not found', 0aH, 00H
+$SG3632	DB	'Intel Ethernet not found', 0aH, 00H
 	ORG $+6
-$SG3611	DB	'E1000 INterrupt Disabled in PCI ConfigSpace', 0aH, 00H
+$SG3635	DB	'E1000 INterrupt Disabled in PCI ConfigSpace', 0aH, 00H
 	ORG $+3
-$SG3621	DB	'E1000 Supports MSI', 0aH, 00H
+$SG3645	DB	'E1000 Supports MSI', 0aH, 00H
 	ORG $+4
-$SG3624	DB	'E1000 legacy irq -> %d, pin -> %d', 0aH, 00H
+$SG3648	DB	'E1000 legacy irq -> %d, pin -> %d', 0aH, 00H
 	ORG $+5
-$SG3648	DB	'MAC Address read successfully', 0aH, 00H
+$SG3672	DB	'MAC Address read successfully', 0aH, 00H
 	ORG $+1
-$SG3649	DB	'e1000 setup completed', 0aH, 00H
+$SG3673	DB	'e1000 setup completed', 0aH, 00H
 CONST	ENDS
 PUBLIC	?e1000_initialize@@YAXXZ			; e1000_initialize
 PUBLIC	?e1000_send_packet@@YAXPEAX_K@Z			; e1000_send_packet
@@ -68,19 +68,19 @@ EXTRN	x64_cli:PROC
 EXTRN	x64_sti:PROC
 EXTRN	x64_inportd:PROC
 EXTRN	x64_outportd:PROC
-EXTRN	?inportd@@YAIG@Z:PROC				; inportd
-EXTRN	?interrupt_end@@YAXI@Z:PROC			; interrupt_end
-EXTRN	?interrupt_set@@YAX_KP6AX0PEAX@ZE@Z:PROC	; interrupt_set
+EXTRN	inportd:PROC
+EXTRN	AuInterruptEnd:PROC
+EXTRN	AuInterruptSet:PROC
 EXTRN	?read_config_16@@YAXGHHHHPEAG@Z:PROC		; read_config_16
 EXTRN	?read_config_8@@YAXGHHHHPEAE@Z:PROC		; read_config_8
 EXTRN	?write_config_8@@YAXGHHHHE@Z:PROC		; write_config_8
 EXTRN	?pci_find_device_class@@YA_NEEPEATpci_device_info@@PEAH11@Z:PROC ; pci_find_device_class
 EXTRN	?pci_alloc_msi@@YA_NHHHP6AX_KPEAX@Z@Z:PROC	; pci_alloc_msi
 EXTRN	?pci_enable_bus_master@@YAXHHH@Z:PROC		; pci_enable_bus_master
-EXTRN	?pmmngr_alloc@@YAPEAXXZ:PROC			; pmmngr_alloc
+EXTRN	?AuPmmngrAlloc@@YAPEAXXZ:PROC			; AuPmmngrAlloc
 EXTRN	?memset@@YAXPEAXEI@Z:PROC			; memset
 EXTRN	memcpy:PROC
-EXTRN	?printf@@YAXPEBDZZ:PROC				; printf
+EXTRN	printf:PROC
 EXTRN	?malloc@@YAPEAX_K@Z:PROC			; malloc
 EXTRN	?_debug_print_@@YAXPEADZZ:PROC			; _debug_print_
 pdata	SEGMENT
@@ -438,8 +438,8 @@ $LN3@e1000_hand:
 
 ; 262  : 		printf ("E1000 New Packet received #3\n");
 
-	lea	rcx, OFFSET FLAT:$SG3573
-	call	?printf@@YAXPEBDZZ			; printf
+	lea	rcx, OFFSET FLAT:$SG3597
+	call	printf
 
 ; 263  : 		break;
 
@@ -505,9 +505,9 @@ $LN6:
 	sub	rsp, 56					; 00000038H
 
 ; 183  : 
-; 184  : 	i_net_dev->tx_desc_base = (uint64_t*)pmmngr_alloc();
+; 184  : 	i_net_dev->tx_desc_base = (uint64_t*)AuPmmngrAlloc();
 
-	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
+	call	?AuPmmngrAlloc@@YAPEAXXZ		; AuPmmngrAlloc
 	mov	rcx, QWORD PTR ?i_net_dev@@3PEAU_e1000_dev_@@EA ; i_net_dev
 	mov	QWORD PTR [rcx+40], rax
 
@@ -541,9 +541,9 @@ $LN3@e1000_tx_i:
 	mov	rdx, QWORD PTR ?i_net_dev@@3PEAU_e1000_dev_@@EA ; i_net_dev
 	mov	QWORD PTR [rdx+rcx*8+312], rax
 
-; 188  : 		i_net_dev->tx_desc[i]->addr = (uint64_t)pmmngr_alloc();
+; 188  : 		i_net_dev->tx_desc[i]->addr = (uint64_t)AuPmmngrAlloc();
 
-	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
+	call	?AuPmmngrAlloc@@YAPEAXXZ		; AuPmmngrAlloc
 	movsxd	rcx, DWORD PTR i$1[rsp]
 	mov	rdx, QWORD PTR ?i_net_dev@@3PEAU_e1000_dev_@@EA ; i_net_dev
 	mov	rcx, QWORD PTR [rdx+rcx*8+312]
@@ -660,9 +660,9 @@ $LN6:
 	sub	rsp, 56					; 00000038H
 
 ; 154  : 
-; 155  : 	i_net_dev->rx_desc_base = (uint64_t*)pmmngr_alloc();
+; 155  : 	i_net_dev->rx_desc_base = (uint64_t*)AuPmmngrAlloc();
 
-	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
+	call	?AuPmmngrAlloc@@YAPEAXXZ		; AuPmmngrAlloc
 	mov	rcx, QWORD PTR ?i_net_dev@@3PEAU_e1000_dev_@@EA ; i_net_dev
 	mov	QWORD PTR [rcx+32], rax
 
@@ -705,9 +705,9 @@ $LN3@e1000_rx_i:
 	mov	rdx, QWORD PTR ?i_net_dev@@3PEAU_e1000_dev_@@EA ; i_net_dev
 	mov	QWORD PTR [rdx+rcx*8+56], rax
 
-; 161  : 		i_net_dev->rx_desc[i]->addr = (uint64_t)pmmngr_alloc();   
+; 161  : 		i_net_dev->rx_desc[i]->addr = (uint64_t)AuPmmngrAlloc();   
 
-	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
+	call	?AuPmmngrAlloc@@YAPEAXXZ		; AuPmmngrAlloc
 	movsxd	rcx, DWORD PTR i$1[rsp]
 	mov	rdx, QWORD PTR ?i_net_dev@@3PEAU_e1000_dev_@@EA ; i_net_dev
 	mov	rcx, QWORD PTR [rdx+rcx*8+56]
@@ -826,7 +826,7 @@ $LN16:
 ; 114  : 		uint32_t head = inportd (REG_RXDESCHEAD);
 
 	mov	cx, 10256				; 00002810H
-	call	?inportd@@YAIG@Z			; inportd
+	call	inportd
 	mov	DWORD PTR head$2[rsp], eax
 $LN10@e1000_inte:
 
@@ -840,7 +840,7 @@ $LN10@e1000_inte:
 
 ; 117  : 			_debug_print_ ("E1000 recevied \r\n");
 
-	lea	rcx, OFFSET FLAT:$SG3504
+	lea	rcx, OFFSET FLAT:$SG3528
 	call	?_debug_print_@@YAXPEADZZ		; _debug_print_
 
 ; 118  : 			size_t size = i_net_dev->rx_desc[i_net_dev->rx_tail]->length;
@@ -889,7 +889,7 @@ $LN8@e1000_inte:
 	movzx	eax, BYTE PTR status$1[rsp]
 	mov	r8d, eax
 	mov	rdx, QWORD PTR size$3[rsp]
-	lea	rcx, OFFSET FLAT:$SG3508
+	lea	rcx, OFFSET FLAT:$SG3532
 	call	?_debug_print_@@YAXPEADZZ		; _debug_print_
 
 ; 128  : 
@@ -967,7 +967,7 @@ $LN11@e1000_inte:
 
 ; 140  : 		_debug_print_ ("E1000 interrupt data transmit \r\n");
 
-	lea	rcx, OFFSET FLAT:$SG3513
+	lea	rcx, OFFSET FLAT:$SG3537
 	call	?_debug_print_@@YAXPEADZZ		; _debug_print_
 	jmp	SHORT $LN3@e1000_inte
 $LN4@e1000_inte:
@@ -986,15 +986,15 @@ $LN4@e1000_inte:
 	and	eax, 2
 	test	eax, eax
 	je	SHORT $LN14@e1000_inte
-	lea	rax, OFFSET FLAT:$SG3516
+	lea	rax, OFFSET FLAT:$SG3540
 	mov	QWORD PTR tv159[rsp], rax
 	jmp	SHORT $LN15@e1000_inte
 $LN14@e1000_inte:
-	lea	rax, OFFSET FLAT:$SG3517
+	lea	rax, OFFSET FLAT:$SG3541
 	mov	QWORD PTR tv159[rsp], rax
 $LN15@e1000_inte:
 	mov	rdx, QWORD PTR tv159[rsp]
-	lea	rcx, OFFSET FLAT:$SG3518
+	lea	rcx, OFFSET FLAT:$SG3542
 	call	?_debug_print_@@YAXPEADZZ		; _debug_print_
 
 ; 143  : 	} else {
@@ -1004,7 +1004,7 @@ $LN2@e1000_inte:
 
 ; 144  : 		_debug_print_ ("E1000 unknown interrupt \r\n");
 
-	lea	rcx, OFFSET FLAT:$SG3520
+	lea	rcx, OFFSET FLAT:$SG3544
 	call	?_debug_print_@@YAXPEADZZ		; _debug_print_
 $LN1@e1000_inte:
 $LN3@e1000_inte:
@@ -1018,11 +1018,11 @@ $LN5@e1000_inte:
 	mov	cx, 192					; 000000c0H
 	call	?e1000_write_command@@YAXGI@Z		; e1000_write_command
 
-; 148  : 	interrupt_end(i_net_dev->e1000_irq);
+; 148  : 	AuInterruptEnd(i_net_dev->e1000_irq);
 
 	mov	rax, QWORD PTR ?i_net_dev@@3PEAU_e1000_dev_@@EA ; i_net_dev
 	mov	ecx, DWORD PTR [rax+20]
-	call	?interrupt_end@@YAXI@Z			; interrupt_end
+	call	AuInterruptEnd
 
 ; 149  : 	x64_sti();
 
@@ -1057,8 +1057,8 @@ $LN10:
 
 ; 79   : 		printf ("EEPROM exist\n");
 
-	lea	rcx, OFFSET FLAT:$SG3480
-	call	?printf@@YAXPEBDZZ			; printf
+	lea	rcx, OFFSET FLAT:$SG3504
+	call	printf
 
 ; 80   : 		uint32_t temp;
 ; 81   : 		temp = e1000_eerprom_read (0);
@@ -1140,8 +1140,8 @@ $LN7@e1000_read:
 
 ; 91   : 		printf ("Applying memory map\n");
 
-	lea	rcx, OFFSET FLAT:$SG3483
-	call	?printf@@YAXPEBDZZ			; printf
+	lea	rcx, OFFSET FLAT:$SG3507
+	call	printf
 
 ; 92   : 		uint8_t * mem_base_mac_8 = (uint8_t*)(i_net_dev->e1000_mem_base + 0x5400);
 
@@ -1549,8 +1549,8 @@ $LN8:
 ; 221  : 	printf ("CUR Tx tail -> %d\n", cur);
 
 	mov	edx, DWORD PTR cur$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3552
-	call	?printf@@YAXPEBDZZ			; printf
+	lea	rcx, OFFSET FLAT:$SG3576
+	call	printf
 
 ; 222  : 	i_net_dev->tx_tail++;
 
@@ -1655,8 +1655,8 @@ $LN4@e1000_send:
 	div	ecx
 	mov	eax, edx
 	mov	edx, eax
-	lea	rcx, OFFSET FLAT:$SG3556
-	call	?printf@@YAXPEBDZZ			; printf
+	lea	rcx, OFFSET FLAT:$SG3580
+	call	printf
 $LN3@e1000_send:
 
 ; 242  : 	for(;;) {
@@ -1678,13 +1678,13 @@ $LN3@e1000_send:
 	movzx	eax, BYTE PTR [rax+12]
 	movzx	eax, al
 	mov	edx, eax
-	lea	rcx, OFFSET FLAT:$SG3561
-	call	?printf@@YAXPEBDZZ			; printf
+	lea	rcx, OFFSET FLAT:$SG3585
+	call	printf
 
 ; 245  : 			printf ("Transmitted\n");
 
-	lea	rcx, OFFSET FLAT:$SG3562
-	call	?printf@@YAXPEBDZZ			; printf
+	lea	rcx, OFFSET FLAT:$SG3586
+	call	printf
 
 ; 246  : 			break;
 
@@ -1732,9 +1732,9 @@ $LN28:
 
 	mov	DWORD PTR bus$[rsp], 0
 
-; 306  : 	pci_device_info *dev = (pci_device_info*)pmmngr_alloc();
+; 306  : 	pci_device_info *dev = (pci_device_info*)AuPmmngrAlloc();
 
-	call	?pmmngr_alloc@@YAPEAXXZ			; pmmngr_alloc
+	call	?AuPmmngrAlloc@@YAPEAXXZ		; AuPmmngrAlloc
 	mov	QWORD PTR dev$[rsp], rax
 
 ; 307  : 	if (!pci_find_device_class (0x02,0x00, dev,&bus, &dev_, &func)) {
@@ -1754,7 +1754,7 @@ $LN28:
 
 ; 308  : 		_debug_print_ ("Intel Ethernet not found\n");
 
-	lea	rcx, OFFSET FLAT:$SG3608
+	lea	rcx, OFFSET FLAT:$SG3632
 	call	?_debug_print_@@YAXPEADZZ		; _debug_print_
 
 ; 309  : 		return;
@@ -1790,7 +1790,7 @@ $LN25@e1000_init:
 
 ; 315  : 		_debug_print_ ("E1000 INterrupt Disabled in PCI ConfigSpace\n");
 
-	lea	rcx, OFFSET FLAT:$SG3611
+	lea	rcx, OFFSET FLAT:$SG3635
 	call	?_debug_print_@@YAXPEADZZ		; _debug_print_
 $LN24@e1000_init:
 
@@ -1883,7 +1883,7 @@ $LN21@e1000_init:
 
 ; 333  : 		_debug_print_ ("E1000 Supports MSI\n");
 
-	lea	rcx, OFFSET FLAT:$SG3621
+	lea	rcx, OFFSET FLAT:$SG3645
 	call	?_debug_print_@@YAXPEADZZ		; _debug_print_
 $LN19@e1000_init:
 
@@ -1909,7 +1909,7 @@ $LN19@e1000_init:
 	movzx	ecx, BYTE PTR [rcx+60]
 	mov	r8d, eax
 	mov	edx, ecx
-	lea	rcx, OFFSET FLAT:$SG3624
+	lea	rcx, OFFSET FLAT:$SG3648
 	call	?_debug_print_@@YAXPEADZZ		; _debug_print_
 
 ; 338  : 			write_config_8 (0,bus,dev_,func,0x3C, 10);
@@ -1934,13 +1934,13 @@ $LN19@e1000_init:
 	xor	ecx, ecx
 	call	?read_config_8@@YAXGHHHHPEAE@Z		; read_config_8
 
-; 340  : 			interrupt_set (10, e1000_interrupt_handler,dev->device.nonBridge.interruptLine);
+; 340  : 			AuInterruptSet(10, e1000_interrupt_handler,dev->device.nonBridge.interruptLine);
 
 	mov	rax, QWORD PTR dev$[rsp]
 	movzx	r8d, BYTE PTR [rax+60]
 	lea	rdx, OFFSET FLAT:?e1000_interrupt_handler@@YAX_KPEAX@Z ; e1000_interrupt_handler
 	mov	ecx, 10
-	call	?interrupt_set@@YAX_KP6AX0PEAX@ZE@Z	; interrupt_set
+	call	AuInterruptSet
 $LN17@e1000_init:
 $LN18@e1000_init:
 
@@ -2223,14 +2223,14 @@ $LN2@e1000_init:
 ; 399  : 		//! Set the MAC address code
 ; 400  : 		_debug_print_ ("MAC Address read successfully\n");
 
-	lea	rcx, OFFSET FLAT:$SG3648
+	lea	rcx, OFFSET FLAT:$SG3672
 	call	?_debug_print_@@YAXPEADZZ		; _debug_print_
 $LN1@e1000_init:
 
 ; 401  : 	}
 ; 402  : 	_debug_print_ ("e1000 setup completed\n");
 
-	lea	rcx, OFFSET FLAT:$SG3649
+	lea	rcx, OFFSET FLAT:$SG3673
 	call	?_debug_print_@@YAXPEADZZ		; _debug_print_
 $LN26@e1000_init:
 

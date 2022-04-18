@@ -70,13 +70,13 @@ unsigned int ide_irq_invoked = 0;
 void ide_primary_irq (size_t vector, void* param)
 {
 	ide_irq_invoked = 1;
-	interrupt_end(14);
+	AuInterruptEnd(14);
 }
 
 void ide_secondary_irq (size_t vector, void* param)
 {
 	reset_ata_controller (ATA_SECONDARY_IO);
-	interrupt_end(15);
+	AuInterruptEnd(15);
 }
 
 void ide_wait_irq () {
@@ -508,9 +508,9 @@ void ata_initialize (){
 	}
 	pci_enable_bus_master (bus,dev,func);
 	
-	interrupt_set(35, ide_primary_irq, 14);
+	AuInterruptSet(35, ide_primary_irq, 14);
 
-	interrupt_set(36, ide_secondary_irq,15);
+	AuInterruptSet(36, ide_secondary_irq,15);
 
 	ata_probe ();
 

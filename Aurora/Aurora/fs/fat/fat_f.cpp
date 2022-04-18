@@ -63,7 +63,7 @@ vfs_node_t* fat32_make_file (uint32_t parent_clust, char* filename, uint32_t siz
 	memset(file, 0, sizeof(vfs_node_t));
 
 
-	uint64_t* buff = (uint64_t*)pmmngr_alloc();
+	uint64_t* buff = (uint64_t*)AuPmmngrAlloc();
 	memset(buff, 0, 4096);
 
 	bool is_parent_root = false;
@@ -103,7 +103,7 @@ search:
 				dirent->file_size = size;
 
 			    ahci_disk_write (ahci_disk_get_port(),cluster_to_sector32(parent_clust) + j,1,buff);
-			    pmmngr_free(buffer);
+				AuPmmngrFree(buffer);
 
 				strcpy (file->filename,fname);
 				file->size = dirent->file_size;
@@ -144,7 +144,7 @@ void fat32_write_content (uint32_t first_cluster, uint8_t *buffer, uint32_t leng
 			required_cluster++;
 	}
 
-	uint64_t* ahci_buff = (uint64_t*)pmmngr_alloc();
+	uint64_t* ahci_buff = (uint64_t*)AuPmmngrAlloc();
 	memset(ahci_buff, 0, 4096);
 	
 
@@ -162,7 +162,7 @@ void fat32_write_content (uint32_t first_cluster, uint8_t *buffer, uint32_t leng
 		buffer += 4096;
 	}
 
-	pmmngr_free(ahci_buff);
+	AuPmmngrFree(ahci_buff);
 }
 /**
  * fat32_write_file -- writes memory buffers to a file

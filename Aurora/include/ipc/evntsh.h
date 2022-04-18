@@ -15,7 +15,7 @@
 #include <stdint.h>
 
 #ifdef ARCH_X64
-#include <arch\x86_64\mmngr\vmmngr.h>
+#include <arch\x86_64\mmngr\paging.h>
 #endif
 
 typedef struct _mail_ {

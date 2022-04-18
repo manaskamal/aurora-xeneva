@@ -12,7 +12,7 @@
 #define __KSTACK_H__
 
 #include <stdint.h>
-#include <arch\x86_64\mmngr\vmmngr.h>
+#include <arch\x86_64\mmngr\paging.h>
 
 
 #define KSTACK_START   0xFFFFFB0000000000  //0x00000000E0200000  

@@ -19,39 +19,39 @@
  * Initialize The Physical Memory Manager
  * @param _info -- Bootloader informations
  */
-extern void pmmngr_init (KERNEL_BOOT_INFO *_info);
+extern void AuPmmngrInit (KERNEL_BOOT_INFO *_info);
 
 /**
  * Allocate a free page
  */
-extern void* pmmngr_alloc();
+extern void* AuPmmngrAlloc();
 
 /** 
  * Allocate some free pages
  * @param size -- amount to allocate
  */
-extern void* pmmngr_alloc_blocks (int size);
+extern void* AuPmmngrAllocBlocks (int size);
 
 /**
  * Reserve a page: Mark it as unusable
  * @param addr -- Address to mark
  * @param size -- Number of pages
  */
-extern void pmmngr_lock_pages (void *addr, size_t size);
+extern void AuPmmngrLockPages (void *addr, size_t size);
 
 //! Reserve a page : mark it as unusable
-extern void pmmngr_lock_page ( void* addr);
+extern void AuPmmngrLockPage ( void* addr);
 
 /**
  * Free a page
  * @param addr -- Address to free
  */
-extern void pmmngr_free (void* addr);
+extern void AuPmmngrFree (void* addr);
 
 /**
  * pmmngr_free_block -- free a list of blocks
  */
-extern void pmmngr_free_blocks (void* addr, int count);
+extern void AuPmmngrFreeBlocks (void* addr, int count);
 
 /**
  * Returns the total amount of free ram
@@ -68,7 +68,7 @@ extern uint64_t pmmngr_get_used_ram ();
  */
 extern uint64_t pmmngr_get_total_ram ();
 
-extern void pmmngr_move_higher_half ();
+extern void AuPmmngrMoveHigher();
 
 extern uint64_t pmmngr_get_ram_bitmap_size();
 

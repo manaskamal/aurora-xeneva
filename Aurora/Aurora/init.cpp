@@ -51,7 +51,6 @@
 #include <drivers\net\amd_am79c973.h>
 #include <drivers\rtc.h>
 #include <drivers\acpi\acpi.h>
-#include <drivers\vbox.h>
 #include <drivers\ahci.h>
 #include <ipc\evntsh.h>
 #include <ipc\message.h>
@@ -114,6 +113,10 @@ void message() {
 	printf ("Hello Message\n");
 }
 
+void ue_thr(void*) {
+	for(;;);
+}
+
 typedef int (*return_int)();
 
 /**========================================
@@ -122,29 +125,23 @@ typedef int (*return_int)();
 void _kmain (KERNEL_BOOT_INFO *info) {
 	debug = info->printf_gui;
 	//! Initialize the memory mappings
-	pmmngr_init (info);
-	vmmngr_x86_64_init(); 
-	heap_initialize();
-	hal_init();
-	hal_x86_64_setup_int();	
+	AuPmmngrInit (info);
+	AuPagingInit();
+	AuHeapInitialize();
+	AuHalInitialize();
+
 	initialize_serial();
 
 	initialize_acpi (info->acpi_table_pointer);
 
-	/*IterateImportTable(info->driver_entry1, info->driver_entry3);
-	void* address = GetProcAddress(info->driver_entry1, "return_int");
-	return_int i = (return_int)address;
-	i();
-	for(;;);*/
 	ahci_initialize();
-	//hda_initialize();
+	hda_initialize();
 
 	vfs_init();
 
     initialize_screen(info);
 	screen_set_configuration(info->X_Resolution,info->Y_Resolution);
 	console_initialize(info);
-	
 	initialize_rtc(); 
 
 	initialize_mouse();
@@ -160,6 +157,8 @@ void _kmain (KERNEL_BOOT_INFO *info) {
 	process_list_initialize();
 	ttype_init();
 
+	printf ("FX State size -> %d byte \n", sizeof(fx_state_t));
+	
 #ifdef ARCH_X64
 	//================================================
 	//! Initialize the scheduler here

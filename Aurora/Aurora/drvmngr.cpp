@@ -36,9 +36,9 @@ void decreament_driver_class_uid () {
 }
 
 driver_param_t * create_driver_parameter () {
-	cpu_t *cpu = (cpu_t*)pmmngr_alloc();
-	cpu->interrupt_set_p = interrupt_set;
-	cpu->interrupt_eoi_p = interrupt_end;
+	cpu_t *cpu = (cpu_t*)AuPmmngrAlloc();
+	cpu->interrupt_set_p = 0; //interrupt_set;
+	cpu->interrupt_eoi_p = 0; //interrupt_end;
 	cpu->inportb_p = x64_inportb;
 	cpu->inportd_p = x64_inportd;
 	cpu->inportw_p = x64_inportw;
@@ -46,7 +46,7 @@ driver_param_t * create_driver_parameter () {
 	cpu->outportd_p = x64_outportd;
 	cpu->outportw_p = x64_outportw;
 
-	pci_p_t *pci = (pci_p_t*)pmmngr_alloc();
+	pci_p_t *pci = (pci_p_t*)AuPmmngrAlloc();
 	pci->pci_enable_bus_master_p = pci_enable_bus_master;
 	pci->pci_enable_interrupt_p = pci_enable_interrupt;
 	pci->pci_find_device_class_p = pci_find_device_class;
@@ -59,7 +59,7 @@ driver_param_t * create_driver_parameter () {
 	pci->write_config_32_p = write_config_32;
 	pci->write_config_8_p = write_config_8;
 
-	mem_t *m = (mem_t*)pmmngr_alloc();
+	mem_t *m = (mem_t*)AuPmmngrAlloc();
 	/*m->get_free_page_p = get_free_page;
 	m->get_phys_address_p = get_physical_address;
 	m->malloc_p = malloc;
@@ -70,10 +70,10 @@ driver_param_t * create_driver_parameter () {
 	m->pmmngr_free_p = pmmngr_free;
 	m->unmap_page_p = unmap_page;*/
 
-	fs_t *fs = (fs_t*)pmmngr_alloc();
-	fs->vfs_mount_p = vfs_mount;
+	fs_t *fs = (fs_t*)AuPmmngrAlloc();
+	//fs->vfs_mount_p = vfs_mount;
 
-	driver_param_t* param = (driver_param_t*)pmmngr_alloc();
+	driver_param_t* param = (driver_param_t*)AuPmmngrAlloc();
 	param->mem = m;
 	param->cpu = cpu;
 	param->pci = pci;

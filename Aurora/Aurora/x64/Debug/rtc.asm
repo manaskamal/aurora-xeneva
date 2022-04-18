@@ -38,8 +38,8 @@ EXTRN	x64_cli:PROC
 EXTRN	x64_sti:PROC
 EXTRN	x64_inportb:PROC
 EXTRN	x64_outportb:PROC
-EXTRN	?interrupt_end@@YAXI@Z:PROC			; interrupt_end
-EXTRN	?interrupt_set@@YAX_KP6AX0PEAX@ZE@Z:PROC	; interrupt_set
+EXTRN	AuInterruptEnd:PROC
+EXTRN	AuInterruptSet:PROC
 EXTRN	?pri_put_message@@YAXPEAU_pri_event_@@@Z:PROC	; pri_put_message
 _BSS	SEGMENT
 bcd	DB	01H DUP (?)
@@ -182,10 +182,10 @@ $LN1@rtc_clock_:
 	call	x64_sti
 
 ; 108  : 	//!send a EOI to apic
-; 109  : 	interrupt_end(8);
+; 109  : 	AuInterruptEnd(8);
 
 	mov	ecx, 8
-	call	?interrupt_end@@YAXI@Z			; interrupt_end
+	call	AuInterruptEnd
 
 ; 110  : }
 
@@ -685,12 +685,12 @@ $LN4@initialize:
 
 ; 132  : 
 ; 133  : 	//!register interrupt
-; 134  : 	interrupt_set (8,rtc_clock_update, 8);
+; 134  : 	AuInterruptSet(8,rtc_clock_update, 8);
 
 	mov	r8b, 8
 	lea	rdx, OFFSET FLAT:?rtc_clock_update@@YAX_KPEAX@Z ; rtc_clock_update
 	mov	ecx, 8
-	call	?interrupt_set@@YAX_KP6AX0PEAX@ZE@Z	; interrupt_set
+	call	AuInterruptSet
 
 ; 135  : 
 ; 136  : #ifdef USE_PIC
