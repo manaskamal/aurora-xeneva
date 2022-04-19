@@ -22,8 +22,9 @@
 #define AU_DRIVER_BASE_START   0xFFFFC00000400000  
 
 //!Global Variable for the program
-aurora_driver_t drivers[256];
+aurora_driver_t *drivers[256];
 static uint32_t driver_class_unique_id = 0;
+
 
 //! request an unique id for driver class
 uint32_t AuRequestDriverId () {
@@ -115,6 +116,15 @@ search:
 	return 0;
 }
 
+void AuCreateDriverInstance (char* drivername) {
+	aurora_driver_t *driver = (aurora_driver_t*)malloc(sizeof(aurora_driver_t));
+	memset(driver, 0, sizeof(aurora_driver_t));
+	strcpy(driver->name, drivername);
+	driver->id = AuRequestDriverId();
+	driver->present = false;
+	drivers[driver->id] = driver;
+
+}
 
 /* 
  * AuGetDriverName -- Extract the driver path from its entry offset 
@@ -146,22 +156,41 @@ void AuGetDriverName (uint32_t vendor_id, uint32_t device_id,uint8_t* buffer,int
 
 	drivername[i] = 0;
 
-	printf ("Drivername -> %s\n", drivername);
+	AuCreateDriverInstance(drivername);
+	return;
 }
 
+void AuDriverLoad (char* filename, aurora_driver_t *driver) {
+	vfs_node_t file = fat32_open(NULL, filename);
+	uint64_t* buffer = (uint64_t*)AuPmmngrAlloc();
+	memset(buffer, 0, 4096);
+	fat32_read(&file, buffer);
+	AuMapPage((uint64_t)buffer,AU_DRIVER_BASE_START,0);
+	printf ("driver file loaded size -> %d bytes\n", file.size);
+
+	void* entry_addr = AuGetProcAddress((void*)AU_DRIVER_BASE_START,"AuDriverMain");
+	printf ("driver entry address -> %x \n", entry_addr);
+	AuPeLinkLibrary(buffer);
+	driver->entry = (au_drv_entry)entry_addr;
+	driver->base = AU_DRIVER_BASE_START;
+	driver->end = driver->base + file.size;
+	driver->present = true;
+}
 
 /* 
  * AuDrvMngrInitialize -- Initialize the driver manager
  * @param info -- kernel boot info
  */
 void AuDrvMngrInitialize (KERNEL_BOOT_INFO *info) {
+	x64_cli();
 	driver_class_unique_id = 0;
 
+	printf ("[aurora]: initializing drivers, please wait... \n");
 	/* Load the conf data */
-	uint64_t* conf = (uint64_t*)AuPmmngrAlloc();
+	uint64_t* conf = (uint64_t*)p2v((size_t)AuPmmngrAlloc());
 	memset(conf, 0, 4096);
 	vfs_node_t file = fat32_open(NULL, "/audrv.cnf");
-	fat32_read_file (&file,conf,file.size);
+	fat32_read_file (&file,(uint64_t*)v2p((size_t)conf),file.size);
 
 	uint8_t* confdata = (uint8_t*)conf;
 
@@ -179,6 +208,13 @@ void AuDrvMngrInitialize (KERNEL_BOOT_INFO *info) {
 		}
 	}
 
-	printf ("Search over \n");
+	for (int i = 0; i < driver_class_unique_id; i++) {
+		aurora_driver_t *driver = drivers[i];
+		AuDriverLoad(driver->name, driver);
+		driver->entry();
+	}
+	x64_sti();
 }
+
+
 

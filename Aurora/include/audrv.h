@@ -34,14 +34,16 @@
 //!Maximum Supported Drivers in Aurora Xeneva v1.0 is 256
 #define AURORA_MAX_DRIVERS  256
 
+typedef int (*au_drv_entry) ();
 //! Aurora driver interface structure
 typedef struct _aurora_driver_ {
 	uint8_t id;
 	uint8_t class_type;
-	char* name;
+	char name[32];
 	bool present;
 	uint64_t base;
 	uint64_t end;
+	au_drv_entry entry;
 }aurora_driver_t;
 
 

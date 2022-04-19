@@ -13,19 +13,19 @@ _BSS	SEGMENT
 pid	DD	01H DUP (?)
 _BSS	ENDS
 CONST	SEGMENT
-$SG3929	DB	'/dev/stdin', 00H
+$SG3928	DB	'/dev/stdin', 00H
 	ORG $+5
-$SG3931	DB	'/dev/stdout', 00H
+$SG3930	DB	'/dev/stdout', 00H
 	ORG $+4
-$SG3933	DB	'/dev/stderr', 00H
+$SG3932	DB	'/dev/stderr', 00H
 	ORG $+4
-$SG3947	DB	'Executable image not found', 0aH, 00H
+$SG3946	DB	'Executable image not found', 0aH, 00H
 	ORG $+4
-$SG3974	DB	'PROCESS CREATION IMAGE SIZE -> %d bytes ', 0dH, 0aH, 00H
+$SG3973	DB	'PROCESS CREATION IMAGE SIZE -> %d bytes ', 0dH, 0aH, 00H
 	ORG $+5
-$SG3996	DB	'Used Pmmngr -> %d MB / Total -> %d MB ', 0dH, 0aH, 00H
+$SG3995	DB	'Used Pmmngr -> %d MB / Total -> %d MB ', 0dH, 0aH, 00H
 	ORG $+3
-$SG4062	DB	'child', 00H
+$SG4061	DB	'child', 00H
 CONST	ENDS
 PUBLIC	?create_user_stack@@YAPEA_KPEA_K@Z		; create_user_stack
 PUBLIC	?create_inc_stack@@YAPEA_KPEA_K@Z		; create_inc_stack
@@ -321,7 +321,7 @@ $LN3:
 ; 394  : 	thread_t *t = create_user_thread(child_proc->entry_point,child_proc->stack,(uint64_t)child_proc->cr3,"child",1);
 
 	mov	BYTE PTR [rsp+32], 1
-	lea	r9, OFFSET FLAT:$SG4062
+	lea	r9, OFFSET FLAT:$SG4061
 	mov	rax, QWORD PTR child_proc$[rsp]
 	mov	r8, QWORD PTR [rax+40]
 	mov	rax, QWORD PTR child_proc$[rsp]
@@ -490,7 +490,7 @@ $LN3:
 
 ; 133  : 	vfs_node_t * stdin = vfs_finddir("/dev/stdin");
 
-	lea	rcx, OFFSET FLAT:$SG3929
+	lea	rcx, OFFSET FLAT:$SG3928
 	call	?vfs_finddir@@YAPEAU_vfs_node_@@PEAD@Z	; vfs_finddir
 	mov	QWORD PTR stdin$[rsp], rax
 
@@ -512,7 +512,7 @@ $LN3:
 
 ; 136  : 	vfs_node_t* stdout = vfs_finddir("/dev/stdout");
 
-	lea	rcx, OFFSET FLAT:$SG3931
+	lea	rcx, OFFSET FLAT:$SG3930
 	call	?vfs_finddir@@YAPEAU_vfs_node_@@PEAD@Z	; vfs_finddir
 	mov	QWORD PTR stdout$[rsp], rax
 
@@ -534,7 +534,7 @@ $LN3:
 
 ; 139  : 	vfs_node_t* stderr = vfs_finddir("/dev/stderr");
 
-	lea	rcx, OFFSET FLAT:$SG3933
+	lea	rcx, OFFSET FLAT:$SG3932
 	call	?vfs_finddir@@YAPEAU_vfs_node_@@PEAD@Z	; vfs_finddir
 	mov	QWORD PTR stderr$[rsp], rax
 
@@ -1367,7 +1367,7 @@ $LN1@kill_proce:
 	mov	rcx, QWORD PTR tv132[rsp]
 	mov	r8, rcx
 	mov	rdx, rax
-	lea	rcx, OFFSET FLAT:$SG3996
+	lea	rcx, OFFSET FLAT:$SG3995
 	call	?_debug_print_@@YAXPEADZZ		; _debug_print_
 
 ; 271  : 
@@ -1475,7 +1475,7 @@ $LN6:
 
 ; 167  : 		printf("Executable image not found\n");
 
-	lea	rcx, OFFSET FLAT:$SG3947
+	lea	rcx, OFFSET FLAT:$SG3946
 	call	printf
 
 ; 168  : 		return -1;
@@ -1652,7 +1652,7 @@ $LN1@create_pro:
 
 	mov	rax, QWORD PTR process$[rsp]
 	mov	rdx, QWORD PTR [rax+32]
-	lea	rcx, OFFSET FLAT:$SG3974
+	lea	rcx, OFFSET FLAT:$SG3973
 	call	?_debug_print_@@YAXPEADZZ		; _debug_print_
 
 ; 214  : 	process->parent = NULL;

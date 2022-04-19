@@ -69,7 +69,7 @@ EXTRN	x64_cli:PROC
 EXTRN	x64_hlt:PROC
 pdata	SEGMENT
 $pdata$?AuPmmngrInit@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z DD imagerel $LN16
-	DD	imagerel $LN16+920
+	DD	imagerel $LN16+927
 	DD	imagerel $unwind$?AuPmmngrInit@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z
 $pdata$?AuPmmngrAlloc@@YAPEAXXZ DD imagerel $LN9
 	DD	imagerel $LN9+245
@@ -1432,7 +1432,10 @@ $LN1@AuPmmngrIn:
 	call	?memset@@YAXPEAXEI@Z			; memset
 
 ; 181  : 	//memcpy(address, info->apcode, 4096);
-; 182  : 
+; 182  : 	higher_half = false;
+
+	mov	BYTE PTR ?higher_half@@3_NA, 0		; higher_half
+
 ; 183  : 	info->printf_gui("[aurora]:pmmngr initialized\n");
 
 	lea	rcx, OFFSET FLAT:$SG3098

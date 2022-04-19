@@ -11,18 +11,16 @@ _BSS	SEGMENT
 ?debug@@3P6AXPEBDZZEA DQ 01H DUP (?)			; debug
 _BSS	ENDS
 CONST	SEGMENT
-$SG5644	DB	'Hello Message', 0aH, 00H
+$SG5645	DB	'Hello Message', 0aH, 00H
 	ORG $+1
-$SG5653	DB	'FX State size -> %d byte ', 0aH, 00H
-	ORG $+5
-$SG5654	DB	'Scheduler Initialized', 0aH, 00H
+$SG5650	DB	'Scheduler Initialized', 0aH, 00H
 	ORG $+1
-$SG5655	DB	'shell', 00H
+$SG5651	DB	'shell', 00H
 	ORG $+2
-$SG5656	DB	'/sndsrv.exe', 00H
-$SG5657	DB	'priwm', 00H
+$SG5652	DB	'/sndsrv.exe', 00H
+$SG5653	DB	'priwm', 00H
 	ORG $+6
-$SG5658	DB	'/priwm.exe', 00H
+$SG5654	DB	'/priwm.exe', 00H
 CONST	ENDS
 _DATA	SEGMENT
 _fltused DD	01H
@@ -79,8 +77,8 @@ $pdata$??_U@YAPEAX_K@Z DD imagerel $LN3
 $pdata$?debug_print@@YAXPEBDZZ DD imagerel $LN3
 	DD	imagerel $LN3+40
 	DD	imagerel $unwind$?debug_print@@YAXPEBDZZ
-$pdata$?_AuMain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z DD imagerel $LN7
-	DD	imagerel $LN7+272
+$pdata$?_AuMain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z DD imagerel $LN5
+	DD	imagerel $LN5+253
 	DD	imagerel $unwind$?_AuMain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z
 pdata	ENDS
 xdata	SEGMENT
@@ -105,7 +103,7 @@ info$ = 48
 
 ; 120  : void _AuMain (KERNEL_BOOT_INFO *info) {
 
-$LN7:
+$LN5:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 40					; 00000028H
 
@@ -184,122 +182,111 @@ $LN7:
 
 	mov	rcx, QWORD PTR info$[rsp]
 	call	?AuDrvMngrInitialize@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z ; AuDrvMngrInitialize
-$LN4@AuMain:
 
-; 144  : 	for(;;);
-
-	jmp	SHORT $LN4@AuMain
-
-; 145  : 	kybrd_init();
+; 144  : 	kybrd_init();
 
 	call	?kybrd_init@@YAXXZ			; kybrd_init
 
-; 146  : 	message_init ();
+; 145  : 	message_init ();
 
 	call	?message_init@@YAXXZ			; message_init
 
-; 147  : 	dwm_ipc_init();
+; 146  : 	dwm_ipc_init();
 
 	call	?dwm_ipc_init@@YAXXZ			; dwm_ipc_init
 
-; 148  : 	pri_loop_init();
+; 147  : 	pri_loop_init();
 
 	call	?pri_loop_init@@YAXXZ			; pri_loop_init
 
-; 149  : 	
-; 150  : 	e1000_initialize();   //<< receiver not working
+; 148  : 	
+; 149  : 	e1000_initialize();   //<< receiver not working
 
 	call	?e1000_initialize@@YAXXZ		; e1000_initialize
 
-; 151  : 	//svga_init();
-; 152  : 	//sound_initialize();
-; 153  : 	//driver_mngr_initialize(info);
-; 154  : 	process_list_initialize();
+; 150  : 	//svga_init();
+; 151  : 	//sound_initialize();
+; 152  : 	//driver_mngr_initialize(info);
+; 153  : 	process_list_initialize();
 
 	call	?process_list_initialize@@YAXXZ		; process_list_initialize
 
-; 155  : 	ttype_init();
+; 154  : 	ttype_init();
 
 	call	?ttype_init@@YAXXZ			; ttype_init
 
-; 156  : 
-; 157  : 	printf ("FX State size -> %d byte \n", sizeof(fx_state_t));
-
-	mov	edx, 416				; 000001a0H
-	lea	rcx, OFFSET FLAT:$SG5653
-	call	printf
-
-; 158  : 	
-; 159  : #ifdef ARCH_X64
-; 160  : 	//================================================
-; 161  : 	//! Initialize the scheduler here
-; 162  : 	//!===============================================
-; 163  : 	initialize_scheduler();
+; 155  : 
+; 156  : 	
+; 157  : #ifdef ARCH_X64
+; 158  : 	//================================================
+; 159  : 	//! Initialize the scheduler here
+; 160  : 	//!===============================================
+; 161  : 	initialize_scheduler();
 
 	call	?initialize_scheduler@@YAXXZ		; initialize_scheduler
 
-; 164  : 
-; 165  : 	printf ("Scheduler Initialized\n");
+; 162  : 
+; 163  : 	printf ("Scheduler Initialized\n");
 
-	lea	rcx, OFFSET FLAT:$SG5654
+	lea	rcx, OFFSET FLAT:$SG5650
 	call	printf
 
-; 166  : 
-; 167  : 	x64_cli();
+; 164  : 
+; 165  : 	x64_cli();
 
 	call	x64_cli
 
-; 168  : 	/* start the sound service manager at id 1 */
-; 169  : 	create_process ("/sndsrv.exe","shell");
+; 166  : 	/* start the sound service manager at id 1 */
+; 167  : 	create_process ("/sndsrv.exe","shell");
 
-	lea	rdx, OFFSET FLAT:$SG5655
-	lea	rcx, OFFSET FLAT:$SG5656
+	lea	rdx, OFFSET FLAT:$SG5651
+	lea	rcx, OFFSET FLAT:$SG5652
 	call	?create_process@@YAHPEBDPEAD@Z		; create_process
 
-; 170  : 
-; 171  : 	/* start the compositing window manager at id 2 */
-; 172  : 	create_process ("/priwm.exe","priwm");
+; 168  : 
+; 169  : 	/* start the compositing window manager at id 2 */
+; 170  : 	create_process ("/priwm.exe","priwm");
 
-	lea	rdx, OFFSET FLAT:$SG5657
-	lea	rcx, OFFSET FLAT:$SG5658
+	lea	rdx, OFFSET FLAT:$SG5653
+	lea	rcx, OFFSET FLAT:$SG5654
 	call	?create_process@@YAHPEBDPEAD@Z		; create_process
 
-; 173  : 
-; 174  : 	//create_process ("/dock.exe", "dock");
-; 175  : 	x64_sti();
+; 171  : 
+; 172  : 	//create_process ("/dock.exe", "dock");
+; 173  : 	x64_sti();
 
 	call	x64_sti
 
-; 176  : 	//! Here start the scheduler (multitasking engine)
-; 177  : 	scheduler_start();
+; 174  : 	//! Here start the scheduler (multitasking engine)
+; 175  : 	scheduler_start();
 
 	call	?scheduler_start@@YAXXZ			; scheduler_start
 $LN2@AuMain:
 
-; 178  : #endif
-; 179  : 
-; 180  : 	//! Loop forever
-; 181  : 	while(1) {
+; 176  : #endif
+; 177  : 
+; 178  : 	//! Loop forever
+; 179  : 	while(1) {
 
 	xor	eax, eax
 	cmp	eax, 1
 	je	SHORT $LN1@AuMain
 
-; 182  : 		//!looping looping
-; 183  : 		x64_cli();
+; 180  : 		//!looping looping
+; 181  : 		x64_cli();
 
 	call	x64_cli
 
-; 184  : 		x64_hlt();
+; 182  : 		x64_hlt();
 
 	call	x64_hlt
 
-; 185  : 	}
+; 183  : 	}
 
 	jmp	SHORT $LN2@AuMain
 $LN1@AuMain:
 
-; 186  : }
+; 184  : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -366,7 +353,7 @@ $LN3:
 
 ; 111  : 	printf ("Hello Message\n");
 
-	lea	rcx, OFFSET FLAT:$SG5644
+	lea	rcx, OFFSET FLAT:$SG5645
 	call	printf
 
 ; 112  : }

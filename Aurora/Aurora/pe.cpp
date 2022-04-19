@@ -47,7 +47,7 @@ uint64_t get_image_base() {
 }
 
 
-void* GetProcAddress(void *image, const char* procname){
+void* AuGetProcAddress(void *image, const char* procname){
 	
 	PIMAGE_DOS_HEADER dos_header  = (PIMAGE_DOS_HEADER)image;
 	PIMAGE_NT_HEADERS ntHeaders = raw_offset<PIMAGE_NT_HEADERS>(dos_header, dos_header->e_lfanew); 
@@ -79,17 +79,17 @@ void* GetProcAddress(void *image, const char* procname){
  * @param image -- dll image
  * @param exporter -- executable image
  */
-void LinkLibrary (void* image, void *exporter) {
+void AuPeLinkLibrary (void* image) {
 	PIMAGE_DOS_HEADER dos_header = (PIMAGE_DOS_HEADER)image;
 	PIMAGE_NT_HEADERS nt_headers = raw_offset<PIMAGE_NT_HEADERS>(dos_header, dos_header->e_lfanew);
 	if (IMAGE_DATA_DIRECTORY_IMPORT + 1 > nt_headers->OptionalHeader.NumberOfRvaAndSizes)
 		return;
 	IMAGE_DATA_DIRECTORY& datadir = nt_headers->OptionalHeader.DataDirectory[IMAGE_DATA_DIRECTORY_IMPORT];
 	if (datadir.VirtualAddress == 0 || datadir.Size == 0) {
-		printf ("Import table va -> %d, size -> %d \n", datadir.VirtualAddress, datadir.Size);
+		//printf ("Import table va -> %d, size -> %d \n", datadir.VirtualAddress, datadir.Size);
 		return;
 	}
-	printf ("Import table va -> %d, size -> %d \n", datadir.VirtualAddress, datadir.Size);
+	//printf ("Import table va -> %d, size -> %d \n", datadir.VirtualAddress, datadir.Size);
 	PIMAGE_IMPORT_DIRECTORY importdir = raw_offset<PIMAGE_IMPORT_DIRECTORY>(image, datadir.VirtualAddress);
 	for (size_t n = 0; importdir[n].ThunkTableRva; ++n) {
 		const char* func = raw_offset<const char*>(image, importdir[n].NameRva);
@@ -97,7 +97,7 @@ void LinkLibrary (void* image, void *exporter) {
 		while (*iat) {
 			PIMAGE_IMPORT_HINT_TABLE hint = raw_offset<PIMAGE_IMPORT_HINT_TABLE>(image, *iat);
 			const char* fname = hint->name;
-			void* procaddr = GetProcAddress((void*)0xFFFFC00000000000, fname);
+			void* procaddr = AuGetProcAddress((void*)0xFFFFC00000000000, fname);
 			*iat = (uint64_t)procaddr;
 			++iat;
 		}

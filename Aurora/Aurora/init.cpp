@@ -141,7 +141,6 @@ void _AuMain (KERNEL_BOOT_INFO *info) {
 
 	//Here we initialise all drivers stuffs
 	AuDrvMngrInitialize(info);
-	for(;;);
 	kybrd_init();
 	message_init ();
 	dwm_ipc_init();
@@ -154,7 +153,6 @@ void _AuMain (KERNEL_BOOT_INFO *info) {
 	process_list_initialize();
 	ttype_init();
 
-	printf ("FX State size -> %d byte \n", sizeof(fx_state_t));
 	
 #ifdef ARCH_X64
 	//================================================
