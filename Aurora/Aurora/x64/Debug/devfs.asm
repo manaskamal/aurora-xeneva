@@ -12,8 +12,8 @@ CONST	ENDS
 PUBLIC	?devfs_mount@@YAXXZ				; devfs_mount
 EXTRN	?strcpy@@YAPEADPEADPEBD@Z:PROC			; strcpy
 EXTRN	?memset@@YAXPEAXEI@Z:PROC			; memset
-EXTRN	?vfs_mkdir@@YAXPEADPEAU_vfs_node_@@PEAU_vfs_entry_@@@Z:PROC ; vfs_mkdir
-EXTRN	?vfs_mkentry@@YAPEAU_vfs_entry_@@XZ:PROC	; vfs_mkentry
+EXTRN	vfs_mkdir:PROC
+EXTRN	vfs_mkentry:PROC
 EXTRN	?malloc@@YAPEAX_K@Z:PROC			; malloc
 pdata	SEGMENT
 $pdata$?devfs_mount@@YAXXZ DD imagerel $LN3
@@ -64,7 +64,7 @@ $LN3:
 ; 21   : 
 ; 22   : 	vfs_entry *ent = vfs_mkentry();
 
-	call	?vfs_mkentry@@YAPEAU_vfs_entry_@@XZ	; vfs_mkentry
+	call	vfs_mkentry
 	mov	QWORD PTR ent$[rsp], rax
 
 ; 23   : 	vfs_mkdir("/dev", node, ent);
@@ -72,7 +72,7 @@ $LN3:
 	mov	r8, QWORD PTR ent$[rsp]
 	mov	rdx, QWORD PTR node$[rsp]
 	lea	rcx, OFFSET FLAT:$SG3110
-	call	?vfs_mkdir@@YAXPEADPEAU_vfs_node_@@PEAU_vfs_entry_@@@Z ; vfs_mkdir
+	call	vfs_mkdir
 
 ; 24   : }
 

@@ -216,9 +216,6 @@
     <ClInclude Include="..\include\drivers\svga\rgba_arrow.h">
       <Filter>include\drivers\svga</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\drvmngr.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\arch\x86_64\mmngr\map.h">
       <Filter>include\arch\x86_64\mmngr</Filter>
     </ClInclude>
@@ -230,9 +227,6 @@
     </ClInclude>
     <ClInclude Include="..\include\drivers\rtc.h">
       <Filter>include\drivers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\procmngr.h">
-      <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\objctmngr.h">
       <Filter>include</Filter>
@@ -321,9 +315,6 @@
     <ClInclude Include="..\include\drivers\ahci_disk.h">
       <Filter>include\drivers</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\drivers\pciata.h">
-      <Filter>include\drivers</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\fs\fat\fat.h">
       <Filter>include\fs\fat</Filter>
     </ClInclude>
@@ -344,6 +335,9 @@
     </ClInclude>
     <ClInclude Include="..\include\arch\x86_64\mmngr\paging.h">
       <Filter>include\arch\x86_64\mmngr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\audrv.h">
+      <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -464,9 +458,6 @@
     <ClCompile Include="sysserv\sysfile.cpp">
       <Filter>source\sysserv</Filter>
     </ClCompile>
-    <ClCompile Include="drvmngr.cpp">
-      <Filter>source</Filter>
-    </ClCompile>
     <ClCompile Include="arch\x86_64\map.cpp">
       <Filter>source\arch\x86_64</Filter>
     </ClCompile>
@@ -475,9 +466,6 @@
     </ClCompile>
     <ClCompile Include="drivers\rtc.cpp">
       <Filter>source\drivers</Filter>
-    </ClCompile>
-    <ClCompile Include="procmngr.cpp">
-      <Filter>source</Filter>
     </ClCompile>
     <ClCompile Include="drivers\net\e1000.cpp">
       <Filter>source\drivers\net</Filter>
@@ -536,9 +524,6 @@
     <ClCompile Include="drivers\ahci_disk.cpp">
       <Filter>source\drivers</Filter>
     </ClCompile>
-    <ClCompile Include="drivers\pciata.cpp">
-      <Filter>source\drivers</Filter>
-    </ClCompile>
     <ClCompile Include="hwcursor.cpp">
       <Filter>source</Filter>
     </ClCompile>
@@ -556,6 +541,9 @@
     </ClCompile>
     <ClCompile Include="arch\x86_64\paging.cpp">
       <Filter>source\arch\x86_64</Filter>
+    </ClCompile>
+    <ClCompile Include="audrv.cpp">
+      <Filter>source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

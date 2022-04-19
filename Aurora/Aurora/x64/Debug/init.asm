@@ -11,15 +11,18 @@ _BSS	SEGMENT
 ?debug@@3P6AXPEBDZZEA DQ 01H DUP (?)			; debug
 _BSS	ENDS
 CONST	SEGMENT
-$SG5831	DB	'Hello Message', 0aH, 00H
+$SG5644	DB	'Hello Message', 0aH, 00H
 	ORG $+1
-$SG5843	DB	'FX State size -> %d byte ', 0aH, 00H
+$SG5653	DB	'FX State size -> %d byte ', 0aH, 00H
 	ORG $+5
-$SG5844	DB	'Scheduler Initialized', 0aH, 00H
+$SG5654	DB	'Scheduler Initialized', 0aH, 00H
 	ORG $+1
-$SG5845	DB	'shell', 00H
+$SG5655	DB	'shell', 00H
 	ORG $+2
-$SG5846	DB	'/sndsrv.exe', 00H
+$SG5656	DB	'/sndsrv.exe', 00H
+$SG5657	DB	'priwm', 00H
+	ORG $+6
+$SG5658	DB	'/priwm.exe', 00H
 CONST	ENDS
 _DATA	SEGMENT
 _fltused DD	01H
@@ -29,36 +32,35 @@ PUBLIC	??3@YAXPEAX@Z					; operator delete
 PUBLIC	message
 PUBLIC	??_U@YAPEAX_K@Z					; operator new[]
 PUBLIC	?debug_print@@YAXPEBDZZ				; debug_print
-PUBLIC	?ue_thr@@YAXPEAX@Z				; ue_thr
-PUBLIC	?_kmain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z		; _kmain
+PUBLIC	?_AuMain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z		; _AuMain
 EXTRN	x64_cli:PROC
 EXTRN	x64_sti:PROC
 EXTRN	x64_hlt:PROC
 EXTRN	?AuHalInitialize@@YAXXZ:PROC			; AuHalInitialize
 EXTRN	?AuPmmngrInit@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z:PROC ; AuPmmngrInit
 EXTRN	?AuPagingInit@@YAXXZ:PROC			; AuPagingInit
-EXTRN	?console_initialize@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z:PROC ; console_initialize
+EXTRN	?AuConsoleInitialize@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z:PROC ; AuConsoleInitialize
 EXTRN	printf:PROC
 EXTRN	?kybrd_init@@YAXXZ:PROC				; kybrd_init
-EXTRN	?initialize_mouse@@YAXXZ:PROC			; initialize_mouse
+EXTRN	?AuInitializeMouse@@YAXXZ:PROC			; AuInitializeMouse
 EXTRN	?AuHeapInitialize@@YAXXZ:PROC			; AuHeapInitialize
 EXTRN	?malloc@@YAPEAX_K@Z:PROC			; malloc
 EXTRN	?free@@YAXPEAX@Z:PROC				; free
 EXTRN	?hda_initialize@@YAXXZ:PROC			; hda_initialize
 EXTRN	?ahci_initialize@@YAXXZ:PROC			; ahci_initialize
 EXTRN	?e1000_initialize@@YAXXZ:PROC			; e1000_initialize
-EXTRN	?initialize_rtc@@YAXXZ:PROC			; initialize_rtc
-EXTRN	?initialize_acpi@@YAXPEAX@Z:PROC		; initialize_acpi
-EXTRN	?vfs_init@@YAXXZ:PROC				; vfs_init
+EXTRN	?AuInitializeRTC@@YAXXZ:PROC			; AuInitializeRTC
+EXTRN	?AuInitializeBasicAcpi@@YAXPEAX@Z:PROC		; AuInitializeBasicAcpi
+EXTRN	?AuVFSInit@@YAXXZ:PROC				; AuVFSInit
 EXTRN	?initialize_scheduler@@YAXXZ:PROC		; initialize_scheduler
 EXTRN	?scheduler_start@@YAXXZ:PROC			; scheduler_start
 EXTRN	?message_init@@YAXXZ:PROC			; message_init
 EXTRN	?dwm_ipc_init@@YAXXZ:PROC			; dwm_ipc_init
-EXTRN	?initialize_screen@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z:PROC ; initialize_screen
-EXTRN	?screen_set_configuration@@YAXII@Z:PROC		; screen_set_configuration
+EXTRN	?AuInitializeScreen@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z:PROC ; AuInitializeScreen
 EXTRN	?create_process@@YAHPEBDPEAD@Z:PROC		; create_process
 EXTRN	?process_list_initialize@@YAXXZ:PROC		; process_list_initialize
-EXTRN	?initialize_serial@@YAXXZ:PROC			; initialize_serial
+EXTRN	?AuDrvMngrInitialize@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z:PROC ; AuDrvMngrInitialize
+EXTRN	?AuInitializeSerial@@YAXXZ:PROC			; AuInitializeSerial
 EXTRN	?pri_loop_init@@YAXXZ:PROC			; pri_loop_init
 EXTRN	?ttype_init@@YAXXZ:PROC				; ttype_init
 pdata	SEGMENT
@@ -77,9 +79,9 @@ $pdata$??_U@YAPEAX_K@Z DD imagerel $LN3
 $pdata$?debug_print@@YAXPEBDZZ DD imagerel $LN3
 	DD	imagerel $LN3+40
 	DD	imagerel $unwind$?debug_print@@YAXPEBDZZ
-$pdata$?_kmain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z DD imagerel $LN5
-	DD	imagerel $LN5+266
-	DD	imagerel $unwind$?_kmain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z
+$pdata$?_AuMain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z DD imagerel $LN7
+	DD	imagerel $LN7+272
+	DD	imagerel $unwind$?_AuMain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z
 pdata	ENDS
 xdata	SEGMENT
 $unwind$??2@YAPEAX_K@Z DD 010901H
@@ -92,229 +94,216 @@ $unwind$??_U@YAPEAX_K@Z DD 010901H
 	DD	04209H
 $unwind$?debug_print@@YAXPEBDZZ DD 011801H
 	DD	04218H
-$unwind$?_kmain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z DD 010901H
+$unwind$?_AuMain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z DD 010901H
 	DD	04209H
 xdata	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\init.cpp
 _TEXT	SEGMENT
 info$ = 48
-?_kmain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z PROC		; _kmain
+?_AuMain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z PROC		; _AuMain
 
-; 125  : void _kmain (KERNEL_BOOT_INFO *info) {
+; 120  : void _AuMain (KERNEL_BOOT_INFO *info) {
 
-$LN5:
+$LN7:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 40					; 00000028H
 
-; 126  : 	debug = info->printf_gui;
+; 121  : 	debug = info->printf_gui;
 
 	mov	rax, QWORD PTR info$[rsp]
 	mov	rax, QWORD PTR [rax+106]
 	mov	QWORD PTR ?debug@@3P6AXPEBDZZEA, rax	; debug
 
-; 127  : 	//! Initialize the memory mappings
-; 128  : 	AuPmmngrInit (info);
+; 122  : 	//! Initialize the memory mappings
+; 123  : 	AuPmmngrInit (info);
 
 	mov	rcx, QWORD PTR info$[rsp]
 	call	?AuPmmngrInit@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z ; AuPmmngrInit
 
-; 129  : 	AuPagingInit();
+; 124  : 	AuPagingInit();
 
 	call	?AuPagingInit@@YAXXZ			; AuPagingInit
 
-; 130  : 	AuHeapInitialize();
+; 125  : 	AuHeapInitialize();
 
 	call	?AuHeapInitialize@@YAXXZ		; AuHeapInitialize
 
-; 131  : 	AuHalInitialize();
+; 126  : 	AuHalInitialize();
 
 	call	?AuHalInitialize@@YAXXZ			; AuHalInitialize
 
-; 132  : 
-; 133  : 	initialize_serial();
+; 127  : 
+; 128  : 	AuInitializeSerial();
 
-	call	?initialize_serial@@YAXXZ		; initialize_serial
+	call	?AuInitializeSerial@@YAXXZ		; AuInitializeSerial
 
-; 134  : 
-; 135  : 	initialize_acpi (info->acpi_table_pointer);
+; 129  : 	AuInitializeBasicAcpi (info->acpi_table_pointer);
 
 	mov	rax, QWORD PTR info$[rsp]
 	mov	rcx, QWORD PTR [rax+82]
-	call	?initialize_acpi@@YAXPEAX@Z		; initialize_acpi
+	call	?AuInitializeBasicAcpi@@YAXPEAX@Z	; AuInitializeBasicAcpi
 
-; 136  : 
-; 137  : 	ahci_initialize();
+; 130  : 
+; 131  : 	ahci_initialize();
 
 	call	?ahci_initialize@@YAXXZ			; ahci_initialize
 
-; 138  : 	hda_initialize();
+; 132  : 	hda_initialize();
 
 	call	?hda_initialize@@YAXXZ			; hda_initialize
 
-; 139  : 
-; 140  : 	vfs_init();
+; 133  : 
+; 134  : 	AuVFSInit();
 
-	call	?vfs_init@@YAXXZ			; vfs_init
+	call	?AuVFSInit@@YAXXZ			; AuVFSInit
+
+; 135  : 	
+; 136  : 	AuInitializeScreen(info);
+
+	mov	rcx, QWORD PTR info$[rsp]
+	call	?AuInitializeScreen@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z ; AuInitializeScreen
+
+; 137  : 	AuConsoleInitialize(info);
+
+	mov	rcx, QWORD PTR info$[rsp]
+	call	?AuConsoleInitialize@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z ; AuConsoleInitialize
+
+; 138  : 	AuInitializeRTC(); 
+
+	call	?AuInitializeRTC@@YAXXZ			; AuInitializeRTC
+
+; 139  : 
+; 140  : 	AuInitializeMouse();
+
+	call	?AuInitializeMouse@@YAXXZ		; AuInitializeMouse
 
 ; 141  : 
-; 142  :     initialize_screen(info);
+; 142  : 	//Here we initialise all drivers stuffs
+; 143  : 	AuDrvMngrInitialize(info);
 
 	mov	rcx, QWORD PTR info$[rsp]
-	call	?initialize_screen@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z ; initialize_screen
+	call	?AuDrvMngrInitialize@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z ; AuDrvMngrInitialize
+$LN4@AuMain:
 
-; 143  : 	screen_set_configuration(info->X_Resolution,info->Y_Resolution);
+; 144  : 	for(;;);
 
-	mov	rax, QWORD PTR info$[rsp]
-	movzx	eax, WORD PTR [rax+62]
-	mov	rcx, QWORD PTR info$[rsp]
-	movzx	ecx, WORD PTR [rcx+60]
-	mov	edx, eax
-	call	?screen_set_configuration@@YAXII@Z	; screen_set_configuration
+	jmp	SHORT $LN4@AuMain
 
-; 144  : 	console_initialize(info);
-
-	mov	rcx, QWORD PTR info$[rsp]
-	call	?console_initialize@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z ; console_initialize
-
-; 145  : 	initialize_rtc(); 
-
-	call	?initialize_rtc@@YAXXZ			; initialize_rtc
-
-; 146  : 
-; 147  : 	initialize_mouse();
-
-	call	?initialize_mouse@@YAXXZ		; initialize_mouse
-
-; 148  : 	kybrd_init();
+; 145  : 	kybrd_init();
 
 	call	?kybrd_init@@YAXXZ			; kybrd_init
 
-; 149  : 	message_init ();
+; 146  : 	message_init ();
 
 	call	?message_init@@YAXXZ			; message_init
 
-; 150  : 	dwm_ipc_init();
+; 147  : 	dwm_ipc_init();
 
 	call	?dwm_ipc_init@@YAXXZ			; dwm_ipc_init
 
-; 151  : 	pri_loop_init();
+; 148  : 	pri_loop_init();
 
 	call	?pri_loop_init@@YAXXZ			; pri_loop_init
 
-; 152  : 	
-; 153  : 	e1000_initialize();   //<< receiver not working
+; 149  : 	
+; 150  : 	e1000_initialize();   //<< receiver not working
 
 	call	?e1000_initialize@@YAXXZ		; e1000_initialize
 
-; 154  : 	//svga_init();
-; 155  : 	//sound_initialize();
-; 156  : 	//driver_mngr_initialize(info);
-; 157  : 	process_list_initialize();
+; 151  : 	//svga_init();
+; 152  : 	//sound_initialize();
+; 153  : 	//driver_mngr_initialize(info);
+; 154  : 	process_list_initialize();
 
 	call	?process_list_initialize@@YAXXZ		; process_list_initialize
 
-; 158  : 	ttype_init();
+; 155  : 	ttype_init();
 
 	call	?ttype_init@@YAXXZ			; ttype_init
 
-; 159  : 
-; 160  : 	printf ("FX State size -> %d byte \n", sizeof(fx_state_t));
+; 156  : 
+; 157  : 	printf ("FX State size -> %d byte \n", sizeof(fx_state_t));
 
 	mov	edx, 416				; 000001a0H
-	lea	rcx, OFFSET FLAT:$SG5843
+	lea	rcx, OFFSET FLAT:$SG5653
 	call	printf
 
-; 161  : 	
-; 162  : #ifdef ARCH_X64
-; 163  : 	//================================================
-; 164  : 	//! Initialize the scheduler here
-; 165  : 	//!===============================================
-; 166  : 	initialize_scheduler();
+; 158  : 	
+; 159  : #ifdef ARCH_X64
+; 160  : 	//================================================
+; 161  : 	//! Initialize the scheduler here
+; 162  : 	//!===============================================
+; 163  : 	initialize_scheduler();
 
 	call	?initialize_scheduler@@YAXXZ		; initialize_scheduler
 
-; 167  : 
-; 168  : 	printf ("Scheduler Initialized\n");
+; 164  : 
+; 165  : 	printf ("Scheduler Initialized\n");
 
-	lea	rcx, OFFSET FLAT:$SG5844
+	lea	rcx, OFFSET FLAT:$SG5654
 	call	printf
 
-; 169  : 
-; 170  : 	x64_cli();
+; 166  : 
+; 167  : 	x64_cli();
 
 	call	x64_cli
 
-; 171  : 	/* start the sound service manager at id 1 */
-; 172  : 	create_process ("/sndsrv.exe","shell");
+; 168  : 	/* start the sound service manager at id 1 */
+; 169  : 	create_process ("/sndsrv.exe","shell");
 
-	lea	rdx, OFFSET FLAT:$SG5845
-	lea	rcx, OFFSET FLAT:$SG5846
+	lea	rdx, OFFSET FLAT:$SG5655
+	lea	rcx, OFFSET FLAT:$SG5656
+	call	?create_process@@YAHPEBDPEAD@Z		; create_process
+
+; 170  : 
+; 171  : 	/* start the compositing window manager at id 2 */
+; 172  : 	create_process ("/priwm.exe","priwm");
+
+	lea	rdx, OFFSET FLAT:$SG5657
+	lea	rcx, OFFSET FLAT:$SG5658
 	call	?create_process@@YAHPEBDPEAD@Z		; create_process
 
 ; 173  : 
-; 174  : 	/* start the compositing window manager at id 2 */
-; 175  : 	//create_process ("/priwm.exe","priwm");
-; 176  : 
-; 177  : 	//create_process ("/dock.exe", "dock");
-; 178  : 	x64_sti();
+; 174  : 	//create_process ("/dock.exe", "dock");
+; 175  : 	x64_sti();
 
 	call	x64_sti
 
-; 179  : 	//! Here start the scheduler (multitasking engine)
-; 180  : 	scheduler_start();
+; 176  : 	//! Here start the scheduler (multitasking engine)
+; 177  : 	scheduler_start();
 
 	call	?scheduler_start@@YAXXZ			; scheduler_start
-$LN2@kmain:
+$LN2@AuMain:
 
-; 181  : #endif
-; 182  : 
-; 183  : 	//! Loop forever
-; 184  : 	while(1) {
+; 178  : #endif
+; 179  : 
+; 180  : 	//! Loop forever
+; 181  : 	while(1) {
 
 	xor	eax, eax
 	cmp	eax, 1
-	je	SHORT $LN1@kmain
+	je	SHORT $LN1@AuMain
 
-; 185  : 		//!looping looping
-; 186  : 		x64_cli();
+; 182  : 		//!looping looping
+; 183  : 		x64_cli();
 
 	call	x64_cli
 
-; 187  : 		x64_hlt();
+; 184  : 		x64_hlt();
 
 	call	x64_hlt
 
-; 188  : 	}
+; 185  : 	}
 
-	jmp	SHORT $LN2@kmain
-$LN1@kmain:
+	jmp	SHORT $LN2@AuMain
+$LN1@AuMain:
 
-; 189  : }
+; 186  : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
-?_kmain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z ENDP		; _kmain
-_TEXT	ENDS
-; Function compile flags: /Odtpy
-; File e:\xeneva project\xeneva\aurora\aurora\init.cpp
-_TEXT	SEGMENT
-__formal$ = 8
-?ue_thr@@YAXPEAX@Z PROC					; ue_thr
-
-; 116  : void ue_thr(void*) {
-
-	mov	QWORD PTR [rsp+8], rcx
-$LN2@ue_thr:
-
-; 117  : 	for(;;);
-
-	jmp	SHORT $LN2@ue_thr
-
-; 118  : }
-
-	ret	0
-?ue_thr@@YAXPEAX@Z ENDP					; ue_thr
+?_AuMain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z ENDP		; _AuMain
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\init.cpp
@@ -322,7 +311,7 @@ _TEXT	SEGMENT
 text$ = 48
 ?debug_print@@YAXPEBDZZ PROC				; debug_print
 
-; 108  : void debug_print (const char* text, ...) {
+; 106  : void debug_print (const char* text, ...) {
 
 $LN3:
 	mov	QWORD PTR [rsp+8], rcx
@@ -331,12 +320,12 @@ $LN3:
 	mov	QWORD PTR [rsp+32], r9
 	sub	rsp, 40					; 00000028H
 
-; 109  : 	debug(text);
+; 107  : 	debug(text);
 
 	mov	rcx, QWORD PTR text$[rsp]
 	call	QWORD PTR ?debug@@3P6AXPEBDZZEA		; debug
 
-; 110  : }
+; 108  : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -348,18 +337,18 @@ _TEXT	SEGMENT
 size$ = 48
 ??_U@YAPEAX_K@Z PROC					; operator new[]
 
-; 98   : void* __cdecl operator new[] (size_t size) {
+; 96   : void* __cdecl operator new[] (size_t size) {
 
 $LN3:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 40					; 00000028H
 
-; 99   : 	return malloc(size);
+; 97   : 	return malloc(size);
 
 	mov	rcx, QWORD PTR size$[rsp]
 	call	?malloc@@YAPEAX_K@Z			; malloc
 
-; 100  : }
+; 98   : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -370,17 +359,17 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 message	PROC
 
-; 112  : void message() {
+; 110  : void message() {
 
 $LN3:
 	sub	rsp, 40					; 00000028H
 
-; 113  : 	printf ("Hello Message\n");
+; 111  : 	printf ("Hello Message\n");
 
-	lea	rcx, OFFSET FLAT:$SG5831
+	lea	rcx, OFFSET FLAT:$SG5644
 	call	printf
 
-; 114  : }
+; 112  : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -392,18 +381,18 @@ _TEXT	SEGMENT
 p$ = 48
 ??3@YAXPEAX@Z PROC					; operator delete
 
-; 102  : void __cdecl operator delete (void* p) {
+; 100  : void __cdecl operator delete (void* p) {
 
 $LN3:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 40					; 00000028H
 
-; 103  : 	free(p);
+; 101  : 	free(p);
 
 	mov	rcx, QWORD PTR p$[rsp]
 	call	?free@@YAXPEAX@Z			; free
 
-; 104  : }
+; 102  : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -415,18 +404,18 @@ _TEXT	SEGMENT
 size$ = 48
 ??2@YAPEAX_K@Z PROC					; operator new
 
-; 94   : void* __cdecl ::operator new(size_t size) {
+; 92   : void* __cdecl ::operator new(size_t size) {
 
 $LN3:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 40					; 00000028H
 
-; 95   : 	return malloc(size);
+; 93   : 	return malloc(size);
 
 	mov	rcx, QWORD PTR size$[rsp]
 	call	?malloc@@YAPEAX_K@Z			; malloc
 
-; 96   : }
+; 94   : }
 
 	add	rsp, 40					; 00000028H
 	ret	0

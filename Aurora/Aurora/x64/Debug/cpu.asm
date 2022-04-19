@@ -15,25 +15,25 @@ _xsave	DB	01H DUP (?)
 pit_tick DD	01H DUP (?)
 _BSS	ENDS
 CONST	SEGMENT
-$SG2986	DB	'*** [x64_idt] x64_default_handler: Unhandled Exception *'
+$SG2988	DB	'*** [x64_idt] x64_default_handler: Unhandled Exception *'
 	DB	'** ', 0aH, 00H
 	ORG $+3
-$SG3026	DB	'IDT initialized', 0aH, 00H
+$SG3028	DB	'IDT initialized', 0aH, 00H
 	ORG $+7
-$SG3027	DB	'Exception initialized', 0aH, 00H
+$SG3029	DB	'Exception initialized', 0aH, 00H
 	ORG $+1
-$SG3028	DB	'APIC initialized', 0aH, 00H
+$SG3030	DB	'APIC initialized', 0aH, 00H
 	ORG $+6
-$SG3030	DB	'EFER.SYSCALL enabled', 0aH, 00H
+$SG3032	DB	'EFER.SYSCALL enabled', 0aH, 00H
 	ORG $+2
-$SG3031	DB	'User Land Initialized', 0aH, 00H
+$SG3033	DB	'User Land Initialized', 0aH, 00H
 	ORG $+1
-$SG3032	DB	'System call initialized', 0aH, 00H
+$SG3034	DB	'System call initialized', 0aH, 00H
 	ORG $+7
-$SG3045	DB	'FXSAVE enabled', 0aH, 00H
-$SG3048	DB	'[aurora]: SSE2 is supported ', 0aH, 00H
+$SG3047	DB	'FXSAVE enabled', 0aH, 00H
+$SG3050	DB	'[aurora]: SSE2 is supported ', 0aH, 00H
 	ORG $+2
-$SG3051	DB	'[aurora]: SSE3 is supported ', 0aH, 00H
+$SG3053	DB	'[aurora]: SSE3 is supported ', 0aH, 00H
 CONST	ENDS
 PUBLIC	?x86_64_gdt_init@@YAXXZ				; x86_64_gdt_init
 PUBLIC	?setvect@@YAX_KP6AX0PEAX@Z@Z			; setvect
@@ -199,7 +199,7 @@ $LN5:
 
 ; 141  : 	printf("*** [x64_idt] x64_default_handler: Unhandled Exception *** \n");
 
-	lea	rcx, OFFSET FLAT:$SG2986
+	lea	rcx, OFFSET FLAT:$SG2988
 	call	printf
 $LN2@default_ir:
 
@@ -743,7 +743,7 @@ $LN7@hal_cpu_fe:
 
 ; 265  : 			printf("FXSAVE enabled\n");
 
-	lea	rcx, OFFSET FLAT:$SG3045
+	lea	rcx, OFFSET FLAT:$SG3047
 	call	printf
 
 ; 266  : 			_fxsave = true;
@@ -775,7 +775,7 @@ $LN6@hal_cpu_fe:
 
 ; 272  : 		printf("[aurora]: SSE2 is supported \n");
 
-	lea	rcx, OFFSET FLAT:$SG3048
+	lea	rcx, OFFSET FLAT:$SG3050
 	call	printf
 	jmp	SHORT $LN2@hal_cpu_fe
 $LN3@hal_cpu_fe:
@@ -790,7 +790,7 @@ $LN3@hal_cpu_fe:
 
 ; 275  : 		printf("[aurora]: SSE3 is supported \n");
 
-	lea	rcx, OFFSET FLAT:$SG3051
+	lea	rcx, OFFSET FLAT:$SG3053
 	call	printf
 $LN1@hal_cpu_fe:
 $LN2@hal_cpu_fe:
@@ -825,7 +825,7 @@ $LN3:
 
 ; 205  : 	debug_print ("IDT initialized\n");
 
-	lea	rcx, OFFSET FLAT:$SG3026
+	lea	rcx, OFFSET FLAT:$SG3028
 	call	?debug_print@@YAXPEBDZZ			; debug_print
 
 ; 206  : 	x64_sti();
@@ -840,7 +840,7 @@ $LN3:
 ; 209  : 
 ; 210  : 	debug_print ("Exception initialized\n");
 
-	lea	rcx, OFFSET FLAT:$SG3027
+	lea	rcx, OFFSET FLAT:$SG3029
 	call	?debug_print@@YAXPEBDZZ			; debug_print
 
 ; 211  : 	
@@ -853,7 +853,7 @@ $LN3:
 ; 215  : 	
 ; 216  : 	debug_print ("APIC initialized\n");
 
-	lea	rcx, OFFSET FLAT:$SG3028
+	lea	rcx, OFFSET FLAT:$SG3030
 	call	?debug_print@@YAXPEBDZZ			; debug_print
 
 ; 217  : 
@@ -898,7 +898,7 @@ $LN3:
 ; 226  : 
 ; 227  : 	debug_print ("EFER.SYSCALL enabled\n");
 
-	lea	rcx, OFFSET FLAT:$SG3030
+	lea	rcx, OFFSET FLAT:$SG3032
 	call	?debug_print@@YAXPEBDZZ			; debug_print
 
 ; 228  : 	//! initialize the user land environment
@@ -910,7 +910,7 @@ $LN3:
 ; 230  : 
 ; 231  : 	debug_print ("User Land Initialized\n");
 
-	lea	rcx, OFFSET FLAT:$SG3031
+	lea	rcx, OFFSET FLAT:$SG3033
 	call	?debug_print@@YAXPEBDZZ			; debug_print
 
 ; 232  : 	//! initialize the syscall entries
@@ -921,7 +921,7 @@ $LN3:
 ; 234  : 
 ; 235  : 	debug_print ("System call initialized\n");
 
-	lea	rcx, OFFSET FLAT:$SG3032
+	lea	rcx, OFFSET FLAT:$SG3034
 	call	?debug_print@@YAXPEBDZZ			; debug_print
 
 ; 236  : 

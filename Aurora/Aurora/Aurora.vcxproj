@@ -150,7 +150,7 @@
       <Driver>Driver</Driver>
       <OptimizeReferences>false</OptimizeReferences>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
-      <EntryPointSymbol>_kmain</EntryPointSymbol>
+      <EntryPointSymbol>_AuMain</EntryPointSymbol>
       <BaseAddress>0xFFFFC00000000000</BaseAddress>
       <RandomizedBaseAddress>
       </RandomizedBaseAddress>
@@ -216,7 +216,6 @@
     <ClInclude Include="..\include\drivers\mouse.h" />
     <ClInclude Include="..\include\drivers\net\e1000.h" />
     <ClInclude Include="..\include\drivers\pci.h" />
-    <ClInclude Include="..\include\drivers\pciata.h" />
     <ClInclude Include="..\include\drivers\rtc.h" />
     <ClInclude Include="..\include\drivers\svga\backdoor_def.h" />
     <ClInclude Include="..\include\drivers\svga\gmr.h" />
@@ -232,7 +231,7 @@
     <ClInclude Include="..\include\drivers\svga\vmsvga.h" />
     <ClInclude Include="..\include\drivers\term.h" />
     <ClInclude Include="..\include\drivers\vmmouse.h" />
-    <ClInclude Include="..\include\drvmngr.h" />
+    <ClInclude Include="..\include\audrv.h" />
     <ClInclude Include="..\include\efi.h" />
     <ClInclude Include="..\include\error.h" />
     <ClInclude Include="..\include\fs\devfs.h" />
@@ -256,7 +255,6 @@
     <ClInclude Include="..\include\pe.h" />
     <ClInclude Include="..\include\pmmngr.h" />
     <ClInclude Include="..\include\proc.h" />
-    <ClInclude Include="..\include\procmngr.h" />
     <ClInclude Include="..\include\screen.h" />
     <ClInclude Include="..\include\serial.h" />
     <ClInclude Include="..\include\sound.h" />
@@ -298,14 +296,23 @@
     <ClCompile Include="drivers\mouse.cpp" />
     <ClCompile Include="drivers\net\e1000.cpp" />
     <ClCompile Include="drivers\pci.cpp" />
-    <ClCompile Include="drivers\pciata.cpp" />
     <ClCompile Include="drivers\rtc.cpp" />
-    <ClCompile Include="drivers\svga\gmr.cpp" />
-    <ClCompile Include="drivers\svga\svga_screen.cpp" />
-    <ClCompile Include="drivers\svga\svga_screen_util.cpp" />
-    <ClCompile Include="drivers\svga\vmsvga.cpp" />
-    <ClCompile Include="drivers\svga\vm_backdoor.cpp" />
-    <ClCompile Include="drvmngr.cpp" />
+    <ClCompile Include="drivers\svga\gmr.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="drivers\svga\svga_screen.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="drivers\svga\svga_screen_util.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="drivers\svga\vmsvga.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="drivers\svga\vm_backdoor.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="audrv.cpp" />
     <ClCompile Include="fs\devfs.cpp" />
     <ClCompile Include="fs\fat\fat.cpp" />
     <ClCompile Include="fs\fat\fat_f.cpp" />
@@ -324,7 +331,6 @@
     <ClCompile Include="pe.cpp" />
     <ClCompile Include="pmmngr.cpp" />
     <ClCompile Include="proc.cpp" />
-    <ClCompile Include="procmngr.cpp" />
     <ClCompile Include="screen.cpp" />
     <ClCompile Include="serial.cpp" />
     <ClCompile Include="sound.cpp" />
@@ -353,7 +359,9 @@
     <NASM Include="arch\x86_64\_low_level.asm">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
     </NASM>
-    <NASM Include="drivers\svga\backdoor_stuff.asm" />
+    <NASM Include="drivers\svga\backdoor_stuff.asm">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </NASM>
     <NASM Include="_fast_cpy.asm" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

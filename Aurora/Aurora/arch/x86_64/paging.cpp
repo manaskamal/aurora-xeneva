@@ -172,8 +172,8 @@ bool AuMapPage(uint64_t physical_address, uint64_t virtual_address, uint8_t attr
 	uint64_t* pml1 = (uint64_t*)(p2v(pml2[i2]) & ~(4096 - 1));
 	if (pml1[i1] & PAGING_PRESENT)
 	{
-		//pmmngr_free((void*)physical_address);
-		//return false;
+		AuPmmngrFree((void*)physical_address);
+		return false;
 	}
 
 	pml1[i1] = physical_address | flags;

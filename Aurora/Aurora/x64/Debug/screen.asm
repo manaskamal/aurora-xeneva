@@ -10,43 +10,43 @@ _BSS	SEGMENT
 ?display@@3U__display__@@A DB 020H DUP (?)		; display
 _BSS	ENDS
 CONST	SEGMENT
-$SG3158	DB	'fb', 00H
+$SG3160	DB	'fb', 00H
 	ORG $+5
-$SG3159	DB	'VFS Node created', 0aH, 00H
+$SG3161	DB	'VFS Node created', 0aH, 00H
 	ORG $+6
-$SG3160	DB	'/dev/fb', 00H
-$SG3161	DB	'VFS DEV FB Registered', 0aH, 00H
+$SG3162	DB	'/dev/fb', 00H
+$SG3163	DB	'VFS DEV FB Registered', 0aH, 00H
 CONST	ENDS
-PUBLIC	?initialize_screen@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z ; initialize_screen
-PUBLIC	?screen_set_configuration@@YAXII@Z		; screen_set_configuration
-PUBLIC	?get_screen_width@@YAIXZ			; get_screen_width
-PUBLIC	?get_screen_height@@YAIXZ			; get_screen_height
-PUBLIC	?get_framebuffer_addr@@YAPEAIXZ			; get_framebuffer_addr
-PUBLIC	?get_bpp@@YAIXZ					; get_bpp
-PUBLIC	?get_screen_scanline@@YAGXZ			; get_screen_scanline
-PUBLIC	?get_fb_size@@YAIXZ				; get_fb_size
-PUBLIC	?draw_pixel@@YAXIII@Z				; draw_pixel
+PUBLIC	?AuInitializeScreen@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z ; AuInitializeScreen
+PUBLIC	?AuScreenMap@@YAXII@Z				; AuScreenMap
+PUBLIC	AuGetScreenWidth
+PUBLIC	AuGetScreenHeight
+PUBLIC	AuGetFramebuffer
+PUBLIC	AuGetScreenBPP
+PUBLIC	AuGetScreenScanline
+PUBLIC	AuGetFramebufferSize
+PUBLIC	AuDrawPixel
 PUBLIC	?screen_io_query@@YAHPEAU_vfs_node_@@HPEAX@Z	; screen_io_query
 EXTRN	?strcpy@@YAPEADPEADPEBD@Z:PROC			; strcpy
 EXTRN	printf:PROC
-EXTRN	?vfs_mount@@YAXPEADPEAU_vfs_node_@@PEAU_vfs_entry_@@@Z:PROC ; vfs_mount
+EXTRN	vfs_mount:PROC
 EXTRN	?AuPmmngrAlloc@@YAPEAXXZ:PROC			; AuPmmngrAlloc
 EXTRN	AuMapPage:PROC
 pdata	SEGMENT
-$pdata$?initialize_screen@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z DD imagerel $LN9
-	DD	imagerel $LN9+423
-	DD	imagerel $unwind$?initialize_screen@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z
-$pdata$?screen_set_configuration@@YAXII@Z DD imagerel $LN6
+$pdata$?AuInitializeScreen@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z DD imagerel $LN9
+	DD	imagerel $LN9+448
+	DD	imagerel $unwind$?AuInitializeScreen@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z
+$pdata$?AuScreenMap@@YAXII@Z DD imagerel $LN6
 	DD	imagerel $LN6+159
-	DD	imagerel $unwind$?screen_set_configuration@@YAXII@Z
+	DD	imagerel $unwind$?AuScreenMap@@YAXII@Z
 $pdata$?screen_io_query@@YAHPEAU_vfs_node_@@HPEAX@Z DD imagerel $LN9
 	DD	imagerel $LN9+164
 	DD	imagerel $unwind$?screen_io_query@@YAHPEAU_vfs_node_@@HPEAX@Z
 pdata	ENDS
 xdata	SEGMENT
-$unwind$?initialize_screen@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z DD 010901H
+$unwind$?AuInitializeScreen@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z DD 010901H
 	DD	06209H
-$unwind$?screen_set_configuration@@YAXII@Z DD 010c01H
+$unwind$?AuScreenMap@@YAXII@Z DD 010c01H
 	DD	0620cH
 $unwind$?screen_io_query@@YAHPEAU_vfs_node_@@HPEAX@Z DD 011201H
 	DD	04212H
@@ -65,7 +65,7 @@ code$ = 56
 arg$ = 64
 ?screen_io_query@@YAHPEAU_vfs_node_@@HPEAX@Z PROC	; screen_io_query
 
-; 155  : int screen_io_query (vfs_node_t* node, int code, void* arg) {
+; 157  : int screen_io_query (vfs_node_t* node, int code, void* arg) {
 
 $LN9:
 	mov	QWORD PTR [rsp+24], r8
@@ -73,11 +73,11 @@ $LN9:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 40					; 00000028H
 
-; 156  : 	int ret = 0;
+; 158  : 	int ret = 0;
 
 	mov	DWORD PTR ret$[rsp], 0
 
-; 157  : 	switch (code) {
+; 159  : 	switch (code) {
 
 	mov	eax, DWORD PTR code$[rsp]
 	mov	DWORD PTR tv64[rsp], eax
@@ -92,78 +92,78 @@ $LN9:
 	jmp	SHORT $LN5@screen_io_
 $LN4@screen_io_:
 
-; 158  : 	case SCREEN_GETWIDTH:{
-; 159  : 		uint32_t width = display.width;
+; 160  : 	case SCREEN_GETWIDTH:{
+; 161  : 		uint32_t width = display.width;
 
 	mov	eax, DWORD PTR ?display@@3U__display__@@A
 	mov	DWORD PTR width$2[rsp], eax
 
-; 160  : 		ret = width;
+; 162  : 		ret = width;
 
 	mov	eax, DWORD PTR width$2[rsp]
 	mov	DWORD PTR ret$[rsp], eax
 
-; 161  : 		break;
+; 163  : 		break;
 
 	jmp	SHORT $LN5@screen_io_
 $LN3@screen_io_:
 
-; 162  : 	}
-; 163  : 	case SCREEN_GETHEIGHT:{
-; 164  : 		uint32_t height = display.height;
+; 164  : 	}
+; 165  : 	case SCREEN_GETHEIGHT:{
+; 166  : 		uint32_t height = display.height;
 
 	mov	eax, DWORD PTR ?display@@3U__display__@@A+4
 	mov	DWORD PTR height$3[rsp], eax
 
-; 165  : 		ret = height;
+; 167  : 		ret = height;
 
 	mov	eax, DWORD PTR height$3[rsp]
 	mov	DWORD PTR ret$[rsp], eax
 
-; 166  : 		break;
+; 168  : 		break;
 
 	jmp	SHORT $LN5@screen_io_
 $LN2@screen_io_:
 
-; 167  : 	}
-; 168  : 	case SCREEN_GETBPP:{
-; 169  : 		uint32_t bpp = display.bpp;
+; 169  : 	}
+; 170  : 	case SCREEN_GETBPP:{
+; 171  : 		uint32_t bpp = display.bpp;
 
 	mov	eax, DWORD PTR ?display@@3U__display__@@A+16
 	mov	DWORD PTR bpp$4[rsp], eax
 
-; 170  : 		ret =  bpp;
+; 172  : 		ret =  bpp;
 
 	mov	eax, DWORD PTR bpp$4[rsp]
 	mov	DWORD PTR ret$[rsp], eax
 
-; 171  : 		break;
+; 173  : 		break;
 
 	jmp	SHORT $LN5@screen_io_
 $LN1@screen_io_:
 
-; 172  : 	 }
-; 173  : 	case SCREEN_GET_SCANLINE: {
-; 174  : 		uint16_t scanline = display.scanline;
+; 174  : 	 }
+; 175  : 	case SCREEN_GET_SCANLINE: {
+; 176  : 		uint16_t scanline = display.scanline;
 
 	movzx	eax, WORD PTR ?display@@3U__display__@@A+20
 	mov	WORD PTR scanline$1[rsp], ax
 
-; 175  : 		ret =  scanline;
+; 177  : 		ret =  scanline;
 
 	movzx	eax, WORD PTR scanline$1[rsp]
 	mov	DWORD PTR ret$[rsp], eax
 $LN5@screen_io_:
 
-; 176  : 		break;
-; 177  : 	}
-; 178  : 	}
-; 179  : 
-; 180  : 	return ret;
+; 178  : 		break;
+; 179  : 	}
+; 180  : 	}
+; 181  : 
+; 182  : 	return ret;
 
 	mov	eax, DWORD PTR ret$[rsp]
 
-; 181  : }
+; 183  : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -175,15 +175,15 @@ _TEXT	SEGMENT
 x$ = 8
 y$ = 16
 color$ = 24
-?draw_pixel@@YAXIII@Z PROC				; draw_pixel
+AuDrawPixel PROC
 
-; 144  : void draw_pixel (unsigned x, unsigned y, uint32_t color ) {
+; 146  : void AuDrawPixel (unsigned x, unsigned y, uint32_t color ) {
 
 	mov	DWORD PTR [rsp+24], r8d
 	mov	DWORD PTR [rsp+16], edx
 	mov	DWORD PTR [rsp+8], ecx
 
-; 145  : 	display.buffer[x + y * display.width] = color;
+; 147  : 	display.buffer[x + y * display.width] = color;
 
 	mov	eax, DWORD PTR y$[rsp]
 	imul	eax, DWORD PTR ?display@@3U__display__@@A
@@ -195,94 +195,94 @@ color$ = 24
 	mov	edx, DWORD PTR color$[rsp]
 	mov	DWORD PTR [rcx+rax*4], edx
 
-; 146  : }
+; 148  : }
 
 	ret	0
-?draw_pixel@@YAXIII@Z ENDP				; draw_pixel
+AuDrawPixel ENDP
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\screen.cpp
 _TEXT	SEGMENT
-?get_fb_size@@YAIXZ PROC				; get_fb_size
+AuGetFramebufferSize PROC
 
-; 135  : 	return display.size;
+; 137  : 	return display.size;
 
 	mov	eax, DWORD PTR ?display@@3U__display__@@A+24
 
-; 136  : }
+; 138  : }
 
 	ret	0
-?get_fb_size@@YAIXZ ENDP				; get_fb_size
+AuGetFramebufferSize ENDP
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\screen.cpp
 _TEXT	SEGMENT
-?get_screen_scanline@@YAGXZ PROC			; get_screen_scanline
+AuGetScreenScanline PROC
 
-; 127  : 	return display.scanline;
+; 129  : 	return display.scanline;
 
 	movzx	eax, WORD PTR ?display@@3U__display__@@A+20
 
-; 128  : }
+; 130  : }
 
 	ret	0
-?get_screen_scanline@@YAGXZ ENDP			; get_screen_scanline
+AuGetScreenScanline ENDP
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\screen.cpp
 _TEXT	SEGMENT
-?get_bpp@@YAIXZ PROC					; get_bpp
+AuGetScreenBPP PROC
 
-; 119  : 	return display.bpp;
+; 121  : 	return display.bpp;
 
 	mov	eax, DWORD PTR ?display@@3U__display__@@A+16
 
-; 120  : }
+; 122  : }
 
 	ret	0
-?get_bpp@@YAIXZ ENDP					; get_bpp
+AuGetScreenBPP ENDP
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\screen.cpp
 _TEXT	SEGMENT
-?get_framebuffer_addr@@YAPEAIXZ PROC			; get_framebuffer_addr
+AuGetFramebuffer PROC
 
-; 111  : 	return display.buffer;
+; 113  : 	return display.buffer;
 
 	mov	rax, QWORD PTR ?display@@3U__display__@@A+8
 
-; 112  : }
+; 114  : }
 
 	ret	0
-?get_framebuffer_addr@@YAPEAIXZ ENDP			; get_framebuffer_addr
+AuGetFramebuffer ENDP
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\screen.cpp
 _TEXT	SEGMENT
-?get_screen_height@@YAIXZ PROC				; get_screen_height
+AuGetScreenHeight PROC
 
-; 102  : 	return display.height;
+; 104  : 	return display.height;
 
 	mov	eax, DWORD PTR ?display@@3U__display__@@A+4
 
-; 103  : }
+; 105  : }
 
 	ret	0
-?get_screen_height@@YAIXZ ENDP				; get_screen_height
+AuGetScreenHeight ENDP
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\screen.cpp
 _TEXT	SEGMENT
-?get_screen_width@@YAIXZ PROC				; get_screen_width
+AuGetScreenWidth PROC
 
-; 94   : 	return display.width;
+; 96   : 	return display.width;
 
 	mov	eax, DWORD PTR ?display@@3U__display__@@A
 
-; 95   : }
+; 97   : }
 
 	ret	0
-?get_screen_width@@YAIXZ ENDP				; get_screen_width
+AuGetScreenWidth ENDP
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\screen.cpp
@@ -290,43 +290,43 @@ _TEXT	SEGMENT
 i$1 = 32
 width$ = 64
 height$ = 72
-?screen_set_configuration@@YAXII@Z PROC			; screen_set_configuration
+?AuScreenMap@@YAXII@Z PROC				; AuScreenMap
 
-; 79   : void screen_set_configuration (uint32_t width, uint32_t height) {
+; 81   : void AuScreenMap (uint32_t width, uint32_t height) {
 
 $LN6:
 	mov	DWORD PTR [rsp+16], edx
 	mov	DWORD PTR [rsp+8], ecx
 	sub	rsp, 56					; 00000038H
 
-; 80   : 	display.width = width;
+; 82   : 	display.width = width;
 
 	mov	eax, DWORD PTR width$[rsp]
 	mov	DWORD PTR ?display@@3U__display__@@A, eax
 
-; 81   : 	display.height = height;
+; 83   : 	display.height = height;
 
 	mov	eax, DWORD PTR height$[rsp]
 	mov	DWORD PTR ?display@@3U__display__@@A+4, eax
 
-; 82   : 	//! Map a shared region for other processes to output
-; 83   : 	for (int i = 0; i < display.size / 4096 ; i++)
+; 84   : 	//! Map a shared region for other processes to output
+; 85   : 	for (int i = 0; i < display.size / 4096 ; i++)
 
 	mov	DWORD PTR i$1[rsp], 0
-	jmp	SHORT $LN3@screen_set
-$LN2@screen_set:
+	jmp	SHORT $LN3@AuScreenMa
+$LN2@AuScreenMa:
 	mov	eax, DWORD PTR i$1[rsp]
 	inc	eax
 	mov	DWORD PTR i$1[rsp], eax
-$LN3@screen_set:
+$LN3@AuScreenMa:
 	xor	edx, edx
 	mov	eax, DWORD PTR ?display@@3U__display__@@A+24
 	mov	ecx, 4096				; 00001000H
 	div	ecx
 	cmp	DWORD PTR i$1[rsp], eax
-	jae	SHORT $LN1@screen_set
+	jae	SHORT $LN1@AuScreenMa
 
-; 84   : 		AuMapPage((uint64_t)display.buffer + i * 4096, 0xFFFFD00000200000 + i * 4096, PAGING_USER);
+; 86   : 		AuMapPage((uint64_t)display.buffer + i * 4096, 0xFFFFD00000200000 + i * 4096, PAGING_USER);
 
 	mov	eax, DWORD PTR i$1[rsp]
 	imul	eax, 4096				; 00001000H
@@ -342,20 +342,20 @@ $LN3@screen_set:
 	mov	r8b, 4
 	mov	rdx, rax
 	call	AuMapPage
-	jmp	SHORT $LN2@screen_set
-$LN1@screen_set:
+	jmp	SHORT $LN2@AuScreenMa
+$LN1@AuScreenMa:
 
-; 85   : 
-; 86   : 	display.buffer = (uint32_t*)0xFFFFD00000200000;
+; 87   : 
+; 88   : 	display.buffer = (uint32_t*)0xFFFFD00000200000;
 
 	mov	rax, -52776556036096			; ffffd00000200000H
 	mov	QWORD PTR ?display@@3U__display__@@A+8, rax
 
-; 87   : }
+; 89   : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
-?screen_set_configuration@@YAXII@Z ENDP			; screen_set_configuration
+?AuScreenMap@@YAXII@Z ENDP				; AuScreenMap
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\screen.cpp
@@ -364,9 +364,9 @@ h$1 = 32
 w$2 = 36
 svga$ = 40
 info$ = 64
-?initialize_screen@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z PROC	; initialize_screen
+?AuInitializeScreen@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z PROC	; AuInitializeScreen
 
-; 36   : void initialize_screen (KERNEL_BOOT_INFO *info){
+; 36   : void AuInitializeScreen (KERNEL_BOOT_INFO *info){
 
 $LN9:
 	mov	QWORD PTR [rsp+8], rcx
@@ -418,7 +418,7 @@ $LN9:
 ; 48   : 	strcpy (svga->filename, "fb");
 
 	mov	rax, QWORD PTR svga$[rsp]
-	lea	rdx, OFFSET FLAT:$SG3158
+	lea	rdx, OFFSET FLAT:$SG3160
 	mov	rcx, rax
 	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
 
@@ -480,19 +480,19 @@ $LN9:
 
 ; 60   : 	printf ("VFS Node created\n");
 
-	lea	rcx, OFFSET FLAT:$SG3159
+	lea	rcx, OFFSET FLAT:$SG3161
 	call	printf
 
 ; 61   : 	vfs_mount ("/dev/fb", svga, 0);
 
 	xor	r8d, r8d
 	mov	rdx, QWORD PTR svga$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3160
-	call	?vfs_mount@@YAXPEADPEAU_vfs_node_@@PEAU_vfs_entry_@@@Z ; vfs_mount
+	lea	rcx, OFFSET FLAT:$SG3162
+	call	vfs_mount
 
 ; 62   : 	printf ("VFS DEV FB Registered\n");
 
-	lea	rcx, OFFSET FLAT:$SG3161
+	lea	rcx, OFFSET FLAT:$SG3163
 	call	printf
 
 ; 63   : 
@@ -500,30 +500,30 @@ $LN9:
 ; 65   : 	for (int w = 0; w < info->X_Resolution; w++) {
 
 	mov	DWORD PTR w$2[rsp], 0
-	jmp	SHORT $LN6@initialize
-$LN5@initialize:
+	jmp	SHORT $LN6@AuInitiali
+$LN5@AuInitiali:
 	mov	eax, DWORD PTR w$2[rsp]
 	inc	eax
 	mov	DWORD PTR w$2[rsp], eax
-$LN6@initialize:
+$LN6@AuInitiali:
 	mov	rax, QWORD PTR info$[rsp]
 	movzx	eax, WORD PTR [rax+60]
 	cmp	DWORD PTR w$2[rsp], eax
-	jge	SHORT $LN4@initialize
+	jge	SHORT $LN4@AuInitiali
 
 ; 66   : 		for (int h = 0; h < info->Y_Resolution; h++) {
 
 	mov	DWORD PTR h$1[rsp], 0
-	jmp	SHORT $LN3@initialize
-$LN2@initialize:
+	jmp	SHORT $LN3@AuInitiali
+$LN2@AuInitiali:
 	mov	eax, DWORD PTR h$1[rsp]
 	inc	eax
 	mov	DWORD PTR h$1[rsp], eax
-$LN3@initialize:
+$LN3@AuInitiali:
 	mov	rax, QWORD PTR info$[rsp]
 	movzx	eax, WORD PTR [rax+62]
 	cmp	DWORD PTR h$1[rsp], eax
-	jge	SHORT $LN1@initialize
+	jge	SHORT $LN1@AuInitiali
 
 ; 67   : 			info->graphics_framebuffer[w + h * info->X_Resolution] = 0x00000000;
 
@@ -542,18 +542,28 @@ $LN3@initialize:
 
 ; 68   : 		}
 
-	jmp	SHORT $LN2@initialize
-$LN1@initialize:
+	jmp	SHORT $LN2@AuInitiali
+$LN1@AuInitiali:
 
 ; 69   : 	}
 
-	jmp	SHORT $LN5@initialize
-$LN4@initialize:
+	jmp	SHORT $LN5@AuInitiali
+$LN4@AuInitiali:
 
-; 70   : }
+; 70   : 
+; 71   : 	AuScreenMap(info->X_Resolution, info->Y_Resolution);
+
+	mov	rax, QWORD PTR info$[rsp]
+	movzx	eax, WORD PTR [rax+62]
+	mov	rcx, QWORD PTR info$[rsp]
+	movzx	ecx, WORD PTR [rcx+60]
+	mov	edx, eax
+	call	?AuScreenMap@@YAXII@Z			; AuScreenMap
+
+; 72   : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
-?initialize_screen@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z ENDP	; initialize_screen
+?AuInitializeScreen@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z ENDP	; AuInitializeScreen
 _TEXT	ENDS
 END

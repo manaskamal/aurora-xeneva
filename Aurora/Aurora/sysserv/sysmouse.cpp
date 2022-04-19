@@ -12,7 +12,6 @@
 #include <drivers\svga\backdoor_def.h>
 #include <drivers\svga\vmmouse_defs.h>
 #include <drivers\svga\vmsvga.h>
-#include <drivers\vmmouse.h>
 #include <pmmngr.h>
 #include <string.h>
 #include <stdio.h>

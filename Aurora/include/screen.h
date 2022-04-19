@@ -22,6 +22,7 @@
 #include <_xnboot.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <aurora.h>
 
 //! Standard codes for screen driver features
 #define SCREEN_SETMODE     0x100
@@ -48,62 +49,62 @@ typedef struct __display__ {
 //!Simple Display Interface for User mode applications
 
 /**
- * initialize_screen -- initialize the screen
+ * AuInitializeScreen -- initialize the screen
  * @param info -- the boot information pointer passed by xnldr
  */
-extern void initialize_screen (KERNEL_BOOT_INFO *info);
+extern void AuInitializeScreen (KERNEL_BOOT_INFO *info);
 
 /**
- * screen_set_configuration -- simply set the mode of the screen
+ * AuScreenMap -- simply set the mode of the screen
  * and map the virtual address space to be used
  * @param width -- mode width
  * @param height -- mode height
  */
-extern void screen_set_configuration (uint32_t width, uint32_t height);
+extern void AuScreenMap (uint32_t width, uint32_t height);
 
 /**
- * get_screen_width -- returns the current width of the screen
+ * AuGetScreenWidth  -- returns the current width of the screen
  * @return -- width of the screen
  */
-extern uint32_t  get_screen_width ();
+AU_EXTERN AU_EXPORT uint32_t  AuGetScreenWidth ();
 
 /**
- * get_screen_height -- returns the current height of the screen
+ * AuGetScreenHeight -- returns the current height of the screen
  * @return -- height of the screen
  */
-extern uint32_t  get_screen_height ();
+AU_EXTERN AU_EXPORT uint32_t  AuGetScreenHeight ();
 
 /**
- * get_framebuffer_addr -- returns the current framebuffer address of
+ * AuGetFramebuffer -- returns the current framebuffer address of
  * the screen
  * @return -- framebuffer address
  */
-extern uint32_t *get_framebuffer_addr();
+AU_EXTERN AU_EXPORT uint32_t *AuGetFramebuffer();
 
 /**
- * get_bpp -- returns the current bits per pixel
+ * AuGetScreenBPP -- returns the current bits per pixel
  * @return -- bits/pixel of the screen
  */
-extern uint32_t  get_bpp ();
+AU_EXTERN AU_EXPORT uint32_t  AuGetScreenBPP();
 
 /**
- * get_screen_scanline -- return the current pixles per line of the screen
+ * AuGetScreenScanline -- return the current pixles per line of the screen
  * @return -- scanline of the screen
  */
-extern uint16_t get_screen_scanline ();
+AU_EXTERN AU_EXPORT uint16_t AuGetScreenScanline();
 
 /**
- * get_fb_size -- returns the current framebuffer size of the screen in (bytes)
+ * AuGetFramebufferSize -- returns the current framebuffer size of the screen in (bytes)
  * @return -- framebuffer size
  */
-extern uint32_t get_fb_size();
+AU_EXTERN AU_EXPORT uint32_t AuGetFramebufferSize();
 
 /**
- * draw_pixel -- low level pixel drawing interface
+ * AuDrawPixel -- low level pixel drawing interface
  * @param x -- x position of the pixel
  * @param y -- y position of the pixel
  * @param color -- color of the pixel
  */
-extern void draw_pixel(unsigned x, unsigned y, uint32_t color);
+AU_EXTERN AU_EXPORT void AuDrawPixel(unsigned x, unsigned y, uint32_t color);
 
 #endif

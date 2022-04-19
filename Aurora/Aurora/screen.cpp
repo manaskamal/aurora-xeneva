@@ -30,10 +30,10 @@ int screen_io_query (vfs_node_t* node, int code, void* arg);
 
 
 /**
- * initialize_screen -- initialize the screen
+ * AuInitializeScreen -- initialize the screen
  * @param info -- the boot information pointer passed by xnldr
  */
-void initialize_screen (KERNEL_BOOT_INFO *info){
+void AuInitializeScreen (KERNEL_BOOT_INFO *info){
 	display.buffer = info->graphics_framebuffer;
 	display.width = info->X_Resolution;
 	display.height = info->Y_Resolution;
@@ -67,6 +67,8 @@ void initialize_screen (KERNEL_BOOT_INFO *info){
 			info->graphics_framebuffer[w + h * info->X_Resolution] = 0x00000000;
 		}
 	}
+
+	AuScreenMap(info->X_Resolution, info->Y_Resolution);
 }
 
 
@@ -76,7 +78,7 @@ void initialize_screen (KERNEL_BOOT_INFO *info){
  * @param width -- mode width
  * @param height -- mode height
  */
-void screen_set_configuration (uint32_t width, uint32_t height) {
+void AuScreenMap (uint32_t width, uint32_t height) {
 	display.width = width;
 	display.height = height;
 	//! Map a shared region for other processes to output
@@ -87,35 +89,35 @@ void screen_set_configuration (uint32_t width, uint32_t height) {
 }
 
 /**
- * get_screen_width -- returns the current width of the screen
+ * AuGetScreenWidth -- returns the current width of the screen
  * @return -- width of the screen
  */
-uint32_t get_screen_width () {
+uint32_t AuGetScreenWidth () {
 	return display.width;
 }
 
 /**
- * get_screen_height -- returns the current height of the screen
+ * AuGetScreenHeight -- returns the current height of the screen
  * @return -- height of the screen
  */
-uint32_t get_screen_height () {
+uint32_t AuGetScreenHeight () {
 	return display.height;
 }
 
 /**
- * get_framebuffer_addr -- returns the current framebuffer address of
+ * AuGetFramebuffer -- returns the current framebuffer address of
  * the screen
  * @return -- framebuffer address
  */
-uint32_t * get_framebuffer_addr () {
+uint32_t * AuGetFramebuffer () {
 	return display.buffer;
 }
 
 /**
- * get_bpp -- returns the current bits per pixel
+ * AuGetScreenBPP -- returns the current bits per pixel
  * @return -- bits/pixel of the screen
  */
-uint32_t get_bpp () {
+uint32_t AuGetScreenBPP () {
 	return display.bpp;
 }
 
@@ -123,25 +125,25 @@ uint32_t get_bpp () {
  * get_screen_scanline -- return the current pixles per line of the screen
  * @return -- scanline of the screen
  */
-uint16_t get_screen_scanline () {
+uint16_t AuGetScreenScanline() {
 	return display.scanline;
 }
 
 /**
- * get_fb_size -- returns the current framebuffer size of the screen in (bytes)
+ * AuGetFramebufferSize -- returns the current framebuffer size of the screen in (bytes)
  * @return -- framebuffer size
  */
-uint32_t get_fb_size () {
+uint32_t AuGetFramebufferSize() {
 	return display.size;
 }
 
 /**
- * draw_pixel -- low level pixel drawing interface
+ * AuDrawPixel -- low level pixel drawing interface
  * @param x -- x position of the pixel
  * @param y -- y position of the pixel
  * @param color -- color of the pixel
  */
-void draw_pixel (unsigned x, unsigned y, uint32_t color ) {
+void AuDrawPixel (unsigned x, unsigned y, uint32_t color ) {
 	display.buffer[x + y * display.width] = color;
 }
 

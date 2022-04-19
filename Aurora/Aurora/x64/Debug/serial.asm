@@ -9,15 +9,16 @@ _BSS	SEGMENT
 _serial_initialized_ DB 01H DUP (?)
 _BSS	ENDS
 CONST	SEGMENT
-$SG2978	DB	'Serial Handler', 0aH, 00H
-$SG3071	DB	'.', 00H
+$SG3073	DB	'.', 00H
+	ORG $+6
+$SG2980	DB	'Serial Handler', 0aH, 00H
 CONST	ENDS
-PUBLIC	?initialize_serial@@YAXXZ			; initialize_serial
+PUBLIC	?AuInitializeSerial@@YAXXZ			; AuInitializeSerial
 PUBLIC	?write_serial@@YAXD@Z				; write_serial
 PUBLIC	?debug_serial@@YAXPEAD@Z			; debug_serial
 PUBLIC	?_debug_print_@@YAXPEADZZ			; _debug_print_
 PUBLIC	?is_serial_initialized@@YA_NXZ			; is_serial_initialized
-PUBLIC	?serial_handler@@YAX_KPEAX@Z			; serial_handler
+PUBLIC	?SerialHandler@@YAX_KPEAX@Z			; SerialHandler
 PUBLIC	?is_transmit_empty@@YAHXZ			; is_transmit_empty
 EXTRN	x64_inportb:PROC
 EXTRN	x64_outportb:PROC
@@ -29,9 +30,9 @@ EXTRN	?ftoa@@YAPEADME@Z:PROC				; ftoa
 EXTRN	?p2v@@YA_K_K@Z:PROC				; p2v
 EXTRN	_fltused:DWORD
 pdata	SEGMENT
-$pdata$?initialize_serial@@YAXXZ DD imagerel $LN3
+$pdata$?AuInitializeSerial@@YAXXZ DD imagerel $LN3
 	DD	imagerel $LN3+156
-	DD	imagerel $unwind$?initialize_serial@@YAXXZ
+	DD	imagerel $unwind$?AuInitializeSerial@@YAXXZ
 $pdata$?write_serial@@YAXD@Z DD imagerel $LN5
 	DD	imagerel $LN5+47
 	DD	imagerel $unwind$?write_serial@@YAXD@Z
@@ -41,15 +42,15 @@ $pdata$?debug_serial@@YAXPEAD@Z DD imagerel $LN6
 $pdata$?_debug_print_@@YAXPEADZZ DD imagerel $LN25
 	DD	imagerel $LN25+860
 	DD	imagerel $unwind$?_debug_print_@@YAXPEADZZ
-$pdata$?serial_handler@@YAX_KPEAX@Z DD imagerel $LN3
+$pdata$?SerialHandler@@YAX_KPEAX@Z DD imagerel $LN3
 	DD	imagerel $LN3+41
-	DD	imagerel $unwind$?serial_handler@@YAX_KPEAX@Z
+	DD	imagerel $unwind$?SerialHandler@@YAX_KPEAX@Z
 $pdata$?is_transmit_empty@@YAHXZ DD imagerel $LN3
 	DD	imagerel $LN3+33
 	DD	imagerel $unwind$?is_transmit_empty@@YAHXZ
 pdata	ENDS
 xdata	SEGMENT
-$unwind$?initialize_serial@@YAXXZ DD 010401H
+$unwind$?AuInitializeSerial@@YAXXZ DD 010401H
 	DD	04204H
 $unwind$?write_serial@@YAXD@Z DD 010801H
 	DD	04208H
@@ -57,7 +58,7 @@ $unwind$?debug_serial@@YAXPEAD@Z DD 010901H
 	DD	06209H
 $unwind$?_debug_print_@@YAXPEADZZ DD 021b01H
 	DD	023011bH
-$unwind$?serial_handler@@YAX_KPEAX@Z DD 010e01H
+$unwind$?SerialHandler@@YAX_KPEAX@Z DD 010e01H
 	DD	0420eH
 $unwind$?is_transmit_empty@@YAHXZ DD 010401H
 	DD	04204H
@@ -92,9 +93,9 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 v$ = 48
 p$ = 56
-?serial_handler@@YAX_KPEAX@Z PROC			; serial_handler
+?SerialHandler@@YAX_KPEAX@Z PROC			; SerialHandler
 
-; 24   : void serial_handler (size_t v, void* p) {
+; 24   : void SerialHandler (size_t v, void* p) {
 
 $LN3:
 	mov	QWORD PTR [rsp+16], rdx
@@ -103,7 +104,7 @@ $LN3:
 
 ; 25   : 	printf ("Serial Handler\n");
 
-	lea	rcx, OFFSET FLAT:$SG2978
+	lea	rcx, OFFSET FLAT:$SG2980
 	call	printf
 
 ; 26   : 	AuInterruptEnd(4);
@@ -115,7 +116,7 @@ $LN3:
 
 	add	rsp, 40					; 00000028H
 	ret	0
-?serial_handler@@YAX_KPEAX@Z ENDP			; serial_handler
+?SerialHandler@@YAX_KPEAX@Z ENDP			; SerialHandler
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\serial.cpp
@@ -446,7 +447,7 @@ $LN5@debug_prin:
 ; 119  : 			{
 ; 120  : 				debug_serial(".");
 
-	lea	rcx, OFFSET FLAT:$SG3071
+	lea	rcx, OFFSET FLAT:$SG3073
 	call	?debug_serial@@YAXPEAD@Z		; debug_serial
 
 ; 121  : 			}
@@ -611,9 +612,9 @@ _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\serial.cpp
 _TEXT	SEGMENT
-?initialize_serial@@YAXXZ PROC				; initialize_serial
+?AuInitializeSerial@@YAXXZ PROC				; AuInitializeSerial
 
-; 29   : void initialize_serial() {
+; 29   : void AuInitializeSerial() {
 
 $LN3:
 	sub	rsp, 40					; 00000028H
@@ -686,6 +687,6 @@ $LN3:
 
 	add	rsp, 40					; 00000028H
 	ret	0
-?initialize_serial@@YAXXZ ENDP				; initialize_serial
+?AuInitializeSerial@@YAXXZ ENDP				; AuInitializeSerial
 _TEXT	ENDS
 END

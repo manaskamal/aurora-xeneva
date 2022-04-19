@@ -21,12 +21,12 @@
 #define PORT  0x3f8
 static bool _serial_initialized_ = false;
 
-void serial_handler (size_t v, void* p) {
+void SerialHandler (size_t v, void* p) {
 	printf ("Serial Handler\n");
 	AuInterruptEnd(4);
 }
 
-void initialize_serial() {
+void AuInitializeSerial() {
 	x64_outportb (p2v(PORT + 1), 0x00);
 	x64_outportb (p2v(PORT + 3), 0x80);
 	x64_outportb (p2v(PORT + 0), 0x03);

@@ -15,7 +15,6 @@
 #include <ipc\message.h>
 #include <ipc\evntsh.h>
 #include <ipc\dwm_ipc.h>
-#include <drivers\vmmouse.h>
 #include <atomic\mutex.h>
 #include <fs\vfs.h>
 #include <serial.h>
@@ -133,11 +132,11 @@ finish_packet:
 		if (mouse_y < 0)
 			mouse_y = 0;
 
-		if (mouse_x + 24 > get_screen_width())
-			mouse_x = get_screen_width() - 24;
+		if (mouse_x + 24 > AuGetScreenWidth())
+			mouse_x = AuGetScreenWidth() - 24;
 
-		if (mouse_y + 24 > get_screen_height())
-			mouse_y = get_screen_height() - 24;
+		if (mouse_y + 24 > AuGetScreenHeight())
+			mouse_y = AuGetScreenHeight() - 24;
 
 		mouse_button_state = 0;
 
@@ -154,7 +153,7 @@ finish_packet:
 
 		if (mouse_byte[0] & 0x04)
 			mouse_button |= MOUSE_MIDDLE_CLICK;
-		
+
 		//!Pass here the message stream to all waiting processes
 	
 		x64_cli();
@@ -227,7 +226,7 @@ void mouse_register_device () {
 /**
  * initialize_mouse -- Start the mouse driver
  */
-void initialize_mouse () {
+void AuInitializeMouse () {
 	mouse_cycle = 0;
 	mouse_x = 0;
 	mouse_y = 0;

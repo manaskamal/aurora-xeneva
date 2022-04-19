@@ -33,7 +33,7 @@ typedef struct {
 #pragma pack (pop)
 
 //! initialize console
-extern void console_initialize (PKERNEL_BOOT_INFO info);
+extern void AuConsoleInitialize (PKERNEL_BOOT_INFO info);
 
 //! print string to console
 extern void puts (char* str);
@@ -42,5 +42,5 @@ extern void puts (char* str);
 extern void putc(char s);
 
 //! returns true if the console is initialized
-extern bool is_console_initialized ();
+extern bool AuIsConsoleInitialized ();
 #endif

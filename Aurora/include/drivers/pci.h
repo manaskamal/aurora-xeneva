@@ -319,4 +319,5 @@ extern void pci_enable_bus_master (int bus, int dev, int func);
 extern void pci_enable_interrupt (int bus, int dev, int func);
 extern void pci_enable_mem_space (int bus, int dev, int func);
 extern bool pcie_supported ();
+extern void pci_detect ();
 #endif

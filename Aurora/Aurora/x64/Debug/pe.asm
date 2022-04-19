@@ -12,9 +12,9 @@ _BSS	SEGMENT
 ?image_base@@3_KA DQ 01H DUP (?)			; image_base
 _BSS	ENDS
 CONST	SEGMENT
-$SG3307	DB	'Import table va -> %d, size -> %d ', 0aH, 00H
+$SG3309	DB	'Import table va -> %d, size -> %d ', 0aH, 00H
 	ORG $+4
-$SG3308	DB	'Import table va -> %d, size -> %d ', 0aH, 00H
+$SG3310	DB	'Import table va -> %d, size -> %d ', 0aH, 00H
 CONST	ENDS
 PUBLIC	?load_pe_file@@YAXPEA_KH@Z			; load_pe_file
 PUBLIC	?get_entry_point@@YAP6AXPEAX@ZXZ		; get_entry_point
@@ -225,7 +225,7 @@ $LN6@LinkLibrar:
 	mov	r8d, DWORD PTR [rax+4]
 	mov	rax, QWORD PTR datadir$[rsp]
 	mov	edx, DWORD PTR [rax]
-	lea	rcx, OFFSET FLAT:$SG3307
+	lea	rcx, OFFSET FLAT:$SG3309
 	call	printf
 
 ; 90   : 		return;
@@ -240,7 +240,7 @@ $LN7@LinkLibrar:
 	mov	r8d, DWORD PTR [rax+4]
 	mov	rax, QWORD PTR datadir$[rsp]
 	mov	edx, DWORD PTR [rax]
-	lea	rcx, OFFSET FLAT:$SG3308
+	lea	rcx, OFFSET FLAT:$SG3310
 	call	printf
 
 ; 93   : 	PIMAGE_IMPORT_DIRECTORY importdir = raw_offset<PIMAGE_IMPORT_DIRECTORY>(image, datadir.VirtualAddress);

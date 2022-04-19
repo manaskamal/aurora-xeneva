@@ -29,7 +29,7 @@ uint8_t second;
 /*
  * Get the value of a specific rtc register
  * */
-uint8_t get_rtc_register(int reg_num) {
+uint8_t AuGetRTCRegister(int reg_num) {
     x64_outportb(CMOS_ADDR, reg_num);
     return x64_inportb(CMOS_DATA);
 }
@@ -37,7 +37,7 @@ uint8_t get_rtc_register(int reg_num) {
 /*
  * Set the value of a specific rtc register
  * */
-void set_rtc_register(uint16_t reg_num, uint8_t val) {
+void AuSetRTCRegister(uint16_t reg_num, uint8_t val) {
     x64_outportb(CMOS_ADDR, reg_num);
     x64_outportb(CMOS_DATA, val);
 }
@@ -46,7 +46,7 @@ void set_rtc_register(uint16_t reg_num, uint8_t val) {
 /*
  * Check if rtc is updating time currently
  * */
-int is_updating_rtc() {
+int AuIsUpdatingRTC() {
 	x64_outportb(CMOS_ADDR, 0x0A);
     uint32_t status = x64_inportb(CMOS_DATA);
     return (status & 0x80);
@@ -56,18 +56,18 @@ int is_updating_rtc() {
 /*
  * Read current date and time from rtc, store in global var current_datetime
  * */
-void rtc_read_datetime() {
+void AuRTCReadDateTime() {
     // Wait until rtc is not updating
-    while(is_updating_rtc());
+	while(AuIsUpdatingRTC());
 
-    second = get_rtc_register(0x00);
-    minute = get_rtc_register(0x02);
-    hour = get_rtc_register(0x04);
-    day = get_rtc_register(0x07);
-    month = get_rtc_register(0x08);
-    year = get_rtc_register(0x09);
+	second = AuGetRTCRegister(0x00);
+    minute = AuGetRTCRegister(0x02);
+    hour = AuGetRTCRegister(0x04);
+    day = AuGetRTCRegister(0x07);
+    month = AuGetRTCRegister(0x08);
+    year = AuGetRTCRegister(0x09);
 
-    uint8_t registerB = get_rtc_register(0x0B);
+    uint8_t registerB = AuGetRTCRegister(0x0B);
 
     // Convert BCD to binary values if necessary
     if (!(registerB & 0x04)) {
@@ -82,12 +82,12 @@ void rtc_read_datetime() {
 
 //! RTC clock interrupt handler
 //! it updates current time from RTC clock
-void rtc_clock_update(size_t s, void* p) {
+void AuRTCClockUpdate(size_t s, void* p) {
 	x64_cli ();
 
-	bool ready = get_rtc_register(0x0C) & 0x10;
+	bool ready = AuGetRTCRegister(0x0C) & 0x10;
 	if (ready) {
-		rtc_read_datetime();
+		AuRTCReadDateTime();
 	}
 
 	
@@ -109,12 +109,15 @@ void rtc_clock_update(size_t s, void* p) {
 	AuInterruptEnd(8);
 }
 
-void initialize_rtc () {
+/*
+ * AuInitializeRTC -- Initialize Real time clock
+ */
+void AuInitializeRTC () {
 
 	century = year = month = day = 0;
     hour = minute = second = 0;
 
-	unsigned char status = get_rtc_register (0x0B);
+	unsigned char status = AuGetRTCRegister(0x0B);
 	status |= 0x02;
 	status |= 0x10;
 	status &= ~0x20;
@@ -126,12 +129,12 @@ void initialize_rtc () {
 	x64_outportb (0x71, status);
 
 	//! Read status from RTC
-	get_rtc_register (0x0C);
+	AuGetRTCRegister(0x0C);
 
-	rtc_read_datetime();
+	AuRTCReadDateTime();
 
 	//!register interrupt
-	AuInterruptSet(8,rtc_clock_update, 8);
+	AuInterruptSet(8,AuRTCClockUpdate, 8);
 
 #ifdef USE_PIC
 	irq_mask(8,false);
@@ -139,31 +142,31 @@ void initialize_rtc () {
 }
 
 
-uint8_t rtc_get_year () {
+uint8_t AuGetYear () {
 	return year;
 }
 
-uint8_t rtc_get_century() {
+uint8_t AuGetCentury() {
 	return century;
 }
 
-uint8_t rtc_get_minutes() {
+uint8_t AuGetMinutes() {
 	return minute;
 }
 
-uint8_t rtc_get_second() {
+uint8_t AuGetSecond() {
 	return second;
 }
 
-uint8_t rtc_get_day () {
+uint8_t AuGetDay() {
 	return day;
 }
 
-uint8_t rtc_get_hour () {
+uint8_t AuGetHour () {
 	return hour;
 }
 
-uint8_t rtc_get_month() {
+uint8_t AuGetMonth() {
 	return month;
 }
 

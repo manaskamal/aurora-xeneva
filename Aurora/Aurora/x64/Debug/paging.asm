@@ -38,7 +38,7 @@ $pdata$?AuPagingInit@@YAXXZ DD imagerel $LN12
 	DD	imagerel $LN12+379
 	DD	imagerel $unwind$?AuPagingInit@@YAXXZ
 $pdata$AuMapPage DD imagerel $LN7
-	DD	imagerel $LN7+597
+	DD	imagerel $LN7+619
 	DD	imagerel $unwind$AuMapPage
 $pdata$?AuMapPageEx@@YA_NPEA_K_K1E@Z DD imagerel $LN9
 	DD	imagerel $LN9+639
@@ -1459,10 +1459,21 @@ $LN2@AuMapPage:
 	mov	rcx, QWORD PTR pml1$[rsp]
 	mov	rax, QWORD PTR [rcx+rax*8]
 	and	rax, 1
+	test	rax, rax
+	je	SHORT $LN1@AuMapPage
 
 ; 174  : 	{
-; 175  : 		//pmmngr_free((void*)physical_address);
-; 176  : 		//return false;
+; 175  : 		AuPmmngrFree((void*)physical_address);
+
+	mov	rcx, QWORD PTR physical_address$[rsp]
+	call	?AuPmmngrFree@@YAXPEAX@Z		; AuPmmngrFree
+
+; 176  : 		return false;
+
+	xor	al, al
+	jmp	SHORT $LN5@AuMapPage
+$LN1@AuMapPage:
+
 ; 177  : 	}
 ; 178  : 
 ; 179  : 	pml1[i1] = physical_address | flags;
@@ -1487,6 +1498,7 @@ $LN2@AuMapPage:
 ; 182  : 	return true;
 
 	mov	al, 1
+$LN5@AuMapPage:
 
 ; 183  : }
 

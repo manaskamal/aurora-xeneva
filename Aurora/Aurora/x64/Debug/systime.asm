@@ -8,13 +8,13 @@ INCLUDELIB OLDNAMES
 PUBLIC	?sys_get_current_time@@YAXPEAU_sys_time_@@@Z	; sys_get_current_time
 PUBLIC	?sys_get_system_tick@@YAIXZ			; sys_get_system_tick
 EXTRN	x64_cli:PROC
-EXTRN	?rtc_get_year@@YAEXZ:PROC			; rtc_get_year
-EXTRN	?rtc_get_second@@YAEXZ:PROC			; rtc_get_second
-EXTRN	?rtc_get_day@@YAEXZ:PROC			; rtc_get_day
-EXTRN	?rtc_get_hour@@YAEXZ:PROC			; rtc_get_hour
-EXTRN	?rtc_get_minutes@@YAEXZ:PROC			; rtc_get_minutes
-EXTRN	?rtc_get_century@@YAEXZ:PROC			; rtc_get_century
-EXTRN	?rtc_get_month@@YAEXZ:PROC			; rtc_get_month
+EXTRN	AuGetYear:PROC
+EXTRN	AuGetSecond:PROC
+EXTRN	AuGetDay:PROC
+EXTRN	AuGetHour:PROC
+EXTRN	AuGetMinutes:PROC
+EXTRN	AuGetCentury:PROC
+EXTRN	AuGetMonth:PROC
 EXTRN	?memset@@YAXPEAXEI@Z:PROC			; memset
 EXTRN	?sched_get_tick@@YAIXZ:PROC			; sched_get_tick
 pdata	SEGMENT
@@ -78,45 +78,45 @@ $LN3:
 	mov	rcx, QWORD PTR time$[rsp]
 	call	?memset@@YAXPEAXEI@Z			; memset
 
-; 21   : 	time->seconds = rtc_get_second();
+; 21   : 	time->seconds = AuGetSecond();
 
-	call	?rtc_get_second@@YAEXZ			; rtc_get_second
+	call	AuGetSecond
 	mov	rcx, QWORD PTR time$[rsp]
 	mov	BYTE PTR [rcx], al
 
-; 22   : 	time->minutes = rtc_get_minutes();
+; 22   : 	time->minutes = AuGetMinutes();
 
-	call	?rtc_get_minutes@@YAEXZ			; rtc_get_minutes
+	call	AuGetMinutes
 	mov	rcx, QWORD PTR time$[rsp]
 	mov	BYTE PTR [rcx+1], al
 
-; 23   : 	time->hour = rtc_get_hour();
+; 23   : 	time->hour = AuGetHour();
 
-	call	?rtc_get_hour@@YAEXZ			; rtc_get_hour
+	call	AuGetHour
 	mov	rcx, QWORD PTR time$[rsp]
 	mov	BYTE PTR [rcx+2], al
 
-; 24   : 	time->day = rtc_get_day();
+; 24   : 	time->day = AuGetDay();
 
-	call	?rtc_get_day@@YAEXZ			; rtc_get_day
+	call	AuGetDay
 	mov	rcx, QWORD PTR time$[rsp]
 	mov	BYTE PTR [rcx+3], al
 
-; 25   : 	time->month = rtc_get_month();
+; 25   : 	time->month = AuGetMonth();
 
-	call	?rtc_get_month@@YAEXZ			; rtc_get_month
+	call	AuGetMonth
 	mov	rcx, QWORD PTR time$[rsp]
 	mov	BYTE PTR [rcx+4], al
 
-; 26   : 	time->year = rtc_get_year();
+; 26   : 	time->year = AuGetYear();
 
-	call	?rtc_get_year@@YAEXZ			; rtc_get_year
+	call	AuGetYear
 	mov	rcx, QWORD PTR time$[rsp]
 	mov	BYTE PTR [rcx+5], al
 
-; 27   : 	time->century = rtc_get_century();
+; 27   : 	time->century = AuGetCentury();
 
-	call	?rtc_get_century@@YAEXZ			; rtc_get_century
+	call	AuGetCentury
 	mov	rcx, QWORD PTR time$[rsp]
 	mov	BYTE PTR [rcx+6], al
 

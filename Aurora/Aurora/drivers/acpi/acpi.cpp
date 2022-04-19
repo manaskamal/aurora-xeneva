@@ -72,7 +72,7 @@ void fadt_handler (size_t v, void* p) {
 }
 
 //! Initialize the acpi data structures
-void initialize_acpi (void* acpi_base) {
+void AuInitializeBasicAcpi (void* acpi_base) {
 	memset (&kern_acpi, 0, sizeof(aurora_acpi));
 	acpiRsdp *rsdp = (acpiRsdp*)acpi_base;
 	acpiRsdt *rsdt = (acpiRsdt*)rsdp->rsdtAddr;
@@ -233,13 +233,13 @@ void acpi_shutdown () {
 	x64_cli();
 	x64_outportd (kern_acpi.fadt->sciCmdPort, 0);
 	if (kern_acpi.fadt->pm1aCtrlBlock != NULL) {
-		x64_outportw (kern_acpi.fadt->pm1aCtrlBlock, kern_acpi.slp_typa | SLP_EN);
+		x64_outportd (kern_acpi.fadt->pm1aCtrlBlock, kern_acpi.slp_typa | SLP_EN);
 		printf ("Shutdown step1 complete\n");
 	}
 
 	if (kern_acpi.fadt->pm1bCtrlBlock){
 		printf ("[ACPI] pm1bCtrlBlock -> %x\n", kern_acpi.fadt->pm1bCtrlBlock);
-		x64_outportw (kern_acpi.fadt->pm1bCtrlBlock,  (kern_acpi.slp_typb << 0) | SLP_EN);
+		x64_outportd (kern_acpi.fadt->pm1bCtrlBlock,  (kern_acpi.slp_typb << 0) | SLP_EN);
 	} 
 
 	printf ("\nShutdown step2 complete\n");

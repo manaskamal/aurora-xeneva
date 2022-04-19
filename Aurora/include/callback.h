@@ -13,7 +13,6 @@
 
 #include <stdint.h>
 #include <string.h>
-#include <drivers\vmmouse.h>
 #include <drivers\rtc.h>
 
 //!This is an interface layer between system service callbacks
@@ -27,7 +26,7 @@ extern uint16_t get_thread_id ();
 extern uint32_t* sys_get_fb_mem ();
 extern void sys_fb_update ();
 extern void sys_set_mouse_data ();
-extern bool sys_get_mouse_pack (vm_mouse_packet *pack);
+//extern bool sys_get_mouse_pack (vm_mouse_packet *pack);
 extern void sys_move_cursor (uint32_t visible, uint32_t x,uint32_t y);
 extern void sys_unblock_id (uint16_t id);
 extern void create_uthread (void (*entry) (void*), char* name);

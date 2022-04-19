@@ -10,28 +10,28 @@ _BSS	SEGMENT
 ?root_dir@@3PEAU_vfs_entry_@@EA DQ 01H DUP (?)		; root_dir
 _BSS	ENDS
 CONST	SEGMENT
-$SG3462	DB	'[VFS]: Mounting filesystem to root failed, already in us'
+$SG3464	DB	'[VFS]: Mounting filesystem to root failed, already in us'
 	DB	'e', 0aH, 00H
 	ORG $+5
-$SG3490	DB	'[vfs]: already mounted -> %s', 0aH, 00H
+$SG3492	DB	'[vfs]: already mounted -> %s', 0aH, 00H
 	ORG $+2
-$SG3532	DB	'Directory', 00H
+$SG3534	DB	'Directory', 00H
 	ORG $+2
-$SG3535	DB	'File', 00H
+$SG3537	DB	'File', 00H
 	ORG $+7
-$SG3536	DB	'%s -> %s ', 0aH, 00H
+$SG3538	DB	'%s -> %s ', 0aH, 00H
 CONST	ENDS
-PUBLIC	?vfs_init@@YAXXZ				; vfs_init
+PUBLIC	?AuVFSInit@@YAXXZ				; AuVFSInit
 PUBLIC	?vfs_finddir@@YAPEAU_vfs_node_@@PEAD@Z		; vfs_finddir
-PUBLIC	?vfs_mkdir@@YAXPEADPEAU_vfs_node_@@PEAU_vfs_entry_@@@Z ; vfs_mkdir
-PUBLIC	?vfs_mkentry@@YAPEAU_vfs_entry_@@XZ		; vfs_mkentry
-PUBLIC	?vfs_mount@@YAXPEADPEAU_vfs_node_@@PEAU_vfs_entry_@@@Z ; vfs_mount
+PUBLIC	vfs_mkdir
+PUBLIC	vfs_mkentry
+PUBLIC	vfs_mount
 PUBLIC	?vfs_lsdir@@YAXPEAD@Z				; vfs_lsdir
-PUBLIC	?openfs@@YA?AU_vfs_node_@@PEAU1@PEAD@Z		; openfs
-PUBLIC	?readfs@@YAXPEAU_vfs_node_@@0PEA_KI@Z		; readfs
-PUBLIC	?writefs@@YAXPEAU_vfs_node_@@0PEAEI@Z		; writefs
-PUBLIC	?readfs_block@@YAXPEAU_vfs_node_@@0PEA_K@Z	; readfs_block
-PUBLIC	?vfs_ioquery@@YAHPEAU_vfs_node_@@HPEAX@Z	; vfs_ioquery
+PUBLIC	openfs
+PUBLIC	readfs
+PUBLIC	writefs
+PUBLIC	readfs_block
+PUBLIC	vfs_ioquery
 EXTRN	?strcmp@@YAHPEBD0@Z:PROC			; strcmp
 EXTRN	?strcpy@@YAPEADPEADPEBD@Z:PROC			; strcpy
 EXTRN	?strlen@@YA_KPEBD@Z:PROC			; strlen
@@ -45,63 +45,63 @@ EXTRN	?initialize_fat32@@YAXXZ:PROC			; initialize_fat32
 EXTRN	?fat32_self_register@@YAXXZ:PROC		; fat32_self_register
 EXTRN	?devfs_mount@@YAXXZ:PROC			; devfs_mount
 pdata	SEGMENT
-$pdata$?vfs_init@@YAXXZ DD imagerel $LN3
+$pdata$?AuVFSInit@@YAXXZ DD imagerel $LN3
 	DD	imagerel $LN3+77
-	DD	imagerel $unwind$?vfs_init@@YAXXZ
+	DD	imagerel $unwind$?AuVFSInit@@YAXXZ
 $pdata$?vfs_finddir@@YAPEAU_vfs_node_@@PEAD@Z DD imagerel $LN20
 	DD	imagerel $LN20+502
 	DD	imagerel $unwind$?vfs_finddir@@YAPEAU_vfs_node_@@PEAD@Z
-$pdata$?vfs_mkdir@@YAXPEADPEAU_vfs_node_@@PEAU_vfs_entry_@@@Z DD imagerel $LN20
+$pdata$vfs_mkdir DD imagerel $LN20
 	DD	imagerel $LN20+504
-	DD	imagerel $unwind$?vfs_mkdir@@YAXPEADPEAU_vfs_node_@@PEAU_vfs_entry_@@@Z
-$pdata$?vfs_mkentry@@YAPEAU_vfs_entry_@@XZ DD imagerel $LN3
+	DD	imagerel $unwind$vfs_mkdir
+$pdata$vfs_mkentry DD imagerel $LN3
 	DD	imagerel $LN3+55
-	DD	imagerel $unwind$?vfs_mkentry@@YAPEAU_vfs_entry_@@XZ
-$pdata$?vfs_mount@@YAXPEADPEAU_vfs_node_@@PEAU_vfs_entry_@@@Z DD imagerel $LN23
+	DD	imagerel $unwind$vfs_mkentry
+$pdata$vfs_mount DD imagerel $LN23
 	DD	imagerel $LN23+653
-	DD	imagerel $unwind$?vfs_mount@@YAXPEADPEAU_vfs_node_@@PEAU_vfs_entry_@@@Z
+	DD	imagerel $unwind$vfs_mount
 $pdata$?vfs_lsdir@@YAXPEAD@Z DD imagerel $LN25
 	DD	imagerel $LN25+594
 	DD	imagerel $unwind$?vfs_lsdir@@YAXPEAD@Z
-$pdata$?openfs@@YA?AU_vfs_node_@@PEAU1@PEAD@Z DD imagerel $LN4
+$pdata$openfs DD imagerel $LN4
 	DD	imagerel $LN4+129
-	DD	imagerel $unwind$?openfs@@YA?AU_vfs_node_@@PEAU1@PEAD@Z
-$pdata$?readfs@@YAXPEAU_vfs_node_@@0PEA_KI@Z DD imagerel $LN4
+	DD	imagerel $unwind$openfs
+$pdata$readfs DD imagerel $LN4
 	DD	imagerel $LN4+60
-	DD	imagerel $unwind$?readfs@@YAXPEAU_vfs_node_@@0PEA_KI@Z
-$pdata$?writefs@@YAXPEAU_vfs_node_@@0PEAEI@Z DD imagerel $LN4
+	DD	imagerel $unwind$readfs
+$pdata$writefs DD imagerel $LN4
 	DD	imagerel $LN4+60
-	DD	imagerel $unwind$?writefs@@YAXPEAU_vfs_node_@@0PEAEI@Z
-$pdata$?readfs_block@@YAXPEAU_vfs_node_@@0PEA_K@Z DD imagerel $LN4
+	DD	imagerel $unwind$writefs
+$pdata$readfs_block DD imagerel $LN4
 	DD	imagerel $LN4+50
-	DD	imagerel $unwind$?readfs_block@@YAXPEAU_vfs_node_@@0PEA_K@Z
-$pdata$?vfs_ioquery@@YAHPEAU_vfs_node_@@HPEAX@Z DD imagerel $LN4
+	DD	imagerel $unwind$readfs_block
+$pdata$vfs_ioquery DD imagerel $LN4
 	DD	imagerel $LN4+53
-	DD	imagerel $unwind$?vfs_ioquery@@YAHPEAU_vfs_node_@@HPEAX@Z
+	DD	imagerel $unwind$vfs_ioquery
 pdata	ENDS
 xdata	SEGMENT
-$unwind$?vfs_init@@YAXXZ DD 010401H
+$unwind$?AuVFSInit@@YAXXZ DD 010401H
 	DD	06204H
 $unwind$?vfs_finddir@@YAPEAU_vfs_node_@@PEAD@Z DD 010901H
 	DD	0e209H
-$unwind$?vfs_mkdir@@YAXPEADPEAU_vfs_node_@@PEAU_vfs_entry_@@@Z DD 011301H
+$unwind$vfs_mkdir DD 011301H
 	DD	0c213H
-$unwind$?vfs_mkentry@@YAPEAU_vfs_entry_@@XZ DD 010401H
+$unwind$vfs_mkentry DD 010401H
 	DD	06204H
-$unwind$?vfs_mount@@YAXPEADPEAU_vfs_node_@@PEAU_vfs_entry_@@@Z DD 011301H
+$unwind$vfs_mount DD 011301H
 	DD	0e213H
 $unwind$?vfs_lsdir@@YAXPEAD@Z DD 010901H
 	DD	0e209H
-$unwind$?openfs@@YA?AU_vfs_node_@@PEAU1@PEAD@Z DD 041801H
+$unwind$openfs DD 041801H
 	DD	01f0118H
 	DD	060107011H
-$unwind$?readfs@@YAXPEAU_vfs_node_@@0PEA_KI@Z DD 011801H
+$unwind$readfs DD 011801H
 	DD	04218H
-$unwind$?writefs@@YAXPEAU_vfs_node_@@0PEAEI@Z DD 011801H
+$unwind$writefs DD 011801H
 	DD	04218H
-$unwind$?readfs_block@@YAXPEAU_vfs_node_@@0PEA_K@Z DD 011301H
+$unwind$readfs_block DD 011301H
 	DD	04213H
-$unwind$?vfs_ioquery@@YAHPEAU_vfs_node_@@HPEAX@Z DD 011201H
+$unwind$vfs_ioquery DD 011201H
 	DD	04212H
 xdata	ENDS
 ; Function compile flags: /Odtpy
@@ -110,7 +110,7 @@ _TEXT	SEGMENT
 node$ = 48
 code$ = 56
 arg$ = 64
-?vfs_ioquery@@YAHPEAU_vfs_node_@@HPEAX@Z PROC		; vfs_ioquery
+vfs_ioquery PROC
 
 ; 45   : int vfs_ioquery (vfs_node_t *node, int code, void* arg) {
 
@@ -139,7 +139,7 @@ $LN1@vfs_ioquer:
 
 	add	rsp, 40					; 00000028H
 	ret	0
-?vfs_ioquery@@YAHPEAU_vfs_node_@@HPEAX@Z ENDP		; vfs_ioquery
+vfs_ioquery ENDP
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\fs\vfs.cpp
@@ -147,7 +147,7 @@ _TEXT	SEGMENT
 node$ = 48
 file$ = 56
 buffer$ = 64
-?readfs_block@@YAXPEAU_vfs_node_@@0PEA_K@Z PROC		; readfs_block
+readfs_block PROC
 
 ; 39   : void readfs_block (vfs_node_t* node, vfs_node_t* file, uint64_t *buffer) {
 
@@ -175,7 +175,7 @@ $LN1@readfs_blo:
 
 	add	rsp, 40					; 00000028H
 	ret	0
-?readfs_block@@YAXPEAU_vfs_node_@@0PEA_K@Z ENDP		; readfs_block
+readfs_block ENDP
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\fs\vfs.cpp
@@ -184,7 +184,7 @@ node$ = 48
 file$ = 56
 buffer$ = 64
 length$ = 72
-?writefs@@YAXPEAU_vfs_node_@@0PEAEI@Z PROC		; writefs
+writefs	PROC
 
 ; 33   : void writefs (vfs_node_t *node, vfs_node_t* file, uint8_t *buffer, uint32_t length) {
 
@@ -214,7 +214,7 @@ $LN1@writefs:
 
 	add	rsp, 40					; 00000028H
 	ret	0
-?writefs@@YAXPEAU_vfs_node_@@0PEAEI@Z ENDP		; writefs
+writefs	ENDP
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\fs\vfs.cpp
@@ -223,7 +223,7 @@ node$ = 48
 file$ = 56
 buffer$ = 64
 length$ = 72
-?readfs@@YAXPEAU_vfs_node_@@0PEA_KI@Z PROC		; readfs
+readfs	PROC
 
 ; 26   : void readfs (vfs_node_t *node, vfs_node_t* file, uint64_t* buffer, uint32_t length) {
 
@@ -253,7 +253,7 @@ $LN1@readfs:
 
 	add	rsp, 40					; 00000028H
 	ret	0
-?readfs@@YAXPEAU_vfs_node_@@0PEA_KI@Z ENDP		; readfs
+readfs	ENDP
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\fs\vfs.cpp
@@ -263,7 +263,7 @@ $T2 = 136
 $T3 = 272
 node$ = 280
 path$ = 288
-?openfs@@YA?AU_vfs_node_@@PEAU1@PEAD@Z PROC		; openfs
+openfs	PROC
 
 ; 20   : vfs_node_t openfs (vfs_node_t *node, char* path) {
 
@@ -307,7 +307,7 @@ $LN1@openfs:
 	pop	rdi
 	pop	rsi
 	ret	0
-?openfs@@YA?AU_vfs_node_@@PEAU1@PEAD@Z ENDP		; openfs
+openfs	ENDP
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\fs\vfs.cpp
@@ -576,7 +576,7 @@ $LN6@vfs_lsdir:
 
 ; 300  : 				type = "Directory";
 
-	lea	rax, OFFSET FLAT:$SG3532
+	lea	rax, OFFSET FLAT:$SG3534
 	mov	QWORD PTR type$5[rsp], rax
 	jmp	SHORT $LN2@vfs_lsdir
 $LN3@vfs_lsdir:
@@ -590,7 +590,7 @@ $LN3@vfs_lsdir:
 
 ; 302  : 				type = "File";
 
-	lea	rax, OFFSET FLAT:$SG3535
+	lea	rax, OFFSET FLAT:$SG3537
 	mov	QWORD PTR type$5[rsp], rax
 $LN1@vfs_lsdir:
 $LN2@vfs_lsdir:
@@ -600,7 +600,7 @@ $LN2@vfs_lsdir:
 	mov	rax, QWORD PTR f$6[rsp]
 	mov	r8, rax
 	mov	rdx, QWORD PTR type$5[rsp]
-	lea	rcx, OFFSET FLAT:$SG3536
+	lea	rcx, OFFSET FLAT:$SG3538
 	call	printf
 
 ; 304  : 		}
@@ -633,7 +633,7 @@ pathname$6 = 96
 path$ = 128
 node$ = 136
 dirnode$ = 144
-?vfs_mount@@YAXPEADPEAU_vfs_node_@@PEAU_vfs_entry_@@@Z PROC ; vfs_mount
+vfs_mount PROC
 
 ; 189  : void vfs_mount (char *path, vfs_node_t *node, vfs_entry *dirnode) {
 
@@ -669,7 +669,7 @@ $LN23:
 
 ; 193  : 			printf ("[VFS]: Mounting filesystem to root failed, already in use\n");
 
-	lea	rcx, OFFSET FLAT:$SG3462
+	lea	rcx, OFFSET FLAT:$SG3464
 	call	printf
 
 ; 194  : 			return;   //Already a root filesystem is present
@@ -901,14 +901,14 @@ $LN16@vfs_mount:
 	mov	r8, QWORD PTR ent$[rsp]
 	mov	rdx, QWORD PTR node$[rsp]
 	mov	rcx, QWORD PTR path$[rsp]
-	call	?vfs_mount@@YAXPEADPEAU_vfs_node_@@PEAU_vfs_entry_@@@Z ; vfs_mount
+	call	vfs_mount
 $LN3@vfs_mount:
 
 ; 241  : 		}
 ; 242  : 		printf ("[vfs]: already mounted -> %s\n", path);
 
 	mov	rdx, QWORD PTR path$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3490
+	lea	rcx, OFFSET FLAT:$SG3492
 	call	printf
 
 ; 243  : 		return;
@@ -931,7 +931,7 @@ $LN4@vfs_mount:
 
 ; 248  : 			vfs_entry* entryn = vfs_mkentry();
 
-	call	?vfs_mkentry@@YAPEAU_vfs_entry_@@XZ	; vfs_mkentry
+	call	vfs_mkentry
 	mov	QWORD PTR entryn$5[rsp], rax
 
 ; 249  : 			vfs_mkdir(path,node,entryn);
@@ -939,7 +939,7 @@ $LN4@vfs_mount:
 	mov	r8, QWORD PTR entryn$5[rsp]
 	mov	rdx, QWORD PTR node$[rsp]
 	mov	rcx, QWORD PTR path$[rsp]
-	call	?vfs_mkdir@@YAXPEADPEAU_vfs_node_@@PEAU_vfs_entry_@@@Z ; vfs_mkdir
+	call	vfs_mkdir
 $LN1@vfs_mount:
 
 ; 250  : 		}
@@ -958,13 +958,13 @@ $LN21@vfs_mount:
 
 	add	rsp, 120				; 00000078H
 	ret	0
-?vfs_mount@@YAXPEADPEAU_vfs_node_@@PEAU_vfs_entry_@@@Z ENDP ; vfs_mount
+vfs_mount ENDP
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\fs\vfs.cpp
 _TEXT	SEGMENT
 ent$ = 32
-?vfs_mkentry@@YAPEAU_vfs_entry_@@XZ PROC		; vfs_mkentry
+vfs_mkentry PROC
 
 ; 176  : vfs_entry * vfs_mkentry() {
 
@@ -996,7 +996,7 @@ $LN3:
 
 	add	rsp, 56					; 00000038H
 	ret	0
-?vfs_mkentry@@YAPEAU_vfs_entry_@@XZ ENDP		; vfs_mkentry
+vfs_mkentry ENDP
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\fs\vfs.cpp
@@ -1012,7 +1012,7 @@ pathname$ = 80
 path$ = 112
 dir$ = 120
 dir_node$ = 128
-?vfs_mkdir@@YAXPEADPEAU_vfs_node_@@PEAU_vfs_entry_@@@Z PROC ; vfs_mkdir
+vfs_mkdir PROC
 
 ; 124  : void vfs_mkdir (char* path, vfs_node_t* dir, vfs_entry* dir_node) {
 
@@ -1275,7 +1275,7 @@ $LN18@vfs_mkdir:
 
 	add	rsp, 104				; 00000068H
 	ret	0
-?vfs_mkdir@@YAXPEADPEAU_vfs_node_@@PEAU_vfs_entry_@@@Z ENDP ; vfs_mkdir
+vfs_mkdir ENDP
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\fs\vfs.cpp
@@ -1549,9 +1549,9 @@ _TEXT	ENDS
 ; File e:\xeneva project\xeneva\aurora\aurora\fs\vfs.cpp
 _TEXT	SEGMENT
 root$ = 32
-?vfs_init@@YAXXZ PROC					; vfs_init
+?AuVFSInit@@YAXXZ PROC					; AuVFSInit
 
-; 52   : void vfs_init () {
+; 52   : void AuVFSInit () {
 
 $LN3:
 	sub	rsp, 56					; 00000038H
@@ -1601,6 +1601,6 @@ $LN3:
 
 	add	rsp, 56					; 00000038H
 	ret	0
-?vfs_init@@YAXXZ ENDP					; vfs_init
+?AuVFSInit@@YAXXZ ENDP					; AuVFSInit
 _TEXT	ENDS
 END

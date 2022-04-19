@@ -12,7 +12,7 @@
 #ifndef __SERIAL_H__
 #define __SERIAL_H__
 
-extern void initialize_serial ();
+extern void AuInitializeSerial ();
 extern void write_serial (char a);
 extern void debug_serial (char* string);
 extern void _debug_print_ (char* format, ...);

@@ -13,10 +13,8 @@
 #include <stdio.h>
 #include <drivers\svga\gmr.h>
 #include <drivers\svga\svga_screen.h>
-#include <drivers\vga.h>
 #include <drivers\svga\svga_screen_util.h>
 #include <drivers\svga\svga_qrcode.h>
-#include <drivers\vmmouse.h>
 #include <screen.h>
 #include <serial.h>
 #include <string.h>

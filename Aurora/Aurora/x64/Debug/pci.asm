@@ -10,19 +10,21 @@ _BSS	SEGMENT
 ?v_i@@3HA DD	01H DUP (?)				; v_i
 _BSS	ENDS
 CONST	SEGMENT
-$SG3809	DB	'MSI-X found for this device', 0aH, 00H
+$SG3812	DB	'MSI-X found for this device', 0aH, 00H
 	ORG $+3
-$SG3811	DB	'MSI found for this device', 0aH, 00H
+$SG3814	DB	'MSI found for this device', 0aH, 00H
 	ORG $+5
-$SG3816	DB	'MSI-DATA -> %x', 0aH, 00H
-$SG3821	DB	'MSG Control -> %x', 0aH, 00H
+$SG3819	DB	'MSI-DATA -> %x', 0aH, 00H
+$SG3824	DB	'MSG Control -> %x', 0aH, 00H
 	ORG $+5
-$SG3828	DB	'MSI 64BIT Capable', 0aH, 00H
+$SG3831	DB	'MSI 64BIT Capable', 0aH, 00H
 	ORG $+5
-$SG3830	DB	'MSI Mask Capable', 0aH, 00H
+$SG3833	DB	'MSI Mask Capable', 0aH, 00H
 	ORG $+6
-$SG3831	DB	'MSI interrupt for this device enabled msi reg -> %x', 0aH
+$SG3834	DB	'MSI interrupt for this device enabled msi reg -> %x', 0aH
 	DB	00H
+	ORG $+3
+$SG3872	DB	'Device found -> %d, vendor -> %d ', 0aH, 00H
 CONST	ENDS
 PUBLIC	?read_config_header@@YAXHHHPEATpci_device_info@@@Z ; read_config_header
 PUBLIC	?read_config_16@@YAXGHHHHPEAG@Z			; read_config_16
@@ -39,6 +41,7 @@ PUBLIC	?pci_enable_bus_master@@YAXHHH@Z		; pci_enable_bus_master
 PUBLIC	?pci_enable_interrupt@@YAXHHH@Z			; pci_enable_interrupt
 PUBLIC	?pci_enable_mem_space@@YAXHHH@Z			; pci_enable_mem_space
 PUBLIC	?pcie_supported@@YA_NXZ				; pcie_supported
+PUBLIC	?pci_detect@@YAXXZ				; pci_detect
 PUBLIC	?pci_config_read32@@YAIPEBU_pci_address_@@G@Z	; pci_config_read32
 PUBLIC	?pcie_find_device@@YA_KGHHH@Z			; pcie_find_device
 PUBLIC	??$mem_after@PEAUacpiMcfgAlloc@@UacpiMcfg@@@@YAPEAUacpiMcfgAlloc@@PEAUacpiMcfg@@@Z ; mem_after<acpiMcfgAlloc * __ptr64,acpiMcfg>
@@ -102,6 +105,9 @@ $pdata$?pci_enable_interrupt@@YAXHHH@Z DD imagerel $LN3
 $pdata$?pci_enable_mem_space@@YAXHHH@Z DD imagerel $LN3
 	DD	imagerel $LN3+120
 	DD	imagerel $unwind$?pci_enable_mem_space@@YAXHHH@Z
+$pdata$?pci_detect@@YAXXZ DD imagerel $LN14
+	DD	imagerel $LN14+244
+	DD	imagerel $unwind$?pci_detect@@YAXXZ
 $pdata$?pci_config_pack_address@@YAIPEBU_pci_address_@@G@Z DD imagerel ?pci_config_pack_address@@YAIPEBU_pci_address_@@G@Z
 	DD	imagerel ?pci_config_pack_address@@YAIPEBU_pci_address_@@G@Z+76
 	DD	imagerel $unwind$?pci_config_pack_address@@YAIPEBU_pci_address_@@G@Z
@@ -146,6 +152,8 @@ $unwind$?pci_enable_interrupt@@YAXHHH@Z DD 011101H
 	DD	08211H
 $unwind$?pci_enable_mem_space@@YAXHHH@Z DD 011101H
 	DD	08211H
+$unwind$?pci_detect@@YAXXZ DD 020701H
+	DD	0290107H
 $unwind$?pci_config_pack_address@@YAIPEBU_pci_address_@@G@Z DD 010e01H
 	DD	0220eH
 $unwind$?pci_config_read32@@YAIPEBU_pci_address_@@G@Z DD 010e01H
@@ -574,6 +582,127 @@ _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\drivers\pci.cpp
 _TEXT	SEGMENT
+dev$1 = 48
+bus$2 = 52
+func$3 = 56
+config$ = 64
+?pci_detect@@YAXXZ PROC					; pci_detect
+
+; 404  : void pci_detect () {
+
+$LN14:
+	sub	rsp, 328				; 00000148H
+
+; 405  : 	pci_device_info config;
+; 406  : 	for (int bus = 0; bus < 256; bus++) {
+
+	mov	DWORD PTR bus$2[rsp], 0
+	jmp	SHORT $LN11@pci_detect
+$LN10@pci_detect:
+	mov	eax, DWORD PTR bus$2[rsp]
+	inc	eax
+	mov	DWORD PTR bus$2[rsp], eax
+$LN11@pci_detect:
+	cmp	DWORD PTR bus$2[rsp], 256		; 00000100H
+	jge	$LN9@pci_detect
+
+; 407  : 		for (int dev = 0; dev < 32; dev++) {
+
+	mov	DWORD PTR dev$1[rsp], 0
+	jmp	SHORT $LN8@pci_detect
+$LN7@pci_detect:
+	mov	eax, DWORD PTR dev$1[rsp]
+	inc	eax
+	mov	DWORD PTR dev$1[rsp], eax
+$LN8@pci_detect:
+	cmp	DWORD PTR dev$1[rsp], 32		; 00000020H
+	jge	$LN6@pci_detect
+
+; 408  : 			for (int func = 0; func < 8; func++) {
+
+	mov	DWORD PTR func$3[rsp], 0
+	jmp	SHORT $LN5@pci_detect
+$LN4@pci_detect:
+	mov	eax, DWORD PTR func$3[rsp]
+	inc	eax
+	mov	DWORD PTR func$3[rsp], eax
+$LN5@pci_detect:
+	cmp	DWORD PTR func$3[rsp], 8
+	jge	SHORT $LN3@pci_detect
+
+; 409  : 
+; 410  : 				read_config_32 (0,bus, dev, func, 0, config.header[0]);
+
+	mov	eax, 4
+	imul	rax, 0
+	mov	eax, DWORD PTR config$[rsp+rax]
+	mov	DWORD PTR [rsp+40], eax
+	mov	DWORD PTR [rsp+32], 0
+	mov	r9d, DWORD PTR func$3[rsp]
+	mov	r8d, DWORD PTR dev$1[rsp]
+	mov	edx, DWORD PTR bus$2[rsp]
+	xor	ecx, ecx
+	call	?read_config_32@@YAXGHHHHI@Z		; read_config_32
+
+; 411  : 
+; 412  : 				read_config_header (bus, dev, func, &config);
+
+	lea	r9, QWORD PTR config$[rsp]
+	mov	r8d, DWORD PTR func$3[rsp]
+	mov	edx, DWORD PTR dev$1[rsp]
+	mov	ecx, DWORD PTR bus$2[rsp]
+	call	?read_config_header@@YAXHHHPEATpci_device_info@@@Z ; read_config_header
+
+; 413  : 
+; 414  : 				if (config.device.deviceID == 0xFFFF || config.device.vendorID == 0xFFFF) 
+
+	movzx	eax, WORD PTR config$[rsp+2]
+	cmp	eax, 65535				; 0000ffffH
+	je	SHORT $LN1@pci_detect
+	movzx	eax, WORD PTR config$[rsp]
+	cmp	eax, 65535				; 0000ffffH
+	jne	SHORT $LN2@pci_detect
+$LN1@pci_detect:
+
+; 415  : 					continue;
+
+	jmp	SHORT $LN4@pci_detect
+$LN2@pci_detect:
+
+; 416  : 				
+; 417  : 				printf ("Device found -> %d, vendor -> %d \n", config.device.deviceID, config.device.vendorID);
+
+	movzx	eax, WORD PTR config$[rsp]
+	movzx	ecx, WORD PTR config$[rsp+2]
+	mov	r8d, eax
+	mov	edx, ecx
+	lea	rcx, OFFSET FLAT:$SG3872
+	call	printf
+
+; 418  : 			}
+
+	jmp	$LN4@pci_detect
+$LN3@pci_detect:
+
+; 419  : 		}
+
+	jmp	$LN7@pci_detect
+$LN6@pci_detect:
+
+; 420  : 	}
+
+	jmp	$LN10@pci_detect
+$LN9@pci_detect:
+
+; 421  : }
+
+	add	rsp, 328				; 00000148H
+	ret	0
+?pci_detect@@YAXXZ ENDP					; pci_detect
+_TEXT	ENDS
+; Function compile flags: /Odtpy
+; File e:\xeneva project\xeneva\aurora\aurora\drivers\pci.cpp
+_TEXT	SEGMENT
 ?pcie_supported@@YA_NXZ PROC				; pcie_supported
 
 ; 396  : 	/*if (!acpi_pcie_supported ())
@@ -890,7 +1019,7 @@ $LN9@pci_alloc_:
 
 ; 313  : 				printf ("MSI-X found for this device\n");
 
-	lea	rcx, OFFSET FLAT:$SG3809
+	lea	rcx, OFFSET FLAT:$SG3812
 	call	printf
 
 ; 314  : 				msi_reg = capptr;
@@ -914,7 +1043,7 @@ $LN7@pci_alloc_:
 
 ; 319  : 				printf ("MSI found for this device\n");
 
-	lea	rcx, OFFSET FLAT:$SG3811
+	lea	rcx, OFFSET FLAT:$SG3814
 	call	printf
 
 ; 320  : 				msi_reg = capptr;
@@ -982,7 +1111,7 @@ $LN5@pci_alloc_:
 ; 334  : 		printf ("MSI-DATA -> %x\n", msi_data);
 
 	mov	rdx, QWORD PTR msi_data$9[rsp]
-	lea	rcx, OFFSET FLAT:$SG3816
+	lea	rcx, OFFSET FLAT:$SG3819
 	call	printf
 
 ; 335  : 		uint64_t internal_ptr = 0;
@@ -1023,7 +1152,7 @@ $LN4@pci_alloc_:
 ; 341  : 			printf ("MSG Control -> %x\n", msgctrl);
 
 	mov	rdx, QWORD PTR msgctrl$7[rsp]
-	lea	rcx, OFFSET FLAT:$SG3821
+	lea	rcx, OFFSET FLAT:$SG3824
 	call	printf
 
 ; 342  : 			bool mask_cap = ((msgctrl & (1<<8)) != 0);
@@ -1087,7 +1216,7 @@ $LN16@pci_alloc_:
 
 ; 350  : 				printf ("MSI 64BIT Capable\n");
 
-	lea	rcx, OFFSET FLAT:$SG3828
+	lea	rcx, OFFSET FLAT:$SG3831
 	call	printf
 
 ; 351  : 				write_config_32(bus, dev, func, msi_reg + 2, msi_addr >> 32);
@@ -1133,7 +1262,7 @@ $LN2@pci_alloc_:
 
 ; 356  : 				printf ("MSI Mask Capable\n");
 
-	lea	rcx, OFFSET FLAT:$SG3830
+	lea	rcx, OFFSET FLAT:$SG3833
 	call	printf
 
 ; 357  : 				write_config_32 (bus, dev, func, msi_reg + 4, 0);
@@ -1179,7 +1308,7 @@ $LN1@pci_alloc_:
 ; 363  : 			printf ("MSI interrupt for this device enabled msi reg -> %x\n", msi_reg);
 
 	mov	edx, DWORD PTR msi_reg$2[rsp]
-	lea	rcx, OFFSET FLAT:$SG3831
+	lea	rcx, OFFSET FLAT:$SG3834
 	call	printf
 
 ; 364  : 			v_i++;

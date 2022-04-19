@@ -16,6 +16,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <utils\lnklist.h>
+#include <aurora.h>
 
 
 #define  FS_FLAG_DIRECTORY  0x1
@@ -67,7 +68,7 @@ typedef struct _file_ {
 	uint32_t  status;
 }FILE;
 
-extern void vfs_init ();
+extern void AuVFSInit ();
 extern vfs_node_t* vfs_finddir (char *path);
 /*
  * vfs_mkdir -- creates a virtual directory
@@ -75,13 +76,13 @@ extern vfs_node_t* vfs_finddir (char *path);
  * @param dir -- directory file
  * @param dir_node -- dir node
  */
-extern void vfs_mkdir (char* path, vfs_node_t* dir, vfs_entry* dir_node);
-extern vfs_entry * vfs_mkentry();
-extern void vfs_mount (char *path, vfs_node_t *node, vfs_entry* ent);
+AU_EXTERN AU_EXPORT void vfs_mkdir (char* path, vfs_node_t* dir, vfs_entry* dir_node);
+AU_EXTERN AU_EXPORT vfs_entry * vfs_mkentry();
+AU_EXTERN AU_EXPORT void vfs_mount (char *path, vfs_node_t *node, vfs_entry* ent);
 extern void vfs_lsdir (char* path);
-extern vfs_node_t openfs (vfs_node_t *node, char* path);
-extern void readfs (vfs_node_t *node, vfs_node_t *file, uint64_t* buffer, uint32_t length);
-extern void writefs (vfs_node_t *node, vfs_node_t *file, uint8_t *buffer, uint32_t length);
-extern void readfs_block (vfs_node_t* node, vfs_node_t *file,  uint64_t *buffer);
-extern int  vfs_ioquery (vfs_node_t *node, int code, void* arg);
+AU_EXTERN AU_EXPORT vfs_node_t openfs (vfs_node_t *node, char* path);
+AU_EXTERN AU_EXPORT void readfs (vfs_node_t *node, vfs_node_t *file, uint64_t* buffer, uint32_t length);
+AU_EXTERN AU_EXPORT void writefs (vfs_node_t *node, vfs_node_t *file, uint8_t *buffer, uint32_t length);
+AU_EXTERN AU_EXPORT void readfs_block (vfs_node_t* node, vfs_node_t *file,  uint64_t *buffer);
+AU_EXTERN AU_EXPORT int  vfs_ioquery (vfs_node_t *node, int code, void* arg);
 #endif

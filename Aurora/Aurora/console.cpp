@@ -41,24 +41,20 @@ int fb_io_query (vfs_node_t* node, int code, void* arg) {
 
 
 //! Initialize console device
-void console_initialize (PKERNEL_BOOT_INFO info) {
+void AuConsoleInitialize (PKERNEL_BOOT_INFO info) {
 	console_x = 0;
 	console_y = 0;
 	scanline = info->pixels_per_line;
 	screen_width = info->X_Resolution;
 	screen_height = info->Y_Resolution;
-	fb =  get_framebuffer_addr();//info->graphics_framebuffer;
+	fb =  AuGetFramebuffer();//info->graphics_framebuffer;
 
-	//psf_data = info->psf_font_data;
 	uint64_t* buffer = (uint64_t*)AuPmmngrAllocBlocks(2);
 	memset(buffer, 0, 8192);
 	vfs_node_t file = fat32_open(NULL, "/font.psf");
 	fat32_read_file (&file,buffer,file.size);
-	//vfs_node_t node =
 	psf_data = buffer;
 	_console_initialized_ = true;
-	printf ("Font finally loaded\n");
-	//for(;;);
 }
 
 //! Put a character to console output
@@ -164,6 +160,6 @@ void puts(char *s){
     
 
 
-bool is_console_initialized () {
+bool AuIsConsoleInitialized () {
 	return _console_initialized_;
 }

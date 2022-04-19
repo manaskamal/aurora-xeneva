@@ -6,7 +6,7 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 PUBLIC	?ioquery@@YAXHHPEAX@Z				; ioquery
-EXTRN	?vfs_ioquery@@YAHPEAU_vfs_node_@@HPEAX@Z:PROC	; vfs_ioquery
+EXTRN	vfs_ioquery:PROC
 EXTRN	x64_cli:PROC
 EXTRN	?get_current_thread@@YAPEAU_thread_@@XZ:PROC	; get_current_thread
 pdata	SEGMENT
@@ -56,7 +56,7 @@ $LN4:
 	mov	r8, QWORD PTR arg$[rsp]
 	mov	edx, DWORD PTR code$[rsp]
 	mov	rcx, QWORD PTR node$[rsp]
-	call	?vfs_ioquery@@YAHPEAU_vfs_node_@@HPEAX@Z ; vfs_ioquery
+	call	vfs_ioquery
 $LN1@ioquery:
 
 ; 27   : 	return;

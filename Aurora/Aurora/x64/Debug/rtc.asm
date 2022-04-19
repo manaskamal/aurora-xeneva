@@ -21,19 +21,19 @@ _BSS	SEGMENT
 ?minute@@3EA DB	01H DUP (?)				; minute
 ?second@@3EA DB	01H DUP (?)				; second
 _BSS	ENDS
-PUBLIC	?initialize_rtc@@YAXXZ				; initialize_rtc
-PUBLIC	?rtc_get_year@@YAEXZ				; rtc_get_year
-PUBLIC	?rtc_get_second@@YAEXZ				; rtc_get_second
-PUBLIC	?rtc_get_day@@YAEXZ				; rtc_get_day
-PUBLIC	?rtc_get_hour@@YAEXZ				; rtc_get_hour
-PUBLIC	?rtc_get_minutes@@YAEXZ				; rtc_get_minutes
-PUBLIC	?rtc_get_century@@YAEXZ				; rtc_get_century
-PUBLIC	?rtc_get_month@@YAEXZ				; rtc_get_month
-PUBLIC	?get_rtc_register@@YAEH@Z			; get_rtc_register
-PUBLIC	?set_rtc_register@@YAXGE@Z			; set_rtc_register
-PUBLIC	?is_updating_rtc@@YAHXZ				; is_updating_rtc
-PUBLIC	?rtc_read_datetime@@YAXXZ			; rtc_read_datetime
-PUBLIC	?rtc_clock_update@@YAX_KPEAX@Z			; rtc_clock_update
+PUBLIC	?AuInitializeRTC@@YAXXZ				; AuInitializeRTC
+PUBLIC	AuGetYear
+PUBLIC	AuGetSecond
+PUBLIC	AuGetDay
+PUBLIC	AuGetHour
+PUBLIC	AuGetMinutes
+PUBLIC	AuGetCentury
+PUBLIC	AuGetMonth
+PUBLIC	?AuGetRTCRegister@@YAEH@Z			; AuGetRTCRegister
+PUBLIC	?AuSetRTCRegister@@YAXGE@Z			; AuSetRTCRegister
+PUBLIC	?AuIsUpdatingRTC@@YAHXZ				; AuIsUpdatingRTC
+PUBLIC	?AuRTCReadDateTime@@YAXXZ			; AuRTCReadDateTime
+PUBLIC	?AuRTCClockUpdate@@YAX_KPEAX@Z			; AuRTCClockUpdate
 EXTRN	x64_cli:PROC
 EXTRN	x64_sti:PROC
 EXTRN	x64_inportb:PROC
@@ -45,37 +45,37 @@ _BSS	SEGMENT
 bcd	DB	01H DUP (?)
 _BSS	ENDS
 pdata	SEGMENT
-$pdata$?initialize_rtc@@YAXXZ DD imagerel $LN5
+$pdata$?AuInitializeRTC@@YAXXZ DD imagerel $LN5
 	DD	imagerel $LN5+251
-	DD	imagerel $unwind$?initialize_rtc@@YAXXZ
-$pdata$?get_rtc_register@@YAEH@Z DD imagerel $LN3
+	DD	imagerel $unwind$?AuInitializeRTC@@YAXXZ
+$pdata$?AuGetRTCRegister@@YAEH@Z DD imagerel $LN3
 	DD	imagerel $LN3+36
-	DD	imagerel $unwind$?get_rtc_register@@YAEH@Z
-$pdata$?set_rtc_register@@YAXGE@Z DD imagerel $LN3
+	DD	imagerel $unwind$?AuGetRTCRegister@@YAEH@Z
+$pdata$?AuSetRTCRegister@@YAXGE@Z DD imagerel $LN3
 	DD	imagerel $LN3+46
-	DD	imagerel $unwind$?set_rtc_register@@YAXGE@Z
-$pdata$?is_updating_rtc@@YAHXZ DD imagerel $LN3
+	DD	imagerel $unwind$?AuSetRTCRegister@@YAXGE@Z
+$pdata$?AuIsUpdatingRTC@@YAHXZ DD imagerel $LN3
 	DD	imagerel $LN3+45
-	DD	imagerel $unwind$?is_updating_rtc@@YAHXZ
-$pdata$?rtc_read_datetime@@YAXXZ DD imagerel $LN6
+	DD	imagerel $unwind$?AuIsUpdatingRTC@@YAHXZ
+$pdata$?AuRTCReadDateTime@@YAXXZ DD imagerel $LN6
 	DD	imagerel $LN6+455
-	DD	imagerel $unwind$?rtc_read_datetime@@YAXXZ
-$pdata$?rtc_clock_update@@YAX_KPEAX@Z DD imagerel $LN6
+	DD	imagerel $unwind$?AuRTCReadDateTime@@YAXXZ
+$pdata$?AuRTCClockUpdate@@YAX_KPEAX@Z DD imagerel $LN6
 	DD	imagerel $LN6+186
-	DD	imagerel $unwind$?rtc_clock_update@@YAX_KPEAX@Z
+	DD	imagerel $unwind$?AuRTCClockUpdate@@YAX_KPEAX@Z
 pdata	ENDS
 xdata	SEGMENT
-$unwind$?initialize_rtc@@YAXXZ DD 010401H
+$unwind$?AuInitializeRTC@@YAXXZ DD 010401H
 	DD	06204H
-$unwind$?get_rtc_register@@YAEH@Z DD 010801H
+$unwind$?AuGetRTCRegister@@YAEH@Z DD 010801H
 	DD	04208H
-$unwind$?set_rtc_register@@YAXGE@Z DD 010d01H
+$unwind$?AuSetRTCRegister@@YAXGE@Z DD 010d01H
 	DD	0420dH
-$unwind$?is_updating_rtc@@YAHXZ DD 010401H
+$unwind$?AuIsUpdatingRTC@@YAHXZ DD 010401H
 	DD	06204H
-$unwind$?rtc_read_datetime@@YAXXZ DD 010401H
+$unwind$?AuRTCReadDateTime@@YAXXZ DD 010401H
 	DD	08204H
-$unwind$?rtc_clock_update@@YAX_KPEAX@Z DD 021101H
+$unwind$?AuRTCClockUpdate@@YAX_KPEAX@Z DD 021101H
 	DD	01d0111H
 xdata	ENDS
 ; Function compile flags: /Odtpy
@@ -86,9 +86,9 @@ ready$ = 33
 msg$ = 48
 s$ = 240
 p$ = 248
-?rtc_clock_update@@YAX_KPEAX@Z PROC			; rtc_clock_update
+?AuRTCClockUpdate@@YAX_KPEAX@Z PROC			; AuRTCClockUpdate
 
-; 85   : void rtc_clock_update(size_t s, void* p) {
+; 85   : void AuRTCClockUpdate(size_t s, void* p) {
 
 $LN6:
 	mov	QWORD PTR [rsp+16], rdx
@@ -100,19 +100,19 @@ $LN6:
 	call	x64_cli
 
 ; 87   : 
-; 88   : 	bool ready = get_rtc_register(0x0C) & 0x10;
+; 88   : 	bool ready = AuGetRTCRegister(0x0C) & 0x10;
 
 	mov	ecx, 12
-	call	?get_rtc_register@@YAEH@Z		; get_rtc_register
+	call	?AuGetRTCRegister@@YAEH@Z		; AuGetRTCRegister
 	movzx	eax, al
 	and	eax, 16
 	test	eax, eax
-	je	SHORT $LN4@rtc_clock_
+	je	SHORT $LN4@AuRTCClock
 	mov	BYTE PTR tv69[rsp], 1
-	jmp	SHORT $LN5@rtc_clock_
-$LN4@rtc_clock_:
+	jmp	SHORT $LN5@AuRTCClock
+$LN4@AuRTCClock:
 	mov	BYTE PTR tv69[rsp], 0
-$LN5@rtc_clock_:
+$LN5@AuRTCClock:
 	movzx	eax, BYTE PTR tv69[rsp]
 	mov	BYTE PTR ready$[rsp], al
 
@@ -120,12 +120,12 @@ $LN5@rtc_clock_:
 
 	movzx	eax, BYTE PTR ready$[rsp]
 	test	eax, eax
-	je	SHORT $LN1@rtc_clock_
+	je	SHORT $LN1@AuRTCClock
 
-; 90   : 		rtc_read_datetime();
+; 90   : 		AuRTCReadDateTime();
 
-	call	?rtc_read_datetime@@YAXXZ		; rtc_read_datetime
-$LN1@rtc_clock_:
+	call	?AuRTCReadDateTime@@YAXXZ		; AuRTCReadDateTime
+$LN1@AuRTCClock:
 
 ; 91   : 	}
 ; 92   : 
@@ -191,7 +191,7 @@ $LN1@rtc_clock_:
 
 	add	rsp, 232				; 000000e8H
 	ret	0
-?rtc_clock_update@@YAX_KPEAX@Z ENDP			; rtc_clock_update
+?AuRTCClockUpdate@@YAX_KPEAX@Z ENDP			; AuRTCClockUpdate
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\drivers\rtc.cpp
@@ -203,65 +203,65 @@ tv130 = 44
 tv141 = 48
 tv148 = 52
 tv155 = 56
-?rtc_read_datetime@@YAXXZ PROC				; rtc_read_datetime
+?AuRTCReadDateTime@@YAXXZ PROC				; AuRTCReadDateTime
 
-; 59   : void rtc_read_datetime() {
+; 59   : void AuRTCReadDateTime() {
 
 $LN6:
 	sub	rsp, 72					; 00000048H
-$LN3@rtc_read_d:
+$LN3@AuRTCReadD:
 
 ; 60   :     // Wait until rtc is not updating
-; 61   :     while(is_updating_rtc());
+; 61   : 	while(AuIsUpdatingRTC());
 
-	call	?is_updating_rtc@@YAHXZ			; is_updating_rtc
+	call	?AuIsUpdatingRTC@@YAHXZ			; AuIsUpdatingRTC
 	test	eax, eax
-	je	SHORT $LN2@rtc_read_d
-	jmp	SHORT $LN3@rtc_read_d
-$LN2@rtc_read_d:
+	je	SHORT $LN2@AuRTCReadD
+	jmp	SHORT $LN3@AuRTCReadD
+$LN2@AuRTCReadD:
 
 ; 62   : 
-; 63   :     second = get_rtc_register(0x00);
+; 63   : 	second = AuGetRTCRegister(0x00);
 
 	xor	ecx, ecx
-	call	?get_rtc_register@@YAEH@Z		; get_rtc_register
+	call	?AuGetRTCRegister@@YAEH@Z		; AuGetRTCRegister
 	mov	BYTE PTR ?second@@3EA, al		; second
 
-; 64   :     minute = get_rtc_register(0x02);
+; 64   :     minute = AuGetRTCRegister(0x02);
 
 	mov	ecx, 2
-	call	?get_rtc_register@@YAEH@Z		; get_rtc_register
+	call	?AuGetRTCRegister@@YAEH@Z		; AuGetRTCRegister
 	mov	BYTE PTR ?minute@@3EA, al		; minute
 
-; 65   :     hour = get_rtc_register(0x04);
+; 65   :     hour = AuGetRTCRegister(0x04);
 
 	mov	ecx, 4
-	call	?get_rtc_register@@YAEH@Z		; get_rtc_register
+	call	?AuGetRTCRegister@@YAEH@Z		; AuGetRTCRegister
 	mov	BYTE PTR ?hour@@3EA, al			; hour
 
-; 66   :     day = get_rtc_register(0x07);
+; 66   :     day = AuGetRTCRegister(0x07);
 
 	mov	ecx, 7
-	call	?get_rtc_register@@YAEH@Z		; get_rtc_register
+	call	?AuGetRTCRegister@@YAEH@Z		; AuGetRTCRegister
 	mov	BYTE PTR ?day@@3EA, al			; day
 
-; 67   :     month = get_rtc_register(0x08);
+; 67   :     month = AuGetRTCRegister(0x08);
 
 	mov	ecx, 8
-	call	?get_rtc_register@@YAEH@Z		; get_rtc_register
+	call	?AuGetRTCRegister@@YAEH@Z		; AuGetRTCRegister
 	mov	BYTE PTR ?month@@3EA, al		; month
 
-; 68   :     year = get_rtc_register(0x09);
+; 68   :     year = AuGetRTCRegister(0x09);
 
 	mov	ecx, 9
-	call	?get_rtc_register@@YAEH@Z		; get_rtc_register
+	call	?AuGetRTCRegister@@YAEH@Z		; AuGetRTCRegister
 	mov	BYTE PTR ?year@@3EA, al			; year
 
 ; 69   : 
-; 70   :     uint8_t registerB = get_rtc_register(0x0B);
+; 70   :     uint8_t registerB = AuGetRTCRegister(0x0B);
 
 	mov	ecx, 11
-	call	?get_rtc_register@@YAEH@Z		; get_rtc_register
+	call	?AuGetRTCRegister@@YAEH@Z		; AuGetRTCRegister
 	mov	BYTE PTR registerB$[rsp], al
 
 ; 71   : 
@@ -271,7 +271,7 @@ $LN2@rtc_read_d:
 	movzx	eax, BYTE PTR registerB$[rsp]
 	and	eax, 4
 	test	eax, eax
-	jne	$LN1@rtc_read_d
+	jne	$LN1@AuRTCReadD
 
 ; 74   :         second = (second & 0x0F) + ((second / 16) * 10);
 
@@ -378,22 +378,22 @@ $LN2@rtc_read_d:
 	add	ecx, eax
 	mov	eax, ecx
 	mov	BYTE PTR ?year@@3EA, al			; year
-$LN1@rtc_read_d:
+$LN1@AuRTCReadD:
 
 ; 80   :     }
 ; 81   : }
 
 	add	rsp, 72					; 00000048H
 	ret	0
-?rtc_read_datetime@@YAXXZ ENDP				; rtc_read_datetime
+?AuRTCReadDateTime@@YAXXZ ENDP				; AuRTCReadDateTime
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\drivers\rtc.cpp
 _TEXT	SEGMENT
 status$ = 32
-?is_updating_rtc@@YAHXZ PROC				; is_updating_rtc
+?AuIsUpdatingRTC@@YAHXZ PROC				; AuIsUpdatingRTC
 
-; 49   : int is_updating_rtc() {
+; 49   : int AuIsUpdatingRTC() {
 
 $LN3:
 	sub	rsp, 56					; 00000038H
@@ -420,16 +420,16 @@ $LN3:
 
 	add	rsp, 56					; 00000038H
 	ret	0
-?is_updating_rtc@@YAHXZ ENDP				; is_updating_rtc
+?AuIsUpdatingRTC@@YAHXZ ENDP				; AuIsUpdatingRTC
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\drivers\rtc.cpp
 _TEXT	SEGMENT
 reg_num$ = 48
 val$ = 56
-?set_rtc_register@@YAXGE@Z PROC				; set_rtc_register
+?AuSetRTCRegister@@YAXGE@Z PROC				; AuSetRTCRegister
 
-; 40   : void set_rtc_register(uint16_t reg_num, uint8_t val) {
+; 40   : void AuSetRTCRegister(uint16_t reg_num, uint8_t val) {
 
 $LN3:
 	mov	BYTE PTR [rsp+16], dl
@@ -452,15 +452,15 @@ $LN3:
 
 	add	rsp, 40					; 00000028H
 	ret	0
-?set_rtc_register@@YAXGE@Z ENDP				; set_rtc_register
+?AuSetRTCRegister@@YAXGE@Z ENDP				; AuSetRTCRegister
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\drivers\rtc.cpp
 _TEXT	SEGMENT
 reg_num$ = 48
-?get_rtc_register@@YAEH@Z PROC				; get_rtc_register
+?AuGetRTCRegister@@YAEH@Z PROC				; AuGetRTCRegister
 
-; 32   : uint8_t get_rtc_register(int reg_num) {
+; 32   : uint8_t AuGetRTCRegister(int reg_num) {
 
 $LN3:
 	mov	DWORD PTR [rsp+8], ecx
@@ -481,120 +481,120 @@ $LN3:
 
 	add	rsp, 40					; 00000028H
 	ret	0
-?get_rtc_register@@YAEH@Z ENDP				; get_rtc_register
+?AuGetRTCRegister@@YAEH@Z ENDP				; AuGetRTCRegister
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\drivers\rtc.cpp
 _TEXT	SEGMENT
-?rtc_get_month@@YAEXZ PROC				; rtc_get_month
+AuGetMonth PROC
 
-; 167  : 	return month;
+; 170  : 	return month;
 
 	movzx	eax, BYTE PTR ?month@@3EA		; month
 
-; 168  : }
+; 171  : }
 
 	ret	0
-?rtc_get_month@@YAEXZ ENDP				; rtc_get_month
+AuGetMonth ENDP
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\drivers\rtc.cpp
 _TEXT	SEGMENT
-?rtc_get_century@@YAEXZ PROC				; rtc_get_century
+AuGetCentury PROC
 
-; 147  : 	return century;
+; 150  : 	return century;
 
 	movzx	eax, BYTE PTR ?century@@3EA		; century
 
-; 148  : }
+; 151  : }
 
 	ret	0
-?rtc_get_century@@YAEXZ ENDP				; rtc_get_century
+AuGetCentury ENDP
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\drivers\rtc.cpp
 _TEXT	SEGMENT
-?rtc_get_minutes@@YAEXZ PROC				; rtc_get_minutes
+AuGetMinutes PROC
 
-; 151  : 	return minute;
+; 154  : 	return minute;
 
 	movzx	eax, BYTE PTR ?minute@@3EA		; minute
 
-; 152  : }
+; 155  : }
 
 	ret	0
-?rtc_get_minutes@@YAEXZ ENDP				; rtc_get_minutes
+AuGetMinutes ENDP
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\drivers\rtc.cpp
 _TEXT	SEGMENT
-?rtc_get_hour@@YAEXZ PROC				; rtc_get_hour
+AuGetHour PROC
 
-; 163  : 	return hour;
+; 166  : 	return hour;
 
 	movzx	eax, BYTE PTR ?hour@@3EA		; hour
 
-; 164  : }
+; 167  : }
 
 	ret	0
-?rtc_get_hour@@YAEXZ ENDP				; rtc_get_hour
+AuGetHour ENDP
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\drivers\rtc.cpp
 _TEXT	SEGMENT
-?rtc_get_day@@YAEXZ PROC				; rtc_get_day
+AuGetDay PROC
 
-; 159  : 	return day;
+; 162  : 	return day;
 
 	movzx	eax, BYTE PTR ?day@@3EA			; day
 
-; 160  : }
+; 163  : }
 
 	ret	0
-?rtc_get_day@@YAEXZ ENDP				; rtc_get_day
+AuGetDay ENDP
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\drivers\rtc.cpp
 _TEXT	SEGMENT
-?rtc_get_second@@YAEXZ PROC				; rtc_get_second
+AuGetSecond PROC
 
-; 155  : 	return second;
+; 158  : 	return second;
 
 	movzx	eax, BYTE PTR ?second@@3EA		; second
 
-; 156  : }
+; 159  : }
 
 	ret	0
-?rtc_get_second@@YAEXZ ENDP				; rtc_get_second
+AuGetSecond ENDP
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\drivers\rtc.cpp
 _TEXT	SEGMENT
-?rtc_get_year@@YAEXZ PROC				; rtc_get_year
+AuGetYear PROC
 
-; 143  : 	return year;
+; 146  : 	return year;
 
 	movzx	eax, BYTE PTR ?year@@3EA		; year
 
-; 144  : }
+; 147  : }
 
 	ret	0
-?rtc_get_year@@YAEXZ ENDP				; rtc_get_year
+AuGetYear ENDP
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\drivers\rtc.cpp
 _TEXT	SEGMENT
 status$ = 32
 tv81 = 36
-?initialize_rtc@@YAXXZ PROC				; initialize_rtc
+?AuInitializeRTC@@YAXXZ PROC				; AuInitializeRTC
 
-; 112  : void initialize_rtc () {
+; 115  : void AuInitializeRTC () {
 
 $LN5:
 	sub	rsp, 56					; 00000038H
 
-; 113  : 
-; 114  : 	century = year = month = day = 0;
+; 116  : 
+; 117  : 	century = year = month = day = 0;
 
 	mov	BYTE PTR ?day@@3EA, 0			; day
 	movzx	eax, BYTE PTR ?day@@3EA			; day
@@ -604,7 +604,7 @@ $LN5:
 	movzx	eax, BYTE PTR ?year@@3EA		; year
 	mov	BYTE PTR ?century@@3EA, al		; century
 
-; 115  :     hour = minute = second = 0;
+; 118  :     hour = minute = second = 0;
 
 	mov	BYTE PTR ?second@@3EA, 0		; second
 	movzx	eax, BYTE PTR ?second@@3EA		; second
@@ -612,94 +612,94 @@ $LN5:
 	movzx	eax, BYTE PTR ?minute@@3EA		; minute
 	mov	BYTE PTR ?hour@@3EA, al			; hour
 
-; 116  : 
-; 117  : 	unsigned char status = get_rtc_register (0x0B);
+; 119  : 
+; 120  : 	unsigned char status = AuGetRTCRegister(0x0B);
 
 	mov	ecx, 11
-	call	?get_rtc_register@@YAEH@Z		; get_rtc_register
+	call	?AuGetRTCRegister@@YAEH@Z		; AuGetRTCRegister
 	mov	BYTE PTR status$[rsp], al
 
-; 118  : 	status |= 0x02;
+; 121  : 	status |= 0x02;
 
 	movzx	eax, BYTE PTR status$[rsp]
 	or	eax, 2
 	mov	BYTE PTR status$[rsp], al
 
-; 119  : 	status |= 0x10;
+; 122  : 	status |= 0x10;
 
 	movzx	eax, BYTE PTR status$[rsp]
 	or	eax, 16
 	mov	BYTE PTR status$[rsp], al
 
-; 120  : 	status &= ~0x20;
+; 123  : 	status &= ~0x20;
 
 	movzx	eax, BYTE PTR status$[rsp]
 	and	eax, -33				; ffffffffffffffdfH
 	mov	BYTE PTR status$[rsp], al
 
-; 121  : 	status &= ~0x40;
+; 124  : 	status &= ~0x40;
 
 	movzx	eax, BYTE PTR status$[rsp]
 	and	eax, -65				; ffffffffffffffbfH
 	mov	BYTE PTR status$[rsp], al
 
-; 122  : 	bcd = !(status & 0x04);
+; 125  : 	bcd = !(status & 0x04);
 
 	movzx	eax, BYTE PTR status$[rsp]
 	and	eax, 4
 	test	eax, eax
-	jne	SHORT $LN3@initialize
+	jne	SHORT $LN3@AuInitiali
 	mov	DWORD PTR tv81[rsp], 1
-	jmp	SHORT $LN4@initialize
-$LN3@initialize:
+	jmp	SHORT $LN4@AuInitiali
+$LN3@AuInitiali:
 	mov	DWORD PTR tv81[rsp], 0
-$LN4@initialize:
+$LN4@AuInitiali:
 	movzx	eax, BYTE PTR tv81[rsp]
 	mov	BYTE PTR bcd, al
 
-; 123  : 
-; 124  : 	//! Write status to rtc
-; 125  : 	x64_outportb (0x70, 0x0B);
+; 126  : 
+; 127  : 	//! Write status to rtc
+; 128  : 	x64_outportb (0x70, 0x0B);
 
 	mov	dl, 11
 	mov	cx, 112					; 00000070H
 	call	x64_outportb
 
-; 126  : 	x64_outportb (0x71, status);
+; 129  : 	x64_outportb (0x71, status);
 
 	movzx	edx, BYTE PTR status$[rsp]
 	mov	cx, 113					; 00000071H
 	call	x64_outportb
 
-; 127  : 
-; 128  : 	//! Read status from RTC
-; 129  : 	get_rtc_register (0x0C);
+; 130  : 
+; 131  : 	//! Read status from RTC
+; 132  : 	AuGetRTCRegister(0x0C);
 
 	mov	ecx, 12
-	call	?get_rtc_register@@YAEH@Z		; get_rtc_register
+	call	?AuGetRTCRegister@@YAEH@Z		; AuGetRTCRegister
 
-; 130  : 
-; 131  : 	rtc_read_datetime();
+; 133  : 
+; 134  : 	AuRTCReadDateTime();
 
-	call	?rtc_read_datetime@@YAXXZ		; rtc_read_datetime
+	call	?AuRTCReadDateTime@@YAXXZ		; AuRTCReadDateTime
 
-; 132  : 
-; 133  : 	//!register interrupt
-; 134  : 	AuInterruptSet(8,rtc_clock_update, 8);
+; 135  : 
+; 136  : 	//!register interrupt
+; 137  : 	AuInterruptSet(8,AuRTCClockUpdate, 8);
 
 	mov	r8b, 8
-	lea	rdx, OFFSET FLAT:?rtc_clock_update@@YAX_KPEAX@Z ; rtc_clock_update
+	lea	rdx, OFFSET FLAT:?AuRTCClockUpdate@@YAX_KPEAX@Z ; AuRTCClockUpdate
 	mov	ecx, 8
 	call	AuInterruptSet
 
-; 135  : 
-; 136  : #ifdef USE_PIC
-; 137  : 	irq_mask(8,false);
-; 138  : #endif
-; 139  : }
+; 138  : 
+; 139  : #ifdef USE_PIC
+; 140  : 	irq_mask(8,false);
+; 141  : #endif
+; 142  : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
-?initialize_rtc@@YAXXZ ENDP				; initialize_rtc
+?AuInitializeRTC@@YAXXZ ENDP				; AuInitializeRTC
 _TEXT	ENDS
 END

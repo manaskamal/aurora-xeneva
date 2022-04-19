@@ -49,7 +49,7 @@ int vfs_ioquery (vfs_node_t *node, int code, void* arg) {
 }
 
 
-void vfs_init () {
+void AuVFSInit () {
 	vfs_entry *root = (vfs_entry*)malloc(sizeof(vfs_entry));
 	root->node = 0;
 	root->childs = initialize_list();

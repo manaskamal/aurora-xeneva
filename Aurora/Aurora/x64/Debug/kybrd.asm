@@ -6,7 +6,7 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 CONST	SEGMENT
-$SG3414	DB	'[Aurora]:Key Pressed', 0aH, 00H
+$SG3416	DB	'[Aurora]:Key Pressed', 0aH, 00H
 CONST	ENDS
 PUBLIC	?kybrd_init@@YAXXZ				; kybrd_init
 PUBLIC	?kybrd_handler@@YAX_KPEAX@Z			; kybrd_handler
@@ -115,7 +115,7 @@ $LN2@kybrd_hand:
 
 ; 37   : 			printf ("[Aurora]:Key Pressed\n");
 
-	lea	rcx, OFFSET FLAT:$SG3414
+	lea	rcx, OFFSET FLAT:$SG3416
 	call	printf
 $LN1@kybrd_hand:
 $LN3@kybrd_hand:

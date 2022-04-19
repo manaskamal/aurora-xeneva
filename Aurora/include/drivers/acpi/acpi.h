@@ -351,7 +351,7 @@ typedef struct _acpi_srat_mem_affinity_
 
 
 //! initialize acpi subsystem
-extern void initialize_acpi (void* acpi_base);
+extern void AuInitializeBasicAcpi (void* acpi_base);
 extern void acpi_parse_madt ();
 extern void acpi_system_reboot ();
 extern uint8_t* search_s5 (acpiDsdt* header);

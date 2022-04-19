@@ -459,7 +459,7 @@ uint64_t fat32_get_sector_per_cluster () {
  * fat32_format_date -- returns fat32 formated date
  */
 uint16_t fat32_format_date () {
-	return (uint16_t)(2000 + rtc_get_year()-1980)<<9 | (uint16_t)rtc_get_month() << 5 | (uint16_t)rtc_get_day();
+	return (uint16_t)(2000 + AuGetYear()-1980)<<9 | (uint16_t)AuGetMonth() << 5 | (uint16_t)AuGetDay();
 	//return (uint16_t)(2022-1980) <<9 | (uint16_t)3 << 5 | (uint16_t)6;
 }
 
@@ -467,7 +467,7 @@ uint16_t fat32_format_date () {
  * fat32_format_time -- returns fat32 formated time
  */
 uint16_t fat32_format_time () {
-	return (uint16_t)rtc_get_hour() << 11 | (uint16_t)rtc_get_minutes() << 5 | (uint16_t)rtc_get_second()/2;
+	return (uint16_t)AuGetHour() << 11 | (uint16_t)AuGetMinutes() << 5 | (uint16_t)AuGetSecond()/2;
 }
 
 /**

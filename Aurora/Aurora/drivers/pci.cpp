@@ -401,4 +401,24 @@ bool pcie_supported () {
 }
 
 
+void pci_detect () {
+	pci_device_info config;
+	for (int bus = 0; bus < 256; bus++) {
+		for (int dev = 0; dev < 32; dev++) {
+			for (int func = 0; func < 8; func++) {
+
+				read_config_32 (0,bus, dev, func, 0, config.header[0]);
+
+				read_config_header (bus, dev, func, &config);
+
+				if (config.device.deviceID == 0xFFFF || config.device.vendorID == 0xFFFF) 
+					continue;
+				
+				printf ("Device found -> %d, vendor -> %d \n", config.device.deviceID, config.device.vendorID);
+			}
+		}
+	}
+}
+
+
 

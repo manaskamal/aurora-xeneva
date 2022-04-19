@@ -1012,7 +1012,7 @@ int main (int argc, char* argv[]) {
 	sys_print_text ("Reading cursor files \n");
 	load_cursor ("/cursor.bmp",(uint8_t*)0x0000070000000000, arrow_cursor);
 	load_cursor ("/spin.bmp", (uint8_t*)0x0000070000001000, spin_cursor);
-	Image* wallp = pri_load_wallpaper ("/winne1.jpg");
+	Image* wallp = pri_load_wallpaper ("/bihu2.jpg");
 	pri_wallpaper_draw(wallp);
 	sys_print_text ("PRIWM: Wallpaper and cursors loaded \n");
 
@@ -1034,11 +1034,6 @@ int main (int argc, char* argv[]) {
 	pri_wallpaper_present();
 
 
-	canvas_screen_update(canvas, 0, 0, s_width, s_height);
-
-	acrylic_initialize_font();
-	acrylic_font_set_size(64);
-	acrylic_font_draw_string(canvas, "PRIWM",1024,300,64,BLUE); 
 	canvas_screen_update(canvas, 0, 0, s_width, s_height);
 
     cursor_store_back(0, 0);

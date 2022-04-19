@@ -6,7 +6,7 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 CONST	SEGMENT
-$SG3683	DB	'dev', 00H
+$SG3685	DB	'dev', 00H
 CONST	ENDS
 PUBLIC	?sys_open_file@@YAHPEADPEAU_file_@@@Z		; sys_open_file
 PUBLIC	?sys_read_file@@YAXHPEAEPEAU_file_@@@Z		; sys_read_file
@@ -16,10 +16,10 @@ EXTRN	?strchr@@YAPEADPEADH@Z:PROC			; strchr
 EXTRN	?memset@@YAXPEAXEI@Z:PROC			; memset
 EXTRN	memcpy:PROC
 EXTRN	?vfs_finddir@@YAPEAU_vfs_node_@@PEAD@Z:PROC	; vfs_finddir
-EXTRN	?openfs@@YA?AU_vfs_node_@@PEAU1@PEAD@Z:PROC	; openfs
-EXTRN	?readfs@@YAXPEAU_vfs_node_@@0PEA_KI@Z:PROC	; readfs
-EXTRN	?writefs@@YAXPEAU_vfs_node_@@0PEAEI@Z:PROC	; writefs
-EXTRN	?readfs_block@@YAXPEAU_vfs_node_@@0PEA_K@Z:PROC	; readfs_block
+EXTRN	openfs:PROC
+EXTRN	readfs:PROC
+EXTRN	writefs:PROC
+EXTRN	readfs_block:PROC
 EXTRN	x64_cli:PROC
 EXTRN	?AuPmmngrAlloc@@YAPEAXXZ:PROC			; AuPmmngrAlloc
 EXTRN	?AuPmmngrFree@@YAXPEAX@Z:PROC			; AuPmmngrFree
@@ -155,7 +155,7 @@ $LN3@sys_write_:
 	mov	r8, QWORD PTR buffer$[rsp]
 	lea	rdx, QWORD PTR file$[rsp]
 	mov	rcx, QWORD PTR node$[rsp]
-	call	?writefs@@YAXPEAU_vfs_node_@@0PEAEI@Z	; writefs
+	call	writefs
 
 ; 174  : 	}else {
 
@@ -168,7 +168,7 @@ $LN2@sys_write_:
 	mov	r8, QWORD PTR buffer$[rsp]
 	mov	rdx, QWORD PTR node$[rsp]
 	mov	rcx, QWORD PTR node$[rsp]
-	call	?writefs@@YAXPEAU_vfs_node_@@0PEAEI@Z	; writefs
+	call	writefs
 $LN1@sys_write_:
 $LN4@sys_write_:
 
@@ -326,7 +326,7 @@ $LN2@sys_read_f:
 	mov	r8, QWORD PTR buff$2[rsp]
 	lea	rdx, QWORD PTR file$[rsp]
 	mov	rcx, QWORD PTR node$[rsp]
-	call	?readfs_block@@YAXPEAU_vfs_node_@@0PEA_K@Z ; readfs_block
+	call	readfs_block
 
 ; 133  : 			memcpy (buffer,buff,4096);
 
@@ -362,7 +362,7 @@ $LN6@sys_read_f:
 	mov	r8, QWORD PTR buffer$[rsp]
 	mov	rdx, QWORD PTR node$[rsp]
 	mov	rcx, QWORD PTR node$[rsp]
-	call	?readfs@@YAXPEAU_vfs_node_@@0PEA_KI@Z	; readfs
+	call	readfs
 $LN1@sys_read_f:
 $LN8@sys_read_f:
 
@@ -585,7 +585,7 @@ $LN8@sys_open_f:
 ; 83   : 
 ; 84   : 	if (!(strcmp(pathname, "dev") == 0)) {
 
-	lea	rdx, OFFSET FLAT:$SG3683
+	lea	rdx, OFFSET FLAT:$SG3685
 	lea	rcx, QWORD PTR pathname$[rsp]
 	call	?strcmp@@YAHPEBD0@Z			; strcmp
 	test	eax, eax
@@ -596,7 +596,7 @@ $LN8@sys_open_f:
 	mov	r8, QWORD PTR filename$[rsp]
 	mov	rdx, QWORD PTR node$[rsp]
 	lea	rcx, QWORD PTR $T5[rsp]
-	call	?openfs@@YA?AU_vfs_node_@@PEAU1@PEAD@Z	; openfs
+	call	openfs
 	lea	rcx, QWORD PTR $T4[rsp]
 	mov	rdi, rcx
 	mov	rsi, rax

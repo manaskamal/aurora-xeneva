@@ -32,34 +32,34 @@ _BSS	SEGMENT
 ?root_dir_cache@@3PEAEEA DQ 01H DUP (?)			; root_dir_cache
 _BSS	ENDS
 CONST	SEGMENT
-$SG3629	DB	'FAT32 BOOT PARAMETER BLOCK ', 0dH, 0aH, 00H
+$SG3631	DB	'FAT32 BOOT PARAMETER BLOCK ', 0dH, 0aH, 00H
 	ORG $+2
-$SG3630	DB	'Bytes/Sector -> %d ', 0dH, 0aH, 00H
+$SG3632	DB	'Bytes/Sector -> %d ', 0dH, 0aH, 00H
 	ORG $+2
-$SG3631	DB	'Sectors/Cluster -> %d ', 0dH, 0aH, 00H
+$SG3633	DB	'Sectors/Cluster -> %d ', 0dH, 0aH, 00H
 	ORG $+3
-$SG3640	DB	'%c', 00H
+$SG3642	DB	'%c', 00H
 	ORG $+1
-$SG3632	DB	'Reserved Sectors -> %d ', 0dH, 0aH, 00H
+$SG3634	DB	'Reserved Sectors -> %d ', 0dH, 0aH, 00H
 	ORG $+2
-$SG3641	DB	0dH, 0aH, 00H
+$SG3643	DB	0dH, 0aH, 00H
 	ORG $+1
-$SG3633	DB	'Number Of FATs -> %d ', 0dH, 0aH, 00H
-$SG3634	DB	'Root Base Cluster -> %d ', 0dH, 0aH, 00H
+$SG3635	DB	'Number Of FATs -> %d ', 0dH, 0aH, 00H
+$SG3636	DB	'Root Base Cluster -> %d ', 0dH, 0aH, 00H
 	ORG $+1
-$SG3646	DB	'%c', 00H
+$SG3648	DB	'%c', 00H
 	ORG $+1
-$SG3635	DB	'Sector/FAT32 -> %d ', 0dH, 0aH, 00H
+$SG3637	DB	'Sector/FAT32 -> %d ', 0dH, 0aH, 00H
 	ORG $+2
-$SG3647	DB	0dH, 0aH, 00H
+$SG3649	DB	0dH, 0aH, 00H
 	ORG $+1
-$SG3816	DB	'/', 00H
+$SG3818	DB	'/', 00H
 	ORG $+2
-$SG3648	DB	'FAT32 Total clusters -> %d ', 0dH, 0aH, 00H
+$SG3650	DB	'FAT32 Total clusters -> %d ', 0dH, 0aH, 00H
 	ORG $+2
-$SG3817	DB	'/', 00H
+$SG3819	DB	'/', 00H
 	ORG $+6
-$SG3818	DB	'File System registered', 0aH, 00H
+$SG3820	DB	'File System registered', 0aH, 00H
 CONST	ENDS
 PUBLIC	?initialize_fat32@@YAXXZ			; initialize_fat32
 PUBLIC	?fat32_open@@YA?AU_vfs_node_@@PEAU1@PEAD@Z	; fat32_open
@@ -83,7 +83,7 @@ EXTRN	?strcpy@@YAPEADPEADPEBD@Z:PROC			; strcpy
 EXTRN	?strchr@@YAPEADPEADH@Z:PROC			; strchr
 EXTRN	?memset@@YAXPEAXEI@Z:PROC			; memset
 EXTRN	memcpy:PROC
-EXTRN	?vfs_mount@@YAXPEADPEAU_vfs_node_@@PEAU_vfs_entry_@@@Z:PROC ; vfs_mount
+EXTRN	vfs_mount:PROC
 EXTRN	?fat32_to_dos_file_name@@YAXPEBDPEADI@Z:PROC	; fat32_to_dos_file_name
 EXTRN	printf:PROC
 EXTRN	?AuPmmngrAlloc@@YAPEAXXZ:PROC			; AuPmmngrAlloc
@@ -93,12 +93,12 @@ EXTRN	?ahci_disk_write@@YAXPEAU_hba_port_@@_KIPEA_K@Z:PROC ; ahci_disk_write
 EXTRN	?ahci_disk_read@@YAXPEAU_hba_port_@@_KIPEA_K@Z:PROC ; ahci_disk_read
 EXTRN	?ahci_disk_get_port@@YAPEAU_hba_port_@@XZ:PROC	; ahci_disk_get_port
 EXTRN	?_debug_print_@@YAXPEADZZ:PROC			; _debug_print_
-EXTRN	?rtc_get_year@@YAEXZ:PROC			; rtc_get_year
-EXTRN	?rtc_get_second@@YAEXZ:PROC			; rtc_get_second
-EXTRN	?rtc_get_day@@YAEXZ:PROC			; rtc_get_day
-EXTRN	?rtc_get_hour@@YAEXZ:PROC			; rtc_get_hour
-EXTRN	?rtc_get_minutes@@YAEXZ:PROC			; rtc_get_minutes
-EXTRN	?rtc_get_month@@YAEXZ:PROC			; rtc_get_month
+EXTRN	AuGetYear:PROC
+EXTRN	AuGetSecond:PROC
+EXTRN	AuGetDay:PROC
+EXTRN	AuGetHour:PROC
+EXTRN	AuGetMinutes:PROC
+EXTRN	AuGetMonth:PROC
 pdata	SEGMENT
 $pdata$?initialize_fat32@@YAXXZ DD imagerel $LN9
 	DD	imagerel $LN9+535
@@ -183,20 +183,20 @@ tv70 = 36
 $LN3:
 	sub	rsp, 56					; 00000038H
 
-; 470  : 	return (uint16_t)rtc_get_hour() << 11 | (uint16_t)rtc_get_minutes() << 5 | (uint16_t)rtc_get_second()/2;
+; 470  : 	return (uint16_t)AuGetHour() << 11 | (uint16_t)AuGetMinutes() << 5 | (uint16_t)AuGetSecond()/2;
 
-	call	?rtc_get_hour@@YAEXZ			; rtc_get_hour
+	call	AuGetHour
 	movzx	eax, al
 	shl	eax, 11
 	mov	DWORD PTR tv66[rsp], eax
-	call	?rtc_get_minutes@@YAEXZ			; rtc_get_minutes
+	call	AuGetMinutes
 	movzx	eax, al
 	shl	eax, 5
 	mov	ecx, DWORD PTR tv66[rsp]
 	or	ecx, eax
 	mov	eax, ecx
 	mov	DWORD PTR tv70[rsp], eax
-	call	?rtc_get_second@@YAEXZ			; rtc_get_second
+	call	AuGetSecond
 	movzx	eax, al
 	cdq
 	sub	eax, edx
@@ -223,22 +223,22 @@ tv74 = 36
 $LN3:
 	sub	rsp, 56					; 00000038H
 
-; 462  : 	return (uint16_t)(2000 + rtc_get_year()-1980)<<9 | (uint16_t)rtc_get_month() << 5 | (uint16_t)rtc_get_day();
+; 462  : 	return (uint16_t)(2000 + AuGetYear()-1980)<<9 | (uint16_t)AuGetMonth() << 5 | (uint16_t)AuGetDay();
 
-	call	?rtc_get_year@@YAEXZ			; rtc_get_year
+	call	AuGetYear
 	movzx	eax, al
 	add	eax, 20
 	movzx	eax, ax
 	shl	eax, 9
 	mov	DWORD PTR tv70[rsp], eax
-	call	?rtc_get_month@@YAEXZ			; rtc_get_month
+	call	AuGetMonth
 	movzx	eax, al
 	shl	eax, 5
 	mov	ecx, DWORD PTR tv70[rsp]
 	or	ecx, eax
 	mov	eax, ecx
 	mov	DWORD PTR tv74[rsp], eax
-	call	?rtc_get_day@@YAEXZ			; rtc_get_day
+	call	AuGetDay
 	movzx	eax, al
 	mov	ecx, DWORD PTR tv74[rsp]
 	or	ecx, eax
@@ -982,7 +982,7 @@ $LN3:
 ; 478  : 	strcpy (fsys->filename, "/");
 
 	mov	rax, QWORD PTR fsys$[rsp]
-	lea	rdx, OFFSET FLAT:$SG3816
+	lea	rdx, OFFSET FLAT:$SG3818
 	mov	rcx, rax
 	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
 
@@ -1048,12 +1048,12 @@ $LN3:
 
 	xor	r8d, r8d
 	mov	rdx, QWORD PTR fsys$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3817
-	call	?vfs_mount@@YAXPEADPEAU_vfs_node_@@PEAU_vfs_entry_@@@Z ; vfs_mount
+	lea	rcx, OFFSET FLAT:$SG3819
+	call	vfs_mount
 
 ; 491  : 	printf ("File System registered\n");
 
-	lea	rcx, OFFSET FLAT:$SG3818
+	lea	rcx, OFFSET FLAT:$SG3820
 	call	printf
 
 ; 492  : }
@@ -1852,7 +1852,7 @@ $LN9:
 ; 81   : #ifdef _DEBUG_ON_
 ; 82   : 	_debug_print_ ("FAT32 BOOT PARAMETER BLOCK \r\n");
 
-	lea	rcx, OFFSET FLAT:$SG3629
+	lea	rcx, OFFSET FLAT:$SG3631
 	call	?_debug_print_@@YAXPEADZZ		; _debug_print_
 
 ; 83   : 	_debug_print_ ("Bytes/Sector -> %d \r\n", fat32_data->bytes_per_sector);
@@ -1860,7 +1860,7 @@ $LN9:
 	mov	rax, QWORD PTR fat32_data$[rsp]
 	movzx	eax, WORD PTR [rax+11]
 	mov	edx, eax
-	lea	rcx, OFFSET FLAT:$SG3630
+	lea	rcx, OFFSET FLAT:$SG3632
 	call	?_debug_print_@@YAXPEADZZ		; _debug_print_
 
 ; 84   : 	_debug_print_ ("Sectors/Cluster -> %d \r\n", fat32_data->sectors_per_cluster);
@@ -1868,7 +1868,7 @@ $LN9:
 	mov	rax, QWORD PTR fat32_data$[rsp]
 	movzx	eax, BYTE PTR [rax+13]
 	mov	edx, eax
-	lea	rcx, OFFSET FLAT:$SG3631
+	lea	rcx, OFFSET FLAT:$SG3633
 	call	?_debug_print_@@YAXPEADZZ		; _debug_print_
 
 ; 85   : 	_debug_print_ ("Reserved Sectors -> %d \r\n", fat32_data->reserved_sectors);
@@ -1876,7 +1876,7 @@ $LN9:
 	mov	rax, QWORD PTR fat32_data$[rsp]
 	movzx	eax, WORD PTR [rax+14]
 	mov	edx, eax
-	lea	rcx, OFFSET FLAT:$SG3632
+	lea	rcx, OFFSET FLAT:$SG3634
 	call	?_debug_print_@@YAXPEADZZ		; _debug_print_
 
 ; 86   : 	_debug_print_ ("Number Of FATs -> %d \r\n", fat32_data->num_fats);
@@ -1884,21 +1884,21 @@ $LN9:
 	mov	rax, QWORD PTR fat32_data$[rsp]
 	movzx	eax, BYTE PTR [rax+16]
 	mov	edx, eax
-	lea	rcx, OFFSET FLAT:$SG3633
+	lea	rcx, OFFSET FLAT:$SG3635
 	call	?_debug_print_@@YAXPEADZZ		; _debug_print_
 
 ; 87   : 	_debug_print_ ("Root Base Cluster -> %d \r\n", fat32_data->info.FAT32.root_dir_cluster);
 
 	mov	rax, QWORD PTR fat32_data$[rsp]
 	mov	edx, DWORD PTR [rax+44]
-	lea	rcx, OFFSET FLAT:$SG3634
+	lea	rcx, OFFSET FLAT:$SG3636
 	call	?_debug_print_@@YAXPEADZZ		; _debug_print_
 
 ; 88   : 	_debug_print_ ("Sector/FAT32 -> %d \r\n", fat32_data->info.FAT32.sect_per_fat32);
 
 	mov	rax, QWORD PTR fat32_data$[rsp]
 	mov	edx, DWORD PTR [rax+36]
-	lea	rcx, OFFSET FLAT:$SG3635
+	lea	rcx, OFFSET FLAT:$SG3637
 	call	?_debug_print_@@YAXPEADZZ		; _debug_print_
 
 ; 89   : 
@@ -1921,7 +1921,7 @@ $LN6@initialize:
 	mov	rcx, QWORD PTR fat32_data$[rsp]
 	movsx	eax, BYTE PTR [rcx+rax+71]
 	mov	edx, eax
-	lea	rcx, OFFSET FLAT:$SG3640
+	lea	rcx, OFFSET FLAT:$SG3642
 	call	?_debug_print_@@YAXPEADZZ		; _debug_print_
 
 ; 93   : 	}
@@ -1932,7 +1932,7 @@ $LN4@initialize:
 ; 94   : 
 ; 95   : 	_debug_print_ ("\r\n");
 
-	lea	rcx, OFFSET FLAT:$SG3641
+	lea	rcx, OFFSET FLAT:$SG3643
 	call	?_debug_print_@@YAXPEADZZ		; _debug_print_
 
 ; 96   : 
@@ -1954,7 +1954,7 @@ $LN3@initialize:
 	mov	rcx, QWORD PTR fat32_data$[rsp]
 	movsx	eax, BYTE PTR [rcx+rax+82]
 	mov	edx, eax
-	lea	rcx, OFFSET FLAT:$SG3646
+	lea	rcx, OFFSET FLAT:$SG3648
 	call	?_debug_print_@@YAXPEADZZ		; _debug_print_
 
 ; 99   : 	}
@@ -1965,7 +1965,7 @@ $LN1@initialize:
 ; 100  : 
 ; 101  : 	_debug_print_ ("\r\n");
 
-	lea	rcx, OFFSET FLAT:$SG3647
+	lea	rcx, OFFSET FLAT:$SG3649
 	call	?_debug_print_@@YAXPEADZZ		; _debug_print_
 
 ; 102  : #endif
@@ -2032,7 +2032,7 @@ $LN1@initialize:
 ; 111  : 	_debug_print_ ("FAT32 Total clusters -> %d \r\n", total_clusters);
 
 	mov	edx, DWORD PTR ?total_clusters@@3IA	; total_clusters
-	lea	rcx, OFFSET FLAT:$SG3648
+	lea	rcx, OFFSET FLAT:$SG3650
 	call	?_debug_print_@@YAXPEADZZ		; _debug_print_
 
 ; 112  : 

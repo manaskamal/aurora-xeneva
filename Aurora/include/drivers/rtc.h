@@ -14,6 +14,7 @@
 
 #include <stdint.h>
 #include <hal.h>
+#include <aurora.h>
 
 #define CMOS_ADDR 0x70
 #define CMOS_DATA 0x71
@@ -29,12 +30,12 @@ typedef struct _sys_time_ {
 }sys_time;
 
 
-extern void initialize_rtc ();
-extern uint8_t rtc_get_year ();
-extern uint8_t rtc_get_second ();
-extern uint8_t rtc_get_day();
-extern uint8_t rtc_get_hour();
-extern uint8_t rtc_get_minutes ();
-extern uint8_t rtc_get_century();
-extern uint8_t rtc_get_month ();
+extern void AuInitializeRTC ();
+AU_EXTERN AU_EXPORT uint8_t AuGetYear();
+AU_EXTERN AU_EXPORT uint8_t AuGetSecond ();
+AU_EXTERN AU_EXPORT uint8_t AuGetDay();
+AU_EXTERN AU_EXPORT uint8_t AuGetHour();
+AU_EXTERN AU_EXPORT uint8_t AuGetMinutes();
+AU_EXTERN AU_EXPORT uint8_t AuGetCentury();
+AU_EXTERN AU_EXPORT uint8_t AuGetMonth();
 #endif

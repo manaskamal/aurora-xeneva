@@ -45,7 +45,6 @@
 #include <drivers\ac97\ac97.h>
 #include <drivers\hdaudio\hda.h>
 #include <drivers\ahci_disk.h>
-#include <drivers\vga.h>
 #include <drivers\usb\xhci.h>
 #include <drivers\net\e1000.h>
 #include <drivers\net\amd_am79c973.h>
@@ -60,8 +59,7 @@
 #include <screen.h>
 #include <proc.h>
 #include <pmmngr.h>
-#include <drvmngr.h>
-#include <procmngr.h>
+#include <audrv.h>
 #include <serial.h>
 #include <stream.h>
 #include <sound.h>
@@ -113,16 +111,13 @@ void message() {
 	printf ("Hello Message\n");
 }
 
-void ue_thr(void*) {
-	for(;;);
-}
 
 typedef int (*return_int)();
 
 /**========================================
  ** the main entry routine -- _kmain
  **/
-void _kmain (KERNEL_BOOT_INFO *info) {
+void _AuMain (KERNEL_BOOT_INFO *info) {
 	debug = info->printf_gui;
 	//! Initialize the memory mappings
 	AuPmmngrInit (info);
@@ -130,21 +125,23 @@ void _kmain (KERNEL_BOOT_INFO *info) {
 	AuHeapInitialize();
 	AuHalInitialize();
 
-	initialize_serial();
-
-	initialize_acpi (info->acpi_table_pointer);
+	AuInitializeSerial();
+	AuInitializeBasicAcpi (info->acpi_table_pointer);
 
 	ahci_initialize();
 	hda_initialize();
 
-	vfs_init();
+	AuVFSInit();
+	
+	AuInitializeScreen(info);
+	AuConsoleInitialize(info);
+	AuInitializeRTC(); 
 
-    initialize_screen(info);
-	screen_set_configuration(info->X_Resolution,info->Y_Resolution);
-	console_initialize(info);
-	initialize_rtc(); 
+	AuInitializeMouse();
 
-	initialize_mouse();
+	//Here we initialise all drivers stuffs
+	AuDrvMngrInitialize(info);
+	for(;;);
 	kybrd_init();
 	message_init ();
 	dwm_ipc_init();
@@ -172,7 +169,7 @@ void _kmain (KERNEL_BOOT_INFO *info) {
 	create_process ("/sndsrv.exe","shell");
 
 	/* start the compositing window manager at id 2 */
-	//create_process ("/priwm.exe","priwm");
+	create_process ("/priwm.exe","priwm");
 
 	//create_process ("/dock.exe", "dock");
 	x64_sti();

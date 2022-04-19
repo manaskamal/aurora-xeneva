@@ -14,18 +14,18 @@ _BSS	SEGMENT
 ?last@@3PEAU_tele_type_@@EA DQ 01H DUP (?)		; last
 _BSS	ENDS
 CONST	SEGMENT
-$SG3490	DB	'/dev/', 00H
+$SG3492	DB	'/dev/', 00H
 	ORG $+2
-$SG3491	DB	'ttym', 00H
+$SG3493	DB	'ttym', 00H
 	ORG $+3
-$SG3495	DB	'[TTY]: Master node mounted at -> %s  ', 0dH, 0aH, 00H
-$SG3497	DB	'/dev/', 00H
+$SG3497	DB	'[TTY]: Master node mounted at -> %s  ', 0dH, 0aH, 00H
+$SG3499	DB	'/dev/', 00H
 	ORG $+2
-$SG3498	DB	'ttys', 00H
+$SG3500	DB	'ttys', 00H
 	ORG $+3
-$SG3502	DB	'[TTY]: Slave node mounted at %s ', 0dH, 0aH, 00H
+$SG3504	DB	'[TTY]: Slave node mounted at %s ', 0dH, 0aH, 00H
 	ORG $+5
-$SG3505	DB	'Used RAM -> %d MB/ Total RAM %d MB', 0dH, 0aH, 00H
+$SG3507	DB	'Used RAM -> %d MB/ Total RAM %d MB', 0dH, 0aH, 00H
 CONST	ENDS
 _DATA	SEGMENT
 ?master_count@@3HA DD 01H				; master_count
@@ -43,7 +43,7 @@ PUBLIC	?ttype_slave_read@@YAXPEAU_vfs_node_@@PEA_KI@Z	; ttype_slave_read
 PUBLIC	?ttype_slave_write@@YAXPEAU_vfs_node_@@PEAEI@Z	; ttype_slave_write
 EXTRN	?strcpy@@YAPEADPEADPEBD@Z:PROC			; strcpy
 EXTRN	?memset@@YAXPEAXEI@Z:PROC			; memset
-EXTRN	?vfs_mount@@YAXPEADPEAU_vfs_node_@@PEAU_vfs_entry_@@@Z:PROC ; vfs_mount
+EXTRN	vfs_mount:PROC
 EXTRN	?circ_buf_init@@YAPEAU_circ_buf_@@PEAE_K@Z:PROC	; circ_buf_init
 EXTRN	?AuPmmngrAlloc@@YAPEAXXZ:PROC			; AuPmmngrAlloc
 EXTRN	?AuPmmngrFree@@YAXPEAX@Z:PROC			; AuPmmngrFree
@@ -711,14 +711,14 @@ $LN3:
 ; 244  : 	char mname[10];
 ; 245  : 	strcpy (mname, "/dev/");
 
-	lea	rdx, OFFSET FLAT:$SG3490
+	lea	rdx, OFFSET FLAT:$SG3492
 	lea	rcx, QWORD PTR mname$[rsp]
 	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
 
 ; 246  : 	strcpy (mname+5, "ttym");
 
 	lea	rax, QWORD PTR mname$[rsp+5]
-	lea	rdx, OFFSET FLAT:$SG3491
+	lea	rdx, OFFSET FLAT:$SG3493
 	mov	rcx, rax
 	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
 
@@ -814,21 +814,21 @@ $LN3:
 ; 267  : 	_debug_print_ ("[TTY]: Master node mounted at -> %s  \r\n", mname);
 
 	lea	rdx, QWORD PTR mname$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3495
+	lea	rcx, OFFSET FLAT:$SG3497
 	call	?_debug_print_@@YAXPEADZZ		; _debug_print_
 
 ; 268  : 
 ; 269  : 	char sname[10];
 ; 270  : 	strcpy (sname, "/dev/");
 
-	lea	rdx, OFFSET FLAT:$SG3497
+	lea	rdx, OFFSET FLAT:$SG3499
 	lea	rcx, QWORD PTR sname$[rsp]
 	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
 
 ; 271  : 	strcpy (sname+5, "ttys");
 
 	lea	rax, QWORD PTR sname$[rsp+5]
-	lea	rdx, OFFSET FLAT:$SG3498
+	lea	rdx, OFFSET FLAT:$SG3500
 	mov	rcx, rax
 	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
 
@@ -922,13 +922,13 @@ $LN3:
 	xor	r8d, r8d
 	mov	rdx, QWORD PTR sn$[rsp]
 	lea	rcx, QWORD PTR sname$[rsp]
-	call	?vfs_mount@@YAXPEADPEAU_vfs_node_@@PEAU_vfs_entry_@@@Z ; vfs_mount
+	call	vfs_mount
 
 ; 289  : 
 ; 290  : 	_debug_print_ ("[TTY]: Slave node mounted at %s \r\n", sname);
 
 	lea	rdx, QWORD PTR sname$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3502
+	lea	rcx, OFFSET FLAT:$SG3504
 	call	?_debug_print_@@YAXPEADZZ		; _debug_print_
 
 ; 291  : 	
@@ -1182,7 +1182,7 @@ $LN3:
 	mov	rcx, QWORD PTR tv279[rsp]
 	mov	r8, rcx
 	mov	rdx, rax
-	lea	rcx, OFFSET FLAT:$SG3505
+	lea	rcx, OFFSET FLAT:$SG3507
 	call	?_debug_print_@@YAXPEADZZ		; _debug_print_
 
 ; 343  : 

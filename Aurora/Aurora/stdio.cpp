@@ -15,6 +15,7 @@
 #include <serial.h>
 #include <va_list.h>
 #include <string.h>
+#include <ctype.h>
 
 static char* chars = "0123456789ABCDEF";
 
@@ -103,10 +104,25 @@ char* ftoa(float value, uint8_t decimal_places) {
 	return float_to_string_output;
 }
 
+
+int atoi (const char* s) {
+	
+	int n = 0, neg =0;
+	while (isspace(*s)) s++;
+	switch (*s) {
+	case '-': neg=1;
+	case '+': s++;
+	}
+
+	while (isdigit(*s))
+		n = 10*n - (*s++ - '0');
+	return neg ? n : -n;
+}
+
 void printf(const char* format, ...)
 {
 
-	if (!is_console_initialized()) {
+	if (!AuIsConsoleInitialized()) {
 		debug_print (format);
 		return;
 	}

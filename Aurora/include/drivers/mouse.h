@@ -38,5 +38,5 @@
 #define MOUSE_IOCODE_DISABLE   300
 #define MOUSE_IOCODE_ENABLE    301
 
-extern void initialize_mouse ();
+extern void AuInitializeMouse ();
 #endif
