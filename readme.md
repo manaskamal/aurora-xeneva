@@ -3,7 +3,7 @@
 Aurora's Xeneva is an operating system completely build from scratch. The system uses x86_64 architecture and can be booted from uefi environment.
 The Kernel is known as _'Aurora'_ with hybrid kernel design and the entire operating system is known as _'Xeneva'_. The
 
-In 2020,I started the system as a personal learning project for myself and still it can be considered as a learning project. 
+In 2020, I started the system as a personal learning project for myself and still it can be considered as a learning project. 
 At very first the system used x86 architecture and BIOS to boot from. The design of the kernel was same to the new one. 
 The kernel used little drivers like ps2 mouse, keyboard and vbe for graphics and a small stack based window manager 
 in the kernel space. In 2021 the the entire system was re-written from scratch with focus on x64 architecture and uefi environment.
@@ -47,10 +47,20 @@ iii> EFI-Based partition to store the Kernel {_'xnkrnl.exe'_} and
      the bootloader {_'BOOTx64.efi' - stored in 'uefi directory under the repo'_}
 
 
+## __Project Directory Structures:__
+_Aurora/Aurora/_ -- The main kernel directory <br>
+_Aurora/PriWM/_ -- PriWM Compositor directory <br>
+_Aurora/include/_ -- inlcude directory <br>
+_Drivers/_ -- Drivers Project directories. <br>
+_images/_ -- Screenshots directory <br>
+_uefi/_ -- UEFI required headers directory <br>
+_xnlib/lib64/_ -- Xeneva required static libraries <br>
+_xnlib/xnacrylic/_ -- Xeneva Graphics libraries <br>
+_xnlib/xnclib/_ -- C library  <br>
 
 
 # Screenshot
-![alt text](https://github.com/manaskamal/aurora-xeneva/blob/master/images/xedock.jpg?raw=true)
+![alt text](https://github.com/manaskamal/aurora-xeneva/blob/master/images/XenevaFullResolution.jpg?raw=true)
                              _Aurora's Xeneva in 1920x1080 resolution_
 
 # About Me:
