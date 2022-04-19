@@ -15,6 +15,7 @@
 
 #include <stdint.h>
 //#include <arch\x86_64\apic.h>
+#include <aurora.h>
 
 #define GDT_ENTRY_NULL 0
 #define GDT_ENTRY_KERNEL_CODE 1
@@ -158,8 +159,8 @@ typedef struct _fx_state_ {
 //!=======================================================
 //! G L O B A L     F U N C T I O N S
 //!=======================================================
-extern "C" void x64_cli ();
-extern "C" void x64_sti ();
+AU_EXTERN AU_EXPORT void x64_cli ();
+AU_EXTERN AU_EXPORT void x64_sti ();
 extern "C" void x64_hlt();
 //! in & out port functions
 extern "C" uint8_t x64_inportb(uint16_t port);

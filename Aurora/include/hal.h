@@ -104,12 +104,26 @@ AU_EXTERN AU_EXPORT void outportw(uint16_t port, uint16_t data);
  */
 AU_EXTERN AU_EXPORT void outportd(uint16_t port, uint32_t data);
 
-//! Interrupt EOI routine
+/*
+ * AuInterruptEnd -- Ends an interrupt handler
+ * @param irq -- interrupt irq
+ */
 AU_EXTERN AU_EXPORT void AuInterruptEnd (uint32_t irq);
-//! Interrupt Vector Registration
+
+/*
+ * AuInterruptSet -- Register an interrupt handler for a device
+ * @param vector -- interrupt vector num
+ * @param fn -- function pointer
+ * @param irq -- irq number
+ */
 AU_EXTERN AU_EXPORT void AuInterruptSet (size_t vector, void (*fn)(size_t, void* p),uint8_t irq);
-//! Mask or unmask an interrupt
-extern void AuIrqMask (uint8_t irq, bool value);
+
+/*
+ * AuIrqMask -- Mask an Irq, so that it will never delivers an 
+ * interrupt untill it is unmasked
+ * @param value -- if true, mask else unmask
+ */
+AU_EXTERN AU_EXPORT void AuIrqMask (uint8_t irq, bool value);
 
 extern void* get_ap_address ();
 #endif

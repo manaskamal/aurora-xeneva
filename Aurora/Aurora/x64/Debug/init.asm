@@ -13,14 +13,14 @@ _BSS	ENDS
 CONST	SEGMENT
 $SG5645	DB	'Hello Message', 0aH, 00H
 	ORG $+1
-$SG5650	DB	'Scheduler Initialized', 0aH, 00H
+$SG5653	DB	'Scheduler Initialized', 0aH, 00H
 	ORG $+1
-$SG5651	DB	'shell', 00H
+$SG5654	DB	'shell', 00H
 	ORG $+2
-$SG5652	DB	'/sndsrv.exe', 00H
-$SG5653	DB	'priwm', 00H
+$SG5655	DB	'/sndsrv.exe', 00H
+$SG5656	DB	'priwm', 00H
 	ORG $+6
-$SG5654	DB	'/priwm.exe', 00H
+$SG5657	DB	'/priwm.exe', 00H
 CONST	ENDS
 _DATA	SEGMENT
 _fltused DD	01H
@@ -77,8 +77,8 @@ $pdata$??_U@YAPEAX_K@Z DD imagerel $LN3
 $pdata$?debug_print@@YAXPEBDZZ DD imagerel $LN3
 	DD	imagerel $LN3+40
 	DD	imagerel $unwind$?debug_print@@YAXPEBDZZ
-$pdata$?_AuMain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z DD imagerel $LN5
-	DD	imagerel $LN5+253
+$pdata$?_AuMain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z DD imagerel $LN7
+	DD	imagerel $LN7+255
 	DD	imagerel $unwind$?_AuMain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z
 pdata	ENDS
 xdata	SEGMENT
@@ -103,7 +103,7 @@ info$ = 48
 
 ; 120  : void _AuMain (KERNEL_BOOT_INFO *info) {
 
-$LN5:
+$LN7:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 40					; 00000028H
 
@@ -214,8 +214,12 @@ $LN5:
 ; 154  : 	ttype_init();
 
 	call	?ttype_init@@YAXXZ			; ttype_init
+$LN4@AuMain:
 
-; 155  : 
+; 155  : 	for(;;);
+
+	jmp	SHORT $LN4@AuMain
+
 ; 156  : 	
 ; 157  : #ifdef ARCH_X64
 ; 158  : 	//================================================
@@ -228,7 +232,7 @@ $LN5:
 ; 162  : 
 ; 163  : 	printf ("Scheduler Initialized\n");
 
-	lea	rcx, OFFSET FLAT:$SG5650
+	lea	rcx, OFFSET FLAT:$SG5653
 	call	printf
 
 ; 164  : 
@@ -239,16 +243,16 @@ $LN5:
 ; 166  : 	/* start the sound service manager at id 1 */
 ; 167  : 	create_process ("/sndsrv.exe","shell");
 
-	lea	rdx, OFFSET FLAT:$SG5651
-	lea	rcx, OFFSET FLAT:$SG5652
+	lea	rdx, OFFSET FLAT:$SG5654
+	lea	rcx, OFFSET FLAT:$SG5655
 	call	?create_process@@YAHPEBDPEAD@Z		; create_process
 
 ; 168  : 
 ; 169  : 	/* start the compositing window manager at id 2 */
 ; 170  : 	create_process ("/priwm.exe","priwm");
 
-	lea	rdx, OFFSET FLAT:$SG5653
-	lea	rcx, OFFSET FLAT:$SG5654
+	lea	rdx, OFFSET FLAT:$SG5656
+	lea	rcx, OFFSET FLAT:$SG5657
 	call	?create_process@@YAHPEBDPEAD@Z		; create_process
 
 ; 171  : 

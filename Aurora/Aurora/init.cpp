@@ -147,12 +147,11 @@ void _AuMain (KERNEL_BOOT_INFO *info) {
 	pri_loop_init();
 	
 	e1000_initialize();   //<< receiver not working
-	//svga_init();
 	//sound_initialize();
-	//driver_mngr_initialize(info);
+
 	process_list_initialize();
 	ttype_init();
-
+	for(;;);
 	
 #ifdef ARCH_X64
 	//================================================

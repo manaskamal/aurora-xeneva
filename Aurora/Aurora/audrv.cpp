@@ -24,7 +24,7 @@
 //!Global Variable for the program
 aurora_driver_t *drivers[256];
 static uint32_t driver_class_unique_id = 0;
-
+static uint64_t driver_load_base = 0;
 
 //! request an unique id for driver class
 uint32_t AuRequestDriverId () {
@@ -160,21 +160,36 @@ void AuGetDriverName (uint32_t vendor_id, uint32_t device_id,uint8_t* buffer,int
 	return;
 }
 
+/*
+ * AuDriverLoad -- Manage and loads dll drivers
+ * @param filename -- file path
+ * @param driver -- driver instance
+ */
 void AuDriverLoad (char* filename, aurora_driver_t *driver) {
+	int next_base_offset = 0;
 	vfs_node_t file = fat32_open(NULL, filename);
 	uint64_t* buffer = (uint64_t*)AuPmmngrAlloc();
 	memset(buffer, 0, 4096);
 	fat32_read(&file, buffer);
-	AuMapPage((uint64_t)buffer,AU_DRIVER_BASE_START,0);
-	printf ("driver file loaded size -> %d bytes\n", file.size);
+	AuMapPage((uint64_t)buffer,driver_load_base,0);
+	next_base_offset++;
+	
+	while(file.eof != 1) {
+		uint64_t* block = (uint64_t*)AuPmmngrAlloc();
+		fat32_read (&file,block);
+		AuMapPage((uint64_t)block,driver_load_base + next_base_offset * 4096, 0);
+		next_base_offset++;
+	}
 
-	void* entry_addr = AuGetProcAddress((void*)AU_DRIVER_BASE_START,"AuDriverMain");
-	printf ("driver entry address -> %x \n", entry_addr);
+
+	void* entry_addr = AuGetProcAddress((void*)driver_load_base,"AuDriverMain");
+	
 	AuPeLinkLibrary(buffer);
 	driver->entry = (au_drv_entry)entry_addr;
 	driver->base = AU_DRIVER_BASE_START;
 	driver->end = driver->base + file.size;
 	driver->present = true;
+	driver_load_base = driver_load_base + next_base_offset * 4096;
 }
 
 /* 
@@ -184,7 +199,7 @@ void AuDriverLoad (char* filename, aurora_driver_t *driver) {
 void AuDrvMngrInitialize (KERNEL_BOOT_INFO *info) {
 	x64_cli();
 	driver_class_unique_id = 0;
-
+	driver_load_base = AU_DRIVER_BASE_START;
 	printf ("[aurora]: initializing drivers, please wait... \n");
 	/* Load the conf data */
 	uint64_t* conf = (uint64_t*)p2v((size_t)AuPmmngrAlloc());
@@ -208,6 +223,7 @@ void AuDrvMngrInitialize (KERNEL_BOOT_INFO *info) {
 		}
 	}
 
+	/* Serially call each startup entries of each driver */
 	for (int i = 0; i < driver_class_unique_id; i++) {
 		aurora_driver_t *driver = drivers[i];
 		AuDriverLoad(driver->name, driver);
