@@ -14,6 +14,7 @@
 
 #include <stdint.h>
 #include <hal.h>
+#include <aurora.h>
 
 
 #define  PCI_CONFIG_PORT   0x0CF8
@@ -291,7 +292,7 @@ typedef struct {
 	pci_cap_header header;							// 00 - 01
 	unsigned short msgCtrl;							// 02 - 03
 	void *msgUpperAddr;								// 04 - 07
-	unsigned tableOffBir;							// 08 - 0B
+	unsigned tableOffBir;							// 08 - 0B 
 
 } pci_msi_xcap;
 
@@ -301,23 +302,22 @@ typedef struct {
 #define PCI_CONF_BAR_PREFETCH  0x08
 
 
-extern void read_config_header (int bus, int dev, int function, pci_device_info *dev_info);
-extern void  read_config_16 (uint16_t segment,int bus, int dev, int function, int reg, unsigned short *data );
-extern void  write_config_16 (uint16_t segment,int bus, int dev, int function, int reg, unsigned short data );
-extern void  read_config_32 (uint16_t segment, int bus, int dev, int function, int reg, uint32_t data);
-extern void read_config_8 (uint16_t segment,int bus, int dev, int function, int reg, unsigned char* data);
-extern void write_config_8 (uint16_t segment,int bus, int dev, int func, int reg, unsigned char data);
-extern void  read_config_32_ext (uint16_t segment,int bus, int dev, int function, int reg, uint32_t *data);
-extern void write_config_32 (int bus, int dev, int func, int reg, unsigned data);
+AU_EXTERN AU_EXPORT void read_config_header (int bus, int dev, int function, pci_device_info *dev_info);
+AU_EXTERN AU_EXPORT void  read_config_16 (uint16_t segment,int bus, int dev, int function, int reg, unsigned short *data );
+AU_EXTERN AU_EXPORT void  write_config_16 (uint16_t segment,int bus, int dev, int function, int reg, unsigned short data );
+AU_EXTERN AU_EXPORT void  read_config_32 (uint16_t segment, int bus, int dev, int function, int reg, uint32_t data);
+AU_EXTERN AU_EXPORT void read_config_8 (uint16_t segment,int bus, int dev, int function, int reg, unsigned char* data);
+AU_EXTERN AU_EXPORT void write_config_8 (uint16_t segment,int bus, int dev, int func, int reg, unsigned char data);
+AU_EXTERN AU_EXPORT void  read_config_32_ext (uint16_t segment,int bus, int dev, int function, int reg, uint32_t *data);
+AU_EXTERN AU_EXPORT void write_config_32 (int bus, int dev, int func, int reg, unsigned data);
 
-extern bool pci_find_device (uint16_t vendor_id, uint16_t device_id, pci_address *addr_out);
-extern void pci_set_mem_enable (const pci_address *addr, bool enabe);
-extern bool pci_find_device_class (uint8_t class_code, uint8_t sub_class, pci_device_info *addr_out, int *bus, int *dev, int *func);
-extern bool pci_find_device_id (uint16_t device_id, uint16_t vendor_id, pci_device_info *addr_out);
-extern bool pci_alloc_msi (int func, int dev, int bus, void (*fn)(size_t, void* p));
-extern void pci_enable_bus_master (int bus, int dev, int func);
-extern void pci_enable_interrupt (int bus, int dev, int func);
-extern void pci_enable_mem_space (int bus, int dev, int func);
-extern bool pcie_supported ();
-extern void pci_detect ();
+AU_EXTERN AU_EXPORT bool pci_find_device (uint16_t vendor_id, uint16_t device_id, pci_address *addr_out);
+AU_EXTERN AU_EXPORT void pci_set_mem_enable (const pci_address *addr, bool enabe);
+AU_EXTERN AU_EXPORT bool pci_find_device_class (uint8_t class_code, uint8_t sub_class, pci_device_info *addr_out, int *bus, int *dev, int *func);
+AU_EXTERN AU_EXPORT bool pci_find_device_id (uint16_t device_id, uint16_t vendor_id, pci_device_info *addr_out);
+AU_EXTERN AU_EXPORT bool pci_alloc_msi (int func, int dev, int bus, void (*fn)(size_t, void* p));
+AU_EXTERN AU_EXPORT void pci_enable_bus_master (int bus, int dev, int func);
+AU_EXTERN AU_EXPORT void pci_enable_interrupt (int bus, int dev, int func);
+AU_EXTERN AU_EXPORT void pci_enable_mem_space (int bus, int dev, int func);
+AU_EXTERN AU_EXPORT bool pcie_supported ();
 #endif

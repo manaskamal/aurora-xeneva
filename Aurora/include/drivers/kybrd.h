@@ -16,5 +16,8 @@
 #include <hal.h>
 #include <stdio.h>
 
-extern void kybrd_init ();
+/*
+ * AuKeyboardInitialize -- initialize the keyboard
+ */
+extern void AuKeyboardInitialize ();
 #endif

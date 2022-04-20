@@ -125,6 +125,8 @@ E:\XENEVA PROJECT\XENEVA\AURORA\AURORA\X64\DEBUG\PMMNGR.OBJ
 E:\XENEVA PROJECT\XENEVA\AURORA\AURORA\X64\DEBUG\PMMNGR.ASM
 E:\XENEVA PROJECT\XENEVA\AURORA\AURORA\X64\DEBUG\PE.OBJ
 E:\XENEVA PROJECT\XENEVA\AURORA\AURORA\X64\DEBUG\PE.ASM
+E:\XENEVA PROJECT\XENEVA\AURORA\AURORA\X64\DEBUG\_CRT.OBJ
+E:\XENEVA PROJECT\XENEVA\AURORA\AURORA\X64\DEBUG\_CRT.ASM
 E:\XENEVA PROJECT\XENEVA\AURORA\AURORA\X64\DEBUG\RING.OBJ
 E:\XENEVA PROJECT\XENEVA\AURORA\AURORA\X64\DEBUG\RING.ASM
 E:\XENEVA PROJECT\XENEVA\AURORA\AURORA\X64\DEBUG\PIPE.OBJ
@@ -197,6 +199,7 @@ E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\ttype.obj
 E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\user64.obj
 E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\valloc.obj
 E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\vfs.obj
+E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\_crt.obj
 E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\Aurora.write.1.tlog
 E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\cl.command.1.tlog
 E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\CL.read.1.tlog

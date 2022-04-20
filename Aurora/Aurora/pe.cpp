@@ -86,10 +86,8 @@ void AuPeLinkLibrary (void* image) {
 		return;
 	IMAGE_DATA_DIRECTORY& datadir = nt_headers->OptionalHeader.DataDirectory[IMAGE_DATA_DIRECTORY_IMPORT];
 	if (datadir.VirtualAddress == 0 || datadir.Size == 0) {
-		//printf ("Import table va -> %d, size -> %d \n", datadir.VirtualAddress, datadir.Size);
 		return;
 	}
-	//printf ("Import table va -> %d, size -> %d \n", datadir.VirtualAddress, datadir.Size);
 	PIMAGE_IMPORT_DIRECTORY importdir = raw_offset<PIMAGE_IMPORT_DIRECTORY>(image, datadir.VirtualAddress);
 	for (size_t n = 0; importdir[n].ThunkTableRva; ++n) {
 		const char* func = raw_offset<const char*>(image, importdir[n].NameRva);

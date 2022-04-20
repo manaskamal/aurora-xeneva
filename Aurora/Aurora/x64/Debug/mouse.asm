@@ -54,7 +54,7 @@ EXTRN	inportb:PROC
 EXTRN	outportb:PROC
 EXTRN	AuInterruptEnd:PROC
 EXTRN	AuInterruptSet:PROC
-EXTRN	?AuIrqMask@@YAXE_N@Z:PROC			; AuIrqMask
+EXTRN	AuIrqMask:PROC
 EXTRN	?strcpy@@YAPEADPEADPEBD@Z:PROC			; strcpy
 EXTRN	?memset@@YAXPEAXEI@Z:PROC			; memset
 EXTRN	memcpy:PROC
@@ -239,7 +239,7 @@ $LN4@mouse_ioqu:
 
 	mov	dl, 1
 	mov	cl, 12
-	call	?AuIrqMask@@YAXE_N@Z			; AuIrqMask
+	call	AuIrqMask
 
 ; 190  : 			break;
 
@@ -251,7 +251,7 @@ $LN3@mouse_ioqu:
 
 	xor	edx, edx
 	mov	cl, 12
-	call	?AuIrqMask@@YAXE_N@Z			; AuIrqMask
+	call	AuIrqMask
 
 ; 193  : 			break;
 

@@ -15,7 +15,7 @@ PUBLIC	outportw
 PUBLIC	outportd
 PUBLIC	AuInterruptEnd
 PUBLIC	AuInterruptSet
-PUBLIC	?AuIrqMask@@YAXE_N@Z				; AuIrqMask
+PUBLIC	AuIrqMask
 EXTRN	x64_inportb:PROC
 EXTRN	x64_inportw:PROC
 EXTRN	x64_inportd:PROC
@@ -59,9 +59,9 @@ $pdata$AuInterruptEnd DD imagerel $LN3
 $pdata$AuInterruptSet DD imagerel $LN3
 	DD	imagerel $LN3+45
 	DD	imagerel $unwind$AuInterruptSet
-$pdata$?AuIrqMask@@YAXE_N@Z DD imagerel $LN3
+$pdata$AuIrqMask DD imagerel $LN3
 	DD	imagerel $LN3+32
-	DD	imagerel $unwind$?AuIrqMask@@YAXE_N@Z
+	DD	imagerel $unwind$AuIrqMask
 pdata	ENDS
 xdata	SEGMENT
 $unwind$?AuHalInitialize@@YAXXZ DD 010401H
@@ -84,7 +84,7 @@ $unwind$AuInterruptEnd DD 010801H
 	DD	04208H
 $unwind$AuInterruptSet DD 011301H
 	DD	04213H
-$unwind$?AuIrqMask@@YAXE_N@Z DD 010c01H
+$unwind$AuIrqMask DD 010c01H
 	DD	0420cH
 xdata	ENDS
 ; Function compile flags: /Odtpy
@@ -92,7 +92,7 @@ xdata	ENDS
 _TEXT	SEGMENT
 irq$ = 48
 value$ = 56
-?AuIrqMask@@YAXE_N@Z PROC				; AuIrqMask
+AuIrqMask PROC
 
 ; 155  : void AuIrqMask (uint8_t irq, bool value) {
 
@@ -118,7 +118,7 @@ $LN3:
 
 	add	rsp, 40					; 00000028H
 	ret	0
-?AuIrqMask@@YAXE_N@Z ENDP				; AuIrqMask
+AuIrqMask ENDP
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\hal.cpp

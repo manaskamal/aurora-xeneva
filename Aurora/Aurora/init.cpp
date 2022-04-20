@@ -84,22 +84,6 @@
 #include <fs\fat\fat.h>
 #include <fs\fat\fat_f.h>
 
-/**
- * Runtime setup
- */
-extern "C" int _fltused = 1;
-
-void* __cdecl ::operator new(size_t size) {
-	return malloc(size);
-}
-
-void* __cdecl operator new[] (size_t size) {
-	return malloc(size);
-}
-
-void __cdecl operator delete (void* p) {
-	free(p);
-}
 
 void (*debug) (const char* text, ...);
 
@@ -107,12 +91,6 @@ void debug_print (const char* text, ...) {
 	debug(text);
 }
 
-void message() {
-	printf ("Hello Message\n");
-}
-
-
-typedef int (*return_int)();
 
 /**========================================
  ** the main entry routine -- _kmain
@@ -141,17 +119,15 @@ void _AuMain (KERNEL_BOOT_INFO *info) {
 
 	//Here we initialise all drivers stuffs
 	AuDrvMngrInitialize(info);
-	kybrd_init();
+	AuKeyboardInitialize();
 	message_init ();
 	dwm_ipc_init();
 	pri_loop_init();
 	
 	e1000_initialize();   //<< receiver not working
-	//sound_initialize();
 
 	process_list_initialize();
 	ttype_init();
-	for(;;);
 	
 #ifdef ARCH_X64
 	//================================================
@@ -162,11 +138,13 @@ void _AuMain (KERNEL_BOOT_INFO *info) {
 	printf ("Scheduler Initialized\n");
 
 	x64_cli();
+	int au_status = 0;
+
 	/* start the sound service manager at id 1 */
-	create_process ("/sndsrv.exe","shell");
+	au_status = AuCreateProcess ("/sndsrv.exe","shell");
 
 	/* start the compositing window manager at id 2 */
-	create_process ("/priwm.exe","priwm");
+	au_status = AuCreateProcess ("/priwm.exe","priwm");
 
 	//create_process ("/dock.exe", "dock");
 	x64_sti();

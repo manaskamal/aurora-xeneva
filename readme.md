@@ -28,6 +28,7 @@ The Goal of the project is to produce a high-quality Operating system with full 
 6. ACPI
 7. High-Definition Audio
 8. Networking (under development)
+9. Driver Manager (_loading and linking dll files as drivers_)
 
 ## __Ported Projects__:
 1. FreeType 
@@ -48,16 +49,19 @@ iii> EFI-Based partition to store the Kernel {_'xnkrnl.exe'_} and
 
 
 ## __Project Directory Structures:__
-_Aurora/Aurora/_ -- The main kernel directory <br>
-_Aurora/PriWM/_ -- PriWM Compositor directory <br>
-_Aurora/include/_ -- inlcude directory <br>
-_Drivers/_ -- Drivers Project directories. <br>
-_images/_ -- Screenshots directory <br>
-_uefi/_ -- UEFI required headers directory <br>
-_xnlib/lib64/_ -- Xeneva required static libraries <br>
-_xnlib/xnacrylic/_ -- Xeneva Graphics libraries <br>
-_xnlib/xnclib/_ -- C library  <br>
+__Aurora/Aurora/__ -- The main kernel directory <br>
+__Aurora/PriWM/__ -- PriWM Compositor directory <br>
+__Aurora/include/__ -- inlcude directory <br>
+__Drivers/__ -- Drivers Project directories. <br>
+__images/__ -- Screenshots directory <br>
+__uefi/__ -- UEFI required headers directory <br>
+__xnlib/lib64/__ -- Xeneva required static libraries <br>
+__xnlib/xnacrylic/__ -- Xeneva Graphics libraries <br>
+__xnlib/xnclib/__ -- C library  <br>
 
+
+## __Creating and Using Drivers inside Aurora__
+_Please refer to __"Drivers/"__ directory_
 
 # Screenshot
 ![alt text](https://github.com/manaskamal/aurora-xeneva/blob/master/images/XenevaFullResolution.jpg?raw=true)

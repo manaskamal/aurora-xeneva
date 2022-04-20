@@ -43,7 +43,7 @@
  */
 int create__sys_process (const char* name, char* procnm) {
 	x64_cli();
-	int id = create_process (name, procnm);
+	int id = AuCreateProcess (name, procnm);
 	/*int master_fd = get_current_thread()->master_fd;
 	ttype_dup_master(id, master_fd);*/
 	return 0;

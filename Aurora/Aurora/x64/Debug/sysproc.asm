@@ -21,7 +21,7 @@ EXTRN	?pmmngr_get_total_ram@@YA_KXZ:PROC		; pmmngr_get_total_ram
 EXTRN	x64_cli:PROC
 EXTRN	?get_current_thread@@YAPEAU_thread_@@XZ:PROC	; get_current_thread
 EXTRN	?force_sched@@YAXXZ:PROC			; force_sched
-EXTRN	?create_process@@YAHPEBDPEAD@Z:PROC		; create_process
+EXTRN	?AuCreateProcess@@YAHPEBDPEAD@Z:PROC		; AuCreateProcess
 EXTRN	?kill_process@@YAXXZ:PROC			; kill_process
 EXTRN	?kill_process_by_id@@YAXG@Z:PROC		; kill_process_by_id
 EXTRN	?_debug_print_@@YAXPEADZZ:PROC			; _debug_print_
@@ -216,11 +216,11 @@ $LN3:
 
 	call	x64_cli
 
-; 46   : 	int id = create_process (name, procnm);
+; 46   : 	int id = AuCreateProcess (name, procnm);
 
 	mov	rdx, QWORD PTR procnm$[rsp]
 	mov	rcx, QWORD PTR name$[rsp]
-	call	?create_process@@YAHPEBDPEAD@Z		; create_process
+	call	?AuCreateProcess@@YAHPEBDPEAD@Z		; AuCreateProcess
 	mov	DWORD PTR id$[rsp], eax
 
 ; 47   : 	/*int master_fd = get_current_thread()->master_fd;

@@ -29,7 +29,7 @@ $SG4061	DB	'child', 00H
 CONST	ENDS
 PUBLIC	?create_user_stack@@YAPEA_KPEA_K@Z		; create_user_stack
 PUBLIC	?create_inc_stack@@YAPEA_KPEA_K@Z		; create_inc_stack
-PUBLIC	?create_process@@YAHPEBDPEAD@Z			; create_process
+PUBLIC	?AuCreateProcess@@YAHPEBDPEAD@Z			; AuCreateProcess
 PUBLIC	?kill_process@@YAXXZ				; kill_process
 PUBLIC	?kill_process_by_id@@YAXG@Z			; kill_process_by_id
 PUBLIC	?get_num_process@@YAIXZ				; get_num_process
@@ -79,9 +79,9 @@ $pdata$?create_user_stack@@YAPEA_KPEA_K@Z DD imagerel $LN6
 $pdata$?create_inc_stack@@YAPEA_KPEA_K@Z DD imagerel $LN6
 	DD	imagerel $LN6+143
 	DD	imagerel $unwind$?create_inc_stack@@YAPEA_KPEA_K@Z
-$pdata$?create_process@@YAHPEBDPEAD@Z DD imagerel $LN6
+$pdata$?AuCreateProcess@@YAHPEBDPEAD@Z DD imagerel $LN6
 	DD	imagerel $LN6+672
-	DD	imagerel $unwind$?create_process@@YAHPEBDPEAD@Z
+	DD	imagerel $unwind$?AuCreateProcess@@YAHPEBDPEAD@Z
 $pdata$?kill_process@@YAXXZ DD imagerel $LN10
 	DD	imagerel $LN10+443
 	DD	imagerel $unwind$?kill_process@@YAXXZ
@@ -118,7 +118,7 @@ $unwind$?create_user_stack@@YAPEA_KPEA_K@Z DD 010901H
 	DD	08209H
 $unwind$?create_inc_stack@@YAPEA_KPEA_K@Z DD 010901H
 	DD	08209H
-$unwind$?create_process@@YAHPEBDPEAD@Z DD 041301H
+$unwind$?AuCreateProcess@@YAHPEBDPEAD@Z DD 041301H
 	DD	03b0113H
 	DD	0600b700cH
 $unwind$?kill_process@@YAXXZ DD 010401H
@@ -1402,9 +1402,9 @@ $T2 = 256
 $T3 = 360
 filename$ = 496
 procname$ = 504
-?create_process@@YAHPEBDPEAD@Z PROC			; create_process
+?AuCreateProcess@@YAHPEBDPEAD@Z PROC			; AuCreateProcess
 
-; 152  : int create_process(const char* filename, char* procname) {
+; 152  : int AuCreateProcess(const char* filename, char* procname) {
 
 $LN6:
 	mov	QWORD PTR [rsp+16], rdx
@@ -1471,7 +1471,7 @@ $LN6:
 
 	movzx	eax, BYTE PTR file$[rsp+49]
 	cmp	eax, 3
-	jne	SHORT $LN3@create_pro
+	jne	SHORT $LN3@AuCreatePr
 
 ; 167  : 		printf("Executable image not found\n");
 
@@ -1481,8 +1481,8 @@ $LN6:
 ; 168  : 		return -1;
 
 	mov	eax, -1
-	jmp	$LN4@create_pro
-$LN3@create_pro:
+	jmp	$LN4@AuCreatePr
+$LN3@AuCreatePr:
 
 ; 169  : 	}
 ; 170  : 	//!open the binary file and read it
@@ -1558,7 +1558,7 @@ $LN3@create_pro:
 ; 191  : 	int position = 1;  //we already read 4096 bytes at first
 
 	mov	DWORD PTR position$[rsp], 1
-$LN2@create_pro:
+$LN2@AuCreatePr:
 
 ; 192  : 
 ; 193  : 
@@ -1566,7 +1566,7 @@ $LN2@create_pro:
 
 	movzx	eax, BYTE PTR file$[rsp+36]
 	cmp	eax, 1
-	je	SHORT $LN1@create_pro
+	je	SHORT $LN1@AuCreatePr
 
 ; 195  : 		uint64_t* block = (uint64_t*)AuPmmngrAlloc();
 
@@ -1603,8 +1603,8 @@ $LN2@create_pro:
 
 ; 201  : 	}
 
-	jmp	SHORT $LN2@create_pro
-$LN1@create_pro:
+	jmp	SHORT $LN2@AuCreatePr
+$LN1@AuCreatePr:
 
 ; 202  : 
 ; 203  : 
@@ -1689,7 +1689,7 @@ $LN1@create_pro:
 
 	mov	rax, QWORD PTR t$[rsp]
 	movzx	eax, WORD PTR [rax+738]
-$LN4@create_pro:
+$LN4@AuCreatePr:
 
 ; 223  : }
 
@@ -1697,7 +1697,7 @@ $LN4@create_pro:
 	pop	rdi
 	pop	rsi
 	ret	0
-?create_process@@YAHPEBDPEAD@Z ENDP			; create_process
+?AuCreateProcess@@YAHPEBDPEAD@Z ENDP			; AuCreateProcess
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\proc.cpp

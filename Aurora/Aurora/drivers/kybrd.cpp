@@ -18,7 +18,7 @@ extern void debug_print (const char* text, ...);
  * kybrd_handler -- Handles Key Events and redirects it to
  *                  Window Manager
  */
-void kybrd_handler(size_t v, void* p)
+void AuKeyboardHandler(size_t v, void* p)
 {
 	static bool _extended = false;
 	int code = 0;
@@ -57,6 +57,6 @@ void kybrd_handler(size_t v, void* p)
  * kybrd_init -- Initialize the keyboard
  * it installs the irq_1 handler with keyboard handler function
  */
-void kybrd_init () {
-	AuInterruptSet (1,kybrd_handler,1);
+void AuKeyboardInitialize () {
+	AuInterruptSet (1,AuKeyboardHandler,1);
 }

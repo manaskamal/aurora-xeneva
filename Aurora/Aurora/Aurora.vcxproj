@@ -351,6 +351,7 @@
     <ClCompile Include="utils\lnklist.cpp" />
     <ClCompile Include="utils\pipe.cpp" />
     <ClCompile Include="utils\ring.cpp" />
+    <ClCompile Include="_crt.cpp" />
   </ItemGroup>
   <ItemGroup>
     <NASM Include="arch\x86_64\interrupts.asm" />

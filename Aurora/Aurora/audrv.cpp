@@ -78,10 +78,10 @@ search:
 		p++;
 
 	fbuf = p;
-	char num[5];
-	memset(num, 0, 5);
+	char num[2];
+	memset(num, 0, 2);
 	int i;
-	for (i= 0; i < 5; i++) {
+	for (i= 0; i < 2; i++) {
 		if (p[i] == ',' || p[i] == ']')
 			break;
 		num[i] = p[i];
@@ -94,7 +94,7 @@ search:
 	p = strchr(fbuf,',');
 	if (p)
 		p++;
-	for (int i = 0; i < 5; i++) {
+	for (int i = 0; i < 2; i++) {
 		if (p[i] == ',' || p[i] == ']')
 			break;
 		num[i] = p[i];
@@ -218,7 +218,7 @@ void AuDrvMngrInitialize (KERNEL_BOOT_INFO *info) {
 				read_config_header (bus, dev, func, &config);
 				if (config.device.deviceID == 0xFFFF || config.device.vendorID == 0xFFFF) 
 					continue;	
-				AuGetDriverName(config.device.vendorID,config.device.deviceID,  confdata,1);
+				AuGetDriverName(config.device.classCode,config.device.subClassCode,  confdata,1);
 			}
 		}
 	}

@@ -361,15 +361,13 @@ $LN8@AuPeLinkLi:
 	jne	SHORT $LN7@AuPeLinkLi
 $LN6@AuPeLinkLi:
 
-; 89   : 		//printf ("Import table va -> %d, size -> %d \n", datadir.VirtualAddress, datadir.Size);
-; 90   : 		return;
+; 89   : 		return;
 
 	jmp	$LN9@AuPeLinkLi
 $LN7@AuPeLinkLi:
 
-; 91   : 	}
-; 92   : 	//printf ("Import table va -> %d, size -> %d \n", datadir.VirtualAddress, datadir.Size);
-; 93   : 	PIMAGE_IMPORT_DIRECTORY importdir = raw_offset<PIMAGE_IMPORT_DIRECTORY>(image, datadir.VirtualAddress);
+; 90   : 	}
+; 91   : 	PIMAGE_IMPORT_DIRECTORY importdir = raw_offset<PIMAGE_IMPORT_DIRECTORY>(image, datadir.VirtualAddress);
 
 	mov	rax, QWORD PTR datadir$[rsp]
 	mov	edx, DWORD PTR [rax]
@@ -377,7 +375,7 @@ $LN7@AuPeLinkLi:
 	call	??$raw_offset@PEAU_IMAGE_IMPORT_DIRECTORY@@PEAX@@YAPEAU_IMAGE_IMPORT_DIRECTORY@@PEAXH@Z ; raw_offset<_IMAGE_IMPORT_DIRECTORY * __ptr64,void * __ptr64>
 	mov	QWORD PTR importdir$[rsp], rax
 
-; 94   : 	for (size_t n = 0; importdir[n].ThunkTableRva; ++n) {
+; 92   : 	for (size_t n = 0; importdir[n].ThunkTableRva; ++n) {
 
 	mov	QWORD PTR n$2[rsp], 0
 	jmp	SHORT $LN5@AuPeLinkLi
@@ -392,7 +390,7 @@ $LN5@AuPeLinkLi:
 	cmp	DWORD PTR [rcx+rax+16], 0
 	je	$LN3@AuPeLinkLi
 
-; 95   : 		const char* func = raw_offset<const char*>(image, importdir[n].NameRva);
+; 93   : 		const char* func = raw_offset<const char*>(image, importdir[n].NameRva);
 
 	mov	rax, QWORD PTR n$2[rsp]
 	imul	rax, 20
@@ -402,7 +400,7 @@ $LN5@AuPeLinkLi:
 	call	??$raw_offset@PEBDPEAX@@YAPEBDPEAXH@Z	; raw_offset<char const * __ptr64,void * __ptr64>
 	mov	QWORD PTR func$6[rsp], rax
 
-; 96   : 		PIMAGE_IMPORT_LOOKUP_TABLE_PE32P iat = raw_offset<PIMAGE_IMPORT_LOOKUP_TABLE_PE32P>(image, importdir[n].ThunkTableRva);
+; 94   : 		PIMAGE_IMPORT_LOOKUP_TABLE_PE32P iat = raw_offset<PIMAGE_IMPORT_LOOKUP_TABLE_PE32P>(image, importdir[n].ThunkTableRva);
 
 	mov	rax, QWORD PTR n$2[rsp]
 	imul	rax, 20
@@ -413,13 +411,13 @@ $LN5@AuPeLinkLi:
 	mov	QWORD PTR iat$1[rsp], rax
 $LN2@AuPeLinkLi:
 
-; 97   : 		while (*iat) {
+; 95   : 		while (*iat) {
 
 	mov	rax, QWORD PTR iat$1[rsp]
 	cmp	QWORD PTR [rax], 0
 	je	SHORT $LN1@AuPeLinkLi
 
-; 98   : 			PIMAGE_IMPORT_HINT_TABLE hint = raw_offset<PIMAGE_IMPORT_HINT_TABLE>(image, *iat);
+; 96   : 			PIMAGE_IMPORT_HINT_TABLE hint = raw_offset<PIMAGE_IMPORT_HINT_TABLE>(image, *iat);
 
 	mov	rax, QWORD PTR iat$1[rsp]
 	mov	edx, DWORD PTR [rax]
@@ -427,43 +425,43 @@ $LN2@AuPeLinkLi:
 	call	??$raw_offset@PEAU_IMAGE_IMPORT_HINT_TABLE@@PEAX@@YAPEAU_IMAGE_IMPORT_HINT_TABLE@@PEAXH@Z ; raw_offset<_IMAGE_IMPORT_HINT_TABLE * __ptr64,void * __ptr64>
 	mov	QWORD PTR hint$5[rsp], rax
 
-; 99   : 			const char* fname = hint->name;
+; 97   : 			const char* fname = hint->name;
 
 	mov	rax, QWORD PTR hint$5[rsp]
 	add	rax, 2
 	mov	QWORD PTR fname$3[rsp], rax
 
-; 100  : 			void* procaddr = AuGetProcAddress((void*)0xFFFFC00000000000, fname);
+; 98   : 			void* procaddr = AuGetProcAddress((void*)0xFFFFC00000000000, fname);
 
 	mov	rdx, QWORD PTR fname$3[rsp]
 	mov	rcx, -70368744177664			; ffffc00000000000H
 	call	?AuGetProcAddress@@YAPEAXPEAXPEBD@Z	; AuGetProcAddress
 	mov	QWORD PTR procaddr$4[rsp], rax
 
-; 101  : 			*iat = (uint64_t)procaddr;
+; 99   : 			*iat = (uint64_t)procaddr;
 
 	mov	rax, QWORD PTR iat$1[rsp]
 	mov	rcx, QWORD PTR procaddr$4[rsp]
 	mov	QWORD PTR [rax], rcx
 
-; 102  : 			++iat;
+; 100  : 			++iat;
 
 	mov	rax, QWORD PTR iat$1[rsp]
 	add	rax, 8
 	mov	QWORD PTR iat$1[rsp], rax
 
-; 103  : 		}
+; 101  : 		}
 
 	jmp	SHORT $LN2@AuPeLinkLi
 $LN1@AuPeLinkLi:
 
-; 104  : 	}
+; 102  : 	}
 
 	jmp	$LN4@AuPeLinkLi
 $LN3@AuPeLinkLi:
 $LN9@AuPeLinkLi:
 
-; 105  : }
+; 103  : }
 
 	add	rsp, 120				; 00000078H
 	ret	0

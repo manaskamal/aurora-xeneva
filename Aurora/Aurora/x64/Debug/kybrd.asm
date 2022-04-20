@@ -8,8 +8,8 @@ INCLUDELIB OLDNAMES
 CONST	SEGMENT
 $SG3416	DB	'[Aurora]:Key Pressed', 0aH, 00H
 CONST	ENDS
-PUBLIC	?kybrd_init@@YAXXZ				; kybrd_init
-PUBLIC	?kybrd_handler@@YAX_KPEAX@Z			; kybrd_handler
+PUBLIC	?AuKeyboardInitialize@@YAXXZ			; AuKeyboardInitialize
+PUBLIC	?AuKeyboardHandler@@YAX_KPEAX@Z			; AuKeyboardHandler
 EXTRN	inportb:PROC
 EXTRN	AuInterruptEnd:PROC
 EXTRN	AuInterruptSet:PROC
@@ -19,17 +19,17 @@ EXTRN	?AuPmmngrFree@@YAXPEAX@Z:PROC			; AuPmmngrFree
 EXTRN	?is_scheduler_initialized@@YA_NXZ:PROC		; is_scheduler_initialized
 EXTRN	?message_send@@YAXGPEAU_message_@@@Z:PROC	; message_send
 pdata	SEGMENT
-$pdata$?kybrd_init@@YAXXZ DD imagerel $LN3
+$pdata$?AuKeyboardInitialize@@YAXXZ DD imagerel $LN3
 	DD	imagerel $LN3+29
-	DD	imagerel $unwind$?kybrd_init@@YAXXZ
-$pdata$?kybrd_handler@@YAX_KPEAX@Z DD imagerel $LN6
+	DD	imagerel $unwind$?AuKeyboardInitialize@@YAXXZ
+$pdata$?AuKeyboardHandler@@YAX_KPEAX@Z DD imagerel $LN6
 	DD	imagerel $LN6+157
-	DD	imagerel $unwind$?kybrd_handler@@YAX_KPEAX@Z
+	DD	imagerel $unwind$?AuKeyboardHandler@@YAX_KPEAX@Z
 pdata	ENDS
 xdata	SEGMENT
-$unwind$?kybrd_init@@YAXXZ DD 010401H
+$unwind$?AuKeyboardInitialize@@YAXXZ DD 010401H
 	DD	04204H
-$unwind$?kybrd_handler@@YAX_KPEAX@Z DD 010e01H
+$unwind$?AuKeyboardHandler@@YAX_KPEAX@Z DD 010e01H
 	DD	0620eH
 xdata	ENDS
 ; Function compile flags: /Odtpy
@@ -40,7 +40,7 @@ code$ = 36
 msg$2 = 40
 v$ = 64
 p$ = 72
-?kybrd_handler@@YAX_KPEAX@Z PROC			; kybrd_handler
+?AuKeyboardHandler@@YAX_KPEAX@Z PROC			; AuKeyboardHandler
 
 ; 22   : {
 
@@ -62,7 +62,7 @@ $LN6:
 	movzx	eax, al
 	and	eax, 1
 	test	eax, eax
-	je	SHORT $LN3@kybrd_hand
+	je	SHORT $LN3@AuKeyboard
 
 ; 27   : 	{
 ; 28   : 		
@@ -78,7 +78,7 @@ $LN6:
 	call	?is_scheduler_initialized@@YA_NXZ	; is_scheduler_initialized
 	movzx	eax, al
 	test	eax, eax
-	je	SHORT $LN2@kybrd_hand
+	je	SHORT $LN2@AuKeyboard
 
 ; 31   : 			message_t *msg = (message_t*)AuPmmngrAlloc();
 
@@ -110,15 +110,15 @@ $LN6:
 
 ; 36   : 		} else {
 
-	jmp	SHORT $LN1@kybrd_hand
-$LN2@kybrd_hand:
+	jmp	SHORT $LN1@AuKeyboard
+$LN2@AuKeyboard:
 
 ; 37   : 			printf ("[Aurora]:Key Pressed\n");
 
 	lea	rcx, OFFSET FLAT:$SG3416
 	call	printf
-$LN1@kybrd_hand:
-$LN3@kybrd_hand:
+$LN1@AuKeyboard:
+$LN3@AuKeyboard:
 $end$7:
 
 ; 38   : 		}
@@ -143,22 +143,22 @@ $end$7:
 
 	add	rsp, 56					; 00000038H
 	ret	0
-?kybrd_handler@@YAX_KPEAX@Z ENDP			; kybrd_handler
+?AuKeyboardHandler@@YAX_KPEAX@Z ENDP			; AuKeyboardHandler
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\drivers\kybrd.cpp
 _TEXT	SEGMENT
-?kybrd_init@@YAXXZ PROC					; kybrd_init
+?AuKeyboardInitialize@@YAXXZ PROC			; AuKeyboardInitialize
 
-; 60   : void kybrd_init () {
+; 60   : void AuKeyboardInitialize () {
 
 $LN3:
 	sub	rsp, 40					; 00000028H
 
-; 61   : 	AuInterruptSet (1,kybrd_handler,1);
+; 61   : 	AuInterruptSet (1,AuKeyboardHandler,1);
 
 	mov	r8b, 1
-	lea	rdx, OFFSET FLAT:?kybrd_handler@@YAX_KPEAX@Z ; kybrd_handler
+	lea	rdx, OFFSET FLAT:?AuKeyboardHandler@@YAX_KPEAX@Z ; AuKeyboardHandler
 	mov	ecx, 1
 	call	AuInterruptSet
 
@@ -166,6 +166,6 @@ $LN3:
 
 	add	rsp, 40					; 00000028H
 	ret	0
-?kybrd_init@@YAXXZ ENDP					; kybrd_init
+?AuKeyboardInitialize@@YAXXZ ENDP			; AuKeyboardInitialize
 _TEXT	ENDS
 END

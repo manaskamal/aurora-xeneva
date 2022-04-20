@@ -149,7 +149,7 @@ void allocate_fd (thread_t *t) {
  * @param procname -- processname
  * @return -- created thread id
  */
-int create_process(const char* filename, char* procname) {
+int AuCreateProcess(const char* filename, char* procname) {
 	//!allocate a data-structure for process 
 	process_t *process = (process_t*)malloc(sizeof(process_t)); //pmmngr_alloc();
 	memset(process, 0,sizeof(process_t));

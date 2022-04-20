@@ -545,6 +545,9 @@
     <ClCompile Include="audrv.cpp">
       <Filter>source</Filter>
     </ClCompile>
+    <ClCompile Include="_crt.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <NASM Include="arch\x86_64\interrupts.asm">

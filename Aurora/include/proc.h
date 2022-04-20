@@ -60,7 +60,7 @@ extern uint64_t* create_inc_stack (uint64_t* cr3);
  * @param procname -- processname
  * @return -- created thread id
  */
-extern int create_process(const char* filename, char* procname);
+extern int AuCreateProcess(const char* filename, char* procname);
 
 /**
  * kill_process -- kills the current process
