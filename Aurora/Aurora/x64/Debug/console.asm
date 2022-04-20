@@ -31,8 +31,8 @@ PUBLIC	?AuIsConsoleInitialized@@YA_NXZ			; AuIsConsoleInitialized
 PUBLIC	?fb_write@@YAXPEAU_vfs_node_@@PEAEI@Z		; fb_write
 PUBLIC	?fb_io_query@@YAHPEAU_vfs_node_@@HPEAX@Z	; fb_io_query
 PUBLIC	?console_pixel@@YAXIII@Z			; console_pixel
-EXTRN	?AuPmmngrAllocBlocks@@YAPEAXH@Z:PROC		; AuPmmngrAllocBlocks
-EXTRN	?memset@@YAXPEAXEI@Z:PROC			; memset
+EXTRN	AuPmmngrAllocBlocks:PROC
+EXTRN	memset:PROC
 EXTRN	memcpy:PROC
 EXTRN	?fat32_open@@YA?AU_vfs_node_@@PEAU1@PEAD@Z:PROC	; fat32_open
 EXTRN	?fat32_read_file@@YAXPEAU_vfs_node_@@PEA_KI@Z:PROC ; fat32_read_file
@@ -772,7 +772,7 @@ $LN3:
 ; 52   : 	uint64_t* buffer = (uint64_t*)AuPmmngrAllocBlocks(2);
 
 	mov	ecx, 2
-	call	?AuPmmngrAllocBlocks@@YAPEAXH@Z		; AuPmmngrAllocBlocks
+	call	AuPmmngrAllocBlocks
 	mov	QWORD PTR buffer$[rsp], rax
 
 ; 53   : 	memset(buffer, 0, 8192);
@@ -780,7 +780,7 @@ $LN3:
 	mov	r8d, 8192				; 00002000H
 	xor	edx, edx
 	mov	rcx, QWORD PTR buffer$[rsp]
-	call	?memset@@YAXPEAXEI@Z			; memset
+	call	memset
 
 ; 54   : 	vfs_node_t file = fat32_open(NULL, "/font.psf");
 

@@ -6,8 +6,8 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 PUBLIC	?fat32_to_dos_file_name@@YAXPEBDPEADI@Z		; fat32_to_dos_file_name
-EXTRN	?strlen@@YA_KPEBD@Z:PROC			; strlen
-EXTRN	?memset@@YAXPEAXEI@Z:PROC			; memset
+EXTRN	strlen:PROC
+EXTRN	memset:PROC
 pdata	SEGMENT
 $pdata$?fat32_to_dos_file_name@@YAXPEBDPEADI@Z DD imagerel $LN23
 	DD	imagerel $LN23+511
@@ -73,7 +73,7 @@ $LN15@fat32_to_d:
 	mov	r8d, DWORD PTR fname_length$[rsp]
 	mov	dl, 32					; 00000020H
 	mov	rcx, QWORD PTR fname$[rsp]
-	call	?memset@@YAXPEAXEI@Z			; memset
+	call	memset
 
 ; 57   : 
 ; 58   : 	for (i=0; i < strlen (filename)-1 && i < fname_length; i++)
@@ -88,7 +88,7 @@ $LN13@fat32_to_d:
 	mov	eax, DWORD PTR i$[rsp]
 	mov	QWORD PTR tv71[rsp], rax
 	mov	rcx, QWORD PTR filename$[rsp]
-	call	?strlen@@YA_KPEBD@Z			; strlen
+	call	strlen
 	dec	rax
 	mov	rcx, QWORD PTR tv71[rsp]
 	cmp	rcx, rax

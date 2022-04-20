@@ -55,12 +55,12 @@ EXTRN	outportb:PROC
 EXTRN	AuInterruptEnd:PROC
 EXTRN	AuInterruptSet:PROC
 EXTRN	AuIrqMask:PROC
-EXTRN	?strcpy@@YAPEADPEADPEBD@Z:PROC			; strcpy
-EXTRN	?memset@@YAXPEAXEI@Z:PROC			; memset
+EXTRN	strcpy:PROC
+EXTRN	memset:PROC
 EXTRN	memcpy:PROC
 EXTRN	printf:PROC
 EXTRN	vfs_mount:PROC
-EXTRN	?malloc@@YAPEAX_K@Z:PROC			; malloc
+EXTRN	malloc:PROC
 EXTRN	AuGetScreenWidth:PROC
 EXTRN	AuGetScreenHeight:PROC
 EXTRN	?dwm_put_message@@YAXPEAU_dwm_message_@@@Z:PROC	; dwm_put_message
@@ -125,7 +125,7 @@ $LN3:
 ; 209  : 	vfs_node_t *node = (vfs_node_t*)malloc(sizeof(vfs_node_t));
 
 	mov	ecx, 104				; 00000068H
-	call	?malloc@@YAPEAX_K@Z			; malloc
+	call	malloc
 	mov	QWORD PTR node$[rsp], rax
 
 ; 210  : 	strcpy (node->filename, "mouse");
@@ -133,7 +133,7 @@ $LN3:
 	mov	rax, QWORD PTR node$[rsp]
 	lea	rdx, OFFSET FLAT:$SG3591
 	mov	rcx, rax
-	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
+	call	strcpy
 
 ; 211  : 	node->size = 0;
 
@@ -742,7 +742,7 @@ $LN1@mouse_hand:
 	mov	r8d, 3
 	xor	edx, edx
 	lea	rcx, OFFSET FLAT:?curr_button@@3PAEA	; curr_button
-	call	?memset@@YAXPEAXEI@Z			; memset
+	call	memset
 $LN12@mouse_hand:
 $read_next$28:
 

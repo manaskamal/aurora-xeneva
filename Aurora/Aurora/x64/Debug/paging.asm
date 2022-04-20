@@ -24,15 +24,15 @@ PUBLIC	?AuGetPhysicalAddress@@YAPEA_K_K@Z		; AuGetPhysicalAddress
 PUBLIC	AuGetFreePage
 PUBLIC	?AuGetRootPageTable@@YAPEA_KXZ			; AuGetRootPageTable
 PUBLIC	AuFreePages
-EXTRN	?AuPmmngrAlloc@@YAPEAXXZ:PROC			; AuPmmngrAlloc
-EXTRN	?AuPmmngrFree@@YAXPEAX@Z:PROC			; AuPmmngrFree
+EXTRN	AuPmmngrAlloc:PROC
+EXTRN	AuPmmngrFree:PROC
 EXTRN	?AuPmmngrMoveHigher@@YAXXZ:PROC			; AuPmmngrMoveHigher
-EXTRN	?p2v@@YA_K_K@Z:PROC				; p2v
+EXTRN	p2v:PROC
 EXTRN	x64_mfence:PROC
 EXTRN	x64_read_cr3:PROC
 EXTRN	x64_write_cr3:PROC
 EXTRN	flush_tlb:PROC
-EXTRN	?memset@@YAXPEAXEI@Z:PROC			; memset
+EXTRN	memset:PROC
 pdata	SEGMENT
 $pdata$?AuPagingInit@@YAXXZ DD imagerel $LN12
 	DD	imagerel $LN12+379
@@ -259,7 +259,7 @@ $LN2@AuFreePage:
 ; 241  : 			AuPmmngrFree(page);
 
 	mov	rcx, QWORD PTR page$3[rsp]
-	call	?AuPmmngrFree@@YAXPEAX@Z		; AuPmmngrFree
+	call	AuPmmngrFree
 $LN1@AuFreePage:
 
 ; 242  : 
@@ -359,7 +359,7 @@ $LN7@AuGetFreeP:
 
 	call	x64_read_cr3
 	mov	rcx, rax
-	call	?p2v@@YA_K_K@Z				; p2v
+	call	p2v
 	mov	QWORD PTR pml4$[rsp], rax
 $LN6@AuGetFreeP:
 
@@ -389,7 +389,7 @@ $LN4@AuGetFreeP:
 	call	?pml4_index@@YA_K_K@Z			; pml4_index
 	mov	rcx, QWORD PTR pml4$[rsp]
 	mov	rcx, QWORD PTR [rcx+rax*8]
-	call	?p2v@@YA_K_K@Z				; p2v
+	call	p2v
 	and	rax, -4096				; fffffffffffff000H
 	mov	QWORD PTR pdpt$1[rsp], rax
 
@@ -416,7 +416,7 @@ $LN3@AuGetFreeP:
 	call	?pdp_index@@YA_K_K@Z			; pdp_index
 	mov	rcx, QWORD PTR pdpt$1[rsp]
 	mov	rcx, QWORD PTR [rcx+rax*8]
-	call	?p2v@@YA_K_K@Z				; p2v
+	call	p2v
 	and	rax, -4096				; fffffffffffff000H
 	mov	QWORD PTR pd$2[rsp], rax
 
@@ -443,7 +443,7 @@ $LN2@AuGetFreeP:
 	call	?pd_index@@YA_K_K@Z			; pd_index
 	mov	rcx, QWORD PTR pd$2[rsp]
 	mov	rcx, QWORD PTR [rcx+rax*8]
-	call	?p2v@@YA_K_K@Z				; p2v
+	call	p2v
 	and	rax, -4096				; fffffffffffff000H
 	mov	QWORD PTR pt$3[rsp], rax
 
@@ -590,9 +590,9 @@ $LN9:
 
 ; 328  : 	uint64_t *new_cr3 = (uint64_t*)p2v((size_t)AuPmmngrAlloc());
 
-	call	?AuPmmngrAlloc@@YAPEAXXZ		; AuPmmngrAlloc
+	call	AuPmmngrAlloc
 	mov	rcx, rax
-	call	?p2v@@YA_K_K@Z				; p2v
+	call	p2v
 	mov	QWORD PTR new_cr3$[rsp], rax
 
 ; 329  : 	memset(new_cr3,0,4096);
@@ -600,7 +600,7 @@ $LN9:
 	mov	r8d, 4096				; 00001000H
 	xor	edx, edx
 	mov	rcx, QWORD PTR new_cr3$[rsp]
-	call	?memset@@YAXPEAXEI@Z			; memset
+	call	memset
 
 ; 330  : 
 ; 331  : 	//! For now, copy the 4 GiB identity mapping from old pml4
@@ -796,7 +796,7 @@ $LN2@AuUnmapPag:
 ; 201  : 		AuPmmngrFree(page);
 
 	mov	rcx, QWORD PTR page$[rsp]
-	call	?AuPmmngrFree@@YAXPEAX@Z		; AuPmmngrFree
+	call	AuPmmngrFree
 $LN1@AuUnmapPag:
 
 ; 202  : }
@@ -908,7 +908,7 @@ $LN2@AuUnmapPag:
 ; 220  : 		AuPmmngrFree(page);
 
 	mov	rcx, QWORD PTR page$[rsp]
-	call	?AuPmmngrFree@@YAXPEAX@Z		; AuPmmngrFree
+	call	AuPmmngrFree
 $LN1@AuUnmapPag:
 
 ; 221  : 
@@ -1014,7 +1014,7 @@ $LN5@AuMapPageE:
 
 ; 280  : 		const uint64_t page = (uint64_t)AuPmmngrAlloc();
 
-	call	?AuPmmngrAlloc@@YAPEAXXZ		; AuPmmngrAlloc
+	call	AuPmmngrAlloc
 	mov	QWORD PTR page$1[rsp], rax
 
 ; 281  : 		pml4i[i4] = page | flags;
@@ -1030,7 +1030,7 @@ $LN5@AuMapPageE:
 ; 282  : 		clear((void*)p2v(page));
 
 	mov	rcx, QWORD PTR page$1[rsp]
-	call	?p2v@@YA_K_K@Z				; p2v
+	call	p2v
 	mov	rcx, rax
 	call	?clear@@YAXPEAX@Z			; clear
 
@@ -1050,7 +1050,7 @@ $LN4@AuMapPageE:
 	movsxd	rax, DWORD PTR i4$[rsp]
 	mov	rcx, QWORD PTR pml4i$[rsp]
 	mov	rcx, QWORD PTR [rcx+rax*8]
-	call	?p2v@@YA_K_K@Z				; p2v
+	call	p2v
 	and	rax, -4096				; fffffffffffff000H
 	mov	QWORD PTR pml3$[rsp], rax
 
@@ -1066,7 +1066,7 @@ $LN4@AuMapPageE:
 
 ; 289  : 		const uint64_t page = (uint64_t)AuPmmngrAlloc();
 
-	call	?AuPmmngrAlloc@@YAPEAXXZ		; AuPmmngrAlloc
+	call	AuPmmngrAlloc
 	mov	QWORD PTR page$3[rsp], rax
 
 ; 290  : 		pml3[i3] = page | flags;
@@ -1082,7 +1082,7 @@ $LN4@AuMapPageE:
 ; 291  : 		clear((void*)p2v(page));
 
 	mov	rcx, QWORD PTR page$3[rsp]
-	call	?p2v@@YA_K_K@Z				; p2v
+	call	p2v
 	mov	rcx, rax
 	call	?clear@@YAXPEAX@Z			; clear
 
@@ -1104,7 +1104,7 @@ $LN3@AuMapPageE:
 	movsxd	rax, DWORD PTR i3$[rsp]
 	mov	rcx, QWORD PTR pml3$[rsp]
 	mov	rcx, QWORD PTR [rcx+rax*8]
-	call	?p2v@@YA_K_K@Z				; p2v
+	call	p2v
 	and	rax, -4096				; fffffffffffff000H
 	mov	QWORD PTR pml2$[rsp], rax
 
@@ -1120,7 +1120,7 @@ $LN3@AuMapPageE:
 ; 299  : 
 ; 300  : 		const uint64_t page = (uint64_t)AuPmmngrAlloc();
 
-	call	?AuPmmngrAlloc@@YAPEAXXZ		; AuPmmngrAlloc
+	call	AuPmmngrAlloc
 	mov	QWORD PTR page$2[rsp], rax
 
 ; 301  : 		pml2[i2] = page | flags;
@@ -1136,7 +1136,7 @@ $LN3@AuMapPageE:
 ; 302  : 		clear((void*)p2v(page));
 
 	mov	rcx, QWORD PTR page$2[rsp]
-	call	?p2v@@YA_K_K@Z				; p2v
+	call	p2v
 	mov	rcx, rax
 	call	?clear@@YAXPEAX@Z			; clear
 
@@ -1158,7 +1158,7 @@ $LN2@AuMapPageE:
 	movsxd	rax, DWORD PTR i2$[rsp]
 	mov	rcx, QWORD PTR pml2$[rsp]
 	mov	rcx, QWORD PTR [rcx+rax*8]
-	call	?p2v@@YA_K_K@Z				; p2v
+	call	p2v
 	and	rax, -4096				; fffffffffffff000H
 	mov	QWORD PTR pml1$[rsp], rax
 
@@ -1175,7 +1175,7 @@ $LN2@AuMapPageE:
 ; 311  : 		AuPmmngrFree((void*)physical_address);
 
 	mov	rcx, QWORD PTR physical_address$[rsp]
-	call	?AuPmmngrFree@@YAXPEAX@Z		; AuPmmngrFree
+	call	AuPmmngrFree
 
 ; 312  : 		return false;
 
@@ -1284,7 +1284,7 @@ $LN7:
 
 	call	x64_read_cr3
 	mov	rcx, rax
-	call	?p2v@@YA_K_K@Z				; p2v
+	call	p2v
 	mov	QWORD PTR pml4i$[rsp], rax
 
 ; 136  : 
@@ -1301,7 +1301,7 @@ $LN7:
 ; 139  : 		
 ; 140  : 		const uint64_t page = (uint64_t)AuPmmngrAlloc();
 
-	call	?AuPmmngrAlloc@@YAPEAXXZ		; AuPmmngrAlloc
+	call	AuPmmngrAlloc
 	mov	QWORD PTR page$1[rsp], rax
 
 ; 141  : 		pml4i[i4] = page | flags;
@@ -1317,7 +1317,7 @@ $LN7:
 ; 142  : 		clear((void*)p2v(page));
 
 	mov	rcx, QWORD PTR page$1[rsp]
-	call	?p2v@@YA_K_K@Z				; p2v
+	call	p2v
 	mov	rcx, rax
 	call	?clear@@YAXPEAX@Z			; clear
 
@@ -1337,7 +1337,7 @@ $LN4@AuMapPage:
 	movsxd	rax, DWORD PTR i4$[rsp]
 	mov	rcx, QWORD PTR pml4i$[rsp]
 	mov	rcx, QWORD PTR [rcx+rax*8]
-	call	?p2v@@YA_K_K@Z				; p2v
+	call	p2v
 	and	rax, -4096				; fffffffffffff000H
 	mov	QWORD PTR pml3$[rsp], rax
 
@@ -1355,7 +1355,7 @@ $LN4@AuMapPage:
 ; 150  : 		
 ; 151  : 		const uint64_t page = (uint64_t)AuPmmngrAlloc();
 
-	call	?AuPmmngrAlloc@@YAPEAXXZ		; AuPmmngrAlloc
+	call	AuPmmngrAlloc
 	mov	QWORD PTR page$3[rsp], rax
 
 ; 152  : 		pml3[i3] = page | flags;
@@ -1371,7 +1371,7 @@ $LN4@AuMapPage:
 ; 153  : 		clear((void*)p2v(page));
 
 	mov	rcx, QWORD PTR page$3[rsp]
-	call	?p2v@@YA_K_K@Z				; p2v
+	call	p2v
 	mov	rcx, rax
 	call	?clear@@YAXPEAX@Z			; clear
 
@@ -1394,7 +1394,7 @@ $LN3@AuMapPage:
 	movsxd	rax, DWORD PTR i3$[rsp]
 	mov	rcx, QWORD PTR pml3$[rsp]
 	mov	rcx, QWORD PTR [rcx+rax*8]
-	call	?p2v@@YA_K_K@Z				; p2v
+	call	p2v
 	and	rax, -4096				; fffffffffffff000H
 	mov	QWORD PTR pml2$[rsp], rax
 
@@ -1411,7 +1411,7 @@ $LN3@AuMapPage:
 ; 163  : 	{
 ; 164  : 		const uint64_t page = (uint64_t)AuPmmngrAlloc();
 
-	call	?AuPmmngrAlloc@@YAPEAXXZ		; AuPmmngrAlloc
+	call	AuPmmngrAlloc
 	mov	QWORD PTR page$2[rsp], rax
 
 ; 165  : 		pml2[i2] = page | flags;
@@ -1427,7 +1427,7 @@ $LN3@AuMapPage:
 ; 166  : 		clear((void*)p2v(page));
 
 	mov	rcx, QWORD PTR page$2[rsp]
-	call	?p2v@@YA_K_K@Z				; p2v
+	call	p2v
 	mov	rcx, rax
 	call	?clear@@YAXPEAX@Z			; clear
 
@@ -1449,7 +1449,7 @@ $LN2@AuMapPage:
 	movsxd	rax, DWORD PTR i2$[rsp]
 	mov	rcx, QWORD PTR pml2$[rsp]
 	mov	rcx, QWORD PTR [rcx+rax*8]
-	call	?p2v@@YA_K_K@Z				; p2v
+	call	p2v
 	and	rax, -4096				; fffffffffffff000H
 	mov	QWORD PTR pml1$[rsp], rax
 
@@ -1466,7 +1466,7 @@ $LN2@AuMapPage:
 ; 175  : 		AuPmmngrFree((void*)physical_address);
 
 	mov	rcx, QWORD PTR physical_address$[rsp]
-	call	?AuPmmngrFree@@YAXPEAX@Z		; AuPmmngrFree
+	call	AuPmmngrFree
 
 ; 176  : 		return false;
 
@@ -1531,7 +1531,7 @@ $LN12:
 
 ; 90   : 	uint64_t *new_cr3 = (uint64_t*)AuPmmngrAlloc();    
 
-	call	?AuPmmngrAlloc@@YAPEAXXZ		; AuPmmngrAlloc
+	call	AuPmmngrAlloc
 	mov	QWORD PTR new_cr3$[rsp], rax
 
 ; 91   : 
@@ -1540,7 +1540,7 @@ $LN12:
 	mov	r8d, 4096				; 00001000H
 	xor	edx, edx
 	mov	rcx, QWORD PTR new_cr3$[rsp]
-	call	?memset@@YAXPEAXEI@Z			; memset
+	call	memset
 
 ; 93   : 
 ; 94   : 	//! Copy all higher half mappings to new mapping
@@ -1607,7 +1607,7 @@ $LN7@AuPagingIn:
 ; 106  : 
 ; 107  : 	uint64_t* pdpt = (uint64_t*)AuPmmngrAlloc();
 
-	call	?AuPmmngrAlloc@@YAPEAXXZ		; AuPmmngrAlloc
+	call	AuPmmngrAlloc
 	mov	QWORD PTR pdpt$[rsp], rax
 
 ; 108  : 	memset(pdpt, 0, 4096);
@@ -1615,7 +1615,7 @@ $LN7@AuPagingIn:
 	mov	r8d, 4096				; 00001000H
 	xor	edx, edx
 	mov	rcx, QWORD PTR pdpt$[rsp]
-	call	?memset@@YAXPEAXEI@Z			; memset
+	call	memset
 
 ; 109  : 
 ; 110  : 	new_cr3[pml4_index(PHYSICAL_MEMORY_BASE)] = (uint64_t)pdpt | PAGING_PRESENT | PAGING_WRITABLE;

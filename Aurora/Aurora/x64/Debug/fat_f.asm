@@ -18,18 +18,18 @@ CONST	ENDS
 PUBLIC	?fat32_make_file@@YAPEAU_vfs_node_@@IPEADI@Z	; fat32_make_file
 PUBLIC	?fat32_write_file@@YAXPEAU_vfs_node_@@PEAEI@Z	; fat32_write_file
 PUBLIC	?fat32_write_content@@YAXIPEAEI@Z		; fat32_write_content
-EXTRN	?strcpy@@YAPEADPEADPEBD@Z:PROC			; strcpy
-EXTRN	?memset@@YAXPEAXEI@Z:PROC			; memset
+EXTRN	strcpy:PROC
+EXTRN	memset:PROC
 EXTRN	memcpy:PROC
 EXTRN	?fat32_to_dos_file_name@@YAXPEBDPEADI@Z:PROC	; fat32_to_dos_file_name
 EXTRN	?fat32_find_free_cluster@@YAIXZ:PROC		; fat32_find_free_cluster
 EXTRN	?fat32_alloc_cluster@@YAXHI@Z:PROC		; fat32_alloc_cluster
 EXTRN	?fat32_get_root_cluster@@YAIXZ:PROC		; fat32_get_root_cluster
 EXTRN	?fat32_get_sector_per_cluster@@YA_KXZ:PROC	; fat32_get_sector_per_cluster
-EXTRN	?AuPmmngrAlloc@@YAPEAXXZ:PROC			; AuPmmngrAlloc
-EXTRN	?AuPmmngrFree@@YAXPEAX@Z:PROC			; AuPmmngrFree
-EXTRN	?malloc@@YAPEAX_K@Z:PROC			; malloc
-EXTRN	?free@@YAXPEAX@Z:PROC				; free
+EXTRN	AuPmmngrAlloc:PROC
+EXTRN	AuPmmngrFree:PROC
+EXTRN	malloc:PROC
+EXTRN	free:PROC
 EXTRN	?ahci_disk_write@@YAXPEAU_hba_port_@@_KIPEA_K@Z:PROC ; ahci_disk_write
 EXTRN	?ahci_disk_read@@YAXPEAU_hba_port_@@_KIPEA_K@Z:PROC ; ahci_disk_read
 EXTRN	?ahci_disk_get_port@@YAPEAU_hba_port_@@XZ:PROC	; ahci_disk_get_port
@@ -128,7 +128,7 @@ $LN11@fat32_writ:
 ; 146  : 
 ; 147  : 	uint64_t* ahci_buff = (uint64_t*)AuPmmngrAlloc();
 
-	call	?AuPmmngrAlloc@@YAPEAXXZ		; AuPmmngrAlloc
+	call	AuPmmngrAlloc
 	mov	QWORD PTR ahci_buff$[rsp], rax
 
 ; 148  : 	memset(ahci_buff, 0, 4096);
@@ -136,7 +136,7 @@ $LN11@fat32_writ:
 	mov	r8d, 4096				; 00001000H
 	xor	edx, edx
 	mov	rcx, QWORD PTR ahci_buff$[rsp]
-	call	?memset@@YAXPEAXEI@Z			; memset
+	call	memset
 
 ; 149  : 	
 ; 150  : 
@@ -232,7 +232,7 @@ $LN5@fat32_writ:
 ; 165  : 	AuPmmngrFree(ahci_buff);
 
 	mov	rcx, QWORD PTR ahci_buff$[rsp]
-	call	?AuPmmngrFree@@YAXPEAX@Z		; AuPmmngrFree
+	call	AuPmmngrFree
 
 ; 166  : }
 
@@ -416,7 +416,7 @@ $LN14:
 ; 62   : 	vfs_node_t *file = (vfs_node_t*)malloc(sizeof(vfs_node_t));
 
 	mov	ecx, 104				; 00000068H
-	call	?malloc@@YAPEAX_K@Z			; malloc
+	call	malloc
 	mov	QWORD PTR file$[rsp], rax
 
 ; 63   : 	memset(file, 0, sizeof(vfs_node_t));
@@ -424,13 +424,13 @@ $LN14:
 	mov	r8d, 104				; 00000068H
 	xor	edx, edx
 	mov	rcx, QWORD PTR file$[rsp]
-	call	?memset@@YAXPEAXEI@Z			; memset
+	call	memset
 
 ; 64   : 
 ; 65   : 
 ; 66   : 	uint64_t* buff = (uint64_t*)AuPmmngrAlloc();
 
-	call	?AuPmmngrAlloc@@YAPEAXXZ		; AuPmmngrAlloc
+	call	AuPmmngrAlloc
 	mov	QWORD PTR buff$[rsp], rax
 
 ; 67   : 	memset(buff, 0, 4096);
@@ -438,7 +438,7 @@ $LN14:
 	mov	r8d, 4096				; 00001000H
 	xor	edx, edx
 	mov	rcx, QWORD PTR buff$[rsp]
-	call	?memset@@YAXPEAXEI@Z			; memset
+	call	memset
 
 ; 68   : 
 ; 69   : 	bool is_parent_root = false;
@@ -458,7 +458,7 @@ $LN14:
 	mov	r8d, 11
 	xor	edx, edx
 	lea	rcx, QWORD PTR fname$[rsp]
-	call	?memset@@YAXPEAXEI@Z			; memset
+	call	memset
 
 ; 75   : 	fat32_to_dos_file_name (filename, fname, 11);
 
@@ -503,7 +503,7 @@ $LN10@fat32_make:
 	mov	r8d, 4096				; 00001000H
 	xor	edx, edx
 	mov	rcx, QWORD PTR buff$[rsp]
-	call	?memset@@YAXPEAXEI@Z			; memset
+	call	memset
 
 ; 83   : 		ahci_disk_read (ahci_disk_get_port(), cluster_to_sector32(parent_clust) + j, 1,buff);
 
@@ -664,7 +664,7 @@ $LN3@fat32_make:
 ; 106  : 				AuPmmngrFree(buffer);
 
 	mov	rcx, QWORD PTR buffer$5[rsp]
-	call	?AuPmmngrFree@@YAXPEAX@Z		; AuPmmngrFree
+	call	AuPmmngrFree
 
 ; 107  : 
 ; 108  : 				strcpy (file->filename,fname);
@@ -672,7 +672,7 @@ $LN3@fat32_make:
 	mov	rax, QWORD PTR file$[rsp]
 	lea	rdx, QWORD PTR fname$[rsp]
 	mov	rcx, rax
-	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
+	call	strcpy
 
 ; 109  : 				file->size = dirent->file_size;
 
@@ -760,7 +760,7 @@ $LN2@fat32_make:
 ; 125  : 		free (file);
 
 	mov	rcx, QWORD PTR file$[rsp]
-	call	?free@@YAXPEAX@Z			; free
+	call	free
 
 ; 126  : 		return NULL;
 

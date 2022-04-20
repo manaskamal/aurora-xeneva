@@ -14,8 +14,8 @@ EXTRN	inportb:PROC
 EXTRN	AuInterruptEnd:PROC
 EXTRN	AuInterruptSet:PROC
 EXTRN	printf:PROC
-EXTRN	?AuPmmngrAlloc@@YAPEAXXZ:PROC			; AuPmmngrAlloc
-EXTRN	?AuPmmngrFree@@YAXPEAX@Z:PROC			; AuPmmngrFree
+EXTRN	AuPmmngrAlloc:PROC
+EXTRN	AuPmmngrFree:PROC
 EXTRN	?is_scheduler_initialized@@YA_NXZ:PROC		; is_scheduler_initialized
 EXTRN	?message_send@@YAXGPEAU_message_@@@Z:PROC	; message_send
 pdata	SEGMENT
@@ -82,7 +82,7 @@ $LN6:
 
 ; 31   : 			message_t *msg = (message_t*)AuPmmngrAlloc();
 
-	call	?AuPmmngrAlloc@@YAPEAXXZ		; AuPmmngrAlloc
+	call	AuPmmngrAlloc
 	mov	QWORD PTR msg$2[rsp], rax
 
 ; 32   : 			msg->type = 3;
@@ -106,7 +106,7 @@ $LN6:
 ; 35   : 			AuPmmngrFree (msg);
 
 	mov	rcx, QWORD PTR msg$2[rsp]
-	call	?AuPmmngrFree@@YAXPEAX@Z		; AuPmmngrFree
+	call	AuPmmngrFree
 
 ; 36   : 		} else {
 

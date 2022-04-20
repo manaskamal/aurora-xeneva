@@ -41,16 +41,16 @@ PUBLIC	?ttype_master_read@@YAXPEAU_vfs_node_@@PEA_KI@Z	; ttype_master_read
 PUBLIC	?ttype_master_write@@YAXPEAU_vfs_node_@@PEAEI@Z	; ttype_master_write
 PUBLIC	?ttype_slave_read@@YAXPEAU_vfs_node_@@PEA_KI@Z	; ttype_slave_read
 PUBLIC	?ttype_slave_write@@YAXPEAU_vfs_node_@@PEAEI@Z	; ttype_slave_write
-EXTRN	?strcpy@@YAPEADPEADPEBD@Z:PROC			; strcpy
-EXTRN	?memset@@YAXPEAXEI@Z:PROC			; memset
+EXTRN	strcpy:PROC
+EXTRN	memset:PROC
 EXTRN	vfs_mount:PROC
 EXTRN	?circ_buf_init@@YAPEAU_circ_buf_@@PEAE_K@Z:PROC	; circ_buf_init
-EXTRN	?AuPmmngrAlloc@@YAPEAXXZ:PROC			; AuPmmngrAlloc
-EXTRN	?AuPmmngrFree@@YAXPEAX@Z:PROC			; AuPmmngrFree
+EXTRN	AuPmmngrAlloc:PROC
+EXTRN	AuPmmngrFree:PROC
 EXTRN	?pmmngr_get_used_ram@@YA_KXZ:PROC		; pmmngr_get_used_ram
 EXTRN	?pmmngr_get_total_ram@@YA_KXZ:PROC		; pmmngr_get_total_ram
 EXTRN	x64_cli:PROC
-EXTRN	?malloc@@YAPEAX_K@Z:PROC			; malloc
+EXTRN	malloc:PROC
 EXTRN	?sztoa@@YAPEAD_KPEADH@Z:PROC			; sztoa
 EXTRN	?get_current_thread@@YAPEAU_thread_@@XZ:PROC	; get_current_thread
 EXTRN	?thread_iterate_ready_list@@YAPEAU_thread_@@G@Z:PROC ; thread_iterate_ready_list
@@ -395,7 +395,7 @@ $LN1@ttype_dele:
 ; 92   : 	AuPmmngrFree(tty);
 
 	mov	rcx, QWORD PTR tty$[rsp]
-	call	?AuPmmngrFree@@YAXPEAX@Z		; AuPmmngrFree
+	call	AuPmmngrFree
 $LN6@ttype_dele:
 
 ; 93   : }
@@ -652,13 +652,13 @@ $LN3:
 ; 229  : 	ttype_t *tty= (ttype_t*)malloc(sizeof(ttype_t));  //pmmngr_alloc();
 
 	mov	ecx, 120				; 00000078H
-	call	?malloc@@YAPEAX_K@Z			; malloc
+	call	malloc
 	mov	QWORD PTR tty$[rsp], rax
 
 ; 230  : 
 ; 231  : 	void* inbuffer = AuPmmngrAlloc();
 
-	call	?AuPmmngrAlloc@@YAPEAXXZ		; AuPmmngrAlloc
+	call	AuPmmngrAlloc
 	mov	QWORD PTR inbuffer$[rsp], rax
 
 ; 232  : 	memset(inbuffer, 0, 4096);
@@ -666,11 +666,11 @@ $LN3:
 	mov	r8d, 4096				; 00001000H
 	xor	edx, edx
 	mov	rcx, QWORD PTR inbuffer$[rsp]
-	call	?memset@@YAXPEAXEI@Z			; memset
+	call	memset
 
 ; 233  : 	void* outbuffer = AuPmmngrAlloc();
 
-	call	?AuPmmngrAlloc@@YAPEAXXZ		; AuPmmngrAlloc
+	call	AuPmmngrAlloc
 	mov	QWORD PTR outbuffer$[rsp], rax
 
 ; 234  : 	memset(outbuffer, 0, 4096);
@@ -678,7 +678,7 @@ $LN3:
 	mov	r8d, 4096				; 00001000H
 	xor	edx, edx
 	mov	rcx, QWORD PTR outbuffer$[rsp]
-	call	?memset@@YAXPEAXEI@Z			; memset
+	call	memset
 
 ; 235  : 
 ; 236  : 	tty->in_buffer = circ_buf_init((uint8_t*)inbuffer,4095);
@@ -713,14 +713,14 @@ $LN3:
 
 	lea	rdx, OFFSET FLAT:$SG3492
 	lea	rcx, QWORD PTR mname$[rsp]
-	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
+	call	strcpy
 
 ; 246  : 	strcpy (mname+5, "ttym");
 
 	lea	rax, QWORD PTR mname$[rsp+5]
 	lea	rdx, OFFSET FLAT:$SG3493
 	mov	rcx, rax
-	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
+	call	strcpy
 
 ; 247  : 	sztoa (master_count,mname+9,10);
 
@@ -737,7 +737,7 @@ $LN3:
 ; 252  : 	vfs_node_t *mn = (vfs_node_t*)malloc(sizeof(vfs_node_t));  //pmmngr_alloc();
 
 	mov	ecx, 104				; 00000068H
-	call	?malloc@@YAPEAX_K@Z			; malloc
+	call	malloc
 	mov	QWORD PTR mn$[rsp], rax
 
 ; 253  : 	strcpy(mn->filename, mname+5);
@@ -745,7 +745,7 @@ $LN3:
 	lea	rax, QWORD PTR mname$[rsp+5]
 	mov	rcx, QWORD PTR mn$[rsp]
 	mov	rdx, rax
-	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
+	call	strcpy
 
 ; 254  : 	mn->size = 0;
 
@@ -823,14 +823,14 @@ $LN3:
 
 	lea	rdx, OFFSET FLAT:$SG3499
 	lea	rcx, QWORD PTR sname$[rsp]
-	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
+	call	strcpy
 
 ; 271  : 	strcpy (sname+5, "ttys");
 
 	lea	rax, QWORD PTR sname$[rsp+5]
 	lea	rdx, OFFSET FLAT:$SG3500
 	mov	rcx, rax
-	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
+	call	strcpy
 
 ; 272  : 	sztoa (slave_count,sname+9,10);
 
@@ -844,7 +844,7 @@ $LN3:
 ; 274  : 	vfs_node_t *sn = (vfs_node_t*)malloc(sizeof(vfs_node_t));
 
 	mov	ecx, 104				; 00000068H
-	call	?malloc@@YAPEAX_K@Z			; malloc
+	call	malloc
 	mov	QWORD PTR sn$[rsp], rax
 
 ; 275  : 	strcpy(sn->filename, sname);
@@ -852,7 +852,7 @@ $LN3:
 	mov	rax, QWORD PTR sn$[rsp]
 	lea	rdx, QWORD PTR sname$[rsp]
 	mov	rcx, rax
-	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
+	call	strcpy
 
 ; 276  : 	sn->size = 0;
 

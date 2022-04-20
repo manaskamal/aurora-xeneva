@@ -35,6 +35,7 @@
 #include <string.h>
 #include <arch\x86_64\mmngr\paging.h>
 #include <pmmngr.h>
+#include <aurora.h>
 
 /* Meta data magic */
 #define MAGIC_USED  0x12112002
@@ -74,26 +75,26 @@ extern void au_free_page(void* ptr, int pages);
 * kmalloc -- allocate a small chunk of memory
 * @param size -- size in bytes
 */
-extern void* malloc(size_t size);
+AU_EXTERN AU_EXPORT void* malloc(size_t size);
 
 /*
 * free up a pointer
 *@param ptr -- pointer to the address block to free
 */
-extern void free(void* ptr);
+AU_EXTERN AU_EXPORT void free(void* ptr);
 
 /*
 * krealloc -- reallocate a block from the old block
 * @param ptr -- pointer to the old block
 * @param new_size -- size of the new block
 */
-extern void* realloc(void* ptr, size_t new_size);
+AU_EXTERN AU_EXPORT void* realloc(void* ptr, size_t new_size);
 
 /*
 * kcalloc -- allocates a memory filled with zeroes
 * @param n_item -- number of items
 * @param size -- size of each items
 */
-extern void* calloc(size_t n_item, size_t size);
+AU_EXTERN AU_EXPORT void* calloc(size_t n_item, size_t size);
 
 #endif

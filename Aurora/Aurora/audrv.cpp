@@ -167,24 +167,28 @@ void AuGetDriverName (uint32_t vendor_id, uint32_t device_id,uint8_t* buffer,int
  */
 void AuDriverLoad (char* filename, aurora_driver_t *driver) {
 	int next_base_offset = 0;
+	uint64_t* virtual_base = (uint64_t*)driver_load_base;
+
 	vfs_node_t file = fat32_open(NULL, filename);
 	uint64_t* buffer = (uint64_t*)AuPmmngrAlloc();
 	memset(buffer, 0, 4096);
 	fat32_read(&file, buffer);
 	AuMapPage((uint64_t)buffer,driver_load_base,0);
-	next_base_offset++;
+	next_base_offset = 1;
 	
+
 	while(file.eof != 1) {
 		uint64_t* block = (uint64_t*)AuPmmngrAlloc();
+		memset(block, 0, 4096);
 		fat32_read (&file,block);
-		AuMapPage((uint64_t)block,driver_load_base + next_base_offset * 4096, 0);
+		AuMapPage((uint64_t)block,(driver_load_base + next_base_offset * 4096), 0);
 		next_base_offset++;
 	}
 
 
 	void* entry_addr = AuGetProcAddress((void*)driver_load_base,"AuDriverMain");
-	
-	AuPeLinkLibrary(buffer);
+
+	AuPeLinkLibrary(virtual_base);
 	driver->entry = (au_drv_entry)entry_addr;
 	driver->base = AU_DRIVER_BASE_START;
 	driver->end = driver->base + file.size;

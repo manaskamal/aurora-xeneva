@@ -60,10 +60,10 @@ PUBLIC	?thread_delete_block@@YAXPEAU_thread_@@@Z	; thread_delete_block
 PUBLIC	?idle_thread@@YAXXZ				; idle_thread
 PUBLIC	?next_task@@YAXXZ				; next_task
 PUBLIC	?scheduler_isr@@YAX_KPEAX@Z			; scheduler_isr
-EXTRN	?memset@@YAXPEAXEI@Z:PROC			; memset
-EXTRN	?AuPmmngrAlloc@@YAPEAXXZ:PROC			; AuPmmngrAlloc
-EXTRN	?p2v@@YA_K_K@Z:PROC				; p2v
-EXTRN	?v2p@@YA_K_K@Z:PROC				; v2p
+EXTRN	memset:PROC
+EXTRN	AuPmmngrAlloc:PROC
+EXTRN	p2v:PROC
+EXTRN	v2p:PROC
 EXTRN	x64_cli:PROC
 EXTRN	x64_sti:PROC
 EXTRN	x64_read_cr3:PROC
@@ -72,7 +72,7 @@ EXTRN	x64_fxrstor:PROC
 EXTRN	?setvect@@YAX_KP6AX0PEAX@Z@Z:PROC		; setvect
 EXTRN	?is_cpu_fxsave_supported@@YA_NXZ:PROC		; is_cpu_fxsave_supported
 EXTRN	?AuMapPageEx@@YA_NPEA_K_K1E@Z:PROC		; AuMapPageEx
-EXTRN	?malloc@@YAPEAX_K@Z:PROC			; malloc
+EXTRN	malloc:PROC
 EXTRN	save_context:PROC
 EXTRN	execute_idle:PROC
 EXTRN	get_kernel_tss:PROC
@@ -1282,7 +1282,7 @@ $LN3:
 ; 146  : 	thread_t *t = (thread_t*)malloc(sizeof(thread_t));//pmmngr_alloc();
 
 	mov	ecx, 1280				; 00000500H
-	call	?malloc@@YAPEAX_K@Z			; malloc
+	call	malloc
 	mov	QWORD PTR t$[rsp], rax
 
 ; 147  : 	memset(t, 0, sizeof(thread_t));
@@ -1290,7 +1290,7 @@ $LN3:
 	mov	r8d, 1280				; 00000500H
 	xor	edx, edx
 	mov	rcx, QWORD PTR t$[rsp]
-	call	?memset@@YAXPEAXEI@Z			; memset
+	call	memset
 
 ; 148  : 	t->ss = 0x10;
 
@@ -1483,7 +1483,7 @@ $LN3:
 	mov	r8d, 512				; 00000200H
 	xor	edx, edx
 	mov	rcx, rax
-	call	?memset@@YAXPEAXEI@Z			; memset
+	call	memset
 
 ; 185  : 	/*((fx_state_t*)t->fx_state)->mxcsr = 0x1f80;
 ; 186  : 	((fx_state_t*)t->fx_state)->mxcsrMask = 0xffbf;
@@ -1526,7 +1526,7 @@ $LN3:
 ; 202  : 	thread_t *t = (thread_t*)malloc(sizeof(thread_t));//pmmngr_alloc();
 
 	mov	ecx, 1280				; 00000500H
-	call	?malloc@@YAPEAX_K@Z			; malloc
+	call	malloc
 	mov	QWORD PTR t$[rsp], rax
 
 ; 203  : 	memset (t, 0, sizeof(thread_t));
@@ -1534,7 +1534,7 @@ $LN3:
 	mov	r8d, 1280				; 00000500H
 	xor	edx, edx
 	mov	rcx, QWORD PTR t$[rsp]
-	call	?memset@@YAXPEAXEI@Z			; memset
+	call	memset
 
 ; 204  : 	t->ss = SEGVAL(GDT_ENTRY_USER_DATA,3); 
 
@@ -1673,7 +1673,7 @@ $LN3:
 ; 232  : 	t->cr3 = v2p(cr3);
 
 	mov	rcx, QWORD PTR cr3$[rsp]
-	call	?v2p@@YA_K_K@Z				; v2p
+	call	v2p
 	mov	rcx, QWORD PTR t$[rsp]
 	mov	QWORD PTR [rcx+192], rax
 
@@ -1705,7 +1705,7 @@ $LN3:
 
 ; 237  : 	t->msg_box = (uint64_t*)AuPmmngrAlloc();
 
-	call	?AuPmmngrAlloc@@YAPEAXXZ		; AuPmmngrAlloc
+	call	AuPmmngrAlloc
 	mov	rcx, QWORD PTR t$[rsp]
 	mov	QWORD PTR [rcx+752], rax
 
@@ -1727,7 +1727,7 @@ $LN3:
 	mov	r8d, 512				; 00000200H
 	xor	edx, edx
 	mov	rcx, rax
-	call	?memset@@YAXPEAXEI@Z			; memset
+	call	memset
 
 ; 241  : 	/*((fx_state_t*)t->fx_state)->mxcsr = 0x1f80;
 ; 242  : 	((fx_state_t*)t->fx_state)->mxcsrMask = 0xffbf;
@@ -1847,10 +1847,10 @@ $LN3:
 
 	call	x64_read_cr3
 	mov	QWORD PTR tv67[rsp], rax
-	call	?AuPmmngrAlloc@@YAPEAXXZ		; AuPmmngrAlloc
+	call	AuPmmngrAlloc
 	add	rax, 4096				; 00001000H
 	mov	rcx, rax
-	call	?p2v@@YA_K_K@Z				; p2v
+	call	p2v
 	mov	BYTE PTR [rsp+32], 1
 	lea	r9, OFFSET FLAT:$SG3512
 	mov	rcx, QWORD PTR tv67[rsp]

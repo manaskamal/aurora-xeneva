@@ -10,11 +10,11 @@ $SG3108	DB	'dev', 00H
 $SG3110	DB	'/dev', 00H
 CONST	ENDS
 PUBLIC	?devfs_mount@@YAXXZ				; devfs_mount
-EXTRN	?strcpy@@YAPEADPEADPEBD@Z:PROC			; strcpy
-EXTRN	?memset@@YAXPEAXEI@Z:PROC			; memset
+EXTRN	strcpy:PROC
+EXTRN	memset:PROC
 EXTRN	vfs_mkdir:PROC
 EXTRN	vfs_mkentry:PROC
-EXTRN	?malloc@@YAPEAX_K@Z:PROC			; malloc
+EXTRN	malloc:PROC
 pdata	SEGMENT
 $pdata$?devfs_mount@@YAXXZ DD imagerel $LN3
 	DD	imagerel $LN3+103
@@ -39,7 +39,7 @@ $LN3:
 ; 17   : 	vfs_node_t *node = (vfs_node_t*)malloc(sizeof(vfs_node_t));
 
 	mov	ecx, 104				; 00000068H
-	call	?malloc@@YAPEAX_K@Z			; malloc
+	call	malloc
 	mov	QWORD PTR node$[rsp], rax
 
 ; 18   : 	memset(node, 0, sizeof(vfs_node_t));
@@ -47,14 +47,14 @@ $LN3:
 	mov	r8d, 104				; 00000068H
 	xor	edx, edx
 	mov	rcx, QWORD PTR node$[rsp]
-	call	?memset@@YAXPEAXEI@Z			; memset
+	call	memset
 
 ; 19   : 	strcpy(node->filename, "dev");
 
 	mov	rax, QWORD PTR node$[rsp]
 	lea	rdx, OFFSET FLAT:$SG3108
 	mov	rcx, rax
-	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
+	call	strcpy
 
 ; 20   : 	node->flags = FS_FLAG_DIRECTORY;
 

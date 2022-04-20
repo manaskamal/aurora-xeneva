@@ -78,17 +78,17 @@ PUBLIC	?fat32_clear_cluster@@YAXI@Z			; fat32_clear_cluster
 PUBLIC	?fat32_locate_subdir@@YA?AU_vfs_node_@@U1@PEBD@Z ; fat32_locate_subdir
 PUBLIC	?fat32_format_date@@YAGXZ			; fat32_format_date
 PUBLIC	?fat32_format_time@@YAGXZ			; fat32_format_time
-EXTRN	?strcmp@@YAHPEBD0@Z:PROC			; strcmp
-EXTRN	?strcpy@@YAPEADPEADPEBD@Z:PROC			; strcpy
-EXTRN	?strchr@@YAPEADPEADH@Z:PROC			; strchr
-EXTRN	?memset@@YAXPEAXEI@Z:PROC			; memset
+EXTRN	strcmp:PROC
+EXTRN	strcpy:PROC
+EXTRN	strchr:PROC
+EXTRN	memset:PROC
 EXTRN	memcpy:PROC
 EXTRN	vfs_mount:PROC
 EXTRN	?fat32_to_dos_file_name@@YAXPEBDPEADI@Z:PROC	; fat32_to_dos_file_name
 EXTRN	printf:PROC
-EXTRN	?AuPmmngrAlloc@@YAPEAXXZ:PROC			; AuPmmngrAlloc
-EXTRN	?AuPmmngrFree@@YAXPEAX@Z:PROC			; AuPmmngrFree
-EXTRN	?malloc@@YAPEAX_K@Z:PROC			; malloc
+EXTRN	AuPmmngrAlloc:PROC
+EXTRN	AuPmmngrFree:PROC
+EXTRN	malloc:PROC
 EXTRN	?ahci_disk_write@@YAXPEAU_hba_port_@@_KIPEA_K@Z:PROC ; ahci_disk_write
 EXTRN	?ahci_disk_read@@YAXPEAU_hba_port_@@_KIPEA_K@Z:PROC ; ahci_disk_read
 EXTRN	?ahci_disk_get_port@@YAPEAU_hba_port_@@XZ:PROC	; ahci_disk_get_port
@@ -289,7 +289,7 @@ $LN12:
 ; 302  : 	//dos_file_name[11] = 0;
 ; 303  : 	uint64_t* buf = (uint64_t*)AuPmmngrAlloc();
 
-	call	?AuPmmngrAlloc@@YAPEAXXZ		; AuPmmngrAlloc
+	call	AuPmmngrAlloc
 	mov	QWORD PTR buf$[rsp], rax
 
 ; 304  : 	if (kfile.flags != FS_FLAG_INVALID) {
@@ -355,7 +355,7 @@ $LN6@fat32_loca:
 
 	lea	rdx, QWORD PTR dos_file_name$[rsp]
 	lea	rcx, QWORD PTR name$3[rsp]
-	call	?strcmp@@YAHPEBD0@Z			; strcmp
+	call	strcmp
 	test	eax, eax
 	jne	$LN3@fat32_loca
 
@@ -365,7 +365,7 @@ $LN6@fat32_loca:
 
 	mov	rdx, QWORD PTR filename$[rsp]
 	lea	rcx, QWORD PTR file$[rsp]
-	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
+	call	strcpy
 
 ; 327  : 					file.current = pkDir->first_cluster;
 
@@ -413,7 +413,7 @@ $LN1@fat32_loca:
 ; 337  : 					AuPmmngrFree(buf);
 
 	mov	rcx, QWORD PTR buf$[rsp]
-	call	?AuPmmngrFree@@YAXPEAX@Z		; AuPmmngrFree
+	call	AuPmmngrFree
 
 ; 338  : 					//!return file
 ; 339  : 					return file;
@@ -454,7 +454,7 @@ $LN9@fat32_loca:
 ; 350  : 	AuPmmngrFree(buf);
 
 	mov	rcx, QWORD PTR buf$[rsp]
-	call	?AuPmmngrFree@@YAXPEAX@Z		; AuPmmngrFree
+	call	AuPmmngrFree
 
 ; 351  : 	file.flags = FS_FLAG_INVALID;
 
@@ -496,7 +496,7 @@ $LN3:
 
 ; 187  : 	uint64_t *buffer = (uint64_t*)AuPmmngrAlloc();
 
-	call	?AuPmmngrAlloc@@YAPEAXXZ		; AuPmmngrAlloc
+	call	AuPmmngrAlloc
 	mov	QWORD PTR buffer$[rsp], rax
 
 ; 188  : 	memset (buffer, 0, 4096);
@@ -504,7 +504,7 @@ $LN3:
 	mov	r8d, 4096				; 00001000H
 	xor	edx, edx
 	mov	rcx, QWORD PTR buffer$[rsp]
-	call	?memset@@YAXPEAXEI@Z			; memset
+	call	memset
 
 ; 189  : 	//update_cluster (buffer,cluster);
 ; 190  : 	uint32_t sector = cluster_to_sector32 (cluster);
@@ -532,7 +532,7 @@ $LN3:
 ; 192  : 	AuPmmngrFree(buffer);
 
 	mov	rcx, QWORD PTR buffer$[rsp]
-	call	?AuPmmngrFree@@YAXPEAX@Z		; AuPmmngrFree
+	call	AuPmmngrFree
 
 ; 193  : }
 
@@ -588,7 +588,7 @@ $LN3:
 
 ; 124  : 	uint64_t *buf_area = (uint64_t*)AuPmmngrAlloc();
 
-	call	?AuPmmngrAlloc@@YAPEAXXZ		; AuPmmngrAlloc
+	call	AuPmmngrAlloc
 	mov	QWORD PTR buf_area$[rsp], rax
 
 ; 125  : 	memset(buf_area,0,4096);
@@ -596,7 +596,7 @@ $LN3:
 	mov	r8d, 4096				; 00001000H
 	xor	edx, edx
 	mov	rcx, QWORD PTR buf_area$[rsp]
-	call	?memset@@YAXPEAXEI@Z			; memset
+	call	memset
 
 ; 126  : 	//ata_read_28 (fat_sector,1,buf);
 ; 127  : 	ahci_disk_read (ahci_disk_get_port(),fat_sector,1,buf_area);
@@ -625,7 +625,7 @@ $LN3:
 ; 130  : 	AuPmmngrFree(buf_area);
 
 	mov	rcx, QWORD PTR buf_area$[rsp]
-	call	?AuPmmngrFree@@YAXPEAX@Z		; AuPmmngrFree
+	call	AuPmmngrFree
 
 ; 131  : 	return value & 0x0FFFFFFF;
 
@@ -757,7 +757,7 @@ $LN3:
 
 ; 169  : 	uint64_t *buffer = (uint64_t*)AuPmmngrAlloc();
 
-	call	?AuPmmngrAlloc@@YAPEAXXZ		; AuPmmngrAlloc
+	call	AuPmmngrAlloc
 	mov	QWORD PTR buffer$[rsp], rax
 
 ; 170  : 	memset(buffer,0,4096);
@@ -765,7 +765,7 @@ $LN3:
 	mov	r8d, 4096				; 00001000H
 	xor	edx, edx
 	mov	rcx, QWORD PTR buffer$[rsp]
-	call	?memset@@YAXPEAXEI@Z			; memset
+	call	memset
 
 ; 171  : 	ahci_disk_read(ahci_disk_get_port(),fat_sector,1,buffer);
 
@@ -823,7 +823,7 @@ $LN3:
 ; 179  : 	AuPmmngrFree(buffer);
 
 	mov	rcx, QWORD PTR buffer$[rsp]
-	call	?AuPmmngrFree@@YAXPEAX@Z		; AuPmmngrFree
+	call	AuPmmngrFree
 
 ; 180  : }
 
@@ -894,7 +894,7 @@ $LN4@fat32_find:
 
 ; 145  : 		uint64_t *buffer = (uint64_t*)AuPmmngrAlloc();
 
-	call	?AuPmmngrAlloc@@YAPEAXXZ		; AuPmmngrAlloc
+	call	AuPmmngrAlloc
 	mov	QWORD PTR buffer$4[rsp], rax
 
 ; 146  : 		memset(buffer,0,4096);
@@ -902,7 +902,7 @@ $LN4@fat32_find:
 	mov	r8d, 4096				; 00001000H
 	xor	edx, edx
 	mov	rcx, QWORD PTR buffer$4[rsp]
-	call	?memset@@YAXPEAXEI@Z			; memset
+	call	memset
 
 ; 147  : 		ahci_disk_read(ahci_disk_get_port(),fat_sector,1,buffer);
 
@@ -931,7 +931,7 @@ $LN4@fat32_find:
 ; 151  : 		AuPmmngrFree(buffer);
 
 	mov	rcx, QWORD PTR buffer$4[rsp]
-	call	?AuPmmngrFree@@YAXPEAX@Z		; AuPmmngrFree
+	call	AuPmmngrFree
 
 ; 152  : 		//! Found a free cluster return the value
 ; 153  : 		if (value == 0x00) {
@@ -976,7 +976,7 @@ $LN3:
 ; 477  : 	vfs_node_t *fsys = (vfs_node_t*)malloc(sizeof(vfs_node_t));
 
 	mov	ecx, 104				; 00000068H
-	call	?malloc@@YAPEAX_K@Z			; malloc
+	call	malloc
 	mov	QWORD PTR fsys$[rsp], rax
 
 ; 478  : 	strcpy (fsys->filename, "/");
@@ -984,7 +984,7 @@ $LN3:
 	mov	rax, QWORD PTR fsys$[rsp]
 	lea	rdx, OFFSET FLAT:$SG3818
 	mov	rcx, rax
-	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
+	call	strcpy
 
 ; 479  : 	fsys->size = 0;
 
@@ -1099,7 +1099,7 @@ $LN12:
 
 ; 252  : 	buf = (uint64_t*)AuPmmngrAlloc();
 
-	call	?AuPmmngrAlloc@@YAPEAXXZ		; AuPmmngrAlloc
+	call	AuPmmngrAlloc
 	mov	QWORD PTR buf$[rsp], rax
 
 ; 253  : 	for (unsigned int sector = 0; sector < sectors_per_cluster; sector++) {
@@ -1121,7 +1121,7 @@ $LN9@fat32_loca:
 	mov	r8d, 4096				; 00001000H
 	xor	edx, edx
 	mov	rcx, QWORD PTR buf$[rsp]
-	call	?memset@@YAXPEAXEI@Z			; memset
+	call	memset
 
 ; 256  : 		//ata_read_28 (root_sector + sector,1, buf);
 ; 257  : 		ahci_disk_read(ahci_disk_get_port(),root_sector + sector,1,buf);
@@ -1178,7 +1178,7 @@ $LN6@fat32_loca:
 
 	lea	rdx, QWORD PTR name$3[rsp]
 	lea	rcx, QWORD PTR dos_file_name$[rsp]
-	call	?strcmp@@YAHPEBD0@Z			; strcmp
+	call	strcmp
 	test	eax, eax
 	jne	$LN3@fat32_loca
 
@@ -1186,7 +1186,7 @@ $LN6@fat32_loca:
 
 	mov	rdx, QWORD PTR dir$[rsp]
 	lea	rcx, QWORD PTR file$[rsp]
-	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
+	call	strcpy
 
 ; 267  : 				file.current = dirent->first_cluster;
 
@@ -1234,7 +1234,7 @@ $LN1@fat32_loca:
 ; 277  : 				AuPmmngrFree(buf);
 
 	mov	rcx, QWORD PTR buf$[rsp]
-	call	?AuPmmngrFree@@YAXPEAX@Z		; AuPmmngrFree
+	call	AuPmmngrFree
 
 ; 278  : 				return file;
 
@@ -1508,7 +1508,7 @@ $LN17:
 
 	mov	edx, 47					; 0000002fH
 	mov	rcx, QWORD PTR path$[rsp]
-	call	?strchr@@YAPEADPEADH@Z			; strchr
+	call	strchr
 	mov	QWORD PTR p$[rsp], rax
 
 ; 368  : 	if (!p) {
@@ -1756,7 +1756,7 @@ $LN2@fat32_open:
 	inc	rax
 	mov	edx, 47					; 0000002fH
 	mov	rcx, rax
-	call	?strchr@@YAPEADPEADH@Z			; strchr
+	call	strchr
 	mov	QWORD PTR p$[rsp], rax
 
 ; 425  : 		if (p)
@@ -1823,7 +1823,7 @@ $LN9:
 ; 71   : 
 ; 72   : 	uint64_t *buf = (uint64_t*)AuPmmngrAlloc();
 
-	call	?AuPmmngrAlloc@@YAPEAXXZ		; AuPmmngrAlloc
+	call	AuPmmngrAlloc
 	mov	QWORD PTR buf$[rsp], rax
 
 ; 73   : 	//ata_read_28 (2048,1,buf); //partition_begin_lba = 2048

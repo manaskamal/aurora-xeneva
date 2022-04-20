@@ -7,7 +7,7 @@ INCLUDELIB OLDNAMES
 
 PUBLIC	?map_memory@@YAPEAX_KIE@Z			; map_memory
 PUBLIC	?unmap_memory@@YAXPEAXI@Z			; unmap_memory
-EXTRN	?AuPmmngrAlloc@@YAPEAXXZ:PROC			; AuPmmngrAlloc
+EXTRN	AuPmmngrAlloc:PROC
 EXTRN	x64_cli:PROC
 EXTRN	AuMapPage:PROC
 EXTRN	AuUnmapPage:PROC
@@ -255,7 +255,7 @@ $LN11@map_memory:
 $LN15@map_memory:
 	mov	DWORD PTR tv83[rsp], 0
 $LN16@map_memory:
-	call	?AuPmmngrAlloc@@YAPEAXXZ		; AuPmmngrAlloc
+	call	AuPmmngrAlloc
 	movzx	r8d, BYTE PTR tv83[rsp]
 	mov	rdx, QWORD PTR addr$[rsp]
 	mov	rcx, rax
@@ -302,7 +302,7 @@ $LN18@map_memory:
 	add	rcx, rax
 	mov	rax, rcx
 	mov	QWORD PTR tv131[rsp], rax
-	call	?AuPmmngrAlloc@@YAPEAXXZ		; AuPmmngrAlloc
+	call	AuPmmngrAlloc
 	movzx	r8d, BYTE PTR tv94[rsp]
 	mov	rcx, QWORD PTR tv131[rsp]
 	mov	rdx, rcx
@@ -336,7 +336,7 @@ $LN10@map_memory:
 $LN19@map_memory:
 	mov	DWORD PTR tv138[rsp], 0
 $LN20@map_memory:
-	call	?AuPmmngrAlloc@@YAPEAXXZ		; AuPmmngrAlloc
+	call	AuPmmngrAlloc
 	movzx	r8d, BYTE PTR tv138[rsp]
 	mov	rdx, QWORD PTR addr$[rsp]
 	mov	rcx, rax
@@ -383,7 +383,7 @@ $LN22@map_memory:
 	add	rcx, rax
 	mov	rax, rcx
 	mov	QWORD PTR tv154[rsp], rax
-	call	?AuPmmngrAlloc@@YAPEAXXZ		; AuPmmngrAlloc
+	call	AuPmmngrAlloc
 	movzx	r8d, BYTE PTR tv149[rsp]
 	mov	rcx, QWORD PTR tv154[rsp]
 	mov	rdx, rcx

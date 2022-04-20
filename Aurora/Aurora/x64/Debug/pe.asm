@@ -26,7 +26,7 @@ PUBLIC	??$raw_offset@PEAU_IMAGE_IMPORT_DIRECTORY@@PEAX@@YAPEAU_IMAGE_IMPORT_DIRE
 PUBLIC	??$raw_offset@PEBDPEAX@@YAPEBDPEAXH@Z		; raw_offset<char const * __ptr64,void * __ptr64>
 PUBLIC	??$raw_offset@PEA_KPEAX@@YAPEA_KPEAXH@Z		; raw_offset<unsigned __int64 * __ptr64,void * __ptr64>
 PUBLIC	??$raw_offset@PEAU_IMAGE_IMPORT_HINT_TABLE@@PEAX@@YAPEAU_IMAGE_IMPORT_HINT_TABLE@@PEAXH@Z ; raw_offset<_IMAGE_IMPORT_HINT_TABLE * __ptr64,void * __ptr64>
-EXTRN	?strcmp@@YAHPEBD0@Z:PROC			; strcmp
+EXTRN	strcmp:PROC
 pdata	SEGMENT
 $pdata$?load_pe_file@@YAXPEA_KH@Z DD imagerel $LN3
 	DD	imagerel $LN3+94
@@ -604,7 +604,7 @@ $LN4@AuGetProcA:
 
 	mov	rdx, QWORD PTR procname$[rsp]
 	mov	rcx, QWORD PTR function_name$4[rsp]
-	call	?strcmp@@YAHPEBD0@Z			; strcmp
+	call	strcmp
 	test	eax, eax
 	jne	SHORT $LN1@AuGetProcA
 

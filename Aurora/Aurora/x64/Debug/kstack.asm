@@ -10,7 +10,7 @@ _BSS	SEGMENT
 ?index@@3IA DD	01H DUP (?)				; index
 _BSS	ENDS
 PUBLIC	?allocate_kstack@@YA_KPEA_K@Z			; allocate_kstack
-EXTRN	?AuPmmngrAlloc@@YAPEAXXZ:PROC			; AuPmmngrAlloc
+EXTRN	AuPmmngrAlloc:PROC
 EXTRN	?AuMapPageEx@@YA_NPEA_K_K1E@Z:PROC		; AuMapPageEx
 pdata	SEGMENT
 $pdata$?allocate_kstack@@YA_KPEA_K@Z DD imagerel $LN6
@@ -56,7 +56,7 @@ $LN3@allocate_k:
 
 ; 20   : 		void* p = AuPmmngrAlloc();
 
-	call	?AuPmmngrAlloc@@YAPEAXXZ		; AuPmmngrAlloc
+	call	AuPmmngrAlloc
 	mov	QWORD PTR p$2[rsp], rax
 
 ; 21   : 		AuMapPageEx (cr3,(uint64_t)p,location + i * 4096, 0);

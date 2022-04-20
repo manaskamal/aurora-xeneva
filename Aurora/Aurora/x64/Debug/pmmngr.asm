@@ -45,25 +45,25 @@ $SG3069	DB	'KB', 00H
 $SG3071	DB	'MB', 00H
 CONST	ENDS
 PUBLIC	?AuPmmngrInit@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z	; AuPmmngrInit
-PUBLIC	?AuPmmngrAlloc@@YAPEAXXZ			; AuPmmngrAlloc
-PUBLIC	?AuPmmngrAllocBlocks@@YAPEAXH@Z			; AuPmmngrAllocBlocks
+PUBLIC	AuPmmngrAlloc
+PUBLIC	AuPmmngrAllocBlocks
 PUBLIC	?AuPmmngrLockPages@@YAXPEAX_K@Z			; AuPmmngrLockPages
 PUBLIC	?AuPmmngrLockPage@@YAXPEAX@Z			; AuPmmngrLockPage
-PUBLIC	?AuPmmngrFree@@YAXPEAX@Z			; AuPmmngrFree
-PUBLIC	?AuPmmngrFreeBlocks@@YAXPEAXH@Z			; AuPmmngrFreeBlocks
+PUBLIC	AuPmmngrFree
+PUBLIC	AuPmmngrFreeBlocks
 PUBLIC	?pmmngr_get_free_ram@@YA_KXZ			; pmmngr_get_free_ram
 PUBLIC	?pmmngr_get_used_ram@@YA_KXZ			; pmmngr_get_used_ram
 PUBLIC	?pmmngr_get_total_ram@@YA_KXZ			; pmmngr_get_total_ram
 PUBLIC	?AuPmmngrMoveHigher@@YAXXZ			; AuPmmngrMoveHigher
 PUBLIC	?pmmngr_get_ram_bitmap_size@@YA_KXZ		; pmmngr_get_ram_bitmap_size
-PUBLIC	?p2v@@YA_K_K@Z					; p2v
-PUBLIC	?v2p@@YA_K_K@Z					; v2p
+PUBLIC	p2v
+PUBLIC	v2p
 PUBLIC	?is_higher_half@@YA_NXZ				; is_higher_half
 PUBLIC	??ABitmap@@QEAA_N_K@Z				; Bitmap::operator[]
 PUBLIC	?Set@Bitmap@@QEAA_N_K_N@Z			; Bitmap::Set
 PUBLIC	?AuPmmngrInitBitmap@@YAX_KPEAX@Z		; AuPmmngrInitBitmap
 PUBLIC	?AuPmmngrUnreservePage@@YAXPEAX@Z		; AuPmmngrUnreservePage
-EXTRN	?memset@@YAXPEAXEI@Z:PROC			; memset
+EXTRN	memset:PROC
 EXTRN	printf:PROC
 EXTRN	x64_cli:PROC
 EXTRN	x64_hlt:PROC
@@ -71,24 +71,24 @@ pdata	SEGMENT
 $pdata$?AuPmmngrInit@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z DD imagerel $LN16
 	DD	imagerel $LN16+927
 	DD	imagerel $unwind$?AuPmmngrInit@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z
-$pdata$?AuPmmngrAlloc@@YAPEAXXZ DD imagerel $LN9
+$pdata$AuPmmngrAlloc DD imagerel $LN9
 	DD	imagerel $LN9+245
-	DD	imagerel $unwind$?AuPmmngrAlloc@@YAPEAXXZ
-$pdata$?AuPmmngrAllocBlocks@@YAPEAXH@Z DD imagerel $LN6
+	DD	imagerel $unwind$AuPmmngrAlloc
+$pdata$AuPmmngrAllocBlocks DD imagerel $LN6
 	DD	imagerel $LN6+77
-	DD	imagerel $unwind$?AuPmmngrAllocBlocks@@YAPEAXH@Z
+	DD	imagerel $unwind$AuPmmngrAllocBlocks
 $pdata$?AuPmmngrLockPages@@YAXPEAX_K@Z DD imagerel $LN6
 	DD	imagerel $LN6+84
 	DD	imagerel $unwind$?AuPmmngrLockPages@@YAXPEAX_K@Z
 $pdata$?AuPmmngrLockPage@@YAXPEAX@Z DD imagerel $LN5
 	DD	imagerel $LN5+128
 	DD	imagerel $unwind$?AuPmmngrLockPage@@YAXPEAX@Z
-$pdata$?AuPmmngrFree@@YAXPEAX@Z DD imagerel $LN6
+$pdata$AuPmmngrFree DD imagerel $LN6
 	DD	imagerel $LN6+153
-	DD	imagerel $unwind$?AuPmmngrFree@@YAXPEAX@Z
-$pdata$?AuPmmngrFreeBlocks@@YAXPEAXH@Z DD imagerel $LN6
+	DD	imagerel $unwind$AuPmmngrFree
+$pdata$AuPmmngrFreeBlocks DD imagerel $LN6
 	DD	imagerel $LN6+86
-	DD	imagerel $unwind$?AuPmmngrFreeBlocks@@YAXPEAXH@Z
+	DD	imagerel $unwind$AuPmmngrFreeBlocks
 $pdata$?AuPmmngrMoveHigher@@YAXXZ DD imagerel $LN3
 	DD	imagerel $LN3+35
 	DD	imagerel $unwind$?AuPmmngrMoveHigher@@YAXXZ
@@ -126,17 +126,17 @@ xdata	ENDS
 xdata	SEGMENT
 $unwind$?AuPmmngrInit@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z DD 020c01H
 	DD	013010cH
-$unwind$?AuPmmngrAlloc@@YAPEAXXZ DD 010401H
+$unwind$AuPmmngrAlloc DD 010401H
 	DD	06204H
-$unwind$?AuPmmngrAllocBlocks@@YAPEAXH@Z DD 010801H
+$unwind$AuPmmngrAllocBlocks DD 010801H
 	DD	06208H
 $unwind$?AuPmmngrLockPages@@YAXPEAX_K@Z DD 010e01H
 	DD	0620eH
 $unwind$?AuPmmngrLockPage@@YAXPEAX@Z DD 010901H
 	DD	06209H
-$unwind$?AuPmmngrFree@@YAXPEAX@Z DD 010901H
+$unwind$AuPmmngrFree DD 010901H
 	DD	06209H
-$unwind$?AuPmmngrFreeBlocks@@YAXPEAXH@Z DD 010d01H
+$unwind$AuPmmngrFreeBlocks DD 010d01H
 	DD	0620dH
 $unwind$?AuPmmngrMoveHigher@@YAXXZ DD 010401H
 	DD	04204H
@@ -490,7 +490,7 @@ _TEXT	ENDS
 ; File e:\xeneva project\xeneva\aurora\aurora\pmmngr.cpp
 _TEXT	SEGMENT
 vaddr$ = 8
-?v2p@@YA_K_K@Z PROC					; v2p
+v2p	PROC
 
 ; 203  : uint64_t v2p (uint64_t vaddr) {
 
@@ -524,13 +524,13 @@ $LN3@v2p:
 ; 208  : }
 
 	fatret	0
-?v2p@@YA_K_K@Z ENDP					; v2p
+v2p	ENDP
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\pmmngr.cpp
 _TEXT	SEGMENT
 addr$ = 8
-?p2v@@YA_K_K@Z PROC					; p2v
+p2v	PROC
 
 ; 196  : uint64_t p2v (uint64_t addr) {
 
@@ -564,7 +564,7 @@ $LN3@p2v:
 ; 201  : }
 
 	fatret	0
-?p2v@@YA_K_K@Z ENDP					; p2v
+p2v	ENDP
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\pmmngr.cpp
@@ -593,7 +593,7 @@ $LN3:
 ; 191  : 	ram_bitmap.Buffer = (uint8_t*)p2v((uint64_t)ram_bitmap.Buffer);
 
 	mov	rcx, QWORD PTR ?ram_bitmap@@3VBitmap@@A+8
-	call	?p2v@@YA_K_K@Z				; p2v
+	call	p2v
 	mov	QWORD PTR ?ram_bitmap@@3VBitmap@@A+8, rax
 
 ; 192  : 	higher_half = true;
@@ -655,7 +655,7 @@ i$1 = 32
 address$ = 40
 addr$ = 64
 count$ = 72
-?AuPmmngrFreeBlocks@@YAXPEAXH@Z PROC			; AuPmmngrFreeBlocks
+AuPmmngrFreeBlocks PROC
 
 ; 268  : void AuPmmngrFreeBlocks(void* addr, int count) {
 
@@ -685,7 +685,7 @@ $LN3@AuPmmngrFr:
 ; 271  : 		AuPmmngrFree(address);
 
 	mov	rcx, QWORD PTR address$[rsp]
-	call	?AuPmmngrFree@@YAXPEAX@Z		; AuPmmngrFree
+	call	AuPmmngrFree
 
 ; 272  : 		address += 0x1000;
 
@@ -702,14 +702,14 @@ $LN1@AuPmmngrFr:
 
 	add	rsp, 56					; 00000038H
 	ret	0
-?AuPmmngrFreeBlocks@@YAXPEAXH@Z ENDP			; AuPmmngrFreeBlocks
+AuPmmngrFreeBlocks ENDP
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\pmmngr.cpp
 _TEXT	SEGMENT
 index$ = 32
 addr$ = 64
-?AuPmmngrFree@@YAXPEAX@Z PROC				; AuPmmngrFree
+AuPmmngrFree PROC
 
 ; 253  : {
 
@@ -778,7 +778,7 @@ $LN4@AuPmmngrFr:
 
 	add	rsp, 56					; 00000038H
 	ret	0
-?AuPmmngrFree@@YAXPEAX@Z ENDP				; AuPmmngrFree
+AuPmmngrFree ENDP
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\pmmngr.cpp
@@ -897,7 +897,7 @@ _TEXT	SEGMENT
 i$1 = 32
 first$ = 40
 size$ = 64
-?AuPmmngrAllocBlocks@@YAPEAXH@Z PROC			; AuPmmngrAllocBlocks
+AuPmmngrAllocBlocks PROC
 
 ; 239  : void* AuPmmngrAllocBlocks(int size) {
 
@@ -907,7 +907,7 @@ $LN6:
 
 ; 240  : 	void *first = AuPmmngrAlloc();
 
-	call	?AuPmmngrAlloc@@YAPEAXXZ		; AuPmmngrAlloc
+	call	AuPmmngrAlloc
 	mov	QWORD PTR first$[rsp], rax
 
 ; 241  : 	for (int i = 0; i < size / 4096; i++) {
@@ -929,7 +929,7 @@ $LN3@AuPmmngrAl:
 
 ; 242  : 		AuPmmngrAlloc();
 
-	call	?AuPmmngrAlloc@@YAPEAXXZ		; AuPmmngrAlloc
+	call	AuPmmngrAlloc
 
 ; 243  : 	}
 
@@ -945,13 +945,13 @@ $LN1@AuPmmngrAl:
 
 	add	rsp, 56					; 00000038H
 	ret	0
-?AuPmmngrAllocBlocks@@YAPEAXH@Z ENDP			; AuPmmngrAllocBlocks
+AuPmmngrAllocBlocks ENDP
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\pmmngr.cpp
 _TEXT	SEGMENT
 tv77 = 32
-?AuPmmngrAlloc@@YAPEAXXZ PROC				; AuPmmngrAlloc
+AuPmmngrAlloc PROC
 
 ; 221  : {
 
@@ -1058,7 +1058,7 @@ $LN7@AuPmmngrAl:
 
 	add	rsp, 56					; 00000038H
 	ret	0
-?AuPmmngrAlloc@@YAPEAXXZ ENDP				; AuPmmngrAlloc
+AuPmmngrAlloc ENDP
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\pmmngr.cpp
@@ -1429,7 +1429,7 @@ $LN1@AuPmmngrIn:
 	mov	r8d, 4096				; 00001000H
 	xor	edx, edx
 	mov	rcx, QWORD PTR address$[rsp]
-	call	?memset@@YAXPEAXEI@Z			; memset
+	call	memset
 
 ; 181  : 	//memcpy(address, info->apcode, 4096);
 ; 182  : 	higher_half = false;

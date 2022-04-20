@@ -11,9 +11,9 @@ CONST	ENDS
 PUBLIC	?sys_open_file@@YAHPEADPEAU_file_@@@Z		; sys_open_file
 PUBLIC	?sys_read_file@@YAXHPEAEPEAU_file_@@@Z		; sys_read_file
 PUBLIC	?sys_write_file@@YAXHPEAEPEAU_file_@@@Z		; sys_write_file
-EXTRN	?strcmp@@YAHPEBD0@Z:PROC			; strcmp
-EXTRN	?strchr@@YAPEADPEADH@Z:PROC			; strchr
-EXTRN	?memset@@YAXPEAXEI@Z:PROC			; memset
+EXTRN	strcmp:PROC
+EXTRN	strchr:PROC
+EXTRN	memset:PROC
 EXTRN	memcpy:PROC
 EXTRN	?vfs_finddir@@YAPEAU_vfs_node_@@PEAD@Z:PROC	; vfs_finddir
 EXTRN	openfs:PROC
@@ -21,8 +21,8 @@ EXTRN	readfs:PROC
 EXTRN	writefs:PROC
 EXTRN	readfs_block:PROC
 EXTRN	x64_cli:PROC
-EXTRN	?AuPmmngrAlloc@@YAPEAXXZ:PROC			; AuPmmngrAlloc
-EXTRN	?AuPmmngrFree@@YAXPEAX@Z:PROC			; AuPmmngrFree
+EXTRN	AuPmmngrAlloc:PROC
+EXTRN	AuPmmngrFree:PROC
 EXTRN	?get_current_thread@@YAPEAU_thread_@@XZ:PROC	; get_current_thread
 pdata	SEGMENT
 $pdata$?sys_open_file@@YAHPEADPEAU_file_@@@Z DD imagerel $LN17
@@ -311,7 +311,7 @@ $LN2@sys_read_f:
 
 ; 130  : 			uint64_t* buff = (uint64_t*)AuPmmngrAlloc();
 
-	call	?AuPmmngrAlloc@@YAPEAXXZ		; AuPmmngrAlloc
+	call	AuPmmngrAlloc
 	mov	QWORD PTR buff$2[rsp], rax
 
 ; 131  : 			memset(buff, 0, 4096);
@@ -319,7 +319,7 @@ $LN2@sys_read_f:
 	mov	r8d, 4096				; 00001000H
 	xor	edx, edx
 	mov	rcx, QWORD PTR buff$2[rsp]
-	call	?memset@@YAXPEAXEI@Z			; memset
+	call	memset
 
 ; 132  : 			readfs_block (node,&file,buff);
 
@@ -344,7 +344,7 @@ $LN2@sys_read_f:
 ; 135  : 			AuPmmngrFree(buff);
 
 	mov	rcx, QWORD PTR buff$2[rsp]
-	call	?AuPmmngrFree@@YAXPEAX@Z		; AuPmmngrFree
+	call	AuPmmngrFree
 
 ; 136  : 			
 ; 137  : 		}
@@ -411,7 +411,7 @@ $LN17:
 
 	mov	edx, 47					; 0000002fH
 	mov	rcx, QWORD PTR filename$[rsp]
-	call	?strchr@@YAPEADPEADH@Z			; strchr
+	call	strchr
 	mov	QWORD PTR p$[rsp], rax
 
 ; 51   : 	if (p)
@@ -587,7 +587,7 @@ $LN8@sys_open_f:
 
 	lea	rdx, OFFSET FLAT:$SG3684
 	lea	rcx, QWORD PTR pathname$[rsp]
-	call	?strcmp@@YAHPEBD0@Z			; strcmp
+	call	strcmp
 	test	eax, eax
 	je	$LN2@sys_open_f
 

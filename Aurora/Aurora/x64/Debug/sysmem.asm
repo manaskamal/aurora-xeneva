@@ -10,7 +10,7 @@ PUBLIC	?copy_memory@@YAXG_K0@Z				; copy_memory
 PUBLIC	?unmap_shared_memory@@YAXG_K0@Z			; unmap_shared_memory
 PUBLIC	?sys_get_used_ram@@YA_KXZ			; sys_get_used_ram
 PUBLIC	?sys_get_free_ram@@YA_KXZ			; sys_get_free_ram
-EXTRN	?AuPmmngrAlloc@@YAPEAXXZ:PROC			; AuPmmngrAlloc
+EXTRN	AuPmmngrAlloc:PROC
 EXTRN	?pmmngr_get_free_ram@@YA_KXZ:PROC		; pmmngr_get_free_ram
 EXTRN	?pmmngr_get_used_ram@@YA_KXZ:PROC		; pmmngr_get_used_ram
 EXTRN	x64_cli:PROC
@@ -388,7 +388,7 @@ $LN3@map_shared:
 	add	rcx, rax
 	mov	rax, rcx
 	mov	QWORD PTR tv79[rsp], rax
-	call	?AuPmmngrAlloc@@YAPEAXXZ		; AuPmmngrAlloc
+	call	AuPmmngrAlloc
 	mov	r8b, 4
 	mov	rcx, QWORD PTR tv79[rsp]
 	mov	rdx, rcx

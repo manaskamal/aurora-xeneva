@@ -27,7 +27,7 @@ PUBLIC	?atow@@YAXPEADPEBD@Z				; atow
 PUBLIC	?int_to_str@@YAPEBDH@Z				; int_to_str
 PUBLIC	__real@41200000
 PUBLIC	__real@bf800000
-EXTRN	?strlen@@YA_KPEBD@Z:PROC			; strlen
+EXTRN	strlen:PROC
 EXTRN	?puts@@YAXPEAD@Z:PROC				; puts
 EXTRN	?putc@@YAXD@Z:PROC				; putc
 EXTRN	?AuIsConsoleInitialized@@YA_NXZ:PROC		; AuIsConsoleInitialized
@@ -627,7 +627,7 @@ $LN14@printf:
 ; 157  : 					size_t len = strlen(buffer);
 
 	lea	rcx, QWORD PTR buffer$11[rsp]
-	call	?strlen@@YA_KPEBD@Z			; strlen
+	call	strlen
 	mov	QWORD PTR len$10[rsp], rax
 $LN13@printf:
 

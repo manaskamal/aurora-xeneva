@@ -32,15 +32,15 @@ PUBLIC	readfs
 PUBLIC	writefs
 PUBLIC	readfs_block
 PUBLIC	vfs_ioquery
-EXTRN	?strcmp@@YAHPEBD0@Z:PROC			; strcmp
-EXTRN	?strcpy@@YAPEADPEADPEBD@Z:PROC			; strcpy
-EXTRN	?strlen@@YA_KPEBD@Z:PROC			; strlen
-EXTRN	?strchr@@YAPEADPEADH@Z:PROC			; strchr
+EXTRN	strcmp:PROC
+EXTRN	strcpy:PROC
+EXTRN	strlen:PROC
+EXTRN	strchr:PROC
 EXTRN	?initialize_list@@YAPEAU_list_@@XZ:PROC		; initialize_list
 EXTRN	?list_add@@YAXPEAU_list_@@PEAX@Z:PROC		; list_add
 EXTRN	?list_get_at@@YAPEAXPEAU_list_@@I@Z:PROC	; list_get_at
 EXTRN	printf:PROC
-EXTRN	?malloc@@YAPEAX_K@Z:PROC			; malloc
+EXTRN	malloc:PROC
 EXTRN	?initialize_fat32@@YAXXZ:PROC			; initialize_fat32
 EXTRN	?fat32_self_register@@YAXXZ:PROC		; fat32_self_register
 EXTRN	?devfs_mount@@YAXXZ:PROC			; devfs_mount
@@ -336,7 +336,7 @@ $LN25:
 
 	mov	edx, 47					; 0000002fH
 	mov	rcx, QWORD PTR path$[rsp]
-	call	?strchr@@YAPEADPEADH@Z			; strchr
+	call	strchr
 	mov	QWORD PTR next$[rsp], rax
 
 ; 258  : 	if (next)
@@ -375,7 +375,7 @@ $LN22@vfs_lsdir:
 	cmp	eax, 47					; 0000002fH
 	jne	SHORT $LN21@vfs_lsdir
 	mov	rcx, QWORD PTR path$[rsp]
-	call	?strlen@@YA_KPEBD@Z			; strlen
+	call	strlen
 	cmp	rax, 2
 	jne	SHORT $LN21@vfs_lsdir
 
@@ -480,7 +480,7 @@ $LN13@vfs_lsdir:
 	mov	rax, QWORD PTR file_$4[rsp]
 	lea	rdx, QWORD PTR pathname$7[rsp]
 	mov	rcx, rax
-	call	?strcmp@@YAHPEBD0@Z			; strcmp
+	call	strcmp
 	test	eax, eax
 	jne	SHORT $LN10@vfs_lsdir
 
@@ -512,7 +512,7 @@ $LN11@vfs_lsdir:
 	inc	rax
 	mov	edx, 47					; 0000002fH
 	mov	rcx, rax
-	call	?strchr@@YAPEADPEADH@Z			; strchr
+	call	strchr
 	mov	QWORD PTR next$[rsp], rax
 
 ; 289  : 		if (next)
@@ -652,7 +652,7 @@ $LN23:
 	cmp	eax, 47					; 0000002fH
 	jne	SHORT $LN20@vfs_mount
 	mov	rcx, QWORD PTR path$[rsp]
-	call	?strlen@@YA_KPEBD@Z			; strlen
+	call	strlen
 	cmp	rax, 2
 	jne	SHORT $LN20@vfs_mount
 
@@ -698,7 +698,7 @@ $LN20@vfs_mount:
 
 	mov	edx, 47					; 0000002fH
 	mov	rcx, QWORD PTR path$[rsp]
-	call	?strchr@@YAPEADPEADH@Z			; strchr
+	call	strchr
 	mov	QWORD PTR next$[rsp], rax
 
 ; 204  : 	if (next)
@@ -829,7 +829,7 @@ $LN9@vfs_mount:
 	mov	rax, QWORD PTR file_$3[rsp]
 	lea	rdx, QWORD PTR pathname$6[rsp]
 	mov	rcx, rax
-	call	?strcmp@@YAHPEBD0@Z			; strcmp
+	call	strcmp
 	test	eax, eax
 	jne	SHORT $LN6@vfs_mount
 
@@ -856,7 +856,7 @@ $LN7@vfs_mount:
 	inc	rax
 	mov	edx, 47					; 0000002fH
 	mov	rcx, rax
-	call	?strchr@@YAPEADPEADH@Z			; strchr
+	call	strchr
 	mov	QWORD PTR next$[rsp], rax
 
 ; 233  : 		if (next)
@@ -974,7 +974,7 @@ $LN3:
 ; 177  : 	vfs_entry* ent = (vfs_entry*)malloc(sizeof(vfs_entry));
 
 	mov	ecx, 16
-	call	?malloc@@YAPEAX_K@Z			; malloc
+	call	malloc
 	mov	QWORD PTR ent$[rsp], rax
 
 ; 178  : 	ent->node = 0;
@@ -1036,7 +1036,7 @@ $LN20:
 
 	mov	edx, 47					; 0000002fH
 	mov	rcx, QWORD PTR path$[rsp]
-	call	?strchr@@YAPEADPEADH@Z			; strchr
+	call	strchr
 	mov	QWORD PTR next$[rsp], rax
 
 ; 128  : 	if (next)
@@ -1164,7 +1164,7 @@ $LN8@vfs_mkdir:
 	mov	rax, QWORD PTR file_$3[rsp]
 	lea	rdx, QWORD PTR pathname$[rsp]
 	mov	rcx, rax
-	call	?strcmp@@YAHPEBD0@Z			; strcmp
+	call	strcmp
 	test	eax, eax
 	jne	SHORT $LN5@vfs_mkdir
 
@@ -1205,7 +1205,7 @@ $LN6@vfs_mkdir:
 	inc	rax
 	mov	edx, 47					; 0000002fH
 	mov	rcx, rax
-	call	?strchr@@YAPEADPEADH@Z			; strchr
+	call	strchr
 	mov	QWORD PTR next$[rsp], rax
 
 ; 159  : 		if (next)
@@ -1231,7 +1231,7 @@ $LN15@vfs_mkdir:
 	mov	rax, QWORD PTR dir$[rsp]
 	lea	rdx, QWORD PTR pathname$[rsp]
 	mov	rcx, rax
-	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
+	call	strcpy
 
 ; 164  : 	if (found) {
 
@@ -1307,7 +1307,7 @@ $LN20:
 	cmp	eax, 47					; 0000002fH
 	jne	SHORT $LN17@vfs_finddi
 	mov	rcx, QWORD PTR path$[rsp]
-	call	?strlen@@YA_KPEBD@Z			; strlen
+	call	strlen
 	cmp	rax, 2
 	jne	SHORT $LN17@vfs_finddi
 
@@ -1330,7 +1330,7 @@ $LN17@vfs_finddi:
 
 	mov	edx, 47					; 0000002fH
 	mov	rcx, QWORD PTR path$[rsp]
-	call	?strchr@@YAPEADPEADH@Z			; strchr
+	call	strchr
 	mov	QWORD PTR next$[rsp], rax
 
 ; 77   : 	if (next)
@@ -1463,7 +1463,7 @@ $LN7@vfs_finddi:
 	mov	rax, QWORD PTR file_$3[rsp]
 	lea	rdx, QWORD PTR pathname$[rsp]
 	mov	rcx, rax
-	call	?strcmp@@YAHPEBD0@Z			; strcmp
+	call	strcmp
 	test	eax, eax
 	jne	SHORT $LN4@vfs_finddi
 
@@ -1500,7 +1500,7 @@ $LN5@vfs_finddi:
 	inc	rax
 	mov	edx, 47					; 0000002fH
 	mov	rcx, rax
-	call	?strchr@@YAPEADPEADH@Z			; strchr
+	call	strchr
 	mov	QWORD PTR next$[rsp], rax
 
 ; 108  : 		if (next)
@@ -1559,7 +1559,7 @@ $LN3:
 ; 53   : 	vfs_entry *root = (vfs_entry*)malloc(sizeof(vfs_entry));
 
 	mov	ecx, 16
-	call	?malloc@@YAPEAX_K@Z			; malloc
+	call	malloc
 	mov	QWORD PTR root$[rsp], rax
 
 ; 54   : 	root->node = 0;

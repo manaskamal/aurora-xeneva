@@ -10,14 +10,14 @@ _BSS	SEGMENT
 ?debug@@3P6AXPEBDZZEA DQ 01H DUP (?)			; debug
 _BSS	ENDS
 CONST	SEGMENT
-$SG5635	DB	'Scheduler Initialized', 0aH, 00H
+$SG5638	DB	'Scheduler Initialized', 0aH, 00H
 	ORG $+1
-$SG5637	DB	'shell', 00H
+$SG5640	DB	'shell', 00H
 	ORG $+2
-$SG5638	DB	'/sndsrv.exe', 00H
-$SG5639	DB	'priwm', 00H
+$SG5641	DB	'/sndsrv.exe', 00H
+$SG5642	DB	'priwm', 00H
 	ORG $+6
-$SG5640	DB	'/priwm.exe', 00H
+$SG5643	DB	'/priwm.exe', 00H
 CONST	ENDS
 PUBLIC	?debug_print@@YAXPEBDZZ				; debug_print
 PUBLIC	?_AuMain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z		; _AuMain
@@ -34,7 +34,6 @@ EXTRN	?AuInitializeMouse@@YAXXZ:PROC			; AuInitializeMouse
 EXTRN	?AuHeapInitialize@@YAXXZ:PROC			; AuHeapInitialize
 EXTRN	?hda_initialize@@YAXXZ:PROC			; hda_initialize
 EXTRN	?ahci_initialize@@YAXXZ:PROC			; ahci_initialize
-EXTRN	?e1000_initialize@@YAXXZ:PROC			; e1000_initialize
 EXTRN	?AuInitializeRTC@@YAXXZ:PROC			; AuInitializeRTC
 EXTRN	?AuInitializeBasicAcpi@@YAXPEAX@Z:PROC		; AuInitializeBasicAcpi
 EXTRN	?AuVFSInit@@YAXXZ:PROC				; AuVFSInit
@@ -53,8 +52,8 @@ pdata	SEGMENT
 $pdata$?debug_print@@YAXPEBDZZ DD imagerel $LN3
 	DD	imagerel $LN3+40
 	DD	imagerel $unwind$?debug_print@@YAXPEBDZZ
-$pdata$?_AuMain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z DD imagerel $LN5
-	DD	imagerel $LN5+269
+$pdata$?_AuMain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z DD imagerel $LN7
+	DD	imagerel $LN7+266
 	DD	imagerel $unwind$?_AuMain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z
 pdata	ENDS
 xdata	SEGMENT
@@ -72,7 +71,7 @@ info$ = 64
 
 ; 98   : void _AuMain (KERNEL_BOOT_INFO *info) {
 
-$LN5:
+$LN7:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 56					; 00000038H
 
@@ -169,10 +168,7 @@ $LN5:
 	call	?pri_loop_init@@YAXXZ			; pri_loop_init
 
 ; 126  : 	
-; 127  : 	e1000_initialize();   //<< receiver not working
-
-	call	?e1000_initialize@@YAXXZ		; e1000_initialize
-
+; 127  : 	//e1000_initialize();   //<< receiver not working
 ; 128  : 
 ; 129  : 	process_list_initialize();
 
@@ -181,85 +177,90 @@ $LN5:
 ; 130  : 	ttype_init();
 
 	call	?ttype_init@@YAXXZ			; ttype_init
+$LN4@AuMain:
 
 ; 131  : 	
-; 132  : #ifdef ARCH_X64
-; 133  : 	//================================================
-; 134  : 	//! Initialize the scheduler here
-; 135  : 	//!===============================================
-; 136  : 	initialize_scheduler();
+; 132  : 	for(;;);
+
+	jmp	SHORT $LN4@AuMain
+
+; 133  : #ifdef ARCH_X64
+; 134  : 	//================================================
+; 135  : 	//! Initialize the scheduler here
+; 136  : 	//!===============================================
+; 137  : 	initialize_scheduler();
 
 	call	?initialize_scheduler@@YAXXZ		; initialize_scheduler
 
-; 137  : 
-; 138  : 	printf ("Scheduler Initialized\n");
+; 138  : 
+; 139  : 	printf ("Scheduler Initialized\n");
 
-	lea	rcx, OFFSET FLAT:$SG5635
+	lea	rcx, OFFSET FLAT:$SG5638
 	call	printf
 
-; 139  : 
-; 140  : 	x64_cli();
+; 140  : 
+; 141  : 	x64_cli();
 
 	call	x64_cli
 
-; 141  : 	int au_status = 0;
+; 142  : 	int au_status = 0;
 
 	mov	DWORD PTR au_status$[rsp], 0
 
-; 142  : 
-; 143  : 	/* start the sound service manager at id 1 */
-; 144  : 	au_status = AuCreateProcess ("/sndsrv.exe","shell");
+; 143  : 
+; 144  : 	/* start the sound service manager at id 1 */
+; 145  : 	au_status = AuCreateProcess ("/sndsrv.exe","shell");
 
-	lea	rdx, OFFSET FLAT:$SG5637
-	lea	rcx, OFFSET FLAT:$SG5638
+	lea	rdx, OFFSET FLAT:$SG5640
+	lea	rcx, OFFSET FLAT:$SG5641
 	call	?AuCreateProcess@@YAHPEBDPEAD@Z		; AuCreateProcess
 	mov	DWORD PTR au_status$[rsp], eax
 
-; 145  : 
-; 146  : 	/* start the compositing window manager at id 2 */
-; 147  : 	au_status = AuCreateProcess ("/priwm.exe","priwm");
+; 146  : 
+; 147  : 	/* start the compositing window manager at id 2 */
+; 148  : 	au_status = AuCreateProcess ("/priwm.exe","priwm");
 
-	lea	rdx, OFFSET FLAT:$SG5639
-	lea	rcx, OFFSET FLAT:$SG5640
+	lea	rdx, OFFSET FLAT:$SG5642
+	lea	rcx, OFFSET FLAT:$SG5643
 	call	?AuCreateProcess@@YAHPEBDPEAD@Z		; AuCreateProcess
 	mov	DWORD PTR au_status$[rsp], eax
 
-; 148  : 
-; 149  : 	//create_process ("/dock.exe", "dock");
-; 150  : 	x64_sti();
+; 149  : 
+; 150  : 	//create_process ("/dock.exe", "dock");
+; 151  : 	x64_sti();
 
 	call	x64_sti
 
-; 151  : 	//! Here start the scheduler (multitasking engine)
-; 152  : 	scheduler_start();
+; 152  : 	//! Here start the scheduler (multitasking engine)
+; 153  : 	scheduler_start();
 
 	call	?scheduler_start@@YAXXZ			; scheduler_start
 $LN2@AuMain:
 
-; 153  : #endif
-; 154  : 
-; 155  : 	//! Loop forever
-; 156  : 	while(1) {
+; 154  : #endif
+; 155  : 
+; 156  : 	//! Loop forever
+; 157  : 	while(1) {
 
 	xor	eax, eax
 	cmp	eax, 1
 	je	SHORT $LN1@AuMain
 
-; 157  : 		//!looping looping
-; 158  : 		x64_cli();
+; 158  : 		//!looping looping
+; 159  : 		x64_cli();
 
 	call	x64_cli
 
-; 159  : 		x64_hlt();
+; 160  : 		x64_hlt();
 
 	call	x64_hlt
 
-; 160  : 	}
+; 161  : 	}
 
 	jmp	SHORT $LN2@AuMain
 $LN1@AuMain:
 
-; 161  : }
+; 162  : }
 
 	add	rsp, 56					; 00000038H
 	ret	0

@@ -12,8 +12,8 @@ _DATA	ENDS
 PUBLIC	??2@YAPEAX_K@Z					; operator new
 PUBLIC	??3@YAXPEAX@Z					; operator delete
 PUBLIC	??_U@YAPEAX_K@Z					; operator new[]
-EXTRN	?malloc@@YAPEAX_K@Z:PROC			; malloc
-EXTRN	?free@@YAXPEAX@Z:PROC				; free
+EXTRN	malloc:PROC
+EXTRN	free:PROC
 pdata	SEGMENT
 $pdata$??2@YAPEAX_K@Z DD imagerel $LN3
 	DD	imagerel $LN3+24
@@ -48,7 +48,7 @@ $LN3:
 ; 43   : 	return malloc(size);
 
 	mov	rcx, QWORD PTR size$[rsp]
-	call	?malloc@@YAPEAX_K@Z			; malloc
+	call	malloc
 
 ; 44   : }
 
@@ -71,7 +71,7 @@ $LN3:
 ; 47   : 	free(p);
 
 	mov	rcx, QWORD PTR p$[rsp]
-	call	?free@@YAXPEAX@Z			; free
+	call	free
 
 ; 48   : }
 
@@ -94,7 +94,7 @@ $LN3:
 ; 39   : 	return malloc(size);
 
 	mov	rcx, QWORD PTR size$[rsp]
-	call	?malloc@@YAPEAX_K@Z			; malloc
+	call	malloc
 
 ; 40   : }
 

@@ -14,25 +14,25 @@
 
 
 #include <stdint.h>
-
+#include <aurora.h>
 
 //!=====================================================
 //! S T R I N G   G L O B A L   F U N C T I O N S
 //!=====================================================
-extern int strcmp (const char* str1, const char* str2);
-extern char *strcpy(char *s1, const char *s2);
-extern size_t strlen (const char* str);
-extern int strncmp(const char* s1, const char *s2, size_t n);
-extern char *strncpy(char *destString, const char* sourceString, size_t maxLength);
-extern char* strchr (char* str, int character);
+AU_EXTERN AU_EXPORT int strcmp (const char* str1, const char* str2);
+AU_EXTERN AU_EXPORT char *strcpy(char *s1, const char *s2);
+AU_EXTERN AU_EXPORT size_t strlen (const char* str);
+AU_EXTERN AU_EXPORT int strncmp(const char* s1, const char *s2, size_t n);
+AU_EXTERN AU_EXPORT char *strncpy(char *destString, const char* sourceString, size_t maxLength);
+AU_EXTERN AU_EXPORT char* strchr (char* str, int character);
 
 //!=====================================================
 //! M E M O R Y  G L O B A L   F U N C T I O N S
 //!=====================================================
-extern void memset(void *targ, uint8_t val, uint32_t len);
-extern "C" void  memcpy(void *targ, void *src, uint32_t len);
-extern  int memcmp(const void *first, const void *second, size_t length);
-extern void* memmove (void*, const void*, size_t);
+AU_EXTERN AU_EXPORT void memset(void *targ, uint8_t val, uint32_t len);
+AU_EXTERN AU_EXPORT void  memcpy(void *targ, void *src, uint32_t len);
+AU_EXTERN AU_EXPORT  int memcmp(const void *first, const void *second, size_t length);
+AU_EXTERN AU_EXPORT void* memmove (void*, const void*, size_t);
 
 
 

@@ -21,11 +21,11 @@ PUBLIC	?pipe_read@@YAXPEAU_vfs_node_@@PEA_KI@Z		; pipe_read
 EXTRN	?circ_buf_init@@YAPEAU_circ_buf_@@PEAE_K@Z:PROC	; circ_buf_init
 EXTRN	?circular_buf_put@@YAXPEAU_circ_buf_@@E@Z:PROC	; circular_buf_put
 EXTRN	?circular_buf_get@@YAHPEAU_circ_buf_@@PEAE@Z:PROC ; circular_buf_get
-EXTRN	?strcpy@@YAPEADPEADPEBD@Z:PROC			; strcpy
-EXTRN	?strlen@@YA_KPEBD@Z:PROC			; strlen
+EXTRN	strcpy:PROC
+EXTRN	strlen:PROC
 EXTRN	vfs_mount:PROC
-EXTRN	?AuPmmngrAlloc@@YAPEAXXZ:PROC			; AuPmmngrAlloc
-EXTRN	?malloc@@YAPEAX_K@Z:PROC			; malloc
+EXTRN	AuPmmngrAlloc:PROC
+EXTRN	malloc:PROC
 EXTRN	?get_current_thread@@YAPEAU_thread_@@XZ:PROC	; get_current_thread
 EXTRN	?sztoa@@YAPEAD_KPEADH@Z:PROC			; sztoa
 pdata	SEGMENT
@@ -213,7 +213,7 @@ $LN5:
 
 	mov	rdx, QWORD PTR name$[rsp]
 	lea	rcx, QWORD PTR pipe_name$[rsp]
-	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
+	call	strcpy
 
 ; 58   : 	else {
 
@@ -224,16 +224,16 @@ $LN2@allocate_p:
 
 	lea	rdx, OFFSET FLAT:$SG3424
 	lea	rcx, QWORD PTR pipe_name$[rsp]
-	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
+	call	strcpy
 
 ; 60   : 		strcpy (pipe_name + strlen(pipe_name)-1, p_value);
 
 	lea	rcx, QWORD PTR pipe_name$[rsp]
-	call	?strlen@@YA_KPEBD@Z			; strlen
+	call	strlen
 	lea	rax, QWORD PTR pipe_name$[rsp+rax-1]
 	lea	rdx, QWORD PTR p_value$[rsp]
 	mov	rcx, rax
-	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
+	call	strcpy
 $LN1@allocate_p:
 
 ; 61   : 	}
@@ -244,23 +244,23 @@ $LN1@allocate_p:
 
 	lea	rdx, OFFSET FLAT:$SG3426
 	lea	rcx, QWORD PTR path_name$[rsp]
-	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
+	call	strcpy
 
 ; 66   : 	strcpy (path_name + strlen(path_name)-1, pipe_name);
 
 	lea	rcx, QWORD PTR path_name$[rsp]
-	call	?strlen@@YA_KPEBD@Z			; strlen
+	call	strlen
 	lea	rax, QWORD PTR path_name$[rsp+rax-1]
 	lea	rdx, QWORD PTR pipe_name$[rsp]
 	mov	rcx, rax
-	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
+	call	strcpy
 
 ; 67   : 
 ; 68   : 	
 ; 69   : 	vfs_node_t *readn = (vfs_node_t*)malloc(sizeof(vfs_node_t));
 
 	mov	ecx, 104				; 00000068H
-	call	?malloc@@YAPEAX_K@Z			; malloc
+	call	malloc
 	mov	QWORD PTR readn$[rsp], rax
 
 ; 70   : 	strcpy(readn->filename, pipe_name);
@@ -268,7 +268,7 @@ $LN1@allocate_p:
 	mov	rax, QWORD PTR readn$[rsp]
 	lea	rdx, QWORD PTR pipe_name$[rsp]
 	mov	rcx, rax
-	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
+	call	strcpy
 
 ; 71   : 	readn->size = 0;
 
@@ -397,7 +397,7 @@ $LN3:
 
 ; 20   : 	unsigned char *p = (unsigned char*)AuPmmngrAlloc();  //Main Buffer
 
-	call	?AuPmmngrAlloc@@YAPEAXXZ		; AuPmmngrAlloc
+	call	AuPmmngrAlloc
 	mov	QWORD PTR p$[rsp], rax
 
 ; 21   : 	circ_buf_t *circ = circ_buf_init((unsigned char*)p,4096);
@@ -409,7 +409,7 @@ $LN3:
 
 ; 22   : 	pipe_t *pipe = (pipe_t*)AuPmmngrAlloc();
 
-	call	?AuPmmngrAlloc@@YAPEAXXZ		; AuPmmngrAlloc
+	call	AuPmmngrAlloc
 	mov	QWORD PTR pipe$[rsp], rax
 
 ; 23   : 	pipe->buf = circ;

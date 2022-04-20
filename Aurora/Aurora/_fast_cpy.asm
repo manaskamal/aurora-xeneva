@@ -11,8 +11,8 @@
 section .text
 [BITS 64]
 
-global memcpy
-memcpy:
+global _fastcpy
+_fastcpy:
      mov rax, rcx
 	 push rsi
 	 push rdi

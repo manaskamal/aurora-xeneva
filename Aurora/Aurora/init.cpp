@@ -124,11 +124,12 @@ void _AuMain (KERNEL_BOOT_INFO *info) {
 	dwm_ipc_init();
 	pri_loop_init();
 	
-	e1000_initialize();   //<< receiver not working
+	//e1000_initialize();   //<< receiver not working
 
 	process_list_initialize();
 	ttype_init();
 	
+	for(;;);
 #ifdef ARCH_X64
 	//================================================
 	//! Initialize the scheduler here

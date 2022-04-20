@@ -19,9 +19,9 @@ $SG3025	DB	'[GPT]: Partition table lba -> %d', 0aH, 00H
 $SG3027	DB	'[GPT]: SizeOf(GPTPartitionTable) -> %d', 0aH, 00H
 CONST	ENDS
 PUBLIC	?initialize_gpt@@YAXXZ				; initialize_gpt
-EXTRN	?memset@@YAXPEAXEI@Z:PROC			; memset
+EXTRN	memset:PROC
 EXTRN	printf:PROC
-EXTRN	?AuPmmngrFree@@YAXPEAX@Z:PROC			; AuPmmngrFree
+EXTRN	AuPmmngrFree:PROC
 EXTRN	?ata_read_28@@YAEIGPEAE@Z:PROC			; ata_read_28
 pdata	SEGMENT
 $pdata$?initialize_gpt@@YAXXZ DD imagerel $LN6
@@ -59,7 +59,7 @@ $LN6:
 	mov	r8d, 512				; 00000200H
 	xor	edx, edx
 	lea	rcx, QWORD PTR buffer$[rsp]
-	call	?memset@@YAXPEAXEI@Z			; memset
+	call	memset
 
 ; 25   : 
 ; 26   : 	ata_read_28 (1,1,buffer);
@@ -158,7 +158,7 @@ $LN1@initialize:
 ; 45   : 	AuPmmngrFree(buf);
 
 	lea	rcx, QWORD PTR buf$[rsp]
-	call	?AuPmmngrFree@@YAXPEAX@Z		; AuPmmngrFree
+	call	AuPmmngrFree
 
 ; 46   : }
 

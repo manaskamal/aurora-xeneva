@@ -7,7 +7,7 @@ INCLUDELIB OLDNAMES
 
 PUBLIC	?valloc@@YAX_K@Z				; valloc
 PUBLIC	?vfree@@YAX_K@Z					; vfree
-EXTRN	?AuPmmngrAlloc@@YAPEAXXZ:PROC			; AuPmmngrAlloc
+EXTRN	AuPmmngrAlloc:PROC
 EXTRN	x64_cli:PROC
 EXTRN	AuMapPage:PROC
 EXTRN	AuUnmapPage:PROC
@@ -67,7 +67,7 @@ $LN3:
 
 ; 11   : 	void *p = AuPmmngrAlloc();
 
-	call	?AuPmmngrAlloc@@YAPEAXXZ		; AuPmmngrAlloc
+	call	AuPmmngrAlloc
 	mov	QWORD PTR p$[rsp], rax
 
 ; 12   : 	AuMapPage((uint64_t)p, pos, PAGING_USER);

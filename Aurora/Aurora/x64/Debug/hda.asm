@@ -110,9 +110,9 @@ EXTRN	pci_find_device_class:PROC
 EXTRN	pci_alloc_msi:PROC
 EXTRN	pci_enable_bus_master:PROC
 EXTRN	pci_enable_interrupt:PROC
-EXTRN	?memset@@YAXPEAXEI@Z:PROC			; memset
+EXTRN	memset:PROC
 EXTRN	memcpy:PROC
-EXTRN	?AuPmmngrAlloc@@YAPEAXXZ:PROC			; AuPmmngrAlloc
+EXTRN	AuPmmngrAlloc:PROC
 EXTRN	AuMapPage:PROC
 EXTRN	?AuGetPhysicalAddress@@YAPEA_K_K@Z:PROC		; AuGetPhysicalAddress
 EXTRN	printf:PROC
@@ -1329,7 +1329,7 @@ $LN7@hda_init_o:
 
 ; 293  : 	uint64_t bdl_base = (uint64_t)AuPmmngrAlloc();   //get_physical_address  ((uint64_t) 0x0000000000000000);
 
-	call	?AuPmmngrAlloc@@YAPEAXXZ		; AuPmmngrAlloc
+	call	AuPmmngrAlloc
 	mov	QWORD PTR bdl_base$[rsp], rax
 
 ; 294  : 	ihda_bdl_entry *bdl = (ihda_bdl_entry*)bdl_base;  //(_ihd_audio.corb + 3072);
@@ -1473,7 +1473,7 @@ $LN4@hda_init_o:
 ; 317  : 
 ; 318  : 	uint64_t* dma_pos = (uint64_t*)AuPmmngrAlloc();
 
-	call	?AuPmmngrAlloc@@YAPEAXXZ		; AuPmmngrAlloc
+	call	AuPmmngrAlloc
 	mov	QWORD PTR dma_pos$[rsp], rax
 
 ; 319  : 	for (int i = 0; i < 8; i++) {
@@ -2858,12 +2858,12 @@ $LN12@hda_initia:
 ; 562  : 
 ; 563  : 	_ihd_audio.output = (hda_output*)AuPmmngrAlloc();
 
-	call	?AuPmmngrAlloc@@YAPEAXXZ		; AuPmmngrAlloc
+	call	AuPmmngrAlloc
 	mov	QWORD PTR ?_ihd_audio@@3U_hd_audio_@@A+33, rax
 
 ; 564  : 	_ihd_audio.vol = (hda_volume*)AuPmmngrAlloc();
 
-	call	?AuPmmngrAlloc@@YAPEAXXZ		; AuPmmngrAlloc
+	call	AuPmmngrAlloc
 	mov	QWORD PTR ?_ihd_audio@@3U_hd_audio_@@A+41, rax
 
 ; 565  : 	memset (_ihd_audio.output, 0, 4096);
@@ -2871,7 +2871,7 @@ $LN12@hda_initia:
 	mov	r8d, 4096				; 00001000H
 	xor	edx, edx
 	mov	rcx, QWORD PTR ?_ihd_audio@@3U_hd_audio_@@A+33
-	call	?memset@@YAXPEAXEI@Z			; memset
+	call	memset
 
 ; 566  : 
 ; 567  : 
@@ -2930,12 +2930,12 @@ $LN10@hda_initia:
 
 ; 577  : 	_ihd_audio.corb = (uint32_t*)AuPmmngrAlloc(); 
 
-	call	?AuPmmngrAlloc@@YAPEAXXZ		; AuPmmngrAlloc
+	call	AuPmmngrAlloc
 	mov	QWORD PTR ?_ihd_audio@@3U_hd_audio_@@A+8, rax
 
 ; 578  : 	_ihd_audio.rirb = (uint64_t*)AuPmmngrAlloc(); 
 
-	call	?AuPmmngrAlloc@@YAPEAXXZ		; AuPmmngrAlloc
+	call	AuPmmngrAlloc
 	mov	QWORD PTR ?_ihd_audio@@3U_hd_audio_@@A+16, rax
 
 ; 579  : 	memset (_ihd_audio.corb, 0, 4096);
@@ -2943,14 +2943,14 @@ $LN10@hda_initia:
 	mov	r8d, 4096				; 00001000H
 	xor	edx, edx
 	mov	rcx, QWORD PTR ?_ihd_audio@@3U_hd_audio_@@A+8
-	call	?memset@@YAXPEAXEI@Z			; memset
+	call	memset
 
 ; 580  : 	memset (_ihd_audio.rirb, 0, 4096);
 
 	mov	r8d, 4096				; 00001000H
 	xor	edx, edx
 	mov	rcx, QWORD PTR ?_ihd_audio@@3U_hd_audio_@@A+16
-	call	?memset@@YAXPEAXEI@Z			; memset
+	call	memset
 
 ; 581  : 
 ; 582  : 
@@ -2981,7 +2981,7 @@ $LN9@hda_initia:
 	add	rcx, rax
 	mov	rax, rcx
 	mov	QWORD PTR tv164[rsp], rax
-	call	?AuPmmngrAlloc@@YAPEAXXZ		; AuPmmngrAlloc
+	call	AuPmmngrAlloc
 	xor	r8d, r8d
 	mov	rcx, QWORD PTR tv164[rsp]
 	mov	rdx, rcx
@@ -3004,7 +3004,7 @@ $LN7@hda_initia:
 	mov	r8d, 2048				; 00000800H
 	mov	dl, 100					; 00000064H
 	mov	rcx, QWORD PTR ?_ihd_audio@@3U_hd_audio_@@A+61
-	call	?memset@@YAXPEAXEI@Z			; memset
+	call	memset
 
 ; 591  : 
 ; 592  : 

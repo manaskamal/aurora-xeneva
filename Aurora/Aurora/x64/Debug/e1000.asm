@@ -77,11 +77,11 @@ EXTRN	write_config_8:PROC
 EXTRN	pci_find_device_class:PROC
 EXTRN	pci_alloc_msi:PROC
 EXTRN	pci_enable_bus_master:PROC
-EXTRN	?AuPmmngrAlloc@@YAPEAXXZ:PROC			; AuPmmngrAlloc
-EXTRN	?memset@@YAXPEAXEI@Z:PROC			; memset
+EXTRN	AuPmmngrAlloc:PROC
+EXTRN	memset:PROC
 EXTRN	memcpy:PROC
 EXTRN	printf:PROC
-EXTRN	?malloc@@YAPEAX_K@Z:PROC			; malloc
+EXTRN	malloc:PROC
 EXTRN	?_debug_print_@@YAXPEADZZ:PROC			; _debug_print_
 pdata	SEGMENT
 $pdata$?e1000_initialize@@YAXXZ DD imagerel $LN28
@@ -507,7 +507,7 @@ $LN6:
 ; 183  : 
 ; 184  : 	i_net_dev->tx_desc_base = (uint64_t*)AuPmmngrAlloc();
 
-	call	?AuPmmngrAlloc@@YAPEAXXZ		; AuPmmngrAlloc
+	call	AuPmmngrAlloc
 	mov	rcx, QWORD PTR ?i_net_dev@@3PEAU_e1000_dev_@@EA ; i_net_dev
 	mov	QWORD PTR [rcx+40], rax
 
@@ -543,7 +543,7 @@ $LN3@e1000_tx_i:
 
 ; 188  : 		i_net_dev->tx_desc[i]->addr = (uint64_t)AuPmmngrAlloc();
 
-	call	?AuPmmngrAlloc@@YAPEAXXZ		; AuPmmngrAlloc
+	call	AuPmmngrAlloc
 	movsxd	rcx, DWORD PTR i$1[rsp]
 	mov	rdx, QWORD PTR ?i_net_dev@@3PEAU_e1000_dev_@@EA ; i_net_dev
 	mov	rcx, QWORD PTR [rdx+rcx*8+312]
@@ -662,7 +662,7 @@ $LN6:
 ; 154  : 
 ; 155  : 	i_net_dev->rx_desc_base = (uint64_t*)AuPmmngrAlloc();
 
-	call	?AuPmmngrAlloc@@YAPEAXXZ		; AuPmmngrAlloc
+	call	AuPmmngrAlloc
 	mov	rcx, QWORD PTR ?i_net_dev@@3PEAU_e1000_dev_@@EA ; i_net_dev
 	mov	QWORD PTR [rcx+32], rax
 
@@ -672,7 +672,7 @@ $LN6:
 	xor	edx, edx
 	mov	rax, QWORD PTR ?i_net_dev@@3PEAU_e1000_dev_@@EA ; i_net_dev
 	mov	rcx, QWORD PTR [rax+32]
-	call	?memset@@YAXPEAXEI@Z			; memset
+	call	memset
 
 ; 157  : 	uint64_t rx_desc_base = (uint64_t)i_net_dev->rx_desc_base;
 
@@ -707,7 +707,7 @@ $LN3@e1000_rx_i:
 
 ; 161  : 		i_net_dev->rx_desc[i]->addr = (uint64_t)AuPmmngrAlloc();   
 
-	call	?AuPmmngrAlloc@@YAPEAXXZ		; AuPmmngrAlloc
+	call	AuPmmngrAlloc
 	movsxd	rcx, DWORD PTR i$1[rsp]
 	mov	rdx, QWORD PTR ?i_net_dev@@3PEAU_e1000_dev_@@EA ; i_net_dev
 	mov	rcx, QWORD PTR [rdx+rcx*8+56]
@@ -1734,7 +1734,7 @@ $LN28:
 
 ; 306  : 	pci_device_info *dev = (pci_device_info*)AuPmmngrAlloc();
 
-	call	?AuPmmngrAlloc@@YAPEAXXZ		; AuPmmngrAlloc
+	call	AuPmmngrAlloc
 	mov	QWORD PTR dev$[rsp], rax
 
 ; 307  : 	if (!pci_find_device_class (0x02,0x00, dev,&bus, &dev_, &func)) {
@@ -1799,7 +1799,7 @@ $LN24@e1000_init:
 ; 318  : 	i_net_dev = (e1000_dev*)malloc(sizeof(e1000_dev));
 
 	mov	ecx, 376				; 00000178H
-	call	?malloc@@YAPEAX_K@Z			; malloc
+	call	malloc
 	mov	QWORD PTR ?i_net_dev@@3PEAU_e1000_dev_@@EA, rax ; i_net_dev
 
 ; 319  :     

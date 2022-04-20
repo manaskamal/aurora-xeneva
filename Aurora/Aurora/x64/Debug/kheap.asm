@@ -14,15 +14,15 @@ _BSS	ENDS
 PUBLIC	?AuHeapInitialize@@YAXXZ			; AuHeapInitialize
 PUBLIC	?au_request_page@@YAPEA_KH@Z			; au_request_page
 PUBLIC	?au_free_page@@YAXPEAXH@Z			; au_free_page
-PUBLIC	?malloc@@YAPEAX_K@Z				; malloc
-PUBLIC	?free@@YAXPEAX@Z				; free
+PUBLIC	malloc
+PUBLIC	free
 PUBLIC	?au_split_block@@YAXPEAU_meta_data_@@_K@Z	; au_split_block
 PUBLIC	?au_expand_kmalloc@@YAX_K@Z			; au_expand_kmalloc
 PUBLIC	?krealloc@@YAPEAXPEAX_K@Z			; krealloc
 PUBLIC	?kcalloc@@YAPEAX_K0@Z				; kcalloc
-EXTRN	?memset@@YAXPEAXEI@Z:PROC			; memset
+EXTRN	memset:PROC
 EXTRN	memcpy:PROC
-EXTRN	?AuPmmngrAlloc@@YAPEAXXZ:PROC			; AuPmmngrAlloc
+EXTRN	AuPmmngrAlloc:PROC
 EXTRN	AuMapPage:PROC
 EXTRN	AuGetFreePage:PROC
 EXTRN	AuFreePages:PROC
@@ -36,12 +36,12 @@ $pdata$?au_request_page@@YAPEA_KH@Z DD imagerel $LN6
 $pdata$?au_free_page@@YAXPEAXH@Z DD imagerel $LN3
 	DD	imagerel $LN3+38
 	DD	imagerel $unwind$?au_free_page@@YAXPEAXH@Z
-$pdata$?malloc@@YAPEAX_K@Z DD imagerel $LN9
+$pdata$malloc DD imagerel $LN9
 	DD	imagerel $LN9+197
-	DD	imagerel $unwind$?malloc@@YAPEAX_K@Z
-$pdata$?free@@YAXPEAX@Z DD imagerel $LN6
+	DD	imagerel $unwind$malloc
+$pdata$free DD	imagerel $LN6
 	DD	imagerel $LN6+229
-	DD	imagerel $unwind$?free@@YAXPEAX@Z
+	DD	imagerel $unwind$free
 $pdata$?au_split_block@@YAXPEAU_meta_data_@@_K@Z DD imagerel $LN4
 	DD	imagerel $LN4+207
 	DD	imagerel $unwind$?au_split_block@@YAXPEAU_meta_data_@@_K@Z
@@ -62,9 +62,9 @@ $unwind$?au_request_page@@YAPEA_KH@Z DD 010801H
 	DD	08208H
 $unwind$?au_free_page@@YAXPEAXH@Z DD 010d01H
 	DD	0420dH
-$unwind$?malloc@@YAPEAX_K@Z DD 010901H
+$unwind$malloc DD 010901H
 	DD	06209H
-$unwind$?free@@YAXPEAX@Z DD 010901H
+$unwind$free DD	010901H
 	DD	02209H
 $unwind$?au_split_block@@YAXPEAU_meta_data_@@_K@Z DD 010e01H
 	DD	0220eH
@@ -101,7 +101,7 @@ $LN4:
 ; 191  : 	void* ptr = malloc(total);
 
 	mov	rcx, QWORD PTR total$[rsp]
-	call	?malloc@@YAPEAX_K@Z			; malloc
+	call	malloc
 	mov	QWORD PTR ptr$[rsp], rax
 
 ; 192  : 	if (ptr)
@@ -114,7 +114,7 @@ $LN4:
 	mov	r8d, DWORD PTR total$[rsp]
 	xor	edx, edx
 	mov	rcx, QWORD PTR ptr$[rsp]
-	call	?memset@@YAXPEAXEI@Z			; memset
+	call	memset
 $LN1@kcalloc:
 
 ; 194  : 	return ptr;
@@ -145,7 +145,7 @@ $LN4:
 ; 171  : 	void* result = malloc(new_size);
 
 	mov	rcx, QWORD PTR new_size$[rsp]
-	call	?malloc@@YAPEAX_K@Z			; malloc
+	call	malloc
 	mov	QWORD PTR result$[rsp], rax
 
 ; 172  : 	if (ptr) {
@@ -169,7 +169,7 @@ $LN1@krealloc:
 ; 179  : 	free(ptr);
 
 	mov	rcx, QWORD PTR ptr$[rsp]
-	call	?free@@YAXPEAX@Z			; free
+	call	free
 
 ; 180  : 	return result;
 
@@ -444,7 +444,7 @@ _TEXT	SEGMENT
 meta$ = 0
 actual_addr$ = 8
 ptr$ = 32
-?free@@YAXPEAX@Z PROC					; free
+free	PROC
 
 ; 143  : void free(void* ptr) {
 
@@ -555,14 +555,14 @@ $LN1@free:
 
 	add	rsp, 24
 	ret	0
-?free@@YAXPEAX@Z ENDP					; free
+free	ENDP
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\arch\x86_64\kheap.cpp
 _TEXT	SEGMENT
 meta$1 = 32
 size$ = 64
-?malloc@@YAPEAX_K@Z PROC				; malloc
+malloc	PROC
 
 ; 113  : void* malloc(size_t size) {
 
@@ -666,14 +666,14 @@ $LN4@malloc:
 ; 135  : 	return malloc(size);
 
 	mov	rcx, QWORD PTR size$[rsp]
-	call	?malloc@@YAPEAX_K@Z			; malloc
+	call	malloc
 $LN7@malloc:
 
 ; 136  : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
-?malloc@@YAPEAX_K@Z ENDP				; malloc
+malloc	ENDP
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\arch\x86_64\kheap.cpp
@@ -752,7 +752,7 @@ $LN3@au_request:
 	add	rcx, rax
 	mov	rax, rcx
 	mov	QWORD PTR tv73[rsp], rax
-	call	?AuPmmngrAlloc@@YAPEAXXZ		; AuPmmngrAlloc
+	call	AuPmmngrAlloc
 	xor	r8d, r8d
 	mov	rcx, QWORD PTR tv73[rsp]
 	mov	rdx, rcx
@@ -799,7 +799,7 @@ $LN3:
 	mov	r8d, 16384				; 00004000H
 	xor	edx, edx
 	mov	rcx, QWORD PTR page$[rsp]
-	call	?memset@@YAXPEAXEI@Z			; memset
+	call	memset
 
 ; 44   : 	/* setup the first meta data block */
 ; 45   : 	uint8_t* desc_addr = (uint8_t*)page;

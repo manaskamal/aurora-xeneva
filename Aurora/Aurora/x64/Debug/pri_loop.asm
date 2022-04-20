@@ -23,14 +23,14 @@ PUBLIC	?pri_loop_destroy_by_id@@YAXG@Z			; pri_loop_destroy_by_id
 PUBLIC	?pri_loop_create@@YAXXZ				; pri_loop_create
 PUBLIC	?pri_get_message@@YAXPEAU_pri_event_@@@Z	; pri_get_message
 PUBLIC	?pri_loop_ioquery@@YAHPEAU_vfs_node_@@HPEAX@Z	; pri_loop_ioquery
-EXTRN	?strcpy@@YAPEADPEADPEBD@Z:PROC			; strcpy
-EXTRN	?memset@@YAXPEAXEI@Z:PROC			; memset
+EXTRN	strcpy:PROC
+EXTRN	memset:PROC
 EXTRN	memcpy:PROC
-EXTRN	?AuPmmngrAlloc@@YAPEAXXZ:PROC			; AuPmmngrAlloc
-EXTRN	?AuPmmngrFree@@YAXPEAX@Z:PROC			; AuPmmngrFree
+EXTRN	AuPmmngrAlloc:PROC
+EXTRN	AuPmmngrFree:PROC
 EXTRN	x64_cli:PROC
 EXTRN	x64_sti:PROC
-EXTRN	?malloc@@YAPEAX_K@Z:PROC			; malloc
+EXTRN	malloc:PROC
 EXTRN	vfs_mount:PROC
 EXTRN	?unblock_thread@@YAXPEAU_thread_@@@Z:PROC	; unblock_thread
 EXTRN	?get_current_thread@@YAPEAU_thread_@@XZ:PROC	; get_current_thread
@@ -284,7 +284,7 @@ $LN6@pri_get_me:
 	xor	edx, edx
 	mov	rax, QWORD PTR loop$1[rsp]
 	mov	rcx, QWORD PTR [rax]
-	call	?memset@@YAXPEAXEI@Z			; memset
+	call	memset
 
 ; 149  : 				loop->pending_msg_count--;
 
@@ -346,12 +346,12 @@ $LN5:
 
 ; 45   : 	pri_loop_box_t *loop = (pri_loop_box_t*)AuPmmngrAlloc();  //malloc(sizeof(pri_loop_box_t));
 
-	call	?AuPmmngrAlloc@@YAPEAXXZ		; AuPmmngrAlloc
+	call	AuPmmngrAlloc
 	mov	QWORD PTR loop$[rsp], rax
 
 ; 46   : 	loop->address = AuPmmngrAlloc();//malloc(sizeof(pri_event_t));
 
-	call	?AuPmmngrAlloc@@YAPEAXXZ		; AuPmmngrAlloc
+	call	AuPmmngrAlloc
 	mov	rcx, QWORD PTR loop$[rsp]
 	mov	QWORD PTR [rcx], rax
 
@@ -361,7 +361,7 @@ $LN5:
 	xor	edx, edx
 	mov	rax, QWORD PTR loop$[rsp]
 	mov	rcx, QWORD PTR [rax]
-	call	?memset@@YAXPEAXEI@Z			; memset
+	call	memset
 
 ; 48   : 	loop->owner_id = get_current_thread()->id;
 
@@ -578,12 +578,12 @@ $LN1@pri_loop_d:
 
 	mov	rax, QWORD PTR box$[rsp]
 	mov	rcx, QWORD PTR [rax]
-	call	?AuPmmngrFree@@YAXPEAX@Z		; AuPmmngrFree
+	call	AuPmmngrFree
 
 ; 85   : 	AuPmmngrFree(box);
 
 	mov	rcx, QWORD PTR box$[rsp]
-	call	?AuPmmngrFree@@YAXPEAX@Z		; AuPmmngrFree
+	call	AuPmmngrFree
 $LN6@pri_loop_d:
 
 ; 86   : 	
@@ -753,7 +753,7 @@ $LN3:
 ; 205  : 	vfs_node_t *node = (vfs_node_t*)malloc(sizeof(vfs_node_t));
 
 	mov	ecx, 104				; 00000068H
-	call	?malloc@@YAPEAX_K@Z			; malloc
+	call	malloc
 	mov	QWORD PTR node$[rsp], rax
 
 ; 206  : 	strcpy (node->filename, "pri_loop");
@@ -761,7 +761,7 @@ $LN3:
 	mov	rax, QWORD PTR node$[rsp]
 	lea	rdx, OFFSET FLAT:$SG3432
 	mov	rcx, rax
-	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
+	call	strcpy
 
 ; 207  : 	node->size = 0;
 

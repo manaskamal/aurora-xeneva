@@ -13,9 +13,9 @@ PUBLIC	?dwm_ipc_init@@YAXXZ				; dwm_ipc_init
 PUBLIC	?dwm_put_message@@YAXPEAU_dwm_message_@@@Z	; dwm_put_message
 PUBLIC	?dwm_dispatch_message@@YAXPEAU_dwm_message_@@@Z	; dwm_dispatch_message
 PUBLIC	?get_dwm_message_q_address@@YAPEA_KXZ		; get_dwm_message_q_address
-EXTRN	?memset@@YAXPEAXEI@Z:PROC			; memset
+EXTRN	memset:PROC
 EXTRN	memcpy:PROC
-EXTRN	?AuPmmngrAlloc@@YAPEAXXZ:PROC			; AuPmmngrAlloc
+EXTRN	AuPmmngrAlloc:PROC
 EXTRN	x64_cli:PROC
 EXTRN	AuMapPage:PROC
 EXTRN	?get_current_thread@@YAPEAU_thread_@@XZ:PROC	; get_current_thread
@@ -98,7 +98,7 @@ $LN4:
 	mov	r8d, 4096				; 00001000H
 	xor	edx, edx
 	mov	rcx, QWORD PTR [rax+752]
-	call	?memset@@YAXPEAXEI@Z			; memset
+	call	memset
 $LN1@dwm_dispat:
 
 ; 51   : 	}
@@ -198,7 +198,7 @@ $LN3:
 
 ; 20   : 	void* p = AuPmmngrAlloc();
 
-	call	?AuPmmngrAlloc@@YAPEAXXZ		; AuPmmngrAlloc
+	call	AuPmmngrAlloc
 	mov	QWORD PTR p$[rsp], rax
 
 ; 21   : 	memset(p, 0, 4096);
@@ -206,7 +206,7 @@ $LN3:
 	mov	r8d, 4096				; 00001000H
 	xor	edx, edx
 	mov	rcx, QWORD PTR p$[rsp]
-	call	?memset@@YAXPEAXEI@Z			; memset
+	call	memset
 
 ; 22   : 	AuMapPage((uint64_t)p,0xFFFFFD0000000000, PAGING_USER);
 
@@ -217,7 +217,7 @@ $LN3:
 
 ; 23   : 	void *p2 = AuPmmngrAlloc();
 
-	call	?AuPmmngrAlloc@@YAPEAXXZ		; AuPmmngrAlloc
+	call	AuPmmngrAlloc
 	mov	QWORD PTR p2$[rsp], rax
 
 ; 24   : 	memset(p2, 0, 4096);
@@ -225,7 +225,7 @@ $LN3:
 	mov	r8d, 4096				; 00001000H
 	xor	edx, edx
 	mov	rcx, QWORD PTR p2$[rsp]
-	call	?memset@@YAXPEAXEI@Z			; memset
+	call	memset
 
 ; 25   : 	AuMapPage((uint64_t)p2,0xFFFFD00000000000,PAGING_USER);
 

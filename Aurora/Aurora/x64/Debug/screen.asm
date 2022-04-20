@@ -27,10 +27,10 @@ PUBLIC	AuGetScreenScanline
 PUBLIC	AuGetFramebufferSize
 PUBLIC	AuDrawPixel
 PUBLIC	?screen_io_query@@YAHPEAU_vfs_node_@@HPEAX@Z	; screen_io_query
-EXTRN	?strcpy@@YAPEADPEADPEBD@Z:PROC			; strcpy
+EXTRN	strcpy:PROC
 EXTRN	printf:PROC
 EXTRN	vfs_mount:PROC
-EXTRN	?AuPmmngrAlloc@@YAPEAXXZ:PROC			; AuPmmngrAlloc
+EXTRN	AuPmmngrAlloc:PROC
 EXTRN	AuMapPage:PROC
 pdata	SEGMENT
 $pdata$?AuInitializeScreen@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z DD imagerel $LN9
@@ -412,7 +412,7 @@ $LN9:
 ; 46   : 	 */
 ; 47   : 	vfs_node_t * svga = (vfs_node_t*)AuPmmngrAlloc(); 
 
-	call	?AuPmmngrAlloc@@YAPEAXXZ		; AuPmmngrAlloc
+	call	AuPmmngrAlloc
 	mov	QWORD PTR svga$[rsp], rax
 
 ; 48   : 	strcpy (svga->filename, "fb");
@@ -420,7 +420,7 @@ $LN9:
 	mov	rax, QWORD PTR svga$[rsp]
 	lea	rdx, OFFSET FLAT:$SG3160
 	mov	rcx, rax
-	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
+	call	strcpy
 
 ; 49   : 	svga->size = 0;
 

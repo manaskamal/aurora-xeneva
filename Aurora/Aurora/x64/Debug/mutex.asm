@@ -8,7 +8,7 @@ INCLUDELIB OLDNAMES
 PUBLIC	?create_mutex@@YAPEAUmutex_t@@XZ		; create_mutex
 PUBLIC	?mutex_lock@@YAXPEAUmutex_t@@@Z			; mutex_lock
 PUBLIC	?mutex_unlock@@YAXPEAUmutex_t@@@Z		; mutex_unlock
-EXTRN	?malloc@@YAPEAX_K@Z:PROC			; malloc
+EXTRN	malloc:PROC
 EXTRN	?block_thread@@YAXPEAU_thread_@@@Z:PROC		; block_thread
 EXTRN	?unblock_thread@@YAXPEAU_thread_@@@Z:PROC	; unblock_thread
 EXTRN	?get_current_thread@@YAPEAU_thread_@@XZ:PROC	; get_current_thread
@@ -289,7 +289,7 @@ $LN3:
 ; 19   : 	mutex_t * obj = (mutex_t*)malloc(sizeof(mutex_t));
 
 	mov	ecx, 216				; 000000d8H
-	call	?malloc@@YAPEAX_K@Z			; malloc
+	call	malloc
 	mov	QWORD PTR obj$[rsp], rax
 
 ; 20   : 	obj->blocks = 0;

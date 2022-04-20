@@ -26,13 +26,13 @@ PUBLIC	?dsp_delete@@YAXPEAU_dsp_@@@Z			; dsp_delete
 PUBLIC	?sound_create_client@@YAXPEAU_vfs_node_@@@Z	; sound_create_client
 PUBLIC	?snd_io_query@@YAHPEAU_vfs_node_@@HPEAX@Z	; snd_io_query
 PUBLIC	?sound_write@@YAXPEAU_vfs_node_@@PEAEI@Z	; sound_write
-EXTRN	?strcpy@@YAPEADPEADPEBD@Z:PROC			; strcpy
-EXTRN	?memset@@YAXPEAXEI@Z:PROC			; memset
+EXTRN	strcpy:PROC
+EXTRN	memset:PROC
 EXTRN	memcpy:PROC
 EXTRN	vfs_mount:PROC
-EXTRN	?AuPmmngrAlloc@@YAPEAXXZ:PROC			; AuPmmngrAlloc
-EXTRN	?AuPmmngrFree@@YAXPEAX@Z:PROC			; AuPmmngrFree
-EXTRN	?malloc@@YAPEAX_K@Z:PROC			; malloc
+EXTRN	AuPmmngrAlloc:PROC
+EXTRN	AuPmmngrFree:PROC
+EXTRN	malloc:PROC
 EXTRN	?hda_audio_play@@YAXXZ:PROC			; hda_audio_play
 pdata	SEGMENT
 $pdata$?sound_initialize@@YAXXZ DD imagerel $LN3
@@ -211,7 +211,7 @@ $LN3:
 
 ; 81   : 	dsp_t *dsp = (dsp_t*)AuPmmngrAlloc();
 
-	call	?AuPmmngrAlloc@@YAPEAXXZ		; AuPmmngrAlloc
+	call	AuPmmngrAlloc
 	mov	QWORD PTR dsp$[rsp], rax
 
 ; 82   : 	memset(dsp,0,4096);
@@ -219,7 +219,7 @@ $LN3:
 	mov	r8d, 4096				; 00001000H
 	xor	edx, edx
 	mov	rcx, QWORD PTR dsp$[rsp]
-	call	?memset@@YAXPEAXEI@Z			; memset
+	call	memset
 
 ; 83   : 	node->device = dsp;
 
@@ -321,7 +321,7 @@ $LN1@dsp_delete:
 ; 74   : 	AuPmmngrFree (dsp);
 
 	mov	rcx, QWORD PTR dsp$[rsp]
-	call	?AuPmmngrFree@@YAXPEAX@Z		; AuPmmngrFree
+	call	AuPmmngrFree
 $LN6@dsp_delete:
 
 ; 75   : }
@@ -495,7 +495,7 @@ $LN3:
 ; 132  : 	vfs_node_t * snd = (vfs_node_t*)malloc(sizeof(vfs_node_t));
 
 	mov	ecx, 104				; 00000068H
-	call	?malloc@@YAPEAX_K@Z			; malloc
+	call	malloc
 	mov	QWORD PTR snd$[rsp], rax
 
 ; 133  : 	strcpy (snd->filename, "snd");
@@ -503,7 +503,7 @@ $LN3:
 	mov	rax, QWORD PTR snd$[rsp]
 	lea	rdx, OFFSET FLAT:$SG3776
 	mov	rcx, rax
-	call	?strcpy@@YAPEADPEADPEBD@Z		; strcpy
+	call	strcpy
 
 ; 134  : 	snd->size = 0;
 

@@ -23,11 +23,11 @@ PUBLIC	?is_transmit_empty@@YAHXZ			; is_transmit_empty
 EXTRN	x64_inportb:PROC
 EXTRN	x64_outportb:PROC
 EXTRN	AuInterruptEnd:PROC
-EXTRN	?strlen@@YA_KPEBD@Z:PROC			; strlen
+EXTRN	strlen:PROC
 EXTRN	?sztoa@@YAPEAD_KPEADH@Z:PROC			; sztoa
 EXTRN	printf:PROC
 EXTRN	?ftoa@@YAPEADME@Z:PROC				; ftoa
-EXTRN	?p2v@@YA_K_K@Z:PROC				; p2v
+EXTRN	p2v:PROC
 EXTRN	_fltused:DWORD
 pdata	SEGMENT
 $pdata$?AuInitializeSerial@@YAXXZ DD imagerel $LN3
@@ -76,7 +76,7 @@ $LN3:
 ; 45   : 	return x64_inportb (p2v(PORT + 5)) & 0x20;
 
 	mov	ecx, 1021				; 000003fdH
-	call	?p2v@@YA_K_K@Z				; p2v
+	call	p2v
 	movzx	ecx, ax
 	call	x64_inportb
 	movzx	eax, al
@@ -307,7 +307,7 @@ $LN14@debug_prin:
 ; 86   : 					size_t len = strlen(buffer);
 
 	lea	rcx, QWORD PTR buffer$11[rsp]
-	call	?strlen@@YA_KPEBD@Z			; strlen
+	call	strlen
 	mov	QWORD PTR len$10[rsp], rax
 $LN13@debug_prin:
 
@@ -554,7 +554,7 @@ $LN3@debug_seri:
 	movsxd	rax, DWORD PTR i$1[rsp]
 	mov	QWORD PTR tv65[rsp], rax
 	mov	rcx, QWORD PTR string$[rsp]
-	call	?strlen@@YA_KPEBD@Z			; strlen
+	call	strlen
 	mov	rcx, QWORD PTR tv65[rsp]
 	cmp	rcx, rax
 	jae	SHORT $LN1@debug_seri
@@ -598,7 +598,7 @@ $LN1@write_seri:
 ; 50   : 	x64_outportb (p2v(PORT), a);
 
 	mov	ecx, 1016				; 000003f8H
-	call	?p2v@@YA_K_K@Z				; p2v
+	call	p2v
 	movzx	edx, BYTE PTR a$[rsp]
 	movzx	ecx, ax
 	call	x64_outportb
@@ -622,7 +622,7 @@ $LN3:
 ; 30   : 	x64_outportb (p2v(PORT + 1), 0x00);
 
 	mov	ecx, 1017				; 000003f9H
-	call	?p2v@@YA_K_K@Z				; p2v
+	call	p2v
 	xor	edx, edx
 	movzx	ecx, ax
 	call	x64_outportb
@@ -630,7 +630,7 @@ $LN3:
 ; 31   : 	x64_outportb (p2v(PORT + 3), 0x80);
 
 	mov	ecx, 1019				; 000003fbH
-	call	?p2v@@YA_K_K@Z				; p2v
+	call	p2v
 	mov	dl, 128					; 00000080H
 	movzx	ecx, ax
 	call	x64_outportb
@@ -638,7 +638,7 @@ $LN3:
 ; 32   : 	x64_outportb (p2v(PORT + 0), 0x03);
 
 	mov	ecx, 1016				; 000003f8H
-	call	?p2v@@YA_K_K@Z				; p2v
+	call	p2v
 	mov	dl, 3
 	movzx	ecx, ax
 	call	x64_outportb
@@ -646,7 +646,7 @@ $LN3:
 ; 33   : 	x64_outportb (p2v(PORT + 1), 0x00);
 
 	mov	ecx, 1017				; 000003f9H
-	call	?p2v@@YA_K_K@Z				; p2v
+	call	p2v
 	xor	edx, edx
 	movzx	ecx, ax
 	call	x64_outportb
@@ -654,7 +654,7 @@ $LN3:
 ; 34   : 	x64_outportb (p2v(PORT + 3), 0x03);
 
 	mov	ecx, 1019				; 000003fbH
-	call	?p2v@@YA_K_K@Z				; p2v
+	call	p2v
 	mov	dl, 3
 	movzx	ecx, ax
 	call	x64_outportb
@@ -662,7 +662,7 @@ $LN3:
 ; 35   : 	x64_outportb (p2v(PORT + 2), 0xC7);
 
 	mov	ecx, 1018				; 000003faH
-	call	?p2v@@YA_K_K@Z				; p2v
+	call	p2v
 	mov	dl, 199					; 000000c7H
 	movzx	ecx, ax
 	call	x64_outportb
@@ -670,7 +670,7 @@ $LN3:
 ; 36   : 	x64_outportb (p2v(PORT + 4), 0x0B);
 
 	mov	ecx, 1020				; 000003fcH
-	call	?p2v@@YA_K_K@Z				; p2v
+	call	p2v
 	mov	dl, 11
 	movzx	ecx, ax
 	call	x64_outportb

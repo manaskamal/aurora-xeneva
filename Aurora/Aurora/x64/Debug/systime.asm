@@ -15,7 +15,7 @@ EXTRN	AuGetHour:PROC
 EXTRN	AuGetMinutes:PROC
 EXTRN	AuGetCentury:PROC
 EXTRN	AuGetMonth:PROC
-EXTRN	?memset@@YAXPEAXEI@Z:PROC			; memset
+EXTRN	memset:PROC
 EXTRN	?sched_get_tick@@YAIXZ:PROC			; sched_get_tick
 pdata	SEGMENT
 $pdata$?sys_get_current_time@@YAXPEAU_sys_time_@@@Z DD imagerel $LN3
@@ -76,7 +76,7 @@ $LN3:
 	mov	r8d, 7
 	xor	edx, edx
 	mov	rcx, QWORD PTR time$[rsp]
-	call	?memset@@YAXPEAXEI@Z			; memset
+	call	memset
 
 ; 21   : 	time->seconds = AuGetSecond();
 

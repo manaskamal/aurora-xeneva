@@ -137,10 +137,10 @@ EXTRN	x64_inportw:PROC
 EXTRN	x64_outportb:PROC
 EXTRN	x64_outportw:PROC
 EXTRN	x64_outportd:PROC
-EXTRN	?strlen@@YA_KPEBD@Z:PROC			; strlen
-EXTRN	?strncmp@@YAHPEBD0_K@Z:PROC			; strncmp
-EXTRN	?strncpy@@YAPEADPEADPEBD_K@Z:PROC		; strncpy
-EXTRN	?memset@@YAXPEAXEI@Z:PROC			; memset
+EXTRN	strlen:PROC
+EXTRN	strncmp:PROC
+EXTRN	strncpy:PROC
+EXTRN	memset:PROC
 EXTRN	printf:PROC
 EXTRN	AuInterruptEnd:PROC
 EXTRN	AuInterruptSet:PROC
@@ -967,7 +967,7 @@ $LN39:
 	mov	r8d, 45					; 0000002dH
 	xor	edx, edx
 	lea	rcx, OFFSET FLAT:?kern_acpi@@3U_aurora_acpi_@@A ; kern_acpi
-	call	?memset@@YAXPEAXEI@Z			; memset
+	call	memset
 
 ; 77   : 	acpiRsdp *rsdp = (acpiRsdp*)acpi_base;
 
@@ -1028,7 +1028,7 @@ $LN35@AuInitiali:
 	mov	r8d, 4
 	mov	rdx, rax
 	lea	rcx, QWORD PTR sig$[rsp]
-	call	?strncpy@@YAPEADPEADPEBD_K@Z		; strncpy
+	call	strncpy
 
 ; 87   : 		sig[4] = '\0';
 
@@ -1040,11 +1040,11 @@ $LN35@AuInitiali:
 ; 89   : 		if (!strncmp(sig, ACPI_SIG_FADT, strlen(ACPI_SIG_FADT))) {
 
 	lea	rcx, OFFSET FLAT:$SG3394
-	call	?strlen@@YA_KPEBD@Z			; strlen
+	call	strlen
 	mov	r8, rax
 	lea	rdx, OFFSET FLAT:$SG3395
 	lea	rcx, QWORD PTR sig$[rsp]
-	call	?strncmp@@YAHPEBD0_K@Z			; strncmp
+	call	strncmp
 	test	eax, eax
 	jne	SHORT $LN32@AuInitiali
 
@@ -1065,11 +1065,11 @@ $LN32@AuInitiali:
 ; 94   : 		else if (!strncmp(sig, ACPI_SIG_APIC, strlen("CIPA"))) {
 
 	lea	rcx, OFFSET FLAT:$SG3400
-	call	?strlen@@YA_KPEBD@Z			; strlen
+	call	strlen
 	mov	r8, rax
 	lea	rdx, OFFSET FLAT:$SG3401
 	lea	rcx, QWORD PTR sig$[rsp]
-	call	?strncmp@@YAHPEBD0_K@Z			; strncmp
+	call	strncmp
 	test	eax, eax
 	jne	SHORT $LN30@AuInitiali
 
@@ -1094,11 +1094,11 @@ $LN30@AuInitiali:
 ; 100  : 		else if (!strncmp(sig, ACPI_SIG_SRAT, strlen(ACPI_SIG_SRAT))) {
 
 	lea	rcx, OFFSET FLAT:$SG3406
-	call	?strlen@@YA_KPEBD@Z			; strlen
+	call	strlen
 	mov	r8, rax
 	lea	rdx, OFFSET FLAT:$SG3407
 	lea	rcx, QWORD PTR sig$[rsp]
-	call	?strncmp@@YAHPEBD0_K@Z			; strncmp
+	call	strncmp
 	test	eax, eax
 	jne	$LN28@AuInitiali
 
@@ -1303,11 +1303,11 @@ $LN26@AuInitiali:
 	jmp	$LN16@AuInitiali
 $LN28@AuInitiali:
 	lea	rcx, OFFSET FLAT:$SG3457
-	call	?strlen@@YA_KPEBD@Z			; strlen
+	call	strlen
 	mov	r8, rax
 	lea	rdx, OFFSET FLAT:$SG3458
 	lea	rcx, QWORD PTR sig$[rsp]
-	call	?strncmp@@YAHPEBD0_K@Z			; strncmp
+	call	strncmp
 	test	eax, eax
 	jne	SHORT $LN15@AuInitiali
 
@@ -1322,11 +1322,11 @@ $LN15@AuInitiali:
 ; 142  : 		else if (!strncmp(sig, ACPI_SIG_MCFG, strlen(ACPI_SIG_MCFG))) {
 
 	lea	rcx, OFFSET FLAT:$SG3462
-	call	?strlen@@YA_KPEBD@Z			; strlen
+	call	strlen
 	mov	r8, rax
 	lea	rdx, OFFSET FLAT:$SG3463
 	lea	rcx, QWORD PTR sig$[rsp]
-	call	?strncmp@@YAHPEBD0_K@Z			; strncmp
+	call	strncmp
 	test	eax, eax
 	jne	SHORT $LN13@AuInitiali
 
@@ -1382,11 +1382,11 @@ $LN10@AuInitiali:
 	jmp	SHORT $LN9@AuInitiali
 $LN13@AuInitiali:
 	lea	rcx, OFFSET FLAT:$SG3484
-	call	?strlen@@YA_KPEBD@Z			; strlen
+	call	strlen
 	mov	r8, rax
 	lea	rdx, OFFSET FLAT:$SG3485
 	lea	rcx, QWORD PTR sig$[rsp]
-	call	?strncmp@@YAHPEBD0_K@Z			; strncmp
+	call	strncmp
 	test	eax, eax
 	jne	SHORT $LN8@AuInitiali
 
@@ -1401,11 +1401,11 @@ $LN8@AuInitiali:
 ; 154  : 		else if (!strncmp(sig, ACPI_SIG_MCHI, strlen(ACPI_SIG_MCHI))) {
 
 	lea	rcx, OFFSET FLAT:$SG3489
-	call	?strlen@@YA_KPEBD@Z			; strlen
+	call	strlen
 	mov	r8, rax
 	lea	rdx, OFFSET FLAT:$SG3490
 	lea	rcx, QWORD PTR sig$[rsp]
-	call	?strncmp@@YAHPEBD0_K@Z			; strncmp
+	call	strncmp
 	test	eax, eax
 	jne	SHORT $LN6@AuInitiali
 

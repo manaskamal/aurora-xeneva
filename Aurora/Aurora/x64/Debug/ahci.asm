@@ -60,7 +60,7 @@ EXTRN	AuInterruptSet:PROC
 EXTRN	read_config_16:PROC
 EXTRN	write_config_16:PROC
 EXTRN	pci_find_device_class:PROC
-EXTRN	?AuPmmngrAlloc@@YAPEAXXZ:PROC			; AuPmmngrAlloc
+EXTRN	AuPmmngrAlloc:PROC
 EXTRN	?hda_handler@@YAX_KPEAX@Z:PROC			; hda_handler
 EXTRN	?is_hdaudio_initialized@@YA_NXZ:PROC		; is_hdaudio_initialized
 EXTRN	printf:PROC
@@ -448,7 +448,7 @@ $LN22:
 
 ; 148  : 	pci_device_info *info = (pci_device_info*)AuPmmngrAlloc();
 
-	call	?AuPmmngrAlloc@@YAPEAXXZ		; AuPmmngrAlloc
+	call	AuPmmngrAlloc
 	mov	QWORD PTR info$[rsp], rax
 
 ; 149  : 	int bus,dev,func;

@@ -31,8 +31,8 @@ PUBLIC	?ahci_disk_start_cmd@@YAXPEAU_hba_port_@@@Z	; ahci_disk_start_cmd
 PUBLIC	?ahci_disk_get_port@@YAPEAU_hba_port_@@XZ	; ahci_disk_get_port
 PUBLIC	?ahci_disk_find_slot@@YAIPEAU_hba_port_@@@Z	; ahci_disk_find_slot
 PUBLIC	?ahci_disk_identify@@YAXPEAU_hba_port_@@_KIPEA_K@Z ; ahci_disk_identify
-EXTRN	?AuPmmngrAlloc@@YAPEAXXZ:PROC			; AuPmmngrAlloc
-EXTRN	?memset@@YAXPEAXEI@Z:PROC			; memset
+EXTRN	AuPmmngrAlloc:PROC
+EXTRN	memset:PROC
 EXTRN	printf:PROC
 EXTRN	?_debug_print_@@YAXPEADZZ:PROC			; _debug_print_
 pdata	SEGMENT
@@ -1386,7 +1386,7 @@ $LN10:
 ; 286  : 	/* Allocate command list */
 ; 287  : 	phys = (uint64_t)AuPmmngrAlloc();
 
-	call	?AuPmmngrAlloc@@YAPEAXXZ		; AuPmmngrAlloc
+	call	AuPmmngrAlloc
 	mov	QWORD PTR phys$[rsp], rax
 
 ; 288  : 	port->clb = phys & 0xffffffff;
@@ -1416,13 +1416,13 @@ $LN10:
 	mov	r8d, 4096				; 00001000H
 	xor	edx, edx
 	mov	rcx, QWORD PTR phys$[rsp]
-	call	?memset@@YAXPEAXEI@Z			; memset
+	call	memset
 
 ; 293  : 
 ; 294  : 	/* Allocate FIS */
 ; 295  : 	phys = (uint64_t)AuPmmngrAlloc();
 
-	call	?AuPmmngrAlloc@@YAPEAXXZ		; AuPmmngrAlloc
+	call	AuPmmngrAlloc
 	mov	QWORD PTR phys$[rsp], rax
 
 ; 296  : 	port->fb = phys & 0xffffffff;
@@ -1452,7 +1452,7 @@ $LN10:
 	mov	r8d, 4096				; 00001000H
 	xor	edx, edx
 	mov	rcx, QWORD PTR phys$[rsp]
-	call	?memset@@YAXPEAXEI@Z			; memset
+	call	memset
 
 ; 301  : 
 ; 302  : 	uint8_t cold_presence = port->cmd & (1<<20);
@@ -1500,7 +1500,7 @@ $LN6@ahci_disk_:
 
 ; 309  : 		phys = (uint64_t)AuPmmngrAlloc();
 
-	call	?AuPmmngrAlloc@@YAPEAXXZ		; AuPmmngrAlloc
+	call	AuPmmngrAlloc
 	mov	QWORD PTR phys$[rsp], rax
 
 ; 310  : 		cmd_list[i].ctba = phys & 0xffffffff;
@@ -1553,7 +1553,7 @@ $LN6@ahci_disk_:
 	mov	r8d, 4096				; 00001000H
 	xor	edx, edx
 	mov	rcx, QWORD PTR phys$[rsp]
-	call	?memset@@YAXPEAXEI@Z			; memset
+	call	memset
 
 ; 315  : 	}
 
@@ -1610,7 +1610,7 @@ $LN4@ahci_disk_:
 ; 331  : 
 ; 332  : 	uint64_t *addr = (uint64_t*)AuPmmngrAlloc();
 
-	call	?AuPmmngrAlloc@@YAPEAXXZ		; AuPmmngrAlloc
+	call	AuPmmngrAlloc
 	mov	QWORD PTR addr$[rsp], rax
 
 ; 333  : 	memset(addr,0,4096);
@@ -1618,7 +1618,7 @@ $LN4@ahci_disk_:
 	mov	r8d, 4096				; 00001000H
 	xor	edx, edx
 	mov	rcx, QWORD PTR addr$[rsp]
-	call	?memset@@YAXPEAXEI@Z			; memset
+	call	memset
 
 ; 334  : 	ahci_disk_identify(port,0,1,addr);
 

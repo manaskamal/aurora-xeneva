@@ -74,7 +74,7 @@ EXTRN	inportw:PROC
 EXTRN	outportb:PROC
 EXTRN	AuInterruptEnd:PROC
 EXTRN	AuInterruptSet:PROC
-EXTRN	?memset@@YAXPEAXEI@Z:PROC			; memset
+EXTRN	memset:PROC
 EXTRN	printf:PROC
 EXTRN	pci_find_device_class:PROC
 EXTRN	pci_enable_bus_master:PROC
@@ -194,7 +194,7 @@ $LN11:
 	mov	r8d, 40					; 00000028H
 	xor	edx, edx
 	lea	rcx, OFFSET FLAT:?ata_device_name@@3PADA ; ata_device_name
-	call	?memset@@YAXPEAXEI@Z			; memset
+	call	memset
 
 ; 471  : 		for (int i= 0; i < 40; i += 2)
 
@@ -283,7 +283,7 @@ $LN8@ata_probe:
 	mov	r8d, 40					; 00000028H
 	xor	edx, edx
 	lea	rcx, OFFSET FLAT:?ata_device_name@@3PADA ; ata_device_name
-	call	?memset@@YAXPEAXEI@Z			; memset
+	call	memset
 
 ; 485  : 		for (int i= 0; i < 40; i += 2)
 
