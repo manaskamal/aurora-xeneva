@@ -200,8 +200,8 @@ void acpi_parse_madt () {
 		case ACPI_APICTYPE_LAPIC: {
 			acpiLocalApic *lapic = (acpiLocalApic*)apic_header;
 			printf ("[ACPI]: Madt entry -> LAPIC id -> %d, address -> %x\n", lapic->lapicId, lapic->procId);
-			/*if (lapic->lapicId != 0)
-				initialize_cpu(lapic->lapicId);*/
+			if (lapic->procId != 0)
+				kern_acpi.num_cpu = lapic->procId;
 			break;
 		}							 
 		case ACPI_APICTYPE_IOAPIC:{
@@ -277,4 +277,12 @@ bool acpi_pcie_supported () {
 //! Get MCFG table
 acpiMcfg *acpi_get_mcfg () {
 	return kern_acpi.mcfg;
+}
+
+/*
+ * AuGetNumCPU -- get the total number
+ * of cpu
+ */
+uint8_t AuGetNumCPU () {
+	return kern_acpi.num_cpu;
 }

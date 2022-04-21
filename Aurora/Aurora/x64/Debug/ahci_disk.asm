@@ -10,18 +10,18 @@ _BSS	SEGMENT
 ?sata_drive_port@@3PEAU_hba_port_@@EA DQ 01H DUP (?)	; sata_drive_port
 _BSS	ENDS
 CONST	SEGMENT
-$SG3865	DB	'[AHCI]:Port Hung', 0aH, 00H
+$SG3881	DB	'[AHCI]:Port Hung', 0aH, 00H
 	ORG $+6
-$SG3871	DB	'[AHCI]: Port error ', 0dH, 0aH, 00H
+$SG3887	DB	'[AHCI]: Port error ', 0dH, 0aH, 00H
 	ORG $+2
-$SG3898	DB	'[AHCI]:Port Hung', 0aH, 00H
+$SG3914	DB	'[AHCI]:Port Hung', 0aH, 00H
 	ORG $+6
-$SG3904	DB	'[AHCI]: Port error ', 0dH, 0aH, 00H
+$SG3920	DB	'[AHCI]: Port error ', 0dH, 0aH, 00H
 	ORG $+2
-$SG3933	DB	'[AHCI]:Port Hung', 0aH, 00H
+$SG3949	DB	'[AHCI]:Port Hung', 0aH, 00H
 	ORG $+6
-$SG3952	DB	'[AHCI]: Port Supports cold presence %d', 0aH, 00H
-$SG3969	DB	'[AHCI]: Model -> %s', 0aH, 00H
+$SG3968	DB	'[AHCI]: Port Supports cold presence %d', 0aH, 00H
+$SG3985	DB	'[AHCI]: Model -> %s', 0aH, 00H
 CONST	ENDS
 PUBLIC	?ahci_disk_initialize@@YAXPEAU_hba_port_@@@Z	; ahci_disk_initialize
 PUBLIC	?ahci_disk_write@@YAXPEAU_hba_port_@@_KIPEA_K@Z	; ahci_disk_write
@@ -408,7 +408,7 @@ $LN5@ahci_disk_:
 
 ; 259  : 		printf ("[AHCI]:Port Hung\n");
 
-	lea	rcx, OFFSET FLAT:$SG3933
+	lea	rcx, OFFSET FLAT:$SG3949
 	call	printf
 $LN4@ahci_disk_:
 
@@ -923,7 +923,7 @@ $LN8@ahci_disk_:
 
 ; 133  : 		_debug_print_ ("[AHCI]:Port Hung\n");
 
-	lea	rcx, OFFSET FLAT:$SG3865
+	lea	rcx, OFFSET FLAT:$SG3881
 	call	?_debug_print_@@YAXPEADZZ		; _debug_print_
 $LN7@ahci_disk_:
 
@@ -977,7 +977,7 @@ $LN4@ahci_disk_:
 
 ; 141  : 			_debug_print_ ("[AHCI]: Port error \r\n");
 
-	lea	rcx, OFFSET FLAT:$SG3871
+	lea	rcx, OFFSET FLAT:$SG3887
 	call	?_debug_print_@@YAXPEADZZ		; _debug_print_
 
 ; 142  : 			break;
@@ -1270,7 +1270,7 @@ $LN6@ahci_disk_:
 
 ; 195  : 		printf ("[AHCI]:Port Hung\n");
 
-	lea	rcx, OFFSET FLAT:$SG3898
+	lea	rcx, OFFSET FLAT:$SG3914
 	call	printf
 $LN5@ahci_disk_:
 
@@ -1323,7 +1323,7 @@ $LN2@ahci_disk_:
 
 ; 202  : 			_debug_print_ ("[AHCI]: Port error \r\n");
 
-	lea	rcx, OFFSET FLAT:$SG3904
+	lea	rcx, OFFSET FLAT:$SG3920
 	call	?_debug_print_@@YAXPEADZZ		; _debug_print_
 
 ; 203  : 			break;
@@ -1472,7 +1472,7 @@ $LN10:
 
 	movzx	eax, BYTE PTR cold_presence$[rsp]
 	mov	edx, eax
-	lea	rcx, OFFSET FLAT:$SG3952
+	lea	rcx, OFFSET FLAT:$SG3968
 	call	printf
 $LN7@ahci_disk_:
 
@@ -1677,7 +1677,7 @@ $LN1@ahci_disk_:
 ; 342  : 	printf ("[AHCI]: Model -> %s\n", ata_device_name);
 
 	lea	rdx, QWORD PTR ata_device_name$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3969
+	lea	rcx, OFFSET FLAT:$SG3985
 	call	printf
 
 ; 343  : 

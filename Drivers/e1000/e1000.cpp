@@ -32,6 +32,7 @@
 #include <aurora.h>
 #include <drivers\pci.h>
 #include <arch\x86_64\mmngr\kheap.h>
+#include <hal.h>
 
 typedef struct _e1000_nic_ {
 	uint32_t mmio_addr;
@@ -48,8 +49,13 @@ typedef struct _e1000_nic_ {
 }e1000_nic_dev;
 
 e1000_nic_dev *e1000_nic;
+bool first_interrupt = false;
 
 #define INTS (ICR_LSC | ICR_RXO | ICR_RXT0 | ICR_TXQE | ICR_TXDW | ICR_ACK | ICR_RXDMT0 | ICR_SRPD)
+#define CTRL_PHY_RST (1UL << 31UL)
+#define CTRL_RST     (1UL << 26UL)
+#define CTRL_SLU     (1UL << 6UL)
+#define CTRL_LRST    (1UL << 3UL)
 
 uint32_t mmio_read32(uintptr_t addr) {
 	return *((volatile uint32_t*)(addr));
@@ -123,6 +129,8 @@ void e1000_read_mac(e1000_nic_dev *device) {
 void e1000_handler (size_t v, void* p) {
 	uint32_t status = e1000_read_command(e1000_nic, E1000_REG_ICR);
 	printf ("E1000 interrupt handler++\n");
+	if (!first_interrupt)
+		first_interrupt = true;
 	e1000_write_command(e1000_nic, E1000_REG_ICR, status);
 }
 
@@ -174,6 +182,14 @@ void e1000_init_tx (e1000_nic_dev * dev) {
 
 	e1000_write_command(dev, E1000_REG_TCTRL, tctl);
 }
+
+/*
+ * AuDriverUnload -- Frees and clear up everthing of e1000 driver
+ * turn e1000 off!
+ */
+AU_EXTERN AU_EXPORT int AuDriverUnload() {
+	return 0;
+}
 /*
  * AuDriverMain -- Main entry for e1000 driver
  */
@@ -223,11 +239,6 @@ AU_EXTERN AU_EXPORT int AuDriverMain() {
 
 
 	e1000_write_mac(e1000_dev);
-
-#define CTRL_PHY_RST (1UL << 31UL)
-#define CTRL_RST     (1UL << 26UL)
-#define CTRL_SLU     (1UL << 6UL)
-#define CTRL_LRST    (1UL << 3UL)
 
 	e1000_dev->irq = dev.device.nonBridge.interruptLine;
 	printf ("[driver]: e1000 irq -> %d \n", e1000_dev->irq);
@@ -286,9 +297,13 @@ AU_EXTERN AU_EXPORT int AuDriverMain() {
 
 
 	e1000_write_command(e1000_dev, E1000_REG_IMS, INTS);
-	for (int i = 0; i < 10000; i++)
-		;
 
+	AuEnableInterrupts();
+	for(;;) {
+		if (first_interrupt)
+			break;
+	}
+	AuDisableInterupts();
 	printf ("[driver]: e1000 initialized \n");
 	return 0;
 }

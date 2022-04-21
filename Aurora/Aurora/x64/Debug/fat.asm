@@ -32,34 +32,34 @@ _BSS	SEGMENT
 ?root_dir_cache@@3PEAEEA DQ 01H DUP (?)			; root_dir_cache
 _BSS	ENDS
 CONST	SEGMENT
-$SG3631	DB	'FAT32 BOOT PARAMETER BLOCK ', 0dH, 0aH, 00H
+$SG3647	DB	'FAT32 BOOT PARAMETER BLOCK ', 0dH, 0aH, 00H
 	ORG $+2
-$SG3632	DB	'Bytes/Sector -> %d ', 0dH, 0aH, 00H
+$SG3648	DB	'Bytes/Sector -> %d ', 0dH, 0aH, 00H
 	ORG $+2
-$SG3633	DB	'Sectors/Cluster -> %d ', 0dH, 0aH, 00H
+$SG3649	DB	'Sectors/Cluster -> %d ', 0dH, 0aH, 00H
 	ORG $+3
-$SG3642	DB	'%c', 00H
+$SG3658	DB	'%c', 00H
 	ORG $+1
-$SG3634	DB	'Reserved Sectors -> %d ', 0dH, 0aH, 00H
+$SG3650	DB	'Reserved Sectors -> %d ', 0dH, 0aH, 00H
 	ORG $+2
-$SG3643	DB	0dH, 0aH, 00H
+$SG3659	DB	0dH, 0aH, 00H
 	ORG $+1
-$SG3635	DB	'Number Of FATs -> %d ', 0dH, 0aH, 00H
-$SG3636	DB	'Root Base Cluster -> %d ', 0dH, 0aH, 00H
+$SG3651	DB	'Number Of FATs -> %d ', 0dH, 0aH, 00H
+$SG3652	DB	'Root Base Cluster -> %d ', 0dH, 0aH, 00H
 	ORG $+1
-$SG3648	DB	'%c', 00H
+$SG3664	DB	'%c', 00H
 	ORG $+1
-$SG3637	DB	'Sector/FAT32 -> %d ', 0dH, 0aH, 00H
+$SG3653	DB	'Sector/FAT32 -> %d ', 0dH, 0aH, 00H
 	ORG $+2
-$SG3649	DB	0dH, 0aH, 00H
+$SG3665	DB	0dH, 0aH, 00H
 	ORG $+1
-$SG3818	DB	'/', 00H
+$SG3834	DB	'/', 00H
 	ORG $+2
-$SG3650	DB	'FAT32 Total clusters -> %d ', 0dH, 0aH, 00H
+$SG3666	DB	'FAT32 Total clusters -> %d ', 0dH, 0aH, 00H
 	ORG $+2
-$SG3819	DB	'/', 00H
+$SG3835	DB	'/', 00H
 	ORG $+6
-$SG3820	DB	'File System registered', 0aH, 00H
+$SG3836	DB	'File System registered', 0aH, 00H
 CONST	ENDS
 PUBLIC	?initialize_fat32@@YAXXZ			; initialize_fat32
 PUBLIC	?fat32_open@@YA?AU_vfs_node_@@PEAU1@PEAD@Z	; fat32_open
@@ -982,7 +982,7 @@ $LN3:
 ; 478  : 	strcpy (fsys->filename, "/");
 
 	mov	rax, QWORD PTR fsys$[rsp]
-	lea	rdx, OFFSET FLAT:$SG3818
+	lea	rdx, OFFSET FLAT:$SG3834
 	mov	rcx, rax
 	call	strcpy
 
@@ -1048,12 +1048,12 @@ $LN3:
 
 	xor	r8d, r8d
 	mov	rdx, QWORD PTR fsys$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3819
+	lea	rcx, OFFSET FLAT:$SG3835
 	call	vfs_mount
 
 ; 491  : 	printf ("File System registered\n");
 
-	lea	rcx, OFFSET FLAT:$SG3820
+	lea	rcx, OFFSET FLAT:$SG3836
 	call	printf
 
 ; 492  : }
@@ -1852,7 +1852,7 @@ $LN9:
 ; 81   : #ifdef _DEBUG_ON_
 ; 82   : 	_debug_print_ ("FAT32 BOOT PARAMETER BLOCK \r\n");
 
-	lea	rcx, OFFSET FLAT:$SG3631
+	lea	rcx, OFFSET FLAT:$SG3647
 	call	?_debug_print_@@YAXPEADZZ		; _debug_print_
 
 ; 83   : 	_debug_print_ ("Bytes/Sector -> %d \r\n", fat32_data->bytes_per_sector);
@@ -1860,7 +1860,7 @@ $LN9:
 	mov	rax, QWORD PTR fat32_data$[rsp]
 	movzx	eax, WORD PTR [rax+11]
 	mov	edx, eax
-	lea	rcx, OFFSET FLAT:$SG3632
+	lea	rcx, OFFSET FLAT:$SG3648
 	call	?_debug_print_@@YAXPEADZZ		; _debug_print_
 
 ; 84   : 	_debug_print_ ("Sectors/Cluster -> %d \r\n", fat32_data->sectors_per_cluster);
@@ -1868,7 +1868,7 @@ $LN9:
 	mov	rax, QWORD PTR fat32_data$[rsp]
 	movzx	eax, BYTE PTR [rax+13]
 	mov	edx, eax
-	lea	rcx, OFFSET FLAT:$SG3633
+	lea	rcx, OFFSET FLAT:$SG3649
 	call	?_debug_print_@@YAXPEADZZ		; _debug_print_
 
 ; 85   : 	_debug_print_ ("Reserved Sectors -> %d \r\n", fat32_data->reserved_sectors);
@@ -1876,7 +1876,7 @@ $LN9:
 	mov	rax, QWORD PTR fat32_data$[rsp]
 	movzx	eax, WORD PTR [rax+14]
 	mov	edx, eax
-	lea	rcx, OFFSET FLAT:$SG3634
+	lea	rcx, OFFSET FLAT:$SG3650
 	call	?_debug_print_@@YAXPEADZZ		; _debug_print_
 
 ; 86   : 	_debug_print_ ("Number Of FATs -> %d \r\n", fat32_data->num_fats);
@@ -1884,21 +1884,21 @@ $LN9:
 	mov	rax, QWORD PTR fat32_data$[rsp]
 	movzx	eax, BYTE PTR [rax+16]
 	mov	edx, eax
-	lea	rcx, OFFSET FLAT:$SG3635
+	lea	rcx, OFFSET FLAT:$SG3651
 	call	?_debug_print_@@YAXPEADZZ		; _debug_print_
 
 ; 87   : 	_debug_print_ ("Root Base Cluster -> %d \r\n", fat32_data->info.FAT32.root_dir_cluster);
 
 	mov	rax, QWORD PTR fat32_data$[rsp]
 	mov	edx, DWORD PTR [rax+44]
-	lea	rcx, OFFSET FLAT:$SG3636
+	lea	rcx, OFFSET FLAT:$SG3652
 	call	?_debug_print_@@YAXPEADZZ		; _debug_print_
 
 ; 88   : 	_debug_print_ ("Sector/FAT32 -> %d \r\n", fat32_data->info.FAT32.sect_per_fat32);
 
 	mov	rax, QWORD PTR fat32_data$[rsp]
 	mov	edx, DWORD PTR [rax+36]
-	lea	rcx, OFFSET FLAT:$SG3637
+	lea	rcx, OFFSET FLAT:$SG3653
 	call	?_debug_print_@@YAXPEADZZ		; _debug_print_
 
 ; 89   : 
@@ -1921,7 +1921,7 @@ $LN6@initialize:
 	mov	rcx, QWORD PTR fat32_data$[rsp]
 	movsx	eax, BYTE PTR [rcx+rax+71]
 	mov	edx, eax
-	lea	rcx, OFFSET FLAT:$SG3642
+	lea	rcx, OFFSET FLAT:$SG3658
 	call	?_debug_print_@@YAXPEADZZ		; _debug_print_
 
 ; 93   : 	}
@@ -1932,7 +1932,7 @@ $LN4@initialize:
 ; 94   : 
 ; 95   : 	_debug_print_ ("\r\n");
 
-	lea	rcx, OFFSET FLAT:$SG3643
+	lea	rcx, OFFSET FLAT:$SG3659
 	call	?_debug_print_@@YAXPEADZZ		; _debug_print_
 
 ; 96   : 
@@ -1954,7 +1954,7 @@ $LN3@initialize:
 	mov	rcx, QWORD PTR fat32_data$[rsp]
 	movsx	eax, BYTE PTR [rcx+rax+82]
 	mov	edx, eax
-	lea	rcx, OFFSET FLAT:$SG3648
+	lea	rcx, OFFSET FLAT:$SG3664
 	call	?_debug_print_@@YAXPEADZZ		; _debug_print_
 
 ; 99   : 	}
@@ -1965,7 +1965,7 @@ $LN1@initialize:
 ; 100  : 
 ; 101  : 	_debug_print_ ("\r\n");
 
-	lea	rcx, OFFSET FLAT:$SG3649
+	lea	rcx, OFFSET FLAT:$SG3665
 	call	?_debug_print_@@YAXPEADZZ		; _debug_print_
 
 ; 102  : #endif
@@ -2032,7 +2032,7 @@ $LN1@initialize:
 ; 111  : 	_debug_print_ ("FAT32 Total clusters -> %d \r\n", total_clusters);
 
 	mov	edx, DWORD PTR ?total_clusters@@3IA	; total_clusters
-	lea	rcx, OFFSET FLAT:$SG3650
+	lea	rcx, OFFSET FLAT:$SG3666
 	call	?_debug_print_@@YAXPEADZZ		; _debug_print_
 
 ; 112  : 

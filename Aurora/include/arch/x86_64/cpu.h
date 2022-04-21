@@ -156,6 +156,12 @@ typedef struct _fx_state_ {
 }fx_state_t;
 #pragma pack(pop)
 
+/* cpu structure */
+typedef struct _cpu_ {
+	uint8_t cpu_id;     // 0
+	void*   au_current_thread;
+}cpu_t;
+
 //!=======================================================
 //! G L O B A L     F U N C T I O N S
 //!=======================================================
@@ -177,6 +183,9 @@ extern "C" void x64_write_msr(size_t msr, uint64_t data);
 
 //!Mfench
 extern "C" void x64_mfence ();
+
+//!Pause
+extern "C" void x64_pause();
 
 //!x64_cpuid
 extern "C" void x64_cpuid(size_t page, size_t* a, size_t* b, size_t* c, size_t* d, size_t subpage = 0);

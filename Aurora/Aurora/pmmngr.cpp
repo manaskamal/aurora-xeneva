@@ -178,7 +178,8 @@ void AuPmmngrInit(KERNEL_BOOT_INFO *info)
 	uint64_t *address = (uint64_t*)0xA000;
 	AuPmmngrLockPage((void*)0xA000);
 	memset(address, 0, 4096);
-	//memcpy(address, info->apcode, 4096);
+	memcpy(address, info->apcode, 4096);
+
 	higher_half = false;
 	info->printf_gui("[aurora]:pmmngr initialized\n");
 }

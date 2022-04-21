@@ -35,6 +35,7 @@
 #define AURORA_MAX_DRIVERS  256
 
 typedef int (*au_drv_entry) ();
+typedef int (*au_drv_unload) ();
 //! Aurora driver interface structure
 typedef struct _aurora_driver_ {
 	uint8_t id;
@@ -44,6 +45,7 @@ typedef struct _aurora_driver_ {
 	uint64_t base;
 	uint64_t end;
 	au_drv_entry entry;
+	au_drv_unload unload;
 }aurora_driver_t;
 
 

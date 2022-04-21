@@ -296,6 +296,7 @@ typedef struct _aurora_acpi_
 	acpiMcfg *mcfg;
 	uint16_t slp_typa;
 	uint16_t slp_typb;
+	uint8_t  num_cpu;
 }aurora_acpi;
 
 typedef struct _apic_interrupt_override_
@@ -358,4 +359,9 @@ extern uint8_t* search_s5 (acpiDsdt* header);
 extern void acpi_shutdown ();
 extern bool acpi_pcie_supported ();
 extern acpiMcfg *acpi_get_mcfg ();
+/*
+ * AuGetNumCPU -- get the total number
+ * of cpu
+ */
+extern uint8_t AuGetNumCPU ();
 #endif

@@ -10,16 +10,16 @@ _BSS	SEGMENT
 ?root_dir@@3PEAU_vfs_entry_@@EA DQ 01H DUP (?)		; root_dir
 _BSS	ENDS
 CONST	SEGMENT
-$SG3464	DB	'[VFS]: Mounting filesystem to root failed, already in us'
+$SG3475	DB	'[VFS]: Mounting filesystem to root failed, already in us'
 	DB	'e', 0aH, 00H
 	ORG $+5
-$SG3492	DB	'[vfs]: already mounted -> %s', 0aH, 00H
+$SG3503	DB	'[vfs]: already mounted -> %s', 0aH, 00H
 	ORG $+2
-$SG3534	DB	'Directory', 00H
+$SG3545	DB	'Directory', 00H
 	ORG $+2
-$SG3537	DB	'File', 00H
+$SG3548	DB	'File', 00H
 	ORG $+7
-$SG3538	DB	'%s -> %s ', 0aH, 00H
+$SG3549	DB	'%s -> %s ', 0aH, 00H
 CONST	ENDS
 PUBLIC	?AuVFSInit@@YAXXZ				; AuVFSInit
 PUBLIC	?vfs_finddir@@YAPEAU_vfs_node_@@PEAD@Z		; vfs_finddir
@@ -576,7 +576,7 @@ $LN6@vfs_lsdir:
 
 ; 300  : 				type = "Directory";
 
-	lea	rax, OFFSET FLAT:$SG3534
+	lea	rax, OFFSET FLAT:$SG3545
 	mov	QWORD PTR type$5[rsp], rax
 	jmp	SHORT $LN2@vfs_lsdir
 $LN3@vfs_lsdir:
@@ -590,7 +590,7 @@ $LN3@vfs_lsdir:
 
 ; 302  : 				type = "File";
 
-	lea	rax, OFFSET FLAT:$SG3537
+	lea	rax, OFFSET FLAT:$SG3548
 	mov	QWORD PTR type$5[rsp], rax
 $LN1@vfs_lsdir:
 $LN2@vfs_lsdir:
@@ -600,7 +600,7 @@ $LN2@vfs_lsdir:
 	mov	rax, QWORD PTR f$6[rsp]
 	mov	r8, rax
 	mov	rdx, QWORD PTR type$5[rsp]
-	lea	rcx, OFFSET FLAT:$SG3538
+	lea	rcx, OFFSET FLAT:$SG3549
 	call	printf
 
 ; 304  : 		}
@@ -669,7 +669,7 @@ $LN23:
 
 ; 193  : 			printf ("[VFS]: Mounting filesystem to root failed, already in use\n");
 
-	lea	rcx, OFFSET FLAT:$SG3464
+	lea	rcx, OFFSET FLAT:$SG3475
 	call	printf
 
 ; 194  : 			return;   //Already a root filesystem is present
@@ -908,7 +908,7 @@ $LN3@vfs_mount:
 ; 242  : 		printf ("[vfs]: already mounted -> %s\n", path);
 
 	mov	rdx, QWORD PTR path$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3492
+	lea	rcx, OFFSET FLAT:$SG3503
 	call	printf
 
 ; 243  : 		return;

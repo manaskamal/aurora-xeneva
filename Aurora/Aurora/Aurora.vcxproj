@@ -189,6 +189,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\include\arch\x86_64\apic.h" />
+    <ClInclude Include="..\include\arch\x86_64\apinit.h" />
     <ClInclude Include="..\include\arch\x86_64\block.h" />
     <ClInclude Include="..\include\arch\x86_64\cpu.h" />
     <ClInclude Include="..\include\arch\x86_64\exception.h" />
@@ -214,7 +215,6 @@
     <ClInclude Include="..\include\drivers\hdaudio\hda.h" />
     <ClInclude Include="..\include\drivers\kybrd.h" />
     <ClInclude Include="..\include\drivers\mouse.h" />
-    <ClInclude Include="..\include\drivers\net\e1000.h" />
     <ClInclude Include="..\include\drivers\pci.h" />
     <ClInclude Include="..\include\drivers\rtc.h" />
     <ClInclude Include="..\include\drivers\svga\backdoor_def.h" />
@@ -243,7 +243,6 @@
     <ClInclude Include="..\include\fs\ttype.h" />
     <ClInclude Include="..\include\fs\vfs.h" />
     <ClInclude Include="..\include\hal.h" />
-    <ClInclude Include="..\include\hwcursor.h" />
     <ClInclude Include="..\include\ipc\dwm_ipc.h" />
     <ClInclude Include="..\include\ipc\message.h" />
     <ClInclude Include="..\include\ipc\pipe.h" />
@@ -274,6 +273,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="arch\x86_64\apic.cpp" />
+    <ClCompile Include="arch\x86_64\apinit.cpp" />
     <ClCompile Include="arch\x86_64\cpu.cpp" />
     <ClCompile Include="arch\x86_64\exception.cpp" />
     <ClCompile Include="arch\x86_64\ioapic.cpp" />
@@ -294,7 +294,6 @@
     <ClCompile Include="drivers\hda\hda.cpp" />
     <ClCompile Include="drivers\kybrd.cpp" />
     <ClCompile Include="drivers\mouse.cpp" />
-    <ClCompile Include="drivers\net\e1000.cpp" />
     <ClCompile Include="drivers\pci.cpp" />
     <ClCompile Include="drivers\rtc.cpp" />
     <ClCompile Include="drivers\svga\gmr.cpp">
@@ -322,7 +321,6 @@
     <ClCompile Include="fs\ttype.cpp" />
     <ClCompile Include="fs\vfs.cpp" />
     <ClCompile Include="hal.cpp" />
-    <ClCompile Include="hwcursor.cpp" />
     <ClCompile Include="init.cpp" />
     <ClCompile Include="ipc\dwm_ipc.cpp" />
     <ClCompile Include="ipc\message.cpp" />

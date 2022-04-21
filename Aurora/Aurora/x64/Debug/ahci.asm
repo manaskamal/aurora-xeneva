@@ -13,38 +13,38 @@ ___ahci_64_bit___ DB 01H DUP (?)
 ?hbabar@@3PEAXEA DQ 01H DUP (?)				; hbabar
 _BSS	ENDS
 CONST	SEGMENT
-$SG3827	DB	'[AHCI]: Taking the control from firmware took %d ms', 0aH
+$SG3843	DB	'[AHCI]: Taking the control from firmware took %d ms', 0aH
 	DB	00H
 	ORG $+3
-$SG3853	DB	'*******************************', 0aH, 00H
+$SG3869	DB	'*******************************', 0aH, 00H
 	ORG $+7
-$SG3854	DB	'AHCI/SATA not found', 0aH, 00H
+$SG3870	DB	'AHCI/SATA not found', 0aH, 00H
 	ORG $+3
-$SG3855	DB	'Xeneva initialisation failed', 0aH, 00H
+$SG3871	DB	'Xeneva initialisation failed', 0aH, 00H
 	ORG $+2
-$SG3856	DB	'Halting System', 0aH, 00H
-$SG3857	DB	'*******************************', 0aH, 00H
+$SG3872	DB	'Halting System', 0aH, 00H
+$SG3873	DB	'*******************************', 0aH, 00H
 	ORG $+7
-$SG3864	DB	'AHCI/SATA found at dev -> %d, func -> %d, bus -> %d', 0aH
+$SG3880	DB	'AHCI/SATA found at dev -> %d, func -> %d, bus -> %d', 0aH
 	DB	00H
 	ORG $+3
-$SG3870	DB	'[AHCI]: Version -- %d.%d', 0aH, 00H
+$SG3886	DB	'[AHCI]: Version -- %d.%d', 0aH, 00H
 	ORG $+6
-$SG3873	DB	'[AHCI]: 64-bit DMA supported', 0aH, 00H
+$SG3889	DB	'[AHCI]: 64-bit DMA supported', 0aH, 00H
 	ORG $+2
-$SG3875	DB	'[AHCI]: Num Command Slots -> %d', 0aH, 00H
+$SG3891	DB	'[AHCI]: Num Command Slots -> %d', 0aH, 00H
 	ORG $+7
-$SG3878	DB	'[AHCI]: Support Staggered spin-up %d', 0aH, 00H
+$SG3894	DB	'[AHCI]: Support Staggered spin-up %d', 0aH, 00H
 	ORG $+2
-$SG3880	DB	'[AHCI]: FIS-Based Switching supported', 0aH, 00H
+$SG3896	DB	'[AHCI]: FIS-Based Switching supported', 0aH, 00H
 	ORG $+1
-$SG3889	DB	'[AHCI]: SATA Drive found at port %d', 0aH, 00H
+$SG3905	DB	'[AHCI]: SATA Drive found at port %d', 0aH, 00H
 	ORG $+3
-$SG3892	DB	'[AHCI]: SATAPI Drive found at port %d', 0aH, 00H
+$SG3908	DB	'[AHCI]: SATAPI Drive found at port %d', 0aH, 00H
 	ORG $+1
-$SG3895	DB	'[AHCI]: SEMB Drive found at port %d', 0aH, 00H
+$SG3911	DB	'[AHCI]: SEMB Drive found at port %d', 0aH, 00H
 	ORG $+3
-$SG3898	DB	'[AHCI]: PM Drive found at port %d', 0aH, 00H
+$SG3914	DB	'[AHCI]: PM Drive found at port %d', 0aH, 00H
 CONST	ENDS
 PUBLIC	?ahci_initialize@@YAXXZ				; ahci_initialize
 PUBLIC	?ahci_is_64_bit_supported@@YA_NXZ		; ahci_is_64_bit_supported
@@ -288,7 +288,7 @@ $LN1@ahci_contr:
 ; 93   : 	printf ("[AHCI]: Taking the control from firmware took %d ms\n", i);
 
 	mov	edx, DWORD PTR i$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3827
+	lea	rcx, OFFSET FLAT:$SG3843
 	call	printf
 
 ; 94   : }
@@ -503,27 +503,27 @@ $LN19@ahci_initi:
 
 ; 159  : 			printf ("*******************************\n");
 
-	lea	rcx, OFFSET FLAT:$SG3853
+	lea	rcx, OFFSET FLAT:$SG3869
 	call	printf
 
 ; 160  : 			printf ("AHCI/SATA not found\n");
 
-	lea	rcx, OFFSET FLAT:$SG3854
+	lea	rcx, OFFSET FLAT:$SG3870
 	call	printf
 
 ; 161  : 			printf ("Xeneva initialisation failed\n");
 
-	lea	rcx, OFFSET FLAT:$SG3855
+	lea	rcx, OFFSET FLAT:$SG3871
 	call	printf
 
 ; 162  : 			printf ("Halting System\n");
 
-	lea	rcx, OFFSET FLAT:$SG3856
+	lea	rcx, OFFSET FLAT:$SG3872
 	call	printf
 
 ; 163  : 			printf ("*******************************\n");
 
-	lea	rcx, OFFSET FLAT:$SG3857
+	lea	rcx, OFFSET FLAT:$SG3873
 	call	printf
 $LN16@ahci_initi:
 
@@ -610,7 +610,7 @@ $LN14@ahci_initi:
 	mov	r9d, DWORD PTR bus$[rsp]
 	mov	r8d, DWORD PTR func$[rsp]
 	mov	edx, DWORD PTR dev$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3864
+	lea	rcx, OFFSET FLAT:$SG3880
 	call	printf
 
 ; 181  : 	HBA_MEM *hba = (HBA_MEM*)(info->device.nonBridge.baseAddress[5] & 0xFFFFFFF0);
@@ -681,7 +681,7 @@ $LN14@ahci_initi:
 
 	mov	r8d, DWORD PTR version_minor$[rsp]
 	mov	edx, DWORD PTR version_major$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3870
+	lea	rcx, OFFSET FLAT:$SG3886
 	call	printf
 
 ; 195  : 	uint32_t _bit = hba->cap >> 31 & 0xff;
@@ -699,7 +699,7 @@ $LN14@ahci_initi:
 
 ; 197  : 		printf ("[AHCI]: 64-bit DMA supported\n");
 
-	lea	rcx, OFFSET FLAT:$SG3873
+	lea	rcx, OFFSET FLAT:$SG3889
 	call	printf
 
 ; 198  : 		___ahci_64_bit___ = true;
@@ -735,7 +735,7 @@ $LN13@ahci_initi:
 ; 206  : 	_debug_print_ ("[AHCI]: Num Command Slots -> %d\n", num_command_slots);
 
 	mov	edx, DWORD PTR num_command_slots$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3875
+	lea	rcx, OFFSET FLAT:$SG3891
 	call	?_debug_print_@@YAXPEADZZ		; _debug_print_
 
 ; 207  : 
@@ -756,7 +756,7 @@ $LN13@ahci_initi:
 
 	movzx	eax, BYTE PTR support_spin$[rsp]
 	mov	edx, eax
-	lea	rcx, OFFSET FLAT:$SG3878
+	lea	rcx, OFFSET FLAT:$SG3894
 	call	?_debug_print_@@YAXPEADZZ		; _debug_print_
 $LN12@ahci_initi:
 
@@ -772,7 +772,7 @@ $LN12@ahci_initi:
 
 ; 214  : 		_debug_print_ ("[AHCI]: FIS-Based Switching supported\n");
 
-	lea	rcx, OFFSET FLAT:$SG3880
+	lea	rcx, OFFSET FLAT:$SG3896
 	call	?_debug_print_@@YAXPEADZZ		; _debug_print_
 $LN11@ahci_initi:
 
@@ -817,7 +817,7 @@ $LN10@ahci_initi:
 ; 221  : 				printf ("[AHCI]: SATA Drive found at port %d\n", i);
 
 	mov	edx, DWORD PTR i$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3889
+	lea	rcx, OFFSET FLAT:$SG3905
 	call	printf
 
 ; 222  : 				hba->port[i].sctl &= ~PX_SCTL_IPM_MASK;
@@ -864,7 +864,7 @@ $LN7@ahci_initi:
 ; 227  : 				printf ("[AHCI]: SATAPI Drive found at port %d\n", i);
 
 	mov	edx, DWORD PTR i$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3892
+	lea	rcx, OFFSET FLAT:$SG3908
 	call	printf
 	jmp	SHORT $LN4@ahci_initi
 $LN5@ahci_initi:
@@ -877,7 +877,7 @@ $LN5@ahci_initi:
 ; 229  : 				printf ("[AHCI]: SEMB Drive found at port %d\n", i);
 
 	mov	edx, DWORD PTR i$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3895
+	lea	rcx, OFFSET FLAT:$SG3911
 	call	printf
 	jmp	SHORT $LN2@ahci_initi
 $LN3@ahci_initi:
@@ -890,7 +890,7 @@ $LN3@ahci_initi:
 ; 231  : 				printf ("[AHCI]: PM Drive found at port %d\n", i);
 
 	mov	edx, DWORD PTR i$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3898
+	lea	rcx, OFFSET FLAT:$SG3914
 	call	printf
 $LN1@ahci_initi:
 $LN2@ahci_initi:

@@ -187,9 +187,11 @@ void AuDriverLoad (char* filename, aurora_driver_t *driver) {
 
 
 	void* entry_addr = AuGetProcAddress((void*)driver_load_base,"AuDriverMain");
+	void* unload_addr = AuGetProcAddress((void*)driver_load_base,"AuDriverUnload");
 
 	AuPeLinkLibrary(virtual_base);
 	driver->entry = (au_drv_entry)entry_addr;
+	driver->unload = (au_drv_unload)unload_addr;
 	driver->base = AU_DRIVER_BASE_START;
 	driver->end = driver->base + file.size;
 	driver->present = true;
@@ -201,7 +203,6 @@ void AuDriverLoad (char* filename, aurora_driver_t *driver) {
  * @param info -- kernel boot info
  */
 void AuDrvMngrInitialize (KERNEL_BOOT_INFO *info) {
-	x64_cli();
 	driver_class_unique_id = 0;
 	driver_load_base = AU_DRIVER_BASE_START;
 	printf ("[aurora]: initializing drivers, please wait... \n");
@@ -233,7 +234,6 @@ void AuDrvMngrInitialize (KERNEL_BOOT_INFO *info) {
 		AuDriverLoad(driver->name, driver);
 		driver->entry();
 	}
-	x64_sti();
 }
 
 

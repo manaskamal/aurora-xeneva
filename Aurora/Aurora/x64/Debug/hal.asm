@@ -16,6 +16,10 @@ PUBLIC	outportd
 PUBLIC	AuInterruptEnd
 PUBLIC	AuInterruptSet
 PUBLIC	AuIrqMask
+PUBLIC	AuDisableInterupts
+PUBLIC	AuEnableInterrupts
+EXTRN	x64_cli:PROC
+EXTRN	x64_sti:PROC
 EXTRN	x64_inportb:PROC
 EXTRN	x64_inportw:PROC
 EXTRN	x64_inportd:PROC
@@ -62,6 +66,12 @@ $pdata$AuInterruptSet DD imagerel $LN3
 $pdata$AuIrqMask DD imagerel $LN3
 	DD	imagerel $LN3+32
 	DD	imagerel $unwind$AuIrqMask
+$pdata$AuDisableInterupts DD imagerel $LN3
+	DD	imagerel $LN3+14
+	DD	imagerel $unwind$AuDisableInterupts
+$pdata$AuEnableInterrupts DD imagerel $LN3
+	DD	imagerel $LN3+14
+	DD	imagerel $unwind$AuEnableInterrupts
 pdata	ENDS
 xdata	SEGMENT
 $unwind$?AuHalInitialize@@YAXXZ DD 010401H
@@ -86,7 +96,51 @@ $unwind$AuInterruptSet DD 011301H
 	DD	04213H
 $unwind$AuIrqMask DD 010c01H
 	DD	0420cH
+$unwind$AuDisableInterupts DD 010401H
+	DD	04204H
+$unwind$AuEnableInterrupts DD 010401H
+	DD	04204H
 xdata	ENDS
+; Function compile flags: /Odtpy
+; File e:\xeneva project\xeneva\aurora\aurora\hal.cpp
+_TEXT	SEGMENT
+AuEnableInterrupts PROC
+
+; 170  : void AuEnableInterrupts() {
+
+$LN3:
+	sub	rsp, 40					; 00000028H
+
+; 171  : 	x64_sti();
+
+	call	x64_sti
+
+; 172  : }
+
+	add	rsp, 40					; 00000028H
+	ret	0
+AuEnableInterrupts ENDP
+_TEXT	ENDS
+; Function compile flags: /Odtpy
+; File e:\xeneva project\xeneva\aurora\aurora\hal.cpp
+_TEXT	SEGMENT
+AuDisableInterupts PROC
+
+; 166  : void AuDisableInterupts() {
+
+$LN3:
+	sub	rsp, 40					; 00000028H
+
+; 167  : 	x64_cli();
+
+	call	x64_cli
+
+; 168  : }
+
+	add	rsp, 40					; 00000028H
+	ret	0
+AuDisableInterupts ENDP
+_TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\hal.cpp
 _TEXT	SEGMENT

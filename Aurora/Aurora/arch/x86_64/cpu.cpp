@@ -15,7 +15,9 @@
 #include <arch\x86_64\pic.h>
 #include <stdio.h>
 #include <arch\x86_64\apic.h>
+#include <arch\x86_64\apinit.h>
 #include <arch\x86_64\ioapic.h>
+#include <arch\x86_64\mmngr\paging.h>
 
 
 //! Global Descriptor Table functions
@@ -282,3 +284,5 @@ bool is_cpu_fxsave_supported () {
 bool is_cpu_xsave_supported () {
 	return _xsave;
 }
+
+

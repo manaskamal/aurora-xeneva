@@ -260,7 +260,7 @@ void idle_thread () {
 
 //! Initialize the scheduler engine and its core
 //! data structure
-void initialize_scheduler () {
+void AuInitializeScheduler () {
 	//blocked_list = initialize_list();
 	scheduler_enable = true;
 	scheduler_initialized = true;
@@ -370,15 +370,13 @@ sched_end:
 
 
 //! Start the scheduler engine
-void scheduler_start () {
-	x64_cli();
+void AuSchedulerStart () {
 #ifdef USE_APIC
 	setvect(0x40, scheduler_isr);
 #endif
 #ifdef USE_PIC
 	interrupt_set(0,scheduler_isr,0);
 #endif
-	x64_sti();
 	execute_idle(current_thread,get_kernel_tss());
 }
 

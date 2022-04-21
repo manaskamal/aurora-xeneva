@@ -77,7 +77,7 @@ typedef struct _KERNEL_BOOT_INFO_ {
 	uint8_t* driver_entry4;   //!FLOPPY
 	uint8_t* driver_entry5;   //!ATA
 	uint8_t* driver_entry6;   //!USB
-	uint8_t*    priramfs;
+	void*    apcode;
 }KERNEL_BOOT_INFO, *PKERNEL_BOOT_INFO;
 #pragma pack(pop)
 

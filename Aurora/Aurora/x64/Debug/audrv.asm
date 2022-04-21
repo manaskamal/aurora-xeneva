@@ -14,11 +14,13 @@ driver_class_unique_id DD 01H DUP (?)
 driver_load_base DQ 01H DUP (?)
 _BSS	ENDS
 CONST	SEGMENT
-$SG3976	DB	'AuDriverMain', 00H
+$SG3994	DB	'AuDriverMain', 00H
 	ORG $+3
-$SG3981	DB	'[aurora]: initializing drivers, please wait... ', 0aH, 00H
+$SG3997	DB	'AuDriverUnload', 00H
+	ORG $+1
+$SG4003	DB	'[aurora]: initializing drivers, please wait... ', 0aH, 00H
 	ORG $+7
-$SG3987	DB	'/audrv.cnf', 00H
+$SG4009	DB	'/audrv.cnf', 00H
 CONST	ENDS
 PUBLIC	?AuDrvMngrInitialize@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z ; AuDrvMngrInitialize
 PUBLIC	?AuRequestDriverId@@YAIXZ			; AuRequestDriverId
@@ -27,8 +29,6 @@ PUBLIC	?AuGetConfEntry@@YAPEADIIPEAEH@Z		; AuGetConfEntry
 PUBLIC	?AuCreateDriverInstance@@YAXPEAD@Z		; AuCreateDriverInstance
 PUBLIC	?AuGetDriverName@@YAXIIPEAEH@Z			; AuGetDriverName
 PUBLIC	?AuDriverLoad@@YAXPEADPEAU_aurora_driver_@@@Z	; AuDriverLoad
-EXTRN	x64_cli:PROC
-EXTRN	x64_sti:PROC
 EXTRN	strcpy:PROC
 EXTRN	strchr:PROC
 EXTRN	memset:PROC
@@ -48,7 +48,7 @@ EXTRN	?fat32_read_file@@YAXPEAU_vfs_node_@@PEA_KI@Z:PROC ; fat32_read_file
 EXTRN	?fat32_read@@YAXPEAU_vfs_node_@@PEA_K@Z:PROC	; fat32_read
 pdata	SEGMENT
 $pdata$?AuDrvMngrInitialize@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z DD imagerel $LN17
-	DD	imagerel $LN17+556
+	DD	imagerel $LN17+546
 	DD	imagerel $unwind$?AuDrvMngrInitialize@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z
 $pdata$?AuRequestDriverId@@YAIXZ DD imagerel $LN3
 	DD	imagerel $LN3+35
@@ -63,7 +63,7 @@ $pdata$?AuGetDriverName@@YAXIIPEAEH@Z DD imagerel $LN9
 	DD	imagerel $LN9+234
 	DD	imagerel $unwind$?AuGetDriverName@@YAXIIPEAEH@Z
 $pdata$?AuDriverLoad@@YAXPEADPEAU_aurora_driver_@@@Z DD imagerel $LN5
-	DD	imagerel $LN5+441
+	DD	imagerel $LN5+482
 	DD	imagerel $unwind$?AuDriverLoad@@YAXPEADPEAU_aurora_driver_@@@Z
 pdata	ENDS
 xdata	SEGMENT
@@ -88,8 +88,9 @@ _TEXT	SEGMENT
 next_base_offset$ = 32
 buffer$ = 40
 block$1 = 48
-virtual_base$ = 56
-entry_addr$ = 64
+entry_addr$ = 56
+virtual_base$ = 64
+unload_addr$ = 72
 file$ = 80
 $T2 = 192
 $T3 = 296
@@ -218,30 +219,43 @@ $LN1@AuDriverLo:
 ; 188  : 
 ; 189  : 	void* entry_addr = AuGetProcAddress((void*)driver_load_base,"AuDriverMain");
 
-	lea	rdx, OFFSET FLAT:$SG3976
+	lea	rdx, OFFSET FLAT:$SG3994
 	mov	rcx, QWORD PTR driver_load_base
 	call	?AuGetProcAddress@@YAPEAXPEAXPEBD@Z	; AuGetProcAddress
 	mov	QWORD PTR entry_addr$[rsp], rax
 
-; 190  : 
-; 191  : 	AuPeLinkLibrary(virtual_base);
+; 190  : 	void* unload_addr = AuGetProcAddress((void*)driver_load_base,"AuDriverUnload");
+
+	lea	rdx, OFFSET FLAT:$SG3997
+	mov	rcx, QWORD PTR driver_load_base
+	call	?AuGetProcAddress@@YAPEAXPEAXPEBD@Z	; AuGetProcAddress
+	mov	QWORD PTR unload_addr$[rsp], rax
+
+; 191  : 
+; 192  : 	AuPeLinkLibrary(virtual_base);
 
 	mov	rcx, QWORD PTR virtual_base$[rsp]
 	call	?AuPeLinkLibrary@@YAXPEAX@Z		; AuPeLinkLibrary
 
-; 192  : 	driver->entry = (au_drv_entry)entry_addr;
+; 193  : 	driver->entry = (au_drv_entry)entry_addr;
 
 	mov	rax, QWORD PTR driver$[rsp]
 	mov	rcx, QWORD PTR entry_addr$[rsp]
 	mov	QWORD PTR [rax+56], rcx
 
-; 193  : 	driver->base = AU_DRIVER_BASE_START;
+; 194  : 	driver->unload = (au_drv_unload)unload_addr;
+
+	mov	rax, QWORD PTR driver$[rsp]
+	mov	rcx, QWORD PTR unload_addr$[rsp]
+	mov	QWORD PTR [rax+64], rcx
+
+; 195  : 	driver->base = AU_DRIVER_BASE_START;
 
 	mov	rax, QWORD PTR driver$[rsp]
 	mov	rcx, -70368739983360			; ffffc00000400000H
 	mov	QWORD PTR [rax+40], rcx
 
-; 194  : 	driver->end = driver->base + file.size;
+; 196  : 	driver->end = driver->base + file.size;
 
 	mov	eax, DWORD PTR file$[rsp+32]
 	mov	rcx, QWORD PTR driver$[rsp]
@@ -249,12 +263,12 @@ $LN1@AuDriverLo:
 	mov	rcx, QWORD PTR driver$[rsp]
 	mov	QWORD PTR [rcx+48], rax
 
-; 195  : 	driver->present = true;
+; 197  : 	driver->present = true;
 
 	mov	rax, QWORD PTR driver$[rsp]
 	mov	BYTE PTR [rax+34], 1
 
-; 196  : 	driver_load_base = driver_load_base + next_base_offset * 4096;
+; 198  : 	driver_load_base = driver_load_base + next_base_offset * 4096;
 
 	mov	eax, DWORD PTR next_base_offset$[rsp]
 	imul	eax, 4096				; 00001000H
@@ -264,7 +278,7 @@ $LN1@AuDriverLo:
 	mov	rax, rcx
 	mov	QWORD PTR driver_load_base, rax
 
-; 197  : }
+; 199  : }
 
 	add	rsp, 408				; 00000198H
 	pop	rdi
@@ -422,13 +436,13 @@ $LN3:
 
 ; 120  : 	aurora_driver_t *driver = (aurora_driver_t*)malloc(sizeof(aurora_driver_t));
 
-	mov	ecx, 64					; 00000040H
+	mov	ecx, 72					; 00000048H
 	call	malloc
 	mov	QWORD PTR driver$[rsp], rax
 
 ; 121  : 	memset(driver, 0, sizeof(aurora_driver_t));
 
-	mov	r8d, 64					; 00000040H
+	mov	r8d, 72					; 00000048H
 	xor	edx, edx
 	mov	rcx, QWORD PTR driver$[rsp]
 	call	memset
@@ -871,7 +885,7 @@ $T7 = 568
 info$ = 704
 ?AuDrvMngrInitialize@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z PROC ; AuDrvMngrInitialize
 
-; 203  : void AuDrvMngrInitialize (KERNEL_BOOT_INFO *info) {
+; 205  : void AuDrvMngrInitialize (KERNEL_BOOT_INFO *info) {
 
 $LN17:
 	mov	QWORD PTR [rsp+8], rcx
@@ -879,42 +893,38 @@ $LN17:
 	push	rdi
 	sub	rsp, 680				; 000002a8H
 
-; 204  : 	x64_cli();
-
-	call	x64_cli
-
-; 205  : 	driver_class_unique_id = 0;
+; 206  : 	driver_class_unique_id = 0;
 
 	mov	DWORD PTR driver_class_unique_id, 0
 
-; 206  : 	driver_load_base = AU_DRIVER_BASE_START;
+; 207  : 	driver_load_base = AU_DRIVER_BASE_START;
 
 	mov	rax, -70368739983360			; ffffc00000400000H
 	mov	QWORD PTR driver_load_base, rax
 
-; 207  : 	printf ("[aurora]: initializing drivers, please wait... \n");
+; 208  : 	printf ("[aurora]: initializing drivers, please wait... \n");
 
-	lea	rcx, OFFSET FLAT:$SG3981
+	lea	rcx, OFFSET FLAT:$SG4003
 	call	printf
 
-; 208  : 	/* Load the conf data */
-; 209  : 	uint64_t* conf = (uint64_t*)p2v((size_t)AuPmmngrAlloc());
+; 209  : 	/* Load the conf data */
+; 210  : 	uint64_t* conf = (uint64_t*)p2v((size_t)AuPmmngrAlloc());
 
 	call	AuPmmngrAlloc
 	mov	rcx, rax
 	call	p2v
 	mov	QWORD PTR conf$[rsp], rax
 
-; 210  : 	memset(conf, 0, 4096);
+; 211  : 	memset(conf, 0, 4096);
 
 	mov	r8d, 4096				; 00001000H
 	xor	edx, edx
 	mov	rcx, QWORD PTR conf$[rsp]
 	call	memset
 
-; 211  : 	vfs_node_t file = fat32_open(NULL, "/audrv.cnf");
+; 212  : 	vfs_node_t file = fat32_open(NULL, "/audrv.cnf");
 
-	lea	r8, OFFSET FLAT:$SG3987
+	lea	r8, OFFSET FLAT:$SG4009
 	xor	edx, edx
 	lea	rcx, QWORD PTR $T7[rsp]
 	call	?fat32_open@@YA?AU_vfs_node_@@PEAU1@PEAD@Z ; fat32_open
@@ -930,7 +940,7 @@ $LN17:
 	mov	ecx, 104				; 00000068H
 	rep movsb
 
-; 212  : 	fat32_read_file (&file,(uint64_t*)v2p((size_t)conf),file.size);
+; 213  : 	fat32_read_file (&file,(uint64_t*)v2p((size_t)conf),file.size);
 
 	mov	rcx, QWORD PTR conf$[rsp]
 	call	v2p
@@ -939,15 +949,15 @@ $LN17:
 	lea	rcx, QWORD PTR file$[rsp]
 	call	?fat32_read_file@@YAXPEAU_vfs_node_@@PEA_KI@Z ; fat32_read_file
 
-; 213  : 
-; 214  : 	uint8_t* confdata = (uint8_t*)conf;
+; 214  : 
+; 215  : 	uint8_t* confdata = (uint8_t*)conf;
 
 	mov	rax, QWORD PTR conf$[rsp]
 	mov	QWORD PTR confdata$[rsp], rax
 
-; 215  : 
-; 216  : 	pci_device_info config;
-; 217  : 	for (int bus = 0; bus < 256; bus++) {
+; 216  : 
+; 217  : 	pci_device_info config;
+; 218  : 	for (int bus = 0; bus < 256; bus++) {
 
 	mov	DWORD PTR bus$2[rsp], 0
 	jmp	SHORT $LN14@AuDrvMngrI
@@ -959,7 +969,7 @@ $LN14@AuDrvMngrI:
 	cmp	DWORD PTR bus$2[rsp], 256		; 00000100H
 	jge	$LN12@AuDrvMngrI
 
-; 218  : 		for (int dev = 0; dev < 32; dev++) {
+; 219  : 		for (int dev = 0; dev < 32; dev++) {
 
 	mov	DWORD PTR dev$1[rsp], 0
 	jmp	SHORT $LN11@AuDrvMngrI
@@ -971,7 +981,7 @@ $LN11@AuDrvMngrI:
 	cmp	DWORD PTR dev$1[rsp], 32		; 00000020H
 	jge	$LN9@AuDrvMngrI
 
-; 219  : 			for (int func = 0; func < 8; func++) {
+; 220  : 			for (int func = 0; func < 8; func++) {
 
 	mov	DWORD PTR func$3[rsp], 0
 	jmp	SHORT $LN8@AuDrvMngrI
@@ -983,8 +993,8 @@ $LN8@AuDrvMngrI:
 	cmp	DWORD PTR func$3[rsp], 8
 	jge	$LN6@AuDrvMngrI
 
-; 220  : 
-; 221  : 				read_config_32 (0,bus, dev, func, 0, config.header[0]);
+; 221  : 
+; 222  : 				read_config_32 (0,bus, dev, func, 0, config.header[0]);
 
 	mov	eax, 4
 	imul	rax, 0
@@ -997,7 +1007,7 @@ $LN8@AuDrvMngrI:
 	xor	ecx, ecx
 	call	read_config_32
 
-; 222  : 				read_config_header (bus, dev, func, &config);
+; 223  : 				read_config_header (bus, dev, func, &config);
 
 	lea	r9, QWORD PTR config$[rsp]
 	mov	r8d, DWORD PTR func$3[rsp]
@@ -1005,7 +1015,7 @@ $LN8@AuDrvMngrI:
 	mov	ecx, DWORD PTR bus$2[rsp]
 	call	read_config_header
 
-; 223  : 				if (config.device.deviceID == 0xFFFF || config.device.vendorID == 0xFFFF) 
+; 224  : 				if (config.device.deviceID == 0xFFFF || config.device.vendorID == 0xFFFF) 
 
 	movzx	eax, WORD PTR config$[rsp+2]
 	cmp	eax, 65535				; 0000ffffH
@@ -1015,12 +1025,12 @@ $LN8@AuDrvMngrI:
 	jne	SHORT $LN5@AuDrvMngrI
 $LN4@AuDrvMngrI:
 
-; 224  : 					continue;	
+; 225  : 					continue;	
 
 	jmp	SHORT $LN7@AuDrvMngrI
 $LN5@AuDrvMngrI:
 
-; 225  : 				AuGetDriverName(config.device.classCode,config.device.subClassCode,  confdata,1);
+; 226  : 				AuGetDriverName(config.device.classCode,config.device.subClassCode,  confdata,1);
 
 	movzx	eax, BYTE PTR config$[rsp+10]
 	movzx	ecx, BYTE PTR config$[rsp+11]
@@ -1029,24 +1039,24 @@ $LN5@AuDrvMngrI:
 	mov	edx, eax
 	call	?AuGetDriverName@@YAXIIPEAEH@Z		; AuGetDriverName
 
-; 226  : 			}
+; 227  : 			}
 
 	jmp	$LN7@AuDrvMngrI
 $LN6@AuDrvMngrI:
 
-; 227  : 		}
+; 228  : 		}
 
 	jmp	$LN10@AuDrvMngrI
 $LN9@AuDrvMngrI:
 
-; 228  : 	}
+; 229  : 	}
 
 	jmp	$LN13@AuDrvMngrI
 $LN12@AuDrvMngrI:
 
-; 229  : 
-; 230  : 	/* Serially call each startup entries of each driver */
-; 231  : 	for (int i = 0; i < driver_class_unique_id; i++) {
+; 230  : 
+; 231  : 	/* Serially call each startup entries of each driver */
+; 232  : 	for (int i = 0; i < driver_class_unique_id; i++) {
 
 	mov	DWORD PTR i$4[rsp], 0
 	jmp	SHORT $LN3@AuDrvMngrI
@@ -1059,14 +1069,14 @@ $LN3@AuDrvMngrI:
 	cmp	DWORD PTR i$4[rsp], eax
 	jae	SHORT $LN1@AuDrvMngrI
 
-; 232  : 		aurora_driver_t *driver = drivers[i];
+; 233  : 		aurora_driver_t *driver = drivers[i];
 
 	movsxd	rax, DWORD PTR i$4[rsp]
 	lea	rcx, OFFSET FLAT:?drivers@@3PAPEAU_aurora_driver_@@A ; drivers
 	mov	rax, QWORD PTR [rcx+rax*8]
 	mov	QWORD PTR driver$5[rsp], rax
 
-; 233  : 		AuDriverLoad(driver->name, driver);
+; 234  : 		AuDriverLoad(driver->name, driver);
 
 	mov	rax, QWORD PTR driver$5[rsp]
 	add	rax, 2
@@ -1074,19 +1084,15 @@ $LN3@AuDrvMngrI:
 	mov	rcx, rax
 	call	?AuDriverLoad@@YAXPEADPEAU_aurora_driver_@@@Z ; AuDriverLoad
 
-; 234  : 		driver->entry();
+; 235  : 		driver->entry();
 
 	mov	rax, QWORD PTR driver$5[rsp]
 	call	QWORD PTR [rax+56]
 
-; 235  : 	}
+; 236  : 	}
 
 	jmp	SHORT $LN2@AuDrvMngrI
 $LN1@AuDrvMngrI:
-
-; 236  : 	x64_sti();
-
-	call	x64_sti
 
 ; 237  : }
 

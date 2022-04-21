@@ -1,8 +1,8 @@
-﻿Build started 20-04-2022 আবেলি 5:55:41.
+﻿Build started 21-04-2022 ৰাতিপু 10:20:06.
      1>Project "E:\Xeneva Project\Xeneva\Aurora\Aurora\Aurora.vcxproj" on node 2 (Rebuild target(s)).
      1>_NASM:
          arch\x86_64\interrupts.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmpb5493c280f48467cae9d14422aa8a876.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp9676deaefc974fe489a219abb215af14.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\interrupts.obj"  "E:\Xeneva Project\Xeneva\Aurora\Aurora\arch\x86_64\interrupts.asm"
      1>E:\Xeneva Project\Xeneva\Aurora\Aurora\arch\x86_64\interrupts.asm(132): warning : signed dword immediate exceeds bounds [-w+number-overflow]
      1>E:\Xeneva Project\Xeneva\Aurora\Aurora\arch\x86_64\interrupts.asm(132): warning : dword data exceeds bounds [-w+number-overflow]
@@ -502,26 +502,27 @@
      1>E:\Xeneva Project\Xeneva\Aurora\Aurora\arch\x86_64\interrupts.asm(156): warning : dword data exceeds bounds [-w+number-overflow]
        _NASM:
          arch\x86_64\switch.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp07507e3b2ef2417abc0ba44e102d8ff3.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmpb08985ed7b844ce0ac60e2977be0535d.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\switch.obj"  "E:\Xeneva Project\Xeneva\Aurora\Aurora\arch\x86_64\switch.asm"
        _NASM:
          arch\x86_64\user.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp5904926e25e44a55a011e6b24ba68677.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmpcd9a8a59dd084ff0852ae4fd97e35c71.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\user.obj"  "E:\Xeneva Project\Xeneva\Aurora\Aurora\arch\x86_64\user.asm"
        _NASM:
          arch\x86_64\_low_level.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmped104dfb67ac42eca345652f1a71dd8a.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp65eca8bc23ab41b5a1d3bed766bbb41f.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\_low_level.obj"  "E:\Xeneva Project\Xeneva\Aurora\Aurora\arch\x86_64\_low_level.asm"
        _NASM:
          _fast_cpy.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp2e6b58e3e2384506870dcbd7a8d562b5.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmpeb233c0090314fa78bf729f5a4a5e403.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\_fast_cpy.obj"  "E:\Xeneva Project\Xeneva\Aurora\Aurora\_fast_cpy.asm"
        ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I..\include /ZI /nologo /W0 /WX- /Od /Oy /D ARCH_X64 /D USE_APIC /D X64 /D _DEBUG_ON_ /D _MBCS /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /GR- /FAs /Fa"x64\Debug\\" /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt arch\x86_64\apic.cpp arch\x86_64\cpu.cpp arch\x86_64\exception.cpp arch\x86_64\ioapic.cpp arch\x86_64\kheap.cpp arch\x86_64\kstack.cpp arch\x86_64\map.cpp arch\x86_64\pic.cpp arch\x86_64\systable.cpp arch\x86_64\thread.cpp arch\x86_64\user64.cpp arch\x86_64\paging.cpp atomic\mutex.cpp console.cpp drivers\acpi\acpi.cpp drivers\ahci.cpp drivers\ahci_disk.cpp drivers\ata.cpp drivers\hda\hda.cpp drivers\kybrd.cpp drivers\mouse.cpp drivers\net\e1000.cpp drivers\pci.cpp drivers\rtc.cpp audrv.cpp fs\devfs.cpp fs\fat\fat.cpp fs\fat\fat_f.cpp fs\fat\fat_util.cpp fs\fat\fat_dir.cpp fs\gpt.cpp fs\ttype.cpp fs\vfs.cpp hal.cpp hwcursor.cpp init.cpp ipc\dwm_ipc.cpp ipc\message.cpp ipc\postbox.cpp ipc\pri_loop.cpp pe.cpp pmmngr.cpp proc.cpp screen.cpp serial.cpp sound.cpp stdio.cpp string.cpp sysserv\ioquery.cpp sysserv\sysfb.cpp sysserv\sysfile.cpp sysserv\sysmem.cpp sysserv\sysmouse.cpp sysserv\sysproc.cpp sysserv\systhread.cpp sysserv\systime.cpp sysserv\syswait.cpp sysserv\valloc.cpp timer.cpp utils\circ_buf.cpp utils\lnklist.cpp utils\pipe.cpp utils\ring.cpp _crt.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I..\include /ZI /nologo /W0 /WX- /Od /Oy /D ARCH_X64 /D USE_APIC /D X64 /D _DEBUG_ON_ /D _MBCS /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /GR- /FAs /Fa"x64\Debug\\" /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt arch\x86_64\apic.cpp arch\x86_64\apinit.cpp arch\x86_64\cpu.cpp arch\x86_64\exception.cpp arch\x86_64\ioapic.cpp arch\x86_64\kheap.cpp arch\x86_64\kstack.cpp arch\x86_64\map.cpp arch\x86_64\pic.cpp arch\x86_64\systable.cpp arch\x86_64\thread.cpp arch\x86_64\user64.cpp arch\x86_64\paging.cpp atomic\mutex.cpp console.cpp drivers\acpi\acpi.cpp drivers\ahci.cpp drivers\ahci_disk.cpp drivers\ata.cpp drivers\hda\hda.cpp drivers\kybrd.cpp drivers\mouse.cpp drivers\pci.cpp drivers\rtc.cpp audrv.cpp fs\devfs.cpp fs\fat\fat.cpp fs\fat\fat_f.cpp fs\fat\fat_util.cpp fs\fat\fat_dir.cpp fs\gpt.cpp fs\ttype.cpp fs\vfs.cpp hal.cpp init.cpp ipc\dwm_ipc.cpp ipc\message.cpp ipc\postbox.cpp ipc\pri_loop.cpp pe.cpp pmmngr.cpp proc.cpp screen.cpp serial.cpp sound.cpp stdio.cpp string.cpp sysserv\ioquery.cpp sysserv\sysfb.cpp sysserv\sysfile.cpp sysserv\sysmem.cpp sysserv\sysmouse.cpp sysserv\sysproc.cpp sysserv\systhread.cpp sysserv\systime.cpp sysserv\syswait.cpp sysserv\valloc.cpp timer.cpp utils\circ_buf.cpp utils\lnklist.cpp utils\pipe.cpp utils\ring.cpp _crt.cpp
      1>cl : Command line warning D9038: /ZI is not supported on this platform; enabling /Zi instead
      1>cl : Command line warning D9007: '/Gm' requires '/Zi'; option ignored
      1>cl : Command line warning D9002: ignoring unknown option '/arch:SSE'
          apic.cpp
+         apinit.cpp
          cpu.cpp
          exception.cpp
          ioapic.cpp
@@ -540,11 +541,10 @@
          ahci_disk.cpp
          ata.cpp
          hda.cpp
-         kybrd.cpp
          Generating Code...
          Compiling...
+         kybrd.cpp
          mouse.cpp
-         e1000.cpp
          pci.cpp
          rtc.cpp
          audrv.cpp
@@ -557,15 +557,14 @@
          ttype.cpp
          vfs.cpp
          hal.cpp
-         hwcursor.cpp
          init.cpp
          dwm_ipc.cpp
          message.cpp
          postbox.cpp
          pri_loop.cpp
+         pe.cpp
          Generating Code...
          Compiling...
-         pe.cpp
          pmmngr.cpp
          proc.cpp
          screen.cpp
@@ -585,9 +584,9 @@
          valloc.cpp
          timer.cpp
          circ_buf.cpp
+         lnklist.cpp
          Generating Code...
          Compiling...
-         lnklist.cpp
          pipe.cpp
          ring.cpp
          _crt.cpp
@@ -596,6 +595,7 @@
      1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V110\Microsoft.CppBuild.targets(1139,5): warning MSB8012: TargetName(Aurora) does not match the Linker's OutputFile property value (xnkrnl). This may cause your project to build incorrectly. To correct this, please make sure that $(OutDir), $(TargetName) and $(TargetExt) property values match the value specified in %(Link.OutputFile).
        Link:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:PROMPT /OUT:"F:\EFI\XENEVA\xnkrnl.exe" /INCREMENTAL /NOLOGO /LIBPATH:"E:\Xeneva Project\Xeneva\Aurora" /NODEFAULTLIB /MANIFEST:NO /PDB:"E:\Xeneva Project\Xeneva\Aurora\x64\Debug\Aurora.pdb" /MAP /MAPINFO:EXPORTS /SUBSYSTEM:NATIVE /STACK:"0x100000" /LARGEADDRESSAWARE /Driver /OPT:NOREF /LTCG /TLBID:1 /ENTRY:"_AuMain" /BASE:"0xFFFFC00000000000" /FIXED:NO /IMPLIB:"E:\Xeneva Project\Xeneva\Aurora\x64\Debug\Aurora.lib" /MACHINE:X64 /ALIGN:512 x64\Debug\apic.obj
+         x64\Debug\apinit.obj
          x64\Debug\cpu.obj
          x64\Debug\exception.obj
          x64\Debug\ioapic.obj
@@ -616,7 +616,6 @@
          x64\Debug\hda.obj
          x64\Debug\kybrd.obj
          x64\Debug\mouse.obj
-         x64\Debug\e1000.obj
          x64\Debug\pci.obj
          x64\Debug\rtc.obj
          x64\Debug\audrv.obj
@@ -629,7 +628,6 @@
          x64\Debug\ttype.obj
          x64\Debug\vfs.obj
          x64\Debug\hal.obj
-         x64\Debug\hwcursor.obj
          x64\Debug\init.obj
          x64\Debug\dwm_ipc.obj
          x64\Debug\message.obj
@@ -672,4 +670,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:03.86
+Time Elapsed 00:00:05.52

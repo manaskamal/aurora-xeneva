@@ -125,5 +125,15 @@ AU_EXTERN AU_EXPORT void AuInterruptSet (size_t vector, void (*fn)(size_t, void*
  */
 AU_EXTERN AU_EXPORT void AuIrqMask (uint8_t irq, bool value);
 
+/*
+ * AuDisableInterrupts -- disable all interrupts
+ */
+AU_EXTERN AU_EXPORT void AuDisableInterupts();
+
+/*
+ * AuEnableInterrupts -- enable all interrupts
+ */
+AU_EXTERN AU_EXPORT void AuEnableInterrupts();
+
 extern void* get_ap_address ();
 #endif

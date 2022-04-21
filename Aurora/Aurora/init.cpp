@@ -46,8 +46,6 @@
 #include <drivers\hdaudio\hda.h>
 #include <drivers\ahci_disk.h>
 #include <drivers\usb\xhci.h>
-#include <drivers\net\e1000.h>
-#include <drivers\net\amd_am79c973.h>
 #include <drivers\rtc.h>
 #include <drivers\acpi\acpi.h>
 #include <drivers\ahci.h>
@@ -118,27 +116,26 @@ void _AuMain (KERNEL_BOOT_INFO *info) {
 	AuInitializeMouse();
 
 	//Here we initialise all drivers stuffs
+	/* Clear interrupts as scheduler will enable it */
+	x64_cli();
 	AuDrvMngrInitialize(info);
 	AuKeyboardInitialize();
-	message_init ();
 	dwm_ipc_init();
 	pri_loop_init();
-	
-	//e1000_initialize();   //<< receiver not working
 
 	process_list_initialize();
 	ttype_init();
 	
-	for(;;);
+	/*Initialize other processor */
+	AuInitializeCpu(AuGetNumCPU());
 #ifdef ARCH_X64
 	//================================================
 	//! Initialize the scheduler here
 	//!===============================================
-	initialize_scheduler();
+	AuInitializeScheduler();
 
 	printf ("Scheduler Initialized\n");
 
-	x64_cli();
 	int au_status = 0;
 
 	/* start the sound service manager at id 1 */
@@ -148,9 +145,8 @@ void _AuMain (KERNEL_BOOT_INFO *info) {
 	au_status = AuCreateProcess ("/priwm.exe","priwm");
 
 	//create_process ("/dock.exe", "dock");
-	x64_sti();
 	//! Here start the scheduler (multitasking engine)
-	scheduler_start();
+	AuSchedulerStart();
 #endif
 
 	//! Loop forever

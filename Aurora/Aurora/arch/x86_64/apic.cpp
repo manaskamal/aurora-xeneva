@@ -17,6 +17,8 @@
 #include <hal.h>
 #include <stdio.h>
 #include <arch\x86_64\pic.h>
+#include <arch\x86_64\apinit.h>
+#include <arch\x86_64\cpu.h>
 
 #define IA32_APIC_BASE_MSR  0x1B
 #define IA32_APIC_BASE_MSR_BSP  0x100
@@ -197,22 +199,69 @@ bool icr_busy () {
 }
 
 
-#ifdef SMP
-void initialize_cpu (uint32_t processor) {
+bool ap_started = false;
 
-	uint64_t* address = (uint64_t*)pmmngr_alloc();
-	void* ap_data = get_ap_address();
-	memcpy (address, ap_data, 4096);
 
-	write_apic_register (LAPIC_REGISTER_ICR, icr_dest(processor) | 0x4500);
-	while (icr_busy());
+/*
+ * Initialize other Application Processors
+ * @param num_cpu -- total number of cpu
+ */
+void AuInitializeCpu(uint8_t num_cpu) {
+	if (num_cpu == 0)
+		return;
 
-	//!startup ipi
-	size_t startup_ipi = icr_dest (processor) | 0x4600 | ((size_t)address >> 12);
-	write_apic_register (LAPIC_REGISTER_ICR, startup_ipi);
-	while (icr_busy());
-	for (int i = 0; i < 100; i++)
-		;
+	//! fixed address
+	uint64_t *apdata = (uint64_t*)0xA000;
+	uint64_t ap_init_address = (uint64_t)AuApInit;
+	uint64_t ap_aligned_address = (uint64_t)apdata;
+
+	uint64_t *pml4 = (uint64_t*)AuGetRootPageTable();
+
+	
+
+	for (int i = 1; i <= num_cpu; i++) {
+		if (i == 8)
+			break;
+		ap_started = false;
+
+		void *stack_address = AuPmmngrAlloc();
+		*(uint64_t*)(ap_aligned_address + 8) = (uint64_t)pml4;
+		*(uint64_t*)(ap_aligned_address + 16) = (uint64_t)stack_address;
+		*(uint64_t*)(ap_aligned_address + 24) = ap_init_address;
+		*(uint64_t*)(ap_aligned_address + 32) = (uint64_t)p2v((size_t)AuPmmngrAlloc());
+		void* cpu_struc = (void*)p2v((uint64_t)AuPmmngrAlloc());
+		cpu_t *cpu = (cpu_t*)cpu_struc;
+		cpu->cpu_id = i;
+		cpu->au_current_thread = 0;
+		*(uint64_t*)(ap_aligned_address + 40) = (uint64_t)cpu_struc;
+		
+		
+
+		write_apic_register(LAPIC_REGISTER_ICR, icr_dest(i) | 0x4500);
+		while (icr_busy());
+
+
+		size_t startup_ipi = icr_dest(i) | 0x4600 | ((size_t)apdata >> 12);
+		write_apic_register(LAPIC_REGISTER_ICR, startup_ipi);
+		while (icr_busy());
+		for (int i = 0; i < 10000000; i++)
+			;
+		write_apic_register(LAPIC_REGISTER_ICR, startup_ipi);
+		while (icr_busy());
+		
+		for (int i = 0; i < 10000000; i++)
+			;
+	
+		do {
+			x64_pause();
+		} while (!ap_started);
+	}
 
 }
-#endif
+
+/* AuAPStarted -- inform the BSP that ap has fully
+ * initialized
+ */
+void AuAPStarted () {
+	ap_started = true;
+}

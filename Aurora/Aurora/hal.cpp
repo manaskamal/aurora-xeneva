@@ -163,4 +163,13 @@ void AuIrqMask (uint8_t irq, bool value) {
 #endif
 }
 
+void AuDisableInterupts() {
+	x64_cli();
+}
+
+void AuEnableInterrupts() {
+	x64_sti();
+}
+
+
 

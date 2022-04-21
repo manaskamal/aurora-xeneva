@@ -100,10 +100,10 @@ typedef struct _uthread_ {
 //!*****************************
 
 //!initialize_scheduler -- initialize scheduler engine and creates all data structures
-extern void initialize_scheduler ();
+extern void AuInitializeScheduler ();
 
 //!scheduler_start -- start the scheduler
-extern void scheduler_start ();
+extern void AuSchedulerStart ();
 
 //!create_user_thread -- creates a user thread entry
 //!@param entry -- entry point address

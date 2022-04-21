@@ -46,8 +46,15 @@ extern void apic_local_eoi();
 extern uint64_t read_apic_register(uint16_t reg);
 extern void write_apic_register(uint16_t reg, uint64_t value);
 
-#ifdef SMP
-extern void initialize_cpu (uint32_t processor);
-#endif
+/*
+ * Initialize other Application Processors
+ * @param num_cpu -- total number of cpu
+ */
+extern void AuInitializeCpu (uint8_t num_cpu);
+/* AuAPStarted -- inform the BSP that ap has fully
+ * initialized
+ */
+extern void AuAPStarted ();
+
 extern void timer_sleep(uint32_t ms);
 #endif
