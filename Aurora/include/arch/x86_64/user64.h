@@ -32,5 +32,7 @@
 
 extern void initialize_syscall ();
 extern void initialize_user_land (size_t bit);
+//! Set up the user space environment for each AP's
+extern void initialize_user_land_ap (size_t bit);
 extern "C" TSS* get_kernel_tss ();
 #endif

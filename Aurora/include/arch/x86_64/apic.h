@@ -38,7 +38,7 @@
 #define LAPIC_REGISTER_TMRDIV      0x3E
 
 //! initialize apic
-extern void initialize_apic ();
+extern void initialize_apic (bool bsp);
 //! sends eoi to cpu local apic
 extern void apic_local_eoi();
 

@@ -55,6 +55,32 @@ void initialize_user_land (size_t bit) {
 	x64_write_msr (IA32_SYSENTER_ESP, (size_t)esp_stack); */
 }
 
+//! Set up the user space environment for each AP's
+void initialize_user_land_ap (size_t bit) {
+
+	uint16_t data_sel = SEGVAL (GDT_ENTRY_USER_DATA, 3);
+	uint16_t code_sel = 0;
+	switch (bit) {
+	case 64:
+		code_sel = SEGVAL (GDT_ENTRY_USER_CODE, 3);
+		break;
+	case 32:
+		code_sel = SEGVAL (GDT_ENTRY_USER_CODE32, 3);
+		break;
+	default:
+		return;
+	}
+
+	gdtr peek_gdt;
+	x64_sgdt (&peek_gdt);
+	gdt_entry& tss_entry = peek_gdt.gdtaddr[GDT_ENTRY_TSS];
+
+	TSS *tss_ = (TSS*) (tss_entry.base_low + (tss_entry.base_mid << 16) + (tss_entry.base_high << 24) + ((uint64_t)*(uint32_t*)&peek_gdt.gdtaddr[GDT_ENTRY_TSS + 1] << 32));
+	
+	/*void* esp_stack = x64_get_stack();
+	x64_write_msr (IA32_SYSENTER_ESP, (size_t)esp_stack); */
+}
+
 TSS* get_kernel_tss () {
 	return tss;
 }

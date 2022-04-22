@@ -243,6 +243,16 @@ extern void x86_64_gdt_init ();
 extern void setvect(size_t vector, void (*function)(size_t vector, void* param));
 
 extern "C" void gdt_initialize();
+/*
+ * gdt_initialize_ap -- initialize gdt for Application
+ * processors
+ */
+extern void gdt_initialize_ap();
+/*
+ * interrupt_initialize_ap -- intialises interrupts for
+ * for each APs
+ */
+extern void interrupt_initialize_ap();
 extern void  interrupt_initialize();
 extern void  interrupt_initialize();
 extern void exception_init ();

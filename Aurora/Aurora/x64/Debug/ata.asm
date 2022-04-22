@@ -26,31 +26,31 @@ _BSS	SEGMENT
 ?ide_irq_invoked@@3IA DD 01H DUP (?)			; ide_irq_invoked
 _BSS	ENDS
 CONST	SEGMENT
-$SG3338	DB	'master ', 00H
-$SG3339	DB	'slave', 00H
+$SG3341	DB	'master ', 00H
+$SG3342	DB	'slave', 00H
 	ORG $+2
-$SG3340	DB	'primary', 00H
-$SG3341	DB	'secondary', 00H
+$SG3343	DB	'primary', 00H
+$SG3344	DB	'secondary', 00H
 	ORG $+6
-$SG3342	DB	'ATA: %s s has error. disabled, ', 0aH, 00H
+$SG3345	DB	'ATA: %s s has error. disabled, ', 0aH, 00H
 	ORG $+7
-$SG3372	DB	'[ATA]: error!, device failure!', 0aH, 00H
-$SG3413	DB	'[ATA]: Read28 -- no selected io & drive', 0aH, 00H
+$SG3375	DB	'[ATA]: error!, device failure!', 0aH, 00H
+$SG3416	DB	'[ATA]: Read28 -- no selected io & drive', 0aH, 00H
 	ORG $+7
-$SG3501	DB	'[ATA]: Primary-Master Device: %s', 0aH, 00H
+$SG3504	DB	'[ATA]: Primary-Master Device: %s', 0aH, 00H
 	ORG $+6
-$SG3503	DB	'[ATA]: Primary-Master Device Size -> %d GB', 0aH, 00H
+$SG3506	DB	'[ATA]: Primary-Master Device Size -> %d GB', 0aH, 00H
 	ORG $+4
-$SG3509	DB	'[ATA]: Primary-Slave Device: %s', 0aH, 00H
+$SG3512	DB	'[ATA]: Primary-Slave Device: %s', 0aH, 00H
 	ORG $+7
-$SG3517	DB	'******************************************', 0aH, 00H
+$SG3520	DB	'******************************************', 0aH, 00H
 	ORG $+4
-$SG3518	DB	'System error!!!!', 0aH, 00H
+$SG3521	DB	'System error!!!!', 0aH, 00H
 	ORG $+6
-$SG3519	DB	'Xeneva initialization failed', 0aH, 00H
+$SG3522	DB	'Xeneva initialization failed', 0aH, 00H
 	ORG $+2
-$SG3520	DB	'Storage IDE mode error, halting system', 0aH, 00H
-$SG3521	DB	'******************************************', 0aH, 00H
+$SG3523	DB	'Storage IDE mode error, halting system', 0aH, 00H
+$SG3524	DB	'******************************************', 0aH, 00H
 CONST	ENDS
 PUBLIC	?ata_initialize@@YAXXZ				; ata_initialize
 PUBLIC	?ata_read_28@@YAEIGPEAE@Z			; ata_read_28
@@ -242,7 +242,7 @@ $LN5@ata_probe:
 ; 477  : 		printf("[ATA]: Primary-Master Device: %s\n", ata_device_name);
 
 	lea	rdx, OFFSET FLAT:?ata_device_name@@3PADA ; ata_device_name
-	lea	rcx, OFFSET FLAT:$SG3501
+	lea	rcx, OFFSET FLAT:$SG3504
 	call	printf
 
 ; 478  : 		printf("[ATA]: Primary-Master Device Size -> %d GB\n", *((unsigned int*)(ide_buf + 200)) / 1024 / 1024 / 1024);
@@ -258,7 +258,7 @@ $LN5@ata_probe:
 	mov	ecx, 1024				; 00000400H
 	div	ecx
 	mov	edx, eax
-	lea	rcx, OFFSET FLAT:$SG3503
+	lea	rcx, OFFSET FLAT:$SG3506
 	call	printf
 
 ; 479  : 		ata_drive = (ATA_PRIMARY << 1) | ATA_MASTER;
@@ -335,7 +335,7 @@ $LN1@ata_probe:
 ; 492  : 		printf("[ATA]: Primary-Slave Device: %s\n", ata_device_name);
 
 	lea	rdx, OFFSET FLAT:?ata_device_name@@3PADA ; ata_device_name
-	lea	rcx, OFFSET FLAT:$SG3509
+	lea	rcx, OFFSET FLAT:$SG3512
 	call	printf
 $LN4@ata_probe:
 
@@ -704,7 +704,7 @@ $retry2$11:
 ; 162  : 	{
 ; 163  : 		printf("[ATA]: error!, device failure!\n");
 
-	lea	rcx, OFFSET FLAT:$SG3372
+	lea	rcx, OFFSET FLAT:$SG3375
 	call	printf
 $LN2@ide_poll:
 
@@ -918,26 +918,26 @@ $pm_stat_read$20:
 	movzx	eax, BYTE PTR drive$[rsp]
 	test	eax, eax
 	jne	SHORT $LN15@ide_identi
-	lea	rax, OFFSET FLAT:$SG3338
+	lea	rax, OFFSET FLAT:$SG3341
 	mov	QWORD PTR tv152[rsp], rax
 	jmp	SHORT $LN16@ide_identi
 $LN15@ide_identi:
-	lea	rax, OFFSET FLAT:$SG3339
+	lea	rax, OFFSET FLAT:$SG3342
 	mov	QWORD PTR tv152[rsp], rax
 $LN16@ide_identi:
 	movzx	eax, BYTE PTR bus$[rsp]
 	test	eax, eax
 	jne	SHORT $LN17@ide_identi
-	lea	rax, OFFSET FLAT:$SG3340
+	lea	rax, OFFSET FLAT:$SG3343
 	mov	QWORD PTR tv156[rsp], rax
 	jmp	SHORT $LN18@ide_identi
 $LN17@ide_identi:
-	lea	rax, OFFSET FLAT:$SG3341
+	lea	rax, OFFSET FLAT:$SG3344
 	mov	QWORD PTR tv156[rsp], rax
 $LN18@ide_identi:
 	mov	r8, QWORD PTR tv152[rsp]
 	mov	rdx, QWORD PTR tv156[rsp]
-	lea	rcx, OFFSET FLAT:$SG3342
+	lea	rcx, OFFSET FLAT:$SG3345
 	call	printf
 $LN7@ide_identi:
 $LN6@ide_identi:
@@ -2220,7 +2220,7 @@ $LN4@ata_read_2:
 ; 254  : 	default:{
 ; 255  : 		printf ("[ATA]: Read28 -- no selected io & drive\n");
 
-	lea	rcx, OFFSET FLAT:$SG3413
+	lea	rcx, OFFSET FLAT:$SG3416
 	call	printf
 
 ; 256  : 		return 0;
@@ -2417,27 +2417,27 @@ $LN6:
 
 ; 502  : 		debug_print ("******************************************\n");
 
-	lea	rcx, OFFSET FLAT:$SG3517
+	lea	rcx, OFFSET FLAT:$SG3520
 	call	?debug_print@@YAXPEBDZZ			; debug_print
 
 ; 503  : 		debug_print ("System error!!!!\n");
 
-	lea	rcx, OFFSET FLAT:$SG3518
+	lea	rcx, OFFSET FLAT:$SG3521
 	call	?debug_print@@YAXPEBDZZ			; debug_print
 
 ; 504  : 		debug_print ("Xeneva initialization failed\n");
 
-	lea	rcx, OFFSET FLAT:$SG3519
+	lea	rcx, OFFSET FLAT:$SG3522
 	call	?debug_print@@YAXPEBDZZ			; debug_print
 
 ; 505  : 		debug_print ("Storage IDE mode error, halting system\n");
 
-	lea	rcx, OFFSET FLAT:$SG3520
+	lea	rcx, OFFSET FLAT:$SG3523
 	call	?debug_print@@YAXPEBDZZ			; debug_print
 
 ; 506  : 		debug_print ("******************************************\n");
 
-	lea	rcx, OFFSET FLAT:$SG3521
+	lea	rcx, OFFSET FLAT:$SG3524
 	call	?debug_print@@YAXPEBDZZ			; debug_print
 $LN2@ata_initia:
 

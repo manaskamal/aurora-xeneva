@@ -111,6 +111,19 @@ extern "C" void gdt_initialize()
 	load_default_sregs();
 }
 
+/*
+ * gdt_initialize_ap -- initialize gdt for Application
+ * processors
+ */
+void gdt_initialize_ap() {
+	gdtr* new_gdtr = new gdtr;
+	gdt_entry* new_gdt = new gdt_entry[GDT_ENTRIES];
+	fill_gdt(new_gdt);
+	new_gdtr->gdtaddr = new_gdt;
+	new_gdtr->size = GDT_ENTRIES * sizeof(gdt_entry) - 1;
+	x64_lgdt(new_gdtr);
+}
+
 
 //=====================================================================
 // I N T E R R U P T   D E S C R I P T O R   T A B L E
@@ -162,7 +175,7 @@ void  interrupt_initialize() {
 
 	AuPCPUSetKernelTSS(tss);
 
-	IDTR *idtr = (IDTR*)0xFFFFD80000000000;
+	IDTR *idtr = (IDTR*)malloc(sizeof(IDTR));  //0xFFFFD80000000000;
 	idtr->idtaddr = the_idt;
 	idtr->length = 256 * sizeof(IDT) - 1;
 	x64_lidt(idtr);
@@ -185,6 +198,40 @@ void x86_64_gdt_init () {
 	gdt_initialize();
 
 	x64_sti();
+}
+
+/*
+ * interrupt_initialize_ap -- intialises interrupts for
+ * for each APs
+ */
+void interrupt_initialize_ap() {
+	TSS* tss = (TSS*)malloc(sizeof(TSS));
+	tss->iomapbase = sizeof(TSS);
+	size_t tss_addr = (size_t)tss;
+
+	gdtr curr_gdt;
+	x64_sgdt(&curr_gdt);
+	gdt_entry* thegdt = curr_gdt.gdtaddr; //curr_gdt.gdtaddr;
+	set_gdt_entry(thegdt[GDT_ENTRY_TSS], (tss_addr & UINT32_MAX), sizeof(TSS), GDT_ACCESS_PRESENT | 0x9, 0);
+	*(uint64_t*)&thegdt[GDT_ENTRY_TSS + 1] = (tss_addr >> 32);
+	x64_ltr(SEGVAL(GDT_ENTRY_TSS, 3));
+
+	
+
+	AuPCPUSetKernelTSS(tss);
+
+	IDTR *idtr = (IDTR*)malloc(sizeof(IDTR));  //0xFFFFD80000000000;
+	idtr->idtaddr = the_idt;
+	idtr->length = 256 * sizeof(IDT) - 1;
+	x64_lidt(idtr);
+	for (int n = 0; n < 256; n++)
+	{
+		the_idt[n].ist = 0;
+		the_idt[n].selector = SEGVAL(GDT_ENTRY_KERNEL_CODE, 0);
+		the_idt[n].zero = 0;
+		the_idt[n].type_attr = GDT_ACCESS_PRESENT | 0xE;
+		register_irq(&the_idt[n], default_irq_handlers[n]);
+	}
 }
 
 
@@ -212,7 +259,7 @@ void x86_64_init_cpu () {
 	
 
 	//!Initialize APIC   FIXME: Causes triple fault now
-	initialize_apic ();
+	initialize_apic (true);
 	
 	debug_print ("APIC initialized\n");
 

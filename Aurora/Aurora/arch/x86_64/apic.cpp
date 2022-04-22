@@ -135,22 +135,26 @@ void  apic_timer_interrupt (size_t p, void* param) {
 
 
 //! Initialize our APIC
-void initialize_apic () {
+void initialize_apic (bool bsp) {
 
 	size_t apic_base;
-	apic_base = (size_t)0xFEE00000;
-	apic_timer_count = 0;
-	//map_page (0xFEE00000, 0xFEE00000,0);
+	if (bsp) {
+		apic_base = (size_t)0xFEE00000;
+		apic_timer_count = 0;
 
-	apic = (void*)apic_base;
+		apic = (void*)apic_base;
 
-	if (x2apic_supported() ) {
-		x2apic = true;
-		apic_base |= IA32_APIC_BASE_MSR_X2APIC;
+		if (x2apic_supported() ) {
+			x2apic = true;
+			apic_base |= IA32_APIC_BASE_MSR_X2APIC;
+		}
+
+		apic_base |= IA32_APIC_BASE_MSR_ENABLE;
+		x64_write_msr (IA32_APIC_BASE_MSR, apic_base);
+	} else {
+		x64_write_msr(IA32_APIC_BASE_MSR, x64_read_msr(IA32_APIC_BASE_MSR) | IA32_APIC_BASE_MSR_ENABLE | (x2apic ? IA32_APIC_BASE_MSR_X2APIC : 0));
 	}
 
-	apic_base |= IA32_APIC_BASE_MSR_ENABLE;
-	x64_write_msr (IA32_APIC_BASE_MSR, apic_base);
 	setvect (0xFF, apic_spurious_interrupt);
 	write_apic_register (LAPIC_REGISTER_SVR, read_apic_register (LAPIC_REGISTER_SVR) | 
 		                                     IA32_APIC_SVR_ENABLE | 0xFF);
@@ -175,7 +179,8 @@ void initialize_apic () {
 
 	//! Finally Intialize I/O APIC
 	//map_page (ioapic_base,ioapic_base,0);
-	ioapic_init ((void*)0xfec00000);
+	if (bsp)
+		ioapic_init ((void*)0xfec00000);
 
 }
 

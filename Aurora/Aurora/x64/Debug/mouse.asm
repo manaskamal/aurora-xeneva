@@ -33,11 +33,11 @@ mouse_cycle DB	01H DUP (?)
 ?old_message@@3U_dwm_message_@@A DB 01cH DUP (?)	; old_message
 _BSS	ENDS
 CONST	SEGMENT
-$SG3633	DB	'mouse', 00H
+$SG3636	DB	'mouse', 00H
 	ORG $+2
-$SG3634	DB	'/dev/mouse', 00H
+$SG3637	DB	'/dev/mouse', 00H
 	ORG $+5
-$SG3638	DB	'mouse interrupt setupped', 0aH, 00H
+$SG3641	DB	'mouse interrupt setupped', 0aH, 00H
 CONST	ENDS
 PUBLIC	?AuInitializeMouse@@YAXXZ			; AuInitializeMouse
 PUBLIC	?mouse_wait@@YAXE@Z				; mouse_wait
@@ -131,7 +131,7 @@ $LN3:
 ; 210  : 	strcpy (node->filename, "mouse");
 
 	mov	rax, QWORD PTR node$[rsp]
-	lea	rdx, OFFSET FLAT:$SG3633
+	lea	rdx, OFFSET FLAT:$SG3636
 	mov	rcx, rax
 	call	strcpy
 
@@ -195,7 +195,7 @@ $LN3:
 
 	xor	r8d, r8d
 	mov	rdx, QWORD PTR node$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3634
+	lea	rcx, OFFSET FLAT:$SG3637
 	call	vfs_mount
 
 ; 223  : }
@@ -1095,7 +1095,7 @@ $LN3:
 
 ; 258  : 	printf ("mouse interrupt setupped\n");
 
-	lea	rcx, OFFSET FLAT:$SG3638
+	lea	rcx, OFFSET FLAT:$SG3641
 	call	printf
 
 ; 259  : 	mouse_register_device ();

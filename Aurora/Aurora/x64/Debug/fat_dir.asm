@@ -6,17 +6,17 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 CONST	SEGMENT
-$SG3642	DB	'Listing Files', 0aH, 00H
+$SG3645	DB	'Listing Files', 0aH, 00H
 	ORG $+1
-$SG3648	DB	'%s         %d KB ', 0aH, 00H
+$SG3651	DB	'%s         %d KB ', 0aH, 00H
 	ORG $+5
-$SG3660	DB	'Creating directory ', 0dH, 0aH, 00H
+$SG3663	DB	'Creating directory ', 0dH, 0aH, 00H
 	ORG $+2
-$SG3692	DB	'FAT32: Directory created at entry-> %d ', 0dH, 0aH, 00H
+$SG3695	DB	'FAT32: Directory created at entry-> %d ', 0dH, 0aH, 00H
 	ORG $+6
-$SG3706	DB	'Creating directory ', 0dH, 0aH, 00H
+$SG3709	DB	'Creating directory ', 0dH, 0aH, 00H
 	ORG $+2
-$SG3724	DB	'FAT32: Directory opened at entry-> %d ', 0dH, 0aH, 00H
+$SG3727	DB	'FAT32: Directory opened at entry-> %d ', 0dH, 0aH, 00H
 CONST	ENDS
 PUBLIC	?fat32_find_free_dir_entry@@YAXI@Z		; fat32_find_free_dir_entry
 PUBLIC	?fat32_make_dir@@YAPEAU_vfs_node_@@IPEAD@Z	; fat32_make_dir
@@ -123,7 +123,7 @@ $LN13:
 ; 211  : 
 ; 212  : 	_debug_print_ ("Creating directory \r\n");
 
-	lea	rcx, OFFSET FLAT:$SG3706
+	lea	rcx, OFFSET FLAT:$SG3709
 	call	?_debug_print_@@YAXPEADZZ		; _debug_print_
 
 ; 213  : 
@@ -287,7 +287,7 @@ $LN6@fat32_open:
 ; 242  : 				_debug_print_ ("FAT32: Directory opened at entry-> %d \r\n",i);
 
 	mov	edx, DWORD PTR i$1[rsp]
-	lea	rcx, OFFSET FLAT:$SG3724
+	lea	rcx, OFFSET FLAT:$SG3727
 	call	?_debug_print_@@YAXPEADZZ		; _debug_print_
 
 ; 243  : 			    return file;
@@ -418,7 +418,7 @@ $LN16:
 ; 94   : 
 ; 95   : 	_debug_print_ ("Creating directory \r\n");
 
-	lea	rcx, OFFSET FLAT:$SG3660
+	lea	rcx, OFFSET FLAT:$SG3663
 	call	?_debug_print_@@YAXPEADZZ		; _debug_print_
 
 ; 96   : 
@@ -921,7 +921,7 @@ $LN3@fat32_make:
 ; 181  : 				_debug_print_ ("FAT32: Directory created at entry-> %d \r\n",i);
 
 	mov	edx, DWORD PTR i$6[rsp]
-	lea	rcx, OFFSET FLAT:$SG3692
+	lea	rcx, OFFSET FLAT:$SG3695
 	call	?_debug_print_@@YAXPEADZZ		; _debug_print_
 
 ; 182  : 			    return file;
@@ -1045,7 +1045,7 @@ $LN7:
 ; 68   : 
 ; 69   : 	printf ("Listing Files\n");
 
-	lea	rcx, OFFSET FLAT:$SG3642
+	lea	rcx, OFFSET FLAT:$SG3645
 	call	printf
 
 ; 70   : 	for (int i = 0; i < 16; i++) {
@@ -1077,7 +1077,7 @@ $LN4@fat32_find:
 	mov	rcx, QWORD PTR dirent$[rsp]
 	mov	r8d, eax
 	mov	rdx, rcx
-	lea	rcx, OFFSET FLAT:$SG3648
+	lea	rcx, OFFSET FLAT:$SG3651
 	call	printf
 $LN1@fat32_find:
 

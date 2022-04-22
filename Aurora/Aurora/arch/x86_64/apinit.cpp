@@ -31,6 +31,7 @@
 #include <stdio.h>
 #include <arch\x86_64\apic.h>
 #include <arch\x86_64\pcpu.h>
+#include <arch\x86_64\user64.h>
 
 /*
  * AuApInit -- Main entry for Application 
@@ -39,9 +40,29 @@
  */
 void AuApInit(void* cpu) {
 	x64_cli();
-	printf ("Welcome to Application Processor \n");
+	
 	AuCreatePCPU(cpu);
-	printf ("PCPU ID -> %d \n", AuPCPUGetCPUID());
+	/* Initialize GDT & Interrupts for each core */
+	gdt_initialize_ap();
+	interrupt_initialize_ap();
+	/* Setup exception for each core */
+	exception_init();
+	initialize_apic(false);
+
+	size_t efer = x64_read_msr(IA32_EFER);
+	efer |= (1<<11);
+	efer |= 1;
+	efer |= (1<<0);
+	efer |= 1;
+	x64_write_msr(IA32_EFER, efer);
+
+	initialize_user_land_ap(64);
+	initialize_syscall();
+	hal_cpu_feature_enable();
+	printf ("Welcome to Application Processor \n");
+
+	/* From here scheduler should be initialized with good spinlock
+	 * system */
 	AuAPStarted();
 	for(;;) {
 		x64_pause();
