@@ -6,15 +6,20 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 CONST	SEGMENT
-$SG2860	DB	'Welcome to Application Processor ', 0aH, 00H
+$SG3383	DB	'Welcome to Application Processor ', 0aH, 00H
+	ORG $+5
+$SG3384	DB	'PCPU ID -> %d ', 0aH, 00H
 CONST	ENDS
 PUBLIC	?AuApInit@@YAXPEAX@Z				; AuApInit
 EXTRN	x64_cli:PROC
+EXTRN	x64_pause:PROC
 EXTRN	printf:PROC
 EXTRN	?AuAPStarted@@YAXXZ:PROC			; AuAPStarted
+EXTRN	?AuCreatePCPU@@YAXPEAX@Z:PROC			; AuCreatePCPU
+EXTRN	?AuPCPUGetCPUID@@YAEXZ:PROC			; AuPCPUGetCPUID
 pdata	SEGMENT
 $pdata$?AuApInit@@YAXPEAX@Z DD imagerel $LN5
-	DD	imagerel $LN5+38
+	DD	imagerel $LN5+75
 	DD	imagerel $unwind$?AuApInit@@YAXPEAX@Z
 pdata	ENDS
 xdata	SEGMENT
@@ -27,31 +32,49 @@ _TEXT	SEGMENT
 cpu$ = 48
 ?AuApInit@@YAXPEAX@Z PROC				; AuApInit
 
-; 39   : void AuApInit(void* cpu) {
+; 40   : void AuApInit(void* cpu) {
 
 $LN5:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 40					; 00000028H
 
-; 40   : 	x64_cli();
+; 41   : 	x64_cli();
 
 	call	x64_cli
 
-; 41   : 	printf ("Welcome to Application Processor \n");
+; 42   : 	printf ("Welcome to Application Processor \n");
 
-	lea	rcx, OFFSET FLAT:$SG2860
+	lea	rcx, OFFSET FLAT:$SG3383
 	call	printf
 
-; 42   : 	AuAPStarted();
+; 43   : 	AuCreatePCPU(cpu);
+
+	mov	rcx, QWORD PTR cpu$[rsp]
+	call	?AuCreatePCPU@@YAXPEAX@Z		; AuCreatePCPU
+
+; 44   : 	printf ("PCPU ID -> %d \n", AuPCPUGetCPUID());
+
+	call	?AuPCPUGetCPUID@@YAEXZ			; AuPCPUGetCPUID
+	movzx	eax, al
+	mov	edx, eax
+	lea	rcx, OFFSET FLAT:$SG3384
+	call	printf
+
+; 45   : 	AuAPStarted();
 
 	call	?AuAPStarted@@YAXXZ			; AuAPStarted
 $LN2@AuApInit:
 
-; 43   : 	for(;;);
+; 46   : 	for(;;) {
+; 47   : 		x64_pause();
+
+	call	x64_pause
+
+; 48   : 	}
 
 	jmp	SHORT $LN2@AuApInit
 
-; 44   : }
+; 49   : }
 
 	add	rsp, 40					; 00000028H
 	ret	0

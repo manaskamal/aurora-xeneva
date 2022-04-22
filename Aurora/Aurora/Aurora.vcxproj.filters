@@ -330,6 +330,9 @@
     <ClInclude Include="..\include\arch\x86_64\apinit.h">
       <Filter>include\arch\x86_64</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\arch\x86_64\pcpu.h">
+      <Filter>include\arch\x86_64</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="init.cpp">
@@ -534,6 +537,9 @@
       <Filter>source</Filter>
     </ClCompile>
     <ClCompile Include="arch\x86_64\apinit.cpp">
+      <Filter>source\arch\x86_64</Filter>
+    </ClCompile>
+    <ClCompile Include="arch\x86_64\pcpu.cpp">
       <Filter>source\arch\x86_64</Filter>
     </ClCompile>
   </ItemGroup>

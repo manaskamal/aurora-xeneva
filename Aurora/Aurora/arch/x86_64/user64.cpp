@@ -10,6 +10,7 @@
  */
 
 #include <arch\x86_64\user64.h>
+#include <arch\x86_64\pcpu.h>
 
 extern "C" void syscall_entry();
 extern "C" void x64_syscall_entry_compat();

@@ -30,6 +30,7 @@
 #include <arch\x86_64\cpu.h>
 #include <stdio.h>
 #include <arch\x86_64\apic.h>
+#include <arch\x86_64\pcpu.h>
 
 /*
  * AuApInit -- Main entry for Application 
@@ -39,6 +40,10 @@
 void AuApInit(void* cpu) {
 	x64_cli();
 	printf ("Welcome to Application Processor \n");
+	AuCreatePCPU(cpu);
+	printf ("PCPU ID -> %d \n", AuPCPUGetCPUID());
 	AuAPStarted();
-	for(;;);
+	for(;;) {
+		x64_pause();
+	}
 }

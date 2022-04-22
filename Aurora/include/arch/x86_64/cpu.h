@@ -113,15 +113,7 @@ typedef struct _idtr {
 	void*    idtaddr;
 } IDTR;
 
-typedef struct _tss {
-	uint32_t reserved;
-	size_t   rsp[3];
-	size_t reserved2;
-	size_t   IST[7];
-	size_t   resv3;
-	uint16_t  resv4;
-	uint16_t  iomapbase;
-}TSS;
+
 
 typedef struct _stack_frame_ {
 	_stack_frame_* baseptr;
@@ -156,11 +148,26 @@ typedef struct _fx_state_ {
 }fx_state_t;
 #pragma pack(pop)
 
+#pragma pack(push,1)
+typedef struct _tss {
+	uint32_t reserved;
+	size_t   rsp[3];
+	size_t reserved2;
+	size_t   IST[7];
+	size_t   resv3;
+	uint16_t  resv4;
+	uint16_t  iomapbase;
+}TSS;
+#pragma pack(pop)
+
+#pragma pack(push,1)
 /* cpu structure */
 typedef struct _cpu_ {
 	uint8_t cpu_id;     // 0
-	void*   au_current_thread;
+	uint64_t*   au_current_thread; // offset -> 1
+	TSS*    kernel_tss; //offset -> 9
 }cpu_t;
+#pragma pack(pop)
 
 //!=======================================================
 //! G L O B A L     F U N C T I O N S
@@ -214,6 +221,21 @@ extern "C" void x64_atom_exchange (size_t r1, size_t r2);
 //!------------------------------------
 extern "C" void x64_fxsave(uint8_t* location);
 extern "C" void x64_fxrstor(uint8_t* location);
+
+/*
+ *  FS & GS Base
+ */
+extern "C" uint8_t x64_fs_readb(size_t offset);
+extern "C" uint16_t x64_fs_readw(size_t offset);
+extern "C" uint32_t x64_fs_readd(size_t offset);
+extern "C" uint64_t x64_fs_readq(size_t offset);
+extern "C" void x64_fs_writeb(size_t offset, uint8_t val);
+extern "C" void x64_fs_writew(size_t offset, uint16_t val);
+extern "C" void x64_fs_writed(size_t offset, uint32_t val);
+extern "C" void x64_fs_writeq(size_t offset, uint64_t val);
+
+extern "C" void x64_set_kstack (void* ktss,size_t stack);
+extern "C" size_t x64_get_kstack (void* ktss);
 
 //! init -- initializer of x86_64 hal subsystem
 extern void x86_64_gdt_init ();

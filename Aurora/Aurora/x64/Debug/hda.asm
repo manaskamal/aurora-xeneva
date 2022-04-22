@@ -33,53 +33,53 @@ hdaudio_initialized DB 01H DUP (?)
 ?play_pos@@3PEAEEA DQ 01H DUP (?)			; play_pos
 _BSS	ENDS
 CONST	SEGMENT
-$SG3649	DB	'HD Audio: No supported RIRB size !!', 0aH, 00H
+$SG3675	DB	'HD Audio: No supported RIRB size !!', 0aH, 00H
 	ORG $+3
-$SG3652	DB	'RIRB DMA Engine started', 0aH, 00H
+$SG3678	DB	'RIRB DMA Engine started', 0aH, 00H
 	ORG $+3
-$SG3744	DB	'output', 00H
+$SG3770	DB	'output', 00H
 	ORG $+1
-$SG3746	DB	'input', 00H
+$SG3772	DB	'input', 00H
 	ORG $+2
-$SG3748	DB	'mixer', 00H
+$SG3774	DB	'mixer', 00H
 	ORG $+6
-$SG3750	DB	'selector', 00H
+$SG3776	DB	'selector', 00H
 	ORG $+3
-$SG3754	DB	'power', 00H
+$SG3780	DB	'power', 00H
 	ORG $+6
-$SG3752	DB	'pin complex', 00H
+$SG3778	DB	'pin complex', 00H
 	ORG $+4
-$SG3756	DB	'volume knob', 00H
+$SG3782	DB	'volume knob', 00H
 	ORG $+4
-$SG3758	DB	'beep generator', 00H
+$SG3784	DB	'beep generator', 00H
 	ORG $+1
-$SG3760	DB	'vendor defined', 00H
+$SG3786	DB	'vendor defined', 00H
 	ORG $+1
-$SG3762	DB	'unknown', 00H
-$SG3781	DB	'[HD_Audio]: Num Function Group -> %d, fg_start -> %d', 0aH
+$SG3788	DB	'unknown', 00H
+$SG3807	DB	'[HD_Audio]: Num Function Group -> %d, fg_start -> %d', 0aH
 	DB	00H
 	ORG $+2
-$SG3783	DB	'[HD-Audio]:Widget device id -> %x, vendor id -> %x', 0aH
+$SG3809	DB	'[HD-Audio]:Widget device id -> %x, vendor id -> %x', 0aH
 	DB	00H
 	ORG $+4
-$SG3785	DB	'[HD-Audio]:Widget version -> %d.%d, r0%d', 0aH, 00H
+$SG3811	DB	'[HD-Audio]:Widget version -> %d.%d, r0%d', 0aH, 00H
 	ORG $+6
-$SG3789	DB	'Widget start -> %d, num widgets -> %d', 0aH, 00H
+$SG3815	DB	'Widget start -> %d, num widgets -> %d', 0aH, 00H
 	ORG $+1
-$SG3791	DB	'FG not audio group', 0aH, 00H
+$SG3817	DB	'FG not audio group', 0aH, 00H
 	ORG $+4
-$SG3821	DB	'No HD-Audio was found', 0aH, 00H
+$SG3847	DB	'No HD-Audio was found', 0aH, 00H
 	ORG $+1
-$SG3824	DB	'[HD-Audio]: Interrupt disabled in PCI Config_Space %x', 0aH
+$SG3850	DB	'[HD-Audio]: Interrupt disabled in PCI Config_Space %x', 0aH
 	DB	00H
 	ORG $+1
-$SG3829	DB	'[HD-Audio]: Supports MSI', 0aH, 00H
+$SG3855	DB	'[HD-Audio]: Supports MSI', 0aH, 00H
 	ORG $+6
-$SG3831	DB	'[HD-Audio]: INterrupt int -> %d', 0aH, 00H
+$SG3857	DB	'[HD-Audio]: INterrupt int -> %d', 0aH, 00H
 	ORG $+7
-$SG3842	DB	'HD-Audio 64-OK', 0aH, 00H
-$SG3852	DB	'HDA Device found at index ->%d', 0aH, 00H
-$SG3853	DB	'IHD-Audio Initialized successfully', 0aH, 00H
+$SG3868	DB	'HD-Audio 64-OK', 0aH, 00H
+$SG3878	DB	'HDA Device found at index ->%d', 0aH, 00H
+$SG3879	DB	'IHD-Audio Initialized successfully', 0aH, 00H
 CONST	ENDS
 PUBLIC	?hda_initialize@@YAXXZ				; hda_initialize
 PUBLIC	?codec_query@@YAIHHI@Z				; codec_query
@@ -445,7 +445,7 @@ codec$ = 96
 
 	mov	r8d, DWORD PTR fg_start$[rsp]
 	mov	edx, DWORD PTR num_fg$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3781
+	lea	rcx, OFFSET FLAT:$SG3807
 	call	printf
 
 ; 464  : 
@@ -465,7 +465,7 @@ codec$ = 96
 	and	ecx, 65535				; 0000ffffH
 	mov	r8d, eax
 	mov	edx, ecx
-	lea	rcx, OFFSET FLAT:$SG3783
+	lea	rcx, OFFSET FLAT:$SG3809
 	call	printf
 
 ; 467  : 	
@@ -487,7 +487,7 @@ codec$ = 96
 	shr	edx, 20
 	mov	r9d, eax
 	mov	r8d, ecx
-	lea	rcx, OFFSET FLAT:$SG3785
+	lea	rcx, OFFSET FLAT:$SG3811
 	call	printf
 
 ; 470  : 
@@ -537,7 +537,7 @@ $LN7@codec_enum:
 
 	mov	r8d, DWORD PTR num_widgets$[rsp]
 	mov	edx, DWORD PTR widgets_start$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3789
+	lea	rcx, OFFSET FLAT:$SG3815
 	call	printf
 
 ; 480  : 		
@@ -566,7 +566,7 @@ $LN7@codec_enum:
 
 ; 484  : 			printf ("FG not audio group\n");
 
-	lea	rcx, OFFSET FLAT:$SG3791
+	lea	rcx, OFFSET FLAT:$SG3817
 	call	printf
 
 ; 485  : 			continue;
@@ -743,70 +743,70 @@ $LN15@widget_ini:
 
 ; 411  : 	case 0:  s = "output"; break;
 
-	lea	rax, OFFSET FLAT:$SG3744
+	lea	rax, OFFSET FLAT:$SG3770
 	mov	QWORD PTR s$[rsp], rax
 	jmp	SHORT $LN16@widget_ini
 $LN14@widget_ini:
 
 ; 412  : 	case 1:  s = "input"; break;
 
-	lea	rax, OFFSET FLAT:$SG3746
+	lea	rax, OFFSET FLAT:$SG3772
 	mov	QWORD PTR s$[rsp], rax
 	jmp	SHORT $LN16@widget_ini
 $LN13@widget_ini:
 
 ; 413  : 	case 2:  s = "mixer"; break;
 
-	lea	rax, OFFSET FLAT:$SG3748
+	lea	rax, OFFSET FLAT:$SG3774
 	mov	QWORD PTR s$[rsp], rax
 	jmp	SHORT $LN16@widget_ini
 $LN12@widget_ini:
 
 ; 414  : 	case 3:  s = "selector"; break;
 
-	lea	rax, OFFSET FLAT:$SG3750
+	lea	rax, OFFSET FLAT:$SG3776
 	mov	QWORD PTR s$[rsp], rax
 	jmp	SHORT $LN16@widget_ini
 $LN11@widget_ini:
 
 ; 415  : 	case 4:  s = "pin complex"; break;
 
-	lea	rax, OFFSET FLAT:$SG3752
+	lea	rax, OFFSET FLAT:$SG3778
 	mov	QWORD PTR s$[rsp], rax
 	jmp	SHORT $LN16@widget_ini
 $LN10@widget_ini:
 
 ; 416  : 	case 5:  s = "power"; break;
 
-	lea	rax, OFFSET FLAT:$SG3754
+	lea	rax, OFFSET FLAT:$SG3780
 	mov	QWORD PTR s$[rsp], rax
 	jmp	SHORT $LN16@widget_ini
 $LN9@widget_ini:
 
 ; 417  : 	case 6:  s = "volume knob"; break;
 
-	lea	rax, OFFSET FLAT:$SG3756
+	lea	rax, OFFSET FLAT:$SG3782
 	mov	QWORD PTR s$[rsp], rax
 	jmp	SHORT $LN16@widget_ini
 $LN8@widget_ini:
 
 ; 418  : 	case 7:  s = "beep generator"; break;
 
-	lea	rax, OFFSET FLAT:$SG3758
+	lea	rax, OFFSET FLAT:$SG3784
 	mov	QWORD PTR s$[rsp], rax
 	jmp	SHORT $LN16@widget_ini
 $LN7@widget_ini:
 
 ; 419  : 	case 16: s = "vendor defined"; break;
 
-	lea	rax, OFFSET FLAT:$SG3760
+	lea	rax, OFFSET FLAT:$SG3786
 	mov	QWORD PTR s$[rsp], rax
 	jmp	SHORT $LN16@widget_ini
 $LN6@widget_ini:
 
 ; 420  : 	default: s = "unknown"; break;
 
-	lea	rax, OFFSET FLAT:$SG3762
+	lea	rax, OFFSET FLAT:$SG3788
 	mov	QWORD PTR s$[rsp], rax
 $LN16@widget_ini:
 
@@ -1830,7 +1830,7 @@ $LN2@setup_rirb:
 
 ; 159  : 		printf ("HD Audio: No supported RIRB size !!\n");
 
-	lea	rcx, OFFSET FLAT:$SG3649
+	lea	rcx, OFFSET FLAT:$SG3675
 	call	printf
 
 ; 160  : 		_ihd_audio.rirb_entries = 256;
@@ -1919,7 +1919,7 @@ $LN5@setup_rirb:
 
 ; 177  : 	printf ("RIRB DMA Engine started\n");
 
-	lea	rcx, OFFSET FLAT:$SG3652
+	lea	rcx, OFFSET FLAT:$SG3678
 	call	printf
 
 ; 178  : 
@@ -2792,7 +2792,7 @@ $LN16:
 
 ; 545  : 		printf ("No HD-Audio was found\n");
 
-	lea	rcx, OFFSET FLAT:$SG3821
+	lea	rcx, OFFSET FLAT:$SG3847
 	call	printf
 
 ; 546  : 		return;
@@ -2830,7 +2830,7 @@ $LN13@hda_initia:
 
 	movzx	eax, WORD PTR command$[rsp]
 	mov	edx, eax
-	lea	rcx, OFFSET FLAT:$SG3824
+	lea	rcx, OFFSET FLAT:$SG3850
 	call	printf
 $LN12@hda_initia:
 
@@ -2892,7 +2892,7 @@ $LN12@hda_initia:
 
 ; 570  : 		printf ("[HD-Audio]: Supports MSI\n");
 
-	lea	rcx, OFFSET FLAT:$SG3829
+	lea	rcx, OFFSET FLAT:$SG3855
 	call	printf
 $LN11@hda_initia:
 
@@ -2906,7 +2906,7 @@ $LN11@hda_initia:
 
 	movzx	eax, BYTE PTR pci_dev$[rsp+60]
 	mov	edx, eax
-	lea	rcx, OFFSET FLAT:$SG3831
+	lea	rcx, OFFSET FLAT:$SG3857
 	call	printf
 
 ; 573  : 		AuInterruptSet(10, hda_handler,10);
@@ -3019,7 +3019,7 @@ $LN7@hda_initia:
 
 ; 594  : 		printf ("HD-Audio 64-OK\n");
 
-	lea	rcx, OFFSET FLAT:$SG3842
+	lea	rcx, OFFSET FLAT:$SG3868
 	call	printf
 $LN6@hda_initia:
 
@@ -3112,7 +3112,7 @@ $LN5@hda_initia:
 ; 612  : 				printf ("HDA Device found at index ->%d\n", i);
 
 	mov	edx, DWORD PTR i$1[rsp]
-	lea	rcx, OFFSET FLAT:$SG3852
+	lea	rcx, OFFSET FLAT:$SG3878
 	call	printf
 
 ; 613  : 				break;
@@ -3150,7 +3150,7 @@ $LN3@hda_initia:
 
 ; 625  : 	printf ("IHD-Audio Initialized successfully\n");
 
-	lea	rcx, OFFSET FLAT:$SG3853
+	lea	rcx, OFFSET FLAT:$SG3879
 	call	printf
 $LN14@hda_initia:
 

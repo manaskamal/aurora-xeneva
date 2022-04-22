@@ -233,6 +233,7 @@ void AuInitializeCpu(uint8_t num_cpu) {
 		cpu_t *cpu = (cpu_t*)cpu_struc;
 		cpu->cpu_id = i;
 		cpu->au_current_thread = 0;
+		cpu->kernel_tss = 0;
 		*(uint64_t*)(ap_aligned_address + 40) = (uint64_t)cpu_struc;
 		
 		

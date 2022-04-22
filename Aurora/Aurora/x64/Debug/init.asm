@@ -10,14 +10,14 @@ _BSS	SEGMENT
 ?debug@@3P6AXPEBDZZEA DQ 01H DUP (?)			; debug
 _BSS	ENDS
 CONST	SEGMENT
-$SG5554	DB	'Scheduler Initialized', 0aH, 00H
+$SG5580	DB	'Scheduler Initialized', 0aH, 00H
 	ORG $+1
-$SG5556	DB	'shell', 00H
+$SG5582	DB	'shell', 00H
 	ORG $+2
-$SG5557	DB	'/sndsrv.exe', 00H
-$SG5558	DB	'priwm', 00H
+$SG5583	DB	'/sndsrv.exe', 00H
+$SG5584	DB	'priwm', 00H
 	ORG $+6
-$SG5559	DB	'/priwm.exe', 00H
+$SG5585	DB	'/priwm.exe', 00H
 CONST	ENDS
 PUBLIC	?debug_print@@YAXPEBDZZ				; debug_print
 PUBLIC	?_AuMain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z		; _AuMain
@@ -196,7 +196,7 @@ $LN5:
 ; 136  : 
 ; 137  : 	printf ("Scheduler Initialized\n");
 
-	lea	rcx, OFFSET FLAT:$SG5554
+	lea	rcx, OFFSET FLAT:$SG5580
 	call	printf
 
 ; 138  : 
@@ -208,8 +208,8 @@ $LN5:
 ; 141  : 	/* start the sound service manager at id 1 */
 ; 142  : 	au_status = AuCreateProcess ("/sndsrv.exe","shell");
 
-	lea	rdx, OFFSET FLAT:$SG5556
-	lea	rcx, OFFSET FLAT:$SG5557
+	lea	rdx, OFFSET FLAT:$SG5582
+	lea	rcx, OFFSET FLAT:$SG5583
 	call	?AuCreateProcess@@YAHPEBDPEAD@Z		; AuCreateProcess
 	mov	DWORD PTR au_status$[rsp], eax
 
@@ -217,13 +217,13 @@ $LN5:
 ; 144  : 	/* start the compositing window manager at id 2 */
 ; 145  : 	au_status = AuCreateProcess ("/priwm.exe","priwm");
 
-	lea	rdx, OFFSET FLAT:$SG5558
-	lea	rcx, OFFSET FLAT:$SG5559
+	lea	rdx, OFFSET FLAT:$SG5584
+	lea	rcx, OFFSET FLAT:$SG5585
 	call	?AuCreateProcess@@YAHPEBDPEAD@Z		; AuCreateProcess
 	mov	DWORD PTR au_status$[rsp], eax
 
 ; 146  : 
-; 147  : 	//create_process ("/dock.exe", "dock");
+; 147  : 	//au_status = AuCreateProcess ("/dock.exe", "dock");
 ; 148  : 	//! Here start the scheduler (multitasking engine)
 ; 149  : 	AuSchedulerStart();
 

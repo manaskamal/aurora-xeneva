@@ -84,6 +84,53 @@ x64_pause:
 	 ret
 
 ;---------------------------------------------------------
+; GS Base and FS Base
+;---------------------------------------------------------
+global x64_fs_readb
+x64_fs_readb:
+     xor rax, rax
+	 mov al, [fs:rcx]
+	 ret
+
+global x64_fs_readw
+x64_fs_readw:
+     xor rax, rax
+	 mov ax, [fs:rcx]
+	 ret
+
+global x64_fs_readd
+x64_fs_readd:
+     xor rax, rax
+	 mov eax, [fs:rcx]
+	 ret
+
+global x64_fs_readq
+x64_fs_readq:
+     mov rax, [fs:rcx]
+	 ret
+
+global x64_fs_writeb
+x64_fs_writeb:
+     mov [fs:rcx], dl
+	 ret
+
+global x64_fs_writew
+x64_fs_writew:
+     mov [fs:rcx], dx
+	 ret
+
+global x64_fs_writed
+x64_fs_writed:
+     mov [fs:rcx], edx
+	 ret
+
+global x64_fs_writeq
+x64_fs_writeq:
+     mov [fs:rcx], rdx
+	 ret
+
+
+;---------------------------------------------------------
 ; Control Register functions
 ;---------------------------------------------------------
 
@@ -343,4 +390,14 @@ x64_fxrstor:
 	  add rcx, 0x10
       fxrstor64 [rcx]
 	  ret
+
+global x64_set_kstack
+x64_set_kstack:
+       mov [rcx + 0x4], rdx
+	   ret
+	   
+global x64_get_kstack
+x64_get_kstack:
+       mov rax, [rcx + 0x4]
+	   ret 
 

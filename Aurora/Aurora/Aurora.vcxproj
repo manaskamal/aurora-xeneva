@@ -199,6 +199,7 @@
     <ClInclude Include="..\include\arch\x86_64\mmngr\map.h" />
     <ClInclude Include="..\include\arch\x86_64\mmngr\paging.h" />
     <ClInclude Include="..\include\arch\x86_64\multiproc.h" />
+    <ClInclude Include="..\include\arch\x86_64\pcpu.h" />
     <ClInclude Include="..\include\arch\x86_64\pic.h" />
     <ClInclude Include="..\include\arch\x86_64\thread.h" />
     <ClInclude Include="..\include\arch\x86_64\user64.h" />
@@ -280,6 +281,7 @@
     <ClCompile Include="arch\x86_64\kheap.cpp" />
     <ClCompile Include="arch\x86_64\kstack.cpp" />
     <ClCompile Include="arch\x86_64\map.cpp" />
+    <ClCompile Include="arch\x86_64\pcpu.cpp" />
     <ClCompile Include="arch\x86_64\pic.cpp" />
     <ClCompile Include="arch\x86_64\systable.cpp" />
     <ClCompile Include="arch\x86_64\thread.cpp" />

@@ -18,6 +18,7 @@
 #include <utils\lnklist.h>
 #include <string.h>
 #include <serial.h>
+#include <arch\x86_64\pcpu.h>
 
 /**
  ** E X T E R N A L  S T A T I C  S Y M B O L S
@@ -269,6 +270,7 @@ void AuInitializeScheduler () {
 	    blocked nor get destroyed untill the system turns off **/
 	thread_t *idle_ = create_kthread (idle_thread,(uint64_t)p2v((uint64_t)AuPmmngrAlloc() + 4096),x64_read_cr3(),"Idle",1);
 	current_thread = idle_;
+	AuPCPUSetCurrentThread(current_thread);
 }
 
 
@@ -282,7 +284,7 @@ void AuInitializeScheduler () {
  *  @output  current_thread = next ready stated thread
  */
 void next_task () {
-	thread_t* task = current_thread;
+	thread_t* task = AuPCPUGetCurrentThread();//current_thread;
 	do {
 		if (task->state == THREAD_STATE_SLEEP) {
 			if (task->quanta == 0) {
@@ -297,7 +299,8 @@ void next_task () {
 	}while (task->state != THREAD_STATE_READY);
 
 end:
-	current_thread = task;
+	AuPCPUSetCurrentThread(task);
+	current_thread = AuPCPUGetCurrentThread(); //task;
 }
 
 
@@ -313,9 +316,10 @@ void scheduler_isr (size_t v, void* param) {
 	if (scheduler_enable == false)
 		goto sched_end;
 
+	TSS *ktss = AuPCPUGetCpu(AuPCPUGetCPUID())->kernel_tss;
 	//mutex_lock (scheduler_mutex);
 	/** save currently running thread contexts */
-	if (save_context(current_thread,get_kernel_tss()) == 0) {
+	if (save_context(current_thread,ktss) == 0) {
 		current_thread->cr3 = x64_read_cr3();
 
 		if(is_cpu_fxsave_supported()) {
@@ -323,8 +327,10 @@ void scheduler_isr (size_t v, void* param) {
 		}
 		/* check if the thread is user mode thread, if yes
 		   than store the kernel esp */
-		if (current_thread->priviledge == THREAD_LEVEL_USER)
-			current_thread->kern_esp = get_kernel_tss()->rsp[0];
+		if (current_thread->priviledge == THREAD_LEVEL_USER) {
+			//current_thread->kern_esp = ktss->rsp[0];
+			current_thread->kern_esp = x64_get_kstack(ktss);
+		}
 
 		/* now get the next runnable task from the thread list */
 		next_task();
@@ -348,13 +354,14 @@ void scheduler_isr (size_t v, void* param) {
 
 
 		if (current_thread->priviledge == THREAD_LEVEL_USER){
-			get_kernel_tss()->rsp[0] = current_thread->kern_esp;
+			//ktss->rsp[0] = current_thread->kern_esp;
+			x64_set_kstack(ktss,current_thread->kern_esp);
 		}
 
 
 		//x64_write_cr3 (current_thread->cr3);
 		//mutex_unlock (scheduler_mutex);
-		execute_idle (current_thread,get_kernel_tss());
+		execute_idle (current_thread,ktss);
 	}
 
 sched_end:

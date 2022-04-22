@@ -18,6 +18,7 @@
 #include <arch\x86_64\apinit.h>
 #include <arch\x86_64\ioapic.h>
 #include <arch\x86_64\mmngr\paging.h>
+#include <arch\x86_64\pcpu.h>
 
 
 //! Global Descriptor Table functions
@@ -148,24 +149,18 @@ void default_irq(size_t vect, void* param){
 
 void  interrupt_initialize() {
  
+	TSS* tss = (TSS*)malloc(sizeof(TSS));
+	tss->iomapbase = sizeof(TSS);
+	size_t tss_addr = (size_t)tss;
 
-	void* m_ist[4];
-	uint32_t tss[28];
-	for (int i = 0; i < 28; i++) tss[i] = 0xffffffff;
-	for (int i = 0; i < 1; i++)
-	{
-		uint8_t bos[1024];
-		m_ist[i] = bos + 1024;
-		tss[9+i*2] = reinterpret_cast<uint64_t>(m_ist[i]) & 0xffffffff;
-		tss[9+i*2+1] = reinterpret_cast<uint64_t>(m_ist[i]) >> 32;
-	}
 	gdtr curr_gdt;
 	x64_sgdt(&curr_gdt);
 	gdt_entry* thegdt = the_gdtr.gdtaddr; //curr_gdt.gdtaddr;
-	set_gdt_entry(thegdt[GDT_ENTRY_TSS], reinterpret_cast<uint64_t>(tss) & UINT32_MAX, sizeof(tss), GDT_ACCESS_PRESENT | 0x9, 0);
-	*(uint64_t*)&thegdt[GDT_ENTRY_TSS + 1] = (reinterpret_cast<uint64_t>(tss) >> 32);
-	x64_ltr(SEGVAL(GDT_ENTRY_TSS, 0));
+	set_gdt_entry(thegdt[GDT_ENTRY_TSS], (tss_addr & UINT32_MAX), sizeof(TSS), GDT_ACCESS_PRESENT | 0x9, 0);
+	*(uint64_t*)&thegdt[GDT_ENTRY_TSS + 1] = (tss_addr >> 32);
+	x64_ltr(SEGVAL(GDT_ENTRY_TSS, 3));
 
+	AuPCPUSetKernelTSS(tss);
 
 	IDTR *idtr = (IDTR*)0xFFFFD80000000000;
 	idtr->idtaddr = the_idt;
@@ -202,9 +197,13 @@ void pit_handler_callback (size_t p, void* param) {
 void x86_64_init_cpu () {
 	x64_cli();
 
+	AuCreatePCPU(NULL);
 	////! initialize the interrupt descriptor table
 	interrupt_initialize();
+
+	
 	debug_print ("IDT initialized\n");
+
 	x64_sti();
 	////! initialize all exception handlers
 	exception_init ();
@@ -237,7 +236,8 @@ void x86_64_init_cpu () {
 	debug_print ("System call initialized\n");
 
 	hal_cpu_feature_enable();
-	//apic_initialize_timer();
+
+
     x64_sti ();
 	
 }

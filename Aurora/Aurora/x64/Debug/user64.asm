@@ -10,9 +10,9 @@ _BSS	SEGMENT
 ?tss@@3PEAU_tss@@EA DQ 01H DUP (?)			; tss
 _BSS	ENDS
 CONST	SEGMENT
-$SG2881	DB	'Syscalled occured', 0aH, 00H
+$SG3404	DB	'Syscalled occured', 0aH, 00H
 	ORG $+5
-$SG2882	DB	'Loaded kernel stack is %x', 0aH, 00H
+$SG3405	DB	'Loaded kernel stack is %x', 0aH, 00H
 CONST	ENDS
 PUBLIC	?initialize_syscall@@YAXXZ			; initialize_syscall
 PUBLIC	?initialize_user_land@@YAX_K@Z			; initialize_user_land
@@ -48,25 +48,25 @@ _TEXT	SEGMENT
 rcx$ = 48
 syscall_debug PROC
 
-; 62   : extern "C" void syscall_debug  (uint64_t rcx) {
+; 63   : extern "C" void syscall_debug  (uint64_t rcx) {
 
 $LN3:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 40					; 00000028H
 
-; 63   : 	printf ("Syscalled occured\n");
+; 64   : 	printf ("Syscalled occured\n");
 
-	lea	rcx, OFFSET FLAT:$SG2881
+	lea	rcx, OFFSET FLAT:$SG3404
 	call	printf
 
-; 64   : 	printf ("Loaded kernel stack is %x\n", rcx);
+; 65   : 	printf ("Loaded kernel stack is %x\n", rcx);
 
 	mov	rdx, QWORD PTR rcx$[rsp]
-	lea	rcx, OFFSET FLAT:$SG2882
+	lea	rcx, OFFSET FLAT:$SG3405
 	call	printf
 
-; 65   : 	//for(;;);
-; 66   : }
+; 66   : 	//for(;;);
+; 67   : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -77,11 +77,11 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 get_kernel_tss PROC
 
-; 58   : 	return tss;
+; 59   : 	return tss;
 
 	mov	rax, QWORD PTR ?tss@@3PEAU_tss@@EA	; tss
 
-; 59   : }
+; 60   : }
 
 	ret	0
 get_kernel_tss ENDP
@@ -97,24 +97,24 @@ peek_gdt$ = 56
 bit$ = 96
 ?initialize_user_land@@YAX_K@Z PROC			; initialize_user_land
 
-; 32   : void initialize_user_land (size_t bit) {
+; 33   : void initialize_user_land (size_t bit) {
 
 $LN8:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 88					; 00000058H
 
-; 33   : 
-; 34   : 	uint16_t data_sel = SEGVAL (GDT_ENTRY_USER_DATA, 3);
+; 34   : 
+; 35   : 	uint16_t data_sel = SEGVAL (GDT_ENTRY_USER_DATA, 3);
 
 	mov	eax, 35					; 00000023H
 	mov	WORD PTR data_sel$[rsp], ax
 
-; 35   : 	uint16_t code_sel = 0;
+; 36   : 	uint16_t code_sel = 0;
 
 	xor	eax, eax
 	mov	WORD PTR code_sel$[rsp], ax
 
-; 36   : 	switch (bit) {
+; 37   : 	switch (bit) {
 
 	mov	rax, QWORD PTR bit$[rsp]
 	mov	QWORD PTR tv64[rsp], rax
@@ -125,43 +125,43 @@ $LN8:
 	jmp	SHORT $LN1@initialize
 $LN3@initialize:
 
-; 37   : 	case 64:
-; 38   : 		code_sel = SEGVAL (GDT_ENTRY_USER_CODE, 3);
+; 38   : 	case 64:
+; 39   : 		code_sel = SEGVAL (GDT_ENTRY_USER_CODE, 3);
 
 	mov	eax, 43					; 0000002bH
 	mov	WORD PTR code_sel$[rsp], ax
 
-; 39   : 		break;
+; 40   : 		break;
 
 	jmp	SHORT $LN4@initialize
 $LN2@initialize:
 
-; 40   : 	case 32:
-; 41   : 		code_sel = SEGVAL (GDT_ENTRY_USER_CODE32, 3);
+; 41   : 	case 32:
+; 42   : 		code_sel = SEGVAL (GDT_ENTRY_USER_CODE32, 3);
 
 	mov	eax, 27
 	mov	WORD PTR code_sel$[rsp], ax
 
-; 42   : 		break;
+; 43   : 		break;
 
 	jmp	SHORT $LN4@initialize
 $LN1@initialize:
 
-; 43   : 	default:
-; 44   : 		return;
+; 44   : 	default:
+; 45   : 		return;
 
 	jmp	SHORT $LN6@initialize
 $LN4@initialize:
 
-; 45   : 	}
-; 46   : 
-; 47   : 	gdtr peek_gdt;
-; 48   : 	x64_sgdt (&peek_gdt);
+; 46   : 	}
+; 47   : 
+; 48   : 	gdtr peek_gdt;
+; 49   : 	x64_sgdt (&peek_gdt);
 
 	lea	rcx, QWORD PTR peek_gdt$[rsp]
 	call	x64_sgdt
 
-; 49   : 	gdt_entry& tss_entry = peek_gdt.gdtaddr[GDT_ENTRY_TSS];
+; 50   : 	gdt_entry& tss_entry = peek_gdt.gdtaddr[GDT_ENTRY_TSS];
 
 	mov	eax, 8
 	imul	rax, 7
@@ -170,8 +170,8 @@ $LN4@initialize:
 	mov	rax, rcx
 	mov	QWORD PTR tss_entry$[rsp], rax
 
-; 50   : 
-; 51   : 	tss = (TSS*) (tss_entry.base_low + (tss_entry.base_mid << 16) + (tss_entry.base_high << 24) + ((uint64_t)*(uint32_t*)&peek_gdt.gdtaddr[GDT_ENTRY_TSS + 1] << 32));
+; 51   : 
+; 52   : 	tss = (TSS*) (tss_entry.base_low + (tss_entry.base_mid << 16) + (tss_entry.base_high << 24) + ((uint64_t)*(uint32_t*)&peek_gdt.gdtaddr[GDT_ENTRY_TSS + 1] << 32));
 
 	mov	rax, QWORD PTR tss_entry$[rsp]
 	movzx	eax, WORD PTR [rax+2]
@@ -193,10 +193,10 @@ $LN4@initialize:
 	mov	QWORD PTR ?tss@@3PEAU_tss@@EA, rax	; tss
 $LN6@initialize:
 
-; 52   : 	
-; 53   : 	/*void* esp_stack = x64_get_stack();
-; 54   : 	x64_write_msr (IA32_SYSENTER_ESP, (size_t)esp_stack); */
-; 55   : }
+; 53   : 	
+; 54   : 	/*void* esp_stack = x64_get_stack();
+; 55   : 	x64_write_msr (IA32_SYSENTER_ESP, (size_t)esp_stack); */
+; 56   : }
 
 	add	rsp, 88					; 00000058H
 	ret	0
@@ -209,22 +209,22 @@ sysret_sel$ = 32
 syscall_sel$ = 40
 ?initialize_syscall@@YAXXZ PROC				; initialize_syscall
 
-; 19   : void initialize_syscall ()  {
+; 20   : void initialize_syscall ()  {
 
 $LN3:
 	sub	rsp, 56					; 00000038H
 
-; 20   : 	
-; 21   : 	uint64_t syscall_sel = SEGVAL (GDT_ENTRY_KERNEL_CODE, 0);
+; 21   : 	
+; 22   : 	uint64_t syscall_sel = SEGVAL (GDT_ENTRY_KERNEL_CODE, 0);
 
 	mov	QWORD PTR syscall_sel$[rsp], 8
 
-; 22   : 	uint64_t sysret_sel = SEGVAL (GDT_ENTRY_USER_CODE32, 3);
+; 23   : 	uint64_t sysret_sel = SEGVAL (GDT_ENTRY_USER_CODE32, 3);
 
 	mov	QWORD PTR sysret_sel$[rsp], 27
 
-; 23   : 
-; 24   : 	x64_write_msr (IA32_STAR, (sysret_sel << 48) | (syscall_sel << 32));
+; 24   : 
+; 25   : 	x64_write_msr (IA32_STAR, (sysret_sel << 48) | (syscall_sel << 32));
 
 	mov	rax, QWORD PTR sysret_sel$[rsp]
 	shl	rax, 48					; 00000030H
@@ -235,25 +235,25 @@ $LN3:
 	mov	ecx, -1073741695			; c0000081H
 	call	x64_write_msr
 
-; 25   : 	x64_write_msr (IA32_LSTAR, (size_t)&syscall_entry);
+; 26   : 	x64_write_msr (IA32_LSTAR, (size_t)&syscall_entry);
 
 	lea	rdx, OFFSET FLAT:syscall_entry
 	mov	ecx, -1073741694			; c0000082H
 	call	x64_write_msr
 
-; 26   : 	x64_write_msr (IA32_SFMASK, IA32_EFLAGS_INTR | IA32_EFLAGS_DIRF);
+; 27   : 	x64_write_msr (IA32_SFMASK, IA32_EFLAGS_INTR | IA32_EFLAGS_DIRF);
 
 	mov	edx, 1536				; 00000600H
 	mov	ecx, -1073741692			; c0000084H
 	call	x64_write_msr
 
-; 27   : 	x64_write_msr (IA32_CSTAR, (size_t)&x64_syscall_entry_compat);
+; 28   : 	x64_write_msr (IA32_CSTAR, (size_t)&x64_syscall_entry_compat);
 
 	lea	rdx, OFFSET FLAT:x64_syscall_entry_compat
 	mov	ecx, -1073741693			; c0000083H
 	call	x64_write_msr
 
-; 28   : }
+; 29   : }
 
 	add	rsp, 56					; 00000038H
 	ret	0

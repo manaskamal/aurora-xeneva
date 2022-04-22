@@ -1007,7 +1007,6 @@ int main (int argc, char* argv[]) {
 	sys_print_text ("PRIWM: Canvas Created w-> %d, h-> %d \r\n", w, h);
 	//! load cursor library
 
-
 	cursor_init ();
 	sys_print_text ("Reading cursor files \n");
 	load_cursor ("/cursor.bmp",(uint8_t*)0x0000070000000000, arrow_cursor);

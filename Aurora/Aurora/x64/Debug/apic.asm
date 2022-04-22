@@ -53,7 +53,7 @@ $pdata$?write_apic_register@@YAXG_K@Z DD imagerel $LN6
 	DD	imagerel $LN6+231
 	DD	imagerel $unwind$?write_apic_register@@YAXG_K@Z
 $pdata$?AuInitializeCpu@@YAXE@Z DD imagerel $LN23
-	DD	imagerel $LN23+483
+	DD	imagerel $LN23+496
 	DD	imagerel $unwind$?AuInitializeCpu@@YAXE@Z
 $pdata$?timer_sleep@@YAXI@Z DD imagerel $LN5
 	DD	imagerel $LN5+43
@@ -360,11 +360,11 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 ?AuAPStarted@@YAXXZ PROC				; AuAPStarted
 
-; 266  : 	ap_started = true;
+; 267  : 	ap_started = true;
 
 	mov	BYTE PTR ?ap_started@@3_NA, 1		; ap_started
 
-; 267  : }
+; 268  : }
 
 	ret	0
 ?AuAPStarted@@YAXXZ ENDP				; AuAPStarted
@@ -376,10 +376,10 @@ i$1 = 32
 i$2 = 36
 i$3 = 40
 ap_aligned_address$ = 48
-cpu_struc$4 = 56
-startup_ipi$5 = 64
+cpu$4 = 56
+cpu_struc$5 = 64
 apdata$ = 72
-cpu$6 = 80
+startup_ipi$6 = 80
 pml4$ = 88
 stack_address$7 = 96
 ap_init_address$ = 104
@@ -492,34 +492,39 @@ $LN16@AuInitiali:
 	call	AuPmmngrAlloc
 	mov	rcx, rax
 	call	p2v
-	mov	QWORD PTR cpu_struc$4[rsp], rax
+	mov	QWORD PTR cpu_struc$5[rsp], rax
 
 ; 233  : 		cpu_t *cpu = (cpu_t*)cpu_struc;
 
-	mov	rax, QWORD PTR cpu_struc$4[rsp]
-	mov	QWORD PTR cpu$6[rsp], rax
+	mov	rax, QWORD PTR cpu_struc$5[rsp]
+	mov	QWORD PTR cpu$4[rsp], rax
 
 ; 234  : 		cpu->cpu_id = i;
 
-	mov	rax, QWORD PTR cpu$6[rsp]
+	mov	rax, QWORD PTR cpu$4[rsp]
 	movzx	ecx, BYTE PTR i$1[rsp]
 	mov	BYTE PTR [rax], cl
 
 ; 235  : 		cpu->au_current_thread = 0;
 
-	mov	rax, QWORD PTR cpu$6[rsp]
-	mov	QWORD PTR [rax+8], 0
+	mov	rax, QWORD PTR cpu$4[rsp]
+	mov	QWORD PTR [rax+1], 0
 
-; 236  : 		*(uint64_t*)(ap_aligned_address + 40) = (uint64_t)cpu_struc;
+; 236  : 		cpu->kernel_tss = 0;
+
+	mov	rax, QWORD PTR cpu$4[rsp]
+	mov	QWORD PTR [rax+9], 0
+
+; 237  : 		*(uint64_t*)(ap_aligned_address + 40) = (uint64_t)cpu_struc;
 
 	mov	rax, QWORD PTR ap_aligned_address$[rsp]
-	mov	rcx, QWORD PTR cpu_struc$4[rsp]
+	mov	rcx, QWORD PTR cpu_struc$5[rsp]
 	mov	QWORD PTR [rax+40], rcx
 
-; 237  : 		
 ; 238  : 		
-; 239  : 
-; 240  : 		write_apic_register(LAPIC_REGISTER_ICR, icr_dest(i) | 0x4500);
+; 239  : 		
+; 240  : 
+; 241  : 		write_apic_register(LAPIC_REGISTER_ICR, icr_dest(i) | 0x4500);
 
 	mov	ecx, DWORD PTR i$1[rsp]
 	call	?icr_dest@@YA_KI@Z			; icr_dest
@@ -529,7 +534,7 @@ $LN16@AuInitiali:
 	call	?write_apic_register@@YAXG_K@Z		; write_apic_register
 $LN15@AuInitiali:
 
-; 241  : 		while (icr_busy());
+; 242  : 		while (icr_busy());
 
 	call	?icr_busy@@YA_NXZ			; icr_busy
 	movzx	eax, al
@@ -538,9 +543,9 @@ $LN15@AuInitiali:
 	jmp	SHORT $LN15@AuInitiali
 $LN14@AuInitiali:
 
-; 242  : 
 ; 243  : 
-; 244  : 		size_t startup_ipi = icr_dest(i) | 0x4600 | ((size_t)apdata >> 12);
+; 244  : 
+; 245  : 		size_t startup_ipi = icr_dest(i) | 0x4600 | ((size_t)apdata >> 12);
 
 	mov	ecx, DWORD PTR i$1[rsp]
 	call	?icr_dest@@YA_KI@Z			; icr_dest
@@ -548,16 +553,16 @@ $LN14@AuInitiali:
 	mov	rcx, QWORD PTR apdata$[rsp]
 	shr	rcx, 12
 	or	rax, rcx
-	mov	QWORD PTR startup_ipi$5[rsp], rax
+	mov	QWORD PTR startup_ipi$6[rsp], rax
 
-; 245  : 		write_apic_register(LAPIC_REGISTER_ICR, startup_ipi);
+; 246  : 		write_apic_register(LAPIC_REGISTER_ICR, startup_ipi);
 
-	mov	rdx, QWORD PTR startup_ipi$5[rsp]
+	mov	rdx, QWORD PTR startup_ipi$6[rsp]
 	mov	cx, 48					; 00000030H
 	call	?write_apic_register@@YAXG_K@Z		; write_apic_register
 $LN13@AuInitiali:
 
-; 246  : 		while (icr_busy());
+; 247  : 		while (icr_busy());
 
 	call	?icr_busy@@YA_NXZ			; icr_busy
 	movzx	eax, al
@@ -566,31 +571,31 @@ $LN13@AuInitiali:
 	jmp	SHORT $LN13@AuInitiali
 $LN12@AuInitiali:
 
-; 247  : 		for (int i = 0; i < 10000000; i++)
+; 248  : 		for (int i = 0; i < 10000000; i++)
 
-	mov	DWORD PTR i$2[rsp], 0
+	mov	DWORD PTR i$3[rsp], 0
 	jmp	SHORT $LN11@AuInitiali
 $LN10@AuInitiali:
-	mov	eax, DWORD PTR i$2[rsp]
+	mov	eax, DWORD PTR i$3[rsp]
 	inc	eax
-	mov	DWORD PTR i$2[rsp], eax
+	mov	DWORD PTR i$3[rsp], eax
 $LN11@AuInitiali:
-	cmp	DWORD PTR i$2[rsp], 10000000		; 00989680H
+	cmp	DWORD PTR i$3[rsp], 10000000		; 00989680H
 	jge	SHORT $LN9@AuInitiali
 
-; 248  : 			;
+; 249  : 			;
 
 	jmp	SHORT $LN10@AuInitiali
 $LN9@AuInitiali:
 
-; 249  : 		write_apic_register(LAPIC_REGISTER_ICR, startup_ipi);
+; 250  : 		write_apic_register(LAPIC_REGISTER_ICR, startup_ipi);
 
-	mov	rdx, QWORD PTR startup_ipi$5[rsp]
+	mov	rdx, QWORD PTR startup_ipi$6[rsp]
 	mov	cx, 48					; 00000030H
 	call	?write_apic_register@@YAXG_K@Z		; write_apic_register
 $LN8@AuInitiali:
 
-; 250  : 		while (icr_busy());
+; 251  : 		while (icr_busy());
 
 	call	?icr_busy@@YA_NXZ			; icr_busy
 	movzx	eax, al
@@ -599,45 +604,45 @@ $LN8@AuInitiali:
 	jmp	SHORT $LN8@AuInitiali
 $LN7@AuInitiali:
 
-; 251  : 		
-; 252  : 		for (int i = 0; i < 10000000; i++)
+; 252  : 		
+; 253  : 		for (int i = 0; i < 10000000; i++)
 
-	mov	DWORD PTR i$3[rsp], 0
+	mov	DWORD PTR i$2[rsp], 0
 	jmp	SHORT $LN6@AuInitiali
 $LN5@AuInitiali:
-	mov	eax, DWORD PTR i$3[rsp]
+	mov	eax, DWORD PTR i$2[rsp]
 	inc	eax
-	mov	DWORD PTR i$3[rsp], eax
+	mov	DWORD PTR i$2[rsp], eax
 $LN6@AuInitiali:
-	cmp	DWORD PTR i$3[rsp], 10000000		; 00989680H
+	cmp	DWORD PTR i$2[rsp], 10000000		; 00989680H
 	jge	SHORT $LN4@AuInitiali
 
-; 253  : 			;
+; 254  : 			;
 
 	jmp	SHORT $LN5@AuInitiali
 $LN4@AuInitiali:
 $LN3@AuInitiali:
 
-; 254  : 	
-; 255  : 		do {
-; 256  : 			x64_pause();
+; 255  : 	
+; 256  : 		do {
+; 257  : 			x64_pause();
 
 	call	x64_pause
 
-; 257  : 		} while (!ap_started);
+; 258  : 		} while (!ap_started);
 
 	movzx	eax, BYTE PTR ?ap_started@@3_NA		; ap_started
 	test	eax, eax
 	je	SHORT $LN3@AuInitiali
 
-; 258  : 	}
+; 259  : 	}
 
 	jmp	$LN18@AuInitiali
 $LN17@AuInitiali:
 $LN21@AuInitiali:
 
-; 259  : 
-; 260  : }
+; 260  : 
+; 261  : }
 
 	add	rsp, 120				; 00000078H
 	ret	0

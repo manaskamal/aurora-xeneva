@@ -164,7 +164,7 @@ void page_fault (size_t vector, void* param){
 	printf ("CS -> %x, SS -> %x\n", frame->cs, frame->ss);
 	printf ("******Cause********\n");
 	if (us){
-		//map_page((uint64_t)pmmngr_alloc(), (uint64_t)vaddr,PAGING_USER);
+		//AuMapPage((uint64_t)AuPmmngrAlloc(), (uint64_t)vaddr,PAGING_USER);
 		printf ("***** User Priviledge not set ******** \n");
 	}else if (present){
 		//map_page((uint64_t)pmmngr_alloc(), (uint64_t)vaddr,PAGING_USER);
@@ -177,8 +177,8 @@ void page_fault (size_t vector, void* param){
 		printf ("*** Invalid Page ****\n");
 	}
 
+
 	for(;;);
-	//map_page((uint64_t)pmmngr_alloc(), (uint64_t)vaddr);
 }
 
 //! exception function -- fpu_fault
