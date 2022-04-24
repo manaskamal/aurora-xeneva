@@ -19,10 +19,10 @@ PUBLIC	?AuPCPUSetKernelTSS@@YAXPEAU_tss@@@Z		; AuPCPUSetKernelTSS
 PUBLIC	?AuPCPUGetKernelTSS@@YAPEAU_tss@@XZ		; AuPCPUGetKernelTSS
 EXTRN	memset:PROC
 EXTRN	x64_write_msr:PROC
-EXTRN	x64_fs_readb:PROC
-EXTRN	x64_fs_readq:PROC
-EXTRN	x64_fs_writeb:PROC
-EXTRN	x64_fs_writeq:PROC
+EXTRN	x64_gs_readb:PROC
+EXTRN	x64_gs_readq:PROC
+EXTRN	x64_gs_writeb:PROC
+EXTRN	x64_gs_writeq:PROC
 EXTRN	malloc:PROC
 pdata	SEGMENT
 $pdata$?AuCreatePCPU@@YAXPEAX@Z DD imagerel $LN6
@@ -73,10 +73,10 @@ _TEXT	SEGMENT
 $LN3:
 	sub	rsp, 40					; 00000028H
 
-; 102  : 	return (TSS*)x64_fs_readq(9);
+; 102  : 	return (TSS*)x64_gs_readq(9);
 
 	mov	ecx, 9
-	call	x64_fs_readq
+	call	x64_gs_readq
 
 ; 103  : }
 
@@ -96,11 +96,11 @@ $LN3:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 40					; 00000028H
 
-; 95   : 	x64_fs_writeq(9,(uint64_t)tss);
+; 95   : 	x64_gs_writeq(9,(uint64_t)tss);
 
 	mov	rdx, QWORD PTR tss$[rsp]
 	mov	ecx, 9
-	call	x64_fs_writeq
+	call	x64_gs_writeq
 
 ; 96   : }
 
@@ -118,10 +118,10 @@ _TEXT	SEGMENT
 $LN3:
 	sub	rsp, 40					; 00000028H
 
-; 87   : 	return (thread_t*)x64_fs_readq(1);
+; 87   : 	return (thread_t*)x64_gs_readq(1);
 
 	mov	ecx, 1
-	call	x64_fs_readq
+	call	x64_gs_readq
 
 ; 88   : }
 
@@ -141,11 +141,11 @@ $LN3:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 40					; 00000028H
 
-; 80   : 	x64_fs_writeq(1,(uint64_t)thread);
+; 80   : 	x64_gs_writeq(1,(uint64_t)thread);
 
 	mov	rdx, QWORD PTR thread$[rsp]
 	mov	ecx, 1
-	call	x64_fs_writeq
+	call	x64_gs_writeq
 
 ; 81   : }
 
@@ -163,10 +163,10 @@ _TEXT	SEGMENT
 $LN3:
 	sub	rsp, 40					; 00000028H
 
-; 73   : 	return x64_fs_readb(0);
+; 73   : 	return x64_gs_readb(0);
 
 	xor	ecx, ecx
-	call	x64_fs_readb
+	call	x64_gs_readb
 
 ; 74   : }
 
@@ -186,11 +186,11 @@ $LN3:
 	mov	BYTE PTR [rsp+8], cl
 	sub	rsp, 40					; 00000028H
 
-; 66   : 	x64_fs_writeb(0,id);
+; 66   : 	x64_gs_writeb(0,id);
 
 	movzx	edx, BYTE PTR id$[rsp]
 	xor	ecx, ecx
-	call	x64_fs_writeb
+	call	x64_gs_writeb
 
 ; 67   : }
 
@@ -266,10 +266,10 @@ $LN1@AuCreatePC:
 	mov	rdx, QWORD PTR cpu$[rsp]
 	mov	QWORD PTR [rcx+rax*8], rdx
 
-; 55   : 	x64_write_msr(MSR_IA32_FS_BASE, (uint64_t)cpu);
+; 55   : 	x64_write_msr(MSR_IA32_GS_BASE, (uint64_t)cpu);
 
 	mov	rdx, QWORD PTR cpu$[rsp]
-	mov	ecx, -1073741568			; c0000100H
+	mov	ecx, -1073741567			; c0000101H
 	call	x64_write_msr
 
 ; 56   : }

@@ -121,13 +121,13 @@ uint32_t fat32_read_fat (uint32_t cluster_index) {
 	auto fat_offset = cluster_index * 4;
 	uint64_t fat_sector = fat_begin_lba + (fat_offset / 512);
 	size_t ent_offset = fat_offset  % 512;
-	uint64_t *buf_area = (uint64_t*)AuPmmngrAlloc();
+	uint64_t *buf_area = (uint64_t*)p2v((size_t)AuPmmngrAlloc());
 	memset(buf_area,0,4096);
 	//ata_read_28 (fat_sector,1,buf);
-	ahci_disk_read (ahci_disk_get_port(),fat_sector,1,buf_area);
+	ahci_disk_read (ahci_disk_get_port(),fat_sector,1,(uint64_t*)v2p((size_t)buf_area));
 	unsigned char *buf = (unsigned char*)buf_area;
 	uint32_t value = *(uint32_t*)&buf[ent_offset];
-	AuPmmngrFree(buf_area);
+	AuPmmngrFree((void*)v2p((size_t)buf_area));
 	return value & 0x0FFFFFFF;
 }
 
@@ -248,21 +248,25 @@ vfs_node_t fat32_locate_dir (const char* dir) {
 	uint64_t* buf;
 	fat32_dir *dirent;
 	char dos_file_name[11];
-	fat32_to_dos_file_name (dir, dos_file_name, 11);	
-	buf = (uint64_t*)AuPmmngrAlloc();
+	fat32_to_dos_file_name (dir, dos_file_name, 11);
+
+	buf = (uint64_t*)p2v((uint64_t)AuPmmngrAlloc());
 	for (unsigned int sector = 0; sector < sectors_per_cluster; sector++) {
-	
+
 		memset (buf, 0, 4096);
 		//ata_read_28 (root_sector + sector,1, buf);
-		ahci_disk_read(ahci_disk_get_port(),root_sector + sector,1,buf);
-		dirent = (fat32_dir*)buf;
+		ahci_disk_read(ahci_disk_get_port(),root_sector + sector,1,(uint64_t*)v2p((uint64_t)buf));
+
+		uint8_t* aligned_buf = (uint8_t*)buf;
+		dirent = (fat32_dir*)aligned_buf;
+
 		for (int i=0; i < 16; i++) {
-			
 			char name[11];
 			memcpy (name, dirent->filename, 11);
-
 			name[11] = 0;
+		
 			if (strcmp (dos_file_name, name) == 0) {
+				
 				strcpy (file.filename, dir);
 				file.current = dirent->first_cluster;
 				file.size = dirent->file_size;
@@ -274,7 +278,7 @@ vfs_node_t fat32_locate_dir (const char* dir) {
 				else
 					file.flags = FS_FLAG_GENERAL;
 				
-				AuPmmngrFree(buf);
+				//AuPmmngrFree((void*)v2p((size_t)buf));
 				return file;
 			}
 			dirent++;
@@ -300,7 +304,7 @@ vfs_node_t fat32_locate_subdir (vfs_node_t kfile, const char* filename) {
 	char dos_file_name[11];
 	fat32_to_dos_file_name (filename, dos_file_name, 11);
 	//dos_file_name[11] = 0;
-	uint64_t* buf = (uint64_t*)AuPmmngrAlloc();
+	uint64_t* buf = (uint64_t*)p2v((size_t)AuPmmngrAlloc());
 	if (kfile.flags != FS_FLAG_INVALID) {
 		
 		//! read the directory
@@ -308,9 +312,10 @@ vfs_node_t fat32_locate_subdir (vfs_node_t kfile, const char* filename) {
 
 			//! read 
 		
-			fat32_read (&kfile, buf);
+			fat32_read (&kfile, (uint64_t*)v2p((uint64_t)buf));
 			//! set directory
-			fat32_dir* pkDir = (fat32_dir*)buf;
+			uint8_t* aligned_buf = (uint8_t*)buf;
+			fat32_dir* pkDir = (fat32_dir*)aligned_buf;
 
 			//! 16 entries
 			for (unsigned int i = 0; i < 16; i++) {
@@ -334,7 +339,7 @@ vfs_node_t fat32_locate_subdir (vfs_node_t kfile, const char* filename) {
 					else
 						file.flags = FS_FLAG_GENERAL;
 
-					AuPmmngrFree(buf);
+					AuPmmngrFree((void*)v2p((size_t)buf));
 					//!return file
 					return file;
 				}
@@ -347,7 +352,7 @@ vfs_node_t fat32_locate_subdir (vfs_node_t kfile, const char* filename) {
 		}
 	}
 
-	AuPmmngrFree(buf);
+	AuPmmngrFree((void*)v2p((size_t)buf));
 	file.flags = FS_FLAG_INVALID;
 	return file;
 }

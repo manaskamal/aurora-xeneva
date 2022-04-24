@@ -44,7 +44,7 @@ void AuInitializeScreen (KERNEL_BOOT_INFO *info){
 	/**
 	 * register the device node for screen interface
 	 */
-	vfs_node_t * svga = (vfs_node_t*)AuPmmngrAlloc(); 
+	vfs_node_t * svga = (vfs_node_t*)malloc(sizeof(vfs_node_t)); //AuPmmngrAlloc(); 
 	strcpy (svga->filename, "fb");
 	svga->size = 0;
 	svga->eof = 0;

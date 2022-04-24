@@ -573,7 +573,8 @@ void hda_initialize () {
 		AuInterruptSet(10, hda_handler,10);
 	}
 
-	_ihd_audio.mmio = pci_dev.device.nonBridge.baseAddress[0] & ~3;
+	uintptr_t mmio = pci_dev.device.nonBridge.baseAddress[0] & ~3;
+	_ihd_audio.mmio = (size_t)AuMapMMIO(mmio,2);
 	_ihd_audio.corb = (uint32_t*)AuPmmngrAlloc(); 
 	_ihd_audio.rirb = (uint64_t*)AuPmmngrAlloc(); 
 	memset (_ihd_audio.corb, 0, 4096);

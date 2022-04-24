@@ -311,11 +311,11 @@ void load_cursor (char* filename, uint8_t* addr,pri_bmp_image *bmp) {
  * retreived data
  */
 void mouse_get (mouse_message_t *msg) {
-	mouse_message_t *tmsg = (mouse_message_t*)0xFFFFFFFFB0000000;
+	mouse_message_t *tmsg = (mouse_message_t*)0x400000; //0xFFFFFFFFB0000000;
 	if (tmsg->type != 0) {
 		memcpy (msg,tmsg,sizeof(mouse_message_t));
 	}
-	memset ((void*)0xFFFFFFFFB0000000, 0, sizeof(mouse_message_t));
+	memset ((void*)0x400000 /*0xFFFFFFFFB0000000*/, 0, sizeof(mouse_message_t));
 }
 
 
@@ -1099,7 +1099,7 @@ int main (int argc, char* argv[]) {
 			}
 
 			if (key_msg.dword == KEY_A) {
-				create_process("/cnsl.exe", "cnsl");
+				create_process("/init.exe", "cnsl");
 			}
 			memset(&key_msg, 0, sizeof(message_t));
 		}

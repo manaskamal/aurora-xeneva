@@ -49,10 +49,11 @@ void AuConsoleInitialize (PKERNEL_BOOT_INFO info) {
 	screen_height = info->Y_Resolution;
 	fb =  AuGetFramebuffer();//info->graphics_framebuffer;
 
-	uint64_t* buffer = (uint64_t*)AuPmmngrAllocBlocks(2);
+
+	uint64_t* buffer = (uint64_t*)p2v((size_t)AuPmmngrAllocBlocks(2));
 	memset(buffer, 0, 8192);
 	vfs_node_t file = fat32_open(NULL, "/font.psf");
-	fat32_read_file (&file,buffer,file.size);
+	fat32_read_file (&file,(uint64_t*)v2p((size_t)buffer),file.size);
 	psf_data = buffer;
 	_console_initialized_ = true;
 }

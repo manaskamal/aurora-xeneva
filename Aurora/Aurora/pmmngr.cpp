@@ -189,10 +189,13 @@ void AuPmmngrInit(KERNEL_BOOT_INFO *info)
  * of memory 
  */
 void AuPmmngrMoveHigher () {
-	ram_bitmap.Buffer = (uint8_t*)p2v((uint64_t)ram_bitmap.Buffer);
 	higher_half = true;
+	ram_bitmap.Buffer = (uint8_t*)p2v((uint64_t)ram_bitmap.Buffer);
 }
 
+void AuPmmngrSetHighHalf(bool value) {
+	higher_half = value;
+}
 
 uint64_t p2v (uint64_t addr) {
 	if (higher_half)

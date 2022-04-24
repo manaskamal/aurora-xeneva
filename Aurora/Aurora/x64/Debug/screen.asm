@@ -10,12 +10,12 @@ _BSS	SEGMENT
 ?display@@3U__display__@@A DB 020H DUP (?)		; display
 _BSS	ENDS
 CONST	SEGMENT
-$SG3199	DB	'fb', 00H
+$SG3227	DB	'fb', 00H
 	ORG $+5
-$SG3200	DB	'VFS Node created', 0aH, 00H
+$SG3228	DB	'VFS Node created', 0aH, 00H
 	ORG $+6
-$SG3201	DB	'/dev/fb', 00H
-$SG3202	DB	'VFS DEV FB Registered', 0aH, 00H
+$SG3229	DB	'/dev/fb', 00H
+$SG3230	DB	'VFS DEV FB Registered', 0aH, 00H
 CONST	ENDS
 PUBLIC	?AuInitializeScreen@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z ; AuInitializeScreen
 PUBLIC	?AuScreenMap@@YAXII@Z				; AuScreenMap
@@ -30,11 +30,11 @@ PUBLIC	?screen_io_query@@YAHPEAU_vfs_node_@@HPEAX@Z	; screen_io_query
 EXTRN	strcpy:PROC
 EXTRN	printf:PROC
 EXTRN	vfs_mount:PROC
-EXTRN	AuPmmngrAlloc:PROC
 EXTRN	AuMapPage:PROC
+EXTRN	malloc:PROC
 pdata	SEGMENT
 $pdata$?AuInitializeScreen@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z DD imagerel $LN9
-	DD	imagerel $LN9+448
+	DD	imagerel $LN9+453
 	DD	imagerel $unwind$?AuInitializeScreen@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z
 $pdata$?AuScreenMap@@YAXII@Z DD imagerel $LN6
 	DD	imagerel $LN6+159
@@ -410,15 +410,16 @@ $LN9:
 ; 44   : 	/**
 ; 45   : 	 * register the device node for screen interface
 ; 46   : 	 */
-; 47   : 	vfs_node_t * svga = (vfs_node_t*)AuPmmngrAlloc(); 
+; 47   : 	vfs_node_t * svga = (vfs_node_t*)malloc(sizeof(vfs_node_t)); //AuPmmngrAlloc(); 
 
-	call	AuPmmngrAlloc
+	mov	ecx, 104				; 00000068H
+	call	malloc
 	mov	QWORD PTR svga$[rsp], rax
 
 ; 48   : 	strcpy (svga->filename, "fb");
 
 	mov	rax, QWORD PTR svga$[rsp]
-	lea	rdx, OFFSET FLAT:$SG3199
+	lea	rdx, OFFSET FLAT:$SG3227
 	mov	rcx, rax
 	call	strcpy
 
@@ -480,19 +481,19 @@ $LN9:
 
 ; 60   : 	printf ("VFS Node created\n");
 
-	lea	rcx, OFFSET FLAT:$SG3200
+	lea	rcx, OFFSET FLAT:$SG3228
 	call	printf
 
 ; 61   : 	vfs_mount ("/dev/fb", svga, 0);
 
 	xor	r8d, r8d
 	mov	rdx, QWORD PTR svga$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3201
+	lea	rcx, OFFSET FLAT:$SG3229
 	call	vfs_mount
 
 ; 62   : 	printf ("VFS DEV FB Registered\n");
 
-	lea	rcx, OFFSET FLAT:$SG3202
+	lea	rcx, OFFSET FLAT:$SG3230
 	call	printf
 
 ; 63   : 

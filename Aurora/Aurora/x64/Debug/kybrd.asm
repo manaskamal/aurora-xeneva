@@ -6,7 +6,7 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 CONST	SEGMENT
-$SG3461	DB	'[Aurora]:Key Pressed', 0aH, 00H
+$SG3492	DB	'[Aurora]:Key Pressed', 0aH, 00H
 CONST	ENDS
 PUBLIC	?AuKeyboardInitialize@@YAXXZ			; AuKeyboardInitialize
 PUBLIC	?AuKeyboardHandler@@YAX_KPEAX@Z			; AuKeyboardHandler
@@ -16,6 +16,8 @@ EXTRN	AuInterruptSet:PROC
 EXTRN	printf:PROC
 EXTRN	AuPmmngrAlloc:PROC
 EXTRN	AuPmmngrFree:PROC
+EXTRN	p2v:PROC
+EXTRN	v2p:PROC
 EXTRN	?is_scheduler_initialized@@YA_NXZ:PROC		; is_scheduler_initialized
 EXTRN	?message_send@@YAXGPEAU_message_@@@Z:PROC	; message_send
 pdata	SEGMENT
@@ -23,7 +25,7 @@ $pdata$?AuKeyboardInitialize@@YAXXZ DD imagerel $LN3
 	DD	imagerel $LN3+29
 	DD	imagerel $unwind$?AuKeyboardInitialize@@YAXXZ
 $pdata$?AuKeyboardHandler@@YAX_KPEAX@Z DD imagerel $LN6
-	DD	imagerel $LN6+157
+	DD	imagerel $LN6+173
 	DD	imagerel $unwind$?AuKeyboardHandler@@YAX_KPEAX@Z
 pdata	ENDS
 xdata	SEGMENT
@@ -80,9 +82,11 @@ $LN6:
 	test	eax, eax
 	je	SHORT $LN2@AuKeyboard
 
-; 31   : 			message_t *msg = (message_t*)AuPmmngrAlloc();
+; 31   : 			message_t *msg = (message_t*)p2v((size_t)AuPmmngrAlloc());
 
 	call	AuPmmngrAlloc
+	mov	rcx, rax
+	call	p2v
 	mov	QWORD PTR msg$2[rsp], rax
 
 ; 32   : 			msg->type = 3;
@@ -103,9 +107,11 @@ $LN6:
 	mov	cx, 2
 	call	?message_send@@YAXGPEAU_message_@@@Z	; message_send
 
-; 35   : 			AuPmmngrFree (msg);
+; 35   : 			AuPmmngrFree ((void*)v2p((size_t)msg));
 
 	mov	rcx, QWORD PTR msg$2[rsp]
+	call	v2p
+	mov	rcx, rax
 	call	AuPmmngrFree
 
 ; 36   : 		} else {
@@ -115,7 +121,7 @@ $LN2@AuKeyboard:
 
 ; 37   : 			printf ("[Aurora]:Key Pressed\n");
 
-	lea	rcx, OFFSET FLAT:$SG3461
+	lea	rcx, OFFSET FLAT:$SG3492
 	call	printf
 $LN1@AuKeyboard:
 $LN3@AuKeyboard:

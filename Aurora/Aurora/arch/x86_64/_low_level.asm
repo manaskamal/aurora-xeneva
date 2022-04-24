@@ -129,6 +129,49 @@ x64_fs_writeq:
      mov [fs:rcx], rdx
 	 ret
 
+global x64_gs_readb
+x64_gs_readb:
+     xor rax, rax
+	 mov al, [gs:rcx]
+	 ret
+
+global x64_gs_readw
+x64_gs_readw:
+     xor rax, rax
+	 mov ax, [gs:rcx]
+	 ret
+
+global x64_gs_readd
+x64_gs_readd:
+     xor rax, rax
+	 mov eax, [gs:rcx]
+	 ret
+
+global x64_gs_readq
+x64_gs_readq:
+     mov rax, [gs:rcx]
+	 ret
+
+global x64_gs_writeb
+x64_gs_writeb:
+     mov [gs:rcx], dl
+	 ret
+
+global x64_gs_writew
+x64_gs_writew:
+     mov [gs:rcx], dx
+	 ret
+
+global x64_gs_writed
+x64_gs_writed:
+     mov [gs:rcx], edx
+	 ret
+
+global x64_gs_writeq
+x64_gs_writeq:
+     mov [gs:rcx], rdx
+	 ret
+
 
 ;---------------------------------------------------------
 ; Control Register functions

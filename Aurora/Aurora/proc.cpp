@@ -99,16 +99,13 @@ process_t *find_process_by_id (uint32_t pid) {
  */
 uint64_t *create_user_stack (uint64_t* cr3) {
 #define USER_STACK  0x0000700000000000 
-	
 	uint64_t location = USER_STACK;
 	
 	/* 2 mb stack / process */
 	for (int i=0; i < (2*1024*1024)/4096; i++) {
-		uint64_t *block = (uint64_t*)AuPmmngrAlloc();
-		memset (block, 0, 4096);
-		AuMapPageEx(cr3, (uint64_t)block,location + i * 4096, PAGING_USER);
+		uint64_t *block = (uint64_t*)p2v((size_t)AuPmmngrAlloc());
+		AuMapPageEx(cr3,v2p((size_t)block),location + i * 4096, PAGING_USER);
 	}
-
 	return (uint64_t*)(USER_STACK + (2*1024*1024));
 }
 
@@ -159,18 +156,19 @@ int AuCreateProcess(const char* filename, char* procname) {
 
 	//!open the process file-binary
 	char *fname = (char*)filename;
-   
+
 	//vfs_node_t file = openfs (n,fname);
 	vfs_node_t file = fat32_open(NULL, fname);
-
+	
 	if (file.status == FS_FLAG_INVALID) {
 		printf("Executable image not found\n");
 		return -1;
 	}
 	//!open the binary file and read it
-	uint64_t* buf = (uint64_t*)AuPmmngrAlloc();   
+	uint64_t* buf = (uint64_t*)p2v((size_t)AuPmmngrAlloc());   
 	//readfs_block(n,&file,buf);
-	fat32_read (&file,buf);
+	
+	fat32_read (&file,(uint64_t*)v2p((size_t)buf));
 	
 
 	IMAGE_DOS_HEADER* dos = (IMAGE_DOS_HEADER*)buf;
@@ -183,23 +181,20 @@ int AuCreateProcess(const char* filename, char* procname) {
 
 	//! create the user stack and address space
 	uint64_t *cr3 = AuCreateAddressSpace();	
-
 	uint64_t stack = (uint64_t)create_user_stack(cr3);
 
-	AuMapPageEx(cr3,(uint64_t)buf,_image_base_, PAGING_USER);
+	AuMapPageEx(cr3,v2p((size_t)buf),_image_base_, PAGING_USER);
 	////! read rest of the image
 	int position = 1;  //we already read 4096 bytes at first
 
-
 	while (file.eof != 1){
-		uint64_t* block = (uint64_t*)AuPmmngrAlloc();
+		uint64_t* block = (uint64_t*)p2v((size_t)AuPmmngrAlloc());
 		//read_blk(&file,block,file.id);
 		//readfs_block (n, &file, block);
-		fat32_read (&file,block);
-		AuMapPageEx(cr3,(uint64_t)block,_image_base_ + position * 4096, PAGING_USER);
+		fat32_read (&file,(uint64_t*)v2p((size_t)block));
+		AuMapPageEx(cr3,v2p((size_t)block),_image_base_ + position * 4096, PAGING_USER);
 		position++;
 	}
-
 
 	//!allocate current process
 	//strcpy (process->name,procname);
@@ -210,7 +205,6 @@ int AuCreateProcess(const char* filename, char* procname) {
 	process->image_base = _image_base_;
 	process->stack = stack;
 	process->image_size = nt->OptionalHeader.SizeOfImage;
-	_debug_print_ ("PROCESS CREATION IMAGE SIZE -> %d bytes \r\n", process->image_size);
 	process->parent = NULL;
 	//! Create and thread and start scheduling when scheduler starts */
 	thread_t *t = create_user_thread(ent,stack,(uint64_t)cr3,procname,0);

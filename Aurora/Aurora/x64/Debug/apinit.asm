@@ -6,7 +6,7 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 CONST	SEGMENT
-$SG3394	DB	'Welcome to Application Processor ', 0aH, 00H
+$SG3422	DB	'Welcome to Application Processor %d', 0aH, 00H
 CONST	ENDS
 PUBLIC	?AuApInit@@YAXPEAX@Z				; AuApInit
 EXTRN	x64_cli:PROC
@@ -16,6 +16,7 @@ EXTRN	x64_pause:PROC
 EXTRN	?gdt_initialize_ap@@YAXXZ:PROC			; gdt_initialize_ap
 EXTRN	?interrupt_initialize_ap@@YAXXZ:PROC		; interrupt_initialize_ap
 EXTRN	?exception_init@@YAXXZ:PROC			; exception_init
+EXTRN	?x86_64_cpu_get_id@@YAEXZ:PROC			; x86_64_cpu_get_id
 EXTRN	?hal_cpu_feature_enable@@YAXXZ:PROC		; hal_cpu_feature_enable
 EXTRN	printf:PROC
 EXTRN	?initialize_apic@@YAX_N@Z:PROC			; initialize_apic
@@ -25,7 +26,7 @@ EXTRN	?initialize_syscall@@YAXXZ:PROC			; initialize_syscall
 EXTRN	?initialize_user_land_ap@@YAX_K@Z:PROC		; initialize_user_land_ap
 pdata	SEGMENT
 $pdata$?AuApInit@@YAXPEAX@Z DD imagerel $LN5
-	DD	imagerel $LN5+182
+	DD	imagerel $LN5+192
 	DD	imagerel $unwind$?AuApInit@@YAXPEAX@Z
 pdata	ENDS
 xdata	SEGMENT
@@ -125,9 +126,12 @@ $LN5:
 
 	call	?hal_cpu_feature_enable@@YAXXZ		; hal_cpu_feature_enable
 
-; 62   : 	printf ("Welcome to Application Processor \n");
+; 62   : 	printf ("Welcome to Application Processor %d\n", x86_64_cpu_get_id());
 
-	lea	rcx, OFFSET FLAT:$SG3394
+	call	?x86_64_cpu_get_id@@YAEXZ		; x86_64_cpu_get_id
+	movzx	eax, al
+	mov	edx, eax
+	lea	rcx, OFFSET FLAT:$SG3422
 	call	printf
 
 ; 63   : 

@@ -140,13 +140,15 @@ void initialize_apic (bool bsp) {
 	size_t apic_base;
 	if (bsp) {
 		apic_base = (size_t)0xFEE00000;
+
 		apic_timer_count = 0;
 
-		apic = (void*)apic_base;
 
 		if (x2apic_supported() ) {
 			x2apic = true;
 			apic_base |= IA32_APIC_BASE_MSR_X2APIC;
+		}else {
+			apic = (void*)AuMapMMIO((uintptr_t)apic_base,1);
 		}
 
 		apic_base |= IA32_APIC_BASE_MSR_ENABLE;
@@ -154,6 +156,8 @@ void initialize_apic (bool bsp) {
 	} else {
 		x64_write_msr(IA32_APIC_BASE_MSR, x64_read_msr(IA32_APIC_BASE_MSR) | IA32_APIC_BASE_MSR_ENABLE | (x2apic ? IA32_APIC_BASE_MSR_X2APIC : 0));
 	}
+
+	printf ("APIC initialized \n");
 
 	setvect (0xFF, apic_spurious_interrupt);
 	write_apic_register (LAPIC_REGISTER_SVR, read_apic_register (LAPIC_REGISTER_SVR) | 
@@ -184,6 +188,10 @@ void initialize_apic (bool bsp) {
 
 }
 
+void AuAPICMoveToHigher() {
+	apic = (void*)p2v((size_t)apic);
+	printf ("New APIC -> %x\n", apic);
+}
 
 void timer_sleep(uint32_t ms) {
 	uint32_t tick = ms + apic_timer_count;

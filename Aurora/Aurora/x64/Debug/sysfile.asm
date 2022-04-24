@@ -6,7 +6,7 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 CONST	SEGMENT
-$SG3729	DB	'dev', 00H
+$SG3757	DB	'dev', 00H
 CONST	ENDS
 PUBLIC	?sys_open_file@@YAHPEADPEAU_file_@@@Z		; sys_open_file
 PUBLIC	?sys_read_file@@YAXHPEAEPEAU_file_@@@Z		; sys_read_file
@@ -23,13 +23,15 @@ EXTRN	readfs_block:PROC
 EXTRN	x64_cli:PROC
 EXTRN	AuPmmngrAlloc:PROC
 EXTRN	AuPmmngrFree:PROC
+EXTRN	p2v:PROC
+EXTRN	v2p:PROC
 EXTRN	?get_current_thread@@YAPEAU_thread_@@XZ:PROC	; get_current_thread
 pdata	SEGMENT
 $pdata$?sys_open_file@@YAHPEADPEAU_file_@@@Z DD imagerel $LN17
 	DD	imagerel $LN17+635
 	DD	imagerel $unwind$?sys_open_file@@YAHPEADPEAU_file_@@@Z
 $pdata$?sys_read_file@@YAXHPEAEPEAU_file_@@@Z DD imagerel $LN10
-	DD	imagerel $LN10+425
+	DD	imagerel $LN10+456
 	DD	imagerel $unwind$?sys_read_file@@YAXHPEAEPEAU_file_@@@Z
 $pdata$?sys_write_file@@YAXHPEAEPEAU_file_@@@Z DD imagerel $LN6
 	DD	imagerel $LN6+289
@@ -296,7 +298,7 @@ $LN4@sys_read_f:
 $LN5@sys_read_f:
 	mov	eax, DWORD PTR file$[rsp+32]
 	cmp	DWORD PTR i$1[rsp], eax
-	jae	SHORT $LN3@sys_read_f
+	jae	$LN3@sys_read_f
 
 ; 128  : 			if (file.eof) 
 
@@ -306,12 +308,14 @@ $LN5@sys_read_f:
 
 ; 129  : 				break;
 
-	jmp	SHORT $LN3@sys_read_f
+	jmp	$LN3@sys_read_f
 $LN2@sys_read_f:
 
-; 130  : 			uint64_t* buff = (uint64_t*)AuPmmngrAlloc();
+; 130  : 			uint64_t* buff = (uint64_t*)p2v((size_t)AuPmmngrAlloc());
 
 	call	AuPmmngrAlloc
+	mov	rcx, rax
+	call	p2v
 	mov	QWORD PTR buff$2[rsp], rax
 
 ; 131  : 			memset(buff, 0, 4096);
@@ -321,9 +325,11 @@ $LN2@sys_read_f:
 	mov	rcx, QWORD PTR buff$2[rsp]
 	call	memset
 
-; 132  : 			readfs_block (node,&file,buff);
+; 132  : 			readfs_block (node,&file,(uint64_t*)v2p((size_t)buff));
 
-	mov	r8, QWORD PTR buff$2[rsp]
+	mov	rcx, QWORD PTR buff$2[rsp]
+	call	v2p
+	mov	r8, rax
 	lea	rdx, QWORD PTR file$[rsp]
 	mov	rcx, QWORD PTR node$[rsp]
 	call	readfs_block
@@ -341,9 +347,11 @@ $LN2@sys_read_f:
 	add	rax, 4096				; 00001000H
 	mov	QWORD PTR buffer$[rsp], rax
 
-; 135  : 			AuPmmngrFree(buff);
+; 135  : 			AuPmmngrFree((void*)v2p((size_t)buff));
 
 	mov	rcx, QWORD PTR buff$2[rsp]
+	call	v2p
+	mov	rcx, rax
 	call	AuPmmngrFree
 
 ; 136  : 			
@@ -585,7 +593,7 @@ $LN8@sys_open_f:
 ; 83   : 
 ; 84   : 	if (!(strcmp(pathname, "dev") == 0)) {
 
-	lea	rdx, OFFSET FLAT:$SG3729
+	lea	rdx, OFFSET FLAT:$SG3757
 	lea	rcx, QWORD PTR pathname$[rsp]
 	call	strcmp
 	test	eax, eax

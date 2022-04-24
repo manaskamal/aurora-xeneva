@@ -10,11 +10,11 @@
 
 #include <arch\x86_64\kstack.h>
 #include <string.h>
+#include <stdio.h>
 
 unsigned int index = 0;
 
 extern uint64_t allocate_kstack (uint64_t *cr3) {
-
 	uint64_t location = KSTACK_START; //+ index;
 	for (int i = 0; i < 8192/4096; i++) {
 		void* p = AuPmmngrAlloc();

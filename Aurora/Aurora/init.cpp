@@ -126,27 +126,32 @@ void _AuMain (KERNEL_BOOT_INFO *info) {
 	process_list_initialize();
 	ttype_init();
 	
-	/*Initialize other processor */
-	AuInitializeCpu(AuGetNumCPU());
-	
-#ifdef ARCH_X64
 	//================================================
 	//! Initialize the scheduler here
 	//!===============================================
 	AuInitializeScheduler();
+	
+	/*Initialize other processor */
+	AuInitializeCpu(AuGetNumCPU());
 
+	/*Clear the lower half for user space */
+	AuPagingClearLow();
+
+#ifdef ARCH_X64
+	
 	printf ("Scheduler Initialized\n");
 
 	int au_status = 0;
 
 	/* start the sound service manager at id 1 */
-	au_status = AuCreateProcess ("/sndsrv.exe","shell");
+	au_status = AuCreateProcess ("/init.exe","shell");
 
 	/* start the compositing window manager at id 2 */
 	au_status = AuCreateProcess ("/priwm.exe","priwm");
 
 	//au_status = AuCreateProcess ("/dock.exe", "dock");
 	//! Here start the scheduler (multitasking engine)
+	
 	AuSchedulerStart();
 #endif
 

@@ -178,9 +178,10 @@ void ahci_initialize () {
 	}
 
 	printf ("AHCI/SATA found at dev -> %d, func -> %d, bus -> %d\n", dev, func, bus);
-	HBA_MEM *hba = (HBA_MEM*)(info->device.nonBridge.baseAddress[5] & 0xFFFFFFF0);
-	hbabar = (void*)(info->device.nonBridge.baseAddress[5] & 0xFFFFFFF0);
-	
+	uintptr_t hba_phys = (info->device.nonBridge.baseAddress[5] & 0xFFFFFFF0);
+	void* mmio = AuMapMMIO(hba_phys,512);
+	HBA_MEM *hba = (HBA_MEM*)mmio;//(info->device.nonBridge.baseAddress[5] & 0xFFFFFFF0);
+	hbabar = (void*)mmio; //(info->device.nonBridge.baseAddress[5] & 0xFFFFFFF0);
 	hba->ghc = 1;
 
 	timer_sleep(500);

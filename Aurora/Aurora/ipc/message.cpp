@@ -41,7 +41,7 @@ void message_send (uint16_t dest_id, message_t *msg) {
 
 	msg->dest_id = dest_id;
 	//!Actuall Message model
-	kernel_message_queue_t * temp = (kernel_message_queue_t*)AuPmmngrAlloc();
+	kernel_message_queue_t * temp = (kernel_message_queue_t*)malloc(sizeof(kernel_message_queue_t));
 
 	memcpy (&temp->msg, msg, sizeof(message_t));
 	temp->link = top;
@@ -67,7 +67,7 @@ void message_receive (message_t* msg) {
 			top = top->link;
 			temp->link = NULL;
 			memcpy (msg, &temp->msg,sizeof(message_t));
-			AuPmmngrFree(temp);
+			free(temp);
 		}
 	}
 

@@ -59,7 +59,7 @@ void AuApInit(void* cpu) {
 	initialize_user_land_ap(64);
 	initialize_syscall();
 	hal_cpu_feature_enable();
-	printf ("Welcome to Application Processor \n");
+	printf ("Welcome to Application Processor %d\n", x86_64_cpu_get_id());
 
 	/* From here scheduler should be initialized with good spinlock
 	 * system */

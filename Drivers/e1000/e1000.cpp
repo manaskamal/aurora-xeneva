@@ -227,7 +227,8 @@ AU_EXTERN AU_EXPORT int AuDriverMain() {
 
 	pci_enable_bus_master(bus,dev_,func);
 
-	e1000_dev->mmio_addr = (uintptr_t)dev.device.nonBridge.baseAddress[0];
+	uintptr_t mmio = dev.device.nonBridge.baseAddress[0];
+	e1000_dev->mmio_addr = (uintptr_t)AuMapMMIO(mmio,1);
 
 	e1000_eeprom_detect(e1000_dev);
 	

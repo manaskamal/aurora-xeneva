@@ -14,18 +14,18 @@ _BSS	SEGMENT
 ?last@@3PEAU_tele_type_@@EA DQ 01H DUP (?)		; last
 _BSS	ENDS
 CONST	SEGMENT
-$SG3531	DB	'/dev/', 00H
+$SG3558	DB	'/dev/', 00H
 	ORG $+2
-$SG3532	DB	'ttym', 00H
+$SG3559	DB	'ttym', 00H
 	ORG $+3
-$SG3536	DB	'[TTY]: Master node mounted at -> %s  ', 0dH, 0aH, 00H
-$SG3538	DB	'/dev/', 00H
+$SG3563	DB	'[TTY]: Master node mounted at -> %s  ', 0dH, 0aH, 00H
+$SG3565	DB	'/dev/', 00H
 	ORG $+2
-$SG3539	DB	'ttys', 00H
+$SG3566	DB	'ttys', 00H
 	ORG $+3
-$SG3543	DB	'[TTY]: Slave node mounted at %s ', 0dH, 0aH, 00H
+$SG3570	DB	'[TTY]: Slave node mounted at %s ', 0dH, 0aH, 00H
 	ORG $+5
-$SG3546	DB	'Used RAM -> %d MB/ Total RAM %d MB', 0dH, 0aH, 00H
+$SG3573	DB	'Used RAM -> %d MB/ Total RAM %d MB', 0dH, 0aH, 00H
 CONST	ENDS
 _DATA	SEGMENT
 ?master_count@@3HA DD 01H				; master_count
@@ -711,14 +711,14 @@ $LN3:
 ; 244  : 	char mname[10];
 ; 245  : 	strcpy (mname, "/dev/");
 
-	lea	rdx, OFFSET FLAT:$SG3531
+	lea	rdx, OFFSET FLAT:$SG3558
 	lea	rcx, QWORD PTR mname$[rsp]
 	call	strcpy
 
 ; 246  : 	strcpy (mname+5, "ttym");
 
 	lea	rax, QWORD PTR mname$[rsp+5]
-	lea	rdx, OFFSET FLAT:$SG3532
+	lea	rdx, OFFSET FLAT:$SG3559
 	mov	rcx, rax
 	call	strcpy
 
@@ -814,21 +814,21 @@ $LN3:
 ; 267  : 	_debug_print_ ("[TTY]: Master node mounted at -> %s  \r\n", mname);
 
 	lea	rdx, QWORD PTR mname$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3536
+	lea	rcx, OFFSET FLAT:$SG3563
 	call	?_debug_print_@@YAXPEADZZ		; _debug_print_
 
 ; 268  : 
 ; 269  : 	char sname[10];
 ; 270  : 	strcpy (sname, "/dev/");
 
-	lea	rdx, OFFSET FLAT:$SG3538
+	lea	rdx, OFFSET FLAT:$SG3565
 	lea	rcx, QWORD PTR sname$[rsp]
 	call	strcpy
 
 ; 271  : 	strcpy (sname+5, "ttys");
 
 	lea	rax, QWORD PTR sname$[rsp+5]
-	lea	rdx, OFFSET FLAT:$SG3539
+	lea	rdx, OFFSET FLAT:$SG3566
 	mov	rcx, rax
 	call	strcpy
 
@@ -928,7 +928,7 @@ $LN3:
 ; 290  : 	_debug_print_ ("[TTY]: Slave node mounted at %s \r\n", sname);
 
 	lea	rdx, QWORD PTR sname$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3543
+	lea	rcx, OFFSET FLAT:$SG3570
 	call	?_debug_print_@@YAXPEADZZ		; _debug_print_
 
 ; 291  : 	
@@ -1182,7 +1182,7 @@ $LN3:
 	mov	rcx, QWORD PTR tv279[rsp]
 	mov	r8, rcx
 	mov	rdx, rax
-	lea	rcx, OFFSET FLAT:$SG3546
+	lea	rcx, OFFSET FLAT:$SG3573
 	call	?_debug_print_@@YAXPEADZZ		; _debug_print_
 
 ; 343  : 

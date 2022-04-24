@@ -9,6 +9,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "xnacrylic", "..\xnlib\xnacr
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PriWM", "PriWM\PriWM.vcxproj", "{70F4467B-DAA1-43AF-89FB-4381A1554801}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Init", "Init\Init.vcxproj", "{A9DFF85D-290B-4628-9E94-A6287DD9E606}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Mixed Platforms = Debug|Mixed Platforms
@@ -61,6 +63,16 @@ Global
 		{70F4467B-DAA1-43AF-89FB-4381A1554801}.Release|Win32.ActiveCfg = Release|Win32
 		{70F4467B-DAA1-43AF-89FB-4381A1554801}.Release|Win32.Build.0 = Release|Win32
 		{70F4467B-DAA1-43AF-89FB-4381A1554801}.Release|x64.ActiveCfg = Release|Win32
+		{A9DFF85D-290B-4628-9E94-A6287DD9E606}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{A9DFF85D-290B-4628-9E94-A6287DD9E606}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{A9DFF85D-290B-4628-9E94-A6287DD9E606}.Debug|Win32.ActiveCfg = Debug|Win32
+		{A9DFF85D-290B-4628-9E94-A6287DD9E606}.Debug|Win32.Build.0 = Debug|Win32
+		{A9DFF85D-290B-4628-9E94-A6287DD9E606}.Debug|x64.ActiveCfg = Debug|x64
+		{A9DFF85D-290B-4628-9E94-A6287DD9E606}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{A9DFF85D-290B-4628-9E94-A6287DD9E606}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{A9DFF85D-290B-4628-9E94-A6287DD9E606}.Release|Win32.ActiveCfg = Release|Win32
+		{A9DFF85D-290B-4628-9E94-A6287DD9E606}.Release|Win32.Build.0 = Release|Win32
+		{A9DFF85D-290B-4628-9E94-A6287DD9E606}.Release|x64.ActiveCfg = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

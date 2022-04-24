@@ -94,7 +94,7 @@ uint32_t ahci_disk_find_slot (HBA_PORT *port) {
 void ahci_disk_read (HBA_PORT *port, uint64_t lba, uint32_t count, uint64_t *buffer) {
 	//port->is = (uint32_t)-1;
 	int spin = 0;
-	HBA_CMD_HEADER *cmd_list = (HBA_CMD_HEADER*)port->clb;
+	HBA_CMD_HEADER *cmd_list = (HBA_CMD_HEADER*)p2v(port->clb);
 	uint64_t buffer_whole = (uint64_t)buffer;
 
 	cmd_list->cfl = sizeof(FIS_REG_H2D)/sizeof(uint32_t);
@@ -103,7 +103,7 @@ void ahci_disk_read (HBA_PORT *port, uint64_t lba, uint32_t count, uint64_t *buf
 	
 	uint32_t command_slot = ahci_disk_find_slot(port);
 
-	HBA_CMD_TABLE *tbl = (HBA_CMD_TABLE*)cmd_list[command_slot].ctba;
+	HBA_CMD_TABLE *tbl = (HBA_CMD_TABLE*)p2v(cmd_list[command_slot].ctba);
 	int i=0;
 	//for (i = 0; i < cmd_list->prdtl; i++){
 	tbl->prdt[0].data_base_address = buffer_whole & 0xffffffff;
@@ -278,8 +278,6 @@ void ahci_disk_initialize (HBA_PORT *port) {
 	ahci_disk_stop_cmd(port);
 
 	sata_drive_port = port;
-
-
 
 	uint64_t phys;
 

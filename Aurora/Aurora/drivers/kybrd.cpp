@@ -28,11 +28,11 @@ void AuKeyboardHandler(size_t v, void* p)
 		
 		int code = inportb(0x60);
 		if (is_scheduler_initialized()) {
-			message_t *msg = (message_t*)AuPmmngrAlloc();
+			message_t *msg = (message_t*)p2v((size_t)AuPmmngrAlloc());
 			msg->type = 3;
 		    msg->dword = code;
 		    message_send (2,msg);
-			AuPmmngrFree (msg);
+			AuPmmngrFree ((void*)v2p((size_t)msg));
 		} else {
 			printf ("[Aurora]:Key Pressed\n");
 		}

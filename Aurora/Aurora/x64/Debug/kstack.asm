@@ -30,13 +30,12 @@ p$2 = 48
 cr3$ = 80
 ?allocate_kstack@@YA_KPEA_K@Z PROC			; allocate_kstack
 
-; 16   : extern uint64_t allocate_kstack (uint64_t *cr3) {
+; 17   : extern uint64_t allocate_kstack (uint64_t *cr3) {
 
 $LN6:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 72					; 00000048H
 
-; 17   : 
 ; 18   : 	uint64_t location = KSTACK_START; //+ index;
 
 	mov	rax, -5497558138880			; fffffb0000000000H

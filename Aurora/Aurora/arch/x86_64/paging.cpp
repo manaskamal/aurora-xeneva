@@ -15,6 +15,7 @@
 #include <arch\x86_64\thread.h>
 #include <pmmngr.h>
 #include <serial.h>
+#include <arch\x86_64\apic.h>
 
 
 //!!!======================================================================================
@@ -35,6 +36,9 @@
 //!!======================================================================================
 
 
+#define MMIO_BASE   0xfffffff280000000
+
+uint64_t* mmio_base_address = 0;
 
 uint64_t* root_cr3;
 
@@ -90,6 +94,7 @@ void AuPagingInit() {
 	uint64_t *new_cr3 = (uint64_t*)AuPmmngrAlloc();    
 
 	memset (new_cr3, 0, 4096);
+	mmio_base_address = (uint64_t*)MMIO_BASE;
 
 	//! Copy all higher half mappings to new mapping
 	for (int i = 0; i < 512; ++i) {
@@ -119,7 +124,6 @@ void AuPagingInit() {
 	x64_write_cr3 ((size_t)new_cr3);
 
 	AuPmmngrMoveHigher();
-
 }
 
 
@@ -309,6 +313,8 @@ bool AuMapPageEx (uint64_t *pml4i,uint64_t physical_address, uint64_t virtual_ad
 
 	if (pml1[i1] & PAGING_PRESENT){
 		AuPmmngrFree((void*)physical_address);
+		printf ("Already present -> %x \n", virtual_address);
+		for(;;);
 		return false;
 	}
 
@@ -319,12 +325,21 @@ bool AuMapPageEx (uint64_t *pml4i,uint64_t physical_address, uint64_t virtual_ad
 }
 
 
+/*
+ * AuPagingClearLow -- Clears the lower half for 
+ * user user
+ */
+void AuPagingClearLow() {
+	uint64_t* cr3 = (uint64_t*)x64_read_cr3();
+	for (int i = 0; i < 256; i++)
+		cr3[i] = 0;
+}
 
 //! creates a new address space for user with same structure
 //! to kernel i.e clone kernel space
 uint64_t *AuCreateAddressSpace (){
 	
-	uint64_t *cr3 = (uint64_t*)root_cr3; //x64_read_cr3();
+	uint64_t *cr3 = (uint64_t*)p2v((uint64_t)root_cr3); //x64_read_cr3();
 	uint64_t *new_cr3 = (uint64_t*)p2v((size_t)AuPmmngrAlloc());
 	memset(new_cr3,0,4096);
 
@@ -333,8 +348,6 @@ uint64_t *AuCreateAddressSpace (){
 	//! addresses that are needed, like physical addresses allocated for 
 	//! paging tables creations and memory mapped I/O which are not
 	//! virtually allocated in higher half sections
-	new_cr3[0] = cr3[0];
-	new_cr3[1] = cr3[1];
 
 	//! Copy Kernel's Higher Half section
 	for (int i = 0; i < 512; i++) {
@@ -382,6 +395,20 @@ uint64_t* AuGetFreePage (size_t s, bool user) {
 		start += 4096;
 	}
 	return 0;
+}
+
+/*
+ * AuMapMMIO -- Maps Memory Mapped IO addresses
+ * @param phys_addr -- mmio physical address
+ * @param page_count -- number of pages
+ */
+void* AuMapMMIO (uintptr_t phys_addr, size_t page_count) {
+	uint64_t* out = mmio_base_address;
+	for (size_t i = 0; i < page_count; i++) {
+		AuMapPage((uint64_t)(phys_addr + i * 4096), (uint64_t)(mmio_base_address + i * 4096),PAGING_WRITABLE | PAGING_NO_CACHING | PAGING_NO_EXECUTE);
+	}
+	mmio_base_address += (page_count * 4096);
+	return out;
 }
 
 

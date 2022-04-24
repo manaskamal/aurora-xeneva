@@ -235,9 +235,9 @@ thread_t* create_user_thread (void (*entry) (void*),uint64_t stack,uint64_t cr3,
 	t->id = task_id++;
 	t->quanta = 0;
 	t->ttype = 0;
-	t->msg_box = (uint64_t*)AuPmmngrAlloc();
+	t->msg_box = (uint64_t*)p2v((size_t)AuPmmngrAlloc());
 	/** Map the thread's msg box to a virtual address, from where the process will receive system messages **/
-	AuMapPageEx((uint64_t*)t->cr3,(uint64_t)t->msg_box,(uint64_t)0xFFFFFFFFB0000000, PAGING_USER);
+	AuMapPageEx((uint64_t*)p2v(t->cr3),v2p((size_t)t->msg_box),(uint64_t)0x400000, PAGING_USER);
 	memset(t->fx_state, 0, 512);
 	/*((fx_state_t*)t->fx_state)->mxcsr = 0x1f80;
 	((fx_state_t*)t->fx_state)->mxcsrMask = 0xffbf;
@@ -283,8 +283,8 @@ void AuInitializeScheduler () {
  * 
  *  @output  current_thread = next ready stated thread
  */
-void next_task () {
-	thread_t* task = AuPCPUGetCurrentThread();//current_thread;
+void next_task (cpu_t *pcpu) {
+	thread_t* task = (thread_t*)pcpu->au_current_thread;//current_thread;
 	do {
 		if (task->state == THREAD_STATE_SLEEP) {
 			if (task->quanta == 0) {
@@ -299,8 +299,9 @@ void next_task () {
 	}while (task->state != THREAD_STATE_READY);
 
 end:
-	AuPCPUSetCurrentThread(task);
-	current_thread = AuPCPUGetCurrentThread(); //task;
+	//AuPCPUSetCurrentThread(task);
+	pcpu->au_current_thread = (uint64_t*)task;
+	current_thread = (thread_t*)pcpu->au_current_thread;//AuPCPUGetCurrentThread(); //task;
 }
 
 
@@ -315,8 +316,9 @@ void scheduler_isr (size_t v, void* param) {
 	   multitasking */
 	if (scheduler_enable == false)
 		goto sched_end;
-
-	TSS *ktss = AuPCPUGetCpu(AuPCPUGetCPUID())->kernel_tss;
+	
+	cpu_t* pcpu = AuPCPUGetCpu(x86_64_cpu_get_id());
+	TSS *ktss = pcpu->kernel_tss;
 	//mutex_lock (scheduler_mutex);
 	/** save currently running thread contexts */
 	if (save_context(current_thread,ktss) == 0) {
@@ -333,7 +335,7 @@ void scheduler_isr (size_t v, void* param) {
 		}
 
 		/* now get the next runnable task from the thread list */
-		next_task();
+		next_task(pcpu);
 
 		/*
 		  Here increase the system tick and

@@ -5,19 +5,19 @@ include listing.inc
 INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
-PUBLIC	?float_to_string_output@@3PADA			; float_to_string_output
 PUBLIC	?integer_buffer@@3PADA				; integer_buffer
+PUBLIC	?float_to_string_output@@3PADA			; float_to_string_output
 _BSS	SEGMENT
-?float_to_string_output@@3PADA DB 020H DUP (?)		; float_to_string_output
 ?integer_buffer@@3PADA DB 020H DUP (?)			; integer_buffer
+?float_to_string_output@@3PADA DB 020H DUP (?)		; float_to_string_output
 _BSS	ENDS
 _DATA	SEGMENT
-chars	DQ	FLAT:$SG3034
+chars	DQ	FLAT:$SG3061
 _DATA	ENDS
 CONST	SEGMENT
-$SG3193	DB	'.', 00H
+$SG3220	DB	'.', 00H
 	ORG $+6
-$SG3034	DB	'0123456789ABCDEF', 00H
+$SG3061	DB	'0123456789ABCDEF', 00H
 CONST	ENDS
 PUBLIC	?atoi@@YAHPEBD@Z				; atoi
 PUBLIC	?sztoa@@YAPEAD_KPEADH@Z				; sztoa
@@ -767,7 +767,7 @@ $LN5@printf:
 ; 190  : 			{
 ; 191  : 				puts(".");
 
-	lea	rcx, OFFSET FLAT:$SG3193
+	lea	rcx, OFFSET FLAT:$SG3220
 	call	?puts@@YAXPEAD@Z			; puts
 
 ; 192  : 			}

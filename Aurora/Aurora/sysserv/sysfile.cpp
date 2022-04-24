@@ -127,12 +127,12 @@ void sys_read_file (int fd, uint8_t* buffer, FILE *ufile) {
 		for (int i = 0; i < file.size; i += 8) {
 			if (file.eof) 
 				break;
-			uint64_t* buff = (uint64_t*)AuPmmngrAlloc();
+			uint64_t* buff = (uint64_t*)p2v((size_t)AuPmmngrAlloc());
 			memset(buff, 0, 4096);
-			readfs_block (node,&file,buff);
+			readfs_block (node,&file,(uint64_t*)v2p((size_t)buff));
 			memcpy (buffer,buff,4096);
 			buffer += 4096;
-			AuPmmngrFree(buff);
+			AuPmmngrFree((void*)v2p((size_t)buff));
 			
 		}
 

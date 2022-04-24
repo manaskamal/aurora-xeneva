@@ -56,5 +56,7 @@ extern void AuInitializeCpu (uint8_t num_cpu);
  */
 extern void AuAPStarted ();
 
+extern void AuAPICMoveToHigher();
+
 extern void timer_sleep(uint32_t ms);
 #endif

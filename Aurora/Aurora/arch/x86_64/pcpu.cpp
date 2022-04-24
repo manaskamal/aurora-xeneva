@@ -52,7 +52,7 @@ void AuCreatePCPU(void* alloc) {
 		cpu->cpu_id = 0;
 
 	cpus[cpu->cpu_id] = cpu;
-	x64_write_msr(MSR_IA32_FS_BASE, (uint64_t)cpu);
+	x64_write_msr(MSR_IA32_GS_BASE, (uint64_t)cpu);
 }
 
 cpu_t *AuPCPUGetCpu (uint8_t id) {
@@ -63,28 +63,28 @@ cpu_t *AuPCPUGetCpu (uint8_t id) {
  * @param id -- cpu id
  */
 void AuPCPUSetCPUID (uint8_t id) {
-	x64_fs_writeb(0,id);
+	x64_gs_writeb(0,id);
 }
 
 /*
  * AuPCPUGetCPUID -- Gets CPU id for current processor
  */
 uint8_t AuPCPUGetCPUID () {
-	return x64_fs_readb(0);
+	return x64_gs_readb(0);
 }
 /*
  * AuPCPUSetCurrentThread -- Set Current CPU Current thread
  * @param thread -- thread address
  */
 void AuPCPUSetCurrentThread (thread_t* thread) {
-	x64_fs_writeq(1,(uint64_t)thread);
+	x64_gs_writeq(1,(uint64_t)thread);
 }
 
 /**
  * AuPCPUGetCurrentThread -- Get the current cpu current thread
  */
 thread_t* AuPCPUGetCurrentThread() {
-	return (thread_t*)x64_fs_readq(1);
+	return (thread_t*)x64_gs_readq(1);
 }
 
 /** 
@@ -92,14 +92,14 @@ thread_t* AuPCPUGetCurrentThread() {
  * @param tss -- pointer to tss structure
  */
 void AuPCPUSetKernelTSS(TSS *tss) {
-	x64_fs_writeq(9,(uint64_t)tss);
+	x64_gs_writeq(9,(uint64_t)tss);
 }
 
 /**
  * AuPCPUGetKernelTSS -- Gets the kernel TSS structure
  */
 TSS* AuPCPUGetKernelTSS() {
-	return (TSS*)x64_fs_readq(9);
+	return (TSS*)x64_gs_readq(9);
 }
 
 

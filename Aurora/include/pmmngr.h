@@ -71,10 +71,20 @@ extern uint64_t pmmngr_get_total_ram ();
 
 extern void AuPmmngrMoveHigher();
 
+extern void AuPmmngrSetHighHalf(bool value);
+
 extern uint64_t pmmngr_get_ram_bitmap_size();
 
+/*
+ * p2v -- converts physical address to its virtual base
+ * @param addr -- physical address
+ */
 AU_EXTERN AU_EXPORT uint64_t p2v (uint64_t addr);
 
+/*
+ * v2p -- converts virtual address to its physical address
+ * @param vaddr -- virtual address
+ */
 AU_EXTERN AU_EXPORT uint64_t v2p (uint64_t vaddr);
 
 extern bool is_higher_half();

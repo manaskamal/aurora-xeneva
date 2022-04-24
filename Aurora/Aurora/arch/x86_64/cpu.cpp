@@ -240,6 +240,15 @@ void pit_handler_callback (size_t p, void* param) {
 	apic_local_eoi();
 }
 
+/*
+ * x86_64_cpu_get_id -- returns the id of the cpu
+ */
+uint8_t x86_64_cpu_get_id () {
+	size_t a, b, c, d;
+	x64_cpuid(0x1, &a, &b, &c, &d);
+	uint8_t id = (b >> 24);
+	return id;
+}
 
 void x86_64_init_cpu () {
 	x64_cli();
