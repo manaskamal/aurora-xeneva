@@ -49,7 +49,7 @@ EXTRN	printf:PROC
 EXTRN	?AuApInit@@YAXPEAX@Z:PROC			; AuApInit
 pdata	SEGMENT
 $pdata$?initialize_apic@@YAX_N@Z DD imagerel $LN10
-	DD	imagerel $LN10+391
+	DD	imagerel $LN10+393
 	DD	imagerel $unwind$?initialize_apic@@YAX_N@Z
 $pdata$?apic_local_eoi@@YAXXZ DD imagerel $LN3
 	DD	imagerel $LN3+20
@@ -948,7 +948,7 @@ _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\arch\x86_64\apic.cpp
 _TEXT	SEGMENT
-tv81 = 32
+tv82 = 32
 apic_base$ = 40
 timer_vector$ = 48
 timer_reg$ = 56
@@ -1005,8 +1005,9 @@ $LN4@initialize:
 
 ; 151  : 			apic = (void*)AuMapMMIO((uintptr_t)apic_base,1);
 
+	mov	eax, DWORD PTR apic_base$[rsp]
 	mov	edx, 1
-	mov	ecx, DWORD PTR apic_base$[rsp]
+	mov	ecx, eax
 	call	AuMapMMIO
 	mov	QWORD PTR apic, rax
 $LN3@initialize:
@@ -1035,15 +1036,15 @@ $LN5@initialize:
 	movzx	eax, BYTE PTR x2apic
 	test	eax, eax
 	je	SHORT $LN8@initialize
-	mov	DWORD PTR tv81[rsp], 1024		; 00000400H
+	mov	DWORD PTR tv82[rsp], 1024		; 00000400H
 	jmp	SHORT $LN9@initialize
 $LN8@initialize:
-	mov	DWORD PTR tv81[rsp], 0
+	mov	DWORD PTR tv82[rsp], 0
 $LN9@initialize:
 	mov	ecx, 27
 	call	x64_read_msr
 	bts	rax, 11
-	movsxd	rcx, DWORD PTR tv81[rsp]
+	movsxd	rcx, DWORD PTR tv82[rsp]
 	or	rax, rcx
 	mov	rdx, rax
 	mov	ecx, 27

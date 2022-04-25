@@ -35,7 +35,7 @@
 #include <hal.h>
 
 typedef struct _e1000_nic_ {
-	uint32_t mmio_addr;
+	uint64_t mmio_addr;
 	e1000_rx_desc *rx;
 	e1000_tx_desc *tx;
 	uintptr_t rx_phys;
@@ -228,8 +228,7 @@ AU_EXTERN AU_EXPORT int AuDriverMain() {
 	pci_enable_bus_master(bus,dev_,func);
 
 	uintptr_t mmio = dev.device.nonBridge.baseAddress[0];
-	e1000_dev->mmio_addr = (uintptr_t)AuMapMMIO(mmio,1);
-
+	e1000_dev->mmio_addr = (uint64_t)AuMapMMIO(mmio,8);
 	e1000_eeprom_detect(e1000_dev);
 	
 	e1000_read_mac(e1000_dev);

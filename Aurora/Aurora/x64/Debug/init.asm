@@ -235,36 +235,35 @@ $LN5:
 ; 151  : 
 ; 152  : 	//au_status = AuCreateProcess ("/dock.exe", "dock");
 ; 153  : 	//! Here start the scheduler (multitasking engine)
-; 154  : 	
-; 155  : 	AuSchedulerStart();
+; 154  : 	AuSchedulerStart();
 
 	call	?AuSchedulerStart@@YAXXZ		; AuSchedulerStart
 $LN2@AuMain:
 
-; 156  : #endif
-; 157  : 
-; 158  : 	//! Loop forever
-; 159  : 	while(1) {
+; 155  : #endif
+; 156  : 
+; 157  : 	//! Loop forever
+; 158  : 	while(1) {
 
 	xor	eax, eax
 	cmp	eax, 1
 	je	SHORT $LN1@AuMain
 
-; 160  : 		//!looping looping
-; 161  : 		x64_cli();
+; 159  : 		//!looping looping
+; 160  : 		x64_cli();
 
 	call	x64_cli
 
-; 162  : 		x64_hlt();
+; 161  : 		x64_hlt();
 
 	call	x64_hlt
 
-; 163  : 	}
+; 162  : 	}
 
 	jmp	SHORT $LN2@AuMain
 $LN1@AuMain:
 
-; 164  : }
+; 163  : }
 
 	add	rsp, 56					; 00000038H
 	ret	0

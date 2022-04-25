@@ -13,7 +13,7 @@ EXTRN	AuMapPage:PROC
 EXTRN	AuUnmapPage:PROC
 pdata	SEGMENT
 $pdata$?valloc@@YAX_K@Z DD imagerel $LN3
-	DD	imagerel $LN3+42
+	DD	imagerel $LN3+47
 	DD	imagerel $unwind$?valloc@@YAX_K@Z
 $pdata$?vfree@@YAX_K@Z DD imagerel $LN3
 	DD	imagerel $LN3+29
@@ -31,22 +31,22 @@ _TEXT	SEGMENT
 pos$ = 48
 ?vfree@@YAX_K@Z PROC					; vfree
 
-; 15   : void vfree (uint64_t pos) {
+; 16   : void vfree (uint64_t pos) {
 
 $LN3:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 40					; 00000028H
 
-; 16   : 	x64_cli();
+; 17   : 	x64_cli();
 
 	call	x64_cli
 
-; 17   : 	AuUnmapPage((uint64_t)pos);
+; 18   : 	AuUnmapPage((uint64_t)pos);
 
 	mov	rcx, QWORD PTR pos$[rsp]
 	call	AuUnmapPage
 
-; 18   : }
+; 19   : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -65,19 +65,23 @@ $LN3:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 56					; 00000038H
 
-; 11   : 	void *p = AuPmmngrAlloc();
+; 11   : 	x64_cli();
+
+	call	x64_cli
+
+; 12   : 	void *p = AuPmmngrAlloc();
 
 	call	AuPmmngrAlloc
 	mov	QWORD PTR p$[rsp], rax
 
-; 12   : 	AuMapPage((uint64_t)p, pos, PAGING_USER);
+; 13   : 	AuMapPage((uint64_t)p, pos, PAGING_USER);
 
 	mov	r8b, 4
 	mov	rdx, QWORD PTR pos$[rsp]
 	mov	rcx, QWORD PTR p$[rsp]
 	call	AuMapPage
 
-; 13   : }
+; 14   : }
 
 	add	rsp, 56					; 00000038H
 	ret	0

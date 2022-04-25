@@ -151,7 +151,6 @@ void _AuMain (KERNEL_BOOT_INFO *info) {
 
 	//au_status = AuCreateProcess ("/dock.exe", "dock");
 	//! Here start the scheduler (multitasking engine)
-	
 	AuSchedulerStart();
 #endif
 

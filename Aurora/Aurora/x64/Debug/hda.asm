@@ -121,7 +121,7 @@ EXTRN	?sound_request_next@@YAXPEAE@Z:PROC		; sound_request_next
 EXTRN	__ImageBase:BYTE
 pdata	SEGMENT
 $pdata$?hda_initialize@@YAXXZ DD imagerel $LN16
-	DD	imagerel $LN16+865
+	DD	imagerel $LN16+867
 	DD	imagerel $unwind$?hda_initialize@@YAXXZ
 $pdata$?codec_query@@YAIHHI@Z DD imagerel $LN6
 	DD	imagerel $LN6+132
@@ -2765,7 +2765,7 @@ device_found$ = 80
 statests$ = 84
 mmio$ = 88
 pos$ = 96
-tv166 = 104
+tv167 = 104
 pci_dev$ = 112
 ?hda_initialize@@YAXXZ PROC				; hda_initialize
 
@@ -2931,8 +2931,9 @@ $LN10@hda_initia:
 
 ; 577  : 	_ihd_audio.mmio = (size_t)AuMapMMIO(mmio,2);
 
+	mov	eax, DWORD PTR mmio$[rsp]
 	mov	edx, 2
-	mov	ecx, DWORD PTR mmio$[rsp]
+	mov	ecx, eax
 	call	AuMapMMIO
 	mov	QWORD PTR ?_ihd_audio@@3U_hd_audio_@@A, rax
 
@@ -2988,10 +2989,10 @@ $LN9@hda_initia:
 	mov	rcx, QWORD PTR pos$[rsp]
 	add	rcx, rax
 	mov	rax, rcx
-	mov	QWORD PTR tv166[rsp], rax
+	mov	QWORD PTR tv167[rsp], rax
 	call	AuPmmngrAlloc
 	xor	r8d, r8d
-	mov	rcx, QWORD PTR tv166[rsp]
+	mov	rcx, QWORD PTR tv167[rsp]
 	mov	rdx, rcx
 	mov	rcx, rax
 	call	AuMapPage

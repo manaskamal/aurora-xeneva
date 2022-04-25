@@ -36,7 +36,6 @@
 //!!======================================================================================
 
 
-#define MMIO_BASE   0xfffffff280000000
 
 uint64_t* mmio_base_address = 0;
 
@@ -174,11 +173,11 @@ bool AuMapPage(uint64_t physical_address, uint64_t virtual_address, uint8_t attr
 	}
 	
 	uint64_t* pml1 = (uint64_t*)(p2v(pml2[i2]) & ~(4096 - 1));
-	if (pml1[i1] & PAGING_PRESENT)
+	/*if (pml1[i1] & PAGING_PRESENT)
 	{
 		AuPmmngrFree((void*)physical_address);
 		return false;
-	}
+	}*/
 
 	pml1[i1] = physical_address | flags;
 	flush_tlb ((void*)virtual_address);
@@ -402,13 +401,14 @@ uint64_t* AuGetFreePage (size_t s, bool user) {
  * @param phys_addr -- mmio physical address
  * @param page_count -- number of pages
  */
-void* AuMapMMIO (uintptr_t phys_addr, size_t page_count) {
-	uint64_t* out = mmio_base_address;
+void* AuMapMMIO (uint64_t phys_addr, size_t page_count) {
+	uint64_t out = (uint64_t)mmio_base_address;
+	
 	for (size_t i = 0; i < page_count; i++) {
-		AuMapPage((uint64_t)(phys_addr + i * 4096), (uint64_t)(mmio_base_address + i * 4096),PAGING_WRITABLE | PAGING_NO_CACHING | PAGING_NO_EXECUTE);
+		AuMapPage(phys_addr + i * 4096, out + i * 4096,PAGING_NO_CACHING | PAGING_NO_EXECUTE);
 	}
 	mmio_base_address += (page_count * 4096);
-	return out;
+	return (void*)out;
 }
 
 

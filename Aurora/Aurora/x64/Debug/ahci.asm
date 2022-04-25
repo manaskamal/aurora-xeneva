@@ -68,7 +68,7 @@ EXTRN	printf:PROC
 EXTRN	?_debug_print_@@YAXPEADZZ:PROC			; _debug_print_
 pdata	SEGMENT
 $pdata$?ahci_initialize@@YAXXZ DD imagerel $LN22
-	DD	imagerel $LN22+1119
+	DD	imagerel $LN22+1121
 	DD	imagerel $unwind$?ahci_initialize@@YAXXZ
 $pdata$?ahci_check_type@@YAHPEAU_hba_port_@@@Z DD imagerel $LN11
 	DD	imagerel $LN11+147
@@ -627,8 +627,9 @@ $LN14@ahci_initi:
 
 ; 182  : 	void* mmio = AuMapMMIO(hba_phys,512);
 
+	mov	eax, DWORD PTR hba_phys$[rsp]
 	mov	edx, 512				; 00000200H
-	mov	ecx, DWORD PTR hba_phys$[rsp]
+	mov	ecx, eax
 	call	AuMapMMIO
 	mov	QWORD PTR mmio$[rsp], rax
 
