@@ -161,6 +161,7 @@
     <ClInclude Include="sys\mmap.h" />
     <ClInclude Include="sys\pe.h" />
     <ClInclude Include="sys\postbox.h" />
+    <ClInclude Include="sys\shm.h" />
     <ClInclude Include="sys\signal.h" />
     <ClInclude Include="sys\types.h" />
     <ClInclude Include="sys\utf.h" />

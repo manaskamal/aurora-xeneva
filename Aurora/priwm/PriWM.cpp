@@ -55,6 +55,7 @@
 #include <sys/_process.h>
 #include <sys/_kybrd.h>
 #include <sys/pe.h>
+#include <sys/shm.h>
 #include <fastcpy.h>
 
 /* backing store & shared win start address */
@@ -998,6 +999,7 @@ int main (int argc, char* argv[]) {
 	uint32_t s_width = ioquery(svga_fd,SCREEN_GETWIDTH,NULL);
 	uint32_t s_height = ioquery(svga_fd, SCREEN_GETHEIGHT, NULL);
 	sys_print_text ("PRIWM: Framebuffer loaded \r\n");
+
 	/*
 	 * create the main backing store
 	 */

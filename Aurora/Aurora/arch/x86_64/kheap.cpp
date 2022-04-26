@@ -79,6 +79,7 @@ void au_expand_kmalloc(size_t req_size) {
 	if (req_size >= 4096)
 		req_pages = (req_size + sizeof(meta_data_t)) / 4096 + 1;
 
+	printf ("AuExpand Kmallod req_page -> %d \n", req_pages);
 	void* page = au_request_page(req_pages);
 	uint8_t* desc_addr = (uint8_t*)page;
 	/* setup the first meta data block */
@@ -131,6 +132,7 @@ void* malloc(size_t size) {
 		}
 	}
 
+	printf ("Expanding for -> %d \n", size);
 	au_expand_kmalloc(size);
 	return malloc(size);
 }
@@ -201,7 +203,7 @@ uint64_t* au_request_page(int pages) {
 	uint64_t* page = AuGetFreePage(0,false);
 	uint64_t page_ = (uint64_t)page;
 	for (size_t i = 0; i < pages; i++) {
-		AuMapPage((uint64_t)AuPmmngrAlloc(), (uint64_t)(page_ + i * 4096), 0);
+		AuMapPage((uint64_t)AuPmmngrAlloc(), page_ + i * 4096, 0);
 		
 	}
 	return (uint64_t*)page;

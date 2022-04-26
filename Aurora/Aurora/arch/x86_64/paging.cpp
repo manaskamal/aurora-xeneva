@@ -250,14 +250,14 @@ void AuFreePages(uint64_t virt_addr, bool free_physical, size_t s){
 
 
 //! returns a physical address from virtual address
-uint64_t* AuGetPhysicalAddress (uint64_t virt_addr) {
+uint64_t* AuGetPhysicalAddress (uint64_t cr3,uint64_t virt_addr) {
 	const long i1 = pml4_index(virt_addr);
 
-	uint64_t *pml4 = (uint64_t*)x64_read_cr3();
-	uint64_t *pdpt = (uint64_t*)(pml4[pml4_index(virt_addr)] & ~(4096 - 1));
-	uint64_t *pd = (uint64_t*)(pdpt[pdp_index(virt_addr)] & ~(4096 - 1));
-	uint64_t *pt = (uint64_t*)(pd[pd_index(virt_addr)] & ~(4096 - 1));
-	uint64_t *page = (uint64_t*)(pt[pt_index(virt_addr)] & ~(4096 - 1));
+	uint64_t *pml4 = (uint64_t*)p2v(cr3);
+	uint64_t *pdpt = (uint64_t*)(p2v(pml4[pml4_index(virt_addr)]) & ~(4096 - 1));
+	uint64_t *pd = (uint64_t*)(p2v(pdpt[pdp_index(virt_addr)]) & ~(4096 - 1));
+	uint64_t *pt = (uint64_t*)(p2v(pd[pd_index(virt_addr)]) & ~(4096 - 1));
+	uint64_t *page = (uint64_t*)(p2v(pt[pt_index(virt_addr)]) & ~(4096 - 1));
 
 	if (page != NULL)
 		return page;

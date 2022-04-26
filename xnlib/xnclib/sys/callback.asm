@@ -314,4 +314,22 @@ sys_copy_mem:
 	syscall
 	ret
 
+global sys_shmget
+sys_shmget:
+    mov r12, 4
+	mov r13, rcx
+	mov r14, rdx
+	mov r15, r8
+	syscall
+	ret
+
+global sys_shmat
+sys_shmat:
+    mov r12,12
+	mov r13, rcx
+	mov r14, rdx
+	mov r15, r8
+	syscall
+	ret
+
 

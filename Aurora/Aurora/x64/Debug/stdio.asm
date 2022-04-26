@@ -12,17 +12,23 @@ _BSS	SEGMENT
 ?float_to_string_output@@3PADA DB 020H DUP (?)		; float_to_string_output
 _BSS	ENDS
 _DATA	SEGMENT
-chars	DQ	FLAT:$SG3061
+r_x	DD	075bcd15H
+r_y	DD	0159a55e5H
+r_z	DD	01f123bb5H
+r_w	DD	05491333H
+chars	DQ	FLAT:$SG3065
 _DATA	ENDS
 CONST	SEGMENT
-$SG3220	DB	'.', 00H
+$SG3224	DB	'.', 00H
 	ORG $+6
-$SG3061	DB	'0123456789ABCDEF', 00H
+$SG3065	DB	'0123456789ABCDEF', 00H
 CONST	ENDS
 PUBLIC	?atoi@@YAHPEBD@Z				; atoi
 PUBLIC	?sztoa@@YAPEAD_KPEADH@Z				; sztoa
 PUBLIC	printf
 PUBLIC	?ftoa@@YAPEADME@Z				; ftoa
+PUBLIC	?rand@@YAHXZ					; rand
+PUBLIC	?srand@@YAXI@Z					; srand
 PUBLIC	?atow@@YAXPEADPEBD@Z				; atow
 PUBLIC	?int_to_str@@YAPEBDH@Z				; int_to_str
 PUBLIC	__real@41200000
@@ -46,6 +52,9 @@ $pdata$printf DD imagerel $LN26
 $pdata$?ftoa@@YAPEADME@Z DD imagerel $LN9
 	DD	imagerel $LN9+311
 	DD	imagerel $unwind$?ftoa@@YAPEADME@Z
+$pdata$?rand@@YAHXZ DD imagerel $LN3
+	DD	imagerel $LN3+113
+	DD	imagerel $unwind$?rand@@YAHXZ
 $pdata$?int_to_str@@YAPEBDH@Z DD imagerel $LN7
 	DD	imagerel $LN7+280
 	DD	imagerel $unwind$?int_to_str@@YAPEBDH@Z
@@ -67,6 +76,8 @@ $unwind$printf DD 021b01H
 	DD	023011bH
 $unwind$?ftoa@@YAPEADME@Z DD 010e01H
 	DD	0820eH
+$unwind$?rand@@YAHXZ DD 010401H
+	DD	02204H
 $unwind$?int_to_str@@YAPEBDH@Z DD 010801H
 	DD	04208H
 xdata	ENDS
@@ -265,6 +276,85 @@ $LN1@atow:
 
 	ret	0
 ?atow@@YAXPEADPEBD@Z ENDP				; atow
+_TEXT	ENDS
+; Function compile flags: /Odtpy
+; File e:\xeneva project\xeneva\aurora\aurora\stdio.cpp
+_TEXT	SEGMENT
+seed$ = 8
+?srand@@YAXI@Z PROC					; srand
+
+; 228  : void srand (unsigned int seed) {
+
+	mov	DWORD PTR [rsp+8], ecx
+
+; 229  : 	r_w ^= seed;
+
+	mov	eax, DWORD PTR seed$[rsp]
+	mov	ecx, DWORD PTR r_w
+	xor	ecx, eax
+	mov	eax, ecx
+	mov	DWORD PTR r_w, eax
+
+; 230  : }
+
+	ret	0
+?srand@@YAXI@Z ENDP					; srand
+_TEXT	ENDS
+; Function compile flags: /Odtpy
+; File e:\xeneva project\xeneva\aurora\aurora\stdio.cpp
+_TEXT	SEGMENT
+t$ = 0
+?rand@@YAHXZ PROC					; rand
+
+; 218  : int rand() {
+
+$LN3:
+	sub	rsp, 24
+
+; 219  : 	uint32_t t;
+; 220  : 
+; 221  : 	t = r_x ^ (r_x << 11);
+
+	mov	eax, DWORD PTR r_x
+	shl	eax, 11
+	mov	ecx, DWORD PTR r_x
+	xor	ecx, eax
+	mov	eax, ecx
+	mov	DWORD PTR t$[rsp], eax
+
+; 222  : 	r_x = r_y; r_y = r_z; r_z = r_w;
+
+	mov	eax, DWORD PTR r_y
+	mov	DWORD PTR r_x, eax
+	mov	eax, DWORD PTR r_z
+	mov	DWORD PTR r_y, eax
+	mov	eax, DWORD PTR r_w
+	mov	DWORD PTR r_z, eax
+
+; 223  : 	r_w = r_w ^ (r_w >> 19) ^ t ^ (t >> 8);
+
+	mov	eax, DWORD PTR r_w
+	shr	eax, 19
+	mov	ecx, DWORD PTR r_w
+	xor	ecx, eax
+	mov	eax, ecx
+	xor	eax, DWORD PTR t$[rsp]
+	mov	ecx, DWORD PTR t$[rsp]
+	shr	ecx, 8
+	xor	eax, ecx
+	mov	DWORD PTR r_w, eax
+
+; 224  : 	
+; 225  : 	return (r_w & RAND_MAX);
+
+	mov	eax, DWORD PTR r_w
+	btr	eax, 31
+
+; 226  : }
+
+	add	rsp, 24
+	ret	0
+?rand@@YAHXZ ENDP					; rand
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\stdio.cpp
@@ -767,7 +857,7 @@ $LN5@printf:
 ; 190  : 			{
 ; 191  : 				puts(".");
 
-	lea	rcx, OFFSET FLAT:$SG3220
+	lea	rcx, OFFSET FLAT:$SG3224
 	call	?puts@@YAXPEAD@Z			; puts
 
 ; 192  : 			}

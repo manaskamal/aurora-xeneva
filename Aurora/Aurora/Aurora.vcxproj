@@ -251,6 +251,7 @@
     <ClInclude Include="..\include\ipc\pri_loop.h" />
     <ClInclude Include="..\include\ipc\signals.h" />
     <ClInclude Include="..\include\limits.h" />
+    <ClInclude Include="..\include\mmngr\shmem.h" />
     <ClInclude Include="..\include\objctmngr.h" />
     <ClInclude Include="..\include\pe.h" />
     <ClInclude Include="..\include\pmmngr.h" />
@@ -328,6 +329,7 @@
     <ClCompile Include="ipc\message.cpp" />
     <ClCompile Include="ipc\postbox.cpp" />
     <ClCompile Include="ipc\pri_loop.cpp" />
+    <ClCompile Include="mmngr\shmem.cpp" />
     <ClCompile Include="pe.cpp" />
     <ClCompile Include="pmmngr.cpp" />
     <ClCompile Include="proc.cpp" />

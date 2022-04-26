@@ -206,6 +206,7 @@ int AuCreateProcess(const char* filename, char* procname) {
 	process->stack = stack;
 	process->image_size = nt->OptionalHeader.SizeOfImage;
 	process->parent = NULL;
+	process->shared_mem_list = initialize_list();
 	//! Create and thread and start scheduling when scheduler starts */
 	thread_t *t = create_user_thread(ent,stack,(uint64_t)cr3,procname,0);
 	//allocate_fd(t);

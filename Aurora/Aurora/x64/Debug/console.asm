@@ -22,7 +22,7 @@ psf_data DQ	01H DUP (?)
 _console_initialized_ DB 01H DUP (?)
 _BSS	ENDS
 CONST	SEGMENT
-$SG3374	DB	'/font.psf', 00H
+$SG3378	DB	'/font.psf', 00H
 CONST	ENDS
 PUBLIC	?AuConsoleInitialize@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z ; AuConsoleInitialize
 PUBLIC	?puts@@YAXPEAD@Z				; puts
@@ -789,7 +789,7 @@ $LN3:
 
 ; 55   : 	vfs_node_t file = fat32_open(NULL, "/font.psf");
 
-	lea	r8, OFFSET FLAT:$SG3374
+	lea	r8, OFFSET FLAT:$SG3378
 	xor	edx, edx
 	lea	rcx, QWORD PTR $T2[rsp]
 	call	?fat32_open@@YA?AU_vfs_node_@@PEAU1@PEAD@Z ; fat32_open

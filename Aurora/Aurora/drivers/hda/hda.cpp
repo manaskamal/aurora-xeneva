@@ -294,7 +294,7 @@ void hda_init_output_stream () {
 	ihda_bdl_entry *bdl = (ihda_bdl_entry*)bdl_base;  //(_ihd_audio.corb + 3072);
 	int j = 0;
 	for (j = 0; j < BDL_SIZE; j++) {
-		bdl[j].paddr = (uint64_t)AuGetPhysicalAddress((uint64_t)_ihd_audio.buffer + j * 512);
+		bdl[j].paddr = (uint64_t)AuGetPhysicalAddress(x64_read_cr3(),(uint64_t)_ihd_audio.buffer + j * 512);
 		bdl[j].length = 512;
 		bdl[j].flags = 0;
 	}

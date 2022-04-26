@@ -12,7 +12,7 @@ _BSS	SEGMENT
 ?root_cr3@@3PEA_KEA DQ 01H DUP (?)			; root_cr3
 _BSS	ENDS
 CONST	SEGMENT
-$SG3657	DB	'Already present -> %x ', 0aH, 00H
+$SG3662	DB	'Already present -> %x ', 0aH, 00H
 CONST	ENDS
 PUBLIC	?pml4_index@@YA_K_K@Z				; pml4_index
 PUBLIC	?pdp_index@@YA_K_K@Z				; pdp_index
@@ -25,9 +25,9 @@ PUBLIC	?AuMapPageEx@@YA_NPEA_K_K1E@Z			; AuMapPageEx
 PUBLIC	?AuUnmapPageEx@@YAXPEA_K_K_N@Z			; AuUnmapPageEx
 PUBLIC	AuUnmapPage
 PUBLIC	?AuCreateAddressSpace@@YAPEA_KXZ		; AuCreateAddressSpace
-PUBLIC	?AuGetPhysicalAddress@@YAPEA_K_K@Z		; AuGetPhysicalAddress
+PUBLIC	?AuGetPhysicalAddress@@YAPEA_K_K0@Z		; AuGetPhysicalAddress
 PUBLIC	AuGetFreePage
-PUBLIC	?AuGetRootPageTable@@YAPEA_KXZ			; AuGetRootPageTable
+PUBLIC	AuGetRootPageTable
 PUBLIC	AuFreePages
 PUBLIC	AuMapMMIO
 PUBLIC	?AuPagingClearLow@@YAXXZ			; AuPagingClearLow
@@ -60,11 +60,11 @@ $pdata$AuUnmapPage DD imagerel $LN5
 $pdata$?AuCreateAddressSpace@@YAPEA_KXZ DD imagerel $LN9
 	DD	imagerel $LN9+182
 	DD	imagerel $unwind$?AuCreateAddressSpace@@YAPEA_KXZ
-$pdata$?AuGetPhysicalAddress@@YAPEA_K_K@Z DD imagerel $LN4
-	DD	imagerel $LN4+171
-	DD	imagerel $unwind$?AuGetPhysicalAddress@@YAPEA_K_K@Z
+$pdata$?AuGetPhysicalAddress@@YAPEA_K_K0@Z DD imagerel $LN4
+	DD	imagerel $LN4+201
+	DD	imagerel $unwind$?AuGetPhysicalAddress@@YAPEA_K_K0@Z
 $pdata$AuGetFreePage DD imagerel $LN11
-	DD	imagerel $LN11+378
+	DD	imagerel $LN11+372
 	DD	imagerel $unwind$AuGetFreePage
 $pdata$AuFreePages DD imagerel $LN8
 	DD	imagerel $LN8+343
@@ -92,8 +92,8 @@ $unwind$AuUnmapPage DD 010901H
 	DD	0a209H
 $unwind$?AuCreateAddressSpace@@YAPEA_KXZ DD 010401H
 	DD	08204H
-$unwind$?AuGetPhysicalAddress@@YAPEA_K_K@Z DD 010901H
-	DD	0a209H
+$unwind$?AuGetPhysicalAddress@@YAPEA_K_K0@Z DD 010e01H
+	DD	0a20eH
 $unwind$AuGetFreePage DD 010d01H
 	DD	0c20dH
 $unwind$AuFreePages DD 011201H
@@ -423,7 +423,7 @@ _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\arch\x86_64\paging.cpp
 _TEXT	SEGMENT
-?AuGetRootPageTable@@YAPEA_KXZ PROC			; AuGetRootPageTable
+AuGetRootPageTable PROC
 
 ; 416  : 	return root_cr3;
 
@@ -432,7 +432,7 @@ _TEXT	SEGMENT
 ; 417  : }
 
 	ret	0
-?AuGetRootPageTable@@YAPEA_KXZ ENDP			; AuGetRootPageTable
+AuGetRootPageTable ENDP
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\arch\x86_64\paging.cpp
@@ -471,8 +471,7 @@ $LN11:
 
 ; 369  : 		start = USER_BASE_ADDRESS;
 
-	mov	rax, 2199023255552			; 0000020000000000H
-	mov	QWORD PTR start$[rsp], rax
+	mov	QWORD PTR start$[rsp], 1610612736	; 60000000H
 
 ; 370  : 	else
 
@@ -630,12 +629,14 @@ pml4$ = 48
 pdpt$ = 56
 pd$ = 64
 pt$ = 72
-virt_addr$ = 96
-?AuGetPhysicalAddress@@YAPEA_K_K@Z PROC			; AuGetPhysicalAddress
+cr3$ = 96
+virt_addr$ = 104
+?AuGetPhysicalAddress@@YAPEA_K_K0@Z PROC		; AuGetPhysicalAddress
 
-; 253  : uint64_t* AuGetPhysicalAddress (uint64_t virt_addr) {
+; 253  : uint64_t* AuGetPhysicalAddress (uint64_t cr3,uint64_t virt_addr) {
 
 $LN4:
+	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 88					; 00000058H
 
@@ -646,44 +647,49 @@ $LN4:
 	mov	DWORD PTR i1$[rsp], eax
 
 ; 255  : 
-; 256  : 	uint64_t *pml4 = (uint64_t*)x64_read_cr3();
+; 256  : 	uint64_t *pml4 = (uint64_t*)p2v(cr3);
 
-	call	x64_read_cr3
+	mov	rcx, QWORD PTR cr3$[rsp]
+	call	p2v
 	mov	QWORD PTR pml4$[rsp], rax
 
-; 257  : 	uint64_t *pdpt = (uint64_t*)(pml4[pml4_index(virt_addr)] & ~(4096 - 1));
+; 257  : 	uint64_t *pdpt = (uint64_t*)(p2v(pml4[pml4_index(virt_addr)]) & ~(4096 - 1));
 
 	mov	rcx, QWORD PTR virt_addr$[rsp]
 	call	?pml4_index@@YA_K_K@Z			; pml4_index
 	mov	rcx, QWORD PTR pml4$[rsp]
-	mov	rax, QWORD PTR [rcx+rax*8]
+	mov	rcx, QWORD PTR [rcx+rax*8]
+	call	p2v
 	and	rax, -4096				; fffffffffffff000H
 	mov	QWORD PTR pdpt$[rsp], rax
 
-; 258  : 	uint64_t *pd = (uint64_t*)(pdpt[pdp_index(virt_addr)] & ~(4096 - 1));
+; 258  : 	uint64_t *pd = (uint64_t*)(p2v(pdpt[pdp_index(virt_addr)]) & ~(4096 - 1));
 
 	mov	rcx, QWORD PTR virt_addr$[rsp]
 	call	?pdp_index@@YA_K_K@Z			; pdp_index
 	mov	rcx, QWORD PTR pdpt$[rsp]
-	mov	rax, QWORD PTR [rcx+rax*8]
+	mov	rcx, QWORD PTR [rcx+rax*8]
+	call	p2v
 	and	rax, -4096				; fffffffffffff000H
 	mov	QWORD PTR pd$[rsp], rax
 
-; 259  : 	uint64_t *pt = (uint64_t*)(pd[pd_index(virt_addr)] & ~(4096 - 1));
+; 259  : 	uint64_t *pt = (uint64_t*)(p2v(pd[pd_index(virt_addr)]) & ~(4096 - 1));
 
 	mov	rcx, QWORD PTR virt_addr$[rsp]
 	call	?pd_index@@YA_K_K@Z			; pd_index
 	mov	rcx, QWORD PTR pd$[rsp]
-	mov	rax, QWORD PTR [rcx+rax*8]
+	mov	rcx, QWORD PTR [rcx+rax*8]
+	call	p2v
 	and	rax, -4096				; fffffffffffff000H
 	mov	QWORD PTR pt$[rsp], rax
 
-; 260  : 	uint64_t *page = (uint64_t*)(pt[pt_index(virt_addr)] & ~(4096 - 1));
+; 260  : 	uint64_t *page = (uint64_t*)(p2v(pt[pt_index(virt_addr)]) & ~(4096 - 1));
 
 	mov	rcx, QWORD PTR virt_addr$[rsp]
 	call	?pt_index@@YA_K_K@Z			; pt_index
 	mov	rcx, QWORD PTR pt$[rsp]
-	mov	rax, QWORD PTR [rcx+rax*8]
+	mov	rcx, QWORD PTR [rcx+rax*8]
+	call	p2v
 	and	rax, -4096				; fffffffffffff000H
 	mov	QWORD PTR page$[rsp], rax
 
@@ -702,7 +708,7 @@ $LN1@AuGetPhysi:
 
 	add	rsp, 88					; 00000058H
 	ret	0
-?AuGetPhysicalAddress@@YAPEA_K_K@Z ENDP			; AuGetPhysicalAddress
+?AuGetPhysicalAddress@@YAPEA_K_K0@Z ENDP		; AuGetPhysicalAddress
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\arch\x86_64\paging.cpp
@@ -1294,7 +1300,7 @@ $LN4@AuMapPageE:
 ; 315  : 		printf ("Already present -> %x \n", virtual_address);
 
 	mov	rdx, QWORD PTR virtual_address$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3657
+	lea	rcx, OFFSET FLAT:$SG3662
 	call	printf
 $LN2@AuMapPageE:
 

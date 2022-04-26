@@ -207,3 +207,24 @@ void printf(const char* format, ...)
 	}
 	va_end(args);
 }
+
+#define RAND_MAX 0x7FFFFFFF
+
+static uint32_t r_x = 123456789;
+static uint32_t r_y = 362436069;
+static uint32_t r_z = 521288629;
+static uint32_t r_w = 88675123;
+
+int rand() {
+	uint32_t t;
+
+	t = r_x ^ (r_x << 11);
+	r_x = r_y; r_y = r_z; r_z = r_w;
+	r_w = r_w ^ (r_w >> 19) ^ t ^ (t >> 8);
+	
+	return (r_w & RAND_MAX);
+}
+
+void srand (unsigned int seed) {
+	r_w ^= seed;
+}

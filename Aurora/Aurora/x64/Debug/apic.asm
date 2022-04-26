@@ -15,9 +15,9 @@ apic_timer_count DD 01H DUP (?)
 ?ap_started@@3_NA DB 01H DUP (?)			; ap_started
 _BSS	ENDS
 CONST	SEGMENT
-$SG3310	DB	'APIC initialized ', 0aH, 00H
+$SG3314	DB	'APIC initialized ', 0aH, 00H
 	ORG $+5
-$SG3319	DB	'New APIC -> %x', 0aH, 00H
+$SG3323	DB	'New APIC -> %x', 0aH, 00H
 CONST	ENDS
 PUBLIC	?initialize_apic@@YAX_N@Z			; initialize_apic
 PUBLIC	?apic_local_eoi@@YAXXZ				; apic_local_eoi
@@ -43,7 +43,7 @@ EXTRN	?setvect@@YAX_KP6AX0PEAX@Z@Z:PROC		; setvect
 EXTRN	?ioapic_init@@YAXPEAX@Z:PROC			; ioapic_init
 EXTRN	AuPmmngrAlloc:PROC
 EXTRN	p2v:PROC
-EXTRN	?AuGetRootPageTable@@YAPEA_KXZ:PROC		; AuGetRootPageTable
+EXTRN	AuGetRootPageTable:PROC
 EXTRN	AuMapMMIO:PROC
 EXTRN	printf:PROC
 EXTRN	?AuApInit@@YAXPEAX@Z:PROC			; AuApInit
@@ -387,7 +387,7 @@ $LN3:
 ; 193  : 	printf ("New APIC -> %x\n", apic);
 
 	mov	rdx, QWORD PTR apic
-	lea	rcx, OFFSET FLAT:$SG3319
+	lea	rcx, OFFSET FLAT:$SG3323
 	call	printf
 
 ; 194  : }
@@ -463,7 +463,7 @@ $LN20@AuInitiali:
 ; 230  : 
 ; 231  : 	uint64_t *pml4 = (uint64_t*)AuGetRootPageTable();
 
-	call	?AuGetRootPageTable@@YAPEA_KXZ		; AuGetRootPageTable
+	call	AuGetRootPageTable
 	mov	QWORD PTR pml4$[rsp], rax
 
 ; 232  : 
@@ -1055,7 +1055,7 @@ $LN2@initialize:
 ; 159  : 
 ; 160  : 	printf ("APIC initialized \n");
 
-	lea	rcx, OFFSET FLAT:$SG3310
+	lea	rcx, OFFSET FLAT:$SG3314
 	call	printf
 
 ; 161  : 

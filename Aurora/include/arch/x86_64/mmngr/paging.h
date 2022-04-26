@@ -24,7 +24,7 @@
 #define PAGING_WRITE_THROUGH  0x400000
 
 #define KERNEL_BASE_ADDRESS  0xFFFFE00000000000
-#define USER_BASE_ADDRESS 0x0000020000000000   //0x0000400000000000
+#define USER_BASE_ADDRESS 0x0000000060000000   //0x0000400000000000
 #define PHYSICAL_MEMORY_BASE  0xFFFF800000000000
 #define MMIO_BASE    0xffffff1000000000            //  0xffffff1fc0000000
 
@@ -45,9 +45,9 @@ extern void AuUnmapPageEx(uint64_t* cr3, uint64_t virt_addr, bool free_physical)
 AU_EXTERN AU_EXPORT void AuUnmapPage(uint64_t virt_addr);
 extern uint64_t *AuCreateAddressSpace();
 
-extern uint64_t* AuGetPhysicalAddress(uint64_t virt_addr);
+extern uint64_t* AuGetPhysicalAddress(uint64_t cr3,uint64_t virt_addr);
 AU_EXTERN AU_EXPORT uint64_t* AuGetFreePage(size_t s, bool user);
-extern  uint64_t* AuGetRootPageTable();
+AU_EXTERN AU_EXPORT  uint64_t* AuGetRootPageTable();
 AU_EXTERN AU_EXPORT void AuFreePages(uint64_t virt_addr, bool free_physical, size_t s);
 AU_EXTERN AU_EXPORT void* AuMapMMIO (uint64_t phys_addr, size_t page_count);
 extern void AuPagingClearLow();

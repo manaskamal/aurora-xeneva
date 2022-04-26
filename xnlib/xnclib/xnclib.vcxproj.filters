@@ -107,6 +107,9 @@
     <ClInclude Include="sys\pe.h">
       <Filter>sys</Filter>
     </ClInclude>
+    <ClInclude Include="sys\shm.h">
+      <Filter>sys</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="string.cpp" />

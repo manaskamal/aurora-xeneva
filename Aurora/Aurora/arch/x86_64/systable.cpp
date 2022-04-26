@@ -2,6 +2,7 @@
 #include <arch\x86_64\cpu.h>
 #include <stdio.h>
 #include <sysserv.h>
+#include <mmngr\shmem.h>
 
 extern "C" uint64_t *funct = NULL;
 
@@ -36,7 +37,7 @@ extern "C" void x64_syscall_handler (int a) {
 		funct = (uint64_t*)copy_memory;
 		break;
 	case 4:
-		funct = (uint64_t*)0;
+		funct = (uint64_t*)AuCreateShMem;
 		break;
 	case 5:
 		funct = (uint64_t*)valloc;
@@ -60,7 +61,7 @@ extern "C" void x64_syscall_handler (int a) {
 		funct = (uint64_t*)destroy_timer;
 		break;
 	case 12:
-		funct = (uint64_t*)0;
+		funct = (uint64_t*)AuObtainShMem;
 		break;
 	case 13:
 		funct = (uint64_t*)ttype_create;
