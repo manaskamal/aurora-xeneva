@@ -20,6 +20,8 @@
 #include <stream.h>
 #include <pe.h>
 #include <ipc\signals.h>
+#include <mmngr\vma.h>
+#include <mmngr\vma.h>
 
 typedef void (*main_thread) (void*);
 
@@ -35,19 +37,42 @@ typedef struct _process_ {
 	uint64_t* cr3;
 	uint64_t image_base;
 	uint64_t stack;
-	uint64_t mmap_sz;
+	au_vm_area_t * vma_area;
+	au_vm_area_t * last_vma;
 	list_t *shared_mem_list;
 	struct _process_ *next;
 	struct _process_ *prev;
 	struct _process_ *parent;
 }process_t;
 
+
+/*
+ * AuInsertVMArea -- Insert vm area object to given process
+ * @param proc -- process where to insert vm object
+ * @param vma -- vm area
+ */
+extern void AuInsertVMArea(process_t *proc, au_vm_area_t *vma);
+
+/*
+ * AuRemoveVMArea -- Remove vm area object from given process
+ * @param proc -- process from where to remove
+ * @param vma -- vm area object
+ */
+extern void AuRemoveVMArea (process_t *proc, au_vm_area_t *vma);
+
+/*
+ * AuFindVMA -- finds a vm region
+ * @param address -- address to search
+ */
+extern au_vm_area_t *AuFindVMA (uint64_t address);
+
+
 /**
  * create_user_stack -- creates a 2mb user mode threads stack
  * @param cr3 -- the destination top level paging structure, where to create
  * the stack
  */
-extern uint64_t *create_user_stack (uint64_t* cr3);
+extern uint64_t *create_user_stack (process_t *proc, uint64_t* cr3);
 
 /**
  * create_inc_stack -- not used for now

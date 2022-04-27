@@ -55,7 +55,7 @@ $pdata$?AuUnmapPageEx@@YAXPEA_K_K_N@Z DD imagerel $LN5
 	DD	imagerel $LN5+246
 	DD	imagerel $unwind$?AuUnmapPageEx@@YAXPEA_K_K_N@Z
 $pdata$AuUnmapPage DD imagerel $LN5
-	DD	imagerel $LN5+227
+	DD	imagerel $LN5+255
 	DD	imagerel $unwind$AuUnmapPage
 $pdata$?AuCreateAddressSpace@@YAPEA_KXZ DD imagerel $LN9
 	DD	imagerel $LN9+182
@@ -846,44 +846,50 @@ $LN5:
 	mov	DWORD PTR i1$[rsp], eax
 
 ; 192  : 
-; 193  : 	uint64_t *pml4_ = (uint64_t*)x64_read_cr3();
+; 193  : 	uint64_t *pml4_ = (uint64_t*)p2v(x64_read_cr3());
 
 	call	x64_read_cr3
+	mov	rcx, rax
+	call	p2v
 	mov	QWORD PTR pml4_$[rsp], rax
 
-; 194  : 	uint64_t *pdpt = (uint64_t*)(pml4_[pml4_index(virt_addr)] & ~(4096 - 1));
+; 194  : 	uint64_t *pdpt = (uint64_t*)(p2v(pml4_[pml4_index(virt_addr)]) & ~(4096 - 1));
 
 	mov	rcx, QWORD PTR virt_addr$[rsp]
 	call	?pml4_index@@YA_K_K@Z			; pml4_index
 	mov	rcx, QWORD PTR pml4_$[rsp]
-	mov	rax, QWORD PTR [rcx+rax*8]
+	mov	rcx, QWORD PTR [rcx+rax*8]
+	call	p2v
 	and	rax, -4096				; fffffffffffff000H
 	mov	QWORD PTR pdpt$[rsp], rax
 
-; 195  : 	uint64_t *pd = (uint64_t*)(pdpt[pdp_index(virt_addr)] & ~(4096 - 1));
+; 195  : 	uint64_t *pd = (uint64_t*)(p2v(pdpt[pdp_index(virt_addr)]) & ~(4096 - 1));
 
 	mov	rcx, QWORD PTR virt_addr$[rsp]
 	call	?pdp_index@@YA_K_K@Z			; pdp_index
 	mov	rcx, QWORD PTR pdpt$[rsp]
-	mov	rax, QWORD PTR [rcx+rax*8]
+	mov	rcx, QWORD PTR [rcx+rax*8]
+	call	p2v
 	and	rax, -4096				; fffffffffffff000H
 	mov	QWORD PTR pd$[rsp], rax
 
-; 196  : 	uint64_t *pt = (uint64_t*)(pd[pd_index(virt_addr)] & ~(4096 - 1));
+; 196  : 	uint64_t *pt = (uint64_t*)(p2v(pd[pd_index(virt_addr)]) & ~(4096 - 1));
 
 	mov	rcx, QWORD PTR virt_addr$[rsp]
 	call	?pd_index@@YA_K_K@Z			; pd_index
 	mov	rcx, QWORD PTR pd$[rsp]
-	mov	rax, QWORD PTR [rcx+rax*8]
+	mov	rcx, QWORD PTR [rcx+rax*8]
+	call	p2v
 	and	rax, -4096				; fffffffffffff000H
 	mov	QWORD PTR pt$[rsp], rax
 
-; 197  : 	uint64_t *page = (uint64_t*)(pt[pt_index(virt_addr)] & ~(4096 - 1));
+; 197  : 	uint64_t *page = (uint64_t*)(p2v(pt[pt_index(virt_addr)]) & ~(4096 - 1));
 
 	mov	rcx, QWORD PTR virt_addr$[rsp]
 	call	?pt_index@@YA_K_K@Z			; pt_index
 	mov	rcx, QWORD PTR pt$[rsp]
-	mov	rax, QWORD PTR [rcx+rax*8]
+	mov	rcx, QWORD PTR [rcx+rax*8]
+	call	p2v
 	and	rax, -4096				; fffffffffffff000H
 	mov	QWORD PTR page$[rsp], rax
 

@@ -97,7 +97,7 @@ process_t *find_process_by_id (uint32_t pid) {
  * create_user_stack -- Create stack for User process 
  * @param cr3 -- top level paging structure address
  */
-uint64_t *create_user_stack (uint64_t* cr3) {
+uint64_t *create_user_stack (process_t *proc, uint64_t* cr3) {
 #define USER_STACK  0x0000700000000000 
 	uint64_t location = USER_STACK;
 	
@@ -106,6 +106,16 @@ uint64_t *create_user_stack (uint64_t* cr3) {
 		uint64_t *block = (uint64_t*)p2v((size_t)AuPmmngrAlloc());
 		AuMapPageEx(cr3,v2p((size_t)block),location + i * 4096, PAGING_USER);
 	}
+
+	au_vm_area_t *vma = (au_vm_area_t*)malloc(sizeof(au_vm_area_t));
+	vma->start = location;
+	vma->end = (location + 2*1024*1024);
+	vma->file = NULL;
+	vma->offset = 0;
+	vma->prot_flags = VM_READ | VM_EXEC;
+	vma->type = VM_TYPE_STACK;
+	vma->length = 2*1024*1024;
+	AuInsertVMArea(proc, vma);
 	return (uint64_t*)(USER_STACK + (2*1024*1024));
 }
 
@@ -151,8 +161,7 @@ int AuCreateProcess(const char* filename, char* procname) {
 	process_t *process = (process_t*)malloc(sizeof(process_t)); //pmmngr_alloc();
 	memset(process, 0,sizeof(process_t));
 	process->pid_t = pid;
-	process->mmap_sz = 0;
-
+	
 
 	//!open the process file-binary
 	char *fname = (char*)filename;
@@ -175,26 +184,39 @@ int AuCreateProcess(const char* filename, char* procname) {
 	PIMAGE_NT_HEADERS nt = raw_offset<PIMAGE_NT_HEADERS>(dos, dos->e_lfanew);
 
 	//!extract the informations
-   // load_pe_file(buf,file.size);
+ 
 	uint64_t _image_base_ = nt->OptionalHeader.ImageBase;
 	ientry ent = (ientry)(nt->OptionalHeader.AddressOfEntryPoint + nt->OptionalHeader.ImageBase); //buffer
 
 	//! create the user stack and address space
 	uint64_t *cr3 = AuCreateAddressSpace();	
-	uint64_t stack = (uint64_t)create_user_stack(cr3);
 
 	AuMapPageEx(cr3,v2p((size_t)buf),_image_base_, PAGING_USER);
 	////! read rest of the image
 	int position = 1;  //we already read 4096 bytes at first
 
+	uint64_t text_section_start = _image_base_;
+
 	while (file.eof != 1){
 		uint64_t* block = (uint64_t*)p2v((size_t)AuPmmngrAlloc());
-		//read_blk(&file,block,file.id);
-		//readfs_block (n, &file, block);
 		fat32_read (&file,(uint64_t*)v2p((size_t)block));
 		AuMapPageEx(cr3,v2p((size_t)block),_image_base_ + position * 4096, PAGING_USER);
 		position++;
 	}
+
+	uint64_t text_section_end = _image_base_ + position * 4096;
+
+	au_vm_area_t *vma = (au_vm_area_t*)malloc(sizeof(au_vm_area_t));
+	vma->start = text_section_start;
+	vma->end = text_section_end;
+	vma->file = NULL;
+	vma->offset = 0;
+	vma->prot_flags = VM_READ | VM_EXEC;
+	vma->type = VM_TYPE_TEXT;
+	vma->length = file.size;
+	AuInsertVMArea(process, vma);
+
+	uint64_t stack = (uint64_t)create_user_stack(process,cr3);
 
 	//!allocate current process
 	//strcpy (process->name,procname);
@@ -362,7 +384,7 @@ void exec (const char* filename, uint32_t pid) {
     x64_write_cr3((size_t)c_cr3);
 
 	//!create the stack
-	uint64_t stack = (uint64_t)create_user_stack(child_proc->cr3);
+	uint64_t stack = (uint64_t)create_user_stack(child_proc,child_proc->cr3);
 	child_proc->stack = stack;
 
 	IMAGE_DOS_HEADER* dos = (IMAGE_DOS_HEADER*)buffer;

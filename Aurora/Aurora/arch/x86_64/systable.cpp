@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <sysserv.h>
 #include <mmngr\shmem.h>
+#include <mmngr\aummap.h>
 
 extern "C" uint64_t *funct = NULL;
 
@@ -112,7 +113,7 @@ extern "C" void x64_syscall_handler (int a) {
 		funct = (uint64_t*)exec;
 		break;
 	case 29:
-		funct = (uint64_t*)map_memory;
+		funct = (uint64_t*)au_mmap;
 		break;
 	case 30:
 		funct = (uint64_t*)unmap_memory;

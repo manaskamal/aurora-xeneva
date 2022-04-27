@@ -10,7 +10,7 @@ _BSS	SEGMENT
 funct	DQ	01H DUP (?)
 _BSS	ENDS
 CONST	SEGMENT
-$SG3830	DB	'System Call Fault!! Halting System', 0aH, 00H
+$SG3847	DB	'System Call Fault!! Halting System', 0aH, 00H
 CONST	ENDS
 PUBLIC	x64_syscall_handler
 EXTRN	printf:PROC
@@ -41,7 +41,6 @@ EXTRN	?sys_set_signal@@YAXHP6AXH@Z@Z:PROC		; sys_set_signal
 EXTRN	?unmap_shared_memory@@YAXG_K0@Z:PROC		; unmap_shared_memory
 EXTRN	?sys_attach_ttype@@YAXH@Z:PROC			; sys_attach_ttype
 EXTRN	?copy_memory@@YAXG_K0@Z:PROC			; copy_memory
-EXTRN	?map_memory@@YAPEAX_KIE@Z:PROC			; map_memory
 EXTRN	?unmap_memory@@YAXPEAXI@Z:PROC			; unmap_memory
 EXTRN	?ttype_create@@YAHPEAH0@Z:PROC			; ttype_create
 EXTRN	?ttype_dup_master@@YAXHH@Z:PROC			; ttype_dup_master
@@ -52,6 +51,7 @@ EXTRN	?pause_timer@@YAXH@Z:PROC			; pause_timer
 EXTRN	?start_timer@@YAXH@Z:PROC			; start_timer
 EXTRN	?AuCreateShMem@@YAII_KI@Z:PROC			; AuCreateShMem
 EXTRN	?AuObtainShMem@@YAPEAXIPEAXH@Z:PROC		; AuObtainShMem
+EXTRN	?au_mmap@@YAPEAXPEAX_K0@Z:PROC			; au_mmap
 EXTRN	__ImageBase:BYTE
 pdata	SEGMENT
 $pdata$x64_syscall_handler DD imagerel $LN48
@@ -70,40 +70,40 @@ tv66 = 36
 a$ = 64
 x64_syscall_handler PROC
 
-; 15   : extern "C" void x64_syscall_handler (int a) {
+; 16   : extern "C" void x64_syscall_handler (int a) {
 
 $LN48:
 	mov	DWORD PTR [rsp+8], ecx
 	sub	rsp, 56					; 00000038H
 
-; 16   : 
-; 17   : 	//! get the index number
-; 18   : 	int idx = a;
+; 17   : 
+; 18   : 	//! get the index number
+; 19   : 	int idx = a;
 
 	mov	eax, DWORD PTR a$[rsp]
 	mov	DWORD PTR idx$[rsp], eax
 
-; 19   : 
-; 20   : 	//! check for index limit
-; 21   : 	if (idx > 256) {
+; 20   : 
+; 21   : 	//! check for index limit
+; 22   : 	if (idx > 256) {
 
 	cmp	DWORD PTR idx$[rsp], 256		; 00000100H
 	jle	SHORT $LN44@x64_syscal
 
-; 22   : 		printf ("System Call Fault!! Halting System\n");
+; 23   : 		printf ("System Call Fault!! Halting System\n");
 
-	lea	rcx, OFFSET FLAT:$SG3830
+	lea	rcx, OFFSET FLAT:$SG3847
 	call	printf
 $LN43@x64_syscal:
 
-; 23   : 		for(;;);  //Loop forever for now
+; 24   : 		for(;;);  //Loop forever for now
 
 	jmp	SHORT $LN43@x64_syscal
 $LN44@x64_syscal:
 
-; 24   : 	}
-; 25   : 
-; 26   : 	switch (idx) {
+; 25   : 	}
+; 26   : 
+; 27   : 	switch (idx) {
 
 	mov	eax, DWORD PTR idx$[rsp]
 	mov	DWORD PTR tv66[rsp], eax
@@ -116,440 +116,440 @@ $LN44@x64_syscal:
 	jmp	rax
 $LN39@x64_syscal:
 
-; 27   : 	case 0:
-; 28   : 		funct = (uint64_t*)printf;
+; 28   : 	case 0:
+; 29   : 		funct = (uint64_t*)printf;
 
 	lea	rax, OFFSET FLAT:printf
 	mov	QWORD PTR funct, rax
 
-; 29   : 		break;
+; 30   : 		break;
 
 	jmp	$LN40@x64_syscal
 $LN38@x64_syscal:
 
-; 30   : 	case 1:
-; 31   : 		funct = (uint64_t*)wait;
+; 31   : 	case 1:
+; 32   : 		funct = (uint64_t*)wait;
 
 	lea	rax, OFFSET FLAT:?wait@@YAXXZ		; wait
 	mov	QWORD PTR funct, rax
 
-; 32   : 		break;
+; 33   : 		break;
 
 	jmp	$LN40@x64_syscal
 $LN37@x64_syscal:
 
-; 33   : 	case 2:
-; 34   : 		funct = (uint64_t*)create__sys_process;
+; 34   : 	case 2:
+; 35   : 		funct = (uint64_t*)create__sys_process;
 
 	lea	rax, OFFSET FLAT:?create__sys_process@@YAHPEBDPEAD@Z ; create__sys_process
 	mov	QWORD PTR funct, rax
 
-; 35   : 		break;
+; 36   : 		break;
 
 	jmp	$LN40@x64_syscal
 $LN36@x64_syscal:
 
-; 36   : 	case 3:
-; 37   : 		funct = (uint64_t*)copy_memory;
+; 37   : 	case 3:
+; 38   : 		funct = (uint64_t*)copy_memory;
 
 	lea	rax, OFFSET FLAT:?copy_memory@@YAXG_K0@Z ; copy_memory
 	mov	QWORD PTR funct, rax
 
-; 38   : 		break;
+; 39   : 		break;
 
 	jmp	$LN40@x64_syscal
 $LN35@x64_syscal:
 
-; 39   : 	case 4:
-; 40   : 		funct = (uint64_t*)AuCreateShMem;
+; 40   : 	case 4:
+; 41   : 		funct = (uint64_t*)AuCreateShMem;
 
 	lea	rax, OFFSET FLAT:?AuCreateShMem@@YAII_KI@Z ; AuCreateShMem
 	mov	QWORD PTR funct, rax
 
-; 41   : 		break;
+; 42   : 		break;
 
 	jmp	$LN40@x64_syscal
 $LN34@x64_syscal:
 
-; 42   : 	case 5:
-; 43   : 		funct = (uint64_t*)valloc;
+; 43   : 	case 5:
+; 44   : 		funct = (uint64_t*)valloc;
 
 	lea	rax, OFFSET FLAT:?valloc@@YAX_K@Z	; valloc
 	mov	QWORD PTR funct, rax
 
-; 44   : 		break;
+; 45   : 		break;
 
 	jmp	$LN40@x64_syscal
 $LN33@x64_syscal:
 
-; 45   : 	case 6:
-; 46   : 		funct = (uint64_t*)message_send;
+; 46   : 	case 6:
+; 47   : 		funct = (uint64_t*)message_send;
 
 	lea	rax, OFFSET FLAT:?message_send@@YAXGPEAU_message_@@@Z ; message_send
 	mov	QWORD PTR funct, rax
 
-; 47   : 		break;
+; 48   : 		break;
 
 	jmp	$LN40@x64_syscal
 $LN32@x64_syscal:
 
-; 48   : 	case 7:
-; 49   : 		funct = (uint64_t*)message_receive;
+; 49   : 	case 7:
+; 50   : 		funct = (uint64_t*)message_receive;
 
 	lea	rax, OFFSET FLAT:?message_receive@@YAXPEAU_message_@@@Z ; message_receive
 	mov	QWORD PTR funct, rax
 
-; 50   : 		break;
+; 51   : 		break;
 
 	jmp	$LN40@x64_syscal
 $LN31@x64_syscal:
 
-; 51   : 	case 8:
-; 52   : 		funct = (uint64_t*)map_shared_memory;
+; 52   : 	case 8:
+; 53   : 		funct = (uint64_t*)map_shared_memory;
 
 	lea	rax, OFFSET FLAT:?map_shared_memory@@YAXG_K0@Z ; map_shared_memory
 	mov	QWORD PTR funct, rax
 
-; 53   : 		break;
+; 54   : 		break;
 
 	jmp	$LN40@x64_syscal
 $LN30@x64_syscal:
 
-; 54   : 	case 9:
-; 55   : 		funct = (uint64_t*)get_thread_id;
+; 55   : 	case 9:
+; 56   : 		funct = (uint64_t*)get_thread_id;
 
 	lea	rax, OFFSET FLAT:?get_thread_id@@YAGXZ	; get_thread_id
 	mov	QWORD PTR funct, rax
 
-; 56   : 		break;
+; 57   : 		break;
 
 	jmp	$LN40@x64_syscal
 $LN29@x64_syscal:
 
-; 57   : 	case 10:
-; 58   : 		funct = (uint64_t*)create_timer;
+; 58   : 	case 10:
+; 59   : 		funct = (uint64_t*)create_timer;
 
 	lea	rax, OFFSET FLAT:?create_timer@@YAHIG@Z	; create_timer
 	mov	QWORD PTR funct, rax
 
-; 59   : 		break;
+; 60   : 		break;
 
 	jmp	$LN40@x64_syscal
 $LN28@x64_syscal:
 
-; 60   : 	case 11:
-; 61   : 		funct = (uint64_t*)destroy_timer;
+; 61   : 	case 11:
+; 62   : 		funct = (uint64_t*)destroy_timer;
 
 	lea	rax, OFFSET FLAT:?destroy_timer@@YAXH@Z	; destroy_timer
 	mov	QWORD PTR funct, rax
 
-; 62   : 		break;
+; 63   : 		break;
 
 	jmp	$LN40@x64_syscal
 $LN27@x64_syscal:
 
-; 63   : 	case 12:
-; 64   : 		funct = (uint64_t*)AuObtainShMem;
+; 64   : 	case 12:
+; 65   : 		funct = (uint64_t*)AuObtainShMem;
 
 	lea	rax, OFFSET FLAT:?AuObtainShMem@@YAPEAXIPEAXH@Z ; AuObtainShMem
 	mov	QWORD PTR funct, rax
 
-; 65   : 		break;
+; 66   : 		break;
 
 	jmp	$LN40@x64_syscal
 $LN26@x64_syscal:
 
-; 66   : 	case 13:
-; 67   : 		funct = (uint64_t*)ttype_create;
+; 67   : 	case 13:
+; 68   : 		funct = (uint64_t*)ttype_create;
 
 	lea	rax, OFFSET FLAT:?ttype_create@@YAHPEAH0@Z ; ttype_create
 	mov	QWORD PTR funct, rax
 
-; 68   : 		break;
+; 69   : 		break;
 
 	jmp	$LN40@x64_syscal
 $LN25@x64_syscal:
 
-; 69   : 	case 14:
-; 70   : 		funct = (uint64_t*)start_timer;
+; 70   : 	case 14:
+; 71   : 		funct = (uint64_t*)start_timer;
 
 	lea	rax, OFFSET FLAT:?start_timer@@YAXH@Z	; start_timer
 	mov	QWORD PTR funct, rax
 
-; 71   : 		break;
+; 72   : 		break;
 
 	jmp	$LN40@x64_syscal
 $LN24@x64_syscal:
 
-; 72   : 	case 15:
-; 73   : 		funct = (uint64_t*)pause_timer;
+; 73   : 	case 15:
+; 74   : 		funct = (uint64_t*)pause_timer;
 
 	lea	rax, OFFSET FLAT:?pause_timer@@YAXH@Z	; pause_timer
 	mov	QWORD PTR funct, rax
 
-; 74   : 		break;
+; 75   : 		break;
 
 	jmp	$LN40@x64_syscal
 $LN23@x64_syscal:
 
-; 75   : 	case 16:
-; 76   : 		funct = (uint64_t*)allocate_pipe;
+; 76   : 	case 16:
+; 77   : 		funct = (uint64_t*)allocate_pipe;
 
 	lea	rax, OFFSET FLAT:?allocate_pipe@@YAXPEAHPEAD@Z ; allocate_pipe
 	mov	QWORD PTR funct, rax
 
-; 77   : 		break;
+; 78   : 		break;
 
 	jmp	$LN40@x64_syscal
 $LN22@x64_syscal:
 
-; 78   : 	case 17:
-; 79   : 		funct = (uint64_t*)sys_unblock_id;
+; 79   : 	case 17:
+; 80   : 		funct = (uint64_t*)sys_unblock_id;
 
 	lea	rax, OFFSET FLAT:?sys_unblock_id@@YAXG@Z ; sys_unblock_id
 	mov	QWORD PTR funct, rax
 
-; 80   : 		break;
+; 81   : 		break;
 
 	jmp	$LN40@x64_syscal
 $LN21@x64_syscal:
 
-; 81   : 	case 18:
-; 82   : 		funct = (uint64_t*)create_uthread;
+; 82   : 	case 18:
+; 83   : 		funct = (uint64_t*)create_uthread;
 
 	lea	rax, OFFSET FLAT:?create_uthread@@YAXP6AXPEAX@ZPEAD@Z ; create_uthread
 	mov	QWORD PTR funct, rax
 
-; 83   : 		break;
+; 84   : 		break;
 
 	jmp	$LN40@x64_syscal
 $LN20@x64_syscal:
 
-; 84   : 	case 19:
-; 85   : 		funct = (uint64_t*)sys_open_file;
+; 85   : 	case 19:
+; 86   : 		funct = (uint64_t*)sys_open_file;
 
 	lea	rax, OFFSET FLAT:?sys_open_file@@YAHPEADPEAU_file_@@@Z ; sys_open_file
 	mov	QWORD PTR funct, rax
 
-; 86   : 		break;
+; 87   : 		break;
 
 	jmp	$LN40@x64_syscal
 $LN19@x64_syscal:
 
-; 87   : 	case 20:
-; 88   : 		funct = (uint64_t*)sys_read_file;
+; 88   : 	case 20:
+; 89   : 		funct = (uint64_t*)sys_read_file;
 
 	lea	rax, OFFSET FLAT:?sys_read_file@@YAXHPEAEPEAU_file_@@@Z ; sys_read_file
 	mov	QWORD PTR funct, rax
 
-; 89   : 		break;
+; 90   : 		break;
 
 	jmp	$LN40@x64_syscal
 $LN18@x64_syscal:
 
-; 90   : 	case 21:
-; 91   : 		funct = (uint64_t*)ttype_dup_master;
+; 91   : 	case 21:
+; 92   : 		funct = (uint64_t*)ttype_dup_master;
 
 	lea	rax, OFFSET FLAT:?ttype_dup_master@@YAXHH@Z ; ttype_dup_master
 	mov	QWORD PTR funct, rax
 
-; 92   : 		break;
+; 93   : 		break;
 
 	jmp	$LN40@x64_syscal
 $LN17@x64_syscal:
 
-; 93   : 	case 22:
-; 94   : 		funct = (uint64_t*)sys_get_used_ram;
+; 94   : 	case 22:
+; 95   : 		funct = (uint64_t*)sys_get_used_ram;
 
 	lea	rax, OFFSET FLAT:?sys_get_used_ram@@YA_KXZ ; sys_get_used_ram
 	mov	QWORD PTR funct, rax
 
-; 95   : 		break;
+; 96   : 		break;
 
 	jmp	$LN40@x64_syscal
 $LN16@x64_syscal:
 
-; 96   : 	case 23:
-; 97   : 		funct = (uint64_t*)sys_get_free_ram;
+; 97   : 	case 23:
+; 98   : 		funct = (uint64_t*)sys_get_free_ram;
 
 	lea	rax, OFFSET FLAT:?sys_get_free_ram@@YA_KXZ ; sys_get_free_ram
 	mov	QWORD PTR funct, rax
 
-; 98   : 		break;
+; 99   : 		break;
 
 	jmp	$LN40@x64_syscal
 $LN15@x64_syscal:
 
-; 99   : 	case 24:
-; 100  : 		funct = (uint64_t*)sys_sleep;
+; 100  : 	case 24:
+; 101  : 		funct = (uint64_t*)sys_sleep;
 
 	lea	rax, OFFSET FLAT:?sys_sleep@@YAX_K@Z	; sys_sleep
 	mov	QWORD PTR funct, rax
 
-; 101  : 		break;
+; 102  : 		break;
 
 	jmp	$LN40@x64_syscal
 $LN14@x64_syscal:
 
-; 102  : 	case 25:
-; 103  : 		funct = (uint64_t*)sys_exit;
+; 103  : 	case 25:
+; 104  : 		funct = (uint64_t*)sys_exit;
 
 	lea	rax, OFFSET FLAT:?sys_exit@@YAXXZ	; sys_exit
 	mov	QWORD PTR funct, rax
 
-; 104  : 		break;
+; 105  : 		break;
 
 	jmp	$LN40@x64_syscal
 $LN13@x64_syscal:
 
-; 105  : 	case 26:
-; 106  : 		funct = (uint64_t*)sys_attach_ttype;
+; 106  : 	case 26:
+; 107  : 		funct = (uint64_t*)sys_attach_ttype;
 
 	lea	rax, OFFSET FLAT:?sys_attach_ttype@@YAXH@Z ; sys_attach_ttype
 	mov	QWORD PTR funct, rax
 
-; 107  : 		break;
+; 108  : 		break;
 
 	jmp	$LN40@x64_syscal
 $LN12@x64_syscal:
 
-; 108  : 	case 27:
-; 109  : 		funct = (uint64_t*)fork;
+; 109  : 	case 27:
+; 110  : 		funct = (uint64_t*)fork;
 
 	lea	rax, OFFSET FLAT:?fork@@YAIXZ		; fork
 	mov	QWORD PTR funct, rax
 
-; 110  : 		break;
+; 111  : 		break;
 
 	jmp	$LN40@x64_syscal
 $LN11@x64_syscal:
 
-; 111  : 	case 28:
-; 112  : 		funct = (uint64_t*)exec;
+; 112  : 	case 28:
+; 113  : 		funct = (uint64_t*)exec;
 
 	lea	rax, OFFSET FLAT:?exec@@YAXPEBDI@Z	; exec
 	mov	QWORD PTR funct, rax
 
-; 113  : 		break;
+; 114  : 		break;
 
 	jmp	$LN40@x64_syscal
 $LN10@x64_syscal:
 
-; 114  : 	case 29:
-; 115  : 		funct = (uint64_t*)map_memory;
+; 115  : 	case 29:
+; 116  : 		funct = (uint64_t*)au_mmap;
 
-	lea	rax, OFFSET FLAT:?map_memory@@YAPEAX_KIE@Z ; map_memory
+	lea	rax, OFFSET FLAT:?au_mmap@@YAPEAXPEAX_K0@Z ; au_mmap
 	mov	QWORD PTR funct, rax
 
-; 116  : 		break;
+; 117  : 		break;
 
 	jmp	$LN40@x64_syscal
 $LN9@x64_syscal:
 
-; 117  : 	case 30:
-; 118  : 		funct = (uint64_t*)unmap_memory;
+; 118  : 	case 30:
+; 119  : 		funct = (uint64_t*)unmap_memory;
 
 	lea	rax, OFFSET FLAT:?unmap_memory@@YAXPEAXI@Z ; unmap_memory
 	mov	QWORD PTR funct, rax
 
-; 119  : 		break;
+; 120  : 		break;
 
 	jmp	SHORT $LN40@x64_syscal
 $LN8@x64_syscal:
 
-; 120  : 	case 31:
-; 121  : 		funct = (uint64_t*)ioquery;
+; 121  : 	case 31:
+; 122  : 		funct = (uint64_t*)ioquery;
 
 	lea	rax, OFFSET FLAT:?ioquery@@YAXHHPEAX@Z	; ioquery
 	mov	QWORD PTR funct, rax
 
-; 122  : 		break;
+; 123  : 		break;
 
 	jmp	SHORT $LN40@x64_syscal
 $LN7@x64_syscal:
 
-; 123  : 	case 32:
-; 124  : 		funct = (uint64_t*)sys_get_current_time;
+; 124  : 	case 32:
+; 125  : 		funct = (uint64_t*)sys_get_current_time;
 
 	lea	rax, OFFSET FLAT:?sys_get_current_time@@YAXPEAU_sys_time_@@@Z ; sys_get_current_time
 	mov	QWORD PTR funct, rax
 
-; 125  : 		break;
+; 126  : 		break;
 
 	jmp	SHORT $LN40@x64_syscal
 $LN6@x64_syscal:
 
-; 126  : 	case 33:
-; 127  : 		funct = (uint64_t*)sys_get_system_tick;
+; 127  : 	case 33:
+; 128  : 		funct = (uint64_t*)sys_get_system_tick;
 
 	lea	rax, OFFSET FLAT:?sys_get_system_tick@@YAIXZ ; sys_get_system_tick
 	mov	QWORD PTR funct, rax
 
-; 128  : 		break;
+; 129  : 		break;
 
 	jmp	SHORT $LN40@x64_syscal
 $LN5@x64_syscal:
 
-; 129  : 	case 34:
-; 130  : 		funct = (uint64_t*)sys_kill;
+; 130  : 	case 34:
+; 131  : 		funct = (uint64_t*)sys_kill;
 
 	lea	rax, OFFSET FLAT:?sys_kill@@YAXHH@Z	; sys_kill
 	mov	QWORD PTR funct, rax
 
-; 131  : 		break;
+; 132  : 		break;
 
 	jmp	SHORT $LN40@x64_syscal
 $LN4@x64_syscal:
 
-; 132  : 	case 35:
-; 133  : 		funct = (uint64_t*)sys_set_signal;
+; 133  : 	case 35:
+; 134  : 		funct = (uint64_t*)sys_set_signal;
 
 	lea	rax, OFFSET FLAT:?sys_set_signal@@YAXHP6AXH@Z@Z ; sys_set_signal
 	mov	QWORD PTR funct, rax
 
-; 134  : 		break;
+; 135  : 		break;
 
 	jmp	SHORT $LN40@x64_syscal
 $LN3@x64_syscal:
 
-; 135  : 	case 36:
-; 136  : 		funct = (uint64_t*)unmap_shared_memory;
+; 136  : 	case 36:
+; 137  : 		funct = (uint64_t*)unmap_shared_memory;
 
 	lea	rax, OFFSET FLAT:?unmap_shared_memory@@YAXG_K0@Z ; unmap_shared_memory
 	mov	QWORD PTR funct, rax
 
-; 137  : 		break;
+; 138  : 		break;
 
 	jmp	SHORT $LN40@x64_syscal
 $LN2@x64_syscal:
 
-; 138  : 	case 37:
-; 139  : 		funct = (uint64_t*)sys_write_file;
+; 139  : 	case 37:
+; 140  : 		funct = (uint64_t*)sys_write_file;
 
 	lea	rax, OFFSET FLAT:?sys_write_file@@YAXHPEAEPEAU_file_@@@Z ; sys_write_file
 	mov	QWORD PTR funct, rax
 
-; 140  : 		break;
+; 141  : 		break;
 
 	jmp	SHORT $LN40@x64_syscal
 $LN1@x64_syscal:
 
-; 141  : 	case 38:
-; 142  : 		funct = (uint64_t*)vfree;
+; 142  : 	case 38:
+; 143  : 		funct = (uint64_t*)vfree;
 
 	lea	rax, OFFSET FLAT:?vfree@@YAX_K@Z	; vfree
 	mov	QWORD PTR funct, rax
 $LN40@x64_syscal:
 
-; 143  : 		break;
-; 144  : 	}
-; 145  : 
-; 146  : 	
-; 147  : 	//! update the function pointer to syscall table index
-; 148  : 	//funct = (uint64_t*)_syscalls[idx];
-; 149  : 
-; 150  : 	//return to the caller
-; 151  : }
+; 144  : 		break;
+; 145  : 	}
+; 146  : 
+; 147  : 	
+; 148  : 	//! update the function pointer to syscall table index
+; 149  : 	//funct = (uint64_t*)_syscalls[idx];
+; 150  : 
+; 151  : 	//return to the caller
+; 152  : }
 
 	add	rsp, 56					; 00000038H
 	ret	0

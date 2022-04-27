@@ -64,6 +64,7 @@ int sys_open_file (char* filename, FILE *ufile) {
 
     int fd = 0;
 	vfs_node_t *node = vfs_finddir(filename);
+
 	bool fd_found = false;
 	if (node) {
 		for (int i = 0; i < 60; i++) {
@@ -73,11 +74,6 @@ int sys_open_file (char* filename, FILE *ufile) {
 				fd_found = true;
 				break;
 			}
-		}
-		if (!fd_found){
-			get_current_thread()->fd[get_current_thread()->fd_current] = node;
-			fd = get_current_thread()->fd_current;
-			get_current_thread()->fd_current++;
 		}
 	}
 
@@ -91,6 +87,14 @@ int sys_open_file (char* filename, FILE *ufile) {
 			ufile->start_cluster = file.current;
 			ufile->flags = file.flags; 
 			ufile->status = file.status;
+		}
+
+		vfs_node_t *file_ = (vfs_node_t*)malloc(sizeof(vfs_node_t));
+		memcpy(file_, &file, sizeof(vfs_node_t));
+		if (!fd_found){
+			get_current_thread()->fd[get_current_thread()->fd_current] = file_;
+			fd = get_current_thread()->fd_current;
+			get_current_thread()->fd_current++;
 		}
 	}
 	

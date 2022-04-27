@@ -180,7 +180,7 @@ thread_t* create_kthread (void (*entry) (void), uint64_t stack,uint64_t cr3, cha
 	t->priviledge = THREAD_LEVEL_KERNEL;
 	t->state = THREAD_STATE_READY;
 	//t->priority = priority;
-	t->fd_current = 0;
+	t->fd_current = 3;
 	//t->fx_state = (char*)malloc(512);
 	memset(t->fx_state, 0, 512);
 	/*((fx_state_t*)t->fx_state)->mxcsr = 0x1f80;
@@ -246,7 +246,7 @@ thread_t* create_user_thread (void (*entry) (void*),uint64_t stack,uint64_t cr3,
 	t->priviledge = THREAD_LEVEL_USER;
 	t->state = THREAD_STATE_READY;
 	t->priority = priority;
-	t->fd_current = 0;
+	t->fd_current = 3;
 	thread_insert (t);
 	return t;
 }

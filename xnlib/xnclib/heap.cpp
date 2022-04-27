@@ -534,12 +534,12 @@ int liballoc_unlock () {
 
 void* liballoc_alloc (int pages) {
 	unsigned int size = pages * 4096;
-	void* p = mmap(0,size, ATTRIBUTE_READ | ATTRIBUTE_USER | ATTRIBUTE_WRITE);
+	void* p = mmap(0,size, 0,0,0,0);
 	return p;
 }
 
 int liballoc_free (void* ptr, int pages) {
-	munmap (ptr,pages * 4096);
+	sys_munmap (ptr,pages * 4096);
 	return 0;
 }
 

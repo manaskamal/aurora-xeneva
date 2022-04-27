@@ -37,8 +37,8 @@ section .text
 ;; Memory Stuffs
 ;;=========================================================
 
-global mmap
-mmap:
+global sys_mmap
+sys_mmap:
    mov r12, 29
    mov r13, rcx
    mov r14, rdx
@@ -46,8 +46,8 @@ mmap:
    syscall
    ret
 
-global munmap
-munmap:
+global sys_munmap
+sys_munmap:
    mov r12, 30
    mov r13, rcx
    mov r14, rdx

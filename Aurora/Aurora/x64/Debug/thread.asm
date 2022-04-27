@@ -1498,10 +1498,10 @@ $LN3:
 	mov	BYTE PTR [rax+736], 1
 
 ; 182  : 	//t->priority = priority;
-; 183  : 	t->fd_current = 0;
+; 183  : 	t->fd_current = 3;
 
 	mov	rax, QWORD PTR t$[rsp]
-	mov	DWORD PTR [rax+1256], 0
+	mov	DWORD PTR [rax+1256], 3
 
 ; 184  : 	//t->fx_state = (char*)malloc(512);
 ; 185  : 	memset(t->fx_state, 0, 512);
@@ -1790,10 +1790,10 @@ $LN3:
 	movzx	ecx, BYTE PTR priority$[rsp]
 	mov	BYTE PTR [rax+768], cl
 
-; 249  : 	t->fd_current = 0;
+; 249  : 	t->fd_current = 3;
 
 	mov	rax, QWORD PTR t$[rsp]
-	mov	DWORD PTR [rax+1256], 0
+	mov	DWORD PTR [rax+1256], 3
 
 ; 250  : 	thread_insert (t);
 

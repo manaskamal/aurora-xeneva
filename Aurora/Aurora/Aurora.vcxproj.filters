@@ -342,6 +342,15 @@
     <ClInclude Include="..\include\mmngr\shmem.h">
       <Filter>include\mmngr</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\mmngr\vma.h">
+      <Filter>include\mmngr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\mmngr\mmfault.h">
+      <Filter>include\mmngr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\mmngr\aummap.h">
+      <Filter>include\mmngr</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="init.cpp">
@@ -552,6 +561,15 @@
       <Filter>source\arch\x86_64</Filter>
     </ClCompile>
     <ClCompile Include="mmngr\shmem.cpp">
+      <Filter>source\mmngr</Filter>
+    </ClCompile>
+    <ClCompile Include="mmngr\vma.cpp">
+      <Filter>source\mmngr</Filter>
+    </ClCompile>
+    <ClCompile Include="mmngr\mmfault.cpp">
+      <Filter>source\mmngr</Filter>
+    </ClCompile>
+    <ClCompile Include="mmngr\aummap.cpp">
       <Filter>source\mmngr</Filter>
     </ClCompile>
   </ItemGroup>

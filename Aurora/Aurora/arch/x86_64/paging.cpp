@@ -190,11 +190,11 @@ void AuUnmapPage(uint64_t virt_addr){
 	
 	const long i1 = pml4_index(virt_addr);
 
-	uint64_t *pml4_ = (uint64_t*)x64_read_cr3();
-	uint64_t *pdpt = (uint64_t*)(pml4_[pml4_index(virt_addr)] & ~(4096 - 1));
-	uint64_t *pd = (uint64_t*)(pdpt[pdp_index(virt_addr)] & ~(4096 - 1));
-	uint64_t *pt = (uint64_t*)(pd[pd_index(virt_addr)] & ~(4096 - 1));
-	uint64_t *page = (uint64_t*)(pt[pt_index(virt_addr)] & ~(4096 - 1));
+	uint64_t *pml4_ = (uint64_t*)p2v(x64_read_cr3());
+	uint64_t *pdpt = (uint64_t*)(p2v(pml4_[pml4_index(virt_addr)]) & ~(4096 - 1));
+	uint64_t *pd = (uint64_t*)(p2v(pdpt[pdp_index(virt_addr)]) & ~(4096 - 1));
+	uint64_t *pt = (uint64_t*)(p2v(pd[pd_index(virt_addr)]) & ~(4096 - 1));
+	uint64_t *page = (uint64_t*)(p2v(pt[pt_index(virt_addr)]) & ~(4096 - 1));
 	
 	if ((pt[pt_index(virt_addr)] & PAGING_PRESENT) != 0) {
 		

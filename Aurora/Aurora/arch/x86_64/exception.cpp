@@ -12,6 +12,7 @@
 #include <arch\x86_64\mmngr\paging.h>
 #include <arch\x86_64\thread.h>
 #include <drivers\svga\vmsvga.h>
+#include <mmngr\mmfault.h>
 #include <screen.h>
 #include <serial.h>
 
@@ -153,32 +154,52 @@ void page_fault (size_t vector, void* param){
 	int resv = frame->error & 0x8;
 	int id = frame->error & 0x10;
 
-	panic ("Page Fault \n");
-	printf ("Faulting Address -> %x\n", vaddr);
-	printf ("__PROCESSOR TRACE__\n");
-	printf ("RIP -> %x\n", frame->rip);
-	printf ("Stack -> %x\n", frame->rsp);
-	printf ("RFLAGS -> %x\n", frame->rflags);
-	printf ("Current thread -> %s\n", get_current_thread()->name);
-	printf ("Current Thread id -> %d\n", get_current_thread()->id);
-	printf ("CS -> %x, SS -> %x\n", frame->cs, frame->ss);
-	printf ("******Cause********\n");
+	uint64_t virt_addr = (uint64_t)vaddr;
 	if (us){
-		//AuMapPage((uint64_t)AuPmmngrAlloc(), (uint64_t)vaddr,PAGING_USER);
-		printf ("***** User Priviledge not set ******** \n");
+		//printf ("***** User Priviledge not set ******** \n");
+		AuHandlePageNotPresent(virt_addr, us);
 	}else if (present){
-		//map_page((uint64_t)pmmngr_alloc(), (uint64_t)vaddr,PAGING_USER);
-		printf ("**** Not present ****\n");
+		AuHandlePageNotPresent(virt_addr, us);
 	}else if (rw) {
+		panic ("Page Fault \n");
+		printf ("Faulting Address -> %x\n", vaddr);
+		printf ("__PROCESSOR TRACE__\n");
+		printf ("RIP -> %x\n", frame->rip);
+		printf ("Stack -> %x\n", frame->rsp);
+		printf ("RFLAGS -> %x\n", frame->rflags);
+		printf ("Current thread -> %s\n", get_current_thread()->name);
+		printf ("Current Thread id -> %d\n", get_current_thread()->id);
+		printf ("CS -> %x, SS -> %x\n", frame->cs, frame->ss);
+		printf ("******Cause********\n");
 		printf ("*** R/W ***\n");
+		for(;;);
 	}else if (resv) {
+		panic ("Page Fault \n");
+		printf ("Faulting Address -> %x\n", vaddr);
+		printf ("__PROCESSOR TRACE__\n");
+		printf ("RIP -> %x\n", frame->rip);
+		printf ("Stack -> %x\n", frame->rsp);
+		printf ("RFLAGS -> %x\n", frame->rflags);
+		printf ("Current thread -> %s\n", get_current_thread()->name);
+		printf ("Current Thread id -> %d\n", get_current_thread()->id);
+		printf ("CS -> %x, SS -> %x\n", frame->cs, frame->ss);
+		printf ("******Cause********\n");
 		printf ("*** Reserved Page ***\n");
+		for(;;);
 	}else if (id) {
+		panic ("Page Fault \n");
+		printf ("Faulting Address -> %x\n", vaddr);
+		printf ("__PROCESSOR TRACE__\n");
+		printf ("RIP -> %x\n", frame->rip);
+		printf ("Stack -> %x\n", frame->rsp);
+		printf ("RFLAGS -> %x\n", frame->rflags);
+		printf ("Current thread -> %s\n", get_current_thread()->name);
+		printf ("Current Thread id -> %d\n", get_current_thread()->id);
+		printf ("CS -> %x, SS -> %x\n", frame->cs, frame->ss);
+		printf ("******Cause********\n");
 		printf ("*** Invalid Page ****\n");
+		for(;;);
 	}
-
-
-	for(;;);
 }
 
 //! exception function -- fpu_fault

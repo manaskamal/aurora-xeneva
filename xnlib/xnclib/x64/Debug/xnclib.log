@@ -1,24 +1,24 @@
-﻿Build started 26-04-2022 আবেলি 8:41:14.
+﻿Build started 27-04-2022 আবেলি 3:32:04.
      1>Project "E:\Xeneva Project\Xeneva\xnlib\xnclib\xnclib.vcxproj" on node 2 (Rebuild target(s)).
      1>_NASM:
          setjmp.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp440a448171c1419da24dcb0f1d3e9c3f.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmpb74f093ef75b44899a28fc33db932326.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\setjmp.obj"  "E:\Xeneva Project\Xeneva\xnlib\xnclib\setjmp.asm"
        _NASM:
          sys\callback.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp7ff6b8c023664c91afb008b6904e3362.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmpa0b6db2ba0c842c59ba64d3f9105c5cd.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\callback.obj"  "E:\Xeneva Project\Xeneva\xnlib\xnclib\sys\callback.asm"
      1>E:\Xeneva Project\Xeneva\xnlib\xnclib\sys\callback.asm(121): warning : label alone on a line without a colon might be in error [-w+label-orphan]
        _NASM:
          _fast_copy.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp56d47092027246ee8b7c1e2c72429db7.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp4c3da4ceb0ce4a699c17a14925c88352.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\_fast_copy.obj"  "E:\Xeneva Project\Xeneva\xnlib\xnclib\_fast_copy.asm"
        _NASM:
          crt0.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp46e111d62ba647fda326ce775f55db21.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp700793b6dd004aa394aa725492893ccf.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\crt0.obj"  "E:\Xeneva Project\Xeneva\xnlib\xnclib\crt0.asm"
        ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\xnlib\xnclib" /I"E:\Xeneva Project\Xeneva\xnlib\xnclib\c++" /Zi /nologo /W4 /WX- /sdl- /MP /Od /D ARCH_X64 /D _MBCS /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt c++\ios.cpp c++\iostream.cpp c++\istream.cpp c++\memory.cpp c++\ostream.cpp c++\_string.cpp errno.cpp heap.cpp initializer.cpp math.cpp qsort.cpp stdio.cpp string.cpp sys\postbox.cpp sys\stdlib.cpp sys\_xeneva.cpp _term.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\xnlib\xnclib" /I"E:\Xeneva Project\Xeneva\xnlib\xnclib\c++" /Zi /nologo /W4 /WX- /sdl- /MP /Od /D ARCH_X64 /D _MBCS /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt c++\ios.cpp c++\iostream.cpp c++\istream.cpp c++\memory.cpp c++\ostream.cpp c++\_string.cpp errno.cpp heap.cpp initializer.cpp math.cpp qsort.cpp stdio.cpp string.cpp sys\mman.cpp sys\postbox.cpp sys\stdlib.cpp sys\_xeneva.cpp _term.cpp
      1>cl : Command line warning D9025: overriding '/sdl-' with '/GS-'
      1>cl : Command line warning D9002: ignoring unknown option '/arch:SSE'
      1>cl : Command line warning D9030: '/Gm' is incompatible with multiprocessing; ignoring /MP switch
@@ -57,6 +57,7 @@
      1>sys\stdlib.cpp(174): warning C4505: 'swap' : unreferenced local function has been removed
          postbox.cpp
      1>sys\postbox.cpp(30): warning C4244: 'initializing' : conversion from 'unsigned int' to 'uint16_t', possible loss of data
+         mman.cpp
          string.cpp
      1>string.cpp(240): warning C4267: 'initializing' : conversion from 'size_t' to 'int', possible loss of data
      1>string.cpp(241): warning C4267: 'initializing' : conversion from 'size_t' to 'int', possible loss of data
@@ -146,6 +147,7 @@
          x64\Debug\qsort.obj
          x64\Debug\stdio.obj
          x64\Debug\string.obj
+         x64\Debug\mman.obj
          x64\Debug\postbox.obj
          x64\Debug\stdlib.obj
          x64\Debug\_xeneva.obj
@@ -159,4 +161,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:02.50
+Time Elapsed 00:00:05.03
