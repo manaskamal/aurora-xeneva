@@ -38,5 +38,5 @@
  * AuHandlePageNotPresent -- Handle not present
  * pages
  */
-extern void AuHandlePageNotPresent (uint64_t vaddr, bool user);
+extern void AuHandlePageNotPresent (uint64_t vaddr, bool user, void* param);
 #endif

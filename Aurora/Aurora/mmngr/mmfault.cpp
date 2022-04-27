@@ -36,10 +36,13 @@
  * AuHandlePageNotPresent -- Handle not present
  * pages
  */
-void AuHandlePageNotPresent (uint64_t vaddr, bool user) {
+void AuHandlePageNotPresent (uint64_t vaddr, bool user, void* param) {
+	interrupt_stack_frame *frame = (interrupt_stack_frame*)param;
 	au_vm_area_t *vm = AuFindVMA(vaddr);
 	if (vm == NULL){
-		printf ("AuHandleNotPresent -> %x \n", vaddr);
+		printf ("Page Fault -> %x \n", vaddr);
+		printf ("RIP -> %x \n", frame->rip);
+		printf ("Current thread -> %s \n", get_current_thread()->name);
 		for(;;);
 	}
 

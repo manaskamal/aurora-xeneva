@@ -96,6 +96,12 @@ int sys_open_file (char* filename, FILE *ufile) {
 			fd = get_current_thread()->fd_current;
 			get_current_thread()->fd_current++;
 		}
+	}else {
+		if (!fd_found){
+			get_current_thread()->fd[get_current_thread()->fd_current] = node;
+			fd = get_current_thread()->fd_current;
+			get_current_thread()->fd_current++;
+		}
 	}
 	
 	//! return the allocated fd number
@@ -123,24 +129,26 @@ void sys_read_file (int fd, uint8_t* buffer, FILE *ufile) {
 	file.write = 0;
 	file.ioquery  = 0;
 
-	vfs_node_t *node = get_current_thread()->fd[fd];
-	if (node == NULL)
-		return;
+	vfs_node_t *node = NULL;
 
 	if (ufile->flags > 0){
-		for (int i = 0; i < file.size; i += 8) {
-			if (file.eof) 
-				break;
+		node = vfs_finddir("/");
+		if (node == NULL)
+			return;
+		while(file.eof != 1){
 			uint64_t* buff = (uint64_t*)p2v((size_t)AuPmmngrAlloc());
 			memset(buff, 0, 4096);
 			readfs_block (node,&file,(uint64_t*)v2p((size_t)buff));
 			memcpy (buffer,buff,4096);
 			buffer += 4096;
 			AuPmmngrFree((void*)v2p((size_t)buff));
-			
 		}
 
 	}else {
+		node = get_current_thread()->fd[fd];
+		if (node == NULL)
+			return;
+
 		readfs(node, node, (uint64_t*)buffer, file.size);
 	}
 

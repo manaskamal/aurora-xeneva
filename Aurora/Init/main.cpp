@@ -4,6 +4,8 @@
 #include <sys/shm.h>
 #include <sys/mmap.h>
 #include <sys/_file.h>
+#include <stdlib.h>
+#include <string.h>
 
 #define KEY 0x1234
 /*
@@ -25,6 +27,7 @@ int main (int argc, char* argv[]) {
 	sys_print_text ("      ");
 	for (uint8_t i = 0; i < 40; i++)
 		sys_print_text ("%c", ptr6[i]);
+
 	while(1) {
 		sys_wait();
 	}

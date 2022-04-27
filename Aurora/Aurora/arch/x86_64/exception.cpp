@@ -157,9 +157,9 @@ void page_fault (size_t vector, void* param){
 	uint64_t virt_addr = (uint64_t)vaddr;
 	if (us){
 		//printf ("***** User Priviledge not set ******** \n");
-		AuHandlePageNotPresent(virt_addr, us);
+		AuHandlePageNotPresent(virt_addr, us, param);
 	}else if (present){
-		AuHandlePageNotPresent(virt_addr, us);
+		AuHandlePageNotPresent(virt_addr, us, param);
 	}else if (rw) {
 		panic ("Page Fault \n");
 		printf ("Faulting Address -> %x\n", vaddr);
