@@ -282,7 +282,6 @@ void cursor_init () {
 void load_cursor (char* filename, uint8_t* addr,pri_bmp_image *bmp) {
 	UFILE file;
 	int fd = sys_open_file (filename, &file);
-
 	sys_read_file (fd, addr, &file);
 	uint8_t* buffer = (uint8_t*)addr;
 
@@ -395,7 +394,6 @@ void pri_wallp_pixel (unsigned x, unsigned y, uint32_t color) {
  */
 Image *pri_load_wallpaper (char *filename) {
 	wallpaper = (pri_wallpaper_t*)malloc(sizeof(pri_wallpaper_t));
-
 	for (int i = 0; i < (canvas->width * canvas->height * 32) / 4096; i++) 
 		valloc(0x0000060000000000 + i * 4096);
 
@@ -411,7 +409,6 @@ Image *pri_load_wallpaper (char *filename) {
 		wallpaper->h = img->height;
 	}
 
-	
 	return img;
 }
 
@@ -1013,10 +1010,8 @@ int main (int argc, char* argv[]) {
 	sys_print_text ("Reading cursor files \n");
 	load_cursor ("/cursor.bmp",(uint8_t*)0x0000070000000000, arrow_cursor);
 	load_cursor ("/spin.bmp", (uint8_t*)0x0000070000001000, spin_cursor);
-	Image* wallp = (Image*)malloc(sizeof(Image)); //pri_load_wallpaper ("/bihu2.jpg");
-	wallp->data = NULL;
+	Image* wallp = pri_load_wallpaper ("/winne1.jpg");
 	pri_wallpaper_draw(wallp);
-	sys_print_text ("PRIWM: Wallpaper and cursors loaded \n");
 
 	/* initialize window list */
 	window_list_init();

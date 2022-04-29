@@ -37,6 +37,7 @@
 #include <stdio.h>
 #include <proc.h>
 #include <arch\x86_64\cpu.h>
+#include <serial.h>
 #include <hal.h>
 /**
  * sys_open_file -- opens a file 
@@ -91,11 +92,9 @@ int sys_open_file (char* filename, FILE *ufile) {
 
 		vfs_node_t *file_ = (vfs_node_t*)malloc(sizeof(vfs_node_t));
 		memcpy(file_, &file, sizeof(vfs_node_t));
-		if (!fd_found){
-			get_current_thread()->fd[get_current_thread()->fd_current] = file_;
-			fd = get_current_thread()->fd_current;
-			get_current_thread()->fd_current++;
-		}
+		get_current_thread()->fd[get_current_thread()->fd_current] = file_;
+		fd = get_current_thread()->fd_current;
+		get_current_thread()->fd_current++;
 	}else {
 		if (!fd_found){
 			get_current_thread()->fd[get_current_thread()->fd_current] = node;
@@ -116,18 +115,7 @@ int sys_open_file (char* filename, FILE *ufile) {
  */
 void sys_read_file (int fd, uint8_t* buffer, FILE *ufile) {
 	x64_cli ();
-	vfs_node_t file;
-	file.size = ufile->size;
-	file.eof = ufile->eof;
-	file.pos = ufile->pos;
-	file.current = ufile->start_cluster;
-	file.flags = ufile->flags;
-	file.status = ufile->status;
-	file.open = 0;
-	file.read = 0;
-	file.read_blk = 0;
-	file.write = 0;
-	file.ioquery  = 0;
+	vfs_node_t *file = get_current_thread()->fd[fd];
 
 	vfs_node_t *node = NULL;
 
@@ -135,11 +123,14 @@ void sys_read_file (int fd, uint8_t* buffer, FILE *ufile) {
 		node = vfs_finddir("/");
 		if (node == NULL)
 			return;
-		while(file.eof != 1){
+		for (int i=0; i < file->size; i++){
+			if (file->eof)
+				break;
 			uint64_t* buff = (uint64_t*)p2v((size_t)AuPmmngrAlloc());
 			memset(buff, 0, 4096);
-			readfs_block (node,&file,(uint64_t*)v2p((size_t)buff));
-			memcpy (buffer,buff,4096);
+			readfs_block (node,file,(uint64_t*)v2p((size_t)buff));
+			uint8_t* aligned_buf = (uint8_t*)buff;
+			memcpy (buffer,aligned_buf,4096);
 			buffer += 4096;
 			AuPmmngrFree((void*)v2p((size_t)buff));
 		}
@@ -149,7 +140,7 @@ void sys_read_file (int fd, uint8_t* buffer, FILE *ufile) {
 		if (node == NULL)
 			return;
 
-		readfs(node, node, (uint64_t*)buffer, file.size);
+		readfs(node, node, (uint64_t*)buffer, file->size);
 	}
 
 }

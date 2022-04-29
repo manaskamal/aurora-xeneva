@@ -155,10 +155,7 @@ void page_fault (size_t vector, void* param){
 	int id = frame->error & 0x10;
 
 	uint64_t virt_addr = (uint64_t)vaddr;
-	if (us){
-		//printf ("***** User Priviledge not set ******** \n");
-		AuHandlePageNotPresent(virt_addr, us, param);
-	}else if (present){
+	if (present){
 		AuHandlePageNotPresent(virt_addr, us, param);
 	}else if (rw) {
 		panic ("Page Fault \n");

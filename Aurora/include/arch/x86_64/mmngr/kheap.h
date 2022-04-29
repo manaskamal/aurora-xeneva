@@ -45,7 +45,7 @@ typedef struct _meta_data_ {
 	uint32_t magic;
 	size_t   size;
 	bool     free;
-	uint8_t*   eob_mark;
+	uint8_t   eob_mark;
 	_meta_data_ *next;
 	_meta_data_ *prev;
 }meta_data_t;

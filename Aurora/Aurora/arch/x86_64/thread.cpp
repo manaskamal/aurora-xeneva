@@ -225,7 +225,6 @@ thread_t* create_user_thread (void (*entry) (void*),uint64_t stack,uint64_t cr3,
 
 	/** Kernel stack is important for syscall or interruption in the system **/
 	t->kern_esp = (uint64_t)allocate_kstack((uint64_t*)cr3);
-
 	t->ds = 0x23;
 	t->es = 0x23;
 	t->fs = 0x23;

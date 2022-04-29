@@ -173,6 +173,7 @@ int AuCreateProcess(const char* filename, char* procname) {
 		printf("Executable image not found\n");
 		return -1;
 	}
+
 	//!open the binary file and read it
 	uint64_t* buf = (uint64_t*)p2v((size_t)AuPmmngrAlloc());   
 	//readfs_block(n,&file,buf);
@@ -203,7 +204,6 @@ int AuCreateProcess(const char* filename, char* procname) {
 		AuMapPageEx(cr3,v2p((size_t)block),_image_base_ + position * 4096, PAGING_USER);
 		position++;
 	}
-
 	uint64_t text_section_end = _image_base_ + position * 4096;
 
 	au_vm_area_t *vma = (au_vm_area_t*)malloc(sizeof(au_vm_area_t));
@@ -231,7 +231,6 @@ int AuCreateProcess(const char* filename, char* procname) {
 	process->shared_mem_list = initialize_list();
 	//! Create and thread and start scheduling when scheduler starts */
 	thread_t *t = create_user_thread(ent,stack,(uint64_t)cr3,procname,0);
-	//allocate_fd(t);
 	//! add the process to process manager
 	process->thread_data_pointer = t;
     add_process(process);
