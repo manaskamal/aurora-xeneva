@@ -121,7 +121,7 @@ void _AuMain (KERNEL_BOOT_INFO *info) {
 	//Here we initialise all drivers stuffs
 	/* Clear interrupts as scheduler will enable it */
 	x64_cli();
-	//AuDrvMngrInitialize(info);
+	AuDrvMngrInitialize(info);
 	AuKeyboardInitialize();
 	dwm_ipc_init();
 	pri_loop_init();
