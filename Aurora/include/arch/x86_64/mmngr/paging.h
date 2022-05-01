@@ -28,6 +28,8 @@
 #define PHYSICAL_MEMORY_BASE  0xFFFF800000000000
 #define MMIO_BASE    0xffffff1000000000            //  0xffffff1fc0000000
 
+#define PROCESS_HEAP_BREAK  0x0000000020000000   //8GiB
+
 extern size_t  pml4_index (uint64_t addr);
 extern size_t pdp_index (uint64_t addr);
 extern size_t pd_index (uint64_t addr);
@@ -46,7 +48,7 @@ AU_EXTERN AU_EXPORT void AuUnmapPage(uint64_t virt_addr);
 extern uint64_t *AuCreateAddressSpace();
 
 extern uint64_t* AuGetPhysicalAddress(uint64_t cr3,uint64_t virt_addr);
-AU_EXTERN AU_EXPORT uint64_t* AuGetFreePage(size_t s, bool user);
+AU_EXTERN AU_EXPORT uint64_t* AuGetFreePage(size_t s, bool user, void* ptr);
 AU_EXTERN AU_EXPORT  uint64_t* AuGetRootPageTable();
 AU_EXTERN AU_EXPORT void AuFreePages(uint64_t virt_addr, bool free_physical, size_t s);
 AU_EXTERN AU_EXPORT void* AuMapMMIO (uint64_t phys_addr, size_t page_count);

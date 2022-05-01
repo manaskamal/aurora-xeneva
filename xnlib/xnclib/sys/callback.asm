@@ -43,6 +43,7 @@ sys_mmap:
    mov r13, rcx
    mov r14, rdx
    mov r15, r8
+   mov rdi, r9
    syscall
    ret
 
@@ -73,6 +74,7 @@ sys_print_text:
 	mov r13, rcx
 	mov r14, rdx
 	mov r15, r8
+	mov rdi, r9
 	syscall
 	ret
 
@@ -329,6 +331,13 @@ sys_shmat:
 	mov r13, rcx
 	mov r14, rdx
 	mov r15, r8
+	syscall
+	ret
+
+global sys_proc_heap_brk
+sys_proc_heap_brk:
+    mov r12, 39
+	mov r13, rcx
 	syscall
 	ret
 

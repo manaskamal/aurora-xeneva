@@ -98,7 +98,7 @@ void* AuObtainShMem (uint32_t id, void * shmaddr, int shmflg) {
 		/*Now we have the first virtual address, lets map in */
 		for (int i = 0; i < mem->num_frames; i++) {
 			uint64_t *phys_addr = (uint64_t*)AuGetPhysicalAddress(cr3,virtual_addr + i * 4096);
-			uint64_t current_virt = (uint64_t)AuGetFreePage(0,true);
+			uint64_t current_virt = (uint64_t)AuGetFreePage(0,true, 0);
 			AuMapPage(v2p((uint64_t)phys_addr),current_virt,PAGING_USER);
 			if (ret_addre == NULL)
 				ret_addre = (void*)current_virt;
@@ -111,7 +111,7 @@ void* AuObtainShMem (uint32_t id, void * shmaddr, int shmflg) {
 		/* Allocate some memory for this process */
 		for (int i = 0; i < mem->num_frames; i++) {
 			void* p = AuPmmngrAlloc();
-			uint64_t virt = (uint64_t)AuGetFreePage(0,true);
+			uint64_t virt = (uint64_t)AuGetFreePage(0,true, 0);
 			AuMapPage ((uint64_t)p,virt, PAGING_USER);
 
 			/* Store the first virtual address */

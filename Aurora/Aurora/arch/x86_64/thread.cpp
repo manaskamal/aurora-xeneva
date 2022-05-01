@@ -213,7 +213,7 @@ thread_t* create_user_thread (void (*entry) (void*),uint64_t stack,uint64_t cr3,
 	t->rdx = 0;
 	t->rsi = 10;
 	t->rdi = 0;
-	t->rbp = (uint64_t)t->rsp;
+	t->rbp = (uint64_t)t->rsp - 32;
 	t->r8 = 0;
 	t->r9 = 0;
 	t->r10 = 0;

@@ -228,6 +228,7 @@ int AuCreateProcess(const char* filename, char* procname) {
 	process->stack = stack;
 	process->image_size = nt->OptionalHeader.SizeOfImage;
 	process->parent = NULL;
+	process->_image_heap_break_ = PROCESS_HEAP_BREAK;
 	process->shared_mem_list = initialize_list();
 	//! Create and thread and start scheduling when scheduler starts */
 	thread_t *t = create_user_thread(ent,stack,(uint64_t)cr3,procname,0);
@@ -431,4 +432,23 @@ void process_list_initialize () {
 	pid = 0;
 	process_head = NULL;
 	process_last = NULL;
+}
+
+
+/*
+ * process_heap_break -- increments the heap size
+ * @param 
+ */
+void* process_heap_break (uint64_t pages) {
+	x64_cli();
+	process_t *proc = get_current_process();
+	int i = 0;
+	uint64_t first_page = 0;
+	for (i = 0; i < pages; i++) {
+		uint64_t page = (uint64_t)AuGetFreePage(0,true,(void*)proc->_image_heap_break_);
+		if (first_page == 0)
+			first_page = page;
+		AuMapPage((uint64_t)AuPmmngrAlloc(), page, PAGING_USER);
+	}
+	return (void*)first_page;
 }

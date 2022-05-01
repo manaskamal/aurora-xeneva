@@ -10,9 +10,11 @@ PUBLIC	?message_send@@YAXGPEAU_message_@@@Z		; message_send
 PUBLIC	?message_receive@@YAXPEAU_message_@@@Z		; message_receive
 PUBLIC	?is_message_queue_empty@@YA_NXZ			; is_message_queue_empty
 EXTRN	memcpy:PROC
+EXTRN	AuPmmngrAlloc:PROC
+EXTRN	AuPmmngrFree:PROC
+EXTRN	p2v:PROC
+EXTRN	v2p:PROC
 EXTRN	x64_cli:PROC
-EXTRN	malloc:PROC
-EXTRN	free:PROC
 EXTRN	?unblock_thread@@YAXPEAU_thread_@@@Z:PROC	; unblock_thread
 EXTRN	?get_current_thread@@YAPEAU_thread_@@XZ:PROC	; get_current_thread
 EXTRN	?thread_iterate_ready_list@@YAPEAU_thread_@@G@Z:PROC ; thread_iterate_ready_list
@@ -22,10 +24,10 @@ top	DQ	01H DUP (?)
 _BSS	ENDS
 pdata	SEGMENT
 $pdata$?message_send@@YAXGPEAU_message_@@@Z DD imagerel $LN5
-	DD	imagerel $LN5+163
+	DD	imagerel $LN5+166
 	DD	imagerel $unwind$?message_send@@YAXGPEAU_message_@@@Z
 $pdata$?message_receive@@YAXPEAU_message_@@@Z DD imagerel $LN6
-	DD	imagerel $LN6+143
+	DD	imagerel $LN6+151
 	DD	imagerel $unwind$?message_receive@@YAXPEAU_message_@@@Z
 $pdata$?is_message_queue_empty@@YA_NXZ DD imagerel $LN5
 	DD	imagerel $LN5+39
@@ -137,18 +139,21 @@ $LN3@message_re:
 	mov	rcx, QWORD PTR msg$[rsp]
 	call	memcpy
 
-; 70   : 			free(temp);
+; 70   : 			//free(temp);
+; 71   : 			AuPmmngrFree((void*)v2p((uint64_t)temp));
 
 	mov	rcx, QWORD PTR temp$[rsp]
-	call	free
+	call	v2p
+	mov	rcx, rax
+	call	AuPmmngrFree
 $LN1@message_re:
 $LN2@message_re:
 $LN4@message_re:
 
-; 71   : 		}
-; 72   : 	}
-; 73   : 
-; 74   : }
+; 72   : 		}
+; 73   : 	}
+; 74   : 
+; 75   : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -216,10 +221,11 @@ $LN2@message_se:
 	mov	WORD PTR [rax+58], cx
 
 ; 43   : 	//!Actuall Message model
-; 44   : 	kernel_message_queue_t * temp = (kernel_message_queue_t*)malloc(sizeof(kernel_message_queue_t));
+; 44   : 	kernel_message_queue_t * temp = (kernel_message_queue_t*)p2v((uint64_t)AuPmmngrAlloc()); //malloc(sizeof(kernel_message_queue_t));
 
-	mov	ecx, 120				; 00000078H
-	call	malloc
+	call	AuPmmngrAlloc
+	mov	rcx, rax
+	call	p2v
 	mov	QWORD PTR temp$[rsp], rax
 
 ; 45   : 

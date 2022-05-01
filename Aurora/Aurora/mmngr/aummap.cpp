@@ -33,6 +33,7 @@
 #include <arch\x86_64\mmngr\kheap.h>
 #include <mmngr\vma.h>
 #include <proc.h>
+#include <serial.h>
 
 /**
  * au_mmap -- memory map
@@ -43,37 +44,48 @@
  * @param filedesc -- file descriptor to map
  * @param offset -- offset from where to begin, it should be multiple of PAGE_SIZE
  */
-void* au_mmap (void* address, size_t length, void* params) {
+void* au_mmap (void* address, size_t length, int protect, int flags, int filedesc, uint64_t offset) {
 	/* this is a system call, so make sure it is atomic */
 	x64_cli();
-	mmap_params_t *map_param = (mmap_params_t*)params;
 	
+	printf ("MMAP offset ->  %d \n", offset);
+
 	process_t *proc = get_current_process();
 	uint64_t vaddr_start = 0;
 
 	/* Get the starting address */
 	if (address == NULL) {
-		address = AuGetFreePage(0,true);
+		address = AuGetFreePage(0,true, 0);
 		vaddr_start = (uint64_t)address;
 	}else 
 		vaddr_start = (uint64_t)address;
 
 	vfs_node_t *file = NULL;
-	if (map_param->filedesc) {
-		file = get_current_thread()->fd[map_param->filedesc];
+	if (filedesc) {
+		file = get_current_thread()->fd[filedesc];
 	}
 
 	uint64_t size = length / 4096;
+	
 	if (size == 0)
 		size = 1;
+	
+	_debug_print_ ("Including VM Area \r\n");
 	au_vm_area_t *vma = (au_vm_area_t*)malloc(sizeof(au_vm_area_t));
+	_debug_print_ ("VMA New Address -> %x \r\n", vma);
 	vma->start = vaddr_start;
-	vma->end = (vaddr_start + length * 4096);
+	vma->end = vma->start + (size * 0x1000);
+//	printf ("MMAP SYSCALL end -> %x , start -> %x\n", vma->end, vma->start);
 	vma->file = file;
-	vma->offset = map_param->offset;
-	vma->prot_flags = map_param->protect;
+	vma->offset = offset;
+	vma->prot_flags = protect;
 	vma->type = VM_TYPE_RESOURCE;
 	vma->length = size;
 	AuInsertVMArea(proc, vma);
+
+	if (vma->file == NULL)
+		for (int i = 0; i < size; i++) {
+			AuMapPage((uint64_t)AuPmmngrAlloc(), vma->start + i * 4096, PAGING_USER);
+		}
 	return address;
 }

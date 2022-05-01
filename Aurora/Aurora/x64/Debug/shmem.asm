@@ -34,7 +34,7 @@ $pdata$?AuCreateShMem@@YAII_KI@Z DD imagerel $LN7
 	DD	imagerel $LN7+284
 	DD	imagerel $unwind$?AuCreateShMem@@YAII_KI@Z
 $pdata$?AuObtainShMem@@YAPEAXIPEAXH@Z DD imagerel $LN17
-	DD	imagerel $LN17+450
+	DD	imagerel $LN17+456
 	DD	imagerel $unwind$?AuObtainShMem@@YAPEAXIPEAXH@Z
 pdata	ENDS
 xdata	SEGMENT
@@ -174,8 +174,9 @@ $LN9@AuObtainSh:
 	call	?AuGetPhysicalAddress@@YAPEA_K_K0@Z	; AuGetPhysicalAddress
 	mov	QWORD PTR phys_addr$7[rsp], rax
 
-; 101  : 			uint64_t current_virt = (uint64_t)AuGetFreePage(0,true);
+; 101  : 			uint64_t current_virt = (uint64_t)AuGetFreePage(0,true, 0);
 
+	xor	r8d, r8d
 	mov	dl, 1
 	xor	ecx, ecx
 	call	AuGetFreePage
@@ -238,8 +239,9 @@ $LN4@AuObtainSh:
 	call	AuPmmngrAlloc
 	mov	QWORD PTR p$9[rsp], rax
 
-; 114  : 			uint64_t virt = (uint64_t)AuGetFreePage(0,true);
+; 114  : 			uint64_t virt = (uint64_t)AuGetFreePage(0,true, 0);
 
+	xor	r8d, r8d
 	mov	dl, 1
 	xor	ecx, ecx
 	call	AuGetFreePage

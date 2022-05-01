@@ -92,7 +92,7 @@ $pdata$?AuSchedulerStart@@YAXXZ DD imagerel $LN3
 	DD	imagerel $LN3+46
 	DD	imagerel $unwind$?AuSchedulerStart@@YAXXZ
 $pdata$?create_user_thread@@YAPEAU_thread_@@P6AXPEAX@Z_K2QEADE@Z DD imagerel $LN3
-	DD	imagerel $LN3+729
+	DD	imagerel $LN3+733
 	DD	imagerel $unwind$?create_user_thread@@YAPEAU_thread_@@P6AXPEAX@Z_K2QEADE@Z
 $pdata$?create_kthread@@YAPEAU_thread_@@P6AXXZ_K1QEADE@Z DD imagerel $LN3
 	DD	imagerel $LN3+614
@@ -1535,7 +1535,7 @@ _TEXT	ENDS
 ; File e:\xeneva project\xeneva\aurora\aurora\arch\x86_64\thread.cpp
 _TEXT	SEGMENT
 t$ = 32
-tv144 = 40
+tv145 = 40
 entry$ = 64
 stack$ = 72
 cr3$ = 80
@@ -1622,12 +1622,13 @@ $LN3:
 	mov	rax, QWORD PTR t$[rsp]
 	mov	QWORD PTR [rax+80], 0
 
-; 216  : 	t->rbp = (uint64_t)t->rsp;
+; 216  : 	t->rbp = (uint64_t)t->rsp - 32;
 
 	mov	rax, QWORD PTR t$[rsp]
+	mov	rax, QWORD PTR [rax+8]
+	sub	rax, 32					; 00000020H
 	mov	rcx, QWORD PTR t$[rsp]
-	mov	rcx, QWORD PTR [rcx+8]
-	mov	QWORD PTR [rax+88], rcx
+	mov	QWORD PTR [rcx+88], rax
 
 ; 217  : 	t->r8 = 0;
 
@@ -1745,13 +1746,13 @@ $LN3:
 	mov	rax, QWORD PTR t$[rsp]
 	mov	rcx, QWORD PTR [rax+752]
 	call	v2p
-	mov	QWORD PTR tv144[rsp], rax
+	mov	QWORD PTR tv145[rsp], rax
 	mov	rcx, QWORD PTR t$[rsp]
 	mov	rcx, QWORD PTR [rcx+192]
 	call	p2v
 	mov	r9b, 4
 	mov	r8d, 4194304				; 00400000H
-	mov	rcx, QWORD PTR tv144[rsp]
+	mov	rcx, QWORD PTR tv145[rsp]
 	mov	rdx, rcx
 	mov	rcx, rax
 	call	?AuMapPageEx@@YA_NPEA_K_K1E@Z		; AuMapPageEx

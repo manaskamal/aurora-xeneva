@@ -15,7 +15,7 @@ EXTRN	AuGetFreePage:PROC
 EXTRN	?get_current_process@@YAPEAU_process_@@XZ:PROC	; get_current_process
 pdata	SEGMENT
 $pdata$?map_memory@@YAPEAX_KIE@Z DD imagerel $LN22
-	DD	imagerel $LN22+498
+	DD	imagerel $LN22+501
 	DD	imagerel $unwind$?map_memory@@YAPEAX_KIE@Z
 $pdata$?unmap_memory@@YAXPEAXI@Z DD imagerel $LN8
 	DD	imagerel $LN8+145
@@ -131,12 +131,12 @@ _TEXT	SEGMENT
 user$ = 32
 i$1 = 36
 i$2 = 40
-tv88 = 44
-tv143 = 48
-tv132 = 52
-tv77 = 56
-tv93 = 64
-tv148 = 72
+tv89 = 44
+tv144 = 48
+tv133 = 52
+tv78 = 56
+tv94 = 64
+tv149 = 72
 c_proc$ = 80
 addr$ = 112
 length$ = 120
@@ -187,9 +187,10 @@ $LN11@map_memory:
 	cmp	QWORD PTR addr$[rsp], 0
 	jne	$LN10@map_memory
 
-; 33   : 		addr = (uint64_t)AuGetFreePage(length, user);
+; 33   : 		addr = (uint64_t)AuGetFreePage(length, user, 0);
 
 	mov	eax, DWORD PTR length$[rsp]
+	xor	r8d, r8d
 	movzx	edx, BYTE PTR user$[rsp]
 	mov	ecx, eax
 	call	AuGetFreePage
@@ -205,13 +206,13 @@ $LN11@map_memory:
 	movzx	eax, BYTE PTR user$[rsp]
 	cmp	eax, 1
 	jne	SHORT $LN14@map_memory
-	mov	DWORD PTR tv77[rsp], 4
+	mov	DWORD PTR tv78[rsp], 4
 	jmp	SHORT $LN15@map_memory
 $LN14@map_memory:
-	mov	DWORD PTR tv77[rsp], 0
+	mov	DWORD PTR tv78[rsp], 0
 $LN15@map_memory:
 	call	AuPmmngrAlloc
-	movzx	r8d, BYTE PTR tv77[rsp]
+	movzx	r8d, BYTE PTR tv78[rsp]
 	mov	rdx, QWORD PTR addr$[rsp]
 	mov	rcx, rax
 	call	AuMapPage
@@ -245,10 +246,10 @@ $LN8@map_memory:
 	movzx	eax, BYTE PTR user$[rsp]
 	cmp	eax, 1
 	jne	SHORT $LN16@map_memory
-	mov	DWORD PTR tv88[rsp], 4
+	mov	DWORD PTR tv89[rsp], 4
 	jmp	SHORT $LN17@map_memory
 $LN16@map_memory:
-	mov	DWORD PTR tv88[rsp], 0
+	mov	DWORD PTR tv89[rsp], 0
 $LN17@map_memory:
 	mov	eax, DWORD PTR i$1[rsp]
 	imul	eax, 4096				; 00001000H
@@ -256,10 +257,10 @@ $LN17@map_memory:
 	mov	rcx, QWORD PTR addr$[rsp]
 	add	rcx, rax
 	mov	rax, rcx
-	mov	QWORD PTR tv93[rsp], rax
+	mov	QWORD PTR tv94[rsp], rax
 	call	AuPmmngrAlloc
-	movzx	r8d, BYTE PTR tv88[rsp]
-	mov	rcx, QWORD PTR tv93[rsp]
+	movzx	r8d, BYTE PTR tv89[rsp]
+	mov	rcx, QWORD PTR tv94[rsp]
 	mov	rdx, rcx
 	mov	rcx, rax
 	call	AuMapPage
@@ -286,13 +287,13 @@ $LN10@map_memory:
 	movzx	eax, BYTE PTR user$[rsp]
 	cmp	eax, 1
 	jne	SHORT $LN18@map_memory
-	mov	DWORD PTR tv132[rsp], 4
+	mov	DWORD PTR tv133[rsp], 4
 	jmp	SHORT $LN19@map_memory
 $LN18@map_memory:
-	mov	DWORD PTR tv132[rsp], 0
+	mov	DWORD PTR tv133[rsp], 0
 $LN19@map_memory:
 	call	AuPmmngrAlloc
-	movzx	r8d, BYTE PTR tv132[rsp]
+	movzx	r8d, BYTE PTR tv133[rsp]
 	mov	rdx, QWORD PTR addr$[rsp]
 	mov	rcx, rax
 	call	AuMapPage
@@ -326,10 +327,10 @@ $LN3@map_memory:
 	movzx	eax, BYTE PTR user$[rsp]
 	cmp	eax, 1
 	jne	SHORT $LN20@map_memory
-	mov	DWORD PTR tv143[rsp], 4
+	mov	DWORD PTR tv144[rsp], 4
 	jmp	SHORT $LN21@map_memory
 $LN20@map_memory:
-	mov	DWORD PTR tv143[rsp], 0
+	mov	DWORD PTR tv144[rsp], 0
 $LN21@map_memory:
 	mov	eax, DWORD PTR i$2[rsp]
 	imul	eax, 4096				; 00001000H
@@ -337,10 +338,10 @@ $LN21@map_memory:
 	mov	rcx, QWORD PTR addr$[rsp]
 	add	rcx, rax
 	mov	rax, rcx
-	mov	QWORD PTR tv148[rsp], rax
+	mov	QWORD PTR tv149[rsp], rax
 	call	AuPmmngrAlloc
-	movzx	r8d, BYTE PTR tv143[rsp]
-	mov	rcx, QWORD PTR tv148[rsp]
+	movzx	r8d, BYTE PTR tv144[rsp]
+	mov	rcx, QWORD PTR tv149[rsp]
 	mov	rdx, rcx
 	mov	rcx, rax
 	call	AuMapPage

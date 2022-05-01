@@ -4,6 +4,7 @@
 #include <sysserv.h>
 #include <mmngr\shmem.h>
 #include <mmngr\aummap.h>
+#include <proc.h>
 
 extern "C" uint64_t *funct = NULL;
 
@@ -142,6 +143,8 @@ extern "C" void x64_syscall_handler (int a) {
 	case 38:
 		funct = (uint64_t*)vfree;
 		break;
+	case 39:
+		funct = (uint64_t*)process_heap_break;
 	}
 
 	

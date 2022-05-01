@@ -6,16 +6,16 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 CONST	SEGMENT
-$SG3834	DB	'Kernel Panic!! Page fault ', 0aH, 00H
+$SG3838	DB	'Kernel Panic!! Page fault ', 0aH, 00H
 	ORG $+4
-$SG3835	DB	'Virtual address -> %x ', 0aH, 00H
-$SG3836	DB	'RIP ->%x ', 0aH, 00H
+$SG3839	DB	'Virtual address -> %x ', 0aH, 00H
+$SG3840	DB	'RIP ->%x ', 0aH, 00H
 	ORG $+5
-$SG3842	DB	'Page Fault -> %x ', 0aH, 00H
+$SG3846	DB	'Page Fault -> %x ', 0aH, 00H
 	ORG $+5
-$SG3843	DB	'RIP -> %x ', 0aH, 00H
+$SG3847	DB	'RIP -> %x ', 0aH, 00H
 	ORG $+4
-$SG3844	DB	'Current thread -> %s ', 0aH, 00H
+$SG3848	DB	'Current thread -> %s ', 0aH, 00H
 CONST	ENDS
 PUBLIC	?AuHandlePageNotPresent@@YAX_K_NPEAX@Z		; AuHandlePageNotPresent
 EXTRN	printf:PROC
@@ -66,20 +66,20 @@ $LN13:
 
 ; 42   : 		printf ("Kernel Panic!! Page fault \n");
 
-	lea	rcx, OFFSET FLAT:$SG3834
+	lea	rcx, OFFSET FLAT:$SG3838
 	call	printf
 
 ; 43   : 		printf ("Virtual address -> %x \n", vaddr);
 
 	mov	rdx, QWORD PTR vaddr$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3835
+	lea	rcx, OFFSET FLAT:$SG3839
 	call	printf
 
 ; 44   : 		printf ("RIP ->%x \n", frame->rip);
 
 	mov	rax, QWORD PTR frame$[rsp]
 	mov	rdx, QWORD PTR [rax+16]
-	lea	rcx, OFFSET FLAT:$SG3836
+	lea	rcx, OFFSET FLAT:$SG3840
 	call	printf
 $LN9@AuHandlePa:
 
@@ -103,21 +103,21 @@ $LN10@AuHandlePa:
 ; 49   : 		printf ("Page Fault -> %x \n", vaddr);
 
 	mov	rdx, QWORD PTR vaddr$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3842
+	lea	rcx, OFFSET FLAT:$SG3846
 	call	printf
 
 ; 50   : 		printf ("RIP -> %x \n", frame->rip);
 
 	mov	rax, QWORD PTR frame$[rsp]
 	mov	rdx, QWORD PTR [rax+16]
-	lea	rcx, OFFSET FLAT:$SG3843
+	lea	rcx, OFFSET FLAT:$SG3847
 	call	printf
 
 ; 51   : 		printf ("Current thread -> %s \n", get_current_thread()->name);
 
 	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
 	mov	rdx, QWORD PTR [rax+728]
-	lea	rcx, OFFSET FLAT:$SG3844
+	lea	rcx, OFFSET FLAT:$SG3848
 	call	printf
 $LN6@AuHandlePa:
 

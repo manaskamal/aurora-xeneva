@@ -533,8 +533,8 @@ int liballoc_unlock () {
 }
 
 void* liballoc_alloc (int pages) {
-	unsigned int size = pages * 4096;
-	void* p = mmap(0,size, 0,0,0,0);
+	size_t size = pages * 4096;
+	char* p = (char*)sys_proc_heap_brk(pages);
 	return p;
 }
 

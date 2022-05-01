@@ -421,11 +421,15 @@ Image *pri_load_wallpaper (char *filename) {
 void pri_wallpaper_change (pri_wallpaper_t *wallp,char* filename) {
 	UFILE f;
 	int fd = sys_open_file (filename, &f);
+	
 	sys_read_file (fd,wallp->buffer, &f);
+	sys_print_text ("F.SIZE -> %d, fd -> %d\n", f.size, fd);
 	wallp->img->width = 0;
 	wallp->img->height = 0;
 	wallp->img->size = f.size;
+	sys_print_text ("Calling JPEG Decoder \n");
 	CallJpegDecoder(wallp->img);
+	
 }
 
 
@@ -1005,7 +1009,6 @@ int main (int argc, char* argv[]) {
 	int h = canvas_get_height(canvas);
 	sys_print_text ("PRIWM: Canvas Created w-> %d, h-> %d \r\n", w, h);
 	//! load cursor library
-
 	cursor_init ();
 	sys_print_text ("Reading cursor files \n");
 	load_cursor ("/cursor.bmp",(uint8_t*)0x0000070000000000, arrow_cursor);
@@ -1074,7 +1077,7 @@ int main (int argc, char* argv[]) {
 			}
 			
 			if (key_msg.dword == KEY_W) {
-				pri_wallpaper_change(wallpaper,"/leaf.jpg");
+				pri_wallpaper_change(wallpaper,"/madhu.jpg");
 				pri_wallpaper_draw(wallpaper->img);
 				pri_wallpaper_present();
 				 cursor_store_back(mouse_x, mouse_y);

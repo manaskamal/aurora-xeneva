@@ -52,6 +52,6 @@ typedef struct _mmap_params_ {
  * @param filedesc -- file descriptor to map
  * @param offset -- offset from where to begin, it should be multiple of PAGE_SIZE
  */
-extern void* au_mmap (void* address, size_t length, void* otherparams);
+extern void* au_mmap (void* address, size_t length, int protect, int flags, int filedesc, uint64_t offset);
 
 #endif

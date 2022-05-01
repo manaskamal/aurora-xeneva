@@ -15,9 +15,9 @@ apic_timer_count DD 01H DUP (?)
 ?ap_started@@3_NA DB 01H DUP (?)			; ap_started
 _BSS	ENDS
 CONST	SEGMENT
-$SG3314	DB	'APIC initialized ', 0aH, 00H
+$SG3315	DB	'APIC initialized ', 0aH, 00H
 	ORG $+5
-$SG3323	DB	'New APIC -> %x', 0aH, 00H
+$SG3324	DB	'New APIC -> %x', 0aH, 00H
 CONST	ENDS
 PUBLIC	?initialize_apic@@YAX_N@Z			; initialize_apic
 PUBLIC	?apic_local_eoi@@YAXXZ				; apic_local_eoi
@@ -387,7 +387,7 @@ $LN3:
 ; 193  : 	printf ("New APIC -> %x\n", apic);
 
 	mov	rdx, QWORD PTR apic
-	lea	rcx, OFFSET FLAT:$SG3323
+	lea	rcx, OFFSET FLAT:$SG3324
 	call	printf
 
 ; 194  : }
@@ -1055,7 +1055,7 @@ $LN2@initialize:
 ; 159  : 
 ; 160  : 	printf ("APIC initialized \n");
 
-	lea	rcx, OFFSET FLAT:$SG3314
+	lea	rcx, OFFSET FLAT:$SG3315
 	call	printf
 
 ; 161  : 

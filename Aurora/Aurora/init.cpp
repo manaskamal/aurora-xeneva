@@ -90,7 +90,7 @@ void debug_print (const char* text, ...) {
 	debug(text);
 }
 
-
+extern "C" void x64_stack_test(uint8_t a, uint16_t b, int c, int d, int e, uint8 f);
 /**========================================
  ** the main entry routine -- _kmain
  **/
@@ -100,6 +100,8 @@ void _AuMain (KERNEL_BOOT_INFO *info) {
 	AuPmmngrInit (info);
 	AuPagingInit();
 	AuHeapInitialize();
+	
+
 	AuInitializeShMem();
 	AuHalInitialize();
 
@@ -108,7 +110,6 @@ void _AuMain (KERNEL_BOOT_INFO *info) {
 
 	ahci_initialize();
 	hda_initialize();
-
 	AuVFSInit();
 	
 	AuInitializeScreen(info);

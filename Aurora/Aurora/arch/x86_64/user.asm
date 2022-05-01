@@ -28,7 +28,8 @@ syscall_entry:
 	 mov rdx, rsp         ;we save the user stack
 	 mov r9, [rel current_thread]
 	 mov rsp, [r9 + 0xC8]
-	; mov rsp, qword[fs:0x20]    ;load kernel stack
+	 mov r10, rdx         ;store the user stack in r10 because rdx will be modified
+	 ;mov rsp, qword[fs:0x20]    ;load kernel stack
 	 swapgs
 
 	 ;save syscall return stuff
@@ -43,15 +44,22 @@ syscall_entry:
 	 ;kernel
 	 sti
 
-	 sub rsp, 32
+	 sub rsp, 40
 	 mov rcx, r12
 	 call  x64_syscall_handler
 	 mov rcx, r13
 	 mov rdx, r14
 	 mov r8, r15
 	 mov r9, rdi
+
+	 mov rax, [r10 + 40]    ;get other parameters from user stack
+	 mov [rsp + 32], rax    ;store it in kernel stack
+	 mov rax, [r10 + 48]    ;get other parameters from user stack
+	 mov [rsp + 40], rax    ;store it in kernel stack
 	 call [rel funct]
-	 add rsp, 32
+	
+	 add rsp, 40
+
 	 ;return 
 	 cli
 
@@ -64,10 +72,11 @@ syscall_entry:
 	 swapgs
 
 	 ;user stack
-	 mov rsp, rdx
-	 ;mov rcx, rsp   ;;;;;;DEBUG PURPOSES
-	 ;call syscall_debug    ;;;;;;;;DEBUG PURPOSES
+	 mov rsp, r10
 	 o64 sysret
+
+
+
 
 x64_compat_common:
      sti

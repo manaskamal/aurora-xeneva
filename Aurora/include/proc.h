@@ -37,6 +37,8 @@ typedef struct _process_ {
 	uint64_t* cr3;
 	uint64_t image_base;
 	uint64_t stack;
+	uint64_t _image_heap_break_;
+	uint64_t _heap_size_;
 	au_vm_area_t * vma_area;
 	au_vm_area_t * last_vma;
 	list_t *shared_mem_list;
@@ -123,6 +125,12 @@ extern process_t *find_process_by_id (uint32_t pid);
  * @param thread -- thread address
  */
 extern process_t *find_process_by_thread (thread_t *thread);
+
+/*
+ * process_heap_break -- increments the heap size
+ * @param 
+ */
+extern void* process_heap_break (uint64_t pages);
 
 extern void process_list_initialize ();
 #endif

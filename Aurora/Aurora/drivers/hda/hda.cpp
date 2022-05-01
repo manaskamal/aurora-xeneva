@@ -588,7 +588,7 @@ void hda_initialize () {
 	}
 
 	_ihd_audio.buffer = (uint64_t*)0xFFFFF00000100000;
-	memset (_ihd_audio.buffer, 100, BDL_SIZE*HDA_BUFFER_SIZE);
+	memset (_ihd_audio.buffer, 10000, BDL_SIZE*HDA_BUFFER_SIZE);
 
 
 	if (_aud_inw_ (GCAP) & 1) {

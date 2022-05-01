@@ -115,12 +115,16 @@ int sys_open_file (char* filename, FILE *ufile) {
  */
 void sys_read_file (int fd, uint8_t* buffer, FILE *ufile) {
 	x64_cli ();
-	vfs_node_t *file = get_current_thread()->fd[fd];
+	vfs_node_t *file = NULL; 
 
 	vfs_node_t *node = NULL;
 
-	if (ufile->flags > 0){
+	/* if UFILE->size is greater than 0, it's a
+	 * file system based file descriptor, so get
+	 * the root file system file */
+	if (ufile->size > 0){
 		node = vfs_finddir("/");
+		file = get_current_thread()->fd[fd];
 		if (node == NULL)
 			return;
 		for (int i=0; i < file->size; i++){
@@ -129,13 +133,14 @@ void sys_read_file (int fd, uint8_t* buffer, FILE *ufile) {
 			uint64_t* buff = (uint64_t*)p2v((size_t)AuPmmngrAlloc());
 			memset(buff, 0, 4096);
 			readfs_block (node,file,(uint64_t*)v2p((size_t)buff));
-			uint8_t* aligned_buf = (uint8_t*)buff;
-			memcpy (buffer,aligned_buf,4096);
+			memcpy (buffer,buff,4096);
 			buffer += 4096;
 			AuPmmngrFree((void*)v2p((size_t)buff));
 		}
 
 	}else {
+		/* So this fd is non-file system based fd
+		 * get it from fd table */
 		node = get_current_thread()->fd[fd];
 		if (node == NULL)
 			return;
@@ -178,3 +183,4 @@ void sys_write_file (int fd, unsigned char* buffer, FILE *ufile) {
 		writefs(node, node, buffer,file.size);
 	}
 }
+

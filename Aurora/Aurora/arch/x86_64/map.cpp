@@ -30,7 +30,7 @@ void *map_memory (uint64_t addr, uint32_t length,uint8_t attribute) {
 	//! cause, null parameter will cause map_memory to look for free
 	//! memory in process's address space
 	if (addr == NULL) {
-		addr = (uint64_t)AuGetFreePage(length, user);
+		addr = (uint64_t)AuGetFreePage(length, user, 0);
 		if (length == 4096) {
 			AuMapPage((uint64_t)AuPmmngrAlloc(), addr,(user == true) ? PAGING_USER : 0);
 			return (void*)addr;

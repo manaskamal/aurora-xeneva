@@ -40,8 +40,8 @@ uint8_t* last_mark = NULL;
  * kernel malloc library with four pages (16KiB)
  */
 void AuHeapInitialize() {
-	uint64_t* page = au_request_page(4);
-	memset(page, 0, (4*4096));
+	uint64_t* page = au_request_page(1);
+	memset(page, 0, (1*4096));
 	/* setup the first meta data block */
 	uint8_t* desc_addr = (uint8_t*)page;
 	meta_data_t *meta = (meta_data_t*)desc_addr;
@@ -49,38 +49,44 @@ void AuHeapInitialize() {
 	meta->next = NULL;
 	meta->prev = NULL;
 	meta->magic = MAGIC_FREE;
-	meta->eob_mark = 0;
 	/* meta->size holds only the usable area size for user */
-	meta->size = (4*4096) - sizeof(meta_data_t);
+	meta->size = (1*4096) - sizeof(meta_data_t);
 	first_block = meta;
 	last_block = meta;
 	uint64_t lm = (uint64_t)page;
-	last_mark = (uint8_t*)(lm + (4*4096));
+	last_mark = (uint8_t*)(lm + (1*4096));
 }
 /* 
  * au_split_block -- split block into two block
  */
 int au_split_block(meta_data_t* meta_block, size_t req_size) {
 	uint8_t* meta_block_a = (uint8_t*)meta_block;	
+	
+	if (meta_block->size <= sizeof(meta_data_t))
+		return 0;
+
 	meta_data_t* new_block = (meta_data_t*)(meta_block_a + sizeof(meta_data_t) + req_size);
 	size_t size =  meta_block->size - req_size - sizeof(meta_data_t);
 	if ((((uint8_t*)new_block + sizeof(meta_data_t)) > last_mark)) {
-		_debug_print_ ("New block size  crosses last mark \r\n");
 		return 0;
 	}
 
 	new_block->free = true;
-	new_block->eob_mark = 1;
 	new_block->magic = MAGIC_FREE;
 	new_block->prev = meta_block;
 	new_block->next = meta_block->next;
+	if (meta_block->next != NULL)
+		meta_block->next->prev = new_block;
+
 	new_block->size = meta_block->size - req_size - sizeof(meta_data_t);
-	if (new_block->size < 0)
-		new_block->size = 0;
+	if (new_block->size <= sizeof(meta_data_t)) {
+		new_block->free = false;
+	}
+	
 	meta_block->size = req_size + sizeof(meta_data_t);
 	meta_block->next = new_block;
-	new_block->prev->eob_mark = 0;
 	last_block = new_block;
+
 	return 1;
 }
 
@@ -98,13 +104,11 @@ void au_expand_kmalloc(size_t req_size) {
 	meta->next = NULL;
 	meta->prev = NULL;
 	meta->magic = MAGIC_FREE;
-	meta->eob_mark = 1; //(desc_addr + 4095);
 
 	/* meta->size holds only the usable area size for user */
 	meta->size = req_pages * 4096 - sizeof(meta_data_t);
 	last_block->next = meta;
 	meta->prev = last_block;
-	last_block->eob_mark = 0;
 	last_block = meta;
 
 
@@ -154,6 +158,7 @@ void* malloc(size_t size) {
 	}
 
 	if (ret) {
+		_debug_print_ ("Returning address -> %x \r\n", ret);
 		return ret;
 	} else{
 		au_expand_kmalloc(size);
@@ -173,13 +178,17 @@ void merge_forward(meta_data_t *meta) {
 	if (!meta->next->free)
 		return;
 
+	/* Corrupted meta block */
+	if (meta->next->size <= sizeof(meta_data_t))
+		return;
+
 	if (last_block == meta->next)
 		last_block = meta;
 
+	meta->size += meta->size + meta->next->size;
+	
 	if (meta->next->next != NULL)
 		meta->next->next->prev = meta;
-
-	meta->size = meta->size + meta->next->size; // - sizeof(meta_data_t);
 
 	meta->next = meta->next->next;
 }
@@ -199,10 +208,9 @@ void merge_backward (meta_data_t* meta) {
  * @param ptr -- pointer to the address block to free
  */
 void free(void* ptr) {
-	uint8_t* actual_addr = (uint8_t*)ptr - sizeof(meta_data_t);
-	meta_data_t *meta = (meta_data_t*)actual_addr;
+	uint8_t* actual_addr = (uint8_t*)ptr;
+	meta_data_t *meta = (meta_data_t*)(actual_addr - sizeof(meta_data_t));
 	meta->free = true;
-
 	/* merge it with 3 near blocks if they are free*/
 	merge_forward(meta);
 	merge_backward(meta);
@@ -244,8 +252,10 @@ void* kcalloc(size_t n_item, size_t size) {
  * @param pages -- number of pages needs to be mapped
  */
 uint64_t* au_request_page(int pages) {
-	uint64_t* page = AuGetFreePage(0,false);
+	uint64_t* page = AuGetFreePage(0,false, 0);
 	uint64_t page_ = (uint64_t)page;
+
+	_debug_print_ ("*****Requesting page -> %x \r\n", page);
 	for (size_t i = 0; i < pages; i++) {
 		AuMapPage((uint64_t)AuPmmngrAlloc(), page_ + i * 4096, 0);
 		

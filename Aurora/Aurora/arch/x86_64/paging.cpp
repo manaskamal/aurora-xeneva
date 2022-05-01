@@ -200,8 +200,11 @@ void AuUnmapPage(uint64_t virt_addr){
 		
 		pt[pt_index(virt_addr)] = 0;
 	}
-	if (page != 0)
+
+	if (page != 0) {
+		printf ("Unmapping Address page -> %x \n", page);
 		AuPmmngrFree(page);
+	}
 }
 
 
@@ -362,12 +365,15 @@ uint64_t *AuCreateAddressSpace (){
 }
 
 
-uint64_t* AuGetFreePage (size_t s, bool user) {
+uint64_t* AuGetFreePage (size_t s, bool user, void* ptr) {
 	uint64_t* page = 0;
 	uint64_t start = 0;
-	if (user)
-		start = USER_BASE_ADDRESS;
-	else
+	if (user) {
+		if (ptr)
+			start = (uint64_t)ptr;
+		else
+			start = USER_BASE_ADDRESS;
+	}else
 		start = KERNEL_BASE_ADDRESS;
 
 	uint64_t* end = 0;

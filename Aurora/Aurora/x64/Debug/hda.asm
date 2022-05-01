@@ -3014,10 +3014,10 @@ $LN7@hda_initia:
 	mov	rax, -17592184995840			; fffff00000100000H
 	mov	QWORD PTR ?_ihd_audio@@3U_hd_audio_@@A+61, rax
 
-; 591  : 	memset (_ihd_audio.buffer, 100, BDL_SIZE*HDA_BUFFER_SIZE);
+; 591  : 	memset (_ihd_audio.buffer, 10000, BDL_SIZE*HDA_BUFFER_SIZE);
 
 	mov	r8d, 2048				; 00000800H
-	mov	dl, 100					; 00000064H
+	mov	dl, 16
 	mov	rcx, QWORD PTR ?_ihd_audio@@3U_hd_audio_@@A+61
 	call	memset
 

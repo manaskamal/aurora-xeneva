@@ -52,13 +52,6 @@ typedef struct _mmap_params_ {
  * @param offset -- offset from where to begin, it should be multiple of PAGE_SIZE
  */
 void* mmap(void* address, size_t length, int protect, int flags, int filedesc, uint64_t offset){
-	valloc(0x10000);
-	mmap_params_t* params = (mmap_params_t*)0x10000;
-	params->protect = protect;
-	params->flags = flags;
-	params->filedesc = filedesc;
-	params->offset = offset;
-	void* ptr = sys_mmap(address, length, params);
-	vfree(0x10000);
+	void* ptr = sys_mmap(address, length, protect, flags, filedesc, offset);
 	return ptr;
 }
