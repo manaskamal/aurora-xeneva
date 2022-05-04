@@ -7,9 +7,11 @@ INCLUDELIB OLDNAMES
 
 PUBLIC	?mmio_base_address@@3PEA_KEA			; mmio_base_address
 PUBLIC	?root_cr3@@3PEA_KEA				; root_cr3
+PUBLIC	?first@@3_NA					; first
 _BSS	SEGMENT
 ?mmio_base_address@@3PEA_KEA DQ 01H DUP (?)		; mmio_base_address
 ?root_cr3@@3PEA_KEA DQ 01H DUP (?)			; root_cr3
+?first@@3_NA DB	01H DUP (?)				; first
 _BSS	ENDS
 CONST	SEGMENT
 $SG3571	DB	'Unmapping Address page -> %x ', 0aH, 00H
@@ -27,7 +29,7 @@ PUBLIC	?AuMapPageEx@@YA_NPEA_K_K1E@Z			; AuMapPageEx
 PUBLIC	?AuUnmapPageEx@@YAXPEA_K_K_N@Z			; AuUnmapPageEx
 PUBLIC	AuUnmapPage
 PUBLIC	?AuCreateAddressSpace@@YAPEA_KXZ		; AuCreateAddressSpace
-PUBLIC	?AuGetPhysicalAddress@@YAPEA_K_K0@Z		; AuGetPhysicalAddress
+PUBLIC	AuGetPhysicalAddress
 PUBLIC	AuGetFreePage
 PUBLIC	AuGetRootPageTable
 PUBLIC	AuFreePages
@@ -62,9 +64,9 @@ $pdata$AuUnmapPage DD imagerel $LN5
 $pdata$?AuCreateAddressSpace@@YAPEA_KXZ DD imagerel $LN9
 	DD	imagerel $LN9+182
 	DD	imagerel $unwind$?AuCreateAddressSpace@@YAPEA_KXZ
-$pdata$?AuGetPhysicalAddress@@YAPEA_K_K0@Z DD imagerel $LN4
+$pdata$AuGetPhysicalAddress DD imagerel $LN4
 	DD	imagerel $LN4+201
-	DD	imagerel $unwind$?AuGetPhysicalAddress@@YAPEA_K_K0@Z
+	DD	imagerel $unwind$AuGetPhysicalAddress
 $pdata$AuGetFreePage DD imagerel $LN13
 	DD	imagerel $LN13+403
 	DD	imagerel $unwind$AuGetFreePage
@@ -72,7 +74,7 @@ $pdata$AuFreePages DD imagerel $LN8
 	DD	imagerel $LN8+343
 	DD	imagerel $unwind$AuFreePages
 $pdata$AuMapMMIO DD imagerel $LN6
-	DD	imagerel $LN6+161
+	DD	imagerel $LN6+171
 	DD	imagerel $unwind$AuMapMMIO
 $pdata$?AuPagingClearLow@@YAXXZ DD imagerel $LN6
 	DD	imagerel $LN6+69
@@ -94,14 +96,14 @@ $unwind$AuUnmapPage DD 010901H
 	DD	0a209H
 $unwind$?AuCreateAddressSpace@@YAPEA_KXZ DD 010401H
 	DD	08204H
-$unwind$?AuGetPhysicalAddress@@YAPEA_K_K0@Z DD 010e01H
+$unwind$AuGetPhysicalAddress DD 010e01H
 	DD	0a20eH
 $unwind$AuGetFreePage DD 011201H
 	DD	0c212H
 $unwind$AuFreePages DD 011201H
 	DD	0c212H
 $unwind$AuMapMMIO DD 010e01H
-	DD	0620eH
+	DD	0820eH
 $unwind$?AuPagingClearLow@@YAXXZ DD 010401H
 	DD	06204H
 $unwind$?clear@@YAXPEAX@Z DD 010901H
@@ -202,23 +204,23 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 i$1 = 32
 out$ = 40
-phys_addr$ = 64
-page_count$ = 72
+address$ = 48
+phys_addr$ = 80
+page_count$ = 88
 AuMapMMIO PROC
 
-; 410  : void* AuMapMMIO (uint64_t phys_addr, size_t page_count) {
+; 411  : void* AuMapMMIO (uint64_t phys_addr, size_t page_count) {
 
 $LN6:
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
-	sub	rsp, 56					; 00000038H
+	sub	rsp, 72					; 00000048H
 
-; 411  : 	uint64_t out = (uint64_t)mmio_base_address;
+; 412  : 	uint64_t out = (uint64_t)mmio_base_address;
 
 	mov	rax, QWORD PTR ?mmio_base_address@@3PEA_KEA ; mmio_base_address
 	mov	QWORD PTR out$[rsp], rax
 
-; 412  : 	
 ; 413  : 	for (size_t i = 0; i < page_count; i++) {
 
 	mov	QWORD PTR i$1[rsp], 0
@@ -253,21 +255,29 @@ $LN3@AuMapMMIO:
 	jmp	SHORT $LN2@AuMapMMIO
 $LN1@AuMapMMIO:
 
-; 416  : 	mmio_base_address += (page_count * 4096);
+; 416  : 
+; 417  : 	uint64_t address = out;
+
+	mov	rax, QWORD PTR out$[rsp]
+	mov	QWORD PTR address$[rsp], rax
+
+; 418  : 	mmio_base_address = (uint64_t*)(address + (page_count * 4096));
 
 	mov	rax, QWORD PTR page_count$[rsp]
 	imul	rax, 4096				; 00001000H
-	mov	rcx, QWORD PTR ?mmio_base_address@@3PEA_KEA ; mmio_base_address
-	lea	rax, QWORD PTR [rcx+rax*8]
+	mov	rcx, QWORD PTR address$[rsp]
+	add	rcx, rax
+	mov	rax, rcx
 	mov	QWORD PTR ?mmio_base_address@@3PEA_KEA, rax ; mmio_base_address
 
-; 417  : 	return (void*)out;
+; 419  : 
+; 420  : 	return (void*)out;
 
 	mov	rax, QWORD PTR out$[rsp]
 
-; 418  : }
+; 421  : }
 
-	add	rsp, 56					; 00000038H
+	add	rsp, 72					; 00000048H
 	ret	0
 AuMapMMIO ENDP
 _TEXT	ENDS
@@ -427,11 +437,11 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 AuGetRootPageTable PROC
 
-; 422  : 	return root_cr3;
+; 425  : 	return root_cr3;
 
 	mov	rax, QWORD PTR ?root_cr3@@3PEA_KEA	; root_cr3
 
-; 423  : }
+; 426  : }
 
 	ret	0
 AuGetRootPageTable ENDP
@@ -651,7 +661,7 @@ pd$ = 64
 pt$ = 72
 cr3$ = 96
 virt_addr$ = 104
-?AuGetPhysicalAddress@@YAPEA_K_K0@Z PROC		; AuGetPhysicalAddress
+AuGetPhysicalAddress PROC
 
 ; 256  : uint64_t* AuGetPhysicalAddress (uint64_t cr3,uint64_t virt_addr) {
 
@@ -728,7 +738,7 @@ $LN1@AuGetPhysi:
 
 	add	rsp, 88					; 00000058H
 	ret	0
-?AuGetPhysicalAddress@@YAPEA_K_K0@Z ENDP		; AuGetPhysicalAddress
+AuGetPhysicalAddress ENDP
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\arch\x86_64\paging.cpp

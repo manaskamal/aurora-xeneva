@@ -16,8 +16,9 @@
  * main -- the main entry point of init
  */
 int main (int argc, char* argv[]) {
-	//sys_print_text ("Init process started %d %d %d %d\n", 10, 20, 30, 40);
+	sys_print_text ("Init process started %d %d %d %d\n", 10, 20, 30, 40);
 	void* ptr = mmap (0,8192,0,0,0,64);
+	sys_print_text ("Ptr returned -> %x \n", ptr);
 	while(1) {
 		sys_wait();
 	}

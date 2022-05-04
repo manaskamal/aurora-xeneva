@@ -33,19 +33,23 @@
 #include <drivers\pci.h>
 #include <arch\x86_64\mmngr\kheap.h>
 #include <hal.h>
+#include <fs\vfs.h>
+#include <net\aunet.h>
 
 typedef struct _e1000_nic_ {
 	uint64_t mmio_addr;
 	e1000_rx_desc *rx;
 	e1000_tx_desc *tx;
-	uintptr_t rx_phys;
-	uintptr_t tx_phys;
+	uint64_t rx_phys;
+	uint64_t tx_phys;
+	uint8_t* rx_virt[E1000_NUM_RX_DESC];
+	uint8_t* tx_virt[E1000_NUM_TX_DESC];
 	int irq;
 	int rx_index;
 	int tx_index;
 	int link_status;
 	uint8_t has_eeprom;
-	uint8_t mac[5];
+	uint8_t mac[6];
 }e1000_nic_dev;
 
 e1000_nic_dev *e1000_nic;
@@ -57,11 +61,11 @@ bool first_interrupt = false;
 #define CTRL_SLU     (1UL << 6UL)
 #define CTRL_LRST    (1UL << 3UL)
 
-uint32_t mmio_read32(uintptr_t addr) {
+uint32_t mmio_read32(uint64_t addr) {
 	return *((volatile uint32_t*)(addr));
 }
 
-void mmio_write32(uintptr_t addr, uint32_t val) {
+void mmio_write32(uint64_t addr, uint32_t val) {
 	(*((volatile uint32_t*)(addr))) = val;
 }
 
@@ -131,6 +135,13 @@ void e1000_handler (size_t v, void* p) {
 	printf ("E1000 interrupt handler++\n");
 	if (!first_interrupt)
 		first_interrupt = true;
+
+	if (status & ICR_LSC) 
+		e1000_nic->link_status = (e1000_read_command(e1000_nic, E1000_REG_STATUS) & (1<<1));
+
+	if (status & ICR_RXT0) 
+		printf ("[driver]: e1000 received packet \n");
+
 	e1000_write_command(e1000_nic, E1000_REG_ICR, status);
 }
 
@@ -143,7 +154,7 @@ void e1000_disable_interrupt (e1000_nic_dev *dev) {
 }
 
 void e1000_init_rx (e1000_nic_dev * dev) {
-	e1000_write_command(dev, E1000_REG_RXDESCLO, dev->rx_phys);
+	e1000_write_command(dev, E1000_REG_RXDESCLO, v2p(dev->rx_phys));
 	e1000_write_command(dev, E1000_REG_RXDESCHI, 0);
 	e1000_write_command(dev, E1000_REG_RXDESCLEN, E1000_NUM_RX_DESC * sizeof(e1000_rx_desc));
 	e1000_write_command(dev, E1000_REG_RXDESCHEAD, 0);
@@ -162,7 +173,7 @@ void e1000_init_rx (e1000_nic_dev * dev) {
 }
 
 void e1000_init_tx (e1000_nic_dev * dev) {
-	e1000_write_command(dev, E1000_REG_TXDESCLO, dev->tx_phys);
+	e1000_write_command(dev, E1000_REG_TXDESCLO, v2p(dev->tx_phys));
 	e1000_write_command(dev, E1000_REG_TXDESCHI, 0);
 	e1000_write_command(dev, E1000_REG_TXDESCLEN, E1000_NUM_TX_DESC * sizeof(e1000_tx_desc));
 	e1000_write_command(dev, E1000_REG_TXDESCHEAD, 0);
@@ -183,12 +194,49 @@ void e1000_init_tx (e1000_nic_dev * dev) {
 	e1000_write_command(dev, E1000_REG_TCTRL, tctl);
 }
 
+void e1000_send_packet (e1000_nic_dev* dev, uint8_t* payload, size_t payload_size) {
+	int tx_tail = e1000_read_command(dev,E1000_REG_TXDESCTAIL);
+	int tx_head = e1000_read_command(dev,E1000_REG_TXDESCHEAD);
+
+	memcpy(dev->tx_virt[dev->tx_index], payload,payload_size);
+	dev->tx[dev->tx_index].length = payload_size;
+	dev->tx[dev->tx_index].cmd = CMD_EOP | CMD_IFCS | CMD_RS;
+	dev->tx[dev->tx_index].status = 0;
+
+	if (++dev->tx_index == E1000_NUM_TX_DESC)
+		dev->tx_index = 0;
+
+	e1000_write_command(dev,E1000_REG_TXDESCTAIL, dev->tx_index);
+	e1000_read_command(dev, E1000_REG_STATUS);
+}
+
+/*
+ * e1000_write_file -- writes to e1000 device 
+ * @param file -- e1000 node
+ * @param buffer -- buffer to write
+ * @param length -- length of the buffer
+ */
+void e1000_write_file (vfs_node_t *file, uint8_t* buffer, uint32_t length) {
+	printf ("[driver]: writing to e1000 file device \n");
+	e1000_send_packet(e1000_nic, buffer, length);
+}
+
+/*
+ * e1000_ioctl -- e1000 file ioquery
+ */
+int e1000_ioquery (vfs_node_t *file, int code, void* arg) {
+	return 1;
+}
+
 /*
  * AuDriverUnload -- Frees and clear up everthing of e1000 driver
  * turn e1000 off!
  */
 AU_EXTERN AU_EXPORT int AuDriverUnload() {
 	return 0;
+}
+
+void AuInterruptHandlerE1000(size_t v, void* p) {
 }
 /*
  * AuDriverMain -- Main entry for e1000 driver
@@ -204,11 +252,14 @@ AU_EXTERN AU_EXPORT int AuDriverMain() {
 
 	
 	e1000_nic_dev *e1000_dev = (e1000_nic_dev*)malloc(sizeof(e1000_nic_dev));
+
+	pci_enable_bus_master(bus,dev_,func);
+
 	e1000_nic = e1000_dev;
-	e1000_dev->rx_phys = (uintptr_t)AuPmmngrAllocBlocks(2);
+	e1000_dev->rx_phys = (uint64_t)p2v((size_t)AuPmmngrAllocBlocks(2));
 	e1000_dev->rx = (e1000_rx_desc*)e1000_dev->rx_phys;
 	
-	e1000_dev->tx_phys = (uintptr_t)AuPmmngrAllocBlocks(2);
+	e1000_dev->tx_phys = (uint64_t)p2v((size_t)AuPmmngrAllocBlocks(2));
 	e1000_dev->tx = (e1000_tx_desc*)e1000_dev->tx_phys;
 	
 	memset(e1000_dev->rx, 0, sizeof(e1000_rx_desc) * 512);
@@ -216,21 +267,22 @@ AU_EXTERN AU_EXPORT int AuDriverMain() {
 	
 	for (int i = 0; i < 512; ++i) {
 		e1000_dev->rx[i].addr = (uint64_t)AuPmmngrAlloc();
+		e1000_dev->rx_virt[i] = (uint8_t*)AuMapMMIO(e1000_dev->rx[i].addr, 1);
 		e1000_dev->rx[i].status = 0;
 	}
 
 	for (int i = 0; i < E1000_NUM_TX_DESC; ++i) {
 		e1000_dev->tx[i].addr = (uint64_t)AuPmmngrAlloc();
+		e1000_dev->tx_virt[i] = (uint8_t*)AuMapMMIO(e1000_dev->tx[i].addr, 1);
+		memset(e1000_dev->tx_virt[i],0, 4096);
 		e1000_dev->tx[i].status = 0;
 		e1000_dev->tx[i].cmd = (1<<0);
 	}
 
-	pci_enable_bus_master(bus,dev_,func);
-
-	uintptr_t mmio = dev.device.nonBridge.baseAddress[0];
+	uint64_t mmio = dev.device.nonBridge.baseAddress[0];
 	e1000_dev->mmio_addr = (uint64_t)AuMapMMIO(mmio,8);
+
 	e1000_eeprom_detect(e1000_dev);
-	
 	e1000_read_mac(e1000_dev);
 	for (uint8_t i = 0; i < 6; i++)
 		printf ("%x:", e1000_dev->mac[i]);
@@ -242,6 +294,10 @@ AU_EXTERN AU_EXPORT int AuDriverMain() {
 
 	e1000_dev->irq = dev.device.nonBridge.interruptLine;
 	printf ("[driver]: e1000 irq -> %d \n", e1000_dev->irq);
+
+	if (e1000_dev->irq == 0xFF)
+		return 1;
+
 	AuInterruptSet(e1000_dev->irq, e1000_handler, e1000_dev->irq);
 
 	e1000_disable_interrupt(e1000_dev);
@@ -297,6 +353,30 @@ AU_EXTERN AU_EXPORT int AuDriverMain() {
 
 
 	e1000_write_command(e1000_dev, E1000_REG_IMS, INTS);
+
+
+	vfs_node_t *file = (vfs_node_t*)malloc(sizeof(vfs_node_t));
+	strcpy (file->filename, "e1000");
+	file->size = 0;
+	file->eof = 0;
+	file->pos = 0;
+	file->current = 0;
+	file->flags = FS_FLAG_GENERAL;
+	file->device = e1000_nic;
+	file->status = 0;
+	file->open = 0;
+	file->read = 0;
+	file->write = e1000_write_file;
+	file->read_blk = 0;
+	file->ioquery = e1000_ioquery;
+	vfs_mount ("/dev/e1000", file, 0);
+
+	AuNet_t *net = (AuNet_t*)malloc(sizeof(AuNet_t));
+	memset(net->mac, 0, 6);
+	memcpy (net->mac, e1000_dev->mac,6);
+	memset(net->name, 0, 8);
+	strcpy(net->name, "e1000");
+	AuNetAddAdapter(file,net);
 
 	AuEnableInterrupts();
 	for(;;) {

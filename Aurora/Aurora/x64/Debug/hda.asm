@@ -115,7 +115,7 @@ EXTRN	memset:PROC
 EXTRN	memcpy:PROC
 EXTRN	AuPmmngrAlloc:PROC
 EXTRN	AuMapPage:PROC
-EXTRN	?AuGetPhysicalAddress@@YAPEA_K_K0@Z:PROC	; AuGetPhysicalAddress
+EXTRN	AuGetPhysicalAddress:PROC
 EXTRN	AuMapMMIO:PROC
 EXTRN	printf:PROC
 EXTRN	?sound_request_next@@YAXPEAE@Z:PROC		; sound_request_next
@@ -1369,7 +1369,7 @@ $LN6@hda_init_o:
 	mov	rcx, QWORD PTR tv82[rsp]
 	mov	rdx, rcx
 	mov	rcx, rax
-	call	?AuGetPhysicalAddress@@YAPEA_K_K0@Z	; AuGetPhysicalAddress
+	call	AuGetPhysicalAddress
 	movsxd	rcx, DWORD PTR j$[rsp]
 	imul	rcx, 16
 	mov	rdx, QWORD PTR bdl$[rsp]

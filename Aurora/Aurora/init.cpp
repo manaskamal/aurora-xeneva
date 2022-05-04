@@ -66,9 +66,8 @@
 
 #include <fs\ttype.h>
 
-#include <net\arp.h>
 #include <net\ethernet.h>
-#include <net\nethw.h>
+#include <net\aunet.h>
 #include <utils\circ_buf.h>
 
 #ifdef ARCH_X64
@@ -118,6 +117,8 @@ void _AuMain (KERNEL_BOOT_INFO *info) {
 
 	AuInitializeMouse();
 
+	AuNetInitialize();
+
 	//Here we initialise all drivers stuffs
 	/* Clear interrupts as scheduler will enable it */
 	x64_cli();
@@ -139,6 +140,7 @@ void _AuMain (KERNEL_BOOT_INFO *info) {
 
 	/*Clear the lower half for user space */
 	AuPagingClearLow();
+
 
 #ifdef ARCH_X64
 	

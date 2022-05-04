@@ -29,6 +29,7 @@ The Goal of the project is to produce a high-quality Operating system with full 
 7. High-Definition Audio
 8. Networking (under development)
 9. Driver Manager (_loading and linking dll files as drivers_)
+10.Fully Higher half with MMIO mappings
 
 ## __Ported Projects__:
 1. FreeType 
@@ -64,8 +65,8 @@ __xnlib/xnclib/__ -- C library  <br>
 _Please refer to __"Drivers/"__ directory_
 
 # Screenshot
-![alt text](https://github.com/manaskamal/aurora-xeneva/blob/master/images/XenevaFullResolution.jpg?raw=true)
-                             _Aurora's Xeneva in 1920x1080 resolution_
+![alt text](https://github.com/manaskamal/aurora-xeneva/blob/master/images/xemod.png?raw=true)
+                             _Aurora's Xeneva in 1280x1024 resolution_
 
 # About Me:
 I am Manas Kamal Choudhury from Assam, India. I have been programming since class 6. I am self-taught.

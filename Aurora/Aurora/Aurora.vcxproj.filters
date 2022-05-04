@@ -88,6 +88,12 @@
     <Filter Include="source\mmngr">
       <UniqueIdentifier>{b089a29f-951c-4d58-a29b-b2c55ff8dcec}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\net">
+      <UniqueIdentifier>{4bae1cf2-e4de-4fc6-bd15-ddacf27906d1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\net">
+      <UniqueIdentifier>{e1adc153-da64-4964-9d0e-4518698073db}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\stdint.h">
@@ -351,6 +357,12 @@
     <ClInclude Include="..\include\mmngr\aummap.h">
       <Filter>include\mmngr</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\net\ethernet.h">
+      <Filter>include\net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\net\aunet.h">
+      <Filter>include\net</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="init.cpp">
@@ -571,6 +583,12 @@
     </ClCompile>
     <ClCompile Include="mmngr\aummap.cpp">
       <Filter>source\mmngr</Filter>
+    </ClCompile>
+    <ClCompile Include="net\aunet.cpp">
+      <Filter>source\net</Filter>
+    </ClCompile>
+    <ClCompile Include="net\ethernet.cpp">
+      <Filter>source\net</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

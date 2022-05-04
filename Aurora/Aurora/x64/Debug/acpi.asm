@@ -597,9 +597,9 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 ?acpi_pcie_supported@@YA_NXZ PROC			; acpi_pcie_supported
 
-; 269  : 	//if (!kern_acpi->mcfg) {
-; 270  : 	//	return false;
-; 271  : 	//} 
+; 269  : 	/*if (!kern_acpi.mcfg) {
+; 270  : 		return true;
+; 271  : 	} */
 ; 272  : 	////! for now let's use pci legacy mode
 ; 273  : 	//return true;
 ; 274  : 	return false;

@@ -32,6 +32,12 @@
 #include <drivers\pci.h>
 #include "xhci.h"
 #include <arch\x86_64\mmngr\paging.h>
+#include <arch\x86_64\mmngr\kheap.h>
+
+usb_dev_t *usb_device;
+
+void AuUSBInterrupt(size_t v, void* p) {
+}
 
 /*
  * AuDriverUnload -- Frees and clear up everthing of e1000 driver
@@ -50,7 +56,10 @@ AU_EXTERN AU_EXPORT int AuDriverMain() {
 		printf ("[usb]: xhci not found \n");
 	}
 
+	usb_device = (usb_dev_t*)malloc(sizeof(usb_dev_t));
+	
 	pci_enable_bus_master(bus, dev, func);
+
 
 	uint64_t usb_addr_low = device.device.nonBridge.baseAddress[0] & 0xFFFFFFF0;
 	uint64_t usb_addr_high = device.device.nonBridge.baseAddress[1] & 0xFFFFFFFF;
@@ -59,13 +68,25 @@ AU_EXTERN AU_EXPORT int AuDriverMain() {
 	printf ("[usb]: address low -> %x, address high -> %x \n", usb_addr_low, usb_addr_high);
 	printf ("[usb]: mmio addr -> %x \n", mmio_addr);
 
-	uint64_t* mmio_base = (uint64_t*)AuMapMMIO(mmio_addr, 4);
+	uint64_t mmio_base = (uint64_t)AuMapMMIO(mmio_addr, 4);
 	xhci_cap_regs_t *cap = (xhci_cap_regs_t*)mmio_base;
-	xhci_op_regs_t *op = (xhci_op_regs_t*)(cap + (cap->cap_caplen_version & 0xFF));
-	
+	uint64_t op_base = (uint64_t)(mmio_base + (cap->cap_caplen_version & 0xFF));
+	xhci_op_regs_t *op = (xhci_op_regs_t*)op_base;
+
+	usb_device->cap_regs = cap;
+	usb_device->op_regs = op;
+
 	printf ("[usb]: xhci available slots: %d \n", (cap->cap_hcsparams1 & 0xFF));
 	printf ("[usb]: xhci available ports: %d \n", (cap->cap_hcsparams1 >> 24));
-	
 
-	for(;;);
+	usb_device->num_slots = (cap->cap_hcsparams1 & 0xFF);
+	usb_device->num_ports = (cap->cap_hcsparams1 >> 24);
+	
+	/* Reset the XHCI controller */
+	xhci_reset(usb_device);
+
+	printf ("[usb]: xhci interrupt -> %d \n", device.device.nonBridge.interruptLine);
+
+	printf ("[usb]: xhci reset completed \n");
+	return 0;
 }

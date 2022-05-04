@@ -22,7 +22,7 @@ EXTRN	AuPmmngrAlloc:PROC
 EXTRN	v2p:PROC
 EXTRN	x64_cli:PROC
 EXTRN	AuMapPage:PROC
-EXTRN	?AuGetPhysicalAddress@@YAPEA_K_K0@Z:PROC	; AuGetPhysicalAddress
+EXTRN	AuGetPhysicalAddress:PROC
 EXTRN	AuGetFreePage:PROC
 EXTRN	malloc:PROC
 EXTRN	?get_current_thread@@YAPEAU_thread_@@XZ:PROC	; get_current_thread
@@ -171,7 +171,7 @@ $LN9@AuObtainSh:
 	mov	rax, rcx
 	mov	rdx, rax
 	mov	rcx, QWORD PTR cr3$6[rsp]
-	call	?AuGetPhysicalAddress@@YAPEA_K_K0@Z	; AuGetPhysicalAddress
+	call	AuGetPhysicalAddress
 	mov	QWORD PTR phys_addr$7[rsp], rax
 
 ; 101  : 			uint64_t current_virt = (uint64_t)AuGetFreePage(0,true, 0);

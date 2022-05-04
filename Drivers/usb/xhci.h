@@ -59,5 +59,17 @@ typedef struct _xhci_op_regs_ {
 }xhci_op_regs_t;
 #pragma pack(pop)
 
+typedef struct _usb_dev_ {
+	xhci_cap_regs_t *cap_regs;
+	xhci_op_regs_t* op_regs;
+	uint32_t num_slots;
+	uint32_t num_ports;
+}usb_dev_t;
 
+
+/*
+ * xhci_reset -- reset the xhci controller
+ * @param dev -- usb device
+ */
+extern void xhci_reset (usb_dev_t *dev);
 #endif

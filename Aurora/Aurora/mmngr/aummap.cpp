@@ -47,8 +47,6 @@
 void* au_mmap (void* address, size_t length, int protect, int flags, int filedesc, uint64_t offset) {
 	/* this is a system call, so make sure it is atomic */
 	x64_cli();
-	
-	printf ("MMAP offset ->  %d \n", offset);
 
 	process_t *proc = get_current_process();
 	uint64_t vaddr_start = 0;
@@ -70,12 +68,9 @@ void* au_mmap (void* address, size_t length, int protect, int flags, int filedes
 	if (size == 0)
 		size = 1;
 	
-	_debug_print_ ("Including VM Area \r\n");
 	au_vm_area_t *vma = (au_vm_area_t*)malloc(sizeof(au_vm_area_t));
-	_debug_print_ ("VMA New Address -> %x \r\n", vma);
 	vma->start = vaddr_start;
 	vma->end = vma->start + (size * 0x1000);
-//	printf ("MMAP SYSCALL end -> %x , start -> %x\n", vma->end, vma->start);
 	vma->file = file;
 	vma->offset = offset;
 	vma->prot_flags = protect;
@@ -83,6 +78,7 @@ void* au_mmap (void* address, size_t length, int protect, int flags, int filedes
 	vma->length = size;
 	AuInsertVMArea(proc, vma);
 
+	/* Map it quicky */
 	if (vma->file == NULL)
 		for (int i = 0; i < size; i++) {
 			AuMapPage((uint64_t)AuPmmngrAlloc(), vma->start + i * 4096, PAGING_USER);

@@ -266,9 +266,9 @@ uint8_t* search_s5 (acpiDsdt* header) {
 
 //! Checks for PCIe support
 bool acpi_pcie_supported () {
-	//if (!kern_acpi->mcfg) {
-	//	return false;
-	//} 
+	/*if (!kern_acpi.mcfg) {
+		return true;
+	} */
 	////! for now let's use pci legacy mode
 	//return true;
 	return false;

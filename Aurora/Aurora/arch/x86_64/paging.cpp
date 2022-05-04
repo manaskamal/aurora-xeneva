@@ -402,6 +402,7 @@ uint64_t* AuGetFreePage (size_t s, bool user, void* ptr) {
 	return 0;
 }
 
+bool first = false;
 /*
  * AuMapMMIO -- Maps Memory Mapped IO addresses
  * @param phys_addr -- mmio physical address
@@ -409,11 +410,13 @@ uint64_t* AuGetFreePage (size_t s, bool user, void* ptr) {
  */
 void* AuMapMMIO (uint64_t phys_addr, size_t page_count) {
 	uint64_t out = (uint64_t)mmio_base_address;
-	
 	for (size_t i = 0; i < page_count; i++) {
 		AuMapPage(phys_addr + i * 4096, out + i * 4096,PAGING_NO_CACHING | PAGING_NO_EXECUTE);
 	}
-	mmio_base_address += (page_count * 4096);
+
+	uint64_t address = out;
+	mmio_base_address = (uint64_t*)(address + (page_count * 4096));
+
 	return (void*)out;
 }
 

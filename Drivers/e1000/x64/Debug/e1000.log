@@ -1,11 +1,15 @@
-﻿Build started 25-04-2022 ৰাতিপু 10:38:18.
+﻿Build started 04-05-2022 ৰাতিপু 7:37:16.
      1>Project "E:\Xeneva Project\Xeneva\Drivers\e1000\e1000.vcxproj" on node 2 (Rebuild target(s)).
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\Aurora\include" /Zi /nologo /W3 /WX- /Od /Oy /D ARCH_X64 /D _WINDLL /D _MBCS /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt e1000.cpp
      1>cl : Command line warning D9002: ignoring unknown option '/arch:SSE'
          e1000.cpp
-     1>e1000.cpp(69): warning C4244: 'argument' : conversion from 'uint64_t' to 'uintptr_t', possible loss of data
-     1>e1000.cpp(73): warning C4244: 'argument' : conversion from 'uint64_t' to 'uintptr_t', possible loss of data
+     1>E:\Xeneva Project\Xeneva\Aurora\include\ctype.h(33): warning C4005: 'isascii' : macro redefinition
+                 E:\Xeneva Project\Xeneva\Aurora\include\ctype.h(22) : see previous definition of 'isascii'
+     1>e1000.cpp(157): warning C4244: 'argument' : conversion from 'uint64_t' to 'uint32_t', possible loss of data
+     1>e1000.cpp(176): warning C4244: 'argument' : conversion from 'uint64_t' to 'uint32_t', possible loss of data
+     1>e1000.cpp(201): warning C4267: 'argument' : conversion from 'size_t' to 'uint32_t', possible loss of data
+     1>e1000.cpp(202): warning C4267: '=' : conversion from 'size_t' to 'volatile uint16_t', possible loss of data
      1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V110\Microsoft.CppBuild.targets(1137,5): warning MSB8012: TargetPath(E:\Xeneva Project\Xeneva\Drivers\e1000\x64\Debug\e1000.dll) does not match the Linker's OutputFile property value (F:\e1000.dll). This may cause your project to build incorrectly. To correct this, please make sure that $(OutDir), $(TargetName) and $(TargetExt) property values match the value specified in %(Link.OutputFile).
        Link:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:PROMPT /OUT:"F:\e1000.dll" /INCREMENTAL /NOLOGO /LIBPATH:"E:\Xeneva Project\Xeneva\Aurora\x64\Debug" Aurora.lib /NODEFAULTLIB /MANIFEST:NO /PDB:"E:\Xeneva Project\Xeneva\Drivers\e1000\x64\Debug\e1000.pdb" /MAP /MAPINFO:EXPORTS /SUBSYSTEM:NATIVE /STACK:"0x100000" /LARGEADDRESSAWARE /Driver /OPT:NOREF /LTCG /TLBID:1 /BASE:"0xFFFFC00000400000" /FIXED:NO /IMPLIB:"E:\Xeneva Project\Xeneva\Drivers\e1000\x64\Debug\e1000.lib" /MACHINE:X64 /ALIGN:512 /DLL x64\Debug\e1000.obj
@@ -17,4 +21,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:01.48
+Time Elapsed 00:00:00.81

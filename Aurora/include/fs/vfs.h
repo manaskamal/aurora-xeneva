@@ -19,6 +19,32 @@
 #include <aurora.h>
 
 
+/*
+ * @example-- to create a empty directory 
+ * vfs_file_t *file = (vfs_file_t*)kmalloc(sizeof(vfs_file_t));
+ * file->flags = FS_FLAG_DIR;
+ * vfs_node_t *node = vfs_mknode();
+ * vfs_mkdir("/dirname", file, node);
+ *
+ * node is required because, every vfs_file with flag FS_FLAG_DIR
+ * requires another link to a node, containing the list entries
+ * of all the file and sub directories, that's why we link the file
+ * structure with the node
+ *
+ * @example -- to remove a directory/file
+ * vfs_remove_file("/dirname/filename");
+ * if you also want to remove 'dirname'...
+ * vfs_remove_file("/dirname");
+ *
+ * @example -- to mount or to create a file
+ * vfs_file_t *file = (vfs_file_t*)kmalloc(sizeof(vfs_file_t));
+ * file->flags = FS_FLAG_GEN;
+ * vfs_mount("/yourdirname/filename", file);
+ * @note -- you cannot mount it to '/' root dir because already
+ * root file system needs that space
+ */
+
+
 #define  FS_FLAG_DIRECTORY  0x1
 #define  FS_FLAG_GENERAL   0x2
 #define  FS_FLAG_DELETED    0x3
