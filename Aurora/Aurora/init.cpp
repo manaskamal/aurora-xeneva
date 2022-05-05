@@ -63,7 +63,7 @@
 #include <sound.h>
 #include <ipc\pri_loop.h>
 #include <mmngr\shmem.h>
-
+#include <shirq.h>
 #include <fs\ttype.h>
 
 #include <net\ethernet.h>
@@ -118,6 +118,7 @@ void _AuMain (KERNEL_BOOT_INFO *info) {
 	AuInitializeMouse();
 
 	AuNetInitialize();
+	AuSharedDeviceInit();
 
 	//Here we initialise all drivers stuffs
 	/* Clear interrupts as scheduler will enable it */

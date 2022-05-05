@@ -104,6 +104,9 @@ void mouse_handler (size_t p, void* param) {
 		case 3:
 			mouse_byte[3] = mouse_in;
 			goto finish_packet;
+		case 4:
+			mouse_byte[4] = mouse_in;
+			goto finish_packet;
 		}
 
 		goto read_next;
@@ -154,6 +157,15 @@ finish_packet:
 		if (mouse_byte[0] & 0x04)
 			mouse_button |= MOUSE_MIDDLE_CLICK;
 
+
+		if (mouse_byte[4] & 0x1)
+			printf ("Mouse Vertical scroll up \n");
+		else if (mouse_byte[4] & 0xF)
+			printf ("Mouse Vertical scroll down \n");
+		else if (mouse_byte[4] & 0x2)
+			printf ("Mouse Horizontal Scroll up \n");
+		else if (mouse_byte[4] & 0xE)
+			printf ("Mouse Horizontal Scroll down \n");
 		//!Pass here the message stream to all waiting processes
 	
 		x64_cli();

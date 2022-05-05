@@ -263,6 +263,7 @@
     <ClInclude Include="..\include\proc.h" />
     <ClInclude Include="..\include\screen.h" />
     <ClInclude Include="..\include\serial.h" />
+    <ClInclude Include="..\include\shirq.h" />
     <ClInclude Include="..\include\sound.h" />
     <ClInclude Include="..\include\stdarg.h" />
     <ClInclude Include="..\include\stdint.h" />
@@ -345,6 +346,7 @@
     <ClCompile Include="proc.cpp" />
     <ClCompile Include="screen.cpp" />
     <ClCompile Include="serial.cpp" />
+    <ClCompile Include="shirq.cpp" />
     <ClCompile Include="sound.cpp" />
     <ClCompile Include="stdio.cpp" />
     <ClCompile Include="string.cpp" />

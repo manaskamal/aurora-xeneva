@@ -33,6 +33,7 @@
 #include "xhci.h"
 #include <arch\x86_64\mmngr\paging.h>
 #include <arch\x86_64\mmngr\kheap.h>
+#include <shirq.h>
 
 usb_dev_t *usb_device;
 
@@ -86,6 +87,19 @@ AU_EXTERN AU_EXPORT int AuDriverMain() {
 	xhci_reset(usb_device);
 
 	printf ("[usb]: xhci interrupt -> %d \n", device.device.nonBridge.interruptLine);
+	
+	shirq_t *shdev = (shirq_t*)malloc(sizeof(shirq_t));
+	shdev->device_id = device.device.deviceID;
+	shdev->vendor_id = device.device.vendorID;
+	shdev->irq = device.device.nonBridge.interruptLine;
+	shdev->IrqHandler  = AuUSBInterrupt;
+	AuSharedDeviceRegister(shdev);
+
+	if (!AuCheckSharedDevice(shdev->irq, shdev->device_id))
+		AuInterruptSet(shdev->irq, AuUSBInterrupt, shdev->irq);
+	else
+		AuInstallSharedHandler(shdev->irq);
+	//pci_alloc_msi(func,dev,bus,AuUSBInterrupt);
 
 	printf ("[usb]: xhci reset completed \n");
 	return 0;

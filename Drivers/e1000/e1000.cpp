@@ -35,6 +35,7 @@
 #include <hal.h>
 #include <fs\vfs.h>
 #include <net\aunet.h>
+#include <shirq.h>
 
 typedef struct _e1000_nic_ {
 	uint64_t mmio_addr;
@@ -298,7 +299,18 @@ AU_EXTERN AU_EXPORT int AuDriverMain() {
 	if (e1000_dev->irq == 0xFF)
 		return 1;
 
-	AuInterruptSet(e1000_dev->irq, e1000_handler, e1000_dev->irq);
+	shirq_t *shared_device = (shirq_t*)malloc(sizeof(shirq_t));
+	shared_device->irq = e1000_dev->irq;
+	shared_device->device_id = dev.device.deviceID;
+	shared_device->vendor_id = dev.device.vendorID;
+	shared_device->IrqHandler = e1000_handler;
+	AuSharedDeviceRegister(shared_device);
+
+	if (!AuCheckSharedDevice(e1000_dev->irq,dev.device.deviceID))
+		AuInterruptSet(e1000_dev->irq, e1000_handler,e1000_dev->irq);
+	else
+		AuInstallSharedHandler(e1000_dev->irq);
+
 
 	e1000_disable_interrupt(e1000_dev);
 
