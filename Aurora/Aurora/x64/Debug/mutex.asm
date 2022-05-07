@@ -11,9 +11,9 @@ PUBLIC	?mutex_unlock@@YAXPEAUmutex_t@@@Z		; mutex_unlock
 EXTRN	malloc:PROC
 EXTRN	?block_thread@@YAXPEAU_thread_@@@Z:PROC		; block_thread
 EXTRN	?unblock_thread@@YAXPEAU_thread_@@@Z:PROC	; unblock_thread
-EXTRN	?get_current_thread@@YAPEAU_thread_@@XZ:PROC	; get_current_thread
+EXTRN	get_current_thread:PROC
 EXTRN	?set_multi_task_enable@@YAX_N@Z:PROC		; set_multi_task_enable
-EXTRN	?force_sched@@YAXXZ:PROC			; force_sched
+EXTRN	force_sched:PROC
 EXTRN	?thread_iterate_block_list@@YAPEAU_thread_@@H@Z:PROC ; thread_iterate_block_list
 pdata	SEGMENT
 $pdata$?create_mutex@@YAPEAUmutex_t@@XZ DD imagerel $LN3
@@ -181,7 +181,7 @@ $LN6:
 	mov	rax, QWORD PTR obj$[rsp]
 	cmp	DWORD PTR [rax+12], 0
 	je	SHORT $LN3@mutex_lock
-	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
+	call	get_current_thread
 	mov	rcx, QWORD PTR obj$[rsp]
 	cmp	QWORD PTR [rcx], rax
 	jne	SHORT $LN3@mutex_lock
@@ -216,7 +216,7 @@ $LN2@mutex_lock:
 
 ; 41   : 		block_thread(get_current_thread());
 
-	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
+	call	get_current_thread
 	mov	rcx, rax
 	call	?block_thread@@YAXPEAU_thread_@@@Z	; block_thread
 
@@ -230,7 +230,7 @@ $LN2@mutex_lock:
 
 ; 43   : 		obj->block_thread_id[obj->block_thread_num] = get_current_thread()->id;
 
-	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
+	call	get_current_thread
 	movzx	eax, WORD PTR [rax+738]
 	mov	rcx, QWORD PTR obj$[rsp]
 	movzx	ecx, WORD PTR [rcx+8]
@@ -244,7 +244,7 @@ $LN2@mutex_lock:
 
 ; 45   : 		force_sched();
 
-	call	?force_sched@@YAXXZ			; force_sched
+	call	force_sched
 
 ; 46   : 	}
 
@@ -259,7 +259,7 @@ $LN1@mutex_lock:
 
 ; 49   : 	obj->owner_thread = get_current_thread();
 
-	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
+	call	get_current_thread
 	mov	rcx, QWORD PTR obj$[rsp]
 	mov	QWORD PTR [rcx], rax
 

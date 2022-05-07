@@ -158,7 +158,7 @@ void* malloc(size_t size) {
 	}
 
 	if (ret) {
-		_debug_print_ ("Returning address -> %x \r\n", ret);
+		//_debug_print_ ("Returning address -> %x \r\n", ret);
 		return ret;
 	} else{
 		au_expand_kmalloc(size);

@@ -42,8 +42,8 @@ pri_loop_box_t *last_loop = NULL;
  * pri_loop_create -- create a new pri_loop_box 
  */
 void pri_loop_create () {
-	pri_loop_box_t *loop = (pri_loop_box_t*)AuPmmngrAlloc();  //malloc(sizeof(pri_loop_box_t));
-	loop->address = AuPmmngrAlloc();//malloc(sizeof(pri_event_t));
+	pri_loop_box_t *loop = (pri_loop_box_t*)malloc(sizeof(pri_loop_box_t));
+	loop->address = (void*)p2v((size_t)AuPmmngrAlloc());//malloc(sizeof(pri_event_t));
 	memset(loop->address,0, sizeof(pri_event_t));
 	loop->owner_id = get_current_thread()->id;
 	loop->pending_msg_count = 0;
@@ -81,9 +81,9 @@ void pri_loop_destroy (pri_loop_box_t *box) {
 		box->next->prev = box->prev;
 	}
 
-	AuPmmngrFree(box->address);
-	AuPmmngrFree(box);
-	
+	AuPmmngrFree((void*)v2p((size_t)box->address));
+	//AuPmmngrFree(box);
+	free(box);
 }
 
 /*

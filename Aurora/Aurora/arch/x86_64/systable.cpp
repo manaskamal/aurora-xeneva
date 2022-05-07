@@ -145,6 +145,10 @@ extern "C" void x64_syscall_handler (int a) {
 		break;
 	case 39:
 		funct = (uint64_t*)process_heap_break;
+		break;
+	case 40:
+		funct = (uint64_t*)dwm_dispatch_message;
+		break;
 	}
 
 	

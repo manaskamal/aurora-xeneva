@@ -31,6 +31,7 @@ extern size_t circular_buf_capacity(circ_buf_t *cbuf);
 extern void circular_buf_put(circ_buf_t *cbuf,uint8_t data);
 extern int circular_buf_put2(circ_buf_t *cbuf, int data);
 extern int circular_buf_get(circ_buf_t *cbuf, uint8_t *data);
+extern int circular_buf_get2(circ_buf_t *cbuf, int *data);
 extern bool circular_buf_empty(circ_buf_t *cbuf);
 extern bool circular_buf_full(circ_buf_t *cbuf);
 

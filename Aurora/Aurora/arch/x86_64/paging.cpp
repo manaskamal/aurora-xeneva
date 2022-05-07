@@ -202,8 +202,8 @@ void AuUnmapPage(uint64_t virt_addr){
 	}
 
 	if (page != 0) {
-		printf ("Unmapping Address page -> %x \n", page);
-		AuPmmngrFree(page);
+
+		AuPmmngrFree((void*)v2p((size_t)page));
 	}
 }
 

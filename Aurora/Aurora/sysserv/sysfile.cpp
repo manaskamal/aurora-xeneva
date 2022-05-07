@@ -138,7 +138,7 @@ void sys_read_file (int fd, uint8_t* buffer, FILE *ufile) {
 			AuPmmngrFree((void*)v2p((size_t)buff));
 		}
 
-	}else {
+	}else if (ufile == NULL) {
 		/* So this fd is non-file system based fd
 		 * get it from fd table */
 		node = get_current_thread()->fd[fd];

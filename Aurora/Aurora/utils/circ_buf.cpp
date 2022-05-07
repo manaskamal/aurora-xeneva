@@ -105,6 +105,20 @@ int circular_buf_get(circ_buf_t *cbuf, uint8_t *data)
 	return r;
 }
 
+int circular_buf_get2(circ_buf_t *cbuf, int *data)
+{
+	int r = -1;
+
+	if (!circular_buf_empty(cbuf))
+	{
+		*data = cbuf->buffer[cbuf->tail];
+		retreat_pointer(cbuf);
+		r = 0;
+	}
+
+	return r;
+}
+
 bool circular_buf_empty(circ_buf_t *cbuf)
 {
 	return (!cbuf->full && (cbuf->head == cbuf->tail));

@@ -18,6 +18,7 @@
 #include <atomic\mutex.h>
 #include <fs\vfs.h>
 #include <serial.h>
+#include <utils\circ_buf.h>
 
 static uint8_t mouse_cycle = 0;
 static uint8_t mouse_byte[4];
@@ -168,6 +169,7 @@ finish_packet:
 			printf ("Mouse Horizontal Scroll down \n");
 		//!Pass here the message stream to all waiting processes
 	
+
 		x64_cli();
 		dwm_message_t msg; // = (dwm_message_t*)pmmngr_alloc();
 		msg.type = 1;
@@ -213,6 +215,10 @@ int mouse_ioquery (vfs_node_t *node, int code, void* arg) {
 	return 1;
 }
 
+void mouse_read (vfs_node_t *file, uint64_t* buffer, uint32_t length) {
+	x64_cli();
+}
+
 
 /**
  * Register it to the VFS Subsystem
@@ -227,7 +233,7 @@ void mouse_register_device () {
 	node->flags = FS_FLAG_GENERAL;
 	node->status = 0;
 	node->open = 0;
-	node->read = 0;
+	node->read = mouse_read;
 	node->write = 0;
 	node->read_blk = 0;
 	node->ioquery = mouse_ioquery;

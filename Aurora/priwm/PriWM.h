@@ -167,6 +167,8 @@ typedef struct _pri_win_ {
 	uint16_t owner_id;
 	uint32_t *backing_store;
 	uint32_t *pri_win_info_loc;
+	uint16_t sh_win_key;
+	uint16_t backing_store_key;
 	int drag_x;
 	int drag_y;
 	int resz_h;

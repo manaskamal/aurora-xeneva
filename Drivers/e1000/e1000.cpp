@@ -36,6 +36,7 @@
 #include <fs\vfs.h>
 #include <net\aunet.h>
 #include <shirq.h>
+#include <arch\x86_64\thread.h>
 
 typedef struct _e1000_nic_ {
 	uint64_t mmio_addr;
@@ -137,11 +138,12 @@ void e1000_handler (size_t v, void* p) {
 	if (!first_interrupt)
 		first_interrupt = true;
 
-	if (status & ICR_LSC) 
+	if (status & ICR_LSC) {
 		e1000_nic->link_status = (e1000_read_command(e1000_nic, E1000_REG_STATUS) & (1<<1));
+		printf ("e1000: Link status %s\n", (e1000_nic->link_status ? "up" : "down"));
+	}
 
-	if (status & ICR_RXT0) 
-		printf ("[driver]: e1000 received packet \n");
+	
 
 	e1000_write_command(e1000_nic, E1000_REG_ICR, status);
 }
@@ -237,7 +239,21 @@ AU_EXTERN AU_EXPORT int AuDriverUnload() {
 	return 0;
 }
 
-void AuInterruptHandlerE1000(size_t v, void* p) {
+
+void e1000_thread() {
+	int head = e1000_read_command(e1000_nic, E1000_REG_RXDESCHEAD);
+	while(1){
+		if (head == e1000_nic->rx_index) {
+			head = e1000_read_command(e1000_nic, E1000_REG_RXDESCHEAD);
+		}
+
+		if (head != e1000_nic->rx_index){
+			//printf ("[network]: packet received \n");
+			e1000_nic->rx_index = head;
+		}
+		sleep_thread(get_current_thread(),1000);
+		force_sched();
+	}
 }
 /*
  * AuDriverMain -- Main entry for e1000 driver
@@ -390,7 +406,11 @@ AU_EXTERN AU_EXPORT int AuDriverMain() {
 	strcpy(net->name, "e1000");
 	AuNetAddAdapter(file,net);
 
+
 	AuEnableInterrupts();
+
+	thread_t *nic_thread = create_kthread(e1000_thread,(uint64_t)p2v((uint64_t)AuPmmngrAlloc() + 4096),(uint64_t)AuGetRootPageTable(),
+		"e1000_thr",1);
 	for(;;) {
 		if (first_interrupt)
 			break;

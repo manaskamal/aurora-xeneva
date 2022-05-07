@@ -12,9 +12,9 @@ _BSS	SEGMENT
 ?last_loop@@3PEAU_pri_loop_box_@@EA DQ 01H DUP (?)	; last_loop
 _BSS	ENDS
 CONST	SEGMENT
-$SG3499	DB	'pri_loop', 00H
+$SG3504	DB	'pri_loop', 00H
 	ORG $+7
-$SG3500	DB	'/dev/pri_loop', 00H
+$SG3505	DB	'/dev/pri_loop', 00H
 CONST	ENDS
 PUBLIC	?pri_loop_init@@YAXXZ				; pri_loop_init
 PUBLIC	?pri_put_message@@YAXPEAU_pri_event_@@@Z	; pri_put_message
@@ -28,12 +28,15 @@ EXTRN	memset:PROC
 EXTRN	memcpy:PROC
 EXTRN	AuPmmngrAlloc:PROC
 EXTRN	AuPmmngrFree:PROC
+EXTRN	p2v:PROC
+EXTRN	v2p:PROC
 EXTRN	x64_cli:PROC
 EXTRN	x64_sti:PROC
 EXTRN	malloc:PROC
+EXTRN	free:PROC
 EXTRN	vfs_mount:PROC
 EXTRN	?unblock_thread@@YAXPEAU_thread_@@@Z:PROC	; unblock_thread
-EXTRN	?get_current_thread@@YAPEAU_thread_@@XZ:PROC	; get_current_thread
+EXTRN	get_current_thread:PROC
 EXTRN	?thread_iterate_ready_list@@YAPEAU_thread_@@G@Z:PROC ; thread_iterate_ready_list
 EXTRN	?thread_iterate_block_list@@YAPEAU_thread_@@H@Z:PROC ; thread_iterate_block_list
 pdata	SEGMENT
@@ -44,13 +47,13 @@ $pdata$?pri_put_message@@YAXPEAU_pri_event_@@@Z DD imagerel $LN10
 	DD	imagerel $LN10+245
 	DD	imagerel $unwind$?pri_put_message@@YAXPEAU_pri_event_@@@Z
 $pdata$?pri_loop_destroy@@YAXPEAU_pri_loop_box_@@@Z DD imagerel $LN8
-	DD	imagerel $LN8+162
+	DD	imagerel $LN8+170
 	DD	imagerel $unwind$?pri_loop_destroy@@YAXPEAU_pri_loop_box_@@@Z
 $pdata$?pri_loop_destroy_by_id@@YAXG@Z DD imagerel $LN7
 	DD	imagerel $LN7+82
 	DD	imagerel $unwind$?pri_loop_destroy_by_id@@YAXG@Z
 $pdata$?pri_loop_create@@YAXXZ DD imagerel $LN5
-	DD	imagerel $LN5+200
+	DD	imagerel $LN5+213
 	DD	imagerel $unwind$?pri_loop_create@@YAXXZ
 $pdata$?pri_get_message@@YAXPEAU_pri_event_@@@Z DD imagerel $LN9
 	DD	imagerel $LN9+203
@@ -142,7 +145,7 @@ $LN6@pri_loop_i:
 	mov	rax, QWORD PTR box$1[rsp]
 	movzx	eax, WORD PTR [rax+8]
 	mov	DWORD PTR tv68[rsp], eax
-	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
+	call	get_current_thread
 	movzx	eax, WORD PTR [rax+738]
 	mov	ecx, DWORD PTR tv68[rsp]
 	cmp	ecx, eax
@@ -238,7 +241,7 @@ $LN9:
 ; 142  : 
 ; 143  : 	uint16_t owner_id = get_current_thread()->id;
 
-	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
+	call	get_current_thread
 	movzx	eax, WORD PTR [rax+738]
 	mov	WORD PTR owner_id$[rsp], ax
 
@@ -344,14 +347,17 @@ loop$ = 32
 $LN5:
 	sub	rsp, 56					; 00000038H
 
-; 45   : 	pri_loop_box_t *loop = (pri_loop_box_t*)AuPmmngrAlloc();  //malloc(sizeof(pri_loop_box_t));
+; 45   : 	pri_loop_box_t *loop = (pri_loop_box_t*)malloc(sizeof(pri_loop_box_t));
 
-	call	AuPmmngrAlloc
+	mov	ecx, 32					; 00000020H
+	call	malloc
 	mov	QWORD PTR loop$[rsp], rax
 
-; 46   : 	loop->address = AuPmmngrAlloc();//malloc(sizeof(pri_event_t));
+; 46   : 	loop->address = (void*)p2v((size_t)AuPmmngrAlloc());//malloc(sizeof(pri_event_t));
 
 	call	AuPmmngrAlloc
+	mov	rcx, rax
+	call	p2v
 	mov	rcx, QWORD PTR loop$[rsp]
 	mov	QWORD PTR [rcx], rax
 
@@ -365,7 +371,7 @@ $LN5:
 
 ; 48   : 	loop->owner_id = get_current_thread()->id;
 
-	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
+	call	get_current_thread
 	mov	rcx, QWORD PTR loop$[rsp]
 	movzx	eax, WORD PTR [rax+738]
 	mov	WORD PTR [rcx+8], ax
@@ -574,19 +580,21 @@ $LN1@pri_loop_d:
 
 ; 82   : 	}
 ; 83   : 
-; 84   : 	AuPmmngrFree(box->address);
+; 84   : 	AuPmmngrFree((void*)v2p((size_t)box->address));
 
 	mov	rax, QWORD PTR box$[rsp]
 	mov	rcx, QWORD PTR [rax]
+	call	v2p
+	mov	rcx, rax
 	call	AuPmmngrFree
 
-; 85   : 	AuPmmngrFree(box);
+; 85   : 	//AuPmmngrFree(box);
+; 86   : 	free(box);
 
 	mov	rcx, QWORD PTR box$[rsp]
-	call	AuPmmngrFree
+	call	free
 $LN6@pri_loop_d:
 
-; 86   : 	
 ; 87   : }
 
 	add	rsp, 40					; 00000028H
@@ -759,7 +767,7 @@ $LN3:
 ; 206  : 	strcpy (node->filename, "pri_loop");
 
 	mov	rax, QWORD PTR node$[rsp]
-	lea	rdx, OFFSET FLAT:$SG3499
+	lea	rdx, OFFSET FLAT:$SG3504
 	mov	rcx, rax
 	call	strcpy
 
@@ -823,7 +831,7 @@ $LN3:
 
 	xor	r8d, r8d
 	mov	rdx, QWORD PTR node$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3500
+	lea	rcx, OFFSET FLAT:$SG3505
 	call	vfs_mount
 
 ; 219  : }

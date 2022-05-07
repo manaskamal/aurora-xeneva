@@ -95,10 +95,10 @@ AU_EXTERN AU_EXPORT int AuDriverMain() {
 	shdev->IrqHandler  = AuUSBInterrupt;
 	AuSharedDeviceRegister(shdev);
 
-	if (!AuCheckSharedDevice(shdev->irq, shdev->device_id))
+	/*if (!AuCheckSharedDevice(shdev->irq, shdev->device_id))
 		AuInterruptSet(shdev->irq, AuUSBInterrupt, shdev->irq);
 	else
-		AuInstallSharedHandler(shdev->irq);
+		AuInstallSharedHandler(shdev->irq);*/
 	//pci_alloc_msi(func,dev,bus,AuUSBInterrupt);
 
 	printf ("[usb]: xhci reset completed \n");

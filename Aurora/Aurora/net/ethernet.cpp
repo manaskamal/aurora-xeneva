@@ -47,4 +47,5 @@ void ethernet_send (void* data, size_t len, uint16_t type, uint8_t* dest) {
 	memcpy(packet->src,src_mac,6);
 	packet->type_len = htons(type);
 	AuNetWrite((uint8_t*)packet,total_sz);
+	free(packet);
 }

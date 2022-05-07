@@ -19,6 +19,7 @@
 #include <fs\vfs.h>
 #include <stream.h>
 #include <arch\x86_64\mmngr\kheap.h>
+#include <aurora.h>
 
 
 //! ====Thread States======================================================
@@ -119,7 +120,7 @@ extern thread_t* create_user_thread (void (*entry) (void*),uint64_t stack,uint64
 //! @param cr3 -- top level paging structure for the thread
 //! @param name -- name of the thread
 //! @param priority -- (currently not used)priority of the thread 
-extern thread_t* create_kthread (void (*entry) (void), uint64_t stack,uint64_t cr3, char name[8], uint8_t priority);
+AU_EXTERN AU_EXPORT thread_t* create_kthread (void (*entry) (void), uint64_t stack,uint64_t cr3, char name[8], uint8_t priority);
 
 //! block_thread -- blocks a thread entry
 //! @param thread -- thread address to block
@@ -131,7 +132,7 @@ extern void unblock_thread (thread_t *thread);
 
 //! get_current_thread -- get current thread
 //! @return -- returns the currently running thread to the caller
-extern thread_t * get_current_thread ();
+AU_EXTERN AU_EXPORT thread_t * get_current_thread ();
 
 //!set_multi_task_enable -- enable or disable multi tasking
 //! @param value -- enable/disable multitask bit
@@ -142,7 +143,7 @@ extern void set_multi_task_enable (bool value);
 extern bool is_multi_task_enable ();
 
 //!foce_sched -- force the scheduler to task switch
-extern void force_sched();
+AU_EXTERN AU_EXPORT void force_sched();
 
 //!thread_iterate_ready_list -- iterate through ready list and return a specific thread
 //! @param id -- id of the thread to search 
@@ -178,7 +179,7 @@ extern void set_current_thread (thread_t *thread);
 //! sleep_thread -- causes a specific thread to sleep for some times
 //! @param t -- thread address 
 //! @param ms -- time to sleep in milliseconds
-extern void sleep_thread (thread_t *t, uint64_t ms);
+AU_EXTERN AU_EXPORT void sleep_thread (thread_t *t, uint64_t ms);
 
 //! task_delete -- delete a specific task from thread list
 //! @param thread -- address of the thread to delete

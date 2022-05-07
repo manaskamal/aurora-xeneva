@@ -25,16 +25,18 @@ void dwm_ipc_init () {
 	AuMapPage((uint64_t)p2,0xFFFFD00000000000,PAGING_USER);
 }
 
+
 uint64_t* get_dwm_message_q_address () {
 	return 0;
 }
+
 void dwm_put_message (dwm_message_t *msg) {
 	if (!is_multi_task_enable())
 		return;
 
-	thread_t *t  = thread_iterate_ready_list (2);   //!ready list
+	thread_t *t  = thread_iterate_ready_list (3);   //!ready list
 	if (t == NULL) {
-		t = thread_iterate_block_list(2);
+		t = thread_iterate_block_list(3);
 	}
 	dwm_message_t *tmsg = (dwm_message_t*)t->msg_box;
 	if (tmsg->type == 0)

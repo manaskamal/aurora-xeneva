@@ -18,7 +18,7 @@ EXTRN	memcpy:PROC
 EXTRN	AuPmmngrAlloc:PROC
 EXTRN	x64_cli:PROC
 EXTRN	AuMapPage:PROC
-EXTRN	?get_current_thread@@YAPEAU_thread_@@XZ:PROC	; get_current_thread
+EXTRN	get_current_thread:PROC
 EXTRN	?is_multi_task_enable@@YA_NXZ:PROC		; is_multi_task_enable
 EXTRN	?thread_iterate_ready_list@@YAPEAU_thread_@@G@Z:PROC ; thread_iterate_ready_list
 EXTRN	?thread_iterate_block_list@@YAPEAU_thread_@@H@Z:PROC ; thread_iterate_block_list
@@ -46,11 +46,11 @@ xdata	ENDS
 _TEXT	SEGMENT
 ?get_dwm_message_q_address@@YAPEA_KXZ PROC		; get_dwm_message_q_address
 
-; 29   : 	return 0;
+; 30   : 	return 0;
 
 	xor	eax, eax
 
-; 30   : }
+; 31   : }
 
 	ret	0
 ?get_dwm_message_q_address@@YAPEA_KXZ ENDP		; get_dwm_message_q_address
@@ -62,48 +62,48 @@ tmsg$ = 32
 msg$ = 64
 ?dwm_dispatch_message@@YAXPEAU_dwm_message_@@@Z PROC	; dwm_dispatch_message
 
-; 45   : void dwm_dispatch_message (dwm_message_t *msg) {
+; 47   : void dwm_dispatch_message (dwm_message_t *msg) {
 
 $LN4:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 56					; 00000038H
 
-; 46   : 	x64_cli();
+; 48   : 	x64_cli();
 
 	call	x64_cli
 
-; 47   : 	dwm_message_t *tmsg = (dwm_message_t*)get_current_thread()->msg_box;
+; 49   : 	dwm_message_t *tmsg = (dwm_message_t*)get_current_thread()->msg_box;
 
-	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
+	call	get_current_thread
 	mov	rax, QWORD PTR [rax+752]
 	mov	QWORD PTR tmsg$[rsp], rax
 
-; 48   : 	if (tmsg->type != 0) {
+; 50   : 	if (tmsg->type != 0) {
 
 	mov	rax, QWORD PTR tmsg$[rsp]
 	movzx	eax, WORD PTR [rax]
 	test	eax, eax
 	je	SHORT $LN1@dwm_dispat
 
-; 49   : 		memcpy (msg,tmsg,sizeof(dwm_message_t));
+; 51   : 		memcpy (msg,tmsg,sizeof(dwm_message_t));
 
 	mov	r8d, 28
 	mov	rdx, QWORD PTR tmsg$[rsp]
 	mov	rcx, QWORD PTR msg$[rsp]
 	call	memcpy
 
-; 50   : 		memset (get_current_thread()->msg_box, 0, 4096);
+; 52   : 		memset (get_current_thread()->msg_box, 0, 4096);
 
-	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
+	call	get_current_thread
 	mov	r8d, 4096				; 00001000H
 	xor	edx, edx
 	mov	rcx, QWORD PTR [rax+752]
 	call	memset
 $LN1@dwm_dispat:
 
-; 51   : 	}
-; 52   : 	
-; 53   : }
+; 53   : 	}
+; 54   : 	
+; 55   : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -117,58 +117,58 @@ tmsg$ = 40
 msg$ = 64
 ?dwm_put_message@@YAXPEAU_dwm_message_@@@Z PROC		; dwm_put_message
 
-; 31   : void dwm_put_message (dwm_message_t *msg) {
+; 33   : void dwm_put_message (dwm_message_t *msg) {
 
 $LN6:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 56					; 00000038H
 
-; 32   : 	if (!is_multi_task_enable())
+; 34   : 	if (!is_multi_task_enable())
 
 	call	?is_multi_task_enable@@YA_NXZ		; is_multi_task_enable
 	movzx	eax, al
 	test	eax, eax
 	jne	SHORT $LN3@dwm_put_me
 
-; 33   : 		return;
+; 35   : 		return;
 
 	jmp	SHORT $LN4@dwm_put_me
 $LN3@dwm_put_me:
 
-; 34   : 
-; 35   : 	thread_t *t  = thread_iterate_ready_list (2);   //!ready list
+; 36   : 
+; 37   : 	thread_t *t  = thread_iterate_ready_list (3);   //!ready list
 
-	mov	cx, 2
+	mov	cx, 3
 	call	?thread_iterate_ready_list@@YAPEAU_thread_@@G@Z ; thread_iterate_ready_list
 	mov	QWORD PTR t$[rsp], rax
 
-; 36   : 	if (t == NULL) {
+; 38   : 	if (t == NULL) {
 
 	cmp	QWORD PTR t$[rsp], 0
 	jne	SHORT $LN2@dwm_put_me
 
-; 37   : 		t = thread_iterate_block_list(2);
+; 39   : 		t = thread_iterate_block_list(3);
 
-	mov	ecx, 2
+	mov	ecx, 3
 	call	?thread_iterate_block_list@@YAPEAU_thread_@@H@Z ; thread_iterate_block_list
 	mov	QWORD PTR t$[rsp], rax
 $LN2@dwm_put_me:
 
-; 38   : 	}
-; 39   : 	dwm_message_t *tmsg = (dwm_message_t*)t->msg_box;
+; 40   : 	}
+; 41   : 	dwm_message_t *tmsg = (dwm_message_t*)t->msg_box;
 
 	mov	rax, QWORD PTR t$[rsp]
 	mov	rax, QWORD PTR [rax+752]
 	mov	QWORD PTR tmsg$[rsp], rax
 
-; 40   : 	if (tmsg->type == 0)
+; 42   : 	if (tmsg->type == 0)
 
 	mov	rax, QWORD PTR tmsg$[rsp]
 	movzx	eax, WORD PTR [rax]
 	test	eax, eax
 	jne	SHORT $LN1@dwm_put_me
 
-; 41   : 		memcpy (t->msg_box,msg,sizeof(dwm_message_t));
+; 43   : 		memcpy (t->msg_box,msg,sizeof(dwm_message_t));
 
 	mov	r8d, 28
 	mov	rdx, QWORD PTR msg$[rsp]
@@ -178,7 +178,7 @@ $LN2@dwm_put_me:
 $LN1@dwm_put_me:
 $LN4@dwm_put_me:
 
-; 42   : }
+; 44   : }
 
 	add	rsp, 56					; 00000038H
 	ret	0

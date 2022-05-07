@@ -16,7 +16,7 @@ EXTRN	p2v:PROC
 EXTRN	v2p:PROC
 EXTRN	x64_cli:PROC
 EXTRN	?unblock_thread@@YAXPEAU_thread_@@@Z:PROC	; unblock_thread
-EXTRN	?get_current_thread@@YAPEAU_thread_@@XZ:PROC	; get_current_thread
+EXTRN	get_current_thread:PROC
 EXTRN	?thread_iterate_ready_list@@YAPEAU_thread_@@G@Z:PROC ; thread_iterate_ready_list
 EXTRN	?thread_iterate_block_list@@YAPEAU_thread_@@H@Z:PROC ; thread_iterate_block_list
 _BSS	SEGMENT
@@ -114,7 +114,7 @@ $LN3@message_re:
 	mov	rax, QWORD PTR temp$[rsp]
 	movzx	eax, WORD PTR [rax+58]
 	mov	DWORD PTR tv67[rsp], eax
-	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
+	call	get_current_thread
 	movzx	eax, WORD PTR [rax+738]
 	mov	ecx, DWORD PTR tv67[rsp]
 	cmp	ecx, eax

@@ -255,8 +255,10 @@
     <ClInclude Include="..\include\mmngr\mmfault.h" />
     <ClInclude Include="..\include\mmngr\shmem.h" />
     <ClInclude Include="..\include\mmngr\vma.h" />
+    <ClInclude Include="..\include\net\arp.h" />
     <ClInclude Include="..\include\net\aunet.h" />
     <ClInclude Include="..\include\net\ethernet.h" />
+    <ClInclude Include="..\include\net\network.h" />
     <ClInclude Include="..\include\objctmngr.h" />
     <ClInclude Include="..\include\pe.h" />
     <ClInclude Include="..\include\pmmngr.h" />
@@ -339,6 +341,7 @@
     <ClCompile Include="mmngr\mmfault.cpp" />
     <ClCompile Include="mmngr\shmem.cpp" />
     <ClCompile Include="mmngr\vma.cpp" />
+    <ClCompile Include="net\arp.cpp" />
     <ClCompile Include="net\aunet.cpp" />
     <ClCompile Include="net\ethernet.cpp" />
     <ClCompile Include="pe.cpp" />

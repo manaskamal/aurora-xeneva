@@ -34,23 +34,23 @@ _BSS	SEGMENT
 current_thread DQ 01H DUP (?)
 _BSS	ENDS
 CONST	SEGMENT
-$SG3606	DB	'Idle', 00H
+$SG3612	DB	'Idle', 00H
 CONST	ENDS
 PUBLIC	?AuInitializeScheduler@@YAXXZ			; AuInitializeScheduler
 PUBLIC	?AuSchedulerStart@@YAXXZ			; AuSchedulerStart
 PUBLIC	?create_user_thread@@YAPEAU_thread_@@P6AXPEAX@Z_K2QEADE@Z ; create_user_thread
-PUBLIC	?create_kthread@@YAPEAU_thread_@@P6AXXZ_K1QEADE@Z ; create_kthread
+PUBLIC	create_kthread
 PUBLIC	?block_thread@@YAXPEAU_thread_@@@Z		; block_thread
 PUBLIC	?unblock_thread@@YAXPEAU_thread_@@@Z		; unblock_thread
-PUBLIC	?get_current_thread@@YAPEAU_thread_@@XZ		; get_current_thread
+PUBLIC	get_current_thread
 PUBLIC	?set_multi_task_enable@@YAX_N@Z			; set_multi_task_enable
 PUBLIC	?is_multi_task_enable@@YA_NXZ			; is_multi_task_enable
-PUBLIC	?force_sched@@YAXXZ				; force_sched
+PUBLIC	force_sched
 PUBLIC	?thread_iterate_ready_list@@YAPEAU_thread_@@G@Z	; thread_iterate_ready_list
 PUBLIC	?thread_iterate_block_list@@YAPEAU_thread_@@H@Z	; thread_iterate_block_list
 PUBLIC	?thread_get_id_by_name@@YAGPEAD@Z		; thread_get_id_by_name
 PUBLIC	?set_current_thread@@YAXPEAU_thread_@@@Z	; set_current_thread
-PUBLIC	?sleep_thread@@YAXPEAU_thread_@@_K@Z		; sleep_thread
+PUBLIC	sleep_thread
 PUBLIC	?task_delete@@YAXPEAU_thread_@@@Z		; task_delete
 PUBLIC	?is_scheduler_initialized@@YA_NXZ		; is_scheduler_initialized
 PUBLIC	?sched_get_tick@@YAIXZ				; sched_get_tick
@@ -92,20 +92,20 @@ $pdata$?AuSchedulerStart@@YAXXZ DD imagerel $LN3
 	DD	imagerel $LN3+46
 	DD	imagerel $unwind$?AuSchedulerStart@@YAXXZ
 $pdata$?create_user_thread@@YAPEAU_thread_@@P6AXPEAX@Z_K2QEADE@Z DD imagerel $LN3
-	DD	imagerel $LN3+733
+	DD	imagerel $LN3+780
 	DD	imagerel $unwind$?create_user_thread@@YAPEAU_thread_@@P6AXPEAX@Z_K2QEADE@Z
-$pdata$?create_kthread@@YAPEAU_thread_@@P6AXXZ_K1QEADE@Z DD imagerel $LN3
-	DD	imagerel $LN3+614
-	DD	imagerel $unwind$?create_kthread@@YAPEAU_thread_@@P6AXXZ_K1QEADE@Z
+$pdata$create_kthread DD imagerel $LN3
+	DD	imagerel $LN3+661
+	DD	imagerel $unwind$create_kthread
 $pdata$?block_thread@@YAXPEAU_thread_@@@Z DD imagerel $LN3
 	DD	imagerel $LN3+46
 	DD	imagerel $unwind$?block_thread@@YAXPEAU_thread_@@@Z
 $pdata$?unblock_thread@@YAXPEAU_thread_@@@Z DD imagerel $LN7
 	DD	imagerel $LN7+104
 	DD	imagerel $unwind$?unblock_thread@@YAXPEAU_thread_@@@Z
-$pdata$?force_sched@@YAXXZ DD imagerel $LN3
+$pdata$force_sched DD imagerel $LN3
 	DD	imagerel $LN3+14
-	DD	imagerel $unwind$?force_sched@@YAXXZ
+	DD	imagerel $unwind$force_sched
 $pdata$?thread_iterate_ready_list@@YAPEAU_thread_@@G@Z DD imagerel $LN7
 	DD	imagerel $LN7+79
 	DD	imagerel $unwind$?thread_iterate_ready_list@@YAPEAU_thread_@@G@Z
@@ -129,13 +129,13 @@ $unwind$?AuSchedulerStart@@YAXXZ DD 010401H
 	DD	04204H
 $unwind$?create_user_thread@@YAPEAU_thread_@@P6AXPEAX@Z_K2QEADE@Z DD 011801H
 	DD	06218H
-$unwind$?create_kthread@@YAPEAU_thread_@@P6AXXZ_K1QEADE@Z DD 011801H
+$unwind$create_kthread DD 011801H
 	DD	06218H
 $unwind$?block_thread@@YAXPEAU_thread_@@@Z DD 010901H
 	DD	04209H
 $unwind$?unblock_thread@@YAXPEAU_thread_@@@Z DD 010901H
 	DD	06209H
-$unwind$?force_sched@@YAXXZ DD 010401H
+$unwind$force_sched DD 010401H
 	DD	04204H
 $unwind$?thread_iterate_ready_list@@YAPEAU_thread_@@G@Z DD 010901H
 	DD	02209H
@@ -816,7 +816,7 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 t$ = 8
 ms$ = 16
-?sleep_thread@@YAXPEAU_thread_@@_K@Z PROC		; sleep_thread
+sleep_thread PROC
 
 ; 483  : void sleep_thread (thread_t *t, uint64_t ms) {
 
@@ -837,7 +837,7 @@ ms$ = 16
 ; 486  : }
 
 	ret	0
-?sleep_thread@@YAXPEAU_thread_@@_K@Z ENDP		; sleep_thread
+sleep_thread ENDP
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\arch\x86_64\thread.cpp
@@ -1107,7 +1107,7 @@ _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\arch\x86_64\thread.cpp
 _TEXT	SEGMENT
-?force_sched@@YAXXZ PROC				; force_sched
+force_sched PROC
 
 ; 494  : void force_sched () {
 
@@ -1126,7 +1126,7 @@ $LN3:
 
 	add	rsp, 40					; 00000028H
 	ret	0
-?force_sched@@YAXXZ ENDP				; force_sched
+force_sched ENDP
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\arch\x86_64\thread.cpp
@@ -1179,7 +1179,7 @@ _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\arch\x86_64\thread.cpp
 _TEXT	SEGMENT
-?get_current_thread@@YAPEAU_thread_@@XZ PROC		; get_current_thread
+get_current_thread PROC
 
 ; 490  : 	return current_thread;
 
@@ -1188,7 +1188,7 @@ _TEXT	SEGMENT
 ; 491  : }
 
 	ret	0
-?get_current_thread@@YAPEAU_thread_@@XZ ENDP		; get_current_thread
+get_current_thread ENDP
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\arch\x86_64\thread.cpp
@@ -1296,7 +1296,7 @@ stack$ = 72
 cr3$ = 80
 name$ = 88
 priority$ = 96
-?create_kthread@@YAPEAU_thread_@@P6AXXZ_K1QEADE@Z PROC	; create_kthread
+create_kthread PROC
 
 ; 146  : {
 
@@ -1513,9 +1513,22 @@ $LN3:
 	mov	rcx, rax
 	call	memset
 
-; 186  : 	/*((fx_state_t*)t->fx_state)->mxcsr = 0x1f80;
+; 186  : 	((fx_state_t*)t->fx_state)->mxcsr = 0x1f80;
+
+	mov	rax, QWORD PTR t$[rsp]
+	mov	DWORD PTR [rax+232], 8064		; 00001f80H
+
 ; 187  : 	((fx_state_t*)t->fx_state)->mxcsrMask = 0xffbf;
-; 188  : 	((fx_state_t*)t->fx_state)->fcw = 0x33f;*/
+
+	mov	rax, QWORD PTR t$[rsp]
+	mov	DWORD PTR [rax+236], 65471		; 0000ffbfH
+
+; 188  : 	((fx_state_t*)t->fx_state)->fcw = 0x33f;
+
+	mov	eax, 831				; 0000033fH
+	mov	rcx, QWORD PTR t$[rsp]
+	mov	WORD PTR [rcx+208], ax
+
 ; 189  : 	thread_insert(t);
 
 	mov	rcx, QWORD PTR t$[rsp]
@@ -1529,7 +1542,7 @@ $LN3:
 
 	add	rsp, 56					; 00000038H
 	ret	0
-?create_kthread@@YAPEAU_thread_@@P6AXXZ_K1QEADE@Z ENDP	; create_kthread
+create_kthread ENDP
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\arch\x86_64\thread.cpp
@@ -1766,9 +1779,22 @@ $LN3:
 	mov	rcx, rax
 	call	memset
 
-; 241  : 	/*((fx_state_t*)t->fx_state)->mxcsr = 0x1f80;
+; 241  : 	((fx_state_t*)t->fx_state)->mxcsr = 0x1f80;
+
+	mov	rax, QWORD PTR t$[rsp]
+	mov	DWORD PTR [rax+232], 8064		; 00001f80H
+
 ; 242  : 	((fx_state_t*)t->fx_state)->mxcsrMask = 0xffbf;
-; 243  : 	((fx_state_t*)t->fx_state)->fcw = 0x33f;*/
+
+	mov	rax, QWORD PTR t$[rsp]
+	mov	DWORD PTR [rax+236], 65471		; 0000ffbfH
+
+; 243  : 	((fx_state_t*)t->fx_state)->fcw = 0x33f;
+
+	mov	eax, 831				; 0000033fH
+	mov	rcx, QWORD PTR t$[rsp]
+	mov	WORD PTR [rcx+208], ax
+
 ; 244  : 	t->_is_user = 1;
 
 	mov	rax, QWORD PTR t$[rsp]
@@ -1881,12 +1907,12 @@ $LN3:
 	mov	rcx, rax
 	call	p2v
 	mov	BYTE PTR [rsp+32], 1
-	lea	r9, OFFSET FLAT:$SG3606
+	lea	r9, OFFSET FLAT:$SG3612
 	mov	rcx, QWORD PTR tv67[rsp]
 	mov	r8, rcx
 	mov	rdx, rax
 	lea	rcx, OFFSET FLAT:?idle_thread@@YAXXZ	; idle_thread
-	call	?create_kthread@@YAPEAU_thread_@@P6AXXZ_K1QEADE@Z ; create_kthread
+	call	create_kthread
 	mov	QWORD PTR idle_$[rsp], rax
 
 ; 271  : 	current_thread = idle_;

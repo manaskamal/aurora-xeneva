@@ -14,9 +14,7 @@ _BSS	SEGMENT
 ?last_mark@@3PEAEEA DQ 01H DUP (?)			; last_mark
 _BSS	ENDS
 CONST	SEGMENT
-$SG3134	DB	'Returning address -> %x ', 0dH, 0aH, 00H
-	ORG $+5
-$SG3176	DB	'*****Requesting page -> %x ', 0dH, 0aH, 00H
+$SG3175	DB	'*****Requesting page -> %x ', 0dH, 0aH, 00H
 CONST	ENDS
 PUBLIC	?AuHeapInitialize@@YAXXZ			; AuHeapInitialize
 PUBLIC	?au_request_page@@YAPEA_KH@Z			; au_request_page
@@ -47,7 +45,7 @@ $pdata$?au_free_page@@YAXPEAXH@Z DD imagerel $LN3
 	DD	imagerel $LN3+38
 	DD	imagerel $unwind$?au_free_page@@YAXPEAXH@Z
 $pdata$malloc DD imagerel $LN11
-	DD	imagerel $LN11+256
+	DD	imagerel $LN11+239
 	DD	imagerel $unwind$malloc
 $pdata$free DD	imagerel $LN3
 	DD	imagerel $LN3+67
@@ -835,12 +833,7 @@ $LN7@malloc:
 	cmp	QWORD PTR ret$[rsp], 0
 	je	SHORT $LN2@malloc
 
-; 161  : 		_debug_print_ ("Returning address -> %x \r\n", ret);
-
-	mov	rdx, QWORD PTR ret$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3134
-	call	?_debug_print_@@YAXPEADZZ		; _debug_print_
-
+; 161  : 		//_debug_print_ ("Returning address -> %x \r\n", ret);
 ; 162  : 		return ret;
 
 	mov	rax, QWORD PTR ret$[rsp]
@@ -932,7 +925,7 @@ $LN6:
 ; 258  : 	_debug_print_ ("*****Requesting page -> %x \r\n", page);
 
 	mov	rdx, QWORD PTR page$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3176
+	lea	rcx, OFFSET FLAT:$SG3175
 	call	?_debug_print_@@YAXPEADZZ		; _debug_print_
 
 ; 259  : 	for (size_t i = 0; i < pages; i++) {

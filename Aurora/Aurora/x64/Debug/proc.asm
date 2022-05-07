@@ -64,7 +64,7 @@ EXTRN	AuGetFreePage:PROC
 EXTRN	malloc:PROC
 EXTRN	?create_user_thread@@YAPEAU_thread_@@P6AXPEAX@Z_K2QEADE@Z:PROC ; create_user_thread
 EXTRN	?unblock_thread@@YAXPEAU_thread_@@@Z:PROC	; unblock_thread
-EXTRN	?get_current_thread@@YAPEAU_thread_@@XZ:PROC	; get_current_thread
+EXTRN	get_current_thread:PROC
 EXTRN	?thread_iterate_ready_list@@YAPEAU_thread_@@G@Z:PROC ; thread_iterate_ready_list
 EXTRN	?thread_iterate_block_list@@YAPEAU_thread_@@H@Z:PROC ; thread_iterate_block_list
 EXTRN	?task_delete@@YAXPEAU_thread_@@@Z:PROC		; task_delete
@@ -371,7 +371,7 @@ $LN6:
 ; 342  : 	
 ; 343  : 	thread_t * p_thread = get_current_thread();
 
-	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
+	call	get_current_thread
 	mov	QWORD PTR p_thread$[rsp], rax
 
 ; 344  : 	process_t *parent = find_process_by_thread (p_thread);
@@ -974,7 +974,7 @@ $LN3:
 
 ; 426  : 	thread_t * p_thread = get_current_thread();
 
-	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
+	call	get_current_thread
 	mov	QWORD PTR p_thread$[rsp], rax
 
 ; 427  : 	process_t *c_proc = find_process_by_thread (p_thread);
@@ -1284,7 +1284,7 @@ $LN10:
 
 ; 247  : 	thread_t * remove_thread = get_current_thread();
 
-	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
+	call	get_current_thread
 	mov	QWORD PTR remove_thread$[rsp], rax
 
 ; 248  : 	uint16_t t_id = remove_thread->id;

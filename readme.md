@@ -27,9 +27,10 @@ The Goal of the project is to produce a high-quality Operating system with full 
 5. TrueType fonts
 6. ACPI
 7. High-Definition Audio
-8. Networking (under development)
+8. Basic Networking (under development)
 9. Driver Manager (_loading and linking dll files as drivers_)
-10.Fully Higher half with MMIO mappings
+10. Fully Higher half with MMIO mappings
+11. Multiprocessor support (multiprocessor scheduler not ready!!)
 
 ## __Ported Projects__:
 1. FreeType 

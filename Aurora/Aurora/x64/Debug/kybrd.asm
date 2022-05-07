@@ -101,10 +101,10 @@ $LN6:
 	mov	ecx, DWORD PTR code$1[rsp]
 	mov	DWORD PTR [rax], ecx
 
-; 34   : 		    message_send (2,msg);
+; 34   : 		    message_send (3,msg);
 
 	mov	rdx, QWORD PTR msg$2[rsp]
-	mov	cx, 2
+	mov	cx, 3
 	call	?message_send@@YAXGPEAU_message_@@@Z	; message_send
 
 ; 35   : 			AuPmmngrFree ((void*)v2p((size_t)msg));

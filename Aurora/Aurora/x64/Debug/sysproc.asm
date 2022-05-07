@@ -6,9 +6,9 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 CONST	SEGMENT
-$SG3890	DB	'***Process killed ', 0dH, 0aH, 00H
+$SG3893	DB	'***Process killed ', 0dH, 0aH, 00H
 	ORG $+3
-$SG3891	DB	'*** Current used RAM -> %d MB / total -> %d MB ', 0dH, 0aH
+$SG3894	DB	'*** Current used RAM -> %d MB / total -> %d MB ', 0dH, 0aH
 	DB	00H
 CONST	ENDS
 PUBLIC	?create__sys_process@@YAHPEBDPEAD@Z		; create__sys_process
@@ -19,8 +19,8 @@ PUBLIC	?sys_attach_ttype@@YAXH@Z			; sys_attach_ttype
 EXTRN	?pmmngr_get_used_ram@@YA_KXZ:PROC		; pmmngr_get_used_ram
 EXTRN	?pmmngr_get_total_ram@@YA_KXZ:PROC		; pmmngr_get_total_ram
 EXTRN	x64_cli:PROC
-EXTRN	?get_current_thread@@YAPEAU_thread_@@XZ:PROC	; get_current_thread
-EXTRN	?force_sched@@YAXXZ:PROC			; force_sched
+EXTRN	get_current_thread:PROC
+EXTRN	force_sched:PROC
 EXTRN	?AuCreateProcess@@YAHPEBDPEAD@Z:PROC		; AuCreateProcess
 EXTRN	?kill_process@@YAXXZ:PROC			; kill_process
 EXTRN	?kill_process_by_id@@YAXG@Z:PROC		; kill_process_by_id
@@ -71,7 +71,7 @@ $LN3:
 
 	movsxd	rax, DWORD PTR id$[rsp]
 	mov	QWORD PTR tv66[rsp], rax
-	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
+	call	get_current_thread
 	mov	rcx, QWORD PTR tv66[rsp]
 	mov	QWORD PTR [rax+744], rcx
 
@@ -131,7 +131,7 @@ $LN3:
 
 ; 73   : 	force_sched();
 
-	call	?force_sched@@YAXXZ			; force_sched
+	call	force_sched
 
 ; 74   : 	//! For now, no signals are supported, just kill the process
 ; 75   : }
@@ -161,7 +161,7 @@ $LN3:
 
 ; 59   : 	_debug_print_ ("***Process killed \r\n");
 
-	lea	rcx, OFFSET FLAT:$SG3890
+	lea	rcx, OFFSET FLAT:$SG3893
 	call	?_debug_print_@@YAXPEADZZ		; _debug_print_
 
 ; 60   : 	_debug_print_ ("*** Current used RAM -> %d MB / total -> %d MB \r\n", pmmngr_get_used_ram() / 1024 / 1024, pmmngr_get_total_ram() / 1024 / 1024);
@@ -184,12 +184,12 @@ $LN3:
 	mov	rcx, QWORD PTR tv67[rsp]
 	mov	r8, rcx
 	mov	rdx, rax
-	lea	rcx, OFFSET FLAT:$SG3891
+	lea	rcx, OFFSET FLAT:$SG3894
 	call	?_debug_print_@@YAXPEADZZ		; _debug_print_
 
 ; 61   : 	force_sched();
 
-	call	?force_sched@@YAXXZ			; force_sched
+	call	force_sched
 
 ; 62   : }
 

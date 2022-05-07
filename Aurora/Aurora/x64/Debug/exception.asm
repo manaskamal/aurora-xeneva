@@ -204,8 +204,8 @@ EXTRN	x64_cli:PROC
 EXTRN	x64_read_cr2:PROC
 EXTRN	?setvect@@YAX_KP6AX0PEAX@Z@Z:PROC		; setvect
 EXTRN	?block_thread@@YAXPEAU_thread_@@@Z:PROC		; block_thread
-EXTRN	?get_current_thread@@YAPEAU_thread_@@XZ:PROC	; get_current_thread
-EXTRN	?force_sched@@YAXXZ:PROC			; force_sched
+EXTRN	get_current_thread:PROC
+EXTRN	force_sched:PROC
 EXTRN	?AuHandlePageNotPresent@@YAX_K_NPEAX@Z:PROC	; AuHandlePageNotPresent
 pdata	SEGMENT
 $pdata$?exception_init@@YAXXZ DD imagerel $LN3
@@ -370,7 +370,7 @@ $LN28:
 
 ; 234  : 	 printf (" Current thread -> %s\n", get_current_thread()->name);
 
-	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
+	call	get_current_thread
 	mov	rdx, QWORD PTR [rax+728]
 	lea	rcx, OFFSET FLAT:$SG3670
 	call	printf
@@ -382,7 +382,7 @@ $LN28:
 
 ; 236  : 	 fx_state_t* state = (fx_state_t*)get_current_thread()->fx_state;
 
-	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
+	call	get_current_thread
 	add	rax, 208				; 000000d0H
 	mov	QWORD PTR state$[rsp], rax
 
@@ -832,14 +832,14 @@ $LN13@page_fault:
 
 ; 167  : 		printf ("Current thread -> %s\n", get_current_thread()->name);
 
-	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
+	call	get_current_thread
 	mov	rdx, QWORD PTR [rax+728]
 	lea	rcx, OFFSET FLAT:$SG3595
 	call	printf
 
 ; 168  : 		printf ("Current Thread id -> %d\n", get_current_thread()->id);
 
-	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
+	call	get_current_thread
 	movzx	eax, WORD PTR [rax+738]
 	mov	edx, eax
 	lea	rcx, OFFSET FLAT:$SG3596
@@ -915,14 +915,14 @@ $LN11@page_fault:
 
 ; 180  : 		printf ("Current thread -> %s\n", get_current_thread()->name);
 
-	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
+	call	get_current_thread
 	mov	rdx, QWORD PTR [rax+728]
 	lea	rcx, OFFSET FLAT:$SG3611
 	call	printf
 
 ; 181  : 		printf ("Current Thread id -> %d\n", get_current_thread()->id);
 
-	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
+	call	get_current_thread
 	movzx	eax, WORD PTR [rax+738]
 	mov	edx, eax
 	lea	rcx, OFFSET FLAT:$SG3612
@@ -998,14 +998,14 @@ $LN7@page_fault:
 
 ; 193  : 		printf ("Current thread -> %s\n", get_current_thread()->name);
 
-	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
+	call	get_current_thread
 	mov	rdx, QWORD PTR [rax+728]
 	lea	rcx, OFFSET FLAT:$SG3627
 	call	printf
 
 ; 194  : 		printf ("Current Thread id -> %d\n", get_current_thread()->id);
 
-	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
+	call	get_current_thread
 	movzx	eax, WORD PTR [rax+738]
 	mov	edx, eax
 	lea	rcx, OFFSET FLAT:$SG3628
@@ -1100,7 +1100,7 @@ $LN5:
 
 ; 136  : 	printf ("Current task ->%s\n", get_current_thread()->name);
 
-	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
+	call	get_current_thread
 	mov	rdx, QWORD PTR [rax+728]
 	lea	rcx, OFFSET FLAT:$SG3565
 	call	printf
@@ -1116,7 +1116,7 @@ $LN5:
 
 ; 138  : 	printf ("CURRENT TASK STATE -> %d\n", get_current_thread()->state);
 
-	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
+	call	get_current_thread
 	movzx	eax, BYTE PTR [rax+736]
 	mov	edx, eax
 	lea	rcx, OFFSET FLAT:$SG3567
@@ -1129,13 +1129,13 @@ $LN2@general_pr:
 
 ; 140  : 	block_thread(get_current_thread());
 
-	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
+	call	get_current_thread
 	mov	rcx, rax
 	call	?block_thread@@YAXPEAU_thread_@@@Z	; block_thread
 
 ; 141  : 	force_sched();
 
-	call	?force_sched@@YAXXZ			; force_sched
+	call	force_sched
 
 ; 142  : }
 
@@ -1384,14 +1384,14 @@ $LN5:
 
 ; 86   : 	printf ("Current task -> %s\n", get_current_thread()->name);
 
-	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
+	call	get_current_thread
 	mov	rdx, QWORD PTR [rax+728]
 	lea	rcx, OFFSET FLAT:$SG3509
 	call	printf
 
 ; 87   : 	printf ("Current task id -> %d\n", get_current_thread()->id);
 
-	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
+	call	get_current_thread
 	movzx	eax, WORD PTR [rax+738]
 	mov	edx, eax
 	lea	rcx, OFFSET FLAT:$SG3510

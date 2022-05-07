@@ -366,6 +366,12 @@
     <ClInclude Include="..\include\shirq.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\net\arp.h">
+      <Filter>include\net</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\net\network.h">
+      <Filter>include\net</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="init.cpp">
@@ -595,6 +601,9 @@
     </ClCompile>
     <ClCompile Include="shirq.cpp">
       <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="net\arp.cpp">
+      <Filter>source\net</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

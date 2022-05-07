@@ -10,9 +10,9 @@ _BSS	SEGMENT
 ?pipe_count@@3HA DD 01H DUP (?)				; pipe_count
 _BSS	ENDS
 CONST	SEGMENT
-$SG3494	DB	'pipe', 00H
+$SG3497	DB	'pipe', 00H
 	ORG $+3
-$SG3496	DB	'/dev/', 00H
+$SG3499	DB	'/dev/', 00H
 CONST	ENDS
 PUBLIC	?pipe_create@@YAPEAU_pipe_@@XZ			; pipe_create
 PUBLIC	?allocate_pipe@@YAXPEAHPEAD@Z			; allocate_pipe
@@ -26,7 +26,7 @@ EXTRN	strlen:PROC
 EXTRN	vfs_mount:PROC
 EXTRN	AuPmmngrAlloc:PROC
 EXTRN	malloc:PROC
-EXTRN	?get_current_thread@@YAPEAU_thread_@@XZ:PROC	; get_current_thread
+EXTRN	get_current_thread:PROC
 EXTRN	?sztoa@@YAPEAD_KPEADH@Z:PROC			; sztoa
 pdata	SEGMENT
 $pdata$?pipe_create@@YAPEAU_pipe_@@XZ DD imagerel $LN3
@@ -222,7 +222,7 @@ $LN2@allocate_p:
 
 ; 59   : 		strcpy(pipe_name, "pipe");
 
-	lea	rdx, OFFSET FLAT:$SG3494
+	lea	rdx, OFFSET FLAT:$SG3497
 	lea	rcx, QWORD PTR pipe_name$[rsp]
 	call	strcpy
 
@@ -242,7 +242,7 @@ $LN1@allocate_p:
 ; 64   : 	char path_name[10];
 ; 65   : 	strcpy(path_name, "/dev/");
 
-	lea	rdx, OFFSET FLAT:$SG3496
+	lea	rdx, OFFSET FLAT:$SG3499
 	lea	rcx, QWORD PTR path_name$[rsp]
 	call	strcpy
 
@@ -343,7 +343,7 @@ $LN1@allocate_p:
 ; 84   : 
 ; 85   : 	thread_t * t = get_current_thread();
 
-	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
+	call	get_current_thread
 	mov	QWORD PTR t$[rsp], rax
 
 ; 86   : 	t->fd[t->fd_current] = readn;

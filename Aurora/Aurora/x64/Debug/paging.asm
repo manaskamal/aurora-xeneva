@@ -14,9 +14,7 @@ _BSS	SEGMENT
 ?first@@3_NA DB	01H DUP (?)				; first
 _BSS	ENDS
 CONST	SEGMENT
-$SG3571	DB	'Unmapping Address page -> %x ', 0aH, 00H
-	ORG $+1
-$SG3663	DB	'Already present -> %x ', 0aH, 00H
+$SG3664	DB	'Already present -> %x ', 0aH, 00H
 CONST	ENDS
 PUBLIC	?pml4_index@@YA_K_K@Z				; pml4_index
 PUBLIC	?pdp_index@@YA_K_K@Z				; pdp_index
@@ -39,6 +37,7 @@ EXTRN	AuPmmngrAlloc:PROC
 EXTRN	AuPmmngrFree:PROC
 EXTRN	?AuPmmngrMoveHigher@@YAXXZ:PROC			; AuPmmngrMoveHigher
 EXTRN	p2v:PROC
+EXTRN	v2p:PROC
 EXTRN	x64_mfence:PROC
 EXTRN	x64_read_cr3:PROC
 EXTRN	x64_write_cr3:PROC
@@ -59,7 +58,7 @@ $pdata$?AuUnmapPageEx@@YAXPEA_K_K_N@Z DD imagerel $LN5
 	DD	imagerel $LN5+246
 	DD	imagerel $unwind$?AuUnmapPageEx@@YAXPEA_K_K_N@Z
 $pdata$AuUnmapPage DD imagerel $LN5
-	DD	imagerel $LN5+272
+	DD	imagerel $LN5+263
 	DD	imagerel $unwind$AuUnmapPage
 $pdata$?AuCreateAddressSpace@@YAPEA_KXZ DD imagerel $LN9
 	DD	imagerel $LN9+182
@@ -950,15 +949,12 @@ $LN2@AuUnmapPag:
 	cmp	QWORD PTR page$[rsp], 0
 	je	SHORT $LN1@AuUnmapPag
 
-; 205  : 		printf ("Unmapping Address page -> %x \n", page);
-
-	mov	rdx, QWORD PTR page$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3571
-	call	printf
-
-; 206  : 		AuPmmngrFree(page);
+; 205  : 
+; 206  : 		AuPmmngrFree((void*)v2p((size_t)page));
 
 	mov	rcx, QWORD PTR page$[rsp]
+	call	v2p
+	mov	rcx, rax
 	call	AuPmmngrFree
 $LN1@AuUnmapPag:
 
@@ -1344,7 +1340,7 @@ $LN4@AuMapPageE:
 ; 318  : 		printf ("Already present -> %x \n", virtual_address);
 
 	mov	rdx, QWORD PTR virtual_address$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3663
+	lea	rcx, OFFSET FLAT:$SG3664
 	call	printf
 $LN2@AuMapPageE:
 

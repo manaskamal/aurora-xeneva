@@ -77,6 +77,8 @@ bool _window_broadcast_mouse_ = true;
 uint32_t mouse_x, mouse_y;
 uint32_t prev_x = 0, prev_y = 0;
 int last_mouse_button = 0;
+uint32_t shared_win_key_prefix = 100;
+uint32_t backing_store_key_prefix = 400;
 
 /* data structures */
 list_t *window_list;
@@ -143,10 +145,10 @@ void pri_wm_get_message (pri_event_t *ev) {
  * @param size -- size of the backing store
  * @return -- return the new backing store
  */
-void* create_new_backing_store (uint16_t owner_id, int size) {
+void* create_new_backing_store (uint16_t owner_id, int size, uint16_t *key) {
 	uint32_t* addr = (uint32_t*)BACKING_STORE_START;
 	uint32_t cursor = 0;
-
+	uint32_t key_prefix = backing_store_key_prefix + owner_id;
 	/* check, every backing store slots for free slot */
 	for (int i = 0; i < backing_store_list->pointer; i++) {
 		backing_store_t *store = (backing_store_t*)list_get_at(backing_store_list, i);
@@ -171,14 +173,18 @@ void* create_new_backing_store (uint16_t owner_id, int size) {
 
 	/* no free backing store slot was found, create one */
 	addr += cursor;
-	map_shared_memory (owner_id, (uint64_t)addr, size);
+	//map_shared_memory (owner_id, (uint64_t)addr, size);
+	int id = sys_shmget(key_prefix,size,0);
+	void* ptr = sys_shmat(id,0,NULL);
+	*key = key_prefix;
+	backing_store_key_prefix += 10;
 	backing_store_t *new_back_store = (backing_store_t*)malloc(sizeof(backing_store_t));
-	new_back_store->addr = addr;
+	new_back_store->addr = (uint32_t*)ptr;
 	new_back_store->size = size;
 	new_back_store->free = false;
 	new_back_store->owner_id = owner_id;
 	list_add (backing_store_list, new_back_store);	
-	return addr;
+	return ptr;
 }
 
 /**
@@ -216,12 +222,16 @@ void remove_backing_store (uint16_t owner_id) {
 	}
 }
 
+
 /**
  * create_new_shared_win -- creates a new shared window space
  * @param owner_id -- owner of the shared window space
  */
-uint32_t* create_new_shared_win (uint16_t owner_id) {
+uint32_t* create_new_shared_win (uint16_t *sh_key, uint16_t owner_id) {
 	int cursor_pos = 0;
+	uint32_t key = shared_win_key_prefix + owner_id;
+	shared_win_key_prefix++;
+
 	for (int i = 0; i < shared_win_space_list->pointer; i++) {
 		shared_win_t *sh = (shared_win_t*)list_get_at(shared_win_space_list, i);
 		if (sh->free) {
@@ -233,15 +243,15 @@ uint32_t* create_new_shared_win (uint16_t owner_id) {
 			cursor_pos += 8192;
 	}
 
-	uint32_t *addr = (uint32_t*)SHARED_WIN_START;
-	addr += cursor_pos;
-	map_shared_memory (owner_id, (uint64_t)addr, 8192);
+	int id = sys_shmget(key,8192,0);
+	void* addr = sys_shmat(id,NULL,0);
+	*sh_key = key; 
 	shared_win_t* sh = (shared_win_t*)malloc(sizeof(shared_win_t));
 	sh->free = false;
 	sh->owner_id = owner_id;
-	sh->win_info_location = addr;
+	sh->win_info_location = (uint32_t*)addr;
 	list_add(shared_win_space_list, sh);
-	return addr;
+	return sh->win_info_location;
 }
 
 /**
@@ -304,7 +314,6 @@ void load_cursor (char* filename, uint8_t* addr,pri_bmp_image *bmp) {
 }
 
 
-
 /**
  * mouse_get -- get mouse movement info from kernel
  * @param msg -- the mouse msg pointer to store the
@@ -315,7 +324,7 @@ void mouse_get (mouse_message_t *msg) {
 	if (tmsg->type != 0) {
 		memcpy (msg,tmsg,sizeof(mouse_message_t));
 	}
-	memset ((void*)0x400000 /*0xFFFFFFFFB0000000*/, 0, sizeof(mouse_message_t));
+	memset ((void*)0x400000, 0, sizeof(mouse_message_t));
 }
 
 
@@ -597,11 +606,15 @@ void pri_remove_desktop_component (uint16_t id) {
  * @return win -- newly created window pointer
  */
 pri_window_t * window_create (int x, int y, int w, int h, uint8_t attr, uint16_t owner_id, char* title) {
+	uint16_t sh_key = 0;
+	uint16_t back_store_key = 0;
 	pri_window_t *win = (pri_window_t*)malloc(sizeof(pri_window_t));
 	win->attribute = attr;
-	win->backing_store = (uint32_t*)create_new_backing_store(owner_id, w*h*4);
+	win->backing_store = (uint32_t*)create_new_backing_store(owner_id, w*h*4, &back_store_key);
 	win->owner_id = owner_id;
-	win->pri_win_info_loc = create_new_shared_win(owner_id);
+	win->pri_win_info_loc = create_new_shared_win(&sh_key,owner_id);
+	win->sh_win_key = sh_key;
+	win->backing_store_key = back_store_key;
 	win->title = title;
 	win->anim = false;
 	win->anim_x = 0;
@@ -818,29 +831,8 @@ void compose_frame () {
 			int winx = 0;
 			int winy = 0;
 
-			if (win->anim) {
-				winx = win->anim_x; //info->x;
-			    winy = win->anim_y; //info->y;
-				if (win->anim_x == info->x && win->anim_y == info->y){
-					win->anim = false;
-					animation_on = false;
-				}else {
-					if (win->anim_dir == PRI_WIN_ANIM_POSITIVE) {
-						win->anim_x += 2;
-						win->anim_y += 2;
-					}else if (win->anim_dir == PRI_WIN_ANIM_NEGATIVE) {
-						win->anim_y -= 1;
-					}
-					if (win->anim_x + 1 != info->x && win->anim_y + 1 != info->y)  {
-						pri_wallp_add_dirty_clip(pri_create_rect(winx,winy,info->width,info->height));
-						pri_add_clip(winx,winy,info->width,info->height);
-					}
-					animation_on = true;
-				}
-			} else {
-				winx = info->x;
-				winy = info->y;
-			}
+			winx = info->x;
+			winy = info->y;
 
 			int wid = info->width;
 			int he = info->height;
@@ -867,7 +859,7 @@ void compose_frame () {
 			}
 
 			for (int i = 0; i < he; i++)  {
-				fastcpy (canvas->address + (winy + i) * canvas->width + winx,win->backing_store + (0 + i) * canvas->width + 0,
+				fastcpy (canvas->address + (winy + i) * canvas->width + winx,win->backing_store + (0 + i) * 4 + 0,
 				wid * 4);	
 			}
 			/* add the clip region */
@@ -1033,6 +1025,9 @@ int main (int argc, char* argv[]) {
 	acrylic_draw_rect_filled (canvas, 0,0,s_width, s_height, LIGHTBLACK);
 	pri_wallpaper_present();
 
+	acrylic_initialize_font();
+	acrylic_font_set_size(64);
+	acrylic_font_draw_string(canvas,"Hello Font!", 400,500,34,BLACK);
 
 	canvas_screen_update(canvas, 0, 0, s_width, s_height);
 
@@ -1046,6 +1041,7 @@ int main (int argc, char* argv[]) {
 	pri_event_t event;
 	mouse_message_t mouse;
 	message_t key_msg;
+
 	while (1) {
 		mouse_get (&mouse);
 		pri_wm_get_message (&event);
@@ -1100,7 +1096,7 @@ int main (int argc, char* argv[]) {
 			}
 
 			if (key_msg.dword == KEY_A) {
-				create_process("/init.exe", "cnsl");
+				create_process("/ptest.exe", "ptest");
 			}
 			memset(&key_msg, 0, sizeof(message_t));
 		}
@@ -1121,32 +1117,14 @@ int main (int argc, char* argv[]) {
 			strcpy(title,event.char_values);
 
 			pri_window_t *win = window_create (x,y,w,h,attribute,event.from_id, title);
-			if (event.from_id != 3) {
-				win->anim = true;
-				win->anim_x = x - 30;
-				win->anim_y = y - 30;
-				if (win->anim_x <= 0)
-					win->anim_x = 0;
-				if (win->anim_y <= 0)
-					win->anim_y = 0;
-				win->anim_dir = PRI_WIN_ANIM_POSITIVE;
-			}
-
-			if (event.from_id == 3){
-				win->anim = true;
-				win->anim_x = 0;
-				win->anim_y = s_height;
-				win->anim_dir = PRI_WIN_ANIM_NEGATIVE;
-			}
-
-
 			pri_window_set_focused(win, false);
+
 
 			/* Send the new gift message to client */
 			pri_event_t e;
 			e.type = DAISY_GIFT_CANVAS;
-			e.p_value = win->backing_store;
-			e.p_value2 = win->pri_win_info_loc;
+			e.dword = win->sh_win_key; //sh_win_key
+			e.dword2 = win->backing_store_key;   //shared win key  win->pri_win_info_loc;
 			e.to_id = event.from_id;
 			ioquery(pri_loop_fd,PRI_LOOP_PUT_EVENT, &e);
 

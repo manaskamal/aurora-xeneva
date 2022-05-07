@@ -10,9 +10,10 @@ EXTRN	memcpy:PROC
 EXTRN	?AuNetWrite@@YAXPEAE_K@Z:PROC			; AuNetWrite
 EXTRN	?AuGetNetTuple@@YAPEAU_au_net_@@XZ:PROC		; AuGetNetTuple
 EXTRN	malloc:PROC
+EXTRN	free:PROC
 pdata	SEGMENT
 $pdata$?ethernet_send@@YAXPEAX_KGPEAE@Z DD imagerel $LN3
-	DD	imagerel $LN3+201
+	DD	imagerel $LN3+211
 	DD	imagerel $unwind$?ethernet_send@@YAXPEAX_KGPEAE@Z
 pdata	ENDS
 xdata	SEGMENT
@@ -101,7 +102,12 @@ $LN3:
 	mov	rcx, QWORD PTR packet$[rsp]
 	call	?AuNetWrite@@YAXPEAE_K@Z		; AuNetWrite
 
-; 50   : }
+; 50   : 	free(packet);
+
+	mov	rcx, QWORD PTR packet$[rsp]
+	call	free
+
+; 51   : }
 
 	add	rsp, 72					; 00000048H
 	ret	0

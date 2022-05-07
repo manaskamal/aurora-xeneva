@@ -15,6 +15,7 @@ PUBLIC	?circular_buf_capacity@@YA_KPEAU_circ_buf_@@@Z	; circular_buf_capacity
 PUBLIC	?circular_buf_put@@YAXPEAU_circ_buf_@@E@Z	; circular_buf_put
 PUBLIC	?circular_buf_put2@@YAHPEAU_circ_buf_@@H@Z	; circular_buf_put2
 PUBLIC	?circular_buf_get@@YAHPEAU_circ_buf_@@PEAE@Z	; circular_buf_get
+PUBLIC	?circular_buf_get2@@YAHPEAU_circ_buf_@@PEAH@Z	; circular_buf_get2
 PUBLIC	?circular_buf_empty@@YA_NPEAU_circ_buf_@@@Z	; circular_buf_empty
 PUBLIC	?circular_buf_full@@YA_NPEAU_circ_buf_@@@Z	; circular_buf_full
 EXTRN	malloc:PROC
@@ -41,6 +42,9 @@ $pdata$?circular_buf_put2@@YAHPEAU_circ_buf_@@H@Z DD imagerel $LN4
 $pdata$?circular_buf_get@@YAHPEAU_circ_buf_@@PEAE@Z DD imagerel $LN4
 	DD	imagerel $LN4+94
 	DD	imagerel $unwind$?circular_buf_get@@YAHPEAU_circ_buf_@@PEAE@Z
+$pdata$?circular_buf_get2@@YAHPEAU_circ_buf_@@PEAH@Z DD imagerel $LN4
+	DD	imagerel $LN4+94
+	DD	imagerel $unwind$?circular_buf_get2@@YAHPEAU_circ_buf_@@PEAH@Z
 $pdata$?circular_buf_empty@@YA_NPEAU_circ_buf_@@@Z DD imagerel $LN5
 	DD	imagerel $LN5+67
 	DD	imagerel $unwind$?circular_buf_empty@@YA_NPEAU_circ_buf_@@@Z
@@ -60,6 +64,8 @@ $unwind$?circular_buf_put2@@YAHPEAU_circ_buf_@@H@Z DD 010d01H
 	DD	0620dH
 $unwind$?circular_buf_get@@YAHPEAU_circ_buf_@@PEAE@Z DD 010e01H
 	DD	0620eH
+$unwind$?circular_buf_get2@@YAHPEAU_circ_buf_@@PEAH@Z DD 010e01H
+	DD	0620eH
 $unwind$?circular_buf_empty@@YA_NPEAU_circ_buf_@@@Z DD 010901H
 	DD	02209H
 xdata	ENDS
@@ -69,16 +75,16 @@ _TEXT	SEGMENT
 cbuf$ = 8
 ?circular_buf_full@@YA_NPEAU_circ_buf_@@@Z PROC		; circular_buf_full
 
-; 114  : {
+; 128  : {
 
 	mov	QWORD PTR [rsp+8], rcx
 
-; 115  : 	return cbuf->full;
+; 129  : 	return cbuf->full;
 
 	mov	rax, QWORD PTR cbuf$[rsp]
 	movzx	eax, BYTE PTR [rax+32]
 
-; 116  : }
+; 130  : }
 
 	ret	0
 ?circular_buf_full@@YA_NPEAU_circ_buf_@@@Z ENDP		; circular_buf_full
@@ -90,13 +96,13 @@ tv70 = 0
 cbuf$ = 32
 ?circular_buf_empty@@YA_NPEAU_circ_buf_@@@Z PROC	; circular_buf_empty
 
-; 109  : {
+; 123  : {
 
 $LN5:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 24
 
-; 110  : 	return (!cbuf->full && (cbuf->head == cbuf->tail));
+; 124  : 	return (!cbuf->full && (cbuf->head == cbuf->tail));
 
 	mov	rax, QWORD PTR cbuf$[rsp]
 	movzx	eax, BYTE PTR [rax+32]
@@ -114,11 +120,72 @@ $LN3@circular_b:
 $LN4@circular_b:
 	movzx	eax, BYTE PTR tv70[rsp]
 
-; 111  : }
+; 125  : }
 
 	add	rsp, 24
 	ret	0
 ?circular_buf_empty@@YA_NPEAU_circ_buf_@@@Z ENDP	; circular_buf_empty
+_TEXT	ENDS
+; Function compile flags: /Odtpy
+; File e:\xeneva project\xeneva\aurora\aurora\utils\circ_buf.cpp
+_TEXT	SEGMENT
+r$ = 32
+cbuf$ = 64
+data$ = 72
+?circular_buf_get2@@YAHPEAU_circ_buf_@@PEAH@Z PROC	; circular_buf_get2
+
+; 109  : {
+
+$LN4:
+	mov	QWORD PTR [rsp+16], rdx
+	mov	QWORD PTR [rsp+8], rcx
+	sub	rsp, 56					; 00000038H
+
+; 110  : 	int r = -1;
+
+	mov	DWORD PTR r$[rsp], -1
+
+; 111  : 
+; 112  : 	if (!circular_buf_empty(cbuf))
+
+	mov	rcx, QWORD PTR cbuf$[rsp]
+	call	?circular_buf_empty@@YA_NPEAU_circ_buf_@@@Z ; circular_buf_empty
+	movzx	eax, al
+	test	eax, eax
+	jne	SHORT $LN1@circular_b
+
+; 113  : 	{
+; 114  : 		*data = cbuf->buffer[cbuf->tail];
+
+	mov	rax, QWORD PTR cbuf$[rsp]
+	mov	rax, QWORD PTR [rax+16]
+	mov	rcx, QWORD PTR cbuf$[rsp]
+	mov	rcx, QWORD PTR [rcx]
+	movzx	eax, BYTE PTR [rcx+rax]
+	mov	rcx, QWORD PTR data$[rsp]
+	mov	DWORD PTR [rcx], eax
+
+; 115  : 		retreat_pointer(cbuf);
+
+	mov	rcx, QWORD PTR cbuf$[rsp]
+	call	?retreat_pointer@@YAXPEAU_circ_buf_@@@Z	; retreat_pointer
+
+; 116  : 		r = 0;
+
+	mov	DWORD PTR r$[rsp], 0
+$LN1@circular_b:
+
+; 117  : 	}
+; 118  : 
+; 119  : 	return r;
+
+	mov	eax, DWORD PTR r$[rsp]
+
+; 120  : }
+
+	add	rsp, 56					; 00000038H
+	ret	0
+?circular_buf_get2@@YAHPEAU_circ_buf_@@PEAH@Z ENDP	; circular_buf_get2
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\utils\circ_buf.cpp

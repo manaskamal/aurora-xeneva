@@ -34,6 +34,7 @@
 #include <utils\lnklist.h>
 #include <arch\x86_64\mmngr\kheap.h>
 #include <proc.h>
+#include <serial.h>
 
 list_t *shared_mem_list;
 uint32_t sh_id;

@@ -8,7 +8,7 @@ INCLUDELIB OLDNAMES
 PUBLIC	?ioquery@@YAXHHPEAX@Z				; ioquery
 EXTRN	vfs_ioquery:PROC
 EXTRN	x64_cli:PROC
-EXTRN	?get_current_thread@@YAPEAU_thread_@@XZ:PROC	; get_current_thread
+EXTRN	get_current_thread:PROC
 pdata	SEGMENT
 $pdata$?ioquery@@YAXHHPEAX@Z DD imagerel $LN4
 	DD	imagerel $LN4+77
@@ -41,7 +41,7 @@ $LN4:
 
 ; 24   : 	vfs_node_t *node = get_current_thread()->fd[device_id];
 
-	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
+	call	get_current_thread
 	movsxd	rcx, DWORD PTR device_id$[rsp]
 	mov	rax, QWORD PTR [rax+rcx*8+776]
 	mov	QWORD PTR node$[rsp], rax

@@ -42,6 +42,7 @@ void AuHandlePageNotPresent (uint64_t vaddr, bool user, void* param) {
 		printf ("Kernel Panic!! Page fault \n");
 		printf ("Virtual address -> %x \n", vaddr);
 		printf ("RIP ->%x \n", frame->rip);
+		printf ("Current thread -> %s \n", get_current_thread()->name);
 		for(;;);
 	}
 	au_vm_area_t *vm = AuFindVMA(vaddr);

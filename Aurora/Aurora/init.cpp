@@ -68,6 +68,7 @@
 
 #include <net\ethernet.h>
 #include <net\aunet.h>
+#include <net\arp.h>
 #include <utils\circ_buf.h>
 
 #ifdef ARCH_X64
@@ -119,6 +120,11 @@ void _AuMain (KERNEL_BOOT_INFO *info) {
 
 	AuNetInitialize();
 	AuSharedDeviceInit();
+	
+	//================================================
+	//! Initialize the scheduler here
+	//!===============================================
+	AuInitializeScheduler();
 
 	//Here we initialise all drivers stuffs
 	/* Clear interrupts as scheduler will enable it */
@@ -131,10 +137,7 @@ void _AuMain (KERNEL_BOOT_INFO *info) {
 	process_list_initialize();
 	ttype_init();
 	
-	//================================================
-	//! Initialize the scheduler here
-	//!===============================================
-	AuInitializeScheduler();
+	
 	
 	/*Initialize other processor */
 	AuInitializeCpu(AuGetNumCPU());
@@ -142,6 +145,7 @@ void _AuMain (KERNEL_BOOT_INFO *info) {
 	/*Clear the lower half for user space */
 	AuPagingClearLow();
 
+	AuARPRequestMAC();
 
 #ifdef ARCH_X64
 	
@@ -152,7 +156,7 @@ void _AuMain (KERNEL_BOOT_INFO *info) {
 	/* start the sound service manager at id 1 */
 	au_status = AuCreateProcess ("/init.exe","shell");
 
-	/* start the compositing window manager at id 2 */
+	/* start the compositing window manager at id 3 */
 	au_status = AuCreateProcess ("/priwm.exe","priwm");
 
 	//au_status = AuCreateProcess ("/dock.exe", "dock");

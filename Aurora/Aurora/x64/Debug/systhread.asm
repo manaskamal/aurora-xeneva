@@ -12,9 +12,9 @@ EXTRN	x64_cli:PROC
 EXTRN	x64_read_cr3:PROC
 EXTRN	?AuCreateAddressSpace@@YAPEA_KXZ:PROC		; AuCreateAddressSpace
 EXTRN	?create_user_thread@@YAPEAU_thread_@@P6AXPEAX@Z_K2QEADE@Z:PROC ; create_user_thread
-EXTRN	?get_current_thread@@YAPEAU_thread_@@XZ:PROC	; get_current_thread
-EXTRN	?force_sched@@YAXXZ:PROC			; force_sched
-EXTRN	?sleep_thread@@YAXPEAU_thread_@@_K@Z:PROC	; sleep_thread
+EXTRN	get_current_thread:PROC
+EXTRN	force_sched:PROC
+EXTRN	sleep_thread:PROC
 EXTRN	?create_inc_stack@@YAPEA_KPEA_K@Z:PROC		; create_inc_stack
 pdata	SEGMENT
 $pdata$?get_thread_id@@YAGXZ DD imagerel $LN3
@@ -54,18 +54,18 @@ $LN3:
 
 ; 48   : 	thread_t* t = get_current_thread();
 
-	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
+	call	get_current_thread
 	mov	QWORD PTR t$[rsp], rax
 
 ; 49   : 	sleep_thread (t, ms);
 
 	mov	rdx, QWORD PTR ms$[rsp]
 	mov	rcx, QWORD PTR t$[rsp]
-	call	?sleep_thread@@YAXPEAU_thread_@@_K@Z	; sleep_thread
+	call	sleep_thread
 
 ; 50   : 	force_sched();
 
-	call	?force_sched@@YAXXZ			; force_sched
+	call	force_sched
 
 ; 51   : }
 
@@ -182,7 +182,7 @@ $LN3:
 
 ; 18   : 	return get_current_thread()->id;
 
-	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
+	call	get_current_thread
 	movzx	eax, WORD PTR [rax+738]
 
 ; 19   : }

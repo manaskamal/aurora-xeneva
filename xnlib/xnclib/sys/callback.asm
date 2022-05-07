@@ -341,4 +341,10 @@ sys_proc_heap_brk:
 	syscall
 	ret
 
+global sys_dispatch_mouse
+sys_dispatch_mouse:
+    mov r12, 40
+	mov r13, rcx
+	syscall
+	ret
 

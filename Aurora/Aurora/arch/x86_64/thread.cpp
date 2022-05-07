@@ -183,9 +183,9 @@ thread_t* create_kthread (void (*entry) (void), uint64_t stack,uint64_t cr3, cha
 	t->fd_current = 3;
 	//t->fx_state = (char*)malloc(512);
 	memset(t->fx_state, 0, 512);
-	/*((fx_state_t*)t->fx_state)->mxcsr = 0x1f80;
+	((fx_state_t*)t->fx_state)->mxcsr = 0x1f80;
 	((fx_state_t*)t->fx_state)->mxcsrMask = 0xffbf;
-	((fx_state_t*)t->fx_state)->fcw = 0x33f;*/
+	((fx_state_t*)t->fx_state)->fcw = 0x33f;
 	thread_insert(t);
 	return t;
 }
@@ -238,9 +238,9 @@ thread_t* create_user_thread (void (*entry) (void*),uint64_t stack,uint64_t cr3,
 	/** Map the thread's msg box to a virtual address, from where the process will receive system messages **/
 	AuMapPageEx((uint64_t*)p2v(t->cr3),v2p((size_t)t->msg_box),(uint64_t)0x400000, PAGING_USER);
 	memset(t->fx_state, 0, 512);
-	/*((fx_state_t*)t->fx_state)->mxcsr = 0x1f80;
+	((fx_state_t*)t->fx_state)->mxcsr = 0x1f80;
 	((fx_state_t*)t->fx_state)->mxcsrMask = 0xffbf;
-	((fx_state_t*)t->fx_state)->fcw = 0x33f;*/
+	((fx_state_t*)t->fx_state)->fcw = 0x33f;
 	t->_is_user = 1;
 	t->priviledge = THREAD_LEVEL_USER;
 	t->state = THREAD_STATE_READY;

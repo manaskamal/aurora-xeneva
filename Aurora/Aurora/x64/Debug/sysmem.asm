@@ -17,7 +17,7 @@ EXTRN	x64_cli:PROC
 EXTRN	?pml4_index@@YA_K_K@Z:PROC			; pml4_index
 EXTRN	AuMapPage:PROC
 EXTRN	AuUnmapPage:PROC
-EXTRN	?get_current_thread@@YAPEAU_thread_@@XZ:PROC	; get_current_thread
+EXTRN	get_current_thread:PROC
 EXTRN	?thread_iterate_ready_list@@YAPEAU_thread_@@G@Z:PROC ; thread_iterate_ready_list
 EXTRN	?thread_iterate_block_list@@YAPEAU_thread_@@H@Z:PROC ; thread_iterate_block_list
 pdata	SEGMENT
@@ -239,7 +239,7 @@ $LN4@copy_memor:
 ; 41   : 	}
 ; 42   : 	uint64_t *current_cr3 = (uint64_t*)get_current_thread()->cr3;
 
-	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
+	call	get_current_thread
 	mov	rax, QWORD PTR [rax+192]
 	mov	QWORD PTR current_cr3$[rsp], rax
 
@@ -353,7 +353,7 @@ $LN4@map_shared:
 ; 26   : 	}
 ; 27   : 	uint64_t *current_cr3 = (uint64_t*)get_current_thread()->cr3;
 
-	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
+	call	get_current_thread
 	mov	rax, QWORD PTR [rax+192]
 	mov	QWORD PTR current_cr3$[rsp], rax
 

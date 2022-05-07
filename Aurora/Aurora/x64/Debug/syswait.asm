@@ -10,8 +10,8 @@ PUBLIC	?sys_unblock_id@@YAXG@Z				; sys_unblock_id
 EXTRN	x64_cli:PROC
 EXTRN	?block_thread@@YAXPEAU_thread_@@@Z:PROC		; block_thread
 EXTRN	?unblock_thread@@YAXPEAU_thread_@@@Z:PROC	; unblock_thread
-EXTRN	?get_current_thread@@YAPEAU_thread_@@XZ:PROC	; get_current_thread
-EXTRN	?force_sched@@YAXXZ:PROC			; force_sched
+EXTRN	get_current_thread:PROC
+EXTRN	force_sched:PROC
 EXTRN	?thread_iterate_block_list@@YAPEAU_thread_@@H@Z:PROC ; thread_iterate_block_list
 pdata	SEGMENT
 $pdata$?wait@@YAXXZ DD imagerel $LN3
@@ -95,7 +95,7 @@ $LN3:
 
 ; 22   : 	thread_t *t = get_current_thread ();
 
-	call	?get_current_thread@@YAPEAU_thread_@@XZ	; get_current_thread
+	call	get_current_thread
 	mov	QWORD PTR t$[rsp], rax
 
 ; 23   : 	block_thread (t);
@@ -105,7 +105,7 @@ $LN3:
 
 ; 24   : 	force_sched();
 
-	call	?force_sched@@YAXXZ			; force_sched
+	call	force_sched
 
 ; 25   : }
 
