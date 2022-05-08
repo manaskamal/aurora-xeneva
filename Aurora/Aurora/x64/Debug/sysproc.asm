@@ -73,7 +73,7 @@ $LN3:
 	mov	QWORD PTR tv66[rsp], rax
 	call	get_current_thread
 	mov	rcx, QWORD PTR tv66[rsp]
-	mov	QWORD PTR [rax+744], rcx
+	mov	QWORD PTR [rax+240], rcx
 
 ; 93   : }
 

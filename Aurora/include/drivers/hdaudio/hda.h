@@ -91,7 +91,7 @@
 #define HDA_GCAP_OSS(gcap)  (((gcap) & HDA_GCAP_OSS_MASK) >> HDA_GCAP_OSS_SHIFT)
 
 
-#define HDA_BUFFER_SIZE  512
+#define HDA_BUFFER_SIZE  2048 //512
 #define HDA_SAMPLES_PER_BUFFER   (HDA_BUFFER_SIZE/2)
 
 /* GCTL bits */

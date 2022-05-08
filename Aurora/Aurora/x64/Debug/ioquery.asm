@@ -43,7 +43,7 @@ $LN4:
 
 	call	get_current_thread
 	movsxd	rcx, DWORD PTR device_id$[rsp]
-	mov	rax, QWORD PTR [rax+rcx*8+776]
+	mov	rax, QWORD PTR [rax+rcx*8+272]
 	mov	QWORD PTR node$[rsp], rax
 
 ; 25   : 	if (node) 

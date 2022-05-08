@@ -127,7 +127,7 @@ void sys_read_file (int fd, uint8_t* buffer, FILE *ufile) {
 		file = get_current_thread()->fd[fd];
 		if (node == NULL)
 			return;
-		for (int i=0; i < file->size; i++){
+		for (int i=0; i < ufile->size; i++){
 			if (file->eof)
 				break;
 			uint64_t* buff = (uint64_t*)p2v((size_t)AuPmmngrAlloc());
@@ -157,7 +157,7 @@ void sys_read_file (int fd, uint8_t* buffer, FILE *ufile) {
  * @param buffer - buffer from where to write
  * @param ufile -- user mode file structure
  */
-void sys_write_file (int fd, unsigned char* buffer, FILE *ufile) {
+void sys_write_file (int fd, uint64* buffer, FILE *ufile) {
 	x64_cli();
 	vfs_node_t file;
 	file.size = ufile->size;

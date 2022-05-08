@@ -26,7 +26,7 @@ EXTRN	?sys_unblock_id@@YAXG@Z:PROC			; sys_unblock_id
 EXTRN	?create_uthread@@YAXP6AXPEAX@ZPEAD@Z:PROC	; create_uthread
 EXTRN	?sys_open_file@@YAHPEADPEAU_file_@@@Z:PROC	; sys_open_file
 EXTRN	?sys_read_file@@YAXHPEAEPEAU_file_@@@Z:PROC	; sys_read_file
-EXTRN	?sys_write_file@@YAXHPEAEPEAU_file_@@@Z:PROC	; sys_write_file
+EXTRN	?sys_write_file@@YAXHPEA_KPEAU_file_@@@Z:PROC	; sys_write_file
 EXTRN	?sys_get_used_ram@@YA_KXZ:PROC			; sys_get_used_ram
 EXTRN	?sys_get_free_ram@@YA_KXZ:PROC			; sys_get_free_ram
 EXTRN	?sys_sleep@@YAX_K@Z:PROC			; sys_sleep
@@ -528,7 +528,7 @@ $LN4@x64_syscal:
 ; 140  : 	case 37:
 ; 141  : 		funct = (uint64_t*)sys_write_file;
 
-	lea	rax, OFFSET FLAT:?sys_write_file@@YAXHPEAEPEAU_file_@@@Z ; sys_write_file
+	lea	rax, OFFSET FLAT:?sys_write_file@@YAXHPEA_KPEAU_file_@@@Z ; sys_write_file
 	mov	QWORD PTR funct, rax
 
 ; 142  : 		break;

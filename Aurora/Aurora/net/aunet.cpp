@@ -60,7 +60,7 @@ void AuNetAddAdapter (vfs_node_t *hw_file, AuNet_t *aunet) {
  * @param buffer -- buffer to write
  * @param length -- length of the buffer
  */
-void AuNetWrite (uint8_t* buffer, size_t length) {
+void AuNetWrite (uint64_t* buffer, size_t length) {
 	if (!net_hw_file)
 		return;
 	net_hw_file->write (net_hw_file, buffer, length);

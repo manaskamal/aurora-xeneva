@@ -52,11 +52,11 @@
 #define PRI_LOOP_PUT_EVENT 403
 #define PRI_LOOP_GET_EVENT 404
 
-
-#define SOUND_LOOP_ENABLE  13
-#define SOUND_PLAY 14
-#define SOUND_ADD_PCM 15
-#define SOUND_CREATE_CLIENT 16
+#define SOUND_REGISTER_MEDIAPLAYER 100
+#define SOUND_START_OUTPUT  102
+#define SOUND_STOP_OUTPUT  103
+#define SOUND_START_INPUT  104
+#define SOUND_STOP_INPUT  105
 
 
 extern "C" int ioquery (int devid, int code, void* arg);

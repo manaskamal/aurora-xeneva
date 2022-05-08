@@ -30,7 +30,7 @@ void readfs (vfs_node_t *node, vfs_node_t* file, uint64_t* buffer, uint32_t leng
 }
 
 
-void writefs (vfs_node_t *node, vfs_node_t* file, uint8_t *buffer, uint32_t length) {
+void writefs (vfs_node_t *node, vfs_node_t* file, uint64_t *buffer, uint32_t length) {
 	if (node) {
 		node->write (file, buffer, length);
 	}

@@ -13,15 +13,15 @@ _BSS	SEGMENT
 _BSS	ENDS
 PUBLIC	?AuNetInitialize@@YAXXZ				; AuNetInitialize
 PUBLIC	AuNetAddAdapter
-PUBLIC	?AuNetWrite@@YAXPEAE_K@Z			; AuNetWrite
+PUBLIC	?AuNetWrite@@YAXPEA_K_K@Z			; AuNetWrite
 PUBLIC	?AuGetNetTuple@@YAPEAU_au_net_@@XZ		; AuGetNetTuple
 pdata	SEGMENT
-$pdata$?AuNetWrite@@YAXPEAE_K@Z DD imagerel $LN4
+$pdata$?AuNetWrite@@YAXPEA_K_K@Z DD imagerel $LN4
 	DD	imagerel $LN4+58
-	DD	imagerel $unwind$?AuNetWrite@@YAXPEAE_K@Z
+	DD	imagerel $unwind$?AuNetWrite@@YAXPEA_K_K@Z
 pdata	ENDS
 xdata	SEGMENT
-$unwind$?AuNetWrite@@YAXPEAE_K@Z DD 010e01H
+$unwind$?AuNetWrite@@YAXPEA_K_K@Z DD 010e01H
 	DD	0420eH
 xdata	ENDS
 ; Function compile flags: /Odtpy
@@ -43,9 +43,9 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 buffer$ = 48
 length$ = 56
-?AuNetWrite@@YAXPEAE_K@Z PROC				; AuNetWrite
+?AuNetWrite@@YAXPEA_K_K@Z PROC				; AuNetWrite
 
-; 63   : void AuNetWrite (uint8_t* buffer, size_t length) {
+; 63   : void AuNetWrite (uint64_t* buffer, size_t length) {
 
 $LN4:
 	mov	QWORD PTR [rsp+16], rdx
@@ -75,7 +75,7 @@ $LN2@AuNetWrite:
 
 	add	rsp, 40					; 00000028H
 	ret	0
-?AuNetWrite@@YAXPEAE_K@Z ENDP				; AuNetWrite
+?AuNetWrite@@YAXPEA_K_K@Z ENDP				; AuNetWrite
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\net\aunet.cpp

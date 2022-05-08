@@ -22,13 +22,14 @@ CONST	ENDS
 PUBLIC	?AuHandlePageNotPresent@@YAX_K_NPEAX@Z		; AuHandlePageNotPresent
 EXTRN	printf:PROC
 EXTRN	AuPmmngrAlloc:PROC
+EXTRN	x64_cli:PROC
 EXTRN	AuMapPage:PROC
 EXTRN	get_current_thread:PROC
 EXTRN	?AuFindVMA@@YAPEAU_vma_area_@@_K@Z:PROC		; AuFindVMA
 EXTRN	?fat32_read@@YAXPEAU_vfs_node_@@PEA_K@Z:PROC	; fat32_read
 pdata	SEGMENT
 $pdata$?AuHandlePageNotPresent@@YAX_K_NPEAX@Z DD imagerel $LN13
-	DD	imagerel $LN13+320
+	DD	imagerel $LN13+330
 	DD	imagerel $unwind$?AuHandlePageNotPresent@@YAX_K_NPEAX@Z
 pdata	ENDS
 xdata	SEGMENT
@@ -66,78 +67,86 @@ $LN13:
 	test	eax, eax
 	jne	SHORT $LN10@AuHandlePa
 
-; 42   : 		printf ("Kernel Panic!! Page fault \n");
+; 42   : 		x64_cli();
+
+	call	x64_cli
+
+; 43   : 		printf ("Kernel Panic!! Page fault \n");
 
 	lea	rcx, OFFSET FLAT:$SG3838
 	call	printf
 
-; 43   : 		printf ("Virtual address -> %x \n", vaddr);
+; 44   : 		printf ("Virtual address -> %x \n", vaddr);
 
 	mov	rdx, QWORD PTR vaddr$[rsp]
 	lea	rcx, OFFSET FLAT:$SG3839
 	call	printf
 
-; 44   : 		printf ("RIP ->%x \n", frame->rip);
+; 45   : 		printf ("RIP ->%x \n", frame->rip);
 
 	mov	rax, QWORD PTR frame$[rsp]
 	mov	rdx, QWORD PTR [rax+16]
 	lea	rcx, OFFSET FLAT:$SG3840
 	call	printf
 
-; 45   : 		printf ("Current thread -> %s \n", get_current_thread()->name);
+; 46   : 		printf ("Current thread -> %s \n", get_current_thread()->name);
 
 	call	get_current_thread
-	mov	rdx, QWORD PTR [rax+728]
+	mov	rdx, QWORD PTR [rax+224]
 	lea	rcx, OFFSET FLAT:$SG3841
 	call	printf
 $LN9@AuHandlePa:
 
-; 46   : 		for(;;);
+; 47   : 		for(;;);
 
 	jmp	SHORT $LN9@AuHandlePa
 $LN10@AuHandlePa:
 
-; 47   : 	}
-; 48   : 	au_vm_area_t *vm = AuFindVMA(vaddr);
+; 48   : 	}
+; 49   : 	au_vm_area_t *vm = AuFindVMA(vaddr);
 
 	mov	rcx, QWORD PTR vaddr$[rsp]
 	call	?AuFindVMA@@YAPEAU_vma_area_@@_K@Z	; AuFindVMA
 	mov	QWORD PTR vm$[rsp], rax
 
-; 49   : 	if (vm == NULL){
+; 50   : 	if (vm == NULL){
 
 	cmp	QWORD PTR vm$[rsp], 0
 	jne	SHORT $LN7@AuHandlePa
 
-; 50   : 		printf ("Page Fault -> %x \n", vaddr);
+; 51   : 		x64_cli();
+
+	call	x64_cli
+
+; 52   : 		printf ("Page Fault -> %x \n", vaddr);
 
 	mov	rdx, QWORD PTR vaddr$[rsp]
 	lea	rcx, OFFSET FLAT:$SG3847
 	call	printf
 
-; 51   : 		printf ("RIP -> %x \n", frame->rip);
+; 53   : 		printf ("RIP -> %x \n", frame->rip);
 
 	mov	rax, QWORD PTR frame$[rsp]
 	mov	rdx, QWORD PTR [rax+16]
 	lea	rcx, OFFSET FLAT:$SG3848
 	call	printf
 
-; 52   : 		printf ("Current thread -> %s \n", get_current_thread()->name);
+; 54   : 		printf ("Current thread -> %s \n", get_current_thread()->name);
 
 	call	get_current_thread
-	mov	rdx, QWORD PTR [rax+728]
+	mov	rdx, QWORD PTR [rax+224]
 	lea	rcx, OFFSET FLAT:$SG3849
 	call	printf
 $LN6@AuHandlePa:
 
-; 53   : 		for(;;);
+; 55   : 		for(;;);
 
 	jmp	SHORT $LN6@AuHandlePa
 $LN7@AuHandlePa:
 
-; 54   : 	}
-; 55   : 
-; 56   : 	for (int i = 0; i < vm->length; i++) {
+; 56   : 	}
+; 57   : 
+; 58   : 	for (int i = 0; i < vm->length; i++) {
 
 	mov	DWORD PTR i$1[rsp], 0
 	jmp	SHORT $LN4@AuHandlePa
@@ -151,12 +160,12 @@ $LN4@AuHandlePa:
 	cmp	rax, QWORD PTR [rcx+40]
 	jae	SHORT $LN2@AuHandlePa
 
-; 57   : 		void* phys_addr = AuPmmngrAlloc();
+; 59   : 		void* phys_addr = AuPmmngrAlloc();
 
 	call	AuPmmngrAlloc
 	mov	QWORD PTR phys_addr$2[rsp], rax
 
-; 58   : 		if (vm->file && vm->file->eof != 1) {
+; 60   : 		if (vm->file && vm->file->eof != 1) {
 
 	mov	rax, QWORD PTR vm$[rsp]
 	cmp	QWORD PTR [rax+24], 0
@@ -167,7 +176,7 @@ $LN4@AuHandlePa:
 	cmp	eax, 1
 	je	SHORT $LN1@AuHandlePa
 
-; 59   : 			fat32_read(vm->file, (uint64_t*)phys_addr);
+; 61   : 			fat32_read(vm->file, (uint64_t*)phys_addr);
 
 	mov	rdx, QWORD PTR phys_addr$2[rsp]
 	mov	rax, QWORD PTR vm$[rsp]
@@ -175,20 +184,20 @@ $LN4@AuHandlePa:
 	call	?fat32_read@@YAXPEAU_vfs_node_@@PEA_K@Z	; fat32_read
 $LN1@AuHandlePa:
 
-; 60   : 		}
-; 61   : 		AuMapPage((uint64_t)phys_addr, vaddr, PAGING_USER);
+; 62   : 		}
+; 63   : 		AuMapPage((uint64_t)phys_addr, vaddr, PAGING_USER);
 
 	mov	r8b, 4
 	mov	rdx, QWORD PTR vaddr$[rsp]
 	mov	rcx, QWORD PTR phys_addr$2[rsp]
 	call	AuMapPage
 
-; 62   : 	}
+; 64   : 	}
 
 	jmp	SHORT $LN3@AuHandlePa
 $LN2@AuHandlePa:
 
-; 63   : }
+; 65   : }
 
 	add	rsp, 72					; 00000048H
 	ret	0

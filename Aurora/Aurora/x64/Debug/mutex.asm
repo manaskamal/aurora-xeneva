@@ -231,7 +231,7 @@ $LN2@mutex_lock:
 ; 43   : 		obj->block_thread_id[obj->block_thread_num] = get_current_thread()->id;
 
 	call	get_current_thread
-	movzx	eax, WORD PTR [rax+738]
+	movzx	eax, WORD PTR [rax+234]
 	mov	rcx, QWORD PTR obj$[rsp]
 	movzx	ecx, WORD PTR [rcx+8]
 	mov	rdx, QWORD PTR obj$[rsp]

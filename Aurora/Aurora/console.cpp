@@ -16,6 +16,7 @@
 #include <fs\vfs.h>
 #include <fs\fat\fat.h>
 #include <screen.h>
+#include <serial.h>
 
 //! default kernel console
 static uint16_t scanline = 0;
@@ -24,7 +25,7 @@ static uint16_t screen_height = 0;
 static uint32_t *fb = nullptr;
 static int console_x = 0;
 static int console_y = 0;
-static uint64_t *psf_data = nullptr;
+static uint8_t *psf_data = nullptr;
 static bool _console_initialized_ = false;
 
 
@@ -54,7 +55,8 @@ void AuConsoleInitialize (PKERNEL_BOOT_INFO info) {
 	memset(buffer, 0, 8192);
 	vfs_node_t file = fat32_open(NULL, "/font.psf");
 	fat32_read_file (&file,(uint64_t*)v2p((size_t)buffer),file.size);
-	psf_data = buffer;
+	uint8_t* aligned_buf = (uint8_t*)buffer;
+	psf_data = aligned_buf;
 	_console_initialized_ = true;
 }
 
@@ -97,17 +99,18 @@ void puts(char *s){
 	psf2_t *font = (psf2_t*)psf_data;
     int x,y,line,mask,offs;
     int bpl=(font->width+7)/8;
+
     while(*s) {
 		if (*s == '\n') {
 
             console_y += 16;
 			console_x = 0;
 			////!Scroll
-			if (console_y + 1 > screen_height) {
-				for (int i = 16; i < screen_height * screen_width; i++) {
+			if (console_y + 1 >= screen_height) {
+				for (int i = 16; i < (screen_width * screen_height); i++) {
 					fb[i] = fb[i + screen_width * 16];
 				}
-				console_y--;
+				console_y --;
 			}
 
 		} else if (*s == '\b') {

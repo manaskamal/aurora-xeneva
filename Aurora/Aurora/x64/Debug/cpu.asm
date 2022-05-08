@@ -69,7 +69,7 @@ EXTRN	printf:PROC
 EXTRN	?initialize_syscall@@YAXXZ:PROC			; initialize_syscall
 EXTRN	?initialize_user_land@@YAX_K@Z:PROC		; initialize_user_land
 EXTRN	?initialize_apic@@YAX_N@Z:PROC			; initialize_apic
-EXTRN	?apic_local_eoi@@YAXXZ:PROC			; apic_local_eoi
+EXTRN	apic_local_eoi:PROC
 EXTRN	malloc:PROC
 EXTRN	?AuCreatePCPU@@YAXPEAX@Z:PROC			; AuCreatePCPU
 EXTRN	?AuPCPUSetKernelTSS@@YAXPEAU_tss@@@Z:PROC	; AuPCPUSetKernelTSS
@@ -193,7 +193,7 @@ $LN3:
 
 ; 240  : 	apic_local_eoi();
 
-	call	?apic_local_eoi@@YAXXZ			; apic_local_eoi
+	call	apic_local_eoi
 
 ; 241  : }
 

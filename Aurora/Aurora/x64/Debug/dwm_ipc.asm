@@ -75,7 +75,7 @@ $LN4:
 ; 49   : 	dwm_message_t *tmsg = (dwm_message_t*)get_current_thread()->msg_box;
 
 	call	get_current_thread
-	mov	rax, QWORD PTR [rax+752]
+	mov	rax, QWORD PTR [rax+248]
 	mov	QWORD PTR tmsg$[rsp], rax
 
 ; 50   : 	if (tmsg->type != 0) {
@@ -97,7 +97,7 @@ $LN4:
 	call	get_current_thread
 	mov	r8d, 4096				; 00001000H
 	xor	edx, edx
-	mov	rcx, QWORD PTR [rax+752]
+	mov	rcx, QWORD PTR [rax+248]
 	call	memset
 $LN1@dwm_dispat:
 
@@ -158,7 +158,7 @@ $LN2@dwm_put_me:
 ; 41   : 	dwm_message_t *tmsg = (dwm_message_t*)t->msg_box;
 
 	mov	rax, QWORD PTR t$[rsp]
-	mov	rax, QWORD PTR [rax+752]
+	mov	rax, QWORD PTR [rax+248]
 	mov	QWORD PTR tmsg$[rsp], rax
 
 ; 42   : 	if (tmsg->type == 0)
@@ -173,7 +173,7 @@ $LN2@dwm_put_me:
 	mov	r8d, 28
 	mov	rdx, QWORD PTR msg$[rsp]
 	mov	rax, QWORD PTR t$[rsp]
-	mov	rcx, QWORD PTR [rax+752]
+	mov	rcx, QWORD PTR [rax+248]
 	call	memcpy
 $LN1@dwm_put_me:
 $LN4@dwm_put_me:

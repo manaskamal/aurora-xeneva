@@ -109,11 +109,11 @@ void _AuMain (KERNEL_BOOT_INFO *info) {
 	AuInitializeBasicAcpi (info->acpi_table_pointer);
 
 	ahci_initialize();
-	hda_initialize();
 	AuVFSInit();
 	
 	AuInitializeScreen(info);
 	AuConsoleInitialize(info);
+	AuSoundInitialize();
 	AuInitializeRTC(); 
 
 	AuInitializeMouse();
@@ -130,15 +130,14 @@ void _AuMain (KERNEL_BOOT_INFO *info) {
 	/* Clear interrupts as scheduler will enable it */
 	x64_cli();
 	AuDrvMngrInitialize(info);
+	//hda_initialize();
 	AuKeyboardInitialize();
 	dwm_ipc_init();
 	pri_loop_init();
 
 	process_list_initialize();
 	ttype_init();
-	
-	
-	
+
 	/*Initialize other processor */
 	AuInitializeCpu(AuGetNumCPU());
 
@@ -148,6 +147,7 @@ void _AuMain (KERNEL_BOOT_INFO *info) {
 	AuARPRequestMAC();
 
 #ifdef ARCH_X64
+
 	
 	printf ("Scheduler Initialized\n");
 

@@ -62,7 +62,7 @@ AU_EXTERN AU_EXPORT void AuNetAddAdapter (vfs_node_t *hw_file, AuNet_t *aunet);
  * @param buffer -- buffer to write
  * @param length -- length of the buffer
  */
-extern void AuNetWrite (uint8_t* buffer, size_t length);
+extern void AuNetWrite (uint64_t* buffer, size_t length);
 
 /*
  * AuGetNetTuple -- returns the net structure

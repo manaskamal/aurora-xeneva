@@ -15,6 +15,7 @@
 
 #include <stdint.h>
 #include <arch\x86_64\cpu.h>
+#include <aurora.h>
 
 //! APIC Definitions
 #define LAPIC_SPURIOUS   0x00f0
@@ -40,7 +41,7 @@
 //! initialize apic
 extern void initialize_apic (bool bsp);
 //! sends eoi to cpu local apic
-extern void apic_local_eoi();
+AU_EXTERN AU_EXPORT void apic_local_eoi();
 
 //!APIC REGISTER R/W
 extern uint64_t read_apic_register(uint16_t reg);

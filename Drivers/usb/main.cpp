@@ -66,9 +66,6 @@ AU_EXTERN AU_EXPORT int AuDriverMain() {
 	uint64_t usb_addr_high = device.device.nonBridge.baseAddress[1] & 0xFFFFFFFF;
 	uint64_t mmio_addr = (usb_addr_high << 32) | usb_addr_low;
 
-	printf ("[usb]: address low -> %x, address high -> %x \n", usb_addr_low, usb_addr_high);
-	printf ("[usb]: mmio addr -> %x \n", mmio_addr);
-
 	uint64_t mmio_base = (uint64_t)AuMapMMIO(mmio_addr, 4);
 	xhci_cap_regs_t *cap = (xhci_cap_regs_t*)mmio_base;
 	uint64_t op_base = (uint64_t)(mmio_base + (cap->cap_caplen_version & 0xFF));

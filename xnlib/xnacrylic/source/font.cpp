@@ -58,7 +58,7 @@ void acrylic_font_destroy () {
 
 
 void acrylic_font_set_size (uint32_t sz) {
-	err = FT_Set_Pixel_Sizes(face,sz,sz);  //sz / 72.f * 96
+	err = FT_Set_Pixel_Sizes(face,sz/ 72.f * 96,sz/ 72.f * 96);  //sz / 72.f * 96
 }
 
 void acrylic_font_draw_string (canvas_t *canvas, char* string, int penx, int peny, uint32_t sz, uint32_t color) {

@@ -183,7 +183,7 @@ $LN3:
 ; 18   : 	return get_current_thread()->id;
 
 	call	get_current_thread
-	movzx	eax, WORD PTR [rax+738]
+	movzx	eax, WORD PTR [rax+234]
 
 ; 19   : }
 

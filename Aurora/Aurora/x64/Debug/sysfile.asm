@@ -11,7 +11,7 @@ $SG3820	DB	'/', 00H
 CONST	ENDS
 PUBLIC	?sys_open_file@@YAHPEADPEAU_file_@@@Z		; sys_open_file
 PUBLIC	?sys_read_file@@YAXHPEAEPEAU_file_@@@Z		; sys_read_file
-PUBLIC	?sys_write_file@@YAXHPEAEPEAU_file_@@@Z		; sys_write_file
+PUBLIC	?sys_write_file@@YAXHPEA_KPEAU_file_@@@Z	; sys_write_file
 EXTRN	strcmp:PROC
 EXTRN	strchr:PROC
 EXTRN	memset:PROC
@@ -35,9 +35,9 @@ $pdata$?sys_open_file@@YAHPEADPEAU_file_@@@Z DD imagerel $LN18
 $pdata$?sys_read_file@@YAXHPEAEPEAU_file_@@@Z DD imagerel $LN12
 	DD	imagerel $LN12+363
 	DD	imagerel $unwind$?sys_read_file@@YAXHPEAEPEAU_file_@@@Z
-$pdata$?sys_write_file@@YAXHPEAEPEAU_file_@@@Z DD imagerel $LN6
+$pdata$?sys_write_file@@YAXHPEA_KPEAU_file_@@@Z DD imagerel $LN6
 	DD	imagerel $LN6+289
-	DD	imagerel $unwind$?sys_write_file@@YAXHPEAEPEAU_file_@@@Z
+	DD	imagerel $unwind$?sys_write_file@@YAXHPEA_KPEAU_file_@@@Z
 pdata	ENDS
 xdata	SEGMENT
 $unwind$?sys_open_file@@YAHPEADPEAU_file_@@@Z DD 041301H
@@ -45,7 +45,7 @@ $unwind$?sys_open_file@@YAHPEADPEAU_file_@@@Z DD 041301H
 	DD	0600b700cH
 $unwind$?sys_read_file@@YAXHPEAEPEAU_file_@@@Z DD 011201H
 	DD	08212H
-$unwind$?sys_write_file@@YAXHPEAEPEAU_file_@@@Z DD 021501H
+$unwind$?sys_write_file@@YAXHPEA_KPEAU_file_@@@Z DD 021501H
 	DD	0150115H
 xdata	ENDS
 ; Function compile flags: /Odtpy
@@ -56,9 +56,9 @@ file$ = 48
 fd$ = 176
 buffer$ = 184
 ufile$ = 192
-?sys_write_file@@YAXHPEAEPEAU_file_@@@Z PROC		; sys_write_file
+?sys_write_file@@YAXHPEA_KPEAU_file_@@@Z PROC		; sys_write_file
 
-; 160  : void sys_write_file (int fd, unsigned char* buffer, FILE *ufile) {
+; 160  : void sys_write_file (int fd, uint64* buffer, FILE *ufile) {
 
 $LN6:
 	mov	QWORD PTR [rsp+24], r8
@@ -132,7 +132,7 @@ $LN6:
 
 	call	get_current_thread
 	movsxd	rcx, DWORD PTR fd$[rsp]
-	mov	rax, QWORD PTR [rax+rcx*8+776]
+	mov	rax, QWORD PTR [rax+rcx*8+272]
 	mov	QWORD PTR node$[rsp], rax
 
 ; 176  : 	if (node == NULL) {
@@ -181,15 +181,15 @@ $LN4@sys_write_:
 
 	add	rsp, 168				; 000000a8H
 	ret	0
-?sys_write_file@@YAXHPEAEPEAU_file_@@@Z ENDP		; sys_write_file
+?sys_write_file@@YAXHPEA_KPEAU_file_@@@Z ENDP		; sys_write_file
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\sysserv\sysfile.cpp
 _TEXT	SEGMENT
 i$1 = 32
 node$ = 40
-file$ = 48
-buff$2 = 56
+buff$2 = 48
+file$ = 56
 fd$ = 80
 buffer$ = 88
 ufile$ = 96
@@ -236,7 +236,7 @@ $LN12:
 
 	call	get_current_thread
 	movsxd	rcx, DWORD PTR fd$[rsp]
-	mov	rax, QWORD PTR [rax+rcx*8+776]
+	mov	rax, QWORD PTR [rax+rcx*8+272]
 	mov	QWORD PTR file$[rsp], rax
 
 ; 128  : 		if (node == NULL)
@@ -249,7 +249,7 @@ $LN12:
 	jmp	$LN10@sys_read_f
 $LN8@sys_read_f:
 
-; 130  : 		for (int i=0; i < file->size; i++){
+; 130  : 		for (int i=0; i < ufile->size; i++){
 
 	mov	DWORD PTR i$1[rsp], 0
 	jmp	SHORT $LN7@sys_read_f
@@ -258,8 +258,8 @@ $LN6@sys_read_f:
 	inc	eax
 	mov	DWORD PTR i$1[rsp], eax
 $LN7@sys_read_f:
-	mov	rax, QWORD PTR file$[rsp]
-	mov	eax, DWORD PTR [rax+32]
+	mov	rax, QWORD PTR ufile$[rsp]
+	mov	eax, DWORD PTR [rax+4]
 	cmp	DWORD PTR i$1[rsp], eax
 	jae	$LN5@sys_read_f
 
@@ -337,7 +337,7 @@ $LN9@sys_read_f:
 
 	call	get_current_thread
 	movsxd	rcx, DWORD PTR fd$[rsp]
-	mov	rax, QWORD PTR [rax+rcx*8+776]
+	mov	rax, QWORD PTR [rax+rcx*8+272]
 	mov	QWORD PTR node$[rsp], rax
 
 ; 145  : 		if (node == NULL)
@@ -517,7 +517,7 @@ $LN8@sys_open_f:
 
 	call	get_current_thread
 	movsxd	rcx, DWORD PTR i$1[rsp]
-	mov	rax, QWORD PTR [rax+rcx*8+776]
+	mov	rax, QWORD PTR [rax+rcx*8+272]
 	mov	QWORD PTR _node$3[rsp], rax
 
 ; 73   : 			if (_node == node) {
@@ -643,21 +643,21 @@ $LN3@sys_open_f:
 	call	get_current_thread
 	mov	QWORD PTR tv158[rsp], rax
 	call	get_current_thread
-	movsxd	rax, DWORD PTR [rax+1256]
+	movsxd	rax, DWORD PTR [rax+752]
 	mov	rcx, QWORD PTR file_$2[rsp]
 	mov	rdx, QWORD PTR tv158[rsp]
-	mov	QWORD PTR [rdx+rax*8+776], rcx
+	mov	QWORD PTR [rdx+rax*8+272], rcx
 
 ; 96   : 		fd = get_current_thread()->fd_current;
 
 	call	get_current_thread
-	mov	eax, DWORD PTR [rax+1256]
+	mov	eax, DWORD PTR [rax+752]
 	mov	DWORD PTR fd$[rsp], eax
 
 ; 97   : 		get_current_thread()->fd_current++;
 
 	call	get_current_thread
-	add	rax, 1256				; 000004e8H
+	add	rax, 752				; 000002f0H
 	mov	QWORD PTR tv169[rsp], rax
 	mov	rax, QWORD PTR tv169[rsp]
 	mov	eax, DWORD PTR [rax]
@@ -681,21 +681,21 @@ $LN4@sys_open_f:
 	call	get_current_thread
 	mov	QWORD PTR tv173[rsp], rax
 	call	get_current_thread
-	movsxd	rax, DWORD PTR [rax+1256]
+	movsxd	rax, DWORD PTR [rax+752]
 	mov	rcx, QWORD PTR node$[rsp]
 	mov	rdx, QWORD PTR tv173[rsp]
-	mov	QWORD PTR [rdx+rax*8+776], rcx
+	mov	QWORD PTR [rdx+rax*8+272], rcx
 
 ; 101  : 			fd = get_current_thread()->fd_current;
 
 	call	get_current_thread
-	mov	eax, DWORD PTR [rax+1256]
+	mov	eax, DWORD PTR [rax+752]
 	mov	DWORD PTR fd$[rsp], eax
 
 ; 102  : 			get_current_thread()->fd_current++;
 
 	call	get_current_thread
-	add	rax, 1256				; 000004e8H
+	add	rax, 752				; 000002f0H
 	mov	QWORD PTR tv184[rsp], rax
 	mov	rax, QWORD PTR tv184[rsp]
 	mov	eax, DWORD PTR [rax]

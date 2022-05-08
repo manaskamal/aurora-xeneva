@@ -181,11 +181,11 @@ thread_t* create_kthread (void (*entry) (void), uint64_t stack,uint64_t cr3, cha
 	t->state = THREAD_STATE_READY;
 	//t->priority = priority;
 	t->fd_current = 3;
-	//t->fx_state = (char*)malloc(512);
+	t->fx_state = (uint8_t*)malloc(512);
 	memset(t->fx_state, 0, 512);
-	((fx_state_t*)t->fx_state)->mxcsr = 0x1f80;
+	/*((fx_state_t*)t->fx_state)->mxcsr = 0x1f80;
 	((fx_state_t*)t->fx_state)->mxcsrMask = 0xffbf;
-	((fx_state_t*)t->fx_state)->fcw = 0x33f;
+	((fx_state_t*)t->fx_state)->fcw = 0x33f;*/
 	thread_insert(t);
 	return t;
 }
@@ -237,10 +237,11 @@ thread_t* create_user_thread (void (*entry) (void*),uint64_t stack,uint64_t cr3,
 	t->msg_box = (uint64_t*)p2v((size_t)AuPmmngrAlloc());
 	/** Map the thread's msg box to a virtual address, from where the process will receive system messages **/
 	AuMapPageEx((uint64_t*)p2v(t->cr3),v2p((size_t)t->msg_box),(uint64_t)0x400000, PAGING_USER);
+	t->fx_state = (uint8_t*)malloc(512);
 	memset(t->fx_state, 0, 512);
-	((fx_state_t*)t->fx_state)->mxcsr = 0x1f80;
+	/*((fx_state_t*)t->fx_state)->mxcsr = 0x1f80;
 	((fx_state_t*)t->fx_state)->mxcsrMask = 0xffbf;
-	((fx_state_t*)t->fx_state)->fcw = 0x33f;
+	((fx_state_t*)t->fx_state)->fcw = 0x33f;*/
 	t->_is_user = 1;
 	t->priviledge = THREAD_LEVEL_USER;
 	t->state = THREAD_STATE_READY;
@@ -323,9 +324,7 @@ void scheduler_isr (size_t v, void* param) {
 	if (save_context(current_thread,ktss) == 0) {
 		current_thread->cr3 = x64_read_cr3();
 
-		if(is_cpu_fxsave_supported()) {
-			x64_fxsave((uint8_t*)&current_thread->fx_state);
-		}
+		
 		/* check if the thread is user mode thread, if yes
 		   than store the kernel esp */
 		if (current_thread->priviledge == THREAD_LEVEL_USER) {
@@ -350,8 +349,6 @@ void scheduler_isr (size_t v, void* param) {
 #endif
 		
 		/** now return to the new task last stored instruction */
-		if (is_cpu_fxsave_supported())
-			x64_fxrstor((uint8_t*)&current_thread->fx_state);
 
 
 		if (current_thread->priviledge == THREAD_LEVEL_USER){

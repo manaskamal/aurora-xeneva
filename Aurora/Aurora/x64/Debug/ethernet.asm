@@ -7,7 +7,7 @@ INCLUDELIB OLDNAMES
 
 PUBLIC	?ethernet_send@@YAXPEAX_KGPEAE@Z		; ethernet_send
 EXTRN	memcpy:PROC
-EXTRN	?AuNetWrite@@YAXPEAE_K@Z:PROC			; AuNetWrite
+EXTRN	?AuNetWrite@@YAXPEA_K_K@Z:PROC			; AuNetWrite
 EXTRN	?AuGetNetTuple@@YAPEAU_au_net_@@XZ:PROC		; AuGetNetTuple
 EXTRN	malloc:PROC
 EXTRN	free:PROC
@@ -96,11 +96,11 @@ $LN3:
 	mov	rcx, QWORD PTR packet$[rsp]
 	mov	WORD PTR [rcx+12], ax
 
-; 49   : 	AuNetWrite((uint8_t*)packet,total_sz);
+; 49   : 	AuNetWrite((uint64_t*)packet,total_sz);
 
 	mov	rdx, QWORD PTR total_sz$[rsp]
 	mov	rcx, QWORD PTR packet$[rsp]
-	call	?AuNetWrite@@YAXPEAE_K@Z		; AuNetWrite
+	call	?AuNetWrite@@YAXPEA_K_K@Z		; AuNetWrite
 
 ; 50   : 	free(packet);
 

@@ -146,7 +146,7 @@ $LN6@pri_loop_i:
 	movzx	eax, WORD PTR [rax+8]
 	mov	DWORD PTR tv68[rsp], eax
 	call	get_current_thread
-	movzx	eax, WORD PTR [rax+738]
+	movzx	eax, WORD PTR [rax+234]
 	mov	ecx, DWORD PTR tv68[rsp]
 	cmp	ecx, eax
 	jne	SHORT $LN3@pri_loop_i
@@ -242,7 +242,7 @@ $LN9:
 ; 143  : 	uint16_t owner_id = get_current_thread()->id;
 
 	call	get_current_thread
-	movzx	eax, WORD PTR [rax+738]
+	movzx	eax, WORD PTR [rax+234]
 	mov	WORD PTR owner_id$[rsp], ax
 
 ; 144  : 	for (pri_loop_box_t *loop = first_loop; loop != NULL; loop = loop->next) {
@@ -373,7 +373,7 @@ $LN5:
 
 	call	get_current_thread
 	mov	rcx, QWORD PTR loop$[rsp]
-	movzx	eax, WORD PTR [rax+738]
+	movzx	eax, WORD PTR [rax+234]
 	mov	WORD PTR [rcx+8], ax
 
 ; 49   : 	loop->pending_msg_count = 0;
@@ -723,7 +723,7 @@ $LN2@pri_put_me:
 	cmp	QWORD PTR thread$[rsp], 0
 	je	SHORT $LN1@pri_put_me
 	mov	rax, QWORD PTR thread$[rsp]
-	movzx	eax, BYTE PTR [rax+736]
+	movzx	eax, BYTE PTR [rax+232]
 	cmp	eax, 3
 	jne	SHORT $LN1@pri_put_me
 

@@ -226,6 +226,7 @@ void machine_check_abort (size_t v, void* p){
  void simd_fpu_fault (size_t v, void* p){
 	 x64_cli();
 	 interrupt_stack_frame *frame = (interrupt_stack_frame*)p;
+	 x64_fxrstor((uint8_t*)&get_current_thread()->fx_state);
 	 panic("\nSIMD FPU Fault");
 	 printf ("\n__CPU Informations__ \n");
 	 printf (" RIP -> %x \n", frame->rip);
@@ -233,8 +234,10 @@ void machine_check_abort (size_t v, void* p){
 	 printf (" RFLAGS -> %x \n", frame->rflags);
 	 printf (" Current thread -> %s\n", get_current_thread()->name);
 	 printf (" MXCSR bit  -- ");
-	 fx_state_t* state = (fx_state_t*)get_current_thread()->fx_state;
-	 uint32_t mxcsr = state->mxcsr;
+	 uint8_t *data = get_current_thread()->fx_state;
+	 uint32_t mxcsr = ((data[10] >> 8) & 0xffff);
+	 printf ("XMM -> %x  XMM1 -> %x XMM2 - > %x", data[0xA0], data[0xB0], data[0xC0]);
+	 printf ("XMM3 -> %x XMM4 -> %x XMM5 -> %x\n", data[0xD0], data[0xE0], data[0xF0]);
 	 if (mxcsr & 0x0001)
 		 printf ("Invalid operation flag \n");
 	 else if (mxcsr & 0x0002)

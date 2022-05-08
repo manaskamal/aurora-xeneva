@@ -29,7 +29,7 @@ EXTRN	x64_outportd:PROC
 EXTRN	?x86_64_gdt_init@@YAXXZ:PROC			; x86_64_gdt_init
 EXTRN	?setvect@@YAX_KP6AX0PEAX@Z@Z:PROC		; setvect
 EXTRN	?x86_64_init_cpu@@YAXXZ:PROC			; x86_64_init_cpu
-EXTRN	?apic_local_eoi@@YAXXZ:PROC			; apic_local_eoi
+EXTRN	apic_local_eoi:PROC
 EXTRN	?ioapic_register_irq@@YAX_KP6AX0PEAX@ZE@Z:PROC	; ioapic_register_irq
 EXTRN	?ioapic_mask_irq@@YAXE_N@Z:PROC			; ioapic_mask_irq
 pdata	SEGMENT
@@ -234,7 +234,7 @@ $LN3:
 ; 128  : #ifdef USE_APIC
 ; 129  : 	apic_local_eoi ();
 
-	call	?apic_local_eoi@@YAXXZ			; apic_local_eoi
+	call	apic_local_eoi
 
 ; 130  : #endif
 ; 131  : #elif ARCH_ARM

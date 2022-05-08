@@ -507,18 +507,18 @@ $LN3:
 ; 141  : 	t->fd[t->fd_current] = stdin;
 
 	mov	rax, QWORD PTR t$[rsp]
-	movsxd	rax, DWORD PTR [rax+1256]
+	movsxd	rax, DWORD PTR [rax+752]
 	mov	rcx, QWORD PTR t$[rsp]
 	mov	rdx, QWORD PTR stdin$[rsp]
-	mov	QWORD PTR [rcx+rax*8+776], rdx
+	mov	QWORD PTR [rcx+rax*8+272], rdx
 
 ; 142  : 	t->fd_current++;
 
 	mov	rax, QWORD PTR t$[rsp]
-	mov	eax, DWORD PTR [rax+1256]
+	mov	eax, DWORD PTR [rax+752]
 	inc	eax
 	mov	rcx, QWORD PTR t$[rsp]
-	mov	DWORD PTR [rcx+1256], eax
+	mov	DWORD PTR [rcx+752], eax
 
 ; 143  : 	vfs_node_t* stdout = vfs_finddir("/dev/stdout");
 
@@ -529,18 +529,18 @@ $LN3:
 ; 144  : 	t->fd[t->fd_current] = stdout;
 
 	mov	rax, QWORD PTR t$[rsp]
-	movsxd	rax, DWORD PTR [rax+1256]
+	movsxd	rax, DWORD PTR [rax+752]
 	mov	rcx, QWORD PTR t$[rsp]
 	mov	rdx, QWORD PTR stdout$[rsp]
-	mov	QWORD PTR [rcx+rax*8+776], rdx
+	mov	QWORD PTR [rcx+rax*8+272], rdx
 
 ; 145  : 	t->fd_current++;
 
 	mov	rax, QWORD PTR t$[rsp]
-	mov	eax, DWORD PTR [rax+1256]
+	mov	eax, DWORD PTR [rax+752]
 	inc	eax
 	mov	rcx, QWORD PTR t$[rsp]
-	mov	DWORD PTR [rcx+1256], eax
+	mov	DWORD PTR [rcx+752], eax
 
 ; 146  : 	vfs_node_t* stderr = vfs_finddir("/dev/stderr");
 
@@ -551,18 +551,18 @@ $LN3:
 ; 147  : 	t->fd[t->fd_current] = stderr;
 
 	mov	rax, QWORD PTR t$[rsp]
-	movsxd	rax, DWORD PTR [rax+1256]
+	movsxd	rax, DWORD PTR [rax+752]
 	mov	rcx, QWORD PTR t$[rsp]
 	mov	rdx, QWORD PTR stderr$[rsp]
-	mov	QWORD PTR [rcx+rax*8+776], rdx
+	mov	QWORD PTR [rcx+rax*8+272], rdx
 
 ; 148  : 	t->fd_current++;
 
 	mov	rax, QWORD PTR t$[rsp]
-	mov	eax, DWORD PTR [rax+1256]
+	mov	eax, DWORD PTR [rax+752]
 	inc	eax
 	mov	rcx, QWORD PTR t$[rsp]
-	mov	DWORD PTR [rcx+1256], eax
+	mov	DWORD PTR [rcx+752], eax
 
 ; 149  : 
 ; 150  : }
@@ -1147,7 +1147,7 @@ $LN7@kill_proce:
 ; 314  : 	remove_thread->state = THREAD_STATE_BLOCKED;
 
 	mov	rax, QWORD PTR remove_thread$[rsp]
-	mov	BYTE PTR [rax+736], 3
+	mov	BYTE PTR [rax+232], 3
 
 ; 315  : 	task_delete (remove_thread);
 
@@ -1290,7 +1290,7 @@ $LN10:
 ; 248  : 	uint16_t t_id = remove_thread->id;
 
 	mov	rax, QWORD PTR remove_thread$[rsp]
-	movzx	eax, WORD PTR [rax+738]
+	movzx	eax, WORD PTR [rax+234]
 	mov	WORD PTR t_id$[rsp], ax
 
 ; 249  : 	process_t *proc = find_process_by_thread (remove_thread);
@@ -1322,7 +1322,7 @@ $LN10:
 ; 254  : 	int timer = find_timer_id (remove_thread->id);
 
 	mov	rax, QWORD PTR remove_thread$[rsp]
-	movzx	ecx, WORD PTR [rax+738]
+	movzx	ecx, WORD PTR [rax+234]
 	call	?find_timer_id@@YAHG@Z			; find_timer_id
 	mov	DWORD PTR timer$[rsp], eax
 
@@ -1367,7 +1367,7 @@ $LN7@kill_proce:
 ; 272  : 	AuPmmngrFree(remove_thread->msg_box);
 
 	mov	rax, QWORD PTR remove_thread$[rsp]
-	mov	rcx, QWORD PTR [rax+752]
+	mov	rcx, QWORD PTR [rax+248]
 	call	AuPmmngrFree
 
 ; 273  : 	pri_loop_destroy_by_id (t_id);
@@ -1870,7 +1870,7 @@ $LN1@AuCreatePr:
 ; 239  : 	return t->id;
 
 	mov	rax, QWORD PTR t$[rsp]
-	movzx	eax, WORD PTR [rax+738]
+	movzx	eax, WORD PTR [rax+234]
 $LN4@AuCreatePr:
 
 ; 240  : }

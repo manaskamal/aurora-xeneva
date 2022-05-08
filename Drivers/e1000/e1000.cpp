@@ -134,7 +134,6 @@ void e1000_read_mac(e1000_nic_dev *device) {
 
 void e1000_handler (size_t v, void* p) {
 	uint32_t status = e1000_read_command(e1000_nic, E1000_REG_ICR);
-	printf ("E1000 interrupt handler++\n");
 	if (!first_interrupt)
 		first_interrupt = true;
 
@@ -219,9 +218,10 @@ void e1000_send_packet (e1000_nic_dev* dev, uint8_t* payload, size_t payload_siz
  * @param buffer -- buffer to write
  * @param length -- length of the buffer
  */
-void e1000_write_file (vfs_node_t *file, uint8_t* buffer, uint32_t length) {
+void e1000_write_file (vfs_node_t *file, uint64_t* buffer, uint32_t length) {
 	printf ("[driver]: writing to e1000 file device \n");
-	e1000_send_packet(e1000_nic, buffer, length);
+	uint8_t* aligned_buf = (uint8_t*)buffer;
+	e1000_send_packet(e1000_nic, aligned_buf, length);
 }
 
 /*
@@ -310,7 +310,6 @@ AU_EXTERN AU_EXPORT int AuDriverMain() {
 	e1000_write_mac(e1000_dev);
 
 	e1000_dev->irq = dev.device.nonBridge.interruptLine;
-	printf ("[driver]: e1000 irq -> %d \n", e1000_dev->irq);
 
 	if (e1000_dev->irq == 0xFF)
 		return 1;

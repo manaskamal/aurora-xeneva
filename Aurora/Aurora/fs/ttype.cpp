@@ -113,7 +113,7 @@ void ttype_master_read (vfs_node_t *file, uint64_t* buffer,uint32_t length) {
  * @param buffer -- actual text buffer needs to be transferred
  * @param length -- length of the text
  */
-void ttype_master_write (vfs_node_t *file, uint8_t* buffer, uint32_t length) {
+void ttype_master_write (vfs_node_t *file, uint64_t* buffer, uint32_t length) {
 	x64_cli();
 
 	//! get the master node from the child process
@@ -200,7 +200,7 @@ void ttype_slave_read (vfs_node_t *file, uint64_t* buffer,uint32_t length) {
 	
 }
 
-void ttype_slave_write (vfs_node_t *file, uint8_t* buffer, uint32_t length) {
+void ttype_slave_write (vfs_node_t *file, uint64_t* buffer, uint32_t length) {
 	vfs_node_t *node = get_current_thread()->fd[get_current_thread()->slave_fd];
 	ttype_t *type = (ttype_t*)node->device;
 	/*for (int i = 0; i < 32; i++)

@@ -10,15 +10,15 @@ _BSS	SEGMENT
 ?debug@@3P6AXPEBDZZEA DQ 01H DUP (?)			; debug
 _BSS	ENDS
 CONST	SEGMENT
-$SG5672	DB	'Scheduler Initialized', 0aH, 00H
+$SG5681	DB	'Scheduler Initialized', 0aH, 00H
 	ORG $+1
-$SG5674	DB	'shell', 00H
+$SG5683	DB	'shell', 00H
 	ORG $+2
-$SG5675	DB	'/init.exe', 00H
+$SG5684	DB	'/init.exe', 00H
 	ORG $+2
-$SG5676	DB	'priwm', 00H
+$SG5685	DB	'priwm', 00H
 	ORG $+6
-$SG5677	DB	'/priwm.exe', 00H
+$SG5686	DB	'/priwm.exe', 00H
 CONST	ENDS
 PUBLIC	?debug_print@@YAXPEBDZZ				; debug_print
 PUBLIC	?_AuMain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z		; _AuMain
@@ -34,7 +34,6 @@ EXTRN	printf:PROC
 EXTRN	?AuKeyboardInitialize@@YAXXZ:PROC		; AuKeyboardInitialize
 EXTRN	?AuInitializeMouse@@YAXXZ:PROC			; AuInitializeMouse
 EXTRN	?AuHeapInitialize@@YAXXZ:PROC			; AuHeapInitialize
-EXTRN	?hda_initialize@@YAXXZ:PROC			; hda_initialize
 EXTRN	?ahci_initialize@@YAXXZ:PROC			; ahci_initialize
 EXTRN	?AuInitializeRTC@@YAXXZ:PROC			; AuInitializeRTC
 EXTRN	?AuInitializeBasicAcpi@@YAXPEAX@Z:PROC		; AuInitializeBasicAcpi
@@ -48,6 +47,7 @@ EXTRN	?AuCreateProcess@@YAHPEBDPEAD@Z:PROC		; AuCreateProcess
 EXTRN	?process_list_initialize@@YAXXZ:PROC		; process_list_initialize
 EXTRN	?AuDrvMngrInitialize@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z:PROC ; AuDrvMngrInitialize
 EXTRN	?AuInitializeSerial@@YAXXZ:PROC			; AuInitializeSerial
+EXTRN	?AuSoundInitialize@@YAXXZ:PROC			; AuSoundInitialize
 EXTRN	?pri_loop_init@@YAXXZ:PROC			; pri_loop_init
 EXTRN	?AuInitializeShMem@@YAXXZ:PROC			; AuInitializeShMem
 EXTRN	?AuSharedDeviceInit@@YAXXZ:PROC			; AuSharedDeviceInit
@@ -127,24 +127,24 @@ $LN5:
 
 	call	?ahci_initialize@@YAXXZ			; ahci_initialize
 
-; 112  : 	hda_initialize();
-
-	call	?hda_initialize@@YAXXZ			; hda_initialize
-
-; 113  : 	AuVFSInit();
+; 112  : 	AuVFSInit();
 
 	call	?AuVFSInit@@YAXXZ			; AuVFSInit
 
-; 114  : 	
-; 115  : 	AuInitializeScreen(info);
+; 113  : 	
+; 114  : 	AuInitializeScreen(info);
 
 	mov	rcx, QWORD PTR info$[rsp]
 	call	?AuInitializeScreen@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z ; AuInitializeScreen
 
-; 116  : 	AuConsoleInitialize(info);
+; 115  : 	AuConsoleInitialize(info);
 
 	mov	rcx, QWORD PTR info$[rsp]
 	call	?AuConsoleInitialize@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z ; AuConsoleInitialize
+
+; 116  : 	AuSoundInitialize();
+
+	call	?AuSoundInitialize@@YAXXZ		; AuSoundInitialize
 
 ; 117  : 	AuInitializeRTC(); 
 
@@ -184,54 +184,54 @@ $LN5:
 	mov	rcx, QWORD PTR info$[rsp]
 	call	?AuDrvMngrInitialize@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z ; AuDrvMngrInitialize
 
-; 133  : 	AuKeyboardInitialize();
+; 133  : 	//hda_initialize();
+; 134  : 	AuKeyboardInitialize();
 
 	call	?AuKeyboardInitialize@@YAXXZ		; AuKeyboardInitialize
 
-; 134  : 	dwm_ipc_init();
+; 135  : 	dwm_ipc_init();
 
 	call	?dwm_ipc_init@@YAXXZ			; dwm_ipc_init
 
-; 135  : 	pri_loop_init();
+; 136  : 	pri_loop_init();
 
 	call	?pri_loop_init@@YAXXZ			; pri_loop_init
 
-; 136  : 
-; 137  : 	process_list_initialize();
+; 137  : 
+; 138  : 	process_list_initialize();
 
 	call	?process_list_initialize@@YAXXZ		; process_list_initialize
 
-; 138  : 	ttype_init();
+; 139  : 	ttype_init();
 
 	call	?ttype_init@@YAXXZ			; ttype_init
 
-; 139  : 	
-; 140  : 	
-; 141  : 	
-; 142  : 	/*Initialize other processor */
-; 143  : 	AuInitializeCpu(AuGetNumCPU());
+; 140  : 
+; 141  : 	/*Initialize other processor */
+; 142  : 	AuInitializeCpu(AuGetNumCPU());
 
 	call	?AuGetNumCPU@@YAEXZ			; AuGetNumCPU
 	movzx	ecx, al
 	call	?AuInitializeCpu@@YAXE@Z		; AuInitializeCpu
 
-; 144  : 
-; 145  : 	/*Clear the lower half for user space */
-; 146  : 	AuPagingClearLow();
+; 143  : 
+; 144  : 	/*Clear the lower half for user space */
+; 145  : 	AuPagingClearLow();
 
 	call	?AuPagingClearLow@@YAXXZ		; AuPagingClearLow
 
-; 147  : 
-; 148  : 	AuARPRequestMAC();
+; 146  : 
+; 147  : 	AuARPRequestMAC();
 
 	call	?AuARPRequestMAC@@YAXXZ			; AuARPRequestMAC
 
-; 149  : 
-; 150  : #ifdef ARCH_X64
+; 148  : 
+; 149  : #ifdef ARCH_X64
+; 150  : 
 ; 151  : 	
 ; 152  : 	printf ("Scheduler Initialized\n");
 
-	lea	rcx, OFFSET FLAT:$SG5672
+	lea	rcx, OFFSET FLAT:$SG5681
 	call	printf
 
 ; 153  : 
@@ -243,8 +243,8 @@ $LN5:
 ; 156  : 	/* start the sound service manager at id 1 */
 ; 157  : 	au_status = AuCreateProcess ("/init.exe","shell");
 
-	lea	rdx, OFFSET FLAT:$SG5674
-	lea	rcx, OFFSET FLAT:$SG5675
+	lea	rdx, OFFSET FLAT:$SG5683
+	lea	rcx, OFFSET FLAT:$SG5684
 	call	?AuCreateProcess@@YAHPEBDPEAD@Z		; AuCreateProcess
 	mov	DWORD PTR au_status$[rsp], eax
 
@@ -252,8 +252,8 @@ $LN5:
 ; 159  : 	/* start the compositing window manager at id 3 */
 ; 160  : 	au_status = AuCreateProcess ("/priwm.exe","priwm");
 
-	lea	rdx, OFFSET FLAT:$SG5676
-	lea	rcx, OFFSET FLAT:$SG5677
+	lea	rdx, OFFSET FLAT:$SG5685
+	lea	rcx, OFFSET FLAT:$SG5686
 	call	?AuCreateProcess@@YAHPEBDPEAD@Z		; AuCreateProcess
 	mov	DWORD PTR au_status$[rsp], eax
 

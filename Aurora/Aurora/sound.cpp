@@ -1,14 +1,32 @@
 /**
- *  Copyright (C) Manas Kamal Choudhury 2021
+ * BSD 2-Clause License
  *
- *  sound.h -- Controls entire sounds of the system
- *             it requires a proper audio controller to be
- *             configured
- *             
- *  /PROJECT - Aurora's Xeneva v1.0
- *  /AUTHOR  - Manas Kamal Choudhury
+ * Copyright (c) 2021, Manas Kamal Choudhury
+ * All rights reserved.
  *
- */
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer.
+ *
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ **/
+
 
 #include <sound.h>
 #include <fs\vfs.h>
@@ -16,133 +34,89 @@
 #include <drivers\hdaudio\hda.h>
 #include <ipc\pri_loop.h>
 #include <_null.h>
-
-#define PLAY_STARTUP  12
-#define SOUND_LOOP_ENABLE  13
-#define SOUND_PLAY 14
-#define SOUND_ADD_PCM 15
-#define SOUND_CREATE_CLIENT 16
-
-#define SND_REQUEST_NEXT   0x5
+#include <arch\x86_64\thread.h>
 
 
-static bool _sound_loop_prop_ = false;
+sound_t *registered_dev;
+thread_t* registered_thr;
 
-dsp_t *dsp_head = NULL;
-dsp_t *dsp_last = NULL;
-
-
-/**
- * Insert a dsp to dsp list
- * @param dsp -- new dsp address
- */
-void dsp_insert (dsp_t* dsp) {
-	dsp->next = NULL;
-	dsp->prev = NULL;
-
-	if (dsp_head == NULL) {
-		dsp_last = dsp;
-		dsp_head = dsp;
-	} else {
-		dsp_last->next = dsp;
-		dsp->prev = dsp_last;
-	}
-	dsp_last = dsp;
-}
-
-/**
- * remove a dsp from dsp list
- * @param dsp -- dsp address to remove
- */
-void dsp_delete (dsp_t* dsp) {
-
-	if (dsp_head == NULL)
+void AuSoundRead (vfs_node_t *file, uint64_t* buffer, uint32_t length) {
+	if (registered_dev == NULL)
 		return;
-
-	if (dsp == dsp_head) {
-		dsp_head = dsp_head->next;
-	} else {
-		dsp->prev->next = dsp->next;
-	}
-
-	if (dsp == dsp_last) {
-		dsp_last = dsp->prev;
-	} else {
-		dsp->next->prev = dsp->prev;
-	}
-
-	AuPmmngrFree (dsp);
 }
-/**
- * sound_create_client -- create a client node
- * @param node -- virtual file system node
- */
-void sound_create_client (vfs_node_t *node) {
-	dsp_t *dsp = (dsp_t*)AuPmmngrAlloc();
-	memset(dsp,0,4096);
-	node->device = dsp;
-	dsp_insert (dsp);
+
+void AuSoundWrite (vfs_node_t *file, uint64_t* buffer, uint32_t length) {
+	x64_cli();
+	if (registered_dev == NULL)
+		return;
+	uint8_t* aligned_buf = (uint8_t*)buffer;
+	registered_dev->write(aligned_buf, length);
 }
 
 
-int snd_io_query (vfs_node_t* node, int code, void* arg) {
-	switch(code) {
-	case PLAY_STARTUP:
-		hda_audio_play();
+int AuSoundIOQuery (vfs_node_t *node, int code, void* arg) {
+	if (registered_dev == NULL)
+		return 1;
+
+	switch (code)
+	{
+	case SOUND_REGISTER_MEDIAPLAYER:
+		registered_thr = get_current_thread();
 		break;
-	case SOUND_LOOP_ENABLE: 
-		_sound_loop_prop_ = true;
+	case SOUND_START_OUTPUT:
+		registered_dev->start_output_stream();
 		break;
-	case SOUND_PLAY:
-		hda_audio_play();
+	case SOUND_STOP_OUTPUT:
+		registered_dev->stop_output_stream();
 		break;
-	case SOUND_CREATE_CLIENT:
-		sound_create_client (node);
+	case SOUND_START_INPUT: //Not implemented
 		break;
+	case SOUND_STOP_INPUT:
+		break;  //Not implemented
 	}
 
-	return 1;
+	return 0;
 }
 
 
-void sound_write (vfs_node_t *file, uint8_t* buffer, uint32_t length) {
-	/* it will write the audio content to hda descriptor buffers */
-	if (file->device) {
-		dsp_t *dsp = (dsp_t*)file->device;
-		memcpy (dsp->buf,buffer, 512);
-	}
+void AuSoundInitialize () {
+	vfs_node_t *dsp = (vfs_node_t*)malloc(sizeof(vfs_node_t));
+	strcpy (dsp->filename, "dsp");
+	dsp->size = 0;
+	dsp->eof = 0;
+	dsp->pos = 0;
+	dsp->current = 0;
+	dsp->flags = FS_FLAG_GENERAL;
+	dsp->status = 0;
+	dsp->open = 0;
+	dsp->read = AuSoundRead;
+	dsp->write = AuSoundWrite;
+	dsp->read_blk = 0;
+	dsp->ioquery = AuSoundIOQuery;
+	vfs_mount ("/dev/dsp", dsp, 0);
+}
+
+void AuSoundRegisterDevice(sound_t * dev) {
+	if (registered_dev)
+		return;
+	registered_dev = dev;
 }
 
 
-void sound_request_next (uint8_t* usable_buffer) {
-	for (dsp_t *c_dsp = dsp_head; c_dsp != NULL; c_dsp = c_dsp->next) {
-		for (int i = 0; i < SAMPLES_PER_BUFFER; i++) {
-			usable_buffer[i] = c_dsp->buf[i];
-			usable_buffer[i] /= 2;
-		}
-		//memcpy (usable_buffer,c_dsp->buf,512/);
-	}
+void AuSoundRequestNext (uint8_t *buffer) {
+
 }
 
-//! For now simply make interface to hdaudio!!
-void sound_initialize () {
-	dsp_last = NULL;
-	dsp_last = NULL;
+void AuSoundOutputStart() {
+	if (registered_dev == NULL)
+		return;
+	registered_dev->start_output_stream();
+}
 
-	vfs_node_t * snd = (vfs_node_t*)malloc(sizeof(vfs_node_t));
-	strcpy (snd->filename, "snd");
-	snd->size = 0;
-	snd->eof = 0;
-	snd->pos = 0;
-	snd->current = 0;
-	snd->flags = FS_FLAG_GENERAL;
-	snd->status = 0;
-	snd->open = 0;
-	snd->read = 0;
-	snd->write = sound_write;
-	snd->read_blk = 0;
-	snd->ioquery = snd_io_query;
-	vfs_mount ("/dev/snd", snd, 0);
+void AuSoundOutputStop() {
+	if (registered_dev == NULL)
+		return;
+	registered_dev->stop_output_stream();
 }
 
 

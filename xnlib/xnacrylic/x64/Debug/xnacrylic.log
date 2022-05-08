@@ -1,4 +1,4 @@
-﻿Build started 05-05-2022 আবেলি 10:38:47.
+﻿Build started 07-05-2022 আবেলি 2:42:17.
      1>Project "E:\Xeneva Project\Xeneva\xnlib\xnacrylic\xnacrylic.vcxproj" on node 2 (Rebuild target(s)).
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\xnlib\xnclib" /I"E:\Xeneva Project\Xeneva\xnlib\xnacrylic\include" /I"E:\os_dev\freetype2-master\freetype2-master\include" /Zi /nologo /W4 /WX- /sdl- /MP /Od /D ARCH_X64 /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt source\acrylic.cpp source\buffer.cpp source\canvas.cpp source\color.cpp source\font.cpp source\image.cpp source\path2d.cpp source\psf\psf.cpp
@@ -73,6 +73,7 @@
      1>E:\Xeneva Project\Xeneva\xnlib\xnacrylic\include\jpg\jpeg_decoder.h(580): warning C4127: conditional expression is constant
      1>source\image.cpp(100): warning C4244: '=' : conversion from 'unsigned int' to 'uint8_t', possible loss of data
          font.cpp
+     1>source\font.cpp(61): warning C4244: 'argument' : conversion from 'float' to 'FT_UInt', possible loss of data
      1>source\font.cpp(86): warning C4018: '<' : signed/unsigned mismatch
      1>source\font.cpp(87): warning C4018: '<' : signed/unsigned mismatch
      1>source\font.cpp(64): warning C4100: 'sz' : unreferenced formal parameter
@@ -140,4 +141,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:00.76
+Time Elapsed 00:00:00.71

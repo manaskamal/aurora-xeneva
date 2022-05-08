@@ -14,6 +14,13 @@
 #define __SOUND_H__
 
 #include <stdint.h>
+#include <aurora.h>
+
+#define SOUND_REGISTER_MEDIAPLAYER 100
+#define SOUND_START_OUTPUT  102
+#define SOUND_STOP_OUTPUT  103
+#define SOUND_START_INPUT  104
+#define SOUND_STOP_INPUT  105
 
 typedef struct _dsp_ {
 	uint8_t buf[512];
@@ -24,14 +31,19 @@ typedef struct _dsp_ {
 
 typedef struct _sound_ {
 	/* the streams to read/write from/to */
-	void *output;
-	void *input;
-	uint32_t strm_size;
-	int vol;
+	char name[32];
+	void (*write) (uint8_t* buffer, size_t length);
+	void (*read) (uint8_t* buffer, size_t length);
+	void (*stop_output_stream) ();
+	void (*start_output_stream) ();
 }sound_t;
 
 
 
-extern void sound_initialize ();
-extern void sound_request_next (uint8_t* usable_buffer);
+extern void AuSoundInitialize ();
+AU_EXTERN AU_EXPORT void AuSoundRegisterDevice(sound_t * dev);
+AU_EXTERN AU_EXPORT void AuSoundRequestNext (uint8_t* buffer);
+extern void AuSoundOutputStart();
+extern void AuSoundOutputStop();
+
 #endif

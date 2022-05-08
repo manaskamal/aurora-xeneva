@@ -186,7 +186,7 @@ buffer$ = 64
 length$ = 72
 writefs	PROC
 
-; 33   : void writefs (vfs_node_t *node, vfs_node_t* file, uint8_t *buffer, uint32_t length) {
+; 33   : void writefs (vfs_node_t *node, vfs_node_t* file, uint64_t *buffer, uint32_t length) {
 
 $LN4:
 	mov	DWORD PTR [rsp+32], r9d

@@ -986,12 +986,10 @@ void pri_win_check_draggable (int x, int y, int button) {
  * main -- the main entry point of priwm
  */
 int main (int argc, char* argv[]) {
-	sys_print_text ("PRIWM: Loading Framebuffer \r\n");
 	int svga_fd = sys_open_file ("/dev/fb", NULL);
 	
 	uint32_t s_width = ioquery(svga_fd,SCREEN_GETWIDTH,NULL);
 	uint32_t s_height = ioquery(svga_fd, SCREEN_GETHEIGHT, NULL);
-	sys_print_text ("PRIWM: Framebuffer loaded \r\n");
 
 	/*
 	 * create the main backing store
@@ -999,7 +997,6 @@ int main (int argc, char* argv[]) {
 	canvas = create_canvas (s_width,s_height);
 	int w = canvas_get_width(canvas);
 	int h = canvas_get_height(canvas);
-	sys_print_text ("PRIWM: Canvas Created w-> %d, h-> %d \r\n", w, h);
 	//! load cursor library
 	cursor_init ();
 	sys_print_text ("Reading cursor files \n");
@@ -1025,9 +1022,6 @@ int main (int argc, char* argv[]) {
 	acrylic_draw_rect_filled (canvas, 0,0,s_width, s_height, LIGHTBLACK);
 	pri_wallpaper_present();
 
-	acrylic_initialize_font();
-	acrylic_font_set_size(64);
-	acrylic_font_draw_string(canvas,"Hello Font!", 400,500,34,BLACK);
 
 	canvas_screen_update(canvas, 0, 0, s_width, s_height);
 

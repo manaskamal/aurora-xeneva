@@ -20,7 +20,7 @@ $SG3315	DB	'APIC initialized ', 0aH, 00H
 $SG3324	DB	'New APIC -> %x', 0aH, 00H
 CONST	ENDS
 PUBLIC	?initialize_apic@@YAX_N@Z			; initialize_apic
-PUBLIC	?apic_local_eoi@@YAXXZ				; apic_local_eoi
+PUBLIC	apic_local_eoi
 PUBLIC	?read_apic_register@@YA_KG@Z			; read_apic_register
 PUBLIC	?write_apic_register@@YAXG_K@Z			; write_apic_register
 PUBLIC	?AuInitializeCpu@@YAXE@Z			; AuInitializeCpu
@@ -51,9 +51,9 @@ pdata	SEGMENT
 $pdata$?initialize_apic@@YAX_N@Z DD imagerel $LN10
 	DD	imagerel $LN10+393
 	DD	imagerel $unwind$?initialize_apic@@YAX_N@Z
-$pdata$?apic_local_eoi@@YAXXZ DD imagerel $LN3
+$pdata$apic_local_eoi DD imagerel $LN3
 	DD	imagerel $LN3+20
-	DD	imagerel $unwind$?apic_local_eoi@@YAXXZ
+	DD	imagerel $unwind$apic_local_eoi
 $pdata$?read_apic_register@@YA_KG@Z DD imagerel $LN6
 	DD	imagerel $LN6+191
 	DD	imagerel $unwind$?read_apic_register@@YA_KG@Z
@@ -85,7 +85,7 @@ pdata	ENDS
 xdata	SEGMENT
 $unwind$?initialize_apic@@YAX_N@Z DD 010801H
 	DD	08208H
-$unwind$?apic_local_eoi@@YAXXZ DD 010401H
+$unwind$apic_local_eoi DD 010401H
 	DD	04204H
 $unwind$?read_apic_register@@YA_KG@Z DD 010901H
 	DD	08209H
@@ -198,7 +198,7 @@ $LN3:
 
 ; 132  : 	apic_local_eoi();
 
-	call	?apic_local_eoi@@YAXXZ			; apic_local_eoi
+	call	apic_local_eoi
 
 ; 133  : }
 
@@ -925,7 +925,7 @@ _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\arch\x86_64\apic.cpp
 _TEXT	SEGMENT
-?apic_local_eoi@@YAXXZ PROC				; apic_local_eoi
+apic_local_eoi PROC
 
 ; 84   : extern void apic_local_eoi(){
 
@@ -943,7 +943,7 @@ $LN3:
 
 	add	rsp, 40					; 00000028H
 	ret	0
-?apic_local_eoi@@YAXXZ ENDP				; apic_local_eoi
+apic_local_eoi ENDP
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\arch\x86_64\apic.cpp

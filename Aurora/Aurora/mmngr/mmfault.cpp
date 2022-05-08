@@ -39,6 +39,7 @@
 void AuHandlePageNotPresent (uint64_t vaddr, bool user, void* param) {
 	interrupt_stack_frame *frame = (interrupt_stack_frame*)param;
 	if (!user) {
+		x64_cli();
 		printf ("Kernel Panic!! Page fault \n");
 		printf ("Virtual address -> %x \n", vaddr);
 		printf ("RIP ->%x \n", frame->rip);
@@ -47,6 +48,7 @@ void AuHandlePageNotPresent (uint64_t vaddr, bool user, void* param) {
 	}
 	au_vm_area_t *vm = AuFindVMA(vaddr);
 	if (vm == NULL){
+		x64_cli();
 		printf ("Page Fault -> %x \n", vaddr);
 		printf ("RIP -> %x \n", frame->rip);
 		printf ("Current thread -> %s \n", get_current_thread()->name);
