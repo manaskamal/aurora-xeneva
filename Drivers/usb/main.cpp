@@ -30,14 +30,20 @@
 #include <stdio.h>
 #include <aurora.h>
 #include <drivers\pci.h>
+#include <drivers\pcie.h>
+#include <hal.h>
 #include "xhci.h"
+#include <drivers\pcie.h>
 #include <arch\x86_64\mmngr\paging.h>
 #include <arch\x86_64\mmngr\kheap.h>
 #include <shirq.h>
 
 usb_dev_t *usb_device;
+shirq_t *shdev;
 
 void AuUSBInterrupt(size_t v, void* p) {
+	//AuFiredSharedHandler(usb_device->irq,v,p,shdev);
+	AuInterruptEnd(usb_device->irq);
 }
 
 /*
@@ -51,19 +57,20 @@ AU_EXTERN AU_EXPORT int AuDriverUnload() {
  * AuDriverMain -- Main entry for usb driver
  */
 AU_EXTERN AU_EXPORT int AuDriverMain() {
-	pci_device_info device;
-	int dev, func, bus;
-	if (!pci_find_device_class(0x0C, 0x03, &device, &bus, &dev, &func)) {
+
+	uint32_t device = pci_express_scan_class(0x0C, 0x03);
+	if (device == 0xFFFFFFFF){
 		printf ("[usb]: xhci not found \n");
+		return 1;
 	}
 
 	usb_device = (usb_dev_t*)malloc(sizeof(usb_dev_t));
 	
-	pci_enable_bus_master(bus, dev, func);
+	//pci_enable_bus_master(device);
+	//pci_enable_interrupts(device);
 
-
-	uint64_t usb_addr_low = device.device.nonBridge.baseAddress[0] & 0xFFFFFFF0;
-	uint64_t usb_addr_high = device.device.nonBridge.baseAddress[1] & 0xFFFFFFFF;
+	uint64_t usb_addr_low = pci_express_read(device, PCI_BAR0) & 0xFFFFFFF0;
+	uint64_t usb_addr_high = pci_express_read(device, PCI_BAR1) & 0xFFFFFFFF;
 	uint64_t mmio_addr = (usb_addr_high << 32) | usb_addr_low;
 
 	uint64_t mmio_base = (uint64_t)AuMapMMIO(mmio_addr, 4);
@@ -74,30 +81,32 @@ AU_EXTERN AU_EXPORT int AuDriverMain() {
 	usb_device->cap_regs = cap;
 	usb_device->op_regs = op;
 
-	printf ("[usb]: xhci available slots: %d \n", (cap->cap_hcsparams1 & 0xFF));
-	printf ("[usb]: xhci available ports: %d \n", (cap->cap_hcsparams1 >> 24));
+	//printf ("[usb]: xhci available slots: %d \n", (cap->cap_hcsparams1 & 0xFF));
+	//printf ("[usb]: xhci available ports: %d \n", (cap->cap_hcsparams1 >> 24));
 
 	usb_device->num_slots = (cap->cap_hcsparams1 & 0xFF);
 	usb_device->num_ports = (cap->cap_hcsparams1 >> 24);
 	
 	/* Reset the XHCI controller */
-	xhci_reset(usb_device);
+	//xhci_reset(usb_device);
 
-	printf ("[usb]: xhci interrupt -> %d \n", device.device.nonBridge.interruptLine);
+	//printf ("[usb]: xhci interrupt -> %d \n", pci_express_read(device, PCI_INTERRUPT_LINE));
 	
-	shirq_t *shdev = (shirq_t*)malloc(sizeof(shirq_t));
+	/*shdev = (shirq_t*)malloc(sizeof(shirq_t));
 	shdev->device_id = device.device.deviceID;
 	shdev->vendor_id = device.device.vendorID;
 	shdev->irq = device.device.nonBridge.interruptLine;
 	shdev->IrqHandler  = AuUSBInterrupt;
-	AuSharedDeviceRegister(shdev);
+	AuSharedDeviceRegister(shdev);*/
 
-	/*if (!AuCheckSharedDevice(shdev->irq, shdev->device_id))
-		AuInterruptSet(shdev->irq, AuUSBInterrupt, shdev->irq);
-	else
-		AuInstallSharedHandler(shdev->irq);*/
+	usb_device->irq = pci_express_read(device, PCI_INTERRUPT_LINE); //shdev->irq;
+	
+	//AuInterruptSet(shdev->irq, AuUSBInterrupt, shdev->irq, true);
+	
 	//pci_alloc_msi(func,dev,bus,AuUSBInterrupt);
 
 	printf ("[usb]: xhci reset completed \n");
+	pcie_print_capabilities(device);
+	//pci_alloc_msi(func,dev,bus,AuUSBInterrupt);
 	return 0;
 }

@@ -1,4 +1,4 @@
-﻿Build started 08-05-2022 ৰাতিপু 7:13:08.
+﻿Build started 11-05-2022 আবেলি 11:26:32.
      1>Project "E:\Xeneva Project\Xeneva\Drivers\usb\usb.vcxproj" on node 2 (Rebuild target(s)).
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\Aurora\include" /Zi /nologo /W3 /WX- /Od /Oy /D ARCH_X64 /D _WINDLL /D _MBCS /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt main.cpp xhci.cpp
@@ -18,4 +18,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:00.53
+Time Elapsed 00:00:00.45

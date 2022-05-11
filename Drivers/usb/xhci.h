@@ -64,6 +64,7 @@ typedef struct _usb_dev_ {
 	xhci_op_regs_t* op_regs;
 	uint32_t num_slots;
 	uint32_t num_ports;
+	uint8_t irq;
 }usb_dev_t;
 
 

@@ -1,424 +1,184 @@
 /**
- *  Copyright (C) Manas Kamal Choudhury
+ * BSD 2-Clause License
  *
- *  pci.cpp -- PCI/PCIe Configurations for Hardware devices
+ * Copyright (c) 2021, Manas Kamal Choudhury
+ * All rights reserved.
  *
- *  /PROJECT - Aurora {Xeneva }
- *  /AUTHOR  - Manas Kamal Choudhury
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
  *
- * =======================================================
- */
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer.
+ *
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * 
+ *
+ **/
 
 #include <drivers\pci.h>
-#include <stdio.h>
-#include <drivers\acpi\acpi.h>
+#include <hal.h>
 
-/** Legacy PCI port configurations **/
-#define PCI_MAX_BUS  0x20
-#define PCI_REG_CONFIG_ADDRESS 0xCF8
-#define PCI_REG_CONFIG_DATA 0xCFC
+#define PCI_ADDRESS_PORT  0xCF8
+#define PCI_VALUE_PORT  0xCFC
 
-#define header_address(bus,device,function,reg) \
-	(0x80000000L | (((unsigned) ((bus) & 0xFF) << 16) |  \
-	(((device) & 0x1F) << 11) | (((function) & 0x7) << 8) | \
-	((reg) & 0x3F) << 2))
-
-
-
-//! Configuration space pack address
-static uint32_t pci_config_pack_address (const pci_address *addr, uint16_t offset) {
-
-	const uint32_t enable_bit = 0x80000000UL;
-
-	return (((uint32_t)addr->bus << 16) |
-		((uint32_t)addr->device << 11) |
-		((uint32_t)addr->function << 8) |
-		offset | enable_bit);
+int pci_decode_bus (uint32_t device) {
+	return (uint8_t)((device >> 16));
 }
 
-//! Read Configuration space 4 byte
-uint32_t pci_config_read32 (const pci_address *addr, uint16_t offset) {
-	outportd (PCI_REG_CONFIG_ADDRESS, pci_config_pack_address (addr, offset));
-	return inportd (PCI_REG_CONFIG_DATA);
+int pci_decode_slot (uint32_t device) {
+	return (uint8_t)((device >> 8));
 }
 
-/**
- * Iterate through PCIe to get correct memory mapped address
- */
-uint64_t pcie_find_device (uint16_t segment, int bus, int dev, int func) {
-	if (bus > 255)
-		return 0;
-	if (dev > 31)
-		return 0;
-	if (func > 7)
-		return 0;
-	acpiMcfg *mcfg = acpi_get_mcfg();
-	acpiMcfgAlloc* allocs = mem_after<acpiMcfgAlloc*>(mcfg);
-	for (; raw_diff(allocs, mcfg) < mcfg->header.length; ++allocs) {
-		if (allocs->startBusNum <= bus && bus <= allocs->endBusNum)
-			break;
+int pci_decode_func (uint32_t device) {
+	return (uint8_t)(device);
+}
+
+uint32_t pci_get_address(uint32_t device, int reg) {
+	return 0x80000000 | (pci_decode_bus(device) << 16) | (pci_decode_slot(device) << 11) | (pci_decode_func(device) << 8) | 
+		((reg) & 0xFC);
+}
+
+
+uint32_t pci_encode_device(int bus, int slot, int func) {
+	return (uint32_t)((bus << 16)  |(slot << 8) | func);
+}
+
+uint32_t pci_read (uint32_t device, int reg) {
+	int size = 0;
+	switch(reg) {
+	case PCI_VENDOR_ID:
+		size = 2;
+		break;
+	case PCI_DEVICE_ID:
+		size = 2;
+		break;
+	case PCI_COMMAND:
+		size = 2;
+		break;
+	case PCI_STATUS:
+		size = 2;
+		break;
+	case PCI_REVISION_ID:
+		size = 1;
+		break;
+	case PCI_PROG_IF:
+		size = 1;
+		break;
+	case PCI_SUBCLASS:
+		size = 1;
+		break;
+	case PCI_CLASS:
+		size = 1;
+		break;
+	case PCI_CACHE_LINE_SIZE:
+		size = 1;
+		break;
+	case PCI_LATENCY_TIMER:
+		size = 1;
+		break;
+	case PCI_HEADER_TYPE:
+		size = 1;
+		break;
+	case PCI_BIST:
+		size = 1;
+		break;
+	case PCI_BAR0:
+		size = 4;
+		break;
+	case PCI_BAR1:
+		size = 4;
+		break;
+	case PCI_BAR2:
+		size = 4;
+		break;
+	case PCI_BAR3:
+		size = 4;
+		break;
+	case PCI_BAR4:
+		size = 4;
+		break;
+	case PCI_BAR5:
+		size = 4;
+		break;
+	case PCI_INTERRUPT_LINE:
+		size = 1;
+		break;
+	case PCI_INTERRUPT_PIN:
+		size = 1;
+		break;
 	}
-	if (raw_diff(allocs, mcfg) >= mcfg->header.length)
-		return 0;
-	uint64_t addr = allocs->baseAddress + ((bus - allocs->startBusNum) << 20) | (dev << 15) | (func << 12);
-	return addr;
-}
 
+	outportd(PCI_ADDRESS_PORT, pci_get_address(device, reg));
 
-/** Read Configuration space 1 byte **/
-void read_config_8 (uint16_t segment, int bus, int dev, int function, int reg, unsigned char* data) {
-	if (!acpi_pcie_supported()){
-		unsigned address = header_address (bus, dev, function, (reg / 4));
-		x64_outportd (PCI_CONFIG_PORT, address);
-		*data = x64_inportb ((PCI_DATA_PORT + (reg % 4)));
-	}else {
-		uint64_t addr = pcie_find_device(segment, bus, dev, function);
-		if (addr == 0)
-			return;
-		void *address = (void*)addr;
-		*data = *raw_offset<volatile uint8_t*>(address, reg);
+	if (size == 4) {
+		uint32_t t = inportd(PCI_VALUE_PORT);
+		return t;
+	}else if (size == 2) {
+		uint16_t t = inportw(PCI_VALUE_PORT + (reg & 2));
+		return t;
+	}else if (size == 1) {
+		uint8_t t = inportb (PCI_VALUE_PORT + (reg & 3));
+		return t;
 	}
+
+	return 0xFFFF;
 }
 
-/** Write configuration space 1 byte **/
-void write_config_8 (uint16_t segment, int bus, int dev, int func, int reg, unsigned char data) {
-	if (!acpi_pcie_supported()) {
-		unsigned address = header_address (bus, dev, func, (reg / 4));
-		outportd (PCI_CONFIG_PORT, address);
-		outportb (PCI_DATA_PORT + (reg % 4), data);
-	}else {
-		uint64_t addr = pcie_find_device(segment, bus, dev, func);
-		if (addr == 0)
-			return;
-		void *address = (void*)addr;
-		*raw_offset<volatile uint8_t*>(address, reg) = data;
-	}
+void pci_write (uint32_t device, int reg, uint32_t value) {
+	outportd(PCI_ADDRESS_PORT, pci_get_address(device,reg));
+	outportd(PCI_VALUE_PORT, value);
 }
 
-/**
- * Read Configuration space 4 byte 
- **/
-void read_config_32 (uint16_t segment,int bus, int dev, int function, int reg, uint32_t data)
-{
-	if (!acpi_pcie_supported()) {
-		//! read configuration dword
-		unsigned address = header_address (bus, dev, function, reg);
-		x64_outportd (PCI_CONFIG_PORT, address);
-		data = x64_inportd (PCI_DATA_PORT);
-	}else {
-		uint64_t addr = pcie_find_device(segment, bus, dev, function);
-		if (addr == 0)
-			return;
-		void *address = (void*)addr;
-		data = *raw_offset<volatile uint32_t*>(address, reg * 4);
-	}
-}
-
-/**
- * Same as read_config_32 instead here data is used as pointer
- */
-void  read_config_32_ext (uint16_t segment,int bus, int dev, int function, int reg, uint32_t *data)
-{
-	if (!acpi_pcie_supported()) {
-		//! read configuration dword
-		unsigned address = header_address (bus, dev, function, reg);
-		x64_outportd (PCI_CONFIG_PORT, address);
-		*data = x64_inportd (PCI_DATA_PORT);
-	}else {
-		uint64_t addr = pcie_find_device(segment, bus, dev, function);
-		if (addr == 0)
-			return;
-		void *address = (void*)addr;
-		*data = *raw_offset<volatile uint32_t*>(address, reg);
-		//printf ("Data returned -> %x\n", *data);
-	}
-}
-
-/**
- * Write config in 4 bytes
- */
-void write_config_32 (int bus, int dev, int func, int reg, unsigned data) {
-	//! write
-	unsigned address = header_address (bus, dev, func, reg);
-	x64_outportd (PCI_CONFIG_PORT, address);
-	x64_outportd (PCI_DATA_PORT, data);
-}
-
-/**
- * Read config space in word
- */
-void  read_config_16 (uint16_t segment,int bus, int dev, int function, int reg, unsigned short *data )
-{
-	if (!acpi_pcie_supported()) {
-		//! read configuration word
-		unsigned address = header_address (bus, dev, function, (reg / 2));
-		x64_outportd (PCI_CONFIG_PORT, address);
-		*data = x64_inportw (PCI_DATA_PORT + (reg % 2));
-	}else {
-		uint64_t addr = pcie_find_device(segment, bus, dev, function);
-		if (addr == 0)
-			return;
-		void *address = (void*)addr;
-		*data = *raw_offset<volatile uint16_t*>(address, reg);
-	}
-}
-
-/**
- * Write config space in word
- */
-void  write_config_16 (uint16_t segment,int bus, int dev, int function, int reg, unsigned short data )
-{
-	if (!acpi_pcie_supported()) {
-		//! write configuration word
-		unsigned address = header_address (bus, dev, function, (reg / 2));
-		x64_outportd (PCI_CONFIG_PORT, address);
-		x64_outportw ((PCI_DATA_PORT + (reg % 2)), data);
-	}else {
-		uint64_t addr = pcie_find_device(segment, bus, dev, function);
-		if (addr == 0)
-			return;
-		void *address = (void*)addr;
-		*raw_offset<volatile uint16_t*>(address, reg * 4) = data;
-	}
-}
-
-
-void read_config_header (int bus, int dev, int function, pci_device_info *dev_info)
-{
-	if (!acpi_pcie_supported()) {
-		unsigned address = 0;
-		int reg;
-
-		for (reg = 0; reg < (PCI_CONFIGHEADER_SIZE / 4); reg ++)
-		{
-			address = header_address (bus, dev, function, reg);
-			x64_outportd (PCI_CONFIG_PORT, address);
-			dev_info->header[reg] = x64_inportd(PCI_DATA_PORT);
-		}
-	} 
-}
-
-
-bool pci_find_device_class (uint8_t class_code, uint8_t sub_class, pci_device_info *addr_out, int *bus_, int *dev_, int *func_) {	
-	pci_device_info config;
-	acpiMcfg *mcfg = acpi_get_mcfg();
-	acpiMcfgAlloc *alloc = mem_after<acpiMcfgAlloc*>(mcfg);
-	//if (!acpi_pcie_supported()){
-		for (int bus = 0; bus < 256; bus++) {
-			for (int dev = 0; dev < 32; dev++) {
-				for (int func = 0; func < 8; func++) {
-					if (!acpi_pcie_supported()) {
-						read_config_32 (0,bus, dev, func, 0, config.header[0]);
-						read_config_header (bus, dev, func, &config);
-						
-						if (config.device.classCode == class_code && config.device.subClassCode == sub_class) {
-							 *addr_out = config;
-							 *bus_ = bus;
-					         *dev_ = dev;
-					         *func_ = func;
-							 return true;
-						}
-					} else {
-						uint32_t class_, subclass_;
-						uint32_t result = 0;
-						read_config_32_ext (alloc->pciSegment,bus, dev, func, 0x8, &result);
-						class_ = (result >> 24) & 0xFF;
-						subclass_ = (result >> 16) & 0xFF;
-						if (class_ == 0xFF || class_ == 0x00)
-							continue;
-
-						//printf ("Class found -> %x, sub_class -> %x\n", class_, subclass_);
-					   //read_config_header (bus, dev, func, &config);
-
-						if (class_ == class_code && subclass_ == sub_class) {	
-							uint32_t intLine = 0;
-							read_config_32_ext(alloc->pciSegment, bus, dev, func, 0x3C, &intLine);
-						    read_config_32_ext (alloc->pciSegment, bus, dev, func, 0x10, &config.device.nonBridge.baseAddress[0]);
-				     	    read_config_32_ext (alloc->pciSegment, bus, dev, func, 0x14, &config.device.nonBridge.baseAddress[1]);
-					        read_config_32_ext (alloc->pciSegment, bus, dev, func, 0x18, &config.device.nonBridge.baseAddress[2]);
-					        read_config_32_ext (alloc->pciSegment,bus, dev, func, 0x1C, &config.device.nonBridge.baseAddress[3]);
-					        read_config_32_ext (alloc->pciSegment, bus, dev, func, 0x20, &config.device.nonBridge.baseAddress[4]);
-					
-						    *addr_out = config;
-						    addr_out->device.nonBridge.interruptLine = intLine & 0xff;
-						    addr_out->device.nonBridge.interruptPin = (intLine >> 8) & 0xff;
-						
-					         *bus_ = bus;
-					         *dev_ = dev;
-					         *func_ = func;
-					         return true;
-						}
-					}	
-				}
-			}
-		}
-
-	return false;
-}
-
-
-bool pci_find_device_id (uint16_t device_id, uint16_t vendor_id, pci_device_info *addr_out) {
-	pci_device_info config;
-	for (int bus = 0; bus < 256; bus++) {
-		for (int dev = 0; dev < 32; dev++) {
-			for (int func = 0; func < 8; func++) {
-
-				read_config_32 (0,bus, dev, func, 0, config.header[0]);
-
-				read_config_header (bus, dev, func, &config);
-
-				if (config.device.deviceID == device_id && config.device.vendorID == vendor_id) {
-					*addr_out = config;
-					return true;
-				}
+uint32_t pci_scan_class(uint8_t classcode, uint8_t subclass) {
+	for (int bus = 0; bus < PCI_MAX_BUS; bus++) {
+		for (int dev = 0; dev < PCI_DEVICE_PER_BUS; dev++) {
+			for (int func = 0; func < PCI_FUNCTION_PER_DEVICE; func++) {
+				uint32_t addr = pci_encode_device(bus,dev,func);
+				uint32_t cc = pci_read(addr,PCI_CLASS);
+				uint32_t sc = pci_read(addr,PCI_SUBCLASS);
+				if (cc == classcode && sc == subclass) 
+					return addr;
 			}
 		}
 	}
-
-	return false;
+	return 0xFFFFFFFF;
 }
 
-
-//! Get MSI address
-uint64_t pci_get_msi_addr (uint64_t* data, size_t vector, uint32_t processor, uint8_t edge_trigger, uint8_t deassert) {
-
-	*data = (vector & 0xFF) | (edge_trigger == 1 ? 0 : (1 << 15)) | (deassert == 1 ? 0 : (1 << 14));
-	return (0xFEE00000 | (processor << 12));
-}
-
-
-
-int v_i = 0;
-/**
- * Check for MSI and MSI-x Capabilities
- */
-bool pci_alloc_msi (int func, int dev, int bus, void (*fn)(size_t, void* p)) {
-	
-	pci_cap_header *cap_header = NULL;
-	pci_msi_cap *msi_cap = NULL;
-	pci_msi_xcap *msi_x_cap = NULL;
-
-
-	uint32_t status = 0;
-	read_config_32_ext (0,bus, dev, func, 0x4,&status);
-	status >>= 16;
-	if ((status >> 4) & 1) {
-		uint32_t capptr = 0, cap_reg = 0, msi_reg = 0; 
-		read_config_32_ext (0,bus, dev, func, 0x34, &capptr);
-		/*capptr &= 0xFF;
-		capptr /= 4;*/
-		while (capptr != 0) {
-			read_config_32_ext (0,bus, dev, func, capptr, &cap_reg);
-			if ((cap_reg & 0xff) == PCI_CAPABILITY_MSIX) {
-				printf ("MSI-X found for this device\n");
-				msi_reg = capptr;
-				break;
-			}
-
-			if ((cap_reg & 0xff)  == PCI_CAPABILITY_MSI) {
-				printf ("MSI found for this device\n");
-				msi_reg = capptr;
-				//break;
-			}
-			capptr = ((cap_reg >> 8) & 0xff);   //((cap_reg >> 8) & 0xFF) / 4;
-		}
-
-		if (msi_reg == 0)
-			return false;
-
-		uint32_t vector = 60 + v_i;
-		setvect (vector, fn);
-
-		uint64_t msi_data = 0;
-		uint64_t msi_addr = pci_get_msi_addr (&msi_data, vector, 0,0,0);
-		printf ("MSI-DATA -> %x\n", msi_data);
-		uint64_t internal_ptr = 0;
-		read_config_32_ext (0, bus, dev, func, 32,&cap_reg);
-		if ((cap_reg & 0xFF) == 0x11) { 
-			//!MSI-X interrupt handling not implemented yet
-		} else {
-			uint64_t msgctrl = cap_reg >> 16;
-			printf ("MSG Control -> %x\n", msgctrl);
-			bool mask_cap = ((msgctrl & (1<<8)) != 0);
-			bool bits64_cap = ((msgctrl & (1<<7)) != 0);
-			uint32_t requested_vecs= (msgctrl >> 1) & 0x7;
-
-			//! write msg and data
-			write_config_32 (bus, dev, func, msi_reg + 1, (uint32_t)msi_addr);
-			uint32_t data_offset = 2;
-			if (bits64_cap) {
-				printf ("MSI 64BIT Capable\n");
-				write_config_32(bus, dev, func, msi_reg + 2, msi_addr >> 32);
-				++data_offset;
-			}
-			write_config_32(bus,dev,func,msi_reg + data_offset,msi_data);
-			if (mask_cap){
-				printf ("MSI Mask Capable\n");
-				write_config_32 (bus, dev, func, msi_reg + 4, 0);
-			}
-			//!Enable MSI
-			msgctrl |= 0x1;
-			cap_reg = (cap_reg & UINT16_MAX) | (msgctrl << 16);
-			write_config_32 (bus, dev, func, msi_reg, cap_reg);
-			printf ("MSI interrupt for this device enabled msi reg -> %x\n", msi_reg);
-			v_i++;
-			return true;
+uint32_t pci_scan_device(uint32_t vendid, uint32_t devid) {
+	for (int dev = 0; dev < PCI_DEVICE_PER_BUS; dev++) {
+		for (int func = 0; func < PCI_FUNCTION_PER_DEVICE; func++) {
+			uint32_t addr = pci_encode_device(0,dev,func);
+			uint32_t v = pci_read(addr,PCI_VENDOR_ID);
+			uint32_t d = pci_read(addr,PCI_DEVICE_ID);
+			if (v == vendid && d == devid) 
+				return addr;
 		}
 	}
+
+	return 0xFFFFFFFF;
 }
 
-
-void pci_enable_bus_master (int bus, int dev, int func) {
-	//command reg -> 0x4
-	uint16_t command_reg = 0;
-	read_config_16 (0,bus,dev,func,0x4, &command_reg);
-	command_reg |= (1<<2);
-	command_reg |= (1<<10);
-    write_config_16 (0,bus, dev,func,0x4,command_reg);
+void pci_enable_bus_master (uint32_t device) {
+	uint32_t command = pci_read(device, PCI_COMMAND);
+	command |= (1<<2);
+	pci_write(device, PCI_COMMAND,command);
 }
 
-void pci_enable_interrupt (int bus, int dev, int func) {
-	uint16_t command_reg = 0;
-	read_config_16 (0,bus,dev,func,0x4, &command_reg);
-	command_reg &= ~(1<<10);
-    write_config_16 (0,bus, dev,func,0x4,command_reg);
+void pci_enable_interrupts (uint32_t device) {
+	uint32_t command = pci_read(device, PCI_COMMAND);
+	command &= ~(1<<10);
+	pci_write(device,PCI_COMMAND,command);
 }
-
-void pci_enable_mem_space (int bus, int dev, int func) {
-	uint16_t command_reg = 0;
-	read_config_16 (0,bus,dev, func, 0x4, &command_reg);
-	command_reg |= (1<<1);
-	write_config_16(0,bus,dev,func,0x4,command_reg);
-}
-
-
-bool pcie_supported () {
-	/*if (!acpi_pcie_supported ())
-		return false;
-	else 
-		return true;*/
-	return false;
-}
-
-
-void pci_detect () {
-	pci_device_info config;
-	for (int bus = 0; bus < 256; bus++) {
-		for (int dev = 0; dev < 32; dev++) {
-			for (int func = 0; func < 8; func++) {
-
-				read_config_32 (0,bus, dev, func, 0, config.header[0]);
-
-				read_config_header (bus, dev, func, &config);
-
-				if (config.device.deviceID == 0xFFFF || config.device.vendorID == 0xFFFF) 
-					continue;
-				
-				printf ("Device found -> %d, vendor -> %d \n", config.device.deviceID, config.device.vendorID);
-			}
-		}
-	}
-}
-
-
-

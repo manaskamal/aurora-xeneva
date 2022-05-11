@@ -134,7 +134,7 @@ void AuInitializeRTC () {
 	AuRTCReadDateTime();
 
 	//!register interrupt
-	AuInterruptSet(8,AuRTCClockUpdate, 8);
+	AuInterruptSet(8,AuRTCClockUpdate, 8, false);
 
 #ifdef USE_PIC
 	irq_mask(8,false);

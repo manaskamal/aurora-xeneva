@@ -217,6 +217,7 @@
     <ClInclude Include="..\include\drivers\kybrd.h" />
     <ClInclude Include="..\include\drivers\mouse.h" />
     <ClInclude Include="..\include\drivers\pci.h" />
+    <ClInclude Include="..\include\drivers\pcie.h" />
     <ClInclude Include="..\include\drivers\rtc.h" />
     <ClInclude Include="..\include\drivers\svga\backdoor_def.h" />
     <ClInclude Include="..\include\drivers\svga\gmr.h" />
@@ -306,6 +307,7 @@
     <ClCompile Include="drivers\kybrd.cpp" />
     <ClCompile Include="drivers\mouse.cpp" />
     <ClCompile Include="drivers\pci.cpp" />
+    <ClCompile Include="drivers\pcie.cpp" />
     <ClCompile Include="drivers\rtc.cpp" />
     <ClCompile Include="drivers\svga\gmr.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>

@@ -350,7 +350,6 @@ uint64_t *AuCreateAddressSpace (){
 	//! addresses that are needed, like physical addresses allocated for 
 	//! paging tables creations and memory mapped I/O which are not
 	//! virtually allocated in higher half sections
-
 	//! Copy Kernel's Higher Half section
 	for (int i = 0; i < 512; i++) {
 		if (i < 256)
@@ -411,7 +410,7 @@ bool first = false;
 void* AuMapMMIO (uint64_t phys_addr, size_t page_count) {
 	uint64_t out = (uint64_t)mmio_base_address;
 	for (size_t i = 0; i < page_count; i++) {
-		AuMapPage(phys_addr + i * 4096, out + i * 4096,PAGING_NO_CACHING | PAGING_NO_EXECUTE);
+		AuMapPage(phys_addr + i * 4096, out + i * 4096,0x04 | 0x08);
 	}
 
 	uint64_t address = out;

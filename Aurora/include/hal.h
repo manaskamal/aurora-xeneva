@@ -116,7 +116,7 @@ AU_EXTERN AU_EXPORT void AuInterruptEnd (uint32_t irq);
  * @param fn -- function pointer
  * @param irq -- irq number
  */
-AU_EXTERN AU_EXPORT void AuInterruptSet (size_t vector, void (*fn)(size_t, void* p),uint8_t irq);
+AU_EXTERN AU_EXPORT void AuInterruptSet (size_t vector, void (*fn)(size_t, void* p),uint8_t irq, bool level);
 
 /*
  * AuIrqMask -- Mask an Irq, so that it will never delivers an 

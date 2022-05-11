@@ -272,7 +272,7 @@ void AuInitializeMouse () {
 	mouse_write (0xF4);
 	mouse_read ();
 
-	AuInterruptSet (34, mouse_handler, 12);  //34
+	AuInterruptSet (34, mouse_handler, 12, false);  //34
 	printf ("mouse interrupt setupped\n");
 	mouse_register_device ();
 }

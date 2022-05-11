@@ -135,14 +135,14 @@ void AuInterruptEnd (uint32_t irq) {
 #endif
 }
 
-void AuInterruptSet (size_t vector, void (*fn)(size_t, void* p),uint8_t irq){
+void AuInterruptSet (size_t vector, void (*fn)(size_t, void* p),uint8_t irq, bool level){
 #ifdef ARCH_X64
 #ifdef USE_PIC
 	setvect(32 + vector, fn);
 	irq_mask(irq,false);
 #endif
 #ifdef USE_APIC
-	ioapic_register_irq(vector,fn,irq);
+	ioapic_register_irq(vector,fn,irq, level);
 #endif
 #elif  ARCH_ARM
 	//! update comming soon..

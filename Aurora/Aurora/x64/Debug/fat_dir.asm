@@ -6,17 +6,17 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 CONST	SEGMENT
-$SG3677	DB	'Listing Files', 0aH, 00H
+$SG3680	DB	'Listing Files', 0aH, 00H
 	ORG $+1
-$SG3683	DB	'%s         %d KB ', 0aH, 00H
+$SG3686	DB	'%s         %d KB ', 0aH, 00H
 	ORG $+5
-$SG3695	DB	'Creating directory ', 0dH, 0aH, 00H
+$SG3698	DB	'Creating directory ', 0dH, 0aH, 00H
 	ORG $+2
-$SG3727	DB	'FAT32: Directory created at entry-> %d ', 0dH, 0aH, 00H
+$SG3730	DB	'FAT32: Directory created at entry-> %d ', 0dH, 0aH, 00H
 	ORG $+6
-$SG3741	DB	'Creating directory ', 0dH, 0aH, 00H
+$SG3744	DB	'Creating directory ', 0dH, 0aH, 00H
 	ORG $+2
-$SG3759	DB	'FAT32: Directory opened at entry-> %d ', 0dH, 0aH, 00H
+$SG3762	DB	'FAT32: Directory opened at entry-> %d ', 0dH, 0aH, 00H
 CONST	ENDS
 PUBLIC	?fat32_find_free_dir_entry@@YAXI@Z		; fat32_find_free_dir_entry
 PUBLIC	?fat32_make_dir@@YAPEAU_vfs_node_@@IPEAD@Z	; fat32_make_dir
@@ -26,7 +26,7 @@ EXTRN	strcpy:PROC
 EXTRN	memset:PROC
 EXTRN	memcpy:PROC
 EXTRN	?fat32_to_dos_file_name@@YAXPEBDPEADI@Z:PROC	; fat32_to_dos_file_name
-EXTRN	?_debug_print_@@YAXPEADZZ:PROC			; _debug_print_
+EXTRN	_debug_print_:PROC
 EXTRN	?fat32_find_free_cluster@@YAIXZ:PROC		; fat32_find_free_cluster
 EXTRN	?fat32_alloc_cluster@@YAXHI@Z:PROC		; fat32_alloc_cluster
 EXTRN	?fat32_get_root_cluster@@YAIXZ:PROC		; fat32_get_root_cluster
@@ -123,8 +123,8 @@ $LN13:
 ; 211  : 
 ; 212  : 	_debug_print_ ("Creating directory \r\n");
 
-	lea	rcx, OFFSET FLAT:$SG3741
-	call	?_debug_print_@@YAXPEADZZ		; _debug_print_
+	lea	rcx, OFFSET FLAT:$SG3744
+	call	_debug_print_
 
 ; 213  : 
 ; 214  : 	char fname[11];
@@ -287,8 +287,8 @@ $LN6@fat32_open:
 ; 242  : 				_debug_print_ ("FAT32: Directory opened at entry-> %d \r\n",i);
 
 	mov	edx, DWORD PTR i$1[rsp]
-	lea	rcx, OFFSET FLAT:$SG3759
-	call	?_debug_print_@@YAXPEADZZ		; _debug_print_
+	lea	rcx, OFFSET FLAT:$SG3762
+	call	_debug_print_
 
 ; 243  : 			    return file;
 
@@ -418,8 +418,8 @@ $LN16:
 ; 94   : 
 ; 95   : 	_debug_print_ ("Creating directory \r\n");
 
-	lea	rcx, OFFSET FLAT:$SG3695
-	call	?_debug_print_@@YAXPEADZZ		; _debug_print_
+	lea	rcx, OFFSET FLAT:$SG3698
+	call	_debug_print_
 
 ; 96   : 
 ; 97   : 	char fname[11];
@@ -921,8 +921,8 @@ $LN3@fat32_make:
 ; 181  : 				_debug_print_ ("FAT32: Directory created at entry-> %d \r\n",i);
 
 	mov	edx, DWORD PTR i$6[rsp]
-	lea	rcx, OFFSET FLAT:$SG3727
-	call	?_debug_print_@@YAXPEADZZ		; _debug_print_
+	lea	rcx, OFFSET FLAT:$SG3730
+	call	_debug_print_
 
 ; 182  : 			    return file;
 
@@ -1045,7 +1045,7 @@ $LN7:
 ; 68   : 
 ; 69   : 	printf ("Listing Files\n");
 
-	lea	rcx, OFFSET FLAT:$SG3677
+	lea	rcx, OFFSET FLAT:$SG3680
 	call	printf
 
 ; 70   : 	for (int i = 0; i < 16; i++) {
@@ -1077,7 +1077,7 @@ $LN4@fat32_find:
 	mov	rcx, QWORD PTR dirent$[rsp]
 	mov	r8d, eax
 	mov	rdx, rcx
-	lea	rcx, OFFSET FLAT:$SG3683
+	lea	rcx, OFFSET FLAT:$SG3686
 	call	printf
 $LN1@fat32_find:
 

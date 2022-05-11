@@ -10,23 +10,31 @@ _BSS	SEGMENT
 ?debug@@3P6AXPEBDZZEA DQ 01H DUP (?)			; debug
 _BSS	ENDS
 CONST	SEGMENT
-$SG5681	DB	'Scheduler Initialized', 0aH, 00H
-	ORG $+1
-$SG5683	DB	'shell', 00H
-	ORG $+2
-$SG5684	DB	'/init.exe', 00H
-	ORG $+2
-$SG5685	DB	'priwm', 00H
+$SG5381	DB	'/zara.wav', 00H
 	ORG $+6
-$SG5686	DB	'/priwm.exe', 00H
+$SG5382	DB	'file.size -> %d ', 0aH, 00H
+	ORG $+6
+$SG5391	DB	'Scheduler Initialized', 0aH, 00H
+	ORG $+1
+$SG5393	DB	'shell', 00H
+	ORG $+2
+$SG5394	DB	'/init.exe', 00H
+	ORG $+2
+$SG5395	DB	'priwm', 00H
+	ORG $+6
+$SG5396	DB	'/priwm.exe', 00H
 CONST	ENDS
 PUBLIC	?debug_print@@YAXPEBDZZ				; debug_print
 PUBLIC	?_AuMain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z		; _AuMain
 EXTRN	x64_cli:PROC
+EXTRN	x64_sti:PROC
 EXTRN	x64_hlt:PROC
 EXTRN	?AuInitializeCpu@@YAXE@Z:PROC			; AuInitializeCpu
 EXTRN	?AuHalInitialize@@YAXXZ:PROC			; AuHalInitialize
 EXTRN	?AuPmmngrInit@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z:PROC ; AuPmmngrInit
+EXTRN	AuPmmngrAlloc:PROC
+EXTRN	p2v:PROC
+EXTRN	v2p:PROC
 EXTRN	?AuPagingInit@@YAXXZ:PROC			; AuPagingInit
 EXTRN	?AuPagingClearLow@@YAXXZ:PROC			; AuPagingClearLow
 EXTRN	?AuConsoleInitialize@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z:PROC ; AuConsoleInitialize
@@ -48,38 +56,48 @@ EXTRN	?process_list_initialize@@YAXXZ:PROC		; process_list_initialize
 EXTRN	?AuDrvMngrInitialize@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z:PROC ; AuDrvMngrInitialize
 EXTRN	?AuInitializeSerial@@YAXXZ:PROC			; AuInitializeSerial
 EXTRN	?AuSoundInitialize@@YAXXZ:PROC			; AuSoundInitialize
+EXTRN	?AuSoundOutputStart@@YAXXZ:PROC			; AuSoundOutputStart
+EXTRN	?AuSoundWrite@@YAXPEAU_vfs_node_@@PEA_KI@Z:PROC	; AuSoundWrite
 EXTRN	?pri_loop_init@@YAXXZ:PROC			; pri_loop_init
 EXTRN	?AuInitializeShMem@@YAXXZ:PROC			; AuInitializeShMem
 EXTRN	?AuSharedDeviceInit@@YAXXZ:PROC			; AuSharedDeviceInit
 EXTRN	?ttype_init@@YAXXZ:PROC				; ttype_init
 EXTRN	?AuNetInitialize@@YAXXZ:PROC			; AuNetInitialize
-EXTRN	?AuARPRequestMAC@@YAXXZ:PROC			; AuARPRequestMAC
+EXTRN	?fat32_open@@YA?AU_vfs_node_@@PEAU1@PEAD@Z:PROC	; fat32_open
+EXTRN	?fat32_read@@YAXPEAU_vfs_node_@@PEA_K@Z:PROC	; fat32_read
 pdata	SEGMENT
 $pdata$?debug_print@@YAXPEBDZZ DD imagerel $LN3
 	DD	imagerel $LN3+40
 	DD	imagerel $unwind$?debug_print@@YAXPEBDZZ
-$pdata$?_AuMain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z DD imagerel $LN5
-	DD	imagerel $LN5+292
+$pdata$?_AuMain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z DD imagerel $LN7
+	DD	imagerel $LN7+471
 	DD	imagerel $unwind$?_AuMain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z
 pdata	ENDS
 xdata	SEGMENT
 $unwind$?debug_print@@YAXPEBDZZ DD 011801H
 	DD	04218H
-$unwind$?_AuMain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z DD 010901H
-	DD	06209H
+$unwind$?_AuMain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z DD 040e01H
+	DD	02f010eH
+	DD	060067007H
 xdata	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\init.cpp
 _TEXT	SEGMENT
 au_status$ = 32
-info$ = 64
+buffer$ = 40
+file$ = 48
+$T1 = 160
+$T2 = 264
+info$ = 400
 ?_AuMain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z PROC		; _AuMain
 
 ; 97   : void _AuMain (KERNEL_BOOT_INFO *info) {
 
-$LN5:
+$LN7:
 	mov	QWORD PTR [rsp+8], rcx
-	sub	rsp, 56					; 00000038H
+	push	rsi
+	push	rdi
+	sub	rsp, 376				; 00000178H
 
 ; 98   : 	debug = info->printf_gui;
 
@@ -122,7 +140,10 @@ $LN5:
 	mov	rcx, QWORD PTR [rax+82]
 	call	?AuInitializeBasicAcpi@@YAXPEAX@Z	; AuInitializeBasicAcpi
 
-; 110  : 
+; 110  : 	AuSharedDeviceInit();
+
+	call	?AuSharedDeviceInit@@YAXXZ		; AuSharedDeviceInit
+
 ; 111  : 	ahci_initialize();
 
 	call	?ahci_initialize@@YAXXZ			; ahci_initialize
@@ -160,10 +181,7 @@ $LN5:
 
 	call	?AuNetInitialize@@YAXXZ			; AuNetInitialize
 
-; 122  : 	AuSharedDeviceInit();
-
-	call	?AuSharedDeviceInit@@YAXXZ		; AuSharedDeviceInit
-
+; 122  : 	
 ; 123  : 	
 ; 124  : 	//================================================
 ; 125  : 	//! Initialize the scheduler here
@@ -215,82 +233,138 @@ $LN5:
 	call	?AuInitializeCpu@@YAXE@Z		; AuInitializeCpu
 
 ; 143  : 
-; 144  : 	/*Clear the lower half for user space */
-; 145  : 	AuPagingClearLow();
+; 144  : 	
+; 145  : 	/*Clear the lower half for user space */
+; 146  : 	AuPagingClearLow();
 
 	call	?AuPagingClearLow@@YAXXZ		; AuPagingClearLow
 
-; 146  : 
-; 147  : 	AuARPRequestMAC();
+; 147  : 
+; 148  : 	//AuARPRequestMAC();
+; 149  : 	x64_sti();
 
-	call	?AuARPRequestMAC@@YAXXZ			; AuARPRequestMAC
+	call	x64_sti
 
-; 148  : 
-; 149  : #ifdef ARCH_X64
-; 150  : 
-; 151  : 	
-; 152  : 	printf ("Scheduler Initialized\n");
+; 150  : 	vfs_node_t file = fat32_open(NULL, "/zara.wav");
 
-	lea	rcx, OFFSET FLAT:$SG5681
+	lea	r8, OFFSET FLAT:$SG5381
+	xor	edx, edx
+	lea	rcx, QWORD PTR $T2[rsp]
+	call	?fat32_open@@YA?AU_vfs_node_@@PEAU1@PEAD@Z ; fat32_open
+	lea	rcx, QWORD PTR $T1[rsp]
+	mov	rdi, rcx
+	mov	rsi, rax
+	mov	ecx, 104				; 00000068H
+	rep movsb
+	lea	rax, QWORD PTR file$[rsp]
+	lea	rcx, QWORD PTR $T1[rsp]
+	mov	rdi, rax
+	mov	rsi, rcx
+	mov	ecx, 104				; 00000068H
+	rep movsb
+
+; 151  : 	printf ("file.size -> %d \n", file.size);
+
+	mov	edx, DWORD PTR file$[rsp+32]
+	lea	rcx, OFFSET FLAT:$SG5382
 	call	printf
 
-; 153  : 
-; 154  : 	int au_status = 0;
+; 152  : 	uint64_t* buffer = (uint64_t*)p2v((size_t)AuPmmngrAlloc());
+
+	call	AuPmmngrAlloc
+	mov	rcx, rax
+	call	p2v
+	mov	QWORD PTR buffer$[rsp], rax
+
+; 153  : 	fat32_read(&file, (uint64_t*)v2p((size_t)buffer));
+
+	mov	rcx, QWORD PTR buffer$[rsp]
+	call	v2p
+	mov	rdx, rax
+	lea	rcx, QWORD PTR file$[rsp]
+	call	?fat32_read@@YAXPEAU_vfs_node_@@PEA_K@Z	; fat32_read
+
+; 154  : 	AuSoundWrite(NULL, buffer, 4096);
+
+	mov	r8d, 4096				; 00001000H
+	mov	rdx, QWORD PTR buffer$[rsp]
+	xor	ecx, ecx
+	call	?AuSoundWrite@@YAXPEAU_vfs_node_@@PEA_KI@Z ; AuSoundWrite
+
+; 155  : 	AuSoundOutputStart();
+
+	call	?AuSoundOutputStart@@YAXXZ		; AuSoundOutputStart
+$LN4@AuMain:
+
+; 156  : 	for(;;);
+
+	jmp	SHORT $LN4@AuMain
+
+; 157  : #ifdef ARCH_X64
+; 158  : 
+; 159  : 	printf ("Scheduler Initialized\n");
+
+	lea	rcx, OFFSET FLAT:$SG5391
+	call	printf
+
+; 160  : 	int au_status = 0;
 
 	mov	DWORD PTR au_status$[rsp], 0
 
-; 155  : 
-; 156  : 	/* start the sound service manager at id 1 */
-; 157  : 	au_status = AuCreateProcess ("/init.exe","shell");
-
-	lea	rdx, OFFSET FLAT:$SG5683
-	lea	rcx, OFFSET FLAT:$SG5684
-	call	?AuCreateProcess@@YAHPEBDPEAD@Z		; AuCreateProcess
-	mov	DWORD PTR au_status$[rsp], eax
-
-; 158  : 
-; 159  : 	/* start the compositing window manager at id 3 */
-; 160  : 	au_status = AuCreateProcess ("/priwm.exe","priwm");
-
-	lea	rdx, OFFSET FLAT:$SG5685
-	lea	rcx, OFFSET FLAT:$SG5686
-	call	?AuCreateProcess@@YAHPEBDPEAD@Z		; AuCreateProcess
-	mov	DWORD PTR au_status$[rsp], eax
-
 ; 161  : 
-; 162  : 	//au_status = AuCreateProcess ("/dock.exe", "dock");
-; 163  : 	//! Here start the scheduler (multitasking engine)
-; 164  : 	AuSchedulerStart();
+; 162  : 	/* start the sound service manager at id 1 */
+; 163  : 	au_status = AuCreateProcess ("/init.exe","shell");
+
+	lea	rdx, OFFSET FLAT:$SG5393
+	lea	rcx, OFFSET FLAT:$SG5394
+	call	?AuCreateProcess@@YAHPEBDPEAD@Z		; AuCreateProcess
+	mov	DWORD PTR au_status$[rsp], eax
+
+; 164  : 
+; 165  : 	/* start the compositing window manager at id 3 */
+; 166  : 	au_status = AuCreateProcess ("/priwm.exe","priwm");
+
+	lea	rdx, OFFSET FLAT:$SG5395
+	lea	rcx, OFFSET FLAT:$SG5396
+	call	?AuCreateProcess@@YAHPEBDPEAD@Z		; AuCreateProcess
+	mov	DWORD PTR au_status$[rsp], eax
+
+; 167  : 
+; 168  : 	//au_status = AuCreateProcess ("/dock.exe", "dock");
+; 169  : 	//! Here start the scheduler (multitasking engine)
+; 170  : 	AuSchedulerStart();
 
 	call	?AuSchedulerStart@@YAXXZ		; AuSchedulerStart
 $LN2@AuMain:
 
-; 165  : #endif
-; 166  : 
-; 167  : 	//! Loop forever
-; 168  : 	while(1) {
+; 171  : #endif
+; 172  : 
+; 173  : 	//! Loop forever
+; 174  : 	while(1) {
 
 	xor	eax, eax
 	cmp	eax, 1
 	je	SHORT $LN1@AuMain
 
-; 169  : 		//!looping looping
-; 170  : 		x64_cli();
+; 175  : 		//!looping looping
+; 176  : 		x64_cli();
 
 	call	x64_cli
 
-; 171  : 		x64_hlt();
+; 177  : 		x64_hlt();
 
 	call	x64_hlt
 
-; 172  : 	}
+; 178  : 	}
 
 	jmp	SHORT $LN2@AuMain
 $LN1@AuMain:
 
-; 173  : }
+; 179  : }
 
-	add	rsp, 56					; 00000038H
+	add	rsp, 376				; 00000178H
+	pop	rdi
+	pop	rsi
 	ret	0
 ?_AuMain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z ENDP		; _AuMain
 _TEXT	ENDS

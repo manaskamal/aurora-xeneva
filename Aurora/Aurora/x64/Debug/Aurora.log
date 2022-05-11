@@ -1,8 +1,8 @@
-﻿Build started 08-05-2022 আবেলি 4:28:07.
+﻿Build started 12-05-2022 ৰাতিপু 12:35:40.
      1>Project "E:\Xeneva Project\Xeneva\Aurora\Aurora\Aurora.vcxproj" on node 2 (Rebuild target(s)).
      1>_NASM:
          arch\x86_64\interrupts.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp3af05839e85b4649a53af49251d85fef.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmpc2130f8d1f774df4a690916acfc918b2.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\interrupts.obj"  "E:\Xeneva Project\Xeneva\Aurora\Aurora\arch\x86_64\interrupts.asm"
      1>E:\Xeneva Project\Xeneva\Aurora\Aurora\arch\x86_64\interrupts.asm(132): warning : signed dword immediate exceeds bounds [-w+number-overflow]
      1>E:\Xeneva Project\Xeneva\Aurora\Aurora\arch\x86_64\interrupts.asm(132): warning : dword data exceeds bounds [-w+number-overflow]
@@ -502,22 +502,22 @@
      1>E:\Xeneva Project\Xeneva\Aurora\Aurora\arch\x86_64\interrupts.asm(156): warning : dword data exceeds bounds [-w+number-overflow]
        _NASM:
          arch\x86_64\switch.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp5c0b90c61d9148e3a498ea9fd46e6976.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp2c193737cd364e5cb2aaa389de45298e.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\switch.obj"  "E:\Xeneva Project\Xeneva\Aurora\Aurora\arch\x86_64\switch.asm"
        _NASM:
          arch\x86_64\user.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmpd6fafaf6db594cb685cf3587321b655d.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp70d0514ee9e94c4397445e4f89d7c376.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\user.obj"  "E:\Xeneva Project\Xeneva\Aurora\Aurora\arch\x86_64\user.asm"
        _NASM:
          arch\x86_64\_low_level.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp0d1f53d00352461794c39260b47b7a4f.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp188de01921134dd194fe35a4274b3eec.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\_low_level.obj"  "E:\Xeneva Project\Xeneva\Aurora\Aurora\arch\x86_64\_low_level.asm"
        _NASM:
          _fast_cpy.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmpebac436dec8a4e009e3ecf495d9423be.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp6c74bde972f9480eaabf98b67280aa7e.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\_fast_cpy.obj"  "E:\Xeneva Project\Xeneva\Aurora\Aurora\_fast_cpy.asm"
        ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I..\include /ZI /nologo /W0 /WX- /Od /Oy /D ARCH_X64 /D USE_APIC /D X64 /D _DEBUG_ON_ /D _MBCS /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /GR- /FAs /Fa"x64\Debug\\" /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt arch\x86_64\apic.cpp arch\x86_64\apinit.cpp arch\x86_64\cpu.cpp arch\x86_64\exception.cpp arch\x86_64\ioapic.cpp arch\x86_64\kheap.cpp arch\x86_64\kstack.cpp arch\x86_64\map.cpp arch\x86_64\pcpu.cpp arch\x86_64\pic.cpp arch\x86_64\systable.cpp arch\x86_64\thread.cpp arch\x86_64\user64.cpp arch\x86_64\paging.cpp atomic\mutex.cpp console.cpp drivers\acpi\acpi.cpp drivers\ahci.cpp drivers\ahci_disk.cpp drivers\ata.cpp drivers\hda\hda.cpp drivers\kybrd.cpp drivers\mouse.cpp drivers\pci.cpp drivers\rtc.cpp audrv.cpp fs\devfs.cpp fs\fat\fat.cpp fs\fat\fat_f.cpp fs\fat\fat_util.cpp fs\fat\fat_dir.cpp fs\gpt.cpp fs\ttype.cpp fs\vfs.cpp hal.cpp init.cpp ipc\dwm_ipc.cpp ipc\message.cpp ipc\postbox.cpp ipc\pri_loop.cpp mmngr\aummap.cpp mmngr\mmfault.cpp mmngr\shmem.cpp mmngr\vma.cpp net\arp.cpp net\aunet.cpp net\ethernet.cpp pe.cpp pmmngr.cpp proc.cpp screen.cpp serial.cpp shirq.cpp sound.cpp stdio.cpp string.cpp sysserv\ioquery.cpp sysserv\sysfb.cpp sysserv\sysfile.cpp sysserv\sysmem.cpp sysserv\sysmouse.cpp sysserv\sysproc.cpp sysserv\systhread.cpp sysserv\systime.cpp sysserv\syswait.cpp sysserv\valloc.cpp timer.cpp utils\circ_buf.cpp utils\lnklist.cpp utils\pipe.cpp utils\ring.cpp _crt.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I..\include /ZI /nologo /W0 /WX- /Od /Oy /D ARCH_X64 /D USE_APIC /D X64 /D _DEBUG_ON_ /D _MBCS /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /GR- /FAs /Fa"x64\Debug\\" /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt arch\x86_64\apic.cpp arch\x86_64\apinit.cpp arch\x86_64\cpu.cpp arch\x86_64\exception.cpp arch\x86_64\ioapic.cpp arch\x86_64\kheap.cpp arch\x86_64\kstack.cpp arch\x86_64\map.cpp arch\x86_64\pcpu.cpp arch\x86_64\pic.cpp arch\x86_64\systable.cpp arch\x86_64\thread.cpp arch\x86_64\user64.cpp arch\x86_64\paging.cpp atomic\mutex.cpp console.cpp drivers\acpi\acpi.cpp drivers\ahci.cpp drivers\ahci_disk.cpp drivers\ata.cpp drivers\hda\hda.cpp drivers\kybrd.cpp drivers\mouse.cpp drivers\pci.cpp drivers\pcie.cpp drivers\rtc.cpp audrv.cpp fs\devfs.cpp fs\fat\fat.cpp fs\fat\fat_f.cpp fs\fat\fat_util.cpp fs\fat\fat_dir.cpp fs\gpt.cpp fs\ttype.cpp fs\vfs.cpp hal.cpp init.cpp ipc\dwm_ipc.cpp ipc\message.cpp ipc\postbox.cpp ipc\pri_loop.cpp mmngr\aummap.cpp mmngr\mmfault.cpp mmngr\shmem.cpp mmngr\vma.cpp net\arp.cpp net\aunet.cpp net\ethernet.cpp pe.cpp pmmngr.cpp proc.cpp screen.cpp serial.cpp shirq.cpp sound.cpp stdio.cpp string.cpp sysserv\ioquery.cpp sysserv\sysfb.cpp sysserv\sysfile.cpp sysserv\sysmem.cpp sysserv\sysmouse.cpp sysserv\sysproc.cpp sysserv\systhread.cpp sysserv\systime.cpp sysserv\syswait.cpp sysserv\valloc.cpp timer.cpp utils\circ_buf.cpp utils\lnklist.cpp utils\pipe.cpp utils\ring.cpp _crt.cpp
      1>cl : Command line warning D9038: /ZI is not supported on this platform; enabling /Zi instead
      1>cl : Command line warning D9007: '/Gm' requires '/Zi'; option ignored
      1>cl : Command line warning D9002: ignoring unknown option '/arch:SSE'
@@ -547,6 +547,7 @@
          kybrd.cpp
          mouse.cpp
          pci.cpp
+         pcie.cpp
          rtc.cpp
          audrv.cpp
          devfs.cpp
@@ -562,9 +563,9 @@
          dwm_ipc.cpp
          message.cpp
          postbox.cpp
-         pri_loop.cpp
          Generating Code...
          Compiling...
+         pri_loop.cpp
          aummap.cpp
          mmfault.cpp
          shmem.cpp
@@ -584,9 +585,9 @@
          ioquery.cpp
          sysfb.cpp
          sysfile.cpp
-         sysmem.cpp
          Generating Code...
          Compiling...
+         sysmem.cpp
          sysmouse.cpp
          sysproc.cpp
          systhread.cpp
@@ -627,6 +628,7 @@
          x64\Debug\kybrd.obj
          x64\Debug\mouse.obj
          x64\Debug\pci.obj
+         x64\Debug\pcie.obj
          x64\Debug\rtc.obj
          x64\Debug\audrv.obj
          x64\Debug\devfs.obj
@@ -688,4 +690,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:05.06
+Time Elapsed 00:00:05.85

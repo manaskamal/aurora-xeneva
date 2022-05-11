@@ -136,9 +136,9 @@ $LN6:
 $LN3@dwm_put_me:
 
 ; 36   : 
-; 37   : 	thread_t *t  = thread_iterate_ready_list (3);   //!ready list
+; 37   : 	thread_t *t  = thread_iterate_ready_list (2);   //!ready list
 
-	mov	cx, 3
+	mov	cx, 2
 	call	?thread_iterate_ready_list@@YAPEAU_thread_@@G@Z ; thread_iterate_ready_list
 	mov	QWORD PTR t$[rsp], rax
 
@@ -147,9 +147,9 @@ $LN3@dwm_put_me:
 	cmp	QWORD PTR t$[rsp], 0
 	jne	SHORT $LN2@dwm_put_me
 
-; 39   : 		t = thread_iterate_block_list(3);
+; 39   : 		t = thread_iterate_block_list(2);
 
-	mov	ecx, 3
+	mov	ecx, 2
 	call	?thread_iterate_block_list@@YAPEAU_thread_@@H@Z ; thread_iterate_block_list
 	mov	QWORD PTR t$[rsp], rax
 $LN2@dwm_put_me:

@@ -18,6 +18,7 @@
 #include <stdio.h>
 #include <arch\x86_64\pic.h>
 #include <arch\x86_64\apinit.h>
+#include <serial.h>
 #include <arch\x86_64\cpu.h>
 
 #define IA32_APIC_BASE_MSR  0x1B
@@ -33,7 +34,7 @@
 
 static bool x2apic = false;
 static void* apic = nullptr;
-
+bool debug_mode = false;
 extern void debug_print(const char *text, ...);
 
 //! Reads APIC register
@@ -82,8 +83,7 @@ void write_apic_register(uint16_t reg, uint64_t value){
 
 //! Sends EOI to APIC
 extern void apic_local_eoi(){
-
-	write_apic_register(LAPIC_REGISTER_EOI, 0);
+	write_apic_register(LAPIC_REGISTER_EOI, 1);
 }
 
 
@@ -92,7 +92,7 @@ bool x2apic_supported(){
 
 	size_t a, b, c, d;
 	x64_cpuid(0x1, &a, &b, &c, &d);
-	return (c & (1 << 21)) != 0;
+	return false; //(c & (1 << 21)) != 0;
 }
 
 static void io_wait(){
@@ -148,7 +148,7 @@ void initialize_apic (bool bsp) {
 			x2apic = true;
 			apic_base |= IA32_APIC_BASE_MSR_X2APIC;
 		}else {
-			apic = (void*)AuMapMMIO((uintptr_t)apic_base,1);
+			apic = (void*)AuMapMMIO(apic_base,2);
 		}
 
 		apic_base |= IA32_APIC_BASE_MSR_ENABLE;
@@ -165,7 +165,7 @@ void initialize_apic (bool bsp) {
 
 
 	//!Register the time speed
-	write_apic_register (LAPIC_REGISTER_TMRDIV, 0x3);  //0xa
+	write_apic_register (LAPIC_REGISTER_TMRDIV,0x3);  //0xa
 
 	/*! timer initialized*/
 	size_t timer_vector = 0x40;
@@ -278,4 +278,8 @@ void AuInitializeCpu(uint8_t num_cpu) {
  */
 void AuAPStarted () {
 	ap_started = true;
+}
+
+void APICDebug (bool debug){
+	debug_mode = debug;
 }

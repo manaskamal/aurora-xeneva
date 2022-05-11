@@ -50,16 +50,19 @@ uint16_t _aud_inw_(int reg) {
 }
 
 //! Size -> 1 byte
+uint8_t _aud_inb_ (int reg) {
+	volatile uint8_t* mmio = (uint8_t*)(_ihd_audio.mmio + reg);
+	_debug_print_ ("AUD:INB -> %x \r\n", *mmio);
+	return *mmio;
+}
+//! Size -> 1 byte
 void _aud_outb_ (int reg, uint8_t value) {
 	 volatile uint8_t* mmio = (uint8_t*)(_ihd_audio.mmio + reg);
+	 _debug_print_ ("AUD:OUTB -> %x \r\n", value);
 	*mmio = value;
 }
 
-//! Size -> 1 byte
-uint8_t _aud_inb_ (int reg) {
-	volatile uint8_t* mmio = (uint8_t*)(_ihd_audio.mmio + reg);
-	return *mmio;
-}
+
 
 ////!=======================================================================
 ////!=======================================================================
@@ -543,16 +546,14 @@ void hda_write (uint8_t* buffer, size_t length) {
  * Initialize the HD Audio Controller
  */
 void hda_initialize () {
-	pci_device_info pci_dev;
-	int bus, dev, func;
 
-	if (!pci_find_device_class (0x04, 0x03, &pci_dev, &bus, &dev, &func)){
+	uint32_t device = pci_scan_class (0x04, 0x03);
+	if (device == 0xFFFFFFFF){
 		printf ("No HD-Audio was found\n");
 		return;
 	}
 
-	uint16_t command = 0;
-	read_config_16 (0,bus,dev,func,0x4,&command);
+	uint16_t command = pci_read(device,PCI_COMMAND);
 	if (((command >> 10) & 0xff) != 0) {
 		printf ("[HD-Audio]: Interrupt disabled in PCI Config_Space %x\n", command);
 	}
@@ -561,24 +562,18 @@ void hda_initialize () {
 	//command |= 0x2;
 	//write_config_16 (0,bus,dev,func, 0x4,command);
 
-	pci_enable_bus_master(bus,dev,func);
-	pci_enable_interrupt(bus,dev,func);
 
 
 	_ihd_audio.output = (hda_output*)AuPmmngrAlloc();
 	_ihd_audio.vol = (hda_volume*)AuPmmngrAlloc();
 	memset (_ihd_audio.output, 0, 4096);
 
+	int intline = pci_read(device, PCI_INTERRUPT_LINE);
+	printf ("[HD-Audio]: INterrupt int -> %d\n", intline);
+	AuInterruptSet(10, hda_handler,10, false);
 
-	bool pci_status = pci_alloc_msi (func, dev, bus, hda_handler);
-	if (pci_status) 
-		printf ("[HD-Audio]: Supports MSI\n");
-	if (!pci_status) {
-		printf ("[HD-Audio]: INterrupt int -> %d\n", pci_dev.device.nonBridge.interruptLine);
-		AuInterruptSet(10, hda_handler,10);
-	}
 
-	uintptr_t mmio = pci_dev.device.nonBridge.baseAddress[0] & ~3;
+	uintptr_t mmio = pci_read(device,PCI_BAR0) & ~3;
 	_ihd_audio.mmio = (size_t)AuMapMMIO(mmio,2);
 	_debug_print_("_IHD_MMIO -> %x \r\n", _ihd_audio.mmio);
 	_ihd_audio.corb = (uint32_t*)AuPmmngrAlloc(); 

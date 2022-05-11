@@ -30,7 +30,7 @@ EXTRN	?x86_64_gdt_init@@YAXXZ:PROC			; x86_64_gdt_init
 EXTRN	?setvect@@YAX_KP6AX0PEAX@Z@Z:PROC		; setvect
 EXTRN	?x86_64_init_cpu@@YAXXZ:PROC			; x86_64_init_cpu
 EXTRN	apic_local_eoi:PROC
-EXTRN	?ioapic_register_irq@@YAX_KP6AX0PEAX@ZE@Z:PROC	; ioapic_register_irq
+EXTRN	?ioapic_register_irq@@YAX_KP6AX0PEAX@ZE_N@Z:PROC ; ioapic_register_irq
 EXTRN	?ioapic_mask_irq@@YAXE_N@Z:PROC			; ioapic_mask_irq
 pdata	SEGMENT
 $pdata$?AuHalInitialize@@YAXXZ DD imagerel $LN3
@@ -61,7 +61,7 @@ $pdata$AuInterruptEnd DD imagerel $LN3
 	DD	imagerel $LN3+18
 	DD	imagerel $unwind$AuInterruptEnd
 $pdata$AuInterruptSet DD imagerel $LN3
-	DD	imagerel $LN3+45
+	DD	imagerel $LN3+56
 	DD	imagerel $unwind$AuInterruptSet
 $pdata$AuIrqMask DD imagerel $LN3
 	DD	imagerel $LN3+32
@@ -92,8 +92,8 @@ $unwind$outportd DD 010d01H
 	DD	0420dH
 $unwind$AuInterruptEnd DD 010801H
 	DD	04208H
-$unwind$AuInterruptSet DD 011301H
-	DD	04213H
+$unwind$AuInterruptSet DD 011801H
+	DD	04218H
 $unwind$AuIrqMask DD 010c01H
 	DD	0420cH
 $unwind$AuDisableInterupts DD 010401H
@@ -180,11 +180,13 @@ _TEXT	SEGMENT
 vector$ = 48
 fn$ = 56
 irq$ = 64
+level$ = 72
 AuInterruptSet PROC
 
-; 138  : void AuInterruptSet (size_t vector, void (*fn)(size_t, void* p),uint8_t irq){
+; 138  : void AuInterruptSet (size_t vector, void (*fn)(size_t, void* p),uint8_t irq, bool level){
 
 $LN3:
+	mov	BYTE PTR [rsp+32], r9b
 	mov	BYTE PTR [rsp+24], r8b
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
@@ -196,12 +198,13 @@ $LN3:
 ; 142  : 	irq_mask(irq,false);
 ; 143  : #endif
 ; 144  : #ifdef USE_APIC
-; 145  : 	ioapic_register_irq(vector,fn,irq);
+; 145  : 	ioapic_register_irq(vector,fn,irq, level);
 
+	movzx	r9d, BYTE PTR level$[rsp]
 	movzx	r8d, BYTE PTR irq$[rsp]
 	mov	rdx, QWORD PTR fn$[rsp]
 	mov	rcx, QWORD PTR vector$[rsp]
-	call	?ioapic_register_irq@@YAX_KP6AX0PEAX@ZE@Z ; ioapic_register_irq
+	call	?ioapic_register_irq@@YAX_KP6AX0PEAX@ZE_N@Z ; ioapic_register_irq
 
 ; 146  : #endif
 ; 147  : #elif  ARCH_ARM

@@ -29,6 +29,7 @@
 
 #include "hda.h"
 #include <stdio.h>
+#include "codecs\sigmatel.h"
 
 /**
  * one time function for sending command and reading response
@@ -73,7 +74,18 @@ int codec_enumerate_widgets(int codec) {
 	printf ("[driver]: hdaudio num function group -> %d, fg_start -> %d\n", num_fg, fg_start);
 
 	uint32_t vendor_id = codec_query (codec, 0, VERB_GET_PARAMETER | PARAM_VENDOR_ID);
-	printf ("[driver]: hdaudio widget device id -> %x, vendor id -> %x\n", vendor_id & 0xffff , (vendor_id >> 16 ));
+	uint32_t devid = vendor_id & 0xffff;
+	uint32_t vendid = vendor_id >> 16;
+
+	/*register function pointers */
+	if (devid == 0x7680 && vendid == 0x8384) {  
+		/* Sigmatel Codec */
+		hda_set_codec_init_func(sigmatel_init);
+		hda_set_volume_func(sigmatel_set_volume);
+		printf ("[hda]: sigmatel codec registered \n");
+	}
+
+	printf ("[driver]: hdaudio widget device id -> 0%x, vendor id -> 0%x\n", devid , vendid);
 	
 	uint32_t rev_id = codec_query (codec, 0, VERB_GET_PARAMETER | PARAM_REV_ID);
 	printf ("[driver]: widget version -> %d.%d, r0%d\n", rev_id>>20, rev_id>>16, rev_id>>8);
@@ -102,7 +114,6 @@ int codec_enumerate_widgets(int codec) {
 		}
 		
 	}
-
 
 	return 1; //_ihd_audio.output->nid ? 0 : -1;
 }

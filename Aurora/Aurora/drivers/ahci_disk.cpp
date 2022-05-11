@@ -126,11 +126,11 @@ void ahci_disk_read (HBA_PORT *port, uint64_t lba, uint32_t count, uint64_t *buf
 	fis->countl = count & 0xff;
 	fis->counth = (count >> 8) & 0xff;
 
-	while((port->tfd & (ATA_SR_BSY  | ATA_SR_DRQ)) && spin < 1000000) {
+	while((port->tfd & (ATA_SR_BSY  | ATA_SR_DRQ))) {
 		spin++;
 	}
-	if (spin==1000000)
-		_debug_print_ ("[AHCI]:Port Hung\n");
+	/*if (spin==1000000)
+		_debug_print_ ("[AHCI]:Port Hung\n");*/
 
 
 	port->ci = 1<<command_slot;

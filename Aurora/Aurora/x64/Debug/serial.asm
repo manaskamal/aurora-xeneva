@@ -9,14 +9,14 @@ _BSS	SEGMENT
 _serial_initialized_ DB 01H DUP (?)
 _BSS	ENDS
 CONST	SEGMENT
-$SG3145	DB	'.', 00H
+$SG3148	DB	'.', 00H
 	ORG $+6
-$SG3052	DB	'Serial Handler', 0aH, 00H
+$SG3055	DB	'Serial Handler', 0aH, 00H
 CONST	ENDS
 PUBLIC	?AuInitializeSerial@@YAXXZ			; AuInitializeSerial
 PUBLIC	?write_serial@@YAXD@Z				; write_serial
 PUBLIC	?debug_serial@@YAXPEAD@Z			; debug_serial
-PUBLIC	?_debug_print_@@YAXPEADZZ			; _debug_print_
+PUBLIC	_debug_print_
 PUBLIC	?is_serial_initialized@@YA_NXZ			; is_serial_initialized
 PUBLIC	?SerialHandler@@YAX_KPEAX@Z			; SerialHandler
 PUBLIC	?is_transmit_empty@@YAHXZ			; is_transmit_empty
@@ -39,9 +39,9 @@ $pdata$?write_serial@@YAXD@Z DD imagerel $LN5
 $pdata$?debug_serial@@YAXPEAD@Z DD imagerel $LN6
 	DD	imagerel $LN6+85
 	DD	imagerel $unwind$?debug_serial@@YAXPEAD@Z
-$pdata$?_debug_print_@@YAXPEADZZ DD imagerel $LN25
+$pdata$_debug_print_ DD imagerel $LN25
 	DD	imagerel $LN25+860
-	DD	imagerel $unwind$?_debug_print_@@YAXPEADZZ
+	DD	imagerel $unwind$_debug_print_
 $pdata$?SerialHandler@@YAX_KPEAX@Z DD imagerel $LN3
 	DD	imagerel $LN3+41
 	DD	imagerel $unwind$?SerialHandler@@YAX_KPEAX@Z
@@ -56,7 +56,7 @@ $unwind$?write_serial@@YAXD@Z DD 010801H
 	DD	04208H
 $unwind$?debug_serial@@YAXPEAD@Z DD 010901H
 	DD	06209H
-$unwind$?_debug_print_@@YAXPEADZZ DD 021b01H
+$unwind$_debug_print_ DD 021b01H
 	DD	023011bH
 $unwind$?SerialHandler@@YAX_KPEAX@Z DD 010e01H
 	DD	0420eH
@@ -104,7 +104,7 @@ $LN3:
 
 ; 25   : 	printf ("Serial Handler\n");
 
-	lea	rcx, OFFSET FLAT:$SG3052
+	lea	rcx, OFFSET FLAT:$SG3055
 	call	printf
 
 ; 26   : 	AuInterruptEnd(4);
@@ -149,7 +149,7 @@ len$10 = 104
 buffer$11 = 112
 buffer$12 = 192
 format$ = 288
-?_debug_print_@@YAXPEADZZ PROC				; _debug_print_
+_debug_print_ PROC
 
 ; 58   : void _debug_print_ (char* format, ...) {
 
@@ -447,7 +447,7 @@ $LN5@debug_prin:
 ; 119  : 			{
 ; 120  : 				debug_serial(".");
 
-	lea	rcx, OFFSET FLAT:$SG3145
+	lea	rcx, OFFSET FLAT:$SG3148
 	call	?debug_serial@@YAXPEAD@Z		; debug_serial
 
 ; 121  : 			}
@@ -526,7 +526,7 @@ $LN21@debug_prin:
 
 	add	rsp, 280				; 00000118H
 	ret	0
-?_debug_print_@@YAXPEADZZ ENDP				; _debug_print_
+_debug_print_ ENDP
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\serial.cpp

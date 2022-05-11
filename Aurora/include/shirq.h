@@ -58,7 +58,7 @@ AU_EXTERN AU_EXPORT void AuSharedDeviceRegister (shirq_t *shdev);
  * AuInstallSharedHandler -- Install the shared handler
  * @param irq
  */
-AU_EXTERN AU_EXPORT void AuInstallSharedHandler (uint8_t irq);
+AU_EXTERN AU_EXPORT void AuInstallSharedHandler (uint8_t irq, bool level);
 
 /*
  * AuCheckSharedDevice -- Checks if already a device with same
@@ -69,6 +69,8 @@ AU_EXTERN AU_EXPORT void AuInstallSharedHandler (uint8_t irq);
  * @param device_id -- unique pci device id
  */
 AU_EXTERN AU_EXPORT bool AuCheckSharedDevice(uint8_t irq, uint32_t device_id);
+
+AU_EXTERN AU_EXPORT void AuFiredSharedHandler (uint8_t irq, size_t v, void* p, shirq_t *dev);
 
 
 #endif

@@ -26,31 +26,22 @@ _BSS	SEGMENT
 ?ide_irq_invoked@@3IA DD 01H DUP (?)			; ide_irq_invoked
 _BSS	ENDS
 CONST	SEGMENT
-$SG3366	DB	'master ', 00H
-$SG3367	DB	'slave', 00H
-	ORG $+2
-$SG3368	DB	'primary', 00H
-$SG3369	DB	'secondary', 00H
-	ORG $+6
-$SG3370	DB	'ATA: %s s has error. disabled, ', 0aH, 00H
+$SG3088	DB	'[ATA]: error!, device failure!', 0aH, 00H
+$SG3129	DB	'[ATA]: Read28 -- no selected io & drive', 0aH, 00H
 	ORG $+7
-$SG3400	DB	'[ATA]: error!, device failure!', 0aH, 00H
-$SG3441	DB	'[ATA]: Read28 -- no selected io & drive', 0aH, 00H
-	ORG $+7
-$SG3529	DB	'[ATA]: Primary-Master Device: %s', 0aH, 00H
+$SG3217	DB	'[ATA]: Primary-Master Device: %s', 0aH, 00H
 	ORG $+6
-$SG3531	DB	'[ATA]: Primary-Master Device Size -> %d GB', 0aH, 00H
+$SG3219	DB	'[ATA]: Primary-Master Device Size -> %d GB', 0aH, 00H
 	ORG $+4
-$SG3537	DB	'[ATA]: Primary-Slave Device: %s', 0aH, 00H
-	ORG $+7
-$SG3545	DB	'******************************************', 0aH, 00H
-	ORG $+4
-$SG3546	DB	'System error!!!!', 0aH, 00H
+$SG3225	DB	'[ATA]: Primary-Slave Device: %s', 0aH, 00H
+	ORG $+3
+$SG3055	DB	'slave', 00H
 	ORG $+6
-$SG3547	DB	'Xeneva initialization failed', 0aH, 00H
-	ORG $+2
-$SG3548	DB	'Storage IDE mode error, halting system', 0aH, 00H
-$SG3549	DB	'******************************************', 0aH, 00H
+$SG3054	DB	'master ', 00H
+$SG3056	DB	'primary', 00H
+$SG3057	DB	'secondary', 00H
+	ORG $+6
+$SG3058	DB	'ATA: %s s has error. disabled, ', 0aH, 00H
 CONST	ENDS
 PUBLIC	?ata_initialize@@YAXXZ				; ata_initialize
 PUBLIC	?ata_read_28@@YAEIGPEAE@Z			; ata_read_28
@@ -76,12 +67,9 @@ EXTRN	AuInterruptEnd:PROC
 EXTRN	AuInterruptSet:PROC
 EXTRN	memset:PROC
 EXTRN	printf:PROC
-EXTRN	pci_find_device_class:PROC
-EXTRN	pci_enable_bus_master:PROC
-EXTRN	?debug_print@@YAXPEBDZZ:PROC			; debug_print
 pdata	SEGMENT
-$pdata$?ata_initialize@@YAXXZ DD imagerel $LN6
-	DD	imagerel $LN6+196
+$pdata$?ata_initialize@@YAXXZ DD imagerel $LN3
+	DD	imagerel $LN3+70
 	DD	imagerel $unwind$?ata_initialize@@YAXXZ
 $pdata$?ata_read_28@@YAEIGPEAE@Z DD imagerel $LN15
 	DD	imagerel $LN15+455
@@ -130,8 +118,8 @@ $pdata$?ata_probe@@YAXXZ DD imagerel $LN11
 	DD	imagerel $unwind$?ata_probe@@YAXXZ
 pdata	ENDS
 xdata	SEGMENT
-$unwind$?ata_initialize@@YAXXZ DD 020701H
-	DD	0290107H
+$unwind$?ata_initialize@@YAXXZ DD 010401H
+	DD	04204H
 $unwind$?ata_read_28@@YAEIGPEAE@Z DD 011201H
 	DD	08212H
 $unwind$?ata_write_one@@YAEPEAEI@Z DD 010d01H
@@ -242,7 +230,7 @@ $LN5@ata_probe:
 ; 477  : 		printf("[ATA]: Primary-Master Device: %s\n", ata_device_name);
 
 	lea	rdx, OFFSET FLAT:?ata_device_name@@3PADA ; ata_device_name
-	lea	rcx, OFFSET FLAT:$SG3529
+	lea	rcx, OFFSET FLAT:$SG3217
 	call	printf
 
 ; 478  : 		printf("[ATA]: Primary-Master Device Size -> %d GB\n", *((unsigned int*)(ide_buf + 200)) / 1024 / 1024 / 1024);
@@ -258,7 +246,7 @@ $LN5@ata_probe:
 	mov	ecx, 1024				; 00000400H
 	div	ecx
 	mov	edx, eax
-	lea	rcx, OFFSET FLAT:$SG3531
+	lea	rcx, OFFSET FLAT:$SG3219
 	call	printf
 
 ; 479  : 		ata_drive = (ATA_PRIMARY << 1) | ATA_MASTER;
@@ -335,7 +323,7 @@ $LN1@ata_probe:
 ; 492  : 		printf("[ATA]: Primary-Slave Device: %s\n", ata_device_name);
 
 	lea	rdx, OFFSET FLAT:?ata_device_name@@3PADA ; ata_device_name
-	lea	rcx, OFFSET FLAT:$SG3537
+	lea	rcx, OFFSET FLAT:$SG3225
 	call	printf
 $LN4@ata_probe:
 
@@ -704,7 +692,7 @@ $retry2$11:
 ; 162  : 	{
 ; 163  : 		printf("[ATA]: error!, device failure!\n");
 
-	lea	rcx, OFFSET FLAT:$SG3400
+	lea	rcx, OFFSET FLAT:$SG3088
 	call	printf
 $LN2@ide_poll:
 
@@ -918,26 +906,26 @@ $pm_stat_read$20:
 	movzx	eax, BYTE PTR drive$[rsp]
 	test	eax, eax
 	jne	SHORT $LN15@ide_identi
-	lea	rax, OFFSET FLAT:$SG3366
+	lea	rax, OFFSET FLAT:$SG3054
 	mov	QWORD PTR tv152[rsp], rax
 	jmp	SHORT $LN16@ide_identi
 $LN15@ide_identi:
-	lea	rax, OFFSET FLAT:$SG3367
+	lea	rax, OFFSET FLAT:$SG3055
 	mov	QWORD PTR tv152[rsp], rax
 $LN16@ide_identi:
 	movzx	eax, BYTE PTR bus$[rsp]
 	test	eax, eax
 	jne	SHORT $LN17@ide_identi
-	lea	rax, OFFSET FLAT:$SG3368
+	lea	rax, OFFSET FLAT:$SG3056
 	mov	QWORD PTR tv156[rsp], rax
 	jmp	SHORT $LN18@ide_identi
 $LN17@ide_identi:
-	lea	rax, OFFSET FLAT:$SG3369
+	lea	rax, OFFSET FLAT:$SG3057
 	mov	QWORD PTR tv156[rsp], rax
 $LN18@ide_identi:
 	mov	r8, QWORD PTR tv152[rsp]
 	mov	rdx, QWORD PTR tv156[rsp]
-	lea	rcx, OFFSET FLAT:$SG3370
+	lea	rcx, OFFSET FLAT:$SG3058
 	call	printf
 $LN7@ide_identi:
 $LN6@ide_identi:
@@ -2220,7 +2208,7 @@ $LN4@ata_read_2:
 ; 254  : 	default:{
 ; 255  : 		printf ("[ATA]: Read28 -- no selected io & drive\n");
 
-	lea	rcx, OFFSET FLAT:$SG3441
+	lea	rcx, OFFSET FLAT:$SG3129
 	call	printf
 
 ; 256  : 		return 0;
@@ -2382,89 +2370,42 @@ _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\drivers\ata.cpp
 _TEXT	SEGMENT
-dev$ = 48
-bus$ = 52
-func$ = 56
-info$ = 64
 ?ata_initialize@@YAXXZ PROC				; ata_initialize
 
 ; 496  : void ata_initialize (){
 
-$LN6:
-	sub	rsp, 328				; 00000148H
+$LN3:
+	sub	rsp, 40					; 00000028H
 
 ; 497  : 
 ; 498  : 	x64_cli();
 
 	call	x64_cli
 
-; 499  : 	pci_device_info info;
+; 499  : /*	pci_device_info info;
 ; 500  : 	int bus; int dev; int func;
 ; 501  : 	if (!pci_find_device_class (0x01,0x01,&info,&bus,&dev,&func)) {
-
-	lea	rax, QWORD PTR func$[rsp]
-	mov	QWORD PTR [rsp+40], rax
-	lea	rax, QWORD PTR dev$[rsp]
-	mov	QWORD PTR [rsp+32], rax
-	lea	r9, QWORD PTR bus$[rsp]
-	lea	r8, QWORD PTR info$[rsp]
-	mov	dl, 1
-	mov	cl, 1
-	call	pci_find_device_class
-	movzx	eax, al
-	test	eax, eax
-	jne	SHORT $LN3@ata_initia
-
 ; 502  : 		debug_print ("******************************************\n");
-
-	lea	rcx, OFFSET FLAT:$SG3545
-	call	?debug_print@@YAXPEBDZZ			; debug_print
-
 ; 503  : 		debug_print ("System error!!!!\n");
-
-	lea	rcx, OFFSET FLAT:$SG3546
-	call	?debug_print@@YAXPEBDZZ			; debug_print
-
 ; 504  : 		debug_print ("Xeneva initialization failed\n");
-
-	lea	rcx, OFFSET FLAT:$SG3547
-	call	?debug_print@@YAXPEBDZZ			; debug_print
-
 ; 505  : 		debug_print ("Storage IDE mode error, halting system\n");
-
-	lea	rcx, OFFSET FLAT:$SG3548
-	call	?debug_print@@YAXPEBDZZ			; debug_print
-
 ; 506  : 		debug_print ("******************************************\n");
-
-	lea	rcx, OFFSET FLAT:$SG3549
-	call	?debug_print@@YAXPEBDZZ			; debug_print
-$LN2@ata_initia:
-
 ; 507  : 		for(;;);
-
-	jmp	SHORT $LN2@ata_initia
-$LN3@ata_initia:
-
 ; 508  : 	}
-; 509  : 	pci_enable_bus_master (bus,dev,func);
-
-	mov	r8d, DWORD PTR func$[rsp]
-	mov	edx, DWORD PTR dev$[rsp]
-	mov	ecx, DWORD PTR bus$[rsp]
-	call	pci_enable_bus_master
-
+; 509  : 	pci_enable_bus_master (bus,dev,func);*/
 ; 510  : 	
-; 511  : 	AuInterruptSet(35, ide_primary_irq, 14);
+; 511  : 	AuInterruptSet(35, ide_primary_irq, 14, false);
 
+	xor	r9d, r9d
 	mov	r8b, 14
 	lea	rdx, OFFSET FLAT:?ide_primary_irq@@YAX_KPEAX@Z ; ide_primary_irq
 	mov	ecx, 35					; 00000023H
 	call	AuInterruptSet
 
 ; 512  : 
-; 513  : 	AuInterruptSet(36, ide_secondary_irq,15);
+; 513  : 	AuInterruptSet(36, ide_secondary_irq,15, false);
 
+	xor	r9d, r9d
 	mov	r8b, 15
 	lea	rdx, OFFSET FLAT:?ide_secondary_irq@@YAX_KPEAX@Z ; ide_secondary_irq
 	mov	ecx, 36					; 00000024H
@@ -2482,7 +2423,7 @@ $LN3@ata_initia:
 
 ; 518  : }
 
-	add	rsp, 328				; 00000148H
+	add	rsp, 40					; 00000028H
 	ret	0
 ?ata_initialize@@YAXXZ ENDP				; ata_initialize
 _TEXT	ENDS

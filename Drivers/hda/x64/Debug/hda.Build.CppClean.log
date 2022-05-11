@@ -1,4 +1,5 @@
 E:\XENEVA PROJECT\XENEVA\DRIVERS\HDA\X64\DEBUG\CODEC.OBJ
+E:\XENEVA PROJECT\XENEVA\DRIVERS\HDA\X64\DEBUG\SIGMATEL.OBJ
 E:\XENEVA PROJECT\XENEVA\DRIVERS\HDA\X64\DEBUG\HDA.OBJ
 E:\XENEVA PROJECT\XENEVA\DRIVERS\HDA\X64\DEBUG\STREAM.OBJ
 E:\XENEVA PROJECT\XENEVA\DRIVERS\HDA\X64\DEBUG\WIDGET.OBJ
@@ -9,6 +10,7 @@ F:\HDA.DLL
 F:\HDA.MAP
 E:\Xeneva Project\Xeneva\Drivers\hda\x64\Debug\codec.obj
 E:\Xeneva Project\Xeneva\Drivers\hda\x64\Debug\hda.obj
+E:\Xeneva Project\Xeneva\Drivers\hda\x64\Debug\sigmatel.obj
 E:\Xeneva Project\Xeneva\Drivers\hda\x64\Debug\stream.obj
 E:\Xeneva Project\Xeneva\Drivers\hda\x64\Debug\widget.obj
 E:\Xeneva Project\Xeneva\Drivers\hda\x64\Debug\cl.command.1.tlog

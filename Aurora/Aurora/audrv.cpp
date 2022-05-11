@@ -210,20 +210,26 @@ void AuDrvMngrInitialize (KERNEL_BOOT_INFO *info) {
 	uint64_t* conf = (uint64_t*)p2v((size_t)AuPmmngrAlloc());
 	memset(conf, 0, 4096);
 	vfs_node_t file = fat32_open(NULL, "/audrv.cnf");
-	fat32_read_file (&file,(uint64_t*)v2p((size_t)conf),file.size);
+	int filesize = file.size / 1024;
+	if(filesize < 4096)
+		fat32_read(&file,(uint64_t*)v2p((size_t)conf));
 
 	uint8_t* confdata = (uint8_t*)conf;
 
-	pci_device_info config;
 	for (int bus = 0; bus < 256; bus++) {
 		for (int dev = 0; dev < 32; dev++) {
 			for (int func = 0; func < 8; func++) {
 
-				read_config_32 (0,bus, dev, func, 0, config.header[0]);
-				read_config_header (bus, dev, func, &config);
-				if (config.device.deviceID == 0xFFFF || config.device.vendorID == 0xFFFF) 
+				uint32_t addr = pci_encode_device(bus,dev,func);
+				uint32_t vendid = pci_read(addr, PCI_VENDOR_ID);
+				uint32_t devid = pci_read(addr, PCI_DEVICE_ID);
+				uint32_t classCode = pci_read(addr, PCI_CLASS);
+				uint32_t subClass = pci_read(addr, PCI_SUBCLASS);
+				if (devid == 0xFFFF || vendid == 0xFFFF) 
 					continue;	
-				AuGetDriverName(config.device.classCode,config.device.subClassCode,  confdata,1);
+				AuGetDriverName(classCode,subClass,  confdata,1);
+				for(int i = 0; i < 1000; i++)
+					;
 			}
 		}
 	}

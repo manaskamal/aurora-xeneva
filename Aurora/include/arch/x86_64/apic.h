@@ -60,4 +60,6 @@ extern void AuAPStarted ();
 extern void AuAPICMoveToHigher();
 
 extern void timer_sleep(uint32_t ms);
+
+AU_EXTERN AU_EXPORT void APICDebug (bool debug);
 #endif

@@ -33,7 +33,7 @@ EXTRN	free:PROC
 EXTRN	?ahci_disk_write@@YAXPEAU_hba_port_@@_KIPEA_K@Z:PROC ; ahci_disk_write
 EXTRN	?ahci_disk_read@@YAXPEAU_hba_port_@@_KIPEA_K@Z:PROC ; ahci_disk_read
 EXTRN	?ahci_disk_get_port@@YAPEAU_hba_port_@@XZ:PROC	; ahci_disk_get_port
-EXTRN	?_debug_print_@@YAXPEADZZ:PROC			; _debug_print_
+EXTRN	_debug_print_:PROC
 EXTRN	?fat32_read_fat@@YAII@Z:PROC			; fat32_read_fat
 EXTRN	?fat32_clear_cluster@@YAXI@Z:PROC		; fat32_clear_cluster
 EXTRN	?cluster_to_sector32@@YA_K_K@Z:PROC		; cluster_to_sector32
@@ -194,7 +194,7 @@ $LN3@fat32_writ:
 
 	mov	edx, DWORD PTR cluster$[rsp]
 	lea	rcx, OFFSET FLAT:$SG3626
-	call	?_debug_print_@@YAXPEADZZ		; _debug_print_
+	call	_debug_print_
 $LN4@fat32_writ:
 
 ; 158  : 		}
@@ -310,7 +310,7 @@ $LN7@fat32_writ:
 
 	mov	edx, DWORD PTR required_cluster$[rsp]
 	lea	rcx, OFFSET FLAT:$SG3641
-	call	?_debug_print_@@YAXPEADZZ		; _debug_print_
+	call	_debug_print_
 
 ; 184  : 
 ; 185  : 	uint32_t cluster = file->current;
@@ -449,7 +449,7 @@ $LN14:
 ; 71   : 	_debug_print_ ("FAT32: Creating a file \r\n");
 
 	lea	rcx, OFFSET FLAT:$SG3583
-	call	?_debug_print_@@YAXPEADZZ		; _debug_print_
+	call	_debug_print_
 
 ; 72   : 
 ; 73   : 	char fname[11];
@@ -712,7 +712,7 @@ $LN3@fat32_make:
 
 	mov	edx, DWORD PTR i$3[rsp]
 	lea	rcx, OFFSET FLAT:$SG3602
-	call	?_debug_print_@@YAXPEADZZ		; _debug_print_
+	call	_debug_print_
 
 ; 116  : 			    return file;
 

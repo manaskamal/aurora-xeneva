@@ -77,25 +77,35 @@ bool AuCheckSharedDevice(uint8_t irq, uint32_t device_id) {
  * AuSharedHandler -- Shared Device Handler
  */
 void AuSharedHandler(size_t v, void* p) {
-	printf ("SharedIRQHandler called \n");
+	x64_cli();
 	/* Call each IRQHandler */
 	for (int i = 0; i < shdevice_count; i++){
 		shirq_t *device = shdevice[i];
 		if (device->IrqHandler)
 			device->IrqHandler(v,p);
 	}
-
-	AuInterruptEnd(0);
+	x64_sti();
+	//AuInterruptEnd(0);
 }
 
 /**
  * AuInstallSharedHandler -- Install the shared handler
  * @param irq
  */
-void AuInstallSharedHandler (uint8_t irq) {
+void AuInstallSharedHandler (uint8_t irq, bool level) {
 	if (SharedHandlerInstalled)
 		return;
-	AuInterruptSet(irq,AuSharedHandler, irq);
+	//AuInterruptSet(irq,AuSharedHandler, irq, level);
 	SharedHandlerInstalled = true;
+}
+
+void AuFiredSharedHandler (uint8_t irq, size_t v, void* p, shirq_t *fired) {
+	for (int i = 0; i < shdevice_count; i++){
+		shirq_t* device = shdevice[i];
+		if (device == fired)
+			continue;
+		if (device->irq == irq && device->IrqHandler != NULL)
+			device->IrqHandler(v,p);
+	}
 }
 

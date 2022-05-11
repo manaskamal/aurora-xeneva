@@ -35,7 +35,7 @@
 #include <ipc\pri_loop.h>
 #include <_null.h>
 #include <arch\x86_64\thread.h>
-
+#include <stdio.h>
 
 sound_t *registered_dev;
 thread_t* registered_thr;
@@ -46,7 +46,6 @@ void AuSoundRead (vfs_node_t *file, uint64_t* buffer, uint32_t length) {
 }
 
 void AuSoundWrite (vfs_node_t *file, uint64_t* buffer, uint32_t length) {
-	x64_cli();
 	if (registered_dev == NULL)
 		return;
 	uint8_t* aligned_buf = (uint8_t*)buffer;

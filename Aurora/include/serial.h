@@ -12,9 +12,11 @@
 #ifndef __SERIAL_H__
 #define __SERIAL_H__
 
+#include <aurora.h>
+
 extern void AuInitializeSerial ();
 extern void write_serial (char a);
 extern void debug_serial (char* string);
-extern void _debug_print_ (char* format, ...);
+AU_EXTERN AU_EXPORT void _debug_print_ (char* format, ...);
 extern bool is_serial_initialized();
 #endif

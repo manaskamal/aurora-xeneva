@@ -14,6 +14,7 @@
 #define __SOUND_H__
 
 #include <stdint.h>
+#include <fs\vfs.h>
 #include <aurora.h>
 
 #define SOUND_REGISTER_MEDIAPLAYER 100
@@ -45,5 +46,5 @@ AU_EXTERN AU_EXPORT void AuSoundRegisterDevice(sound_t * dev);
 AU_EXTERN AU_EXPORT void AuSoundRequestNext (uint8_t* buffer);
 extern void AuSoundOutputStart();
 extern void AuSoundOutputStop();
-
+extern void AuSoundWrite (vfs_node_t *file, uint64_t* buffer, uint32_t length);
 #endif

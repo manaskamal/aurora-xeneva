@@ -6,9 +6,9 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 CONST	SEGMENT
-$SG3893	DB	'***Process killed ', 0dH, 0aH, 00H
+$SG3896	DB	'***Process killed ', 0dH, 0aH, 00H
 	ORG $+3
-$SG3894	DB	'*** Current used RAM -> %d MB / total -> %d MB ', 0dH, 0aH
+$SG3897	DB	'*** Current used RAM -> %d MB / total -> %d MB ', 0dH, 0aH
 	DB	00H
 CONST	ENDS
 PUBLIC	?create__sys_process@@YAHPEBDPEAD@Z		; create__sys_process
@@ -24,7 +24,7 @@ EXTRN	force_sched:PROC
 EXTRN	?AuCreateProcess@@YAHPEBDPEAD@Z:PROC		; AuCreateProcess
 EXTRN	?kill_process@@YAXXZ:PROC			; kill_process
 EXTRN	?kill_process_by_id@@YAXG@Z:PROC		; kill_process_by_id
-EXTRN	?_debug_print_@@YAXPEADZZ:PROC			; _debug_print_
+EXTRN	_debug_print_:PROC
 pdata	SEGMENT
 $pdata$?create__sys_process@@YAHPEBDPEAD@Z DD imagerel $LN3
 	DD	imagerel $LN3+45
@@ -161,8 +161,8 @@ $LN3:
 
 ; 59   : 	_debug_print_ ("***Process killed \r\n");
 
-	lea	rcx, OFFSET FLAT:$SG3893
-	call	?_debug_print_@@YAXPEADZZ		; _debug_print_
+	lea	rcx, OFFSET FLAT:$SG3896
+	call	_debug_print_
 
 ; 60   : 	_debug_print_ ("*** Current used RAM -> %d MB / total -> %d MB \r\n", pmmngr_get_used_ram() / 1024 / 1024, pmmngr_get_total_ram() / 1024 / 1024);
 
@@ -184,8 +184,8 @@ $LN3:
 	mov	rcx, QWORD PTR tv67[rsp]
 	mov	r8, rcx
 	mov	rdx, rax
-	lea	rcx, OFFSET FLAT:$SG3894
-	call	?_debug_print_@@YAXPEADZZ		; _debug_print_
+	lea	rcx, OFFSET FLAT:$SG3897
+	call	_debug_print_
 
 ; 61   : 	force_sched();
 

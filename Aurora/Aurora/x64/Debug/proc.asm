@@ -13,17 +13,17 @@ _BSS	SEGMENT
 pid	DD	01H DUP (?)
 _BSS	ENDS
 CONST	SEGMENT
-$SG4120	DB	'Used Pmmngr -> %d MB / Total -> %d MB ', 0dH, 0aH, 00H
+$SG4123	DB	'Used Pmmngr -> %d MB / Total -> %d MB ', 0dH, 0aH, 00H
 	ORG $+3
-$SG4186	DB	'child', 00H
+$SG4189	DB	'child', 00H
 	ORG $+6
-$SG4043	DB	'/dev/stdin', 00H
+$SG4046	DB	'/dev/stdin', 00H
 	ORG $+5
-$SG4045	DB	'/dev/stdout', 00H
+$SG4048	DB	'/dev/stdout', 00H
 	ORG $+4
-$SG4047	DB	'/dev/stderr', 00H
+$SG4050	DB	'/dev/stderr', 00H
 	ORG $+4
-$SG4061	DB	'Executable image not found', 0aH, 00H
+$SG4064	DB	'Executable image not found', 0aH, 00H
 CONST	ENDS
 PUBLIC	?create_user_stack@@YAPEA_KPEAU_process_@@PEA_K@Z ; create_user_stack
 PUBLIC	?create_inc_stack@@YAPEA_KPEA_K@Z		; create_inc_stack
@@ -74,7 +74,7 @@ EXTRN	?destroy_timer@@YAXH@Z:PROC			; destroy_timer
 EXTRN	?find_timer_id@@YAHG@Z:PROC			; find_timer_id
 EXTRN	?fat32_open@@YA?AU_vfs_node_@@PEAU1@PEAD@Z:PROC	; fat32_open
 EXTRN	?fat32_read@@YAXPEAU_vfs_node_@@PEA_K@Z:PROC	; fat32_read
-EXTRN	?_debug_print_@@YAXPEADZZ:PROC			; _debug_print_
+EXTRN	_debug_print_:PROC
 EXTRN	?pri_loop_destroy_by_id@@YAXG@Z:PROC		; pri_loop_destroy_by_id
 pdata	SEGMENT
 $pdata$?create_user_stack@@YAPEA_KPEAU_process_@@PEA_K@Z DD imagerel $LN6
@@ -331,7 +331,7 @@ $LN3:
 ; 411  : 	thread_t *t = create_user_thread(child_proc->entry_point,child_proc->stack,(uint64_t)child_proc->cr3,"child",1);
 
 	mov	BYTE PTR [rsp+32], 1
-	lea	r9, OFFSET FLAT:$SG4186
+	lea	r9, OFFSET FLAT:$SG4189
 	mov	rax, QWORD PTR child_proc$[rsp]
 	mov	r8, QWORD PTR [rax+40]
 	mov	rax, QWORD PTR child_proc$[rsp]
@@ -500,7 +500,7 @@ $LN3:
 
 ; 140  : 	vfs_node_t * stdin = vfs_finddir("/dev/stdin");
 
-	lea	rcx, OFFSET FLAT:$SG4043
+	lea	rcx, OFFSET FLAT:$SG4046
 	call	?vfs_finddir@@YAPEAU_vfs_node_@@PEAD@Z	; vfs_finddir
 	mov	QWORD PTR stdin$[rsp], rax
 
@@ -522,7 +522,7 @@ $LN3:
 
 ; 143  : 	vfs_node_t* stdout = vfs_finddir("/dev/stdout");
 
-	lea	rcx, OFFSET FLAT:$SG4045
+	lea	rcx, OFFSET FLAT:$SG4048
 	call	?vfs_finddir@@YAPEAU_vfs_node_@@PEAD@Z	; vfs_finddir
 	mov	QWORD PTR stdout$[rsp], rax
 
@@ -544,7 +544,7 @@ $LN3:
 
 ; 146  : 	vfs_node_t* stderr = vfs_finddir("/dev/stderr");
 
-	lea	rcx, OFFSET FLAT:$SG4047
+	lea	rcx, OFFSET FLAT:$SG4050
 	call	?vfs_finddir@@YAPEAU_vfs_node_@@PEAD@Z	; vfs_finddir
 	mov	QWORD PTR stderr$[rsp], rax
 
@@ -1466,8 +1466,8 @@ $LN1@kill_proce:
 	mov	rcx, QWORD PTR tv132[rsp]
 	mov	r8, rcx
 	mov	rdx, rax
-	lea	rcx, OFFSET FLAT:$SG4120
-	call	?_debug_print_@@YAXPEADZZ		; _debug_print_
+	lea	rcx, OFFSET FLAT:$SG4123
+	call	_debug_print_
 
 ; 288  : 
 ; 289  : 	AuPmmngrFree(cr3);
@@ -1573,7 +1573,7 @@ $LN6:
 
 ; 173  : 		printf("Executable image not found\n");
 
-	lea	rcx, OFFSET FLAT:$SG4061
+	lea	rcx, OFFSET FLAT:$SG4064
 	call	printf
 
 ; 174  : 		return -1;

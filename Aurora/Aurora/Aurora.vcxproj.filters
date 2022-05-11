@@ -372,6 +372,9 @@
     <ClInclude Include="..\include\net\network.h">
       <Filter>include\net</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\drivers\pcie.h">
+      <Filter>include\drivers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="init.cpp">
@@ -604,6 +607,9 @@
     </ClCompile>
     <ClCompile Include="net\arp.cpp">
       <Filter>source\net</Filter>
+    </ClCompile>
+    <ClCompile Include="drivers\pcie.cpp">
+      <Filter>source\drivers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

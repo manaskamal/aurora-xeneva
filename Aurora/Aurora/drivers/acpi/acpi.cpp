@@ -23,7 +23,7 @@
 #define SLP_EN (1<<13)
 
 aurora_acpi kern_acpi;
-
+bool pcie_support;
 
 void acpi_power_button_enable () {
 	x64_outportw (kern_acpi.fadt->pm1aEventBlock, (1<<5));
@@ -80,6 +80,7 @@ void AuInitializeBasicAcpi (void* acpi_base) {
 	char sig[5];
 	int entries = (rsdt->header.length - sizeof(rsdt->header))/4;
 	acpiSysDescHeader* header = nullptr;
+	pcie_support = false;
 
 	for (int count = 0; count < entries; count++) {
 		header = (acpiSysDescHeader*)rsdt->entry[count];
@@ -143,10 +144,11 @@ void AuInitializeBasicAcpi (void* acpi_base) {
 			//printf ("[ACPI]: Mcfg table found\n");
 			kern_acpi.mcfg = (acpiMcfg*) header;
 			acpiMcfgAlloc *allocs = mem_after<acpiMcfgAlloc*>(kern_acpi.mcfg);
-			for (; raw_diff(allocs, kern_acpi.mcfg) < kern_acpi.mcfg->header.length; ++allocs) {
-				printf ("PCIe Start bus num -> %d, End bus num -> %d, base address-> %x\n", allocs->startBusNum, allocs->endBusNum,
-					allocs->baseAddress);
-			}
+			//for (; raw_diff(allocs, kern_acpi.mcfg) < kern_acpi.mcfg->header.length; ++allocs) {
+				printf ("PCIe Start bus num -> %d, End bus num -> %d, base address-> %x, segment -> %d\n", allocs->startBusNum, allocs->endBusNum,
+					allocs->baseAddress, allocs->pciSegment);
+				pcie_support = true;
+			//}
 		}
 		else if (!strncmp(sig, ACPI_SIG_HPET, strlen(ACPI_SIG_HPET))) {
 			printf ("[ACPI]: HPET table found\n");
@@ -168,7 +170,7 @@ void AuInitializeBasicAcpi (void* acpi_base) {
 		kern_acpi.dsdt = (acpiDsdt*)kern_acpi.fadt->dsdtAddr;
 		printf ("[ACPI]: Dsdt found -> %x\n", kern_acpi.dsdt);
 		printf ("[ACPI]: Sci Interrupt -> %d\n", kern_acpi.fadt->sciInt);
-		AuInterruptSet(kern_acpi.fadt->sciInt,fadt_handler, kern_acpi.fadt->sciInt);
+		AuInterruptSet(kern_acpi.fadt->sciInt,fadt_handler, kern_acpi.fadt->sciInt, false);
 		uint8_t* S5Block = search_s5(kern_acpi.dsdt);
 		if (S5Block != NULL) {
 			printf ("S5Block found\n");
@@ -266,12 +268,7 @@ uint8_t* search_s5 (acpiDsdt* header) {
 
 //! Checks for PCIe support
 bool acpi_pcie_supported () {
-	/*if (!kern_acpi.mcfg) {
-		return true;
-	} */
-	////! for now let's use pci legacy mode
-	//return true;
-	return false;
+	return pcie_support;
 }
 
 //! Get MCFG table

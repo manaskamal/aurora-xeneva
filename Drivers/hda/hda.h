@@ -87,9 +87,46 @@
 #define REG_O0_BDLPL     0x118    ///< Output 0 - BDL Pointer Lower
 #define REG_O0_BDLPU     0x11c    ///< Output 0 - BDL Pointer Upper
 
+#define REG_I0_CTLL      0x80    ///< Input 0 - Control Lower
+#define REG_I0_STS       0x83    ///< Input 0 - Status 
+#define REG_I0_LPIB      0x84    ///< Input 0 - Link position in current buffer 
+#define REG_I0_CBL       0x88    ///< Input 0 - Cyclic Buffer Length 
+#define REG_I0_LVI       0x8C    ///< Input 0 - Last Valid Index 
+#define REG_I0_FIFOD     0x90   ///< Input 0 - FIFO
+#define REG_I0_FMT       0x92   ///< Input 0 - Format 
+#define REG_I0_BDPL      0x98   ///< Input 0 - BDL Pointer Lower 
+#define REG_I0_BDPU      0x9C   ///< Input 0 - BDL Pointer Upper
+
+
 
 #define BDL_SIZE 4
-#define BUFFER_SIZE  0x10000
+#define BUFFER_SIZE   4096 //0x10000
+
+
+#define HDA_GCAP_OSS_MASK  0xf000
+#define HDA_GCAP_OSS_SHIFT  12
+#define HDA_GCAP_ISS_SHIFT  8
+#define HDA_GCAP_ISS_MASK  0x0f00
+#define HDA_GCAP_BSS_SHIFT 3
+#define HDA_GCAP_BSS_MASK  0x00f8
+#define HDA_GCAP_NSD0_SHIFT  1
+#define HDA_GCAP_NSD0_MASK  0x0006
+
+#define HDA_GCAP_BSS(gcap)  (((gcap) & HDA_GCAP_BSS_MASK) >> HDA_GCAP_BSS_SHIFT)
+#define HDA_GCAP_ISS(gcap)  (((gcap) & HDA_GCAP_ISS_MASK) >> HDA_GCAP_ISS_SHIFT)
+#define HDA_GCAP_OSS(gcap)  (((gcap) & HDA_GCAP_OSS_MASK) >> HDA_GCAP_OSS_SHIFT)
+
+#define HDA_INTCTL_CIE  0x40000000
+#define HDA_INTCTL_GIE  0x80000000
+
+#define HDAC_SDCTL_RUN  0x000002
+#define HDAC_SDCTL_IOCE 0x000004
+#define HDAC_SDCTL_FEIE 0x000008
+#define HDAC_SDCTL_DEIE 0x000010
+
+#define HDAC_SDSTS_DESE  (1<<4)
+#define HDAC_SDSTS_FIFOE (1<<3)
+#define HDAC_SDSTS_BCIS  (1<<2)
 
 /* GCTL bits */
 enum reg_gctl {
@@ -109,6 +146,7 @@ enum reg_rirbctl {
 
 enum codec_verbs {
 	VERB_GET_PARAMETER      = 0xf0000,
+	VERB_GET_STREAM_CHANNEL = 0xf0600,
 	VERB_SET_STREAM_CHANNEL = 0x70600,
 	VERB_SET_FORMAT         = 0x20000,
 	VERB_GET_AMP_GAIN_MUTE  = 0xb0000,
@@ -189,16 +227,26 @@ typedef struct _bdl_ {
 #pragma pack(pop)
 
 
+typedef struct _hd_output_ {
+	int output_nid;
+	int  output_codec_id;
+	uint32_t output_amp_gain_step;
+}hd_output_t;
+
+	
 typedef struct _hd_audio_ {
-	size_t mmio;
+	uint64_t mmio;
 	uint32_t* corb;
 	uint64_t* rirb;
+	uint64_t dma_buffer_phys;
 	uint32_t rirb_entries;
 	uint32_t corb_entries;
+	uint16_t num_iss;
+	uint16_t num_oss;
+	uint8_t irq;
 	bool immediate_use;
-	uint16_t output_nid;
-	uint8_t  output_codec_id;
-	uint32_t output_amp_gain_step;
+	hd_output_t *output[15];
+	uintptr_t output_ptr;
 }hd_audio_t;
 
 
@@ -245,7 +293,16 @@ extern void hda_output_stream_start ();
  * hda_output_stream_stop -- stops the output stream
  */
 extern void hda_output_stream_stop();
-
+/*
+ * hda_set_codec_init_func -- sets function pointer to each codecs
+ * initialisation code
+ */
+extern void hda_set_codec_init_func (void (*init_func)(int codec, int nid));
+/*
+ * hda_set_volume_func -- sets function pointer to each codecs volume 
+ * function
+ */
+extern void hda_set_volume_func (void (*set_vol) (uint8_t volume, int codec));
 /*==========================================
  * CODEC functions
  * =========================================
@@ -271,7 +328,7 @@ extern int codec_enumerate_widgets(int codec);
  *  @param nid --> node id
  */
 extern void widget_init (int codec, int nid);
-extern void widget_init_output (uint8_t codec, uint16_t nid);
+extern void widget_init_output ();
 
 /**
  *=============================================

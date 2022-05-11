@@ -13,38 +13,35 @@ _BSS	SEGMENT
 ?shdevice_count@@3_KA DQ 01H DUP (?)			; shdevice_count
 ?SharedHandlerInstalled@@3_NA DB 01H DUP (?)		; SharedHandlerInstalled
 _BSS	ENDS
-CONST	SEGMENT
-$SG2996	DB	'SharedIRQHandler called ', 0aH, 00H
-CONST	ENDS
 PUBLIC	?AuSharedDeviceInit@@YAXXZ			; AuSharedDeviceInit
 PUBLIC	AuSharedDeviceRegister
 PUBLIC	AuInstallSharedHandler
 PUBLIC	AuCheckSharedDevice
+PUBLIC	AuFiredSharedHandler
 PUBLIC	?AuSharedHandler@@YAX_KPEAX@Z			; AuSharedHandler
-EXTRN	AuInterruptEnd:PROC
-EXTRN	AuInterruptSet:PROC
-EXTRN	printf:PROC
+EXTRN	x64_cli:PROC
+EXTRN	x64_sti:PROC
 pdata	SEGMENT
 $pdata$?AuSharedDeviceInit@@YAXXZ DD imagerel $LN6
 	DD	imagerel $LN6+74
 	DD	imagerel $unwind$?AuSharedDeviceInit@@YAXXZ
-$pdata$AuInstallSharedHandler DD imagerel $LN4
-	DD	imagerel $LN4+58
-	DD	imagerel $unwind$AuInstallSharedHandler
 $pdata$AuCheckSharedDevice DD imagerel $LN7
 	DD	imagerel $LN7+106
 	DD	imagerel $unwind$AuCheckSharedDevice
+$pdata$AuFiredSharedHandler DD imagerel $LN8
+	DD	imagerel $LN8+146
+	DD	imagerel $unwind$AuFiredSharedHandler
 $pdata$?AuSharedHandler@@YAX_KPEAX@Z DD imagerel $LN7
-	DD	imagerel $LN7+125
+	DD	imagerel $LN7+116
 	DD	imagerel $unwind$?AuSharedHandler@@YAX_KPEAX@Z
 pdata	ENDS
 xdata	SEGMENT
 $unwind$?AuSharedDeviceInit@@YAXXZ DD 010401H
 	DD	02204H
-$unwind$AuInstallSharedHandler DD 010801H
-	DD	04208H
 $unwind$AuCheckSharedDevice DD 010c01H
 	DD	0220cH
+$unwind$AuFiredSharedHandler DD 011701H
+	DD	06217H
 $unwind$?AuSharedHandler@@YAX_KPEAX@Z DD 010e01H
 	DD	0620eH
 xdata	ENDS
@@ -64,10 +61,9 @@ $LN7:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 56					; 00000038H
 
-; 80   : 	printf ("SharedIRQHandler called \n");
+; 80   : 	x64_cli();
 
-	lea	rcx, OFFSET FLAT:$SG2996
-	call	printf
+	call	x64_cli
 
 ; 81   : 	/* Call each IRQHandler */
 ; 82   : 	for (int i = 0; i < shdevice_count; i++){
@@ -109,17 +105,97 @@ $LN1@AuSharedHa:
 	jmp	SHORT $LN3@AuSharedHa
 $LN2@AuSharedHa:
 
-; 87   : 
-; 88   : 	AuInterruptEnd(0);
+; 87   : 	x64_sti();
 
-	xor	ecx, ecx
-	call	AuInterruptEnd
+	call	x64_sti
 
+; 88   : 	//AuInterruptEnd(0);
 ; 89   : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
 ?AuSharedHandler@@YAX_KPEAX@Z ENDP			; AuSharedHandler
+_TEXT	ENDS
+; Function compile flags: /Odtpy
+; File e:\xeneva project\xeneva\aurora\aurora\shirq.cpp
+_TEXT	SEGMENT
+i$1 = 32
+device$2 = 40
+irq$ = 64
+v$ = 72
+p$ = 80
+fired$ = 88
+AuFiredSharedHandler PROC
+
+; 102  : void AuFiredSharedHandler (uint8_t irq, size_t v, void* p, shirq_t *fired) {
+
+$LN8:
+	mov	QWORD PTR [rsp+32], r9
+	mov	QWORD PTR [rsp+24], r8
+	mov	QWORD PTR [rsp+16], rdx
+	mov	BYTE PTR [rsp+8], cl
+	sub	rsp, 56					; 00000038H
+
+; 103  : 	for (int i = 0; i < shdevice_count; i++){
+
+	mov	DWORD PTR i$1[rsp], 0
+	jmp	SHORT $LN5@AuFiredSha
+$LN4@AuFiredSha:
+	mov	eax, DWORD PTR i$1[rsp]
+	inc	eax
+	mov	DWORD PTR i$1[rsp], eax
+$LN5@AuFiredSha:
+	movsxd	rax, DWORD PTR i$1[rsp]
+	cmp	rax, QWORD PTR ?shdevice_count@@3_KA	; shdevice_count
+	jae	SHORT $LN3@AuFiredSha
+
+; 104  : 		shirq_t* device = shdevice[i];
+
+	movsxd	rax, DWORD PTR i$1[rsp]
+	lea	rcx, OFFSET FLAT:?shdevice@@3PAPEAU_shirq_@@A ; shdevice
+	mov	rax, QWORD PTR [rcx+rax*8]
+	mov	QWORD PTR device$2[rsp], rax
+
+; 105  : 		if (device == fired)
+
+	mov	rax, QWORD PTR fired$[rsp]
+	cmp	QWORD PTR device$2[rsp], rax
+	jne	SHORT $LN2@AuFiredSha
+
+; 106  : 			continue;
+
+	jmp	SHORT $LN4@AuFiredSha
+$LN2@AuFiredSha:
+
+; 107  : 		if (device->irq == irq && device->IrqHandler != NULL)
+
+	mov	rax, QWORD PTR device$2[rsp]
+	movzx	eax, BYTE PTR [rax]
+	movzx	ecx, BYTE PTR irq$[rsp]
+	cmp	eax, ecx
+	jne	SHORT $LN1@AuFiredSha
+	mov	rax, QWORD PTR device$2[rsp]
+	cmp	QWORD PTR [rax+16], 0
+	je	SHORT $LN1@AuFiredSha
+
+; 108  : 			device->IrqHandler(v,p);
+
+	mov	rdx, QWORD PTR p$[rsp]
+	mov	rcx, QWORD PTR v$[rsp]
+	mov	rax, QWORD PTR device$2[rsp]
+	call	QWORD PTR [rax+16]
+$LN1@AuFiredSha:
+
+; 109  : 	}
+
+	jmp	SHORT $LN4@AuFiredSha
+$LN3@AuFiredSha:
+
+; 110  : }
+
+	add	rsp, 56					; 00000038H
+	ret	0
+AuFiredSharedHandler ENDP
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\shirq.cpp
@@ -194,14 +270,14 @@ _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\shirq.cpp
 _TEXT	SEGMENT
-irq$ = 48
+irq$ = 8
+level$ = 16
 AuInstallSharedHandler PROC
 
-; 95   : void AuInstallSharedHandler (uint8_t irq) {
+; 95   : void AuInstallSharedHandler (uint8_t irq, bool level) {
 
-$LN4:
+	mov	BYTE PTR [rsp+16], dl
 	mov	BYTE PTR [rsp+8], cl
-	sub	rsp, 40					; 00000028H
 
 ; 96   : 	if (SharedHandlerInstalled)
 
@@ -214,14 +290,7 @@ $LN4:
 	jmp	SHORT $LN2@AuInstallS
 $LN1@AuInstallS:
 
-; 98   : 	AuInterruptSet(irq,AuSharedHandler, irq);
-
-	movzx	eax, BYTE PTR irq$[rsp]
-	movzx	r8d, BYTE PTR irq$[rsp]
-	lea	rdx, OFFSET FLAT:?AuSharedHandler@@YAX_KPEAX@Z ; AuSharedHandler
-	mov	ecx, eax
-	call	AuInterruptSet
-
+; 98   : 	//AuInterruptSet(irq,AuSharedHandler, irq, level);
 ; 99   : 	SharedHandlerInstalled = true;
 
 	mov	BYTE PTR ?SharedHandlerInstalled@@3_NA, 1 ; SharedHandlerInstalled
@@ -229,8 +298,7 @@ $LN2@AuInstallS:
 
 ; 100  : }
 
-	add	rsp, 40					; 00000028H
-	ret	0
+	fatret	0
 AuInstallSharedHandler ENDP
 _TEXT	ENDS
 ; Function compile flags: /Odtpy

@@ -30,23 +30,38 @@
 #include "hda.h"
 #include <aurora.h>
 #include <drivers\pci.h>
+#include <drivers\pcie.h>
+#include <hal.h>
 #include <stdio.h>
 #include <arch\x86_64\mmngr\paging.h>
 #include <shirq.h>
 #include <arch\x86_64\mmngr\kheap.h>
 #include <sound.h>
+#include <serial.h>
+#include "codecs\sigmatel.h"
 #include <arch\x86_64\apic.h>
+#include <arch\x86_64\thread.h>
 
 /* global variables */
 hd_audio_t hd_audio;
 uint16_t rirbrp = 0;
 uint16_t corbwp = 0;
+shirq_t *shared_device;
 
-bool first_interrupt = false;
+bool hda_first_interrupt = false;
+bool debug = false;
+void (*codec_initialize_output)(int codec, int nid);
+void (*codec_set_volume) (uint8_t vol, int codec);
 
 void _aud_outl_(int reg, uint32_t value) {
 	 volatile uint32_t* mmio = (uint32_t*)(hd_audio.mmio + reg);
+	 if (debug) {
+		_debug_print_ ("OUTL: value -> %x, mmio -> %x \r\n", value, mmio);
+	 }
 	*mmio = value;
+	if (debug) {
+		_debug_print_ ("OUTL: REREAD: -> %x \r\n", *mmio);
+	}
 }
 
 uint32_t _aud_inl_ (int reg) {
@@ -56,7 +71,13 @@ uint32_t _aud_inl_ (int reg) {
 
 void _aud_outw_ (int reg, uint16_t value) {
 	volatile uint16_t* mmio = (uint16_t*)(hd_audio.mmio + reg);
+	if (debug) {
+		_debug_print_ ("OUTW: value -> %x, mmio -> %x \r\n", value, mmio);
+	 }
 	*mmio = value;
+	if (debug) {
+		_debug_print_ ("OUTW: REREAD: -> %x \r\n", _aud_inw_(reg));
+	}
 }
 
 uint16_t _aud_inw_(int reg) {
@@ -65,8 +86,15 @@ uint16_t _aud_inw_(int reg) {
 }
 
 void _aud_outb_ (int reg, uint8_t value) {
+	
 	 volatile uint8_t* mmio = (uint8_t*)(hd_audio.mmio + reg);
+	 if (debug) {
+		_debug_print_ ("OUTB: value -> %x, mmio -> %x \r\n", value, mmio);
+	 }
 	*mmio = value;
+	if (debug) {
+		_debug_print_ ("OUTB: REREAD: -> %x \r\n", _aud_inb_(reg));
+	}
 }
 
 uint8_t _aud_inb_ (int reg) {
@@ -95,15 +123,14 @@ void setup_corb () {
 		hd_audio.corb_entries = 2;
 		reg |= 0x0;
 	} else {
-		hd_audio.corb_entries = 256;
-		reg |= 0x2;
+		printf ("[driver]: hd-audio no supported corb size found \n");
 	}
 
 	_aud_outb_(CORBSIZE, reg);
 
-
 	/* Set CORB Base Address */
-	corb_base = (uintptr_t)v2p((size_t)hd_audio.corb);
+	corb_base = (uint64_t)v2p((size_t)hd_audio.corb);
+	printf ("CORB Base -> %x \n", corb_base);
 	_aud_outl_(CORBLBASE, corb_base);
 	_aud_outl_(CORBUBASE, corb_base >> 32);
 
@@ -112,8 +139,8 @@ void setup_corb () {
 	_aud_outw_ (CORBRP, 0x0);
 	
 	/* Start DMA engine */
-	_aud_outb_(CORBCTL, 0x1);
-	uint32_t corbctl = _aud_inb_(CORBCTL);
+	//_aud_outb_(CORBCTL, 0x1);
+	uint8_t corbctl = _aud_inb_(CORBCTL);
 	corbctl |= 0x2;
 	_aud_outb_ (CORBCTL, corbctl);
 }
@@ -139,13 +166,15 @@ void setup_rirb() {
 		hd_audio.rirb_entries = 2;
 		reg |= 0x0;
 	}else {
-		hd_audio.rirb_entries = 256;
-		reg |= 0x2;
+		//hd_audio.rirb_entries = 256;
+		//reg |= 0x2;
+		printf ("[driver]: hdaudio no supported rirb size found \n");
 	}
 
 	_aud_outb_(RIRBSIZE,reg);
 	/* Set RIRB Base address */
 	rirb_base = (uint64_t)v2p((size_t)hd_audio.rirb);
+	printf ("rirb base -> %x \n", rirb_base);
 	_aud_outl_(RIRBLBASE, rirb_base);
 	_aud_outl_(RIRBUBASE, rirb_base >> 32);
 	
@@ -153,7 +182,7 @@ void setup_rirb() {
 	_aud_outw_(RINTCNT, hd_audio.rirb_entries / 2);
 	_aud_outb_ (RIRBCTL,0x1);
 	/* Start DMA Engine */
-	uint32_t rirbctl = _aud_inb_ (RIRBCTL);
+	uint8_t rirbctl = _aud_inb_ (RIRBCTL);
 	rirbctl |= 0x2;
 	_aud_outb_ (RIRBCTL,rirbctl);
 
@@ -174,8 +203,8 @@ void corb_write (uint32_t verb) {
 	}
 
 	//! else use standard command transmitting method
-	uint16_t wp = _aud_inw_(CORBWP) & 0xffff;
-	uint16_t rp = _aud_inw_(CORBRP) & 0xffff;
+	uint16_t wp = _aud_inw_(CORBWP) & 0xff;
+	uint16_t rp = _aud_inw_(CORBRP) & 0xff;
     corbwp = 0;
 	corbwp = (rp + 1);
 	corbwp %= hd_audio.corb_entries;
@@ -221,19 +250,69 @@ void rirb_read (uint64_t *response) {
 void hda_reset () {
 	_aud_outl_ (CORBCTL, 0);
 	_aud_outl_ (RIRBCTL, 0);
-	_aud_outw_ (RIRBWP, 0);
+	
+	_aud_outl_ (DPIBLBASE, 0x0);
+	_aud_outl_ (DPIBUBASE, 0x0);
 
-	while ((_aud_inl_ (CORBCTL) & CORBCTL_CORBRUN) ||
-		(_aud_inl_(RIRBCTL) & RIRBCTL_RIRBRUN));
 
-	_aud_outl_(GCTL, 0);
-	while ((_aud_inl_(GCTL) & GCTL_RESET));
+	uint32_t gctl = _aud_inl_(GCTL);
+	_aud_outl_(GCTL, gctl & ~GCTL_RESET);
+	int count = 10000;
+	do {
+		gctl = _aud_inl_(GCTL);
+		if (!(gctl & GCTL_RESET))
+			break;
+		for (int i = 0; 100; i++)
+			;
+	}while (--count);
+
+	if(gctl & GCTL_RESET) {
+		printf ("[driver]: hdaudio unable to put hda in reset \n");
+	}
+
+	for (int i = 0; i < 10000; i++)
+		;
+	gctl = _aud_inl_ (GCTL);
+	_aud_outl_(GCTL, gctl | GCTL_RESET);
+	count = 10000;
+	do {
+		gctl = _aud_inl_(GCTL);
+		if (gctl & GCTL_RESET)
+			break;
+		for (int i = 0; i < 1000; i++)
+			;
+	}while(--count);
+	if (!(gctl & GCTL_RESET)) {
+		printf ("[driver]: device stuck in reset \n");
+	}
+
+	for (int i = 0; i < 100000000; i++)
+		;
+
+	/*for (int i = 0; i < 100000000; i++)
+		;
 
 	_aud_outl_(GCTL, GCTL_RESET);
 	while ((_aud_inl_(GCTL) & GCTL_RESET) == 0);
 
+	for (int i = 0; i < 100000000; i++)
+		;*/
+
+	setup_corb();
+	setup_rirb();
+
 	_aud_outw_(WAKEEN, 0xffff);
-	_aud_outl_(INTCTL, 0xffffffff);  //0x800000ff
+	uint32_t intctl = _aud_inl_(INTCTL);
+	intctl |= (1<<31);
+	intctl |= (1<<30);
+	
+	for (int i = 1; i <= 8; i++)
+		intctl |= (1 << i);
+
+
+	for (int i = 0; i < 100000000; i++)
+		;
+
 }
 
 
@@ -246,68 +325,104 @@ AU_EXTERN AU_EXPORT int AuDriverUnload(){
 }
 
 void hda_handler (size_t v, void* p) {
-	AuDisableInterupts();
-	if (first_interrupt == false)
-		first_interrupt = true;
+//	AuInterruptEnd(0);
+	if (hda_first_interrupt == false)
+		hda_first_interrupt = true;
 
 	uint32_t isr = _aud_inl_(INTSTS);
 	uint8_t sts = _aud_inb_(REG_O0_STS);
-	printf ("HDA Handler called \n");
+	
+	_debug_print_ ("HDA Handler \r\n");
 	if (sts & 0x4) {
-		printf ("HDA Buffer completed \n");
-		//hda_output_stop();
+		_debug_print_ ("HDA Buffer completed \r\n");
+		hda_output_stream_stop();
 	}
-	_aud_outl_(INTSTS, isr);
+   
 	_aud_outb_ (REG_O0_STS,sts);
-	apic_local_eoi();
-	//AuInterruptEnd(1);
-	AuEnableInterrupts();
+	_aud_outl_(INTSTS, isr);
+
+	//AuFiredSharedHandler(hd_audio.irq,v,p, shared_device);
+	AuInterruptEnd(hd_audio.irq);
 }
+
 
 /*
  * AuDriverMain -- Main entry for hda driver
  */
 AU_EXTERN AU_EXPORT int AuDriverMain(){
 
-	pci_device_info pci_dev;
-	int bus, dev, func;
+	hda_first_interrupt = false;
 
-	if (!pci_find_device_class (0x04, 0x03, &pci_dev, &bus, &dev, &func)){
+	uint32_t device = pci_express_scan_class (0x04, 0x03);
+	if (device == 0xFFFFFFFF){
 		printf ("[driver]: intel hda not found\n");
 		return 1;
 	}
+	
 
-	pci_enable_bus_master(bus,dev,func);
-	pci_enable_interrupt(bus,dev,func);
+	/*uint8_t tcsel = 0;
+	read_config_8(0,bus,dev,func,0x44,&tcsel);
+	write_config_8(0,bus,dev,func,0x44,(tcsel & 0xf8));*/
+
+	codec_initialize_output = NULL;
+	codec_set_volume = NULL;
+
+	//pci_enable_bus_master(device);
+	//pci_enable_interrupts(device);
 
 
-	printf ("[drivers]: hda interrupt line -> %d \n", pci_dev.device.nonBridge.interruptLine);
-	shirq_t *shared_device = (shirq_t*)malloc(sizeof(shirq_t));
-	shared_device->irq = pci_dev.device.nonBridge.interruptLine;
-	shared_device->device_id = pci_dev.device.deviceID;
-	shared_device->vendor_id = pci_dev.device.vendorID;
+	shared_device = (shirq_t*)malloc(sizeof(shirq_t));
+	shared_device->irq = pci_express_read(device, PCI_INTERRUPT_LINE);
+	shared_device->device_id = pci_express_read(device,PCI_DEVICE_ID);
+	shared_device->vendor_id = pci_express_read(device,PCI_VENDOR_ID);
 	shared_device->IrqHandler = hda_handler;
 	AuSharedDeviceRegister(shared_device);
 
-	if (!AuCheckSharedDevice(shared_device->irq,pci_dev.device.deviceID))
-		AuInterruptSet(shared_device->irq, hda_handler,shared_device->irq);
-	else
-		AuInstallSharedHandler(shared_device->irq);
+	hd_audio.irq = shared_device->irq;
 
-	//AuInterruptSet(pci_dev.device.nonBridge.interruptLine, hda_handler,pci_dev.device.nonBridge.interruptLine); 
+	
+	if (hd_audio.irq < 255)
+		AuInterruptSet(hd_audio.irq, hda_handler,hd_audio.irq, false);
 
-	uintptr_t mmio = pci_dev.device.nonBridge.baseAddress[0] & ~3;
-	hd_audio.mmio = (size_t)AuMapMMIO(mmio,8);
+
+	
+
+	uintptr_t mmio = pci_express_read(device, PCI_BAR0);
+	printf ("HDA base address -> %x , irq -> %d\n", mmio, hd_audio.irq);
+	hd_audio.mmio = (uint64_t)AuMapMMIO(mmio,2);
+	/*uint64_t phys = (uint64_t)AuPmmngrAlloc();
+	uint64_t dma_buffer_virt = (uint64_t)AuMapMMIO(phys,1);
+	hd_audio.dma_buffer_phys = (uint64_t)phys;*/
 	hd_audio.corb = (uint32_t*)p2v((size_t)AuPmmngrAlloc());
 	hd_audio.rirb = (uint64_t*)p2v((size_t)AuPmmngrAlloc());
+	memset((void*)hd_audio.corb, 0, 4096);
+	memset((void*)hd_audio.rirb, 0, 4096);
+	
 
+
+	uint64_t pos = 0xFFFFF00000100000;
+	for (int i = 0; i < (BDL_SIZE*BUFFER_SIZE/ 4096) + 1; i++) {
+		AuMapPage ((uint64_t)AuPmmngrAlloc(),pos + i * 4096, 0);
+	}
+
+	printf ("[drivers]: hda interrupt line -> %d \n", shared_device->irq);
 	/* Avoid immediate use */
 	hd_audio.immediate_use = false; 
-	hd_audio.output_nid = 0;
+	hd_audio.output_ptr = 0;
 	
-	hda_reset();
-	setup_corb();
-	setup_rirb();
+	
+
+	 uint16_t gcap = _aud_inw_(GCAP);
+	 uint16_t num_oss = HDA_GCAP_OSS(gcap);
+	 uint16_t num_iss = HDA_GCAP_ISS(gcap);
+
+	 hd_audio.num_iss = num_iss;
+	 hd_audio.num_oss = num_oss;
+	 
+	 hda_reset();
+
+	 printf ("Reset completed \n");
+	
 
 	uint16_t statests = _aud_inw_ (STATESTS);
 	for (int i = 0; i < 15; i++) {
@@ -319,13 +434,13 @@ AU_EXTERN AU_EXPORT int AuDriverMain(){
 		}
 	} 
 
-	widget_init_output(hd_audio.output_codec_id, hd_audio.output_nid);
+	widget_init_output();
 	hda_init_output_stream();
+	
 	hda_set_volume(255);
 
 	sound_t *sound = (sound_t*)malloc(sizeof(sound_t));
 	strcpy(sound->name, "intel hd audio");
-	sound->write = 0;
 	sound->read = 0;
 	sound->start_output_stream = hda_output_stream_start;
 	sound->stop_output_stream = hda_output_stream_stop;
@@ -333,7 +448,16 @@ AU_EXTERN AU_EXPORT int AuDriverMain(){
 	AuSoundRegisterDevice(sound);
 
 
-	printf ("[driver]: intel hda audio initialized vendor: %x device: %x\n", pci_dev.device.vendorID, pci_dev.device.deviceID);
+	printf ("[driver]: intel hda audio initialized vendor: %x device: %x\n", shared_device->vendor_id, shared_device->device_id);
+	pcie_print_capabilities(device);
+
+	/*AuEnableInterrupts();
+	for(;;){
+		if(hda_first_interrupt)
+			break;
+	}
+
+	AuDisableInterupts();*/
 	return 0;
 }
 
@@ -345,36 +469,79 @@ AU_EXTERN AU_EXPORT int AuDriverMain(){
  * @param amp_gain -- amp gain step
  */
 void hda_set_output_nid(uint16_t nid, uint8_t codec, uint32_t amp_gain) {
-	if (hd_audio.output_nid == 0) {
-		hd_audio.output_nid = nid;
-		hd_audio.output_codec_id = codec;
-		hd_audio.output_amp_gain_step = amp_gain;
+
+	if(hd_audio.output[hd_audio.output_ptr] == NULL){
+		hd_output_t *output = (hd_output_t*)malloc(sizeof(hd_output_t));
+		output->output_codec_id = codec;
+		output->output_nid = nid;
+		output->output_amp_gain_step = amp_gain;
+		hd_audio.output[hd_audio.output_ptr] = output;
+		hd_audio.output_ptr++;
 	}
 }
+
+void widget_init_output () {
+	int codec, nid = 0;
+	if (codec_initialize_output) {
+		codec_initialize_output(hd_audio.output[0]->output_codec_id,hd_audio.output[0]->output_nid);
+		return;
+	}
+
+	for (int i = 0; i < hd_audio.output_ptr; i++) {
+		codec = hd_audio.output[i]->output_codec_id;
+		nid = hd_audio.output[i]->output_nid;
+		/* first output channel is 0x10 */
+		codec_query(codec, nid,VERB_SET_STREAM_CHANNEL | 0x10);
+		uint16_t format =  BITS_16 | SR_48_KHZ | 2 - 1;
+		codec_query(codec, nid,VERB_SET_FORMAT | format);
+		//codec_query(codec, nid,VERB_SET_PIN_CONTROL | (1<<6));
+		codec_query(codec, nid,VERB_SET_POWER_STATE | 0x0);
+		//_aud_outw_(REG_O0_FMT, format);
+	}
+}
+
 
 /*
  * hda_set_volume -- sets volume to output codec
  * @param volume -- volume level 
  */
 void hda_set_volume (uint8_t volume) {
+	if (codec_set_volume) {
+		codec_set_volume(volume,hd_audio.output[0]->output_codec_id);
+		return;
+	}
+	
 	int meta = 0xb000;
-	if (volume == 0)
-		volume = 0x80;
-	else
-		volume = volume * hd_audio.output_amp_gain_step / 255;
+	int codec, nid = 0;
 
-	codec_query(hd_audio.output_codec_id, hd_audio.output_nid, VERB_SET_AMP_GAIN_MUTE | meta | volume);
+	for (int i = 0; i < hd_audio.output_ptr; i++) {
+		codec = hd_audio.output[i]->output_codec_id;
+		nid = hd_audio.output[i]->output_nid;
+		if (volume == 0)
+			volume = 0x80;
+		else
+			volume = volume * hd_audio.output[i]->output_amp_gain_step / 255;
+		_debug_print_ ("AMP Gain %d \r\n",hd_audio.output[i]->output_amp_gain_step );
+		codec_query(codec,nid, VERB_SET_AMP_GAIN_MUTE | (1<<15) | (1<<13) | (1<<12) | volume);
+	}
+	
 }
+
 
 
 /*
  * hda_output_stream_start -- starts the output stream
  */
 void hda_output_stream_start () {
-	uint32_t value = _aud_inl_(REG_O0_CTLL);
-	value |= 0x4;
-	value |= 0x2;
-    _aud_outw_(REG_O0_CTLL,value);
+
+	uint32_t ssync = _aud_inl_ (SSYNC);
+	ssync &= ~(1<<4);
+	_aud_outl_(SSYNC, ssync);
+
+	uint8_t value = _aud_inb_(REG_O0_CTLL);
+	value |= HDAC_SDCTL_IOCE | HDAC_SDCTL_FEIE | HDAC_SDCTL_DEIE | HDAC_SDCTL_RUN;
+	//value |= (1<<1);
+    _aud_outb_(REG_O0_CTLL,value);
 }
 
 /*
@@ -382,6 +549,26 @@ void hda_output_stream_start () {
  */
 void hda_output_stream_stop() {
 	uint32_t value = _aud_inl_(REG_O0_CTLL);
-	value &= ~0x2;
+	value &= ~(1<<1);
     _aud_outw_(REG_O0_CTLL,value);
+}
+
+/*
+ * hda_set_codec_init_func -- sets function pointer to each codecs
+ * initialisation code
+ */
+void hda_set_codec_init_func (void (*init_func)(int codec, int nid)) {
+	if (codec_initialize_output)
+		return;
+	codec_initialize_output = init_func;
+}
+
+/*
+ * hda_set_volume_func -- sets function pointer to each codecs volume 
+ * function
+ */
+void hda_set_volume_func (void (*set_vol) (uint8_t volume, int codec)) {
+	if (codec_set_volume)
+		return;
+	codec_set_volume = set_vol;
 }

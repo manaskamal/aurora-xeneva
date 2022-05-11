@@ -55,7 +55,7 @@ EXTRN	?sztoa@@YAPEAD_KPEADH@Z:PROC			; sztoa
 EXTRN	get_current_thread:PROC
 EXTRN	?thread_iterate_ready_list@@YAPEAU_thread_@@G@Z:PROC ; thread_iterate_ready_list
 EXTRN	?thread_iterate_block_list@@YAPEAU_thread_@@H@Z:PROC ; thread_iterate_block_list
-EXTRN	?_debug_print_@@YAXPEADZZ:PROC			; _debug_print_
+EXTRN	_debug_print_:PROC
 pdata	SEGMENT
 $pdata$?ttype_create@@YAHPEAH0@Z DD imagerel $LN3
 	DD	imagerel $LN3+1426
@@ -815,7 +815,7 @@ $LN3:
 
 	lea	rdx, QWORD PTR mname$[rsp]
 	lea	rcx, OFFSET FLAT:$SG3570
-	call	?_debug_print_@@YAXPEADZZ		; _debug_print_
+	call	_debug_print_
 
 ; 268  : 
 ; 269  : 	char sname[10];
@@ -929,7 +929,7 @@ $LN3:
 
 	lea	rdx, QWORD PTR sname$[rsp]
 	lea	rcx, OFFSET FLAT:$SG3577
-	call	?_debug_print_@@YAXPEADZZ		; _debug_print_
+	call	_debug_print_
 
 ; 291  : 	
 ; 292  : 	/*for (int i = 0; i < 32; i++) {
@@ -1183,7 +1183,7 @@ $LN3:
 	mov	r8, rcx
 	mov	rdx, rax
 	lea	rcx, OFFSET FLAT:$SG3580
-	call	?_debug_print_@@YAXPEADZZ		; _debug_print_
+	call	_debug_print_
 
 ; 343  : 
 ; 344  : 	ttype_insert (tty);

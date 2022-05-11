@@ -33,7 +33,7 @@ EXTRN	AuPmmngrAlloc:PROC
 EXTRN	AuMapPage:PROC
 EXTRN	AuGetFreePage:PROC
 EXTRN	AuFreePages:PROC
-EXTRN	?_debug_print_@@YAXPEADZZ:PROC			; _debug_print_
+EXTRN	_debug_print_:PROC
 pdata	SEGMENT
 $pdata$?AuHeapInitialize@@YAXXZ DD imagerel $LN3
 	DD	imagerel $LN3+173
@@ -926,7 +926,7 @@ $LN6:
 
 	mov	rdx, QWORD PTR page$[rsp]
 	lea	rcx, OFFSET FLAT:$SG3175
-	call	?_debug_print_@@YAXPEADZZ		; _debug_print_
+	call	_debug_print_
 
 ; 259  : 	for (size_t i = 0; i < pages; i++) {
 

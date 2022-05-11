@@ -173,6 +173,7 @@ void sys_write_file (int fd, uint64* buffer, FILE *ufile) {
 	file.ioquery  = 0;
 
 	vfs_node_t *node = get_current_thread()->fd[fd];
+	printf ("NODE name -> %s \n", node->filename);
 	if (node == NULL) {
 		return;
 	}

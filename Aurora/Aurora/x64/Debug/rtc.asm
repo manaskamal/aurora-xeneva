@@ -46,7 +46,7 @@ bcd	DB	01H DUP (?)
 _BSS	ENDS
 pdata	SEGMENT
 $pdata$?AuInitializeRTC@@YAXXZ DD imagerel $LN5
-	DD	imagerel $LN5+251
+	DD	imagerel $LN5+254
 	DD	imagerel $unwind$?AuInitializeRTC@@YAXXZ
 $pdata$?AuGetRTCRegister@@YAEH@Z DD imagerel $LN3
 	DD	imagerel $LN3+36
@@ -685,8 +685,9 @@ $LN4@AuInitiali:
 
 ; 135  : 
 ; 136  : 	//!register interrupt
-; 137  : 	AuInterruptSet(8,AuRTCClockUpdate, 8);
+; 137  : 	AuInterruptSet(8,AuRTCClockUpdate, 8, false);
 
+	xor	r9d, r9d
 	mov	r8b, 8
 	lea	rdx, OFFSET FLAT:?AuRTCClockUpdate@@YAX_KPEAX@Z ; AuRTCClockUpdate
 	mov	ecx, 8

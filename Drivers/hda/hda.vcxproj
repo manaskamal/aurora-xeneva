@@ -141,11 +141,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="codec.cpp" />
+    <ClCompile Include="codecs\sigmatel.cpp" />
     <ClCompile Include="hda.cpp" />
     <ClCompile Include="stream.cpp" />
     <ClCompile Include="widget.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="codecs\sigmatel.h" />
     <ClInclude Include="hda.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

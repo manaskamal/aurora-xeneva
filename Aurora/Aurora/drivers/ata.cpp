@@ -496,7 +496,7 @@ void  ata_probe ()
 void ata_initialize (){
 
 	x64_cli();
-	pci_device_info info;
+/*	pci_device_info info;
 	int bus; int dev; int func;
 	if (!pci_find_device_class (0x01,0x01,&info,&bus,&dev,&func)) {
 		debug_print ("******************************************\n");
@@ -506,11 +506,11 @@ void ata_initialize (){
 		debug_print ("******************************************\n");
 		for(;;);
 	}
-	pci_enable_bus_master (bus,dev,func);
+	pci_enable_bus_master (bus,dev,func);*/
 	
-	AuInterruptSet(35, ide_primary_irq, 14);
+	AuInterruptSet(35, ide_primary_irq, 14, false);
 
-	AuInterruptSet(36, ide_secondary_irq,15);
+	AuInterruptSet(36, ide_secondary_irq,15, false);
 
 	ata_probe ();
 

@@ -10,15 +10,17 @@
  */
 
 #include <arch\x86_64\ioapic.h>
+#include <arch\x86_64\mmngr\paging.h>
 
 extern void debug_print(const char *text, ...);
+
+void* io_apic_base;
 
 //! Read I/O Apic register
 static uint32_t read_ioapic_register(void* apic_base, const uint8_t offset)
 {
-	volatile uint32_t* ioregsel = reinterpret_cast<volatile uint32_t*>(apic_base);
-	volatile uint32_t* ioregwin = raw_offset<volatile uint32_t*>(apic_base, 0x10);
-
+	volatile uint32_t* ioregsel = reinterpret_cast<volatile uint32_t*>(io_apic_base);
+	volatile uint32_t* ioregwin = raw_offset<volatile uint32_t*>(io_apic_base, 0x10);
 	*ioregsel = offset;
 	return *ioregwin;
 }
@@ -26,8 +28,8 @@ static uint32_t read_ioapic_register(void* apic_base, const uint8_t offset)
 //! Write I/O Apic register
 static void write_ioapic_register(void* apic_base, const uint8_t offset, const uint32_t val)
 {
-	volatile uint32_t* ioregsel = reinterpret_cast<volatile uint32_t*>(apic_base);
-	volatile uint32_t* ioregwin = raw_offset<volatile uint32_t*>(apic_base, 0x10);
+	volatile uint32_t* ioregsel = reinterpret_cast<volatile uint32_t*>(io_apic_base);
+	volatile uint32_t* ioregwin = raw_offset<volatile uint32_t*>(io_apic_base, 0x10);
 	*ioregsel = offset;
 	*ioregwin = val;
 }
@@ -43,24 +45,23 @@ static void write_ioapic_register(void* apic_base, const uint8_t offset, const u
  *  @param irq    -- IRQ number to remap to vector
  *
  */
-void ioapic_register_irq(size_t vector, void (*fn)(size_t, void* p),uint8_t irq)
+void ioapic_register_irq(size_t vector, void (*fn)(size_t, void* p),uint8_t irq, bool level)
 {
 	uint32_t reg = IOAPIC_REG_RED_TBL_BASE + irq* 2;
-	write_ioapic_register((void*)0xfec00000, reg + 1, read_apic_register(0x02) << 24);
-	uint32_t low = read_ioapic_register ((void*)0xfec00000,reg);
+	write_ioapic_register((void*)io_apic_base, reg + 1, read_apic_register(0x02) << 24);
+	uint32_t low = read_ioapic_register ((void*)io_apic_base,reg);
 	//!unmask the irq
 	low &= ~(1<<16);
 	//!set to physical delivery mode
-	low &= ~(1<<11);
-	low &= ~0x700;
-
-	low &= ~0xff;
-	low |= vector + 32;
-
-	low |= (0<<13);
 	low |= (0<<15);
-
-	write_ioapic_register((void*)0xfec00000, reg, low);   //vector + 32
+	if (level)
+		low |= (1<<15);
+	else
+		low |= (0<<15);
+	low |= (0<<13);
+	low |= (0<<11);
+	low |= vector + 32;
+	write_ioapic_register(io_apic_base, reg, low);   //vector + 32
     setvect(vector + 32, fn);
 }
 
@@ -87,7 +88,7 @@ void ioapic_redirect (uint8_t irq, uint32_t gsi, uint16_t flags, uint8_t apic) {
 
 void ioapic_mask_irq (uint8_t irq, bool value){
 	uint32_t reg = IOAPIC_REG_RED_TBL_BASE + irq* 2;
-	write_ioapic_register((void*)0xfec00000, reg + 1, read_apic_register(0x02) << 24);
+	write_ioapic_register((void*)io_apic_base, reg + 1, read_apic_register(0x02) << 24);
 	uint32_t low = read_ioapic_register ((void*)0xfec00000,reg);
 	//!unmask the irq
 	if (value)
@@ -95,18 +96,22 @@ void ioapic_mask_irq (uint8_t irq, bool value){
 	else
 		low &= ~(1<<16); //unmask
 
-	write_ioapic_register((void*)0xfec00000, reg, low);   //vector + 32
+	write_ioapic_register((void*)io_apic_base, reg, low);   //vector + 32
 }
 
 //! I/O Apic Initialization
 void ioapic_init(void* address)
 {
-	uint32_t ver = read_ioapic_register(address, IOAPIC_REG_VER);
+	uint64_t ioapic_phys = (uint64_t)address;
+	io_apic_base = (void*)AuMapMMIO(ioapic_phys,1);
+
+	uint32_t ver = read_ioapic_register(io_apic_base, IOAPIC_REG_VER);
 	uint32_t intr_num = (ver >> 16) & 0xFF;
-	debug_print ("IOAPIC INTR NUM -> %d\n", intr_num);
 	for(size_t n = 0; n <= intr_num; ++n)
 	{
 		uint32_t reg = IOAPIC_REG_RED_TBL_BASE + n * 2;
-		write_ioapic_register(address, reg, read_ioapic_register(address, reg) |(1<<16));
+		uint32_t val = read_ioapic_register(address, reg);
+		write_ioapic_register(io_apic_base, reg, val |(1<<16));
 	}
+
 }

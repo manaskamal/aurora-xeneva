@@ -107,7 +107,7 @@ void _AuMain (KERNEL_BOOT_INFO *info) {
 
 	AuInitializeSerial();
 	AuInitializeBasicAcpi (info->acpi_table_pointer);
-
+	AuSharedDeviceInit();
 	ahci_initialize();
 	AuVFSInit();
 	
@@ -119,7 +119,7 @@ void _AuMain (KERNEL_BOOT_INFO *info) {
 	AuInitializeMouse();
 
 	AuNetInitialize();
-	AuSharedDeviceInit();
+	
 	
 	//================================================
 	//! Initialize the scheduler here
@@ -141,16 +141,22 @@ void _AuMain (KERNEL_BOOT_INFO *info) {
 	/*Initialize other processor */
 	AuInitializeCpu(AuGetNumCPU());
 
+	
 	/*Clear the lower half for user space */
 	AuPagingClearLow();
 
-	AuARPRequestMAC();
-
+	//AuARPRequestMAC();
+	x64_sti();
+	vfs_node_t file = fat32_open(NULL, "/zara.wav");
+	printf ("file.size -> %d \n", file.size);
+	uint64_t* buffer = (uint64_t*)p2v((size_t)AuPmmngrAlloc());
+	fat32_read(&file, (uint64_t*)v2p((size_t)buffer));
+	AuSoundWrite(NULL, buffer, 4096);
+	AuSoundOutputStart();
+	for(;;);
 #ifdef ARCH_X64
 
-	
 	printf ("Scheduler Initialized\n");
-
 	int au_status = 0;
 
 	/* start the sound service manager at id 1 */

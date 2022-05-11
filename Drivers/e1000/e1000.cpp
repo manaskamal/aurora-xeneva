@@ -31,12 +31,14 @@
 #include <stdio.h>
 #include <aurora.h>
 #include <drivers\pci.h>
+#include <drivers\pcie.h>
 #include <arch\x86_64\mmngr\kheap.h>
 #include <hal.h>
 #include <fs\vfs.h>
 #include <net\aunet.h>
 #include <shirq.h>
 #include <arch\x86_64\thread.h>
+#include <serial.h>
 
 typedef struct _e1000_nic_ {
 	uint64_t mmio_addr;
@@ -55,6 +57,7 @@ typedef struct _e1000_nic_ {
 }e1000_nic_dev;
 
 e1000_nic_dev *e1000_nic;
+shirq_t *shared_device;
 bool first_interrupt = false;
 
 #define INTS (ICR_LSC | ICR_RXO | ICR_RXT0 | ICR_TXQE | ICR_TXDW | ICR_ACK | ICR_RXDMT0 | ICR_SRPD)
@@ -108,7 +111,7 @@ void e1000_write_mac(e1000_nic_dev *device) {
 }
 
 void e1000_read_mac(e1000_nic_dev *device) {
-	if (device->has_eeprom) {
+	/*if (device->has_eeprom) {
 		uint32_t t;
 		t = e1000_eeprom_read(device, 0);
 		device->mac[0] = t & 0xFF;
@@ -119,7 +122,7 @@ void e1000_read_mac(e1000_nic_dev *device) {
 		t = e1000_eeprom_read(device, 2);
 		device->mac[4] = t & 0xFF;
 		device->mac[5] = t >> 8;
-	}else {
+	}else {*/
 		uint32_t mac_addr_low = *(uint32_t*)(device->mmio_addr + E1000_REG_RXADDR);
 		uint32_t mac_addr_high = *(uint32_t*)(device->mmio_addr + E1000_REG_RXADDR + 4);
 		device->mac[0] = (mac_addr_low >> 0) & 0xFF;
@@ -128,7 +131,7 @@ void e1000_read_mac(e1000_nic_dev *device) {
 		device->mac[3] = (mac_addr_low >> 24) & 0xFF;
 		device->mac[4] = (mac_addr_high >> 0) & 0xFF;
 		device->mac[5] = (mac_addr_high >> 8) & 0xFF;
-	}
+	//}
 }
 
 
@@ -137,14 +140,19 @@ void e1000_handler (size_t v, void* p) {
 	if (!first_interrupt)
 		first_interrupt = true;
 
+	_debug_print_ ("e1000 interrupt -> %d \r\n", e1000_nic->irq);
 	if (status & ICR_LSC) {
 		e1000_nic->link_status = (e1000_read_command(e1000_nic, E1000_REG_STATUS) & (1<<1));
-		printf ("e1000: Link status %s\n", (e1000_nic->link_status ? "up" : "down"));
+		printf ("e1000: Link status %s \r\n", (e1000_nic->link_status ? "up" : "down"));
 	}
 
-	
+	if (status &ICR_RXT0)
+		_debug_print_ ("e1000: received packet \r\n");
 
 	e1000_write_command(e1000_nic, E1000_REG_ICR, status);
+
+	//AuFiredSharedHandler(e1000_nic->irq,v,p, shared_device);
+	AuInterruptEnd(e1000_nic->irq);
 }
 
 	
@@ -241,16 +249,16 @@ AU_EXTERN AU_EXPORT int AuDriverUnload() {
 
 
 void e1000_thread() {
-	int head = e1000_read_command(e1000_nic, E1000_REG_RXDESCHEAD);
+	//int head = e1000_read_command(e1000_nic, E1000_REG_RXDESCHEAD);
 	while(1){
-		if (head == e1000_nic->rx_index) {
+		/*if (head == e1000_nic->rx_index) {
 			head = e1000_read_command(e1000_nic, E1000_REG_RXDESCHEAD);
 		}
 
 		if (head != e1000_nic->rx_index){
 			//printf ("[network]: packet received \n");
 			e1000_nic->rx_index = head;
-		}
+		}*/
 		sleep_thread(get_current_thread(),1000);
 		force_sched();
 	}
@@ -261,16 +269,17 @@ void e1000_thread() {
 AU_EXTERN AU_EXPORT int AuDriverMain() {
 	printf ("[driver]: Initializing e1000 network driver \n");
 	int bus, dev_, func = 0;
-	pci_device_info dev; 
-	if (!pci_find_device_class (0x02,0x00, &dev,&bus, &dev_, &func)) {
+	
+	uint32_t device = pci_express_scan_class (0x02,0x00);
+	if (device == 0xFFFFFFFF){
 		printf ("[driver]: e1000 not found\n");
 		return 1;
 	}
 
-	
 	e1000_nic_dev *e1000_dev = (e1000_nic_dev*)malloc(sizeof(e1000_nic_dev));
 
-	pci_enable_bus_master(bus,dev_,func);
+	//pci_enable_bus_master(device);
+	//pci_enable_interrupts(device);
 
 	e1000_nic = e1000_dev;
 	e1000_dev->rx_phys = (uint64_t)p2v((size_t)AuPmmngrAllocBlocks(2));
@@ -296,7 +305,8 @@ AU_EXTERN AU_EXPORT int AuDriverMain() {
 		e1000_dev->tx[i].cmd = (1<<0);
 	}
 
-	uint64_t mmio = dev.device.nonBridge.baseAddress[0];
+	uint64_t mmio = pci_express_read(device, PCI_BAR0);//dev.device.nonBridge.baseAddress[0];
+	printf ("MMIO E1000 -> %x \n", mmio);
 	e1000_dev->mmio_addr = (uint64_t)AuMapMMIO(mmio,8);
 
 	e1000_eeprom_detect(e1000_dev);
@@ -309,22 +319,22 @@ AU_EXTERN AU_EXPORT int AuDriverMain() {
 
 	e1000_write_mac(e1000_dev);
 
-	e1000_dev->irq = dev.device.nonBridge.interruptLine;
+	e1000_dev->irq = pci_express_read(device,PCI_INTERRUPT_LINE);//dev.device.nonBridge.interruptLine;
 
 	if (e1000_dev->irq == 0xFF)
 		return 1;
 
-	shirq_t *shared_device = (shirq_t*)malloc(sizeof(shirq_t));
+	/*shared_device = (shirq_t*)malloc(sizeof(shirq_t));
 	shared_device->irq = e1000_dev->irq;
 	shared_device->device_id = dev.device.deviceID;
 	shared_device->vendor_id = dev.device.vendorID;
 	shared_device->IrqHandler = e1000_handler;
-	AuSharedDeviceRegister(shared_device);
+	AuSharedDeviceRegister(shared_device);*/
 
-	if (!AuCheckSharedDevice(e1000_dev->irq,dev.device.deviceID))
-		AuInterruptSet(e1000_dev->irq, e1000_handler,e1000_dev->irq);
-	else
-		AuInstallSharedHandler(e1000_dev->irq);
+	if (e1000_dev->irq < 255)
+		AuInterruptSet(e1000_dev->irq, e1000_handler,e1000_dev->irq, false);
+	//else
+	//	AuInstallSharedHandler(e1000_dev->irq, true);*/
 
 
 	e1000_disable_interrupt(e1000_dev);
@@ -406,15 +416,16 @@ AU_EXTERN AU_EXPORT int AuDriverMain() {
 	AuNetAddAdapter(file,net);
 
 
-	AuEnableInterrupts();
-
 	thread_t *nic_thread = create_kthread(e1000_thread,(uint64_t)p2v((uint64_t)AuPmmngrAlloc() + 4096),(uint64_t)AuGetRootPageTable(),
 		"e1000_thr",1);
+	pcie_print_capabilities(device);
+	
+	/*AuEnableInterrupts();
 	for(;;) {
 		if (first_interrupt)
 			break;
 	}
-	AuDisableInterupts();
+	AuDisableInterupts();*/
 	printf ("[driver]: e1000 initialized \n");
 	return 0;
 }

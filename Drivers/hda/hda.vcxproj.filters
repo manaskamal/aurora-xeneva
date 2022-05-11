@@ -5,8 +5,19 @@
     <ClCompile Include="codec.cpp" />
     <ClCompile Include="widget.cpp" />
     <ClCompile Include="stream.cpp" />
+    <ClCompile Include="codecs\sigmatel.cpp">
+      <Filter>codecs</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="hda.h" />
+    <ClInclude Include="codecs\sigmatel.h">
+      <Filter>codecs</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="codecs">
+      <UniqueIdentifier>{7573310c-2778-472d-9f8b-a885802340a2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>

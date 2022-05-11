@@ -6,8 +6,10 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 CONST	SEGMENT
-$SG3802	DB	'dev', 00H
-$SG3820	DB	'/', 00H
+$SG3805	DB	'dev', 00H
+$SG3823	DB	'/', 00H
+	ORG $+2
+$SG3848	DB	'NODE name -> %s ', 0aH, 00H
 CONST	ENDS
 PUBLIC	?sys_open_file@@YAHPEADPEAU_file_@@@Z		; sys_open_file
 PUBLIC	?sys_read_file@@YAXHPEAEPEAU_file_@@@Z		; sys_read_file
@@ -22,6 +24,7 @@ EXTRN	readfs:PROC
 EXTRN	writefs:PROC
 EXTRN	readfs_block:PROC
 EXTRN	x64_cli:PROC
+EXTRN	printf:PROC
 EXTRN	AuPmmngrAlloc:PROC
 EXTRN	AuPmmngrFree:PROC
 EXTRN	p2v:PROC
@@ -36,7 +39,7 @@ $pdata$?sys_read_file@@YAXHPEAEPEAU_file_@@@Z DD imagerel $LN12
 	DD	imagerel $LN12+363
 	DD	imagerel $unwind$?sys_read_file@@YAXHPEAEPEAU_file_@@@Z
 $pdata$?sys_write_file@@YAXHPEA_KPEAU_file_@@@Z DD imagerel $LN6
-	DD	imagerel $LN6+289
+	DD	imagerel $LN6+309
 	DD	imagerel $unwind$?sys_write_file@@YAXHPEA_KPEAU_file_@@@Z
 pdata	ENDS
 xdata	SEGMENT
@@ -135,25 +138,32 @@ $LN6:
 	mov	rax, QWORD PTR [rax+rcx*8+272]
 	mov	QWORD PTR node$[rsp], rax
 
-; 176  : 	if (node == NULL) {
+; 176  : 	printf ("NODE name -> %s \n", node->filename);
+
+	mov	rax, QWORD PTR node$[rsp]
+	mov	rdx, rax
+	lea	rcx, OFFSET FLAT:$SG3848
+	call	printf
+
+; 177  : 	if (node == NULL) {
 
 	cmp	QWORD PTR node$[rsp], 0
 	jne	SHORT $LN3@sys_write_
 
-; 177  : 		return;
+; 178  : 		return;
 
 	jmp	SHORT $LN4@sys_write_
 $LN3@sys_write_:
 
-; 178  : 	}
-; 179  : 
-; 180  : 	if (ufile->flags) {
+; 179  : 	}
+; 180  : 
+; 181  : 	if (ufile->flags) {
 
 	mov	rax, QWORD PTR ufile$[rsp]
 	cmp	DWORD PTR [rax+20], 0
 	je	SHORT $LN2@sys_write_
 
-; 181  : 		writefs(node, &file,buffer,file.size);
+; 182  : 		writefs(node, &file,buffer,file.size);
 
 	mov	r9d, DWORD PTR file$[rsp+32]
 	mov	r8, QWORD PTR buffer$[rsp]
@@ -161,12 +171,12 @@ $LN3@sys_write_:
 	mov	rcx, QWORD PTR node$[rsp]
 	call	writefs
 
-; 182  : 	}else {
+; 183  : 	}else {
 
 	jmp	SHORT $LN1@sys_write_
 $LN2@sys_write_:
 
-; 183  : 		writefs(node, node, buffer,file.size);
+; 184  : 		writefs(node, node, buffer,file.size);
 
 	mov	r9d, DWORD PTR file$[rsp+32]
 	mov	r8, QWORD PTR buffer$[rsp]
@@ -176,8 +186,8 @@ $LN2@sys_write_:
 $LN1@sys_write_:
 $LN4@sys_write_:
 
-; 184  : 	}
-; 185  : }
+; 185  : 	}
+; 186  : }
 
 	add	rsp, 168				; 000000a8H
 	ret	0
@@ -228,7 +238,7 @@ $LN12:
 
 ; 126  : 		node = vfs_finddir("/");
 
-	lea	rcx, OFFSET FLAT:$SG3820
+	lea	rcx, OFFSET FLAT:$SG3823
 	call	?vfs_finddir@@YAPEAU_vfs_node_@@PEAD@Z	; vfs_finddir
 	mov	QWORD PTR node$[rsp], rax
 
@@ -551,7 +561,7 @@ $LN9@sys_open_f:
 ; 80   : 
 ; 81   : 	if (!(strcmp(pathname, "dev") == 0)) {
 
-	lea	rdx, OFFSET FLAT:$SG3802
+	lea	rdx, OFFSET FLAT:$SG3805
 	lea	rcx, QWORD PTR pathname$[rsp]
 	call	strcmp
 	test	eax, eax

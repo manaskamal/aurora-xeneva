@@ -10,18 +10,16 @@ _BSS	SEGMENT
 ?sata_drive_port@@3PEAU_hba_port_@@EA DQ 01H DUP (?)	; sata_drive_port
 _BSS	ENDS
 CONST	SEGMENT
-$SG3942	DB	'[AHCI]:Port Hung', 0aH, 00H
-	ORG $+6
-$SG3948	DB	'[AHCI]: Port error ', 0dH, 0aH, 00H
+$SG3634	DB	'[AHCI]: Port error ', 0dH, 0aH, 00H
 	ORG $+2
-$SG3975	DB	'[AHCI]:Port Hung', 0aH, 00H
+$SG3661	DB	'[AHCI]:Port Hung', 0aH, 00H
 	ORG $+6
-$SG3981	DB	'[AHCI]: Port error ', 0dH, 0aH, 00H
+$SG3667	DB	'[AHCI]: Port error ', 0dH, 0aH, 00H
 	ORG $+2
-$SG4010	DB	'[AHCI]:Port Hung', 0aH, 00H
+$SG3696	DB	'[AHCI]:Port Hung', 0aH, 00H
 	ORG $+6
-$SG4029	DB	'[AHCI]: Port Supports cold presence %d', 0aH, 00H
-$SG4046	DB	'[AHCI]: Model -> %s', 0aH, 00H
+$SG3715	DB	'[AHCI]: Port Supports cold presence %d', 0aH, 00H
+$SG3732	DB	'[AHCI]: Model -> %s', 0aH, 00H
 CONST	ENDS
 PUBLIC	?ahci_disk_initialize@@YAXPEAU_hba_port_@@@Z	; ahci_disk_initialize
 PUBLIC	?ahci_disk_write@@YAXPEAU_hba_port_@@_KIPEA_K@Z	; ahci_disk_write
@@ -35,7 +33,7 @@ EXTRN	AuPmmngrAlloc:PROC
 EXTRN	p2v:PROC
 EXTRN	memset:PROC
 EXTRN	printf:PROC
-EXTRN	?_debug_print_@@YAXPEADZZ:PROC			; _debug_print_
+EXTRN	_debug_print_:PROC
 pdata	SEGMENT
 $pdata$?ahci_disk_initialize@@YAXPEAU_hba_port_@@@Z DD imagerel $LN10
 	DD	imagerel $LN10+776
@@ -43,8 +41,8 @@ $pdata$?ahci_disk_initialize@@YAXPEAU_hba_port_@@@Z DD imagerel $LN10
 $pdata$?ahci_disk_write@@YAXPEAU_hba_port_@@_KIPEA_K@Z DD imagerel $LN10
 	DD	imagerel $LN10+744
 	DD	imagerel $unwind$?ahci_disk_write@@YAXPEAU_hba_port_@@_KIPEA_K@Z
-$pdata$?ahci_disk_read@@YAXPEAU_hba_port_@@_KIPEA_K@Z DD imagerel $LN12
-	DD	imagerel $LN12+777
+$pdata$?ahci_disk_read@@YAXPEAU_hba_port_@@_KIPEA_K@Z DD imagerel $LN11
+	DD	imagerel $LN11+745
 	DD	imagerel $unwind$?ahci_disk_read@@YAXPEAU_hba_port_@@_KIPEA_K@Z
 $pdata$?ahci_disk_find_slot@@YAIPEAU_hba_port_@@@Z DD imagerel $LN7
 	DD	imagerel $LN7+87
@@ -409,7 +407,7 @@ $LN5@ahci_disk_:
 
 ; 259  : 		printf ("[AHCI]:Port Hung\n");
 
-	lea	rcx, OFFSET FLAT:$SG4010
+	lea	rcx, OFFSET FLAT:$SG3696
 	call	printf
 $LN4@ahci_disk_:
 
@@ -668,14 +666,14 @@ _TEXT	ENDS
 ; File e:\xeneva project\xeneva\aurora\aurora\drivers\ahci_disk.cpp
 _TEXT	SEGMENT
 fis$ = 32
-spin$ = 40
-command_slot$ = 44
+command_slot$ = 40
 tbl$ = 48
 cmd_list$ = 56
-tv295 = 64
-tv290 = 68
-buffer_whole$ = 72
-i$ = 80
+spin$ = 64
+tv292 = 68
+tv287 = 72
+buffer_whole$ = 80
+i$ = 88
 port$ = 112
 lba$ = 120
 count$ = 128
@@ -684,7 +682,7 @@ buffer$ = 136
 
 ; 94   : void ahci_disk_read (HBA_PORT *port, uint64_t lba, uint32_t count, uint64_t *buffer) {
 
-$LN12:
+$LN11:
 	mov	QWORD PTR [rsp+32], r9
 	mov	DWORD PTR [rsp+24], r8d
 	mov	QWORD PTR [rsp+16], rdx
@@ -897,18 +895,16 @@ $LN12:
 	and	eax, 255				; 000000ffH
 	mov	rcx, QWORD PTR fis$[rsp]
 	mov	BYTE PTR [rcx+13], al
-$LN9@ahci_disk_:
+$LN8@ahci_disk_:
 
 ; 128  : 
-; 129  : 	while((port->tfd & (ATA_SR_BSY  | ATA_SR_DRQ)) && spin < 1000000) {
+; 129  : 	while((port->tfd & (ATA_SR_BSY  | ATA_SR_DRQ))) {
 
 	mov	rax, QWORD PTR port$[rsp]
 	mov	eax, DWORD PTR [rax+32]
 	and	eax, 136				; 00000088H
 	test	eax, eax
-	je	SHORT $LN8@ahci_disk_
-	cmp	DWORD PTR spin$[rsp], 1000000		; 000f4240H
-	jge	SHORT $LN8@ahci_disk_
+	je	SHORT $LN7@ahci_disk_
 
 ; 130  : 		spin++;
 
@@ -918,29 +914,20 @@ $LN9@ahci_disk_:
 
 ; 131  : 	}
 
-	jmp	SHORT $LN9@ahci_disk_
-$LN8@ahci_disk_:
-
-; 132  : 	if (spin==1000000)
-
-	cmp	DWORD PTR spin$[rsp], 1000000		; 000f4240H
-	jne	SHORT $LN7@ahci_disk_
-
-; 133  : 		_debug_print_ ("[AHCI]:Port Hung\n");
-
-	lea	rcx, OFFSET FLAT:$SG3942
-	call	?_debug_print_@@YAXPEADZZ		; _debug_print_
+	jmp	SHORT $LN8@ahci_disk_
 $LN7@ahci_disk_:
 
+; 132  : 	/*if (spin==1000000)
+; 133  : 		_debug_print_ ("[AHCI]:Port Hung\n");*/
 ; 134  : 
 ; 135  : 
 ; 136  : 	port->ci = 1<<command_slot;
 
 	mov	eax, DWORD PTR command_slot$[rsp]
 	mov	ecx, 1
-	mov	DWORD PTR tv290[rsp], ecx
+	mov	DWORD PTR tv287[rsp], ecx
 	movzx	ecx, al
-	mov	eax, DWORD PTR tv290[rsp]
+	mov	eax, DWORD PTR tv287[rsp]
 	shl	eax, cl
 	mov	rcx, QWORD PTR port$[rsp]
 	mov	DWORD PTR [rcx+56], eax
@@ -956,9 +943,9 @@ $LN6@ahci_disk_:
 
 	mov	eax, DWORD PTR command_slot$[rsp]
 	mov	ecx, 1
-	mov	DWORD PTR tv295[rsp], ecx
+	mov	DWORD PTR tv292[rsp], ecx
 	movzx	ecx, al
-	mov	eax, DWORD PTR tv295[rsp]
+	mov	eax, DWORD PTR tv292[rsp]
 	shl	eax, cl
 	mov	rcx, QWORD PTR port$[rsp]
 	mov	ecx, DWORD PTR [rcx+56]
@@ -982,8 +969,8 @@ $LN4@ahci_disk_:
 
 ; 141  : 			_debug_print_ ("[AHCI]: Port error \r\n");
 
-	lea	rcx, OFFSET FLAT:$SG3948
-	call	?_debug_print_@@YAXPEADZZ		; _debug_print_
+	lea	rcx, OFFSET FLAT:$SG3634
+	call	_debug_print_
 
 ; 142  : 			break;
 
@@ -1275,7 +1262,7 @@ $LN6@ahci_disk_:
 
 ; 195  : 		printf ("[AHCI]:Port Hung\n");
 
-	lea	rcx, OFFSET FLAT:$SG3975
+	lea	rcx, OFFSET FLAT:$SG3661
 	call	printf
 $LN5@ahci_disk_:
 
@@ -1328,8 +1315,8 @@ $LN2@ahci_disk_:
 
 ; 202  : 			_debug_print_ ("[AHCI]: Port error \r\n");
 
-	lea	rcx, OFFSET FLAT:$SG3981
-	call	?_debug_print_@@YAXPEADZZ		; _debug_print_
+	lea	rcx, OFFSET FLAT:$SG3667
+	call	_debug_print_
 
 ; 203  : 			break;
 
@@ -1475,7 +1462,7 @@ $LN10:
 
 	movzx	eax, BYTE PTR cold_presence$[rsp]
 	mov	edx, eax
-	lea	rcx, OFFSET FLAT:$SG4029
+	lea	rcx, OFFSET FLAT:$SG3715
 	call	printf
 $LN7@ahci_disk_:
 
@@ -1680,7 +1667,7 @@ $LN1@ahci_disk_:
 ; 340  : 	printf ("[AHCI]: Model -> %s\n", ata_device_name);
 
 	lea	rdx, QWORD PTR ata_device_name$[rsp]
-	lea	rcx, OFFSET FLAT:$SG4046
+	lea	rcx, OFFSET FLAT:$SG3732
 	call	printf
 
 ; 341  : 

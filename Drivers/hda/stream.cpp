@@ -40,35 +40,38 @@ uint64_t* stream_buffer = 0;
 void hda_init_output_stream () {
 
 	uint64_t pos = 0xFFFFF00000100000;
-	for (int i = 0; i < (BDL_SIZE*BUFFER_SIZE/ 4096); i++) {
-		AuMapPage ((uint64_t)AuPmmngrAlloc(),pos + i * 4096, 0);
-	}
-	stream_buffer = (uint64_t*)pos;
-	memset(stream_buffer,0,BDL_SIZE*BUFFER_SIZE);
 
-	_aud_outl_ (REG_O0_CTLL, 1); //clear the run bit
-	for (int i = 0; i < 1000; i++)
+	stream_buffer = (uint64_t*)pos;
+	memset(stream_buffer,255,BDL_SIZE*BUFFER_SIZE);
+	uint64_t phys_buf = (uint64_t)v2p((size_t)AuGetPhysicalAddress((uint64_t)AuGetRootPageTable(),pos));
+
+	printf ("Reseting stream \n");
+
+	/* Now reset the stream */
+	_aud_outl_ (REG_O0_CTLL, 1); //reset
+	//while((_aud_inl_(REG_O0_CTLL) & 0x1) == 0);
+	for (int i = 0; i < 1000000; i++)
 		;
 
 	_aud_outl_ (REG_O0_CTLL, 0);
-	_aud_outl_ (REG_O0_CTLL, 0x4);
+	//while((_aud_inl_(REG_O0_CTLL) & 0x1));
 
-	for (int i = 0; i < 1000; i++)
+
+	for (int i = 0; i < 100000; i++)
 		;
 	uint64_t bdl_base = (uint64_t)AuPmmngrAlloc();   //get_physical_address  ((uint64_t) 0x0000000000000000);
 	hda_bdl_entry *bdl = (hda_bdl_entry*)bdl_base;  //(_ihd_audio.corb + 3072);
+
 	int j = 0;
 	for (j = 0; j < BDL_SIZE; j++) {
-		bdl[j].paddr = (uint64_t)AuGetPhysicalAddress((uint64_t)AuGetRootPageTable(),pos+ j * BUFFER_SIZE);
+		bdl[j].paddr = (uint64_t)(phys_buf + j * BUFFER_SIZE);
 		bdl[j].length = BUFFER_SIZE;
-		bdl[j].flags = 0;
+		bdl[j].flags = 1;
 	}
 	 
-	bdl[j-1].flags = 1;
+	//bdl[j-1].flags = 1;
 
-	_aud_outl_ (REG_O0_CTLL,0x10); 
-	_aud_outl_ (REG_O0_CTLU,0x10);
-	//_aud_outl_ (REG_O0_CTLU, 0x10);
+	_aud_outb_ (REG_O0_CTLU, 0x10);
 
 	_aud_outl_ (REG_O0_CBL,BDL_SIZE*BUFFER_SIZE);
 	_aud_outw_(REG_O0_STLVI, BDL_SIZE-1);
@@ -76,11 +79,11 @@ void hda_init_output_stream () {
 	_aud_outl_ (REG_O0_BDLPL, bdl_base);
 	_aud_outl_ (REG_O0_BDLPU, bdl_base >> 32);
 
-	//uint16_t format =  (0<<14) | (0<<11) | (0<<8)| (1<<4) | (1<<0);
+	//uint16_t format =  (1<<14) | (0<<11)  | (1<<4) | 1;
 	uint16_t format = BITS_16 | SR_48_KHZ | 2 - 1;
 	_aud_outw_ (REG_O0_FMT, format);
 
-	//_aud_outb_(REG_O0_STS, (1<<2) | (1<<3) | (1<<4));
+	_aud_outb_ (REG_O0_STS, HDAC_SDSTS_DESE | HDAC_SDSTS_FIFOE | HDAC_SDSTS_BCIS);
 
 	uint64_t* dma_pos = (uint64_t*)p2v((size_t)AuPmmngrAlloc());
 	for (int i = 0; i < 8; i++) {
@@ -88,15 +91,20 @@ void hda_init_output_stream () {
 	}
 
 	//_ihd_audio.dma_pos = dma_pos;
+	//uint64_t dma_val = (uint64_t)v2p((size_t)dma_pos);
+
 
 	_aud_outl_ (DPIBLBASE, (uint32_t)v2p((size_t)dma_pos) | 0x1);
 	_aud_outl_ (DPIBUBASE, (uint32_t)v2p((size_t)dma_pos) >> 32);
+	
+	
+
+	printf ("HD Audio stream initialized \n");
 
 }
 
 void output_stream_write(uint8_t* buffer, size_t length) {
-	AuDisableInterupts();
-	printf ("Writing to stream -> %x buf -> %x\n", stream_buffer, buffer);
+	printf ("Writing data \n");
 	memcpy(stream_buffer, buffer, 4096);
 }
 

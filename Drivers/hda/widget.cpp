@@ -29,6 +29,7 @@
 
 
 #include "hda.h"
+#include <stdio.h>
 
 /**
  *  Initializes widgets for a codec and node
@@ -73,18 +74,34 @@ void widget_init (int codec, int nid) {
 	default: s = "unknown"; break;
 
 	}
-	amp_gain = codec_query(codec, nid, VERB_GET_AMP_GAIN_MUTE | 0x8000) << 8;
-	amp_gain |= codec_query(codec, nid, VERB_GET_AMP_GAIN_MUTE | 0xa000);
+
+
+	amp_gain = codec_query(codec, nid, VERB_GET_AMP_GAIN_MUTE | ((1<<15) | (1<<13)));
+	amp_gain |= codec_query(codec, nid, VERB_GET_AMP_GAIN_MUTE | ((1<<15) | (0<<13)));
 
 	eapd_btl = codec_query (codec, nid, VERB_GET_EAPD_BTL);	
 	
 	switch (type) {
+	case WIDGET_PIN:{
+		uint32_t pin_cap, ctl;
+		pin_cap = codec_query(codec, nid, VERB_GET_PARAMETER | PARAM_PIN_CAP);
+		if ((pin_cap & PIN_CAP_OUTPUT) == 0) 
+			return;
+
+		ctl = codec_query(codec, nid, VERB_GET_PIN_CONTROL);
+		ctl |= PIN_CTL_ENABLE_OUTPUT;
+		codec_query(codec, nid, VERB_SET_PIN_CONTROL | ctl);
+		codec_query(codec, nid, VERB_SET_EAPD_BTL | (1<<1) | (1<<2));
+		break;
+	}
 	case WIDGET_OUTPUT:{
 		/* here we should create a list of output codec and nodes */
-		hda_set_output_nid(nid, codec, (amp_cap >> 8) & 0x7f);
-
+		uint8_t mute_val = (amp_cap >> 7) & 0xff;
+		uint8_t gain_val = amp_cap & 0xff;
+		hda_set_output_nid(nid, codec, gain_val);
+		printf ("Widget output - mute_val -> %d, gain val -> %d \n", mute_val, gain_val);
 		uint32_t eapd_ = codec_query (codec,nid, VERB_GET_EAPD_BTL);	
-		codec_query (codec, nid,VERB_SET_EAPD_BTL | eapd_ | 0x2);
+		codec_query (codec, nid,VERB_SET_EAPD_BTL | (1<<1) | (1<<2));
 		break;
 		}
 	default:
@@ -93,12 +110,4 @@ void widget_init (int codec, int nid) {
 	}	
 }
 
-void widget_init_output (uint8_t codec, uint16_t nid) {
-
-	/* first output channel is 0x10 */
-	codec_query(codec, nid,VERB_SET_STREAM_CHANNEL | 0x10);
-	uint16_t format = BITS_16 | SR_48_KHZ | 2 - 1;
-	codec_query(codec, nid,VERB_SET_FORMAT | format);
-	_aud_outl_(REG_O0_FMT, format);
-}
 

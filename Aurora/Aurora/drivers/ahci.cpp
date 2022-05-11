@@ -33,10 +33,12 @@
 #include <drivers/ahci.h>
 #include <drivers/ahci_disk.h>
 #include <drivers/pci.h>
+#include <drivers/pcie.h>
 #include <drivers/hdaudio/hda.h>
 #include <pmmngr.h>
 #include <stdio.h>
 #include <serial.h>
+#include <shirq.h>
 
 #define SATA_SIG_ATA   0x00000101
 #define SATA_SIG_ATAPI 0xEB140101
@@ -97,7 +99,6 @@ void ahci_control_hand_os (HBA_MEM *mem) {
  * ahci_interrupt_handler -- handles AHCI interrupts
  */
 void ahci_interrupt_handler (size_t v, void* p) {
-	x64_cli();
 
 	HBA_MEM *hba = (HBA_MEM*)hbabar;
 	uint32_t is = hba->is;
@@ -132,30 +133,34 @@ void ahci_interrupt_handler (size_t v, void* p) {
 		}
 	}
 
-	if (is_hdaudio_initialized())
-		hda_handler(v,p);
+	/*if (is_hdaudio_initialized())
+		hda_handler(v,p);*/
+
+	_debug_print_ ("AHCI\Interrupt \r\n");
 	
 	hba->is = is;
 	AuInterruptEnd(0);
 
-	x64_sti();
+
 }
 
 /* 
  * ahci_initialize -- initialize the AHCI Controller
  */
 void ahci_initialize () {
-	pci_device_info *info = (pci_device_info*)AuPmmngrAlloc();
 	int bus,dev,func;
 	bool ahci_not_found = false;
 
 	/* First find in standard registry */
-	if (!pci_find_device_class(0x01,0x06,info,&bus,&dev,&func)) {
+	uint32_t device = pci_express_scan_class(0x01,0x06);
+	printf ("AHCI Device -> %x \n", device);
+	if (device == 0xFFFFFFFF)
 		ahci_not_found = true;
-	}
+	
 	/* not found? now search in RAID registry */
 	if (ahci_not_found) {
-		if (!pci_find_device_class(0x01,0x04,info,&bus,&dev,&func)) {
+		device = pci_scan_class(0x01,0x04);
+		if (device == 0xFFFFFFFF){
 			printf ("*******************************\n");
 			printf ("AHCI/SATA not found\n");
 			printf ("Xeneva initialisation failed\n");
@@ -164,21 +169,36 @@ void ahci_initialize () {
 			for(;;);
 		}
 	}
+	
+	
+	uint32_t int_line = pci_express_read(device, PCI_INTERRUPT_LINE);
+	printf ("AHCI INTERRUPT LINE -> %d \r\n", int_line);
+	uint32_t base_address = pci_express_read(device,PCI_BAR5);
+	printf ("AHCI/SATA found BAR -> %x \n", base_address);
 
-	uint16_t command_reg = 0;
-	read_config_16 (0,bus,dev,func,0x4, &command_reg);
-	command_reg |= (1<<2);
-	command_reg &= ~(1<<10);
-	command_reg |= (1<<1);
-    write_config_16 (0,bus, dev,func,0x4,command_reg);
+	
 
-	uint8_t int_line = info->device.nonBridge.interruptLine;
-	if (info->device.nonBridge.interruptLine < 255) {
-		AuInterruptSet(11, ahci_interrupt_handler, 11);
+	//pci_enable_bus_master(device);
+	//pci_enable_interrupts(device);
+
+	
+
+	//uint8_t int_line = info->device.nonBridge.interruptLine;
+	
+
+	/*shirq_t* shdev = (shirq_t*)malloc(sizeof(shirq_t));
+	shdev->irq = info->device.nonBridge.interruptLine;
+	shdev->IrqHandler = ahci_interrupt_handler;
+	shdev->device_id = info->device.deviceID;
+	shdev->vendor_id = info->device.vendorID;
+	AuSharedDeviceRegister(shdev);*/
+	
+	if (int_line < 255) {
+		AuInterruptSet(int_line, ahci_interrupt_handler,int_line, false);
 	}
 
-	printf ("AHCI/SATA found at dev -> %d, func -> %d, bus -> %d\n", dev, func, bus);
-	uintptr_t hba_phys = (info->device.nonBridge.baseAddress[5] & 0xFFFFFFF0);
+
+	uintptr_t hba_phys = base_address & 0xFFFFFFF0;
 	void* mmio = AuMapMMIO(hba_phys,512);
 	HBA_MEM *hba = (HBA_MEM*)mmio;//(info->device.nonBridge.baseAddress[5] & 0xFFFFFFF0);
 	hbabar = (void*)mmio; //(info->device.nonBridge.baseAddress[5] & 0xFFFFFFF0);
@@ -235,6 +255,9 @@ void ahci_initialize () {
 		pi >>= 1;
 		i++;
 	}
+
+	pcie_print_capabilities(device);
+	for(;;);
 }
 
 /*

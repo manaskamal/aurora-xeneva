@@ -31,7 +31,7 @@ void AuKeyboardHandler(size_t v, void* p)
 			message_t *msg = (message_t*)p2v((size_t)AuPmmngrAlloc());
 			msg->type = 3;
 		    msg->dword = code;
-		    message_send (3,msg);
+		    message_send (2,msg);
 			AuPmmngrFree ((void*)v2p((size_t)msg));
 		} else {
 			printf ("[Aurora]:Key Pressed\n");
@@ -58,5 +58,5 @@ void AuKeyboardHandler(size_t v, void* p)
  * it installs the irq_1 handler with keyboard handler function
  */
 void AuKeyboardInitialize () {
-	AuInterruptSet (1,AuKeyboardHandler,1);
+	AuInterruptSet (1,AuKeyboardHandler,1, false);
 }
