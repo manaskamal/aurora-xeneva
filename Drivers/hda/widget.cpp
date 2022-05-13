@@ -31,6 +31,48 @@
 #include "hda.h"
 #include <stdio.h>
 
+void widget_dump_connection (int codec, int nid) {
+	uint32_t num_conn;
+	uint32_t sel;
+	int i;
+	uint32_t conn_val;
+	num_conn = codec_query(codec, nid, VERB_GET_PARAMETER | PARAM_CONN_LIST_LEN);
+
+	printf ("Num Connection -> %d Long Form -> %d \n", num_conn, (num_conn & 0x80));
+
+	for (int i = 0; i < (num_conn & 0x7f); i++) {
+		uint32_t conn;
+		bool range;
+		int idx, shift;
+
+		if (num_conn & 0x80){
+			idx = i & ~3;
+			shift = 8 * (i & 3);
+		}else {
+			idx = i & ~1;
+			shift = 8 * (i & 1);
+		}
+
+		conn = codec_query(codec, nid, VERB_GET_CONN_LIST | idx);
+		conn >>= shift;
+		
+		if (num_conn & 0x80) {
+			/* Use long form list entry */
+			range = conn & 0x8000;
+			conn  &= 0x7fff;
+		}else {
+			/* Use short form list entry*/
+			range = conn & 0x80;
+			conn &= 0x7f;	
+			printf ("%d ",conn);
+		}
+
+	
+	}
+
+	sel = codec_query(codec, nid, VERB_GET_CONN_SELECT);
+	printf (" [current: %d]\n", sel);
+}
 /**
  *  Initializes widgets for a codec and node
  *  @param codec-> codec id
@@ -56,6 +98,8 @@ void widget_init (int codec, int nid) {
 
 	if (widget_cap & WIDGET_CAP_POWER_CNTRL) {
 		codec_query(codec, nid, VERB_SET_POWER_STATE | 0x0);
+		for (int i = 0; i < 100000; i++)
+			;
 	}
 
 	uint32_t amp_gain;
@@ -85,12 +129,15 @@ void widget_init (int codec, int nid) {
 	case WIDGET_PIN:{
 		uint32_t pin_cap, ctl;
 		pin_cap = codec_query(codec, nid, VERB_GET_PARAMETER | PARAM_PIN_CAP);
-		if ((pin_cap & PIN_CAP_OUTPUT) == 0) 
+		if ((pin_cap & PIN_CAP_OUTPUT) == 0 || (pin_cap & PIN_CAP_INPUT) == 0) 
 			return;
 
 		ctl = codec_query(codec, nid, VERB_GET_PIN_CONTROL);
 		ctl |= PIN_CTL_ENABLE_OUTPUT;
+		ctl |= (1<<5); //enable input
 		codec_query(codec, nid, VERB_SET_PIN_CONTROL | ctl);
+		//printf ("pin complex - con length %d \n", (widget_cap >> 8 & 0xff));
+		//widget_dump_connection(codec, nid);
 		codec_query(codec, nid, VERB_SET_EAPD_BTL | (1<<1) | (1<<2));
 		break;
 	}
@@ -99,11 +146,17 @@ void widget_init (int codec, int nid) {
 		uint8_t mute_val = (amp_cap >> 7) & 0xff;
 		uint8_t gain_val = amp_cap & 0xff;
 		hda_set_output_nid(nid, codec, gain_val);
-		printf ("Widget output - mute_val -> %d, gain val -> %d \n", mute_val, gain_val);
-		uint32_t eapd_ = codec_query (codec,nid, VERB_GET_EAPD_BTL);	
-		codec_query (codec, nid,VERB_SET_EAPD_BTL | (1<<1) | (1<<2));
 		break;
 		}
+
+	case WIDGET_INPUT:{
+		codec_query(codec, nid,VERB_SET_STREAM_CHANNEL | (1<<5) | 1);
+		uint16_t format =   (1<<15) | SR_44_KHZ | (0<<11) | (0 << 8) | BITS_16 | 1;
+		codec_query(codec, nid,VERB_SET_FORMAT | format);
+		codec_query(codec, nid, VERB_SET_CONV_CHANNEL_COUNT | 1);
+		codec_query(codec, nid, VERB_SET_EAPD_BTL | (1<<1) | (1<<2));
+		break;
+					  }
 	default:
 		return;
 

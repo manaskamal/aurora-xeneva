@@ -1092,9 +1092,9 @@ $LN2@initialize:
 ; 165  : 
 ; 166  : 
 ; 167  : 	//!Register the time speed
-; 168  : 	write_apic_register (LAPIC_REGISTER_TMRDIV,0x3);  //0xa
+; 168  : 	write_apic_register (LAPIC_REGISTER_TMRDIV,0xa);  //0x3
 
-	mov	edx, 3
+	mov	edx, 10
 	mov	cx, 62					; 0000003eH
 	call	?write_apic_register@@YAXG_K@Z		; write_apic_register
 

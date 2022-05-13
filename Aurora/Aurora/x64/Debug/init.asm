@@ -10,19 +10,19 @@ _BSS	SEGMENT
 ?debug@@3P6AXPEBDZZEA DQ 01H DUP (?)			; debug
 _BSS	ENDS
 CONST	SEGMENT
-$SG5381	DB	'/zara.wav', 00H
+$SG5388	DB	'/mon.wav', 00H
+	ORG $+7
+$SG5389	DB	'file.size -> %d ', 0aH, 00H
 	ORG $+6
-$SG5382	DB	'file.size -> %d ', 0aH, 00H
-	ORG $+6
-$SG5391	DB	'Scheduler Initialized', 0aH, 00H
+$SG5406	DB	'Scheduler Initialized', 0aH, 00H
 	ORG $+1
-$SG5393	DB	'shell', 00H
+$SG5408	DB	'shell', 00H
 	ORG $+2
-$SG5394	DB	'/init.exe', 00H
+$SG5409	DB	'/init.exe', 00H
 	ORG $+2
-$SG5395	DB	'priwm', 00H
+$SG5410	DB	'priwm', 00H
 	ORG $+6
-$SG5396	DB	'/priwm.exe', 00H
+$SG5411	DB	'/priwm.exe', 00H
 CONST	ENDS
 PUBLIC	?debug_print@@YAXPEBDZZ				; debug_print
 PUBLIC	?_AuMain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z		; _AuMain
@@ -33,11 +33,15 @@ EXTRN	?AuInitializeCpu@@YAXE@Z:PROC			; AuInitializeCpu
 EXTRN	?AuHalInitialize@@YAXXZ:PROC			; AuHalInitialize
 EXTRN	?AuPmmngrInit@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z:PROC ; AuPmmngrInit
 EXTRN	AuPmmngrAlloc:PROC
+EXTRN	AuPmmngrFree:PROC
 EXTRN	p2v:PROC
 EXTRN	v2p:PROC
 EXTRN	?AuPagingInit@@YAXXZ:PROC			; AuPagingInit
+EXTRN	AuMapPage:PROC
 EXTRN	?AuPagingClearLow@@YAXXZ:PROC			; AuPagingClearLow
 EXTRN	?AuConsoleInitialize@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z:PROC ; AuConsoleInitialize
+EXTRN	memset:PROC
+EXTRN	memcpy:PROC
 EXTRN	printf:PROC
 EXTRN	?AuKeyboardInitialize@@YAXXZ:PROC		; AuKeyboardInitialize
 EXTRN	?AuInitializeMouse@@YAXXZ:PROC			; AuInitializeMouse
@@ -69,35 +73,39 @@ pdata	SEGMENT
 $pdata$?debug_print@@YAXPEBDZZ DD imagerel $LN3
 	DD	imagerel $LN3+40
 	DD	imagerel $unwind$?debug_print@@YAXPEBDZZ
-$pdata$?_AuMain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z DD imagerel $LN7
-	DD	imagerel $LN7+471
+$pdata$?_AuMain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z DD imagerel $LN13
+	DD	imagerel $LN13+683
 	DD	imagerel $unwind$?_AuMain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z
 pdata	ENDS
 xdata	SEGMENT
 $unwind$?debug_print@@YAXPEBDZZ DD 011801H
 	DD	04218H
 $unwind$?_AuMain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z DD 040e01H
-	DD	02f010eH
+	DD	033010eH
 	DD	060067007H
 xdata	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\init.cpp
 _TEXT	SEGMENT
-au_status$ = 32
-buffer$ = 40
-file$ = 48
-$T1 = 160
-$T2 = 264
-info$ = 400
+i$1 = 32
+i$2 = 36
+au_status$ = 40
+buffer$3 = 48
+pos$ = 56
+tv79 = 64
+file$ = 80
+$T4 = 192
+$T5 = 296
+info$ = 432
 ?_AuMain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z PROC		; _AuMain
 
 ; 97   : void _AuMain (KERNEL_BOOT_INFO *info) {
 
-$LN7:
+$LN13:
 	mov	QWORD PTR [rsp+8], rcx
 	push	rsi
 	push	rdi
-	sub	rsp, 376				; 00000178H
+	sub	rsp, 408				; 00000198H
 
 ; 98   : 	debug = info->printf_gui;
 
@@ -240,129 +248,210 @@ $LN7:
 	call	?AuPagingClearLow@@YAXXZ		; AuPagingClearLow
 
 ; 147  : 
-; 148  : 	//AuARPRequestMAC();
-; 149  : 	x64_sti();
+; 148  : 	uint64_t pos = (uint64_t)0xFFFFF00000000000;
+
+	mov	rax, -17592186044416			; fffff00000000000H
+	mov	QWORD PTR pos$[rsp], rax
+
+; 149  : 	for (int i = 0; i < 5*1024*1024/4096; i++)
+
+	mov	DWORD PTR i$2[rsp], 0
+	jmp	SHORT $LN10@AuMain
+$LN9@AuMain:
+	mov	eax, DWORD PTR i$2[rsp]
+	inc	eax
+	mov	DWORD PTR i$2[rsp], eax
+$LN10@AuMain:
+	cmp	DWORD PTR i$2[rsp], 1280		; 00000500H
+	jge	SHORT $LN8@AuMain
+
+; 150  : 		AuMapPage((uint64_t)AuPmmngrAlloc(),pos + i * 4096, 0);
+
+	mov	eax, DWORD PTR i$2[rsp]
+	imul	eax, 4096				; 00001000H
+	cdqe
+	mov	rcx, QWORD PTR pos$[rsp]
+	add	rcx, rax
+	mov	rax, rcx
+	mov	QWORD PTR tv79[rsp], rax
+	call	AuPmmngrAlloc
+	xor	r8d, r8d
+	mov	rcx, QWORD PTR tv79[rsp]
+	mov	rdx, rcx
+	mov	rcx, rax
+	call	AuMapPage
+	jmp	SHORT $LN9@AuMain
+$LN8@AuMain:
+
+; 151  : 
+; 152  : 	//AuARPRequestMAC();
+; 153  : 	x64_sti();
 
 	call	x64_sti
 
-; 150  : 	vfs_node_t file = fat32_open(NULL, "/zara.wav");
+; 154  : 	vfs_node_t file = fat32_open(NULL, "/mon.wav");
 
-	lea	r8, OFFSET FLAT:$SG5381
+	lea	r8, OFFSET FLAT:$SG5388
 	xor	edx, edx
-	lea	rcx, QWORD PTR $T2[rsp]
+	lea	rcx, QWORD PTR $T5[rsp]
 	call	?fat32_open@@YA?AU_vfs_node_@@PEAU1@PEAD@Z ; fat32_open
-	lea	rcx, QWORD PTR $T1[rsp]
+	lea	rcx, QWORD PTR $T4[rsp]
 	mov	rdi, rcx
 	mov	rsi, rax
 	mov	ecx, 104				; 00000068H
 	rep movsb
 	lea	rax, QWORD PTR file$[rsp]
-	lea	rcx, QWORD PTR $T1[rsp]
+	lea	rcx, QWORD PTR $T4[rsp]
 	mov	rdi, rax
 	mov	rsi, rcx
 	mov	ecx, 104				; 00000068H
 	rep movsb
 
-; 151  : 	printf ("file.size -> %d \n", file.size);
+; 155  : 	printf ("file.size -> %d \n", file.size);
 
 	mov	edx, DWORD PTR file$[rsp+32]
-	lea	rcx, OFFSET FLAT:$SG5382
+	lea	rcx, OFFSET FLAT:$SG5389
 	call	printf
 
-; 152  : 	uint64_t* buffer = (uint64_t*)p2v((size_t)AuPmmngrAlloc());
+; 156  : 
+; 157  : 	for (int i = 0; i < 5*1024*1024/4096; i++) {
+
+	mov	DWORD PTR i$1[rsp], 0
+	jmp	SHORT $LN7@AuMain
+$LN6@AuMain:
+	mov	eax, DWORD PTR i$1[rsp]
+	inc	eax
+	mov	DWORD PTR i$1[rsp], eax
+$LN7@AuMain:
+	cmp	DWORD PTR i$1[rsp], 1280		; 00000500H
+	jge	SHORT $LN5@AuMain
+
+; 158  : 		uint64_t* buffer = (uint64_t*)p2v((size_t)AuPmmngrAlloc());
 
 	call	AuPmmngrAlloc
 	mov	rcx, rax
 	call	p2v
-	mov	QWORD PTR buffer$[rsp], rax
+	mov	QWORD PTR buffer$3[rsp], rax
 
-; 153  : 	fat32_read(&file, (uint64_t*)v2p((size_t)buffer));
+; 159  : 		memset(buffer, 0, 4096);
 
-	mov	rcx, QWORD PTR buffer$[rsp]
+	mov	r8d, 4096				; 00001000H
+	xor	edx, edx
+	mov	rcx, QWORD PTR buffer$3[rsp]
+	call	memset
+
+; 160  : 		fat32_read(&file, (uint64_t*)v2p((size_t)buffer));
+
+	mov	rcx, QWORD PTR buffer$3[rsp]
 	call	v2p
 	mov	rdx, rax
 	lea	rcx, QWORD PTR file$[rsp]
 	call	?fat32_read@@YAXPEAU_vfs_node_@@PEA_K@Z	; fat32_read
 
-; 154  : 	AuSoundWrite(NULL, buffer, 4096);
+; 161  : 		memcpy((void*)(pos + i * 4096),buffer,4096);
+
+	mov	eax, DWORD PTR i$1[rsp]
+	imul	eax, 4096				; 00001000H
+	cdqe
+	mov	rcx, QWORD PTR pos$[rsp]
+	add	rcx, rax
+	mov	rax, rcx
+	mov	r8d, 4096				; 00001000H
+	mov	rdx, QWORD PTR buffer$3[rsp]
+	mov	rcx, rax
+	call	memcpy
+
+; 162  : 		AuPmmngrFree((void*)v2p((size_t)buffer));
+
+	mov	rcx, QWORD PTR buffer$3[rsp]
+	call	v2p
+	mov	rcx, rax
+	call	AuPmmngrFree
+
+; 163  : 	}
+
+	jmp	$LN6@AuMain
+$LN5@AuMain:
+
+; 164  : 	AuSoundWrite(NULL, (uint64_t*)pos,4096);
 
 	mov	r8d, 4096				; 00001000H
-	mov	rdx, QWORD PTR buffer$[rsp]
+	mov	rdx, QWORD PTR pos$[rsp]
 	xor	ecx, ecx
 	call	?AuSoundWrite@@YAXPEAU_vfs_node_@@PEA_KI@Z ; AuSoundWrite
 
-; 155  : 	AuSoundOutputStart();
+; 165  : 	AuSoundOutputStart();
 
 	call	?AuSoundOutputStart@@YAXXZ		; AuSoundOutputStart
 $LN4@AuMain:
 
-; 156  : 	for(;;);
+; 166  : 	for(;;);
 
 	jmp	SHORT $LN4@AuMain
 
-; 157  : #ifdef ARCH_X64
-; 158  : 
-; 159  : 	printf ("Scheduler Initialized\n");
+; 167  : #ifdef ARCH_X64
+; 168  : 
+; 169  : 	printf ("Scheduler Initialized\n");
 
-	lea	rcx, OFFSET FLAT:$SG5391
+	lea	rcx, OFFSET FLAT:$SG5406
 	call	printf
 
-; 160  : 	int au_status = 0;
+; 170  : 	int au_status = 0;
 
 	mov	DWORD PTR au_status$[rsp], 0
 
-; 161  : 
-; 162  : 	/* start the sound service manager at id 1 */
-; 163  : 	au_status = AuCreateProcess ("/init.exe","shell");
+; 171  : 
+; 172  : 	/* start the sound service manager at id 1 */
+; 173  : 	au_status = AuCreateProcess ("/init.exe","shell");
 
-	lea	rdx, OFFSET FLAT:$SG5393
-	lea	rcx, OFFSET FLAT:$SG5394
+	lea	rdx, OFFSET FLAT:$SG5408
+	lea	rcx, OFFSET FLAT:$SG5409
 	call	?AuCreateProcess@@YAHPEBDPEAD@Z		; AuCreateProcess
 	mov	DWORD PTR au_status$[rsp], eax
 
-; 164  : 
-; 165  : 	/* start the compositing window manager at id 3 */
-; 166  : 	au_status = AuCreateProcess ("/priwm.exe","priwm");
+; 174  : 
+; 175  : 	/* start the compositing window manager at id 3 */
+; 176  : 	au_status = AuCreateProcess ("/priwm.exe","priwm");
 
-	lea	rdx, OFFSET FLAT:$SG5395
-	lea	rcx, OFFSET FLAT:$SG5396
+	lea	rdx, OFFSET FLAT:$SG5410
+	lea	rcx, OFFSET FLAT:$SG5411
 	call	?AuCreateProcess@@YAHPEBDPEAD@Z		; AuCreateProcess
 	mov	DWORD PTR au_status$[rsp], eax
 
-; 167  : 
-; 168  : 	//au_status = AuCreateProcess ("/dock.exe", "dock");
-; 169  : 	//! Here start the scheduler (multitasking engine)
-; 170  : 	AuSchedulerStart();
+; 177  : 
+; 178  : 	//au_status = AuCreateProcess ("/dock.exe", "dock");
+; 179  : 	//! Here start the scheduler (multitasking engine)
+; 180  : 	AuSchedulerStart();
 
 	call	?AuSchedulerStart@@YAXXZ		; AuSchedulerStart
 $LN2@AuMain:
 
-; 171  : #endif
-; 172  : 
-; 173  : 	//! Loop forever
-; 174  : 	while(1) {
+; 181  : #endif
+; 182  : 
+; 183  : 	//! Loop forever
+; 184  : 	while(1) {
 
 	xor	eax, eax
 	cmp	eax, 1
 	je	SHORT $LN1@AuMain
 
-; 175  : 		//!looping looping
-; 176  : 		x64_cli();
+; 185  : 		//!looping looping
+; 186  : 		x64_cli();
 
 	call	x64_cli
 
-; 177  : 		x64_hlt();
+; 187  : 		x64_hlt();
 
 	call	x64_hlt
 
-; 178  : 	}
+; 188  : 	}
 
 	jmp	SHORT $LN2@AuMain
 $LN1@AuMain:
 
-; 179  : }
+; 189  : }
 
-	add	rsp, 376				; 00000178H
+	add	rsp, 408				; 00000198H
 	pop	rdi
 	pop	rsi
 	ret	0

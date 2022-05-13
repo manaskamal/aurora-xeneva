@@ -39,13 +39,21 @@ uint64_t* stream_buffer = 0;
 //! not completed yet
 void hda_init_output_stream () {
 
-	uint64_t pos = 0xFFFFF00000100000;
-
+	
+	uint64_t pos = 0xFFFFD00004000000;
+	uint64_t phys_buf = 0;
 	stream_buffer = (uint64_t*)pos;
-	memset(stream_buffer,255,BDL_SIZE*BUFFER_SIZE);
-	uint64_t phys_buf = (uint64_t)v2p((size_t)AuGetPhysicalAddress((uint64_t)AuGetRootPageTable(),pos));
+	for (int i = 0; i < (BDL_SIZE*BUFFER_SIZE/ 4096)+1; i++) {
+		void *p = AuPmmngrAlloc();
+		if (phys_buf == 0)
+			phys_buf = (uint64_t)p;
+		AuMapPage ((uint64_t)p,pos + i * 4096, 0);
+	}
+	memset(stream_buffer,0,BDL_SIZE*BUFFER_SIZE);
+	
+	printf ("Stream run bit -> %d \n", ((_aud_inb_(REG_O0_CTLL) >> 2) & 0xff));
 
-	printf ("Reseting stream \n");
+	printf ("Reseting stream , phys buf-> %x \n", phys_buf);
 
 	/* Now reset the stream */
 	_aud_outl_ (REG_O0_CTLL, 1); //reset
@@ -66,12 +74,16 @@ void hda_init_output_stream () {
 	for (j = 0; j < BDL_SIZE; j++) {
 		bdl[j].paddr = (uint64_t)(phys_buf + j * BUFFER_SIZE);
 		bdl[j].length = BUFFER_SIZE;
-		bdl[j].flags = 1;
+		bdl[j].flags = 0;
 	}
 	 
 	//bdl[j-1].flags = 1;
+	printf ("BDL[0]->paddr -> %x \n", bdl[0].paddr);
+	printf ("BDL[1]->paddr -> %x \n", bdl[1].paddr);
+	printf ("BDL[2]->paddr -> %x \n", bdl[2].paddr);
+	printf ("BDL[3]->paddr -> %x \n", bdl[3].paddr);
 
-	_aud_outb_ (REG_O0_CTLU, 0x10);
+	_aud_outb_ (REG_O0_CTLU, (1<<4));
 
 	_aud_outl_ (REG_O0_CBL,BDL_SIZE*BUFFER_SIZE);
 	_aud_outw_(REG_O0_STLVI, BDL_SIZE-1);
@@ -80,7 +92,7 @@ void hda_init_output_stream () {
 	_aud_outl_ (REG_O0_BDLPU, bdl_base >> 32);
 
 	//uint16_t format =  (1<<14) | (0<<11)  | (1<<4) | 1;
-	uint16_t format = BITS_16 | SR_48_KHZ | 2 - 1;
+	uint16_t format = (1<<15) | SR_44_KHZ | (0<<11) | (0 << 8) | BITS_16 | 1;
 	_aud_outw_ (REG_O0_FMT, format);
 
 	_aud_outb_ (REG_O0_STS, HDAC_SDSTS_DESE | HDAC_SDSTS_FIFOE | HDAC_SDSTS_BCIS);
@@ -91,21 +103,27 @@ void hda_init_output_stream () {
 	}
 
 	//_ihd_audio.dma_pos = dma_pos;
-	//uint64_t dma_val = (uint64_t)v2p((size_t)dma_pos);
+	uint64_t dma_val = (uint64_t)v2p((size_t)dma_pos);
 
 
-	_aud_outl_ (DPIBLBASE, (uint32_t)v2p((size_t)dma_pos) | 0x1);
-	_aud_outl_ (DPIBUBASE, (uint32_t)v2p((size_t)dma_pos) >> 32);
+	_aud_outl_ (DPIBLBASE, dma_val);
+	_aud_outl_ (DPIBUBASE, dma_val >> 32);
 	
-	
+	uint32_t strm = _aud_inl_(REG_O0_CTLL);
 
-	printf ("HD Audio stream initialized \n");
+	printf ("HD Audio stream initialized id -> %d\n", ((strm >> 20) & 0xffff));
 
 }
 
-void output_stream_write(uint8_t* buffer, size_t length) {
-	printf ("Writing data \n");
-	memcpy(stream_buffer, buffer, 4096);
+void output_stream_write(uint64_t* buffer, size_t length) {
+	printf ("Writing data to -> %x the buffer -> %x\n", stream_buffer, buffer);
+	uint64_t buf = (uint64_t)buffer;
+	uint8_t* aligned = (uint8_t*)(buf+44);
+	printf ("Aligned buffer ->%x \n", aligned);
+	for (int i = 0; i < 5; i++)
+		printf ("%c", aligned[i]);
+	uint64_t strm_buff = (uint64_t)stream_buffer;
+	memcpy((void*)strm_buff,aligned,BDL_SIZE*BUFFER_SIZE);
 }
 
 

@@ -145,13 +145,23 @@ void _AuMain (KERNEL_BOOT_INFO *info) {
 	/*Clear the lower half for user space */
 	AuPagingClearLow();
 
+	uint64_t pos = (uint64_t)0xFFFFF00000000000;
+	for (int i = 0; i < 5*1024*1024/4096; i++)
+		AuMapPage((uint64_t)AuPmmngrAlloc(),pos + i * 4096, 0);
+
 	//AuARPRequestMAC();
 	x64_sti();
-	vfs_node_t file = fat32_open(NULL, "/zara.wav");
+	vfs_node_t file = fat32_open(NULL, "/mon.wav");
 	printf ("file.size -> %d \n", file.size);
-	uint64_t* buffer = (uint64_t*)p2v((size_t)AuPmmngrAlloc());
-	fat32_read(&file, (uint64_t*)v2p((size_t)buffer));
-	AuSoundWrite(NULL, buffer, 4096);
+
+	for (int i = 0; i < 5*1024*1024/4096; i++) {
+		uint64_t* buffer = (uint64_t*)p2v((size_t)AuPmmngrAlloc());
+		memset(buffer, 0, 4096);
+		fat32_read(&file, (uint64_t*)v2p((size_t)buffer));
+		memcpy((void*)(pos + i * 4096),buffer,4096);
+		AuPmmngrFree((void*)v2p((size_t)buffer));
+	}
+	AuSoundWrite(NULL, (uint64_t*)pos,4096);
 	AuSoundOutputStart();
 	for(;;);
 #ifdef ARCH_X64

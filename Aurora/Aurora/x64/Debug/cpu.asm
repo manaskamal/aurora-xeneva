@@ -29,11 +29,6 @@ $SG3646	DB	'EFER.SYSCALL enabled', 0aH, 00H
 $SG3647	DB	'User Land Initialized', 0aH, 00H
 	ORG $+1
 $SG3648	DB	'System call initialized', 0aH, 00H
-	ORG $+7
-$SG3661	DB	'FXSAVE enabled', 0aH, 00H
-$SG3664	DB	'[aurora]: SSE2 is supported ', 0aH, 00H
-	ORG $+2
-$SG3667	DB	'[aurora]: SSE3 is supported ', 0aH, 00H
 CONST	ENDS
 PUBLIC	?x86_64_gdt_init@@YAXXZ				; x86_64_gdt_init
 PUBLIC	?setvect@@YAX_KP6AX0PEAX@Z@Z			; setvect
@@ -116,7 +111,7 @@ $pdata$?x86_64_cpu_get_id@@YAEXZ DD imagerel $LN3
 	DD	imagerel $LN3+71
 	DD	imagerel $unwind$?x86_64_cpu_get_id@@YAEXZ
 $pdata$?hal_cpu_feature_enable@@YAXXZ DD imagerel $LN10
-	DD	imagerel $LN10+311
+	DD	imagerel $LN10+270
 	DD	imagerel $unwind$?hal_cpu_feature_enable@@YAXXZ
 $pdata$load_default_sregs DD imagerel $LN3
 	DD	imagerel $LN3+90
@@ -634,11 +629,11 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 ?is_cpu_xsave_supported@@YA_NXZ PROC			; is_cpu_xsave_supported
 
-; 341  : 	return _xsave;
+; 342  : 	return _xsave;
 
 	movzx	eax, BYTE PTR _xsave
 
-; 342  : }
+; 343  : }
 
 	ret	0
 ?is_cpu_xsave_supported@@YA_NXZ ENDP			; is_cpu_xsave_supported
@@ -648,11 +643,11 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 ?is_cpu_fxsave_supported@@YA_NXZ PROC			; is_cpu_fxsave_supported
 
-; 337  : 	return _fxsave;
+; 338  : 	return _fxsave;
 
 	movzx	eax, BYTE PTR _fxsave
 
-; 338  : }
+; 339  : }
 
 	ret	0
 ?is_cpu_fxsave_supported@@YA_NXZ ENDP			; is_cpu_fxsave_supported
@@ -763,11 +758,7 @@ $LN7@hal_cpu_fe:
 	bts	rax, 9
 	mov	QWORD PTR cr4$1[rsp], rax
 
-; 323  : 			printf("FXSAVE enabled\n");
-
-	lea	rcx, OFFSET FLAT:$SG3661
-	call	printf
-
+; 323  : 			//printf("FXSAVE enabled\n");
 ; 324  : 			_fxsave = true;
 
 	mov	BYTE PTR _fxsave, 1
@@ -794,31 +785,21 @@ $LN6@hal_cpu_fe:
 	and	rax, 67108864				; 04000000H
 	test	rax, rax
 	je	SHORT $LN3@hal_cpu_fe
-
-; 330  : 		printf("[aurora]: SSE2 is supported \n");
-
-	lea	rcx, OFFSET FLAT:$SG3664
-	call	printf
 	jmp	SHORT $LN2@hal_cpu_fe
 $LN3@hal_cpu_fe:
 
+; 330  : 		//printf("[aurora]: SSE2 is supported \n");
 ; 331  : 	}
-; 332  : 	else if ((c & (1 << 0)) != 0)
+; 332  : 	else if ((c & (1 << 0)) != 0){
 
 	mov	rax, QWORD PTR c$[rsp]
 	and	rax, 1
-	test	rax, rax
-	je	SHORT $LN1@hal_cpu_fe
-
-; 333  : 		printf("[aurora]: SSE3 is supported \n");
-
-	lea	rcx, OFFSET FLAT:$SG3667
-	call	printf
-$LN1@hal_cpu_fe:
 $LN2@hal_cpu_fe:
 $LN4@hal_cpu_fe:
 
-; 334  : }
+; 333  : 		//printf("[aurora]: SSE3 is supported \n");
+; 334  : 	}
+; 335  : }
 
 	add	rsp, 120				; 00000078H
 	ret	0

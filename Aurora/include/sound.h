@@ -33,7 +33,7 @@ typedef struct _dsp_ {
 typedef struct _sound_ {
 	/* the streams to read/write from/to */
 	char name[32];
-	void (*write) (uint8_t* buffer, size_t length);
+	void (*write) (uint64_t* buffer, size_t length);
 	void (*read) (uint8_t* buffer, size_t length);
 	void (*stop_output_stream) ();
 	void (*start_output_stream) ();

@@ -257,7 +257,6 @@ void ahci_initialize () {
 	}
 
 	pcie_print_capabilities(device);
-	for(;;);
 }
 
 /*

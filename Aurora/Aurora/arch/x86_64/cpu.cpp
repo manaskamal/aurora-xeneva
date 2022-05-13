@@ -320,17 +320,18 @@ void hal_cpu_feature_enable () {
 
 		if ((d & (1 << 24)) != 0) {
 			cr4 |= (1 << 9);
-			printf("FXSAVE enabled\n");
+			//printf("FXSAVE enabled\n");
 			_fxsave = true;
 		}
 		cr4 |= (1 << 10);
 		x64_write_cr4(cr4);
 	}
 	else if ((d & (1 << 26)) != 0) {
-		printf("[aurora]: SSE2 is supported \n");
+		//printf("[aurora]: SSE2 is supported \n");
 	}
-	else if ((c & (1 << 0)) != 0)
-		printf("[aurora]: SSE3 is supported \n");
+	else if ((c & (1 << 0)) != 0){
+		//printf("[aurora]: SSE3 is supported \n");
+	}
 }
 
 bool is_cpu_fxsave_supported () {

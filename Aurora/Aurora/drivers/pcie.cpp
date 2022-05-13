@@ -128,7 +128,7 @@ uint32_t pci_express_read (uint32_t device, int reg) {
 		size = 1;
 		break;
 	default:
-		size = 4;
+		size = 1;
 		break;
 	}
 
@@ -146,6 +146,92 @@ uint32_t pci_express_read (uint32_t device, int reg) {
 	return 0xFFFFFFFF;
 }
 
+
+void pci_express_write (uint32_t device, int reg, uint32_t val) {
+	if(acpi_pcie_supported() == false) {
+		return pci_write(device,reg, val);
+	}
+
+	size_t* address = (size_t*)device;
+
+	int size = 0;
+	switch(reg) {
+	case PCI_VENDOR_ID:
+		size = 2;
+		break;
+	case PCI_DEVICE_ID:
+		size = 2;
+		break;
+	case PCI_COMMAND:
+		size = 2;
+		break;
+	case PCI_STATUS:
+		size = 2;
+		break;
+	case PCI_REVISION_ID:
+		size = 1;
+		break;
+	case PCI_PROG_IF:
+		size = 1;
+		break;
+	case PCI_SUBCLASS:
+		size = 1;
+		break;
+	case PCI_CLASS:
+		size = 1;
+		break;
+	case PCI_CACHE_LINE_SIZE:
+		size = 1;
+		break;
+	case PCI_LATENCY_TIMER:
+		size = 1;
+		break;
+	case PCI_HEADER_TYPE:
+		size = 1;
+		break;
+	case PCI_BIST:
+		size = 1;
+		break;
+	case PCI_BAR0:
+		size = 4;
+		break;
+	case PCI_BAR1:
+		size = 4;
+		break;
+	case PCI_BAR2:
+		size = 4;
+		break;
+	case PCI_BAR3:
+		size = 4;
+		break;
+	case PCI_BAR4:
+		size = 4;
+		break;
+	case PCI_BAR5:
+		size = 4;
+		break;
+	case PCI_CAPABILITIES_PTR:
+		size = 1;
+		break;
+	case PCI_INTERRUPT_LINE:
+		size = 1;
+		break;
+	case PCI_INTERRUPT_PIN:
+		size = 1;
+		break;
+	default:
+		size = 1;
+		break;
+	}
+
+	if (size == 1){
+		*raw_offset<volatile uint8_t*>(address, reg) = val;
+	}else if (size == 2) {
+		*raw_offset<volatile uint16_t*>(address, reg) = val;
+	}else if (size == 4) {
+		*raw_offset<volatile uint32_t*>(address, reg) = val;
+	}
+}
 
 uint32_t pci_express_read2 (uint32_t device, int reg, int size) {
 	size_t* address = (size_t*)device;
@@ -173,11 +259,16 @@ uint32_t pci_express_scan_class (uint8_t classCode, uint8_t subClassCode) {
 
 	acpiMcfg *mcfg = acpi_get_mcfg();
 	acpiMcfgAlloc *allocs = mem_after<acpiMcfgAlloc*>(mcfg);
+	uint16_t pciSegment = 0;
+	if (allocs->pciSegment <= 65535)
+		pciSegment = allocs->pciSegment;
+	else
+		pciSegment = 0;
 
 	for (int bus = 0; bus < allocs->endBusNum; bus++){
 		for (int dev = 0; dev < PCI_DEVICE_PER_BUS; dev++) {
 			for (int func = 0; func < PCI_FUNCTION_PER_DEVICE; func++) {
-				uint32_t address = pci_express_get_device(allocs->pciSegment, bus,dev,func);
+				uint32_t address = pci_express_get_device(pciSegment, bus,dev,func);
 				//debug_print ("Dev Address ->%x \n", address);
 				if (address == 0xFFFFFFFF)
 					continue;

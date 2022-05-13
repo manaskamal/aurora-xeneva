@@ -48,8 +48,7 @@ void AuSoundRead (vfs_node_t *file, uint64_t* buffer, uint32_t length) {
 void AuSoundWrite (vfs_node_t *file, uint64_t* buffer, uint32_t length) {
 	if (registered_dev == NULL)
 		return;
-	uint8_t* aligned_buf = (uint8_t*)buffer;
-	registered_dev->write(aligned_buf, length);
+	registered_dev->write(buffer, length);
 }
 
 

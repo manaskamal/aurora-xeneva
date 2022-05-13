@@ -137,7 +137,7 @@ EXTRN	_debug_print_:PROC
 EXTRN	__ImageBase:BYTE
 pdata	SEGMENT
 $pdata$?hda_initialize@@YAXXZ DD imagerel $LN14
-	DD	imagerel $LN14+864
+	DD	imagerel $LN14+861
 	DD	imagerel $unwind$?hda_initialize@@YAXXZ
 $pdata$?codec_query@@YAIHHI@Z DD imagerel $LN6
 	DD	imagerel $LN6+132
@@ -3007,9 +3007,9 @@ $LN10@hda_initia:
 
 ; 584  : 
 ; 585  : 	//! Allocate the main audio buffer area
-; 586  : 	uint64_t pos = 0xFFFFF00000100000;
+; 586  : 	uint64_t pos = 0xFFFFD00000400000;
 
-	mov	rax, -17592184995840			; fffff00000100000H
+	mov	rax, -52776553938944			; ffffd00000400000H
 	mov	QWORD PTR pos$[rsp], rax
 
 ; 587  : 	for (int i = 0; i < (BDL_SIZE*HDA_BUFFER_SIZE/ 4096)+1; i++) {
@@ -3046,9 +3046,9 @@ $LN9@hda_initia:
 $LN7@hda_initia:
 
 ; 590  : 
-; 591  : 	_ihd_audio.buffer = (uint64_t*)0xFFFFF00000100000;
+; 591  : 	_ihd_audio.buffer = (uint64_t*)0xFFFFD00000400000;
 
-	mov	rax, -17592184995840			; fffff00000100000H
+	mov	rax, -52776553938944			; ffffd00000400000H
 	mov	QWORD PTR ?_ihd_audio@@3U_hd_audio_@@A+61, rax
 
 ; 592  : 	memset (_ihd_audio.buffer, 10000, BDL_SIZE*HDA_BUFFER_SIZE);
@@ -3224,11 +3224,10 @@ $LN3@hda_initia:
 	lea	rcx, OFFSET FLAT:?hda_output_stop@@YAXXZ ; hda_output_stop
 	mov	QWORD PTR [rax+48], rcx
 
-; 632  : 	sound->write = hda_write;
+; 632  : 	sound->write = 0; //hda_write;
 
 	mov	rax, QWORD PTR sound$[rsp]
-	lea	rcx, OFFSET FLAT:?hda_write@@YAXPEAE_K@Z ; hda_write
-	mov	QWORD PTR [rax+32], rcx
+	mov	QWORD PTR [rax+32], 0
 
 ; 633  : 	sound->read = 0;
 

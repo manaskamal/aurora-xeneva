@@ -106,16 +106,16 @@ void AuInitializeBasicAcpi (void* acpi_base) {
 			while (raw_diff(sub,srat) < srat->Header.length) {
 				switch (sub->type) {
 				case acpi_srat_type_memory_affinity: {
-					printf ("[ACPI]: Srat memory affinity found \n");
+					//printf ("[ACPI]: Srat memory affinity found \n");
 					acpi_srat_mem_affinity *mem_affinity = (acpi_srat_mem_affinity*)sub;
-					printf ("Mem start -> %x \n", mem_affinity->base_address);
+					/*printf ("Mem start -> %x \n", mem_affinity->base_address);
 					printf ("Mem end -> %x \n", (mem_affinity->base_address + mem_affinity->length)*4096);
 					printf ("Mem Length -> %d MB \n", (mem_affinity->length / 1024 / 1024));
 					printf ("Numa Domain -> %d \n", mem_affinity->proximity_domain);
-					printf ("Mem LLength -> %d\n", mem_affinity->header.length);
+					printf ("Mem LLength -> %d\n", mem_affinity->header.length);*/
 					break;
 				}case acpi_srat_type_cpu_affinity:
-					printf ("[ACPI]: Srat cpu affinity found \n");
+					//printf ("[ACPI]: Srat cpu affinity found \n");
 					break;
 				case acpi_srat_type_generic_affinity:
 					printf ("[ACPI]: Generic affinity found \n");
@@ -145,8 +145,9 @@ void AuInitializeBasicAcpi (void* acpi_base) {
 			kern_acpi.mcfg = (acpiMcfg*) header;
 			acpiMcfgAlloc *allocs = mem_after<acpiMcfgAlloc*>(kern_acpi.mcfg);
 			//for (; raw_diff(allocs, kern_acpi.mcfg) < kern_acpi.mcfg->header.length; ++allocs) {
-				printf ("PCIe Start bus num -> %d, End bus num -> %d, base address-> %x, segment -> %d\n", allocs->startBusNum, allocs->endBusNum,
-					allocs->baseAddress, allocs->pciSegment);
+				printf ("PCIe Start bus num -> %d, End bus num -> %d, base address-> %x\n", allocs->startBusNum, allocs->endBusNum,
+					allocs->baseAddress);
+				printf ("PCIe Segment -> %d \n", allocs->pciSegment);
 				pcie_support = true;
 			//}
 		}

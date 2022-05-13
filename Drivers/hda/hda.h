@@ -100,7 +100,7 @@
 
 
 #define BDL_SIZE 4
-#define BUFFER_SIZE   4096 //0x10000
+#define BUFFER_SIZE   0x100000//0x10000
 
 
 #define HDA_GCAP_OSS_MASK  0xf000
@@ -339,6 +339,6 @@ extern void widget_init_output ();
  * hda_init_output_stream -- initialize the output stream
  */
 extern void hda_init_output_stream ();
-extern void output_stream_write(uint8_t* buffer, size_t length);
+extern void output_stream_write(uint64_t* buffer, size_t length);
 
 #endif

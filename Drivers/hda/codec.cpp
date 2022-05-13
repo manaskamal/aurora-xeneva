@@ -107,7 +107,7 @@ int codec_enumerate_widgets(int codec) {
 			continue;
 		}
 
-		//codec_query (codec, fg_start + i, VERB_SET_POWER_STATE | 0x0);
+		codec_query (codec, fg_start + i, VERB_SET_POWER_STATE | 0x0);
 
 		for (int j = 0; j < num_widgets; j++) {
 			widget_init (codec, widgets_start + j);

@@ -130,10 +130,10 @@ void setup_corb () {
 
 	/* Set CORB Base Address */
 	corb_base = (uint64_t)v2p((size_t)hd_audio.corb);
-	printf ("CORB Base -> %x \n", corb_base);
+
 	_aud_outl_(CORBLBASE, corb_base);
 	_aud_outl_(CORBUBASE, corb_base >> 32);
-
+	
 	_aud_outw_ (CORBWP, corbwp);
 	_aud_outw_ (CORBRP, 0x8000);
 	_aud_outw_ (CORBRP, 0x0);
@@ -332,10 +332,10 @@ void hda_handler (size_t v, void* p) {
 	uint32_t isr = _aud_inl_(INTSTS);
 	uint8_t sts = _aud_inb_(REG_O0_STS);
 	
-	_debug_print_ ("HDA Handler \r\n");
+	printf("HDA Handler \r\n");
 	if (sts & 0x4) {
-		_debug_print_ ("HDA Buffer completed \r\n");
-		hda_output_stream_stop();
+		printf ("HDA Buffer completed \r\n");
+	//	hda_output_stream_stop();
 	}
    
 	_aud_outb_ (REG_O0_STS,sts);
@@ -360,15 +360,22 @@ AU_EXTERN AU_EXPORT int AuDriverMain(){
 	}
 	
 
-	/*uint8_t tcsel = 0;
-	read_config_8(0,bus,dev,func,0x44,&tcsel);
-	write_config_8(0,bus,dev,func,0x44,(tcsel & 0xf8));*/
+	uint8_t tcsel;
+	tcsel = pci_express_read(device,0x44);
+	pci_express_write(device,0x44,(tcsel & 0xf8));
 
 	codec_initialize_output = NULL;
 	codec_set_volume = NULL;
 
 	//pci_enable_bus_master(device);
 	//pci_enable_interrupts(device);
+	uint32_t command = pci_express_read(device ,PCI_COMMAND);
+	command &= ~(1<<10); //clear the Interrupt disable
+	command |= (1<<2); //Bus Master
+	command |= (1<<1);
+	command |= (1<<0);
+	pci_express_write(device, PCI_COMMAND, command);
+
 
 
 	shared_device = (shirq_t*)malloc(sizeof(shirq_t));
@@ -399,12 +406,6 @@ AU_EXTERN AU_EXPORT int AuDriverMain(){
 	memset((void*)hd_audio.rirb, 0, 4096);
 	
 
-
-	uint64_t pos = 0xFFFFF00000100000;
-	for (int i = 0; i < (BDL_SIZE*BUFFER_SIZE/ 4096) + 1; i++) {
-		AuMapPage ((uint64_t)AuPmmngrAlloc(),pos + i * 4096, 0);
-	}
-
 	printf ("[drivers]: hda interrupt line -> %d \n", shared_device->irq);
 	/* Avoid immediate use */
 	hd_audio.immediate_use = false; 
@@ -434,9 +435,9 @@ AU_EXTERN AU_EXPORT int AuDriverMain(){
 		}
 	} 
 
-	widget_init_output();
-	hda_init_output_stream();
 	
+	hda_init_output_stream();
+	widget_init_output();
 	hda_set_volume(255);
 
 	sound_t *sound = (sound_t*)malloc(sizeof(sound_t));
@@ -451,13 +452,7 @@ AU_EXTERN AU_EXPORT int AuDriverMain(){
 	printf ("[driver]: intel hda audio initialized vendor: %x device: %x\n", shared_device->vendor_id, shared_device->device_id);
 	pcie_print_capabilities(device);
 
-	/*AuEnableInterrupts();
-	for(;;){
-		if(hda_first_interrupt)
-			break;
-	}
 
-	AuDisableInterupts();*/
 	return 0;
 }
 
@@ -487,17 +482,28 @@ void widget_init_output () {
 		return;
 	}
 
-	for (int i = 0; i < hd_audio.output_ptr; i++) {
-		codec = hd_audio.output[i]->output_codec_id;
-		nid = hd_audio.output[i]->output_nid;
+	//for (int i = 0; i < hd_audio.output_ptr; i++) {
+		codec = hd_audio.output[0]->output_codec_id;
+		nid = hd_audio.output[0]->output_nid;
 		/* first output channel is 0x10 */
-		codec_query(codec, nid,VERB_SET_STREAM_CHANNEL | 0x10);
-		uint16_t format =  BITS_16 | SR_48_KHZ | 2 - 1;
+		codec_query(codec, nid,VERB_SET_STREAM_CHANNEL | (1<<4) | 1);
+		uint32_t stream = codec_query(codec, nid, VERB_GET_STREAM_CHANNEL);
+		printf ("Associated Stream num -> %d \n", ((stream >> 4) & 0xf));
+		uint16_t format =   (1<<15) | SR_44_KHZ | (0<<11) | (0 << 8) | BITS_16 | 1;
 		codec_query(codec, nid,VERB_SET_FORMAT | format);
-		//codec_query(codec, nid,VERB_SET_PIN_CONTROL | (1<<6));
-		codec_query(codec, nid,VERB_SET_POWER_STATE | 0x0);
+		codec_query(codec, nid,VERB_SET_PIN_CONTROL | (1<<6));
+
+		codec_query(codec, nid, VERB_SET_CONV_CHANNEL_COUNT | 1);
+		stream = codec_query(codec, nid, VERB_GET_CONV_CHANNEL_COUNT);
+		printf ("Converter chan count -> %d \n", (stream & 0xff));
+
+
+		uint32_t eapd_ = codec_query (codec,nid, VERB_GET_EAPD_BTL);	
+		codec_query (codec, nid,VERB_SET_EAPD_BTL | eapd_ | 0x2);
+
+		codec_query(codec, nid,VERB_SET_POWER_STATE | 0x1);
 		//_aud_outw_(REG_O0_FMT, format);
-	}
+	//}
 }
 
 
@@ -514,16 +520,22 @@ void hda_set_volume (uint8_t volume) {
 	int meta = 0xb000;
 	int codec, nid = 0;
 
-	for (int i = 0; i < hd_audio.output_ptr; i++) {
-		codec = hd_audio.output[i]->output_codec_id;
-		nid = hd_audio.output[i]->output_nid;
+	/*for (int i = 0; i < hd_audio.output_ptr; i++) {*/
+		codec = hd_audio.output[0]->output_codec_id;
+		nid = hd_audio.output[0]->output_nid;
 		if (volume == 0)
 			volume = 0x80;
 		else
-			volume = volume * hd_audio.output[i]->output_amp_gain_step / 255;
-		_debug_print_ ("AMP Gain %d \r\n",hd_audio.output[i]->output_amp_gain_step );
-		codec_query(codec,nid, VERB_SET_AMP_GAIN_MUTE | (1<<15) | (1<<13) | (1<<12) | volume);
-	}
+			volume = volume * hd_audio.output[0]->output_amp_gain_step / 255;
+		_debug_print_ ("AMP Gain %d \r\n",hd_audio.output[0]->output_amp_gain_step );
+		uint32_t vol = codec_query(codec, nid, VERB_GET_AMP_GAIN_MUTE);
+		vol |= (1<<15);
+		vol |= (1<<13);
+		vol |= (1<<12);
+		vol &= ~(1<<7);
+		vol |= volume & 0xff;
+		codec_query(codec,nid, VERB_SET_AMP_GAIN_MUTE | vol);
+	//}
 	
 }
 
@@ -533,14 +545,13 @@ void hda_set_volume (uint8_t volume) {
  * hda_output_stream_start -- starts the output stream
  */
 void hda_output_stream_start () {
-
 	uint32_t ssync = _aud_inl_ (SSYNC);
 	ssync &= ~(1<<4);
 	_aud_outl_(SSYNC, ssync);
 
 	uint8_t value = _aud_inb_(REG_O0_CTLL);
-	value |= HDAC_SDCTL_IOCE | HDAC_SDCTL_FEIE | HDAC_SDCTL_DEIE | HDAC_SDCTL_RUN;
-	//value |= (1<<1);
+	//value |= HDAC_SDCTL_IOCE | HDAC_SDCTL_FEIE | HDAC_SDCTL_DEIE | HDAC_SDCTL_RUN;
+	value |= (1<<1);
     _aud_outb_(REG_O0_CTLL,value);
 }
 

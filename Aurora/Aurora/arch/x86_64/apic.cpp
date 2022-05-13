@@ -165,7 +165,7 @@ void initialize_apic (bool bsp) {
 
 
 	//!Register the time speed
-	write_apic_register (LAPIC_REGISTER_TMRDIV,0x3);  //0xa
+	write_apic_register (LAPIC_REGISTER_TMRDIV,0xa);  //0x3
 
 	/*! timer initialized*/
 	size_t timer_vector = 0x40;

@@ -31,20 +31,30 @@
 #include "sigmatel.h"
 
 void sigmatel_init (int codec, int nid) {
-	codec_query (codec, 2, VERB_SET_STREAM_CHANNEL | 0x10);  //0x10
-	codec_query (codec, 3, VERB_SET_STREAM_CHANNEL | 0x10);
-	codec_query (codec, 4, VERB_SET_STREAM_CHANNEL | 0x10);
-	codec_query (codec, 5, VERB_SET_STREAM_CHANNEL | 0x10);
-	codec_query (codec, 6, VERB_SET_STREAM_CHANNEL | 0x10);
 
-
-	uint16_t format =  (1<<14) | (0<<11) | (1<<4) | 1;
+	
+	/*codec_query (codec, 3, VERB_SET_STREAM_CHANNEL | (1<<4));
+	codec_query (codec, 4, VERB_SET_STREAM_CHANNEL | (1<<4));
+	codec_query (codec, 5, VERB_SET_STREAM_CHANNEL | (1<<4));
+	codec_query (codec, 6, VERB_SET_STREAM_CHANNEL | (1<<4));*/
+	
+	uint16_t format =  (1<<15) | SR_44_KHZ | (0<<11) | (0 << 8) | BITS_16 | 1;
 	//uint16_t format =  (0<<14) | (0<<11) | (0<<8)| (1<<4) | (1<<0);
 	codec_query (codec, 2, VERB_SET_FORMAT | format);
-	codec_query (codec, 3, VERB_SET_FORMAT | format);
+	
+	codec_query (codec, 2, VERB_SET_STREAM_CHANNEL | 0x10);  //0x10
+
+	codec_query (codec, 2, VERB_SET_CONV_CHANNEL_COUNT | 1);
+	/*codec_query (codec, 3, VERB_SET_CONV_CHANNEL_COUNT | 1);
+	codec_query (codec, 4, VERB_SET_CONV_CHANNEL_COUNT | 1);
+	codec_query (codec, 5, VERB_SET_CONV_CHANNEL_COUNT | 1);
+	codec_query (codec, 6, VERB_SET_CONV_CHANNEL_COUNT | 1);*/
+
+	
+	/*codec_query (codec, 3, VERB_SET_FORMAT | format);
 	codec_query (codec, 4, VERB_SET_FORMAT | format);
 	codec_query (codec, 5, VERB_SET_FORMAT | format);
-	codec_query (codec, 6, VERB_SET_FORMAT | format);
+	codec_query (codec, 6, VERB_SET_FORMAT | format);*/
 
 	
 
@@ -53,24 +63,10 @@ void sigmatel_init (int codec, int nid) {
 	//_ihd_audio.output->sample_rate = SR_48_KHZ;
 	//_ihd_audio.output->num_channels = 2;
 
-	codec_query (codec, 2, VERB_SET_EAPD_BTL | (1<<1) | (1<<2));
-	codec_query (codec, 3, VERB_SET_EAPD_BTL | (1<<1) | (1<<2));
-	codec_query (codec, 4, VERB_SET_EAPD_BTL | (1<<1) | (1<<2));
-	codec_query (codec, 5, VERB_SET_EAPD_BTL | (1<<1) | (1<<2));
-	codec_query (codec, 6, VERB_SET_EAPD_BTL | (1<<1) | (1<<2));
-
-	codec_query(codec, 2,VERB_SET_PIN_CONTROL | (1<<6));
-	codec_query(codec, 3,VERB_SET_PIN_CONTROL | (1<<6));
-	codec_query(codec, 4,VERB_SET_PIN_CONTROL | (1<<6));
-	codec_query(codec, 5,VERB_SET_PIN_CONTROL | (1<<6));
-	codec_query(codec, 6,VERB_SET_PIN_CONTROL | (1<<6));
+	codec_query(codec, nid, 0x70C00 | (1<<2));
 	
 	//!Set Pin control : enable the output bit
-	codec_query(codec, 2,VERB_SET_POWER_STATE | 0x0);
-	codec_query(codec, 3,VERB_SET_POWER_STATE | 0x0);
-	codec_query(codec, 4,VERB_SET_POWER_STATE | 0x0);
-	codec_query(codec, 5,VERB_SET_POWER_STATE | 0x0);
-	codec_query(codec, 6,VERB_SET_POWER_STATE | 0x0);
+	
 }
 
 

@@ -583,12 +583,12 @@ void hda_initialize () {
 	memset (_ihd_audio.rirb, 0, 4096);
 
 	//! Allocate the main audio buffer area
-	uint64_t pos = 0xFFFFF00000100000;
+	uint64_t pos = 0xFFFFD00000400000;
 	for (int i = 0; i < (BDL_SIZE*HDA_BUFFER_SIZE/ 4096)+1; i++) {
 		AuMapPage ((uint64_t)AuPmmngrAlloc(),pos + i * 4096, 0);
 	}
 
-	_ihd_audio.buffer = (uint64_t*)0xFFFFF00000100000;
+	_ihd_audio.buffer = (uint64_t*)0xFFFFD00000400000;
 	memset (_ihd_audio.buffer, 10000, BDL_SIZE*HDA_BUFFER_SIZE);
 
 
@@ -629,7 +629,7 @@ void hda_initialize () {
 	sound_t *sound = (sound_t*)malloc(sizeof(sound_t));
 	sound->start_output_stream = hda_audio_play;
 	sound->stop_output_stream = hda_output_stop;
-	sound->write = hda_write;
+	sound->write = 0; //hda_write;
 	sound->read = 0;
 	AuSoundRegisterDevice(sound);
 
