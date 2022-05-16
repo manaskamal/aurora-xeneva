@@ -16,17 +16,17 @@ PUBLIC	?pci_decode_bus@@YAHI@Z				; pci_decode_bus
 PUBLIC	?pci_decode_slot@@YAHI@Z			; pci_decode_slot
 PUBLIC	?pci_decode_func@@YAHI@Z			; pci_decode_func
 PUBLIC	?pci_get_address@@YAIIH@Z			; pci_get_address
-EXTRN	inportb:PROC
-EXTRN	inportw:PROC
-EXTRN	inportd:PROC
-EXTRN	outportd:PROC
+EXTRN	x64_inportb:PROC
+EXTRN	x64_inportw:PROC
+EXTRN	x64_inportd:PROC
+EXTRN	x64_outportd:PROC
 EXTRN	__ImageBase:BYTE
 pdata	SEGMENT
 $pdata$pci_read DD imagerel $LN32
 	DD	imagerel $LN32+578
 	DD	imagerel $unwind$pci_read
-$pdata$pci_scan_class DD imagerel $LN13
-	DD	imagerel $LN13+208
+$pdata$pci_scan_class DD imagerel $LN14
+	DD	imagerel $LN14+234
 	DD	imagerel $unwind$pci_scan_class
 $pdata$pci_scan_device DD imagerel $LN10
 	DD	imagerel $LN10+159
@@ -41,7 +41,7 @@ $pdata$pci_enable_interrupts DD imagerel $LN3
 	DD	imagerel $LN3+62
 	DD	imagerel $unwind$pci_enable_interrupts
 $pdata$?pci_get_address@@YAIIH@Z DD imagerel $LN3
-	DD	imagerel $LN3+93
+	DD	imagerel $LN3+85
 	DD	imagerel $unwind$?pci_get_address@@YAIIH@Z
 pdata	ENDS
 xdata	SEGMENT
@@ -77,7 +77,7 @@ $LN3:
 	sub	rsp, 56					; 00000038H
 
 ; 50   : 	return 0x80000000 | (pci_decode_bus(device) << 16) | (pci_decode_slot(device) << 11) | (pci_decode_func(device) << 8) | 
-; 51   : 		((reg) & 0xFC);
+; 51   : 		reg;
 
 	mov	ecx, DWORD PTR device$[rsp]
 	call	?pci_decode_bus@@YAHI@Z			; pci_decode_bus
@@ -97,9 +97,7 @@ $LN3:
 	mov	ecx, DWORD PTR tv71[rsp]
 	or	ecx, eax
 	mov	eax, ecx
-	mov	ecx, DWORD PTR reg$[rsp]
-	and	ecx, 252				; 000000fcH
-	or	eax, ecx
+	or	eax, DWORD PTR reg$[rsp]
 
 ; 52   : }
 
@@ -203,33 +201,33 @@ command$ = 32
 device$ = 64
 pci_enable_interrupts PROC
 
-; 180  : void pci_enable_interrupts (uint32_t device) {
+; 182  : void pci_enable_interrupts (uint32_t device) {
 
 $LN3:
 	mov	DWORD PTR [rsp+8], ecx
 	sub	rsp, 56					; 00000038H
 
-; 181  : 	uint32_t command = pci_read(device, PCI_COMMAND);
+; 183  : 	uint32_t command = pci_read(device, PCI_COMMAND);
 
 	mov	edx, 4
 	mov	ecx, DWORD PTR device$[rsp]
 	call	pci_read
 	mov	DWORD PTR command$[rsp], eax
 
-; 182  : 	command &= ~(1<<10);
+; 184  : 	command &= ~(1<<10);
 
 	mov	eax, DWORD PTR command$[rsp]
 	btr	eax, 10
 	mov	DWORD PTR command$[rsp], eax
 
-; 183  : 	pci_write(device,PCI_COMMAND,command);
+; 185  : 	pci_write(device,PCI_COMMAND,command);
 
 	mov	r8d, DWORD PTR command$[rsp]
 	mov	edx, 4
 	mov	ecx, DWORD PTR device$[rsp]
 	call	pci_write
 
-; 184  : }
+; 186  : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -242,33 +240,33 @@ command$ = 32
 device$ = 64
 pci_enable_bus_master PROC
 
-; 174  : void pci_enable_bus_master (uint32_t device) {
+; 176  : void pci_enable_bus_master (uint32_t device) {
 
 $LN3:
 	mov	DWORD PTR [rsp+8], ecx
 	sub	rsp, 56					; 00000038H
 
-; 175  : 	uint32_t command = pci_read(device, PCI_COMMAND);
+; 177  : 	uint32_t command = pci_read(device, PCI_COMMAND);
 
 	mov	edx, 4
 	mov	ecx, DWORD PTR device$[rsp]
 	call	pci_read
 	mov	DWORD PTR command$[rsp], eax
 
-; 176  : 	command |= (1<<2);
+; 178  : 	command |= (1<<2);
 
 	mov	eax, DWORD PTR command$[rsp]
 	or	eax, 4
 	mov	DWORD PTR command$[rsp], eax
 
-; 177  : 	pci_write(device, PCI_COMMAND,command);
+; 179  : 	pci_write(device, PCI_COMMAND,command);
 
 	mov	r8d, DWORD PTR command$[rsp]
 	mov	edx, 4
 	mov	ecx, DWORD PTR device$[rsp]
 	call	pci_write
 
-; 178  : }
+; 180  : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -290,20 +288,20 @@ $LN3:
 	mov	DWORD PTR [rsp+8], ecx
 	sub	rsp, 40					; 00000028H
 
-; 141  : 	outportd(PCI_ADDRESS_PORT, pci_get_address(device,reg));
+; 141  : 	x64_outportd(PCI_ADDRESS_PORT, pci_get_address(device,reg));
 
 	mov	edx, DWORD PTR reg$[rsp]
 	mov	ecx, DWORD PTR device$[rsp]
 	call	?pci_get_address@@YAIIH@Z		; pci_get_address
 	mov	edx, eax
 	mov	cx, 3320				; 00000cf8H
-	call	outportd
+	call	x64_outportd
 
-; 142  : 	outportd(PCI_VALUE_PORT, value);
+; 142  : 	x64_outportd(PCI_VALUE_PORT, value);
 
 	mov	edx, DWORD PTR value$[rsp]
 	mov	cx, 3324				; 00000cfcH
-	call	outportd
+	call	x64_outportd
 
 ; 143  : }
 
@@ -323,14 +321,14 @@ vendid$ = 80
 devid$ = 88
 pci_scan_device PROC
 
-; 160  : uint32_t pci_scan_device(uint32_t vendid, uint32_t devid) {
+; 162  : uint32_t pci_scan_device(uint32_t vendid, uint32_t devid) {
 
 $LN10:
 	mov	DWORD PTR [rsp+16], edx
 	mov	DWORD PTR [rsp+8], ecx
 	sub	rsp, 72					; 00000048H
 
-; 161  : 	for (int dev = 0; dev < PCI_DEVICE_PER_BUS; dev++) {
+; 163  : 	for (int dev = 0; dev < PCI_DEVICE_PER_BUS; dev++) {
 
 	mov	DWORD PTR dev$2[rsp], 0
 	jmp	SHORT $LN7@pci_scan_d
@@ -342,7 +340,7 @@ $LN7@pci_scan_d:
 	cmp	DWORD PTR dev$2[rsp], 32		; 00000020H
 	jge	SHORT $LN5@pci_scan_d
 
-; 162  : 		for (int func = 0; func < PCI_FUNCTION_PER_DEVICE; func++) {
+; 164  : 		for (int func = 0; func < PCI_FUNCTION_PER_DEVICE; func++) {
 
 	mov	DWORD PTR func$1[rsp], 0
 	jmp	SHORT $LN4@pci_scan_d
@@ -354,7 +352,7 @@ $LN4@pci_scan_d:
 	cmp	DWORD PTR func$1[rsp], 8
 	jge	SHORT $LN2@pci_scan_d
 
-; 163  : 			uint32_t addr = pci_encode_device(0,dev,func);
+; 165  : 			uint32_t addr = pci_encode_device(0,dev,func);
 
 	mov	r8d, DWORD PTR func$1[rsp]
 	mov	edx, DWORD PTR dev$2[rsp]
@@ -362,21 +360,21 @@ $LN4@pci_scan_d:
 	call	?pci_encode_device@@YAIHHH@Z		; pci_encode_device
 	mov	DWORD PTR addr$3[rsp], eax
 
-; 164  : 			uint32_t v = pci_read(addr,PCI_VENDOR_ID);
+; 166  : 			uint32_t v = pci_read(addr,PCI_VENDOR_ID);
 
 	xor	edx, edx
 	mov	ecx, DWORD PTR addr$3[rsp]
 	call	pci_read
 	mov	DWORD PTR v$4[rsp], eax
 
-; 165  : 			uint32_t d = pci_read(addr,PCI_DEVICE_ID);
+; 167  : 			uint32_t d = pci_read(addr,PCI_DEVICE_ID);
 
 	mov	edx, 2
 	mov	ecx, DWORD PTR addr$3[rsp]
 	call	pci_read
 	mov	DWORD PTR d$5[rsp], eax
 
-; 166  : 			if (v == vendid && d == devid) 
+; 168  : 			if (v == vendid && d == devid) 
 
 	mov	eax, DWORD PTR vendid$[rsp]
 	cmp	DWORD PTR v$4[rsp], eax
@@ -385,29 +383,29 @@ $LN4@pci_scan_d:
 	cmp	DWORD PTR d$5[rsp], eax
 	jne	SHORT $LN1@pci_scan_d
 
-; 167  : 				return addr;
+; 169  : 				return addr;
 
 	mov	eax, DWORD PTR addr$3[rsp]
 	jmp	SHORT $LN8@pci_scan_d
 $LN1@pci_scan_d:
 
-; 168  : 		}
+; 170  : 		}
 
 	jmp	SHORT $LN3@pci_scan_d
 $LN2@pci_scan_d:
 
-; 169  : 	}
+; 171  : 	}
 
 	jmp	SHORT $LN6@pci_scan_d
 $LN5@pci_scan_d:
 
-; 170  : 
-; 171  : 	return 0xFFFFFFFF;
+; 172  : 
+; 173  : 	return 0xFFFFFFFF;
 
 	mov	eax, -1					; ffffffffH
 $LN8@pci_scan_d:
 
-; 172  : }
+; 174  : }
 
 	add	rsp, 72					; 00000048H
 	ret	0
@@ -428,7 +426,7 @@ pci_scan_class PROC
 
 ; 145  : uint32_t pci_scan_class(uint8_t classcode, uint8_t subclass) {
 
-$LN13:
+$LN14:
 	mov	BYTE PTR [rsp+16], dl
 	mov	BYTE PTR [rsp+8], cl
 	sub	rsp, 72					; 00000048H
@@ -436,38 +434,38 @@ $LN13:
 ; 146  : 	for (int bus = 0; bus < PCI_MAX_BUS; bus++) {
 
 	mov	DWORD PTR bus$3[rsp], 0
-	jmp	SHORT $LN10@pci_scan_c
-$LN9@pci_scan_c:
+	jmp	SHORT $LN11@pci_scan_c
+$LN10@pci_scan_c:
 	mov	eax, DWORD PTR bus$3[rsp]
 	inc	eax
 	mov	DWORD PTR bus$3[rsp], eax
-$LN10@pci_scan_c:
+$LN11@pci_scan_c:
 	cmp	DWORD PTR bus$3[rsp], 256		; 00000100H
-	jge	$LN8@pci_scan_c
+	jge	$LN9@pci_scan_c
 
 ; 147  : 		for (int dev = 0; dev < PCI_DEVICE_PER_BUS; dev++) {
 
 	mov	DWORD PTR dev$2[rsp], 0
-	jmp	SHORT $LN7@pci_scan_c
-$LN6@pci_scan_c:
+	jmp	SHORT $LN8@pci_scan_c
+$LN7@pci_scan_c:
 	mov	eax, DWORD PTR dev$2[rsp]
 	inc	eax
 	mov	DWORD PTR dev$2[rsp], eax
-$LN7@pci_scan_c:
+$LN8@pci_scan_c:
 	cmp	DWORD PTR dev$2[rsp], 32		; 00000020H
-	jge	SHORT $LN5@pci_scan_c
+	jge	$LN6@pci_scan_c
 
 ; 148  : 			for (int func = 0; func < PCI_FUNCTION_PER_DEVICE; func++) {
 
 	mov	DWORD PTR func$1[rsp], 0
-	jmp	SHORT $LN4@pci_scan_c
-$LN3@pci_scan_c:
+	jmp	SHORT $LN5@pci_scan_c
+$LN4@pci_scan_c:
 	mov	eax, DWORD PTR func$1[rsp]
 	inc	eax
 	mov	DWORD PTR func$1[rsp], eax
-$LN4@pci_scan_c:
+$LN5@pci_scan_c:
 	cmp	DWORD PTR func$1[rsp], 8
-	jge	SHORT $LN2@pci_scan_c
+	jge	SHORT $LN3@pci_scan_c
 
 ; 149  : 				uint32_t addr = pci_encode_device(bus,dev,func);
 
@@ -491,7 +489,19 @@ $LN4@pci_scan_c:
 	call	pci_read
 	mov	DWORD PTR sc$6[rsp], eax
 
-; 152  : 				if (cc == classcode && sc == subclass) 
+; 152  : 				if (cc == 0xFF && sc == 0xFF)
+
+	cmp	DWORD PTR cc$5[rsp], 255		; 000000ffH
+	jne	SHORT $LN2@pci_scan_c
+	cmp	DWORD PTR sc$6[rsp], 255		; 000000ffH
+	jne	SHORT $LN2@pci_scan_c
+
+; 153  : 					continue;
+
+	jmp	SHORT $LN4@pci_scan_c
+$LN2@pci_scan_c:
+
+; 154  : 				if (cc == classcode && sc == subclass) 
 
 	movzx	eax, BYTE PTR classcode$[rsp]
 	cmp	DWORD PTR cc$5[rsp], eax
@@ -500,33 +510,33 @@ $LN4@pci_scan_c:
 	cmp	DWORD PTR sc$6[rsp], eax
 	jne	SHORT $LN1@pci_scan_c
 
-; 153  : 					return addr;
+; 155  : 					return addr;
 
 	mov	eax, DWORD PTR addr$4[rsp]
-	jmp	SHORT $LN11@pci_scan_c
+	jmp	SHORT $LN12@pci_scan_c
 $LN1@pci_scan_c:
 
-; 154  : 			}
+; 156  : 			}
 
-	jmp	SHORT $LN3@pci_scan_c
-$LN2@pci_scan_c:
+	jmp	SHORT $LN4@pci_scan_c
+$LN3@pci_scan_c:
 
-; 155  : 		}
+; 157  : 		}
 
-	jmp	$LN6@pci_scan_c
-$LN5@pci_scan_c:
+	jmp	$LN7@pci_scan_c
+$LN6@pci_scan_c:
 
-; 156  : 	}
+; 158  : 	}
 
-	jmp	$LN9@pci_scan_c
-$LN8@pci_scan_c:
+	jmp	$LN10@pci_scan_c
+$LN9@pci_scan_c:
 
-; 157  : 	return 0xFFFFFFFF;
+; 159  : 	return 0xFFFFFFFF;
 
 	mov	eax, -1					; ffffffffH
-$LN11@pci_scan_c:
+$LN12@pci_scan_c:
 
-; 158  : }
+; 160  : }
 
 	add	rsp, 72					; 00000048H
 	ret	0
@@ -768,14 +778,14 @@ $LN26@pci_read:
 ; 121  : 		break;
 ; 122  : 	}
 ; 123  : 
-; 124  : 	outportd(PCI_ADDRESS_PORT, pci_get_address(device, reg));
+; 124  : 	x64_outportd(PCI_ADDRESS_PORT, pci_get_address(device, reg));
 
 	mov	edx, DWORD PTR reg$[rsp]
 	mov	ecx, DWORD PTR device$[rsp]
 	call	?pci_get_address@@YAIIH@Z		; pci_get_address
 	mov	edx, eax
 	mov	cx, 3320				; 00000cf8H
-	call	outportd
+	call	x64_outportd
 
 ; 125  : 
 ; 126  : 	if (size == 4) {
@@ -783,10 +793,10 @@ $LN26@pci_read:
 	cmp	DWORD PTR size$[rsp], 4
 	jne	SHORT $LN5@pci_read
 
-; 127  : 		uint32_t t = inportd(PCI_VALUE_PORT);
+; 127  : 		uint32_t t = x64_inportd(PCI_VALUE_PORT);
 
 	mov	cx, 3324				; 00000cfcH
-	call	inportd
+	call	x64_inportd
 	mov	DWORD PTR t$3[rsp], eax
 
 ; 128  : 		return t;
@@ -801,13 +811,13 @@ $LN5@pci_read:
 	cmp	DWORD PTR size$[rsp], 2
 	jne	SHORT $LN3@pci_read
 
-; 130  : 		uint16_t t = inportw(PCI_VALUE_PORT + (reg & 2));
+; 130  : 		uint16_t t =  x64_inportw(PCI_VALUE_PORT + (reg & 2)); //+ (reg & 2));
 
 	mov	eax, DWORD PTR reg$[rsp]
 	and	eax, 2
 	add	eax, 3324				; 00000cfcH
 	movzx	ecx, ax
-	call	inportw
+	call	x64_inportw
 	mov	WORD PTR t$2[rsp], ax
 
 ; 131  : 		return t;
@@ -822,13 +832,13 @@ $LN3@pci_read:
 	cmp	DWORD PTR size$[rsp], 1
 	jne	SHORT $LN1@pci_read
 
-; 133  : 		uint8_t t = inportb (PCI_VALUE_PORT + (reg & 3));
+; 133  : 		uint8_t t = x64_inportb (PCI_VALUE_PORT + (reg & 3));
 
 	mov	eax, DWORD PTR reg$[rsp]
 	and	eax, 3
 	add	eax, 3324				; 00000cfcH
 	movzx	ecx, ax
-	call	inportb
+	call	x64_inportb
 	mov	BYTE PTR t$1[rsp], al
 
 ; 134  : 		return t;

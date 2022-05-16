@@ -82,7 +82,7 @@ void hda_handler (size_t v, void* p) {
 	_debug_print_ ("HDA Handler called \r\n");
 	if (sts & 0x4) {
 		uint8_t* buffer = (uint8_t*)(_ihd_audio.buffer + _ihd_audio.buffer_completed * 4096);
-		AuSoundRequestNext(buffer);
+		//AuSoundRequestNext(buffer);
 		//hda_output_stop();
 		_ihd_audio.buffer_completed++;
 		_ihd_audio.buffer_completed %= BDL_SIZE;

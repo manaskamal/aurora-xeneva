@@ -14,7 +14,7 @@ _BSS	SEGMENT
 ?last_mark@@3PEAEEA DQ 01H DUP (?)			; last_mark
 _BSS	ENDS
 CONST	SEGMENT
-$SG3175	DB	'*****Requesting page -> %x ', 0dH, 0aH, 00H
+$SG3181	DB	'*****Requesting page -> %x ', 0dH, 0aH, 00H
 CONST	ENDS
 PUBLIC	?AuHeapInitialize@@YAXXZ			; AuHeapInitialize
 PUBLIC	?au_request_page@@YAPEA_KH@Z			; au_request_page
@@ -925,7 +925,7 @@ $LN6:
 ; 258  : 	_debug_print_ ("*****Requesting page -> %x \r\n", page);
 
 	mov	rdx, QWORD PTR page$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3175
+	lea	rcx, OFFSET FLAT:$SG3181
 	call	_debug_print_
 
 ; 259  : 	for (size_t i = 0; i < pages; i++) {

@@ -100,7 +100,7 @@
 
 
 #define BDL_SIZE 4
-#define BUFFER_SIZE   0x100000//0x10000
+#define BUFFER_SIZE     4096 //1024 //0x10000 //2560 ///    0x100000 
 
 
 #define HDA_GCAP_OSS_MASK  0xf000
@@ -215,6 +215,7 @@ enum sample_format {
     SR_44_KHZ               = (1 << 14),
     BITS_32                 = (4 <<  4),
     BITS_16                 = (1 <<  4),
+	BITS_8                  = (0 << 4),
 };
 
 
@@ -238,7 +239,7 @@ typedef struct _hd_audio_ {
 	uint64_t mmio;
 	uint32_t* corb;
 	uint64_t* rirb;
-	uint64_t dma_buffer_phys;
+	uint64_t sample_buffer;
 	uint32_t rirb_entries;
 	uint32_t corb_entries;
 	uint16_t num_iss;
@@ -247,6 +248,7 @@ typedef struct _hd_audio_ {
 	bool immediate_use;
 	hd_output_t *output[15];
 	uintptr_t output_ptr;
+	uint64_t dma_pos_buff;
 }hd_audio_t;
 
 
@@ -303,6 +305,11 @@ extern void hda_set_codec_init_func (void (*init_func)(int codec, int nid));
  * function
  */
 extern void hda_set_volume_func (void (*set_vol) (uint8_t volume, int codec));
+
+extern void hda_audio_set_dma_pos (uint64_t dma_buff);
+
+extern uint64_t hda_get_dma_pos_buffer ();
+extern void hda_set_sample_buffer(uint64_t buffer);
 /*==========================================
  * CODEC functions
  * =========================================
@@ -339,6 +346,7 @@ extern void widget_init_output ();
  * hda_init_output_stream -- initialize the output stream
  */
 extern void hda_init_output_stream ();
-extern void output_stream_write(uint64_t* buffer, size_t length);
+extern void output_stream_write(uint8_t* buffer, size_t length);
+extern void output_stream_write2(uint64_t* buffer, uint32_t pos, size_t length);
 
 #endif

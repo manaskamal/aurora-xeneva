@@ -6,7 +6,7 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 CONST	SEGMENT
-$SG3499	DB	'[Aurora]:Key Pressed', 0aH, 00H
+$SG3505	DB	'[Aurora]:Key Pressed', 0aH, 00H
 CONST	ENDS
 PUBLIC	?AuKeyboardInitialize@@YAXXZ			; AuKeyboardInitialize
 PUBLIC	?AuKeyboardHandler@@YAX_KPEAX@Z			; AuKeyboardHandler
@@ -101,10 +101,10 @@ $LN6:
 	mov	ecx, DWORD PTR code$1[rsp]
 	mov	DWORD PTR [rax], ecx
 
-; 34   : 		    message_send (2,msg);
+; 34   : 		    message_send (4,msg);
 
 	mov	rdx, QWORD PTR msg$2[rsp]
-	mov	cx, 2
+	mov	cx, 4
 	call	?message_send@@YAXGPEAU_message_@@@Z	; message_send
 
 ; 35   : 			AuPmmngrFree ((void*)v2p((size_t)msg));
@@ -121,7 +121,7 @@ $LN2@AuKeyboard:
 
 ; 37   : 			printf ("[Aurora]:Key Pressed\n");
 
-	lea	rcx, OFFSET FLAT:$SG3499
+	lea	rcx, OFFSET FLAT:$SG3505
 	call	printf
 $LN1@AuKeyboard:
 $LN3@AuKeyboard:

@@ -31,6 +31,7 @@ The Goal of the project is to produce a high-quality Operating system with full 
 9. Driver Manager (_loading and linking dll files as drivers_)
 10. Fully Higher half with MMIO mappings
 11. Multiprocessor support (multiprocessor scheduler not ready!!)
+12. Software Audio Mixer 
 
 ## __Ported Projects__:
 1. FreeType 

@@ -15,23 +15,23 @@ _xsave	DB	01H DUP (?)
 pit_tick DD	01H DUP (?)
 _BSS	ENDS
 CONST	SEGMENT
-$SG3582	DB	'*** [x64_idt] x64_default_handler: Unhandled Exception *'
+$SG3588	DB	'*** [x64_idt] x64_default_handler: Unhandled Exception *'
 	DB	'** ', 0aH, 00H
 	ORG $+3
-$SG3642	DB	'IDT initialized', 0aH, 00H
+$SG3648	DB	'IDT initialized', 0aH, 00H
 	ORG $+7
-$SG3643	DB	'Exception initialized', 0aH, 00H
+$SG3649	DB	'Exception initialized', 0aH, 00H
 	ORG $+1
-$SG3644	DB	'APIC initialized', 0aH, 00H
+$SG3650	DB	'APIC initialized', 0aH, 00H
 	ORG $+6
-$SG3646	DB	'EFER.SYSCALL enabled', 0aH, 00H
+$SG3652	DB	'EFER.SYSCALL enabled', 0aH, 00H
 	ORG $+2
-$SG3647	DB	'User Land Initialized', 0aH, 00H
+$SG3653	DB	'User Land Initialized', 0aH, 00H
 	ORG $+1
-$SG3648	DB	'System call initialized', 0aH, 00H
+$SG3654	DB	'System call initialized', 0aH, 00H
 CONST	ENDS
 PUBLIC	?x86_64_gdt_init@@YAXXZ				; x86_64_gdt_init
-PUBLIC	?setvect@@YAX_KP6AX0PEAX@Z@Z			; setvect
+PUBLIC	setvect
 PUBLIC	gdt_initialize
 PUBLIC	?gdt_initialize_ap@@YAXXZ			; gdt_initialize_ap
 PUBLIC	?interrupt_initialize_ap@@YAXXZ			; interrupt_initialize_ap
@@ -41,6 +41,7 @@ PUBLIC	?x86_64_cpu_get_id@@YAEXZ			; x86_64_cpu_get_id
 PUBLIC	?hal_cpu_feature_enable@@YAXXZ			; hal_cpu_feature_enable
 PUBLIC	?is_cpu_fxsave_supported@@YA_NXZ		; is_cpu_fxsave_supported
 PUBLIC	?is_cpu_xsave_supported@@YA_NXZ			; is_cpu_xsave_supported
+PUBLIC	?cpu_msi_address@@YA_KPEA_K_KIEE@Z		; cpu_msi_address
 PUBLIC	load_default_sregs
 PUBLIC	?set_gdt_entry@@YAXAEAU_gdt@@_K1EE@Z		; set_gdt_entry
 PUBLIC	?save_sregs@@YAXXZ				; save_sregs
@@ -113,6 +114,9 @@ $pdata$?x86_64_cpu_get_id@@YAEXZ DD imagerel $LN3
 $pdata$?hal_cpu_feature_enable@@YAXXZ DD imagerel $LN10
 	DD	imagerel $LN10+270
 	DD	imagerel $unwind$?hal_cpu_feature_enable@@YAXXZ
+$pdata$?cpu_msi_address@@YA_KPEA_K_KIEE@Z DD imagerel $LN7
+	DD	imagerel $LN7+131
+	DD	imagerel $unwind$?cpu_msi_address@@YA_KPEA_K_KIEE@Z
 $pdata$load_default_sregs DD imagerel $LN3
 	DD	imagerel $LN3+90
 	DD	imagerel $unwind$load_default_sregs
@@ -155,6 +159,8 @@ $unwind$?x86_64_cpu_get_id@@YAEXZ DD 010401H
 	DD	0c204H
 $unwind$?hal_cpu_feature_enable@@YAXXZ DD 010401H
 	DD	0e204H
+$unwind$?cpu_msi_address@@YA_KPEA_K_KIEE@Z DD 011801H
+	DD	02218H
 $unwind$load_default_sregs DD 010401H
 	DD	04204H
 $unwind$?set_gdt_entry@@YAXAEAU_gdt@@EE@Z DD 011201H
@@ -216,7 +222,7 @@ $LN5:
 
 ; 157  : 	printf("*** [x64_idt] x64_default_handler: Unhandled Exception *** \n");
 
-	lea	rcx, OFFSET FLAT:$SG3582
+	lea	rcx, OFFSET FLAT:$SG3588
 	call	printf
 $LN2@default_ir:
 
@@ -627,6 +633,67 @@ _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\arch\x86_64\cpu.cpp
 _TEXT	SEGMENT
+tv67 = 0
+tv72 = 4
+data$ = 32
+vector$ = 40
+processor$ = 48
+edge$ = 56
+deassert$ = 64
+?cpu_msi_address@@YA_KPEA_K_KIEE@Z PROC			; cpu_msi_address
+
+; 353  : uint64_t cpu_msi_address (uint64_t* data, size_t vector, uint32_t processor, uint8_t edge, uint8_t deassert) {
+
+$LN7:
+	mov	BYTE PTR [rsp+32], r9b
+	mov	DWORD PTR [rsp+24], r8d
+	mov	QWORD PTR [rsp+16], rdx
+	mov	QWORD PTR [rsp+8], rcx
+	sub	rsp, 24
+
+; 354  : 	*data = (vector & 0xFF) | (edge == 1 ? 0 : (1<<15)) | (deassert == 1 ? 0 : (1<<14));
+
+	movzx	eax, BYTE PTR edge$[rsp]
+	cmp	eax, 1
+	jne	SHORT $LN3@cpu_msi_ad
+	mov	DWORD PTR tv67[rsp], 0
+	jmp	SHORT $LN4@cpu_msi_ad
+$LN3@cpu_msi_ad:
+	mov	DWORD PTR tv67[rsp], 32768		; 00008000H
+$LN4@cpu_msi_ad:
+	movzx	eax, BYTE PTR deassert$[rsp]
+	cmp	eax, 1
+	jne	SHORT $LN5@cpu_msi_ad
+	mov	DWORD PTR tv72[rsp], 0
+	jmp	SHORT $LN6@cpu_msi_ad
+$LN5@cpu_msi_ad:
+	mov	DWORD PTR tv72[rsp], 16384		; 00004000H
+$LN6@cpu_msi_ad:
+	mov	rax, QWORD PTR vector$[rsp]
+	and	rax, 255				; 000000ffH
+	movsxd	rcx, DWORD PTR tv67[rsp]
+	or	rax, rcx
+	movsxd	rcx, DWORD PTR tv72[rsp]
+	or	rax, rcx
+	mov	rcx, QWORD PTR data$[rsp]
+	mov	QWORD PTR [rcx], rax
+
+; 355  : 	return (0xFEE00000 | (processor << 12));
+
+	mov	eax, DWORD PTR processor$[rsp]
+	shl	eax, 12
+	or	eax, -18874368				; fee00000H
+	mov	eax, eax
+
+; 356  : }
+
+	add	rsp, 24
+	ret	0
+?cpu_msi_address@@YA_KPEA_K_KIEE@Z ENDP			; cpu_msi_address
+_TEXT	ENDS
+; Function compile flags: /Odtpy
+; File e:\xeneva project\xeneva\aurora\aurora\arch\x86_64\cpu.cpp
+_TEXT	SEGMENT
 ?is_cpu_xsave_supported@@YA_NXZ PROC			; is_cpu_xsave_supported
 
 ; 342  : 	return _xsave;
@@ -878,7 +945,7 @@ $LN3:
 ; 260  : 	
 ; 261  : 	debug_print ("IDT initialized\n");
 
-	lea	rcx, OFFSET FLAT:$SG3642
+	lea	rcx, OFFSET FLAT:$SG3648
 	call	?debug_print@@YAXPEBDZZ			; debug_print
 
 ; 262  : 
@@ -894,7 +961,7 @@ $LN3:
 ; 266  : 
 ; 267  : 	debug_print ("Exception initialized\n");
 
-	lea	rcx, OFFSET FLAT:$SG3643
+	lea	rcx, OFFSET FLAT:$SG3649
 	call	?debug_print@@YAXPEBDZZ			; debug_print
 
 ; 268  : 	
@@ -908,7 +975,7 @@ $LN3:
 ; 272  : 	
 ; 273  : 	debug_print ("APIC initialized\n");
 
-	lea	rcx, OFFSET FLAT:$SG3644
+	lea	rcx, OFFSET FLAT:$SG3650
 	call	?debug_print@@YAXPEBDZZ			; debug_print
 
 ; 274  : 
@@ -953,7 +1020,7 @@ $LN3:
 ; 283  : 
 ; 284  : 	debug_print ("EFER.SYSCALL enabled\n");
 
-	lea	rcx, OFFSET FLAT:$SG3646
+	lea	rcx, OFFSET FLAT:$SG3652
 	call	?debug_print@@YAXPEBDZZ			; debug_print
 
 ; 285  : 	//! initialize the user land environment
@@ -965,7 +1032,7 @@ $LN3:
 ; 287  : 
 ; 288  : 	debug_print ("User Land Initialized\n");
 
-	lea	rcx, OFFSET FLAT:$SG3647
+	lea	rcx, OFFSET FLAT:$SG3653
 	call	?debug_print@@YAXPEBDZZ			; debug_print
 
 ; 289  : 	//! initialize the syscall entries
@@ -976,7 +1043,7 @@ $LN3:
 ; 291  : 
 ; 292  : 	debug_print ("System call initialized\n");
 
-	lea	rcx, OFFSET FLAT:$SG3648
+	lea	rcx, OFFSET FLAT:$SG3654
 	call	?debug_print@@YAXPEBDZZ			; debug_print
 
 ; 293  : 
@@ -1462,7 +1529,7 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 vector$ = 8
 function$ = 16
-?setvect@@YAX_KP6AX0PEAX@Z@Z PROC			; setvect
+setvect	PROC
 
 ; 144  : {
 
@@ -1479,7 +1546,7 @@ function$ = 16
 ; 146  : };
 
 	ret	0
-?setvect@@YAX_KP6AX0PEAX@Z@Z ENDP			; setvect
+setvect	ENDP
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\arch\x86_64\cpu.cpp

@@ -410,7 +410,7 @@ bool first = false;
 void* AuMapMMIO (uint64_t phys_addr, size_t page_count) {
 	uint64_t out = (uint64_t)mmio_base_address;
 	for (size_t i = 0; i < page_count; i++) {
-		AuMapPage(phys_addr + i * 4096, out + i * 4096,0x04 | 0x08);
+		AuMapPage(phys_addr + i * 4096, out + i * 4096,0x04 | 0x08);  //
 	}
 
 	uint64_t address = out;

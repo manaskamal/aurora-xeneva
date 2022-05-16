@@ -38,7 +38,7 @@
 AU_EXTERN AU_EXPORT uint32_t pci_express_scan_class (uint8_t classCode, uint8_t subClassCode);
 AU_EXTERN AU_EXPORT uint32_t pci_express_read (uint32_t device, int reg);
 AU_EXTERN AU_EXPORT void pci_express_write (uint32_t device, int reg, uint32_t val);
-AU_EXTERN AU_EXPORT void pcie_print_capabilities (uint32_t device);
+AU_EXTERN AU_EXPORT void pcie_alloc_msi (uint32_t device, size_t vector);
 
 #endif
 

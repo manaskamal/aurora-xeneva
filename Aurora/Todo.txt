@@ -28,7 +28,6 @@ Network Stack
 
 User-Space Related
 ================================
-Audio Mixer
 High-Quality Window Manager
 
 

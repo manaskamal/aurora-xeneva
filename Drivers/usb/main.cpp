@@ -57,7 +57,7 @@ AU_EXTERN AU_EXPORT int AuDriverUnload() {
  * AuDriverMain -- Main entry for usb driver
  */
 AU_EXTERN AU_EXPORT int AuDriverMain() {
-
+	//printf ("Initializing USB\n");
 	uint32_t device = pci_express_scan_class(0x0C, 0x03);
 	if (device == 0xFFFFFFFF){
 		printf ("[usb]: xhci not found \n");
@@ -65,6 +65,25 @@ AU_EXTERN AU_EXPORT int AuDriverMain() {
 	}
 
 	usb_device = (usb_dev_t*)malloc(sizeof(usb_dev_t));
+
+	uint32_t command = pci_express_read(device ,PCI_COMMAND);
+
+	command |= (1<<2);
+	command |= (1<<1);
+	command |= (1<<0);
+	if ((command & (1<<10)) != 0)
+		command &= ~(1<<10); //clear the Interrupt disable
+	pci_express_write(device, PCI_COMMAND, command);
+
+
+	uint32_t stat = pci_express_read(device, PCI_STATUS);
+	if ((stat & (1<<3) != 0) && (command & (1<<10) != 1)){
+		printf ("USB supports interrupt \n");
+	}
+
+	if (stat & (1<<4)){
+		printf ("USB supports cap list\n");
+	}
 	
 	//pci_enable_bus_master(device);
 	//pci_enable_interrupts(device);
@@ -103,10 +122,9 @@ AU_EXTERN AU_EXPORT int AuDriverMain() {
 	
 	//AuInterruptSet(shdev->irq, AuUSBInterrupt, shdev->irq, true);
 	
-	//pci_alloc_msi(func,dev,bus,AuUSBInterrupt);
+	//pcie_alloc_msi(device,36);
 
-	printf ("[usb]: xhci reset completed \n");
-	pcie_print_capabilities(device);
+	//pcie_alloc_msi(device, 35);
 	//pci_alloc_msi(func,dev,bus,AuUSBInterrupt);
 	return 0;
 }

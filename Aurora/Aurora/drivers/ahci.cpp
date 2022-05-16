@@ -136,7 +136,7 @@ void ahci_interrupt_handler (size_t v, void* p) {
 	/*if (is_hdaudio_initialized())
 		hda_handler(v,p);*/
 
-	_debug_print_ ("AHCI\Interrupt \r\n");
+	printf ("AHCI\Interrupt \r\n");
 	
 	hba->is = is;
 	AuInterruptEnd(0);
@@ -186,12 +186,12 @@ void ahci_initialize () {
 	//uint8_t int_line = info->device.nonBridge.interruptLine;
 	
 
-	/*shirq_t* shdev = (shirq_t*)malloc(sizeof(shirq_t));
-	shdev->irq = info->device.nonBridge.interruptLine;
+	shirq_t* shdev = (shirq_t*)malloc(sizeof(shirq_t));
+	shdev->irq = int_line;
 	shdev->IrqHandler = ahci_interrupt_handler;
-	shdev->device_id = info->device.deviceID;
-	shdev->vendor_id = info->device.vendorID;
-	AuSharedDeviceRegister(shdev);*/
+	shdev->device_id = 0;
+	shdev->vendor_id = 0;
+	AuSharedDeviceRegister(shdev);
 	
 	if (int_line < 255) {
 		AuInterruptSet(int_line, ahci_interrupt_handler,int_line, false);
@@ -256,7 +256,7 @@ void ahci_initialize () {
 		i++;
 	}
 
-	pcie_print_capabilities(device);
+	//pcie_print_capabilities(device);
 }
 
 /*

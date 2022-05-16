@@ -14,100 +14,100 @@ _BSS	SEGMENT
 ?pcie_support@@3_NA DB 01H DUP (?)			; pcie_support
 _BSS	ENDS
 CONST	SEGMENT
-$SG3442	DB	'[ACPI]: data structures are incomplete', 0aH, 00H
-$SG3445	DB	'[ACPI]: Already enabled', 0aH, 00H
+$SG3448	DB	'[ACPI]: data structures are incomplete', 0aH, 00H
+$SG3451	DB	'[ACPI]: Already enabled', 0aH, 00H
 	ORG $+7
-$SG3447	DB	'PM1aCTRLBlock -> %x', 0aH, 00H
+$SG3453	DB	'PM1aCTRLBlock -> %x', 0aH, 00H
 	ORG $+3
-$SG3449	DB	'[ACPI]: Enabled successfully', 0aH, 00H
+$SG3455	DB	'[ACPI]: Enabled successfully', 0aH, 00H
 	ORG $+2
-$SG3451	DB	'[ACPI]: Verifying pm1bCtrlBlock ', 0aH, 00H
+$SG3457	DB	'[ACPI]: Verifying pm1bCtrlBlock ', 0aH, 00H
 	ORG $+6
-$SG3454	DB	'[ACPI]: Enabled successfully', 0aH, 00H
+$SG3460	DB	'[ACPI]: Enabled successfully', 0aH, 00H
 	ORG $+2
-$SG3459	DB	'[ACPI]: Fadt interrupt fired', 0aH, 00H
+$SG3465	DB	'[ACPI]: Fadt interrupt fired', 0aH, 00H
 	ORG $+2
-$SG3479	DB	'FACP', 00H
+$SG3485	DB	'FACP', 00H
 	ORG $+3
-$SG3480	DB	'FACP', 00H
+$SG3486	DB	'FACP', 00H
 	ORG $+3
-$SG3482	DB	'[ACPI]: Fadt table found', 0aH, 00H
+$SG3488	DB	'[ACPI]: Fadt table found', 0aH, 00H
 	ORG $+2
-$SG3485	DB	'CIPA', 00H
+$SG3491	DB	'CIPA', 00H
 	ORG $+3
-$SG3486	DB	'APIC', 00H
+$SG3492	DB	'APIC', 00H
 	ORG $+7
-$SG3488	DB	'[ACPI]: Madt table found', 0aH, 00H
+$SG3494	DB	'[ACPI]: Madt table found', 0aH, 00H
 	ORG $+2
-$SG3491	DB	'SRAT', 00H
+$SG3497	DB	'SRAT', 00H
 	ORG $+3
-$SG3492	DB	'SRAT', 00H
+$SG3498	DB	'SRAT', 00H
 	ORG $+7
-$SG3493	DB	'[ACPI]: Srat table found', 0aH, 00H
+$SG3499	DB	'[ACPI]: Srat table found', 0aH, 00H
 	ORG $+6
-$SG3496	DB	'[ACPI]: Srat -> %d length -> %d', 0aH, 00H
+$SG3502	DB	'[ACPI]: Srat -> %d length -> %d', 0aH, 00H
 	ORG $+7
-$SG3517	DB	'[ACPI]: Generic affinity found ', 0aH, 00H
+$SG3523	DB	'[ACPI]: Generic affinity found ', 0aH, 00H
 	ORG $+7
-$SG3519	DB	'[ACPI]: GICC affinity found ', 0aH, 00H
+$SG3525	DB	'[ACPI]: GICC affinity found ', 0aH, 00H
 	ORG $+2
-$SG3521	DB	'[ACPI]: GIC ITS Affinity found ', 0aH, 00H
+$SG3527	DB	'[ACPI]: GIC ITS Affinity found ', 0aH, 00H
 	ORG $+7
-$SG3523	DB	'[ACPI]: X2APIC CPU Affinity found ', 0aH, 00H
+$SG3529	DB	'[ACPI]: X2APIC CPU Affinity found ', 0aH, 00H
 	ORG $+4
-$SG3525	DB	'[ACPI]: Srat type reserved ', 0aH, 00H
+$SG3531	DB	'[ACPI]: Srat type reserved ', 0aH, 00H
 	ORG $+3
-$SG3535	DB	'SLIT', 00H
+$SG3541	DB	'SLIT', 00H
 	ORG $+3
-$SG3536	DB	'SLIT', 00H
+$SG3542	DB	'SLIT', 00H
 	ORG $+3
-$SG3537	DB	'[ACPI]: Slit table found ', 0aH, 00H
+$SG3543	DB	'[ACPI]: Slit table found ', 0aH, 00H
 	ORG $+1
-$SG3540	DB	'MCFG', 00H
+$SG3546	DB	'MCFG', 00H
 	ORG $+3
-$SG3541	DB	'MCFG', 00H
+$SG3547	DB	'MCFG', 00H
 	ORG $+7
-$SG3551	DB	'PCIe Segment -> %d ', 0aH, 00H
+$SG3557	DB	'PCIe Segment -> %d ', 0aH, 00H
 	ORG $+3
-$SG3550	DB	'PCIe Start bus num -> %d, End bus num -> %d, base addres'
+$SG3556	DB	'PCIe Start bus num -> %d, End bus num -> %d, base addres'
 	DB	's-> %x', 0aH, 00H
-$SG3554	DB	'HPET', 00H
+$SG3560	DB	'HPET', 00H
 	ORG $+3
-$SG3555	DB	'HPET', 00H
+$SG3561	DB	'HPET', 00H
 	ORG $+3
-$SG3556	DB	'[ACPI]: HPET table found', 0aH, 00H
+$SG3562	DB	'[ACPI]: HPET table found', 0aH, 00H
 	ORG $+2
-$SG3559	DB	'MCHI', 00H
+$SG3565	DB	'MCHI', 00H
 	ORG $+3
-$SG3560	DB	'MCHI', 00H
+$SG3566	DB	'MCHI', 00H
 	ORG $+7
-$SG3561	DB	'[ACPI]: Management Controller Host Interface Table', 0aH
+$SG3567	DB	'[ACPI]: Management Controller Host Interface Table', 0aH
 	DB	00H
 	ORG $+4
-$SG3566	DB	'[ACPI]: Dsdt found -> %x', 0aH, 00H
+$SG3572	DB	'[ACPI]: Dsdt found -> %x', 0aH, 00H
 	ORG $+6
-$SG3567	DB	'[ACPI]: Sci Interrupt -> %d', 0aH, 00H
+$SG3573	DB	'[ACPI]: Sci Interrupt -> %d', 0aH, 00H
 	ORG $+3
-$SG3570	DB	'S5Block found', 0aH, 00H
+$SG3576	DB	'S5Block found', 0aH, 00H
 	ORG $+1
-$SG3573	DB	'[ACPI]: SLP_typA -> %x, SLP_typB -> %x', 0aH, 00H
-$SG3594	DB	'[ACPI]: Madt entry -> LAPIC id -> %d, address -> %x', 0aH
+$SG3579	DB	'[ACPI]: SLP_typA -> %x, SLP_typB -> %x', 0aH, 00H
+$SG3600	DB	'[ACPI]: Madt entry -> LAPIC id -> %d, address -> %x', 0aH
 	DB	00H
 	ORG $+3
-$SG3599	DB	'[ACPI]: Madt entry -> I/O APIC address -> %x, GSI -> %d', 0aH
+$SG3605	DB	'[ACPI]: Madt entry -> I/O APIC address -> %x, GSI -> %d', 0aH
 	DB	00H
 	ORG $+7
-$SG3603	DB	'[ACPI]: Interrupt Source Override, GSI -> %d, SRC -> %d', 0aH
+$SG3609	DB	'[ACPI]: Interrupt Source Override, GSI -> %d, SRC -> %d', 0aH
 	DB	00H
 	ORG $+7
-$SG3614	DB	'[ACPI]: Reset Address -> %x, Reset value -> %x', 0aH, 00H
-$SG3618	DB	'Shutdown step1 complete', 0aH, 00H
+$SG3620	DB	'[ACPI]: Reset Address -> %x, Reset value -> %x', 0aH, 00H
+$SG3624	DB	'Shutdown step1 complete', 0aH, 00H
 	ORG $+7
-$SG3620	DB	'[ACPI] pm1bCtrlBlock -> %x', 0aH, 00H
+$SG3626	DB	'[ACPI] pm1bCtrlBlock -> %x', 0aH, 00H
 	ORG $+4
-$SG3621	DB	0aH, 'Shutdown step2 complete', 0aH, 00H
+$SG3627	DB	0aH, 'Shutdown step2 complete', 0aH, 00H
 	ORG $+6
-$SG3622	DB	'[ACPI]: Shutdown failed', 0aH, 00H
+$SG3628	DB	'[ACPI]: Shutdown failed', 0aH, 00H
 CONST	ENDS
 PUBLIC	?AuInitializeBasicAcpi@@YAXPEAX@Z		; AuInitializeBasicAcpi
 PUBLIC	?acpi_parse_madt@@YAXXZ				; acpi_parse_madt
@@ -322,7 +322,7 @@ $LN3:
 
 ; 70   : 	printf ("[ACPI]: Fadt interrupt fired\n");
 
-	lea	rcx, OFFSET FLAT:$SG3459
+	lea	rcx, OFFSET FLAT:$SG3465
 	call	printf
 
 ; 71   : 	AuInterruptEnd(9);
@@ -360,7 +360,7 @@ $LN5@acpi_enabl:
 
 ; 39   : 		printf ("[ACPI]: data structures are incomplete\n");
 
-	lea	rcx, OFFSET FLAT:$SG3442
+	lea	rcx, OFFSET FLAT:$SG3448
 	call	printf
 
 ; 40   : 		return;
@@ -385,7 +385,7 @@ $LN6@acpi_enabl:
 
 ; 44   : 		printf ("[ACPI]: Already enabled\n");
 
-	lea	rcx, OFFSET FLAT:$SG3445
+	lea	rcx, OFFSET FLAT:$SG3451
 	call	printf
 
 ; 45   : 		return;
@@ -413,7 +413,7 @@ $LN4@acpi_enabl:
 
 	mov	rax, QWORD PTR ?kern_acpi@@3U_aurora_acpi_@@A+9
 	mov	edx, DWORD PTR [rax+64]
-	lea	rcx, OFFSET FLAT:$SG3447
+	lea	rcx, OFFSET FLAT:$SG3453
 	call	printf
 
 ; 50   : 	if ((word_1 & ACPI_PMCTRL_SCI_EN) == 1){
@@ -426,7 +426,7 @@ $LN4@acpi_enabl:
 ; 51   : 
 ; 52   : 		printf ("[ACPI]: Enabled successfully\n");
 
-	lea	rcx, OFFSET FLAT:$SG3449
+	lea	rcx, OFFSET FLAT:$SG3455
 	call	printf
 $LN3@acpi_enabl:
 
@@ -441,7 +441,7 @@ $LN3@acpi_enabl:
 
 ; 57   : 		printf ("[ACPI]: Verifying pm1bCtrlBlock \n");
 
-	lea	rcx, OFFSET FLAT:$SG3451
+	lea	rcx, OFFSET FLAT:$SG3457
 	call	printf
 
 ; 58   : 		uint16_t word_3 = x64_inportw(kern_acpi.fadt->pm1bCtrlBlock);
@@ -460,7 +460,7 @@ $LN3@acpi_enabl:
 
 ; 60   : 			printf ("[ACPI]: Enabled successfully\n");
 
-	lea	rcx, OFFSET FLAT:$SG3454
+	lea	rcx, OFFSET FLAT:$SG3460
 	call	printf
 $LN1@acpi_enabl:
 $LN2@acpi_enabl:
@@ -611,7 +611,7 @@ $LN7:
 
 ; 240  : 		printf ("Shutdown step1 complete\n");
 
-	lea	rcx, OFFSET FLAT:$SG3618
+	lea	rcx, OFFSET FLAT:$SG3624
 	call	printf
 $LN4@acpi_shutd:
 
@@ -627,7 +627,7 @@ $LN4@acpi_shutd:
 
 	mov	rax, QWORD PTR ?kern_acpi@@3U_aurora_acpi_@@A+9
 	mov	edx, DWORD PTR [rax+68]
-	lea	rcx, OFFSET FLAT:$SG3620
+	lea	rcx, OFFSET FLAT:$SG3626
 	call	printf
 
 ; 245  : 		x64_outportd (kern_acpi.fadt->pm1bCtrlBlock,  (kern_acpi.slp_typb << 0) | SLP_EN);
@@ -644,12 +644,12 @@ $LN3@acpi_shutd:
 ; 247  : 
 ; 248  : 	printf ("\nShutdown step2 complete\n");
 
-	lea	rcx, OFFSET FLAT:$SG3621
+	lea	rcx, OFFSET FLAT:$SG3627
 	call	printf
 
 ; 249  : 	printf ("[ACPI]: Shutdown failed\n");
 
-	lea	rcx, OFFSET FLAT:$SG3622
+	lea	rcx, OFFSET FLAT:$SG3628
 	call	printf
 $LN2@acpi_shutd:
 
@@ -759,7 +759,7 @@ $LN3:
 	mov	r8d, eax
 	mov	rax, QWORD PTR ?kern_acpi@@3U_aurora_acpi_@@A+9
 	mov	rdx, QWORD PTR [rax+119]
-	lea	rcx, OFFSET FLAT:$SG3614
+	lea	rcx, OFFSET FLAT:$SG3620
 	call	printf
 
 ; 232  : 	x64_outportw (kern_acpi.fadt->resetReg.address, kern_acpi.fadt->resetValue);
@@ -837,7 +837,7 @@ $LN5@acpi_parse:
 	movzx	ecx, BYTE PTR [rcx+3]
 	mov	r8d, eax
 	mov	edx, ecx
-	lea	rcx, OFFSET FLAT:$SG3594
+	lea	rcx, OFFSET FLAT:$SG3600
 	call	printf
 
 ; 206  : 			if (lapic->procId != 0)
@@ -872,7 +872,7 @@ $LN3@acpi_parse:
 	mov	r8d, DWORD PTR [rax+8]
 	mov	rax, QWORD PTR io_apic$2[rsp]
 	mov	edx, DWORD PTR [rax+4]
-	lea	rcx, OFFSET FLAT:$SG3599
+	lea	rcx, OFFSET FLAT:$SG3605
 	call	printf
 
 ; 213  : 			break;
@@ -894,7 +894,7 @@ $LN2@acpi_parse:
 	mov	r8d, eax
 	mov	rax, QWORD PTR over$3[rsp]
 	mov	edx, DWORD PTR [rax+4]
-	lea	rcx, OFFSET FLAT:$SG3603
+	lea	rcx, OFFSET FLAT:$SG3609
 	call	printf
 $LN1@acpi_parse:
 $LN6@acpi_parse:
@@ -1032,10 +1032,10 @@ $LN32@AuInitiali:
 ; 89   : 
 ; 90   : 		if (!strncmp(sig, ACPI_SIG_FADT, strlen(ACPI_SIG_FADT))) {
 
-	lea	rcx, OFFSET FLAT:$SG3479
+	lea	rcx, OFFSET FLAT:$SG3485
 	call	strlen
 	mov	r8, rax
-	lea	rdx, OFFSET FLAT:$SG3480
+	lea	rdx, OFFSET FLAT:$SG3486
 	lea	rcx, QWORD PTR sig$[rsp]
 	call	strncmp
 	test	eax, eax
@@ -1048,7 +1048,7 @@ $LN32@AuInitiali:
 
 ; 92   : 			printf ("[ACPI]: Fadt table found\n");
 
-	lea	rcx, OFFSET FLAT:$SG3482
+	lea	rcx, OFFSET FLAT:$SG3488
 	call	printf
 	jmp	$LN28@AuInitiali
 $LN29@AuInitiali:
@@ -1057,10 +1057,10 @@ $LN29@AuInitiali:
 ; 94   : 		 
 ; 95   : 		else if (!strncmp(sig, ACPI_SIG_APIC, strlen("CIPA"))) {
 
-	lea	rcx, OFFSET FLAT:$SG3485
+	lea	rcx, OFFSET FLAT:$SG3491
 	call	strlen
 	mov	r8, rax
-	lea	rdx, OFFSET FLAT:$SG3486
+	lea	rdx, OFFSET FLAT:$SG3492
 	lea	rcx, QWORD PTR sig$[rsp]
 	call	strncmp
 	test	eax, eax
@@ -1073,7 +1073,7 @@ $LN29@AuInitiali:
 
 ; 97   : 			printf ("[ACPI]: Madt table found\n");
 
-	lea	rcx, OFFSET FLAT:$SG3488
+	lea	rcx, OFFSET FLAT:$SG3494
 	call	printf
 
 ; 98   : 			acpi_parse_madt ();
@@ -1086,10 +1086,10 @@ $LN27@AuInitiali:
 ; 100  : 
 ; 101  : 		else if (!strncmp(sig, ACPI_SIG_SRAT, strlen(ACPI_SIG_SRAT))) {
 
-	lea	rcx, OFFSET FLAT:$SG3491
+	lea	rcx, OFFSET FLAT:$SG3497
 	call	strlen
 	mov	r8, rax
-	lea	rdx, OFFSET FLAT:$SG3492
+	lea	rdx, OFFSET FLAT:$SG3498
 	lea	rcx, QWORD PTR sig$[rsp]
 	call	strncmp
 	test	eax, eax
@@ -1097,7 +1097,7 @@ $LN27@AuInitiali:
 
 ; 102  : 			printf ("[ACPI]: Srat table found\n");
 
-	lea	rcx, OFFSET FLAT:$SG3493
+	lea	rcx, OFFSET FLAT:$SG3499
 	call	printf
 
 ; 103  : 			acpi_table_srat_xe* srat = (acpi_table_srat_xe*)header;
@@ -1112,7 +1112,7 @@ $LN27@AuInitiali:
 	mov	rcx, QWORD PTR srat$4[rsp]
 	mov	r8d, DWORD PTR [rcx+4]
 	mov	edx, eax
-	lea	rcx, OFFSET FLAT:$SG3496
+	lea	rcx, OFFSET FLAT:$SG3502
 	call	printf
 
 ; 105  : 			acpi_sub_table *sub = (acpi_sub_table*)&srat[1];
@@ -1177,7 +1177,7 @@ $LN18@AuInitiali:
 ; 120  : 				case acpi_srat_type_generic_affinity:
 ; 121  : 					printf ("[ACPI]: Generic affinity found \n");
 
-	lea	rcx, OFFSET FLAT:$SG3517
+	lea	rcx, OFFSET FLAT:$SG3523
 	call	printf
 
 ; 122  : 					break;
@@ -1188,7 +1188,7 @@ $LN17@AuInitiali:
 ; 123  : 				case acpi_srat_type_gicc_affinity:
 ; 124  : 					printf ("[ACPI]: GICC affinity found \n");
 
-	lea	rcx, OFFSET FLAT:$SG3519
+	lea	rcx, OFFSET FLAT:$SG3525
 	call	printf
 
 ; 125  : 					break;
@@ -1199,7 +1199,7 @@ $LN16@AuInitiali:
 ; 126  : 				case acpi_srat_type_gic_its_affinity:
 ; 127  : 					printf ("[ACPI]: GIC ITS Affinity found \n");
 
-	lea	rcx, OFFSET FLAT:$SG3521
+	lea	rcx, OFFSET FLAT:$SG3527
 	call	printf
 
 ; 128  : 					break;
@@ -1210,7 +1210,7 @@ $LN15@AuInitiali:
 ; 129  : 				case acpi_srat_type_x2apic_cpu_affinity:
 ; 130  : 					printf ("[ACPI]: X2APIC CPU Affinity found \n");
 
-	lea	rcx, OFFSET FLAT:$SG3523
+	lea	rcx, OFFSET FLAT:$SG3529
 	call	printf
 
 ; 131  : 					break;
@@ -1221,7 +1221,7 @@ $LN14@AuInitiali:
 ; 132  : 				case acpi_srat_type_reserved:
 ; 133  : 					printf ("[ACPI]: Srat type reserved \n");
 
-	lea	rcx, OFFSET FLAT:$SG3525
+	lea	rcx, OFFSET FLAT:$SG3531
 	call	printf
 $LN21@AuInitiali:
 
@@ -1247,10 +1247,10 @@ $LN23@AuInitiali:
 
 	jmp	$LN13@AuInitiali
 $LN25@AuInitiali:
-	lea	rcx, OFFSET FLAT:$SG3535
+	lea	rcx, OFFSET FLAT:$SG3541
 	call	strlen
 	mov	r8, rax
-	lea	rdx, OFFSET FLAT:$SG3536
+	lea	rdx, OFFSET FLAT:$SG3542
 	lea	rcx, QWORD PTR sig$[rsp]
 	call	strncmp
 	test	eax, eax
@@ -1258,7 +1258,7 @@ $LN25@AuInitiali:
 
 ; 141  : 			printf ("[ACPI]: Slit table found \n");
 
-	lea	rcx, OFFSET FLAT:$SG3537
+	lea	rcx, OFFSET FLAT:$SG3543
 	call	printf
 	jmp	$LN11@AuInitiali
 $LN12@AuInitiali:
@@ -1266,10 +1266,10 @@ $LN12@AuInitiali:
 ; 142  : 		}
 ; 143  : 		else if (!strncmp(sig, ACPI_SIG_MCFG, strlen(ACPI_SIG_MCFG))) {
 
-	lea	rcx, OFFSET FLAT:$SG3540
+	lea	rcx, OFFSET FLAT:$SG3546
 	call	strlen
 	mov	r8, rax
-	lea	rdx, OFFSET FLAT:$SG3541
+	lea	rdx, OFFSET FLAT:$SG3547
 	lea	rcx, QWORD PTR sig$[rsp]
 	call	strncmp
 	test	eax, eax
@@ -1299,7 +1299,7 @@ $LN12@AuInitiali:
 	mov	r9, QWORD PTR [rdx]
 	mov	r8d, eax
 	mov	edx, ecx
-	lea	rcx, OFFSET FLAT:$SG3550
+	lea	rcx, OFFSET FLAT:$SG3556
 	call	printf
 
 ; 150  : 				printf ("PCIe Segment -> %d \n", allocs->pciSegment);
@@ -1307,7 +1307,7 @@ $LN12@AuInitiali:
 	mov	rax, QWORD PTR allocs$5[rsp]
 	movzx	eax, WORD PTR [rax+8]
 	mov	edx, eax
-	lea	rcx, OFFSET FLAT:$SG3551
+	lea	rcx, OFFSET FLAT:$SG3557
 	call	printf
 
 ; 151  : 				pcie_support = true;
@@ -1320,10 +1320,10 @@ $LN10@AuInitiali:
 ; 153  : 		}
 ; 154  : 		else if (!strncmp(sig, ACPI_SIG_HPET, strlen(ACPI_SIG_HPET))) {
 
-	lea	rcx, OFFSET FLAT:$SG3554
+	lea	rcx, OFFSET FLAT:$SG3560
 	call	strlen
 	mov	r8, rax
-	lea	rdx, OFFSET FLAT:$SG3555
+	lea	rdx, OFFSET FLAT:$SG3561
 	lea	rcx, QWORD PTR sig$[rsp]
 	call	strncmp
 	test	eax, eax
@@ -1331,7 +1331,7 @@ $LN10@AuInitiali:
 
 ; 155  : 			printf ("[ACPI]: HPET table found\n");
 
-	lea	rcx, OFFSET FLAT:$SG3556
+	lea	rcx, OFFSET FLAT:$SG3562
 	call	printf
 	jmp	SHORT $LN7@AuInitiali
 $LN8@AuInitiali:
@@ -1339,10 +1339,10 @@ $LN8@AuInitiali:
 ; 156  : 		}
 ; 157  : 		else if (!strncmp(sig, ACPI_SIG_MCHI, strlen(ACPI_SIG_MCHI))) {
 
-	lea	rcx, OFFSET FLAT:$SG3559
+	lea	rcx, OFFSET FLAT:$SG3565
 	call	strlen
 	mov	r8, rax
-	lea	rdx, OFFSET FLAT:$SG3560
+	lea	rdx, OFFSET FLAT:$SG3566
 	lea	rcx, QWORD PTR sig$[rsp]
 	call	strncmp
 	test	eax, eax
@@ -1350,7 +1350,7 @@ $LN8@AuInitiali:
 
 ; 158  : 			printf ("[ACPI]: Management Controller Host Interface Table\n");
 
-	lea	rcx, OFFSET FLAT:$SG3561
+	lea	rcx, OFFSET FLAT:$SG3567
 	call	printf
 $LN6@AuInitiali:
 $LN7@AuInitiali:
@@ -1405,7 +1405,7 @@ $LN5@AuInitiali:
 ; 172  : 		printf ("[ACPI]: Dsdt found -> %x\n", kern_acpi.dsdt);
 
 	mov	rdx, QWORD PTR ?kern_acpi@@3U_aurora_acpi_@@A+25
-	lea	rcx, OFFSET FLAT:$SG3566
+	lea	rcx, OFFSET FLAT:$SG3572
 	call	printf
 
 ; 173  : 		printf ("[ACPI]: Sci Interrupt -> %d\n", kern_acpi.fadt->sciInt);
@@ -1413,7 +1413,7 @@ $LN5@AuInitiali:
 	mov	rax, QWORD PTR ?kern_acpi@@3U_aurora_acpi_@@A+9
 	movzx	eax, WORD PTR [rax+46]
 	mov	edx, eax
-	lea	rcx, OFFSET FLAT:$SG3567
+	lea	rcx, OFFSET FLAT:$SG3573
 	call	printf
 
 ; 174  : 		AuInterruptSet(kern_acpi.fadt->sciInt,fadt_handler, kern_acpi.fadt->sciInt, false);
@@ -1440,7 +1440,7 @@ $LN5@AuInitiali:
 
 ; 177  : 			printf ("S5Block found\n");
 
-	lea	rcx, OFFSET FLAT:$SG3570
+	lea	rcx, OFFSET FLAT:$SG3576
 	call	printf
 
 ; 178  : 			S5Block += 4;
@@ -1517,7 +1517,7 @@ $LN1@AuInitiali:
 	movzx	ecx, WORD PTR ?kern_acpi@@3U_aurora_acpi_@@A+41
 	mov	r8d, eax
 	mov	edx, ecx
-	lea	rcx, OFFSET FLAT:$SG3573
+	lea	rcx, OFFSET FLAT:$SG3579
 	call	printf
 $LN3@AuInitiali:
 $LN4@AuInitiali:

@@ -34,7 +34,7 @@ _BSS	SEGMENT
 current_thread DQ 01H DUP (?)
 _BSS	ENDS
 CONST	SEGMENT
-$SG3611	DB	'Idle', 00H
+$SG3617	DB	'Idle', 00H
 CONST	ENDS
 PUBLIC	?AuInitializeScheduler@@YAXXZ			; AuInitializeScheduler
 PUBLIC	?AuSchedulerStart@@YAXXZ			; AuSchedulerStart
@@ -68,7 +68,7 @@ EXTRN	x64_cli:PROC
 EXTRN	x64_read_cr3:PROC
 EXTRN	x64_set_kstack:PROC
 EXTRN	x64_get_kstack:PROC
-EXTRN	?setvect@@YAX_KP6AX0PEAX@Z@Z:PROC		; setvect
+EXTRN	setvect:PROC
 EXTRN	?x86_64_cpu_get_id@@YAEXZ:PROC			; x86_64_cpu_get_id
 EXTRN	?AuMapPageEx@@YA_NPEA_K_K1E@Z:PROC		; AuMapPageEx
 EXTRN	malloc:PROC
@@ -1803,7 +1803,7 @@ $LN3:
 
 	lea	rdx, OFFSET FLAT:?scheduler_isr@@YAX_KPEAX@Z ; scheduler_isr
 	mov	ecx, 64					; 00000040H
-	call	?setvect@@YAX_KP6AX0PEAX@Z@Z		; setvect
+	call	setvect
 
 ; 381  : #endif
 ; 382  : #ifdef USE_PIC
@@ -1859,7 +1859,7 @@ $LN3:
 	mov	rcx, rax
 	call	p2v
 	mov	BYTE PTR [rsp+32], 1
-	lea	r9, OFFSET FLAT:$SG3611
+	lea	r9, OFFSET FLAT:$SG3617
 	mov	rcx, QWORD PTR tv67[rsp]
 	mov	r8, rcx
 	mov	rdx, rax

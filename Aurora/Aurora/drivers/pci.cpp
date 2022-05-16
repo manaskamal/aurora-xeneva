@@ -48,7 +48,7 @@ int pci_decode_func (uint32_t device) {
 
 uint32_t pci_get_address(uint32_t device, int reg) {
 	return 0x80000000 | (pci_decode_bus(device) << 16) | (pci_decode_slot(device) << 11) | (pci_decode_func(device) << 8) | 
-		((reg) & 0xFC);
+		reg;
 }
 
 
@@ -121,16 +121,16 @@ uint32_t pci_read (uint32_t device, int reg) {
 		break;
 	}
 
-	outportd(PCI_ADDRESS_PORT, pci_get_address(device, reg));
+	x64_outportd(PCI_ADDRESS_PORT, pci_get_address(device, reg));
 
 	if (size == 4) {
-		uint32_t t = inportd(PCI_VALUE_PORT);
+		uint32_t t = x64_inportd(PCI_VALUE_PORT);
 		return t;
 	}else if (size == 2) {
-		uint16_t t = inportw(PCI_VALUE_PORT + (reg & 2));
+		uint16_t t =  x64_inportw(PCI_VALUE_PORT + (reg & 2)); //+ (reg & 2));
 		return t;
 	}else if (size == 1) {
-		uint8_t t = inportb (PCI_VALUE_PORT + (reg & 3));
+		uint8_t t = x64_inportb (PCI_VALUE_PORT + (reg & 3));
 		return t;
 	}
 
@@ -138,8 +138,8 @@ uint32_t pci_read (uint32_t device, int reg) {
 }
 
 void pci_write (uint32_t device, int reg, uint32_t value) {
-	outportd(PCI_ADDRESS_PORT, pci_get_address(device,reg));
-	outportd(PCI_VALUE_PORT, value);
+	x64_outportd(PCI_ADDRESS_PORT, pci_get_address(device,reg));
+	x64_outportd(PCI_VALUE_PORT, value);
 }
 
 uint32_t pci_scan_class(uint8_t classcode, uint8_t subclass) {
@@ -149,6 +149,8 @@ uint32_t pci_scan_class(uint8_t classcode, uint8_t subclass) {
 				uint32_t addr = pci_encode_device(bus,dev,func);
 				uint32_t cc = pci_read(addr,PCI_CLASS);
 				uint32_t sc = pci_read(addr,PCI_SUBCLASS);
+				if (cc == 0xFF && sc == 0xFF)
+					continue;
 				if (cc == classcode && sc == subclass) 
 					return addr;
 			}

@@ -111,7 +111,7 @@ void e1000_write_mac(e1000_nic_dev *device) {
 }
 
 void e1000_read_mac(e1000_nic_dev *device) {
-	/*if (device->has_eeprom) {
+	if (device->has_eeprom) {
 		uint32_t t;
 		t = e1000_eeprom_read(device, 0);
 		device->mac[0] = t & 0xFF;
@@ -122,7 +122,7 @@ void e1000_read_mac(e1000_nic_dev *device) {
 		t = e1000_eeprom_read(device, 2);
 		device->mac[4] = t & 0xFF;
 		device->mac[5] = t >> 8;
-	}else {*/
+	}else {
 		uint32_t mac_addr_low = *(uint32_t*)(device->mmio_addr + E1000_REG_RXADDR);
 		uint32_t mac_addr_high = *(uint32_t*)(device->mmio_addr + E1000_REG_RXADDR + 4);
 		device->mac[0] = (mac_addr_low >> 0) & 0xFF;
@@ -131,7 +131,7 @@ void e1000_read_mac(e1000_nic_dev *device) {
 		device->mac[3] = (mac_addr_low >> 24) & 0xFF;
 		device->mac[4] = (mac_addr_high >> 0) & 0xFF;
 		device->mac[5] = (mac_addr_high >> 8) & 0xFF;
-	//}
+	}
 }
 
 
@@ -140,7 +140,7 @@ void e1000_handler (size_t v, void* p) {
 	if (!first_interrupt)
 		first_interrupt = true;
 
-	_debug_print_ ("e1000 interrupt -> %d \r\n", e1000_nic->irq);
+	printf ("e1000 interrupt -> %d \r\n", e1000_nic->irq);
 	if (status & ICR_LSC) {
 		e1000_nic->link_status = (e1000_read_command(e1000_nic, E1000_REG_STATUS) & (1<<1));
 		printf ("e1000: Link status %s \r\n", (e1000_nic->link_status ? "up" : "down"));
@@ -151,7 +151,7 @@ void e1000_handler (size_t v, void* p) {
 
 	e1000_write_command(e1000_nic, E1000_REG_ICR, status);
 
-	//AuFiredSharedHandler(e1000_nic->irq,v,p, shared_device);
+	
 	AuInterruptEnd(e1000_nic->irq);
 }
 
@@ -418,7 +418,7 @@ AU_EXTERN AU_EXPORT int AuDriverMain() {
 
 	thread_t *nic_thread = create_kthread(e1000_thread,(uint64_t)p2v((uint64_t)AuPmmngrAlloc() + 4096),(uint64_t)AuGetRootPageTable(),
 		"e1000_thr",1);
-	pcie_print_capabilities(device);
+	//pcie_print_capabilities(device);
 	
 	/*AuEnableInterrupts();
 	for(;;) {

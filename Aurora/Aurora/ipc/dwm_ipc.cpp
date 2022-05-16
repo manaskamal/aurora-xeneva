@@ -34,9 +34,9 @@ void dwm_put_message (dwm_message_t *msg) {
 	if (!is_multi_task_enable())
 		return;
 
-	thread_t *t  = thread_iterate_ready_list (2);   //!ready list
+	thread_t *t  = thread_iterate_ready_list (4);   //!ready list
 	if (t == NULL) {
-		t = thread_iterate_block_list(2);
+		t = thread_iterate_block_list(4);
 	}
 	dwm_message_t *tmsg = (dwm_message_t*)t->msg_box;
 	if (tmsg->type == 0)

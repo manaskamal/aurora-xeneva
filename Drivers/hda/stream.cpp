@@ -39,7 +39,6 @@ uint64_t* stream_buffer = 0;
 //! not completed yet
 void hda_init_output_stream () {
 
-	
 	uint64_t pos = 0xFFFFD00004000000;
 	uint64_t phys_buf = 0;
 	stream_buffer = (uint64_t*)pos;
@@ -49,12 +48,9 @@ void hda_init_output_stream () {
 			phys_buf = (uint64_t)p;
 		AuMapPage ((uint64_t)p,pos + i * 4096, 0);
 	}
+	hda_set_sample_buffer(pos);
 	memset(stream_buffer,0,BDL_SIZE*BUFFER_SIZE);
 	
-	printf ("Stream run bit -> %d \n", ((_aud_inb_(REG_O0_CTLL) >> 2) & 0xff));
-
-	printf ("Reseting stream , phys buf-> %x \n", phys_buf);
-
 	/* Now reset the stream */
 	_aud_outl_ (REG_O0_CTLL, 1); //reset
 	//while((_aud_inl_(REG_O0_CTLL) & 0x1) == 0);
@@ -76,12 +72,8 @@ void hda_init_output_stream () {
 		bdl[j].length = BUFFER_SIZE;
 		bdl[j].flags = 0;
 	}
-	 
+	
 	//bdl[j-1].flags = 1;
-	printf ("BDL[0]->paddr -> %x \n", bdl[0].paddr);
-	printf ("BDL[1]->paddr -> %x \n", bdl[1].paddr);
-	printf ("BDL[2]->paddr -> %x \n", bdl[2].paddr);
-	printf ("BDL[3]->paddr -> %x \n", bdl[3].paddr);
 
 	_aud_outb_ (REG_O0_CTLU, (1<<4));
 
@@ -106,24 +98,24 @@ void hda_init_output_stream () {
 	uint64_t dma_val = (uint64_t)v2p((size_t)dma_pos);
 
 
-	_aud_outl_ (DPIBLBASE, dma_val);
+	_aud_outl_ (DPIBLBASE, dma_val | 0x1);
 	_aud_outl_ (DPIBUBASE, dma_val >> 32);
+
+	hda_audio_set_dma_pos((uint64_t)dma_pos);
 	
 	uint32_t strm = _aud_inl_(REG_O0_CTLL);
 
-	printf ("HD Audio stream initialized id -> %d\n", ((strm >> 20) & 0xffff));
-
 }
 
-void output_stream_write(uint64_t* buffer, size_t length) {
-	printf ("Writing data to -> %x the buffer -> %x\n", stream_buffer, buffer);
-	uint64_t buf = (uint64_t)buffer;
-	uint8_t* aligned = (uint8_t*)(buf+44);
-	printf ("Aligned buffer ->%x \n", aligned);
-	for (int i = 0; i < 5; i++)
-		printf ("%c", aligned[i]);
-	uint64_t strm_buff = (uint64_t)stream_buffer;
-	memcpy((void*)strm_buff,aligned,BDL_SIZE*BUFFER_SIZE);
+void output_stream_write(uint8_t* buffer, size_t length) {
+	int16_t* buf = (int16_t*)buffer;
+	int16_t* strm_buff = (int16_t*)stream_buffer;
+
+	for (int i = 0; i < BUFFER_SIZE / sizeof(int16_t); i++) 
+		strm_buff[i] = buf[i];
+
+	for (int i = 0; i < BUFFER_SIZE / sizeof(int16_t); i++) 
+		strm_buff[i] /= 2;
 }
 
 

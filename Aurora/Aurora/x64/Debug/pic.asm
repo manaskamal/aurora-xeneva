@@ -18,7 +18,7 @@ EXTRN	x64_cli:PROC
 EXTRN	x64_sti:PROC
 EXTRN	x64_inportb:PROC
 EXTRN	x64_outportb:PROC
-EXTRN	?setvect@@YAX_KP6AX0PEAX@Z@Z:PROC		; setvect
+EXTRN	setvect:PROC
 ;	COMDAT ?ticks@?1??pit_sleep_ms@@YAXI@Z@4HA
 _BSS	SEGMENT
 ?ticks@?1??pit_sleep_ms@@YAXI@Z@4HA DD 01H DUP (?)	; `pit_sleep_ms'::`2'::ticks
@@ -554,7 +554,7 @@ $LN1@initialize:
 
 	lea	rdx, OFFSET FLAT:?pit_interrupt_handler@@YAX_KPEAX@Z ; pit_interrupt_handler
 	mov	ecx, 32					; 00000020H
-	call	?setvect@@YAX_KP6AX0PEAX@Z@Z		; setvect
+	call	setvect
 
 ; 83   : 	pic_clear_mask(0);
 

@@ -15,6 +15,7 @@
 
 #include <stdint.h>
 #include <fs\vfs.h>
+#include <arch\x86_64\thread.h>
 #include <aurora.h>
 
 #define SOUND_REGISTER_MEDIAPLAYER 100
@@ -24,8 +25,10 @@
 #define SOUND_STOP_INPUT  105
 
 typedef struct _dsp_ {
-	uint8_t buf[512];
+	uint8_t *buffer;
 	uint16_t id;
+	thread_t *registered_thr;
+	bool available;
 	struct _dsp_ *next;
 	struct _dsp_* prev;
 }dsp_t;
@@ -33,7 +36,7 @@ typedef struct _dsp_ {
 typedef struct _sound_ {
 	/* the streams to read/write from/to */
 	char name[32];
-	void (*write) (uint64_t* buffer, size_t length);
+	void (*write) (uint8_t* buffer, size_t length);
 	void (*read) (uint8_t* buffer, size_t length);
 	void (*stop_output_stream) ();
 	void (*start_output_stream) ();
@@ -43,8 +46,8 @@ typedef struct _sound_ {
 
 extern void AuSoundInitialize ();
 AU_EXTERN AU_EXPORT void AuSoundRegisterDevice(sound_t * dev);
-AU_EXTERN AU_EXPORT void AuSoundRequestNext (uint8_t* buffer);
+AU_EXTERN AU_EXPORT void AuSoundRequestNext (uint64_t* buffer);
 extern void AuSoundOutputStart();
 extern void AuSoundOutputStop();
-extern void AuSoundWrite (vfs_node_t *file, uint64_t* buffer, uint32_t length);
+extern void AuSoundWrite (vfs_node_t *file, uint8_t* buffer, uint32_t length);
 #endif

@@ -14,13 +14,13 @@ driver_class_unique_id DD 01H DUP (?)
 driver_load_base DQ 01H DUP (?)
 _BSS	ENDS
 CONST	SEGMENT
-$SG3743	DB	'AuDriverMain', 00H
+$SG3749	DB	'AuDriverMain', 00H
 	ORG $+3
-$SG3746	DB	'AuDriverUnload', 00H
+$SG3752	DB	'AuDriverUnload', 00H
 	ORG $+1
-$SG3752	DB	'[aurora]: initializing drivers, please wait... ', 0aH, 00H
+$SG3758	DB	'[aurora]: initializing drivers, please wait... ', 0aH, 00H
 	ORG $+7
-$SG3758	DB	'/audrv.cnf', 00H
+$SG3764	DB	'/audrv.cnf', 00H
 CONST	ENDS
 PUBLIC	?AuDrvMngrInitialize@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z ; AuDrvMngrInitialize
 PUBLIC	?AuRequestDriverId@@YAIXZ			; AuRequestDriverId
@@ -218,14 +218,14 @@ $LN1@AuDriverLo:
 ; 188  : 
 ; 189  : 	void* entry_addr = AuGetProcAddress((void*)driver_load_base,"AuDriverMain");
 
-	lea	rdx, OFFSET FLAT:$SG3743
+	lea	rdx, OFFSET FLAT:$SG3749
 	mov	rcx, QWORD PTR driver_load_base
 	call	?AuGetProcAddress@@YAPEAXPEAXPEBD@Z	; AuGetProcAddress
 	mov	QWORD PTR entry_addr$[rsp], rax
 
 ; 190  : 	void* unload_addr = AuGetProcAddress((void*)driver_load_base,"AuDriverUnload");
 
-	lea	rdx, OFFSET FLAT:$SG3746
+	lea	rdx, OFFSET FLAT:$SG3752
 	mov	rcx, QWORD PTR driver_load_base
 	call	?AuGetProcAddress@@YAPEAXPEAXPEBD@Z	; AuGetProcAddress
 	mov	QWORD PTR unload_addr$[rsp], rax
@@ -909,7 +909,7 @@ $LN21:
 
 ; 208  : 	printf ("[aurora]: initializing drivers, please wait... \n");
 
-	lea	rcx, OFFSET FLAT:$SG3752
+	lea	rcx, OFFSET FLAT:$SG3758
 	call	printf
 
 ; 209  : 	/* Load the conf data */
@@ -929,7 +929,7 @@ $LN21:
 
 ; 212  : 	vfs_node_t file = fat32_open(NULL, "/audrv.cnf");
 
-	lea	r8, OFFSET FLAT:$SG3758
+	lea	r8, OFFSET FLAT:$SG3764
 	xor	edx, edx
 	lea	rcx, QWORD PTR $T13[rsp]
 	call	?fat32_open@@YA?AU_vfs_node_@@PEAU1@PEAD@Z ; fat32_open

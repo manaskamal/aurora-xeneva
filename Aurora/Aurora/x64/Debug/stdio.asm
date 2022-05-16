@@ -16,12 +16,12 @@ r_x	DD	075bcd15H
 r_y	DD	0159a55e5H
 r_z	DD	01f123bb5H
 r_w	DD	05491333H
-chars	DQ	FLAT:$SG3066
+chars	DQ	FLAT:$SG3072
 _DATA	ENDS
 CONST	SEGMENT
-$SG3225	DB	'.', 00H
-	ORG $+6
-$SG3066	DB	'0123456789ABCDEF', 00H
+$SG3072	DB	'0123456789ABCDEF', 00H
+	ORG $+3
+$SG3231	DB	'.', 00H
 CONST	ENDS
 PUBLIC	?atoi@@YAHPEBD@Z				; atoi
 PUBLIC	?sztoa@@YAPEAD_KPEADH@Z				; sztoa
@@ -857,7 +857,7 @@ $LN5@printf:
 ; 190  : 			{
 ; 191  : 				puts(".");
 
-	lea	rcx, OFFSET FLAT:$SG3225
+	lea	rcx, OFFSET FLAT:$SG3231
 	call	?puts@@YAXPEAD@Z			; puts
 
 ; 192  : 			}

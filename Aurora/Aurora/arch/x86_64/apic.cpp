@@ -128,8 +128,10 @@ void apic_spurious_interrupt (size_t p, void* param) {
 static int apic_timer_count = 0;
 //! Interrupt Vector Functions for APIC
 void  apic_timer_interrupt (size_t p, void* param) {
+	x64_cli();
 	apic_timer_count++;
 	apic_local_eoi();
+	x64_sti();
 }
 
 
@@ -157,15 +159,14 @@ void initialize_apic (bool bsp) {
 		x64_write_msr(IA32_APIC_BASE_MSR, x64_read_msr(IA32_APIC_BASE_MSR) | IA32_APIC_BASE_MSR_ENABLE | (x2apic ? IA32_APIC_BASE_MSR_X2APIC : 0));
 	}
 
-	printf ("APIC initialized \n");
-
+	
 	setvect (0xFF, apic_spurious_interrupt);
 	write_apic_register (LAPIC_REGISTER_SVR, read_apic_register (LAPIC_REGISTER_SVR) | 
 		                                     IA32_APIC_SVR_ENABLE | 0xFF);
 
 
 	//!Register the time speed
-	write_apic_register (LAPIC_REGISTER_TMRDIV,0xa);  //0x3
+	write_apic_register (LAPIC_REGISTER_TMRDIV,0x3);  // //0x3    //->correct->   0x2
 
 	/*! timer initialized*/
 	size_t timer_vector = 0x40;
@@ -174,7 +175,7 @@ void initialize_apic (bool bsp) {
 	size_t timer_reg = (1 << 17) | timer_vector;
 	write_apic_register (LAPIC_REGISTER_LVT_TIMER, timer_reg);
 	io_wait ();
-	write_apic_register (LAPIC_REGISTER_TMRINITCNT,1000);  //100 , 500
+	write_apic_register (LAPIC_REGISTER_TMRINITCNT,500);  //100 , 500, 1000 <- correct
 	
 
 	x64_outportb(PIC1_DATA, 0xFF);

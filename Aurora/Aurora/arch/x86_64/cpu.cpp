@@ -342,4 +342,17 @@ bool is_cpu_xsave_supported () {
 	return _xsave;
 }
 
+/*
+ * cpu_msi_address -- calculates the cpu msi address
+ * @param data -- msi data to return
+ * @param vector -- interrupt vector number
+ * @param processor -- processor number
+ * @param edge -- edge triggered or level triggered
+ * @param deassert -- deassert bit
+ */
+uint64_t cpu_msi_address (uint64_t* data, size_t vector, uint32_t processor, uint8_t edge, uint8_t deassert) {
+	*data = (vector & 0xFF) | (edge == 1 ? 0 : (1<<15)) | (deassert == 1 ? 0 : (1<<14));
+	return (0xFEE00000 | (processor << 12));
+}
+
 

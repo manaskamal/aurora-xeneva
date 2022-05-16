@@ -27,7 +27,7 @@ EXTRN	x64_outportb:PROC
 EXTRN	x64_outportw:PROC
 EXTRN	x64_outportd:PROC
 EXTRN	?x86_64_gdt_init@@YAXXZ:PROC			; x86_64_gdt_init
-EXTRN	?setvect@@YAX_KP6AX0PEAX@Z@Z:PROC		; setvect
+EXTRN	setvect:PROC
 EXTRN	?x86_64_init_cpu@@YAXXZ:PROC			; x86_64_init_cpu
 EXTRN	apic_local_eoi:PROC
 EXTRN	?ioapic_register_irq@@YAX_KP6AX0PEAX@ZE_N@Z:PROC ; ioapic_register_irq
@@ -456,7 +456,7 @@ $LN3:
 
 	mov	rdx, QWORD PTR function$[rsp]
 	mov	rcx, QWORD PTR vector$[rsp]
-	call	?setvect@@YAX_KP6AX0PEAX@Z@Z		; setvect
+	call	setvect
 
 ; 21   : #elif  ARCH_ARM
 ; 22   : 	//! initialize arm32 hal initializer

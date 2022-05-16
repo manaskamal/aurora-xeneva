@@ -33,19 +33,19 @@ mouse_cycle DB	01H DUP (?)
 ?old_message@@3U_dwm_message_@@A DB 01cH DUP (?)	; old_message
 _BSS	ENDS
 CONST	SEGMENT
-$SG3700	DB	'Mouse Vertical scroll up ', 0aH, 00H
+$SG3706	DB	'Mouse Vertical scroll up ', 0aH, 00H
 	ORG $+5
-$SG3703	DB	'Mouse Vertical scroll down ', 0aH, 00H
+$SG3709	DB	'Mouse Vertical scroll down ', 0aH, 00H
 	ORG $+3
-$SG3706	DB	'Mouse Horizontal Scroll up ', 0aH, 00H
+$SG3712	DB	'Mouse Horizontal Scroll up ', 0aH, 00H
 	ORG $+3
-$SG3709	DB	'Mouse Horizontal Scroll down ', 0aH, 00H
+$SG3715	DB	'Mouse Horizontal Scroll down ', 0aH, 00H
 	ORG $+1
-$SG3735	DB	'mouse', 00H
+$SG3741	DB	'mouse', 00H
 	ORG $+2
-$SG3736	DB	'/dev/mouse', 00H
+$SG3742	DB	'/dev/mouse', 00H
 	ORG $+5
-$SG3740	DB	'mouse interrupt setupped', 0aH, 00H
+$SG3746	DB	'mouse interrupt setupped', 0aH, 00H
 CONST	ENDS
 PUBLIC	?AuInitializeMouse@@YAXXZ			; AuInitializeMouse
 PUBLIC	?mouse_wait@@YAXE@Z				; mouse_wait
@@ -145,7 +145,7 @@ $LN3:
 ; 228  : 	strcpy (node->filename, "mouse");
 
 	mov	rax, QWORD PTR node$[rsp]
-	lea	rdx, OFFSET FLAT:$SG3735
+	lea	rdx, OFFSET FLAT:$SG3741
 	mov	rcx, rax
 	call	strcpy
 
@@ -210,7 +210,7 @@ $LN3:
 
 	xor	r8d, r8d
 	mov	rdx, QWORD PTR node$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3736
+	lea	rcx, OFFSET FLAT:$SG3742
 	call	vfs_mount
 
 ; 241  : }
@@ -743,7 +743,7 @@ $LN8@mouse_hand:
 
 ; 163  : 			printf ("Mouse Vertical scroll up \n");
 
-	lea	rcx, OFFSET FLAT:$SG3700
+	lea	rcx, OFFSET FLAT:$SG3706
 	call	printf
 	jmp	SHORT $LN6@mouse_hand
 $LN7@mouse_hand:
@@ -760,7 +760,7 @@ $LN7@mouse_hand:
 
 ; 165  : 			printf ("Mouse Vertical scroll down \n");
 
-	lea	rcx, OFFSET FLAT:$SG3703
+	lea	rcx, OFFSET FLAT:$SG3709
 	call	printf
 	jmp	SHORT $LN4@mouse_hand
 $LN5@mouse_hand:
@@ -777,7 +777,7 @@ $LN5@mouse_hand:
 
 ; 167  : 			printf ("Mouse Horizontal Scroll up \n");
 
-	lea	rcx, OFFSET FLAT:$SG3706
+	lea	rcx, OFFSET FLAT:$SG3712
 	call	printf
 	jmp	SHORT $LN2@mouse_hand
 $LN3@mouse_hand:
@@ -794,7 +794,7 @@ $LN3@mouse_hand:
 
 ; 169  : 			printf ("Mouse Horizontal Scroll down \n");
 
-	lea	rcx, OFFSET FLAT:$SG3709
+	lea	rcx, OFFSET FLAT:$SG3715
 	call	printf
 $LN1@mouse_hand:
 $LN2@mouse_hand:
@@ -1227,7 +1227,7 @@ $LN3:
 
 ; 276  : 	printf ("mouse interrupt setupped\n");
 
-	lea	rcx, OFFSET FLAT:$SG3740
+	lea	rcx, OFFSET FLAT:$SG3746
 	call	printf
 
 ; 277  : 	mouse_register_device ();

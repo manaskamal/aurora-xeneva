@@ -28,8 +28,8 @@ $pdata$?AuSharedDeviceInit@@YAXXZ DD imagerel $LN6
 $pdata$AuCheckSharedDevice DD imagerel $LN7
 	DD	imagerel $LN7+106
 	DD	imagerel $unwind$AuCheckSharedDevice
-$pdata$AuFiredSharedHandler DD imagerel $LN8
-	DD	imagerel $LN8+146
+$pdata$AuFiredSharedHandler DD imagerel $LN7
+	DD	imagerel $LN7+132
 	DD	imagerel $unwind$AuFiredSharedHandler
 $pdata$?AuSharedHandler@@YAX_KPEAX@Z DD imagerel $LN7
 	DD	imagerel $LN7+116
@@ -129,7 +129,7 @@ AuFiredSharedHandler PROC
 
 ; 102  : void AuFiredSharedHandler (uint8_t irq, size_t v, void* p, shirq_t *fired) {
 
-$LN8:
+$LN7:
 	mov	QWORD PTR [rsp+32], r9
 	mov	QWORD PTR [rsp+24], r8
 	mov	QWORD PTR [rsp+16], rdx
@@ -139,15 +139,15 @@ $LN8:
 ; 103  : 	for (int i = 0; i < shdevice_count; i++){
 
 	mov	DWORD PTR i$1[rsp], 0
-	jmp	SHORT $LN5@AuFiredSha
-$LN4@AuFiredSha:
+	jmp	SHORT $LN4@AuFiredSha
+$LN3@AuFiredSha:
 	mov	eax, DWORD PTR i$1[rsp]
 	inc	eax
 	mov	DWORD PTR i$1[rsp], eax
-$LN5@AuFiredSha:
+$LN4@AuFiredSha:
 	movsxd	rax, DWORD PTR i$1[rsp]
 	cmp	rax, QWORD PTR ?shdevice_count@@3_KA	; shdevice_count
-	jae	SHORT $LN3@AuFiredSha
+	jae	SHORT $LN2@AuFiredSha
 
 ; 104  : 		shirq_t* device = shdevice[i];
 
@@ -156,18 +156,7 @@ $LN5@AuFiredSha:
 	mov	rax, QWORD PTR [rcx+rax*8]
 	mov	QWORD PTR device$2[rsp], rax
 
-; 105  : 		if (device == fired)
-
-	mov	rax, QWORD PTR fired$[rsp]
-	cmp	QWORD PTR device$2[rsp], rax
-	jne	SHORT $LN2@AuFiredSha
-
-; 106  : 			continue;
-
-	jmp	SHORT $LN4@AuFiredSha
-$LN2@AuFiredSha:
-
-; 107  : 		if (device->irq == irq && device->IrqHandler != NULL)
+; 105  : 		if (device->irq == irq && device->IrqHandler != NULL)
 
 	mov	rax, QWORD PTR device$2[rsp]
 	movzx	eax, BYTE PTR [rax]
@@ -178,7 +167,7 @@ $LN2@AuFiredSha:
 	cmp	QWORD PTR [rax+16], 0
 	je	SHORT $LN1@AuFiredSha
 
-; 108  : 			device->IrqHandler(v,p);
+; 106  : 			device->IrqHandler(v,p);
 
 	mov	rdx, QWORD PTR p$[rsp]
 	mov	rcx, QWORD PTR v$[rsp]
@@ -186,12 +175,12 @@ $LN2@AuFiredSha:
 	call	QWORD PTR [rax+16]
 $LN1@AuFiredSha:
 
-; 109  : 	}
+; 107  : 	}
 
-	jmp	SHORT $LN4@AuFiredSha
-$LN3@AuFiredSha:
+	jmp	SHORT $LN3@AuFiredSha
+$LN2@AuFiredSha:
 
-; 110  : }
+; 108  : }
 
 	add	rsp, 56					; 00000038H
 	ret	0

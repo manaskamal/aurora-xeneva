@@ -102,8 +102,6 @@ void AuInstallSharedHandler (uint8_t irq, bool level) {
 void AuFiredSharedHandler (uint8_t irq, size_t v, void* p, shirq_t *fired) {
 	for (int i = 0; i < shdevice_count; i++){
 		shirq_t* device = shdevice[i];
-		if (device == fired)
-			continue;
 		if (device->irq == irq && device->IrqHandler != NULL)
 			device->IrqHandler(v,p);
 	}

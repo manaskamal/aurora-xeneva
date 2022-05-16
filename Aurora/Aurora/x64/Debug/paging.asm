@@ -14,7 +14,7 @@ _BSS	SEGMENT
 ?first@@3_NA DB	01H DUP (?)				; first
 _BSS	ENDS
 CONST	SEGMENT
-$SG3666	DB	'Already present -> %x ', 0aH, 00H
+$SG3672	DB	'Already present -> %x ', 0aH, 00H
 CONST	ENDS
 PUBLIC	?pml4_index@@YA_K_K@Z				; pml4_index
 PUBLIC	?pdp_index@@YA_K_K@Z				; pdp_index
@@ -233,7 +233,7 @@ $LN3@AuMapMMIO:
 	cmp	QWORD PTR i$1[rsp], rax
 	jae	SHORT $LN1@AuMapMMIO
 
-; 413  : 		AuMapPage(phys_addr + i * 4096, out + i * 4096,0x04 | 0x08);
+; 413  : 		AuMapPage(phys_addr + i * 4096, out + i * 4096,0x04 | 0x08);  //
 
 	mov	rax, QWORD PTR i$1[rsp]
 	imul	rax, 4096				; 00001000H
@@ -1339,7 +1339,7 @@ $LN4@AuMapPageE:
 ; 318  : 		printf ("Already present -> %x \n", virtual_address);
 
 	mov	rdx, QWORD PTR virtual_address$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3666
+	lea	rcx, OFFSET FLAT:$SG3672
 	call	printf
 $LN2@AuMapPageE:
 

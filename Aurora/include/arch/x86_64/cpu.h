@@ -248,7 +248,7 @@ extern "C" size_t x64_get_kstack (void* ktss);
 //! init -- initializer of x86_64 hal subsystem
 extern void x86_64_gdt_init ();
 //! setvect -- installs a interrupt vector
-extern void setvect(size_t vector, void (*function)(size_t vector, void* param));
+AU_EXTERN AU_EXPORT void setvect(size_t vector, void (*function)(size_t vector, void* param));
 
 extern "C" void gdt_initialize();
 /*
@@ -269,4 +269,13 @@ extern uint8_t x86_64_cpu_get_id ();
 extern void hal_cpu_feature_enable ();
 extern bool is_cpu_fxsave_supported ();
 extern bool is_cpu_xsave_supported ();
+/*
+ * cpu_msi_address -- calculates the cpu msi address
+ * @param data -- msi data to return
+ * @param vector -- interrupt vector number
+ * @param processor -- processor number
+ * @param edge -- edge triggered or level triggered
+ * @param deassert -- deassert bit
+ */
+extern uint64_t cpu_msi_address (uint64_t* data, size_t vector, uint32_t processor, uint8_t edge, uint8_t deassert);
 #endif
