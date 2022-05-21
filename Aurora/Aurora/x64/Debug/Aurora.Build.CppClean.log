@@ -49,8 +49,8 @@ E:\XENEVA PROJECT\XENEVA\AURORA\AURORA\X64\DEBUG\POSTBOX.OBJ
 E:\XENEVA PROJECT\XENEVA\AURORA\AURORA\X64\DEBUG\POSTBOX.ASM
 E:\XENEVA PROJECT\XENEVA\AURORA\AURORA\X64\DEBUG\MESSAGE.OBJ
 E:\XENEVA PROJECT\XENEVA\AURORA\AURORA\X64\DEBUG\MESSAGE.ASM
-E:\XENEVA PROJECT\XENEVA\AURORA\AURORA\X64\DEBUG\DWM_IPC.OBJ
-E:\XENEVA PROJECT\XENEVA\AURORA\AURORA\X64\DEBUG\DWM_IPC.ASM
+E:\XENEVA PROJECT\XENEVA\AURORA\AURORA\X64\DEBUG\POINTDEV.OBJ
+E:\XENEVA PROJECT\XENEVA\AURORA\AURORA\X64\DEBUG\POINTDEV.ASM
 E:\XENEVA PROJECT\XENEVA\AURORA\AURORA\X64\DEBUG\INIT.OBJ
 E:\XENEVA PROJECT\XENEVA\AURORA\AURORA\X64\DEBUG\INIT.ASM
 E:\XENEVA PROJECT\XENEVA\AURORA\AURORA\X64\DEBUG\HAL.OBJ
@@ -168,7 +168,6 @@ E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\circ_buf.obj
 E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\console.obj
 E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\cpu.obj
 E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\devfs.obj
-E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\dwm_ipc.obj
 E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\ethernet.obj
 E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\exception.obj
 E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\fat.obj
@@ -198,6 +197,7 @@ E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\pe.obj
 E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\pic.obj
 E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\pipe.obj
 E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\pmmngr.obj
+E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\pointdev.obj
 E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\postbox.obj
 E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\pri_loop.obj
 E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\proc.obj

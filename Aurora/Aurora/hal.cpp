@@ -139,7 +139,7 @@ void AuInterruptSet (size_t vector, void (*fn)(size_t, void* p),uint8_t irq, boo
 #ifdef ARCH_X64
 #ifdef USE_PIC
 	setvect(32 + vector, fn);
-	irq_mask(irq,false);
+	AuIrqMask(irq,false);
 #endif
 #ifdef USE_APIC
 	ioapic_register_irq(vector,fn,irq, level);

@@ -100,7 +100,7 @@
 
 
 #define BDL_SIZE 4
-#define BUFFER_SIZE     4096 //1024 //0x10000 //2560 ///    0x100000 
+#define BUFFER_SIZE   8192//0x10000 
 
 
 #define HDA_GCAP_OSS_MASK  0xf000

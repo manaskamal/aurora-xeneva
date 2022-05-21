@@ -1036,8 +1036,12 @@ int main (int argc, char* argv[]) {
 	mouse_message_t mouse;
 	message_t key_msg;
 
+	int mouse_fd = sys_open_file("/dev/mouse", NULL);
+	ioquery(mouse_fd, MOUSE_REGISTER_WM,NULL);
+
 	while (1) {
 		mouse_get (&mouse);
+
 		pri_wm_get_message (&event);
 		message_receive(&key_msg);
 		//frame_tick = sys_get_system_tick();

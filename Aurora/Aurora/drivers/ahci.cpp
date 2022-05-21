@@ -178,11 +178,10 @@ void ahci_initialize () {
 
 	
 
-	//pci_enable_bus_master(device);
-	//pci_enable_interrupts(device);
+	pci_enable_bus_master(device);
+	pci_enable_interrupts(device);
 
 	
-
 	//uint8_t int_line = info->device.nonBridge.interruptLine;
 	
 
@@ -197,7 +196,6 @@ void ahci_initialize () {
 		AuInterruptSet(int_line, ahci_interrupt_handler,int_line, false);
 	}
 
-
 	uintptr_t hba_phys = base_address & 0xFFFFFFF0;
 	void* mmio = AuMapMMIO(hba_phys,512);
 	HBA_MEM *hba = (HBA_MEM*)mmio;//(info->device.nonBridge.baseAddress[5] & 0xFFFFFFF0);
@@ -207,7 +205,7 @@ void ahci_initialize () {
 	timer_sleep(500);
 	hba->ghc = (1<<31);
 	timer_sleep(100);
-	hba->ghc = (1<<1);
+	//hba->ghc = (1<<1);
 
 	uint32_t version_major = hba->vs >> 16 & 0xff;
 	uint32_t version_minor = hba->vs & 0xff;

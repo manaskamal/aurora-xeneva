@@ -10,15 +10,15 @@ _BSS	SEGMENT
 ?debug@@3P6AXPEBDZZEA DQ 01H DUP (?)			; debug
 _BSS	ENDS
 CONST	SEGMENT
-$SG5394	DB	'Scheduler Initialized', 0aH, 00H
+$SG5389	DB	'Scheduler Initialized', 0aH, 00H
 	ORG $+1
-$SG5396	DB	'shell', 00H
+$SG5391	DB	'shell', 00H
 	ORG $+2
-$SG5397	DB	'/init.exe', 00H
+$SG5392	DB	'/init.exe', 00H
 	ORG $+2
-$SG5398	DB	'priwm', 00H
+$SG5393	DB	'priwm', 00H
 	ORG $+6
-$SG5399	DB	'/priwm.exe', 00H
+$SG5394	DB	'/priwm.exe', 00H
 CONST	ENDS
 PUBLIC	?debug_print@@YAXPEBDZZ				; debug_print
 PUBLIC	?_AuMain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z		; _AuMain
@@ -27,9 +27,7 @@ EXTRN	x64_hlt:PROC
 EXTRN	?AuInitializeCpu@@YAXE@Z:PROC			; AuInitializeCpu
 EXTRN	?AuHalInitialize@@YAXXZ:PROC			; AuHalInitialize
 EXTRN	?AuPmmngrInit@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z:PROC ; AuPmmngrInit
-EXTRN	AuPmmngrAlloc:PROC
 EXTRN	?AuPagingInit@@YAXXZ:PROC			; AuPagingInit
-EXTRN	AuMapPage:PROC
 EXTRN	?AuPagingClearLow@@YAXXZ:PROC			; AuPagingClearLow
 EXTRN	?AuConsoleInitialize@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z:PROC ; AuConsoleInitialize
 EXTRN	printf:PROC
@@ -43,7 +41,7 @@ EXTRN	?AuGetNumCPU@@YAEXZ:PROC			; AuGetNumCPU
 EXTRN	?AuVFSInit@@YAXXZ:PROC				; AuVFSInit
 EXTRN	?AuInitializeScheduler@@YAXXZ:PROC		; AuInitializeScheduler
 EXTRN	?AuSchedulerStart@@YAXXZ:PROC			; AuSchedulerStart
-EXTRN	?dwm_ipc_init@@YAXXZ:PROC			; dwm_ipc_init
+EXTRN	?AuPointDevInitialize@@YAXXZ:PROC		; AuPointDevInitialize
 EXTRN	?AuInitializeScreen@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z:PROC ; AuInitializeScreen
 EXTRN	?AuCreateProcess@@YAHPEBDPEAD@Z:PROC		; AuCreateProcess
 EXTRN	?process_list_initialize@@YAXXZ:PROC		; process_list_initialize
@@ -59,31 +57,28 @@ pdata	SEGMENT
 $pdata$?debug_print@@YAXPEBDZZ DD imagerel $LN3
 	DD	imagerel $LN3+40
 	DD	imagerel $unwind$?debug_print@@YAXPEBDZZ
-$pdata$?_AuMain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z DD imagerel $LN8
-	DD	imagerel $LN8+386
+$pdata$?_AuMain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z DD imagerel $LN5
+	DD	imagerel $LN5+287
 	DD	imagerel $unwind$?_AuMain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z
 pdata	ENDS
 xdata	SEGMENT
 $unwind$?debug_print@@YAXPEBDZZ DD 011801H
 	DD	04218H
 $unwind$?_AuMain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z DD 010901H
-	DD	08209H
+	DD	06209H
 xdata	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\init.cpp
 _TEXT	SEGMENT
-i$1 = 32
-au_status$ = 36
-pos$ = 40
-tv79 = 48
-info$ = 80
+au_status$ = 32
+info$ = 64
 ?_AuMain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z PROC		; _AuMain
 
 ; 97   : void _AuMain (KERNEL_BOOT_INFO *info) {
 
-$LN8:
+$LN5:
 	mov	QWORD PTR [rsp+8], rcx
-	sub	rsp, 72					; 00000048H
+	sub	rsp, 56					; 00000038H
 
 ; 98   : 	debug = info->printf_gui;
 
@@ -193,154 +188,102 @@ $LN8:
 
 	call	?AuKeyboardInitialize@@YAXXZ		; AuKeyboardInitialize
 
-; 135  : 	dwm_ipc_init();
+; 135  : 	AuPointDevInitialize();
 
-	call	?dwm_ipc_init@@YAXXZ			; dwm_ipc_init
+	call	?AuPointDevInitialize@@YAXXZ		; AuPointDevInitialize
 
-; 136  : 	pri_loop_init();
+; 136  : 
+; 137  : 	pri_loop_init();
 
 	call	?pri_loop_init@@YAXXZ			; pri_loop_init
 
-; 137  : 
-; 138  : 	process_list_initialize();
+; 138  : 
+; 139  : 	process_list_initialize();
 
 	call	?process_list_initialize@@YAXXZ		; process_list_initialize
 
-; 139  : 	ttype_init();
+; 140  : 	ttype_init();
 
 	call	?ttype_init@@YAXXZ			; ttype_init
 
-; 140  : 
-; 141  : 	/*Initialize other processor */
-; 142  : 	AuInitializeCpu(AuGetNumCPU());
+; 141  : 
+; 142  : 	/*Initialize other processor */
+; 143  : 	AuInitializeCpu(AuGetNumCPU());
 
 	call	?AuGetNumCPU@@YAEXZ			; AuGetNumCPU
 	movzx	ecx, al
 	call	?AuInitializeCpu@@YAXE@Z		; AuInitializeCpu
 
-; 143  : 
-; 144  : 	
-; 145  : 	/*Clear the lower half for user space */
-; 146  : 	AuPagingClearLow();
+; 144  : 
+; 145  : 	
+; 146  : 	/*Clear the lower half for user space */
+; 147  : 	AuPagingClearLow();
 
 	call	?AuPagingClearLow@@YAXXZ		; AuPagingClearLow
 
-; 147  : 
-; 148  : 	uint64_t pos = (uint64_t)0xFFFFF00000000000;
+; 148  : 
+; 149  : #ifdef ARCH_X64
+; 150  : 
+; 151  : 	printf ("Scheduler Initialized\n");
 
-	mov	rax, -17592186044416			; fffff00000000000H
-	mov	QWORD PTR pos$[rsp], rax
-
-; 149  : 	for (int i = 0; i < 10*1024*1024/4096; i++)
-
-	mov	DWORD PTR i$1[rsp], 0
-	jmp	SHORT $LN5@AuMain
-$LN4@AuMain:
-	mov	eax, DWORD PTR i$1[rsp]
-	inc	eax
-	mov	DWORD PTR i$1[rsp], eax
-$LN5@AuMain:
-	cmp	DWORD PTR i$1[rsp], 2560		; 00000a00H
-	jge	SHORT $LN3@AuMain
-
-; 150  : 		AuMapPage((uint64_t)AuPmmngrAlloc(),pos + i * 4096, 0);
-
-	mov	eax, DWORD PTR i$1[rsp]
-	imul	eax, 4096				; 00001000H
-	cdqe
-	mov	rcx, QWORD PTR pos$[rsp]
-	add	rcx, rax
-	mov	rax, rcx
-	mov	QWORD PTR tv79[rsp], rax
-	call	AuPmmngrAlloc
-	xor	r8d, r8d
-	mov	rcx, QWORD PTR tv79[rsp]
-	mov	rdx, rcx
-	mov	rcx, rax
-	call	AuMapPage
-	jmp	SHORT $LN4@AuMain
-$LN3@AuMain:
-
-; 151  : 	
-; 152  : 	
-; 153  : 	//AuARPRequestMAC();
-; 154  : 	/*vfs_node_t file = fat32_open(NULL, "/mon.wav");
-; 155  : 	printf ("file.size -> %d \n", file.size);
-; 156  : 
-; 157  : 	for (int i = 0; i < 10*1024*1024/4096; i++) {
-; 158  : 		uint64_t* buffer = (uint64_t*)p2v((size_t)AuPmmngrAlloc());
-; 159  : 		memset(buffer, 0, 4096);
-; 160  : 		fat32_read(&file, (uint64_t*)v2p((size_t)buffer));
-; 161  : 		memcpy((void*)(pos + i * 4096),buffer,4096);
-; 162  : 		AuPmmngrFree((void*)v2p((size_t)buffer));
-; 163  : 	}
-; 164  : 	AuSoundWrite(NULL, (uint8_t*)pos,1024);*/
-; 165  : 	//AuSoundOutputStart();
-; 166  : 	
-; 167  : 	//for(;;);
-; 168  : #ifdef ARCH_X64
-; 169  : 
-; 170  : 	printf ("Scheduler Initialized\n");
-
-	lea	rcx, OFFSET FLAT:$SG5394
+	lea	rcx, OFFSET FLAT:$SG5389
 	call	printf
 
-; 171  : 	int au_status = 0;
+; 152  : 	int au_status = 0;
 
 	mov	DWORD PTR au_status$[rsp], 0
 
-; 172  : 
-; 173  : 	/* start the sound service manager at id 1 */
-; 174  : 	au_status = AuCreateProcess ("/init.exe","shell");
+; 153  : 
+; 154  : 	/* start the sound service manager at id 1 */
+; 155  : 	au_status = AuCreateProcess ("/init.exe","shell");
 
-	lea	rdx, OFFSET FLAT:$SG5396
-	lea	rcx, OFFSET FLAT:$SG5397
+	lea	rdx, OFFSET FLAT:$SG5391
+	lea	rcx, OFFSET FLAT:$SG5392
 	call	?AuCreateProcess@@YAHPEBDPEAD@Z		; AuCreateProcess
 	mov	DWORD PTR au_status$[rsp], eax
 
-; 175  : 
-; 176  : 	/* start the compositing window manager at id 3 */
-; 177  : 	au_status = AuCreateProcess ("/priwm.exe","priwm");
+; 156  : 
+; 157  : 	/* start the compositing window manager at id 3 */
+; 158  : 	au_status = AuCreateProcess ("/priwm.exe","priwm");
 
-	lea	rdx, OFFSET FLAT:$SG5398
-	lea	rcx, OFFSET FLAT:$SG5399
+	lea	rdx, OFFSET FLAT:$SG5393
+	lea	rcx, OFFSET FLAT:$SG5394
 	call	?AuCreateProcess@@YAHPEBDPEAD@Z		; AuCreateProcess
 	mov	DWORD PTR au_status$[rsp], eax
 
-; 178  : 
-; 179  : 	//au_status = AuCreateProcess ("/dock.exe", "dock");
-; 180  : 	//! Here start the scheduler (multitasking engine)
-; 181  : 	AuSchedulerStart();
+; 159  : 
+; 160  : 	//! Here start the scheduler (multitasking engine)
+; 161  : 	AuSchedulerStart();
 
 	call	?AuSchedulerStart@@YAXXZ		; AuSchedulerStart
 $LN2@AuMain:
 
-; 182  : #endif
-; 183  : 
-; 184  : 	//! Loop forever
-; 185  : 	while(1) {
+; 162  : #endif
+; 163  : 
+; 164  : 	//! Loop forever
+; 165  : 	while(1) {
 
 	xor	eax, eax
 	cmp	eax, 1
 	je	SHORT $LN1@AuMain
 
-; 186  : 		//!looping looping
-; 187  : 		x64_cli();
+; 166  : 		//!looping looping
+; 167  : 		x64_cli();
 
 	call	x64_cli
 
-; 188  : 		x64_hlt();
+; 168  : 		x64_hlt();
 
 	call	x64_hlt
 
-; 189  : 	}
+; 169  : 	}
 
 	jmp	SHORT $LN2@AuMain
 $LN1@AuMain:
 
-; 190  : }
+; 170  : }
 
-	add	rsp, 72					; 00000048H
+	add	rsp, 56					; 00000038H
 	ret	0
 ?_AuMain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z ENDP		; _AuMain
 _TEXT	ENDS

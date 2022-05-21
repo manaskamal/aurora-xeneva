@@ -33,7 +33,6 @@ void pit_interrupt_handler (size_t v, void* param) {
 
 
 void initialize_pic () {
-	x64_cli();
 
 	uint8_t base0 = 0x20; 
 	uint8_t base1 = 0x28;
@@ -81,7 +80,7 @@ void initialize_pic () {
 	x64_outportb(0x40, divisor >> 8);
 	setvect(32+0,pit_interrupt_handler);
 	pic_clear_mask(0);
-	x64_sti();
+
 }
 
 

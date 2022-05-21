@@ -8,20 +8,19 @@ INCLUDELIB OLDNAMES
 PUBLIC	?get_thread_id@@YAGXZ				; get_thread_id
 PUBLIC	?create_uthread@@YAXP6AXPEAX@ZPEAD@Z		; create_uthread
 PUBLIC	?sys_sleep@@YAX_K@Z				; sys_sleep
+EXTRN	p2v:PROC
 EXTRN	x64_cli:PROC
 EXTRN	x64_read_cr3:PROC
 EXTRN	?AuCreateAddressSpace@@YAPEA_KXZ:PROC		; AuCreateAddressSpace
-EXTRN	?create_user_thread@@YAPEAU_thread_@@P6AXPEAX@Z_K2QEADE@Z:PROC ; create_user_thread
 EXTRN	get_current_thread:PROC
 EXTRN	force_sched:PROC
 EXTRN	sleep_thread:PROC
-EXTRN	?create_inc_stack@@YAPEA_KPEA_K@Z:PROC		; create_inc_stack
 pdata	SEGMENT
 $pdata$?get_thread_id@@YAGXZ DD imagerel $LN3
 	DD	imagerel $LN3+26
 	DD	imagerel $unwind$?get_thread_id@@YAGXZ
-$pdata$?create_uthread@@YAXP6AXPEAX@ZPEAD@Z DD imagerel $LN6
-	DD	imagerel $LN6+154
+$pdata$?create_uthread@@YAXP6AXPEAX@ZPEAD@Z DD imagerel $LN3
+	DD	imagerel $LN3+52
 	DD	imagerel $unwind$?create_uthread@@YAXP6AXPEAX@ZPEAD@Z
 $pdata$?sys_sleep@@YAX_K@Z DD imagerel $LN3
 	DD	imagerel $LN3+49
@@ -31,7 +30,7 @@ xdata	SEGMENT
 $unwind$?get_thread_id@@YAGXZ DD 010401H
 	DD	04204H
 $unwind$?create_uthread@@YAXP6AXPEAX@ZPEAD@Z DD 010e01H
-	DD	0c20eH
+	DD	0620eH
 $unwind$?sys_sleep@@YAX_K@Z DD 010901H
 	DD	06209H
 xdata	ENDS
@@ -42,32 +41,32 @@ t$ = 32
 ms$ = 64
 ?sys_sleep@@YAX_K@Z PROC				; sys_sleep
 
-; 46   : void sys_sleep (uint64_t ms) {
+; 44   : void sys_sleep (uint64_t ms) {
 
 $LN3:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 56					; 00000038H
 
-; 47   : 	x64_cli();
+; 45   : 	x64_cli();
 
 	call	x64_cli
 
-; 48   : 	thread_t* t = get_current_thread();
+; 46   : 	thread_t* t = get_current_thread();
 
 	call	get_current_thread
 	mov	QWORD PTR t$[rsp], rax
 
-; 49   : 	sleep_thread (t, ms);
+; 47   : 	sleep_thread (t, ms);
 
 	mov	rdx, QWORD PTR ms$[rsp]
 	mov	rcx, QWORD PTR t$[rsp]
 	call	sleep_thread
 
-; 50   : 	force_sched();
+; 48   : 	force_sched();
 
 	call	force_sched
 
-; 51   : }
+; 49   : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -76,21 +75,18 @@ _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\sysserv\systhread.cpp
 _TEXT	SEGMENT
-i$1 = 48
-new_cr3$ = 56
-old_cr3$ = 64
-stack$ = 72
-t$ = 80
-entry$ = 112
-name$ = 120
+old_cr3$ = 32
+new_cr3$ = 40
+entry$ = 64
+name$ = 72
 ?create_uthread@@YAXP6AXPEAX@ZPEAD@Z PROC		; create_uthread
 
 ; 22   : void create_uthread (void (*entry) (void*), char* name) {
 
-$LN6:
+$LN3:
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
-	sub	rsp, 104				; 00000068H
+	sub	rsp, 56					; 00000038H
 
 ; 23   : 	x64_cli();
 
@@ -102,67 +98,30 @@ $LN6:
 ; 27   : 	 * TODO: Update the process structure and add an
 ; 28   : 	 * entry for the new user thread!!
 ; 29   : 	 */  
-; 30   : 	uint64_t *old_cr3 = (uint64_t*)x64_read_cr3();
+; 30   : 	uint64_t *old_cr3 = (uint64_t*)p2v(x64_read_cr3());
 
 	call	x64_read_cr3
+	mov	rcx, rax
+	call	p2v
 	mov	QWORD PTR old_cr3$[rsp], rax
 
-; 31   : 	uint64_t *new_cr3 = AuCreateAddressSpace();
+; 31   : 	uint64_t* new_cr3 = (uint64_t*)AuCreateAddressSpace();
 
 	call	?AuCreateAddressSpace@@YAPEA_KXZ	; AuCreateAddressSpace
 	mov	QWORD PTR new_cr3$[rsp], rax
 
-; 32   : 
-; 33   : 	for (int i = 0; i < 256; i++) {
-
-	mov	DWORD PTR i$1[rsp], 0
-	jmp	SHORT $LN3@create_uth
-$LN2@create_uth:
-	mov	eax, DWORD PTR i$1[rsp]
-	inc	eax
-	mov	DWORD PTR i$1[rsp], eax
-$LN3@create_uth:
-	cmp	DWORD PTR i$1[rsp], 256			; 00000100H
-	jge	SHORT $LN1@create_uth
-
-; 34   : 		new_cr3[i] = old_cr3[i];
-
-	movsxd	rax, DWORD PTR i$1[rsp]
-	movsxd	rcx, DWORD PTR i$1[rsp]
-	mov	rdx, QWORD PTR new_cr3$[rsp]
-	mov	r8, QWORD PTR old_cr3$[rsp]
-	mov	rax, QWORD PTR [r8+rax*8]
-	mov	QWORD PTR [rdx+rcx*8], rax
-
-; 35   : 	}
-
-	jmp	SHORT $LN2@create_uth
-$LN1@create_uth:
-
+; 32   : 	
+; 33   : 
+; 34   : 
+; 35   : 	//uint64_t stack = (uint64_t)p2v((size_t)AuPmmngrAlloc()); //create_inc_stack(old_cr3);
 ; 36   : 
-; 37   : 	uint64_t stack = (uint64_t)create_inc_stack(new_cr3);
+; 37   : 
+; 38   : 	/* Create the new user thread */
+; 39   : 	//thread_t * t = create_user_thread(entry,stack + 4096,(uint64_t)new_cr3,name,1);
+; 40   : 	return;
+; 41   : }
 
-	mov	rcx, QWORD PTR new_cr3$[rsp]
-	call	?create_inc_stack@@YAPEA_KPEA_K@Z	; create_inc_stack
-	mov	QWORD PTR stack$[rsp], rax
-
-; 38   : 
-; 39   : 
-; 40   : 
-; 41   : 	/* Create the new user thread */
-; 42   : 	thread_t * t = create_user_thread(entry,stack,(uint64_t)new_cr3,name,1);
-
-	mov	BYTE PTR [rsp+32], 1
-	mov	r9, QWORD PTR name$[rsp]
-	mov	r8, QWORD PTR new_cr3$[rsp]
-	mov	rdx, QWORD PTR stack$[rsp]
-	mov	rcx, QWORD PTR entry$[rsp]
-	call	?create_user_thread@@YAPEAU_thread_@@P6AXPEAX@Z_K2QEADE@Z ; create_user_thread
-	mov	QWORD PTR t$[rsp], rax
-
-; 43   : }
-
-	add	rsp, 104				; 00000068H
+	add	rsp, 56					; 00000038H
 	ret	0
 ?create_uthread@@YAXP6AXPEAX@ZPEAD@Z ENDP		; create_uthread
 _TEXT	ENDS

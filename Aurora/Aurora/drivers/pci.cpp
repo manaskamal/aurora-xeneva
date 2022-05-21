@@ -30,6 +30,7 @@
 
 #include <drivers\pci.h>
 #include <hal.h>
+#include <stdio.h>
 
 #define PCI_ADDRESS_PORT  0xCF8
 #define PCI_VALUE_PORT  0xCFC
@@ -48,11 +49,11 @@ int pci_decode_func (uint32_t device) {
 
 uint32_t pci_get_address(uint32_t device, int reg) {
 	return 0x80000000 | (pci_decode_bus(device) << 16) | (pci_decode_slot(device) << 11) | (pci_decode_func(device) << 8) | 
-		reg;
+		reg & 0x3F;
 }
 
 
-uint32_t pci_encode_device(int bus, int slot, int func) {
+uint32_t pci_encode_device(uint32_t bus, uint32_t slot, uint32_t func) {
 	return (uint32_t)((bus << 16)  |(slot << 8) | func);
 }
 
@@ -66,7 +67,7 @@ uint32_t pci_read (uint32_t device, int reg) {
 		size = 2;
 		break;
 	case PCI_COMMAND:
-		size = 2;
+		size = 4;
 		break;
 	case PCI_STATUS:
 		size = 2;
@@ -138,8 +139,16 @@ uint32_t pci_read (uint32_t device, int reg) {
 }
 
 void pci_write (uint32_t device, int reg, uint32_t value) {
-	x64_outportd(PCI_ADDRESS_PORT, pci_get_address(device,reg));
-	x64_outportd(PCI_VALUE_PORT, value);
+	if (reg == PCI_COMMAND) {
+		reg = 2;
+		unsigned short data = (unsigned short)value;
+		unsigned addr = pci_get_address(device, reg/2);
+		outportd(PCI_ADDRESS_PORT, addr);
+		outportw((PCI_VALUE_PORT + (reg % 2)),data);
+	}else {
+		x64_outportd(PCI_ADDRESS_PORT, pci_get_address(device,reg));
+		x64_outportd(PCI_VALUE_PORT, value);
+	}
 }
 
 uint32_t pci_scan_class(uint8_t classcode, uint8_t subclass) {

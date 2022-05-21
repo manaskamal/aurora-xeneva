@@ -66,24 +66,24 @@ AU_EXTERN AU_EXPORT int AuDriverMain() {
 
 	usb_device = (usb_dev_t*)malloc(sizeof(usb_dev_t));
 
-	uint32_t command = pci_express_read(device ,PCI_COMMAND);
+	//uint32_t command = pci_express_read(device ,PCI_COMMAND);
 
-	command |= (1<<2);
-	command |= (1<<1);
-	command |= (1<<0);
-	if ((command & (1<<10)) != 0)
-		command &= ~(1<<10); //clear the Interrupt disable
-	pci_express_write(device, PCI_COMMAND, command);
+	//command |= (1<<2);
+	//command |= (1<<1);
+	//command |= (1<<0);
+	//if ((command & (1<<10)) != 0)
+	//	command &= ~(1<<10); //clear the Interrupt disable
+	//pci_express_write(device, PCI_COMMAND, command);
 
 
-	uint32_t stat = pci_express_read(device, PCI_STATUS);
+	/*uint32_t stat = pci_express_read(device, PCI_STATUS);
 	if ((stat & (1<<3) != 0) && (command & (1<<10) != 1)){
 		printf ("USB supports interrupt \n");
 	}
 
 	if (stat & (1<<4)){
 		printf ("USB supports cap list\n");
-	}
+	}*/
 	
 	//pci_enable_bus_master(device);
 	//pci_enable_interrupts(device);

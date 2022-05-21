@@ -51,7 +51,7 @@
 #include <drivers\ahci.h>
 #include <ipc\evntsh.h>
 #include <ipc\message.h>
-#include <ipc\dwm_ipc.h>
+#include <ipc\pointdev.h>
 #include <fs\gpt.h>
 #include <fs\vfs.h>
 #include <screen.h>
@@ -132,7 +132,8 @@ void _AuMain (KERNEL_BOOT_INFO *info) {
 	AuDrvMngrInitialize(info);
 	//hda_initialize();
 	AuKeyboardInitialize();
-	dwm_ipc_init();
+	AuPointDevInitialize();
+
 	pri_loop_init();
 
 	process_list_initialize();
@@ -145,26 +146,6 @@ void _AuMain (KERNEL_BOOT_INFO *info) {
 	/*Clear the lower half for user space */
 	AuPagingClearLow();
 
-	uint64_t pos = (uint64_t)0xFFFFF00000000000;
-	for (int i = 0; i < 10*1024*1024/4096; i++)
-		AuMapPage((uint64_t)AuPmmngrAlloc(),pos + i * 4096, 0);
-	
-	
-	//AuARPRequestMAC();
-	/*vfs_node_t file = fat32_open(NULL, "/mon.wav");
-	printf ("file.size -> %d \n", file.size);
-
-	for (int i = 0; i < 10*1024*1024/4096; i++) {
-		uint64_t* buffer = (uint64_t*)p2v((size_t)AuPmmngrAlloc());
-		memset(buffer, 0, 4096);
-		fat32_read(&file, (uint64_t*)v2p((size_t)buffer));
-		memcpy((void*)(pos + i * 4096),buffer,4096);
-		AuPmmngrFree((void*)v2p((size_t)buffer));
-	}
-	AuSoundWrite(NULL, (uint8_t*)pos,1024);*/
-	//AuSoundOutputStart();
-	
-	//for(;;);
 #ifdef ARCH_X64
 
 	printf ("Scheduler Initialized\n");
@@ -176,7 +157,6 @@ void _AuMain (KERNEL_BOOT_INFO *info) {
 	/* start the compositing window manager at id 3 */
 	au_status = AuCreateProcess ("/priwm.exe","priwm");
 
-	//au_status = AuCreateProcess ("/dock.exe", "dock");
 	//! Here start the scheduler (multitasking engine)
 	AuSchedulerStart();
 #endif

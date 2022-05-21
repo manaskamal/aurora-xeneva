@@ -43,7 +43,7 @@ thread_t* registered_thr;
 uint32_t next_pos = 0;
 uint8_t* data_buff = 0;
 
-#define BUFF_SIZE  4096 //1024 //0x10000
+#define BUFF_SIZE   8192//0x10000 
 
 dsp_t* dsp_first;
 dsp_t* dsp_last;
@@ -88,11 +88,17 @@ void AuRemoveDSP(dsp_t *dsp) {
 }
 
 void AuRequestNextBlock(uint16_t id) {
-	pri_event_t e;
-	e.to_id = id;
-	e.from_id = 0;
-	e.type = 400;
-	pri_put_message(&e);
+	//pri_event_t e;
+	//e.to_id = id;
+	//e.from_id = 0;
+	//e.type = 10;
+	//pri_put_message(&e);
+	thread_t *t = thread_iterate_ready_list(id);
+	if (t == NULL)
+		t = thread_iterate_block_list(id);
+
+	if (t->state == THREAD_STATE_BLOCKED)
+		unblock_thread(t);
 }
 
 /*
@@ -118,22 +124,23 @@ void AuSoundRead (vfs_node_t *file, uint64_t* buffer, uint32_t length) {
 void AuSoundWrite (vfs_node_t *file, uint8_t* buffer, uint32_t length) {
 	if (registered_dev == NULL)
 		return;
-	uint8_t* tmp_buffer = (uint8_t*)p2v((size_t)AuPmmngrAlloc());
+	int16_t* tmp_buffer = (int16_t*)p2v((size_t)AuPmmngrAllocBlocks(BUFF_SIZE/4096));
+	uint8_t* buff = (uint8_t*)p2v((size_t)AuPmmngrAllocBlocks(BUFF_SIZE/4096));
+	for (dsp_t *dsp = dsp_first; dsp != NULL; dsp = dsp->next) {
 
-	for (dsp_t *dsp = dsp_first; dsp != NULL; dsp = dsp->next) {
+		for (int i = 0; i < BUFF_SIZE; i++)
+			circular_buf_get(dsp->buffer,buff); 
+
+		int16_t* aligned_buff = (int16_t*)buff;
 		for (int i = 0; i < BUFF_SIZE / sizeof(int16_t); i++) {
-			tmp_buffer[i] = dsp->buffer[i];
+			tmp_buffer[i] = aligned_buff[i];
 		}
-		
-	}
-	
-	registered_dev->write(tmp_buffer, BUFF_SIZE);
-	for (dsp_t *dsp = dsp_first; dsp != NULL; dsp = dsp->next) {
 		AuRequestNextBlock(dsp->id);
 	}
-	/*data_buff = buffer;
-	data_buff += BUFF_SIZE;*/
-	AuPmmngrFree((void*)v2p(((size_t)tmp_buffer)));
+	
+	registered_dev->write((uint8_t*)tmp_buffer, BUFF_SIZE);
+	AuPmmngrFreeBlocks((void*)v2p((size_t)buff), BUFF_SIZE/4096);
+	AuPmmngrFreeBlocks((void*)v2p((size_t)tmp_buffer), BUFF_SIZE/4096);
 }
 
 
@@ -149,15 +156,15 @@ int AuSoundIOQuery (vfs_node_t *node, int code, void* arg) {
 	case SOUND_REGISTER_MEDIAPLAYER:{
 		registered_thr = get_current_thread();
 		dsp_t *dsp = (dsp_t*)malloc(sizeof(dsp_t));
-		dsp->buffer = (uint8_t*)p2v((size_t)AuPmmngrAlloc());
-		memset(dsp->buffer, 0, 4096);
+		uint8_t* buffer = (uint8_t*)p2v((size_t)AuPmmngrAllocBlocks(BUFF_SIZE/4096));
+		dsp->buffer = circ_buf_init(buffer, BUFF_SIZE); //(uint8_t*)
 		dsp->id = get_current_thread()->id;
 		dsp->registered_thr = get_current_thread();
 		AuSoundAddDSP(dsp);
 		break;
 	}
 	case SOUND_START_OUTPUT:{
-		AuSoundWrite(node,NULL, BUFF_SIZE);
+		//AuSoundWrite(node,NULL, BUFF_SIZE);
 		registered_dev->start_output_stream();
 		break;
 	}
@@ -178,7 +185,14 @@ void AuFileWrite (vfs_node_t* node, uint64_t *buffer, uint32_t length) {
 	dsp_t *dsp = AuSoundGetDSP(get_current_thread()->id);
 	uint8_t* al = (uint8_t*)buffer;
 	uint8_t* aligned_buffer = (uint8_t*)buffer;
-	memcpy(dsp->buffer, aligned_buffer, BUFF_SIZE);
+	if (circular_buf_full(dsp->buffer)) {
+		dsp->blocked_thr = get_current_thread();
+		block_thread(get_current_thread());
+		force_sched();
+	}
+	for (int i = 0; i < BUFF_SIZE; i++) 
+		circular_buf_put2(dsp->buffer, aligned_buffer[i]);
+	
 }
 
 void AuSoundInitialize () {
@@ -209,14 +223,22 @@ void AuSoundRegisterDevice(sound_t * dev) {
 
 
 void AuSoundRequestNext (uint64_t *buffer) {
-	//printf ("Request next ");
 	int16_t* hw_buffer = (int16_t*)buffer;
+	uint8_t *buff = (uint8_t*)p2v((size_t)AuPmmngrAllocBlocks(BUFF_SIZE/4096));
 	for (dsp_t *dsp = dsp_first; dsp != NULL; dsp = dsp->next) {
-		int16_t *data_bu = (int16_t*)dsp->buffer;
+
+		for (int i = 0; i < BUFF_SIZE / sizeof(int16_t); i++)
+			hw_buffer[i] = 0;
+		
+		for (int i = 0; i < BUFF_SIZE; i++)
+			circular_buf_get(dsp->buffer,buff);
+		
+		int16_t *data_bu = (int16_t*)buff;
 		for (int i = 0; i < BUFF_SIZE / sizeof(int16_t); i++){
 			hw_buffer[i] = data_bu[i];
 		}
 	}
+
 
 	for (int i = 0; i < BUFF_SIZE / sizeof(int16_t); i++)
 		hw_buffer[i] /= 2;
@@ -225,15 +247,9 @@ void AuSoundRequestNext (uint64_t *buffer) {
 		AuRequestNextBlock(dsp->id);
 	}
 
-	/*int16_t *data_bu =(int16_t*)data_buff;
-	for (int i = 0; i < BUFF_SIZE / sizeof(int16_t); i++) 
-		hw_buffer[i] = data_bu[i];
-
-	for (int i = 0; i < BUFF_SIZE / sizeof(int16_t); i++) 
-		hw_buffer[i] /= 2;
-
-	data_buff += BUFF_SIZE;*/
+	AuPmmngrFreeBlocks((void*)v2p((size_t)buff),BUFF_SIZE/4096);
 }
+
 
 void AuSoundOutputStart() {
 	if (registered_dev == NULL)

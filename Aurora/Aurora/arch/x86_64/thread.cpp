@@ -345,7 +345,7 @@ void scheduler_isr (size_t v, void* param) {
 	    apic_local_eoi();
 #endif
 #ifdef USE_PIC
-		interrupt_end (0);
+		AuInterruptEnd (0);
 #endif
 		
 		/** now return to the new task last stored instruction */
@@ -367,7 +367,7 @@ sched_end:
 	apic_local_eoi();
 #endif
 #ifdef USE_PIC
-	interrupt_end(0);
+	AuInterruptEnd(0);
 #endif
 	//x64_sti();
 	
@@ -380,7 +380,7 @@ void AuSchedulerStart () {
 	setvect(0x40, scheduler_isr);
 #endif
 #ifdef USE_PIC
-	interrupt_set(0,scheduler_isr,0);
+	AuInterruptSet(0,scheduler_isr,0, false);
 #endif
 	execute_idle(current_thread,get_kernel_tss());
 }

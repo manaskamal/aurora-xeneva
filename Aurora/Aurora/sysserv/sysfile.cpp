@@ -128,8 +128,10 @@ void sys_read_file (int fd, uint8_t* buffer, FILE *ufile) {
 		if (node == NULL)
 			return;
 		for (int i=0; i < ufile->size; i++){
-			if (file->eof)
+			if (file->eof) {
+				ufile->eof = 1;
 				break;
+			}
 			uint64_t* buff = (uint64_t*)p2v((size_t)AuPmmngrAlloc());
 			memset(buff, 0, 4096);
 			readfs_block (node,file,(uint64_t*)v2p((size_t)buff));

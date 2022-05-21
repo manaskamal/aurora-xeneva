@@ -137,7 +137,7 @@ void AuInitializeRTC () {
 	AuInterruptSet(8,AuRTCClockUpdate, 8, false);
 
 #ifdef USE_PIC
-	irq_mask(8,false);
+	AuIrqMask(8,false);
 #endif
 }
 

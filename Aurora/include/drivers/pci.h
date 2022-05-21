@@ -75,6 +75,6 @@ AU_EXTERN AU_EXPORT uint32_t pci_scan_device(uint32_t vendid, uint32_t devid);
 AU_EXTERN AU_EXPORT void pci_write (uint32_t device, int reg, uint32_t value);
 AU_EXTERN AU_EXPORT void pci_enable_bus_master (uint32_t device);
 AU_EXTERN AU_EXPORT void pci_enable_interrupts (uint32_t device);
-extern uint32_t pci_encode_device(int bus, int slot, int func);
+extern uint32_t pci_encode_device(uint32_t bus, uint32_t slot, uint32_t func);
 
 #endif

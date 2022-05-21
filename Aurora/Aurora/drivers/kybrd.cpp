@@ -25,7 +25,6 @@ void AuKeyboardHandler(size_t v, void* p)
 	//! read scan code only if the kybrd controller output buffer is full (scan mode is in it)
 	if (inportb(0x64) & 1)
 	{
-		
 		int code = inportb(0x60);
 		if (is_scheduler_initialized()) {
 			message_t *msg = (message_t*)p2v((size_t)AuPmmngrAlloc());

@@ -245,6 +245,8 @@ extern "C" void x64_gs_writeq(size_t offset, uint64_t val);
 extern "C" void x64_set_kstack (void* ktss,size_t stack);
 extern "C" size_t x64_get_kstack (void* ktss);
 
+extern "C" void x64_rdtsc(uint32_t *hi, uint32_t *lo);
+
 //! init -- initializer of x86_64 hal subsystem
 extern void x86_64_gdt_init ();
 //! setvect -- installs a interrupt vector
@@ -278,4 +280,9 @@ extern bool is_cpu_xsave_supported ();
  * @param deassert -- deassert bit
  */
 extern uint64_t cpu_msi_address (uint64_t* data, size_t vector, uint32_t processor, uint8_t edge, uint8_t deassert);
+
+/*
+ * cpu_rdtsc -- read the current time stamp counter
+ */
+extern uint32_t cpu_rdtsc ();
 #endif

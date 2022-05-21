@@ -6,7 +6,7 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 CONST	SEGMENT
-$SG3505	DB	'[Aurora]:Key Pressed', 0aH, 00H
+$SG3509	DB	'[Aurora]:Key Pressed', 0aH, 00H
 CONST	ENDS
 PUBLIC	?AuKeyboardInitialize@@YAXXZ			; AuKeyboardInitialize
 PUBLIC	?AuKeyboardHandler@@YAX_KPEAX@Z			; AuKeyboardHandler
@@ -67,85 +67,84 @@ $LN6:
 	je	SHORT $LN3@AuKeyboard
 
 ; 27   : 	{
-; 28   : 		
-; 29   : 		int code = inportb(0x60);
+; 28   : 		int code = inportb(0x60);
 
 	mov	cx, 96					; 00000060H
 	call	inportb
 	movzx	eax, al
 	mov	DWORD PTR code$1[rsp], eax
 
-; 30   : 		if (is_scheduler_initialized()) {
+; 29   : 		if (is_scheduler_initialized()) {
 
 	call	?is_scheduler_initialized@@YA_NXZ	; is_scheduler_initialized
 	movzx	eax, al
 	test	eax, eax
 	je	SHORT $LN2@AuKeyboard
 
-; 31   : 			message_t *msg = (message_t*)p2v((size_t)AuPmmngrAlloc());
+; 30   : 			message_t *msg = (message_t*)p2v((size_t)AuPmmngrAlloc());
 
 	call	AuPmmngrAlloc
 	mov	rcx, rax
 	call	p2v
 	mov	QWORD PTR msg$2[rsp], rax
 
-; 32   : 			msg->type = 3;
+; 31   : 			msg->type = 3;
 
 	mov	eax, 3
 	mov	rcx, QWORD PTR msg$2[rsp]
 	mov	WORD PTR [rcx+56], ax
 
-; 33   : 		    msg->dword = code;
+; 32   : 		    msg->dword = code;
 
 	mov	rax, QWORD PTR msg$2[rsp]
 	mov	ecx, DWORD PTR code$1[rsp]
 	mov	DWORD PTR [rax], ecx
 
-; 34   : 		    message_send (4,msg);
+; 33   : 		    message_send (4,msg);
 
 	mov	rdx, QWORD PTR msg$2[rsp]
 	mov	cx, 4
 	call	?message_send@@YAXGPEAU_message_@@@Z	; message_send
 
-; 35   : 			AuPmmngrFree ((void*)v2p((size_t)msg));
+; 34   : 			AuPmmngrFree ((void*)v2p((size_t)msg));
 
 	mov	rcx, QWORD PTR msg$2[rsp]
 	call	v2p
 	mov	rcx, rax
 	call	AuPmmngrFree
 
-; 36   : 		} else {
+; 35   : 		} else {
 
 	jmp	SHORT $LN1@AuKeyboard
 $LN2@AuKeyboard:
 
-; 37   : 			printf ("[Aurora]:Key Pressed\n");
+; 36   : 			printf ("[Aurora]:Key Pressed\n");
 
-	lea	rcx, OFFSET FLAT:$SG3505
+	lea	rcx, OFFSET FLAT:$SG3509
 	call	printf
 $LN1@AuKeyboard:
 $LN3@AuKeyboard:
 $end$7:
 
-; 38   : 		}
-; 39   : 
-; 40   : 		/*thread_t* thr = (thread_t*)thread_iterate_ready_list (1);
-; 41   : 	    if (thr != NULL){
-; 42   : 			unblock_thread(thr);
-; 43   : 		}*/
-; 44   : 		//!Here we need to pass this code to window manager process {a.k.a DWM} or shell program
-; 45   : 		//!shell will decode the scancode and will take action
-; 46   : 	}
-; 47   : 
-; 48   :  end:
-; 49   : 	//! tell apic we are done!!!
-; 50   : 	AuInterruptEnd(1);
+; 37   : 		}
+; 38   : 
+; 39   : 		/*thread_t* thr = (thread_t*)thread_iterate_ready_list (1);
+; 40   : 	    if (thr != NULL){
+; 41   : 			unblock_thread(thr);
+; 42   : 		}*/
+; 43   : 		//!Here we need to pass this code to window manager process {a.k.a DWM} or shell program
+; 44   : 		//!shell will decode the scancode and will take action
+; 45   : 	}
+; 46   : 
+; 47   :  end:
+; 48   : 	//! tell apic we are done!!!
+; 49   : 	AuInterruptEnd(1);
 
 	mov	ecx, 1
 	call	AuInterruptEnd
 
-; 51   : 	return;
-; 52   : }
+; 50   : 	return;
+; 51   : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -156,12 +155,12 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 ?AuKeyboardInitialize@@YAXXZ PROC			; AuKeyboardInitialize
 
-; 60   : void AuKeyboardInitialize () {
+; 59   : void AuKeyboardInitialize () {
 
 $LN3:
 	sub	rsp, 40					; 00000028H
 
-; 61   : 	AuInterruptSet (1,AuKeyboardHandler,1, false);
+; 60   : 	AuInterruptSet (1,AuKeyboardHandler,1, false);
 
 	xor	r9d, r9d
 	mov	r8b, 1
@@ -169,7 +168,7 @@ $LN3:
 	mov	ecx, 1
 	call	AuInterruptSet
 
-; 62   : }
+; 61   : }
 
 	add	rsp, 40					; 00000028H
 	ret	0

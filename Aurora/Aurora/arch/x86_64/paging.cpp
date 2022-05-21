@@ -11,7 +11,6 @@
 
 #include <arch\x86_64\mmngr\paging.h>
 #include <screen.h>
-#include <ipc\dwm_ipc.h>
 #include <arch\x86_64\thread.h>
 #include <pmmngr.h>
 #include <serial.h>
@@ -316,7 +315,6 @@ bool AuMapPageEx (uint64_t *pml4i,uint64_t physical_address, uint64_t virtual_ad
 	if (pml1[i1] & PAGING_PRESENT){
 		AuPmmngrFree((void*)physical_address);
 		printf ("Already present -> %x \n", virtual_address);
-		for(;;);
 		return false;
 	}
 

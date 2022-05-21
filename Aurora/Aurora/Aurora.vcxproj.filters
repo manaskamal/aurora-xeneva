@@ -180,9 +180,6 @@
     <ClInclude Include="..\include\callback.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\ipc\dwm_ipc.h">
-      <Filter>include\ipc</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\utils\lnklist.h">
       <Filter>include\utils</Filter>
     </ClInclude>
@@ -375,6 +372,9 @@
     <ClInclude Include="..\include\drivers\pcie.h">
       <Filter>include\drivers</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\ipc\pointdev.h">
+      <Filter>include\ipc</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="init.cpp">
@@ -463,9 +463,6 @@
     </ClCompile>
     <ClCompile Include="sysserv\systhread.cpp">
       <Filter>source\sysserv</Filter>
-    </ClCompile>
-    <ClCompile Include="ipc\dwm_ipc.cpp">
-      <Filter>source\ipc</Filter>
     </ClCompile>
     <ClCompile Include="utils\lnklist.cpp">
       <Filter>source\utils</Filter>
@@ -610,6 +607,9 @@
     </ClCompile>
     <ClCompile Include="drivers\pcie.cpp">
       <Filter>source\drivers</Filter>
+    </ClCompile>
+    <ClCompile Include="ipc\pointdev.cpp">
+      <Filter>source\ipc</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -266,9 +266,12 @@ void x86_64_init_cpu () {
 
 	debug_print ("Exception initialized\n");
 	
+	//initialize_pic();
 
+#ifdef USE_APIC
 	//!Initialize APIC   FIXME: Causes triple fault now
 	initialize_apic (true);
+#endif
 	
 	debug_print ("APIC initialized\n");
 
@@ -353,6 +356,16 @@ bool is_cpu_xsave_supported () {
 uint64_t cpu_msi_address (uint64_t* data, size_t vector, uint32_t processor, uint8_t edge, uint8_t deassert) {
 	*data = (vector & 0xFF) | (edge == 1 ? 0 : (1<<15)) | (deassert == 1 ? 0 : (1<<14));
 	return (0xFEE00000 | (processor << 12));
+}
+
+/*
+ * cpu_rdtsc -- read the current time stamp counter
+ */
+uint32_t cpu_rdtsc () {
+	uint32_t hi;
+	uint32_t lo;
+	x64_rdtsc(&hi, &lo);
+	return (hi | lo);
 }
 
 

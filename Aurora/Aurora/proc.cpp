@@ -127,13 +127,11 @@ uint64_t* create_inc_stack (uint64_t* cr3) {
 	uint64_t location = INC_STACK ; //+ user_stack_index;
 
 	for (int i = 0; i < (2*1024*1024) / 4096; i++) {
-		void* p = AuPmmngrAlloc();
-		memset(p, 0, 4096);
-		AuMapPageEx(cr3,(uint64_t)p, location + i * 4096, PAGING_USER);
+		AuMapPageEx(cr3,(uint64_t)AuPmmngrAlloc(), location + i * 4096, PAGING_USER);
 	}
 
 	//user_stack_index += 0x100000;
-	return (uint64_t*)(INC_STACK + (2*1024*1024));
+	return (uint64_t*)(INC_STACK + (1*1024*1024));
 }
 
 void allocate_fd (thread_t *t) {

@@ -76,7 +76,7 @@ void circular_buf_put(circ_buf_t *cbuf, uint8_t data)
 	advance_pointer(cbuf);
 }
 
-int circular_buf_put2(circ_buf_t *cbuf, int data)
+int circular_buf_put2(circ_buf_t *cbuf, uint8_t data)
 {
 	int r = -1;
 

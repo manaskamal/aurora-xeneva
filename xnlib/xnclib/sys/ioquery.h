@@ -33,6 +33,7 @@
 //! Mouse Code
 #define MOUSE_IOCODE_DISABLE   300
 #define MOUSE_IOCODE_ENABLE    301
+#define MOUSE_REGISTER_WM      302
 
 
 //! Standard codes for svga driver

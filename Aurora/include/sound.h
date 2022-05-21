@@ -17,6 +17,7 @@
 #include <fs\vfs.h>
 #include <arch\x86_64\thread.h>
 #include <aurora.h>
+#include <utils\circ_buf.h>
 
 #define SOUND_REGISTER_MEDIAPLAYER 100
 #define SOUND_START_OUTPUT  102
@@ -25,9 +26,11 @@
 #define SOUND_STOP_INPUT  105
 
 typedef struct _dsp_ {
-	uint8_t *buffer;
+	//uint8_t *buffer;
+	circ_buf_t *buffer;
 	uint16_t id;
 	thread_t *registered_thr;
+	thread_t *blocked_thr;
 	bool available;
 	struct _dsp_ *next;
 	struct _dsp_* prev;

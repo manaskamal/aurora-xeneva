@@ -309,7 +309,7 @@ void pcie_alloc_msi (uint32_t device, size_t vector) {
 				uint64_t msi_addr = cpu_msi_address(&msi_data,vector,0,1,0);
 				printf ("writing msi address -> %x, as -> %x \n", msi_addr, (msi_addr & 0xffffffff));
 				pci_express_write(device,msi_reg + 1, msi_addr);
-				*(uint64_t*)(device + msi_reg + 1) = msi_addr & UINT32_MAX;
+				//*(uint64_t*)(device + msi_reg + 1) = msi_addr & UINT32_MAX;
 
 				uint64_t debug_addr = *(uint64_t*)(device + msi_reg + 1);
 				printf ("MSI Debug Addr -> %x , msi_data -> %d \n", debug_addr, msi_data);
@@ -324,14 +324,11 @@ void pcie_alloc_msi (uint32_t device, size_t vector) {
 					++data_offset;
 				}if (maskcap){
 					pci_express_write(device, msi_reg + 4, 0);
-					*(uint64_t*)(device + msi_reg + 4) = 0;
+					//*(uint64_t*)(device + msi_reg + 4) = 0;
 					printf ("Maskable msi\n");
 				}
 
-				//pci_express_write(device,msi_reg + data_offset,msi_data);
-				*(uint64_t*)(device + msi_reg + data_offset) = msi_data;
-				uint64_t msd = *(uint64_t*)(device + msi_reg + data_offset);
-				printf ("MSI DATA REREAD -> %d\n", msd);
+				pci_express_write(device,msi_reg + data_offset,msi_data);
 
 
 				mscntrl |= 1;

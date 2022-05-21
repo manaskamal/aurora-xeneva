@@ -10,7 +10,7 @@ _BSS	SEGMENT
 funct	DQ	01H DUP (?)
 _BSS	ENDS
 CONST	SEGMENT
-$SG4194	DB	'System Call Fault!! Halting System', 0aH, 00H
+$SG4195	DB	'System Call Fault!! Halting System', 0aH, 00H
 CONST	ENDS
 PUBLIC	x64_syscall_handler
 EXTRN	printf:PROC
@@ -41,7 +41,6 @@ EXTRN	?sys_set_signal@@YAXHP6AXH@Z@Z:PROC		; sys_set_signal
 EXTRN	?unmap_shared_memory@@YAXG_K0@Z:PROC		; unmap_shared_memory
 EXTRN	?sys_attach_ttype@@YAXH@Z:PROC			; sys_attach_ttype
 EXTRN	?copy_memory@@YAXG_K0@Z:PROC			; copy_memory
-EXTRN	?dwm_dispatch_message@@YAXPEAU_dwm_message_@@@Z:PROC ; dwm_dispatch_message
 EXTRN	?unmap_memory@@YAXPEAXI@Z:PROC			; unmap_memory
 EXTRN	?ttype_create@@YAHPEAH0@Z:PROC			; ttype_create
 EXTRN	?ttype_dup_master@@YAXHH@Z:PROC			; ttype_dup_master
@@ -57,7 +56,7 @@ EXTRN	?process_heap_break@@YAPEAX_K@Z:PROC		; process_heap_break
 EXTRN	__ImageBase:BYTE
 pdata	SEGMENT
 $pdata$x64_syscall_handler DD imagerel $LN50
-	DD	imagerel $LN50+1004
+	DD	imagerel $LN50+1000
 	DD	imagerel $unwind$x64_syscall_handler
 pdata	ENDS
 xdata	SEGMENT
@@ -94,7 +93,7 @@ $LN50:
 
 ; 24   : 		printf ("System Call Fault!! Halting System\n");
 
-	lea	rcx, OFFSET FLAT:$SG4194
+	lea	rcx, OFFSET FLAT:$SG4195
 	call	printf
 $LN45@x64_syscal:
 
@@ -559,10 +558,9 @@ $LN2@x64_syscal:
 $LN1@x64_syscal:
 
 ; 149  : 	case 40:
-; 150  : 		funct = (uint64_t*)dwm_dispatch_message;
+; 150  : 		funct = (uint64_t*)0; //dwm_dispatch_message;
 
-	lea	rax, OFFSET FLAT:?dwm_dispatch_message@@YAXPEAU_dwm_message_@@@Z ; dwm_dispatch_message
-	mov	QWORD PTR funct, rax
+	mov	QWORD PTR funct, 0
 $LN42@x64_syscal:
 
 ; 151  : 		break;
@@ -577,7 +575,7 @@ $LN42@x64_syscal:
 
 	add	rsp, 56					; 00000038H
 	ret	0
-	npad	2
+	npad	1
 $LN49@x64_syscal:
 	DD	$LN41@x64_syscal
 	DD	$LN40@x64_syscal

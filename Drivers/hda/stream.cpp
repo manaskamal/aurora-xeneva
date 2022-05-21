@@ -42,7 +42,7 @@ void hda_init_output_stream () {
 	uint64_t pos = 0xFFFFD00004000000;
 	uint64_t phys_buf = 0;
 	stream_buffer = (uint64_t*)pos;
-	for (int i = 0; i < (BDL_SIZE*BUFFER_SIZE/ 4096)+1; i++) {
+	for (int i = 0; i < (BDL_SIZE*BUFFER_SIZE/ 4096); i++) {
 		void *p = AuPmmngrAlloc();
 		if (phys_buf == 0)
 			phys_buf = (uint64_t)p;

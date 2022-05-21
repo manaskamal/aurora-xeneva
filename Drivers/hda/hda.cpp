@@ -248,69 +248,33 @@ void rirb_read (uint64_t *response) {
  * hda_reset -- reset the hd audio controller
  */
 void hda_reset () {
-	_aud_outl_ (CORBCTL, 0);
-	_aud_outl_ (RIRBCTL, 0);
-	
-	_aud_outl_ (DPIBLBASE, 0x0);
-	_aud_outl_ (DPIBUBASE, 0x0);
+	_aud_outl_(CORBCTL, 0);
+	_aud_outl_(RIRBCTL, 0);
 
+	while ((_aud_inl_(CORBCTL) & CORBCTL_CORBRUN) ||
+		(_aud_inl_(RIRBCTL) & RIRBCTL_RIRBRUN));
 
-	uint32_t gctl = _aud_inl_(GCTL);
-	_aud_outl_(GCTL, gctl & ~GCTL_RESET);
-	int count = 10000;
-	do {
-		gctl = _aud_inl_(GCTL);
-		if (!(gctl & GCTL_RESET))
-			break;
-		for (int i = 0; 100; i++)
-			;
-	}while (--count);
+	_aud_outl_(GCTL, 0);
+	while((_aud_inl_(GCTL) & GCTL_RESET));
 
-	if(gctl & GCTL_RESET) {
-		printf ("[driver]: hdaudio unable to put hda in reset \n");
-	}
+	/* Delay */
+	//for (int i = 0; i < 10000000; i++)
+	//	;
 
-	for (int i = 0; i < 10000; i++)
-		;
-	gctl = _aud_inl_ (GCTL);
-	_aud_outl_(GCTL, gctl | GCTL_RESET);
-	count = 10000;
-	do {
-		gctl = _aud_inl_(GCTL);
-		if (gctl & GCTL_RESET)
-			break;
-		for (int i = 0; i < 1000; i++)
-			;
-	}while(--count);
-	if (!(gctl & GCTL_RESET)) {
-		printf ("[driver]: device stuck in reset \n");
-	}
-
-	for (int i = 0; i < 100000000; i++)
-		;
-
-	/*for (int i = 0; i < 100000000; i++)
-		;
 
 	_aud_outl_(GCTL, GCTL_RESET);
-	while ((_aud_inl_(GCTL) & GCTL_RESET) == 0);
+	while((_aud_inl_(GCTL) & GCTL_RESET) == 0);
 
-	for (int i = 0; i < 100000000; i++)
-		;*/
+
+	_aud_outw_(WAKEEN, 0xffff);
+	uint32_t intctl = _aud_inl_(INTCTL);
+	_aud_outl_(INTCTL, 0x800000ff);
 
 	setup_corb();
 	setup_rirb();
 
-	_aud_outw_(WAKEEN, 0xffff);
-	uint32_t intctl = _aud_inl_(INTCTL);
-	intctl |= (1<<31);
-	intctl |= (1<<30);
-	intctl |= (1 << 4);
-	_aud_outl_(INTCTL, 0x800000ff);
-
-	for (int i = 0; i < 100000000; i++)
+	for (int i = 0; i < 10000; i++)
 		;
-	
 	
 }
 
@@ -332,14 +296,16 @@ void hda_handler (size_t v, void* p) {
 	uint32_t isr = _aud_inl_(INTSTS);
 	uint8_t sts = _aud_inb_(REG_O0_STS);
 	
-//	printf("HDA Handler \r\n");
+	printf("HDA Handler \r\n");
 	if (sts & 0x4) {
 		printf ("HDA Buffer completed \r\n");
 	//	hda_output_stream_stop();
+	
 	}
-   
+
+    _aud_outl_(INTSTS, isr);
 	_aud_outb_ (REG_O0_STS,sts);
-	_aud_outl_(INTSTS, isr);
+	
 	
 	AuInterruptEnd(hd_audio.irq);
 	//AuFiredSharedHandler(hd_audio.irq,v,p, shared_device);
@@ -355,12 +321,11 @@ void hd_thr() {
 	while(1) {
 		pos = dma[4] & 0xffffffff;
 		pos /= BUFFER_SIZE;
-
 		if (old_pos != pos) {
-			AuSoundRequestNext((uint64_t*)(hd_audio.sample_buffer + pos * BUFFER_SIZE));
+			AuSoundRequestNext((uint64_t*)(hd_audio.sample_buffer + old_pos * BUFFER_SIZE));
 			old_pos = pos;
 		}
-		sleep_thread(get_current_thread(), 10);
+		sleep_thread(get_current_thread(), 100);
 		force_sched();
 	}
 }
@@ -379,23 +344,27 @@ AU_EXTERN AU_EXPORT int AuDriverMain(){
 	}
 	
 
-	uint8_t tcsel;
+	/*uint8_t tcsel;
 	tcsel = pci_express_read(device,0x44);
-	pci_express_write(device,0x44,(tcsel & 0xf8));
+	pci_express_write(device,0x44,(tcsel & 0xf8));*/
 
 	codec_initialize_output = NULL;
 	codec_set_volume = NULL;
 
 
 	uint32_t command = pci_express_read(device ,PCI_COMMAND);
-
 	command |= (1<<2);
 	command |= (1<<1);
-	command |= (1<<0);
-	if ((command & (1<<10)) != 0)
-		command &= ~(1<<10); //clear the Interrupt disable
+	command &= ~(1<<10);
+	 //clear the Interrupt disable
 	pci_express_write(device, PCI_COMMAND, command);
 
+	uint32_t com2 = pci_express_read(device, PCI_COMMAND);
+
+	printf ("Comm -> %x, comm2-> %x \n", command, com2);
+	if ((com2 & (1<<10)) ){
+		printf ("Interrupt not disabled \n");
+	}
 
 	uint32_t stat = pci_express_read(device, PCI_STATUS);
 	if ((stat & (1<<3) != 0) && (command & (1<<10) != 1)){
@@ -415,11 +384,12 @@ AU_EXTERN AU_EXPORT int AuDriverMain(){
 
 	hd_audio.irq = shared_device->irq;
 
-	
-	if (hd_audio.irq < 255)
-		AuInterruptSet(hd_audio.irq, hda_handler,hd_audio.irq, false);
-	//pcie_alloc_msi(device, 35);
-	//setvect(35, hda_handler);
+	if( hd_audio.irq < 255) {
+		AuInterruptSet(hd_audio.irq, hda_handler, hd_audio.irq, false);
+	}else {
+		pcie_alloc_msi(device, 46);
+		setvect(46, hda_handler);
+	}
 	
 
 	uintptr_t mmio = pci_express_read(device, PCI_BAR0);

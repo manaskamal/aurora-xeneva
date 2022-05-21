@@ -695,7 +695,7 @@ $LN4@AuInitiali:
 
 ; 138  : 
 ; 139  : #ifdef USE_PIC
-; 140  : 	irq_mask(8,false);
+; 140  : 	AuIrqMask(8,false);
 ; 141  : #endif
 ; 142  : }
 

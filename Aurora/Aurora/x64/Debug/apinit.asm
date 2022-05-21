@@ -6,7 +6,7 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 CONST	SEGMENT
-$SG3434	DB	'Welcome to Application Processor %d', 0aH, 00H
+$SG3438	DB	'Welcome to Application Processor %d', 0aH, 00H
 CONST	ENDS
 PUBLIC	?AuApInit@@YAXPEAX@Z				; AuApInit
 EXTRN	x64_cli:PROC
@@ -131,7 +131,7 @@ $LN5:
 	call	?x86_64_cpu_get_id@@YAEXZ		; x86_64_cpu_get_id
 	movzx	eax, al
 	mov	edx, eax
-	lea	rcx, OFFSET FLAT:$SG3434
+	lea	rcx, OFFSET FLAT:$SG3438
 	call	printf
 
 ; 63   : 

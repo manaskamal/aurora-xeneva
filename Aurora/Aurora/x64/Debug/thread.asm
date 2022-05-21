@@ -34,7 +34,7 @@ _BSS	SEGMENT
 current_thread DQ 01H DUP (?)
 _BSS	ENDS
 CONST	SEGMENT
-$SG3617	DB	'Idle', 00H
+$SG3621	DB	'Idle', 00H
 CONST	ENDS
 PUBLIC	?AuInitializeScheduler@@YAXXZ			; AuInitializeScheduler
 PUBLIC	?AuSchedulerStart@@YAXXZ			; AuSchedulerStart
@@ -265,7 +265,7 @@ $LN2@scheduler_:
 
 ; 346  : #endif
 ; 347  : #ifdef USE_PIC
-; 348  : 		interrupt_end (0);
+; 348  : 		AuInterruptEnd (0);
 ; 349  : #endif
 ; 350  : 		
 ; 351  : 		/** now return to the new task last stored instruction */
@@ -311,7 +311,7 @@ $sched_end$9:
 
 ; 368  : #endif
 ; 369  : #ifdef USE_PIC
-; 370  : 	interrupt_end(0);
+; 370  : 	AuInterruptEnd(0);
 ; 371  : #endif
 ; 372  : 	//x64_sti();
 ; 373  : 	
@@ -1807,7 +1807,7 @@ $LN3:
 
 ; 381  : #endif
 ; 382  : #ifdef USE_PIC
-; 383  : 	interrupt_set(0,scheduler_isr,0);
+; 383  : 	AuInterruptSet(0,scheduler_isr,0, false);
 ; 384  : #endif
 ; 385  : 	execute_idle(current_thread,get_kernel_tss());
 
@@ -1859,7 +1859,7 @@ $LN3:
 	mov	rcx, rax
 	call	p2v
 	mov	BYTE PTR [rsp+32], 1
-	lea	r9, OFFSET FLAT:$SG3617
+	lea	r9, OFFSET FLAT:$SG3621
 	mov	rcx, QWORD PTR tv67[rsp]
 	mov	r8, rcx
 	mov	rdx, rax

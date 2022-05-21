@@ -14,7 +14,7 @@
 #include <screen.h>
 #include <ipc\message.h>
 #include <ipc\evntsh.h>
-#include <ipc\dwm_ipc.h>
+#include <ipc\pointdev.h>
 #include <atomic\mutex.h>
 #include <fs\vfs.h>
 #include <serial.h>
@@ -158,18 +158,8 @@ finish_packet:
 		if (mouse_byte[0] & 0x04)
 			mouse_button |= MOUSE_MIDDLE_CLICK;
 
-
-		if (mouse_byte[4] & 0x1)
-			printf ("Mouse Vertical scroll up \n");
-		else if (mouse_byte[4] & 0xF)
-			printf ("Mouse Vertical scroll down \n");
-		else if (mouse_byte[4] & 0x2)
-			printf ("Mouse Horizontal Scroll up \n");
-		else if (mouse_byte[4] & 0xE)
-			printf ("Mouse Horizontal Scroll down \n");
 		//!Pass here the message stream to all waiting processes
 	
-
 		x64_cli();
 		dwm_message_t msg; // = (dwm_message_t*)pmmngr_alloc();
 		msg.type = 1;
@@ -178,7 +168,8 @@ finish_packet:
 		msg.dword4 = mouse_button_state;
 		msg.dword5 = mouse_byte[1];
 		msg.dword6 = -mouse_byte[2];
-		dwm_put_message (&msg);
+		//dwm_put_message (&msg);
+		PointDevPutMessage(&msg);
 		x64_sti();
 		//pmmngr_free (msg);
 		//mutex_unlock (mouse);
@@ -196,48 +187,12 @@ read_next:
 }
 
 
-/**  Mouse IOQuery function **/
-int mouse_ioquery (vfs_node_t *node, int code, void* arg) {
-	switch (code) {
-		case MOUSE_IOCODE_DISABLE:
-			AuIrqMask(12,true);
-			break;
-		case MOUSE_IOCODE_ENABLE:
-			AuIrqMask(12, false);
-			break;
-		case 302:
-			return 10;
-			break;
-		default:
-			break;
-	}
-
-	return 1;
-}
-
-void mouse_read (vfs_node_t *file, uint64_t* buffer, uint32_t length) {
-	x64_cli();
-}
 
 
 /**
  * Register it to the VFS Subsystem
  */
 void mouse_register_device () {
-	vfs_node_t *node = (vfs_node_t*)malloc(sizeof(vfs_node_t));
-	strcpy (node->filename, "mouse");
-	node->size = 0;
-	node->eof = 0;
-	node->pos = 0;
-	node->current = 0;
-	node->flags = FS_FLAG_GENERAL;
-	node->status = 0;
-	node->open = 0;
-	node->read = mouse_read;
-	node->write = 0;
-	node->read_blk = 0;
-	node->ioquery = mouse_ioquery;
-	vfs_mount ("/dev/mouse", node, 0);
 }
 
 
@@ -273,6 +228,4 @@ void AuInitializeMouse () {
 	mouse_read ();
 
 	AuInterruptSet (34, mouse_handler, 12, false);  //34
-	printf ("mouse interrupt setupped\n");
-	mouse_register_device ();
 }

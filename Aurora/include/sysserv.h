@@ -38,7 +38,7 @@
 #include <screen.h>
 #include <ipc\message.h>
 #include <callback.h>
-#include <ipc\dwm_ipc.h>
+#include <ipc\pointdev.h>
 #include <arch\x86_64\mmngr\map.h>
 #include <fs\ttype.h>
 #include <ipc\pipe.h>

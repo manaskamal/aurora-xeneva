@@ -6,18 +6,16 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 CONST	SEGMENT
-$SG3458	DB	'MSI found for this device', 0aH, 00H
+$SG3462	DB	'MSI found for this device', 0aH, 00H
 	ORG $+5
-$SG3462	DB	'writing msi address -> %x, as -> %x ', 0aH, 00H
+$SG3466	DB	'writing msi address -> %x, as -> %x ', 0aH, 00H
 	ORG $+2
-$SG3466	DB	'MSI Debug Addr -> %x , msi_data -> %d ', 0aH, 00H
-$SG3471	DB	'64Bit msi', 0aH, 00H
+$SG3469	DB	'MSI Debug Addr -> %x , msi_data -> %d ', 0aH, 00H
+$SG3474	DB	'64Bit msi', 0aH, 00H
 	ORG $+5
-$SG3474	DB	'Maskable msi', 0aH, 00H
+$SG3476	DB	'Maskable msi', 0aH, 00H
 	ORG $+2
-$SG3478	DB	'MSI DATA REREAD -> %d', 0aH, 00H
-	ORG $+1
-$SG3480	DB	'MSI-X found for this device', 0aH, 00H
+$SG3478	DB	'MSI-X found for this device', 0aH, 00H
 CONST	ENDS
 PUBLIC	pci_express_scan_class
 PUBLIC	pci_express_read
@@ -48,7 +46,7 @@ $pdata$pci_express_write DD imagerel $LN35
 	DD	imagerel $LN35+618
 	DD	imagerel $unwind$pci_express_write
 $pdata$pcie_alloc_msi DD imagerel $LN15
-	DD	imagerel $LN15+815
+	DD	imagerel $LN15+705
 	DD	imagerel $unwind$pcie_alloc_msi
 $pdata$?pci_express_get_device@@YAIGGGG@Z DD imagerel $LN7
 	DD	imagerel $LN7+231
@@ -64,8 +62,8 @@ $unwind$pci_express_read DD 010c01H
 	DD	0820cH
 $unwind$pci_express_write DD 011101H
 	DD	06211H
-$unwind$pcie_alloc_msi DD 021001H
-	DD	0110110H
+$unwind$pcie_alloc_msi DD 010d01H
+	DD	0e20dH
 $unwind$?pci_express_get_device@@YAIGGGG@Z DD 011a01H
 	DD	0821aH
 $unwind$?pci_express_read2@@YAIIHH@Z DD 011101H
@@ -404,22 +402,21 @@ _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\drivers\pcie.cpp
 _TEXT	SEGMENT
-msi_reg$1 = 48
-cap_reg$2 = 52
+cap_reg$1 = 48
+msi_reg$2 = 52
 maskcap$3 = 56
 bit64_cap$4 = 57
 mscntrl$5 = 60
 capptr$6 = 64
-data_offset$7 = 68
-status$ = 72
-msi_addr$8 = 80
-tv150 = 88
-tv146 = 92
+status$ = 68
+data_offset$7 = 72
+tv146 = 76
+tv142 = 80
+msi_addr$8 = 88
 msi_data$9 = 96
 debug_addr$10 = 104
-msd$11 = 112
-device$ = 144
-vector$ = 152
+device$ = 128
+vector$ = 136
 pcie_alloc_msi PROC
 
 ; 290  : void pcie_alloc_msi (uint32_t device, size_t vector) {
@@ -427,7 +424,7 @@ pcie_alloc_msi PROC
 $LN15:
 	mov	QWORD PTR [rsp+16], rdx
 	mov	DWORD PTR [rsp+8], ecx
-	sub	rsp, 136				; 00000088H
+	sub	rsp, 120				; 00000078H
 
 ; 291  : 	if (acpi_pcie_supported() == false)
 
@@ -479,11 +476,11 @@ $LN8@pcie_alloc:
 
 ; 299  : 		uint32_t cap_reg = 0;
 
-	mov	DWORD PTR cap_reg$2[rsp], 0
+	mov	DWORD PTR cap_reg$1[rsp], 0
 
 ; 300  : 		uint32_t msi_reg = 0;
 
-	mov	DWORD PTR msi_reg$1[rsp], 0
+	mov	DWORD PTR msi_reg$2[rsp], 0
 $LN6@pcie_alloc:
 
 ; 301  : 		while (capptr != 0) {
@@ -497,28 +494,28 @@ $LN6@pcie_alloc:
 	mov	edx, DWORD PTR capptr$6[rsp]
 	mov	ecx, DWORD PTR device$[rsp]
 	call	?pci_express_read2@@YAIIHH@Z		; pci_express_read2
-	mov	DWORD PTR cap_reg$2[rsp], eax
+	mov	DWORD PTR cap_reg$1[rsp], eax
 
 ; 303  : 			if ((cap_reg & 0xff) == 0x05) {
 
-	mov	eax, DWORD PTR cap_reg$2[rsp]
+	mov	eax, DWORD PTR cap_reg$1[rsp]
 	and	eax, 255				; 000000ffH
 	cmp	eax, 5
 	jne	$LN4@pcie_alloc
 
 ; 304  : 				printf ("MSI found for this device\n");
 
-	lea	rcx, OFFSET FLAT:$SG3458
+	lea	rcx, OFFSET FLAT:$SG3462
 	call	printf
 
 ; 305  : 				msi_reg = cap_reg;
 
-	mov	eax, DWORD PTR cap_reg$2[rsp]
-	mov	DWORD PTR msi_reg$1[rsp], eax
+	mov	eax, DWORD PTR cap_reg$1[rsp]
+	mov	DWORD PTR msi_reg$2[rsp], eax
 
 ; 306  : 				uint32_t mscntrl = cap_reg >> 16;
 
-	mov	eax, DWORD PTR cap_reg$2[rsp]
+	mov	eax, DWORD PTR cap_reg$1[rsp]
 	shr	eax, 16
 	mov	DWORD PTR mscntrl$5[rsp], eax
 
@@ -542,35 +539,24 @@ $LN6@pcie_alloc:
 	mov	rax, rcx
 	mov	r8, rax
 	mov	rdx, QWORD PTR msi_addr$8[rsp]
-	lea	rcx, OFFSET FLAT:$SG3462
+	lea	rcx, OFFSET FLAT:$SG3466
 	call	printf
 
 ; 311  : 				pci_express_write(device,msi_reg + 1, msi_addr);
 
-	mov	eax, DWORD PTR msi_reg$1[rsp]
+	mov	eax, DWORD PTR msi_reg$2[rsp]
 	inc	eax
 	mov	r8d, DWORD PTR msi_addr$8[rsp]
 	mov	edx, eax
 	mov	ecx, DWORD PTR device$[rsp]
 	call	pci_express_write
 
-; 312  : 				*(uint64_t*)(device + msi_reg + 1) = msi_addr & UINT32_MAX;
-
-	mov	eax, -1					; ffffffffH
-	mov	rcx, QWORD PTR msi_addr$8[rsp]
-	and	rcx, rax
-	mov	rax, rcx
-	mov	ecx, DWORD PTR device$[rsp]
-	mov	edx, DWORD PTR msi_reg$1[rsp]
-	lea	ecx, DWORD PTR [rcx+rdx+1]
-	mov	ecx, ecx
-	mov	QWORD PTR [rcx], rax
-
+; 312  : 				//*(uint64_t*)(device + msi_reg + 1) = msi_addr & UINT32_MAX;
 ; 313  : 
 ; 314  : 				uint64_t debug_addr = *(uint64_t*)(device + msi_reg + 1);
 
 	mov	eax, DWORD PTR device$[rsp]
-	mov	ecx, DWORD PTR msi_reg$1[rsp]
+	mov	ecx, DWORD PTR msi_reg$2[rsp]
 	lea	eax, DWORD PTR [rax+rcx+1]
 	mov	eax, eax
 	mov	rax, QWORD PTR [rax]
@@ -580,7 +566,7 @@ $LN6@pcie_alloc:
 
 	mov	r8, QWORD PTR msi_data$9[rsp]
 	mov	rdx, QWORD PTR debug_addr$10[rsp]
-	lea	rcx, OFFSET FLAT:$SG3466
+	lea	rcx, OFFSET FLAT:$SG3469
 	call	printf
 
 ; 316  : 				
@@ -590,12 +576,12 @@ $LN6@pcie_alloc:
 	and	eax, 128				; 00000080H
 	test	eax, eax
 	je	SHORT $LN11@pcie_alloc
-	mov	DWORD PTR tv146[rsp], 1
+	mov	DWORD PTR tv142[rsp], 1
 	jmp	SHORT $LN12@pcie_alloc
 $LN11@pcie_alloc:
-	mov	DWORD PTR tv146[rsp], 0
+	mov	DWORD PTR tv142[rsp], 0
 $LN12@pcie_alloc:
-	movzx	eax, BYTE PTR tv146[rsp]
+	movzx	eax, BYTE PTR tv142[rsp]
 	mov	BYTE PTR bit64_cap$4[rsp], al
 
 ; 318  : 				bool maskcap = ((mscntrl & (1<<8)) != 0);
@@ -604,12 +590,12 @@ $LN12@pcie_alloc:
 	and	eax, 256				; 00000100H
 	test	eax, eax
 	je	SHORT $LN13@pcie_alloc
-	mov	DWORD PTR tv150[rsp], 1
+	mov	DWORD PTR tv146[rsp], 1
 	jmp	SHORT $LN14@pcie_alloc
 $LN13@pcie_alloc:
-	mov	DWORD PTR tv150[rsp], 0
+	mov	DWORD PTR tv146[rsp], 0
 $LN14@pcie_alloc:
-	movzx	eax, BYTE PTR tv150[rsp]
+	movzx	eax, BYTE PTR tv146[rsp]
 	mov	BYTE PTR maskcap$3[rsp], al
 
 ; 319  : 
@@ -627,7 +613,7 @@ $LN14@pcie_alloc:
 
 	mov	rax, QWORD PTR msi_addr$8[rsp]
 	shr	rax, 32					; 00000020H
-	mov	ecx, DWORD PTR msi_reg$1[rsp]
+	mov	ecx, DWORD PTR msi_reg$2[rsp]
 	add	ecx, 2
 	mov	r8d, eax
 	mov	edx, ecx
@@ -636,7 +622,7 @@ $LN14@pcie_alloc:
 
 ; 323  : 					printf ("64Bit msi\n");
 
-	lea	rcx, OFFSET FLAT:$SG3471
+	lea	rcx, OFFSET FLAT:$SG3474
 	call	printf
 
 ; 324  : 					++data_offset;
@@ -654,125 +640,100 @@ $LN3@pcie_alloc:
 
 ; 326  : 					pci_express_write(device, msi_reg + 4, 0);
 
-	mov	eax, DWORD PTR msi_reg$1[rsp]
+	mov	eax, DWORD PTR msi_reg$2[rsp]
 	add	eax, 4
 	xor	r8d, r8d
 	mov	edx, eax
 	mov	ecx, DWORD PTR device$[rsp]
 	call	pci_express_write
 
-; 327  : 					*(uint64_t*)(device + msi_reg + 4) = 0;
-
-	mov	eax, DWORD PTR device$[rsp]
-	mov	ecx, DWORD PTR msi_reg$1[rsp]
-	lea	eax, DWORD PTR [rax+rcx+4]
-	mov	eax, eax
-	mov	QWORD PTR [rax], 0
-
+; 327  : 					//*(uint64_t*)(device + msi_reg + 4) = 0;
 ; 328  : 					printf ("Maskable msi\n");
 
-	lea	rcx, OFFSET FLAT:$SG3474
+	lea	rcx, OFFSET FLAT:$SG3476
 	call	printf
 $LN2@pcie_alloc:
 
 ; 329  : 				}
 ; 330  : 
-; 331  : 				//pci_express_write(device,msi_reg + data_offset,msi_data);
-; 332  : 				*(uint64_t*)(device + msi_reg + data_offset) = msi_data;
+; 331  : 				pci_express_write(device,msi_reg + data_offset,msi_data);
 
-	mov	eax, DWORD PTR msi_reg$1[rsp]
-	mov	ecx, DWORD PTR device$[rsp]
+	mov	eax, DWORD PTR data_offset$7[rsp]
+	mov	ecx, DWORD PTR msi_reg$2[rsp]
 	add	ecx, eax
 	mov	eax, ecx
-	add	eax, DWORD PTR data_offset$7[rsp]
-	mov	eax, eax
-	mov	rcx, QWORD PTR msi_data$9[rsp]
-	mov	QWORD PTR [rax], rcx
-
-; 333  : 				uint64_t msd = *(uint64_t*)(device + msi_reg + data_offset);
-
-	mov	eax, DWORD PTR msi_reg$1[rsp]
+	mov	r8d, DWORD PTR msi_data$9[rsp]
+	mov	edx, eax
 	mov	ecx, DWORD PTR device$[rsp]
-	add	ecx, eax
-	mov	eax, ecx
-	add	eax, DWORD PTR data_offset$7[rsp]
-	mov	eax, eax
-	mov	rax, QWORD PTR [rax]
-	mov	QWORD PTR msd$11[rsp], rax
+	call	pci_express_write
 
-; 334  : 				printf ("MSI DATA REREAD -> %d\n", msd);
-
-	mov	rdx, QWORD PTR msd$11[rsp]
-	lea	rcx, OFFSET FLAT:$SG3478
-	call	printf
-
-; 335  : 
-; 336  : 
-; 337  : 				mscntrl |= 1;
+; 332  : 
+; 333  : 
+; 334  : 				mscntrl |= 1;
 
 	mov	eax, DWORD PTR mscntrl$5[rsp]
 	or	eax, 1
 	mov	DWORD PTR mscntrl$5[rsp], eax
 
-; 338  : 				cap_reg = (cap_reg & UINT16_MAX) | (mscntrl << 16);
+; 335  : 				cap_reg = (cap_reg & UINT16_MAX) | (mscntrl << 16);
 
-	mov	eax, DWORD PTR cap_reg$2[rsp]
+	mov	eax, DWORD PTR cap_reg$1[rsp]
 	and	eax, 65535				; 0000ffffH
 	mov	ecx, DWORD PTR mscntrl$5[rsp]
 	shl	ecx, 16
 	or	eax, ecx
-	mov	DWORD PTR cap_reg$2[rsp], eax
+	mov	DWORD PTR cap_reg$1[rsp], eax
 
-; 339  : 				pci_express_write(device, msi_reg, cap_reg);
+; 336  : 				pci_express_write(device, msi_reg, cap_reg);
 
-	mov	r8d, DWORD PTR cap_reg$2[rsp]
-	mov	edx, DWORD PTR msi_reg$1[rsp]
+	mov	r8d, DWORD PTR cap_reg$1[rsp]
+	mov	edx, DWORD PTR msi_reg$2[rsp]
 	mov	ecx, DWORD PTR device$[rsp]
 	call	pci_express_write
 
-; 340  : 				break;
+; 337  : 				break;
 
 	jmp	SHORT $LN5@pcie_alloc
 $LN4@pcie_alloc:
 
-; 341  : 			}
-; 342  : 
-; 343  : 			if ((cap_reg & 0xff)  == 0x11) {
+; 338  : 			}
+; 339  : 
+; 340  : 			if ((cap_reg & 0xff)  == 0x11) {
 
-	mov	eax, DWORD PTR cap_reg$2[rsp]
+	mov	eax, DWORD PTR cap_reg$1[rsp]
 	and	eax, 255				; 000000ffH
 	cmp	eax, 17
 	jne	SHORT $LN1@pcie_alloc
 
-; 344  : 				printf ("MSI-X found for this device\n");
+; 341  : 				printf ("MSI-X found for this device\n");
 
-	lea	rcx, OFFSET FLAT:$SG3480
+	lea	rcx, OFFSET FLAT:$SG3478
 	call	printf
 
-; 345  : 				break;
+; 342  : 				break;
 
 	jmp	SHORT $LN5@pcie_alloc
 $LN1@pcie_alloc:
 
-; 346  : 			}
-; 347  : 			capptr = ((cap_reg >> 8) & 0xff);   //((cap_reg >> 8) & 0xFF) / 4;
+; 343  : 			}
+; 344  : 			capptr = ((cap_reg >> 8) & 0xff);   //((cap_reg >> 8) & 0xFF) / 4;
 
-	mov	eax, DWORD PTR cap_reg$2[rsp]
+	mov	eax, DWORD PTR cap_reg$1[rsp]
 	shr	eax, 8
 	and	eax, 255				; 000000ffH
 	mov	DWORD PTR capptr$6[rsp], eax
 
-; 348  : 		}
+; 345  : 		}
 
 	jmp	$LN6@pcie_alloc
 $LN5@pcie_alloc:
 $LN7@pcie_alloc:
 $LN9@pcie_alloc:
 
-; 349  : 	}
-; 350  : }
+; 346  : 	}
+; 347  : }
 
-	add	rsp, 136				; 00000088H
+	add	rsp, 120				; 00000078H
 	ret	0
 pcie_alloc_msi ENDP
 _TEXT	ENDS

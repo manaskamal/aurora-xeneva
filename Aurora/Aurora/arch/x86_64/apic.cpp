@@ -166,7 +166,16 @@ void initialize_apic (bool bsp) {
 
 
 	//!Register the time speed
-	write_apic_register (LAPIC_REGISTER_TMRDIV,0x3);  // //0x3    //->correct->   0x2
+	write_apic_register (LAPIC_REGISTER_TMRDIV,0x1);  // //0x3    //->correct->   0x2
+
+	/*write_apic_register (LAPIC_REGISTER_TMRINITCNT, UINT32_MAX);
+
+	pit_sleep_ms(1);
+
+	write_apic_register (LAPIC_REGISTER_LVT_TIMER, IA32_APIC_LVT_MASK);
+
+	uint32_t ticks_in_10ms = UINT32_MAX - read_apic_register(LAPIC_REGISTER_TMRCURRCNT);*/
+
 
 	/*! timer initialized*/
 	size_t timer_vector = 0x40;
@@ -175,7 +184,7 @@ void initialize_apic (bool bsp) {
 	size_t timer_reg = (1 << 17) | timer_vector;
 	write_apic_register (LAPIC_REGISTER_LVT_TIMER, timer_reg);
 	io_wait ();
-	write_apic_register (LAPIC_REGISTER_TMRINITCNT,500);  //100 , 500, 1000 <- correct
+	write_apic_register (LAPIC_REGISTER_TMRINITCNT,1000);  //100 , 500, 1000 <- correct
 	
 
 	x64_outportb(PIC1_DATA, 0xFF);
@@ -184,6 +193,7 @@ void initialize_apic (bool bsp) {
 
 	//! Finally Intialize I/O APIC
 	//map_page (ioapic_base,ioapic_base,0);
+
 	if (bsp)
 		ioapic_init ((void*)0xfec00000);
 
@@ -195,9 +205,15 @@ void AuAPICMoveToHigher() {
 }
 
 void timer_sleep(uint32_t ms) {
+#ifdef USE_PIC
+	pit_sleep_ms(ms);
+#endif
+#ifdef USE_APIC
 	uint32_t tick = ms + apic_timer_count;
 	while (tick > apic_timer_count)
 		;
+#endif
+
 }
 
 

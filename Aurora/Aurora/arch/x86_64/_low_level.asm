@@ -444,5 +444,16 @@ x64_get_kstack:
        mov rax, [rcx + 0x4]
 	   ret 
 
+;;===============================================
+;; TSC Timer 
+;;===============================================
+global x64_rdtsc
+x64_rdtsc:
+     mov rbx, rdx
+     rdtsc
+	 mov [rcx], edx
+	 mov [rbx], eax
+	 ret 
+
 
 

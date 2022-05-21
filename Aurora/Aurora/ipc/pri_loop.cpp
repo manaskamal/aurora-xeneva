@@ -34,6 +34,7 @@
 #include <arch\x86_64\mmngr\kheap.h>
 #include <arch\x86_64\thread.h>
 #include <serial.h>
+#include <stdio.h>
 #include <fs\vfs.h>
 
 pri_loop_box_t *first_loop = NULL;
@@ -150,7 +151,8 @@ void pri_get_message (pri_event_t *event) {
 				if (loop->pending_msg_count == 0) {
 					loop->message_pending = false;
 				}
-			} 
+			}
+			memset (loop->address, 0, sizeof(pri_event_t));
 			break;
 		}
 	}

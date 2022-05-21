@@ -195,7 +195,7 @@ $LN3:
 ; 139  : #ifdef ARCH_X64
 ; 140  : #ifdef USE_PIC
 ; 141  : 	setvect(32 + vector, fn);
-; 142  : 	irq_mask(irq,false);
+; 142  : 	AuIrqMask(irq,false);
 ; 143  : #endif
 ; 144  : #ifdef USE_APIC
 ; 145  : 	ioapic_register_irq(vector,fn,irq, level);
