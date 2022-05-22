@@ -166,7 +166,7 @@ void initialize_apic (bool bsp) {
 
 
 	//!Register the time speed
-	write_apic_register (LAPIC_REGISTER_TMRDIV,0x1);  // //0x3    //->correct->   0x2
+	write_apic_register (LAPIC_REGISTER_TMRDIV,0x3);  // //0x3    //->correct->   0x2
 
 	/*write_apic_register (LAPIC_REGISTER_TMRINITCNT, UINT32_MAX);
 

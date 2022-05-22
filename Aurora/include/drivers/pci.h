@@ -35,7 +35,7 @@
 
 #define PCI_VENDOR_ID    0x00
 #define PCI_DEVICE_ID    0x02
-#define PCI_COMMAND      0x04
+#define PCI_COMMAND      0x4
 #define PCI_STATUS       0x06
 #define PCI_REVISION_ID  0x08
 #define PCI_PROG_IF      0x09
@@ -70,6 +70,7 @@
 
 
 AU_EXTERN AU_EXPORT uint32_t pci_read (uint32_t device, int reg);
+AU_EXTERN AU_EXPORT uint32_t pci_read2 (uint32_t device, int reg, int size);
 AU_EXTERN AU_EXPORT uint32_t pci_scan_class(uint8_t classcode, uint8_t subclass);
 AU_EXTERN AU_EXPORT uint32_t pci_scan_device(uint32_t vendid, uint32_t devid);
 AU_EXTERN AU_EXPORT void pci_write (uint32_t device, int reg, uint32_t value);

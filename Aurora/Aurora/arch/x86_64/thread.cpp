@@ -181,6 +181,7 @@ thread_t* create_kthread (void (*entry) (void), uint64_t stack,uint64_t cr3, cha
 	t->state = THREAD_STATE_READY;
 	//t->priority = priority;
 	t->fd_current = 3;
+
 	t->fx_state = (uint8_t*)malloc(512);
 	memset(t->fx_state, 0, 512);
 	/*((fx_state_t*)t->fx_state)->mxcsr = 0x1f80;
@@ -237,8 +238,10 @@ thread_t* create_user_thread (void (*entry) (void*),uint64_t stack,uint64_t cr3,
 	t->msg_box = (uint64_t*)p2v((size_t)AuPmmngrAlloc());
 	/** Map the thread's msg box to a virtual address, from where the process will receive system messages **/
 	AuMapPageEx((uint64_t*)p2v(t->cr3),v2p((size_t)t->msg_box),(uint64_t)0x400000, PAGING_USER);
+
 	t->fx_state = (uint8_t*)malloc(512);
 	memset(t->fx_state, 0, 512);
+	t->mxcsr = 0x1f80;
 	/*((fx_state_t*)t->fx_state)->mxcsr = 0x1f80;
 	((fx_state_t*)t->fx_state)->mxcsrMask = 0xffbf;
 	((fx_state_t*)t->fx_state)->fcw = 0x33f;*/
@@ -332,6 +335,9 @@ void scheduler_isr (size_t v, void* param) {
 			current_thread->kern_esp = x64_get_kstack(ktss);
 		}
 
+		if (is_cpu_fxsave_supported())
+			x64_fxsave(current_thread->fx_state);
+
 		/* now get the next runnable task from the thread list */
 		next_task(pcpu);
 
@@ -356,6 +362,10 @@ void scheduler_isr (size_t v, void* param) {
 			x64_set_kstack(ktss,current_thread->kern_esp);
 		}
 
+		if (is_cpu_fxsave_supported())
+			x64_fxrstor(current_thread->fx_state);
+
+		x64_ldmxcsr(&current_thread->mxcsr);
 
 		//x64_write_cr3 (current_thread->cr3);
 		//mutex_unlock (scheduler_mutex);

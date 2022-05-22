@@ -10,11 +10,11 @@ _BSS	SEGMENT
 ?window_manager_thr@@3PEAU_thread_@@EA DQ 01H DUP (?)	; window_manager_thr
 _BSS	ENDS
 CONST	SEGMENT
-$SG3553	DB	'Reading Pointer ', 0aH, 00H
+$SG3558	DB	'Reading Pointer ', 0aH, 00H
 	ORG $+2
-$SG3565	DB	'mouse', 00H
+$SG3570	DB	'mouse', 00H
 	ORG $+6
-$SG3566	DB	'/dev/mouse', 00H
+$SG3571	DB	'/dev/mouse', 00H
 CONST	ENDS
 PUBLIC	?AuPointDevInitialize@@YAXXZ			; AuPointDevInitialize
 PUBLIC	?PointDevPutMessage@@YAXPEAU_dwm_message_@@@Z	; PointDevPutMessage
@@ -81,7 +81,7 @@ $LN3:
 
 ; 42   : 	printf ("Reading Pointer \n");
 
-	lea	rcx, OFFSET FLAT:$SG3553
+	lea	rcx, OFFSET FLAT:$SG3558
 	call	printf
 
 ; 43   : 	thread_t* t = get_current_thread();
@@ -333,7 +333,7 @@ $LN3:
 ; 59   : 	strcpy (node->filename, "mouse");
 
 	mov	rax, QWORD PTR node$[rsp]
-	lea	rdx, OFFSET FLAT:$SG3565
+	lea	rdx, OFFSET FLAT:$SG3570
 	mov	rcx, rax
 	call	strcpy
 
@@ -398,7 +398,7 @@ $LN3:
 
 	xor	r8d, r8d
 	mov	rdx, QWORD PTR node$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3566
+	lea	rcx, OFFSET FLAT:$SG3571
 	call	vfs_mount
 
 ; 72   : 	window_manager_thr = NULL;

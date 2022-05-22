@@ -1022,6 +1022,10 @@ int main (int argc, char* argv[]) {
 	acrylic_draw_rect_filled (canvas, 0,0,s_width, s_height, LIGHTBLACK);
 	pri_wallpaper_present();
 
+	acrylic_initialize_font();
+	acrylic_font_set_size(64);
+	acrylic_font_draw_string(canvas, "Hello! Xeneva", 450,450,32, BLACK);
+
 
 	canvas_screen_update(canvas, 0, 0, s_width, s_height);
 

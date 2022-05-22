@@ -70,7 +70,7 @@ void hda_init_output_stream () {
 	for (j = 0; j < BDL_SIZE; j++) {
 		bdl[j].paddr = (uint64_t)(phys_buf + j * BUFFER_SIZE);
 		bdl[j].length = BUFFER_SIZE;
-		bdl[j].flags = 0;
+		bdl[j].flags = 1;
 	}
 	
 	//bdl[j-1].flags = 1;

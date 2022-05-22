@@ -241,6 +241,8 @@ extern "C" void x64_gs_writeb(size_t offset, uint8_t val);
 extern "C" void x64_gs_writew(size_t offset, uint16_t val);
 extern "C" void x64_gs_writed(size_t offset, uint32_t val);
 extern "C" void x64_gs_writeq(size_t offset, uint64_t val);
+extern "C" void x64_ldmxcsr(uint32_t *location);
+extern "C" void x64_stmxcsr(uint32_t *location);
 
 extern "C" void x64_set_kstack (void* ktss,size_t stack);
 extern "C" size_t x64_get_kstack (void* ktss);

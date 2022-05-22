@@ -235,9 +235,9 @@ void machine_check_abort (size_t v, void* p){
 	 printf (" Current thread -> %s\n", get_current_thread()->name);
 	 printf (" MXCSR bit  -- ");
 	 uint8_t *data = get_current_thread()->fx_state;
-	 uint32_t mxcsr = ((data[10] >> 8) & 0xffff);
-	 printf ("XMM -> %x  XMM1 -> %x XMM2 - > %x", data[0xA0], data[0xB0], data[0xC0]);
-	 printf ("XMM3 -> %x XMM4 -> %x XMM5 -> %x\n", data[0xD0], data[0xE0], data[0xF0]);
+	 uint32_t mxcsr;
+	 x64_ldmxcsr(&mxcsr);
+	 printf ("MXCSR reg -> %x \n", mxcsr);
 	 if (mxcsr & 0x0001)
 		 printf ("Invalid operation flag \n");
 	 else if (mxcsr & 0x0002)
@@ -262,6 +262,7 @@ void machine_check_abort (size_t v, void* p){
 		 printf ("Overflow mask\n");
 	 else if (mxcsr & 0x0800)
 		 printf ("Underflow mask\n");
+
 	 for(;;);
  }
 

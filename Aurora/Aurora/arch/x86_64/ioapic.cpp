@@ -107,11 +107,11 @@ void ioapic_init(void* address)
 
 	uint32_t ver = read_ioapic_register(io_apic_base, IOAPIC_REG_VER);
 	uint32_t intr_num = (ver >> 16) & 0xFF;
-	/*for(size_t n = 0; n <= intr_num; ++n)
+	for(size_t n = 0; n <= intr_num; ++n)
 	{
 		uint32_t reg = IOAPIC_REG_RED_TBL_BASE + n * 2;
 		uint32_t val = read_ioapic_register(address, reg);
 		write_ioapic_register(io_apic_base, reg, val |(1<<16));
-	}*/
+	}
 
 }

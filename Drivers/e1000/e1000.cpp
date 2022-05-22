@@ -249,16 +249,16 @@ AU_EXTERN AU_EXPORT int AuDriverUnload() {
 
 
 void e1000_thread() {
-	//int head = e1000_read_command(e1000_nic, E1000_REG_RXDESCHEAD);
+	int head = e1000_read_command(e1000_nic, E1000_REG_RXDESCHEAD);
 	while(1){
-		/*if (head == e1000_nic->rx_index) {
+		if (head == e1000_nic->rx_index) {
 			head = e1000_read_command(e1000_nic, E1000_REG_RXDESCHEAD);
 		}
 
 		if (head != e1000_nic->rx_index){
 			//printf ("[network]: packet received \n");
 			e1000_nic->rx_index = head;
-		}*/
+		}
 		sleep_thread(get_current_thread(),1000);
 		force_sched();
 	}
@@ -420,12 +420,12 @@ AU_EXTERN AU_EXPORT int AuDriverMain() {
 		"e1000_thr",1);
 	//pcie_print_capabilities(device);
 	
-	/*AuEnableInterrupts();
-	for(;;) {
-		if (first_interrupt)
-			break;
-	}
-	AuDisableInterupts();*/
+	//AuEnableInterrupts();
+	//for(;;) {
+	//	if (first_interrupt)
+	//		break;
+	//}
+	//AuDisableInterupts();
 	printf ("[driver]: e1000 initialized \n");
 	return 0;
 }

@@ -13,17 +13,17 @@ _BSS	SEGMENT
 pid	DD	01H DUP (?)
 _BSS	ENDS
 CONST	SEGMENT
-$SG4132	DB	'Used Pmmngr -> %d MB / Total -> %d MB ', 0dH, 0aH, 00H
+$SG4137	DB	'Used Pmmngr -> %d MB / Total -> %d MB ', 0dH, 0aH, 00H
 	ORG $+3
-$SG4198	DB	'child', 00H
+$SG4203	DB	'child', 00H
 	ORG $+6
-$SG4055	DB	'/dev/stdin', 00H
+$SG4060	DB	'/dev/stdin', 00H
 	ORG $+5
-$SG4057	DB	'/dev/stdout', 00H
+$SG4062	DB	'/dev/stdout', 00H
 	ORG $+4
-$SG4059	DB	'/dev/stderr', 00H
+$SG4064	DB	'/dev/stderr', 00H
 	ORG $+4
-$SG4073	DB	'Executable image not found', 0aH, 00H
+$SG4078	DB	'Executable image not found', 0aH, 00H
 CONST	ENDS
 PUBLIC	?create_user_stack@@YAPEA_KPEAU_process_@@PEA_K@Z ; create_user_stack
 PUBLIC	?create_inc_stack@@YAPEA_KPEA_K@Z		; create_inc_stack
@@ -331,7 +331,7 @@ $LN3:
 ; 409  : 	thread_t *t = create_user_thread(child_proc->entry_point,child_proc->stack,(uint64_t)child_proc->cr3,"child",1);
 
 	mov	BYTE PTR [rsp+32], 1
-	lea	r9, OFFSET FLAT:$SG4198
+	lea	r9, OFFSET FLAT:$SG4203
 	mov	rax, QWORD PTR child_proc$[rsp]
 	mov	r8, QWORD PTR [rax+40]
 	mov	rax, QWORD PTR child_proc$[rsp]
@@ -500,7 +500,7 @@ $LN3:
 
 ; 138  : 	vfs_node_t * stdin = vfs_finddir("/dev/stdin");
 
-	lea	rcx, OFFSET FLAT:$SG4055
+	lea	rcx, OFFSET FLAT:$SG4060
 	call	?vfs_finddir@@YAPEAU_vfs_node_@@PEAD@Z	; vfs_finddir
 	mov	QWORD PTR stdin$[rsp], rax
 
@@ -522,7 +522,7 @@ $LN3:
 
 ; 141  : 	vfs_node_t* stdout = vfs_finddir("/dev/stdout");
 
-	lea	rcx, OFFSET FLAT:$SG4057
+	lea	rcx, OFFSET FLAT:$SG4062
 	call	?vfs_finddir@@YAPEAU_vfs_node_@@PEAD@Z	; vfs_finddir
 	mov	QWORD PTR stdout$[rsp], rax
 
@@ -544,7 +544,7 @@ $LN3:
 
 ; 144  : 	vfs_node_t* stderr = vfs_finddir("/dev/stderr");
 
-	lea	rcx, OFFSET FLAT:$SG4059
+	lea	rcx, OFFSET FLAT:$SG4064
 	call	?vfs_finddir@@YAPEAU_vfs_node_@@PEAD@Z	; vfs_finddir
 	mov	QWORD PTR stderr$[rsp], rax
 
@@ -1466,7 +1466,7 @@ $LN1@kill_proce:
 	mov	rcx, QWORD PTR tv132[rsp]
 	mov	r8, rcx
 	mov	rdx, rax
-	lea	rcx, OFFSET FLAT:$SG4132
+	lea	rcx, OFFSET FLAT:$SG4137
 	call	_debug_print_
 
 ; 286  : 
@@ -1573,7 +1573,7 @@ $LN6:
 
 ; 171  : 		printf("Executable image not found\n");
 
-	lea	rcx, OFFSET FLAT:$SG4073
+	lea	rcx, OFFSET FLAT:$SG4078
 	call	printf
 
 ; 172  : 		return -1;

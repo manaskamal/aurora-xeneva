@@ -138,18 +138,29 @@ uint32_t pci_read (uint32_t device, int reg) {
 	return 0xFFFF;
 }
 
-void pci_write (uint32_t device, int reg, uint32_t value) {
-	if (reg == PCI_COMMAND) {
-		reg = 2;
-		unsigned short data = (unsigned short)value;
-		unsigned addr = pci_get_address(device, reg/2);
-		outportd(PCI_ADDRESS_PORT, addr);
-		outportw((PCI_VALUE_PORT + (reg % 2)),data);
-	}else {
-		x64_outportd(PCI_ADDRESS_PORT, pci_get_address(device,reg));
-		x64_outportd(PCI_VALUE_PORT, value);
+uint32_t pci_read2 (uint32_t device, int reg, int size) {
+	
+	x64_outportd(PCI_ADDRESS_PORT, pci_get_address(device, reg));
+
+	if (size == 4) {
+		uint32_t t = x64_inportd(PCI_VALUE_PORT);
+		return t;
+	}else if (size == 2) {
+		uint16_t t =  x64_inportw(PCI_VALUE_PORT + (reg & 2)); //+ (reg & 2));
+		return t;
+	}else if (size == 1) {
+		uint8_t t = x64_inportb (PCI_VALUE_PORT + (reg & 3));
+		return t;
 	}
+
+	return 0xFFFF;
 }
+
+void pci_write (uint32_t device, int reg, uint32_t value) {
+	x64_outportd(PCI_ADDRESS_PORT, pci_get_address(device,reg));
+	x64_outportd(PCI_VALUE_PORT, value);
+}
+
 
 uint32_t pci_scan_class(uint8_t classcode, uint8_t subclass) {
 	for (int bus = 0; bus < PCI_MAX_BUS; bus++) {

@@ -6,17 +6,17 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 CONST	SEGMENT
-$SG3103	DB	'[GPT]: Initializing gpt partition tables....', 0aH, 00H
+$SG3107	DB	'[GPT]: Initializing gpt partition tables....', 0aH, 00H
 	ORG $+2
-$SG3107	DB	'[GPT]: Signature %s', 0aH, 00H
+$SG3111	DB	'[GPT]: Signature %s', 0aH, 00H
 	ORG $+3
-$SG3108	DB	'[GPT]: Revision %x', 0aH, 00H
+$SG3112	DB	'[GPT]: Revision %x', 0aH, 00H
 	ORG $+4
-$SG3109	DB	'[GPT]: Total partition entries %d', 0aH, 00H
+$SG3113	DB	'[GPT]: Total partition entries %d', 0aH, 00H
 	ORG $+5
-$SG3110	DB	'[GPT]: Partition table lba -> %d', 0aH, 00H
+$SG3114	DB	'[GPT]: Partition table lba -> %d', 0aH, 00H
 	ORG $+6
-$SG3112	DB	'[GPT]: SizeOf(GPTPartitionTable) -> %d', 0aH, 00H
+$SG3116	DB	'[GPT]: SizeOf(GPTPartitionTable) -> %d', 0aH, 00H
 CONST	ENDS
 PUBLIC	?initialize_gpt@@YAXXZ				; initialize_gpt
 EXTRN	memset:PROC
@@ -50,7 +50,7 @@ $LN6:
 
 ; 22   : 	printf ("[GPT]: Initializing gpt partition tables....\n");
 
-	lea	rcx, OFFSET FLAT:$SG3103
+	lea	rcx, OFFSET FLAT:$SG3107
 	call	printf
 
 ; 23   : 	uint8_t buffer[512];
@@ -80,34 +80,34 @@ $LN6:
 
 	mov	rax, QWORD PTR gpt_h$[rsp]
 	mov	rdx, rax
-	lea	rcx, OFFSET FLAT:$SG3107
+	lea	rcx, OFFSET FLAT:$SG3111
 	call	printf
 
 ; 31   : 	printf ("[GPT]: Revision %x\n", gpt_h->reserved);
 
 	mov	rax, QWORD PTR gpt_h$[rsp]
 	mov	edx, DWORD PTR [rax+20]
-	lea	rcx, OFFSET FLAT:$SG3108
+	lea	rcx, OFFSET FLAT:$SG3112
 	call	printf
 
 ; 32   : 	printf ("[GPT]: Total partition entries %d\n", gpt_h->num_partition_entries);
 
 	mov	rax, QWORD PTR gpt_h$[rsp]
 	mov	edx, DWORD PTR [rax+80]
-	lea	rcx, OFFSET FLAT:$SG3109
+	lea	rcx, OFFSET FLAT:$SG3113
 	call	printf
 
 ; 33   : 	printf ("[GPT]: Partition table lba -> %d\n", gpt_h->partition_table_lba);
 
 	mov	rax, QWORD PTR gpt_h$[rsp]
 	mov	rdx, QWORD PTR [rax+72]
-	lea	rcx, OFFSET FLAT:$SG3110
+	lea	rcx, OFFSET FLAT:$SG3114
 	call	printf
 
 ; 34   : 	printf ("[GPT]: SizeOf(GPTPartitionTable) -> %d\n", sizeof(gpt_partition_t));
 
 	mov	edx, 128				; 00000080H
-	lea	rcx, OFFSET FLAT:$SG3112
+	lea	rcx, OFFSET FLAT:$SG3116
 	call	printf
 
 ; 35   : 	uint8_t buf[512];

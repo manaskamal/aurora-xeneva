@@ -36,7 +36,7 @@
 
 extern void debug_print (const char* text, ...);
 
-uint32_t pci_express_get_device (uint16_t segment, uint16_t bus, uint16_t device, uint16_t function) {
+uint64_t pci_express_get_device (uint16_t segment, uint16_t bus, uint16_t device, uint16_t function) {
 	if (bus > 255)
 		return 0;
 	if (device > 31)
@@ -44,7 +44,7 @@ uint32_t pci_express_get_device (uint16_t segment, uint16_t bus, uint16_t device
 	if (function > 7)
 		return 0;
 
-	uint32_t addr = 0;
+	uint64_t addr = 0;
 	acpiMcfg *mcfg = acpi_get_mcfg();
 	acpiMcfgAlloc *allocs = mem_after<acpiMcfgAlloc*>(mcfg);
 	if (allocs->startBusNum <= bus && bus <= allocs->endBusNum) {
@@ -55,13 +55,13 @@ uint32_t pci_express_get_device (uint16_t segment, uint16_t bus, uint16_t device
 	return 0xFFFFFFFF;
 }
 
-uint32_t pci_express_read (uint32_t device, int reg) {
+uint64_t pci_express_read (uint64_t device, int reg) {
 	if(acpi_pcie_supported() == false) {
 		return pci_read(device,reg);
 	}
 
 	size_t* address = (size_t*)device;
-	uint32_t result = 0;
+	uint64_t result = 0;
 
 	int size = 0;
 	switch(reg) {
@@ -147,8 +147,30 @@ uint32_t pci_express_read (uint32_t device, int reg) {
 	return 0xFFFFFFFF;
 }
 
+uint64_t pci_express_read2 (uint64_t device, int reg, int size) {
+	if(acpi_pcie_supported() == false) {
+		return pci_read(device,reg);
+	}
 
-void pci_express_write (uint32_t device, int reg, uint32_t val) {
+	size_t* address = (size_t*)device;
+	uint64_t result = 0;
+
+	if (size == 1){
+		result = *raw_offset<volatile uint8_t*>(device, reg);
+		return result;
+	}else if (size == 2) {
+		result = *raw_offset<volatile uint16_t*>(device, reg);
+		return result;
+	}else if (size == 4) {
+		result = *raw_offset<volatile uint32_t*>(device, reg);
+		return result;
+	}
+
+	return UINT64_MAX;
+}
+
+
+void pci_express_write (uint64_t device, int reg, uint32_t val) {
 	if(acpi_pcie_supported() == false) {
 		return pci_write(device,reg, val);
 	}
@@ -234,26 +256,25 @@ void pci_express_write (uint32_t device, int reg, uint32_t val) {
 	}
 }
 
-uint32_t pci_express_read2 (uint32_t device, int reg, int size) {
-	size_t* address = (size_t*)device;
-	uint32_t result = 0;
-
-	if (size == 1){
-		result = *raw_offset<volatile uint8_t*>(address, reg);
-		return result;
-	}else if (size == 2) {
-		result = *raw_offset<volatile uint16_t*>(address, reg);
-		return result;
-	}else if (size == 4) {
-		result = *raw_offset<volatile uint32_t*>(address, reg);
-		return result;
+void pci_express_write2 (uint64_t device, int reg, int size,uint64_t val) {
+	if(acpi_pcie_supported() == false) {
+		return pci_write(device,reg, val);
 	}
 
-	return 0xABCD;
+	size_t* address = (size_t*)device;
+	
+	if (size == 1){
+		*raw_offset<volatile uint8_t*>(device, reg) = val;
+	}else if (size == 2) {
+		*raw_offset<volatile uint16_t*>(device, reg) = val;
+	}else if (size == 4) {
+		*raw_offset<volatile uint64_t*>(device, reg) = val;
+	}
 }
 
 
-uint32_t pci_express_scan_class (uint8_t classCode, uint8_t subClassCode) {
+
+uint64_t pci_express_scan_class (uint8_t classCode, uint8_t subClassCode) {
 	if(acpi_pcie_supported() == false) {
 		return pci_scan_class(classCode, subClassCode);
 	}
@@ -287,11 +308,11 @@ uint32_t pci_express_scan_class (uint8_t classCode, uint8_t subClassCode) {
 	return 0xFFFFFFFF;
 }
 
-void pcie_alloc_msi (uint32_t device, size_t vector) {
+void pcie_alloc_msi (uint64_t device, size_t vector) {
 	if (acpi_pcie_supported() == false)
 		return;
 
-	uint32_t status = pci_express_read2 (device,PCI_COMMAND, 4);
+	uint64_t status = pci_express_read2 (device,PCI_COMMAND, 4);
 	status >>= 16;
 	if ((status & (1<<4)) != 0) {
 		uint32_t capptr = pci_express_read2(device,PCI_CAPABILITIES_PTR, 4);
@@ -300,40 +321,44 @@ void pcie_alloc_msi (uint32_t device, size_t vector) {
 		uint32_t msi_reg = 0;
 		while (capptr != 0) {
 			cap_reg = pci_express_read2(device,capptr, 4);
-			if ((cap_reg & 0xff) == 0x05) {
+			if ((cap_reg & 0xff) == 0x5) {
 				printf ("MSI found for this device\n");
 				msi_reg = cap_reg;
-				uint32_t mscntrl = cap_reg >> 16;
-				//printf ("MSIReg -> %x, cntrl -> %x \n", (device + msi_reg), mscntrl);
-				uint64_t msi_data;
-				uint64_t msi_addr = cpu_msi_address(&msi_data,vector,0,1,0);
-				printf ("writing msi address -> %x, as -> %x \n", msi_addr, (msi_addr & 0xffffffff));
-				pci_express_write(device,msi_reg + 1, msi_addr);
-				//*(uint64_t*)(device + msi_reg + 1) = msi_addr & UINT32_MAX;
 
-				uint64_t debug_addr = *(uint64_t*)(device + msi_reg + 1);
-				printf ("MSI Debug Addr -> %x , msi_data -> %d \n", debug_addr, msi_data);
+			
+				uint32_t mscntrl = cap_reg >> 16;
+	
+				uint64_t msi_data;
+				uint32_t msi_addr = cpu_msi_address(&msi_data,vector,0,1,0);
+			
+				pci_express_write2(device,msi_reg + 0x4, 4,msi_addr);
+			
+				uint32_t msi_add = pci_express_read2(device, msi_reg + 0x4, 4);
+				printf ("MSI_Address -> %x , %x\n", msi_add, msi_addr);
+
+				uint64_t debug_addr = pci_express_read2(device, msi_reg + 0x4, 4);
+		
 				
 				bool bit64_cap = ((mscntrl & (1<<7)) != 0);
 				bool maskcap = ((mscntrl & (1<<8)) != 0);
 
-				uint32_t data_offset = 2;
+				uint64_t data_offset = 8;
 				if (bit64_cap){
-					pci_express_write(device, msi_reg + 2,(msi_addr >> 32));
+					pci_express_write2(device, (msi_reg + 0x8),4,(msi_addr >> 32));
 					printf ("64Bit msi\n");
-					++data_offset;
-				}if (maskcap){
-					pci_express_write(device, msi_reg + 4, 0);
-					//*(uint64_t*)(device + msi_reg + 4) = 0;
+					data_offset = 0xC;
+				}
+				pci_express_write2(device,(msi_reg + data_offset),4,msi_data);
+				if (maskcap){
+					pci_express_write2(device, msi_reg + 0x10,4, 0);
+				
 					printf ("Maskable msi\n");
 				}
 
-				pci_express_write(device,msi_reg + data_offset,msi_data);
-
-
+				
 				mscntrl |= 1;
 				cap_reg = (cap_reg & UINT16_MAX) | (mscntrl << 16);
-				pci_express_write(device, msi_reg, cap_reg);
+				pci_express_write2(device, msi_reg, 4,cap_reg);
 				break;
 			}
 

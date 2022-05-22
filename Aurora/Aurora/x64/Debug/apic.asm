@@ -19,7 +19,7 @@ apic_timer_count DD 01H DUP (?)
 ?ap_started@@3_NA DB 01H DUP (?)			; ap_started
 _BSS	ENDS
 CONST	SEGMENT
-$SG3346	DB	'New APIC -> %x', 0aH, 00H
+$SG3350	DB	'New APIC -> %x', 0aH, 00H
 CONST	ENDS
 PUBLIC	?initialize_apic@@YAX_N@Z			; initialize_apic
 PUBLIC	apic_local_eoi
@@ -416,7 +416,7 @@ $LN3:
 ; 204  : 	printf ("New APIC -> %x\n", apic);
 
 	mov	rdx, QWORD PTR apic
-	lea	rcx, OFFSET FLAT:$SG3346
+	lea	rcx, OFFSET FLAT:$SG3350
 	call	printf
 
 ; 205  : }
@@ -1101,9 +1101,9 @@ $LN2@initialize:
 ; 166  : 
 ; 167  : 
 ; 168  : 	//!Register the time speed
-; 169  : 	write_apic_register (LAPIC_REGISTER_TMRDIV,0x1);  // //0x3    //->correct->   0x2
+; 169  : 	write_apic_register (LAPIC_REGISTER_TMRDIV,0x3);  // //0x3    //->correct->   0x2
 
-	mov	edx, 1
+	mov	edx, 3
 	mov	cx, 62					; 0000003eH
 	call	?write_apic_register@@YAXG_K@Z		; write_apic_register
 

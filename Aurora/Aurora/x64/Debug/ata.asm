@@ -26,22 +26,22 @@ _BSS	SEGMENT
 ?ide_irq_invoked@@3IA DD 01H DUP (?)			; ide_irq_invoked
 _BSS	ENDS
 CONST	SEGMENT
-$SG3098	DB	'[ATA]: error!, device failure!', 0aH, 00H
-$SG3139	DB	'[ATA]: Read28 -- no selected io & drive', 0aH, 00H
+$SG3072	DB	'master ', 00H
+$SG3073	DB	'slave', 00H
+	ORG $+2
+$SG3074	DB	'primary', 00H
+$SG3075	DB	'secondary', 00H
+	ORG $+6
+$SG3076	DB	'ATA: %s s has error. disabled, ', 0aH, 00H
 	ORG $+7
-$SG3227	DB	'[ATA]: Primary-Master Device: %s', 0aH, 00H
+$SG3106	DB	'[ATA]: error!, device failure!', 0aH, 00H
+$SG3147	DB	'[ATA]: Read28 -- no selected io & drive', 0aH, 00H
+	ORG $+7
+$SG3235	DB	'[ATA]: Primary-Master Device: %s', 0aH, 00H
 	ORG $+6
-$SG3229	DB	'[ATA]: Primary-Master Device Size -> %d GB', 0aH, 00H
+$SG3237	DB	'[ATA]: Primary-Master Device Size -> %d GB', 0aH, 00H
 	ORG $+4
-$SG3235	DB	'[ATA]: Primary-Slave Device: %s', 0aH, 00H
-	ORG $+3
-$SG3065	DB	'slave', 00H
-	ORG $+6
-$SG3064	DB	'master ', 00H
-$SG3066	DB	'primary', 00H
-$SG3067	DB	'secondary', 00H
-	ORG $+6
-$SG3068	DB	'ATA: %s s has error. disabled, ', 0aH, 00H
+$SG3243	DB	'[ATA]: Primary-Slave Device: %s', 0aH, 00H
 CONST	ENDS
 PUBLIC	?ata_initialize@@YAXXZ				; ata_initialize
 PUBLIC	?ata_read_28@@YAEIGPEAE@Z			; ata_read_28
@@ -230,7 +230,7 @@ $LN5@ata_probe:
 ; 477  : 		printf("[ATA]: Primary-Master Device: %s\n", ata_device_name);
 
 	lea	rdx, OFFSET FLAT:?ata_device_name@@3PADA ; ata_device_name
-	lea	rcx, OFFSET FLAT:$SG3227
+	lea	rcx, OFFSET FLAT:$SG3235
 	call	printf
 
 ; 478  : 		printf("[ATA]: Primary-Master Device Size -> %d GB\n", *((unsigned int*)(ide_buf + 200)) / 1024 / 1024 / 1024);
@@ -246,7 +246,7 @@ $LN5@ata_probe:
 	mov	ecx, 1024				; 00000400H
 	div	ecx
 	mov	edx, eax
-	lea	rcx, OFFSET FLAT:$SG3229
+	lea	rcx, OFFSET FLAT:$SG3237
 	call	printf
 
 ; 479  : 		ata_drive = (ATA_PRIMARY << 1) | ATA_MASTER;
@@ -323,7 +323,7 @@ $LN1@ata_probe:
 ; 492  : 		printf("[ATA]: Primary-Slave Device: %s\n", ata_device_name);
 
 	lea	rdx, OFFSET FLAT:?ata_device_name@@3PADA ; ata_device_name
-	lea	rcx, OFFSET FLAT:$SG3235
+	lea	rcx, OFFSET FLAT:$SG3243
 	call	printf
 $LN4@ata_probe:
 
@@ -692,7 +692,7 @@ $retry2$11:
 ; 162  : 	{
 ; 163  : 		printf("[ATA]: error!, device failure!\n");
 
-	lea	rcx, OFFSET FLAT:$SG3098
+	lea	rcx, OFFSET FLAT:$SG3106
 	call	printf
 $LN2@ide_poll:
 
@@ -906,26 +906,26 @@ $pm_stat_read$20:
 	movzx	eax, BYTE PTR drive$[rsp]
 	test	eax, eax
 	jne	SHORT $LN15@ide_identi
-	lea	rax, OFFSET FLAT:$SG3064
+	lea	rax, OFFSET FLAT:$SG3072
 	mov	QWORD PTR tv152[rsp], rax
 	jmp	SHORT $LN16@ide_identi
 $LN15@ide_identi:
-	lea	rax, OFFSET FLAT:$SG3065
+	lea	rax, OFFSET FLAT:$SG3073
 	mov	QWORD PTR tv152[rsp], rax
 $LN16@ide_identi:
 	movzx	eax, BYTE PTR bus$[rsp]
 	test	eax, eax
 	jne	SHORT $LN17@ide_identi
-	lea	rax, OFFSET FLAT:$SG3066
+	lea	rax, OFFSET FLAT:$SG3074
 	mov	QWORD PTR tv156[rsp], rax
 	jmp	SHORT $LN18@ide_identi
 $LN17@ide_identi:
-	lea	rax, OFFSET FLAT:$SG3067
+	lea	rax, OFFSET FLAT:$SG3075
 	mov	QWORD PTR tv156[rsp], rax
 $LN18@ide_identi:
 	mov	r8, QWORD PTR tv152[rsp]
 	mov	rdx, QWORD PTR tv156[rsp]
-	lea	rcx, OFFSET FLAT:$SG3068
+	lea	rcx, OFFSET FLAT:$SG3076
 	call	printf
 $LN7@ide_identi:
 $LN6@ide_identi:
@@ -2208,7 +2208,7 @@ $LN4@ata_read_2:
 ; 254  : 	default:{
 ; 255  : 		printf ("[ATA]: Read28 -- no selected io & drive\n");
 
-	lea	rcx, OFFSET FLAT:$SG3139
+	lea	rcx, OFFSET FLAT:$SG3147
 	call	printf
 
 ; 256  : 		return 0;

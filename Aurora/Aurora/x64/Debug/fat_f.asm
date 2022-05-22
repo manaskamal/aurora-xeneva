@@ -6,13 +6,13 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 CONST	SEGMENT
-$SG3593	DB	'FAT32: Creating a file ', 0dH, 0aH, 00H
+$SG3597	DB	'FAT32: Creating a file ', 0dH, 0aH, 00H
 	ORG $+6
-$SG3612	DB	'FAT32: file created at entry-> %d ', 0dH, 0aH, 00H
+$SG3616	DB	'FAT32: file created at entry-> %d ', 0dH, 0aH, 00H
 	ORG $+3
-$SG3636	DB	'[FAT32]: cluster -> %d flushed to disk ', 0dH, 0aH, 00H
+$SG3640	DB	'[FAT32]: cluster -> %d flushed to disk ', 0dH, 0aH, 00H
 	ORG $+6
-$SG3651	DB	'[FAT32]: Writing to file, required clusters -> %d ', 0dH
+$SG3655	DB	'[FAT32]: Writing to file, required clusters -> %d ', 0dH
 	DB	0aH, 00H
 CONST	ENDS
 PUBLIC	?fat32_make_file@@YAPEAU_vfs_node_@@IPEADI@Z	; fat32_make_file
@@ -193,7 +193,7 @@ $LN3@fat32_writ:
 ; 157  : 			_debug_print_ ("[FAT32]: cluster -> %d flushed to disk \r\n", cluster);
 
 	mov	edx, DWORD PTR cluster$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3636
+	lea	rcx, OFFSET FLAT:$SG3640
 	call	_debug_print_
 $LN4@fat32_writ:
 
@@ -309,7 +309,7 @@ $LN7@fat32_writ:
 ; 183  : 	_debug_print_ ("[FAT32]: Writing to file, required clusters -> %d \r\n", required_cluster);
 
 	mov	edx, DWORD PTR required_cluster$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3651
+	lea	rcx, OFFSET FLAT:$SG3655
 	call	_debug_print_
 
 ; 184  : 
@@ -448,7 +448,7 @@ $LN14:
 ; 70   : 
 ; 71   : 	_debug_print_ ("FAT32: Creating a file \r\n");
 
-	lea	rcx, OFFSET FLAT:$SG3593
+	lea	rcx, OFFSET FLAT:$SG3597
 	call	_debug_print_
 
 ; 72   : 
@@ -711,7 +711,7 @@ $LN3@fat32_make:
 ; 115  : 				_debug_print_ ("FAT32: file created at entry-> %d \r\n",i);
 
 	mov	edx, DWORD PTR i$3[rsp]
-	lea	rcx, OFFSET FLAT:$SG3612
+	lea	rcx, OFFSET FLAT:$SG3616
 	call	_debug_print_
 
 ; 116  : 			    return file;

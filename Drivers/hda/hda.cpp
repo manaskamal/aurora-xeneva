@@ -337,7 +337,7 @@ AU_EXTERN AU_EXPORT int AuDriverMain(){
 
 	hda_first_interrupt = false;
 
-	uint32_t device = pci_express_scan_class (0x04, 0x03);
+	uint64_t device = pci_express_scan_class (0x04, 0x03);
 	if (device == 0xFFFFFFFF){
 		printf ("[driver]: intel hda not found\n");
 		return 1;
@@ -359,7 +359,7 @@ AU_EXTERN AU_EXPORT int AuDriverMain(){
 	 //clear the Interrupt disable
 	pci_express_write(device, PCI_COMMAND, command);
 
-	uint32_t com2 = pci_express_read(device, PCI_COMMAND);
+	uint32_t com2 = pci_express_read2(device, PCI_COMMAND, 4);
 
 	printf ("Comm -> %x, comm2-> %x \n", command, com2);
 	if ((com2 & (1<<10)) ){
@@ -384,13 +384,15 @@ AU_EXTERN AU_EXPORT int AuDriverMain(){
 
 	hd_audio.irq = shared_device->irq;
 
-	if( hd_audio.irq < 255) {
-		AuInterruptSet(hd_audio.irq, hda_handler, hd_audio.irq, false);
-	}else {
-		pcie_alloc_msi(device, 46);
-		setvect(46, hda_handler);
-	}
-	
+	AuInterruptSet(3, hda_handler, 3, false);
+	AuInterruptSet(4, hda_handler, 4, false);
+	AuInterruptSet(5, hda_handler, 5, false);
+	AuInterruptSet(6, hda_handler, 6, false);
+	AuInterruptSet(10, hda_handler, 10, false);
+	AuInterruptSet(11, hda_handler, 11, false);
+	AuInterruptSet(14, hda_handler, 14, false);
+	AuInterruptSet(15, hda_handler, 15, false);
+	//AuInterruptSet(7, hda_handler, 7, false);
 
 	uintptr_t mmio = pci_express_read(device, PCI_BAR0);
 	printf ("HDA base address -> %x , irq -> %d\n", mmio, hd_audio.irq);

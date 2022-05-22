@@ -455,5 +455,15 @@ x64_rdtsc:
 	 mov [rbx], eax
 	 ret 
 
+global x64_ldmxcsr
+x64_ldmxcsr:
+     ldmxcsr [rcx]
+	 ret
+
+global x64_stmxcsr
+x64_stmxcsr:
+     stmxcsr [rcx]
+	 ret
+
 
 
