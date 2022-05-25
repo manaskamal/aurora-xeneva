@@ -5,26 +5,26 @@ include listing.inc
 INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
-PUBLIC	?dsp_first@@3PEAU_dsp_@@EA			; dsp_first
-PUBLIC	?dsp_last@@3PEAU_dsp_@@EA			; dsp_last
 PUBLIC	?registered_dev@@3PEAU_sound_@@EA		; registered_dev
 PUBLIC	?registered_thr@@3PEAU_thread_@@EA		; registered_thr
 PUBLIC	?next_pos@@3IA					; next_pos
 PUBLIC	?data_buff@@3PEAEEA				; data_buff
+PUBLIC	?dsp_first@@3PEAU_dsp_@@EA			; dsp_first
+PUBLIC	?dsp_last@@3PEAU_dsp_@@EA			; dsp_last
 _BSS	SEGMENT
-?dsp_first@@3PEAU_dsp_@@EA DQ 01H DUP (?)		; dsp_first
-?dsp_last@@3PEAU_dsp_@@EA DQ 01H DUP (?)		; dsp_last
 ?registered_dev@@3PEAU_sound_@@EA DQ 01H DUP (?)	; registered_dev
 ?registered_thr@@3PEAU_thread_@@EA DQ 01H DUP (?)	; registered_thr
 ?next_pos@@3IA DD 01H DUP (?)				; next_pos
 	ALIGN	8
 
 ?data_buff@@3PEAEEA DQ 01H DUP (?)			; data_buff
+?dsp_first@@3PEAU_dsp_@@EA DQ 01H DUP (?)		; dsp_first
+?dsp_last@@3PEAU_dsp_@@EA DQ 01H DUP (?)		; dsp_last
 _BSS	ENDS
 CONST	SEGMENT
-$SG4204	DB	'dsp', 00H
+$SG3866	DB	'dsp', 00H
 	ORG $+4
-$SG4205	DB	'/dev/dsp', 00H
+$SG3867	DB	'/dev/dsp', 00H
 CONST	ENDS
 PUBLIC	?AuSoundInitialize@@YAXXZ			; AuSoundInitialize
 PUBLIC	AuSoundRegisterDevice
@@ -1097,7 +1097,7 @@ $LN3:
 ; 200  : 	strcpy (dsp->filename, "dsp");
 
 	mov	rax, QWORD PTR dsp$[rsp]
-	lea	rdx, OFFSET FLAT:$SG4204
+	lea	rdx, OFFSET FLAT:$SG3866
 	mov	rcx, rax
 	call	strcpy
 
@@ -1163,7 +1163,7 @@ $LN3:
 
 	xor	r8d, r8d
 	mov	rdx, QWORD PTR dsp$[rsp]
-	lea	rcx, OFFSET FLAT:$SG4205
+	lea	rcx, OFFSET FLAT:$SG3867
 	call	vfs_mount
 
 ; 213  : 

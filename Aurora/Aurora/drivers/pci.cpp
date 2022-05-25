@@ -13,6 +13,8 @@
 #include <stdio.h>
 #include <drivers\acpi\acpi.h>
 
+#ifdef _USE_LEGACY_PCI_
+
 /** Legacy PCI port configurations **/
 #define PCI_MAX_BUS  0x20
 #define PCI_REG_CONFIG_ADDRESS 0xCF8
@@ -468,6 +470,7 @@ void pci_print_capabilities (pci_device_info *dev) {
 			cap_header = pci_get_capabilities(dev,cap_header);
 		}
 	}
-	
 }
+
+#endif
 

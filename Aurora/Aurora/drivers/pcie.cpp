@@ -37,6 +37,14 @@
 
 extern void debug_print (const char* text, ...);
 
+/*
+ * pci_express_get_device -- converts given segment, bus, device and function number to
+ * a pcie device address
+ * @param segment -- segment number
+ * @param bus -- bus number
+ * @param device -- device number
+ * @param function -- function number
+ */
 uint64_t pci_express_get_device (uint16_t segment, int bus, int device, int function) {
 	if (bus > 255)
 		return 0;
@@ -56,10 +64,11 @@ uint64_t pci_express_get_device (uint16_t segment, int bus, int device, int func
 	return 0xFFFFFFFF;
 }
 
+
 uint32_t pci_express_read (uint64_t device, int reg, int bus,int dev,int func) {
-	/*if(acpi_pcie_supported() == false) {
-		return pci_read(device,reg);
-	}*/
+	if(acpi_pcie_supported() == false) {
+		return 0; //pci_read(device,reg);
+	}
 	uint32_t address = 0;
 	acpiMcfg *mcfg = acpi_get_mcfg();
 	acpiMcfgAlloc *allocs = mem_after<acpiMcfgAlloc*>(mcfg);
@@ -306,7 +315,14 @@ void pci_express_write2 (uint64_t device, int reg, int size,uint64_t val, int bu
 }
 
 
-
+/*
+ * pci_express_scan_class -- scans and return pcie device with given class code and sub class code
+ * @param classCode -- class code
+ * @param subClassCode -- sub class code
+ * @param bus -- address, where bus number will be stored
+ * @param dev -- address, where device number will be stored
+ * @param func -- address, where function number will be stored
+ */
 uint64_t pci_express_scan_class (uint8_t classCode, uint8_t subClassCode, int *bus_, int *dev_, int *func_) {
 	if(acpi_pcie_supported() == false) {
 		return 0; //pci_scan_class(classCode, subClassCode);
@@ -344,10 +360,20 @@ uint64_t pci_express_scan_class (uint8_t classCode, uint8_t subClassCode, int *b
 	return 0xFFFFFFFF;
 }
 
-void pcie_alloc_msi (uint64_t device, size_t vector,  int bus, int dev, int func) {
+/*
+ * pcie_alloc_msi -- Allocate MSI/MSI-X for interrupt
+ * @todo -- MSIX not implemented yet 
+ * @param device -- PCIe device address
+ * @param vector -- interrupt vector
+ * @param bus -- PCIe device bus number
+ * @param dev -- PCIe device dev number
+ * @param func -- PCIe device function number
+ */
+bool pcie_alloc_msi (uint64_t device, size_t vector,  int bus, int dev, int func) {
 	if (acpi_pcie_supported() == false)
-		return;
+		return false;
 
+	bool value = false;
 	uint64_t status = pci_express_read2 (device,PCI_COMMAND, 4, bus, dev, func);
 	status >>= 16;
 	if ((status & (1<<4)) != 0) {
@@ -358,7 +384,7 @@ void pcie_alloc_msi (uint64_t device, size_t vector,  int bus, int dev, int func
 		while (capptr != 0) {
 			cap_reg = pci_express_read2(device,capptr, 4, bus, dev, func);
 			if ((cap_reg & 0xff) == 0x5) {
-				printf ("MSI found for this device, -> %x\n", cap_reg);
+
 				msi_reg = cap_reg;
 				uint16_t msctl = msi_reg >> 16;
 				bool bit64_cap = (msctl & (1<<7));
@@ -366,9 +392,9 @@ void pcie_alloc_msi (uint64_t device, size_t vector,  int bus, int dev, int func
 
 				uint64_t msi_data = 0;
 	
-				uint32_t msi_addr = cpu_msi_address(&msi_data,vector,0,1,0);
+				uint64_t msi_addr = cpu_msi_address(&msi_data,vector,0,1,0);
 
-				//*(uint32_t*)(cap_reg + 0x4) = msi_addr & UINT32_MAX;
+
 				pci_express_write2(device, capptr + 0x4, 4, msi_addr & UINT32_MAX, bus, dev, func);
 
 				if (bit64_cap) {
@@ -384,18 +410,22 @@ void pcie_alloc_msi (uint64_t device, size_t vector,  int bus, int dev, int func
 
 
 				msctl |= 1;
-				//pci_express_write2(device, capptr, 4,cap_reg, bus, dev, func);
+
 				cap_reg = msi_reg & UINT16_MAX | msctl << 16;
 				pci_express_write2(device, capptr, 4,  cap_reg & UINT32_MAX, bus, dev, func);
 				uint32_t cap_reg2 = pci_express_read2(device, capptr, 4, bus, dev, func);
+				value = true; //MSI Allocated
 				break;
 			}
 
 			if ((cap_reg & 0xff)  == 0x11) {
 				printf ("MSI-X found for this device\n");
+				value = true; //MSI-X Allocated: not implemented
 				break;
 			}
 			capptr = ((cap_reg >> 8) & 0xff);   //((cap_reg >> 8) & 0xFF) / 4;
 		}
 	}
+
+	return value;
 }

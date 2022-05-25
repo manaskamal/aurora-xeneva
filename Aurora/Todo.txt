@@ -4,12 +4,12 @@ Aurora Kernel TODO:
 Drivers
 ----------------------------------
 NVMe
-AHCI
+AHCI     (done)
 E1000 Network Driver(MUST)
 USB 3.0 (xHCI)
 USB Mass-Storage
-FAT32 Write support
-HDAudio -Codec - Realtek
+FAT32 Write support   (done)
+HDAudio   (done)
 USB Camera (WebCam)
 Bluetooth
 Wifi 
@@ -18,8 +18,9 @@ ACPI/AML
 
 Processor Related:
 ============================
-SMP Support
-MSI/MSI-X allocation
+SMP Support  (done)
+MSI          (done)
+MSI-X allocation   
 Kernel Memory Security
 Address Randomizer
 Kernel Memory Unmap after initialization

@@ -30,6 +30,7 @@
 #ifndef __PCI_H__
 #define __PCI_H__
 
+#ifdef _USE_LEGACY_PCI_
 
 #include <stdint.h>
 #include <hal.h>
@@ -341,5 +342,7 @@ AU_EXTERN AU_EXPORT void pci_enable_interrupt (int bus, int dev, int func);
 AU_EXTERN AU_EXPORT void pci_enable_mem_space (int bus, int dev, int func);
 AU_EXTERN AU_EXPORT bool pcie_supported ();
 AU_EXTERN AU_EXPORT void pci_print_capabilities (pci_device_info *dev);
+
+#endif
 
 #endif

@@ -5,16 +5,14 @@ include listing.inc
 INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
-PUBLIC	?default_data@@3PEAEEA				; default_data
-PUBLIC	?play_pos@@3PEAEEA				; play_pos
 PUBLIC	?_ihd_audio@@3U_hd_audio_@@A			; _ihd_audio
 PUBLIC	?rirbrp@@3GA					; rirbrp
 PUBLIC	?corbwp@@3GA					; corbwp
 PUBLIC	?play_data@@3PEAEEA				; play_data
 PUBLIC	?play_length@@3IA				; play_length
+PUBLIC	?default_data@@3PEAEEA				; default_data
+PUBLIC	?play_pos@@3PEAEEA				; play_pos
 _BSS	SEGMENT
-?default_data@@3PEAEEA DQ 01H DUP (?)			; default_data
-?play_pos@@3PEAEEA DQ 01H DUP (?)			; play_pos
 ?_ihd_audio@@3U_hd_audio_@@A DB 051H DUP (?)		; _ihd_audio
 	ALIGN	4
 
@@ -29,62 +27,66 @@ hdaudio_initialized DB 01H DUP (?)
 
 ?play_data@@3PEAEEA DQ 01H DUP (?)			; play_data
 ?play_length@@3IA DD 01H DUP (?)			; play_length
+	ALIGN	8
+
+?default_data@@3PEAEEA DQ 01H DUP (?)			; default_data
+?play_pos@@3PEAEEA DQ 01H DUP (?)			; play_pos
 _BSS	ENDS
 CONST	SEGMENT
-$SG4104	DB	'HDA Handler called ', 0dH, 0aH, 00H
+$SG3748	DB	'AUD:INB -> %x ', 0dH, 0aH, 00H
+	ORG $+7
+$SG3755	DB	'AUD:OUTB -> %x ', 0dH, 0aH, 00H
+	ORG $+6
+$SG3766	DB	'HDA Handler called ', 0dH, 0aH, 00H
 	ORG $+2
-$SG4132	DB	'HD Audio: No supported RIRB size !!', 0aH, 00H
+$SG3794	DB	'HD Audio: No supported RIRB size !!', 0aH, 00H
 	ORG $+3
-$SG4135	DB	'RIRB DMA Engine started', 0aH, 00H
+$SG3797	DB	'RIRB DMA Engine started', 0aH, 00H
 	ORG $+3
-$SG4231	DB	'output', 00H
+$SG3893	DB	'output', 00H
 	ORG $+5
-$SG4171	DB	'Setting volume ', 0dH, 0aH, 00H
+$SG3833	DB	'Setting volume ', 0dH, 0aH, 00H
 	ORG $+2
-$SG4233	DB	'input', 00H
+$SG3895	DB	'input', 00H
 	ORG $+2
-$SG4235	DB	'mixer', 00H
+$SG3897	DB	'mixer', 00H
 	ORG $+6
-$SG4237	DB	'selector', 00H
+$SG3899	DB	'selector', 00H
 	ORG $+3
-$SG4241	DB	'power', 00H
+$SG3903	DB	'power', 00H
 	ORG $+6
-$SG4239	DB	'pin complex', 00H
+$SG3901	DB	'pin complex', 00H
 	ORG $+4
-$SG4243	DB	'volume knob', 00H
+$SG3905	DB	'volume knob', 00H
 	ORG $+4
-$SG4245	DB	'beep generator', 00H
+$SG3907	DB	'beep generator', 00H
 	ORG $+1
-$SG4247	DB	'vendor defined', 00H
+$SG3909	DB	'vendor defined', 00H
 	ORG $+1
-$SG4249	DB	'unknown', 00H
-$SG4268	DB	'[HD_Audio]: Num Function Group -> %d, fg_start -> %d', 0aH
+$SG3911	DB	'unknown', 00H
+$SG3930	DB	'[HD_Audio]: Num Function Group -> %d, fg_start -> %d', 0aH
 	DB	00H
 	ORG $+2
-$SG4270	DB	'[HD-Audio]:Widget device id -> %x, vendor id -> %x', 0aH
+$SG3932	DB	'[HD-Audio]:Widget device id -> %x, vendor id -> %x', 0aH
 	DB	00H
 	ORG $+4
-$SG4272	DB	'[HD-Audio]:Widget version -> %d.%d, r0%d', 0aH, 00H
+$SG3934	DB	'[HD-Audio]:Widget version -> %d.%d, r0%d', 0aH, 00H
 	ORG $+6
-$SG4276	DB	'Widget start -> %d, num widgets -> %d', 0aH, 00H
+$SG3938	DB	'Widget start -> %d, num widgets -> %d', 0aH, 00H
 	ORG $+1
-$SG4278	DB	'FG not audio group', 0aH, 00H
+$SG3940	DB	'FG not audio group', 0aH, 00H
 	ORG $+4
-$SG4305	DB	'Writing HDA ', 0dH, 0aH, 00H
+$SG3967	DB	'Writing HDA ', 0dH, 0aH, 00H
 	ORG $+1
-$SG4311	DB	'[HD-Audio]: INterrupt int -> %d', 0aH, 00H
+$SG3973	DB	'[HD-Audio]: INterrupt int -> %d', 0aH, 00H
 	ORG $+7
-$SG4314	DB	'_IHD_MMIO -> %x ', 0dH, 0aH, 00H
+$SG3976	DB	'_IHD_MMIO -> %x ', 0dH, 0aH, 00H
 	ORG $+5
-$SG4317	DB	'_IHD Corb -> %x, RIRB -> %x ', 0dH, 0aH, 00H
+$SG3979	DB	'_IHD Corb -> %x, RIRB -> %x ', 0dH, 0aH, 00H
 	ORG $+1
-$SG4326	DB	'HD-Audio 64-OK', 0aH, 00H
-$SG4336	DB	'HDA Device found at index ->%d', 0aH, 00H
-$SG4340	DB	'IHD-Audio Initialized successfully', 0aH, 00H
-	ORG $+4
-$SG4086	DB	'AUD:INB -> %x ', 0dH, 0aH, 00H
-	ORG $+7
-$SG4093	DB	'AUD:OUTB -> %x ', 0dH, 0aH, 00H
+$SG3988	DB	'HD-Audio 64-OK', 0aH, 00H
+$SG3998	DB	'HDA Device found at index ->%d', 0aH, 00H
+$SG4002	DB	'IHD-Audio Initialized successfully', 0aH, 00H
 CONST	ENDS
 PUBLIC	?hda_initialize@@YAXXZ				; hda_initialize
 PUBLIC	?codec_query@@YAIHHI@Z				; codec_query
@@ -109,18 +111,18 @@ PUBLIC	?widget_init@@YAXHH@Z				; widget_init
 PUBLIC	?hda_reset@@YAXXZ				; hda_reset
 PUBLIC	?hda_output_start@@YAXXZ			; hda_output_start
 PUBLIC	?hda_write@@YAXPEAE_K@Z				; hda_write
-EXTRN	x64_read_cr3:PROC
-EXTRN	AuInterruptEnd:PROC
-EXTRN	AuInterruptSet:PROC
 EXTRN	memset:PROC
 EXTRN	memcpy:PROC
 EXTRN	AuPmmngrAlloc:PROC
 EXTRN	p2v:PROC
 EXTRN	v2p:PROC
+EXTRN	x64_read_cr3:PROC
 EXTRN	AuMapPage:PROC
 EXTRN	AuGetPhysicalAddress:PROC
 EXTRN	AuMapMMIO:PROC
 EXTRN	malloc:PROC
+EXTRN	AuInterruptEnd:PROC
+EXTRN	AuInterruptSet:PROC
 EXTRN	printf:PROC
 EXTRN	AuSoundRegisterDevice:PROC
 EXTRN	_debug_print_:PROC
@@ -265,7 +267,7 @@ $LN3:
 
 ; 541  : 	_debug_print_ ("Writing HDA \r\n");
 
-	lea	rcx, OFFSET FLAT:$SG4305
+	lea	rcx, OFFSET FLAT:$SG3967
 	call	_debug_print_
 
 ; 542  : 	hda_audio_add_pcm(buffer,0,length);
@@ -489,7 +491,7 @@ codec$ = 96
 
 	mov	r8d, DWORD PTR fg_start$[rsp]
 	mov	edx, DWORD PTR num_fg$[rsp]
-	lea	rcx, OFFSET FLAT:$SG4268
+	lea	rcx, OFFSET FLAT:$SG3930
 	call	printf
 
 ; 466  : 
@@ -509,7 +511,7 @@ codec$ = 96
 	and	ecx, 65535				; 0000ffffH
 	mov	r8d, eax
 	mov	edx, ecx
-	lea	rcx, OFFSET FLAT:$SG4270
+	lea	rcx, OFFSET FLAT:$SG3932
 	call	printf
 
 ; 469  : 	
@@ -531,7 +533,7 @@ codec$ = 96
 	shr	edx, 20
 	mov	r9d, eax
 	mov	r8d, ecx
-	lea	rcx, OFFSET FLAT:$SG4272
+	lea	rcx, OFFSET FLAT:$SG3934
 	call	printf
 
 ; 472  : 
@@ -581,7 +583,7 @@ $LN7@codec_enum:
 
 	mov	r8d, DWORD PTR num_widgets$[rsp]
 	mov	edx, DWORD PTR widgets_start$[rsp]
-	lea	rcx, OFFSET FLAT:$SG4276
+	lea	rcx, OFFSET FLAT:$SG3938
 	call	printf
 
 ; 482  : 		
@@ -610,7 +612,7 @@ $LN7@codec_enum:
 
 ; 486  : 			printf ("FG not audio group\n");
 
-	lea	rcx, OFFSET FLAT:$SG4278
+	lea	rcx, OFFSET FLAT:$SG3940
 	call	printf
 
 ; 487  : 			continue;
@@ -787,70 +789,70 @@ $LN15@widget_ini:
 
 ; 415  : 	case 0:  s = "output"; break;
 
-	lea	rax, OFFSET FLAT:$SG4231
+	lea	rax, OFFSET FLAT:$SG3893
 	mov	QWORD PTR s$[rsp], rax
 	jmp	SHORT $LN16@widget_ini
 $LN14@widget_ini:
 
 ; 416  : 	case 1:  s = "input"; break;
 
-	lea	rax, OFFSET FLAT:$SG4233
+	lea	rax, OFFSET FLAT:$SG3895
 	mov	QWORD PTR s$[rsp], rax
 	jmp	SHORT $LN16@widget_ini
 $LN13@widget_ini:
 
 ; 417  : 	case 2:  s = "mixer"; break;
 
-	lea	rax, OFFSET FLAT:$SG4235
+	lea	rax, OFFSET FLAT:$SG3897
 	mov	QWORD PTR s$[rsp], rax
 	jmp	SHORT $LN16@widget_ini
 $LN12@widget_ini:
 
 ; 418  : 	case 3:  s = "selector"; break;
 
-	lea	rax, OFFSET FLAT:$SG4237
+	lea	rax, OFFSET FLAT:$SG3899
 	mov	QWORD PTR s$[rsp], rax
 	jmp	SHORT $LN16@widget_ini
 $LN11@widget_ini:
 
 ; 419  : 	case 4:  s = "pin complex"; break;
 
-	lea	rax, OFFSET FLAT:$SG4239
+	lea	rax, OFFSET FLAT:$SG3901
 	mov	QWORD PTR s$[rsp], rax
 	jmp	SHORT $LN16@widget_ini
 $LN10@widget_ini:
 
 ; 420  : 	case 5:  s = "power"; break;
 
-	lea	rax, OFFSET FLAT:$SG4241
+	lea	rax, OFFSET FLAT:$SG3903
 	mov	QWORD PTR s$[rsp], rax
 	jmp	SHORT $LN16@widget_ini
 $LN9@widget_ini:
 
 ; 421  : 	case 6:  s = "volume knob"; break;
 
-	lea	rax, OFFSET FLAT:$SG4243
+	lea	rax, OFFSET FLAT:$SG3905
 	mov	QWORD PTR s$[rsp], rax
 	jmp	SHORT $LN16@widget_ini
 $LN8@widget_ini:
 
 ; 422  : 	case 7:  s = "beep generator"; break;
 
-	lea	rax, OFFSET FLAT:$SG4245
+	lea	rax, OFFSET FLAT:$SG3907
 	mov	QWORD PTR s$[rsp], rax
 	jmp	SHORT $LN16@widget_ini
 $LN7@widget_ini:
 
 ; 423  : 	case 16: s = "vendor defined"; break;
 
-	lea	rax, OFFSET FLAT:$SG4247
+	lea	rax, OFFSET FLAT:$SG3909
 	mov	QWORD PTR s$[rsp], rax
 	jmp	SHORT $LN16@widget_ini
 $LN6@widget_ini:
 
 ; 424  : 	default: s = "unknown"; break;
 
-	lea	rax, OFFSET FLAT:$SG4249
+	lea	rax, OFFSET FLAT:$SG3911
 	mov	QWORD PTR s$[rsp], rax
 $LN16@widget_ini:
 
@@ -1881,7 +1883,7 @@ $LN2@setup_rirb:
 
 ; 163  : 		printf ("HD Audio: No supported RIRB size !!\n");
 
-	lea	rcx, OFFSET FLAT:$SG4132
+	lea	rcx, OFFSET FLAT:$SG3794
 	call	printf
 
 ; 164  : 		_ihd_audio.rirb_entries = 256;
@@ -1970,7 +1972,7 @@ $LN5@setup_rirb:
 
 ; 181  : 	printf ("RIRB DMA Engine started\n");
 
-	lea	rcx, OFFSET FLAT:$SG4135
+	lea	rcx, OFFSET FLAT:$SG3797
 	call	printf
 
 ; 182  : 
@@ -2190,7 +2192,7 @@ $LN3:
 
 	movzx	eax, BYTE PTR value$[rsp]
 	mov	edx, eax
-	lea	rcx, OFFSET FLAT:$SG4093
+	lea	rcx, OFFSET FLAT:$SG3755
 	call	_debug_print_
 
 ; 62   : 	*mmio = value;
@@ -2232,7 +2234,7 @@ $LN3:
 	movzx	eax, BYTE PTR [rax]
 	movzx	eax, al
 	mov	edx, eax
-	lea	rcx, OFFSET FLAT:$SG4086
+	lea	rcx, OFFSET FLAT:$SG3748
 	call	_debug_print_
 
 ; 56   : 	return *mmio;
@@ -2441,7 +2443,7 @@ $LN4:
 
 ; 82   : 	_debug_print_ ("HDA Handler called \r\n");
 
-	lea	rcx, OFFSET FLAT:$SG4104
+	lea	rcx, OFFSET FLAT:$SG3766
 	call	_debug_print_
 
 ; 83   : 	if (sts & 0x4) {
@@ -2626,7 +2628,7 @@ $LN1@hda_set_vo:
 ; 272  : 	//codec_query (_ihd_audio.output->codec, _ihd_audio.output->nid, VERB_SET_AMP_GAIN_MUTE | 0xb000 | volume);
 ; 273  : 	_debug_print_ ("Setting volume \r\n");	
 
-	lea	rcx, OFFSET FLAT:$SG4171
+	lea	rcx, OFFSET FLAT:$SG3833
 	call	_debug_print_
 
 ; 274  : 	codec_query (_ihd_audio.output->codec, 2, 0x39000 | volume);
@@ -2882,7 +2884,7 @@ $LN12:
 ; 572  : 	printf ("[HD-Audio]: INterrupt int -> %d\n", intline);
 
 	mov	edx, DWORD PTR intline$[rsp]
-	lea	rcx, OFFSET FLAT:$SG4311
+	lea	rcx, OFFSET FLAT:$SG3973
 	call	printf
 
 ; 573  : 	AuInterruptSet(10, hda_handler,10, false);
@@ -2910,7 +2912,7 @@ $LN12:
 ; 578  : 	_debug_print_("_IHD_MMIO -> %x \r\n", _ihd_audio.mmio);
 
 	mov	rdx, QWORD PTR ?_ihd_audio@@3U_hd_audio_@@A
-	lea	rcx, OFFSET FLAT:$SG4314
+	lea	rcx, OFFSET FLAT:$SG3976
 	call	_debug_print_
 
 ; 579  : 	_ihd_audio.corb = (uint32_t*)AuPmmngrAlloc(); 
@@ -2927,7 +2929,7 @@ $LN12:
 
 	mov	r8, QWORD PTR ?_ihd_audio@@3U_hd_audio_@@A+16
 	mov	rdx, QWORD PTR ?_ihd_audio@@3U_hd_audio_@@A+8
-	lea	rcx, OFFSET FLAT:$SG4317
+	lea	rcx, OFFSET FLAT:$SG3979
 	call	_debug_print_
 
 ; 582  : 	memset (_ihd_audio.corb, 0, 4096);
@@ -3010,7 +3012,7 @@ $LN7@hda_initia:
 
 ; 596  : 		printf ("HD-Audio 64-OK\n");
 
-	lea	rcx, OFFSET FLAT:$SG4326
+	lea	rcx, OFFSET FLAT:$SG3988
 	call	printf
 $LN6@hda_initia:
 
@@ -3103,7 +3105,7 @@ $LN5@hda_initia:
 ; 614  : 				printf ("HDA Device found at index ->%d\n", i);
 
 	mov	edx, DWORD PTR i$1[rsp]
-	lea	rcx, OFFSET FLAT:$SG4336
+	lea	rcx, OFFSET FLAT:$SG3998
 	call	printf
 
 ; 615  : 				break;
@@ -3181,7 +3183,7 @@ $LN3@hda_initia:
 ; 635  : 
 ; 636  : 	printf ("IHD-Audio Initialized successfully\n");
 
-	lea	rcx, OFFSET FLAT:$SG4340
+	lea	rcx, OFFSET FLAT:$SG4002
 	call	printf
 
 ; 637  : }

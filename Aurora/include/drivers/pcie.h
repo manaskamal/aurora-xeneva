@@ -61,13 +61,41 @@
 #define PCI_DEVICE_PER_BUS 32
 #define PCI_FUNCTION_PER_DEVICE 8
 
+
+/*
+ * pci_express_get_device -- converts given segment, bus, device and function number to
+ * a pcie device address
+ * @param segment -- segment number
+ * @param bus -- bus number
+ * @param device -- device number
+ * @param function -- function number
+ */
 extern uint64_t pci_express_get_device (uint16_t segment, int bus, int device, int function);
+
+/*
+ * pci_express_scan_class -- scans and return pcie device with given class code and sub class code
+ * @param classCode -- class code
+ * @param subClassCode -- sub class code
+ * @param bus -- address, where bus number will be stored
+ * @param dev -- address, where device number will be stored
+ * @param func -- address, where function number will be stored
+ */
 AU_EXTERN AU_EXPORT uint64_t pci_express_scan_class (uint8_t classCode, uint8_t subClassCode, int *bus_, int *dev_, int *func_);
 AU_EXTERN AU_EXPORT uint32_t pci_express_read (uint64_t device, int reg,  int bus, int dev,int func);
 AU_EXTERN AU_EXPORT uint64_t pci_express_read2 (uint64_t device, int reg, int size, int bus, int dev, int func);
 AU_EXTERN AU_EXPORT void pci_express_write (uint64_t device, int reg, uint32_t val,  int bus, int dev, int func);
 AU_EXTERN AU_EXPORT void pci_express_write2 (uint64_t device, int reg, int size,uint64_t val,  int bus, int dev,int func);
-AU_EXTERN AU_EXPORT void pcie_alloc_msi (uint64_t device, size_t vector,  int bus, int dev, int func);
+
+/*
+ * pcie_alloc_msi -- Allocate MSI/MSI-X for interrupt
+ * @todo -- MSIX not implemented yet 
+ * @param device -- PCIe device address
+ * @param vector -- interrupt vector
+ * @param bus -- PCIe device bus number
+ * @param dev -- PCIe device dev number
+ * @param func -- PCIe device function number
+ */
+AU_EXTERN AU_EXPORT bool pcie_alloc_msi (uint64_t device, size_t vector,  int bus, int dev, int func);
 
 #endif
 
