@@ -6,102 +6,65 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 CONST	SEGMENT
-$SG3521	DB	'MSI found for this device', 0aH, 00H
-	ORG $+5
-$SG3526	DB	'MSI_Address -> %x , %x', 0aH, 00H
-$SG3532	DB	'64Bit msi', 0aH, 00H
-	ORG $+5
-$SG3534	DB	'Maskable msi', 0aH, 00H
-	ORG $+2
-$SG3536	DB	'MSI-X found for this device', 0aH, 00H
+$SG4055	DB	'MSI found for this device, -> %x', 0aH, 00H
+	ORG $+6
+$SG4066	DB	'MSI-X found for this device', 0aH, 00H
 CONST	ENDS
+PUBLIC	?pci_express_get_device@@YA_KGHHH@Z		; pci_express_get_device
 PUBLIC	pci_express_scan_class
 PUBLIC	pci_express_read
 PUBLIC	pci_express_read2
 PUBLIC	pci_express_write
 PUBLIC	pci_express_write2
 PUBLIC	pcie_alloc_msi
-PUBLIC	?pci_express_get_device@@YA_KGGGG@Z		; pci_express_get_device
 PUBLIC	??$mem_after@PEAUacpiMcfgAlloc@@UacpiMcfg@@@@YAPEAUacpiMcfgAlloc@@PEAUacpiMcfg@@@Z ; mem_after<acpiMcfgAlloc * __ptr64,acpiMcfg>
-PUBLIC	??$raw_offset@PECEPEA_K@@YAPECEPEA_KH@Z		; raw_offset<unsigned char volatile * __ptr64,unsigned __int64 * __ptr64>
-PUBLIC	??$raw_offset@PECGPEA_K@@YAPECGPEA_KH@Z		; raw_offset<unsigned short volatile * __ptr64,unsigned __int64 * __ptr64>
-PUBLIC	??$raw_offset@PECIPEA_K@@YAPECIPEA_KH@Z		; raw_offset<unsigned int volatile * __ptr64,unsigned __int64 * __ptr64>
 PUBLIC	??$raw_offset@PECE_K@@YAPECE_KH@Z		; raw_offset<unsigned char volatile * __ptr64,unsigned __int64>
 PUBLIC	??$raw_offset@PECG_K@@YAPECG_KH@Z		; raw_offset<unsigned short volatile * __ptr64,unsigned __int64>
 PUBLIC	??$raw_offset@PECI_K@@YAPECI_KH@Z		; raw_offset<unsigned int volatile * __ptr64,unsigned __int64>
-PUBLIC	??$raw_offset@PEC_K_K@@YAPEC_K_KH@Z		; raw_offset<unsigned __int64 volatile * __ptr64,unsigned __int64>
-EXTRN	pci_read:PROC
-EXTRN	pci_scan_class:PROC
-EXTRN	pci_write:PROC
+EXTRN	?cpu_msi_address@@YA_KPEA_K_KIEE@Z:PROC		; cpu_msi_address
 EXTRN	?acpi_pcie_supported@@YA_NXZ:PROC		; acpi_pcie_supported
 EXTRN	?acpi_get_mcfg@@YAPEAUacpiMcfg@@XZ:PROC		; acpi_get_mcfg
 EXTRN	printf:PROC
-EXTRN	?cpu_msi_address@@YA_KPEA_K_KIEE@Z:PROC		; cpu_msi_address
 EXTRN	__ImageBase:BYTE
 pdata	SEGMENT
+$pdata$?pci_express_get_device@@YA_KGHHH@Z DD imagerel $LN7
+	DD	imagerel $LN7+216
+	DD	imagerel $unwind$?pci_express_get_device@@YA_KGHHH@Z
 $pdata$pci_express_scan_class DD imagerel $LN19
-	DD	imagerel $LN19+375
+	DD	imagerel $LN19+461
 	DD	imagerel $unwind$pci_express_scan_class
-$pdata$pci_express_read DD imagerel $LN35
-	DD	imagerel $LN35+650
+$pdata$pci_express_read DD imagerel $LN36
+	DD	imagerel $LN36+758
 	DD	imagerel $unwind$pci_express_read
-$pdata$pci_express_read2 DD imagerel $LN9
-	DD	imagerel $LN9+200
+$pdata$pci_express_read2 DD imagerel $LN11
+	DD	imagerel $LN11+327
 	DD	imagerel $unwind$pci_express_read2
-$pdata$pci_express_write DD imagerel $LN35
-	DD	imagerel $LN35+618
+$pdata$pci_express_write DD imagerel $LN37
+	DD	imagerel $LN37+738
 	DD	imagerel $unwind$pci_express_write
-$pdata$pci_express_write2 DD imagerel $LN9
-	DD	imagerel $LN9+160
+$pdata$pci_express_write2 DD imagerel $LN10
+	DD	imagerel $LN10+274
 	DD	imagerel $unwind$pci_express_write2
-$pdata$pcie_alloc_msi DD imagerel $LN15
-	DD	imagerel $LN15+761
+$pdata$pcie_alloc_msi DD imagerel $LN16
+	DD	imagerel $LN16+1050
 	DD	imagerel $unwind$pcie_alloc_msi
-$pdata$?pci_express_get_device@@YA_KGGGG@Z DD imagerel $LN7
-	DD	imagerel $LN7+234
-	DD	imagerel $unwind$?pci_express_get_device@@YA_KGGGG@Z
 pdata	ENDS
 xdata	SEGMENT
-$unwind$pci_express_scan_class DD 010c01H
-	DD	0a20cH
-$unwind$pci_express_read DD 010d01H
-	DD	0820dH
-$unwind$pci_express_read2 DD 011201H
-	DD	06212H
-$unwind$pci_express_write DD 011201H
-	DD	06212H
+$unwind$?pci_express_get_device@@YA_KGHHH@Z DD 011701H
+	DD	08217H
+$unwind$pci_express_scan_class DD 011601H
+	DD	0c216H
+$unwind$pci_express_read DD 011701H
+	DD	0a217H
+$unwind$pci_express_read2 DD 011701H
+	DD	08217H
+$unwind$pci_express_write DD 011701H
+	DD	08217H
 $unwind$pci_express_write2 DD 011701H
-	DD	06217H
-$unwind$pcie_alloc_msi DD 021101H
-	DD	0110111H
-$unwind$?pci_express_get_device@@YA_KGGGG@Z DD 011a01H
-	DD	0821aH
+	DD	08217H
+$unwind$pcie_alloc_msi DD 021b01H
+	DD	011011bH
 xdata	ENDS
-; Function compile flags: /Odtpy
-; File e:\xeneva project\xeneva\aurora\include\stdint.h
-;	COMDAT ??$raw_offset@PEC_K_K@@YAPEC_K_KH@Z
-_TEXT	SEGMENT
-p1$ = 8
-offset$ = 16
-??$raw_offset@PEC_K_K@@YAPEC_K_KH@Z PROC		; raw_offset<unsigned __int64 volatile * __ptr64,unsigned __int64>, COMDAT
-
-; 183  : 	{
-
-	mov	DWORD PTR [rsp+16], edx
-	mov	QWORD PTR [rsp+8], rcx
-
-; 184  : 		return (T) ((size_t)p1 + offset);
-
-	movsxd	rax, DWORD PTR offset$[rsp]
-	mov	rcx, QWORD PTR p1$[rsp]
-	add	rcx, rax
-	mov	rax, rcx
-
-; 185  : 	};
-
-	ret	0
-??$raw_offset@PEC_K_K@@YAPEC_K_KH@Z ENDP		; raw_offset<unsigned __int64 volatile * __ptr64,unsigned __int64>
-_TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\include\stdint.h
 ;	COMDAT ??$raw_offset@PECI_K@@YAPECI_KH@Z
@@ -179,81 +142,6 @@ offset$ = 16
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\include\stdint.h
-;	COMDAT ??$raw_offset@PECIPEA_K@@YAPECIPEA_KH@Z
-_TEXT	SEGMENT
-p1$ = 8
-offset$ = 16
-??$raw_offset@PECIPEA_K@@YAPECIPEA_KH@Z PROC		; raw_offset<unsigned int volatile * __ptr64,unsigned __int64 * __ptr64>, COMDAT
-
-; 183  : 	{
-
-	mov	DWORD PTR [rsp+16], edx
-	mov	QWORD PTR [rsp+8], rcx
-
-; 184  : 		return (T) ((size_t)p1 + offset);
-
-	movsxd	rax, DWORD PTR offset$[rsp]
-	mov	rcx, QWORD PTR p1$[rsp]
-	add	rcx, rax
-	mov	rax, rcx
-
-; 185  : 	};
-
-	ret	0
-??$raw_offset@PECIPEA_K@@YAPECIPEA_KH@Z ENDP		; raw_offset<unsigned int volatile * __ptr64,unsigned __int64 * __ptr64>
-_TEXT	ENDS
-; Function compile flags: /Odtpy
-; File e:\xeneva project\xeneva\aurora\include\stdint.h
-;	COMDAT ??$raw_offset@PECGPEA_K@@YAPECGPEA_KH@Z
-_TEXT	SEGMENT
-p1$ = 8
-offset$ = 16
-??$raw_offset@PECGPEA_K@@YAPECGPEA_KH@Z PROC		; raw_offset<unsigned short volatile * __ptr64,unsigned __int64 * __ptr64>, COMDAT
-
-; 183  : 	{
-
-	mov	DWORD PTR [rsp+16], edx
-	mov	QWORD PTR [rsp+8], rcx
-
-; 184  : 		return (T) ((size_t)p1 + offset);
-
-	movsxd	rax, DWORD PTR offset$[rsp]
-	mov	rcx, QWORD PTR p1$[rsp]
-	add	rcx, rax
-	mov	rax, rcx
-
-; 185  : 	};
-
-	ret	0
-??$raw_offset@PECGPEA_K@@YAPECGPEA_KH@Z ENDP		; raw_offset<unsigned short volatile * __ptr64,unsigned __int64 * __ptr64>
-_TEXT	ENDS
-; Function compile flags: /Odtpy
-; File e:\xeneva project\xeneva\aurora\include\stdint.h
-;	COMDAT ??$raw_offset@PECEPEA_K@@YAPECEPEA_KH@Z
-_TEXT	SEGMENT
-p1$ = 8
-offset$ = 16
-??$raw_offset@PECEPEA_K@@YAPECEPEA_KH@Z PROC		; raw_offset<unsigned char volatile * __ptr64,unsigned __int64 * __ptr64>, COMDAT
-
-; 183  : 	{
-
-	mov	DWORD PTR [rsp+16], edx
-	mov	QWORD PTR [rsp+8], rcx
-
-; 184  : 		return (T) ((size_t)p1 + offset);
-
-	movsxd	rax, DWORD PTR offset$[rsp]
-	mov	rcx, QWORD PTR p1$[rsp]
-	add	rcx, rax
-	mov	rax, rcx
-
-; 185  : 	};
-
-	ret	0
-??$raw_offset@PECEPEA_K@@YAPECEPEA_KH@Z ENDP		; raw_offset<unsigned char volatile * __ptr64,unsigned __int64 * __ptr64>
-_TEXT	ENDS
-; Function compile flags: /Odtpy
-; File e:\xeneva project\xeneva\aurora\include\stdint.h
 ;	COMDAT ??$mem_after@PEAUacpiMcfgAlloc@@UacpiMcfg@@@@YAPEAUacpiMcfgAlloc@@PEAUacpiMcfg@@@Z
 _TEXT	SEGMENT
 p1$ = 8
@@ -279,472 +167,387 @@ _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\drivers\pcie.cpp
 _TEXT	SEGMENT
-allocs$ = 32
-addr$ = 40
-mcfg$ = 48
-segment$ = 80
-bus$ = 88
-device$ = 96
-function$ = 104
-?pci_express_get_device@@YA_KGGGG@Z PROC		; pci_express_get_device
-
-; 39   : uint64_t pci_express_get_device (uint16_t segment, uint16_t bus, uint16_t device, uint16_t function) {
-
-$LN7:
-	mov	WORD PTR [rsp+32], r9w
-	mov	WORD PTR [rsp+24], r8w
-	mov	WORD PTR [rsp+16], dx
-	mov	WORD PTR [rsp+8], cx
-	sub	rsp, 72					; 00000048H
-
-; 40   : 	if (bus > 255)
-
-	movzx	eax, WORD PTR bus$[rsp]
-	cmp	eax, 255				; 000000ffH
-	jle	SHORT $LN4@pci_expres
-
-; 41   : 		return 0;
-
-	xor	eax, eax
-	jmp	$LN5@pci_expres
-$LN4@pci_expres:
-
-; 42   : 	if (device > 31)
-
-	movzx	eax, WORD PTR device$[rsp]
-	cmp	eax, 31
-	jle	SHORT $LN3@pci_expres
-
-; 43   : 		return 0;
-
-	xor	eax, eax
-	jmp	$LN5@pci_expres
-$LN3@pci_expres:
-
-; 44   : 	if (function > 7)
-
-	movzx	eax, WORD PTR function$[rsp]
-	cmp	eax, 7
-	jle	SHORT $LN2@pci_expres
-
-; 45   : 		return 0;
-
-	xor	eax, eax
-	jmp	$LN5@pci_expres
-$LN2@pci_expres:
-
-; 46   : 
-; 47   : 	uint64_t addr = 0;
-
-	mov	QWORD PTR addr$[rsp], 0
-
-; 48   : 	acpiMcfg *mcfg = acpi_get_mcfg();
-
-	call	?acpi_get_mcfg@@YAPEAUacpiMcfg@@XZ	; acpi_get_mcfg
-	mov	QWORD PTR mcfg$[rsp], rax
-
-; 49   : 	acpiMcfgAlloc *allocs = mem_after<acpiMcfgAlloc*>(mcfg);
-
-	mov	rcx, QWORD PTR mcfg$[rsp]
-	call	??$mem_after@PEAUacpiMcfgAlloc@@UacpiMcfg@@@@YAPEAUacpiMcfgAlloc@@PEAUacpiMcfg@@@Z ; mem_after<acpiMcfgAlloc * __ptr64,acpiMcfg>
-	mov	QWORD PTR allocs$[rsp], rax
-
-; 50   : 	if (allocs->startBusNum <= bus && bus <= allocs->endBusNum) {
-
-	mov	rax, QWORD PTR allocs$[rsp]
-	movzx	eax, BYTE PTR [rax+10]
-	movzx	ecx, WORD PTR bus$[rsp]
-	cmp	eax, ecx
-	jg	SHORT $LN1@pci_expres
-	movzx	eax, WORD PTR bus$[rsp]
-	mov	rcx, QWORD PTR allocs$[rsp]
-	movzx	ecx, BYTE PTR [rcx+11]
-	cmp	eax, ecx
-	jg	SHORT $LN1@pci_expres
-
-; 51   : 		addr = allocs->baseAddress + ((bus - allocs->startBusNum) << 20) | (device << 15) | (function << 12);
-
-	movzx	eax, WORD PTR bus$[rsp]
-	mov	rcx, QWORD PTR allocs$[rsp]
-	movzx	ecx, BYTE PTR [rcx+10]
-	sub	eax, ecx
-	shl	eax, 20
-	cdqe
-	mov	rcx, QWORD PTR allocs$[rsp]
-	mov	rcx, QWORD PTR [rcx]
-	add	rcx, rax
-	mov	rax, rcx
-	movzx	ecx, WORD PTR device$[rsp]
-	shl	ecx, 15
-	movsxd	rcx, ecx
-	or	rax, rcx
-	movzx	ecx, WORD PTR function$[rsp]
-	shl	ecx, 12
-	movsxd	rcx, ecx
-	or	rax, rcx
-	mov	QWORD PTR addr$[rsp], rax
-
-; 52   : 		return addr;
-
-	mov	rax, QWORD PTR addr$[rsp]
-	jmp	SHORT $LN5@pci_expres
-$LN1@pci_expres:
-
-; 53   : 	}
-; 54   : 
-; 55   : 	return 0xFFFFFFFF;
-
-	mov	eax, -1					; ffffffffH
-$LN5@pci_expres:
-
-; 56   : }
-
-	add	rsp, 72					; 00000048H
-	ret	0
-?pci_express_get_device@@YA_KGGGG@Z ENDP		; pci_express_get_device
-_TEXT	ENDS
-; Function compile flags: /Odtpy
-; File e:\xeneva project\xeneva\aurora\aurora\drivers\pcie.cpp
-_TEXT	SEGMENT
-cap_reg$1 = 48
-msi_reg$2 = 52
-maskcap$3 = 56
-bit64_cap$4 = 57
-mscntrl$5 = 60
-capptr$6 = 64
-msi_addr$7 = 68
-tv151 = 72
-tv155 = 76
-status$ = 80
-msi_add$8 = 88
-data_offset$9 = 96
-msi_data$10 = 104
-debug_addr$11 = 112
+capptr$1 = 64
+msctl$2 = 68
+tv140 = 72
+tv136 = 73
+cap_reg$3 = 76
+bit64_cap$4 = 80
+maskcap$5 = 81
+msi_reg$6 = 84
+msi_addr$7 = 88
+status$ = 96
+msi_data$8 = 104
+cap_reg2$9 = 112
 device$ = 144
 vector$ = 152
+bus$ = 160
+dev$ = 168
+func$ = 176
 pcie_alloc_msi PROC
 
-; 311  : void pcie_alloc_msi (uint64_t device, size_t vector) {
+; 347  : void pcie_alloc_msi (uint64_t device, size_t vector,  int bus, int dev, int func) {
 
-$LN15:
+$LN16:
+	mov	DWORD PTR [rsp+32], r9d
+	mov	DWORD PTR [rsp+24], r8d
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 136				; 00000088H
 
-; 312  : 	if (acpi_pcie_supported() == false)
+; 348  : 	if (acpi_pcie_supported() == false)
 
 	call	?acpi_pcie_supported@@YA_NXZ		; acpi_pcie_supported
 	movzx	eax, al
 	test	eax, eax
-	jne	SHORT $LN8@pcie_alloc
+	jne	SHORT $LN9@pcie_alloc
 
-; 313  : 		return;
+; 349  : 		return;
 
-	jmp	$LN9@pcie_alloc
-$LN8@pcie_alloc:
+	jmp	$LN10@pcie_alloc
+$LN9@pcie_alloc:
 
-; 314  : 
-; 315  : 	uint64_t status = pci_express_read2 (device,PCI_COMMAND, 4);
+; 350  : 
+; 351  : 	uint64_t status = pci_express_read2 (device,PCI_COMMAND, 4, bus, dev, func);
 
+	mov	eax, DWORD PTR func$[rsp]
+	mov	DWORD PTR [rsp+40], eax
+	mov	eax, DWORD PTR dev$[rsp]
+	mov	DWORD PTR [rsp+32], eax
+	mov	r9d, DWORD PTR bus$[rsp]
 	mov	r8d, 4
 	mov	edx, 4
 	mov	rcx, QWORD PTR device$[rsp]
 	call	pci_express_read2
 	mov	QWORD PTR status$[rsp], rax
 
-; 316  : 	status >>= 16;
+; 352  : 	status >>= 16;
 
 	mov	rax, QWORD PTR status$[rsp]
 	shr	rax, 16
 	mov	QWORD PTR status$[rsp], rax
 
-; 317  : 	if ((status & (1<<4)) != 0) {
+; 353  : 	if ((status & (1<<4)) != 0) {
 
 	mov	rax, QWORD PTR status$[rsp]
 	and	rax, 16
 	test	rax, rax
-	je	$LN7@pcie_alloc
+	je	$LN8@pcie_alloc
 
-; 318  : 		uint32_t capptr = pci_express_read2(device,PCI_CAPABILITIES_PTR, 4);
+; 354  : 		uint32_t capptr = pci_express_read2(device,PCI_CAPABILITIES_PTR, 4, bus, dev, func);
 
+	mov	eax, DWORD PTR func$[rsp]
+	mov	DWORD PTR [rsp+40], eax
+	mov	eax, DWORD PTR dev$[rsp]
+	mov	DWORD PTR [rsp+32], eax
+	mov	r9d, DWORD PTR bus$[rsp]
 	mov	r8d, 4
 	mov	edx, 52					; 00000034H
 	mov	rcx, QWORD PTR device$[rsp]
 	call	pci_express_read2
-	mov	DWORD PTR capptr$6[rsp], eax
+	mov	DWORD PTR capptr$1[rsp], eax
 
-; 319  : 		capptr &= 0xFF; 
+; 355  : 		capptr &= 0xFF; 
 
-	mov	eax, DWORD PTR capptr$6[rsp]
+	mov	eax, DWORD PTR capptr$1[rsp]
 	and	eax, 255				; 000000ffH
-	mov	DWORD PTR capptr$6[rsp], eax
+	mov	DWORD PTR capptr$1[rsp], eax
 
-; 320  : 		uint32_t cap_reg = 0;
+; 356  : 		uint32_t cap_reg = 0;
 
-	mov	DWORD PTR cap_reg$1[rsp], 0
+	mov	DWORD PTR cap_reg$3[rsp], 0
 
-; 321  : 		uint32_t msi_reg = 0;
+; 357  : 		uint32_t msi_reg = 0;
 
-	mov	DWORD PTR msi_reg$2[rsp], 0
-$LN6@pcie_alloc:
+	mov	DWORD PTR msi_reg$6[rsp], 0
+$LN7@pcie_alloc:
 
-; 322  : 		while (capptr != 0) {
+; 358  : 		while (capptr != 0) {
 
-	cmp	DWORD PTR capptr$6[rsp], 0
-	je	$LN5@pcie_alloc
+	cmp	DWORD PTR capptr$1[rsp], 0
+	je	$LN6@pcie_alloc
 
-; 323  : 			cap_reg = pci_express_read2(device,capptr, 4);
+; 359  : 			cap_reg = pci_express_read2(device,capptr, 4, bus, dev, func);
 
+	mov	eax, DWORD PTR func$[rsp]
+	mov	DWORD PTR [rsp+40], eax
+	mov	eax, DWORD PTR dev$[rsp]
+	mov	DWORD PTR [rsp+32], eax
+	mov	r9d, DWORD PTR bus$[rsp]
 	mov	r8d, 4
-	mov	edx, DWORD PTR capptr$6[rsp]
+	mov	edx, DWORD PTR capptr$1[rsp]
 	mov	rcx, QWORD PTR device$[rsp]
 	call	pci_express_read2
-	mov	DWORD PTR cap_reg$1[rsp], eax
+	mov	DWORD PTR cap_reg$3[rsp], eax
 
-; 324  : 			if ((cap_reg & 0xff) == 0x5) {
+; 360  : 			if ((cap_reg & 0xff) == 0x5) {
 
-	mov	eax, DWORD PTR cap_reg$1[rsp]
+	mov	eax, DWORD PTR cap_reg$3[rsp]
 	and	eax, 255				; 000000ffH
 	cmp	eax, 5
-	jne	$LN4@pcie_alloc
+	jne	$LN5@pcie_alloc
 
-; 325  : 				printf ("MSI found for this device\n");
+; 361  : 				printf ("MSI found for this device, -> %x\n", cap_reg);
 
-	lea	rcx, OFFSET FLAT:$SG3521
+	mov	edx, DWORD PTR cap_reg$3[rsp]
+	lea	rcx, OFFSET FLAT:$SG4055
 	call	printf
 
-; 326  : 				msi_reg = cap_reg;
+; 362  : 				msi_reg = cap_reg;
 
-	mov	eax, DWORD PTR cap_reg$1[rsp]
-	mov	DWORD PTR msi_reg$2[rsp], eax
+	mov	eax, DWORD PTR cap_reg$3[rsp]
+	mov	DWORD PTR msi_reg$6[rsp], eax
 
-; 327  : 
-; 328  : 			
-; 329  : 				uint32_t mscntrl = cap_reg >> 16;
+; 363  : 				uint16_t msctl = msi_reg >> 16;
 
-	mov	eax, DWORD PTR cap_reg$1[rsp]
+	mov	eax, DWORD PTR msi_reg$6[rsp]
 	shr	eax, 16
-	mov	DWORD PTR mscntrl$5[rsp], eax
+	mov	WORD PTR msctl$2[rsp], ax
 
-; 330  : 	
-; 331  : 				uint64_t msi_data;
-; 332  : 				uint32_t msi_addr = cpu_msi_address(&msi_data,vector,0,1,0);
+; 364  : 				bool bit64_cap = (msctl & (1<<7));
+
+	movzx	eax, WORD PTR msctl$2[rsp]
+	and	eax, 128				; 00000080H
+	test	eax, eax
+	je	SHORT $LN12@pcie_alloc
+	mov	BYTE PTR tv136[rsp], 1
+	jmp	SHORT $LN13@pcie_alloc
+$LN12@pcie_alloc:
+	mov	BYTE PTR tv136[rsp], 0
+$LN13@pcie_alloc:
+	movzx	eax, BYTE PTR tv136[rsp]
+	mov	BYTE PTR bit64_cap$4[rsp], al
+
+; 365  : 				bool maskcap = (msctl & (1<<8));
+
+	movzx	eax, WORD PTR msctl$2[rsp]
+	and	eax, 256				; 00000100H
+	test	eax, eax
+	je	SHORT $LN14@pcie_alloc
+	mov	BYTE PTR tv140[rsp], 1
+	jmp	SHORT $LN15@pcie_alloc
+$LN14@pcie_alloc:
+	mov	BYTE PTR tv140[rsp], 0
+$LN15@pcie_alloc:
+	movzx	eax, BYTE PTR tv140[rsp]
+	mov	BYTE PTR maskcap$5[rsp], al
+
+; 366  : 
+; 367  : 				uint64_t msi_data = 0;
+
+	mov	QWORD PTR msi_data$8[rsp], 0
+
+; 368  : 	
+; 369  : 				uint32_t msi_addr = cpu_msi_address(&msi_data,vector,0,1,0);
 
 	mov	BYTE PTR [rsp+32], 0
 	mov	r9b, 1
 	xor	r8d, r8d
 	mov	rdx, QWORD PTR vector$[rsp]
-	lea	rcx, QWORD PTR msi_data$10[rsp]
+	lea	rcx, QWORD PTR msi_data$8[rsp]
 	call	?cpu_msi_address@@YA_KPEA_K_KIEE@Z	; cpu_msi_address
 	mov	DWORD PTR msi_addr$7[rsp], eax
 
-; 333  : 			
-; 334  : 				pci_express_write2(device,msi_reg + 0x4, 4,msi_addr);
+; 370  : 
+; 371  : 				//*(uint32_t*)(cap_reg + 0x4) = msi_addr & UINT32_MAX;
+; 372  : 				pci_express_write2(device, capptr + 0x4, 4, msi_addr & UINT32_MAX, bus, dev, func);
 
 	mov	eax, DWORD PTR msi_addr$7[rsp]
-	mov	ecx, DWORD PTR msi_reg$2[rsp]
+	mov	ecx, DWORD PTR capptr$1[rsp]
 	add	ecx, 4
+	mov	edx, DWORD PTR func$[rsp]
+	mov	DWORD PTR [rsp+48], edx
+	mov	edx, DWORD PTR dev$[rsp]
+	mov	DWORD PTR [rsp+40], edx
+	mov	edx, DWORD PTR bus$[rsp]
+	mov	DWORD PTR [rsp+32], edx
 	mov	r9d, eax
 	mov	r8d, 4
 	mov	edx, ecx
 	mov	rcx, QWORD PTR device$[rsp]
 	call	pci_express_write2
 
-; 335  : 			
-; 336  : 				uint32_t msi_add = pci_express_read2(device, msi_reg + 0x4, 4);
-
-	mov	eax, DWORD PTR msi_reg$2[rsp]
-	add	eax, 4
-	mov	r8d, 4
-	mov	edx, eax
-	mov	rcx, QWORD PTR device$[rsp]
-	call	pci_express_read2
-	mov	DWORD PTR msi_add$8[rsp], eax
-
-; 337  : 				printf ("MSI_Address -> %x , %x\n", msi_add, msi_addr);
-
-	mov	r8d, DWORD PTR msi_addr$7[rsp]
-	mov	edx, DWORD PTR msi_add$8[rsp]
-	lea	rcx, OFFSET FLAT:$SG3526
-	call	printf
-
-; 338  : 
-; 339  : 				uint64_t debug_addr = pci_express_read2(device, msi_reg + 0x4, 4);
-
-	mov	eax, DWORD PTR msi_reg$2[rsp]
-	add	eax, 4
-	mov	r8d, 4
-	mov	edx, eax
-	mov	rcx, QWORD PTR device$[rsp]
-	call	pci_express_read2
-	mov	QWORD PTR debug_addr$11[rsp], rax
-
-; 340  : 		
-; 341  : 				
-; 342  : 				bool bit64_cap = ((mscntrl & (1<<7)) != 0);
-
-	mov	eax, DWORD PTR mscntrl$5[rsp]
-	and	eax, 128				; 00000080H
-	test	eax, eax
-	je	SHORT $LN11@pcie_alloc
-	mov	DWORD PTR tv151[rsp], 1
-	jmp	SHORT $LN12@pcie_alloc
-$LN11@pcie_alloc:
-	mov	DWORD PTR tv151[rsp], 0
-$LN12@pcie_alloc:
-	movzx	eax, BYTE PTR tv151[rsp]
-	mov	BYTE PTR bit64_cap$4[rsp], al
-
-; 343  : 				bool maskcap = ((mscntrl & (1<<8)) != 0);
-
-	mov	eax, DWORD PTR mscntrl$5[rsp]
-	and	eax, 256				; 00000100H
-	test	eax, eax
-	je	SHORT $LN13@pcie_alloc
-	mov	DWORD PTR tv155[rsp], 1
-	jmp	SHORT $LN14@pcie_alloc
-$LN13@pcie_alloc:
-	mov	DWORD PTR tv155[rsp], 0
-$LN14@pcie_alloc:
-	movzx	eax, BYTE PTR tv155[rsp]
-	mov	BYTE PTR maskcap$3[rsp], al
-
-; 344  : 
-; 345  : 				uint64_t data_offset = 8;
-
-	mov	QWORD PTR data_offset$9[rsp], 8
-
-; 346  : 				if (bit64_cap){
+; 373  : 
+; 374  : 				if (bit64_cap) {
 
 	movzx	eax, BYTE PTR bit64_cap$4[rsp]
 	test	eax, eax
-	je	SHORT $LN3@pcie_alloc
+	je	$LN4@pcie_alloc
 
-; 347  : 					pci_express_write2(device, (msi_reg + 0x8),4,(msi_addr >> 32));
+; 375  : 					pci_express_write2(device, capptr + 0x8, 4, msi_addr >> 32, bus, dev ,func);
 
 	mov	eax, DWORD PTR msi_addr$7[rsp]
 	shr	eax, 32					; 00000020H
 	mov	eax, eax
-	mov	ecx, DWORD PTR msi_reg$2[rsp]
+	mov	ecx, DWORD PTR capptr$1[rsp]
 	add	ecx, 8
+	mov	edx, DWORD PTR func$[rsp]
+	mov	DWORD PTR [rsp+48], edx
+	mov	edx, DWORD PTR dev$[rsp]
+	mov	DWORD PTR [rsp+40], edx
+	mov	edx, DWORD PTR bus$[rsp]
+	mov	DWORD PTR [rsp+32], edx
 	mov	r9d, eax
 	mov	r8d, 4
 	mov	edx, ecx
 	mov	rcx, QWORD PTR device$[rsp]
 	call	pci_express_write2
 
-; 348  : 					printf ("64Bit msi\n");
+; 376  : 					pci_express_write2(device, capptr + 0xC, 2, msi_data & UINT16_MAX, bus, dev, func);
 
-	lea	rcx, OFFSET FLAT:$SG3532
-	call	printf
-
-; 349  : 					data_offset = 0xC;
-
-	mov	QWORD PTR data_offset$9[rsp], 12
-$LN3@pcie_alloc:
-
-; 350  : 				}
-; 351  : 				pci_express_write2(device,(msi_reg + data_offset),4,msi_data);
-
-	mov	eax, DWORD PTR msi_reg$2[rsp]
-	add	rax, QWORD PTR data_offset$9[rsp]
-	mov	r9, QWORD PTR msi_data$10[rsp]
-	mov	r8d, 4
-	mov	edx, eax
+	mov	rax, QWORD PTR msi_data$8[rsp]
+	and	rax, 65535				; 0000ffffH
+	mov	ecx, DWORD PTR capptr$1[rsp]
+	add	ecx, 12
+	mov	edx, DWORD PTR func$[rsp]
+	mov	DWORD PTR [rsp+48], edx
+	mov	edx, DWORD PTR dev$[rsp]
+	mov	DWORD PTR [rsp+40], edx
+	mov	edx, DWORD PTR bus$[rsp]
+	mov	DWORD PTR [rsp+32], edx
+	mov	r9, rax
+	mov	r8d, 2
+	mov	edx, ecx
 	mov	rcx, QWORD PTR device$[rsp]
 	call	pci_express_write2
 
-; 352  : 				if (maskcap){
+; 377  : 				}else 
 
-	movzx	eax, BYTE PTR maskcap$3[rsp]
+	jmp	SHORT $LN3@pcie_alloc
+$LN4@pcie_alloc:
+
+; 378  : 					pci_express_write2(device, capptr + 0x8, 2, msi_data & UINT16_MAX, bus, dev, func);
+
+	mov	rax, QWORD PTR msi_data$8[rsp]
+	and	rax, 65535				; 0000ffffH
+	mov	ecx, DWORD PTR capptr$1[rsp]
+	add	ecx, 8
+	mov	edx, DWORD PTR func$[rsp]
+	mov	DWORD PTR [rsp+48], edx
+	mov	edx, DWORD PTR dev$[rsp]
+	mov	DWORD PTR [rsp+40], edx
+	mov	edx, DWORD PTR bus$[rsp]
+	mov	DWORD PTR [rsp+32], edx
+	mov	r9, rax
+	mov	r8d, 2
+	mov	edx, ecx
+	mov	rcx, QWORD PTR device$[rsp]
+	call	pci_express_write2
+$LN3@pcie_alloc:
+
+; 379  : 				
+; 380  : 				
+; 381  : 				if (maskcap) 
+
+	movzx	eax, BYTE PTR maskcap$5[rsp]
 	test	eax, eax
 	je	SHORT $LN2@pcie_alloc
 
-; 353  : 					pci_express_write2(device, msi_reg + 0x10,4, 0);
+; 382  : 					pci_express_write2(device, capptr + 0x10, 4, 0, bus, dev, func);
 
-	mov	eax, DWORD PTR msi_reg$2[rsp]
+	mov	eax, DWORD PTR capptr$1[rsp]
 	add	eax, 16
+	mov	ecx, DWORD PTR func$[rsp]
+	mov	DWORD PTR [rsp+48], ecx
+	mov	ecx, DWORD PTR dev$[rsp]
+	mov	DWORD PTR [rsp+40], ecx
+	mov	ecx, DWORD PTR bus$[rsp]
+	mov	DWORD PTR [rsp+32], ecx
 	xor	r9d, r9d
 	mov	r8d, 4
 	mov	edx, eax
 	mov	rcx, QWORD PTR device$[rsp]
 	call	pci_express_write2
-
-; 354  : 				
-; 355  : 					printf ("Maskable msi\n");
-
-	lea	rcx, OFFSET FLAT:$SG3534
-	call	printf
 $LN2@pcie_alloc:
 
-; 356  : 				}
-; 357  : 
-; 358  : 				
-; 359  : 				mscntrl |= 1;
+; 383  : 				
+; 384  : 
+; 385  : 
+; 386  : 				msctl |= 1;
 
-	mov	eax, DWORD PTR mscntrl$5[rsp]
+	movzx	eax, WORD PTR msctl$2[rsp]
 	or	eax, 1
-	mov	DWORD PTR mscntrl$5[rsp], eax
+	mov	WORD PTR msctl$2[rsp], ax
 
-; 360  : 				cap_reg = (cap_reg & UINT16_MAX) | (mscntrl << 16);
+; 387  : 				//pci_express_write2(device, capptr, 4,cap_reg, bus, dev, func);
+; 388  : 				cap_reg = msi_reg & UINT16_MAX | msctl << 16;
 
-	mov	eax, DWORD PTR cap_reg$1[rsp]
+	mov	eax, DWORD PTR msi_reg$6[rsp]
 	and	eax, 65535				; 0000ffffH
-	mov	ecx, DWORD PTR mscntrl$5[rsp]
+	movzx	ecx, WORD PTR msctl$2[rsp]
 	shl	ecx, 16
 	or	eax, ecx
-	mov	DWORD PTR cap_reg$1[rsp], eax
+	mov	DWORD PTR cap_reg$3[rsp], eax
 
-; 361  : 				pci_express_write2(device, msi_reg, 4,cap_reg);
+; 389  : 				pci_express_write2(device, capptr, 4,  cap_reg & UINT32_MAX, bus, dev, func);
 
-	mov	eax, DWORD PTR cap_reg$1[rsp]
+	mov	eax, DWORD PTR cap_reg$3[rsp]
+	mov	ecx, DWORD PTR func$[rsp]
+	mov	DWORD PTR [rsp+48], ecx
+	mov	ecx, DWORD PTR dev$[rsp]
+	mov	DWORD PTR [rsp+40], ecx
+	mov	ecx, DWORD PTR bus$[rsp]
+	mov	DWORD PTR [rsp+32], ecx
 	mov	r9d, eax
 	mov	r8d, 4
-	mov	edx, DWORD PTR msi_reg$2[rsp]
+	mov	edx, DWORD PTR capptr$1[rsp]
 	mov	rcx, QWORD PTR device$[rsp]
 	call	pci_express_write2
 
-; 362  : 				break;
+; 390  : 				uint32_t cap_reg2 = pci_express_read2(device, capptr, 4, bus, dev, func);
 
-	jmp	SHORT $LN5@pcie_alloc
-$LN4@pcie_alloc:
+	mov	eax, DWORD PTR func$[rsp]
+	mov	DWORD PTR [rsp+40], eax
+	mov	eax, DWORD PTR dev$[rsp]
+	mov	DWORD PTR [rsp+32], eax
+	mov	r9d, DWORD PTR bus$[rsp]
+	mov	r8d, 4
+	mov	edx, DWORD PTR capptr$1[rsp]
+	mov	rcx, QWORD PTR device$[rsp]
+	call	pci_express_read2
+	mov	DWORD PTR cap_reg2$9[rsp], eax
 
-; 363  : 			}
-; 364  : 
-; 365  : 			if ((cap_reg & 0xff)  == 0x11) {
+; 391  : 				break;
 
-	mov	eax, DWORD PTR cap_reg$1[rsp]
+	jmp	SHORT $LN6@pcie_alloc
+$LN5@pcie_alloc:
+
+; 392  : 			}
+; 393  : 
+; 394  : 			if ((cap_reg & 0xff)  == 0x11) {
+
+	mov	eax, DWORD PTR cap_reg$3[rsp]
 	and	eax, 255				; 000000ffH
 	cmp	eax, 17
 	jne	SHORT $LN1@pcie_alloc
 
-; 366  : 				printf ("MSI-X found for this device\n");
+; 395  : 				printf ("MSI-X found for this device\n");
 
-	lea	rcx, OFFSET FLAT:$SG3536
+	lea	rcx, OFFSET FLAT:$SG4066
 	call	printf
 
-; 367  : 				break;
+; 396  : 				break;
 
-	jmp	SHORT $LN5@pcie_alloc
+	jmp	SHORT $LN6@pcie_alloc
 $LN1@pcie_alloc:
 
-; 368  : 			}
-; 369  : 			capptr = ((cap_reg >> 8) & 0xff);   //((cap_reg >> 8) & 0xFF) / 4;
+; 397  : 			}
+; 398  : 			capptr = ((cap_reg >> 8) & 0xff);   //((cap_reg >> 8) & 0xFF) / 4;
 
-	mov	eax, DWORD PTR cap_reg$1[rsp]
+	mov	eax, DWORD PTR cap_reg$3[rsp]
 	shr	eax, 8
 	and	eax, 255				; 000000ffH
-	mov	DWORD PTR capptr$6[rsp], eax
+	mov	DWORD PTR capptr$1[rsp], eax
 
-; 370  : 		}
+; 399  : 		}
 
-	jmp	$LN6@pcie_alloc
-$LN5@pcie_alloc:
-$LN7@pcie_alloc:
-$LN9@pcie_alloc:
+	jmp	$LN7@pcie_alloc
+$LN6@pcie_alloc:
+$LN8@pcie_alloc:
+$LN10@pcie_alloc:
 
-; 371  : 	}
-; 372  : }
+; 400  : 	}
+; 401  : }
 
 	add	rsp, 136				; 00000088H
 	ret	0
@@ -753,52 +556,100 @@ _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\drivers\pcie.cpp
 _TEXT	SEGMENT
-address$ = 32
-device$ = 64
-reg$ = 72
-size$ = 80
-val$ = 88
+allocs$ = 32
+mcfg$ = 40
+address$ = 48
+device$ = 80
+reg$ = 88
+size$ = 96
+val$ = 104
+bus$ = 112
+dev$ = 120
+func$ = 128
 pci_express_write2 PROC
 
-; 259  : void pci_express_write2 (uint64_t device, int reg, int size,uint64_t val) {
+; 287  : void pci_express_write2 (uint64_t device, int reg, int size,uint64_t val, int bus, int dev, int func) {
 
-$LN9:
+$LN10:
 	mov	QWORD PTR [rsp+32], r9
 	mov	DWORD PTR [rsp+24], r8d
 	mov	DWORD PTR [rsp+16], edx
 	mov	QWORD PTR [rsp+8], rcx
-	sub	rsp, 56					; 00000038H
+	sub	rsp, 72					; 00000048H
 
-; 260  : 	if(acpi_pcie_supported() == false) {
+; 288  : 	if(acpi_pcie_supported() == false) {
 
 	call	?acpi_pcie_supported@@YA_NXZ		; acpi_pcie_supported
 	movzx	eax, al
 	test	eax, eax
-	jne	SHORT $LN6@pci_expres
+	jne	SHORT $LN7@pci_expres
 
-; 261  : 		return pci_write(device,reg, val);
+; 289  : 		return; //pci_write(device,reg, val);
 
-	mov	r8d, DWORD PTR val$[rsp]
-	mov	edx, DWORD PTR reg$[rsp]
-	mov	ecx, DWORD PTR device$[rsp]
-	call	pci_write
-	jmp	SHORT $LN7@pci_expres
+	jmp	$LN8@pci_expres
+$LN7@pci_expres:
+
+; 290  : 	}
+; 291  : 
+; 292  : 	size_t address = 0;
+
+	mov	QWORD PTR address$[rsp], 0
+
+; 293  : 	acpiMcfg *mcfg = acpi_get_mcfg();
+
+	call	?acpi_get_mcfg@@YAPEAUacpiMcfg@@XZ	; acpi_get_mcfg
+	mov	QWORD PTR mcfg$[rsp], rax
+
+; 294  : 	acpiMcfgAlloc *allocs = mem_after<acpiMcfgAlloc*>(mcfg);
+
+	mov	rcx, QWORD PTR mcfg$[rsp]
+	call	??$mem_after@PEAUacpiMcfgAlloc@@UacpiMcfg@@@@YAPEAUacpiMcfgAlloc@@PEAUacpiMcfg@@@Z ; mem_after<acpiMcfgAlloc * __ptr64,acpiMcfg>
+	mov	QWORD PTR allocs$[rsp], rax
+
+; 295  : 	if (allocs->startBusNum <= bus && bus <= allocs->endBusNum) 
+
+	mov	rax, QWORD PTR allocs$[rsp]
+	movzx	eax, BYTE PTR [rax+10]
+	cmp	eax, DWORD PTR bus$[rsp]
+	jg	SHORT $LN6@pci_expres
+	mov	rax, QWORD PTR allocs$[rsp]
+	movzx	eax, BYTE PTR [rax+11]
+	cmp	DWORD PTR bus$[rsp], eax
+	jg	SHORT $LN6@pci_expres
+
+; 296  : 		address = allocs->baseAddress + ((bus - allocs->startBusNum) << 20) | (device << 15) | (func << 12) | (reg);
+
+	mov	rax, QWORD PTR allocs$[rsp]
+	movzx	eax, BYTE PTR [rax+10]
+	mov	ecx, DWORD PTR bus$[rsp]
+	sub	ecx, eax
+	mov	eax, ecx
+	shl	eax, 20
+	cdqe
+	mov	rcx, QWORD PTR allocs$[rsp]
+	mov	rcx, QWORD PTR [rcx]
+	add	rcx, rax
+	mov	rax, rcx
+	mov	rcx, QWORD PTR device$[rsp]
+	shl	rcx, 15
+	or	rax, rcx
+	mov	ecx, DWORD PTR func$[rsp]
+	shl	ecx, 12
+	movsxd	rcx, ecx
+	or	rax, rcx
+	movsxd	rcx, DWORD PTR reg$[rsp]
+	or	rax, rcx
+	mov	QWORD PTR address$[rsp], rax
 $LN6@pci_expres:
 
-; 262  : 	}
-; 263  : 
-; 264  : 	size_t* address = (size_t*)device;
-
-	mov	rax, QWORD PTR device$[rsp]
-	mov	QWORD PTR address$[rsp], rax
-
-; 265  : 	
-; 266  : 	if (size == 1){
+; 297  : 
+; 298  : 
+; 299  : 	if (size == 1){
 
 	cmp	DWORD PTR size$[rsp], 1
 	jne	SHORT $LN5@pci_expres
 
-; 267  : 		*raw_offset<volatile uint8_t*>(device, reg) = val;
+; 300  : 		*raw_offset<volatile uint8_t*>(device, reg) = (uint8_t)val;
 
 	mov	edx, DWORD PTR reg$[rsp]
 	mov	rcx, QWORD PTR device$[rsp]
@@ -808,12 +659,12 @@ $LN6@pci_expres:
 	jmp	SHORT $LN4@pci_expres
 $LN5@pci_expres:
 
-; 268  : 	}else if (size == 2) {
+; 301  : 	}else if (size == 2) {
 
 	cmp	DWORD PTR size$[rsp], 2
 	jne	SHORT $LN3@pci_expres
 
-; 269  : 		*raw_offset<volatile uint16_t*>(device, reg) = val;
+; 302  : 		*raw_offset<volatile uint16_t*>(device, reg) = (uint16_t)val;
 
 	mov	edx, DWORD PTR reg$[rsp]
 	mov	rcx, QWORD PTR device$[rsp]
@@ -823,27 +674,27 @@ $LN5@pci_expres:
 	jmp	SHORT $LN2@pci_expres
 $LN3@pci_expres:
 
-; 270  : 	}else if (size == 4) {
+; 303  : 	}else if (size == 4) {
 
 	cmp	DWORD PTR size$[rsp], 4
 	jne	SHORT $LN1@pci_expres
 
-; 271  : 		*raw_offset<volatile uint64_t*>(device, reg) = val;
+; 304  : 		*raw_offset<volatile uint32_t*>(device, reg) = val;
 
 	mov	edx, DWORD PTR reg$[rsp]
 	mov	rcx, QWORD PTR device$[rsp]
-	call	??$raw_offset@PEC_K_K@@YAPEC_K_KH@Z	; raw_offset<unsigned __int64 volatile * __ptr64,unsigned __int64>
-	mov	rcx, QWORD PTR val$[rsp]
-	mov	QWORD PTR [rax], rcx
+	call	??$raw_offset@PECI_K@@YAPECI_KH@Z	; raw_offset<unsigned int volatile * __ptr64,unsigned __int64>
+	mov	ecx, DWORD PTR val$[rsp]
+	mov	DWORD PTR [rax], ecx
 $LN1@pci_expres:
 $LN2@pci_expres:
 $LN4@pci_expres:
-$LN7@pci_expres:
+$LN8@pci_expres:
 
-; 272  : 	}
-; 273  : }
+; 305  : 	}
+; 306  : }
 
-	add	rsp, 56					; 00000038H
+	add	rsp, 72					; 00000048H
 	ret	0
 pci_express_write2 ENDP
 _TEXT	ENDS
@@ -851,339 +702,399 @@ _TEXT	ENDS
 ; File e:\xeneva project\xeneva\aurora\aurora\drivers\pcie.cpp
 _TEXT	SEGMENT
 size$ = 32
-tv70 = 36
-address$ = 40
-device$ = 64
-reg$ = 72
-val$ = 80
+tv89 = 36
+allocs$ = 40
+address$ = 48
+mcfg$ = 56
+device$ = 80
+reg$ = 88
+val$ = 96
+bus$ = 104
+dev$ = 112
+func$ = 120
 pci_express_write PROC
 
-; 173  : void pci_express_write (uint64_t device, int reg, uint32_t val) {
+; 191  : void pci_express_write (uint64_t device, int reg, uint32_t val, int bus,int dev, int func) {
 
-$LN35:
+$LN37:
+	mov	DWORD PTR [rsp+32], r9d
 	mov	DWORD PTR [rsp+24], r8d
 	mov	DWORD PTR [rsp+16], edx
 	mov	QWORD PTR [rsp+8], rcx
-	sub	rsp, 56					; 00000038H
+	sub	rsp, 72					; 00000048H
 
-; 174  : 	if(acpi_pcie_supported() == false) {
+; 192  : 	if(acpi_pcie_supported() == false) {
 
 	call	?acpi_pcie_supported@@YA_NXZ		; acpi_pcie_supported
 	movzx	eax, al
 	test	eax, eax
+	jne	SHORT $LN32@pci_expres
+
+; 193  : 		return; //pci_write(device,reg, val);
+
+	jmp	$LN33@pci_expres
+$LN32@pci_expres:
+
+; 194  : 	}
+; 195  : 	
+; 196  : 	size_t address = 0;
+
+	mov	QWORD PTR address$[rsp], 0
+
+; 197  : 
+; 198  : 	acpiMcfg *mcfg = acpi_get_mcfg();
+
+	call	?acpi_get_mcfg@@YAPEAUacpiMcfg@@XZ	; acpi_get_mcfg
+	mov	QWORD PTR mcfg$[rsp], rax
+
+; 199  : 	acpiMcfgAlloc *allocs = mem_after<acpiMcfgAlloc*>(mcfg);
+
+	mov	rcx, QWORD PTR mcfg$[rsp]
+	call	??$mem_after@PEAUacpiMcfgAlloc@@UacpiMcfg@@@@YAPEAUacpiMcfgAlloc@@PEAUacpiMcfg@@@Z ; mem_after<acpiMcfgAlloc * __ptr64,acpiMcfg>
+	mov	QWORD PTR allocs$[rsp], rax
+
+; 200  : 	if (allocs->startBusNum <= bus && bus <= allocs->endBusNum) 
+
+	mov	rax, QWORD PTR allocs$[rsp]
+	movzx	eax, BYTE PTR [rax+10]
+	cmp	eax, DWORD PTR bus$[rsp]
+	jg	SHORT $LN31@pci_expres
+	mov	rax, QWORD PTR allocs$[rsp]
+	movzx	eax, BYTE PTR [rax+11]
+	cmp	DWORD PTR bus$[rsp], eax
+	jg	SHORT $LN31@pci_expres
+
+; 201  : 		address = allocs->baseAddress + ((bus - allocs->startBusNum) << 20) | (device << 15) | (func << 12);
+
+	mov	rax, QWORD PTR allocs$[rsp]
+	movzx	eax, BYTE PTR [rax+10]
+	mov	ecx, DWORD PTR bus$[rsp]
+	sub	ecx, eax
+	mov	eax, ecx
+	shl	eax, 20
+	cdqe
+	mov	rcx, QWORD PTR allocs$[rsp]
+	mov	rcx, QWORD PTR [rcx]
+	add	rcx, rax
+	mov	rax, rcx
+	mov	rcx, QWORD PTR device$[rsp]
+	shl	rcx, 15
+	or	rax, rcx
+	mov	ecx, DWORD PTR func$[rsp]
+	shl	ecx, 12
+	movsxd	rcx, ecx
+	or	rax, rcx
+	mov	QWORD PTR address$[rsp], rax
+$LN31@pci_expres:
+
+; 202  : 	
+; 203  : 
+; 204  : 	if (address == 0)
+
+	cmp	QWORD PTR address$[rsp], 0
 	jne	SHORT $LN30@pci_expres
 
-; 175  : 		return pci_write(device,reg, val);
+; 205  : 		return;
 
-	mov	r8d, DWORD PTR val$[rsp]
-	mov	edx, DWORD PTR reg$[rsp]
-	mov	ecx, DWORD PTR device$[rsp]
-	call	pci_write
-	jmp	$LN31@pci_expres
+	jmp	$LN33@pci_expres
 $LN30@pci_expres:
 
-; 176  : 	}
-; 177  : 
-; 178  : 	size_t* address = (size_t*)device;
-
-	mov	rax, QWORD PTR device$[rsp]
-	mov	QWORD PTR address$[rsp], rax
-
-; 179  : 	reg = reg;
+; 206  : 	
+; 207  : 	reg = reg;
 
 	mov	eax, DWORD PTR reg$[rsp]
 	mov	DWORD PTR reg$[rsp], eax
 
-; 180  : 	int size = 0;
+; 208  : 	int size = 0;
 
 	mov	DWORD PTR size$[rsp], 0
 
-; 181  : 	switch(reg) {
+; 209  : 	switch(reg) {
 
 	mov	eax, DWORD PTR reg$[rsp]
-	mov	DWORD PTR tv70[rsp], eax
-	cmp	DWORD PTR tv70[rsp], 61			; 0000003dH
+	mov	DWORD PTR tv89[rsp], eax
+	cmp	DWORD PTR tv89[rsp], 61			; 0000003dH
 	ja	$LN6@pci_expres
-	movsxd	rax, DWORD PTR tv70[rsp]
+	movsxd	rax, DWORD PTR tv89[rsp]
 	lea	rcx, OFFSET FLAT:__ImageBase
-	movzx	eax, BYTE PTR $LN33@pci_expres[rcx+rax]
-	mov	eax, DWORD PTR $LN34@pci_expres[rcx+rax*4]
+	movzx	eax, BYTE PTR $LN35@pci_expres[rcx+rax]
+	mov	eax, DWORD PTR $LN36@pci_expres[rcx+rax*4]
 	add	rax, rcx
 	jmp	rax
 $LN27@pci_expres:
 
-; 182  : 	case PCI_VENDOR_ID:
-; 183  : 		size = 2;
+; 210  : 	case PCI_VENDOR_ID:
+; 211  : 		size = 2;
 
 	mov	DWORD PTR size$[rsp], 2
 
-; 184  : 		break;
+; 212  : 		break;
 
 	jmp	$LN28@pci_expres
 $LN26@pci_expres:
 
-; 185  : 	case PCI_DEVICE_ID:
-; 186  : 		size = 2;
+; 213  : 	case PCI_DEVICE_ID:
+; 214  : 		size = 2;
 
 	mov	DWORD PTR size$[rsp], 2
 
-; 187  : 		break;
+; 215  : 		break;
 
 	jmp	$LN28@pci_expres
 $LN25@pci_expres:
 
-; 188  : 	case PCI_COMMAND:
-; 189  : 		size = 2;
+; 216  : 	case PCI_COMMAND:
+; 217  : 		size = 2;
 
 	mov	DWORD PTR size$[rsp], 2
 
-; 190  : 		break;
+; 218  : 		break;
 
 	jmp	$LN28@pci_expres
 $LN24@pci_expres:
 
-; 191  : 	case PCI_STATUS:
-; 192  : 		size = 2;
+; 219  : 	case PCI_STATUS:
+; 220  : 		size = 2;
 
 	mov	DWORD PTR size$[rsp], 2
 
-; 193  : 		break;
+; 221  : 		break;
 
 	jmp	$LN28@pci_expres
 $LN23@pci_expres:
 
-; 194  : 	case PCI_REVISION_ID:
-; 195  : 		size = 1;
+; 222  : 	case PCI_REVISION_ID:
+; 223  : 		size = 1;
 
 	mov	DWORD PTR size$[rsp], 1
 
-; 196  : 		break;
+; 224  : 		break;
 
 	jmp	$LN28@pci_expres
 $LN22@pci_expres:
 
-; 197  : 	case PCI_PROG_IF:
-; 198  : 		size = 1;
+; 225  : 	case PCI_PROG_IF:
+; 226  : 		size = 1;
 
 	mov	DWORD PTR size$[rsp], 1
 
-; 199  : 		break;
+; 227  : 		break;
 
 	jmp	$LN28@pci_expres
 $LN21@pci_expres:
 
-; 200  : 	case PCI_SUBCLASS:
-; 201  : 		size = 1;
+; 228  : 	case PCI_SUBCLASS:
+; 229  : 		size = 1;
 
 	mov	DWORD PTR size$[rsp], 1
 
-; 202  : 		break;
+; 230  : 		break;
 
 	jmp	$LN28@pci_expres
 $LN20@pci_expres:
 
-; 203  : 	case PCI_CLASS:
-; 204  : 		size = 1;
+; 231  : 	case PCI_CLASS:
+; 232  : 		size = 1;
 
 	mov	DWORD PTR size$[rsp], 1
 
-; 205  : 		break;
+; 233  : 		break;
 
 	jmp	$LN28@pci_expres
 $LN19@pci_expres:
 
-; 206  : 	case PCI_CACHE_LINE_SIZE:
-; 207  : 		size = 1;
+; 234  : 	case PCI_CACHE_LINE_SIZE:
+; 235  : 		size = 1;
 
 	mov	DWORD PTR size$[rsp], 1
 
-; 208  : 		break;
+; 236  : 		break;
 
 	jmp	$LN28@pci_expres
 $LN18@pci_expres:
 
-; 209  : 	case PCI_LATENCY_TIMER:
-; 210  : 		size = 1;
+; 237  : 	case PCI_LATENCY_TIMER:
+; 238  : 		size = 1;
 
 	mov	DWORD PTR size$[rsp], 1
 
-; 211  : 		break;
+; 239  : 		break;
 
 	jmp	SHORT $LN28@pci_expres
 $LN17@pci_expres:
 
-; 212  : 	case PCI_HEADER_TYPE:
-; 213  : 		size = 1;
+; 240  : 	case PCI_HEADER_TYPE:
+; 241  : 		size = 1;
 
 	mov	DWORD PTR size$[rsp], 1
 
-; 214  : 		break;
+; 242  : 		break;
 
 	jmp	SHORT $LN28@pci_expres
 $LN16@pci_expres:
 
-; 215  : 	case PCI_BIST:
-; 216  : 		size = 1;
+; 243  : 	case PCI_BIST:
+; 244  : 		size = 1;
 
 	mov	DWORD PTR size$[rsp], 1
 
-; 217  : 		break;
+; 245  : 		break;
 
 	jmp	SHORT $LN28@pci_expres
 $LN15@pci_expres:
 
-; 218  : 	case PCI_BAR0:
-; 219  : 		size = 4;
+; 246  : 	case PCI_BAR0:
+; 247  : 		size = 4;
 
 	mov	DWORD PTR size$[rsp], 4
 
-; 220  : 		break;
+; 248  : 		break;
 
 	jmp	SHORT $LN28@pci_expres
 $LN14@pci_expres:
 
-; 221  : 	case PCI_BAR1:
-; 222  : 		size = 4;
+; 249  : 	case PCI_BAR1:
+; 250  : 		size = 4;
 
 	mov	DWORD PTR size$[rsp], 4
 
-; 223  : 		break;
+; 251  : 		break;
 
 	jmp	SHORT $LN28@pci_expres
 $LN13@pci_expres:
 
-; 224  : 	case PCI_BAR2:
-; 225  : 		size = 4;
+; 252  : 	case PCI_BAR2:
+; 253  : 		size = 4;
 
 	mov	DWORD PTR size$[rsp], 4
 
-; 226  : 		break;
+; 254  : 		break;
 
 	jmp	SHORT $LN28@pci_expres
 $LN12@pci_expres:
 
-; 227  : 	case PCI_BAR3:
-; 228  : 		size = 4;
+; 255  : 	case PCI_BAR3:
+; 256  : 		size = 4;
 
 	mov	DWORD PTR size$[rsp], 4
 
-; 229  : 		break;
+; 257  : 		break;
 
 	jmp	SHORT $LN28@pci_expres
 $LN11@pci_expres:
 
-; 230  : 	case PCI_BAR4:
-; 231  : 		size = 4;
+; 258  : 	case PCI_BAR4:
+; 259  : 		size = 4;
 
 	mov	DWORD PTR size$[rsp], 4
 
-; 232  : 		break;
+; 260  : 		break;
 
 	jmp	SHORT $LN28@pci_expres
 $LN10@pci_expres:
 
-; 233  : 	case PCI_BAR5:
-; 234  : 		size = 4;
+; 261  : 	case PCI_BAR5:
+; 262  : 		size = 4;
 
 	mov	DWORD PTR size$[rsp], 4
 
-; 235  : 		break;
+; 263  : 		break;
 
 	jmp	SHORT $LN28@pci_expres
 $LN9@pci_expres:
 
-; 236  : 	case PCI_CAPABILITIES_PTR:
-; 237  : 		size = 1;
+; 264  : 	case PCI_CAPABILITIES_PTR:
+; 265  : 		size = 1;
 
 	mov	DWORD PTR size$[rsp], 1
 
-; 238  : 		break;
+; 266  : 		break;
 
 	jmp	SHORT $LN28@pci_expres
 $LN8@pci_expres:
 
-; 239  : 	case PCI_INTERRUPT_LINE:
-; 240  : 		size = 1;
+; 267  : 	case PCI_INTERRUPT_LINE:
+; 268  : 		size = 1;
 
 	mov	DWORD PTR size$[rsp], 1
 
-; 241  : 		break;
+; 269  : 		break;
 
 	jmp	SHORT $LN28@pci_expres
 $LN7@pci_expres:
 
-; 242  : 	case PCI_INTERRUPT_PIN:
-; 243  : 		size = 1;
+; 270  : 	case PCI_INTERRUPT_PIN:
+; 271  : 		size = 1;
 
 	mov	DWORD PTR size$[rsp], 1
 
-; 244  : 		break;
+; 272  : 		break;
 
 	jmp	SHORT $LN28@pci_expres
 $LN6@pci_expres:
 
-; 245  : 	default:
-; 246  : 		size = 4;
+; 273  : 	default:
+; 274  : 		size = 4;
 
 	mov	DWORD PTR size$[rsp], 4
 $LN28@pci_expres:
 
-; 247  : 		break;
-; 248  : 	}
-; 249  : 
-; 250  : 	if (size == 1){
+; 275  : 		break;
+; 276  : 	}
+; 277  : 
+; 278  : 	if (size == 1){
 
 	cmp	DWORD PTR size$[rsp], 1
 	jne	SHORT $LN5@pci_expres
 
-; 251  : 		*raw_offset<volatile uint8_t*>(address, reg) = val;
+; 279  : 		*raw_offset<volatile uint8_t*>(device, reg) = (uint8_t)val;
 
 	mov	edx, DWORD PTR reg$[rsp]
-	mov	rcx, QWORD PTR address$[rsp]
-	call	??$raw_offset@PECEPEA_K@@YAPECEPEA_KH@Z	; raw_offset<unsigned char volatile * __ptr64,unsigned __int64 * __ptr64>
+	mov	rcx, QWORD PTR device$[rsp]
+	call	??$raw_offset@PECE_K@@YAPECE_KH@Z	; raw_offset<unsigned char volatile * __ptr64,unsigned __int64>
 	movzx	ecx, BYTE PTR val$[rsp]
 	mov	BYTE PTR [rax], cl
 	jmp	SHORT $LN4@pci_expres
 $LN5@pci_expres:
 
-; 252  : 	}else if (size == 2) {
+; 280  : 	}else if (size == 2) {
 
 	cmp	DWORD PTR size$[rsp], 2
 	jne	SHORT $LN3@pci_expres
 
-; 253  : 		*raw_offset<volatile uint16_t*>(address, reg) = val;
+; 281  : 		*raw_offset<volatile uint16_t*>(device, reg) = (uint16_t)val;
 
 	mov	edx, DWORD PTR reg$[rsp]
-	mov	rcx, QWORD PTR address$[rsp]
-	call	??$raw_offset@PECGPEA_K@@YAPECGPEA_KH@Z	; raw_offset<unsigned short volatile * __ptr64,unsigned __int64 * __ptr64>
+	mov	rcx, QWORD PTR device$[rsp]
+	call	??$raw_offset@PECG_K@@YAPECG_KH@Z	; raw_offset<unsigned short volatile * __ptr64,unsigned __int64>
 	movzx	ecx, WORD PTR val$[rsp]
 	mov	WORD PTR [rax], cx
 	jmp	SHORT $LN2@pci_expres
 $LN3@pci_expres:
 
-; 254  : 	}else if (size == 4) {
+; 282  : 	}else if (size == 4) {
 
 	cmp	DWORD PTR size$[rsp], 4
 	jne	SHORT $LN1@pci_expres
 
-; 255  : 		*raw_offset<volatile uint32_t*>(address, reg) = val;
+; 283  : 		*raw_offset<volatile uint32_t*>(device, reg) = (uint32_t)val;
 
 	mov	edx, DWORD PTR reg$[rsp]
-	mov	rcx, QWORD PTR address$[rsp]
-	call	??$raw_offset@PECIPEA_K@@YAPECIPEA_KH@Z	; raw_offset<unsigned int volatile * __ptr64,unsigned __int64 * __ptr64>
+	mov	rcx, QWORD PTR device$[rsp]
+	call	??$raw_offset@PECI_K@@YAPECI_KH@Z	; raw_offset<unsigned int volatile * __ptr64,unsigned __int64>
 	mov	ecx, DWORD PTR val$[rsp]
 	mov	DWORD PTR [rax], ecx
 $LN1@pci_expres:
 $LN2@pci_expres:
 $LN4@pci_expres:
-$LN31@pci_expres:
+$LN33@pci_expres:
 
-; 256  : 	}
-; 257  : }
+; 284  : 	}
+; 285  : }
 
-	add	rsp, 56					; 00000038H
+	add	rsp, 72					; 00000048H
 	ret	0
-$LN34@pci_expres:
+$LN36@pci_expres:
 	DD	$LN27@pci_expres
 	DD	$LN26@pci_expres
 	DD	$LN25@pci_expres
@@ -1206,7 +1117,7 @@ $LN34@pci_expres:
 	DD	$LN8@pci_expres
 	DD	$LN7@pci_expres
 	DD	$LN6@pci_expres
-$LN33@pci_expres:
+$LN35@pci_expres:
 	DB	0
 	DB	21
 	DB	1
@@ -1275,54 +1186,114 @@ _TEXT	ENDS
 ; File e:\xeneva project\xeneva\aurora\aurora\drivers\pcie.cpp
 _TEXT	SEGMENT
 result$ = 32
-address$ = 40
-device$ = 64
-reg$ = 72
-size$ = 80
+allocs$ = 40
+address$ = 48
+mcfg$ = 56
+device$ = 80
+reg$ = 88
+size$ = 96
+bus$ = 104
+dev$ = 112
+func$ = 120
 pci_express_read2 PROC
 
-; 150  : uint64_t pci_express_read2 (uint64_t device, int reg, int size) {
+; 159  : uint64_t pci_express_read2 (uint64_t device, int reg, int size, int bus, int dev, int func) {
 
-$LN9:
+$LN11:
+	mov	DWORD PTR [rsp+32], r9d
 	mov	DWORD PTR [rsp+24], r8d
 	mov	DWORD PTR [rsp+16], edx
 	mov	QWORD PTR [rsp+8], rcx
-	sub	rsp, 56					; 00000038H
+	sub	rsp, 72					; 00000048H
 
-; 151  : 	if(acpi_pcie_supported() == false) {
+; 160  : 	if(acpi_pcie_supported() == false) {
 
 	call	?acpi_pcie_supported@@YA_NXZ		; acpi_pcie_supported
 	movzx	eax, al
 	test	eax, eax
+	jne	SHORT $LN8@pci_expres
+
+; 161  : 		return 0;
+
+	xor	eax, eax
+	jmp	$LN9@pci_expres
+$LN8@pci_expres:
+
+; 162  : 	}
+; 163  : 
+; 164  : 	size_t address = 0;
+
+	mov	QWORD PTR address$[rsp], 0
+
+; 165  : 	acpiMcfg *mcfg = acpi_get_mcfg();
+
+	call	?acpi_get_mcfg@@YAPEAUacpiMcfg@@XZ	; acpi_get_mcfg
+	mov	QWORD PTR mcfg$[rsp], rax
+
+; 166  : 	acpiMcfgAlloc *allocs = mem_after<acpiMcfgAlloc*>(mcfg);
+
+	mov	rcx, QWORD PTR mcfg$[rsp]
+	call	??$mem_after@PEAUacpiMcfgAlloc@@UacpiMcfg@@@@YAPEAUacpiMcfgAlloc@@PEAUacpiMcfg@@@Z ; mem_after<acpiMcfgAlloc * __ptr64,acpiMcfg>
+	mov	QWORD PTR allocs$[rsp], rax
+
+; 167  : 	if (allocs->startBusNum <= bus && bus <= allocs->endBusNum) 
+
+	mov	rax, QWORD PTR allocs$[rsp]
+	movzx	eax, BYTE PTR [rax+10]
+	cmp	eax, DWORD PTR bus$[rsp]
+	jg	SHORT $LN7@pci_expres
+	mov	rax, QWORD PTR allocs$[rsp]
+	movzx	eax, BYTE PTR [rax+11]
+	cmp	DWORD PTR bus$[rsp], eax
+	jg	SHORT $LN7@pci_expres
+
+; 168  : 		address = allocs->baseAddress + ((bus - allocs->startBusNum) << 20) | (device << 15) | (func << 12);
+
+	mov	rax, QWORD PTR allocs$[rsp]
+	movzx	eax, BYTE PTR [rax+10]
+	mov	ecx, DWORD PTR bus$[rsp]
+	sub	ecx, eax
+	mov	eax, ecx
+	shl	eax, 20
+	cdqe
+	mov	rcx, QWORD PTR allocs$[rsp]
+	mov	rcx, QWORD PTR [rcx]
+	add	rcx, rax
+	mov	rax, rcx
+	mov	rcx, QWORD PTR device$[rsp]
+	shl	rcx, 15
+	or	rax, rcx
+	mov	ecx, DWORD PTR func$[rsp]
+	shl	ecx, 12
+	movsxd	rcx, ecx
+	or	rax, rcx
+	mov	QWORD PTR address$[rsp], rax
+$LN7@pci_expres:
+
+; 169  : 
+; 170  : 	if (address == 0)
+
+	cmp	QWORD PTR address$[rsp], 0
 	jne	SHORT $LN6@pci_expres
 
-; 152  : 		return pci_read(device,reg);
+; 171  : 		return 0;
 
-	mov	edx, DWORD PTR reg$[rsp]
-	mov	ecx, DWORD PTR device$[rsp]
-	call	pci_read
-	mov	eax, eax
-	jmp	$LN7@pci_expres
+	xor	eax, eax
+	jmp	$LN9@pci_expres
 $LN6@pci_expres:
 
-; 153  : 	}
-; 154  : 
-; 155  : 	size_t* address = (size_t*)device;
-
-	mov	rax, QWORD PTR device$[rsp]
-	mov	QWORD PTR address$[rsp], rax
-
-; 156  : 	uint64_t result = 0;
+; 172  : 
+; 173  : 	uint64_t result = 0;
 
 	mov	QWORD PTR result$[rsp], 0
 
-; 157  : 
-; 158  : 	if (size == 1){
+; 174  : 
+; 175  : 	if (size == 1){
 
 	cmp	DWORD PTR size$[rsp], 1
 	jne	SHORT $LN5@pci_expres
 
-; 159  : 		result = *raw_offset<volatile uint8_t*>(device, reg);
+; 176  : 		result = *raw_offset<volatile uint8_t*>(device,reg);
 
 	mov	edx, DWORD PTR reg$[rsp]
 	mov	rcx, QWORD PTR device$[rsp]
@@ -1331,19 +1302,19 @@ $LN6@pci_expres:
 	movzx	eax, al
 	mov	QWORD PTR result$[rsp], rax
 
-; 160  : 		return result;
+; 177  : 		return result;
 
 	mov	rax, QWORD PTR result$[rsp]
-	jmp	SHORT $LN7@pci_expres
+	jmp	SHORT $LN9@pci_expres
 	jmp	SHORT $LN4@pci_expres
 $LN5@pci_expres:
 
-; 161  : 	}else if (size == 2) {
+; 178  : 	}else if (size == 2) {
 
 	cmp	DWORD PTR size$[rsp], 2
 	jne	SHORT $LN3@pci_expres
 
-; 162  : 		result = *raw_offset<volatile uint16_t*>(device, reg);
+; 179  : 		result = *raw_offset<volatile uint16_t*>(device, reg);
 
 	mov	edx, DWORD PTR reg$[rsp]
 	mov	rcx, QWORD PTR device$[rsp]
@@ -1352,19 +1323,19 @@ $LN5@pci_expres:
 	movzx	eax, ax
 	mov	QWORD PTR result$[rsp], rax
 
-; 163  : 		return result;
+; 180  : 		return result;
 
 	mov	rax, QWORD PTR result$[rsp]
-	jmp	SHORT $LN7@pci_expres
+	jmp	SHORT $LN9@pci_expres
 	jmp	SHORT $LN2@pci_expres
 $LN3@pci_expres:
 
-; 164  : 	}else if (size == 4) {
+; 181  : 	}else if (size == 4) {
 
 	cmp	DWORD PTR size$[rsp], 4
 	jne	SHORT $LN1@pci_expres
 
-; 165  : 		result = *raw_offset<volatile uint32_t*>(device, reg);
+; 182  : 		result = *raw_offset<volatile uint32_t*>(device,reg);
 
 	mov	edx, DWORD PTR reg$[rsp]
 	mov	rcx, QWORD PTR device$[rsp]
@@ -1373,24 +1344,25 @@ $LN3@pci_expres:
 	mov	eax, eax
 	mov	QWORD PTR result$[rsp], rax
 
-; 166  : 		return result;
+; 183  : 		return result;
 
 	mov	rax, QWORD PTR result$[rsp]
-	jmp	SHORT $LN7@pci_expres
+	jmp	SHORT $LN9@pci_expres
 $LN1@pci_expres:
 $LN2@pci_expres:
 $LN4@pci_expres:
 
-; 167  : 	}
-; 168  : 
-; 169  : 	return UINT64_MAX;
+; 184  : 	}
+; 185  : 	
+; 186  : 
+; 187  : 	return UINT64_MAX;
 
 	mov	rax, -1
-$LN7@pci_expres:
+$LN9@pci_expres:
 
-; 170  : }
+; 188  : }
 
-	add	rsp, 56					; 00000038H
+	add	rsp, 72					; 00000048H
 	ret	0
 pci_express_read2 ENDP
 _TEXT	ENDS
@@ -1398,97 +1370,117 @@ _TEXT	ENDS
 ; File e:\xeneva project\xeneva\aurora\aurora\drivers\pcie.cpp
 _TEXT	SEGMENT
 size$ = 32
-tv71 = 36
-result$ = 40
-address$ = 48
-device$ = 80
-reg$ = 88
+address$ = 36
+tv87 = 40
+result$ = 48
+allocs$ = 56
+mcfg$ = 64
+device$ = 96
+reg$ = 104
+bus$ = 112
+dev$ = 120
+func$ = 128
 pci_express_read PROC
 
-; 58   : uint64_t pci_express_read (uint64_t device, int reg) {
+; 59   : uint32_t pci_express_read (uint64_t device, int reg, int bus,int dev,int func) {
 
-$LN35:
+$LN36:
+	mov	DWORD PTR [rsp+32], r9d
+	mov	DWORD PTR [rsp+24], r8d
 	mov	DWORD PTR [rsp+16], edx
 	mov	QWORD PTR [rsp+8], rcx
-	sub	rsp, 72					; 00000048H
+	sub	rsp, 88					; 00000058H
 
-; 59   : 	if(acpi_pcie_supported() == false) {
+; 60   : 	/*if(acpi_pcie_supported() == false) {
+; 61   : 		return pci_read(device,reg);
+; 62   : 	}*/
+; 63   : 	uint32_t address = 0;
 
-	call	?acpi_pcie_supported@@YA_NXZ		; acpi_pcie_supported
-	movzx	eax, al
-	test	eax, eax
-	jne	SHORT $LN30@pci_expres
+	mov	DWORD PTR address$[rsp], 0
 
-; 60   : 		return pci_read(device,reg);
+; 64   : 	acpiMcfg *mcfg = acpi_get_mcfg();
 
-	mov	edx, DWORD PTR reg$[rsp]
-	mov	ecx, DWORD PTR device$[rsp]
-	call	pci_read
-	mov	eax, eax
-	jmp	$LN31@pci_expres
-$LN30@pci_expres:
+	call	?acpi_get_mcfg@@YAPEAUacpiMcfg@@XZ	; acpi_get_mcfg
+	mov	QWORD PTR mcfg$[rsp], rax
 
-; 61   : 	}
-; 62   : 
-; 63   : 	size_t* address = (size_t*)device;
+; 65   : 	acpiMcfgAlloc *allocs = mem_after<acpiMcfgAlloc*>(mcfg);
 
-	mov	rax, QWORD PTR device$[rsp]
-	mov	QWORD PTR address$[rsp], rax
+	mov	rcx, QWORD PTR mcfg$[rsp]
+	call	??$mem_after@PEAUacpiMcfgAlloc@@UacpiMcfg@@@@YAPEAUacpiMcfgAlloc@@PEAUacpiMcfg@@@Z ; mem_after<acpiMcfgAlloc * __ptr64,acpiMcfg>
+	mov	QWORD PTR allocs$[rsp], rax
 
-; 64   : 	uint64_t result = 0;
+; 66   : 	if (allocs->startBusNum <= bus && bus <= allocs->endBusNum) {
+
+	mov	rax, QWORD PTR allocs$[rsp]
+	movzx	eax, BYTE PTR [rax+10]
+	cmp	eax, DWORD PTR bus$[rsp]
+	jg	SHORT $LN31@pci_expres
+	mov	rax, QWORD PTR allocs$[rsp]
+	movzx	eax, BYTE PTR [rax+11]
+	cmp	DWORD PTR bus$[rsp], eax
+	jg	SHORT $LN31@pci_expres
+
+; 67   : 		address = allocs->baseAddress + ((bus - allocs->startBusNum) << 20) | (device << 15) | (func << 12);
+
+	mov	rax, QWORD PTR allocs$[rsp]
+	movzx	eax, BYTE PTR [rax+10]
+	mov	ecx, DWORD PTR bus$[rsp]
+	sub	ecx, eax
+	mov	eax, ecx
+	shl	eax, 20
+	cdqe
+	mov	rcx, QWORD PTR allocs$[rsp]
+	mov	rcx, QWORD PTR [rcx]
+	add	rcx, rax
+	mov	rax, rcx
+	mov	rcx, QWORD PTR device$[rsp]
+	shl	rcx, 15
+	or	rax, rcx
+	mov	ecx, DWORD PTR func$[rsp]
+	shl	ecx, 12
+	movsxd	rcx, ecx
+	or	rax, rcx
+	mov	DWORD PTR address$[rsp], eax
+$LN31@pci_expres:
+
+; 68   : 	}
+; 69   : 
+; 70   : 	uint64_t result = 0;
 
 	mov	QWORD PTR result$[rsp], 0
 
-; 65   : 
-; 66   : 	int size = 0;
+; 71   : 	if (address == 0)
+
+	cmp	DWORD PTR address$[rsp], 0
+	jne	SHORT $LN30@pci_expres
+
+; 72   : 		return 0;
+
+	xor	eax, eax
+	jmp	$LN32@pci_expres
+$LN30@pci_expres:
+
+; 73   : 
+; 74   : 
+; 75   : 	int size = 0;
 
 	mov	DWORD PTR size$[rsp], 0
 
-; 67   : 	switch(reg) {
+; 76   : 	switch(reg) {
 
 	mov	eax, DWORD PTR reg$[rsp]
-	mov	DWORD PTR tv71[rsp], eax
-	cmp	DWORD PTR tv71[rsp], 61			; 0000003dH
+	mov	DWORD PTR tv87[rsp], eax
+	cmp	DWORD PTR tv87[rsp], 61			; 0000003dH
 	ja	$LN6@pci_expres
-	movsxd	rax, DWORD PTR tv71[rsp]
+	movsxd	rax, DWORD PTR tv87[rsp]
 	lea	rcx, OFFSET FLAT:__ImageBase
-	movzx	eax, BYTE PTR $LN33@pci_expres[rcx+rax]
-	mov	eax, DWORD PTR $LN34@pci_expres[rcx+rax*4]
+	movzx	eax, BYTE PTR $LN34@pci_expres[rcx+rax]
+	mov	eax, DWORD PTR $LN35@pci_expres[rcx+rax*4]
 	add	rax, rcx
 	jmp	rax
 $LN27@pci_expres:
 
-; 68   : 	case PCI_VENDOR_ID:
-; 69   : 		size = 2;
-
-	mov	DWORD PTR size$[rsp], 2
-
-; 70   : 		break;
-
-	jmp	$LN28@pci_expres
-$LN26@pci_expres:
-
-; 71   : 	case PCI_DEVICE_ID:
-; 72   : 		size = 2;
-
-	mov	DWORD PTR size$[rsp], 2
-
-; 73   : 		break;
-
-	jmp	$LN28@pci_expres
-$LN25@pci_expres:
-
-; 74   : 	case PCI_COMMAND:
-; 75   : 		size = 2;
-
-	mov	DWORD PTR size$[rsp], 2
-
-; 76   : 		break;
-
-	jmp	$LN28@pci_expres
-$LN24@pci_expres:
-
-; 77   : 	case PCI_STATUS:
+; 77   : 	case PCI_VENDOR_ID:
 ; 78   : 		size = 2;
 
 	mov	DWORD PTR size$[rsp], 2
@@ -1496,39 +1488,39 @@ $LN24@pci_expres:
 ; 79   : 		break;
 
 	jmp	$LN28@pci_expres
-$LN23@pci_expres:
+$LN26@pci_expres:
 
-; 80   : 	case PCI_REVISION_ID:
-; 81   : 		size = 1;
+; 80   : 	case PCI_DEVICE_ID:
+; 81   : 		size = 2;
 
-	mov	DWORD PTR size$[rsp], 1
+	mov	DWORD PTR size$[rsp], 2
 
 ; 82   : 		break;
 
 	jmp	$LN28@pci_expres
-$LN22@pci_expres:
+$LN25@pci_expres:
 
-; 83   : 	case PCI_PROG_IF:
-; 84   : 		size = 1;
+; 83   : 	case PCI_COMMAND:
+; 84   : 		size = 2;
 
-	mov	DWORD PTR size$[rsp], 1
+	mov	DWORD PTR size$[rsp], 2
 
 ; 85   : 		break;
 
 	jmp	$LN28@pci_expres
-$LN21@pci_expres:
+$LN24@pci_expres:
 
-; 86   : 	case PCI_SUBCLASS:
-; 87   : 		size = 1;
+; 86   : 	case PCI_STATUS:
+; 87   : 		size = 2;
 
-	mov	DWORD PTR size$[rsp], 1
+	mov	DWORD PTR size$[rsp], 2
 
 ; 88   : 		break;
 
 	jmp	$LN28@pci_expres
-$LN20@pci_expres:
+$LN23@pci_expres:
 
-; 89   : 	case PCI_CLASS:
+; 89   : 	case PCI_REVISION_ID:
 ; 90   : 		size = 1;
 
 	mov	DWORD PTR size$[rsp], 1
@@ -1536,9 +1528,9 @@ $LN20@pci_expres:
 ; 91   : 		break;
 
 	jmp	$LN28@pci_expres
-$LN19@pci_expres:
+$LN22@pci_expres:
 
-; 92   : 	case PCI_CACHE_LINE_SIZE:
+; 92   : 	case PCI_PROG_IF:
 ; 93   : 		size = 1;
 
 	mov	DWORD PTR size$[rsp], 1
@@ -1546,69 +1538,69 @@ $LN19@pci_expres:
 ; 94   : 		break;
 
 	jmp	$LN28@pci_expres
-$LN18@pci_expres:
+$LN21@pci_expres:
 
-; 95   : 	case PCI_LATENCY_TIMER:
+; 95   : 	case PCI_SUBCLASS:
 ; 96   : 		size = 1;
 
 	mov	DWORD PTR size$[rsp], 1
 
 ; 97   : 		break;
 
-	jmp	SHORT $LN28@pci_expres
-$LN17@pci_expres:
+	jmp	$LN28@pci_expres
+$LN20@pci_expres:
 
-; 98   : 	case PCI_HEADER_TYPE:
+; 98   : 	case PCI_CLASS:
 ; 99   : 		size = 1;
 
 	mov	DWORD PTR size$[rsp], 1
 
 ; 100  : 		break;
 
-	jmp	SHORT $LN28@pci_expres
-$LN16@pci_expres:
+	jmp	$LN28@pci_expres
+$LN19@pci_expres:
 
-; 101  : 	case PCI_BIST:
+; 101  : 	case PCI_CACHE_LINE_SIZE:
 ; 102  : 		size = 1;
 
 	mov	DWORD PTR size$[rsp], 1
 
 ; 103  : 		break;
 
-	jmp	SHORT $LN28@pci_expres
-$LN15@pci_expres:
+	jmp	$LN28@pci_expres
+$LN18@pci_expres:
 
-; 104  : 	case PCI_BAR0:
-; 105  : 		size = 4;
+; 104  : 	case PCI_LATENCY_TIMER:
+; 105  : 		size = 1;
 
-	mov	DWORD PTR size$[rsp], 4
+	mov	DWORD PTR size$[rsp], 1
 
 ; 106  : 		break;
 
 	jmp	SHORT $LN28@pci_expres
-$LN14@pci_expres:
+$LN17@pci_expres:
 
-; 107  : 	case PCI_BAR1:
-; 108  : 		size = 4;
+; 107  : 	case PCI_HEADER_TYPE:
+; 108  : 		size = 1;
 
-	mov	DWORD PTR size$[rsp], 4
+	mov	DWORD PTR size$[rsp], 1
 
 ; 109  : 		break;
 
 	jmp	SHORT $LN28@pci_expres
-$LN13@pci_expres:
+$LN16@pci_expres:
 
-; 110  : 	case PCI_BAR2:
-; 111  : 		size = 4;
+; 110  : 	case PCI_BIST:
+; 111  : 		size = 1;
 
-	mov	DWORD PTR size$[rsp], 4
+	mov	DWORD PTR size$[rsp], 1
 
 ; 112  : 		break;
 
 	jmp	SHORT $LN28@pci_expres
-$LN12@pci_expres:
+$LN15@pci_expres:
 
-; 113  : 	case PCI_BAR3:
+; 113  : 	case PCI_BAR0:
 ; 114  : 		size = 4;
 
 	mov	DWORD PTR size$[rsp], 4
@@ -1616,9 +1608,9 @@ $LN12@pci_expres:
 ; 115  : 		break;
 
 	jmp	SHORT $LN28@pci_expres
-$LN11@pci_expres:
+$LN14@pci_expres:
 
-; 116  : 	case PCI_BAR4:
+; 116  : 	case PCI_BAR1:
 ; 117  : 		size = 4;
 
 	mov	DWORD PTR size$[rsp], 4
@@ -1626,9 +1618,9 @@ $LN11@pci_expres:
 ; 118  : 		break;
 
 	jmp	SHORT $LN28@pci_expres
-$LN10@pci_expres:
+$LN13@pci_expres:
 
-; 119  : 	case PCI_BAR5:
+; 119  : 	case PCI_BAR2:
 ; 120  : 		size = 4;
 
 	mov	DWORD PTR size$[rsp], 4
@@ -1636,124 +1628,154 @@ $LN10@pci_expres:
 ; 121  : 		break;
 
 	jmp	SHORT $LN28@pci_expres
-$LN9@pci_expres:
+$LN12@pci_expres:
 
-; 122  : 	case PCI_CAPABILITIES_PTR:
-; 123  : 		size = 1;
+; 122  : 	case PCI_BAR3:
+; 123  : 		size = 4;
 
-	mov	DWORD PTR size$[rsp], 1
+	mov	DWORD PTR size$[rsp], 4
 
 ; 124  : 		break;
 
 	jmp	SHORT $LN28@pci_expres
-$LN8@pci_expres:
+$LN11@pci_expres:
 
-; 125  : 	case PCI_INTERRUPT_LINE:
-; 126  : 		size = 1;
+; 125  : 	case PCI_BAR4:
+; 126  : 		size = 4;
 
-	mov	DWORD PTR size$[rsp], 1
+	mov	DWORD PTR size$[rsp], 4
 
 ; 127  : 		break;
 
 	jmp	SHORT $LN28@pci_expres
-$LN7@pci_expres:
+$LN10@pci_expres:
 
-; 128  : 	case PCI_INTERRUPT_PIN:
-; 129  : 		size = 1;
+; 128  : 	case PCI_BAR5:
+; 129  : 		size = 4;
 
-	mov	DWORD PTR size$[rsp], 1
+	mov	DWORD PTR size$[rsp], 4
 
 ; 130  : 		break;
 
 	jmp	SHORT $LN28@pci_expres
+$LN9@pci_expres:
+
+; 131  : 	case PCI_CAPABILITIES_PTR:
+; 132  : 		size = 1;
+
+	mov	DWORD PTR size$[rsp], 1
+
+; 133  : 		break;
+
+	jmp	SHORT $LN28@pci_expres
+$LN8@pci_expres:
+
+; 134  : 	case PCI_INTERRUPT_LINE:
+; 135  : 		size = 1;
+
+	mov	DWORD PTR size$[rsp], 1
+
+; 136  : 		break;
+
+	jmp	SHORT $LN28@pci_expres
+$LN7@pci_expres:
+
+; 137  : 	case PCI_INTERRUPT_PIN:
+; 138  : 		size = 1;
+
+	mov	DWORD PTR size$[rsp], 1
+
+; 139  : 		break;
+
+	jmp	SHORT $LN28@pci_expres
 $LN6@pci_expres:
 
-; 131  : 	default:
-; 132  : 		size = 1;
+; 140  : 	default:
+; 141  : 		size = 1;
 
 	mov	DWORD PTR size$[rsp], 1
 $LN28@pci_expres:
 
-; 133  : 		break;
-; 134  : 	}
-; 135  : 
-; 136  : 	if (size == 1){
+; 142  : 		break;
+; 143  : 	}
+; 144  : 
+; 145  : 	if (size == 1){
 
 	cmp	DWORD PTR size$[rsp], 1
 	jne	SHORT $LN5@pci_expres
 
-; 137  : 		result = *raw_offset<volatile uint8_t*>(address, reg);
+; 146  : 		result = *raw_offset<volatile uint8_t*>(device,reg);
 
 	mov	edx, DWORD PTR reg$[rsp]
-	mov	rcx, QWORD PTR address$[rsp]
-	call	??$raw_offset@PECEPEA_K@@YAPECEPEA_KH@Z	; raw_offset<unsigned char volatile * __ptr64,unsigned __int64 * __ptr64>
+	mov	rcx, QWORD PTR device$[rsp]
+	call	??$raw_offset@PECE_K@@YAPECE_KH@Z	; raw_offset<unsigned char volatile * __ptr64,unsigned __int64>
 	movzx	eax, BYTE PTR [rax]
 	movzx	eax, al
 	mov	QWORD PTR result$[rsp], rax
 
-; 138  : 		return result;
+; 147  : 		return result;
 
-	mov	rax, QWORD PTR result$[rsp]
-	jmp	SHORT $LN31@pci_expres
+	mov	eax, DWORD PTR result$[rsp]
+	jmp	SHORT $LN32@pci_expres
 	jmp	SHORT $LN4@pci_expres
 $LN5@pci_expres:
 
-; 139  : 	}else if (size == 2) {
+; 148  : 	}else if (size == 2) {
 
 	cmp	DWORD PTR size$[rsp], 2
 	jne	SHORT $LN3@pci_expres
 
-; 140  : 		result = *raw_offset<volatile uint16_t*>(address, reg);
+; 149  : 		result = *raw_offset<volatile uint16_t*>(device, reg);
 
 	mov	edx, DWORD PTR reg$[rsp]
-	mov	rcx, QWORD PTR address$[rsp]
-	call	??$raw_offset@PECGPEA_K@@YAPECGPEA_KH@Z	; raw_offset<unsigned short volatile * __ptr64,unsigned __int64 * __ptr64>
+	mov	rcx, QWORD PTR device$[rsp]
+	call	??$raw_offset@PECG_K@@YAPECG_KH@Z	; raw_offset<unsigned short volatile * __ptr64,unsigned __int64>
 	movzx	eax, WORD PTR [rax]
 	movzx	eax, ax
 	mov	QWORD PTR result$[rsp], rax
 
-; 141  : 		return result;
+; 150  : 		return result;
 
-	mov	rax, QWORD PTR result$[rsp]
-	jmp	SHORT $LN31@pci_expres
+	mov	eax, DWORD PTR result$[rsp]
+	jmp	SHORT $LN32@pci_expres
 	jmp	SHORT $LN2@pci_expres
 $LN3@pci_expres:
 
-; 142  : 	}else if (size == 4) {
+; 151  : 	}else if (size == 4) {
 
 	cmp	DWORD PTR size$[rsp], 4
 	jne	SHORT $LN1@pci_expres
 
-; 143  : 		result = *raw_offset<volatile uint32_t*>(address, reg);
+; 152  : 		result = *raw_offset<volatile uint32_t*>(device,reg);
 
 	mov	edx, DWORD PTR reg$[rsp]
-	mov	rcx, QWORD PTR address$[rsp]
-	call	??$raw_offset@PECIPEA_K@@YAPECIPEA_KH@Z	; raw_offset<unsigned int volatile * __ptr64,unsigned __int64 * __ptr64>
+	mov	rcx, QWORD PTR device$[rsp]
+	call	??$raw_offset@PECI_K@@YAPECI_KH@Z	; raw_offset<unsigned int volatile * __ptr64,unsigned __int64>
 	mov	eax, DWORD PTR [rax]
 	mov	eax, eax
 	mov	QWORD PTR result$[rsp], rax
 
-; 144  : 		return result;
+; 153  : 		return result;
 
-	mov	rax, QWORD PTR result$[rsp]
-	jmp	SHORT $LN31@pci_expres
+	mov	eax, DWORD PTR result$[rsp]
+	jmp	SHORT $LN32@pci_expres
 $LN1@pci_expres:
 $LN2@pci_expres:
 $LN4@pci_expres:
 
-; 145  : 	}
-; 146  : 
-; 147  : 	return 0xFFFFFFFF;
+; 154  : 	}
+; 155  : 
+; 156  : 	return 0xFFFFFFFF;
 
 	mov	eax, -1					; ffffffffH
-$LN31@pci_expres:
+$LN32@pci_expres:
 
-; 148  : }
+; 157  : }
 
-	add	rsp, 72					; 00000048H
+	add	rsp, 88					; 00000058H
 	ret	0
-	npad	3
-$LN34@pci_expres:
+	npad	1
+$LN35@pci_expres:
 	DD	$LN27@pci_expres
 	DD	$LN26@pci_expres
 	DD	$LN25@pci_expres
@@ -1776,7 +1798,7 @@ $LN34@pci_expres:
 	DD	$LN8@pci_expres
 	DD	$LN7@pci_expres
 	DD	$LN6@pci_expres
-$LN33@pci_expres:
+$LN34@pci_expres:
 	DB	0
 	DB	21
 	DB	1
@@ -1844,214 +1866,367 @@ _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\drivers\pcie.cpp
 _TEXT	SEGMENT
-pciSegment$ = 32
-address$1 = 36
-bus$2 = 40
-dev$3 = 44
-func$4 = 48
-sub_ClassCode$5 = 52
-allocs$ = 56
-class_code$6 = 64
-mcfg$ = 72
-classCode$ = 96
-subClassCode$ = 104
+sub_ClassCode$1 = 48
+dev$2 = 52
+func$3 = 56
+pciSegment$ = 60
+class_code$4 = 64
+bus$5 = 68
+address$6 = 72
+allocs$ = 80
+mcfg$ = 88
+classCode$ = 112
+subClassCode$ = 120
+bus_$ = 128
+dev_$ = 136
+func_$ = 144
 pci_express_scan_class PROC
 
-; 277  : uint64_t pci_express_scan_class (uint8_t classCode, uint8_t subClassCode) {
+; 310  : uint64_t pci_express_scan_class (uint8_t classCode, uint8_t subClassCode, int *bus_, int *dev_, int *func_) {
 
 $LN19:
+	mov	QWORD PTR [rsp+32], r9
+	mov	QWORD PTR [rsp+24], r8
 	mov	BYTE PTR [rsp+16], dl
 	mov	BYTE PTR [rsp+8], cl
-	sub	rsp, 88					; 00000058H
+	sub	rsp, 104				; 00000068H
 
-; 278  : 	if(acpi_pcie_supported() == false) {
+; 311  : 	if(acpi_pcie_supported() == false) {
 
 	call	?acpi_pcie_supported@@YA_NXZ		; acpi_pcie_supported
 	movzx	eax, al
 	test	eax, eax
 	jne	SHORT $LN16@pci_expres
 
-; 279  : 		return pci_scan_class(classCode, subClassCode);
+; 312  : 		return 0; //pci_scan_class(classCode, subClassCode);
 
-	movzx	edx, BYTE PTR subClassCode$[rsp]
-	movzx	ecx, BYTE PTR classCode$[rsp]
-	call	pci_scan_class
-	mov	eax, eax
+	xor	eax, eax
 	jmp	$LN17@pci_expres
 $LN16@pci_expres:
 
-; 280  : 	}
-; 281  : 
-; 282  : 	acpiMcfg *mcfg = acpi_get_mcfg();
+; 313  : 	}
+; 314  : 
+; 315  : 	acpiMcfg *mcfg = acpi_get_mcfg();
 
 	call	?acpi_get_mcfg@@YAPEAUacpiMcfg@@XZ	; acpi_get_mcfg
 	mov	QWORD PTR mcfg$[rsp], rax
 
-; 283  : 	acpiMcfgAlloc *allocs = mem_after<acpiMcfgAlloc*>(mcfg);
+; 316  : 	acpiMcfgAlloc *allocs = mem_after<acpiMcfgAlloc*>(mcfg);
 
 	mov	rcx, QWORD PTR mcfg$[rsp]
 	call	??$mem_after@PEAUacpiMcfgAlloc@@UacpiMcfg@@@@YAPEAUacpiMcfgAlloc@@PEAUacpiMcfg@@@Z ; mem_after<acpiMcfgAlloc * __ptr64,acpiMcfg>
 	mov	QWORD PTR allocs$[rsp], rax
 
-; 284  : 	uint16_t pciSegment = 0;
+; 317  : 	uint16_t pciSegment = 0;
 
 	xor	eax, eax
 	mov	WORD PTR pciSegment$[rsp], ax
 
-; 285  : 	if (allocs->pciSegment <= 65535)
+; 318  : 	if (allocs->pciSegment <= 65535)
 
 	mov	rax, QWORD PTR allocs$[rsp]
 	movzx	eax, WORD PTR [rax+8]
 	cmp	eax, 65535				; 0000ffffH
 	jg	SHORT $LN15@pci_expres
 
-; 286  : 		pciSegment = allocs->pciSegment;
+; 319  : 		pciSegment = allocs->pciSegment;
 
 	mov	rax, QWORD PTR allocs$[rsp]
 	movzx	eax, WORD PTR [rax+8]
 	mov	WORD PTR pciSegment$[rsp], ax
 
-; 287  : 	else
+; 320  : 	else
 
 	jmp	SHORT $LN14@pci_expres
 $LN15@pci_expres:
 
-; 288  : 		pciSegment = 0;
+; 321  : 		pciSegment = 0;
 
 	xor	eax, eax
 	mov	WORD PTR pciSegment$[rsp], ax
 $LN14@pci_expres:
 
-; 289  : 
-; 290  : 	for (int bus = 0; bus < allocs->endBusNum; bus++){
+; 322  : 
+; 323  : 	for (int bus = 0; bus < allocs->endBusNum; bus++){
 
-	mov	DWORD PTR bus$2[rsp], 0
+	mov	DWORD PTR bus$5[rsp], 0
 	jmp	SHORT $LN13@pci_expres
 $LN12@pci_expres:
-	mov	eax, DWORD PTR bus$2[rsp]
+	mov	eax, DWORD PTR bus$5[rsp]
 	inc	eax
-	mov	DWORD PTR bus$2[rsp], eax
+	mov	DWORD PTR bus$5[rsp], eax
 $LN13@pci_expres:
 	mov	rax, QWORD PTR allocs$[rsp]
 	movzx	eax, BYTE PTR [rax+11]
-	cmp	DWORD PTR bus$2[rsp], eax
+	cmp	DWORD PTR bus$5[rsp], eax
 	jge	$LN11@pci_expres
 
-; 291  : 		for (int dev = 0; dev < PCI_DEVICE_PER_BUS; dev++) {
+; 324  : 		for (int dev = 0; dev < PCI_DEVICE_PER_BUS; dev++) {
 
-	mov	DWORD PTR dev$3[rsp], 0
+	mov	DWORD PTR dev$2[rsp], 0
 	jmp	SHORT $LN10@pci_expres
 $LN9@pci_expres:
-	mov	eax, DWORD PTR dev$3[rsp]
+	mov	eax, DWORD PTR dev$2[rsp]
 	inc	eax
-	mov	DWORD PTR dev$3[rsp], eax
+	mov	DWORD PTR dev$2[rsp], eax
 $LN10@pci_expres:
-	cmp	DWORD PTR dev$3[rsp], 32		; 00000020H
+	cmp	DWORD PTR dev$2[rsp], 32		; 00000020H
 	jge	$LN8@pci_expres
 
-; 292  : 			for (int func = 0; func < PCI_FUNCTION_PER_DEVICE; func++) {
+; 325  : 			for (int func = 0; func < PCI_FUNCTION_PER_DEVICE; func++) {
 
-	mov	DWORD PTR func$4[rsp], 0
+	mov	DWORD PTR func$3[rsp], 0
 	jmp	SHORT $LN7@pci_expres
 $LN6@pci_expres:
-	mov	eax, DWORD PTR func$4[rsp]
+	mov	eax, DWORD PTR func$3[rsp]
 	inc	eax
-	mov	DWORD PTR func$4[rsp], eax
+	mov	DWORD PTR func$3[rsp], eax
 $LN7@pci_expres:
-	cmp	DWORD PTR func$4[rsp], 8
+	cmp	DWORD PTR func$3[rsp], 8
 	jge	$LN5@pci_expres
 
-; 293  : 				uint32_t address = pci_express_get_device(pciSegment, bus,dev,func);
+; 326  : 				uint64_t address = pci_express_get_device(pciSegment, bus,dev,func);
 
-	movzx	r9d, WORD PTR func$4[rsp]
-	movzx	r8d, WORD PTR dev$3[rsp]
-	movzx	edx, WORD PTR bus$2[rsp]
+	mov	r9d, DWORD PTR func$3[rsp]
+	mov	r8d, DWORD PTR dev$2[rsp]
+	mov	edx, DWORD PTR bus$5[rsp]
 	movzx	ecx, WORD PTR pciSegment$[rsp]
-	call	?pci_express_get_device@@YA_KGGGG@Z	; pci_express_get_device
-	mov	DWORD PTR address$1[rsp], eax
+	call	?pci_express_get_device@@YA_KGHHH@Z	; pci_express_get_device
+	mov	QWORD PTR address$6[rsp], rax
 
-; 294  : 				//debug_print ("Dev Address ->%x \n", address);
-; 295  : 				if (address == 0xFFFFFFFF)
+; 327  : 			
+; 328  : 				if (address == 0xFFFFFFFF)
 
-	cmp	DWORD PTR address$1[rsp], -1		; ffffffffH
+	mov	eax, -1					; ffffffffH
+	cmp	QWORD PTR address$6[rsp], rax
 	jne	SHORT $LN4@pci_expres
 
-; 296  : 					continue;
+; 329  : 					continue;
 
 	jmp	SHORT $LN6@pci_expres
 $LN4@pci_expres:
 
-; 297  : 				uint32_t class_code = pci_express_read(address,PCI_CLASS);
+; 330  : 				uint8_t class_code = pci_express_read(address,PCI_CLASS, bus,dev,func);
 
-	mov	eax, DWORD PTR address$1[rsp]
+	mov	eax, DWORD PTR func$3[rsp]
+	mov	DWORD PTR [rsp+32], eax
+	mov	r9d, DWORD PTR dev$2[rsp]
+	mov	r8d, DWORD PTR bus$5[rsp]
 	mov	edx, 11
-	mov	ecx, eax
+	mov	rcx, QWORD PTR address$6[rsp]
 	call	pci_express_read
-	mov	DWORD PTR class_code$6[rsp], eax
+	mov	BYTE PTR class_code$4[rsp], al
 
-; 298  : 				uint32_t sub_ClassCode = pci_express_read(address, PCI_SUBCLASS);
+; 331  : 				uint8_t sub_ClassCode = pci_express_read(address, PCI_SUBCLASS, bus, dev, func);
 
-	mov	eax, DWORD PTR address$1[rsp]
+	mov	eax, DWORD PTR func$3[rsp]
+	mov	DWORD PTR [rsp+32], eax
+	mov	r9d, DWORD PTR dev$2[rsp]
+	mov	r8d, DWORD PTR bus$5[rsp]
 	mov	edx, 10
-	mov	ecx, eax
+	mov	rcx, QWORD PTR address$6[rsp]
 	call	pci_express_read
-	mov	DWORD PTR sub_ClassCode$5[rsp], eax
+	mov	BYTE PTR sub_ClassCode$1[rsp], al
 
-; 299  : 				if (classCode == 0xFF || sub_ClassCode == 0xFF)
+; 332  : 				if (classCode == 0xFF || sub_ClassCode == 0xFF)
 
 	movzx	eax, BYTE PTR classCode$[rsp]
 	cmp	eax, 255				; 000000ffH
 	je	SHORT $LN2@pci_expres
-	cmp	DWORD PTR sub_ClassCode$5[rsp], 255	; 000000ffH
+	movzx	eax, BYTE PTR sub_ClassCode$1[rsp]
+	cmp	eax, 255				; 000000ffH
 	jne	SHORT $LN3@pci_expres
 $LN2@pci_expres:
 
-; 300  : 					continue;
+; 333  : 					continue;
 
-	jmp	SHORT $LN6@pci_expres
+	jmp	$LN6@pci_expres
 $LN3@pci_expres:
 
-; 301  : 				if(class_code == classCode && sub_ClassCode == subClassCode) {
+; 334  : 				if(class_code == classCode && sub_ClassCode == subClassCode) {
 
-	movzx	eax, BYTE PTR classCode$[rsp]
-	cmp	DWORD PTR class_code$6[rsp], eax
+	movzx	eax, BYTE PTR class_code$4[rsp]
+	movzx	ecx, BYTE PTR classCode$[rsp]
+	cmp	eax, ecx
 	jne	SHORT $LN1@pci_expres
-	movzx	eax, BYTE PTR subClassCode$[rsp]
-	cmp	DWORD PTR sub_ClassCode$5[rsp], eax
+	movzx	eax, BYTE PTR sub_ClassCode$1[rsp]
+	movzx	ecx, BYTE PTR subClassCode$[rsp]
+	cmp	eax, ecx
 	jne	SHORT $LN1@pci_expres
 
-; 302  : 					return address;
+; 335  : 					*bus_ = bus;
 
-	mov	eax, DWORD PTR address$1[rsp]
+	mov	rax, QWORD PTR bus_$[rsp]
+	mov	ecx, DWORD PTR bus$5[rsp]
+	mov	DWORD PTR [rax], ecx
+
+; 336  : 					*dev_ = dev;
+
+	mov	rax, QWORD PTR dev_$[rsp]
+	mov	ecx, DWORD PTR dev$2[rsp]
+	mov	DWORD PTR [rax], ecx
+
+; 337  : 					*func_ = func;
+
+	mov	rax, QWORD PTR func_$[rsp]
+	mov	ecx, DWORD PTR func$3[rsp]
+	mov	DWORD PTR [rax], ecx
+
+; 338  : 					return address;
+
+	mov	rax, QWORD PTR address$6[rsp]
 	jmp	SHORT $LN17@pci_expres
 $LN1@pci_expres:
 
-; 303  : 				}
-; 304  : 			}
+; 339  : 				}
+; 340  : 			}
 
 	jmp	$LN6@pci_expres
 $LN5@pci_expres:
 
-; 305  : 		}
+; 341  : 		}
 
 	jmp	$LN9@pci_expres
 $LN8@pci_expres:
 
-; 306  : 	}
+; 342  : 	}
 
 	jmp	$LN12@pci_expres
 $LN11@pci_expres:
 
-; 307  : 
-; 308  : 	return 0xFFFFFFFF;
+; 343  : 
+; 344  : 	return 0xFFFFFFFF;
 
 	mov	eax, -1					; ffffffffH
 $LN17@pci_expres:
 
-; 309  : }
+; 345  : }
 
-	add	rsp, 88					; 00000058H
+	add	rsp, 104				; 00000068H
 	ret	0
 pci_express_scan_class ENDP
+_TEXT	ENDS
+; Function compile flags: /Odtpy
+; File e:\xeneva project\xeneva\aurora\aurora\drivers\pcie.cpp
+_TEXT	SEGMENT
+allocs$ = 32
+addr$ = 40
+mcfg$ = 48
+segment$ = 80
+bus$ = 88
+device$ = 96
+function$ = 104
+?pci_express_get_device@@YA_KGHHH@Z PROC		; pci_express_get_device
+
+; 40   : uint64_t pci_express_get_device (uint16_t segment, int bus, int device, int function) {
+
+$LN7:
+	mov	DWORD PTR [rsp+32], r9d
+	mov	DWORD PTR [rsp+24], r8d
+	mov	DWORD PTR [rsp+16], edx
+	mov	WORD PTR [rsp+8], cx
+	sub	rsp, 72					; 00000048H
+
+; 41   : 	if (bus > 255)
+
+	cmp	DWORD PTR bus$[rsp], 255		; 000000ffH
+	jle	SHORT $LN4@pci_expres
+
+; 42   : 		return 0;
+
+	xor	eax, eax
+	jmp	$LN5@pci_expres
+$LN4@pci_expres:
+
+; 43   : 	if (device > 31)
+
+	cmp	DWORD PTR device$[rsp], 31
+	jle	SHORT $LN3@pci_expres
+
+; 44   : 		return 0;
+
+	xor	eax, eax
+	jmp	$LN5@pci_expres
+$LN3@pci_expres:
+
+; 45   : 	if (function > 7)
+
+	cmp	DWORD PTR function$[rsp], 7
+	jle	SHORT $LN2@pci_expres
+
+; 46   : 		return 0;
+
+	xor	eax, eax
+	jmp	$LN5@pci_expres
+$LN2@pci_expres:
+
+; 47   : 
+; 48   : 	uint64_t addr = 0;
+
+	mov	QWORD PTR addr$[rsp], 0
+
+; 49   : 	acpiMcfg *mcfg = acpi_get_mcfg();
+
+	call	?acpi_get_mcfg@@YAPEAUacpiMcfg@@XZ	; acpi_get_mcfg
+	mov	QWORD PTR mcfg$[rsp], rax
+
+; 50   : 	acpiMcfgAlloc *allocs = mem_after<acpiMcfgAlloc*>(mcfg);
+
+	mov	rcx, QWORD PTR mcfg$[rsp]
+	call	??$mem_after@PEAUacpiMcfgAlloc@@UacpiMcfg@@@@YAPEAUacpiMcfgAlloc@@PEAUacpiMcfg@@@Z ; mem_after<acpiMcfgAlloc * __ptr64,acpiMcfg>
+	mov	QWORD PTR allocs$[rsp], rax
+
+; 51   : 	if (allocs->startBusNum <= bus && bus <= allocs->endBusNum) {
+
+	mov	rax, QWORD PTR allocs$[rsp]
+	movzx	eax, BYTE PTR [rax+10]
+	cmp	eax, DWORD PTR bus$[rsp]
+	jg	SHORT $LN1@pci_expres
+	mov	rax, QWORD PTR allocs$[rsp]
+	movzx	eax, BYTE PTR [rax+11]
+	cmp	DWORD PTR bus$[rsp], eax
+	jg	SHORT $LN1@pci_expres
+
+; 52   : 		addr = allocs->baseAddress + ((bus - allocs->startBusNum) << 20) | (device << 15) | (function << 12);
+
+	mov	rax, QWORD PTR allocs$[rsp]
+	movzx	eax, BYTE PTR [rax+10]
+	mov	ecx, DWORD PTR bus$[rsp]
+	sub	ecx, eax
+	mov	eax, ecx
+	shl	eax, 20
+	cdqe
+	mov	rcx, QWORD PTR allocs$[rsp]
+	mov	rcx, QWORD PTR [rcx]
+	add	rcx, rax
+	mov	rax, rcx
+	mov	ecx, DWORD PTR device$[rsp]
+	shl	ecx, 15
+	movsxd	rcx, ecx
+	or	rax, rcx
+	mov	ecx, DWORD PTR function$[rsp]
+	shl	ecx, 12
+	movsxd	rcx, ecx
+	or	rax, rcx
+	mov	QWORD PTR addr$[rsp], rax
+
+; 53   : 		return addr;
+
+	mov	rax, QWORD PTR addr$[rsp]
+	jmp	SHORT $LN5@pci_expres
+$LN1@pci_expres:
+
+; 54   : 	}
+; 55   : 
+; 56   : 	return 0xFFFFFFFF;
+
+	mov	eax, -1					; ffffffffH
+$LN5@pci_expres:
+
+; 57   : }
+
+	add	rsp, 72					; 00000048H
+	ret	0
+?pci_express_get_device@@YA_KGHHH@Z ENDP		; pci_express_get_device
 _TEXT	ENDS
 END

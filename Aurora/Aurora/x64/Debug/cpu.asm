@@ -108,7 +108,7 @@ $pdata$?interrupt_initialize@@YAXXZ DD imagerel $LN6
 	DD	imagerel $LN6+415
 	DD	imagerel $unwind$?interrupt_initialize@@YAXXZ
 $pdata$?x86_64_init_cpu@@YAXXZ DD imagerel $LN3
-	DD	imagerel $LN3+227
+	DD	imagerel $LN3+199
 	DD	imagerel $unwind$?x86_64_init_cpu@@YAXXZ
 $pdata$?x86_64_cpu_get_id@@YAEXZ DD imagerel $LN3
 	DD	imagerel $LN3+71
@@ -644,27 +644,27 @@ lo$ = 32
 hi$ = 36
 ?cpu_rdtsc@@YAIXZ PROC					; cpu_rdtsc
 
-; 364  : uint32_t cpu_rdtsc () {
+; 367  : uint32_t cpu_rdtsc () {
 
 $LN3:
 	sub	rsp, 56					; 00000038H
 
-; 365  : 	uint32_t hi;
-; 366  : 	uint32_t lo;
-; 367  : 	x64_rdtsc(&hi, &lo);
+; 368  : 	uint32_t hi;
+; 369  : 	uint32_t lo;
+; 370  : 	x64_rdtsc(&hi, &lo);
 
 	lea	rdx, QWORD PTR lo$[rsp]
 	lea	rcx, QWORD PTR hi$[rsp]
 	call	x64_rdtsc
 
-; 368  : 	return (hi | lo);
+; 371  : 	return (hi | lo);
 
 	mov	eax, DWORD PTR lo$[rsp]
 	mov	ecx, DWORD PTR hi$[rsp]
 	or	ecx, eax
 	mov	eax, ecx
 
-; 369  : }
+; 372  : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -682,7 +682,7 @@ edge$ = 56
 deassert$ = 64
 ?cpu_msi_address@@YA_KPEA_K_KIEE@Z PROC			; cpu_msi_address
 
-; 356  : uint64_t cpu_msi_address (uint64_t* data, size_t vector, uint32_t processor, uint8_t edge, uint8_t deassert) {
+; 358  : uint64_t cpu_msi_address (uint64_t* data, size_t vector, uint32_t processor, uint8_t edge, uint8_t deassert) {
 
 $LN7:
 	mov	BYTE PTR [rsp+32], r9b
@@ -691,7 +691,7 @@ $LN7:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 24
 
-; 357  : 	*data = (vector & 0xFF) | (edge == 1 ? 0 : (1<<15)) | (deassert == 1 ? 0 : (1<<14));
+; 359  : 	*data = (vector & 0xFF) | (edge == 1 ? 0 : (1<<15)) | (deassert == 1 ? 0 : (1<<14));
 
 	movzx	eax, BYTE PTR edge$[rsp]
 	cmp	eax, 1
@@ -718,14 +718,15 @@ $LN6@cpu_msi_ad:
 	mov	rcx, QWORD PTR data$[rsp]
 	mov	QWORD PTR [rcx], rax
 
-; 358  : 	return (0xFEE00000 | (processor << 12));
+; 360  : 	//*data = low;
+; 361  : 	return (0xFEE00000 | (processor << 12));
 
 	mov	eax, DWORD PTR processor$[rsp]
 	shl	eax, 12
 	or	eax, -18874368				; fee00000H
 	mov	eax, eax
 
-; 359  : }
+; 362  : }
 
 	add	rsp, 24
 	ret	0
@@ -736,11 +737,11 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 ?is_cpu_xsave_supported@@YA_NXZ PROC			; is_cpu_xsave_supported
 
-; 345  : 	return _xsave;
+; 347  : 	return _xsave;
 
 	movzx	eax, BYTE PTR _xsave
 
-; 346  : }
+; 348  : }
 
 	ret	0
 ?is_cpu_xsave_supported@@YA_NXZ ENDP			; is_cpu_xsave_supported
@@ -750,11 +751,11 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 ?is_cpu_fxsave_supported@@YA_NXZ PROC			; is_cpu_fxsave_supported
 
-; 341  : 	return _fxsave;
+; 343  : 	return _fxsave;
 
 	movzx	eax, BYTE PTR _fxsave
 
-; 342  : }
+; 344  : }
 
 	ret	0
 ?is_cpu_fxsave_supported@@YA_NXZ ENDP			; is_cpu_fxsave_supported
@@ -771,36 +772,36 @@ b$ = 88
 a$ = 96
 ?hal_cpu_feature_enable@@YAXXZ PROC			; hal_cpu_feature_enable
 
-; 305  : void hal_cpu_feature_enable () {
+; 307  : void hal_cpu_feature_enable () {
 
 $LN10:
 	sub	rsp, 120				; 00000078H
 
-; 306  : 	uint64_t cr0 = x64_read_cr0();
+; 308  : 	uint64_t cr0 = x64_read_cr0();
 
 	call	x64_read_cr0
 	mov	QWORD PTR cr0$[rsp], rax
 
-; 307  : 	cr0 &= ~(1<<2);
+; 309  : 	cr0 &= ~(1<<2);
 
 	mov	rax, QWORD PTR cr0$[rsp]
 	and	rax, -5
 	mov	QWORD PTR cr0$[rsp], rax
 
-; 308  : 	cr0 |= (1<<1);
+; 310  : 	cr0 |= (1<<1);
 
 	mov	rax, QWORD PTR cr0$[rsp]
 	or	rax, 2
 	mov	QWORD PTR cr0$[rsp], rax
 
-; 309  : 	x64_write_cr0(cr0);
+; 311  : 	x64_write_cr0(cr0);
 
 	mov	rcx, QWORD PTR cr0$[rsp]
 	call	x64_write_cr0
 
-; 310  : 
-; 311  : 	size_t a, b, c, d;
-; 312  : 	x64_cpuid(1, &a, &b, &c, &d, 0);
+; 312  : 
+; 313  : 	size_t a, b, c, d;
+; 314  : 	x64_cpuid(1, &a, &b, &c, &d, 0);
 
 	mov	QWORD PTR [rsp+40], 0
 	lea	rax, QWORD PTR d$[rsp]
@@ -811,82 +812,82 @@ $LN10:
 	mov	ecx, 1
 	call	x64_cpuid
 
-; 313  : 	if ((c & (1<<26)) != 0) {
+; 315  : 	if ((c & (1<<26)) != 0) {
 
 	mov	rax, QWORD PTR c$[rsp]
 	and	rax, 67108864				; 04000000H
 	test	rax, rax
 	je	SHORT $LN7@hal_cpu_fe
 
-; 314  : 			/* Enable XCR0 register */
-; 315  : 		uint64_t cr4 = x64_read_cr4();
+; 316  : 			/* Enable XCR0 register */
+; 317  : 		uint64_t cr4 = x64_read_cr4();
 
 	call	x64_read_cr4
 	mov	QWORD PTR cr4$2[rsp], rax
 
-; 316  : 		cr4 |= (1 << 18);
+; 318  : 		cr4 |= (1 << 18);
 
 	mov	rax, QWORD PTR cr4$2[rsp]
 	bts	rax, 18
 	mov	QWORD PTR cr4$2[rsp], rax
 
-; 317  : 		x64_write_cr4(cr4);
+; 319  : 		x64_write_cr4(cr4);
 
 	mov	rcx, QWORD PTR cr4$2[rsp]
 	call	x64_write_cr4
 $LN7@hal_cpu_fe:
 
-; 318  : 	}
-; 319  : 
-; 320  : 	if ((d & (1 << 25)) != 0){
+; 320  : 	}
+; 321  : 
+; 322  : 	if ((d & (1 << 25)) != 0){
 
 	mov	rax, QWORD PTR d$[rsp]
 	and	rax, 33554432				; 02000000H
 	test	rax, rax
 	je	SHORT $LN6@hal_cpu_fe
 
-; 321  : 		size_t cr4 = x64_read_cr4();
+; 323  : 		size_t cr4 = x64_read_cr4();
 
 	call	x64_read_cr4
 	mov	QWORD PTR cr4$1[rsp], rax
 
-; 322  : 		
-; 323  : 
-; 324  : 		if ((d & (1 << 24)) != 0) {
+; 324  : 		
+; 325  : 
+; 326  : 		if ((d & (1 << 24)) != 0) {
 
 	mov	rax, QWORD PTR d$[rsp]
 	and	rax, 16777216				; 01000000H
 	test	rax, rax
 	je	SHORT $LN5@hal_cpu_fe
 
-; 325  : 			cr4 |= (1 << 9);
+; 327  : 			cr4 |= (1 << 9);
 
 	mov	rax, QWORD PTR cr4$1[rsp]
 	bts	rax, 9
 	mov	QWORD PTR cr4$1[rsp], rax
 
-; 326  : 			//printf("FXSAVE enabled\n");
-; 327  : 			_fxsave = true;
+; 328  : 			//printf("FXSAVE enabled\n");
+; 329  : 			_fxsave = true;
 
 	mov	BYTE PTR _fxsave, 1
 $LN5@hal_cpu_fe:
 
-; 328  : 		}
-; 329  : 		cr4 |= (1 << 10);
+; 330  : 		}
+; 331  : 		cr4 |= (1 << 10);
 
 	mov	rax, QWORD PTR cr4$1[rsp]
 	bts	rax, 10
 	mov	QWORD PTR cr4$1[rsp], rax
 
-; 330  : 		x64_write_cr4(cr4);
+; 332  : 		x64_write_cr4(cr4);
 
 	mov	rcx, QWORD PTR cr4$1[rsp]
 	call	x64_write_cr4
 	jmp	SHORT $LN4@hal_cpu_fe
 $LN6@hal_cpu_fe:
 
-; 331  : 	}
-; 332  : 	else if ((d & (1 << 26)) != 0) {
+; 333  : 	}
+; 334  : 	else if ((d & (1 << 26)) != 0) {
 
 	mov	rax, QWORD PTR d$[rsp]
 	and	rax, 67108864				; 04000000H
@@ -895,18 +896,18 @@ $LN6@hal_cpu_fe:
 	jmp	SHORT $LN2@hal_cpu_fe
 $LN3@hal_cpu_fe:
 
-; 333  : 		//printf("[aurora]: SSE2 is supported \n");
-; 334  : 	}
-; 335  : 	else if ((c & (1 << 0)) != 0){
+; 335  : 		//printf("[aurora]: SSE2 is supported \n");
+; 336  : 	}
+; 337  : 	else if ((c & (1 << 0)) != 0){
 
 	mov	rax, QWORD PTR c$[rsp]
 	and	rax, 1
 $LN2@hal_cpu_fe:
 $LN4@hal_cpu_fe:
 
-; 336  : 		//printf("[aurora]: SSE3 is supported \n");
-; 337  : 	}
-; 338  : }
+; 338  : 		//printf("[aurora]: SSE3 is supported \n");
+; 339  : 	}
+; 340  : }
 
 	add	rsp, 120				; 00000078H
 	ret	0
@@ -1005,46 +1006,36 @@ $LN3:
 	call	?debug_print@@YAXPEBDZZ			; debug_print
 
 ; 268  : 	
-; 269  : 	//initialize_pic();
-; 270  : 
-; 271  : #ifdef USE_APIC
-; 272  : 	//!Initialize APIC   FIXME: Causes triple fault now
-; 273  : 	initialize_apic (true);
+; 269  : #ifdef USE_PIC
+; 270  : 	 initialize_pic();
+; 271  : #endif
+; 272  : 
+; 273  : #ifdef USE_APIC
+; 274  : 	//!Initialize APIC   FIXME: Causes triple fault now
+; 275  : 	initialize_apic (true);
 
 	mov	cl, 1
 	call	?initialize_apic@@YAX_N@Z		; initialize_apic
 
-; 274  : #endif
-; 275  : 	
-; 276  : 	debug_print ("APIC initialized\n");
+; 276  : #endif
+; 277  : 	
+; 278  : 	debug_print ("APIC initialized\n");
 
 	lea	rcx, OFFSET FLAT:$SG3659
 	call	?debug_print@@YAXPEBDZZ			; debug_print
 
-; 277  : 
-; 278  : //	//!Enable EFER and SYSCALL Extension
-; 279  : 	size_t efer = x64_read_msr(IA32_EFER);
+; 279  : 
+; 280  : //	//!Enable EFER and SYSCALL Extension
+; 281  : 	size_t efer = x64_read_msr(IA32_EFER);
 
 	mov	ecx, -1073741696			; c0000080H
 	call	x64_read_msr
 	mov	QWORD PTR efer$[rsp], rax
 
-; 280  : 	efer |= (1<<11);
+; 282  : 	efer |= (1<<11);
 
 	mov	rax, QWORD PTR efer$[rsp]
 	bts	rax, 11
-	mov	QWORD PTR efer$[rsp], rax
-
-; 281  : 	efer |= 1;
-
-	mov	rax, QWORD PTR efer$[rsp]
-	or	rax, 1
-	mov	QWORD PTR efer$[rsp], rax
-
-; 282  : 	efer |= (1<<0);
-
-	mov	rax, QWORD PTR efer$[rsp]
-	or	rax, 1
 	mov	QWORD PTR efer$[rsp], rax
 
 ; 283  : 	efer |= 1;
@@ -1053,55 +1044,57 @@ $LN3:
 	or	rax, 1
 	mov	QWORD PTR efer$[rsp], rax
 
-; 284  : 	x64_write_msr(IA32_EFER, efer);
+; 284  : 	//efer |= (1<<0);
+; 285  : 	//efer |= 1;
+; 286  : 	x64_write_msr(IA32_EFER, efer);
 
 	mov	rdx, QWORD PTR efer$[rsp]
 	mov	ecx, -1073741696			; c0000080H
 	call	x64_write_msr
 
-; 285  : 	//! now start the interrupts
-; 286  : 
-; 287  : 	debug_print ("EFER.SYSCALL enabled\n");
+; 287  : 	//! now start the interrupts
+; 288  : 
+; 289  : 	debug_print ("EFER.SYSCALL enabled\n");
 
 	lea	rcx, OFFSET FLAT:$SG3661
 	call	?debug_print@@YAXPEBDZZ			; debug_print
 
-; 288  : 	//! initialize the user land environment
-; 289  : 	initialize_user_land (64);
+; 290  : 	//! initialize the user land environment
+; 291  : 	initialize_user_land (64);
 
 	mov	ecx, 64					; 00000040H
 	call	?initialize_user_land@@YAX_K@Z		; initialize_user_land
 
-; 290  : 
-; 291  : 	debug_print ("User Land Initialized\n");
+; 292  : 
+; 293  : 	debug_print ("User Land Initialized\n");
 
 	lea	rcx, OFFSET FLAT:$SG3662
 	call	?debug_print@@YAXPEBDZZ			; debug_print
 
-; 292  : 	//! initialize the syscall entries
-; 293  : 	initialize_syscall ();
+; 294  : 	//! initialize the syscall entries
+; 295  : 	initialize_syscall ();
 
 	call	?initialize_syscall@@YAXXZ		; initialize_syscall
 
-; 294  : 
-; 295  : 	debug_print ("System call initialized\n");
+; 296  : 
+; 297  : 	debug_print ("System call initialized\n");
 
 	lea	rcx, OFFSET FLAT:$SG3663
 	call	?debug_print@@YAXPEBDZZ			; debug_print
 
-; 296  : 
-; 297  : 	hal_cpu_feature_enable();
+; 298  : 
+; 299  : 	hal_cpu_feature_enable();
 
 	call	?hal_cpu_feature_enable@@YAXXZ		; hal_cpu_feature_enable
 
-; 298  : 
-; 299  : 
-; 300  :     x64_sti ();
+; 300  : 
+; 301  : 
+; 302  :     x64_sti ();
 
 	call	x64_sti
 
-; 301  : 	
-; 302  : }
+; 303  : 	
+; 304  : }
 
 	add	rsp, 56					; 00000038H
 	ret	0

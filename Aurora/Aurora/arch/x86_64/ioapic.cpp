@@ -48,16 +48,19 @@ static void write_ioapic_register(void* apic_base, const uint8_t offset, const u
 void ioapic_register_irq(size_t vector, void (*fn)(size_t, void* p),uint8_t irq, bool level)
 {
 	uint32_t reg = IOAPIC_REG_RED_TBL_BASE + irq* 2;
-	write_ioapic_register((void*)io_apic_base, reg + 1, read_apic_register(0x02) << 24);
+	uint32_t high_reg = read_ioapic_register((void*)io_apic_base, reg + 1);
+	high_reg &= ~0xff000000;
+	high_reg |= (0<<24);
+	write_ioapic_register((void*)io_apic_base, reg + 1, high_reg);
 	uint32_t low = read_ioapic_register ((void*)io_apic_base,reg);
 	//!unmask the irq
 	low &= ~(1<<16);
-	//!set to physical delivery mode
-	low |= (0<<15);
+	
 	if (level)
 		low |= (1<<15);
 	else
 		low |= (0<<15);
+
 	low |= (0<<13);
 	low |= (0<<11);
 	low |= vector + 32;

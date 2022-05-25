@@ -547,7 +547,7 @@ void hda_write (uint8_t* buffer, size_t length) {
  */
 void hda_initialize () {
 
-	uint32_t device = pci_scan_class (0x04, 0x03);
+	/*uint32_t device = pci_scan_class (0x04, 0x03);
 	if (device == 0xFFFFFFFF){
 		printf ("No HD-Audio was found\n");
 		return;
@@ -556,7 +556,7 @@ void hda_initialize () {
 	uint16_t command = pci_read(device,PCI_COMMAND);
 	if (((command >> 10) & 0xff) != 0) {
 		printf ("[HD-Audio]: Interrupt disabled in PCI Config_Space %x\n", command);
-	}
+	}*/
 
 	//command |= 0<<10;
 	//command |= 0x2;
@@ -568,12 +568,12 @@ void hda_initialize () {
 	_ihd_audio.vol = (hda_volume*)AuPmmngrAlloc();
 	memset (_ihd_audio.output, 0, 4096);
 
-	int intline = pci_read(device, PCI_INTERRUPT_LINE);
+	int intline = 0; //pci_read(device, PCI_INTERRUPT_LINE);
 	printf ("[HD-Audio]: INterrupt int -> %d\n", intline);
 	AuInterruptSet(10, hda_handler,10, false);
 
 
-	uintptr_t mmio = pci_read(device,PCI_BAR0) & ~3;
+	uintptr_t mmio = 0; // pci_read(device,PCI_BAR0) & ~3;
 	_ihd_audio.mmio = (size_t)AuMapMMIO(mmio,2);
 	_debug_print_("_IHD_MMIO -> %x \r\n", _ihd_audio.mmio);
 	_ihd_audio.corb = (uint32_t*)AuPmmngrAlloc(); 

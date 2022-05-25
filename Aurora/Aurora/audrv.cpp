@@ -16,6 +16,7 @@
 #include <fs\fat\fat.h>
 #include <pmmngr.h>
 #include <drivers\pci.h>
+#include <drivers\pcie.h>
 
 
 /* Drivers are located from 4 MiB of kernel address */
@@ -216,18 +217,22 @@ void AuDrvMngrInitialize (KERNEL_BOOT_INFO *info) {
 
 	uint8_t* confdata = (uint8_t*)conf;
 
-	for (int bus = 0; bus < 256; bus++) {
-		for (int dev = 0; dev < 32; dev++) {
-			for (int func = 0; func < 8; func++) {
+	uint32_t vend_id, dev_id, class_code, sub_class = 0;
+	uint32_t device = 0;
+	for (uint16_t bus = 0; bus < 0x20; bus++) {
+		for (uint16_t dev = 0; dev < 32; dev++) {
+			for (uint16_t func = 0; func < 8; func++) {
+			
+				uint64_t device = pci_express_get_device(0, bus, dev, func);
 
-				uint32_t addr = pci_encode_device(bus,dev,func);
-				uint32_t vendid = pci_read(addr, PCI_VENDOR_ID);
-				uint32_t devid = pci_read(addr, PCI_DEVICE_ID);
-				uint32_t classCode = pci_read(addr, PCI_CLASS);
-				uint32_t subClass = pci_read(addr, PCI_SUBCLASS);
-				if (devid == 0xFFFF || vendid == 0xFFFF) 
+				vend_id = pci_express_read(device, PCI_VENDOR_ID, bus, dev, func);
+				dev_id = pci_express_read(device, PCI_DEVICE_ID, bus, dev, func);
+				class_code = pci_express_read(device, PCI_CLASS, bus, dev, func);
+				sub_class = pci_express_read(device, PCI_SUBCLASS, bus, dev, func);
+				
+				if (dev_id == 0xFFFF || vend_id == 0xFFFF) 
 					continue;	
-				AuGetDriverName(classCode,subClass,  confdata,1);
+				AuGetDriverName(class_code,sub_class,  confdata,1);
 				for(int i = 0; i < 1000; i++)
 					;
 			}

@@ -1,10 +1,11 @@
-﻿Build started 19-05-2022 আবেলি 10:03:12.
+﻿Build started 25-05-2022 ৰাতিপু 9:28:14.
      1>Project "E:\Xeneva Project\Xeneva\Drivers\usb\usb.vcxproj" on node 2 (Rebuild target(s)).
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\Aurora\include" /Zi /nologo /W3 /WX- /Od /Oy /D ARCH_X64 /D _WINDLL /D _MBCS /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt main.cpp xhci.cpp
      1>cl : Command line warning D9002: ignoring unknown option '/arch:SSE'
          xhci.cpp
          main.cpp
+     1>main.cpp(63): warning C4244: 'initializing' : conversion from 'uint64_t' to 'uint32_t', possible loss of data
          Generating Code...
      1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V110\Microsoft.CppBuild.targets(1137,5): warning MSB8012: TargetPath(E:\Xeneva Project\Xeneva\Drivers\usb\x64\Debug\usb.dll) does not match the Linker's OutputFile property value (F:\usb.dll). This may cause your project to build incorrectly. To correct this, please make sure that $(OutDir), $(TargetName) and $(TargetExt) property values match the value specified in %(Link.OutputFile).
        Link:
@@ -18,4 +19,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:00.57
+Time Elapsed 00:00:01.31

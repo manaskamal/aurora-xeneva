@@ -102,6 +102,7 @@ void ahci_interrupt_handler (size_t v, void* p) {
 
 	HBA_MEM *hba = (HBA_MEM*)hbabar;
 	uint32_t is = hba->is;
+	_debug_print_ ("AHCI Interrupt handler \r\n");
 #if 0
 	printf ("[AHCI]: Interrupt fired++\n");
 #endif
@@ -133,10 +134,6 @@ void ahci_interrupt_handler (size_t v, void* p) {
 		}
 	}
 
-	/*if (is_hdaudio_initialized())
-		hda_handler(v,p);*/
-
-	printf ("AHCI\Interrupt \r\n");
 	
 	hba->is = is;
 	AuInterruptEnd(0);
@@ -148,18 +145,19 @@ void ahci_interrupt_handler (size_t v, void* p) {
  * ahci_initialize -- initialize the AHCI Controller
  */
 void ahci_initialize () {
-	int bus,dev,func;
+	int bus,dev,func = 0;
 	bool ahci_not_found = false;
 
 	/* First find in standard registry */
-	uint32_t device = pci_express_scan_class(0x01,0x06);
-	printf ("AHCI Device -> %x \n", device);
+	uint64_t device = pci_express_scan_class(0x01,0x06, &bus, &dev, &func);
+	printf ("AHCI device -> %x \n", device);
 	if (device == 0xFFFFFFFF)
-		ahci_not_found = true;
+		ahci_not_found = true; // pci_express_scan_class(0x01,0x06);
 	
+
 	/* not found? now search in RAID registry */
 	if (ahci_not_found) {
-		device = pci_scan_class(0x01,0x04);
+		device = pci_express_scan_class(0x01,0x04, &bus, &dev, &func);
 		if (device == 0xFFFFFFFF){
 			printf ("*******************************\n");
 			printf ("AHCI/SATA not found\n");
@@ -171,33 +169,25 @@ void ahci_initialize () {
 	}
 	
 	
-	uint32_t int_line = pci_express_read(device, PCI_INTERRUPT_LINE);
+	uint32_t int_line = pci_express_read(device, PCI_INTERRUPT_LINE, bus, dev, func);
 	printf ("AHCI INTERRUPT LINE -> %d \r\n", int_line);
-	uint32_t base_address = pci_express_read(device,PCI_BAR5);
+	uint32_t base_address = pci_express_read(device,PCI_BAR5, bus, dev, func);
 	printf ("AHCI/SATA found BAR -> %x \n", base_address);
 
 	
 
-	pci_enable_bus_master(device);
-	pci_enable_interrupts(device);
+	uint64_t command = pci_express_read(device,PCI_COMMAND, bus, dev, func); 
+	command |= (1<<1);
+	command |= (1<<10);
+	pci_express_write(device, PCI_COMMAND, command, bus, dev, func);
 
-	
-	//uint8_t int_line = info->device.nonBridge.interruptLine;
-	
 
-	shirq_t* shdev = (shirq_t*)malloc(sizeof(shirq_t));
-	shdev->irq = int_line;
-	shdev->IrqHandler = ahci_interrupt_handler;
-	shdev->device_id = 0;
-	shdev->vendor_id = 0;
-	AuSharedDeviceRegister(shdev);
+	pcie_alloc_msi(device, 36, bus, dev, func);
+	setvect(36, ahci_interrupt_handler);
 	
-	if (int_line < 255) {
-		AuInterruptSet(int_line, ahci_interrupt_handler,int_line, false);
-	}
 
 	uintptr_t hba_phys = base_address & 0xFFFFFFF0;
-	void* mmio = AuMapMMIO(hba_phys,512);
+	void* mmio = AuMapMMIO(hba_phys,3);
 	HBA_MEM *hba = (HBA_MEM*)mmio;//(info->device.nonBridge.baseAddress[5] & 0xFFFFFFF0);
 	hbabar = (void*)mmio; //(info->device.nonBridge.baseAddress[5] & 0xFFFFFFF0);
 	hba->ghc = 1;

@@ -268,7 +268,12 @@ void hda_reset () {
 
 	_aud_outw_(WAKEEN, 0xffff);
 	uint32_t intctl = _aud_inl_(INTCTL);
-	_aud_outl_(INTCTL, 0x800000ff);
+	intctl |= (1<<31);
+	intctl |= (1<<30);
+	for (int i = 0; i < 8; i++)
+		intctl |= (1<<i);
+	_aud_outl_(INTCTL,0x800000ff);
+
 
 	setup_corb();
 	setup_rirb();
@@ -296,10 +301,13 @@ void hda_handler (size_t v, void* p) {
 	uint32_t isr = _aud_inl_(INTSTS);
 	uint8_t sts = _aud_inb_(REG_O0_STS);
 	
-	printf("HDA Handler \r\n");
+
 	if (sts & 0x4) {
-		printf ("HDA Buffer completed \r\n");
-	//	hda_output_stream_stop();
+		uint64_t *dma = (uint64_t*)hd_audio.dma_pos_buff;
+		uint32_t pos = dma[4] & 0xffffffff;
+		pos /= BUFFER_SIZE;
+		//printf("HDA Buffer completed \r\n");
+		AuSoundRequestNext((uint64_t*)(hd_audio.sample_buffer + pos * BUFFER_SIZE));
 	
 	}
 
@@ -336,14 +344,17 @@ void hd_thr() {
 AU_EXTERN AU_EXPORT int AuDriverMain(){
 
 	hda_first_interrupt = false;
-
-	uint64_t device = pci_express_scan_class (0x04, 0x03);
+    int bus, func, dev;
+	uint64_t device = pci_express_scan_class (0x04, 0x03, &bus, &dev, &func);
 	if (device == 0xFFFFFFFF){
 		printf ("[driver]: intel hda not found\n");
+		for(;;);
 		return 1;
 	}
 	
 
+	printf ("HDA Func -> %d, dev -> %d \n", func, dev);
+	printf ("HDA Bus -> %d \n", bus);
 	/*uint8_t tcsel;
 	tcsel = pci_express_read(device,0x44);
 	pci_express_write(device,0x44,(tcsel & 0xf8));*/
@@ -352,51 +363,42 @@ AU_EXTERN AU_EXPORT int AuDriverMain(){
 	codec_set_volume = NULL;
 
 
-	uint32_t command = pci_express_read(device ,PCI_COMMAND);
-	command |= (1<<2);
+	uint64_t command = pci_express_read(device ,PCI_COMMAND, bus,dev,func);
+	command |= (1<<10);
 	command |= (1<<1);
-	command &= ~(1<<10);
+	
 	 //clear the Interrupt disable
-	pci_express_write(device, PCI_COMMAND, command);
+	pci_express_write(device, PCI_COMMAND, command, bus,dev,func);
 
-	uint32_t com2 = pci_express_read2(device, PCI_COMMAND, 4);
+
+	uint64_t com2 = pci_express_read(device, PCI_COMMAND,bus,dev,func);
+
 
 	printf ("Comm -> %x, comm2-> %x \n", command, com2);
-	if ((com2 & (1<<10)) ){
-		printf ("Interrupt not disabled \n");
-	}
-
-	uint32_t stat = pci_express_read(device, PCI_STATUS);
-	if ((stat & (1<<3) != 0) && (command & (1<<10) != 1)){
-		printf ("HDA supports interrupt \n");
-	}
-
-	if (stat & (1<<4)){
-		printf ("HDA supports cap list\n");
+	if ((com2 & (1<<10) != 1) ){
+		printf ("Interrupt enabled \n");
 	}
 	
+	
+
+	pcie_alloc_msi(device,80,bus,dev,func);
+	setvect(80, hda_handler);
+
 	shared_device = (shirq_t*)malloc(sizeof(shirq_t));
-	shared_device->irq = pci_express_read(device, PCI_INTERRUPT_LINE);
-	shared_device->device_id = pci_express_read(device,PCI_DEVICE_ID);
-	shared_device->vendor_id = pci_express_read(device,PCI_VENDOR_ID);
+	shared_device->irq = pci_express_read(device, PCI_INTERRUPT_LINE, bus,dev,func);
+	shared_device->device_id = pci_express_read(device,PCI_DEVICE_ID, bus,dev,func);
+	shared_device->vendor_id =  pci_express_read(device,PCI_VENDOR_ID, bus,dev,func);
 	shared_device->IrqHandler = hda_handler;
 	AuSharedDeviceRegister(shared_device);
 
 	hd_audio.irq = shared_device->irq;
+	//AuInterruptSet(10, hda_handler, 10, true);
 
-	AuInterruptSet(3, hda_handler, 3, false);
-	AuInterruptSet(4, hda_handler, 4, false);
-	AuInterruptSet(5, hda_handler, 5, false);
-	AuInterruptSet(6, hda_handler, 6, false);
-	AuInterruptSet(10, hda_handler, 10, false);
-	AuInterruptSet(11, hda_handler, 11, false);
-	AuInterruptSet(14, hda_handler, 14, false);
-	AuInterruptSet(15, hda_handler, 15, false);
-	//AuInterruptSet(7, hda_handler, 7, false);
-
-	uintptr_t mmio = pci_express_read(device, PCI_BAR0);
+	printf ("HD_AUDIO IRQ -> %d \n", hd_audio.irq);
+	
+	uintptr_t mmio = pci_express_read(device, PCI_BAR0, bus,dev,func);
 	printf ("HDA base address -> %x , irq -> %d\n", mmio, hd_audio.irq);
-	hd_audio.mmio = (uint64_t)AuMapMMIO(mmio,2);
+	hd_audio.mmio = (uint64_t)AuMapMMIO(mmio,1);
 	/*uint64_t phys = (uint64_t)AuPmmngrAlloc();
 	uint64_t dma_buffer_virt = (uint64_t)AuMapMMIO(phys,1);
 	hd_audio.dma_buffer_phys = (uint64_t)phys;*/
@@ -448,7 +450,7 @@ AU_EXTERN AU_EXPORT int AuDriverMain(){
 	sound->write = output_stream_write;
 	AuSoundRegisterDevice(sound);
 
-	thread_t *t = create_kthread(hd_thr,(uint64_t)p2v((size_t)AuPmmngrAlloc() + 4096),(uint64_t)AuGetRootPageTable(),"hda",1);
+	//thread_t *t = create_kthread(hd_thr,(uint64_t)p2v((size_t)AuPmmngrAlloc() + 4096),(uint64_t)AuGetRootPageTable(),"hda",1);
 
 	printf ("[driver]: intel hda audio initialized vendor: %x device: %x\n", shared_device->vendor_id, shared_device->device_id);
 	//
@@ -551,6 +553,7 @@ void hda_output_stream_start () {
 	value |= HDAC_SDCTL_IOCE; // | HDAC_SDCTL_RUN;
 	value |= (1<<1);
     _aud_outb_(REG_O0_CTLL,value);
+
 }
 
 /*

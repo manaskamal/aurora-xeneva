@@ -1,7 +1,7 @@
-﻿Build started 22-05-2022 আবেলি 3:30:07.
+﻿Build started 25-05-2022 ৰাতিপু 9:25:19.
      1>Project "E:\Xeneva Project\Xeneva\Drivers\hda\hda.vcxproj" on node 2 (Rebuild target(s)).
      1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\Aurora\include" /Zi /nologo /W3 /WX- /Od /Oy /D ARCH_X64 /D USE_APIC /D _WINDLL /D _MBCS /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt codec.cpp codecs\sigmatel.cpp hda.cpp stream.cpp widget.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\Aurora\include" /Zi /nologo /W3 /WX- /Od /Oy /D ARCH_X64 /D USE_APIC /D _WINDLL /D _MBCS /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt codec.cpp codecs\sigmatel.cpp hda.cpp stream.cpp widget.cpp
      1>cl : Command line warning D9002: ignoring unknown option '/arch:SSE'
          widget.cpp
      1>widget.cpp(43): warning C4018: '<' : signed/unsigned mismatch
@@ -21,16 +21,10 @@
                  E:\Xeneva Project\Xeneva\Aurora\include\va_list.h(42) : see previous definition of 'va_arg'
      1>hda.cpp(134): warning C4244: 'argument' : conversion from 'uint64_t' to 'uint32_t', possible loss of data
      1>hda.cpp(178): warning C4244: 'argument' : conversion from 'uint64_t' to 'uint32_t', possible loss of data
-     1>hda.cpp(355): warning C4244: 'initializing' : conversion from 'uint64_t' to 'uint32_t', possible loss of data
-     1>hda.cpp(362): warning C4244: 'initializing' : conversion from 'uint64_t' to 'uint32_t', possible loss of data
-     1>hda.cpp(369): warning C4244: 'initializing' : conversion from 'uint64_t' to 'uint32_t', possible loss of data
-     1>hda.cpp(370): warning C4554: '&' : check operator precedence for possible error; use parentheses to clarify precedence
-     1>hda.cpp(379): warning C4244: '=' : conversion from 'uint64_t' to 'uint8_t', possible loss of data
-     1>hda.cpp(380): warning C4244: '=' : conversion from 'uint64_t' to 'uint32_t', possible loss of data
-     1>hda.cpp(381): warning C4244: '=' : conversion from 'uint64_t' to 'uint32_t', possible loss of data
-     1>hda.cpp(397): warning C4244: 'initializing' : conversion from 'uint64_t' to 'uintptr_t', possible loss of data
-     1>hda.cpp(485): warning C4018: '<' : signed/unsigned mismatch
-     1>hda.cpp(521): warning C4018: '<' : signed/unsigned mismatch
+     1>hda.cpp(371): warning C4244: 'argument' : conversion from 'uint64_t' to 'uint32_t', possible loss of data
+     1>hda.cpp(378): warning C4554: '&' : check operator precedence for possible error; use parentheses to clarify precedence
+     1>hda.cpp(487): warning C4018: '<' : signed/unsigned mismatch
+     1>hda.cpp(523): warning C4018: '<' : signed/unsigned mismatch
          sigmatel.cpp
          codec.cpp
      1>codec.cpp(65): warning C4101: 'j' : unreferenced local variable
@@ -50,4 +44,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:00.81
+Time Elapsed 00:00:00.93

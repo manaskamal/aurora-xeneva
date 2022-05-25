@@ -270,7 +270,7 @@ AU_EXTERN AU_EXPORT int AuDriverMain() {
 	printf ("[driver]: Initializing e1000 network driver \n");
 	int bus, dev_, func = 0;
 	
-	uint32_t device = pci_express_scan_class (0x02,0x00);
+	uint32_t device = pci_express_scan_class (0x02,0x00,&bus, &dev_, &func);
 	if (device == 0xFFFFFFFF){
 		printf ("[driver]: e1000 not found\n");
 		return 1;
@@ -280,6 +280,9 @@ AU_EXTERN AU_EXPORT int AuDriverMain() {
 
 	//pci_enable_bus_master(device);
 	//pci_enable_interrupts(device);
+	printf ("E1000\n");
+	pcie_alloc_msi(device, 40, bus, dev_, func);
+	
 
 	e1000_nic = e1000_dev;
 	e1000_dev->rx_phys = (uint64_t)p2v((size_t)AuPmmngrAllocBlocks(2));
@@ -305,7 +308,7 @@ AU_EXTERN AU_EXPORT int AuDriverMain() {
 		e1000_dev->tx[i].cmd = (1<<0);
 	}
 
-	uint64_t mmio = pci_express_read(device, PCI_BAR0);//dev.device.nonBridge.baseAddress[0];
+	uint64_t mmio = pci_express_read(device, PCI_BAR0, bus ,dev_, func);//dev.device.nonBridge.baseAddress[0];
 	printf ("MMIO E1000 -> %x \n", mmio);
 	e1000_dev->mmio_addr = (uint64_t)AuMapMMIO(mmio,8);
 
@@ -319,7 +322,7 @@ AU_EXTERN AU_EXPORT int AuDriverMain() {
 
 	e1000_write_mac(e1000_dev);
 
-	e1000_dev->irq = pci_express_read(device,PCI_INTERRUPT_LINE);//dev.device.nonBridge.interruptLine;
+	e1000_dev->irq = pci_express_read(device,PCI_INTERRUPT_LINE, bus, dev_, func);//dev.device.nonBridge.interruptLine;
 
 	if (e1000_dev->irq == 0xFF)
 		return 1;
@@ -336,7 +339,7 @@ AU_EXTERN AU_EXPORT int AuDriverMain() {
 	//else
 	//	AuInstallSharedHandler(e1000_dev->irq, true);*/
 
-
+	
 	e1000_disable_interrupt(e1000_dev);
 
 	/* turn off receive + transmit */
@@ -416,8 +419,8 @@ AU_EXTERN AU_EXPORT int AuDriverMain() {
 	AuNetAddAdapter(file,net);
 
 
-	thread_t *nic_thread = create_kthread(e1000_thread,(uint64_t)p2v((uint64_t)AuPmmngrAlloc() + 4096),(uint64_t)AuGetRootPageTable(),
-		"e1000_thr",1);
+	/*thread_t *nic_thread = create_kthread(e1000_thread,(uint64_t)p2v((uint64_t)AuPmmngrAlloc() + 4096),(uint64_t)AuGetRootPageTable(),
+		"e1000_thr",1);*/
 	//pcie_print_capabilities(device);
 	
 	//AuEnableInterrupts();

@@ -58,7 +58,9 @@ AU_EXTERN AU_EXPORT int AuDriverUnload() {
  */
 AU_EXTERN AU_EXPORT int AuDriverMain() {
 	//printf ("Initializing USB\n");
-	uint32_t device = pci_express_scan_class(0x0C, 0x03);
+	int bus, dev, func;
+
+	uint32_t device = pci_express_scan_class(0x0C, 0x03, &bus, &dev, &func);
 	if (device == 0xFFFFFFFF){
 		printf ("[usb]: xhci not found \n");
 		return 1;
@@ -88,8 +90,8 @@ AU_EXTERN AU_EXPORT int AuDriverMain() {
 	//pci_enable_bus_master(device);
 	//pci_enable_interrupts(device);
 
-	uint64_t usb_addr_low = pci_express_read(device, PCI_BAR0) & 0xFFFFFFF0;
-	uint64_t usb_addr_high = pci_express_read(device, PCI_BAR1) & 0xFFFFFFFF;
+	uint64_t usb_addr_low = pci_express_read(device, PCI_BAR0, bus, dev, func) & 0xFFFFFFF0;
+	uint64_t usb_addr_high = pci_express_read(device, PCI_BAR1, bus, dev, func) & 0xFFFFFFFF;
 	uint64_t mmio_addr = (usb_addr_high << 32) | usb_addr_low;
 
 	uint64_t mmio_base = (uint64_t)AuMapMMIO(mmio_addr, 4);
@@ -118,12 +120,10 @@ AU_EXTERN AU_EXPORT int AuDriverMain() {
 	shdev->IrqHandler  = AuUSBInterrupt;
 	AuSharedDeviceRegister(shdev);*/
 
-	usb_device->irq = pci_express_read(device, PCI_INTERRUPT_LINE); //shdev->irq;
+	usb_device->irq = pci_express_read(device, PCI_INTERRUPT_LINE ,bus, dev, func); //shdev->irq;
 	
 	//AuInterruptSet(shdev->irq, AuUSBInterrupt, shdev->irq, true);
 	
-	//pcie_alloc_msi(device,36);
-
 	//pcie_alloc_msi(device, 35);
 	//pci_alloc_msi(func,dev,bus,AuUSBInterrupt);
 	return 0;

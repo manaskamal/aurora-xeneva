@@ -266,7 +266,9 @@ void x86_64_init_cpu () {
 
 	debug_print ("Exception initialized\n");
 	
-	//initialize_pic();
+#ifdef USE_PIC
+	 initialize_pic();
+#endif
 
 #ifdef USE_APIC
 	//!Initialize APIC   FIXME: Causes triple fault now
@@ -279,8 +281,8 @@ void x86_64_init_cpu () {
 	size_t efer = x64_read_msr(IA32_EFER);
 	efer |= (1<<11);
 	efer |= 1;
-	efer |= (1<<0);
-	efer |= 1;
+	//efer |= (1<<0);
+	//efer |= 1;
 	x64_write_msr(IA32_EFER, efer);
 	//! now start the interrupts
 
@@ -355,6 +357,7 @@ bool is_cpu_xsave_supported () {
  */
 uint64_t cpu_msi_address (uint64_t* data, size_t vector, uint32_t processor, uint8_t edge, uint8_t deassert) {
 	*data = (vector & 0xFF) | (edge == 1 ? 0 : (1<<15)) | (deassert == 1 ? 0 : (1<<14));
+	//*data = low;
 	return (0xFEE00000 | (processor << 12));
 }
 

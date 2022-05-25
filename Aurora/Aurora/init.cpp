@@ -142,9 +142,9 @@ void _AuMain (KERNEL_BOOT_INFO *info) {
 	/*Initialize other processor */
 	AuInitializeCpu(AuGetNumCPU());
 
-	
 	/*Clear the lower half for user space */
 	AuPagingClearLow();
+
 
 #ifdef ARCH_X64
 
