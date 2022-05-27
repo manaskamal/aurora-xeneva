@@ -55,7 +55,8 @@ void PeLinkLibrary (void* image, void* exporter) {
 			PIMAGE_IMPORT_HINT_TABLE hint = raw_offset<PIMAGE_IMPORT_HINT_TABLE>(image, *iat);
 			const char* fname = hint->name;
 			void* procaddr = GetProcAddress((void*)exporter, fname);
-			*iat = (uint64_t)procaddr;
+			if (procaddr != NULL)
+				*iat = (uint64_t)procaddr;
 			++iat;
 		}
 	}
@@ -64,4 +65,5 @@ void PeLinkLibrary (void* image, void* exporter) {
 
 void LinkSharedLibrary () {
 	PeLinkLibrary((void*)0x0000000000600000, (void*)0x0000000100000000);
+	PeLinkLibrary((void*)0x0000000000600000, (void*)0x0000000100200000);
 }

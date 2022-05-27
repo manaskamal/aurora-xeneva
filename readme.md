@@ -32,6 +32,8 @@ The Goal of the project is to produce a high-quality Operating system with full 
 10. Fully Higher half with MMIO mappings
 11. Multiprocessor support (multiprocessor scheduler not ready!!)
 12. Software Audio Mixer 
+13. Dynamic Library (Shared Library)
+14. SSE/SSE2
 
 ## __Ported Projects__:
 1. FreeType 
@@ -67,8 +69,8 @@ __xnlib/xnclib/__ -- C library  <br>
 _Please refer to __"Drivers/"__ directory_
 
 # Screenshot
-![alt text](https://github.com/manaskamal/aurora-xeneva/blob/master/images/xemod.png?raw=true)
-                             _Aurora's Xeneva in 1280x1024 resolution_
+![alt text](https://github.com/manaskamal/aurora-xeneva/blob/master/images/HelloXeneva2.png?raw=true)
+                             _Aurora's Xeneva in 1024x768 resolution_
 
 # About Me:
 I am Manas Kamal Choudhury from Assam, India. I have been programming since class 6. I am self-taught.

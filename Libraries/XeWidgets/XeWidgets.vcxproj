@@ -111,6 +111,7 @@
       <DataExecutionPrevention />
       <AdditionalOptions>/ALIGN:512 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalLibraryDirectories>E:\Xeneva Project\Xeneva\xnlib\lib64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <BaseAddress>0x0000000100200000</BaseAddress>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

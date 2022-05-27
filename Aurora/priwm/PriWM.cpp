@@ -451,7 +451,11 @@ void pri_wallpaper_change (pri_wallpaper_t *wallp,char* filename) {
 void pri_wallpaper_draw (Image *img) {
 	unsigned x = 0;
 	unsigned y = 0;
-	if (img->data != NULL){
+	if (img != NULL){
+
+		if (img->data == NULL)
+			pri_wallpaper_draw(NULL);
+
 		uint8_t* data = img->image;
 		uint32_t w = img->width;
 		uint32_t h = img->height;
@@ -468,7 +472,7 @@ void pri_wallpaper_draw (Image *img) {
 				j++;
 			}
 		}
-	} else {
+	} else{
 		for (int i = 0; i < canvas->width; i++) {
 			for (int j = 0; j < canvas->height; j++) {
 				pri_wallp_pixel(0 + i, 0 + j, LIGHTBLACK);
@@ -1000,14 +1004,14 @@ int main (int argc, char* argv[]) {
 	canvas = create_canvas (s_width,s_height);
 	int w = canvas_get_width(canvas);
 	int h = canvas_get_height(canvas);
-	sys_print_text ("Canvas -> w -> %d , h -> %d \n", canvas->width, canvas->height);
+
 	//! load cursor library
 	cursor_init ();
 	sys_print_text ("Reading cursor files \n");
 	load_cursor ("/cursor.bmp",(uint8_t*)0x0000070000000000, arrow_cursor);
 	load_cursor ("/spin.bmp", (uint8_t*)0x0000070000001000, spin_cursor);
 	Image* wallp = pri_load_wallpaper ("/winne1.jpg");
-	pri_wallpaper_draw(wallp);
+	pri_wallpaper_draw(NULL);
 
 	/* initialize window list */
 	window_list_init();
@@ -1028,14 +1032,12 @@ int main (int argc, char* argv[]) {
 
 	acrylic_initialize_font();
 	acrylic_font_set_size(64);
-	acrylic_font_draw_string(canvas, "Hello! Xeneva", 450,450,32, BLACK);
+	acrylic_font_draw_string(canvas, "Hello! Xeneva", 450,450,32, WHITE);
 
 
 	canvas_screen_update(canvas, 0, 0, s_width, s_height);
 
     cursor_store_back(0, 0);
-
-
     
 	pri_loop_fd = sys_open_file ("/dev/pri_loop",NULL);
 	uint32_t frame_tick;

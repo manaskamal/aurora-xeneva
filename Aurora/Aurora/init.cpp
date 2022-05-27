@@ -91,7 +91,7 @@ void debug_print (const char* text, ...) {
 	debug(text);
 }
 
-extern "C" void x64_stack_test(uint8_t a, uint16_t b, int c, int d, int e, uint8 f);
+
 /**========================================
  ** the main entry routine -- _kmain
  **/
@@ -101,7 +101,6 @@ void _AuMain (KERNEL_BOOT_INFO *info) {
 	AuPmmngrInit (info);
 	AuPagingInit();
 	AuHeapInitialize();
-	
 
 	AuInitializeShMem();
 	AuHalInitialize();
@@ -118,10 +117,14 @@ void _AuMain (KERNEL_BOOT_INFO *info) {
 	AuInitializeRTC(); 
 
 	AuInitializeMouse();
-
 	AuNetInitialize();
 	
-	
+	/***************************************************
+	 * PHASE - 2
+	 ***************************************************
+	 */
+
+
 	//================================================
 	//! Initialize the scheduler here
 	//!===============================================
@@ -132,28 +135,27 @@ void _AuMain (KERNEL_BOOT_INFO *info) {
 	x64_cli();
 	AuDrvMngrInitialize(info);
 	
+	// Load system known libraries for usermode processes
 	AuSysLibInitialize();
 
-	//hda_initialize();
+
 	AuKeyboardInitialize();
 	AuPointDevInitialize();
 	
-	
-
-
-
+	// Initialize main ipc manager
 	pri_loop_init();
 
+	// Initialize the process list
 	process_list_initialize();
 	ttype_init();
 
 	/*Initialize other processor */
 	AuInitializeCpu(AuGetNumCPU());	
 
-
 	/*Clear the lower half for user space */
 	AuPagingClearLow();
 
+	for(;;);
 #ifdef ARCH_X64
 
 	printf ("Scheduler Initialized\n");

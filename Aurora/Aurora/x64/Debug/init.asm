@@ -10,15 +10,15 @@ _BSS	SEGMENT
 ?debug@@3P6AXPEBDZZEA DQ 01H DUP (?)			; debug
 _BSS	ENDS
 CONST	SEGMENT
-$SG5400	DB	'Scheduler Initialized', 0aH, 00H
+$SG5396	DB	'Scheduler Initialized', 0aH, 00H
 	ORG $+1
-$SG5402	DB	'shell', 00H
+$SG5398	DB	'shell', 00H
 	ORG $+2
-$SG5403	DB	'/init.exe', 00H
+$SG5399	DB	'/init.exe', 00H
 	ORG $+2
-$SG5404	DB	'priwm', 00H
+$SG5400	DB	'priwm', 00H
 	ORG $+6
-$SG5405	DB	'/priwm.exe', 00H
+$SG5401	DB	'/priwm.exe', 00H
 CONST	ENDS
 PUBLIC	?debug_print@@YAXPEBDZZ				; debug_print
 PUBLIC	?_AuMain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z		; _AuMain
@@ -58,8 +58,8 @@ pdata	SEGMENT
 $pdata$?debug_print@@YAXPEBDZZ DD imagerel $LN3
 	DD	imagerel $LN3+40
 	DD	imagerel $unwind$?debug_print@@YAXPEBDZZ
-$pdata$?_AuMain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z DD imagerel $LN5
-	DD	imagerel $LN5+292
+$pdata$?_AuMain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z DD imagerel $LN7
+	DD	imagerel $LN7+294
 	DD	imagerel $unwind$?_AuMain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z
 pdata	ENDS
 xdata	SEGMENT
@@ -77,7 +77,7 @@ info$ = 64
 
 ; 98   : void _AuMain (KERNEL_BOOT_INFO *info) {
 
-$LN5:
+$LN7:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 56					; 00000038H
 
@@ -101,198 +101,204 @@ $LN5:
 
 	call	?AuHeapInitialize@@YAXXZ		; AuHeapInitialize
 
-; 104  : 	
-; 105  : 
-; 106  : 	AuInitializeShMem();
+; 104  : 
+; 105  : 	AuInitializeShMem();
 
 	call	?AuInitializeShMem@@YAXXZ		; AuInitializeShMem
 
-; 107  : 	AuHalInitialize();
+; 106  : 	AuHalInitialize();
 
 	call	?AuHalInitialize@@YAXXZ			; AuHalInitialize
 
-; 108  : 
-; 109  : 	AuInitializeSerial();
+; 107  : 
+; 108  : 	AuInitializeSerial();
 
 	call	?AuInitializeSerial@@YAXXZ		; AuInitializeSerial
 
-; 110  : 	AuInitializeBasicAcpi (info->acpi_table_pointer);
+; 109  : 	AuInitializeBasicAcpi (info->acpi_table_pointer);
 
 	mov	rax, QWORD PTR info$[rsp]
 	mov	rcx, QWORD PTR [rax+82]
 	call	?AuInitializeBasicAcpi@@YAXPEAX@Z	; AuInitializeBasicAcpi
 
-; 111  : 	AuSharedDeviceInit();
+; 110  : 	AuSharedDeviceInit();
 
 	call	?AuSharedDeviceInit@@YAXXZ		; AuSharedDeviceInit
 
-; 112  : 	ahci_initialize();
+; 111  : 	ahci_initialize();
 
 	call	?ahci_initialize@@YAXXZ			; ahci_initialize
 
-; 113  : 	AuVFSInit();
+; 112  : 	AuVFSInit();
 
 	call	?AuVFSInit@@YAXXZ			; AuVFSInit
 
-; 114  : 	
-; 115  : 	AuInitializeScreen(info);
+; 113  : 	
+; 114  : 	AuInitializeScreen(info);
 
 	mov	rcx, QWORD PTR info$[rsp]
 	call	?AuInitializeScreen@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z ; AuInitializeScreen
 
-; 116  : 	AuConsoleInitialize(info);
+; 115  : 	AuConsoleInitialize(info);
 
 	mov	rcx, QWORD PTR info$[rsp]
 	call	?AuConsoleInitialize@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z ; AuConsoleInitialize
 
-; 117  : 	AuSoundInitialize();
+; 116  : 	AuSoundInitialize();
 
 	call	?AuSoundInitialize@@YAXXZ		; AuSoundInitialize
 
-; 118  : 	AuInitializeRTC(); 
+; 117  : 	AuInitializeRTC(); 
 
 	call	?AuInitializeRTC@@YAXXZ			; AuInitializeRTC
 
-; 119  : 
-; 120  : 	AuInitializeMouse();
+; 118  : 
+; 119  : 	AuInitializeMouse();
 
 	call	?AuInitializeMouse@@YAXXZ		; AuInitializeMouse
 
-; 121  : 
-; 122  : 	AuNetInitialize();
+; 120  : 	AuNetInitialize();
 
 	call	?AuNetInitialize@@YAXXZ			; AuNetInitialize
 
-; 123  : 	
-; 124  : 	
-; 125  : 	//================================================
-; 126  : 	//! Initialize the scheduler here
-; 127  : 	//!===============================================
-; 128  : 	AuInitializeScheduler();
+; 121  : 	
+; 122  : 	/***************************************************
+; 123  : 	 * PHASE - 2
+; 124  : 	 ***************************************************
+; 125  : 	 */
+; 126  : 
+; 127  : 
+; 128  : 	//================================================
+; 129  : 	//! Initialize the scheduler here
+; 130  : 	//!===============================================
+; 131  : 	AuInitializeScheduler();
 
 	call	?AuInitializeScheduler@@YAXXZ		; AuInitializeScheduler
 
-; 129  : 
-; 130  : 	//Here we initialise all drivers stuffs
-; 131  : 	/* Clear interrupts as scheduler will enable it */
-; 132  : 	x64_cli();
+; 132  : 
+; 133  : 	//Here we initialise all drivers stuffs
+; 134  : 	/* Clear interrupts as scheduler will enable it */
+; 135  : 	x64_cli();
 
 	call	x64_cli
 
-; 133  : 	AuDrvMngrInitialize(info);
+; 136  : 	AuDrvMngrInitialize(info);
 
 	mov	rcx, QWORD PTR info$[rsp]
 	call	?AuDrvMngrInitialize@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z ; AuDrvMngrInitialize
 
-; 134  : 	
-; 135  : 	AuSysLibInitialize();
+; 137  : 	
+; 138  : 	// Load system known libraries for usermode processes
+; 139  : 	AuSysLibInitialize();
 
 	call	?AuSysLibInitialize@@YAXXZ		; AuSysLibInitialize
 
-; 136  : 
-; 137  : 	//hda_initialize();
-; 138  : 	AuKeyboardInitialize();
+; 140  : 
+; 141  : 
+; 142  : 	AuKeyboardInitialize();
 
 	call	?AuKeyboardInitialize@@YAXXZ		; AuKeyboardInitialize
 
-; 139  : 	AuPointDevInitialize();
+; 143  : 	AuPointDevInitialize();
 
 	call	?AuPointDevInitialize@@YAXXZ		; AuPointDevInitialize
 
-; 140  : 	
-; 141  : 	
-; 142  : 
-; 143  : 
-; 144  : 
-; 145  : 	pri_loop_init();
+; 144  : 	
+; 145  : 	// Initialize main ipc manager
+; 146  : 	pri_loop_init();
 
 	call	?pri_loop_init@@YAXXZ			; pri_loop_init
 
-; 146  : 
-; 147  : 	process_list_initialize();
+; 147  : 
+; 148  : 	// Initialize the process list
+; 149  : 	process_list_initialize();
 
 	call	?process_list_initialize@@YAXXZ		; process_list_initialize
 
-; 148  : 	ttype_init();
+; 150  : 	ttype_init();
 
 	call	?ttype_init@@YAXXZ			; ttype_init
 
-; 149  : 
-; 150  : 	/*Initialize other processor */
-; 151  : 	AuInitializeCpu(AuGetNumCPU());	
+; 151  : 
+; 152  : 	/*Initialize other processor */
+; 153  : 	AuInitializeCpu(AuGetNumCPU());	
 
 	call	?AuGetNumCPU@@YAEXZ			; AuGetNumCPU
 	movzx	ecx, al
 	call	?AuInitializeCpu@@YAXE@Z		; AuInitializeCpu
 
-; 152  : 
-; 153  : 
-; 154  : 	/*Clear the lower half for user space */
-; 155  : 	AuPagingClearLow();
+; 154  : 
+; 155  : 	/*Clear the lower half for user space */
+; 156  : 	AuPagingClearLow();
 
 	call	?AuPagingClearLow@@YAXXZ		; AuPagingClearLow
+$LN4@AuMain:
 
-; 156  : 
-; 157  : #ifdef ARCH_X64
-; 158  : 
-; 159  : 	printf ("Scheduler Initialized\n");
+; 157  : 
+; 158  : 	for(;;);
 
-	lea	rcx, OFFSET FLAT:$SG5400
+	jmp	SHORT $LN4@AuMain
+
+; 159  : #ifdef ARCH_X64
+; 160  : 
+; 161  : 	printf ("Scheduler Initialized\n");
+
+	lea	rcx, OFFSET FLAT:$SG5396
 	call	printf
 
-; 160  : 	int au_status = 0;
+; 162  : 	int au_status = 0;
 
 	mov	DWORD PTR au_status$[rsp], 0
 
-; 161  : 
-; 162  : 	/* start the sound service manager at id 1 */
-; 163  : 	au_status = AuCreateProcess ("/init.exe","shell");
+; 163  : 
+; 164  : 	/* start the sound service manager at id 1 */
+; 165  : 	au_status = AuCreateProcess ("/init.exe","shell");
 
-	lea	rdx, OFFSET FLAT:$SG5402
-	lea	rcx, OFFSET FLAT:$SG5403
+	lea	rdx, OFFSET FLAT:$SG5398
+	lea	rcx, OFFSET FLAT:$SG5399
 	call	?AuCreateProcess@@YAHPEBDPEAD@Z		; AuCreateProcess
 	mov	DWORD PTR au_status$[rsp], eax
 
-; 164  : 
-; 165  : 	/* start the compositing window manager at id 3 */
-; 166  : 	au_status = AuCreateProcess ("/priwm.exe","priwm");
+; 166  : 
+; 167  : 	/* start the compositing window manager at id 3 */
+; 168  : 	au_status = AuCreateProcess ("/priwm.exe","priwm");
 
-	lea	rdx, OFFSET FLAT:$SG5404
-	lea	rcx, OFFSET FLAT:$SG5405
+	lea	rdx, OFFSET FLAT:$SG5400
+	lea	rcx, OFFSET FLAT:$SG5401
 	call	?AuCreateProcess@@YAHPEBDPEAD@Z		; AuCreateProcess
 	mov	DWORD PTR au_status$[rsp], eax
 
-; 167  : 
-; 168  : 	//! Here start the scheduler (multitasking engine)
-; 169  : 	AuSchedulerStart();
+; 169  : 
+; 170  : 	//! Here start the scheduler (multitasking engine)
+; 171  : 	AuSchedulerStart();
 
 	call	?AuSchedulerStart@@YAXXZ		; AuSchedulerStart
 $LN2@AuMain:
 
-; 170  : #endif
-; 171  : 
-; 172  : 	//! Loop forever
-; 173  : 	while(1) {
+; 172  : #endif
+; 173  : 
+; 174  : 	//! Loop forever
+; 175  : 	while(1) {
 
 	xor	eax, eax
 	cmp	eax, 1
 	je	SHORT $LN1@AuMain
 
-; 174  : 		//!looping looping
-; 175  : 		x64_cli();
+; 176  : 		//!looping looping
+; 177  : 		x64_cli();
 
 	call	x64_cli
 
-; 176  : 		x64_hlt();
+; 178  : 		x64_hlt();
 
 	call	x64_hlt
 
-; 177  : 	}
+; 179  : 	}
 
 	jmp	SHORT $LN2@AuMain
 $LN1@AuMain:
 
-; 178  : }
+; 180  : }
 
 	add	rsp, 56					; 00000038H
 	ret	0

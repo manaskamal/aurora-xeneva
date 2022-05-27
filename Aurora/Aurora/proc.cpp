@@ -205,6 +205,10 @@ int AuCreateProcess(const char* filename, char* procname) {
 		position++;
 	}
 
+	/*
+	 * Hacky way, for now we just have two system known shared library
+	 * the graphics library and the widget library
+	 */
 
 	AuLibEntry_t *lib = AuGetSysLib("xnacrl.dll");
 	if (lib != NULL) {
@@ -212,6 +216,12 @@ int AuCreateProcess(const char* filename, char* procname) {
 			AuMapPageEx(cr3, lib->phys_start + i * 4096, 0x100000000 + i * 4096, PAGING_USER);
 		}
 	}
+
+	AuLibEntry_t *lib2 = AuGetSysLib("xewid.dll");
+	if (lib2 != NULL)
+		for (int i = 0; i < lib2->phys_blocks_count; i++) 
+			AuMapPageEx(cr3, lib2->phys_start + i * 4096,0x100200000 + i * 4096, PAGING_USER); 
+
 
 
 	uint64_t text_section_end = _image_base_ + position * 4096;

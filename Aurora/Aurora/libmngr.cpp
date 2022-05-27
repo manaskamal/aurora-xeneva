@@ -115,8 +115,8 @@ void AuSysLibInitialize () {
 	libentry_first = NULL;
 	libentry_last = NULL;
 
-	AuSysLoadLib("xewid.dll");
 	AuSysLoadLib("xnacrl.dll");
+	AuSysLoadLib("xewid.dll");
 }
 
 /********************************************************************
