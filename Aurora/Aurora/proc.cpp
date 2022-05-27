@@ -14,6 +14,7 @@
 #include <timer.h>
 #include <fs\fat\fat.h>
 #include <_null.h>
+#include <libmngr.h>
 #include <serial.h>
 #include <ipc\pri_loop.h>
 
@@ -159,15 +160,14 @@ int AuCreateProcess(const char* filename, char* procname) {
 	process_t *process = (process_t*)malloc(sizeof(process_t)); //pmmngr_alloc();
 	memset(process, 0,sizeof(process_t));
 	process->pid_t = pid;
-	
 
 	//!open the process file-binary
 	char *fname = (char*)filename;
 
 	//vfs_node_t file = openfs (n,fname);
-	vfs_node_t file = fat32_open(NULL, fname);
+	vfs_node_t *file = fat32_open(NULL, fname);
 	
-	if (file.status == FS_FLAG_INVALID) {
+	if (file->status == FS_FLAG_INVALID) {
 		printf("Executable image not found\n");
 		return -1;
 	}
@@ -176,7 +176,7 @@ int AuCreateProcess(const char* filename, char* procname) {
 	uint64_t* buf = (uint64_t*)p2v((size_t)AuPmmngrAlloc());   
 	//readfs_block(n,&file,buf);
 	
-	fat32_read (&file,(uint64_t*)v2p((size_t)buf));
+	fat32_read (file,(uint64_t*)v2p((size_t)buf));
 	
 
 	IMAGE_DOS_HEADER* dos = (IMAGE_DOS_HEADER*)buf;
@@ -196,14 +196,26 @@ int AuCreateProcess(const char* filename, char* procname) {
 
 	uint64_t text_section_start = _image_base_;
 
-	while (file.eof != 1){
+
+	while (file->eof != 1){
 		uint64_t* block = (uint64_t*)p2v((size_t)AuPmmngrAlloc());
-		fat32_read (&file,(uint64_t*)v2p((size_t)block));
+		
+		fat32_read (file,(uint64_t*)v2p((size_t)block));
 		AuMapPageEx(cr3,v2p((size_t)block),_image_base_ + position * 4096, PAGING_USER);
 		position++;
 	}
-	uint64_t text_section_end = _image_base_ + position * 4096;
 
+
+	AuLibEntry_t *lib = AuGetSysLib("xnacrl.dll");
+	if (lib != NULL) {
+		for (int i = 0; i < lib->phys_blocks_count; i++) {
+			AuMapPageEx(cr3, lib->phys_start + i * 4096, 0x100000000 + i * 4096, PAGING_USER);
+		}
+	}
+
+
+	uint64_t text_section_end = _image_base_ + position * 4096;
+	
 	au_vm_area_t *vma = (au_vm_area_t*)malloc(sizeof(au_vm_area_t));
 	vma->start = text_section_start;
 	vma->end = text_section_end;
@@ -211,7 +223,7 @@ int AuCreateProcess(const char* filename, char* procname) {
 	vma->offset = 0;
 	vma->prot_flags = VM_READ | VM_EXEC;
 	vma->type = VM_TYPE_TEXT;
-	vma->length = file.size;
+	vma->length = file->size;
 	AuInsertVMArea(process, vma);
 
 	uint64_t stack = (uint64_t)create_user_stack(process,cr3);
@@ -255,13 +267,6 @@ void kill_process () {
 	if (timer != -1) {
 		destroy_timer (timer);
 	}
-
-
-	/*uint64_t virt = USER_BASE_ADDRESS;
-	for (int i = 0; i < proc->mmap_sz + 1; i++) {
-		unmap_page (virt);
-		virt = virt + i * 4096;
-	}*/
 		
 
 	remove_process (proc);
@@ -449,4 +454,14 @@ void* process_heap_break (uint64_t pages) {
 		AuMapPage((uint64_t)AuPmmngrAlloc(), page, PAGING_USER);
 	}
 	return (void*)first_page;
+}
+
+/*
+ * Link all libraries
+ */
+void process_link_libraries () {
+	x64_cli();
+	printf ("Linking Libraries \n");
+	process_t *proc = get_current_process();
+	AuPeLinkLibraryEx((void*)proc->image_base,(void*)0x100000000); 
 }

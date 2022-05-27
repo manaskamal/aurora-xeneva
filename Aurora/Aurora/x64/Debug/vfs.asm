@@ -10,16 +10,28 @@ _BSS	SEGMENT
 ?root_dir@@3PEAU_vfs_entry_@@EA DQ 01H DUP (?)		; root_dir
 _BSS	ENDS
 CONST	SEGMENT
-$SG3548	DB	'[VFS]: Mounting filesystem to root failed, already in us'
+$SG3556	DB	'[VFS]: Mounting filesystem to root failed, already in us'
 	DB	'e', 0aH, 00H
 	ORG $+5
-$SG3576	DB	'[vfs]: already mounted -> %s', 0aH, 00H
-	ORG $+2
-$SG3618	DB	'Directory', 00H
-	ORG $+2
-$SG3621	DB	'File', 00H
+$SG3584	DB	'Recursively calling for -> %s ', 0dH, 0aH, 00H
 	ORG $+7
-$SG3622	DB	'%s -> %s ', 0aH, 00H
+$SG3585	DB	'[vfs]: already mounted -> %s', 0aH, 00H
+	ORG $+2
+$SG3587	DB	'Not found entry -> %s ', 0dH, 0aH, 00H
+	ORG $+7
+$SG3589	DB	'Mounting path -> %s, creating entry ', 0dH, 0aH, 00H
+	ORG $+1
+$SG3591	DB	'Entry created -> %x ', 0dH, 0aH, 00H
+	ORG $+1
+$SG3593	DB	'Ent->child -> %x %x nodes-> %d ', 0dH, 0aH, 00H
+	ORG $+6
+$SG3594	DB	'List added %x ', 0dH, 0aH, 00H
+	ORG $+7
+$SG3633	DB	'Directory', 00H
+	ORG $+2
+$SG3636	DB	'File', 00H
+	ORG $+7
+$SG3637	DB	'%s -> %s ', 0aH, 00H
 CONST	ENDS
 PUBLIC	?AuVFSInit@@YAXXZ				; AuVFSInit
 PUBLIC	?vfs_finddir@@YAPEAU_vfs_node_@@PEAD@Z		; vfs_finddir
@@ -44,6 +56,7 @@ EXTRN	malloc:PROC
 EXTRN	?initialize_fat32@@YAXXZ:PROC			; initialize_fat32
 EXTRN	?fat32_self_register@@YAXXZ:PROC		; fat32_self_register
 EXTRN	?devfs_mount@@YAXXZ:PROC			; devfs_mount
+EXTRN	_debug_print_:PROC
 pdata	SEGMENT
 $pdata$?AuVFSInit@@YAXXZ DD imagerel $LN3
 	DD	imagerel $LN3+77
@@ -58,13 +71,13 @@ $pdata$vfs_mkentry DD imagerel $LN3
 	DD	imagerel $LN3+55
 	DD	imagerel $unwind$vfs_mkentry
 $pdata$vfs_mount DD imagerel $LN23
-	DD	imagerel $LN23+653
+	DD	imagerel $LN23+793
 	DD	imagerel $unwind$vfs_mount
 $pdata$?vfs_lsdir@@YAXPEAD@Z DD imagerel $LN25
 	DD	imagerel $LN25+594
 	DD	imagerel $unwind$?vfs_lsdir@@YAXPEAD@Z
 $pdata$openfs DD imagerel $LN4
-	DD	imagerel $LN4+129
+	DD	imagerel $LN4+45
 	DD	imagerel $unwind$openfs
 $pdata$readfs DD imagerel $LN4
 	DD	imagerel $LN4+60
@@ -92,9 +105,8 @@ $unwind$vfs_mount DD 011301H
 	DD	0e213H
 $unwind$?vfs_lsdir@@YAXPEAD@Z DD 010901H
 	DD	0e209H
-$unwind$openfs DD 041801H
-	DD	01f0118H
-	DD	060107011H
+$unwind$openfs DD 010e01H
+	DD	0420eH
 $unwind$readfs DD 011801H
 	DD	04218H
 $unwind$writefs DD 011801H
@@ -112,7 +124,7 @@ code$ = 56
 arg$ = 64
 vfs_ioquery PROC
 
-; 45   : int vfs_ioquery (vfs_node_t *node, int code, void* arg) {
+; 46   : int vfs_ioquery (vfs_node_t *node, int code, void* arg) {
 
 $LN4:
 	mov	QWORD PTR [rsp+24], r8
@@ -120,12 +132,12 @@ $LN4:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 40					; 00000028H
 
-; 46   : 	if (node) {
+; 47   : 	if (node) {
 
 	cmp	QWORD PTR node$[rsp], 0
 	je	SHORT $LN1@vfs_ioquer
 
-; 47   : 		return node->ioquery (node, code, arg);
+; 48   : 		return node->ioquery (node, code, arg);
 
 	mov	r8, QWORD PTR arg$[rsp]
 	mov	edx, DWORD PTR code$[rsp]
@@ -134,8 +146,8 @@ $LN4:
 	call	QWORD PTR [rax+96]
 $LN1@vfs_ioquer:
 
-; 48   : 	}
-; 49   : }
+; 49   : 	}
+; 50   : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -149,7 +161,7 @@ file$ = 56
 buffer$ = 64
 readfs_block PROC
 
-; 39   : void readfs_block (vfs_node_t* node, vfs_node_t* file, uint64_t *buffer) {
+; 40   : void readfs_block (vfs_node_t* node, vfs_node_t* file, uint64_t *buffer) {
 
 $LN4:
 	mov	QWORD PTR [rsp+24], r8
@@ -157,12 +169,12 @@ $LN4:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 40					; 00000028H
 
-; 40   : 	if (node) {
+; 41   : 	if (node) {
 
 	cmp	QWORD PTR node$[rsp], 0
 	je	SHORT $LN1@readfs_blo
 
-; 41   : 		node->read_blk (file, buffer);
+; 42   : 		node->read_blk (file, buffer);
 
 	mov	rdx, QWORD PTR buffer$[rsp]
 	mov	rcx, QWORD PTR file$[rsp]
@@ -170,8 +182,8 @@ $LN4:
 	call	QWORD PTR [rax+88]
 $LN1@readfs_blo:
 
-; 42   : 	}
-; 43   : }
+; 43   : 	}
+; 44   : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -186,7 +198,7 @@ buffer$ = 64
 length$ = 72
 writefs	PROC
 
-; 33   : void writefs (vfs_node_t *node, vfs_node_t* file, uint64_t *buffer, uint32_t length) {
+; 34   : void writefs (vfs_node_t *node, vfs_node_t* file, uint64_t *buffer, uint32_t length) {
 
 $LN4:
 	mov	DWORD PTR [rsp+32], r9d
@@ -195,12 +207,12 @@ $LN4:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 40					; 00000028H
 
-; 34   : 	if (node) {
+; 35   : 	if (node) {
 
 	cmp	QWORD PTR node$[rsp], 0
 	je	SHORT $LN1@writefs
 
-; 35   : 		node->write (file, buffer, length);
+; 36   : 		node->write (file, buffer, length);
 
 	mov	r8d, DWORD PTR length$[rsp]
 	mov	rdx, QWORD PTR buffer$[rsp]
@@ -209,8 +221,8 @@ $LN4:
 	call	QWORD PTR [rax+80]
 $LN1@writefs:
 
-; 36   : 	}
-; 37   : }
+; 37   : 	}
+; 38   : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -225,7 +237,7 @@ buffer$ = 64
 length$ = 72
 readfs	PROC
 
-; 26   : void readfs (vfs_node_t *node, vfs_node_t* file, uint64_t* buffer, uint32_t length) {
+; 27   : void readfs (vfs_node_t *node, vfs_node_t* file, uint64_t* buffer, uint32_t length) {
 
 $LN4:
 	mov	DWORD PTR [rsp+32], r9d
@@ -234,12 +246,12 @@ $LN4:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 40					; 00000028H
 
-; 27   : 	if (node) {
+; 28   : 	if (node) {
 
 	cmp	QWORD PTR node$[rsp], 0
 	je	SHORT $LN1@readfs
 
-; 28   : 		node->read (file, buffer, length);
+; 29   : 		node->read (file, buffer, length);
 
 	mov	r8d, DWORD PTR length$[rsp]
 	mov	rdx, QWORD PTR buffer$[rsp]
@@ -248,8 +260,8 @@ $LN4:
 	call	QWORD PTR [rax+72]
 $LN1@readfs:
 
-; 29   : 	}
-; 30   : }
+; 30   : 	}
+; 31   : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -258,54 +270,34 @@ _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\fs\vfs.cpp
 _TEXT	SEGMENT
-$T1 = 32
-$T2 = 136
-$T3 = 272
-node$ = 280
-path$ = 288
+node$ = 48
+path$ = 56
 openfs	PROC
 
-; 20   : vfs_node_t openfs (vfs_node_t *node, char* path) {
+; 21   : vfs_node_t* openfs (vfs_node_t *node, char* path) {
 
 $LN4:
-	mov	QWORD PTR [rsp+24], r8
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
-	push	rsi
-	push	rdi
-	sub	rsp, 248				; 000000f8H
+	sub	rsp, 40					; 00000028H
 
-; 21   : 	if (node) {
+; 22   : 	if (node) {
 
 	cmp	QWORD PTR node$[rsp], 0
 	je	SHORT $LN1@openfs
 
-; 22   : 		return node->open (node, path);
+; 23   : 		return node->open (node, path);
 
-	mov	r8, QWORD PTR path$[rsp]
-	mov	rdx, QWORD PTR node$[rsp]
-	lea	rcx, QWORD PTR $T2[rsp]
+	mov	rdx, QWORD PTR path$[rsp]
+	mov	rcx, QWORD PTR node$[rsp]
 	mov	rax, QWORD PTR node$[rsp]
 	call	QWORD PTR [rax+64]
-	lea	rcx, QWORD PTR $T1[rsp]
-	mov	rdi, rcx
-	mov	rsi, rax
-	mov	ecx, 104				; 00000068H
-	rep movsb
-	lea	rax, QWORD PTR $T1[rsp]
-	mov	rdi, QWORD PTR $T3[rsp]
-	mov	rsi, rax
-	mov	ecx, 104				; 00000068H
-	rep movsb
-	mov	rax, QWORD PTR $T3[rsp]
 $LN1@openfs:
 
-; 23   : 	}
-; 24   : }
+; 24   : 	}
+; 25   : }
 
-	add	rsp, 248				; 000000f8H
-	pop	rdi
-	pop	rsi
+	add	rsp, 40					; 00000028H
 	ret	0
 openfs	ENDP
 _TEXT	ENDS
@@ -326,47 +318,47 @@ pathname$7 = 96
 path$ = 128
 ?vfs_lsdir@@YAXPEAD@Z PROC				; vfs_lsdir
 
-; 256  : void vfs_lsdir (char* path) {
+; 261  : void vfs_lsdir (char* path) {
 
 $LN25:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 120				; 00000078H
 
-; 257  : 	char* next = strchr(path, '/');
+; 262  : 	char* next = strchr(path, '/');
 
 	mov	edx, 47					; 0000002fH
 	mov	rcx, QWORD PTR path$[rsp]
 	call	strchr
 	mov	QWORD PTR next$[rsp], rax
 
-; 258  : 	if (next)
+; 263  : 	if (next)
 
 	cmp	QWORD PTR next$[rsp], 0
 	je	SHORT $LN22@vfs_lsdir
 
-; 259  : 		next++;
+; 264  : 		next++;
 
 	mov	rax, QWORD PTR next$[rsp]
 	inc	rax
 	mov	QWORD PTR next$[rsp], rax
 $LN22@vfs_lsdir:
 
-; 260  : 
-; 261  : 	bool found = false;
+; 265  : 
+; 266  : 	bool found = false;
 
 	mov	BYTE PTR found$[rsp], 0
 
-; 262  : 	vfs_entry *ent = root_dir;
+; 267  : 	vfs_entry *ent = root_dir;
 
 	mov	rax, QWORD PTR ?root_dir@@3PEAU_vfs_entry_@@EA ; root_dir
 	mov	QWORD PTR ent$[rsp], rax
 
-; 263  : 	vfs_node_t *entry_found = 0;
+; 268  : 	vfs_node_t *entry_found = 0;
 
 	mov	QWORD PTR entry_found$[rsp], 0
 
-; 264  : 
-; 265  : 	if (path[0] == '/' && strlen(path) == 2)
+; 269  : 
+; 270  : 	if (path[0] == '/' && strlen(path) == 2)
 
 	mov	eax, 1
 	imul	rax, 0
@@ -379,25 +371,25 @@ $LN22@vfs_lsdir:
 	cmp	rax, 2
 	jne	SHORT $LN21@vfs_lsdir
 
-; 266  : 		found = true;
+; 271  : 		found = true;
 
 	mov	BYTE PTR found$[rsp], 1
 $LN21@vfs_lsdir:
 $LN20@vfs_lsdir:
 
-; 267  : 
-; 268  : 
-; 269  : 	while (next) {
+; 272  : 
+; 273  : 
+; 274  : 	while (next) {
 
 	cmp	QWORD PTR next$[rsp], 0
 	je	$LN19@vfs_lsdir
 
-; 270  : 		int i = 0;
+; 275  : 		int i = 0;
 
 	mov	DWORD PTR i$1[rsp], 0
 
-; 271  : 	    char pathname[16];
-; 272  : 		for (i = 0; i < 16; i++) {
+; 276  : 	    char pathname[16];
+; 277  : 		for (i = 0; i < 16; i++) {
 
 	mov	DWORD PTR i$1[rsp], 0
 	jmp	SHORT $LN18@vfs_lsdir
@@ -409,7 +401,7 @@ $LN18@vfs_lsdir:
 	cmp	DWORD PTR i$1[rsp], 16
 	jge	SHORT $LN16@vfs_lsdir
 
-; 273  : 			if (next[i] == '/' || next[i] == '\0')
+; 278  : 			if (next[i] == '/' || next[i] == '\0')
 
 	movsxd	rax, DWORD PTR i$1[rsp]
 	mov	rcx, QWORD PTR next$[rsp]
@@ -423,12 +415,12 @@ $LN18@vfs_lsdir:
 	jne	SHORT $LN15@vfs_lsdir
 $LN14@vfs_lsdir:
 
-; 274  : 				break;
+; 279  : 				break;
 
 	jmp	SHORT $LN16@vfs_lsdir
 $LN15@vfs_lsdir:
 
-; 275  : 			pathname[i] = next[i];
+; 280  : 			pathname[i] = next[i];
 
 	movsxd	rax, DWORD PTR i$1[rsp]
 	movsxd	rcx, DWORD PTR i$1[rsp]
@@ -436,18 +428,18 @@ $LN15@vfs_lsdir:
 	movzx	eax, BYTE PTR [rdx+rax]
 	mov	BYTE PTR pathname$7[rsp+rcx], al
 
-; 276  : 		}
+; 281  : 		}
 
 	jmp	SHORT $LN17@vfs_lsdir
 $LN16@vfs_lsdir:
 
-; 277  : 		pathname[i] = 0;
+; 282  : 		pathname[i] = 0;
 
 	movsxd	rax, DWORD PTR i$1[rsp]
 	mov	BYTE PTR pathname$7[rsp+rax], 0
 
-; 278  : 
-; 279  : 		for (int j = 0; j < ent->childs->pointer; j++) {
+; 283  : 
+; 284  : 		for (int j = 0; j < ent->childs->pointer; j++) {
 
 	mov	DWORD PTR j$2[rsp], 0
 	jmp	SHORT $LN13@vfs_lsdir
@@ -462,7 +454,7 @@ $LN13@vfs_lsdir:
 	cmp	DWORD PTR j$2[rsp], eax
 	jae	SHORT $LN11@vfs_lsdir
 
-; 280  : 			vfs_node_t *file_ = (vfs_node_t*)list_get_at(ent->childs, j);
+; 285  : 			vfs_node_t *file_ = (vfs_node_t*)list_get_at(ent->childs, j);
 
 	mov	edx, DWORD PTR j$2[rsp]
 	mov	rax, QWORD PTR ent$[rsp]
@@ -470,12 +462,12 @@ $LN13@vfs_lsdir:
 	call	?list_get_at@@YAPEAXPEAU_list_@@I@Z	; list_get_at
 	mov	QWORD PTR file_$4[rsp], rax
 
-; 281  : 			entry_found = file_;
+; 286  : 			entry_found = file_;
 
 	mov	rax, QWORD PTR file_$4[rsp]
 	mov	QWORD PTR entry_found$[rsp], rax
 
-; 282  : 			if (strcmp(file_->filename, pathname) == 0) {
+; 287  : 			if (strcmp(file_->filename, pathname) == 0) {
 
 	mov	rax, QWORD PTR file_$4[rsp]
 	lea	rdx, QWORD PTR pathname$7[rsp]
@@ -484,14 +476,14 @@ $LN13@vfs_lsdir:
 	test	eax, eax
 	jne	SHORT $LN10@vfs_lsdir
 
-; 283  : 				if (file_->flags == FS_FLAG_DIRECTORY)
+; 288  : 				if (file_->flags == FS_FLAG_DIRECTORY)
 
 	mov	rax, QWORD PTR file_$4[rsp]
 	movzx	eax, BYTE PTR [rax+48]
 	cmp	eax, 1
 	jne	SHORT $LN9@vfs_lsdir
 
-; 284  : 					ent = (vfs_entry *)file_->device;
+; 289  : 					ent = (vfs_entry *)file_->device;
 
 	mov	rax, QWORD PTR file_$4[rsp]
 	mov	rax, QWORD PTR [rax+56]
@@ -499,14 +491,14 @@ $LN13@vfs_lsdir:
 $LN9@vfs_lsdir:
 $LN10@vfs_lsdir:
 
-; 285  : 			}
-; 286  : 		}
+; 290  : 			}
+; 291  : 		}
 
 	jmp	SHORT $LN12@vfs_lsdir
 $LN11@vfs_lsdir:
 
-; 287  : 
-; 288  : 		next = strchr(next + 1, '/');
+; 292  : 
+; 293  : 		next = strchr(next + 1, '/');
 
 	mov	rax, QWORD PTR next$[rsp]
 	inc	rax
@@ -515,32 +507,32 @@ $LN11@vfs_lsdir:
 	call	strchr
 	mov	QWORD PTR next$[rsp], rax
 
-; 289  : 		if (next)
+; 294  : 		if (next)
 
 	cmp	QWORD PTR next$[rsp], 0
 	je	SHORT $LN8@vfs_lsdir
 
-; 290  : 			next++;
+; 295  : 			next++;
 
 	mov	rax, QWORD PTR next$[rsp]
 	inc	rax
 	mov	QWORD PTR next$[rsp], rax
 $LN8@vfs_lsdir:
 
-; 291  : 	}
+; 296  : 	}
 
 	jmp	$LN20@vfs_lsdir
 $LN19@vfs_lsdir:
 
-; 292  : 
-; 293  : 	if (ent) {
+; 297  : 
+; 298  : 	if (ent) {
 
 	cmp	QWORD PTR ent$[rsp], 0
 	je	$LN7@vfs_lsdir
 
-; 294  : 		/* if this entry is a directory, recursively
-; 295  : 		* call the node and check it */
-; 296  : 		for (int i = 0; i < ent->childs->pointer; i++) {
+; 299  : 		/* if this entry is a directory, recursively
+; 300  : 		* call the node and check it */
+; 301  : 		for (int i = 0; i < ent->childs->pointer; i++) {
 
 	mov	DWORD PTR i$3[rsp], 0
 	jmp	SHORT $LN6@vfs_lsdir
@@ -555,7 +547,7 @@ $LN6@vfs_lsdir:
 	cmp	DWORD PTR i$3[rsp], eax
 	jae	SHORT $LN4@vfs_lsdir
 
-; 297  : 			vfs_node_t *f = (vfs_node_t*)list_get_at(ent->childs, i);
+; 302  : 			vfs_node_t *f = (vfs_node_t*)list_get_at(ent->childs, i);
 
 	mov	edx, DWORD PTR i$3[rsp]
 	mov	rax, QWORD PTR ent$[rsp]
@@ -563,55 +555,55 @@ $LN6@vfs_lsdir:
 	call	?list_get_at@@YAPEAXPEAU_list_@@I@Z	; list_get_at
 	mov	QWORD PTR f$6[rsp], rax
 
-; 298  : 			char* type = 0;
+; 303  : 			char* type = 0;
 
 	mov	QWORD PTR type$5[rsp], 0
 
-; 299  : 			if (f->flags == FS_FLAG_DIRECTORY)
+; 304  : 			if (f->flags == FS_FLAG_DIRECTORY)
 
 	mov	rax, QWORD PTR f$6[rsp]
 	movzx	eax, BYTE PTR [rax+48]
 	cmp	eax, 1
 	jne	SHORT $LN3@vfs_lsdir
 
-; 300  : 				type = "Directory";
+; 305  : 				type = "Directory";
 
-	lea	rax, OFFSET FLAT:$SG3618
+	lea	rax, OFFSET FLAT:$SG3633
 	mov	QWORD PTR type$5[rsp], rax
 	jmp	SHORT $LN2@vfs_lsdir
 $LN3@vfs_lsdir:
 
-; 301  : 			else if (f->flags == FS_FLAG_GENERAL)
+; 306  : 			else if (f->flags == FS_FLAG_GENERAL)
 
 	mov	rax, QWORD PTR f$6[rsp]
 	movzx	eax, BYTE PTR [rax+48]
 	cmp	eax, 2
 	jne	SHORT $LN1@vfs_lsdir
 
-; 302  : 				type = "File";
+; 307  : 				type = "File";
 
-	lea	rax, OFFSET FLAT:$SG3621
+	lea	rax, OFFSET FLAT:$SG3636
 	mov	QWORD PTR type$5[rsp], rax
 $LN1@vfs_lsdir:
 $LN2@vfs_lsdir:
 
-; 303  : 			printf("%s -> %s \n",type, f->filename);
+; 308  : 			printf("%s -> %s \n",type, f->filename);
 
 	mov	rax, QWORD PTR f$6[rsp]
 	mov	r8, rax
 	mov	rdx, QWORD PTR type$5[rsp]
-	lea	rcx, OFFSET FLAT:$SG3622
+	lea	rcx, OFFSET FLAT:$SG3637
 	call	printf
 
-; 304  : 		}
+; 309  : 		}
 
 	jmp	$LN5@vfs_lsdir
 $LN4@vfs_lsdir:
 $LN7@vfs_lsdir:
 
-; 305  : 		return;
-; 306  : 	}
-; 307  : }
+; 310  : 		return;
+; 311  : 	}
+; 312  : }
 
 	add	rsp, 120				; 00000078H
 	ret	0
@@ -623,19 +615,19 @@ _TEXT	SEGMENT
 found$ = 32
 i$1 = 36
 next$ = 40
-j$2 = 48
-ent$ = 56
+ent$ = 48
+j$2 = 56
 entry_found$ = 64
-file_$3 = 72
-entry_$4 = 80
-entryn$5 = 88
+entry_$3 = 72
+entryn$4 = 80
+file_$5 = 88
 pathname$6 = 96
 path$ = 128
 node$ = 136
 dirnode$ = 144
 vfs_mount PROC
 
-; 189  : void vfs_mount (char *path, vfs_node_t *node, vfs_entry *dirnode) {
+; 190  : void vfs_mount (char *path, vfs_node_t *node, vfs_entry *dirnode) {
 
 $LN23:
 	mov	QWORD PTR [rsp+24], r8
@@ -643,7 +635,7 @@ $LN23:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 120				; 00000078H
 
-; 190  : 	if (path[0] == '/' && strlen(path) == 2) {
+; 191  : 	if (path[0] == '/' && strlen(path) == 2) {
 
 	mov	eax, 1
 	imul	rax, 0
@@ -656,41 +648,40 @@ $LN23:
 	cmp	rax, 2
 	jne	SHORT $LN20@vfs_mount
 
-; 191  : 		vfs_entry *entry_ = root_dir;
+; 192  : 		vfs_entry *entry_ = root_dir;
 
 	mov	rax, QWORD PTR ?root_dir@@3PEAU_vfs_entry_@@EA ; root_dir
-	mov	QWORD PTR entry_$4[rsp], rax
+	mov	QWORD PTR entry_$3[rsp], rax
 
-; 192  : 		if (entry_->node) {
+; 193  : 		if (entry_->node) {
 
-	mov	rax, QWORD PTR entry_$4[rsp]
+	mov	rax, QWORD PTR entry_$3[rsp]
 	cmp	QWORD PTR [rax], 0
 	je	SHORT $LN19@vfs_mount
 
-; 193  : 			printf ("[VFS]: Mounting filesystem to root failed, already in use\n");
+; 194  : 			printf ("[VFS]: Mounting filesystem to root failed, already in use\n");
 
-	lea	rcx, OFFSET FLAT:$SG3548
+	lea	rcx, OFFSET FLAT:$SG3556
 	call	printf
 
-; 194  : 			return;   //Already a root filesystem is present
+; 195  : 			return;   //Already a root filesystem is present
 
 	jmp	$LN21@vfs_mount
 $LN19@vfs_mount:
 
-; 195  : 		}
-; 196  : 		entry_->node = node; //else mount
+; 196  : 		}
+; 197  : 		entry_->node = node; //else mount
 
-	mov	rax, QWORD PTR entry_$4[rsp]
+	mov	rax, QWORD PTR entry_$3[rsp]
 	mov	rcx, QWORD PTR node$[rsp]
 	mov	QWORD PTR [rax], rcx
 
-; 197  : 		return;
+; 198  : 		return;
 
 	jmp	$LN21@vfs_mount
 $LN20@vfs_mount:
 
-; 198  : 	}
-; 199  : 
+; 199  : 	}
 ; 200  : 
 ; 201  : 	//! seeking else? other mount points
 ; 202  : 	//! /home/manas
@@ -821,36 +812,35 @@ $LN9@vfs_mount:
 	mov	rax, QWORD PTR ent$[rsp]
 	mov	rcx, QWORD PTR [rax+8]
 	call	?list_get_at@@YAPEAXPEAU_list_@@I@Z	; list_get_at
-	mov	QWORD PTR file_$3[rsp], rax
+	mov	QWORD PTR file_$5[rsp], rax
 
-; 225  : 		
-; 226  : 			if (strcmp(file_->filename, pathname)==0) {
+; 225  : 			if (strcmp(file_->filename, pathname)==0) {
 
-	mov	rax, QWORD PTR file_$3[rsp]
+	mov	rax, QWORD PTR file_$5[rsp]
 	lea	rdx, QWORD PTR pathname$6[rsp]
 	mov	rcx, rax
 	call	strcmp
 	test	eax, eax
 	jne	SHORT $LN6@vfs_mount
 
-; 227  : 				entry_found = file_;
+; 226  : 				entry_found = file_;
 
-	mov	rax, QWORD PTR file_$3[rsp]
+	mov	rax, QWORD PTR file_$5[rsp]
 	mov	QWORD PTR entry_found$[rsp], rax
 
-; 228  : 				found = true;
+; 227  : 				found = true;
 
 	mov	BYTE PTR found$[rsp], 1
 $LN6@vfs_mount:
 
-; 229  : 			}
-; 230  : 		}
+; 228  : 			}
+; 229  : 		}
 
 	jmp	SHORT $LN8@vfs_mount
 $LN7@vfs_mount:
 
-; 231  : 
-; 232  : 		next = strchr (next + 1, '/'); 
+; 230  : 
+; 231  : 		next = strchr (next + 1, '/'); 
 
 	mov	rax, QWORD PTR next$[rsp]
 	inc	rax
@@ -859,42 +849,48 @@ $LN7@vfs_mount:
 	call	strchr
 	mov	QWORD PTR next$[rsp], rax
 
-; 233  : 		if (next)
+; 232  : 		if (next)
 
 	cmp	QWORD PTR next$[rsp], 0
 	je	SHORT $LN5@vfs_mount
 
-; 234  : 			next++;
+; 233  : 			next++;
 
 	mov	rax, QWORD PTR next$[rsp]
 	inc	rax
 	mov	QWORD PTR next$[rsp], rax
 $LN5@vfs_mount:
 
-; 235  : 	}
+; 234  : 	}
 
 	jmp	$LN17@vfs_mount
 $LN16@vfs_mount:
 
-; 236  : 
-; 237  : 	if (found) {
+; 235  : 
+; 236  : 	if (found) {
 
 	movzx	eax, BYTE PTR found$[rsp]
 	test	eax, eax
 	je	SHORT $LN4@vfs_mount
 
-; 238  : 		if (entry_found->flags == FS_FLAG_DIRECTORY) {
+; 237  : 		if (entry_found->flags == FS_FLAG_DIRECTORY) {
 
 	mov	rax, QWORD PTR entry_found$[rsp]
 	movzx	eax, BYTE PTR [rax+48]
 	cmp	eax, 1
 	jne	SHORT $LN3@vfs_mount
 
-; 239  : 			ent = (vfs_entry*)entry_found->device;
+; 238  : 			ent = (vfs_entry*)entry_found->device;
 
 	mov	rax, QWORD PTR entry_found$[rsp]
 	mov	rax, QWORD PTR [rax+56]
 	mov	QWORD PTR ent$[rsp], rax
+
+; 239  : 			_debug_print_ ("Recursively calling for -> %s \r\n", path);
+
+	mov	rdx, QWORD PTR path$[rsp]
+	lea	rcx, OFFSET FLAT:$SG3584
+	call	_debug_print_
 
 ; 240  : 			vfs_mount(path,node,ent);
 
@@ -908,12 +904,12 @@ $LN3@vfs_mount:
 ; 242  : 		printf ("[vfs]: already mounted -> %s\n", path);
 
 	mov	rdx, QWORD PTR path$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3576
+	lea	rcx, OFFSET FLAT:$SG3585
 	call	printf
 
 ; 243  : 		return;
 
-	jmp	SHORT $LN21@vfs_mount
+	jmp	$LN21@vfs_mount
 $LN4@vfs_mount:
 
 ; 244  : 	}
@@ -922,39 +918,73 @@ $LN4@vfs_mount:
 
 	movzx	eax, BYTE PTR found$[rsp]
 	test	eax, eax
-	jne	SHORT $LN2@vfs_mount
+	jne	$LN2@vfs_mount
 
-; 247  : 		if (entry_found) {
+; 247  : 		_debug_print_ ("Not found entry -> %s \r\n", path);
+
+	mov	rdx, QWORD PTR path$[rsp]
+	lea	rcx, OFFSET FLAT:$SG3587
+	call	_debug_print_
+
+; 248  : 		if (entry_found) {
 
 	cmp	QWORD PTR entry_found$[rsp], 0
 	je	SHORT $LN1@vfs_mount
 
-; 248  : 			vfs_entry* entryn = vfs_mkentry();
+; 249  : 			_debug_print_ ("Mounting path -> %s, creating entry \r\n", path);
+
+	mov	rdx, QWORD PTR path$[rsp]
+	lea	rcx, OFFSET FLAT:$SG3589
+	call	_debug_print_
+
+; 250  : 			vfs_entry* entryn = vfs_mkentry();
 
 	call	vfs_mkentry
-	mov	QWORD PTR entryn$5[rsp], rax
+	mov	QWORD PTR entryn$4[rsp], rax
 
-; 249  : 			vfs_mkdir(path,node,entryn);
+; 251  : 			_debug_print_ ("Entry created -> %x \r\n", entryn);
 
-	mov	r8, QWORD PTR entryn$5[rsp]
+	mov	rdx, QWORD PTR entryn$4[rsp]
+	lea	rcx, OFFSET FLAT:$SG3591
+	call	_debug_print_
+
+; 252  : 			vfs_mkdir(path,node,entryn);
+
+	mov	r8, QWORD PTR entryn$4[rsp]
 	mov	rdx, QWORD PTR node$[rsp]
 	mov	rcx, QWORD PTR path$[rsp]
 	call	vfs_mkdir
 $LN1@vfs_mount:
 
-; 250  : 		}
-; 251  : 		list_add(ent->childs, node);
+; 253  : 		}
+; 254  : 		_debug_print_ ("Ent->child -> %x %x nodes-> %d \r\n", ent->childs, node, sizeof(vfs_node_t));
+
+	mov	r9d, 104				; 00000068H
+	mov	r8, QWORD PTR node$[rsp]
+	mov	rax, QWORD PTR ent$[rsp]
+	mov	rdx, QWORD PTR [rax+8]
+	lea	rcx, OFFSET FLAT:$SG3593
+	call	_debug_print_
+
+; 255  : 		list_add(ent->childs, node);
 
 	mov	rdx, QWORD PTR node$[rsp]
 	mov	rax, QWORD PTR ent$[rsp]
 	mov	rcx, QWORD PTR [rax+8]
 	call	?list_add@@YAXPEAU_list_@@PEAX@Z	; list_add
+
+; 256  : 		_debug_print_ ("List added %x \r\n", ent->childs);
+
+	mov	rax, QWORD PTR ent$[rsp]
+	mov	rdx, QWORD PTR [rax+8]
+	lea	rcx, OFFSET FLAT:$SG3594
+	call	_debug_print_
 $LN2@vfs_mount:
 $LN21@vfs_mount:
 
-; 252  : 	}
-; 253  : 	
-; 254  : }
+; 257  : 	}
+; 258  : 	
+; 259  : }
 
 	add	rsp, 120				; 00000078H
 	ret	0
@@ -966,33 +996,33 @@ _TEXT	SEGMENT
 ent$ = 32
 vfs_mkentry PROC
 
-; 176  : vfs_entry * vfs_mkentry() {
+; 177  : vfs_entry * vfs_mkentry() {
 
 $LN3:
 	sub	rsp, 56					; 00000038H
 
-; 177  : 	vfs_entry* ent = (vfs_entry*)malloc(sizeof(vfs_entry));
+; 178  : 	vfs_entry* ent = (vfs_entry*)malloc(sizeof(vfs_entry));
 
 	mov	ecx, 16
 	call	malloc
 	mov	QWORD PTR ent$[rsp], rax
 
-; 178  : 	ent->node = 0;
+; 179  : 	ent->node = 0;
 
 	mov	rax, QWORD PTR ent$[rsp]
 	mov	QWORD PTR [rax], 0
 
-; 179  : 	ent->childs = initialize_list();
+; 180  : 	ent->childs = initialize_list();
 
 	call	?initialize_list@@YAPEAU_list_@@XZ	; initialize_list
 	mov	rcx, QWORD PTR ent$[rsp]
 	mov	QWORD PTR [rcx+8], rax
 
-; 180  : 	return ent;
+; 181  : 	return ent;
 
 	mov	rax, QWORD PTR ent$[rsp]
 
-; 181  : }
+; 182  : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -1014,7 +1044,7 @@ dir$ = 120
 dir_node$ = 128
 vfs_mkdir PROC
 
-; 124  : void vfs_mkdir (char* path, vfs_node_t* dir, vfs_entry* dir_node) {
+; 125  : void vfs_mkdir (char* path, vfs_node_t* dir, vfs_entry* dir_node) {
 
 $LN20:
 	mov	QWORD PTR [rsp+24], r8
@@ -1022,59 +1052,59 @@ $LN20:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 104				; 00000068H
 
-; 125  : 	dir->device = dir_node;
+; 126  : 	dir->device = dir_node;
 
 	mov	rax, QWORD PTR dir$[rsp]
 	mov	rcx, QWORD PTR dir_node$[rsp]
 	mov	QWORD PTR [rax+56], rcx
 
-; 126  : 	bool found = false;
+; 127  : 	bool found = false;
 
 	mov	BYTE PTR found$[rsp], 0
 
-; 127  : 	char* next = strchr(path, '/');
+; 128  : 	char* next = strchr(path, '/');
 
 	mov	edx, 47					; 0000002fH
 	mov	rcx, QWORD PTR path$[rsp]
 	call	strchr
 	mov	QWORD PTR next$[rsp], rax
 
-; 128  : 	if (next)
+; 129  : 	if (next)
 
 	cmp	QWORD PTR next$[rsp], 0
 	je	SHORT $LN17@vfs_mkdir
 
-; 129  : 		next++;
+; 130  : 		next++;
 
 	mov	rax, QWORD PTR next$[rsp]
 	inc	rax
 	mov	QWORD PTR next$[rsp], rax
 $LN17@vfs_mkdir:
 
-; 130  : 
-; 131  : 	vfs_entry* ent = root_dir;
+; 131  : 
+; 132  : 	vfs_entry* ent = root_dir;
 
 	mov	rax, QWORD PTR ?root_dir@@3PEAU_vfs_entry_@@EA ; root_dir
 	mov	QWORD PTR ent$[rsp], rax
 
-; 132  : 	vfs_node_t* entry_found = 0;
+; 133  : 	vfs_node_t* entry_found = 0;
 
 	mov	QWORD PTR entry_found$[rsp], 0
 $LN16@vfs_mkdir:
 
-; 133  : 	char pathname[16];
-; 134  : 	
-; 135  : 	while(next) {
+; 134  : 	char pathname[16];
+; 135  : 	
+; 136  : 	while(next) {
 
 	cmp	QWORD PTR next$[rsp], 0
 	je	$LN15@vfs_mkdir
 
-; 136  : 		int i = 0;
+; 137  : 		int i = 0;
 
 	mov	DWORD PTR i$1[rsp], 0
 
-; 137  : 
-; 138  : 		for (i = 0; i < 16; i++) {
+; 138  : 
+; 139  : 		for (i = 0; i < 16; i++) {
 
 	mov	DWORD PTR i$1[rsp], 0
 	jmp	SHORT $LN14@vfs_mkdir
@@ -1086,7 +1116,7 @@ $LN14@vfs_mkdir:
 	cmp	DWORD PTR i$1[rsp], 16
 	jge	SHORT $LN12@vfs_mkdir
 
-; 139  : 			if (next[i] == '/' || next[i] == '\0')
+; 140  : 			if (next[i] == '/' || next[i] == '\0')
 
 	movsxd	rax, DWORD PTR i$1[rsp]
 	mov	rcx, QWORD PTR next$[rsp]
@@ -1100,12 +1130,12 @@ $LN14@vfs_mkdir:
 	jne	SHORT $LN11@vfs_mkdir
 $LN10@vfs_mkdir:
 
-; 140  : 				break;
+; 141  : 				break;
 
 	jmp	SHORT $LN12@vfs_mkdir
 $LN11@vfs_mkdir:
 
-; 141  : 			pathname[i] = next[i];
+; 142  : 			pathname[i] = next[i];
 
 	movsxd	rax, DWORD PTR i$1[rsp]
 	movsxd	rcx, DWORD PTR i$1[rsp]
@@ -1113,30 +1143,30 @@ $LN11@vfs_mkdir:
 	movzx	eax, BYTE PTR [rdx+rax]
 	mov	BYTE PTR pathname$[rsp+rcx], al
 
-; 142  : 		}
+; 143  : 		}
 
 	jmp	SHORT $LN13@vfs_mkdir
 $LN12@vfs_mkdir:
 
-; 143  : 		pathname[i] = 0;
+; 144  : 		pathname[i] = 0;
 
 	movsxd	rax, DWORD PTR i$1[rsp]
 	mov	BYTE PTR pathname$[rsp+rax], 0
 
-; 144  : 
-; 145  : 		if (ent == NULL)
+; 145  : 
+; 146  : 		if (ent == NULL)
 
 	cmp	QWORD PTR ent$[rsp], 0
 	jne	SHORT $LN9@vfs_mkdir
 
-; 146  : 			ent = root_dir;
+; 147  : 			ent = root_dir;
 
 	mov	rax, QWORD PTR ?root_dir@@3PEAU_vfs_entry_@@EA ; root_dir
 	mov	QWORD PTR ent$[rsp], rax
 $LN9@vfs_mkdir:
 
-; 147  : 
-; 148  : 		for (int j = 0; j < ent->childs->pointer; j++) {
+; 148  : 
+; 149  : 		for (int j = 0; j < ent->childs->pointer; j++) {
 
 	mov	DWORD PTR j$2[rsp], 0
 	jmp	SHORT $LN8@vfs_mkdir
@@ -1151,7 +1181,7 @@ $LN8@vfs_mkdir:
 	cmp	DWORD PTR j$2[rsp], eax
 	jae	SHORT $LN6@vfs_mkdir
 
-; 149  : 			vfs_node_t* file_ = (vfs_node_t*)list_get_at(ent->childs, j);
+; 150  : 			vfs_node_t* file_ = (vfs_node_t*)list_get_at(ent->childs, j);
 
 	mov	edx, DWORD PTR j$2[rsp]
 	mov	rax, QWORD PTR ent$[rsp]
@@ -1159,7 +1189,7 @@ $LN8@vfs_mkdir:
 	call	?list_get_at@@YAPEAXPEAU_list_@@I@Z	; list_get_at
 	mov	QWORD PTR file_$3[rsp], rax
 
-; 150  : 			if (strcmp(file_->filename, pathname) == 0) {
+; 151  : 			if (strcmp(file_->filename, pathname) == 0) {
 
 	mov	rax, QWORD PTR file_$3[rsp]
 	lea	rdx, QWORD PTR pathname$[rsp]
@@ -1168,38 +1198,38 @@ $LN8@vfs_mkdir:
 	test	eax, eax
 	jne	SHORT $LN5@vfs_mkdir
 
-; 151  : 				if (file_->flags == FS_FLAG_DIRECTORY)
+; 152  : 				if (file_->flags == FS_FLAG_DIRECTORY)
 
 	mov	rax, QWORD PTR file_$3[rsp]
 	movzx	eax, BYTE PTR [rax+48]
 	cmp	eax, 1
 	jne	SHORT $LN4@vfs_mkdir
 
-; 152  : 					ent = (vfs_entry *)file_->device;
+; 153  : 					ent = (vfs_entry *)file_->device;
 
 	mov	rax, QWORD PTR file_$3[rsp]
 	mov	rax, QWORD PTR [rax+56]
 	mov	QWORD PTR ent$[rsp], rax
 $LN4@vfs_mkdir:
 
-; 153  : 				found = true;
+; 154  : 				found = true;
 
 	mov	BYTE PTR found$[rsp], 1
 
-; 154  : 				entry_found = file_;
+; 155  : 				entry_found = file_;
 
 	mov	rax, QWORD PTR file_$3[rsp]
 	mov	QWORD PTR entry_found$[rsp], rax
 $LN5@vfs_mkdir:
 
-; 155  : 			}
-; 156  : 		}
+; 156  : 			}
+; 157  : 		}
 
 	jmp	SHORT $LN7@vfs_mkdir
 $LN6@vfs_mkdir:
 
-; 157  : 
-; 158  : 		next = strchr(next + 1, '/');
+; 158  : 
+; 159  : 		next = strchr(next + 1, '/');
 
 	mov	rax, QWORD PTR next$[rsp]
 	inc	rax
@@ -1208,59 +1238,59 @@ $LN6@vfs_mkdir:
 	call	strchr
 	mov	QWORD PTR next$[rsp], rax
 
-; 159  : 		if (next)
+; 160  : 		if (next)
 
 	cmp	QWORD PTR next$[rsp], 0
 	je	SHORT $LN3@vfs_mkdir
 
-; 160  : 			next++;
+; 161  : 			next++;
 
 	mov	rax, QWORD PTR next$[rsp]
 	inc	rax
 	mov	QWORD PTR next$[rsp], rax
 $LN3@vfs_mkdir:
 
-; 161  : 	}
+; 162  : 	}
 
 	jmp	$LN16@vfs_mkdir
 $LN15@vfs_mkdir:
 
-; 162  : 
-; 163  : 	strcpy(dir->filename, pathname);
+; 163  : 
+; 164  : 	strcpy(dir->filename, pathname);
 
 	mov	rax, QWORD PTR dir$[rsp]
 	lea	rdx, QWORD PTR pathname$[rsp]
 	mov	rcx, rax
 	call	strcpy
 
-; 164  : 	if (found) {
+; 165  : 	if (found) {
 
 	movzx	eax, BYTE PTR found$[rsp]
 	test	eax, eax
 	je	SHORT $LN2@vfs_mkdir
 
-; 165  : 		/* if this entry is a directory, recursively
-; 166  : 		* call the node and check it */
-; 167  : 		list_add(ent->childs, dir);
+; 166  : 		/* if this entry is a directory, recursively
+; 167  : 		* call the node and check it */
+; 168  : 		list_add(ent->childs, dir);
 
 	mov	rdx, QWORD PTR dir$[rsp]
 	mov	rax, QWORD PTR ent$[rsp]
 	mov	rcx, QWORD PTR [rax+8]
 	call	?list_add@@YAXPEAU_list_@@PEAX@Z	; list_add
 
-; 168  : 		return;
+; 169  : 		return;
 
 	jmp	SHORT $LN18@vfs_mkdir
 $LN2@vfs_mkdir:
 
-; 169  : 	}
-; 170  : 	if (!found) {
+; 170  : 	}
+; 171  : 	if (!found) {
 
 	movzx	eax, BYTE PTR found$[rsp]
 	test	eax, eax
 	jne	SHORT $LN1@vfs_mkdir
 
-; 171  : 		list_add(ent->childs, dir);
+; 172  : 		list_add(ent->childs, dir);
 
 	mov	rdx, QWORD PTR dir$[rsp]
 	mov	rax, QWORD PTR ent$[rsp]
@@ -1269,9 +1299,9 @@ $LN2@vfs_mkdir:
 $LN1@vfs_mkdir:
 $LN18@vfs_mkdir:
 
-; 172  : 		return;
-; 173  : 	}		
-; 174  : }
+; 173  : 		return;
+; 174  : 	}		
+; 175  : }
 
 	add	rsp, 104				; 00000068H
 	ret	0
@@ -1292,13 +1322,13 @@ fs_path$ = 104
 path$ = 128
 ?vfs_finddir@@YAPEAU_vfs_node_@@PEAD@Z PROC		; vfs_finddir
 
-; 69   : vfs_node_t* vfs_finddir (char *path) {
+; 70   : vfs_node_t* vfs_finddir (char *path) {
 
 $LN20:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 120				; 00000078H
 
-; 70   : 	if (path[0] == '/' && strlen(path) == 2) {
+; 71   : 	if (path[0] == '/' && strlen(path) == 2) {
 
 	mov	eax, 1
 	imul	rax, 0
@@ -1311,69 +1341,69 @@ $LN20:
 	cmp	rax, 2
 	jne	SHORT $LN17@vfs_finddi
 
-; 71   : 		vfs_entry *entry_ = root_dir;
+; 72   : 		vfs_entry *entry_ = root_dir;
 
 	mov	rax, QWORD PTR ?root_dir@@3PEAU_vfs_entry_@@EA ; root_dir
 	mov	QWORD PTR entry_$4[rsp], rax
 
-; 72   : 		return entry_->node;
+; 73   : 		return entry_->node;
 
 	mov	rax, QWORD PTR entry_$4[rsp]
 	mov	rax, QWORD PTR [rax]
 	jmp	$LN18@vfs_finddi
 $LN17@vfs_finddi:
 
-; 73   : 	}
-; 74   : 
+; 74   : 	}
 ; 75   : 
-; 76   : 	char* next = strchr(path, '/');
+; 76   : 
+; 77   : 	char* next = strchr(path, '/');
 
 	mov	edx, 47					; 0000002fH
 	mov	rcx, QWORD PTR path$[rsp]
 	call	strchr
 	mov	QWORD PTR next$[rsp], rax
 
-; 77   : 	if (next)
+; 78   : 	if (next)
 
 	cmp	QWORD PTR next$[rsp], 0
 	je	SHORT $LN16@vfs_finddi
 
-; 78   : 		next++;
+; 79   : 		next++;
 
 	mov	rax, QWORD PTR next$[rsp]
 	inc	rax
 	mov	QWORD PTR next$[rsp], rax
 $LN16@vfs_finddi:
 
-; 79   : 
-; 80   : 	char* fs_path = next;
+; 80   : 
+; 81   : 	char* fs_path = next;
 
 	mov	rax, QWORD PTR next$[rsp]
 	mov	QWORD PTR fs_path$[rsp], rax
 
-; 81   : 
-; 82   : 	vfs_entry* ent = root_dir;
+; 82   : 
+; 83   : 	vfs_entry* ent = root_dir;
 
 	mov	rax, QWORD PTR ?root_dir@@3PEAU_vfs_entry_@@EA ; root_dir
 	mov	QWORD PTR ent$[rsp], rax
 
-; 83   : 	vfs_node_t* entry_found = 0;
+; 84   : 	vfs_node_t* entry_found = 0;
 
 	mov	QWORD PTR entry_found$[rsp], 0
 $LN15@vfs_finddi:
 
-; 84   : 	char pathname[16];
-; 85   : 
-; 86   : 	while(next) {
+; 85   : 	char pathname[16];
+; 86   : 
+; 87   : 	while(next) {
 
 	cmp	QWORD PTR next$[rsp], 0
 	je	$LN14@vfs_finddi
 
-; 87   : 		int i = 0;
+; 88   : 		int i = 0;
 
 	mov	DWORD PTR i$1[rsp], 0
 
-; 88   : 		for (i = 0; i < 16; i++) {
+; 89   : 		for (i = 0; i < 16; i++) {
 
 	mov	DWORD PTR i$1[rsp], 0
 	jmp	SHORT $LN13@vfs_finddi
@@ -1385,7 +1415,7 @@ $LN13@vfs_finddi:
 	cmp	DWORD PTR i$1[rsp], 16
 	jge	SHORT $LN11@vfs_finddi
 
-; 89   : 			if (next[i] == '/' || next[i] == '\0')
+; 90   : 			if (next[i] == '/' || next[i] == '\0')
 
 	movsxd	rax, DWORD PTR i$1[rsp]
 	mov	rcx, QWORD PTR next$[rsp]
@@ -1399,12 +1429,12 @@ $LN13@vfs_finddi:
 	jne	SHORT $LN10@vfs_finddi
 $LN9@vfs_finddi:
 
-; 90   : 				break;
+; 91   : 				break;
 
 	jmp	SHORT $LN11@vfs_finddi
 $LN10@vfs_finddi:
 
-; 91   : 			pathname[i] = next[i];
+; 92   : 			pathname[i] = next[i];
 
 	movsxd	rax, DWORD PTR i$1[rsp]
 	movsxd	rcx, DWORD PTR i$1[rsp]
@@ -1412,30 +1442,30 @@ $LN10@vfs_finddi:
 	movzx	eax, BYTE PTR [rdx+rax]
 	mov	BYTE PTR pathname$[rsp+rcx], al
 
-; 92   : 		}
+; 93   : 		}
 
 	jmp	SHORT $LN12@vfs_finddi
 $LN11@vfs_finddi:
 
-; 93   : 		pathname[i] = 0;
+; 94   : 		pathname[i] = 0;
 
 	movsxd	rax, DWORD PTR i$1[rsp]
 	mov	BYTE PTR pathname$[rsp+rax], 0
 
-; 94   : 
-; 95   : 		if (ent == NULL)
+; 95   : 
+; 96   : 		if (ent == NULL)
 
 	cmp	QWORD PTR ent$[rsp], 0
 	jne	SHORT $LN8@vfs_finddi
 
-; 96   : 			ent = root_dir;
+; 97   : 			ent = root_dir;
 
 	mov	rax, QWORD PTR ?root_dir@@3PEAU_vfs_entry_@@EA ; root_dir
 	mov	QWORD PTR ent$[rsp], rax
 $LN8@vfs_finddi:
 
-; 97   : 
-; 98   : 		for (int j = 0; j < ent->childs->pointer; j++) {
+; 98   : 
+; 99   : 		for (int j = 0; j < ent->childs->pointer; j++) {
 
 	mov	DWORD PTR j$2[rsp], 0
 	jmp	SHORT $LN7@vfs_finddi
@@ -1450,7 +1480,7 @@ $LN7@vfs_finddi:
 	cmp	DWORD PTR j$2[rsp], eax
 	jae	SHORT $LN5@vfs_finddi
 
-; 99   : 			vfs_node_t *file_ = (vfs_node_t*)list_get_at(ent->childs, j);
+; 100  : 			vfs_node_t *file_ = (vfs_node_t*)list_get_at(ent->childs, j);
 
 	mov	edx, DWORD PTR j$2[rsp]
 	mov	rax, QWORD PTR ent$[rsp]
@@ -1458,7 +1488,7 @@ $LN7@vfs_finddi:
 	call	?list_get_at@@YAPEAXPEAU_list_@@I@Z	; list_get_at
 	mov	QWORD PTR file_$3[rsp], rax
 
-; 100  : 			if (strcmp(file_->filename, pathname) == 0) {
+; 101  : 			if (strcmp(file_->filename, pathname) == 0) {
 
 	mov	rax, QWORD PTR file_$3[rsp]
 	lea	rdx, QWORD PTR pathname$[rsp]
@@ -1467,34 +1497,34 @@ $LN7@vfs_finddi:
 	test	eax, eax
 	jne	SHORT $LN4@vfs_finddi
 
-; 101  : 				if (file_->flags == FS_FLAG_DIRECTORY)
+; 102  : 				if (file_->flags == FS_FLAG_DIRECTORY)
 
 	mov	rax, QWORD PTR file_$3[rsp]
 	movzx	eax, BYTE PTR [rax+48]
 	cmp	eax, 1
 	jne	SHORT $LN3@vfs_finddi
 
-; 102  : 					ent = (vfs_entry*)file_->device;
+; 103  : 					ent = (vfs_entry*)file_->device;
 
 	mov	rax, QWORD PTR file_$3[rsp]
 	mov	rax, QWORD PTR [rax+56]
 	mov	QWORD PTR ent$[rsp], rax
 $LN3@vfs_finddi:
 
-; 103  : 				entry_found = file_;
+; 104  : 				entry_found = file_;
 
 	mov	rax, QWORD PTR file_$3[rsp]
 	mov	QWORD PTR entry_found$[rsp], rax
 $LN4@vfs_finddi:
 
-; 104  : 			}
-; 105  : 		}
+; 105  : 			}
+; 106  : 		}
 
 	jmp	SHORT $LN6@vfs_finddi
 $LN5@vfs_finddi:
 
-; 106  : 
-; 107  : 		next = strchr(next + 1, '/');
+; 107  : 
+; 108  : 		next = strchr(next + 1, '/');
 
 	mov	rax, QWORD PTR next$[rsp]
 	inc	rax
@@ -1503,43 +1533,43 @@ $LN5@vfs_finddi:
 	call	strchr
 	mov	QWORD PTR next$[rsp], rax
 
-; 108  : 		if (next)
+; 109  : 		if (next)
 
 	cmp	QWORD PTR next$[rsp], 0
 	je	SHORT $LN2@vfs_finddi
 
-; 109  : 			next++;
+; 110  : 			next++;
 
 	mov	rax, QWORD PTR next$[rsp]
 	inc	rax
 	mov	QWORD PTR next$[rsp], rax
 $LN2@vfs_finddi:
 
-; 110  : 	}
+; 111  : 	}
 
 	jmp	$LN15@vfs_finddi
 $LN14@vfs_finddi:
 
-; 111  : 
-; 112  : 	if (!entry_found) 
+; 112  : 
+; 113  : 	if (!entry_found) 
 
 	cmp	QWORD PTR entry_found$[rsp], 0
 	jne	SHORT $LN1@vfs_finddi
 
-; 113  : 		entry_found = root_dir->node;
+; 114  : 		entry_found = root_dir->node;
 
 	mov	rax, QWORD PTR ?root_dir@@3PEAU_vfs_entry_@@EA ; root_dir
 	mov	rax, QWORD PTR [rax]
 	mov	QWORD PTR entry_found$[rsp], rax
 $LN1@vfs_finddi:
 
-; 114  : 
-; 115  : 	return entry_found;
+; 115  : 
+; 116  : 	return entry_found;
 
 	mov	rax, QWORD PTR entry_found$[rsp]
 $LN18@vfs_finddi:
 
-; 116  : }
+; 117  : }
 
 	add	rsp, 120				; 00000078H
 	ret	0
@@ -1551,53 +1581,53 @@ _TEXT	SEGMENT
 root$ = 32
 ?AuVFSInit@@YAXXZ PROC					; AuVFSInit
 
-; 52   : void AuVFSInit () {
+; 53   : void AuVFSInit () {
 
 $LN3:
 	sub	rsp, 56					; 00000038H
 
-; 53   : 	vfs_entry *root = (vfs_entry*)malloc(sizeof(vfs_entry));
+; 54   : 	vfs_entry *root = (vfs_entry*)malloc(sizeof(vfs_entry));
 
 	mov	ecx, 16
 	call	malloc
 	mov	QWORD PTR root$[rsp], rax
 
-; 54   : 	root->node = 0;
+; 55   : 	root->node = 0;
 
 	mov	rax, QWORD PTR root$[rsp]
 	mov	QWORD PTR [rax], 0
 
-; 55   : 	root->childs = initialize_list();
+; 56   : 	root->childs = initialize_list();
 
 	call	?initialize_list@@YAPEAU_list_@@XZ	; initialize_list
 	mov	rcx, QWORD PTR root$[rsp]
 	mov	QWORD PTR [rcx+8], rax
 
-; 56   : 	root_dir = root;
+; 57   : 	root_dir = root;
 
 	mov	rax, QWORD PTR root$[rsp]
 	mov	QWORD PTR ?root_dir@@3PEAU_vfs_entry_@@EA, rax ; root_dir
 
-; 57   : 
 ; 58   : 
-; 59   : 	//! Initialize the root file system
-; 60   : 	initialize_fat32();
+; 59   : 
+; 60   : 	//! Initialize the root file system
+; 61   : 	initialize_fat32();
 
 	call	?initialize_fat32@@YAXXZ		; initialize_fat32
 
-; 61   : 	fat32_self_register();
+; 62   : 	fat32_self_register();
 
 	call	?fat32_self_register@@YAXXZ		; fat32_self_register
 
-; 62   : 
-; 63   : 	//! Initialize the device file system
-; 64   : 	devfs_mount();
+; 63   : 
+; 64   : 	//! Initialize the device file system
+; 65   : 	devfs_mount();
 
 	call	?devfs_mount@@YAXXZ			; devfs_mount
 
-; 65   : 
 ; 66   : 
-; 67   : }
+; 67   : 
+; 68   : }
 
 	add	rsp, 56					; 00000038H
 	ret	0

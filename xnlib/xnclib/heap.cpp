@@ -1,6 +1,7 @@
 #include <heap.h>
 #include <sys\mmap.h>
 #include <sys\_term.h>
+#include <sys\pe.h>
 /**  Durand's Ridiculously Amazing Super Duper Memory functions.  */
 
 //#define DEBUG	
@@ -545,5 +546,6 @@ int liballoc_free (void* ptr, int pages) {
 
 
 void heap_initialize_allocator() {
+	LinkSharedLibrary();
 }
 

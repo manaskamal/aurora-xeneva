@@ -11,6 +11,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PriWM", "PriWM\PriWM.vcxpro
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Init", "Init\Init.vcxproj", "{A9DFF85D-290B-4628-9E94-A6287DD9E606}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "XeWidgets", "..\Libraries\XeWidgets\XeWidgets.vcxproj", "{D28495B8-357E-466D-9D85-106B0A3B4489}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Mixed Platforms = Debug|Mixed Platforms
@@ -73,6 +75,16 @@ Global
 		{A9DFF85D-290B-4628-9E94-A6287DD9E606}.Release|Win32.ActiveCfg = Release|Win32
 		{A9DFF85D-290B-4628-9E94-A6287DD9E606}.Release|Win32.Build.0 = Release|Win32
 		{A9DFF85D-290B-4628-9E94-A6287DD9E606}.Release|x64.ActiveCfg = Release|Win32
+		{D28495B8-357E-466D-9D85-106B0A3B4489}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{D28495B8-357E-466D-9D85-106B0A3B4489}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{D28495B8-357E-466D-9D85-106B0A3B4489}.Debug|Win32.ActiveCfg = Debug|Win32
+		{D28495B8-357E-466D-9D85-106B0A3B4489}.Debug|Win32.Build.0 = Debug|Win32
+		{D28495B8-357E-466D-9D85-106B0A3B4489}.Debug|x64.ActiveCfg = Debug|x64
+		{D28495B8-357E-466D-9D85-106B0A3B4489}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{D28495B8-357E-466D-9D85-106B0A3B4489}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{D28495B8-357E-466D-9D85-106B0A3B4489}.Release|Win32.ActiveCfg = Release|Win32
+		{D28495B8-357E-466D-9D85-106B0A3B4489}.Release|Win32.Build.0 = Release|Win32
+		{D28495B8-357E-466D-9D85-106B0A3B4489}.Release|x64.ActiveCfg = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

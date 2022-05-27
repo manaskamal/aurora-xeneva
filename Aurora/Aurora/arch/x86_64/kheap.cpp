@@ -131,7 +131,6 @@ void au_expand_kmalloc(size_t req_size) {
  * @param size -- size in bytes
  */
 void* malloc(size_t size) {
-	
 	meta_data_t *meta = first_block;
 	uint8_t* ret = 0;
 	/* now search begins */
@@ -152,13 +151,19 @@ void* malloc(size_t size) {
 				ret =  ((uint8_t*)meta + sizeof(meta_data_t));
 				break;
 			}
-
 		}
+
+		if (meta->next == meta && meta->prev == meta &&
+			meta->size == 0) {
+				meta->next = NULL;
+				meta->prev = NULL;
+				meta->free = false;
+		}
+
 		meta = meta->next;
 	}
 
 	if (ret) {
-		//_debug_print_ ("Returning address -> %x \r\n", ret);
 		return ret;
 	} else{
 		au_expand_kmalloc(size);

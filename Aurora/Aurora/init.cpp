@@ -55,6 +55,7 @@
 #include <fs\gpt.h>
 #include <fs\vfs.h>
 #include <screen.h>
+#include <libmngr.h>
 #include <proc.h>
 #include <pmmngr.h>
 #include <audrv.h>
@@ -130,9 +131,16 @@ void _AuMain (KERNEL_BOOT_INFO *info) {
 	/* Clear interrupts as scheduler will enable it */
 	x64_cli();
 	AuDrvMngrInitialize(info);
+	
+	AuSysLibInitialize();
+
 	//hda_initialize();
 	AuKeyboardInitialize();
 	AuPointDevInitialize();
+	
+	
+
+
 
 	pri_loop_init();
 
@@ -140,11 +148,11 @@ void _AuMain (KERNEL_BOOT_INFO *info) {
 	ttype_init();
 
 	/*Initialize other processor */
-	AuInitializeCpu(AuGetNumCPU());
+	AuInitializeCpu(AuGetNumCPU());	
+
 
 	/*Clear the lower half for user space */
 	AuPagingClearLow();
-
 
 #ifdef ARCH_X64
 

@@ -11,6 +11,7 @@
 #define __IMAGE_H__
 
 #include <stdint.h>
+#include <sys\_xeneva.h>
 
 typedef struct _IMAGE_ {
 	uint32_t width;
@@ -22,9 +23,9 @@ typedef struct _IMAGE_ {
 }Image;
 
 
-extern Image* LoadImage (char* filename, uint8_t* address);
-extern void FillImageInfo (Image *img, uint32_t w, uint32_t h);
-extern void CallJpegDecoder (Image *img);
-extern void ImageResizeBilinear (uint8_t* src,int src_w, int src_h, int new_w, int new_h, uint8_t* new_img);
+XE_EXTERN XE_EXPORT Image* LoadImage (char* filename, uint8_t* address);
+XE_EXTERN XE_EXPORT void FillImageInfo (Image *img, uint32_t w, uint32_t h);
+XE_EXTERN XE_EXPORT void CallJpegDecoder (Image *img);
+XE_EXTERN XE_EXPORT void ImageResizeBilinear (uint8_t* src,int src_w, int src_h, int new_w, int new_h, uint8_t* new_img);
 
 #endif

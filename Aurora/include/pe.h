@@ -231,6 +231,14 @@ extern ientry get_entry_point ();
 extern uint64_t get_image_base();
 extern void* AuGetProcAddress(void *image, const char* procname);
 extern void AuPeLinkLibrary (void* image);
+
+/*
+ * LinkLibrary -- Links a dll library to its executable
+ * @param image -- executable
+ * @param exporter -- dll images
+ * @param exporter -- executable image
+ */
+extern void AuPeLinkLibraryEx (void* image, void* exporter);
 extern "C" __declspec(dllexport) void message();
 //=====================================================================
 //   E N D   O F   P E    H E A D E R                                ||

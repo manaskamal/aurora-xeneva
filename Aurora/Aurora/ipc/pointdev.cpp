@@ -4,6 +4,7 @@
 #include <atomic\mutex.h>
 #include <utils\lnklist.h>
 #include <utils\circ_buf.h>
+#include <serial.h>
 #include <stdio.h>
 
 thread_t *window_manager_thr = NULL;
@@ -55,7 +56,10 @@ void AuPointDevInitialize () {
 	void *p2 = AuPmmngrAlloc();
 	memset(p2, 0, 4096);
 	AuMapPage((uint64_t)p2,0xFFFFD00000000000,PAGING_USER);
+	_debug_print_ ("Allocating new File \r\n");
+
 	vfs_node_t *node = (vfs_node_t*)malloc(sizeof(vfs_node_t));
+	
 	strcpy (node->filename, "mouse");
 	node->size = 0;
 	node->eof = 0;

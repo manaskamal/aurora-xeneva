@@ -396,6 +396,7 @@ AU_EXTERN AU_EXPORT int AuDriverMain() {
 
 
 	vfs_node_t *file = (vfs_node_t*)malloc(sizeof(vfs_node_t));
+printf ("FILE e1000 created -> %x \n", file);
 	strcpy (file->filename, "e1000");
 	file->size = 0;
 	file->eof = 0;
@@ -409,7 +410,11 @@ AU_EXTERN AU_EXPORT int AuDriverMain() {
 	file->write = e1000_write_file;
 	file->read_blk = 0;
 	file->ioquery = e1000_ioquery;
+	
 	vfs_mount ("/dev/e1000", file, 0);
+
+	
+
 
 	AuNet_t *net = (AuNet_t*)malloc(sizeof(AuNet_t));
 	memset(net->mac, 0, 6);

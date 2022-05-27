@@ -28,6 +28,12 @@
 #define SYSTEM_ICON_NETWORK 9
 #define SYSTEM_ICON_APPLICATION 10
 
+
+#define XE_EXPORT  __declspec(dllexport)
+#define XE_IMPORT  __declspec(dllimport)
+
+#define XE_EXTERN  extern "C"
+
 #ifdef __cplusplus
 extern "C" {
 #endif

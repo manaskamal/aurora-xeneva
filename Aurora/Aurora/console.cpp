@@ -53,11 +53,14 @@ void AuConsoleInitialize (PKERNEL_BOOT_INFO info) {
 
 	uint64_t* buffer = (uint64_t*)p2v((size_t)AuPmmngrAllocBlocks(2));
 	memset(buffer, 0, 8192);
-	vfs_node_t file = fat32_open(NULL, "/font.psf");
-	fat32_read_file (&file,(uint64_t*)v2p((size_t)buffer),file.size);
+	vfs_node_t *file = fat32_open(NULL, "/font.psf");
+	if (file) 
+		fat32_read_file (file,(uint64_t*)v2p((size_t)buffer),file->size);
 	uint8_t* aligned_buf = (uint8_t*)buffer;
 	psf_data = aligned_buf;
 	_console_initialized_ = true;
+
+	free(file);
 }
 
 //! Put a character to console output

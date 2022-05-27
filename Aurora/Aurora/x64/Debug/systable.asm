@@ -10,7 +10,7 @@ _BSS	SEGMENT
 funct	DQ	01H DUP (?)
 _BSS	ENDS
 CONST	SEGMENT
-$SG4200	DB	'System Call Fault!! Halting System', 0aH, 00H
+$SG4204	DB	'System Call Fault!! Halting System', 0aH, 00H
 CONST	ENDS
 PUBLIC	x64_syscall_handler
 EXTRN	printf:PROC
@@ -53,10 +53,11 @@ EXTRN	?AuCreateShMem@@YAII_KI@Z:PROC			; AuCreateShMem
 EXTRN	?AuObtainShMem@@YAPEAXIPEAXH@Z:PROC		; AuObtainShMem
 EXTRN	?au_mmap@@YAPEAXPEAX_KHHH1@Z:PROC		; au_mmap
 EXTRN	?process_heap_break@@YAPEAX_K@Z:PROC		; process_heap_break
+EXTRN	?process_link_libraries@@YAXXZ:PROC		; process_link_libraries
 EXTRN	__ImageBase:BYTE
 pdata	SEGMENT
 $pdata$x64_syscall_handler DD imagerel $LN50
-	DD	imagerel $LN50+1000
+	DD	imagerel $LN50+1004
 	DD	imagerel $unwind$x64_syscall_handler
 pdata	ENDS
 xdata	SEGMENT
@@ -93,7 +94,7 @@ $LN50:
 
 ; 24   : 		printf ("System Call Fault!! Halting System\n");
 
-	lea	rcx, OFFSET FLAT:$SG4200
+	lea	rcx, OFFSET FLAT:$SG4204
 	call	printf
 $LN45@x64_syscal:
 
@@ -558,9 +559,10 @@ $LN2@x64_syscal:
 $LN1@x64_syscal:
 
 ; 149  : 	case 40:
-; 150  : 		funct = (uint64_t*)0; //dwm_dispatch_message;
+; 150  : 		funct = (uint64_t*)process_link_libraries; //dwm_dispatch_message;
 
-	mov	QWORD PTR funct, 0
+	lea	rax, OFFSET FLAT:?process_link_libraries@@YAXXZ ; process_link_libraries
+	mov	QWORD PTR funct, rax
 $LN42@x64_syscal:
 
 ; 151  : 		break;
@@ -575,7 +577,7 @@ $LN42@x64_syscal:
 
 	add	rsp, 56					; 00000038H
 	ret	0
-	npad	1
+	npad	2
 $LN49@x64_syscal:
 	DD	$LN41@x64_syscal
 	DD	$LN40@x64_syscal

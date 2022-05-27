@@ -17,6 +17,7 @@
 #include <pmmngr.h>
 #include <drivers\pci.h>
 #include <drivers\pcie.h>
+#include <serial.h>
 
 
 /* Drivers are located from 4 MiB of kernel address */
@@ -170,18 +171,18 @@ void AuDriverLoad (char* filename, aurora_driver_t *driver) {
 	int next_base_offset = 0;
 	uint64_t* virtual_base = (uint64_t*)driver_load_base;
 
-	vfs_node_t file = fat32_open(NULL, filename);
+	vfs_node_t *file = fat32_open(NULL, filename);
 	uint64_t* buffer = (uint64_t*)AuPmmngrAlloc();
 	memset(buffer, 0, 4096);
-	fat32_read(&file, buffer);
+	fat32_read(file, buffer);
 	AuMapPage((uint64_t)buffer,driver_load_base,0);
 	next_base_offset = 1;
 	
 
-	while(file.eof != 1) {
+	while(file->eof != 1) {
 		uint64_t* block = (uint64_t*)AuPmmngrAlloc();
 		memset(block, 0, 4096);
-		fat32_read (&file,block);
+		fat32_read (file,block);
 		AuMapPage((uint64_t)block,(driver_load_base + next_base_offset * 4096), 0);
 		next_base_offset++;
 	}
@@ -194,9 +195,11 @@ void AuDriverLoad (char* filename, aurora_driver_t *driver) {
 	driver->entry = (au_drv_entry)entry_addr;
 	driver->unload = (au_drv_unload)unload_addr;
 	driver->base = AU_DRIVER_BASE_START;
-	driver->end = driver->base + file.size;
+	driver->end = driver->base + file->size;
 	driver->present = true;
 	driver_load_base = driver_load_base + next_base_offset * 4096;
+	
+	free(file);
 }
 
 /* 
@@ -210,12 +213,14 @@ void AuDrvMngrInitialize (KERNEL_BOOT_INFO *info) {
 	/* Load the conf data */
 	uint64_t* conf = (uint64_t*)p2v((size_t)AuPmmngrAlloc());
 	memset(conf, 0, 4096);
-	vfs_node_t file = fat32_open(NULL, "/audrv.cnf");
-	int filesize = file.size / 1024;
+	vfs_node_t* file = fat32_open(NULL, "/audrv.cnf");
+	_debug_print_ ("AuDRV file -> %x \r\n", file);
+	int filesize = file->size / 1024;
 	if(filesize < 4096)
-		fat32_read(&file,(uint64_t*)v2p((size_t)conf));
+		fat32_read(file,(uint64_t*)v2p((size_t)conf));
 
 	uint8_t* confdata = (uint8_t*)conf;
+
 
 	uint32_t vend_id, dev_id, class_code, sub_class = 0;
 	uint32_t device = 0;
@@ -239,12 +244,17 @@ void AuDrvMngrInitialize (KERNEL_BOOT_INFO *info) {
 		}
 	}
 
+
 	/* Serially call each startup entries of each driver */
 	for (int i = 0; i < driver_class_unique_id; i++) {
 		aurora_driver_t *driver = drivers[i];
 		AuDriverLoad(driver->name, driver);
 		driver->entry();
 	}
+
+
+	free(file);	
+	_debug_print_  ("Freeing file \r\n");
 }
 
 

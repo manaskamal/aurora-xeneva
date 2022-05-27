@@ -213,7 +213,6 @@
     <ClInclude Include="..\include\drivers\ahci.h" />
     <ClInclude Include="..\include\drivers\ahci_disk.h" />
     <ClInclude Include="..\include\drivers\ata.h" />
-    <ClInclude Include="..\include\drivers\hdaudio\hda.h" />
     <ClInclude Include="..\include\drivers\kybrd.h" />
     <ClInclude Include="..\include\drivers\mouse.h" />
     <ClInclude Include="..\include\drivers\pci.h" />
@@ -260,7 +259,7 @@
     <ClInclude Include="..\include\net\aunet.h" />
     <ClInclude Include="..\include\net\ethernet.h" />
     <ClInclude Include="..\include\net\network.h" />
-    <ClInclude Include="..\include\objctmngr.h" />
+    <ClInclude Include="..\include\libmngr.h" />
     <ClInclude Include="..\include\pe.h" />
     <ClInclude Include="..\include\pmmngr.h" />
     <ClInclude Include="..\include\proc.h" />
@@ -303,7 +302,6 @@
     <ClCompile Include="drivers\ahci.cpp" />
     <ClCompile Include="drivers\ahci_disk.cpp" />
     <ClCompile Include="drivers\ata.cpp" />
-    <ClCompile Include="drivers\hda\hda.cpp" />
     <ClCompile Include="drivers\kybrd.cpp" />
     <ClCompile Include="drivers\mouse.cpp" />
     <ClCompile Include="drivers\pci.cpp" />
@@ -339,6 +337,7 @@
     <ClCompile Include="ipc\message.cpp" />
     <ClCompile Include="ipc\postbox.cpp" />
     <ClCompile Include="ipc\pri_loop.cpp" />
+    <ClCompile Include="libmngr.cpp" />
     <ClCompile Include="mmngr\aummap.cpp" />
     <ClCompile Include="mmngr\mmfault.cpp" />
     <ClCompile Include="mmngr\shmem.cpp" />

@@ -22,7 +22,7 @@ psf_data DQ	01H DUP (?)
 _console_initialized_ DB 01H DUP (?)
 _BSS	ENDS
 CONST	SEGMENT
-$SG3401	DB	'/font.psf', 00H
+$SG3400	DB	'/font.psf', 00H
 CONST	ENDS
 PUBLIC	?AuConsoleInitialize@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z ; AuConsoleInitialize
 PUBLIC	?puts@@YAXPEAD@Z				; puts
@@ -36,12 +36,13 @@ EXTRN	p2v:PROC
 EXTRN	v2p:PROC
 EXTRN	memset:PROC
 EXTRN	memcpy:PROC
-EXTRN	?fat32_open@@YA?AU_vfs_node_@@PEAU1@PEAD@Z:PROC	; fat32_open
+EXTRN	free:PROC
+EXTRN	?fat32_open@@YAPEAU_vfs_node_@@PEAU1@PEAD@Z:PROC ; fat32_open
 EXTRN	?fat32_read_file@@YAXPEAU_vfs_node_@@PEA_KI@Z:PROC ; fat32_read_file
 EXTRN	AuGetFramebuffer:PROC
 pdata	SEGMENT
-$pdata$?AuConsoleInitialize@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z DD imagerel $LN3
-	DD	imagerel $LN3+280
+$pdata$?AuConsoleInitialize@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z DD imagerel $LN4
+	DD	imagerel $LN4+233
 	DD	imagerel $unwind$?AuConsoleInitialize@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z
 $pdata$?puts@@YAXPEAD@Z DD imagerel $LN25
 	DD	imagerel $LN25+739
@@ -54,9 +55,8 @@ $pdata$?fb_write@@YAXPEAU_vfs_node_@@PEAEI@Z DD imagerel $LN3
 	DD	imagerel $unwind$?fb_write@@YAXPEAU_vfs_node_@@PEAEI@Z
 pdata	ENDS
 xdata	SEGMENT
-$unwind$?AuConsoleInitialize@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z DD 040e01H
-	DD	02f010eH
-	DD	060067007H
+$unwind$?AuConsoleInitialize@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z DD 010901H
+	DD	08209H
 $unwind$?puts@@YAXPEAD@Z DD 010901H
 	DD	08209H
 $unwind$?putc@@YAXD@Z DD 010801H
@@ -72,13 +72,13 @@ x$ = 16
 y$ = 24
 ?console_pixel@@YAXIII@Z PROC				; console_pixel
 
-; 89   : {
+; 92   : {
 
 	mov	DWORD PTR [rsp+24], r8d
 	mov	DWORD PTR [rsp+16], edx
 	mov	DWORD PTR [rsp+8], ecx
 
-; 90   : 	fb[x + y * screen_width] = col;
+; 93   : 	fb[x + y * screen_width] = col;
 
 	movzx	eax, WORD PTR screen_width
 	mov	ecx, DWORD PTR y$[rsp]
@@ -92,7 +92,7 @@ y$ = 24
 	mov	edx, DWORD PTR col$[rsp]
 	mov	DWORD PTR [rcx+rax*4], edx
 
-; 91   : }
+; 94   : }
 
 	ret	0
 ?console_pixel@@YAXIII@Z ENDP				; console_pixel
@@ -155,11 +155,11 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 ?AuIsConsoleInitialized@@YA_NXZ PROC			; AuIsConsoleInitialized
 
-; 168  : 	return _console_initialized_;
+; 171  : 	return _console_initialized_;
 
 	movzx	eax, BYTE PTR _console_initialized_
 
-; 169  : }
+; 172  : }
 
 	ret	0
 ?AuIsConsoleInitialized@@YA_NXZ ENDP			; AuIsConsoleInitialized
@@ -182,33 +182,33 @@ glyph$ = 56
 c$ = 80
 ?putc@@YAXD@Z PROC					; putc
 
-; 64   : void putc (char c) {
+; 67   : void putc (char c) {
 
 $LN14:
 	mov	BYTE PTR [rsp+8], cl
 	sub	rsp, 72					; 00000048H
 
-; 65   : 	if (psf_data == NULL)
+; 68   : 	if (psf_data == NULL)
 
 	cmp	QWORD PTR psf_data, 0
 	jne	SHORT $LN7@putc
 
-; 66   : 		return;
+; 69   : 		return;
 
 	jmp	$LN8@putc
 $LN7@putc:
 
-; 67   : 
-; 68   : 	psf2_t *font = (psf2_t*)psf_data;
+; 70   : 
+; 71   : 	psf2_t *font = (psf2_t*)psf_data;
 
 	mov	rax, QWORD PTR psf_data
 	mov	QWORD PTR font$[rsp], rax
 
-; 69   :     int x,y,kx=0,line,mask,offs;
+; 72   :     int x,y,kx=0,line,mask,offs;
 
 	mov	DWORD PTR kx$[rsp], 0
 
-; 70   :     int bpl=(font->width+7)/8;
+; 73   :     int bpl=(font->width+7)/8;
 
 	mov	rax, QWORD PTR font$[rsp]
 	mov	eax, DWORD PTR [rax+28]
@@ -218,10 +218,10 @@ $LN7@putc:
 	div	ecx
 	mov	DWORD PTR bpl$[rsp], eax
 
-; 71   :   
-; 72   : 	
-; 73   : 	unsigned char *glyph = (unsigned char*)psf_data + font->headersize + 
-; 74   : 				(c>0&&c<font->numglyph?c:0)*font->bytesperglyph;
+; 74   :   
+; 75   : 	
+; 76   : 	unsigned char *glyph = (unsigned char*)psf_data + font->headersize + 
+; 77   : 				(c>0&&c<font->numglyph?c:0)*font->bytesperglyph;
 
 	movsx	eax, BYTE PTR c$[rsp]
 	test	eax, eax
@@ -249,7 +249,7 @@ $LN11@putc:
 	add	rax, rcx
 	mov	QWORD PTR glyph$[rsp], rax
 
-; 75   : 	offs = kx * (font->width + 1);// * 4);
+; 78   : 	offs = kx * (font->width + 1);// * 4);
 
 	mov	rax, QWORD PTR font$[rsp]
 	mov	eax, DWORD PTR [rax+28]
@@ -259,7 +259,7 @@ $LN11@putc:
 	mov	eax, ecx
 	mov	DWORD PTR offs$[rsp], eax
 
-; 76   : 	for(y=0;y<font->height;y++) {
+; 79   : 	for(y=0;y<font->height;y++) {
 
 	mov	DWORD PTR y$[rsp], 0
 	jmp	SHORT $LN6@putc
@@ -273,7 +273,7 @@ $LN6@putc:
 	cmp	DWORD PTR y$[rsp], eax
 	jae	$LN4@putc
 
-; 77   : 		line=offs; mask=1<<(font->width-1);
+; 80   : 		line=offs; mask=1<<(font->width-1);
 
 	mov	eax, DWORD PTR offs$[rsp]
 	mov	DWORD PTR line$[rsp], eax
@@ -287,7 +287,7 @@ $LN6@putc:
 	shl	eax, cl
 	mov	DWORD PTR mask$[rsp], eax
 
-; 78   : 		for(x=0;x<font->width;x++) {
+; 81   : 		for(x=0;x<font->width;x++) {
 
 	mov	DWORD PTR x$[rsp], 0
 	jmp	SHORT $LN3@putc
@@ -301,7 +301,7 @@ $LN3@putc:
 	cmp	DWORD PTR x$[rsp], eax
 	jae	SHORT $LN1@putc
 
-; 79   : 			fb[line + console_x + console_y * screen_width ]=((int)*glyph) & (mask)?0xFFFFFF:0;
+; 82   : 			fb[line + console_x + console_y * screen_width ]=((int)*glyph) & (mask)?0xFFFFFF:0;
 
 	mov	rax, QWORD PTR glyph$[rsp]
 	movzx	eax, BYTE PTR [rax]
@@ -327,7 +327,7 @@ $LN13@putc:
 	mov	edx, DWORD PTR tv136[rsp]
 	mov	DWORD PTR [rcx+rax*4], edx
 
-; 80   : 			mask>>=1; line+=1;
+; 83   : 			mask>>=1; line+=1;
 
 	mov	eax, DWORD PTR mask$[rsp]
 	sar	eax, 1
@@ -336,12 +336,12 @@ $LN13@putc:
 	inc	eax
 	mov	DWORD PTR line$[rsp], eax
 
-; 81   : 		}
+; 84   : 		}
 
 	jmp	SHORT $LN2@putc
 $LN1@putc:
 
-; 82   : 		fb[line + console_x + console_y * screen_width]=0; glyph+=bpl; offs+=scanline;
+; 85   : 		fb[line + console_x + console_y * screen_width]=0; glyph+=bpl; offs+=scanline;
 
 	mov	eax, DWORD PTR console_x
 	mov	ecx, DWORD PTR line$[rsp]
@@ -366,12 +366,12 @@ $LN1@putc:
 	mov	eax, ecx
 	mov	DWORD PTR offs$[rsp], eax
 
-; 83   : 	}
+; 86   : 	}
 
 	jmp	$LN5@putc
 $LN4@putc:
 
-; 84   : 	console_x += font->width + 1;
+; 87   : 	console_x += font->width + 1;
 
 	mov	rax, QWORD PTR font$[rsp]
 	mov	eax, DWORD PTR [rax+28]
@@ -380,7 +380,7 @@ $LN4@putc:
 	mov	DWORD PTR console_x, eax
 $LN8@putc:
 
-; 85   : }
+; 88   : }
 
 	add	rsp, 72					; 00000048H
 	ret	0
@@ -404,30 +404,30 @@ glyph$2 = 48
 s$ = 80
 ?puts@@YAXPEAD@Z PROC					; puts
 
-; 95   : void puts(char *s){
+; 98   : void puts(char *s){
 
 $LN25:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 72					; 00000048H
 
-; 96   : 	if (psf_data == NULL)
+; 99   : 	if (psf_data == NULL)
 
 	cmp	QWORD PTR psf_data, 0
 	jne	SHORT $LN18@puts
 
-; 97   : 		return;
+; 100  : 		return;
 
 	jmp	$LN19@puts
 $LN18@puts:
 
-; 98   : 
-; 99   : 	psf2_t *font = (psf2_t*)psf_data;
+; 101  : 
+; 102  : 	psf2_t *font = (psf2_t*)psf_data;
 
 	mov	rax, QWORD PTR psf_data
 	mov	QWORD PTR font$[rsp], rax
 
-; 100  :     int x,y,line,mask,offs;
-; 101  :     int bpl=(font->width+7)/8;
+; 103  :     int x,y,line,mask,offs;
+; 104  :     int bpl=(font->width+7)/8;
 
 	mov	rax, QWORD PTR font$[rsp]
 	mov	eax, DWORD PTR [rax+28]
@@ -438,34 +438,34 @@ $LN18@puts:
 	mov	DWORD PTR bpl$[rsp], eax
 $LN17@puts:
 
-; 102  : 
-; 103  :     while(*s) {
+; 105  : 
+; 106  :     while(*s) {
 
 	mov	rax, QWORD PTR s$[rsp]
 	movsx	eax, BYTE PTR [rax]
 	test	eax, eax
 	je	$LN16@puts
 
-; 104  : 		if (*s == '\n') {
+; 107  : 		if (*s == '\n') {
 
 	mov	rax, QWORD PTR s$[rsp]
 	movsx	eax, BYTE PTR [rax]
 	cmp	eax, 10
 	jne	$LN15@puts
 
-; 105  : 
-; 106  :             console_y += 16;
+; 108  : 
+; 109  :             console_y += 16;
 
 	mov	eax, DWORD PTR console_y
 	add	eax, 16
 	mov	DWORD PTR console_y, eax
 
-; 107  : 			console_x = 0;
+; 110  : 			console_x = 0;
 
 	mov	DWORD PTR console_x, 0
 
-; 108  : 			////!Scroll
-; 109  : 			if (console_y + 1 >= screen_height) {
+; 111  : 			////!Scroll
+; 112  : 			if (console_y + 1 >= screen_height) {
 
 	mov	eax, DWORD PTR console_y
 	inc	eax
@@ -473,7 +473,7 @@ $LN17@puts:
 	cmp	eax, ecx
 	jl	SHORT $LN14@puts
 
-; 110  : 				for (int i = 16; i < (screen_width * screen_height); i++) {
+; 113  : 				for (int i = 16; i < (screen_width * screen_height); i++) {
 
 	mov	DWORD PTR i$1[rsp], 16
 	jmp	SHORT $LN13@puts
@@ -488,7 +488,7 @@ $LN13@puts:
 	cmp	DWORD PTR i$1[rsp], eax
 	jge	SHORT $LN11@puts
 
-; 111  : 					fb[i] = fb[i + screen_width * 16];
+; 114  : 					fb[i] = fb[i + screen_width * 16];
 
 	movzx	eax, WORD PTR screen_width
 	imul	eax, 16
@@ -502,12 +502,12 @@ $LN13@puts:
 	mov	eax, DWORD PTR [r8+rax*4]
 	mov	DWORD PTR [rdx+rcx*4], eax
 
-; 112  : 				}
+; 115  : 				}
 
 	jmp	SHORT $LN12@puts
 $LN11@puts:
 
-; 113  : 				console_y --;
+; 116  : 				console_y --;
 
 	mov	eax, DWORD PTR console_y
 	dec	eax
@@ -516,35 +516,35 @@ $LN14@puts:
 	jmp	$LN10@puts
 $LN15@puts:
 
-; 114  : 			}
-; 115  : 
-; 116  : 		} else if (*s == '\b') {
+; 117  : 			}
+; 118  : 
+; 119  : 		} else if (*s == '\b') {
 
 	mov	rax, QWORD PTR s$[rsp]
 	movsx	eax, BYTE PTR [rax]
 	cmp	eax, 8
 	jne	SHORT $LN9@puts
 
-; 117  : 			if (console_x > 0) {
+; 120  : 			if (console_x > 0) {
 
 	cmp	DWORD PTR console_x, 0
 	jle	SHORT $LN8@puts
 
-; 118  : 				console_x--;
+; 121  : 				console_x--;
 
 	mov	eax, DWORD PTR console_x
 	dec	eax
 	mov	DWORD PTR console_x, eax
 $LN8@puts:
 
-; 119  : 			}
-; 120  : 		}else {
+; 122  : 			}
+; 123  : 		}else {
 
 	jmp	$LN7@puts
 $LN9@puts:
 
-; 121  : 			unsigned char *glyph = (unsigned char*)psf_data + font->headersize + 
-; 122  : 				(*s>0&&*s<font->numglyph?*s:0)*font->bytesperglyph;
+; 124  : 			unsigned char *glyph = (unsigned char*)psf_data + font->headersize + 
+; 125  : 				(*s>0&&*s<font->numglyph?*s:0)*font->bytesperglyph;
 
 	mov	rax, QWORD PTR s$[rsp]
 	movsx	eax, BYTE PTR [rax]
@@ -575,7 +575,7 @@ $LN22@puts:
 	add	rax, rcx
 	mov	QWORD PTR glyph$2[rsp], rax
 
-; 123  : 			offs = console_x * (font->width + 1);// * 4);
+; 126  : 			offs = console_x * (font->width + 1);// * 4);
 
 	mov	rax, QWORD PTR font$[rsp]
 	mov	eax, DWORD PTR [rax+28]
@@ -585,7 +585,7 @@ $LN22@puts:
 	mov	eax, ecx
 	mov	DWORD PTR offs$[rsp], eax
 
-; 124  : 			for(y=0;y<font->height;y++) {
+; 127  : 			for(y=0;y<font->height;y++) {
 
 	mov	DWORD PTR y$[rsp], 0
 	jmp	SHORT $LN6@puts
@@ -599,7 +599,7 @@ $LN6@puts:
 	cmp	DWORD PTR y$[rsp], eax
 	jae	$LN4@puts
 
-; 125  : 				line=offs; mask=1<<(font->width-1);
+; 128  : 				line=offs; mask=1<<(font->width-1);
 
 	mov	eax, DWORD PTR offs$[rsp]
 	mov	DWORD PTR line$[rsp], eax
@@ -613,7 +613,7 @@ $LN6@puts:
 	shl	eax, cl
 	mov	DWORD PTR mask$[rsp], eax
 
-; 126  : 				for(x=0;x<font->width;x++) {
+; 129  : 				for(x=0;x<font->width;x++) {
 
 	mov	DWORD PTR x$[rsp], 0
 	jmp	SHORT $LN3@puts
@@ -627,7 +627,7 @@ $LN3@puts:
 	cmp	DWORD PTR x$[rsp], eax
 	jae	SHORT $LN1@puts
 
-; 127  : 					fb[line  + console_y * screen_width ]=((int)*glyph) & (mask)?0xFFFFFF:0;
+; 130  : 					fb[line  + console_y * screen_width ]=((int)*glyph) & (mask)?0xFFFFFF:0;
 
 	mov	rax, QWORD PTR glyph$2[rsp]
 	movzx	eax, BYTE PTR [rax]
@@ -651,7 +651,7 @@ $LN24@puts:
 	mov	edx, DWORD PTR tv162[rsp]
 	mov	DWORD PTR [rcx+rax*4], edx
 
-; 128  : 					mask>>=1; line+=1;
+; 131  : 					mask>>=1; line+=1;
 
 	mov	eax, DWORD PTR mask$[rsp]
 	sar	eax, 1
@@ -660,12 +660,12 @@ $LN24@puts:
 	inc	eax
 	mov	DWORD PTR line$[rsp], eax
 
-; 129  : 				}
+; 132  : 				}
 
 	jmp	SHORT $LN2@puts
 $LN1@puts:
 
-; 130  : 				fb[line  + console_y * screen_width]=0; glyph+=bpl; offs+=scanline;
+; 133  : 				fb[line  + console_y * screen_width]=0; glyph+=bpl; offs+=scanline;
 
 	movzx	eax, WORD PTR screen_width
 	mov	ecx, DWORD PTR console_y
@@ -688,12 +688,12 @@ $LN1@puts:
 	mov	eax, ecx
 	mov	DWORD PTR offs$[rsp], eax
 
-; 131  : 			}
+; 134  : 			}
 
 	jmp	$LN5@puts
 $LN4@puts:
 
-; 132  : 			console_x++;
+; 135  : 			console_x++;
 
 	mov	eax, DWORD PTR console_x
 	inc	eax
@@ -701,22 +701,22 @@ $LN4@puts:
 $LN7@puts:
 $LN10@puts:
 
-; 133  : 		}
-; 134  : 		s++; 
+; 136  : 		}
+; 137  : 		s++; 
 
 	mov	rax, QWORD PTR s$[rsp]
 	inc	rax
 	mov	QWORD PTR s$[rsp], rax
 
-; 135  :     }
+; 138  :     }
 
 	jmp	$LN17@puts
 $LN16@puts:
 $LN19@puts:
 
-; 136  : 
-; 137  : 	
-; 138  : }
+; 139  : 
+; 140  : 	
+; 141  : }
 
 	add	rsp, 72					; 00000048H
 	ret	0
@@ -725,21 +725,17 @@ _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\console.cpp
 _TEXT	SEGMENT
-buffer$ = 32
-aligned_buf$ = 40
-file$ = 48
-$T1 = 160
-$T2 = 264
-info$ = 400
+file$ = 32
+buffer$ = 40
+aligned_buf$ = 48
+info$ = 80
 ?AuConsoleInitialize@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z PROC ; AuConsoleInitialize
 
 ; 45   : void AuConsoleInitialize (PKERNEL_BOOT_INFO info) {
 
-$LN3:
+$LN4:
 	mov	QWORD PTR [rsp+8], rcx
-	push	rsi
-	push	rdi
-	sub	rsp, 376				; 00000178H
+	sub	rsp, 72					; 00000048H
 
 ; 46   : 	console_x = 0;
 
@@ -789,52 +785,52 @@ $LN3:
 	mov	rcx, QWORD PTR buffer$[rsp]
 	call	memset
 
-; 56   : 	vfs_node_t file = fat32_open(NULL, "/font.psf");
+; 56   : 	vfs_node_t *file = fat32_open(NULL, "/font.psf");
 
-	lea	r8, OFFSET FLAT:$SG3401
-	xor	edx, edx
-	lea	rcx, QWORD PTR $T2[rsp]
-	call	?fat32_open@@YA?AU_vfs_node_@@PEAU1@PEAD@Z ; fat32_open
-	lea	rcx, QWORD PTR $T1[rsp]
-	mov	rdi, rcx
-	mov	rsi, rax
-	mov	ecx, 104				; 00000068H
-	rep movsb
-	lea	rax, QWORD PTR file$[rsp]
-	lea	rcx, QWORD PTR $T1[rsp]
-	mov	rdi, rax
-	mov	rsi, rcx
-	mov	ecx, 104				; 00000068H
-	rep movsb
+	lea	rdx, OFFSET FLAT:$SG3400
+	xor	ecx, ecx
+	call	?fat32_open@@YAPEAU_vfs_node_@@PEAU1@PEAD@Z ; fat32_open
+	mov	QWORD PTR file$[rsp], rax
 
-; 57   : 	fat32_read_file (&file,(uint64_t*)v2p((size_t)buffer),file.size);
+; 57   : 	if (file) 
+
+	cmp	QWORD PTR file$[rsp], 0
+	je	SHORT $LN1@AuConsoleI
+
+; 58   : 		fat32_read_file (file,(uint64_t*)v2p((size_t)buffer),file->size);
 
 	mov	rcx, QWORD PTR buffer$[rsp]
 	call	v2p
-	mov	r8d, DWORD PTR file$[rsp+32]
+	mov	rcx, QWORD PTR file$[rsp]
+	mov	r8d, DWORD PTR [rcx+32]
 	mov	rdx, rax
-	lea	rcx, QWORD PTR file$[rsp]
+	mov	rcx, QWORD PTR file$[rsp]
 	call	?fat32_read_file@@YAXPEAU_vfs_node_@@PEA_KI@Z ; fat32_read_file
+$LN1@AuConsoleI:
 
-; 58   : 	uint8_t* aligned_buf = (uint8_t*)buffer;
+; 59   : 	uint8_t* aligned_buf = (uint8_t*)buffer;
 
 	mov	rax, QWORD PTR buffer$[rsp]
 	mov	QWORD PTR aligned_buf$[rsp], rax
 
-; 59   : 	psf_data = aligned_buf;
+; 60   : 	psf_data = aligned_buf;
 
 	mov	rax, QWORD PTR aligned_buf$[rsp]
 	mov	QWORD PTR psf_data, rax
 
-; 60   : 	_console_initialized_ = true;
+; 61   : 	_console_initialized_ = true;
 
 	mov	BYTE PTR _console_initialized_, 1
 
-; 61   : }
+; 62   : 
+; 63   : 	free(file);
 
-	add	rsp, 376				; 00000178H
-	pop	rdi
-	pop	rsi
+	mov	rcx, QWORD PTR file$[rsp]
+	call	free
+
+; 64   : }
+
+	add	rsp, 72					; 00000048H
 	ret	0
 ?AuConsoleInitialize@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z ENDP ; AuConsoleInitialize
 _TEXT	ENDS

@@ -10,11 +10,13 @@ _BSS	SEGMENT
 ?window_manager_thr@@3PEAU_thread_@@EA DQ 01H DUP (?)	; window_manager_thr
 _BSS	ENDS
 CONST	SEGMENT
-$SG3558	DB	'Reading Pointer ', 0aH, 00H
-	ORG $+2
-$SG3570	DB	'mouse', 00H
+$SG3567	DB	'Reading Pointer ', 0aH, 00H
 	ORG $+6
-$SG3571	DB	'/dev/mouse', 00H
+$SG3576	DB	'Allocating new File ', 0dH, 0aH, 00H
+	ORG $+1
+$SG3580	DB	'mouse', 00H
+	ORG $+2
+$SG3581	DB	'/dev/mouse', 00H
 CONST	ENDS
 PUBLIC	?AuPointDevInitialize@@YAXXZ			; AuPointDevInitialize
 PUBLIC	?PointDevPutMessage@@YAXPEAU_dwm_message_@@@Z	; PointDevPutMessage
@@ -33,10 +35,11 @@ EXTRN	get_current_thread:PROC
 EXTRN	?is_multi_task_enable@@YA_NXZ:PROC		; is_multi_task_enable
 EXTRN	?thread_iterate_ready_list@@YAPEAU_thread_@@G@Z:PROC ; thread_iterate_ready_list
 EXTRN	?thread_iterate_block_list@@YAPEAU_thread_@@H@Z:PROC ; thread_iterate_block_list
+EXTRN	_debug_print_:PROC
 EXTRN	printf:PROC
 pdata	SEGMENT
 $pdata$?AuPointDevInitialize@@YAXXZ DD imagerel $LN3
-	DD	imagerel $LN3+311
+	DD	imagerel $LN3+323
 	DD	imagerel $unwind$?AuPointDevInitialize@@YAXXZ
 $pdata$?PointDevPutMessage@@YAXPEAU_dwm_message_@@@Z DD imagerel $LN7
 	DD	imagerel $LN7+155
@@ -67,7 +70,7 @@ buffer$ = 72
 length$ = 80
 ?AuPointerRead@@YAXPEAU_vfs_node_@@PEA_KI@Z PROC	; AuPointerRead
 
-; 40   : void AuPointerRead (vfs_node_t *file, uint64_t* buffer, uint32_t length) {
+; 41   : void AuPointerRead (vfs_node_t *file, uint64_t* buffer, uint32_t length) {
 
 $LN3:
 	mov	DWORD PTR [rsp+24], r8d
@@ -75,21 +78,21 @@ $LN3:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 56					; 00000038H
 
-; 41   : 	x64_cli();
+; 42   : 	x64_cli();
 
 	call	x64_cli
 
-; 42   : 	printf ("Reading Pointer \n");
+; 43   : 	printf ("Reading Pointer \n");
 
-	lea	rcx, OFFSET FLAT:$SG3558
+	lea	rcx, OFFSET FLAT:$SG3567
 	call	printf
 
-; 43   : 	thread_t* t = get_current_thread();
+; 44   : 	thread_t* t = get_current_thread();
 
 	call	get_current_thread
 	mov	QWORD PTR t$[rsp], rax
 
-; 44   : 	memcpy (buffer, t->msg_box, sizeof(dwm_message_t));
+; 45   : 	memcpy (buffer, t->msg_box, sizeof(dwm_message_t));
 
 	mov	r8d, 28
 	mov	rax, QWORD PTR t$[rsp]
@@ -97,7 +100,7 @@ $LN3:
 	mov	rcx, QWORD PTR buffer$[rsp]
 	call	memcpy
 
-; 45   : }
+; 46   : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -112,7 +115,7 @@ code$ = 72
 arg$ = 80
 ?mouse_ioquery@@YAHPEAU_vfs_node_@@HPEAX@Z PROC		; mouse_ioquery
 
-; 17   : int mouse_ioquery (vfs_node_t *node, int code, void* arg) {
+; 18   : int mouse_ioquery (vfs_node_t *node, int code, void* arg) {
 
 $LN9:
 	mov	QWORD PTR [rsp+24], r8
@@ -120,11 +123,11 @@ $LN9:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 56					; 00000038H
 
-; 18   : 	x64_cli();
+; 19   : 	x64_cli();
 
 	call	x64_cli
 
-; 19   : 	switch (code) {
+; 20   : 	switch (code) {
 
 	mov	eax, DWORD PTR code$[rsp]
 	mov	DWORD PTR tv64[rsp], eax
@@ -137,48 +140,48 @@ $LN9:
 	jmp	SHORT $LN1@mouse_ioqu
 $LN4@mouse_ioqu:
 
-; 20   : 		case MOUSE_IOCODE_DISABLE:
-; 21   : 			AuIrqMask(12,true);
+; 21   : 		case MOUSE_IOCODE_DISABLE:
+; 22   : 			AuIrqMask(12,true);
 
 	mov	dl, 1
 	mov	cl, 12
 	call	AuIrqMask
 
-; 22   : 			break;
+; 23   : 			break;
 
 	jmp	SHORT $LN5@mouse_ioqu
 $LN3@mouse_ioqu:
 
-; 23   : 		case MOUSE_IOCODE_ENABLE:
-; 24   : 			AuIrqMask(12, false);
+; 24   : 		case MOUSE_IOCODE_ENABLE:
+; 25   : 			AuIrqMask(12, false);
 
 	xor	edx, edx
 	mov	cl, 12
 	call	AuIrqMask
 
-; 25   : 			break;
+; 26   : 			break;
 
 	jmp	SHORT $LN5@mouse_ioqu
 $LN2@mouse_ioqu:
 
-; 26   : 		case MOUSE_REGISTER_WM:
-; 27   : 			window_manager_thr = get_current_thread();
+; 27   : 		case MOUSE_REGISTER_WM:
+; 28   : 			window_manager_thr = get_current_thread();
 
 	call	get_current_thread
 	mov	QWORD PTR ?window_manager_thr@@3PEAU_thread_@@EA, rax ; window_manager_thr
 $LN1@mouse_ioqu:
 $LN5@mouse_ioqu:
 
-; 28   : 			break;
-; 29   : 		default:
-; 30   : 			break;
-; 31   : 	}
-; 32   : 
-; 33   : 	return 1;
+; 29   : 			break;
+; 30   : 		default:
+; 31   : 			break;
+; 32   : 	}
+; 33   : 
+; 34   : 	return 1;
 
 	mov	eax, 1
 
-; 34   : }
+; 35   : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -192,49 +195,49 @@ tmsg$ = 40
 msg$ = 64
 ?PointDevPutMessage@@YAXPEAU_dwm_message_@@@Z PROC	; PointDevPutMessage
 
-; 80   : void PointDevPutMessage(dwm_message_t *msg) {
+; 84   : void PointDevPutMessage(dwm_message_t *msg) {
 
 $LN7:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 56					; 00000038H
 
-; 81   : 	if (!is_multi_task_enable())
+; 85   : 	if (!is_multi_task_enable())
 
 	call	?is_multi_task_enable@@YA_NXZ		; is_multi_task_enable
 	movzx	eax, al
 	test	eax, eax
 	jne	SHORT $LN4@PointDevPu
 
-; 82   : 		return;
+; 86   : 		return;
 
 	jmp	SHORT $LN5@PointDevPu
 $LN4@PointDevPu:
 
-; 83   : 
-; 84   : 	if (window_manager_thr == NULL)
+; 87   : 
+; 88   : 	if (window_manager_thr == NULL)
 
 	cmp	QWORD PTR ?window_manager_thr@@3PEAU_thread_@@EA, 0 ; window_manager_thr
 	jne	SHORT $LN3@PointDevPu
 
-; 85   : 		return;
+; 89   : 		return;
 
 	jmp	SHORT $LN5@PointDevPu
 $LN3@PointDevPu:
 
-; 86   : 
-; 87   : 	thread_t *t  = thread_iterate_ready_list (window_manager_thr->id);   //!ready list
+; 90   : 
+; 91   : 	thread_t *t  = thread_iterate_ready_list (window_manager_thr->id);   //!ready list
 
 	mov	rax, QWORD PTR ?window_manager_thr@@3PEAU_thread_@@EA ; window_manager_thr
 	movzx	ecx, WORD PTR [rax+234]
 	call	?thread_iterate_ready_list@@YAPEAU_thread_@@G@Z ; thread_iterate_ready_list
 	mov	QWORD PTR t$[rsp], rax
 
-; 88   : 	if (t == NULL) {
+; 92   : 	if (t == NULL) {
 
 	cmp	QWORD PTR t$[rsp], 0
 	jne	SHORT $LN2@PointDevPu
 
-; 89   : 		t = thread_iterate_block_list(window_manager_thr->id);
+; 93   : 		t = thread_iterate_block_list(window_manager_thr->id);
 
 	mov	rax, QWORD PTR ?window_manager_thr@@3PEAU_thread_@@EA ; window_manager_thr
 	movzx	eax, WORD PTR [rax+234]
@@ -243,21 +246,21 @@ $LN3@PointDevPu:
 	mov	QWORD PTR t$[rsp], rax
 $LN2@PointDevPu:
 
-; 90   : 	}
-; 91   : 	dwm_message_t *tmsg = (dwm_message_t*)t->msg_box;
+; 94   : 	}
+; 95   : 	dwm_message_t *tmsg = (dwm_message_t*)t->msg_box;
 
 	mov	rax, QWORD PTR t$[rsp]
 	mov	rax, QWORD PTR [rax+248]
 	mov	QWORD PTR tmsg$[rsp], rax
 
-; 92   : 	if (tmsg->type == 0)
+; 96   : 	if (tmsg->type == 0)
 
 	mov	rax, QWORD PTR tmsg$[rsp]
 	movzx	eax, WORD PTR [rax]
 	test	eax, eax
 	jne	SHORT $LN1@PointDevPu
 
-; 93   : 		memcpy (t->msg_box,msg,sizeof(dwm_message_t));
+; 97   : 		memcpy (t->msg_box,msg,sizeof(dwm_message_t));
 
 	mov	r8d, 28
 	mov	rdx, QWORD PTR msg$[rsp]
@@ -267,7 +270,7 @@ $LN2@PointDevPu:
 $LN1@PointDevPu:
 $LN5@PointDevPu:
 
-; 94   : }
+; 98   : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -281,131 +284,138 @@ p$ = 40
 p2$ = 48
 ?AuPointDevInitialize@@YAXXZ PROC			; AuPointDevInitialize
 
-; 51   : void AuPointDevInitialize () {
+; 52   : void AuPointDevInitialize () {
 
 $LN3:
 	sub	rsp, 72					; 00000048H
 
-; 52   : 	void* p = AuPmmngrAlloc();
+; 53   : 	void* p = AuPmmngrAlloc();
 
 	call	AuPmmngrAlloc
 	mov	QWORD PTR p$[rsp], rax
 
-; 53   : 	memset(p, 0, 4096);
+; 54   : 	memset(p, 0, 4096);
 
 	mov	r8d, 4096				; 00001000H
 	xor	edx, edx
 	mov	rcx, QWORD PTR p$[rsp]
 	call	memset
 
-; 54   : 	AuMapPage((uint64_t)p,0xFFFFFD0000000000, PAGING_USER);
+; 55   : 	AuMapPage((uint64_t)p,0xFFFFFD0000000000, PAGING_USER);
 
 	mov	r8b, 4
 	mov	rdx, -3298534883328			; fffffd0000000000H
 	mov	rcx, QWORD PTR p$[rsp]
 	call	AuMapPage
 
-; 55   : 	void *p2 = AuPmmngrAlloc();
+; 56   : 	void *p2 = AuPmmngrAlloc();
 
 	call	AuPmmngrAlloc
 	mov	QWORD PTR p2$[rsp], rax
 
-; 56   : 	memset(p2, 0, 4096);
+; 57   : 	memset(p2, 0, 4096);
 
 	mov	r8d, 4096				; 00001000H
 	xor	edx, edx
 	mov	rcx, QWORD PTR p2$[rsp]
 	call	memset
 
-; 57   : 	AuMapPage((uint64_t)p2,0xFFFFD00000000000,PAGING_USER);
+; 58   : 	AuMapPage((uint64_t)p2,0xFFFFD00000000000,PAGING_USER);
 
 	mov	r8b, 4
 	mov	rdx, -52776558133248			; ffffd00000000000H
 	mov	rcx, QWORD PTR p2$[rsp]
 	call	AuMapPage
 
-; 58   : 	vfs_node_t *node = (vfs_node_t*)malloc(sizeof(vfs_node_t));
+; 59   : 	_debug_print_ ("Allocating new File \r\n");
+
+	lea	rcx, OFFSET FLAT:$SG3576
+	call	_debug_print_
+
+; 60   : 
+; 61   : 	vfs_node_t *node = (vfs_node_t*)malloc(sizeof(vfs_node_t));
 
 	mov	ecx, 104				; 00000068H
 	call	malloc
 	mov	QWORD PTR node$[rsp], rax
 
-; 59   : 	strcpy (node->filename, "mouse");
+; 62   : 	
+; 63   : 	strcpy (node->filename, "mouse");
 
 	mov	rax, QWORD PTR node$[rsp]
-	lea	rdx, OFFSET FLAT:$SG3570
+	lea	rdx, OFFSET FLAT:$SG3580
 	mov	rcx, rax
 	call	strcpy
 
-; 60   : 	node->size = 0;
+; 64   : 	node->size = 0;
 
 	mov	rax, QWORD PTR node$[rsp]
 	mov	DWORD PTR [rax+32], 0
 
-; 61   : 	node->eof = 0;
+; 65   : 	node->eof = 0;
 
 	mov	rax, QWORD PTR node$[rsp]
 	mov	BYTE PTR [rax+36], 0
 
-; 62   : 	node->pos = 0;
+; 66   : 	node->pos = 0;
 
 	mov	rax, QWORD PTR node$[rsp]
 	mov	DWORD PTR [rax+40], 0
 
-; 63   : 	node->current = 0;
+; 67   : 	node->current = 0;
 
 	mov	rax, QWORD PTR node$[rsp]
 	mov	DWORD PTR [rax+44], 0
 
-; 64   : 	node->flags = FS_FLAG_GENERAL;
+; 68   : 	node->flags = FS_FLAG_GENERAL;
 
 	mov	rax, QWORD PTR node$[rsp]
 	mov	BYTE PTR [rax+48], 2
 
-; 65   : 	node->status = 0;
+; 69   : 	node->status = 0;
 
 	mov	rax, QWORD PTR node$[rsp]
 	mov	BYTE PTR [rax+49], 0
 
-; 66   : 	node->open = 0;
+; 70   : 	node->open = 0;
 
 	mov	rax, QWORD PTR node$[rsp]
 	mov	QWORD PTR [rax+64], 0
 
-; 67   : 	node->read = AuPointerRead;
+; 71   : 	node->read = AuPointerRead;
 
 	mov	rax, QWORD PTR node$[rsp]
 	lea	rcx, OFFSET FLAT:?AuPointerRead@@YAXPEAU_vfs_node_@@PEA_KI@Z ; AuPointerRead
 	mov	QWORD PTR [rax+72], rcx
 
-; 68   : 	node->write = 0;
+; 72   : 	node->write = 0;
 
 	mov	rax, QWORD PTR node$[rsp]
 	mov	QWORD PTR [rax+80], 0
 
-; 69   : 	node->read_blk = 0;
+; 73   : 	node->read_blk = 0;
 
 	mov	rax, QWORD PTR node$[rsp]
 	mov	QWORD PTR [rax+88], 0
 
-; 70   : 	node->ioquery = mouse_ioquery;
+; 74   : 	node->ioquery = mouse_ioquery;
 
 	mov	rax, QWORD PTR node$[rsp]
 	lea	rcx, OFFSET FLAT:?mouse_ioquery@@YAHPEAU_vfs_node_@@HPEAX@Z ; mouse_ioquery
 	mov	QWORD PTR [rax+96], rcx
 
-; 71   : 	vfs_mount ("/dev/mouse", node, 0);
+; 75   : 	vfs_mount ("/dev/mouse", node, 0);
 
 	xor	r8d, r8d
 	mov	rdx, QWORD PTR node$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3571
+	lea	rcx, OFFSET FLAT:$SG3581
 	call	vfs_mount
 
-; 72   : 	window_manager_thr = NULL;
+; 76   : 	window_manager_thr = NULL;
 
 	mov	QWORD PTR ?window_manager_thr@@3PEAU_thread_@@EA, 0 ; window_manager_thr
 
-; 73   : }
+; 77   : }
 
 	add	rsp, 72					; 00000048H
 	ret	0

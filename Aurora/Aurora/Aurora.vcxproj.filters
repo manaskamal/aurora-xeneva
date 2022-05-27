@@ -64,12 +64,6 @@
     <Filter Include="include\drivers\ac97">
       <UniqueIdentifier>{2cc0df7d-60c8-4062-b400-dc5b78561d68}</UniqueIdentifier>
     </Filter>
-    <Filter Include="include\drivers\hdaudio">
-      <UniqueIdentifier>{9fa879d4-f775-4887-9ddc-e3133c00cc8b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="source\drivers\hdaudio">
-      <UniqueIdentifier>{8c9a931b-8e99-4bcf-8973-e448723d3f09}</UniqueIdentifier>
-    </Filter>
     <Filter Include="source\drivers\acpi">
       <UniqueIdentifier>{e89aec89-63a4-4866-9ec8-17158093dfee}</UniqueIdentifier>
     </Filter>
@@ -225,14 +219,8 @@
     <ClInclude Include="..\include\drivers\ac97\ac97.h">
       <Filter>include\drivers\ac97</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\drivers\hdaudio\hda.h">
-      <Filter>include\drivers\hdaudio</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\drivers\rtc.h">
       <Filter>include\drivers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\objctmngr.h">
-      <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\include\arch\x86_64\pic.h">
       <Filter>include\arch\x86_64</Filter>
@@ -375,6 +363,9 @@
     <ClInclude Include="..\include\ipc\pointdev.h">
       <Filter>include\ipc</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\libmngr.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="init.cpp">
@@ -494,9 +485,6 @@
     <ClCompile Include="arch\x86_64\map.cpp">
       <Filter>source\arch\x86_64</Filter>
     </ClCompile>
-    <ClCompile Include="drivers\hda\hda.cpp">
-      <Filter>source\drivers\hdaudio</Filter>
-    </ClCompile>
     <ClCompile Include="drivers\rtc.cpp">
       <Filter>source\drivers</Filter>
     </ClCompile>
@@ -610,6 +598,9 @@
     </ClCompile>
     <ClCompile Include="ipc\pointdev.cpp">
       <Filter>source\ipc</Filter>
+    </ClCompile>
+    <ClCompile Include="libmngr.cpp">
+      <Filter>source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

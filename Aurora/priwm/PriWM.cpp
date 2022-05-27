@@ -58,6 +58,8 @@
 #include <sys/shm.h>
 #include <fastcpy.h>
 
+#include <xebase.h>
+
 /* backing store & shared win start address */
 #define BACKING_STORE_START   0x0000100000000000
 #define SHARED_WIN_START      0x00000A0000000000
@@ -991,12 +993,14 @@ int main (int argc, char* argv[]) {
 	uint32_t s_width = ioquery(svga_fd,SCREEN_GETWIDTH,NULL);
 	uint32_t s_height = ioquery(svga_fd, SCREEN_GETHEIGHT, NULL);
 
+
 	/*
 	 * create the main backing store
 	 */
 	canvas = create_canvas (s_width,s_height);
 	int w = canvas_get_width(canvas);
 	int h = canvas_get_height(canvas);
+	sys_print_text ("Canvas -> w -> %d , h -> %d \n", canvas->width, canvas->height);
 	//! load cursor library
 	cursor_init ();
 	sys_print_text ("Reading cursor files \n");

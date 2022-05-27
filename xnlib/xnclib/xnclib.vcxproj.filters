@@ -150,6 +150,9 @@
     <ClCompile Include="sys\mman.cpp">
       <Filter>sys</Filter>
     </ClCompile>
+    <ClCompile Include="sys\pe.cpp">
+      <Filter>sys</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="sys">

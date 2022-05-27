@@ -45,6 +45,9 @@
     <ClCompile Include="source\buffer.cpp">
       <Filter>source</Filter>
     </ClCompile>
+    <ClCompile Include="xnacrylic.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\canvas.h">

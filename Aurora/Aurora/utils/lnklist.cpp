@@ -22,11 +22,14 @@ list_t* initialize_list() {
 
 
 void list_add(list_t* list, void* data) {
+	_debug_print_ ("List adding -> %x , sizeof(dataentry) -> %d \r\n", data, sizeof(dataentry));
 	dataentry *current_data = (dataentry*)malloc(sizeof(dataentry));
+	_debug_print_ ("Current data -> %x \r\n", current_data);
 	current_data->next = nullptr;
 	current_data->prev = nullptr;
 	current_data->data = data;
 
+	
 
 	if (!list->entry_current) {
 		list->entry_current = current_data;

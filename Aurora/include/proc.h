@@ -132,5 +132,10 @@ extern process_t *find_process_by_thread (thread_t *thread);
  */
 extern void* process_heap_break (uint64_t pages);
 
+/*
+ * Link all libraries
+ */
+extern void process_link_libraries ();
+
 extern void process_list_initialize ();
 #endif

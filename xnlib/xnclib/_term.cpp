@@ -43,6 +43,6 @@ void _term_putchar_ (unsigned char *buffer) {
 	UFILE file;
 	file.size = 4096;
 	file.flags = 0;
-	sys_write_file(1,buff,&file);
+	//sys_write_file(1,buff,&file);
 	free(buff);
 }

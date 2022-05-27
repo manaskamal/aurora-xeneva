@@ -79,20 +79,18 @@ int sys_open_file (char* filename, FILE *ufile) {
 	}
 
 	if (!(strcmp(pathname, "dev") == 0)) {
-		vfs_node_t file = openfs(node, filename);
+		vfs_node_t *file = openfs(node, filename);
 		if (ufile) {
 			ufile->id = fd;
-			ufile->size = file.size;
-			ufile->eof = file.eof;
-			ufile->pos = file.pos;
-			ufile->start_cluster = file.current;
-			ufile->flags = file.flags; 
-			ufile->status = file.status;
+			ufile->size = file->size;
+			ufile->eof = file->eof;
+			ufile->pos = file->pos;
+			ufile->start_cluster = file->current;
+			ufile->flags = file->flags; 
+			ufile->status = file->status;
 		}
 
-		vfs_node_t *file_ = (vfs_node_t*)malloc(sizeof(vfs_node_t));
-		memcpy(file_, &file, sizeof(vfs_node_t));
-		get_current_thread()->fd[get_current_thread()->fd_current] = file_;
+		get_current_thread()->fd[get_current_thread()->fd_current] = file;
 		fd = get_current_thread()->fd_current;
 		get_current_thread()->fd_current++;
 	}else {

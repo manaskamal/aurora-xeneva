@@ -13,7 +13,7 @@
 #include <arch\x86_64\mmngr\paging.h>
 #include <pe.h>
 #include <stdio.h>
-
+#include <serial.h>
 
 ientry ent;
 uint64_t image_base;
@@ -96,6 +96,37 @@ void AuPeLinkLibrary (void* image) {
 			PIMAGE_IMPORT_HINT_TABLE hint = raw_offset<PIMAGE_IMPORT_HINT_TABLE>(image, *iat);
 			const char* fname = hint->name;
 			void* procaddr = AuGetProcAddress((void*)0xFFFFC00000000000, fname);
+			*iat = (uint64_t)procaddr;
+			++iat;
+		}
+	}
+}
+
+
+/*
+ * LinkLibrary -- Links a dll library to its executable
+ * @param image -- executable
+ * @param exporter -- dll images
+ * @param exporter -- executable image
+ */
+void AuPeLinkLibraryEx (void* image, void* exporter) {
+	PIMAGE_DOS_HEADER dos_header = (PIMAGE_DOS_HEADER)image;
+	PIMAGE_NT_HEADERS nt_headers = raw_offset<PIMAGE_NT_HEADERS>(dos_header, dos_header->e_lfanew);
+	if (IMAGE_DATA_DIRECTORY_IMPORT + 1 > nt_headers->OptionalHeader.NumberOfRvaAndSizes)
+		return;
+	IMAGE_DATA_DIRECTORY& datadir = nt_headers->OptionalHeader.DataDirectory[IMAGE_DATA_DIRECTORY_IMPORT];
+	if (datadir.VirtualAddress == 0 || datadir.Size == 0) {
+		return;
+	}
+	PIMAGE_IMPORT_DIRECTORY importdir = raw_offset<PIMAGE_IMPORT_DIRECTORY>(image, datadir.VirtualAddress);
+	for (size_t n = 0; importdir[n].ThunkTableRva; ++n) {
+		const char* func = raw_offset<const char*>(image, importdir[n].NameRva);
+		PIMAGE_IMPORT_LOOKUP_TABLE_PE32P iat = raw_offset<PIMAGE_IMPORT_LOOKUP_TABLE_PE32P>(image, importdir[n].ThunkTableRva);
+		while (*iat) {
+			PIMAGE_IMPORT_HINT_TABLE hint = raw_offset<PIMAGE_IMPORT_HINT_TABLE>(image, *iat);
+			const char* fname = hint->name;
+			_debug_print_ ("FNAME -> %s \r\n", fname);
+			void* procaddr = AuGetProcAddress(exporter, fname);
 			*iat = (uint64_t)procaddr;
 			++iat;
 		}

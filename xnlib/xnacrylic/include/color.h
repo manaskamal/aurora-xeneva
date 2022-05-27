@@ -107,10 +107,10 @@
 #define GET_BLUE(color)  ((color >> 0) & 0x000000FF)
 
 
-extern uint32_t alpha_blend (uint32_t color1, uint32_t color2);
+XE_EXTERN XE_EXPORT uint32_t alpha_blend (uint32_t color1, uint32_t color2);
 
-extern uint32_t make_col (uint8_t red, uint8_t green, uint8_t blue);
-extern uint32_t make_col_a (uint8_t red, uint8_t green, uint8_t blue, uint8_t a);
-extern void radial_gradient (canvas_t *canvas,int g_w, int g_h, uint32_t c1, uint32_t c2, int x1, int y1, float r);
-extern void linear_gradient (canvas_t *canvas,int x1, int y1, int x2, int y2, uint32_t col1, uint32_t col2);
+XE_EXTERN XE_EXPORT uint32_t make_col (uint8_t red, uint8_t green, uint8_t blue);
+XE_EXTERN XE_EXPORT uint32_t make_col_a (uint8_t red, uint8_t green, uint8_t blue, uint8_t a);
+XE_EXTERN XE_EXPORT void radial_gradient (canvas_t *canvas,int g_w, int g_h, uint32_t c1, uint32_t c2, int x1, int y1, float r);
+XE_EXTERN XE_EXPORT void linear_gradient (canvas_t *canvas,int x1, int y1, int x2, int y2, uint32_t col1, uint32_t col2);
 #endif

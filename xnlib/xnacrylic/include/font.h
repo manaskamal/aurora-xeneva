@@ -22,15 +22,15 @@ typedef struct _font_ {
 	uint32_t height;
 }Font;
 
-extern void acrylic_initialize_font ();
-extern void acrylic_font_set_size (uint32_t sz);
-extern void acrylic_font_draw_string (canvas_t *canvas, char* string, int x, int y, uint32_t sz,uint32_t color);
-extern Font* acrylic_get_system_font ();
-extern void acrylic_font_get_centering(char* string, int *c_w, int *c_h);
-extern int acrylic_font_get_length (char* string);
-extern int acrylic_font_get_height (char* string);
+XE_EXTERN XE_EXPORT void acrylic_initialize_font ();
+XE_EXTERN XE_EXPORT void acrylic_font_set_size (uint32_t sz);
+XE_EXTERN XE_EXPORT void acrylic_font_draw_string (canvas_t *canvas, char* string, int x, int y, uint32_t sz,uint32_t color);
+XE_EXTERN XE_EXPORT Font* acrylic_get_system_font ();
+XE_EXTERN XE_EXPORT void acrylic_font_get_centering(char* string, int *c_w, int *c_h);
+XE_EXTERN XE_EXPORT int acrylic_font_get_length (char* string);
+XE_EXTERN XE_EXPORT int acrylic_font_get_height (char* string);
 /**
  * acrylic_font_destroy -- destroys font
  */
-extern void acrylic_font_destroy ();
+XE_EXTERN XE_EXPORT void acrylic_font_destroy ();
 #endif

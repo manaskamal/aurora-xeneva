@@ -127,7 +127,7 @@ extern void initialize_fat32 ();
  * @param filename -- name of the file
  * @example -- \\EFI\\BOOT\\BOOTx64.efi
  */
-extern vfs_node_t fat32_open (vfs_node_t *node,char* filename);
+extern vfs_node_t* fat32_open (vfs_node_t *node,char* filename);
 
 /**
  * fat32_read_file -- reads entire file to a buffer (unused)
@@ -148,7 +148,7 @@ extern void fat32_read (vfs_node_t *file, uint64_t* buf);
  * fat32_locate_dir -- locates a file in current directory
  * @param dir -- actually filename to search
  */
-extern vfs_node_t fat32_locate_dir (const char* dir);
+extern vfs_node_t* fat32_locate_dir (const char* dir);
 
 /**
  * fat32_self_register -- registers the file system as vfs object

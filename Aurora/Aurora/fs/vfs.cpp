@@ -14,10 +14,11 @@
 #include <utils\gtree.h>
 #include <fs\fat\fat.h>
 #include <fs\devfs.h>
+#include <serial.h>
 
 vfs_entry *root_dir = NULL;   // for '/' directory
 
-vfs_node_t openfs (vfs_node_t *node, char* path) {
+vfs_node_t* openfs (vfs_node_t *node, char* path) {
 	if (node) {
 		return node->open (node, path);
 	}
@@ -197,7 +198,6 @@ void vfs_mount (char *path, vfs_node_t *node, vfs_entry *dirnode) {
 		return;
 	}
 
-
 	//! seeking else? other mount points
 	//! /home/manas
 	char* next = strchr(path,'/');
@@ -222,7 +222,6 @@ void vfs_mount (char *path, vfs_node_t *node, vfs_entry *dirnode) {
 
 		for (int j = 0; j < ent->childs->pointer; j++) {
 			vfs_node_t *file_ = (vfs_node_t*)list_get_at(ent->childs, j);
-		
 			if (strcmp(file_->filename, pathname)==0) {
 				entry_found = file_;
 				found = true;
@@ -237,6 +236,7 @@ void vfs_mount (char *path, vfs_node_t *node, vfs_entry *dirnode) {
 	if (found) {
 		if (entry_found->flags == FS_FLAG_DIRECTORY) {
 			ent = (vfs_entry*)entry_found->device;
+			_debug_print_ ("Recursively calling for -> %s \r\n", path);
 			vfs_mount(path,node,ent);
 		}
 		printf ("[vfs]: already mounted -> %s\n", path);
@@ -244,11 +244,16 @@ void vfs_mount (char *path, vfs_node_t *node, vfs_entry *dirnode) {
 	}
 
 	if (!found) {
+		_debug_print_ ("Not found entry -> %s \r\n", path);
 		if (entry_found) {
+			_debug_print_ ("Mounting path -> %s, creating entry \r\n", path);
 			vfs_entry* entryn = vfs_mkentry();
+			_debug_print_ ("Entry created -> %x \r\n", entryn);
 			vfs_mkdir(path,node,entryn);
 		}
+		_debug_print_ ("Ent->child -> %x %x nodes-> %d \r\n", ent->childs, node, sizeof(vfs_node_t));
 		list_add(ent->childs, node);
+		_debug_print_ ("List added %x \r\n", ent->childs);
 	}
 	
 }

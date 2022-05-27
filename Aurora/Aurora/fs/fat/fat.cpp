@@ -243,13 +243,14 @@ void fat32_read_file (vfs_node_t *file, uint64_t* buffer, uint32_t count) {
  * fat32_locate_dir -- locates a file in current directory
  * @param dir -- actually filename to search
  */
-vfs_node_t fat32_locate_dir (const char* dir) {
-	vfs_node_t file;
+vfs_node_t *fat32_locate_dir (const char* dir) {
+	vfs_node_t *file = (vfs_node_t*)malloc(sizeof(vfs_node_t));
+
 	uint64_t* buf;
 	fat32_dir *dirent;
 	char dos_file_name[11];
 	fat32_to_dos_file_name (dir, dos_file_name, 11);
-
+	
 	buf = (uint64_t*)p2v((uint64_t)AuPmmngrAlloc());
 	for (unsigned int sector = 0; sector < sectors_per_cluster; sector++) {
 
@@ -257,26 +258,25 @@ vfs_node_t fat32_locate_dir (const char* dir) {
 		//ata_read_28 (root_sector + sector,1, buf);
 		ahci_disk_read(ahci_disk_get_port(),root_sector + sector,1,(uint64_t*)v2p((uint64_t)buf));
 
-		uint8_t* aligned_buf = (uint8_t*)buf;
-		dirent = (fat32_dir*)aligned_buf;
+		dirent = (fat32_dir*)buf;
 
 		for (int i=0; i < 16; i++) {
 			char name[11];
 			memcpy (name, dirent->filename, 11);
 			name[11] = 0;
-		
+
 			if (strcmp (dos_file_name, name) == 0) {
 				
-				strcpy (file.filename, dir);
-				file.current = dirent->first_cluster;
-				file.size = dirent->file_size;
-				file.eof = 0;
-				file.status = FS_STATUS_FOUND;
+				strcpy (file->filename, dir);
+				file->current = dirent->first_cluster;
+				file->size = dirent->file_size;
+				file->eof = 0;
+				file->status = FS_STATUS_FOUND;
 
 				if (dirent->attrib == 0x10)
-					file.flags = FS_FLAG_DIRECTORY;
+					file->flags = FS_FLAG_DIRECTORY;
 				else
-					file.flags = FS_FLAG_GENERAL;
+					file->flags = FS_FLAG_GENERAL;
 				
 				//AuPmmngrFree((void*)v2p((size_t)buf));
 				return file;
@@ -285,10 +285,8 @@ vfs_node_t fat32_locate_dir (const char* dir) {
 		}
 	}
 
-	file.status = FS_FLAG_INVALID;
-	file.size = 0;
-	file.eof = 0;
-	return file;
+	free(file);
+	return NULL;
 }
 
 
@@ -297,25 +295,24 @@ vfs_node_t fat32_locate_dir (const char* dir) {
  * @param kfile -- parent vfs file object
  * @param filename -- file name to search
  */
-vfs_node_t fat32_locate_subdir (vfs_node_t kfile, const char* filename) {
+vfs_node_t *fat32_locate_subdir (vfs_node_t *kfile, const char* filename) {
 
-	vfs_node_t file;
+	vfs_node_t *file = (vfs_node_t*)malloc(sizeof(vfs_node_t));
 
 	char dos_file_name[11];
 	fat32_to_dos_file_name (filename, dos_file_name, 11);
 	//dos_file_name[11] = 0;
 	uint64_t* buf = (uint64_t*)p2v((size_t)AuPmmngrAlloc());
-	if (kfile.flags != FS_FLAG_INVALID) {
+	if (kfile->flags != FS_FLAG_INVALID) {
 		
 		//! read the directory
-		while (!kfile.eof) {
+		while (!kfile->eof) {
 
 			//! read 
 		
-			fat32_read (&kfile, (uint64_t*)v2p((uint64_t)buf));
+			fat32_read (kfile, (uint64_t*)v2p((uint64_t)buf));
 			//! set directory
-			uint8_t* aligned_buf = (uint8_t*)buf;
-			fat32_dir* pkDir = (fat32_dir*)aligned_buf;
+			fat32_dir* pkDir = (fat32_dir*)buf;
 
 			//! 16 entries
 			for (unsigned int i = 0; i < 16; i++) {
@@ -328,18 +325,19 @@ vfs_node_t fat32_locate_subdir (vfs_node_t kfile, const char* filename) {
 				if (strcmp (name, dos_file_name) == 0) {
 
 					//! found file
-					strcpy (file.filename, filename);
-					file.current = pkDir->first_cluster;
-					file.size = pkDir->file_size;
-					file.eof = 0;
-					file.status = FS_STATUS_FOUND;
+					strcpy (file->filename, filename);
+					file->current = pkDir->first_cluster;
+					file->size = pkDir->file_size;
+					file->eof = 0;
+					file->status = FS_STATUS_FOUND;
 					//! set file type
 					if (pkDir->attrib == 0x10)
-						file.flags = FS_FLAG_DIRECTORY;
+						file->flags = FS_FLAG_DIRECTORY;
 					else
-						file.flags = FS_FLAG_GENERAL;
+						file->flags = FS_FLAG_GENERAL;
 
 					AuPmmngrFree((void*)v2p((size_t)buf));
+					free(kfile);
 					//!return file
 					return file;
 				}
@@ -353,7 +351,8 @@ vfs_node_t fat32_locate_subdir (vfs_node_t kfile, const char* filename) {
 	}
 
 	AuPmmngrFree((void*)v2p((size_t)buf));
-	file.flags = FS_FLAG_INVALID;
+	file->flags = FS_FLAG_INVALID;
+	free(kfile);
 	return file;
 }
 
@@ -362,8 +361,8 @@ vfs_node_t fat32_locate_subdir (vfs_node_t kfile, const char* filename) {
 //! Opens a file 
 //! @param filename -- name of the file
 //! @example -- \\EFI\\BOOT\\BOOTx64.efi
-vfs_node_t fat32_open (vfs_node_t * node, char* filename) {
-	vfs_node_t cur_dir;
+vfs_node_t * fat32_open (vfs_node_t * node, char* filename) {
+	vfs_node_t *cur_dir;
 	char* p = 0;
 	bool  root_dir = true;
 	char* path = (char*) filename;
@@ -375,15 +374,12 @@ vfs_node_t fat32_open (vfs_node_t * node, char* filename) {
 		cur_dir = fat32_locate_dir (path);
 
 		//! found file ?
-		if (cur_dir.flags == FS_FLAG_GENERAL) {
+		if (cur_dir != NULL && cur_dir->flags == FS_FLAG_GENERAL) {
 			return cur_dir;
 		}
 
 		//! unable to find
-		vfs_node_t ret;
-		ret.flags = FS_FLAG_INVALID;
-		ret.size = 0;
-		return ret;
+		return NULL;
 	}
 
 	//! go to next character after first '\'
@@ -417,11 +413,11 @@ vfs_node_t fat32_open (vfs_node_t * node, char* filename) {
 		}
 
 		//! found directory or file?
-		if (cur_dir.flags == FS_FLAG_INVALID)
+		if (cur_dir == NULL)
 			break;
 
 		//! found file?
-		if (cur_dir.flags == FS_FLAG_GENERAL){
+		if (cur_dir != NULL && cur_dir->flags == FS_FLAG_GENERAL){
 			return cur_dir;
 		}
 
@@ -432,10 +428,11 @@ vfs_node_t fat32_open (vfs_node_t * node, char* filename) {
 	}
 
 	//! unable to find
-	vfs_node_t ret;
+	/*vfs_node_t ret;
 	ret.flags = FS_FLAG_INVALID;
-	ret.size = 0;
-	return ret;
+	ret.size = 0;*/
+	free(cur_dir);
+	return NULL;
 }
 
 

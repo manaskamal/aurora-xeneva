@@ -195,6 +195,7 @@
     <ClCompile Include="stdio.cpp" />
     <ClCompile Include="string.cpp" />
     <ClCompile Include="sys\mman.cpp" />
+    <ClCompile Include="sys\pe.cpp" />
     <ClCompile Include="sys\postbox.cpp" />
     <ClCompile Include="sys\stdlib.cpp" />
     <ClCompile Include="sys\_xeneva.cpp" />

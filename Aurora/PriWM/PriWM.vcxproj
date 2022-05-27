@@ -81,7 +81,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>E:\Xeneva Project\Xeneva\xnlib\xnclib;E:\Xeneva Project\Xeneva\xnlib\xnacrylic\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>E:\Xeneva Project\Xeneva\xnlib\xnclib;E:\Xeneva Project\Xeneva\xnlib\xnacrylic\include;E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <SDLCheck>false</SDLCheck>
       <PreprocessorDefinitions>ARCH_X64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <IgnoreStandardIncludePath>true</IgnoreStandardIncludePath>
@@ -96,8 +96,8 @@
       <GenerateDebugInformation>
       </GenerateDebugInformation>
       <OutputFile>F:\priwm.exe</OutputFile>
-      <AdditionalLibraryDirectories>E:\Xeneva Project\Xeneva\xnlib\lib64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>xnclib.lib; xnacrylic.lib;freetype.lib;</AdditionalDependencies>
+      <AdditionalLibraryDirectories>E:\Xeneva Project\Xeneva\xnlib\lib64;E:\Xeneva Project\Xeneva\Aurora\x64\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>xnclib.lib; xnacrylic.lib;freetype.lib;XeWidgets.lib;</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
       <EnableUAC>false</EnableUAC>
       <GenerateMapFile>true</GenerateMapFile>
