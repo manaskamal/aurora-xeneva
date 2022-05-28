@@ -45,8 +45,9 @@
  */
 
 
-#define  FS_FLAG_DIRECTORY  0x1
-#define  FS_FLAG_GENERAL   0x2
+#define  FS_FLAG_DIRECTORY  (1<<1)
+#define  FS_FLAG_GENERAL    (1<<2)
+#define  FS_FLAG_DEVICE     (1<<3)
 #define  FS_FLAG_DELETED    0x3
 #define  FS_FLAG_INVALID    FS_FLAG_DELETED
 

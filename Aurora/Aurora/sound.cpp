@@ -202,7 +202,7 @@ void AuSoundInitialize () {
 	dsp->eof = 0;
 	dsp->pos = 0;
 	dsp->current = 0;
-	dsp->flags = FS_FLAG_GENERAL;
+	dsp->flags = FS_FLAG_GENERAL | FS_FLAG_DEVICE;
 	dsp->status = 0;
 	dsp->open = 0;
 	dsp->read = AuSoundRead;

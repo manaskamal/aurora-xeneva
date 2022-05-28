@@ -16,7 +16,7 @@ $pdata$?valloc@@YAX_K@Z DD imagerel $LN3
 	DD	imagerel $LN3+47
 	DD	imagerel $unwind$?valloc@@YAX_K@Z
 $pdata$?vfree@@YAX_K@Z DD imagerel $LN3
-	DD	imagerel $LN3+29
+	DD	imagerel $LN3+31
 	DD	imagerel $unwind$?vfree@@YAX_K@Z
 pdata	ENDS
 xdata	SEGMENT
@@ -41,8 +41,9 @@ $LN3:
 
 	call	x64_cli
 
-; 18   : 	AuUnmapPage((uint64_t)pos);
+; 18   : 	AuUnmapPage((uint64_t)pos, true);
 
+	mov	dl, 1
 	mov	rcx, QWORD PTR pos$[rsp]
 	call	AuUnmapPage
 

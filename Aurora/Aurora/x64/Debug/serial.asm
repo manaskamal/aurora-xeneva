@@ -27,14 +27,13 @@ EXTRN	strlen:PROC
 EXTRN	?sztoa@@YAPEAD_KPEADH@Z:PROC			; sztoa
 EXTRN	printf:PROC
 EXTRN	?ftoa@@YAPEADME@Z:PROC				; ftoa
-EXTRN	p2v:PROC
 EXTRN	_fltused:DWORD
 pdata	SEGMENT
 $pdata$?AuInitializeSerial@@YAXXZ DD imagerel $LN3
-	DD	imagerel $LN3+156
+	DD	imagerel $LN3+93
 	DD	imagerel $unwind$?AuInitializeSerial@@YAXXZ
 $pdata$?write_serial@@YAXD@Z DD imagerel $LN5
-	DD	imagerel $LN5+47
+	DD	imagerel $LN5+38
 	DD	imagerel $unwind$?write_serial@@YAXD@Z
 $pdata$?debug_serial@@YAXPEAD@Z DD imagerel $LN6
 	DD	imagerel $LN6+85
@@ -46,7 +45,7 @@ $pdata$?SerialHandler@@YAX_KPEAX@Z DD imagerel $LN3
 	DD	imagerel $LN3+41
 	DD	imagerel $unwind$?SerialHandler@@YAX_KPEAX@Z
 $pdata$?is_transmit_empty@@YAHXZ DD imagerel $LN3
-	DD	imagerel $LN3+33
+	DD	imagerel $LN3+24
 	DD	imagerel $unwind$?is_transmit_empty@@YAHXZ
 pdata	ENDS
 xdata	SEGMENT
@@ -73,11 +72,9 @@ _TEXT	SEGMENT
 $LN3:
 	sub	rsp, 40					; 00000028H
 
-; 45   : 	return x64_inportb (p2v(PORT + 5)) & 0x20;
+; 45   : 	return x64_inportb (PORT + 5) & 0x20;
 
-	mov	ecx, 1021				; 000003fdH
-	call	p2v
-	movzx	ecx, ax
+	mov	cx, 1021				; 000003fdH
 	call	x64_inportb
 	movzx	eax, al
 	and	eax, 32					; 00000020H
@@ -595,12 +592,10 @@ $LN2@write_seri:
 	jmp	SHORT $LN2@write_seri
 $LN1@write_seri:
 
-; 50   : 	x64_outportb (p2v(PORT), a);
+; 50   : 	x64_outportb (PORT, a);
 
-	mov	ecx, 1016				; 000003f8H
-	call	p2v
 	movzx	edx, BYTE PTR a$[rsp]
-	movzx	ecx, ax
+	mov	cx, 1016				; 000003f8H
 	call	x64_outportb
 
 ; 51   : }
@@ -619,60 +614,46 @@ _TEXT	SEGMENT
 $LN3:
 	sub	rsp, 40					; 00000028H
 
-; 30   : 	x64_outportb (p2v(PORT + 1), 0x00);
+; 30   : 	x64_outportb (PORT + 1, 0x00);
 
-	mov	ecx, 1017				; 000003f9H
-	call	p2v
 	xor	edx, edx
-	movzx	ecx, ax
+	mov	cx, 1017				; 000003f9H
 	call	x64_outportb
 
-; 31   : 	x64_outportb (p2v(PORT + 3), 0x80);
+; 31   : 	x64_outportb ((PORT + 3), 0x80);
 
-	mov	ecx, 1019				; 000003fbH
-	call	p2v
 	mov	dl, 128					; 00000080H
-	movzx	ecx, ax
+	mov	cx, 1019				; 000003fbH
 	call	x64_outportb
 
-; 32   : 	x64_outportb (p2v(PORT + 0), 0x03);
+; 32   : 	x64_outportb ((PORT + 0), 0x03);
 
-	mov	ecx, 1016				; 000003f8H
-	call	p2v
 	mov	dl, 3
-	movzx	ecx, ax
+	mov	cx, 1016				; 000003f8H
 	call	x64_outportb
 
-; 33   : 	x64_outportb (p2v(PORT + 1), 0x00);
+; 33   : 	x64_outportb ((PORT + 1), 0x00);
 
-	mov	ecx, 1017				; 000003f9H
-	call	p2v
 	xor	edx, edx
-	movzx	ecx, ax
+	mov	cx, 1017				; 000003f9H
 	call	x64_outportb
 
-; 34   : 	x64_outportb (p2v(PORT + 3), 0x03);
+; 34   : 	x64_outportb ((PORT + 3), 0x03);
 
-	mov	ecx, 1019				; 000003fbH
-	call	p2v
 	mov	dl, 3
-	movzx	ecx, ax
+	mov	cx, 1019				; 000003fbH
 	call	x64_outportb
 
-; 35   : 	x64_outportb (p2v(PORT + 2), 0xC7);
+; 35   : 	x64_outportb ((PORT + 2), 0xC7);
 
-	mov	ecx, 1018				; 000003faH
-	call	p2v
 	mov	dl, 199					; 000000c7H
-	movzx	ecx, ax
+	mov	cx, 1018				; 000003faH
 	call	x64_outportb
 
-; 36   : 	x64_outportb (p2v(PORT + 4), 0x0B);
+; 36   : 	x64_outportb ((PORT + 4), 0x0B);
 
-	mov	ecx, 1020				; 000003fcH
-	call	p2v
 	mov	dl, 11
-	movzx	ecx, ax
+	mov	cx, 1020				; 000003fcH
 	call	x64_outportb
 
 ; 37   : 	

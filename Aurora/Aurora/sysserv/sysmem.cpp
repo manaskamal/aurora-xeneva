@@ -57,7 +57,7 @@ void unmap_shared_memory (uint16_t dest_id, uint64_t pos, size_t size) {
 	uint64_t *cr3 = (uint64_t*)t->cr3;
 
 	for (int i = 0; i < size/4096; i++) {
-		AuUnmapPage(pos + i * 4096);
+		AuUnmapPage(pos + i * 4096, false);
 		//unmap_page_ex(cr3,pos + i * 4096, false);
 	}
 }

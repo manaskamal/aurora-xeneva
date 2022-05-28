@@ -44,6 +44,7 @@ typedef struct _shared_mem_ {
 	size_t size;
 	uint8_t flags;
 	uint32_t num_frames;
+	uint16_t link_count;
 	thread_t* map_in_thread;
 	void *first_process_vaddr;
 }shared_mem_t;
@@ -67,4 +68,10 @@ extern uint32_t AuCreateShMem (uint32_t key,size_t size, uint32_t flags);
  * @param shmflg -- shared memory flags
  */
 extern void* AuObtainShMem (uint32_t key, void * shmaddr, int shmflg);
+
+/*
+ * Unlinks a shared memory 
+ * @param key -- unique key id
+ */
+extern void shm_unlink (uint32_t key);
 #endif

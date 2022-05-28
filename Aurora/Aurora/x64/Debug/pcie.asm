@@ -6,7 +6,7 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 CONST	SEGMENT
-$SG3675	DB	'MSI-X found for this device', 0aH, 00H
+$SG3676	DB	'MSI-X found for this device', 0aH, 00H
 CONST	ENDS
 PUBLIC	?pci_express_get_device@@YA_KGHHH@Z		; pci_express_get_device
 PUBLIC	pci_express_scan_class
@@ -528,7 +528,7 @@ $LN5@pcie_alloc:
 
 ; 422  : 				printf ("MSI-X found for this device\n");
 
-	lea	rcx, OFFSET FLAT:$SG3675
+	lea	rcx, OFFSET FLAT:$SG3676
 	call	printf
 
 ; 423  : 				value = true; //MSI-X Allocated: not implemented

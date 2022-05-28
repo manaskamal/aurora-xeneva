@@ -28,7 +28,7 @@ $pdata$?copy_memory@@YAXG_K0@Z DD imagerel $LN7
 	DD	imagerel $LN7+251
 	DD	imagerel $unwind$?copy_memory@@YAXG_K0@Z
 $pdata$?unmap_shared_memory@@YAXG_K0@Z DD imagerel $LN7
-	DD	imagerel $LN7+174
+	DD	imagerel $LN7+176
 	DD	imagerel $unwind$?unmap_shared_memory@@YAXG_K0@Z
 $pdata$?sys_get_used_ram@@YA_KXZ DD imagerel $LN3
 	DD	imagerel $LN3+19
@@ -168,7 +168,7 @@ $LN3@unmap_shar:
 	cmp	rcx, rax
 	jae	SHORT $LN1@unmap_shar
 
-; 60   : 		AuUnmapPage(pos + i * 4096);
+; 60   : 		AuUnmapPage(pos + i * 4096, false);
 
 	mov	eax, DWORD PTR i$1[rsp]
 	imul	eax, 4096				; 00001000H
@@ -176,6 +176,7 @@ $LN3@unmap_shar:
 	mov	rcx, QWORD PTR pos$[rsp]
 	add	rcx, rax
 	mov	rax, rcx
+	xor	edx, edx
 	mov	rcx, rax
 	call	AuUnmapPage
 

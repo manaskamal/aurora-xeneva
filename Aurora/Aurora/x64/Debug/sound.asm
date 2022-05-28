@@ -22,9 +22,9 @@ _BSS	SEGMENT
 ?dsp_last@@3PEAU_dsp_@@EA DQ 01H DUP (?)		; dsp_last
 _BSS	ENDS
 CONST	SEGMENT
-$SG3866	DB	'dsp', 00H
+$SG3867	DB	'dsp', 00H
 	ORG $+4
-$SG3867	DB	'/dev/dsp', 00H
+$SG3868	DB	'/dev/dsp', 00H
 CONST	ENDS
 PUBLIC	?AuSoundInitialize@@YAXXZ			; AuSoundInitialize
 PUBLIC	AuSoundRegisterDevice
@@ -1097,7 +1097,7 @@ $LN3:
 ; 200  : 	strcpy (dsp->filename, "dsp");
 
 	mov	rax, QWORD PTR dsp$[rsp]
-	lea	rdx, OFFSET FLAT:$SG3866
+	lea	rdx, OFFSET FLAT:$SG3867
 	mov	rcx, rax
 	call	strcpy
 
@@ -1121,10 +1121,10 @@ $LN3:
 	mov	rax, QWORD PTR dsp$[rsp]
 	mov	DWORD PTR [rax+44], 0
 
-; 205  : 	dsp->flags = FS_FLAG_GENERAL;
+; 205  : 	dsp->flags = FS_FLAG_GENERAL | FS_FLAG_DEVICE;
 
 	mov	rax, QWORD PTR dsp$[rsp]
-	mov	BYTE PTR [rax+48], 2
+	mov	BYTE PTR [rax+48], 12
 
 ; 206  : 	dsp->status = 0;
 
@@ -1163,7 +1163,7 @@ $LN3:
 
 	xor	r8d, r8d
 	mov	rdx, QWORD PTR dsp$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3867
+	lea	rcx, OFFSET FLAT:$SG3868
 	call	vfs_mount
 
 ; 213  : 

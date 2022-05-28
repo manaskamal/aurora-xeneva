@@ -10,28 +10,28 @@ _BSS	SEGMENT
 ?root_dir@@3PEAU_vfs_entry_@@EA DQ 01H DUP (?)		; root_dir
 _BSS	ENDS
 CONST	SEGMENT
-$SG3556	DB	'[VFS]: Mounting filesystem to root failed, already in us'
+$SG3557	DB	'[VFS]: Mounting filesystem to root failed, already in us'
 	DB	'e', 0aH, 00H
 	ORG $+5
-$SG3584	DB	'Recursively calling for -> %s ', 0dH, 0aH, 00H
+$SG3585	DB	'Recursively calling for -> %s ', 0dH, 0aH, 00H
 	ORG $+7
-$SG3585	DB	'[vfs]: already mounted -> %s', 0aH, 00H
+$SG3586	DB	'[vfs]: already mounted -> %s', 0aH, 00H
 	ORG $+2
-$SG3587	DB	'Not found entry -> %s ', 0dH, 0aH, 00H
+$SG3588	DB	'Not found entry -> %s ', 0dH, 0aH, 00H
 	ORG $+7
-$SG3589	DB	'Mounting path -> %s, creating entry ', 0dH, 0aH, 00H
+$SG3590	DB	'Mounting path -> %s, creating entry ', 0dH, 0aH, 00H
 	ORG $+1
-$SG3591	DB	'Entry created -> %x ', 0dH, 0aH, 00H
+$SG3592	DB	'Entry created -> %x ', 0dH, 0aH, 00H
 	ORG $+1
-$SG3593	DB	'Ent->child -> %x %x nodes-> %d ', 0dH, 0aH, 00H
+$SG3594	DB	'Ent->child -> %x %x nodes-> %d ', 0dH, 0aH, 00H
 	ORG $+6
-$SG3594	DB	'List added %x ', 0dH, 0aH, 00H
+$SG3595	DB	'List added %x ', 0dH, 0aH, 00H
 	ORG $+7
-$SG3633	DB	'Directory', 00H
+$SG3634	DB	'Directory', 00H
 	ORG $+2
-$SG3636	DB	'File', 00H
+$SG3637	DB	'File', 00H
 	ORG $+7
-$SG3637	DB	'%s -> %s ', 0aH, 00H
+$SG3638	DB	'%s -> %s ', 0aH, 00H
 CONST	ENDS
 PUBLIC	?AuVFSInit@@YAXXZ				; AuVFSInit
 PUBLIC	?vfs_finddir@@YAPEAU_vfs_node_@@PEAD@Z		; vfs_finddir
@@ -480,7 +480,7 @@ $LN13@vfs_lsdir:
 
 	mov	rax, QWORD PTR file_$4[rsp]
 	movzx	eax, BYTE PTR [rax+48]
-	cmp	eax, 1
+	cmp	eax, 2
 	jne	SHORT $LN9@vfs_lsdir
 
 ; 289  : 					ent = (vfs_entry *)file_->device;
@@ -563,12 +563,12 @@ $LN6@vfs_lsdir:
 
 	mov	rax, QWORD PTR f$6[rsp]
 	movzx	eax, BYTE PTR [rax+48]
-	cmp	eax, 1
+	cmp	eax, 2
 	jne	SHORT $LN3@vfs_lsdir
 
 ; 305  : 				type = "Directory";
 
-	lea	rax, OFFSET FLAT:$SG3633
+	lea	rax, OFFSET FLAT:$SG3634
 	mov	QWORD PTR type$5[rsp], rax
 	jmp	SHORT $LN2@vfs_lsdir
 $LN3@vfs_lsdir:
@@ -577,12 +577,12 @@ $LN3@vfs_lsdir:
 
 	mov	rax, QWORD PTR f$6[rsp]
 	movzx	eax, BYTE PTR [rax+48]
-	cmp	eax, 2
+	cmp	eax, 4
 	jne	SHORT $LN1@vfs_lsdir
 
 ; 307  : 				type = "File";
 
-	lea	rax, OFFSET FLAT:$SG3636
+	lea	rax, OFFSET FLAT:$SG3637
 	mov	QWORD PTR type$5[rsp], rax
 $LN1@vfs_lsdir:
 $LN2@vfs_lsdir:
@@ -592,7 +592,7 @@ $LN2@vfs_lsdir:
 	mov	rax, QWORD PTR f$6[rsp]
 	mov	r8, rax
 	mov	rdx, QWORD PTR type$5[rsp]
-	lea	rcx, OFFSET FLAT:$SG3637
+	lea	rcx, OFFSET FLAT:$SG3638
 	call	printf
 
 ; 309  : 		}
@@ -661,7 +661,7 @@ $LN23:
 
 ; 194  : 			printf ("[VFS]: Mounting filesystem to root failed, already in use\n");
 
-	lea	rcx, OFFSET FLAT:$SG3556
+	lea	rcx, OFFSET FLAT:$SG3557
 	call	printf
 
 ; 195  : 			return;   //Already a root filesystem is present
@@ -877,7 +877,7 @@ $LN16@vfs_mount:
 
 	mov	rax, QWORD PTR entry_found$[rsp]
 	movzx	eax, BYTE PTR [rax+48]
-	cmp	eax, 1
+	cmp	eax, 2
 	jne	SHORT $LN3@vfs_mount
 
 ; 238  : 			ent = (vfs_entry*)entry_found->device;
@@ -889,7 +889,7 @@ $LN16@vfs_mount:
 ; 239  : 			_debug_print_ ("Recursively calling for -> %s \r\n", path);
 
 	mov	rdx, QWORD PTR path$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3584
+	lea	rcx, OFFSET FLAT:$SG3585
 	call	_debug_print_
 
 ; 240  : 			vfs_mount(path,node,ent);
@@ -904,7 +904,7 @@ $LN3@vfs_mount:
 ; 242  : 		printf ("[vfs]: already mounted -> %s\n", path);
 
 	mov	rdx, QWORD PTR path$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3585
+	lea	rcx, OFFSET FLAT:$SG3586
 	call	printf
 
 ; 243  : 		return;
@@ -923,7 +923,7 @@ $LN4@vfs_mount:
 ; 247  : 		_debug_print_ ("Not found entry -> %s \r\n", path);
 
 	mov	rdx, QWORD PTR path$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3587
+	lea	rcx, OFFSET FLAT:$SG3588
 	call	_debug_print_
 
 ; 248  : 		if (entry_found) {
@@ -934,7 +934,7 @@ $LN4@vfs_mount:
 ; 249  : 			_debug_print_ ("Mounting path -> %s, creating entry \r\n", path);
 
 	mov	rdx, QWORD PTR path$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3589
+	lea	rcx, OFFSET FLAT:$SG3590
 	call	_debug_print_
 
 ; 250  : 			vfs_entry* entryn = vfs_mkentry();
@@ -945,7 +945,7 @@ $LN4@vfs_mount:
 ; 251  : 			_debug_print_ ("Entry created -> %x \r\n", entryn);
 
 	mov	rdx, QWORD PTR entryn$4[rsp]
-	lea	rcx, OFFSET FLAT:$SG3591
+	lea	rcx, OFFSET FLAT:$SG3592
 	call	_debug_print_
 
 ; 252  : 			vfs_mkdir(path,node,entryn);
@@ -963,7 +963,7 @@ $LN1@vfs_mount:
 	mov	r8, QWORD PTR node$[rsp]
 	mov	rax, QWORD PTR ent$[rsp]
 	mov	rdx, QWORD PTR [rax+8]
-	lea	rcx, OFFSET FLAT:$SG3593
+	lea	rcx, OFFSET FLAT:$SG3594
 	call	_debug_print_
 
 ; 255  : 		list_add(ent->childs, node);
@@ -977,7 +977,7 @@ $LN1@vfs_mount:
 
 	mov	rax, QWORD PTR ent$[rsp]
 	mov	rdx, QWORD PTR [rax+8]
-	lea	rcx, OFFSET FLAT:$SG3594
+	lea	rcx, OFFSET FLAT:$SG3595
 	call	_debug_print_
 $LN2@vfs_mount:
 $LN21@vfs_mount:
@@ -1202,7 +1202,7 @@ $LN8@vfs_mkdir:
 
 	mov	rax, QWORD PTR file_$3[rsp]
 	movzx	eax, BYTE PTR [rax+48]
-	cmp	eax, 1
+	cmp	eax, 2
 	jne	SHORT $LN4@vfs_mkdir
 
 ; 153  : 					ent = (vfs_entry *)file_->device;
@@ -1501,7 +1501,7 @@ $LN7@vfs_finddi:
 
 	mov	rax, QWORD PTR file_$3[rsp]
 	movzx	eax, BYTE PTR [rax+48]
-	cmp	eax, 1
+	cmp	eax, 2
 	jne	SHORT $LN3@vfs_finddi
 
 ; 103  : 					ent = (vfs_entry*)file_->device;

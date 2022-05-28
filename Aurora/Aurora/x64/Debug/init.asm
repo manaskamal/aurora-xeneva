@@ -10,15 +10,15 @@ _BSS	SEGMENT
 ?debug@@3P6AXPEBDZZEA DQ 01H DUP (?)			; debug
 _BSS	ENDS
 CONST	SEGMENT
-$SG5396	DB	'Scheduler Initialized', 0aH, 00H
+$SG5400	DB	'Scheduler Initialized', 0aH, 00H
 	ORG $+1
-$SG5398	DB	'shell', 00H
+$SG5402	DB	'shell', 00H
 	ORG $+2
-$SG5399	DB	'/init.exe', 00H
+$SG5403	DB	'/init.exe', 00H
 	ORG $+2
-$SG5400	DB	'priwm', 00H
+$SG5404	DB	'priwm', 00H
 	ORG $+6
-$SG5401	DB	'/priwm.exe', 00H
+$SG5405	DB	'/priwm.exe', 00H
 CONST	ENDS
 PUBLIC	?debug_print@@YAXPEBDZZ				; debug_print
 PUBLIC	?_AuMain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z		; _AuMain
@@ -58,8 +58,8 @@ pdata	SEGMENT
 $pdata$?debug_print@@YAXPEBDZZ DD imagerel $LN3
 	DD	imagerel $LN3+40
 	DD	imagerel $unwind$?debug_print@@YAXPEBDZZ
-$pdata$?_AuMain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z DD imagerel $LN7
-	DD	imagerel $LN7+294
+$pdata$?_AuMain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z DD imagerel $LN5
+	DD	imagerel $LN5+292
 	DD	imagerel $unwind$?_AuMain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z
 pdata	ENDS
 xdata	SEGMENT
@@ -77,7 +77,7 @@ info$ = 64
 
 ; 98   : void _AuMain (KERNEL_BOOT_INFO *info) {
 
-$LN7:
+$LN5:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 56					; 00000038H
 
@@ -232,18 +232,14 @@ $LN7:
 ; 156  : 	AuPagingClearLow();
 
 	call	?AuPagingClearLow@@YAXXZ		; AuPagingClearLow
-$LN4@AuMain:
 
 ; 157  : 
-; 158  : 	for(;;);
-
-	jmp	SHORT $LN4@AuMain
-
+; 158  : 
 ; 159  : #ifdef ARCH_X64
 ; 160  : 
 ; 161  : 	printf ("Scheduler Initialized\n");
 
-	lea	rcx, OFFSET FLAT:$SG5396
+	lea	rcx, OFFSET FLAT:$SG5400
 	call	printf
 
 ; 162  : 	int au_status = 0;
@@ -254,8 +250,8 @@ $LN4@AuMain:
 ; 164  : 	/* start the sound service manager at id 1 */
 ; 165  : 	au_status = AuCreateProcess ("/init.exe","shell");
 
-	lea	rdx, OFFSET FLAT:$SG5398
-	lea	rcx, OFFSET FLAT:$SG5399
+	lea	rdx, OFFSET FLAT:$SG5402
+	lea	rcx, OFFSET FLAT:$SG5403
 	call	?AuCreateProcess@@YAHPEBDPEAD@Z		; AuCreateProcess
 	mov	DWORD PTR au_status$[rsp], eax
 
@@ -263,8 +259,8 @@ $LN4@AuMain:
 ; 167  : 	/* start the compositing window manager at id 3 */
 ; 168  : 	au_status = AuCreateProcess ("/priwm.exe","priwm");
 
-	lea	rdx, OFFSET FLAT:$SG5400
-	lea	rcx, OFFSET FLAT:$SG5401
+	lea	rdx, OFFSET FLAT:$SG5404
+	lea	rcx, OFFSET FLAT:$SG5405
 	call	?AuCreateProcess@@YAHPEBDPEAD@Z		; AuCreateProcess
 	mov	DWORD PTR au_status$[rsp], eax
 

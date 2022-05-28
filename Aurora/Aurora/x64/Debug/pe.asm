@@ -12,7 +12,7 @@ _BSS	SEGMENT
 ?image_base@@3_KA DQ 01H DUP (?)			; image_base
 _BSS	ENDS
 CONST	SEGMENT
-$SG3475	DB	'FNAME -> %s ', 0dH, 0aH, 00H
+$SG3476	DB	'FNAME -> %s ', 0dH, 0aH, 00H
 CONST	ENDS
 PUBLIC	?load_pe_file@@YAXPEA_KH@Z			; load_pe_file
 PUBLIC	?get_entry_point@@YAP6AXPEAX@ZXZ		; get_entry_point
@@ -446,7 +446,7 @@ $LN2@AuPeLinkLi:
 ; 128  : 			_debug_print_ ("FNAME -> %s \r\n", fname);
 
 	mov	rdx, QWORD PTR fname$3[rsp]
-	lea	rcx, OFFSET FLAT:$SG3475
+	lea	rcx, OFFSET FLAT:$SG3476
 	call	_debug_print_
 
 ; 129  : 			void* procaddr = AuGetProcAddress(exporter, fname);

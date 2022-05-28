@@ -10,7 +10,7 @@ _BSS	SEGMENT
 funct	DQ	01H DUP (?)
 _BSS	ENDS
 CONST	SEGMENT
-$SG4204	DB	'System Call Fault!! Halting System', 0aH, 00H
+$SG4213	DB	'System Call Fault!! Halting System', 0aH, 00H
 CONST	ENDS
 PUBLIC	x64_syscall_handler
 EXTRN	printf:PROC
@@ -26,6 +26,7 @@ EXTRN	?sys_unblock_id@@YAXG@Z:PROC			; sys_unblock_id
 EXTRN	?create_uthread@@YAXP6AXPEAX@ZPEAD@Z:PROC	; create_uthread
 EXTRN	?sys_open_file@@YAHPEADPEAU_file_@@@Z:PROC	; sys_open_file
 EXTRN	?sys_read_file@@YAXHPEAEPEAU_file_@@@Z:PROC	; sys_read_file
+EXTRN	?sys_close_file@@YAXH@Z:PROC			; sys_close_file
 EXTRN	?sys_write_file@@YAXHPEA_KPEAU_file_@@@Z:PROC	; sys_write_file
 EXTRN	?sys_get_used_ram@@YA_KXZ:PROC			; sys_get_used_ram
 EXTRN	?sys_get_free_ram@@YA_KXZ:PROC			; sys_get_free_ram
@@ -38,7 +39,6 @@ EXTRN	?sys_get_current_time@@YAXPEAU_sys_time_@@@Z:PROC ; sys_get_current_time
 EXTRN	?sys_get_system_tick@@YAIXZ:PROC		; sys_get_system_tick
 EXTRN	?sys_kill@@YAXHH@Z:PROC				; sys_kill
 EXTRN	?sys_set_signal@@YAXHP6AXH@Z@Z:PROC		; sys_set_signal
-EXTRN	?unmap_shared_memory@@YAXG_K0@Z:PROC		; unmap_shared_memory
 EXTRN	?sys_attach_ttype@@YAXH@Z:PROC			; sys_attach_ttype
 EXTRN	?copy_memory@@YAXG_K0@Z:PROC			; copy_memory
 EXTRN	?unmap_memory@@YAXPEAXI@Z:PROC			; unmap_memory
@@ -51,9 +51,9 @@ EXTRN	?pause_timer@@YAXH@Z:PROC			; pause_timer
 EXTRN	?start_timer@@YAXH@Z:PROC			; start_timer
 EXTRN	?AuCreateShMem@@YAII_KI@Z:PROC			; AuCreateShMem
 EXTRN	?AuObtainShMem@@YAPEAXIPEAXH@Z:PROC		; AuObtainShMem
+EXTRN	?shm_unlink@@YAXI@Z:PROC			; shm_unlink
 EXTRN	?au_mmap@@YAPEAXPEAX_KHHH1@Z:PROC		; au_mmap
 EXTRN	?process_heap_break@@YAPEAX_K@Z:PROC		; process_heap_break
-EXTRN	?process_link_libraries@@YAXXZ:PROC		; process_link_libraries
 EXTRN	__ImageBase:BYTE
 pdata	SEGMENT
 $pdata$x64_syscall_handler DD imagerel $LN50
@@ -94,7 +94,7 @@ $LN50:
 
 ; 24   : 		printf ("System Call Fault!! Halting System\n");
 
-	lea	rcx, OFFSET FLAT:$SG4204
+	lea	rcx, OFFSET FLAT:$SG4213
 	call	printf
 $LN45@x64_syscal:
 
@@ -515,9 +515,9 @@ $LN6@x64_syscal:
 $LN5@x64_syscal:
 
 ; 137  : 	case 36:
-; 138  : 		funct = (uint64_t*)unmap_shared_memory;
+; 138  : 		funct = (uint64_t*)shm_unlink;
 
-	lea	rax, OFFSET FLAT:?unmap_shared_memory@@YAXG_K0@Z ; unmap_shared_memory
+	lea	rax, OFFSET FLAT:?shm_unlink@@YAXI@Z	; shm_unlink
 	mov	QWORD PTR funct, rax
 
 ; 139  : 		break;
@@ -559,9 +559,9 @@ $LN2@x64_syscal:
 $LN1@x64_syscal:
 
 ; 149  : 	case 40:
-; 150  : 		funct = (uint64_t*)process_link_libraries; //dwm_dispatch_message;
+; 150  : 		funct = (uint64_t*)sys_close_file; //dwm_dispatch_message;
 
-	lea	rax, OFFSET FLAT:?process_link_libraries@@YAXXZ ; process_link_libraries
+	lea	rax, OFFSET FLAT:?sys_close_file@@YAXH@Z ; sys_close_file
 	mov	QWORD PTR funct, rax
 $LN42@x64_syscal:
 

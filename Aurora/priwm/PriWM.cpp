@@ -26,7 +26,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * /PROJECT - Aurora's Xeneva v1.0
- * @priwm.h -- priyanshi's window manager header
+ * @priwm.h -- pri_window manager
  *
  **/
 
@@ -202,7 +202,8 @@ void free_backing_store (uint16_t owner_id) {
 		}
 	}
 
-	sys_unmap_sh_mem (_store->owner_id,(uint64_t)_store->addr,_store->size);
+	//sys_unmap_sh_mem (_store->owner_id,(uint64_t)_store->addr,_store->size);
+	//sys_shm_unlink(store
 	_store->free = true;
 	_store->owner_id = 0;
 }
@@ -268,7 +269,7 @@ void free_shared_win (uint16_t owner_id) {
 			break;
 	}
 
-	sys_unmap_sh_mem(sh->owner_id, (uint64_t)sh->win_info_location,8192);
+	//sys_unmap_sh_mem(sh->owner_id, (uint64_t)sh->win_info_location,8192);
 	sh->free = true;
 	sh->owner_id = 0;
 }
@@ -383,7 +384,7 @@ void cursor_store_back (unsigned x, unsigned y) {
 void cursor_draw_back (unsigned x, unsigned y) {
 	for (int w = 0; w < 24; w++) {
 		for (int h = 0; h < 24; h++) {
-			canvas_draw_pixel(canvas,x+w,y+h,cursor_back[h * 24+ w]);
+			canvas_draw_pixel(canvas,x+w,y+h,cursor_back[h * 24 + w]);
 		}
 	}
 }
@@ -775,7 +776,7 @@ void pri_window_resize (pri_window_t *win, int n_w,int n_h) {
 void compose_frame () {
 	/* draw previously stored occluded area by cursor */
 	cursor_draw_back(prev_x, prev_y);
-	pri_add_clip(prev_x, prev_y, 24, 24);
+	pri_add_clip(prev_x, prev_y, 24,24);
 	
 	bool animation_on = false;
 	int window_opacity = 255;
@@ -1198,7 +1199,7 @@ int main (int argc, char* argv[]) {
 			int w = 0;
 			int h = 0;
 			uint16_t owner_id = event.from_id;
-			pri_notify_win_destroyed(owner_id);
+			//pri_notify_win_destroyed(owner_id);
 			for (int i = 0; i < window_list->pointer; i++) {
 				pri_window_t *win = (pri_window_t*)list_get_at(window_list, i);
 				if (win->owner_id == event.from_id)  {
@@ -1207,16 +1208,20 @@ int main (int argc, char* argv[]) {
 					y = info->y;
 					w = info->width;
 					h = info->height;
-					sys_unmap_sh_mem(win->owner_id,(uint64_t)win->backing_store,w*h*4);
-					sys_unmap_sh_mem(win->owner_id,(uint64_t)win->pri_win_info_loc,8192);
+
+					sys_shm_unlink(win->sh_win_key);
+					sys_shm_unlink(win->backing_store_key);
+				
 					list_remove(window_list, i);
 					free(win);
 					
 					break;
 				}
 			}
-
+           
 			pri_send_quit(owner_id);
+			focused_win = NULL;
+
 			if (x != 0 && y != 0 && w != 0 && h != 0) 
 				pri_wallp_add_dirty_clip(pri_create_rect(x,y,w,h));
 

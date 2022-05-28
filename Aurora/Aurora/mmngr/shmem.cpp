@@ -65,6 +65,7 @@ uint32_t AuCreateShMem (uint32_t key,size_t size, uint32_t flags) {
 	sh_mem->key = key;
 	sh_mem->size = size;
 	sh_mem->num_frames = (size / 4096);
+	sh_mem->link_count = 0;
 	sh_mem->map_in_thread = NULL;
 	sh_mem->first_process_vaddr = NULL;
 	list_add(shared_mem_list, sh_mem);
@@ -82,6 +83,8 @@ uint32_t AuCreateShMem (uint32_t key,size_t size, uint32_t flags) {
 void* AuObtainShMem (uint32_t id, void * shmaddr, int shmflg) {
 	x64_cli();
 	shared_mem_t *mem = NULL;
+	process_t * proc = get_current_process();
+
 	for (int i = 0; i < shared_mem_list->pointer; i++) {
 		mem = (shared_mem_t*)list_get_at(shared_mem_list, i);
 		if (mem->id == id){
@@ -104,6 +107,20 @@ void* AuObtainShMem (uint32_t id, void * shmaddr, int shmflg) {
 			if (ret_addre == NULL)
 				ret_addre = (void*)current_virt;
 		}
+
+		mem->link_count++;
+
+		/* Keep a track of this shared memory segment */
+		au_vm_area_t *vma = (au_vm_area_t*)malloc(sizeof(au_vm_area_t));
+		vma->start = (uint64_t)ret_addre;
+		vma->end = (vma->start + mem->num_frames * 4096);
+		vma->file = NULL;
+		vma->offset = 0;
+		vma->prot_flags = VM_READ | VM_EXEC | VM_SHARED;
+		vma->type = VM_TYPE_DATA;
+		vma->unique_id = mem->key;
+		vma->length = mem->num_frames * 4096; 
+		AuInsertVMArea(proc, vma);
 	}else {
 		/* No process has mapped the shared memory, let this process's
 		   thread map in some memory for other process to use */
@@ -120,7 +137,88 @@ void* AuObtainShMem (uint32_t id, void * shmaddr, int shmflg) {
 				mem->first_process_vaddr = (void*)virt;
 		}
 		ret_addre = mem->first_process_vaddr;
+
+		/* Keep a track of this shared memory segment */
+		au_vm_area_t *vma = (au_vm_area_t*)malloc(sizeof(au_vm_area_t));
+		vma->start = (uint64_t)ret_addre;
+		vma->end = (vma->start + mem->num_frames * 4096);
+		vma->file = NULL;
+		vma->offset = 0;
+		vma->prot_flags = VM_READ | VM_EXEC | VM_SHARED;
+		vma->type = VM_TYPE_DATA;
+		vma->length = mem->num_frames * 4096; 
+		vma->unique_id = mem->key;
+		AuInsertVMArea(proc, vma);
 	}
 
 	return ret_addre;
+}
+
+/*
+ * Unlinks a shared memory 
+ */
+void shm_unlink (uint32_t key) {
+	x64_cli();
+	process_t *proc = get_current_process();
+	thread_t *thr = get_current_thread();
+
+	shared_mem_t *mem = NULL;
+	for (int i = 0; i < shared_mem_list->pointer; i++) {
+		mem = (shared_mem_t*)list_get_at(shared_mem_list, i);
+		if (mem->key == key)
+			break;
+	}
+
+	if (mem == NULL)
+		return;
+
+	/* Check if the creator of this shared memory
+	 * segment is this thread, if not then just
+	 * unmap the virtual address without freeing up
+	 * the physical addresses
+	 */
+	if (mem->map_in_thread != thr) {
+		au_vm_area_t *vma = AuFindVMAUniqueId(mem->key);
+		uint64_t start_addr = vma->start;
+		uint64_t length = vma->length;
+
+		for (int i = 0; i < length / 4096; i++)
+			AuUnmapPage(start_addr + i * 4096, false);
+
+		AuRemoveVMArea(proc, vma);
+		mem->link_count--;
+	}
+
+	/* Check if the creator of this sh memory
+	 * segment is this, than unmap the physical
+	 * address also */
+	if (mem->map_in_thread == thr) {
+		/* check the number of links */
+		if (mem->link_count != 0) {
+			/* means, another process still working on
+			 * this sh mem segment
+			 */
+			return;
+		}
+
+		uint64_t start_addr = (uint64_t)mem->first_process_vaddr;
+		for (int i = 0; i < mem->num_frames; i++) 
+			AuUnmapPage(start_addr + i * 4096, true);
+
+		/* Remove the vm area */
+		au_vm_area_t *vma = AuFindVMAUniqueId(mem->key);
+		AuRemoveVMArea(proc, vma);
+
+		/* Finally delete the shared memory segment */
+		for (int i = 0; i < shared_mem_list->pointer; i++) {
+			shared_mem_t *m = (shared_mem_t*)list_get_at(shared_mem_list, i);
+			if (m->key == mem->key) {
+				list_remove(shared_mem_list, i);
+			}
+		}
+
+		free(mem);
+	}
+
+
 }

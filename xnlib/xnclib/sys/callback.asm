@@ -169,6 +169,12 @@ sys_read_file:
 	syscall
 	ret
 
+global sys_close_file
+sys_close_file:
+    mov r12, 40
+	mov r13, rcx
+	syscall
+	ret
 
 global sys_unblock_id
 sys_unblock_id:
@@ -207,12 +213,10 @@ sys_set_signal:
 	syscall
 	ret
 
-global sys_unmap_sh_mem 
-sys_unmap_sh_mem:
+global sys_shm_unlink
+sys_shm_unlink:
     mov r12, 36
 	mov r13, rcx
-	mov r14, rdx
-	mov r15, r8
 	syscall
 	ret
 

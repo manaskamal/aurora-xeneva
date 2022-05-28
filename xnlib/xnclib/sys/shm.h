@@ -47,4 +47,11 @@ extern "C" uint32_t sys_shmget (uint32_t key,size_t size, uint32_t flags);
  */
 extern "C" void* sys_shmat (uint32_t key, void * shmaddr, int shmflg);
 
+
+/*
+ * unlink the shared memory segment
+ * @param key -- key identifier
+ */
+extern "C" void sys_shm_unlink(uint32_t key);
+
 #endif

@@ -14,17 +14,17 @@ driver_class_unique_id DD 01H DUP (?)
 driver_load_base DQ 01H DUP (?)
 _BSS	ENDS
 CONST	SEGMENT
-$SG3793	DB	'AuDriverMain', 00H
+$SG3794	DB	'AuDriverMain', 00H
 	ORG $+3
-$SG3796	DB	'AuDriverUnload', 00H
+$SG3797	DB	'AuDriverUnload', 00H
 	ORG $+1
-$SG3802	DB	'[aurora]: initializing drivers, please wait... ', 0aH, 00H
+$SG3803	DB	'[aurora]: initializing drivers, please wait... ', 0aH, 00H
 	ORG $+7
-$SG3807	DB	'/audrv.cnf', 00H
+$SG3808	DB	'/audrv.cnf', 00H
 	ORG $+5
-$SG3808	DB	'AuDRV file -> %x ', 0dH, 0aH, 00H
+$SG3809	DB	'AuDRV file -> %x ', 0dH, 0aH, 00H
 	ORG $+4
-$SG3844	DB	'Freeing file ', 0dH, 0aH, 00H
+$SG3845	DB	'Freeing file ', 0dH, 0aH, 00H
 CONST	ENDS
 PUBLIC	?AuDrvMngrInitialize@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z ; AuDrvMngrInitialize
 PUBLIC	?AuRequestDriverId@@YAIXZ			; AuRequestDriverId
@@ -208,14 +208,14 @@ $LN1@AuDriverLo:
 ; 190  : 
 ; 191  : 	void* entry_addr = AuGetProcAddress((void*)driver_load_base,"AuDriverMain");
 
-	lea	rdx, OFFSET FLAT:$SG3793
+	lea	rdx, OFFSET FLAT:$SG3794
 	mov	rcx, QWORD PTR driver_load_base
 	call	?AuGetProcAddress@@YAPEAXPEAXPEBD@Z	; AuGetProcAddress
 	mov	QWORD PTR entry_addr$[rsp], rax
 
 ; 192  : 	void* unload_addr = AuGetProcAddress((void*)driver_load_base,"AuDriverUnload");
 
-	lea	rdx, OFFSET FLAT:$SG3796
+	lea	rdx, OFFSET FLAT:$SG3797
 	mov	rcx, QWORD PTR driver_load_base
 	call	?AuGetProcAddress@@YAPEAXPEAXPEBD@Z	; AuGetProcAddress
 	mov	QWORD PTR unload_addr$[rsp], rax
@@ -901,7 +901,7 @@ $LN21:
 
 ; 212  : 	printf ("[aurora]: initializing drivers, please wait... \n");
 
-	lea	rcx, OFFSET FLAT:$SG3802
+	lea	rcx, OFFSET FLAT:$SG3803
 	call	printf
 
 ; 213  : 	/* Load the conf data */
@@ -921,7 +921,7 @@ $LN21:
 
 ; 216  : 	vfs_node_t* file = fat32_open(NULL, "/audrv.cnf");
 
-	lea	rdx, OFFSET FLAT:$SG3807
+	lea	rdx, OFFSET FLAT:$SG3808
 	xor	ecx, ecx
 	call	?fat32_open@@YAPEAU_vfs_node_@@PEAU1@PEAD@Z ; fat32_open
 	mov	QWORD PTR file$[rsp], rax
@@ -929,7 +929,7 @@ $LN21:
 ; 217  : 	_debug_print_ ("AuDRV file -> %x \r\n", file);
 
 	mov	rdx, QWORD PTR file$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3808
+	lea	rcx, OFFSET FLAT:$SG3809
 	call	_debug_print_
 
 ; 218  : 	int filesize = file->size / 1024;
@@ -1182,7 +1182,7 @@ $LN1@AuDrvMngrI:
 
 ; 257  : 	_debug_print_  ("Freeing file \r\n");
 
-	lea	rcx, OFFSET FLAT:$SG3844
+	lea	rcx, OFFSET FLAT:$SG3845
 	call	_debug_print_
 
 ; 258  : }

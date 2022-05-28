@@ -65,7 +65,7 @@ void AuPointDevInitialize () {
 	node->eof = 0;
 	node->pos = 0;
 	node->current = 0;
-	node->flags = FS_FLAG_GENERAL;
+	node->flags = FS_FLAG_GENERAL | FS_FLAG_DEVICE;
 	node->status = 0;
 	node->open = 0;
 	node->read = AuPointerRead;

@@ -8,6 +8,7 @@ INCLUDELIB OLDNAMES
 PUBLIC	?AuInsertVMArea@@YAXPEAU_process_@@PEAU_vma_area_@@@Z ; AuInsertVMArea
 PUBLIC	?AuRemoveVMArea@@YAXPEAU_process_@@PEAU_vma_area_@@@Z ; AuRemoveVMArea
 PUBLIC	?AuFindVMA@@YAPEAU_vma_area_@@_K@Z		; AuFindVMA
+PUBLIC	?AuFindVMAUniqueId@@YAPEAU_vma_area_@@I@Z	; AuFindVMAUniqueId
 EXTRN	free:PROC
 EXTRN	?get_current_process@@YAPEAU_process_@@XZ:PROC	; get_current_process
 pdata	SEGMENT
@@ -17,13 +18,81 @@ $pdata$?AuRemoveVMArea@@YAXPEAU_process_@@PEAU_vma_area_@@@Z DD imagerel $LN8
 $pdata$?AuFindVMA@@YAPEAU_vma_area_@@_K@Z DD imagerel $LN7
 	DD	imagerel $LN7+104
 	DD	imagerel $unwind$?AuFindVMA@@YAPEAU_vma_area_@@_K@Z
+$pdata$?AuFindVMAUniqueId@@YAPEAU_vma_area_@@I@Z DD imagerel $LN7
+	DD	imagerel $LN7+86
+	DD	imagerel $unwind$?AuFindVMAUniqueId@@YAPEAU_vma_area_@@I@Z
 pdata	ENDS
 xdata	SEGMENT
 $unwind$?AuRemoveVMArea@@YAXPEAU_process_@@PEAU_vma_area_@@@Z DD 010e01H
 	DD	0420eH
 $unwind$?AuFindVMA@@YAPEAU_vma_area_@@_K@Z DD 010901H
 	DD	06209H
+$unwind$?AuFindVMAUniqueId@@YAPEAU_vma_area_@@I@Z DD 010801H
+	DD	06208H
 xdata	ENDS
+; Function compile flags: /Odtpy
+; File e:\xeneva project\xeneva\aurora\aurora\mmngr\vma.cpp
+_TEXT	SEGMENT
+vma$1 = 32
+proc$ = 40
+uid$ = 64
+?AuFindVMAUniqueId@@YAPEAU_vma_area_@@I@Z PROC		; AuFindVMAUniqueId
+
+; 97   : au_vm_area_t *AuFindVMAUniqueId (uint32_t uid) {
+
+$LN7:
+	mov	DWORD PTR [rsp+8], ecx
+	sub	rsp, 56					; 00000038H
+
+; 98   : 	process_t *proc = get_current_process();
+
+	call	?get_current_process@@YAPEAU_process_@@XZ ; get_current_process
+	mov	QWORD PTR proc$[rsp], rax
+
+; 99   : 	for (au_vm_area_t *vma = proc->vma_area; vma != NULL; vma = vma->next) {
+
+	mov	rax, QWORD PTR proc$[rsp]
+	mov	rax, QWORD PTR [rax+80]
+	mov	QWORD PTR vma$1[rsp], rax
+	jmp	SHORT $LN4@AuFindVMAU
+$LN3@AuFindVMAU:
+	mov	rax, QWORD PTR vma$1[rsp]
+	mov	rax, QWORD PTR [rax+56]
+	mov	QWORD PTR vma$1[rsp], rax
+$LN4@AuFindVMAU:
+	cmp	QWORD PTR vma$1[rsp], 0
+	je	SHORT $LN2@AuFindVMAU
+
+; 100  : 		if (vma->unique_id == uid){
+
+	mov	rax, QWORD PTR vma$1[rsp]
+	mov	ecx, DWORD PTR uid$[rsp]
+	cmp	DWORD PTR [rax+52], ecx
+	jne	SHORT $LN1@AuFindVMAU
+
+; 101  : 			return vma;
+
+	mov	rax, QWORD PTR vma$1[rsp]
+	jmp	SHORT $LN5@AuFindVMAU
+$LN1@AuFindVMAU:
+
+; 102  : 		}
+; 103  : 	}
+
+	jmp	SHORT $LN3@AuFindVMAU
+$LN2@AuFindVMAU:
+
+; 104  : 	return NULL;
+
+	xor	eax, eax
+$LN5@AuFindVMAU:
+
+; 105  : }
+
+	add	rsp, 56					; 00000038H
+	ret	0
+?AuFindVMAUniqueId@@YAPEAU_vma_area_@@I@Z ENDP		; AuFindVMAUniqueId
+_TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\mmngr\vma.cpp
 _TEXT	SEGMENT

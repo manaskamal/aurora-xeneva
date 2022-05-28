@@ -54,6 +54,7 @@ typedef struct _vma_area_ {
 	uint64_t  offset;
 	size_t    length;
 	char      type;
+	uint32_t  unique_id;
 	struct _vma_area_ *next;
 	struct _vma_area_ *prev;
 }au_vm_area_t;

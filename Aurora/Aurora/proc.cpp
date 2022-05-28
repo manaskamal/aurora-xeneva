@@ -17,7 +17,7 @@
 #include <libmngr.h>
 #include <serial.h>
 #include <ipc\pri_loop.h>
-
+#include <arch\x86_64\kstack.h>
 
 process_t *process_head = NULL;
 process_t *process_last = NULL;
@@ -249,6 +249,7 @@ int AuCreateProcess(const char* filename, char* procname) {
 	process->image_size = nt->OptionalHeader.SizeOfImage;
 	process->parent = NULL;
 	process->_image_heap_break_ = PROCESS_HEAP_BREAK;
+	process->_heap_size_ = 0;
 	process->shared_mem_list = initialize_list();
 	//! Create and thread and start scheduling when scheduler starts */
 	thread_t *t = create_user_thread(ent,stack,(uint64_t)cr3,procname,0);
@@ -266,8 +267,8 @@ void kill_process () {
 	x64_cli();
 	thread_t * remove_thread = get_current_thread();
 	uint16_t t_id = remove_thread->id;
-	process_t *proc = find_process_by_thread (remove_thread);
-	uint64_t  init_stack = proc->stack - 0x100000;
+	process_t *proc = get_current_process();
+	uint64_t  init_stack = proc->stack - (2*1024*1024);
 	uint64_t image_base = proc->image_base;
 	uint64_t *cr3 = (uint64_t*)remove_thread->cr3;
 	
@@ -277,28 +278,34 @@ void kill_process () {
 	if (timer != -1) {
 		destroy_timer (timer);
 	}
-		
-
-	remove_process (proc);
-	task_delete (remove_thread);
-	AuPmmngrFree(remove_thread);
-	AuPmmngrFree(remove_thread->msg_box);
-	pri_loop_destroy_by_id (t_id);
+	
 
 	//!unmap the binary image
 	for (uint32_t i = 0; i < proc->image_size / 4096; i++) {
 	//	uint64_t virtual_addr = proc->image_base + (i * 4096);
-		AuUnmapPage(image_base + i * 4096);
+		AuUnmapPage(image_base + i * 4096, true);
 	}
 	
 	//!unmap the runtime stack
-	for (int i = 0; i < 0x100000 / 4096; i++) {
-		AuUnmapPage(init_stack + i * 4096);
+	for (int i = 0; i < (2*1024*1024) / 4096; i++) {
+		AuUnmapPage(init_stack + i * 4096, true);
 	}
 
+	for (int i = 0; i < proc->_heap_size_ / 4096; i++) {
+		AuUnmapPage(PROCESS_HEAP_BREAK + i * 4096, true);
+	}
+	
+	free(remove_thread->fx_state);
+	
+	remove_process (proc);
+	task_delete (remove_thread);
+	free(remove_thread);
+	AuPmmngrFree((void*)v2p((size_t)remove_thread->msg_box));
+	pri_loop_destroy_by_id (t_id);
 
 	_debug_print_ ("Used Pmmngr -> %d MB / Total -> %d MB \r\n", pmmngr_get_used_ram () / 1024 / 1024, pmmngr_get_total_ram() / 1024 / 1024);
 
+	free_kstack(cr3);
 	AuPmmngrFree(cr3);
 }
 
@@ -463,6 +470,7 @@ void* process_heap_break (uint64_t pages) {
 			first_page = page;
 		AuMapPage((uint64_t)AuPmmngrAlloc(), page, PAGING_USER);
 	}
+	proc->_heap_size_ += pages * 4096;
 	return (void*)first_page;
 }
 

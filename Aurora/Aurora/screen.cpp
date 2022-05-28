@@ -50,7 +50,7 @@ void AuInitializeScreen (KERNEL_BOOT_INFO *info){
 	svga->eof = 0;
 	svga->pos = 0;
 	svga->current = 0;
-	svga->flags = FS_FLAG_GENERAL;
+	svga->flags = FS_FLAG_GENERAL | FS_FLAG_DEVICE;
 	svga->status = 0;
 	svga->open = 0;
 	svga->read = 0;

@@ -135,7 +135,7 @@ extern "C" void x64_syscall_handler (int a) {
 		funct = (uint64_t*)sys_set_signal;
 		break;
 	case 36:
-		funct = (uint64_t*)unmap_shared_memory;
+		funct = (uint64_t*)shm_unlink;
 		break;
 	case 37:
 		funct = (uint64_t*)sys_write_file;
@@ -147,7 +147,7 @@ extern "C" void x64_syscall_handler (int a) {
 		funct = (uint64_t*)process_heap_break;
 		break;
 	case 40:
-		funct = (uint64_t*)process_link_libraries; //dwm_dispatch_message;
+		funct = (uint64_t*)sys_close_file; //dwm_dispatch_message;
 		break;
 	}
 

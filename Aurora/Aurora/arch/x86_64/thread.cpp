@@ -1,13 +1,32 @@
 /**
- *  Copyright (C) Manas Kamal Choudhury 2021
+ * BSD 2-Clause License
  *
- *  thread.cpp -- Multitasking for Aurora
+ * Copyright (c) 2021, Manas Kamal Choudhury
+ * All rights reserved.
  *
- *  /PROJECT - Aurora {Xeneva}
- *  /AUTHOR  - Manas Kamal Choudhury
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
  *
- *=============================================
- */
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer.
+ *
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ *
+ **/
 
 #include <arch\x86_64\thread.h>
 #include <arch\x86_64\user64.h>
@@ -87,7 +106,11 @@ void task_delete (thread_t* thread) {
 		thread->next->prev = thread->prev;
 	}
 
-	//pmmngr_free (thread);
+	/* donot free the thread, cuz when thread needs
+	 * to move from runnable queue to blocked queue
+	 * same address is used, rather call 'free' 
+	 * externally 
+	 */
 }
 
 
@@ -184,9 +207,7 @@ thread_t* create_kthread (void (*entry) (void), uint64_t stack,uint64_t cr3, cha
 
 	t->fx_state = (uint8_t*)malloc(512);
 	memset(t->fx_state, 0, 512);
-	/*((fx_state_t*)t->fx_state)->mxcsr = 0x1f80;
-	((fx_state_t*)t->fx_state)->mxcsrMask = 0xffbf;
-	((fx_state_t*)t->fx_state)->fcw = 0x33f;*/
+	t->mxcsr = 0x1f80;
 	thread_insert(t);
 	return t;
 }
@@ -242,9 +263,6 @@ thread_t* create_user_thread (void (*entry) (void*),uint64_t stack,uint64_t cr3,
 	t->fx_state = (uint8_t*)malloc(512);
 	memset(t->fx_state, 0, 512);
 	t->mxcsr = 0x1f80;
-	/*((fx_state_t*)t->fx_state)->mxcsr = 0x1f80;
-	((fx_state_t*)t->fx_state)->mxcsrMask = 0xffbf;
-	((fx_state_t*)t->fx_state)->fcw = 0x33f;*/
 	t->_is_user = 1;
 	t->priviledge = THREAD_LEVEL_USER;
 	t->state = THREAD_STATE_READY;
@@ -257,7 +275,7 @@ thread_t* create_user_thread (void (*entry) (void*),uint64_t stack,uint64_t cr3,
 //! the main idle thread
 void idle_thread () {
 	while(1) {
-		//x64_hlt();
+		x64_hlt();
 	}
 }
 

@@ -68,6 +68,14 @@ extern void AuRemoveVMArea (process_t *proc, au_vm_area_t *vma);
  */
 extern au_vm_area_t *AuFindVMA (uint64_t address);
 
+/*
+ * AuFindVMAUniqueId -- In some cases we will not be able to
+ * know the virtual address, specially for shared memory cases
+ * so, we will use unique id to find the virtual address range
+ * @param uid -- unique id
+ */
+extern au_vm_area_t *AuFindVMAUniqueId (uint32_t uid);
+
 
 /**
  * create_user_stack -- creates a 2mb user mode threads stack

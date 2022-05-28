@@ -185,7 +185,7 @@ bool AuMapPage(uint64_t physical_address, uint64_t virtual_address, uint8_t attr
 }
 
 
-void AuUnmapPage(uint64_t virt_addr){
+void AuUnmapPage(uint64_t virt_addr, bool free_physical){
 	
 	const long i1 = pml4_index(virt_addr);
 
@@ -200,8 +200,7 @@ void AuUnmapPage(uint64_t virt_addr){
 		pt[pt_index(virt_addr)] = 0;
 	}
 
-	if (page != 0) {
-
+	if (page != 0 && free_physical == true) {
 		AuPmmngrFree((void*)v2p((size_t)page));
 	}
 }

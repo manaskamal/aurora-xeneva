@@ -5,20 +5,25 @@ include listing.inc
 INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
-PUBLIC	?index@@3IA					; index
-_BSS	SEGMENT
-?index@@3IA DD	01H DUP (?)				; index
-_BSS	ENDS
 PUBLIC	?allocate_kstack@@YA_KPEA_K@Z			; allocate_kstack
+PUBLIC	?free_kstack@@YAXPEA_K@Z			; free_kstack
 EXTRN	AuPmmngrAlloc:PROC
+EXTRN	AuPmmngrFree:PROC
+EXTRN	v2p:PROC
 EXTRN	?AuMapPageEx@@YA_NPEA_K_K1E@Z:PROC		; AuMapPageEx
+EXTRN	AuGetPhysicalAddress:PROC
 pdata	SEGMENT
 $pdata$?allocate_kstack@@YA_KPEA_K@Z DD imagerel $LN6
 	DD	imagerel $LN6+122
 	DD	imagerel $unwind$?allocate_kstack@@YA_KPEA_K@Z
+$pdata$?free_kstack@@YAXPEA_K@Z DD imagerel $LN6
+	DD	imagerel $LN6+117
+	DD	imagerel $unwind$?free_kstack@@YAXPEA_K@Z
 pdata	ENDS
 xdata	SEGMENT
 $unwind$?allocate_kstack@@YA_KPEA_K@Z DD 010901H
+	DD	08209H
+$unwind$?free_kstack@@YAXPEA_K@Z DD 010901H
 	DD	08209H
 xdata	ENDS
 ; Function compile flags: /Odtpy
@@ -28,20 +33,90 @@ i$1 = 32
 location$ = 40
 p$2 = 48
 cr3$ = 80
-?allocate_kstack@@YA_KPEA_K@Z PROC			; allocate_kstack
+?free_kstack@@YAXPEA_K@Z PROC				; free_kstack
 
-; 17   : extern uint64_t allocate_kstack (uint64_t *cr3) {
+; 52   : void free_kstack (uint64_t *cr3) {
 
 $LN6:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 72					; 00000048H
 
-; 18   : 	uint64_t location = KSTACK_START; //+ index;
+; 53   : 	uint64_t location = KSTACK_START; 
 
 	mov	rax, -5497558138880			; fffffb0000000000H
 	mov	QWORD PTR location$[rsp], rax
 
-; 19   : 	for (int i = 0; i < 8192/4096; i++) {
+; 54   : 	/* 
+; 55   : 	 * Here kernel stack is not directly unmapped
+; 56   : 	 * because untill we call force_sched() the system 
+; 57   : 	 * will be using kstack, rather we just get the
+; 58   : 	 * physical addresses and free them using physical 
+; 59   : 	 * mmngr
+; 60   : 	 */
+; 61   : 	for (int i = 0; i < 8192 / 4096; i++) {
+
+	mov	DWORD PTR i$1[rsp], 0
+	jmp	SHORT $LN3@free_kstac
+$LN2@free_kstac:
+	mov	eax, DWORD PTR i$1[rsp]
+	inc	eax
+	mov	DWORD PTR i$1[rsp], eax
+$LN3@free_kstac:
+	cmp	DWORD PTR i$1[rsp], 2
+	jge	SHORT $LN1@free_kstac
+
+; 62   : 		void* p = AuGetPhysicalAddress((size_t)cr3,location + i * 4096);
+
+	mov	eax, DWORD PTR i$1[rsp]
+	imul	eax, 4096				; 00001000H
+	cdqe
+	mov	rcx, QWORD PTR location$[rsp]
+	add	rcx, rax
+	mov	rax, rcx
+	mov	rdx, rax
+	mov	rcx, QWORD PTR cr3$[rsp]
+	call	AuGetPhysicalAddress
+	mov	QWORD PTR p$2[rsp], rax
+
+; 63   : 		AuPmmngrFree((void*)v2p((size_t)p));
+
+	mov	rcx, QWORD PTR p$2[rsp]
+	call	v2p
+	mov	rcx, rax
+	call	AuPmmngrFree
+
+; 64   : 	}
+
+	jmp	SHORT $LN2@free_kstac
+$LN1@free_kstac:
+
+; 65   : }
+
+	add	rsp, 72					; 00000048H
+	ret	0
+?free_kstack@@YAXPEA_K@Z ENDP				; free_kstack
+_TEXT	ENDS
+; Function compile flags: /Odtpy
+; File e:\xeneva project\xeneva\aurora\aurora\arch\x86_64\kstack.cpp
+_TEXT	SEGMENT
+i$1 = 32
+location$ = 40
+p$2 = 48
+cr3$ = 80
+?allocate_kstack@@YA_KPEA_K@Z PROC			; allocate_kstack
+
+; 41   : uint64_t allocate_kstack (uint64_t *cr3) {
+
+$LN6:
+	mov	QWORD PTR [rsp+8], rcx
+	sub	rsp, 72					; 00000048H
+
+; 42   : 	uint64_t location = KSTACK_START; 
+
+	mov	rax, -5497558138880			; fffffb0000000000H
+	mov	QWORD PTR location$[rsp], rax
+
+; 43   : 	for (int i = 0; i < 8192/4096; i++) {
 
 	mov	DWORD PTR i$1[rsp], 0
 	jmp	SHORT $LN3@allocate_k
@@ -53,12 +128,12 @@ $LN3@allocate_k:
 	cmp	DWORD PTR i$1[rsp], 2
 	jge	SHORT $LN1@allocate_k
 
-; 20   : 		void* p = AuPmmngrAlloc();
+; 44   : 		void* p = AuPmmngrAlloc();
 
 	call	AuPmmngrAlloc
 	mov	QWORD PTR p$2[rsp], rax
 
-; 21   : 		AuMapPageEx (cr3,(uint64_t)p,location + i * 4096, 0);
+; 45   : 		AuMapPageEx (cr3,(uint64_t)p,location + i * 4096, 0);
 
 	mov	eax, DWORD PTR i$1[rsp]
 	imul	eax, 4096				; 00001000H
@@ -72,17 +147,17 @@ $LN3@allocate_k:
 	mov	rcx, QWORD PTR cr3$[rsp]
 	call	?AuMapPageEx@@YA_NPEA_K_K1E@Z		; AuMapPageEx
 
-; 22   : 	}
+; 46   : 	}
 
 	jmp	SHORT $LN2@allocate_k
 $LN1@allocate_k:
 
-; 23   : 	//index += 2*1024*1024;
-; 24   : 	return (KSTACK_START + 8192);
+; 47   : 	
+; 48   : 	return (KSTACK_START + 8192);
 
 	mov	rax, -5497558130688			; fffffb0000002000H
 
-; 25   : }
+; 49   : }
 
 	add	rsp, 72					; 00000048H
 	ret	0

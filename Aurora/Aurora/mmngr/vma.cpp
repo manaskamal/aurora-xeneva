@@ -87,3 +87,19 @@ au_vm_area_t *AuFindVMA (uint64_t address) {
 	}
 	return NULL;
 }
+
+/*
+ * AuFindVMAUniqueId -- In some cases we will not be able to
+ * know the virtual address, specially for shared memory cases
+ * so, we will use unique id to find the virtual address range
+ * @param uid -- unique id
+ */
+au_vm_area_t *AuFindVMAUniqueId (uint32_t uid) {
+	process_t *proc = get_current_process();
+	for (au_vm_area_t *vma = proc->vma_area; vma != NULL; vma = vma->next) {
+		if (vma->unique_id == uid){
+			return vma;
+		}
+	}
+	return NULL;
+}

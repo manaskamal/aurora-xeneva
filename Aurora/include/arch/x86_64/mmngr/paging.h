@@ -45,7 +45,7 @@ extern void AuPagingInit();
 AU_EXTERN AU_EXPORT bool AuMapPage (uint64_t physical_address, uint64_t virtual_address, uint8_t attrib);
 extern bool AuMapPageEx(uint64_t *pml4i,uint64_t physical_address, uint64_t virtual_address, uint8_t attrib);
 extern void AuUnmapPageEx(uint64_t* cr3, uint64_t virt_addr, bool free_physical);
-AU_EXTERN AU_EXPORT void AuUnmapPage(uint64_t virt_addr);
+AU_EXTERN AU_EXPORT void AuUnmapPage(uint64_t virt_addr, bool free_physical);
 extern uint64_t *AuCreateAddressSpace();
 
 AU_EXTERN AU_EXPORT uint64_t* AuGetPhysicalAddress(uint64_t cr3,uint64_t virt_addr);

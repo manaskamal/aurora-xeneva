@@ -184,3 +184,19 @@ void sys_write_file (int fd, uint64* buffer, FILE *ufile) {
 	}
 }
 
+/*
+ * sys_close_file -- closes opened file
+ */
+void sys_close_file (int fd) {
+	x64_cli();
+	vfs_node_t *node = get_current_thread()->fd[fd];
+	get_current_thread()->fd[fd] = 0;
+	if ((node->flags & FS_FLAG_DEVICE)){
+		
+		return;
+	}else{
+		free(node);
+	}
+
+}
+

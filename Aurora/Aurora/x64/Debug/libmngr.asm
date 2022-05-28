@@ -12,9 +12,9 @@ _BSS	SEGMENT
 ?libentry_last@@3PEAU_libentry_@@EA DQ 01H DUP (?)	; libentry_last
 _BSS	ENDS
 CONST	SEGMENT
-$SG3430	DB	'xnacrl.dll', 00H
+$SG3431	DB	'xnacrl.dll', 00H
 	ORG $+5
-$SG3431	DB	'xewid.dll', 00H
+$SG3432	DB	'xewid.dll', 00H
 CONST	ENDS
 PUBLIC	?AuSysLibInitialize@@YAXXZ			; AuSysLibInitialize
 PUBLIC	?AuGetSysLib@@YAPEAU_libentry_@@PEAD@Z		; AuGetSysLib
@@ -426,12 +426,12 @@ $LN3:
 ; 117  : 
 ; 118  : 	AuSysLoadLib("xnacrl.dll");
 
-	lea	rcx, OFFSET FLAT:$SG3430
+	lea	rcx, OFFSET FLAT:$SG3431
 	call	?AuSysLoadLib@@YAXPEAD@Z		; AuSysLoadLib
 
 ; 119  : 	AuSysLoadLib("xewid.dll");
 
-	lea	rcx, OFFSET FLAT:$SG3431
+	lea	rcx, OFFSET FLAT:$SG3432
 	call	?AuSysLoadLib@@YAXPEAD@Z		; AuSysLoadLib
 
 ; 120  : }

@@ -10,13 +10,13 @@ _BSS	SEGMENT
 ?window_manager_thr@@3PEAU_thread_@@EA DQ 01H DUP (?)	; window_manager_thr
 _BSS	ENDS
 CONST	SEGMENT
-$SG3567	DB	'Reading Pointer ', 0aH, 00H
+$SG3568	DB	'Reading Pointer ', 0aH, 00H
 	ORG $+6
-$SG3576	DB	'Allocating new File ', 0dH, 0aH, 00H
+$SG3577	DB	'Allocating new File ', 0dH, 0aH, 00H
 	ORG $+1
-$SG3580	DB	'mouse', 00H
+$SG3581	DB	'mouse', 00H
 	ORG $+2
-$SG3581	DB	'/dev/mouse', 00H
+$SG3582	DB	'/dev/mouse', 00H
 CONST	ENDS
 PUBLIC	?AuPointDevInitialize@@YAXXZ			; AuPointDevInitialize
 PUBLIC	?PointDevPutMessage@@YAXPEAU_dwm_message_@@@Z	; PointDevPutMessage
@@ -84,7 +84,7 @@ $LN3:
 
 ; 43   : 	printf ("Reading Pointer \n");
 
-	lea	rcx, OFFSET FLAT:$SG3567
+	lea	rcx, OFFSET FLAT:$SG3568
 	call	printf
 
 ; 44   : 	thread_t* t = get_current_thread();
@@ -329,7 +329,7 @@ $LN3:
 
 ; 59   : 	_debug_print_ ("Allocating new File \r\n");
 
-	lea	rcx, OFFSET FLAT:$SG3576
+	lea	rcx, OFFSET FLAT:$SG3577
 	call	_debug_print_
 
 ; 60   : 
@@ -343,7 +343,7 @@ $LN3:
 ; 63   : 	strcpy (node->filename, "mouse");
 
 	mov	rax, QWORD PTR node$[rsp]
-	lea	rdx, OFFSET FLAT:$SG3580
+	lea	rdx, OFFSET FLAT:$SG3581
 	mov	rcx, rax
 	call	strcpy
 
@@ -367,10 +367,10 @@ $LN3:
 	mov	rax, QWORD PTR node$[rsp]
 	mov	DWORD PTR [rax+44], 0
 
-; 68   : 	node->flags = FS_FLAG_GENERAL;
+; 68   : 	node->flags = FS_FLAG_GENERAL | FS_FLAG_DEVICE;
 
 	mov	rax, QWORD PTR node$[rsp]
-	mov	BYTE PTR [rax+48], 2
+	mov	BYTE PTR [rax+48], 12
 
 ; 69   : 	node->status = 0;
 
@@ -408,7 +408,7 @@ $LN3:
 
 	xor	r8d, r8d
 	mov	rdx, QWORD PTR node$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3581
+	lea	rcx, OFFSET FLAT:$SG3582
 	call	vfs_mount
 
 ; 76   : 	window_manager_thr = NULL;

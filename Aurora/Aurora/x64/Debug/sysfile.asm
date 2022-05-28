@@ -6,12 +6,13 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 CONST	SEGMENT
-$SG3824	DB	'dev', 00H
-$SG3837	DB	'/', 00H
+$SG3828	DB	'dev', 00H
+$SG3841	DB	'/', 00H
 CONST	ENDS
 PUBLIC	?sys_open_file@@YAHPEADPEAU_file_@@@Z		; sys_open_file
 PUBLIC	?sys_read_file@@YAXHPEAEPEAU_file_@@@Z		; sys_read_file
 PUBLIC	?sys_write_file@@YAXHPEA_KPEAU_file_@@@Z	; sys_write_file
+PUBLIC	?sys_close_file@@YAXH@Z				; sys_close_file
 EXTRN	strcmp:PROC
 EXTRN	strchr:PROC
 EXTRN	memset:PROC
@@ -26,6 +27,7 @@ EXTRN	AuPmmngrAlloc:PROC
 EXTRN	AuPmmngrFree:PROC
 EXTRN	p2v:PROC
 EXTRN	v2p:PROC
+EXTRN	free:PROC
 EXTRN	get_current_thread:PROC
 pdata	SEGMENT
 $pdata$?sys_open_file@@YAHPEADPEAU_file_@@@Z DD imagerel $LN18
@@ -37,6 +39,9 @@ $pdata$?sys_read_file@@YAXHPEAEPEAU_file_@@@Z DD imagerel $LN12
 $pdata$?sys_write_file@@YAXHPEA_KPEAU_file_@@@Z DD imagerel $LN6
 	DD	imagerel $LN6+289
 	DD	imagerel $unwind$?sys_write_file@@YAXHPEA_KPEAU_file_@@@Z
+$pdata$?sys_close_file@@YAXH@Z DD imagerel $LN5
+	DD	imagerel $LN5+93
+	DD	imagerel $unwind$?sys_close_file@@YAXH@Z
 pdata	ENDS
 xdata	SEGMENT
 $unwind$?sys_open_file@@YAHPEADPEAU_file_@@@Z DD 021101H
@@ -45,7 +50,72 @@ $unwind$?sys_read_file@@YAXHPEAEPEAU_file_@@@Z DD 011201H
 	DD	08212H
 $unwind$?sys_write_file@@YAXHPEA_KPEAU_file_@@@Z DD 021501H
 	DD	0150115H
+$unwind$?sys_close_file@@YAXH@Z DD 010801H
+	DD	06208H
 xdata	ENDS
+; Function compile flags: /Odtpy
+; File e:\xeneva project\xeneva\aurora\aurora\sysserv\sysfile.cpp
+_TEXT	SEGMENT
+node$ = 32
+fd$ = 64
+?sys_close_file@@YAXH@Z PROC				; sys_close_file
+
+; 190  : void sys_close_file (int fd) {
+
+$LN5:
+	mov	DWORD PTR [rsp+8], ecx
+	sub	rsp, 56					; 00000038H
+
+; 191  : 	x64_cli();
+
+	call	x64_cli
+
+; 192  : 	vfs_node_t *node = get_current_thread()->fd[fd];
+
+	call	get_current_thread
+	movsxd	rcx, DWORD PTR fd$[rsp]
+	mov	rax, QWORD PTR [rax+rcx*8+272]
+	mov	QWORD PTR node$[rsp], rax
+
+; 193  : 	get_current_thread()->fd[fd] = 0;
+
+	call	get_current_thread
+	movsxd	rcx, DWORD PTR fd$[rsp]
+	mov	QWORD PTR [rax+rcx*8+272], 0
+
+; 194  : 	if ((node->flags & FS_FLAG_DEVICE)){
+
+	mov	rax, QWORD PTR node$[rsp]
+	movzx	eax, BYTE PTR [rax+48]
+	and	eax, 8
+	test	eax, eax
+	je	SHORT $LN2@sys_close_
+
+; 195  : 		
+; 196  : 		return;
+
+	jmp	SHORT $LN3@sys_close_
+
+; 197  : 	}else{
+
+	jmp	SHORT $LN1@sys_close_
+$LN2@sys_close_:
+
+; 198  : 		free(node);
+
+	mov	rcx, QWORD PTR node$[rsp]
+	call	free
+$LN1@sys_close_:
+$LN3@sys_close_:
+
+; 199  : 	}
+; 200  : 
+; 201  : }
+
+	add	rsp, 56					; 00000038H
+	ret	0
+?sys_close_file@@YAXH@Z ENDP				; sys_close_file
+_TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\sysserv\sysfile.cpp
 _TEXT	SEGMENT
@@ -226,7 +296,7 @@ $LN12:
 
 ; 124  : 		node = vfs_finddir("/");
 
-	lea	rcx, OFFSET FLAT:$SG3837
+	lea	rcx, OFFSET FLAT:$SG3841
 	call	?vfs_finddir@@YAPEAU_vfs_node_@@PEAD@Z	; vfs_finddir
 	mov	QWORD PTR node$[rsp], rax
 
@@ -550,7 +620,7 @@ $LN9@sys_open_f:
 ; 80   : 
 ; 81   : 	if (!(strcmp(pathname, "dev") == 0)) {
 
-	lea	rdx, OFFSET FLAT:$SG3824
+	lea	rdx, OFFSET FLAT:$SG3828
 	lea	rcx, QWORD PTR pathname$[rsp]
 	call	strcmp
 	test	eax, eax

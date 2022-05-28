@@ -72,7 +72,7 @@ void allocate_pipe (int *fd, char* name) {
 	readn->eof = 0;
 	readn->pos = 0;
 	readn->current = 0;
-	readn->flags = FS_FLAG_GENERAL;
+	readn->flags = FS_FLAG_GENERAL | FS_FLAG_DEVICE;
 	readn->status = 0;
 	readn->open = 0;
 	readn->device = p;

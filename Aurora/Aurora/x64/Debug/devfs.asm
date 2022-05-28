@@ -6,8 +6,8 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 CONST	SEGMENT
-$SG3189	DB	'dev', 00H
-$SG3191	DB	'/dev', 00H
+$SG3190	DB	'dev', 00H
+$SG3192	DB	'/dev', 00H
 CONST	ENDS
 PUBLIC	?devfs_mount@@YAXXZ				; devfs_mount
 EXTRN	strcpy:PROC
@@ -52,14 +52,14 @@ $LN3:
 ; 19   : 	strcpy(node->filename, "dev");
 
 	mov	rax, QWORD PTR node$[rsp]
-	lea	rdx, OFFSET FLAT:$SG3189
+	lea	rdx, OFFSET FLAT:$SG3190
 	mov	rcx, rax
 	call	strcpy
 
 ; 20   : 	node->flags = FS_FLAG_DIRECTORY;
 
 	mov	rax, QWORD PTR node$[rsp]
-	mov	BYTE PTR [rax+48], 1
+	mov	BYTE PTR [rax+48], 2
 
 ; 21   : 
 ; 22   : 	vfs_entry *ent = vfs_mkentry();
@@ -71,7 +71,7 @@ $LN3:
 
 	mov	r8, QWORD PTR ent$[rsp]
 	mov	rdx, QWORD PTR node$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3191
+	lea	rcx, OFFSET FLAT:$SG3192
 	call	vfs_mkdir
 
 ; 24   : }

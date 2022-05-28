@@ -15,6 +15,6 @@ void valloc (uint64_t pos) {
 
 void vfree (uint64_t pos) {
 	x64_cli();
-	AuUnmapPage((uint64_t)pos);
+	AuUnmapPage((uint64_t)pos, true);
 }
 

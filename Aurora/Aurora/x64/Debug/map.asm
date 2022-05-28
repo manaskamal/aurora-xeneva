@@ -18,7 +18,7 @@ $pdata$?map_memory@@YAPEAX_KIE@Z DD imagerel $LN22
 	DD	imagerel $LN22+501
 	DD	imagerel $unwind$?map_memory@@YAPEAX_KIE@Z
 $pdata$?unmap_memory@@YAXPEAXI@Z DD imagerel $LN8
-	DD	imagerel $LN8+145
+	DD	imagerel $LN8+149
 	DD	imagerel $unwind$?unmap_memory@@YAXPEAXI@Z
 pdata	ENDS
 xdata	SEGMENT
@@ -71,8 +71,9 @@ $LN8:
 	cmp	DWORD PTR length$[rsp], 4096		; 00001000H
 	jne	SHORT $LN5@unmap_memo
 
-; 86   : 		AuUnmapPage(address);
+; 86   : 		AuUnmapPage(address, true);
 
+	mov	dl, 1
 	mov	rcx, QWORD PTR address$[rsp]
 	call	AuUnmapPage
 $LN5@unmap_memo:
@@ -99,7 +100,7 @@ $LN3@unmap_memo:
 	cmp	DWORD PTR i$1[rsp], eax
 	jae	SHORT $LN1@unmap_memo
 
-; 90   : 			AuUnmapPage(address + i * 4096);
+; 90   : 			AuUnmapPage(address + i * 4096, true);
 
 	mov	eax, DWORD PTR i$1[rsp]
 	imul	eax, 4096				; 00001000H
@@ -107,6 +108,7 @@ $LN3@unmap_memo:
 	mov	rcx, QWORD PTR address$[rsp]
 	add	rcx, rax
 	mov	rax, rcx
+	mov	dl, 1
 	mov	rcx, rax
 	call	AuUnmapPage
 

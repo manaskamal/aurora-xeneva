@@ -83,11 +83,11 @@ void unmap_memory (void* addr, uint32_t length) {
 	uint64_t address = (uint64_t)addr;
 
 	if (length == 4096) 
-		AuUnmapPage(address);
+		AuUnmapPage(address, true);
 
 	if (length > 4096) {
 		for (int i = 0; i < length / 4096; i++) {
-			AuUnmapPage(address + i * 4096);
+			AuUnmapPage(address + i * 4096, true);
 		}
 	}
 
