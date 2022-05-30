@@ -2,7 +2,12 @@
 E:\Xeneva Project\Xeneva\xnlib\xnclib\x64\Debug\setjmp.obj
 ^sys\callback.asm
 E:\Xeneva Project\Xeneva\xnlib\xnclib\x64\Debug\callback.obj
+^sys\sse2.asm
+E:\Xeneva Project\Xeneva\xnlib\xnclib\x64\Debug\sse2.obj
 ^_fast_copy.asm
 E:\Xeneva Project\Xeneva\xnlib\xnclib\x64\Debug\_fast_copy.obj
-^crt0.asm
-E:\Xeneva Project\Xeneva\xnlib\xnclib\x64\Debug\crt0.obj
+^E:\Xeneva Project\Xeneva\xnlib\xnclib\xnclib.vcxproj
+E:\Xeneva Project\Xeneva\Aurora\x64\Debug\xnclib.lib
+E:\Xeneva Project\Xeneva\Aurora\x64\Debug\xnclib.lib
+E:\Xeneva Project\Xeneva\Aurora\x64\Debug\xnclib.exp
+E:\Xeneva Project\Xeneva\Aurora\x64\Debug\xnclib.exp

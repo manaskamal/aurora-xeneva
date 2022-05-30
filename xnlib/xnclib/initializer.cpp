@@ -12,10 +12,10 @@
 
 #include <stdlib.h>
 #include <stdint.h>
-
+#include <sys\_xeneva.h>
 
 extern "C" int _fltused = 1;
-
+//
 void* __cdecl ::operator new(size_t size) {
 	return malloc(size);
 }

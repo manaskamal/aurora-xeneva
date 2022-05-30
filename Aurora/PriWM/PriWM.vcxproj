@@ -97,7 +97,7 @@
       </GenerateDebugInformation>
       <OutputFile>F:\priwm.exe</OutputFile>
       <AdditionalLibraryDirectories>E:\Xeneva Project\Xeneva\xnlib\lib64;E:\Xeneva Project\Xeneva\Aurora\x64\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>xnclib.lib; xnacrylic.lib;freetype.lib;XeWidgets.lib;</AdditionalDependencies>
+      <AdditionalDependencies>xnclib.lib; xnacrylic.lib;XeWidgets.lib; xncrt.lib;</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
       <EnableUAC>false</EnableUAC>
       <GenerateMapFile>true</GenerateMapFile>

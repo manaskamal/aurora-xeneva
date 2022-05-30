@@ -96,7 +96,7 @@
     <Link>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <OutputFile>F:\xewid.dll</OutputFile>
-      <AdditionalDependencies />
+      <AdditionalDependencies>xnclib.lib;</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
       <EnableUAC>false</EnableUAC>
       <GenerateMapFile>true</GenerateMapFile>
@@ -110,7 +110,7 @@
       <FixedBaseAddress>false</FixedBaseAddress>
       <DataExecutionPrevention />
       <AdditionalOptions>/ALIGN:512 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalLibraryDirectories>E:\Xeneva Project\Xeneva\xnlib\lib64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>E:\Xeneva Project\Xeneva\xnlib\lib64;E:\Xeneva Project\Xeneva\Aurora\x64\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <BaseAddress>0x0000000100200000</BaseAddress>
     </Link>
   </ItemDefinitionGroup>
@@ -142,9 +142,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="xebase.cpp" />
+    <ClCompile Include="xebasewin.cpp" />
+    <ClCompile Include="xeloop.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="includes\xebase.h" />
+    <ClInclude Include="includes\xebasewin.h" />
+    <ClInclude Include="includes\xeloop.h" />
+    <ClInclude Include="includes\xewidgets.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -8,9 +8,20 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="xebase.cpp" />
+    <ClCompile Include="xeloop.cpp" />
+    <ClCompile Include="xebasewin.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="includes\xebase.h">
+      <Filter>includes</Filter>
+    </ClInclude>
+    <ClInclude Include="includes\xeloop.h">
+      <Filter>includes</Filter>
+    </ClInclude>
+    <ClInclude Include="includes\xebasewin.h">
+      <Filter>includes</Filter>
+    </ClInclude>
+    <ClInclude Include="includes\xewidgets.h">
       <Filter>includes</Filter>
     </ClInclude>
   </ItemGroup>

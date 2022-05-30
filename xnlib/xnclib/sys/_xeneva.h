@@ -34,6 +34,9 @@
 
 #define XE_EXTERN  extern "C"
 
+#define XE_API XE_EXTERN
+#define XE_MAIN XE_EXPORT
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -41,21 +44,21 @@ extern "C" {
 	///**
 	//  sys_get_used_ram -- returns the amount of used ram in bytes
 	//  */
-	uint32_t sys_get_used_ram ();
+	XE_EXPORT uint32_t sys_get_used_ram ();
 
 	/**
 	  sys_get_free_ram -- returns the amount of free ram in bytes
 	  */
-	uint32_t sys_get_free_ram ();
+	XE_EXPORT uint32_t sys_get_free_ram ();
 
 
-    int sys_create_timer (uint32_t interval, uint16_t id);
+    XE_EXPORT int sys_create_timer (uint32_t interval, uint16_t id);
 	
-	void sys_destroy_timer (int utimer_id);
+	XE_EXPORT void sys_destroy_timer (int utimer_id);
 
-	void sys_start_timer (int utimer_id);
+	XE_EXPORT void sys_start_timer (int utimer_id);
 
-	void sys_pause_timer (int utimer_id);
+	XE_EXPORT void sys_pause_timer (int utimer_id);
 
 #ifdef __cplusplus
 }

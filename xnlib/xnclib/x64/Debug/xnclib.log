@@ -1,28 +1,29 @@
-﻿Build started 29-05-2022 ৰাতিপু 12:59:19.
+﻿Build started 30-05-2022 ৰাতিপু 10:29:16.
      1>Project "E:\Xeneva Project\Xeneva\xnlib\xnclib\xnclib.vcxproj" on node 2 (Rebuild target(s)).
      1>_NASM:
          setjmp.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmpc227b3e1ca1f48e888f6bfcccc70be75.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp631272b0010c495491f8870ff4f01ca0.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\setjmp.obj"  "E:\Xeneva Project\Xeneva\xnlib\xnclib\setjmp.asm"
        _NASM:
          sys\callback.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp2e352fe345da4c0aacf05e2e4bdfe454.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp2dcd895eec774818b9e91be0f307f594.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\callback.obj"  "E:\Xeneva Project\Xeneva\xnlib\xnclib\sys\callback.asm"
-     1>E:\Xeneva Project\Xeneva\xnlib\xnclib\sys\callback.asm(123): warning : label alone on a line without a colon might be in error [-w+label-orphan]
+     1>E:\Xeneva Project\Xeneva\xnlib\xnclib\sys\callback.asm(134): warning : label alone on a line without a colon might be in error [-w+label-orphan]
+       _NASM:
+         sys\sse2.asm
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp5e312715a0db43ee998c32ecfc23a0db.cmd"
+         "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\sse2.obj"  "E:\Xeneva Project\Xeneva\xnlib\xnclib\sys\sse2.asm"
        _NASM:
          _fast_copy.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp91171feb6c51465c9a0c39b78cc274da.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp99baa3d014a54b8085629aa5fce58ea2.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\_fast_copy.obj"  "E:\Xeneva Project\Xeneva\xnlib\xnclib\_fast_copy.asm"
-       _NASM:
-         crt0.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp864e6a748a574d139c4185a3438d10ad.cmd"
-         "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\crt0.obj"  "E:\Xeneva Project\Xeneva\xnlib\xnclib\crt0.asm"
        ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\xnlib\xnclib" /I"E:\Xeneva Project\Xeneva\xnlib\xnclib\c++" /Zi /nologo /W4 /WX- /sdl- /MP /Od /D ARCH_X64 /D _MBCS /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt c++\ios.cpp c++\iostream.cpp c++\istream.cpp c++\memory.cpp c++\ostream.cpp c++\_string.cpp errno.cpp heap.cpp initializer.cpp math.cpp qsort.cpp stdio.cpp string.cpp sys\mman.cpp sys\pe.cpp sys\postbox.cpp sys\stdlib.cpp sys\_xeneva.cpp _term.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\xnlib\xnclib" /I"E:\Xeneva Project\Xeneva\xnlib\xnclib\c++" /Zi /nologo /W4 /WX- /sdl- /MP /Od /D ARCH_X64 /D _WINDLL /D _MBCS /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt c++\ios.cpp c++\iostream.cpp c++\istream.cpp c++\memory.cpp c++\ostream.cpp c++\_string.cpp errno.cpp heap.cpp initializer.cpp math.cpp qsort.cpp stdio.cpp string.cpp sys\mman.cpp sys\pe.cpp sys\postbox.cpp sys\stdlib.cpp sys\_xeneva.cpp _main.cpp _term.cpp
      1>cl : Command line warning D9025: overriding '/sdl-' with '/GS-'
      1>cl : Command line warning D9002: ignoring unknown option '/arch:SSE'
      1>cl : Command line warning D9030: '/Gm' is incompatible with multiprocessing; ignoring /MP switch
          _term.cpp
+         _main.cpp
          _xeneva.cpp
      1>sys\_xeneva.cpp(30): warning C4018: '<' : signed/unsigned mismatch
          stdlib.cpp
@@ -136,9 +137,9 @@
          Generating Code...
      1>e:\xeneva project\xeneva\xnlib\xnclib\string.cpp(60): warning C4706: assignment within conditional expression
      1>e:\xeneva project\xeneva\xnlib\xnclib\string.cpp(74): warning C4706: assignment within conditional expression
-     1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V110\Microsoft.CppBuild.targets(1299,5): warning MSB8012: TargetPath(E:\Xeneva Project\Xeneva\Aurora\x64\Debug\xnclib.lib) does not match the Library's OutputFile property value (E:\Xeneva Project\Xeneva\xnlib\lib64\xnclib.lib). This may cause your project to build incorrectly. To correct this, please make sure that $(OutDir), $(TargetName) and $(TargetExt) property values match the value specified in %(Lib.OutputFile).
-       Lib:
-         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\Lib.exe /OUT:"E:\Xeneva Project\Xeneva\xnlib\lib64\xnclib.lib" /NOLOGO /NODEFAULTLIB /MACHINE:X64 x64\Debug\ios.obj
+     1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V110\Microsoft.CppBuild.targets(1137,5): warning MSB8012: TargetPath(E:\Xeneva Project\Xeneva\Aurora\x64\Debug\xnclib.dll) does not match the Linker's OutputFile property value (F:\xnclib.dll). This may cause your project to build incorrectly. To correct this, please make sure that $(OutDir), $(TargetName) and $(TargetExt) property values match the value specified in %(Link.OutputFile).
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:PROMPT /OUT:"F:\xnclib.dll" /INCREMENTAL /NOLOGO /LIBPATH:"E:\Xeneva Project\Xeneva\Aurora\x64\Debug" /NODEFAULTLIB /MANIFEST:NO /PDB:"E:\Xeneva Project\Xeneva\Aurora\x64\Debug\xnclib.pdb" /MAP /MAPINFO:EXPORTS /SUBSYSTEM:NATIVE /LARGEADDRESSAWARE /Driver /OPT:NOREF /LTCG /TLBID:1 /BASE:"0x0000000100000000" /FIXED:NO /IMPLIB:"E:\Xeneva Project\Xeneva\Aurora\x64\Debug\xnclib.lib" /MACHINE:X64 /ALIGN:512 /DLL x64\Debug\ios.obj
          x64\Debug\iostream.obj
          x64\Debug\istream.obj
          x64\Debug\memory.obj
@@ -156,14 +157,19 @@
          x64\Debug\postbox.obj
          x64\Debug\stdlib.obj
          x64\Debug\_xeneva.obj
+         x64\Debug\_main.obj
          x64\Debug\_term.obj
          x64\Debug\setjmp.obj
+         x64\Debug\sse2.obj
          x64\Debug\_fast_copy.obj
          x64\Debug\callback.obj
-         x64\Debug\crt0.obj
-         xnclib.vcxproj -> E:\Xeneva Project\Xeneva\Aurora\x64\Debug\xnclib.lib
+     1>LINK : warning LNK4075: ignoring '/INCREMENTAL' due to '/LTCG' specification
+            Creating library E:\Xeneva Project\Xeneva\Aurora\x64\Debug\xnclib.lib and object E:\Xeneva Project\Xeneva\Aurora\x64\Debug\xnclib.exp
+         LINK : /LTCG specified but no code generation required; remove /LTCG from the link command line to improve linker performance
+     1>iostream.obj : warning LNK4210: .CRT section exists; there may be unhandled static initializers or terminators
+         xnclib.vcxproj -> E:\Xeneva Project\Xeneva\Aurora\x64\Debug\xnclib.dll
      1>Done Building Project "E:\Xeneva Project\Xeneva\xnlib\xnclib\xnclib.vcxproj" (Rebuild target(s)).
 
 Build succeeded.
 
-Time Elapsed 00:00:03.18
+Time Elapsed 00:00:02.35

@@ -13,6 +13,7 @@ section .text
 [BITS 64]
 
 global fastcpy
+export fastcpy
 fastcpy:
      mov rax, rcx
 	 push rsi

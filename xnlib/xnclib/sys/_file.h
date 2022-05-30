@@ -13,6 +13,7 @@
 #define __FILE_H__
 
 #include <stdint.h>
+#include <sys\_xeneva.h>
 
 typedef struct _file_ {
 	//char filename[32];
@@ -26,12 +27,12 @@ typedef struct _file_ {
 }UFILE;
 
 #ifdef __cplusplus
-extern "C" {
+XE_EXTERN {
 #endif
-int sys_open_file (char* filename, UFILE *stream);
-void sys_read_file (int fd, unsigned char* buffer,UFILE *f);
-void sys_write_file (int fd, uint64_t* buffer, UFILE *f);
-void sys_close_file (int fd);
+XE_EXPORT int sys_open_file (char* filename, UFILE *stream);
+XE_EXPORT void sys_read_file (int fd, unsigned char* buffer,UFILE *f);
+XE_EXPORT void sys_write_file (int fd, uint64_t* buffer, UFILE *f);
+XE_EXPORT void sys_close_file (int fd);
 #ifdef __cplusplus
 }
 #endif

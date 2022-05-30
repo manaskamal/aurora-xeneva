@@ -10,8 +10,10 @@
 #ifndef __STDLIB_H__
 #define __STDLIB_H__
 
+#include <sys\_xeneva.h>
+
 #ifdef __cplusplus
-extern "C" {
+XE_EXTERN {
 #endif
 
 #include <stdarg.h>
@@ -26,34 +28,34 @@ extern "C" {
 
 #define RAND_MAX  (0x7fffffff)
 
-int atoi (const char*);
-long atol (const char*);
-long atoll (const char *);
-double atof (const char*);
-int abs (int);
-void* malloc(unsigned int);
-void free(void* ptr);
-void* realloc (void* address, unsigned int new_size);
-void* calloc(unsigned long long num, unsigned long long size);
-int mblen (const char*, size_t);
-size_t mbstowcs(wchar_t *, const char*, size_t);
-int mbtowc (wchar_t*, const char*, size_t);
-char* mkdtemp (char*);
-char* mkstemp (char *);
-int rand (void);
+XE_EXPORT int atoi (const char*);
+XE_EXPORT long atol (const char*);
+XE_EXPORT long atoll (const char *);
+XE_EXPORT double atof (const char*);
+XE_EXPORT int abs (int);
+XE_EXPORT void* malloc(unsigned int);
+XE_EXPORT void free(void* ptr);
+XE_EXPORT void* realloc (void* address, unsigned int new_size);
+XE_EXPORT void* calloc(unsigned long long num, unsigned long long size);
+XE_EXPORT int mblen (const char*, size_t);
+XE_EXPORT size_t mbstowcs(wchar_t *, const char*, size_t);
+XE_EXPORT int mbtowc (wchar_t*, const char*, size_t);
+XE_EXPORT char* mkdtemp (char*);
+XE_EXPORT char* mkstemp (char *);
+XE_EXPORT int rand (void);
 #define random() rand()
-size_t wcstombs (char*, const wchar_t *, size_t);
-int wctomb (char*, wchar_t);
-void qsort(void* base, size_t num, size_t size, int (*comparator)(const void*, const void*));
+XE_EXPORT size_t wcstombs (char*, const wchar_t *, size_t);
+XE_EXPORT int wctomb (char*, wchar_t);
+XE_EXPORT void qsort(void* base, size_t num, size_t size, int (*comparator)(const void*, const void*));
 
-char* sztoa(size_t value, char* str, int base);
-char* getenv(const char*);
-void exit (int errno);
+XE_EXPORT char* sztoa(size_t value, char* str, int base);
+XE_EXPORT char* getenv(const char*);
+XE_EXPORT void exit (int errno);
 
-int vsprintf(char *str, const char *format, va_list ap);
-long strtol(const char* nptr, char** endptr, int base);
-unsigned long strtoul(const char* nptr, char** endptr, int base);
-void itoa_s(int i,unsigned base,char* buf);
+XE_EXPORT int vsprintf(char *str, const char *format, va_list ap);
+XE_EXPORT long strtol(const char* nptr, char** endptr, int base);
+XE_EXPORT unsigned long strtoul(const char* nptr, char** endptr, int base);
+XE_EXPORT void itoa_s(int i,unsigned base,char* buf);
 
 #ifdef __cplusplus
 }

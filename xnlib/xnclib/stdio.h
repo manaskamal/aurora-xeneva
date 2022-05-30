@@ -12,9 +12,10 @@
 
 #include <sys\_file.h>
 #include <stdarg.h>
+#include <sys\_xeneva.h>
 
 #ifdef __cplusplus
-extern "C" {
+XE_EXTERN {
 #endif
 
 
@@ -39,19 +40,19 @@ typedef struct _iobuf_ {
 #define stdout FILE*
 #define stderr  FILE*
 
-int fprintf(FILE, const char *, ...);
-int printf(const char *, ...);
-FILE* fopen (const char* name, const char* mode);
-size_t fread (void* ptr, size_t size, size_t nmemb,FILE* stream);
-long ftell (FILE *fp);
-int fseek (FILE* fp, long int offset,  int pos);
-int fgetc (FILE *fp);
-int fgetc (FILE* fp);
-int fclose (FILE *fp);
-int fclose (FILE *fp);
+XE_EXPORT int fprintf(FILE, const char *, ...);
+XE_EXPORT int printf(const char *, ...);
+XE_EXPORT FILE* fopen (const char* name, const char* mode);
+XE_EXPORT size_t fread (void* ptr, size_t size, size_t nmemb,FILE* stream);
+XE_EXPORT long ftell (FILE *fp);
+XE_EXPORT int fseek (FILE* fp, long int offset,  int pos);
+XE_EXPORT int fgetc (FILE *fp);
+XE_EXPORT int fgetc (FILE* fp);
+XE_EXPORT int fclose (FILE *fp);
+XE_EXPORT int fclose (FILE *fp);
 
-int vfprintf(FILE *stream, const char* format, va_list arg);
-int sprintf(char *str, const char* string,...);
+XE_EXPORT int vfprintf(FILE *stream, const char* format, va_list arg);
+XE_EXPORT int sprintf(char *str, const char* string,...);
 
 
 #ifdef __cplusplus

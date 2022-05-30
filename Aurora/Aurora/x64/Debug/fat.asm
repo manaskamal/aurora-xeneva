@@ -116,7 +116,7 @@ $pdata$?fat32_read@@YAXPEAU_vfs_node_@@PEA_K@Z DD imagerel $LN5
 	DD	imagerel $LN5+139
 	DD	imagerel $unwind$?fat32_read@@YAXPEAU_vfs_node_@@PEA_K@Z
 $pdata$?fat32_locate_dir@@YAPEAU_vfs_node_@@PEBD@Z DD imagerel $LN12
-	DD	imagerel $LN12+444
+	DD	imagerel $LN12+458
 	DD	imagerel $unwind$?fat32_locate_dir@@YAPEAU_vfs_node_@@PEBD@Z
 $pdata$?fat32_self_register@@YAXXZ DD imagerel $LN3
 	DD	imagerel $LN3+213
@@ -178,12 +178,12 @@ tv66 = 32
 tv70 = 36
 ?fat32_format_time@@YAGXZ PROC				; fat32_format_time
 
-; 471  : uint16_t fat32_format_time () {
+; 472  : uint16_t fat32_format_time () {
 
 $LN3:
 	sub	rsp, 56					; 00000038H
 
-; 472  : 	return (uint16_t)AuGetHour() << 11 | (uint16_t)AuGetMinutes() << 5 | (uint16_t)AuGetSecond()/2;
+; 473  : 	return (uint16_t)AuGetHour() << 11 | (uint16_t)AuGetMinutes() << 5 | (uint16_t)AuGetSecond()/2;
 
 	call	AuGetHour
 	movzx	eax, al
@@ -205,7 +205,7 @@ $LN3:
 	or	ecx, eax
 	mov	eax, ecx
 
-; 473  : }
+; 474  : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -218,12 +218,12 @@ tv70 = 32
 tv74 = 36
 ?fat32_format_date@@YAGXZ PROC				; fat32_format_date
 
-; 463  : uint16_t fat32_format_date () {
+; 464  : uint16_t fat32_format_date () {
 
 $LN3:
 	sub	rsp, 56					; 00000038H
 
-; 464  : 	return (uint16_t)(2000 + AuGetYear()-1980)<<9 | (uint16_t)AuGetMonth() << 5 | (uint16_t)AuGetDay();
+; 465  : 	return (uint16_t)(2000 + AuGetYear()-1980)<<9 | (uint16_t)AuGetMonth() << 5 | (uint16_t)AuGetDay();
 
 	call	AuGetYear
 	movzx	eax, al
@@ -244,8 +244,8 @@ $LN3:
 	or	ecx, eax
 	mov	eax, ecx
 
-; 465  : 	//return (uint16_t)(2022-1980) <<9 | (uint16_t)3 << 5 | (uint16_t)6;
-; 466  : }
+; 466  : 	//return (uint16_t)(2022-1980) <<9 | (uint16_t)3 << 5 | (uint16_t)6;
+; 467  : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -264,38 +264,38 @@ kfile$ = 112
 filename$ = 120
 ?fat32_locate_subdir@@YAPEAU_vfs_node_@@PEAU1@PEBD@Z PROC ; fat32_locate_subdir
 
-; 298  : vfs_node_t *fat32_locate_subdir (vfs_node_t *kfile, const char* filename) {
+; 299  : vfs_node_t *fat32_locate_subdir (vfs_node_t *kfile, const char* filename) {
 
 $LN12:
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 104				; 00000068H
 
-; 299  : 
-; 300  : 	vfs_node_t *file = (vfs_node_t*)malloc(sizeof(vfs_node_t));
+; 300  : 
+; 301  : 	vfs_node_t *file = (vfs_node_t*)malloc(sizeof(vfs_node_t));
 
 	mov	ecx, 104				; 00000068H
 	call	malloc
 	mov	QWORD PTR file$[rsp], rax
 
-; 301  : 
-; 302  : 	char dos_file_name[11];
-; 303  : 	fat32_to_dos_file_name (filename, dos_file_name, 11);
+; 302  : 
+; 303  : 	char dos_file_name[11];
+; 304  : 	fat32_to_dos_file_name (filename, dos_file_name, 11);
 
 	mov	r8d, 11
 	lea	rdx, QWORD PTR dos_file_name$[rsp]
 	mov	rcx, QWORD PTR filename$[rsp]
 	call	?fat32_to_dos_file_name@@YAXPEBDPEADI@Z	; fat32_to_dos_file_name
 
-; 304  : 	//dos_file_name[11] = 0;
-; 305  : 	uint64_t* buf = (uint64_t*)p2v((size_t)AuPmmngrAlloc());
+; 305  : 	//dos_file_name[11] = 0;
+; 306  : 	uint64_t* buf = (uint64_t*)p2v((size_t)AuPmmngrAlloc());
 
 	call	AuPmmngrAlloc
 	mov	rcx, rax
 	call	p2v
 	mov	QWORD PTR buf$[rsp], rax
 
-; 306  : 	if (kfile->flags != FS_FLAG_INVALID) {
+; 307  : 	if (kfile->flags != FS_FLAG_INVALID) {
 
 	mov	rax, QWORD PTR kfile$[rsp]
 	movzx	eax, BYTE PTR [rax+48]
@@ -303,19 +303,19 @@ $LN12:
 	je	$LN9@fat32_loca
 $LN8@fat32_loca:
 
-; 307  : 		
-; 308  : 		//! read the directory
-; 309  : 		while (!kfile->eof) {
+; 308  : 		
+; 309  : 		//! read the directory
+; 310  : 		while (!kfile->eof) {
 
 	mov	rax, QWORD PTR kfile$[rsp]
 	movzx	eax, BYTE PTR [rax+36]
 	test	eax, eax
 	jne	$LN7@fat32_loca
 
-; 310  : 
-; 311  : 			//! read 
-; 312  : 		
-; 313  : 			fat32_read (kfile, (uint64_t*)v2p((uint64_t)buf));
+; 311  : 
+; 312  : 			//! read 
+; 313  : 		
+; 314  : 			fat32_read (kfile, (uint64_t*)v2p((uint64_t)buf));
 
 	mov	rcx, QWORD PTR buf$[rsp]
 	call	v2p
@@ -323,15 +323,15 @@ $LN8@fat32_loca:
 	mov	rcx, QWORD PTR kfile$[rsp]
 	call	?fat32_read@@YAXPEAU_vfs_node_@@PEA_K@Z	; fat32_read
 
-; 314  : 			//! set directory
-; 315  : 			fat32_dir* pkDir = (fat32_dir*)buf;
+; 315  : 			//! set directory
+; 316  : 			fat32_dir* pkDir = (fat32_dir*)buf;
 
 	mov	rax, QWORD PTR buf$[rsp]
 	mov	QWORD PTR pkDir$2[rsp], rax
 
-; 316  : 
-; 317  : 			//! 16 entries
-; 318  : 			for (unsigned int i = 0; i < 16; i++) {
+; 317  : 
+; 318  : 			//! 16 entries
+; 319  : 			for (unsigned int i = 0; i < 16; i++) {
 
 	mov	DWORD PTR i$1[rsp], 0
 	jmp	SHORT $LN6@fat32_loca
@@ -343,10 +343,10 @@ $LN6@fat32_loca:
 	cmp	DWORD PTR i$1[rsp], 16
 	jae	$LN4@fat32_loca
 
-; 319  : 
-; 320  : 				//! get current filename;
-; 321  : 				char name[11];
-; 322  : 				memcpy (name, pkDir->filename, 11);
+; 320  : 
+; 321  : 				//! get current filename;
+; 322  : 				char name[11];
+; 323  : 				memcpy (name, pkDir->filename, 11);
 
 	mov	rax, QWORD PTR pkDir$2[rsp]
 	mov	r8d, 11
@@ -354,9 +354,9 @@ $LN6@fat32_loca:
 	lea	rcx, QWORD PTR name$3[rsp]
 	call	memcpy
 
-; 323  : 				//name[11] = 0;
-; 324  : 
-; 325  : 				if (strcmp (name, dos_file_name) == 0) {
+; 324  : 				//name[11] = 0;
+; 325  : 
+; 326  : 				if (strcmp (name, dos_file_name) == 0) {
 
 	lea	rdx, QWORD PTR dos_file_name$[rsp]
 	lea	rcx, QWORD PTR name$3[rsp]
@@ -364,130 +364,130 @@ $LN6@fat32_loca:
 	test	eax, eax
 	jne	$LN3@fat32_loca
 
-; 326  : 
-; 327  : 					//! found file
-; 328  : 					strcpy (file->filename, filename);
+; 327  : 
+; 328  : 					//! found file
+; 329  : 					strcpy (file->filename, filename);
 
 	mov	rax, QWORD PTR file$[rsp]
 	mov	rdx, QWORD PTR filename$[rsp]
 	mov	rcx, rax
 	call	strcpy
 
-; 329  : 					file->current = pkDir->first_cluster;
+; 330  : 					file->current = pkDir->first_cluster;
 
 	mov	rax, QWORD PTR pkDir$2[rsp]
 	movzx	eax, WORD PTR [rax+26]
 	mov	rcx, QWORD PTR file$[rsp]
 	mov	DWORD PTR [rcx+44], eax
 
-; 330  : 					file->size = pkDir->file_size;
+; 331  : 					file->size = pkDir->file_size;
 
 	mov	rax, QWORD PTR file$[rsp]
 	mov	rcx, QWORD PTR pkDir$2[rsp]
 	mov	ecx, DWORD PTR [rcx+28]
 	mov	DWORD PTR [rax+32], ecx
 
-; 331  : 					file->eof = 0;
+; 332  : 					file->eof = 0;
 
 	mov	rax, QWORD PTR file$[rsp]
 	mov	BYTE PTR [rax+36], 0
 
-; 332  : 					file->status = FS_STATUS_FOUND;
+; 333  : 					file->status = FS_STATUS_FOUND;
 
 	mov	rax, QWORD PTR file$[rsp]
 	mov	BYTE PTR [rax+49], 4
 
-; 333  : 					//! set file type
-; 334  : 					if (pkDir->attrib == 0x10)
+; 334  : 					//! set file type
+; 335  : 					if (pkDir->attrib == 0x10)
 
 	mov	rax, QWORD PTR pkDir$2[rsp]
 	movzx	eax, BYTE PTR [rax+11]
 	cmp	eax, 16
 	jne	SHORT $LN2@fat32_loca
 
-; 335  : 						file->flags = FS_FLAG_DIRECTORY;
+; 336  : 						file->flags = FS_FLAG_DIRECTORY;
 
 	mov	rax, QWORD PTR file$[rsp]
 	mov	BYTE PTR [rax+48], 2
 
-; 336  : 					else
+; 337  : 					else
 
 	jmp	SHORT $LN1@fat32_loca
 $LN2@fat32_loca:
 
-; 337  : 						file->flags = FS_FLAG_GENERAL;
+; 338  : 						file->flags = FS_FLAG_GENERAL;
 
 	mov	rax, QWORD PTR file$[rsp]
 	mov	BYTE PTR [rax+48], 4
 $LN1@fat32_loca:
 
-; 338  : 
-; 339  : 					AuPmmngrFree((void*)v2p((size_t)buf));
+; 339  : 
+; 340  : 					AuPmmngrFree((void*)v2p((size_t)buf));
 
 	mov	rcx, QWORD PTR buf$[rsp]
 	call	v2p
 	mov	rcx, rax
 	call	AuPmmngrFree
 
-; 340  : 					free(kfile);
+; 341  : 					free(kfile);
 
 	mov	rcx, QWORD PTR kfile$[rsp]
 	call	free
 
-; 341  : 					//!return file
-; 342  : 					return file;
+; 342  : 					//!return file
+; 343  : 					return file;
 
 	mov	rax, QWORD PTR file$[rsp]
 	jmp	SHORT $LN10@fat32_loca
 $LN3@fat32_loca:
 
-; 343  : 				}
-; 344  : 
-; 345  : 				//! go to next entry
-; 346  : 				pkDir++;
+; 344  : 				}
+; 345  : 
+; 346  : 				//! go to next entry
+; 347  : 				pkDir++;
 
 	mov	rax, QWORD PTR pkDir$2[rsp]
 	add	rax, 32					; 00000020H
 	mov	QWORD PTR pkDir$2[rsp], rax
 
-; 347  : 			}
+; 348  : 			}
 
 	jmp	$LN5@fat32_loca
 $LN4@fat32_loca:
 
-; 348  : 
-; 349  : 			//pmmngr_free (buf);
-; 350  : 		}
+; 349  : 
+; 350  : 			//pmmngr_free (buf);
+; 351  : 		}
 
 	jmp	$LN8@fat32_loca
 $LN7@fat32_loca:
 $LN9@fat32_loca:
 
-; 351  : 	}
-; 352  : 
-; 353  : 	AuPmmngrFree((void*)v2p((size_t)buf));
+; 352  : 	}
+; 353  : 
+; 354  : 	AuPmmngrFree((void*)v2p((size_t)buf));
 
 	mov	rcx, QWORD PTR buf$[rsp]
 	call	v2p
 	mov	rcx, rax
 	call	AuPmmngrFree
 
-; 354  : 	file->flags = FS_FLAG_INVALID;
+; 355  : 	file->flags = FS_FLAG_INVALID;
 
 	mov	rax, QWORD PTR file$[rsp]
 	mov	BYTE PTR [rax+48], 3
 
-; 355  : 	free(kfile);
+; 356  : 	free(kfile);
 
 	mov	rcx, QWORD PTR kfile$[rsp]
 	call	free
 
-; 356  : 	return file;
+; 357  : 	return file;
 
 	mov	rax, QWORD PTR file$[rsp]
 $LN10@fat32_loca:
 
-; 357  : }
+; 358  : }
 
 	add	rsp, 104				; 00000068H
 	ret	0
@@ -691,11 +691,11 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 ?fat32_get_sector_per_cluster@@YA_KXZ PROC		; fat32_get_sector_per_cluster
 
-; 457  : 	return sectors_per_cluster;
+; 458  : 	return sectors_per_cluster;
 
 	movzx	eax, BYTE PTR ?sectors_per_cluster@@3EA	; sectors_per_cluster
 
-; 458  : }
+; 459  : }
 
 	ret	0
 ?fat32_get_sector_per_cluster@@YA_KXZ ENDP		; fat32_get_sector_per_cluster
@@ -705,11 +705,11 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 ?fat32_get_root_cluster@@YAIXZ PROC			; fat32_get_root_cluster
 
-; 450  : 	return root_dir_first_cluster;
+; 451  : 	return root_dir_first_cluster;
 
 	mov	eax, DWORD PTR ?root_dir_first_cluster@@3IA ; root_dir_first_cluster
 
-; 451  : }
+; 452  : }
 
 	ret	0
 ?fat32_get_root_cluster@@YAIXZ ENDP			; fat32_get_root_cluster
@@ -719,11 +719,11 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 ?fat32_get_root_sector@@YA_KXZ PROC			; fat32_get_root_sector
 
-; 443  : 	return root_sector;
+; 444  : 	return root_sector;
 
 	mov	eax, DWORD PTR ?root_sector@@3KA	; root_sector
 
-; 444  : }
+; 445  : }
 
 	ret	0
 ?fat32_get_root_sector@@YA_KXZ ENDP			; fat32_get_root_sector
@@ -992,95 +992,95 @@ _TEXT	SEGMENT
 fsys$ = 32
 ?fat32_self_register@@YAXXZ PROC			; fat32_self_register
 
-; 478  : void fat32_self_register () {
+; 479  : void fat32_self_register () {
 
 $LN3:
 	sub	rsp, 56					; 00000038H
 
-; 479  : 	vfs_node_t *fsys = (vfs_node_t*)malloc(sizeof(vfs_node_t));
+; 480  : 	vfs_node_t *fsys = (vfs_node_t*)malloc(sizeof(vfs_node_t));
 
 	mov	ecx, 104				; 00000068H
 	call	malloc
 	mov	QWORD PTR fsys$[rsp], rax
 
-; 480  : 	strcpy (fsys->filename, "/");
+; 481  : 	strcpy (fsys->filename, "/");
 
 	mov	rax, QWORD PTR fsys$[rsp]
 	lea	rdx, OFFSET FLAT:$SG3927
 	mov	rcx, rax
 	call	strcpy
 
-; 481  : 	fsys->size = 0;
+; 482  : 	fsys->size = 0;
 
 	mov	rax, QWORD PTR fsys$[rsp]
 	mov	DWORD PTR [rax+32], 0
 
-; 482  : 	fsys->eof = 0;
+; 483  : 	fsys->eof = 0;
 
 	mov	rax, QWORD PTR fsys$[rsp]
 	mov	BYTE PTR [rax+36], 0
 
-; 483  : 	fsys->pos = 0;
+; 484  : 	fsys->pos = 0;
 
 	mov	rax, QWORD PTR fsys$[rsp]
 	mov	DWORD PTR [rax+40], 0
 
-; 484  : 	fsys->current = 0;
+; 485  : 	fsys->current = 0;
 
 	mov	rax, QWORD PTR fsys$[rsp]
 	mov	DWORD PTR [rax+44], 0
 
-; 485  : 	fsys->flags = FS_FLAG_GENERAL;
+; 486  : 	fsys->flags = FS_FLAG_GENERAL;
 
 	mov	rax, QWORD PTR fsys$[rsp]
 	mov	BYTE PTR [rax+48], 4
 
-; 486  : 	fsys->status = 0;
+; 487  : 	fsys->status = 0;
 
 	mov	rax, QWORD PTR fsys$[rsp]
 	mov	BYTE PTR [rax+49], 0
 
-; 487  : 	fsys->open = fat32_open;
+; 488  : 	fsys->open = fat32_open;
 
 	mov	rax, QWORD PTR fsys$[rsp]
 	lea	rcx, OFFSET FLAT:?fat32_open@@YAPEAU_vfs_node_@@PEAU1@PEAD@Z ; fat32_open
 	mov	QWORD PTR [rax+64], rcx
 
-; 488  : 	fsys->read = fat32_read_file;
+; 489  : 	fsys->read = fat32_read_file;
 
 	mov	rax, QWORD PTR fsys$[rsp]
 	lea	rcx, OFFSET FLAT:?fat32_read_file@@YAXPEAU_vfs_node_@@PEA_KI@Z ; fat32_read_file
 	mov	QWORD PTR [rax+72], rcx
 
-; 489  : 	fsys->write = 0;
+; 490  : 	fsys->write = 0;
 
 	mov	rax, QWORD PTR fsys$[rsp]
 	mov	QWORD PTR [rax+80], 0
 
-; 490  : 	fsys->read_blk = fat32_read;
+; 491  : 	fsys->read_blk = fat32_read;
 
 	mov	rax, QWORD PTR fsys$[rsp]
 	lea	rcx, OFFSET FLAT:?fat32_read@@YAXPEAU_vfs_node_@@PEA_K@Z ; fat32_read
 	mov	QWORD PTR [rax+88], rcx
 
-; 491  : 	fsys->ioquery = 0;
+; 492  : 	fsys->ioquery = 0;
 
 	mov	rax, QWORD PTR fsys$[rsp]
 	mov	QWORD PTR [rax+96], 0
 
-; 492  : 	vfs_mount ("/", fsys, 0);
+; 493  : 	vfs_mount ("/", fsys, 0);
 
 	xor	r8d, r8d
 	mov	rdx, QWORD PTR fsys$[rsp]
 	lea	rcx, OFFSET FLAT:$SG3928
 	call	vfs_mount
 
-; 493  : 	printf ("File System registered\n");
+; 494  : 	printf ("File System registered\n");
 
 	lea	rcx, OFFSET FLAT:$SG3929
 	call	printf
 
-; 494  : }
+; 495  : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -1094,10 +1094,10 @@ sector$1 = 40
 i$2 = 44
 dirent$ = 48
 buf$ = 56
-name$3 = 64
-tv83 = 80
-tv78 = 88
-dos_file_name$ = 96
+dos_file_name$ = 64
+name$3 = 80
+tv85 = 96
+tv80 = 104
 dir$ = 128
 ?fat32_locate_dir@@YAPEAU_vfs_node_@@PEBD@Z PROC	; fat32_locate_dir
 
@@ -1124,15 +1124,21 @@ $LN12:
 	mov	rcx, QWORD PTR dir$[rsp]
 	call	?fat32_to_dos_file_name@@YAXPEBDPEADI@Z	; fat32_to_dos_file_name
 
-; 253  : 	
-; 254  : 	buf = (uint64_t*)p2v((uint64_t)AuPmmngrAlloc());
+; 253  : 	dos_file_name[11] = 0;
+
+	mov	eax, 1
+	imul	rax, 11
+	mov	BYTE PTR dos_file_name$[rsp+rax], 0
+
+; 254  : 	
+; 255  : 	buf = (uint64_t*)p2v((uint64_t)AuPmmngrAlloc());
 
 	call	AuPmmngrAlloc
 	mov	rcx, rax
 	call	p2v
 	mov	QWORD PTR buf$[rsp], rax
 
-; 255  : 	for (unsigned int sector = 0; sector < sectors_per_cluster; sector++) {
+; 256  : 	for (unsigned int sector = 0; sector < sectors_per_cluster; sector++) {
 
 	mov	DWORD PTR sector$1[rsp], 0
 	jmp	SHORT $LN9@fat32_loca
@@ -1145,43 +1151,43 @@ $LN9@fat32_loca:
 	cmp	DWORD PTR sector$1[rsp], eax
 	jae	$LN7@fat32_loca
 
-; 256  : 
-; 257  : 		memset (buf, 0, 4096);
+; 257  : 
+; 258  : 		memset (buf, 0, 4096);
 
 	mov	r8d, 4096				; 00001000H
 	xor	edx, edx
 	mov	rcx, QWORD PTR buf$[rsp]
 	call	memset
 
-; 258  : 		//ata_read_28 (root_sector + sector,1, buf);
-; 259  : 		ahci_disk_read(ahci_disk_get_port(),root_sector + sector,1,(uint64_t*)v2p((uint64_t)buf));
+; 259  : 		//ata_read_28 (root_sector + sector,1, buf);
+; 260  : 		ahci_disk_read(ahci_disk_get_port(),root_sector + sector,1,(uint64_t*)v2p((uint64_t)buf));
 
 	mov	rcx, QWORD PTR buf$[rsp]
 	call	v2p
-	mov	QWORD PTR tv78[rsp], rax
+	mov	QWORD PTR tv80[rsp], rax
 	mov	ecx, DWORD PTR sector$1[rsp]
 	mov	edx, DWORD PTR ?root_sector@@3KA	; root_sector
 	add	edx, ecx
 	mov	ecx, edx
 	mov	ecx, ecx
-	mov	QWORD PTR tv83[rsp], rcx
+	mov	QWORD PTR tv85[rsp], rcx
 	call	?ahci_disk_get_port@@YAPEAU_hba_port_@@XZ ; ahci_disk_get_port
-	mov	rcx, QWORD PTR tv78[rsp]
+	mov	rcx, QWORD PTR tv80[rsp]
 	mov	r9, rcx
 	mov	r8d, 1
-	mov	rcx, QWORD PTR tv83[rsp]
+	mov	rcx, QWORD PTR tv85[rsp]
 	mov	rdx, rcx
 	mov	rcx, rax
 	call	?ahci_disk_read@@YAXPEAU_hba_port_@@_KIPEA_K@Z ; ahci_disk_read
 
-; 260  : 
-; 261  : 		dirent = (fat32_dir*)buf;
+; 261  : 
+; 262  : 		dirent = (fat32_dir*)buf;
 
 	mov	rax, QWORD PTR buf$[rsp]
 	mov	QWORD PTR dirent$[rsp], rax
 
-; 262  : 
-; 263  : 		for (int i=0; i < 16; i++) {
+; 263  : 
+; 264  : 		for (int i=0; i < 16; i++) {
 
 	mov	DWORD PTR i$2[rsp], 0
 	jmp	SHORT $LN6@fat32_loca
@@ -1193,8 +1199,8 @@ $LN6@fat32_loca:
 	cmp	DWORD PTR i$2[rsp], 16
 	jge	$LN4@fat32_loca
 
-; 264  : 			char name[11];
-; 265  : 			memcpy (name, dirent->filename, 11);
+; 265  : 			char name[11];
+; 266  : 			memcpy (name, dirent->filename, 11);
 
 	mov	rax, QWORD PTR dirent$[rsp]
 	mov	r8d, 11
@@ -1202,14 +1208,14 @@ $LN6@fat32_loca:
 	lea	rcx, QWORD PTR name$3[rsp]
 	call	memcpy
 
-; 266  : 			name[11] = 0;
+; 267  : 			name[11] = 0;
 
 	mov	eax, 1
 	imul	rax, 11
 	mov	BYTE PTR name$3[rsp+rax], 0
 
-; 267  : 
-; 268  : 			if (strcmp (dos_file_name, name) == 0) {
+; 268  : 	
+; 269  : 			if (strcmp (dos_file_name, name) == 0) {
 
 	lea	rdx, QWORD PTR name$3[rsp]
 	lea	rcx, QWORD PTR dos_file_name$[rsp]
@@ -1217,99 +1223,99 @@ $LN6@fat32_loca:
 	test	eax, eax
 	jne	SHORT $LN3@fat32_loca
 
-; 269  : 				
-; 270  : 				strcpy (file->filename, dir);
+; 270  : 				
+; 271  : 				strcpy (file->filename, dir);
 
 	mov	rax, QWORD PTR file$[rsp]
 	mov	rdx, QWORD PTR dir$[rsp]
 	mov	rcx, rax
 	call	strcpy
 
-; 271  : 				file->current = dirent->first_cluster;
+; 272  : 				file->current = dirent->first_cluster;
 
 	mov	rax, QWORD PTR dirent$[rsp]
 	movzx	eax, WORD PTR [rax+26]
 	mov	rcx, QWORD PTR file$[rsp]
 	mov	DWORD PTR [rcx+44], eax
 
-; 272  : 				file->size = dirent->file_size;
+; 273  : 				file->size = dirent->file_size;
 
 	mov	rax, QWORD PTR file$[rsp]
 	mov	rcx, QWORD PTR dirent$[rsp]
 	mov	ecx, DWORD PTR [rcx+28]
 	mov	DWORD PTR [rax+32], ecx
 
-; 273  : 				file->eof = 0;
+; 274  : 				file->eof = 0;
 
 	mov	rax, QWORD PTR file$[rsp]
 	mov	BYTE PTR [rax+36], 0
 
-; 274  : 				file->status = FS_STATUS_FOUND;
+; 275  : 				file->status = FS_STATUS_FOUND;
 
 	mov	rax, QWORD PTR file$[rsp]
 	mov	BYTE PTR [rax+49], 4
 
-; 275  : 
-; 276  : 				if (dirent->attrib == 0x10)
+; 276  : 
+; 277  : 				if (dirent->attrib == 0x10)
 
 	mov	rax, QWORD PTR dirent$[rsp]
 	movzx	eax, BYTE PTR [rax+11]
 	cmp	eax, 16
 	jne	SHORT $LN2@fat32_loca
 
-; 277  : 					file->flags = FS_FLAG_DIRECTORY;
+; 278  : 					file->flags = FS_FLAG_DIRECTORY;
 
 	mov	rax, QWORD PTR file$[rsp]
 	mov	BYTE PTR [rax+48], 2
 
-; 278  : 				else
+; 279  : 				else
 
 	jmp	SHORT $LN1@fat32_loca
 $LN2@fat32_loca:
 
-; 279  : 					file->flags = FS_FLAG_GENERAL;
+; 280  : 					file->flags = FS_FLAG_GENERAL;
 
 	mov	rax, QWORD PTR file$[rsp]
 	mov	BYTE PTR [rax+48], 4
 $LN1@fat32_loca:
 
-; 280  : 				
-; 281  : 				//AuPmmngrFree((void*)v2p((size_t)buf));
-; 282  : 				return file;
+; 281  : 				
+; 282  : 				//AuPmmngrFree((void*)v2p((size_t)buf));
+; 283  : 				return file;
 
 	mov	rax, QWORD PTR file$[rsp]
 	jmp	SHORT $LN10@fat32_loca
 $LN3@fat32_loca:
 
-; 283  : 			}
-; 284  : 			dirent++;
+; 284  : 			}
+; 285  : 			dirent++;
 
 	mov	rax, QWORD PTR dirent$[rsp]
 	add	rax, 32					; 00000020H
 	mov	QWORD PTR dirent$[rsp], rax
 
-; 285  : 		}
+; 286  : 		}
 
 	jmp	$LN5@fat32_loca
 $LN4@fat32_loca:
 
-; 286  : 	}
+; 287  : 	}
 
 	jmp	$LN8@fat32_loca
 $LN7@fat32_loca:
 
-; 287  : 
-; 288  : 	free(file);
+; 288  : 
+; 289  : 	free(file);
 
 	mov	rcx, QWORD PTR file$[rsp]
 	call	free
 
-; 289  : 	return NULL;
+; 290  : 	return NULL;
 
 	xor	eax, eax
 $LN10@fat32_loca:
 
-; 290  : }
+; 291  : }
 
 	add	rsp, 120				; 00000078H
 	ret	0
@@ -1488,51 +1494,51 @@ node$ = 96
 filename$ = 104
 ?fat32_open@@YAPEAU_vfs_node_@@PEAU1@PEAD@Z PROC	; fat32_open
 
-; 364  : vfs_node_t * fat32_open (vfs_node_t * node, char* filename) {
+; 365  : vfs_node_t * fat32_open (vfs_node_t * node, char* filename) {
 
 $LN17:
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 88					; 00000058H
 
-; 365  : 	vfs_node_t *cur_dir;
-; 366  : 	char* p = 0;
+; 366  : 	vfs_node_t *cur_dir;
+; 367  : 	char* p = 0;
 
 	mov	QWORD PTR p$[rsp], 0
 
-; 367  : 	bool  root_dir = true;
+; 368  : 	bool  root_dir = true;
 
 	mov	BYTE PTR root_dir$[rsp], 1
 
-; 368  : 	char* path = (char*) filename;
+; 369  : 	char* path = (char*) filename;
 
 	mov	rax, QWORD PTR filename$[rsp]
 	mov	QWORD PTR path$[rsp], rax
 
-; 369  : 
-; 370  : 	//! any '\'s in path ?
-; 371  : 	p = strchr (path, '/');
+; 370  : 
+; 371  : 	//! any '\'s in path ?
+; 372  : 	p = strchr (path, '/');
 
 	mov	edx, 47					; 0000002fH
 	mov	rcx, QWORD PTR path$[rsp]
 	call	strchr
 	mov	QWORD PTR p$[rsp], rax
 
-; 372  : 	if (!p) {
+; 373  : 	if (!p) {
 
 	cmp	QWORD PTR p$[rsp], 0
 	jne	SHORT $LN14@fat32_open
 
-; 373  : 		//! nope, must be in root directory, search it
-; 374  : 		cur_dir = fat32_locate_dir (path);
+; 374  : 		//! nope, must be in root directory, search it
+; 375  : 		cur_dir = fat32_locate_dir (path);
 
 	mov	rcx, QWORD PTR path$[rsp]
 	call	?fat32_locate_dir@@YAPEAU_vfs_node_@@PEBD@Z ; fat32_locate_dir
 	mov	QWORD PTR cur_dir$[rsp], rax
 
-; 375  : 
-; 376  : 		//! found file ?
-; 377  : 		if (cur_dir != NULL && cur_dir->flags == FS_FLAG_GENERAL) {
+; 376  : 
+; 377  : 		//! found file ?
+; 378  : 		if (cur_dir != NULL && cur_dir->flags == FS_FLAG_GENERAL) {
 
 	cmp	QWORD PTR cur_dir$[rsp], 0
 	je	SHORT $LN13@fat32_open
@@ -1541,45 +1547,45 @@ $LN17:
 	cmp	eax, 4
 	jne	SHORT $LN13@fat32_open
 
-; 378  : 			return cur_dir;
+; 379  : 			return cur_dir;
 
 	mov	rax, QWORD PTR cur_dir$[rsp]
 	jmp	$LN15@fat32_open
 $LN13@fat32_open:
 
-; 379  : 		}
-; 380  : 
-; 381  : 		//! unable to find
-; 382  : 		return NULL;
+; 380  : 		}
+; 381  : 
+; 382  : 		//! unable to find
+; 383  : 		return NULL;
 
 	xor	eax, eax
 	jmp	$LN15@fat32_open
 $LN14@fat32_open:
 
-; 383  : 	}
-; 384  : 
-; 385  : 	//! go to next character after first '\'
-; 386  : 	p++;
+; 384  : 	}
+; 385  : 
+; 386  : 	//! go to next character after first '\'
+; 387  : 	p++;
 
 	mov	rax, QWORD PTR p$[rsp]
 	inc	rax
 	mov	QWORD PTR p$[rsp], rax
 $LN12@fat32_open:
 
-; 387  : 
-; 388  : 	while (p) {
+; 388  : 
+; 389  : 	while (p) {
 
 	cmp	QWORD PTR p$[rsp], 0
 	je	$LN11@fat32_open
 
-; 389  : 
-; 390  : 		//! get pathname
-; 391  : 		char pathname[16];
-; 392  : 		int i=0;
+; 390  : 
+; 391  : 		//! get pathname
+; 392  : 		char pathname[16];
+; 393  : 		int i=0;
 
 	mov	DWORD PTR i$1[rsp], 0
 
-; 393  : 		for (i=0; i < 16; i++) {
+; 394  : 		for (i=0; i < 16; i++) {
 
 	mov	DWORD PTR i$1[rsp], 0
 	jmp	SHORT $LN10@fat32_open
@@ -1591,9 +1597,9 @@ $LN10@fat32_open:
 	cmp	DWORD PTR i$1[rsp], 16
 	jge	SHORT $LN8@fat32_open
 
-; 394  : 
-; 395  : 			//! if another '\' or end of line is reached, we are done
-; 396  : 			if (p[i] == '/' || p[i]=='\0')
+; 395  : 
+; 396  : 			//! if another '\' or end of line is reached, we are done
+; 397  : 			if (p[i] == '/' || p[i]=='\0')
 
 	movsxd	rax, DWORD PTR i$1[rsp]
 	mov	rcx, QWORD PTR p$[rsp]
@@ -1607,14 +1613,14 @@ $LN10@fat32_open:
 	jne	SHORT $LN7@fat32_open
 $LN6@fat32_open:
 
-; 397  : 				break;
+; 398  : 				break;
 
 	jmp	SHORT $LN8@fat32_open
 $LN7@fat32_open:
 
-; 398  : 
-; 399  : 			//! copy character
-; 400  : 			pathname[i]=p[i];
+; 399  : 
+; 400  : 			//! copy character
+; 401  : 			pathname[i]=p[i];
 
 	movsxd	rax, DWORD PTR i$1[rsp]
 	movsxd	rcx, DWORD PTR i$1[rsp]
@@ -1622,43 +1628,43 @@ $LN7@fat32_open:
 	movzx	eax, BYTE PTR [rdx+rax]
 	mov	BYTE PTR pathname$2[rsp+rcx], al
 
-; 401  : 		}
+; 402  : 		}
 
 	jmp	SHORT $LN9@fat32_open
 $LN8@fat32_open:
 
-; 402  : 		pathname[i]=0; //null terminate
+; 403  : 		pathname[i]=0; //null terminate
 
 	movsxd	rax, DWORD PTR i$1[rsp]
 	mov	BYTE PTR pathname$2[rsp+rax], 0
 
-; 403  : 
-; 404  : 		//! open subdirectory or file
-; 405  : 		if (root_dir) {
+; 404  : 
+; 405  : 		//! open subdirectory or file
+; 406  : 		if (root_dir) {
 
 	movzx	eax, BYTE PTR root_dir$[rsp]
 	test	eax, eax
 	je	SHORT $LN5@fat32_open
 
-; 406  : 			//! search root dir -- open pathname
-; 407  : 			cur_dir = fat32_locate_dir (pathname);
+; 407  : 			//! search root dir -- open pathname
+; 408  : 			cur_dir = fat32_locate_dir (pathname);
 
 	lea	rcx, QWORD PTR pathname$2[rsp]
 	call	?fat32_locate_dir@@YAPEAU_vfs_node_@@PEBD@Z ; fat32_locate_dir
 	mov	QWORD PTR cur_dir$[rsp], rax
 
-; 408  : 			root_dir = false;
+; 409  : 			root_dir = false;
 
 	mov	BYTE PTR root_dir$[rsp], 0
 
-; 409  : 		}
-; 410  : 		else {
+; 410  : 		}
+; 411  : 		else {
 
 	jmp	SHORT $LN4@fat32_open
 $LN5@fat32_open:
 
-; 411  : 			//! search a sub directory instead for pathname
-; 412  : 			cur_dir = fat32_locate_subdir (cur_dir, pathname);
+; 412  : 			//! search a sub directory instead for pathname
+; 413  : 			cur_dir = fat32_locate_subdir (cur_dir, pathname);
 
 	lea	rdx, QWORD PTR pathname$2[rsp]
 	mov	rcx, QWORD PTR cur_dir$[rsp]
@@ -1666,22 +1672,22 @@ $LN5@fat32_open:
 	mov	QWORD PTR cur_dir$[rsp], rax
 $LN4@fat32_open:
 
-; 413  : 		}
-; 414  : 
-; 415  : 		//! found directory or file?
-; 416  : 		if (cur_dir == NULL)
+; 414  : 		}
+; 415  : 
+; 416  : 		//! found directory or file?
+; 417  : 		if (cur_dir == NULL)
 
 	cmp	QWORD PTR cur_dir$[rsp], 0
 	jne	SHORT $LN3@fat32_open
 
-; 417  : 			break;
+; 418  : 			break;
 
 	jmp	SHORT $LN11@fat32_open
 $LN3@fat32_open:
 
-; 418  : 
-; 419  : 		//! found file?
-; 420  : 		if (cur_dir != NULL && cur_dir->flags == FS_FLAG_GENERAL){
+; 419  : 
+; 420  : 		//! found file?
+; 421  : 		if (cur_dir != NULL && cur_dir->flags == FS_FLAG_GENERAL){
 
 	cmp	QWORD PTR cur_dir$[rsp], 0
 	je	SHORT $LN2@fat32_open
@@ -1690,16 +1696,16 @@ $LN3@fat32_open:
 	cmp	eax, 4
 	jne	SHORT $LN2@fat32_open
 
-; 421  : 			return cur_dir;
+; 422  : 			return cur_dir;
 
 	mov	rax, QWORD PTR cur_dir$[rsp]
 	jmp	SHORT $LN15@fat32_open
 $LN2@fat32_open:
 
-; 422  : 		}
-; 423  : 
-; 424  : 		//! find next '\'
-; 425  : 		p=strchr(p+1, '/');
+; 423  : 		}
+; 424  : 
+; 425  : 		//! find next '\'
+; 426  : 		p=strchr(p+1, '/');
 
 	mov	rax, QWORD PTR p$[rsp]
 	inc	rax
@@ -1708,39 +1714,39 @@ $LN2@fat32_open:
 	call	strchr
 	mov	QWORD PTR p$[rsp], rax
 
-; 426  : 		if (p)
+; 427  : 		if (p)
 
 	cmp	QWORD PTR p$[rsp], 0
 	je	SHORT $LN1@fat32_open
 
-; 427  : 			p++;
+; 428  : 			p++;
 
 	mov	rax, QWORD PTR p$[rsp]
 	inc	rax
 	mov	QWORD PTR p$[rsp], rax
 $LN1@fat32_open:
 
-; 428  : 	}
+; 429  : 	}
 
 	jmp	$LN12@fat32_open
 $LN11@fat32_open:
 
-; 429  : 
-; 430  : 	//! unable to find
-; 431  : 	/*vfs_node_t ret;
-; 432  : 	ret.flags = FS_FLAG_INVALID;
-; 433  : 	ret.size = 0;*/
-; 434  : 	free(cur_dir);
+; 430  : 
+; 431  : 	//! unable to find
+; 432  : 	/*vfs_node_t ret;
+; 433  : 	ret.flags = FS_FLAG_INVALID;
+; 434  : 	ret.size = 0;*/
+; 435  : 	free(cur_dir);
 
 	mov	rcx, QWORD PTR cur_dir$[rsp]
 	call	free
 
-; 435  : 	return NULL;
+; 436  : 	return NULL;
 
 	xor	eax, eax
 $LN15@fat32_open:
 
-; 436  : }
+; 437  : }
 
 	add	rsp, 88					; 00000058H
 	ret	0

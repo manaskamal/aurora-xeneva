@@ -35,12 +35,21 @@
 #include <hal.h>
 #include <arch\x86_64\mmngr\kheap.h>
 
+/* For now Aurora uses, static addresses
+ * to store the libraries
+ */
+#define XNCLIB_BASE  0x100000000
+#define XNACRL_BASE  0x100400000
+#define XNWID_BASE   0x100200000
+
+
 typedef struct _libentry_ {
 	char path[64];
 	bool loaded;
 	uint64_t phys_start;
 	uint64_t phys_end;
 	int phys_blocks_count;
+	bool linked;
 	struct _libentry_ *next;
 	struct _libentry_ *prev;
 }AuLibEntry_t;

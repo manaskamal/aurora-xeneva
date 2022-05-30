@@ -12,10 +12,12 @@
 #ifndef __WAIT_H__
 #define __WAIT_H__
 
+#include <sys\_xeneva.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-void sys_wait ();
+XE_EXPORT void sys_wait ();
 #ifdef __cplusplus
 }
 #endif

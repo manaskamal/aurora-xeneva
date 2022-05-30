@@ -11,7 +11,8 @@
 #define __FAST_CPY_H__
 
 #include <stdint.h>
+#include <sys\_xeneva.h>
 
-extern "C" void * fastcpy (void* targ, void* src, size_t len);
+extern "C" XE_EXPORT void * fastcpy (void* targ, void* src, size_t len);
 
 #endif

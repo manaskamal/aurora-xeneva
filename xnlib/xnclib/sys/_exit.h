@@ -13,12 +13,14 @@
 #ifndef __EXIT_H__
 #define __EXIT_H__
 
+#include <sys\_xeneva.h>
+
 #pragma once
 
 #ifdef __cplusplus
-extern "C" {
+XE_EXTERN {
 #endif
-void sys_exit ();
+XE_EXPORT void sys_exit ();
 #ifdef __cplusplus
 }
 #endif

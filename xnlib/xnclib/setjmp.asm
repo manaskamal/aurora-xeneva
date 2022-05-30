@@ -10,6 +10,7 @@ section .text
 [BITS 64]
 
 global setjmp
+export setjmp
 setjmp:
      mov [rcx], rbx
 	 mov [rcx + 8], rbp
@@ -28,6 +29,7 @@ setjmp:
 	 
 
 global longjmp
+export longjmp
 longjmp:
      xor rax, rax
 	 cmp rdx, 1

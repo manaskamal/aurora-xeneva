@@ -13,6 +13,8 @@
 #ifndef __SLEEP_H__
 #define __SLEEP_H__
 
+#include <sys\_xeneva.h>
+
 /************************************************
  *  Put process into sleep mode
  *
@@ -22,9 +24,9 @@
  */
 
 #ifdef __cplusplus
-extern "C" {
+XE_EXTERN {
 #endif
-void sys_sleep (unsigned long long ms);
+XE_EXPORT void sys_sleep (unsigned long long ms);
 #ifdef __cplusplus
 }
 #endif

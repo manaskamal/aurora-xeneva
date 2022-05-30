@@ -32,6 +32,7 @@
 #include <fs\vfs.h>
 #include <fs\fat\fat.h>
 #include <stdio.h>
+#include <pe.h>
 
 AuLibEntry_t *libentry_first = NULL;
 AuLibEntry_t *libentry_last = NULL;
@@ -84,8 +85,10 @@ AuLibEntry_t *AuGetSysLib (char* path) {
 void AuSysLoadLib(char* fname) {
 	int blocks_read = 0;
 	vfs_node_t *file = fat32_open(NULL, fname);
-	if (file == NULL)
+	if (file == NULL){
+		printf ("Failed to load -> %s \n", fname);
 		return;
+	}
 
 	uint64_t* phys_start = (uint64_t*)AuPmmngrAlloc();
 	fat32_read(file, phys_start);
@@ -98,11 +101,13 @@ void AuSysLoadLib(char* fname) {
 	}
 
 	AuLibEntry_t *entry = (AuLibEntry_t*)malloc(sizeof(AuLibEntry_t));
+	printf ("Entry for %s is -> %x \n", fname, entry);
 	strcpy(entry->path, fname);
 	entry->loaded = true;
 	entry->phys_start = (uint64_t)phys_start;
 	entry->phys_end = (entry->phys_start + blocks_read * 4096);
 	entry->phys_blocks_count = blocks_read;
+	entry->linked = false;
 	AuLibInsert(entry);
 }
 
@@ -117,21 +122,7 @@ void AuSysLibInitialize () {
 
 	AuSysLoadLib("xnacrl.dll");
 	AuSysLoadLib("xewid.dll");
+	AuSysLoadLib("xnclib.dll");
+
 }
 
-/********************************************************************
- * [SERIOUS BUG]: Whenever system tries to open up a file, the
- * caller gets vfs_node_t as a file with required information about
- * the file to be able to read that file. vfs_node_t is returned by
- * vfs_open function/ fat32_open function. The bug is, vfs_node_t 
- * should be allocated on heap, but current implementation allocates
- * vfs_node_t on stack, which causes problem on calling fat32_open
- * from different function
- * @replace --> vfs_node_t file = fat32_open/vfs_open   to 
- * vfs_node_t *file = fat32_open/vfs_open
- *
- * if we fix this issue, the entire system should be take cared to
- * handle this new implementation
- *
- *********************************************************************
- */

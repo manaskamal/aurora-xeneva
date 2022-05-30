@@ -250,6 +250,7 @@ vfs_node_t *fat32_locate_dir (const char* dir) {
 	fat32_dir *dirent;
 	char dos_file_name[11];
 	fat32_to_dos_file_name (dir, dos_file_name, 11);
+	dos_file_name[11] = 0;
 	
 	buf = (uint64_t*)p2v((uint64_t)AuPmmngrAlloc());
 	for (unsigned int sector = 0; sector < sectors_per_cluster; sector++) {
@@ -264,7 +265,7 @@ vfs_node_t *fat32_locate_dir (const char* dir) {
 			char name[11];
 			memcpy (name, dirent->filename, 11);
 			name[11] = 0;
-
+	
 			if (strcmp (dos_file_name, name) == 0) {
 				
 				strcpy (file->filename, dir);

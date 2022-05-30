@@ -51,7 +51,7 @@ extern "C" void x64_syscall_handler (int a) {
 		funct = (uint64_t*)message_receive;
 		break;
 	case 8:
-		funct = (uint64_t*)map_shared_memory;
+		funct = (uint64_t*)process_link_libraries;
 		break;
 	case 9:
 		funct = (uint64_t*)get_thread_id;

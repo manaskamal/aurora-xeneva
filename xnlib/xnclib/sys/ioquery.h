@@ -12,6 +12,8 @@
 #ifndef __IOQUERY_H__
 #define __IOQUERY_H__
 
+#include <sys\_xeneva.h>
+
 //!device ids
 #define IO_QUERY_STDIN  0
 #define IO_QUERY_STDOUT 1
@@ -60,6 +62,6 @@
 #define SOUND_STOP_INPUT  105
 
 
-extern "C" int ioquery (int devid, int code, void* arg);
+extern "C" XE_EXPORT int ioquery (int devid, int code, void* arg);
 
 #endif

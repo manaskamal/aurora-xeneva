@@ -56,6 +56,7 @@
 #include <sys/_kybrd.h>
 #include <sys/pe.h>
 #include <sys/shm.h>
+#include <sys/sse2.h>
 #include <fastcpy.h>
 
 #include <xebase.h>
@@ -992,17 +993,20 @@ void pri_win_check_draggable (int x, int y, int button) {
 /*
  * main -- the main entry point of priwm
  */
-int main (int argc, char* argv[]) {
+XE_EXTERN int XeMain (int argc, char* argv[]) {
+	
 	int svga_fd = sys_open_file ("/dev/fb", NULL);
 	
 	uint32_t s_width = ioquery(svga_fd,SCREEN_GETWIDTH,NULL);
 	uint32_t s_height = ioquery(svga_fd, SCREEN_GETHEIGHT, NULL);
 
-
+	sys_print_text ("XeMain PRIWM \n");
 	/*
 	 * create the main backing store
 	 */
 	canvas = create_canvas (s_width,s_height);
+	sys_print_text ("Created canvas -> %x \n", canvas);
+
 	int w = canvas_get_width(canvas);
 	int h = canvas_get_height(canvas);
 

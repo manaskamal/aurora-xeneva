@@ -476,3 +476,8 @@ strtoul(const char* nptr, char** endptr, int base)
 //void qsort(void * base, size_t nmemb, size_t size, int (*compar)(const void *, const void *)) {
 //	
 //}
+
+int atexit(void (*func)(void)) {
+	func();
+	return 0;
+}

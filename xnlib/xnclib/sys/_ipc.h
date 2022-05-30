@@ -13,6 +13,8 @@
 #define __IPC_H__
 
 #include <stdint.h>
+#include <sys\_xeneva.h>
+
 //! Message format
 typedef struct _message_ {
 	uint32_t dword;
@@ -79,11 +81,11 @@ typedef struct _pri_event_ {
 //!====================================================================
 
 #ifdef __cplusplus
-extern "C" {
+XE_EXTERN {
 #endif
-void message_send (unsigned short dest_id, message_t *msg);
-void message_receive (message_t *msg);
-void sys_pipe (int *fd, char* name);
+XE_EXPORT void message_send (unsigned short dest_id, message_t *msg);
+XE_EXPORT void message_receive (message_t *msg);
+XE_EXPORT void sys_pipe (int *fd, char* name);
 #ifdef __cplusplus
 }
 #endif

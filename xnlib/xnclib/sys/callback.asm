@@ -38,6 +38,7 @@ section .text
 ;;=========================================================
 
 global sys_mmap
+export sys_mmap
 sys_mmap:
    mov r12, 29
    mov r13, rcx
@@ -48,6 +49,7 @@ sys_mmap:
    ret
 
 global sys_munmap
+export sys_munmap
 sys_munmap:
    mov r12, 30
    mov r13, rcx
@@ -56,6 +58,7 @@ sys_munmap:
    ret
 
 global valloc
+export valloc
 valloc:
     mov r12, 5
 	mov r13, rcx
@@ -63,12 +66,14 @@ valloc:
 	ret
 
 global sys_exit
+export sys_exit
 sys_exit:
     mov r12, 25
 	syscall
 	ret
 
 global sys_print_text
+export sys_print_text
 sys_print_text:
     mov r12, 0
 	mov r13, rcx
@@ -80,6 +85,7 @@ sys_print_text:
 
 
 global sys_wait
+export sys_wait
 sys_wait:
     mov r12, 1
 	syscall
@@ -87,6 +93,7 @@ sys_wait:
 
 
 global ioquery
+export ioquery
 ioquery:
     mov r12, 31
 	mov r13, rcx
@@ -96,6 +103,7 @@ ioquery:
 	ret
 
 global create_process
+export create_process
 create_process:
     mov r12, 2
 	mov r13, rcx
@@ -104,6 +112,7 @@ create_process:
 	ret
 
 global message_send
+export message_send
 message_send:
     mov r12, 6
 	mov r13, rcx
@@ -112,6 +121,7 @@ message_send:
 	ret
 
 global message_receive
+export message_receive
 message_receive:
     mov r12, 7
 	mov r13, rcx
@@ -120,6 +130,7 @@ message_receive:
 
 
 global get_current_pid
+export get_current_pid
 get_current_pid
     mov r12, 9
 	syscall
@@ -127,6 +138,7 @@ get_current_pid
 
 
 global map_shared_memory
+export map_shared_memory
 map_shared_memory:
     mov r12, 8
 	mov r13, rcx
@@ -137,6 +149,7 @@ map_shared_memory:
 
 
 global sys_sleep
+export sys_sleep
 sys_sleep:
       mov r12, 24
 	  mov r13, rcx
@@ -145,6 +158,7 @@ sys_sleep:
 
 
 global create_uthread
+export create_uthread
 create_uthread:
     mov r12, 18
 	mov r13, rcx
@@ -153,6 +167,7 @@ create_uthread:
 	ret
 
 global sys_open_file
+export sys_open_file
 sys_open_file:
     mov r12, 19
 	mov r13, rcx
@@ -161,6 +176,7 @@ sys_open_file:
 	ret
 
 global sys_read_file
+export sys_read_file
 sys_read_file:
     mov r12, 20
 	mov r13, rcx
@@ -170,6 +186,7 @@ sys_read_file:
 	ret
 
 global sys_close_file
+export sys_close_file
 sys_close_file:
     mov r12, 40
 	mov r13, rcx
@@ -177,6 +194,7 @@ sys_close_file:
 	ret
 
 global sys_unblock_id
+export sys_unblock_id
 sys_unblock_id:
     mov r12, 17
 	mov r13, rcx
@@ -185,6 +203,7 @@ sys_unblock_id:
 
 
 global sys_get_current_time
+export sys_get_current_time
 sys_get_current_time:
     mov r12, 32
 	mov r13, rcx
@@ -192,12 +211,14 @@ sys_get_current_time:
 	ret
 
 global sys_get_system_tick
+export sys_get_system_tick
 sys_get_system_tick:
     mov r12, 33
 	syscall
 	ret
 
 global sys_kill
+export sys_kill
 sys_kill:
     mov r12, 34
 	mov r13, rcx
@@ -206,6 +227,7 @@ sys_kill:
 	ret
 
 global sys_set_signal
+export sys_set_signal
 sys_set_signal:
     mov r12, 35
 	mov r13, rcx
@@ -214,6 +236,7 @@ sys_set_signal:
 	ret
 
 global sys_shm_unlink
+export sys_shm_unlink
 sys_shm_unlink:
     mov r12, 36
 	mov r13, rcx
@@ -221,12 +244,14 @@ sys_shm_unlink:
 	ret
 
 global sys_get_used_ram 
+export sys_get_used_ram
 sys_get_used_ram:
     mov r12, 22
 	syscall
 	ret
 
 global sys_write_file 
+export sys_write_file
 sys_write_file:
     mov r12, 37
 	mov r13, rcx
@@ -236,6 +261,7 @@ sys_write_file:
 	ret
 
 global sys_ttype_create
+export sys_ttype_create
 sys_ttype_create:
     mov r12,13
 	mov r13, rcx
@@ -244,6 +270,7 @@ sys_ttype_create:
 	ret
 
 global sys_attach_tty
+export sys_attach_tty
 sys_attach_tty:
     mov r12,26
 	mov r13,rcx
@@ -251,6 +278,7 @@ sys_attach_tty:
 	ret
 
 global sys_pipe
+export sys_pipe
 sys_pipe:
     mov r12, 16
 	mov r13, rcx
@@ -259,6 +287,7 @@ sys_pipe:
 	ret
 
 global vfree
+export vfree
 vfree:
     mov r12, 38
 	mov r13, rcx
@@ -267,6 +296,7 @@ vfree:
 
 
 global sys_get_free_ram 
+export sys_get_free_ram
 sys_get_free_ram: 
     mov r12, 23
 	syscall
@@ -274,6 +304,7 @@ sys_get_free_ram:
 
 
 global sys_create_timer
+export sys_create_timer
 sys_create_timer:
     mov r12, 10
 	mov r13, rcx
@@ -282,6 +313,7 @@ sys_create_timer:
 	ret
 
 global sys_destroy_timer
+export sys_destroy_timer
 sys_destroy_timer:
     mov r12, 11
 	mov r13, rcx
@@ -290,6 +322,7 @@ sys_destroy_timer:
 
 
 global sys_start_timer
+export sys_start_timer
 sys_start_timer:
     mov r12, 14
 	mov r13, rcx
@@ -297,6 +330,7 @@ sys_start_timer:
 	ret
 
 global sys_pause_timer
+export sys_pause_timer
 sys_pause_timer:
     mov r12, 15
 	mov r13, rcx
@@ -304,6 +338,7 @@ sys_pause_timer:
 	ret
 
 global sys_ttype_dup
+export sys_ttype_dup
 sys_ttype_dup:
     mov r12, 21
 	mov r13, rcx
@@ -312,6 +347,7 @@ sys_ttype_dup:
 	ret
 
 global sys_copy_mem
+export sys_copy_mem
 sys_copy_mem:
     mov r12, 3
 	mov r13, rcx
@@ -321,6 +357,7 @@ sys_copy_mem:
 	ret
 
 global sys_shmget
+export sys_shmget
 sys_shmget:
     mov r12, 4
 	mov r13, rcx
@@ -330,6 +367,7 @@ sys_shmget:
 	ret
 
 global sys_shmat
+export sys_shmat
 sys_shmat:
     mov r12,12
 	mov r13, rcx
@@ -339,6 +377,7 @@ sys_shmat:
 	ret
 
 global sys_proc_heap_brk
+export sys_proc_heap_brk
 sys_proc_heap_brk:
     mov r12, 39
 	mov r13, rcx

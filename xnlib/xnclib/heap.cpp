@@ -546,6 +546,6 @@ int liballoc_free (void* ptr, int pages) {
 
 
 void heap_initialize_allocator() {
-	LinkSharedLibrary();
+	//LinkSharedLibrary();
 }
 

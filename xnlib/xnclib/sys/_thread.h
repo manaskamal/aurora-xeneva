@@ -12,6 +12,9 @@
 #ifndef __THREAD_H__
 #define __THREAD_H__
 
+#include <sys\_xeneva.h>
+
+
 /**********************************************************
  ** Create a user level thread
  **
@@ -23,7 +26,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-void create_uthread (void (*entry)(), char* name);
+XE_EXPORT void create_uthread (void (*entry)(), char* name);
 #ifdef __cplusplus
 }
 #endif

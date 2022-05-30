@@ -12,9 +12,14 @@ _BSS	SEGMENT
 ?libentry_last@@3PEAU_libentry_@@EA DQ 01H DUP (?)	; libentry_last
 _BSS	ENDS
 CONST	SEGMENT
-$SG3431	DB	'xnacrl.dll', 00H
+$SG3681	DB	'Failed to load -> %s ', 0aH, 00H
+	ORG $+1
+$SG3692	DB	'Entry for %s is -> %x ', 0aH, 00H
+$SG3696	DB	'xnacrl.dll', 00H
 	ORG $+5
-$SG3432	DB	'xewid.dll', 00H
+$SG3697	DB	'xewid.dll', 00H
+	ORG $+6
+$SG3698	DB	'xnclib.dll', 00H
 CONST	ENDS
 PUBLIC	?AuSysLibInitialize@@YAXXZ			; AuSysLibInitialize
 PUBLIC	?AuGetSysLib@@YAPEAU_libentry_@@PEAD@Z		; AuGetSysLib
@@ -28,9 +33,10 @@ EXTRN	malloc:PROC
 EXTRN	free:PROC
 EXTRN	?fat32_open@@YAPEAU_vfs_node_@@PEAU1@PEAD@Z:PROC ; fat32_open
 EXTRN	?fat32_read@@YAXPEAU_vfs_node_@@PEA_K@Z:PROC	; fat32_read
+EXTRN	printf:PROC
 pdata	SEGMENT
 $pdata$?AuSysLibInitialize@@YAXXZ DD imagerel $LN3
-	DD	imagerel $LN3+55
+	DD	imagerel $LN3+67
 	DD	imagerel $unwind$?AuSysLibInitialize@@YAXXZ
 $pdata$?AuGetSysLib@@YAPEAU_libentry_@@PEAD@Z DD imagerel $LN7
 	DD	imagerel $LN7+83
@@ -39,7 +45,7 @@ $pdata$?AuLibRemove@@YAXPEAU_libentry_@@@Z DD imagerel $LN8
 	DD	imagerel $LN8+146
 	DD	imagerel $unwind$?AuLibRemove@@YAXPEAU_libentry_@@@Z
 $pdata$?AuSysLoadLib@@YAXPEAD@Z DD imagerel $LN6
-	DD	imagerel $LN6+244
+	DD	imagerel $LN6+292
 	DD	imagerel $unwind$?AuSysLoadLib@@YAXPEAD@Z
 pdata	ENDS
 xdata	SEGMENT
@@ -63,106 +69,120 @@ phys$1 = 64
 fname$ = 96
 ?AuSysLoadLib@@YAXPEAD@Z PROC				; AuSysLoadLib
 
-; 84   : void AuSysLoadLib(char* fname) {
+; 85   : void AuSysLoadLib(char* fname) {
 
 $LN6:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 88					; 00000058H
 
-; 85   : 	int blocks_read = 0;
+; 86   : 	int blocks_read = 0;
 
 	mov	DWORD PTR blocks_read$[rsp], 0
 
-; 86   : 	vfs_node_t *file = fat32_open(NULL, fname);
+; 87   : 	vfs_node_t *file = fat32_open(NULL, fname);
 
 	mov	rdx, QWORD PTR fname$[rsp]
 	xor	ecx, ecx
 	call	?fat32_open@@YAPEAU_vfs_node_@@PEAU1@PEAD@Z ; fat32_open
 	mov	QWORD PTR file$[rsp], rax
 
-; 87   : 	if (file == NULL)
+; 88   : 	if (file == NULL){
 
 	cmp	QWORD PTR file$[rsp], 0
 	jne	SHORT $LN3@AuSysLoadL
 
-; 88   : 		return;
+; 89   : 		printf ("Failed to load -> %s \n", fname);
+
+	mov	rdx, QWORD PTR fname$[rsp]
+	lea	rcx, OFFSET FLAT:$SG3681
+	call	printf
+
+; 90   : 		return;
 
 	jmp	$LN4@AuSysLoadL
 $LN3@AuSysLoadL:
 
-; 89   : 
-; 90   : 	uint64_t* phys_start = (uint64_t*)AuPmmngrAlloc();
+; 91   : 	}
+; 92   : 
+; 93   : 	uint64_t* phys_start = (uint64_t*)AuPmmngrAlloc();
 
 	call	AuPmmngrAlloc
 	mov	QWORD PTR phys_start$[rsp], rax
 
-; 91   : 	fat32_read(file, phys_start);
+; 94   : 	fat32_read(file, phys_start);
 
 	mov	rdx, QWORD PTR phys_start$[rsp]
 	mov	rcx, QWORD PTR file$[rsp]
 	call	?fat32_read@@YAXPEAU_vfs_node_@@PEA_K@Z	; fat32_read
 
-; 92   : 	blocks_read = 1;
+; 95   : 	blocks_read = 1;
 
 	mov	DWORD PTR blocks_read$[rsp], 1
 $LN2@AuSysLoadL:
 
-; 93   : 
-; 94   : 	while(file->eof != 1){
+; 96   : 
+; 97   : 	while(file->eof != 1){
 
 	mov	rax, QWORD PTR file$[rsp]
 	movzx	eax, BYTE PTR [rax+36]
 	cmp	eax, 1
 	je	SHORT $LN1@AuSysLoadL
 
-; 95   : 		uint64_t *phys = (uint64_t*)AuPmmngrAlloc();
+; 98   : 		uint64_t *phys = (uint64_t*)AuPmmngrAlloc();
 
 	call	AuPmmngrAlloc
 	mov	QWORD PTR phys$1[rsp], rax
 
-; 96   : 		fat32_read(file, phys);
+; 99   : 		fat32_read(file, phys);
 
 	mov	rdx, QWORD PTR phys$1[rsp]
 	mov	rcx, QWORD PTR file$[rsp]
 	call	?fat32_read@@YAXPEAU_vfs_node_@@PEA_K@Z	; fat32_read
 
-; 97   : 		blocks_read++;
+; 100  : 		blocks_read++;
 
 	mov	eax, DWORD PTR blocks_read$[rsp]
 	inc	eax
 	mov	DWORD PTR blocks_read$[rsp], eax
 
-; 98   : 	}
+; 101  : 	}
 
 	jmp	SHORT $LN2@AuSysLoadL
 $LN1@AuSysLoadL:
 
-; 99   : 
-; 100  : 	AuLibEntry_t *entry = (AuLibEntry_t*)malloc(sizeof(AuLibEntry_t));
+; 102  : 
+; 103  : 	AuLibEntry_t *entry = (AuLibEntry_t*)malloc(sizeof(AuLibEntry_t));
 
 	mov	ecx, 112				; 00000070H
 	call	malloc
 	mov	QWORD PTR entry$[rsp], rax
 
-; 101  : 	strcpy(entry->path, fname);
+; 104  : 	printf ("Entry for %s is -> %x \n", fname, entry);
+
+	mov	r8, QWORD PTR entry$[rsp]
+	mov	rdx, QWORD PTR fname$[rsp]
+	lea	rcx, OFFSET FLAT:$SG3692
+	call	printf
+
+; 105  : 	strcpy(entry->path, fname);
 
 	mov	rax, QWORD PTR entry$[rsp]
 	mov	rdx, QWORD PTR fname$[rsp]
 	mov	rcx, rax
 	call	strcpy
 
-; 102  : 	entry->loaded = true;
+; 106  : 	entry->loaded = true;
 
 	mov	rax, QWORD PTR entry$[rsp]
 	mov	BYTE PTR [rax+64], 1
 
-; 103  : 	entry->phys_start = (uint64_t)phys_start;
+; 107  : 	entry->phys_start = (uint64_t)phys_start;
 
 	mov	rax, QWORD PTR entry$[rsp]
 	mov	rcx, QWORD PTR phys_start$[rsp]
 	mov	QWORD PTR [rax+72], rcx
 
-; 104  : 	entry->phys_end = (entry->phys_start + blocks_read * 4096);
+; 108  : 	entry->phys_end = (entry->phys_start + blocks_read * 4096);
 
 	mov	eax, DWORD PTR blocks_read$[rsp]
 	imul	eax, 4096				; 00001000H
@@ -172,19 +192,24 @@ $LN1@AuSysLoadL:
 	mov	rcx, QWORD PTR entry$[rsp]
 	mov	QWORD PTR [rcx+80], rax
 
-; 105  : 	entry->phys_blocks_count = blocks_read;
+; 109  : 	entry->phys_blocks_count = blocks_read;
 
 	mov	rax, QWORD PTR entry$[rsp]
 	mov	ecx, DWORD PTR blocks_read$[rsp]
 	mov	DWORD PTR [rax+88], ecx
 
-; 106  : 	AuLibInsert(entry);
+; 110  : 	entry->linked = false;
+
+	mov	rax, QWORD PTR entry$[rsp]
+	mov	BYTE PTR [rax+92], 0
+
+; 111  : 	AuLibInsert(entry);
 
 	mov	rcx, QWORD PTR entry$[rsp]
 	call	?AuLibInsert@@YAXPEAU_libentry_@@@Z	; AuLibInsert
 $LN4@AuSysLoadL:
 
-; 107  : }
+; 112  : }
 
 	add	rsp, 88					; 00000058H
 	ret	0
@@ -196,42 +221,42 @@ _TEXT	SEGMENT
 libentry$ = 48
 ?AuLibRemove@@YAXPEAU_libentry_@@@Z PROC		; AuLibRemove
 
-; 54   : void AuLibRemove(AuLibEntry_t* libentry) {
+; 55   : void AuLibRemove(AuLibEntry_t* libentry) {
 
 $LN8:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 40					; 00000028H
 
-; 55   : 
-; 56   : 	if (libentry_first == NULL)
+; 56   : 
+; 57   : 	if (libentry_first == NULL)
 
 	cmp	QWORD PTR ?libentry_first@@3PEAU_libentry_@@EA, 0 ; libentry_first
 	jne	SHORT $LN5@AuLibRemov
 
-; 57   : 		return;
+; 58   : 		return;
 
 	jmp	SHORT $LN6@AuLibRemov
 $LN5@AuLibRemov:
 
-; 58   : 
-; 59   : 	if (libentry == libentry_first) {
+; 59   : 
+; 60   : 	if (libentry == libentry_first) {
 
 	mov	rax, QWORD PTR ?libentry_first@@3PEAU_libentry_@@EA ; libentry_first
 	cmp	QWORD PTR libentry$[rsp], rax
 	jne	SHORT $LN4@AuLibRemov
 
-; 60   : 		libentry_first = libentry_first->next;
+; 61   : 		libentry_first = libentry_first->next;
 
 	mov	rax, QWORD PTR ?libentry_first@@3PEAU_libentry_@@EA ; libentry_first
 	mov	rax, QWORD PTR [rax+96]
 	mov	QWORD PTR ?libentry_first@@3PEAU_libentry_@@EA, rax ; libentry_first
 
-; 61   : 	} else {
+; 62   : 	} else {
 
 	jmp	SHORT $LN3@AuLibRemov
 $LN4@AuLibRemov:
 
-; 62   : 		libentry->prev->next = libentry->next;
+; 63   : 		libentry->prev->next = libentry->next;
 
 	mov	rax, QWORD PTR libentry$[rsp]
 	mov	rax, QWORD PTR [rax+104]
@@ -240,26 +265,26 @@ $LN4@AuLibRemov:
 	mov	QWORD PTR [rax+96], rcx
 $LN3@AuLibRemov:
 
-; 63   : 	}
-; 64   : 
-; 65   : 	if (libentry == libentry_last) {
+; 64   : 	}
+; 65   : 
+; 66   : 	if (libentry == libentry_last) {
 
 	mov	rax, QWORD PTR ?libentry_last@@3PEAU_libentry_@@EA ; libentry_last
 	cmp	QWORD PTR libentry$[rsp], rax
 	jne	SHORT $LN2@AuLibRemov
 
-; 66   : 		libentry_last = libentry->prev;
+; 67   : 		libentry_last = libentry->prev;
 
 	mov	rax, QWORD PTR libentry$[rsp]
 	mov	rax, QWORD PTR [rax+104]
 	mov	QWORD PTR ?libentry_last@@3PEAU_libentry_@@EA, rax ; libentry_last
 
-; 67   : 	} else {
+; 68   : 	} else {
 
 	jmp	SHORT $LN1@AuLibRemov
 $LN2@AuLibRemov:
 
-; 68   : 		libentry->next->prev = libentry->prev;
+; 69   : 		libentry->next->prev = libentry->prev;
 
 	mov	rax, QWORD PTR libentry$[rsp]
 	mov	rax, QWORD PTR [rax+96]
@@ -268,15 +293,15 @@ $LN2@AuLibRemov:
 	mov	QWORD PTR [rax+104], rcx
 $LN1@AuLibRemov:
 
-; 69   : 	}
-; 70   : 
-; 71   : 	free(libentry);
+; 70   : 	}
+; 71   : 
+; 72   : 	free(libentry);
 
 	mov	rcx, QWORD PTR libentry$[rsp]
 	call	free
 $LN6@AuLibRemov:
 
-; 72   : }
+; 73   : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -288,61 +313,61 @@ _TEXT	SEGMENT
 new_entry$ = 8
 ?AuLibInsert@@YAXPEAU_libentry_@@@Z PROC		; AuLibInsert
 
-; 39   : void AuLibInsert (AuLibEntry_t* new_entry) {
+; 40   : void AuLibInsert (AuLibEntry_t* new_entry) {
 
 	mov	QWORD PTR [rsp+8], rcx
 
-; 40   : 	new_entry->next = NULL;
+; 41   : 	new_entry->next = NULL;
 
 	mov	rax, QWORD PTR new_entry$[rsp]
 	mov	QWORD PTR [rax+96], 0
 
-; 41   : 	new_entry->prev = NULL;
+; 42   : 	new_entry->prev = NULL;
 
 	mov	rax, QWORD PTR new_entry$[rsp]
 	mov	QWORD PTR [rax+104], 0
 
-; 42   : 
-; 43   : 	if (libentry_first == NULL) {
+; 43   : 
+; 44   : 	if (libentry_first == NULL) {
 
 	cmp	QWORD PTR ?libentry_first@@3PEAU_libentry_@@EA, 0 ; libentry_first
 	jne	SHORT $LN2@AuLibInser
 
-; 44   : 		libentry_last = new_entry;
+; 45   : 		libentry_last = new_entry;
 
 	mov	rax, QWORD PTR new_entry$[rsp]
 	mov	QWORD PTR ?libentry_last@@3PEAU_libentry_@@EA, rax ; libentry_last
 
-; 45   : 		libentry_first = new_entry;
+; 46   : 		libentry_first = new_entry;
 
 	mov	rax, QWORD PTR new_entry$[rsp]
 	mov	QWORD PTR ?libentry_first@@3PEAU_libentry_@@EA, rax ; libentry_first
 
-; 46   : 	} else {
+; 47   : 	} else {
 
 	jmp	SHORT $LN1@AuLibInser
 $LN2@AuLibInser:
 
-; 47   : 		libentry_last->next = new_entry;
+; 48   : 		libentry_last->next = new_entry;
 
 	mov	rax, QWORD PTR ?libentry_last@@3PEAU_libentry_@@EA ; libentry_last
 	mov	rcx, QWORD PTR new_entry$[rsp]
 	mov	QWORD PTR [rax+96], rcx
 
-; 48   : 		new_entry->prev = libentry_last;
+; 49   : 		new_entry->prev = libentry_last;
 
 	mov	rax, QWORD PTR new_entry$[rsp]
 	mov	rcx, QWORD PTR ?libentry_last@@3PEAU_libentry_@@EA ; libentry_last
 	mov	QWORD PTR [rax+104], rcx
 $LN1@AuLibInser:
 
-; 49   : 	}
-; 50   : 	libentry_last = new_entry;
+; 50   : 	}
+; 51   : 	libentry_last = new_entry;
 
 	mov	rax, QWORD PTR new_entry$[rsp]
 	mov	QWORD PTR ?libentry_last@@3PEAU_libentry_@@EA, rax ; libentry_last
 
-; 51   : }
+; 52   : }
 
 	ret	0
 ?AuLibInsert@@YAXPEAU_libentry_@@@Z ENDP		; AuLibInsert
@@ -354,13 +379,13 @@ first$1 = 32
 path$ = 64
 ?AuGetSysLib@@YAPEAU_libentry_@@PEAD@Z PROC		; AuGetSysLib
 
-; 74   : AuLibEntry_t *AuGetSysLib (char* path) {
+; 75   : AuLibEntry_t *AuGetSysLib (char* path) {
 
 $LN7:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 56					; 00000038H
 
-; 75   : 	for (AuLibEntry_t *first = libentry_first; first != NULL; first = first->next) {
+; 76   : 	for (AuLibEntry_t *first = libentry_first; first != NULL; first = first->next) {
 
 	mov	rax, QWORD PTR ?libentry_first@@3PEAU_libentry_@@EA ; libentry_first
 	mov	QWORD PTR first$1[rsp], rax
@@ -373,7 +398,7 @@ $LN4@AuGetSysLi:
 	cmp	QWORD PTR first$1[rsp], 0
 	je	SHORT $LN2@AuGetSysLi
 
-; 76   : 		if (strcmp(first->path, path) == 0) 
+; 77   : 		if (strcmp(first->path, path) == 0) 
 
 	mov	rax, QWORD PTR first$1[rsp]
 	mov	rdx, QWORD PTR path$[rsp]
@@ -382,24 +407,24 @@ $LN4@AuGetSysLi:
 	test	eax, eax
 	jne	SHORT $LN1@AuGetSysLi
 
-; 77   : 			return first;
+; 78   : 			return first;
 
 	mov	rax, QWORD PTR first$1[rsp]
 	jmp	SHORT $LN5@AuGetSysLi
 $LN1@AuGetSysLi:
 
-; 78   : 	}
+; 79   : 	}
 
 	jmp	SHORT $LN3@AuGetSysLi
 $LN2@AuGetSysLi:
 
-; 79   : 
-; 80   : 	return NULL;
+; 80   : 
+; 81   : 	return NULL;
 
 	xor	eax, eax
 $LN5@AuGetSysLi:
 
-; 81   : }
+; 82   : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -410,31 +435,37 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 ?AuSysLibInitialize@@YAXXZ PROC				; AuSysLibInitialize
 
-; 114  : void AuSysLibInitialize () {
+; 119  : void AuSysLibInitialize () {
 
 $LN3:
 	sub	rsp, 40					; 00000028H
 
-; 115  : 	libentry_first = NULL;
+; 120  : 	libentry_first = NULL;
 
 	mov	QWORD PTR ?libentry_first@@3PEAU_libentry_@@EA, 0 ; libentry_first
 
-; 116  : 	libentry_last = NULL;
+; 121  : 	libentry_last = NULL;
 
 	mov	QWORD PTR ?libentry_last@@3PEAU_libentry_@@EA, 0 ; libentry_last
 
-; 117  : 
-; 118  : 	AuSysLoadLib("xnacrl.dll");
+; 122  : 
+; 123  : 	AuSysLoadLib("xnacrl.dll");
 
-	lea	rcx, OFFSET FLAT:$SG3431
+	lea	rcx, OFFSET FLAT:$SG3696
 	call	?AuSysLoadLib@@YAXPEAD@Z		; AuSysLoadLib
 
-; 119  : 	AuSysLoadLib("xewid.dll");
+; 124  : 	AuSysLoadLib("xewid.dll");
 
-	lea	rcx, OFFSET FLAT:$SG3432
+	lea	rcx, OFFSET FLAT:$SG3697
 	call	?AuSysLoadLib@@YAXPEAD@Z		; AuSysLoadLib
 
-; 120  : }
+; 125  : 	AuSysLoadLib("xnclib.dll");
+
+	lea	rcx, OFFSET FLAT:$SG3698
+	call	?AuSysLoadLib@@YAXPEAD@Z		; AuSysLoadLib
+
+; 126  : 
+; 127  : }
 
 	add	rsp, 40					; 00000028H
 	ret	0

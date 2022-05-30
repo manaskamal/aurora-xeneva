@@ -99,8 +99,8 @@
     <Link>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <OutputFile>F:\xnacrl.dll</OutputFile>
-      <AdditionalLibraryDirectories>E:\Xeneva Project\Xeneva\xnlib\lib64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>xnclib.lib; freetype.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>E:\Xeneva Project\Xeneva\xnlib\lib64;E:\Xeneva Project\Xeneva\Aurora\x64\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>xnclib.lib;</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
       <EnableUAC>false</EnableUAC>
       <GenerateMapFile>true</GenerateMapFile>
@@ -115,7 +115,7 @@
       <DataExecutionPrevention />
       <AdditionalOptions>/ALIGN:512 %(AdditionalOptions)</AdditionalOptions>
       <NoEntryPoint>false</NoEntryPoint>
-      <BaseAddress>0x0000000100000000</BaseAddress>
+      <BaseAddress>0x0000000100400000</BaseAddress>
     </Link>
     <Lib>
       <OutputFile>E:\Xeneva Project\Xeneva\xnlib\lib64\xnacrylic.lib</OutputFile>

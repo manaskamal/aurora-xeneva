@@ -10,14 +10,15 @@
 #include <sys/ioquery.h>
 #include <image.h>
 #include <xebase.h>
+#include <sys\_xeneva.h>
 
 
 
-#define KEY 0x1234
+//#define KEY 0x1234
 /*
  * main -- the main entry point of init
  */
-int main (int argc, char* argv[]) {
+XE_EXTERN XE_EXPORT int XeMain (int argc, char* argv[]) {
 	sys_print_text ("Init process started %d %d %d %d\n", 10, 20, 30, 40);
 	void* ptr = mmap (0,8192,0,0,0,64);
 	sys_print_text ("Ptr returned -> %x \n", ptr);

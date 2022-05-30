@@ -159,6 +159,7 @@ int AuCreateProcess(const char* filename, char* procname) {
 	//!allocate a data-structure for process 
 	process_t *process = (process_t*)malloc(sizeof(process_t)); //pmmngr_alloc();
 	memset(process, 0,sizeof(process_t));
+	printf ("Process addr -> %x\n", process);
 	process->pid_t = pid;
 
 	//!open the process file-binary
@@ -166,7 +167,6 @@ int AuCreateProcess(const char* filename, char* procname) {
 
 	//vfs_node_t file = openfs (n,fname);
 	vfs_node_t *file = fat32_open(NULL, fname);
-	
 	if (file->status == FS_FLAG_INVALID) {
 		printf("Executable image not found\n");
 		return -1;
@@ -210,10 +210,15 @@ int AuCreateProcess(const char* filename, char* procname) {
 	 * the graphics library and the widget library
 	 */
 
-	AuLibEntry_t *lib = AuGetSysLib("xnacrl.dll");
+	AuLibEntry_t *lib = AuGetSysLib("xnclib.dll");
+	if (lib != NULL)
+		for (int i = 0; i < lib->phys_blocks_count; i++) 
+			AuMapPageEx(cr3, lib->phys_start + i * 4096,0x100000000 + i * 4096, PAGING_USER); 
+
+	AuLibEntry_t *lib3 = AuGetSysLib("xnacrl.dll");
 	if (lib != NULL) {
-		for (int i = 0; i < lib->phys_blocks_count; i++) {
-			AuMapPageEx(cr3, lib->phys_start + i * 4096, 0x100000000 + i * 4096, PAGING_USER);
+		for (int i = 0; i < lib3->phys_blocks_count; i++) {
+			AuMapPageEx(cr3, lib3->phys_start + i * 4096, 0x100400000 + i * 4096, PAGING_USER);
 		}
 	}
 
@@ -221,6 +226,8 @@ int AuCreateProcess(const char* filename, char* procname) {
 	if (lib2 != NULL)
 		for (int i = 0; i < lib2->phys_blocks_count; i++) 
 			AuMapPageEx(cr3, lib2->phys_start + i * 4096,0x100200000 + i * 4096, PAGING_USER); 
+
+	
 
 
 
@@ -256,6 +263,14 @@ int AuCreateProcess(const char* filename, char* procname) {
 	//! add the process to process manager
 	process->thread_data_pointer = t;
     add_process(process);
+
+	//uint64_t *this_cr3 = (uint64_t*)x64_read_cr3();
+	//uint64_t* proc_cr3 = cr3;
+	//_debug_print_ ("THIS CR3 -> %x \r\n", this_cr3);
+	//_debug_print_ ("PROC CR3 -> %x \r\n", proc_cr3);
+	//x64_write_cr3((size_t)v2p((size_t)proc_cr3));
+	//process_link_libraries();
+	//x64_write_cr3((size_t)this_cr3);
 
 	return t->id;
 }
@@ -479,7 +494,17 @@ void* process_heap_break (uint64_t pages) {
  */
 void process_link_libraries () {
 	x64_cli();
-	printf ("Linking Libraries \n");
+
 	process_t *proc = get_current_process();
-	AuPeLinkLibraryEx((void*)proc->image_base,(void*)0x100000000); 
+	_debug_print_ ("Linking libraries -> %x \r\n", proc);
+	
+	AuPeLinkLibraryEx((void*)0x0000000000600000,(void*)0x0000000100000000);
+	AuPeLinkLibraryEx((void*)0x0000000100400000,(void*)0x0000000100000000);
+	AuPeLinkLibraryEx((void*)0x0000000000600000,(void*)0x0000000100400000);
+	///* Link the CLIB to every DLL */
+	
+
+	AuPeLinkLibraryEx((void*)0x0000000100200000,(void*)0x0000000100000000);
+	AuPeLinkLibraryEx((void*)0x0000000000600000,(void*)0x0000000100200000);
+	_debug_print_ ("Libraries linked \r\n");
 }

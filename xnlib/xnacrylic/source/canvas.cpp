@@ -20,21 +20,21 @@
 #include <fastcpy.h>
 
 bool double_buffer = true;
-int svga_fd = 0;
-int svga_fd2 = 0;
+//int svga_fd = 0;
+//int svga_fd2 = 0;
 
 
 canvas_t *create_canvas (int width, int height) {
-	svga_fd = sys_open_file ("/dev/fb", NULL);
+	int svga_fd = sys_open_file ("/dev/fb", NULL);
 	uint32_t s_width = ioquery(svga_fd,SCREEN_GETWIDTH,NULL);
 	uint32_t s_height = ioquery(svga_fd, SCREEN_GETHEIGHT, NULL);
 	uint32_t bpp = ioquery(svga_fd, SCREEN_GETBPP, NULL);
 	uint16_t scanline = ioquery(svga_fd, SCREEN_GET_SCANLINE, NULL);
 
-	svga_fd2 = sys_open_file ("/dev/svga", NULL);
+	int svga_fd2 = sys_open_file ("/dev/svga", NULL);
 
-	sys_print_text ("Creating canvas \n");
 	canvas_t *canvas = (canvas_t*)malloc(sizeof(canvas_t));
+	sys_print_text ("Canvas address -> %x \n", canvas);
 	uint32_t *address = NULL;
 	if (double_buffer) {
 		address = acrylic_allocate_buffer(width * height * 4);
@@ -141,7 +141,7 @@ uint32_t canvas_get_scale (canvas_t * canvas) {
 }
 
 int canvas_get_fd () {
-	return svga_fd;
+	return 0; //svga_fd;
 }
 
 void canvas_close (canvas_t *canvas) {

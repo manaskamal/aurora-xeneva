@@ -32,11 +32,12 @@
 #define __SHM_H__
 
 #include <stdint.h>
+#include <sys\_xeneva.h>
 
 /*
  * sys_shmget -- Create a shared memory object
  */
-extern "C" uint32_t sys_shmget (uint32_t key,size_t size, uint32_t flags);
+XE_EXTERN XE_EXPORT uint32_t sys_shmget (uint32_t key,size_t size, uint32_t flags);
 
 /*
  * Obtain Shared Memory for this process 
@@ -45,13 +46,13 @@ extern "C" uint32_t sys_shmget (uint32_t key,size_t size, uint32_t flags);
  * the address
  * @param shmflg -- shared memory flags
  */
-extern "C" void* sys_shmat (uint32_t key, void * shmaddr, int shmflg);
+XE_EXTERN XE_EXPORT void* sys_shmat (uint32_t key, void * shmaddr, int shmflg);
 
 
 /*
  * unlink the shared memory segment
  * @param key -- key identifier
  */
-extern "C" void sys_shm_unlink(uint32_t key);
+XE_EXTERN XE_EXPORT void sys_shm_unlink(uint32_t key);
 
 #endif

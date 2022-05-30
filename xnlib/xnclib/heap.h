@@ -2,6 +2,7 @@
 #define _LIBALLOC_H
 
 #include <stdint.h>
+#include <sys\_xeneva.h>
 
 // If we are told to not define our own size_t, then we
 // skip the define.
@@ -85,10 +86,10 @@ extern int liballoc_free(void*,int);
  
 extern void heap_initialize_allocator();
 
-void     *malloc(unsigned int);				//< The standard function.
-void     *realloc(void *, unsigned int);		//< The standard function.
-void     *calloc(unsigned long long, unsigned long long);		//< The standard function.
-void      free(void *);					//< The standard function.
+XE_EXTERN XE_EXPORT void     *malloc(unsigned int);				//< The standard function.
+XE_EXTERN XE_EXPORT void     *realloc(void *, unsigned int);		//< The standard function.
+XE_EXTERN XE_EXPORT void     *calloc(unsigned long long, unsigned long long);		//< The standard function.
+XE_EXTERN XE_EXPORT void      free(void *);					//< The standard function.
 
 
 #ifdef __cplusplus

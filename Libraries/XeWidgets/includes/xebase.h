@@ -30,5 +30,33 @@
 
 #include <sys\_xeneva.h>
 #include <stdint.h>
+#include <sys\_ipc.h>
 
-XE_EXTERN XE_EXPORT int XeGetResult();
+#define PRIWM_REQUEST_WINDOW  100
+#define PRIWM_WINDOW_SHOW  104
+
+#define XE_CREATE_WINDOW  202
+
+
+typedef struct _xe_app_ {
+	int event_fd;
+	int sh_key;
+	int back_key;
+	uint32_t *framebuffer;
+	void* shared_win_address;
+	int buffer_width;
+	int buffer_height;
+}XeApp;
+
+
+
+/*
+ * XeSendEventPRIWM -- Sends a message to PRIWM
+ * @param event -- message body
+ */
+XE_EXTERN XE_EXPORT void XeSendEventPRIWM (pri_event_t *event);
+/*
+ * XeStartApplication -- Initializes all the required stuffs
+ * for GUI Application
+ */
+XE_EXTERN XE_EXPORT XeApp* XeStartApplication(int argc, char* argv[]);

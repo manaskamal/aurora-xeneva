@@ -19,6 +19,7 @@ __chkstk:
       ret
 
 global _start
+export _start
 _start:
      mov rsi, rcx
 	 mov rdi, rdx

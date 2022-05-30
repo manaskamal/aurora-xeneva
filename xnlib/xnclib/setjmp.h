@@ -9,6 +9,7 @@
 #ifndef __SETJMP_H__
 #define __SETJMP_H__
 
+#include <sys\_xeneva.h>
 
 typedef long long int __jmp_buf[8];
 
@@ -18,14 +19,14 @@ typedef struct __jmp_buf_tag {
 	unsigned long __ss[128/sizeof(long)];
 } jmp_buf;
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-int setjmp (jmp_buf);
-void longjmp(jmp_buf, int);
-#ifdef __cplusplus
-}
-#endif
+//#ifdef __cplusplus
+//XE_EXTERN {
+//#endif
+XE_EXTERN XE_EXPORT int setjmp (jmp_buf);
+XE_EXTERN XE_EXPORT void longjmp(jmp_buf, int);
+//#ifdef __cplusplus
+//}
+//#endif
 
 
 #endif

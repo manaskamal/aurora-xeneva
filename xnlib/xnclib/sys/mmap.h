@@ -13,7 +13,7 @@
 #define __MMAP_H__
 
 #include <stdint.h>
-
+#include <sys\_xeneva.h>
 
 //! Direct callback to the syscall wrapper
 //! local and global mapping are same as MAP_PRIVATE | MAP_SHARED
@@ -25,13 +25,13 @@
 #define ATTRIBUTE_READ  3
 #define ATTRIBUTE_WRITE 4
 #define ATTRIBUTE_USER  5
-extern "C" void* sys_mmap (void* address, size_t length, int protect, int flags, int filedesc, uint64_t offset);
-extern "C" void sys_munmap (void* addr, uint32_t length);
-extern "C" void valloc (unsigned long long pos);
-extern "C" void vfree (unsigned long long pos);
-extern "C" void map_shared_memory (uint16_t dest_id, uint64_t pos, size_t size);
-extern "C" void sys_copy_mem(uint16_t dest_id, uint64_t pos, size_t size);
-extern "C" void* sys_proc_heap_brk(uint64_t pages);
+extern "C" XE_EXPORT void* sys_mmap (void* address, size_t length, int protect, int flags, int filedesc, uint64_t offset);
+extern "C" XE_EXPORT void sys_munmap (void* addr, uint32_t length);
+extern "C" XE_EXPORT void valloc (unsigned long long pos);
+extern "C" XE_EXPORT void vfree (unsigned long long pos);
+extern "C" XE_EXPORT void map_shared_memory (uint16_t dest_id, uint64_t pos, size_t size);
+extern "C" XE_EXPORT void sys_copy_mem(uint16_t dest_id, uint64_t pos, size_t size);
+extern "C" XE_EXPORT void* sys_proc_heap_brk(uint64_t pages);
 
 /**
  * au_mmap -- memory map
@@ -42,5 +42,5 @@ extern "C" void* sys_proc_heap_brk(uint64_t pages);
  * @param filedesc -- file descriptor to map
  * @param offset -- offset from where to begin, it should be multiple of PAGE_SIZE
  */
-extern void* mmap (void* address, size_t length, int protect, int flags, int filedesc, uint64_t offset);
+XE_EXTERN XE_EXPORT void* mmap (void* address, size_t length, int protect, int flags, int filedesc, uint64_t offset);
 #endif

@@ -20,7 +20,7 @@
 #define __POSTBOX_H__
 
 #include <stdint.h>
-
+#include <sys\_xeneva.h>
 
 
 /* for now, just create a timer message */
@@ -49,5 +49,5 @@ typedef struct _post_box_message_ {
   
   @param msg -- Pointer to the memory area to write to
   */
-extern void post_box_receive_msg (postmsg_t *msg);
+XE_EXTERN XE_EXPORT void post_box_receive_msg (postmsg_t *msg);
 #endif

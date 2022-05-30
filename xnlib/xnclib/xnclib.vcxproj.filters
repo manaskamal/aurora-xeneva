@@ -110,6 +110,9 @@
     <ClInclude Include="sys\shm.h">
       <Filter>sys</Filter>
     </ClInclude>
+    <ClInclude Include="sys\sse2.h">
+      <Filter>sys</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="string.cpp" />
@@ -153,6 +156,7 @@
     <ClCompile Include="sys\pe.cpp">
       <Filter>sys</Filter>
     </ClCompile>
+    <ClCompile Include="_main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="sys">
@@ -169,5 +173,8 @@
     </NASM>
     <NASM Include="_fast_copy.asm" />
     <NASM Include="setjmp.asm" />
+    <NASM Include="sys\sse2.asm">
+      <Filter>sys</Filter>
+    </NASM>
   </ItemGroup>
 </Project>

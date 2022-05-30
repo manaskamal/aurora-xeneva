@@ -20,7 +20,6 @@ EXTRN	?wait@@YAXXZ:PROC				; wait
 EXTRN	?create__sys_process@@YAHPEBDPEAD@Z:PROC	; create__sys_process
 EXTRN	?valloc@@YAX_K@Z:PROC				; valloc
 EXTRN	?vfree@@YAX_K@Z:PROC				; vfree
-EXTRN	?map_shared_memory@@YAXG_K0@Z:PROC		; map_shared_memory
 EXTRN	?get_thread_id@@YAGXZ:PROC			; get_thread_id
 EXTRN	?sys_unblock_id@@YAXG@Z:PROC			; sys_unblock_id
 EXTRN	?create_uthread@@YAXP6AXPEAX@ZPEAD@Z:PROC	; create_uthread
@@ -54,6 +53,7 @@ EXTRN	?AuObtainShMem@@YAPEAXIPEAXH@Z:PROC		; AuObtainShMem
 EXTRN	?shm_unlink@@YAXI@Z:PROC			; shm_unlink
 EXTRN	?au_mmap@@YAPEAXPEAX_KHHH1@Z:PROC		; au_mmap
 EXTRN	?process_heap_break@@YAPEAX_K@Z:PROC		; process_heap_break
+EXTRN	?process_link_libraries@@YAXXZ:PROC		; process_link_libraries
 EXTRN	__ImageBase:BYTE
 pdata	SEGMENT
 $pdata$x64_syscall_handler DD imagerel $LN50
@@ -207,9 +207,9 @@ $LN34@x64_syscal:
 $LN33@x64_syscal:
 
 ; 53   : 	case 8:
-; 54   : 		funct = (uint64_t*)map_shared_memory;
+; 54   : 		funct = (uint64_t*)process_link_libraries;
 
-	lea	rax, OFFSET FLAT:?map_shared_memory@@YAXG_K0@Z ; map_shared_memory
+	lea	rax, OFFSET FLAT:?process_link_libraries@@YAXXZ ; process_link_libraries
 	mov	QWORD PTR funct, rax
 
 ; 55   : 		break;

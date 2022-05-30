@@ -10,15 +10,15 @@ _BSS	SEGMENT
 ?debug@@3P6AXPEBDZZEA DQ 01H DUP (?)			; debug
 _BSS	ENDS
 CONST	SEGMENT
-$SG5400	DB	'Scheduler Initialized', 0aH, 00H
+$SG5401	DB	'Scheduler Initialized', 0aH, 00H
 	ORG $+1
-$SG5402	DB	'shell', 00H
+$SG5403	DB	'shell', 00H
 	ORG $+2
-$SG5403	DB	'/init.exe', 00H
+$SG5404	DB	'/init.exe', 00H
 	ORG $+2
-$SG5404	DB	'priwm', 00H
+$SG5405	DB	'priwm', 00H
 	ORG $+6
-$SG5405	DB	'/priwm.exe', 00H
+$SG5406	DB	'/priwm.exe', 00H
 CONST	ENDS
 PUBLIC	?debug_print@@YAXPEBDZZ				; debug_print
 PUBLIC	?_AuMain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z		; _AuMain
@@ -239,7 +239,7 @@ $LN5:
 ; 160  : 
 ; 161  : 	printf ("Scheduler Initialized\n");
 
-	lea	rcx, OFFSET FLAT:$SG5400
+	lea	rcx, OFFSET FLAT:$SG5401
 	call	printf
 
 ; 162  : 	int au_status = 0;
@@ -250,8 +250,8 @@ $LN5:
 ; 164  : 	/* start the sound service manager at id 1 */
 ; 165  : 	au_status = AuCreateProcess ("/init.exe","shell");
 
-	lea	rdx, OFFSET FLAT:$SG5402
-	lea	rcx, OFFSET FLAT:$SG5403
+	lea	rdx, OFFSET FLAT:$SG5403
+	lea	rcx, OFFSET FLAT:$SG5404
 	call	?AuCreateProcess@@YAHPEBDPEAD@Z		; AuCreateProcess
 	mov	DWORD PTR au_status$[rsp], eax
 
@@ -259,42 +259,44 @@ $LN5:
 ; 167  : 	/* start the compositing window manager at id 3 */
 ; 168  : 	au_status = AuCreateProcess ("/priwm.exe","priwm");
 
-	lea	rdx, OFFSET FLAT:$SG5404
-	lea	rcx, OFFSET FLAT:$SG5405
+	lea	rdx, OFFSET FLAT:$SG5405
+	lea	rcx, OFFSET FLAT:$SG5406
 	call	?AuCreateProcess@@YAHPEBDPEAD@Z		; AuCreateProcess
 	mov	DWORD PTR au_status$[rsp], eax
 
 ; 169  : 
-; 170  : 	//! Here start the scheduler (multitasking engine)
-; 171  : 	AuSchedulerStart();
+; 170  : 	//au_status = AuCreateProcess ("/ptest.exe","priwm2");
+; 171  : 
+; 172  : 	//! Here start the scheduler (multitasking engine)
+; 173  : 	AuSchedulerStart();
 
 	call	?AuSchedulerStart@@YAXXZ		; AuSchedulerStart
 $LN2@AuMain:
 
-; 172  : #endif
-; 173  : 
-; 174  : 	//! Loop forever
-; 175  : 	while(1) {
+; 174  : #endif
+; 175  : 
+; 176  : 	//! Loop forever
+; 177  : 	while(1) {
 
 	xor	eax, eax
 	cmp	eax, 1
 	je	SHORT $LN1@AuMain
 
-; 176  : 		//!looping looping
-; 177  : 		x64_cli();
+; 178  : 		//!looping looping
+; 179  : 		x64_cli();
 
 	call	x64_cli
 
-; 178  : 		x64_hlt();
+; 180  : 		x64_hlt();
 
 	call	x64_hlt
 
-; 179  : 	}
+; 181  : 	}
 
 	jmp	SHORT $LN2@AuMain
 $LN1@AuMain:
 
-; 180  : }
+; 182  : }
 
 	add	rsp, 56					; 00000038H
 	ret	0

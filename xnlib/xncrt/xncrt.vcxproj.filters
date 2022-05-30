@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <NASM Include="crt0.asm" />
+    <NASM Include="_syscall.asm" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="crt.cpp" />
+  </ItemGroup>
+</Project>
