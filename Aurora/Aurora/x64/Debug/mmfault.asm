@@ -6,18 +6,16 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 CONST	SEGMENT
-$SG3861	DB	'Kernel Panic!! Page fault ', 0aH, 00H
+$SG3871	DB	'Kernel Panic!! Page fault ', 0aH, 00H
 	ORG $+4
-$SG3862	DB	'Virtual address -> %x ', 0aH, 00H
-$SG3863	DB	'RIP ->%x ', 0aH, 00H
+$SG3872	DB	'Virtual address -> %x ', 0aH, 00H
+$SG3873	DB	'RIP ->%x ', 0aH, 00H
 	ORG $+5
-$SG3864	DB	'Current thread -> %s ', 0aH, 00H
+$SG3874	DB	'Current thread -> %s ', 0aH, 00H
 	ORG $+1
-$SG3870	DB	'Page Fault -> %x ', 0aH, 00H
+$SG3880	DB	'Page Fault -> %x ', 0aH, 00H
 	ORG $+5
-$SG3871	DB	'RIP -> %x ', 0aH, 00H
-	ORG $+4
-$SG3872	DB	'Current thread -> %s ', 0aH, 00H
+$SG3881	DB	'RIP -> %x ', 0aH, 00H
 CONST	ENDS
 PUBLIC	?AuHandlePageNotPresent@@YAX_K_NPEAX@Z		; AuHandlePageNotPresent
 EXTRN	printf:PROC
@@ -29,7 +27,7 @@ EXTRN	?AuFindVMA@@YAPEAU_vma_area_@@_K@Z:PROC		; AuFindVMA
 EXTRN	?fat32_read@@YAXPEAU_vfs_node_@@PEA_K@Z:PROC	; fat32_read
 pdata	SEGMENT
 $pdata$?AuHandlePageNotPresent@@YAX_K_NPEAX@Z DD imagerel $LN13
-	DD	imagerel $LN13+330
+	DD	imagerel $LN13+313
 	DD	imagerel $unwind$?AuHandlePageNotPresent@@YAX_K_NPEAX@Z
 pdata	ENDS
 xdata	SEGMENT
@@ -48,7 +46,7 @@ user$ = 88
 param$ = 96
 ?AuHandlePageNotPresent@@YAX_K_NPEAX@Z PROC		; AuHandlePageNotPresent
 
-; 39   : void AuHandlePageNotPresent (uint64_t vaddr, bool user, void* param) {
+; 40   : void AuHandlePageNotPresent (uint64_t vaddr, bool user, void* param) {
 
 $LN13:
 	mov	QWORD PTR [rsp+24], r8
@@ -56,97 +54,99 @@ $LN13:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 72					; 00000048H
 
-; 40   : 	interrupt_stack_frame *frame = (interrupt_stack_frame*)param;
+; 41   : 	x64_cli();
+
+	call	x64_cli
+
+; 42   : 	interrupt_stack_frame *frame = (interrupt_stack_frame*)param;
 
 	mov	rax, QWORD PTR param$[rsp]
 	mov	QWORD PTR frame$[rsp], rax
 
-; 41   : 	if (!user) {
+; 43   : 	if (!user) {
 
 	movzx	eax, BYTE PTR user$[rsp]
 	test	eax, eax
 	jne	SHORT $LN10@AuHandlePa
 
-; 42   : 		x64_cli();
+; 44   : 		x64_cli();
 
 	call	x64_cli
 
-; 43   : 		printf ("Kernel Panic!! Page fault \n");
+; 45   : 		printf ("Kernel Panic!! Page fault \n");
 
-	lea	rcx, OFFSET FLAT:$SG3861
+	lea	rcx, OFFSET FLAT:$SG3871
 	call	printf
 
-; 44   : 		printf ("Virtual address -> %x \n", vaddr);
+; 46   : 		printf ("Virtual address -> %x \n", vaddr);
 
 	mov	rdx, QWORD PTR vaddr$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3862
+	lea	rcx, OFFSET FLAT:$SG3872
 	call	printf
 
-; 45   : 		printf ("RIP ->%x \n", frame->rip);
+; 47   : 		printf ("RIP ->%x \n", frame->rip);
 
 	mov	rax, QWORD PTR frame$[rsp]
 	mov	rdx, QWORD PTR [rax+16]
-	lea	rcx, OFFSET FLAT:$SG3863
+	lea	rcx, OFFSET FLAT:$SG3873
 	call	printf
 
-; 46   : 		printf ("Current thread -> %s \n", get_current_thread()->name);
+; 48   : 		printf ("Current thread -> %s \n", get_current_thread()->name);
 
 	call	get_current_thread
 	mov	rdx, QWORD PTR [rax+224]
-	lea	rcx, OFFSET FLAT:$SG3864
+	lea	rcx, OFFSET FLAT:$SG3874
 	call	printf
 $LN9@AuHandlePa:
 
-; 47   : 		for(;;);
+; 49   : 		for(;;);
 
 	jmp	SHORT $LN9@AuHandlePa
 $LN10@AuHandlePa:
 
-; 48   : 	}
-; 49   : 	au_vm_area_t *vm = AuFindVMA(vaddr);
+; 50   : 	}
+; 51   : 	au_vm_area_t *vm = AuFindVMA(vaddr);
 
 	mov	rcx, QWORD PTR vaddr$[rsp]
 	call	?AuFindVMA@@YAPEAU_vma_area_@@_K@Z	; AuFindVMA
 	mov	QWORD PTR vm$[rsp], rax
 
-; 50   : 	if (vm == NULL){
+; 52   : 	if (vm == NULL){
 
 	cmp	QWORD PTR vm$[rsp], 0
 	jne	SHORT $LN7@AuHandlePa
 
-; 51   : 		x64_cli();
+; 53   : 		x64_cli();
 
 	call	x64_cli
 
-; 52   : 		printf ("Page Fault -> %x \n", vaddr);
+; 54   : 		printf ("Page Fault -> %x \n", vaddr);
 
 	mov	rdx, QWORD PTR vaddr$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3870
+	lea	rcx, OFFSET FLAT:$SG3880
 	call	printf
 
-; 53   : 		printf ("RIP -> %x \n", frame->rip);
+; 55   : 		printf ("RIP -> %x \n", frame->rip);
 
 	mov	rax, QWORD PTR frame$[rsp]
 	mov	rdx, QWORD PTR [rax+16]
-	lea	rcx, OFFSET FLAT:$SG3871
-	call	printf
-
-; 54   : 		printf ("Current thread -> %s \n", get_current_thread()->name);
-
-	call	get_current_thread
-	mov	rdx, QWORD PTR [rax+224]
-	lea	rcx, OFFSET FLAT:$SG3872
+	lea	rcx, OFFSET FLAT:$SG3881
 	call	printf
 $LN6@AuHandlePa:
 
-; 55   : 		for(;;);
+; 56   : 		//printf ("Current thread -> %s \n", get_current_thread()->name);
+; 57   : 		for(;;);
 
 	jmp	SHORT $LN6@AuHandlePa
+
+; 58   : 		return;
+
+	jmp	SHORT $LN11@AuHandlePa
 $LN7@AuHandlePa:
 
-; 56   : 	}
-; 57   : 
-; 58   : 	for (int i = 0; i < vm->length; i++) {
+; 59   : 	}
+; 60   : 
+; 61   : 	for (int i = 0; i < vm->length; i++) {
 
 	mov	DWORD PTR i$1[rsp], 0
 	jmp	SHORT $LN4@AuHandlePa
@@ -160,12 +160,12 @@ $LN4@AuHandlePa:
 	cmp	rax, QWORD PTR [rcx+40]
 	jae	SHORT $LN2@AuHandlePa
 
-; 59   : 		void* phys_addr = AuPmmngrAlloc();
+; 62   : 		void* phys_addr = AuPmmngrAlloc();
 
 	call	AuPmmngrAlloc
 	mov	QWORD PTR phys_addr$2[rsp], rax
 
-; 60   : 		if (vm->file && vm->file->eof != 1) {
+; 63   : 		if (vm->file && vm->file->eof != 1) {
 
 	mov	rax, QWORD PTR vm$[rsp]
 	cmp	QWORD PTR [rax+24], 0
@@ -176,7 +176,7 @@ $LN4@AuHandlePa:
 	cmp	eax, 1
 	je	SHORT $LN1@AuHandlePa
 
-; 61   : 			fat32_read(vm->file, (uint64_t*)phys_addr);
+; 64   : 			fat32_read(vm->file, (uint64_t*)phys_addr);
 
 	mov	rdx, QWORD PTR phys_addr$2[rsp]
 	mov	rax, QWORD PTR vm$[rsp]
@@ -184,20 +184,21 @@ $LN4@AuHandlePa:
 	call	?fat32_read@@YAXPEAU_vfs_node_@@PEA_K@Z	; fat32_read
 $LN1@AuHandlePa:
 
-; 62   : 		}
-; 63   : 		AuMapPage((uint64_t)phys_addr, vaddr, PAGING_USER);
+; 65   : 		}
+; 66   : 		AuMapPage((uint64_t)phys_addr, vaddr, PAGING_USER);
 
 	mov	r8b, 4
 	mov	rdx, QWORD PTR vaddr$[rsp]
 	mov	rcx, QWORD PTR phys_addr$2[rsp]
 	call	AuMapPage
 
-; 64   : 	}
+; 67   : 	}
 
 	jmp	SHORT $LN3@AuHandlePa
 $LN2@AuHandlePa:
+$LN11@AuHandlePa:
 
-; 65   : }
+; 68   : }
 
 	add	rsp, 72					; 00000048H
 	ret	0

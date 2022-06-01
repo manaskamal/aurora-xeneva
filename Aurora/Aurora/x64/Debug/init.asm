@@ -10,15 +10,15 @@ _BSS	SEGMENT
 ?debug@@3P6AXPEBDZZEA DQ 01H DUP (?)			; debug
 _BSS	ENDS
 CONST	SEGMENT
-$SG5401	DB	'Scheduler Initialized', 0aH, 00H
+$SG5402	DB	'Scheduler Initialized', 0aH, 00H
 	ORG $+1
-$SG5403	DB	'shell', 00H
+$SG5404	DB	'shell', 00H
 	ORG $+2
-$SG5404	DB	'/init.exe', 00H
+$SG5405	DB	'/init.exe', 00H
 	ORG $+2
-$SG5405	DB	'priwm', 00H
+$SG5406	DB	'priwm', 00H
 	ORG $+6
-$SG5406	DB	'/priwm.exe', 00H
+$SG5407	DB	'/priwm.exe', 00H
 CONST	ENDS
 PUBLIC	?debug_print@@YAXPEBDZZ				; debug_print
 PUBLIC	?_AuMain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z		; _AuMain
@@ -228,44 +228,44 @@ $LN5:
 	call	?AuInitializeCpu@@YAXE@Z		; AuInitializeCpu
 
 ; 154  : 
-; 155  : 	/*Clear the lower half for user space */
-; 156  : 	AuPagingClearLow();
+; 155  : 	
+; 156  : 	/*Clear the lower half for user space */
+; 157  : 	AuPagingClearLow();
 
 	call	?AuPagingClearLow@@YAXXZ		; AuPagingClearLow
 
-; 157  : 
 ; 158  : 
-; 159  : #ifdef ARCH_X64
-; 160  : 
-; 161  : 	printf ("Scheduler Initialized\n");
+; 159  : 
+; 160  : #ifdef ARCH_X64
+; 161  : 
+; 162  : 	printf ("Scheduler Initialized\n");
 
-	lea	rcx, OFFSET FLAT:$SG5401
+	lea	rcx, OFFSET FLAT:$SG5402
 	call	printf
 
-; 162  : 	int au_status = 0;
+; 163  : 	int au_status = 0;
 
 	mov	DWORD PTR au_status$[rsp], 0
 
-; 163  : 
-; 164  : 	/* start the sound service manager at id 1 */
-; 165  : 	au_status = AuCreateProcess ("/init.exe","shell");
+; 164  : 
+; 165  : 	/* start the sound service manager at id 1 */
+; 166  : 	au_status = AuCreateProcess ("/init.exe","shell");
 
-	lea	rdx, OFFSET FLAT:$SG5403
-	lea	rcx, OFFSET FLAT:$SG5404
+	lea	rdx, OFFSET FLAT:$SG5404
+	lea	rcx, OFFSET FLAT:$SG5405
 	call	?AuCreateProcess@@YAHPEBDPEAD@Z		; AuCreateProcess
 	mov	DWORD PTR au_status$[rsp], eax
 
-; 166  : 
-; 167  : 	/* start the compositing window manager at id 3 */
-; 168  : 	au_status = AuCreateProcess ("/priwm.exe","priwm");
+; 167  : 
+; 168  : 	/* start the compositing window manager at id 3 */
+; 169  : 	au_status = AuCreateProcess ("/priwm.exe","priwm");
 
-	lea	rdx, OFFSET FLAT:$SG5405
-	lea	rcx, OFFSET FLAT:$SG5406
+	lea	rdx, OFFSET FLAT:$SG5406
+	lea	rcx, OFFSET FLAT:$SG5407
 	call	?AuCreateProcess@@YAHPEBDPEAD@Z		; AuCreateProcess
 	mov	DWORD PTR au_status$[rsp], eax
 
-; 169  : 
-; 170  : 	//au_status = AuCreateProcess ("/ptest.exe","priwm2");
+; 170  : 
 ; 171  : 
 ; 172  : 	//! Here start the scheduler (multitasking engine)
 ; 173  : 	AuSchedulerStart();

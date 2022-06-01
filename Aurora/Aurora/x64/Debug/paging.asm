@@ -753,7 +753,7 @@ $LN9:
 	sub	rsp, 72					; 00000048H
 
 ; 340  : 	
-; 341  : 	uint64_t *cr3 = (uint64_t*)p2v((uint64_t)root_cr3); //x64_read_cr3();
+; 341  : 	uint64_t *cr3 = (uint64_t*)p2v((uint64_t)root_cr3);
 
 	mov	rcx, QWORD PTR ?root_cr3@@3PEA_KEA	; root_cr3
 	call	p2v

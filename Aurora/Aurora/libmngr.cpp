@@ -101,7 +101,6 @@ void AuSysLoadLib(char* fname) {
 	}
 
 	AuLibEntry_t *entry = (AuLibEntry_t*)malloc(sizeof(AuLibEntry_t));
-	printf ("Entry for %s is -> %x \n", fname, entry);
 	strcpy(entry->path, fname);
 	entry->loaded = true;
 	entry->phys_start = (uint64_t)phys_start;

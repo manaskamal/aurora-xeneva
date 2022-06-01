@@ -29,6 +29,7 @@
  **/
 
 #include <stdlib.h>
+#include <sys\_term.h>
 
 extern "C" int _fltused = 1;
 
@@ -49,4 +50,8 @@ void __cdecl operator delete[] (void* p) {
 }
 
 extern "C" void sys_link_libs();
+
+XE_EXTERN XE_EXPORT void PrintManas() {
+	sys_print_text ("Manas Kamal Choudhury \r\n");
+}
 

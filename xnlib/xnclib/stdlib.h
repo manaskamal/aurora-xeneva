@@ -56,6 +56,7 @@ XE_EXPORT int vsprintf(char *str, const char *format, va_list ap);
 XE_EXPORT long strtol(const char* nptr, char** endptr, int base);
 XE_EXPORT unsigned long strtoul(const char* nptr, char** endptr, int base);
 XE_EXPORT void itoa_s(int i,unsigned base,char* buf);
+XE_EXPORT void PrintOSName();
 
 #ifdef __cplusplus
 }

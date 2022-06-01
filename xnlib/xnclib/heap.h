@@ -54,7 +54,7 @@ struct	boundary_tag
  * \return 0 if the lock was acquired successfully. Anything else is
  * failure.
  */
-extern int liballoc_lock();
+XE_EXTERN XE_EXPORT int liballoc_lock();
 
 /** This function unlocks what was previously locked by the liballoc_lock
  * function.  If it disabled interrupts, it enables interrupts. If it
@@ -62,7 +62,7 @@ extern int liballoc_lock();
  *
  * \return 0 if the lock was successfully released.
  */
-extern int liballoc_unlock();
+XE_EXTERN XE_EXPORT int liballoc_unlock();
 
 /** This is the hook into the local system which allocates pages. It
  * accepts an integer parameter which is the number of pages
@@ -71,7 +71,7 @@ extern int liballoc_unlock();
  * \return NULL if the pages were not allocated.
  * \return A pointer to the allocated memory.
  */
-extern void* liballoc_alloc(int);
+XE_EXTERN XE_EXPORT void* liballoc_alloc(int);
 
 /** This frees previously allocated memory. The void* parameter passed
  * to the function is the exact same value returned from a previous
@@ -81,7 +81,7 @@ extern void* liballoc_alloc(int);
  *
  * \return 0 if the memory was successfully freed.
  */
-extern int liballoc_free(void*,int);
+XE_EXTERN XE_EXPORT int liballoc_free(void*,int);
 
  
 extern void heap_initialize_allocator();

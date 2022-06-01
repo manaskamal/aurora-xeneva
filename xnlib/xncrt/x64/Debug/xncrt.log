@@ -1,20 +1,20 @@
-﻿Build started 30-05-2022 ৰাতিপু 10:31:59.
+﻿Build started 01-06-2022 আবেলি 10:05:42.
      1>Project "E:\Xeneva Project\Xeneva\xnlib\xncrt\xncrt.vcxproj" on node 2 (Rebuild target(s)).
      1>_NASM:
          crt0.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp20e018ea9b284297b6cd98924a167832.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp6f1e076340864a46906c8d11499fa645.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\crt0.obj"  "E:\Xeneva Project\Xeneva\xnlib\xncrt\crt0.asm"
        _NASM:
          _syscall.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmpa0320b42e82d471c8ec0fb6884aeb64f.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp5a21ad7357634b88b45f271dc02732f7.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\_syscall.obj"  "E:\Xeneva Project\Xeneva\xnlib\xncrt\_syscall.asm"
        ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\xnlib\xnclib" /Zi /nologo /W3 /WX- /sdl- /MP /Od /D ARCH_X64 /D _MBCS /X /Gm /GS- /arch:SSE2 /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt crt.cpp
      1>cl : Command line warning D9025: overriding '/sdl-' with '/GS-'
      1>cl : Command line warning D9002: ignoring unknown option '/arch:SSE2'
          crt.cpp
-     1>crt.cpp(36): warning C4267: 'argument' : conversion from 'size_t' to 'unsigned int', possible loss of data
-     1>crt.cpp(40): warning C4267: 'argument' : conversion from 'size_t' to 'unsigned int', possible loss of data
+     1>crt.cpp(37): warning C4267: 'argument' : conversion from 'size_t' to 'unsigned int', possible loss of data
+     1>crt.cpp(41): warning C4267: 'argument' : conversion from 'size_t' to 'unsigned int', possible loss of data
      1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V110\Microsoft.CppBuild.targets(1299,5): warning MSB8012: TargetPath(E:\Xeneva Project\Xeneva\Aurora\x64\Debug\xncrt.lib) does not match the Library's OutputFile property value (E:\Xeneva Project\Xeneva\xnlib\lib64\xncrt.lib). This may cause your project to build incorrectly. To correct this, please make sure that $(OutDir), $(TargetName) and $(TargetExt) property values match the value specified in %(Lib.OutputFile).
        Lib:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\Lib.exe /OUT:"E:\Xeneva Project\Xeneva\xnlib\lib64\xncrt.lib" /NOLOGO /MACHINE:X64 x64\Debug\crt.obj
@@ -25,4 +25,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:01.62
+Time Elapsed 00:00:01.25

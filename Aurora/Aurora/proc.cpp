@@ -212,20 +212,28 @@ int AuCreateProcess(const char* filename, char* procname) {
 
 	AuLibEntry_t *lib = AuGetSysLib("xnclib.dll");
 	if (lib != NULL)
-		for (int i = 0; i < lib->phys_blocks_count; i++) 
-			AuMapPageEx(cr3, lib->phys_start + i * 4096,0x100000000 + i * 4096, PAGING_USER); 
+		for (int i = 0; i < lib->phys_blocks_count; i++) {
+			void* phys = (void*)p2v((size_t)AuPmmngrAlloc());
+			memcpy (phys, (void*)p2v(lib->phys_start + i * 4096), 4096);
+			AuMapPageEx(cr3, v2p((size_t)phys),0x100000000 + i * 4096, PAGING_USER); 
+		}
 
 	AuLibEntry_t *lib3 = AuGetSysLib("xnacrl.dll");
 	if (lib != NULL) {
 		for (int i = 0; i < lib3->phys_blocks_count; i++) {
-			AuMapPageEx(cr3, lib3->phys_start + i * 4096, 0x100400000 + i * 4096, PAGING_USER);
+			void* phys = (void*)p2v((size_t)AuPmmngrAlloc());
+			memcpy (phys, (void*)p2v(lib3->phys_start + i * 4096), 4096);
+			AuMapPageEx(cr3, v2p((size_t)phys), 0x100400000 + i * 4096, PAGING_USER);
 		}
 	}
 
 	AuLibEntry_t *lib2 = AuGetSysLib("xewid.dll");
 	if (lib2 != NULL)
-		for (int i = 0; i < lib2->phys_blocks_count; i++) 
-			AuMapPageEx(cr3, lib2->phys_start + i * 4096,0x100200000 + i * 4096, PAGING_USER); 
+		for (int i = 0; i < lib2->phys_blocks_count; i++) {
+			void* phys = (void*)p2v((size_t)AuPmmngrAlloc());
+			memcpy (phys, (void*)p2v(lib2->phys_start + i * 4096), 4096);
+			AuMapPageEx(cr3, v2p((size_t)phys),0x100200000 + i * 4096, PAGING_USER); 
+		}
 
 	
 
@@ -257,6 +265,7 @@ int AuCreateProcess(const char* filename, char* procname) {
 	process->parent = NULL;
 	process->_image_heap_break_ = PROCESS_HEAP_BREAK;
 	process->_heap_size_ = 0;
+	process->process_file = file;
 	process->shared_mem_list = initialize_list();
 	//! Create and thread and start scheduling when scheduler starts */
 	thread_t *t = create_user_thread(ent,stack,(uint64_t)cr3,procname,0);
@@ -264,15 +273,10 @@ int AuCreateProcess(const char* filename, char* procname) {
 	process->thread_data_pointer = t;
     add_process(process);
 
-	//uint64_t *this_cr3 = (uint64_t*)x64_read_cr3();
-	//uint64_t* proc_cr3 = cr3;
-	//_debug_print_ ("THIS CR3 -> %x \r\n", this_cr3);
-	//_debug_print_ ("PROC CR3 -> %x \r\n", proc_cr3);
-	//x64_write_cr3((size_t)v2p((size_t)proc_cr3));
-	//process_link_libraries();
-	//x64_write_cr3((size_t)this_cr3);
+	//free(file);
 
-	return t->id;
+	_debug_print_ ("PROCESS CR3 -> %x \r\n", cr3);
+	return process->pid_t;
 }
 
 /**
@@ -311,7 +315,7 @@ void kill_process () {
 	}
 	
 	free(remove_thread->fx_state);
-	
+	free(proc->process_file);
 	remove_process (proc);
 	task_delete (remove_thread);
 	free(remove_thread);
@@ -483,7 +487,8 @@ void* process_heap_break (uint64_t pages) {
 		uint64_t page = (uint64_t)AuGetFreePage(0,true,(void*)proc->_image_heap_break_);
 		if (first_page == 0)
 			first_page = page;
-		AuMapPage((uint64_t)AuPmmngrAlloc(), page, PAGING_USER);
+		uint64_t p = (uint64_t)AuPmmngrAlloc();
+		AuMapPage((uint64_t)p, page, PAGING_USER);
 	}
 	proc->_heap_size_ += pages * 4096;
 	return (void*)first_page;
@@ -496,15 +501,21 @@ void process_link_libraries () {
 	x64_cli();
 
 	process_t *proc = get_current_process();
-	_debug_print_ ("Linking libraries -> %x \r\n", proc);
-	
-	AuPeLinkLibraryEx((void*)0x0000000000600000,(void*)0x0000000100000000);
+	printf ("Linking Libraries -> %x \r\n", proc->image_base);
+
 	AuPeLinkLibraryEx((void*)0x0000000100400000,(void*)0x0000000100000000);
-	AuPeLinkLibraryEx((void*)0x0000000000600000,(void*)0x0000000100400000);
+    AuPeLinkLibraryEx((void*)0x0000000100200000,(void*)0x0000000100000000);
+
+	AuPeLinkLibraryEx((void*)0x0000000000600000,(void*)0x0000000100000000);  //
+	AuPeLinkLibraryEx((void*)0x0000000100000000,(void*)0x0000000000600000); //
+	
+	//AuPeLinkLibraryEx((void*)0x0000000000600000,(void*)0x0000000100400000);
 	///* Link the CLIB to every DLL */
 	
 
-	AuPeLinkLibraryEx((void*)0x0000000100200000,(void*)0x0000000100000000);
-	AuPeLinkLibraryEx((void*)0x0000000000600000,(void*)0x0000000100200000);
+	
+    //AuPeLinkLibraryEx((void*)0x0000000000600000,(void*)0x0000000100200000);
+	
+	
 	_debug_print_ ("Libraries linked \r\n");
 }

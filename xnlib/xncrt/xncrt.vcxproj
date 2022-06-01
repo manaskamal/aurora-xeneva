@@ -135,6 +135,9 @@
   <ItemGroup>
     <ClCompile Include="crt.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="helper.h" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
     <Import Project="$(VCTargetsPath)\BuildCustomizations\nasm.targets" />

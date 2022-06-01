@@ -12,6 +12,7 @@
 
 #include <arch\x86_64\mmngr\map.h>
 #include <proc.h>
+#include <serial.h>
 
 /**
  * do a memory map with given length,
@@ -81,7 +82,6 @@ void unmap_memory (void* addr, uint32_t length) {
 	 */
 
 	uint64_t address = (uint64_t)addr;
-
 	if (length == 4096) 
 		AuUnmapPage(address, true);
 

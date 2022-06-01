@@ -7,4 +7,7 @@
   <ItemGroup>
     <ClCompile Include="crt.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="helper.h" />
+  </ItemGroup>
 </Project>

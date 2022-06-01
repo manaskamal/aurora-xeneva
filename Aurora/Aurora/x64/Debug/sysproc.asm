@@ -6,9 +6,9 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 CONST	SEGMENT
-$SG3919	DB	'***Process killed ', 0dH, 0aH, 00H
+$SG3920	DB	'***Process killed ', 0dH, 0aH, 00H
 	ORG $+3
-$SG3920	DB	'*** Current used RAM -> %d MB / total -> %d MB ', 0dH, 0aH
+$SG3921	DB	'*** Current used RAM -> %d MB / total -> %d MB ', 0dH, 0aH
 	DB	00H
 CONST	ENDS
 PUBLIC	?create__sys_process@@YAHPEBDPEAD@Z		; create__sys_process
@@ -27,7 +27,7 @@ EXTRN	?kill_process_by_id@@YAXG@Z:PROC		; kill_process_by_id
 EXTRN	_debug_print_:PROC
 pdata	SEGMENT
 $pdata$?create__sys_process@@YAHPEBDPEAD@Z DD imagerel $LN3
-	DD	imagerel $LN3+45
+	DD	imagerel $LN3+47
 	DD	imagerel $unwind$?create__sys_process@@YAHPEBDPEAD@Z
 $pdata$?sys_exit@@YAXXZ DD imagerel $LN3
 	DD	imagerel $LN3+114
@@ -61,13 +61,13 @@ tv66 = 32
 id$ = 64
 ?sys_attach_ttype@@YAXH@Z PROC				; sys_attach_ttype
 
-; 91   : void sys_attach_ttype (int id) {
+; 89   : void sys_attach_ttype (int id) {
 
 $LN3:
 	mov	DWORD PTR [rsp+8], ecx
 	sub	rsp, 56					; 00000038H
 
-; 92   : 	get_current_thread()->ttype = id;
+; 90   : 	get_current_thread()->ttype = id;
 
 	movsxd	rax, DWORD PTR id$[rsp]
 	mov	QWORD PTR tv66[rsp], rax
@@ -75,7 +75,7 @@ $LN3:
 	mov	rcx, QWORD PTR tv66[rsp]
 	mov	QWORD PTR [rax+240], rcx
 
-; 93   : }
+; 91   : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -88,19 +88,19 @@ signo$ = 48
 handler$ = 56
 ?sys_set_signal@@YAXHP6AXH@Z@Z PROC			; sys_set_signal
 
-; 82   : void sys_set_signal (int signo, sig_handler handler) {
+; 80   : void sys_set_signal (int signo, sig_handler handler) {
 
 $LN3:
 	mov	QWORD PTR [rsp+16], rdx
 	mov	DWORD PTR [rsp+8], ecx
 	sub	rsp, 40					; 00000028H
 
-; 83   : 	x64_cli();
+; 81   : 	x64_cli();
 
 	call	x64_cli
 
-; 84   : 	//get_current_thread()->signals[signo] = handler;
-; 85   : }
+; 82   : 	//get_current_thread()->signals[signo] = handler;
+; 83   : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -113,28 +113,28 @@ pid$ = 48
 signo$ = 56
 ?sys_kill@@YAXHH@Z PROC					; sys_kill
 
-; 70   : void sys_kill (int pid, int signo) {
+; 68   : void sys_kill (int pid, int signo) {
 
 $LN3:
 	mov	DWORD PTR [rsp+16], edx
 	mov	DWORD PTR [rsp+8], ecx
 	sub	rsp, 40					; 00000028H
 
-; 71   : 	x64_cli();
+; 69   : 	x64_cli();
 
 	call	x64_cli
 
-; 72   : 	kill_process_by_id(pid);
+; 70   : 	kill_process_by_id(pid);
 
 	movzx	ecx, WORD PTR pid$[rsp]
 	call	?kill_process_by_id@@YAXG@Z		; kill_process_by_id
 
-; 73   : 	force_sched();
+; 71   : 	force_sched();
 
 	call	force_sched
 
-; 74   : 	//! For now, no signals are supported, just kill the process
-; 75   : }
+; 72   : 	//! For now, no signals are supported, just kill the process
+; 73   : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -146,25 +146,25 @@ _TEXT	SEGMENT
 tv67 = 32
 ?sys_exit@@YAXXZ PROC					; sys_exit
 
-; 56   : void sys_exit () {
+; 54   : void sys_exit () {
 
 $LN3:
 	sub	rsp, 56					; 00000038H
 
-; 57   : 	x64_cli();	
+; 55   : 	x64_cli();	
 
 	call	x64_cli
 
-; 58   : 	kill_process();
+; 56   : 	kill_process();
 
 	call	?kill_process@@YAXXZ			; kill_process
 
-; 59   : 	_debug_print_ ("***Process killed \r\n");
+; 57   : 	_debug_print_ ("***Process killed \r\n");
 
-	lea	rcx, OFFSET FLAT:$SG3919
+	lea	rcx, OFFSET FLAT:$SG3920
 	call	_debug_print_
 
-; 60   : 	_debug_print_ ("*** Current used RAM -> %d MB / total -> %d MB \r\n", pmmngr_get_used_ram() / 1024 / 1024, pmmngr_get_total_ram() / 1024 / 1024);
+; 58   : 	_debug_print_ ("*** Current used RAM -> %d MB / total -> %d MB \r\n", pmmngr_get_used_ram() / 1024 / 1024, pmmngr_get_total_ram() / 1024 / 1024);
 
 	call	?pmmngr_get_total_ram@@YA_KXZ		; pmmngr_get_total_ram
 	xor	edx, edx
@@ -184,14 +184,14 @@ $LN3:
 	mov	rcx, QWORD PTR tv67[rsp]
 	mov	r8, rcx
 	mov	rdx, rax
-	lea	rcx, OFFSET FLAT:$SG3920
+	lea	rcx, OFFSET FLAT:$SG3921
 	call	_debug_print_
 
-; 61   : 	force_sched();
+; 59   : 	force_sched();
 
 	call	force_sched
 
-; 62   : }
+; 60   : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -223,13 +223,11 @@ $LN3:
 	call	?AuCreateProcess@@YAHPEBDPEAD@Z		; AuCreateProcess
 	mov	DWORD PTR id$[rsp], eax
 
-; 47   : 	/*int master_fd = get_current_thread()->master_fd;
-; 48   : 	ttype_dup_master(id, master_fd);*/
-; 49   : 	return 0;
+; 47   : 	return id;
 
-	xor	eax, eax
+	mov	eax, DWORD PTR id$[rsp]
 
-; 50   : }
+; 48   : }
 
 	add	rsp, 56					; 00000038H
 	ret	0

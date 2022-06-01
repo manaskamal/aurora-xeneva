@@ -104,6 +104,8 @@ void AuPeLinkLibrary (void* image) {
 }
 
 
+
+
 /*
  * LinkLibrary -- Links a dll library to its executable
  * @param image -- executable
@@ -129,16 +131,15 @@ void AuPeLinkLibraryEx (void* image, void* exporter) {
 		/* Here Check the required dll name, for the base address */
 		if (strcmp(func,"xnclib.dll") == 0){
 			exporter = (void*)XNCLIB_BASE;
-			_debug_print_ ("FUNC -> %s , exporter -> %x \r\n", func, exporter);
 		}else if (strcmp(func,"xnacrl.dll") == 0){
 			exporter = (void*)XNACRL_BASE;
-		}else if (strcmp(func,"xnwid.dll") == 0)
+		}else if (strcmp(func,"xewid.dll") == 0){
 			exporter = (void*)XNWID_BASE;
+		}
 
 		
 		PIMAGE_IMPORT_LOOKUP_TABLE_PE32P iat = raw_offset<PIMAGE_IMPORT_LOOKUP_TABLE_PE32P>(image, importdir[n].ThunkTableRva);
-		if (*iat > 65536)
-			return;
+	
 		while (*iat) {
 			PIMAGE_IMPORT_HINT_TABLE hint = raw_offset<PIMAGE_IMPORT_HINT_TABLE>(image, *iat);
 			const char* fname = hint->name;
@@ -149,12 +150,10 @@ void AuPeLinkLibraryEx (void* image, void* exporter) {
 				uint64_t addr = *iat;
 				uint64_t paddr = (uint64_t)procaddr;
 				if (addr == paddr) {
-					_debug_print_ ("Already Mapped \r\n");
 					return;
 				}
 
 				*iat = (uint64_t)procaddr;
-				//_debug_print_ ("Mapped %s to %x \r\n", fname, *iat);
 			}
 			++iat;
 		}

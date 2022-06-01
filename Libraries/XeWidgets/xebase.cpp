@@ -38,6 +38,7 @@
 #include <sys\_wait.h>
 #include <sys\shm.h>
 #include <xebasewin.h>
+#include <sys\_term.h>
 #include <stdlib.h>
 
 
@@ -65,9 +66,10 @@ check:
  * for GUI Application
  */
 XeApp* XeStartApplication(int argc, char* argv[]) {
+	sys_print_text ("Starting XEApp \n");
 	int event_fd = XePriLoopCreate();
-
 	XeApp *app = (XeApp*)malloc(sizeof(XeApp));
+	sys_print_text("App Address -> %x \n", app);
 	memset(app, 0, sizeof(XeApp));
 
 	/* Request a new Window from the server */

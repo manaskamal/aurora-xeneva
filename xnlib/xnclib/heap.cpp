@@ -141,18 +141,19 @@ static void dump_array()
 
 static inline void insert_tag( struct boundary_tag *tag, int index )
 {
-	int realIndex;
+	int realIndex = 0;
 	
 	if ( index < 0 ) 
 	{
 		realIndex = getexp( tag->real_size - sizeof(struct boundary_tag) );
+		
 		if ( realIndex < MINEXP ) realIndex = MINEXP;
 	}
 	else
 		realIndex = index;
-	
+
 	tag->index = realIndex;
-	
+
 	if ( l_freePages[ realIndex ] != NULL ) 
 	{
 		l_freePages[ realIndex ]->prev = tag;
@@ -221,7 +222,6 @@ static inline struct boundary_tag* split_tag( struct boundary_tag* tag )
 						tag->split_right = new_tag;
 	
 						tag->real_size -= new_tag->real_size;
-	
 						insert_tag( new_tag, -1 );
 	
 	return new_tag;
@@ -323,7 +323,7 @@ void *malloc(unsigned int size)
 		
 			// No page found. Make one.
 			if ( tag == NULL )
-			{	
+			{
 				if ( (tag = allocate_new_tag( size )) == NULL )
 				{
 					liballoc_unlock();
@@ -338,21 +338,22 @@ void *malloc(unsigned int size)
 				if ( (tag->split_left == NULL) && (tag->split_right == NULL) )
 					l_completePages[ index ] -= 1;
 			}
-		
+			
 		// We have a free page.  Remove it from the free pages list.
 		tag->size = size;
-
+		
 		// Removed... see if we can re-use the excess space.
 
 		#ifdef DEBUG
 		printf("Found tag with %i bytes available (requested %i bytes, leaving %i), which has exponent: %i (%i bytes)\n", tag->real_size - sizeof(struct boundary_tag), size, tag->real_size - size - sizeof(struct boundary_tag), index, 1<<index );
 		#endif
 		unsigned int remainder = tag->real_size - size - sizeof( boundary_tag ) * 2; // Support a new tag + remainder
-
+		
+		
 		if (remainder > 0 /*&& ( (tag->real_size - remainder) >= (1<<MINEXP))*/ )
 		{
 			int childIndex = getexp( remainder );
-	
+
 			if ( childIndex >= 0 )
 			{
 				#ifdef DEBUG
@@ -535,6 +536,7 @@ int liballoc_unlock () {
 
 void* liballoc_alloc (int pages) {
 	size_t size = pages * 4096;
+	//sys_print_text ("Requesting pages -> %d ", pages);
 	char* p = (char*)sys_proc_heap_brk(pages);
 	return p;
 }

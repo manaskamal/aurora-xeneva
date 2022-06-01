@@ -19,14 +19,10 @@ E:\XENEVA PROJECT\XENEVA\XNLIB\XNCLIB\X64\DEBUG\_XENEVA.OBJ
 E:\XENEVA PROJECT\XENEVA\XNLIB\XNCLIB\X64\DEBUG\_MAIN.OBJ
 E:\XENEVA PROJECT\XENEVA\XNLIB\XNCLIB\X64\DEBUG\_TERM.OBJ
 E:\XENEVA PROJECT\XENEVA\XNLIB\XNCLIB\X64\DEBUG\VC110.PDB
-F:\XNCLIB.DLL
-F:\XNCLIB.MAP
 E:\Xeneva Project\Xeneva\xnlib\xnclib\x64\Debug\setjmp.obj
 E:\Xeneva Project\Xeneva\xnlib\xnclib\x64\Debug\callback.obj
 E:\Xeneva Project\Xeneva\xnlib\xnclib\x64\Debug\sse2.obj
 E:\Xeneva Project\Xeneva\xnlib\xnclib\x64\Debug\_fast_copy.obj
-E:\Xeneva Project\Xeneva\Aurora\x64\Debug\xnclib.lib
-E:\Xeneva Project\Xeneva\Aurora\x64\Debug\xnclib.exp
 E:\Xeneva Project\Xeneva\xnlib\xnclib\x64\Debug\errno.obj
 E:\Xeneva Project\Xeneva\xnlib\xnclib\x64\Debug\heap.obj
 E:\Xeneva Project\Xeneva\xnlib\xnclib\x64\Debug\initializer.obj
@@ -50,9 +46,6 @@ E:\Xeneva Project\Xeneva\xnlib\xnclib\x64\Debug\_xeneva.obj
 E:\Xeneva Project\Xeneva\xnlib\xnclib\x64\Debug\cl.command.1.tlog
 E:\Xeneva Project\Xeneva\xnlib\xnclib\x64\Debug\CL.read.1.tlog
 E:\Xeneva Project\Xeneva\xnlib\xnclib\x64\Debug\CL.write.1.tlog
-E:\Xeneva Project\Xeneva\xnlib\xnclib\x64\Debug\link.command.1.tlog
-E:\Xeneva Project\Xeneva\xnlib\xnclib\x64\Debug\link.read.1.tlog
-E:\Xeneva Project\Xeneva\xnlib\xnclib\x64\Debug\link.write.1.tlog
 E:\Xeneva Project\Xeneva\xnlib\xnclib\x64\Debug\xnclib.write.1.tlog
 E:\Xeneva Project\Xeneva\xnlib\xnclib\x64\Debug\vc110.idb
 E:\Xeneva Project\Xeneva\xnlib\xnclib\x64\Debug\vc110.pdb

@@ -6,7 +6,6 @@
     <ClInclude Include="float.h" />
     <ClInclude Include="stddef.h" />
     <ClInclude Include="stdlib.h" />
-    <ClInclude Include="heap.h" />
     <ClInclude Include="sys\mmap.h">
       <Filter>sys</Filter>
     </ClInclude>
@@ -113,10 +112,10 @@
     <ClInclude Include="sys\sse2.h">
       <Filter>sys</Filter>
     </ClInclude>
+    <ClInclude Include="heap.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="string.cpp" />
-    <ClCompile Include="heap.cpp" />
     <ClCompile Include="sys\stdlib.cpp" />
     <ClCompile Include="initializer.cpp" />
     <ClCompile Include="math.cpp" />
@@ -157,6 +156,7 @@
       <Filter>sys</Filter>
     </ClCompile>
     <ClCompile Include="_main.cpp" />
+    <ClCompile Include="heap.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="sys">

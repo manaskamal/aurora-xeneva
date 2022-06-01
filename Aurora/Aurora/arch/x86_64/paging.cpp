@@ -338,7 +338,7 @@ void AuPagingClearLow() {
 //! to kernel i.e clone kernel space
 uint64_t *AuCreateAddressSpace (){
 	
-	uint64_t *cr3 = (uint64_t*)p2v((uint64_t)root_cr3); //x64_read_cr3();
+	uint64_t *cr3 = (uint64_t*)p2v((uint64_t)root_cr3);
 	uint64_t *new_cr3 = (uint64_t*)p2v((size_t)AuPmmngrAlloc());
 	memset(new_cr3,0,4096);
 

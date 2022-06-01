@@ -14,12 +14,11 @@ _BSS	ENDS
 CONST	SEGMENT
 $SG3681	DB	'Failed to load -> %s ', 0aH, 00H
 	ORG $+1
-$SG3692	DB	'Entry for %s is -> %x ', 0aH, 00H
-$SG3696	DB	'xnacrl.dll', 00H
+$SG3695	DB	'xnacrl.dll', 00H
 	ORG $+5
-$SG3697	DB	'xewid.dll', 00H
+$SG3696	DB	'xewid.dll', 00H
 	ORG $+6
-$SG3698	DB	'xnclib.dll', 00H
+$SG3697	DB	'xnclib.dll', 00H
 CONST	ENDS
 PUBLIC	?AuSysLibInitialize@@YAXXZ			; AuSysLibInitialize
 PUBLIC	?AuGetSysLib@@YAPEAU_libentry_@@PEAD@Z		; AuGetSysLib
@@ -45,7 +44,7 @@ $pdata$?AuLibRemove@@YAXPEAU_libentry_@@@Z DD imagerel $LN8
 	DD	imagerel $LN8+146
 	DD	imagerel $unwind$?AuLibRemove@@YAXPEAU_libentry_@@@Z
 $pdata$?AuSysLoadLib@@YAXPEAD@Z DD imagerel $LN6
-	DD	imagerel $LN6+292
+	DD	imagerel $LN6+270
 	DD	imagerel $unwind$?AuSysLoadLib@@YAXPEAD@Z
 pdata	ENDS
 xdata	SEGMENT
@@ -157,32 +156,25 @@ $LN1@AuSysLoadL:
 	call	malloc
 	mov	QWORD PTR entry$[rsp], rax
 
-; 104  : 	printf ("Entry for %s is -> %x \n", fname, entry);
-
-	mov	r8, QWORD PTR entry$[rsp]
-	mov	rdx, QWORD PTR fname$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3692
-	call	printf
-
-; 105  : 	strcpy(entry->path, fname);
+; 104  : 	strcpy(entry->path, fname);
 
 	mov	rax, QWORD PTR entry$[rsp]
 	mov	rdx, QWORD PTR fname$[rsp]
 	mov	rcx, rax
 	call	strcpy
 
-; 106  : 	entry->loaded = true;
+; 105  : 	entry->loaded = true;
 
 	mov	rax, QWORD PTR entry$[rsp]
 	mov	BYTE PTR [rax+64], 1
 
-; 107  : 	entry->phys_start = (uint64_t)phys_start;
+; 106  : 	entry->phys_start = (uint64_t)phys_start;
 
 	mov	rax, QWORD PTR entry$[rsp]
 	mov	rcx, QWORD PTR phys_start$[rsp]
 	mov	QWORD PTR [rax+72], rcx
 
-; 108  : 	entry->phys_end = (entry->phys_start + blocks_read * 4096);
+; 107  : 	entry->phys_end = (entry->phys_start + blocks_read * 4096);
 
 	mov	eax, DWORD PTR blocks_read$[rsp]
 	imul	eax, 4096				; 00001000H
@@ -192,24 +184,24 @@ $LN1@AuSysLoadL:
 	mov	rcx, QWORD PTR entry$[rsp]
 	mov	QWORD PTR [rcx+80], rax
 
-; 109  : 	entry->phys_blocks_count = blocks_read;
+; 108  : 	entry->phys_blocks_count = blocks_read;
 
 	mov	rax, QWORD PTR entry$[rsp]
 	mov	ecx, DWORD PTR blocks_read$[rsp]
 	mov	DWORD PTR [rax+88], ecx
 
-; 110  : 	entry->linked = false;
+; 109  : 	entry->linked = false;
 
 	mov	rax, QWORD PTR entry$[rsp]
 	mov	BYTE PTR [rax+92], 0
 
-; 111  : 	AuLibInsert(entry);
+; 110  : 	AuLibInsert(entry);
 
 	mov	rcx, QWORD PTR entry$[rsp]
 	call	?AuLibInsert@@YAXPEAU_libentry_@@@Z	; AuLibInsert
 $LN4@AuSysLoadL:
 
-; 112  : }
+; 111  : }
 
 	add	rsp, 88					; 00000058H
 	ret	0
@@ -435,37 +427,37 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 ?AuSysLibInitialize@@YAXXZ PROC				; AuSysLibInitialize
 
-; 119  : void AuSysLibInitialize () {
+; 118  : void AuSysLibInitialize () {
 
 $LN3:
 	sub	rsp, 40					; 00000028H
 
-; 120  : 	libentry_first = NULL;
+; 119  : 	libentry_first = NULL;
 
 	mov	QWORD PTR ?libentry_first@@3PEAU_libentry_@@EA, 0 ; libentry_first
 
-; 121  : 	libentry_last = NULL;
+; 120  : 	libentry_last = NULL;
 
 	mov	QWORD PTR ?libentry_last@@3PEAU_libentry_@@EA, 0 ; libentry_last
 
-; 122  : 
-; 123  : 	AuSysLoadLib("xnacrl.dll");
+; 121  : 
+; 122  : 	AuSysLoadLib("xnacrl.dll");
+
+	lea	rcx, OFFSET FLAT:$SG3695
+	call	?AuSysLoadLib@@YAXPEAD@Z		; AuSysLoadLib
+
+; 123  : 	AuSysLoadLib("xewid.dll");
 
 	lea	rcx, OFFSET FLAT:$SG3696
 	call	?AuSysLoadLib@@YAXPEAD@Z		; AuSysLoadLib
 
-; 124  : 	AuSysLoadLib("xewid.dll");
+; 124  : 	AuSysLoadLib("xnclib.dll");
 
 	lea	rcx, OFFSET FLAT:$SG3697
 	call	?AuSysLoadLib@@YAXPEAD@Z		; AuSysLoadLib
 
-; 125  : 	AuSysLoadLib("xnclib.dll");
-
-	lea	rcx, OFFSET FLAT:$SG3698
-	call	?AuSysLoadLib@@YAXPEAD@Z		; AuSysLoadLib
-
-; 126  : 
-; 127  : }
+; 125  : 
+; 126  : }
 
 	add	rsp, 40					; 00000028H
 	ret	0

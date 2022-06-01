@@ -29,7 +29,7 @@
 #define PHYSICAL_MEMORY_BASE  0xFFFF800000000000
 #define MMIO_BASE    0xffffff1000000000            //  0xffffff1fc0000000
 
-#define PROCESS_HEAP_BREAK  0x0000000020000000   //8GiB
+#define PROCESS_HEAP_BREAK  0x0000000380000000   //12GiB
 
 extern size_t  pml4_index (uint64_t addr);
 extern size_t pdp_index (uint64_t addr);

@@ -31,12 +31,14 @@
 #include <proc.h>
 #include <mmngr\vma.h>
 #include <fs\fat\fat.h>
+#include <serial.h>
 
 /*
  * AuHandlePageNotPresent -- Handle not present
  * pages
  */
 void AuHandlePageNotPresent (uint64_t vaddr, bool user, void* param) {
+	x64_cli();
 	interrupt_stack_frame *frame = (interrupt_stack_frame*)param;
 	if (!user) {
 		x64_cli();
@@ -51,8 +53,9 @@ void AuHandlePageNotPresent (uint64_t vaddr, bool user, void* param) {
 		x64_cli();
 		printf ("Page Fault -> %x \n", vaddr);
 		printf ("RIP -> %x \n", frame->rip);
-		printf ("Current thread -> %s \n", get_current_thread()->name);
+		//printf ("Current thread -> %s \n", get_current_thread()->name);
 		for(;;);
+		return;
 	}
 
 	for (int i = 0; i < vm->length; i++) {

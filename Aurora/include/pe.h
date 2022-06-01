@@ -239,6 +239,7 @@ extern void AuPeLinkLibrary (void* image);
  * @param exporter -- executable image
  */
 extern void AuPeLinkLibraryEx (void* image, void* exporter);
+
 extern "C" __declspec(dllexport) void message();
 //=====================================================================
 //   E N D   O F   P E    H E A D E R                                ||

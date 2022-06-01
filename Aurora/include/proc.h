@@ -41,6 +41,7 @@ typedef struct _process_ {
 	uint64_t _heap_size_;
 	au_vm_area_t * vma_area;
 	au_vm_area_t * last_vma;
+	vfs_node_t *process_file;
 	list_t *shared_mem_list;
 	struct _process_ *next;
 	struct _process_ *prev;
