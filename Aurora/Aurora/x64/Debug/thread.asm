@@ -103,7 +103,7 @@ $pdata$?block_thread@@YAXPEAU_thread_@@@Z DD imagerel $LN3
 	DD	imagerel $LN3+46
 	DD	imagerel $unwind$?block_thread@@YAXPEAU_thread_@@@Z
 $pdata$?unblock_thread@@YAXPEAU_thread_@@@Z DD imagerel $LN7
-	DD	imagerel $LN7+104
+	DD	imagerel $LN7+99
 	DD	imagerel $unwind$?unblock_thread@@YAXPEAU_thread_@@@Z
 $pdata$force_sched DD imagerel $LN3
 	DD	imagerel $LN3+14
@@ -1226,10 +1226,7 @@ $LN7:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 56					; 00000038H
 
-; 493  : 	x64_cli();
-
-	call	x64_cli
-
+; 493  : 	//x64_cli();
 ; 494  : 	t->state = THREAD_STATE_READY;
 
 	mov	rax, QWORD PTR t$[rsp]

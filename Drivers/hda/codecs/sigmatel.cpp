@@ -33,28 +33,27 @@
 void sigmatel_init (int codec, int nid) {
 
 	
-	/*codec_query (codec, 3, VERB_SET_STREAM_CHANNEL | (1<<4));
-	codec_query (codec, 4, VERB_SET_STREAM_CHANNEL | (1<<4));
-	codec_query (codec, 5, VERB_SET_STREAM_CHANNEL | (1<<4));
-	codec_query (codec, 6, VERB_SET_STREAM_CHANNEL | (1<<4));*/
-	
 	uint16_t format =  (1<<15) | SR_44_KHZ | (0<<11) | (0 << 8) | BITS_16 | 1;
 	//uint16_t format =  (0<<14) | (0<<11) | (0<<8)| (1<<4) | (1<<0);
 	codec_query (codec, 2, VERB_SET_FORMAT | format);
 	
 	codec_query (codec, 2, VERB_SET_STREAM_CHANNEL | 0x10);  //0x10
+	codec_query (codec, 3, VERB_SET_STREAM_CHANNEL | 0x10);
+	codec_query (codec, 4, VERB_SET_STREAM_CHANNEL | 0x10);
+	codec_query (codec, 5, VERB_SET_STREAM_CHANNEL | 0x10);
+	codec_query (codec, 6, VERB_SET_STREAM_CHANNEL | 0x10);
 
 	codec_query (codec, 2, VERB_SET_CONV_CHANNEL_COUNT | 1);
-	/*codec_query (codec, 3, VERB_SET_CONV_CHANNEL_COUNT | 1);
+	codec_query (codec, 3, VERB_SET_CONV_CHANNEL_COUNT | 1);
 	codec_query (codec, 4, VERB_SET_CONV_CHANNEL_COUNT | 1);
 	codec_query (codec, 5, VERB_SET_CONV_CHANNEL_COUNT | 1);
-	codec_query (codec, 6, VERB_SET_CONV_CHANNEL_COUNT | 1);*/
+	codec_query (codec, 6, VERB_SET_CONV_CHANNEL_COUNT | 1);
 
 	
-	/*codec_query (codec, 3, VERB_SET_FORMAT | format);
+	codec_query (codec, 3, VERB_SET_FORMAT | format);
 	codec_query (codec, 4, VERB_SET_FORMAT | format);
 	codec_query (codec, 5, VERB_SET_FORMAT | format);
-	codec_query (codec, 6, VERB_SET_FORMAT | format);*/
+	codec_query (codec, 6, VERB_SET_FORMAT | format);
 
 	
 

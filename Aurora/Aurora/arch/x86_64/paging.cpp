@@ -15,6 +15,7 @@
 #include <pmmngr.h>
 #include <serial.h>
 #include <arch\x86_64\apic.h>
+#include <stdio.h>
 
 
 //!!!======================================================================================
@@ -127,7 +128,8 @@ void AuPagingInit() {
 
 //! Map a page in current address space
 bool AuMapPage(uint64_t physical_address, uint64_t virtual_address, uint8_t attrib){
-	size_t flags = PAGING_WRITABLE | PAGING_PRESENT | attrib;
+	uint8_t flags = PAGING_PRESENT | PAGING_WRITABLE | attrib;
+
 	
 	const long i4 = (virtual_address >> 39) & 0x1FF;
 	const long i3 = (virtual_address >> 30) & 0x1FF;
@@ -407,7 +409,7 @@ bool first = false;
 void* AuMapMMIO (uint64_t phys_addr, size_t page_count) {
 	uint64_t out = (uint64_t)mmio_base_address;
 	for (size_t i = 0; i < page_count; i++) {
-		AuMapPage(phys_addr + i * 4096, out + i * 4096,0x04 | 0x08);  //
+		AuMapPage(phys_addr + i * 4096, out + i * 4096,(1<<4) | (1<<8));  //
 	}
 
 	uint64_t address = out;

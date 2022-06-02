@@ -294,9 +294,7 @@ AU_EXTERN AU_EXPORT int AuDriverUnload(){
 
 void hda_handler (size_t v, void* p) {
 //	AuInterruptEnd(0);
-	if (hda_first_interrupt == false){
-		hda_first_interrupt = true;
-	}
+	AuDisableInterupts();
 
 	uint32_t isr = _aud_inl_(INTSTS);
 	uint8_t sts = _aud_inb_(REG_O0_STS);
@@ -306,18 +304,27 @@ void hda_handler (size_t v, void* p) {
 		uint64_t *dma = (uint64_t*)hd_audio.dma_pos_buff;
 		uint32_t pos = dma[4] & 0xffffffff;
 		pos /= BUFFER_SIZE;
+		pos %= BDL_SIZE;
+		
 		//printf("HDA Buffer completed \r\n");
+		memset((int16_t*)(hd_audio.sample_buffer + pos * (BUFFER_SIZE/sizeof(int16_t))),0,BUFFER_SIZE/sizeof(int16_t));
 		AuSoundRequestNext((uint64_t*)(hd_audio.sample_buffer + pos * BUFFER_SIZE));
+		/*pos++;
+		pos %= BDL_SIZE;
+		_debug_print_ ("HDA_interrupt pos -> %d, buffer-> %x \r\n", pos,(hd_audio.sample_buffer + pos * BUFFER_SIZE));
+		AuSoundRequestNext((uint64_t*)(hd_audio.sample_buffer + pos * BUFFER_SIZE));*/
 	
 	}
 
+
+    _aud_outb_ (REG_O0_STS,sts);
     _aud_outl_(INTSTS, isr);
-	_aud_outb_ (REG_O0_STS,sts);
+	
 	
 	
 	AuInterruptEnd(hd_audio.irq);
 	//AuFiredSharedHandler(hd_audio.irq,v,p, shared_device);
-	
+	AuEnableInterrupts();
 }
 
 
@@ -355,9 +362,10 @@ AU_EXTERN AU_EXPORT int AuDriverMain(){
 
 	printf ("HDA Func -> %d, dev -> %d \n", func, dev);
 	printf ("HDA Bus -> %d \n", bus);
-	/*uint8_t tcsel;
-	tcsel = pci_express_read(device,0x44);
-	pci_express_write(device,0x44,(tcsel & 0xf8));*/
+
+	uint8_t tcsel;
+	tcsel = pci_express_read2(device,0x44, 1,bus,dev,func);
+	pci_express_write2(device,0x44,(tcsel & 0xf8),1,bus,dev,func);
 
 	codec_initialize_output = NULL;
 	codec_set_volume = NULL;
@@ -545,6 +553,10 @@ void hda_set_volume (uint8_t volume) {
  * hda_output_stream_start -- starts the output stream
  */
 void hda_output_stream_start () {
+
+	hda_set_volume(255);
+
+
 	uint32_t ssync = _aud_inl_ (SSYNC);
 	ssync &= ~(1<<4);
 	_aud_outl_(SSYNC, ssync);

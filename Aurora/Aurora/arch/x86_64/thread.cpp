@@ -490,7 +490,7 @@ uint16_t thread_get_id_by_name (char* name) {
 
 //!unblock a thread
 void unblock_thread (thread_t *t) {
-	x64_cli();
+	//x64_cli();
 	t->state = THREAD_STATE_READY;
 	for (thread_t *thr = blocked_thr_head; thr != NULL; thr = thr->next) {
 		if (thr == t) 

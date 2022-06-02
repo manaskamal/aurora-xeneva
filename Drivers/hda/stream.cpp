@@ -46,10 +46,10 @@ void hda_init_output_stream () {
 		void *p = AuPmmngrAlloc();
 		if (phys_buf == 0)
 			phys_buf = (uint64_t)p;
-		AuMapPage ((uint64_t)p,pos + i * 4096, 0);
+		AuMapPage ((uint64_t)p,pos + i * 4096, (1<<4));
 	}
 	hda_set_sample_buffer(pos);
-	memset(stream_buffer,0,BDL_SIZE*BUFFER_SIZE);
+
 	
 	/* Now reset the stream */
 	_aud_outl_ (REG_O0_CTLL, 1); //reset
@@ -73,7 +73,6 @@ void hda_init_output_stream () {
 		bdl[j].flags = 1;
 	}
 	
-	//bdl[j-1].flags = 1;
 
 	_aud_outb_ (REG_O0_CTLU, (1<<4));
 
@@ -108,6 +107,7 @@ void hda_init_output_stream () {
 }
 
 void output_stream_write(uint8_t* buffer, size_t length) {
+	printf ("Stream written ");
 	int16_t* buf = (int16_t*)buffer;
 	int16_t* strm_buff = (int16_t*)stream_buffer;
 

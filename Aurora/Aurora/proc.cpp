@@ -501,7 +501,6 @@ void process_link_libraries () {
 	x64_cli();
 
 	process_t *proc = get_current_process();
-	printf ("Linking Libraries -> %x \r\n", proc->image_base);
 
 	AuPeLinkLibraryEx((void*)0x0000000100400000,(void*)0x0000000100000000);
     AuPeLinkLibraryEx((void*)0x0000000100200000,(void*)0x0000000100000000);

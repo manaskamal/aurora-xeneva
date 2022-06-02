@@ -235,68 +235,67 @@ $LN5:
 	call	?AuPagingClearLow@@YAXXZ		; AuPagingClearLow
 
 ; 158  : 
-; 159  : 
-; 160  : #ifdef ARCH_X64
-; 161  : 
-; 162  : 	printf ("Scheduler Initialized\n");
+; 159  : #ifdef ARCH_X64
+; 160  : 
+; 161  : 	printf ("Scheduler Initialized\n");
 
 	lea	rcx, OFFSET FLAT:$SG5402
 	call	printf
 
-; 163  : 	int au_status = 0;
+; 162  : 	int au_status = 0;
 
 	mov	DWORD PTR au_status$[rsp], 0
 
-; 164  : 
-; 165  : 	/* start the sound service manager at id 1 */
-; 166  : 	au_status = AuCreateProcess ("/init.exe","shell");
+; 163  : 
+; 164  : 	/* start the sound service manager at id 1 */
+; 165  : 	au_status = AuCreateProcess ("/init.exe","shell");
 
 	lea	rdx, OFFSET FLAT:$SG5404
 	lea	rcx, OFFSET FLAT:$SG5405
 	call	?AuCreateProcess@@YAHPEBDPEAD@Z		; AuCreateProcess
 	mov	DWORD PTR au_status$[rsp], eax
 
-; 167  : 
-; 168  : 	/* start the compositing window manager at id 3 */
-; 169  : 	au_status = AuCreateProcess ("/priwm.exe","priwm");
+; 166  : 
+; 167  : 	/* start the compositing window manager at id 3 */
+; 168  : 	au_status = AuCreateProcess ("/priwm.exe","priwm");
 
 	lea	rdx, OFFSET FLAT:$SG5406
 	lea	rcx, OFFSET FLAT:$SG5407
 	call	?AuCreateProcess@@YAHPEBDPEAD@Z		; AuCreateProcess
 	mov	DWORD PTR au_status$[rsp], eax
 
+; 169  : 
 ; 170  : 
-; 171  : 
-; 172  : 	//! Here start the scheduler (multitasking engine)
-; 173  : 	AuSchedulerStart();
+; 171  : 	//! Here start the scheduler (multitasking engine)
+; 172  : 	AuSchedulerStart();
 
 	call	?AuSchedulerStart@@YAXXZ		; AuSchedulerStart
 $LN2@AuMain:
 
-; 174  : #endif
-; 175  : 
-; 176  : 	//! Loop forever
-; 177  : 	while(1) {
+; 173  : #endif
+; 174  : 
+; 175  : 	//! Loop forever
+; 176  : 	while(1) {
 
 	xor	eax, eax
 	cmp	eax, 1
 	je	SHORT $LN1@AuMain
 
-; 178  : 		//!looping looping
-; 179  : 		x64_cli();
+; 177  : 		//!looping looping
+; 178  : 		x64_cli();
 
 	call	x64_cli
 
-; 180  : 		x64_hlt();
+; 179  : 		x64_hlt();
 
 	call	x64_hlt
 
-; 181  : 	}
+; 180  : 	}
 
 	jmp	SHORT $LN2@AuMain
 $LN1@AuMain:
 
-; 182  : }
+; 181  : }
 
 	add	rsp, 56					; 00000038H
 	ret	0

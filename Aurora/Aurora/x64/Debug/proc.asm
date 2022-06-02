@@ -35,9 +35,7 @@ $SG4218	DB	'Used Pmmngr -> %d MB / Total -> %d MB ', 0dH, 0aH, 00H
 	ORG $+3
 $SG4284	DB	'child', 00H
 	ORG $+6
-$SG4318	DB	'Linking Libraries -> %x ', 0dH, 0aH, 00H
-	ORG $+5
-$SG4327	DB	'Libraries linked ', 0dH, 0aH, 00H
+$SG4326	DB	'Libraries linked ', 0dH, 0aH, 00H
 CONST	ENDS
 PUBLIC	?create_user_stack@@YAPEA_KPEAU_process_@@PEA_K@Z ; create_user_stack
 PUBLIC	?create_inc_stack@@YAPEA_KPEA_K@Z		; create_inc_stack
@@ -127,7 +125,7 @@ $pdata$?process_heap_break@@YAPEAX_K@Z DD imagerel $LN7
 	DD	imagerel $LN7+184
 	DD	imagerel $unwind$?process_heap_break@@YAPEAX_K@Z
 $pdata$?process_link_libraries@@YAXXZ DD imagerel $LN3
-	DD	imagerel $LN3+147
+	DD	imagerel $LN3+126
 	DD	imagerel $unwind$?process_link_libraries@@YAXXZ
 $pdata$?remove_process@@YAXPEAU_process_@@@Z DD imagerel $LN8
 	DD	imagerel $LN8+163
@@ -807,54 +805,47 @@ $LN3:
 	call	?get_current_process@@YAPEAU_process_@@XZ ; get_current_process
 	mov	QWORD PTR proc$[rsp], rax
 
-; 504  : 	printf ("Linking Libraries -> %x \r\n", proc->image_base);
-
-	mov	rax, QWORD PTR proc$[rsp]
-	mov	rdx, QWORD PTR [rax+48]
-	lea	rcx, OFFSET FLAT:$SG4318
-	call	printf
-
-; 505  : 
-; 506  : 	AuPeLinkLibraryEx((void*)0x0000000100400000,(void*)0x0000000100000000);
+; 504  : 
+; 505  : 	AuPeLinkLibraryEx((void*)0x0000000100400000,(void*)0x0000000100000000);
 
 	mov	rdx, 4294967296				; 0000000100000000H
 	mov	rcx, 4299161600				; 0000000100400000H
 	call	?AuPeLinkLibraryEx@@YAXPEAX0@Z		; AuPeLinkLibraryEx
 
-; 507  :     AuPeLinkLibraryEx((void*)0x0000000100200000,(void*)0x0000000100000000);
+; 506  :     AuPeLinkLibraryEx((void*)0x0000000100200000,(void*)0x0000000100000000);
 
 	mov	rdx, 4294967296				; 0000000100000000H
 	mov	rcx, 4297064448				; 0000000100200000H
 	call	?AuPeLinkLibraryEx@@YAXPEAX0@Z		; AuPeLinkLibraryEx
 
-; 508  : 
-; 509  : 	AuPeLinkLibraryEx((void*)0x0000000000600000,(void*)0x0000000100000000);  //
+; 507  : 
+; 508  : 	AuPeLinkLibraryEx((void*)0x0000000000600000,(void*)0x0000000100000000);  //
 
 	mov	rdx, 4294967296				; 0000000100000000H
 	mov	ecx, 6291456				; 00600000H
 	call	?AuPeLinkLibraryEx@@YAXPEAX0@Z		; AuPeLinkLibraryEx
 
-; 510  : 	AuPeLinkLibraryEx((void*)0x0000000100000000,(void*)0x0000000000600000); //
+; 509  : 	AuPeLinkLibraryEx((void*)0x0000000100000000,(void*)0x0000000000600000); //
 
 	mov	edx, 6291456				; 00600000H
 	mov	rcx, 4294967296				; 0000000100000000H
 	call	?AuPeLinkLibraryEx@@YAXPEAX0@Z		; AuPeLinkLibraryEx
 
-; 511  : 	
-; 512  : 	//AuPeLinkLibraryEx((void*)0x0000000000600000,(void*)0x0000000100400000);
-; 513  : 	///* Link the CLIB to every DLL */
-; 514  : 	
-; 515  : 
-; 516  : 	
-; 517  :     //AuPeLinkLibraryEx((void*)0x0000000000600000,(void*)0x0000000100200000);
+; 510  : 	
+; 511  : 	//AuPeLinkLibraryEx((void*)0x0000000000600000,(void*)0x0000000100400000);
+; 512  : 	///* Link the CLIB to every DLL */
+; 513  : 	
+; 514  : 
+; 515  : 	
+; 516  :     //AuPeLinkLibraryEx((void*)0x0000000000600000,(void*)0x0000000100200000);
+; 517  : 	
 ; 518  : 	
-; 519  : 	
-; 520  : 	_debug_print_ ("Libraries linked \r\n");
+; 519  : 	_debug_print_ ("Libraries linked \r\n");
 
-	lea	rcx, OFFSET FLAT:$SG4327
+	lea	rcx, OFFSET FLAT:$SG4326
 	call	_debug_print_
 
-; 521  : }
+; 520  : }
 
 	add	rsp, 56					; 00000038H
 	ret	0

@@ -43,7 +43,7 @@ thread_t* registered_thr;
 uint32_t next_pos = 0;
 uint8_t* data_buff = 0;
 
-#define BUFF_SIZE   8192//0x10000 
+#define BUFF_SIZE  4096
 
 dsp_t* dsp_first;
 dsp_t* dsp_last;
@@ -88,17 +88,17 @@ void AuRemoveDSP(dsp_t *dsp) {
 }
 
 void AuRequestNextBlock(uint16_t id) {
-	//pri_event_t e;
-	//e.to_id = id;
-	//e.from_id = 0;
-	//e.type = 10;
-	//pri_put_message(&e);
-	thread_t *t = thread_iterate_ready_list(id);
-	if (t == NULL)
-		t = thread_iterate_block_list(id);
+	pri_event_t e;
+	e.to_id = id;
+	e.from_id = 0;
+	e.type = 10;
+	pri_put_message(&e);
+	//thread_t *t = thread_iterate_ready_list(id);
+	//if (t == NULL)
+	//	t = thread_iterate_block_list(id);
 
-	if (t->state == THREAD_STATE_BLOCKED)
-		unblock_thread(t);
+	//if (t->state == THREAD_STATE_BLOCKED)
+	//	unblock_thread(t);
 }
 
 /*
@@ -135,7 +135,7 @@ void AuSoundWrite (vfs_node_t *file, uint8_t* buffer, uint32_t length) {
 		for (int i = 0; i < BUFF_SIZE / sizeof(int16_t); i++) {
 			tmp_buffer[i] = aligned_buff[i];
 		}
-		AuRequestNextBlock(dsp->id);
+		//AuRequestNextBlock(dsp->id);
 	}
 	
 	registered_dev->write((uint8_t*)tmp_buffer, BUFF_SIZE);
@@ -223,11 +223,13 @@ void AuSoundRegisterDevice(sound_t * dev) {
 
 
 void AuSoundRequestNext (uint64_t *buffer) {
+	if (dsp_first == NULL)
+		return;
 	int16_t* hw_buffer = (int16_t*)buffer;
 	uint8_t *buff = (uint8_t*)p2v((size_t)AuPmmngrAllocBlocks(BUFF_SIZE/4096));
 	for (dsp_t *dsp = dsp_first; dsp != NULL; dsp = dsp->next) {
 
-		for (int i = 0; i < BUFF_SIZE / sizeof(int16_t); i++)
+		for (int i = 0; i < BUFF_SIZE/ sizeof(int16_t); i++)
 			hw_buffer[i] = 0;
 		
 		for (int i = 0; i < BUFF_SIZE; i++)

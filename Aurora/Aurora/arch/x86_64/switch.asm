@@ -29,19 +29,19 @@ save_context:
 	mov [rcx + 0x90], r14
 	mov [rcx + 0x98], r15
 
-	mov rdx, [rcx + 0xD0]
-	and dl, 0xF0
-	add rdx, 0x10
-	movaps [rdx], xmm6
-	movaps [rdx+0x10], xmm7
-	movaps [rdx+0x20], xmm8
-	movaps [rdx+0x30], xmm9
-	movaps [rdx+0x40], xmm10
-	movaps [rdx+0x50], xmm11
-	movaps [rdx+0x60], xmm12
-	movaps [rdx+0x70], xmm13
-	movaps [rdx+0x80], xmm14
-	movaps [rdx+0x90], xmm15
+	;mov rdx, [rcx + 0xD0]
+	;and dl, 0xF0
+	;add rdx, 0x10
+	;movaps [rdx], xmm6
+	;movaps [rdx+0x10], xmm7
+	;movaps [rdx+0x20], xmm8
+	;movaps [rdx+0x30], xmm9
+	;movaps [rdx+0x40], xmm10
+	;movaps [rdx+0x50], xmm11
+	;movaps [rdx+0x60], xmm12
+	;movaps [rdx+0x70], xmm13
+	;movaps [rdx+0x80], xmm14
+	;movaps [rdx+0x90], xmm15
 
 	pushfq  
 	pop rax
@@ -53,7 +53,6 @@ save_context:
     mov [rcx + 0x08], rsp
 	;rsp savings here
 
-	
 	xor rax, rax  
 	jmp rdx
 
@@ -82,19 +81,19 @@ execute_idle:
 	;mov rax,  [rcx + 0xC8]   ;get the current task rsp0 {kernel mode stack}
 	;mov [rdx + 0x4],rax     ;store it in tss, as we are going to enter user mode for user threads
 
-	mov rdx, [rcx + 0xD0]
-	and dl, 0xF0
-	add rdx, 0x10
-	movaps xmm6, [rdx]
-	movaps xmm7, [rdx+0x10]
-	movaps xmm8, [rdx+0x20]
-	movaps xmm9, [rdx+0x30]
-	movaps xmm10, [rdx+0x40] 
-	movaps xmm11, [rdx+0x50]
-	movaps xmm12, [rdx+0x60]
-	movaps xmm13, [rdx+0x70]
-	movaps xmm14, [rdx+0x80]
-	movaps xmm15, [rdx+0x90] 
+	;mov rdx, [rcx + 0xD0]
+	;and dl, 0xF0
+	;add rdx, 0x10
+	;movaps xmm6, [rdx]
+	;movaps xmm7, [rdx+0x10]
+	;movaps xmm8, [rdx+0x20]
+	;movaps xmm9, [rdx+0x30]
+	;movaps xmm10, [rdx+0x40] 
+	;movaps xmm11, [rdx+0x50]
+	;movaps xmm12, [rdx+0x60]
+	;movaps xmm13, [rdx+0x70]
+	;movaps xmm14, [rdx+0x80]
+	;movaps xmm15, [rdx+0x90] 
 	
 	;mov qword[fs:0x20], r8
 
@@ -113,6 +112,7 @@ execute_idle:
 	push r9
 	popfq
 	jmp rdx
+	
 
 
 	

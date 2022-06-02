@@ -102,7 +102,7 @@ void ahci_interrupt_handler (size_t v, void* p) {
 
 	HBA_MEM *hba = (HBA_MEM*)hbabar;
 	uint32_t is = hba->is;
-	_debug_print_ ("AHCI Interrupt handler \r\n");
+	//_debug_print_ ("AHCI Interrupt handler \r\n");
 #if 0
 	printf ("[AHCI]: Interrupt fired++\n");
 #endif
