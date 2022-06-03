@@ -159,7 +159,6 @@ int AuCreateProcess(const char* filename, char* procname) {
 	//!allocate a data-structure for process 
 	process_t *process = (process_t*)malloc(sizeof(process_t)); //pmmngr_alloc();
 	memset(process, 0,sizeof(process_t));
-	printf ("Process addr -> %x\n", process);
 	process->pid_t = pid;
 
 	//!open the process file-binary

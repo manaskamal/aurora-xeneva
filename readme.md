@@ -1,3 +1,8 @@
+# Latest Updates
+
+[Click here to see, Aurora's Xeneva playing live audio using Intel HD Audio](https://www.youtube.com/watch?v=q6m1qwLDbqE)
+
+
 # Aurora's Xeneva
 
 Aurora's Xeneva is an operating system completely build from scratch. The system uses x86_64 architecture and can be booted from uefi environment.
@@ -67,6 +72,7 @@ __xnlib/xnclib/__ -- C library  <br>
 
 ## __Creating and Using Drivers inside Aurora__
 _Please refer to __"Drivers/"__ directory_
+
 
 # Screenshot
 ![alt text](https://github.com/manaskamal/aurora-xeneva/blob/master/images/HelloXeneva2.png?raw=true)
