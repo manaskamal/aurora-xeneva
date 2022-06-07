@@ -247,7 +247,7 @@ $LN5:
 	mov	DWORD PTR au_status$[rsp], 0
 
 ; 163  : 
-; 164  : 	/* start the sound service manager at id 1 */
+; 164  : 	/* start the init process here */
 ; 165  : 	au_status = AuCreateProcess ("/init.exe","shell");
 
 	lea	rdx, OFFSET FLAT:$SG5404
@@ -265,37 +265,36 @@ $LN5:
 	mov	DWORD PTR au_status$[rsp], eax
 
 ; 169  : 
-; 170  : 
-; 171  : 	//! Here start the scheduler (multitasking engine)
-; 172  : 	AuSchedulerStart();
+; 170  : 	//! Here start the scheduler (multitasking engine)
+; 171  : 	AuSchedulerStart();
 
 	call	?AuSchedulerStart@@YAXXZ		; AuSchedulerStart
 $LN2@AuMain:
 
-; 173  : #endif
-; 174  : 
-; 175  : 	//! Loop forever
-; 176  : 	while(1) {
+; 172  : #endif
+; 173  : 
+; 174  : 	//! Loop forever
+; 175  : 	while(1) {
 
 	xor	eax, eax
 	cmp	eax, 1
 	je	SHORT $LN1@AuMain
 
-; 177  : 		//!looping looping
-; 178  : 		x64_cli();
+; 176  : 		//!looping looping
+; 177  : 		x64_cli();
 
 	call	x64_cli
 
-; 179  : 		x64_hlt();
+; 178  : 		x64_hlt();
 
 	call	x64_hlt
 
-; 180  : 	}
+; 179  : 	}
 
 	jmp	SHORT $LN2@AuMain
 $LN1@AuMain:
 
-; 181  : }
+; 180  : }
 
 	add	rsp, 56					; 00000038H
 	ret	0

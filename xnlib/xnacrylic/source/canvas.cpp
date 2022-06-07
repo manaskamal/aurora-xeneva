@@ -31,16 +31,12 @@ canvas_t *create_canvas (int width, int height) {
 	uint32_t bpp = ioquery(svga_fd, SCREEN_GETBPP, NULL);
 	uint16_t scanline = ioquery(svga_fd, SCREEN_GET_SCANLINE, NULL);
 
-	int svga_fd2 = sys_open_file ("/dev/svga", NULL);
 
 	canvas_t *canvas = (canvas_t*)malloc(sizeof(canvas_t));
 	
-	uint32_t *address = NULL;
-	if (double_buffer) {
-		address = acrylic_allocate_buffer(width * height * 4);
+	uint32_t *address = acrylic_allocate_buffer(width * height * 32);
 		/*for (int i = 0; i < (width * height * 32) / 4096; i++)
 			valloc(0x0000600000000000 + i * 4096);*/
-	}
 
 	canvas->width = s_width;
 	canvas->height = s_height;
@@ -48,8 +44,7 @@ canvas_t *create_canvas (int width, int height) {
 	canvas->scanline = scanline;
 	canvas->ctx_width = width;
 	canvas->ctx_height = height;
-	if (double_buffer)
-		canvas->address = address;   //0x0000600000000000;
+	canvas->address = address;   //0x0000600000000000;
 	return canvas;
 }
 
@@ -81,19 +76,17 @@ void canvas_set_height (canvas_t * canvas,uint32_t height) {
 }
 
 uint32_t canvas_get_width (canvas_t * canvas) {
-	return canvas->width;
+	return canvas->ctx_width;
 }
 
 uint32_t canvas_get_height (canvas_t * canvas) {
-	return canvas->height;
+	return canvas->ctx_height;
 }
 
 void canvas_screen_update (canvas_t * canvas,uint32_t x, uint32_t y, uint32_t w, uint32_t h) {
 	uint32_t* lfb = (uint32_t*)0xFFFFD00000200000;
 
 	//! Avoid Tearing 
-	for (int j = 0; j < 1000; j++)
-		;
 
 	for (int i = 0; i < h; i++)
 		fastcpy (lfb + (y + i) * canvas->width + x,canvas->address + (y + i) * canvas->width + x, w * 4);
@@ -116,7 +109,7 @@ void canvas_draw_pixel (canvas_t * canvas,uint32_t x, uint32_t y, uint32_t color
 
 uint32_t canvas_get_pixel (canvas_t * canvas,uint32_t x, uint32_t y) {
 	unsigned int* lfb =  canvas->address; 
-	return lfb[x + y * canvas_get_scale(canvas)];
+	return lfb[x + y * canvas_get_width(canvas)];
 }
 
 

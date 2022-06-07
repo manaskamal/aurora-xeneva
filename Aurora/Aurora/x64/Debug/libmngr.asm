@@ -456,8 +456,7 @@ $LN3:
 	lea	rcx, OFFSET FLAT:$SG3697
 	call	?AuSysLoadLib@@YAXPEAD@Z		; AuSysLoadLib
 
-; 125  : 
-; 126  : }
+; 125  : }
 
 	add	rsp, 40					; 00000028H
 	ret	0

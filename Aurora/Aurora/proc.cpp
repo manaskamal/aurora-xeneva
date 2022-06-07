@@ -161,12 +161,15 @@ int AuCreateProcess(const char* filename, char* procname) {
 	memset(process, 0,sizeof(process_t));
 	process->pid_t = pid;
 
+	_debug_print_ ("Process created -> %x \r\n",process);
+
 	//!open the process file-binary
 	char *fname = (char*)filename;
 
 	//vfs_node_t file = openfs (n,fname);
 	vfs_node_t *file = fat32_open(NULL, fname);
 	if (file->status == FS_FLAG_INVALID) {
+		_debug_print_ ("Executable invalid \r\n");
 		printf("Executable image not found\n");
 		return -1;
 	}
@@ -181,6 +184,7 @@ int AuCreateProcess(const char* filename, char* procname) {
 	IMAGE_DOS_HEADER* dos = (IMAGE_DOS_HEADER*)buf;
 	PIMAGE_NT_HEADERS nt = raw_offset<PIMAGE_NT_HEADERS>(dos, dos->e_lfanew);
 
+	_debug_print_ ("DOS Sign-> %x \r\n", dos->e_magic);
 	//!extract the informations
  
 	uint64_t _image_base_ = nt->OptionalHeader.ImageBase;
@@ -227,14 +231,24 @@ int AuCreateProcess(const char* filename, char* procname) {
 	}
 
 	AuLibEntry_t *lib2 = AuGetSysLib("xewid.dll");
-	if (lib2 != NULL)
+	if (lib2 != NULL){
 		for (int i = 0; i < lib2->phys_blocks_count; i++) {
 			void* phys = (void*)p2v((size_t)AuPmmngrAlloc());
 			memcpy (phys, (void*)p2v(lib2->phys_start + i * 4096), 4096);
 			AuMapPageEx(cr3, v2p((size_t)phys),0x100200000 + i * 4096, PAGING_USER); 
 		}
-
+	}
 	
+	/*AuLibEntry_t *lib4 = AuGetSysLib("ft.dll");
+	printf ("FT Lib physc-> %d \n", lib4->phys_blocks_count);
+	if (lib4 != NULL) {
+		for (int i = 0; i < lib4->phys_blocks_count; i++) {
+			void* phys = (void*)p2v((size_t)AuPmmngrAlloc());
+			memcpy (phys, (void*)p2v(lib4->phys_start + i * 4096), 4096);
+			AuMapPageEx(cr3, v2p((size_t)phys), 0x100500000 + i * 4096, PAGING_USER);
+		}
+	}*/
+
 
 
 
@@ -273,8 +287,6 @@ int AuCreateProcess(const char* filename, char* procname) {
     add_process(process);
 
 	//free(file);
-
-	_debug_print_ ("PROCESS CR3 -> %x \r\n", cr3);
 	return process->pid_t;
 }
 
@@ -500,9 +512,11 @@ void process_link_libraries () {
 	x64_cli();
 
 	process_t *proc = get_current_process();
-
+	
 	AuPeLinkLibraryEx((void*)0x0000000100400000,(void*)0x0000000100000000);
     AuPeLinkLibraryEx((void*)0x0000000100200000,(void*)0x0000000100000000);
+	//AuPeLinkLibraryEx((void*)0x0000000100500000,(void*)0x0000000100000000);
+	//
 
 	AuPeLinkLibraryEx((void*)0x0000000000600000,(void*)0x0000000100000000);  //
 	AuPeLinkLibraryEx((void*)0x0000000100000000,(void*)0x0000000000600000); //

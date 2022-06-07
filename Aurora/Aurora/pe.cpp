@@ -131,10 +131,14 @@ void AuPeLinkLibraryEx (void* image, void* exporter) {
 		/* Here Check the required dll name, for the base address */
 		if (strcmp(func,"xnclib.dll") == 0){
 			exporter = (void*)XNCLIB_BASE;
+			_debug_print_ ("Importer depends on -> %s \r\n", func);
 		}else if (strcmp(func,"xnacrl.dll") == 0){
 			exporter = (void*)XNACRL_BASE;
 		}else if (strcmp(func,"xewid.dll") == 0){
 			exporter = (void*)XNWID_BASE;
+		}else if (strcmp(func, "ftype.dll") == 0){
+			_debug_print_ ("Exporter found -> %s \r\n", func);
+			//exporter = (void*)FTYPE_BASE;
 		}
 
 		
@@ -145,7 +149,7 @@ void AuPeLinkLibraryEx (void* image, void* exporter) {
 			const char* fname = hint->name;
 			
 			void* procaddr = AuGetProcAddress(exporter, fname);
-			
+	
 			if (procaddr != 0) {
 				uint64_t addr = *iat;
 				uint64_t paddr = (uint64_t)procaddr;

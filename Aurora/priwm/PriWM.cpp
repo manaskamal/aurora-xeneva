@@ -516,8 +516,12 @@ void pri_wallpaper_present_rect (int x, int y, int w, int h) {
 	/* draw the entire wallpaper */
 	for (int j=0; j < h; j++){
 		fastcpy (canvas->address + (y + j) * canvas->width + x,wallp + (y + j) * canvas->width + x,
-					w * 32);	
+					w * 32);	  
 	}
+	/*for (int j=0; j < h; j++){
+		fastcpy (canvas->address + (((y + j) * canvas->width + x) / 4),wallp + (((y + j) * canvas->width + x)/4),
+					w * 4);	  
+	}*/
 }
 
 
@@ -618,7 +622,7 @@ pri_window_t * window_create (int x, int y, int w, int h, uint8_t attr, uint16_t
 	uint16_t back_store_key = 0;
 	pri_window_t *win = (pri_window_t*)malloc(sizeof(pri_window_t));
 	win->attribute = attr;
-	win->backing_store = (uint32_t*)create_new_backing_store(owner_id, w*h*4, &back_store_key);
+	win->backing_store = (uint32_t*)create_new_backing_store(owner_id, w*h*32, &back_store_key);
 	win->owner_id = owner_id;
 	win->pri_win_info_loc = create_new_shared_win(&sh_key,owner_id);
 	win->sh_win_key = sh_key;
@@ -866,9 +870,15 @@ void compose_frame () {
 				he = canvas->height - info->y;
 			}
 
-			for (int i = 0; i < he; i++)  {
-				fastcpy (canvas->address + (winy + i) * canvas->width + winx,win->backing_store + (0 + i) * 4 + 0,
+			/*for (int i = 0; i < he; i++)  {
+				fastcpy (canvas->address + (winy + i) * canvas->width + winx, win->backing_store + (0 + i) * 4 + 0,
 				wid * 4);	
+			}*/
+			for (int j = 0; j < he; j++) {
+				for (int i = 0; i < wid; i++){
+					*(uint32_t*)(canvas->address + (winy + j) * canvas->width + (winx + i)) = alpha_blend(*(uint32_t*)(canvas->address + (winy + j)* canvas->width + (winx + i)),
+						*(uint32_t*)(win->backing_store + j * info->width + i));
+				}
 			}
 			/* add the clip region */
 			pri_add_clip (winx, winy, wid, he);
@@ -1000,21 +1010,20 @@ XE_EXTERN int XeMain (int argc, char* argv[]) {
 	uint32_t s_width = ioquery(svga_fd,SCREEN_GETWIDTH,NULL);
 	uint32_t s_height = ioquery(svga_fd, SCREEN_GETHEIGHT, NULL);
 
-	sys_print_text ("XeMain PRIWM \n");
 	/*
 	 * create the main backing store
 	 */
 	canvas = create_canvas (s_width,s_height);
-	sys_print_text ("Created canvas -> %x \n", canvas);
+	sys_print_text ("Created canvas -> %x \r\n", canvas);
 
 	int w = canvas_get_width(canvas);
 	int h = canvas_get_height(canvas);
 
 	//! load cursor library
 	cursor_init ();
-	sys_print_text ("Reading cursor files \n");
+	sys_print_text ("Reading cursor files \r\n");
 	load_cursor ("/cursor.bmp",(uint8_t*)0x0000070000000000, arrow_cursor);
-	load_cursor ("/spin.bmp", (uint8_t*)0x0000070000001000, spin_cursor);
+	//load_cursor ("/spin.bmp", (uint8_t*)0x0000070000001000, spin_cursor);
 	Image* wallp = pri_load_wallpaper ("/winne1.jpg");
 	pri_wallpaper_draw(NULL);
 

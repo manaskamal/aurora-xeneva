@@ -5,11 +5,20 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
     </Filter>
+    <Filter Include="includes\styles">
+      <UniqueIdentifier>{4e91cf01-bba4-4f84-87a5-18a1b27161ad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="styles">
+      <UniqueIdentifier>{6e837fe6-56ab-4e9b-8bb1-5e8009d8d5ee}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="xebase.cpp" />
     <ClCompile Include="xeloop.cpp" />
-    <ClCompile Include="xebasewin.cpp" />
+    <ClCompile Include="xewindow.cpp" />
+    <ClCompile Include="styles\XEDefaultWinStyle.cpp">
+      <Filter>styles</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="includes\xebase.h">
@@ -18,11 +27,14 @@
     <ClInclude Include="includes\xeloop.h">
       <Filter>includes</Filter>
     </ClInclude>
-    <ClInclude Include="includes\xebasewin.h">
-      <Filter>includes</Filter>
-    </ClInclude>
     <ClInclude Include="includes\xewidgets.h">
       <Filter>includes</Filter>
+    </ClInclude>
+    <ClInclude Include="includes\xewindow.h">
+      <Filter>includes</Filter>
+    </ClInclude>
+    <ClInclude Include="includes\styles\XEDefaultWinStyle.h">
+      <Filter>includes\styles</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

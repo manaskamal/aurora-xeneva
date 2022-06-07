@@ -107,7 +107,7 @@ $LN7:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 72					; 00000048H
 
-; 102  : 
+; 102  : 	//x64_cli();
 ; 103  : 	HBA_MEM *hba = (HBA_MEM*)hbabar;
 
 	mov	rax, QWORD PTR ?hbabar@@3PEAXEA		; hbabar
@@ -151,7 +151,7 @@ $LN4@ahci_inter:
 	je	SHORT $LN1@ahci_inter
 
 ; 111  : #if 0
-; 112  : 			printf ("[AHCI]: Interrupt from %d port\n", i);
+; 112  : 			_debug_print_ ("[AHCI]: Interrupt from %d port \r\n", i);
 ; 113  : #endif
 ; 114  : 			uint32_t port_is = hba->port[i].is;
 
@@ -210,7 +210,7 @@ $LN2@ahci_inter:
 	xor	ecx, ecx
 	call	AuInterruptEnd
 
-; 140  : 
+; 140  : 	//x64_sti();
 ; 141  : 
 ; 142  : }
 

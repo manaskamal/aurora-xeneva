@@ -19,17 +19,18 @@
 #include FT_FREETYPE_H
 
 
-//Font system_font;
-//static FT_Library lib = 0;
-//static FT_Error err;
-//static FT_Face face;
-//static FT_GlyphSlot slot;
+Font system_font;
+static FT_Library lib = 0;
+static FT_Error err;
+static FT_Face face;
+static FT_GlyphSlot slot;
 
 /**
  * acrylic_initialize_font -- initializes font library
  */
 void acrylic_initialize_font () {
-	/*UFILE f;
+	
+	UFILE f;
 	int fd = sys_open_file("/roboto.ttf", &f);
 	for (int i = 0; i < 1024*1024/4096; i++)
 		valloc(0xFFFFFFFFC0000000 + i * 4096);
@@ -45,25 +46,25 @@ void acrylic_initialize_font () {
 	err = FT_New_Memory_Face(lib,system_font.data,system_font.size,0,&face);
 	err = FT_Set_Pixel_Sizes(face,0,32);
 	slot = face->glyph;
-	*/
+	
 }
 
 /**
  * acrylic_font_destroy -- destroys font
  */
 void acrylic_font_destroy () {
-	/*for (int i = 0; i < 1024*1024/4096; i++)
-		vfree(0xFFFFFFFFC0000000 + i * 4096);*/
+	for (int i = 0; i < 1024*1024/4096; i++)
+		vfree(0xFFFFFFFFC0000000 + i * 4096);
 }
 
 
 void acrylic_font_set_size (uint32_t sz) {
-	//err = FT_Set_Pixel_Sizes(face,sz/ 72.f * 96,sz/ 72.f * 96);  //sz / 72.f * 96
+	err = FT_Set_Pixel_Sizes(face,sz/ 72.f * 96,sz/ 72.f * 96);  //sz / 72.f * 96
 }
 
 void acrylic_font_draw_string (canvas_t *canvas, char* string, int penx, int peny, uint32_t sz, uint32_t color) {
 	
-	/*int w = face->glyph->metrics.width;
+	int w = face->glyph->metrics.width;
 	int h = face->glyph->metrics.height;
 	FT_Bool use_kerning = FT_HAS_KERNING(face);
 	uint32_t previous = 0;
@@ -93,16 +94,16 @@ void acrylic_font_draw_string (canvas_t *canvas, char* string, int penx, int pen
 		peny += face->glyph->advance.y >> 6;
 		previous = glyph_index;
 		string++;
-	}*/
+	}
 }
 
 Font* acrylic_get_system_font () {
-	//return &system_font;
+	return &system_font;
 	return 0;
 }
 
 int acrylic_font_get_length(char *string) {
-	/*size_t penx = 0;
+	size_t penx = 0;
 	int string_width = 0;
 	while(*string) {
 		err = FT_Load_Char(face,*string, FT_LOAD_ADVANCE_ONLY);
@@ -110,12 +111,12 @@ int acrylic_font_get_length(char *string) {
 			continue;
 		penx += face->glyph->advance.x >> 6;
 		string++;
-	}*/
+	}
 	return 0; //penx;
 }
 
 int acrylic_font_get_height(char* string) {
-	/*size_t peny = 0;
+	size_t peny = 0;
 	int string_width = 0;
 	while(*string) {
 		err = FT_Load_Char(face,*string, FT_LOAD_ADVANCE_ONLY);
@@ -123,13 +124,13 @@ int acrylic_font_get_height(char* string) {
 			continue;
 		peny += face->glyph->advance.y >> 6;
 		string++;
-	}*/
+	}
 	return 0; //peny;
 }
 
 void acrylic_close_font () {
-	/*FT_Done_Face(face);
+	FT_Done_Face(face);
 	FT_Done_FreeType(lib);
 	for (int i = 0; i < system_font.size/4096; i++)
-		vfree(0xFFFFFFFFC0000000 + i * 4096);*/
+		vfree(0xFFFFFFFFC0000000 + i * 4096);
 }

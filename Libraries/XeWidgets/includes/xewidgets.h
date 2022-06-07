@@ -33,7 +33,7 @@
 /* All includes in one header */
 
 #include <xebase.h>
-#include <xebasewin.h>
+#include <xewindow.h>
 #include <xeloop.h>
 
 

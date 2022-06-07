@@ -27,6 +27,9 @@
  *
  *
  **/
+#ifndef __XE_BASE_H__
+#define __XE_BASE_H__
+
 
 #include <sys\_xeneva.h>
 #include <stdint.h>
@@ -60,3 +63,5 @@ XE_EXTERN XE_EXPORT void XeSendEventPRIWM (pri_event_t *event);
  * for GUI Application
  */
 XE_EXTERN XE_EXPORT XeApp* XeStartApplication(int argc, char* argv[]);
+
+#endif

@@ -39,6 +39,9 @@ void message_send (uint16_t dest_id, message_t *msg) {
 		}
 	}
 
+	if (dest_thread == NULL)
+		return;
+
 	msg->dest_id = dest_id;
 	//!Actuall Message model
 	kernel_message_queue_t * temp = (kernel_message_queue_t*)p2v((uint64_t)AuPmmngrAlloc()); //malloc(sizeof(kernel_message_queue_t));

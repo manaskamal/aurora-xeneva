@@ -1,6 +1,10 @@
-﻿Build started 02-06-2022 আবেলি 4:11:04.
+﻿Build started 07-06-2022 আবেলি 11:49:36.
      1>Project "E:\Xeneva Project\Xeneva\xnlib\xnacrylic\xnacrylic.vcxproj" on node 2 (Rebuild target(s)).
-     1>ClCompile:
+     1>_NASM:
+         _base.asm
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmpdecc310290ac4c489d6466cb6d32379e.cmd"
+         "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\_base.obj"  "E:\Xeneva Project\Xeneva\xnlib\xnacrylic\_base.asm"
+       ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\xnlib\xnclib" /I"E:\Xeneva Project\Xeneva\xnlib\xnacrylic\include" /I"E:\os_dev\freetype2-master\freetype2-master\include" /Zi /nologo /W4 /WX- /sdl- /MP /Od /D ARCH_X64 /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt source\acrylic.cpp source\buffer.cpp source\canvas.cpp source\color.cpp source\font.cpp source\image.cpp source\path2d.cpp source\psf\psf.cpp xnacrylic.cpp
      1>cl : Command line warning D9025: overriding '/sdl-' with '/GS-'
      1>cl : Command line warning D9002: ignoring unknown option '/arch:SSE'
@@ -74,15 +78,14 @@
      1>E:\Xeneva Project\Xeneva\xnlib\xnacrylic\include\jpg\jpeg_decoder.h(580): warning C4127: conditional expression is constant
      1>source\image.cpp(100): warning C4244: '=' : conversion from 'unsigned int' to 'uint8_t', possible loss of data
          font.cpp
-     1>source\font.cpp(60): warning C4100: 'sz' : unreferenced formal parameter
-     1>source\font.cpp(64): warning C4100: 'color' : unreferenced formal parameter
-     1>source\font.cpp(64): warning C4100: 'sz' : unreferenced formal parameter
-     1>source\font.cpp(64): warning C4100: 'peny' : unreferenced formal parameter
-     1>source\font.cpp(64): warning C4100: 'penx' : unreferenced formal parameter
-     1>source\font.cpp(64): warning C4100: 'string' : unreferenced formal parameter
-     1>source\font.cpp(64): warning C4100: 'canvas' : unreferenced formal parameter
-     1>source\font.cpp(104): warning C4100: 'string' : unreferenced formal parameter
-     1>source\font.cpp(117): warning C4100: 'string' : unreferenced formal parameter
+     1>source\font.cpp(62): warning C4244: 'argument' : conversion from 'float' to 'FT_UInt', possible loss of data
+     1>source\font.cpp(87): warning C4018: '<' : signed/unsigned mismatch
+     1>source\font.cpp(88): warning C4018: '<' : signed/unsigned mismatch
+     1>source\font.cpp(65): warning C4100: 'sz' : unreferenced formal parameter
+     1>source\font.cpp(67): warning C4189: 'w' : local variable is initialized but not referenced
+     1>source\font.cpp(68): warning C4189: 'h' : local variable is initialized but not referenced
+     1>source\font.cpp(107): warning C4189: 'string_width' : local variable is initialized but not referenced
+     1>source\font.cpp(120): warning C4189: 'string_width' : local variable is initialized but not referenced
          color.cpp
      1>source\color.cpp(75): warning C4244: 'argument' : conversion from 'float' to 'uint8_t', possible loss of data
      1>source\color.cpp(80): warning C4244: 'initializing' : conversion from 'int' to 'float', possible loss of data
@@ -93,44 +96,44 @@
      1>source\color.cpp(92): warning C4018: '<' : signed/unsigned mismatch
          canvas.cpp
      1>source\canvas.cpp(32): warning C4244: 'initializing' : conversion from 'int' to 'uint16_t', possible loss of data
-     1>source\canvas.cpp(34): warning C4189: 'svga_fd2' : local variable is initialized but not referenced
-     1>source\canvas.cpp(98): warning C4018: '<' : signed/unsigned mismatch
-     1>source\canvas.cpp(124): warning C4018: '<' : signed/unsigned mismatch
-     1>source\canvas.cpp(125): warning C4018: '<' : signed/unsigned mismatch
+     1>source\canvas.cpp(91): warning C4018: '<' : signed/unsigned mismatch
+     1>source\canvas.cpp(117): warning C4018: '<' : signed/unsigned mismatch
+     1>source\canvas.cpp(118): warning C4018: '<' : signed/unsigned mismatch
          buffer.cpp
      1>source\buffer.cpp(24): warning C4267: '+=' : conversion from 'size_t' to 'int', possible loss of data
      1>source\buffer.cpp(33): warning C4267: '-=' : conversion from 'size_t' to 'int', possible loss of data
          acrylic.cpp
-     1>source\acrylic.cpp(24): warning C4018: '<' : signed/unsigned mismatch
      1>source\acrylic.cpp(25): warning C4018: '<' : signed/unsigned mismatch
-     1>source\acrylic.cpp(61): warning C4018: '<' : signed/unsigned mismatch
+     1>source\acrylic.cpp(26): warning C4018: '<' : signed/unsigned mismatch
      1>source\acrylic.cpp(62): warning C4018: '<' : signed/unsigned mismatch
-     1>source\acrylic.cpp(175): warning C4189: 'i' : local variable is initialized but not referenced
-     1>source\acrylic.cpp(192): warning C4244: 'initializing' : conversion from 'uint32_t' to 'float', possible loss of data
+     1>source\acrylic.cpp(63): warning C4018: '<' : signed/unsigned mismatch
+     1>source\acrylic.cpp(176): warning C4189: 'i' : local variable is initialized but not referenced
      1>source\acrylic.cpp(193): warning C4244: 'initializing' : conversion from 'uint32_t' to 'float', possible loss of data
      1>source\acrylic.cpp(194): warning C4244: 'initializing' : conversion from 'uint32_t' to 'float', possible loss of data
-     1>source\acrylic.cpp(200): warning C4244: 'argument' : conversion from 'float' to 'uint8_t', possible loss of data
-     1>source\acrylic.cpp(210): warning C4244: 'initializing' : conversion from 'uint32_t' to 'float', possible loss of data
+     1>source\acrylic.cpp(195): warning C4244: 'initializing' : conversion from 'uint32_t' to 'float', possible loss of data
+     1>source\acrylic.cpp(201): warning C4244: 'argument' : conversion from 'float' to 'uint8_t', possible loss of data
      1>source\acrylic.cpp(211): warning C4244: 'initializing' : conversion from 'uint32_t' to 'float', possible loss of data
      1>source\acrylic.cpp(212): warning C4244: 'initializing' : conversion from 'uint32_t' to 'float', possible loss of data
      1>source\acrylic.cpp(213): warning C4244: 'initializing' : conversion from 'uint32_t' to 'float', possible loss of data
-     1>source\acrylic.cpp(220): warning C4244: 'argument' : conversion from 'float' to 'uint8_t', possible loss of data
-     1>source\acrylic.cpp(253): warning C4018: '<' : signed/unsigned mismatch
+     1>source\acrylic.cpp(214): warning C4244: 'initializing' : conversion from 'uint32_t' to 'float', possible loss of data
+     1>source\acrylic.cpp(221): warning C4244: 'argument' : conversion from 'float' to 'uint8_t', possible loss of data
      1>source\acrylic.cpp(254): warning C4018: '<' : signed/unsigned mismatch
-     1>source\acrylic.cpp(270): warning C4244: 'initializing' : conversion from 'int' to 'uint8_t', possible loss of data
+     1>source\acrylic.cpp(255): warning C4018: '<' : signed/unsigned mismatch
      1>source\acrylic.cpp(271): warning C4244: 'initializing' : conversion from 'int' to 'uint8_t', possible loss of data
      1>source\acrylic.cpp(272): warning C4244: 'initializing' : conversion from 'int' to 'uint8_t', possible loss of data
      1>source\acrylic.cpp(273): warning C4244: 'initializing' : conversion from 'int' to 'uint8_t', possible loss of data
-     1>source\acrylic.cpp(281): warning C4100: 'sy' : unreferenced formal parameter
-     1>source\acrylic.cpp(281): warning C4100: 'sx' : unreferenced formal parameter
+     1>source\acrylic.cpp(274): warning C4244: 'initializing' : conversion from 'int' to 'uint8_t', possible loss of data
+     1>source\acrylic.cpp(282): warning C4100: 'sy' : unreferenced formal parameter
+     1>source\acrylic.cpp(282): warning C4100: 'sx' : unreferenced formal parameter
          Generating Code...
+     1>e:\xeneva project\xeneva\xnlib\xnacrylic\source\font.cpp(102): warning C4702: unreachable code
      1>e:\xeneva project\xeneva\xnlib\xnacrylic\include\jpg\jpeg_decoder.h(328): warning C4706: assignment within conditional expression
      1>e:\xeneva project\xeneva\xnlib\xnacrylic\include\jpg\jpeg_decoder.h(330): warning C4706: assignment within conditional expression
      1>e:\xeneva project\xeneva\xnlib\xnacrylic\include\jpg\jpeg_decoder.h(348): warning C4706: assignment within conditional expression
      1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V110\Microsoft.CppBuild.targets(1137,5): warning MSB8012: TargetPath(E:\Xeneva Project\Xeneva\Aurora\x64\Debug\xnacrylic.dll) does not match the Linker's OutputFile property value (F:\xnacrl.dll). This may cause your project to build incorrectly. To correct this, please make sure that $(OutDir), $(TargetName) and $(TargetExt) property values match the value specified in %(Link.OutputFile).
      1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V110\Microsoft.CppBuild.targets(1139,5): warning MSB8012: TargetName(xnacrylic) does not match the Linker's OutputFile property value (xnacrl). This may cause your project to build incorrectly. To correct this, please make sure that $(OutDir), $(TargetName) and $(TargetExt) property values match the value specified in %(Link.OutputFile).
        Link:
-         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:PROMPT /OUT:"F:\xnacrl.dll" /INCREMENTAL /NOLOGO /LIBPATH:"E:\Xeneva Project\Xeneva\xnlib\lib64" /LIBPATH:"E:\Xeneva Project\Xeneva\Aurora\x64\Debug" xnclib.lib /NODEFAULTLIB /MANIFEST:NO /PDB:"E:\Xeneva Project\Xeneva\Aurora\x64\Debug\xnacrylic.pdb" /MAP /MAPINFO:EXPORTS /SUBSYSTEM:NATIVE /LARGEADDRESSAWARE /Driver /OPT:NOREF /LTCG /TLBID:1 /BASE:"0x0000000100400000" /FIXED:NO /IMPLIB:"E:\Xeneva Project\Xeneva\Aurora\x64\Debug\xnacrylic.lib" /MACHINE:X64 /ALIGN:512 /DLL x64\Debug\acrylic.obj
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:PROMPT /OUT:"F:\xnacrl.dll" /INCREMENTAL /NOLOGO /LIBPATH:"E:\Xeneva Project\Xeneva\xnlib\lib64" /LIBPATH:"E:\Xeneva Project\Xeneva\Aurora\x64\Debug" xnclib.lib freetype.lib /NODEFAULTLIB /MANIFEST:NO /PDB:"E:\Xeneva Project\Xeneva\Aurora\x64\Debug\xnacrylic.pdb" /MAP /MAPINFO:EXPORTS /SUBSYSTEM:NATIVE /LARGEADDRESSAWARE /Driver /OPT:NOREF /LTCG /TLBID:1 /BASE:"0x0000000100400000" /FIXED:NO /IMPLIB:"E:\Xeneva Project\Xeneva\Aurora\x64\Debug\xnacrylic.lib" /MACHINE:X64 /ALIGN:512 /DLL x64\Debug\acrylic.obj
          x64\Debug\buffer.obj
          x64\Debug\canvas.obj
          x64\Debug\color.obj
@@ -139,6 +142,7 @@
          x64\Debug\path2d.obj
          x64\Debug\psf.obj
          x64\Debug\xnacrylic.obj
+         x64\Debug\_base.obj
      1>LINK : warning LNK4075: ignoring '/INCREMENTAL' due to '/LTCG' specification
             Creating library E:\Xeneva Project\Xeneva\Aurora\x64\Debug\xnacrylic.lib and object E:\Xeneva Project\Xeneva\Aurora\x64\Debug\xnacrylic.exp
          LINK : /LTCG specified but no code generation required; remove /LTCG from the link command line to improve linker performance
@@ -147,4 +151,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:02.15
+Time Elapsed 00:00:03.45

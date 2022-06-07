@@ -174,11 +174,11 @@ bool AuMapPage(uint64_t physical_address, uint64_t virtual_address, uint8_t attr
 	}
 	
 	uint64_t* pml1 = (uint64_t*)(p2v(pml2[i2]) & ~(4096 - 1));
-	/*if (pml1[i1] & PAGING_PRESENT)
+	if (pml1[i1] & PAGING_PRESENT)
 	{
 		AuPmmngrFree((void*)physical_address);
 		return false;
-	}*/
+	}
 
 	pml1[i1] = physical_address | flags;
 	flush_tlb ((void*)virtual_address);
@@ -409,7 +409,7 @@ bool first = false;
 void* AuMapMMIO (uint64_t phys_addr, size_t page_count) {
 	uint64_t out = (uint64_t)mmio_base_address;
 	for (size_t i = 0; i < page_count; i++) {
-		AuMapPage(phys_addr + i * 4096, out + i * 4096,(1<<4) | (1<<8));  //
+		AuMapPage(phys_addr + i * 4096, out + i * 4096,0x04 | 0x08);  //
 	}
 
 	uint64_t address = out;

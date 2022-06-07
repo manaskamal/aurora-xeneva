@@ -5,12 +5,13 @@
 
 #include <string.h>
 #include <stdio.h>
-
+#include <serial.h>
 
 void valloc (uint64_t pos) {
 	x64_cli();
 	void *p = AuPmmngrAlloc();
-	AuMapPage((uint64_t)p, pos, PAGING_USER);
+	if (!AuMapPage((uint64_t)p, pos, PAGING_USER))
+		return;
 }
 
 void vfree (uint64_t pos) {

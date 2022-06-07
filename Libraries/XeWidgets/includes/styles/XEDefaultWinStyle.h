@@ -27,18 +27,16 @@
  *
  **/
 
-#include <xebasewin.h>
-#include <sys\_ipc.h>
-#include <xebase.h>
-#include <sys\_process.h>
+#ifndef __XE_DEFAULT_WIN_STYLE_H__
+#define __XE_DEFAULT_WIN_STYLE_H__
+
+#include <xewindow.h>
+
 
 /*
- * XeShowWindow -- Sends a msg to PRIWM
- * to show the window
+ * XEDefaultWinPaint -- Default Window style painter
+ * @param win -- Pointer to window object
  */
-void XeShowWindow() {
-	pri_event_t e;
-	e.type = PRIWM_WINDOW_SHOW;
-	e.from_id = get_current_pid();
-	XeSendEventPRIWM(&e);
-}
+extern void XEDefaultWinPaint(XEWindow *win);
+
+#endif

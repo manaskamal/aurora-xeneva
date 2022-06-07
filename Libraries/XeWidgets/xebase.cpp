@@ -25,10 +25,8 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- *
  **/
 
-#include <sys\_xeneva.h>
 #include <xebase.h>
 #include <xeloop.h>
 #include <sys\_process.h>
@@ -37,7 +35,6 @@
 #include <sys\ioquery.h>
 #include <sys\_wait.h>
 #include <sys\shm.h>
-#include <xebasewin.h>
 #include <sys\_term.h>
 #include <stdlib.h>
 
@@ -75,8 +72,8 @@ XeApp* XeStartApplication(int argc, char* argv[]) {
 	e.type = PRIWM_REQUEST_WINDOW;
 	e.dword = 0;
 	e.dword2 = 0;
-	e.dword3 = XE_WIN_DEFAULT_WIDTH;
-	e.dword4 = XE_WIN_DEFAULT_HEIGHT;
+	e.dword3 = 400;
+	e.dword4 = 400;
 	e.dword5 = 0;
 	XeSendEventPRIWM(&e);
 	memset(&e, 0, sizeof(pri_event_t));
@@ -99,15 +96,11 @@ XeApp* XeStartApplication(int argc, char* argv[]) {
 				back_key = e.dword2;
 				uint16_t id = sys_shmget(sh_key, 0, 0);
 				void* sh_win_addr = sys_shmat(id,0, 0);
-				xe_win_info_t *info = (xe_win_info_t*)sh_win_addr;
 				uint16_t back_id = sys_shmget(back_key, 0, 0);
 				void* backing_store = sys_shmat(back_id, 0, 0);
 				uint32_t *fb = (uint32_t*)backing_store;
 				
-				/* Fill the buffer with white color */
-				for (int i = 0; i < info->width; i++) 
-					for (int j = 0; j < info->height; j++)
-						fb[i+j*4] = 0xffffffff;
+				///* Fill the buffer with white color */
 
 				/* Fill up the 'app' structure */
 				app->sh_key = sh_key;
@@ -115,8 +108,8 @@ XeApp* XeStartApplication(int argc, char* argv[]) {
 				app->event_fd = event_fd;
 				app->framebuffer = fb;
 				app->shared_win_address = sh_win_addr;
-				app->buffer_width = XE_WIN_DEFAULT_WIDTH;
-				app->buffer_height = XE_WIN_DEFAULT_HEIGHT;
+				app->buffer_width = 400;
+				app->buffer_height = 400;
 
 				memset(&e, 0, sizeof(pri_event_t));
 				break;

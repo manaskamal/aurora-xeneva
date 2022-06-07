@@ -15,6 +15,7 @@
 #include <psf\psf.h>
 #include <arrayfont.h>
 #include <math.h>
+#include <sys\_term.h>
 
 
 #define sign(x)  ((x < 0) ? -1 :((x > 0) ? 1 : 0))

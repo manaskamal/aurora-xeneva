@@ -48,6 +48,7 @@ EXTRN	?create_timer@@YAHIG@Z:PROC			; create_timer
 EXTRN	?destroy_timer@@YAXH@Z:PROC			; destroy_timer
 EXTRN	?pause_timer@@YAXH@Z:PROC			; pause_timer
 EXTRN	?start_timer@@YAXH@Z:PROC			; start_timer
+EXTRN	_debug_print_:PROC
 EXTRN	?AuCreateShMem@@YAII_KI@Z:PROC			; AuCreateShMem
 EXTRN	?AuObtainShMem@@YAPEAXIPEAXH@Z:PROC		; AuObtainShMem
 EXTRN	?shm_unlink@@YAXI@Z:PROC			; shm_unlink
@@ -119,9 +120,9 @@ $LN46@x64_syscal:
 $LN41@x64_syscal:
 
 ; 29   : 	case 0:
-; 30   : 		funct = (uint64_t*)printf; //_debug_print_; //
+; 30   : 		funct = (uint64_t*)_debug_print_; //
 
-	lea	rax, OFFSET FLAT:printf
+	lea	rax, OFFSET FLAT:_debug_print_
 	mov	QWORD PTR funct, rax
 
 ; 31   : 		break;

@@ -265,7 +265,6 @@ vfs_node_t *fat32_locate_dir (const char* dir) {
 			char name[11];
 			memcpy (name, dirent->filename, 11);
 			name[11] = 0;
-	
 			if (strcmp (dos_file_name, name) == 0) {
 				
 				strcpy (file->filename, dir);
@@ -279,13 +278,14 @@ vfs_node_t *fat32_locate_dir (const char* dir) {
 				else
 					file->flags = FS_FLAG_GENERAL;
 				
-				//AuPmmngrFree((void*)v2p((size_t)buf));
+				AuPmmngrFree((void*)v2p((size_t)buf));
 				return file;
 			}
 			dirent++;
 		}
 	}
 
+	AuPmmngrFree((void*)v2p((size_t)buf));
 	free(file);
 	return NULL;
 }

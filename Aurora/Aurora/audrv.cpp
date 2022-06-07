@@ -214,7 +214,6 @@ void AuDrvMngrInitialize (KERNEL_BOOT_INFO *info) {
 	uint64_t* conf = (uint64_t*)p2v((size_t)AuPmmngrAlloc());
 	memset(conf, 0, 4096);
 	vfs_node_t* file = fat32_open(NULL, "/audrv.cnf");
-	_debug_print_ ("AuDRV file -> %x \r\n", file);
 	int filesize = file->size / 1024;
 	if(filesize < 4096)
 		fat32_read(file,(uint64_t*)v2p((size_t)conf));

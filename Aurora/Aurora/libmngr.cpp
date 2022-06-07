@@ -122,6 +122,5 @@ void AuSysLibInitialize () {
 	AuSysLoadLib("xnacrl.dll");
 	AuSysLoadLib("xewid.dll");
 	AuSysLoadLib("xnclib.dll");
-
 }
 

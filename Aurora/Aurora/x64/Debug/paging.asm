@@ -14,7 +14,7 @@ _BSS	SEGMENT
 ?first@@3_NA DB	01H DUP (?)				; first
 _BSS	ENDS
 CONST	SEGMENT
-$SG3661	DB	'Already present -> %x ', 0aH, 00H
+$SG3663	DB	'Already present -> %x ', 0aH, 00H
 CONST	ENDS
 PUBLIC	?pml4_index@@YA_K_K@Z				; pml4_index
 PUBLIC	?pdp_index@@YA_K_K@Z				; pdp_index
@@ -48,8 +48,8 @@ pdata	SEGMENT
 $pdata$?AuPagingInit@@YAXXZ DD imagerel $LN12
 	DD	imagerel $LN12+396
 	DD	imagerel $unwind$?AuPagingInit@@YAXXZ
-$pdata$AuMapPage DD imagerel $LN6
-	DD	imagerel $LN6+576
+$pdata$AuMapPage DD imagerel $LN7
+	DD	imagerel $LN7+616
 	DD	imagerel $unwind$AuMapPage
 $pdata$?AuMapPageEx@@YA_NPEA_K_K1E@Z DD imagerel $LN9
 	DD	imagerel $LN9+659
@@ -233,7 +233,7 @@ $LN3@AuMapMMIO:
 	cmp	QWORD PTR i$1[rsp], rax
 	jae	SHORT $LN1@AuMapMMIO
 
-; 412  : 		AuMapPage(phys_addr + i * 4096, out + i * 4096,(1<<4) | (1<<8));  //
+; 412  : 		AuMapPage(phys_addr + i * 4096, out + i * 4096,0x04 | 0x08);  //
 
 	mov	rax, QWORD PTR i$1[rsp]
 	imul	rax, 4096				; 00001000H
@@ -245,7 +245,7 @@ $LN3@AuMapMMIO:
 	mov	rdx, QWORD PTR phys_addr$[rsp]
 	add	rdx, rcx
 	mov	rcx, rdx
-	mov	r8b, 16
+	mov	r8b, 12
 	mov	rdx, rax
 	call	AuMapPage
 
@@ -1343,7 +1343,7 @@ $LN2@AuMapPageE:
 ; 318  : 		printf ("Already present -> %x \n", virtual_address);
 
 	mov	rdx, QWORD PTR virtual_address$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3661
+	lea	rcx, OFFSET FLAT:$SG3663
 	call	printf
 
 ; 319  : 		return false;
@@ -1388,12 +1388,12 @@ _TEXT	ENDS
 ; File e:\xeneva project\xeneva\aurora\aurora\arch\x86_64\paging.cpp
 _TEXT	SEGMENT
 flags$ = 32
-i4$ = 36
-i3$ = 40
-i2$ = 44
-page$1 = 48
-pml3$ = 56
-i1$ = 64
+i3$ = 36
+i2$ = 40
+i4$ = 44
+i1$ = 48
+page$1 = 56
+pml3$ = 64
 page$2 = 72
 page$3 = 80
 pml2$ = 88
@@ -1406,7 +1406,7 @@ AuMapPage PROC
 
 ; 130  : bool AuMapPage(uint64_t physical_address, uint64_t virtual_address, uint8_t attrib){
 
-$LN6:
+$LN7:
 	mov	BYTE PTR [rsp+24], r8b
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
@@ -1464,7 +1464,7 @@ $LN6:
 	mov	rax, QWORD PTR [rcx+rax*8]
 	and	rax, 1
 	test	rax, rax
-	jne	SHORT $LN3@AuMapPage
+	jne	SHORT $LN4@AuMapPage
 
 ; 142  : 	{
 ; 143  : 		
@@ -1498,7 +1498,7 @@ $LN6:
 ; 148  : 		x64_mfence();
 
 	call	x64_mfence
-$LN3@AuMapPage:
+$LN4@AuMapPage:
 
 ; 149  : 	}
 ; 150  : 	uint64_t* pml3 = (uint64_t*)(p2v(pml4i[i4]) & ~(4096 - 1));
@@ -1518,7 +1518,7 @@ $LN3@AuMapPage:
 	mov	rax, QWORD PTR [rcx+rax*8]
 	and	rax, 1
 	test	rax, rax
-	jne	SHORT $LN2@AuMapPage
+	jne	SHORT $LN3@AuMapPage
 
 ; 153  : 	{
 ; 154  : 		
@@ -1552,7 +1552,7 @@ $LN3@AuMapPage:
 ; 159  : 		x64_mfence();
 
 	call	x64_mfence
-$LN2@AuMapPage:
+$LN3@AuMapPage:
 
 ; 160  : 		
 ; 161  : 	}
@@ -1575,7 +1575,7 @@ $LN2@AuMapPage:
 	mov	rax, QWORD PTR [rcx+rax*8]
 	and	rax, 1
 	test	rax, rax
-	jne	SHORT $LN1@AuMapPage
+	jne	SHORT $LN2@AuMapPage
 
 ; 167  : 	{
 ; 168  : 		const uint64_t page = (uint64_t)AuPmmngrAlloc();
@@ -1608,7 +1608,7 @@ $LN2@AuMapPage:
 ; 172  : 		x64_mfence();
 
 	call	x64_mfence
-$LN1@AuMapPage:
+$LN2@AuMapPage:
 
 ; 173  : 		
 ; 174  : 	}
@@ -1622,11 +1622,28 @@ $LN1@AuMapPage:
 	and	rax, -4096				; fffffffffffff000H
 	mov	QWORD PTR pml1$[rsp], rax
 
-; 177  : 	/*if (pml1[i1] & PAGING_PRESENT)
+; 177  : 	if (pml1[i1] & PAGING_PRESENT)
+
+	movsxd	rax, DWORD PTR i1$[rsp]
+	mov	rcx, QWORD PTR pml1$[rsp]
+	mov	rax, QWORD PTR [rcx+rax*8]
+	and	rax, 1
+	test	rax, rax
+	je	SHORT $LN1@AuMapPage
+
 ; 178  : 	{
 ; 179  : 		AuPmmngrFree((void*)physical_address);
+
+	mov	rcx, QWORD PTR physical_address$[rsp]
+	call	AuPmmngrFree
+
 ; 180  : 		return false;
-; 181  : 	}*/
+
+	xor	al, al
+	jmp	SHORT $LN5@AuMapPage
+$LN1@AuMapPage:
+
+; 181  : 	}
 ; 182  : 
 ; 183  : 	pml1[i1] = physical_address | flags;
 
@@ -1650,6 +1667,7 @@ $LN1@AuMapPage:
 ; 186  : 	return true;
 
 	mov	al, 1
+$LN5@AuMapPage:
 
 ; 187  : }
 

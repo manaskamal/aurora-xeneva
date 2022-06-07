@@ -294,7 +294,6 @@ AU_EXTERN AU_EXPORT int AuDriverUnload(){
 
 void hda_handler (size_t v, void* p) {
 //	AuInterruptEnd(0);
-	AuDisableInterupts();
 
 	uint32_t isr = _aud_inl_(INTSTS);
 	uint8_t sts = _aud_inb_(REG_O0_STS);
@@ -307,7 +306,6 @@ void hda_handler (size_t v, void* p) {
 		pos %= BDL_SIZE;
 		
 		//printf("HDA Buffer completed \r\n");
-		memset((int16_t*)(hd_audio.sample_buffer + pos * (BUFFER_SIZE/sizeof(int16_t))),0,BUFFER_SIZE/sizeof(int16_t));
 		AuSoundRequestNext((uint64_t*)(hd_audio.sample_buffer + pos * BUFFER_SIZE));
 		/*pos++;
 		pos %= BDL_SIZE;
@@ -324,7 +322,6 @@ void hda_handler (size_t v, void* p) {
 	
 	AuInterruptEnd(hd_audio.irq);
 	//AuFiredSharedHandler(hd_audio.irq,v,p, shared_device);
-	AuEnableInterrupts();
 }
 
 

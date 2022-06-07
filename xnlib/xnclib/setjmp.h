@@ -19,14 +19,14 @@ typedef struct __jmp_buf_tag {
 	unsigned long __ss[128/sizeof(long)];
 } jmp_buf;
 
-//#ifdef __cplusplus
-//XE_EXTERN {
-//#endif
-XE_EXTERN XE_EXPORT int setjmp (jmp_buf);
-XE_EXTERN XE_EXPORT void longjmp(jmp_buf, int);
-//#ifdef __cplusplus
-//}
-//#endif
+#ifdef __cplusplus
+XE_EXTERN {
+#endif
+XE_EXPORT int setjmp (jmp_buf);
+XE_EXPORT void longjmp(jmp_buf, int);
+#ifdef __cplusplus
+}
+#endif
 
 
 #endif

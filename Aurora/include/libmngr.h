@@ -41,6 +41,7 @@
 #define XNCLIB_BASE  0x100000000
 #define XNACRL_BASE  0x100400000
 #define XNWID_BASE   0x100200000
+#define FTYPE_BASE   0x100500000
 
 
 typedef struct _libentry_ {

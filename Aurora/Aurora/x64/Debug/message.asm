@@ -23,8 +23,8 @@ _BSS	SEGMENT
 top	DQ	01H DUP (?)
 _BSS	ENDS
 pdata	SEGMENT
-$pdata$?message_send@@YAXGPEAU_message_@@@Z DD imagerel $LN5
-	DD	imagerel $LN5+166
+$pdata$?message_send@@YAXGPEAU_message_@@@Z DD imagerel $LN6
+	DD	imagerel $LN6+176
 	DD	imagerel $unwind$?message_send@@YAXGPEAU_message_@@@Z
 $pdata$?message_receive@@YAXPEAU_message_@@@Z DD imagerel $LN6
 	DD	imagerel $LN6+151
@@ -77,39 +77,39 @@ temp$ = 40
 msg$ = 64
 ?message_receive@@YAXPEAU_message_@@@Z PROC		; message_receive
 
-; 57   : void message_receive (message_t* msg) {
+; 60   : void message_receive (message_t* msg) {
 
 $LN6:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 56					; 00000038H
 
-; 58   : 	x64_cli ();
+; 61   : 	x64_cli ();
 
 	call	x64_cli
 
-; 59   : 
-; 60   : 	kernel_message_queue_t *temp;
-; 61   : 
-; 62   : 	if (top == NULL) 
+; 62   : 
+; 63   : 	kernel_message_queue_t *temp;
+; 64   : 
+; 65   : 	if (top == NULL) 
 
 	cmp	QWORD PTR top, 0
 	jne	SHORT $LN3@message_re
 
-; 63   : 		return;
+; 66   : 		return;
 
 	jmp	SHORT $LN4@message_re
 
-; 64   : 	else {
+; 67   : 	else {
 
 	jmp	SHORT $LN2@message_re
 $LN3@message_re:
 
-; 65   : 		temp = top;
+; 68   : 		temp = top;
 
 	mov	rax, QWORD PTR top
 	mov	QWORD PTR temp$[rsp], rax
 
-; 66   : 		if (temp->msg.dest_id == get_current_thread()->id) {
+; 69   : 		if (temp->msg.dest_id == get_current_thread()->id) {
 
 	mov	rax, QWORD PTR temp$[rsp]
 	movzx	eax, WORD PTR [rax+58]
@@ -120,18 +120,18 @@ $LN3@message_re:
 	cmp	ecx, eax
 	jne	SHORT $LN1@message_re
 
-; 67   : 			top = top->link;
+; 70   : 			top = top->link;
 
 	mov	rax, QWORD PTR top
 	mov	rax, QWORD PTR [rax+112]
 	mov	QWORD PTR top, rax
 
-; 68   : 			temp->link = NULL;
+; 71   : 			temp->link = NULL;
 
 	mov	rax, QWORD PTR temp$[rsp]
 	mov	QWORD PTR [rax+112], 0
 
-; 69   : 			memcpy (msg, &temp->msg,sizeof(message_t));
+; 72   : 			memcpy (msg, &temp->msg,sizeof(message_t));
 
 	mov	rax, QWORD PTR temp$[rsp]
 	mov	r8d, 112				; 00000070H
@@ -139,8 +139,8 @@ $LN3@message_re:
 	mov	rcx, QWORD PTR msg$[rsp]
 	call	memcpy
 
-; 70   : 			//free(temp);
-; 71   : 			AuPmmngrFree((void*)v2p((uint64_t)temp));
+; 73   : 			//free(temp);
+; 74   : 			AuPmmngrFree((void*)v2p((uint64_t)temp));
 
 	mov	rcx, QWORD PTR temp$[rsp]
 	call	v2p
@@ -150,10 +150,10 @@ $LN1@message_re:
 $LN2@message_re:
 $LN4@message_re:
 
-; 72   : 		}
-; 73   : 	}
-; 74   : 
-; 75   : }
+; 75   : 		}
+; 76   : 	}
+; 77   : 
+; 78   : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -171,7 +171,7 @@ msg$ = 88
 
 ; 31   : void message_send (uint16_t dest_id, message_t *msg) {
 
-$LN5:
+$LN6:
 	mov	QWORD PTR [rsp+16], rdx
 	mov	WORD PTR [rsp+8], cx
 	sub	rsp, 72					; 00000048H
@@ -190,7 +190,7 @@ $LN5:
 ; 35   : 	if (!dest_thread) {
 
 	cmp	QWORD PTR dest_thread$[rsp], 0
-	jne	SHORT $LN2@message_se
+	jne	SHORT $LN3@message_se
 
 ; 36   : 		thread_t * blocked_thread = thread_iterate_block_list (dest_id);
 
@@ -202,34 +202,45 @@ $LN5:
 ; 37   : 		if (blocked_thread  != NULL){
 
 	cmp	QWORD PTR blocked_thread$1[rsp], 0
-	je	SHORT $LN1@message_se
+	je	SHORT $LN2@message_se
 
 ; 38   : 			unblock_thread (blocked_thread);
 
 	mov	rcx, QWORD PTR blocked_thread$1[rsp]
 	call	?unblock_thread@@YAXPEAU_thread_@@@Z	; unblock_thread
-$LN1@message_se:
 $LN2@message_se:
+$LN3@message_se:
 
 ; 39   : 		}
 ; 40   : 	}
 ; 41   : 
-; 42   : 	msg->dest_id = dest_id;
+; 42   : 	if (dest_thread == NULL)
+
+	cmp	QWORD PTR dest_thread$[rsp], 0
+	jne	SHORT $LN1@message_se
+
+; 43   : 		return;
+
+	jmp	SHORT $LN4@message_se
+$LN1@message_se:
+
+; 44   : 
+; 45   : 	msg->dest_id = dest_id;
 
 	mov	rax, QWORD PTR msg$[rsp]
 	movzx	ecx, WORD PTR dest_id$[rsp]
 	mov	WORD PTR [rax+58], cx
 
-; 43   : 	//!Actuall Message model
-; 44   : 	kernel_message_queue_t * temp = (kernel_message_queue_t*)p2v((uint64_t)AuPmmngrAlloc()); //malloc(sizeof(kernel_message_queue_t));
+; 46   : 	//!Actuall Message model
+; 47   : 	kernel_message_queue_t * temp = (kernel_message_queue_t*)p2v((uint64_t)AuPmmngrAlloc()); //malloc(sizeof(kernel_message_queue_t));
 
 	call	AuPmmngrAlloc
 	mov	rcx, rax
 	call	p2v
 	mov	QWORD PTR temp$[rsp], rax
 
-; 45   : 
-; 46   : 	memcpy (&temp->msg, msg, sizeof(message_t));
+; 48   : 
+; 49   : 	memcpy (&temp->msg, msg, sizeof(message_t));
 
 	mov	rax, QWORD PTR temp$[rsp]
 	mov	r8d, 112				; 00000070H
@@ -237,19 +248,20 @@ $LN2@message_se:
 	mov	rcx, rax
 	call	memcpy
 
-; 47   : 	temp->link = top;
+; 50   : 	temp->link = top;
 
 	mov	rax, QWORD PTR temp$[rsp]
 	mov	rcx, QWORD PTR top
 	mov	QWORD PTR [rax+112], rcx
 
-; 48   : 	top = temp;
+; 51   : 	top = temp;
 
 	mov	rax, QWORD PTR temp$[rsp]
 	mov	QWORD PTR top, rax
+$LN4@message_se:
 
-; 49   : 
-; 50   : }
+; 52   : 
+; 53   : }
 
 	add	rsp, 72					; 00000048H
 	ret	0

@@ -84,4 +84,7 @@
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <NASM Include="_base.asm" />
+  </ItemGroup>
 </Project>

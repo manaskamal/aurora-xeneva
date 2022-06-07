@@ -3,20 +3,22 @@
 extern XeMain
 extern sys_exit
 extern sys_link_libs
-extern heap_initialize
 
 section .text
 [BITS 64]
 
-global _hello
-_hello:
-    mov rax, 10
-	ret
+
+global __chkstk
+__chkstk:
+ret
 
 global _start
 _start:
+
      mov rsi, rcx
 	 mov rdi, rdx
+
+
 
 	 sub rsp, 32
 	 call sys_link_libs

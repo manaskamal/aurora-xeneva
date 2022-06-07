@@ -397,8 +397,6 @@ sched_end:
 #ifdef USE_PIC
 	AuInterruptEnd(0);
 #endif
-	//x64_sti();
-	
 }
 
 
@@ -538,4 +536,5 @@ bool is_scheduler_initialized () {
 uint32_t sched_get_tick() {
 	return system_tick;
 }
+
 

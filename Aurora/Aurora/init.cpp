@@ -161,12 +161,11 @@ void _AuMain (KERNEL_BOOT_INFO *info) {
 	printf ("Scheduler Initialized\n");
 	int au_status = 0;
 
-	/* start the sound service manager at id 1 */
+	/* start the init process here */
 	au_status = AuCreateProcess ("/init.exe","shell");
 
 	/* start the compositing window manager at id 3 */
 	au_status = AuCreateProcess ("/priwm.exe","priwm");
-
 
 	//! Here start the scheduler (multitasking engine)
 	AuSchedulerStart();

@@ -53,13 +53,13 @@ $SG3732	DB	'Sector/FAT32 -> %d ', 0dH, 0aH, 00H
 	ORG $+2
 $SG3744	DB	0dH, 0aH, 00H
 	ORG $+1
-$SG3927	DB	'/', 00H
+$SG3931	DB	'/', 00H
 	ORG $+2
 $SG3745	DB	'FAT32 Total clusters -> %d ', 0dH, 0aH, 00H
 	ORG $+2
-$SG3928	DB	'/', 00H
+$SG3932	DB	'/', 00H
 	ORG $+6
-$SG3929	DB	'File System registered', 0aH, 00H
+$SG3933	DB	'File System registered', 0aH, 00H
 CONST	ENDS
 PUBLIC	?initialize_fat32@@YAXXZ			; initialize_fat32
 PUBLIC	?fat32_open@@YAPEAU_vfs_node_@@PEAU1@PEAD@Z	; fat32_open
@@ -116,7 +116,7 @@ $pdata$?fat32_read@@YAXPEAU_vfs_node_@@PEA_K@Z DD imagerel $LN5
 	DD	imagerel $LN5+139
 	DD	imagerel $unwind$?fat32_read@@YAXPEAU_vfs_node_@@PEA_K@Z
 $pdata$?fat32_locate_dir@@YAPEAU_vfs_node_@@PEBD@Z DD imagerel $LN12
-	DD	imagerel $LN12+458
+	DD	imagerel $LN12+498
 	DD	imagerel $unwind$?fat32_locate_dir@@YAPEAU_vfs_node_@@PEBD@Z
 $pdata$?fat32_self_register@@YAXXZ DD imagerel $LN3
 	DD	imagerel $LN3+213
@@ -1006,7 +1006,7 @@ $LN3:
 ; 481  : 	strcpy (fsys->filename, "/");
 
 	mov	rax, QWORD PTR fsys$[rsp]
-	lea	rdx, OFFSET FLAT:$SG3927
+	lea	rdx, OFFSET FLAT:$SG3931
 	mov	rcx, rax
 	call	strcpy
 
@@ -1072,12 +1072,12 @@ $LN3:
 
 	xor	r8d, r8d
 	mov	rdx, QWORD PTR fsys$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3928
+	lea	rcx, OFFSET FLAT:$SG3932
 	call	vfs_mount
 
 ; 494  : 	printf ("File System registered\n");
 
-	lea	rcx, OFFSET FLAT:$SG3929
+	lea	rcx, OFFSET FLAT:$SG3933
 	call	printf
 
 ; 495  : }
@@ -1214,97 +1214,109 @@ $LN6@fat32_loca:
 	imul	rax, 11
 	mov	BYTE PTR name$3[rsp+rax], 0
 
-; 268  : 	
-; 269  : 			if (strcmp (dos_file_name, name) == 0) {
+; 268  : 			if (strcmp (dos_file_name, name) == 0) {
 
 	lea	rdx, QWORD PTR name$3[rsp]
 	lea	rcx, QWORD PTR dos_file_name$[rsp]
 	call	strcmp
 	test	eax, eax
-	jne	SHORT $LN3@fat32_loca
+	jne	$LN3@fat32_loca
 
-; 270  : 				
-; 271  : 				strcpy (file->filename, dir);
+; 269  : 				
+; 270  : 				strcpy (file->filename, dir);
 
 	mov	rax, QWORD PTR file$[rsp]
 	mov	rdx, QWORD PTR dir$[rsp]
 	mov	rcx, rax
 	call	strcpy
 
-; 272  : 				file->current = dirent->first_cluster;
+; 271  : 				file->current = dirent->first_cluster;
 
 	mov	rax, QWORD PTR dirent$[rsp]
 	movzx	eax, WORD PTR [rax+26]
 	mov	rcx, QWORD PTR file$[rsp]
 	mov	DWORD PTR [rcx+44], eax
 
-; 273  : 				file->size = dirent->file_size;
+; 272  : 				file->size = dirent->file_size;
 
 	mov	rax, QWORD PTR file$[rsp]
 	mov	rcx, QWORD PTR dirent$[rsp]
 	mov	ecx, DWORD PTR [rcx+28]
 	mov	DWORD PTR [rax+32], ecx
 
-; 274  : 				file->eof = 0;
+; 273  : 				file->eof = 0;
 
 	mov	rax, QWORD PTR file$[rsp]
 	mov	BYTE PTR [rax+36], 0
 
-; 275  : 				file->status = FS_STATUS_FOUND;
+; 274  : 				file->status = FS_STATUS_FOUND;
 
 	mov	rax, QWORD PTR file$[rsp]
 	mov	BYTE PTR [rax+49], 4
 
-; 276  : 
-; 277  : 				if (dirent->attrib == 0x10)
+; 275  : 
+; 276  : 				if (dirent->attrib == 0x10)
 
 	mov	rax, QWORD PTR dirent$[rsp]
 	movzx	eax, BYTE PTR [rax+11]
 	cmp	eax, 16
 	jne	SHORT $LN2@fat32_loca
 
-; 278  : 					file->flags = FS_FLAG_DIRECTORY;
+; 277  : 					file->flags = FS_FLAG_DIRECTORY;
 
 	mov	rax, QWORD PTR file$[rsp]
 	mov	BYTE PTR [rax+48], 2
 
-; 279  : 				else
+; 278  : 				else
 
 	jmp	SHORT $LN1@fat32_loca
 $LN2@fat32_loca:
 
-; 280  : 					file->flags = FS_FLAG_GENERAL;
+; 279  : 					file->flags = FS_FLAG_GENERAL;
 
 	mov	rax, QWORD PTR file$[rsp]
 	mov	BYTE PTR [rax+48], 4
 $LN1@fat32_loca:
 
-; 281  : 				
-; 282  : 				//AuPmmngrFree((void*)v2p((size_t)buf));
-; 283  : 				return file;
+; 280  : 				
+; 281  : 				AuPmmngrFree((void*)v2p((size_t)buf));
+
+	mov	rcx, QWORD PTR buf$[rsp]
+	call	v2p
+	mov	rcx, rax
+	call	AuPmmngrFree
+
+; 282  : 				return file;
 
 	mov	rax, QWORD PTR file$[rsp]
 	jmp	SHORT $LN10@fat32_loca
 $LN3@fat32_loca:
 
-; 284  : 			}
-; 285  : 			dirent++;
+; 283  : 			}
+; 284  : 			dirent++;
 
 	mov	rax, QWORD PTR dirent$[rsp]
 	add	rax, 32					; 00000020H
 	mov	QWORD PTR dirent$[rsp], rax
 
-; 286  : 		}
+; 285  : 		}
 
 	jmp	$LN5@fat32_loca
 $LN4@fat32_loca:
 
-; 287  : 	}
+; 286  : 	}
 
 	jmp	$LN8@fat32_loca
 $LN7@fat32_loca:
 
-; 288  : 
+; 287  : 
+; 288  : 	AuPmmngrFree((void*)v2p((size_t)buf));
+
+	mov	rcx, QWORD PTR buf$[rsp]
+	call	v2p
+	mov	rcx, rax
+	call	AuPmmngrFree
+
 ; 289  : 	free(file);
 
 	mov	rcx, QWORD PTR file$[rsp]

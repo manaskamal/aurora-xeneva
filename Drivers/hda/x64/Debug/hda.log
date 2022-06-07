@@ -1,4 +1,4 @@
-﻿Build started 02-06-2022 আবেলি 9:19:03.
+﻿Build started 05-06-2022 আবেলি 10:03:14.
      1>Project "E:\Xeneva Project\Xeneva\Drivers\hda\hda.vcxproj" on node 2 (Rebuild target(s)).
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\Aurora\include" /Zi /nologo /W3 /WX- /Od /Oy /D ARCH_X64 /D USE_APIC /D _WINDLL /D _MBCS /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt codec.cpp codecs\sigmatel.cpp hda.cpp stream.cpp widget.cpp
@@ -21,11 +21,11 @@
                  E:\Xeneva Project\Xeneva\Aurora\include\va_list.h(42) : see previous definition of 'va_arg'
      1>hda.cpp(134): warning C4244: 'argument' : conversion from 'uint64_t' to 'uint32_t', possible loss of data
      1>hda.cpp(178): warning C4244: 'argument' : conversion from 'uint64_t' to 'uint32_t', possible loss of data
-     1>hda.cpp(367): warning C4244: '=' : conversion from 'uint64_t' to 'uint8_t', possible loss of data
-     1>hda.cpp(379): warning C4244: 'argument' : conversion from 'uint64_t' to 'uint32_t', possible loss of data
-     1>hda.cpp(386): warning C4554: '&' : check operator precedence for possible error; use parentheses to clarify precedence
-     1>hda.cpp(495): warning C4018: '<' : signed/unsigned mismatch
-     1>hda.cpp(531): warning C4018: '<' : signed/unsigned mismatch
+     1>hda.cpp(364): warning C4244: '=' : conversion from 'uint64_t' to 'uint8_t', possible loss of data
+     1>hda.cpp(376): warning C4244: 'argument' : conversion from 'uint64_t' to 'uint32_t', possible loss of data
+     1>hda.cpp(383): warning C4554: '&' : check operator precedence for possible error; use parentheses to clarify precedence
+     1>hda.cpp(492): warning C4018: '<' : signed/unsigned mismatch
+     1>hda.cpp(528): warning C4018: '<' : signed/unsigned mismatch
          sigmatel.cpp
          codec.cpp
      1>codec.cpp(65): warning C4101: 'j' : unreferenced local variable
@@ -45,4 +45,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:00.83
+Time Elapsed 00:00:00.84

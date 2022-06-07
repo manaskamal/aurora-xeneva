@@ -99,7 +99,7 @@ void ahci_control_hand_os (HBA_MEM *mem) {
  * ahci_interrupt_handler -- handles AHCI interrupts
  */
 void ahci_interrupt_handler (size_t v, void* p) {
-
+	//x64_cli();
 	HBA_MEM *hba = (HBA_MEM*)hbabar;
 	uint32_t is = hba->is;
 	//_debug_print_ ("AHCI Interrupt handler \r\n");
@@ -109,7 +109,7 @@ void ahci_interrupt_handler (size_t v, void* p) {
 	for (int i = 0; i < 32; i++) {
 		if ((hba->is & hba->pi & (1<<i))) {
 #if 0
-			printf ("[AHCI]: Interrupt from %d port\n", i);
+			_debug_print_ ("[AHCI]: Interrupt from %d port \r\n", i);
 #endif
 			uint32_t port_is = hba->port[i].is;
 
@@ -137,7 +137,7 @@ void ahci_interrupt_handler (size_t v, void* p) {
 	
 	hba->is = is;
 	AuInterruptEnd(0);
-
+	//x64_sti();
 
 }
 

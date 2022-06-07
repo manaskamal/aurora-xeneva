@@ -25,40 +25,21 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- *
  **/
 
-#ifndef __XE_BASE_WIN_H__
-#define __XE_BASE_WIN_H__
-
-#include <stdint.h>
-#include <sys\_xeneva.h>
-
-typedef struct _pri_rect_ {
-	int x;
-	int y;
-	int w;
-	int h;
-}pri_rect_t;
-
-typedef struct _xe_win_info_ {
-	pri_rect_t rect[256];
-	int rect_count;
-	bool dirty;
-	int x;
-	int y;
-	int width;
-	int height;
-}xe_win_info_t;
-
-#define XE_WIN_DEFAULT_WIDTH  400
-#define XE_WIN_DEFAULT_HEIGHT 400
+#include <styles\XEDefaultWinStyle.h>
+#include <xewindow.h>
+#include <color.h>
+#include <acrylic.h>
+#include <canvas.h>
+#include <sys\_term.h>
 
 /*
- * XeShowWindow -- Sends a msg to PRIWM
- * to show the window
+ * XEDefaultWinPaint -- Default Window style painter
+ * @param win -- Pointer to window object
  */
-XE_EXTERN XE_EXPORT void XeShowWindow();
-
-
-#endif
+void XEDefaultWinPaint(XEWindow *win) {
+	acrylic_draw_rect_filled(win->ctx, 0, 0, win->shwin->width, win->shwin->height,0x4DFFFFFF );
+	//acrylic_box_blur(win->ctx, win->ctx->address,win->ctx->address,0,0,win->shwin->width, win->shwin->height);
+	acrylic_draw_rect_filled(win->ctx,win->shwin->width/2- 370/2,win->shwin->height/2 - 370/2,370,370, WHITE);
+}
