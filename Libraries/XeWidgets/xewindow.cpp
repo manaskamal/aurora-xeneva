@@ -59,6 +59,7 @@ XE_EXTERN XE_EXPORT XEWindow * XECreateWindow (XeApp *app, canvas_t *canvas, uin
 	win->shwin->x = x;
 	win->shwin->y = y;
 	win->first_time = true;
+	win->global_controls = list_init();
 	win->paint = XEDefaultWinPaint;
 	strcpy(win->title, title);
 	return win;

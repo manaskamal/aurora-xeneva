@@ -19,6 +19,7 @@
     <ClCompile Include="styles\XEDefaultWinStyle.cpp">
       <Filter>styles</Filter>
     </ClCompile>
+    <ClCompile Include="list.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="includes\xebase.h">
@@ -35,6 +36,9 @@
     </ClInclude>
     <ClInclude Include="includes\styles\XEDefaultWinStyle.h">
       <Filter>includes\styles</Filter>
+    </ClInclude>
+    <ClInclude Include="includes\list.h">
+      <Filter>includes</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

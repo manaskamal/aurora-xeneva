@@ -33,11 +33,17 @@
 #include <stdint.h>
 #include <canvas.h>
 #include <sys\_xeneva.h>
+#include <list.h>
 #include <xebase.h>
 
 #define XE_WIN_DEFAULT_WIDTH  400
 #define XE_WIN_DEFAULT_HEIGHT 400
 
+
+#define XE_GLBL_CNTRL_CLOSE 1
+#define XE_GLBL_CNTRL_MAXIMIZE 2
+#define XE_GLBL_CNTRL_MINIMIZE 3
+#define XE_GLBL_CNTRL_USER 4
 
 
 typedef struct _pri_rect_ {
@@ -57,6 +63,18 @@ typedef struct _xe_sh_win_ {
 	int width;
 	int height;
 }XESharedWin;
+
+/* 
+ * XEGlobalControl -- Global Control
+ * Buttons structure
+ */
+typedef struct _global_control_ {
+	int x;
+	int y;
+	uint8_t type;
+	bool hover;
+	bool clicked;
+}XEGlobalControl;
 	
 typedef struct _xe_win_ {
 	uint8_t attrib;
@@ -67,6 +85,7 @@ typedef struct _xe_win_ {
 	uint32_t color;
 	bool first_time;
 	XESharedWin *shwin;
+	list_t* global_controls;
 	void (*paint)(_xe_win_ *win);
 }XEWindow;
 
