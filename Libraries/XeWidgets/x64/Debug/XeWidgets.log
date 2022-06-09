@@ -1,9 +1,10 @@
-﻿Build started 08-06-2022 ৰাতিপু 12:30:42.
+﻿Build started 09-06-2022 আবেলি 2:54:04.
      1>Project "E:\Xeneva Project\Xeneva\Libraries\XeWidgets\XeWidgets.vcxproj" on node 2 (Rebuild target(s)).
      1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\xnlib\xnclib" /I"E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes" /I"E:\Xeneva Project\Xeneva\xnlib\xnacrylic\include" /Zi /nologo /W3 /WX- /Od /Oy /D ARCH_X64 /D _WINDLL /D _MBCS /X /Gm /GS- /arch:SSE2 /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt styles\XEDefaultWinStyle.cpp xebase.cpp xeloop.cpp xewindow.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\xnlib\xnclib" /I"E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes" /I"E:\Xeneva Project\Xeneva\xnlib\xnacrylic\include" /Zi /nologo /W3 /WX- /Od /Oy /D ARCH_X64 /D DEFAULT_COLOR_MODE /D _WINDLL /D _MBCS /X /Gm /GS- /arch:SSE2 /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt styles\XEDefaultWinStyle.cpp xebase.cpp xeloop.cpp xewindow.cpp
      1>cl : Command line warning D9002: ignoring unknown option '/arch:SSE2'
          xewindow.cpp
+     1>xewindow.cpp(56): warning C4267: 'argument' : conversion from 'size_t' to 'unsigned int', possible loss of data
          xeloop.cpp
          xebase.cpp
          XEDefaultWinStyle.cpp
@@ -23,4 +24,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:00.63
+Time Elapsed 00:00:00.74

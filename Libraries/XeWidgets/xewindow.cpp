@@ -33,6 +33,7 @@
 #include <fastcpy.h>
 #include <sys\_process.h>
 #include <sys\_term.h>
+#include <string.h>
 
 /*
  * XECreateWindow -- Creates a new window with given properties
@@ -52,12 +53,14 @@ XE_EXTERN XE_EXPORT XEWindow * XECreateWindow (XeApp *app, canvas_t *canvas, uin
 	win->ctx = canvas;
 	win->shared_win = app->shared_win_address;
 	win->shwin = (XESharedWin*)win->shared_win;
-	win->title = title;
+	win->title = (char*)malloc(strlen(title));
+	memset(win->title, 0, strlen(title));
 	win->color = 0;
 	win->shwin->x = x;
 	win->shwin->y = y;
 	win->first_time = true;
 	win->paint = XEDefaultWinPaint;
+	strcpy(win->title, title);
 	return win;
 }
 
@@ -97,7 +100,7 @@ XE_EXTERN XE_EXPORT void XEUpdateWindow(XEWindow* win, int x, int y, int w, int 
 XE_EXTERN XE_EXPORT void XEShowWindow(XEWindow *win) {
 	if (win->paint)
 		win->paint(win);
-	sys_print_text("Showing window -> %d %d \r\n",win->shwin->width, win->shwin->height);
+	
 	XEUpdateWindow(win, 0, 0, win->shwin->width, win->shwin->height);
 
 	if (win->first_time) {

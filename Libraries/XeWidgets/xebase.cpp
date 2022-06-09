@@ -37,6 +37,8 @@
 #include <sys\shm.h>
 #include <sys\_term.h>
 #include <stdlib.h>
+#include <acrylic.h>
+#include <font.h>
 
 
 #define PRI_WM_RECEIVER       0xFFFFD00000000000
@@ -64,6 +66,12 @@ check:
  */
 XeApp* XeStartApplication(int argc, char* argv[]) {
 	int event_fd = XePriLoopCreate();
+
+	sys_print_text ("Initializing font \r\n");
+	/* Start truetype font engine */
+	acrylic_initialize_font();
+	sys_print_text ("Font initialized \r\n");
+
 	XeApp *app = (XeApp*)malloc(sizeof(XeApp));
 	memset(app, 0, sizeof(XeApp));
 

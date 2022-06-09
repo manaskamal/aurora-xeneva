@@ -47,7 +47,8 @@ uint8_t* data_buff = 0;
 
 dsp_t* dsp_first;
 dsp_t* dsp_last;
-
+bool _audio_started_;
+bool _audio_stoped_;
 /*
  * AuSoundAddDSP -- adds a dsp to the dsp list
  * @param dsp -- dsp to add
@@ -165,12 +166,21 @@ int AuSoundIOQuery (vfs_node_t *node, int code, void* arg) {
 	}
 	case SOUND_START_OUTPUT:{
 		//AuSoundWrite(node,NULL, BUFF_SIZE);
+		if (_audio_started_)
+			return 0;
 		registered_dev->start_output_stream();
+		_audio_started_ = true;
+		_audio_stoped_ = false;
 		break;
 	}
-	case SOUND_STOP_OUTPUT:
+	case SOUND_STOP_OUTPUT:{
+		if(_audio_stoped_)
+			return 0;
 		registered_dev->stop_output_stream();
+		_audio_stoped_ = true;
+		_audio_started_ = false;
 		break;
+						   }
 	case SOUND_START_INPUT: //Not implemented
 		break;
 	case SOUND_STOP_INPUT:
@@ -213,6 +223,8 @@ void AuSoundInitialize () {
 
 	dsp_first = NULL;
 	dsp_last = NULL;
+	_audio_started_ = false;
+	_audio_stoped_ = false;
 }
 
 void AuSoundRegisterDevice(sound_t * dev) {
@@ -225,18 +237,18 @@ void AuSoundRegisterDevice(sound_t * dev) {
 void AuSoundRequestNext (uint64_t *buffer) {
 	if (dsp_first == NULL)
 		return;
-	int16_t* hw_buffer = (int16_t*)buffer;
+	int16_t* hw_buffer = (int16_t*)(buffer);
 	uint8_t *buff = (uint8_t*)p2v((size_t)AuPmmngrAllocBlocks(BUFF_SIZE/4096));
 	for (dsp_t *dsp = dsp_first; dsp != NULL; dsp = dsp->next) {
 
-		for (int i = 0; i < BUFF_SIZE/ sizeof(int16_t); i++)
+		for (int i = 0; i < BUFF_SIZE/sizeof(int16_t); i++)
 			hw_buffer[i] = 0;
 		
 		for (int i = 0; i < BUFF_SIZE; i++)
 			circular_buf_get(dsp->buffer,buff);
 		
 		int16_t *data_bu = (int16_t*)buff;
-		for (int i = 0; i < BUFF_SIZE / sizeof(int16_t); i++){
+		for (int i = 0; i < BUFF_SIZE /sizeof(int16_t); i++){
 			hw_buffer[i] = data_bu[i];
 		}
 	}
@@ -256,6 +268,7 @@ void AuSoundRequestNext (uint64_t *buffer) {
 void AuSoundOutputStart() {
 	if (registered_dev == NULL)
 		return;
+	printf ("Output Start \n");
 	registered_dev->start_output_stream();
 }
 

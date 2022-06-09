@@ -310,7 +310,7 @@ $LN6:
 	mov	DWORD PTR ?display@@3U__display__@@A+4, eax
 
 ; 84   : 	//! Map a shared region for other processes to output
-; 85   : 	for (int i = 0; i < display.size / 4096 ; i++)
+; 85   : 	for (int i = 0; i < display.size / 4096; i++)
 
 	mov	DWORD PTR i$1[rsp], 0
 	jmp	SHORT $LN3@AuScreenMa

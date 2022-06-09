@@ -112,7 +112,7 @@ int acrylic_font_get_length(char *string) {
 		penx += face->glyph->advance.x >> 6;
 		string++;
 	}
-	return 0; //penx;
+	return penx;
 }
 
 int acrylic_font_get_height(char* string) {
@@ -125,7 +125,7 @@ int acrylic_font_get_height(char* string) {
 		peny += face->glyph->advance.y >> 6;
 		string++;
 	}
-	return 0; //peny;
+	return peny;
 }
 
 void acrylic_close_font () {

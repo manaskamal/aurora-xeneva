@@ -870,16 +870,28 @@ void compose_frame () {
 				he = canvas->height - info->y;
 			}
 
-			/*for (int i = 0; i < he; i++)  {
-				fastcpy (canvas->address + (winy + i) * canvas->width + winx, win->backing_store + (0 + i) * 4 + 0,
-				wid * 4);	
-			}*/
-			for (int j = 0; j < he; j++) {
+
+#ifdef DEFAULT_COLOR_MODE
+			
+			for (int i = 0; i < he; i++)  {
+				/* Align the count to 16 byte boundary */
+				memcpy_sse2(canvas->address + (winy + i) * canvas->width + winx, win->backing_store + (0 + i) * info->width + 0,
+					(wid/16)*4-1);	
+			}
+#endif
+
+#ifdef TRANSPARENCY_ENABLE
+			/* Here we need full SSE library to perform alpha bliting in faster way, if system supports
+			 * GPU, that will add extra benifits */
+
+			/*for (int j = 0; j < he; j++) {
 				for (int i = 0; i < wid; i++){
 					*(uint32_t*)(canvas->address + (winy + j) * canvas->width + (winx + i)) = alpha_blend(*(uint32_t*)(canvas->address + (winy + j)* canvas->width + (winx + i)),
 						*(uint32_t*)(win->backing_store + j * info->width + i));
 				}
-			}
+			}*/
+
+#endif
 			/* add the clip region */
 			pri_add_clip (winx, winy, wid, he);
 		}
@@ -1104,7 +1116,7 @@ XE_EXTERN int XeMain (int argc, char* argv[]) {
 			}
 
 			if (key_msg.dword == KEY_I) {
-				pri_wallpaper_change(wallpaper,"/winne1.jpg");
+				pri_wallpaper_change(wallpaper,"/univ.jpg");
 				pri_wallpaper_draw(wallpaper->img);
 				pri_wallpaper_present();
 				 cursor_store_back(mouse_x, mouse_y);

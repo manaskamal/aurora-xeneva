@@ -28,7 +28,7 @@ XE_EXTERN XE_EXPORT int XeMain (int argc, char* argv[]) {
 	void* p = malloc(16);
 	sys_print_text ("P -> %x \n", p);
 	while(1) {
-		sys_sleep(1000);
+		sys_wait();
 	}
 	return 0;
 }

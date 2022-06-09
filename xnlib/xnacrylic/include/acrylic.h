@@ -124,13 +124,12 @@ XE_EXTERN XE_EXPORT void acrylic_draw_line (canvas_t * canvas,int x0, int y0, in
 /**
  * acrylic_draw_circle -- draws outlined circle without filling
  * @param canvas -- selected canvas to use for drawing
- * @param xc -- starting x position
- * @param yc -- starting y position
- * @param x -- ending x position
- * @param y -- ending y position
+ * @param x -- x position
+ * @param y -- y position
+ * @param radius -- radius of the circle
  * @param color -- outline color
  */
-XE_EXTERN XE_EXPORT void acrylic_draw_circle (canvas_t * canvas,int xc, int yc, int x, int y, uint32_t color);
+XE_EXTERN XE_EXPORT void acrylic_draw_circle (canvas_t * canvas,int x, int y, int radius, uint32_t color);
 
 XE_EXTERN XE_EXPORT void acrylic_circ_bres (canvas_t * canvas,int xc, int yc, int r, uint32_t color);
 
@@ -160,5 +159,9 @@ XE_EXTERN XE_EXPORT void acrylic_box_blur (canvas_t * canvas,unsigned int* input
 
 //! [UNUSED FOR NOW]
 XE_EXTERN XE_EXPORT void acrylic_blit_alpha (canvas_t * canvas,unsigned int* dest, unsigned int* src, int x, int y, int w, int h, int sx, int sy);
+
+XE_EXTERN XE_EXPORT void acrylic_draw_vertical_gradient(canvas_t *canvas,int x, int y, int w, int h, uint32_t color1, uint32_t color2);
+
+XE_EXTERN XE_EXPORT void acrylic_draw_horizontal_gradient(canvas_t *canvas,int x, int y, int w, int h, uint32_t color1, uint32_t color2);
 
 #endif

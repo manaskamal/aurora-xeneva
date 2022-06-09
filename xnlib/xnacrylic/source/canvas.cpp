@@ -18,6 +18,7 @@
 #include <buffer.h>
 #include <sys\_file.h>
 #include <fastcpy.h>
+#include <sys\sse2.h>
 
 bool double_buffer = true;
 //int svga_fd = 0;

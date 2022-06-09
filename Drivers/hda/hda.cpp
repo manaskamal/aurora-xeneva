@@ -294,6 +294,7 @@ AU_EXTERN AU_EXPORT int AuDriverUnload(){
 
 void hda_handler (size_t v, void* p) {
 //	AuInterruptEnd(0);
+	AuDisableInterupts();
 
 	uint32_t isr = _aud_inl_(INTSTS);
 	uint8_t sts = _aud_inb_(REG_O0_STS);
@@ -321,6 +322,7 @@ void hda_handler (size_t v, void* p) {
 	
 	
 	AuInterruptEnd(hd_audio.irq);
+	AuEnableInterrupts();
 	//AuFiredSharedHandler(hd_audio.irq,v,p, shared_device);
 }
 
@@ -493,20 +495,20 @@ void widget_init_output () {
 		codec = hd_audio.output[i]->output_codec_id;
 		nid = hd_audio.output[i]->output_nid;
 		/* first output channel is 0x10 */
-		codec_query(codec, nid,VERB_SET_STREAM_CHANNEL | (1<<4) | 1);
+		codec_query(codec, nid,VERB_SET_STREAM_CHANNEL | (1<<4));
 		uint32_t stream = codec_query(codec, nid, VERB_GET_STREAM_CHANNEL);
-		uint16_t format =   (1<<15) | SR_44_KHZ | (0<<11) | (0 << 8) | BITS_16| 1;
+		uint16_t format =  SR_44_KHZ | (0<<11) | (0 << 8) | BITS_16| 1;
 		codec_query(codec, nid,VERB_SET_FORMAT | format);
-		codec_query(codec, nid,VERB_SET_PIN_CONTROL | (1<<6));
+		//codec_query(codec, nid,VERB_SET_PIN_CONTROL | (1<<6));
 
-		codec_query(codec, nid, VERB_SET_CONV_CHANNEL_COUNT | 1);
-		stream = codec_query(codec, nid, VERB_GET_CONV_CHANNEL_COUNT);
+		/*codec_query(codec, nid, VERB_SET_CONV_CHANNEL_COUNT | 1);
+		stream = codec_query(codec, nid, VERB_GET_CONV_CHANNEL_COUNT);*/
 
 
-		uint32_t eapd_ = codec_query (codec,nid, VERB_GET_EAPD_BTL);	
-		codec_query (codec, nid,VERB_SET_EAPD_BTL | eapd_ | 0x2);
+		/*uint32_t eapd_ = codec_query (codec,nid, VERB_GET_EAPD_BTL);	
+		codec_query (codec, nid,VERB_SET_EAPD_BTL | eapd_ | 0x2);*/
 
-		codec_query(codec, nid,VERB_SET_POWER_STATE | 0x1);
+		codec_query(codec, nid,VERB_SET_POWER_STATE | 0x0);
 		//_aud_outw_(REG_O0_FMT, format);
 	}
 }
@@ -531,7 +533,7 @@ void hda_set_volume (uint8_t volume) {
 		if (volume == 0)
 			volume = 0x80;
 		else
-			volume = 255; //volume * hd_audio.output[0]->output_amp_gain_step / 255;*/
+			volume = 0; //volume * hd_audio.output[i]->output_amp_gain_step / 255;
 		//_debug_print_ ("AMP Gain %d \r\n",hd_audio.output[0]->output_amp_gain_step );
 		uint32_t vol = codec_query(codec, nid, VERB_GET_AMP_GAIN_MUTE);
 		vol |= (1<<15);
@@ -539,7 +541,7 @@ void hda_set_volume (uint8_t volume) {
 		vol |= (1<<12);
 		vol &= ~(1<<7);
 		vol |= volume;
-		codec_query(codec,nid, VERB_SET_AMP_GAIN_MUTE | meta | volume);
+		codec_query(codec,nid, VERB_SET_AMP_GAIN_MUTE | vol);
 	}
 	
 }

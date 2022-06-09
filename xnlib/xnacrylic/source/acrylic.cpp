@@ -47,11 +47,29 @@ void acrylic_draw_rect_unfilled (canvas_t * canvas,int x, int y, int width, int 
 }
 
 
-void acrylic_draw_filled_circle (canvas_t * canvas,int o_x, int o_y, int radius, uint32_t fill_color) {
-	for(int y = -radius; y <= radius; y++)
-		for (int x = -radius; x <= radius; x++)
-			if(x * x +y*y <= radius * radius)
-				canvas_draw_pixel (canvas,o_x + x, o_y + y, fill_color);
+void acrylic_draw_filled_circle (canvas_t * canvas,int x, int y, int radius, uint32_t fill_color) {
+	acrylic_draw_vertical_line(canvas,x,y-radius,2*radius+1,fill_color);
+	int f = 1 - radius;
+	int ddF_x = 1;
+	int ddF_y = -2 * radius;
+	int i = 0;
+	int j = radius;
+
+	while( i < j) {
+		if (f >= 0) {
+			j--;
+			ddF_y += 2;
+			f += ddF_y;
+		}
+		i++;
+		ddF_x += 2;
+		f += ddF_x;
+		
+		acrylic_draw_vertical_line(canvas,x+i,y-j,2*j+1,fill_color);
+		acrylic_draw_vertical_line(canvas,x+j,y-i,2*i+1,fill_color);
+		acrylic_draw_vertical_line(canvas,x-i,y-j,2*j+1,fill_color);
+		acrylic_draw_vertical_line(canvas, x-j, y-i,2*i+1,fill_color);
+	}
 }
 
 
@@ -140,20 +158,41 @@ void acrylic_draw_line (canvas_t * canvas,int x1, int y1, int x2, int y2, uint32
 }
 
 
-void acrylic_draw_circle (canvas_t * canvas,int xc, int yc, int x, int y, uint32_t color) {
-	canvas_draw_pixel (canvas,xc + x, yc + y, color);
-	canvas_draw_pixel (canvas,xc - x, yc + y, color);
-	canvas_draw_pixel (canvas,xc + x, yc - y, color);
-	canvas_draw_pixel (canvas,xc - x, yc - y, color);
-	canvas_draw_pixel (canvas,xc + y, yc + x, color);
-	canvas_draw_pixel (canvas,xc - y, yc + y, color);
-	canvas_draw_pixel (canvas,xc + y, yc-x, color);
-	canvas_draw_pixel (canvas,xc - y, yc - x, color);
+void acrylic_draw_circle (canvas_t * canvas,int x, int y, int radius, uint32_t color) {
+	int f = 1 - radius;
+	int ddF_x = 1;
+	int ddF_y = -2 * radius;
+	int i = 0;
+	int j = radius;
+
+	canvas_draw_pixel(canvas, x, y + radius, color);
+	canvas_draw_pixel(canvas, x, y - radius, color);
+	canvas_draw_pixel(canvas, x + radius, y, color);
+	canvas_draw_pixel(canvas, x - radius, y ,color);
+
+	while(i < j) {
+		if (f >= 0) {
+			j--;
+			ddF_y += 2;
+			f += ddF_y;
+		}
+		i++;
+		ddF_x += 2;
+		f += ddF_x;
+		canvas_draw_pixel(canvas,x+i, y+j,color);
+		canvas_draw_pixel(canvas,x-i,y+j,color);
+		canvas_draw_pixel(canvas,x+i,y-j,color);
+		canvas_draw_pixel(canvas,x-i,y-j,color);
+		canvas_draw_pixel(canvas,x+j,y+i,color);
+		canvas_draw_pixel(canvas,x-j,y+i,color);
+		canvas_draw_pixel(canvas,x+j,y-i,color);
+		canvas_draw_pixel(canvas,x-j,y-i,color);
+	}
 }
 
 
 void acrylic_circ_bres (canvas_t * canvas,int xc, int yc, int r, uint32_t color) {
-	int x = 0, y = r;
+	/*int x = 0, y = r;
 	int d = 3 - 2 * r;
 
 	while (y >= x) {
@@ -167,7 +206,7 @@ void acrylic_circ_bres (canvas_t * canvas,int xc, int yc, int r, uint32_t color)
 			d = d + 4 * x + 6;
 
 		acrylic_draw_circle (canvas,xc, yc, x, y, color);
-	}
+	}*/
 }
 
 void acrylic_draw_bezier (canvas_t * canvas,int x[], int y[], uint32_t color) {
@@ -182,7 +221,6 @@ void acrylic_draw_bezier (canvas_t * canvas,int x[], int y[], uint32_t color) {
 		canvas_draw_pixel(canvas,(uint32_t)xu, (uint32_t)yu,color);
 	}
 }
-
 
 //!FX
 void acrylic_set_tint (canvas_t * canvas,float value, uint32_t* img,int w, int h, int x, int y) {
@@ -300,4 +338,46 @@ void acrylic_blit_alpha (canvas_t * canvas,unsigned int* dest, unsigned int* src
 		row_start += w * canvas_get_width(canvas);
 	}
 
+}
+
+void acrylic_draw_vertical_gradient(canvas_t *canvas,int x, int y, int w, int h, uint32_t color1, uint32_t color2) {
+	uint8_t r1 = GET_RED(color1);
+	uint8_t g1 = GET_GREEN(color1);
+	uint8_t b1 = GET_BLUE(color1);
+	uint8_t a1 = GET_ALPHA(color1);
+
+	uint8_t r2 = GET_RED(color2);
+	uint8_t g2 = GET_GREEN(color2);
+	uint8_t b2 = GET_BLUE(color2);
+	uint8_t a2 = GET_ALPHA(color2);
+
+	for (int j = 0; j < h; j++) {
+		uint8_t a = (uint8_t)(j * (((double)a2 - a1) / h) + a1);
+		uint8_t red = (uint8_t)(j * (((double)r2 - r1) / h) + r1);
+		uint8_t green = (uint8_t)(j * (((double)g2 - g1) / h) + g1);
+		uint8_t blue = (uint8_t)(j * (((double)b2 - b1) / h) + b1);
+		uint32_t col =(a << 24) | (red << 16) | (green << 8) | (blue << 0);
+		acrylic_draw_rect_filled(canvas,x, y + j, w, 1, col);
+	}
+}
+
+void acrylic_draw_horizontal_gradient(canvas_t *canvas,int x, int y, int w, int h, uint32_t color1, uint32_t color2) {
+	uint8_t r1 = GET_RED(color1);
+	uint8_t g1 = GET_GREEN(color1);
+	uint8_t b1 = GET_BLUE(color1);
+	uint8_t a1 = GET_ALPHA(color1);
+
+	uint8_t r2 = GET_RED(color2);
+	uint8_t g2 = GET_GREEN(color2);
+	uint8_t b2 = GET_BLUE(color2);
+	uint8_t a2 = GET_ALPHA(color2);
+
+	for (int j = 0; j < w; j++) {
+		uint8_t a = (uint8_t)(j * (((double)a2 - a1) / w) + a1);
+		uint8_t red = (uint8_t)(j * (((double)r2 - r1) / w) + r1);
+		uint8_t green = (uint8_t)(j * (((double)g2 - g1) / w) + g1);
+		uint8_t blue = (uint8_t)(j * (((double)b2 - b1) / w) + b1);
+		uint32_t col =(a << 24) | (red << 16) | (green << 8) | (blue << 0);
+		acrylic_draw_rect_filled(canvas,x + j, y, 1, h, col);
+	}
 }

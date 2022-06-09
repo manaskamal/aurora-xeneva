@@ -82,7 +82,7 @@ void AuScreenMap (uint32_t width, uint32_t height) {
 	display.width = width;
 	display.height = height;
 	//! Map a shared region for other processes to output
-	for (int i = 0; i < display.size / 4096 ; i++)
+	for (int i = 0; i < display.size / 4096; i++)
 		AuMapPage((uint64_t)display.buffer + i * 4096, 0xFFFFD00000200000 + i * 4096, PAGING_USER);
 
 	display.buffer = (uint32_t*)0xFFFFD00000200000;

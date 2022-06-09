@@ -150,7 +150,7 @@ void widget_init (int codec, int nid) {
 		}
 
 	case WIDGET_INPUT:{
-		codec_query(codec, nid,VERB_SET_STREAM_CHANNEL | (1<<5) | 1);
+		codec_query(codec, nid,VERB_SET_STREAM_CHANNEL | (1<<4));
 		uint16_t format =   (1<<15) | SR_44_KHZ | (0<<11) | (0 << 8) | BITS_16 | 1;
 		codec_query(codec, nid,VERB_SET_FORMAT | format);
 		codec_query(codec, nid, VERB_SET_CONV_CHANNEL_COUNT | 1);

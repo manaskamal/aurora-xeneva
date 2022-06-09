@@ -48,6 +48,8 @@ void hda_init_output_stream () {
 			phys_buf = (uint64_t)p;
 		AuMapPage ((uint64_t)p,pos + i * 4096, (1<<4));
 	}
+
+
 	hda_set_sample_buffer(pos);
 
 	
@@ -83,7 +85,7 @@ void hda_init_output_stream () {
 	_aud_outl_ (REG_O0_BDLPU, bdl_base >> 32);
 
 	//uint16_t format =  (1<<14) | (0<<11)  | (1<<4) | 1;
-	uint16_t format = (1<<15) | SR_44_KHZ | (0<<11) | (0 << 8) | BITS_16 | 1;
+	uint16_t format =  (1<<15) | SR_44_KHZ | (0<<11) | (0 << 8) | BITS_16 | 1;
 	_aud_outw_ (REG_O0_FMT, format);
 
 	_aud_outb_ (REG_O0_STS, HDAC_SDSTS_DESE | HDAC_SDSTS_FIFOE | HDAC_SDSTS_BCIS);
@@ -107,7 +109,6 @@ void hda_init_output_stream () {
 }
 
 void output_stream_write(uint8_t* buffer, size_t length) {
-	printf ("Stream written ");
 	int16_t* buf = (int16_t*)buffer;
 	int16_t* strm_buff = (int16_t*)stream_buffer;
 

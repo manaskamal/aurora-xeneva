@@ -234,67 +234,66 @@ $LN5:
 
 	call	?AuPagingClearLow@@YAXXZ		; AuPagingClearLow
 
-; 158  : 
-; 159  : #ifdef ARCH_X64
-; 160  : 
-; 161  : 	printf ("Scheduler Initialized\n");
+; 158  : #ifdef ARCH_X64
+; 159  : 
+; 160  : 	printf ("Scheduler Initialized\n");
 
 	lea	rcx, OFFSET FLAT:$SG5402
 	call	printf
 
-; 162  : 	int au_status = 0;
+; 161  : 	int au_status = 0;
 
 	mov	DWORD PTR au_status$[rsp], 0
 
-; 163  : 
-; 164  : 	/* start the init process here */
-; 165  : 	au_status = AuCreateProcess ("/init.exe","shell");
+; 162  : 
+; 163  : 	/* start the init process here */
+; 164  : 	au_status = AuCreateProcess ("/init.exe","shell");
 
 	lea	rdx, OFFSET FLAT:$SG5404
 	lea	rcx, OFFSET FLAT:$SG5405
 	call	?AuCreateProcess@@YAHPEBDPEAD@Z		; AuCreateProcess
 	mov	DWORD PTR au_status$[rsp], eax
 
-; 166  : 
-; 167  : 	/* start the compositing window manager at id 3 */
-; 168  : 	au_status = AuCreateProcess ("/priwm.exe","priwm");
+; 165  : 
+; 166  : 	/* start the compositing window manager at id 3 */
+; 167  : 	au_status = AuCreateProcess ("/priwm.exe","priwm");
 
 	lea	rdx, OFFSET FLAT:$SG5406
 	lea	rcx, OFFSET FLAT:$SG5407
 	call	?AuCreateProcess@@YAHPEBDPEAD@Z		; AuCreateProcess
 	mov	DWORD PTR au_status$[rsp], eax
 
-; 169  : 
-; 170  : 	//! Here start the scheduler (multitasking engine)
-; 171  : 	AuSchedulerStart();
+; 168  : 
+; 169  : 	//! Here start the scheduler (multitasking engine)
+; 170  : 	AuSchedulerStart();
 
 	call	?AuSchedulerStart@@YAXXZ		; AuSchedulerStart
 $LN2@AuMain:
 
-; 172  : #endif
-; 173  : 
-; 174  : 	//! Loop forever
-; 175  : 	while(1) {
+; 171  : #endif
+; 172  : 
+; 173  : 	//! Loop forever
+; 174  : 	while(1) {
 
 	xor	eax, eax
 	cmp	eax, 1
 	je	SHORT $LN1@AuMain
 
-; 176  : 		//!looping looping
-; 177  : 		x64_cli();
+; 175  : 		//!looping looping
+; 176  : 		x64_cli();
 
 	call	x64_cli
 
-; 178  : 		x64_hlt();
+; 177  : 		x64_hlt();
 
 	call	x64_hlt
 
-; 179  : 	}
+; 178  : 	}
 
 	jmp	SHORT $LN2@AuMain
 $LN1@AuMain:
 
-; 180  : }
+; 179  : }
 
 	add	rsp, 56					; 00000038H
 	ret	0

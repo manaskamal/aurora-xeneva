@@ -33,13 +33,37 @@
 #include <acrylic.h>
 #include <canvas.h>
 #include <sys\_term.h>
+#include <font.h>
+#include <string.h>
 
+/*
+ * XEDefaultPaintTitlebar -- Paints the titlebar 
+ * @param win -- Pointer to the window structure
+ */
+void XEDefaultPaintTitlebar(XEWindow *win) {
+	acrylic_draw_vertical_gradient(win->ctx, 0,0,win->shwin->width,26, LIGHTSILVER, SILVER);
+
+	acrylic_draw_filled_circle(win->ctx,20,13,8,ORANGE);
+	acrylic_draw_circle(win->ctx, 20,13,8,DARKRED);
+	acrylic_draw_filled_circle(win->ctx,42,13,8,YELLOW);
+	acrylic_draw_circle(win->ctx, 42,13,8,DARKGOLDENROD);
+	acrylic_draw_filled_circle(win->ctx,62,13,8,PALEGREEN);
+	acrylic_draw_circle(win->ctx,62,13,8,GREEN);
+
+	/* Now draw the title */
+	acrylic_font_set_size(10);
+	int font_width = acrylic_font_get_length(win->title);
+	int font_height = acrylic_font_get_height(win->title);
+	acrylic_font_draw_string(win->ctx, win->title, win->shwin->width/2 - font_width/2, 26/2 + 4, 16,BLACK);
+
+	/* Fill the titlebar with outline */
+	acrylic_draw_rect_unfilled(win->ctx, 2, 0, win->shwin->width - 1, 26, GRAY);
+}
 /*
  * XEDefaultWinPaint -- Default Window style painter
  * @param win -- Pointer to window object
  */
 void XEDefaultWinPaint(XEWindow *win) {
-	acrylic_draw_rect_filled(win->ctx, 0, 0, win->shwin->width, win->shwin->height,0x4DFFFFFF );
-	//acrylic_box_blur(win->ctx, win->ctx->address,win->ctx->address,0,0,win->shwin->width, win->shwin->height);
-	acrylic_draw_rect_filled(win->ctx,win->shwin->width/2- 370/2,win->shwin->height/2 - 370/2,370,370, WHITE);
+	acrylic_draw_rect_filled(win->ctx, 0, 0, win->shwin->width, win->shwin->height, WHITE);
+	XEDefaultPaintTitlebar(win);
 }

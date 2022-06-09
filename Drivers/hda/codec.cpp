@@ -112,7 +112,6 @@ int codec_enumerate_widgets(int codec) {
 		for (int j = 0; j < num_widgets; j++) {
 			widget_init (codec, widgets_start + j);
 		}
-		
 	}
 
 	return 1; //_ihd_audio.output->nid ? 0 : -1;
