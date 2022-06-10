@@ -20,6 +20,7 @@ typedef struct _font_ {
 	int size;
 	uint32_t width;
 	uint32_t height;
+	int fd;
 }Font;
 
 XE_EXTERN XE_EXPORT void acrylic_initialize_font ();
@@ -32,5 +33,5 @@ XE_EXTERN XE_EXPORT int acrylic_font_get_height (char* string);
 /**
  * acrylic_font_destroy -- destroys font
  */
-XE_EXTERN XE_EXPORT void acrylic_font_destroy ();
+XE_EXTERN XE_EXPORT void acrylic_close_font ();
 #endif

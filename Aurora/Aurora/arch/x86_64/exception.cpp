@@ -164,8 +164,8 @@ void page_fault (size_t vector, void* param){
 		printf ("RIP -> %x\n", frame->rip);
 		printf ("Stack -> %x\n", frame->rsp);
 		printf ("RFLAGS -> %x\n", frame->rflags);
-		printf ("Current thread -> %s\n", get_current_thread()->name);
-		printf ("Current Thread id -> %d\n", get_current_thread()->id);
+		//printf ("Current thread -> %s\n", get_current_thread()->name);
+		//printf ("Current Thread id -> %d\n", get_current_thread()->id);
 		printf ("CS -> %x, SS -> %x\n", frame->cs, frame->ss);
 		printf ("******Cause********\n");
 		printf ("*** R/W ***\n");
@@ -177,8 +177,8 @@ void page_fault (size_t vector, void* param){
 		printf ("RIP -> %x\n", frame->rip);
 		printf ("Stack -> %x\n", frame->rsp);
 		printf ("RFLAGS -> %x\n", frame->rflags);
-		printf ("Current thread -> %s\n", get_current_thread()->name);
-		printf ("Current Thread id -> %d\n", get_current_thread()->id);
+		//printf ("Current thread -> %s\n", get_current_thread()->name);
+		//printf ("Current Thread id -> %d\n", get_current_thread()->id);
 		printf ("CS -> %x, SS -> %x\n", frame->cs, frame->ss);
 		printf ("******Cause********\n");
 		printf ("*** Reserved Page ***\n");
@@ -190,8 +190,8 @@ void page_fault (size_t vector, void* param){
 		printf ("RIP -> %x\n", frame->rip);
 		printf ("Stack -> %x\n", frame->rsp);
 		printf ("RFLAGS -> %x\n", frame->rflags);
-		printf ("Current thread -> %s\n", get_current_thread()->name);
-		printf ("Current Thread id -> %d\n", get_current_thread()->id);
+		//printf ("Current thread -> %s\n", get_current_thread()->name);
+		//printf ("Current Thread id -> %d\n", get_current_thread()->id);
 		printf ("CS -> %x, SS -> %x\n", frame->cs, frame->ss);
 		printf ("******Cause********\n");
 		printf ("*** Invalid Page ****\n");

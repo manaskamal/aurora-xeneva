@@ -176,7 +176,6 @@ finish_packet:
     /*	if (left_button_up()) {
 			mouse_button_state |= 5;
 		}*/
-
 		memcpy (prev_button, curr_button, 3);
 		memset (curr_button, 0x00, 3);
 read_next:

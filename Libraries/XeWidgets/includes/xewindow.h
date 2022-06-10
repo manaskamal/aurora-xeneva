@@ -64,18 +64,7 @@ typedef struct _xe_sh_win_ {
 	int height;
 }XESharedWin;
 
-/* 
- * XEGlobalControl -- Global Control
- * Buttons structure
- */
-typedef struct _global_control_ {
-	int x;
-	int y;
-	uint8_t type;
-	bool hover;
-	bool clicked;
-}XEGlobalControl;
-	
+
 typedef struct _xe_win_ {
 	uint8_t attrib;
 	uint32_t *backbuff;
@@ -86,8 +75,32 @@ typedef struct _xe_win_ {
 	bool first_time;
 	XESharedWin *shwin;
 	list_t* global_controls;
+	XeApp *app;
 	void (*paint)(_xe_win_ *win);
 }XEWindow;
+
+/* 
+ * XEGlobalControl -- Global Control
+ * Buttons structure
+ */
+typedef struct _global_control_ {
+	int x;
+	int y;
+	int w;
+	int h;
+	uint8_t type;
+	bool hover;
+	bool clicked;
+	uint32_t fill_color;
+	uint32_t outline_color;
+	uint32_t hover_fill_color;
+	uint32_t hover_outline_color;
+	uint32_t clicked_fill_color;
+	uint32_t clicked_outline_color;
+	void (*mouse_event)(_global_control_ *g_ctrl,XEWindow *win,int x, int y, int button);
+	void (*action_event) (_global_control_ *g_ctrl, XEWindow *win);
+}XEGlobalControl;
+	
 
 /*
  * XECreateWindow -- Creates a new window with given properties
@@ -115,14 +128,33 @@ XE_EXTERN XE_EXPORT void XEWindowSetXY (XEWindow *win, int x, int y);
 * @param y -- Y Coordinate
 * @param w -- Width of the rect
 * @param h -- Height of the rect
+* @param dirty -- is this update dirty?
 */
-XE_EXTERN XE_EXPORT void XEUpdateWindow(XEWindow* win, int x, int y, int w, int h);
+XE_EXTERN XE_EXPORT void XEUpdateWindow(XEWindow* win, int x, int y, int w, int h, bool dirty);
 
 /*
  * XeShowWindow -- Sends a msg to PRIWM
  * to show the window
  */
 XE_EXTERN XE_EXPORT void XEShowWindow(XEWindow *win);
+
+/*
+ * XEWindowMouseHandle -- Default Mouse handler for XEWindow
+ * @param win -- Pointer to window
+ * @param x -- X coord of mouse passed by window manager
+ * @param y -- Y coord of mouse passed by window manager
+ * @param button -- mouse button state passed by window manager
+ */
+XE_EXTERN XE_EXPORT void XEWindowMouseHandle(XEWindow *win, int x, int y, int button, int scroll);
+
+/*
+ * XEAddGlobalButton -- Adds Global Control button to window
+ * @param win -- Pointer to window
+ * @param x -- X Coordinate
+ * @param y -- Y Coordinate
+ * @param type -- button type
+ */
+XE_EXTERN XE_EXPORT XEGlobalControl* XEAddGlobalButton(XEWindow *win,int x, int y, int w, int h, uint8_t type);
 
 
 #endif

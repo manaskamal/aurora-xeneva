@@ -103,3 +103,12 @@ au_vm_area_t *AuFindVMAUniqueId (uint32_t uid) {
 	}
 	return NULL;
 }
+
+/*
+ * AuCleanVMA -- Clean up all allocated memory areas
+ * @param proc -- Pointer to process structure
+ */
+void AuCleanVMA(process_t *proc) {
+	for (au_vm_area_t *vma = proc->vma_area; vma != NULL; vma = vma->next)
+		free(vma);
+}

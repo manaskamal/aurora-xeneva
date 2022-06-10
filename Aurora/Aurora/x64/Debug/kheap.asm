@@ -7,24 +7,24 @@ INCLUDELIB OLDNAMES
 
 PUBLIC	?first_block@@3PEAU_meta_data_@@EA		; first_block
 PUBLIC	?last_block@@3PEAU_meta_data_@@EA		; last_block
-PUBLIC	?last_mark@@3PEAEEA				; last_mark
+PUBLIC	?last_mark@@3_KA				; last_mark
 _BSS	SEGMENT
 ?first_block@@3PEAU_meta_data_@@EA DQ 01H DUP (?)	; first_block
 ?last_block@@3PEAU_meta_data_@@EA DQ 01H DUP (?)	; last_block
-?last_mark@@3PEAEEA DQ 01H DUP (?)			; last_mark
+?last_mark@@3_KA DQ 01H DUP (?)				; last_mark
 _BSS	ENDS
 CONST	SEGMENT
-$SG3191	DB	'*****Requesting page -> %x ', 0dH, 0aH, 00H
+$SG3189	DB	'*****Requesting page -> %x num_page-> %d ', 0dH, 0aH, 00H
 CONST	ENDS
 PUBLIC	?AuHeapInitialize@@YAXXZ			; AuHeapInitialize
-PUBLIC	?au_request_page@@YAPEA_KH@Z			; au_request_page
+PUBLIC	?au_request_page@@YAPEAXH@Z			; au_request_page
 PUBLIC	?au_free_page@@YAXPEAXH@Z			; au_free_page
 PUBLIC	malloc
 PUBLIC	free
 PUBLIC	?au_split_block@@YAHPEAU_meta_data_@@_K@Z	; au_split_block
 PUBLIC	?au_expand_kmalloc@@YAX_K@Z			; au_expand_kmalloc
-PUBLIC	?merge_forward@@YAXPEAU_meta_data_@@@Z		; merge_forward
-PUBLIC	?merge_backward@@YAXPEAU_meta_data_@@@Z		; merge_backward
+PUBLIC	?merge_next@@YAXPEAU_meta_data_@@@Z		; merge_next
+PUBLIC	?merge_prev@@YAXPEAU_meta_data_@@@Z		; merge_prev
 PUBLIC	?krealloc@@YAPEAXPEAX_K@Z			; krealloc
 PUBLIC	?kcalloc@@YAPEAX_K0@Z				; kcalloc
 EXTRN	memset:PROC
@@ -36,29 +36,32 @@ EXTRN	AuFreePages:PROC
 EXTRN	_debug_print_:PROC
 pdata	SEGMENT
 $pdata$?AuHeapInitialize@@YAXXZ DD imagerel $LN3
-	DD	imagerel $LN3+173
+	DD	imagerel $LN3+153
 	DD	imagerel $unwind$?AuHeapInitialize@@YAXXZ
-$pdata$?au_request_page@@YAPEA_KH@Z DD imagerel $LN6
-	DD	imagerel $LN6+152
-	DD	imagerel $unwind$?au_request_page@@YAPEA_KH@Z
+$pdata$?au_request_page@@YAPEAXH@Z DD imagerel $LN6
+	DD	imagerel $LN6+157
+	DD	imagerel $unwind$?au_request_page@@YAPEAXH@Z
 $pdata$?au_free_page@@YAXPEAXH@Z DD imagerel $LN3
 	DD	imagerel $LN3+38
 	DD	imagerel $unwind$?au_free_page@@YAXPEAXH@Z
-$pdata$malloc DD imagerel $LN12
-	DD	imagerel $LN12+321
+$pdata$malloc DD imagerel $LN11
+	DD	imagerel $LN11+241
 	DD	imagerel $unwind$malloc
 $pdata$free DD	imagerel $LN3
-	DD	imagerel $LN3+67
+	DD	imagerel $LN3+69
 	DD	imagerel $unwind$free
-$pdata$?au_split_block@@YAHPEAU_meta_data_@@_K@Z DD imagerel $LN7
-	DD	imagerel $LN7+289
+$pdata$?au_split_block@@YAHPEAU_meta_data_@@_K@Z DD imagerel $LN6
+	DD	imagerel $LN6+256
 	DD	imagerel $unwind$?au_split_block@@YAHPEAU_meta_data_@@_K@Z
 $pdata$?au_expand_kmalloc@@YAX_K@Z DD imagerel $LN5
-	DD	imagerel $LN5+335
+	DD	imagerel $LN5+329
 	DD	imagerel $unwind$?au_expand_kmalloc@@YAX_K@Z
-$pdata$?merge_backward@@YAXPEAU_meta_data_@@@Z DD imagerel $LN4
+$pdata$?merge_next@@YAXPEAU_meta_data_@@@Z DD imagerel $LN9
+	DD	imagerel $LN9+197
+	DD	imagerel $unwind$?merge_next@@YAXPEAU_meta_data_@@@Z
+$pdata$?merge_prev@@YAXPEAU_meta_data_@@@Z DD imagerel $LN4
 	DD	imagerel $LN4+57
-	DD	imagerel $unwind$?merge_backward@@YAXPEAU_meta_data_@@@Z
+	DD	imagerel $unwind$?merge_prev@@YAXPEAU_meta_data_@@@Z
 $pdata$?krealloc@@YAPEAXPEAX_K@Z DD imagerel $LN4
 	DD	imagerel $LN4+77
 	DD	imagerel $unwind$?krealloc@@YAPEAXPEAX_K@Z
@@ -69,19 +72,21 @@ pdata	ENDS
 xdata	SEGMENT
 $unwind$?AuHeapInitialize@@YAXXZ DD 010401H
 	DD	08204H
-$unwind$?au_request_page@@YAPEA_KH@Z DD 010801H
+$unwind$?au_request_page@@YAPEAXH@Z DD 010801H
 	DD	08208H
 $unwind$?au_free_page@@YAXPEAXH@Z DD 010d01H
 	DD	0420dH
 $unwind$malloc DD 010901H
-	DD	06209H
+	DD	08209H
 $unwind$free DD	010901H
 	DD	06209H
 $unwind$?au_split_block@@YAHPEAU_meta_data_@@_K@Z DD 010e01H
-	DD	0420eH
+	DD	0620eH
 $unwind$?au_expand_kmalloc@@YAX_K@Z DD 010901H
 	DD	0a209H
-$unwind$?merge_backward@@YAXPEAU_meta_data_@@@Z DD 010901H
+$unwind$?merge_next@@YAXPEAU_meta_data_@@@Z DD 010901H
+	DD	02209H
+$unwind$?merge_prev@@YAXPEAU_meta_data_@@@Z DD 010901H
 	DD	04209H
 $unwind$?krealloc@@YAPEAXPEAX_K@Z DD 010e01H
 	DD	0620eH
@@ -97,32 +102,32 @@ n_item$ = 64
 size$ = 72
 ?kcalloc@@YAPEAX_K0@Z PROC				; kcalloc
 
-; 247  : void* kcalloc(size_t n_item, size_t size) {
+; 240  : void* kcalloc(size_t n_item, size_t size) {
 
 $LN4:
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 56					; 00000038H
 
-; 248  : 	size_t total = n_item * size;
+; 241  : 	size_t total = n_item * size;
 
 	mov	rax, QWORD PTR n_item$[rsp]
 	imul	rax, QWORD PTR size$[rsp]
 	mov	QWORD PTR total$[rsp], rax
 
-; 249  : 
-; 250  : 	void* ptr = malloc(total);
+; 242  : 
+; 243  : 	void* ptr = malloc(total);
 
 	mov	rcx, QWORD PTR total$[rsp]
 	call	malloc
 	mov	QWORD PTR ptr$[rsp], rax
 
-; 251  : 	if (ptr)
+; 244  : 	if (ptr)
 
 	cmp	QWORD PTR ptr$[rsp], 0
 	je	SHORT $LN1@kcalloc
 
-; 252  : 		memset(ptr, 0, total);
+; 245  : 		memset(ptr, 0, total);
 
 	mov	r8d, DWORD PTR total$[rsp]
 	xor	edx, edx
@@ -130,11 +135,11 @@ $LN4:
 	call	memset
 $LN1@kcalloc:
 
-; 253  : 	return ptr;
+; 246  : 	return ptr;
 
 	mov	rax, QWORD PTR ptr$[rsp]
 
-; 254  : }
+; 247  : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -148,28 +153,28 @@ ptr$ = 64
 new_size$ = 72
 ?krealloc@@YAPEAXPEAX_K@Z PROC				; krealloc
 
-; 229  : void* krealloc(void* ptr, size_t new_size) {
+; 222  : void* krealloc(void* ptr, size_t new_size) {
 
 $LN4:
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 56					; 00000038H
 
-; 230  : 	void* result = malloc(new_size);
+; 223  : 	void* result = malloc(new_size);
 
 	mov	rcx, QWORD PTR new_size$[rsp]
 	call	malloc
 	mov	QWORD PTR result$[rsp], rax
 
-; 231  : 	if (ptr) {
+; 224  : 	if (ptr) {
 
 	cmp	QWORD PTR ptr$[rsp], 0
 	je	SHORT $LN1@krealloc
 
-; 232  : 		/* here we can check the size difference
-; 233  : 		 * of new_size and old size from internal
-; 234  : 		 * data structure of kmalloc */
-; 235  : 		memcpy(result, ptr, new_size);
+; 225  : 		/* here we can check the size difference
+; 226  : 		 * of new_size and old size from internal
+; 227  : 		 * data structure of kmalloc */
+; 228  : 		memcpy(result, ptr, new_size);
 
 	mov	r8d, DWORD PTR new_size$[rsp]
 	mov	rdx, QWORD PTR ptr$[rsp]
@@ -177,18 +182,18 @@ $LN4:
 	call	memcpy
 $LN1@krealloc:
 
-; 236  : 	}
-; 237  : 
-; 238  : 	free(ptr);
+; 229  : 	}
+; 230  : 
+; 231  : 	free(ptr);
 
 	mov	rcx, QWORD PTR ptr$[rsp]
 	call	free
 
-; 239  : 	return result;
+; 232  : 	return result;
 
 	mov	rax, QWORD PTR result$[rsp]
 
-; 240  : }
+; 233  : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -198,145 +203,139 @@ _TEXT	ENDS
 ; File e:\xeneva project\xeneva\aurora\aurora\arch\x86_64\kheap.cpp
 _TEXT	SEGMENT
 meta$ = 48
-?merge_backward@@YAXPEAU_meta_data_@@@Z PROC		; merge_backward
+?merge_prev@@YAXPEAU_meta_data_@@@Z PROC		; merge_prev
 
-; 206  : void merge_backward (meta_data_t* meta) {
+; 199  : void merge_prev (meta_data_t* meta) {
 
 $LN4:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 40					; 00000028H
 
-; 207  : 	if (meta->prev != NULL && meta->prev->free)
+; 200  : 	if (meta->prev != NULL && meta->prev->magic == MAGIC_FREE)
 
 	mov	rax, QWORD PTR meta$[rsp]
-	cmp	QWORD PTR [rax+32], 0
-	je	SHORT $LN1@merge_back
+	cmp	QWORD PTR [rax+16], 0
+	je	SHORT $LN1@merge_prev
 	mov	rax, QWORD PTR meta$[rsp]
-	mov	rax, QWORD PTR [rax+32]
-	movzx	eax, BYTE PTR [rax+16]
-	test	eax, eax
-	je	SHORT $LN1@merge_back
+	mov	rax, QWORD PTR [rax+16]
+	cmp	DWORD PTR [rax], 369500162		; 16062002H
+	jne	SHORT $LN1@merge_prev
 
-; 208  : 		merge_forward(meta->prev);
+; 201  : 		merge_next(meta->prev);
 
 	mov	rax, QWORD PTR meta$[rsp]
-	mov	rcx, QWORD PTR [rax+32]
-	call	?merge_forward@@YAXPEAU_meta_data_@@@Z	; merge_forward
-$LN1@merge_back:
+	mov	rcx, QWORD PTR [rax+16]
+	call	?merge_next@@YAXPEAU_meta_data_@@@Z	; merge_next
+$LN1@merge_prev:
 
-; 209  : }
+; 202  : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
-?merge_backward@@YAXPEAU_meta_data_@@@Z ENDP		; merge_backward
+?merge_prev@@YAXPEAU_meta_data_@@@Z ENDP		; merge_prev
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\arch\x86_64\kheap.cpp
 _TEXT	SEGMENT
-meta$ = 8
-?merge_forward@@YAXPEAU_meta_data_@@@Z PROC		; merge_forward
+tv69 = 0
+meta$ = 32
+?merge_next@@YAXPEAU_meta_data_@@@Z PROC		; merge_next
 
-; 180  : void merge_forward(meta_data_t *meta) {
+; 176  : void merge_next(meta_data_t *meta) {
 
+$LN9:
 	mov	QWORD PTR [rsp+8], rcx
+	sub	rsp, 24
 
-; 181  : 	if (meta->next == NULL) 
-
-	mov	rax, QWORD PTR meta$[rsp]
-	cmp	QWORD PTR [rax+24], 0
-	jne	SHORT $LN5@merge_forw
-
-; 182  : 		return;
-
-	jmp	$LN6@merge_forw
-$LN5@merge_forw:
-
-; 183  : 	if (!meta->next->free)
+; 177  : 	if (meta->next == NULL) 
 
 	mov	rax, QWORD PTR meta$[rsp]
-	mov	rax, QWORD PTR [rax+24]
-	movzx	eax, BYTE PTR [rax+16]
-	test	eax, eax
-	jne	SHORT $LN4@merge_forw
+	cmp	QWORD PTR [rax+8], 0
+	jne	SHORT $LN4@merge_next
 
-; 184  : 		return;
+; 178  : 		return;
 
-	jmp	$LN6@merge_forw
-$LN4@merge_forw:
+	jmp	$LN5@merge_next
+$LN4@merge_next:
 
-; 185  : 
-; 186  : 	/* Corrupted meta block */
-; 187  : 	if (meta->next->size <= sizeof(meta_data_t))
+; 179  : 	if (!meta->next->magic == MAGIC_FREE)
 
 	mov	rax, QWORD PTR meta$[rsp]
-	mov	rax, QWORD PTR [rax+24]
-	cmp	QWORD PTR [rax+8], 40			; 00000028H
-	ja	SHORT $LN3@merge_forw
+	mov	rax, QWORD PTR [rax+8]
+	cmp	DWORD PTR [rax], 0
+	jne	SHORT $LN7@merge_next
+	mov	DWORD PTR tv69[rsp], 1
+	jmp	SHORT $LN8@merge_next
+$LN7@merge_next:
+	mov	DWORD PTR tv69[rsp], 0
+$LN8@merge_next:
+	cmp	DWORD PTR tv69[rsp], 369500162		; 16062002H
+	jne	SHORT $LN3@merge_next
 
-; 188  : 		return;
+; 180  : 		return;
 
-	jmp	$LN6@merge_forw
-$LN3@merge_forw:
+	jmp	SHORT $LN5@merge_next
+$LN3@merge_next:
 
-; 189  : 
-; 190  : 	if (last_block == meta->next)
+; 181  : 
+; 182  : 
+; 183  : 	if (last_block == meta->next)
 
 	mov	rax, QWORD PTR meta$[rsp]
-	mov	rax, QWORD PTR [rax+24]
+	mov	rax, QWORD PTR [rax+8]
 	cmp	QWORD PTR ?last_block@@3PEAU_meta_data_@@EA, rax ; last_block
-	jne	SHORT $LN2@merge_forw
+	jne	SHORT $LN2@merge_next
 
-; 191  : 		last_block = meta;
+; 184  : 		last_block = meta;
 
 	mov	rax, QWORD PTR meta$[rsp]
 	mov	QWORD PTR ?last_block@@3PEAU_meta_data_@@EA, rax ; last_block
-$LN2@merge_forw:
+$LN2@merge_next:
 
-; 192  : 
-; 193  : 	meta->size += meta->size + meta->next->size;
+; 185  : 
+; 186  : 	meta->size += meta->next->size + sizeof(meta_data_t);
 
 	mov	rax, QWORD PTR meta$[rsp]
-	mov	rax, QWORD PTR [rax+24]
+	mov	rax, QWORD PTR [rax+8]
+	movsxd	rax, DWORD PTR [rax+4]
 	mov	rcx, QWORD PTR meta$[rsp]
-	mov	rcx, QWORD PTR [rcx+8]
-	add	rcx, QWORD PTR [rax+8]
-	mov	rax, rcx
+	movsxd	rcx, DWORD PTR [rcx+4]
+	lea	rax, QWORD PTR [rcx+rax+24]
 	mov	rcx, QWORD PTR meta$[rsp]
-	add	rax, QWORD PTR [rcx+8]
+	mov	DWORD PTR [rcx+4], eax
+
+; 187  : 	
+; 188  : 	if (meta->next->next != NULL)
+
+	mov	rax, QWORD PTR meta$[rsp]
+	mov	rax, QWORD PTR [rax+8]
+	cmp	QWORD PTR [rax+8], 0
+	je	SHORT $LN1@merge_next
+
+; 189  : 		meta->next->next->prev = meta;
+
+	mov	rax, QWORD PTR meta$[rsp]
+	mov	rax, QWORD PTR [rax+8]
+	mov	rax, QWORD PTR [rax+8]
 	mov	rcx, QWORD PTR meta$[rsp]
+	mov	QWORD PTR [rax+16], rcx
+$LN1@merge_next:
+
+; 190  : 
+; 191  : 	meta->next = meta->next->next;
+
+	mov	rax, QWORD PTR meta$[rsp]
+	mov	rax, QWORD PTR [rax+8]
+	mov	rcx, QWORD PTR meta$[rsp]
+	mov	rax, QWORD PTR [rax+8]
 	mov	QWORD PTR [rcx+8], rax
+$LN5@merge_next:
 
-; 194  : 	
-; 195  : 	if (meta->next->next != NULL)
+; 192  : }
 
-	mov	rax, QWORD PTR meta$[rsp]
-	mov	rax, QWORD PTR [rax+24]
-	cmp	QWORD PTR [rax+24], 0
-	je	SHORT $LN1@merge_forw
-
-; 196  : 		meta->next->next->prev = meta;
-
-	mov	rax, QWORD PTR meta$[rsp]
-	mov	rax, QWORD PTR [rax+24]
-	mov	rax, QWORD PTR [rax+24]
-	mov	rcx, QWORD PTR meta$[rsp]
-	mov	QWORD PTR [rax+32], rcx
-$LN1@merge_forw:
-
-; 197  : 
-; 198  : 	meta->next = meta->next->next;
-
-	mov	rax, QWORD PTR meta$[rsp]
-	mov	rax, QWORD PTR [rax+24]
-	mov	rcx, QWORD PTR meta$[rsp]
-	mov	rax, QWORD PTR [rax+24]
-	mov	QWORD PTR [rcx+24], rax
-$LN6@merge_forw:
-
-; 199  : }
-
-	fatret	0
-?merge_forward@@YAXPEAU_meta_data_@@@Z ENDP		; merge_forward
+	add	rsp, 24
+	ret	0
+?merge_next@@YAXPEAU_meta_data_@@@Z ENDP		; merge_next
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\arch\x86_64\kheap.cpp
@@ -349,25 +348,25 @@ lm$ = 64
 req_size$ = 96
 ?au_expand_kmalloc@@YAX_K@Z PROC			; au_expand_kmalloc
 
-; 94   : void au_expand_kmalloc(size_t req_size) {
+; 96   : void au_expand_kmalloc(size_t req_size) {
 
 $LN5:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 88					; 00000058H
 
-; 95   : 	size_t req_pages = 1;
+; 97   : 	size_t req_pages = 1;
 
 	mov	QWORD PTR req_pages$[rsp], 1
 
-; 96   : 	if (req_size >= 4096)
+; 98   : 	if (req_size >= 4096)
 
 	cmp	QWORD PTR req_size$[rsp], 4096		; 00001000H
 	jb	SHORT $LN2@au_expand_
 
-; 97   : 		req_pages = (req_size + sizeof(meta_data_t)) / 4096 + 1;
+; 99   : 		req_pages = (req_size + sizeof(meta_data_t)) / 4096 + 1;
 
 	mov	rax, QWORD PTR req_size$[rsp]
-	add	rax, 40					; 00000028H
+	add	rax, 24
 	xor	edx, edx
 	mov	ecx, 4096				; 00001000H
 	div	rcx
@@ -375,126 +374,122 @@ $LN5:
 	mov	QWORD PTR req_pages$[rsp], rax
 $LN2@au_expand_:
 
-; 98   : 
-; 99   : 	void* page = au_request_page(req_pages);
+; 100  : 
+; 101  : 	void* page = au_request_page(req_pages);
 
 	mov	ecx, DWORD PTR req_pages$[rsp]
-	call	?au_request_page@@YAPEA_KH@Z		; au_request_page
+	call	?au_request_page@@YAPEAXH@Z		; au_request_page
 	mov	QWORD PTR page$[rsp], rax
 
-; 100  : 	uint8_t* desc_addr = (uint8_t*)page;
+; 102  : 	uint8_t* desc_addr = (uint8_t*)page;
 
 	mov	rax, QWORD PTR page$[rsp]
 	mov	QWORD PTR desc_addr$[rsp], rax
 
-; 101  : 	/* setup the first meta data block */
-; 102  : 	meta_data_t *meta = (meta_data_t*)desc_addr;
+; 103  : 	/* setup the first meta data block */
+; 104  : 	meta_data_t *meta = (meta_data_t*)desc_addr;
 
 	mov	rax, QWORD PTR desc_addr$[rsp]
 	mov	QWORD PTR meta$[rsp], rax
 
-; 103  : 	meta->free = true;
+; 105  : 	//meta->free = true;
+; 106  : 	meta->next = NULL;
 
 	mov	rax, QWORD PTR meta$[rsp]
-	mov	BYTE PTR [rax+16], 1
+	mov	QWORD PTR [rax+8], 0
 
-; 104  : 	meta->next = NULL;
-
-	mov	rax, QWORD PTR meta$[rsp]
-	mov	QWORD PTR [rax+24], 0
-
-; 105  : 	meta->prev = NULL;
+; 107  : 	meta->prev = NULL;
 
 	mov	rax, QWORD PTR meta$[rsp]
-	mov	QWORD PTR [rax+32], 0
+	mov	QWORD PTR [rax+16], 0
 
-; 106  : 	meta->magic = MAGIC_FREE;
+; 108  : 	meta->magic = MAGIC_FREE;
 
 	mov	rax, QWORD PTR meta$[rsp]
 	mov	DWORD PTR [rax], 369500162		; 16062002H
 
-; 107  : 
-; 108  : 	/* meta->size holds only the usable area size for user */
-; 109  : 	meta->size = req_pages * 4096 - sizeof(meta_data_t);
+; 109  : 
+; 110  : 	/* meta->size holds only the usable area size for user */
+; 111  : 	meta->size = req_pages * 4096 - sizeof(meta_data_t);
 
 	mov	rax, QWORD PTR req_pages$[rsp]
 	imul	rax, 4096				; 00001000H
-	sub	rax, 40					; 00000028H
+	sub	rax, 24
 	mov	rcx, QWORD PTR meta$[rsp]
-	mov	QWORD PTR [rcx+8], rax
+	mov	DWORD PTR [rcx+4], eax
 
-; 110  : 	last_block->next = meta;
+; 112  : 	last_block->next = meta;
 
 	mov	rax, QWORD PTR ?last_block@@3PEAU_meta_data_@@EA ; last_block
 	mov	rcx, QWORD PTR meta$[rsp]
-	mov	QWORD PTR [rax+24], rcx
+	mov	QWORD PTR [rax+8], rcx
 
-; 111  : 	meta->prev = last_block;
+; 113  : 	meta->prev = last_block;
 
 	mov	rax, QWORD PTR meta$[rsp]
 	mov	rcx, QWORD PTR ?last_block@@3PEAU_meta_data_@@EA ; last_block
-	mov	QWORD PTR [rax+32], rcx
+	mov	QWORD PTR [rax+16], rcx
 
-; 112  : 	last_block = meta;
+; 114  : 	last_block = meta;
 
 	mov	rax, QWORD PTR meta$[rsp]
 	mov	QWORD PTR ?last_block@@3PEAU_meta_data_@@EA, rax ; last_block
 
-; 113  : 
-; 114  : 
-; 115  : 	/* now check if we can merge the last block and this
-; 116  : 	* into one
-; 117  : 	*/
-; 118  : 	if (meta->prev->free) {
+; 115  : 
+; 116  : 
+; 117  : 	/* now check if we can merge the last block and this
+; 118  : 	* into one
+; 119  : 	*/
+; 120  : 	if (meta->prev->magic == MAGIC_FREE) {
 
 	mov	rax, QWORD PTR meta$[rsp]
-	mov	rax, QWORD PTR [rax+32]
-	movzx	eax, BYTE PTR [rax+16]
-	test	eax, eax
-	je	SHORT $LN1@au_expand_
+	mov	rax, QWORD PTR [rax+16]
+	cmp	DWORD PTR [rax], 369500162		; 16062002H
+	jne	SHORT $LN1@au_expand_
 
-; 119  : 		meta->prev->size += meta->size;
+; 121  : 		meta->prev->size += meta->size - sizeof(meta_data_t);
 
 	mov	rax, QWORD PTR meta$[rsp]
-	mov	rax, QWORD PTR [rax+32]
-	mov	rax, QWORD PTR [rax+8]
+	mov	rax, QWORD PTR [rax+16]
 	mov	rcx, QWORD PTR meta$[rsp]
-	add	rax, QWORD PTR [rcx+8]
+	movsxd	rcx, DWORD PTR [rcx+4]
+	movsxd	rax, DWORD PTR [rax+4]
+	lea	rax, QWORD PTR [rax+rcx-24]
 	mov	rcx, QWORD PTR meta$[rsp]
-	mov	rcx, QWORD PTR [rcx+32]
-	mov	QWORD PTR [rcx+8], rax
+	mov	rcx, QWORD PTR [rcx+16]
+	mov	DWORD PTR [rcx+4], eax
 
-; 120  : 		meta->prev->next = NULL;
-
-	mov	rax, QWORD PTR meta$[rsp]
-	mov	rax, QWORD PTR [rax+32]
-	mov	QWORD PTR [rax+24], 0
-
-; 121  : 		last_block = meta->prev;
+; 122  : 		meta->prev->next = NULL;
 
 	mov	rax, QWORD PTR meta$[rsp]
-	mov	rax, QWORD PTR [rax+32]
+	mov	rax, QWORD PTR [rax+16]
+	mov	QWORD PTR [rax+8], 0
+
+; 123  : 		last_block = meta->prev;
+
+	mov	rax, QWORD PTR meta$[rsp]
+	mov	rax, QWORD PTR [rax+16]
 	mov	QWORD PTR ?last_block@@3PEAU_meta_data_@@EA, rax ; last_block
 $LN1@au_expand_:
 
-; 122  : 	}
-; 123  : 
-; 124  : 	uint64_t lm = (uint64_t)page;
+; 124  : 	}
+; 125  : 
+; 126  : 	uint64_t lm = (uint64_t)page;
 
 	mov	rax, QWORD PTR page$[rsp]
 	mov	QWORD PTR lm$[rsp], rax
 
-; 125  : 	last_mark = (uint8_t*)(lm + (req_pages * 4096));
+; 127  : 	last_mark = (uint64_t)(lm + (req_pages * 4096));
 
 	mov	rax, QWORD PTR req_pages$[rsp]
 	imul	rax, 4096				; 00001000H
 	mov	rcx, QWORD PTR lm$[rsp]
 	add	rcx, rax
 	mov	rax, rcx
-	mov	QWORD PTR ?last_mark@@3PEAEEA, rax	; last_mark
+	mov	QWORD PTR ?last_mark@@3_KA, rax		; last_mark
 
-; 126  : 	
-; 127  : }
+; 128  : 	
+; 129  : }
 
 	add	rsp, 88					; 00000058H
 	ret	0
@@ -503,159 +498,146 @@ _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\arch\x86_64\kheap.cpp
 _TEXT	SEGMENT
-new_block$ = 0
-meta_block_a$ = 8
-size$ = 16
-meta_block$ = 48
-req_size$ = 56
+new_block_m$ = 0
+new_block$ = 8
+meta_block_a$ = 16
+new_block_pos$ = 24
+size$ = 32
+splitable$ = 64
+req_size$ = 72
 ?au_split_block@@YAHPEAU_meta_data_@@_K@Z PROC		; au_split_block
 
-; 62   : int au_split_block(meta_data_t* meta_block, size_t req_size) {
+; 62   : int au_split_block(meta_data_t* splitable, size_t req_size) {
 
-$LN7:
+$LN6:
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
-	sub	rsp, 40					; 00000028H
+	sub	rsp, 56					; 00000038H
 
-; 63   : 	uint8_t* meta_block_a = (uint8_t*)meta_block;	
+; 63   : 	uint8_t* meta_block_a = (uint8_t*)splitable;	
 
-	mov	rax, QWORD PTR meta_block$[rsp]
+	mov	rax, QWORD PTR splitable$[rsp]
 	mov	QWORD PTR meta_block_a$[rsp], rax
 
-; 64   : 	
-; 65   : 	if (meta_block->size <= sizeof(meta_data_t))
-
-	mov	rax, QWORD PTR meta_block$[rsp]
-	cmp	QWORD PTR [rax+8], 40			; 00000028H
-	ja	SHORT $LN4@au_split_b
-
-; 66   : 		return 0;
-
-	xor	eax, eax
-	jmp	$LN5@au_split_b
-$LN4@au_split_b:
-
-; 67   : 
-; 68   : 	meta_data_t* new_block = (meta_data_t*)(meta_block_a + sizeof(meta_data_t) + req_size);
+; 64   : 
+; 65   : 	uint8_t* new_block = (uint8_t*)(meta_block_a + sizeof(meta_data_t) + req_size);
 
 	mov	rax, QWORD PTR meta_block_a$[rsp]
 	mov	rcx, QWORD PTR req_size$[rsp]
-	lea	rax, QWORD PTR [rax+rcx+40]
+	lea	rax, QWORD PTR [rax+rcx+24]
 	mov	QWORD PTR new_block$[rsp], rax
 
-; 69   : 	size_t size =  meta_block->size - req_size - sizeof(meta_data_t);
-
-	mov	rax, QWORD PTR meta_block$[rsp]
-	mov	rcx, QWORD PTR req_size$[rsp]
-	mov	rax, QWORD PTR [rax+8]
-	sub	rax, rcx
-	sub	rax, 40					; 00000028H
-	mov	QWORD PTR size$[rsp], rax
-
-; 70   : 	if ((((uint8_t*)new_block + sizeof(meta_data_t)) > last_mark)) {
+; 66   : 	meta_data_t* new_block_m = (meta_data_t*)new_block;
 
 	mov	rax, QWORD PTR new_block$[rsp]
-	add	rax, 40					; 00000028H
-	cmp	rax, QWORD PTR ?last_mark@@3PEAEEA	; last_mark
+	mov	QWORD PTR new_block_m$[rsp], rax
+
+; 67   : 	size_t size =  splitable->size - req_size - sizeof(meta_data_t);
+
+	mov	rax, QWORD PTR splitable$[rsp]
+	movsxd	rax, DWORD PTR [rax+4]
+	sub	rax, QWORD PTR req_size$[rsp]
+	sub	rax, 24
+	mov	QWORD PTR size$[rsp], rax
+
+; 68   : 
+; 69   : 	uint64_t new_block_pos = (uint64_t)new_block;
+
+	mov	rax, QWORD PTR new_block$[rsp]
+	mov	QWORD PTR new_block_pos$[rsp], rax
+
+; 70   : 	if ((new_block_pos + req_size) > last_mark)
+
+	mov	rax, QWORD PTR req_size$[rsp]
+	mov	rcx, QWORD PTR new_block_pos$[rsp]
+	add	rcx, rax
+	mov	rax, rcx
+	cmp	rax, QWORD PTR ?last_mark@@3_KA		; last_mark
 	jbe	SHORT $LN3@au_split_b
 
 ; 71   : 		return 0;
 
 	xor	eax, eax
-	jmp	$LN5@au_split_b
+	jmp	$LN4@au_split_b
 $LN3@au_split_b:
 
-; 72   : 	}
-; 73   : 
-; 74   : 	new_block->free = true;
+; 72   : 	
+; 73   : 	//new_block->free = true;
+; 74   : 	new_block_m->magic = MAGIC_FREE;
 
-	mov	rax, QWORD PTR new_block$[rsp]
-	mov	BYTE PTR [rax+16], 1
-
-; 75   : 	new_block->magic = MAGIC_FREE;
-
-	mov	rax, QWORD PTR new_block$[rsp]
+	mov	rax, QWORD PTR new_block_m$[rsp]
 	mov	DWORD PTR [rax], 369500162		; 16062002H
 
-; 76   : 	new_block->prev = meta_block;
+; 75   : 	new_block_m->prev = splitable;
 
-	mov	rax, QWORD PTR new_block$[rsp]
-	mov	rcx, QWORD PTR meta_block$[rsp]
-	mov	QWORD PTR [rax+32], rcx
+	mov	rax, QWORD PTR new_block_m$[rsp]
+	mov	rcx, QWORD PTR splitable$[rsp]
+	mov	QWORD PTR [rax+16], rcx
 
-; 77   : 	new_block->next = meta_block->next;
+; 76   : 	new_block_m->next = splitable->next;
 
-	mov	rax, QWORD PTR new_block$[rsp]
-	mov	rcx, QWORD PTR meta_block$[rsp]
-	mov	rcx, QWORD PTR [rcx+24]
-	mov	QWORD PTR [rax+24], rcx
+	mov	rax, QWORD PTR new_block_m$[rsp]
+	mov	rcx, QWORD PTR splitable$[rsp]
+	mov	rcx, QWORD PTR [rcx+8]
+	mov	QWORD PTR [rax+8], rcx
 
-; 78   : 	if (meta_block->next != NULL)
+; 77   : 	if (new_block_m->next != NULL)
 
-	mov	rax, QWORD PTR meta_block$[rsp]
-	cmp	QWORD PTR [rax+24], 0
+	mov	rax, QWORD PTR new_block_m$[rsp]
+	cmp	QWORD PTR [rax+8], 0
 	je	SHORT $LN2@au_split_b
 
-; 79   : 		meta_block->next->prev = new_block;
+; 78   : 		new_block_m->next->prev = new_block_m;
 
-	mov	rax, QWORD PTR meta_block$[rsp]
-	mov	rax, QWORD PTR [rax+24]
-	mov	rcx, QWORD PTR new_block$[rsp]
-	mov	QWORD PTR [rax+32], rcx
+	mov	rax, QWORD PTR new_block_m$[rsp]
+	mov	rax, QWORD PTR [rax+8]
+	mov	rcx, QWORD PTR new_block_m$[rsp]
+	mov	QWORD PTR [rax+16], rcx
 $LN2@au_split_b:
 
+; 79   : 
 ; 80   : 
-; 81   : 	new_block->size = meta_block->size - req_size - sizeof(meta_data_t);
+; 81   : 	new_block_m->size = size;
 
-	mov	rax, QWORD PTR meta_block$[rsp]
-	mov	rcx, QWORD PTR req_size$[rsp]
-	mov	rax, QWORD PTR [rax+8]
-	sub	rax, rcx
-	sub	rax, 40					; 00000028H
-	mov	rcx, QWORD PTR new_block$[rsp]
-	mov	QWORD PTR [rcx+8], rax
+	mov	rax, QWORD PTR new_block_m$[rsp]
+	mov	ecx, DWORD PTR size$[rsp]
+	mov	DWORD PTR [rax+4], ecx
 
-; 82   : 	if (new_block->size <= sizeof(meta_data_t)) {
+; 82   : 	
+; 83   : 	splitable->size = req_size;
 
-	mov	rax, QWORD PTR new_block$[rsp]
-	cmp	QWORD PTR [rax+8], 40			; 00000028H
-	ja	SHORT $LN1@au_split_b
+	mov	rax, QWORD PTR splitable$[rsp]
+	mov	ecx, DWORD PTR req_size$[rsp]
+	mov	DWORD PTR [rax+4], ecx
 
-; 83   : 		new_block->free = false;
+; 84   : 	splitable->next = new_block_m;
 
-	mov	rax, QWORD PTR new_block$[rsp]
-	mov	BYTE PTR [rax+16], 0
+	mov	rax, QWORD PTR splitable$[rsp]
+	mov	rcx, QWORD PTR new_block_m$[rsp]
+	mov	QWORD PTR [rax+8], rcx
+
+; 85   : 
+; 86   : 	if (last_block == splitable)
+
+	mov	rax, QWORD PTR splitable$[rsp]
+	cmp	QWORD PTR ?last_block@@3PEAU_meta_data_@@EA, rax ; last_block
+	jne	SHORT $LN1@au_split_b
+
+; 87   : 		last_block = new_block_m;
+
+	mov	rax, QWORD PTR new_block_m$[rsp]
+	mov	QWORD PTR ?last_block@@3PEAU_meta_data_@@EA, rax ; last_block
 $LN1@au_split_b:
 
-; 84   : 	}
-; 85   : 	
-; 86   : 	meta_block->size = req_size + sizeof(meta_data_t);
-
-	mov	rax, QWORD PTR req_size$[rsp]
-	add	rax, 40					; 00000028H
-	mov	rcx, QWORD PTR meta_block$[rsp]
-	mov	QWORD PTR [rcx+8], rax
-
-; 87   : 	meta_block->next = new_block;
-
-	mov	rax, QWORD PTR meta_block$[rsp]
-	mov	rcx, QWORD PTR new_block$[rsp]
-	mov	QWORD PTR [rax+24], rcx
-
-; 88   : 	last_block = new_block;
-
-	mov	rax, QWORD PTR new_block$[rsp]
-	mov	QWORD PTR ?last_block@@3PEAU_meta_data_@@EA, rax ; last_block
-
-; 89   : 
-; 90   : 	return 1;
+; 88   : 
+; 89   : 	return 1;
 
 	mov	eax, 1
-$LN5@au_split_b:
+$LN4@au_split_b:
 
-; 91   : }
+; 90   : }
 
-	add	rsp, 40					; 00000028H
+	add	rsp, 56					; 00000038H
 	ret	0
 ?au_split_block@@YAHPEAU_meta_data_@@_K@Z ENDP		; au_split_block
 _TEXT	ENDS
@@ -667,40 +649,40 @@ actual_addr$ = 40
 ptr$ = 64
 free	PROC
 
-; 215  : void free(void* ptr) {
+; 208  : void free(void* ptr) {
 
 $LN3:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 56					; 00000038H
 
-; 216  : 	uint8_t* actual_addr = (uint8_t*)ptr;
+; 209  : 	uint8_t* actual_addr = (uint8_t*)ptr;
 
 	mov	rax, QWORD PTR ptr$[rsp]
 	mov	QWORD PTR actual_addr$[rsp], rax
 
-; 217  : 	meta_data_t *meta = (meta_data_t*)(actual_addr - sizeof(meta_data_t));
+; 210  : 	meta_data_t *meta = (meta_data_t*)(actual_addr - sizeof(meta_data_t));
 
 	mov	rax, QWORD PTR actual_addr$[rsp]
-	sub	rax, 40					; 00000028H
+	sub	rax, 24
 	mov	QWORD PTR meta$[rsp], rax
 
-; 218  : 	meta->free = true;
+; 211  : 	meta->magic = MAGIC_FREE;
 
 	mov	rax, QWORD PTR meta$[rsp]
-	mov	BYTE PTR [rax+16], 1
+	mov	DWORD PTR [rax], 369500162		; 16062002H
 
-; 219  : 	/* merge it with 3 near blocks if they are free*/
-; 220  : 	merge_forward(meta);
-
-	mov	rcx, QWORD PTR meta$[rsp]
-	call	?merge_forward@@YAXPEAU_meta_data_@@@Z	; merge_forward
-
-; 221  : 	merge_backward(meta);
+; 212  : 	/* merge it with 3 near blocks if they are free*/
+; 213  : 	merge_next(meta);
 
 	mov	rcx, QWORD PTR meta$[rsp]
-	call	?merge_backward@@YAXPEAU_meta_data_@@@Z	; merge_backward
+	call	?merge_next@@YAXPEAU_meta_data_@@@Z	; merge_next
 
-; 222  : }
+; 214  : 	merge_prev(meta);
+
+	mov	rcx, QWORD PTR meta$[rsp]
+	call	?merge_prev@@YAXPEAU_meta_data_@@@Z	; merge_prev
+
+; 215  : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -711,187 +693,156 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 meta$ = 32
 ret$ = 40
-size$ = 64
+meta_addr$1 = 48
+addr$2 = 56
+size$ = 80
 malloc	PROC
 
-; 133  : void* malloc(size_t size) {
+; 135  : void* malloc(size_t size) {
 
-$LN12:
+$LN11:
 	mov	QWORD PTR [rsp+8], rcx
-	sub	rsp, 56					; 00000038H
+	sub	rsp, 72					; 00000048H
 
-; 134  : 	meta_data_t *meta = first_block;
+; 136  : 	meta_data_t *meta = first_block;
 
 	mov	rax, QWORD PTR ?first_block@@3PEAU_meta_data_@@EA ; first_block
 	mov	QWORD PTR meta$[rsp], rax
 
-; 135  : 	uint8_t* ret = 0;
+; 137  : 	uint8_t* ret = 0;
 
 	mov	QWORD PTR ret$[rsp], 0
-$LN9@malloc:
+$LN8@malloc:
 
-; 136  : 	/* now search begins */
-; 137  : 	while(meta){
+; 138  : 	/* now search begins */
+; 139  : 	while(meta){
 
 	cmp	QWORD PTR meta$[rsp], 0
-	je	$LN8@malloc
+	je	$LN7@malloc
 
-; 138  : 		if (meta->free) {
-
-	mov	rax, QWORD PTR meta$[rsp]
-	movzx	eax, BYTE PTR [rax+16]
-	test	eax, eax
-	je	SHORT $LN7@malloc
-
-; 139  : 			if (meta->size > size) {
+; 140  : 		if (meta->magic == MAGIC_FREE) {
 
 	mov	rax, QWORD PTR meta$[rsp]
-	mov	rcx, QWORD PTR size$[rsp]
-	cmp	QWORD PTR [rax+8], rcx
-	jbe	SHORT $LN6@malloc
+	cmp	DWORD PTR [rax], 369500162		; 16062002H
+	jne	SHORT $LN6@malloc
 
-; 140  : 				if (au_split_block(meta, size)){
+; 141  : 		
+; 142  : 			if (meta->size > size) {
+
+	mov	rax, QWORD PTR meta$[rsp]
+	movsxd	rax, DWORD PTR [rax+4]
+	cmp	rax, QWORD PTR size$[rsp]
+	jbe	SHORT $LN5@malloc
+
+; 143  : 				if (au_split_block(meta, size)){
 
 	mov	rdx, QWORD PTR size$[rsp]
 	mov	rcx, QWORD PTR meta$[rsp]
 	call	?au_split_block@@YAHPEAU_meta_data_@@_K@Z ; au_split_block
 	test	eax, eax
-	je	SHORT $LN5@malloc
+	je	SHORT $LN4@malloc
 
-; 141  : 					meta->free = false;
-
-	mov	rax, QWORD PTR meta$[rsp]
-	mov	BYTE PTR [rax+16], 0
-
-; 142  : 					meta->magic = MAGIC_USED;
+; 144  : 					meta->magic = MAGIC_USED;
 
 	mov	rax, QWORD PTR meta$[rsp]
 	mov	DWORD PTR [rax], 303112194		; 12112002H
 
-; 143  : 					ret = ((uint8_t*)meta + sizeof(meta_data_t));
+; 145  : 					uint8_t* meta_addr = (uint8_t*)meta;
 
 	mov	rax, QWORD PTR meta$[rsp]
-	add	rax, 40					; 00000028H
+	mov	QWORD PTR meta_addr$1[rsp], rax
+
+; 146  : 					ret = ((uint8_t*)(meta_addr + sizeof(meta_data_t)));
+
+	mov	rax, QWORD PTR meta_addr$1[rsp]
+	add	rax, 24
 	mov	QWORD PTR ret$[rsp], rax
+$LN4@malloc:
+
+; 147  : 				}
+; 148  : 				break;
+
+	jmp	SHORT $LN7@malloc
 $LN5@malloc:
 
-; 144  : 				}
-; 145  : 				break;
-
-	jmp	$LN8@malloc
-$LN6@malloc:
-
-; 146  : 			}
-; 147  : 
-; 148  : 			if (meta->size == size) {
+; 149  : 			}
+; 150  : 
+; 151  : 			if (meta->size == size) {
 
 	mov	rax, QWORD PTR meta$[rsp]
-	mov	rcx, QWORD PTR size$[rsp]
-	cmp	QWORD PTR [rax+8], rcx
-	jne	SHORT $LN4@malloc
+	movsxd	rax, DWORD PTR [rax+4]
+	cmp	rax, QWORD PTR size$[rsp]
+	jne	SHORT $LN3@malloc
 
-; 149  : 				meta->free = false;
-
-	mov	rax, QWORD PTR meta$[rsp]
-	mov	BYTE PTR [rax+16], 0
-
-; 150  : 				meta->magic = MAGIC_USED;
+; 152  : 				meta->magic = MAGIC_USED;
 
 	mov	rax, QWORD PTR meta$[rsp]
 	mov	DWORD PTR [rax], 303112194		; 12112002H
 
-; 151  : 				ret =  ((uint8_t*)meta + sizeof(meta_data_t));
+; 153  : 				uint8_t* addr = (uint8_t*)meta;
 
 	mov	rax, QWORD PTR meta$[rsp]
-	add	rax, 40					; 00000028H
+	mov	QWORD PTR addr$2[rsp], rax
+
+; 154  : 				ret =  ((uint8_t*)(addr + sizeof(meta_data_t)));
+
+	mov	rax, QWORD PTR addr$2[rsp]
+	add	rax, 24
 	mov	QWORD PTR ret$[rsp], rax
 
-; 152  : 				break;
+; 155  : 				break;
 
-	jmp	SHORT $LN8@malloc
-$LN4@malloc:
-$LN7@malloc:
-
-; 153  : 			}
-; 154  : 		}
-; 155  : 
-; 156  : 		if (meta->next == meta && meta->prev == meta &&
-; 157  : 			meta->size == 0) {
-
-	mov	rax, QWORD PTR meta$[rsp]
-	mov	rcx, QWORD PTR meta$[rsp]
-	cmp	QWORD PTR [rax+24], rcx
-	jne	SHORT $LN3@malloc
-	mov	rax, QWORD PTR meta$[rsp]
-	mov	rcx, QWORD PTR meta$[rsp]
-	cmp	QWORD PTR [rax+32], rcx
-	jne	SHORT $LN3@malloc
-	mov	rax, QWORD PTR meta$[rsp]
-	cmp	QWORD PTR [rax+8], 0
-	jne	SHORT $LN3@malloc
-
-; 158  : 				meta->next = NULL;
-
-	mov	rax, QWORD PTR meta$[rsp]
-	mov	QWORD PTR [rax+24], 0
-
-; 159  : 				meta->prev = NULL;
-
-	mov	rax, QWORD PTR meta$[rsp]
-	mov	QWORD PTR [rax+32], 0
-
-; 160  : 				meta->free = false;
-
-	mov	rax, QWORD PTR meta$[rsp]
-	mov	BYTE PTR [rax+16], 0
+	jmp	SHORT $LN7@malloc
 $LN3@malloc:
+$LN6@malloc:
 
-; 161  : 		}
-; 162  : 
-; 163  : 		meta = meta->next;
+; 156  : 			}
+; 157  : 		}
+; 158  : 
+; 159  : 		meta = meta->next;
 
 	mov	rax, QWORD PTR meta$[rsp]
-	mov	rax, QWORD PTR [rax+24]
+	mov	rax, QWORD PTR [rax+8]
 	mov	QWORD PTR meta$[rsp], rax
 
-; 164  : 	}
+; 160  : 	}
 
-	jmp	$LN9@malloc
-$LN8@malloc:
+	jmp	$LN8@malloc
+$LN7@malloc:
 
-; 165  : 
-; 166  : 	if (ret) {
+; 161  : 
+; 162  : 	if (ret) {
 
 	cmp	QWORD PTR ret$[rsp], 0
 	je	SHORT $LN2@malloc
 
-; 167  : 		return ret;
+; 163  : 		return ret;
 
 	mov	rax, QWORD PTR ret$[rsp]
-	jmp	SHORT $LN10@malloc
+	jmp	SHORT $LN9@malloc
 
-; 168  : 	} else{
+; 164  : 	} else{
 
 	jmp	SHORT $LN1@malloc
 $LN2@malloc:
 
-; 169  : 		au_expand_kmalloc(size);
+; 165  : 		au_expand_kmalloc(size);
 
 	mov	rcx, QWORD PTR size$[rsp]
 	call	?au_expand_kmalloc@@YAX_K@Z		; au_expand_kmalloc
 $LN1@malloc:
 
-; 170  : 		
-; 171  : 	}
-; 172  : 	return malloc(size);
+; 166  : 		
+; 167  : 	}
+; 168  : 	return malloc(size);
 
 	mov	rcx, QWORD PTR size$[rsp]
 	call	malloc
-$LN10@malloc:
+$LN9@malloc:
 
-; 173  : }
+; 169  : }
 
-	add	rsp, 56					; 00000038H
+	add	rsp, 72					; 00000048H
 	ret	0
 malloc	ENDP
 _TEXT	ENDS
@@ -902,14 +853,14 @@ ptr$ = 48
 pages$ = 56
 ?au_free_page@@YAXPEAXH@Z PROC				; au_free_page
 
-; 277  : void au_free_page(void* ptr, int pages) {
+; 270  : void au_free_page(void* ptr, int pages) {
 
 $LN3:
 	mov	DWORD PTR [rsp+16], edx
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 40					; 00000028H
 
-; 278  : 	AuFreePages((uint64_t)ptr,true,pages);
+; 271  : 	AuFreePages((uint64_t)ptr,true,pages);
 
 	movsxd	rax, DWORD PTR pages$[rsp]
 	mov	r8, rax
@@ -917,7 +868,7 @@ $LN3:
 	mov	rcx, QWORD PTR ptr$[rsp]
 	call	AuFreePages
 
-; 279  : }
+; 272  : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -929,17 +880,17 @@ _TEXT	SEGMENT
 i$1 = 32
 page$ = 40
 page_$ = 48
-tv76 = 56
+tv77 = 56
 pages$ = 80
-?au_request_page@@YAPEA_KH@Z PROC			; au_request_page
+?au_request_page@@YAPEAXH@Z PROC			; au_request_page
 
-; 259  : uint64_t* au_request_page(int pages) {
+; 252  : void* au_request_page(int pages) {
 
 $LN6:
 	mov	DWORD PTR [rsp+8], ecx
 	sub	rsp, 72					; 00000048H
 
-; 260  : 	uint64_t* page = AuGetFreePage(0,false, 0);
+; 253  : 	char* page = (char*)AuGetFreePage(0,false, 0);
 
 	xor	r8d, r8d
 	xor	edx, edx
@@ -947,19 +898,20 @@ $LN6:
 	call	AuGetFreePage
 	mov	QWORD PTR page$[rsp], rax
 
-; 261  : 	uint64_t page_ = (uint64_t)page;
+; 254  : 	uint64_t page_ = (uint64_t)page;
 
 	mov	rax, QWORD PTR page$[rsp]
 	mov	QWORD PTR page_$[rsp], rax
 
-; 262  : 
-; 263  : 	_debug_print_ ("*****Requesting page -> %x \r\n", page);
+; 255  : 
+; 256  : 	_debug_print_ ("*****Requesting page -> %x num_page-> %d \r\n", page, pages);
 
+	mov	r8d, DWORD PTR pages$[rsp]
 	mov	rdx, QWORD PTR page$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3191
+	lea	rcx, OFFSET FLAT:$SG3189
 	call	_debug_print_
 
-; 264  : 	for (size_t i = 0; i < pages; i++) {
+; 257  : 	for (size_t i = 0; i < pages; i++) {
 
 	mov	QWORD PTR i$1[rsp], 0
 	jmp	SHORT $LN3@au_request
@@ -972,36 +924,36 @@ $LN3@au_request:
 	cmp	QWORD PTR i$1[rsp], rax
 	jae	SHORT $LN1@au_request
 
-; 265  : 		AuMapPage((uint64_t)AuPmmngrAlloc(), page_ + i * 4096, 0);
+; 258  : 		AuMapPage((uint64_t)AuPmmngrAlloc(), page_ + i * 4096, 0);
 
 	mov	rax, QWORD PTR i$1[rsp]
 	imul	rax, 4096				; 00001000H
 	mov	rcx, QWORD PTR page_$[rsp]
 	add	rcx, rax
 	mov	rax, rcx
-	mov	QWORD PTR tv76[rsp], rax
+	mov	QWORD PTR tv77[rsp], rax
 	call	AuPmmngrAlloc
 	xor	r8d, r8d
-	mov	rcx, QWORD PTR tv76[rsp]
+	mov	rcx, QWORD PTR tv77[rsp]
 	mov	rdx, rcx
 	mov	rcx, rax
 	call	AuMapPage
 
-; 266  : 		
-; 267  : 	}
+; 259  : 		
+; 260  : 	}
 
 	jmp	SHORT $LN2@au_request
 $LN1@au_request:
 
-; 268  : 	return (uint64_t*)page;
+; 261  : 	return page;
 
 	mov	rax, QWORD PTR page$[rsp]
 
-; 269  : }
+; 262  : }
 
 	add	rsp, 72					; 00000048H
 	ret	0
-?au_request_page@@YAPEA_KH@Z ENDP			; au_request_page
+?au_request_page@@YAPEAXH@Z ENDP			; au_request_page
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\arch\x86_64\kheap.cpp
@@ -1009,7 +961,6 @@ _TEXT	SEGMENT
 meta$ = 32
 page$ = 40
 desc_addr$ = 48
-lm$ = 56
 ?AuHeapInitialize@@YAXXZ PROC				; AuHeapInitialize
 
 ; 42   : void AuHeapInitialize() {
@@ -1017,10 +968,10 @@ lm$ = 56
 $LN3:
 	sub	rsp, 72					; 00000048H
 
-; 43   : 	uint64_t* page = au_request_page(1);
+; 43   : 	void* page = au_request_page(1);
 
 	mov	ecx, 1
-	call	?au_request_page@@YAPEA_KH@Z		; au_request_page
+	call	?au_request_page@@YAPEAXH@Z		; au_request_page
 	mov	QWORD PTR page$[rsp], rax
 
 ; 44   : 	memset(page, 0, (1*4096));
@@ -1041,20 +992,16 @@ $LN3:
 	mov	rax, QWORD PTR desc_addr$[rsp]
 	mov	QWORD PTR meta$[rsp], rax
 
-; 48   : 	meta->free = true;
-
-	mov	rax, QWORD PTR meta$[rsp]
-	mov	BYTE PTR [rax+16], 1
-
+; 48   : 	//meta->free = true;
 ; 49   : 	meta->next = NULL;
 
 	mov	rax, QWORD PTR meta$[rsp]
-	mov	QWORD PTR [rax+24], 0
+	mov	QWORD PTR [rax+8], 0
 
 ; 50   : 	meta->prev = NULL;
 
 	mov	rax, QWORD PTR meta$[rsp]
-	mov	QWORD PTR [rax+32], 0
+	mov	QWORD PTR [rax+16], 0
 
 ; 51   : 	meta->magic = MAGIC_FREE;
 
@@ -1065,7 +1012,7 @@ $LN3:
 ; 53   : 	meta->size = (1*4096) - sizeof(meta_data_t);
 
 	mov	rax, QWORD PTR meta$[rsp]
-	mov	QWORD PTR [rax+8], 4056			; 00000fd8H
+	mov	DWORD PTR [rax+4], 4072			; 00000fe8H
 
 ; 54   : 	first_block = meta;
 
@@ -1077,16 +1024,12 @@ $LN3:
 	mov	rax, QWORD PTR meta$[rsp]
 	mov	QWORD PTR ?last_block@@3PEAU_meta_data_@@EA, rax ; last_block
 
-; 56   : 	uint64_t lm = (uint64_t)page;
+; 56   : 	
+; 57   : 	last_mark = ((uint64_t)page + (1*4096));
 
 	mov	rax, QWORD PTR page$[rsp]
-	mov	QWORD PTR lm$[rsp], rax
-
-; 57   : 	last_mark = (uint8_t*)(lm + (1*4096));
-
-	mov	rax, QWORD PTR lm$[rsp]
 	add	rax, 4096				; 00001000H
-	mov	QWORD PTR ?last_mark@@3PEAEEA, rax	; last_mark
+	mov	QWORD PTR ?last_mark@@3_KA, rax		; last_mark
 
 ; 58   : }
 

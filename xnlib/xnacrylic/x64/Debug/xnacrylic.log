@@ -1,8 +1,8 @@
-﻿Build started 09-06-2022 আবেলি 2:40:03.
+﻿Build started 10-06-2022 আবেলি 7:27:42.
      1>Project "E:\Xeneva Project\Xeneva\xnlib\xnacrylic\xnacrylic.vcxproj" on node 2 (Rebuild target(s)).
      1>_NASM:
          _base.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp3316d80d0ff349ffbbdc9d96d1338363.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp4e6ba51366e044dcb11933284eb1dbf0.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\_base.obj"  "E:\Xeneva Project\Xeneva\xnlib\xnacrylic\_base.asm"
        ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\xnlib\xnclib" /I"E:\Xeneva Project\Xeneva\xnlib\xnacrylic\include" /I"E:\os_dev\freetype2-master\freetype2-master\include" /Zi /nologo /W4 /WX- /sdl- /MP /Od /D ARCH_X64 /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt source\acrylic.cpp source\buffer.cpp source\canvas.cpp source\color.cpp source\font.cpp source\image.cpp source\path2d.cpp source\psf\psf.cpp xnacrylic.cpp
@@ -78,16 +78,16 @@
      1>E:\Xeneva Project\Xeneva\xnlib\xnacrylic\include\jpg\jpeg_decoder.h(580): warning C4127: conditional expression is constant
      1>source\image.cpp(100): warning C4244: '=' : conversion from 'unsigned int' to 'uint8_t', possible loss of data
          font.cpp
-     1>source\font.cpp(62): warning C4244: 'argument' : conversion from 'float' to 'FT_UInt', possible loss of data
-     1>source\font.cpp(87): warning C4018: '<' : signed/unsigned mismatch
+     1>source\font.cpp(63): warning C4244: 'argument' : conversion from 'float' to 'FT_UInt', possible loss of data
      1>source\font.cpp(88): warning C4018: '<' : signed/unsigned mismatch
-     1>source\font.cpp(65): warning C4100: 'sz' : unreferenced formal parameter
-     1>source\font.cpp(67): warning C4189: 'w' : local variable is initialized but not referenced
-     1>source\font.cpp(68): warning C4189: 'h' : local variable is initialized but not referenced
-     1>source\font.cpp(115): warning C4267: 'return' : conversion from 'size_t' to 'int', possible loss of data
-     1>source\font.cpp(107): warning C4189: 'string_width' : local variable is initialized but not referenced
-     1>source\font.cpp(128): warning C4267: 'return' : conversion from 'size_t' to 'int', possible loss of data
-     1>source\font.cpp(120): warning C4189: 'string_width' : local variable is initialized but not referenced
+     1>source\font.cpp(89): warning C4018: '<' : signed/unsigned mismatch
+     1>source\font.cpp(66): warning C4100: 'sz' : unreferenced formal parameter
+     1>source\font.cpp(68): warning C4189: 'w' : local variable is initialized but not referenced
+     1>source\font.cpp(69): warning C4189: 'h' : local variable is initialized but not referenced
+     1>source\font.cpp(116): warning C4267: 'return' : conversion from 'size_t' to 'int', possible loss of data
+     1>source\font.cpp(108): warning C4189: 'string_width' : local variable is initialized but not referenced
+     1>source\font.cpp(129): warning C4267: 'return' : conversion from 'size_t' to 'int', possible loss of data
+     1>source\font.cpp(121): warning C4189: 'string_width' : local variable is initialized but not referenced
          color.cpp
      1>source\color.cpp(75): warning C4244: 'argument' : conversion from 'float' to 'uint8_t', possible loss of data
      1>source\color.cpp(80): warning C4244: 'initializing' : conversion from 'int' to 'float', possible loss of data
@@ -133,7 +133,7 @@
      1>source\acrylic.cpp(320): warning C4100: 'sy' : unreferenced formal parameter
      1>source\acrylic.cpp(320): warning C4100: 'sx' : unreferenced formal parameter
          Generating Code...
-     1>e:\xeneva project\xeneva\xnlib\xnacrylic\source\font.cpp(102): warning C4702: unreachable code
+     1>e:\xeneva project\xeneva\xnlib\xnacrylic\source\font.cpp(103): warning C4702: unreachable code
      1>e:\xeneva project\xeneva\xnlib\xnacrylic\include\jpg\jpeg_decoder.h(328): warning C4706: assignment within conditional expression
      1>e:\xeneva project\xeneva\xnlib\xnacrylic\include\jpg\jpeg_decoder.h(330): warning C4706: assignment within conditional expression
      1>e:\xeneva project\xeneva\xnlib\xnacrylic\include\jpg\jpeg_decoder.h(348): warning C4706: assignment within conditional expression
@@ -158,4 +158,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:04.30
+Time Elapsed 00:00:03.19

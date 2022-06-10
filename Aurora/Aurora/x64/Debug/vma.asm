@@ -8,6 +8,7 @@ INCLUDELIB OLDNAMES
 PUBLIC	?AuInsertVMArea@@YAXPEAU_process_@@PEAU_vma_area_@@@Z ; AuInsertVMArea
 PUBLIC	?AuRemoveVMArea@@YAXPEAU_process_@@PEAU_vma_area_@@@Z ; AuRemoveVMArea
 PUBLIC	?AuFindVMA@@YAPEAU_vma_area_@@_K@Z		; AuFindVMA
+PUBLIC	?AuCleanVMA@@YAXPEAU_process_@@@Z		; AuCleanVMA
 PUBLIC	?AuFindVMAUniqueId@@YAPEAU_vma_area_@@I@Z	; AuFindVMAUniqueId
 EXTRN	free:PROC
 EXTRN	?get_current_process@@YAPEAU_process_@@XZ:PROC	; get_current_process
@@ -18,6 +19,9 @@ $pdata$?AuRemoveVMArea@@YAXPEAU_process_@@PEAU_vma_area_@@@Z DD imagerel $LN8
 $pdata$?AuFindVMA@@YAPEAU_vma_area_@@_K@Z DD imagerel $LN7
 	DD	imagerel $LN7+104
 	DD	imagerel $unwind$?AuFindVMA@@YAPEAU_vma_area_@@_K@Z
+$pdata$?AuCleanVMA@@YAXPEAU_process_@@@Z DD imagerel $LN6
+	DD	imagerel $LN6+64
+	DD	imagerel $unwind$?AuCleanVMA@@YAXPEAU_process_@@@Z
 $pdata$?AuFindVMAUniqueId@@YAPEAU_vma_area_@@I@Z DD imagerel $LN7
 	DD	imagerel $LN7+86
 	DD	imagerel $unwind$?AuFindVMAUniqueId@@YAPEAU_vma_area_@@I@Z
@@ -26,6 +30,8 @@ xdata	SEGMENT
 $unwind$?AuRemoveVMArea@@YAXPEAU_process_@@PEAU_vma_area_@@@Z DD 010e01H
 	DD	0420eH
 $unwind$?AuFindVMA@@YAPEAU_vma_area_@@_K@Z DD 010901H
+	DD	06209H
+$unwind$?AuCleanVMA@@YAXPEAU_process_@@@Z DD 010901H
 	DD	06209H
 $unwind$?AuFindVMAUniqueId@@YAPEAU_vma_area_@@I@Z DD 010801H
 	DD	06208H
@@ -92,6 +98,46 @@ $LN5@AuFindVMAU:
 	add	rsp, 56					; 00000038H
 	ret	0
 ?AuFindVMAUniqueId@@YAPEAU_vma_area_@@I@Z ENDP		; AuFindVMAUniqueId
+_TEXT	ENDS
+; Function compile flags: /Odtpy
+; File e:\xeneva project\xeneva\aurora\aurora\mmngr\vma.cpp
+_TEXT	SEGMENT
+vma$1 = 32
+proc$ = 64
+?AuCleanVMA@@YAXPEAU_process_@@@Z PROC			; AuCleanVMA
+
+; 111  : void AuCleanVMA(process_t *proc) {
+
+$LN6:
+	mov	QWORD PTR [rsp+8], rcx
+	sub	rsp, 56					; 00000038H
+
+; 112  : 	for (au_vm_area_t *vma = proc->vma_area; vma != NULL; vma = vma->next)
+
+	mov	rax, QWORD PTR proc$[rsp]
+	mov	rax, QWORD PTR [rax+80]
+	mov	QWORD PTR vma$1[rsp], rax
+	jmp	SHORT $LN3@AuCleanVMA
+$LN2@AuCleanVMA:
+	mov	rax, QWORD PTR vma$1[rsp]
+	mov	rax, QWORD PTR [rax+56]
+	mov	QWORD PTR vma$1[rsp], rax
+$LN3@AuCleanVMA:
+	cmp	QWORD PTR vma$1[rsp], 0
+	je	SHORT $LN1@AuCleanVMA
+
+; 113  : 		free(vma);
+
+	mov	rcx, QWORD PTR vma$1[rsp]
+	call	free
+	jmp	SHORT $LN2@AuCleanVMA
+$LN1@AuCleanVMA:
+
+; 114  : }
+
+	add	rsp, 56					; 00000038H
+	ret	0
+?AuCleanVMA@@YAXPEAU_process_@@@Z ENDP			; AuCleanVMA
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\mmngr\vma.cpp

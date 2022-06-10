@@ -41,6 +41,7 @@ void acrylic_initialize_font () {
 	system_font.data = buffer;
 	system_font.name = "roboto";
 	system_font.size = f.size;
+	system_font.fd = fd;
 	
 	err = FT_Init_FreeType (&lib);
 	err = FT_New_Memory_Face(lib,system_font.data,system_font.size,0,&face);
@@ -131,6 +132,8 @@ int acrylic_font_get_height(char* string) {
 void acrylic_close_font () {
 	FT_Done_Face(face);
 	FT_Done_FreeType(lib);
-	for (int i = 0; i < system_font.size/4096; i++)
+	sys_close_file(system_font.fd);
+	for (int i = 0; i < 1024*1024/4096; i++)
 		vfree(0xFFFFFFFFC0000000 + i * 4096);
+	
 }

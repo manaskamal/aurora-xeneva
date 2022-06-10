@@ -35,6 +35,7 @@
 #include <sys\ioquery.h>
 #include <sys\_wait.h>
 #include <sys\shm.h>
+#include <sys\_exit.h>
 #include <sys\_term.h>
 #include <stdlib.h>
 #include <acrylic.h>
@@ -127,4 +128,24 @@ XeApp* XeStartApplication(int argc, char* argv[]) {
 	}
 
 	return app;
+}
+
+
+/* XECloseApplication -- Closes the application 
+ * @param app -- Pointer to app structure
+ */
+XE_EXTERN XE_EXPORT void XECloseApplication (XeApp *app) {
+	pri_event_t ev;
+	ev.type = 102; //mark for close message
+	XeSendEventPRIWM(&ev);
+	memset(&ev, 0, sizeof(pri_event_t));
+	for(;;) {
+		ioquery(app->event_fd, PRI_LOOP_GET_EVENT, &ev);
+		if (ev.type != 0) {
+			if (ev.type == 208) {
+				sys_exit();
+				memset(&ev, 0, sizeof(pri_event_t));
+			}
+		}
+	}
 }

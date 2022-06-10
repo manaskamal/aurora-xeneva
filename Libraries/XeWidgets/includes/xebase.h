@@ -64,4 +64,9 @@ XE_EXTERN XE_EXPORT void XeSendEventPRIWM (pri_event_t *event);
  */
 XE_EXTERN XE_EXPORT XeApp* XeStartApplication(int argc, char* argv[]);
 
+/* XECloseApplication -- Closes the application 
+ * @param app -- Pointer to app structure
+ */
+XE_EXTERN XE_EXPORT void XECloseApplication (XeApp *app);
+
 #endif

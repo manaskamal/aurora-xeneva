@@ -12,13 +12,13 @@ _BSS	SEGMENT
 ?libentry_last@@3PEAU_libentry_@@EA DQ 01H DUP (?)	; libentry_last
 _BSS	ENDS
 CONST	SEGMENT
-$SG3681	DB	'Failed to load -> %s ', 0aH, 00H
+$SG3680	DB	'Failed to load -> %s ', 0aH, 00H
 	ORG $+1
-$SG3695	DB	'xnacrl.dll', 00H
+$SG3694	DB	'xnacrl.dll', 00H
 	ORG $+5
-$SG3696	DB	'xewid.dll', 00H
+$SG3695	DB	'xewid.dll', 00H
 	ORG $+6
-$SG3697	DB	'xnclib.dll', 00H
+$SG3696	DB	'xnclib.dll', 00H
 CONST	ENDS
 PUBLIC	?AuSysLibInitialize@@YAXXZ			; AuSysLibInitialize
 PUBLIC	?AuGetSysLib@@YAPEAU_libentry_@@PEAD@Z		; AuGetSysLib
@@ -93,7 +93,7 @@ $LN6:
 ; 89   : 		printf ("Failed to load -> %s \n", fname);
 
 	mov	rdx, QWORD PTR fname$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3681
+	lea	rcx, OFFSET FLAT:$SG3680
 	call	printf
 
 ; 90   : 		return;
@@ -443,17 +443,17 @@ $LN3:
 ; 121  : 
 ; 122  : 	AuSysLoadLib("xnacrl.dll");
 
-	lea	rcx, OFFSET FLAT:$SG3695
+	lea	rcx, OFFSET FLAT:$SG3694
 	call	?AuSysLoadLib@@YAXPEAD@Z		; AuSysLoadLib
 
 ; 123  : 	AuSysLoadLib("xewid.dll");
 
-	lea	rcx, OFFSET FLAT:$SG3696
+	lea	rcx, OFFSET FLAT:$SG3695
 	call	?AuSysLoadLib@@YAXPEAD@Z		; AuSysLoadLib
 
 ; 124  : 	AuSysLoadLib("xnclib.dll");
 
-	lea	rcx, OFFSET FLAT:$SG3697
+	lea	rcx, OFFSET FLAT:$SG3696
 	call	?AuSysLoadLib@@YAXPEAD@Z		; AuSysLoadLib
 
 ; 125  : }

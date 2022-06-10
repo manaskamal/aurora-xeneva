@@ -131,7 +131,6 @@ void AuPeLinkLibraryEx (void* image, void* exporter) {
 		/* Here Check the required dll name, for the base address */
 		if (strcmp(func,"xnclib.dll") == 0){
 			exporter = (void*)XNCLIB_BASE;
-			_debug_print_ ("Importer depends on -> %s \r\n", func);
 		}else if (strcmp(func,"xnacrl.dll") == 0){
 			exporter = (void*)XNACRL_BASE;
 		}else if (strcmp(func,"xewid.dll") == 0){

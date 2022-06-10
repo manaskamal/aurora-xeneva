@@ -146,6 +146,7 @@
     <ClCompile Include="xebase.cpp" />
     <ClCompile Include="xeloop.cpp" />
     <ClCompile Include="xewindow.cpp" />
+    <ClCompile Include="xe_glblctrl_close.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="includes\list.h" />
@@ -154,6 +155,7 @@
     <ClInclude Include="includes\xeloop.h" />
     <ClInclude Include="includes\xewidgets.h" />
     <ClInclude Include="includes\xewindow.h" />
+    <ClInclude Include="includes\xe_glblctrl_close.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

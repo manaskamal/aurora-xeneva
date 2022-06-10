@@ -10,7 +10,7 @@ _BSS	SEGMENT
 funct	DQ	01H DUP (?)
 _BSS	ENDS
 CONST	SEGMENT
-$SG4214	DB	'System Call Fault!! Halting System', 0aH, 00H
+$SG4215	DB	'System Call Fault!! Halting System', 0aH, 00H
 CONST	ENDS
 PUBLIC	x64_syscall_handler
 EXTRN	printf:PROC
@@ -95,7 +95,7 @@ $LN50:
 
 ; 24   : 		printf ("System Call Fault!! Halting System\n");
 
-	lea	rcx, OFFSET FLAT:$SG4214
+	lea	rcx, OFFSET FLAT:$SG4215
 	call	printf
 $LN45@x64_syscal:
 

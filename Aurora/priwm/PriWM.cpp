@@ -149,44 +149,38 @@ void pri_wm_get_message (pri_event_t *ev) {
  * @return -- return the new backing store
  */
 void* create_new_backing_store (uint16_t owner_id, int size, uint16_t *key) {
-	uint32_t* addr = (uint32_t*)BACKING_STORE_START;
+	//uint32_t* addr = (uint32_t*)BACKING_STORE_START;
 	uint32_t cursor = 0;
 	uint32_t key_prefix = backing_store_key_prefix + owner_id;
 	/* check, every backing store slots for free slot */
-	for (int i = 0; i < backing_store_list->pointer; i++) {
-		backing_store_t *store = (backing_store_t*)list_get_at(backing_store_list, i);
-		if (store) {
-			/* check if any backing store slot is free, 
-			 * if yes, than use that rather than populating
-			 * virtual addresses
-			 */
-			if (store->free) {
-				map_shared_memory (owner_id, (uint64_t)store->addr, size);
-				store->owner_id = owner_id;
-				store->free = false;
-				return store->addr;
-			} else {
-				/* increase the cursor pos for better address
-				 * alignment
-				 */
-				cursor += store->size;
-			}
-		}
-	}
+	//for (int i = 0; i < backing_store_list->pointer; i++) {
+	//	backing_store_t *store = (backing_store_t*)list_get_at(backing_store_list, i);
+	//	if (store) {
+	//		/* check if any backing store slot is free, 
+	//		 * if yes, than use that rather than populating
+	//		 * virtual addresses
+	//		 */
+	//		if (store->free) {
+	//			map_shared_memory (owner_id, (uint64_t)store->addr, size);
+	//			store->owner_id = owner_id;
+	//			store->free = false;
+	//			return store->addr;
+	//		} else {
+	//			/* increase the cursor pos for better address
+	//			 * alignment
+	//			 */
+	//			cursor += store->size;
+	//		}
+	//	}
+	//}
 
-	/* no free backing store slot was found, create one */
-	addr += cursor;
+	///* no free backing store slot was found, create one */
+	//addr += cursor;
 	//map_shared_memory (owner_id, (uint64_t)addr, size);
 	int id = sys_shmget(key_prefix,size,0);
 	void* ptr = sys_shmat(id,0,NULL);
 	*key = key_prefix;
 	backing_store_key_prefix += 10;
-	backing_store_t *new_back_store = (backing_store_t*)malloc(sizeof(backing_store_t));
-	new_back_store->addr = (uint32_t*)ptr;
-	new_back_store->size = size;
-	new_back_store->free = false;
-	new_back_store->owner_id = owner_id;
-	list_add (backing_store_list, new_back_store);	
 	return ptr;
 }
 
@@ -232,11 +226,11 @@ void remove_backing_store (uint16_t owner_id) {
  * @param owner_id -- owner of the shared window space
  */
 uint32_t* create_new_shared_win (uint16_t *sh_key, uint16_t owner_id) {
-	int cursor_pos = 0;
+	/*int cursor_pos = 0;*/
 	uint32_t key = shared_win_key_prefix + owner_id;
 	shared_win_key_prefix++;
 
-	for (int i = 0; i < shared_win_space_list->pointer; i++) {
+	/*for (int i = 0; i < shared_win_space_list->pointer; i++) {
 		shared_win_t *sh = (shared_win_t*)list_get_at(shared_win_space_list, i);
 		if (sh->free) {
 			map_shared_memory(owner_id, (uint64_t)sh->win_info_location,8192);
@@ -246,16 +240,11 @@ uint32_t* create_new_shared_win (uint16_t *sh_key, uint16_t owner_id) {
 		}else
 			cursor_pos += 8192;
 	}
-
+*/
 	int id = sys_shmget(key,8192,0);
 	void* addr = sys_shmat(id,NULL,0);
 	*sh_key = key; 
-	shared_win_t* sh = (shared_win_t*)malloc(sizeof(shared_win_t));
-	sh->free = false;
-	sh->owner_id = owner_id;
-	sh->win_info_location = (uint32_t*)addr;
-	list_add(shared_win_space_list, sh);
-	return sh->win_info_location;
+	return (uint32_t*)addr;
 }
 
 /**
@@ -440,7 +429,6 @@ void pri_wallpaper_change (pri_wallpaper_t *wallp,char* filename) {
 	wallp->img->width = 0;
 	wallp->img->height = 0;
 	wallp->img->size = f.size;
-	sys_print_text ("Calling JPEG Decoder \n");
 	CallJpegDecoder(wallp->img);
 	
 }
@@ -959,7 +947,10 @@ void pri_win_check_draggable (int x, int y, int button) {
 		pri_win_info_t *info = (pri_win_info_t*)win->pri_win_info_loc;
 
 		/** Bound check the mouse cursor **/
-		if (!(x >= info->x && x < (info->x + info->width) &&
+		/* +74 and - 74 is the limit of draggable area, because
+		 * window controls can lie within this area either right or
+		 * left of the window title bar */
+		if (!(x >= (info->x + 74) && x < (info->x + info->width - 74) &&
 			y >= info->y && y < (info->y + info->height))) 
 			continue;
 
@@ -1147,7 +1138,6 @@ XE_EXTERN int XeMain (int argc, char* argv[]) {
 			uint8_t attribute = event.dword5;
 			char *title = (char*)malloc(100) ;
 			memset(title,0,100);
-
 			strcpy(title,event.char_values);
 
 			pri_window_t *win = window_create (x,y,w,h,attribute,event.from_id, title);
@@ -1249,6 +1239,8 @@ XE_EXTERN int XeMain (int argc, char* argv[]) {
 
 			if (x != 0 && y != 0 && w != 0 && h != 0) 
 				pri_wallp_add_dirty_clip(pri_create_rect(x,y,w,h));
+
+			_window_update_all_ = true;
 
 			memset(&event, 0, sizeof(pri_event_t));
 		}

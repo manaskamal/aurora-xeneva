@@ -14,18 +14,18 @@ _BSS	SEGMENT
 ?last@@3PEAU_tele_type_@@EA DQ 01H DUP (?)		; last
 _BSS	ENDS
 CONST	SEGMENT
-$SG3581	DB	'/dev/', 00H
+$SG3580	DB	'/dev/', 00H
 	ORG $+2
-$SG3582	DB	'ttym', 00H
+$SG3581	DB	'ttym', 00H
 	ORG $+3
-$SG3586	DB	'[TTY]: Master node mounted at -> %s  ', 0dH, 0aH, 00H
-$SG3588	DB	'/dev/', 00H
+$SG3585	DB	'[TTY]: Master node mounted at -> %s  ', 0dH, 0aH, 00H
+$SG3587	DB	'/dev/', 00H
 	ORG $+2
-$SG3589	DB	'ttys', 00H
+$SG3588	DB	'ttys', 00H
 	ORG $+3
-$SG3593	DB	'[TTY]: Slave node mounted at %s ', 0dH, 0aH, 00H
+$SG3592	DB	'[TTY]: Slave node mounted at %s ', 0dH, 0aH, 00H
 	ORG $+5
-$SG3596	DB	'Used RAM -> %d MB/ Total RAM %d MB', 0dH, 0aH, 00H
+$SG3595	DB	'Used RAM -> %d MB/ Total RAM %d MB', 0dH, 0aH, 00H
 CONST	ENDS
 _DATA	SEGMENT
 ?master_count@@3HA DD 01H				; master_count
@@ -711,14 +711,14 @@ $LN3:
 ; 244  : 	char mname[10];
 ; 245  : 	strcpy (mname, "/dev/");
 
-	lea	rdx, OFFSET FLAT:$SG3581
+	lea	rdx, OFFSET FLAT:$SG3580
 	lea	rcx, QWORD PTR mname$[rsp]
 	call	strcpy
 
 ; 246  : 	strcpy (mname+5, "ttym");
 
 	lea	rax, QWORD PTR mname$[rsp+5]
-	lea	rdx, OFFSET FLAT:$SG3582
+	lea	rdx, OFFSET FLAT:$SG3581
 	mov	rcx, rax
 	call	strcpy
 
@@ -814,21 +814,21 @@ $LN3:
 ; 267  : 	_debug_print_ ("[TTY]: Master node mounted at -> %s  \r\n", mname);
 
 	lea	rdx, QWORD PTR mname$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3586
+	lea	rcx, OFFSET FLAT:$SG3585
 	call	_debug_print_
 
 ; 268  : 
 ; 269  : 	char sname[10];
 ; 270  : 	strcpy (sname, "/dev/");
 
-	lea	rdx, OFFSET FLAT:$SG3588
+	lea	rdx, OFFSET FLAT:$SG3587
 	lea	rcx, QWORD PTR sname$[rsp]
 	call	strcpy
 
 ; 271  : 	strcpy (sname+5, "ttys");
 
 	lea	rax, QWORD PTR sname$[rsp+5]
-	lea	rdx, OFFSET FLAT:$SG3589
+	lea	rdx, OFFSET FLAT:$SG3588
 	mov	rcx, rax
 	call	strcpy
 
@@ -928,7 +928,7 @@ $LN3:
 ; 290  : 	_debug_print_ ("[TTY]: Slave node mounted at %s \r\n", sname);
 
 	lea	rdx, QWORD PTR sname$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3593
+	lea	rcx, OFFSET FLAT:$SG3592
 	call	_debug_print_
 
 ; 291  : 	
@@ -1182,7 +1182,7 @@ $LN3:
 	mov	rcx, QWORD PTR tv279[rsp]
 	mov	r8, rcx
 	mov	rdx, rax
-	lea	rcx, OFFSET FLAT:$SG3596
+	lea	rcx, OFFSET FLAT:$SG3595
 	call	_debug_print_
 
 ; 343  : 

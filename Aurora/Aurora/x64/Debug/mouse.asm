@@ -93,7 +93,7 @@ xdata	ENDS
 _TEXT	SEGMENT
 ?mouse_register_device@@YAXXZ PROC			; mouse_register_device
 
-; 196  : }
+; 195  : }
 
 	ret	0
 ?mouse_register_device@@YAXXZ ENDP			; mouse_register_device
@@ -564,15 +564,14 @@ $LN1@mouse_hand:
 ; 176  :     /*	if (left_button_up()) {
 ; 177  : 			mouse_button_state |= 5;
 ; 178  : 		}*/
-; 179  : 
-; 180  : 		memcpy (prev_button, curr_button, 3);
+; 179  : 		memcpy (prev_button, curr_button, 3);
 
 	mov	r8d, 3
 	lea	rdx, OFFSET FLAT:?curr_button@@3PAEA	; curr_button
 	lea	rcx, OFFSET FLAT:?prev_button@@3PAEA	; prev_button
 	call	memcpy
 
-; 181  : 		memset (curr_button, 0x00, 3);
+; 180  : 		memset (curr_button, 0x00, 3);
 
 	mov	r8d, 3
 	xor	edx, edx
@@ -581,23 +580,23 @@ $LN1@mouse_hand:
 $LN12@mouse_hand:
 $read_next$30:
 
-; 182  : read_next:
-; 183  : 		break;
+; 181  : read_next:
+; 182  : 		break;
 
 	jmp	SHORT $LN24@mouse_hand
 
-; 184  : 	}
+; 183  : 	}
 
 	jmp	$LN25@mouse_hand
 $LN24@mouse_hand:
 
-; 185  : 
-; 186  : 	AuInterruptEnd(12);
+; 184  : 
+; 185  : 	AuInterruptEnd(12);
 
 	mov	ecx, 12
 	call	AuInterruptEnd
 
-; 187  : }
+; 186  : }
 
 	add	rsp, 104				; 00000068H
 	ret	0
@@ -819,56 +818,56 @@ _TEXT	SEGMENT
 status$ = 32
 ?AuInitializeMouse@@YAXXZ PROC				; AuInitializeMouse
 
-; 202  : void AuInitializeMouse () {
+; 201  : void AuInitializeMouse () {
 
 $LN3:
 	sub	rsp, 56					; 00000038H
 
-; 203  : 	mouse_cycle = 0;
+; 202  : 	mouse_cycle = 0;
 
 	mov	BYTE PTR mouse_cycle, 0
 
-; 204  : 	mouse_x = 0;
+; 203  : 	mouse_x = 0;
 
 	mov	DWORD PTR ?mouse_x@@3HA, 0		; mouse_x
 
-; 205  : 	mouse_y = 0;
+; 204  : 	mouse_y = 0;
 
 	mov	DWORD PTR ?mouse_y@@3HA, 0		; mouse_y
 
-; 206  : 
-; 207  : 	uint8_t status;
-; 208  : 
-; 209  : 	mouse_wait (1);
+; 205  : 
+; 206  : 	uint8_t status;
+; 207  : 
+; 208  : 	mouse_wait (1);
 
 	mov	cl, 1
 	call	?mouse_wait@@YAXE@Z			; mouse_wait
 
-; 210  :     outportb (0x64, 0xA8);
+; 209  :     outportb (0x64, 0xA8);
 
 	mov	dl, 168					; 000000a8H
 	mov	cx, 100					; 00000064H
 	call	outportb
 
-; 211  : 
-; 212  : 	mouse_wait(1);
+; 210  : 
+; 211  : 	mouse_wait(1);
 
 	mov	cl, 1
 	call	?mouse_wait@@YAXE@Z			; mouse_wait
 
-; 213  : 	outportb (0x64, 0x20);
+; 212  : 	outportb (0x64, 0x20);
 
 	mov	dl, 32					; 00000020H
 	mov	cx, 100					; 00000064H
 	call	outportb
 
-; 214  : 
-; 215  : 	mouse_wait (0);
+; 213  : 
+; 214  : 	mouse_wait (0);
 
 	xor	ecx, ecx
 	call	?mouse_wait@@YAXE@Z			; mouse_wait
 
-; 216  : 	status = (inportb (0x60) | 2);
+; 215  : 	status = (inportb (0x60) | 2);
 
 	mov	cx, 96					; 00000060H
 	call	inportb
@@ -876,52 +875,52 @@ $LN3:
 	or	eax, 2
 	mov	BYTE PTR status$[rsp], al
 
-; 217  : 
-; 218  : 	mouse_wait (1);
+; 216  : 
+; 217  : 	mouse_wait (1);
 
 	mov	cl, 1
 	call	?mouse_wait@@YAXE@Z			; mouse_wait
 
-; 219  : 	outportb (0x64, 0x60);
+; 218  : 	outportb (0x64, 0x60);
 
 	mov	dl, 96					; 00000060H
 	mov	cx, 100					; 00000064H
 	call	outportb
 
-; 220  : 
-; 221  : 	mouse_wait (1);
+; 219  : 
+; 220  : 	mouse_wait (1);
 
 	mov	cl, 1
 	call	?mouse_wait@@YAXE@Z			; mouse_wait
 
-; 222  : 	outportb (0x60, status);
+; 221  : 	outportb (0x60, status);
 
 	movzx	edx, BYTE PTR status$[rsp]
 	mov	cx, 96					; 00000060H
 	call	outportb
 
-; 223  : 
-; 224  : 	mouse_write (0xF6);
+; 222  : 
+; 223  : 	mouse_write (0xF6);
 
 	mov	cl, 246					; 000000f6H
 	call	?mouse_write@@YAXE@Z			; mouse_write
 
-; 225  : 	mouse_read ();
+; 224  : 	mouse_read ();
 
 	call	?mouse_read@@YAEXZ			; mouse_read
 
-; 226  : 
-; 227  : 	mouse_write (0xF4);
+; 225  : 
+; 226  : 	mouse_write (0xF4);
 
 	mov	cl, 244					; 000000f4H
 	call	?mouse_write@@YAXE@Z			; mouse_write
 
-; 228  : 	mouse_read ();
+; 227  : 	mouse_read ();
 
 	call	?mouse_read@@YAEXZ			; mouse_read
 
-; 229  : 
-; 230  : 	AuInterruptSet (34, mouse_handler, 12, false);  //34
+; 228  : 
+; 229  : 	AuInterruptSet (34, mouse_handler, 12, false);  //34
 
 	xor	r9d, r9d
 	mov	r8b, 12
@@ -929,7 +928,7 @@ $LN3:
 	mov	ecx, 34					; 00000022H
 	call	AuInterruptSet
 
-; 231  : }
+; 230  : }
 
 	add	rsp, 56					; 00000038H
 	ret	0

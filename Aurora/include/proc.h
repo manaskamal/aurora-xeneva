@@ -70,6 +70,12 @@ extern void AuRemoveVMArea (process_t *proc, au_vm_area_t *vma);
 extern au_vm_area_t *AuFindVMA (uint64_t address);
 
 /*
+ * AuCleanVMA -- Clean up all allocated memory areas
+ * @param proc -- Pointer to process structure
+ */
+extern void AuCleanVMA(process_t *proc);
+
+/*
  * AuFindVMAUniqueId -- In some cases we will not be able to
  * know the virtual address, specially for shared memory cases
  * so, we will use unique id to find the virtual address range

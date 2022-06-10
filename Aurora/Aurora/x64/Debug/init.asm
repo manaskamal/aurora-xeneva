@@ -10,15 +10,15 @@ _BSS	SEGMENT
 ?debug@@3P6AXPEBDZZEA DQ 01H DUP (?)			; debug
 _BSS	ENDS
 CONST	SEGMENT
-$SG5402	DB	'Scheduler Initialized', 0aH, 00H
+$SG5403	DB	'Scheduler Initialized', 0aH, 00H
 	ORG $+1
-$SG5404	DB	'shell', 00H
+$SG5405	DB	'shell', 00H
 	ORG $+2
-$SG5405	DB	'/init.exe', 00H
+$SG5406	DB	'/init.exe', 00H
 	ORG $+2
-$SG5406	DB	'priwm', 00H
+$SG5407	DB	'priwm', 00H
 	ORG $+6
-$SG5407	DB	'/priwm.exe', 00H
+$SG5408	DB	'/priwm.exe', 00H
 CONST	ENDS
 PUBLIC	?debug_print@@YAXPEBDZZ				; debug_print
 PUBLIC	?_AuMain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z		; _AuMain
@@ -238,7 +238,7 @@ $LN5:
 ; 159  : 
 ; 160  : 	printf ("Scheduler Initialized\n");
 
-	lea	rcx, OFFSET FLAT:$SG5402
+	lea	rcx, OFFSET FLAT:$SG5403
 	call	printf
 
 ; 161  : 	int au_status = 0;
@@ -249,8 +249,8 @@ $LN5:
 ; 163  : 	/* start the init process here */
 ; 164  : 	au_status = AuCreateProcess ("/init.exe","shell");
 
-	lea	rdx, OFFSET FLAT:$SG5404
-	lea	rcx, OFFSET FLAT:$SG5405
+	lea	rdx, OFFSET FLAT:$SG5405
+	lea	rcx, OFFSET FLAT:$SG5406
 	call	?AuCreateProcess@@YAHPEBDPEAD@Z		; AuCreateProcess
 	mov	DWORD PTR au_status$[rsp], eax
 
@@ -258,8 +258,8 @@ $LN5:
 ; 166  : 	/* start the compositing window manager at id 3 */
 ; 167  : 	au_status = AuCreateProcess ("/priwm.exe","priwm");
 
-	lea	rdx, OFFSET FLAT:$SG5406
-	lea	rcx, OFFSET FLAT:$SG5407
+	lea	rdx, OFFSET FLAT:$SG5407
+	lea	rcx, OFFSET FLAT:$SG5408
 	call	?AuCreateProcess@@YAHPEBDPEAD@Z		; AuCreateProcess
 	mov	DWORD PTR au_status$[rsp], eax
 

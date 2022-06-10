@@ -42,9 +42,8 @@
 #define MAGIC_FREE  0x16062002
 
 typedef struct _meta_data_ {
-	uint32_t magic;
-	size_t   size;
-	bool     free;
+	int magic;
+	int size;
 	_meta_data_ *next;
 	_meta_data_ *prev;
 }meta_data_t;
@@ -60,7 +59,7 @@ extern void AuHeapInitialize();
 * au_request_page -- request contiguous 4k virtual pages
 * @param pages -- number of pages needs to be mapped
 */
-extern uint64_t* au_request_page(int pages);
+extern void* au_request_page(int pages);
 
 /*
 * au_free_page -- frees up pages, note that pages

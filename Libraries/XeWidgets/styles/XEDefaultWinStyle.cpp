@@ -43,12 +43,11 @@
 void XEDefaultPaintTitlebar(XEWindow *win) {
 	acrylic_draw_vertical_gradient(win->ctx, 0,0,win->shwin->width,26, LIGHTSILVER, SILVER);
 
-	acrylic_draw_filled_circle(win->ctx,20,13,8,ORANGE);
-	acrylic_draw_circle(win->ctx, 20,13,8,DARKRED);
-	acrylic_draw_filled_circle(win->ctx,42,13,8,YELLOW);
-	acrylic_draw_circle(win->ctx, 42,13,8,DARKGOLDENROD);
-	acrylic_draw_filled_circle(win->ctx,62,13,8,PALEGREEN);
-	acrylic_draw_circle(win->ctx,62,13,8,GREEN);
+	for (int i = 0; i < win->global_controls->pointer; i++) {
+		XEGlobalControl *control = (XEGlobalControl*)list_get_at(win->global_controls, i);
+		acrylic_draw_filled_circle(win->ctx,control->x+8, control->y+8,8,control->fill_color);
+		acrylic_draw_circle(win->ctx,control->x+8, control->y+8, 8,control->outline_color);
+	}
 
 	/* Now draw the title */
 	acrylic_font_set_size(10);

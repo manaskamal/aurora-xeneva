@@ -65,7 +65,7 @@ void remove_process (process_t *proc) {
 		proc->next->prev = proc->prev;
 	}
 	pid--;
-	AuPmmngrFree(proc);
+	free(proc);
 }
 
 
@@ -184,7 +184,7 @@ int AuCreateProcess(const char* filename, char* procname) {
 	IMAGE_DOS_HEADER* dos = (IMAGE_DOS_HEADER*)buf;
 	PIMAGE_NT_HEADERS nt = raw_offset<PIMAGE_NT_HEADERS>(dos, dos->e_lfanew);
 
-	_debug_print_ ("DOS Sign-> %x \r\n", dos->e_magic);
+	
 	//!extract the informations
  
 	uint64_t _image_base_ = nt->OptionalHeader.ImageBase;
@@ -192,6 +192,8 @@ int AuCreateProcess(const char* filename, char* procname) {
 
 	//! create the user stack and address space
 	uint64_t *cr3 = AuCreateAddressSpace();	
+	_debug_print_ ("PROCESS CR3 -> %x \r\n", cr3);
+
 
 	AuMapPageEx(cr3,v2p((size_t)buf),_image_base_, PAGING_USER);
 	////! read rest of the image
@@ -308,6 +310,20 @@ void kill_process () {
 	if (timer != -1) {
 		destroy_timer (timer);
 	}
+
+	/*Close all open dlls */
+	AuLibEntry_t *lib1 = AuGetSysLib("xewid.dll");
+	for (int i = 0; i < lib1->phys_blocks_count; i++)
+		AuUnmapPage(XNWID_BASE + i * 4096, true);
+
+	AuLibEntry_t *lib2 = AuGetSysLib("xnclib.dll");
+	for (int i = 0; i < lib2->phys_blocks_count; i++)
+		AuUnmapPage(XNCLIB_BASE + i * 4096, true);
+
+	AuLibEntry_t *lib3 = AuGetSysLib("xnacrl.dll");
+	for (int i = 0; i < lib3->phys_blocks_count; i++)
+		AuUnmapPage(XNACRL_BASE + i * 4096, true);
+
 	
 
 	//!unmap the binary image
@@ -325,15 +341,19 @@ void kill_process () {
 		AuUnmapPage(PROCESS_HEAP_BREAK + i * 4096, true);
 	}
 	
-	free(remove_thread->fx_state);
-	free(proc->process_file);
-	remove_process (proc);
-	task_delete (remove_thread);
-	free(remove_thread);
+	
 	AuPmmngrFree((void*)v2p((size_t)remove_thread->msg_box));
 	pri_loop_destroy_by_id (t_id);
 
-	_debug_print_ ("Used Pmmngr -> %d MB / Total -> %d MB \r\n", pmmngr_get_used_ram () / 1024 / 1024, pmmngr_get_total_ram() / 1024 / 1024);
+	AuCleanVMA(proc);
+	
+	free(remove_thread->fx_state);
+	free(proc->process_file);
+	remove_process (proc);
+	
+
+	task_delete (remove_thread);
+	free(remove_thread);
 
 	free_kstack(cr3);
 	AuPmmngrFree(cr3);
@@ -527,7 +547,4 @@ void process_link_libraries () {
 
 	
     //AuPeLinkLibraryEx((void*)0x0000000000600000,(void*)0x0000000100200000);
-	
-	
-	_debug_print_ ("Libraries linked \r\n");
 }

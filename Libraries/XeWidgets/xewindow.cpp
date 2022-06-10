@@ -34,7 +34,65 @@
 #include <sys\_process.h>
 #include <sys\_term.h>
 #include <string.h>
+#include <acrylic.h>
+#include <color.h>
+#include <xe_glblctrl_close.h>
 
+/*
+ * =========================================================================================
+ *  XEWindow Default Action Handlers
+ * =========================================================================================
+ */
+void XEGlobalControlMouseEvent(XEGlobalControl *ctrl, XEWindow *win, int x, int y, int button) {
+
+	uint32_t fill_color = 0;
+	uint32_t outline_color = 0;
+
+	if (ctrl->hover){
+		fill_color = ctrl->hover_fill_color;
+		outline_color = ctrl->hover_outline_color;
+	}else if (ctrl->clicked){
+		fill_color = ctrl->clicked_fill_color;
+		outline_color = ctrl->clicked_outline_color;
+	}else {
+		fill_color = ctrl->fill_color;
+		outline_color = ctrl->outline_color;
+	}
+
+	if (ctrl->clicked) {
+		fill_color = ctrl->clicked_fill_color;
+		outline_color = ctrl->clicked_outline_color;
+		ctrl->clicked = false;
+	}
+
+	acrylic_draw_filled_circle(win->ctx,ctrl->x+8, ctrl->y+8,8,fill_color);
+	acrylic_draw_circle(win->ctx,ctrl->x+8, ctrl->y+8, 8,outline_color);
+	XEUpdateWindow(win,ctrl->x, ctrl->y, ctrl->w, ctrl->h, true); 
+
+	if (button)
+		if (ctrl->action_event)
+			ctrl->action_event(ctrl,win);
+}
+
+/*
+ * XEAddGlobalButton -- Adds Global Control button to window
+ * @param win -- Pointer to window
+ * @param x -- X Coordinate
+ * @param y -- Y Coordinate
+ * @param type -- button type
+ */
+XE_EXTERN XE_EXPORT XEGlobalControl* XEAddGlobalButton(XEWindow *win,int x, int y, int w, int h, uint8_t type) {
+	XEGlobalControl *glbl = (XEGlobalControl*)malloc(sizeof(XEGlobalControl));
+	glbl->x = x;
+	glbl->y = y;
+	glbl->w = w;
+	glbl->h = h;
+	glbl->clicked = false;
+	glbl->hover = false;
+	glbl->type = type;
+	list_add(win->global_controls, glbl);
+	return glbl;
+}
 /*
  * XECreateWindow -- Creates a new window with given properties
  * @param app -- Pointer to XEApp structure
@@ -60,8 +118,44 @@ XE_EXTERN XE_EXPORT XEWindow * XECreateWindow (XeApp *app, canvas_t *canvas, uin
 	win->shwin->y = y;
 	win->first_time = true;
 	win->global_controls = list_init();
+	win->app = app;
 	win->paint = XEDefaultWinPaint;
 	strcpy(win->title, title);
+
+	/*Add universal three global controls */
+
+	/* Technical Details --> Global Control buttons appears as 
+	 * circular widget whose radius is 8, but the widget takes its
+	 * boundary as rectangle, so the width and height of the bound
+	 * is just double of its radius i.e 16 (8*2)
+	 */
+	XEGlobalControl *close = XEAddGlobalButton(win,12,5,16,16,XE_GLBL_CNTRL_CLOSE);
+	close->mouse_event = XEGlobalControlMouseEvent;
+	close->fill_color = 0xFFDB4844;
+	close->outline_color = 0xFF7A1A17;
+	close->hover_fill_color = 0xFFC62520;
+	close->hover_outline_color = 0xFF7A1A17;
+	close->clicked_fill_color = 0xFFAF0505;
+	close->clicked_outline_color = 0xFF7A1A17;
+	close->action_event = XEGlobalControl_CloseHandler;
+	XEGlobalControl *maxim = XEAddGlobalButton(win,34,5,16,16,XE_GLBL_CNTRL_MAXIMIZE);
+	maxim->mouse_event = XEGlobalControlMouseEvent;
+	maxim->fill_color = 0xFFE8CD56;
+	maxim->outline_color = 0xFF78671F;
+	maxim->hover_fill_color = 0xFFC6A826;
+	maxim->hover_outline_color = 0xFF78671F;
+	maxim->clicked_fill_color = 0xFFAA821D;
+	maxim->clicked_outline_color = 0xFF78671F;
+	maxim->action_event = 0;
+	XEGlobalControl *minim = XEAddGlobalButton(win,54,5,16,16,XE_GLBL_CNTRL_MINIMIZE);
+	minim->mouse_event = XEGlobalControlMouseEvent;
+	minim->fill_color = 0xFF4ED629;
+	minim->outline_color = 0xFF387428;
+	minim->hover_fill_color = 0xFF44BA23;
+	minim->hover_outline_color = 0xFF387428;
+	minim->clicked_fill_color = 0xFF3FA225;
+	minim->clicked_outline_color = 0xFF387428;
+	minim->action_event = 0;
 	return win;
 }
 
@@ -84,7 +178,7 @@ XE_EXTERN XE_EXPORT void XEWindowSetXY (XEWindow *win, int x, int y) {
 * @param w -- Width of the rect
 * @param h -- Height of the rect
 */
-XE_EXTERN XE_EXPORT void XEUpdateWindow(XEWindow* win, int x, int y, int w, int h) {
+XE_EXTERN XE_EXPORT void XEUpdateWindow(XEWindow* win, int x, int y, int w, int h, bool dirty) {
 	uint32_t *lfb = win->backbuff;
 	uint32_t* dbl_buf = win->ctx->address;
 	int width = canvas_get_width(win->ctx);
@@ -92,6 +186,15 @@ XE_EXTERN XE_EXPORT void XEUpdateWindow(XEWindow* win, int x, int y, int w, int 
 
 	for (int i = 0; i < h; i++)
 		fastcpy(lfb + (y + i) * width + x, dbl_buf + (y + i) * width + x, w*4);
+
+	if (dirty) {
+		win->shwin->rect[win->shwin->rect_count].x = x;
+		win->shwin->rect[win->shwin->rect_count].y = y;
+		win->shwin->rect[win->shwin->rect_count].w = w;
+		win->shwin->rect[win->shwin->rect_count].h = h;
+		win->shwin->rect_count++;
+		win->shwin->dirty = 1;
+	}
 }
 
 /*
@@ -102,7 +205,7 @@ XE_EXTERN XE_EXPORT void XEShowWindow(XEWindow *win) {
 	if (win->paint)
 		win->paint(win);
 	
-	XEUpdateWindow(win, 0, 0, win->shwin->width, win->shwin->height);
+	XEUpdateWindow(win, 0, 0, win->shwin->width, win->shwin->height, false);
 
 	if (win->first_time) {
 		pri_event_t e;
@@ -111,6 +214,43 @@ XE_EXTERN XE_EXPORT void XEShowWindow(XEWindow *win) {
 		XeSendEventPRIWM(&e);
 		win->first_time = false;
 	}
+}
+
+
+/*
+ * XEWindowMouseHandle -- Default Mouse handler for XEWindow
+ * @param win -- Pointer to window
+ * @param x -- X coord of mouse passed by window manager
+ * @param y -- Y coord of mouse passed by window manager
+ * @param button -- mouse button state passed by window manager
+ */
+XE_EXTERN XE_EXPORT void XEWindowMouseHandle(XEWindow *win, int x, int y, int button, int scroll) {
+	/* first check titlebar bound, cuz there are global control widgets 
+	 * which needs seperate handling 
+	 */
+	if (y > win->shwin->y && y < win->shwin->y + 26) {
+		for (int i = 0; i < win->global_controls->pointer; i++) {
+			XEGlobalControl *ctrl = (XEGlobalControl*)list_get_at(win->global_controls, i);
+			if (x > win->shwin->x + ctrl->x && x < (win->shwin->x + ctrl->x + ctrl->w) &&
+				(y > win->shwin->y + ctrl->y && y < (win->shwin->y + ctrl->y + ctrl->h))) {
+					ctrl->hover = true;
+					if (button)
+						ctrl->clicked = true;
+
+					if (ctrl->mouse_event)
+						ctrl->mouse_event(ctrl,win,x,y,button);
+			}else {
+				if (ctrl->hover){
+					ctrl->hover = false;
+					ctrl->clicked = false;
+					if (ctrl->mouse_event)
+						ctrl->mouse_event(ctrl,win,x,y,button);
+				}
+			}
+
+		}	
+	}
+
 }
 
 

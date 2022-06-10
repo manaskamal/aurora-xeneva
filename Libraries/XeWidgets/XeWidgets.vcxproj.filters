@@ -20,6 +20,7 @@
       <Filter>styles</Filter>
     </ClCompile>
     <ClCompile Include="list.cpp" />
+    <ClCompile Include="xe_glblctrl_close.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="includes\xebase.h">
@@ -38,6 +39,9 @@
       <Filter>includes\styles</Filter>
     </ClInclude>
     <ClInclude Include="includes\list.h">
+      <Filter>includes</Filter>
+    </ClInclude>
+    <ClInclude Include="includes\xe_glblctrl_close.h">
       <Filter>includes</Filter>
     </ClInclude>
   </ItemGroup>

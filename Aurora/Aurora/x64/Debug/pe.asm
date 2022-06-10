@@ -12,17 +12,15 @@ _BSS	SEGMENT
 ?image_base@@3_KA DQ 01H DUP (?)			; image_base
 _BSS	ENDS
 CONST	SEGMENT
-$SG3578	DB	'xnclib.dll', 00H
+$SG3577	DB	'xnclib.dll', 00H
 	ORG $+5
-$SG3580	DB	'Importer depends on -> %s ', 0dH, 0aH, 00H
-	ORG $+3
-$SG3583	DB	'xnacrl.dll', 00H
+$SG3581	DB	'xnacrl.dll', 00H
 	ORG $+5
-$SG3587	DB	'xewid.dll', 00H
+$SG3585	DB	'xewid.dll', 00H
 	ORG $+6
-$SG3591	DB	'ftype.dll', 00H
+$SG3589	DB	'ftype.dll', 00H
 	ORG $+6
-$SG3592	DB	'Exporter found -> %s ', 0dH, 0aH, 00H
+$SG3590	DB	'Exporter found -> %s ', 0dH, 0aH, 00H
 CONST	ENDS
 PUBLIC	?load_pe_file@@YAXPEA_KH@Z			; load_pe_file
 PUBLIC	?get_entry_point@@YAP6AXPEAX@ZXZ		; get_entry_point
@@ -53,7 +51,7 @@ $pdata$?AuPeLinkLibrary@@YAXPEAX@Z DD imagerel $LN11
 	DD	imagerel $LN11+380
 	DD	imagerel $unwind$?AuPeLinkLibrary@@YAXPEAX@Z
 $pdata$?AuPeLinkLibraryEx@@YAXPEAX0@Z DD imagerel $LN21
-	DD	imagerel $LN21+632
+	DD	imagerel $LN21+615
 	DD	imagerel $unwind$?AuPeLinkLibraryEx@@YAXPEAX0@Z
 pdata	ENDS
 xdata	SEGMENT
@@ -319,8 +317,8 @@ _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\pe.cpp
 _TEXT	SEGMENT
-func$1 = 32
-iat$2 = 40
+iat$1 = 32
+func$2 = 40
 n$3 = 48
 procaddr$4 = 56
 importdir$ = 64
@@ -422,12 +420,12 @@ $LN15@AuPeLinkLi:
 	mov	edx, DWORD PTR [rcx+rax+12]
 	mov	rcx, QWORD PTR image$[rsp]
 	call	??$raw_offset@PEBDPEAX@@YAPEBDPEAXH@Z	; raw_offset<char const * __ptr64,void * __ptr64>
-	mov	QWORD PTR func$1[rsp], rax
+	mov	QWORD PTR func$2[rsp], rax
 
 ; 127  : 		
 ; 128  : 		if(func == 0)
 
-	cmp	QWORD PTR func$1[rsp], 0
+	cmp	QWORD PTR func$2[rsp], 0
 	jne	SHORT $LN12@AuPeLinkLi
 
 ; 129  : 			return;
@@ -439,8 +437,8 @@ $LN12@AuPeLinkLi:
 ; 131  : 		/* Here Check the required dll name, for the base address */
 ; 132  : 		if (strcmp(func,"xnclib.dll") == 0){
 
-	lea	rdx, OFFSET FLAT:$SG3578
-	mov	rcx, QWORD PTR func$1[rsp]
+	lea	rdx, OFFSET FLAT:$SG3577
+	mov	rcx, QWORD PTR func$2[rsp]
 	call	strcmp
 	test	eax, eax
 	jne	SHORT $LN11@AuPeLinkLi
@@ -449,68 +447,62 @@ $LN12@AuPeLinkLi:
 
 	mov	rax, 4294967296				; 0000000100000000H
 	mov	QWORD PTR exporter$[rsp], rax
-
-; 134  : 			_debug_print_ ("Importer depends on -> %s \r\n", func);
-
-	mov	rdx, QWORD PTR func$1[rsp]
-	lea	rcx, OFFSET FLAT:$SG3580
-	call	_debug_print_
 	jmp	SHORT $LN10@AuPeLinkLi
 $LN11@AuPeLinkLi:
 
-; 135  : 		}else if (strcmp(func,"xnacrl.dll") == 0){
+; 134  : 		}else if (strcmp(func,"xnacrl.dll") == 0){
 
-	lea	rdx, OFFSET FLAT:$SG3583
-	mov	rcx, QWORD PTR func$1[rsp]
+	lea	rdx, OFFSET FLAT:$SG3581
+	mov	rcx, QWORD PTR func$2[rsp]
 	call	strcmp
 	test	eax, eax
 	jne	SHORT $LN9@AuPeLinkLi
 
-; 136  : 			exporter = (void*)XNACRL_BASE;
+; 135  : 			exporter = (void*)XNACRL_BASE;
 
 	mov	rax, 4299161600				; 0000000100400000H
 	mov	QWORD PTR exporter$[rsp], rax
 	jmp	SHORT $LN8@AuPeLinkLi
 $LN9@AuPeLinkLi:
 
-; 137  : 		}else if (strcmp(func,"xewid.dll") == 0){
+; 136  : 		}else if (strcmp(func,"xewid.dll") == 0){
 
-	lea	rdx, OFFSET FLAT:$SG3587
-	mov	rcx, QWORD PTR func$1[rsp]
+	lea	rdx, OFFSET FLAT:$SG3585
+	mov	rcx, QWORD PTR func$2[rsp]
 	call	strcmp
 	test	eax, eax
 	jne	SHORT $LN7@AuPeLinkLi
 
-; 138  : 			exporter = (void*)XNWID_BASE;
+; 137  : 			exporter = (void*)XNWID_BASE;
 
 	mov	rax, 4297064448				; 0000000100200000H
 	mov	QWORD PTR exporter$[rsp], rax
 	jmp	SHORT $LN6@AuPeLinkLi
 $LN7@AuPeLinkLi:
 
-; 139  : 		}else if (strcmp(func, "ftype.dll") == 0){
+; 138  : 		}else if (strcmp(func, "ftype.dll") == 0){
 
-	lea	rdx, OFFSET FLAT:$SG3591
-	mov	rcx, QWORD PTR func$1[rsp]
+	lea	rdx, OFFSET FLAT:$SG3589
+	mov	rcx, QWORD PTR func$2[rsp]
 	call	strcmp
 	test	eax, eax
 	jne	SHORT $LN5@AuPeLinkLi
 
-; 140  : 			_debug_print_ ("Exporter found -> %s \r\n", func);
+; 139  : 			_debug_print_ ("Exporter found -> %s \r\n", func);
 
-	mov	rdx, QWORD PTR func$1[rsp]
-	lea	rcx, OFFSET FLAT:$SG3592
+	mov	rdx, QWORD PTR func$2[rsp]
+	lea	rcx, OFFSET FLAT:$SG3590
 	call	_debug_print_
 $LN5@AuPeLinkLi:
 $LN6@AuPeLinkLi:
 $LN8@AuPeLinkLi:
 $LN10@AuPeLinkLi:
 
-; 141  : 			//exporter = (void*)FTYPE_BASE;
-; 142  : 		}
-; 143  : 
-; 144  : 		
-; 145  : 		PIMAGE_IMPORT_LOOKUP_TABLE_PE32P iat = raw_offset<PIMAGE_IMPORT_LOOKUP_TABLE_PE32P>(image, importdir[n].ThunkTableRva);
+; 140  : 			//exporter = (void*)FTYPE_BASE;
+; 141  : 		}
+; 142  : 
+; 143  : 		
+; 144  : 		PIMAGE_IMPORT_LOOKUP_TABLE_PE32P iat = raw_offset<PIMAGE_IMPORT_LOOKUP_TABLE_PE32P>(image, importdir[n].ThunkTableRva);
 
 	mov	rax, QWORD PTR n$3[rsp]
 	imul	rax, 20
@@ -518,94 +510,94 @@ $LN10@AuPeLinkLi:
 	mov	edx, DWORD PTR [rcx+rax+16]
 	mov	rcx, QWORD PTR image$[rsp]
 	call	??$raw_offset@PEA_KPEAX@@YAPEA_KPEAXH@Z	; raw_offset<unsigned __int64 * __ptr64,void * __ptr64>
-	mov	QWORD PTR iat$2[rsp], rax
+	mov	QWORD PTR iat$1[rsp], rax
 $LN4@AuPeLinkLi:
 
-; 146  : 	
-; 147  : 		while (*iat) {
+; 145  : 	
+; 146  : 		while (*iat) {
 
-	mov	rax, QWORD PTR iat$2[rsp]
+	mov	rax, QWORD PTR iat$1[rsp]
 	cmp	QWORD PTR [rax], 0
 	je	$LN3@AuPeLinkLi
 
-; 148  : 			PIMAGE_IMPORT_HINT_TABLE hint = raw_offset<PIMAGE_IMPORT_HINT_TABLE>(image, *iat);
+; 147  : 			PIMAGE_IMPORT_HINT_TABLE hint = raw_offset<PIMAGE_IMPORT_HINT_TABLE>(image, *iat);
 
-	mov	rax, QWORD PTR iat$2[rsp]
+	mov	rax, QWORD PTR iat$1[rsp]
 	mov	edx, DWORD PTR [rax]
 	mov	rcx, QWORD PTR image$[rsp]
 	call	??$raw_offset@PEAU_IMAGE_IMPORT_HINT_TABLE@@PEAX@@YAPEAU_IMAGE_IMPORT_HINT_TABLE@@PEAXH@Z ; raw_offset<_IMAGE_IMPORT_HINT_TABLE * __ptr64,void * __ptr64>
 	mov	QWORD PTR hint$7[rsp], rax
 
-; 149  : 			const char* fname = hint->name;
+; 148  : 			const char* fname = hint->name;
 
 	mov	rax, QWORD PTR hint$7[rsp]
 	add	rax, 2
 	mov	QWORD PTR fname$5[rsp], rax
 
-; 150  : 			
-; 151  : 			void* procaddr = AuGetProcAddress(exporter, fname);
+; 149  : 			
+; 150  : 			void* procaddr = AuGetProcAddress(exporter, fname);
 
 	mov	rdx, QWORD PTR fname$5[rsp]
 	mov	rcx, QWORD PTR exporter$[rsp]
 	call	?AuGetProcAddress@@YAPEAXPEAXPEBD@Z	; AuGetProcAddress
 	mov	QWORD PTR procaddr$4[rsp], rax
 
-; 152  : 	
-; 153  : 			if (procaddr != 0) {
+; 151  : 	
+; 152  : 			if (procaddr != 0) {
 
 	cmp	QWORD PTR procaddr$4[rsp], 0
 	je	SHORT $LN2@AuPeLinkLi
 
-; 154  : 				uint64_t addr = *iat;
+; 153  : 				uint64_t addr = *iat;
 
-	mov	rax, QWORD PTR iat$2[rsp]
+	mov	rax, QWORD PTR iat$1[rsp]
 	mov	rax, QWORD PTR [rax]
 	mov	QWORD PTR addr$8[rsp], rax
 
-; 155  : 				uint64_t paddr = (uint64_t)procaddr;
+; 154  : 				uint64_t paddr = (uint64_t)procaddr;
 
 	mov	rax, QWORD PTR procaddr$4[rsp]
 	mov	QWORD PTR paddr$6[rsp], rax
 
-; 156  : 				if (addr == paddr) {
+; 155  : 				if (addr == paddr) {
 
 	mov	rax, QWORD PTR paddr$6[rsp]
 	cmp	QWORD PTR addr$8[rsp], rax
 	jne	SHORT $LN1@AuPeLinkLi
 
-; 157  : 					return;
+; 156  : 					return;
 
 	jmp	SHORT $LN19@AuPeLinkLi
 $LN1@AuPeLinkLi:
 
-; 158  : 				}
-; 159  : 
-; 160  : 				*iat = (uint64_t)procaddr;
+; 157  : 				}
+; 158  : 
+; 159  : 				*iat = (uint64_t)procaddr;
 
-	mov	rax, QWORD PTR iat$2[rsp]
+	mov	rax, QWORD PTR iat$1[rsp]
 	mov	rcx, QWORD PTR procaddr$4[rsp]
 	mov	QWORD PTR [rax], rcx
 $LN2@AuPeLinkLi:
 
-; 161  : 			}
-; 162  : 			++iat;
+; 160  : 			}
+; 161  : 			++iat;
 
-	mov	rax, QWORD PTR iat$2[rsp]
+	mov	rax, QWORD PTR iat$1[rsp]
 	add	rax, 8
-	mov	QWORD PTR iat$2[rsp], rax
+	mov	QWORD PTR iat$1[rsp], rax
 
-; 163  : 		}
+; 162  : 		}
 
 	jmp	$LN4@AuPeLinkLi
 $LN3@AuPeLinkLi:
 
-; 164  : 	}
+; 163  : 	}
 
 	jmp	$LN14@AuPeLinkLi
 $LN13@AuPeLinkLi:
 $LN19@AuPeLinkLi:
 
-; 165  : }
+; 164  : }
 
 	add	rsp, 136				; 00000088H
 	ret	0
