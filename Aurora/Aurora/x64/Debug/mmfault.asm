@@ -16,6 +16,8 @@ $SG3875	DB	'Current thread -> %s ', 0aH, 00H
 $SG3881	DB	'Page Fault -> %x ', 0aH, 00H
 	ORG $+5
 $SG3882	DB	'RIP -> %x ', 0aH, 00H
+	ORG $+4
+$SG3883	DB	'Current thread -> %s ', 0aH, 00H
 CONST	ENDS
 PUBLIC	?AuHandlePageNotPresent@@YAX_K_NPEAX@Z		; AuHandlePageNotPresent
 EXTRN	printf:PROC
@@ -27,7 +29,7 @@ EXTRN	?AuFindVMA@@YAPEAU_vma_area_@@_K@Z:PROC		; AuFindVMA
 EXTRN	?fat32_read@@YAXPEAU_vfs_node_@@PEA_K@Z:PROC	; fat32_read
 pdata	SEGMENT
 $pdata$?AuHandlePageNotPresent@@YAX_K_NPEAX@Z DD imagerel $LN13
-	DD	imagerel $LN13+313
+	DD	imagerel $LN13+337
 	DD	imagerel $unwind$?AuHandlePageNotPresent@@YAX_K_NPEAX@Z
 pdata	ENDS
 xdata	SEGMENT
@@ -132,9 +134,15 @@ $LN10@AuHandlePa:
 	mov	rdx, QWORD PTR [rax+16]
 	lea	rcx, OFFSET FLAT:$SG3882
 	call	printf
+
+; 56   : 		printf ("Current thread -> %s \n", get_current_thread()->name);
+
+	call	get_current_thread
+	mov	rdx, QWORD PTR [rax+224]
+	lea	rcx, OFFSET FLAT:$SG3883
+	call	printf
 $LN6@AuHandlePa:
 
-; 56   : 		//printf ("Current thread -> %s \n", get_current_thread()->name);
 ; 57   : 		for(;;);
 
 	jmp	SHORT $LN6@AuHandlePa

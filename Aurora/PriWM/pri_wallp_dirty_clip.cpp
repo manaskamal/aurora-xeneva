@@ -36,15 +36,17 @@
 pri_wallp_dirty_clip_t *_wallp_top = NULL;
 static uint32_t _wallp_dirty_count = 0;
 
+pri_rect_t wallp_dirty_rect[256];
+
 /**
  * pri_wallp_add_dirty_clip -- adds a dirty clip rect
  * @param r -- rect to add
  */
-void pri_wallp_add_dirty_clip (pri_rect_t *r) {
-	pri_wallp_dirty_clip_t * s= (pri_wallp_dirty_clip_t*)malloc(sizeof(pri_wallp_dirty_clip_t));
-	s->rect = r;
-	s->link = _wallp_top;
-	_wallp_top = s;
+void pri_wallp_add_dirty_clip (int x, int y, int w, int h) {
+	wallp_dirty_rect[_wallp_dirty_count].x = x;
+	wallp_dirty_rect[_wallp_dirty_count].y = y;
+	wallp_dirty_rect[_wallp_dirty_count].w = w;
+	wallp_dirty_rect[_wallp_dirty_count].h = h;
 	_wallp_dirty_count++;
 }
 
@@ -53,20 +55,11 @@ void pri_wallp_add_dirty_clip (pri_rect_t *r) {
  * the list
  * @return -- dirty rectangle
  */
-pri_rect_t * pri_wallp_get_dirty_rect() {
-	if (_wallp_top == NULL)
-		return NULL;
-
-	pri_rect_t *r;
-	pri_wallp_dirty_clip_t *temp;
-	
-	temp = _wallp_top;
-	_wallp_top = _wallp_top->link;
-	temp->link = NULL;
-	r = temp->rect;
-	free(temp);
-	_wallp_dirty_count--;
-	return r;
+void pri_wallp_get_dirty_rect(int *x, int *y, int *w, int *h, int index) {
+	*x = wallp_dirty_rect[index].x;
+	*y = wallp_dirty_rect[index].y;
+	*w = wallp_dirty_rect[index].w;
+	*h = wallp_dirty_rect[index].h;
 }
 
 /**
@@ -76,4 +69,9 @@ pri_rect_t * pri_wallp_get_dirty_rect() {
  */
 uint32_t pri_wallp_get_dirty_count() {
 	return _wallp_dirty_count;
+}
+
+
+void pri_wallp_dirty_count_reset() {
+	_wallp_dirty_count = 0;
 }

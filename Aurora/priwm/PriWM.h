@@ -178,6 +178,9 @@ typedef struct _pri_win_ {
 	int anim_dir;
 	canvas_t *shadow;
 	char* title;
+	bool mark_for_close;
+	_pri_win_ *next;
+	_pri_win_ *prev;
 }pri_window_t;
 
 /*

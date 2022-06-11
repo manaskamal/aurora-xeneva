@@ -89,6 +89,7 @@ list_t *backing_store_list;
 list_t *shared_win_space_list;
 list_t *desktop_component_list;
 
+
 /**
  * window bits
  */
@@ -96,6 +97,41 @@ pri_window_t *focused_win = NULL;
 pri_window_t *top_window = NULL;
 pri_window_t *dragg_win = NULL;
 pri_window_t *resz_win = NULL;
+
+pri_window_t *root_window = NULL;
+pri_window_t *last_window = NULL;
+
+
+void pri_add_window (pri_window_t* win) {
+	win->next = NULL;
+	win->prev = NULL;
+	if (root_window == NULL){
+		root_window = win;
+		last_window = win;
+	}else {
+		last_window->next = win;
+		win->prev = last_window;
+		last_window = win;
+	}
+}
+
+
+void pri_remove_window (pri_window_t *win) {
+	if (root_window == NULL)
+		return;
+
+	if (win == root_window) {
+		root_window = root_window->next;
+	} else {
+		win->prev->next = win->next;
+	}
+
+	if (win == last_window) {
+		last_window = win->prev;
+	} else {
+		win->next->prev = win->prev;
+	}
+}
 
 /**
  * pri_create_rect -- create a new rectangle
@@ -425,7 +461,6 @@ void pri_wallpaper_change (pri_wallpaper_t *wallp,char* filename) {
 	int fd = sys_open_file (filename, &f);
 	
 	sys_read_file (fd,wallp->buffer, &f);
-	sys_print_text ("F.SIZE -> %d, fd -> %d\n", f.size, fd);
 	wallp->img->width = 0;
 	wallp->img->height = 0;
 	wallp->img->size = f.size;
@@ -566,7 +601,6 @@ void pri_notify_win_destroyed (uint16_t win_id) {
 	e.to_id = 3;
 	e.from_id = get_current_pid();
 	ioquery(pri_loop_fd, PRI_LOOP_PUT_EVENT, &e);
-	sys_print_text ("Notified \r\n");
 }
 
 
@@ -609,6 +643,7 @@ pri_window_t * window_create (int x, int y, int w, int h, uint8_t attr, uint16_t
 	uint16_t sh_key = 0;
 	uint16_t back_store_key = 0;
 	pri_window_t *win = (pri_window_t*)malloc(sizeof(pri_window_t));
+	memset(win, 0, sizeof(pri_window_t));
 	win->attribute = attr;
 	win->backing_store = (uint32_t*)create_new_backing_store(owner_id, w*h*32, &back_store_key);
 	win->owner_id = owner_id;
@@ -626,7 +661,8 @@ pri_window_t * window_create (int x, int y, int w, int h, uint8_t attr, uint16_t
 	info->height = h;
 	info->dirty = 0;
 	info->rect_count = 0;
-	list_add (window_list, win);
+	//list_add (window_list, win);
+	pri_add_window(win);
 	return win;
 }
 
@@ -656,8 +692,8 @@ void window_remove (pri_window_t *win) {
  * @param owner_id -- owner id to search for
  */
 pri_window_t * pri_win_find_by_id (uint16_t owner_id) {
-	for (int i = 0; i < window_list->pointer; i++) {
-		pri_window_t *win = (pri_window_t*)list_get_at(window_list, i);
+
+	for (pri_window_t *win = root_window; win != NULL; win = win->next) {
 		if (win != NULL && win->owner_id == owner_id)
 			return win;
 	}
@@ -671,14 +707,17 @@ pri_window_t * pri_win_find_by_id (uint16_t owner_id) {
  */
 void pri_window_make_top (pri_window_t *win) {
 	int i = 0;
-	for (i = 0; i < window_list->pointer; i++) {
+	/*for (i = 0; i < window_list->pointer; i++) {
 		pri_window_t* _win = (pri_window_t*)list_get_at(window_list, i);
 		if (_win == win)
 			break;
-	}
-
-	list_remove (window_list,i);
-	list_add(window_list, win);
+	}*/
+	if (root_window == win && last_window == win)
+		return;
+	//list_remove (window_list,i);
+	//list_add(window_list, win);
+	pri_remove_window(win);
+	pri_add_window(win);
 }
 
 /**
@@ -695,14 +734,14 @@ void pri_window_set_focused (pri_window_t * win, bool notify) {
 	focused_win = win;
 
 	/* Notify the dock about focus change event */
-	if (notify) {
-		pri_event_t e;
+	//if (notify) {
+	/*	pri_event_t e;
 		e.type = DAISY_NOTIFY_WIN_FOCUS_CHANGED;
 		e.dword = focused_win->owner_id;
 		e.to_id = 3;
 		e.from_id = get_current_pid();
-		ioquery(pri_loop_fd, PRI_LOOP_PUT_EVENT, &e);
-	}
+		ioquery(pri_loop_fd, PRI_LOOP_PUT_EVENT, &e);*/
+	//}
 
 	/*
 	 * here notify the new window that focus is gained
@@ -739,8 +778,7 @@ void pri_window_move (pri_window_t *win, int x, int y) {
 		wh = canvas->height - info->y;
 	}
 
-	pri_rect_t *r = pri_create_rect(wx, wy,ww, wh);
-	pri_wallp_add_dirty_clip(r);
+	pri_wallp_add_dirty_clip(wx, wy, ww, wh);
 	info->x = x;
 	info->y = y;
 	_window_update_all_ = true;
@@ -754,8 +792,8 @@ void pri_window_move (pri_window_t *win, int x, int y) {
  */
 void pri_window_resize (pri_window_t *win, int n_w,int n_h) {
 	pri_win_info_t* info = (pri_win_info_t*)win->pri_win_info_loc;
-	pri_rect_t *r = pri_create_rect(info->x, info->y, info->width + 100, info->height + 100);
-	pri_wallp_add_dirty_clip(r);
+	//pri_rect_t *r = pri_create_rect(info->x, info->y, info->width + 100, info->height + 100);
+	pri_wallp_add_dirty_clip(info->x, info->y, info->width + 100, info->height + 100);
 	info->width = n_w;
 	info->height = n_h;
 	// (--BUGGY---)
@@ -775,16 +813,20 @@ void compose_frame () {
 	int window_opacity = 255;
 
 	//!--Here goes the drawing of all wallpaper dirty areas
-	for (int i = 0; i < pri_wallp_get_dirty_count(); i++) {
-		pri_rect_t *r = pri_wallp_get_dirty_rect();
-		pri_wallpaper_present_rect(r->x, r->y, r->w, r->h);
-		pri_add_clip(r->x, r->y, r->w, r->h);
-		free(r);
+	if (pri_wallp_get_dirty_count() > 0) {
+		int x, y, w, h = 0;
+		for (int i = 0; i < pri_wallp_get_dirty_count(); i++) {
+			pri_wallp_get_dirty_rect(&x, &y, &w, &h, i);
+			pri_wallpaper_present_rect(x,y,w, h);
+			pri_add_clip(x,y,w, h);
+		}
+		pri_wallp_dirty_count_reset();
 	}
 
 	//----Here goes composing of all window buffers ---//
-	for (int i = 0; i < window_list->pointer; i++) {
-		pri_window_t *win = (pri_window_t*)list_get_at(window_list, i);
+	for (pri_window_t *win = root_window; win != NULL; win = win->next) {
+	//	sys_print_text ("Compose Win -> %x \r\n", win);
+		//pri_window_t *win = (pri_window_t*)list_get_at(window_list, i);
 		pri_win_info_t *info = (pri_win_info_t*)win->pri_win_info_loc;
 
 		if (win != NULL && win->anim)
@@ -942,8 +984,9 @@ void pri_win_send_key_event (pri_window_t* win,int code) {
 void pri_win_check_draggable (int x, int y, int button) {
 
 	/** loop through the window list **/
-	for (int i = window_list->pointer - 1; i >= 0; i--) {
-		pri_window_t* win = (pri_window_t*)list_get_at(window_list, i);
+	//for (int i = window_list->pointer - 1; i >= 0; i--) {
+	for (pri_window_t *win = last_window; win != NULL; win = win->prev){
+		//pri_window_t* win = (pri_window_t*)list_get_at(window_list, i);
 		pri_win_info_t *info = (pri_win_info_t*)win->pri_win_info_loc;
 
 		/** Bound check the mouse cursor **/
@@ -1012,6 +1055,9 @@ XE_EXTERN int XeMain (int argc, char* argv[]) {
 	
 	uint32_t s_width = ioquery(svga_fd,SCREEN_GETWIDTH,NULL);
 	uint32_t s_height = ioquery(svga_fd, SCREEN_GETHEIGHT, NULL);
+
+	root_window = NULL;
+	last_window = NULL;
 
 	/*
 	 * create the main backing store
@@ -1141,7 +1187,8 @@ XE_EXTERN int XeMain (int argc, char* argv[]) {
 			strcpy(title,event.char_values);
 
 			pri_window_t *win = window_create (x,y,w,h,attribute,event.from_id, title);
-			pri_window_set_focused(win, false);
+			//pri_window_set_focused(win, false);
+			focused_win = win;
 
 
 			/* Send the new gift message to client */
@@ -1180,8 +1227,8 @@ XE_EXTERN int XeMain (int argc, char* argv[]) {
 		 * show up on the screen */
 		if (event.type == PRI_WIN_READY) {
 			pri_window_t *win = NULL;
-			for (int i = 0; i < window_list->pointer; i++) {
-				win = (pri_window_t*)list_get_at(window_list,i);
+			for (win = root_window; win != NULL; win = win->next) {
+				//win = (pri_window_t*)list_get_at(window_list,i);
 				if (win->owner_id == event.from_id) {
 					break;
 				}
@@ -1189,7 +1236,7 @@ XE_EXTERN int XeMain (int argc, char* argv[]) {
 
 			_window_update_all_ = true;
 
-			pri_notify_win_create(win->title, win->owner_id);
+			//pri_notify_win_create(win->title, win->owner_id);
 			memset (&event, 0, sizeof(pri_event_t));
 		}
 
@@ -1214,31 +1261,35 @@ XE_EXTERN int XeMain (int argc, char* argv[]) {
 			int w = 0;
 			int h = 0;
 			uint16_t owner_id = event.from_id;
-			//pri_notify_win_destroyed(owner_id);
-			for (int i = 0; i < window_list->pointer; i++) {
-				pri_window_t *win = (pri_window_t*)list_get_at(window_list, i);
-				if (win->owner_id == event.from_id)  {
-					pri_win_info_t *info = (pri_win_info_t*)win->pri_win_info_loc;
-					x = info->x;
-					y = info->y;
-					w = info->width;
-					h = info->height;
+			
 
-					sys_shm_unlink(win->sh_win_key);
-					sys_shm_unlink(win->backing_store_key);
+			pri_window_t *win = pri_win_find_by_id(owner_id);
+	
+			focused_win = NULL;
+			//pri_notify_win_destroyed(owner_id);
+			if (win != NULL) {
+				pri_win_info_t *info = (pri_win_info_t*)win->pri_win_info_loc;
+				x = info->x;
+				y = info->y;
+				w = info->width;
+				h = info->height;
+
+				sys_shm_unlink(win->sh_win_key);
+				sys_shm_unlink(win->backing_store_key);
 				
-					list_remove(window_list, i);
-					free(win);
-					
-					break;
-				}
+					//list_remove(window_list, i);
+				sys_print_text ("Freeing win -> %x  %d \r\n", win, owner_id);
+				sys_print_text ("Freeing win n-> %x, p-> %x \r\n", win->next, win->prev);
+				pri_remove_window(win);
+				free(win);
 			}
            
 			pri_send_quit(owner_id);
-			focused_win = NULL;
 
-			if (x != 0 && y != 0 && w != 0 && h != 0) 
-				pri_wallp_add_dirty_clip(pri_create_rect(x,y,w,h));
+			if (x != 0 && y != 0 && w != 0 && h != 0) {
+				pri_wallp_add_dirty_clip(x, y, w, h);
+			}
+			
 
 			_window_update_all_ = true;
 

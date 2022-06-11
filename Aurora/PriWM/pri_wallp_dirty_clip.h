@@ -44,14 +44,14 @@ typedef struct _pri_wallp_dirty_clip_ {
  * pri_wallp_add_dirty_clip -- adds a dirty clip rect
  * @param r -- rect to add
  */
-extern void pri_wallp_add_dirty_clip (pri_rect_t *r);
+extern void pri_wallp_add_dirty_clip (int x, int y, int w, int h);
 
 /**
  * pri_wallp_get_dirty_rect -- pops a dirty rect from 
  * the list
  * @return -- dirty rectangle
  */
-extern pri_rect_t * pri_wallp_get_dirty_rect();
+extern void pri_wallp_get_dirty_rect(int *x, int *y, int *w, int *h, int index);
 
 /**
  * pri_wallp_get_dirty_count -- get total dirty area
@@ -59,4 +59,6 @@ extern pri_rect_t * pri_wallp_get_dirty_rect();
  * @return -- dirty area count
  */
 extern uint32_t pri_wallp_get_dirty_count();
+
+extern void pri_wallp_dirty_count_reset();
 #endif

@@ -53,7 +53,7 @@ void AuHandlePageNotPresent (uint64_t vaddr, bool user, void* param) {
 		x64_cli();
 		printf ("Page Fault -> %x \n", vaddr);
 		printf ("RIP -> %x \n", frame->rip);
-		//printf ("Current thread -> %s \n", get_current_thread()->name);
+		printf ("Current thread -> %s \n", get_current_thread()->name);
 		for(;;);
 		return;
 	}
