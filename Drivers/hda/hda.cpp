@@ -166,8 +166,6 @@ void setup_rirb() {
 		hd_audio.rirb_entries = 2;
 		reg |= 0x0;
 	}else {
-		//hd_audio.rirb_entries = 256;
-		//reg |= 0x2;
 		printf ("[driver]: hdaudio no supported rirb size found \n");
 	}
 

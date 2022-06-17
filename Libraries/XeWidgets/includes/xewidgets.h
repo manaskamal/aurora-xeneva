@@ -36,5 +36,7 @@
 #include <xewindow.h>
 #include <xeloop.h>
 
+#include <xebutton.h>
+
 
 #endif

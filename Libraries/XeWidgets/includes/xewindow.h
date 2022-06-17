@@ -35,6 +35,7 @@
 #include <sys\_xeneva.h>
 #include <list.h>
 #include <xebase.h>
+#include <xewidget.h>
 
 #define XE_WIN_DEFAULT_WIDTH  400
 #define XE_WIN_DEFAULT_HEIGHT 400
@@ -75,9 +76,31 @@ typedef struct _xe_win_ {
 	bool first_time;
 	XESharedWin *shwin;
 	list_t* global_controls;
+	list_t* widgets;
 	XeApp *app;
 	void (*paint)(_xe_win_ *win);
 }XEWindow;
+
+
+/*
+ * XEWidget structure
+ */
+typedef struct _xe_widget_ {
+	int x;
+	int y;
+	int w;
+	int h;
+	int last_mouse_x;
+	int last_mouse_y;
+	bool clicked;
+	bool hover;
+	bool hover_painted;
+	bool kill_focus;
+	void (*action_handler)(_xe_widget_ *widget, XEWindow *win);
+	void (*mouse_event)(_xe_widget_ *widget, XEWindow *win, int x, int y, int button);
+	void (*painter) (_xe_widget_ *widget, XEWindow *win);
+	void (*destroy) (_xe_widget_ *widget, XEWindow *win);
+}XEWidget;
 
 /* 
  * XEGlobalControl -- Global Control
@@ -120,6 +143,13 @@ XE_EXTERN XE_EXPORT XEWindow * XECreateWindow (XeApp *app, canvas_t *canvas, uin
  */
 XE_EXTERN XE_EXPORT void XEWindowSetXY (XEWindow *win, int x, int y);
 
+
+/*
+ * XEWindowAddWidget -- Adds an widget to main activity window
+ * @param window -- Pointer to main activity window
+ * @param widget -- Pointer to widget
+ */
+XE_EXTERN XE_EXPORT void XEWindowAddWidget(XEWindow *window, XEWidget *widget);
 
 
 /* XEUpdateWindow -- Updates a portion of the window

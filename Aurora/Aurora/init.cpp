@@ -49,6 +49,7 @@
 #include <drivers\rtc.h>
 #include <drivers\acpi\acpi.h>
 #include <drivers\ahci.h>
+#include <drivers\pcie.h>
 #include <ipc\evntsh.h>
 #include <ipc\message.h>
 #include <ipc\pointdev.h>

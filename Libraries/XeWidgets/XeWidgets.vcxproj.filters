@@ -21,6 +21,10 @@
     </ClCompile>
     <ClCompile Include="list.cpp" />
     <ClCompile Include="xe_glblctrl_close.cpp" />
+    <ClCompile Include="xebutton.cpp" />
+    <ClCompile Include="styles\XEDefaultButtonStyle.cpp">
+      <Filter>styles</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="includes\xebase.h">
@@ -43,6 +47,15 @@
     </ClInclude>
     <ClInclude Include="includes\xe_glblctrl_close.h">
       <Filter>includes</Filter>
+    </ClInclude>
+    <ClInclude Include="includes\xebutton.h">
+      <Filter>includes</Filter>
+    </ClInclude>
+    <ClInclude Include="includes\xewidget.h">
+      <Filter>includes</Filter>
+    </ClInclude>
+    <ClInclude Include="includes\styles\XEDefaultButtonStyle.h">
+      <Filter>includes\styles</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -32,6 +32,7 @@
 #include <arch\x86_64\kstack.h>
 #include <string.h>
 #include <stdio.h>
+#include <serial.h>
 
 
 /*

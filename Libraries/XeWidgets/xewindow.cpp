@@ -118,6 +118,7 @@ XE_EXTERN XE_EXPORT XEWindow * XECreateWindow (XeApp *app, canvas_t *canvas, uin
 	win->shwin->y = y;
 	win->first_time = true;
 	win->global_controls = list_init();
+	win->widgets = list_init();
 	win->app = app;
 	win->paint = XEDefaultWinPaint;
 	strcpy(win->title, title);
@@ -168,6 +169,16 @@ XE_EXTERN XE_EXPORT XEWindow * XECreateWindow (XeApp *app, canvas_t *canvas, uin
 XE_EXTERN XE_EXPORT void XEWindowSetXY (XEWindow *win, int x, int y) {
 	win->shwin->x = x;
 	win->shwin->y = y;
+}
+
+
+/*
+ * XEWindowAddWidget -- Adds an widget to main activity window
+ * @param window -- Pointer to main activity window
+ * @param widget -- Pointer to widget
+ */
+XE_EXTERN XE_EXPORT void XEWindowAddWidget(XEWindow *window, XEWidget *widget) {
+	list_add(window->widgets, widget);
 }
 
 
@@ -250,6 +261,28 @@ XE_EXTERN XE_EXPORT void XEWindowMouseHandle(XEWindow *win, int x, int y, int bu
 
 		}	
 	}
+
+	/* Activitiy area */
+	if (y > win->shwin->y + 26 && y < (win->shwin->y + 26 + win->shwin->height-26)) {
+		for (int i = 0; i < win->widgets->pointer; i++) {
+			XEWidget *widget = (XEWidget*)list_get_at(win->widgets, i);
+			if (x > win->shwin->x + widget->x && x < (win->shwin->x + widget->x + widget->w) &&
+				(y > win->shwin->y + widget->y && y < (win->shwin->y + widget->y + widget->h))) {
+					widget->hover = true;
+					widget->kill_focus = false;
+					if (widget->mouse_event) 
+						widget->mouse_event(widget, win, x, y, button);
+			}else {
+				if (widget->hover) {
+					widget->hover = false;
+					widget->kill_focus = true;
+					if (widget->mouse_event)
+						widget->mouse_event(widget, win, x, y, button);
+				}
+			}
+		}
+	}
+
 
 }
 

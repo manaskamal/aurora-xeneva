@@ -97,5 +97,7 @@ AU_EXTERN AU_EXPORT void pci_express_write2 (uint64_t device, int reg, int size,
  */
 AU_EXTERN AU_EXPORT bool pcie_alloc_msi (uint64_t device, size_t vector,  int bus, int dev, int func);
 
+extern void pcie_scan_all();
+
 #endif
 

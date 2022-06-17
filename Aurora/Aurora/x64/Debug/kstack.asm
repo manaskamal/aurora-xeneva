@@ -35,25 +35,25 @@ p$2 = 48
 cr3$ = 80
 ?free_kstack@@YAXPEA_K@Z PROC				; free_kstack
 
-; 52   : void free_kstack (uint64_t *cr3) {
+; 53   : void free_kstack (uint64_t *cr3) {
 
 $LN6:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 72					; 00000048H
 
-; 53   : 	uint64_t location = KSTACK_START; 
+; 54   : 	uint64_t location = KSTACK_START; 
 
 	mov	rax, -5497558138880			; fffffb0000000000H
 	mov	QWORD PTR location$[rsp], rax
 
-; 54   : 	/* 
-; 55   : 	 * Here kernel stack is not directly unmapped
-; 56   : 	 * because untill we call force_sched() the system 
-; 57   : 	 * will be using kstack, rather we just get the
-; 58   : 	 * physical addresses and free them using physical 
-; 59   : 	 * mmngr
-; 60   : 	 */
-; 61   : 	for (int i = 0; i < 8192 / 4096; i++) {
+; 55   : 	/* 
+; 56   : 	 * Here kernel stack is not directly unmapped
+; 57   : 	 * because untill we call force_sched() the system 
+; 58   : 	 * will be using kstack, rather we just get the
+; 59   : 	 * physical addresses and free them using physical 
+; 60   : 	 * mmngr
+; 61   : 	 */
+; 62   : 	for (int i = 0; i < 8192 / 4096; i++) {
 
 	mov	DWORD PTR i$1[rsp], 0
 	jmp	SHORT $LN3@free_kstac
@@ -65,7 +65,7 @@ $LN3@free_kstac:
 	cmp	DWORD PTR i$1[rsp], 2
 	jge	SHORT $LN1@free_kstac
 
-; 62   : 		void* p = AuGetPhysicalAddress((size_t)cr3,location + i * 4096);
+; 63   : 		void* p = AuGetPhysicalAddress((size_t)cr3,location + i * 4096);
 
 	mov	eax, DWORD PTR i$1[rsp]
 	imul	eax, 4096				; 00001000H
@@ -78,19 +78,19 @@ $LN3@free_kstac:
 	call	AuGetPhysicalAddress
 	mov	QWORD PTR p$2[rsp], rax
 
-; 63   : 		AuPmmngrFree((void*)v2p((size_t)p));
+; 64   : 		AuPmmngrFree((void*)v2p((size_t)p));
 
 	mov	rcx, QWORD PTR p$2[rsp]
 	call	v2p
 	mov	rcx, rax
 	call	AuPmmngrFree
 
-; 64   : 	}
+; 65   : 	}
 
 	jmp	SHORT $LN2@free_kstac
 $LN1@free_kstac:
 
-; 65   : }
+; 66   : }
 
 	add	rsp, 72					; 00000048H
 	ret	0
@@ -105,18 +105,18 @@ p$2 = 48
 cr3$ = 80
 ?allocate_kstack@@YA_KPEA_K@Z PROC			; allocate_kstack
 
-; 41   : uint64_t allocate_kstack (uint64_t *cr3) {
+; 42   : uint64_t allocate_kstack (uint64_t *cr3) {
 
 $LN6:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 72					; 00000048H
 
-; 42   : 	uint64_t location = KSTACK_START; 
+; 43   : 	uint64_t location = KSTACK_START; 
 
 	mov	rax, -5497558138880			; fffffb0000000000H
 	mov	QWORD PTR location$[rsp], rax
 
-; 43   : 	for (int i = 0; i < 8192/4096; i++) {
+; 44   : 	for (int i = 0; i < 8192/4096; i++) {
 
 	mov	DWORD PTR i$1[rsp], 0
 	jmp	SHORT $LN3@allocate_k
@@ -128,12 +128,12 @@ $LN3@allocate_k:
 	cmp	DWORD PTR i$1[rsp], 2
 	jge	SHORT $LN1@allocate_k
 
-; 44   : 		void* p = AuPmmngrAlloc();
+; 45   : 		void* p = AuPmmngrAlloc();
 
 	call	AuPmmngrAlloc
 	mov	QWORD PTR p$2[rsp], rax
 
-; 45   : 		AuMapPageEx (cr3,(uint64_t)p,location + i * 4096, 0);
+; 46   : 		AuMapPageEx (cr3,(uint64_t)p,location + i * 4096, 0);
 
 	mov	eax, DWORD PTR i$1[rsp]
 	imul	eax, 4096				; 00001000H
@@ -147,17 +147,17 @@ $LN3@allocate_k:
 	mov	rcx, QWORD PTR cr3$[rsp]
 	call	?AuMapPageEx@@YA_NPEA_K_K1E@Z		; AuMapPageEx
 
-; 46   : 	}
+; 47   : 	}
 
 	jmp	SHORT $LN2@allocate_k
 $LN1@allocate_k:
 
-; 47   : 	
-; 48   : 	return (KSTACK_START + 8192);
+; 48   : 	
+; 49   : 	return (KSTACK_START + 8192);
 
 	mov	rax, -5497558130688			; fffffb0000002000H
 
-; 49   : }
+; 50   : }
 
 	add	rsp, 72					; 00000048H
 	ret	0

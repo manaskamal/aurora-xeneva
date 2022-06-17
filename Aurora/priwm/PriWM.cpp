@@ -1153,7 +1153,7 @@ XE_EXTERN int XeMain (int argc, char* argv[]) {
 			}
 
 			if (key_msg.dword == KEY_I) {
-				pri_wallpaper_change(wallpaper,"/univ.jpg");
+				pri_wallpaper_change(wallpaper,"/me.jpg");
 				pri_wallpaper_draw(wallpaper->img);
 				pri_wallpaper_present();
 				 cursor_store_back(mouse_x, mouse_y);

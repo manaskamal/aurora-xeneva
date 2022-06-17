@@ -58,6 +58,18 @@ void XEDefaultPaintTitlebar(XEWindow *win) {
 	/* Fill the titlebar with outline */
 	acrylic_draw_rect_unfilled(win->ctx, 2, 0, win->shwin->width - 1, 26, GRAY);
 }
+
+/*
+ * XEDefaultPaintMainActivity -- Paints the main activity area
+ * @param win -- Pointer to the Activity Window
+ */
+void XEDefaultPaintMainActivity (XEWindow *win) {
+	for (int i = 0; i < win->widgets->pointer; i++) {
+		XEWidget *widget = (XEWidget*)list_get_at(win->widgets, i);
+		if (widget->painter)
+			widget->painter(widget, win);
+	}
+}
 /*
  * XEDefaultWinPaint -- Default Window style painter
  * @param win -- Pointer to window object
@@ -65,4 +77,5 @@ void XEDefaultPaintTitlebar(XEWindow *win) {
 void XEDefaultWinPaint(XEWindow *win) {
 	acrylic_draw_rect_filled(win->ctx, 0, 0, win->shwin->width, win->shwin->height, WHITE);
 	XEDefaultPaintTitlebar(win);
+	XEDefaultPaintMainActivity(win);
 }

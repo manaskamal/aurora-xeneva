@@ -384,7 +384,6 @@ bool pcie_alloc_msi (uint64_t device, size_t vector,  int bus, int dev, int func
 		while (capptr != 0) {
 			cap_reg = pci_express_read2(device,capptr, 4, bus, dev, func);
 			if ((cap_reg & 0xff) == 0x5) {
-
 				msi_reg = cap_reg;
 				uint16_t msctl = msi_reg >> 16;
 				bool bit64_cap = (msctl & (1<<7));
@@ -428,4 +427,32 @@ bool pcie_alloc_msi (uint64_t device, size_t vector,  int bus, int dev, int func
 	}
 
 	return value;
+}
+
+void pcie_scan_all() {
+	acpiMcfg *mcfg = acpi_get_mcfg();
+	acpiMcfgAlloc *allocs = mem_after<acpiMcfgAlloc*>(mcfg);
+	uint16_t pciSegment = 0;
+	if (allocs->pciSegment <= 65535)
+		pciSegment = allocs->pciSegment;
+	else
+		pciSegment = 0;
+
+	for (int bus = 0; bus < allocs->endBusNum; bus++){
+		for (int dev = 0; dev < PCI_DEVICE_PER_BUS; dev++) {
+			for (int func = 0; func < PCI_FUNCTION_PER_DEVICE; func++) {
+				uint64_t address = pci_express_get_device(pciSegment, bus,dev,func);
+			
+				if (address == 0xFFFFFFFF)
+					continue;
+				uint8_t class_code = pci_express_read(address,PCI_CLASS, bus,dev,func);
+				uint8_t sub_ClassCode = pci_express_read(address, PCI_SUBCLASS, bus, dev, func);
+				uint16_t vend = pci_express_read(address, PCI_VENDOR_ID, bus, dev, func);
+				uint16_t dev = pci_express_read(address, PCI_DEVICE_ID, bus, dev, func);
+				if (class_code == 0xFF || sub_ClassCode == 0xFF)
+					continue;
+				printf ("PCIE Dev -- VENID -> %x, DEVID -> %x, CC-> %x, SC-> %x \n",vend, dev, class_code, sub_ClassCode);
+			}
+		}
+	}
 }

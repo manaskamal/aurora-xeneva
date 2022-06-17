@@ -366,6 +366,9 @@
     <ClInclude Include="..\include\libmngr.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\usb.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="init.cpp">

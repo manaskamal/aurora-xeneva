@@ -52,6 +52,7 @@ typedef struct _aurora_driver_ {
 //!driver manager initialization
 extern void AuDrvMngrInitialize (KERNEL_BOOT_INFO *info);
 extern void drv_mngr_write_driver (unsigned char* buffer, size_t length);
+extern void AuDriverLoadMem (uint8_t* mem);
 
 #endif
 

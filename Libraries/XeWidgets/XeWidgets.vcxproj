@@ -142,17 +142,22 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="list.cpp" />
+    <ClCompile Include="styles\XEDefaultButtonStyle.cpp" />
     <ClCompile Include="styles\XEDefaultWinStyle.cpp" />
     <ClCompile Include="xebase.cpp" />
+    <ClCompile Include="xebutton.cpp" />
     <ClCompile Include="xeloop.cpp" />
     <ClCompile Include="xewindow.cpp" />
     <ClCompile Include="xe_glblctrl_close.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="includes\list.h" />
+    <ClInclude Include="includes\styles\XEDefaultButtonStyle.h" />
     <ClInclude Include="includes\styles\XEDefaultWinStyle.h" />
     <ClInclude Include="includes\xebase.h" />
+    <ClInclude Include="includes\xebutton.h" />
     <ClInclude Include="includes\xeloop.h" />
+    <ClInclude Include="includes\xewidget.h" />
     <ClInclude Include="includes\xewidgets.h" />
     <ClInclude Include="includes\xewindow.h" />
     <ClInclude Include="includes\xe_glblctrl_close.h" />

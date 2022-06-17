@@ -1,13 +1,32 @@
 /**
- *  Copyright (C) Manas Kamal Choudhury 2021
+ * BSD 2-Clause License
  *
- *  proc.cpp -- Process
+ * Copyright (c) 2022, Manas Kamal Choudhury
+ * All rights reserved.
  *
- *  /PROJECT - Aurora {Xeneva}
- *  /AUTHOR  - Manas Kamal Choudhury
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
  *
- * ===============================================
- */
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer.
+ *
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ *
+ **/
 
 #include <proc.h>
 #include <atomic\mutex.h>
@@ -157,6 +176,7 @@ void allocate_fd (thread_t *t) {
  */
 int AuCreateProcess(const char* filename, char* procname) {
 	//!allocate a data-structure for process 
+	_debug_print_ ("Creating Process \r\n");
 	process_t *process = (process_t*)malloc(sizeof(process_t)); //pmmngr_alloc();
 	memset(process, 0,sizeof(process_t));
 	process->pid_t = pid;
@@ -303,6 +323,7 @@ void kill_process () {
 	uint64_t  init_stack = proc->stack - (2*1024*1024);
 	uint64_t image_base = proc->image_base;
 	uint64_t *cr3 = (uint64_t*)remove_thread->cr3;
+	_debug_print_ ("CR333333 -> %x \r\n", cr3);
 	
 	int timer = find_timer_id (remove_thread->id);
 
@@ -324,12 +345,18 @@ void kill_process () {
 	for (int i = 0; i < lib3->phys_blocks_count; i++)
 		AuUnmapPage(XNACRL_BASE + i * 4096, true);
 
-	
 
 	//!unmap the binary image
-	for (uint32_t i = 0; i < proc->image_size / 4096; i++) {
+	for (uint32_t i = 0; i < proc->image_size / 4096 + 1; i++) {
 	//	uint64_t virtual_addr = proc->image_base + (i * 4096);
-		AuUnmapPage(image_base + i * 4096, true);
+		_debug_print_ ("Freeing physical of image **** \r\n");
+		void* phys = AuGetPhysicalAddress((uint64_t)cr3,proc->image_base + i * 4096);
+		uint64_t physical_address = (uint64_t)v2p((uint64_t)phys);
+		_debug_print_ ("PHYSICAL ADD -> %x \r\n", physical_address);
+		if (physical_address != 0){
+			_debug_print_ ("****Image physical addr -> %x \r\n", physical_address);
+			AuPmmngrFree((void*)physical_address);
+		}
 	}
 	
 	//!unmap the runtime stack
@@ -338,9 +365,13 @@ void kill_process () {
 	}
 
 	for (int i = 0; i < proc->_heap_size_ / 4096; i++) {
-		AuUnmapPage(PROCESS_HEAP_BREAK + i * 4096, true);
+		void* phys = AuGetPhysicalAddress((uint64_t)cr3,PROCESS_HEAP_BREAK + i * 4096);
+		uint64_t physical_address = (uint64_t)v2p((uint64_t)phys);
+		if (physical_address != 0){
+			AuPmmngrFree((void*)physical_address);
+		}
+		//AuUnmapPage(PROCESS_HEAP_BREAK + i * 4096, true);
 	}
-	
 	
 	AuPmmngrFree((void*)v2p((size_t)remove_thread->msg_box));
 	pri_loop_destroy_by_id (t_id);
@@ -356,7 +387,7 @@ void kill_process () {
 	free(remove_thread);
 
 	free_kstack(cr3);
-	AuPmmngrFree(cr3);
+	AuPmmngrFree((void*)cr3);
 }
 
 /**

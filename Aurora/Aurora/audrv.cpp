@@ -202,6 +202,19 @@ void AuDriverLoad (char* filename, aurora_driver_t *driver) {
 	free(file);
 }
 
+void AuDriverLoadMem (uint8_t* mem) {
+	uint64_t* virtual_base = (uint64_t*)mem;
+
+
+	void* entry_addr = AuGetProcAddress((void*)mem,"AuDriverMain");
+	void* unload_addr = AuGetProcAddress((void*)mem,"AuDriverUnload");
+
+	AuPeLinkLibrary(virtual_base);
+	au_drv_entry entry = (au_drv_entry)entry_addr;
+	int r = entry();
+	for(;;);
+}
+
 /* 
  * AuDrvMngrInitialize -- Initialize the driver manager
  * @param info -- kernel boot info

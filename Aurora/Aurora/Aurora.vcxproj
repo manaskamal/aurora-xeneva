@@ -274,6 +274,7 @@
     <ClInclude Include="..\include\sysserv.h" />
     <ClInclude Include="..\include\termios.h" />
     <ClInclude Include="..\include\timer.h" />
+    <ClInclude Include="..\include\usb.h" />
     <ClInclude Include="..\include\utils\circ_buf.h" />
     <ClInclude Include="..\include\utils\lnklist.h" />
     <ClInclude Include="..\include\utils\ring.h" />
