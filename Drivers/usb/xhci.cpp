@@ -33,6 +33,7 @@
 #include <pmmngr.h>
 #include <string.h>
 #include <stdio.h>
+#include <serial.h>
 #include <usb.h>
 
 /*
@@ -41,7 +42,7 @@
  */
 void xhci_reset (usb_dev_t *dev) {
 	//dev->op_regs->op_usbcmd &= ~1;
-	while(!(dev->op_regs->op_usbsts & (1<<0)));
+	//while(!(dev->op_regs->op_usbsts & (1<<0)));
 
 	dev->op_regs->op_usbcmd |= (1<<1);
 	while((dev->op_regs->op_usbcmd & (1<<1)));
@@ -63,11 +64,11 @@ void xhci_device_context_init (usb_dev_t *dev) {
 	uint32_t scratch_lo = dev->cap_regs->cap_hccparams2 >> 27;
 	uint32_t max_scratchpad = (scratch_hi << 5) | scratch_lo;
 	
-	if (31) {
+	if (max_scratchpad) {
 		uint64_t *spad = (uint64_t*)AuPmmngrAlloc();
 		memset(spad, 0, 4096);
 
-		for (unsigned i = 0; i < 31; i++) {
+		for (unsigned i = 0; i < max_scratchpad; i++) {
 			spad[i] = (uint64_t)AuPmmngrAlloc();
 			memset(&spad[i], 0, 4096);
 		}
@@ -83,12 +84,11 @@ void xhci_command_ring_init(usb_dev_t *dev) {
 	uint64_t cmd_ring_phys = (uint64_t)AuPmmngrAlloc();
 	memset((void*)cmd_ring_phys, 0, 4096);
 	dev->cmd_ring = (xhci_trb_t*)AuMapMMIO(cmd_ring_phys, 1);
-	((volatile uint64_t*)dev->cmd_ring)[63*2] = cmd_ring_phys;
-	((volatile uint64_t*)dev->cmd_ring)[63*2+1] = ((0x2UL | (6UL << 10)) << 32);
+	//((volatile uint64_t*)dev->cmd_ring)[63*2] = cmd_ring_phys;
+	//((volatile uint64_t*)dev->cmd_ring)[63*2+1] = ((0x2UL | (6UL << 10)) << 32);
 
-	dev->op_regs->op_crcr[0] = cmd_ring_phys | 1; 
-	dev->op_regs->op_crcr[1] = (cmd_ring_phys | 1) >> 32;
-	//dev->op_regs->op_dnctrl = 4;
+	dev->op_regs->op_crcr = cmd_ring_phys | 1;
+	dev->op_regs->op_dnctrl = 4;
 	dev->cmd_ring_index = 0;
 	dev->cmd_ring_max = 64;
 	dev->cmd_ring_cycle = 1;
@@ -105,30 +105,30 @@ void xhci_protocol_init (usb_dev_t *dev) {
 		switch(cap->id) {
 		case 1: 
 			printf ("USB Legacy Support \n");
-			break;
+			//break;
 		case 2:{
 			printf ("USB Support Protocol \n");
 			xhci_ex_cap_protocol_t *prot = (xhci_ex_cap_protocol_t*)cap;
 			printf ("Protocol name -> %s , starting port -> %d, max_port -> %d \n", prot->name, 
 				(prot->port_cap_field & 0xFF), ((prot->port_cap_field >> 8) & 0xFF));
 			printf ("Protocol speed -> %d \n", ((prot->port_cap_field >> 28) & 0xFFFF));
-			break;
+			//break;
 	    }
 		case 3:
 			printf ("USB Extended Power Management \n");
-			break;
+			//break;
 		case 4:
 			printf ("USB I/O Virtualization \n");
-			break;
+			//break;
 		case 5:
 			printf ("USB Message Interrupt \n");
-			break;
+			//break;
 		case 6:
 			printf ("USB Local Memory \n");
-			break;
+			//break;
 		case 10:
 			printf ("USB Debug Capabiltiy \n");
-			break;
+			//break;
 		}
 		if (cap->next == 0)
 			break;
@@ -157,19 +157,18 @@ void xhci_event_ring_init (usb_dev_t *dev) {
 	erst->event_ring_seg_hi = (event_ring_seg >> 32) & UINT32_MAX;
 	erst->ring_seg_size = 4096 / 16;
 
-	memset(&event_ring_seg_v[0], 0, 16);
 
 	dev->evnt_ring_cycle = 1;
 	dev->evnt_ring_index = 0;
 
 	dev->rt_regs->intr_reg[0].evtRngSegTabSz = 1;
-	dev->rt_regs->intr_reg[0].evtRngDeqPtrLo = event_ring_seg;
+	dev->rt_regs->intr_reg[0].evtRngDeqPtrLo =  (event_ring_seg << 4) | (0 << 3);
 	dev->rt_regs->intr_reg[0].evtRngDeqPtrHi = (event_ring_seg >> 32);
 	dev->rt_regs->intr_reg[0].evtRngSegBaseLo = e_ring_seg_table;
 	dev->rt_regs->intr_reg[0].evtRngSegBaseHi = (e_ring_seg_table >> 32);
-	dev->rt_regs->intr_reg[0].intr_mod = (0 << 16) | 0x3f8;
-	dev->op_regs->op_usbcmd = (1<<2) | (1<<3) | 0;
-	dev->rt_regs->intr_reg[0].intr_man = (1<<1) | 0;
+	dev->rt_regs->intr_reg[0].intr_mod = (0 << 16) | 512;
+	dev->op_regs->op_usbcmd = (1<<3) | (1<<2) | 0;
+	dev->rt_regs->intr_reg[0].intr_man |= (1<<1) | 1;
 	dev->op_regs->op_usbcmd |= 1;
 	while ((dev->op_regs->op_usbsts & (1<<0)) != 0)
 		;
@@ -191,7 +190,6 @@ void xhci_send_command (usb_dev_t *dev, uint32_t param1, uint32_t param2, uint32
 	
 	ctrl &= ~1;
 	ctrl |= dev->cmd_ring_cycle;
-
 	dev->cmd_ring[dev->cmd_ring_index].trb_param_1 = param1;
 	dev->cmd_ring[dev->cmd_ring_index].trb_param_2 = param2;
 	dev->cmd_ring[dev->cmd_ring_index].trb_status = status;
@@ -199,7 +197,6 @@ void xhci_send_command (usb_dev_t *dev, uint32_t param1, uint32_t param2, uint32
 
 	dev->cmd_ring_index++;
 
-	dev->cmd_ring_index++;
 	if (dev->cmd_ring_index >= 63 ) {
 		dev->cmd_ring[dev->cmd_ring_index].trb_control ^= 1;
 		if (dev->cmd_ring[dev->cmd_ring_index].trb_control & (1<<1)) {
@@ -208,7 +205,7 @@ void xhci_send_command (usb_dev_t *dev, uint32_t param1, uint32_t param2, uint32
 		dev->cmd_ring_index = 0;
 	}
 
-	dev->db_regs->doorbell[0] = 0;
+	dev->db_regs->doorbell[0] = (0<<16) | 0;
 }
 
 
@@ -232,31 +229,35 @@ void xhci_port_initialize (usb_dev_t *dev) {
 
 			/* Enable slot command */
 			xhci_send_command(dev,0,0,0,(i << 16)|(9 << 23));
-			/* Reset completed */
-			uint8_t bm_req_type = USB_BM_REQUEST_INPUT | USB_BM_REQUEST_STANDARD | USB_BM_REQUEST_DEVICE;
-			uint8_t b_request = USB_BREQUEST_GET_DESCRIPTOR;
-			uint16_t wval = USB_DESCRIPTOR_WVALUE(USB_DESCRIPTOR_DEVICE, 0);
-			xhci_send_command(dev,bm_req_type | b_request << 8 | wval << 16,0 | (18 >>16), (0 << 22) | 8,(3 << 16) | (1<<6) | (2<<10));
+			///* Reset completed */
+			//uint8_t bm_req_type = USB_BM_REQUEST_INPUT | USB_BM_REQUEST_STANDARD | USB_BM_REQUEST_DEVICE;
+			//uint8_t b_request = USB_BREQUEST_GET_DESCRIPTOR;
+			//uint16_t wval = USB_DESCRIPTOR_WVALUE(USB_DESCRIPTOR_DEVICE, 0);
+			//xhci_send_command(dev,bm_req_type | b_request << 8 | wval << 16,0 | (18 >>16), (0 << 22) | 8,(3 << 16) | (1<<6) | (2<<10));
 
 
-			xhci_trb_t *trb = (xhci_trb_t*)dev->event_ring_segment;
-			for(;;){
-				xhci_trb_t *event = (xhci_trb_t*)dev->event_ring_segment;
-				uint64_t erdp = (uint64_t)dev->event_ring_segment;
-				if ((event[dev->evnt_ring_index].trb_control & 0xff) == 1){
-					printf ("Event Received %d, %x, %d\n", ((event[dev->evnt_ring_index].trb_control >> 10) & 0xFF), 
-						event[dev->evnt_ring_index].trb_control,  ((event[dev->evnt_ring_index].trb_control >> 10) & 0xFF));
+			//xhci_trb_t *trb = (xhci_trb_t*)dev->event_ring_segment;
+			//for(;;){
+			//	xhci_trb_t *event = (xhci_trb_t*)dev->event_ring_segment;
+			//	uint64_t erdp = (uint64_t)AuGetPhysicalAddress((uint64_t)AuGetRootPageTable(),(uint64_t)dev->event_ring_segment);
+			//	while ((event[dev->evnt_ring_index].trb_control & (1<<0)) == dev->evnt_ring_cycle){
+			//		xhci_event_trb_t *evt = (xhci_event_trb_t*)&event[dev->evnt_ring_index];
+			//		printf ("port Event Received %d, %x, %d\n", evt->trbType, 
+			//			event[dev->evnt_ring_index].trb_control, ((event[dev->evnt_ring_index].trb_status & (1<<24)) & 0xff));
 
-					dev->evnt_ring_index++;
+			//		
 
-					dev->rt_regs->intr_reg[0].evtRngDeqPtrHi = (erdp + sizeof(xhci_trb_t) * dev->evnt_ring_index);
-					dev->rt_regs->intr_reg[0].evtRngDeqPtrLo = (erdp + sizeof(xhci_trb_t) * dev->evnt_ring_index)>> 32;
-					break;
-				}
-
-			}
-
-			printf ("Port Initialized %d \n", i);
+			//		dev->rt_regs->intr_reg[0].evtRngDeqPtrLo = (erdp + sizeof(xhci_trb_t) * dev->evnt_ring_index);
+			//		dev->rt_regs->intr_reg[0].evtRngDeqPtrHi = (erdp + sizeof(xhci_trb_t) * dev->evnt_ring_index)>> 32;
+			//		dev->evnt_ring_cycle ^= 1;
+			//		dev->rt_regs->intr_reg[0].intr_man = (1<<1) | 0;
+			//		dev->evnt_ring_index++;
+			//	}
+			//	break;
+			//}
+			this_port->port_sc |= (1<<9);
+			printf ("Port Initialized %d, Power -> %d, PED -> %d \n", i, ((this_port->port_sc & (1<<9)) & 0xff),
+				((this_port->port_sc & (1<<1)) & 0xff));
 		}
 	}
 }

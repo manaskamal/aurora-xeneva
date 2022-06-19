@@ -360,6 +360,54 @@ uint64_t pci_express_scan_class (uint8_t classCode, uint8_t subClassCode, int *b
 	return 0xFFFFFFFF;
 }
 
+
+/*
+ * pci_express_scan_class -- scans and return pcie device with given class code and sub class code
+ * @param classCode -- class code
+ * @param subClassCode -- sub class code
+ * @param bus -- address, where bus number will be stored
+ * @param dev -- address, where device number will be stored
+ * @param func -- address, where function number will be stored
+ * @param progIf -- Programming interface
+ */
+uint64_t pci_express_scan_class_if (uint8_t classCode, uint8_t subClassCode, uint8_t progIf, int *bus_, int *dev_, int *func_) {
+	if(acpi_pcie_supported() == false) {
+		return 0; //pci_scan_class(classCode, subClassCode);
+	}
+
+	acpiMcfg *mcfg = acpi_get_mcfg();
+	acpiMcfgAlloc *allocs = mem_after<acpiMcfgAlloc*>(mcfg);
+	uint16_t pciSegment = 0;
+	if (allocs->pciSegment <= 65535)
+		pciSegment = allocs->pciSegment;
+	else
+		pciSegment = 0;
+
+	for (int bus = 0; bus < allocs->endBusNum; bus++){
+		for (int dev = 0; dev < PCI_DEVICE_PER_BUS; dev++) {
+			for (int func = 0; func < PCI_FUNCTION_PER_DEVICE; func++) {
+				uint64_t address = pci_express_get_device(pciSegment, bus,dev,func);
+			
+				if (address == 0xFFFFFFFF)
+					continue;
+				uint8_t class_code = pci_express_read(address,PCI_CLASS, bus,dev,func);
+				uint8_t sub_ClassCode = pci_express_read(address, PCI_SUBCLASS, bus, dev, func);
+				uint8_t prog_if = pci_express_read(address,PCI_PROG_IF, bus, dev, func);
+				if (classCode == 0xFF)
+					continue;
+				if(class_code == classCode && sub_ClassCode == subClassCode && prog_if == progIf) {
+					*bus_ = bus;
+					*dev_ = dev;
+					*func_ = func;
+					return address;
+				}
+			}
+		}
+	}
+
+	return 0xFFFFFFFF;
+}
+
 /*
  * pcie_alloc_msi -- Allocate MSI/MSI-X for interrupt
  * @todo -- MSIX not implemented yet 
@@ -449,9 +497,10 @@ void pcie_scan_all() {
 				uint8_t sub_ClassCode = pci_express_read(address, PCI_SUBCLASS, bus, dev, func);
 				uint16_t vend = pci_express_read(address, PCI_VENDOR_ID, bus, dev, func);
 				uint16_t dev = pci_express_read(address, PCI_DEVICE_ID, bus, dev, func);
-				if (class_code == 0xFF || sub_ClassCode == 0xFF)
+				if (class_code == 0xFF)
 					continue;
 				printf ("PCIE Dev -- VENID -> %x, DEVID -> %x, CC-> %x, SC-> %x \n",vend, dev, class_code, sub_ClassCode);
+				printf ("BUS-> %d, DEV -> %d, func ->%d \n", bus, dev, func);
 			}
 		}
 	}

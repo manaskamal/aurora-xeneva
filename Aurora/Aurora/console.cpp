@@ -102,18 +102,20 @@ void puts(char *s){
 	psf2_t *font = (psf2_t*)psf_data;
     int x,y,line,mask,offs;
     int bpl=(font->width+7)/8;
-
     while(*s) {
 		if (*s == '\n') {
 
             console_y += 16;
 			console_x = 0;
-			////!Scroll
-			if (console_y + 1 >= screen_height) {
-				for (int i = 16; i < (screen_width * screen_height); i++) {
-					fb[i] = fb[i + screen_width * 16];
+			//!Scroll
+			if (console_y >= screen_height) {
+			
+				for (int line_y = 0; line_y < screen_height-16; line_y++) {
+					for (int code_x=0; code_x < screen_width-8; code_x++) {
+						fb[line_y * screen_width+ code_x] = fb[(line_y+16) *screen_width + code_x];
+					}
 				}
-				console_y --;
+				console_y -= 16;
 			}
 
 		} else if (*s == '\b') {

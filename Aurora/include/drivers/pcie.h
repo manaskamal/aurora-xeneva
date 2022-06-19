@@ -81,6 +81,18 @@ extern uint64_t pci_express_get_device (uint16_t segment, int bus, int device, i
  * @param func -- address, where function number will be stored
  */
 AU_EXTERN AU_EXPORT uint64_t pci_express_scan_class (uint8_t classCode, uint8_t subClassCode, int *bus_, int *dev_, int *func_);
+
+/*
+ * pci_express_scan_class -- scans and return pcie device with given class code and sub class code
+ * @param classCode -- class code
+ * @param subClassCode -- sub class code
+ * @param bus -- address, where bus number will be stored
+ * @param dev -- address, where device number will be stored
+ * @param func -- address, where function number will be stored
+ * @param if -- Programming interface
+ */
+AU_EXTERN AU_EXPORT uint64_t pci_express_scan_class_if (uint8_t classCode, uint8_t subClassCode, uint8_t prog_if, int *bus_, int *dev_, int *func_);
+
 AU_EXTERN AU_EXPORT uint32_t pci_express_read (uint64_t device, int reg,  int bus, int dev,int func);
 AU_EXTERN AU_EXPORT uint64_t pci_express_read2 (uint64_t device, int reg, int size, int bus, int dev, int func);
 AU_EXTERN AU_EXPORT void pci_express_write (uint64_t device, int reg, uint32_t val,  int bus, int dev, int func);

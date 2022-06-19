@@ -94,7 +94,7 @@ typedef struct _xhci_op_regs_ {
 	uint32_t op_pagesize;
 	uint32_t op_pad1[2];
 	uint32_t op_dnctrl;
-	uint32_t op_crcr[2];
+	uint64_t op_crcr;
 	uint32_t op_pad2[4];
 	uint32_t op_dcbaap_lo;
 	uint32_t op_dcbaap_hi;

@@ -37,38 +37,53 @@
 #include <arch\x86_64\mmngr\paging.h>
 #include <arch\x86_64\mmngr\kheap.h>
 #include <shirq.h>
+#include <serial.h>
+#include <arch\x86_64\thread.h>
 
 usb_dev_t *usb_device;
 shirq_t *shdev;
+bool first_interrupt = false;
 
 void AuUSBInterrupt(size_t v, void* p) {
-	//AuFiredSharedHandler(usb_device->irq,v,p,shdev);
-	printf ("[usb]: interrupt fired++ \n");
+	AuDisableInterupts();
+	/* Clear the USB Status bit */
+	usb_device->op_regs->op_usbsts &= ~XHCI_USB_STS_EINT;
+
 
 	xhci_trb_t *event = (xhci_trb_t*)usb_device->event_ring_segment;
-	uint64_t erdp = (uint64_t)usb_device->event_ring_segment;
-	if ((event[usb_device->evnt_ring_index].trb_control & 0xff) == 1){
-		printf ("Event Received %d, %x, %d\n", ((event[usb_device->evnt_ring_index].trb_control >> 10) & 0xFF), 
+	xhci_event_trb_t *evt = (xhci_event_trb_t*)usb_device->event_ring_segment;
+	uint64_t erdp = (uint64_t)AuGetPhysicalAddress((uint64_t)AuGetRootPageTable(),(uint64_t)usb_device->event_ring_segment);
+	while ((event[usb_device->evnt_ring_index].trb_control & (1<<0)) == 1){
+		printf ("Event Received %d, %x, %d \r\n", ((event[usb_device->evnt_ring_index].trb_control >> 10) & 0xFF), 
 			event->trb_control,  ((event[usb_device->evnt_ring_index].trb_control >> 10) & 0xFF));
-		if (((event[usb_device->evnt_ring_index].trb_control >> 10) & 0xFF) == 34){
-			printf ("PSC Event port id -> %d , completion_code -> %d \n", ((event[usb_device->evnt_ring_index].trb_param_1 >> 24) & 0xFF),
+			
+		if (evt[usb_device->evnt_ring_index].trbType == 34){
+			printf ("[[New Device]] Event port id -> %d , completion_code -> %d \r\n", 
+				((event[usb_device->evnt_ring_index].trb_param_1 >> 24) & 0xFF),
 				((event[usb_device->evnt_ring_index].trb_status >> 24) & 0xff));
-			printf ("cycle bit -> %d \n",(event[usb_device->evnt_ring_index].trb_control & 0xff));
+			
 		}
-
+			
+	
+			
+		/* Update the Dequeue Pointer of interrupt 0 to recently 
+		 * processed event_ring_segment entry (known as TRB Entry) */
+		usb_device->rt_regs->intr_reg[0].evtRngDeqPtrLo = (erdp + sizeof(xhci_trb_t) * usb_device->evnt_ring_index) << 4;
+		usb_device->rt_regs->intr_reg[0].evtRngDeqPtrHi = (erdp + sizeof(xhci_trb_t) * usb_device->evnt_ring_index) >> 32;
+		usb_device->evnt_ring_cycle ^= 1;	
 		usb_device->evnt_ring_index++;
 
-		usb_device->rt_regs->intr_reg[0].evtRngDeqPtrHi = (erdp + sizeof(xhci_trb_t) * usb_device->evnt_ring_index);
-		usb_device->rt_regs->intr_reg[0].evtRngDeqPtrLo = (erdp + sizeof(xhci_trb_t) * usb_device->evnt_ring_index)>> 32;
-	
-		usb_device->op_regs->op_usbsts &= ~XHCI_USB_STS_EINT;
-		usb_device->rt_regs->intr_reg[0].intr_man = 0;
-		usb_device->rt_regs->intr_reg[0].intr_man |= (1<<1);	
-		printf ("Interrupt pending -> %d, interrupt e -> %d \n", (usb_device->rt_regs->intr_reg[0].intr_man & 0xf), 
-		(usb_device->rt_regs->intr_reg[0].intr_man >> 1 & 0xff));
 	}
 
+	/* Clear the Event Handler Busy bit */
+	usb_device->rt_regs->intr_reg[0].evtRngDeqPtrLo |= (0<<3);
+	/* Update the interrupt pending bit with value 1, so 
+	 * that new interrupt gets asserted with new events */
+	usb_device->rt_regs->intr_reg[0].intr_man |= (1<<1) | 1;
+	
+	/*End Of Interrupt to Interrupt Controller */
 	AuInterruptEnd(usb_device->irq);
+	AuEnableInterrupts();
 }
 
 /*
@@ -78,6 +93,7 @@ void AuUSBInterrupt(size_t v, void* p) {
 AU_EXTERN AU_EXPORT int AuDriverUnload() {
 	return 0;
 }
+
 /*
  * AuDriverMain -- Main entry for usb driver
  */
@@ -85,17 +101,17 @@ AU_EXTERN AU_EXPORT int AuDriverMain() {
 	//printf ("Initializing USB\n");
 	int bus, dev, func;
 
-	uint64_t device = pci_express_scan_class(0x0C, 0x03, &bus, &dev, &func);
+	uint64_t device = pci_express_scan_class_if(0x0C, 0x03,0x30, &bus, &dev, &func);
 	if (device == 0xFFFFFFFF){
 		printf ("[usb]: xhci not found \n");
 		return 1;
 	}
-
+	printf ("XHCI bus -> %d , dev -> %d, func -> %d \n", bus, dev, func);
 	usb_device = (usb_dev_t*)malloc(sizeof(usb_dev_t));
 
 	uint64_t command = pci_express_read(device ,PCI_COMMAND,bus,dev,func);
-	command &= ~(1<<10);
-	command |= (1<<1);
+	command |= (1<<10);
+	command |= 0x6;
 
 	
 	pci_express_write(device, PCI_COMMAND, command, bus, dev, func);
@@ -107,14 +123,19 @@ AU_EXTERN AU_EXPORT int AuDriverMain() {
 
 	uint64_t mmio_base = (uint64_t)AuMapMMIO(mmio_addr, 16);
 	xhci_cap_regs_t *cap = (xhci_cap_regs_t*)mmio_base;
+
 	uint64_t op_base = (uint64_t)(mmio_base + (cap->cap_caplen_version & 0xFF));
 	xhci_op_regs_t *op = (xhci_op_regs_t*)op_base;
+
 	uint64_t rt_base = (uint64_t)(mmio_base + (cap->cap_hccparams2 & ~(0x1FUL)));
 	xhci_runtime_regs_t *rt = (xhci_runtime_regs_t*)rt_base;
-	uint64_t db_base = (uint64_t)(mmio_base + (cap->cap_dboff & ~0x3UL));
+
+	uint64_t db_base = (uint64_t)(mmio_base + (cap->cap_dboff));
 	xhci_doorbell_regs_t *db = (xhci_doorbell_regs_t*)db_base;
+
 	uint64_t ext_base = (uint64_t)(mmio_base + ((cap->cap_hccparams1  >> 16) << 2));
 	xhci_ext_cap_t *ext_cap = (xhci_ext_cap_t*)ext_base;
+
 	uint64_t ports_base = (uint64_t)(mmio_base + ((cap->cap_caplen_version & 0xFF)) + 0x400);
 	xhci_port_regs_t *ports = (xhci_port_regs_t*)ports_base;
 
@@ -126,13 +147,14 @@ AU_EXTERN AU_EXPORT int AuDriverMain() {
 	usb_device->ports = ports;
 
 
+
 	//printf ("[usb]: xhci available slots: %d \n", (cap->cap_hcsparams1 & 0xFF));
 	//printf ("[usb]: xhci available ports: %d \n", (cap->cap_hcsparams1 >> 24));
 
 	usb_device->num_slots = (cap->cap_hcsparams1 & 0xFF);
 	usb_device->num_ports = (cap->cap_hcsparams1 >> 24);
 	
-	
+	printf ("[usb]: xhci port power control swith -> %d \n", ((cap->cap_hccparams1 >> 3) & 0xff));
 	
 	/* Reset the XHCI controller */
 	xhci_reset(usb_device);
@@ -150,50 +172,29 @@ AU_EXTERN AU_EXPORT int AuDriverMain() {
 	xhci_command_ring_init(usb_device);
 	
 	
-	setvect(38,AuUSBInterrupt);
-	pcie_alloc_msi(device,38,bus,dev,func);
-	
 	xhci_protocol_init(usb_device);
+
+	setvect(76,AuUSBInterrupt);
+	pcie_alloc_msi(device,76,bus,dev,func);
 
 	xhci_event_ring_init(usb_device);
 
 	for (int i = 0; i < 10000000; i++)
 		;
 
-	
-	/*xhci_noop_cmd_trb_t test;
-	memset(&test, 0, sizeof(xhci_noop_cmd_trb_t));
-	test.trb_type = 23;
-	test.cycleBit = 1;*/
-	
 
+	//xhci_port_initialize(usb_device);
 	AuEnableInterrupts();
-	
+
+	/* Try Sending a No Operation Command to xHCI*/
 	xhci_send_command(usb_device,0,0,0,(23 << 10));
-	for(;;){
-		xhci_trb_t *event = (xhci_trb_t*)usb_device->event_ring_segment;
-		uint64_t erdp = (uint64_t)usb_device->event_ring_segment;
-		if ((event[usb_device->evnt_ring_index].trb_control & 0xff) == 1){
-			printf ("Event Received %d, %x, %d\n", ((event[usb_device->evnt_ring_index].trb_control >> 10) & 0xFF), 
-				event[usb_device->evnt_ring_index].trb_control,  ((event[usb_device->evnt_ring_index].trb_control >> 10) & 0xFF));
-
-			usb_device->evnt_ring_index++;
-
-			usb_device->rt_regs->intr_reg[0].evtRngDeqPtrHi = (erdp + sizeof(xhci_trb_t) * usb_device->evnt_ring_index);
-			usb_device->rt_regs->intr_reg[0].evtRngDeqPtrLo = (erdp + sizeof(xhci_trb_t) * usb_device->evnt_ring_index)>> 32;
-			break;
-		}
-
-	}
-
-	xhci_port_initialize(usb_device);
 
 
 	/* for now xhci is under development, i am learning 
 	 * xhci and doing experiments within it, that's why
 	 * for(;;) loop here
 	 */
+
 	for(;;);
-	
 	return 0;
 }

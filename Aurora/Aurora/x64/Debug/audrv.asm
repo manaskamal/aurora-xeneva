@@ -14,19 +14,19 @@ driver_class_unique_id DD 01H DUP (?)
 driver_load_base DQ 01H DUP (?)
 _BSS	ENDS
 CONST	SEGMENT
-$SG3796	DB	'AuDriverMain', 00H
+$SG3803	DB	'AuDriverMain', 00H
 	ORG $+3
-$SG3799	DB	'AuDriverUnload', 00H
+$SG3806	DB	'AuDriverUnload', 00H
 	ORG $+1
-$SG3809	DB	'AuDriverMain', 00H
+$SG3816	DB	'AuDriverMain', 00H
 	ORG $+3
-$SG3812	DB	'AuDriverUnload', 00H
+$SG3819	DB	'AuDriverUnload', 00H
 	ORG $+1
-$SG3822	DB	'[aurora]: initializing drivers, please wait... ', 0aH, 00H
+$SG3829	DB	'[aurora]: initializing drivers, please wait... ', 0aH, 00H
 	ORG $+7
-$SG3827	DB	'/audrv.cnf', 00H
+$SG3834	DB	'/audrv.cnf', 00H
 	ORG $+5
-$SG3863	DB	'Freeing file ', 0dH, 0aH, 00H
+$SG3870	DB	'Freeing file ', 0dH, 0aH, 00H
 CONST	ENDS
 PUBLIC	?AuDrvMngrInitialize@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z ; AuDrvMngrInitialize
 PUBLIC	?AuDriverLoadMem@@YAXPEAE@Z			; AuDriverLoadMem
@@ -216,14 +216,14 @@ $LN1@AuDriverLo:
 ; 190  : 
 ; 191  : 	void* entry_addr = AuGetProcAddress((void*)driver_load_base,"AuDriverMain");
 
-	lea	rdx, OFFSET FLAT:$SG3796
+	lea	rdx, OFFSET FLAT:$SG3803
 	mov	rcx, QWORD PTR driver_load_base
 	call	?AuGetProcAddress@@YAPEAXPEAXPEBD@Z	; AuGetProcAddress
 	mov	QWORD PTR entry_addr$[rsp], rax
 
 ; 192  : 	void* unload_addr = AuGetProcAddress((void*)driver_load_base,"AuDriverUnload");
 
-	lea	rdx, OFFSET FLAT:$SG3799
+	lea	rdx, OFFSET FLAT:$SG3806
 	mov	rcx, QWORD PTR driver_load_base
 	call	?AuGetProcAddress@@YAPEAXPEAXPEBD@Z	; AuGetProcAddress
 	mov	QWORD PTR unload_addr$[rsp], rax
@@ -896,14 +896,14 @@ $LN5:
 ; 208  : 
 ; 209  : 	void* entry_addr = AuGetProcAddress((void*)mem,"AuDriverMain");
 
-	lea	rdx, OFFSET FLAT:$SG3809
+	lea	rdx, OFFSET FLAT:$SG3816
 	mov	rcx, QWORD PTR mem$[rsp]
 	call	?AuGetProcAddress@@YAPEAXPEAXPEBD@Z	; AuGetProcAddress
 	mov	QWORD PTR entry_addr$[rsp], rax
 
 ; 210  : 	void* unload_addr = AuGetProcAddress((void*)mem,"AuDriverUnload");
 
-	lea	rdx, OFFSET FLAT:$SG3812
+	lea	rdx, OFFSET FLAT:$SG3819
 	mov	rcx, QWORD PTR mem$[rsp]
 	call	?AuGetProcAddress@@YAPEAXPEAXPEBD@Z	; AuGetProcAddress
 	mov	QWORD PTR unload_addr$[rsp], rax
@@ -974,7 +974,7 @@ $LN21:
 
 ; 225  : 	printf ("[aurora]: initializing drivers, please wait... \n");
 
-	lea	rcx, OFFSET FLAT:$SG3822
+	lea	rcx, OFFSET FLAT:$SG3829
 	call	printf
 
 ; 226  : 	/* Load the conf data */
@@ -994,7 +994,7 @@ $LN21:
 
 ; 229  : 	vfs_node_t* file = fat32_open(NULL, "/audrv.cnf");
 
-	lea	rdx, OFFSET FLAT:$SG3827
+	lea	rdx, OFFSET FLAT:$SG3834
 	xor	ecx, ecx
 	call	?fat32_open@@YAPEAU_vfs_node_@@PEAU1@PEAD@Z ; fat32_open
 	mov	QWORD PTR file$[rsp], rax
@@ -1249,7 +1249,7 @@ $LN1@AuDrvMngrI:
 
 ; 269  : 	_debug_print_  ("Freeing file \r\n");
 
-	lea	rcx, OFFSET FLAT:$SG3863
+	lea	rcx, OFFSET FLAT:$SG3870
 	call	_debug_print_
 
 ; 270  : }
