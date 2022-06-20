@@ -27,6 +27,14 @@
  *
  **/
 
+
+/*
+ * TODO : Write and interface which will send command and wait for
+ * an event to occur and pass the event to caller
+ *
+ * Initialize Ports 
+ */
+
 #include <stdio.h>
 #include <aurora.h>
 #include <drivers\pci.h>
@@ -49,7 +57,6 @@ void AuUSBInterrupt(size_t v, void* p) {
 	/* Clear the USB Status bit */
 	usb_device->op_regs->op_usbsts &= ~XHCI_USB_STS_EINT;
 
-
 	xhci_trb_t *event = (xhci_trb_t*)usb_device->event_ring_segment;
 	xhci_event_trb_t *evt = (xhci_event_trb_t*)usb_device->event_ring_segment;
 	uint64_t erdp = (uint64_t)AuGetPhysicalAddress((uint64_t)AuGetRootPageTable(),(uint64_t)usb_device->event_ring_segment);
@@ -57,6 +64,9 @@ void AuUSBInterrupt(size_t v, void* p) {
 		printf ("Event Received %d, %x, %d \r\n", ((event[usb_device->evnt_ring_index].trb_control >> 10) & 0xFF), 
 			event->trb_control,  ((event[usb_device->evnt_ring_index].trb_control >> 10) & 0xFF));
 			
+
+
+		/* New PORT STATUS CHANGE Event */
 		if (evt[usb_device->evnt_ring_index].trbType == 34){
 			printf ("[[New Device]] Event port id -> %d , completion_code -> %d \r\n", 
 				((event[usb_device->evnt_ring_index].trb_param_1 >> 24) & 0xFF),
@@ -64,22 +74,23 @@ void AuUSBInterrupt(size_t v, void* p) {
 			
 		}
 			
-	
-			
+		
 		/* Update the Dequeue Pointer of interrupt 0 to recently 
 		 * processed event_ring_segment entry (known as TRB Entry) */
-		usb_device->rt_regs->intr_reg[0].evtRngDeqPtrLo = (erdp + sizeof(xhci_trb_t) * usb_device->evnt_ring_index) << 4;
+		usb_device->rt_regs->intr_reg[0].evtRngDeqPtrLo = (erdp + sizeof(xhci_trb_t) * usb_device->evnt_ring_index) << 4 | (1<<3);
 		usb_device->rt_regs->intr_reg[0].evtRngDeqPtrHi = (erdp + sizeof(xhci_trb_t) * usb_device->evnt_ring_index) >> 32;
 		usb_device->evnt_ring_cycle ^= 1;	
-		usb_device->evnt_ring_index++;
+		usb_device->evnt_ring_index++;	
 
 	}
 
-	/* Clear the Event Handler Busy bit */
-	usb_device->rt_regs->intr_reg[0].evtRngDeqPtrLo |= (0<<3);
+	
 	/* Update the interrupt pending bit with value 1, so 
 	 * that new interrupt gets asserted with new events */
 	usb_device->rt_regs->intr_reg[0].intr_man |= (1<<1) | 1;
+	
+	/* Clear the Event Handler Busy bit again */
+	usb_device->rt_regs->intr_reg[0].evtRngDeqPtrLo |= 1<<3;
 	
 	/*End Of Interrupt to Interrupt Controller */
 	AuInterruptEnd(usb_device->irq);
@@ -148,13 +159,13 @@ AU_EXTERN AU_EXPORT int AuDriverMain() {
 
 
 
-	//printf ("[usb]: xhci available slots: %d \n", (cap->cap_hcsparams1 & 0xFF));
-	//printf ("[usb]: xhci available ports: %d \n", (cap->cap_hcsparams1 >> 24));
-
 	usb_device->num_slots = (cap->cap_hcsparams1 & 0xFF);
 	usb_device->num_ports = (cap->cap_hcsparams1 >> 24);
 	
-	printf ("[usb]: xhci port power control swith -> %d \n", ((cap->cap_hccparams1 >> 3) & 0xff));
+	/* We need to check, if controller supports port power switch, so that
+	 * individual ports can be powered on or off
+	 */
+	printf ("[usb]: xhci port power control switch -> %d \n", ((cap->cap_hccparams1 >> 3) & 0xff));
 	
 	/* Reset the XHCI controller */
 	xhci_reset(usb_device);
@@ -183,18 +194,15 @@ AU_EXTERN AU_EXPORT int AuDriverMain() {
 		;
 
 
-	//xhci_port_initialize(usb_device);
+	
 	AuEnableInterrupts();
 
 	/* Try Sending a No Operation Command to xHCI*/
 	xhci_send_command(usb_device,0,0,0,(23 << 10));
 
 
-	/* for now xhci is under development, i am learning 
-	 * xhci and doing experiments within it, that's why
-	 * for(;;) loop here
-	 */
+	/* Initialize all ports */
+	//xhci_port_initialize(usb_device);
 
-	for(;;);
 	return 0;
 }

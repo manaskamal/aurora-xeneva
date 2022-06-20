@@ -10,15 +10,15 @@ _BSS	SEGMENT
 ?debug@@3P6AXPEBDZZEA DQ 01H DUP (?)			; debug
 _BSS	ENDS
 CONST	SEGMENT
-$SG5459	DB	'Scheduler Initialized', 0aH, 00H
+$SG5462	DB	'Scheduler Initialized', 0aH, 00H
 	ORG $+1
-$SG5461	DB	'shell', 00H
+$SG5464	DB	'shell', 00H
 	ORG $+2
-$SG5462	DB	'/init.exe', 00H
+$SG5465	DB	'/init.exe', 00H
 	ORG $+2
-$SG5463	DB	'priwm', 00H
+$SG5466	DB	'priwm', 00H
 	ORG $+6
-$SG5464	DB	'/priwm.exe', 00H
+$SG5467	DB	'/priwm.exe', 00H
 CONST	ENDS
 PUBLIC	?debug_print@@YAXPEBDZZ				; debug_print
 PUBLIC	?_AuMain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z		; _AuMain
@@ -47,6 +47,7 @@ EXTRN	?AuSysLibInitialize@@YAXXZ:PROC			; AuSysLibInitialize
 EXTRN	?AuCreateProcess@@YAHPEBDPEAD@Z:PROC		; AuCreateProcess
 EXTRN	?process_list_initialize@@YAXXZ:PROC		; process_list_initialize
 EXTRN	?AuDrvMngrInitialize@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z:PROC ; AuDrvMngrInitialize
+EXTRN	?AuDriverLoadMem@@YAXPEAE@Z:PROC		; AuDriverLoadMem
 EXTRN	?AuInitializeSerial@@YAXXZ:PROC			; AuInitializeSerial
 EXTRN	?AuSoundInitialize@@YAXXZ:PROC			; AuSoundInitialize
 EXTRN	?pri_loop_init@@YAXXZ:PROC			; pri_loop_init
@@ -58,8 +59,8 @@ pdata	SEGMENT
 $pdata$?debug_print@@YAXPEBDZZ DD imagerel $LN3
 	DD	imagerel $LN3+40
 	DD	imagerel $unwind$?debug_print@@YAXPEBDZZ
-$pdata$?_AuMain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z DD imagerel $LN5
-	DD	imagerel $LN5+292
+$pdata$?_AuMain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z DD imagerel $LN7
+	DD	imagerel $LN7+308
 	DD	imagerel $unwind$?_AuMain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z
 pdata	ENDS
 xdata	SEGMENT
@@ -77,7 +78,7 @@ info$ = 64
 
 ; 99   : void _AuMain (KERNEL_BOOT_INFO *info) {
 
-$LN5:
+$LN7:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 56					; 00000038H
 
@@ -121,179 +122,190 @@ $LN5:
 	mov	rcx, QWORD PTR [rax+82]
 	call	?AuInitializeBasicAcpi@@YAXPEAX@Z	; AuInitializeBasicAcpi
 
-; 111  : 	AuSharedDeviceInit();
+; 111  : 	AuDriverLoadMem(info->driver_entry1);
+
+	mov	rax, QWORD PTR info$[rsp]
+	mov	rcx, QWORD PTR [rax+114]
+	call	?AuDriverLoadMem@@YAXPEAE@Z		; AuDriverLoadMem
+$LN4@AuMain:
+
+; 112  : 	for(;;);
+
+	jmp	SHORT $LN4@AuMain
+
+; 113  : 	AuSharedDeviceInit();
 
 	call	?AuSharedDeviceInit@@YAXXZ		; AuSharedDeviceInit
 
-; 112  : 	ahci_initialize();
+; 114  : 	ahci_initialize();
 
 	call	?ahci_initialize@@YAXXZ			; ahci_initialize
 
-; 113  : 	AuVFSInit();
+; 115  : 	AuVFSInit();
 
 	call	?AuVFSInit@@YAXXZ			; AuVFSInit
 
-; 114  : 	
-; 115  : 	AuInitializeScreen(info);
+; 116  : 	
+; 117  : 	AuInitializeScreen(info);
 
 	mov	rcx, QWORD PTR info$[rsp]
 	call	?AuInitializeScreen@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z ; AuInitializeScreen
 
-; 116  : 	AuConsoleInitialize(info);
+; 118  : 	AuConsoleInitialize(info);
 
 	mov	rcx, QWORD PTR info$[rsp]
 	call	?AuConsoleInitialize@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z ; AuConsoleInitialize
 
-; 117  : 	AuSoundInitialize();
+; 119  : 	AuSoundInitialize();
 
 	call	?AuSoundInitialize@@YAXXZ		; AuSoundInitialize
 
-; 118  : 	AuInitializeRTC(); 
+; 120  : 	AuInitializeRTC(); 
 
 	call	?AuInitializeRTC@@YAXXZ			; AuInitializeRTC
 
-; 119  : 
-; 120  : 	AuInitializeMouse();
+; 121  : 
+; 122  : 	AuInitializeMouse();
 
 	call	?AuInitializeMouse@@YAXXZ		; AuInitializeMouse
 
-; 121  : 	AuNetInitialize();
+; 123  : 	AuNetInitialize();
 
 	call	?AuNetInitialize@@YAXXZ			; AuNetInitialize
 
-; 122  : 	
-; 123  : 	/***************************************************
-; 124  : 	 * PHASE - 2
-; 125  : 	 ***************************************************
-; 126  : 	 */
-; 127  : 
-; 128  : 
-; 129  : 	//================================================
-; 130  : 	//! Initialize the scheduler here
-; 131  : 	//!===============================================
-; 132  : 	AuInitializeScheduler();
+; 124  : 	
+; 125  : 	/***************************************************
+; 126  : 	 * PHASE - 2
+; 127  : 	 ***************************************************
+; 128  : 	 */
+; 129  : 
+; 130  : 
+; 131  : 	//================================================
+; 132  : 	//! Initialize the scheduler here
+; 133  : 	//!===============================================
+; 134  : 	AuInitializeScheduler();
 
 	call	?AuInitializeScheduler@@YAXXZ		; AuInitializeScheduler
 
-; 133  : 
-; 134  : 	//Here we initialise all drivers stuffs
-; 135  : 	/* Clear interrupts as scheduler will enable it */
-; 136  : 	x64_cli();
+; 135  : 
+; 136  : 	//Here we initialise all drivers stuffs
+; 137  : 	/* Clear interrupts as scheduler will enable it */
+; 138  : 	x64_cli();
 
 	call	x64_cli
 
-; 137  : 	AuDrvMngrInitialize(info);
+; 139  : 	AuDrvMngrInitialize(info);
 
 	mov	rcx, QWORD PTR info$[rsp]
 	call	?AuDrvMngrInitialize@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z ; AuDrvMngrInitialize
 
-; 138  : 	
-; 139  : 	// Load system known libraries for usermode processes
-; 140  : 	AuSysLibInitialize();
+; 140  : 	
+; 141  : 	// Load system known libraries for usermode processes
+; 142  : 	AuSysLibInitialize();
 
 	call	?AuSysLibInitialize@@YAXXZ		; AuSysLibInitialize
 
-; 141  : 
-; 142  : 
-; 143  : 	AuKeyboardInitialize();
+; 143  : 
+; 144  : 
+; 145  : 	AuKeyboardInitialize();
 
 	call	?AuKeyboardInitialize@@YAXXZ		; AuKeyboardInitialize
 
-; 144  : 	AuPointDevInitialize();
+; 146  : 	AuPointDevInitialize();
 
 	call	?AuPointDevInitialize@@YAXXZ		; AuPointDevInitialize
 
-; 145  : 	
-; 146  : 	// Initialize main ipc manager
-; 147  : 	pri_loop_init();
+; 147  : 	
+; 148  : 	// Initialize main ipc manager
+; 149  : 	pri_loop_init();
 
 	call	?pri_loop_init@@YAXXZ			; pri_loop_init
 
-; 148  : 
-; 149  : 	// Initialize the process list
-; 150  : 	process_list_initialize();
+; 150  : 
+; 151  : 	// Initialize the process list
+; 152  : 	process_list_initialize();
 
 	call	?process_list_initialize@@YAXXZ		; process_list_initialize
 
-; 151  : 	ttype_init();
+; 153  : 	ttype_init();
 
 	call	?ttype_init@@YAXXZ			; ttype_init
 
-; 152  : 
-; 153  : 	/*Initialize other processor */
-; 154  : 	AuInitializeCpu(AuGetNumCPU());	
+; 154  : 
+; 155  : 	/*Initialize other processor */
+; 156  : 	AuInitializeCpu(AuGetNumCPU());	
 
 	call	?AuGetNumCPU@@YAEXZ			; AuGetNumCPU
 	movzx	ecx, al
 	call	?AuInitializeCpu@@YAXE@Z		; AuInitializeCpu
 
-; 155  : 
-; 156  : 	
-; 157  : 	/*Clear the lower half for user space */
-; 158  : 	AuPagingClearLow();
+; 157  : 
+; 158  : 	
+; 159  : 	/*Clear the lower half for user space */
+; 160  : 	AuPagingClearLow();
 
 	call	?AuPagingClearLow@@YAXXZ		; AuPagingClearLow
 
-; 159  : #ifdef ARCH_X64
-; 160  : 
-; 161  : 	printf ("Scheduler Initialized\n");
+; 161  : #ifdef ARCH_X64
+; 162  : 
+; 163  : 	printf ("Scheduler Initialized\n");
 
-	lea	rcx, OFFSET FLAT:$SG5459
+	lea	rcx, OFFSET FLAT:$SG5462
 	call	printf
 
-; 162  : 	int au_status = 0;
+; 164  : 	int au_status = 0;
 
 	mov	DWORD PTR au_status$[rsp], 0
 
-; 163  : 
-; 164  : 	/* start the init process here */
-; 165  : 	au_status = AuCreateProcess ("/init.exe","shell");
+; 165  : 
+; 166  : 	/* start the init process here */
+; 167  : 	au_status = AuCreateProcess ("/init.exe","shell");
 
-	lea	rdx, OFFSET FLAT:$SG5461
-	lea	rcx, OFFSET FLAT:$SG5462
+	lea	rdx, OFFSET FLAT:$SG5464
+	lea	rcx, OFFSET FLAT:$SG5465
 	call	?AuCreateProcess@@YAHPEBDPEAD@Z		; AuCreateProcess
 	mov	DWORD PTR au_status$[rsp], eax
 
-; 166  : 
-; 167  : 	/* start the compositing window manager at id 3 */
-; 168  : 	au_status = AuCreateProcess ("/priwm.exe","priwm");
+; 168  : 
+; 169  : 	/* start the compositing window manager at id 3 */
+; 170  : 	au_status = AuCreateProcess ("/priwm.exe","priwm");
 
-	lea	rdx, OFFSET FLAT:$SG5463
-	lea	rcx, OFFSET FLAT:$SG5464
+	lea	rdx, OFFSET FLAT:$SG5466
+	lea	rcx, OFFSET FLAT:$SG5467
 	call	?AuCreateProcess@@YAHPEBDPEAD@Z		; AuCreateProcess
 	mov	DWORD PTR au_status$[rsp], eax
 
-; 169  : 
-; 170  : 	//! Here start the scheduler (multitasking engine)
-; 171  : 	AuSchedulerStart();
+; 171  : 
+; 172  : 	//! Here start the scheduler (multitasking engine)
+; 173  : 	AuSchedulerStart();
 
 	call	?AuSchedulerStart@@YAXXZ		; AuSchedulerStart
 $LN2@AuMain:
 
-; 172  : #endif
-; 173  : 
-; 174  : 	//! Loop forever
-; 175  : 	while(1) {
+; 174  : #endif
+; 175  : 
+; 176  : 	//! Loop forever
+; 177  : 	while(1) {
 
 	xor	eax, eax
 	cmp	eax, 1
 	je	SHORT $LN1@AuMain
 
-; 176  : 		//!looping looping
-; 177  : 		x64_cli();
+; 178  : 		//!looping looping
+; 179  : 		x64_cli();
 
 	call	x64_cli
 
-; 178  : 		x64_hlt();
+; 180  : 		x64_hlt();
 
 	call	x64_hlt
 
-; 179  : 	}
+; 181  : 	}
 
 	jmp	SHORT $LN2@AuMain
 $LN1@AuMain:
 
-; 180  : }
+; 182  : }
 
 	add	rsp, 56					; 00000038H
 	ret	0

@@ -14,9 +14,8 @@ The kernel used little drivers like ps2 mouse, keyboard and vbe for graphics and
 in the kernel space. In 2021 the the entire system was re-written from scratch with focus on x64 architecture and uefi environment.
 
 Currently the kernel design as hybrid kernel and uses drivers like ps2 mouse, keyboard, acpi, hd-audio, vmware-svga & e1000 network driver.
-Currently, the ACPI subsystem for kernel is in basic level which can shutdown the system and parse the acpi tables. 
-With vmware-svga the graphics capabilities of the system is smoother than the previous kernel. The system uses Compositing Window 
-Manager for graphical display management which is known as 'Quince'{_named after fruit called 'Quince'_}. 
+Currently, the ACPI subsystem for kernel is in basic level which can shutdown the system and parse the acpi tables.The system uses Compositing Window 
+Manager for graphical display management which is known as 'PRIWM'{_named after my dearest one_}. 
 The Compositing Window Manager runs on user-space, which provides off-screen buffers to graphical application that request it. 
 The application and Compositing Window Manager communicate using IPC-Message based channel called Quince Channel.
 The system also provide a very basic Widget Library with {_Button, Menus, Window, EditBox, TextBox, Scrollbars_}.
@@ -30,7 +29,7 @@ The Goal of the project is to produce a high-quality Operating system with full 
 3. A very basic Widget Library
 4. A very basic C Library
 5. TrueType fonts
-6. ACPI
+6. ACPI (basic)
 7. High-Definition Audio
 8. Basic Networking (under development)
 9. Driver Manager (_loading and linking dll files as drivers_)
@@ -39,6 +38,7 @@ The Goal of the project is to produce a high-quality Operating system with full 
 12. Software Audio Mixer 
 13. Dynamic Library (Shared Library)
 14. SSE/SSE2
+15. USB3
 
 ## __Ported Projects__:
 1. FreeType 

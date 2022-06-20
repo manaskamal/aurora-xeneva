@@ -162,7 +162,7 @@ void xhci_event_ring_init (usb_dev_t *dev) {
 	dev->evnt_ring_index = 0;
 
 	dev->rt_regs->intr_reg[0].evtRngSegTabSz = 1;
-	dev->rt_regs->intr_reg[0].evtRngDeqPtrLo =  (event_ring_seg << 4) | (0 << 3);
+	dev->rt_regs->intr_reg[0].evtRngDeqPtrLo =  (event_ring_seg << 4) | (1 << 3);
 	dev->rt_regs->intr_reg[0].evtRngDeqPtrHi = (event_ring_seg >> 32);
 	dev->rt_regs->intr_reg[0].evtRngSegBaseLo = e_ring_seg_table;
 	dev->rt_regs->intr_reg[0].evtRngSegBaseHi = (e_ring_seg_table >> 32);

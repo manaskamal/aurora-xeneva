@@ -4,12 +4,12 @@ Aurora Kernel TODO:
 Drivers
 ----------------------------------
 NVMe
-AHCI     (done)
+AHCI                    (done)
 E1000 Network Driver(MUST)
-USB 3.0 (xHCI)
+USB 3.0 (xHCI)          (done)
 USB Mass-Storage
-FAT32 Write support   (done)
-HDAudio   (done)
+FAT32 Write support     (done)
+HDAudio                 (done)
 USB Camera (WebCam)
 Bluetooth
 Wifi 
