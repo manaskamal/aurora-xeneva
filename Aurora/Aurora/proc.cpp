@@ -144,13 +144,12 @@ uint64_t *create_user_stack (process_t *proc, uint64_t* cr3) {
  */
 uint64_t* create_inc_stack (uint64_t* cr3) {
 #define INC_STACK 0x0000010000000000 
-	uint64_t location = INC_STACK ; //+ user_stack_index;
+	uint64_t location = (uint64_t)AuGetFreePage(0,true,(void*)INC_STACK);
 
 	for (int i = 0; i < (2*1024*1024) / 4096; i++) {
 		AuMapPageEx(cr3,(uint64_t)AuPmmngrAlloc(), location + i * 4096, PAGING_USER);
 	}
 
-	//user_stack_index += 0x100000;
 	return (uint64_t*)(INC_STACK + (1*1024*1024));
 }
 
@@ -292,7 +291,7 @@ int AuCreateProcess(const char* filename, char* procname) {
 	//strcpy (process->name,procname);
 	process->name = procname;
 	process->entry_point = ent;
-
+	process->num_thread = 0;
 	process->cr3 = cr3;
 	process->image_base = _image_base_;
 	process->stack = stack;
@@ -305,7 +304,9 @@ int AuCreateProcess(const char* filename, char* procname) {
 	//! Create and thread and start scheduling when scheduler starts */
 	thread_t *t = create_user_thread(ent,stack,(uint64_t)cr3,procname,0);
 	//! add the process to process manager
-	process->thread_data_pointer = t;
+	process->threads[process->num_thread] = t;
+	process->num_thread++;
+	process->thread_data_pointer = t; //the root thread
     add_process(process);
 
 	//free(file);
@@ -323,7 +324,6 @@ void kill_process () {
 	uint64_t  init_stack = proc->stack - (2*1024*1024);
 	uint64_t image_base = proc->image_base;
 	uint64_t *cr3 = (uint64_t*)remove_thread->cr3;
-	_debug_print_ ("CR333333 -> %x \r\n", cr3);
 	
 	int timer = find_timer_id (remove_thread->id);
 
@@ -385,6 +385,8 @@ void kill_process () {
 
 	task_delete (remove_thread);
 	free(remove_thread);
+
+	/* Here we need to free all child threads */
 
 	free_kstack(cr3);
 	AuPmmngrFree((void*)cr3);

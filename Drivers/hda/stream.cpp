@@ -77,6 +77,7 @@ void hda_init_output_stream () {
 	
 
 	_aud_outb_ (REG_O0_CTLU, (1<<4));
+	_aud_outb_ (REG_O0_CTLL, (1<<18));
 
 	_aud_outl_ (REG_O0_CBL,BDL_SIZE*BUFFER_SIZE);
 	_aud_outw_(REG_O0_STLVI, BDL_SIZE-1);
@@ -91,6 +92,7 @@ void hda_init_output_stream () {
 	_aud_outb_ (REG_O0_STS, HDAC_SDSTS_DESE | HDAC_SDSTS_FIFOE | HDAC_SDSTS_BCIS);
 
 	uint64_t* dma_pos = (uint64_t*)p2v((size_t)AuPmmngrAlloc());
+	memset(dma_pos, 0, 4096);
 	for (int i = 0; i < 8; i++) {
 		dma_pos[i] = 0;
 	}

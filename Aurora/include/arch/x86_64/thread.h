@@ -140,6 +140,16 @@ extern thread_t* create_user_thread (void (*entry) (void*),uint64_t stack,uint64
 //! @param priority -- (currently not used)priority of the thread 
 AU_EXTERN AU_EXPORT thread_t* create_kthread (void (*entry) (void), uint64_t stack,uint64_t cr3, char name[8], uint8_t priority);
 
+/*
+ * create_child_thread -- creates child user thread
+ * @param parent -- parent thread
+ * @param entry -- entry point of the thread
+ * @param stack -- thread stack
+ * @param cr3 -- Parent user address space
+ * @param name[8] -- Current thread name
+ */
+AU_EXTERN AU_EXPORT thread_t* create_child_thread (thread_t *parent, void (*entry)(void*),uint64_t stack, char name[8]);
+
 //! block_thread -- blocks a thread entry
 //! @param thread -- thread address to block
 extern void block_thread (thread_t *thread);

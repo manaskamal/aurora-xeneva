@@ -15,20 +15,20 @@ _xsave	DB	01H DUP (?)
 pit_tick DD	01H DUP (?)
 _BSS	ENDS
 CONST	SEGMENT
-$SG3597	DB	'*** [x64_idt] x64_default_handler: Unhandled Exception *'
+$SG3603	DB	'*** [x64_idt] x64_default_handler: Unhandled Exception *'
 	DB	'** ', 0aH, 00H
 	ORG $+3
-$SG3657	DB	'IDT initialized', 0aH, 00H
+$SG3663	DB	'IDT initialized', 0aH, 00H
 	ORG $+7
-$SG3658	DB	'Exception initialized', 0aH, 00H
+$SG3664	DB	'Exception initialized', 0aH, 00H
 	ORG $+1
-$SG3659	DB	'APIC initialized', 0aH, 00H
+$SG3665	DB	'APIC initialized', 0aH, 00H
 	ORG $+6
-$SG3661	DB	'EFER.SYSCALL enabled', 0aH, 00H
+$SG3667	DB	'EFER.SYSCALL enabled', 0aH, 00H
 	ORG $+2
-$SG3662	DB	'User Land Initialized', 0aH, 00H
+$SG3668	DB	'User Land Initialized', 0aH, 00H
 	ORG $+1
-$SG3663	DB	'System call initialized', 0aH, 00H
+$SG3669	DB	'System call initialized', 0aH, 00H
 CONST	ENDS
 PUBLIC	?x86_64_gdt_init@@YAXXZ				; x86_64_gdt_init
 PUBLIC	setvect
@@ -229,7 +229,7 @@ $LN5:
 
 ; 157  : 	printf("*** [x64_idt] x64_default_handler: Unhandled Exception *** \n");
 
-	lea	rcx, OFFSET FLAT:$SG3597
+	lea	rcx, OFFSET FLAT:$SG3603
 	call	printf
 $LN2@default_ir:
 
@@ -986,7 +986,7 @@ $LN3:
 ; 260  : 	
 ; 261  : 	debug_print ("IDT initialized\n");
 
-	lea	rcx, OFFSET FLAT:$SG3657
+	lea	rcx, OFFSET FLAT:$SG3663
 	call	?debug_print@@YAXPEBDZZ			; debug_print
 
 ; 262  : 
@@ -1002,7 +1002,7 @@ $LN3:
 ; 266  : 
 ; 267  : 	debug_print ("Exception initialized\n");
 
-	lea	rcx, OFFSET FLAT:$SG3658
+	lea	rcx, OFFSET FLAT:$SG3664
 	call	?debug_print@@YAXPEBDZZ			; debug_print
 
 ; 268  : 	
@@ -1021,7 +1021,7 @@ $LN3:
 ; 277  : 	
 ; 278  : 	debug_print ("APIC initialized\n");
 
-	lea	rcx, OFFSET FLAT:$SG3659
+	lea	rcx, OFFSET FLAT:$SG3665
 	call	?debug_print@@YAXPEBDZZ			; debug_print
 
 ; 279  : 
@@ -1056,7 +1056,7 @@ $LN3:
 ; 288  : 
 ; 289  : 	debug_print ("EFER.SYSCALL enabled\n");
 
-	lea	rcx, OFFSET FLAT:$SG3661
+	lea	rcx, OFFSET FLAT:$SG3667
 	call	?debug_print@@YAXPEBDZZ			; debug_print
 
 ; 290  : 	//! initialize the user land environment
@@ -1068,7 +1068,7 @@ $LN3:
 ; 292  : 
 ; 293  : 	debug_print ("User Land Initialized\n");
 
-	lea	rcx, OFFSET FLAT:$SG3662
+	lea	rcx, OFFSET FLAT:$SG3668
 	call	?debug_print@@YAXPEBDZZ			; debug_print
 
 ; 294  : 	//! initialize the syscall entries
@@ -1079,7 +1079,7 @@ $LN3:
 ; 296  : 
 ; 297  : 	debug_print ("System call initialized\n");
 
-	lea	rcx, OFFSET FLAT:$SG3663
+	lea	rcx, OFFSET FLAT:$SG3669
 	call	?debug_print@@YAXPEBDZZ			; debug_print
 
 ; 298  : 

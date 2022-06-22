@@ -10,17 +10,18 @@ PUBLIC	?create_uthread@@YAXP6AXPEAX@ZPEAD@Z		; create_uthread
 PUBLIC	?sys_sleep@@YAX_K@Z				; sys_sleep
 EXTRN	p2v:PROC
 EXTRN	x64_cli:PROC
-EXTRN	x64_read_cr3:PROC
-EXTRN	?AuCreateAddressSpace@@YAPEA_KXZ:PROC		; AuCreateAddressSpace
+EXTRN	create_child_thread:PROC
 EXTRN	get_current_thread:PROC
 EXTRN	force_sched:PROC
 EXTRN	sleep_thread:PROC
+EXTRN	?create_inc_stack@@YAPEA_KPEA_K@Z:PROC		; create_inc_stack
+EXTRN	?get_current_process@@YAPEAU_process_@@XZ:PROC	; get_current_process
 pdata	SEGMENT
 $pdata$?get_thread_id@@YAGXZ DD imagerel $LN3
 	DD	imagerel $LN3+26
 	DD	imagerel $unwind$?get_thread_id@@YAGXZ
 $pdata$?create_uthread@@YAXP6AXPEAX@ZPEAD@Z DD imagerel $LN3
-	DD	imagerel $LN3+52
+	DD	imagerel $LN3+149
 	DD	imagerel $unwind$?create_uthread@@YAXP6AXPEAX@ZPEAD@Z
 $pdata$?sys_sleep@@YAX_K@Z DD imagerel $LN3
 	DD	imagerel $LN3+49
@@ -30,7 +31,7 @@ xdata	SEGMENT
 $unwind$?get_thread_id@@YAGXZ DD 010401H
 	DD	04204H
 $unwind$?create_uthread@@YAXP6AXPEAX@ZPEAD@Z DD 010e01H
-	DD	0620eH
+	DD	0820eH
 $unwind$?sys_sleep@@YAX_K@Z DD 010901H
 	DD	06209H
 xdata	ENDS
@@ -41,32 +42,32 @@ t$ = 32
 ms$ = 64
 ?sys_sleep@@YAX_K@Z PROC				; sys_sleep
 
-; 44   : void sys_sleep (uint64_t ms) {
+; 55   : void sys_sleep (uint64_t ms) {
 
 $LN3:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 56					; 00000038H
 
-; 45   : 	x64_cli();
+; 56   : 	x64_cli();
 
 	call	x64_cli
 
-; 46   : 	thread_t* t = get_current_thread();
+; 57   : 	thread_t* t = get_current_thread();
 
 	call	get_current_thread
 	mov	QWORD PTR t$[rsp], rax
 
-; 47   : 	sleep_thread (t, ms);
+; 58   : 	sleep_thread (t, ms);
 
 	mov	rdx, QWORD PTR ms$[rsp]
 	mov	rcx, QWORD PTR t$[rsp]
 	call	sleep_thread
 
-; 48   : 	force_sched();
+; 59   : 	force_sched();
 
 	call	force_sched
 
-; 49   : }
+; 60   : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -75,53 +76,71 @@ _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\sysserv\systhread.cpp
 _TEXT	SEGMENT
-old_cr3$ = 32
-new_cr3$ = 40
-entry$ = 64
-name$ = 72
+proc$ = 32
+st$ = 40
+t$ = 48
+entry$ = 80
+name$ = 88
 ?create_uthread@@YAXP6AXPEAX@ZPEAD@Z PROC		; create_uthread
 
-; 22   : void create_uthread (void (*entry) (void*), char* name) {
+; 41   : void create_uthread (void (*entry) (void*), char* name) {
 
 $LN3:
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
-	sub	rsp, 56					; 00000038H
+	sub	rsp, 72					; 00000048H
 
-; 23   : 	x64_cli();
+; 42   : 	x64_cli();
 
 	call	x64_cli
 
-; 24   : 	/*
-; 25   : 	 * Not implemented properly
-; 26   : 	 *
-; 27   : 	 * TODO: Update the process structure and add an
-; 28   : 	 * entry for the new user thread!!
-; 29   : 	 */  
-; 30   : 	uint64_t *old_cr3 = (uint64_t*)p2v(x64_read_cr3());
+; 43   : 	process_t *proc = get_current_process();
 
-	call	x64_read_cr3
-	mov	rcx, rax
+	call	?get_current_process@@YAPEAU_process_@@XZ ; get_current_process
+	mov	QWORD PTR proc$[rsp], rax
+
+; 44   : 	uint64_t st = (uint64_t)create_inc_stack((uint64_t*)p2v((size_t)get_current_thread()->cr3));
+
+	call	get_current_thread
+	mov	rcx, QWORD PTR [rax+192]
 	call	p2v
-	mov	QWORD PTR old_cr3$[rsp], rax
+	mov	rcx, rax
+	call	?create_inc_stack@@YAPEA_KPEA_K@Z	; create_inc_stack
+	mov	QWORD PTR st$[rsp], rax
 
-; 31   : 	uint64_t* new_cr3 = (uint64_t*)AuCreateAddressSpace();
+; 45   : 
+; 46   : 	thread_t * t = create_child_thread(get_current_thread(),entry,(uint64_t)st,name);
 
-	call	?AuCreateAddressSpace@@YAPEA_KXZ	; AuCreateAddressSpace
-	mov	QWORD PTR new_cr3$[rsp], rax
+	call	get_current_thread
+	mov	r9, QWORD PTR name$[rsp]
+	mov	r8, QWORD PTR st$[rsp]
+	mov	rdx, QWORD PTR entry$[rsp]
+	mov	rcx, rax
+	call	create_child_thread
+	mov	QWORD PTR t$[rsp], rax
 
-; 32   : 	
-; 33   : 
-; 34   : 
-; 35   : 	//uint64_t stack = (uint64_t)p2v((size_t)AuPmmngrAlloc()); //create_inc_stack(old_cr3);
-; 36   : 
-; 37   : 
-; 38   : 	/* Create the new user thread */
-; 39   : 	//thread_t * t = create_user_thread(entry,stack + 4096,(uint64_t)new_cr3,name,1);
-; 40   : 	return;
-; 41   : }
+; 47   : 	//uint64_t stack = (uint64_t)p2v((size_t)AuPmmngrAlloc()); //create_inc_stack(old_cr3);
+; 48   : 	proc->threads[proc->num_thread] = t;
 
-	add	rsp, 56					; 00000038H
+	mov	rax, QWORD PTR proc$[rsp]
+	movzx	eax, BYTE PTR [rax+2072]
+	mov	rcx, QWORD PTR proc$[rsp]
+	mov	rdx, QWORD PTR t$[rsp]
+	mov	QWORD PTR [rcx+rax*8+24], rdx
+
+; 49   : 	proc->num_thread++;
+
+	mov	rax, QWORD PTR proc$[rsp]
+	movzx	eax, BYTE PTR [rax+2072]
+	inc	al
+	mov	rcx, QWORD PTR proc$[rsp]
+	mov	BYTE PTR [rcx+2072], al
+
+; 50   : 	
+; 51   : 	return;
+; 52   : }
+
+	add	rsp, 72					; 00000048H
 	ret	0
 ?create_uthread@@YAXP6AXPEAX@ZPEAD@Z ENDP		; create_uthread
 _TEXT	ENDS
@@ -130,21 +149,21 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 ?get_thread_id@@YAGXZ PROC				; get_thread_id
 
-; 16   : uint16_t get_thread_id () {
+; 35   : uint16_t get_thread_id () {
 
 $LN3:
 	sub	rsp, 40					; 00000028H
 
-; 17   : 	x64_cli ();
+; 36   : 	x64_cli ();
 
 	call	x64_cli
 
-; 18   : 	return get_current_thread()->id;
+; 37   : 	return get_current_thread()->id;
 
 	call	get_current_thread
 	movzx	eax, WORD PTR [rax+234]
 
-; 19   : }
+; 38   : }
 
 	add	rsp, 40					; 00000028H
 	ret	0

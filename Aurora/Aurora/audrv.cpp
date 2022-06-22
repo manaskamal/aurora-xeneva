@@ -266,7 +266,6 @@ void AuDrvMngrInitialize (KERNEL_BOOT_INFO *info) {
 
 
 	free(file);	
-	_debug_print_  ("Freeing file \r\n");
 }
 
 

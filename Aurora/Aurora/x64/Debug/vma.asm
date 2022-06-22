@@ -14,16 +14,16 @@ EXTRN	free:PROC
 EXTRN	?get_current_process@@YAPEAU_process_@@XZ:PROC	; get_current_process
 pdata	SEGMENT
 $pdata$?AuRemoveVMArea@@YAXPEAU_process_@@PEAU_vma_area_@@@Z DD imagerel $LN8
-	DD	imagerel $LN8+166
+	DD	imagerel $LN8+184
 	DD	imagerel $unwind$?AuRemoveVMArea@@YAXPEAU_process_@@PEAU_vma_area_@@@Z
 $pdata$?AuFindVMA@@YAPEAU_vma_area_@@_K@Z DD imagerel $LN7
-	DD	imagerel $LN7+104
+	DD	imagerel $LN7+107
 	DD	imagerel $unwind$?AuFindVMA@@YAPEAU_vma_area_@@_K@Z
 $pdata$?AuCleanVMA@@YAXPEAU_process_@@@Z DD imagerel $LN6
-	DD	imagerel $LN6+64
+	DD	imagerel $LN6+67
 	DD	imagerel $unwind$?AuCleanVMA@@YAXPEAU_process_@@@Z
 $pdata$?AuFindVMAUniqueId@@YAPEAU_vma_area_@@I@Z DD imagerel $LN7
-	DD	imagerel $LN7+86
+	DD	imagerel $LN7+89
 	DD	imagerel $unwind$?AuFindVMAUniqueId@@YAPEAU_vma_area_@@I@Z
 pdata	ENDS
 xdata	SEGMENT
@@ -58,7 +58,7 @@ $LN7:
 ; 99   : 	for (au_vm_area_t *vma = proc->vma_area; vma != NULL; vma = vma->next) {
 
 	mov	rax, QWORD PTR proc$[rsp]
-	mov	rax, QWORD PTR [rax+80]
+	mov	rax, QWORD PTR [rax+2128]
 	mov	QWORD PTR vma$1[rsp], rax
 	jmp	SHORT $LN4@AuFindVMAU
 $LN3@AuFindVMAU:
@@ -115,7 +115,7 @@ $LN6:
 ; 112  : 	for (au_vm_area_t *vma = proc->vma_area; vma != NULL; vma = vma->next)
 
 	mov	rax, QWORD PTR proc$[rsp]
-	mov	rax, QWORD PTR [rax+80]
+	mov	rax, QWORD PTR [rax+2128]
 	mov	QWORD PTR vma$1[rsp], rax
 	jmp	SHORT $LN3@AuCleanVMA
 $LN2@AuCleanVMA:
@@ -161,7 +161,7 @@ $LN7:
 ; 83   : 	for (au_vm_area_t *vma = proc->vma_area; vma != NULL; vma = vma->next) {
 
 	mov	rax, QWORD PTR proc$[rsp]
-	mov	rax, QWORD PTR [rax+80]
+	mov	rax, QWORD PTR [rax+2128]
 	mov	QWORD PTR vma$1[rsp], rax
 	jmp	SHORT $LN4@AuFindVMA
 $LN3@AuFindVMA:
@@ -223,7 +223,7 @@ $LN8:
 ; 59   : 	if (proc->vma_area == NULL)
 
 	mov	rax, QWORD PTR proc$[rsp]
-	cmp	QWORD PTR [rax+80], 0
+	cmp	QWORD PTR [rax+2128], 0
 	jne	SHORT $LN5@AuRemoveVM
 
 ; 60   : 		return;
@@ -235,17 +235,17 @@ $LN5@AuRemoveVM:
 ; 62   : 	if (vma == proc->vma_area) {
 
 	mov	rax, QWORD PTR proc$[rsp]
-	mov	rax, QWORD PTR [rax+80]
+	mov	rax, QWORD PTR [rax+2128]
 	cmp	QWORD PTR vma$[rsp], rax
 	jne	SHORT $LN4@AuRemoveVM
 
 ; 63   : 		proc->vma_area = proc->vma_area->next;
 
 	mov	rax, QWORD PTR proc$[rsp]
-	mov	rax, QWORD PTR [rax+80]
+	mov	rax, QWORD PTR [rax+2128]
 	mov	rcx, QWORD PTR proc$[rsp]
 	mov	rax, QWORD PTR [rax+56]
-	mov	QWORD PTR [rcx+80], rax
+	mov	QWORD PTR [rcx+2128], rax
 
 ; 64   : 	} else {
 
@@ -266,7 +266,7 @@ $LN3@AuRemoveVM:
 ; 68   : 	if (vma == proc->last_vma) {
 
 	mov	rax, QWORD PTR proc$[rsp]
-	mov	rax, QWORD PTR [rax+88]
+	mov	rax, QWORD PTR [rax+2136]
 	cmp	QWORD PTR vma$[rsp], rax
 	jne	SHORT $LN2@AuRemoveVM
 
@@ -275,7 +275,7 @@ $LN3@AuRemoveVM:
 	mov	rax, QWORD PTR proc$[rsp]
 	mov	rcx, QWORD PTR vma$[rsp]
 	mov	rcx, QWORD PTR [rcx+64]
-	mov	QWORD PTR [rax+88], rcx
+	mov	QWORD PTR [rax+2136], rcx
 
 ; 70   : 	} else {
 
@@ -331,21 +331,21 @@ vma$ = 16
 ; 43   : 	if (proc->vma_area == NULL){
 
 	mov	rax, QWORD PTR proc$[rsp]
-	cmp	QWORD PTR [rax+80], 0
+	cmp	QWORD PTR [rax+2128], 0
 	jne	SHORT $LN2@AuInsertVM
 
 ; 44   : 		proc->vma_area = vma;
 
 	mov	rax, QWORD PTR proc$[rsp]
 	mov	rcx, QWORD PTR vma$[rsp]
-	mov	QWORD PTR [rax+80], rcx
+	mov	QWORD PTR [rax+2128], rcx
 
 ; 45   : 		proc->last_vma = proc->vma_area;
 
 	mov	rax, QWORD PTR proc$[rsp]
 	mov	rcx, QWORD PTR proc$[rsp]
-	mov	rcx, QWORD PTR [rcx+80]
-	mov	QWORD PTR [rax+88], rcx
+	mov	rcx, QWORD PTR [rcx+2128]
+	mov	QWORD PTR [rax+2136], rcx
 
 ; 46   : 	}else {
 
@@ -355,7 +355,7 @@ $LN2@AuInsertVM:
 ; 47   : 		proc->last_vma->next = vma;
 
 	mov	rax, QWORD PTR proc$[rsp]
-	mov	rax, QWORD PTR [rax+88]
+	mov	rax, QWORD PTR [rax+2136]
 	mov	rcx, QWORD PTR vma$[rsp]
 	mov	QWORD PTR [rax+56], rcx
 
@@ -363,14 +363,14 @@ $LN2@AuInsertVM:
 
 	mov	rax, QWORD PTR vma$[rsp]
 	mov	rcx, QWORD PTR proc$[rsp]
-	mov	rcx, QWORD PTR [rcx+88]
+	mov	rcx, QWORD PTR [rcx+2136]
 	mov	QWORD PTR [rax+64], rcx
 
 ; 49   : 		proc->last_vma = vma;
 
 	mov	rax, QWORD PTR proc$[rsp]
 	mov	rcx, QWORD PTR vma$[rsp]
-	mov	QWORD PTR [rax+88], rcx
+	mov	QWORD PTR [rax+2136], rcx
 $LN1@AuInsertVM:
 
 ; 50   : 	}

@@ -6,26 +6,98 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 PUBLIC	?allocate_kstack@@YA_KPEA_K@Z			; allocate_kstack
+PUBLIC	?allocate_kstack_child@@YA_KPEA_K@Z		; allocate_kstack_child
 PUBLIC	?free_kstack@@YAXPEA_K@Z			; free_kstack
+PUBLIC	?free_kstack_child@@YAXPEA_K_K@Z		; free_kstack_child
 EXTRN	AuPmmngrAlloc:PROC
 EXTRN	AuPmmngrFree:PROC
 EXTRN	v2p:PROC
 EXTRN	?AuMapPageEx@@YA_NPEA_K_K1E@Z:PROC		; AuMapPageEx
 EXTRN	AuGetPhysicalAddress:PROC
+EXTRN	AuGetFreePage:PROC
 pdata	SEGMENT
 $pdata$?allocate_kstack@@YA_KPEA_K@Z DD imagerel $LN6
 	DD	imagerel $LN6+122
 	DD	imagerel $unwind$?allocate_kstack@@YA_KPEA_K@Z
+$pdata$?allocate_kstack_child@@YA_KPEA_K@Z DD imagerel $LN6
+	DD	imagerel $LN6+132
+	DD	imagerel $unwind$?allocate_kstack_child@@YA_KPEA_K@Z
 $pdata$?free_kstack@@YAXPEA_K@Z DD imagerel $LN6
 	DD	imagerel $LN6+117
 	DD	imagerel $unwind$?free_kstack@@YAXPEA_K@Z
+$pdata$?free_kstack_child@@YAXPEA_K_K@Z DD imagerel $LN6
+	DD	imagerel $LN6+107
+	DD	imagerel $unwind$?free_kstack_child@@YAXPEA_K_K@Z
 pdata	ENDS
 xdata	SEGMENT
 $unwind$?allocate_kstack@@YA_KPEA_K@Z DD 010901H
 	DD	08209H
+$unwind$?allocate_kstack_child@@YA_KPEA_K@Z DD 010901H
+	DD	08209H
 $unwind$?free_kstack@@YAXPEA_K@Z DD 010901H
 	DD	08209H
+$unwind$?free_kstack_child@@YAXPEA_K_K@Z DD 010e01H
+	DD	0620eH
 xdata	ENDS
+; Function compile flags: /Odtpy
+; File e:\xeneva project\xeneva\aurora\aurora\arch\x86_64\kstack.cpp
+_TEXT	SEGMENT
+i$1 = 32
+p$2 = 40
+cr3$ = 64
+location$ = 72
+?free_kstack_child@@YAXPEA_K_K@Z PROC			; free_kstack_child
+
+; 88   : void free_kstack_child (uint64_t *cr3, uint64_t location) {
+
+$LN6:
+	mov	QWORD PTR [rsp+16], rdx
+	mov	QWORD PTR [rsp+8], rcx
+	sub	rsp, 56					; 00000038H
+
+; 89   : 	for (int i = 0; i < 8192 / 4096; i++) {
+
+	mov	DWORD PTR i$1[rsp], 0
+	jmp	SHORT $LN3@free_kstac
+$LN2@free_kstac:
+	mov	eax, DWORD PTR i$1[rsp]
+	inc	eax
+	mov	DWORD PTR i$1[rsp], eax
+$LN3@free_kstac:
+	cmp	DWORD PTR i$1[rsp], 2
+	jge	SHORT $LN1@free_kstac
+
+; 90   : 		void* p = AuGetPhysicalAddress((size_t)cr3,location + i * 4096);
+
+	mov	eax, DWORD PTR i$1[rsp]
+	imul	eax, 4096				; 00001000H
+	cdqe
+	mov	rcx, QWORD PTR location$[rsp]
+	add	rcx, rax
+	mov	rax, rcx
+	mov	rdx, rax
+	mov	rcx, QWORD PTR cr3$[rsp]
+	call	AuGetPhysicalAddress
+	mov	QWORD PTR p$2[rsp], rax
+
+; 91   : 		AuPmmngrFree((void*)v2p((size_t)p));
+
+	mov	rcx, QWORD PTR p$2[rsp]
+	call	v2p
+	mov	rcx, rax
+	call	AuPmmngrFree
+
+; 92   : 	}
+
+	jmp	SHORT $LN2@free_kstac
+$LN1@free_kstac:
+
+; 93   : }
+
+	add	rsp, 56					; 00000038H
+	ret	0
+?free_kstack_child@@YAXPEA_K_K@Z ENDP			; free_kstack_child
+_TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\arch\x86_64\kstack.cpp
 _TEXT	SEGMENT
@@ -95,6 +167,77 @@ $LN1@free_kstac:
 	add	rsp, 72					; 00000048H
 	ret	0
 ?free_kstack@@YAXPEA_K@Z ENDP				; free_kstack
+_TEXT	ENDS
+; Function compile flags: /Odtpy
+; File e:\xeneva project\xeneva\aurora\aurora\arch\x86_64\kstack.cpp
+_TEXT	SEGMENT
+i$1 = 32
+location$ = 40
+p$2 = 48
+cr3$ = 80
+?allocate_kstack_child@@YA_KPEA_K@Z PROC		; allocate_kstack_child
+
+; 73   : uint64_t allocate_kstack_child (uint64_t *cr3) {
+
+$LN6:
+	mov	QWORD PTR [rsp+8], rcx
+	sub	rsp, 72					; 00000048H
+
+; 74   : 	uint64_t location = (uint64_t)AuGetFreePage(0,true,(void*)KSTACK_START);
+
+	mov	r8, -5497558138880			; fffffb0000000000H
+	mov	dl, 1
+	xor	ecx, ecx
+	call	AuGetFreePage
+	mov	QWORD PTR location$[rsp], rax
+
+; 75   : 	for (int i = 0; i < 8192/4096; i++) {
+
+	mov	DWORD PTR i$1[rsp], 0
+	jmp	SHORT $LN3@allocate_k
+$LN2@allocate_k:
+	mov	eax, DWORD PTR i$1[rsp]
+	inc	eax
+	mov	DWORD PTR i$1[rsp], eax
+$LN3@allocate_k:
+	cmp	DWORD PTR i$1[rsp], 2
+	jge	SHORT $LN1@allocate_k
+
+; 76   : 		void* p = AuPmmngrAlloc();
+
+	call	AuPmmngrAlloc
+	mov	QWORD PTR p$2[rsp], rax
+
+; 77   : 		AuMapPageEx (cr3,(uint64_t)p,location + i * 4096, 0);
+
+	mov	eax, DWORD PTR i$1[rsp]
+	imul	eax, 4096				; 00001000H
+	cdqe
+	mov	rcx, QWORD PTR location$[rsp]
+	add	rcx, rax
+	mov	rax, rcx
+	xor	r9d, r9d
+	mov	r8, rax
+	mov	rdx, QWORD PTR p$2[rsp]
+	mov	rcx, QWORD PTR cr3$[rsp]
+	call	?AuMapPageEx@@YA_NPEA_K_K1E@Z		; AuMapPageEx
+
+; 78   : 	}
+
+	jmp	SHORT $LN2@allocate_k
+$LN1@allocate_k:
+
+; 79   : 	
+; 80   : 	return (location + 8192);
+
+	mov	rax, QWORD PTR location$[rsp]
+	add	rax, 8192				; 00002000H
+
+; 81   : }
+
+	add	rsp, 72					; 00000048H
+	ret	0
+?allocate_kstack_child@@YA_KPEA_K@Z ENDP		; allocate_kstack_child
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\arch\x86_64\kstack.cpp

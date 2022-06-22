@@ -294,6 +294,7 @@ typedef struct _usb_dev_ {
 	uint64_t* event_ring_segment;
 	unsigned evnt_ring_index;
 	unsigned evnt_ring_cycle;
+	unsigned evnt_ring_max;
 }usb_dev_t;
 
 
@@ -326,6 +327,23 @@ extern void xhci_protocol_init (usb_dev_t *dev);
  * @param dev -- Pointer to usb device
  */
 extern void xhci_event_ring_init (usb_dev_t *dev);
+
+/*
+ * xhci_poll_event -- waits for an event to occur on interrupts
+ * @param usb_device -- pointer to usb device structure
+ * @param trb_type -- type of trb to look
+ * @return trb_event_index -- index of the trb on event_ring_segment
+ */
+int xhci_poll_event (usb_dev_t* usb_device, int trb_type);
+
+/*
+ * xhci_send_command_multiple -- sends multiple commands to the command ring
+ * @param dev -- Pointer to usb structure
+ * @param trb -- TRB address containing multiple TRBs
+ * @param num_count -- counts of TRB to send
+ */
+void xhci_send_command_multiple (usb_dev_t* dev, xhci_trb_t* trb, int num_count);
+
 
 /*
  * xhci_send_command -- Sends command to USB device through XHCI

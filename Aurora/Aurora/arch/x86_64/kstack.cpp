@@ -64,3 +64,30 @@ void free_kstack (uint64_t *cr3) {
 		AuPmmngrFree((void*)v2p((size_t)p));
 	}
 }
+
+
+/*
+ * Allocate's stack for child threads
+ * @param -- parent thread Address Space
+ */
+uint64_t allocate_kstack_child (uint64_t *cr3) {
+	uint64_t location = (uint64_t)AuGetFreePage(0,true,(void*)KSTACK_START);
+	for (int i = 0; i < 8192/4096; i++) {
+		void* p = AuPmmngrAlloc();
+		AuMapPageEx (cr3,(uint64_t)p,location + i * 4096, 0);
+	}
+	
+	return (location + 8192);
+}
+
+/*
+ * free_kstack_child -- free up child kernel stacks
+ * @param cr3 -- Parent thread address space
+ * @param location -- start of stack address
+ */
+void free_kstack_child (uint64_t *cr3, uint64_t location) {
+	for (int i = 0; i < 8192 / 4096; i++) {
+		void* p = AuGetPhysicalAddress((size_t)cr3,location + i * 4096);
+		AuPmmngrFree((void*)v2p((size_t)p));
+	}
+}

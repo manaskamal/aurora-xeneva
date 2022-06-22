@@ -290,6 +290,9 @@ AU_EXTERN AU_EXPORT int AuDriverUnload(){
 	return 0;
 }
 
+
+#define HDAC_INTSTS_SIS_MASK		0x3fffffff
+
 void hda_handler (size_t v, void* p) {
 //	AuInterruptEnd(0);
 	AuDisableInterupts();
@@ -297,24 +300,33 @@ void hda_handler (size_t v, void* p) {
 	uint32_t isr = _aud_inl_(INTSTS);
 	uint8_t sts = _aud_inb_(REG_O0_STS);
 	
-
-	if (sts & 0x4) {
-		uint64_t *dma = (uint64_t*)hd_audio.dma_pos_buff;
-		uint32_t pos = dma[4] & 0xffffffff;
-		pos /= BUFFER_SIZE;
-		pos %= BDL_SIZE;
-		
-		//printf("HDA Buffer completed \r\n");
-		AuSoundRequestNext((uint64_t*)(hd_audio.sample_buffer + pos * BUFFER_SIZE));
-		/*pos++;
-		pos %= BDL_SIZE;
-		_debug_print_ ("HDA_interrupt pos -> %d, buffer-> %x \r\n", pos,(hd_audio.sample_buffer + pos * BUFFER_SIZE));
-		AuSoundRequestNext((uint64_t*)(hd_audio.sample_buffer + pos * BUFFER_SIZE));*/
-	
+	if (isr & HDAC_INTSTS_SIS_MASK) {
+		if (sts & 0x4) {
+			uint64_t *dma = (uint64_t*)hd_audio.dma_pos_buff;
+			uint32_t pos = dma[4] & 0xffffffff;
+			pos /= BUFFER_SIZE;
+			pos %= BDL_SIZE;
+			//printf("HDA Buffer completed \r\n");
+			AuSoundRequestNext((uint64_t*)(hd_audio.sample_buffer + pos * BUFFER_SIZE));
+			/*pos++;
+			pos %= BDL_SIZE;
+			_debug_print_ ("HDA_interrupt pos -> %d, buffer-> %x \r\n", pos,(hd_audio.sample_buffer + pos * BUFFER_SIZE));
+			AuSoundRequestNext((uint64_t*)(hd_audio.sample_buffer + pos * BUFFER_SIZE));*/
+		}
+		if (sts & (1<<5)) {
+			_debug_print_ ("[HDAudio]: FIFO Ready error \r\n");
+		}else if (sts & (1<<4)) {
+			_debug_print_ ("[HDAudio]: Descriptor Error \r\n");
+		}else if (sts & (1<<3)) {
+			_debug_print_("[HDAudio]: FIFO ERROR \r\n");
+		}
+		_aud_outb_ (REG_O0_STS,sts);
 	}
 
+	
 
-    _aud_outb_ (REG_O0_STS,sts);
+
+ 
     _aud_outl_(INTSTS, isr);
 	
 	
@@ -484,10 +496,10 @@ void hda_set_output_nid(uint16_t nid, uint8_t codec, uint32_t amp_gain) {
 
 void widget_init_output () {
 	int codec, nid = 0;
-	if (codec_initialize_output) {
+	/*if (codec_initialize_output) {
 		codec_initialize_output(hd_audio.output[0]->output_codec_id,hd_audio.output[0]->output_nid);
 		return;
-	}
+	}*/
 
 	for (int i = 0; i < hd_audio.output_ptr; i++) {
 		codec = hd_audio.output[i]->output_codec_id;
@@ -506,7 +518,7 @@ void widget_init_output () {
 		/*uint32_t eapd_ = codec_query (codec,nid, VERB_GET_EAPD_BTL);	
 		codec_query (codec, nid,VERB_SET_EAPD_BTL | eapd_ | 0x2);*/
 
-		codec_query(codec, nid,VERB_SET_POWER_STATE | 0x0);
+		//codec_query(codec, nid,VERB_SET_POWER_STATE | 0x0);
 		//_aud_outw_(REG_O0_FMT, format);
 	}
 }
@@ -554,11 +566,18 @@ void hda_output_stream_start () {
 	hda_set_volume(255);
 
 
-	uint32_t ssync = _aud_inl_ (SSYNC);
+	/*uint32_t ssync = _aud_inl_ (SSYNC);
 	ssync &= ~(1<<4);
-	_aud_outl_(SSYNC, ssync);
+	_aud_outl_(SSYNC, ssync);*/
+	uint8_t sts = _aud_inl_(REG_O0_STS);
+	sts |= (1<<2);
+	sts |= (1<<3);
+	sts |= (1<<4);
+	_aud_outb_(REG_O0_STS, sts);
 
 	uint8_t value = _aud_inb_(REG_O0_CTLL);
+	value |= (1<<4);
+	value |= (1<<3);
 	value |= HDAC_SDCTL_IOCE; // | HDAC_SDCTL_RUN;
 	value |= (1<<1);
     _aud_outb_(REG_O0_CTLL,value);

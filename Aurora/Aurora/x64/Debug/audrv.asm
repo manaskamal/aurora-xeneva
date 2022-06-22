@@ -25,8 +25,6 @@ $SG3819	DB	'AuDriverUnload', 00H
 $SG3829	DB	'[aurora]: initializing drivers, please wait... ', 0aH, 00H
 	ORG $+7
 $SG3834	DB	'/audrv.cnf', 00H
-	ORG $+5
-$SG3870	DB	'Freeing file ', 0dH, 0aH, 00H
 CONST	ENDS
 PUBLIC	?AuDrvMngrInitialize@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z ; AuDrvMngrInitialize
 PUBLIC	?AuDriverLoadMem@@YAXPEAE@Z			; AuDriverLoadMem
@@ -53,10 +51,9 @@ EXTRN	?fat32_open@@YAPEAU_vfs_node_@@PEAU1@PEAD@Z:PROC ; fat32_open
 EXTRN	?fat32_read@@YAXPEAU_vfs_node_@@PEA_K@Z:PROC	; fat32_read
 EXTRN	?pci_express_get_device@@YA_KGHHH@Z:PROC	; pci_express_get_device
 EXTRN	pci_express_read:PROC
-EXTRN	_debug_print_:PROC
 pdata	SEGMENT
 $pdata$?AuDrvMngrInitialize@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z DD imagerel $LN21
-	DD	imagerel $LN21+720
+	DD	imagerel $LN21+708
 	DD	imagerel $unwind$?AuDrvMngrInitialize@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z
 $pdata$?AuDriverLoadMem@@YAXPEAE@Z DD imagerel $LN5
 	DD	imagerel $LN5+98
@@ -1247,12 +1244,7 @@ $LN1@AuDrvMngrI:
 	mov	rcx, QWORD PTR file$[rsp]
 	call	free
 
-; 269  : 	_debug_print_  ("Freeing file \r\n");
-
-	lea	rcx, OFFSET FLAT:$SG3870
-	call	_debug_print_
-
-; 270  : }
+; 269  : }
 
 	add	rsp, 152				; 00000098H
 	ret	0

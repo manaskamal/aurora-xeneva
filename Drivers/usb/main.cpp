@@ -47,10 +47,17 @@
 #include <shirq.h>
 #include <serial.h>
 #include <arch\x86_64\thread.h>
+#include "xhci_cmd.h"
+
 
 usb_dev_t *usb_device;
 shirq_t *shdev;
 bool first_interrupt = false;
+
+int poll_event_for_trb;
+bool event_available;
+int poll_return_trb_type;
+int trb_event_index;
 
 void AuUSBInterrupt(size_t v, void* p) {
 	AuDisableInterupts();
@@ -61,19 +68,26 @@ void AuUSBInterrupt(size_t v, void* p) {
 	xhci_event_trb_t *evt = (xhci_event_trb_t*)usb_device->event_ring_segment;
 	uint64_t erdp = (uint64_t)AuGetPhysicalAddress((uint64_t)AuGetRootPageTable(),(uint64_t)usb_device->event_ring_segment);
 	while ((event[usb_device->evnt_ring_index].trb_control & (1<<0)) == 1){
-		printf ("Event Received %d, %x, %d \r\n", ((event[usb_device->evnt_ring_index].trb_control >> 10) & 0xFF), 
+		_debug_print_ ("[usb3]: Event Received %d, %x, %d \r\n", ((event[usb_device->evnt_ring_index].trb_control >> 10) & 0xFF), 
 			event->trb_control,  ((event[usb_device->evnt_ring_index].trb_control >> 10) & 0xFF));
 			
 
 
 		/* New PORT STATUS CHANGE Event */
-		if (evt[usb_device->evnt_ring_index].trbType == 34){
-			printf ("[[New Device]] Event port id -> %d , completion_code -> %d \r\n", 
+		if (evt[usb_device->evnt_ring_index].trbType == TRB_EVENT_PORT_STATUS_CHANGE){
+			_debug_print_ ("[usb3]: Event port id -> %d , completion_code -> %d \r\n", 
 				((event[usb_device->evnt_ring_index].trb_param_1 >> 24) & 0xFF),
-				((event[usb_device->evnt_ring_index].trb_status >> 24) & 0xff));
-			
+				((event[usb_device->evnt_ring_index].trb_status >> 24) & 0xff));	
 		}
 			
+
+		if (evt[usb_device->evnt_ring_index].trbType == TRB_EVENT_CMD_COMPLETION) {
+			event_available = true;
+			poll_return_trb_type = TRB_EVENT_CMD_COMPLETION;
+			trb_event_index = usb_device->evnt_ring_index;
+			_debug_print_ ("Event available -> %d \r\n", event_available);
+		}
+
 		
 		/* Update the Dequeue Pointer of interrupt 0 to recently 
 		 * processed event_ring_segment entry (known as TRB Entry) */
@@ -81,6 +95,10 @@ void AuUSBInterrupt(size_t v, void* p) {
 		usb_device->rt_regs->intr_reg[0].evtRngDeqPtrHi = (erdp + sizeof(xhci_trb_t) * usb_device->evnt_ring_index) >> 32;
 		usb_device->evnt_ring_cycle ^= 1;	
 		usb_device->evnt_ring_index++;	
+
+		if (usb_device->evnt_ring_index == usb_device->evnt_ring_max) {
+			usb_device->evnt_ring_index = 0;
+		}
 
 	}
 
@@ -166,6 +184,11 @@ AU_EXTERN AU_EXPORT int AuDriverMain() {
 	 * individual ports can be powered on or off
 	 */
 	printf ("[usb]: xhci port power control switch -> %d \n", ((cap->cap_hccparams1 >> 3) & 0xff));
+
+	trb_event_index = -1;
+	event_available = false;
+	poll_event_for_trb = -1;
+	poll_return_trb_type = -1;
 	
 	/* Reset the XHCI controller */
 	xhci_reset(usb_device);
@@ -198,11 +221,15 @@ AU_EXTERN AU_EXPORT int AuDriverMain() {
 	AuEnableInterrupts();
 
 	/* Try Sending a No Operation Command to xHCI*/
-	xhci_send_command(usb_device,0,0,0,(23 << 10));
+	xhci_send_noop_cmd(usb_device);
 
 
 	/* Initialize all ports */
-	//xhci_port_initialize(usb_device);
+	xhci_port_initialize(usb_device);
+
+	/* Disable all interrupts again because 
+	 * scheduler will enable them all */
+	AuDisableInterupts();
 
 	return 0;
 }

@@ -144,9 +144,12 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="xhci.cpp" />
+    <ClCompile Include="xhci_cmd.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="usb_def.h" />
     <ClInclude Include="xhci.h" />
+    <ClInclude Include="xhci_cmd.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

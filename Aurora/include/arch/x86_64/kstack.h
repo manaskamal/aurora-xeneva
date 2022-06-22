@@ -35,7 +35,7 @@
 #include <arch\x86_64\mmngr\paging.h>
 
 
-#define KSTACK_START   0xFFFFFB0000000000  
+#define KSTACK_START   0xFFFFFB0000000000    
 
 /*
  * allocate_kstack -- allocates kernel stack
@@ -43,9 +43,18 @@
  */
 extern uint64_t allocate_kstack (uint64_t *cr3);
 
+
+extern uint64_t allocate_kstack_child (uint64_t *cr3);
 /*
  * free_kstack -- frees kernel stack
  * @param cr3 -- destination cr3
  */
 extern void free_kstack (uint64_t *cr3);
+
+/*
+ * free_kstack_child -- free up child kernel stacks
+ * @param cr3 -- Parent thread address space
+ * @param location -- start of stack address
+ */
+extern void free_kstack_child (uint64_t *cr3, uint64_t location);
 #endif

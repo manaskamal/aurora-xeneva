@@ -1,7 +1,7 @@
 /**
  * BSD 2-Clause License
  *
- * Copyright (c) 2021, Manas Kamal Choudhury
+ * Copyright (c) 2022, Manas Kamal Choudhury
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -267,6 +267,62 @@ thread_t* create_user_thread (void (*entry) (void*),uint64_t stack,uint64_t cr3,
 	t->priviledge = THREAD_LEVEL_USER;
 	t->state = THREAD_STATE_READY;
 	t->priority = priority;
+	t->fd_current = 3;
+	thread_insert (t);
+	return t;
+}
+
+/*
+ * create_child_thread -- creates child user thread
+ * @param parent -- parent thread
+ * @param entry -- entry point of the thread
+ * @param stack -- thread stack
+ * @param cr3 -- Parent user address space
+ * @param name[8] -- Current thread name
+ */
+thread_t* create_child_thread (thread_t *parent, void (*entry)(void*),uint64_t stack, char name[8]) {
+	thread_t *t = (thread_t*)malloc(sizeof(thread_t));
+	memset(t, 0, sizeof(thread_t));
+	t->ss = SEGVAL(GDT_ENTRY_USER_DATA,3); 
+	t->rsp = (uint64_t*)stack;
+	t->rflags = 0x286;
+	t->cs = SEGVAL (GDT_ENTRY_USER_CODE,3);
+	t->rip = (uint64_t)entry;
+	t->rax = 0;
+	t->rbx = 10;
+	t->rcx = 0;
+	t->rdx = 0;
+	t->rsi = 10;
+	t->rdi = 0;
+	t->rbp = (uint64_t)t->rsp;
+	t->r8 = 0;
+	t->r9 = 0;
+	t->r10 = 0;
+	t->r11 = 0;
+	t->r12 = 0;
+	t->r13 = 0;
+	t->r14 = 0;
+	t->r15 = 0;
+
+	/** Kernel stack is important for syscall or interruption in the system **/
+	t->kern_esp = (uint64_t)allocate_kstack_child((uint64_t*)p2v((size_t)parent->cr3));
+	t->ds = 0x23;
+	t->es = 0x23;
+	t->fs = 0x23;
+	t->gs = 0x23;
+	t->cr3 = parent->cr3;
+	t->name = name;
+	t->id = task_id++;
+	t->quanta = 0;
+	t->ttype = 0;
+	t->msg_box = NULL; //parent->msg_box;
+	t->fx_state = (uint8_t*)malloc(512);
+	memset(t->fx_state, 0, 512);
+	t->mxcsr = 0x1f80;
+	t->_is_user = 1;
+	t->priviledge = THREAD_LEVEL_USER;
+	t->state = THREAD_STATE_READY;
+	t->priority = 1;
 	t->fd_current = 3;
 	thread_insert (t);
 	return t;

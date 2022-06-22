@@ -51,7 +51,9 @@ typedef struct _process_ {
 	uint32_t pid_t;
 	char *name;
 	main_thread entry_point;
-	thread_t * thread_data_pointer; //a pointer to the thread data structure
+	thread_t * threads[255]; 
+	thread_t * thread_data_pointer;
+	uint8_t num_thread;
 	size_t   image_size;
 	uint64_t* cr3;
 	uint64_t image_base;

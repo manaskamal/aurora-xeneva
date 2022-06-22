@@ -35,6 +35,14 @@
 #include <stdio.h>
 #include <serial.h>
 #include <usb.h>
+#include "xhci_cmd.h"
+#include <hal.h>
+
+
+extern int poll_event_for_trb;
+extern bool event_available;
+extern int poll_return_trb_type;
+extern int trb_event_index;
 
 /*
  * xhci_reset -- reset the xhci controller
@@ -112,6 +120,7 @@ void xhci_protocol_init (usb_dev_t *dev) {
 			printf ("Protocol name -> %s , starting port -> %d, max_port -> %d \n", prot->name, 
 				(prot->port_cap_field & 0xFF), ((prot->port_cap_field >> 8) & 0xFF));
 			printf ("Protocol speed -> %d \n", ((prot->port_cap_field >> 28) & 0xFFFF));
+			printf ("Slot Type -> %d \n", ((prot->port_cap_field2) & 0xff));
 			//break;
 	    }
 		case 3:
@@ -160,6 +169,7 @@ void xhci_event_ring_init (usb_dev_t *dev) {
 
 	dev->evnt_ring_cycle = 1;
 	dev->evnt_ring_index = 0;
+	dev->evnt_ring_max = erst->ring_seg_size;
 
 	dev->rt_regs->intr_reg[0].evtRngSegTabSz = 1;
 	dev->rt_regs->intr_reg[0].evtRngDeqPtrLo =  (event_ring_seg << 4) | (1 << 3);
@@ -189,7 +199,7 @@ void xhci_event_ring_init (usb_dev_t *dev) {
 void xhci_send_command (usb_dev_t *dev, uint32_t param1, uint32_t param2, uint32_t status, uint32_t ctrl) {
 	
 	ctrl &= ~1;
-	ctrl |= dev->cmd_ring_cycle;
+	ctrl |= 1; //dev->cmd_ring_cycle;
 	dev->cmd_ring[dev->cmd_ring_index].trb_param_1 = param1;
 	dev->cmd_ring[dev->cmd_ring_index].trb_param_2 = param2;
 	dev->cmd_ring[dev->cmd_ring_index].trb_status = status;
@@ -209,6 +219,58 @@ void xhci_send_command (usb_dev_t *dev, uint32_t param1, uint32_t param2, uint32
 }
 
 
+/*
+ * xhci_send_command_multiple -- sends multiple commands to the command ring
+ * @param dev -- Pointer to usb structure
+ * @param trb -- TRB address containing multiple TRBs
+ * @param num_count -- counts of TRB to send
+ */
+void xhci_send_command_multiple (usb_dev_t* dev, xhci_trb_t* trb, int num_count) {
+	for (int i = 0; i < num_count; i++) {
+		trb[i].trb_control |= 1;
+
+		dev->cmd_ring[dev->cmd_ring_index].trb_param_1 = trb[i].trb_param_1;
+		dev->cmd_ring[dev->cmd_ring_index].trb_param_2 = trb[i].trb_param_2;
+		dev->cmd_ring[dev->cmd_ring_index].trb_status = trb[i].trb_status;
+		dev->cmd_ring[dev->cmd_ring_index].trb_control = trb[i].trb_control;
+
+		dev->cmd_ring_index++;
+
+		if (dev->cmd_ring_index >= 63 ) {
+			dev->cmd_ring[dev->cmd_ring_index].trb_control ^= 1;
+			if (dev->cmd_ring[dev->cmd_ring_index].trb_control & (1<<1)) {
+				dev->cmd_ring_cycle ^= 1;
+			}
+			dev->cmd_ring_index = 0;
+		}
+
+	}
+
+	dev->db_regs->doorbell[0] = (0<<16) | 0;
+}
+
+
+/*
+ * xhci_poll_event -- waits for an event to occur on interrupts
+ * @param usb_device -- pointer to usb device structure
+ * @param trb_type -- type of trb to look
+ * @return trb_event_index -- index of the trb on event_ring_segment
+ */
+int xhci_poll_event (usb_dev_t* usb_device, int trb_type) {
+	int idx = -1;
+	for (;;) {
+		if (event_available && poll_return_trb_type == trb_type 
+			&& trb_event_index != -1) {
+				event_available = false;
+				idx = trb_event_index;
+				trb_event_index = -1;
+				poll_return_trb_type = -1;
+				return idx;
+		}
+	}
+
+	return trb_event_index;
+}
 
 
 /*
@@ -226,35 +288,23 @@ void xhci_port_initialize (usb_dev_t *dev) {
 
 			for (int i = 0; i < 10000000; i++)
 				;
+			
+			uint64_t slot_id = 0;
 
 			/* Enable slot command */
-			xhci_send_command(dev,0,0,0,(i << 16)|(9 << 23));
-			///* Reset completed */
-			//uint8_t bm_req_type = USB_BM_REQUEST_INPUT | USB_BM_REQUEST_STANDARD | USB_BM_REQUEST_DEVICE;
-			//uint8_t b_request = USB_BREQUEST_GET_DESCRIPTOR;
-			//uint16_t wval = USB_DESCRIPTOR_WVALUE(USB_DESCRIPTOR_DEVICE, 0);
-			//xhci_send_command(dev,bm_req_type | b_request << 8 | wval << 16,0 | (18 >>16), (0 << 22) | 8,(3 << 16) | (1<<6) | (2<<10));
+			xhci_enable_slot(dev,0);
+			int idx = xhci_poll_event(dev,TRB_EVENT_CMD_COMPLETION);
+			if (idx != -1) {
+				xhci_event_trb_t *evt = (xhci_event_trb_t*)dev->event_ring_segment;
+				xhci_trb_t *trb = (xhci_trb_t*)evt;
+				slot_id = (trb->trb_control >> 24) & 0xffff;
+				_debug_print_ ("Event received -> %d, slot_id -> %d \r\n",evt[idx].trbType, evt[idx].completionCode);
+				_debug_print_ ("Slot id -> %d \r\n", slot_id);
+			}
+			
+			/* Here we need to Get Device Descriptor */
 
 
-			//xhci_trb_t *trb = (xhci_trb_t*)dev->event_ring_segment;
-			//for(;;){
-			//	xhci_trb_t *event = (xhci_trb_t*)dev->event_ring_segment;
-			//	uint64_t erdp = (uint64_t)AuGetPhysicalAddress((uint64_t)AuGetRootPageTable(),(uint64_t)dev->event_ring_segment);
-			//	while ((event[dev->evnt_ring_index].trb_control & (1<<0)) == dev->evnt_ring_cycle){
-			//		xhci_event_trb_t *evt = (xhci_event_trb_t*)&event[dev->evnt_ring_index];
-			//		printf ("port Event Received %d, %x, %d\n", evt->trbType, 
-			//			event[dev->evnt_ring_index].trb_control, ((event[dev->evnt_ring_index].trb_status & (1<<24)) & 0xff));
-
-			//		
-
-			//		dev->rt_regs->intr_reg[0].evtRngDeqPtrLo = (erdp + sizeof(xhci_trb_t) * dev->evnt_ring_index);
-			//		dev->rt_regs->intr_reg[0].evtRngDeqPtrHi = (erdp + sizeof(xhci_trb_t) * dev->evnt_ring_index)>> 32;
-			//		dev->evnt_ring_cycle ^= 1;
-			//		dev->rt_regs->intr_reg[0].intr_man = (1<<1) | 0;
-			//		dev->evnt_ring_index++;
-			//	}
-			//	break;
-			//}
 			this_port->port_sc |= (1<<9);
 			printf ("Port Initialized %d, Power -> %d, PED -> %d \n", i, ((this_port->port_sc & (1<<9)) & 0xff),
 				((this_port->port_sc & (1<<1)) & 0xff));
