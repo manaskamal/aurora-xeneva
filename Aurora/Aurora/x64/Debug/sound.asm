@@ -28,11 +28,11 @@ _BSS	SEGMENT
 ?_audio_stoped_@@3_NA DB 01H DUP (?)			; _audio_stoped_
 _BSS	ENDS
 CONST	SEGMENT
-$SG3874	DB	'dsp', 00H
+$SG3875	DB	'dsp', 00H
 	ORG $+4
-$SG3875	DB	'/dev/dsp', 00H
+$SG3876	DB	'/dev/dsp', 00H
 	ORG $+7
-$SG3923	DB	'Output Start ', 0aH, 00H
+$SG3924	DB	'Output Start ', 0aH, 00H
 CONST	ENDS
 PUBLIC	?AuSoundInitialize@@YAXXZ			; AuSoundInitialize
 PUBLIC	AuSoundRegisterDevice
@@ -140,7 +140,7 @@ $LN7:
 ; 195  : 	dsp_t *dsp = AuSoundGetDSP(get_current_thread()->id);
 
 	call	get_current_thread
-	movzx	ecx, WORD PTR [rax+234]
+	movzx	ecx, WORD PTR [rax+242]
 	call	?AuSoundGetDSP@@YAPEAU_dsp_@@G@Z	; AuSoundGetDSP
 	mov	QWORD PTR dsp$[rsp], rax
 
@@ -292,7 +292,7 @@ $LN7@AuSoundIOQ:
 
 	call	get_current_thread
 	mov	rcx, QWORD PTR dsp$1[rsp]
-	movzx	eax, WORD PTR [rax+234]
+	movzx	eax, WORD PTR [rax+242]
 	mov	WORD PTR [rcx+8], ax
 
 ; 163  : 		dsp->registered_thr = get_current_thread();
@@ -867,7 +867,7 @@ $LN1@AuSoundOut:
 
 ; 271  : 	printf ("Output Start \n");
 
-	lea	rcx, OFFSET FLAT:$SG3923
+	lea	rcx, OFFSET FLAT:$SG3924
 	call	printf
 
 ; 272  : 	registered_dev->start_output_stream();
@@ -1143,7 +1143,7 @@ $LN3:
 ; 210  : 	strcpy (dsp->filename, "dsp");
 
 	mov	rax, QWORD PTR dsp$[rsp]
-	lea	rdx, OFFSET FLAT:$SG3874
+	lea	rdx, OFFSET FLAT:$SG3875
 	mov	rcx, rax
 	call	strcpy
 
@@ -1209,7 +1209,7 @@ $LN3:
 
 	xor	r8d, r8d
 	mov	rdx, QWORD PTR dsp$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3875
+	lea	rcx, OFFSET FLAT:$SG3876
 	call	vfs_mount
 
 ; 223  : 

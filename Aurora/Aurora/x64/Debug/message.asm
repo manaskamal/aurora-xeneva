@@ -115,7 +115,7 @@ $LN3@message_re:
 	movzx	eax, WORD PTR [rax+58]
 	mov	DWORD PTR tv67[rsp], eax
 	call	get_current_thread
-	movzx	eax, WORD PTR [rax+234]
+	movzx	eax, WORD PTR [rax+242]
 	mov	ecx, DWORD PTR tv67[rsp]
 	cmp	ecx, eax
 	jne	SHORT $LN1@message_re

@@ -30,7 +30,7 @@
 
 #include <arch\x86_64\thread.h>
 #include <proc.h>
-
+#include <serial.h>
 
 uint16_t get_thread_id () {
 	x64_cli ();
@@ -42,7 +42,6 @@ void create_uthread (void (*entry) (void*), char* name) {
 	x64_cli();
 	process_t *proc = get_current_process();
 	uint64_t st = (uint64_t)create_inc_stack((uint64_t*)p2v((size_t)get_current_thread()->cr3));
-
 	thread_t * t = create_child_thread(get_current_thread(),entry,(uint64_t)st,name);
 	//uint64_t stack = (uint64_t)p2v((size_t)AuPmmngrAlloc()); //create_inc_stack(old_cr3);
 	proc->threads[proc->num_thread] = t;

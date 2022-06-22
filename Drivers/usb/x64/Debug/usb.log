@@ -1,4 +1,4 @@
-﻿Build started 21-06-2022 আবেলি 2:33:58.
+﻿Build started 22-06-2022 ৰাতিপু 11:39:01.
      1>Project "E:\Xeneva Project\Xeneva\Drivers\usb\usb.vcxproj" on node 2 (Rebuild target(s)).
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\Aurora\include" /Zi /nologo /W3 /WX- /Od /Oy /D ARCH_X64 /D _WINDLL /D _MBCS /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt main.cpp xhci.cpp xhci_cmd.cpp
@@ -16,9 +16,6 @@
      1>xhci.cpp(69): warning C4244: '=' : conversion from 'uint64_t' to 'uint32_t', possible loss of data
      1>xhci.cpp(175): warning C4244: '=' : conversion from 'uint64_t' to 'unsigned int', possible loss of data
      1>xhci.cpp(177): warning C4244: '=' : conversion from 'uint64_t' to 'unsigned int', possible loss of data
-     1>xhci.cpp(309): warning C4258: 'i' : definition from the for loop is ignored; the definition from the enclosing scope is used
-                 xhci.cpp(289) : definition of 'i' ignored
-                 xhci.cpp(281) : definition of 'i' used
          main.cpp
      1>e:\xeneva project\xeneva\drivers\usb\xhci.h(200): warning C4161: #pragma pack(pop...) : more pops than pushes
      1>e:\xeneva project\xeneva\drivers\usb\xhci.h(220): warning C4200: nonstandard extension used : zero-sized array in struct/union
@@ -47,4 +44,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:00.78
+Time Elapsed 00:00:01.26

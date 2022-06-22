@@ -306,8 +306,8 @@ void xhci_port_initialize (usb_dev_t *dev) {
 
 
 			this_port->port_sc |= (1<<9);
-			printf ("Port Initialized %d, Power -> %d, PED -> %d \n", i, ((this_port->port_sc & (1<<9)) & 0xff),
-				((this_port->port_sc & (1<<1)) & 0xff));
+			/*printf ("Port Initialized %d, Power -> %d, PED -> %d \n", i, ((this_port->port_sc & (1<<9)) & 0xff),
+				((this_port->port_sc & (1<<1)) & 0xff));*/
 		}
 	}
 }

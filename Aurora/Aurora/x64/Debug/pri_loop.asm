@@ -12,9 +12,9 @@ _BSS	SEGMENT
 ?last_loop@@3PEAU_pri_loop_box_@@EA DQ 01H DUP (?)	; last_loop
 _BSS	ENDS
 CONST	SEGMENT
-$SG3549	DB	'pri_loop', 00H
+$SG3550	DB	'pri_loop', 00H
 	ORG $+7
-$SG3550	DB	'/dev/pri_loop', 00H
+$SG3551	DB	'/dev/pri_loop', 00H
 CONST	ENDS
 PUBLIC	?pri_loop_init@@YAXXZ				; pri_loop_init
 PUBLIC	?pri_put_message@@YAXPEAU_pri_event_@@@Z	; pri_put_message
@@ -146,7 +146,7 @@ $LN6@pri_loop_i:
 	movzx	eax, WORD PTR [rax+8]
 	mov	DWORD PTR tv68[rsp], eax
 	call	get_current_thread
-	movzx	eax, WORD PTR [rax+234]
+	movzx	eax, WORD PTR [rax+242]
 	mov	ecx, DWORD PTR tv68[rsp]
 	cmp	ecx, eax
 	jne	SHORT $LN3@pri_loop_i
@@ -242,7 +242,7 @@ $LN9:
 ; 144  : 	uint16_t owner_id = get_current_thread()->id;
 
 	call	get_current_thread
-	movzx	eax, WORD PTR [rax+234]
+	movzx	eax, WORD PTR [rax+242]
 	mov	WORD PTR owner_id$[rsp], ax
 
 ; 145  : 	for (pri_loop_box_t *loop = first_loop; loop != NULL; loop = loop->next) {
@@ -381,7 +381,7 @@ $LN5:
 
 	call	get_current_thread
 	mov	rcx, QWORD PTR loop$[rsp]
-	movzx	eax, WORD PTR [rax+234]
+	movzx	eax, WORD PTR [rax+242]
 	mov	WORD PTR [rcx+8], ax
 
 ; 50   : 	loop->pending_msg_count = 0;
@@ -731,7 +731,7 @@ $LN2@pri_put_me:
 	cmp	QWORD PTR thread$[rsp], 0
 	je	SHORT $LN1@pri_put_me
 	mov	rax, QWORD PTR thread$[rsp]
-	movzx	eax, BYTE PTR [rax+232]
+	movzx	eax, BYTE PTR [rax+240]
 	cmp	eax, 3
 	jne	SHORT $LN1@pri_put_me
 
@@ -775,7 +775,7 @@ $LN3:
 ; 208  : 	strcpy (node->filename, "pri_loop");
 
 	mov	rax, QWORD PTR node$[rsp]
-	lea	rdx, OFFSET FLAT:$SG3549
+	lea	rdx, OFFSET FLAT:$SG3550
 	mov	rcx, rax
 	call	strcpy
 
@@ -839,7 +839,7 @@ $LN3:
 
 	xor	r8d, r8d
 	mov	rdx, QWORD PTR node$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3550
+	lea	rcx, OFFSET FLAT:$SG3551
 	call	vfs_mount
 
 ; 221  : }

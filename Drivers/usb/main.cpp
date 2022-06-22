@@ -183,7 +183,7 @@ AU_EXTERN AU_EXPORT int AuDriverMain() {
 	/* We need to check, if controller supports port power switch, so that
 	 * individual ports can be powered on or off
 	 */
-	printf ("[usb]: xhci port power control switch -> %d \n", ((cap->cap_hccparams1 >> 3) & 0xff));
+	//printf ("[usb]: xhci port power control switch -> %d \n", ((cap->cap_hccparams1 >> 3) & 0xff));
 
 	trb_event_index = -1;
 	event_available = false;

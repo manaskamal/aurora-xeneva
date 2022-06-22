@@ -143,14 +143,13 @@ uint64_t *create_user_stack (process_t *proc, uint64_t* cr3) {
  * Create incremental stack : Creates stack in same address space
  */
 uint64_t* create_inc_stack (uint64_t* cr3) {
-#define INC_STACK 0x0000010000000000 
+#define INC_STACK 0x00000000C0000000
 	uint64_t location = (uint64_t)AuGetFreePage(0,true,(void*)INC_STACK);
-
 	for (int i = 0; i < (2*1024*1024) / 4096; i++) {
 		AuMapPageEx(cr3,(uint64_t)AuPmmngrAlloc(), location + i * 4096, PAGING_USER);
 	}
 
-	return (uint64_t*)(INC_STACK + (1*1024*1024));
+	return (uint64_t*)(location + (1*1024*1024));
 }
 
 void allocate_fd (thread_t *t) {
@@ -378,6 +377,30 @@ void kill_process () {
 
 	AuCleanVMA(proc);
 	
+	/* Here we need to free all child threads */
+	for (int i = 1; i < proc->num_thread; i++) {
+		thread_t *killable = proc->threads[i];
+		free_kstack_child(cr3,killable->kern_esp - 8192);
+		free(killable->fx_state);
+		uint64_t stack_location = (uint64_t)killable->user_stack;
+		stack_location += 1*1024*1024;
+		stack_location -= 2*1024*1024;
+		for (int i = 0; i < (2*1024*1024) / 4096; i++) {
+			void* phys = AuGetPhysicalAddress((uint64_t)cr3,stack_location + i * 4096);
+			uint64_t physical_address = (uint64_t)v2p((uint64_t)phys);
+			if (physical_address != 0){
+				AuPmmngrFree((void*)physical_address);
+			}
+		}
+		thread_t *t = thread_iterate_block_list(killable->id);
+		if (t != NULL){
+			unblock_thread(t);
+		}
+
+		task_delete(killable);
+		free(killable);
+	}
+	
 	free(remove_thread->fx_state);
 	free(proc->process_file);
 	remove_process (proc);
@@ -386,7 +409,7 @@ void kill_process () {
 	task_delete (remove_thread);
 	free(remove_thread);
 
-	/* Here we need to free all child threads */
+	
 
 	free_kstack(cr3);
 	AuPmmngrFree((void*)cr3);

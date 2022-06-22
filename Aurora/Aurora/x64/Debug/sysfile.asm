@@ -6,8 +6,8 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 CONST	SEGMENT
-$SG3838	DB	'dev', 00H
-$SG3851	DB	'/', 00H
+$SG3839	DB	'dev', 00H
+$SG3852	DB	'/', 00H
 CONST	ENDS
 PUBLIC	?sys_open_file@@YAHPEADPEAU_file_@@@Z		; sys_open_file
 PUBLIC	?sys_read_file@@YAXHPEAEPEAU_file_@@@Z		; sys_read_file
@@ -74,14 +74,14 @@ $LN5:
 
 	call	get_current_thread
 	movsxd	rcx, DWORD PTR fd$[rsp]
-	mov	rax, QWORD PTR [rax+rcx*8+272]
+	mov	rax, QWORD PTR [rax+rcx*8+280]
 	mov	QWORD PTR node$[rsp], rax
 
 ; 193  : 	get_current_thread()->fd[fd] = 0;
 
 	call	get_current_thread
 	movsxd	rcx, DWORD PTR fd$[rsp]
-	mov	QWORD PTR [rax+rcx*8+272], 0
+	mov	QWORD PTR [rax+rcx*8+280], 0
 
 ; 194  : 	if ((node->flags & FS_FLAG_DEVICE)){
 
@@ -200,7 +200,7 @@ $LN6:
 
 	call	get_current_thread
 	movsxd	rcx, DWORD PTR fd$[rsp]
-	mov	rax, QWORD PTR [rax+rcx*8+272]
+	mov	rax, QWORD PTR [rax+rcx*8+280]
 	mov	QWORD PTR node$[rsp], rax
 
 ; 176  : 	if (node == NULL) {
@@ -296,7 +296,7 @@ $LN12:
 
 ; 124  : 		node = vfs_finddir("/");
 
-	lea	rcx, OFFSET FLAT:$SG3851
+	lea	rcx, OFFSET FLAT:$SG3852
 	call	?vfs_finddir@@YAPEAU_vfs_node_@@PEAD@Z	; vfs_finddir
 	mov	QWORD PTR node$[rsp], rax
 
@@ -304,7 +304,7 @@ $LN12:
 
 	call	get_current_thread
 	movsxd	rcx, DWORD PTR fd$[rsp]
-	mov	rax, QWORD PTR [rax+rcx*8+272]
+	mov	rax, QWORD PTR [rax+rcx*8+280]
 	mov	QWORD PTR file$[rsp], rax
 
 ; 126  : 		if (node == NULL)
@@ -411,7 +411,7 @@ $LN9@sys_read_f:
 
 	call	get_current_thread
 	movsxd	rcx, DWORD PTR fd$[rsp]
-	mov	rax, QWORD PTR [rax+rcx*8+272]
+	mov	rax, QWORD PTR [rax+rcx*8+280]
 	mov	QWORD PTR node$[rsp], rax
 
 ; 145  : 		if (node == NULL)
@@ -586,7 +586,7 @@ $LN8@sys_open_f:
 
 	call	get_current_thread
 	movsxd	rcx, DWORD PTR i$1[rsp]
-	mov	rax, QWORD PTR [rax+rcx*8+272]
+	mov	rax, QWORD PTR [rax+rcx*8+280]
 	mov	QWORD PTR _node$3[rsp], rax
 
 ; 73   : 			if (_node == node) {
@@ -620,7 +620,7 @@ $LN9@sys_open_f:
 ; 80   : 
 ; 81   : 	if (!(strcmp(pathname, "dev") == 0)) {
 
-	lea	rdx, OFFSET FLAT:$SG3838
+	lea	rdx, OFFSET FLAT:$SG3839
 	lea	rcx, QWORD PTR pathname$[rsp]
 	call	strcmp
 	test	eax, eax
@@ -694,21 +694,21 @@ $LN3@sys_open_f:
 	call	get_current_thread
 	mov	QWORD PTR tv157[rsp], rax
 	call	get_current_thread
-	movsxd	rax, DWORD PTR [rax+752]
+	movsxd	rax, DWORD PTR [rax+760]
 	mov	rcx, QWORD PTR file$2[rsp]
 	mov	rdx, QWORD PTR tv157[rsp]
-	mov	QWORD PTR [rdx+rax*8+272], rcx
+	mov	QWORD PTR [rdx+rax*8+280], rcx
 
 ; 94   : 		fd = get_current_thread()->fd_current;
 
 	call	get_current_thread
-	mov	eax, DWORD PTR [rax+752]
+	mov	eax, DWORD PTR [rax+760]
 	mov	DWORD PTR fd$[rsp], eax
 
 ; 95   : 		get_current_thread()->fd_current++;
 
 	call	get_current_thread
-	add	rax, 752				; 000002f0H
+	add	rax, 760				; 000002f8H
 	mov	QWORD PTR tv168[rsp], rax
 	mov	rax, QWORD PTR tv168[rsp]
 	mov	eax, DWORD PTR [rax]
@@ -732,21 +732,21 @@ $LN4@sys_open_f:
 	call	get_current_thread
 	mov	QWORD PTR tv172[rsp], rax
 	call	get_current_thread
-	movsxd	rax, DWORD PTR [rax+752]
+	movsxd	rax, DWORD PTR [rax+760]
 	mov	rcx, QWORD PTR node$[rsp]
 	mov	rdx, QWORD PTR tv172[rsp]
-	mov	QWORD PTR [rdx+rax*8+272], rcx
+	mov	QWORD PTR [rdx+rax*8+280], rcx
 
 ; 99   : 			fd = get_current_thread()->fd_current;
 
 	call	get_current_thread
-	mov	eax, DWORD PTR [rax+752]
+	mov	eax, DWORD PTR [rax+760]
 	mov	DWORD PTR fd$[rsp], eax
 
 ; 100  : 			get_current_thread()->fd_current++;
 
 	call	get_current_thread
-	add	rax, 752				; 000002f0H
+	add	rax, 760				; 000002f8H
 	mov	QWORD PTR tv183[rsp], rax
 	mov	rax, QWORD PTR tv183[rsp]
 	mov	eax, DWORD PTR [rax]

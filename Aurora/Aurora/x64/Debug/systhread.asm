@@ -42,32 +42,32 @@ t$ = 32
 ms$ = 64
 ?sys_sleep@@YAX_K@Z PROC				; sys_sleep
 
-; 55   : void sys_sleep (uint64_t ms) {
+; 54   : void sys_sleep (uint64_t ms) {
 
 $LN3:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 56					; 00000038H
 
-; 56   : 	x64_cli();
+; 55   : 	x64_cli();
 
 	call	x64_cli
 
-; 57   : 	thread_t* t = get_current_thread();
+; 56   : 	thread_t* t = get_current_thread();
 
 	call	get_current_thread
 	mov	QWORD PTR t$[rsp], rax
 
-; 58   : 	sleep_thread (t, ms);
+; 57   : 	sleep_thread (t, ms);
 
 	mov	rdx, QWORD PTR ms$[rsp]
 	mov	rcx, QWORD PTR t$[rsp]
 	call	sleep_thread
 
-; 59   : 	force_sched();
+; 58   : 	force_sched();
 
 	call	force_sched
 
-; 60   : }
+; 59   : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -108,8 +108,7 @@ $LN3:
 	call	?create_inc_stack@@YAPEA_KPEA_K@Z	; create_inc_stack
 	mov	QWORD PTR st$[rsp], rax
 
-; 45   : 
-; 46   : 	thread_t * t = create_child_thread(get_current_thread(),entry,(uint64_t)st,name);
+; 45   : 	thread_t * t = create_child_thread(get_current_thread(),entry,(uint64_t)st,name);
 
 	call	get_current_thread
 	mov	r9, QWORD PTR name$[rsp]
@@ -119,8 +118,8 @@ $LN3:
 	call	create_child_thread
 	mov	QWORD PTR t$[rsp], rax
 
-; 47   : 	//uint64_t stack = (uint64_t)p2v((size_t)AuPmmngrAlloc()); //create_inc_stack(old_cr3);
-; 48   : 	proc->threads[proc->num_thread] = t;
+; 46   : 	//uint64_t stack = (uint64_t)p2v((size_t)AuPmmngrAlloc()); //create_inc_stack(old_cr3);
+; 47   : 	proc->threads[proc->num_thread] = t;
 
 	mov	rax, QWORD PTR proc$[rsp]
 	movzx	eax, BYTE PTR [rax+2072]
@@ -128,7 +127,7 @@ $LN3:
 	mov	rdx, QWORD PTR t$[rsp]
 	mov	QWORD PTR [rcx+rax*8+24], rdx
 
-; 49   : 	proc->num_thread++;
+; 48   : 	proc->num_thread++;
 
 	mov	rax, QWORD PTR proc$[rsp]
 	movzx	eax, BYTE PTR [rax+2072]
@@ -136,9 +135,9 @@ $LN3:
 	mov	rcx, QWORD PTR proc$[rsp]
 	mov	BYTE PTR [rcx+2072], al
 
-; 50   : 	
-; 51   : 	return;
-; 52   : }
+; 49   : 	
+; 50   : 	return;
+; 51   : }
 
 	add	rsp, 72					; 00000048H
 	ret	0
@@ -161,7 +160,7 @@ $LN3:
 ; 37   : 	return get_current_thread()->id;
 
 	call	get_current_thread
-	movzx	eax, WORD PTR [rax+234]
+	movzx	eax, WORD PTR [rax+242]
 
 ; 38   : }
 

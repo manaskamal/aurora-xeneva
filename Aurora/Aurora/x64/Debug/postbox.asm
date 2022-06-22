@@ -77,7 +77,7 @@ $LN3@post_box_p:
 ; 42   : 	postmsg_t *tmsg = (postmsg_t*)t->msg_box;
 
 	mov	rax, QWORD PTR t$[rsp]
-	mov	rax, QWORD PTR [rax+248]
+	mov	rax, QWORD PTR [rax+256]
 	mov	QWORD PTR tmsg$[rsp], rax
 
 ; 43   : 	if (tmsg->type == 0)
@@ -92,7 +92,7 @@ $LN3@post_box_p:
 	mov	r8d, 32					; 00000020H
 	mov	rdx, QWORD PTR msg$[rsp]
 	mov	rax, QWORD PTR t$[rsp]
-	mov	rcx, QWORD PTR [rax+248]
+	mov	rcx, QWORD PTR [rax+256]
 	call	memcpy
 $LN2@post_box_p:
 
@@ -100,7 +100,7 @@ $LN2@post_box_p:
 ; 46   : 	if (t->state == THREAD_STATE_BLOCKED){
 
 	mov	rax, QWORD PTR t$[rsp]
-	movzx	eax, BYTE PTR [rax+232]
+	movzx	eax, BYTE PTR [rax+240]
 	cmp	eax, 3
 	jne	SHORT $LN1@post_box_p
 

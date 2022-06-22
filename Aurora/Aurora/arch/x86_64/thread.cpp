@@ -194,6 +194,7 @@ thread_t* create_kthread (void (*entry) (void), uint64_t stack,uint64_t cr3, cha
 	t->fs = 0x10;
 	t->gs = 0x10;
 	t->kern_esp = stack;
+	t->user_stack = stack;
 	t->ttype = 0;
 	t->_is_user = 0;
 	t->cr3 = cr3;
@@ -247,6 +248,7 @@ thread_t* create_user_thread (void (*entry) (void*),uint64_t stack,uint64_t cr3,
 
 	/** Kernel stack is important for syscall or interruption in the system **/
 	t->kern_esp = (uint64_t)allocate_kstack((uint64_t*)cr3);
+	t->user_stack = stack;
 	t->ds = 0x23;
 	t->es = 0x23;
 	t->fs = 0x23;
@@ -306,6 +308,7 @@ thread_t* create_child_thread (thread_t *parent, void (*entry)(void*),uint64_t s
 
 	/** Kernel stack is important for syscall or interruption in the system **/
 	t->kern_esp = (uint64_t)allocate_kstack_child((uint64_t*)p2v((size_t)parent->cr3));
+	t->user_stack = stack;
 	t->ds = 0x23;
 	t->es = 0x23;
 	t->fs = 0x23;

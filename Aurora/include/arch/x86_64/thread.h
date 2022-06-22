@@ -89,6 +89,7 @@ typedef struct _thread_ {
 	uint64_t cr3;        //0xC0     [0x08]
 	uint64_t kern_esp;   //0xC8     [0x10]
     uint8_t *fx_state;  //0xD0
+	uint64_t user_stack;
 	uint32_t mxcsr;
 	bool _is_user;       
 	char* name;
