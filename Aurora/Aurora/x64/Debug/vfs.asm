@@ -15,8 +15,7 @@ $SG3556	DB	'[VFS]: Mounting filesystem to root failed, already in us'
 	ORG $+5
 $SG3584	DB	'Recursively calling for -> %s ', 0dH, 0aH, 00H
 	ORG $+7
-$SG3585	DB	'[vfs]: already mounted -> %s', 0aH, 00H
-	ORG $+2
+$SG3585	DB	'[vfs]: already mounted -> %s ', 0dH, 0aH, 00H
 $SG3587	DB	'Not found entry -> %s ', 0dH, 0aH, 00H
 	ORG $+7
 $SG3589	DB	'Mounting path -> %s, creating entry ', 0dH, 0aH, 00H
@@ -659,10 +658,10 @@ $LN23:
 	cmp	QWORD PTR [rax], 0
 	je	SHORT $LN19@vfs_mount
 
-; 194  : 			printf ("[VFS]: Mounting filesystem to root failed, already in use\n");
+; 194  : 			_debug_print_ ("[VFS]: Mounting filesystem to root failed, already in use\n");
 
 	lea	rcx, OFFSET FLAT:$SG3556
-	call	printf
+	call	_debug_print_
 
 ; 195  : 			return;   //Already a root filesystem is present
 
@@ -901,11 +900,11 @@ $LN16@vfs_mount:
 $LN3@vfs_mount:
 
 ; 241  : 		}
-; 242  : 		printf ("[vfs]: already mounted -> %s\n", path);
+; 242  : 		_debug_print_ ("[vfs]: already mounted -> %s \r\n", path);
 
 	mov	rdx, QWORD PTR path$[rsp]
 	lea	rcx, OFFSET FLAT:$SG3585
-	call	printf
+	call	_debug_print_
 
 ; 243  : 		return;
 

@@ -1,7 +1,7 @@
 /**
  * BSD 2-Clause License
  *
- * Copyright (c) 2021, Manas Kamal Choudhury
+ * Copyright (c) 2022, Manas Kamal Choudhury
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -120,7 +120,7 @@ void sys_read_file (int fd, uint8_t* buffer, FILE *ufile) {
 	/* if UFILE->size is greater than 0, it's a
 	 * file system based file descriptor, so get
 	 * the root file system file */
-	if (ufile->size > 0){
+	if (ufile){
 		node = vfs_finddir("/");
 		file = get_current_thread()->fd[fd];
 		if (node == NULL)
@@ -145,7 +145,7 @@ void sys_read_file (int fd, uint8_t* buffer, FILE *ufile) {
 		if (node == NULL)
 			return;
 
-		readfs(node, node, (uint64_t*)buffer, file->size);
+		readfs(node, node, (uint64_t*)buffer, node->size);
 	}
 
 }

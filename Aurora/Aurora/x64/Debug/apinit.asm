@@ -134,24 +134,26 @@ $LN5:
 	lea	rcx, OFFSET FLAT:$SG3450
 	call	printf
 
-; 63   : 
-; 64   : 	/* From here scheduler should be initialized with good spinlock
-; 65   : 	 * system */
-; 66   : 	AuAPStarted();
+; 63   : 	
+; 64   : 	AuAPStarted();
 
 	call	?AuAPStarted@@YAXXZ			; AuAPStarted
 $LN2@AuApInit:
 
-; 67   : 	for(;;) {
-; 68   : 		x64_pause();
+; 65   : 	/* From here scheduler should be initialized with good spinlock
+; 66   : 	 * system */
+; 67   : 	//AuSchedulerStart();
+; 68   : 	
+; 69   : 	for(;;) {
+; 70   : 		x64_pause();
 
 	call	x64_pause
 
-; 69   : 	}
+; 71   : 	}
 
 	jmp	SHORT $LN2@AuApInit
 
-; 70   : }
+; 72   : }
 
 	add	rsp, 56					; 00000038H
 	ret	0

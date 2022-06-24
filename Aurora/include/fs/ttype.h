@@ -52,15 +52,22 @@ typedef struct _tele_type_ {
 	termios_t term;
 	circ_buf_t *in_buffer;
 	circ_buf_t *out_buffer;
-	uint16_t controlling_pid;
-	uint16_t foreground_pid;
-	int master_fd;
-	int slave_fd;
 	struct _tele_type_ *next;
 	struct _tele_type_ *prev;
 }ttype_t;
 
 extern void ttype_init ();
+/*
+ * ttype_create_master -- creates a master device file
+ * @param tty -- Pointer to ttype structure
+ */
+extern vfs_node_t* ttype_create_master (ttype_t *tty);
+
+/*
+ * ttype_create_slave -- creates a slave device file
+ * @param tty -- Pointer to ttype structure
+ */
+extern vfs_node_t* ttype_create_slave (ttype_t *tty);
 extern int ttype_create (int* master_fd, int* slave_fd);
 extern ttype_t * get_ttype (int id);
 extern void ttype_dup_master (int task_id, int master_fd);

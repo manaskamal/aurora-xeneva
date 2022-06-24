@@ -60,10 +60,12 @@ void AuApInit(void* cpu) {
 	initialize_syscall();
 	hal_cpu_feature_enable();
 	printf ("Welcome to Application Processor %d\n", x86_64_cpu_get_id());
-
+	
+	AuAPStarted();
 	/* From here scheduler should be initialized with good spinlock
 	 * system */
-	AuAPStarted();
+	//AuSchedulerStart();
+	
 	for(;;) {
 		x64_pause();
 	}

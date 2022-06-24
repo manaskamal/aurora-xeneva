@@ -49,8 +49,8 @@
  * to screen
  */
 
-int master_count = 1;
-int slave_count = 1;
+int master_count=0;
+int slave_count=0;
 
 ttype_t *root = NULL;
 ttype_t *last = NULL;
@@ -89,7 +89,7 @@ void ttype_delete (ttype_t* tty) {
 		tty->next->prev = tty->prev;
 	}
 
-	AuPmmngrFree(tty);
+	free(tty);
 }
 
 /**
@@ -102,6 +102,8 @@ void ttype_master_read (vfs_node_t *file, uint64_t* buffer,uint32_t length) {
 	//!Read it from out buffer
 	vfs_node_t *node = get_current_thread()->fd[get_current_thread()->master_fd];
 	ttype_t *type = (ttype_t*)node->device;
+
+	uint8_t* aligned_buffer = (uint8_t*)buffer;
 	/*for (int i = 0; i < 32; i++)
 		buffer[i] = type->out_buffer[i];*/
 
@@ -116,6 +118,7 @@ void ttype_master_read (vfs_node_t *file, uint64_t* buffer,uint32_t length) {
 void ttype_master_write (vfs_node_t *file, uint64_t* buffer, uint32_t length) {
 	x64_cli();
 
+	uint8_t* aligned_buffer = (uint8_t*)buffer;
 	//! get the master node from the child process
 	//vfs_node_t *node = get_current_thread()->fd[get_current_thread()->master_fd];
 	//ttype_t *type = (ttype_t*)node->device;
@@ -170,17 +173,16 @@ void ttype_master_write (vfs_node_t *file, uint64_t* buffer, uint32_t length) {
  */
 void ttype_slave_read (vfs_node_t *file, uint64_t* buffer,uint32_t length) {
 	x64_cli();
-
+	uint8_t* aligned_buffer = (uint8_t*)buffer;
 	/* get the ttype */
-	/*vfs_node_t *node = get_current_thread()->fd[get_current_thread()->slave_fd];
-	ttype_t *type = (ttype_t*)node->device;*/
+	ttype_t *type = (ttype_t*)file->device;
 
 	//! lets read everything that has been written 
 	//! by child, be carefull we only read that much
 	//! that have been written by child process
-	//for (int i = 0; i < type->written; i++) {
-	//	circular_buf_get(type->in_buffer,(uint8_t*)&buffer[i]);
-	//}
+	for (int i = 0; i < length; i++) {
+		circular_buf_get(type->in_buffer,&aligned_buffer[i]);
+	}
 
 	//! resate the written count, so that child process
 	//! can write its next data
@@ -201,10 +203,18 @@ void ttype_slave_read (vfs_node_t *file, uint64_t* buffer,uint32_t length) {
 }
 
 void ttype_slave_write (vfs_node_t *file, uint64_t* buffer, uint32_t length) {
-	vfs_node_t *node = get_current_thread()->fd[get_current_thread()->slave_fd];
-	ttype_t *type = (ttype_t*)node->device;
-	/*for (int i = 0; i < 32; i++)
-		type->out_buffer[i] = buffer[i];*/
+	x64_cli();
+	uint8_t* aligned_buffer = (uint8_t*)buffer;
+	ttype_t *type = (ttype_t*)file->device;
+	if (length > 512)
+		length = 512;
+
+	if (circular_buf_full(type->in_buffer)){
+		_debug_print_ ("TTYPE In buffer full \r\n");
+	}
+
+	for (int i = 0; i < length; i++)
+		circular_buf_put2(type->in_buffer,aligned_buffer[i]);
 }
 
 ttype_t * get_ttype (int id) {
@@ -217,85 +227,96 @@ ttype_t * get_ttype (int id) {
 	return NULL;
 }
 
-int ttype_create (int* master_fd, int* slave_fd) {
-	x64_cli();
 
-	/** The malloc needs fixings, that's why there
-	 ** are limited number of pty
-	 **/
-	/*if (master_count > 3)
-		return -1;*/
+int tty_ioquery (vfs_node_t *file, int code, void *arg){
+	return 0;
+}
 
-	ttype_t *tty= (ttype_t*)malloc(sizeof(ttype_t));  //pmmngr_alloc();
+/*
+ * ttype_create_master -- creates a master device file
+ * @param tty -- Pointer to ttype structure
+ */
+vfs_node_t* ttype_create_master (ttype_t *tty) {
 
-	void* inbuffer = AuPmmngrAlloc();
-	memset(inbuffer, 0, 4096);
-	void* outbuffer = AuPmmngrAlloc();
-	memset(outbuffer, 0, 4096);
+	vfs_node_t *node = (vfs_node_t*)malloc(sizeof(vfs_node_t));
 
-	tty->in_buffer = circ_buf_init((uint8_t*)inbuffer,4095);
-	tty->out_buffer = circ_buf_init((uint8_t*)outbuffer, 4095);
-	//
-	tty->id = slave_count;
-
-	//! tty->pid -- stores the current terminal emulator id
-
-	//! Create the namings
 	char mname[10];
 	strcpy (mname, "/dev/");
 	strcpy (mname+5, "ttym");
 	sztoa (master_count,mname+9,10);
+	master_count++;
+	strcpy(node->filename, mname+5);
+
+	node->size = 512;
+	node->eof = 0;
+	node->pos = 0;
+	node->current = 0;
+	node->flags = FS_FLAG_GENERAL | FS_FLAG_DEVICE;
+	node->status = 0;
+	node->open = 0;
+	node->device = tty;
+	node->read = ttype_master_read;
+	node->write = ttype_master_write;
+	node->read_blk = 0;
+	node->ioquery = tty_ioquery;
+
+	vfs_mount(mname,node,0);
+	return node;
+}
 
 
+/*
+ * ttype_create_slave -- creates a slave device file
+ * @param tty -- Pointer to ttype structure
+ */
+vfs_node_t* ttype_create_slave (ttype_t *tty) {
 
-	//////! Master node
-	vfs_node_t *mn = (vfs_node_t*)malloc(sizeof(vfs_node_t));  //pmmngr_alloc();
-	strcpy(mn->filename, mname+5);
-	mn->size = 0;
-	mn->eof = 0;
-	mn->pos = 0;
-	mn->current = 0;
-	mn->flags = FS_FLAG_GENERAL;
-	mn->status = 0;
-	mn->open = 0;
-	mn->device = tty;
-	mn->read = ttype_master_read;
-	mn->write = ttype_master_write;
-	mn->read_blk = 0;
-	mn->ioquery = 0;
-
-	_debug_print_ ("[TTY]: Master node mounted at -> %s  \r\n", mname);
+	vfs_node_t *node = (vfs_node_t*)malloc(sizeof(vfs_node_t));
 
 	char sname[10];
 	strcpy (sname, "/dev/");
 	strcpy (sname+5, "ttys");
 	sztoa (slave_count,sname+9,10);
+	slave_count++;
+	strcpy(node->filename, sname+5);
 
-	vfs_node_t *sn = (vfs_node_t*)malloc(sizeof(vfs_node_t));
-	strcpy(sn->filename, sname);
-	sn->size = 0;
-	sn->eof = 0;
-	sn->pos = 0;
-	sn->current = 0;
-	sn->flags = FS_FLAG_GENERAL;
-	sn->status = 0;
-	sn->open = 0;
-	sn->device = tty;
-	sn->read = ttype_slave_read;
-	sn->write = ttype_slave_write;
-	sn->read_blk = 0;
-	sn->ioquery = 0;
-	vfs_mount (sname, sn, 0);
+	node->size = 512;
+	node->eof = 0;
+	node->pos = 0;
+	node->current = 0;
+	node->flags = FS_FLAG_GENERAL | FS_FLAG_DEVICE;
+	node->status = 0;
+	node->open = 0;
+	node->device = tty;
+	node->read = ttype_slave_read;
+	node->write = ttype_slave_write;
+	node->read_blk = 0;
+	node->ioquery = tty_ioquery;
 
-	_debug_print_ ("[TTY]: Slave node mounted at %s \r\n", sname);
-	
-	/*for (int i = 0; i < 32; i++) {
-		tty->m_path[i] = mname[i];
-		tty->s_path[i] = sname[i];
-	}*/
-		
-	tty->controlling_pid = 0;
-	tty->foreground_pid = 0;
+	vfs_mount(sname,node,0);
+	return node;
+}
+
+
+/*
+ * ttype_create -- creates a new tele type structure
+ * @param master_fd -- master file descriptor
+ * @param slave_fd -- slave file descriptor
+ */
+int ttype_create (int* master_fd, int* slave_fd) {
+	x64_cli();
+
+	ttype_t *tty= (ttype_t*)malloc(sizeof(ttype_t)); 
+	_debug_print_ ("TTYPE Created -> %x \r\n", tty);
+	void* inbuffer = malloc(512);
+	memset(inbuffer, 0, 512);
+	void* outbuffer = malloc(512);
+	memset(outbuffer, 0, 512);
+
+	tty->in_buffer = circ_buf_init((uint8_t*)inbuffer,512);
+	tty->out_buffer = circ_buf_init((uint8_t*)outbuffer,512);
+	tty->id = slave_count;
+
 
 	tty->term.c_iflag = ICRNL | BRKINT;
 	tty->term.c_oflag = ONLCR | OPOST;
@@ -318,32 +339,26 @@ int ttype_create (int* master_fd, int* slave_fd) {
 	tty->size.ws_col = 25;
 	tty->size.ws_row = 80;
 
+	vfs_node_t * master = ttype_create_master(tty);
+	vfs_node_t * slave = ttype_create_slave(tty);
+
 	//! Allocate fd for master
 	int m_fd = get_current_thread()->fd_current;
-	get_current_thread()->fd[m_fd] = mn;
+	get_current_thread()->fd[m_fd] = master;
 	get_current_thread()->fd_current++;
 
 	//! Allocate fd for slave
 	int s_fd = get_current_thread()->fd_current;
-	get_current_thread()->fd[s_fd] = sn;
+	get_current_thread()->fd[s_fd] = slave;
 	get_current_thread()->fd_current++;
 
 	get_current_thread()->master_fd = m_fd;
 	get_current_thread()->slave_fd = s_fd;
 
-	get_current_thread()->fd[1] = mn;
-	get_current_thread()->fd[2] = mn;
-
-	//tty->master_fd = 0; //m_fd;
-	//tty->slave_fd = 0; //s_fd;
-
-	//_debug_print_ ("TTY Created \r\n");
-
-	_debug_print_ ("Used RAM -> %d MB/ Total RAM %d MB\r\n", pmmngr_get_used_ram() / 1024 / 1024, pmmngr_get_total_ram() / 1024 / 1024);
+	get_current_thread()->fd[1] = master;
+	get_current_thread()->fd[2] = master;
 
 	ttype_insert (tty);
-	master_count++;
-	slave_count++;
 	*master_fd = m_fd;
 	*slave_fd = s_fd;
 	return 0;

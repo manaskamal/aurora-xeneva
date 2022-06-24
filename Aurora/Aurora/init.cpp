@@ -153,7 +153,6 @@ void _AuMain (KERNEL_BOOT_INFO *info) {
 	/*Initialize other processor */
 	AuInitializeCpu(AuGetNumCPU());	
 
-	
 	/*Clear the lower half for user space */
 	AuPagingClearLow();
 #ifdef ARCH_X64
@@ -165,7 +164,7 @@ void _AuMain (KERNEL_BOOT_INFO *info) {
 	au_status = AuCreateProcess ("/init.exe","shell");
 
 	/* start the compositing window manager at id 3 */
-	au_status = AuCreateProcess ("/priwm.exe","priwm");
+	//au_status = AuCreateProcess ("/priwm.exe","priwm");
 
 	//! Here start the scheduler (multitasking engine)
 	AuSchedulerStart();

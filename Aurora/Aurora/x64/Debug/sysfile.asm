@@ -34,7 +34,7 @@ $pdata$?sys_open_file@@YAHPEADPEAU_file_@@@Z DD imagerel $LN18
 	DD	imagerel $LN18+676
 	DD	imagerel $unwind$?sys_open_file@@YAHPEADPEAU_file_@@@Z
 $pdata$?sys_read_file@@YAXHPEAEPEAU_file_@@@Z DD imagerel $LN12
-	DD	imagerel $LN12+375
+	DD	imagerel $LN12+372
 	DD	imagerel $unwind$?sys_read_file@@YAXHPEAEPEAU_file_@@@Z
 $pdata$?sys_write_file@@YAXHPEA_KPEAU_file_@@@Z DD imagerel $LN6
 	DD	imagerel $LN6+289
@@ -288,11 +288,10 @@ $LN12:
 ; 120  : 	/* if UFILE->size is greater than 0, it's a
 ; 121  : 	 * file system based file descriptor, so get
 ; 122  : 	 * the root file system file */
-; 123  : 	if (ufile->size > 0){
+; 123  : 	if (ufile){
 
-	mov	rax, QWORD PTR ufile$[rsp]
-	cmp	DWORD PTR [rax+4], 0
-	jbe	$LN9@sys_read_f
+	cmp	QWORD PTR ufile$[rsp], 0
+	je	$LN9@sys_read_f
 
 ; 124  : 		node = vfs_finddir("/");
 
@@ -425,9 +424,9 @@ $LN9@sys_read_f:
 $LN1@sys_read_f:
 
 ; 147  : 
-; 148  : 		readfs(node, node, (uint64_t*)buffer, file->size);
+; 148  : 		readfs(node, node, (uint64_t*)buffer, node->size);
 
-	mov	rax, QWORD PTR file$[rsp]
+	mov	rax, QWORD PTR node$[rsp]
 	mov	r9d, DWORD PTR [rax+32]
 	mov	r8, QWORD PTR buffer$[rsp]
 	mov	rdx, QWORD PTR node$[rsp]

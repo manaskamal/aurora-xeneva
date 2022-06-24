@@ -191,7 +191,7 @@ void vfs_mount (char *path, vfs_node_t *node, vfs_entry *dirnode) {
 	if (path[0] == '/' && strlen(path) == 2) {
 		vfs_entry *entry_ = root_dir;
 		if (entry_->node) {
-			printf ("[VFS]: Mounting filesystem to root failed, already in use\n");
+			_debug_print_ ("[VFS]: Mounting filesystem to root failed, already in use\n");
 			return;   //Already a root filesystem is present
 		}
 		entry_->node = node; //else mount
@@ -239,7 +239,7 @@ void vfs_mount (char *path, vfs_node_t *node, vfs_entry *dirnode) {
 			_debug_print_ ("Recursively calling for -> %s \r\n", path);
 			vfs_mount(path,node,ent);
 		}
-		printf ("[vfs]: already mounted -> %s\n", path);
+		_debug_print_ ("[vfs]: already mounted -> %s \r\n", path);
 		return;
 	}
 
