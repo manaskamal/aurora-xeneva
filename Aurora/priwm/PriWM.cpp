@@ -1167,7 +1167,7 @@ XE_EXTERN int XeMain (int argc, char* argv[]) {
 			}
 
 			if (key_msg.dword == KEY_A) {
-				create_process("/ptest.exe", "ptest");
+				create_process("/xecon.exe", "ptest");
 			}
 			memset(&key_msg, 0, sizeof(message_t));
 		}

@@ -24,10 +24,11 @@ vfs_node_t* openfs (vfs_node_t *node, char* path) {
 	}
 }
 
-void readfs (vfs_node_t *node, vfs_node_t* file, uint64_t* buffer, uint32_t length) {
+size_t readfs (vfs_node_t *node, vfs_node_t* file, uint64_t* buffer, uint32_t length) {
 	if (node) {
-		node->read (file, buffer, length);
+		return node->read (file, buffer, length);
 	}
+	return -1;
 }
 
 
@@ -37,10 +38,11 @@ void writefs (vfs_node_t *node, vfs_node_t* file, uint64_t *buffer, uint32_t len
 	}
 }
 
-void readfs_block (vfs_node_t* node, vfs_node_t* file, uint64_t *buffer) {
+size_t readfs_block (vfs_node_t* node, vfs_node_t* file, uint64_t *buffer) {
 	if (node) {
-		node->read_blk (file, buffer);
+		return node->read_blk (file, buffer);
 	}
+	return -1;
 }
 
 int vfs_ioquery (vfs_node_t *node, int code, void* arg) {

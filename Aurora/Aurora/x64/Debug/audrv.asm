@@ -48,7 +48,7 @@ EXTRN	AuMapPage:PROC
 EXTRN	malloc:PROC
 EXTRN	free:PROC
 EXTRN	?fat32_open@@YAPEAU_vfs_node_@@PEAU1@PEAD@Z:PROC ; fat32_open
-EXTRN	?fat32_read@@YAXPEAU_vfs_node_@@PEA_K@Z:PROC	; fat32_read
+EXTRN	?fat32_read@@YA_KPEAU_vfs_node_@@PEA_K@Z:PROC	; fat32_read
 EXTRN	?pci_express_get_device@@YA_KGHHH@Z:PROC	; pci_express_get_device
 EXTRN	pci_express_read:PROC
 pdata	SEGMENT
@@ -144,7 +144,7 @@ $LN5:
 
 	mov	rdx, QWORD PTR buffer$[rsp]
 	mov	rcx, QWORD PTR file$[rsp]
-	call	?fat32_read@@YAXPEAU_vfs_node_@@PEA_K@Z	; fat32_read
+	call	?fat32_read@@YA_KPEAU_vfs_node_@@PEA_K@Z ; fat32_read
 
 ; 178  : 	AuMapPage((uint64_t)buffer,driver_load_base,0);
 
@@ -183,7 +183,7 @@ $LN2@AuDriverLo:
 
 	mov	rdx, QWORD PTR block$1[rsp]
 	mov	rcx, QWORD PTR file$[rsp]
-	call	?fat32_read@@YAXPEAU_vfs_node_@@PEA_K@Z	; fat32_read
+	call	?fat32_read@@YA_KPEAU_vfs_node_@@PEA_K@Z ; fat32_read
 
 ; 186  : 		AuMapPage((uint64_t)block,(driver_load_base + next_base_offset * 4096), 0);
 
@@ -1016,7 +1016,7 @@ $LN21:
 	call	v2p
 	mov	rdx, rax
 	mov	rcx, QWORD PTR file$[rsp]
-	call	?fat32_read@@YAXPEAU_vfs_node_@@PEA_K@Z	; fat32_read
+	call	?fat32_read@@YA_KPEAU_vfs_node_@@PEA_K@Z ; fat32_read
 $LN18@AuDrvMngrI:
 
 ; 233  : 

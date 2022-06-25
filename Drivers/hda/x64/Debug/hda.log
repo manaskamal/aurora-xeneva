@@ -1,14 +1,14 @@
-﻿Build started 21-06-2022 আবেলি 10:59:31.
+﻿Build started 25-06-2022 ৰাতিপু 8:47:33.
      1>Project "E:\Xeneva Project\Xeneva\Drivers\hda\hda.vcxproj" on node 2 (Rebuild target(s)).
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\Aurora\include" /Zi /nologo /W3 /WX- /Od /Oy /D ARCH_X64 /D USE_APIC /D _WINDLL /D _MBCS /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt codec.cpp codecs\sigmatel.cpp hda.cpp stream.cpp widget.cpp
      1>cl : Command line warning D9002: ignoring unknown option '/arch:SSE'
          widget.cpp
-     1>widget.cpp(43): warning C4018: '<' : signed/unsigned mismatch
-     1>widget.cpp(61): warning C4800: 'uint32_t' : forcing value to bool 'true' or 'false' (performance warning)
-     1>widget.cpp(65): warning C4800: 'uint32_t' : forcing value to bool 'true' or 'false' (performance warning)
-     1>widget.cpp(38): warning C4101: 'conn_val' : unreferenced local variable
-     1>widget.cpp(37): warning C4101: 'i' : unreferenced local variable
+     1>widget.cpp(44): warning C4018: '<' : signed/unsigned mismatch
+     1>widget.cpp(62): warning C4800: 'uint32_t' : forcing value to bool 'true' or 'false' (performance warning)
+     1>widget.cpp(66): warning C4800: 'uint32_t' : forcing value to bool 'true' or 'false' (performance warning)
+     1>widget.cpp(39): warning C4101: 'conn_val' : unreferenced local variable
+     1>widget.cpp(38): warning C4101: 'i' : unreferenced local variable
          stream.cpp
      1>stream.cpp(80): warning C4305: 'argument' : truncation from 'int' to 'uint8_t'
      1>stream.cpp(80): warning C4309: 'argument' : truncation of constant value
@@ -47,4 +47,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:09.48
+Time Elapsed 00:00:00.92

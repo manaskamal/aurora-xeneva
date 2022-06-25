@@ -15,6 +15,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "XeWidgets", "..\Libraries\X
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "xncrt", "..\xnlib\xncrt\xncrt.vcxproj", "{71C4D564-00C6-4968-9C75-C2CE6D509C84}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "XeCon", "..\Apps\XeCon\XeCon.vcxproj", "{5AEFB48E-F20E-4E72-ACA2-A4252A2C0D19}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Mixed Platforms = Debug|Mixed Platforms
@@ -97,6 +99,16 @@ Global
 		{71C4D564-00C6-4968-9C75-C2CE6D509C84}.Release|Win32.ActiveCfg = Release|Win32
 		{71C4D564-00C6-4968-9C75-C2CE6D509C84}.Release|Win32.Build.0 = Release|Win32
 		{71C4D564-00C6-4968-9C75-C2CE6D509C84}.Release|x64.ActiveCfg = Release|Win32
+		{5AEFB48E-F20E-4E72-ACA2-A4252A2C0D19}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{5AEFB48E-F20E-4E72-ACA2-A4252A2C0D19}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{5AEFB48E-F20E-4E72-ACA2-A4252A2C0D19}.Debug|Win32.ActiveCfg = Debug|Win32
+		{5AEFB48E-F20E-4E72-ACA2-A4252A2C0D19}.Debug|Win32.Build.0 = Debug|Win32
+		{5AEFB48E-F20E-4E72-ACA2-A4252A2C0D19}.Debug|x64.ActiveCfg = Debug|x64
+		{5AEFB48E-F20E-4E72-ACA2-A4252A2C0D19}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{5AEFB48E-F20E-4E72-ACA2-A4252A2C0D19}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{5AEFB48E-F20E-4E72-ACA2-A4252A2C0D19}.Release|Win32.ActiveCfg = Release|Win32
+		{5AEFB48E-F20E-4E72-ACA2-A4252A2C0D19}.Release|Win32.Build.0 = Release|Win32
+		{5AEFB48E-F20E-4E72-ACA2-A4252A2C0D19}.Release|x64.ActiveCfg = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

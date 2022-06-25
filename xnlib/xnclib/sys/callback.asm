@@ -337,12 +337,13 @@ sys_pause_timer:
 	syscall
 	ret
 
-global sys_ttype_dup
-export sys_ttype_dup
-sys_ttype_dup:
+global sys_copy_fd
+export sys_copy_fd
+sys_copy_fd:
     mov r12, 21
 	mov r13, rcx
 	mov r14, rdx
+	mov r15, r8
 	syscall
 	ret
 

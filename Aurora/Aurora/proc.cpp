@@ -309,7 +309,7 @@ int AuCreateProcess(const char* filename, char* procname) {
     add_process(process);
 
 	//free(file);
-	return process->pid_t;
+	return t->id;
 }
 
 /**

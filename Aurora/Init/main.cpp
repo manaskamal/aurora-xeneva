@@ -27,24 +27,7 @@ XE_EXTERN XE_EXPORT int XeMain (int argc, char* argv[]) {
 	sys_print_text ("Ptr returned -> %x \r\n", ptr);
 	void* p = malloc(16);
 	sys_print_text ("P -> %x \n", p);
-	int master,  slave = 0;
-	sys_ttype_create(&master, &slave);
-	sys_print_text ("Master fd -> %d, slave fd -> %d \r\n", master, slave);
-	uint8_t *out_buffer = (uint8_t*)malloc(512);
-	uint8_t *in_buffer = (uint8_t*)malloc(512);
-
-	memset(out_buffer, 'M', 512);
-	memset(in_buffer,0, 512);
-
-	UFILE f;
-	f.flags = 0;
-	f.size = 512;
-	sys_write_file(slave,(uint64_t*)out_buffer, &f);
-
 	while(1) {
-		sys_read_file(slave, in_buffer,NULL);
-		for (int i = 0; i < 512; i++)
-			sys_print_text ("%c", in_buffer[i]);
 		sys_wait();
 	}
 	return 0;

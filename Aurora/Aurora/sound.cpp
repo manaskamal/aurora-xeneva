@@ -117,9 +117,10 @@ dsp_t* AuSoundGetDSP(uint16_t id) {
 }
 
 
-void AuSoundRead (vfs_node_t *file, uint64_t* buffer, uint32_t length) {
+size_t AuSoundRead (vfs_node_t *file, uint64_t* buffer, uint32_t length) {
 	if (registered_dev == NULL)
-		return;
+		return -1;
+	return 0;
 }
 
 void AuSoundWrite (vfs_node_t *file, uint8_t* buffer, uint32_t length) {

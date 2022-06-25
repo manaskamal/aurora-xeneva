@@ -135,14 +135,14 @@ extern vfs_node_t* fat32_open (vfs_node_t *node,char* filename);
  * @param buffer -- buffer to store to
  * @param count -- size of the file
  */
-extern void fat32_read_file (vfs_node_t *file, uint64_t* buf, uint32_t count);
+extern size_t fat32_read_file (vfs_node_t *file, uint64_t* buf, uint32_t count);
 
 /**
  * fat32_read -- read just 4kb portion of a file
  * @param file -- file structure pointer
  * @param buf -- pointer to buffer to store the content
  */
-extern void fat32_read (vfs_node_t *file, uint64_t* buf);
+extern size_t fat32_read (vfs_node_t *file, uint64_t* buf);
 
 /**
  * fat32_locate_dir -- locates a file in current directory

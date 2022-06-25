@@ -38,6 +38,7 @@
 #include <proc.h>
 #include <arch\x86_64\cpu.h>
 #include <serial.h>
+#include <error.h>
 #include <hal.h>
 /**
  * sys_open_file -- opens a file 
@@ -63,7 +64,7 @@ int sys_open_file (char* filename, FILE *ufile) {
 
 	pathname[i] = 0;
 
-    int fd = 0;
+	int fd = AU_INVLD_FD;
 	vfs_node_t *node = vfs_finddir(filename);
 
 	bool fd_found = false;
@@ -111,10 +112,10 @@ int sys_open_file (char* filename, FILE *ufile) {
  * @param buffer -- buffer to write the content to
  * @param ufile -- user mode file structure
  */
-void sys_read_file (int fd, uint8_t* buffer, FILE *ufile) {
+size_t sys_read_file (int fd, uint8_t* buffer, FILE *ufile) {
 	x64_cli ();
 	vfs_node_t *file = NULL; 
-
+	size_t byte_read = AU_INVALID;
 	vfs_node_t *node = NULL;
 
 	/* if UFILE->size is greater than 0, it's a
@@ -124,7 +125,7 @@ void sys_read_file (int fd, uint8_t* buffer, FILE *ufile) {
 		node = vfs_finddir("/");
 		file = get_current_thread()->fd[fd];
 		if (node == NULL)
-			return;
+			return byte_read;
 		for (int i=0; i < ufile->size; i++){
 			if (file->eof) {
 				ufile->eof = 1;
@@ -132,10 +133,11 @@ void sys_read_file (int fd, uint8_t* buffer, FILE *ufile) {
 			}
 			uint64_t* buff = (uint64_t*)p2v((size_t)AuPmmngrAlloc());
 			memset(buff, 0, 4096);
-			readfs_block (node,file,(uint64_t*)v2p((size_t)buff));
+			size_t read_ = readfs_block (node,file,(uint64_t*)v2p((size_t)buff));
 			memcpy (buffer,buff,4096);
 			buffer += 4096;
 			AuPmmngrFree((void*)v2p((size_t)buff));
+			byte_read += read_;
 		}
 
 	}else if (ufile == NULL) {
@@ -143,11 +145,13 @@ void sys_read_file (int fd, uint8_t* buffer, FILE *ufile) {
 		 * get it from fd table */
 		node = get_current_thread()->fd[fd];
 		if (node == NULL)
-			return;
+			return byte_read;
 
-		readfs(node, node, (uint64_t*)buffer, node->size);
+		size_t read_ = readfs(node, node, (uint64_t*)buffer, node->size);
+		byte_read += read_;
 	}
 
+	return byte_read;
 }
 
 
@@ -198,5 +202,27 @@ void sys_close_file (int fd) {
 		free(node);
 	}
 
+}
+
+/* sys_copy_fd -- copies a file descriptor to another process main thread
+ * @param tid -- thread id
+ * @param fd -- file descriptor to copy
+ */
+int sys_copy_fd (int tid, int fd, int dest_fd) {
+	x64_cli();
+	vfs_node_t *node = get_current_thread()->fd[fd];
+	thread_t *t = thread_iterate_block_list(tid);
+	if (t == NULL)
+		t = thread_iterate_ready_list(tid);
+
+	if (t == NULL)
+		return AU_FAILURE;
+
+	if (t->fd[dest_fd] != NULL){
+		return AU_FAILURE;
+	}else{
+		t->fd[dest_fd] = node;
+	}
+	return AU_SUCCESS;
 }
 

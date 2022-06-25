@@ -26,7 +26,7 @@ EXTRN	x64_cli:PROC
 EXTRN	AuMapPage:PROC
 EXTRN	get_current_thread:PROC
 EXTRN	?AuFindVMA@@YAPEAU_vma_area_@@_K@Z:PROC		; AuFindVMA
-EXTRN	?fat32_read@@YAXPEAU_vfs_node_@@PEA_K@Z:PROC	; fat32_read
+EXTRN	?fat32_read@@YA_KPEAU_vfs_node_@@PEA_K@Z:PROC	; fat32_read
 pdata	SEGMENT
 $pdata$?AuHandlePageNotPresent@@YAX_K_NPEAX@Z DD imagerel $LN13
 	DD	imagerel $LN13+337
@@ -189,7 +189,7 @@ $LN4@AuHandlePa:
 	mov	rdx, QWORD PTR phys_addr$2[rsp]
 	mov	rax, QWORD PTR vm$[rsp]
 	mov	rcx, QWORD PTR [rax+24]
-	call	?fat32_read@@YAXPEAU_vfs_node_@@PEA_K@Z	; fat32_read
+	call	?fat32_read@@YA_KPEAU_vfs_node_@@PEA_K@Z ; fat32_read
 $LN1@AuHandlePa:
 
 ; 65   : 		}

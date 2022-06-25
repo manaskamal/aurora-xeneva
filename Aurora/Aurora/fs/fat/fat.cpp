@@ -197,7 +197,7 @@ void fat32_clear_cluster (uint32_t cluster) {
  * @param file -- file structure pointer
  * @param buf -- pointer to buffer to store the content
  */
-void fat32_read (vfs_node_t *file, uint64_t* buf) {
+size_t fat32_read (vfs_node_t *file, uint64_t* buf) {
 
 	auto lba = cluster_to_sector32 (file->current); 
 
@@ -207,15 +207,16 @@ void fat32_read (vfs_node_t *file, uint64_t* buf) {
 
 	if (value  >= 0x0FFFFFF8) {
 	    file->eof = 1;
-		return;
+		return -1;
 	}
 
 	if (value  == 0x0FFFFFF7) {
 	    file->eof = 1;
-		return;
+		return -1;
 	}
 	
 	file->current = value;
+	return 4096;
 }
 
 
@@ -226,17 +227,20 @@ void fat32_read (vfs_node_t *file, uint64_t* buf) {
  * @param buffer -- buffer to store to
  * @param count -- size of the file
  */
-void fat32_read_file (vfs_node_t *file, uint64_t* buffer, uint32_t count) {
+size_t fat32_read_file (vfs_node_t *file, uint64_t* buffer, uint32_t count) {
 	/*while(file->eof != 1) {
 		fat32_read (file,buffer);
 		buffer += 4096;
 	}*/
+	int i_bytes = 0; 
 	for (int i=0; i < count; i+= 8) {
-		fat32_read (file, buffer);
 		if (file->eof) 
 			break;
+		int bytes = fat32_read (file, buffer);
+		i_bytes += bytes;
 		buffer += 4096;
 	}
+	return i_bytes;
 }
 
 /**

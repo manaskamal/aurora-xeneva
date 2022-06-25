@@ -16,7 +16,7 @@ $SG3522	DB	'/dev/', 00H
 CONST	ENDS
 PUBLIC	?pipe_create@@YAPEAU_pipe_@@XZ			; pipe_create
 PUBLIC	?allocate_pipe@@YAXPEAHPEAD@Z			; allocate_pipe
-PUBLIC	?pipe_read@@YAXPEAU_vfs_node_@@PEA_KI@Z		; pipe_read
+PUBLIC	?pipe_read@@YA_KPEAU_vfs_node_@@PEA_KI@Z	; pipe_read
 PUBLIC	?pipe_write@@YAXPEAU_vfs_node_@@PEA_KI@Z	; pipe_write
 EXTRN	?circ_buf_init@@YAPEAU_circ_buf_@@PEAE_K@Z:PROC	; circ_buf_init
 EXTRN	?circular_buf_put@@YAXPEAU_circ_buf_@@E@Z:PROC	; circular_buf_put
@@ -35,9 +35,9 @@ $pdata$?pipe_create@@YAPEAU_pipe_@@XZ DD imagerel $LN3
 $pdata$?allocate_pipe@@YAXPEAHPEAD@Z DD imagerel $LN5
 	DD	imagerel $LN5+465
 	DD	imagerel $unwind$?allocate_pipe@@YAXPEAHPEAD@Z
-$pdata$?pipe_read@@YAXPEAU_vfs_node_@@PEA_KI@Z DD imagerel $LN6
-	DD	imagerel $LN6+100
-	DD	imagerel $unwind$?pipe_read@@YAXPEAU_vfs_node_@@PEA_KI@Z
+$pdata$?pipe_read@@YA_KPEAU_vfs_node_@@PEA_KI@Z DD imagerel $LN6
+	DD	imagerel $LN6+105
+	DD	imagerel $unwind$?pipe_read@@YA_KPEAU_vfs_node_@@PEA_KI@Z
 $pdata$?pipe_write@@YAXPEAU_vfs_node_@@PEA_KI@Z DD imagerel $LN6
 	DD	imagerel $LN6+97
 	DD	imagerel $unwind$?pipe_write@@YAXPEAU_vfs_node_@@PEA_KI@Z
@@ -47,7 +47,7 @@ $unwind$?pipe_create@@YAPEAU_pipe_@@XZ DD 010401H
 	DD	08204H
 $unwind$?allocate_pipe@@YAXPEAHPEAD@Z DD 010e01H
 	DD	0c20eH
-$unwind$?pipe_read@@YAXPEAU_vfs_node_@@PEA_KI@Z DD 011301H
+$unwind$?pipe_read@@YA_KPEAU_vfs_node_@@PEA_KI@Z DD 011301H
 	DD	06213H
 $unwind$?pipe_write@@YAXPEAU_vfs_node_@@PEA_KI@Z DD 011301H
 	DD	06213H
@@ -62,7 +62,7 @@ buffer$ = 72
 length$ = 80
 ?pipe_write@@YAXPEAU_vfs_node_@@PEA_KI@Z PROC		; pipe_write
 
-; 37   : void pipe_write (vfs_node_t *file, uint64_t* buffer, uint32_t length) {
+; 39   : void pipe_write (vfs_node_t *file, uint64_t* buffer, uint32_t length) {
 
 $LN6:
 	mov	DWORD PTR [rsp+24], r8d
@@ -70,13 +70,13 @@ $LN6:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 56					; 00000038H
 
-; 38   : 	pipe_t *p = (pipe_t*)file->device;
+; 40   : 	pipe_t *p = (pipe_t*)file->device;
 
 	mov	rax, QWORD PTR file$[rsp]
 	mov	rax, QWORD PTR [rax+56]
 	mov	QWORD PTR p$[rsp], rax
 
-; 39   : 	for (int i = 0; i < length; i++) {
+; 41   : 	for (int i = 0; i < length; i++) {
 
 	mov	DWORD PTR i$1[rsp], 0
 	jmp	SHORT $LN3@pipe_write
@@ -89,7 +89,7 @@ $LN3@pipe_write:
 	cmp	DWORD PTR i$1[rsp], eax
 	jae	SHORT $LN1@pipe_write
 
-; 40   : 		circular_buf_put(p->buf, buffer[i]);
+; 42   : 		circular_buf_put(p->buf, buffer[i]);
 
 	movsxd	rax, DWORD PTR i$1[rsp]
 	mov	rcx, QWORD PTR buffer$[rsp]
@@ -98,12 +98,12 @@ $LN3@pipe_write:
 	mov	rcx, QWORD PTR [rax]
 	call	?circular_buf_put@@YAXPEAU_circ_buf_@@E@Z ; circular_buf_put
 
-; 41   : 	}
+; 43   : 	}
 
 	jmp	SHORT $LN2@pipe_write
 $LN1@pipe_write:
 
-; 42   : }
+; 44   : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -117,9 +117,9 @@ p$ = 40
 file$ = 64
 buffer$ = 72
 length$ = 80
-?pipe_read@@YAXPEAU_vfs_node_@@PEA_KI@Z PROC		; pipe_read
+?pipe_read@@YA_KPEAU_vfs_node_@@PEA_KI@Z PROC		; pipe_read
 
-; 30   : void pipe_read (vfs_node_t *file, uint64_t* buffer,uint32_t length) {
+; 30   : size_t pipe_read (vfs_node_t *file, uint64_t* buffer,uint32_t length) {
 
 $LN6:
 	mov	DWORD PTR [rsp+24], r8d
@@ -158,11 +158,16 @@ $LN3@pipe_read:
 	jmp	SHORT $LN2@pipe_read
 $LN1@pipe_read:
 
-; 34   : }
+; 34   : 
+; 35   : 	return 1;
+
+	mov	eax, 1
+
+; 36   : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
-?pipe_read@@YAXPEAU_vfs_node_@@PEA_KI@Z ENDP		; pipe_read
+?pipe_read@@YA_KPEAU_vfs_node_@@PEA_KI@Z ENDP		; pipe_read
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\utils\pipe.cpp
@@ -177,24 +182,24 @@ fd$ = 112
 name$ = 120
 ?allocate_pipe@@YAXPEAHPEAD@Z PROC			; allocate_pipe
 
-; 46   : void allocate_pipe (int *fd, char* name) {
+; 48   : void allocate_pipe (int *fd, char* name) {
 
 $LN5:
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 104				; 00000068H
 
-; 47   : 
-; 48   : 	///!=========================================
-; 49   : 	///!  Allocate new node for read
+; 49   : 
 ; 50   : 	///!=========================================
-; 51   : 	pipe_t *p = pipe_create();
+; 51   : 	///!  Allocate new node for read
+; 52   : 	///!=========================================
+; 53   : 	pipe_t *p = pipe_create();
 
 	call	?pipe_create@@YAPEAU_pipe_@@XZ		; pipe_create
 	mov	QWORD PTR p$[rsp], rax
 
-; 52   : 	char p_value[2];
-; 53   : 	sztoa(pipe_count, p_value,10);
+; 54   : 	char p_value[2];
+; 55   : 	sztoa(pipe_count, p_value,10);
 
 	movsxd	rax, DWORD PTR ?pipe_count@@3HA		; pipe_count
 	mov	r8d, 10
@@ -202,31 +207,31 @@ $LN5:
 	mov	rcx, rax
 	call	?sztoa@@YAPEAD_KPEADH@Z			; sztoa
 
-; 54   : 
-; 55   : 	char pipe_name[10];
-; 56   : 	if (name)
+; 56   : 
+; 57   : 	char pipe_name[10];
+; 58   : 	if (name)
 
 	cmp	QWORD PTR name$[rsp], 0
 	je	SHORT $LN2@allocate_p
 
-; 57   : 		strcpy(pipe_name, name);
+; 59   : 		strcpy(pipe_name, name);
 
 	mov	rdx, QWORD PTR name$[rsp]
 	lea	rcx, QWORD PTR pipe_name$[rsp]
 	call	strcpy
 
-; 58   : 	else {
+; 60   : 	else {
 
 	jmp	SHORT $LN1@allocate_p
 $LN2@allocate_p:
 
-; 59   : 		strcpy(pipe_name, "pipe");
+; 61   : 		strcpy(pipe_name, "pipe");
 
 	lea	rdx, OFFSET FLAT:$SG3520
 	lea	rcx, QWORD PTR pipe_name$[rsp]
 	call	strcpy
 
-; 60   : 		strcpy (pipe_name + strlen(pipe_name)-1, p_value);
+; 62   : 		strcpy (pipe_name + strlen(pipe_name)-1, p_value);
 
 	lea	rcx, QWORD PTR pipe_name$[rsp]
 	call	strlen
@@ -236,17 +241,17 @@ $LN2@allocate_p:
 	call	strcpy
 $LN1@allocate_p:
 
-; 61   : 	}
-; 62   : 	
-; 63   : 
-; 64   : 	char path_name[10];
-; 65   : 	strcpy(path_name, "/dev/");
+; 63   : 	}
+; 64   : 	
+; 65   : 
+; 66   : 	char path_name[10];
+; 67   : 	strcpy(path_name, "/dev/");
 
 	lea	rdx, OFFSET FLAT:$SG3522
 	lea	rcx, QWORD PTR path_name$[rsp]
 	call	strcpy
 
-; 66   : 	strcpy (path_name + strlen(path_name)-1, pipe_name);
+; 68   : 	strcpy (path_name + strlen(path_name)-1, pipe_name);
 
 	lea	rcx, QWORD PTR path_name$[rsp]
 	call	strlen
@@ -255,98 +260,98 @@ $LN1@allocate_p:
 	mov	rcx, rax
 	call	strcpy
 
-; 67   : 
-; 68   : 	
-; 69   : 	vfs_node_t *readn = (vfs_node_t*)malloc(sizeof(vfs_node_t));
+; 69   : 
+; 70   : 	
+; 71   : 	vfs_node_t *readn = (vfs_node_t*)malloc(sizeof(vfs_node_t));
 
 	mov	ecx, 104				; 00000068H
 	call	malloc
 	mov	QWORD PTR readn$[rsp], rax
 
-; 70   : 	strcpy(readn->filename, pipe_name);
+; 72   : 	strcpy(readn->filename, pipe_name);
 
 	mov	rax, QWORD PTR readn$[rsp]
 	lea	rdx, QWORD PTR pipe_name$[rsp]
 	mov	rcx, rax
 	call	strcpy
 
-; 71   : 	readn->size = 0;
+; 73   : 	readn->size = 0;
 
 	mov	rax, QWORD PTR readn$[rsp]
 	mov	DWORD PTR [rax+32], 0
 
-; 72   : 	readn->eof = 0;
+; 74   : 	readn->eof = 0;
 
 	mov	rax, QWORD PTR readn$[rsp]
 	mov	BYTE PTR [rax+36], 0
 
-; 73   : 	readn->pos = 0;
+; 75   : 	readn->pos = 0;
 
 	mov	rax, QWORD PTR readn$[rsp]
 	mov	DWORD PTR [rax+40], 0
 
-; 74   : 	readn->current = 0;
+; 76   : 	readn->current = 0;
 
 	mov	rax, QWORD PTR readn$[rsp]
 	mov	DWORD PTR [rax+44], 0
 
-; 75   : 	readn->flags = FS_FLAG_GENERAL | FS_FLAG_DEVICE;
+; 77   : 	readn->flags = FS_FLAG_GENERAL | FS_FLAG_DEVICE;
 
 	mov	rax, QWORD PTR readn$[rsp]
 	mov	BYTE PTR [rax+48], 12
 
-; 76   : 	readn->status = 0;
+; 78   : 	readn->status = 0;
 
 	mov	rax, QWORD PTR readn$[rsp]
 	mov	BYTE PTR [rax+49], 0
 
-; 77   : 	readn->open = 0;
+; 79   : 	readn->open = 0;
 
 	mov	rax, QWORD PTR readn$[rsp]
 	mov	QWORD PTR [rax+64], 0
 
-; 78   : 	readn->device = p;
+; 80   : 	readn->device = p;
 
 	mov	rax, QWORD PTR readn$[rsp]
 	mov	rcx, QWORD PTR p$[rsp]
 	mov	QWORD PTR [rax+56], rcx
 
-; 79   : 	readn->read = pipe_read;
+; 81   : 	readn->read = pipe_read;
 
 	mov	rax, QWORD PTR readn$[rsp]
-	lea	rcx, OFFSET FLAT:?pipe_read@@YAXPEAU_vfs_node_@@PEA_KI@Z ; pipe_read
+	lea	rcx, OFFSET FLAT:?pipe_read@@YA_KPEAU_vfs_node_@@PEA_KI@Z ; pipe_read
 	mov	QWORD PTR [rax+72], rcx
 
-; 80   : 	readn->write = pipe_write;
+; 82   : 	readn->write = pipe_write;
 
 	mov	rax, QWORD PTR readn$[rsp]
 	lea	rcx, OFFSET FLAT:?pipe_write@@YAXPEAU_vfs_node_@@PEA_KI@Z ; pipe_write
 	mov	QWORD PTR [rax+80], rcx
 
-; 81   : 	readn->read_blk = 0;
+; 83   : 	readn->read_blk = 0;
 
 	mov	rax, QWORD PTR readn$[rsp]
 	mov	QWORD PTR [rax+88], 0
 
-; 82   : 	readn->ioquery = 0;
+; 84   : 	readn->ioquery = 0;
 
 	mov	rax, QWORD PTR readn$[rsp]
 	mov	QWORD PTR [rax+96], 0
 
-; 83   : 	vfs_mount (path_name, readn, 0);
+; 85   : 	vfs_mount (path_name, readn, 0);
 
 	xor	r8d, r8d
 	mov	rdx, QWORD PTR readn$[rsp]
 	lea	rcx, QWORD PTR path_name$[rsp]
 	call	vfs_mount
 
-; 84   : 
-; 85   : 	thread_t * t = get_current_thread();
+; 86   : 
+; 87   : 	thread_t * t = get_current_thread();
 
 	call	get_current_thread
 	mov	QWORD PTR t$[rsp], rax
 
-; 86   : 	t->fd[t->fd_current] = readn;
+; 88   : 	t->fd[t->fd_current] = readn;
 
 	mov	rax, QWORD PTR t$[rsp]
 	movsxd	rax, DWORD PTR [rax+760]
@@ -354,14 +359,14 @@ $LN1@allocate_p:
 	mov	rdx, QWORD PTR readn$[rsp]
 	mov	QWORD PTR [rcx+rax*8+280], rdx
 
-; 87   : 	*fd = t->fd_current;
+; 89   : 	*fd = t->fd_current;
 
 	mov	rax, QWORD PTR fd$[rsp]
 	mov	rcx, QWORD PTR t$[rsp]
 	mov	ecx, DWORD PTR [rcx+760]
 	mov	DWORD PTR [rax], ecx
 
-; 88   : 	t->fd_current++;
+; 90   : 	t->fd_current++;
 
 	mov	rax, QWORD PTR t$[rsp]
 	mov	eax, DWORD PTR [rax+760]
@@ -369,14 +374,14 @@ $LN1@allocate_p:
 	mov	rcx, QWORD PTR t$[rsp]
 	mov	DWORD PTR [rcx+760], eax
 
-; 89   : 	
-; 90   : 	pipe_count++;
+; 91   : 	
+; 92   : 	pipe_count++;
 
 	mov	eax, DWORD PTR ?pipe_count@@3HA		; pipe_count
 	inc	eax
 	mov	DWORD PTR ?pipe_count@@3HA, eax		; pipe_count
 
-; 91   : }
+; 93   : }
 
 	add	rsp, 104				; 00000068H
 	ret	0

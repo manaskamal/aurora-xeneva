@@ -90,7 +90,7 @@ extern "C" void x64_syscall_handler (int a) {
 		funct = (uint64_t*)sys_read_file;
 		break;
 	case 21:
-		funct = (uint64_t*)ttype_dup_master;
+		funct = (uint64_t*)sys_copy_fd;
 		break;
 	case 22:
 		funct = (uint64_t*)sys_get_used_ram;

@@ -38,7 +38,7 @@ EXTRN	memset:PROC
 EXTRN	memcpy:PROC
 EXTRN	free:PROC
 EXTRN	?fat32_open@@YAPEAU_vfs_node_@@PEAU1@PEAD@Z:PROC ; fat32_open
-EXTRN	?fat32_read_file@@YAXPEAU_vfs_node_@@PEA_KI@Z:PROC ; fat32_read_file
+EXTRN	?fat32_read_file@@YA_KPEAU_vfs_node_@@PEA_KI@Z:PROC ; fat32_read_file
 EXTRN	AuGetFramebuffer:PROC
 pdata	SEGMENT
 $pdata$?AuConsoleInitialize@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z DD imagerel $LN4
@@ -827,7 +827,7 @@ $LN4:
 	mov	r8d, DWORD PTR [rcx+32]
 	mov	rdx, rax
 	mov	rcx, QWORD PTR file$[rsp]
-	call	?fat32_read_file@@YAXPEAU_vfs_node_@@PEA_KI@Z ; fat32_read_file
+	call	?fat32_read_file@@YA_KPEAU_vfs_node_@@PEA_KI@Z ; fat32_read_file
 $LN1@AuConsoleI:
 
 ; 59   : 	uint8_t* aligned_buf = (uint8_t*)buffer;

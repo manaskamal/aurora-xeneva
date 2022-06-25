@@ -31,7 +31,7 @@ EXTRN	AuPmmngrAlloc:PROC
 EXTRN	malloc:PROC
 EXTRN	free:PROC
 EXTRN	?fat32_open@@YAPEAU_vfs_node_@@PEAU1@PEAD@Z:PROC ; fat32_open
-EXTRN	?fat32_read@@YAXPEAU_vfs_node_@@PEA_K@Z:PROC	; fat32_read
+EXTRN	?fat32_read@@YA_KPEAU_vfs_node_@@PEA_K@Z:PROC	; fat32_read
 EXTRN	printf:PROC
 pdata	SEGMENT
 $pdata$?AuSysLibInitialize@@YAXXZ DD imagerel $LN3
@@ -112,7 +112,7 @@ $LN3@AuSysLoadL:
 
 	mov	rdx, QWORD PTR phys_start$[rsp]
 	mov	rcx, QWORD PTR file$[rsp]
-	call	?fat32_read@@YAXPEAU_vfs_node_@@PEA_K@Z	; fat32_read
+	call	?fat32_read@@YA_KPEAU_vfs_node_@@PEA_K@Z ; fat32_read
 
 ; 95   : 	blocks_read = 1;
 
@@ -136,7 +136,7 @@ $LN2@AuSysLoadL:
 
 	mov	rdx, QWORD PTR phys$1[rsp]
 	mov	rcx, QWORD PTR file$[rsp]
-	call	?fat32_read@@YAXPEAU_vfs_node_@@PEA_K@Z	; fat32_read
+	call	?fat32_read@@YA_KPEAU_vfs_node_@@PEA_K@Z ; fat32_read
 
 ; 100  : 		blocks_read++;
 

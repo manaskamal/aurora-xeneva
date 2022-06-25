@@ -38,11 +38,11 @@ int mouse_ioquery (vfs_node_t *node, int code, void* arg) {
 /*
  *  Read current pointer message
  */
-void AuPointerRead (vfs_node_t *file, uint64_t* buffer, uint32_t length) {
+size_t AuPointerRead (vfs_node_t *file, uint64_t* buffer, uint32_t length) {
 	x64_cli();
-	printf ("Reading Pointer \n");
 	thread_t* t = get_current_thread();
 	memcpy (buffer, t->msg_box, sizeof(dwm_message_t));
+	return 0;
 }
 
 

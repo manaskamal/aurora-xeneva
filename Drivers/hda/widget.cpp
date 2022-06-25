@@ -30,6 +30,7 @@
 
 #include "hda.h"
 #include <stdio.h>
+#include <serial.h>
 
 void widget_dump_connection (int codec, int nid) {
 	uint32_t num_conn;
@@ -118,7 +119,6 @@ void widget_init (int codec, int nid) {
 	default: s = "unknown"; break;
 
 	}
-
 
 	amp_gain = codec_query(codec, nid, VERB_GET_AMP_GAIN_MUTE | ((1<<15) | (1<<13)));
 	amp_gain |= codec_query(codec, nid, VERB_GET_AMP_GAIN_MUTE | ((1<<15) | (0<<13)));

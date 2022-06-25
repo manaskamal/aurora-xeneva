@@ -6,9 +6,9 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 CONST	SEGMENT
-$SG3930	DB	'***Process killed ', 0dH, 0aH, 00H
+$SG3932	DB	'***Process killed ', 0dH, 0aH, 00H
 	ORG $+3
-$SG3931	DB	'*** Current used RAM -> %d MB / total -> %d MB ', 0dH, 0aH
+$SG3933	DB	'*** Current used RAM -> %d MB / total -> %d MB ', 0dH, 0aH
 	DB	00H
 CONST	ENDS
 PUBLIC	?create__sys_process@@YAHPEBDPEAD@Z		; create__sys_process
@@ -161,7 +161,7 @@ $LN3:
 
 ; 57   : 	_debug_print_ ("***Process killed \r\n");
 
-	lea	rcx, OFFSET FLAT:$SG3930
+	lea	rcx, OFFSET FLAT:$SG3932
 	call	_debug_print_
 
 ; 58   : 	_debug_print_ ("*** Current used RAM -> %d MB / total -> %d MB \r\n", pmmngr_get_used_ram() / 1024 / 1024, pmmngr_get_total_ram() / 1024 / 1024);
@@ -184,7 +184,7 @@ $LN3:
 	mov	rcx, QWORD PTR tv67[rsp]
 	mov	r8, rcx
 	mov	rdx, rax
-	lea	rcx, OFFSET FLAT:$SG3931
+	lea	rcx, OFFSET FLAT:$SG3933
 	call	_debug_print_
 
 ; 59   : 	force_sched();

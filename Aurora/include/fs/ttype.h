@@ -50,11 +50,20 @@ typedef struct _tele_type_ {
 	uint8_t id;
 	winsize_t size;
 	termios_t term;
-	circ_buf_t *in_buffer;
-	circ_buf_t *out_buffer;
+	circ_buf_t *master_buffer;
+	circ_buf_t *slave_buffer;
+	int master_written;
+	int slave_written;
 	struct _tele_type_ *next;
 	struct _tele_type_ *prev;
 }ttype_t;
+
+/* IoQuery Commands */
+#define TIOCGWINSZ  0x5401
+#define TIOCSWINSZ  0x5402
+#define TIOCFLUSH   0x5403
+#define TIOCGATTR   0x5404
+
 
 extern void ttype_init ();
 /*

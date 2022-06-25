@@ -1,0 +1,78 @@
+#include <stdint.h>
+#include <stdarg.h>
+#include <sys\_ipc.h>
+#include <sys\_file.h>
+#include <sys\_term.h>
+#include <sys\_process.h>
+#include <string.h>
+#include <sys\_sleep.h>
+#include <sys\ioquery.h>
+#include <sys\_wait.h>
+#include <sys\shm.h>
+#include <sys\_thread.h>
+#include <sys\_kybrd.h>
+#include <sys\ioquery.h>
+#include <stdlib.h>
+#include <acrylic.h>
+#include <font.h>
+#include <sys\_xeneva.h>
+
+#include <xewidgets.h>
+#include <canvas.h>
+#include <stdlib.h>
+#include "XeTerm.h"
+
+/*
+ * main -- the main entry point of priwm
+ */
+XE_EXTERN int XeMain (int argc, char* argv[]) {
+
+	XeApp *app = XeStartApplication(argc, argv);
+	int event_fd = app->event_fd;
+
+	canvas_t * canvas = create_canvas(app->buffer_width, app->buffer_height);
+
+	XEWindow *win = XECreateWindow(app,canvas, 1,"XeConsole",canvas->width/2 - 400/2,canvas->height/2 - 400/2);
+
+	XETerm *term = XECreateTerm(0,23, app->buffer_width, app->buffer_height - 23);
+
+	XEWindowAddWidget(win, (XEWidget*)term);
+
+	XEShowWindow(win);
+
+	int master_fd, slave_fd = 0;
+	sys_ttype_create(&master_fd, &slave_fd);
+
+	winsize_t sz;
+	sz.ws_col = term->ws_col;
+	sz.ws_row = term->ws_row;
+	sz.ws_xpixel = term->ws_xpixels;
+	sz.ws_ypixel = term->ws_ypixels;
+	ioquery(master_fd, TIOCSWINSZ, &sz);
+
+	unsigned char* buff = (unsigned char*)malloc(512);
+	memset(buff, 0, 512);
+
+	int pid = create_process("/ptest.exe", "ptest");
+	sys_copy_fd(pid, slave_fd, 0);
+
+	pri_event_t ev;
+	int bytes_ret = 0;
+	for(;;) {
+		bytes_ret = sys_read_file(master_fd, buff, NULL);
+
+		for (int i = 0; i < bytes_ret; i++)
+			sys_print_text ("%c",buff[i]);
+
+		ioquery(event_fd,PRI_LOOP_GET_EVENT, &ev);
+		if (ev.type != 0) {
+			if (ev.type == 201) {
+				XEWindowMouseHandle(win,ev.dword,ev.dword2,ev.dword3,0);
+				memset(&ev, 0, sizeof(pri_event_t));
+			}
+
+		}
+
+		sys_sleep(1000);
+	}
+}

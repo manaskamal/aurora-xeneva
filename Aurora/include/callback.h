@@ -31,7 +31,7 @@ extern void sys_move_cursor (uint32_t visible, uint32_t x,uint32_t y);
 extern void sys_unblock_id (uint16_t id);
 extern void create_uthread (void (*entry) (void*), char* name);
 extern int  sys_open_file (char* filename, FILE *f);
-extern void sys_read_file (int fd, uint8_t* buffer, FILE *f);
+extern size_t sys_read_file (int fd, uint8_t* buffer, FILE *f);
 extern void sys_close_file (int fd);
 extern void sys_write_file (int fd, uint64* buffer, FILE *ufile);
 extern uint64_t sys_get_used_ram ();
@@ -49,4 +49,5 @@ extern void sys_set_signal (int signo, sig_handler handler);
 extern void unmap_shared_memory (uint16_t dest_id, uint64_t pos, size_t size);
 extern void sys_attach_ttype (int id);
 extern void copy_memory (uint16_t dest_id, uint64_t pos, size_t size);
+extern int sys_copy_fd (int tid, int fd, int dest_fd);
 #endif

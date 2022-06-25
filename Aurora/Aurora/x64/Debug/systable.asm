@@ -10,7 +10,7 @@ _BSS	SEGMENT
 funct	DQ	01H DUP (?)
 _BSS	ENDS
 CONST	SEGMENT
-$SG4224	DB	'System Call Fault!! Halting System', 0aH, 00H
+$SG4230	DB	'System Call Fault!! Halting System', 0aH, 00H
 CONST	ENDS
 PUBLIC	x64_syscall_handler
 EXTRN	printf:PROC
@@ -24,7 +24,7 @@ EXTRN	?get_thread_id@@YAGXZ:PROC			; get_thread_id
 EXTRN	?sys_unblock_id@@YAXG@Z:PROC			; sys_unblock_id
 EXTRN	?create_uthread@@YAXP6AXPEAX@ZPEAD@Z:PROC	; create_uthread
 EXTRN	?sys_open_file@@YAHPEADPEAU_file_@@@Z:PROC	; sys_open_file
-EXTRN	?sys_read_file@@YAXHPEAEPEAU_file_@@@Z:PROC	; sys_read_file
+EXTRN	?sys_read_file@@YA_KHPEAEPEAU_file_@@@Z:PROC	; sys_read_file
 EXTRN	?sys_close_file@@YAXH@Z:PROC			; sys_close_file
 EXTRN	?sys_write_file@@YAXHPEA_KPEAU_file_@@@Z:PROC	; sys_write_file
 EXTRN	?sys_get_used_ram@@YA_KXZ:PROC			; sys_get_used_ram
@@ -40,9 +40,9 @@ EXTRN	?sys_kill@@YAXHH@Z:PROC				; sys_kill
 EXTRN	?sys_set_signal@@YAXHP6AXH@Z@Z:PROC		; sys_set_signal
 EXTRN	?sys_attach_ttype@@YAXH@Z:PROC			; sys_attach_ttype
 EXTRN	?copy_memory@@YAXG_K0@Z:PROC			; copy_memory
+EXTRN	?sys_copy_fd@@YAHHHH@Z:PROC			; sys_copy_fd
 EXTRN	?unmap_memory@@YAXPEAXI@Z:PROC			; unmap_memory
 EXTRN	?ttype_create@@YAHPEAH0@Z:PROC			; ttype_create
-EXTRN	?ttype_dup_master@@YAXHH@Z:PROC			; ttype_dup_master
 EXTRN	?allocate_pipe@@YAXPEAHPEAD@Z:PROC		; allocate_pipe
 EXTRN	?create_timer@@YAHIG@Z:PROC			; create_timer
 EXTRN	?destroy_timer@@YAXH@Z:PROC			; destroy_timer
@@ -95,7 +95,7 @@ $LN50:
 
 ; 24   : 		printf ("System Call Fault!! Halting System\n");
 
-	lea	rcx, OFFSET FLAT:$SG4224
+	lea	rcx, OFFSET FLAT:$SG4230
 	call	printf
 $LN45@x64_syscal:
 
@@ -342,7 +342,7 @@ $LN21@x64_syscal:
 ; 89   : 	case 20:
 ; 90   : 		funct = (uint64_t*)sys_read_file;
 
-	lea	rax, OFFSET FLAT:?sys_read_file@@YAXHPEAEPEAU_file_@@@Z ; sys_read_file
+	lea	rax, OFFSET FLAT:?sys_read_file@@YA_KHPEAEPEAU_file_@@@Z ; sys_read_file
 	mov	QWORD PTR funct, rax
 
 ; 91   : 		break;
@@ -351,9 +351,9 @@ $LN21@x64_syscal:
 $LN20@x64_syscal:
 
 ; 92   : 	case 21:
-; 93   : 		funct = (uint64_t*)ttype_dup_master;
+; 93   : 		funct = (uint64_t*)sys_copy_fd;
 
-	lea	rax, OFFSET FLAT:?ttype_dup_master@@YAXHH@Z ; ttype_dup_master
+	lea	rax, OFFSET FLAT:?sys_copy_fd@@YAHHHH@Z	; sys_copy_fd
 	mov	QWORD PTR funct, rax
 
 ; 94   : 		break;

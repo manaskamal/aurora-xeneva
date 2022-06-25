@@ -30,9 +30,10 @@ typedef struct _file_ {
 XE_EXTERN {
 #endif
 XE_EXPORT int sys_open_file (char* filename, UFILE *stream);
-XE_EXPORT void sys_read_file (int fd, unsigned char* buffer,UFILE *f);
+XE_EXPORT size_t sys_read_file (int fd, unsigned char* buffer,UFILE *f);
 XE_EXPORT void sys_write_file (int fd, uint64_t* buffer, UFILE *f);
 XE_EXPORT void sys_close_file (int fd);
+XE_EXPORT int sys_copy_fd(int task_id, int master_fd, int dest_fd);
 #ifdef __cplusplus
 }
 #endif

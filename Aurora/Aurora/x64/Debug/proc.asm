@@ -100,7 +100,7 @@ EXTRN	?AuCleanVMA@@YAXPEAU_process_@@@Z:PROC		; AuCleanVMA
 EXTRN	?destroy_timer@@YAXH@Z:PROC			; destroy_timer
 EXTRN	?find_timer_id@@YAHG@Z:PROC			; find_timer_id
 EXTRN	?fat32_open@@YAPEAU_vfs_node_@@PEAU1@PEAD@Z:PROC ; fat32_open
-EXTRN	?fat32_read@@YAXPEAU_vfs_node_@@PEA_K@Z:PROC	; fat32_read
+EXTRN	?fat32_read@@YA_KPEAU_vfs_node_@@PEA_K@Z:PROC	; fat32_read
 EXTRN	?AuGetSysLib@@YAPEAU_libentry_@@PEAD@Z:PROC	; AuGetSysLib
 EXTRN	_debug_print_:PROC
 EXTRN	?pri_loop_destroy_by_id@@YAXG@Z:PROC		; pri_loop_destroy_by_id
@@ -114,7 +114,7 @@ $pdata$?create_inc_stack@@YAPEA_KPEA_K@Z DD imagerel $LN6
 	DD	imagerel $LN6+134
 	DD	imagerel $unwind$?create_inc_stack@@YAPEA_KPEA_K@Z
 $pdata$?AuCreateProcess@@YAHPEBDPEAD@Z DD imagerel $LN18
-	DD	imagerel $LN18+1741
+	DD	imagerel $LN18+1749
 	DD	imagerel $unwind$?AuCreateProcess@@YAHPEBDPEAD@Z
 $pdata$?kill_process@@YAXXZ DD imagerel $LN32
 	DD	imagerel $LN32+1362
@@ -1956,19 +1956,19 @@ cr3$ = 72
 vma$ = 80
 file$ = 88
 _image_base_$ = 96
-lib$ = 104
-nt$ = 112
+nt$ = 104
+lib$ = 112
 buf$ = 120
 lib2$ = 128
-block$4 = 136
-t$ = 144
-dos$ = 152
-phys$5 = 160
-stack$ = 168
-phys$6 = 176
-ent$ = 184
-lib3$ = 192
-phys$7 = 200
+t$ = 136
+dos$ = 144
+ent$ = 152
+phys$4 = 160
+phys$5 = 168
+lib3$ = 176
+stack$ = 184
+phys$6 = 192
+block$7 = 200
 fname$ = 208
 tv211 = 216
 tv238 = 224
@@ -2076,7 +2076,7 @@ $LN15@AuCreatePr:
 	call	v2p
 	mov	rdx, rax
 	mov	rcx, QWORD PTR file$[rsp]
-	call	?fat32_read@@YAXPEAU_vfs_node_@@PEA_K@Z	; fat32_read
+	call	?fat32_read@@YA_KPEAU_vfs_node_@@PEA_K@Z ; fat32_read
 
 ; 200  : 	
 ; 201  : 
@@ -2163,16 +2163,16 @@ $LN14@AuCreatePr:
 	call	AuPmmngrAlloc
 	mov	rcx, rax
 	call	p2v
-	mov	QWORD PTR block$4[rsp], rax
+	mov	QWORD PTR block$7[rsp], rax
 
 ; 225  : 		
 ; 226  : 		fat32_read (file,(uint64_t*)v2p((size_t)block));
 
-	mov	rcx, QWORD PTR block$4[rsp]
+	mov	rcx, QWORD PTR block$7[rsp]
 	call	v2p
 	mov	rdx, rax
 	mov	rcx, QWORD PTR file$[rsp]
-	call	?fat32_read@@YAXPEAU_vfs_node_@@PEA_K@Z	; fat32_read
+	call	?fat32_read@@YA_KPEAU_vfs_node_@@PEA_K@Z ; fat32_read
 
 ; 227  : 		AuMapPageEx(cr3,v2p((size_t)block),_image_base_ + position * 4096, PAGING_USER);
 
@@ -2183,7 +2183,7 @@ $LN14@AuCreatePr:
 	add	rcx, rax
 	mov	rax, rcx
 	mov	QWORD PTR tv156[rsp], rax
-	mov	rcx, QWORD PTR block$4[rsp]
+	mov	rcx, QWORD PTR block$7[rsp]
 	call	v2p
 	mov	r9b, 4
 	mov	rcx, QWORD PTR tv156[rsp]
@@ -2239,7 +2239,7 @@ $LN11@AuCreatePr:
 	call	AuPmmngrAlloc
 	mov	rcx, rax
 	call	p2v
-	mov	QWORD PTR phys$7[rsp], rax
+	mov	QWORD PTR phys$6[rsp], rax
 
 ; 240  : 			memcpy (phys, (void*)p2v(lib->phys_start + i * 4096), 4096);
 
@@ -2252,7 +2252,7 @@ $LN11@AuCreatePr:
 	call	p2v
 	mov	r8d, 4096				; 00001000H
 	mov	rdx, rax
-	mov	rcx, QWORD PTR phys$7[rsp]
+	mov	rcx, QWORD PTR phys$6[rsp]
 	call	memcpy
 
 ; 241  : 			AuMapPageEx(cr3, v2p((size_t)phys),0x100000000 + i * 4096, PAGING_USER); 
@@ -2263,7 +2263,7 @@ $LN11@AuCreatePr:
 	mov	rcx, 4294967296				; 0000000100000000H
 	add	rax, rcx
 	mov	QWORD PTR tv184[rsp], rax
-	mov	rcx, QWORD PTR phys$7[rsp]
+	mov	rcx, QWORD PTR phys$6[rsp]
 	call	v2p
 	mov	r9b, 4
 	mov	rcx, QWORD PTR tv184[rsp]
@@ -2309,7 +2309,7 @@ $LN7@AuCreatePr:
 	call	AuPmmngrAlloc
 	mov	rcx, rax
 	call	p2v
-	mov	QWORD PTR phys$6[rsp], rax
+	mov	QWORD PTR phys$4[rsp], rax
 
 ; 248  : 			memcpy (phys, (void*)p2v(lib3->phys_start + i * 4096), 4096);
 
@@ -2322,7 +2322,7 @@ $LN7@AuCreatePr:
 	call	p2v
 	mov	r8d, 4096				; 00001000H
 	mov	rdx, rax
-	mov	rcx, QWORD PTR phys$6[rsp]
+	mov	rcx, QWORD PTR phys$4[rsp]
 	call	memcpy
 
 ; 249  : 			AuMapPageEx(cr3, v2p((size_t)phys), 0x100400000 + i * 4096, PAGING_USER);
@@ -2333,7 +2333,7 @@ $LN7@AuCreatePr:
 	mov	rcx, 4299161600				; 0000000100400000H
 	add	rax, rcx
 	mov	QWORD PTR tv211[rsp], rax
-	mov	rcx, QWORD PTR phys$6[rsp]
+	mov	rcx, QWORD PTR phys$4[rsp]
 	call	v2p
 	mov	r9b, 4
 	mov	rcx, QWORD PTR tv211[rsp]
@@ -2619,10 +2619,10 @@ $LN4@AuCreatePr:
 
 ; 310  : 
 ; 311  : 	//free(file);
-; 312  : 	return process->pid_t;
+; 312  : 	return t->id;
 
-	mov	rax, QWORD PTR process$[rsp]
-	mov	eax, DWORD PTR [rax]
+	mov	rax, QWORD PTR t$[rsp]
+	movzx	eax, WORD PTR [rax+242]
 $LN16@AuCreatePr:
 
 ; 313  : }
