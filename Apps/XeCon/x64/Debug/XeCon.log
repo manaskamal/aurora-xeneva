@@ -1,16 +1,16 @@
-﻿Build started 25-06-2022 আবেলি 11:27:17.
+﻿Build started 28-06-2022 আবেলি 11:45:12.
      1>Project "E:\Xeneva Project\Xeneva\Apps\XeCon\XeCon.vcxproj" on node 2 (Rebuild target(s)).
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\xnlib\xnclib" /I"E:\Xeneva Project\Xeneva\xnlib\xnacrylic\include" /I"E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes" /Zi /nologo /W3 /WX- /sdl- /Od /D ARCH_X64 /D _MBCS /X /Gm /GS- /arch:SSE2 /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt main.cpp XeTerm.cpp
      1>cl : Command line warning D9025: overriding '/sdl-' with '/GS-'
      1>cl : Command line warning D9002: ignoring unknown option '/arch:SSE2'
          XeTerm.cpp
-     1>XeTerm.cpp(62): warning C4305: '=' : truncation from 'unsigned int' to 'uint8_t'
-     1>XeTerm.cpp(62): warning C4309: '=' : truncation of constant value
-     1>XeTerm.cpp(63): warning C4305: '=' : truncation from 'unsigned int' to 'uint8_t'
-     1>XeTerm.cpp(63): warning C4309: '=' : truncation of constant value
+     1>XeTerm.cpp(74): warning C4305: '=' : truncation from 'unsigned int' to 'uint8_t'
+     1>XeTerm.cpp(74): warning C4309: '=' : truncation of constant value
+     1>XeTerm.cpp(75): warning C4305: '=' : truncation from 'unsigned int' to 'uint8_t'
+     1>XeTerm.cpp(75): warning C4309: '=' : truncation of constant value
          main.cpp
-     1>main.cpp(62): warning C4267: '=' : conversion from 'size_t' to 'int', possible loss of data
+     1>main.cpp(61): warning C4267: '=' : conversion from 'size_t' to 'int', possible loss of data
          Generating Code...
      1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V110\Microsoft.CppBuild.targets(1137,5): warning MSB8012: TargetPath(E:\Xeneva Project\Xeneva\Aurora\x64\Debug\XeCon.exe) does not match the Linker's OutputFile property value (F:\xecon.exe). This may cause your project to build incorrectly. To correct this, please make sure that $(OutDir), $(TargetName) and $(TargetExt) property values match the value specified in %(Link.OutputFile).
        Link:
@@ -23,4 +23,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:00.55
+Time Elapsed 00:00:00.58

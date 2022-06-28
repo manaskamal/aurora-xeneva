@@ -42,7 +42,7 @@ XE_EXPORT void sys_unblock_id (uint16_t id);
 
 XE_EXPORT void sys_kill (int pid, int signo);
 XE_EXPORT void sys_set_signal (int signo, sig_handler handler);
-
+XE_EXPORT void sys_sigreturn ();
 
 #ifdef __cplusplus
 }

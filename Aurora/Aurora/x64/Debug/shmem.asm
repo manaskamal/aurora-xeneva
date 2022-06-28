@@ -471,7 +471,7 @@ $LN12@AuObtainSh:
 	cmp	QWORD PTR [rax+48], 0
 	je	$LN10@AuObtainSh
 
-; 100  : 		uint64_t cr3 = mem->map_in_thread->cr3;
+; 100  : 		uint64_t cr3 = mem->map_in_thread->frame.cr3;
 
 	mov	rax, QWORD PTR mem$[rsp]
 	mov	rax, QWORD PTR [rax+48]

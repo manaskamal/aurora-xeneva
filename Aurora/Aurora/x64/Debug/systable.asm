@@ -10,7 +10,7 @@ _BSS	SEGMENT
 funct	DQ	01H DUP (?)
 _BSS	ENDS
 CONST	SEGMENT
-$SG4230	DB	'System Call Fault!! Halting System', 0aH, 00H
+$SG4231	DB	'System Call Fault!! Halting System', 0aH, 00H
 CONST	ENDS
 PUBLIC	x64_syscall_handler
 EXTRN	printf:PROC
@@ -38,7 +38,7 @@ EXTRN	?sys_get_current_time@@YAXPEAU_sys_time_@@@Z:PROC ; sys_get_current_time
 EXTRN	?sys_get_system_tick@@YAIXZ:PROC		; sys_get_system_tick
 EXTRN	?sys_kill@@YAXHH@Z:PROC				; sys_kill
 EXTRN	?sys_set_signal@@YAXHP6AXH@Z@Z:PROC		; sys_set_signal
-EXTRN	?sys_attach_ttype@@YAXH@Z:PROC			; sys_attach_ttype
+EXTRN	?sys_sigreturn@@YAXXZ:PROC			; sys_sigreturn
 EXTRN	?copy_memory@@YAXG_K0@Z:PROC			; copy_memory
 EXTRN	?sys_copy_fd@@YAHHHH@Z:PROC			; sys_copy_fd
 EXTRN	?unmap_memory@@YAXPEAXI@Z:PROC			; unmap_memory
@@ -95,7 +95,7 @@ $LN50:
 
 ; 24   : 		printf ("System Call Fault!! Halting System\n");
 
-	lea	rcx, OFFSET FLAT:$SG4230
+	lea	rcx, OFFSET FLAT:$SG4231
 	call	printf
 $LN45@x64_syscal:
 
@@ -406,9 +406,9 @@ $LN16@x64_syscal:
 $LN15@x64_syscal:
 
 ; 107  : 	case 26:
-; 108  : 		funct = (uint64_t*)sys_attach_ttype;
+; 108  : 		funct = (uint64_t*)sys_sigreturn;
 
-	lea	rax, OFFSET FLAT:?sys_attach_ttype@@YAXH@Z ; sys_attach_ttype
+	lea	rax, OFFSET FLAT:?sys_sigreturn@@YAXXZ	; sys_sigreturn
 	mov	QWORD PTR funct, rax
 
 ; 109  : 		break;

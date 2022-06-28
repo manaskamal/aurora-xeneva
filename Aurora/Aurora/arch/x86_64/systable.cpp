@@ -105,7 +105,7 @@ extern "C" void x64_syscall_handler (int a) {
 		funct = (uint64_t*)sys_exit;
 		break;
 	case 26:
-		funct = (uint64_t*)sys_attach_ttype;
+		funct = (uint64_t*)sys_sigreturn;
 		break;
 	case 27:
 		funct = (uint64_t*)fork;

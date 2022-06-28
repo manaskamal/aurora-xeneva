@@ -19,7 +19,6 @@
 //#endif
 XE_EXTERN XE_EXPORT void sys_print_text (const char* text, ...);
 XE_EXTERN XE_EXPORT int sys_ttype_create (int* master_fd, int* slave_fd);
-XE_EXTERN XE_EXPORT void sys_attach_tty (int id);
 XE_EXTERN XE_EXPORT void _term_putchar_ (unsigned char *c);
 //#ifdef __cplusplus
 //}

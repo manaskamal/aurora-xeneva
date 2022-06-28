@@ -102,7 +102,7 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 i$1 = 32
 t$ = 40
-tv72 = 48
+tv73 = 48
 cr3$ = 56
 dest_id$ = 80
 pos$ = 88
@@ -142,7 +142,7 @@ $LN7:
 $LN4@unmap_shar:
 
 ; 56   : 	}
-; 57   : 	uint64_t *cr3 = (uint64_t*)t->cr3;
+; 57   : 	uint64_t *cr3 = (uint64_t*)t->frame.cr3;
 
 	mov	rax, QWORD PTR t$[rsp]
 	mov	rax, QWORD PTR [rax+192]
@@ -159,12 +159,12 @@ $LN2@unmap_shar:
 	mov	DWORD PTR i$1[rsp], eax
 $LN3@unmap_shar:
 	movsxd	rax, DWORD PTR i$1[rsp]
-	mov	QWORD PTR tv72[rsp], rax
+	mov	QWORD PTR tv73[rsp], rax
 	xor	edx, edx
 	mov	rax, QWORD PTR size$[rsp]
 	mov	ecx, 4096				; 00001000H
 	div	rcx
-	mov	rcx, QWORD PTR tv72[rsp]
+	mov	rcx, QWORD PTR tv73[rsp]
 	cmp	rcx, rax
 	jae	SHORT $LN1@unmap_shar
 
@@ -197,10 +197,10 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 i$1 = 32
 t$ = 40
-tv74 = 48
+tv76 = 48
 cr3$ = 56
 current_cr3$ = 64
-tv84 = 72
+tv86 = 72
 dest_id$ = 96
 pos$ = 104
 size$ = 112
@@ -238,13 +238,13 @@ $LN7:
 $LN4@copy_memor:
 
 ; 41   : 	}
-; 42   : 	uint64_t *current_cr3 = (uint64_t*)get_current_thread()->cr3;
+; 42   : 	uint64_t *current_cr3 = (uint64_t*)get_current_thread()->frame.cr3;
 
 	call	get_current_thread
 	mov	rax, QWORD PTR [rax+192]
 	mov	QWORD PTR current_cr3$[rsp], rax
 
-; 43   : 	uint64_t *cr3 = (uint64_t*)t->cr3;
+; 43   : 	uint64_t *cr3 = (uint64_t*)t->frame.cr3;
 
 	mov	rax, QWORD PTR t$[rsp]
 	mov	rax, QWORD PTR [rax+192]
@@ -261,12 +261,12 @@ $LN2@copy_memor:
 	mov	DWORD PTR i$1[rsp], eax
 $LN3@copy_memor:
 	movsxd	rax, DWORD PTR i$1[rsp]
-	mov	QWORD PTR tv74[rsp], rax
+	mov	QWORD PTR tv76[rsp], rax
 	xor	edx, edx
 	mov	rax, QWORD PTR size$[rsp]
 	mov	ecx, 4096				; 00001000H
 	div	rcx
-	mov	rcx, QWORD PTR tv74[rsp]
+	mov	rcx, QWORD PTR tv76[rsp]
 	cmp	rcx, rax
 	jae	SHORT $LN1@copy_memor
 
@@ -280,7 +280,7 @@ $LN3@copy_memor:
 	mov	rax, rcx
 	mov	rcx, rax
 	call	?pml4_index@@YA_K_K@Z			; pml4_index
-	mov	QWORD PTR tv84[rsp], rax
+	mov	QWORD PTR tv86[rsp], rax
 	mov	ecx, DWORD PTR i$1[rsp]
 	imul	ecx, 4096				; 00001000H
 	movsxd	rcx, ecx
@@ -290,7 +290,7 @@ $LN3@copy_memor:
 	call	?pml4_index@@YA_K_K@Z			; pml4_index
 	mov	rcx, QWORD PTR cr3$[rsp]
 	mov	rdx, QWORD PTR current_cr3$[rsp]
-	mov	r8, QWORD PTR tv84[rsp]
+	mov	r8, QWORD PTR tv86[rsp]
 	mov	rdx, QWORD PTR [rdx+r8*8]
 	mov	QWORD PTR [rcx+rax*8], rdx
 
@@ -310,10 +310,10 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 i$1 = 32
 t$ = 40
-tv79 = 48
+tv81 = 48
 cr3$ = 56
 current_cr3$ = 64
-tv86 = 72
+tv88 = 72
 dest_id$ = 96
 pos$ = 104
 size$ = 112
@@ -352,13 +352,13 @@ $LN7:
 $LN4@map_shared:
 
 ; 26   : 	}
-; 27   : 	uint64_t *current_cr3 = (uint64_t*)get_current_thread()->cr3;
+; 27   : 	uint64_t *current_cr3 = (uint64_t*)get_current_thread()->frame.cr3;
 
 	call	get_current_thread
 	mov	rax, QWORD PTR [rax+192]
 	mov	QWORD PTR current_cr3$[rsp], rax
 
-; 28   : 	uint64_t *cr3 = (uint64_t*)t->cr3;
+; 28   : 	uint64_t *cr3 = (uint64_t*)t->frame.cr3;
 
 	mov	rax, QWORD PTR t$[rsp]
 	mov	rax, QWORD PTR [rax+192]
@@ -388,10 +388,10 @@ $LN3@map_shared:
 	mov	rcx, QWORD PTR pos$[rsp]
 	add	rcx, rax
 	mov	rax, rcx
-	mov	QWORD PTR tv79[rsp], rax
+	mov	QWORD PTR tv81[rsp], rax
 	call	AuPmmngrAlloc
 	mov	r8b, 4
-	mov	rcx, QWORD PTR tv79[rsp]
+	mov	rcx, QWORD PTR tv81[rsp]
 	mov	rdx, rcx
 	mov	rcx, rax
 	call	AuMapPage
@@ -405,12 +405,12 @@ $LN1@map_shared:
 
 	mov	rcx, QWORD PTR pos$[rsp]
 	call	?pml4_index@@YA_K_K@Z			; pml4_index
-	mov	QWORD PTR tv86[rsp], rax
+	mov	QWORD PTR tv88[rsp], rax
 	mov	rcx, QWORD PTR pos$[rsp]
 	call	?pml4_index@@YA_K_K@Z			; pml4_index
 	mov	rcx, QWORD PTR cr3$[rsp]
 	mov	rdx, QWORD PTR current_cr3$[rsp]
-	mov	r8, QWORD PTR tv86[rsp]
+	mov	r8, QWORD PTR tv88[rsp]
 	mov	rdx, QWORD PTR [rdx+r8*8]
 	mov	QWORD PTR [rcx+rax*8], rdx
 

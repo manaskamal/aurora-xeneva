@@ -28,11 +28,11 @@ _BSS	SEGMENT
 ?_audio_stoped_@@3_NA DB 01H DUP (?)			; _audio_stoped_
 _BSS	ENDS
 CONST	SEGMENT
-$SG3875	DB	'dsp', 00H
+$SG3873	DB	'dsp', 00H
 	ORG $+4
-$SG3876	DB	'/dev/dsp', 00H
+$SG3874	DB	'/dev/dsp', 00H
 	ORG $+7
-$SG3924	DB	'Output Start ', 0aH, 00H
+$SG3922	DB	'Output Start ', 0aH, 00H
 CONST	ENDS
 PUBLIC	?AuSoundInitialize@@YAXXZ			; AuSoundInitialize
 PUBLIC	AuSoundRegisterDevice
@@ -881,7 +881,7 @@ $LN1@AuSoundOut:
 
 ; 272  : 	printf ("Output Start \n");
 
-	lea	rcx, OFFSET FLAT:$SG3924
+	lea	rcx, OFFSET FLAT:$SG3922
 	call	printf
 
 ; 273  : 	registered_dev->start_output_stream();
@@ -1157,7 +1157,7 @@ $LN3:
 ; 211  : 	strcpy (dsp->filename, "dsp");
 
 	mov	rax, QWORD PTR dsp$[rsp]
-	lea	rdx, OFFSET FLAT:$SG3875
+	lea	rdx, OFFSET FLAT:$SG3873
 	mov	rcx, rax
 	call	strcpy
 
@@ -1223,7 +1223,7 @@ $LN3:
 
 	xor	r8d, r8d
 	mov	rdx, QWORD PTR dsp$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3876
+	lea	rcx, OFFSET FLAT:$SG3874
 	call	vfs_mount
 
 ; 224  : 

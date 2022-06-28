@@ -1,21 +1,21 @@
-﻿Build started 25-06-2022 আবেলি 8:12:43.
+﻿Build started 27-06-2022 আবেলি 2:38:19.
      1>Project "E:\Xeneva Project\Xeneva\xnlib\xnclib\xnclib.vcxproj" on node 2 (Rebuild target(s)).
      1>_NASM:
          setjmp.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp511cf8f62e20471697ffb739ded97539.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmpe3a0da068dd647b987b599df0c4eae87.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\setjmp.obj"  "E:\Xeneva Project\Xeneva\xnlib\xnclib\setjmp.asm"
        _NASM:
          sys\callback.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp22535276c93e45adac77fe31fc40e4bd.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp64930cea3cd240fb8e1087ff03a62a19.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\callback.obj"  "E:\Xeneva Project\Xeneva\xnlib\xnclib\sys\callback.asm"
      1>E:\Xeneva Project\Xeneva\xnlib\xnclib\sys\callback.asm(134): warning : label alone on a line without a colon might be in error [-w+label-orphan]
        _NASM:
          sys\sse2.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmpb0ad1681a8a54a00beb5652264a87618.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp0c8b4a53817841f3af911dd10683526c.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\sse2.obj"  "E:\Xeneva Project\Xeneva\xnlib\xnclib\sys\sse2.asm"
        _NASM:
          _fast_copy.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmpdcfc93b0362543929ea98362cb89bf2a.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp5912aa06f5df4e75b36f61b06b444a4c.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\_fast_copy.obj"  "E:\Xeneva Project\Xeneva\xnlib\xnclib\_fast_copy.asm"
        ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\xnlib\xnclib" /I"E:\Xeneva Project\Xeneva\xnlib\xnclib\c++" /Zi /nologo /W4 /WX- /sdl- /MP /Od /Oy /D ARCH_X64 /D _WINDLL /D _MBCS /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt c++\ios.cpp c++\iostream.cpp c++\istream.cpp c++\memory.cpp c++\ostream.cpp c++\_string.cpp errno.cpp heap.cpp initializer.cpp math.cpp qsort.cpp stdio.cpp string.cpp sys\mman.cpp sys\pe.cpp sys\postbox.cpp sys\stdlib.cpp sys\_xeneva.cpp _main.cpp _term.cpp
@@ -174,4 +174,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:02.04
+Time Elapsed 00:00:09.22

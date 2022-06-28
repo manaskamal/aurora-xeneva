@@ -101,8 +101,7 @@ void ttype_delete (ttype_t* tty) {
  */
 size_t ttype_master_read (vfs_node_t *file, uint64_t* buffer,uint32_t length) {
 	//!Read it from out buffer
-	vfs_node_t *node = get_current_thread()->fd[get_current_thread()->master_fd];
-	ttype_t *type = (ttype_t*)node->device;
+	ttype_t *type = (ttype_t*)file->device;
 
 	size_t bytes_to_ret = 0;
 	uint8_t* aligned_buffer = (uint8_t*)buffer;
@@ -130,8 +129,7 @@ void ttype_master_write (vfs_node_t *file, uint64_t* buffer, uint32_t length) {
 
 	uint8_t* aligned_buffer = (uint8_t*)buffer;
 	//! get the master node from the child process
-	vfs_node_t *node = get_current_thread()->fd[get_current_thread()->master_fd];
-	ttype_t *type = (ttype_t*)node->device;
+	ttype_t *type = (ttype_t*)file->device;
 
 	//! so finally we now use the type buffer to store our text data
 	for (int i = 0; i < length; i++) {
@@ -214,6 +212,11 @@ int tty_ioquery (vfs_node_t *file, int code, void *arg){
 		sz->ws_row = tty->size.ws_row;
 		sz->ws_xpixel = tty->size.ws_xpixel;
 		sz->ws_ypixel = tty->size.ws_ypixel;
+		break;
+	}
+
+	case TIOSPGRP: {
+		tty->slave_pid = get_current_thread()->id;
 		break;
 	}
 	}
@@ -328,6 +331,9 @@ int ttype_create (int* master_fd, int* slave_fd) {
 	tty->size.ws_col = 25;
 	tty->size.ws_row = 80;
 
+	tty->master_pid = get_current_thread()->id;
+	tty->slave_pid = 0;
+
 	vfs_node_t * master = ttype_create_master(tty);
 	vfs_node_t * slave = ttype_create_slave(tty);
 
@@ -341,8 +347,6 @@ int ttype_create (int* master_fd, int* slave_fd) {
 	get_current_thread()->fd[s_fd] = slave;
 	get_current_thread()->fd_current++;
 
-	get_current_thread()->master_fd = m_fd;
-	get_current_thread()->slave_fd = s_fd;
 
 	get_current_thread()->fd[1] = master;
 	get_current_thread()->fd[2] = master;

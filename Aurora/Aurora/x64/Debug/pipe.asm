@@ -10,9 +10,9 @@ _BSS	SEGMENT
 ?pipe_count@@3HA DD 01H DUP (?)				; pipe_count
 _BSS	ENDS
 CONST	SEGMENT
-$SG3520	DB	'pipe', 00H
+$SG3518	DB	'pipe', 00H
 	ORG $+3
-$SG3522	DB	'/dev/', 00H
+$SG3520	DB	'/dev/', 00H
 CONST	ENDS
 PUBLIC	?pipe_create@@YAPEAU_pipe_@@XZ			; pipe_create
 PUBLIC	?allocate_pipe@@YAXPEAHPEAD@Z			; allocate_pipe
@@ -227,7 +227,7 @@ $LN2@allocate_p:
 
 ; 61   : 		strcpy(pipe_name, "pipe");
 
-	lea	rdx, OFFSET FLAT:$SG3520
+	lea	rdx, OFFSET FLAT:$SG3518
 	lea	rcx, QWORD PTR pipe_name$[rsp]
 	call	strcpy
 
@@ -247,7 +247,7 @@ $LN1@allocate_p:
 ; 66   : 	char path_name[10];
 ; 67   : 	strcpy(path_name, "/dev/");
 
-	lea	rdx, OFFSET FLAT:$SG3522
+	lea	rdx, OFFSET FLAT:$SG3520
 	lea	rcx, QWORD PTR path_name$[rsp]
 	call	strcpy
 
@@ -354,25 +354,25 @@ $LN1@allocate_p:
 ; 88   : 	t->fd[t->fd_current] = readn;
 
 	mov	rax, QWORD PTR t$[rsp]
-	movsxd	rax, DWORD PTR [rax+760]
+	movsxd	rax, DWORD PTR [rax+744]
 	mov	rcx, QWORD PTR t$[rsp]
 	mov	rdx, QWORD PTR readn$[rsp]
-	mov	QWORD PTR [rcx+rax*8+280], rdx
+	mov	QWORD PTR [rcx+rax*8+264], rdx
 
 ; 89   : 	*fd = t->fd_current;
 
 	mov	rax, QWORD PTR fd$[rsp]
 	mov	rcx, QWORD PTR t$[rsp]
-	mov	ecx, DWORD PTR [rcx+760]
+	mov	ecx, DWORD PTR [rcx+744]
 	mov	DWORD PTR [rax], ecx
 
 ; 90   : 	t->fd_current++;
 
 	mov	rax, QWORD PTR t$[rsp]
-	mov	eax, DWORD PTR [rax+760]
+	mov	eax, DWORD PTR [rax+744]
 	inc	eax
 	mov	rcx, QWORD PTR t$[rsp]
-	mov	DWORD PTR [rcx+760], eax
+	mov	DWORD PTR [rcx+744], eax
 
 ; 91   : 	
 ; 92   : 	pipe_count++;

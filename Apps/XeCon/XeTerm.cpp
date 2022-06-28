@@ -30,12 +30,24 @@
 #include "XeTerm.h"
 #include <stdlib.h>
 #include <color.h>
+#include <sys\_term.h>
 #include <acrylic.h>
 
 void XETermPainter (XEWidget *widget, XEWindow *win) {
 	XETerm *term = (XETerm*)widget;
 	acrylic_draw_rect_filled(win->ctx,widget->x, widget->y,widget->w, widget->h, term->back_color);
-	acrylic_draw_arr_string(win->ctx, widget->x + 8, widget->y, "Hello World", WHITE);
+	//acrylic_draw_arr_string(win->ctx, widget->x + 8, widget->y, "Hello World", WHITE);
+	int _x = term->cursor_x + 2; 
+	int _y = term->cursor_y + 23;
+	int count = 0;
+	for (int j = 0; j < term->ws_row; j++) {
+		char c = term->buffer[count];
+		sys_print_text ("%c", c);
+		acrylic_draw_arr_font (win->ctx,_x * 8, _y, c, WHITE);
+		_x++;
+		count++;
+	}
+	
 }
 
 void XETermMouseEvent (XEWidget *widget, XEWindow *win, int x, int y, int button) {
@@ -66,6 +78,9 @@ XETerm * XECreateTerm (int x, int y, int w, int h) {
 	term->ws_col = w / 8;
 	term->ws_row = h / 16;
 	term->ws_xpixels = w;
+	term->cursor_x = 0;
+	term->cursor_y = 0;
 	term->ws_ypixels = h;
+	term->buffer = (uint8_t*)malloc(term->ws_col * term->ws_row);
 	return term;
 }

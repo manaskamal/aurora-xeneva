@@ -99,7 +99,7 @@ $LN3:
 	call	?get_current_process@@YAPEAU_process_@@XZ ; get_current_process
 	mov	QWORD PTR proc$[rsp], rax
 
-; 44   : 	uint64_t st = (uint64_t)create_inc_stack((uint64_t*)p2v((size_t)get_current_thread()->cr3));
+; 44   : 	uint64_t st = (uint64_t)create_inc_stack((uint64_t*)p2v((size_t)get_current_thread()->frame.cr3));
 
 	call	get_current_thread
 	mov	rcx, QWORD PTR [rax+192]

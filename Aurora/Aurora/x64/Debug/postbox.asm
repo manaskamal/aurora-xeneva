@@ -77,7 +77,7 @@ $LN3@post_box_p:
 ; 42   : 	postmsg_t *tmsg = (postmsg_t*)t->msg_box;
 
 	mov	rax, QWORD PTR t$[rsp]
-	mov	rax, QWORD PTR [rax+256]
+	mov	rax, QWORD PTR [rax+248]
 	mov	QWORD PTR tmsg$[rsp], rax
 
 ; 43   : 	if (tmsg->type == 0)
@@ -92,7 +92,7 @@ $LN3@post_box_p:
 	mov	r8d, 32					; 00000020H
 	mov	rdx, QWORD PTR msg$[rsp]
 	mov	rax, QWORD PTR t$[rsp]
-	mov	rcx, QWORD PTR [rax+256]
+	mov	rcx, QWORD PTR [rax+248]
 	call	memcpy
 $LN2@post_box_p:
 

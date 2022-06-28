@@ -22,6 +22,7 @@
 #include <stdlib.h>
 #include "XeTerm.h"
 
+
 /*
  * main -- the main entry point of priwm
  */
@@ -50,8 +51,6 @@ XE_EXTERN int XeMain (int argc, char* argv[]) {
 	sz.ws_ypixel = term->ws_ypixels;
 	ioquery(master_fd, TIOCSWINSZ, &sz);
 
-	unsigned char* buff = (unsigned char*)malloc(512);
-	memset(buff, 0, 512);
 
 	int pid = create_process("/ptest.exe", "ptest");
 	sys_copy_fd(pid, slave_fd, 0);
@@ -59,10 +58,15 @@ XE_EXTERN int XeMain (int argc, char* argv[]) {
 	pri_event_t ev;
 	int bytes_ret = 0;
 	for(;;) {
-		bytes_ret = sys_read_file(master_fd, buff, NULL);
+		bytes_ret = sys_read_file(master_fd,term->buffer, NULL);
 
-		for (int i = 0; i < bytes_ret; i++)
-			sys_print_text ("%c",buff[i]);
+		/*for (int i = 0; i < bytes_ret; i++)
+			sys_print_text ("%c",term->buffer[i]);*/
+		if (bytes_ret > 0){
+			sys_print_text ("Bytes ret -> %d \r\n", bytes_ret);
+			term->base.painter((XEWidget*)term,win);
+			XEUpdateWindow(win,term->base.x, term->base.y, term->base.w, term->base.h, true);
+		}
 
 		ioquery(event_fd,PRI_LOOP_GET_EVENT, &ev);
 		if (ev.type != 0) {

@@ -15,15 +15,16 @@ PUBLIC	?create__sys_process@@YAHPEBDPEAD@Z		; create__sys_process
 PUBLIC	?sys_exit@@YAXXZ				; sys_exit
 PUBLIC	?sys_kill@@YAXHH@Z				; sys_kill
 PUBLIC	?sys_set_signal@@YAXHP6AXH@Z@Z			; sys_set_signal
-PUBLIC	?sys_attach_ttype@@YAXH@Z			; sys_attach_ttype
+PUBLIC	?sys_sigreturn@@YAXXZ				; sys_sigreturn
 EXTRN	?pmmngr_get_used_ram@@YA_KXZ:PROC		; pmmngr_get_used_ram
 EXTRN	?pmmngr_get_total_ram@@YA_KXZ:PROC		; pmmngr_get_total_ram
 EXTRN	x64_cli:PROC
 EXTRN	get_current_thread:PROC
 EXTRN	force_sched:PROC
+EXTRN	?thread_iterate_ready_list@@YAPEAU_thread_@@G@Z:PROC ; thread_iterate_ready_list
+EXTRN	?thread_iterate_block_list@@YAPEAU_thread_@@H@Z:PROC ; thread_iterate_block_list
 EXTRN	?AuCreateProcess@@YAHPEBDPEAD@Z:PROC		; AuCreateProcess
 EXTRN	?kill_process@@YAXXZ:PROC			; kill_process
-EXTRN	?kill_process_by_id@@YAXG@Z:PROC		; kill_process_by_id
 EXTRN	_debug_print_:PROC
 pdata	SEGMENT
 $pdata$?create__sys_process@@YAHPEBDPEAD@Z DD imagerel $LN3
@@ -32,15 +33,15 @@ $pdata$?create__sys_process@@YAHPEBDPEAD@Z DD imagerel $LN3
 $pdata$?sys_exit@@YAXXZ DD imagerel $LN3
 	DD	imagerel $LN3+114
 	DD	imagerel $unwind$?sys_exit@@YAXXZ
-$pdata$?sys_kill@@YAXHH@Z DD imagerel $LN3
-	DD	imagerel $LN3+37
+$pdata$?sys_kill@@YAXHH@Z DD imagerel $LN4
+	DD	imagerel $LN4+74
 	DD	imagerel $unwind$?sys_kill@@YAXHH@Z
 $pdata$?sys_set_signal@@YAXHP6AXH@Z@Z DD imagerel $LN3
-	DD	imagerel $LN3+23
+	DD	imagerel $LN3+46
 	DD	imagerel $unwind$?sys_set_signal@@YAXHP6AXH@Z@Z
-$pdata$?sys_attach_ttype@@YAXH@Z DD imagerel $LN3
-	DD	imagerel $LN3+40
-	DD	imagerel $unwind$?sys_attach_ttype@@YAXH@Z
+$pdata$?sys_sigreturn@@YAXXZ DD imagerel $LN3
+	DD	imagerel $LN3+14
+	DD	imagerel $unwind$?sys_sigreturn@@YAXXZ
 pdata	ENDS
 xdata	SEGMENT
 $unwind$?create__sys_process@@YAHPEBDPEAD@Z DD 010e01H
@@ -48,38 +49,33 @@ $unwind$?create__sys_process@@YAHPEBDPEAD@Z DD 010e01H
 $unwind$?sys_exit@@YAXXZ DD 010401H
 	DD	06204H
 $unwind$?sys_kill@@YAXHH@Z DD 010c01H
-	DD	0420cH
+	DD	0620cH
 $unwind$?sys_set_signal@@YAXHP6AXH@Z@Z DD 010d01H
 	DD	0420dH
-$unwind$?sys_attach_ttype@@YAXH@Z DD 010801H
-	DD	06208H
+$unwind$?sys_sigreturn@@YAXXZ DD 010401H
+	DD	04204H
 xdata	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\sysserv\sysproc.cpp
 _TEXT	SEGMENT
-tv66 = 32
-id$ = 64
-?sys_attach_ttype@@YAXH@Z PROC				; sys_attach_ttype
+?sys_sigreturn@@YAXXZ PROC				; sys_sigreturn
 
-; 89   : void sys_attach_ttype (int id) {
+; 92   : void sys_sigreturn () {
 
 $LN3:
-	mov	DWORD PTR [rsp+8], ecx
-	sub	rsp, 56					; 00000038H
+	sub	rsp, 40					; 00000028H
 
-; 90   : 	get_current_thread()->ttype = id;
+; 93   : 	x64_cli();
 
-	movsxd	rax, DWORD PTR id$[rsp]
-	mov	QWORD PTR tv66[rsp], rax
-	call	get_current_thread
-	mov	rcx, QWORD PTR tv66[rsp]
-	mov	QWORD PTR [rax+248], rcx
+	call	x64_cli
 
-; 91   : }
+; 94   : 	
+; 95   : 	/* Signal Not implemented for now */
+; 96   : }
 
-	add	rsp, 56					; 00000038H
+	add	rsp, 40					; 00000028H
 	ret	0
-?sys_attach_ttype@@YAXH@Z ENDP				; sys_attach_ttype
+?sys_sigreturn@@YAXXZ ENDP				; sys_sigreturn
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\sysserv\sysproc.cpp
@@ -88,19 +84,25 @@ signo$ = 48
 handler$ = 56
 ?sys_set_signal@@YAXHP6AXH@Z@Z PROC			; sys_set_signal
 
-; 80   : void sys_set_signal (int signo, sig_handler handler) {
+; 84   : void sys_set_signal (int signo, sig_handler handler) {
 
 $LN3:
 	mov	QWORD PTR [rsp+16], rdx
 	mov	DWORD PTR [rsp+8], ecx
 	sub	rsp, 40					; 00000028H
 
-; 81   : 	x64_cli();
+; 85   : 	x64_cli();
 
 	call	x64_cli
 
-; 82   : 	//get_current_thread()->signals[signo] = handler;
-; 83   : }
+; 86   : 	get_current_thread()->signals[signo] = handler;
+
+	call	get_current_thread
+	movsxd	rcx, DWORD PTR signo$[rsp]
+	mov	rdx, QWORD PTR handler$[rsp]
+	mov	QWORD PTR [rax+rcx*8+752], rdx
+
+; 87   : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -109,34 +111,52 @@ _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\sysserv\sysproc.cpp
 _TEXT	SEGMENT
-pid$ = 48
-signo$ = 56
+current_thread$ = 32
+pid$ = 64
+signo$ = 72
 ?sys_kill@@YAXHH@Z PROC					; sys_kill
 
 ; 68   : void sys_kill (int pid, int signo) {
 
-$LN3:
+$LN4:
 	mov	DWORD PTR [rsp+16], edx
 	mov	DWORD PTR [rsp+8], ecx
-	sub	rsp, 40					; 00000028H
+	sub	rsp, 56					; 00000038H
 
 ; 69   : 	x64_cli();
 
 	call	x64_cli
 
-; 70   : 	kill_process_by_id(pid);
+; 70   : 	thread_t *current_thread = thread_iterate_ready_list(pid);
 
 	movzx	ecx, WORD PTR pid$[rsp]
-	call	?kill_process_by_id@@YAXG@Z		; kill_process_by_id
+	call	?thread_iterate_ready_list@@YAPEAU_thread_@@G@Z ; thread_iterate_ready_list
+	mov	QWORD PTR current_thread$[rsp], rax
 
-; 71   : 	force_sched();
+; 71   : 	if (current_thread == NULL) 
 
-	call	force_sched
+	cmp	QWORD PTR current_thread$[rsp], 0
+	jne	SHORT $LN1@sys_kill
 
-; 72   : 	//! For now, no signals are supported, just kill the process
-; 73   : }
+; 72   : 		current_thread = thread_iterate_block_list(pid);
 
-	add	rsp, 40					; 00000028H
+	mov	ecx, DWORD PTR pid$[rsp]
+	call	?thread_iterate_block_list@@YAPEAU_thread_@@H@Z ; thread_iterate_block_list
+	mov	QWORD PTR current_thread$[rsp], rax
+$LN1@sys_kill:
+
+; 73   : 
+; 74   : 	current_thread->pending_signal = signo;
+
+	mov	rax, QWORD PTR current_thread$[rsp]
+	mov	ecx, DWORD PTR signo$[rsp]
+	mov	DWORD PTR [rax+1064], ecx
+
+; 75   : 
+; 76   : 	/* Signal Not Implemented for now */
+; 77   : }
+
+	add	rsp, 56					; 00000038H
 	ret	0
 ?sys_kill@@YAXHH@Z ENDP					; sys_kill
 _TEXT	ENDS

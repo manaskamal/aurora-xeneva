@@ -6,8 +6,8 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 CONST	SEGMENT
-$SG3840	DB	'dev', 00H
-$SG3854	DB	'/', 00H
+$SG3838	DB	'dev', 00H
+$SG3852	DB	'/', 00H
 CONST	ENDS
 PUBLIC	?sys_open_file@@YAHPEADPEAU_file_@@@Z		; sys_open_file
 PUBLIC	?sys_read_file@@YA_KHPEAEPEAU_file_@@@Z		; sys_read_file
@@ -87,7 +87,7 @@ $LN7:
 
 	call	get_current_thread
 	movsxd	rcx, DWORD PTR fd$[rsp]
-	mov	rax, QWORD PTR [rax+rcx*8+280]
+	mov	rax, QWORD PTR [rax+rcx*8+264]
 	mov	QWORD PTR node$[rsp], rax
 
 ; 214  : 	thread_t *t = thread_iterate_block_list(tid);
@@ -125,7 +125,7 @@ $LN3@sys_copy_f:
 
 	movsxd	rax, DWORD PTR dest_fd$[rsp]
 	mov	rcx, QWORD PTR t$[rsp]
-	cmp	QWORD PTR [rcx+rax*8+280], 0
+	cmp	QWORD PTR [rcx+rax*8+264], 0
 	je	SHORT $LN2@sys_copy_f
 
 ; 222  : 		return AU_FAILURE;
@@ -143,7 +143,7 @@ $LN2@sys_copy_f:
 	movsxd	rax, DWORD PTR dest_fd$[rsp]
 	mov	rcx, QWORD PTR t$[rsp]
 	mov	rdx, QWORD PTR node$[rsp]
-	mov	QWORD PTR [rcx+rax*8+280], rdx
+	mov	QWORD PTR [rcx+rax*8+264], rdx
 $LN1@sys_copy_f:
 
 ; 225  : 	}
@@ -179,14 +179,14 @@ $LN5:
 
 	call	get_current_thread
 	movsxd	rcx, DWORD PTR fd$[rsp]
-	mov	rax, QWORD PTR [rax+rcx*8+280]
+	mov	rax, QWORD PTR [rax+rcx*8+264]
 	mov	QWORD PTR node$[rsp], rax
 
 ; 197  : 	get_current_thread()->fd[fd] = 0;
 
 	call	get_current_thread
 	movsxd	rcx, DWORD PTR fd$[rsp]
-	mov	QWORD PTR [rax+rcx*8+280], 0
+	mov	QWORD PTR [rax+rcx*8+264], 0
 
 ; 198  : 	if ((node->flags & FS_FLAG_DEVICE)){
 
@@ -305,7 +305,7 @@ $LN6:
 
 	call	get_current_thread
 	movsxd	rcx, DWORD PTR fd$[rsp]
-	mov	rax, QWORD PTR [rax+rcx*8+280]
+	mov	rax, QWORD PTR [rax+rcx*8+264]
 	mov	QWORD PTR node$[rsp], rax
 
 ; 180  : 	if (node == NULL) {
@@ -406,7 +406,7 @@ $LN12:
 
 ; 125  : 		node = vfs_finddir("/");
 
-	lea	rcx, OFFSET FLAT:$SG3854
+	lea	rcx, OFFSET FLAT:$SG3852
 	call	?vfs_finddir@@YAPEAU_vfs_node_@@PEAD@Z	; vfs_finddir
 	mov	QWORD PTR node$[rsp], rax
 
@@ -414,7 +414,7 @@ $LN12:
 
 	call	get_current_thread
 	movsxd	rcx, DWORD PTR fd$[rsp]
-	mov	rax, QWORD PTR [rax+rcx*8+280]
+	mov	rax, QWORD PTR [rax+rcx*8+264]
 	mov	QWORD PTR file$[rsp], rax
 
 ; 127  : 		if (node == NULL)
@@ -531,7 +531,7 @@ $LN9@sys_read_f:
 
 	call	get_current_thread
 	movsxd	rcx, DWORD PTR fd$[rsp]
-	mov	rax, QWORD PTR [rax+rcx*8+280]
+	mov	rax, QWORD PTR [rax+rcx*8+264]
 	mov	QWORD PTR node$[rsp], rax
 
 ; 147  : 		if (node == NULL)
@@ -720,7 +720,7 @@ $LN8@sys_open_f:
 
 	call	get_current_thread
 	movsxd	rcx, DWORD PTR i$1[rsp]
-	mov	rax, QWORD PTR [rax+rcx*8+280]
+	mov	rax, QWORD PTR [rax+rcx*8+264]
 	mov	QWORD PTR _node$3[rsp], rax
 
 ; 74   : 			if (_node == node) {
@@ -754,7 +754,7 @@ $LN9@sys_open_f:
 ; 81   : 
 ; 82   : 	if (!(strcmp(pathname, "dev") == 0)) {
 
-	lea	rdx, OFFSET FLAT:$SG3840
+	lea	rdx, OFFSET FLAT:$SG3838
 	lea	rcx, QWORD PTR pathname$[rsp]
 	call	strcmp
 	test	eax, eax
@@ -828,21 +828,21 @@ $LN3@sys_open_f:
 	call	get_current_thread
 	mov	QWORD PTR tv157[rsp], rax
 	call	get_current_thread
-	movsxd	rax, DWORD PTR [rax+760]
+	movsxd	rax, DWORD PTR [rax+744]
 	mov	rcx, QWORD PTR file$2[rsp]
 	mov	rdx, QWORD PTR tv157[rsp]
-	mov	QWORD PTR [rdx+rax*8+280], rcx
+	mov	QWORD PTR [rdx+rax*8+264], rcx
 
 ; 95   : 		fd = get_current_thread()->fd_current;
 
 	call	get_current_thread
-	mov	eax, DWORD PTR [rax+760]
+	mov	eax, DWORD PTR [rax+744]
 	mov	DWORD PTR fd$[rsp], eax
 
 ; 96   : 		get_current_thread()->fd_current++;
 
 	call	get_current_thread
-	add	rax, 760				; 000002f8H
+	add	rax, 744				; 000002e8H
 	mov	QWORD PTR tv168[rsp], rax
 	mov	rax, QWORD PTR tv168[rsp]
 	mov	eax, DWORD PTR [rax]
@@ -866,21 +866,21 @@ $LN4@sys_open_f:
 	call	get_current_thread
 	mov	QWORD PTR tv172[rsp], rax
 	call	get_current_thread
-	movsxd	rax, DWORD PTR [rax+760]
+	movsxd	rax, DWORD PTR [rax+744]
 	mov	rcx, QWORD PTR node$[rsp]
 	mov	rdx, QWORD PTR tv172[rsp]
-	mov	QWORD PTR [rdx+rax*8+280], rcx
+	mov	QWORD PTR [rdx+rax*8+264], rcx
 
 ; 100  : 			fd = get_current_thread()->fd_current;
 
 	call	get_current_thread
-	mov	eax, DWORD PTR [rax+760]
+	mov	eax, DWORD PTR [rax+744]
 	mov	DWORD PTR fd$[rsp], eax
 
 ; 101  : 			get_current_thread()->fd_current++;
 
 	call	get_current_thread
-	add	rax, 760				; 000002f8H
+	add	rax, 744				; 000002e8H
 	mov	QWORD PTR tv183[rsp], rax
 	mov	rax, QWORD PTR tv183[rsp]
 	mov	eax, DWORD PTR [rax]

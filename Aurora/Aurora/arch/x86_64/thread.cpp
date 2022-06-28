@@ -169,35 +169,34 @@ thread_t* create_kthread (void (*entry) (void), uint64_t stack,uint64_t cr3, cha
 {
 	thread_t *t = (thread_t*)malloc(sizeof(thread_t));//pmmngr_alloc();
 	memset(t, 0, sizeof(thread_t));
-	t->ss = 0x10;
-	t->rsp = (uint64_t*)stack;
-	t->rflags = 0x202;
-	t->cs = 0x08;
-	t->rip = (uint64_t)entry;
-	t->rax = 0;
-	t->rbx = 0;
-	t->rcx = 0;
-	t->rdx = 0;
-	t->rsi = 0;
-	t->rdi = 0;
-	t->rbp = (uint64_t)t->rsp;
-	t->r8 = 0;
-	t->r9 = 0;
-	t->r10 = 0;
-	t->r11 = 0;
-	t->r12 = 0;
-	t->r13 = 0;
-	t->r14 = 0;
-	t->r15 = 0;
-	t->ds = 0x10;
-	t->es = 0x10;
-	t->fs = 0x10;
-	t->gs = 0x10;
-	t->kern_esp = stack;
+	t->frame.ss = 0x10;
+	t->frame.rsp = (uint64_t)stack;
+	t->frame.rflags = 0x202;
+	t->frame.cs = 0x08;
+	t->frame.rip = (uint64_t)entry;
+	t->frame.rax = 0;
+	t->frame.rbx = 0;
+	t->frame.rcx = 0;
+	t->frame.rdx = 0;
+	t->frame.rsi = 0;
+	t->frame.rdi = 0;
+	t->frame.rbp = (uint64_t)t->frame.rsp;
+	t->frame.r8 = 0;
+	t->frame.r9 = 0;
+	t->frame.r10 = 0;
+	t->frame.r11 = 0;
+	t->frame.r12 = 0;
+	t->frame.r13 = 0;
+	t->frame.r14 = 0;
+	t->frame.r15 = 0;
+	t->frame.ds = 0x10;
+	t->frame.es = 0x10;
+	t->frame.fs = 0x10;
+	t->frame.gs = 0x10;
+	t->frame.kern_esp = stack;
 	t->user_stack = stack;
-	t->ttype = 0;
 	t->_is_user = 0;
-	t->cr3 = cr3;
+	t->frame.cr3 = cr3;
 	t->name = name;
 	t->id = task_id++;
 	t->quanta = 0;
@@ -225,42 +224,41 @@ thread_t* create_user_thread (void (*entry) (void*),uint64_t stack,uint64_t cr3,
 {
 	thread_t *t = (thread_t*)malloc(sizeof(thread_t));//pmmngr_alloc();
 	memset (t, 0, sizeof(thread_t));
-	t->ss = SEGVAL(GDT_ENTRY_USER_DATA,3); 
-	t->rsp = (uint64_t*)stack;
-	t->rflags = 0x286;
-	t->cs = SEGVAL (GDT_ENTRY_USER_CODE,3);
-	t->rip = (uint64_t)entry;
-	t->rax = 0;
-	t->rbx = 10;
-	t->rcx = 0;
-	t->rdx = 0;
-	t->rsi = 10;
-	t->rdi = 0;
-	t->rbp = (uint64_t)t->rsp - 32;
-	t->r8 = 0;
-	t->r9 = 0;
-	t->r10 = 0;
-	t->r11 = 0;
-	t->r12 = 0;
-	t->r13 = 0;
-	t->r14 = 0;
-	t->r15 = 0;
+	t->frame.ss = SEGVAL(GDT_ENTRY_USER_DATA,3); 
+	t->frame.rsp = (uint64_t)stack;
+	t->frame.rflags = 0x286;
+	t->frame.cs = SEGVAL (GDT_ENTRY_USER_CODE,3);
+	t->frame.rip = (uint64_t)entry;
+	t->frame.rax = 0;
+	t->frame.rbx = 10;
+	t->frame.rcx = 0;
+	t->frame.rdx = 0;
+	t->frame.rsi = 10;
+	t->frame.rdi = 0;
+	t->frame.rbp = (uint64_t)t->frame.rsp - 32;
+	t->frame.r8 = 0;
+	t->frame.r9 = 0;
+	t->frame.r10 = 0;
+	t->frame.r11 = 0;
+	t->frame.r12 = 0;
+	t->frame.r13 = 0;
+	t->frame.r14 = 0;
+	t->frame.r15 = 0;
 
 	/** Kernel stack is important for syscall or interruption in the system **/
-	t->kern_esp = (uint64_t)allocate_kstack((uint64_t*)cr3);
+	t->frame.kern_esp = (uint64_t)allocate_kstack((uint64_t*)cr3);
 	t->user_stack = stack;
-	t->ds = 0x23;
-	t->es = 0x23;
-	t->fs = 0x23;
-	t->gs = 0x23;
-	t->cr3 = v2p(cr3);
+	t->frame.ds = 0x23;
+	t->frame.es = 0x23;
+	t->frame.fs = 0x23;
+	t->frame.gs = 0x23;
+	t->frame.cr3 = v2p(cr3);
 	t->name = name;
 	t->id = task_id++;
 	t->quanta = 0;
-	t->ttype = 0;
 	t->msg_box = (uint64_t*)p2v((size_t)AuPmmngrAlloc());
 	/** Map the thread's msg box to a virtual address, from where the process will receive system messages **/
-	AuMapPageEx((uint64_t*)p2v(t->cr3),v2p((size_t)t->msg_box),(uint64_t)0x400000, PAGING_USER);
+	AuMapPageEx((uint64_t*)p2v(t->frame.cr3),v2p((size_t)t->msg_box),(uint64_t)0x400000, PAGING_USER);
 
 	t->fx_state = (uint8_t*)malloc(512);
 	memset(t->fx_state, 0, 512);
@@ -270,6 +268,9 @@ thread_t* create_user_thread (void (*entry) (void*),uint64_t stack,uint64_t cr3,
 	t->state = THREAD_STATE_READY;
 	t->priority = priority;
 	t->fd_current = 3;
+	for (int i = 0; i < 1024*1024 / 4096; i++)
+		AuMapPageEx((uint64_t*)cr3,(uint64_t)AuPmmngrAlloc(), 0x0000700000400000 + i * 4096, PAGING_USER); 
+	t->signal_stack = (0x0000700000400000 + 1024*1024 - 256);
 	thread_insert (t);
 	return t;
 }
@@ -285,39 +286,38 @@ thread_t* create_user_thread (void (*entry) (void*),uint64_t stack,uint64_t cr3,
 thread_t* create_child_thread (thread_t *parent, void (*entry)(void*),uint64_t stack, char name[8]) {
 	thread_t *t = (thread_t*)malloc(sizeof(thread_t));
 	memset(t, 0, sizeof(thread_t));
-	t->ss = SEGVAL(GDT_ENTRY_USER_DATA,3); 
-	t->rsp = (uint64_t*)stack;
-	t->rflags = 0x286;
-	t->cs = SEGVAL (GDT_ENTRY_USER_CODE,3);
-	t->rip = (uint64_t)entry;
-	t->rax = 0;
-	t->rbx = 10;
-	t->rcx = 0;
-	t->rdx = 0;
-	t->rsi = 10;
-	t->rdi = 0;
-	t->rbp = (uint64_t)t->rsp;
-	t->r8 = 0;
-	t->r9 = 0;
-	t->r10 = 0;
-	t->r11 = 0;
-	t->r12 = 0;
-	t->r13 = 0;
-	t->r14 = 0;
-	t->r15 = 0;
+	t->frame.ss = SEGVAL(GDT_ENTRY_USER_DATA,3); 
+	t->frame.rsp = (uint64_t)stack;
+	t->frame.rflags = 0x286;
+	t->frame.cs = SEGVAL (GDT_ENTRY_USER_CODE,3);
+	t->frame.rip = (uint64_t)entry;
+	t->frame.rax = 0;
+	t->frame.rbx = 10;
+	t->frame.rcx = 0;
+	t->frame.rdx = 0;
+	t->frame.rsi = 10;
+	t->frame.rdi = 0;
+	t->frame.rbp = (uint64_t)t->frame.rsp;
+	t->frame.r8 = 0;
+	t->frame.r9 = 0;
+	t->frame.r10 = 0;
+	t->frame.r11 = 0;
+	t->frame.r12 = 0;
+	t->frame.r13 = 0;
+	t->frame.r14 = 0;
+	t->frame.r15 = 0;
 
 	/** Kernel stack is important for syscall or interruption in the system **/
-	t->kern_esp = (uint64_t)allocate_kstack_child((uint64_t*)p2v((size_t)parent->cr3));
+	t->frame.kern_esp = (uint64_t)allocate_kstack_child((uint64_t*)p2v((size_t)parent->frame.cr3));
 	t->user_stack = stack;
-	t->ds = 0x23;
-	t->es = 0x23;
-	t->fs = 0x23;
-	t->gs = 0x23;
-	t->cr3 = parent->cr3;
+	t->frame.ds = 0x23;
+	t->frame.es = 0x23;
+	t->frame.fs = 0x23;
+	t->frame.gs = 0x23;
+	t->frame.cr3 = parent->frame.cr3;
 	t->name = name;
 	t->id = task_id++;
 	t->quanta = 0;
-	t->ttype = 0;
 	t->msg_box = NULL; //parent->msg_box;
 	t->fx_state = (uint8_t*)malloc(512);
 	memset(t->fx_state, 0, 512);
@@ -402,14 +402,14 @@ void scheduler_isr (size_t v, void* param) {
 	//mutex_lock (scheduler_mutex);
 	/** save currently running thread contexts */
 	if (save_context(current_thread,ktss) == 0) {
-		current_thread->cr3 = x64_read_cr3();
+		current_thread->frame.cr3 = x64_read_cr3();
 
 		
 		/* check if the thread is user mode thread, if yes
 		   than store the kernel esp */
 		if (current_thread->priviledge == THREAD_LEVEL_USER) {
 			//current_thread->kern_esp = ktss->rsp[0];
-			current_thread->kern_esp = x64_get_kstack(ktss);
+			current_thread->frame.kern_esp = x64_get_kstack(ktss);
 		}
 
 		if (is_cpu_fxsave_supported())
@@ -436,13 +436,14 @@ void scheduler_isr (size_t v, void* param) {
 
 		if (current_thread->priviledge == THREAD_LEVEL_USER){
 			//ktss->rsp[0] = current_thread->kern_esp;
-			x64_set_kstack(ktss,current_thread->kern_esp);
+			x64_set_kstack(ktss,current_thread->frame.kern_esp);
 		}
 
 		if (is_cpu_fxsave_supported())
 			x64_fxrstor(current_thread->fx_state);
 
 		x64_ldmxcsr(&current_thread->mxcsr);
+
 
 		//x64_write_cr3 (current_thread->cr3);
 		//mutex_unlock (scheduler_mutex);

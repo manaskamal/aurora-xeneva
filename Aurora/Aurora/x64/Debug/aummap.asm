@@ -110,7 +110,7 @@ $LN7@au_mmap:
 
 	call	get_current_thread
 	movsxd	rcx, DWORD PTR filedesc$[rsp]
-	mov	rax, QWORD PTR [rax+rcx*8+280]
+	mov	rax, QWORD PTR [rax+rcx*8+264]
 	mov	QWORD PTR file$[rsp], rax
 $LN6@au_mmap:
 

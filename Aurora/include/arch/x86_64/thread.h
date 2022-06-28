@@ -59,10 +59,9 @@
 #define  QUANTUM  4  //4 runs/ticks
 
 
-//! THREAD STRUCTURE
-typedef struct _thread_ {
+typedef struct _thread_frame_ {
 	uint64_t ss;       //0x00
-	uint64_t *rsp;      //0x08
+	uint64_t rsp;      //0x08
 	uint64_t rflags;   //0x10
 	uint64_t cs;       //0x18
 	uint64_t rip;      //0x20
@@ -88,6 +87,11 @@ typedef struct _thread_ {
 	uint64_t gs;         //0xB8
 	uint64_t cr3;        //0xC0     [0x08]
 	uint64_t kern_esp;   //0xC8     [0x10]
+}thread_frame_t;
+
+//! THREAD STRUCTURE
+typedef struct _thread_ {
+	thread_frame_t frame;
     uint8_t *fx_state;  //0xD0
 	uint64_t user_stack;
 	uint32_t mxcsr;
@@ -97,22 +101,18 @@ typedef struct _thread_ {
 	uint16_t id;
 	uint8_t priviledge;
 	uint16_t quanta;
-	uint64_t ttype;
 	uint64_t* msg_box;
-	uint64_t* qu_box;
 	uint8_t priority;
 	vfs_node_t *fd[60];   //file descriptor
 	int fd_current;
-	uint8_t master_fd;
-	uint8_t slave_fd;
+	sig_handler signals[NUMSIGNALS+1];
+	int pending_signal;
+	uint64_t signal_stack;
+	thread_frame_t *signal_state;
 	struct _thread_* next;
 	struct _thread_* prev;
 }thread_t;
 
-typedef struct _uthread_ {
-	void (*entry)(void*);
-	struct _uthread_ *self_pointer;
-}uthread;
 
 
 //!****************************

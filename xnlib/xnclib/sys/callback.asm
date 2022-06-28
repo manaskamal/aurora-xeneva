@@ -269,11 +269,10 @@ sys_ttype_create:
 	syscall
 	ret
 
-global sys_attach_tty
-export sys_attach_tty
-sys_attach_tty:
+global sys_sigreturn
+export sys_sigreturn
+sys_sigreturn:
     mov r12,26
-	mov r13,rcx
 	syscall
 	ret
 

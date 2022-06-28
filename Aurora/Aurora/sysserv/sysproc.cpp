@@ -67,9 +67,13 @@ void sys_exit () {
  */
 void sys_kill (int pid, int signo) {
 	x64_cli();
-	kill_process_by_id(pid);
-	force_sched();
-	//! For now, no signals are supported, just kill the process
+	thread_t *current_thread = thread_iterate_ready_list(pid);
+	if (current_thread == NULL) 
+		current_thread = thread_iterate_block_list(pid);
+
+	current_thread->pending_signal = signo;
+
+	/* Signal Not Implemented for now */
 }
 
 /**
@@ -79,13 +83,14 @@ void sys_kill (int pid, int signo) {
  */
 void sys_set_signal (int signo, sig_handler handler) {
 	x64_cli();
-	//get_current_thread()->signals[signo] = handler;
+	get_current_thread()->signals[signo] = handler;
 }
 
 /**
- * sys_attach_ttype -- attach a tele type 
- * @param id -- teletype id 
+ * sys_sigreturn -- return from a signal handler
  */
-void sys_attach_ttype (int id) {
-	get_current_thread()->ttype = id;
+void sys_sigreturn () {
+	x64_cli();
+	
+	/* Signal Not implemented for now */
 }

@@ -46,6 +46,7 @@ extern void sys_get_current_time (sys_time *time);
 extern uint32_t sys_get_system_tick ();
 extern void sys_kill (int pid, int signo);
 extern void sys_set_signal (int signo, sig_handler handler);
+extern void sys_sigreturn ();
 extern void unmap_shared_memory (uint16_t dest_id, uint64_t pos, size_t size);
 extern void sys_attach_ttype (int id);
 extern void copy_memory (uint16_t dest_id, uint64_t pos, size_t size);

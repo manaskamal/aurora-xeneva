@@ -54,6 +54,8 @@ typedef struct _tele_type_ {
 	circ_buf_t *slave_buffer;
 	int master_written;
 	int slave_written;
+	uint16_t master_pid;
+	uint16_t slave_pid;
 	struct _tele_type_ *next;
 	struct _tele_type_ *prev;
 }ttype_t;
@@ -63,6 +65,7 @@ typedef struct _tele_type_ {
 #define TIOCSWINSZ  0x5402
 #define TIOCFLUSH   0x5403
 #define TIOCGATTR   0x5404
+#define TIOSPGRP    0x5405
 
 
 extern void ttype_init ();

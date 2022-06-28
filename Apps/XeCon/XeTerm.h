@@ -43,6 +43,7 @@ typedef struct _xe_term_ {
 	int ws_row;
 	int ws_xpixels; //Max Width
 	int ws_ypixels; // Max Height
+	uint8_t* buffer;
 }XETerm;
 
 typedef struct _win_size_ {

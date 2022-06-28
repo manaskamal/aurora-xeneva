@@ -6,18 +6,18 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 CONST	SEGMENT
-$SG3881	DB	'Kernel Panic!! Page fault ', 0aH, 00H
+$SG3879	DB	'Kernel Panic!! Page fault ', 0aH, 00H
 	ORG $+4
-$SG3882	DB	'Virtual address -> %x ', 0aH, 00H
-$SG3883	DB	'RIP ->%x ', 0aH, 00H
+$SG3880	DB	'Virtual address -> %x ', 0aH, 00H
+$SG3881	DB	'RIP ->%x ', 0aH, 00H
 	ORG $+5
-$SG3884	DB	'Current thread -> %s ', 0aH, 00H
+$SG3882	DB	'Current thread -> %s ', 0aH, 00H
 	ORG $+1
-$SG3890	DB	'Page Fault -> %x ', 0aH, 00H
+$SG3888	DB	'Page Fault -> %x ', 0aH, 00H
 	ORG $+5
-$SG3891	DB	'RIP -> %x ', 0aH, 00H
+$SG3889	DB	'RIP -> %x ', 0aH, 00H
 	ORG $+4
-$SG3892	DB	'Current thread -> %s ', 0aH, 00H
+$SG3890	DB	'Current thread -> %s ', 0aH, 00H
 CONST	ENDS
 PUBLIC	?AuHandlePageNotPresent@@YAX_K_NPEAX@Z		; AuHandlePageNotPresent
 EXTRN	printf:PROC
@@ -77,27 +77,27 @@ $LN13:
 
 ; 45   : 		printf ("Kernel Panic!! Page fault \n");
 
-	lea	rcx, OFFSET FLAT:$SG3881
+	lea	rcx, OFFSET FLAT:$SG3879
 	call	printf
 
 ; 46   : 		printf ("Virtual address -> %x \n", vaddr);
 
 	mov	rdx, QWORD PTR vaddr$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3882
+	lea	rcx, OFFSET FLAT:$SG3880
 	call	printf
 
 ; 47   : 		printf ("RIP ->%x \n", frame->rip);
 
 	mov	rax, QWORD PTR frame$[rsp]
 	mov	rdx, QWORD PTR [rax+16]
-	lea	rcx, OFFSET FLAT:$SG3883
+	lea	rcx, OFFSET FLAT:$SG3881
 	call	printf
 
 ; 48   : 		printf ("Current thread -> %s \n", get_current_thread()->name);
 
 	call	get_current_thread
 	mov	rdx, QWORD PTR [rax+232]
-	lea	rcx, OFFSET FLAT:$SG3884
+	lea	rcx, OFFSET FLAT:$SG3882
 	call	printf
 $LN9@AuHandlePa:
 
@@ -125,21 +125,21 @@ $LN10@AuHandlePa:
 ; 54   : 		printf ("Page Fault -> %x \n", vaddr);
 
 	mov	rdx, QWORD PTR vaddr$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3890
+	lea	rcx, OFFSET FLAT:$SG3888
 	call	printf
 
 ; 55   : 		printf ("RIP -> %x \n", frame->rip);
 
 	mov	rax, QWORD PTR frame$[rsp]
 	mov	rdx, QWORD PTR [rax+16]
-	lea	rcx, OFFSET FLAT:$SG3891
+	lea	rcx, OFFSET FLAT:$SG3889
 	call	printf
 
 ; 56   : 		printf ("Current thread -> %s \n", get_current_thread()->name);
 
 	call	get_current_thread
 	mov	rdx, QWORD PTR [rax+232]
-	lea	rcx, OFFSET FLAT:$SG3892
+	lea	rcx, OFFSET FLAT:$SG3890
 	call	printf
 $LN6@AuHandlePa:
 

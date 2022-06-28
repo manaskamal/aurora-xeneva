@@ -322,7 +322,7 @@ void kill_process () {
 	process_t *proc = get_current_process();
 	uint64_t  init_stack = proc->stack - (2*1024*1024);
 	uint64_t image_base = proc->image_base;
-	uint64_t *cr3 = (uint64_t*)remove_thread->cr3;
+	uint64_t *cr3 = (uint64_t*)remove_thread->frame.cr3;
 	
 	int timer = find_timer_id (remove_thread->id);
 
@@ -380,7 +380,7 @@ void kill_process () {
 	/* Here we need to free all child threads */
 	for (int i = 1; i < proc->num_thread; i++) {
 		thread_t *killable = proc->threads[i];
-		free_kstack_child(cr3,killable->kern_esp - 8192);
+		free_kstack_child(cr3,killable->frame.kern_esp - 8192);
 		free(killable->fx_state);
 		uint64_t stack_location = (uint64_t)killable->user_stack;
 		stack_location += 1*1024*1024;
@@ -433,7 +433,7 @@ void kill_process_by_id (uint16_t id) {
 	uint64_t image_base = proc->image_base;
 	size_t image_size = proc->image_size;
 	//uint64_t heap_base = (uint64_t)proc->user_heap_start;
-	uint64_t *cr3 = (uint64_t*)remove_thread->cr3;
+	uint64_t *cr3 = (uint64_t*)remove_thread->frame.cr3;
 
 	if (was_blocked)
 		unblock_thread(remove_thread);

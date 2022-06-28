@@ -97,7 +97,7 @@ void* AuObtainShMem (uint32_t id, void * shmaddr, int shmflg) {
 	 * lets copy the physical frames from that process's
 	 * address space */
 	if (mem->map_in_thread) {
-		uint64_t cr3 = mem->map_in_thread->cr3;
+		uint64_t cr3 = mem->map_in_thread->frame.cr3;
 		uint64_t virtual_addr = (uint64_t)mem->first_process_vaddr;
 		/*Now we have the first virtual address, lets map in */
 		for (int i = 0; i < mem->num_frames; i++) {
