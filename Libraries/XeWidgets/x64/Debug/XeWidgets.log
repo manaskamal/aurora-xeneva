@@ -1,13 +1,17 @@
-﻿Build started 12-06-2022 আবেলি 7:18:18.
+﻿Build started 29-06-2022 আবেলি 3:49:46.
      1>Project "E:\Xeneva Project\Xeneva\Libraries\XeWidgets\XeWidgets.vcxproj" on node 2 (Rebuild target(s)).
      1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\xnlib\xnclib" /I"E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes" /I"E:\Xeneva Project\Xeneva\xnlib\xnacrylic\include" /Zi /nologo /W3 /WX- /Od /Oy /D ARCH_X64 /D DEFAULT_COLOR_MODE /D _WINDLL /D _MBCS /X /Gm /GS- /arch:SSE2 /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt list.cpp styles\XEDefaultButtonStyle.cpp styles\XEDefaultWinStyle.cpp xebase.cpp xebutton.cpp xeloop.cpp xewindow.cpp xe_glblctrl_close.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\xnlib\xnclib" /I"E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes" /I"E:\Xeneva Project\Xeneva\xnlib\xnacrylic\include" /Zi /nologo /W3 /WX- /Od /Oy /D ARCH_X64 /D DEFAULT_COLOR_MODE /D _WINDLL /D _MBCS /X /Gm /GS- /arch:SSE2 /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt list.cpp styles\XEDefaultButtonStyle.cpp styles\XEDefaultRadioButtonStyle.cpp styles\XEDefaultRadioGroupStyle.cpp styles\XEDefaultWinStyle.cpp xebase.cpp xebutton.cpp xeloop.cpp xeradiobutton.cpp xeradiogroup.cpp xewindow.cpp xe_glblctrl_close.cpp
      1>cl : Command line warning D9002: ignoring unknown option '/arch:SSE2'
          xe_glblctrl_close.cpp
          xewindow.cpp
      1>xewindow.cpp(114): warning C4267: 'argument' : conversion from 'size_t' to 'unsigned int', possible loss of data
      1>xewindow.cpp(243): warning C4018: '<' : signed/unsigned mismatch
      1>xewindow.cpp(267): warning C4018: '<' : signed/unsigned mismatch
+         xeradiogroup.cpp
+     1>xeradiogroup.cpp(67): warning C4267: 'argument' : conversion from 'size_t' to 'unsigned int', possible loss of data
+         xeradiobutton.cpp
+     1>xeradiobutton.cpp(71): warning C4267: 'argument' : conversion from 'size_t' to 'unsigned int', possible loss of data
          xeloop.cpp
          xebutton.cpp
      1>xebutton.cpp(118): warning C4267: 'argument' : conversion from 'size_t' to 'unsigned int', possible loss of data
@@ -15,6 +19,10 @@
          XEDefaultWinStyle.cpp
      1>styles\XEDefaultWinStyle.cpp(46): warning C4018: '<' : signed/unsigned mismatch
      1>styles\XEDefaultWinStyle.cpp(67): warning C4018: '<' : signed/unsigned mismatch
+         XEDefaultRadioGroupStyle.cpp
+     1>styles\XEDefaultRadioGroupStyle.cpp(49): warning C4018: '<' : signed/unsigned mismatch
+     1>styles\XEDefaultRadioGroupStyle.cpp(70): warning C4018: '<' : signed/unsigned mismatch
+         XEDefaultRadioButtonStyle.cpp
          XEDefaultButtonStyle.cpp
          list.cpp
          Generating Code...
@@ -23,10 +31,14 @@
        Link:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:PROMPT /OUT:"F:\xewid.dll" /INCREMENTAL /NOLOGO /LIBPATH:"E:\Xeneva Project\Xeneva\xnlib\lib64" /LIBPATH:"E:\Xeneva Project\Xeneva\Aurora\x64\Debug" xnclib.lib xnacrylic.lib /NODEFAULTLIB /MANIFEST:NO /PDB:"E:\Xeneva Project\Xeneva\Aurora\x64\Debug\XeWidgets.pdb" /MAP /MAPINFO:EXPORTS /SUBSYSTEM:NATIVE /LARGEADDRESSAWARE /Driver /OPT:NOREF /LTCG /TLBID:1 /BASE:"0x0000000100200000" /FIXED:NO /IMPLIB:"E:\Xeneva Project\Xeneva\Aurora\x64\Debug\XeWidgets.lib" /MACHINE:X64 /ALIGN:512 /DLL x64\Debug\list.obj
          x64\Debug\XEDefaultButtonStyle.obj
+         x64\Debug\XEDefaultRadioButtonStyle.obj
+         x64\Debug\XEDefaultRadioGroupStyle.obj
          x64\Debug\XEDefaultWinStyle.obj
          x64\Debug\xebase.obj
          x64\Debug\xebutton.obj
          x64\Debug\xeloop.obj
+         x64\Debug\xeradiobutton.obj
+         x64\Debug\xeradiogroup.obj
          x64\Debug\xewindow.obj
          x64\Debug\xe_glblctrl_close.obj
      1>LINK : warning LNK4075: ignoring '/INCREMENTAL' due to '/LTCG' specification
@@ -37,4 +49,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:00.86
+Time Elapsed 00:00:01.32

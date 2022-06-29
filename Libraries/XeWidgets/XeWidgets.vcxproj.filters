@@ -25,6 +25,14 @@
     <ClCompile Include="styles\XEDefaultButtonStyle.cpp">
       <Filter>styles</Filter>
     </ClCompile>
+    <ClCompile Include="xeradiobutton.cpp" />
+    <ClCompile Include="styles\XEDefaultRadioButtonStyle.cpp">
+      <Filter>styles</Filter>
+    </ClCompile>
+    <ClCompile Include="xeradiogroup.cpp" />
+    <ClCompile Include="styles\XEDefaultRadioGroupStyle.cpp">
+      <Filter>styles</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="includes\xebase.h">
@@ -55,6 +63,18 @@
       <Filter>includes</Filter>
     </ClInclude>
     <ClInclude Include="includes\styles\XEDefaultButtonStyle.h">
+      <Filter>includes\styles</Filter>
+    </ClInclude>
+    <ClInclude Include="includes\xeradiobutton.h">
+      <Filter>includes</Filter>
+    </ClInclude>
+    <ClInclude Include="includes\styles\XEDefaultRadioButtonStyle.h">
+      <Filter>includes\styles</Filter>
+    </ClInclude>
+    <ClInclude Include="includes\xeradiogroup.h">
+      <Filter>includes</Filter>
+    </ClInclude>
+    <ClInclude Include="includes\styles\XEDefaultRadioGroupStyle.h">
       <Filter>includes\styles</Filter>
     </ClInclude>
   </ItemGroup>

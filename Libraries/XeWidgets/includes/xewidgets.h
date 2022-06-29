@@ -37,6 +37,8 @@
 #include <xeloop.h>
 
 #include <xebutton.h>
+#include <xeradiobutton.h>
+#include <xeradiogroup.h>
 
 
 #endif
