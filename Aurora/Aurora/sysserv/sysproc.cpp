@@ -72,7 +72,6 @@ void sys_kill (int pid, int signo) {
 		current_thread = thread_iterate_block_list(pid);
 
 	current_thread->pending_signal = signo;
-
 	/* Signal Not Implemented for now */
 }
 
@@ -86,11 +85,16 @@ void sys_set_signal (int signo, sig_handler handler) {
 	get_current_thread()->signals[signo] = handler;
 }
 
+void sig_loop_tst() {
+	for(;;) {
+		_debug_print_ ("Loop");
+	}
+}
 /**
  * sys_sigreturn -- return from a signal handler
  */
-void sys_sigreturn () {
+void sys_sigreturn (int num) {
 	x64_cli();
-	
-	/* Signal Not implemented for now */
+	thread_t *current_thread = get_current_thread();
+	get_current_thread()->pending_signal = -1;
 }

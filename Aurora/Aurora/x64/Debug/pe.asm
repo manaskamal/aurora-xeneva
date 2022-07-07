@@ -12,15 +12,15 @@ _BSS	SEGMENT
 ?image_base@@3_KA DQ 01H DUP (?)			; image_base
 _BSS	ENDS
 CONST	SEGMENT
-$SG3577	DB	'xnclib.dll', 00H
+$SG3629	DB	'xnclib.dll', 00H
 	ORG $+5
-$SG3581	DB	'xnacrl.dll', 00H
+$SG3633	DB	'xnacrl.dll', 00H
 	ORG $+5
-$SG3585	DB	'xewid.dll', 00H
+$SG3637	DB	'xewid.dll', 00H
 	ORG $+6
-$SG3589	DB	'ftype.dll', 00H
+$SG3641	DB	'ftype.dll', 00H
 	ORG $+6
-$SG3590	DB	'Exporter found -> %s ', 0dH, 0aH, 00H
+$SG3642	DB	'Exporter found -> %s ', 0dH, 0aH, 00H
 CONST	ENDS
 PUBLIC	?load_pe_file@@YAXPEA_KH@Z			; load_pe_file
 PUBLIC	?get_entry_point@@YAP6AXPEAX@ZXZ		; get_entry_point
@@ -437,7 +437,7 @@ $LN12@AuPeLinkLi:
 ; 131  : 		/* Here Check the required dll name, for the base address */
 ; 132  : 		if (strcmp(func,"xnclib.dll") == 0){
 
-	lea	rdx, OFFSET FLAT:$SG3577
+	lea	rdx, OFFSET FLAT:$SG3629
 	mov	rcx, QWORD PTR func$2[rsp]
 	call	strcmp
 	test	eax, eax
@@ -452,7 +452,7 @@ $LN11@AuPeLinkLi:
 
 ; 134  : 		}else if (strcmp(func,"xnacrl.dll") == 0){
 
-	lea	rdx, OFFSET FLAT:$SG3581
+	lea	rdx, OFFSET FLAT:$SG3633
 	mov	rcx, QWORD PTR func$2[rsp]
 	call	strcmp
 	test	eax, eax
@@ -467,7 +467,7 @@ $LN9@AuPeLinkLi:
 
 ; 136  : 		}else if (strcmp(func,"xewid.dll") == 0){
 
-	lea	rdx, OFFSET FLAT:$SG3585
+	lea	rdx, OFFSET FLAT:$SG3637
 	mov	rcx, QWORD PTR func$2[rsp]
 	call	strcmp
 	test	eax, eax
@@ -482,7 +482,7 @@ $LN7@AuPeLinkLi:
 
 ; 138  : 		}else if (strcmp(func, "ftype.dll") == 0){
 
-	lea	rdx, OFFSET FLAT:$SG3589
+	lea	rdx, OFFSET FLAT:$SG3641
 	mov	rcx, QWORD PTR func$2[rsp]
 	call	strcmp
 	test	eax, eax
@@ -491,7 +491,7 @@ $LN7@AuPeLinkLi:
 ; 139  : 			_debug_print_ ("Exporter found -> %s \r\n", func);
 
 	mov	rdx, QWORD PTR func$2[rsp]
-	lea	rcx, OFFSET FLAT:$SG3590
+	lea	rcx, OFFSET FLAT:$SG3642
 	call	_debug_print_
 $LN5@AuPeLinkLi:
 $LN6@AuPeLinkLi:

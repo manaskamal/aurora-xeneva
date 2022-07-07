@@ -16,13 +16,13 @@ _BSS	SEGMENT
 ?last@@3PEAU_tele_type_@@EA DQ 01H DUP (?)		; last
 _BSS	ENDS
 CONST	SEGMENT
-$SG3633	DB	'/dev/', 00H
+$SG3704	DB	'/dev/', 00H
 	ORG $+2
-$SG3634	DB	'ttym', 00H
+$SG3705	DB	'ttym', 00H
 	ORG $+3
-$SG3642	DB	'/dev/', 00H
+$SG3713	DB	'/dev/', 00H
 	ORG $+2
-$SG3643	DB	'ttys', 00H
+$SG3714	DB	'ttys', 00H
 CONST	ENDS
 PUBLIC	?ttype_init@@YAXXZ				; ttype_init
 PUBLIC	?ttype_create_master@@YAPEAU_vfs_node_@@PEAU_tele_type_@@@Z ; ttype_create_master
@@ -1198,14 +1198,14 @@ $LN3:
 ; 268  : 	char sname[10];
 ; 269  : 	strcpy (sname, "/dev/");
 
-	lea	rdx, OFFSET FLAT:$SG3642
+	lea	rdx, OFFSET FLAT:$SG3713
 	lea	rcx, QWORD PTR sname$[rsp]
 	call	strcpy
 
 ; 270  : 	strcpy (sname+5, "ttys");
 
 	lea	rax, QWORD PTR sname$[rsp+5]
-	lea	rdx, OFFSET FLAT:$SG3643
+	lea	rdx, OFFSET FLAT:$SG3714
 	mov	rcx, rax
 	call	strcpy
 
@@ -1338,14 +1338,14 @@ $LN3:
 ; 235  : 	char mname[10];
 ; 236  : 	strcpy (mname, "/dev/");
 
-	lea	rdx, OFFSET FLAT:$SG3633
+	lea	rdx, OFFSET FLAT:$SG3704
 	lea	rcx, QWORD PTR mname$[rsp]
 	call	strcpy
 
 ; 237  : 	strcpy (mname+5, "ttym");
 
 	lea	rax, QWORD PTR mname$[rsp+5]
-	lea	rdx, OFFSET FLAT:$SG3634
+	lea	rdx, OFFSET FLAT:$SG3705
 	mov	rcx, rax
 	call	strcpy
 

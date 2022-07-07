@@ -89,11 +89,30 @@ typedef struct _thread_frame_ {
 	uint64_t kern_esp;   //0xC8     [0x10]
 }thread_frame_t;
 
+#pragma pack(push)
+struct signal_stack_frame {
+	stack_frame* baseptr;
+	size_t  error;
+	size_t  rip;
+	size_t  cs;
+	size_t  rflags;
+	size_t  rsp;
+	size_t  ss;
+	size_t  rax;
+	size_t  rbx;
+	int signal_num;
+	uint64_t handler;
+};
+#pragma pack (pop)
+
+
+
+
 //! THREAD STRUCTURE
 typedef struct _thread_ {
 	thread_frame_t frame;
-    uint8_t *fx_state;  //0xD0
-	uint64_t user_stack;
+	uint64_t user_stack;  //0xD0
+    uint8_t *fx_state;  
 	uint32_t mxcsr;
 	bool _is_user;       
 	char* name;
@@ -108,6 +127,7 @@ typedef struct _thread_ {
 	sig_handler signals[NUMSIGNALS+1];
 	int pending_signal;
 	uint64_t signal_stack;
+	RegsCtx_t* signal_stack2;
 	thread_frame_t *signal_state;
 	struct _thread_* next;
 	struct _thread_* prev;

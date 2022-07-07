@@ -10,12 +10,12 @@ _BSS	SEGMENT
 ?display@@3U__display__@@A DB 020H DUP (?)		; display
 _BSS	ENDS
 CONST	SEGMENT
-$SG3245	DB	'fb', 00H
+$SG3297	DB	'fb', 00H
 	ORG $+5
-$SG3246	DB	'VFS Node created', 0aH, 00H
+$SG3298	DB	'VFS Node created', 0aH, 00H
 	ORG $+6
-$SG3247	DB	'/dev/fb', 00H
-$SG3248	DB	'VFS DEV FB Registered', 0aH, 00H
+$SG3299	DB	'/dev/fb', 00H
+$SG3300	DB	'VFS DEV FB Registered', 0aH, 00H
 CONST	ENDS
 PUBLIC	?AuInitializeScreen@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z ; AuInitializeScreen
 PUBLIC	?AuScreenMap@@YAXII@Z				; AuScreenMap
@@ -419,7 +419,7 @@ $LN9:
 ; 48   : 	strcpy (svga->filename, "fb");
 
 	mov	rax, QWORD PTR svga$[rsp]
-	lea	rdx, OFFSET FLAT:$SG3245
+	lea	rdx, OFFSET FLAT:$SG3297
 	mov	rcx, rax
 	call	strcpy
 
@@ -481,19 +481,19 @@ $LN9:
 
 ; 60   : 	printf ("VFS Node created\n");
 
-	lea	rcx, OFFSET FLAT:$SG3246
+	lea	rcx, OFFSET FLAT:$SG3298
 	call	printf
 
 ; 61   : 	vfs_mount ("/dev/fb", svga, 0);
 
 	xor	r8d, r8d
 	mov	rdx, QWORD PTR svga$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3247
+	lea	rcx, OFFSET FLAT:$SG3299
 	call	vfs_mount
 
 ; 62   : 	printf ("VFS DEV FB Registered\n");
 
-	lea	rcx, OFFSET FLAT:$SG3248
+	lea	rcx, OFFSET FLAT:$SG3300
 	call	printf
 
 ; 63   : 

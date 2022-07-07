@@ -114,11 +114,57 @@ typedef struct _idtr {
 } IDTR;
 
 
-
+#pragma pack(push,1)
 typedef struct _stack_frame_ {
 	_stack_frame_* baseptr;
 	size_t  rip;
 }stack_frame;
+#pragma pack(pop)
+
+typedef struct _regs_{
+	uint64_t r15;
+	uint64_t r14;
+	uint64_t r13;
+	uint64_t r12;
+	uint64_t r11;
+	uint64_t r10;
+	uint64_t r9;
+	uint64_t r8;
+	uint64_t rbp;
+	uint64_t rdi;
+	uint64_t rsi;
+	uint64_t rdx;
+	uint64_t rcx;
+	uint64_t rbx;
+	uint64_t rax;
+}cpu_regs_t;
+
+
+/* Needed for Signal Handling */
+#pragma pack(push,1)
+typedef struct _regs_ctx_ {
+	uint64_t r15;
+	uint64_t r14;
+	uint64_t r13;
+	uint64_t r12;
+	uint64_t r11;
+	uint64_t r10;
+	uint64_t r9;
+	uint64_t r8;
+	uint64_t rbp;
+	uint64_t rdi;
+	uint64_t rsi;
+	uint64_t rdx;
+	uint64_t rcx;
+	uint64_t rbx;
+	uint64_t rax;
+	uint64_t rip;
+	uint64_t cs;
+	uint64_t rflags;
+	uint64_t rsp;
+	uint64_t ss;
+}RegsCtx_t;
+#pragma pack(pop)
 
 
 struct interrupt_stack_frame {
@@ -246,6 +292,8 @@ extern "C" void x64_stmxcsr(uint32_t *location);
 
 extern "C" void x64_set_kstack (void* ktss,size_t stack);
 extern "C" size_t x64_get_kstack (void* ktss);
+
+extern "C" uint64_t x64_kesp_get_top();
 
 extern "C" void x64_rdtsc(uint32_t *hi, uint32_t *lo);
 

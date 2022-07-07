@@ -6,16 +6,19 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 CONST	SEGMENT
-$SG3932	DB	'***Process killed ', 0dH, 0aH, 00H
+$SG4003	DB	'***Process killed ', 0dH, 0aH, 00H
 	ORG $+3
-$SG3933	DB	'*** Current used RAM -> %d MB / total -> %d MB ', 0dH, 0aH
+$SG4004	DB	'*** Current used RAM -> %d MB / total -> %d MB ', 0dH, 0aH
 	DB	00H
+	ORG $+2
+$SG4020	DB	'Loop', 00H
 CONST	ENDS
 PUBLIC	?create__sys_process@@YAHPEBDPEAD@Z		; create__sys_process
 PUBLIC	?sys_exit@@YAXXZ				; sys_exit
 PUBLIC	?sys_kill@@YAXHH@Z				; sys_kill
 PUBLIC	?sys_set_signal@@YAXHP6AXH@Z@Z			; sys_set_signal
-PUBLIC	?sys_sigreturn@@YAXXZ				; sys_sigreturn
+PUBLIC	?sig_loop_tst@@YAXXZ				; sig_loop_tst
+PUBLIC	?sys_sigreturn@@YAXH@Z				; sys_sigreturn
 EXTRN	?pmmngr_get_used_ram@@YA_KXZ:PROC		; pmmngr_get_used_ram
 EXTRN	?pmmngr_get_total_ram@@YA_KXZ:PROC		; pmmngr_get_total_ram
 EXTRN	x64_cli:PROC
@@ -39,9 +42,12 @@ $pdata$?sys_kill@@YAXHH@Z DD imagerel $LN4
 $pdata$?sys_set_signal@@YAXHP6AXH@Z@Z DD imagerel $LN3
 	DD	imagerel $LN3+46
 	DD	imagerel $unwind$?sys_set_signal@@YAXHP6AXH@Z@Z
-$pdata$?sys_sigreturn@@YAXXZ DD imagerel $LN3
-	DD	imagerel $LN3+14
-	DD	imagerel $unwind$?sys_sigreturn@@YAXXZ
+$pdata$?sig_loop_tst@@YAXXZ DD imagerel $LN5
+	DD	imagerel $LN5+23
+	DD	imagerel $unwind$?sig_loop_tst@@YAXXZ
+$pdata$?sys_sigreturn@@YAXH@Z DD imagerel $LN3
+	DD	imagerel $LN3+43
+	DD	imagerel $unwind$?sys_sigreturn@@YAXH@Z
 pdata	ENDS
 xdata	SEGMENT
 $unwind$?create__sys_process@@YAHPEBDPEAD@Z DD 010e01H
@@ -52,30 +58,70 @@ $unwind$?sys_kill@@YAXHH@Z DD 010c01H
 	DD	0620cH
 $unwind$?sys_set_signal@@YAXHP6AXH@Z@Z DD 010d01H
 	DD	0420dH
-$unwind$?sys_sigreturn@@YAXXZ DD 010401H
+$unwind$?sig_loop_tst@@YAXXZ DD 010401H
 	DD	04204H
+$unwind$?sys_sigreturn@@YAXH@Z DD 010801H
+	DD	06208H
 xdata	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\sysserv\sysproc.cpp
 _TEXT	SEGMENT
-?sys_sigreturn@@YAXXZ PROC				; sys_sigreturn
+current_thread$ = 32
+num$ = 64
+?sys_sigreturn@@YAXH@Z PROC				; sys_sigreturn
 
-; 92   : void sys_sigreturn () {
+; 96   : void sys_sigreturn (int num) {
 
 $LN3:
-	sub	rsp, 40					; 00000028H
+	mov	DWORD PTR [rsp+8], ecx
+	sub	rsp, 56					; 00000038H
 
-; 93   : 	x64_cli();
+; 97   : 	x64_cli();
 
 	call	x64_cli
 
-; 94   : 	
-; 95   : 	/* Signal Not implemented for now */
-; 96   : }
+; 98   : 	thread_t *current_thread = get_current_thread();
+
+	call	get_current_thread
+	mov	QWORD PTR current_thread$[rsp], rax
+
+; 99   : 	get_current_thread()->pending_signal = -1;
+
+	call	get_current_thread
+	mov	DWORD PTR [rax+1064], -1
+
+; 100  : }
+
+	add	rsp, 56					; 00000038H
+	ret	0
+?sys_sigreturn@@YAXH@Z ENDP				; sys_sigreturn
+_TEXT	ENDS
+; Function compile flags: /Odtpy
+; File e:\xeneva project\xeneva\aurora\aurora\sysserv\sysproc.cpp
+_TEXT	SEGMENT
+?sig_loop_tst@@YAXXZ PROC				; sig_loop_tst
+
+; 88   : void sig_loop_tst() {
+
+$LN5:
+	sub	rsp, 40					; 00000028H
+$LN2@sig_loop_t:
+
+; 89   : 	for(;;) {
+; 90   : 		_debug_print_ ("Loop");
+
+	lea	rcx, OFFSET FLAT:$SG4020
+	call	_debug_print_
+
+; 91   : 	}
+
+	jmp	SHORT $LN2@sig_loop_t
+
+; 92   : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
-?sys_sigreturn@@YAXXZ ENDP				; sys_sigreturn
+?sig_loop_tst@@YAXXZ ENDP				; sig_loop_tst
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\sysserv\sysproc.cpp
@@ -84,25 +130,25 @@ signo$ = 48
 handler$ = 56
 ?sys_set_signal@@YAXHP6AXH@Z@Z PROC			; sys_set_signal
 
-; 84   : void sys_set_signal (int signo, sig_handler handler) {
+; 83   : void sys_set_signal (int signo, sig_handler handler) {
 
 $LN3:
 	mov	QWORD PTR [rsp+16], rdx
 	mov	DWORD PTR [rsp+8], ecx
 	sub	rsp, 40					; 00000028H
 
-; 85   : 	x64_cli();
+; 84   : 	x64_cli();
 
 	call	x64_cli
 
-; 86   : 	get_current_thread()->signals[signo] = handler;
+; 85   : 	get_current_thread()->signals[signo] = handler;
 
 	call	get_current_thread
 	movsxd	rcx, DWORD PTR signo$[rsp]
 	mov	rdx, QWORD PTR handler$[rsp]
 	mov	QWORD PTR [rax+rcx*8+752], rdx
 
-; 87   : }
+; 86   : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -152,9 +198,8 @@ $LN1@sys_kill:
 	mov	ecx, DWORD PTR signo$[rsp]
 	mov	DWORD PTR [rax+1064], ecx
 
-; 75   : 
-; 76   : 	/* Signal Not Implemented for now */
-; 77   : }
+; 75   : 	/* Signal Not Implemented for now */
+; 76   : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -181,7 +226,7 @@ $LN3:
 
 ; 57   : 	_debug_print_ ("***Process killed \r\n");
 
-	lea	rcx, OFFSET FLAT:$SG3932
+	lea	rcx, OFFSET FLAT:$SG4003
 	call	_debug_print_
 
 ; 58   : 	_debug_print_ ("*** Current used RAM -> %d MB / total -> %d MB \r\n", pmmngr_get_used_ram() / 1024 / 1024, pmmngr_get_total_ram() / 1024 / 1024);
@@ -204,7 +249,7 @@ $LN3:
 	mov	rcx, QWORD PTR tv67[rsp]
 	mov	r8, rcx
 	mov	rdx, rax
-	lea	rcx, OFFSET FLAT:$SG3933
+	lea	rcx, OFFSET FLAT:$SG4004
 	call	_debug_print_
 
 ; 59   : 	force_sched();

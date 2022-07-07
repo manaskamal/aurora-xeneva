@@ -1174,6 +1174,10 @@ XE_EXTERN int XeMain (int argc, char* argv[]) {
 			if (key_msg.dword == KEY_S) {
 				sys_kill(test_id, SIGINT);
 			}
+
+			if (key_msg.dword == KEY_N) {
+				sys_kill(test_id, SIGINT);
+			}
 			memset(&key_msg, 0, sizeof(message_t));
 		}
 

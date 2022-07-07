@@ -235,7 +235,7 @@ thread_t* create_user_thread (void (*entry) (void*),uint64_t stack,uint64_t cr3,
 	t->frame.rdx = 0;
 	t->frame.rsi = 10;
 	t->frame.rdi = 0;
-	t->frame.rbp = (uint64_t)t->frame.rsp - 32;
+	t->frame.rbp = (uint64_t)t->frame.rsp;
 	t->frame.r8 = 0;
 	t->frame.r9 = 0;
 	t->frame.r10 = 0;
@@ -384,6 +384,18 @@ end:
 	current_thread = (thread_t*)pcpu->au_current_thread;//AuPCPUGetCurrentThread(); //task;
 }
 
+extern "C" void sig_ret();
+
+void sig_return () {
+	sig_ret();
+}
+
+void sig_loop () {
+	for(;;) {
+		//_debug_print_ ("Loop    ");
+		x64_cli();
+	}
+}
 
 /** ===============================================
  **  Scheduler Isr | Scheduler Isr
@@ -392,6 +404,7 @@ end:
 void scheduler_isr (size_t v, void* param) {
 	x64_cli();
 	interrupt_stack_frame *frame = (interrupt_stack_frame*)param;
+	
 	/* check for enable bit, if yes than proceed for 
 	   multitasking */
 	if (scheduler_enable == false)
@@ -411,6 +424,42 @@ void scheduler_isr (size_t v, void* param) {
 			//current_thread->kern_esp = ktss->rsp[0];
 			current_thread->frame.kern_esp = x64_get_kstack(ktss);
 		}
+
+
+		/* Check for pending signal, Signal is not complete, just implemented the basic
+		 * signal handling skeleton 
+		 */
+		if (current_thread->pending_signal > 0 && frame->cs == SEGVAL(GDT_ENTRY_USER_CODE, 3)) {
+			RegsCtx_t *ctx = (RegsCtx_t*)(current_thread->frame.kern_esp - sizeof(RegsCtx_t));
+			uint64_t* rsp_ = (uint64_t*)current_thread->user_stack;
+
+			/* Store the current kernel stack information to seperate memory location */
+			current_thread->signal_stack2 = (RegsCtx_t*)malloc(sizeof(RegsCtx_t));
+			memcpy (current_thread->signal_stack2, ctx,sizeof(RegsCtx_t));
+
+			/* Store the return address */
+			rsp_ -= 8;
+			for (int i = 0; i < 2; i++)
+				AuMapPage((uint64_t)AuPmmngrAlloc(), 0x700000 + i * 4096, PAGING_USER);
+			memcpy((void*)0x700000,&sig_ret, 8192);
+			*rsp_ = 0x700000;
+
+
+			current_thread->signal_state = (thread_frame_t*)malloc(sizeof(thread_frame_t));
+			memcpy (current_thread->signal_state,&current_thread->frame,sizeof(thread_frame_t));
+			
+
+			frame->rsp = (uint64_t)rsp_;
+			current_thread->frame.rbp = (uint64_t)rsp_;
+			current_thread->frame.rcx = 10;
+			current_thread->frame.rip = (uint64_t)current_thread->signals[current_thread->pending_signal];
+			current_thread->frame.rsp = frame->rsp;
+			frame->rip = current_thread->frame.rip;
+			frame->rflags = 0x286;
+			current_thread->frame.rflags = 0x286;
+			current_thread->pending_signal = 0;
+		}
+
 
 		if (is_cpu_fxsave_supported())
 			x64_fxsave(current_thread->fx_state);
@@ -445,7 +494,7 @@ void scheduler_isr (size_t v, void* param) {
 		x64_ldmxcsr(&current_thread->mxcsr);
 
 
-		//x64_write_cr3 (current_thread->cr3);
+		//
 		//mutex_unlock (scheduler_mutex);
 		execute_idle (current_thread,ktss);
 	}

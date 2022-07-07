@@ -32,9 +32,23 @@
 #include <stdlib.h>
 #include <string.h>
 #include <styles/XEDefaultRadioGroupStyle.h>
-
+#include <sys/_term.h>
 
 void XERadioGroupMouseEvent (XEWidget *widget, XEWindow *win, int x, int y, int button) {
+	XERadioGroup *rg = (XERadioGroup*)widget;
+
+	for (int i = 0; i < rg->radio_buttons->pointer; i++) {
+		XERadioButton *rb = (XERadioButton*)list_get_at(rg->radio_buttons, i);
+		if (x >= win->shwin->x + rb->base.x && x <= (win->shwin->x + rb->base.x + rb->base.w) &&
+			y >= win->shwin->y + rb->base.y && y <= (win->shwin->y + rb->base.y + rb->base.h)) {
+				if (button){
+					rg->focused_button = rb;
+					
+				}
+				rb->is_true = true;
+				rb->base.mouse_event((XEWidget*)rb,win,x,y,button);
+		}
+	}
 }
 
 void XERadioGroupDestroy (XEWidget *widget, XEWindow *win) {

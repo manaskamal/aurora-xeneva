@@ -154,6 +154,17 @@ void page_fault (size_t vector, void* param){
 	int resv = frame->error & 0x8;
 	int id = frame->error & 0x10;
 
+	thread_t *current_thread = get_current_thread();
+	if (current_thread->pending_signal == -1) {
+		RegsCtx_t *ctx = (RegsCtx_t*)(current_thread->frame.kern_esp - sizeof(RegsCtx_t));
+		memcpy (ctx, current_thread->signal_stack2, sizeof(RegsCtx_t));
+		memcpy (&current_thread->frame, current_thread->signal_state, sizeof(thread_frame_t));
+		current_thread->pending_signal = 0;
+		free(current_thread->signal_state);
+		free(current_thread->signal_stack2);
+		return;
+	}
+
 	uint64_t virt_addr = (uint64_t)vaddr;
 	if (present){
 		AuHandlePageNotPresent(virt_addr, us, param);

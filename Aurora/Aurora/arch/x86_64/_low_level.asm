@@ -465,5 +465,10 @@ x64_stmxcsr:
      stmxcsr [rcx]
 	 ret
 
+global x64_kesp_get_top
+x64_kesp_get_top:
+	 mov rax, rbp
+	 ret
+
 
 

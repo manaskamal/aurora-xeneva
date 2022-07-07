@@ -203,6 +203,7 @@
     <ClInclude Include="..\include\arch\x86_64\pic.h" />
     <ClInclude Include="..\include\arch\x86_64\thread.h" />
     <ClInclude Include="..\include\arch\x86_64\user64.h" />
+    <ClInclude Include="..\include\arch\x86_64\x86_64_signal.h" />
     <ClInclude Include="..\include\atomic\mutex.h" />
     <ClInclude Include="..\include\aurora.h" />
     <ClInclude Include="..\include\callback.h" />
@@ -285,6 +286,7 @@
   <ItemGroup>
     <ClCompile Include="arch\x86_64\apic.cpp" />
     <ClCompile Include="arch\x86_64\apinit.cpp" />
+    <ClCompile Include="arch\x86_64\x86_64_signal.cpp" />
     <ClCompile Include="arch\x86_64\cpu.cpp" />
     <ClCompile Include="arch\x86_64\exception.cpp" />
     <ClCompile Include="arch\x86_64\ioapic.cpp" />

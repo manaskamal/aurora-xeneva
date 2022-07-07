@@ -23,6 +23,13 @@
 #include "XeTerm.h"
 
 
+void HandleSignal (int signo) {
+	if (signo == 10)
+		sys_print_text ("\r\n Yes it's 10 \r\n");
+	sys_print_text ("Hey Signal %d \r\n", signo);
+}
+
+extern "C" void _asm_test();
 /*
  * main -- the main entry point of priwm
  */
@@ -40,6 +47,8 @@ XE_EXTERN int XeMain (int argc, char* argv[]) {
 	XEWindowAddWidget(win, (XEWidget*)term);
 
 	XEShowWindow(win);
+
+	sys_set_signal(SIGINT, HandleSignal);
 
 	int master_fd, slave_fd = 0;
 	sys_ttype_create(&master_fd, &slave_fd);
@@ -59,7 +68,6 @@ XE_EXTERN int XeMain (int argc, char* argv[]) {
 	int bytes_ret = 0;
 	for(;;) {
 		bytes_ret = sys_read_file(master_fd,term->buffer, NULL);
-
 		/*for (int i = 0; i < bytes_ret; i++)
 			sys_print_text ("%c",term->buffer[i]);*/
 		if (bytes_ret > 0){
@@ -73,6 +81,12 @@ XE_EXTERN int XeMain (int argc, char* argv[]) {
 			if (ev.type == 201) {
 				XEWindowMouseHandle(win,ev.dword,ev.dword2,ev.dword3,0);
 				memset(&ev, 0, sizeof(pri_event_t));
+			}
+
+			if (ev.type == 204) {
+				if (ev.dword == KEY_C)
+					_asm_test();
+				memset(&ev.type, 0, sizeof(pri_event_t));
 			}
 
 		}

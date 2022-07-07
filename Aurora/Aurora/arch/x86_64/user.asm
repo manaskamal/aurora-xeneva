@@ -27,8 +27,9 @@ syscall_entry:
 	 
 	 mov rdx, rsp         ;we save the user stack
 	 mov r9, [rel current_thread]
+	 ;mov [r9 + 0xD0], rdx
 	 mov rsp, [r9 + 0xC8]
-	 mov r10, rdx         ;store the user stack in r10 because rdx will be modified
+	 mov r10, rdx ;[rel current_thread]   ;store the user stack in r10 because rdx will be modified
 	 ;mov rsp, qword[fs:0x20]    ;load kernel stack
 	 swapgs
 
@@ -72,7 +73,8 @@ syscall_entry:
 	 swapgs
 
 	 ;user stack
-	 mov rsp, r10
+	; mov r10, [rel current_thread]
+	 mov rsp, r10 ;[r10 + 0xD0]
 	 o64 sysret
 
 
@@ -94,10 +96,9 @@ x64_syscall_entry_compat:
 	 mov rsp, rdx
 	 sysret
 
-global test_sys
-test_sys:
-     mov r12, 0
-	 mov r13, rcx
+global sig_ret
+sig_ret:
+     mov r12, 26
 	 syscall
 	 ret
 

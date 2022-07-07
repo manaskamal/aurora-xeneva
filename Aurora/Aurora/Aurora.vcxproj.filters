@@ -369,6 +369,9 @@
     <ClInclude Include="..\include\usb.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\arch\x86_64\x86_64_signal.h">
+      <Filter>include\arch\x86_64</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="init.cpp">
@@ -604,6 +607,9 @@
     </ClCompile>
     <ClCompile Include="libmngr.cpp">
       <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="arch\x86_64\x86_64_signal.cpp">
+      <Filter>source\arch\x86_64</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

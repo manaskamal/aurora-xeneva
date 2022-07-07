@@ -6,9 +6,9 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 CONST	SEGMENT
-$SG3099	DB	'List adding -> %x , sizeof(dataentry) -> %d ', 0dH, 0aH, 00H
+$SG3151	DB	'List adding -> %x , sizeof(dataentry) -> %d ', 0dH, 0aH, 00H
 	ORG $+1
-$SG3103	DB	'Current data -> %x ', 0dH, 0aH, 00H
+$SG3155	DB	'Current data -> %x ', 0dH, 0aH, 00H
 CONST	ENDS
 PUBLIC	?initialize_list@@YAPEAU_list_@@XZ		; initialize_list
 PUBLIC	?list_add@@YAXPEAU_list_@@PEAX@Z		; list_add
@@ -307,7 +307,7 @@ $LN7:
 
 	mov	r8d, 24
 	mov	rdx, QWORD PTR data$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3099
+	lea	rcx, OFFSET FLAT:$SG3151
 	call	_debug_print_
 
 ; 26   : 	dataentry *current_data = (dataentry*)malloc(sizeof(dataentry));
@@ -319,7 +319,7 @@ $LN7:
 ; 27   : 	_debug_print_ ("Current data -> %x \r\n", current_data);
 
 	mov	rdx, QWORD PTR current_data$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3103
+	lea	rcx, OFFSET FLAT:$SG3155
 	call	_debug_print_
 
 ; 28   : 	current_data->next = nullptr;

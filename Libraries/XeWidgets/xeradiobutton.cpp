@@ -35,6 +35,12 @@
 #include <styles\XEDefaultRadioButtonStyle.h>
 
 void XERadioButtonMouseEvent (XEWidget *widget, XEWindow *win, int x, int y, int button) {
+	XERadioButton *rb = (XERadioButton*)widget;
+	if (rb->is_true ){
+		rb->base.painter(widget,win);
+		XEUpdateWindow(win,widget->x, widget->y, widget->w, widget->h, true);
+	}
+
 }
 
 void XERadioButtonDestroy (XEWidget *widget, XEWindow *win) {

@@ -9,9 +9,8 @@ _BSS	SEGMENT
 _serial_initialized_ DB 01H DUP (?)
 _BSS	ENDS
 CONST	SEGMENT
-$SG3162	DB	'.', 00H
-	ORG $+6
-$SG3069	DB	'Serial Handler', 0aH, 00H
+$SG3121	DB	'Serial Handler', 0aH, 00H
+$SG3214	DB	'.', 00H
 CONST	ENDS
 PUBLIC	?AuInitializeSerial@@YAXXZ			; AuInitializeSerial
 PUBLIC	?write_serial@@YAXD@Z				; write_serial
@@ -101,7 +100,7 @@ $LN3:
 
 ; 25   : 	printf ("Serial Handler\n");
 
-	lea	rcx, OFFSET FLAT:$SG3069
+	lea	rcx, OFFSET FLAT:$SG3121
 	call	printf
 
 ; 26   : 	AuInterruptEnd(4);
@@ -444,7 +443,7 @@ $LN5@debug_prin:
 ; 119  : 			{
 ; 120  : 				debug_serial(".");
 
-	lea	rcx, OFFSET FLAT:$SG3162
+	lea	rcx, OFFSET FLAT:$SG3214
 	call	?debug_serial@@YAXPEAD@Z		; debug_serial
 
 ; 121  : 			}
