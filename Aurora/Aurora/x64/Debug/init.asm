@@ -49,6 +49,7 @@ EXTRN	?process_list_initialize@@YAXXZ:PROC		; process_list_initialize
 EXTRN	?AuDrvMngrInitialize@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z:PROC ; AuDrvMngrInitialize
 EXTRN	?AuInitializeSerial@@YAXXZ:PROC			; AuInitializeSerial
 EXTRN	?AuSoundInitialize@@YAXXZ:PROC			; AuSoundInitialize
+EXTRN	?AuSoundOutputStart@@YAXXZ:PROC			; AuSoundOutputStart
 EXTRN	?pri_loop_init@@YAXXZ:PROC			; pri_loop_init
 EXTRN	?AuInitializeShMem@@YAXXZ:PROC			; AuInitializeShMem
 EXTRN	?AuSharedDeviceInit@@YAXXZ:PROC			; AuSharedDeviceInit
@@ -59,7 +60,7 @@ $pdata$?debug_print@@YAXPEBDZZ DD imagerel $LN3
 	DD	imagerel $LN3+40
 	DD	imagerel $unwind$?debug_print@@YAXPEBDZZ
 $pdata$?_AuMain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z DD imagerel $LN5
-	DD	imagerel $LN5+292
+	DD	imagerel $LN5+297
 	DD	imagerel $unwind$?_AuMain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z
 pdata	ENDS
 xdata	SEGMENT
@@ -233,66 +234,71 @@ $LN5:
 
 	call	?AuPagingClearLow@@YAXXZ		; AuPagingClearLow
 
-; 158  : #ifdef ARCH_X64
-; 159  : 
-; 160  : 	printf ("Scheduler Initialized\n");
+; 158  : 
+; 159  : 	AuSoundOutputStart();
+
+	call	?AuSoundOutputStart@@YAXXZ		; AuSoundOutputStart
+
+; 160  : #ifdef ARCH_X64
+; 161  : 
+; 162  : 	printf ("Scheduler Initialized\n");
 
 	lea	rcx, OFFSET FLAT:$SG5541
 	call	printf
 
-; 161  : 	int au_status = 0;
+; 163  : 	int au_status = 0;
 
 	mov	DWORD PTR au_status$[rsp], 0
 
-; 162  : 
-; 163  : 	/* start the init process here */
-; 164  : 	au_status = AuCreateProcess ("/init.exe","shell");
+; 164  : 
+; 165  : 	/* start the init process here */
+; 166  : 	au_status = AuCreateProcess ("/init.exe","shell");
 
 	lea	rdx, OFFSET FLAT:$SG5543
 	lea	rcx, OFFSET FLAT:$SG5544
 	call	?AuCreateProcess@@YAHPEBDPEAD@Z		; AuCreateProcess
 	mov	DWORD PTR au_status$[rsp], eax
 
-; 165  : 
-; 166  : 	/* start the compositing window manager at id 3 */
-; 167  : 	au_status = AuCreateProcess ("/priwm.exe","priwm");
+; 167  : 
+; 168  : 	/* start the compositing window manager at id 3 */
+; 169  : 	au_status = AuCreateProcess ("/priwm.exe","priwm");
 
 	lea	rdx, OFFSET FLAT:$SG5545
 	lea	rcx, OFFSET FLAT:$SG5546
 	call	?AuCreateProcess@@YAHPEBDPEAD@Z		; AuCreateProcess
 	mov	DWORD PTR au_status$[rsp], eax
 
-; 168  : 
-; 169  : 	//! Here start the scheduler (multitasking engine)
-; 170  : 	AuSchedulerStart();
+; 170  : 
+; 171  : 	//! Here start the scheduler (multitasking engine)
+; 172  : 	AuSchedulerStart();
 
 	call	?AuSchedulerStart@@YAXXZ		; AuSchedulerStart
 $LN2@AuMain:
 
-; 171  : #endif
-; 172  : 
-; 173  : 	//! Loop forever
-; 174  : 	while(1) {
+; 173  : #endif
+; 174  : 
+; 175  : 	//! Loop forever
+; 176  : 	while(1) {
 
 	xor	eax, eax
 	cmp	eax, 1
 	je	SHORT $LN1@AuMain
 
-; 175  : 		//!looping looping
-; 176  : 		x64_cli();
+; 177  : 		//!looping looping
+; 178  : 		x64_cli();
 
 	call	x64_cli
 
-; 177  : 		x64_hlt();
+; 179  : 		x64_hlt();
 
 	call	x64_hlt
 
-; 178  : 	}
+; 180  : 	}
 
 	jmp	SHORT $LN2@AuMain
 $LN1@AuMain:
 
-; 179  : }
+; 181  : }
 
 	add	rsp, 56					; 00000038H
 	ret	0

@@ -1,19 +1,19 @@
-﻿Build started 25-06-2022 ৰাতিপু 8:47:33.
+﻿Build started 16-07-2022 ৰাতিপু 1:28:47.
      1>Project "E:\Xeneva Project\Xeneva\Drivers\hda\hda.vcxproj" on node 2 (Rebuild target(s)).
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\Aurora\include" /Zi /nologo /W3 /WX- /Od /Oy /D ARCH_X64 /D USE_APIC /D _WINDLL /D _MBCS /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt codec.cpp codecs\sigmatel.cpp hda.cpp stream.cpp widget.cpp
      1>cl : Command line warning D9002: ignoring unknown option '/arch:SSE'
          widget.cpp
-     1>widget.cpp(44): warning C4018: '<' : signed/unsigned mismatch
-     1>widget.cpp(62): warning C4800: 'uint32_t' : forcing value to bool 'true' or 'false' (performance warning)
-     1>widget.cpp(66): warning C4800: 'uint32_t' : forcing value to bool 'true' or 'false' (performance warning)
-     1>widget.cpp(39): warning C4101: 'conn_val' : unreferenced local variable
-     1>widget.cpp(38): warning C4101: 'i' : unreferenced local variable
+     1>widget.cpp(46): warning C4018: '<' : signed/unsigned mismatch
+     1>widget.cpp(64): warning C4800: 'uint32_t' : forcing value to bool 'true' or 'false' (performance warning)
+     1>widget.cpp(68): warning C4800: 'uint32_t' : forcing value to bool 'true' or 'false' (performance warning)
+     1>widget.cpp(41): warning C4101: 'conn_val' : unreferenced local variable
+     1>widget.cpp(40): warning C4101: 'i' : unreferenced local variable
          stream.cpp
-     1>stream.cpp(80): warning C4305: 'argument' : truncation from 'int' to 'uint8_t'
-     1>stream.cpp(80): warning C4309: 'argument' : truncation of constant value
-     1>stream.cpp(85): warning C4244: 'argument' : conversion from 'uint64_t' to 'uint32_t', possible loss of data
-     1>stream.cpp(104): warning C4244: 'argument' : conversion from 'uint64_t' to 'uint32_t', possible loss of data
+     1>stream.cpp(78): warning C4305: 'argument' : truncation from 'int' to 'uint8_t'
+     1>stream.cpp(78): warning C4309: 'argument' : truncation of constant value
+     1>stream.cpp(83): warning C4244: 'argument' : conversion from 'uint64_t' to 'uint32_t', possible loss of data
+     1>stream.cpp(102): warning C4244: 'argument' : conversion from 'uint64_t' to 'uint32_t', possible loss of data
          hda.cpp
      1>E:\Xeneva Project\Xeneva\Aurora\include\ctype.h(33): warning C4005: 'isascii' : macro redefinition
                  E:\Xeneva Project\Xeneva\Aurora\include\ctype.h(22) : see previous definition of 'isascii'
@@ -23,14 +23,21 @@
                  E:\Xeneva Project\Xeneva\Aurora\include\va_list.h(42) : see previous definition of 'va_arg'
      1>hda.cpp(134): warning C4244: 'argument' : conversion from 'uint64_t' to 'uint32_t', possible loss of data
      1>hda.cpp(176): warning C4244: 'argument' : conversion from 'uint64_t' to 'uint32_t', possible loss of data
-     1>hda.cpp(376): warning C4244: '=' : conversion from 'uint64_t' to 'uint8_t', possible loss of data
-     1>hda.cpp(388): warning C4244: 'argument' : conversion from 'uint64_t' to 'uint32_t', possible loss of data
-     1>hda.cpp(395): warning C4554: '&' : check operator precedence for possible error; use parentheses to clarify precedence
-     1>hda.cpp(504): warning C4018: '<' : signed/unsigned mismatch
-     1>hda.cpp(540): warning C4018: '<' : signed/unsigned mismatch
+     1>hda.cpp(383): warning C4244: '=' : conversion from 'uint64_t' to 'uint8_t', possible loss of data
+     1>hda.cpp(395): warning C4244: 'argument' : conversion from 'uint64_t' to 'uint32_t', possible loss of data
+     1>hda.cpp(402): warning C4554: '&' : check operator precedence for possible error; use parentheses to clarify precedence
+     1>hda.cpp(511): warning C4018: '<' : signed/unsigned mismatch
+     1>hda.cpp(525): warning C4018: '<' : signed/unsigned mismatch
+     1>hda.cpp(555): warning C4018: '<' : signed/unsigned mismatch
          sigmatel.cpp
          codec.cpp
-     1>codec.cpp(65): warning C4101: 'j' : unreferenced local variable
+     1>codec.cpp(219): warning C4258: 'i' : definition from the for loop is ignored; the definition from the enclosing scope is used
+                 codec.cpp(216) : definition of 'i' ignored
+                 codec.cpp(170) : definition of 'i' used
+     1>codec.cpp(222): warning C4258: 'i' : definition from the for loop is ignored; the definition from the enclosing scope is used
+                 codec.cpp(216) : definition of 'i' ignored
+                 codec.cpp(170) : definition of 'i' used
+     1>codec.cpp(170): warning C4101: 'j' : unreferenced local variable
          Generating Code...
      1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V110\Microsoft.CppBuild.targets(1137,5): warning MSB8012: TargetPath(E:\Xeneva Project\Xeneva\Drivers\hda\x64\Debug\hda.dll) does not match the Linker's OutputFile property value (F:\hda.dll). This may cause your project to build incorrectly. To correct this, please make sure that $(OutDir), $(TargetName) and $(TargetExt) property values match the value specified in %(Link.OutputFile).
        Link:
@@ -47,4 +54,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:00.92
+Time Elapsed 00:00:00.62

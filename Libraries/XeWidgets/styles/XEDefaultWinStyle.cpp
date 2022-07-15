@@ -75,7 +75,7 @@ void XEDefaultPaintMainActivity (XEWindow *win) {
  * @param win -- Pointer to window object
  */
 void XEDefaultWinPaint(XEWindow *win) {
-	acrylic_draw_rect_filled(win->ctx, 0, 0, win->shwin->width, win->shwin->height, WHITE);
+	acrylic_draw_rect_filled(win->ctx, 0, 0, win->shwin->width, win->shwin->height, 0x4DFFFFFF);//WHITE
 	XEDefaultPaintTitlebar(win);
 	XEDefaultPaintMainActivity(win);
 }

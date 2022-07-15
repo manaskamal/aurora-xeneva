@@ -914,12 +914,12 @@ void compose_frame () {
 			/* Here we need full SSE library to perform alpha bliting in faster way, if system supports
 			 * GPU, that will add extra benifits */
 
-			/*for (int j = 0; j < he; j++) {
+			for (int j = 0; j < he; j++) {
 				for (int i = 0; i < wid; i++){
 					*(uint32_t*)(canvas->address + (winy + j) * canvas->width + (winx + i)) = alpha_blend(*(uint32_t*)(canvas->address + (winy + j)* canvas->width + (winx + i)),
 						*(uint32_t*)(win->backing_store + j * info->width + i));
 				}
-			}*/
+			}
 
 #endif
 			/* add the clip region */

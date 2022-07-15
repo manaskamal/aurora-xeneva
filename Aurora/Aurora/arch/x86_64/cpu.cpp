@@ -266,9 +266,9 @@ void x86_64_init_cpu () {
 
 	debug_print ("Exception initialized\n");
 	
-#ifdef USE_PIC
-	 initialize_pic();
-#endif
+
+	initialize_pic();
+
 
 #ifdef USE_APIC
 	//!Initialize APIC   FIXME: Causes triple fault now

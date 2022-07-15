@@ -154,6 +154,7 @@ enum codec_verbs {
 	VERB_GET_CONFIG_DEFAULT = 0xf1c00,
 	VERB_GET_CONN_LIST      = 0xf0200,
     VERB_GET_CONN_SELECT    = 0xf0100,
+	VERB_SET_CONN_SELECT    = 0x70100,
     VERB_GET_PIN_CONTROL    = 0xf0700,
     VERB_SET_PIN_CONTROL    = 0x70700,
     VERB_GET_EAPD_BTL       = 0xf0c00,
@@ -310,6 +311,12 @@ extern void hda_audio_set_dma_pos (uint64_t dma_buff);
 
 extern uint64_t hda_get_dma_pos_buffer ();
 extern void hda_set_sample_buffer(uint64_t buffer);
+
+/*
+ * check a given nid, if it is already present
+ * @param nid -- the desired node id 
+ */
+extern bool hda_check_nid (uint16_t nid);
 /*==========================================
  * CODEC functions
  * =========================================
@@ -323,6 +330,21 @@ extern uint32_t codec_query (int codec, int nid, uint32_t payload);
  * codec_enumerate_widgets -- enumerate every widgets
  */
 extern int codec_enumerate_widgets(int codec);
+
+/*
+ * hda_get_pcm_rates -- collects supported PCM Size / rates 
+ * @param codec -- destination codec
+ * @param nid -- desired node id
+ */
+extern void hda_get_pcm_rates (int codec, int nid);
+
+/*
+ * hda_get_supported_stream_format -- returns the supported 
+ * stream format
+ * @param codec -- codec id
+ * @param nid -- node id
+ */
+extern void hda_get_supported_stream_format (int codec, int nid);
 
 
 /*============================================

@@ -49,9 +49,114 @@ uint32_t codec_query (int codec, int nid, uint32_t payload) {
 	}while ((rirb_status & 1) == 0);
 
 	rirb_read(&response);
-	return response & 0xffffffff;
+	return response  & 0xffffffff;
 }
 
+
+/*
+ * hda_get_pcm_rates -- collects supported PCM Size / rates 
+ * @param codec -- destination codec
+ * @param nid -- desired node id
+ */
+void hda_get_pcm_rates (int codec, int nid) {
+	uint32_t pcm_rates = 0;
+	pcm_rates = codec_query(codec, nid, VERB_GET_PARAMETER | 0x0A);
+	if ((pcm_rates & (1<<0)) != 0) {
+		printf ("Supported 8.0 kHZ, Mult/Div-> 1/6 * 48 \n");
+	}
+	if ((pcm_rates & (1<<1)) != 0) {
+		printf ("Supported 11.025 kHZ, Mult/Div -> 1/4 * 44.1 \n");
+	}
+	if ((pcm_rates & (1<<2)) != 0) {
+		printf ("Suported 16.0 kHZ, Mult/Div -> 1/3 * 48 \n");
+	}
+	if ((pcm_rates & (1<<3)) != 0) {
+		printf ("Supported 22.05 kHZ, Mult/Div -> 1/2*44.1\n");
+	}
+	if ((pcm_rates & (1<<4)) != 0) {
+		printf ("Supported 32.0 kHZ, Mult/Div -> 2/3*48 \n");
+	}
+	if ((pcm_rates & (1<<5)) != 0) {
+		printf ("Supported 44.1 kHZ, Mult/Div -> 0 \n");
+	}
+	if ((pcm_rates & (1<<6)) != 0) {
+		printf ("Supported 48.0 kHZ, Mult/Div -> 0 \n");
+	}
+	if ((pcm_rates & (1<<7)) != 0) {
+		printf ("Supported 88.2 kHZ, Mult/Div -> 2/1*44.1 \n");
+	}
+	if ((pcm_rates & (1<<8)) != 0) {
+		printf ("Supported 96.0 kHZ, Mult/Div -> 2/1*48 \n");
+	}
+	if ((pcm_rates & (1<<9)) != 0) {
+		printf ("Supported 176.4 kHZ, Mult/Div -> 4/1 * 44.1 \n");
+	}
+	if ((pcm_rates & (1<<10)) != 0) {
+		printf ("Supported 192.0 kHZ, Mult/Div -> 4/1 * 48 \n");
+	}else if ((pcm_rates & (1<<11)) != 0) {
+		printf ("Supported 384 kHZ, Mult/Div -> 8/1 * 48 \n");
+	}
+
+	if ((pcm_rates & (1<<16)) != 0) {
+		printf ("8 bit audio formats are supported \n");
+	}
+	if ((pcm_rates & (1<<17)) != 0) {
+		printf ("16 bit audio formats are supported \n");
+	}
+	if ((pcm_rates & (1<<18)) != 0) {
+		printf ("20 bit audio formats are supported \n");
+	}
+	if ((pcm_rates & (1<<19)) != 0) {
+		printf ("24 bit audio formats are supported \n");
+	}
+	if ((pcm_rates & (1<<20)) != 0) {
+		printf ("32 bit audio formats are supported \n");
+	}
+}
+
+/*
+ * hda_get_supported_stream_format -- returns the supported 
+ * stream format
+ * @param codec -- codec id
+ * @param nid -- node id
+ */
+void hda_get_supported_stream_format (int codec, int nid) {
+	uint32_t format = 0;
+	format = codec_query(codec, nid, VERB_GET_PARAMETER | 0x0B);
+	if ((format & (1<<0)) != 0) {
+		printf ("PCM is supported \n");
+	}
+
+	if ((format & (1<<1)) != 0) {
+		printf ("Float32 audio is supported \n");
+	}
+
+	if ((format & (1<<2)) != 0) {
+		printf ("Dolby AC-3 audio is supported \n");
+	}
+}
+
+/*
+ * hda_enable_unsol -- enables unsolicited response for 
+ * nodes, unsolicited response are responses send by
+ * widgets to controller and finally reach the 
+ * hda_interrupt_handler
+ * @param codec -- codec id
+ * @param nid -- node id
+ */
+void hda_enable_unsol (int codec, int nid) {
+	/* enable unsol for this codec */
+	codec_query (codec, nid,0x70800 | (1<<7) | nid); 
+}
+
+/*
+ * hda_get_unsol_node -- returns the node id of
+ * given unsolicited response
+ * @return node_id
+ */
+int hda_get_unsol_node (uint32_t resp) {
+	return (resp & 0xf);
+}
 
 
 /*
@@ -107,7 +212,19 @@ int codec_enumerate_widgets(int codec) {
 			continue;
 		}
 
-		codec_query (codec, fg_start + i, VERB_SET_POWER_STATE | 0x0);
+		codec_query(codec, fg_start + i, 0x7FF00);
+		for (int i = 0; i < 100000; i++)
+			;
+
+		codec_query (codec, fg_start + i, VERB_SET_POWER_STATE | 0x00000);
+
+		uint32_t amp_param = 0;
+		amp_param = codec_query(codec, fg_start + i, VERB_GET_PARAMETER | 0x12000);
+		printf ("Step Size -----> %d NumStep -> %d \n", ((amp_param >> 31) & 0xff), ((amp_param >> 8)&0xff));
+
+
+	//	hda_get_pcm_rates (codec, fg_start + i);
+	//	hda_get_supported_stream_format(codec, fg_start + i);
 
 		for (int j = 0; j < num_widgets; j++) {
 			widget_init (codec, widgets_start + j);

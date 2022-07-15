@@ -32,17 +32,19 @@
 #include <stdio.h>
 #include <serial.h>
 
-void widget_dump_connection (int codec, int nid) {
-	uint32_t num_conn;
+int last_arr = 0;
+
+int widget_dump_connection (int codec, int nid) {
+	uint32_t num_conn = 0;
 	uint32_t sel;
 	int i;
 	uint32_t conn_val;
+	int ret_nid;
 	num_conn = codec_query(codec, nid, VERB_GET_PARAMETER | PARAM_CONN_LIST_LEN);
 
-	printf ("Num Connection -> %d Long Form -> %d \n", num_conn, (num_conn & 0x80));
 
 	for (int i = 0; i < (num_conn & 0x7f); i++) {
-		uint32_t conn;
+		uint32_t conn = 0;
 		bool range;
 		int idx, shift;
 
@@ -65,15 +67,119 @@ void widget_dump_connection (int codec, int nid) {
 			/* Use short form list entry*/
 			range = conn & 0x80;
 			conn &= 0x7f;	
-			printf ("%d ",conn);
-		}
-
+			_debug_print_ (" %d ", conn);
+			ret_nid = conn;
 	
+			/* TODO: Create separate list of volume controls to store this
+			 * line out nodes, to control the volume, NOTE: this is only for
+			 * line out pins, not for speaker pins
+			 */
+			codec_query(codec, ret_nid, VERB_SET_AMP_GAIN_MUTE | 0xb000 | 127);
+		
+		}
 	}
 
+	/* make the 0th index entry active */
+	codec_query(codec, nid, VERB_SET_CONN_SELECT | 0);
 	sel = codec_query(codec, nid, VERB_GET_CONN_SELECT);
-	printf (" [current: %d]\n", sel);
+	//printf ("[current: %d] \n", sel);
+	return ret_nid;
 }
+
+
+bool pin_dump_default_device (int codec, int nid) {
+	bool value = false;
+
+	uint32_t val = codec_query(codec, nid,VERB_GET_PARAMETER | VERB_GET_CONFIG_DEFAULT);
+
+	uint16_t port = (val >> 30) & 0xf;
+	uint8_t location = (val >> 24) & 0xff;
+	
+	/*switch(port) {
+	case 0:
+		printf ("Port Connectivity is a jack \n");
+		break;
+	case 1:
+		printf ("Port Connectivity -- No Phys conn \n");
+		break;
+	case 2:
+		printf ("Port Connectivity -- Integrated Device \n");
+		break;
+	case 3:
+		printf ("Port Connectivity -- both jack and internal dev \n");
+		break;
+	}
+*/
+	/*if ((location & 0xf) == 0) {
+		printf ("Location N/A \n");
+	}else if ((location & 0xf) == 0x1) {
+		printf ("Location Rear \n");
+	}else if ((location & 0xf) == 0x2) {
+		printf ("Location Front \n");
+	}else if ((location & 0xf) == 0x3) {
+		printf ("Location Left \n");
+	}else if ((location & 0xf) == 0x4) {
+		printf ("Location Right \n");
+	}else if ((location & 0xf) == 0x5) {
+		printf ("Location Top \n");
+	}else if ((location & 0xf) == 0x6) {
+		printf ("Location Bottom \n");
+	}else if ((location & 0xf) == 0x7) {
+		printf ("Location Special \n");
+	}*/
+
+	uint8_t default_dev = (val >> 20) & 0xf;
+	switch(default_dev) {
+	case 0:
+		printf ("Line Out \n");
+		value = true;
+		break;
+	case 1:
+		printf ("Speaker \n");
+		value = true;
+		break;
+	case 2:
+		//printf ("HP Out \n");
+		break;
+	case 3:
+		//printf ("CD \n");
+		break;
+	case 4:
+		//printf ("SPDIF Out \n");
+		break;
+	case 5:
+		//printf ("Digital Other Out \n");
+		break;
+	case 6:
+		//printf ("Modem Line Side \n");
+		break;
+	case 7:
+		//printf ("Modem Handset Side \n");
+		break;
+	case 8:
+		//printf ("Line In \n");
+		break;
+	case 9:
+		//printf ("AUX \n");
+		break;
+	case 10:
+		//printf ("Mic In \n");
+		break;
+	case 11:
+		//printf ("Telephony \n");
+		break;
+	case 12:
+		//printf ("SPDIF In \n");
+		break;
+	case 13:
+		//printf ("Digital Other In \n");
+		break;
+	}
+
+	return value;
+}
+
+
 /**
  *  Initializes widgets for a codec and node
  *  @param codec-> codec id
@@ -98,9 +204,7 @@ void widget_init (int codec, int nid) {
 	eapd_btl = codec_query (codec, nid, VERB_GET_EAPD_BTL);
 
 	if (widget_cap & WIDGET_CAP_POWER_CNTRL) {
-		codec_query(codec, nid, VERB_SET_POWER_STATE | 0x0);
-		for (int i = 0; i < 100000; i++)
-			;
+		codec_query(codec, nid, VERB_SET_POWER_STATE | 0x00000);
 	}
 
 	uint32_t amp_gain;
@@ -125,38 +229,66 @@ void widget_init (int codec, int nid) {
 
 	eapd_btl = codec_query (codec, nid, VERB_GET_EAPD_BTL);	
 	
+	
 	switch (type) {
 	case WIDGET_PIN:{
-		uint32_t pin_cap, ctl;
+		uint32_t pin_cap, ctl = 0;
+		uint32_t sel = 0;
+
 		pin_cap = codec_query(codec, nid, VERB_GET_PARAMETER | PARAM_PIN_CAP);
-		if ((pin_cap & PIN_CAP_OUTPUT) == 0 || (pin_cap & PIN_CAP_INPUT) == 0) 
+		if ((pin_cap & PIN_CAP_OUTPUT) == 0)
 			return;
 
+		/* Set the pin controls */
 		ctl = codec_query(codec, nid, VERB_GET_PIN_CONTROL);
+		ctl |= (1<<7);
 		ctl |= PIN_CTL_ENABLE_OUTPUT;
-		ctl |= (1<<5); //enable input
+		ctl |= (1<<5);
 		codec_query(codec, nid, VERB_SET_PIN_CONTROL | ctl);
-		//printf ("pin complex - con length %d \n", (widget_cap >> 8 & 0xff));
-		//widget_dump_connection(codec, nid);
-		codec_query(codec, nid, VERB_SET_EAPD_BTL | (1<<1) | (1<<2));
+
+		
+		codec_query(codec, nid, VERB_SET_EAPD_BTL | (1<<2) | (1<<1) | (1<<0));
+
+		/* now check the pin for attached device (speaker, line out, line in)
+		 * and its port connectivity (jack, integrated device,...etc) 
+		 */
+		if (pin_dump_default_device(codec, nid)) {
+			int ret_nid = widget_dump_connection(codec, nid);
+		}
+		
 		break;
 	}
 	case WIDGET_OUTPUT:{
+		//_debug_print_ ("Output Node -> %d \r\n", nid);
+		//hda_get_supported_stream_format(codec, nid);
 		/* here we should create a list of output codec and nodes */
-		uint8_t mute_val = (amp_cap >> 7) & 0xff;
-		uint8_t gain_val = amp_cap & 0xff;
-		hda_set_output_nid(nid, codec, gain_val);
+
+		/* WIDGET_OUTPUT -- contains all the DACs that needed to 
+		 * configured to use specific output stream, NOTE that this DACs
+		 * are further part of any lineout or speaker pins, after
+		 * configuring each DACs, pins are needed to configured */
+		hda_set_output_nid(nid,codec,0);
 		break;
 		}
 
 	case WIDGET_INPUT:{
-		codec_query(codec, nid,VERB_SET_STREAM_CHANNEL | (1<<4));
-		uint16_t format =   (1<<15) | SR_44_KHZ | (0<<11) | (0 << 8) | BITS_16 | 1;
-		codec_query(codec, nid,VERB_SET_FORMAT | format);
-		codec_query(codec, nid, VERB_SET_CONV_CHANNEL_COUNT | 1);
-		codec_query(codec, nid, VERB_SET_EAPD_BTL | (1<<1) | (1<<2));
+		//_debug_print_ ("Input nid -> %d \r\n", nid);
+		/* Not Implemented */
 		break;
-					  }
+	}
+
+	case WIDGET_VOLUME_KNOB:{
+
+		/* Not implemented fully */
+		_debug_print_ ("Volume knob widget found \r\n", nid);
+
+		codec_query(codec, nid, 0x70f00 | (1<<7) | 100);
+	
+		uint32_t volume = codec_query(codec, nid, VERB_GET_PARAMETER | 0xF0F00);
+		_debug_print_ ("Volume is direct -> %d, Volume -> %d \r\n", ((volume >> 7) & 0xff), 
+			(volume & 0xff));
+		break;
+	}
 	default:
 		return;
 

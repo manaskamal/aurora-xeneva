@@ -165,22 +165,19 @@ void initialize_apic (bool bsp) {
 		                                     IA32_APIC_SVR_ENABLE | 0xFF);
 
 
-	//!Register the time speed
-	write_apic_register (LAPIC_REGISTER_TMRDIV,0x3);  // //0x3    //->correct->   0x2
 
-	/*write_apic_register (LAPIC_REGISTER_TMRINITCNT, UINT32_MAX);
+	size_t a,b,c,d = 0;
+	x64_cpuid(0x1,&a,&b,&c,&d);
+	if ((c & (1<<24)) != 0)
+		printf ("APIC TSC-Deadline supported \n");
 
-	pit_sleep_ms(1);
-
-	write_apic_register (LAPIC_REGISTER_LVT_TIMER, IA32_APIC_LVT_MASK);
-
-	uint32_t ticks_in_10ms = UINT32_MAX - read_apic_register(LAPIC_REGISTER_TMRCURRCNT);*/
 
 
 	/*! timer initialized*/
 	size_t timer_vector = 0x40;
 	setvect (timer_vector, apic_timer_interrupt);
 
+	write_apic_register (LAPIC_REGISTER_TMRDIV,0x3);
 	size_t timer_reg = (1 << 17) | timer_vector;
 	write_apic_register (LAPIC_REGISTER_LVT_TIMER, timer_reg);
 	io_wait ();

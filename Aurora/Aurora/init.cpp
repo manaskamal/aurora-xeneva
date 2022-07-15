@@ -155,6 +155,8 @@ void _AuMain (KERNEL_BOOT_INFO *info) {
 
 	/*Clear the lower half for user space */
 	AuPagingClearLow();
+
+	AuSoundOutputStart();
 #ifdef ARCH_X64
 
 	printf ("Scheduler Initialized\n");
