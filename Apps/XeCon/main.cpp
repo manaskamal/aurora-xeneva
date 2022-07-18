@@ -91,6 +91,6 @@ XE_EXTERN int XeMain (int argc, char* argv[]) {
 
 		}
 
-		sys_sleep(10);
+		sys_sleep(1000);
 	}
 }

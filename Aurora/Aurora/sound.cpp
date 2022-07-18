@@ -239,28 +239,37 @@ void AuSoundRequestNext (uint64_t *buffer) {
 	if (dsp_first == NULL)
 		return;
 	int16_t* hw_buffer = (int16_t*)(buffer);
+
+	for (int i = 0; i < BUFF_SIZE /sizeof(int16_t); i++){
+			hw_buffer[i] = 0;
+		}
+
 	uint8_t *buff = (uint8_t*)p2v((size_t)AuPmmngrAllocBlocks(BUFF_SIZE/4096));
+
 	for (dsp_t *dsp = dsp_first; dsp != NULL; dsp = dsp->next) {
 
-		for (int i = 0; i < BUFF_SIZE/sizeof(int16_t); i++)
-			hw_buffer[i] = 0;
-		
 		for (int i = 0; i < BUFF_SIZE; i++)
 			circular_buf_get(dsp->buffer,buff);
 		
 		int16_t *data_bu = (int16_t*)buff;
+
+		for (int i = 0; i < BUFF_SIZE / sizeof(int16_t); i++)
+			data_bu[i] /= 2;
+
 		for (int i = 0; i < BUFF_SIZE /sizeof(int16_t); i++){
-			hw_buffer[i] = data_bu[i];
+			hw_buffer[i] += data_bu[i];
 		}
+
+		AuRequestNextBlock(dsp->id);
 	}
 
 
 	for (int i = 0; i < BUFF_SIZE / sizeof(int16_t); i++)
 		hw_buffer[i] /= 2;
 
-	for (dsp_t *dsp = dsp_first; dsp != NULL; dsp = dsp->next) {
+	/*for (dsp_t *dsp = dsp_first; dsp != NULL; dsp = dsp->next) {
 		AuRequestNextBlock(dsp->id);
-	}
+	}*/
 
 	AuPmmngrFreeBlocks((void*)v2p((size_t)buff),BUFF_SIZE/4096);
 }

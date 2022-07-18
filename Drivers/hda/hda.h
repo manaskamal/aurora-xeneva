@@ -31,6 +31,7 @@
 #define __HDA_H__
 
 #include <stdint.h>
+#include "widget.h"
 
 //! Device Registers
 #define GCAP   0x00     //Global Capabilities
@@ -83,6 +84,7 @@
 #define REG_O0_STS       0x103    ///< Output 0 - Status
 #define REG_O0_CBL       0x108    ///< Output 0 - Cyclic Buffer Length
 #define REG_O0_STLVI     0x10c    ///< Output 0 - Last Valid Index
+#define REG_O0_FIFOD     0x110    ///< Output 0 - FIFO Size
 #define REG_O0_FMT       0x112    ///< Output 0 - Format
 #define REG_O0_BDLPL     0x118    ///< Output 0 - BDL Pointer Lower
 #define REG_O0_BDLPU     0x11c    ///< Output 0 - BDL Pointer Upper
@@ -98,9 +100,12 @@
 #define REG_I0_BDPU      0x9C   ///< Input 0 - BDL Pointer Upper
 
 
-
-#define BDL_SIZE  256
-#define BUFFER_SIZE  4096
+/* Here: BDL_SIZE*BUFFER_SIZE should not cross
+ * 4K, else we will have some noise comming out
+ * while jumping from one 4k block to other
+ */
+#define BDL_SIZE  4
+#define BUFFER_SIZE   1024
 
 
 #define HDA_GCAP_OSS_MASK  0xf000
@@ -208,11 +213,16 @@ enum pin_capabilities {
 };
 
 enum pin_ctl_flags {
+	PIN_CTL_ENABLE_HPHN     = (1<<7),
     PIN_CTL_ENABLE_OUTPUT   = (1 << 6),
+	PIN_CTL_ENABLE_INPUT    = (1<<5),
+	PIN_CTL_ENABLE_VREFEN   = (1<<2),
+	PIN_CTL_ENABLE_VREF_EN  = (1<<0),
+	PIN_CTL_ENABLE_VREF_EN2 = (1<<1),
 };
 
 enum sample_format {
-    SR_48_KHZ               = 0,
+    SR_48_KHZ               =  (0 << 14),
     SR_44_KHZ               = (1 << 14),
     BITS_32                 = (4 <<  4),
     BITS_16                 = (1 <<  4),
@@ -228,13 +238,6 @@ typedef struct _bdl_ {
 }hda_bdl_entry;
 #pragma pack(pop)
 
-
-typedef struct _hd_output_ {
-	int output_nid;
-	int  output_codec_id;
-	uint32_t output_amp_gain_step;
-}hd_output_t;
-
 	
 typedef struct _hd_audio_ {
 	uint64_t mmio;
@@ -247,7 +250,6 @@ typedef struct _hd_audio_ {
 	uint16_t num_oss;
 	uint8_t irq;
 	bool immediate_use;
-	hd_output_t *output[15];
 	uintptr_t output_ptr;
 	uint64_t dma_pos_buff;
 }hd_audio_t;
@@ -274,18 +276,18 @@ extern void rirb_read (uint64_t *response);
 extern void corb_write (uint32_t verb);
 
 /*
- * hda_set_output_nid -- set output nid
+ * hda_add_widget -- adds widget to widget list
  * @param nid -- node id
  * @param codec -- output codec id
  * @param amp_gain -- amp gain step
  */
-void hda_set_output_nid(uint16_t nid, uint8_t codec, uint32_t amp_gain);
+extern void hda_add_path(hda_audio_path_t *widget);
 
 /*
  * hda_set_volume -- sets volume to output codec
  * @param volume -- volume level 
  */
-extern void hda_set_volume (uint8_t volume);
+extern void hda_set_volume (int volume);
 
 /*
  * hda_output_stream_start -- starts the output stream
@@ -336,7 +338,7 @@ extern int codec_enumerate_widgets(int codec);
  * @param codec -- destination codec
  * @param nid -- desired node id
  */
-extern void hda_get_pcm_rates (int codec, int nid);
+extern uint32_t hda_get_pcm_rates (int codec, int nid);
 
 /*
  * hda_get_supported_stream_format -- returns the supported 
@@ -344,7 +346,7 @@ extern void hda_get_pcm_rates (int codec, int nid);
  * @param codec -- codec id
  * @param nid -- node id
  */
-extern void hda_get_supported_stream_format (int codec, int nid);
+extern uint32_t hda_get_supported_stream_format (int codec, int nid);
 
 
 /*============================================
@@ -368,6 +370,10 @@ extern void widget_init_output ();
  * hda_init_output_stream -- initialize the output stream
  */
 extern void hda_init_output_stream ();
+extern void init_output_converter (int codec, int nid, bool deinit);
+//! Start a Stream !!! Errors are there, needs fixing
+//! not completed yet
+extern void hda_init_input_stream ();
 extern void output_stream_write(uint8_t* buffer, size_t length);
 extern void output_stream_write2(uint64_t* buffer, uint32_t pos, size_t length);
 

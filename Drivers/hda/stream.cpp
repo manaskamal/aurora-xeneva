@@ -1,7 +1,7 @@
 /**
  * BSD 2-Clause License
  *
- * Copyright (c) 2021, Manas Kamal Choudhury
+ * Copyright (c) 2022, Manas Kamal Choudhury
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -46,24 +46,24 @@ void hda_init_output_stream () {
 		void *p = AuPmmngrAlloc();
 		if (phys_buf == 0)
 			phys_buf = (uint64_t)p;
-		AuMapPage ((uint64_t)p,pos + i * 4096, (1<<4));
+		AuMapPage ((uint64_t)p,pos + i * 4096, PAGING_NO_CACHING | PAGING_NO_EXECUTE | PAGING_WRITE_THROUGH);
 	}
 
 
+
 	hda_set_sample_buffer(pos);
-
+	_aud_outb_ (REG_O0_CTLL, 0<<1);
 	/* Now reset the stream */
-	_aud_outl_ (REG_O0_CTLL, 1); //reset
-	//while((_aud_inl_(REG_O0_CTLL) & 0x1) == 0);
-	for (int i = 0; i < 1000000; i++)
+	_aud_outb_ (REG_O0_CTLL, 1); //reset
+	while((_aud_inl_(REG_O0_CTLL) & 0x1) == 0)
 		;
 
-	_aud_outl_ (REG_O0_CTLL, 0);
-	//while((_aud_inl_(REG_O0_CTLL) & 0x1));
-
-
-	for (int i = 0; i < 100000; i++)
+	_aud_outb_ (REG_O0_CTLL, 0);
+	while((_aud_inl_(REG_O0_CTLL) & 0x1) != 0)
 		;
+
+	_aud_outb_ (REG_O0_STS, HDAC_SDSTS_DESE | HDAC_SDSTS_FIFOE | HDAC_SDSTS_BCIS);
+
 	uint64_t bdl_base = (uint64_t)AuPmmngrAlloc();   //get_physical_address  ((uint64_t) 0x0000000000000000);
 	hda_bdl_entry *bdl = (hda_bdl_entry*)bdl_base;  //(_ihd_audio.corb + 3072);
 
@@ -71,11 +71,12 @@ void hda_init_output_stream () {
 	for (j = 0; j < BDL_SIZE; j++) {
 		bdl[j].paddr = (uint64_t)(phys_buf + j * BUFFER_SIZE);
 		bdl[j].length = BUFFER_SIZE;
-		bdl[j].flags = 1;
+		bdl[j].flags = 0;
 	}
+	bdl[j-1].flags = 1;
 
-	_aud_outb_ (REG_O0_CTLU, (1<<4));
-	_aud_outb_ (REG_O0_CTLL, (1<<18));
+	_aud_outb_ (REG_O0_CTLU, (1<<4) | (1<<19));
+	_aud_outb_ (REG_O0_CTLL, (1<<16));
 
 	_aud_outl_ (REG_O0_CBL,BDL_SIZE*BUFFER_SIZE);
 	_aud_outw_(REG_O0_STLVI, BDL_SIZE-1);
@@ -84,16 +85,94 @@ void hda_init_output_stream () {
 	_aud_outl_ (REG_O0_BDLPU, bdl_base >> 32);
 
 	//uint16_t format =  (1<<14) | (0<<11)  | (1<<4) | 1;
-	uint16_t format =  (1<<15) | SR_48_KHZ | (0<<11) | (0 << 8) | BITS_16 | 1;
+	uint16_t format =   SR_48_KHZ | BITS_16 | 1;
 	_aud_outw_ (REG_O0_FMT, format);
 
-	_aud_outb_ (REG_O0_STS, HDAC_SDSTS_DESE | HDAC_SDSTS_FIFOE | HDAC_SDSTS_BCIS);
+	
 
 	uint64_t* dma_pos = (uint64_t*)p2v((size_t)AuPmmngrAlloc());
 	memset(dma_pos, 0, 4096);
-	for (int i = 0; i < 8; i++) {
+	/*for (int i = 0; i < 4096; i++) {
 		dma_pos[i] = 0;
+	}*/
+
+	//_ihd_audio.dma_pos = dma_pos;
+	uint64_t dma_val = (uint64_t)v2p((size_t)dma_pos);
+	AuMapPage(dma_val, 0xFFFFD00005000000,PAGING_NO_CACHING | PAGING_NO_EXECUTE);
+	dma_pos = (uint64_t*)0xFFFFD00005000000;
+
+	_aud_outl_ (DPIBLBASE, dma_val);
+	_aud_outl_ (DPIBUBASE, dma_val >> 32);
+
+	hda_audio_set_dma_pos((uint64_t)dma_pos);
+	
+	/*uint32_t strm = _aud_inl_(REG_O0_CTLL);
+	strm |= (4<<20);
+	_aud_outl_ (REG_O0_CTLL,strm);*/
+	uint16_t sample_fifo = _aud_inw_(REG_O0_FIFOD);
+	
+}
+
+
+//! Start a Stream !!! Errors are there, needs fixing
+//! not completed yet
+void hda_init_input_stream () {
+
+	uint64_t pos = 0xFFFFD00008000000;
+	uint64_t phys_buf = 0;
+	stream_buffer = (uint64_t*)pos;
+	for (int i = 0; i < (4*BUFFER_SIZE/ 4096); i++) {
+		void *p = AuPmmngrAlloc();
+		if (phys_buf == 0)
+			phys_buf = (uint64_t)p;
+		AuMapPage ((uint64_t)p,pos + i * 4096, (1<<4));
 	}
+
+
+
+	//hda_set_sample_buffer(pos);
+	_aud_outl_ (REG_I0_CTLL, 0<<1);
+	/* Now reset the stream */
+	_aud_outl_ (REG_I0_CTLL, 1); //reset
+	while((_aud_inl_(REG_I0_CTLL) & 0x1) == 0)
+		;
+
+	_aud_outl_ (REG_I0_CTLL, 0);
+	while((_aud_inl_(REG_I0_CTLL) & 0x1) != 0)
+		;
+
+	_aud_outb_ (REG_I0_STS, HDAC_SDSTS_DESE | HDAC_SDSTS_FIFOE | HDAC_SDSTS_BCIS);
+
+	uint64_t bdl_base = (uint64_t)AuPmmngrAlloc();   //get_physical_address  ((uint64_t) 0x0000000000000000);
+	hda_bdl_entry *bdl = (hda_bdl_entry*)bdl_base;  //(_ihd_audio.corb + 3072);
+
+	int j = 0;
+	for (j = 0; j < 4; j++) {
+		bdl[j].paddr = (uint64_t)(phys_buf + j * BUFFER_SIZE);
+		bdl[j].length = BUFFER_SIZE;
+		bdl[j].flags = 1;
+	}
+
+//	_aud_outb_ (REG_O0_CTLL, (1<<20));
+	
+
+	_aud_outl_ (REG_I0_CBL,4*BUFFER_SIZE);
+	_aud_outw_(REG_I0_LVI, 4-1);
+
+	_aud_outl_ (REG_I0_BDPL, bdl_base);
+	_aud_outl_ (REG_I0_BDPU, bdl_base >> 32);
+
+	//uint16_t format =  (1<<14) | (0<<11)  | (1<<4) | 1;
+	uint16_t format =    SR_48_KHZ | BITS_16 | 1;
+	_aud_outw_ (REG_I0_FMT, format);
+
+	
+
+	uint64_t* dma_pos = (uint64_t*)p2v((size_t)AuPmmngrAlloc());
+	memset(dma_pos, 0, 4096);
+	/*for (int i = 0; i < 4096; i++) {
+		dma_pos[i] = 0;
+	}*/
 
 	//_ihd_audio.dma_pos = dma_pos;
 	uint64_t dma_val = (uint64_t)v2p((size_t)dma_pos);
@@ -104,8 +183,12 @@ void hda_init_output_stream () {
 
 	hda_audio_set_dma_pos((uint64_t)dma_pos);
 	
-	uint32_t strm = _aud_inl_(REG_O0_CTLL);
-
+	uint32_t strm = _aud_inl_(REG_I0_CTLL);
+	strm |= (2<<20);
+	printf ("Strm num -> %d \n", ((strm >> 20) & 0xf));
+	_aud_outl_ (REG_I0_CTLL,strm);
+	uint16_t sample_fifo = _aud_inw_(REG_I0_FIFOD);
+	
 }
 
 void output_stream_write(uint8_t* buffer, size_t length) {

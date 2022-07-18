@@ -157,6 +157,7 @@ void _AuMain (KERNEL_BOOT_INFO *info) {
 	AuPagingClearLow();
 
 	AuSoundOutputStart();
+	
 #ifdef ARCH_X64
 
 	printf ("Scheduler Initialized\n");
@@ -169,6 +170,7 @@ void _AuMain (KERNEL_BOOT_INFO *info) {
 	au_status = AuCreateProcess ("/priwm.exe","priwm");
 
 	//! Here start the scheduler (multitasking engine)
+	
 	AuSchedulerStart();
 #endif
 

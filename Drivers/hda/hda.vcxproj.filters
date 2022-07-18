@@ -14,6 +14,8 @@
     <ClInclude Include="codecs\sigmatel.h">
       <Filter>codecs</Filter>
     </ClInclude>
+    <ClInclude Include="widget.h" />
+    <ClInclude Include="codec_id.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="codecs">

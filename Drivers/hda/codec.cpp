@@ -30,6 +30,7 @@
 #include "hda.h"
 #include <stdio.h>
 #include "codecs\sigmatel.h"
+#include <serial.h>
 
 /**
  * one time function for sending command and reading response
@@ -58,9 +59,10 @@ uint32_t codec_query (int codec, int nid, uint32_t payload) {
  * @param codec -- destination codec
  * @param nid -- desired node id
  */
-void hda_get_pcm_rates (int codec, int nid) {
+uint32_t hda_get_pcm_rates (int codec, int nid) {
 	uint32_t pcm_rates = 0;
 	pcm_rates = codec_query(codec, nid, VERB_GET_PARAMETER | 0x0A);
+#ifdef _HDA_DEBUG_
 	if ((pcm_rates & (1<<0)) != 0) {
 		printf ("Supported 8.0 kHZ, Mult/Div-> 1/6 * 48 \n");
 	}
@@ -112,6 +114,8 @@ void hda_get_pcm_rates (int codec, int nid) {
 	if ((pcm_rates & (1<<20)) != 0) {
 		printf ("32 bit audio formats are supported \n");
 	}
+#endif
+	return pcm_rates;
 }
 
 /*
@@ -120,9 +124,10 @@ void hda_get_pcm_rates (int codec, int nid) {
  * @param codec -- codec id
  * @param nid -- node id
  */
-void hda_get_supported_stream_format (int codec, int nid) {
+uint32_t hda_get_supported_stream_format (int codec, int nid) {
 	uint32_t format = 0;
 	format = codec_query(codec, nid, VERB_GET_PARAMETER | 0x0B);
+#ifdef _HDA_DEBUG_
 	if ((format & (1<<0)) != 0) {
 		printf ("PCM is supported \n");
 	}
@@ -134,6 +139,8 @@ void hda_get_supported_stream_format (int codec, int nid) {
 	if ((format & (1<<2)) != 0) {
 		printf ("Dolby AC-3 audio is supported \n");
 	}
+#endif
+	return format;
 }
 
 /*
@@ -173,8 +180,8 @@ int codec_enumerate_widgets(int codec) {
 	param = codec_query (codec, 0, VERB_GET_PARAMETER | PARAM_NODE_COUNT);
 
 	num_fg = param & 0x000000ff;
-	fg_start = (param & 0x00ff0000) >> 16;
-
+	fg_start = (param >> 16) & 0xff;
+	param = 0;
 
 	printf ("[driver]: hdaudio num function group -> %d, fg_start -> %d\n", num_fg, fg_start);
 
@@ -190,7 +197,7 @@ int codec_enumerate_widgets(int codec) {
 		printf ("[hda]: sigmatel codec registered \n");
 	}
 
-	printf ("[driver]: hdaudio widget device id -> 0%x, vendor id -> 0%x\n", devid , vendid);
+	printf ("[driver]: hdaudio widget device id -> 0x%x, vendor id -> 0x%x\n", devid , vendid);
 	
 	uint32_t rev_id = codec_query (codec, 0, VERB_GET_PARAMETER | PARAM_REV_ID);
 	printf ("[driver]: widget version -> %d.%d, r0%d\n", rev_id>>20, rev_id>>16, rev_id>>8);
@@ -215,6 +222,9 @@ int codec_enumerate_widgets(int codec) {
 		codec_query(codec, fg_start + i, 0x7FF00);
 		for (int i = 0; i < 100000; i++)
 			;
+		codec_query(codec, fg_start + i, 0x7FF00);
+		for (int i = 0; i < 100000; i++)
+			;
 
 		codec_query (codec, fg_start + i, VERB_SET_POWER_STATE | 0x00000);
 
@@ -230,6 +240,7 @@ int codec_enumerate_widgets(int codec) {
 			widget_init (codec, widgets_start + j);
 		}
 	}
+
 
 	return 1; //_ihd_audio.output->nid ? 0 : -1;
 }

@@ -239,66 +239,68 @@ $LN5:
 
 	call	?AuSoundOutputStart@@YAXXZ		; AuSoundOutputStart
 
-; 160  : #ifdef ARCH_X64
-; 161  : 
-; 162  : 	printf ("Scheduler Initialized\n");
+; 160  : 	
+; 161  : #ifdef ARCH_X64
+; 162  : 
+; 163  : 	printf ("Scheduler Initialized\n");
 
 	lea	rcx, OFFSET FLAT:$SG5541
 	call	printf
 
-; 163  : 	int au_status = 0;
+; 164  : 	int au_status = 0;
 
 	mov	DWORD PTR au_status$[rsp], 0
 
-; 164  : 
-; 165  : 	/* start the init process here */
-; 166  : 	au_status = AuCreateProcess ("/init.exe","shell");
+; 165  : 
+; 166  : 	/* start the init process here */
+; 167  : 	au_status = AuCreateProcess ("/init.exe","shell");
 
 	lea	rdx, OFFSET FLAT:$SG5543
 	lea	rcx, OFFSET FLAT:$SG5544
 	call	?AuCreateProcess@@YAHPEBDPEAD@Z		; AuCreateProcess
 	mov	DWORD PTR au_status$[rsp], eax
 
-; 167  : 
-; 168  : 	/* start the compositing window manager at id 3 */
-; 169  : 	au_status = AuCreateProcess ("/priwm.exe","priwm");
+; 168  : 
+; 169  : 	/* start the compositing window manager at id 3 */
+; 170  : 	au_status = AuCreateProcess ("/priwm.exe","priwm");
 
 	lea	rdx, OFFSET FLAT:$SG5545
 	lea	rcx, OFFSET FLAT:$SG5546
 	call	?AuCreateProcess@@YAHPEBDPEAD@Z		; AuCreateProcess
 	mov	DWORD PTR au_status$[rsp], eax
 
-; 170  : 
-; 171  : 	//! Here start the scheduler (multitasking engine)
-; 172  : 	AuSchedulerStart();
+; 171  : 
+; 172  : 	//! Here start the scheduler (multitasking engine)
+; 173  : 	
+; 174  : 	AuSchedulerStart();
 
 	call	?AuSchedulerStart@@YAXXZ		; AuSchedulerStart
 $LN2@AuMain:
 
-; 173  : #endif
-; 174  : 
-; 175  : 	//! Loop forever
-; 176  : 	while(1) {
+; 175  : #endif
+; 176  : 
+; 177  : 	//! Loop forever
+; 178  : 	while(1) {
 
 	xor	eax, eax
 	cmp	eax, 1
 	je	SHORT $LN1@AuMain
 
-; 177  : 		//!looping looping
-; 178  : 		x64_cli();
+; 179  : 		//!looping looping
+; 180  : 		x64_cli();
 
 	call	x64_cli
 
-; 179  : 		x64_hlt();
+; 181  : 		x64_hlt();
 
 	call	x64_hlt
 
-; 180  : 	}
+; 182  : 	}
 
 	jmp	SHORT $LN2@AuMain
 $LN1@AuMain:
 
-; 181  : }
+; 183  : }
 
 	add	rsp, 56					; 00000038H
 	ret	0

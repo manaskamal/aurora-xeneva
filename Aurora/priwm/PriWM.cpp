@@ -903,14 +903,14 @@ void compose_frame () {
 
 #ifdef DEFAULT_COLOR_MODE
 			
-			for (int i = 0; i < he; i++)  {
-				/* Align the count to 16 byte boundary */
-				memcpy_sse2(canvas->address + (winy + i) * canvas->width + winx, win->backing_store + (0 + i) * info->width + 0,
-					(wid/16)*4-1);	
-			}
+			//for (int i = 0; i < he; i++)  {
+			//	/* Align the count to 16 byte boundary */
+			//	memcpy_sse2(canvas->address + (winy + i) * canvas->width + winx, win->backing_store + (0 + i) * info->width + 0,
+			//		(wid/16)*4-1);	
+			//}
 #endif
 
-#ifdef TRANSPARENCY_ENABLE
+//#ifdef TRANSPARENCY_ENABLE
 			/* Here we need full SSE library to perform alpha bliting in faster way, if system supports
 			 * GPU, that will add extra benifits */
 
@@ -921,7 +921,7 @@ void compose_frame () {
 				}
 			}
 
-#endif
+//#endif
 			/* add the clip region */
 			pri_add_clip (winx, winy, wid, he);
 		}
@@ -1168,7 +1168,7 @@ XE_EXTERN int XeMain (int argc, char* argv[]) {
 			}
 
 			if (key_msg.dword == KEY_A) {
-				test_id = create_process("/xecon.exe", "ptest");
+				test_id = create_process("/ptest.exe", "ptest");
 			}
 
 			if (key_msg.dword == KEY_S) {

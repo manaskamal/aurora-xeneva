@@ -171,7 +171,7 @@ thread_t* create_kthread (void (*entry) (void), uint64_t stack,uint64_t cr3, cha
 	memset(t, 0, sizeof(thread_t));
 	t->frame.ss = 0x10;
 	t->frame.rsp = (uint64_t)stack;
-	t->frame.rflags = 0x202;
+	t->frame.rflags = (1<<9);
 	t->frame.cs = 0x08;
 	t->frame.rip = (uint64_t)entry;
 	t->frame.rax = 0;
@@ -226,7 +226,7 @@ thread_t* create_user_thread (void (*entry) (void*),uint64_t stack,uint64_t cr3,
 	memset (t, 0, sizeof(thread_t));
 	t->frame.ss = SEGVAL(GDT_ENTRY_USER_DATA,3); 
 	t->frame.rsp = (uint64_t)stack;
-	t->frame.rflags = 0x286;
+	t->frame.rflags = (1<<9);
 	t->frame.cs = SEGVAL (GDT_ENTRY_USER_CODE,3);
 	t->frame.rip = (uint64_t)entry;
 	t->frame.rax = 0;
@@ -288,7 +288,7 @@ thread_t* create_child_thread (thread_t *parent, void (*entry)(void*),uint64_t s
 	memset(t, 0, sizeof(thread_t));
 	t->frame.ss = SEGVAL(GDT_ENTRY_USER_DATA,3); 
 	t->frame.rsp = (uint64_t)stack;
-	t->frame.rflags = 0x286;
+	t->frame.rflags = (1<<9);
 	t->frame.cs = SEGVAL (GDT_ENTRY_USER_CODE,3);
 	t->frame.rip = (uint64_t)entry;
 	t->frame.rax = 0;
@@ -334,7 +334,7 @@ thread_t* create_child_thread (thread_t *parent, void (*entry)(void*),uint64_t s
 //! the main idle thread
 void idle_thread () {
 	while(1) {
-		x64_hlt();
+		//x64_hlt();
 	}
 }
 
@@ -497,6 +497,7 @@ void scheduler_isr (size_t v, void* param) {
 		//
 		//mutex_unlock (scheduler_mutex);
 		execute_idle (current_thread,ktss);
+		
 	}
 
 sched_end:
