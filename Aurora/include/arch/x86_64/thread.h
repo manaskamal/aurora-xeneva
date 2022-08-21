@@ -106,6 +106,10 @@ struct signal_stack_frame {
 #pragma pack (pop)
 
 
+typedef struct _signal_q_ {
+	void* signal;
+	_signal_q_ *link;
+}signal_queue;
 
 
 //! THREAD STRUCTURE
@@ -125,10 +129,9 @@ typedef struct _thread_ {
 	vfs_node_t *fd[60];   //file descriptor
 	int fd_current;
 	sig_handler signals[NUMSIGNALS+1];
-	int pending_signal;
-	uint64_t signal_stack;
-	RegsCtx_t* signal_stack2;
-	thread_frame_t *signal_state;
+	signal_queue *signal_queue;
+	int pending_signal_count;
+	void *returnable_signal;
 	struct _thread_* next;
 	struct _thread_* prev;
 }thread_t;

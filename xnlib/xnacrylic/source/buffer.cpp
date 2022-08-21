@@ -10,25 +10,22 @@
 
 #include <buffer.h>
 #include <sys\mmap.h>
+#include <sys\_term.h>
 
 static int dbl_buffer_pos = 0;
 
 
 uint32_t* acrylic_allocate_buffer (size_t sz) {
 	uint64_t location = DOUBLE_BUFFER_START + dbl_buffer_pos;
-	
-	for (int i = 0; i < sz / 4096; i++) {
-		valloc (location + i * 4096);
-	}
+	sys_print_text ("SIZE -> %x \r\n", (location + sz));
 
-	dbl_buffer_pos += sz;
-	return (uint32_t*)location;
+	void* address = mmap(NULL,sz,0,0,0,0);
+
+	return (uint32_t*)address;
 }
 
 
 void acrylic_free_buffer (void *p,size_t sz) {
 	uint64_t location = (uint64_t)p;
-	for (int i = 0; i < sz / 4096; i++) 
-		vfree(location + i * 4096);
-	dbl_buffer_pos -= sz;
+	sys_munmap(p,sz);
 }

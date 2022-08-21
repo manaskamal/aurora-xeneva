@@ -1,4 +1,4 @@
-﻿Build started 19-07-2022 ৰাতিপু 2:25:06.
+﻿Build started 10-08-2022 আবেলি 6:19:04.
      1>Project "E:\Xeneva Project\Xeneva\Drivers\hda\hda.vcxproj" on node 2 (Rebuild target(s)).
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\Aurora\include" /Zi /nologo /W3 /WX- /Od /Oy /D ARCH_X64 /D USE_APIC /D _WINDLL /D _MBCS /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt codec.cpp codecs\sigmatel.cpp hda.cpp stream.cpp widget.cpp
@@ -39,7 +39,7 @@
      1>hda.cpp(379): warning C4244: '=' : conversion from 'uint64_t' to 'uint8_t', possible loss of data
      1>hda.cpp(391): warning C4244: 'argument' : conversion from 'uint64_t' to 'uint32_t', possible loss of data
      1>hda.cpp(398): warning C4554: '&' : check operator precedence for possible error; use parentheses to clarify precedence
-     1>hda.cpp(523): warning C4101: 'codec' : unreferenced local variable
+     1>hda.cpp(524): warning C4101: 'codec' : unreferenced local variable
          sigmatel.cpp
          codec.cpp
      1>codec.cpp(225): warning C4258: 'i' : definition from the for loop is ignored; the definition from the enclosing scope is used
@@ -68,4 +68,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:02.41
+Time Elapsed 00:00:02.45

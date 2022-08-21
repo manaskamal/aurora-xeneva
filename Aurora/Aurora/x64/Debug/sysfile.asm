@@ -6,8 +6,8 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 CONST	SEGMENT
-$SG3909	DB	'dev', 00H
-$SG3923	DB	'/', 00H
+$SG3918	DB	'dev', 00H
+$SG3932	DB	'/', 00H
 CONST	ENDS
 PUBLIC	?sys_open_file@@YAHPEADPEAU_file_@@@Z		; sys_open_file
 PUBLIC	?sys_read_file@@YA_KHPEAEPEAU_file_@@@Z		; sys_read_file
@@ -36,11 +36,11 @@ pdata	SEGMENT
 $pdata$?sys_open_file@@YAHPEADPEAU_file_@@@Z DD imagerel $LN18
 	DD	imagerel $LN18+676
 	DD	imagerel $unwind$?sys_open_file@@YAHPEADPEAU_file_@@@Z
-$pdata$?sys_read_file@@YA_KHPEAEPEAU_file_@@@Z DD imagerel $LN12
-	DD	imagerel $LN12+463
+$pdata$?sys_read_file@@YA_KHPEAEPEAU_file_@@@Z DD imagerel $LN13
+	DD	imagerel $LN13+481
 	DD	imagerel $unwind$?sys_read_file@@YA_KHPEAEPEAU_file_@@@Z
-$pdata$?sys_write_file@@YAXHPEA_KPEAU_file_@@@Z DD imagerel $LN6
-	DD	imagerel $LN6+289
+$pdata$?sys_write_file@@YAXHPEA_KPEAU_file_@@@Z DD imagerel $LN8
+	DD	imagerel $LN8+276
 	DD	imagerel $unwind$?sys_write_file@@YAXHPEA_KPEAU_file_@@@Z
 $pdata$?sys_close_file@@YAXH@Z DD imagerel $LN5
 	DD	imagerel $LN5+93
@@ -71,7 +71,7 @@ fd$ = 72
 dest_fd$ = 80
 ?sys_copy_fd@@YAHHHH@Z PROC				; sys_copy_fd
 
-; 211  : int sys_copy_fd (int tid, int fd, int dest_fd) {
+; 212  : int sys_copy_fd (int tid, int fd, int dest_fd) {
 
 $LN7:
 	mov	DWORD PTR [rsp+24], r8d
@@ -79,66 +79,66 @@ $LN7:
 	mov	DWORD PTR [rsp+8], ecx
 	sub	rsp, 56					; 00000038H
 
-; 212  : 	x64_cli();
+; 213  : 	x64_cli();
 
 	call	x64_cli
 
-; 213  : 	vfs_node_t *node = get_current_thread()->fd[fd];
+; 214  : 	vfs_node_t *node = get_current_thread()->fd[fd];
 
 	call	get_current_thread
 	movsxd	rcx, DWORD PTR fd$[rsp]
 	mov	rax, QWORD PTR [rax+rcx*8+264]
 	mov	QWORD PTR node$[rsp], rax
 
-; 214  : 	thread_t *t = thread_iterate_block_list(tid);
+; 215  : 	thread_t *t = thread_iterate_block_list(tid);
 
 	mov	ecx, DWORD PTR tid$[rsp]
 	call	?thread_iterate_block_list@@YAPEAU_thread_@@H@Z ; thread_iterate_block_list
 	mov	QWORD PTR t$[rsp], rax
 
-; 215  : 	if (t == NULL)
+; 216  : 	if (t == NULL)
 
 	cmp	QWORD PTR t$[rsp], 0
 	jne	SHORT $LN4@sys_copy_f
 
-; 216  : 		t = thread_iterate_ready_list(tid);
+; 217  : 		t = thread_iterate_ready_list(tid);
 
 	movzx	ecx, WORD PTR tid$[rsp]
 	call	?thread_iterate_ready_list@@YAPEAU_thread_@@G@Z ; thread_iterate_ready_list
 	mov	QWORD PTR t$[rsp], rax
 $LN4@sys_copy_f:
 
-; 217  : 
-; 218  : 	if (t == NULL)
+; 218  : 
+; 219  : 	if (t == NULL)
 
 	cmp	QWORD PTR t$[rsp], 0
 	jne	SHORT $LN3@sys_copy_f
 
-; 219  : 		return AU_FAILURE;
+; 220  : 		return AU_FAILURE;
 
 	mov	eax, -7
 	jmp	SHORT $LN5@sys_copy_f
 $LN3@sys_copy_f:
 
-; 220  : 
-; 221  : 	if (t->fd[dest_fd] != NULL){
+; 221  : 
+; 222  : 	if (t->fd[dest_fd] != NULL){
 
 	movsxd	rax, DWORD PTR dest_fd$[rsp]
 	mov	rcx, QWORD PTR t$[rsp]
 	cmp	QWORD PTR [rcx+rax*8+264], 0
 	je	SHORT $LN2@sys_copy_f
 
-; 222  : 		return AU_FAILURE;
+; 223  : 		return AU_FAILURE;
 
 	mov	eax, -7
 	jmp	SHORT $LN5@sys_copy_f
 
-; 223  : 	}else{
+; 224  : 	}else{
 
 	jmp	SHORT $LN1@sys_copy_f
 $LN2@sys_copy_f:
 
-; 224  : 		t->fd[dest_fd] = node;
+; 225  : 		t->fd[dest_fd] = node;
 
 	movsxd	rax, DWORD PTR dest_fd$[rsp]
 	mov	rcx, QWORD PTR t$[rsp]
@@ -146,13 +146,13 @@ $LN2@sys_copy_f:
 	mov	QWORD PTR [rcx+rax*8+264], rdx
 $LN1@sys_copy_f:
 
-; 225  : 	}
-; 226  : 	return AU_SUCCESS;
+; 226  : 	}
+; 227  : 	return AU_SUCCESS;
 
 	mov	eax, 1
 $LN5@sys_copy_f:
 
-; 227  : }
+; 228  : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -165,30 +165,30 @@ node$ = 32
 fd$ = 64
 ?sys_close_file@@YAXH@Z PROC				; sys_close_file
 
-; 194  : void sys_close_file (int fd) {
+; 195  : void sys_close_file (int fd) {
 
 $LN5:
 	mov	DWORD PTR [rsp+8], ecx
 	sub	rsp, 56					; 00000038H
 
-; 195  : 	x64_cli();
+; 196  : 	x64_cli();
 
 	call	x64_cli
 
-; 196  : 	vfs_node_t *node = get_current_thread()->fd[fd];
+; 197  : 	vfs_node_t *node = get_current_thread()->fd[fd];
 
 	call	get_current_thread
 	movsxd	rcx, DWORD PTR fd$[rsp]
 	mov	rax, QWORD PTR [rax+rcx*8+264]
 	mov	QWORD PTR node$[rsp], rax
 
-; 197  : 	get_current_thread()->fd[fd] = 0;
+; 198  : 	get_current_thread()->fd[fd] = 0;
 
 	call	get_current_thread
 	movsxd	rcx, DWORD PTR fd$[rsp]
 	mov	QWORD PTR [rax+rcx*8+264], 0
 
-; 198  : 	if ((node->flags & FS_FLAG_DEVICE)){
+; 199  : 	if ((node->flags & FS_FLAG_DEVICE)){
 
 	mov	rax, QWORD PTR node$[rsp]
 	movzx	eax, BYTE PTR [rax+48]
@@ -196,26 +196,26 @@ $LN5:
 	test	eax, eax
 	je	SHORT $LN2@sys_close_
 
-; 199  : 		
-; 200  : 		return;
+; 200  : 		
+; 201  : 		return;
 
 	jmp	SHORT $LN3@sys_close_
 
-; 201  : 	}else{
+; 202  : 	}else{
 
 	jmp	SHORT $LN1@sys_close_
 $LN2@sys_close_:
 
-; 202  : 		free(node);
+; 203  : 		free(node);
 
 	mov	rcx, QWORD PTR node$[rsp]
 	call	free
 $LN1@sys_close_:
 $LN3@sys_close_:
 
-; 203  : 	}
-; 204  : 
-; 205  : }
+; 204  : 	}
+; 205  : 
+; 206  : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -231,126 +231,125 @@ buffer$ = 184
 ufile$ = 192
 ?sys_write_file@@YAXHPEA_KPEAU_file_@@@Z PROC		; sys_write_file
 
-; 164  : void sys_write_file (int fd, uint64* buffer, FILE *ufile) {
+; 167  : void sys_write_file (int fd, uint64* buffer, FILE *ufile) {
 
-$LN6:
+$LN8:
 	mov	QWORD PTR [rsp+24], r8
 	mov	QWORD PTR [rsp+16], rdx
 	mov	DWORD PTR [rsp+8], ecx
 	sub	rsp, 168				; 000000a8H
 
-; 165  : 	x64_cli();
+; 168  : 	x64_cli();
 
 	call	x64_cli
 
-; 166  : 	vfs_node_t file;
-; 167  : 	file.size = ufile->size;
+; 169  : 	vfs_node_t file;
+; 170  : 	memset(&file, 0, sizeof(vfs_node_t));
+
+	mov	r8d, 104				; 00000068H
+	xor	edx, edx
+	lea	rcx, QWORD PTR file$[rsp]
+	call	memset
+
+; 171  : 	if (ufile) {
+
+	cmp	QWORD PTR ufile$[rsp], 0
+	je	SHORT $LN5@sys_write_
+
+; 172  : 		file.size = ufile->size;
 
 	mov	rax, QWORD PTR ufile$[rsp]
 	mov	eax, DWORD PTR [rax+4]
 	mov	DWORD PTR file$[rsp+32], eax
 
-; 168  : 	file.eof = ufile->eof;
+; 173  : 		file.eof = ufile->eof;
 
 	mov	rax, QWORD PTR ufile$[rsp]
 	movzx	eax, BYTE PTR [rax+8]
 	mov	BYTE PTR file$[rsp+36], al
 
-; 169  : 	file.pos = ufile->pos;
+; 174  : 		file.pos = ufile->pos;
 
 	mov	rax, QWORD PTR ufile$[rsp]
 	mov	eax, DWORD PTR [rax+12]
 	mov	DWORD PTR file$[rsp+40], eax
 
-; 170  : 	file.current = ufile->start_cluster;
+; 175  : 		file.current = ufile->start_cluster;
 
 	mov	rax, QWORD PTR ufile$[rsp]
 	mov	eax, DWORD PTR [rax+16]
 	mov	DWORD PTR file$[rsp+44], eax
 
-; 171  : 	file.flags = ufile->flags;
+; 176  : 		file.flags = ufile->flags;
 
 	mov	rax, QWORD PTR ufile$[rsp]
 	movzx	eax, BYTE PTR [rax+20]
 	mov	BYTE PTR file$[rsp+48], al
 
-; 172  : 	file.status = ufile->status;
+; 177  : 		file.status = ufile->status;
 
 	mov	rax, QWORD PTR ufile$[rsp]
 	movzx	eax, BYTE PTR [rax+24]
 	mov	BYTE PTR file$[rsp+49], al
+$LN5@sys_write_:
 
-; 173  : 	file.open = 0;
-
-	mov	QWORD PTR file$[rsp+64], 0
-
-; 174  : 	file.read = 0;
-
-	mov	QWORD PTR file$[rsp+72], 0
-
-; 175  : 	file.read_blk = 0;
-
-	mov	QWORD PTR file$[rsp+88], 0
-
-; 176  : 	file.write = 0;
-
-	mov	QWORD PTR file$[rsp+80], 0
-
-; 177  : 	file.ioquery  = 0;
-
-	mov	QWORD PTR file$[rsp+96], 0
-
-; 178  : 
-; 179  : 	vfs_node_t *node = get_current_thread()->fd[fd];
+; 178  : 	}
+; 179  : 
+; 180  : 	vfs_node_t *node = get_current_thread()->fd[fd];
 
 	call	get_current_thread
 	movsxd	rcx, DWORD PTR fd$[rsp]
 	mov	rax, QWORD PTR [rax+rcx*8+264]
 	mov	QWORD PTR node$[rsp], rax
 
-; 180  : 	if (node == NULL) {
+; 181  : 	if (node == NULL) {
 
 	cmp	QWORD PTR node$[rsp], 0
-	jne	SHORT $LN3@sys_write_
+	jne	SHORT $LN4@sys_write_
 
-; 181  : 		return;
+; 182  : 		return;
 
-	jmp	SHORT $LN4@sys_write_
-$LN3@sys_write_:
+	jmp	SHORT $LN6@sys_write_
+$LN4@sys_write_:
 
-; 182  : 	}
-; 183  : 
-; 184  : 	if (ufile->flags) {
+; 183  : 	}
+; 184  : 
+; 185  : 	if (ufile) {
+
+	cmp	QWORD PTR ufile$[rsp], 0
+	je	SHORT $LN3@sys_write_
+
+; 186  : 		if (ufile->flags)
 
 	mov	rax, QWORD PTR ufile$[rsp]
 	cmp	DWORD PTR [rax+20], 0
 	je	SHORT $LN2@sys_write_
 
-; 185  : 		writefs(node, &file,buffer,file.size);
+; 187  : 			writefs(node, &file,buffer,file.size);
 
 	mov	r9d, DWORD PTR file$[rsp+32]
 	mov	r8, QWORD PTR buffer$[rsp]
 	lea	rdx, QWORD PTR file$[rsp]
 	mov	rcx, QWORD PTR node$[rsp]
 	call	writefs
-
-; 186  : 	}else {
-
-	jmp	SHORT $LN1@sys_write_
 $LN2@sys_write_:
 
-; 187  : 		writefs(node, node, buffer,file.size);
+; 188  : 	}else
 
-	mov	r9d, DWORD PTR file$[rsp+32]
+	jmp	SHORT $LN1@sys_write_
+$LN3@sys_write_:
+
+; 189  : 		writefs(node, node, buffer,4096);
+
+	mov	r9d, 4096				; 00001000H
 	mov	r8, QWORD PTR buffer$[rsp]
 	mov	rdx, QWORD PTR node$[rsp]
 	mov	rcx, QWORD PTR node$[rsp]
 	call	writefs
 $LN1@sys_write_:
-$LN4@sys_write_:
+$LN6@sys_write_:
 
-; 188  : 	}
-; 189  : }
+; 190  : }
 
 	add	rsp, 168				; 000000a8H
 	ret	0
@@ -362,8 +361,8 @@ _TEXT	SEGMENT
 i$1 = 32
 node$ = 40
 byte_read$ = 48
-buff$2 = 56
-file$ = 64
+file$ = 56
+buff$2 = 64
 read_$3 = 72
 read_$4 = 80
 fd$ = 112
@@ -373,7 +372,7 @@ ufile$ = 128
 
 ; 115  : size_t sys_read_file (int fd, uint8_t* buffer, FILE *ufile) {
 
-$LN12:
+$LN13:
 	mov	QWORD PTR [rsp+24], r8
 	mov	QWORD PTR [rsp+16], rdx
 	mov	DWORD PTR [rsp+8], ecx
@@ -402,11 +401,11 @@ $LN12:
 ; 124  : 	if (ufile){
 
 	cmp	QWORD PTR ufile$[rsp], 0
-	je	$LN9@sys_read_f
+	je	$LN10@sys_read_f
 
 ; 125  : 		node = vfs_finddir("/");
 
-	lea	rcx, OFFSET FLAT:$SG3923
+	lea	rcx, OFFSET FLAT:$SG3932
 	call	?vfs_finddir@@YAPEAU_vfs_node_@@PEAD@Z	; vfs_finddir
 	mov	QWORD PTR node$[rsp], rax
 
@@ -417,18 +416,30 @@ $LN12:
 	mov	rax, QWORD PTR [rax+rcx*8+264]
 	mov	QWORD PTR file$[rsp], rax
 
-; 127  : 		if (node == NULL)
+; 127  : 		if (file == NULL)
 
-	cmp	QWORD PTR node$[rsp], 0
-	jne	SHORT $LN8@sys_read_f
+	cmp	QWORD PTR file$[rsp], 0
+	jne	SHORT $LN9@sys_read_f
 
 ; 128  : 			return byte_read;
 
 	mov	rax, QWORD PTR byte_read$[rsp]
-	jmp	$LN10@sys_read_f
+	jmp	$LN11@sys_read_f
+$LN9@sys_read_f:
+
+; 129  : 
+; 130  : 		if (node == NULL)
+
+	cmp	QWORD PTR node$[rsp], 0
+	jne	SHORT $LN8@sys_read_f
+
+; 131  : 			return byte_read;
+
+	mov	rax, QWORD PTR byte_read$[rsp]
+	jmp	$LN11@sys_read_f
 $LN8@sys_read_f:
 
-; 129  : 		for (int i=0; i < ufile->size; i++){
+; 132  : 		for (int i=0; i < ufile->size; i++){
 
 	mov	DWORD PTR i$1[rsp], 0
 	jmp	SHORT $LN7@sys_read_f
@@ -442,39 +453,39 @@ $LN7@sys_read_f:
 	cmp	DWORD PTR i$1[rsp], eax
 	jae	$LN5@sys_read_f
 
-; 130  : 			if (file->eof) {
+; 133  : 			if (file->eof) {
 
 	mov	rax, QWORD PTR file$[rsp]
 	movzx	eax, BYTE PTR [rax+36]
 	test	eax, eax
 	je	SHORT $LN4@sys_read_f
 
-; 131  : 				ufile->eof = 1;
+; 134  : 				ufile->eof = 1;
 
 	mov	rax, QWORD PTR ufile$[rsp]
 	mov	DWORD PTR [rax+8], 1
 
-; 132  : 				break;
+; 135  : 				break;
 
 	jmp	$LN5@sys_read_f
 $LN4@sys_read_f:
 
-; 133  : 			}
-; 134  : 			uint64_t* buff = (uint64_t*)p2v((size_t)AuPmmngrAlloc());
+; 136  : 			}
+; 137  : 			uint64_t* buff = (uint64_t*)p2v((size_t)AuPmmngrAlloc());
 
 	call	AuPmmngrAlloc
 	mov	rcx, rax
 	call	p2v
 	mov	QWORD PTR buff$2[rsp], rax
 
-; 135  : 			memset(buff, 0, 4096);
+; 138  : 			memset(buff, 0, 4096);
 
 	mov	r8d, 4096				; 00001000H
 	xor	edx, edx
 	mov	rcx, QWORD PTR buff$2[rsp]
 	call	memset
 
-; 136  : 			size_t read_ = readfs_block (node,file,(uint64_t*)v2p((size_t)buff));
+; 139  : 			size_t read_ = readfs_block (node,file,(uint64_t*)v2p((size_t)buff));
 
 	mov	rcx, QWORD PTR buff$2[rsp]
 	call	v2p
@@ -484,27 +495,27 @@ $LN4@sys_read_f:
 	call	readfs_block
 	mov	QWORD PTR read_$3[rsp], rax
 
-; 137  : 			memcpy (buffer,buff,4096);
+; 140  : 			memcpy (buffer,buff,4096);
 
 	mov	r8d, 4096				; 00001000H
 	mov	rdx, QWORD PTR buff$2[rsp]
 	mov	rcx, QWORD PTR buffer$[rsp]
 	call	memcpy
 
-; 138  : 			buffer += 4096;
+; 141  : 			buffer += 4096;
 
 	mov	rax, QWORD PTR buffer$[rsp]
 	add	rax, 4096				; 00001000H
 	mov	QWORD PTR buffer$[rsp], rax
 
-; 139  : 			AuPmmngrFree((void*)v2p((size_t)buff));
+; 142  : 			AuPmmngrFree((void*)v2p((size_t)buff));
 
 	mov	rcx, QWORD PTR buff$2[rsp]
 	call	v2p
 	mov	rcx, rax
 	call	AuPmmngrFree
 
-; 140  : 			byte_read += read_;
+; 143  : 			byte_read += read_;
 
 	mov	rax, QWORD PTR read_$3[rsp]
 	mov	rcx, QWORD PTR byte_read$[rsp]
@@ -512,41 +523,41 @@ $LN4@sys_read_f:
 	mov	rax, rcx
 	mov	QWORD PTR byte_read$[rsp], rax
 
-; 141  : 		}
+; 144  : 		}
 
 	jmp	$LN6@sys_read_f
 $LN5@sys_read_f:
 	jmp	SHORT $LN3@sys_read_f
-$LN9@sys_read_f:
+$LN10@sys_read_f:
 
-; 142  : 
-; 143  : 	}else if (ufile == NULL) {
+; 145  : 
+; 146  : 	}else if (ufile == NULL) {
 
 	cmp	QWORD PTR ufile$[rsp], 0
 	jne	SHORT $LN2@sys_read_f
 
-; 144  : 		/* So this fd is non-file system based fd
-; 145  : 		 * get it from fd table */
-; 146  : 		node = get_current_thread()->fd[fd];
+; 147  : 		/* So this fd is non-file system based fd
+; 148  : 		 * get it from fd table */
+; 149  : 		node = get_current_thread()->fd[fd];
 
 	call	get_current_thread
 	movsxd	rcx, DWORD PTR fd$[rsp]
 	mov	rax, QWORD PTR [rax+rcx*8+264]
 	mov	QWORD PTR node$[rsp], rax
 
-; 147  : 		if (node == NULL)
+; 150  : 		if (node == NULL)
 
 	cmp	QWORD PTR node$[rsp], 0
 	jne	SHORT $LN1@sys_read_f
 
-; 148  : 			return byte_read;
+; 151  : 			return byte_read;
 
 	mov	rax, QWORD PTR byte_read$[rsp]
-	jmp	SHORT $LN10@sys_read_f
+	jmp	SHORT $LN11@sys_read_f
 $LN1@sys_read_f:
 
-; 149  : 
-; 150  : 		size_t read_ = readfs(node, node, (uint64_t*)buffer, node->size);
+; 152  : 
+; 153  : 		size_t read_ = readfs(node, node, (uint64_t*)buffer, node->size);
 
 	mov	rax, QWORD PTR node$[rsp]
 	mov	r9d, DWORD PTR [rax+32]
@@ -556,7 +567,7 @@ $LN1@sys_read_f:
 	call	readfs
 	mov	QWORD PTR read_$4[rsp], rax
 
-; 151  : 		byte_read += read_;
+; 154  : 		byte_read += read_;
 
 	mov	rax, QWORD PTR read_$4[rsp]
 	mov	rcx, QWORD PTR byte_read$[rsp]
@@ -566,14 +577,14 @@ $LN1@sys_read_f:
 $LN2@sys_read_f:
 $LN3@sys_read_f:
 
-; 152  : 	}
-; 153  : 
-; 154  : 	return byte_read;
+; 155  : 	}
+; 156  : 
+; 157  : 	return byte_read;
 
 	mov	rax, QWORD PTR byte_read$[rsp]
-$LN10@sys_read_f:
+$LN11@sys_read_f:
 
-; 155  : }
+; 158  : }
 
 	add	rsp, 104				; 00000068H
 	ret	0
@@ -754,7 +765,7 @@ $LN9@sys_open_f:
 ; 81   : 
 ; 82   : 	if (!(strcmp(pathname, "dev") == 0)) {
 
-	lea	rdx, OFFSET FLAT:$SG3909
+	lea	rdx, OFFSET FLAT:$SG3918
 	lea	rcx, QWORD PTR pathname$[rsp]
 	call	strcmp
 	test	eax, eax

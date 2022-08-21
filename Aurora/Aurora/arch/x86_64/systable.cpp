@@ -149,7 +149,11 @@ extern "C" void x64_syscall_handler (int a) {
 	case 40:
 		funct = (uint64_t*)sys_close_file; //dwm_dispatch_message;
 		break;
+	case 41:
+		funct = (uint64_t*)shm_unlink_direct; 
+		break;
 	}
+	
 
 	
 	//! update the function pointer to syscall table index

@@ -34,8 +34,45 @@
 #include <stdint.h>
 #include <stdarg.h>
 #include <string.h>
+#include <arch\x86_64\thread.h>
+
+typedef struct _signal_ {
+	int signum;
+	RegsCtx_t *signal_stack2;
+	thread_frame_t* signal_state;
+	_signal_ *link;
+}signal_t;
 
 
+/*
+ * AuAllocSignal -- Allocates a new signal 
+ * @param dest_thread -- destination thread
+ * @param signum -- signal number
+ */
+extern void AuAllocSignal (thread_t *dest_thread, int signum);
 
+/*
+ * x86_64_check_signal -- checks if there any pending signal is present
+ * in signal queue
+ * @param current_thread -- pointer to the thread
+ * @param frame -- interrupt_stack_frame
+ */
+extern bool x86_64_check_signal (thread_t *current_thread, interrupt_stack_frame *frame);
+
+/*
+ * x86_64_get_signal -- picks any signal from the signal queue and
+ * return it to the caller
+ * @param current_thread -- pointer to the desired thread
+ */
+extern signal_t *x86_64_get_signal (thread_t* current_thread);
+
+/*
+ * x86_64_prepare_signal -- handles a given signal, basically it prepares the thread for
+ * entering/jumping to signal handler, rest is handled by execute_thread function
+ * @param current_thread -- pointer to current thread
+ * @param frame -- interrupt stack frame
+ * @param signal -- desired signal
+ */
+extern void x86_64_prepare_signal (thread_t* current_thread,interrupt_stack_frame *frame, signal_t* signal);
 
 #endif

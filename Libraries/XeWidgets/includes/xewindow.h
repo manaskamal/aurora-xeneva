@@ -63,6 +63,7 @@ typedef struct _xe_sh_win_ {
 	int y;
 	int width;
 	int height;
+	bool alpha;
 }XESharedWin;
 
 
@@ -186,5 +187,28 @@ XE_EXTERN XE_EXPORT void XEWindowMouseHandle(XEWindow *win, int x, int y, int bu
  */
 XE_EXTERN XE_EXPORT XEGlobalControl* XEAddGlobalButton(XEWindow *win,int x, int y, int w, int h, uint8_t type);
 
+/*
+ * XEWindowHandleResize -- Handle new window resize events from window server
+ * @param win -- Pointer to XEWindow
+ * @param back_key -- Back Buffer key 
+ * @param n_w -- new width
+ * @param n_h -- new height
+ */
+XE_EXTERN XE_EXPORT void XEWindowHandleResize (XeApp *app, XEWindow *win, uint16_t back_key);
+
+/*
+ * XERedrawWindow -- Redraws the window 
+ * @param win -- Pointer to window structure
+ */
+XE_EXTERN XE_EXPORT void XERedrawWindow (XEWindow *win);
+
+
+/*
+ * XEResizeWindow -- Sends resize command to window server
+ * for this window
+ * @param w -- width
+ * @param h -- height
+ */
+XE_EXTERN XE_EXPORT void XEResizeWindow (int w, int h) ;
 
 #endif

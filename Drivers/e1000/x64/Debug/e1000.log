@@ -1,4 +1,4 @@
-﻿Build started 05-06-2022 আবেলি 8:52:54.
+﻿Build started 06-08-2022 আবেলি 8:45:47.
      1>Project "E:\Xeneva Project\Xeneva\Drivers\e1000\e1000.vcxproj" on node 2 (Rebuild target(s)).
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\Aurora\include" /Zi /nologo /W3 /WX- /Od /Oy /D ARCH_X64 /D _WINDLL /D _MBCS /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt e1000.cpp
@@ -10,11 +10,10 @@
                  E:\Xeneva Project\Xeneva\Aurora\include\va_list.h(37) : see previous definition of 'va_start'
      1>E:\Xeneva Project\Xeneva\Aurora\include\stdarg.h(54): warning C4005: 'va_arg' : macro redefinition
                  E:\Xeneva Project\Xeneva\Aurora\include\va_list.h(42) : see previous definition of 'va_arg'
-     1>e1000.cpp(167): warning C4244: 'argument' : conversion from 'uint64_t' to 'uint32_t', possible loss of data
-     1>e1000.cpp(186): warning C4244: 'argument' : conversion from 'uint64_t' to 'uint32_t', possible loss of data
-     1>e1000.cpp(211): warning C4267: 'argument' : conversion from 'size_t' to 'uint32_t', possible loss of data
-     1>e1000.cpp(212): warning C4267: '=' : conversion from 'size_t' to 'volatile uint16_t', possible loss of data
-     1>e1000.cpp(273): warning C4244: 'initializing' : conversion from 'uint64_t' to 'uint32_t', possible loss of data
+     1>e1000.cpp(168): warning C4244: 'argument' : conversion from 'uint64_t' to 'uint32_t', possible loss of data
+     1>e1000.cpp(187): warning C4244: 'argument' : conversion from 'uint64_t' to 'uint32_t', possible loss of data
+     1>e1000.cpp(213): warning C4267: '=' : conversion from 'size_t' to 'volatile uint16_t', possible loss of data
+     1>e1000.cpp(274): warning C4244: 'initializing' : conversion from 'uint64_t' to 'uint32_t', possible loss of data
      1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V110\Microsoft.CppBuild.targets(1137,5): warning MSB8012: TargetPath(E:\Xeneva Project\Xeneva\Drivers\e1000\x64\Debug\e1000.dll) does not match the Linker's OutputFile property value (F:\e1000.dll). This may cause your project to build incorrectly. To correct this, please make sure that $(OutDir), $(TargetName) and $(TargetExt) property values match the value specified in %(Link.OutputFile).
        Link:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:PROMPT /OUT:"F:\e1000.dll" /INCREMENTAL /NOLOGO /LIBPATH:"E:\Xeneva Project\Xeneva\Aurora\x64\Debug" Aurora.lib /NODEFAULTLIB /MANIFEST:NO /PDB:"E:\Xeneva Project\Xeneva\Drivers\e1000\x64\Debug\e1000.pdb" /MAP /MAPINFO:EXPORTS /SUBSYSTEM:NATIVE /STACK:"0x100000" /LARGEADDRESSAWARE /Driver /OPT:NOREF /LTCG /TLBID:1 /BASE:"0xFFFFC00000400000" /FIXED:NO /IMPLIB:"E:\Xeneva Project\Xeneva\Drivers\e1000\x64\Debug\e1000.lib" /MACHINE:X64 /ALIGN:512 /DLL x64\Debug\e1000.obj
@@ -26,4 +25,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:00.44
+Time Elapsed 00:00:00.65

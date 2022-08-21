@@ -10,15 +10,15 @@ _BSS	SEGMENT
 ?debug@@3P6AXPEBDZZEA DQ 01H DUP (?)			; debug
 _BSS	ENDS
 CONST	SEGMENT
-$SG5541	DB	'Scheduler Initialized', 0aH, 00H
+$SG5590	DB	'Scheduler Initialized', 0aH, 00H
 	ORG $+1
-$SG5543	DB	'shell', 00H
+$SG5592	DB	'shell', 00H
 	ORG $+2
-$SG5544	DB	'/init.exe', 00H
+$SG5593	DB	'/init.exe', 00H
 	ORG $+2
-$SG5545	DB	'priwm', 00H
+$SG5594	DB	'priwm', 00H
 	ORG $+6
-$SG5546	DB	'/priwm.exe', 00H
+$SG5595	DB	'/priwm.exe', 00H
 CONST	ENDS
 PUBLIC	?debug_print@@YAXPEBDZZ				; debug_print
 PUBLIC	?_AuMain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z		; _AuMain
@@ -49,7 +49,7 @@ EXTRN	?process_list_initialize@@YAXXZ:PROC		; process_list_initialize
 EXTRN	?AuDrvMngrInitialize@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z:PROC ; AuDrvMngrInitialize
 EXTRN	?AuInitializeSerial@@YAXXZ:PROC			; AuInitializeSerial
 EXTRN	?AuSoundInitialize@@YAXXZ:PROC			; AuSoundInitialize
-EXTRN	?AuSoundOutputStart@@YAXXZ:PROC			; AuSoundOutputStart
+EXTRN	?AuSoundStart@@YAXXZ:PROC			; AuSoundStart
 EXTRN	?pri_loop_init@@YAXXZ:PROC			; pri_loop_init
 EXTRN	?AuInitializeShMem@@YAXXZ:PROC			; AuInitializeShMem
 EXTRN	?AuSharedDeviceInit@@YAXXZ:PROC			; AuSharedDeviceInit
@@ -220,87 +220,89 @@ $LN5:
 
 	call	?ttype_init@@YAXXZ			; ttype_init
 
-; 152  : 
-; 153  : 	/*Initialize other processor */
-; 154  : 	AuInitializeCpu(AuGetNumCPU());	
+; 152  : 	
+; 153  : 	/* Start the sound subsystem */
+; 154  : 	AuSoundStart();
+
+	call	?AuSoundStart@@YAXXZ			; AuSoundStart
+
+; 155  : 
+; 156  : 	/*Initialize other processor */
+; 157  : 	AuInitializeCpu(AuGetNumCPU());	
 
 	call	?AuGetNumCPU@@YAEXZ			; AuGetNumCPU
 	movzx	ecx, al
 	call	?AuInitializeCpu@@YAXE@Z		; AuInitializeCpu
 
-; 155  : 
-; 156  : 	/*Clear the lower half for user space */
-; 157  : 	AuPagingClearLow();
+; 158  : 
+; 159  : 	/*Clear the lower half for user space */
+; 160  : 	AuPagingClearLow();
 
 	call	?AuPagingClearLow@@YAXXZ		; AuPagingClearLow
 
-; 158  : 
-; 159  : 	AuSoundOutputStart();
+; 161  : 
+; 162  : 	
+; 163  : #ifdef ARCH_X64
+; 164  : 
+; 165  : 	printf ("Scheduler Initialized\n");
 
-	call	?AuSoundOutputStart@@YAXXZ		; AuSoundOutputStart
-
-; 160  : 	
-; 161  : #ifdef ARCH_X64
-; 162  : 
-; 163  : 	printf ("Scheduler Initialized\n");
-
-	lea	rcx, OFFSET FLAT:$SG5541
+	lea	rcx, OFFSET FLAT:$SG5590
 	call	printf
 
-; 164  : 	int au_status = 0;
+; 166  : 	int au_status = 0;
 
 	mov	DWORD PTR au_status$[rsp], 0
 
-; 165  : 
-; 166  : 	/* start the init process here */
-; 167  : 	au_status = AuCreateProcess ("/init.exe","shell");
+; 167  : 
+; 168  : 	/* start the init process here */
+; 169  : 	au_status = AuCreateProcess ("/init.exe","shell");
 
-	lea	rdx, OFFSET FLAT:$SG5543
-	lea	rcx, OFFSET FLAT:$SG5544
+	lea	rdx, OFFSET FLAT:$SG5592
+	lea	rcx, OFFSET FLAT:$SG5593
 	call	?AuCreateProcess@@YAHPEBDPEAD@Z		; AuCreateProcess
 	mov	DWORD PTR au_status$[rsp], eax
 
-; 168  : 
-; 169  : 	/* start the compositing window manager at id 3 */
-; 170  : 	au_status = AuCreateProcess ("/priwm.exe","priwm");
+; 170  : 
+; 171  : 	/* start the compositing window manager at id 3 */
+; 172  : 	au_status = AuCreateProcess ("/priwm.exe","priwm");
 
-	lea	rdx, OFFSET FLAT:$SG5545
-	lea	rcx, OFFSET FLAT:$SG5546
+	lea	rdx, OFFSET FLAT:$SG5594
+	lea	rcx, OFFSET FLAT:$SG5595
 	call	?AuCreateProcess@@YAHPEBDPEAD@Z		; AuCreateProcess
 	mov	DWORD PTR au_status$[rsp], eax
 
-; 171  : 
-; 172  : 	//! Here start the scheduler (multitasking engine)
-; 173  : 	
-; 174  : 	AuSchedulerStart();
+; 173  : 
+; 174  : 	//! Here start the scheduler (multitasking engine)
+; 175  : 	
+; 176  : 	AuSchedulerStart();
 
 	call	?AuSchedulerStart@@YAXXZ		; AuSchedulerStart
 $LN2@AuMain:
 
-; 175  : #endif
-; 176  : 
-; 177  : 	//! Loop forever
-; 178  : 	while(1) {
+; 177  : #endif
+; 178  : 
+; 179  : 	//! Loop forever
+; 180  : 	while(1) {
 
 	xor	eax, eax
 	cmp	eax, 1
 	je	SHORT $LN1@AuMain
 
-; 179  : 		//!looping looping
-; 180  : 		x64_cli();
+; 181  : 		//!looping looping
+; 182  : 		x64_cli();
 
 	call	x64_cli
 
-; 181  : 		x64_hlt();
+; 183  : 		x64_hlt();
 
 	call	x64_hlt
 
-; 182  : 	}
+; 184  : 	}
 
 	jmp	SHORT $LN2@AuMain
 $LN1@AuMain:
 
-; 183  : }
+; 185  : }
 
 	add	rsp, 56					; 00000038H
 	ret	0

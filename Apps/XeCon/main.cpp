@@ -68,8 +68,9 @@ XE_EXTERN int XeMain (int argc, char* argv[]) {
 	int bytes_ret = 0;
 	for(;;) {
 		bytes_ret = sys_read_file(master_fd,term->buffer, NULL);
-		/*for (int i = 0; i < bytes_ret; i++)
-			sys_print_text ("%c",term->buffer[i]);*/
+		for (int i = 0; i < bytes_ret; i++)
+			sys_print_text ("%c",term->buffer[i]);
+
 		if (bytes_ret > 0){
 			sys_print_text ("Bytes ret -> %d \r\n", bytes_ret);
 			term->base.painter((XEWidget*)term,win);

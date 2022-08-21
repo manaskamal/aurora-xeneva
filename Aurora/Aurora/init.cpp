@@ -149,6 +149,9 @@ void _AuMain (KERNEL_BOOT_INFO *info) {
 	// Initialize the process list
 	process_list_initialize();
 	ttype_init();
+	
+	/* Start the sound subsystem */
+	AuSoundStart();
 
 	/*Initialize other processor */
 	AuInitializeCpu(AuGetNumCPU());	
@@ -156,7 +159,6 @@ void _AuMain (KERNEL_BOOT_INFO *info) {
 	/*Clear the lower half for user space */
 	AuPagingClearLow();
 
-	AuSoundOutputStart();
 	
 #ifdef ARCH_X64
 

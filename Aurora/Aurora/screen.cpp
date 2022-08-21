@@ -39,6 +39,7 @@ void AuInitializeScreen (KERNEL_BOOT_INFO *info){
 	display.height = info->Y_Resolution;
 	display.bpp = 32;
 	display.scanline = info->pixels_per_line;
+	display.pitch = 4*info->pixels_per_line;
 	display.size = info->fb_size;
 
 	/**
@@ -177,6 +178,9 @@ int screen_io_query (vfs_node_t* node, int code, void* arg) {
 		ret =  scanline;
 		break;
 	}
+	case SCREEN_GET_PITCH:
+		ret = display.pitch;
+		break;
 	}
 
 	return ret;

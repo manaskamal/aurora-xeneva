@@ -176,7 +176,7 @@ $LN4:
 ; 227  : 		 * data structure of kmalloc */
 ; 228  : 		memcpy(result, ptr, new_size);
 
-	mov	r8d, DWORD PTR new_size$[rsp]
+	mov	r8, QWORD PTR new_size$[rsp]
 	mov	rdx, QWORD PTR ptr$[rsp]
 	mov	rcx, QWORD PTR result$[rsp]
 	call	memcpy

@@ -33,7 +33,7 @@
 #define SCREEN_UPDATE      0x105
 #define SCREEN_MOVE_CURSOR  0x106
 #define SCREEN_GET_SCANLINE 0x107
-#define SCREEN_UPDATE_FB  0x108
+#define SCREEN_GET_PITCH    0x108
 
 
 //! Display structure
@@ -44,6 +44,7 @@ typedef struct __display__ {
 	uint32_t bpp;
 	uint16_t scanline;
 	uint32_t size;
+	uint32_t pitch;
 }display_t;
 
 //!Simple Display Interface for User mode applications

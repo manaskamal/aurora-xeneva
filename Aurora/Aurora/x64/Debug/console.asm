@@ -22,7 +22,7 @@ psf_data DQ	01H DUP (?)
 _console_initialized_ DB 01H DUP (?)
 _BSS	ENDS
 CONST	SEGMENT
-$SG3452	DB	'/font.psf', 00H
+$SG3453	DB	'/font.psf', 00H
 CONST	ENDS
 PUBLIC	?AuConsoleInitialize@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z ; AuConsoleInitialize
 PUBLIC	?puts@@YAXPEAD@Z				; puts
@@ -51,7 +51,7 @@ $pdata$?putc@@YAXD@Z DD imagerel $LN14
 	DD	imagerel $LN14+516
 	DD	imagerel $unwind$?putc@@YAXD@Z
 $pdata$?fb_write@@YAXPEAU_vfs_node_@@PEAEI@Z DD imagerel $LN3
-	DD	imagerel $LN3+46
+	DD	imagerel $LN3+48
 	DD	imagerel $unwind$?fb_write@@YAXPEAU_vfs_node_@@PEAEI@Z
 pdata	ENDS
 xdata	SEGMENT
@@ -139,7 +139,8 @@ $LN3:
 
 ; 33   : 	memcpy (fb,buffer,length);
 
-	mov	r8d, DWORD PTR length$[rsp]
+	mov	eax, DWORD PTR length$[rsp]
+	mov	r8d, eax
 	mov	rdx, QWORD PTR buffer$[rsp]
 	mov	rcx, QWORD PTR fb
 	call	memcpy
@@ -744,7 +745,7 @@ $LN4:
 
 ; 56   : 	vfs_node_t *file = fat32_open(NULL, "/font.psf");
 
-	lea	rdx, OFFSET FLAT:$SG3452
+	lea	rdx, OFFSET FLAT:$SG3453
 	xor	ecx, ecx
 	call	?fat32_open@@YAPEAU_vfs_node_@@PEAU1@PEAD@Z ; fat32_open
 	mov	QWORD PTR file$[rsp], rax

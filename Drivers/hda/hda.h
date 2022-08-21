@@ -287,7 +287,7 @@ extern void hda_add_path(hda_audio_path_t *widget);
  * hda_set_volume -- sets volume to output codec
  * @param volume -- volume level 
  */
-extern void hda_set_volume (int volume);
+extern void hda_set_volume (uint8_t volume);
 
 /*
  * hda_output_stream_start -- starts the output stream

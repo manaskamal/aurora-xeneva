@@ -39,6 +39,13 @@
 
 pri_loop_box_t *first_loop = NULL;
 pri_loop_box_t *last_loop = NULL;
+
+/*
+ * TODO: Messages should be stored in a doubly-linked
+ * list structures in each loop box!!!
+ */
+
+
 /**
  * pri_loop_create -- create a new pri_loop_box 
  */
@@ -47,7 +54,6 @@ void pri_loop_create () {
 	loop->address = (void*)p2v((size_t)AuPmmngrAlloc());//malloc(sizeof(pri_event_t));
 	memset(loop->address,0, sizeof(pri_event_t));
 	loop->owner_id = get_current_thread()->id;
-	loop->pending_msg_count = 0;
 	loop->message_pending = 0;
 	loop->next = NULL;
 	loop->prev = NULL;
@@ -107,8 +113,7 @@ void pri_loop_destroy_by_id (uint16_t id) {
  * @param event -- event message to put
  */
 void pri_put_message (pri_event_t *event) {
-	x64_cli();
-	bool hunged = false;
+
 	uint16_t owner_id = event->to_id;
 	for (pri_loop_box_t *loop = first_loop; loop != NULL; loop = loop->next) {
 		if (loop->owner_id == owner_id) {
@@ -116,7 +121,6 @@ void pri_put_message (pri_event_t *event) {
 				break;
 			memcpy (loop->address, event, sizeof(pri_event_t));
 			loop->message_pending = 1;
-			loop->pending_msg_count++;
 			break;
 		}
 	}
@@ -130,7 +134,6 @@ void pri_put_message (pri_event_t *event) {
 		unblock_thread(thread);
 	}
 ret:
-	x64_sti();
 	return;
 }
 
@@ -139,25 +142,20 @@ ret:
  * @param event -- pointer where to store the specific message
  */
 void pri_get_message (pri_event_t *event) {
-	x64_cli ();
-
+	
 	uint16_t owner_id = get_current_thread()->id;
 	for (pri_loop_box_t *loop = first_loop; loop != NULL; loop = loop->next) {
 		if (loop->owner_id == owner_id) {
 			if (loop->message_pending){
 				memcpy (event,loop->address, sizeof(pri_event_t));
 				memset (loop->address, 0, sizeof(pri_event_t));
-				loop->pending_msg_count--;
-				if (loop->pending_msg_count == 0) {
-					loop->message_pending = false;
-				}
+				loop->message_pending = false;
 			}
 			memset (loop->address, 0, sizeof(pri_event_t));
 			break;
 		}
 	}
 
-	x64_sti();
 	return;
 }
 
@@ -168,6 +166,7 @@ void pri_get_message (pri_event_t *event) {
  * @param arg -- extra argument passed by user
  */
 int pri_loop_ioquery (vfs_node_t *file, int code, void *arg) {
+	x64_cli();
 	switch (code) {
 	case PRI_LOOP_CREATE: {
 		pri_loop_create();

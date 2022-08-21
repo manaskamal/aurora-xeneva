@@ -57,7 +57,7 @@ $LN3:
 
 	mov	rax, QWORD PTR packet$[rsp]
 	add	rax, 14
-	mov	r8d, DWORD PTR len$[rsp]
+	mov	r8, QWORD PTR len$[rsp]
 	mov	rdx, QWORD PTR data$[rsp]
 	mov	rcx, rax
 	call	memcpy

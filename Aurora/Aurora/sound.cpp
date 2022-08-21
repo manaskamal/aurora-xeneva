@@ -1,7 +1,7 @@
 /**
  * BSD 2-Clause License
  *
- * Copyright (c) 2021, Manas Kamal Choudhury
+ * Copyright (c) 2022, Manas Kamal Choudhury
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -166,26 +166,24 @@ int AuSoundIOQuery (vfs_node_t *node, int code, void* arg) {
 		break;
 	}
 	case SOUND_START_OUTPUT:{
-		//AuSoundWrite(node,NULL, BUFF_SIZE);
-		if (_audio_started_)
-			return 0;
-		registered_dev->start_output_stream();
-		_audio_started_ = true;
-		_audio_stoped_ = false;
+		/* This Code should be removed */
 		break;
 	}
 	case SOUND_STOP_OUTPUT:{
-		if(_audio_stoped_)
-			return 0;
-		registered_dev->stop_output_stream();
-		_audio_stoped_ = true;
-		_audio_started_ = false;
+		/* This Code should be removed */
 		break;
 						   }
 	case SOUND_START_INPUT: //Not implemented
 		break;
 	case SOUND_STOP_INPUT:
 		break;  //Not implemented
+	case SOUND_SET_VOLUME: {
+		if (!registered_dev)
+			return -1;
+		au_sound_callback_t *callbk = (au_sound_callback_t*)arg;
+		registered_dev->set_volume(callbk->uchar_1);
+		break;
+	}	
 	}
 
 	return 0;
@@ -240,13 +238,13 @@ void AuSoundRequestNext (uint64_t *buffer) {
 		return;
 	int16_t* hw_buffer = (int16_t*)(buffer);
 
-	for (int i = 0; i < BUFF_SIZE /sizeof(int16_t); i++){
-			hw_buffer[i] = 0;
-		}
+	for (int i = 0; i < BUFF_SIZE /sizeof(int16_t); i++)
+		hw_buffer[i] = 0;
+	
 
 	uint8_t *buff = (uint8_t*)p2v((size_t)AuPmmngrAllocBlocks(BUFF_SIZE/4096));
 
-	for (dsp_t *dsp = dsp_first; dsp != NULL; dsp = dsp->next) {
+	for (dsp_t *dsp = dsp_last; dsp != NULL; dsp = dsp->prev) {
 
 		for (int i = 0; i < BUFF_SIZE; i++)
 			circular_buf_get(dsp->buffer,buff);
@@ -260,29 +258,27 @@ void AuSoundRequestNext (uint64_t *buffer) {
 			hw_buffer[i] += data_bu[i];
 		}
 
-		AuRequestNextBlock(dsp->id);
 	}
 
 
 	for (int i = 0; i < BUFF_SIZE / sizeof(int16_t); i++)
 		hw_buffer[i] /= 2;
 
-	/*for (dsp_t *dsp = dsp_first; dsp != NULL; dsp = dsp->next) {
+	for (dsp_t *dsp = dsp_first; dsp != NULL; dsp = dsp->next) {
 		AuRequestNextBlock(dsp->id);
-	}*/
+	}
 
 	AuPmmngrFreeBlocks((void*)v2p((size_t)buff),BUFF_SIZE/4096);
 }
 
 
-void AuSoundOutputStart() {
+void AuSoundStart() {
 	if (registered_dev == NULL)
 		return;
-	printf ("Output Start \n");
 	registered_dev->start_output_stream();
 }
 
-void AuSoundOutputStop() {
+void AuSoundDeInitialize() {
 	if (registered_dev == NULL)
 		return;
 	registered_dev->stop_output_stream();

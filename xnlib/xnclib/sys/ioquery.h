@@ -47,7 +47,7 @@
 #define SCREEN_UPDATE      0x105
 #define SCREEN_MOVE_CURSOR  0x106
 #define SCREEN_GET_SCANLINE 0x107
-#define SCREEN_UPDATE_FB  0x108
+#define SCREEN_GET_PITCH    0x108
 
 /* Pri Loop codes */
 #define PRI_LOOP_CREATE    401

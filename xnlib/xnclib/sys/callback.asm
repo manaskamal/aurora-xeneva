@@ -391,3 +391,11 @@ sys_dispatch_mouse:
 	syscall
 	ret
 
+global sys_shm_unlink_direct
+export sys_shm_unlink_direct
+sys_shm_unlink_direct:
+    mov r12, 41
+	mov r13, rcx
+	syscall
+	ret
+

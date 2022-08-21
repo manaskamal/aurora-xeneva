@@ -108,6 +108,7 @@ XeApp* XeStartApplication(int argc, char* argv[]) {
 				uint16_t back_id = sys_shmget(back_key, 0, 0);
 				void* backing_store = sys_shmat(back_id, 0, 0);
 				uint32_t *fb = (uint32_t*)backing_store;
+
 				
 				///* Fill the buffer with white color */
 
@@ -119,6 +120,12 @@ XeApp* XeStartApplication(int argc, char* argv[]) {
 				app->shared_win_address = sh_win_addr;
 				app->buffer_width = 400;
 				app->buffer_height = 400;
+
+
+				pri_event_t e;
+				e.type = PRIWM_WINDOW_SHOW;
+				e.from_id = get_current_pid();
+				XeSendEventPRIWM(&e);
 
 				memset(&e, 0, sizeof(pri_event_t));
 				break;

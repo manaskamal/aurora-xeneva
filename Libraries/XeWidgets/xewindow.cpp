@@ -37,6 +37,7 @@
 #include <acrylic.h>
 #include <color.h>
 #include <xe_glblctrl_close.h>
+#include <sys\shm.h>
 
 /*
  * =========================================================================================
@@ -113,7 +114,7 @@ XE_EXTERN XE_EXPORT XEWindow * XECreateWindow (XeApp *app, canvas_t *canvas, uin
 	win->shwin = (XESharedWin*)win->shared_win;
 	win->title = (char*)malloc(strlen(title));
 	memset(win->title, 0, strlen(title));
-	win->color = 0;
+	win->color = WHITE;
 	win->shwin->x = x;
 	win->shwin->y = y;
 	win->first_time = true;
@@ -196,7 +197,7 @@ XE_EXTERN XE_EXPORT void XEUpdateWindow(XEWindow* win, int x, int y, int w, int 
 	int height = canvas_get_height(win->ctx);
 
 	for (int i = 0; i < h; i++)
-		fastcpy(lfb + (y + i) * width + x, dbl_buf + (y + i) * width + x, w*4);
+		fastcpy(lfb + (y + i) * win->shwin->width + x, dbl_buf + (y + i) * win->shwin->width + x, w*4);
 
 	if (dirty) {
 		win->shwin->rect[win->shwin->rect_count].x = x;
@@ -225,6 +226,15 @@ XE_EXTERN XE_EXPORT void XEShowWindow(XEWindow *win) {
 		XeSendEventPRIWM(&e);
 		win->first_time = false;
 	}
+}
+
+/*
+ * XERedrawWindow -- Redraws the window 
+ * @param win -- Pointer to window structure
+ */
+XE_EXTERN XE_EXPORT void XERedrawWindow (XEWindow *win) {
+	if (win->paint)
+		win->paint;
 }
 
 
@@ -282,8 +292,36 @@ XE_EXTERN XE_EXPORT void XEWindowMouseHandle(XEWindow *win, int x, int y, int bu
 			}
 		}
 	}
+}
 
+/*
+ * XEWindowHandleResize -- Handle new window resize events from window server
+ * @param win -- Pointer to XEWindow
+ * @param back_key -- Back Buffer key 
+ * @param n_w -- new width
+ * @param n_h -- new height
+ */
+XE_EXTERN XE_EXPORT void XEWindowHandleResize (XeApp *app, XEWindow *win, uint16_t back_key) {
+	uint16_t id = sys_shmget(back_key, 0, 0);
+	void* back_addr = sys_shmat(id,0, 0);
+	app->framebuffer = (uint32_t*)back_addr;
+	win->backbuff = (uint32_t*)back_addr;
+	app->back_key = back_key;
 
+}
+
+/*
+ * XEResizeWindow -- Sends resize command to window server
+ * for this window
+ * @param w -- width
+ * @param h -- height
+ */
+XE_EXTERN XE_EXPORT void XEResizeWindow (int w, int h) {
+	pri_event_t ev;
+	ev.type = 108;
+	ev.dword = w;
+	ev.dword2 = h;
+	XeSendEventPRIWM(&ev);
 }
 
 

@@ -82,19 +82,19 @@ void sigmatel_set_volume (uint8_t volume, int codec) {
 	if (volume == 0)
 		volume = 0x80;  //mute bit
 	else
-		volume = volume * step / 255;
+		volume = volume;
 
 	//codec_query (_ihd_audio.output->codec, _ihd_audio.output->nid, VERB_SET_AMP_GAIN_MUTE | 0xb000 | volume);
 
-	codec_query (codec, 2, 0x39000 | volume);
-	codec_query (codec, 2, 0x3A000 | volume );
-	codec_query (codec, 3, 0x39000 | volume);
-	codec_query (codec, 3, 0x3A000 | volume);
-	codec_query (codec, 4, 0x39000 | volume);
-	codec_query (codec, 4, 0x3A000 | volume);
-	codec_query (codec, 5, 0x39000 | volume);
-	codec_query (codec, 5, 0x3A000 | volume);
-	codec_query (codec, 6, 0x39000 | volume);
-	codec_query (codec, 6, 0x3A000 | volume);
+	codec_query (codec, 2, 0x39000 | 0xb000 | volume);
+	codec_query (codec, 2, 0x3A000 | 0xb000 | volume );
+	codec_query (codec, 3, 0x39000 | 0xb000 | volume);
+	codec_query (codec, 3, 0x3A000 | 0xb000 | volume);
+	codec_query (codec, 4, 0x39000 | 0xb000 | volume);
+	codec_query (codec, 4, 0x3A000 | 0xb000 | volume);
+	codec_query (codec, 5, 0x39000 | 0xb000 | volume);
+	codec_query (codec, 5, 0x3A000 | 0xb000 | volume);
+	codec_query (codec, 6, 0x39000 | 0xb000 | volume);
+	codec_query (codec, 6, 0x3A000 | 0xb000 | volume);
 }
 

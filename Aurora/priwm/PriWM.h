@@ -45,6 +45,8 @@
 #define PRI_WIN_READY 104
 #define PRI_REGISTER_DESKTOP_COMPONENT 105
 #define PRI_CHANGE_WALLPAPER 106
+#define PRI_RESIZE_ACK  107  //!! Resize acknowledgement send to server by clients
+#define PRI_WIN_RESIZE  108
 
 /* Messages that are being send to client by server */
 #define DAISY_WIN_MOVE  200
@@ -56,6 +58,15 @@
 #define DAISY_NOTIFY_WIN_FOCUS_CHANGED 206
 #define DAISY_NOTIFY_WIN_REMOVE 207
 #define DAISY_WINDOW_CLOSED 208
+#define DAISY_WINDOW_RESIZE 209
+
+/* Resize codes */
+#define DAISY_WINDOW_RESIZE_VERTICAL 1
+#define DAISY_WINDOW_RESIZE_HORIZONTAL 2
+#define DAISY_WINDOW_RESIZE_VERTICAL_TOP 3
+#define DAISY_WINDOW_RESIZE_HORIZONTAL_LEFT 4
+#define DAISY_WINDOW_RESIZE_ALL  5
+
 
 typedef struct _pri_rect_ {
 	int x;
@@ -63,6 +74,13 @@ typedef struct _pri_rect_ {
 	int w;
 	int h;
 }pri_rect_t;
+
+typedef struct _pri_rect_2_ {
+	int top;
+	int left;
+	int bottom;
+	int right;
+} pri_rect_2;
 
 #pragma pack (push, 1)
 typedef struct _bmp_{
@@ -149,12 +167,14 @@ typedef struct _pri_win_info_ {
 	int y;
 	int width;
 	int height;
+	bool alpha;
 }pri_win_info_t;
 
 
-#define PRI_WIN_MOVABLE  0x1
-#define PRI_WIN_STATIC   0x2
-#define PRI_WIN_ALWAYS_ON_TOP  0x3
+#define PRI_WIN_MOVABLE   (1<<0)
+#define PRI_WIN_STATIC   (1<<1)
+#define PRI_WIN_ALWAYS_ON_TOP  (1<<2)
+#define PRI_WIN_NON_RESIZABLE  (1<<3)
 
 #define PRI_WIN_ANIM_POSITIVE 0x1
 #define PRI_WIN_ANIM_NEGATIVE 0x2

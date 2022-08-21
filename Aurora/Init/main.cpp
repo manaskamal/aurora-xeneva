@@ -27,7 +27,40 @@ XE_EXTERN XE_EXPORT int XeMain (int argc, char* argv[]) {
 	sys_print_text ("Ptr returned -> %x \r\n", ptr);
 	void* p = malloc(16);
 	sys_print_text ("P -> %x \n", p);
+
+	int event = sys_open_file("/dev/pri_loop",NULL);
+	ioquery(event, PRI_LOOP_CREATE, NULL);
+
+	int fd = sys_open_file("/dev/dsp", NULL);
+	ioquery (fd, SOUND_REGISTER_MEDIAPLAYER, NULL);
+	
+	UFILE file;
+	int fdfile = sys_open_file ("/Ss.wav", &file);
+	file.size = 1;
+	uint8_t* buffer = (uint8_t*)malloc(4096);
+	sys_read_file(fdfile,buffer, &file);
+
+	UFILE sound;
+	sound.flags = 0;
+	sys_write_file(fd, (uint64_t*)buffer, &sound);
+
+	pri_event_t ev;
 	while(1) {
+		ioquery(event,PRI_LOOP_GET_EVENT, &ev);
+		if (ev.type != 0) {
+		if (ev.type == 10) {
+			if (file.eof != 1){
+				sys_read_file(fdfile,buffer, &file);
+				sys_write_file(fd, (uint64_t*)buffer, &sound);
+					//sys_print_text ("Buffer -> %x , pos -> %d  ", buffer, pos);
+			}
+				
+			/*if (file.eof)
+				ioquery(fd, SOUND_STOP_OUTPUT, NULL);*/
+
+			memset(&ev, 0, sizeof(pri_event_t));
+		}
+		}
 		sys_wait();
 	}
 	return 0;

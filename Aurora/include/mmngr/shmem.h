@@ -74,4 +74,11 @@ extern void* AuObtainShMem (uint32_t key, void * shmaddr, int shmflg);
  * @param key -- unique key id
  */
 extern void shm_unlink (uint32_t key);
+
+/*
+ * shm_unlink_direct -- removes the shared memory directly without
+ * waiting for the clients to unlink
+ * @param key -- shared memory chunk key
+ */
+extern void shm_unlink_direct (uint32_t key);
 #endif

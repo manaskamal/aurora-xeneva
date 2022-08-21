@@ -39,6 +39,7 @@
 #include <shirq.h>
 #include <arch\x86_64\thread.h>
 #include <serial.h>
+#include <audrv.h>
 
 typedef struct _e1000_nic_ {
 	uint64_t mmio_addr;
@@ -396,7 +397,7 @@ AU_EXTERN AU_EXPORT int AuDriverMain() {
 
 
 	vfs_node_t *file = (vfs_node_t*)malloc(sizeof(vfs_node_t));
-printf ("FILE e1000 created -> %x \n", file);
+	
 	strcpy (file->filename, "e1000");
 	file->size = 0;
 	file->eof = 0;
@@ -434,6 +435,17 @@ printf ("FILE e1000 created -> %x \n", file);
 	//		break;
 	//}
 	//AuDisableInterupts();
+
+	aurora_device_t *dev = (aurora_device_t*)malloc(sizeof(aurora_device_t));
+	memset(dev, 0, sizeof(aurora_device_t));
+	dev->class_code = 0x02;
+	dev->sub_class_code = 0x00;
+	dev->prog_if = pci_express_read(device,PCI_PROG_IF,bus,dev_,func);
+	dev->aurora_dev_class = DEVICE_CLASS_ETHERNET;
+	dev->aurora_driver_class = DRIVER_CLASS_NETWORK;
+	dev->initialized = true;
+	AuRegisterDevice(dev);
+
 	printf ("[driver]: e1000 initialized \n");
 	return 0;
 }

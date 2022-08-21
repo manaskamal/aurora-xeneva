@@ -17,6 +17,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "xncrt", "..\xnlib\xncrt\xnc
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "XeCon", "..\Apps\XeCon\XeCon.vcxproj", "{5AEFB48E-F20E-4E72-ACA2-A4252A2C0D19}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "XEDock", "..\Apps\XEDock\XEDock.vcxproj", "{9A13A2C4-6691-4E53-A96F-F4FFDF12459C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Mixed Platforms = Debug|Mixed Platforms
@@ -109,6 +111,16 @@ Global
 		{5AEFB48E-F20E-4E72-ACA2-A4252A2C0D19}.Release|Win32.ActiveCfg = Release|Win32
 		{5AEFB48E-F20E-4E72-ACA2-A4252A2C0D19}.Release|Win32.Build.0 = Release|Win32
 		{5AEFB48E-F20E-4E72-ACA2-A4252A2C0D19}.Release|x64.ActiveCfg = Release|Win32
+		{9A13A2C4-6691-4E53-A96F-F4FFDF12459C}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{9A13A2C4-6691-4E53-A96F-F4FFDF12459C}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{9A13A2C4-6691-4E53-A96F-F4FFDF12459C}.Debug|Win32.ActiveCfg = Debug|Win32
+		{9A13A2C4-6691-4E53-A96F-F4FFDF12459C}.Debug|Win32.Build.0 = Debug|Win32
+		{9A13A2C4-6691-4E53-A96F-F4FFDF12459C}.Debug|x64.ActiveCfg = Debug|x64
+		{9A13A2C4-6691-4E53-A96F-F4FFDF12459C}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{9A13A2C4-6691-4E53-A96F-F4FFDF12459C}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{9A13A2C4-6691-4E53-A96F-F4FFDF12459C}.Release|Win32.ActiveCfg = Release|Win32
+		{9A13A2C4-6691-4E53-A96F-F4FFDF12459C}.Release|Win32.Build.0 = Release|Win32
+		{9A13A2C4-6691-4E53-A96F-F4FFDF12459C}.Release|x64.ActiveCfg = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

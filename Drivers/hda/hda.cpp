@@ -313,7 +313,7 @@ void hda_handler (size_t v, void* p) {
 	
 	if (isr & HDAC_INTSTS_SIS_MASK) {
 		if (sts & 0x4) {
-			codec_query(0, 1,VERB_SET_POWER_STATE | 0x4);
+			//codec_query(0, 1,VERB_SET_POWER_STATE | 0x4);
 			uint64_t *dma = (uint64_t*)hd_audio.dma_pos_buff;
 			uint32_t pos = dma[4] & 0xffffffff;
 			pos /= BUFFER_SIZE;
@@ -470,6 +470,7 @@ AU_EXTERN AU_EXPORT int AuDriverMain(){
 	sound->start_output_stream = hda_output_stream_start;
 	sound->stop_output_stream = hda_output_stream_stop;
 	sound->write = output_stream_write;
+	sound->set_volume = hda_set_volume;
 	AuSoundRegisterDevice(sound);
 
 	printf ("[driver]: intel hda audio initialized vendor: %x device: %x\n", shared_device->vendor_id, shared_device->device_id);
@@ -507,7 +508,7 @@ void init_output_converter (int codec, int nid, bool deinit) {
 		/* first output channel is 0x10 */
 		codec_query(codec, nid,VERB_SET_STREAM_CHANNEL | 0x10);
 		format = SR_48_KHZ | BITS_16 | 1;
-		codec_query(codec, nid, VERB_SET_CONV_CHANNEL_COUNT | 1);
+		codec_query(codec, nid, VERB_SET_CONV_CHANNEL_COUNT | 0);
 		codec_query(codec, nid, VERB_SET_AMP_GAIN_MUTE | 0xb000 | 127);
 		codec_query(codec,nid,VERB_SET_FORMAT | format);
 	}else if (deinit){
@@ -558,11 +559,11 @@ void widget_init_output () {
  * hda_set_volume -- sets volume to output codec
  * @param volume -- volume level 
  */
-void hda_set_volume (int volume) {
-	/*if (codec_set_volume) {
-		codec_set_volume(volume,hd_audio.output[0]->output_codec_id);
+void hda_set_volume (uint8_t volume) {
+	if (codec_set_volume) {
+		codec_set_volume(volume,0);
 		return;
-	}*/
+	}
 	
 	if (volume == 0)
 		volume = (1<<7);

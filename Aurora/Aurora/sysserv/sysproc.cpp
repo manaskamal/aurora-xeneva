@@ -34,7 +34,7 @@
 #include <fs\ttype.h>
 #include <drivers\mouse.h>
 #include <serial.h>
-
+#include <arch\x86_64\x86_64_signal.h>
 /**
  * create__sys_process -- creates a process and returns its id
  * @param name -- filepath of the process
@@ -71,8 +71,9 @@ void sys_kill (int pid, int signo) {
 	if (current_thread == NULL) 
 		current_thread = thread_iterate_block_list(pid);
 
-	current_thread->pending_signal = signo;
-	/* Signal Not Implemented for now */
+	/* Allocate a new signal */
+	AuAllocSignal(current_thread,signo);
+
 }
 
 /**
@@ -96,5 +97,5 @@ void sig_loop_tst() {
 void sys_sigreturn (int num) {
 	x64_cli();
 	thread_t *current_thread = get_current_thread();
-	get_current_thread()->pending_signal = -1;
+	/* Just make a page fault here */
 }

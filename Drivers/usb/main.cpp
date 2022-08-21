@@ -48,6 +48,7 @@
 #include <serial.h>
 #include <arch\x86_64\thread.h>
 #include "xhci_cmd.h"
+#include <audrv.h>
 
 
 usb_dev_t *usb_device;
@@ -135,6 +136,11 @@ AU_EXTERN AU_EXPORT int AuDriverMain() {
 		printf ("[usb]: xhci not found \n");
 		return 1;
 	}
+
+	if (AuCheckDevice(0x0C, 0x03, 0x30))
+		return 1;
+
+	
 	printf ("XHCI bus -> %d , dev -> %d, func -> %d \n", bus, dev, func);
 	usb_device = (usb_dev_t*)malloc(sizeof(usb_dev_t));
 
@@ -229,6 +235,16 @@ AU_EXTERN AU_EXPORT int AuDriverMain() {
 
 	/* Disable all interrupts again because 
 	 * scheduler will enable them all */
+
+	aurora_device_t *audev = (aurora_device_t*)malloc(sizeof(aurora_device_t));
+	audev->class_code = 0x0C;
+	audev->sub_class_code = 0x03;
+	audev->prog_if = 0x30;
+	audev->initialized = true;
+	audev->aurora_dev_class = DEVICE_CLASS_USB3;
+	audev->aurora_driver_class = DRIVER_CLASS_USB;
+	AuRegisterDevice(audev);
+
 	AuDisableInterupts();
 
 	return 0;

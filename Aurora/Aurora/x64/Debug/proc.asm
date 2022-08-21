@@ -13,41 +13,41 @@ _BSS	SEGMENT
 pid	DD	01H DUP (?)
 _BSS	ENDS
 CONST	SEGMENT
-$SG4184	DB	'/dev/stdin', 00H
+$SG4192	DB	'/dev/stdin', 00H
 	ORG $+5
-$SG4186	DB	'/dev/stdout', 00H
+$SG4194	DB	'/dev/stdout', 00H
 	ORG $+4
-$SG4188	DB	'/dev/stderr', 00H
+$SG4196	DB	'/dev/stderr', 00H
 	ORG $+4
-$SG4193	DB	'Creating Process ', 0dH, 0aH, 00H
+$SG4201	DB	'Creating Process ', 0dH, 0aH, 00H
 	ORG $+4
-$SG4198	DB	'Process created -> %x ', 0dH, 0aH, 00H
+$SG4206	DB	'Process created -> %x ', 0dH, 0aH, 00H
 	ORG $+3
-$SG4427	DB	'child', 00H
+$SG4435	DB	'child', 00H
 	ORG $+6
-$SG4203	DB	'Executable invalid ', 0dH, 0aH, 00H
+$SG4211	DB	'Executable invalid ', 0dH, 0aH, 00H
 	ORG $+2
-$SG4204	DB	'Executable image not found', 0aH, 00H
+$SG4212	DB	'Executable image not found', 0aH, 00H
 	ORG $+4
-$SG4224	DB	'PROCESS CR3 -> %x ', 0dH, 0aH, 00H
+$SG4232	DB	'PROCESS CR3 -> %x ', 0dH, 0aH, 00H
 	ORG $+3
-$SG4238	DB	'xnclib.dll', 00H
+$SG4246	DB	'xnclib.dll', 00H
 	ORG $+5
-$SG4250	DB	'xnacrl.dll', 00H
+$SG4258	DB	'xnacrl.dll', 00H
 	ORG $+5
-$SG4262	DB	'xewid.dll', 00H
+$SG4270	DB	'xewid.dll', 00H
 	ORG $+6
-$SG4293	DB	'xewid.dll', 00H
+$SG4301	DB	'xewid.dll', 00H
 	ORG $+6
-$SG4299	DB	'xnclib.dll', 00H
+$SG4307	DB	'xnclib.dll', 00H
 	ORG $+5
-$SG4305	DB	'xnacrl.dll', 00H
+$SG4313	DB	'xnacrl.dll', 00H
 	ORG $+5
-$SG4314	DB	'Freeing physical of image **** ', 0dH, 0aH, 00H
+$SG4322	DB	'Freeing physical of image **** ', 0dH, 0aH, 00H
 	ORG $+6
-$SG4320	DB	'PHYSICAL ADD -> %x ', 0dH, 0aH, 00H
+$SG4328	DB	'PHYSICAL ADD -> %x ', 0dH, 0aH, 00H
 	ORG $+2
-$SG4322	DB	'****Image physical addr -> %x ', 0dH, 0aH, 00H
+$SG4330	DB	'****Image physical addr -> %x ', 0dH, 0aH, 00H
 CONST	ENDS
 PUBLIC	?create_user_stack@@YAPEA_KPEAU_process_@@PEA_K@Z ; create_user_stack
 PUBLIC	?create_inc_stack@@YAPEA_KPEA_K@Z		; create_inc_stack
@@ -365,7 +365,7 @@ $LN3:
 ; 537  : 	thread_t *t = create_user_thread(child_proc->entry_point,child_proc->stack,(uint64_t)child_proc->cr3,"child",1);
 
 	mov	BYTE PTR [rsp+32], 1
-	lea	r9, OFFSET FLAT:$SG4427
+	lea	r9, OFFSET FLAT:$SG4435
 	mov	rax, QWORD PTR child_proc$[rsp]
 	mov	r8, QWORD PTR [rax+2088]
 	mov	rax, QWORD PTR child_proc$[rsp]
@@ -534,7 +534,7 @@ $LN3:
 
 ; 156  : 	vfs_node_t * stdin = vfs_finddir("/dev/stdin");
 
-	lea	rcx, OFFSET FLAT:$SG4184
+	lea	rcx, OFFSET FLAT:$SG4192
 	call	?vfs_finddir@@YAPEAU_vfs_node_@@PEAD@Z	; vfs_finddir
 	mov	QWORD PTR stdin$[rsp], rax
 
@@ -556,7 +556,7 @@ $LN3:
 
 ; 159  : 	vfs_node_t* stdout = vfs_finddir("/dev/stdout");
 
-	lea	rcx, OFFSET FLAT:$SG4186
+	lea	rcx, OFFSET FLAT:$SG4194
 	call	?vfs_finddir@@YAPEAU_vfs_node_@@PEAD@Z	; vfs_finddir
 	mov	QWORD PTR stdout$[rsp], rax
 
@@ -578,7 +578,7 @@ $LN3:
 
 ; 162  : 	vfs_node_t* stderr = vfs_finddir("/dev/stderr");
 
-	lea	rcx, OFFSET FLAT:$SG4188
+	lea	rcx, OFFSET FLAT:$SG4196
 	call	?vfs_finddir@@YAPEAU_vfs_node_@@PEAD@Z	; vfs_finddir
 	mov	QWORD PTR stderr$[rsp], rax
 
@@ -1471,7 +1471,7 @@ $LN29@kill_proce:
 ; 334  : 	/*Close all open dlls */
 ; 335  : 	AuLibEntry_t *lib1 = AuGetSysLib("xewid.dll");
 
-	lea	rcx, OFFSET FLAT:$SG4293
+	lea	rcx, OFFSET FLAT:$SG4301
 	call	?AuGetSysLib@@YAPEAU_libentry_@@PEAD@Z	; AuGetSysLib
 	mov	QWORD PTR lib1$[rsp], rax
 
@@ -1505,7 +1505,7 @@ $LN26@kill_proce:
 ; 338  : 
 ; 339  : 	AuLibEntry_t *lib2 = AuGetSysLib("xnclib.dll");
 
-	lea	rcx, OFFSET FLAT:$SG4299
+	lea	rcx, OFFSET FLAT:$SG4307
 	call	?AuGetSysLib@@YAPEAU_libentry_@@PEAD@Z	; AuGetSysLib
 	mov	QWORD PTR lib2$[rsp], rax
 
@@ -1539,7 +1539,7 @@ $LN23@kill_proce:
 ; 342  : 
 ; 343  : 	AuLibEntry_t *lib3 = AuGetSysLib("xnacrl.dll");
 
-	lea	rcx, OFFSET FLAT:$SG4305
+	lea	rcx, OFFSET FLAT:$SG4313
 	call	?AuGetSysLib@@YAPEAU_libentry_@@PEAD@Z	; AuGetSysLib
 	mov	QWORD PTR lib3$[rsp], rax
 
@@ -1597,7 +1597,7 @@ $LN19@kill_proce:
 ; 350  : 	//	uint64_t virtual_addr = proc->image_base + (i * 4096);
 ; 351  : 		_debug_print_ ("Freeing physical of image **** \r\n");
 
-	lea	rcx, OFFSET FLAT:$SG4314
+	lea	rcx, OFFSET FLAT:$SG4322
 	call	_debug_print_
 
 ; 352  : 		void* phys = AuGetPhysicalAddress((uint64_t)cr3,proc->image_base + i * 4096);
@@ -1621,7 +1621,7 @@ $LN19@kill_proce:
 ; 354  : 		_debug_print_ ("PHYSICAL ADD -> %x \r\n", physical_address);
 
 	mov	rdx, QWORD PTR physical_address$11[rsp]
-	lea	rcx, OFFSET FLAT:$SG4320
+	lea	rcx, OFFSET FLAT:$SG4328
 	call	_debug_print_
 
 ; 355  : 		if (physical_address != 0){
@@ -1632,7 +1632,7 @@ $LN19@kill_proce:
 ; 356  : 			_debug_print_ ("****Image physical addr -> %x \r\n", physical_address);
 
 	mov	rdx, QWORD PTR physical_address$11[rsp]
-	lea	rcx, OFFSET FLAT:$SG4322
+	lea	rcx, OFFSET FLAT:$SG4330
 	call	_debug_print_
 
 ; 357  : 			AuPmmngrFree((void*)physical_address);
@@ -1990,7 +1990,7 @@ $LN18:
 ; 176  : 	//!allocate a data-structure for process 
 ; 177  : 	_debug_print_ ("Creating Process \r\n");
 
-	lea	rcx, OFFSET FLAT:$SG4193
+	lea	rcx, OFFSET FLAT:$SG4201
 	call	_debug_print_
 
 ; 178  : 	process_t *process = (process_t*)malloc(sizeof(process_t)); //pmmngr_alloc();
@@ -2016,7 +2016,7 @@ $LN18:
 ; 182  : 	_debug_print_ ("Process created -> %x \r\n",process);
 
 	mov	rdx, QWORD PTR process$[rsp]
-	lea	rcx, OFFSET FLAT:$SG4198
+	lea	rcx, OFFSET FLAT:$SG4206
 	call	_debug_print_
 
 ; 183  : 
@@ -2044,12 +2044,12 @@ $LN18:
 
 ; 190  : 		_debug_print_ ("Executable invalid \r\n");
 
-	lea	rcx, OFFSET FLAT:$SG4203
+	lea	rcx, OFFSET FLAT:$SG4211
 	call	_debug_print_
 
 ; 191  : 		printf("Executable image not found\n");
 
-	lea	rcx, OFFSET FLAT:$SG4204
+	lea	rcx, OFFSET FLAT:$SG4212
 	call	printf
 
 ; 192  : 		return -1;
@@ -2122,7 +2122,7 @@ $LN15@AuCreatePr:
 ; 213  : 	_debug_print_ ("PROCESS CR3 -> %x \r\n", cr3);
 
 	mov	rdx, QWORD PTR cr3$[rsp]
-	lea	rcx, OFFSET FLAT:$SG4224
+	lea	rcx, OFFSET FLAT:$SG4232
 	call	_debug_print_
 
 ; 214  : 
@@ -2211,7 +2211,7 @@ $LN13@AuCreatePr:
 ; 235  : 
 ; 236  : 	AuLibEntry_t *lib = AuGetSysLib("xnclib.dll");
 
-	lea	rcx, OFFSET FLAT:$SG4238
+	lea	rcx, OFFSET FLAT:$SG4246
 	call	?AuGetSysLib@@YAPEAU_libentry_@@PEAD@Z	; AuGetSysLib
 	mov	QWORD PTR lib$[rsp], rax
 
@@ -2281,7 +2281,7 @@ $LN12@AuCreatePr:
 ; 243  : 
 ; 244  : 	AuLibEntry_t *lib3 = AuGetSysLib("xnacrl.dll");
 
-	lea	rcx, OFFSET FLAT:$SG4250
+	lea	rcx, OFFSET FLAT:$SG4258
 	call	?AuGetSysLib@@YAPEAU_libentry_@@PEAD@Z	; AuGetSysLib
 	mov	QWORD PTR lib3$[rsp], rax
 
@@ -2352,7 +2352,7 @@ $LN8@AuCreatePr:
 ; 252  : 
 ; 253  : 	AuLibEntry_t *lib2 = AuGetSysLib("xewid.dll");
 
-	lea	rcx, OFFSET FLAT:$SG4262
+	lea	rcx, OFFSET FLAT:$SG4270
 	call	?AuGetSysLib@@YAPEAU_libentry_@@PEAD@Z	; AuGetSysLib
 	mov	QWORD PTR lib2$[rsp], rax
 

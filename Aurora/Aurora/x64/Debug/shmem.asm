@@ -15,6 +15,7 @@ PUBLIC	?AuInitializeShMem@@YAXXZ			; AuInitializeShMem
 PUBLIC	?AuCreateShMem@@YAII_KI@Z			; AuCreateShMem
 PUBLIC	?AuObtainShMem@@YAPEAXIPEAXH@Z			; AuObtainShMem
 PUBLIC	?shm_unlink@@YAXI@Z				; shm_unlink
+PUBLIC	?shm_unlink_direct@@YAXI@Z			; shm_unlink_direct
 EXTRN	memset:PROC
 EXTRN	?initialize_list@@YAPEAU_list_@@XZ:PROC		; initialize_list
 EXTRN	?list_add@@YAXPEAU_list_@@PEAX@Z:PROC		; list_add
@@ -47,6 +48,9 @@ $pdata$?AuObtainShMem@@YAPEAXIPEAXH@Z DD imagerel $LN17
 $pdata$?shm_unlink@@YAXI@Z DD imagerel $LN21
 	DD	imagerel $LN21+590
 	DD	imagerel $unwind$?shm_unlink@@YAXI@Z
+$pdata$?shm_unlink_direct@@YAXI@Z DD imagerel $LN15
+	DD	imagerel $LN15+352
+	DD	imagerel $unwind$?shm_unlink_direct@@YAXI@Z
 pdata	ENDS
 xdata	SEGMENT
 $unwind$?AuInitializeShMem@@YAXXZ DD 010401H
@@ -57,7 +61,205 @@ $unwind$?AuObtainShMem@@YAPEAXIPEAXH@Z DD 021501H
 	DD	0130115H
 $unwind$?shm_unlink@@YAXI@Z DD 020b01H
 	DD	011010bH
+$unwind$?shm_unlink_direct@@YAXI@Z DD 010801H
+	DD	0c208H
 xdata	ENDS
+; Function compile flags: /Odtpy
+; File e:\xeneva project\xeneva\aurora\aurora\mmngr\shmem.cpp
+_TEXT	SEGMENT
+i$1 = 32
+i$2 = 36
+i$3 = 40
+mem$ = 48
+start_addr$ = 56
+proc$ = 64
+m$4 = 72
+vma$ = 80
+thr$ = 88
+key$ = 112
+?shm_unlink_direct@@YAXI@Z PROC				; shm_unlink_direct
+
+; 230  : void shm_unlink_direct (uint32_t key) {
+
+$LN15:
+	mov	DWORD PTR [rsp+8], ecx
+	sub	rsp, 104				; 00000068H
+
+; 231  : 	x64_cli();
+
+	call	x64_cli
+
+; 232  : 	process_t *proc = get_current_process();
+
+	call	?get_current_process@@YAPEAU_process_@@XZ ; get_current_process
+	mov	QWORD PTR proc$[rsp], rax
+
+; 233  : 	thread_t *thr = get_current_thread();
+
+	call	get_current_thread
+	mov	QWORD PTR thr$[rsp], rax
+
+; 234  : 
+; 235  : 	shared_mem_t *mem = NULL;
+
+	mov	QWORD PTR mem$[rsp], 0
+
+; 236  : 	for (int i = 0; i < shared_mem_list->pointer; i++) {
+
+	mov	DWORD PTR i$2[rsp], 0
+	jmp	SHORT $LN12@shm_unlink
+$LN11@shm_unlink:
+	mov	eax, DWORD PTR i$2[rsp]
+	inc	eax
+	mov	DWORD PTR i$2[rsp], eax
+$LN12@shm_unlink:
+	mov	rax, QWORD PTR ?shared_mem_list@@3PEAU_list_@@EA ; shared_mem_list
+	mov	eax, DWORD PTR [rax]
+	cmp	DWORD PTR i$2[rsp], eax
+	jae	SHORT $LN10@shm_unlink
+
+; 237  : 		mem = (shared_mem_t*)list_get_at(shared_mem_list, i);
+
+	mov	edx, DWORD PTR i$2[rsp]
+	mov	rcx, QWORD PTR ?shared_mem_list@@3PEAU_list_@@EA ; shared_mem_list
+	call	?list_get_at@@YAPEAXPEAU_list_@@I@Z	; list_get_at
+	mov	QWORD PTR mem$[rsp], rax
+
+; 238  : 		if (mem->key == key)
+
+	mov	rax, QWORD PTR mem$[rsp]
+	mov	ecx, DWORD PTR key$[rsp]
+	cmp	DWORD PTR [rax+16], ecx
+	jne	SHORT $LN9@shm_unlink
+
+; 239  : 			break;
+
+	jmp	SHORT $LN10@shm_unlink
+$LN9@shm_unlink:
+
+; 240  : 	}
+
+	jmp	SHORT $LN11@shm_unlink
+$LN10@shm_unlink:
+
+; 241  : 
+; 242  : 	if (mem == NULL)
+
+	cmp	QWORD PTR mem$[rsp], 0
+	jne	SHORT $LN8@shm_unlink
+
+; 243  : 		return;
+
+	jmp	$LN13@shm_unlink
+$LN8@shm_unlink:
+
+; 244  : 
+; 245  : 	uint64_t start_addr = (uint64_t)mem->first_process_vaddr;
+
+	mov	rax, QWORD PTR mem$[rsp]
+	mov	rax, QWORD PTR [rax+56]
+	mov	QWORD PTR start_addr$[rsp], rax
+
+; 246  : 	for (int i = 0; i < mem->num_frames; i++) 
+
+	mov	DWORD PTR i$3[rsp], 0
+	jmp	SHORT $LN7@shm_unlink
+$LN6@shm_unlink:
+	mov	eax, DWORD PTR i$3[rsp]
+	inc	eax
+	mov	DWORD PTR i$3[rsp], eax
+$LN7@shm_unlink:
+	mov	rax, QWORD PTR mem$[rsp]
+	mov	eax, DWORD PTR [rax+36]
+	cmp	DWORD PTR i$3[rsp], eax
+	jae	SHORT $LN5@shm_unlink
+
+; 247  : 		AuUnmapPage(start_addr + i * 4096, true);
+
+	mov	eax, DWORD PTR i$3[rsp]
+	imul	eax, 4096				; 00001000H
+	cdqe
+	mov	rcx, QWORD PTR start_addr$[rsp]
+	add	rcx, rax
+	mov	rax, rcx
+	mov	dl, 1
+	mov	rcx, rax
+	call	AuUnmapPage
+	jmp	SHORT $LN6@shm_unlink
+$LN5@shm_unlink:
+
+; 248  : 
+; 249  : 	/* Remove the vm area */
+; 250  : 	au_vm_area_t *vma = AuFindVMAUniqueId(mem->key);
+
+	mov	rax, QWORD PTR mem$[rsp]
+	mov	ecx, DWORD PTR [rax+16]
+	call	?AuFindVMAUniqueId@@YAPEAU_vma_area_@@I@Z ; AuFindVMAUniqueId
+	mov	QWORD PTR vma$[rsp], rax
+
+; 251  : 	AuRemoveVMArea(proc, vma);
+
+	mov	rdx, QWORD PTR vma$[rsp]
+	mov	rcx, QWORD PTR proc$[rsp]
+	call	?AuRemoveVMArea@@YAXPEAU_process_@@PEAU_vma_area_@@@Z ; AuRemoveVMArea
+
+; 252  : 
+; 253  : 	/* Finally delete the shared memory segment */
+; 254  : 	for (int i = 0; i < shared_mem_list->pointer; i++) {
+
+	mov	DWORD PTR i$1[rsp], 0
+	jmp	SHORT $LN4@shm_unlink
+$LN3@shm_unlink:
+	mov	eax, DWORD PTR i$1[rsp]
+	inc	eax
+	mov	DWORD PTR i$1[rsp], eax
+$LN4@shm_unlink:
+	mov	rax, QWORD PTR ?shared_mem_list@@3PEAU_list_@@EA ; shared_mem_list
+	mov	eax, DWORD PTR [rax]
+	cmp	DWORD PTR i$1[rsp], eax
+	jae	SHORT $LN2@shm_unlink
+
+; 255  : 		shared_mem_t *m = (shared_mem_t*)list_get_at(shared_mem_list, i);
+
+	mov	edx, DWORD PTR i$1[rsp]
+	mov	rcx, QWORD PTR ?shared_mem_list@@3PEAU_list_@@EA ; shared_mem_list
+	call	?list_get_at@@YAPEAXPEAU_list_@@I@Z	; list_get_at
+	mov	QWORD PTR m$4[rsp], rax
+
+; 256  : 		if (m->key == mem->key) {
+
+	mov	rax, QWORD PTR m$4[rsp]
+	mov	rcx, QWORD PTR mem$[rsp]
+	mov	ecx, DWORD PTR [rcx+16]
+	cmp	DWORD PTR [rax+16], ecx
+	jne	SHORT $LN1@shm_unlink
+
+; 257  : 			list_remove(shared_mem_list, i);
+
+	mov	edx, DWORD PTR i$1[rsp]
+	mov	rcx, QWORD PTR ?shared_mem_list@@3PEAU_list_@@EA ; shared_mem_list
+	call	?list_remove@@YAPEAXPEAU_list_@@I@Z	; list_remove
+$LN1@shm_unlink:
+
+; 258  : 		}
+; 259  : 	}
+
+	jmp	SHORT $LN3@shm_unlink
+$LN2@shm_unlink:
+
+; 260  : 
+; 261  : 	free(mem);
+
+	mov	rcx, QWORD PTR mem$[rsp]
+	call	free
+$LN13@shm_unlink:
+
+; 262  : }
+
+	add	rsp, 104				; 00000068H
+	ret	0
+?shm_unlink_direct@@YAXI@Z ENDP				; shm_unlink_direct
+_TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\mmngr\shmem.cpp
 _TEXT	SEGMENT
@@ -367,8 +569,7 @@ $LN19@shm_unlink:
 
 ; 221  : 	}
 ; 222  : 
-; 223  : 
-; 224  : }
+; 223  : }
 
 	add	rsp, 136				; 00000088H
 	ret	0

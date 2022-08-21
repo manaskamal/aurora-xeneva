@@ -220,5 +220,43 @@ void shm_unlink (uint32_t key) {
 		free(mem);
 	}
 
+}
 
+/*
+ * shm_unlink_direct -- removes the shared memory directly without
+ * waiting for the clients to unlink
+ * @param key -- shared memory chunk key
+ */
+void shm_unlink_direct (uint32_t key) {
+	x64_cli();
+	process_t *proc = get_current_process();
+	thread_t *thr = get_current_thread();
+
+	shared_mem_t *mem = NULL;
+	for (int i = 0; i < shared_mem_list->pointer; i++) {
+		mem = (shared_mem_t*)list_get_at(shared_mem_list, i);
+		if (mem->key == key)
+			break;
+	}
+
+	if (mem == NULL)
+		return;
+
+	uint64_t start_addr = (uint64_t)mem->first_process_vaddr;
+	for (int i = 0; i < mem->num_frames; i++) 
+		AuUnmapPage(start_addr + i * 4096, true);
+
+	/* Remove the vm area */
+	au_vm_area_t *vma = AuFindVMAUniqueId(mem->key);
+	AuRemoveVMArea(proc, vma);
+
+	/* Finally delete the shared memory segment */
+	for (int i = 0; i < shared_mem_list->pointer; i++) {
+		shared_mem_t *m = (shared_mem_t*)list_get_at(shared_mem_list, i);
+		if (m->key == mem->key) {
+			list_remove(shared_mem_list, i);
+		}
+	}
+
+	free(mem);
 }

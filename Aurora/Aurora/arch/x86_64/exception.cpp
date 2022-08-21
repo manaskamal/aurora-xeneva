@@ -12,6 +12,7 @@
 #include <arch\x86_64\mmngr\paging.h>
 #include <arch\x86_64\thread.h>
 #include <drivers\svga\vmsvga.h>
+#include <arch\x86_64\x86_64_signal.h>
 #include <mmngr\mmfault.h>
 #include <screen.h>
 #include <serial.h>
@@ -155,13 +156,15 @@ void page_fault (size_t vector, void* param){
 	int id = frame->error & 0x10;
 
 	thread_t *current_thread = get_current_thread();
-	if (current_thread->pending_signal == -1) {
+	if (current_thread->returnable_signal) {
+		signal_t *sig = (signal_t*)current_thread->returnable_signal;
 		RegsCtx_t *ctx = (RegsCtx_t*)(current_thread->frame.kern_esp - sizeof(RegsCtx_t));
-		memcpy (ctx, current_thread->signal_stack2, sizeof(RegsCtx_t));
-		memcpy (&current_thread->frame, current_thread->signal_state, sizeof(thread_frame_t));
-		current_thread->pending_signal = 0;
-		free(current_thread->signal_state);
-		free(current_thread->signal_stack2);
+		memcpy (ctx, sig->signal_stack2, sizeof(RegsCtx_t));
+		memcpy (&current_thread->frame, sig->signal_state, sizeof(thread_frame_t));
+		free(sig->signal_state);
+		free(sig->signal_stack2);
+		free(sig);
+		current_thread->returnable_signal = NULL;
 		return;
 	}
 

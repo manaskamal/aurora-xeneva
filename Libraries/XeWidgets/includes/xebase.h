@@ -38,8 +38,10 @@
 #define PRIWM_REQUEST_WINDOW  100
 #define PRIWM_WINDOW_SHOW  104
 
+#define XE_MOUSE_EVENT    201
 #define XE_CREATE_WINDOW  202
-
+#define XE_RESIZE_WINDOW  208
+#define XE_KEY_EVENT      204
 
 typedef struct _xe_app_ {
 	int event_fd;

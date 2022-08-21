@@ -93,7 +93,8 @@ void PointDevPutMessage(dwm_message_t *msg) {
 		t = thread_iterate_block_list(window_manager_thr->id);
 	}
 	dwm_message_t *tmsg = (dwm_message_t*)t->msg_box;
-	if (tmsg->type == 0)
-		memcpy (t->msg_box,msg,sizeof(dwm_message_t));
+	memcpy (t->msg_box,msg,sizeof(dwm_message_t));
+
+
 }
 

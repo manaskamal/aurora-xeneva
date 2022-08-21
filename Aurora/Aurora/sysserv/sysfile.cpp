@@ -124,6 +124,9 @@ size_t sys_read_file (int fd, uint8_t* buffer, FILE *ufile) {
 	if (ufile){
 		node = vfs_finddir("/");
 		file = get_current_thread()->fd[fd];
+		if (file == NULL)
+			return byte_read;
+
 		if (node == NULL)
 			return byte_read;
 		for (int i=0; i < ufile->size; i++){
@@ -164,28 +167,26 @@ size_t sys_read_file (int fd, uint8_t* buffer, FILE *ufile) {
 void sys_write_file (int fd, uint64* buffer, FILE *ufile) {
 	x64_cli();
 	vfs_node_t file;
-	file.size = ufile->size;
-	file.eof = ufile->eof;
-	file.pos = ufile->pos;
-	file.current = ufile->start_cluster;
-	file.flags = ufile->flags;
-	file.status = ufile->status;
-	file.open = 0;
-	file.read = 0;
-	file.read_blk = 0;
-	file.write = 0;
-	file.ioquery  = 0;
+	memset(&file, 0, sizeof(vfs_node_t));
+	if (ufile) {
+		file.size = ufile->size;
+		file.eof = ufile->eof;
+		file.pos = ufile->pos;
+		file.current = ufile->start_cluster;
+		file.flags = ufile->flags;
+		file.status = ufile->status;
+	}
 
 	vfs_node_t *node = get_current_thread()->fd[fd];
 	if (node == NULL) {
 		return;
 	}
 
-	if (ufile->flags) {
-		writefs(node, &file,buffer,file.size);
-	}else {
-		writefs(node, node, buffer,file.size);
-	}
+	if (ufile) {
+		if (ufile->flags)
+			writefs(node, &file,buffer,file.size);
+	}else
+		writefs(node, node, buffer,4096);
 }
 
 /*

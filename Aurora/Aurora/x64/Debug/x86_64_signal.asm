@@ -5,7 +5,299 @@ include listing.inc
 INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
+PUBLIC	?AuAllocSignal@@YAXPEAU_thread_@@H@Z		; AuAllocSignal
 PUBLIC	?x86_64_check_signal@@YA_NPEAU_thread_@@PEAUinterrupt_stack_frame@@@Z ; x86_64_check_signal
+PUBLIC	?x86_64_get_signal@@YAPEAU_signal_@@PEAU_thread_@@@Z ; x86_64_get_signal
+PUBLIC	?x86_64_prepare_signal@@YAXPEAU_thread_@@PEAUinterrupt_stack_frame@@PEAU_signal_@@@Z ; x86_64_prepare_signal
+EXTRN	memset:PROC
+EXTRN	memcpy:PROC
+EXTRN	AuPmmngrAlloc:PROC
+EXTRN	AuMapPage:PROC
+EXTRN	malloc:PROC
+EXTRN	free:PROC
+EXTRN	sig_ret:PROC
+pdata	SEGMENT
+$pdata$?AuAllocSignal@@YAXPEAU_thread_@@H@Z DD imagerel $LN3
+	DD	imagerel $LN3+208
+	DD	imagerel $unwind$?AuAllocSignal@@YAXPEAU_thread_@@H@Z
+$pdata$?x86_64_get_signal@@YAPEAU_signal_@@PEAU_thread_@@@Z DD imagerel $LN5
+	DD	imagerel $LN5+175
+	DD	imagerel $unwind$?x86_64_get_signal@@YAPEAU_signal_@@PEAU_thread_@@@Z
+$pdata$?x86_64_prepare_signal@@YAXPEAU_thread_@@PEAUinterrupt_stack_frame@@PEAU_signal_@@@Z DD imagerel $LN6
+	DD	imagerel $LN6+391
+	DD	imagerel $unwind$?x86_64_prepare_signal@@YAXPEAU_thread_@@PEAUinterrupt_stack_frame@@PEAU_signal_@@@Z
+pdata	ENDS
+xdata	SEGMENT
+$unwind$?AuAllocSignal@@YAXPEAU_thread_@@H@Z DD 010d01H
+	DD	0620dH
+$unwind$?x86_64_get_signal@@YAPEAU_signal_@@PEAU_thread_@@@Z DD 010901H
+	DD	06209H
+$unwind$?x86_64_prepare_signal@@YAXPEAU_thread_@@PEAUinterrupt_stack_frame@@PEAU_signal_@@@Z DD 011301H
+	DD	08213H
+xdata	ENDS
+; Function compile flags: /Odtpy
+; File e:\xeneva project\xeneva\aurora\aurora\arch\x86_64\x86_64_signal.cpp
+_TEXT	SEGMENT
+i$1 = 32
+rsp_$ = 40
+ctx$ = 48
+tv79 = 56
+current_thread$ = 80
+frame$ = 88
+signal$ = 96
+?x86_64_prepare_signal@@YAXPEAU_thread_@@PEAUinterrupt_stack_frame@@PEAU_signal_@@@Z PROC ; x86_64_prepare_signal
+
+; 111  : void x86_64_prepare_signal (thread_t* current_thread,interrupt_stack_frame *frame, signal_t* signal) {
+
+$LN6:
+	mov	QWORD PTR [rsp+24], r8
+	mov	QWORD PTR [rsp+16], rdx
+	mov	QWORD PTR [rsp+8], rcx
+	sub	rsp, 72					; 00000048H
+
+; 112  : 
+; 113  : 	RegsCtx_t *ctx = (RegsCtx_t*)(current_thread->frame.kern_esp - sizeof(RegsCtx_t));
+
+	mov	rax, QWORD PTR current_thread$[rsp]
+	mov	rax, QWORD PTR [rax+200]
+	sub	rax, 160				; 000000a0H
+	mov	QWORD PTR ctx$[rsp], rax
+
+; 114  : 	uint64_t* rsp_ = (uint64_t*)current_thread->user_stack;
+
+	mov	rax, QWORD PTR current_thread$[rsp]
+	mov	rax, QWORD PTR [rax+208]
+	mov	QWORD PTR rsp_$[rsp], rax
+
+; 115  : 
+; 116  : 	/* Store the current kernel stack information to seperate memory location */
+; 117  : 	memcpy (signal->signal_stack2, ctx,sizeof(RegsCtx_t));
+
+	mov	r8d, 160				; 000000a0H
+	mov	rdx, QWORD PTR ctx$[rsp]
+	mov	rax, QWORD PTR signal$[rsp]
+	mov	rcx, QWORD PTR [rax+8]
+	call	memcpy
+
+; 118  : 
+; 119  : 	/* Store the return address */
+; 120  : 	rsp_ -= 8;
+
+	mov	rax, QWORD PTR rsp_$[rsp]
+	sub	rax, 64					; 00000040H
+	mov	QWORD PTR rsp_$[rsp], rax
+
+; 121  : 	for (int i = 0; i < 2; i++)
+
+	mov	DWORD PTR i$1[rsp], 0
+	jmp	SHORT $LN3@x86_64_pre
+$LN2@x86_64_pre:
+	mov	eax, DWORD PTR i$1[rsp]
+	inc	eax
+	mov	DWORD PTR i$1[rsp], eax
+$LN3@x86_64_pre:
+	cmp	DWORD PTR i$1[rsp], 2
+	jge	SHORT $LN1@x86_64_pre
+
+; 122  : 		AuMapPage((uint64_t)AuPmmngrAlloc(), 0x700000 + i * 4096, PAGING_USER);
+
+	mov	eax, DWORD PTR i$1[rsp]
+	imul	eax, 4096				; 00001000H
+	add	eax, 7340032				; 00700000H
+	cdqe
+	mov	QWORD PTR tv79[rsp], rax
+	call	AuPmmngrAlloc
+	mov	r8b, 4
+	mov	rcx, QWORD PTR tv79[rsp]
+	mov	rdx, rcx
+	mov	rcx, rax
+	call	AuMapPage
+	jmp	SHORT $LN2@x86_64_pre
+$LN1@x86_64_pre:
+
+; 123  : 	memcpy((void*)0x700000,&sig_ret, 8192);
+
+	mov	r8d, 8192				; 00002000H
+	lea	rdx, OFFSET FLAT:sig_ret
+	mov	ecx, 7340032				; 00700000H
+	call	memcpy
+
+; 124  : 	*rsp_ = 0x700000;
+
+	mov	rax, QWORD PTR rsp_$[rsp]
+	mov	QWORD PTR [rax], 7340032		; 00700000H
+
+; 125  : 
+; 126  : 	memcpy (signal->signal_state,&current_thread->frame,sizeof(thread_frame_t));
+
+	mov	rax, QWORD PTR current_thread$[rsp]
+	mov	r8d, 208				; 000000d0H
+	mov	rdx, rax
+	mov	rax, QWORD PTR signal$[rsp]
+	mov	rcx, QWORD PTR [rax+16]
+	call	memcpy
+
+; 127  : 			
+; 128  : 
+; 129  : 	frame->rsp = (uint64_t)rsp_;
+
+	mov	rax, QWORD PTR frame$[rsp]
+	mov	rcx, QWORD PTR rsp_$[rsp]
+	mov	QWORD PTR [rax+40], rcx
+
+; 130  : 	current_thread->frame.rbp = (uint64_t)rsp_;
+
+	mov	rax, QWORD PTR current_thread$[rsp]
+	mov	rcx, QWORD PTR rsp_$[rsp]
+	mov	QWORD PTR [rax+88], rcx
+
+; 131  : 	current_thread->frame.rcx = 10;
+
+	mov	rax, QWORD PTR current_thread$[rsp]
+	mov	QWORD PTR [rax+56], 10
+
+; 132  : 	current_thread->frame.rip = (uint64_t)current_thread->signals[signal->signum];
+
+	mov	rax, QWORD PTR signal$[rsp]
+	movsxd	rax, DWORD PTR [rax]
+	mov	rcx, QWORD PTR current_thread$[rsp]
+	mov	rdx, QWORD PTR current_thread$[rsp]
+	mov	rax, QWORD PTR [rdx+rax*8+752]
+	mov	QWORD PTR [rcx+32], rax
+
+; 133  : 	current_thread->frame.rsp = frame->rsp;
+
+	mov	rax, QWORD PTR current_thread$[rsp]
+	mov	rcx, QWORD PTR frame$[rsp]
+	mov	rcx, QWORD PTR [rcx+40]
+	mov	QWORD PTR [rax+8], rcx
+
+; 134  : 	frame->rip = current_thread->frame.rip;
+
+	mov	rax, QWORD PTR frame$[rsp]
+	mov	rcx, QWORD PTR current_thread$[rsp]
+	mov	rcx, QWORD PTR [rcx+32]
+	mov	QWORD PTR [rax+16], rcx
+
+; 135  : 	frame->rflags = 0x286;
+
+	mov	rax, QWORD PTR frame$[rsp]
+	mov	QWORD PTR [rax+32], 646			; 00000286H
+
+; 136  : 	current_thread->frame.rflags = 0x286;
+
+	mov	rax, QWORD PTR current_thread$[rsp]
+	mov	QWORD PTR [rax+16], 646			; 00000286H
+
+; 137  : 	current_thread->returnable_signal = signal;
+
+	mov	rax, QWORD PTR current_thread$[rsp]
+	mov	rcx, QWORD PTR signal$[rsp]
+	mov	QWORD PTR [rax+1080], rcx
+
+; 138  : }
+
+	add	rsp, 72					; 00000048H
+	ret	0
+?x86_64_prepare_signal@@YAXPEAU_thread_@@PEAUinterrupt_stack_frame@@PEAU_signal_@@@Z ENDP ; x86_64_prepare_signal
+_TEXT	ENDS
+; Function compile flags: /Odtpy
+; File e:\xeneva project\xeneva\aurora\aurora\arch\x86_64\x86_64_signal.cpp
+_TEXT	SEGMENT
+temp$ = 32
+sig$ = 40
+current_thread$ = 64
+?x86_64_get_signal@@YAPEAU_signal_@@PEAU_thread_@@@Z PROC ; x86_64_get_signal
+
+; 84   : signal_t *x86_64_get_signal (thread_t* current_thread) {
+
+$LN5:
+	mov	QWORD PTR [rsp+8], rcx
+	sub	rsp, 56					; 00000038H
+
+; 85   : 	if (!current_thread->signal_queue)
+
+	mov	rax, QWORD PTR current_thread$[rsp]
+	cmp	QWORD PTR [rax+1064], 0
+	jne	SHORT $LN2@x86_64_get
+
+; 86   : 		return NULL;
+
+	xor	eax, eax
+	jmp	$LN3@x86_64_get
+$LN2@x86_64_get:
+
+; 87   : 
+; 88   : 	signal_t *sig;
+; 89   : 	signal_queue *temp;
+; 90   : 	temp = current_thread->signal_queue;
+
+	mov	rax, QWORD PTR current_thread$[rsp]
+	mov	rax, QWORD PTR [rax+1064]
+	mov	QWORD PTR temp$[rsp], rax
+
+; 91   : 	current_thread->signal_queue = current_thread->signal_queue->link;
+
+	mov	rax, QWORD PTR current_thread$[rsp]
+	mov	rax, QWORD PTR [rax+1064]
+	mov	rcx, QWORD PTR current_thread$[rsp]
+	mov	rax, QWORD PTR [rax+8]
+	mov	QWORD PTR [rcx+1064], rax
+
+; 92   : 	temp->link = NULL;
+
+	mov	rax, QWORD PTR temp$[rsp]
+	mov	QWORD PTR [rax+8], 0
+
+; 93   : 	sig = (signal_t*)temp->signal;
+
+	mov	rax, QWORD PTR temp$[rsp]
+	mov	rax, QWORD PTR [rax]
+	mov	QWORD PTR sig$[rsp], rax
+
+; 94   : 	free(temp);
+
+	mov	rcx, QWORD PTR temp$[rsp]
+	call	free
+
+; 95   : 	current_thread->pending_signal_count--;
+
+	mov	rax, QWORD PTR current_thread$[rsp]
+	mov	eax, DWORD PTR [rax+1072]
+	dec	eax
+	mov	rcx, QWORD PTR current_thread$[rsp]
+	mov	DWORD PTR [rcx+1072], eax
+
+; 96   : 
+; 97   : 	current_thread->returnable_signal = sig;
+
+	mov	rax, QWORD PTR current_thread$[rsp]
+	mov	rcx, QWORD PTR sig$[rsp]
+	mov	QWORD PTR [rax+1080], rcx
+
+; 98   : 
+; 99   : 	if (!sig)
+
+	cmp	QWORD PTR sig$[rsp], 0
+	jne	SHORT $LN1@x86_64_get
+
+; 100  : 		return NULL;
+
+	xor	eax, eax
+	jmp	SHORT $LN3@x86_64_get
+$LN1@x86_64_get:
+
+; 101  : 	return sig;
+
+	mov	rax, QWORD PTR sig$[rsp]
+$LN3@x86_64_get:
+
+; 102  : }
+
+	add	rsp, 56					; 00000038H
+	ret	0
+?x86_64_get_signal@@YAPEAU_signal_@@PEAU_thread_@@@Z ENDP ; x86_64_get_signal
+_TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\arch\x86_64\x86_64_signal.cpp
 _TEXT	SEGMENT
@@ -13,35 +305,148 @@ current_thread$ = 8
 frame$ = 16
 ?x86_64_check_signal@@YA_NPEAU_thread_@@PEAUinterrupt_stack_frame@@@Z PROC ; x86_64_check_signal
 
-; 40   : bool x86_64_check_signal (thread_t *current_thread, interrupt_stack_frame *frame) {
+; 65   : bool x86_64_check_signal (thread_t *current_thread, interrupt_stack_frame *frame) {
 
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
 
-; 41   : 	if (current_thread->pending_signal > 0 && frame->cs == SEGVAL(GDT_ENTRY_USER_CODE,3)) {
+; 66   : 	/*if (current_thread->pending_signal > 0 && frame->cs == SEGVAL(GDT_ENTRY_USER_CODE,3)) {
+; 67   : 		return true;
+; 68   : 	}*/
+; 69   : 
+; 70   : 	if (!current_thread->signal_queue)
 
 	mov	rax, QWORD PTR current_thread$[rsp]
-	cmp	DWORD PTR [rax+1064], 0
+	cmp	QWORD PTR [rax+1064], 0
+	jne	SHORT $LN2@x86_64_che
+
+; 71   : 		return false;
+
+	xor	al, al
+	jmp	SHORT $LN3@x86_64_che
+$LN2@x86_64_che:
+
+; 72   : 
+; 73   : 	if (current_thread->pending_signal_count > 0 && frame->cs == SEGVAL(GDT_ENTRY_USER_CODE,3)) 
+
+	mov	rax, QWORD PTR current_thread$[rsp]
+	cmp	DWORD PTR [rax+1072], 0
 	jle	SHORT $LN1@x86_64_che
 	mov	rax, QWORD PTR frame$[rsp]
 	cmp	QWORD PTR [rax+24], 43			; 0000002bH
 	jne	SHORT $LN1@x86_64_che
 
-; 42   : 		return true;
+; 74   : 		return true;
 
 	mov	al, 1
-	jmp	SHORT $LN2@x86_64_che
+	jmp	SHORT $LN3@x86_64_che
 $LN1@x86_64_che:
 
-; 43   : 	}
-; 44   : 	return false;
+; 75   : 
+; 76   : 	return false;
 
 	xor	al, al
-$LN2@x86_64_che:
+$LN3@x86_64_che:
 
-; 45   : }
+; 77   : }
 
 	fatret	0
 ?x86_64_check_signal@@YA_NPEAU_thread_@@PEAUinterrupt_stack_frame@@@Z ENDP ; x86_64_check_signal
+_TEXT	ENDS
+; Function compile flags: /Odtpy
+; File e:\xeneva project\xeneva\aurora\aurora\arch\x86_64\x86_64_signal.cpp
+_TEXT	SEGMENT
+signal$ = 32
+queue$ = 40
+dest_thread$ = 64
+signum$ = 72
+?AuAllocSignal@@YAXPEAU_thread_@@H@Z PROC		; AuAllocSignal
+
+; 44   : void AuAllocSignal (thread_t* dest_thread,int signum) {
+
+$LN3:
+	mov	DWORD PTR [rsp+16], edx
+	mov	QWORD PTR [rsp+8], rcx
+	sub	rsp, 56					; 00000038H
+
+; 45   : 	signal_t *signal = (signal_t*)malloc(sizeof(signal_t));
+
+	mov	ecx, 32					; 00000020H
+	call	malloc
+	mov	QWORD PTR signal$[rsp], rax
+
+; 46   : 	memset(signal, 0, sizeof(signal_t));
+
+	mov	r8d, 32					; 00000020H
+	xor	edx, edx
+	mov	rcx, QWORD PTR signal$[rsp]
+	call	memset
+
+; 47   : 	signal->signum = signum;
+
+	mov	rax, QWORD PTR signal$[rsp]
+	mov	ecx, DWORD PTR signum$[rsp]
+	mov	DWORD PTR [rax], ecx
+
+; 48   : 	signal->signal_stack2 = (RegsCtx_t*)malloc(sizeof(RegsCtx_t));
+
+	mov	ecx, 160				; 000000a0H
+	call	malloc
+	mov	rcx, QWORD PTR signal$[rsp]
+	mov	QWORD PTR [rcx+8], rax
+
+; 49   : 	signal->signal_state = (thread_frame_t*)malloc(sizeof(thread_frame_t));
+
+	mov	ecx, 208				; 000000d0H
+	call	malloc
+	mov	rcx, QWORD PTR signal$[rsp]
+	mov	QWORD PTR [rcx+16], rax
+
+; 50   : 
+; 51   : 	signal_queue *queue = (signal_queue*)malloc(sizeof(signal_queue));
+
+	mov	ecx, 16
+	call	malloc
+	mov	QWORD PTR queue$[rsp], rax
+
+; 52   : 	memset(queue, 0, sizeof(signal_queue));
+
+	mov	r8d, 16
+	xor	edx, edx
+	mov	rcx, QWORD PTR queue$[rsp]
+	call	memset
+
+; 53   : 	queue->signal = signal;
+
+	mov	rax, QWORD PTR queue$[rsp]
+	mov	rcx, QWORD PTR signal$[rsp]
+	mov	QWORD PTR [rax], rcx
+
+; 54   : 	queue->link = dest_thread->signal_queue;
+
+	mov	rax, QWORD PTR queue$[rsp]
+	mov	rcx, QWORD PTR dest_thread$[rsp]
+	mov	rcx, QWORD PTR [rcx+1064]
+	mov	QWORD PTR [rax+8], rcx
+
+; 55   : 	dest_thread->signal_queue = queue;
+
+	mov	rax, QWORD PTR dest_thread$[rsp]
+	mov	rcx, QWORD PTR queue$[rsp]
+	mov	QWORD PTR [rax+1064], rcx
+
+; 56   : 	dest_thread->pending_signal_count++;
+
+	mov	rax, QWORD PTR dest_thread$[rsp]
+	mov	eax, DWORD PTR [rax+1072]
+	inc	eax
+	mov	rcx, QWORD PTR dest_thread$[rsp]
+	mov	DWORD PTR [rcx+1072], eax
+
+; 57   : }
+
+	add	rsp, 56					; 00000038H
+	ret	0
+?AuAllocSignal@@YAXPEAU_thread_@@H@Z ENDP		; AuAllocSignal
 _TEXT	ENDS
 END

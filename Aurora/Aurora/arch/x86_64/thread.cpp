@@ -31,6 +31,7 @@
 #include <arch\x86_64\thread.h>
 #include <arch\x86_64\user64.h>
 #include <arch\x86_64\kstack.h>
+#include <arch\x86_64\x86_64_signal.h>
 #include <timer.h>
 #include <stdio.h>
 #include <atomic\mutex.h>
@@ -171,7 +172,7 @@ thread_t* create_kthread (void (*entry) (void), uint64_t stack,uint64_t cr3, cha
 	memset(t, 0, sizeof(thread_t));
 	t->frame.ss = 0x10;
 	t->frame.rsp = (uint64_t)stack;
-	t->frame.rflags = (1<<9);
+	t->frame.rflags = 0x202;
 	t->frame.cs = 0x08;
 	t->frame.rip = (uint64_t)entry;
 	t->frame.rax = 0;
@@ -204,10 +205,12 @@ thread_t* create_kthread (void (*entry) (void), uint64_t stack,uint64_t cr3, cha
 	t->state = THREAD_STATE_READY;
 	//t->priority = priority;
 	t->fd_current = 3;
-
 	t->fx_state = (uint8_t*)malloc(512);
 	memset(t->fx_state, 0, 512);
 	t->mxcsr = 0x1f80;
+	/* Signal not supported for kernel threads */
+	t->signal_queue = NULL;
+	t->pending_signal_count = 0;
 	thread_insert(t);
 	return t;
 }
@@ -226,7 +229,7 @@ thread_t* create_user_thread (void (*entry) (void*),uint64_t stack,uint64_t cr3,
 	memset (t, 0, sizeof(thread_t));
 	t->frame.ss = SEGVAL(GDT_ENTRY_USER_DATA,3); 
 	t->frame.rsp = (uint64_t)stack;
-	t->frame.rflags = (1<<9);
+	t->frame.rflags = 0x286;
 	t->frame.cs = SEGVAL (GDT_ENTRY_USER_CODE,3);
 	t->frame.rip = (uint64_t)entry;
 	t->frame.rax = 0;
@@ -268,9 +271,11 @@ thread_t* create_user_thread (void (*entry) (void*),uint64_t stack,uint64_t cr3,
 	t->state = THREAD_STATE_READY;
 	t->priority = priority;
 	t->fd_current = 3;
-	for (int i = 0; i < 1024*1024 / 4096; i++)
+	/*for (int i = 0; i < 1024*1024 / 4096; i++)
 		AuMapPageEx((uint64_t*)cr3,(uint64_t)AuPmmngrAlloc(), 0x0000700000400000 + i * 4096, PAGING_USER); 
-	t->signal_stack = (0x0000700000400000 + 1024*1024 - 256);
+	t->signal_stack = (0x0000700000400000 + 1024*1024 - 256);*/
+	t->signal_queue = NULL;
+	t->pending_signal_count = 0;
 	thread_insert (t);
 	return t;
 }
@@ -288,7 +293,7 @@ thread_t* create_child_thread (thread_t *parent, void (*entry)(void*),uint64_t s
 	memset(t, 0, sizeof(thread_t));
 	t->frame.ss = SEGVAL(GDT_ENTRY_USER_DATA,3); 
 	t->frame.rsp = (uint64_t)stack;
-	t->frame.rflags = (1<<9);
+	t->frame.rflags = 0x286;
 	t->frame.cs = SEGVAL (GDT_ENTRY_USER_CODE,3);
 	t->frame.rip = (uint64_t)entry;
 	t->frame.rax = 0;
@@ -384,11 +389,8 @@ end:
 	current_thread = (thread_t*)pcpu->au_current_thread;//AuPCPUGetCurrentThread(); //task;
 }
 
-extern "C" void sig_ret();
 
-void sig_return () {
-	sig_ret();
-}
+
 
 void sig_loop () {
 	for(;;) {
@@ -426,38 +428,13 @@ void scheduler_isr (size_t v, void* param) {
 		}
 
 
-		/* Check for pending signal, Signal is not complete, just implemented the basic
-		 * signal handling skeleton 
+		/* 
+		 * check for pending signal and make current_thread prepared
+		 * for handling the signal (((**********BBBBBUUUUUGGGGGGYYYYYYY*******)))
 		 */
-		if (current_thread->pending_signal > 0 && frame->cs == SEGVAL(GDT_ENTRY_USER_CODE, 3)) {
-			RegsCtx_t *ctx = (RegsCtx_t*)(current_thread->frame.kern_esp - sizeof(RegsCtx_t));
-			uint64_t* rsp_ = (uint64_t*)current_thread->user_stack;
-
-			/* Store the current kernel stack information to seperate memory location */
-			current_thread->signal_stack2 = (RegsCtx_t*)malloc(sizeof(RegsCtx_t));
-			memcpy (current_thread->signal_stack2, ctx,sizeof(RegsCtx_t));
-
-			/* Store the return address */
-			rsp_ -= 8;
-			for (int i = 0; i < 2; i++)
-				AuMapPage((uint64_t)AuPmmngrAlloc(), 0x700000 + i * 4096, PAGING_USER);
-			memcpy((void*)0x700000,&sig_ret, 8192);
-			*rsp_ = 0x700000;
-
-
-			current_thread->signal_state = (thread_frame_t*)malloc(sizeof(thread_frame_t));
-			memcpy (current_thread->signal_state,&current_thread->frame,sizeof(thread_frame_t));
-			
-
-			frame->rsp = (uint64_t)rsp_;
-			current_thread->frame.rbp = (uint64_t)rsp_;
-			current_thread->frame.rcx = 10;
-			current_thread->frame.rip = (uint64_t)current_thread->signals[current_thread->pending_signal];
-			current_thread->frame.rsp = frame->rsp;
-			frame->rip = current_thread->frame.rip;
-			frame->rflags = 0x286;
-			current_thread->frame.rflags = 0x286;
-			current_thread->pending_signal = 0;
+		if (x86_64_check_signal(current_thread, frame)) {
+			signal_t *sig = x86_64_get_signal(current_thread);
+			x86_64_prepare_signal(current_thread,frame,sig);
 		}
 
 

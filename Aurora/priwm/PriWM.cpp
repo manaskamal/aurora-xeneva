@@ -35,6 +35,7 @@
 #include "pri_event.h"
 #include "pri_dirty_clip.h"
 #include "pri_wallp_dirty_clip.h"
+#include "pri_clip.h"
 
 #include <stdint.h>
 #include <string.h>
@@ -94,6 +95,7 @@ list_t *desktop_component_list;
  * window bits
  */
 pri_window_t *focused_win = NULL;
+pri_window_t *focused_last = NULL;
 pri_window_t *top_window = NULL;
 pri_window_t *dragg_win = NULL;
 pri_window_t *resz_win = NULL;
@@ -645,7 +647,7 @@ pri_window_t * window_create (int x, int y, int w, int h, uint8_t attr, uint16_t
 	pri_window_t *win = (pri_window_t*)malloc(sizeof(pri_window_t));
 	memset(win, 0, sizeof(pri_window_t));
 	win->attribute = attr;
-	win->backing_store = (uint32_t*)create_new_backing_store(owner_id, w*h*32, &back_store_key);
+	win->backing_store = (uint32_t*)create_new_backing_store(owner_id, w*h*4, &back_store_key);
 	win->owner_id = owner_id;
 	win->pri_win_info_loc = create_new_shared_win(&sh_key,owner_id);
 	win->sh_win_key = sh_key;
@@ -661,6 +663,7 @@ pri_window_t * window_create (int x, int y, int w, int h, uint8_t attr, uint16_t
 	info->height = h;
 	info->dirty = 0;
 	info->rect_count = 0;
+	info->alpha = false; //By default, alpha is disabled
 	//list_add (window_list, win);
 	pri_add_window(win);
 	return win;
@@ -748,6 +751,7 @@ void pri_window_set_focused (pri_window_t * win, bool notify) {
 	 */
 	//! now let us bring the focus window in top
 	pri_window_make_top(win);
+	
 }
 
 
@@ -791,11 +795,31 @@ void pri_window_move (pri_window_t *win, int x, int y) {
  * @param n_h -- new height of the window
  */
 void pri_window_resize (pri_window_t *win, int n_w,int n_h) {
+
+	if (win->attribute & PRI_WIN_NON_RESIZABLE)
+		return;
+
 	pri_win_info_t* info = (pri_win_info_t*)win->pri_win_info_loc;
 	//pri_rect_t *r = pri_create_rect(info->x, info->y, info->width + 100, info->height + 100);
-	pri_wallp_add_dirty_clip(info->x, info->y, info->width + 100, info->height + 100);
+	pri_wallp_add_dirty_clip(info->x, info->y, info->width, info->height);
 	info->width = n_w;
 	info->height = n_h;
+
+	sys_shm_unlink_direct(win->backing_store_key);
+
+
+	uint16_t back_key = 0;
+	win->backing_store = (uint32_t*)create_new_backing_store(win->owner_id, n_w*n_h*4, &back_key);
+	win->backing_store_key = back_key;
+
+	pri_event_t ev;
+	ev.type = DAISY_WINDOW_RESIZE;
+	ev.dword = DAISY_WINDOW_RESIZE_VERTICAL;
+	ev.dword2 = win->backing_store_key;
+	ev.to_id = win->owner_id;
+	ev.from_id = get_current_pid();
+	ioquery(pri_loop_fd, PRI_LOOP_PUT_EVENT, &ev);
+	_window_update_all_ = true;
 	// (--BUGGY---)
 }
 
@@ -831,45 +855,11 @@ void compose_frame () {
 
 		if (win != NULL && win->anim)
 			_window_update_all_ = true;
-		/*  only update those portion that has been modified for smoothness */
-		if (win != NULL && info->rect_count > 0) {
-			//for (int k = 0; k < info->rect_count; k++) {
-			//	int wid = info->rect[k].w;
-			//	int he = info->rect[k].h;
-			//	int rx = info->rect[k].x;
-			//	int ry = info->rect[k].y;
 
-			//	if (rx < 0)
-			//		rx = 0;
-			//	if (ry < 0)
-			//		ry = 0;
-			//	
-			//	if (info->rect[k].x + info->rect[k].w >= canvas->width)
-			//		wid  = canvas->width - info->rect[k].x;
-
-			//	if (info->rect[k].y + info->rect[k].h>= canvas->height){
-			//		info->rect[k].y = canvas->height - info->rect[k].y;
-			//	}
-
-			//	if (info->x + info->rect[k].x + info->rect[k].w > canvas->width)
-			//		wid  = canvas->width - (info->x + info->rect[k].x);
-
-			//	for (int i = 0; i < he; i++)  {
-			//		fastcpy (canvas->address + (info->y + ry + i) * canvas->width + (info->x + rx),win->backing_store + (ry + i) * canvas->width + rx, 
-			//				wid * 4);
-			//	}
-
-			//	/* finally add a clip area */
-			//	pri_add_clip(info->x + rx,info->y + ry, wid,he);
-			//	info->rect_count = 0;
-			//	_window_update_all_ = false;
-			//}
-			info->rect_count = 0;
-			_window_update_all_ = true;
-		}
 
 		/* update entire window */
-		if (win != NULL && _window_update_all_) {
+		if (win != NULL && _window_update_all_ || info->rect_count > 0 || 
+			(info->rect_count == 0 && info->dirty == 1)) {
 			int winx = 0;
 			int winy = 0;
 
@@ -878,8 +868,7 @@ void compose_frame () {
 
 			int wid = info->width;
 			int he = info->height;
-			int bkstore_xoff = 0;
-			int bkstore_yoff = 0;
+		
 			/* calculate desktop bounds */
 			if (info->x < 0) {
 				info->x = 5;
@@ -891,8 +880,6 @@ void compose_frame () {
 				winy = info->y;
 			}
 
-
-
 			if (info->x + info->width >= canvas->width)
 				wid  = canvas->width - info->x;
 
@@ -900,33 +887,66 @@ void compose_frame () {
 				he = canvas->height - info->y;
 			}
 
+			if (info->alpha) {
 
-#ifdef DEFAULT_COLOR_MODE
-			
-			//for (int i = 0; i < he; i++)  {
-			//	/* Align the count to 16 byte boundary */
-			//	memcpy_sse2(canvas->address + (winy + i) * canvas->width + winx, win->backing_store + (0 + i) * info->width + 0,
-			//		(wid/16)*4-1);	
-			//}
-#endif
+				/* Here we need full SSE library to perform alpha bliting in faster way, if system supports
+				* GPU, that will add extra benifits */
 
-//#ifdef TRANSPARENCY_ENABLE
-			/* Here we need full SSE library to perform alpha bliting in faster way, if system supports
-			 * GPU, that will add extra benifits */
-
-			for (int j = 0; j < he; j++) {
-				for (int i = 0; i < wid; i++){
-					*(uint32_t*)(canvas->address + (winy + j) * canvas->width + (winx + i)) = alpha_blend(*(uint32_t*)(canvas->address + (winy + j)* canvas->width + (winx + i)),
-						*(uint32_t*)(win->backing_store + j * info->width + i));
+				for (int j = 0; j < he; j++) {
+					for (int i = 0; i < wid; i++){
+						*(uint32_t*)(canvas->address + (winy + j) * canvas->width + (winx + i)) = alpha_blend(*(uint32_t*)(canvas->address + (winy + j)* canvas->width + (winx + i)),
+							*(uint32_t*)(win->backing_store + j * info->width + i));
+					}
 				}
-			}
 
-//#endif
-			/* add the clip region */
+			} else {
+				/* Calculate Clipping here */
+				pri_rect_t r1;
+				pri_rect_t r2;
+				r1.x = winx;
+				r1.y = winy;
+				r1.w = wid;
+				r1.h = he;
+
+				//pri_rect_t clip_rect[512];
+				//int clip_count = 0;
+				//pri_window_t *clip_win = NULL;
+				//pri_win_info_t *clip_info = NULL;
+				//for (clip_win = root_window; clip_win != NULL; clip_win = clip_win->next) {
+				//	clip_info = (pri_win_info_t*)clip_win->pri_win_info_loc;
+				//	if (clip_win == win)
+				//		continue;
+				//	r2.x = clip_info->x;
+				//	r2.y = clip_info->y;
+				//	r2.w = clip_info->width;
+				//	r2.h = clip_info->height;
+
+				//	if (pri_check_intersect(&r1, &r2)) {
+				//		/* Now calculate the clip rects and add it to 
+				//		 * clip_rect list */
+				//		//pri_calculate_clip_rects(&r2, &r1, clip_rect, &clip_count);
+				//		clip_info->dirty = 1;
+				//	}
+				//}
+
+				for (int i = 0; i < he; i++)  {
+					/* Align the count to 16 byte boundary */
+					memcpy_sse2(canvas->address + (winy + i) * canvas->width + winx, win->backing_store + (0 + i) * info->width + 0,
+					(wid/16)*4-1);
+				}
+				
+					
+				
+			}
+			
 			pri_add_clip (winx, winy, wid, he);
+			info->rect_count = 0;
+			info->dirty = 0;
 		}
+
+			
 	}
-	
+
 	/* now store the new occluded area by cursor */
 	cursor_store_back(mouse_x, mouse_y);
 	/* draw the new cursor on the backing store */
@@ -1009,12 +1029,12 @@ void pri_win_check_draggable (int x, int y, int button) {
 			}
 
 			/*RESIZEING of WINDOW is disabled for now*/
-			/*if (y >= (info->y + info->height - 10) && y < (info->y + info->height + 10)) {
+			if (y >= (info->y + info->height - 10) && y < (info->y + info->height + 10)) {
 				resz_win = win;
 				resz_win->resz_h = x - info->width;
 				resz_win->resz_v = y - info->height;	
 				break;
-			}*/
+			}
 		}
 	}
 	 /**  check if a draggable window is present or not **/
@@ -1028,11 +1048,11 @@ void pri_win_check_draggable (int x, int y, int button) {
 
 	/** check if a resizable window is present or not,
 	    RESIZEING of WINDOW is disabled for now **/
-	/*if (resz_win) {
+	if (resz_win) {
 		int n_width = x - resz_win->resz_h;
 		int n_height = y - resz_win->resz_v;
 		pri_window_resize(resz_win, n_width, n_height);
-	}*/
+	}
 
 	/** button released **/
 	if (!button)  {
@@ -1073,8 +1093,8 @@ XE_EXTERN int XeMain (int argc, char* argv[]) {
 	sys_print_text ("Reading cursor files \r\n");
 	load_cursor ("/cursor.bmp",(uint8_t*)0x0000070000000000, arrow_cursor);
 	//load_cursor ("/spin.bmp", (uint8_t*)0x0000070000001000, spin_cursor);
-	Image* wallp = pri_load_wallpaper ("/winne1.jpg");
-	pri_wallpaper_draw(NULL);
+	Image* wallp = pri_load_wallpaper ("/start.jpg");
+	pri_wallpaper_draw(wallp);
 
 	/* initialize window list */
 	window_list_init();
@@ -1092,11 +1112,6 @@ XE_EXTERN int XeMain (int argc, char* argv[]) {
 	 */
 	acrylic_draw_rect_filled (canvas, 0,0,s_width, s_height, LIGHTBLACK);
 	pri_wallpaper_present();
-
-	acrylic_initialize_font();
-	acrylic_font_set_size(64);
-	acrylic_font_draw_string(canvas, "Hello! Xeneva", 450,450,32, WHITE);
-
 
 	canvas_screen_update(canvas, 0, 0, s_width, s_height);
 
@@ -1168,7 +1183,8 @@ XE_EXTERN int XeMain (int argc, char* argv[]) {
 			}
 
 			if (key_msg.dword == KEY_A) {
-				test_id = create_process("/ptest.exe", "ptest");
+				//test_id = create_process("/ptest.exe", "ptest");
+				test_id = create_process ("/xecon.exe", "xecon");
 			}
 
 			if (key_msg.dword == KEY_S) {
@@ -1263,6 +1279,14 @@ XE_EXTERN int XeMain (int argc, char* argv[]) {
 			memset(&event, 0, sizeof(pri_event_t));
 		}
 
+		if (event.type == PRI_WIN_RESIZE) {
+			int n_w = event.dword;
+			int n_h = event.dword2;
+			pri_window_t *win = pri_win_find_by_id(event.from_id);
+			if (win != NULL)
+				pri_window_resize(win, n_w, n_h);
+			memset(&event, 0, sizeof(pri_event_t));
+		}
 
 		if (event.type == PRI_WIN_MARK_FOR_CLOSE) {
 			int x = 0;

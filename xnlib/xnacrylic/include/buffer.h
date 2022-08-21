@@ -13,7 +13,7 @@
 
 #include <stdint.h>
 
-#define DOUBLE_BUFFER_START  0x0000000A00000000
+#define DOUBLE_BUFFER_START  0x0000000E00000000
 
 extern uint32_t* acrylic_allocate_buffer (size_t sz);
 extern void acrylic_free_buffer (void *p,size_t sz);

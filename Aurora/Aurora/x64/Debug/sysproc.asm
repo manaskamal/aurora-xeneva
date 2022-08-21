@@ -6,12 +6,12 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 CONST	SEGMENT
-$SG4003	DB	'***Process killed ', 0dH, 0aH, 00H
+$SG4037	DB	'***Process killed ', 0dH, 0aH, 00H
 	ORG $+3
-$SG4004	DB	'*** Current used RAM -> %d MB / total -> %d MB ', 0dH, 0aH
+$SG4038	DB	'*** Current used RAM -> %d MB / total -> %d MB ', 0dH, 0aH
 	DB	00H
 	ORG $+2
-$SG4020	DB	'Loop', 00H
+$SG4054	DB	'Loop', 00H
 CONST	ENDS
 PUBLIC	?create__sys_process@@YAHPEBDPEAD@Z		; create__sys_process
 PUBLIC	?sys_exit@@YAXXZ				; sys_exit
@@ -29,6 +29,7 @@ EXTRN	?thread_iterate_block_list@@YAPEAU_thread_@@H@Z:PROC ; thread_iterate_bloc
 EXTRN	?AuCreateProcess@@YAHPEBDPEAD@Z:PROC		; AuCreateProcess
 EXTRN	?kill_process@@YAXXZ:PROC			; kill_process
 EXTRN	_debug_print_:PROC
+EXTRN	?AuAllocSignal@@YAXPEAU_thread_@@H@Z:PROC	; AuAllocSignal
 pdata	SEGMENT
 $pdata$?create__sys_process@@YAHPEBDPEAD@Z DD imagerel $LN3
 	DD	imagerel $LN3+47
@@ -37,7 +38,7 @@ $pdata$?sys_exit@@YAXXZ DD imagerel $LN3
 	DD	imagerel $LN3+114
 	DD	imagerel $unwind$?sys_exit@@YAXXZ
 $pdata$?sys_kill@@YAXHH@Z DD imagerel $LN4
-	DD	imagerel $LN4+74
+	DD	imagerel $LN4+73
 	DD	imagerel $unwind$?sys_kill@@YAXHH@Z
 $pdata$?sys_set_signal@@YAXHP6AXH@Z@Z DD imagerel $LN3
 	DD	imagerel $LN3+46
@@ -46,7 +47,7 @@ $pdata$?sig_loop_tst@@YAXXZ DD imagerel $LN5
 	DD	imagerel $LN5+23
 	DD	imagerel $unwind$?sig_loop_tst@@YAXXZ
 $pdata$?sys_sigreturn@@YAXH@Z DD imagerel $LN3
-	DD	imagerel $LN3+43
+	DD	imagerel $LN3+28
 	DD	imagerel $unwind$?sys_sigreturn@@YAXH@Z
 pdata	ENDS
 xdata	SEGMENT
@@ -70,27 +71,23 @@ current_thread$ = 32
 num$ = 64
 ?sys_sigreturn@@YAXH@Z PROC				; sys_sigreturn
 
-; 96   : void sys_sigreturn (int num) {
+; 97   : void sys_sigreturn (int num) {
 
 $LN3:
 	mov	DWORD PTR [rsp+8], ecx
 	sub	rsp, 56					; 00000038H
 
-; 97   : 	x64_cli();
+; 98   : 	x64_cli();
 
 	call	x64_cli
 
-; 98   : 	thread_t *current_thread = get_current_thread();
+; 99   : 	thread_t *current_thread = get_current_thread();
 
 	call	get_current_thread
 	mov	QWORD PTR current_thread$[rsp], rax
 
-; 99   : 	get_current_thread()->pending_signal = -1;
-
-	call	get_current_thread
-	mov	DWORD PTR [rax+1064], -1
-
-; 100  : }
+; 100  : 	/* Just make a page fault here */
+; 101  : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -101,23 +98,23 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 ?sig_loop_tst@@YAXXZ PROC				; sig_loop_tst
 
-; 88   : void sig_loop_tst() {
+; 89   : void sig_loop_tst() {
 
 $LN5:
 	sub	rsp, 40					; 00000028H
 $LN2@sig_loop_t:
 
-; 89   : 	for(;;) {
-; 90   : 		_debug_print_ ("Loop");
+; 90   : 	for(;;) {
+; 91   : 		_debug_print_ ("Loop");
 
-	lea	rcx, OFFSET FLAT:$SG4020
+	lea	rcx, OFFSET FLAT:$SG4054
 	call	_debug_print_
 
-; 91   : 	}
+; 92   : 	}
 
 	jmp	SHORT $LN2@sig_loop_t
 
-; 92   : }
+; 93   : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -130,25 +127,25 @@ signo$ = 48
 handler$ = 56
 ?sys_set_signal@@YAXHP6AXH@Z@Z PROC			; sys_set_signal
 
-; 83   : void sys_set_signal (int signo, sig_handler handler) {
+; 84   : void sys_set_signal (int signo, sig_handler handler) {
 
 $LN3:
 	mov	QWORD PTR [rsp+16], rdx
 	mov	DWORD PTR [rsp+8], ecx
 	sub	rsp, 40					; 00000028H
 
-; 84   : 	x64_cli();
+; 85   : 	x64_cli();
 
 	call	x64_cli
 
-; 85   : 	get_current_thread()->signals[signo] = handler;
+; 86   : 	get_current_thread()->signals[signo] = handler;
 
 	call	get_current_thread
 	movsxd	rcx, DWORD PTR signo$[rsp]
 	mov	rdx, QWORD PTR handler$[rsp]
 	mov	QWORD PTR [rax+rcx*8+752], rdx
 
-; 86   : }
+; 87   : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -192,14 +189,15 @@ $LN4:
 $LN1@sys_kill:
 
 ; 73   : 
-; 74   : 	current_thread->pending_signal = signo;
+; 74   : 	/* Allocate a new signal */
+; 75   : 	AuAllocSignal(current_thread,signo);
 
-	mov	rax, QWORD PTR current_thread$[rsp]
-	mov	ecx, DWORD PTR signo$[rsp]
-	mov	DWORD PTR [rax+1064], ecx
+	mov	edx, DWORD PTR signo$[rsp]
+	mov	rcx, QWORD PTR current_thread$[rsp]
+	call	?AuAllocSignal@@YAXPEAU_thread_@@H@Z	; AuAllocSignal
 
-; 75   : 	/* Signal Not Implemented for now */
-; 76   : }
+; 76   : 
+; 77   : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -226,7 +224,7 @@ $LN3:
 
 ; 57   : 	_debug_print_ ("***Process killed \r\n");
 
-	lea	rcx, OFFSET FLAT:$SG4003
+	lea	rcx, OFFSET FLAT:$SG4037
 	call	_debug_print_
 
 ; 58   : 	_debug_print_ ("*** Current used RAM -> %d MB / total -> %d MB \r\n", pmmngr_get_used_ram() / 1024 / 1024, pmmngr_get_total_ram() / 1024 / 1024);
@@ -249,7 +247,7 @@ $LN3:
 	mov	rcx, QWORD PTR tv67[rsp]
 	mov	r8, rcx
 	mov	rdx, rax
-	lea	rcx, OFFSET FLAT:$SG4004
+	lea	rcx, OFFSET FLAT:$SG4038
 	call	_debug_print_
 
 ; 59   : 	force_sched();

@@ -69,7 +69,6 @@ typedef struct _pri_loop_box_ {
 	void* address;
 	uint16_t owner_id;
 	bool message_pending;
-	uint16_t pending_msg_count;
 	struct _pri_loop_box_ *next;
 	struct _pri_loop_box_ *prev;
 }pri_loop_box_t;

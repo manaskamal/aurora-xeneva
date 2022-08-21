@@ -10,11 +10,11 @@ _BSS	SEGMENT
 ?window_manager_thr@@3PEAU_thread_@@EA DQ 01H DUP (?)	; window_manager_thr
 _BSS	ENDS
 CONST	SEGMENT
-$SG3651	DB	'Allocating new File ', 0dH, 0aH, 00H
+$SG3660	DB	'Allocating new File ', 0dH, 0aH, 00H
 	ORG $+1
-$SG3655	DB	'mouse', 00H
+$SG3664	DB	'mouse', 00H
 	ORG $+2
-$SG3656	DB	'/dev/mouse', 00H
+$SG3665	DB	'/dev/mouse', 00H
 CONST	ENDS
 PUBLIC	?AuPointDevInitialize@@YAXXZ			; AuPointDevInitialize
 PUBLIC	?PointDevPutMessage@@YAXPEAU_dwm_message_@@@Z	; PointDevPutMessage
@@ -38,8 +38,8 @@ pdata	SEGMENT
 $pdata$?AuPointDevInitialize@@YAXXZ DD imagerel $LN3
 	DD	imagerel $LN3+323
 	DD	imagerel $unwind$?AuPointDevInitialize@@YAXXZ
-$pdata$?PointDevPutMessage@@YAXPEAU_dwm_message_@@@Z DD imagerel $LN7
-	DD	imagerel $LN7+155
+$pdata$?PointDevPutMessage@@YAXPEAU_dwm_message_@@@Z DD imagerel $LN6
+	DD	imagerel $LN6+143
 	DD	imagerel $unwind$?PointDevPutMessage@@YAXPEAU_dwm_message_@@@Z
 $pdata$?mouse_ioquery@@YAHPEAU_vfs_node_@@HPEAX@Z DD imagerel $LN9
 	DD	imagerel $LN9+107
@@ -193,7 +193,7 @@ msg$ = 64
 
 ; 84   : void PointDevPutMessage(dwm_message_t *msg) {
 
-$LN7:
+$LN6:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 56					; 00000038H
 
@@ -202,23 +202,23 @@ $LN7:
 	call	?is_multi_task_enable@@YA_NXZ		; is_multi_task_enable
 	movzx	eax, al
 	test	eax, eax
-	jne	SHORT $LN4@PointDevPu
+	jne	SHORT $LN3@PointDevPu
 
 ; 86   : 		return;
 
-	jmp	SHORT $LN5@PointDevPu
-$LN4@PointDevPu:
+	jmp	SHORT $LN4@PointDevPu
+$LN3@PointDevPu:
 
 ; 87   : 
 ; 88   : 	if (window_manager_thr == NULL)
 
 	cmp	QWORD PTR ?window_manager_thr@@3PEAU_thread_@@EA, 0 ; window_manager_thr
-	jne	SHORT $LN3@PointDevPu
+	jne	SHORT $LN2@PointDevPu
 
 ; 89   : 		return;
 
-	jmp	SHORT $LN5@PointDevPu
-$LN3@PointDevPu:
+	jmp	SHORT $LN4@PointDevPu
+$LN2@PointDevPu:
 
 ; 90   : 
 ; 91   : 	thread_t *t  = thread_iterate_ready_list (window_manager_thr->id);   //!ready list
@@ -231,7 +231,7 @@ $LN3@PointDevPu:
 ; 92   : 	if (t == NULL) {
 
 	cmp	QWORD PTR t$[rsp], 0
-	jne	SHORT $LN2@PointDevPu
+	jne	SHORT $LN1@PointDevPu
 
 ; 93   : 		t = thread_iterate_block_list(window_manager_thr->id);
 
@@ -240,7 +240,7 @@ $LN3@PointDevPu:
 	mov	ecx, eax
 	call	?thread_iterate_block_list@@YAPEAU_thread_@@H@Z ; thread_iterate_block_list
 	mov	QWORD PTR t$[rsp], rax
-$LN2@PointDevPu:
+$LN1@PointDevPu:
 
 ; 94   : 	}
 ; 95   : 	dwm_message_t *tmsg = (dwm_message_t*)t->msg_box;
@@ -249,24 +249,18 @@ $LN2@PointDevPu:
 	mov	rax, QWORD PTR [rax+248]
 	mov	QWORD PTR tmsg$[rsp], rax
 
-; 96   : 	if (tmsg->type == 0)
-
-	mov	rax, QWORD PTR tmsg$[rsp]
-	movzx	eax, WORD PTR [rax]
-	test	eax, eax
-	jne	SHORT $LN1@PointDevPu
-
-; 97   : 		memcpy (t->msg_box,msg,sizeof(dwm_message_t));
+; 96   : 	memcpy (t->msg_box,msg,sizeof(dwm_message_t));
 
 	mov	r8d, 28
 	mov	rdx, QWORD PTR msg$[rsp]
 	mov	rax, QWORD PTR t$[rsp]
 	mov	rcx, QWORD PTR [rax+248]
 	call	memcpy
-$LN1@PointDevPu:
-$LN5@PointDevPu:
+$LN4@PointDevPu:
 
-; 98   : }
+; 97   : 
+; 98   : 
+; 99   : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -325,7 +319,7 @@ $LN3:
 
 ; 59   : 	_debug_print_ ("Allocating new File \r\n");
 
-	lea	rcx, OFFSET FLAT:$SG3651
+	lea	rcx, OFFSET FLAT:$SG3660
 	call	_debug_print_
 
 ; 60   : 
@@ -339,7 +333,7 @@ $LN3:
 ; 63   : 	strcpy (node->filename, "mouse");
 
 	mov	rax, QWORD PTR node$[rsp]
-	lea	rdx, OFFSET FLAT:$SG3655
+	lea	rdx, OFFSET FLAT:$SG3664
 	mov	rcx, rax
 	call	strcpy
 
@@ -404,7 +398,7 @@ $LN3:
 
 	xor	r8d, r8d
 	mov	rdx, QWORD PTR node$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3656
+	lea	rcx, OFFSET FLAT:$SG3665
 	call	vfs_mount
 
 ; 76   : 	window_manager_thr = NULL;

@@ -55,4 +55,10 @@ XE_EXTERN XE_EXPORT void* sys_shmat (uint32_t key, void * shmaddr, int shmflg);
  */
 XE_EXTERN XE_EXPORT void sys_shm_unlink(uint32_t key);
 
+/*
+ * unlink the shared memory segment without waiting for the
+ * clients to disconnect
+ * @param key -- shared memory segment key
+ */
+XE_EXTERN XE_EXPORT void sys_shm_unlink_direct(uint32_t key);
 #endif

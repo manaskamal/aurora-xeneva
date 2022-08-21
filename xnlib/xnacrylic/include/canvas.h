@@ -24,6 +24,7 @@ typedef struct _canvas_ {
 	uint32_t height;
 	uint32_t bpp;
 	uint16_t scanline;
+	uint32_t pitch;
 	uint32_t ctx_width;
 	uint32_t ctx_height;
 	unsigned int* address;

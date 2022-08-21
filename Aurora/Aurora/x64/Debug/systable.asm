@@ -10,7 +10,7 @@ _BSS	SEGMENT
 funct	DQ	01H DUP (?)
 _BSS	ENDS
 CONST	SEGMENT
-$SG4303	DB	'System Call Fault!! Halting System', 0aH, 00H
+$SG4315	DB	'System Call Fault!! Halting System', 0aH, 00H
 CONST	ENDS
 PUBLIC	x64_syscall_handler
 EXTRN	printf:PROC
@@ -52,13 +52,14 @@ EXTRN	_debug_print_:PROC
 EXTRN	?AuCreateShMem@@YAII_KI@Z:PROC			; AuCreateShMem
 EXTRN	?AuObtainShMem@@YAPEAXIPEAXH@Z:PROC		; AuObtainShMem
 EXTRN	?shm_unlink@@YAXI@Z:PROC			; shm_unlink
+EXTRN	?shm_unlink_direct@@YAXI@Z:PROC			; shm_unlink_direct
 EXTRN	?au_mmap@@YAPEAXPEAX_KHHH1@Z:PROC		; au_mmap
 EXTRN	?process_heap_break@@YAPEAX_K@Z:PROC		; process_heap_break
 EXTRN	?process_link_libraries@@YAXXZ:PROC		; process_link_libraries
 EXTRN	__ImageBase:BYTE
 pdata	SEGMENT
-$pdata$x64_syscall_handler DD imagerel $LN50
-	DD	imagerel $LN50+1004
+$pdata$x64_syscall_handler DD imagerel $LN51
+	DD	imagerel $LN51+1028
 	DD	imagerel $unwind$x64_syscall_handler
 pdata	ENDS
 xdata	SEGMENT
@@ -75,7 +76,7 @@ x64_syscall_handler PROC
 
 ; 17   : extern "C" void x64_syscall_handler (int a) {
 
-$LN50:
+$LN51:
 	mov	DWORD PTR [rsp+8], ecx
 	sub	rsp, 56					; 00000038H
 
@@ -91,18 +92,18 @@ $LN50:
 ; 23   : 	if (idx > 256) {
 
 	cmp	DWORD PTR idx$[rsp], 256		; 00000100H
-	jle	SHORT $LN46@x64_syscal
+	jle	SHORT $LN47@x64_syscal
 
 ; 24   : 		printf ("System Call Fault!! Halting System\n");
 
-	lea	rcx, OFFSET FLAT:$SG4303
+	lea	rcx, OFFSET FLAT:$SG4315
 	call	printf
-$LN45@x64_syscal:
+$LN46@x64_syscal:
 
 ; 25   : 		for(;;);  //Loop forever for now
 
-	jmp	SHORT $LN45@x64_syscal
-$LN46@x64_syscal:
+	jmp	SHORT $LN46@x64_syscal
+$LN47@x64_syscal:
 
 ; 26   : 	}
 ; 27   : 
@@ -110,14 +111,14 @@ $LN46@x64_syscal:
 
 	mov	eax, DWORD PTR idx$[rsp]
 	mov	DWORD PTR tv66[rsp], eax
-	cmp	DWORD PTR tv66[rsp], 40			; 00000028H
-	ja	$LN42@x64_syscal
+	cmp	DWORD PTR tv66[rsp], 41			; 00000029H
+	ja	$LN43@x64_syscal
 	movsxd	rax, DWORD PTR tv66[rsp]
 	lea	rcx, OFFSET FLAT:__ImageBase
-	mov	eax, DWORD PTR $LN49@x64_syscal[rcx+rax*4]
+	mov	eax, DWORD PTR $LN50@x64_syscal[rcx+rax*4]
 	add	rax, rcx
 	jmp	rax
-$LN41@x64_syscal:
+$LN42@x64_syscal:
 
 ; 29   : 	case 0:
 ; 30   : 		funct = (uint64_t*)_debug_print_; //
@@ -127,8 +128,8 @@ $LN41@x64_syscal:
 
 ; 31   : 		break;
 
-	jmp	$LN42@x64_syscal
-$LN40@x64_syscal:
+	jmp	$LN43@x64_syscal
+$LN41@x64_syscal:
 
 ; 32   : 	case 1:
 ; 33   : 		funct = (uint64_t*)wait;
@@ -138,8 +139,8 @@ $LN40@x64_syscal:
 
 ; 34   : 		break;
 
-	jmp	$LN42@x64_syscal
-$LN39@x64_syscal:
+	jmp	$LN43@x64_syscal
+$LN40@x64_syscal:
 
 ; 35   : 	case 2:
 ; 36   : 		funct = (uint64_t*)create__sys_process;
@@ -149,8 +150,8 @@ $LN39@x64_syscal:
 
 ; 37   : 		break;
 
-	jmp	$LN42@x64_syscal
-$LN38@x64_syscal:
+	jmp	$LN43@x64_syscal
+$LN39@x64_syscal:
 
 ; 38   : 	case 3:
 ; 39   : 		funct = (uint64_t*)copy_memory;
@@ -160,8 +161,8 @@ $LN38@x64_syscal:
 
 ; 40   : 		break;
 
-	jmp	$LN42@x64_syscal
-$LN37@x64_syscal:
+	jmp	$LN43@x64_syscal
+$LN38@x64_syscal:
 
 ; 41   : 	case 4:
 ; 42   : 		funct = (uint64_t*)AuCreateShMem;
@@ -171,8 +172,8 @@ $LN37@x64_syscal:
 
 ; 43   : 		break;
 
-	jmp	$LN42@x64_syscal
-$LN36@x64_syscal:
+	jmp	$LN43@x64_syscal
+$LN37@x64_syscal:
 
 ; 44   : 	case 5:
 ; 45   : 		funct = (uint64_t*)valloc;
@@ -182,8 +183,8 @@ $LN36@x64_syscal:
 
 ; 46   : 		break;
 
-	jmp	$LN42@x64_syscal
-$LN35@x64_syscal:
+	jmp	$LN43@x64_syscal
+$LN36@x64_syscal:
 
 ; 47   : 	case 6:
 ; 48   : 		funct = (uint64_t*)message_send;
@@ -193,8 +194,8 @@ $LN35@x64_syscal:
 
 ; 49   : 		break;
 
-	jmp	$LN42@x64_syscal
-$LN34@x64_syscal:
+	jmp	$LN43@x64_syscal
+$LN35@x64_syscal:
 
 ; 50   : 	case 7:
 ; 51   : 		funct = (uint64_t*)message_receive;
@@ -204,8 +205,8 @@ $LN34@x64_syscal:
 
 ; 52   : 		break;
 
-	jmp	$LN42@x64_syscal
-$LN33@x64_syscal:
+	jmp	$LN43@x64_syscal
+$LN34@x64_syscal:
 
 ; 53   : 	case 8:
 ; 54   : 		funct = (uint64_t*)process_link_libraries;
@@ -215,8 +216,8 @@ $LN33@x64_syscal:
 
 ; 55   : 		break;
 
-	jmp	$LN42@x64_syscal
-$LN32@x64_syscal:
+	jmp	$LN43@x64_syscal
+$LN33@x64_syscal:
 
 ; 56   : 	case 9:
 ; 57   : 		funct = (uint64_t*)get_thread_id;
@@ -226,8 +227,8 @@ $LN32@x64_syscal:
 
 ; 58   : 		break;
 
-	jmp	$LN42@x64_syscal
-$LN31@x64_syscal:
+	jmp	$LN43@x64_syscal
+$LN32@x64_syscal:
 
 ; 59   : 	case 10:
 ; 60   : 		funct = (uint64_t*)create_timer;
@@ -237,8 +238,8 @@ $LN31@x64_syscal:
 
 ; 61   : 		break;
 
-	jmp	$LN42@x64_syscal
-$LN30@x64_syscal:
+	jmp	$LN43@x64_syscal
+$LN31@x64_syscal:
 
 ; 62   : 	case 11:
 ; 63   : 		funct = (uint64_t*)destroy_timer;
@@ -248,8 +249,8 @@ $LN30@x64_syscal:
 
 ; 64   : 		break;
 
-	jmp	$LN42@x64_syscal
-$LN29@x64_syscal:
+	jmp	$LN43@x64_syscal
+$LN30@x64_syscal:
 
 ; 65   : 	case 12:
 ; 66   : 		funct = (uint64_t*)AuObtainShMem;
@@ -259,8 +260,8 @@ $LN29@x64_syscal:
 
 ; 67   : 		break;
 
-	jmp	$LN42@x64_syscal
-$LN28@x64_syscal:
+	jmp	$LN43@x64_syscal
+$LN29@x64_syscal:
 
 ; 68   : 	case 13:
 ; 69   : 		funct = (uint64_t*)ttype_create;
@@ -270,8 +271,8 @@ $LN28@x64_syscal:
 
 ; 70   : 		break;
 
-	jmp	$LN42@x64_syscal
-$LN27@x64_syscal:
+	jmp	$LN43@x64_syscal
+$LN28@x64_syscal:
 
 ; 71   : 	case 14:
 ; 72   : 		funct = (uint64_t*)start_timer;
@@ -281,8 +282,8 @@ $LN27@x64_syscal:
 
 ; 73   : 		break;
 
-	jmp	$LN42@x64_syscal
-$LN26@x64_syscal:
+	jmp	$LN43@x64_syscal
+$LN27@x64_syscal:
 
 ; 74   : 	case 15:
 ; 75   : 		funct = (uint64_t*)pause_timer;
@@ -292,8 +293,8 @@ $LN26@x64_syscal:
 
 ; 76   : 		break;
 
-	jmp	$LN42@x64_syscal
-$LN25@x64_syscal:
+	jmp	$LN43@x64_syscal
+$LN26@x64_syscal:
 
 ; 77   : 	case 16:
 ; 78   : 		funct = (uint64_t*)allocate_pipe;
@@ -303,8 +304,8 @@ $LN25@x64_syscal:
 
 ; 79   : 		break;
 
-	jmp	$LN42@x64_syscal
-$LN24@x64_syscal:
+	jmp	$LN43@x64_syscal
+$LN25@x64_syscal:
 
 ; 80   : 	case 17:
 ; 81   : 		funct = (uint64_t*)sys_unblock_id;
@@ -314,8 +315,8 @@ $LN24@x64_syscal:
 
 ; 82   : 		break;
 
-	jmp	$LN42@x64_syscal
-$LN23@x64_syscal:
+	jmp	$LN43@x64_syscal
+$LN24@x64_syscal:
 
 ; 83   : 	case 18:
 ; 84   : 		funct = (uint64_t*)create_uthread;
@@ -325,8 +326,8 @@ $LN23@x64_syscal:
 
 ; 85   : 		break;
 
-	jmp	$LN42@x64_syscal
-$LN22@x64_syscal:
+	jmp	$LN43@x64_syscal
+$LN23@x64_syscal:
 
 ; 86   : 	case 19:
 ; 87   : 		funct = (uint64_t*)sys_open_file;
@@ -336,8 +337,8 @@ $LN22@x64_syscal:
 
 ; 88   : 		break;
 
-	jmp	$LN42@x64_syscal
-$LN21@x64_syscal:
+	jmp	$LN43@x64_syscal
+$LN22@x64_syscal:
 
 ; 89   : 	case 20:
 ; 90   : 		funct = (uint64_t*)sys_read_file;
@@ -347,8 +348,8 @@ $LN21@x64_syscal:
 
 ; 91   : 		break;
 
-	jmp	$LN42@x64_syscal
-$LN20@x64_syscal:
+	jmp	$LN43@x64_syscal
+$LN21@x64_syscal:
 
 ; 92   : 	case 21:
 ; 93   : 		funct = (uint64_t*)sys_copy_fd;
@@ -358,8 +359,8 @@ $LN20@x64_syscal:
 
 ; 94   : 		break;
 
-	jmp	$LN42@x64_syscal
-$LN19@x64_syscal:
+	jmp	$LN43@x64_syscal
+$LN20@x64_syscal:
 
 ; 95   : 	case 22:
 ; 96   : 		funct = (uint64_t*)sys_get_used_ram;
@@ -369,8 +370,8 @@ $LN19@x64_syscal:
 
 ; 97   : 		break;
 
-	jmp	$LN42@x64_syscal
-$LN18@x64_syscal:
+	jmp	$LN43@x64_syscal
+$LN19@x64_syscal:
 
 ; 98   : 	case 23:
 ; 99   : 		funct = (uint64_t*)sys_get_free_ram;
@@ -380,8 +381,8 @@ $LN18@x64_syscal:
 
 ; 100  : 		break;
 
-	jmp	$LN42@x64_syscal
-$LN17@x64_syscal:
+	jmp	$LN43@x64_syscal
+$LN18@x64_syscal:
 
 ; 101  : 	case 24:
 ; 102  : 		funct = (uint64_t*)sys_sleep;
@@ -391,8 +392,8 @@ $LN17@x64_syscal:
 
 ; 103  : 		break;
 
-	jmp	$LN42@x64_syscal
-$LN16@x64_syscal:
+	jmp	$LN43@x64_syscal
+$LN17@x64_syscal:
 
 ; 104  : 	case 25:
 ; 105  : 		funct = (uint64_t*)sys_exit;
@@ -402,8 +403,8 @@ $LN16@x64_syscal:
 
 ; 106  : 		break;
 
-	jmp	$LN42@x64_syscal
-$LN15@x64_syscal:
+	jmp	$LN43@x64_syscal
+$LN16@x64_syscal:
 
 ; 107  : 	case 26:
 ; 108  : 		funct = (uint64_t*)sys_sigreturn;
@@ -413,8 +414,8 @@ $LN15@x64_syscal:
 
 ; 109  : 		break;
 
-	jmp	$LN42@x64_syscal
-$LN14@x64_syscal:
+	jmp	$LN43@x64_syscal
+$LN15@x64_syscal:
 
 ; 110  : 	case 27:
 ; 111  : 		funct = (uint64_t*)fork;
@@ -424,8 +425,8 @@ $LN14@x64_syscal:
 
 ; 112  : 		break;
 
-	jmp	$LN42@x64_syscal
-$LN13@x64_syscal:
+	jmp	$LN43@x64_syscal
+$LN14@x64_syscal:
 
 ; 113  : 	case 28:
 ; 114  : 		funct = (uint64_t*)exec;
@@ -435,8 +436,8 @@ $LN13@x64_syscal:
 
 ; 115  : 		break;
 
-	jmp	$LN42@x64_syscal
-$LN12@x64_syscal:
+	jmp	$LN43@x64_syscal
+$LN13@x64_syscal:
 
 ; 116  : 	case 29:
 ; 117  : 		funct = (uint64_t*)au_mmap;
@@ -446,8 +447,8 @@ $LN12@x64_syscal:
 
 ; 118  : 		break;
 
-	jmp	$LN42@x64_syscal
-$LN11@x64_syscal:
+	jmp	$LN43@x64_syscal
+$LN12@x64_syscal:
 
 ; 119  : 	case 30:
 ; 120  : 		funct = (uint64_t*)unmap_memory;
@@ -457,8 +458,8 @@ $LN11@x64_syscal:
 
 ; 121  : 		break;
 
-	jmp	$LN42@x64_syscal
-$LN10@x64_syscal:
+	jmp	$LN43@x64_syscal
+$LN11@x64_syscal:
 
 ; 122  : 	case 31:
 ; 123  : 		funct = (uint64_t*)ioquery;
@@ -468,8 +469,8 @@ $LN10@x64_syscal:
 
 ; 124  : 		break;
 
-	jmp	$LN42@x64_syscal
-$LN9@x64_syscal:
+	jmp	$LN43@x64_syscal
+$LN10@x64_syscal:
 
 ; 125  : 	case 32:
 ; 126  : 		funct = (uint64_t*)sys_get_current_time;
@@ -479,8 +480,8 @@ $LN9@x64_syscal:
 
 ; 127  : 		break;
 
-	jmp	SHORT $LN42@x64_syscal
-$LN8@x64_syscal:
+	jmp	$LN43@x64_syscal
+$LN9@x64_syscal:
 
 ; 128  : 	case 33:
 ; 129  : 		funct = (uint64_t*)sys_get_system_tick;
@@ -490,8 +491,8 @@ $LN8@x64_syscal:
 
 ; 130  : 		break;
 
-	jmp	SHORT $LN42@x64_syscal
-$LN7@x64_syscal:
+	jmp	SHORT $LN43@x64_syscal
+$LN8@x64_syscal:
 
 ; 131  : 	case 34:
 ; 132  : 		funct = (uint64_t*)sys_kill;
@@ -501,8 +502,8 @@ $LN7@x64_syscal:
 
 ; 133  : 		break;
 
-	jmp	SHORT $LN42@x64_syscal
-$LN6@x64_syscal:
+	jmp	SHORT $LN43@x64_syscal
+$LN7@x64_syscal:
 
 ; 134  : 	case 35:
 ; 135  : 		funct = (uint64_t*)sys_set_signal;
@@ -512,8 +513,8 @@ $LN6@x64_syscal:
 
 ; 136  : 		break;
 
-	jmp	SHORT $LN42@x64_syscal
-$LN5@x64_syscal:
+	jmp	SHORT $LN43@x64_syscal
+$LN6@x64_syscal:
 
 ; 137  : 	case 36:
 ; 138  : 		funct = (uint64_t*)shm_unlink;
@@ -523,8 +524,8 @@ $LN5@x64_syscal:
 
 ; 139  : 		break;
 
-	jmp	SHORT $LN42@x64_syscal
-$LN4@x64_syscal:
+	jmp	SHORT $LN43@x64_syscal
+$LN5@x64_syscal:
 
 ; 140  : 	case 37:
 ; 141  : 		funct = (uint64_t*)sys_write_file;
@@ -534,8 +535,8 @@ $LN4@x64_syscal:
 
 ; 142  : 		break;
 
-	jmp	SHORT $LN42@x64_syscal
-$LN3@x64_syscal:
+	jmp	SHORT $LN43@x64_syscal
+$LN4@x64_syscal:
 
 ; 143  : 	case 38:
 ; 144  : 		funct = (uint64_t*)vfree;
@@ -545,8 +546,8 @@ $LN3@x64_syscal:
 
 ; 145  : 		break;
 
-	jmp	SHORT $LN42@x64_syscal
-$LN2@x64_syscal:
+	jmp	SHORT $LN43@x64_syscal
+$LN3@x64_syscal:
 
 ; 146  : 	case 39:
 ; 147  : 		funct = (uint64_t*)process_heap_break;
@@ -556,30 +557,43 @@ $LN2@x64_syscal:
 
 ; 148  : 		break;
 
-	jmp	SHORT $LN42@x64_syscal
-$LN1@x64_syscal:
+	jmp	SHORT $LN43@x64_syscal
+$LN2@x64_syscal:
 
 ; 149  : 	case 40:
 ; 150  : 		funct = (uint64_t*)sys_close_file; //dwm_dispatch_message;
 
 	lea	rax, OFFSET FLAT:?sys_close_file@@YAXH@Z ; sys_close_file
 	mov	QWORD PTR funct, rax
-$LN42@x64_syscal:
 
 ; 151  : 		break;
-; 152  : 	}
-; 153  : 
-; 154  : 	
-; 155  : 	//! update the function pointer to syscall table index
-; 156  : 	//funct = (uint64_t*)_syscalls[idx];
+
+	jmp	SHORT $LN43@x64_syscal
+$LN1@x64_syscal:
+
+; 152  : 	case 41:
+; 153  : 		funct = (uint64_t*)shm_unlink_direct; 
+
+	lea	rax, OFFSET FLAT:?shm_unlink_direct@@YAXI@Z ; shm_unlink_direct
+	mov	QWORD PTR funct, rax
+$LN43@x64_syscal:
+
+; 154  : 		break;
+; 155  : 	}
+; 156  : 	
 ; 157  : 
-; 158  : 	//return to the caller
-; 159  : }
+; 158  : 	
+; 159  : 	//! update the function pointer to syscall table index
+; 160  : 	//funct = (uint64_t*)_syscalls[idx];
+; 161  : 
+; 162  : 	//return to the caller
+; 163  : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
-	npad	2
-$LN49@x64_syscal:
+	npad	3
+$LN50@x64_syscal:
+	DD	$LN42@x64_syscal
 	DD	$LN41@x64_syscal
 	DD	$LN40@x64_syscal
 	DD	$LN39@x64_syscal

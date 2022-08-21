@@ -29,8 +29,7 @@ bool is_message_queue_empty () {
 
 //!simply find the process id and send the message
 void message_send (uint16_t dest_id, message_t *msg) {
-	x64_cli ();
-
+	x64_cli();
 	thread_t * dest_thread = thread_iterate_ready_list (dest_id);
 	if (!dest_thread) {
 		thread_t * blocked_thread = thread_iterate_block_list (dest_id);

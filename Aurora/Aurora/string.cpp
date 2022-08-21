@@ -18,6 +18,8 @@
 typedef size_t WT;
 #define WS (sizeof(WT))
 
+extern "C" void _fastcpy (void* dest, void* src, size_t count);
+
 void memset(void *targ, uint8_t val, uint32_t len){
 	uint8_t *t = (uint8_t*) targ;
 	while (len--)
@@ -46,11 +48,13 @@ int memcmp(const void *first, const void *second, size_t length)
 	return (0); //return successful code
 }
 
-void memcpy(void *dest, void *src, uint32_t count)
+void memcpy(void *dest, void *src, size_t count)
 {
-    const char *sp = (const char *)src;
+
+    /*const char *sp = (const char *)src;
     char *dp = (char *)dest;
-    for(; count != 0; count--) *dp++ = *sp++;
+    for(; count != 0; count--) *dp++ = *sp++;*/
+	_fastcpy(dest,src,count);
     //return dest;
 }
 

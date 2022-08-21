@@ -1,13 +1,32 @@
 /**
- *  Copyright (C) Manas Kamal Choudhury 2021
+ * BSD 2-Clause License
  *
- *  drvmngr.cpp -- Aurora's Xeneva Driver Manager
+ * Copyright (c) 2022, Manas Kamal Choudhury
+ * All rights reserved.
  *
- *  /PROJECT - Aurora Xeneva
- *  /AUTHOR  - Manas Kamal Choudhury
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
  *
- * ================================================
- */
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer.
+ *
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ *
+ **/
 
 #include <audrv.h>
 #include <pe.h>
@@ -23,8 +42,12 @@
 /* Drivers are located from 4 MiB of kernel address */
 #define AU_DRIVER_BASE_START   0xFFFFC00000400000  
 
+#define AU_MAX_SUPPORTED_DEVICE  256
+
 //!Global Variable for the program
 aurora_driver_t *drivers[256];
+aurora_device_t *au_devices[AU_MAX_SUPPORTED_DEVICE];
+static int devices_count;
 static uint32_t driver_class_unique_id = 0;
 static uint64_t driver_load_base = 0;
 
@@ -76,6 +99,7 @@ search:
 	fbuf = p;
 	p = strchr(fbuf,'[');
 	int venid ,devid = 0;
+	int pi = 0;
 	if (p)
 		p++;
 
@@ -103,6 +127,7 @@ search:
 	}
 	num[i] = 0;
 	devid = atoi(num);
+
 
 
 	if (vendor_id != venid || devid != device_id) {
@@ -215,6 +240,33 @@ void AuDriverLoadMem (uint8_t* mem) {
 	for(;;);
 }
 
+
+/*
+ * AuRegisterDevice -- registers a new device to 
+ * aurora system
+ * @param dev -- device structure to register
+ */
+AU_EXTERN AU_EXPORT void AuRegisterDevice (aurora_device_t *dev) {
+	au_devices[devices_count] = dev;
+	devices_count++;
+}
+
+/*
+ * AuCheckDevice -- checks an aurora device if it's already present
+ * @param classC -- class code of the device to check
+ * @param subclassC -- sub class code of the device to check
+ * @param prog_if -- programming interface of the device
+ */
+AU_EXTERN AU_EXPORT bool AuCheckDevice (uint16_t classC, uint16_t subclassC, uint8_t prog_if) {
+	for (int i = 0; i < devices_count; i++) 
+		if (au_devices[i]->class_code == classC &&
+			au_devices[i]->sub_class_code == subclassC &&
+			au_devices[i]->prog_if == prog_if)
+			return true;
+
+	return false;
+}
+
 /* 
  * AuDrvMngrInitialize -- Initialize the driver manager
  * @param info -- kernel boot info
@@ -222,6 +274,8 @@ void AuDriverLoadMem (uint8_t* mem) {
 void AuDrvMngrInitialize (KERNEL_BOOT_INFO *info) {
 	driver_class_unique_id = 0;
 	driver_load_base = AU_DRIVER_BASE_START;
+	devices_count = 0;
+
 	printf ("[aurora]: initializing drivers, please wait... \n");
 	/* Load the conf data */
 	uint64_t* conf = (uint64_t*)p2v((size_t)AuPmmngrAlloc());

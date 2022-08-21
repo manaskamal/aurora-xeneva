@@ -14,7 +14,7 @@ _BSS	SEGMENT
 ?first@@3_NA DB	01H DUP (?)				; first
 _BSS	ENDS
 CONST	SEGMENT
-$SG3738	DB	'Already present -> %x ', 0aH, 00H
+$SG3748	DB	'Already present -> %x ', 0aH, 00H
 CONST	ENDS
 PUBLIC	?pml4_index@@YA_K_K@Z				; pml4_index
 PUBLIC	?pdp_index@@YA_K_K@Z				; pdp_index
@@ -1343,7 +1343,7 @@ $LN2@AuMapPageE:
 ; 318  : 		printf ("Already present -> %x \n", virtual_address);
 
 	mov	rdx, QWORD PTR virtual_address$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3738
+	lea	rcx, OFFSET FLAT:$SG3748
 	call	printf
 
 ; 319  : 		return false;
