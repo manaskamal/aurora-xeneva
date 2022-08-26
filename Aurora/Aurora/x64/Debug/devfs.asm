@@ -6,8 +6,8 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 CONST	SEGMENT
-$SG3241	DB	'dev', 00H
-$SG3243	DB	'/dev', 00H
+$SG3244	DB	'dev', 00H
+$SG3246	DB	'/dev', 00H
 CONST	ENDS
 PUBLIC	?devfs_mount@@YAXXZ				; devfs_mount
 EXTRN	strcpy:PROC
@@ -38,13 +38,13 @@ $LN3:
 
 ; 17   : 	vfs_node_t *node = (vfs_node_t*)malloc(sizeof(vfs_node_t));
 
-	mov	ecx, 104				; 00000068H
+	mov	ecx, 112				; 00000070H
 	call	malloc
 	mov	QWORD PTR node$[rsp], rax
 
 ; 18   : 	memset(node, 0, sizeof(vfs_node_t));
 
-	mov	r8d, 104				; 00000068H
+	mov	r8d, 112				; 00000070H
 	xor	edx, edx
 	mov	rcx, QWORD PTR node$[rsp]
 	call	memset
@@ -52,7 +52,7 @@ $LN3:
 ; 19   : 	strcpy(node->filename, "dev");
 
 	mov	rax, QWORD PTR node$[rsp]
-	lea	rdx, OFFSET FLAT:$SG3241
+	lea	rdx, OFFSET FLAT:$SG3244
 	mov	rcx, rax
 	call	strcpy
 
@@ -71,7 +71,7 @@ $LN3:
 
 	mov	r8, QWORD PTR ent$[rsp]
 	mov	rdx, QWORD PTR node$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3243
+	lea	rcx, OFFSET FLAT:$SG3246
 	call	vfs_mkdir
 
 ; 24   : }

@@ -28,9 +28,9 @@ _BSS	SEGMENT
 ?_audio_stoped_@@3_NA DB 01H DUP (?)			; _audio_stoped_
 _BSS	ENDS
 CONST	SEGMENT
-$SG3972	DB	'dsp', 00H
+$SG3975	DB	'dsp', 00H
 	ORG $+4
-$SG3973	DB	'/dev/dsp', 00H
+$SG3976	DB	'/dev/dsp', 00H
 CONST	ENDS
 PUBLIC	?AuSoundInitialize@@YAXXZ			; AuSoundInitialize
 PUBLIC	AuSoundRegisterDevice
@@ -1164,14 +1164,14 @@ $LN3:
 
 ; 208  : 	vfs_node_t *dsp = (vfs_node_t*)malloc(sizeof(vfs_node_t));
 
-	mov	ecx, 104				; 00000068H
+	mov	ecx, 112				; 00000070H
 	call	malloc
 	mov	QWORD PTR dsp$[rsp], rax
 
 ; 209  : 	strcpy (dsp->filename, "dsp");
 
 	mov	rax, QWORD PTR dsp$[rsp]
-	lea	rdx, OFFSET FLAT:$SG3972
+	lea	rdx, OFFSET FLAT:$SG3975
 	mov	rcx, rax
 	call	strcpy
 
@@ -1225,19 +1225,19 @@ $LN3:
 ; 219  : 	dsp->read_blk = 0;
 
 	mov	rax, QWORD PTR dsp$[rsp]
-	mov	QWORD PTR [rax+88], 0
+	mov	QWORD PTR [rax+96], 0
 
 ; 220  : 	dsp->ioquery = AuSoundIOQuery;
 
 	mov	rax, QWORD PTR dsp$[rsp]
 	lea	rcx, OFFSET FLAT:?AuSoundIOQuery@@YAHPEAU_vfs_node_@@HPEAX@Z ; AuSoundIOQuery
-	mov	QWORD PTR [rax+96], rcx
+	mov	QWORD PTR [rax+104], rcx
 
 ; 221  : 	vfs_mount ("/dev/dsp", dsp, 0);
 
 	xor	r8d, r8d
 	mov	rdx, QWORD PTR dsp$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3973
+	lea	rcx, OFFSET FLAT:$SG3976
 	call	vfs_mount
 
 ; 222  : 

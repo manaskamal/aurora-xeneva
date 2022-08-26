@@ -10,11 +10,11 @@ _BSS	SEGMENT
 ?window_manager_thr@@3PEAU_thread_@@EA DQ 01H DUP (?)	; window_manager_thr
 _BSS	ENDS
 CONST	SEGMENT
-$SG3660	DB	'Allocating new File ', 0dH, 0aH, 00H
+$SG3663	DB	'Allocating new File ', 0dH, 0aH, 00H
 	ORG $+1
-$SG3664	DB	'mouse', 00H
+$SG3667	DB	'mouse', 00H
 	ORG $+2
-$SG3665	DB	'/dev/mouse', 00H
+$SG3668	DB	'/dev/mouse', 00H
 CONST	ENDS
 PUBLIC	?AuPointDevInitialize@@YAXXZ			; AuPointDevInitialize
 PUBLIC	?PointDevPutMessage@@YAXPEAU_dwm_message_@@@Z	; PointDevPutMessage
@@ -319,13 +319,13 @@ $LN3:
 
 ; 59   : 	_debug_print_ ("Allocating new File \r\n");
 
-	lea	rcx, OFFSET FLAT:$SG3660
+	lea	rcx, OFFSET FLAT:$SG3663
 	call	_debug_print_
 
 ; 60   : 
 ; 61   : 	vfs_node_t *node = (vfs_node_t*)malloc(sizeof(vfs_node_t));
 
-	mov	ecx, 104				; 00000068H
+	mov	ecx, 112				; 00000070H
 	call	malloc
 	mov	QWORD PTR node$[rsp], rax
 
@@ -333,7 +333,7 @@ $LN3:
 ; 63   : 	strcpy (node->filename, "mouse");
 
 	mov	rax, QWORD PTR node$[rsp]
-	lea	rdx, OFFSET FLAT:$SG3664
+	lea	rdx, OFFSET FLAT:$SG3667
 	mov	rcx, rax
 	call	strcpy
 
@@ -386,19 +386,19 @@ $LN3:
 ; 73   : 	node->read_blk = 0;
 
 	mov	rax, QWORD PTR node$[rsp]
-	mov	QWORD PTR [rax+88], 0
+	mov	QWORD PTR [rax+96], 0
 
 ; 74   : 	node->ioquery = mouse_ioquery;
 
 	mov	rax, QWORD PTR node$[rsp]
 	lea	rcx, OFFSET FLAT:?mouse_ioquery@@YAHPEAU_vfs_node_@@HPEAX@Z ; mouse_ioquery
-	mov	QWORD PTR [rax+96], rcx
+	mov	QWORD PTR [rax+104], rcx
 
 ; 75   : 	vfs_mount ("/dev/mouse", node, 0);
 
 	xor	r8d, r8d
 	mov	rdx, QWORD PTR node$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3665
+	lea	rcx, OFFSET FLAT:$SG3668
 	call	vfs_mount
 
 ; 76   : 	window_manager_thr = NULL;

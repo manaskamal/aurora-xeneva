@@ -80,6 +80,7 @@ typedef _vfs_node_* (*open_callback) (_vfs_node_ *node, char* path);
 typedef size_t (*read_callback) (_vfs_node_ *file, uint64_t* buffer,uint32_t length);
 typedef size_t (*read_block_callback) (_vfs_node_ *file, uint64_t* buffer);
 typedef void (*write_callback) (_vfs_node_ *file, uint64_t* buffer, uint32_t length);
+typedef int (*close_callback) (_vfs_node_ *file);
 typedef int (*ioquery_callback) (_vfs_node_ *file, int code, void *arg);
 
 //! The File Node -- everything is file
@@ -95,6 +96,7 @@ typedef struct _vfs_node_ {
 	open_callback open;
 	read_callback read;
 	write_callback write;
+	close_callback close;
 	read_block_callback read_blk;
 	ioquery_callback ioquery;
 }vfs_node_t;

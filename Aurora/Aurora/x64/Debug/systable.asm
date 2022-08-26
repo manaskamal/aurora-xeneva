@@ -10,7 +10,7 @@ _BSS	SEGMENT
 funct	DQ	01H DUP (?)
 _BSS	ENDS
 CONST	SEGMENT
-$SG4315	DB	'System Call Fault!! Halting System', 0aH, 00H
+$SG4317	DB	'System Call Fault!! Halting System', 0aH, 00H
 CONST	ENDS
 PUBLIC	x64_syscall_handler
 EXTRN	printf:PROC
@@ -43,7 +43,7 @@ EXTRN	?copy_memory@@YAXG_K0@Z:PROC			; copy_memory
 EXTRN	?sys_copy_fd@@YAHHHH@Z:PROC			; sys_copy_fd
 EXTRN	?unmap_memory@@YAXPEAXI@Z:PROC			; unmap_memory
 EXTRN	?ttype_create@@YAHPEAH0@Z:PROC			; ttype_create
-EXTRN	?allocate_pipe@@YAXPEAHPEAD@Z:PROC		; allocate_pipe
+EXTRN	?AuAllocAnonPipe@@YAXQEAH@Z:PROC		; AuAllocAnonPipe
 EXTRN	?create_timer@@YAHIG@Z:PROC			; create_timer
 EXTRN	?destroy_timer@@YAXH@Z:PROC			; destroy_timer
 EXTRN	?pause_timer@@YAXH@Z:PROC			; pause_timer
@@ -96,7 +96,7 @@ $LN51:
 
 ; 24   : 		printf ("System Call Fault!! Halting System\n");
 
-	lea	rcx, OFFSET FLAT:$SG4315
+	lea	rcx, OFFSET FLAT:$SG4317
 	call	printf
 $LN46@x64_syscal:
 
@@ -297,9 +297,9 @@ $LN27@x64_syscal:
 $LN26@x64_syscal:
 
 ; 77   : 	case 16:
-; 78   : 		funct = (uint64_t*)allocate_pipe;
+; 78   : 		funct = (uint64_t*)AuAllocAnonPipe;
 
-	lea	rax, OFFSET FLAT:?allocate_pipe@@YAXPEAHPEAD@Z ; allocate_pipe
+	lea	rax, OFFSET FLAT:?AuAllocAnonPipe@@YAXQEAH@Z ; AuAllocAnonPipe
 	mov	QWORD PTR funct, rax
 
 ; 79   : 		break;

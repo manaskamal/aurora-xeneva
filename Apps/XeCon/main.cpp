@@ -62,6 +62,7 @@ XE_EXTERN int XeMain (int argc, char* argv[]) {
 
 
 	int pid = create_process("/ptest.exe", "ptest");
+	sys_print_text ("PTEST PID -> %d \r\n", pid);
 	sys_copy_fd(pid, slave_fd, 0);
 
 	pri_event_t ev;
@@ -92,6 +93,6 @@ XE_EXTERN int XeMain (int argc, char* argv[]) {
 
 		}
 
-		sys_sleep(1000);
+		sys_sleep(100);
 	}
 }

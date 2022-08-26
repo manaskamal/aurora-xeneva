@@ -10,27 +10,27 @@ _BSS	SEGMENT
 ?root_dir@@3PEAU_vfs_entry_@@EA DQ 01H DUP (?)		; root_dir
 _BSS	ENDS
 CONST	SEGMENT
-$SG3608	DB	'[VFS]: Mounting filesystem to root failed, already in us'
+$SG3611	DB	'[VFS]: Mounting filesystem to root failed, already in us'
 	DB	'e', 0aH, 00H
 	ORG $+5
-$SG3636	DB	'Recursively calling for -> %s ', 0dH, 0aH, 00H
+$SG3639	DB	'Recursively calling for -> %s ', 0dH, 0aH, 00H
 	ORG $+7
-$SG3637	DB	'[vfs]: already mounted -> %s ', 0dH, 0aH, 00H
-$SG3639	DB	'Not found entry -> %s ', 0dH, 0aH, 00H
+$SG3640	DB	'[vfs]: already mounted -> %s ', 0dH, 0aH, 00H
+$SG3642	DB	'Not found entry -> %s ', 0dH, 0aH, 00H
 	ORG $+7
-$SG3641	DB	'Mounting path -> %s, creating entry ', 0dH, 0aH, 00H
+$SG3644	DB	'Mounting path -> %s, creating entry ', 0dH, 0aH, 00H
 	ORG $+1
-$SG3643	DB	'Entry created -> %x ', 0dH, 0aH, 00H
+$SG3646	DB	'Entry created -> %x ', 0dH, 0aH, 00H
 	ORG $+1
-$SG3645	DB	'Ent->child -> %x %x nodes-> %d ', 0dH, 0aH, 00H
+$SG3648	DB	'Ent->child -> %x %x nodes-> %d ', 0dH, 0aH, 00H
 	ORG $+6
-$SG3646	DB	'List added %x ', 0dH, 0aH, 00H
+$SG3649	DB	'List added %x ', 0dH, 0aH, 00H
 	ORG $+7
-$SG3685	DB	'Directory', 00H
+$SG3688	DB	'Directory', 00H
 	ORG $+2
-$SG3688	DB	'File', 00H
+$SG3691	DB	'File', 00H
 	ORG $+7
-$SG3689	DB	'%s -> %s ', 0aH, 00H
+$SG3692	DB	'%s -> %s ', 0aH, 00H
 CONST	ENDS
 PUBLIC	?AuVFSInit@@YAXXZ				; AuVFSInit
 PUBLIC	?vfs_finddir@@YAPEAU_vfs_node_@@PEAD@Z		; vfs_finddir
@@ -142,7 +142,7 @@ $LN4:
 	mov	edx, DWORD PTR code$[rsp]
 	mov	rcx, QWORD PTR node$[rsp]
 	mov	rax, QWORD PTR node$[rsp]
-	call	QWORD PTR [rax+96]
+	call	QWORD PTR [rax+104]
 $LN1@vfs_ioquer:
 
 ; 71   : 	}
@@ -178,7 +178,7 @@ $LN4:
 	mov	rdx, QWORD PTR buffer$[rsp]
 	mov	rcx, QWORD PTR file$[rsp]
 	mov	rax, QWORD PTR node$[rsp]
-	call	QWORD PTR [rax+88]
+	call	QWORD PTR [rax+96]
 	jmp	SHORT $LN2@readfs_blo
 $LN1@readfs_blo:
 
@@ -579,7 +579,7 @@ $LN6@vfs_lsdir:
 
 ; 327  : 				type = "Directory";
 
-	lea	rax, OFFSET FLAT:$SG3685
+	lea	rax, OFFSET FLAT:$SG3688
 	mov	QWORD PTR type$5[rsp], rax
 	jmp	SHORT $LN2@vfs_lsdir
 $LN3@vfs_lsdir:
@@ -593,7 +593,7 @@ $LN3@vfs_lsdir:
 
 ; 329  : 				type = "File";
 
-	lea	rax, OFFSET FLAT:$SG3688
+	lea	rax, OFFSET FLAT:$SG3691
 	mov	QWORD PTR type$5[rsp], rax
 $LN1@vfs_lsdir:
 $LN2@vfs_lsdir:
@@ -603,7 +603,7 @@ $LN2@vfs_lsdir:
 	mov	rax, QWORD PTR f$6[rsp]
 	mov	r8, rax
 	mov	rdx, QWORD PTR type$5[rsp]
-	lea	rcx, OFFSET FLAT:$SG3689
+	lea	rcx, OFFSET FLAT:$SG3692
 	call	printf
 
 ; 331  : 		}
@@ -672,7 +672,7 @@ $LN23:
 
 ; 216  : 			_debug_print_ ("[VFS]: Mounting filesystem to root failed, already in use\n");
 
-	lea	rcx, OFFSET FLAT:$SG3608
+	lea	rcx, OFFSET FLAT:$SG3611
 	call	_debug_print_
 
 ; 217  : 			return;   //Already a root filesystem is present
@@ -900,7 +900,7 @@ $LN16@vfs_mount:
 ; 261  : 			_debug_print_ ("Recursively calling for -> %s \r\n", path);
 
 	mov	rdx, QWORD PTR path$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3636
+	lea	rcx, OFFSET FLAT:$SG3639
 	call	_debug_print_
 
 ; 262  : 			vfs_mount(path,node,ent);
@@ -915,7 +915,7 @@ $LN3@vfs_mount:
 ; 264  : 		_debug_print_ ("[vfs]: already mounted -> %s \r\n", path);
 
 	mov	rdx, QWORD PTR path$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3637
+	lea	rcx, OFFSET FLAT:$SG3640
 	call	_debug_print_
 
 ; 265  : 		return;
@@ -934,7 +934,7 @@ $LN4@vfs_mount:
 ; 269  : 		_debug_print_ ("Not found entry -> %s \r\n", path);
 
 	mov	rdx, QWORD PTR path$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3639
+	lea	rcx, OFFSET FLAT:$SG3642
 	call	_debug_print_
 
 ; 270  : 		if (entry_found) {
@@ -945,7 +945,7 @@ $LN4@vfs_mount:
 ; 271  : 			_debug_print_ ("Mounting path -> %s, creating entry \r\n", path);
 
 	mov	rdx, QWORD PTR path$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3641
+	lea	rcx, OFFSET FLAT:$SG3644
 	call	_debug_print_
 
 ; 272  : 			vfs_entry* entryn = vfs_mkentry();
@@ -956,7 +956,7 @@ $LN4@vfs_mount:
 ; 273  : 			_debug_print_ ("Entry created -> %x \r\n", entryn);
 
 	mov	rdx, QWORD PTR entryn$4[rsp]
-	lea	rcx, OFFSET FLAT:$SG3643
+	lea	rcx, OFFSET FLAT:$SG3646
 	call	_debug_print_
 
 ; 274  : 			vfs_mkdir(path,node,entryn);
@@ -970,11 +970,11 @@ $LN1@vfs_mount:
 ; 275  : 		}
 ; 276  : 		_debug_print_ ("Ent->child -> %x %x nodes-> %d \r\n", ent->childs, node, sizeof(vfs_node_t));
 
-	mov	r9d, 104				; 00000068H
+	mov	r9d, 112				; 00000070H
 	mov	r8, QWORD PTR node$[rsp]
 	mov	rax, QWORD PTR ent$[rsp]
 	mov	rdx, QWORD PTR [rax+8]
-	lea	rcx, OFFSET FLAT:$SG3645
+	lea	rcx, OFFSET FLAT:$SG3648
 	call	_debug_print_
 
 ; 277  : 		list_add(ent->childs, node);
@@ -988,7 +988,7 @@ $LN1@vfs_mount:
 
 	mov	rax, QWORD PTR ent$[rsp]
 	mov	rdx, QWORD PTR [rax+8]
-	lea	rcx, OFFSET FLAT:$SG3646
+	lea	rcx, OFFSET FLAT:$SG3649
 	call	_debug_print_
 $LN2@vfs_mount:
 $LN21@vfs_mount:

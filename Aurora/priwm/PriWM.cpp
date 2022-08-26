@@ -924,22 +924,23 @@ void compose_frame () {
 				//	if (pri_check_intersect(&r1, &r2)) {
 				//		/* Now calculate the clip rects and add it to 
 				//		 * clip_rect list */
-				//		//pri_calculate_clip_rects(&r2, &r1, clip_rect, &clip_count);
-				//		clip_info->dirty = 1;
+				//		pri_calculate_clip_rects(&r2, &r1, clip_rect, &clip_count);
+				//		//clip_info->dirty = 1;
 				//	}
 				//}
-
+		
 				for (int i = 0; i < he; i++)  {
 					/* Align the count to 16 byte boundary */
 					memcpy_sse2(canvas->address + (winy + i) * canvas->width + winx, win->backing_store + (0 + i) * info->width + 0,
 					(wid/16)*4-1);
 				}
-				
-					
+
 				
 			}
+
 			
 			pri_add_clip (winx, winy, wid, he);
+
 			info->rect_count = 0;
 			info->dirty = 0;
 		}

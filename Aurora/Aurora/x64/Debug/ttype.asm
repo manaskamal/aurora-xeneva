@@ -16,13 +16,13 @@ _BSS	SEGMENT
 ?last@@3PEAU_tele_type_@@EA DQ 01H DUP (?)		; last
 _BSS	ENDS
 CONST	SEGMENT
-$SG3713	DB	'/dev/', 00H
+$SG3716	DB	'/dev/', 00H
 	ORG $+2
-$SG3714	DB	'ttym', 00H
+$SG3717	DB	'ttym', 00H
 	ORG $+3
-$SG3722	DB	'/dev/', 00H
+$SG3725	DB	'/dev/', 00H
 	ORG $+2
-$SG3723	DB	'ttys', 00H
+$SG3726	DB	'ttys', 00H
 CONST	ENDS
 PUBLIC	?ttype_init@@YAXXZ				; ttype_init
 PUBLIC	?ttype_create_master@@YAPEAU_vfs_node_@@PEAU_tele_type_@@@Z ; ttype_create_master
@@ -1190,7 +1190,7 @@ $LN3:
 ; 265  : 
 ; 266  : 	vfs_node_t *node = (vfs_node_t*)malloc(sizeof(vfs_node_t));
 
-	mov	ecx, 104				; 00000068H
+	mov	ecx, 112				; 00000070H
 	call	malloc
 	mov	QWORD PTR node$[rsp], rax
 
@@ -1198,14 +1198,14 @@ $LN3:
 ; 268  : 	char sname[10];
 ; 269  : 	strcpy (sname, "/dev/");
 
-	lea	rdx, OFFSET FLAT:$SG3722
+	lea	rdx, OFFSET FLAT:$SG3725
 	lea	rcx, QWORD PTR sname$[rsp]
 	call	strcpy
 
 ; 270  : 	strcpy (sname+5, "ttys");
 
 	lea	rax, QWORD PTR sname$[rsp+5]
-	lea	rdx, OFFSET FLAT:$SG3723
+	lea	rdx, OFFSET FLAT:$SG3726
 	mov	rcx, rax
 	call	strcpy
 
@@ -1287,13 +1287,13 @@ $LN3:
 ; 285  : 	node->read_blk = 0;
 
 	mov	rax, QWORD PTR node$[rsp]
-	mov	QWORD PTR [rax+88], 0
+	mov	QWORD PTR [rax+96], 0
 
 ; 286  : 	node->ioquery = tty_ioquery;
 
 	mov	rax, QWORD PTR node$[rsp]
 	lea	rcx, OFFSET FLAT:?tty_ioquery@@YAHPEAU_vfs_node_@@HPEAX@Z ; tty_ioquery
-	mov	QWORD PTR [rax+96], rcx
+	mov	QWORD PTR [rax+104], rcx
 
 ; 287  : 
 ; 288  : 	vfs_mount(sname,node,0);
@@ -1330,7 +1330,7 @@ $LN3:
 ; 232  : 
 ; 233  : 	vfs_node_t *node = (vfs_node_t*)malloc(sizeof(vfs_node_t));
 
-	mov	ecx, 104				; 00000068H
+	mov	ecx, 112				; 00000070H
 	call	malloc
 	mov	QWORD PTR node$[rsp], rax
 
@@ -1338,14 +1338,14 @@ $LN3:
 ; 235  : 	char mname[10];
 ; 236  : 	strcpy (mname, "/dev/");
 
-	lea	rdx, OFFSET FLAT:$SG3713
+	lea	rdx, OFFSET FLAT:$SG3716
 	lea	rcx, QWORD PTR mname$[rsp]
 	call	strcpy
 
 ; 237  : 	strcpy (mname+5, "ttym");
 
 	lea	rax, QWORD PTR mname$[rsp+5]
-	lea	rdx, OFFSET FLAT:$SG3714
+	lea	rdx, OFFSET FLAT:$SG3717
 	mov	rcx, rax
 	call	strcpy
 
@@ -1427,13 +1427,13 @@ $LN3:
 ; 252  : 	node->read_blk = 0;
 
 	mov	rax, QWORD PTR node$[rsp]
-	mov	QWORD PTR [rax+88], 0
+	mov	QWORD PTR [rax+96], 0
 
 ; 253  : 	node->ioquery = tty_ioquery;
 
 	mov	rax, QWORD PTR node$[rsp]
 	lea	rcx, OFFSET FLAT:?tty_ioquery@@YAHPEAU_vfs_node_@@HPEAX@Z ; tty_ioquery
-	mov	QWORD PTR [rax+96], rcx
+	mov	QWORD PTR [rax+104], rcx
 
 ; 254  : 
 ; 255  : 	vfs_mount(mname,node,0);

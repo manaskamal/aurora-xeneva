@@ -1,25 +1,49 @@
-///!!  Copyright (C) Manas Kamal Choudhury 2021
-///!!
-///!!  pipe.cpp -- Pipes
-///!!
-///!!  /PROJECT - Aurora's Xeneva
-///!!  /AUTHOR  - Manas Kamal Choudhury
-///!!
-///!!  needs completion
-///!!==============================================
+/**
+ * BSD 2-Clause License
+ *
+ * Copyright (c) 2022, Manas Kamal Choudhury
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer.
+ *
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * @pipe.cpp -- Pipes IPC
+ *
+ **/
 
 #include <ipc\pipe.h>
 #include <arch\x86_64\mmngr\kheap.h>
 #include <arch\x86_64\thread.h>
 #include <stdio.h>
 
-int pipe_count = 0;
 
+#define MAX_PIPE_BUFFER_SZ   1024
 
-pipe_t* pipe_create () {
-	unsigned char *p = (unsigned char*)AuPmmngrAlloc();  //Main Buffer
-	circ_buf_t *circ = circ_buf_init((unsigned char*)p,4096);
-	pipe_t *pipe = (pipe_t*)AuPmmngrAlloc();
+/*
+ * AuCreatePipe -- Create a pipe buffer
+ */
+pipe_t* AuCreatePipe () {
+	unsigned char *p = (unsigned char*)malloc(MAX_PIPE_BUFFER_SZ);  //Main Buffer
+	circ_buf_t *circ = circ_buf_init((unsigned char*)p,MAX_PIPE_BUFFER_SZ);
+	pipe_t *pipe = (pipe_t*)malloc(sizeof(pipe_t));
 	pipe->buf = circ;
 	pipe->readers = 0;
 	pipe->writers = 0;
@@ -43,33 +67,31 @@ void pipe_write (vfs_node_t *file, uint64_t* buffer, uint32_t length) {
 	}
 }
 
+/*
+ * pipe_close -- closes a pipe and frees its node
+ * @param file -- file node
+ */
+int pipe_close (vfs_node_t *file) {
+	if (file->device)
+		free(file->device);
+
+	free(file);
+	return 0;
+}
 
 
-void allocate_pipe (int *fd, char* name) {
+/*
+ * AuAllocAnonPipe -- Creates anonymous pipe
+ * @param fd[2] -- area where two file descriptor
+ * get stored, one for read end and other for
+ * write end
+ */
+void AuAllocAnonPipe (int fd[2]) {
 
-	///!=========================================
-	///!  Allocate new node for read
-	///!=========================================
-	pipe_t *p = pipe_create();
-	char p_value[2];
-	sztoa(pipe_count, p_value,10);
-
-	char pipe_name[10];
-	if (name)
-		strcpy(pipe_name, name);
-	else {
-		strcpy(pipe_name, "pipe");
-		strcpy (pipe_name + strlen(pipe_name)-1, p_value);
-	}
-	
-
-	char path_name[10];
-	strcpy(path_name, "/dev/");
-	strcpy (path_name + strlen(path_name)-1, pipe_name);
-
+	pipe_t *p = AuCreatePipe();
 	
 	vfs_node_t *readn = (vfs_node_t*)malloc(sizeof(vfs_node_t));
-	strcpy(readn->filename, pipe_name);
+	strcpy(readn->filename, "AuPipe");
 	readn->size = 0;
 	readn->eof = 0;
 	readn->pos = 0;
@@ -79,17 +101,38 @@ void allocate_pipe (int *fd, char* name) {
 	readn->open = 0;
 	readn->device = p;
 	readn->read = pipe_read;
-	readn->write = pipe_write;
+	readn->write = 0;
 	readn->read_blk = 0;
 	readn->ioquery = 0;
-	vfs_mount (path_name, readn, 0);
+	readn->close = pipe_close;
 
+	vfs_node_t *writen = (vfs_node_t*)malloc(sizeof(vfs_node_t));
+	strcpy(writen->filename, "AuPipe");
+	writen->size = 0;
+	writen->eof = 0;
+	writen->pos = 0;
+	writen->current = 0;
+	writen->flags = FS_FLAG_GENERAL | FS_FLAG_DEVICE;
+	writen->status = 0;
+	writen->open = 0;
+	writen->device = p;
+	writen->write = pipe_write;
+	writen->read = 0;
+	writen->read_blk = 0;
+	writen->ioquery = 0;
+	writen->close = pipe_close;
+	
+	/* Read End */
 	thread_t * t = get_current_thread();
 	t->fd[t->fd_current] = readn;
-	*fd = t->fd_current;
+	fd[0] = t->fd_current;
+	t->fd_current++;
+
+	/* Write End */
+	t->fd[t->fd_current] = writen;
+	fd[1] = t->fd_current;
 	t->fd_current++;
 	
-	pipe_count++;
 }
 
 

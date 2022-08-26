@@ -19,9 +19,9 @@ apic_timer_count DD 01H DUP (?)
 ?ap_started@@3_NA DB 01H DUP (?)			; ap_started
 _BSS	ENDS
 CONST	SEGMENT
-$SG3400	DB	'APIC TSC-Deadline supported ', 0aH, 00H
+$SG3403	DB	'APIC TSC-Deadline supported ', 0aH, 00H
 	ORG $+2
-$SG3409	DB	'New APIC -> %x', 0aH, 00H
+$SG3412	DB	'New APIC -> %x', 0aH, 00H
 CONST	ENDS
 PUBLIC	?initialize_apic@@YAX_N@Z			; initialize_apic
 PUBLIC	apic_local_eoi
@@ -418,7 +418,7 @@ $LN3:
 ; 201  : 	printf ("New APIC -> %x\n", apic);
 
 	mov	rdx, QWORD PTR apic
-	lea	rcx, OFFSET FLAT:$SG3409
+	lea	rcx, OFFSET FLAT:$SG3412
 	call	printf
 
 ; 202  : }
@@ -1131,7 +1131,7 @@ $LN3@initialize:
 
 ; 172  : 		printf ("APIC TSC-Deadline supported \n");
 
-	lea	rcx, OFFSET FLAT:$SG3400
+	lea	rcx, OFFSET FLAT:$SG3403
 	call	printf
 $LN2@initialize:
 

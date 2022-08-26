@@ -252,9 +252,6 @@
     <ClInclude Include="..\include\error.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\ipc\pipe.h">
-      <Filter>include\ipc</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\utils\circ_buf.h">
       <Filter>include\utils</Filter>
     </ClInclude>
@@ -371,6 +368,9 @@
     </ClInclude>
     <ClInclude Include="..\include\arch\x86_64\x86_64_signal.h">
       <Filter>include\arch\x86_64</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\ipc\pipe.h">
+      <Filter>include\ipc</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -518,9 +518,6 @@
     <ClCompile Include="utils\circ_buf.cpp">
       <Filter>source\utils</Filter>
     </ClCompile>
-    <ClCompile Include="utils\pipe.cpp">
-      <Filter>source\ipc</Filter>
-    </ClCompile>
     <ClCompile Include="fs\vfs.cpp">
       <Filter>source\fs</Filter>
     </ClCompile>
@@ -610,6 +607,9 @@
     </ClCompile>
     <ClCompile Include="arch\x86_64\x86_64_signal.cpp">
       <Filter>source\arch\x86_64</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\pipe.cpp">
+      <Filter>source\ipc</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

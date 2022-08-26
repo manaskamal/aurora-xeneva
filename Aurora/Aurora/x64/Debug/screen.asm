@@ -10,12 +10,12 @@ _BSS	SEGMENT
 ?display@@3U__display__@@A DB 020H DUP (?)		; display
 _BSS	ENDS
 CONST	SEGMENT
-$SG3298	DB	'fb', 00H
+$SG3301	DB	'fb', 00H
 	ORG $+5
-$SG3299	DB	'VFS Node created', 0aH, 00H
+$SG3302	DB	'VFS Node created', 0aH, 00H
 	ORG $+6
-$SG3300	DB	'/dev/fb', 00H
-$SG3301	DB	'VFS DEV FB Registered', 0aH, 00H
+$SG3303	DB	'/dev/fb', 00H
+$SG3304	DB	'VFS DEV FB Registered', 0aH, 00H
 CONST	ENDS
 PUBLIC	?AuInitializeScreen@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z ; AuInitializeScreen
 PUBLIC	?AuScreenMap@@YAXII@Z				; AuScreenMap
@@ -432,14 +432,14 @@ $LN9:
 ; 47   : 	 */
 ; 48   : 	vfs_node_t * svga = (vfs_node_t*)malloc(sizeof(vfs_node_t)); //AuPmmngrAlloc(); 
 
-	mov	ecx, 104				; 00000068H
+	mov	ecx, 112				; 00000070H
 	call	malloc
 	mov	QWORD PTR svga$[rsp], rax
 
 ; 49   : 	strcpy (svga->filename, "fb");
 
 	mov	rax, QWORD PTR svga$[rsp]
-	lea	rdx, OFFSET FLAT:$SG3298
+	lea	rdx, OFFSET FLAT:$SG3301
 	mov	rcx, rax
 	call	strcpy
 
@@ -491,29 +491,29 @@ $LN9:
 ; 59   : 	svga->read_blk = 0;
 
 	mov	rax, QWORD PTR svga$[rsp]
-	mov	QWORD PTR [rax+88], 0
+	mov	QWORD PTR [rax+96], 0
 
 ; 60   : 	svga->ioquery = screen_io_query;
 
 	mov	rax, QWORD PTR svga$[rsp]
 	lea	rcx, OFFSET FLAT:?screen_io_query@@YAHPEAU_vfs_node_@@HPEAX@Z ; screen_io_query
-	mov	QWORD PTR [rax+96], rcx
+	mov	QWORD PTR [rax+104], rcx
 
 ; 61   : 	printf ("VFS Node created\n");
 
-	lea	rcx, OFFSET FLAT:$SG3299
+	lea	rcx, OFFSET FLAT:$SG3302
 	call	printf
 
 ; 62   : 	vfs_mount ("/dev/fb", svga, 0);
 
 	xor	r8d, r8d
 	mov	rdx, QWORD PTR svga$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3300
+	lea	rcx, OFFSET FLAT:$SG3303
 	call	vfs_mount
 
 ; 63   : 	printf ("VFS DEV FB Registered\n");
 
-	lea	rcx, OFFSET FLAT:$SG3301
+	lea	rcx, OFFSET FLAT:$SG3304
 	call	printf
 
 ; 64   : 

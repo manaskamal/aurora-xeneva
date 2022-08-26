@@ -32,34 +32,34 @@ _BSS	SEGMENT
 ?root_dir_cache@@3PEAEEA DQ 01H DUP (?)			; root_dir_cache
 _BSS	ENDS
 CONST	SEGMENT
-$SG3777	DB	'FAT32 BOOT PARAMETER BLOCK ', 0dH, 0aH, 00H
+$SG3780	DB	'FAT32 BOOT PARAMETER BLOCK ', 0dH, 0aH, 00H
 	ORG $+2
-$SG3778	DB	'Bytes/Sector -> %d ', 0dH, 0aH, 00H
+$SG3781	DB	'Bytes/Sector -> %d ', 0dH, 0aH, 00H
 	ORG $+2
-$SG3779	DB	'Sectors/Cluster -> %d ', 0dH, 0aH, 00H
+$SG3782	DB	'Sectors/Cluster -> %d ', 0dH, 0aH, 00H
 	ORG $+3
-$SG3788	DB	'%c', 00H
+$SG3791	DB	'%c', 00H
 	ORG $+1
-$SG3780	DB	'Reserved Sectors -> %d ', 0dH, 0aH, 00H
+$SG3783	DB	'Reserved Sectors -> %d ', 0dH, 0aH, 00H
 	ORG $+2
-$SG3789	DB	0dH, 0aH, 00H
+$SG3792	DB	0dH, 0aH, 00H
 	ORG $+1
-$SG3781	DB	'Number Of FATs -> %d ', 0dH, 0aH, 00H
-$SG3782	DB	'Root Base Cluster -> %d ', 0dH, 0aH, 00H
+$SG3784	DB	'Number Of FATs -> %d ', 0dH, 0aH, 00H
+$SG3785	DB	'Root Base Cluster -> %d ', 0dH, 0aH, 00H
 	ORG $+1
-$SG3794	DB	'%c', 00H
+$SG3797	DB	'%c', 00H
 	ORG $+1
-$SG3783	DB	'Sector/FAT32 -> %d ', 0dH, 0aH, 00H
+$SG3786	DB	'Sector/FAT32 -> %d ', 0dH, 0aH, 00H
 	ORG $+2
-$SG3795	DB	0dH, 0aH, 00H
+$SG3798	DB	0dH, 0aH, 00H
 	ORG $+1
-$SG3984	DB	'/', 00H
+$SG3987	DB	'/', 00H
 	ORG $+2
-$SG3796	DB	'FAT32 Total clusters -> %d ', 0dH, 0aH, 00H
+$SG3799	DB	'FAT32 Total clusters -> %d ', 0dH, 0aH, 00H
 	ORG $+2
-$SG3985	DB	'/', 00H
+$SG3988	DB	'/', 00H
 	ORG $+6
-$SG3986	DB	'File System registered', 0aH, 00H
+$SG3989	DB	'File System registered', 0aH, 00H
 CONST	ENDS
 PUBLIC	?initialize_fat32@@YAXXZ			; initialize_fat32
 PUBLIC	?fat32_open@@YAPEAU_vfs_node_@@PEAU1@PEAD@Z	; fat32_open
@@ -274,7 +274,7 @@ $LN12:
 ; 304  : 
 ; 305  : 	vfs_node_t *file = (vfs_node_t*)malloc(sizeof(vfs_node_t));
 
-	mov	ecx, 104				; 00000068H
+	mov	ecx, 112				; 00000070H
 	call	malloc
 	mov	QWORD PTR file$[rsp], rax
 
@@ -999,14 +999,14 @@ $LN3:
 
 ; 484  : 	vfs_node_t *fsys = (vfs_node_t*)malloc(sizeof(vfs_node_t));
 
-	mov	ecx, 104				; 00000068H
+	mov	ecx, 112				; 00000070H
 	call	malloc
 	mov	QWORD PTR fsys$[rsp], rax
 
 ; 485  : 	strcpy (fsys->filename, "/");
 
 	mov	rax, QWORD PTR fsys$[rsp]
-	lea	rdx, OFFSET FLAT:$SG3984
+	lea	rdx, OFFSET FLAT:$SG3987
 	mov	rcx, rax
 	call	strcpy
 
@@ -1061,23 +1061,23 @@ $LN3:
 
 	mov	rax, QWORD PTR fsys$[rsp]
 	lea	rcx, OFFSET FLAT:?fat32_read@@YA_KPEAU_vfs_node_@@PEA_K@Z ; fat32_read
-	mov	QWORD PTR [rax+88], rcx
+	mov	QWORD PTR [rax+96], rcx
 
 ; 496  : 	fsys->ioquery = 0;
 
 	mov	rax, QWORD PTR fsys$[rsp]
-	mov	QWORD PTR [rax+96], 0
+	mov	QWORD PTR [rax+104], 0
 
 ; 497  : 	vfs_mount ("/", fsys, 0);
 
 	xor	r8d, r8d
 	mov	rdx, QWORD PTR fsys$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3985
+	lea	rcx, OFFSET FLAT:$SG3988
 	call	vfs_mount
 
 ; 498  : 	printf ("File System registered\n");
 
-	lea	rcx, OFFSET FLAT:$SG3986
+	lea	rcx, OFFSET FLAT:$SG3989
 	call	printf
 
 ; 499  : }
@@ -1109,7 +1109,7 @@ $LN12:
 
 ; 251  : 	vfs_node_t *file = (vfs_node_t*)malloc(sizeof(vfs_node_t));
 
-	mov	ecx, 104				; 00000068H
+	mov	ecx, 112				; 00000070H
 	call	malloc
 	mov	QWORD PTR file$[rsp], rax
 
@@ -1836,7 +1836,7 @@ $LN9:
 ; 81   : #ifdef _DEBUG_ON_
 ; 82   : 	_debug_print_ ("FAT32 BOOT PARAMETER BLOCK \r\n");
 
-	lea	rcx, OFFSET FLAT:$SG3777
+	lea	rcx, OFFSET FLAT:$SG3780
 	call	_debug_print_
 
 ; 83   : 	_debug_print_ ("Bytes/Sector -> %d \r\n", fat32_data->bytes_per_sector);
@@ -1844,7 +1844,7 @@ $LN9:
 	mov	rax, QWORD PTR fat32_data$[rsp]
 	movzx	eax, WORD PTR [rax+11]
 	mov	edx, eax
-	lea	rcx, OFFSET FLAT:$SG3778
+	lea	rcx, OFFSET FLAT:$SG3781
 	call	_debug_print_
 
 ; 84   : 	_debug_print_ ("Sectors/Cluster -> %d \r\n", fat32_data->sectors_per_cluster);
@@ -1852,7 +1852,7 @@ $LN9:
 	mov	rax, QWORD PTR fat32_data$[rsp]
 	movzx	eax, BYTE PTR [rax+13]
 	mov	edx, eax
-	lea	rcx, OFFSET FLAT:$SG3779
+	lea	rcx, OFFSET FLAT:$SG3782
 	call	_debug_print_
 
 ; 85   : 	_debug_print_ ("Reserved Sectors -> %d \r\n", fat32_data->reserved_sectors);
@@ -1860,7 +1860,7 @@ $LN9:
 	mov	rax, QWORD PTR fat32_data$[rsp]
 	movzx	eax, WORD PTR [rax+14]
 	mov	edx, eax
-	lea	rcx, OFFSET FLAT:$SG3780
+	lea	rcx, OFFSET FLAT:$SG3783
 	call	_debug_print_
 
 ; 86   : 	_debug_print_ ("Number Of FATs -> %d \r\n", fat32_data->num_fats);
@@ -1868,21 +1868,21 @@ $LN9:
 	mov	rax, QWORD PTR fat32_data$[rsp]
 	movzx	eax, BYTE PTR [rax+16]
 	mov	edx, eax
-	lea	rcx, OFFSET FLAT:$SG3781
+	lea	rcx, OFFSET FLAT:$SG3784
 	call	_debug_print_
 
 ; 87   : 	_debug_print_ ("Root Base Cluster -> %d \r\n", fat32_data->info.FAT32.root_dir_cluster);
 
 	mov	rax, QWORD PTR fat32_data$[rsp]
 	mov	edx, DWORD PTR [rax+44]
-	lea	rcx, OFFSET FLAT:$SG3782
+	lea	rcx, OFFSET FLAT:$SG3785
 	call	_debug_print_
 
 ; 88   : 	_debug_print_ ("Sector/FAT32 -> %d \r\n", fat32_data->info.FAT32.sect_per_fat32);
 
 	mov	rax, QWORD PTR fat32_data$[rsp]
 	mov	edx, DWORD PTR [rax+36]
-	lea	rcx, OFFSET FLAT:$SG3783
+	lea	rcx, OFFSET FLAT:$SG3786
 	call	_debug_print_
 
 ; 89   : 
@@ -1905,7 +1905,7 @@ $LN6@initialize:
 	mov	rcx, QWORD PTR fat32_data$[rsp]
 	movsx	eax, BYTE PTR [rcx+rax+71]
 	mov	edx, eax
-	lea	rcx, OFFSET FLAT:$SG3788
+	lea	rcx, OFFSET FLAT:$SG3791
 	call	_debug_print_
 
 ; 93   : 	}
@@ -1916,7 +1916,7 @@ $LN4@initialize:
 ; 94   : 
 ; 95   : 	_debug_print_ ("\r\n");
 
-	lea	rcx, OFFSET FLAT:$SG3789
+	lea	rcx, OFFSET FLAT:$SG3792
 	call	_debug_print_
 
 ; 96   : 
@@ -1938,7 +1938,7 @@ $LN3@initialize:
 	mov	rcx, QWORD PTR fat32_data$[rsp]
 	movsx	eax, BYTE PTR [rcx+rax+82]
 	mov	edx, eax
-	lea	rcx, OFFSET FLAT:$SG3794
+	lea	rcx, OFFSET FLAT:$SG3797
 	call	_debug_print_
 
 ; 99   : 	}
@@ -1949,7 +1949,7 @@ $LN1@initialize:
 ; 100  : 
 ; 101  : 	_debug_print_ ("\r\n");
 
-	lea	rcx, OFFSET FLAT:$SG3795
+	lea	rcx, OFFSET FLAT:$SG3798
 	call	_debug_print_
 
 ; 102  : #endif
@@ -2016,7 +2016,7 @@ $LN1@initialize:
 ; 111  : 	_debug_print_ ("FAT32 Total clusters -> %d \r\n", total_clusters);
 
 	mov	edx, DWORD PTR ?total_clusters@@3IA	; total_clusters
-	lea	rcx, OFFSET FLAT:$SG3796
+	lea	rcx, OFFSET FLAT:$SG3799
 	call	_debug_print_
 
 ; 112  : 

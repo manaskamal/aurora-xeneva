@@ -75,7 +75,7 @@ extern "C" void x64_syscall_handler (int a) {
 		funct = (uint64_t*)pause_timer;
 		break;
 	case 16:
-		funct = (uint64_t*)allocate_pipe;
+		funct = (uint64_t*)AuAllocAnonPipe;
 		break;
 	case 17:
 		funct = (uint64_t*)sys_unblock_id;

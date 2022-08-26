@@ -5,53 +5,93 @@ include listing.inc
 INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
-PUBLIC	?pipe_count@@3HA				; pipe_count
-_BSS	SEGMENT
-?pipe_count@@3HA DD 01H DUP (?)				; pipe_count
-_BSS	ENDS
 CONST	SEGMENT
-$SG3598	DB	'pipe', 00H
-	ORG $+3
-$SG3600	DB	'/dev/', 00H
+$SG3602	DB	'AuPipe', 00H
+	ORG $+1
+$SG3606	DB	'AuPipe', 00H
 CONST	ENDS
-PUBLIC	?pipe_create@@YAPEAU_pipe_@@XZ			; pipe_create
-PUBLIC	?allocate_pipe@@YAXPEAHPEAD@Z			; allocate_pipe
+PUBLIC	?AuCreatePipe@@YAPEAU_pipe_@@XZ			; AuCreatePipe
+PUBLIC	?AuAllocAnonPipe@@YAXQEAH@Z			; AuAllocAnonPipe
 PUBLIC	?pipe_read@@YA_KPEAU_vfs_node_@@PEA_KI@Z	; pipe_read
 PUBLIC	?pipe_write@@YAXPEAU_vfs_node_@@PEA_KI@Z	; pipe_write
+PUBLIC	?pipe_close@@YAHPEAU_vfs_node_@@@Z		; pipe_close
 EXTRN	?circ_buf_init@@YAPEAU_circ_buf_@@PEAE_K@Z:PROC	; circ_buf_init
 EXTRN	?circular_buf_put@@YAXPEAU_circ_buf_@@E@Z:PROC	; circular_buf_put
 EXTRN	?circular_buf_get@@YAHPEAU_circ_buf_@@PEAE@Z:PROC ; circular_buf_get
 EXTRN	strcpy:PROC
-EXTRN	strlen:PROC
-EXTRN	vfs_mount:PROC
-EXTRN	AuPmmngrAlloc:PROC
 EXTRN	malloc:PROC
+EXTRN	free:PROC
 EXTRN	get_current_thread:PROC
-EXTRN	?sztoa@@YAPEAD_KPEADH@Z:PROC			; sztoa
 pdata	SEGMENT
-$pdata$?pipe_create@@YAPEAU_pipe_@@XZ DD imagerel $LN3
-	DD	imagerel $LN3+91
-	DD	imagerel $unwind$?pipe_create@@YAPEAU_pipe_@@XZ
-$pdata$?allocate_pipe@@YAXPEAHPEAD@Z DD imagerel $LN5
-	DD	imagerel $LN5+465
-	DD	imagerel $unwind$?allocate_pipe@@YAXPEAHPEAD@Z
+$pdata$?AuCreatePipe@@YAPEAU_pipe_@@XZ DD imagerel $LN3
+	DD	imagerel $LN3+99
+	DD	imagerel $unwind$?AuCreatePipe@@YAPEAU_pipe_@@XZ
+$pdata$?AuAllocAnonPipe@@YAXQEAH@Z DD imagerel $LN3
+	DD	imagerel $LN3+590
+	DD	imagerel $unwind$?AuAllocAnonPipe@@YAXQEAH@Z
 $pdata$?pipe_read@@YA_KPEAU_vfs_node_@@PEA_KI@Z DD imagerel $LN6
 	DD	imagerel $LN6+105
 	DD	imagerel $unwind$?pipe_read@@YA_KPEAU_vfs_node_@@PEA_KI@Z
 $pdata$?pipe_write@@YAXPEAU_vfs_node_@@PEA_KI@Z DD imagerel $LN6
 	DD	imagerel $LN6+97
 	DD	imagerel $unwind$?pipe_write@@YAXPEAU_vfs_node_@@PEA_KI@Z
+$pdata$?pipe_close@@YAHPEAU_vfs_node_@@@Z DD imagerel $LN4
+	DD	imagerel $LN4+52
+	DD	imagerel $unwind$?pipe_close@@YAHPEAU_vfs_node_@@@Z
 pdata	ENDS
 xdata	SEGMENT
-$unwind$?pipe_create@@YAPEAU_pipe_@@XZ DD 010401H
+$unwind$?AuCreatePipe@@YAPEAU_pipe_@@XZ DD 010401H
 	DD	08204H
-$unwind$?allocate_pipe@@YAXPEAHPEAD@Z DD 010e01H
-	DD	0c20eH
+$unwind$?AuAllocAnonPipe@@YAXQEAH@Z DD 010901H
+	DD	08209H
 $unwind$?pipe_read@@YA_KPEAU_vfs_node_@@PEA_KI@Z DD 011301H
 	DD	06213H
 $unwind$?pipe_write@@YAXPEAU_vfs_node_@@PEA_KI@Z DD 011301H
 	DD	06213H
+$unwind$?pipe_close@@YAHPEAU_vfs_node_@@@Z DD 010901H
+	DD	04209H
 xdata	ENDS
+; Function compile flags: /Odtpy
+; File e:\xeneva project\xeneva\aurora\aurora\utils\pipe.cpp
+_TEXT	SEGMENT
+file$ = 48
+?pipe_close@@YAHPEAU_vfs_node_@@@Z PROC			; pipe_close
+
+; 74   : int pipe_close (vfs_node_t *file) {
+
+$LN4:
+	mov	QWORD PTR [rsp+8], rcx
+	sub	rsp, 40					; 00000028H
+
+; 75   : 	if (file->device)
+
+	mov	rax, QWORD PTR file$[rsp]
+	cmp	QWORD PTR [rax+56], 0
+	je	SHORT $LN1@pipe_close
+
+; 76   : 		free(file->device);
+
+	mov	rax, QWORD PTR file$[rsp]
+	mov	rcx, QWORD PTR [rax+56]
+	call	free
+$LN1@pipe_close:
+
+; 77   : 
+; 78   : 	free(file);
+
+	mov	rcx, QWORD PTR file$[rsp]
+	call	free
+
+; 79   : 	return 0;
+
+	xor	eax, eax
+
+; 80   : }
+
+	add	rsp, 40					; 00000028H
+	ret	0
+?pipe_close@@YAHPEAU_vfs_node_@@@Z ENDP			; pipe_close
+_TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\utils\pipe.cpp
 _TEXT	SEGMENT
@@ -62,7 +102,7 @@ buffer$ = 72
 length$ = 80
 ?pipe_write@@YAXPEAU_vfs_node_@@PEA_KI@Z PROC		; pipe_write
 
-; 39   : void pipe_write (vfs_node_t *file, uint64_t* buffer, uint32_t length) {
+; 63   : void pipe_write (vfs_node_t *file, uint64_t* buffer, uint32_t length) {
 
 $LN6:
 	mov	DWORD PTR [rsp+24], r8d
@@ -70,13 +110,13 @@ $LN6:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 56					; 00000038H
 
-; 40   : 	pipe_t *p = (pipe_t*)file->device;
+; 64   : 	pipe_t *p = (pipe_t*)file->device;
 
 	mov	rax, QWORD PTR file$[rsp]
 	mov	rax, QWORD PTR [rax+56]
 	mov	QWORD PTR p$[rsp], rax
 
-; 41   : 	for (int i = 0; i < length; i++) {
+; 65   : 	for (int i = 0; i < length; i++) {
 
 	mov	DWORD PTR i$1[rsp], 0
 	jmp	SHORT $LN3@pipe_write
@@ -89,7 +129,7 @@ $LN3@pipe_write:
 	cmp	DWORD PTR i$1[rsp], eax
 	jae	SHORT $LN1@pipe_write
 
-; 42   : 		circular_buf_put(p->buf, buffer[i]);
+; 66   : 		circular_buf_put(p->buf, buffer[i]);
 
 	movsxd	rax, DWORD PTR i$1[rsp]
 	mov	rcx, QWORD PTR buffer$[rsp]
@@ -98,12 +138,12 @@ $LN3@pipe_write:
 	mov	rcx, QWORD PTR [rax]
 	call	?circular_buf_put@@YAXPEAU_circ_buf_@@E@Z ; circular_buf_put
 
-; 43   : 	}
+; 67   : 	}
 
 	jmp	SHORT $LN2@pipe_write
 $LN1@pipe_write:
 
-; 44   : }
+; 68   : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -119,7 +159,7 @@ buffer$ = 72
 length$ = 80
 ?pipe_read@@YA_KPEAU_vfs_node_@@PEA_KI@Z PROC		; pipe_read
 
-; 30   : size_t pipe_read (vfs_node_t *file, uint64_t* buffer,uint32_t length) {
+; 54   : size_t pipe_read (vfs_node_t *file, uint64_t* buffer,uint32_t length) {
 
 $LN6:
 	mov	DWORD PTR [rsp+24], r8d
@@ -127,13 +167,13 @@ $LN6:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 56					; 00000038H
 
-; 31   : 	pipe_t *p = (pipe_t*)file->device;
+; 55   : 	pipe_t *p = (pipe_t*)file->device;
 
 	mov	rax, QWORD PTR file$[rsp]
 	mov	rax, QWORD PTR [rax+56]
 	mov	QWORD PTR p$[rsp], rax
 
-; 32   : 	for (int i = 0; i < length; i++)
+; 56   : 	for (int i = 0; i < length; i++)
 
 	mov	DWORD PTR i$1[rsp], 0
 	jmp	SHORT $LN3@pipe_read
@@ -146,7 +186,7 @@ $LN3@pipe_read:
 	cmp	DWORD PTR i$1[rsp], eax
 	jae	SHORT $LN1@pipe_read
 
-; 33   : 		circular_buf_get (p->buf,(uint8_t*)&buffer[i]);
+; 57   : 		circular_buf_get (p->buf,(uint8_t*)&buffer[i]);
 
 	movsxd	rax, DWORD PTR i$1[rsp]
 	mov	rcx, QWORD PTR buffer$[rsp]
@@ -158,12 +198,12 @@ $LN3@pipe_read:
 	jmp	SHORT $LN2@pipe_read
 $LN1@pipe_read:
 
-; 34   : 
-; 35   : 	return 1;
+; 58   : 
+; 59   : 	return 1;
 
 	mov	eax, 1
 
-; 36   : }
+; 60   : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -172,186 +212,197 @@ _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\utils\pipe.cpp
 _TEXT	SEGMENT
-p_value$ = 32
-readn$ = 40
+readn$ = 32
+writen$ = 40
 t$ = 48
 p$ = 56
-pipe_name$ = 64
-path_name$ = 80
-fd$ = 112
-name$ = 120
-?allocate_pipe@@YAXPEAHPEAD@Z PROC			; allocate_pipe
+fd$ = 80
+?AuAllocAnonPipe@@YAXQEAH@Z PROC			; AuAllocAnonPipe
 
-; 48   : void allocate_pipe (int *fd, char* name) {
+; 89   : void AuAllocAnonPipe (int fd[2]) {
 
-$LN5:
-	mov	QWORD PTR [rsp+16], rdx
+$LN3:
 	mov	QWORD PTR [rsp+8], rcx
-	sub	rsp, 104				; 00000068H
+	sub	rsp, 72					; 00000048H
 
-; 49   : 
-; 50   : 	///!=========================================
-; 51   : 	///!  Allocate new node for read
-; 52   : 	///!=========================================
-; 53   : 	pipe_t *p = pipe_create();
+; 90   : 
+; 91   : 	pipe_t *p = AuCreatePipe();
 
-	call	?pipe_create@@YAPEAU_pipe_@@XZ		; pipe_create
+	call	?AuCreatePipe@@YAPEAU_pipe_@@XZ		; AuCreatePipe
 	mov	QWORD PTR p$[rsp], rax
 
-; 54   : 	char p_value[2];
-; 55   : 	sztoa(pipe_count, p_value,10);
+; 92   : 	
+; 93   : 	vfs_node_t *readn = (vfs_node_t*)malloc(sizeof(vfs_node_t));
 
-	movsxd	rax, DWORD PTR ?pipe_count@@3HA		; pipe_count
-	mov	r8d, 10
-	lea	rdx, QWORD PTR p_value$[rsp]
-	mov	rcx, rax
-	call	?sztoa@@YAPEAD_KPEADH@Z			; sztoa
-
-; 56   : 
-; 57   : 	char pipe_name[10];
-; 58   : 	if (name)
-
-	cmp	QWORD PTR name$[rsp], 0
-	je	SHORT $LN2@allocate_p
-
-; 59   : 		strcpy(pipe_name, name);
-
-	mov	rdx, QWORD PTR name$[rsp]
-	lea	rcx, QWORD PTR pipe_name$[rsp]
-	call	strcpy
-
-; 60   : 	else {
-
-	jmp	SHORT $LN1@allocate_p
-$LN2@allocate_p:
-
-; 61   : 		strcpy(pipe_name, "pipe");
-
-	lea	rdx, OFFSET FLAT:$SG3598
-	lea	rcx, QWORD PTR pipe_name$[rsp]
-	call	strcpy
-
-; 62   : 		strcpy (pipe_name + strlen(pipe_name)-1, p_value);
-
-	lea	rcx, QWORD PTR pipe_name$[rsp]
-	call	strlen
-	lea	rax, QWORD PTR pipe_name$[rsp+rax-1]
-	lea	rdx, QWORD PTR p_value$[rsp]
-	mov	rcx, rax
-	call	strcpy
-$LN1@allocate_p:
-
-; 63   : 	}
-; 64   : 	
-; 65   : 
-; 66   : 	char path_name[10];
-; 67   : 	strcpy(path_name, "/dev/");
-
-	lea	rdx, OFFSET FLAT:$SG3600
-	lea	rcx, QWORD PTR path_name$[rsp]
-	call	strcpy
-
-; 68   : 	strcpy (path_name + strlen(path_name)-1, pipe_name);
-
-	lea	rcx, QWORD PTR path_name$[rsp]
-	call	strlen
-	lea	rax, QWORD PTR path_name$[rsp+rax-1]
-	lea	rdx, QWORD PTR pipe_name$[rsp]
-	mov	rcx, rax
-	call	strcpy
-
-; 69   : 
-; 70   : 	
-; 71   : 	vfs_node_t *readn = (vfs_node_t*)malloc(sizeof(vfs_node_t));
-
-	mov	ecx, 104				; 00000068H
+	mov	ecx, 112				; 00000070H
 	call	malloc
 	mov	QWORD PTR readn$[rsp], rax
 
-; 72   : 	strcpy(readn->filename, pipe_name);
+; 94   : 	strcpy(readn->filename, "AuPipe");
 
 	mov	rax, QWORD PTR readn$[rsp]
-	lea	rdx, QWORD PTR pipe_name$[rsp]
+	lea	rdx, OFFSET FLAT:$SG3602
 	mov	rcx, rax
 	call	strcpy
 
-; 73   : 	readn->size = 0;
+; 95   : 	readn->size = 0;
 
 	mov	rax, QWORD PTR readn$[rsp]
 	mov	DWORD PTR [rax+32], 0
 
-; 74   : 	readn->eof = 0;
+; 96   : 	readn->eof = 0;
 
 	mov	rax, QWORD PTR readn$[rsp]
 	mov	BYTE PTR [rax+36], 0
 
-; 75   : 	readn->pos = 0;
+; 97   : 	readn->pos = 0;
 
 	mov	rax, QWORD PTR readn$[rsp]
 	mov	DWORD PTR [rax+40], 0
 
-; 76   : 	readn->current = 0;
+; 98   : 	readn->current = 0;
 
 	mov	rax, QWORD PTR readn$[rsp]
 	mov	DWORD PTR [rax+44], 0
 
-; 77   : 	readn->flags = FS_FLAG_GENERAL | FS_FLAG_DEVICE;
+; 99   : 	readn->flags = FS_FLAG_GENERAL | FS_FLAG_DEVICE;
 
 	mov	rax, QWORD PTR readn$[rsp]
 	mov	BYTE PTR [rax+48], 12
 
-; 78   : 	readn->status = 0;
+; 100  : 	readn->status = 0;
 
 	mov	rax, QWORD PTR readn$[rsp]
 	mov	BYTE PTR [rax+49], 0
 
-; 79   : 	readn->open = 0;
+; 101  : 	readn->open = 0;
 
 	mov	rax, QWORD PTR readn$[rsp]
 	mov	QWORD PTR [rax+64], 0
 
-; 80   : 	readn->device = p;
+; 102  : 	readn->device = p;
 
 	mov	rax, QWORD PTR readn$[rsp]
 	mov	rcx, QWORD PTR p$[rsp]
 	mov	QWORD PTR [rax+56], rcx
 
-; 81   : 	readn->read = pipe_read;
+; 103  : 	readn->read = pipe_read;
 
 	mov	rax, QWORD PTR readn$[rsp]
 	lea	rcx, OFFSET FLAT:?pipe_read@@YA_KPEAU_vfs_node_@@PEA_KI@Z ; pipe_read
 	mov	QWORD PTR [rax+72], rcx
 
-; 82   : 	readn->write = pipe_write;
+; 104  : 	readn->write = 0;
 
 	mov	rax, QWORD PTR readn$[rsp]
-	lea	rcx, OFFSET FLAT:?pipe_write@@YAXPEAU_vfs_node_@@PEA_KI@Z ; pipe_write
-	mov	QWORD PTR [rax+80], rcx
+	mov	QWORD PTR [rax+80], 0
 
-; 83   : 	readn->read_blk = 0;
-
-	mov	rax, QWORD PTR readn$[rsp]
-	mov	QWORD PTR [rax+88], 0
-
-; 84   : 	readn->ioquery = 0;
+; 105  : 	readn->read_blk = 0;
 
 	mov	rax, QWORD PTR readn$[rsp]
 	mov	QWORD PTR [rax+96], 0
 
-; 85   : 	vfs_mount (path_name, readn, 0);
+; 106  : 	readn->ioquery = 0;
 
-	xor	r8d, r8d
-	mov	rdx, QWORD PTR readn$[rsp]
-	lea	rcx, QWORD PTR path_name$[rsp]
-	call	vfs_mount
+	mov	rax, QWORD PTR readn$[rsp]
+	mov	QWORD PTR [rax+104], 0
 
-; 86   : 
-; 87   : 	thread_t * t = get_current_thread();
+; 107  : 	readn->close = pipe_close;
+
+	mov	rax, QWORD PTR readn$[rsp]
+	lea	rcx, OFFSET FLAT:?pipe_close@@YAHPEAU_vfs_node_@@@Z ; pipe_close
+	mov	QWORD PTR [rax+88], rcx
+
+; 108  : 
+; 109  : 	vfs_node_t *writen = (vfs_node_t*)malloc(sizeof(vfs_node_t));
+
+	mov	ecx, 112				; 00000070H
+	call	malloc
+	mov	QWORD PTR writen$[rsp], rax
+
+; 110  : 	strcpy(writen->filename, "AuPipe");
+
+	mov	rax, QWORD PTR writen$[rsp]
+	lea	rdx, OFFSET FLAT:$SG3606
+	mov	rcx, rax
+	call	strcpy
+
+; 111  : 	writen->size = 0;
+
+	mov	rax, QWORD PTR writen$[rsp]
+	mov	DWORD PTR [rax+32], 0
+
+; 112  : 	writen->eof = 0;
+
+	mov	rax, QWORD PTR writen$[rsp]
+	mov	BYTE PTR [rax+36], 0
+
+; 113  : 	writen->pos = 0;
+
+	mov	rax, QWORD PTR writen$[rsp]
+	mov	DWORD PTR [rax+40], 0
+
+; 114  : 	writen->current = 0;
+
+	mov	rax, QWORD PTR writen$[rsp]
+	mov	DWORD PTR [rax+44], 0
+
+; 115  : 	writen->flags = FS_FLAG_GENERAL | FS_FLAG_DEVICE;
+
+	mov	rax, QWORD PTR writen$[rsp]
+	mov	BYTE PTR [rax+48], 12
+
+; 116  : 	writen->status = 0;
+
+	mov	rax, QWORD PTR writen$[rsp]
+	mov	BYTE PTR [rax+49], 0
+
+; 117  : 	writen->open = 0;
+
+	mov	rax, QWORD PTR writen$[rsp]
+	mov	QWORD PTR [rax+64], 0
+
+; 118  : 	writen->device = p;
+
+	mov	rax, QWORD PTR writen$[rsp]
+	mov	rcx, QWORD PTR p$[rsp]
+	mov	QWORD PTR [rax+56], rcx
+
+; 119  : 	writen->write = pipe_write;
+
+	mov	rax, QWORD PTR writen$[rsp]
+	lea	rcx, OFFSET FLAT:?pipe_write@@YAXPEAU_vfs_node_@@PEA_KI@Z ; pipe_write
+	mov	QWORD PTR [rax+80], rcx
+
+; 120  : 	writen->read = 0;
+
+	mov	rax, QWORD PTR writen$[rsp]
+	mov	QWORD PTR [rax+72], 0
+
+; 121  : 	writen->read_blk = 0;
+
+	mov	rax, QWORD PTR writen$[rsp]
+	mov	QWORD PTR [rax+96], 0
+
+; 122  : 	writen->ioquery = 0;
+
+	mov	rax, QWORD PTR writen$[rsp]
+	mov	QWORD PTR [rax+104], 0
+
+; 123  : 	writen->close = pipe_close;
+
+	mov	rax, QWORD PTR writen$[rsp]
+	lea	rcx, OFFSET FLAT:?pipe_close@@YAHPEAU_vfs_node_@@@Z ; pipe_close
+	mov	QWORD PTR [rax+88], rcx
+
+; 124  : 	
+; 125  : 	/* Read End */
+; 126  : 	thread_t * t = get_current_thread();
 
 	call	get_current_thread
 	mov	QWORD PTR t$[rsp], rax
 
-; 88   : 	t->fd[t->fd_current] = readn;
+; 127  : 	t->fd[t->fd_current] = readn;
 
 	mov	rax, QWORD PTR t$[rsp]
 	movsxd	rax, DWORD PTR [rax+744]
@@ -359,14 +410,16 @@ $LN1@allocate_p:
 	mov	rdx, QWORD PTR readn$[rsp]
 	mov	QWORD PTR [rcx+rax*8+264], rdx
 
-; 89   : 	*fd = t->fd_current;
+; 128  : 	fd[0] = t->fd_current;
 
-	mov	rax, QWORD PTR fd$[rsp]
-	mov	rcx, QWORD PTR t$[rsp]
-	mov	ecx, DWORD PTR [rcx+744]
-	mov	DWORD PTR [rax], ecx
+	mov	eax, 4
+	imul	rax, 0
+	mov	rcx, QWORD PTR fd$[rsp]
+	mov	rdx, QWORD PTR t$[rsp]
+	mov	edx, DWORD PTR [rdx+744]
+	mov	DWORD PTR [rcx+rax], edx
 
-; 90   : 	t->fd_current++;
+; 129  : 	t->fd_current++;
 
 	mov	rax, QWORD PTR t$[rsp]
 	mov	eax, DWORD PTR [rax+744]
@@ -374,18 +427,39 @@ $LN1@allocate_p:
 	mov	rcx, QWORD PTR t$[rsp]
 	mov	DWORD PTR [rcx+744], eax
 
-; 91   : 	
-; 92   : 	pipe_count++;
+; 130  : 
+; 131  : 	/* Write End */
+; 132  : 	t->fd[t->fd_current] = writen;
 
-	mov	eax, DWORD PTR ?pipe_count@@3HA		; pipe_count
+	mov	rax, QWORD PTR t$[rsp]
+	movsxd	rax, DWORD PTR [rax+744]
+	mov	rcx, QWORD PTR t$[rsp]
+	mov	rdx, QWORD PTR writen$[rsp]
+	mov	QWORD PTR [rcx+rax*8+264], rdx
+
+; 133  : 	fd[1] = t->fd_current;
+
+	mov	eax, 4
+	imul	rax, 1
+	mov	rcx, QWORD PTR fd$[rsp]
+	mov	rdx, QWORD PTR t$[rsp]
+	mov	edx, DWORD PTR [rdx+744]
+	mov	DWORD PTR [rcx+rax], edx
+
+; 134  : 	t->fd_current++;
+
+	mov	rax, QWORD PTR t$[rsp]
+	mov	eax, DWORD PTR [rax+744]
 	inc	eax
-	mov	DWORD PTR ?pipe_count@@3HA, eax		; pipe_count
+	mov	rcx, QWORD PTR t$[rsp]
+	mov	DWORD PTR [rcx+744], eax
 
-; 93   : }
+; 135  : 	
+; 136  : }
 
-	add	rsp, 104				; 00000068H
+	add	rsp, 72					; 00000048H
 	ret	0
-?allocate_pipe@@YAXPEAHPEAD@Z ENDP			; allocate_pipe
+?AuAllocAnonPipe@@YAXQEAH@Z ENDP			; AuAllocAnonPipe
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\utils\pipe.cpp
@@ -393,54 +467,58 @@ _TEXT	SEGMENT
 pipe$ = 32
 p$ = 40
 circ$ = 48
-?pipe_create@@YAPEAU_pipe_@@XZ PROC			; pipe_create
+?AuCreatePipe@@YAPEAU_pipe_@@XZ PROC			; AuCreatePipe
 
-; 19   : pipe_t* pipe_create () {
+; 43   : pipe_t* AuCreatePipe () {
 
 $LN3:
 	sub	rsp, 72					; 00000048H
 
-; 20   : 	unsigned char *p = (unsigned char*)AuPmmngrAlloc();  //Main Buffer
+; 44   : 	unsigned char *p = (unsigned char*)malloc(MAX_PIPE_BUFFER_SZ);  //Main Buffer
 
-	call	AuPmmngrAlloc
+	mov	ecx, 1024				; 00000400H
+	call	malloc
 	mov	QWORD PTR p$[rsp], rax
 
-; 21   : 	circ_buf_t *circ = circ_buf_init((unsigned char*)p,4096);
+; 45   : 	circ_buf_t *circ = circ_buf_init((unsigned char*)p,MAX_PIPE_BUFFER_SZ);
 
-	mov	edx, 4096				; 00001000H
+	mov	edx, 1024				; 00000400H
 	mov	rcx, QWORD PTR p$[rsp]
 	call	?circ_buf_init@@YAPEAU_circ_buf_@@PEAE_K@Z ; circ_buf_init
 	mov	QWORD PTR circ$[rsp], rax
 
-; 22   : 	pipe_t *pipe = (pipe_t*)AuPmmngrAlloc();
+; 46   : 	pipe_t *pipe = (pipe_t*)malloc(sizeof(pipe_t));
 
-	call	AuPmmngrAlloc
+	mov	ecx, 16
+	call	malloc
 	mov	QWORD PTR pipe$[rsp], rax
 
-; 23   : 	pipe->buf = circ;
+; 47   : 	pipe->buf = circ;
 
 	mov	rax, QWORD PTR pipe$[rsp]
 	mov	rcx, QWORD PTR circ$[rsp]
 	mov	QWORD PTR [rax], rcx
 
-; 24   : 	pipe->readers = 0;
+; 48   : 	pipe->readers = 0;
+
+	xor	eax, eax
+	mov	rcx, QWORD PTR pipe$[rsp]
+	mov	WORD PTR [rcx+8], ax
+
+; 49   : 	pipe->writers = 0;
+
+	xor	eax, eax
+	mov	rcx, QWORD PTR pipe$[rsp]
+	mov	WORD PTR [rcx+10], ax
+
+; 50   : 	return pipe;
 
 	mov	rax, QWORD PTR pipe$[rsp]
-	mov	DWORD PTR [rax+8], 0
 
-; 25   : 	pipe->writers = 0;
-
-	mov	rax, QWORD PTR pipe$[rsp]
-	mov	DWORD PTR [rax+12], 0
-
-; 26   : 	return pipe;
-
-	mov	rax, QWORD PTR pipe$[rsp]
-
-; 27   : }
+; 51   : }
 
 	add	rsp, 72					; 00000048H
 	ret	0
-?pipe_create@@YAPEAU_pipe_@@XZ ENDP			; pipe_create
+?AuCreatePipe@@YAPEAU_pipe_@@XZ ENDP			; AuCreatePipe
 _TEXT	ENDS
 END

@@ -6,12 +6,12 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 CONST	SEGMENT
-$SG4037	DB	'***Process killed ', 0dH, 0aH, 00H
+$SG4040	DB	'***Process killed ', 0dH, 0aH, 00H
 	ORG $+3
-$SG4038	DB	'*** Current used RAM -> %d MB / total -> %d MB ', 0dH, 0aH
+$SG4041	DB	'*** Current used RAM -> %d MB / total -> %d MB ', 0dH, 0aH
 	DB	00H
 	ORG $+2
-$SG4054	DB	'Loop', 00H
+$SG4057	DB	'Loop', 00H
 CONST	ENDS
 PUBLIC	?create__sys_process@@YAHPEBDPEAD@Z		; create__sys_process
 PUBLIC	?sys_exit@@YAXXZ				; sys_exit
@@ -107,7 +107,7 @@ $LN2@sig_loop_t:
 ; 90   : 	for(;;) {
 ; 91   : 		_debug_print_ ("Loop");
 
-	lea	rcx, OFFSET FLAT:$SG4054
+	lea	rcx, OFFSET FLAT:$SG4057
 	call	_debug_print_
 
 ; 92   : 	}
@@ -224,7 +224,7 @@ $LN3:
 
 ; 57   : 	_debug_print_ ("***Process killed \r\n");
 
-	lea	rcx, OFFSET FLAT:$SG4037
+	lea	rcx, OFFSET FLAT:$SG4040
 	call	_debug_print_
 
 ; 58   : 	_debug_print_ ("*** Current used RAM -> %d MB / total -> %d MB \r\n", pmmngr_get_used_ram() / 1024 / 1024, pmmngr_get_total_ram() / 1024 / 1024);
@@ -247,7 +247,7 @@ $LN3:
 	mov	rcx, QWORD PTR tv67[rsp]
 	mov	r8, rcx
 	mov	rdx, rax
-	lea	rcx, OFFSET FLAT:$SG4038
+	lea	rcx, OFFSET FLAT:$SG4041
 	call	_debug_print_
 
 ; 59   : 	force_sched();

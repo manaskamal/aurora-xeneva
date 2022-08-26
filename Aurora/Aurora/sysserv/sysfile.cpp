@@ -183,10 +183,12 @@ void sys_write_file (int fd, uint64* buffer, FILE *ufile) {
 	}
 
 	if (ufile) {
-		if (ufile->flags)
+		if (ufile->flags){
 			writefs(node, &file,buffer,file.size);
-	}else
+		}
+	}else {
 		writefs(node, node, buffer,4096);
+	}
 }
 
 /*
