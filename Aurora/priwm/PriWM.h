@@ -47,6 +47,7 @@
 #define PRI_CHANGE_WALLPAPER 106
 #define PRI_RESIZE_ACK  107  //!! Resize acknowledgement send to server by clients
 #define PRI_WIN_RESIZE  108
+#define PRI_WIN_SET_PROPERTIES 109
 
 /* Messages that are being send to client by server */
 #define DAISY_WIN_MOVE  200

@@ -908,26 +908,26 @@ void compose_frame () {
 				r1.w = wid;
 				r1.h = he;
 
-				//pri_rect_t clip_rect[512];
-				//int clip_count = 0;
-				//pri_window_t *clip_win = NULL;
-				//pri_win_info_t *clip_info = NULL;
-				//for (clip_win = root_window; clip_win != NULL; clip_win = clip_win->next) {
-				//	clip_info = (pri_win_info_t*)clip_win->pri_win_info_loc;
-				//	if (clip_win == win)
-				//		continue;
-				//	r2.x = clip_info->x;
-				//	r2.y = clip_info->y;
-				//	r2.w = clip_info->width;
-				//	r2.h = clip_info->height;
+				pri_rect_t clip_rect[512];
+				int clip_count = 0;
+				pri_window_t *clip_win = NULL;
+				pri_win_info_t *clip_info = NULL;
+				for (clip_win = root_window; clip_win != NULL; clip_win = clip_win->next) {
+					clip_info = (pri_win_info_t*)clip_win->pri_win_info_loc;
+					if (clip_win == win)
+						continue;
+					r2.x = clip_info->x;
+					r2.y = clip_info->y;
+					r2.w = clip_info->width;
+					r2.h = clip_info->height;
 
-				//	if (pri_check_intersect(&r1, &r2)) {
-				//		/* Now calculate the clip rects and add it to 
-				//		 * clip_rect list */
-				//		pri_calculate_clip_rects(&r2, &r1, clip_rect, &clip_count);
-				//		//clip_info->dirty = 1;
-				//	}
-				//}
+					if (pri_check_intersect(&r1, &r2)) {
+						/* Now calculate the clip rects and add it to 
+						 * clip_rect list */
+						pri_calculate_clip_rects(&r2, &r1, clip_rect, &clip_count);
+						//clip_info->dirty = 1;
+					}
+				}
 		
 				for (int i = 0; i < he; i++)  {
 					/* Align the count to 16 byte boundary */
@@ -935,11 +935,30 @@ void compose_frame () {
 					(wid/16)*4-1);
 				}
 
+				for (int k = 0; k < clip_count; k++) {
+					int k_x = clip_rect[k].x;
+					int k_y = clip_rect[k].y;
+					int k_w = clip_rect[k].w;
+					int k_h = clip_rect[k].h;
+
+					if (k_x < 0)
+						k_x = 0;
+					if (k_y < 0)
+						k_y = 0;
+					if ((k_x + k_w) >= canvas->width)
+						k_w = canvas->width - k_x;
+					if ((k_y + k_h) >= canvas->height)
+						k_h = canvas->height - k_y;
+
+					pri_add_clip(k_x, k_y, k_w, k_h);
+					clip_count = 0;
+				}
+
 				
 			}
 
-			
-			pri_add_clip (winx, winy, wid, he);
+			if (focused_win == win)
+				pri_add_clip (winx, winy, wid, he);
 
 			info->rect_count = 0;
 			info->dirty = 0;
@@ -1094,7 +1113,7 @@ XE_EXTERN int XeMain (int argc, char* argv[]) {
 	sys_print_text ("Reading cursor files \r\n");
 	load_cursor ("/cursor.bmp",(uint8_t*)0x0000070000000000, arrow_cursor);
 	//load_cursor ("/spin.bmp", (uint8_t*)0x0000070000001000, spin_cursor);
-	Image* wallp = pri_load_wallpaper ("/start.jpg");
+	Image* wallp = pri_load_wallpaper ("/me.jpg");
 	pri_wallpaper_draw(wallp);
 
 	/* initialize window list */
@@ -1332,12 +1351,21 @@ XE_EXTERN int XeMain (int argc, char* argv[]) {
 
 
 
+		if (event.type == PRI_WIN_SET_PROPERTIES) {
+			pri_window_t * win = pri_win_find_by_id(event.from_id);
+			if (win)
+				win->attribute = event.dword;
+
+			memset(&event, 0, sizeof(pri_event_t));
+		}
+
+
 		//diff_tick = sys_get_system_tick();
 		//int delta = diff_tick - frame_tick;
 		//if (delta < 1000/60) {
 			//! it will sleep for 16 ms
 			//sys_sleep (1000/60 - delta);
 		//}
-		sys_sleep(16);
+		sys_sleep(12);
 	}
 }

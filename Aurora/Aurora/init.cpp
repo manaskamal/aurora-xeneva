@@ -168,9 +168,6 @@ void _AuMain (KERNEL_BOOT_INFO *info) {
 	/* start the init process here */
 	au_status = AuCreateProcess ("/init.exe","shell");
 
-	/* start the compositing window manager at id 3 */
-	au_status = AuCreateProcess ("/priwm.exe","priwm");
-
 	//! Here start the scheduler (multitasking engine)
 	
 	AuSchedulerStart();

@@ -37,6 +37,7 @@
 #include <usb.h>
 #include "xhci_cmd.h"
 #include <hal.h>
+#include "usb_def.h"
 
 
 extern int poll_event_for_trb;
@@ -215,6 +216,14 @@ void xhci_send_command (usb_dev_t *dev, uint32_t param1, uint32_t param2, uint32
 		dev->cmd_ring_index = 0;
 	}
 
+	xhci_ring_doorbell(dev);
+}
+
+/*
+ * xhci_ring_doorbell -- rings the doorbell
+ * @param dev -- Pointer to usb structure
+ */
+void xhci_ring_doorbell(usb_dev_t* dev) {
 	dev->db_regs->doorbell[0] = (0<<16) | 0;
 }
 
@@ -302,8 +311,6 @@ void xhci_port_initialize (usb_dev_t *dev) {
 				_debug_print_ ("Slot id -> %d \r\n", slot_id);
 			}
 			
-			/* Here we need to Get Device Descriptor */
-
 
 			this_port->port_sc |= (1<<9);
 			/*printf ("Port Initialized %d, Power -> %d, PED -> %d \n", i, ((this_port->port_sc & (1<<9)) & 0xff),

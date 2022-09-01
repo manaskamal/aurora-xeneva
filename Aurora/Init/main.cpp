@@ -1,3 +1,37 @@
+/**
+ * BSD 2-Clause License
+ *
+ * Copyright (c) 2022, Manas Kamal Choudhury
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer.
+ *
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ **/
+
+/*
+ * Init process -- init process starts all the system services
+ * and required background processes
+ */
+
 #include <sys/_term.h>
 #include <sys/_process.h>
 #include <sys/_wait.h>
@@ -14,53 +48,21 @@
 #include <sys\_sleep.h>
 
 
-
-
-//#define KEY 0x1234
 /*
  * main -- the main entry point of init
  */
 XE_EXTERN XE_EXPORT int XeMain (int argc, char* argv[]) {
 	
-	sys_print_text ("Init process started %d %d %d %d \r\n", 10, 20, 30, 40);
-	void* ptr = mmap (0,8192,0,0,0,64);
-	sys_print_text ("Ptr returned -> %x \r\n", ptr);
-	void* p = malloc(16);
-	sys_print_text ("P -> %x \n", p);
+	/* Start the window manager */
+	sys_print_text ("[init]: Starting window manager... \r\n");
+	int priwm_pid = create_process("/priwm.exe", "priwm");
+	sys_print_text ("[init]: window manager started at pid %d \r\n", priwm_pid);
 
-	int event = sys_open_file("/dev/pri_loop",NULL);
-	ioquery(event, PRI_LOOP_CREATE, NULL);
+	/* Start xedock */
+	int xedock_pid = create_process("/xedock.exe", "xedock");
+	sys_print_text ("[init]: dock manager started at pid %d \r\n", xedock_pid);
 
-	int fd = sys_open_file("/dev/dsp", NULL);
-	ioquery (fd, SOUND_REGISTER_MEDIAPLAYER, NULL);
-	
-	UFILE file;
-	int fdfile = sys_open_file ("/Ss.wav", &file);
-	file.size = 1;
-	uint8_t* buffer = (uint8_t*)malloc(4096);
-	sys_read_file(fdfile,buffer, &file);
-
-	UFILE sound;
-	sound.flags = 0;
-	sys_write_file(fd, (uint64_t*)buffer, &sound);
-
-	pri_event_t ev;
 	while(1) {
-		ioquery(event,PRI_LOOP_GET_EVENT, &ev);
-		if (ev.type != 0) {
-		if (ev.type == 10) {
-			if (file.eof != 1){
-				sys_read_file(fdfile,buffer, &file);
-				sys_write_file(fd, (uint64_t*)buffer, &sound);
-					//sys_print_text ("Buffer -> %x , pos -> %d  ", buffer, pos);
-			}
-				
-			/*if (file.eof)
-				ioquery(fd, SOUND_STOP_OUTPUT, NULL);*/
-
-			memset(&ev, 0, sizeof(pri_event_t));
-		}
-		}
 		sys_wait();
 	}
 	return 0;

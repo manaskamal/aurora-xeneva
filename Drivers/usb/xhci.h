@@ -73,6 +73,14 @@
 #define XHCI_TRB_SIZE  16 
 #define XHCI_EVENT_RING_SEG_TBL_ENTRY_SIZE 16
 
+#define XHCI_TRB_ENT  0x200000000
+#define XHCI_TRB_ISP  0x400000000
+#define XHCI_TRB_IOC  0x2000000000
+#define XHCI_TRB_IDT  0x4000000000
+#define XHCI_TRB_TRT(x)   ((uint64_t)x << 48)
+#define XHCI_TRB_DIR_IN   ((uint64_t)1 << 48)
+
+
 #pragma pack(push,1)
 typedef struct _xhci_cap_regs_ {
 	uint8_t cap_caplen_version;
@@ -273,7 +281,7 @@ typedef struct _xhci_erst_ {
 	uint32_t ring_seg_size;
 	uint32_t rerserved;
 }xhci_erst_t;
-#pragma pack(pop);
+#pragma pack(pop)
 
 typedef struct _usb_dev_ {
 	xhci_cap_regs_t *cap_regs;
@@ -355,6 +363,13 @@ void xhci_send_command_multiple (usb_dev_t* dev, xhci_trb_t* trb, int num_count)
  * @param ctrl -- control for TRB
  */
 void xhci_send_command (usb_dev_t *dev, uint32_t param1, uint32_t param2, uint32_t status, uint32_t ctrl);
+
+
+/*
+ * xhci_ring_doorbell -- rings the doorbell
+ * @param dev -- Pointer to usb structure
+ */
+void xhci_ring_doorbell(usb_dev_t* dev);
 
 /*
  * xhci_port_initialize -- initializes all powered ports

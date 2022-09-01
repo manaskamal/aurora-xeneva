@@ -82,4 +82,26 @@ extern void xhci_enable_slot (usb_dev_t *dev,int slot_type);
  * @param dev -- Pointer to USB structure
  */
 extern void xhci_send_noop_cmd (usb_dev_t* dev);
+
+/*
+ * xhci_create_setup_trb -- creates a setup stage trb
+ */
+extern void xhci_create_setup_trb (usb_dev_t *dev, uint8_t rType, uint8_t bRequest, uint16_t value, uint16_t wIndex, uint16_t wLength);
+
+/*
+ * xhci_create_data_trb -- creates data stage trb
+ * @param dev -- pointer to usb structure
+ * @param buffer -- pointer to memory area
+ * @param size -- size of the buffer
+ * @param in_direction -- direction
+ */
+extern void xhci_create_data_trb (usb_dev_t* dev, uint64_t buffer, uint16_t size, bool in_direction);
+
+/*
+ * xhci_create_status_trb -- creates status stage trb
+ * @param dev -- pointer to usb strucutue
+ * @param in_direction -- direction
+ */
+extern void xhci_create_status_trb (usb_dev_t* dev, bool in_direction);
+
 #endif

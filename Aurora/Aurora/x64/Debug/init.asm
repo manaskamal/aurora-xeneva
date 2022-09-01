@@ -15,10 +15,6 @@ $SG5593	DB	'Scheduler Initialized', 0aH, 00H
 $SG5595	DB	'shell', 00H
 	ORG $+2
 $SG5596	DB	'/init.exe', 00H
-	ORG $+2
-$SG5597	DB	'priwm', 00H
-	ORG $+6
-$SG5598	DB	'/priwm.exe', 00H
 CONST	ENDS
 PUBLIC	?debug_print@@YAXPEBDZZ				; debug_print
 PUBLIC	?_AuMain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z		; _AuMain
@@ -60,7 +56,7 @@ $pdata$?debug_print@@YAXPEBDZZ DD imagerel $LN3
 	DD	imagerel $LN3+40
 	DD	imagerel $unwind$?debug_print@@YAXPEBDZZ
 $pdata$?_AuMain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z DD imagerel $LN5
-	DD	imagerel $LN5+297
+	DD	imagerel $LN5+274
 	DD	imagerel $unwind$?_AuMain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z
 pdata	ENDS
 xdata	SEGMENT
@@ -264,13 +260,7 @@ $LN5:
 
 ; 170  : 
 ; 171  : 	/* start the compositing window manager at id 3 */
-; 172  : 	au_status = AuCreateProcess ("/priwm.exe","priwm");
-
-	lea	rdx, OFFSET FLAT:$SG5597
-	lea	rcx, OFFSET FLAT:$SG5598
-	call	?AuCreateProcess@@YAHPEBDPEAD@Z		; AuCreateProcess
-	mov	DWORD PTR au_status$[rsp], eax
-
+; 172  : 	//au_status = AuCreateProcess ("/priwm.exe","priwm");
 ; 173  : 
 ; 174  : 	//! Here start the scheduler (multitasking engine)
 ; 175  : 	

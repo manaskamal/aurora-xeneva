@@ -245,6 +245,7 @@ AU_EXTERN AU_EXPORT int AuDriverMain() {
 	audev->aurora_driver_class = DRIVER_CLASS_USB;
 	AuRegisterDevice(audev);
 
+
 	AuDisableInterupts();
 
 	return 0;

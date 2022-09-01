@@ -324,6 +324,17 @@ XE_EXTERN XE_EXPORT void XEResizeWindow (int w, int h) {
 	XeSendEventPRIWM(&ev);
 }
 
+/*
+ * XEWindowSetAttrib -- Set window attributes/properties
+ * @param attrib -- attribute value
+ */
+XE_EXTERN XE_EXPORT void XEWindowSetAttrib (uint8_t attrib) {
+	pri_event_t ev;
+	ev.type = 109;
+	ev.dword = attrib;
+	XeSendEventPRIWM(&ev);
+}
+
 
 
 

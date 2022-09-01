@@ -211,4 +211,11 @@ XE_EXTERN XE_EXPORT void XERedrawWindow (XEWindow *win);
  */
 XE_EXTERN XE_EXPORT void XEResizeWindow (int w, int h) ;
 
+
+/*
+ * XEWindowSetAttrib -- Set window attributes/properties
+ * @param attrib -- attribute value
+ */
+XE_EXTERN XE_EXPORT void XEWindowSetAttrib (uint8_t attrib);
+
 #endif
