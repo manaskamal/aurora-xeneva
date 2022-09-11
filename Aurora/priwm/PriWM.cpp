@@ -36,6 +36,8 @@
 #include "pri_dirty_clip.h"
 #include "pri_wallp_dirty_clip.h"
 #include "pri_clip.h"
+#include "pri_popup.h"
+#include "pri_menu.h"
 
 #include <stdint.h>
 #include <string.h>
@@ -90,6 +92,9 @@ list_t *backing_store_list;
 list_t *shared_win_space_list;
 list_t *desktop_component_list;
 
+/* popup window list */
+list_t *popup_list;
+pri_popup_win_t *root_popup_win;
 
 /**
  * window bits
@@ -563,6 +568,14 @@ void desktop_component_list_init () {
 	desktop_component_list = list_init();
 }
 
+/** 
+ * popup_list_init -- initialize the popup list
+ */
+void popup_list_init () {
+	popup_list = list_init();
+	root_popup_win = NULL;
+}
+
 
 /**
  * pri_add_desktop_component -- adds a desktop component to the 
@@ -687,6 +700,37 @@ void window_remove (pri_window_t *win) {
 	free_shared_win (win->owner_id);
 	list_remove(window_list, i);
 	free(win);
+}
+
+/*
+ * pri_add_popup_window -- adds popup window to popup list
+ * @param win -- pointer to popup window
+ */
+void pri_add_popup_window (pri_popup_win_t *win) {
+	list_add(popup_list, win);
+}
+
+/*
+ * pri_remove_popup_window -- removes popup window from popup list
+ * @param win -- pointer to popup window
+ */
+void pri_remove_popup_window (pri_popup_win_t *win) {
+	for (int i = 0; i < popup_list->pointer; i++) {
+		pri_popup_win_t *pwin = (pri_popup_win_t*)list_get_at(popup_list, i);
+		if (pwin == win)
+			list_remove(popup_list, i);
+	}
+}
+
+/*
+ * pri_clear_popup_window -- clears every opened popup windows
+ * @param win -- root popup window
+ */
+void pri_clear_popup_window (pri_popup_win_t* win) {
+	pri_wallp_add_dirty_clip(win->x, win->y, win->w, win->h);
+	pri_remove_popup_window(win);
+	pri_destroy_popup_window(win);
+	_window_update_all_ = true;
 }
 
 
@@ -931,8 +975,9 @@ void compose_frame () {
 		
 				for (int i = 0; i < he; i++)  {
 					/* Align the count to 16 byte boundary */
-					memcpy_sse2(canvas->address + (winy + i) * canvas->width + winx, win->backing_store + (0 + i) * info->width + 0,
-					(wid/16)*4-1);
+					/*memcpy_sse2(canvas->address + (winy + i) * canvas->width + winx, win->backing_store + (0 + i) * info->width + 0,
+					(wid/16)*4-1);*/
+					fastcpy(canvas->address + (winy + i) * canvas->width + winx, win->backing_store + (0 + i) * info->width + 0, wid*4);
 				}
 
 				for (int k = 0; k < clip_count; k++) {
@@ -963,8 +1008,29 @@ void compose_frame () {
 			info->rect_count = 0;
 			info->dirty = 0;
 		}
+		
+	}
 
-			
+	/*
+	 * Render all popup windows
+	 */
+	for (int i = 0; i < popup_list->pointer; i++) {
+		pri_popup_win_t *win = (pri_popup_win_t*)list_get_at(popup_list, i);
+
+		int popup_x = win->x;
+		int popup_y = win->y;
+		int popup_w = win->w;
+		int popup_h = win->h;
+
+		if (win->visible) {
+			for (int i = 0; i < popup_h; i++) {
+				fastcpy(canvas->address + (popup_y + i) * canvas->width + popup_x, 
+					win->pixbuf->address + (0 + i) * win->w + 0, popup_w*4);
+			}
+
+			pri_add_clip(popup_x, popup_y, popup_w, popup_h);
+		}
+		
 	}
 
 	/* now store the new occluded area by cursor */
@@ -1113,7 +1179,7 @@ XE_EXTERN int XeMain (int argc, char* argv[]) {
 	sys_print_text ("Reading cursor files \r\n");
 	load_cursor ("/cursor.bmp",(uint8_t*)0x0000070000000000, arrow_cursor);
 	//load_cursor ("/spin.bmp", (uint8_t*)0x0000070000001000, spin_cursor);
-	Image* wallp = pri_load_wallpaper ("/me.jpg");
+	Image* wallp = pri_load_wallpaper ("/start.jpg");
 	pri_wallpaper_draw(wallp);
 
 	/* initialize window list */
@@ -1126,6 +1192,12 @@ XE_EXTERN int XeMain (int argc, char* argv[]) {
 	 */
 	desktop_component_list_init();
 
+	/*
+	 * initialize popup list
+	 */
+	popup_list_init();
+
+	acrylic_initialize_font();
 	/*
 	 * clear the backing store to light black
 	 * and display the priwm version name
@@ -1214,6 +1286,32 @@ XE_EXTERN int XeMain (int argc, char* argv[]) {
 			if (key_msg.dword == KEY_N) {
 				sys_kill(test_id, SIGINT);
 			}
+
+			if (key_msg.dword == KEY_P) {
+				if (root_popup_win == NULL) {
+					pri_popup_win_t *win = pri_create_popup_window(mouse_x,mouse_y,310,100, (1<<0));
+					pri_menu_t * menu = pri_create_menu(win);
+					pri_menu_item_t *item = pri_create_menu_item("New");
+					pri_menu_item_t *item2 = pri_create_menu_item("Personalize");
+					pri_menu_item_t *item3 = pri_create_menu_item("Refresh");
+					pri_menu_item_t *item4 = pri_create_menu_item("Open Settings");
+					pri_menu_item_t *item5 = pri_create_menu_item("Display Settings");
+					pri_menu_add_item(menu, item);
+					pri_menu_add_item(menu, item2);
+					pri_menu_add_item(menu, item3);
+					pri_menu_add_item(menu, item4);
+					pri_menu_show(menu);
+					win->visible = true;
+					pri_add_popup_window(win);
+					root_popup_win = win;
+				}else {
+					pri_clear_popup_window (root_popup_win);
+					root_popup_win = NULL;
+				}
+				
+			}
+
+
 			memset(&key_msg, 0, sizeof(message_t));
 		}
 

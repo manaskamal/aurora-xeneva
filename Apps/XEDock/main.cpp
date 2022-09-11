@@ -51,11 +51,11 @@
 #include <acrylic.h>
 #include <color.h>
 
-#define DOCK_HEIGHT  30
+#define DOCK_HEIGHT  20
 
 
 void DockPaint (XEWindow* win) {
-	acrylic_draw_vertical_gradient(win->ctx, 0,0,win->shwin->width,DOCK_HEIGHT, LIGHTSILVER, TITLEBAR_DARK);
+	acrylic_draw_vertical_gradient(win->ctx, 0,0,win->shwin->width,DOCK_HEIGHT, LIGHTSILVER, GRAY);
 }
 
 /*
@@ -73,7 +73,7 @@ XE_EXTERN XE_EXPORT int XeMain (int argc, char* argv[]) {
 	canvas_t * canvas = create_canvas(screen_width, DOCK_HEIGHT);
 
 
-	XEWindow *win = XECreateWindow(app,canvas,(1<<1) ,"Dock",0,screen_height - DOCK_HEIGHT);
+	XEWindow *win = XECreateWindow(app,canvas,(1<<1) ,"Dock",0,0);
 	win->shwin->width = screen_width;
 	win->shwin->height = DOCK_HEIGHT;
 	win->color = LIGHTCORAL;
@@ -82,7 +82,16 @@ XE_EXTERN XE_EXPORT int XeMain (int argc, char* argv[]) {
 	XEWindowSetAttrib((1<<1));
 	XEShowWindow(win);
 
+
+	pri_event_t ev;
 	while(1) {
+		ioquery(event_fd,PRI_LOOP_GET_EVENT, &ev);
+		if (ev.type != NULL) {
+			if (ev.type == 201) {
+				//XEWindowMouseHandle(win,ev.dword,ev.dword2,ev.dword3,0);
+				memset(&ev, 0, sizeof(pri_event_t));
+			}
+		}
 		sys_wait();
 	}
 	return 0;

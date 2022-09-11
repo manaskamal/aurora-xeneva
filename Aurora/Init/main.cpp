@@ -58,6 +58,9 @@ XE_EXTERN XE_EXPORT int XeMain (int argc, char* argv[]) {
 	int priwm_pid = create_process("/priwm.exe", "priwm");
 	sys_print_text ("[init]: window manager started at pid %d \r\n", priwm_pid);
 
+	/* let window manager start properly, and render some frame */
+	sys_sleep(100);
+
 	/* Start xedock */
 	int xedock_pid = create_process("/xedock.exe", "xedock");
 	sys_print_text ("[init]: dock manager started at pid %d \r\n", xedock_pid);

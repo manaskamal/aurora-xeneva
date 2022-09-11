@@ -69,6 +69,10 @@
 #define DAISY_WINDOW_RESIZE_ALL  5
 
 
+#define PRI_WM_XCOORD_FOLLOW_MOUSE  (1<<1)
+#define PRI_WM_YCOORD_FOLLOW_MOUSE  (1<<2)
+
+
 typedef struct _pri_rect_ {
 	int x;
 	int y;

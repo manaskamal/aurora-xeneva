@@ -9,6 +9,9 @@
     <ClInclude Include="pri_clip.h" />
     <ClInclude Include="pri_blit.h" />
     <ClInclude Include="pri_rect.h" />
+    <ClInclude Include="pri_popup.h" />
+    <ClInclude Include="pri_menu.h" />
+    <ClInclude Include="pri_menu_painter.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="priwm.cpp" />
@@ -19,5 +22,8 @@
     <ClCompile Include="pri_clip.cpp" />
     <ClCompile Include="pri_blit.cpp" />
     <ClCompile Include="pri_rect.cpp" />
+    <ClCompile Include="pri_popup.cpp" />
+    <ClCompile Include="pri_menu.cpp" />
+    <ClCompile Include="pri_menu_painter.cpp" />
   </ItemGroup>
 </Project>
