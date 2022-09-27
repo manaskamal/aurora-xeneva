@@ -1,6 +1,6 @@
 # Latest Updates
 
-[Click here to see, Aurora's Xeneva playing live audio using Intel HD Audio](https://www.youtube.com/watch?v=q6m1qwLDbqE)
+## _I'll be focusing on it's Kernel 'Aurora' like--hardware support, multiple architecture support, Network support,booting on Real-Machine...etc_
 
 
 # Aurora's Xeneva
