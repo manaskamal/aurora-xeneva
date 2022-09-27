@@ -267,7 +267,7 @@ void x86_64_init_cpu () {
 	debug_print ("Exception initialized\n");
 	
 
-	initialize_pic();
+	//initialize_pic();
 
 
 #ifdef USE_APIC

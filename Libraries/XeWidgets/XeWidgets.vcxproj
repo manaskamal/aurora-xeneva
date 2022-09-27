@@ -143,12 +143,16 @@
   <ItemGroup>
     <ClCompile Include="list.cpp" />
     <ClCompile Include="styles\XEDefaultButtonStyle.cpp" />
+    <ClCompile Include="styles\XEDefaultMenuStyle.cpp" />
     <ClCompile Include="styles\XEDefaultRadioButtonStyle.cpp" />
     <ClCompile Include="styles\XEDefaultRadioGroupStyle.cpp" />
     <ClCompile Include="styles\XEDefaultWinStyle.cpp" />
+    <ClCompile Include="styles\XEMenubarDefaultStyle.cpp" />
     <ClCompile Include="xebase.cpp" />
     <ClCompile Include="xebutton.cpp" />
     <ClCompile Include="xeloop.cpp" />
+    <ClCompile Include="xemenu.cpp" />
+    <ClCompile Include="xequwindow.cpp" />
     <ClCompile Include="xeradiobutton.cpp" />
     <ClCompile Include="xeradiogroup.cpp" />
     <ClCompile Include="xewindow.cpp" />
@@ -157,12 +161,16 @@
   <ItemGroup>
     <ClInclude Include="includes\list.h" />
     <ClInclude Include="includes\styles\XEDefaultButtonStyle.h" />
+    <ClInclude Include="includes\styles\XEDefaultMenuStyle.h" />
     <ClInclude Include="includes\styles\XEDefaultRadioButtonStyle.h" />
     <ClInclude Include="includes\styles\XEDefaultRadioGroupStyle.h" />
     <ClInclude Include="includes\styles\XEDefaultWinStyle.h" />
+    <ClInclude Include="includes\styles\XEMenubarDefaultStyle.h" />
     <ClInclude Include="includes\xebase.h" />
     <ClInclude Include="includes\xebutton.h" />
     <ClInclude Include="includes\xeloop.h" />
+    <ClInclude Include="includes\xemenu.h" />
+    <ClInclude Include="includes\xequwindow.h" />
     <ClInclude Include="includes\xeradiobutton.h" />
     <ClInclude Include="includes\xeradiogroup.h" />
     <ClInclude Include="includes\xewidget.h" />

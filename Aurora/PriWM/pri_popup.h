@@ -32,21 +32,29 @@
 
 #include "priwm.h"
 #include <canvas.h>
+#include "list.h"
 
 #define POPUP_TYPE_MENU  (1<<0)
 #define POPUP_TYPE_TOOLTIP  (1<<1)
 #define POPUP_TYPE_TOAST_NOTIFICATION  (1<<2)
 
-typedef struct _pri_popup_win_ {
+typedef struct _pri_popup_sh_win_ {
 	int x;
 	int y;
-	canvas_t* pixbuf;
 	int w;
 	int h;
-	uint8_t type;
-	bool visible;
 	bool dirty;
-	void (*popup_draw) (_pri_popup_win_ *win);
+	bool close;
+	bool hide;
+}pri_popup_sh_win;
+
+typedef struct _pri_popup_win_ {
+	pri_popup_sh_win *shwin;
+	uint32_t* buffer;
+	uint8_t owner_id;
+	uint16_t shwin_key;
+	uint16_t buffer_win_key;
+	_pri_popup_win_ *link;
 }pri_popup_win_t;
 
 
@@ -56,9 +64,8 @@ typedef struct _pri_popup_win_ {
  * @param y -- y coordinate
  * @param w -- width of the popup window
  * @param h -- height of the popup window
- * @param type -- type of the popup window
  */
-pri_popup_win_t * pri_create_popup_window (int x, int y, int w, int h, uint8_t type);
+pri_popup_win_t * pri_create_popup_window (int x, int y, int w, int h, uint16_t owner_id);
 
 /*
  * pri_destroy_popup_window -- close & destroy popup window

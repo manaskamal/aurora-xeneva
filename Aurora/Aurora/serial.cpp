@@ -17,9 +17,11 @@
 #include <va_list.h>
 #include <pmmngr.h>
 #include <stdarg.h>
+#include <atomic\mutex.h>
 
 #define PORT  0x3f8
 static bool _serial_initialized_ = false;
+mutex_t *SerialLock;
 
 void SerialHandler (size_t v, void* p) {
 	printf ("Serial Handler\n");
@@ -34,7 +36,8 @@ void AuInitializeSerial() {
 	x64_outportb ((PORT + 3), 0x03);
 	x64_outportb ((PORT + 2), 0xC7);
 	x64_outportb ((PORT + 4), 0x0B);
-	
+
+	SerialLock = AuMutexCreate();
 
 	//x64_outportb (PORT + 4, 0x0F);
 	//interrupt_set (4,serial_handler, 4);
@@ -56,6 +59,8 @@ void debug_serial (char* string) {
 }
 
 void _debug_print_ (char* format, ...) {
+
+
 	_va_list_ args;
 	va_start(args, format);
 
@@ -135,6 +140,7 @@ void _debug_print_ (char* format, ...) {
 		++format;
 	}
 	va_end(args);
+
 }
 
 bool is_serial_initialized() {

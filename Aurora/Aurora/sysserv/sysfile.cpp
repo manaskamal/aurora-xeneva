@@ -40,6 +40,8 @@
 #include <serial.h>
 #include <error.h>
 #include <hal.h>
+#include <atomic\mutex.h>
+
 /**
  * sys_open_file -- opens a file 
  * @param filename -- file path 

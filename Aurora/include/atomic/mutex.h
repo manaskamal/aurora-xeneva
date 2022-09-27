@@ -17,6 +17,7 @@
 /* Architecture specific */
 #ifdef ARCH_X64
 #include <arch\x86_64\thread.h>
+#include <aurora.h>
 #endif
 
 
@@ -29,8 +30,8 @@ typedef struct {
 }mutex_t;
 
 //!Create a mutex 
-extern mutex_t* create_mutex ();
-extern void mutex_lock (mutex_t* obj);
-extern void mutex_unlock (mutex_t* obj);
-extern void mutex_destroy (mutex_t* obj);
+AU_EXTERN AU_EXPORT mutex_t* AuMutexCreate();
+AU_EXTERN AU_EXPORT void AuMutexLock (mutex_t* obj);
+AU_EXTERN AU_EXPORT void AuMutexUnlock (mutex_t* obj);
+AU_EXTERN AU_EXPORT void AuMutexDestroy (mutex_t* obj);
 #endif

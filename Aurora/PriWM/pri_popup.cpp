@@ -33,14 +33,10 @@
 #include <stdlib.h>
 #include <color.h>
 #include <sys/mmap.h>
+#include <sys/shm.h>
 
 
 #define POPUP_WIN_MIN_WIDTH  310
-
-void popup_default_draw_handler (pri_popup_win_t *win) {
-	acrylic_draw_rect_filled(win->pixbuf, 0,0,win->w,win->h, WHITE);
-	
-}
 
 /*
  * pri_create_popup_window -- create popup window
@@ -48,26 +44,27 @@ void popup_default_draw_handler (pri_popup_win_t *win) {
  * @param y -- y coordinate
  * @param w -- width of the popup window
  * @param h -- height of the popup window
- * @param type -- type of the popup window
  */
-pri_popup_win_t *pri_create_popup_window (int x, int y, int w, int h, uint8_t type) {
+pri_popup_win_t *pri_create_popup_window (int x, int y, int w, int h, uint16_t owner_id) {
 	pri_popup_win_t * popup = (pri_popup_win_t*)malloc(sizeof(pri_popup_win_t));
-	popup->x = x;
-	popup->y = y;
+	uint16_t server_win_key = 0;
+	uint16_t buffer_key = 0;
 
-	/* width cannot be less than 310 */
-	if (w < 310)
-		w = 310;
-
-	popup->w = w;
-	popup->h = h;
-	popup->type = type;
-	popup->visible = false;
-	popup->dirty = false;
-	size_t length = popup->w *popup->h * 4;
-
-	popup->pixbuf = create_canvas(popup->w, popup->h);
-	popup->popup_draw = popup_default_draw_handler;
+	uint32_t* shwin = create_new_shared_win(&server_win_key,owner_id);
+	popup->shwin = (pri_popup_sh_win*)shwin;
+	popup->owner_id = owner_id;
+	void* framebuffer = create_new_backing_store(owner_id, w*h*4, &buffer_key);
+	popup->buffer = (uint32_t*)framebuffer;
+	
+	popup->shwin->x = x;
+	popup->shwin->y = y;
+	popup->shwin->w = w;
+	popup->shwin->h = h;
+	popup->shwin->dirty = false;
+	popup->shwin->close = false;
+	popup->shwin->hide = false;
+	popup->shwin_key = server_win_key;
+	popup->buffer_win_key = buffer_key;
 	return popup;
 }
 
@@ -76,7 +73,8 @@ pri_popup_win_t *pri_create_popup_window (int x, int y, int w, int h, uint8_t ty
  * @param popup -- pointer to popup window
  */
 void pri_destroy_popup_window (pri_popup_win_t *popup) {
-	canvas_close(popup->pixbuf);
+	sys_shm_unlink(popup->shwin_key);
+	sys_shm_unlink(popup->buffer_win_key);
 	free(popup);
 }
 
@@ -85,5 +83,4 @@ void pri_destroy_popup_window (pri_popup_win_t *popup) {
  * @param popup -- pointer to popup window
  */
 void pri_popup_show (pri_popup_win_t *popup) {
-	popup->popup_draw(popup);
 }

@@ -33,6 +33,14 @@
     <ClCompile Include="styles\XEDefaultRadioGroupStyle.cpp">
       <Filter>styles</Filter>
     </ClCompile>
+    <ClCompile Include="xequwindow.cpp" />
+    <ClCompile Include="xemenu.cpp" />
+    <ClCompile Include="styles\XEMenubarDefaultStyle.cpp">
+      <Filter>styles</Filter>
+    </ClCompile>
+    <ClCompile Include="styles\XEDefaultMenuStyle.cpp">
+      <Filter>styles</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="includes\xebase.h">
@@ -75,6 +83,18 @@
       <Filter>includes</Filter>
     </ClInclude>
     <ClInclude Include="includes\styles\XEDefaultRadioGroupStyle.h">
+      <Filter>includes\styles</Filter>
+    </ClInclude>
+    <ClInclude Include="includes\xequwindow.h">
+      <Filter>includes</Filter>
+    </ClInclude>
+    <ClInclude Include="includes\styles\XEMenubarDefaultStyle.h">
+      <Filter>includes\styles</Filter>
+    </ClInclude>
+    <ClInclude Include="includes\xemenu.h">
+      <Filter>includes</Filter>
+    </ClInclude>
+    <ClInclude Include="includes\styles\XEDefaultMenuStyle.h">
       <Filter>includes\styles</Filter>
     </ClInclude>
   </ItemGroup>

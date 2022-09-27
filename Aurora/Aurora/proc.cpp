@@ -554,7 +554,7 @@ process_t * get_current_process () {
 	return c_proc;
 }
 
-void process_list_initialize () {
+void AuProcessListInit () {
 	pid = 0;
 	process_head = NULL;
 	process_last = NULL;

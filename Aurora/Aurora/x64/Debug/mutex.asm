@@ -5,90 +5,127 @@ include listing.inc
 INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
-PUBLIC	?create_mutex@@YAPEAUmutex_t@@XZ		; create_mutex
-PUBLIC	?mutex_lock@@YAXPEAUmutex_t@@@Z			; mutex_lock
-PUBLIC	?mutex_unlock@@YAXPEAUmutex_t@@@Z		; mutex_unlock
+PUBLIC	AuMutexCreate
+PUBLIC	AuMutexLock
+PUBLIC	AuMutexUnlock
+PUBLIC	AuMutexDestroy
 EXTRN	malloc:PROC
+EXTRN	free:PROC
 EXTRN	?block_thread@@YAXPEAU_thread_@@@Z:PROC		; block_thread
 EXTRN	?unblock_thread@@YAXPEAU_thread_@@@Z:PROC	; unblock_thread
 EXTRN	get_current_thread:PROC
-EXTRN	?set_multi_task_enable@@YAX_N@Z:PROC		; set_multi_task_enable
 EXTRN	force_sched:PROC
 EXTRN	?thread_iterate_block_list@@YAPEAU_thread_@@H@Z:PROC ; thread_iterate_block_list
 pdata	SEGMENT
-$pdata$?create_mutex@@YAPEAUmutex_t@@XZ DD imagerel $LN3
+$pdata$AuMutexCreate DD imagerel $LN3
 	DD	imagerel $LN3+64
-	DD	imagerel $unwind$?create_mutex@@YAPEAUmutex_t@@XZ
-$pdata$?mutex_lock@@YAXPEAUmutex_t@@@Z DD imagerel $LN6
-	DD	imagerel $LN6+195
-	DD	imagerel $unwind$?mutex_lock@@YAXPEAUmutex_t@@@Z
-$pdata$?mutex_unlock@@YAXPEAUmutex_t@@@Z DD imagerel $LN8
-	DD	imagerel $LN8+189
-	DD	imagerel $unwind$?mutex_unlock@@YAXPEAUmutex_t@@@Z
+	DD	imagerel $unwind$AuMutexCreate
+$pdata$AuMutexLock DD imagerel $LN7
+	DD	imagerel $LN7+182
+	DD	imagerel $unwind$AuMutexLock
+$pdata$AuMutexUnlock DD imagerel $LN10
+	DD	imagerel $LN10+195
+	DD	imagerel $unwind$AuMutexUnlock
+$pdata$AuMutexDestroy DD imagerel $LN3
+	DD	imagerel $LN3+24
+	DD	imagerel $unwind$AuMutexDestroy
 pdata	ENDS
 xdata	SEGMENT
-$unwind$?create_mutex@@YAPEAUmutex_t@@XZ DD 010401H
+$unwind$AuMutexCreate DD 010401H
 	DD	06204H
-$unwind$?mutex_lock@@YAXPEAUmutex_t@@@Z DD 010901H
+$unwind$AuMutexLock DD 010901H
 	DD	04209H
-$unwind$?mutex_unlock@@YAXPEAUmutex_t@@@Z DD 010901H
+$unwind$AuMutexUnlock DD 010901H
 	DD	06209H
+$unwind$AuMutexDestroy DD 010901H
+	DD	04209H
 xdata	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\atomic\mutex.cpp
 _TEXT	SEGMENT
+obj$ = 48
+AuMutexDestroy PROC
+
+; 106  : AU_EXTERN AU_EXPORT void AuMutexDestroy (mutex_t *obj) {
+
+$LN3:
+	mov	QWORD PTR [rsp+8], rcx
+	sub	rsp, 40					; 00000028H
+
+; 107  : 	free(obj);
+
+	mov	rcx, QWORD PTR obj$[rsp]
+	call	free
+
+; 108  : }
+
+	add	rsp, 40					; 00000028H
+	ret	0
+AuMutexDestroy ENDP
+_TEXT	ENDS
+; Function compile flags: /Odtpy
+; File e:\xeneva project\xeneva\aurora\aurora\atomic\mutex.cpp
+_TEXT	SEGMENT
 id$1 = 32
-thr$2 = 40
+i$2 = 36
+thr$3 = 40
 obj$ = 64
-?mutex_unlock@@YAXPEAUmutex_t@@@Z PROC			; mutex_unlock
+AuMutexUnlock PROC
 
-; 57   : void mutex_unlock (mutex_t *obj) {
+; 75   : AU_EXTERN AU_EXPORT void AuMutexUnlock (mutex_t *obj) {
 
-$LN8:
+$LN10:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 56					; 00000038H
 
-; 58   : 
-; 59   : 	set_multi_task_enable (false);
+; 76   : 
+; 77   : 	if (get_current_thread() == NULL)
 
-	xor	ecx, ecx
-	call	?set_multi_task_enable@@YAX_N@Z		; set_multi_task_enable
+	call	get_current_thread
+	test	rax, rax
+	jne	SHORT $LN7@AuMutexUnl
 
-; 60   : 
-; 61   : 	if (obj->blocks <= 0) {
+; 78   : 		return;
+
+	jmp	$LN8@AuMutexUnl
+$LN7@AuMutexUnl:
+
+; 79   : 
+; 80   : 
+; 81   : 	if (obj->blocks <= 0) 
 
 	mov	rax, QWORD PTR obj$[rsp]
 	cmp	DWORD PTR [rax+12], 0
-	ja	SHORT $LN5@mutex_unlo
+	ja	SHORT $LN6@AuMutexUnl
 
-; 62   : 		set_multi_task_enable (true);
+; 82   : 		return;
 
-	mov	cl, 1
-	call	?set_multi_task_enable@@YAX_N@Z		; set_multi_task_enable
+	jmp	$LN8@AuMutexUnl
+$LN6@AuMutexUnl:
 
-; 63   : 		return;
-
-	jmp	$LN6@mutex_unlo
-$LN5@mutex_unlo:
-
-; 64   : 	}
-; 65   : 
-; 66   : 	if (obj->block_thread_num > 0) {
+; 83   : 
+; 84   : 	
+; 85   : 	if (obj->blocks == 1) {
 
 	mov	rax, QWORD PTR obj$[rsp]
-	movzx	eax, WORD PTR [rax+8]
-	test	eax, eax
-	jle	SHORT $LN4@mutex_unlo
-$LN3@mutex_unlo:
+	cmp	DWORD PTR [rax+12], 1
+	jne	SHORT $LN5@AuMutexUnl
 
-; 67   : 		while (obj->block_thread_num != 0) {
+; 86   : 		for (int i = 0; i < obj->block_thread_num; i++){
 
+	mov	DWORD PTR i$2[rsp], 0
+	jmp	SHORT $LN4@AuMutexUnl
+$LN3@AuMutexUnl:
+	mov	eax, DWORD PTR i$2[rsp]
+	inc	eax
+	mov	DWORD PTR i$2[rsp], eax
+$LN4@AuMutexUnl:
 	mov	rax, QWORD PTR obj$[rsp]
 	movzx	eax, WORD PTR [rax+8]
-	test	eax, eax
-	je	SHORT $LN2@mutex_unlo
+	cmp	DWORD PTR i$2[rsp], eax
+	jge	SHORT $LN2@AuMutexUnl
 
-; 68   : 			uint16_t id = obj->block_thread_id[obj->block_thread_num];
+; 87   : 			uint16_t id = obj->block_thread_id[obj->block_thread_num];
 
 	mov	rax, QWORD PTR obj$[rsp]
 	movzx	eax, WORD PTR [rax+8]
@@ -96,97 +133,99 @@ $LN3@mutex_unlo:
 	movzx	eax, WORD PTR [rcx+rax*4+16]
 	mov	WORD PTR id$1[rsp], ax
 
-; 69   : 			thread_t * thr = thread_iterate_block_list (id);
+; 88   : 			thread_t * thr = thread_iterate_block_list (id);
 
 	movzx	eax, WORD PTR id$1[rsp]
 	mov	ecx, eax
 	call	?thread_iterate_block_list@@YAPEAU_thread_@@H@Z ; thread_iterate_block_list
-	mov	QWORD PTR thr$2[rsp], rax
+	mov	QWORD PTR thr$3[rsp], rax
 
-; 70   : 			if (thr != NULL)
+; 89   : 			if (thr != NULL)
 
-	cmp	QWORD PTR thr$2[rsp], 0
-	je	SHORT $LN1@mutex_unlo
+	cmp	QWORD PTR thr$3[rsp], 0
+	je	SHORT $LN1@AuMutexUnl
 
-; 71   : 				unblock_thread(thr);
+; 90   : 				unblock_thread(thr);
 
-	mov	rcx, QWORD PTR thr$2[rsp]
+	mov	rcx, QWORD PTR thr$3[rsp]
 	call	?unblock_thread@@YAXPEAU_thread_@@@Z	; unblock_thread
-$LN1@mutex_unlo:
+$LN1@AuMutexUnl:
 
-; 72   : 			obj->block_thread_num--;
+; 91   : 		}
 
-	mov	rax, QWORD PTR obj$[rsp]
-	movzx	eax, WORD PTR [rax+8]
-	dec	ax
+	jmp	SHORT $LN3@AuMutexUnl
+$LN2@AuMutexUnl:
+
+; 92   : 		obj->block_thread_num = 0;
+
+	xor	eax, eax
 	mov	rcx, QWORD PTR obj$[rsp]
 	mov	WORD PTR [rcx+8], ax
 
-; 73   : 		}
+; 93   : 		obj->owner_thread = NULL;
 
-	jmp	SHORT $LN3@mutex_unlo
-$LN2@mutex_unlo:
-$LN4@mutex_unlo:
+	mov	rax, QWORD PTR obj$[rsp]
+	mov	QWORD PTR [rax], 0
 
-; 74   : 	}
-; 75   : 
-; 76   : 	//! decreament the block count
-; 77   : 	obj->blocks--;
+; 94   : 		return;
+
+	jmp	SHORT $LN8@AuMutexUnl
+$LN5@AuMutexUnl:
+
+; 95   : 	}
+; 96   : 
+; 97   : 	//! decreament the block count
+; 98   : 	obj->blocks--;
 
 	mov	rax, QWORD PTR obj$[rsp]
 	mov	eax, DWORD PTR [rax+12]
 	dec	eax
 	mov	rcx, QWORD PTR obj$[rsp]
 	mov	DWORD PTR [rcx+12], eax
+$LN8@AuMutexUnl:
 
-; 78   : 	obj->owner_thread = 0;
-
-	mov	rax, QWORD PTR obj$[rsp]
-	mov	QWORD PTR [rax], 0
-
-; 79   : 	set_multi_task_enable (true);
-
-	mov	cl, 1
-	call	?set_multi_task_enable@@YAX_N@Z		; set_multi_task_enable
-$LN6@mutex_unlo:
-
-; 80   : }
+; 99   : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
-?mutex_unlock@@YAXPEAUmutex_t@@@Z ENDP			; mutex_unlock
+AuMutexUnlock ENDP
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\atomic\mutex.cpp
 _TEXT	SEGMENT
 obj$ = 48
-?mutex_lock@@YAXPEAUmutex_t@@@Z PROC			; mutex_lock
+AuMutexLock PROC
 
-; 28   : void mutex_lock (mutex_t * obj) {
+; 49   : AU_EXTERN AU_EXPORT void AuMutexLock (mutex_t * obj) {
 
-$LN6:
+$LN7:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 40					; 00000028H
 
-; 29   : 	//!disable multi tasking
-; 30   : 	set_multi_task_enable (false);
+; 50   : 	//! check
+; 51   : 	if (get_current_thread() == NULL)
 
-	xor	ecx, ecx
-	call	?set_multi_task_enable@@YAX_N@Z		; set_multi_task_enable
+	call	get_current_thread
+	test	rax, rax
+	jne	SHORT $LN4@AuMutexLoc
 
-; 31   : 
-; 32   : 	//! check
-; 33   : 	if (obj->blocks != 0 && obj->owner_thread == get_current_thread()) {
+; 52   : 		return;
+
+	jmp	$LN5@AuMutexLoc
+$LN4@AuMutexLoc:
+
+; 53   : 
+; 54   : 	if (obj->blocks != 0 && obj->owner_thread == get_current_thread()) {
 
 	mov	rax, QWORD PTR obj$[rsp]
 	cmp	DWORD PTR [rax+12], 0
-	je	SHORT $LN3@mutex_lock
+	je	SHORT $LN3@AuMutexLoc
 	call	get_current_thread
 	mov	rcx, QWORD PTR obj$[rsp]
 	cmp	QWORD PTR [rcx], rax
-	jne	SHORT $LN3@mutex_lock
+	jne	SHORT $LN3@AuMutexLoc
 
-; 34   : 		obj->blocks++;
+; 55   : 		obj->blocks++;
 
 	mov	rax, QWORD PTR obj$[rsp]
 	mov	eax, DWORD PTR [rax+12]
@@ -194,41 +233,28 @@ $LN6:
 	mov	rcx, QWORD PTR obj$[rsp]
 	mov	DWORD PTR [rcx+12], eax
 
-; 35   : 		set_multi_task_enable (true);
+; 56   : 		return;
 
-	mov	cl, 1
-	call	?set_multi_task_enable@@YAX_N@Z		; set_multi_task_enable
+	jmp	SHORT $LN5@AuMutexLoc
+$LN3@AuMutexLoc:
+$LN2@AuMutexLoc:
 
-; 36   : 		return;
-
-	jmp	SHORT $LN4@mutex_lock
-$LN3@mutex_lock:
-$LN2@mutex_lock:
-
-; 37   : 	}
-; 38   : 
-; 39   : 
-; 40   : 	while (obj->blocks != 0) {
+; 57   : 	}
+; 58   : 	
+; 59   : 
+; 60   : 	while (obj->blocks != 0) {
 
 	mov	rax, QWORD PTR obj$[rsp]
 	cmp	DWORD PTR [rax+12], 0
-	je	SHORT $LN1@mutex_lock
+	je	SHORT $LN1@AuMutexLoc
 
-; 41   : 		block_thread(get_current_thread());
+; 61   : 		block_thread(get_current_thread());
 
 	call	get_current_thread
 	mov	rcx, rax
 	call	?block_thread@@YAXPEAU_thread_@@@Z	; block_thread
 
-; 42   : 		obj->block_thread_num++;
-
-	mov	rax, QWORD PTR obj$[rsp]
-	movzx	eax, WORD PTR [rax+8]
-	inc	ax
-	mov	rcx, QWORD PTR obj$[rsp]
-	mov	WORD PTR [rcx+8], ax
-
-; 43   : 		obj->block_thread_id[obj->block_thread_num] = get_current_thread()->id;
+; 62   : 		obj->block_thread_id[obj->block_thread_num] = get_current_thread()->id;
 
 	call	get_current_thread
 	movzx	eax, WORD PTR [rax+242]
@@ -237,85 +263,83 @@ $LN2@mutex_lock:
 	mov	rdx, QWORD PTR obj$[rsp]
 	mov	DWORD PTR [rdx+rcx*4+16], eax
 
-; 44   : 		set_multi_task_enable (true);
+; 63   : 		obj->block_thread_num++;
 
-	mov	cl, 1
-	call	?set_multi_task_enable@@YAX_N@Z		; set_multi_task_enable
+	mov	rax, QWORD PTR obj$[rsp]
+	movzx	eax, WORD PTR [rax+8]
+	inc	ax
+	mov	rcx, QWORD PTR obj$[rsp]
+	mov	WORD PTR [rcx+8], ax
 
-; 45   : 		force_sched();
+; 64   : 		force_sched();
 
 	call	force_sched
 
-; 46   : 	}
+; 65   : 	}
 
-	jmp	SHORT $LN2@mutex_lock
-$LN1@mutex_lock:
+	jmp	SHORT $LN2@AuMutexLoc
+$LN1@AuMutexLoc:
 
-; 47   : 
-; 48   : 	obj->blocks = 1;
+; 66   : 	
+; 67   : 	obj->blocks = 1;
 
 	mov	rax, QWORD PTR obj$[rsp]
 	mov	DWORD PTR [rax+12], 1
 
-; 49   : 	obj->owner_thread = get_current_thread();
+; 68   : 	obj->owner_thread = get_current_thread();
 
 	call	get_current_thread
 	mov	rcx, QWORD PTR obj$[rsp]
 	mov	QWORD PTR [rcx], rax
+$LN5@AuMutexLoc:
 
-; 50   : 	set_multi_task_enable (true);
-
-	mov	cl, 1
-	call	?set_multi_task_enable@@YAX_N@Z		; set_multi_task_enable
-$LN4@mutex_lock:
-
-; 51   : }
+; 69   : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
-?mutex_lock@@YAXPEAUmutex_t@@@Z ENDP			; mutex_lock
+AuMutexLock ENDP
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\atomic\mutex.cpp
 _TEXT	SEGMENT
 obj$ = 32
-?create_mutex@@YAPEAUmutex_t@@XZ PROC			; create_mutex
+AuMutexCreate PROC
 
-; 18   : mutex_t * create_mutex () {
+; 39   : AU_EXTERN AU_EXPORT mutex_t * AuMutexCreate () {
 
 $LN3:
 	sub	rsp, 56					; 00000038H
 
-; 19   : 	mutex_t * obj = (mutex_t*)malloc(sizeof(mutex_t));
+; 40   : 	mutex_t * obj = (mutex_t*)malloc(sizeof(mutex_t));
 
 	mov	ecx, 216				; 000000d8H
 	call	malloc
 	mov	QWORD PTR obj$[rsp], rax
 
-; 20   : 	obj->blocks = 0;
+; 41   : 	obj->blocks = 0;
 
 	mov	rax, QWORD PTR obj$[rsp]
 	mov	DWORD PTR [rax+12], 0
 
-; 21   : 	obj->owner_thread= 0;
+; 42   : 	obj->owner_thread= 0;
 
 	mov	rax, QWORD PTR obj$[rsp]
 	mov	QWORD PTR [rax], 0
 
-; 22   : 	obj->block_thread_num = 0;
+; 43   : 	obj->block_thread_num = 0;
 
 	xor	eax, eax
 	mov	rcx, QWORD PTR obj$[rsp]
 	mov	WORD PTR [rcx+8], ax
 
-; 23   : 	return obj;
+; 44   : 	return obj;
 
 	mov	rax, QWORD PTR obj$[rsp]
 
-; 24   : }
+; 45   : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
-?create_mutex@@YAPEAUmutex_t@@XZ ENDP			; create_mutex
+AuMutexCreate ENDP
 _TEXT	ENDS
 END

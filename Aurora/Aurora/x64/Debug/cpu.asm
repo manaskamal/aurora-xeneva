@@ -68,7 +68,6 @@ EXTRN	?initialize_syscall@@YAXXZ:PROC			; initialize_syscall
 EXTRN	?initialize_user_land@@YAX_K@Z:PROC		; initialize_user_land
 EXTRN	?initialize_apic@@YAX_N@Z:PROC			; initialize_apic
 EXTRN	apic_local_eoi:PROC
-EXTRN	?initialize_pic@@YAXXZ:PROC			; initialize_pic
 EXTRN	malloc:PROC
 EXTRN	?AuCreatePCPU@@YAXPEAX@Z:PROC			; AuCreatePCPU
 EXTRN	?AuPCPUSetKernelTSS@@YAXPEAU_tss@@@Z:PROC	; AuPCPUSetKernelTSS
@@ -109,7 +108,7 @@ $pdata$?interrupt_initialize@@YAXXZ DD imagerel $LN6
 	DD	imagerel $LN6+415
 	DD	imagerel $unwind$?interrupt_initialize@@YAXXZ
 $pdata$?x86_64_init_cpu@@YAXXZ DD imagerel $LN3
-	DD	imagerel $LN3+204
+	DD	imagerel $LN3+199
 	DD	imagerel $unwind$?x86_64_init_cpu@@YAXXZ
 $pdata$?x86_64_cpu_get_id@@YAEXZ DD imagerel $LN3
 	DD	imagerel $LN3+71
@@ -1008,10 +1007,7 @@ $LN3:
 
 ; 268  : 	
 ; 269  : 
-; 270  : 	initialize_pic();
-
-	call	?initialize_pic@@YAXXZ			; initialize_pic
-
+; 270  : 	//initialize_pic();
 ; 271  : 
 ; 272  : 
 ; 273  : #ifdef USE_APIC

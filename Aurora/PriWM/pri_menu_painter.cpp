@@ -34,7 +34,7 @@
 
 
 void pri_menu_painter_paint (pri_menu_t *menu) {
-	pri_popup_win_t *win = menu->window;
+	/*pri_popup_win_t *win = menu->window;
 	acrylic_draw_rect_filled(win->pixbuf, 0,0, win->w, win->h, SILVER);
 	acrylic_font_set_size(13);
 	int font_y = 20;
@@ -47,5 +47,5 @@ void pri_menu_painter_paint (pri_menu_t *menu) {
 		acrylic_font_draw_string(win->pixbuf, item->string, win->w / 2 - f_w/2,font_y,13,BLACK);
 		font_y += 20;
 	}
-	acrylic_draw_rect_unfilled(win->pixbuf, 0, 0, win->w, win->h, DESKBLUE);
+	acrylic_draw_rect_unfilled(win->pixbuf, 0, 0, win->w, win->h, DESKBLUE);*/
 }

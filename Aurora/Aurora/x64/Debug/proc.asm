@@ -60,7 +60,7 @@ PUBLIC	?find_process_by_id@@YAPEAU_process_@@I@Z	; find_process_by_id
 PUBLIC	?find_process_by_thread@@YAPEAU_process_@@PEAU_thread_@@@Z ; find_process_by_thread
 PUBLIC	?process_heap_break@@YAPEAX_K@Z			; process_heap_break
 PUBLIC	?process_link_libraries@@YAXXZ			; process_link_libraries
-PUBLIC	?process_list_initialize@@YAXXZ			; process_list_initialize
+PUBLIC	?AuProcessListInit@@YAXXZ			; AuProcessListInit
 PUBLIC	?add_process@@YAXPEAU_process_@@@Z		; add_process
 PUBLIC	?remove_process@@YAXPEAU_process_@@@Z		; remove_process
 PUBLIC	?allocate_fd@@YAXPEAU_thread_@@@Z		; allocate_fd
@@ -778,7 +778,7 @@ _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\proc.cpp
 _TEXT	SEGMENT
-?process_list_initialize@@YAXXZ PROC			; process_list_initialize
+?AuProcessListInit@@YAXXZ PROC				; AuProcessListInit
 
 ; 558  : 	pid = 0;
 
@@ -795,7 +795,7 @@ _TEXT	SEGMENT
 ; 561  : }
 
 	ret	0
-?process_list_initialize@@YAXXZ ENDP			; process_list_initialize
+?AuProcessListInit@@YAXXZ ENDP				; AuProcessListInit
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\proc.cpp

@@ -125,7 +125,6 @@ void _AuMain (KERNEL_BOOT_INFO *info) {
 	 ***************************************************
 	 */
 
-
 	//================================================
 	//! Initialize the scheduler here
 	//!===============================================
@@ -147,7 +146,7 @@ void _AuMain (KERNEL_BOOT_INFO *info) {
 	pri_loop_init();
 
 	// Initialize the process list
-	process_list_initialize();
+	AuProcessListInit();
 	ttype_init();
 	
 	/* Start the sound subsystem */
@@ -155,6 +154,7 @@ void _AuMain (KERNEL_BOOT_INFO *info) {
 
 	/*Initialize other processor */
 	AuInitializeCpu(AuGetNumCPU());	
+
 
 	/*Clear the lower half for user space */
 	AuPagingClearLow();

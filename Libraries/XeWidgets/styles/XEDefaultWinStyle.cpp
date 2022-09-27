@@ -41,7 +41,7 @@
  * @param win -- Pointer to the window structure
  */
 void XEDefaultPaintTitlebar(XEWindow *win) {
-	acrylic_draw_vertical_gradient(win->ctx, 0,0,win->shwin->width,26, LIGHTSILVER, SILVER);
+	acrylic_draw_vertical_gradient(win->ctx, 0,0,win->shwin->width,26, 0xA6D9D9D9 , SILVER); //LIGHTSILVER
 
 	for (int i = 0; i < win->global_controls->pointer; i++) {
 		XEGlobalControl *control = (XEGlobalControl*)list_get_at(win->global_controls, i);

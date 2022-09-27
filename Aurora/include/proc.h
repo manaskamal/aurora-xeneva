@@ -173,5 +173,5 @@ extern void* process_heap_break (uint64_t pages);
  */
 extern void process_link_libraries ();
 
-extern void process_list_initialize ();
+extern void AuProcessListInit();
 #endif

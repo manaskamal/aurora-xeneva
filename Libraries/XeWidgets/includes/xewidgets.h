@@ -39,6 +39,6 @@
 #include <xebutton.h>
 #include <xeradiobutton.h>
 #include <xeradiogroup.h>
-
+#include <xemenu.h>
 
 #endif

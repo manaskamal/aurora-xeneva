@@ -44,9 +44,13 @@ typedef struct _menu_ {
 	_menu_ *prev;
 }pri_menu_t;
 
+
 typedef struct _menu_item_ {
 	char* string;
 	pri_menu_t* sub_menu;
+	bool selected;
+	bool hovered;
+	bool disabled;
 }pri_menu_item_t;
 
 

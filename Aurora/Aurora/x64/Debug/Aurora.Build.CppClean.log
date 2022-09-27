@@ -3,8 +3,6 @@ E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\switch.obj
 E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\user.obj
 E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\_low_level.obj
 E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\_fast_cpy.obj
-E:\Xeneva Project\Xeneva\Aurora\x64\Debug\Aurora.lib
-E:\Xeneva Project\Xeneva\Aurora\x64\Debug\Aurora.exp
 E:\XENEVA PROJECT\XENEVA\AURORA\AURORA\X64\DEBUG\AHCI_DISK.OBJ
 E:\XENEVA PROJECT\XENEVA\AURORA\AURORA\X64\DEBUG\AHCI_DISK.ASM
 E:\XENEVA PROJECT\XENEVA\AURORA\AURORA\X64\DEBUG\AHCI.OBJ
@@ -154,8 +152,6 @@ E:\XENEVA PROJECT\XENEVA\AURORA\AURORA\X64\DEBUG\SYSMEM.ASM
 E:\XENEVA PROJECT\XENEVA\AURORA\AURORA\X64\DEBUG\SYSFILE.OBJ
 E:\XENEVA PROJECT\XENEVA\AURORA\AURORA\X64\DEBUG\SYSFILE.ASM
 E:\XENEVA PROJECT\XENEVA\AURORA\AURORA\X64\DEBUG\VC110.PDB
-F:\EFI\XENEVA\XNKRNL.EXE
-F:\EFI\XENEVA\XNKRNL.MAP
 E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\acpi.obj
 E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\ahci.obj
 E:\Xeneva Project\Xeneva\Aurora\Aurora\x64\Debug\ahci_disk.obj

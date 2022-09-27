@@ -38,6 +38,13 @@
 #define PRIWM_REQUEST_WINDOW  100
 #define PRIWM_WINDOW_SHOW  104
 
+/* ADDITIONAL WIN CREATE */
+#define PRIWM_POPUP_WIN_CREATE    110
+#define PRIWM_DIALOG_WIN_CREATE   111
+#define PRIWM_POPUP_WIN_CLOSE     112
+#define PRIWM_DIALOG_WIN_CLOSE    113
+
+
 #define XE_MOUSE_EVENT    201
 #define XE_CREATE_WINDOW  202
 #define XE_RESIZE_WINDOW  208
@@ -70,5 +77,12 @@ XE_EXTERN XE_EXPORT XeApp* XeStartApplication(int argc, char* argv[]);
  * @param app -- Pointer to app structure
  */
 XE_EXTERN XE_EXPORT void XECloseApplication (XeApp *app);
+
+/*
+ * XESetRequestBufferSize -- Set requesting buffer width and height size in px
+ * @param buffer_width -- buffer width to request
+ * @param buffer_height -- buffer height to request
+ */
+XE_EXTERN XE_EXPORT void XESetRequestBufferSize (int buffer_width, int buffer_height);
 
 #endif

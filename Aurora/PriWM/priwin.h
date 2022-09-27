@@ -35,23 +35,23 @@
 #define __PRI_WM_LIST_H__
 
 
-
-typedef struct _data_ {
-	_data_ *next;
-	_data_ *prev;
-	void* data;
-}dataentry;
-
-
-typedef struct _qulist_ {
-	unsigned int pointer;
-	dataentry *entry_current;
-}list_t;
-
-extern list_t* list_init();
-extern void list_add (list_t* list, void* data);
-extern void* list_remove(list_t* list, unsigned int);
-extern void * list_get_at(list_t* list, unsigned int index);
+//
+//typedef struct _data_ {
+//	_data_ *next;
+//	_data_ *prev;
+//	void* data;
+//}dataentry;
+//
+//
+//typedef struct _qulist_ {
+//	unsigned int pointer;
+//	dataentry *entry_current;
+//}list_t;
+//
+//extern list_t* list_init();
+//extern void list_add (list_t* list, void* data);
+//extern void* list_remove(list_t* list, unsigned int);
+//extern void * list_get_at(list_t* list, unsigned int index);
 
 
 #endif

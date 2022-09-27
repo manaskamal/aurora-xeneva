@@ -5,12 +5,16 @@ include listing.inc
 INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
+PUBLIC	?SerialLock@@3PEAUmutex_t@@EA			; SerialLock
 _BSS	SEGMENT
 _serial_initialized_ DB 01H DUP (?)
+	ALIGN	8
+
+?SerialLock@@3PEAUmutex_t@@EA DQ 01H DUP (?)		; SerialLock
 _BSS	ENDS
 CONST	SEGMENT
-$SG3121	DB	'Serial Handler', 0aH, 00H
-$SG3214	DB	'.', 00H
+$SG3578	DB	'Serial Handler', 0aH, 00H
+$SG3671	DB	'.', 00H
 CONST	ENDS
 PUBLIC	?AuInitializeSerial@@YAXXZ			; AuInitializeSerial
 PUBLIC	?write_serial@@YAXD@Z				; write_serial
@@ -26,10 +30,11 @@ EXTRN	strlen:PROC
 EXTRN	?sztoa@@YAPEAD_KPEADH@Z:PROC			; sztoa
 EXTRN	printf:PROC
 EXTRN	?ftoa@@YAPEADME@Z:PROC				; ftoa
+EXTRN	AuMutexCreate:PROC
 EXTRN	_fltused:DWORD
 pdata	SEGMENT
 $pdata$?AuInitializeSerial@@YAXXZ DD imagerel $LN3
-	DD	imagerel $LN3+93
+	DD	imagerel $LN3+105
 	DD	imagerel $unwind$?AuInitializeSerial@@YAXXZ
 $pdata$?write_serial@@YAXD@Z DD imagerel $LN5
 	DD	imagerel $LN5+38
@@ -66,19 +71,19 @@ xdata	ENDS
 _TEXT	SEGMENT
 ?is_transmit_empty@@YAHXZ PROC				; is_transmit_empty
 
-; 44   : int is_transmit_empty () {
+; 47   : int is_transmit_empty () {
 
 $LN3:
 	sub	rsp, 40					; 00000028H
 
-; 45   : 	return x64_inportb (PORT + 5) & 0x20;
+; 48   : 	return x64_inportb (PORT + 5) & 0x20;
 
 	mov	cx, 1021				; 000003fdH
 	call	x64_inportb
 	movzx	eax, al
 	and	eax, 32					; 00000020H
 
-; 46   : }
+; 49   : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -91,24 +96,24 @@ v$ = 48
 p$ = 56
 ?SerialHandler@@YAX_KPEAX@Z PROC			; SerialHandler
 
-; 24   : void SerialHandler (size_t v, void* p) {
+; 26   : void SerialHandler (size_t v, void* p) {
 
 $LN3:
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 40					; 00000028H
 
-; 25   : 	printf ("Serial Handler\n");
+; 27   : 	printf ("Serial Handler\n");
 
-	lea	rcx, OFFSET FLAT:$SG3121
+	lea	rcx, OFFSET FLAT:$SG3578
 	call	printf
 
-; 26   : 	AuInterruptEnd(4);
+; 28   : 	AuInterruptEnd(4);
 
 	mov	ecx, 4
 	call	AuInterruptEnd
 
-; 27   : }
+; 29   : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -119,11 +124,11 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 ?is_serial_initialized@@YA_NXZ PROC			; is_serial_initialized
 
-; 141  : 	return _serial_initialized_;
+; 147  : 	return _serial_initialized_;
 
 	movzx	eax, BYTE PTR _serial_initialized_
 
-; 142  : }
+; 148  : }
 
 	ret	0
 ?is_serial_initialized@@YA_NXZ ENDP			; is_serial_initialized
@@ -147,7 +152,7 @@ buffer$12 = 192
 format$ = 288
 _debug_print_ PROC
 
-; 58   : void _debug_print_ (char* format, ...) {
+; 61   : void _debug_print_ (char* format, ...) {
 
 $LN25:
 	mov	QWORD PTR [rsp+8], rcx
@@ -156,49 +161,51 @@ $LN25:
 	mov	QWORD PTR [rsp+32], r9
 	sub	rsp, 280				; 00000118H
 
-; 59   : 	_va_list_ args;
-; 60   : 	va_start(args, format);
+; 62   : 
+; 63   : 
+; 64   : 	_va_list_ args;
+; 65   : 	va_start(args, format);
 
 	lea	rax, QWORD PTR format$[rsp+8]
 	mov	QWORD PTR args$[rsp], rax
 $LN22@debug_prin:
 
-; 61   : 
-; 62   : 	while (*format)
+; 66   : 
+; 67   : 	while (*format)
 
 	mov	rax, QWORD PTR format$[rsp]
 	movsx	eax, BYTE PTR [rax]
 	test	eax, eax
 	je	$LN21@debug_prin
 
-; 63   : 	{
-; 64   : 		if (*format == '%')
+; 68   : 	{
+; 69   : 		if (*format == '%')
 
 	mov	rax, QWORD PTR format$[rsp]
 	movsx	eax, BYTE PTR [rax]
 	cmp	eax, 37					; 00000025H
 	jne	$LN20@debug_prin
 
-; 65   : 		{
-; 66   : 			++format;
+; 70   : 		{
+; 71   : 			++format;
 
 	mov	rax, QWORD PTR format$[rsp]
 	inc	rax
 	mov	QWORD PTR format$[rsp], rax
 
-; 67   : 			if (*format == 'd')
+; 72   : 			if (*format == 'd')
 
 	mov	rax, QWORD PTR format$[rsp]
 	movsx	eax, BYTE PTR [rax]
 	cmp	eax, 100				; 00000064H
 	jne	$LN19@debug_prin
 
-; 68   : 			{
-; 69   : 				size_t width = 0;
+; 73   : 			{
+; 74   : 				size_t width = 0;
 
 	mov	QWORD PTR width$6[rsp], 0
 
-; 70   : 				if (format[1] == '.')
+; 75   : 				if (format[1] == '.')
 
 	mov	eax, 1
 	imul	rax, 1
@@ -207,8 +214,8 @@ $LN22@debug_prin:
 	cmp	eax, 46					; 0000002eH
 	jne	$LN18@debug_prin
 
-; 71   : 				{
-; 72   : 					for (size_t i = 2; format[i] >= '0' && format[i] <= '9'; ++i)
+; 76   : 				{
+; 77   : 					for (size_t i = 2; format[i] >= '0' && format[i] <= '9'; ++i)
 
 	mov	QWORD PTR i$4[rsp], 2
 	jmp	SHORT $LN17@debug_prin
@@ -232,14 +239,14 @@ $LN17@debug_prin:
 	cmp	eax, 57					; 00000039H
 	jg	SHORT $LN15@debug_prin
 
-; 73   : 					{
-; 74   : 						width *= 10;
+; 78   : 					{
+; 79   : 						width *= 10;
 
 	mov	rax, QWORD PTR width$6[rsp]
 	imul	rax, 10
 	mov	QWORD PTR width$6[rsp], rax
 
-; 75   : 						width += format[i] - '0';
+; 80   : 						width += format[i] - '0';
 
 	mov	rax, QWORD PTR i$4[rsp]
 	mov	rcx, QWORD PTR format$[rsp]
@@ -253,14 +260,14 @@ $LN17@debug_prin:
 	mov	rax, rcx
 	mov	QWORD PTR width$6[rsp], rax
 
-; 76   : 					}
+; 81   : 					}
 
 	jmp	SHORT $LN16@debug_prin
 $LN15@debug_prin:
 $LN18@debug_prin:
 
-; 77   : 				}
-; 78   : 				size_t i = va_arg(args, size_t);
+; 82   : 				}
+; 83   : 				size_t i = va_arg(args, size_t);
 
 	mov	rax, QWORD PTR args$[rsp]
 	add	rax, 8
@@ -269,64 +276,64 @@ $LN18@debug_prin:
 	mov	rax, QWORD PTR [rax-8]
 	mov	QWORD PTR i$5[rsp], rax
 
-; 79   : 				char buffer[sizeof(size_t) * 8 + 1];
-; 80   : 			//	size_t len
-; 81   : 				if (i < 0) {
+; 84   : 				char buffer[sizeof(size_t) * 8 + 1];
+; 85   : 			//	size_t len
+; 86   : 				if (i < 0) {
 
 	cmp	QWORD PTR i$5[rsp], 0
 	jae	SHORT $LN14@debug_prin
 
-; 82   : 					i = +i;
+; 87   : 					i = +i;
 
 	mov	rax, QWORD PTR i$5[rsp]
 	mov	QWORD PTR i$5[rsp], rax
 
-; 83   : 					sztoa (i,buffer,10);
+; 88   : 					sztoa (i,buffer,10);
 
 	mov	r8d, 10
 	lea	rdx, QWORD PTR buffer$11[rsp]
 	mov	rcx, QWORD PTR i$5[rsp]
 	call	?sztoa@@YAPEAD_KPEADH@Z			; sztoa
 
-; 84   : 				}else {
+; 89   : 				}else {
 
 	jmp	SHORT $LN13@debug_prin
 $LN14@debug_prin:
 
-; 85   : 					sztoa(i, buffer, 10);
+; 90   : 					sztoa(i, buffer, 10);
 
 	mov	r8d, 10
 	lea	rdx, QWORD PTR buffer$11[rsp]
 	mov	rcx, QWORD PTR i$5[rsp]
 	call	?sztoa@@YAPEAD_KPEADH@Z			; sztoa
 
-; 86   : 					size_t len = strlen(buffer);
+; 91   : 					size_t len = strlen(buffer);
 
 	lea	rcx, QWORD PTR buffer$11[rsp]
 	call	strlen
 	mov	QWORD PTR len$10[rsp], rax
 $LN13@debug_prin:
 
-; 87   : 				}
-; 88   : 			/*	while (len++ < width)
-; 89   : 					puts("0");*/
-; 90   : 				debug_serial(buffer);
+; 92   : 				}
+; 93   : 			/*	while (len++ < width)
+; 94   : 					puts("0");*/
+; 95   : 				debug_serial(buffer);
 
 	lea	rcx, QWORD PTR buffer$11[rsp]
 	call	?debug_serial@@YAXPEAD@Z		; debug_serial
 	jmp	$LN12@debug_prin
 $LN19@debug_prin:
 
-; 91   : 			}
-; 92   : 			else if (*format == 'c')
+; 96   : 			}
+; 97   : 			else if (*format == 'c')
 
 	mov	rax, QWORD PTR format$[rsp]
 	movsx	eax, BYTE PTR [rax]
 	cmp	eax, 99					; 00000063H
 	jne	SHORT $LN11@debug_prin
 
-; 93   : 			{
-; 94   : 				char c = va_arg(args, char);
+; 98   : 			{
+; 99   : 				char c = va_arg(args, char);
 
 	mov	rax, QWORD PTR args$[rsp]
 	add	rax, 4
@@ -335,26 +342,26 @@ $LN19@debug_prin:
 	movzx	eax, BYTE PTR [rax-4]
 	mov	BYTE PTR c$1[rsp], al
 
-; 95   : 				//char buffer[sizeof(size_t) * 8 + 1];
-; 96   : 				//sztoa(c, buffer, 10);
-; 97   : 				//puts(buffer);
-; 98   : 				write_serial(c);
+; 100  : 				//char buffer[sizeof(size_t) * 8 + 1];
+; 101  : 				//sztoa(c, buffer, 10);
+; 102  : 				//puts(buffer);
+; 103  : 				write_serial(c);
 
 	movzx	ecx, BYTE PTR c$1[rsp]
 	call	?write_serial@@YAXD@Z			; write_serial
 	jmp	$LN10@debug_prin
 $LN11@debug_prin:
 
-; 99   : 			}
-; 100  : 			else if (*format == 'x')
+; 104  : 			}
+; 105  : 			else if (*format == 'x')
 
 	mov	rax, QWORD PTR format$[rsp]
 	movsx	eax, BYTE PTR [rax]
 	cmp	eax, 120				; 00000078H
 	jne	SHORT $LN9@debug_prin
 
-; 101  : 			{
-; 102  : 				size_t x = va_arg(args, size_t);
+; 106  : 			{
+; 107  : 				size_t x = va_arg(args, size_t);
 
 	mov	rax, QWORD PTR args$[rsp]
 	add	rax, 8
@@ -363,32 +370,32 @@ $LN11@debug_prin:
 	mov	rax, QWORD PTR [rax-8]
 	mov	QWORD PTR x$9[rsp], rax
 
-; 103  : 				char buffer[sizeof(size_t) * 8 + 1];
-; 104  : 				sztoa(x, buffer, 16);
+; 108  : 				char buffer[sizeof(size_t) * 8 + 1];
+; 109  : 				sztoa(x, buffer, 16);
 
 	mov	r8d, 16
 	lea	rdx, QWORD PTR buffer$12[rsp]
 	mov	rcx, QWORD PTR x$9[rsp]
 	call	?sztoa@@YAPEAD_KPEADH@Z			; sztoa
 
-; 105  : 				//puts("0x");
-; 106  : 				debug_serial(buffer);
+; 110  : 				//puts("0x");
+; 111  : 				debug_serial(buffer);
 
 	lea	rcx, QWORD PTR buffer$12[rsp]
 	call	?debug_serial@@YAXPEAD@Z		; debug_serial
 	jmp	$LN8@debug_prin
 $LN9@debug_prin:
 
-; 107  : 			}
-; 108  : 			else if (*format == 's')
+; 112  : 			}
+; 113  : 			else if (*format == 's')
 
 	mov	rax, QWORD PTR format$[rsp]
 	movsx	eax, BYTE PTR [rax]
 	cmp	eax, 115				; 00000073H
 	jne	SHORT $LN7@debug_prin
 
-; 109  : 			{
-; 110  : 				char* x = va_arg(args, char*);
+; 114  : 			{
+; 115  : 				char* x = va_arg(args, char*);
 
 	mov	rax, QWORD PTR args$[rsp]
 	add	rax, 8
@@ -397,23 +404,23 @@ $LN9@debug_prin:
 	mov	rax, QWORD PTR [rax-8]
 	mov	QWORD PTR x$8[rsp], rax
 
-; 111  : 				debug_serial(x);
+; 116  : 				debug_serial(x);
 
 	mov	rcx, QWORD PTR x$8[rsp]
 	call	?debug_serial@@YAXPEAD@Z		; debug_serial
 	jmp	$LN6@debug_prin
 $LN7@debug_prin:
 
-; 112  : 			}
-; 113  : 			else if (*format == 'f')
+; 117  : 			}
+; 118  : 			else if (*format == 'f')
 
 	mov	rax, QWORD PTR format$[rsp]
 	movsx	eax, BYTE PTR [rax]
 	cmp	eax, 102				; 00000066H
 	jne	SHORT $LN5@debug_prin
 
-; 114  : 			{
-; 115  : 				double x = va_arg(args, double);
+; 119  : 			{
+; 120  : 				double x = va_arg(args, double);
 
 	mov	rax, QWORD PTR args$[rsp]
 	add	rax, 8
@@ -422,7 +429,7 @@ $LN7@debug_prin:
 	movsdx	xmm0, QWORD PTR [rax-8]
 	movsdx	QWORD PTR x$7[rsp], xmm0
 
-; 116  : 				debug_serial(ftoa(x,2));
+; 121  : 				debug_serial(ftoa(x,2));
 
 	cvtsd2ss xmm0, QWORD PTR x$7[rsp]
 	mov	dl, 2
@@ -432,29 +439,29 @@ $LN7@debug_prin:
 	jmp	SHORT $LN4@debug_prin
 $LN5@debug_prin:
 
-; 117  : 			}
-; 118  : 			else if (*format == '%')
+; 122  : 			}
+; 123  : 			else if (*format == '%')
 
 	mov	rax, QWORD PTR format$[rsp]
 	movsx	eax, BYTE PTR [rax]
 	cmp	eax, 37					; 00000025H
 	jne	SHORT $LN3@debug_prin
 
-; 119  : 			{
-; 120  : 				debug_serial(".");
+; 124  : 			{
+; 125  : 				debug_serial(".");
 
-	lea	rcx, OFFSET FLAT:$SG3214
+	lea	rcx, OFFSET FLAT:$SG3671
 	call	?debug_serial@@YAXPEAD@Z		; debug_serial
 
-; 121  : 			}
-; 122  : 			else
+; 126  : 			}
+; 127  : 			else
 
 	jmp	SHORT $LN2@debug_prin
 $LN3@debug_prin:
 
-; 123  : 			{
-; 124  : 				char buf[3];
-; 125  : 				buf[0] = '%'; buf[1] = *format; buf[2] = '\0';
+; 128  : 			{
+; 129  : 				char buf[3];
+; 130  : 				buf[0] = '%'; buf[1] = *format; buf[2] = '\0';
 
 	mov	eax, 1
 	imul	rax, 0
@@ -468,7 +475,7 @@ $LN3@debug_prin:
 	imul	rax, 2
 	mov	BYTE PTR buf$3[rsp+rax], 0
 
-; 126  : 				debug_serial(buf);
+; 131  : 				debug_serial(buf);
 
 	lea	rcx, QWORD PTR buf$3[rsp]
 	call	?debug_serial@@YAXPEAD@Z		; debug_serial
@@ -479,16 +486,16 @@ $LN8@debug_prin:
 $LN10@debug_prin:
 $LN12@debug_prin:
 
-; 127  : 			}
-; 128  : 		}
-; 129  : 		else
+; 132  : 			}
+; 133  : 		}
+; 134  : 		else
 
 	jmp	SHORT $LN1@debug_prin
 $LN20@debug_prin:
 
-; 130  : 		{
-; 131  : 			char buf[2];
-; 132  : 			buf[0] = *format; buf[1] = '\0';
+; 135  : 		{
+; 136  : 			char buf[2];
+; 137  : 			buf[0] = *format; buf[1] = '\0';
 
 	mov	eax, 1
 	imul	rax, 0
@@ -499,26 +506,27 @@ $LN20@debug_prin:
 	imul	rax, 1
 	mov	BYTE PTR buf$2[rsp+rax], 0
 
-; 133  : 			debug_serial(buf);
+; 138  : 			debug_serial(buf);
 
 	lea	rcx, QWORD PTR buf$2[rsp]
 	call	?debug_serial@@YAXPEAD@Z		; debug_serial
 $LN1@debug_prin:
 
-; 134  : 		}
-; 135  : 		++format;
+; 139  : 		}
+; 140  : 		++format;
 
 	mov	rax, QWORD PTR format$[rsp]
 	inc	rax
 	mov	QWORD PTR format$[rsp], rax
 
-; 136  : 	}
+; 141  : 	}
 
 	jmp	$LN22@debug_prin
 $LN21@debug_prin:
 
-; 137  : 	va_end(args);
-; 138  : }
+; 142  : 	va_end(args);
+; 143  : 
+; 144  : }
 
 	add	rsp, 280				; 00000118H
 	ret	0
@@ -532,13 +540,13 @@ tv65 = 40
 string$ = 64
 ?debug_serial@@YAXPEAD@Z PROC				; debug_serial
 
-; 53   : void debug_serial (char* string) {
+; 56   : void debug_serial (char* string) {
 
 $LN6:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 56					; 00000038H
 
-; 54   : 	for (int i = 0; i < strlen(string); i++)
+; 57   : 	for (int i = 0; i < strlen(string); i++)
 
 	mov	DWORD PTR i$1[rsp], 0
 	jmp	SHORT $LN3@debug_seri
@@ -555,7 +563,7 @@ $LN3@debug_seri:
 	cmp	rcx, rax
 	jae	SHORT $LN1@debug_seri
 
-; 55   : 		write_serial(string[i]);
+; 58   : 		write_serial(string[i]);
 
 	movsxd	rax, DWORD PTR i$1[rsp]
 	mov	rcx, QWORD PTR string$[rsp]
@@ -564,7 +572,7 @@ $LN3@debug_seri:
 	jmp	SHORT $LN2@debug_seri
 $LN1@debug_seri:
 
-; 56   : }
+; 59   : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -576,14 +584,14 @@ _TEXT	SEGMENT
 a$ = 48
 ?write_serial@@YAXD@Z PROC				; write_serial
 
-; 48   : void write_serial (char a) {
+; 51   : void write_serial (char a) {
 
 $LN5:
 	mov	BYTE PTR [rsp+8], cl
 	sub	rsp, 40					; 00000028H
 $LN2@write_seri:
 
-; 49   : 	while (is_transmit_empty() == 0);
+; 52   : 	while (is_transmit_empty() == 0);
 
 	call	?is_transmit_empty@@YAHXZ		; is_transmit_empty
 	test	eax, eax
@@ -591,13 +599,13 @@ $LN2@write_seri:
 	jmp	SHORT $LN2@write_seri
 $LN1@write_seri:
 
-; 50   : 	x64_outportb (PORT, a);
+; 53   : 	x64_outportb (PORT, a);
 
 	movzx	edx, BYTE PTR a$[rsp]
 	mov	cx, 1016				; 000003f8H
 	call	x64_outportb
 
-; 51   : }
+; 54   : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -608,62 +616,67 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 ?AuInitializeSerial@@YAXXZ PROC				; AuInitializeSerial
 
-; 29   : void AuInitializeSerial() {
+; 31   : void AuInitializeSerial() {
 
 $LN3:
 	sub	rsp, 40					; 00000028H
 
-; 30   : 	x64_outportb (PORT + 1, 0x00);
+; 32   : 	x64_outportb (PORT + 1, 0x00);
 
 	xor	edx, edx
 	mov	cx, 1017				; 000003f9H
 	call	x64_outportb
 
-; 31   : 	x64_outportb ((PORT + 3), 0x80);
+; 33   : 	x64_outportb ((PORT + 3), 0x80);
 
 	mov	dl, 128					; 00000080H
 	mov	cx, 1019				; 000003fbH
 	call	x64_outportb
 
-; 32   : 	x64_outportb ((PORT + 0), 0x03);
+; 34   : 	x64_outportb ((PORT + 0), 0x03);
 
 	mov	dl, 3
 	mov	cx, 1016				; 000003f8H
 	call	x64_outportb
 
-; 33   : 	x64_outportb ((PORT + 1), 0x00);
+; 35   : 	x64_outportb ((PORT + 1), 0x00);
 
 	xor	edx, edx
 	mov	cx, 1017				; 000003f9H
 	call	x64_outportb
 
-; 34   : 	x64_outportb ((PORT + 3), 0x03);
+; 36   : 	x64_outportb ((PORT + 3), 0x03);
 
 	mov	dl, 3
 	mov	cx, 1019				; 000003fbH
 	call	x64_outportb
 
-; 35   : 	x64_outportb ((PORT + 2), 0xC7);
+; 37   : 	x64_outportb ((PORT + 2), 0xC7);
 
 	mov	dl, 199					; 000000c7H
 	mov	cx, 1018				; 000003faH
 	call	x64_outportb
 
-; 36   : 	x64_outportb ((PORT + 4), 0x0B);
+; 38   : 	x64_outportb ((PORT + 4), 0x0B);
 
 	mov	dl, 11
 	mov	cx, 1020				; 000003fcH
 	call	x64_outportb
 
-; 37   : 	
-; 38   : 
-; 39   : 	//x64_outportb (PORT + 4, 0x0F);
-; 40   : 	//interrupt_set (4,serial_handler, 4);
-; 41   : 	_serial_initialized_ = true;
+; 39   : 
+; 40   : 	SerialLock = AuMutexCreate();
+
+	call	AuMutexCreate
+	mov	QWORD PTR ?SerialLock@@3PEAUmutex_t@@EA, rax ; SerialLock
+
+; 41   : 
+; 42   : 	//x64_outportb (PORT + 4, 0x0F);
+; 43   : 	//interrupt_set (4,serial_handler, 4);
+; 44   : 	_serial_initialized_ = true;
 
 	mov	BYTE PTR _serial_initialized_, 1
 
-; 42   : }
+; 45   : }
 
 	add	rsp, 40					; 00000028H
 	ret	0

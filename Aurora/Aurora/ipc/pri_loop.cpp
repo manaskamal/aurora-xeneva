@@ -113,6 +113,7 @@ void pri_loop_destroy_by_id (uint16_t id) {
  * @param event -- event message to put
  */
 void pri_put_message (pri_event_t *event) {
+	x64_cli();
 
 	uint16_t owner_id = event->to_id;
 	for (pri_loop_box_t *loop = first_loop; loop != NULL; loop = loop->next) {
@@ -142,7 +143,8 @@ ret:
  * @param event -- pointer where to store the specific message
  */
 void pri_get_message (pri_event_t *event) {
-	
+	x64_cli();
+
 	uint16_t owner_id = get_current_thread()->id;
 	for (pri_loop_box_t *loop = first_loop; loop != NULL; loop = loop->next) {
 		if (loop->owner_id == owner_id) {

@@ -669,6 +669,7 @@ pri_window_t * window_create (int x, int y, int w, int h, uint8_t attr, uint16_t
 	win->anim = false;
 	win->anim_x = 0;
 	win->anim_y = 0;
+	win->popup_wins = list_init();
 	pri_win_info_t *info = (pri_win_info_t*)win->pri_win_info_loc;
 	info->x = x;
 	info->y = y;
@@ -677,6 +678,7 @@ pri_window_t * window_create (int x, int y, int w, int h, uint8_t attr, uint16_t
 	info->dirty = 0;
 	info->rect_count = 0;
 	info->alpha = false; //By default, alpha is disabled
+	info->shared_prop = false;
 	//list_add (window_list, win);
 	pri_add_window(win);
 	return win;
@@ -706,19 +708,19 @@ void window_remove (pri_window_t *win) {
  * pri_add_popup_window -- adds popup window to popup list
  * @param win -- pointer to popup window
  */
-void pri_add_popup_window (pri_popup_win_t *win) {
-	list_add(popup_list, win);
+void pri_add_popup_window (pri_window_t* main,  pri_popup_win_t *win) {
+	list_add(main->popup_wins, win);
 }
 
 /*
  * pri_remove_popup_window -- removes popup window from popup list
  * @param win -- pointer to popup window
  */
-void pri_remove_popup_window (pri_popup_win_t *win) {
-	for (int i = 0; i < popup_list->pointer; i++) {
-		pri_popup_win_t *pwin = (pri_popup_win_t*)list_get_at(popup_list, i);
+void pri_remove_popup_window (pri_window_t* main,pri_popup_win_t *win) {
+	for (int i = 0; i < main->popup_wins->pointer; i++) {
+		pri_popup_win_t *pwin = (pri_popup_win_t*)list_get_at(main->popup_wins, i);
 		if (pwin == win)
-			list_remove(popup_list, i);
+			list_remove(main->popup_wins, i);
 	}
 }
 
@@ -727,8 +729,7 @@ void pri_remove_popup_window (pri_popup_win_t *win) {
  * @param win -- root popup window
  */
 void pri_clear_popup_window (pri_popup_win_t* win) {
-	pri_wallp_add_dirty_clip(win->x, win->y, win->w, win->h);
-	pri_remove_popup_window(win);
+	pri_wallp_add_dirty_clip(win->shwin->x, win->shwin->y, win->shwin->w, win->shwin->h);
 	pri_destroy_popup_window(win);
 	_window_update_all_ = true;
 }
@@ -1009,29 +1010,35 @@ void compose_frame () {
 			info->dirty = 0;
 		}
 		
-	}
+		/*
+		* Render all popup windows
+		*/
+		for (int i = 0; i < win->popup_wins->pointer; i++) {
+			pri_popup_win_t *pwin = (pri_popup_win_t*)list_get_at(win->popup_wins, i);
 
-	/*
-	 * Render all popup windows
-	 */
-	for (int i = 0; i < popup_list->pointer; i++) {
-		pri_popup_win_t *win = (pri_popup_win_t*)list_get_at(popup_list, i);
+			if (pwin->shwin->dirty) {
+				int popup_x = pwin->shwin->x;
+				int popup_y = pwin->shwin->y;
+				int popup_w = pwin->shwin->w;
+				int popup_h = pwin->shwin->h;
 
-		int popup_x = win->x;
-		int popup_y = win->y;
-		int popup_w = win->w;
-		int popup_h = win->h;
+				for (int i = 0; i < popup_h; i++) {
+					fastcpy(canvas->address + (popup_y + i) * canvas->width + popup_x, 
+						pwin->buffer + (0 + i) * pwin->shwin->w + 0, popup_w*4);
+				}
 
-		if (win->visible) {
-			for (int i = 0; i < popup_h; i++) {
-				fastcpy(canvas->address + (popup_y + i) * canvas->width + popup_x, 
-					win->pixbuf->address + (0 + i) * win->w + 0, popup_w*4);
+				pri_add_clip(popup_x, popup_y, popup_w, popup_h);
 			}
 
-			pri_add_clip(popup_x, popup_y, popup_w, popup_h);
+			if (pwin->shwin->hide) {
+				pwin->shwin->dirty = false;
+				pwin->shwin->hide = false;
+				_window_update_all_ = true;
+			}
 		}
-		
 	}
+
+	
 
 	/* now store the new occluded area by cursor */
 	cursor_store_back(mouse_x, mouse_y);
@@ -1151,7 +1158,6 @@ void pri_win_check_draggable (int x, int y, int button) {
 	last_mouse_button = button;
 }
 
-
 /*
  * main -- the main entry point of priwm
  */
@@ -1238,6 +1244,7 @@ XE_EXTERN int XeMain (int argc, char* argv[]) {
 			int button = mouse.dword4;
 			int button2 = mouse.dword4;
 			pri_win_check_draggable(mouse_x, mouse_y,button); 
+
 			/* send the mouse event to focused window */
 			if (focused_win && _window_broadcast_mouse_) {
 				pri_win_send_mouse_event(focused_win, mouse_x,mouse_y, button2);
@@ -1287,31 +1294,6 @@ XE_EXTERN int XeMain (int argc, char* argv[]) {
 				sys_kill(test_id, SIGINT);
 			}
 
-			if (key_msg.dword == KEY_P) {
-				if (root_popup_win == NULL) {
-					pri_popup_win_t *win = pri_create_popup_window(mouse_x,mouse_y,310,100, (1<<0));
-					pri_menu_t * menu = pri_create_menu(win);
-					pri_menu_item_t *item = pri_create_menu_item("New");
-					pri_menu_item_t *item2 = pri_create_menu_item("Personalize");
-					pri_menu_item_t *item3 = pri_create_menu_item("Refresh");
-					pri_menu_item_t *item4 = pri_create_menu_item("Open Settings");
-					pri_menu_item_t *item5 = pri_create_menu_item("Display Settings");
-					pri_menu_add_item(menu, item);
-					pri_menu_add_item(menu, item2);
-					pri_menu_add_item(menu, item3);
-					pri_menu_add_item(menu, item4);
-					pri_menu_show(menu);
-					win->visible = true;
-					pri_add_popup_window(win);
-					root_popup_win = win;
-				}else {
-					pri_clear_popup_window (root_popup_win);
-					root_popup_win = NULL;
-				}
-				
-			}
-
-
 			memset(&key_msg, 0, sizeof(message_t));
 		}
 
@@ -1325,11 +1307,8 @@ XE_EXTERN int XeMain (int argc, char* argv[]) {
 			int w = event.dword3;
 			int h = event.dword4;
 			uint8_t attribute = event.dword5;
-			char *title = (char*)malloc(100) ;
-			memset(title,0,100);
-			strcpy(title,event.char_values);
 
-			pri_window_t *win = window_create (x,y,w,h,attribute,event.from_id, title);
+			pri_window_t *win = window_create (x,y,w,h,attribute,event.from_id, NULL);
 			//pri_window_set_focused(win, false);
 			focused_win = win;
 
@@ -1341,8 +1320,33 @@ XE_EXTERN int XeMain (int argc, char* argv[]) {
 			e.dword2 = win->backing_store_key;   //shared win key  win->pri_win_info_loc;
 			e.to_id = event.from_id;
 			ioquery(pri_loop_fd,PRI_LOOP_PUT_EVENT, &e);
-
+			
 			memset (&event, 0, sizeof(pri_event_t));
+		}
+
+		/* PRI_POPUP_WIN_CREATE -- Creates a popup window in
+		 * given position */
+		if (event.type == PRI_POPUP_WIN_CREATE) {
+			int x = event.dword;
+			int y = event.dword2;
+			int w = event.dword3;
+			int h = event.dword4;
+			uint16_t owner_id = event.from_id;
+			pri_window_t *main = pri_win_find_by_id(owner_id);
+				
+			pri_popup_win_t *popup = pri_create_popup_window(x, y, w, h,owner_id);
+			pri_add_popup_window(main,popup);
+
+
+			pri_event_t e;
+			e.type = DAISY_GIFT_CANVAS;
+			e.dword = popup->shwin_key;
+			e.dword2 = popup->buffer_win_key;
+			e.to_id = owner_id;
+			ioquery (pri_loop_fd, PRI_LOOP_PUT_EVENT, &e);
+			
+			
+			memset(&event, 0, sizeof(pri_event_t));
 		}
 
 		/**
@@ -1457,6 +1461,24 @@ XE_EXTERN int XeMain (int argc, char* argv[]) {
 			memset(&event, 0, sizeof(pri_event_t));
 		}
 
+
+		if (event.type == PRI_POPUP_WIN_CLOSE) {
+			uint16_t owner_id = event.from_id;
+			pri_popup_win_t *win = NULL;
+			for (int i = 0; i < popup_list->pointer; i++) {
+				pri_popup_win_t* pwin = (pri_popup_win_t*)list_get_at(popup_list, i);
+				if (pwin->owner_id == owner_id){
+					win = pwin;
+					list_remove(popup_list, i);
+					break;
+				}
+			}
+
+			if (win) 
+				pri_clear_popup_window(win);
+
+			memset(&event, 0, sizeof(pri_event_t));
+		}
 
 		//diff_tick = sys_get_system_tick();
 		//int delta = diff_tick - frame_tick;

@@ -1,4 +1,4 @@
-﻿Build started 11-09-2022 ৰাতিপু 10:16:27.
+﻿Build started 23-09-2022 আবেলি 4:13:12.
      1>Project "E:\Xeneva Project\Xeneva\Aurora\PriWM\PriWM.vcxproj" on node 2 (Rebuild target(s)).
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\xnlib\xnclib" /I"E:\Xeneva Project\Xeneva\xnlib\xnacrylic\include" /I"E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes" /Zi /nologo /W3 /WX- /sdl- /Od /D ARCH_X64 /D DEFAULT_COLOR_MODE /D _MBCS /X /Gm /GS- /arch:SSE2 /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt priwin.cpp priwm.cpp pri_blit.cpp pri_clip.cpp pri_dirty_clip.cpp pri_event.cpp pri_menu.cpp pri_menu_painter.cpp pri_popup.cpp pri_rect.cpp pri_wallp_dirty_clip.cpp
@@ -7,11 +7,9 @@
          pri_wallp_dirty_clip.cpp
          pri_rect.cpp
          pri_popup.cpp
+     1>pri_popup.cpp(55): warning C4244: '=' : conversion from 'uint16_t' to 'uint8_t', possible loss of data
          pri_menu_painter.cpp
-     1>pri_menu_painter.cpp(41): warning C4018: '<' : signed/unsigned mismatch
          pri_menu.cpp
-     1>pri_menu.cpp(102): warning C4267: 'initializing' : conversion from 'size_t' to 'int', possible loss of data
-     1>pri_menu.cpp(120): warning C4018: '<' : signed/unsigned mismatch
          pri_event.cpp
          pri_dirty_clip.cpp
      1>pri_dirty_clip.cpp(59): warning C4018: '<' : signed/unsigned mismatch
@@ -28,8 +26,8 @@
      1>priwm.cpp(509): warning C4018: '<' : signed/unsigned mismatch
      1>priwm.cpp(629): warning C4244: '=' : conversion from 'uint16_t' to 'uint8_t', possible loss of data
      1>priwm.cpp(640): warning C4018: '<' : signed/unsigned mismatch
-     1>priwm.cpp(693): warning C4018: '<' : signed/unsigned mismatch
-     1>priwm.cpp(718): warning C4018: '<' : signed/unsigned mismatch
+     1>priwm.cpp(694): warning C4018: '<' : signed/unsigned mismatch
+     1>priwm.cpp(719): warning C4018: '<' : signed/unsigned mismatch
      1>priwm.cpp(822): warning C4018: '>=' : signed/unsigned mismatch
      1>priwm.cpp(825): warning C4018: '>=' : signed/unsigned mismatch
      1>priwm.cpp(863): warning C4244: '=' : conversion from 'uint16_t' to 'uint8_t', possible loss of data
@@ -38,12 +36,15 @@
      1>priwm.cpp(930): warning C4018: '>=' : signed/unsigned mismatch
      1>priwm.cpp(993): warning C4018: '>=' : signed/unsigned mismatch
      1>priwm.cpp(995): warning C4018: '>=' : signed/unsigned mismatch
-     1>priwm.cpp(1017): warning C4018: '<' : signed/unsigned mismatch
-     1>priwm.cpp(1067): warning C4244: '=' : conversion from 'uint16_t' to 'uint8_t', possible loss of data
-     1>priwm.cpp(1080): warning C4244: '=' : conversion from 'uint16_t' to 'uint8_t', possible loss of data
-     1>priwm.cpp(1214): warning C4101: 'diff_tick' : unreferenced local variable
-     1>priwm.cpp(1213): warning C4101: 'frame_tick' : unreferenced local variable
+     1>priwm.cpp(1015): warning C4018: '<' : signed/unsigned mismatch
+     1>priwm.cpp(1073): warning C4244: '=' : conversion from 'uint16_t' to 'uint8_t', possible loss of data
+     1>priwm.cpp(1086): warning C4244: '=' : conversion from 'uint16_t' to 'uint8_t', possible loss of data
+     1>priwm.cpp(1344): warning C4244: '=' : conversion from 'uint16_t' to 'uint8_t', possible loss of data
+     1>priwm.cpp(1467): warning C4018: '<' : signed/unsigned mismatch
+     1>priwm.cpp(1219): warning C4101: 'diff_tick' : unreferenced local variable
+     1>priwm.cpp(1218): warning C4101: 'frame_tick' : unreferenced local variable
          priwin.cpp
+     1>priwin.cpp(34): warning C4067: unexpected tokens following preprocessor directive - expected a newline
          Generating Code...
      1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V110\Microsoft.CppBuild.targets(1137,5): warning MSB8012: TargetPath(E:\Xeneva Project\Xeneva\Aurora\x64\Debug\PriWM.exe) does not match the Linker's OutputFile property value (F:\priwm.exe). This may cause your project to build incorrectly. To correct this, please make sure that $(OutDir), $(TargetName) and $(TargetExt) property values match the value specified in %(Link.OutputFile).
        Link:
@@ -65,4 +66,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:01.05
+Time Elapsed 00:00:04.42

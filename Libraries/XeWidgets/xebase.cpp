@@ -43,6 +43,9 @@
 
 
 #define PRI_WM_RECEIVER       0xFFFFD00000000000
+static int __request_buffer_width = 0;
+static int __request_buffer_height = 0;
+
 
 /*
  * XeSendEventPRIWM -- Sends a message to PRIWM
@@ -51,11 +54,16 @@
 void XeSendEventPRIWM (pri_event_t *event) {
 	void* address = (void*)PRI_WM_RECEIVER;
 	pri_event_t *data = (pri_event_t*)address;
+	int count = 10;
 check:
 	if (data->type != 0) {
-		sys_sleep(6);
+		sys_sleep(2);
+		count--;
+		if (count == 0)
+			goto force;
 		goto check;
 	}else {
+force:
 		event->from_id = get_current_pid();
 		memcpy(address, event, sizeof(pri_event_t));
 	}
@@ -76,13 +84,16 @@ XeApp* XeStartApplication(int argc, char* argv[]) {
 	XeApp *app = (XeApp*)malloc(sizeof(XeApp));
 	memset(app, 0, sizeof(XeApp));
 
+	if (__request_buffer_width == 0 && __request_buffer_height == 0)
+		__request_buffer_width = __request_buffer_height = 400;
+
 	/* Request a new Window from the server */
 	pri_event_t e;
 	e.type = PRIWM_REQUEST_WINDOW;
 	e.dword = 0;
 	e.dword2 = 0;
-	e.dword3 = 400;
-	e.dword4 = 400;
+	e.dword3 = __request_buffer_width;
+	e.dword4 = __request_buffer_height;
 	e.dword5 = 0;
 	XeSendEventPRIWM(&e);
 	memset(&e, 0, sizeof(pri_event_t));
@@ -155,4 +166,14 @@ XE_EXTERN XE_EXPORT void XECloseApplication (XeApp *app) {
 			}
 		}
 	}
+}
+
+/*
+ * XESetRequestBufferSize -- Set requesting buffer width and height size in px
+ * @param buffer_width -- buffer width to request
+ * @param buffer_height -- buffer height to request
+ */
+XE_EXTERN XE_EXPORT void XESetRequestBufferSize (int buffer_width, int buffer_height) {
+	__request_buffer_width = buffer_width;
+	__request_buffer_height = buffer_height;
 }

@@ -26,7 +26,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * /PROJECT - Aurora's Xeneva v1.0
- * @priwm.h -- priyanshi's window manager header
+ * @priwm.h -- pri window manager header
  *
  **/
 
@@ -35,6 +35,7 @@
 
 #include <stdint.h>
 #include <canvas.h>
+#include <list.h>
 #include <acrylic.h>
 
 
@@ -48,6 +49,13 @@
 #define PRI_RESIZE_ACK  107  //!! Resize acknowledgement send to server by clients
 #define PRI_WIN_RESIZE  108
 #define PRI_WIN_SET_PROPERTIES 109
+
+
+/* ADDITIONAL WIN CREATE */
+#define PRI_POPUP_WIN_CREATE    110
+#define PRI_DIALOG_WIN_CREATE   111
+#define PRI_POPUP_WIN_CLOSE     112
+#define PRI_DIALOG_WIN_CLOSE    113
 
 /* Messages that are being send to client by server */
 #define DAISY_WIN_MOVE  200
@@ -173,6 +181,7 @@ typedef struct _pri_win_info_ {
 	int width;
 	int height;
 	bool alpha;
+	uint8_t shared_prop;
 }pri_win_info_t;
 
 
@@ -204,6 +213,7 @@ typedef struct _pri_win_ {
 	canvas_t *shadow;
 	char* title;
 	bool mark_for_close;
+	list_t *popup_wins;
 	_pri_win_ *next;
 	_pri_win_ *prev;
 }pri_window_t;
@@ -224,4 +234,19 @@ typedef struct _pri_wallp_ {
 typedef struct _desktop_component_ {
 	uint16_t process_id;
 }desktop_component_t;
+
+/**
+ * create_new_shared_win -- creates a new shared window space
+ * @param owner_id -- owner of the shared window space
+ */
+extern uint32_t* create_new_shared_win (uint16_t *sh_key, uint16_t owner_id);
+/**
+ * create_new_backing_store -- creates new backing store
+ * for server and client to share
+ * @param owner_id -- owner id to serve the backing store
+ * @param size -- size of the backing store
+ * @return -- return the new backing store
+ */
+extern void* create_new_backing_store (uint16_t owner_id, int size, uint16_t *key);
+
 #endif
