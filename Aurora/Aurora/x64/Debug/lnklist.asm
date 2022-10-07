@@ -5,24 +5,18 @@ include listing.inc
 INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
-CONST	SEGMENT
-$SG3151	DB	'List adding -> %x , sizeof(dataentry) -> %d ', 0dH, 0aH, 00H
-	ORG $+1
-$SG3155	DB	'Current data -> %x ', 0dH, 0aH, 00H
-CONST	ENDS
 PUBLIC	?initialize_list@@YAPEAU_list_@@XZ		; initialize_list
 PUBLIC	?list_add@@YAXPEAU_list_@@PEAX@Z		; list_add
 PUBLIC	?list_remove@@YAPEAXPEAU_list_@@I@Z		; list_remove
 PUBLIC	?list_get_at@@YAPEAXPEAU_list_@@I@Z		; list_get_at
 EXTRN	malloc:PROC
 EXTRN	free:PROC
-EXTRN	_debug_print_:PROC
 pdata	SEGMENT
 $pdata$?initialize_list@@YAPEAU_list_@@XZ DD imagerel $LN3
 	DD	imagerel $LN3+53
 	DD	imagerel $unwind$?initialize_list@@YAPEAU_list_@@XZ
 $pdata$?list_add@@YAXPEAU_list_@@PEAX@Z DD imagerel $LN7
-	DD	imagerel $LN7+224
+	DD	imagerel $LN7+184
 	DD	imagerel $unwind$?list_add@@YAXPEAU_list_@@PEAX@Z
 $pdata$?list_remove@@YAPEAXPEAU_list_@@I@Z DD imagerel $LN12
 	DD	imagerel $LN12+263
@@ -303,25 +297,14 @@ $LN7:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 56					; 00000038H
 
-; 25   : 	_debug_print_ ("List adding -> %x , sizeof(dataentry) -> %d \r\n", data, sizeof(dataentry));
-
-	mov	r8d, 24
-	mov	rdx, QWORD PTR data$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3151
-	call	_debug_print_
-
+; 25   : 	//_debug_print_ ("List adding -> %x , sizeof(dataentry) -> %d \r\n", data, sizeof(dataentry));
 ; 26   : 	dataentry *current_data = (dataentry*)malloc(sizeof(dataentry));
 
 	mov	ecx, 24
 	call	malloc
 	mov	QWORD PTR current_data$[rsp], rax
 
-; 27   : 	_debug_print_ ("Current data -> %x \r\n", current_data);
-
-	mov	rdx, QWORD PTR current_data$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3155
-	call	_debug_print_
-
+; 27   : 	//_debug_print_ ("Current data -> %x \r\n", current_data);
 ; 28   : 	current_data->next = nullptr;
 
 	mov	rax, QWORD PTR current_data$[rsp]

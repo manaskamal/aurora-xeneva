@@ -37,6 +37,7 @@
 #include <serial.h>
 #include <ipc\pri_loop.h>
 #include <arch\x86_64\kstack.h>
+#include <sound.h>
 
 process_t *process_head = NULL;
 process_t *process_last = NULL;
@@ -325,6 +326,8 @@ void kill_process () {
 	uint64_t *cr3 = (uint64_t*)remove_thread->frame.cr3;
 	
 	int timer = find_timer_id (remove_thread->id);
+
+	AuSoundDestroyDSP(t_id);
 
 	/** destroy the timer */
 	if (timer != -1) {

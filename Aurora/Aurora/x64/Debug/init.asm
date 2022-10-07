@@ -10,11 +10,11 @@ _BSS	SEGMENT
 ?debug@@3P6AXPEBDZZEA DQ 01H DUP (?)			; debug
 _BSS	ENDS
 CONST	SEGMENT
-$SG5593	DB	'Scheduler Initialized', 0aH, 00H
+$SG5598	DB	'Scheduler Initialized', 0aH, 00H
 	ORG $+1
-$SG5595	DB	'shell', 00H
+$SG5600	DB	'shell', 00H
 	ORG $+2
-$SG5596	DB	'/init.exe', 00H
+$SG5601	DB	'/init.exe', 00H
 CONST	ENDS
 PUBLIC	?debug_print@@YAXPEBDZZ				; debug_print
 PUBLIC	?_AuMain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z		; _AuMain
@@ -51,12 +51,13 @@ EXTRN	?AuInitializeShMem@@YAXXZ:PROC			; AuInitializeShMem
 EXTRN	?AuSharedDeviceInit@@YAXXZ:PROC			; AuSharedDeviceInit
 EXTRN	?ttype_init@@YAXXZ:PROC				; ttype_init
 EXTRN	?AuNetInitialize@@YAXXZ:PROC			; AuNetInitialize
+EXTRN	?AuARPRequestMAC@@YAXXZ:PROC			; AuARPRequestMAC
 pdata	SEGMENT
 $pdata$?debug_print@@YAXPEBDZZ DD imagerel $LN3
 	DD	imagerel $LN3+40
 	DD	imagerel $unwind$?debug_print@@YAXPEBDZZ
 $pdata$?_AuMain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z DD imagerel $LN5
-	DD	imagerel $LN5+274
+	DD	imagerel $LN5+279
 	DD	imagerel $unwind$?_AuMain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z
 pdata	ENDS
 xdata	SEGMENT
@@ -221,7 +222,10 @@ $LN5:
 
 	call	?AuSoundStart@@YAXXZ			; AuSoundStart
 
-; 154  : 
+; 154  : 	AuARPRequestMAC();
+
+	call	?AuARPRequestMAC@@YAXXZ			; AuARPRequestMAC
+
 ; 155  : 	/*Initialize other processor */
 ; 156  : 	AuInitializeCpu(AuGetNumCPU());	
 
@@ -237,59 +241,58 @@ $LN5:
 	call	?AuPagingClearLow@@YAXXZ		; AuPagingClearLow
 
 ; 161  : 
-; 162  : 	
-; 163  : #ifdef ARCH_X64
-; 164  : 
-; 165  : 	printf ("Scheduler Initialized\n");
+; 162  : #ifdef ARCH_X64
+; 163  : 
+; 164  : 	printf ("Scheduler Initialized\n");
 
-	lea	rcx, OFFSET FLAT:$SG5593
+	lea	rcx, OFFSET FLAT:$SG5598
 	call	printf
 
-; 166  : 	int au_status = 0;
+; 165  : 	int au_status = 0;
 
 	mov	DWORD PTR au_status$[rsp], 0
 
-; 167  : 
-; 168  : 	/* start the init process here */
-; 169  : 	au_status = AuCreateProcess ("/init.exe","shell");
+; 166  : 
+; 167  : 	/* start the init process here */
+; 168  : 	au_status = AuCreateProcess ("/init.exe","shell");
 
-	lea	rdx, OFFSET FLAT:$SG5595
-	lea	rcx, OFFSET FLAT:$SG5596
+	lea	rdx, OFFSET FLAT:$SG5600
+	lea	rcx, OFFSET FLAT:$SG5601
 	call	?AuCreateProcess@@YAHPEBDPEAD@Z		; AuCreateProcess
 	mov	DWORD PTR au_status$[rsp], eax
 
-; 170  : 
-; 171  : 	//! Here start the scheduler (multitasking engine)
-; 172  : 	
-; 173  : 	AuSchedulerStart();
+; 169  : 
+; 170  : 	//! Here start the scheduler (multitasking engine)
+; 171  : 	
+; 172  : 	AuSchedulerStart();
 
 	call	?AuSchedulerStart@@YAXXZ		; AuSchedulerStart
 $LN2@AuMain:
 
-; 174  : #endif
-; 175  : 
-; 176  : 	//! Loop forever
-; 177  : 	while(1) {
+; 173  : #endif
+; 174  : 
+; 175  : 	//! Loop forever
+; 176  : 	while(1) {
 
 	xor	eax, eax
 	cmp	eax, 1
 	je	SHORT $LN1@AuMain
 
-; 178  : 		//!looping looping
-; 179  : 		x64_cli();
+; 177  : 		//!looping looping
+; 178  : 		x64_cli();
 
 	call	x64_cli
 
-; 180  : 		x64_hlt();
+; 179  : 		x64_hlt();
 
 	call	x64_hlt
 
-; 181  : 	}
+; 180  : 	}
 
 	jmp	SHORT $LN2@AuMain
 $LN1@AuMain:
 
-; 182  : }
+; 181  : }
 
 	add	rsp, 56					; 00000038H
 	ret	0

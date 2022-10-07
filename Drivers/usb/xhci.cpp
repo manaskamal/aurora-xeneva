@@ -45,6 +45,28 @@ extern bool event_available;
 extern int poll_return_trb_type;
 extern int trb_event_index;
 
+
+#define USB_SLOT_CTX_DWORD0(entries, hub, multi_tt, speed, route_string) \
+	(((entries & 0x1F) << 27) | ((hub & 1) << 26) | ((multi_tt & 1) << 25) | ((speed & 0xF) << 20) | (route_string & ((1<<20) - 1)))
+
+#define USB_SLOT_CTX_DWORD1(num_ports, root_hub_port, max_exit_latency) \
+	(((num_ports & 0xFF) << 24) | ((root_hub_port & 0xFF) << 16) | (max_exit_latency & 0xFFFF))
+
+#define USB_ENDPOINT_CTX_DWORD0(max_esit_high, interval, lsa, max_p_streams, mult, ep_state) \
+	(((max_esit_high & 0xFF) << 24) | ((interval & 0xFF) << 16) | ((lsa & 1) << 15) | ((max_p_streams & 0x1F) << 10) | ((mult & 0x3) << 8) | (ep_state & 0x7))
+
+#define USB_ENDPOINT_CTX_DWORD1(max_packet_size, max_burst_size, hid, ep_type, cerr) \
+	(((max_packet_size & 0xFFFF) << 16) | ((max_burst_size & 0xFF) << 8) | ((hid & 1) << 7) | ((ep_type & 0x7) << 3)  | ((cerr & 0x3) << 1))
+
+#define USB_ENDPOINT_CTX_DWORD2(trdp, dcs) \
+	((trdp & 0xFFFFFFF0) | (dcs & 1))
+
+#define USB_ENDPOINT_CTX_DWORD3(trdp) \
+	((trdp >> 32) & 0xFFFFFFFF)
+
+#define USB_ENDPOINT_CTX_DWORD4(max_esit_lo, average_trb_len) \
+	(((max_esit_lo & 0xFFFF) << 16) | (average_trb_len & 0xFFFF))
+
 /*
  * xhci_reset -- reset the xhci controller
  * @param dev -- usb device
@@ -103,6 +125,63 @@ void xhci_command_ring_init(usb_dev_t *dev) {
 	dev->cmd_ring_cycle = 1;
 	dev->cmd_ring_phys = cmd_ring_phys;
 }
+
+
+/*
+ * xhci_get_max_packet_sz -- get the packet size by usb speed
+ * @param speed -- speed of USB port
+ */
+size_t xhci_get_max_packet_sz (uint8_t speed) {
+	switch(speed) {
+	case USB_LOW_SPEED:
+	case USB_FULL_SPEED:
+		return 8;
+	case USB_HIGH_SPEED:
+		return 64;
+	case USB_SUPER_SPEED:
+	case USB_SUPER_SPEED_PLUS:
+		return 512;
+	default:
+		return 512;
+	}
+}
+
+/*
+ * xhci_create_device_ctx -- creates a device context
+ * for a particuler USB device
+ * @param dev -- pointer to usb device
+ * @param slot_num -- slot id
+ * @param port_speed -- speed of this port
+ * @param root_port_num -- root hub port number
+ */
+void xhci_create_device_ctx (usb_dev_t* dev, uint8_t slot_num, uint8_t port_speed, uint8_t root_port_num) {
+
+	uint64_t dev_ctx = (uint64_t)AuPmmngrAlloc();
+	memset((void*)dev_ctx, 0, 4096);
+	dev->dev_ctx_base_array[slot_num] = dev_ctx;
+	
+	uint64_t input_ctx = (uint64_t)AuPmmngrAlloc();
+	memset((void*)input_ctx, 0, 4096);
+
+	volatile uint32_t* aflags = raw_offset<volatile uint32_t*>(input_ctx, 4);
+	*aflags = 3;
+
+	*raw_offset<volatile uint32_t*>(input_ctx,0x20) = USB_SLOT_CTX_DWORD0(1,0,0,port_speed,0);
+	*raw_offset<volatile uint32_t*>(input_ctx,0x20 + 4) = USB_SLOT_CTX_DWORD1(0,root_port_num,0);
+
+	/* initialize the endpoint 0 ctx here */
+	*raw_offset<volatile uint32_t*>(input_ctx,0x40) = USB_ENDPOINT_CTX_DWORD0(0,0,0,0,0,0);
+	*raw_offset<volatile uint32_t*>(input_ctx,0x40 + 4) = USB_ENDPOINT_CTX_DWORD1(xhci_get_max_packet_sz(port_speed),0,0,4,3);
+	*raw_offset<volatile uint32_t*>(input_ctx,0x40 + 8) = USB_ENDPOINT_CTX_DWORD2(dev->cmd_ring_phys, 1);
+	*raw_offset<volatile uint32_t*>(input_ctx,0x40 + 12) = USB_ENDPOINT_CTX_DWORD3(dev->cmd_ring_phys);
+	*raw_offset<volatile uint32_t*>(input_ctx,0x40 + 0x10) = USB_ENDPOINT_CTX_DWORD4(0,8);
+
+	memcpy((void*)dev_ctx, raw_offset<void*>(input_ctx, 0x20), 0x40);
+
+	/* Here we need an function, which will issues commands to this slot */
+	/* (Incomplete) */
+}
+
 
 /*
  * xhci_protocol_init -- Initialize XHCI Extended Protocol 
@@ -281,6 +360,31 @@ int xhci_poll_event (usb_dev_t* usb_device, int trb_type) {
 	return trb_event_index;
 }
 
+/*
+ * xhci_get_port_speed -- converts port speed number to 
+ * readable string
+ * @param port_speed -- port speed number
+ */
+char* xhci_get_port_speed (uint8_t port_speed) {
+	switch(port_speed) {
+	case USB_SPEED_RESERVED:
+		return "[USB_PORT_SPEED]: invalid";
+	case USB_FULL_SPEED:
+		return "[USB_PORT_SPEED]: full speed";
+	case USB_LOW_SPEED:
+		return "[USB_PORT_SPEED]: low speed";
+	case USB_HIGH_SPEED:
+		return "[USB_PORT_SPEED]: high speed";
+	case USB_SUPER_SPEED:
+		return "[USB_PORT_SPEED]: super speed";
+	case USB_SUPER_SPEED_PLUS:
+		return "[USB_PORT_SPEED]: super speed+";
+	default:
+		return "[USB_PORT_SPEED]: unknown";
+	}
+}
+
+
 
 /*
  * xhci_port_initialize -- initializes all powered ports
@@ -295,10 +399,12 @@ void xhci_port_initialize (usb_dev_t *dev) {
 			this_port->port_sc |= (1<<4);
 			while((this_port->port_sc & (1<<4)) != 0);
 
+			uint8_t port_speed = (this_port->port_sc >> 10) & 0xf;
+			printf ("Port Num -> %d, Port Speed -> %s \n", i, xhci_get_port_speed(port_speed));
 			for (int i = 0; i < 10000000; i++)
 				;
 			
-			uint64_t slot_id = 0;
+			uint8_t slot_id = 0;
 
 			/* Enable slot command */
 			xhci_enable_slot(dev,0);
@@ -306,15 +412,21 @@ void xhci_port_initialize (usb_dev_t *dev) {
 			if (idx != -1) {
 				xhci_event_trb_t *evt = (xhci_event_trb_t*)dev->event_ring_segment;
 				xhci_trb_t *trb = (xhci_trb_t*)evt;
-				slot_id = (trb->trb_control >> 24) & 0xffff;
-				_debug_print_ ("Event received -> %d, slot_id -> %d \r\n",evt[idx].trbType, evt[idx].completionCode);
-				_debug_print_ ("Slot id -> %d \r\n", slot_id);
+				slot_id = (trb[idx].trb_control >> 24);
+				//printf ("Event received -> %d, slot_id -> %d \r\n",evt[idx].trbType, evt[idx].completionCode);
+				printf ("Slot id -> %d \n", slot_id);
 			}
 			
+			/* After getting a device slot, 
+			 * allocate device slot data structures
+			 */
+			xhci_create_device_ctx(dev,slot_id,port_speed,i);
 
 			this_port->port_sc |= (1<<9);
 			/*printf ("Port Initialized %d, Power -> %d, PED -> %d \n", i, ((this_port->port_sc & (1<<9)) & 0xff),
 				((this_port->port_sc & (1<<1)) & 0xff));*/
 		}
 	}
+
+	//for(;;);
 }

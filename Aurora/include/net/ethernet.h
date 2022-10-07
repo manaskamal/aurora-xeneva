@@ -31,6 +31,7 @@
 #define __ETHERNET_H__
 
 #include <stdint.h>
+#include <aurora.h>
 
 #define ETHERNET_TYPE_IPV4  0x0800
 #define ETHERNET_TYPE_ARP   0x0806
@@ -39,14 +40,17 @@
 #define ETHERNET_TYPE_IETF_TRILL_PROTOCOL 0x22F3
 #define ETHERNET_TYPE_STREAM_RESV_PROTOCOL 0x22EA
 
-
+#pragma pack(push,1)
 typedef struct _ethernet_ {
 	uint8_t dest[6];
 	uint8_t src[6];
 	uint16_t type_len;
+	uint8_t payload[];
 }ethernet_t;
+#pragma pack(pop)
 
 
+AU_EXTERN AU_EXPORT void ethernet_handle_packet (ethernet_t *frame);
 /*
  * ethernet_send -- sends ethernet packets
  * @param data -- pointer to data

@@ -38,7 +38,7 @@
 void xhci_enable_slot (usb_dev_t *dev,int slot_type) {
 	/* Send Enable slot command */
 	xhci_send_command(dev,0,0,0,(slot_type << 16) | (TRB_CMD_ENABLE_SLOT << 10));
-	//xhci_ring_doorbell(dev);
+	xhci_ring_doorbell(dev);
 }
 
 
@@ -47,7 +47,7 @@ void xhci_enable_slot (usb_dev_t *dev,int slot_type) {
  */
 void xhci_send_noop_cmd (usb_dev_t* dev) {
 	xhci_send_command(dev, 0,0,0,TRB_CMD_NO_OP << 10);
-	//xhci_ring_doorbell(dev);
+	xhci_ring_doorbell(dev);
 }
 
 /*

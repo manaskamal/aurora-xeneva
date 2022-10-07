@@ -16,6 +16,7 @@
 #include <hal.h>
 #include <stdio.h>
 
+
 /*
  * AuKeyboardInitialize -- initialize the keyboard
  */

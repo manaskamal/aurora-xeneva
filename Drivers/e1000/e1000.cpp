@@ -39,6 +39,7 @@
 #include <shirq.h>
 #include <arch\x86_64\thread.h>
 #include <serial.h>
+#include <net\ethernet.h>
 #include <audrv.h>
 
 typedef struct _e1000_nic_ {
@@ -141,14 +142,33 @@ void e1000_handler (size_t v, void* p) {
 	if (!first_interrupt)
 		first_interrupt = true;
 
-	printf ("e1000 interrupt -> %d \r\n", e1000_nic->irq);
+	_debug_print_ ("e1000 interrupt -> %d \r\n", e1000_nic->irq);
 	if (status & ICR_LSC) {
 		e1000_nic->link_status = (e1000_read_command(e1000_nic, E1000_REG_STATUS) & (1<<1));
 		printf ("e1000: Link status %s \r\n", (e1000_nic->link_status ? "up" : "down"));
 	}
 
-	if (status &ICR_RXT0)
-		_debug_print_ ("e1000: received packet \r\n");
+	if (status & ICR_RXT0) {
+		int head = e1000_read_command(e1000_nic, E1000_REG_RXDESCHEAD);
+
+		while ((e1000_nic->rx[e1000_nic->rx_index].status & 0x01)) {
+			int i = e1000_nic->rx_index;
+			_debug_print_ ("e1000: received packet \r\n");
+			ethernet_handle_packet((ethernet_t*)e1000_nic->rx_virt[i]);
+			e1000_nic->rx[i].status = 0;
+			if (++e1000_nic->rx_index == E1000_NUM_RX_DESC)
+				e1000_nic->rx_index = 0;
+
+			if (e1000_nic->rx_index == head){
+				head = e1000_read_command(e1000_nic, E1000_REG_RXDESCHEAD);
+				if (e1000_nic->rx_index == head) break;
+			}
+
+			e1000_write_command(e1000_nic, E1000_REG_RXDESCTAIL, e1000_nic->rx_index);
+			e1000_read_command(e1000_nic, E1000_REG_STATUS);
+
+		}
+	}
 
 	e1000_write_command(e1000_nic, E1000_REG_ICR, status);
 
@@ -250,26 +270,52 @@ AU_EXTERN AU_EXPORT int AuDriverUnload() {
 
 
 void e1000_thread() {
-	int head = e1000_read_command(e1000_nic, E1000_REG_RXDESCHEAD);
+	//int head = e1000_read_command(e1000_nic, E1000_REG_RXDESCHEAD);
 	while(1){
-		if (head == e1000_nic->rx_index) {
-			head = e1000_read_command(e1000_nic, E1000_REG_RXDESCHEAD);
+		uint32_t status = e1000_read_command(e1000_nic, E1000_REG_ICR);
+		if (status & ICR_LSC) {
+			e1000_nic->link_status = (e1000_read_command(e1000_nic, E1000_REG_STATUS) & (1<<1));
+			_debug_print_ ("e1000: Link status %s \r\n", (e1000_nic->link_status ? "up" : "down"));
 		}
 
-		if (head != e1000_nic->rx_index){
-			//printf ("[network]: packet received \n");
-			e1000_nic->rx_index = head;
+
+		if (status & ICR_RXT0) {
+			int head = e1000_read_command(e1000_nic, E1000_REG_RXDESCHEAD);
+
+			while ((e1000_nic->rx[e1000_nic->rx_index].status & 0x01)) {
+				int i = e1000_nic->rx_index;
+
+				_debug_print_ ("e1000: received packet \r\n");
+				ethernet_handle_packet((ethernet_t*)e1000_nic->rx_virt[i]);
+				e1000_nic->rx[i].status = 0;
+				if (++e1000_nic->rx_index == E1000_NUM_RX_DESC)
+					e1000_nic->rx_index = 0;
+
+				if (e1000_nic->rx_index == head){
+					head = e1000_read_command(e1000_nic, E1000_REG_RXDESCHEAD);
+					if (e1000_nic->rx_index == head) break;
+				}
+
+				e1000_write_command(e1000_nic, E1000_REG_RXDESCTAIL, e1000_nic->rx_index);
+				e1000_read_command(e1000_nic, E1000_REG_STATUS);
+			}
 		}
-		sleep_thread(get_current_thread(),1000);
+
+		e1000_write_command(e1000_nic, E1000_REG_ICR, status);
+		
+		sleep_thread(get_current_thread(),2000);
 		force_sched();
 	}
 }
+
+
 /*
  * AuDriverMain -- Main entry for e1000 driver
  */
 AU_EXTERN AU_EXPORT int AuDriverMain() {
 	printf ("[driver]: Initializing e1000 network driver \n");
 	int bus, dev_, func = 0;
+	bool nic_thread_required = false;
 	
 	uint32_t device = pci_express_scan_class (0x02,0x00,&bus, &dev_, &func);
 	if (device == 0xFFFFFFFF){
@@ -282,8 +328,11 @@ AU_EXTERN AU_EXPORT int AuDriverMain() {
 	//pci_enable_bus_master(device);
 	//pci_enable_interrupts(device);
 	printf ("E1000\n");
-	pcie_alloc_msi(device, 40, bus, dev_, func);
-	
+	if (!pcie_alloc_msi(device, 40, bus, dev_, func)) {
+		printf ("E1000 don't support MSI/MSI-X interrupt, setting up network threads... \n");
+		nic_thread_required = true;
+	}
+
 
 	e1000_nic = e1000_dev;
 	e1000_dev->rx_phys = (uint64_t)p2v((size_t)AuPmmngrAllocBlocks(2));
@@ -335,8 +384,8 @@ AU_EXTERN AU_EXPORT int AuDriverMain() {
 	shared_device->IrqHandler = e1000_handler;
 	AuSharedDeviceRegister(shared_device);*/
 
-	if (e1000_dev->irq < 255)
-		AuInterruptSet(e1000_dev->irq, e1000_handler,e1000_dev->irq, false);
+	//if (e1000_dev->irq < 255)
+		AuInterruptSet(11, e1000_handler,e1000_dev->irq, false);
 	//else
 	//	AuInstallSharedHandler(e1000_dev->irq, true);*/
 
@@ -425,8 +474,8 @@ AU_EXTERN AU_EXPORT int AuDriverMain() {
 	AuNetAddAdapter(file,net);
 
 
-	/*thread_t *nic_thread = create_kthread(e1000_thread,(uint64_t)p2v((uint64_t)AuPmmngrAlloc() + 4096),(uint64_t)AuGetRootPageTable(),
-		"e1000_thr",1);*/
+	thread_t *nic_thread = create_kthread(e1000_thread,(uint64_t)p2v((uint64_t)AuPmmngrAlloc() + 4096),(uint64_t)AuGetRootPageTable(),
+		"e1000_thr",1);
 	//pcie_print_capabilities(device);
 	
 	//AuEnableInterrupts();

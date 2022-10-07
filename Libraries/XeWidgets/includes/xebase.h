@@ -47,7 +47,7 @@
 
 #define XE_MOUSE_EVENT    201
 #define XE_CREATE_WINDOW  202
-#define XE_RESIZE_WINDOW  208
+#define XE_RESIZE_WINDOW  209
 #define XE_KEY_EVENT      204
 
 typedef struct _xe_app_ {

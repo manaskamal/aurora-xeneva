@@ -123,6 +123,12 @@ size_t AuSoundRead (vfs_node_t *file, uint64_t* buffer, uint32_t length) {
 	return 0;
 }
 
+/*
+ * AuSoundWrite -- Writes to Sound Cards internal buffer
+ * @param file -- pointer to sound card file
+ * @param buffer -- Pointer to buffer
+ * @param length -- maximum sound samples to write
+ */
 void AuSoundWrite (vfs_node_t *file, uint8_t* buffer, uint32_t length) {
 	if (registered_dev == NULL)
 		return;
@@ -204,6 +210,9 @@ void AuFileWrite (vfs_node_t* node, uint64_t *buffer, uint32_t length) {
 	
 }
 
+/*
+ * AuSoundInitialize -- Initialized the Aurora sound system
+ */
 void AuSoundInitialize () {
 	vfs_node_t *dsp = (vfs_node_t*)malloc(sizeof(vfs_node_t));
 	strcpy (dsp->filename, "dsp");
@@ -226,13 +235,22 @@ void AuSoundInitialize () {
 	_audio_stoped_ = false;
 }
 
+/*
+ * AuSoundRegisterDevice -- Registeres a sound card device
+ * to Aurora Sound System
+ * @param dev -- Sound card device
+ */
 void AuSoundRegisterDevice(sound_t * dev) {
 	if (registered_dev)
 		return;
 	registered_dev = dev;
 }
 
-
+/*
+ * AuSoundRequestNext -- Requests next sound block
+ * by Sound card
+ * @param buffer -- Buffer to be filled with sound samples
+ */
 void AuSoundRequestNext (uint64_t *buffer) {
 	if (dsp_first == NULL)
 		return;
@@ -271,17 +289,48 @@ void AuSoundRequestNext (uint64_t *buffer) {
 	AuPmmngrFreeBlocks((void*)v2p((size_t)buff),BUFF_SIZE/4096);
 }
 
-
+/*
+ * AuSoundStart -- Starts the Sound card
+ */
 void AuSoundStart() {
 	if (registered_dev == NULL)
 		return;
 	registered_dev->start_output_stream();
 }
 
+/*
+ * AuSoundDeInitialize -- Stops the Sound card
+ */
 void AuSoundDeInitialize() {
 	if (registered_dev == NULL)
 		return;
 	registered_dev->stop_output_stream();
+}
+
+
+/*
+ * AuSoundDestroyDSP -- finds and destroys a registered
+ * dsp by its thread id
+ * @param id -- thread id
+ */
+void AuSoundDestroyDSP(uint16_t id) {
+	dsp_t* target_dsp = NULL;
+	for (dsp_t *dsp = dsp_first; dsp != NULL; dsp = dsp->next) {
+		if (dsp->id == id) {
+			target_dsp = dsp;
+			break;
+		}
+	}
+
+	if (target_dsp == NULL)
+		return;
+
+	AuPmmngrFreeBlocks((void*)v2p((uint64_t)target_dsp->buffer->buffer),
+		BUFF_SIZE/4096);
+
+	circ_buf_free(target_dsp->buffer);
+	AuRemoveDSP(target_dsp);
+	free(target_dsp);
 }
 
 

@@ -5,18 +5,30 @@ include listing.inc
 INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
+CONST	SEGMENT
+$SG3293	DB	'Ethernet ARP: Packet received ', 0dH, 0aH, 00H
+	ORG $+7
+$SG3295	DB	'Ethernet IPv4: Packet received ', 0dH, 0aH, 00H
+CONST	ENDS
+PUBLIC	ethernet_handle_packet
 PUBLIC	?ethernet_send@@YAXPEAX_KGPEAE@Z		; ethernet_send
 EXTRN	memcpy:PROC
 EXTRN	?AuNetWrite@@YAXPEA_K_K@Z:PROC			; AuNetWrite
 EXTRN	?AuGetNetTuple@@YAPEAU_au_net_@@XZ:PROC		; AuGetNetTuple
 EXTRN	malloc:PROC
 EXTRN	free:PROC
+EXTRN	_debug_print_:PROC
 pdata	SEGMENT
+$pdata$ethernet_handle_packet DD imagerel $LN7
+	DD	imagerel $LN7+103
+	DD	imagerel $unwind$ethernet_handle_packet
 $pdata$?ethernet_send@@YAXPEAX_KGPEAE@Z DD imagerel $LN3
 	DD	imagerel $LN3+211
 	DD	imagerel $unwind$?ethernet_send@@YAXPEAX_KGPEAE@Z
 pdata	ENDS
 xdata	SEGMENT
+$unwind$ethernet_handle_packet DD 010901H
+	DD	06209H
 $unwind$?ethernet_send@@YAXPEAX_KGPEAE@Z DD 011901H
 	DD	08219H
 xdata	ENDS
@@ -32,7 +44,7 @@ type$ = 96
 dest$ = 104
 ?ethernet_send@@YAXPEAX_KGPEAE@Z PROC			; ethernet_send
 
-; 41   : void ethernet_send (void* data, size_t len, uint16_t type, uint8_t* dest) {
+; 54   : void ethernet_send (void* data, size_t len, uint16_t type, uint8_t* dest) {
 
 $LN3:
 	mov	QWORD PTR [rsp+32], r9
@@ -41,19 +53,19 @@ $LN3:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 72					; 00000048H
 
-; 42   : 	size_t total_sz = sizeof(ethernet_t) + len;
+; 55   : 	size_t total_sz = sizeof(ethernet_t) + len;
 
 	mov	rax, QWORD PTR len$[rsp]
 	add	rax, 14
 	mov	QWORD PTR total_sz$[rsp], rax
 
-; 43   : 	ethernet_t* packet = (ethernet_t*)malloc(total_sz);
+; 56   : 	ethernet_t* packet = (ethernet_t*)malloc(total_sz);
 
 	mov	rcx, QWORD PTR total_sz$[rsp]
 	call	malloc
 	mov	QWORD PTR packet$[rsp], rax
 
-; 44   : 	memcpy(packet + 1, data, len);
+; 57   : 	memcpy(packet + 1, data, len);
 
 	mov	rax, QWORD PTR packet$[rsp]
 	add	rax, 14
@@ -62,7 +74,7 @@ $LN3:
 	mov	rcx, rax
 	call	memcpy
 
-; 45   : 	memcpy(packet->dest, dest,6);
+; 58   : 	memcpy(packet->dest, dest,6);
 
 	mov	rax, QWORD PTR packet$[rsp]
 	mov	r8d, 6
@@ -70,12 +82,12 @@ $LN3:
 	mov	rcx, rax
 	call	memcpy
 
-; 46   : 	uint8_t *src_mac = AuGetNetTuple()->mac;
+; 59   : 	uint8_t *src_mac = AuGetNetTuple()->mac;
 
 	call	?AuGetNetTuple@@YAPEAU_au_net_@@XZ	; AuGetNetTuple
 	mov	QWORD PTR src_mac$[rsp], rax
 
-; 47   : 	memcpy(packet->src,src_mac,6);
+; 60   : 	memcpy(packet->src,src_mac,6);
 
 	mov	rax, QWORD PTR packet$[rsp]
 	add	rax, 6
@@ -84,7 +96,7 @@ $LN3:
 	mov	rcx, rax
 	call	memcpy
 
-; 48   : 	packet->type_len = htons(type);
+; 61   : 	packet->type_len = htons(type);
 
 	movzx	eax, WORD PTR type$[rsp]
 	and	eax, 255				; 000000ffH
@@ -96,21 +108,79 @@ $LN3:
 	mov	rcx, QWORD PTR packet$[rsp]
 	mov	WORD PTR [rcx+12], ax
 
-; 49   : 	AuNetWrite((uint64_t*)packet,total_sz);
+; 62   : 	AuNetWrite((uint64_t*)packet,total_sz);
 
 	mov	rdx, QWORD PTR total_sz$[rsp]
 	mov	rcx, QWORD PTR packet$[rsp]
 	call	?AuNetWrite@@YAXPEA_K_K@Z		; AuNetWrite
 
-; 50   : 	free(packet);
+; 63   : 	free(packet);
 
 	mov	rcx, QWORD PTR packet$[rsp]
 	call	free
 
-; 51   : }
+; 64   : }
 
 	add	rsp, 72					; 00000048H
 	ret	0
 ?ethernet_send@@YAXPEAX_KGPEAE@Z ENDP			; ethernet_send
+_TEXT	ENDS
+; Function compile flags: /Odtpy
+; File e:\xeneva project\xeneva\aurora\aurora\net\ethernet.cpp
+_TEXT	SEGMENT
+tv73 = 32
+frame$ = 64
+ethernet_handle_packet PROC
+
+; 36   : AU_EXTERN AU_EXPORT void ethernet_handle_packet (ethernet_t *frame) {
+
+$LN7:
+	mov	QWORD PTR [rsp+8], rcx
+	sub	rsp, 56					; 00000038H
+
+; 37   : 	switch(ntohs(frame->type_len)) {
+
+	mov	rax, QWORD PTR frame$[rsp]
+	movzx	eax, WORD PTR [rax+12]
+	and	eax, 255				; 000000ffH
+	shl	eax, 8
+	mov	rcx, QWORD PTR frame$[rsp]
+	movzx	ecx, WORD PTR [rcx+12]
+	and	ecx, 65280				; 0000ff00H
+	sar	ecx, 8
+	or	eax, ecx
+	mov	DWORD PTR tv73[rsp], eax
+	cmp	DWORD PTR tv73[rsp], 2048		; 00000800H
+	je	SHORT $LN1@ethernet_h
+	cmp	DWORD PTR tv73[rsp], 2054		; 00000806H
+	je	SHORT $LN2@ethernet_h
+	jmp	SHORT $LN3@ethernet_h
+$LN2@ethernet_h:
+
+; 38   : 	case ETHERNET_TYPE_ARP:
+; 39   : 		_debug_print_ ("Ethernet ARP: Packet received \r\n");
+
+	lea	rcx, OFFSET FLAT:$SG3293
+	call	_debug_print_
+
+; 40   : 		break;
+
+	jmp	SHORT $LN3@ethernet_h
+$LN1@ethernet_h:
+
+; 41   : 	case ETHERNET_TYPE_IPV4:
+; 42   : 		_debug_print_ ("Ethernet IPv4: Packet received \r\n");
+
+	lea	rcx, OFFSET FLAT:$SG3295
+	call	_debug_print_
+$LN3@ethernet_h:
+
+; 43   : 		break;
+; 44   : 	}
+; 45   : }
+
+	add	rsp, 56					; 00000038H
+	ret	0
+ethernet_handle_packet ENDP
 _TEXT	ENDS
 END

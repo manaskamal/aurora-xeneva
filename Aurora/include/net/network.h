@@ -1,7 +1,7 @@
 /**
  * BSD 2-Clause License
  *
- * Copyright (c) 2021, Manas Kamal Choudhury
+ * Copyright (c) 2021-2022, Manas Kamal Choudhury
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -37,6 +37,10 @@
 #define PRIVATE_IP_3  0
 #define PRIVATE_IP_4  0
 
+#define htonl(l)  ((((l)&0xff)<<24) | (((l) & 0xFF00) << 8) | (((l) & 0xFF0000) >> 8) | (((l) & 0xFF000000) >> 24))
+#define htons(s)  ((((s)&0xFF) << 8) | (((s) & 0xFF00) >> 8))
+#define ntohl(l)   htonl((l))
+#define ntohs(s)   htons((s))
 
 
 #endif

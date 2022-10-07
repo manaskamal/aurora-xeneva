@@ -1164,6 +1164,9 @@ void pri_win_check_draggable (int x, int y, int button) {
 XE_EXTERN int XeMain (int argc, char* argv[]) {
 	
 	int svga_fd = sys_open_file ("/dev/fb", NULL);
+	int kybrd_fd = sys_open_file("/dev/kybrd", NULL);
+
+	ioquery(kybrd_fd, 400, NULL);
 	
 	uint32_t s_width = ioquery(svga_fd,SCREEN_GETWIDTH,NULL);
 	uint32_t s_height = ioquery(svga_fd, SCREEN_GETHEIGHT, NULL);

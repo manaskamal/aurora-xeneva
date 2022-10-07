@@ -78,7 +78,8 @@ void AuUSBInterrupt(size_t v, void* p) {
 		if (evt[usb_device->evnt_ring_index].trbType == TRB_EVENT_PORT_STATUS_CHANGE){
 			_debug_print_ ("[usb3]: Event port id -> %d , completion_code -> %d \r\n", 
 				((event[usb_device->evnt_ring_index].trb_param_1 >> 24) & 0xFF),
-				((event[usb_device->evnt_ring_index].trb_status >> 24) & 0xff));	
+				((event[usb_device->evnt_ring_index].trb_status >> 24) & 0xff));
+
 		}
 			
 
@@ -245,6 +246,11 @@ AU_EXTERN AU_EXPORT int AuDriverMain() {
 
 
 	AuDisableInterupts();
+
+
+	/*
+	 * Here we need to initialize an USB3 kernel thread
+	 */
 
 	return 0;
 }

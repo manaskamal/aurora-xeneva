@@ -305,6 +305,13 @@ typedef struct _usb_dev_ {
 	unsigned evnt_ring_max;
 }usb_dev_t;
 
+/* USB speed numbers */
+#define USB_SPEED_RESERVED   0
+#define USB_FULL_SPEED       1
+#define USB_LOW_SPEED        2
+#define USB_HIGH_SPEED       3
+#define USB_SUPER_SPEED      4
+#define USB_SUPER_SPEED_PLUS 5
 
 /*
  * xhci_reset -- reset the xhci controller

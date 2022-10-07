@@ -64,7 +64,7 @@ uint32_t AuCreateShMem (uint32_t key,size_t size, uint32_t flags) {
 	sh_mem->ptr = 0;
 	sh_mem->key = key;
 	sh_mem->size = size;
-	sh_mem->num_frames = (size / 4096);
+	sh_mem->num_frames = (size / 0x1000) + ((size % 0x1000) ? 1 : 0);
 	sh_mem->link_count = 0;
 	sh_mem->map_in_thread = NULL;
 	sh_mem->first_process_vaddr = NULL;
@@ -91,6 +91,9 @@ void* AuObtainShMem (uint32_t id, void * shmaddr, int shmflg) {
 			break;
 		}
 	}
+
+	if (mem == NULL)
+		return NULL;
 
 	void* ret_addre = NULL;
 	/* Shared memory was already mapped so, 
@@ -182,7 +185,7 @@ void shm_unlink (uint32_t key) {
 		uint64_t start_addr = vma->start;
 		uint64_t length = vma->length;
 
-		for (int i = 0; i < length / 4096; i++)
+		for (int i = 0; i < mem->num_frames; i++)
 			AuUnmapPage(start_addr + i * 4096, false);
 
 		AuRemoveVMArea(proc, vma);

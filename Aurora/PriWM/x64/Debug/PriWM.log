@@ -1,4 +1,4 @@
-﻿Build started 23-09-2022 আবেলি 4:13:12.
+﻿Build started 30-09-2022 ৰাতিপু 8:00:05.
      1>Project "E:\Xeneva Project\Xeneva\Aurora\PriWM\PriWM.vcxproj" on node 2 (Rebuild target(s)).
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\xnlib\xnclib" /I"E:\Xeneva Project\Xeneva\xnlib\xnacrylic\include" /I"E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes" /Zi /nologo /W3 /WX- /sdl- /Od /D ARCH_X64 /D DEFAULT_COLOR_MODE /D _MBCS /X /Gm /GS- /arch:SSE2 /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt priwin.cpp priwm.cpp pri_blit.cpp pri_clip.cpp pri_dirty_clip.cpp pri_event.cpp pri_menu.cpp pri_menu_painter.cpp pri_popup.cpp pri_rect.cpp pri_wallp_dirty_clip.cpp
@@ -26,23 +26,23 @@
      1>priwm.cpp(509): warning C4018: '<' : signed/unsigned mismatch
      1>priwm.cpp(629): warning C4244: '=' : conversion from 'uint16_t' to 'uint8_t', possible loss of data
      1>priwm.cpp(640): warning C4018: '<' : signed/unsigned mismatch
-     1>priwm.cpp(694): warning C4018: '<' : signed/unsigned mismatch
-     1>priwm.cpp(719): warning C4018: '<' : signed/unsigned mismatch
-     1>priwm.cpp(822): warning C4018: '>=' : signed/unsigned mismatch
-     1>priwm.cpp(825): warning C4018: '>=' : signed/unsigned mismatch
-     1>priwm.cpp(863): warning C4244: '=' : conversion from 'uint16_t' to 'uint8_t', possible loss of data
-     1>priwm.cpp(886): warning C4018: '<' : signed/unsigned mismatch
-     1>priwm.cpp(927): warning C4018: '>=' : signed/unsigned mismatch
-     1>priwm.cpp(930): warning C4018: '>=' : signed/unsigned mismatch
-     1>priwm.cpp(993): warning C4018: '>=' : signed/unsigned mismatch
-     1>priwm.cpp(995): warning C4018: '>=' : signed/unsigned mismatch
-     1>priwm.cpp(1015): warning C4018: '<' : signed/unsigned mismatch
-     1>priwm.cpp(1073): warning C4244: '=' : conversion from 'uint16_t' to 'uint8_t', possible loss of data
-     1>priwm.cpp(1086): warning C4244: '=' : conversion from 'uint16_t' to 'uint8_t', possible loss of data
-     1>priwm.cpp(1344): warning C4244: '=' : conversion from 'uint16_t' to 'uint8_t', possible loss of data
-     1>priwm.cpp(1467): warning C4018: '<' : signed/unsigned mismatch
-     1>priwm.cpp(1219): warning C4101: 'diff_tick' : unreferenced local variable
-     1>priwm.cpp(1218): warning C4101: 'frame_tick' : unreferenced local variable
+     1>priwm.cpp(695): warning C4018: '<' : signed/unsigned mismatch
+     1>priwm.cpp(720): warning C4018: '<' : signed/unsigned mismatch
+     1>priwm.cpp(823): warning C4018: '>=' : signed/unsigned mismatch
+     1>priwm.cpp(826): warning C4018: '>=' : signed/unsigned mismatch
+     1>priwm.cpp(864): warning C4244: '=' : conversion from 'uint16_t' to 'uint8_t', possible loss of data
+     1>priwm.cpp(887): warning C4018: '<' : signed/unsigned mismatch
+     1>priwm.cpp(928): warning C4018: '>=' : signed/unsigned mismatch
+     1>priwm.cpp(931): warning C4018: '>=' : signed/unsigned mismatch
+     1>priwm.cpp(994): warning C4018: '>=' : signed/unsigned mismatch
+     1>priwm.cpp(996): warning C4018: '>=' : signed/unsigned mismatch
+     1>priwm.cpp(1016): warning C4018: '<' : signed/unsigned mismatch
+     1>priwm.cpp(1074): warning C4244: '=' : conversion from 'uint16_t' to 'uint8_t', possible loss of data
+     1>priwm.cpp(1087): warning C4244: '=' : conversion from 'uint16_t' to 'uint8_t', possible loss of data
+     1>priwm.cpp(1348): warning C4244: '=' : conversion from 'uint16_t' to 'uint8_t', possible loss of data
+     1>priwm.cpp(1471): warning C4018: '<' : signed/unsigned mismatch
+     1>priwm.cpp(1223): warning C4101: 'diff_tick' : unreferenced local variable
+     1>priwm.cpp(1222): warning C4101: 'frame_tick' : unreferenced local variable
          priwin.cpp
      1>priwin.cpp(34): warning C4067: unexpected tokens following preprocessor directive - expected a newline
          Generating Code...
@@ -66,4 +66,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:04.42
+Time Elapsed 00:00:07.11

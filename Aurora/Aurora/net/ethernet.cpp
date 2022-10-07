@@ -29,7 +29,20 @@
 
 #include <net\ethernet.h>
 #include <net\aunet.h>
+#include <net\network.h>
 #include <arch\x86_64\mmngr\kheap.h>
+#include <serial.h>
+
+AU_EXTERN AU_EXPORT void ethernet_handle_packet (ethernet_t *frame) {
+	switch(ntohs(frame->type_len)) {
+	case ETHERNET_TYPE_ARP:
+		_debug_print_ ("Ethernet ARP: Packet received \r\n");
+		break;
+	case ETHERNET_TYPE_IPV4:
+		_debug_print_ ("Ethernet IPv4: Packet received \r\n");
+		break;
+	}
+}
 
 /*
  * ethernet_send -- sends ethernet packets

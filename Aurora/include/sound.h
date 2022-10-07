@@ -64,11 +64,47 @@ typedef struct _au_sound_callback_ {
 	
 
 
-
+/*
+ * AuSoundInitialize -- Initialized the Aurora sound system
+ */
 extern void AuSoundInitialize ();
+
+/*
+ * AuSoundRegisterDevice -- Registeres a sound card device
+ * to Aurora Sound System
+ * @param dev -- Sound card device
+ */
 AU_EXTERN AU_EXPORT void AuSoundRegisterDevice(sound_t * dev);
+
+/*
+ * AuSoundRequestNext -- Requests next sound block
+ * by Sound card
+ * @param buffer -- Buffer to be filled with sound samples
+ */
 AU_EXTERN AU_EXPORT void AuSoundRequestNext (uint64_t* buffer);
+
+/*
+ * AuSoundStart -- Starts the Sound card
+ */
 extern void AuSoundStart();
+
+/*
+ * AuSoundDeInitialize -- Stops the Sound card
+ */
 extern void AuSoundDeInitialize();
+
+/*
+ * AuSoundWrite -- Writes to Sound Cards internal buffer
+ * @param file -- pointer to sound card file
+ * @param buffer -- Pointer to buffer
+ * @param length -- maximum sound samples to write
+ */
 extern void AuSoundWrite (vfs_node_t *file, uint8_t* buffer, uint32_t length);
+
+/*
+ * AuSoundDestroyDSP -- finds and destroys a registered
+ * dsp by its thread id
+ * @param id -- thread id
+ */
+extern void AuSoundDestroyDSP(uint16_t id);
 #endif
