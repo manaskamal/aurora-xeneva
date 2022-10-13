@@ -80,6 +80,9 @@
 #define XHCI_TRB_TRT(x)   ((uint64_t)x << 48)
 #define XHCI_TRB_DIR_IN   ((uint64_t)1 << 48)
 
+#define XHCI_DOORBELL_ENDPOINT_0    1
+#define XHCI_DOORBELL_ENDPOINT_1    2
+
 
 #pragma pack(push,1)
 typedef struct _xhci_cap_regs_ {
@@ -283,6 +286,16 @@ typedef struct _xhci_erst_ {
 }xhci_erst_t;
 #pragma pack(pop)
 
+typedef struct _xhci_slot_ {
+	uint8_t slot_id;
+	uint8_t root_hub_port_num;
+	uint64_t cmd_ring_base;
+	xhci_trb_t* cmd_ring;
+	unsigned cmd_ring_index;
+	unsigned cmd_ring_max;
+	unsigned cmd_ring_cycle;
+}xhci_slot_t;
+
 typedef struct _usb_dev_ {
 	xhci_cap_regs_t *cap_regs;
 	xhci_op_regs_t* op_regs;
@@ -371,12 +384,32 @@ void xhci_send_command_multiple (usb_dev_t* dev, xhci_trb_t* trb, int num_count)
  */
 void xhci_send_command (usb_dev_t *dev, uint32_t param1, uint32_t param2, uint32_t status, uint32_t ctrl);
 
+/*
+ * xhci_send_command_slot -- sends command to slot trb
+ * @param slot -- pointer to slot data structure
+ * @param param1 -- first parameter of trb structure
+ * @param param2 -- 2nd parameter of trb structure
+ * @param status -- status field of trb structure
+ * @param ctrl -- control field of trb structure
+ */
+void xhci_send_command_slot (xhci_slot_t* slot,uint32_t param1, uint32_t param2, uint32_t status, uint32_t ctrl);
+
 
 /*
- * xhci_ring_doorbell -- rings the doorbell
+ * xhci_ring_doorbell -- rings the host doorbell
  * @param dev -- Pointer to usb structure
  */
 void xhci_ring_doorbell(usb_dev_t* dev);
+
+/*
+ * xhci_ring_doorbell_slot -- rings the doorbell by slot
+ * @param dev -- Pointer to usb structure
+ * @param slot -- slot id
+ * @param endpoint -- endpoint number, it should be 0 if
+ * the slot is 0, else values 1-255 should be placed
+ *
+ */
+void xhci_ring_doorbell_slot(usb_dev_t* dev, uint8_t slot, uint32_t endpoint);
 
 /*
  * xhci_port_initialize -- initializes all powered ports

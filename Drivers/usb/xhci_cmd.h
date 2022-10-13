@@ -32,6 +32,7 @@
 
 #include <stdint.h>
 #include "xhci.h"
+#include "usb_def.h"
 
 /* Standard XHCI defined Transfer/Command/Event 
  * TRB type values 
@@ -86,7 +87,7 @@ extern void xhci_send_noop_cmd (usb_dev_t* dev);
 /*
  * xhci_create_setup_trb -- creates a setup stage trb
  */
-extern void xhci_create_setup_trb (usb_dev_t *dev, uint8_t rType, uint8_t bRequest, uint16_t value, uint16_t wIndex, uint16_t wLength);
+extern void xhci_create_setup_trb (xhci_slot_t* slot, uint8_t rType, uint8_t bRequest, uint16_t value, uint16_t wIndex, uint16_t wLength);
 
 /*
  * xhci_create_data_trb -- creates data stage trb
@@ -95,13 +96,32 @@ extern void xhci_create_setup_trb (usb_dev_t *dev, uint8_t rType, uint8_t bReque
  * @param size -- size of the buffer
  * @param in_direction -- direction
  */
-extern void xhci_create_data_trb (usb_dev_t* dev, uint64_t buffer, uint16_t size, bool in_direction);
+extern void xhci_create_data_trb (xhci_slot_t* slot, uint64_t buffer, uint16_t size, bool in_direction);
 
 /*
  * xhci_create_status_trb -- creates status stage trb
  * @param dev -- pointer to usb strucutue
  * @param in_direction -- direction
  */
-extern void xhci_create_status_trb (usb_dev_t* dev, bool in_direction);
+extern void xhci_create_status_trb (xhci_slot_t* slot, bool in_direction);
+
+/*
+ * xhci_address_device -- issues address device command 
+ * @param dev -- pointer to usb device structure
+ * @param bsr -- block set address request (BSR)
+ * @param input_ctx_ptr -- address of input context
+ * @param slot_id -- slot id number
+ */
+extern void xhci_send_address_device (usb_dev_t* dev, uint8_t bsr, uint64_t input_ctx_ptr, uint8_t slot_id);
+
+/*
+ * xhci_send_control_cmd -- Sends control commands to xhci
+ * @param dev -- pointer to usb device structure
+ * @param slot_id -- slot number
+ * @param request -- USB request packet structure
+ * @param buffer_addr -- input buffer address
+ * @param len -- length of the buffer
+ */
+extern void xhci_send_control_cmd (usb_dev_t* dev,xhci_slot_t* slot,uint8_t slot_id, const USB_REQUEST_PACKET *request, uint64_t buffer_addr, const size_t len);
 
 #endif

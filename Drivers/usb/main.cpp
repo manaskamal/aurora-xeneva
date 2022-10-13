@@ -71,7 +71,13 @@ void AuUSBInterrupt(size_t v, void* p) {
 	while ((event[usb_device->evnt_ring_index].trb_control & (1<<0)) == 1){
 		_debug_print_ ("[usb3]: Event Received %d, %x, %d \r\n", ((event[usb_device->evnt_ring_index].trb_control >> 10) & 0xFF), 
 			event->trb_control,  ((event[usb_device->evnt_ring_index].trb_control >> 10) & 0xFF));
-			
+
+
+		if (evt[usb_device->evnt_ring_index].trbType == 96) {
+			event_available = true;
+			poll_return_trb_type = 96;
+			trb_event_index = usb_device->evnt_ring_index;
+		}
 
 
 		/* New PORT STATUS CHANGE Event */

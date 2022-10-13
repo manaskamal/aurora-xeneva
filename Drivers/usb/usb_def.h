@@ -32,6 +32,13 @@
 
 #include <stdint.h>
 
+struct USB_REQUEST_PACKET {
+	uint8_t request_type;
+	uint8_t request;
+	uint16_t value;
+	uint16_t index;
+	uint16_t length;
+};
 #pragma pack(push,1)
 typedef struct _dev_desc_ {
 	uint8_t bLength;

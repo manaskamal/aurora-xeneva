@@ -30,6 +30,7 @@
 #include "xhci.h"
 #include <stdint.h>
 #include <arch\x86_64\mmngr\paging.h>
+#include <arch\x86_64\mmngr\kheap.h>
 #include <pmmngr.h>
 #include <string.h>
 #include <stdio.h>
@@ -59,7 +60,7 @@ extern int trb_event_index;
 	(((max_packet_size & 0xFFFF) << 16) | ((max_burst_size & 0xFF) << 8) | ((hid & 1) << 7) | ((ep_type & 0x7) << 3)  | ((cerr & 0x3) << 1))
 
 #define USB_ENDPOINT_CTX_DWORD2(trdp, dcs) \
-	((trdp & 0xFFFFFFF0) | (dcs & 1))
+	((trdp & 0xFFFFFFFF) | (dcs & 1))
 
 #define USB_ENDPOINT_CTX_DWORD3(trdp) \
 	((trdp >> 32) & 0xFFFFFFFF)
@@ -154,32 +155,69 @@ size_t xhci_get_max_packet_sz (uint8_t speed) {
  * @param port_speed -- speed of this port
  * @param root_port_num -- root hub port number
  */
-void xhci_create_device_ctx (usb_dev_t* dev, uint8_t slot_num, uint8_t port_speed, uint8_t root_port_num) {
+xhci_slot_t* xhci_create_device_ctx (usb_dev_t* dev, uint8_t slot_num, uint8_t port_speed, uint8_t root_port_num) {
 
-	uint64_t dev_ctx = (uint64_t)AuPmmngrAlloc();
-	memset((void*)dev_ctx, 0, 4096);
-	dev->dev_ctx_base_array[slot_num] = dev_ctx;
+	xhci_slot_t* slot = (xhci_slot_t*)malloc(sizeof(xhci_slot_t));
+	memset(slot, 0, sizeof(xhci_slot_t));
+
+	uint64_t output_ctx = (uint64_t)AuPmmngrAlloc();
+	uint64_t* output_ctx_ptr = (uint64_t*)output_ctx;
+	memset((void*)output_ctx, 0, 4096);
+
 	
 	uint64_t input_ctx = (uint64_t)AuPmmngrAlloc();
+	uint8_t *input_ctx_ptr = (uint8_t*)input_ctx;
 	memset((void*)input_ctx, 0, 4096);
 
-	volatile uint32_t* aflags = raw_offset<volatile uint32_t*>(input_ctx, 4);
-	*aflags = 3;
+	*raw_offset<volatile uint32_t*>(input_ctx, 0x04) = (1<<0) | (1<<1);
 
 	*raw_offset<volatile uint32_t*>(input_ctx,0x20) = USB_SLOT_CTX_DWORD0(1,0,0,port_speed,0);
 	*raw_offset<volatile uint32_t*>(input_ctx,0x20 + 4) = USB_SLOT_CTX_DWORD1(0,root_port_num,0);
 
+	_debug_print_ ("******////USB DATA////****** -> %x , %x \r\n", (*raw_offset<volatile uint32_t*>(input_ctx, 0x20 + 4)),USB_SLOT_CTX_DWORD1(0,root_port_num,0));
+
+
 	/* initialize the endpoint 0 ctx here */
 	*raw_offset<volatile uint32_t*>(input_ctx,0x40) = USB_ENDPOINT_CTX_DWORD0(0,0,0,0,0,0);
 	*raw_offset<volatile uint32_t*>(input_ctx,0x40 + 4) = USB_ENDPOINT_CTX_DWORD1(xhci_get_max_packet_sz(port_speed),0,0,4,3);
-	*raw_offset<volatile uint32_t*>(input_ctx,0x40 + 8) = USB_ENDPOINT_CTX_DWORD2(dev->cmd_ring_phys, 1);
-	*raw_offset<volatile uint32_t*>(input_ctx,0x40 + 12) = USB_ENDPOINT_CTX_DWORD3(dev->cmd_ring_phys);
+
+	uint64_t cmd_ring = (uint64_t)AuPmmngrAlloc();
+	memset((void*)cmd_ring, 0, 4096);
+
+	uint64_t* cmd_ring_virt = (uint64_t*)AuMapMMIO(cmd_ring, 1);
+
+
+	*raw_offset<volatile uint32_t*>(input_ctx,0x40 + 8) = USB_ENDPOINT_CTX_DWORD2(cmd_ring, 1);
+	*raw_offset<volatile uint32_t*>(input_ctx,0x40 + 12) = USB_ENDPOINT_CTX_DWORD3(cmd_ring);
 	*raw_offset<volatile uint32_t*>(input_ctx,0x40 + 0x10) = USB_ENDPOINT_CTX_DWORD4(0,8);
 
-	memcpy((void*)dev_ctx, raw_offset<void*>(input_ctx, 0x20), 0x40);
+	memcpy (output_ctx_ptr, raw_offset<void*>(input_ctx,0x20),0x40);
+
+	dev->dev_ctx_base_array[slot_num] = output_ctx;
+
+	slot->cmd_ring_base = cmd_ring;
+	slot->cmd_ring = (xhci_trb_t*)cmd_ring_virt;
+	slot->cmd_ring_index = 0;
+	slot->cmd_ring_max = 64;
+	slot->cmd_ring_cycle = 1;
+
+
 
 	/* Here we need an function, which will issues commands to this slot */
 	/* (Incomplete) */
+	_debug_print_ ("USB: Sending SET_ADDRESS command to slot -> %d \r\n", slot_num);
+	xhci_send_address_device(dev,0,input_ctx,slot_num);
+
+
+	int idx = xhci_poll_event(dev,TRB_EVENT_CMD_COMPLETION);
+	if (idx != -1) {
+		xhci_event_trb_t *evt = (xhci_event_trb_t*)dev->event_ring_segment;
+		xhci_trb_t *trb = (xhci_trb_t*)evt;
+		_debug_print_ ("[USB]: SET_ADDRESS Event received -> %d \r\n",evt[idx].trbType);
+	}
+
+	return slot;
+
 }
 
 
@@ -294,16 +332,27 @@ void xhci_send_command (usb_dev_t *dev, uint32_t param1, uint32_t param2, uint32
 		}
 		dev->cmd_ring_index = 0;
 	}
-
-	xhci_ring_doorbell(dev);
 }
 
+
 /*
- * xhci_ring_doorbell -- rings the doorbell
+ * xhci_ring_doorbell -- rings the host doorbell
  * @param dev -- Pointer to usb structure
  */
 void xhci_ring_doorbell(usb_dev_t* dev) {
 	dev->db_regs->doorbell[0] = (0<<16) | 0;
+}
+
+/*
+ * xhci_ring_doorbell_slot -- rings the doorbell by slot
+ * @param dev -- Pointer to usb structure
+ * @param slot -- slot id
+ * @param endpoint -- endpoint number, it should be 0 if
+ * the slot is 0, else values 1-255 should be placed
+ *
+ */
+void xhci_ring_doorbell_slot(usb_dev_t* dev, uint8_t slot, uint32_t endpoint) {
+	dev->db_regs->doorbell[slot] =  endpoint;
 }
 
 
@@ -337,6 +386,33 @@ void xhci_send_command_multiple (usb_dev_t* dev, xhci_trb_t* trb, int num_count)
 	dev->db_regs->doorbell[0] = (0<<16) | 0;
 }
 
+/*
+ * xhci_send_command_slot -- sends command to slot trb
+ * @param slot -- pointer to slot data structure
+ * @param param1 -- first parameter of trb structure
+ * @param param2 -- 2nd parameter of trb structure
+ * @param status -- status field of trb structure
+ * @param ctrl -- control field of trb structure
+ */
+void xhci_send_command_slot (xhci_slot_t* slot,uint32_t param1, uint32_t param2, uint32_t status, uint32_t ctrl) {
+	
+	ctrl &= ~1;
+	ctrl |= 1; //dev->cmd_ring_cycle;
+	slot->cmd_ring[slot->cmd_ring_index].trb_param_1 = param1;
+	slot->cmd_ring[slot->cmd_ring_index].trb_param_2 = param2;
+	slot->cmd_ring[slot->cmd_ring_index].trb_status = status;
+	slot->cmd_ring[slot->cmd_ring_index].trb_control = ctrl;
+
+	slot->cmd_ring_index++;
+
+	if (slot->cmd_ring_index >= 63 ) {
+		slot->cmd_ring[slot->cmd_ring_index].trb_control ^= 1;
+		if (slot->cmd_ring[slot->cmd_ring_index].trb_control & (1<<1)) {
+			slot->cmd_ring_cycle ^= 1;
+		}
+		slot->cmd_ring_index = 0;
+	}
+}
 
 /*
  * xhci_poll_event -- waits for an event to occur on interrupts
@@ -400,7 +476,7 @@ void xhci_port_initialize (usb_dev_t *dev) {
 			while((this_port->port_sc & (1<<4)) != 0);
 
 			uint8_t port_speed = (this_port->port_sc >> 10) & 0xf;
-			printf ("Port Num -> %d, Port Speed -> %s \n", i, xhci_get_port_speed(port_speed));
+			//printf ("Port Num -> %d, Port Speed -> %s \n", i, xhci_get_port_speed(port_speed));
 			for (int i = 0; i < 10000000; i++)
 				;
 			
@@ -414,19 +490,50 @@ void xhci_port_initialize (usb_dev_t *dev) {
 				xhci_trb_t *trb = (xhci_trb_t*)evt;
 				slot_id = (trb[idx].trb_control >> 24);
 				//printf ("Event received -> %d, slot_id -> %d \r\n",evt[idx].trbType, evt[idx].completionCode);
-				printf ("Slot id -> %d \n", slot_id);
+				//printf ("Slot id -> %d \n", slot_id);
 			}
+
+			if (slot_id == 0)
+				continue;
 			
 			/* After getting a device slot, 
 			 * allocate device slot data structures
 			 */
-			xhci_create_device_ctx(dev,slot_id,port_speed,i);
+			xhci_slot_t* slot = xhci_create_device_ctx(dev,slot_id,port_speed,i);
 
 			this_port->port_sc |= (1<<9);
 			/*printf ("Port Initialized %d, Power -> %d, PED -> %d \n", i, ((this_port->port_sc & (1<<9)) & 0xff),
 				((this_port->port_sc & (1<<1)) & 0xff));*/
+
+			uint64_t* buffer = (uint64_t*)AuPmmngrAlloc();
+			memset(buffer, 0, 4096);
+
+			USB_REQUEST_PACKET pack;
+			pack.request_type = USB_BM_REQUEST_INPUT | USB_BM_REQUEST_STANDARD | USB_BM_REQUEST_DEVICE;
+			pack.request = USB_BREQUEST_GET_DESCRIPTOR;
+			pack.value = USB_DESCRIPTOR_WVALUE(USB_DESCRIPTOR_DEVICE, 0);
+			pack.index = 0;
+			pack.length = 8;
+
+
+			_debug_print_ ("Sending USB CONTROL commands \r\n");
+			xhci_send_control_cmd(dev,slot, slot_id, &pack, (uint64_t)buffer, 8);
+
+			for (int i = 0; i < 10000; i++);
+	
+			/*int t_idx = xhci_poll_event(dev,TRB_EVENT_CMD_COMPLETION);
+			if (t_idx != -1) {
+				xhci_event_trb_t *evt = (xhci_event_trb_t*)dev->event_ring_segment;
+				xhci_trb_t *trb = (xhci_trb_t*)evt;
+				_debug_print_("Control command event received %d \r\n", evt[t_idx].trbType);
+			}*/
+
+			
+			usb_dev_desc_t *dev_desc = (usb_dev_desc_t*)buffer;
+			if (dev_desc->bDeviceClass == 0x09) 
+				printf ("[USB3]: USB Hub, speed: %s \n", xhci_get_port_speed(port_speed));
+
 		}
 	}
 
-	//for(;;);
 }

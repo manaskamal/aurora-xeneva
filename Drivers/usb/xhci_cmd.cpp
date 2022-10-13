@@ -28,6 +28,7 @@
  **/
 
 #include "xhci_cmd.h"
+#include "usb_def.h"
 #include "xhci.h"
 
 /*
@@ -53,8 +54,8 @@ void xhci_send_noop_cmd (usb_dev_t* dev) {
 /*
  * xhci_create_setup_trb -- creates a setup stage trb
  */
-void xhci_create_setup_trb (usb_dev_t *dev, uint8_t rType, uint8_t bRequest, uint16_t value, uint16_t wIndex, uint16_t wLength) {
-	xhci_send_command(dev, rType | bRequest << 8 | value << 16, wIndex | wLength << 16,8,(2 << 10) | (1<<6));
+void xhci_create_setup_trb (xhci_slot_t *slot,uint8_t rType, uint8_t bRequest, uint16_t value, uint16_t wIndex, uint16_t wLength, uint8_t trt) {
+	xhci_send_command_slot(slot, rType | bRequest << 8 | value << 16, wIndex | wLength << 16,(0 << 22) | 8,(trt << 16) |(2 << 10) | (1<<6));
 }
 
 /*
@@ -64,13 +65,13 @@ void xhci_create_setup_trb (usb_dev_t *dev, uint8_t rType, uint8_t bRequest, uin
  * @param size -- size of the buffer
  * @param in_direction -- direction
  */
-void xhci_create_data_trb (usb_dev_t* dev, uint64_t buffer, uint16_t size, bool in_direction) {
+void xhci_create_data_trb (xhci_slot_t *slot, uint64_t buffer, uint16_t size, bool in_direction) {
 	uint8_t dir = 0;
 	if (in_direction)
 		dir = (1<<16);
 	else
 		dir = (0<<16);
-	xhci_send_command (dev,buffer, buffer >> 32, size, dir | (3 << 10) | (1<<1));
+	xhci_send_command_slot (slot,buffer & UINT32_MAX, (buffer >> 32) & UINT32_MAX, size, dir | (3 << 10) | (1<<1));
 }
 
 /*
@@ -78,12 +79,41 @@ void xhci_create_data_trb (usb_dev_t* dev, uint64_t buffer, uint16_t size, bool 
  * @param dev -- pointer to usb strucutue
  * @param in_direction -- direction
  */
-void xhci_create_status_trb (usb_dev_t* dev, bool in_direction) {
+void xhci_create_status_trb (xhci_slot_t* slot, bool in_direction) {
 	uint8_t dir = 0;
 	if (in_direction)
 		dir = 1;
 	else
 		dir = 0;
-	xhci_send_command(dev, 0, 0, 0, (dir << 16) | (4 << 10) | (1<<1));
+	xhci_send_command_slot(slot, 0, 0, 0, (dir << 16) | (4 << 10) | (1<<5) | (1<<1));
 }
 
+/*
+ * xhci_address_device -- issues address device command 
+ * @param dev -- pointer to usb device structure
+ * @param bsr -- block set address request (BSR)
+ * @param input_ctx_ptr -- address of input context
+ * @param slot_id -- slot id number
+ */
+void xhci_send_address_device (usb_dev_t* dev, uint8_t bsr, uint64_t input_ctx_ptr, uint8_t slot_id) {
+	xhci_send_command(dev,input_ctx_ptr & UINT32_MAX, (input_ctx_ptr >> 32) & UINT32_MAX, 0, (slot_id << 24) | (TRB_CMD_ADDRESS_DEV << 10) | (bsr << 9));
+	//xhci_ring_doorbell_slot(dev,slot_id,1);
+	xhci_ring_doorbell(dev);
+}
+
+
+/*
+ * xhci_send_control_cmd -- Sends control commands to xhci
+ * @param dev -- pointer to usb device structure
+ * @param slot_id -- slot number
+ * @param request -- USB request packet structure
+ * @param buffer_addr -- input buffer address
+ * @param len -- length of the buffer
+ */
+void xhci_send_control_cmd (usb_dev_t* dev,xhci_slot_t* slot,uint8_t slot_id, const USB_REQUEST_PACKET *request, uint64_t buffer_addr, const size_t len) {
+	xhci_create_setup_trb(slot,request->request_type, request->request, request->value, request->index, request->length, 3);
+	xhci_create_data_trb(slot,buffer_addr,len,true);
+	xhci_create_status_trb(slot,true);
+	xhci_ring_doorbell_slot(dev,slot_id,XHCI_DOORBELL_ENDPOINT_0);
+	//xhci_ring_doorbell(dev);
+}
