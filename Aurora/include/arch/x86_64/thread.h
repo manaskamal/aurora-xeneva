@@ -176,11 +176,11 @@ AU_EXTERN AU_EXPORT thread_t* create_child_thread (thread_t *parent, void (*entr
 
 //! block_thread -- blocks a thread entry
 //! @param thread -- thread address to block
-extern void block_thread (thread_t *thread);
+AU_EXTERN AU_EXPORT void block_thread (thread_t *thread);
 
 //! unblock_thread --unblocks a thread entry
 //! @param thread -- thread address to unblock
-extern void unblock_thread (thread_t *thread);
+AU_EXTERN AU_EXPORT void unblock_thread (thread_t *thread);
 
 //! get_current_thread -- get current thread
 //! @return -- returns the currently running thread to the caller

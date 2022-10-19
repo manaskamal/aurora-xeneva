@@ -7,7 +7,7 @@ INCLUDELIB OLDNAMES
 
 PUBLIC	?post_box_put_msg@@YAXPEAU_post_box_message_@@G@Z ; post_box_put_msg
 EXTRN	memcpy:PROC
-EXTRN	?unblock_thread@@YAXPEAU_thread_@@@Z:PROC	; unblock_thread
+EXTRN	unblock_thread:PROC
 EXTRN	?is_multi_task_enable@@YA_NXZ:PROC		; is_multi_task_enable
 EXTRN	?thread_iterate_ready_list@@YAPEAU_thread_@@G@Z:PROC ; thread_iterate_ready_list
 EXTRN	?thread_iterate_block_list@@YAPEAU_thread_@@H@Z:PROC ; thread_iterate_block_list
@@ -107,7 +107,7 @@ $LN2@post_box_p:
 ; 47   : 		unblock_thread(t);
 
 	mov	rcx, QWORD PTR t$[rsp]
-	call	?unblock_thread@@YAXPEAU_thread_@@@Z	; unblock_thread
+	call	unblock_thread
 $LN1@post_box_p:
 $LN5@post_box_p:
 

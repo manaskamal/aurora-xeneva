@@ -11,8 +11,8 @@ PUBLIC	AuMutexUnlock
 PUBLIC	AuMutexDestroy
 EXTRN	malloc:PROC
 EXTRN	free:PROC
-EXTRN	?block_thread@@YAXPEAU_thread_@@@Z:PROC		; block_thread
-EXTRN	?unblock_thread@@YAXPEAU_thread_@@@Z:PROC	; unblock_thread
+EXTRN	block_thread:PROC
+EXTRN	unblock_thread:PROC
 EXTRN	get_current_thread:PROC
 EXTRN	force_sched:PROC
 EXTRN	?thread_iterate_block_list@@YAPEAU_thread_@@H@Z:PROC ; thread_iterate_block_list
@@ -148,7 +148,7 @@ $LN4@AuMutexUnl:
 ; 90   : 				unblock_thread(thr);
 
 	mov	rcx, QWORD PTR thr$3[rsp]
-	call	?unblock_thread@@YAXPEAU_thread_@@@Z	; unblock_thread
+	call	unblock_thread
 $LN1@AuMutexUnl:
 
 ; 91   : 		}
@@ -252,7 +252,7 @@ $LN2@AuMutexLoc:
 
 	call	get_current_thread
 	mov	rcx, rax
-	call	?block_thread@@YAXPEAU_thread_@@@Z	; block_thread
+	call	block_thread
 
 ; 62   : 		obj->block_thread_id[obj->block_thread_num] = get_current_thread()->id;
 

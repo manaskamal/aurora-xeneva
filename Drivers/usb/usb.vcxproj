@@ -148,6 +148,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="usb_def.h" />
+    <ClInclude Include="usb_thr.h" />
     <ClInclude Include="xhci.h" />
     <ClInclude Include="xhci_cmd.h" />
   </ItemGroup>

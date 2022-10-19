@@ -164,7 +164,7 @@ XE_EXTERN XE_EXPORT int XeMain (int argc, char* argv[]) {
 	win->color = LIGHTCORAL;
 	win->paint = DockPaint;
 
-	Image *img = load_wallpaper("/me.jpg");
+	Image *img = load_wallpaper("/kati.jpg");
 	
 	XEWindowSetAttrib((1<<1));
 	XEShowWindow(win);

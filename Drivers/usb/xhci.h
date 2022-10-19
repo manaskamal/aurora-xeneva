@@ -1,7 +1,7 @@
 /**
  * BSD 2-Clause License
  *
- * Copyright (c) 2021, Manas Kamal Choudhury
+ * Copyright (c) 2022, Manas Kamal Choudhury
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,6 +31,7 @@
 #define __XHCI_H__
 
 #include <stdint.h>
+#include <arch\x86_64\thread.h>
 
 #define XHCI_USB_CMD_INTE  (1<<2) //Interrupter enable
 #define XHCI_USB_CMD_HSEE  (1<<3) // Host System Error enable
@@ -297,6 +298,8 @@ typedef struct _xhci_slot_ {
 }xhci_slot_t;
 
 typedef struct _usb_dev_ {
+	bool initialized;
+	thread_t *usb_thread;
 	xhci_cap_regs_t *cap_regs;
 	xhci_op_regs_t* op_regs;
 	xhci_doorbell_regs_t *db_regs;
@@ -416,4 +419,10 @@ void xhci_ring_doorbell_slot(usb_dev_t* dev, uint8_t slot, uint32_t endpoint);
  * @param dev -- Pointer to USB device structures
  */
 extern void xhci_port_initialize (usb_dev_t *dev);
+
+/*
+ * xhci_port_initialize_by_num -- initializes a specific port
+ * @param dev -- Pointer to USB device structures
+ */
+extern void xhci_port_initialize_by_num (usb_dev_t *dev, unsigned int port);
 #endif

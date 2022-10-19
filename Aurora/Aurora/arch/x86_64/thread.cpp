@@ -520,7 +520,7 @@ bool is_multi_task_enable () {
 
 
 //! Blocks a running thread 
-void block_thread (thread_t *thread) {
+AU_EXTERN AU_EXPORT void block_thread (thread_t *thread) {
 	thread->state = THREAD_STATE_BLOCKED;
 	task_delete (thread);
 	//list_add (blocked_list,thread);
@@ -574,7 +574,7 @@ uint16_t thread_get_id_by_name (char* name) {
 }
 
 //!unblock a thread
-void unblock_thread (thread_t *t) {
+AU_EXTERN AU_EXPORT void unblock_thread (thread_t *t) {
 	//x64_cli();
 	t->state = THREAD_STATE_READY;
 	for (thread_t *thr = blocked_thr_head; thr != NULL; thr = thr->next) {

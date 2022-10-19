@@ -55,7 +55,7 @@ EXTRN	v2p:PROC
 EXTRN	x64_cli:PROC
 EXTRN	malloc:PROC
 EXTRN	free:PROC
-EXTRN	?block_thread@@YAXPEAU_thread_@@@Z:PROC		; block_thread
+EXTRN	block_thread:PROC
 EXTRN	get_current_thread:PROC
 EXTRN	force_sched:PROC
 EXTRN	?circ_buf_init@@YAPEAU_circ_buf_@@PEAE_K@Z:PROC	; circ_buf_init
@@ -178,7 +178,7 @@ $LN7:
 
 	call	get_current_thread
 	mov	rcx, rax
-	call	?block_thread@@YAXPEAU_thread_@@@Z	; block_thread
+	call	block_thread
 
 ; 206  : 		force_sched();
 

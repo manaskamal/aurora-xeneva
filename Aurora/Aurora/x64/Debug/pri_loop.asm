@@ -34,7 +34,7 @@ EXTRN	x64_cli:PROC
 EXTRN	malloc:PROC
 EXTRN	free:PROC
 EXTRN	vfs_mount:PROC
-EXTRN	?unblock_thread@@YAXPEAU_thread_@@@Z:PROC	; unblock_thread
+EXTRN	unblock_thread:PROC
 EXTRN	get_current_thread:PROC
 EXTRN	?thread_iterate_ready_list@@YAPEAU_thread_@@G@Z:PROC ; thread_iterate_ready_list
 EXTRN	?thread_iterate_block_list@@YAPEAU_thread_@@H@Z:PROC ; thread_iterate_block_list
@@ -702,7 +702,7 @@ $LN2@pri_put_me:
 ; 135  : 		unblock_thread(thread);
 
 	mov	rcx, QWORD PTR thread$[rsp]
-	call	?unblock_thread@@YAXPEAU_thread_@@@Z	; unblock_thread
+	call	unblock_thread
 $LN1@pri_put_me:
 $ret$11:
 

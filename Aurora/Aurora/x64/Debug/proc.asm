@@ -88,7 +88,7 @@ EXTRN	AuGetFreePage:PROC
 EXTRN	malloc:PROC
 EXTRN	free:PROC
 EXTRN	?create_user_thread@@YAPEAU_thread_@@P6AXPEAX@Z_K2QEADE@Z:PROC ; create_user_thread
-EXTRN	?unblock_thread@@YAXPEAU_thread_@@@Z:PROC	; unblock_thread
+EXTRN	unblock_thread:PROC
 EXTRN	get_current_thread:PROC
 EXTRN	?thread_iterate_ready_list@@YAPEAU_thread_@@G@Z:PROC ; thread_iterate_ready_list
 EXTRN	?thread_iterate_block_list@@YAPEAU_thread_@@H@Z:PROC ; thread_iterate_block_list
@@ -1252,7 +1252,7 @@ $LN8@kill_proce:
 ; 442  : 		unblock_thread(remove_thread);
 
 	mov	rcx, QWORD PTR remove_thread$[rsp]
-	call	?unblock_thread@@YAXPEAU_thread_@@@Z	; unblock_thread
+	call	unblock_thread
 $LN7@kill_proce:
 
 ; 443  : 	remove_thread->state = THREAD_STATE_BLOCKED;
@@ -1882,7 +1882,7 @@ $LN3@kill_proce:
 ; 400  : 			unblock_thread(t);
 
 	mov	rcx, QWORD PTR t$14[rsp]
-	call	?unblock_thread@@YAXPEAU_thread_@@@Z	; unblock_thread
+	call	unblock_thread
 $LN1@kill_proce:
 
 ; 401  : 		}

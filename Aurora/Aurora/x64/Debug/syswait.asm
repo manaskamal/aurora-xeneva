@@ -8,8 +8,8 @@ INCLUDELIB OLDNAMES
 PUBLIC	?wait@@YAXXZ					; wait
 PUBLIC	?sys_unblock_id@@YAXG@Z				; sys_unblock_id
 EXTRN	x64_cli:PROC
-EXTRN	?block_thread@@YAXPEAU_thread_@@@Z:PROC		; block_thread
-EXTRN	?unblock_thread@@YAXPEAU_thread_@@@Z:PROC	; unblock_thread
+EXTRN	block_thread:PROC
+EXTRN	unblock_thread:PROC
 EXTRN	get_current_thread:PROC
 EXTRN	force_sched:PROC
 EXTRN	?thread_iterate_block_list@@YAPEAU_thread_@@H@Z:PROC ; thread_iterate_block_list
@@ -66,7 +66,7 @@ $LN5:
 ; 32   : 			unblock_thread(thr);
 
 	mov	rcx, QWORD PTR thr$[rsp]
-	call	?unblock_thread@@YAXPEAU_thread_@@@Z	; unblock_thread
+	call	unblock_thread
 $LN1@sys_unbloc:
 $LN2@sys_unbloc:
 
@@ -101,7 +101,7 @@ $LN3:
 ; 23   : 	block_thread (t);
 
 	mov	rcx, QWORD PTR t$[rsp]
-	call	?block_thread@@YAXPEAU_thread_@@@Z	; block_thread
+	call	block_thread
 
 ; 24   : 	force_sched();
 

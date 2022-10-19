@@ -15,7 +15,7 @@ EXTRN	AuPmmngrFree:PROC
 EXTRN	p2v:PROC
 EXTRN	v2p:PROC
 EXTRN	x64_cli:PROC
-EXTRN	?unblock_thread@@YAXPEAU_thread_@@@Z:PROC	; unblock_thread
+EXTRN	unblock_thread:PROC
 EXTRN	get_current_thread:PROC
 EXTRN	?thread_iterate_ready_list@@YAPEAU_thread_@@G@Z:PROC ; thread_iterate_ready_list
 EXTRN	?thread_iterate_block_list@@YAPEAU_thread_@@H@Z:PROC ; thread_iterate_block_list
@@ -206,7 +206,7 @@ $LN6:
 ; 37   : 			unblock_thread (blocked_thread);
 
 	mov	rcx, QWORD PTR blocked_thread$1[rsp]
-	call	?unblock_thread@@YAXPEAU_thread_@@@Z	; unblock_thread
+	call	unblock_thread
 $LN2@message_se:
 $LN3@message_se:
 

@@ -110,6 +110,8 @@ void _AuMain (KERNEL_BOOT_INFO *info) {
 	AuInitializeBasicAcpi (info->acpi_table_pointer);
 	AuSharedDeviceInit();
 	ahci_initialize();
+	/*AuDriverLoadMem(info->driver_entry1);
+	for(;;);*/
 	AuVFSInit();
 	
 	AuInitializeScreen(info);

@@ -197,7 +197,7 @@ EXTRN	x64_fxrstor:PROC
 EXTRN	x64_ldmxcsr:PROC
 EXTRN	setvect:PROC
 EXTRN	free:PROC
-EXTRN	?block_thread@@YAXPEAU_thread_@@@Z:PROC		; block_thread
+EXTRN	block_thread:PROC
 EXTRN	get_current_thread:PROC
 EXTRN	force_sched:PROC
 EXTRN	?AuHandlePageNotPresent@@YAX_K_NPEAX@Z:PROC	; AuHandlePageNotPresent
@@ -1174,7 +1174,7 @@ $LN2@general_pr:
 
 	call	get_current_thread
 	mov	rcx, rax
-	call	?block_thread@@YAXPEAU_thread_@@@Z	; block_thread
+	call	block_thread
 
 ; 142  : 	force_sched();
 

@@ -41,8 +41,8 @@ PUBLIC	?AuSchedulerStart@@YAXXZ			; AuSchedulerStart
 PUBLIC	?create_user_thread@@YAPEAU_thread_@@P6AXPEAX@Z_K2QEADE@Z ; create_user_thread
 PUBLIC	create_kthread
 PUBLIC	create_child_thread
-PUBLIC	?block_thread@@YAXPEAU_thread_@@@Z		; block_thread
-PUBLIC	?unblock_thread@@YAXPEAU_thread_@@@Z		; unblock_thread
+PUBLIC	block_thread
+PUBLIC	unblock_thread
 PUBLIC	get_current_thread
 PUBLIC	?set_multi_task_enable@@YAX_N@Z			; set_multi_task_enable
 PUBLIC	?is_multi_task_enable@@YA_NXZ			; is_multi_task_enable
@@ -107,12 +107,12 @@ $pdata$create_kthread DD imagerel $LN3
 $pdata$create_child_thread DD imagerel $LN3
 	DD	imagerel $LN3+705
 	DD	imagerel $unwind$create_child_thread
-$pdata$?block_thread@@YAXPEAU_thread_@@@Z DD imagerel $LN3
+$pdata$block_thread DD imagerel $LN3
 	DD	imagerel $LN3+46
-	DD	imagerel $unwind$?block_thread@@YAXPEAU_thread_@@@Z
-$pdata$?unblock_thread@@YAXPEAU_thread_@@@Z DD imagerel $LN7
+	DD	imagerel $unwind$block_thread
+$pdata$unblock_thread DD imagerel $LN7
 	DD	imagerel $LN7+99
-	DD	imagerel $unwind$?unblock_thread@@YAXPEAU_thread_@@@Z
+	DD	imagerel $unwind$unblock_thread
 $pdata$force_sched DD imagerel $LN3
 	DD	imagerel $LN3+14
 	DD	imagerel $unwind$force_sched
@@ -146,9 +146,9 @@ $unwind$create_kthread DD 011801H
 	DD	06218H
 $unwind$create_child_thread DD 011801H
 	DD	06218H
-$unwind$?block_thread@@YAXPEAU_thread_@@@Z DD 010901H
+$unwind$block_thread DD 010901H
 	DD	04209H
-$unwind$?unblock_thread@@YAXPEAU_thread_@@@Z DD 010901H
+$unwind$unblock_thread DD 010901H
 	DD	06209H
 $unwind$force_sched DD 010401H
 	DD	04204H
@@ -1283,9 +1283,9 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 thr$1 = 32
 t$ = 64
-?unblock_thread@@YAXPEAU_thread_@@@Z PROC		; unblock_thread
+unblock_thread PROC
 
-; 577  : void unblock_thread (thread_t *t) {
+; 577  : AU_EXTERN AU_EXPORT void unblock_thread (thread_t *t) {
 
 $LN7:
 	mov	QWORD PTR [rsp+8], rcx
@@ -1336,15 +1336,15 @@ $LN2@unblock_th:
 
 	add	rsp, 56					; 00000038H
 	ret	0
-?unblock_thread@@YAXPEAU_thread_@@@Z ENDP		; unblock_thread
+unblock_thread ENDP
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\arch\x86_64\thread.cpp
 _TEXT	SEGMENT
 thread$ = 48
-?block_thread@@YAXPEAU_thread_@@@Z PROC			; block_thread
+block_thread PROC
 
-; 523  : void block_thread (thread_t *thread) {
+; 523  : AU_EXTERN AU_EXPORT void block_thread (thread_t *thread) {
 
 $LN3:
 	mov	QWORD PTR [rsp+8], rcx
@@ -1370,7 +1370,7 @@ $LN3:
 
 	add	rsp, 40					; 00000028H
 	ret	0
-?block_thread@@YAXPEAU_thread_@@@Z ENDP			; block_thread
+block_thread ENDP
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\arch\x86_64\thread.cpp
