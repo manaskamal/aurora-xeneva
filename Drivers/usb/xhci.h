@@ -299,6 +299,7 @@ typedef struct _xhci_slot_ {
 
 typedef struct _usb_dev_ {
 	bool initialized;
+	bool is_csz_64;
 	thread_t *usb_thread;
 	xhci_cap_regs_t *cap_regs;
 	xhci_op_regs_t* op_regs;

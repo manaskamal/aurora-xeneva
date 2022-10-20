@@ -92,11 +92,18 @@ void AuUSBInterrupt(size_t v, void* p) {
 		xhci_event_trb_t *evt = (xhci_event_trb_t*)usb_device->event_ring_segment;
 		uint64_t erdp = (uint64_t)AuGetPhysicalAddress((uint64_t)AuGetRootPageTable(),(uint64_t)usb_device->event_ring_segment);
 		while ((event[usb_device->evnt_ring_index].trb_control & (1<<0)) == 1){
-			_debug_print_ ("[usb3]: Event Received %d, %x, %d \r\n", ((event[usb_device->evnt_ring_index].trb_control >> 10) & 0xFF), 
+			_debug_print_ ("[usb3]: Event Received %d, %x, %d \r\n", evt[usb_device->evnt_ring_index].trbType, 
 				event->trb_control,  ((event[usb_device->evnt_ring_index].trb_control >> 10) & 0xFF));
 
 
-
+			if (evt[usb_device->evnt_ring_index].trbType == TRB_EVENT_TRANSFER) {
+				usb_device->event_available = true;
+				usb_device->poll_return_trb_type = TRB_EVENT_TRANSFER;
+				usb_device->trb_event_index = usb_device->evnt_ring_index;
+				xhci_trb_t *trb = (xhci_trb_t*)&evt[usb_device->evnt_ring_index];
+				_debug_print_ ("Endpoint id -> %d, TRB Pointer -> %x \r\n",((trb->trb_control >> 16) & 0xff), 
+					trb->trb_param_1 | trb->trb_param_2);
+			}
 
 			/* New PORT STATUS CHANGE Event */
 			if (evt[usb_device->evnt_ring_index].trbType == TRB_EVENT_PORT_STATUS_CHANGE){
@@ -220,8 +227,7 @@ AU_EXTERN AU_EXPORT int AuDriverMain() {
 	usb_device->rt_regs = rt;
 	usb_device->ext_cap = ext_cap;
 	usb_device->ports = ports;
-
-
+	usb_device->is_csz_64 = (cap->cap_hccparams1 >> 2) & 0xf;
 
 	usb_device->num_slots = (cap->cap_hcsparams1 & 0xFF);
 	usb_device->num_ports = (cap->cap_hcsparams1 >> 24);
@@ -260,9 +266,7 @@ AU_EXTERN AU_EXPORT int AuDriverMain() {
 
 	xhci_event_ring_init(usb_device);
 	
-	for (int i = 0; i < 10000000; i++)
-		;
-	
+
 	AuEnableInterrupts();
 
 	/* Try Sending a No Operation Command to xHCI*/
@@ -297,7 +301,6 @@ AU_EXTERN AU_EXPORT int AuDriverMain() {
 	/*
 	 * Here we need to initialize an USB3 kernel thread
 	 */
-
 
 	return 0;
 }

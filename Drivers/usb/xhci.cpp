@@ -315,7 +315,7 @@ void xhci_event_ring_init (usb_dev_t *dev) {
 void xhci_send_command (usb_dev_t *dev, uint32_t param1, uint32_t param2, uint32_t status, uint32_t ctrl) {
 	
 	ctrl &= ~1;
-	ctrl |= 1; //dev->cmd_ring_cycle;
+	ctrl |= dev->cmd_ring_cycle;
 	dev->cmd_ring[dev->cmd_ring_index].trb_param_1 = param1;
 	dev->cmd_ring[dev->cmd_ring_index].trb_param_2 = param2;
 	dev->cmd_ring[dev->cmd_ring_index].trb_status = status;
@@ -395,7 +395,7 @@ void xhci_send_command_multiple (usb_dev_t* dev, xhci_trb_t* trb, int num_count)
 void xhci_send_command_slot (xhci_slot_t* slot,uint32_t param1, uint32_t param2, uint32_t status, uint32_t ctrl) {
 	
 	ctrl &= ~1;
-	ctrl |= 1; //dev->cmd_ring_cycle;
+	ctrl |= slot->cmd_ring_cycle;
 	slot->cmd_ring[slot->cmd_ring_index].trb_param_1 = param1;
 	slot->cmd_ring[slot->cmd_ring_index].trb_param_2 = param2;
 	slot->cmd_ring[slot->cmd_ring_index].trb_status = status;
@@ -419,12 +419,11 @@ void xhci_send_command_slot (xhci_slot_t* slot,uint32_t param1, uint32_t param2,
  * @return trb_event_index -- index of the trb on event_ring_segment
  */
 int xhci_poll_event (usb_dev_t* usb_device, int trb_type) {
-	int idx = -1;
 	for (;;) {
-		if (usb_device->event_available && usb_device->poll_return_trb_type == trb_type 
-			&& usb_device->trb_event_index != -1) {
+		if (usb_device->event_available && usb_device->poll_return_trb_type == trb_type) {
 				usb_device->event_available = false;
-				idx = usb_device->trb_event_index;
+				_debug_print_ ("TRB event idx-> %d \n", usb_device->trb_event_index);
+				int idx = usb_device->trb_event_index;
 				usb_device->trb_event_index = -1;
 				usb_device->poll_return_trb_type = -1;
 				return idx;
@@ -524,24 +523,22 @@ void xhci_port_initialize (usb_dev_t *dev) {
 			pack.length = 8;
 
 
-			_debug_print_ ("Sending USB CONTROL commands \r\n");
 			xhci_send_control_cmd(dev,slot, slot_id, &pack,v2p((uint64_t)buffer), 8);
 
-			for (int i = 0; i < 10000; i++);
 	
-			/*int t_idx = xhci_poll_event(dev,TRB_EVENT_CMD_COMPLETION);
+			int t_idx = xhci_poll_event(dev,TRB_EVENT_TRANSFER);
 			if (t_idx != -1) {
 				xhci_event_trb_t *evt = (xhci_event_trb_t*)dev->event_ring_segment;
 				xhci_trb_t *trb = (xhci_trb_t*)evt;
 				_debug_print_("Control command event received %d \r\n", evt[t_idx].trbType);
-			}*/
+			}
 
 			
 			usb_dev_desc_t *dev_desc = (usb_dev_desc_t*)buffer;
 			if (dev_desc->bDeviceClass == 0x09) 
-				printf ("[USB3]: USB Hub, speed: %s \n", xhci_get_port_speed(port_speed));
+				printf ("[USB3]: USB Hub, speed: %s, wPacketSz-> %d \n", xhci_get_port_speed(port_speed), dev_desc->bMaxPacketSize0);
 			else
-				printf ("[USB3]: bDevice Class -> %x \n", dev_desc->bDeviceClass);
+				printf ("[USB3]: bDevice Class -> %x, wPacketSz -> %d \n", dev_desc->bDeviceClass, dev_desc->bMaxPacketSize0);
 
 		}
 	}
@@ -559,8 +556,7 @@ void xhci_port_initialize_by_num (usb_dev_t *dev, unsigned int port) {
 	if ((this_port->port_sc & 1)) {	
 
 		/* Reset the port */
-		this_port->port_sc |= (1<<4);
-		while((this_port->port_sc & (1<<4)) != 0);
+		xhci_port_reset(this_port);
 
 		uint8_t port_speed = (this_port->port_sc >> 10) & 0xf;
 			//printf ("Port Num -> %d, Port Speed -> %s \n", i, xhci_get_port_speed(port_speed));
@@ -574,8 +570,8 @@ void xhci_port_initialize_by_num (usb_dev_t *dev, unsigned int port) {
 			xhci_event_trb_t *evt = (xhci_event_trb_t*)dev->event_ring_segment;
 			xhci_trb_t *trb = (xhci_trb_t*)evt;
 			slot_id = (trb[idx].trb_control >> 24);
-				//printf ("Event received -> %d, slot_id -> %d \r\n",evt[idx].trbType, evt[idx].completionCode);
-				printf ("Slot id -> %d \n", slot_id);
+			printf ("Event received -> %d, idx -> %d \r\n",evt[idx].trbType, idx);
+			printf ("Slot id -> %d \n", slot_id);
 		}
 
 		if (slot_id == 0)
@@ -606,20 +602,22 @@ void xhci_port_initialize_by_num (usb_dev_t *dev, unsigned int port) {
 
 		for (int i = 0; i < 1000000; i++);
 	
-		/*int t_idx = xhci_poll_event(dev,TRB_EVENT_CMD_COMPLETION);
+		int t_idx = xhci_poll_event(dev,TRB_EVENT_TRANSFER);
 		if (t_idx != -1) {
 				xhci_event_trb_t *evt = (xhci_event_trb_t*)dev->event_ring_segment;
 				xhci_trb_t *trb = (xhci_trb_t*)evt;
 				_debug_print_("Control command event received %d \r\n", evt[t_idx].trbType);
-			}*/
+			}
 
 			
 		usb_dev_desc_t *dev_desc = (usb_dev_desc_t*)buffer;
 		if (dev_desc->bDeviceClass == 0x09) {
-			printf ("[USB3]: USB Hub, speed: %s \n", xhci_get_port_speed(port_speed));
+			printf ("[USB3]: USB Hub, speed: %s, wPacketSz -> %d \n", xhci_get_port_speed(port_speed), dev_desc->bMaxPacketSize0);
 
 		}else {
-			printf ("[USB3]: %x, speed: %s , %x\n", dev_desc->bDeviceClass,xhci_get_port_speed(port_speed), dev_desc->idVendor);
+			printf ("Buffer desc -> %x \n", v2p((uint64_t)buffer));
+			printf ("New Device %x, speed: %s , wPacketSz-> %d\n", dev_desc->bDeviceClass,xhci_get_port_speed(port_speed), dev_desc->bMaxPacketSize0);
+			printf ("New Device Vendor id -> %x, Product Id -> %x \n", dev_desc->idVendor, dev_desc->idProduct);
 		}
 	}
 }

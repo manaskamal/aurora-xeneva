@@ -96,7 +96,7 @@ void xhci_create_status_trb (xhci_slot_t* slot, bool in_direction) {
  * @param slot_id -- slot id number
  */
 void xhci_send_address_device (usb_dev_t* dev, uint8_t bsr, uint64_t input_ctx_ptr, uint8_t slot_id) {
-	xhci_send_command(dev,input_ctx_ptr & UINT32_MAX, (input_ctx_ptr >> 32) & UINT32_MAX, 0, (slot_id << 24) | (TRB_CMD_ADDRESS_DEV << 10) | (bsr << 9));
+	xhci_send_command(dev,input_ctx_ptr & UINT32_MAX, (input_ctx_ptr & UINT32_MAX) >> 32, 0, (slot_id << 24) | (TRB_CMD_ADDRESS_DEV << 10) | ((bsr & 0xf) << 9));
 	//xhci_ring_doorbell_slot(dev,slot_id,1);
 	xhci_ring_doorbell(dev);
 }
@@ -113,7 +113,7 @@ void xhci_send_address_device (usb_dev_t* dev, uint8_t bsr, uint64_t input_ctx_p
 void xhci_send_control_cmd (usb_dev_t* dev,xhci_slot_t* slot,uint8_t slot_id, const USB_REQUEST_PACKET *request, uint64_t buffer_addr, const size_t len) {
 	xhci_create_setup_trb(slot,request->request_type, request->request, request->value, request->index, request->length, 3);
 	xhci_create_data_trb(slot,buffer_addr,len,true);
-	xhci_create_status_trb(slot,true);
+	xhci_create_status_trb(slot,false);
 	xhci_ring_doorbell_slot(dev,slot_id,XHCI_DOORBELL_ENDPOINT_0);
 	//xhci_ring_doorbell(dev);
 }
