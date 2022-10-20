@@ -56,11 +56,6 @@
 usb_dev_t *usb_device;
 shirq_t *shdev;
 
-int poll_event_for_trb;
-bool event_available;
-int poll_return_trb_type;
-int trb_event_index;
-
 
 uint8_t usb_thread_msg;
 uint8_t port_num;
@@ -101,11 +96,6 @@ void AuUSBInterrupt(size_t v, void* p) {
 				event->trb_control,  ((event[usb_device->evnt_ring_index].trb_control >> 10) & 0xFF));
 
 
-			if (evt[usb_device->evnt_ring_index].trbType == 96) {
-				event_available = true;
-				poll_return_trb_type = 96;
-				trb_event_index = usb_device->evnt_ring_index;
-			}
 
 
 			/* New PORT STATUS CHANGE Event */
@@ -125,10 +115,12 @@ void AuUSBInterrupt(size_t v, void* p) {
 
 
 			if (evt[usb_device->evnt_ring_index].trbType == TRB_EVENT_CMD_COMPLETION) {
-				event_available = true;
-				poll_return_trb_type = TRB_EVENT_CMD_COMPLETION;
-				trb_event_index = usb_device->evnt_ring_index;
-				_debug_print_ ("Event available -> %d \r\n", event_available);
+				usb_device->event_available = true;
+				usb_device->poll_return_trb_type = TRB_EVENT_CMD_COMPLETION;
+				usb_device->trb_event_index = usb_device->evnt_ring_index;
+				xhci_trb_t *trb = (xhci_trb_t*)&evt[usb_device->evnt_ring_index];
+				_debug_print_ ("Event available -> %d , slot_id -> %d, index -> %d \r\n", usb_device->event_available, ((trb->trb_control>>24) & 0xff),
+					usb_device->evnt_ring_index);
 			}
 
 		
@@ -233,16 +225,16 @@ AU_EXTERN AU_EXPORT int AuDriverMain() {
 
 	usb_device->num_slots = (cap->cap_hcsparams1 & 0xFF);
 	usb_device->num_ports = (cap->cap_hcsparams1 >> 24);
-	
+
 	/* We need to check, if controller supports port power switch, so that
 	 * individual ports can be powered on or off
 	 */
 	//printf ("[usb]: xhci port power control switch -> %d \n", ((cap->cap_hccparams1 >> 3) & 0xff));
 
-	trb_event_index = -1;
-	event_available = false;
-	poll_event_for_trb = -1;
-	poll_return_trb_type = -1;
+	usb_device->trb_event_index = -1;
+	usb_device->event_available = false;
+	usb_device->poll_event_for_trb = -1;
+	usb_device->poll_return_trb_type = -1;
 
 
 	/* Reset the XHCI controller */
@@ -305,6 +297,7 @@ AU_EXTERN AU_EXPORT int AuDriverMain() {
 	/*
 	 * Here we need to initialize an USB3 kernel thread
 	 */
+
 
 	return 0;
 }

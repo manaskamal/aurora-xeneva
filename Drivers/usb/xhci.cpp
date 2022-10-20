@@ -41,11 +41,6 @@
 #include "usb_def.h"
 
 
-extern int poll_event_for_trb;
-extern bool event_available;
-extern int poll_return_trb_type;
-extern int trb_event_index;
-
 
 #define USB_SLOT_CTX_DWORD0(entries, hub, multi_tt, speed, route_string) \
 	(((entries & 0x1F) << 27) | ((hub & 1) << 26) | ((multi_tt & 1) << 25) | ((speed & 0xF) << 20) | (route_string & ((1<<20) - 1)))
@@ -233,12 +228,15 @@ void xhci_protocol_init (usb_dev_t *dev) {
 			printf ("USB Legacy Support \n");
 			//break;
 		case 2:{
-			printf ("USB Support Protocol \n");
 			xhci_ex_cap_protocol_t *prot = (xhci_ex_cap_protocol_t*)cap;
-			printf ("Protocol name -> %s , starting port -> %d, max_port -> %d \n", prot->name, 
-				(prot->port_cap_field & 0xFF), ((prot->port_cap_field >> 8) & 0xFF));
-			printf ("Protocol speed -> %d \n", ((prot->port_cap_field >> 28) & 0xFFFF));
-			printf ("Slot Type -> %d \n", ((prot->port_cap_field2) & 0xff));
+			char prot_name[4];
+			memset(prot_name,0,4);
+			memcpy(prot_name,prot->name,4);
+			uint8_t start_port = prot->port_cap_field & 0xff;
+			uint8_t max_port = (prot->port_cap_field >> 8) & 0xff;
+			uint32_t proto_speed_id_count = (prot->port_cap_field >> 28) & 0xffff;
+			uint8_t slot_type = prot->port_cap_field2 & 0x1f;
+			printf ("Protocol speed count -> %d, slot_type -> %d \n", proto_speed_id_count, slot_type);
 			//break;
 	    }
 		case 3:
@@ -423,17 +421,17 @@ void xhci_send_command_slot (xhci_slot_t* slot,uint32_t param1, uint32_t param2,
 int xhci_poll_event (usb_dev_t* usb_device, int trb_type) {
 	int idx = -1;
 	for (;;) {
-		if (event_available && poll_return_trb_type == trb_type 
-			&& trb_event_index != -1) {
-				event_available = false;
-				idx = trb_event_index;
-				trb_event_index = -1;
-				poll_return_trb_type = -1;
+		if (usb_device->event_available && usb_device->poll_return_trb_type == trb_type 
+			&& usb_device->trb_event_index != -1) {
+				usb_device->event_available = false;
+				idx = usb_device->trb_event_index;
+				usb_device->trb_event_index = -1;
+				usb_device->poll_return_trb_type = -1;
 				return idx;
 		}
 	}
 
-	return trb_event_index;
+	return -1; //trb_event_index;
 }
 
 /*
@@ -482,26 +480,25 @@ void xhci_port_initialize (usb_dev_t *dev) {
 	for (unsigned int i = 1; i <= dev->num_ports; i++) {
 		xhci_port_regs_t *this_port = &dev->ports[i - 1];
 		if ((this_port->port_sc & 1)) {	
-			_debug_print_ ("Initializing port -> %d \r\n", i);
+			//printf ("Initializing port -> %d \r\n", i);
 			
 			xhci_port_reset(this_port);
 
 			uint8_t port_speed = (this_port->port_sc >> 10) & 0xf;
 			
-			for (int i = 0; i < 10000000; i++)
-				;
-			
+	
 			uint8_t slot_id = 0;
 
 			/* Enable slot command */
 			xhci_enable_slot(dev,0);
 			int idx = xhci_poll_event(dev,TRB_EVENT_CMD_COMPLETION);
+			//printf ("idx -> %d \n", idx);
 			if (idx != -1) {
 				xhci_event_trb_t *evt = (xhci_event_trb_t*)dev->event_ring_segment;
 				xhci_trb_t *trb = (xhci_trb_t*)evt;
 				slot_id = (trb[idx].trb_control >> 24);
 				//printf ("Event received -> %d, slot_id -> %d \r\n",evt[idx].trbType, evt[idx].completionCode);
-				//printf ("Slot id -> %d \n", slot_id);
+				printf ("Slot id -> %d \n", slot_id);
 			}
 
 			if (slot_id == 0)
@@ -511,7 +508,7 @@ void xhci_port_initialize (usb_dev_t *dev) {
 			 * allocate device slot data structures
 			 */
 			xhci_slot_t* slot = xhci_create_device_ctx(dev,slot_id,port_speed,i);
-			printf ("Port Num -> %d, Port Speed -> %s, slot-> %d \n", i, xhci_get_port_speed(port_speed), slot_id);
+			//printf ("Port Num -> %d, Port Speed -> %s, slot-> %d \n", i, xhci_get_port_speed(port_speed), slot_id);
 			this_port->port_sc |= (1<<9);
 			/*printf ("Port Initialized %d, Power -> %d, PED -> %d \n", i, ((this_port->port_sc & (1<<9)) & 0xff),
 				((this_port->port_sc & (1<<1)) & 0xff));*/
@@ -567,8 +564,6 @@ void xhci_port_initialize_by_num (usb_dev_t *dev, unsigned int port) {
 
 		uint8_t port_speed = (this_port->port_sc >> 10) & 0xf;
 			//printf ("Port Num -> %d, Port Speed -> %s \n", i, xhci_get_port_speed(port_speed));
-		for (int i = 0; i < 10000000; i++)
-				;
 			
 		uint8_t slot_id = 0;
 
@@ -609,7 +604,7 @@ void xhci_port_initialize_by_num (usb_dev_t *dev, unsigned int port) {
 		_debug_print_ ("Sending USB CONTROL commands \r\n");
 		xhci_send_control_cmd(dev,slot, slot_id, &pack, v2p((uint64_t)buffer), 8);
 
-		for (int i = 0; i < 10000; i++);
+		for (int i = 0; i < 1000000; i++);
 	
 		/*int t_idx = xhci_poll_event(dev,TRB_EVENT_CMD_COMPLETION);
 		if (t_idx != -1) {

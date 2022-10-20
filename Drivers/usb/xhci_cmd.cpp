@@ -36,7 +36,7 @@
  * @param dev -- Pointer to usb device structure
  * @param slot_type -- type of slot mainly in between 0-31
  */
-void xhci_enable_slot (usb_dev_t *dev,int slot_type) {
+void xhci_enable_slot (usb_dev_t *dev,uint8_t slot_type) {
 	/* Send Enable slot command */
 	xhci_send_command(dev,0,0,0,(slot_type << 16) | (TRB_CMD_ENABLE_SLOT << 10));
 	xhci_ring_doorbell(dev);

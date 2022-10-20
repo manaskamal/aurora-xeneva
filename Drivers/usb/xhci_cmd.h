@@ -77,7 +77,7 @@
  * @param dev -- Pointer to usb device structure
  * @param slot_type -- type of slot mainly in between 0-31
  */
-extern void xhci_enable_slot (usb_dev_t *dev,int slot_type);
+extern void xhci_enable_slot (usb_dev_t *dev,uint8_t slot_type);
 
 /* xhci_send_noop_cmd -- Send No operation command
  * @param dev -- Pointer to USB structure

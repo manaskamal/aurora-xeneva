@@ -319,6 +319,10 @@ typedef struct _usb_dev_ {
 	unsigned evnt_ring_index;
 	unsigned evnt_ring_cycle;
 	unsigned evnt_ring_max;
+	int poll_event_for_trb;
+	bool event_available;
+	int poll_return_trb_type;
+	int trb_event_index;
 }usb_dev_t;
 
 /* USB speed numbers */
