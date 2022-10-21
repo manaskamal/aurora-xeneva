@@ -422,7 +422,7 @@ int xhci_poll_event (usb_dev_t* usb_device, int trb_type) {
 	for (;;) {
 		if (usb_device->event_available && usb_device->poll_return_trb_type == trb_type) {
 				usb_device->event_available = false;
-				_debug_print_ ("TRB event idx-> %d \n", usb_device->trb_event_index);
+				_debug_print_ ("TRB event idx-> %d \r\n", usb_device->trb_event_index);
 				int idx = usb_device->trb_event_index;
 				usb_device->trb_event_index = -1;
 				usb_device->poll_return_trb_type = -1;
@@ -479,24 +479,24 @@ void xhci_port_initialize (usb_dev_t *dev) {
 	for (unsigned int i = 1; i <= dev->num_ports; i++) {
 		xhci_port_regs_t *this_port = &dev->ports[i - 1];
 		if ((this_port->port_sc & 1)) {	
-			//printf ("Initializing port -> %d \r\n", i);
 			
 			xhci_port_reset(this_port);
 
 			uint8_t port_speed = (this_port->port_sc >> 10) & 0xf;
-			
+
+			for (int i = 0; i < 1000000; i++)
+				;
 	
 			uint8_t slot_id = 0;
 
 			/* Enable slot command */
 			xhci_enable_slot(dev,0);
 			int idx = xhci_poll_event(dev,TRB_EVENT_CMD_COMPLETION);
-			//printf ("idx -> %d \n", idx);
+		
 			if (idx != -1) {
 				xhci_event_trb_t *evt = (xhci_event_trb_t*)dev->event_ring_segment;
 				xhci_trb_t *trb = (xhci_trb_t*)evt;
 				slot_id = (trb[idx].trb_control >> 24);
-				//printf ("Event received -> %d, slot_id -> %d \r\n",evt[idx].trbType, evt[idx].completionCode);
 				printf ("Slot id -> %d \n", slot_id);
 			}
 
@@ -507,10 +507,8 @@ void xhci_port_initialize (usb_dev_t *dev) {
 			 * allocate device slot data structures
 			 */
 			xhci_slot_t* slot = xhci_create_device_ctx(dev,slot_id,port_speed,i);
-			//printf ("Port Num -> %d, Port Speed -> %s, slot-> %d \n", i, xhci_get_port_speed(port_speed), slot_id);
-			this_port->port_sc |= (1<<9);
-			/*printf ("Port Initialized %d, Power -> %d, PED -> %d \n", i, ((this_port->port_sc & (1<<9)) & 0xff),
-				((this_port->port_sc & (1<<1)) & 0xff));*/
+			
+			//this_port->port_sc |= (1<<9);
 
 			uint64_t* buffer = (uint64_t*)p2v((uint64_t)AuPmmngrAlloc());
 			memset(buffer, 0, 4096);
@@ -536,9 +534,9 @@ void xhci_port_initialize (usb_dev_t *dev) {
 			
 			usb_dev_desc_t *dev_desc = (usb_dev_desc_t*)buffer;
 			if (dev_desc->bDeviceClass == 0x09) 
-				printf ("[USB3]: USB Hub, speed: %s, wPacketSz-> %d \n", xhci_get_port_speed(port_speed), dev_desc->bMaxPacketSize0);
+				printf ("[USB3]: USB Hub, speed: %s, wPacketSz-> %d\n", xhci_get_port_speed(port_speed), dev_desc->bMaxPacketSize0);
 			else
-				printf ("[USB3]: bDevice Class -> %x, wPacketSz -> %d \n", dev_desc->bDeviceClass, dev_desc->bMaxPacketSize0);
+				printf ("[USB3]: bDevice Class -> %x, wPacketSz -> %d\n", dev_desc->bDeviceClass, dev_desc->bMaxPacketSize0);
 
 		}
 	}
