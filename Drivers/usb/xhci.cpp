@@ -143,6 +143,44 @@ size_t xhci_get_max_packet_sz (uint8_t speed) {
 }
 
 /*
+ * xhci_add_slot -- adds a slot structure to slot list
+ * @param dev -- Pointer to usb device structure
+ */
+void xhci_add_slot (usb_dev_t* dev, xhci_slot_t *slot) {
+	list_add (dev->slot_list, slot);
+}
+
+/*
+ * xhci_slot_remove -- remove a slot structure from slot list
+ * @param dev -- Pointer to usb device structure
+ * @param slot_id -- slot id
+ */
+void xhci_slot_remove (usb_dev_t* dev, uint8_t slot_id) {
+	xhci_slot_t *slot_ = NULL;
+	for (int i = 0; i < dev->slot_list->pointer; i++) {
+		xhci_slot_t *slot = (xhci_slot_t*)list_get_at(dev->slot_list, i);
+		if (slot->slot_id == slot_id)
+			slot_ = (xhci_slot_t*)list_remove(dev->slot_list, i);
+	}
+
+	free(slot_);
+}
+
+/*
+ * xhci_get_slot -- returns a slot struct from the slot list
+ * @param dev -- Pointer to usb device structure
+ * @param slot_id -- slot id 
+ */
+xhci_slot_t *xhci_get_slot (usb_dev_t* dev, uint8_t slot_id) {
+	for (int i = 0; i < dev->slot_list->pointer; i++) {
+		xhci_slot_t *slot = (xhci_slot_t*)list_get_at(dev->slot_list, i);
+		if (slot->slot_id == slot_id)
+			return slot;
+	}
+	return NULL;
+}
+
+/*
  * xhci_create_device_ctx -- creates a device context
  * for a particuler USB device
  * @param dev -- pointer to usb device
@@ -194,7 +232,7 @@ xhci_slot_t* xhci_create_device_ctx (usb_dev_t* dev, uint8_t slot_num, uint8_t p
 	slot->cmd_ring_max = 64;
 	slot->cmd_ring_cycle = 1;
 
-
+	xhci_add_slot (dev, slot);
 
 	/* Here we need an function, which will issues commands to this slot */
 	xhci_send_address_device(dev,0,v2p(input_ctx),slot_num);

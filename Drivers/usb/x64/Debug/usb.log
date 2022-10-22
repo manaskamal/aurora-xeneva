@@ -1,4 +1,4 @@
-﻿Build started 22-10-2022 ৰাতিপু 9:21:57.
+﻿Build started 22-10-2022 আবেলি 11:26:04.
      1>Project "E:\Xeneva Project\Xeneva\Drivers\usb\usb.vcxproj" on node 2 (Rebuild target(s)).
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\Aurora\include" /Zi /nologo /W3 /WX- /Od /Oy /D ARCH_X64 /D _WINDLL /D _MBCS /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt main.cpp usb_std_rq.cpp xhci.cpp xhci_cmd.cpp
@@ -10,8 +10,8 @@
                  E:\Xeneva Project\Xeneva\Aurora\include\va_list.h(42) : see previous definition of 'va_arg'
      1>E:\Xeneva Project\Xeneva\Aurora\include\ctype.h(33): warning C4005: 'isascii' : macro redefinition
                  E:\Xeneva Project\Xeneva\Aurora\include\ctype.h(22) : see previous definition of 'isascii'
-     1>e:\xeneva project\xeneva\drivers\usb\xhci.h(212): warning C4161: #pragma pack(pop...) : more pops than pushes
-     1>e:\xeneva project\xeneva\drivers\usb\xhci.h(232): warning C4200: nonstandard extension used : zero-sized array in struct/union
+     1>e:\xeneva project\xeneva\drivers\usb\xhci.h(213): warning C4161: #pragma pack(pop...) : more pops than pushes
+     1>e:\xeneva project\xeneva\drivers\usb\xhci.h(233): warning C4200: nonstandard extension used : zero-sized array in struct/union
                  Cannot generate copy-ctor or copy-assignment operator when UDT contains a zero-sized array
      1>xhci_cmd.cpp(115): warning C4267: 'argument' : conversion from 'size_t' to 'uint16_t', possible loss of data
          xhci.cpp
@@ -21,12 +21,14 @@
                  E:\Xeneva Project\Xeneva\Aurora\include\va_list.h(42) : see previous definition of 'va_arg'
      1>E:\Xeneva Project\Xeneva\Aurora\include\ctype.h(33): warning C4005: 'isascii' : macro redefinition
                  E:\Xeneva Project\Xeneva\Aurora\include\ctype.h(22) : see previous definition of 'isascii'
-     1>e:\xeneva project\xeneva\drivers\usb\xhci.h(212): warning C4161: #pragma pack(pop...) : more pops than pushes
-     1>e:\xeneva project\xeneva\drivers\usb\xhci.h(232): warning C4200: nonstandard extension used : zero-sized array in struct/union
+     1>e:\xeneva project\xeneva\drivers\usb\xhci.h(213): warning C4161: #pragma pack(pop...) : more pops than pushes
+     1>e:\xeneva project\xeneva\drivers\usb\xhci.h(233): warning C4200: nonstandard extension used : zero-sized array in struct/union
                  Cannot generate copy-ctor or copy-assignment operator when UDT contains a zero-sized array
      1>xhci.cpp(88): warning C4244: '=' : conversion from 'uint64_t' to 'uint32_t', possible loss of data
-     1>xhci.cpp(286): warning C4244: '=' : conversion from 'uint64_t' to 'unsigned int', possible loss of data
-     1>xhci.cpp(288): warning C4244: '=' : conversion from 'uint64_t' to 'unsigned int', possible loss of data
+     1>xhci.cpp(160): warning C4018: '<' : signed/unsigned mismatch
+     1>xhci.cpp(175): warning C4018: '<' : signed/unsigned mismatch
+     1>xhci.cpp(324): warning C4244: '=' : conversion from 'uint64_t' to 'unsigned int', possible loss of data
+     1>xhci.cpp(326): warning C4244: '=' : conversion from 'uint64_t' to 'unsigned int', possible loss of data
          usb_std_rq.cpp
      1>E:\Xeneva Project\Xeneva\Aurora\include\stdarg.h(48): warning C4005: 'va_start' : macro redefinition
                  E:\Xeneva Project\Xeneva\Aurora\include\va_list.h(37) : see previous definition of 'va_start'
@@ -34,8 +36,8 @@
                  E:\Xeneva Project\Xeneva\Aurora\include\va_list.h(42) : see previous definition of 'va_arg'
      1>E:\Xeneva Project\Xeneva\Aurora\include\ctype.h(33): warning C4005: 'isascii' : macro redefinition
                  E:\Xeneva Project\Xeneva\Aurora\include\ctype.h(22) : see previous definition of 'isascii'
-     1>e:\xeneva project\xeneva\drivers\usb\xhci.h(212): warning C4161: #pragma pack(pop...) : more pops than pushes
-     1>e:\xeneva project\xeneva\drivers\usb\xhci.h(232): warning C4200: nonstandard extension used : zero-sized array in struct/union
+     1>e:\xeneva project\xeneva\drivers\usb\xhci.h(213): warning C4161: #pragma pack(pop...) : more pops than pushes
+     1>e:\xeneva project\xeneva\drivers\usb\xhci.h(233): warning C4200: nonstandard extension used : zero-sized array in struct/union
                  Cannot generate copy-ctor or copy-assignment operator when UDT contains a zero-sized array
          main.cpp
      1>E:\Xeneva Project\Xeneva\Aurora\include\stdarg.h(48): warning C4005: 'va_start' : macro redefinition
@@ -44,13 +46,13 @@
                  E:\Xeneva Project\Xeneva\Aurora\include\va_list.h(42) : see previous definition of 'va_arg'
      1>E:\Xeneva Project\Xeneva\Aurora\include\ctype.h(33): warning C4005: 'isascii' : macro redefinition
                  E:\Xeneva Project\Xeneva\Aurora\include\ctype.h(22) : see previous definition of 'isascii'
-     1>e:\xeneva project\xeneva\drivers\usb\xhci.h(212): warning C4161: #pragma pack(pop...) : more pops than pushes
-     1>e:\xeneva project\xeneva\drivers\usb\xhci.h(232): warning C4200: nonstandard extension used : zero-sized array in struct/union
+     1>e:\xeneva project\xeneva\drivers\usb\xhci.h(213): warning C4161: #pragma pack(pop...) : more pops than pushes
+     1>e:\xeneva project\xeneva\drivers\usb\xhci.h(233): warning C4200: nonstandard extension used : zero-sized array in struct/union
                  Cannot generate copy-ctor or copy-assignment operator when UDT contains a zero-sized array
-     1>main.cpp(138): warning C4244: '=' : conversion from 'uint64_t' to 'unsigned int', possible loss of data
-     1>main.cpp(201): warning C4244: 'argument' : conversion from 'uint64_t' to 'uint32_t', possible loss of data
-     1>main.cpp(206): warning C4293: '<<' : shift count negative or too big, undefined behavior
-     1>main.cpp(232): warning C4800: 'uint32_t' : forcing value to bool 'true' or 'false' (performance warning)
+     1>main.cpp(137): warning C4244: '=' : conversion from 'uint64_t' to 'unsigned int', possible loss of data
+     1>main.cpp(200): warning C4244: 'argument' : conversion from 'uint64_t' to 'uint32_t', possible loss of data
+     1>main.cpp(205): warning C4293: '<<' : shift count negative or too big, undefined behavior
+     1>main.cpp(231): warning C4800: 'uint32_t' : forcing value to bool 'true' or 'false' (performance warning)
          Generating Code...
      1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V110\Microsoft.CppBuild.targets(1137,5): warning MSB8012: TargetPath(E:\Xeneva Project\Xeneva\Drivers\usb\x64\Debug\usb.dll) does not match the Linker's OutputFile property value (F:\usb.dll). This may cause your project to build incorrectly. To correct this, please make sure that $(OutDir), $(TargetName) and $(TargetExt) property values match the value specified in %(Link.OutputFile).
        Link:
@@ -66,4 +68,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:00.84
+Time Elapsed 00:00:01.93

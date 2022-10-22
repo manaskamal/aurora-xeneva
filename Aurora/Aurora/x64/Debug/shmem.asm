@@ -17,10 +17,10 @@ PUBLIC	?AuObtainShMem@@YAPEAXIPEAXH@Z			; AuObtainShMem
 PUBLIC	?shm_unlink@@YAXI@Z				; shm_unlink
 PUBLIC	?shm_unlink_direct@@YAXI@Z			; shm_unlink_direct
 EXTRN	memset:PROC
-EXTRN	?initialize_list@@YAPEAU_list_@@XZ:PROC		; initialize_list
-EXTRN	?list_add@@YAXPEAU_list_@@PEAX@Z:PROC		; list_add
-EXTRN	?list_remove@@YAPEAXPEAU_list_@@I@Z:PROC	; list_remove
-EXTRN	?list_get_at@@YAPEAXPEAU_list_@@I@Z:PROC	; list_get_at
+EXTRN	initialize_list:PROC
+EXTRN	list_add:PROC
+EXTRN	list_remove:PROC
+EXTRN	list_get_at:PROC
 EXTRN	AuPmmngrAlloc:PROC
 EXTRN	v2p:PROC
 EXTRN	x64_cli:PROC
@@ -122,7 +122,7 @@ $LN12@shm_unlink:
 
 	mov	edx, DWORD PTR i$2[rsp]
 	mov	rcx, QWORD PTR ?shared_mem_list@@3PEAU_list_@@EA ; shared_mem_list
-	call	?list_get_at@@YAPEAXPEAU_list_@@I@Z	; list_get_at
+	call	list_get_at
 	mov	QWORD PTR mem$[rsp], rax
 
 ; 241  : 		if (mem->key == key)
@@ -223,7 +223,7 @@ $LN4@shm_unlink:
 
 	mov	edx, DWORD PTR i$1[rsp]
 	mov	rcx, QWORD PTR ?shared_mem_list@@3PEAU_list_@@EA ; shared_mem_list
-	call	?list_get_at@@YAPEAXPEAU_list_@@I@Z	; list_get_at
+	call	list_get_at
 	mov	QWORD PTR m$4[rsp], rax
 
 ; 259  : 		if (m->key == mem->key) {
@@ -238,7 +238,7 @@ $LN4@shm_unlink:
 
 	mov	edx, DWORD PTR i$1[rsp]
 	mov	rcx, QWORD PTR ?shared_mem_list@@3PEAU_list_@@EA ; shared_mem_list
-	call	?list_remove@@YAPEAXPEAU_list_@@I@Z	; list_remove
+	call	list_remove
 $LN1@shm_unlink:
 
 ; 261  : 		}
@@ -322,7 +322,7 @@ $LN18@shm_unlink:
 
 	mov	edx, DWORD PTR i$3[rsp]
 	mov	rcx, QWORD PTR ?shared_mem_list@@3PEAU_list_@@EA ; shared_mem_list
-	call	?list_get_at@@YAPEAXPEAU_list_@@I@Z	; list_get_at
+	call	list_get_at
 	mov	QWORD PTR mem$[rsp], rax
 
 ; 171  : 		if (mem->key == key)
@@ -529,7 +529,7 @@ $LN4@shm_unlink:
 
 	mov	edx, DWORD PTR i$1[rsp]
 	mov	rcx, QWORD PTR ?shared_mem_list@@3PEAU_list_@@EA ; shared_mem_list
-	call	?list_get_at@@YAPEAXPEAU_list_@@I@Z	; list_get_at
+	call	list_get_at
 	mov	QWORD PTR m$8[rsp], rax
 
 ; 218  : 			if (m->key == mem->key) {
@@ -544,7 +544,7 @@ $LN4@shm_unlink:
 
 	mov	edx, DWORD PTR i$1[rsp]
 	mov	rcx, QWORD PTR ?shared_mem_list@@3PEAU_list_@@EA ; shared_mem_list
-	call	?list_remove@@YAPEAXPEAU_list_@@I@Z	; list_remove
+	call	list_remove
 $LN1@shm_unlink:
 
 ; 220  : 			}
@@ -631,7 +631,7 @@ $LN15@AuObtainSh:
 
 	mov	edx, DWORD PTR i$3[rsp]
 	mov	rcx, QWORD PTR ?shared_mem_list@@3PEAU_list_@@EA ; shared_mem_list
-	call	?list_get_at@@YAPEAXPEAU_list_@@I@Z	; list_get_at
+	call	list_get_at
 	mov	QWORD PTR mem$[rsp], rax
 
 ; 90   : 		if (mem->id == id){
@@ -1026,7 +1026,7 @@ $LN4@AuCreateSh:
 
 	mov	edx, DWORD PTR i$1[rsp]
 	mov	rcx, QWORD PTR ?shared_mem_list@@3PEAU_list_@@EA ; shared_mem_list
-	call	?list_get_at@@YAPEAXPEAU_list_@@I@Z	; list_get_at
+	call	list_get_at
 	mov	QWORD PTR mem$2[rsp], rax
 
 ; 58   : 		if (mem->key == key)
@@ -1127,7 +1127,7 @@ $LN8@AuCreateSh:
 
 	mov	rdx, QWORD PTR sh_mem$[rsp]
 	mov	rcx, QWORD PTR ?shared_mem_list@@3PEAU_list_@@EA ; shared_mem_list
-	call	?list_add@@YAXPEAU_list_@@PEAX@Z	; list_add
+	call	list_add
 
 ; 72   : 	sh_id++;
 
@@ -1159,7 +1159,7 @@ $LN3:
 
 ; 46   : 	shared_mem_list = initialize_list();
 
-	call	?initialize_list@@YAPEAU_list_@@XZ	; initialize_list
+	call	initialize_list
 	mov	QWORD PTR ?shared_mem_list@@3PEAU_list_@@EA, rax ; shared_mem_list
 
 ; 47   : 	sh_id = 1;

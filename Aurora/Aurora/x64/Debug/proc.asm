@@ -69,7 +69,7 @@ PUBLIC	?fork@@YAIXZ					; fork
 PUBLIC	?exec@@YAXPEBDI@Z				; exec
 EXTRN	memset:PROC
 EXTRN	memcpy:PROC
-EXTRN	?initialize_list@@YAPEAU_list_@@XZ:PROC		; initialize_list
+EXTRN	initialize_list:PROC
 EXTRN	?vfs_finddir@@YAPEAU_vfs_node_@@PEAD@Z:PROC	; vfs_finddir
 EXTRN	AuPmmngrAlloc:PROC
 EXTRN	AuPmmngrFree:PROC
@@ -2581,7 +2581,7 @@ $LN4@AuCreatePr:
 
 ; 303  : 	process->shared_mem_list = initialize_list();
 
-	call	?initialize_list@@YAPEAU_list_@@XZ	; initialize_list
+	call	initialize_list
 	mov	rcx, QWORD PTR process$[rsp]
 	mov	QWORD PTR [rcx+2152], rax
 

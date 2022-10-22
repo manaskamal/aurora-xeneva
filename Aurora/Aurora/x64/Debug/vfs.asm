@@ -47,9 +47,9 @@ EXTRN	strcmp:PROC
 EXTRN	strcpy:PROC
 EXTRN	strlen:PROC
 EXTRN	strchr:PROC
-EXTRN	?initialize_list@@YAPEAU_list_@@XZ:PROC		; initialize_list
-EXTRN	?list_add@@YAXPEAU_list_@@PEAX@Z:PROC		; list_add
-EXTRN	?list_get_at@@YAPEAXPEAU_list_@@I@Z:PROC	; list_get_at
+EXTRN	initialize_list:PROC
+EXTRN	list_add:PROC
+EXTRN	list_get_at:PROC
 EXTRN	printf:PROC
 EXTRN	malloc:PROC
 EXTRN	?initialize_fat32@@YAXXZ:PROC			; initialize_fat32
@@ -470,7 +470,7 @@ $LN13@vfs_lsdir:
 	mov	edx, DWORD PTR j$2[rsp]
 	mov	rax, QWORD PTR ent$[rsp]
 	mov	rcx, QWORD PTR [rax+8]
-	call	?list_get_at@@YAPEAXPEAU_list_@@I@Z	; list_get_at
+	call	list_get_at
 	mov	QWORD PTR file_$4[rsp], rax
 
 ; 308  : 			entry_found = file_;
@@ -563,7 +563,7 @@ $LN6@vfs_lsdir:
 	mov	edx, DWORD PTR i$3[rsp]
 	mov	rax, QWORD PTR ent$[rsp]
 	mov	rcx, QWORD PTR [rax+8]
-	call	?list_get_at@@YAPEAXPEAU_list_@@I@Z	; list_get_at
+	call	list_get_at
 	mov	QWORD PTR f$6[rsp], rax
 
 ; 325  : 			char* type = 0;
@@ -822,7 +822,7 @@ $LN9@vfs_mount:
 	mov	edx, DWORD PTR j$2[rsp]
 	mov	rax, QWORD PTR ent$[rsp]
 	mov	rcx, QWORD PTR [rax+8]
-	call	?list_get_at@@YAPEAXPEAU_list_@@I@Z	; list_get_at
+	call	list_get_at
 	mov	QWORD PTR file_$5[rsp], rax
 
 ; 247  : 			if (strcmp(file_->filename, pathname)==0) {
@@ -982,7 +982,7 @@ $LN1@vfs_mount:
 	mov	rdx, QWORD PTR node$[rsp]
 	mov	rax, QWORD PTR ent$[rsp]
 	mov	rcx, QWORD PTR [rax+8]
-	call	?list_add@@YAXPEAU_list_@@PEAX@Z	; list_add
+	call	list_add
 
 ; 278  : 		_debug_print_ ("List added %x \r\n", ent->childs);
 
@@ -1025,7 +1025,7 @@ $LN3:
 
 ; 202  : 	ent->childs = initialize_list();
 
-	call	?initialize_list@@YAPEAU_list_@@XZ	; initialize_list
+	call	initialize_list
 	mov	rcx, QWORD PTR ent$[rsp]
 	mov	QWORD PTR [rcx+8], rax
 
@@ -1197,7 +1197,7 @@ $LN8@vfs_mkdir:
 	mov	edx, DWORD PTR j$2[rsp]
 	mov	rax, QWORD PTR ent$[rsp]
 	mov	rcx, QWORD PTR [rax+8]
-	call	?list_get_at@@YAPEAXPEAU_list_@@I@Z	; list_get_at
+	call	list_get_at
 	mov	QWORD PTR file_$3[rsp], rax
 
 ; 173  : 			if (strcmp(file_->filename, pathname) == 0) {
@@ -1287,7 +1287,7 @@ $LN15@vfs_mkdir:
 	mov	rdx, QWORD PTR dir$[rsp]
 	mov	rax, QWORD PTR ent$[rsp]
 	mov	rcx, QWORD PTR [rax+8]
-	call	?list_add@@YAXPEAU_list_@@PEAX@Z	; list_add
+	call	list_add
 
 ; 191  : 		return;
 
@@ -1306,7 +1306,7 @@ $LN2@vfs_mkdir:
 	mov	rdx, QWORD PTR dir$[rsp]
 	mov	rax, QWORD PTR ent$[rsp]
 	mov	rcx, QWORD PTR [rax+8]
-	call	?list_add@@YAXPEAU_list_@@PEAX@Z	; list_add
+	call	list_add
 $LN1@vfs_mkdir:
 $LN18@vfs_mkdir:
 
@@ -1496,7 +1496,7 @@ $LN7@vfs_finddi:
 	mov	edx, DWORD PTR j$2[rsp]
 	mov	rax, QWORD PTR ent$[rsp]
 	mov	rcx, QWORD PTR [rax+8]
-	call	?list_get_at@@YAPEAXPEAU_list_@@I@Z	; list_get_at
+	call	list_get_at
 	mov	QWORD PTR file_$3[rsp], rax
 
 ; 123  : 			if (strcmp(file_->filename, pathname) == 0) {
@@ -1610,7 +1610,7 @@ $LN3:
 
 ; 78   : 	root->childs = initialize_list();
 
-	call	?initialize_list@@YAPEAU_list_@@XZ	; initialize_list
+	call	initialize_list
 	mov	rcx, QWORD PTR root$[rsp]
 	mov	QWORD PTR [rcx+8], rax
 

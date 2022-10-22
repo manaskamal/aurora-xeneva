@@ -32,6 +32,7 @@
 
 #include <stdint.h>
 #include <arch\x86_64\thread.h>
+#include <utils\lnklist.h>
 
 #define XHCI_USB_CMD_INTE  (1<<2) //Interrupter enable
 #define XHCI_USB_CMD_HSEE  (1<<3) // Host System Error enable
@@ -301,6 +302,7 @@ typedef struct _usb_dev_ {
 	bool initialized;
 	bool is_csz_64;
 	thread_t *usb_thread;
+	list_t *slot_list;
 	xhci_cap_regs_t *cap_regs;
 	xhci_op_regs_t* op_regs;
 	xhci_doorbell_regs_t *db_regs;
@@ -431,5 +433,25 @@ extern void xhci_port_initialize (usb_dev_t *dev, unsigned int port);
  * @param dev -- Pointer to USB device structures
  */
 extern void xhci_start_default_ports (usb_dev_t *dev);
+
+/*
+ * xhci_add_slot -- adds a slot structure to slot list
+ * @param dev -- Pointer to usb device structure
+ */
+extern void xhci_add_slot (usb_dev_t* dev, xhci_slot_t *slot);
+
+/*
+ * xhci_slot_remove -- remove a slot structure from slot list
+ * @param dev -- Pointer to usb device structure
+ * @param slot_id -- slot id
+ */
+extern void xhci_slot_remove (usb_dev_t* dev, uint8_t slot_id);
+
+/*
+ * xhci_get_slot -- returns a slot struct from the slot list
+ * @param dev -- Pointer to usb device structure
+ * @param slot_id -- slot id 
+ */
+extern xhci_slot_t *xhci_get_slot (usb_dev_t* dev, uint8_t slot_id);
 
 #endif

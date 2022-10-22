@@ -5,34 +5,34 @@ include listing.inc
 INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
-PUBLIC	?initialize_list@@YAPEAU_list_@@XZ		; initialize_list
-PUBLIC	?list_add@@YAXPEAU_list_@@PEAX@Z		; list_add
-PUBLIC	?list_remove@@YAPEAXPEAU_list_@@I@Z		; list_remove
-PUBLIC	?list_get_at@@YAPEAXPEAU_list_@@I@Z		; list_get_at
+PUBLIC	initialize_list
+PUBLIC	list_add
+PUBLIC	list_remove
+PUBLIC	list_get_at
 EXTRN	malloc:PROC
 EXTRN	free:PROC
 pdata	SEGMENT
-$pdata$?initialize_list@@YAPEAU_list_@@XZ DD imagerel $LN3
+$pdata$initialize_list DD imagerel $LN3
 	DD	imagerel $LN3+53
-	DD	imagerel $unwind$?initialize_list@@YAPEAU_list_@@XZ
-$pdata$?list_add@@YAXPEAU_list_@@PEAX@Z DD imagerel $LN7
+	DD	imagerel $unwind$initialize_list
+$pdata$list_add DD imagerel $LN7
 	DD	imagerel $LN7+184
-	DD	imagerel $unwind$?list_add@@YAXPEAU_list_@@PEAX@Z
-$pdata$?list_remove@@YAPEAXPEAU_list_@@I@Z DD imagerel $LN12
+	DD	imagerel $unwind$list_add
+$pdata$list_remove DD imagerel $LN12
 	DD	imagerel $LN12+263
-	DD	imagerel $unwind$?list_remove@@YAPEAXPEAU_list_@@I@Z
-$pdata$?list_get_at@@YAPEAXPEAU_list_@@I@Z DD imagerel $LN10
+	DD	imagerel $unwind$list_remove
+$pdata$list_get_at DD imagerel $LN10
 	DD	imagerel $LN10+146
-	DD	imagerel $unwind$?list_get_at@@YAPEAXPEAU_list_@@I@Z
+	DD	imagerel $unwind$list_get_at
 pdata	ENDS
 xdata	SEGMENT
-$unwind$?initialize_list@@YAPEAU_list_@@XZ DD 010401H
+$unwind$initialize_list DD 010401H
 	DD	06204H
-$unwind$?list_add@@YAXPEAU_list_@@PEAX@Z DD 010e01H
+$unwind$list_add DD 010e01H
 	DD	0620eH
-$unwind$?list_remove@@YAPEAXPEAU_list_@@I@Z DD 010d01H
+$unwind$list_remove DD 010d01H
 	DD	0820dH
-$unwind$?list_get_at@@YAPEAXPEAU_list_@@I@Z DD 010d01H
+$unwind$list_get_at DD 010d01H
 	DD	0420dH
 xdata	ENDS
 ; Function compile flags: /Odtpy
@@ -43,7 +43,7 @@ current_node$ = 8
 tv75 = 16
 list$ = 48
 index$ = 56
-?list_get_at@@YAPEAXPEAU_list_@@I@Z PROC		; list_get_at
+list_get_at PROC
 
 ; 48   : void * list_get_at(list_t* list, unsigned int index) {
 
@@ -120,7 +120,7 @@ $LN6@list_get_a:
 
 	add	rsp, 40					; 00000028H
 	ret	0
-?list_get_at@@YAPEAXPEAU_list_@@I@Z ENDP		; list_get_at
+list_get_at ENDP
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\utils\lnklist.cpp
@@ -130,7 +130,7 @@ current_node$ = 40
 payload$ = 48
 list$ = 80
 index$ = 88
-?list_remove@@YAPEAXPEAU_list_@@I@Z PROC		; list_remove
+list_remove PROC
 
 ; 61   : void* list_remove(list_t* list, unsigned int index) {
 
@@ -279,7 +279,7 @@ $LN10@list_remov:
 
 	add	rsp, 72					; 00000048H
 	ret	0
-?list_remove@@YAPEAXPEAU_list_@@I@Z ENDP		; list_remove
+list_remove ENDP
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\utils\lnklist.cpp
@@ -288,7 +288,7 @@ current_data$ = 32
 current_entry$1 = 40
 list$ = 64
 data$ = 72
-?list_add@@YAXPEAU_list_@@PEAX@Z PROC			; list_add
+list_add PROC
 
 ; 24   : void list_add(list_t* list, void* data) {
 
@@ -392,13 +392,13 @@ $LN3@list_add:
 
 	add	rsp, 56					; 00000038H
 	ret	0
-?list_add@@YAXPEAU_list_@@PEAX@Z ENDP			; list_add
+list_add ENDP
 _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\utils\lnklist.cpp
 _TEXT	SEGMENT
 list$ = 32
-?initialize_list@@YAPEAU_list_@@XZ PROC			; initialize_list
+initialize_list PROC
 
 ; 16   : list_t* initialize_list() {
 
@@ -429,6 +429,6 @@ $LN3:
 
 	add	rsp, 56					; 00000038H
 	ret	0
-?initialize_list@@YAPEAU_list_@@XZ ENDP			; initialize_list
+initialize_list ENDP
 _TEXT	ENDS
 END

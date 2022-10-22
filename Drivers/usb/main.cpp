@@ -247,6 +247,8 @@ AU_EXTERN AU_EXPORT int AuDriverMain() {
 	/* Reset the XHCI controller */
 	xhci_reset(usb_device);
 	
+	/* initialize the slot list */
+	usb_device->slot_list = initialize_list();
 	
 	uint32_t cfg = op->op_config;
 	cfg &= ~0xFF;

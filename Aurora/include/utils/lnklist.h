@@ -20,6 +20,7 @@
 #define __WIN_H__
 
 #include <stdint.h>
+#include <aurora.h>
 
 typedef struct _data_ {
 	_data_ *next;
@@ -33,8 +34,8 @@ typedef struct _list_ {
 	dataentry *entry_current;
 }list_t;
 
-extern list_t* initialize_list();
-extern void list_add (list_t* list, void* data);
-extern void* list_remove(list_t* list, unsigned int);
-extern void * list_get_at(list_t* list, unsigned int index);
+AU_EXTERN AU_EXPORT list_t* initialize_list();
+AU_EXTERN AU_EXPORT void list_add (list_t* list, void* data);
+AU_EXTERN AU_EXPORT void* list_remove(list_t* list, unsigned int);
+AU_EXTERN AU_EXPORT void * list_get_at(list_t* list, unsigned int index);
 #endif
