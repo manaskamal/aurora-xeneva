@@ -59,15 +59,15 @@ shirq_t *shdev;
 
 uint8_t usb_thread_msg;
 uint8_t port_num;
-//thread_t* usb_thread;
-//xhci_trb_t *usb_thread_trb;
 
+/* Main USB thread which is responsible for handling 
+ * device connects/disconnects event and initializing the 
+ * specific changed port 
+ */
 void AuUSBThread() {
-	printf ("AuUSBThread \n");
 	while(1) {
 		if (usb_thread_msg == USB_THREAD_MSG_PORT_CHANGE) {
-			_debug_print_ ("Port connected ->%d \n", port_num);
-			xhci_port_initialize_by_num(usb_device,port_num);
+			xhci_port_initialize(usb_device,port_num);
 			usb_thread_msg = 0;
 		}
 		block_thread(get_current_thread());
@@ -75,7 +75,12 @@ void AuUSBThread() {
 	}
 }
 
-
+/*
+ * AuUSBInterrupt -- The main xhci interrupt 
+ * hanlder
+ * @param v -- vector number passed by system
+ * @param p -- pointer passed by system
+ */
 void AuUSBInterrupt(size_t v, void* p) {
 	AuDisableInterupts();
 
@@ -101,8 +106,6 @@ void AuUSBInterrupt(size_t v, void* p) {
 				usb_device->poll_return_trb_type = TRB_EVENT_TRANSFER;
 				usb_device->trb_event_index = usb_device->evnt_ring_index;
 				xhci_trb_t *trb = (xhci_trb_t*)&evt[usb_device->evnt_ring_index];
-				_debug_print_ ("Endpoint id -> %d, TRB Pointer -> %x \r\n",((trb->trb_control >> 16) & 0xff), 
-					trb->trb_param_1 | trb->trb_param_2);
 			}
 
 			/* New PORT STATUS CHANGE Event */
@@ -116,7 +119,6 @@ void AuUSBInterrupt(size_t v, void* p) {
 					unblock_thread (usb_device->usb_thread);
 					_debug_print_ ("Unblocked thread -> %x \r\n", usb_device->usb_thread);
 				}
-			//unblock_thread(usb_thread);
 			}
 			
 
@@ -126,8 +128,7 @@ void AuUSBInterrupt(size_t v, void* p) {
 				usb_device->poll_return_trb_type = TRB_EVENT_CMD_COMPLETION;
 				usb_device->trb_event_index = usb_device->evnt_ring_index;
 				xhci_trb_t *trb = (xhci_trb_t*)&evt[usb_device->evnt_ring_index];
-				_debug_print_ ("Event available -> %d , slot_id -> %d, index -> %d \r\n", usb_device->event_available, ((trb->trb_control>>24) & 0xff),
-					usb_device->evnt_ring_index);
+
 			}
 
 		
@@ -273,7 +274,7 @@ AU_EXTERN AU_EXPORT int AuDriverMain() {
 	xhci_send_noop_cmd(usb_device);
 
 	/* Initialize all ports */
-	xhci_port_initialize(usb_device);
+	xhci_start_default_ports(usb_device);
 	printf ("Ports initialized \n");
 
 	/* Disable all interrupts again because 
@@ -298,9 +299,6 @@ AU_EXTERN AU_EXPORT int AuDriverMain() {
 
 	AuDisableInterupts();
 
-	/*
-	 * Here we need to initialize an USB3 kernel thread
-	 */
 
 	return 0;
 }

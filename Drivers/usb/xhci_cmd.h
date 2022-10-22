@@ -32,7 +32,7 @@
 
 #include <stdint.h>
 #include "xhci.h"
-#include "usb_def.h"
+#include "usb_std_def.h"
 
 /* Standard XHCI defined Transfer/Command/Event 
  * TRB type values 

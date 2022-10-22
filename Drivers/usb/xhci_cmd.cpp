@@ -28,7 +28,7 @@
  **/
 
 #include "xhci_cmd.h"
-#include "usb_def.h"
+#include "usb_std_def.h"
 #include "xhci.h"
 
 /*
@@ -113,7 +113,7 @@ void xhci_send_address_device (usb_dev_t* dev, uint8_t bsr, uint64_t input_ctx_p
 void xhci_send_control_cmd (usb_dev_t* dev,xhci_slot_t* slot,uint8_t slot_id, const USB_REQUEST_PACKET *request, uint64_t buffer_addr, const size_t len) {
 	xhci_create_setup_trb(slot,request->request_type, request->request, request->value, request->index, request->length, 3);
 	xhci_create_data_trb(slot,buffer_addr,len,true);
-	xhci_create_status_trb(slot,false);
+	xhci_create_status_trb(slot,true);
 	xhci_ring_doorbell_slot(dev,slot_id,XHCI_DOORBELL_ENDPOINT_0);
 	//xhci_ring_doorbell(dev);
 }

@@ -420,14 +420,16 @@ void xhci_ring_doorbell(usb_dev_t* dev);
 void xhci_ring_doorbell_slot(usb_dev_t* dev, uint8_t slot, uint32_t endpoint);
 
 /*
- * xhci_port_initialize -- initializes all powered ports
+ * xhci_port_initialize -- initializes a specific port
  * @param dev -- Pointer to USB device structures
+ * @param port -- number of the specific port
  */
-extern void xhci_port_initialize (usb_dev_t *dev);
+extern void xhci_port_initialize (usb_dev_t *dev, unsigned int port);
 
 /*
- * xhci_port_initialize_by_num -- initializes a specific port
+ * xhci_start_default_ports -- initializes all default powered ports
  * @param dev -- Pointer to USB device structures
  */
-extern void xhci_port_initialize_by_num (usb_dev_t *dev, unsigned int port);
+extern void xhci_start_default_ports (usb_dev_t *dev);
+
 #endif

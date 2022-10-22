@@ -4,11 +4,12 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="xhci.cpp" />
     <ClCompile Include="xhci_cmd.cpp" />
+    <ClCompile Include="usb_std_rq.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="xhci.h" />
     <ClInclude Include="xhci_cmd.h" />
-    <ClInclude Include="usb_def.h" />
     <ClInclude Include="usb_thr.h" />
+    <ClInclude Include="usb_std_def.h" />
   </ItemGroup>
 </Project>

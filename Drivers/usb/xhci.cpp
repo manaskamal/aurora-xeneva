@@ -38,7 +38,7 @@
 #include <usb.h>
 #include "xhci_cmd.h"
 #include <hal.h>
-#include "usb_def.h"
+#include "usb_std_def.h"
 
 
 
@@ -169,8 +169,6 @@ xhci_slot_t* xhci_create_device_ctx (usb_dev_t* dev, uint8_t slot_num, uint8_t p
 	*raw_offset<volatile uint32_t*>(input_ctx,0x20) = USB_SLOT_CTX_DWORD0(1,0,0,port_speed,0);
 	*raw_offset<volatile uint32_t*>(input_ctx,0x20 + 4) = USB_SLOT_CTX_DWORD1(0,root_port_num,0);
 
-	_debug_print_ ("******////USB DATA////****** -> %x , %x \r\n", (*raw_offset<volatile uint32_t*>(input_ctx, 0x20 + 4)),USB_SLOT_CTX_DWORD1(0,root_port_num,0));
-
 
 	/* initialize the endpoint 0 ctx here */
 	*raw_offset<volatile uint32_t*>(input_ctx,0x40) = USB_ENDPOINT_CTX_DWORD0(0,0,0,0,0,0);
@@ -199,8 +197,6 @@ xhci_slot_t* xhci_create_device_ctx (usb_dev_t* dev, uint8_t slot_num, uint8_t p
 
 
 	/* Here we need an function, which will issues commands to this slot */
-	/* (Incomplete) */
-	_debug_print_ ("USB: Sending SET_ADDRESS command to slot -> %d \r\n", slot_num);
 	xhci_send_address_device(dev,0,v2p(input_ctx),slot_num);
 
 
@@ -208,7 +204,6 @@ xhci_slot_t* xhci_create_device_ctx (usb_dev_t* dev, uint8_t slot_num, uint8_t p
 	if (idx != -1) {
 		xhci_event_trb_t *evt = (xhci_event_trb_t*)dev->event_ring_segment;
 		xhci_trb_t *trb = (xhci_trb_t*)evt;
-		_debug_print_ ("[USB]: SET_ADDRESS Event received -> %d \r\n",evt[idx].trbType);
 	}
 
 	return slot;
@@ -422,7 +417,11 @@ int xhci_poll_event (usb_dev_t* usb_device, int trb_type) {
 	for (;;) {
 		if (usb_device->event_available && usb_device->poll_return_trb_type == trb_type) {
 				usb_device->event_available = false;
-				_debug_print_ ("TRB event idx-> %d \r\n", usb_device->trb_event_index);
+			
+				/* here we need a delay, while using VirtualBox */
+				for (int i = 0; i < 10000000; i++)
+					;
+
 				int idx = usb_device->trb_event_index;
 				usb_device->trb_event_index = -1;
 				usb_device->poll_return_trb_type = -1;
@@ -472,92 +471,19 @@ void xhci_port_reset (xhci_port_regs_t *this_port) {
 
 
 /*
- * xhci_port_initialize -- initializes all powered ports
+ * xhci_port_initialize -- initializes a specific port
  * @param dev -- Pointer to USB device structures
+ * @param port -- number of the port
  */
-void xhci_port_initialize (usb_dev_t *dev) {
-	for (unsigned int i = 1; i <= dev->num_ports; i++) {
-		xhci_port_regs_t *this_port = &dev->ports[i - 1];
-		if ((this_port->port_sc & 1)) {	
-			
-			xhci_port_reset(this_port);
-
-			uint8_t port_speed = (this_port->port_sc >> 10) & 0xf;
-
-			for (int i = 0; i < 1000000; i++)
-				;
-	
-			uint8_t slot_id = 0;
-
-			/* Enable slot command */
-			xhci_enable_slot(dev,0);
-			int idx = xhci_poll_event(dev,TRB_EVENT_CMD_COMPLETION);
-		
-			if (idx != -1) {
-				xhci_event_trb_t *evt = (xhci_event_trb_t*)dev->event_ring_segment;
-				xhci_trb_t *trb = (xhci_trb_t*)evt;
-				slot_id = (trb[idx].trb_control >> 24);
-				printf ("Slot id -> %d \n", slot_id);
-			}
-
-			if (slot_id == 0)
-				continue;
-			
-			/* After getting a device slot, 
-			 * allocate device slot data structures
-			 */
-			xhci_slot_t* slot = xhci_create_device_ctx(dev,slot_id,port_speed,i);
-			
-			//this_port->port_sc |= (1<<9);
-
-			uint64_t* buffer = (uint64_t*)p2v((uint64_t)AuPmmngrAlloc());
-			memset(buffer, 0, 4096);
-
-			USB_REQUEST_PACKET pack;
-			pack.request_type = USB_BM_REQUEST_INPUT | USB_BM_REQUEST_STANDARD | USB_BM_REQUEST_DEVICE;
-			pack.request = USB_BREQUEST_GET_DESCRIPTOR;
-			pack.value = USB_DESCRIPTOR_WVALUE(USB_DESCRIPTOR_DEVICE, 0);
-			pack.index = 0;
-			pack.length = 8;
-
-
-			xhci_send_control_cmd(dev,slot, slot_id, &pack,v2p((uint64_t)buffer), 8);
-
-	
-			int t_idx = xhci_poll_event(dev,TRB_EVENT_TRANSFER);
-			if (t_idx != -1) {
-				xhci_event_trb_t *evt = (xhci_event_trb_t*)dev->event_ring_segment;
-				xhci_trb_t *trb = (xhci_trb_t*)evt;
-				_debug_print_("Control command event received %d \r\n", evt[t_idx].trbType);
-			}
-
-			
-			usb_dev_desc_t *dev_desc = (usb_dev_desc_t*)buffer;
-			if (dev_desc->bDeviceClass == 0x09) 
-				printf ("[USB3]: USB Hub, speed: %s, wPacketSz-> %d\n", xhci_get_port_speed(port_speed), dev_desc->bMaxPacketSize0);
-			else
-				printf ("[USB3]: bDevice Class -> %x, wPacketSz -> %d\n", dev_desc->bDeviceClass, dev_desc->bMaxPacketSize0);
-
-		}
-	}
-
-}
-
-
-
-/*
- * xhci_port_initialize_by_num -- initializes a specific port
- * @param dev -- Pointer to USB device structures
- */
-void xhci_port_initialize_by_num (usb_dev_t *dev, unsigned int port) {
+void xhci_port_initialize (usb_dev_t *dev, unsigned int port) {
 	xhci_port_regs_t *this_port = &dev->ports[port - 1];
+
 	if ((this_port->port_sc & 1)) {	
 
 		/* Reset the port */
 		xhci_port_reset(this_port);
 
 		uint8_t port_speed = (this_port->port_sc >> 10) & 0xf;
-			//printf ("Port Num -> %d, Port Speed -> %s \n", i, xhci_get_port_speed(port_speed));
 			
 		uint8_t slot_id = 0;
 
@@ -568,8 +494,6 @@ void xhci_port_initialize_by_num (usb_dev_t *dev, unsigned int port) {
 			xhci_event_trb_t *evt = (xhci_event_trb_t*)dev->event_ring_segment;
 			xhci_trb_t *trb = (xhci_trb_t*)evt;
 			slot_id = (trb[idx].trb_control >> 24);
-			printf ("Event received -> %d, idx -> %d \r\n",evt[idx].trbType, idx);
-			printf ("Slot id -> %d \n", slot_id);
 		}
 
 		if (slot_id == 0)
@@ -581,22 +505,11 @@ void xhci_port_initialize_by_num (usb_dev_t *dev, unsigned int port) {
 		xhci_slot_t* slot = xhci_create_device_ctx(dev,slot_id,port_speed,port);
 
 		this_port->port_sc |= (1<<9);
-			/*printf ("Port Initialized %d, Power -> %d, PED -> %d \n", i, ((this_port->port_sc & (1<<9)) & 0xff),
-				((this_port->port_sc & (1<<1)) & 0xff));*/
 
 		uint64_t* buffer = (uint64_t*)p2v((uint64_t)AuPmmngrAlloc());
 		memset(buffer, 0, 4096);
 
-		USB_REQUEST_PACKET pack;
-		pack.request_type = USB_BM_REQUEST_INPUT | USB_BM_REQUEST_STANDARD | USB_BM_REQUEST_DEVICE;
-		pack.request = USB_BREQUEST_GET_DESCRIPTOR;
-		pack.value = USB_DESCRIPTOR_WVALUE(USB_DESCRIPTOR_DEVICE, 0);
-		pack.index = 0;
-		pack.length = 8;
-
-
-		_debug_print_ ("Sending USB CONTROL commands \r\n");
-		xhci_send_control_cmd(dev,slot, slot_id, &pack, v2p((uint64_t)buffer), 8);
+		usb_get_device_desc(dev,slot,slot_id,v2p((uint64_t)buffer),18);
 
 		for (int i = 0; i < 1000000; i++);
 	
@@ -604,7 +517,6 @@ void xhci_port_initialize_by_num (usb_dev_t *dev, unsigned int port) {
 		if (t_idx != -1) {
 				xhci_event_trb_t *evt = (xhci_event_trb_t*)dev->event_ring_segment;
 				xhci_trb_t *trb = (xhci_trb_t*)evt;
-				_debug_print_("Control command event received %d \r\n", evt[t_idx].trbType);
 			}
 
 			
@@ -613,9 +525,41 @@ void xhci_port_initialize_by_num (usb_dev_t *dev, unsigned int port) {
 			printf ("[USB3]: USB Hub, speed: %s, wPacketSz -> %d \n", xhci_get_port_speed(port_speed), dev_desc->bMaxPacketSize0);
 
 		}else {
-			printf ("Buffer desc -> %x \n", v2p((uint64_t)buffer));
-			printf ("New Device %x, speed: %s , wPacketSz-> %d\n", dev_desc->bDeviceClass,xhci_get_port_speed(port_speed), dev_desc->bMaxPacketSize0);
-			printf ("New Device Vendor id -> %x, Product Id -> %x \n", dev_desc->idVendor, dev_desc->idProduct);
+			printf ("[USB3]: Device Vendor id -> %x, Product Id -> %x, speed -> %s \n", dev_desc->idVendor, dev_desc->idProduct,
+				xhci_get_port_speed(port_speed));
+		}
+
+		uint64_t* string_buf = (uint64_t*)p2v((uint64_t)AuPmmngrAlloc());
+		memset(string_buf, 0, 4096);
+		
+		usb_get_string_desc(dev,slot,slot_id,v2p((uint64_t)string_buf),dev_desc->iManufacturer);
+		t_idx = -1;
+		t_idx = xhci_poll_event(dev,TRB_EVENT_TRANSFER);
+		if (t_idx != -1) {
+			xhci_event_trb_t *evt = (xhci_event_trb_t*)dev->event_ring_segment;
+			xhci_trb_t *trb = (xhci_trb_t*)evt;
+		}
+
+		uint16_t* string = (uint16_t*)string_buf;
+		for (int l = 0; l < 10; l++)
+			printf ("%c", string[l]);
+		printf ("\n");
+	}
+}
+
+/*
+ * xhci_port_initialize -- initializes all powered ports
+ * @param dev -- Pointer to USB device structures
+ */
+void xhci_start_default_ports (usb_dev_t *dev) {
+	for (unsigned int i = 1; i <= dev->num_ports; i++) {
+		xhci_port_regs_t *this_port = &dev->ports[i - 1];
+		if ((this_port->port_sc & 1)) {	
+			xhci_port_initialize(dev,i);
 		}
 	}
 }
+
+
+
+

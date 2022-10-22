@@ -31,6 +31,7 @@
 #define __USB_DEF_H__
 
 #include <stdint.h>
+#include "xhci.h"
 
 #define USB_AUDIO_DEV_CLASS   0x01
 #define USB_COMMUNICATION_CDC_CTRL_CLASS 0x02
@@ -79,5 +80,27 @@ typedef struct _dev_desc_ {
 	uint8_t bNumConfigurations;
 }usb_dev_desc_t;
 #pragma pack(pop)
+
+
+/*
+ * usb_get_device_desc -- sends USB_GET_DESCRIPTOR request to specific device
+ * @param dev -- Pointer to usb device structure
+ * @param slot -- Pointer to usb slot data structure
+ * @param slot_id -- Slot id of the device
+ * @param buffer -- address of the buffer where device descriptor will be written
+ * @param len -- number of bytes needs to be requested
+ */
+extern void usb_get_device_desc (usb_dev_t *dev, xhci_slot_t *slot,uint8_t slot_id, uint64_t buffer,uint16_t len);
+
+
+/*
+ * usb_get_string_desc -- request a string descriptor to specific device
+ * @param dev -- Pointer to usb device structure
+ * @param slot -- Pointer to usb slot data structure
+ * @param slot_id -- Slot id of the device
+ * @param buffer -- address of the buffer where device descriptor will be written
+ * @param id-- type of the string needs to be requested
+ */
+extern void usb_get_string_desc (usb_dev_t *dev, xhci_slot_t *slot, uint8_t slot_id, uint64_t buffer, uint16_t id);
 
 #endif

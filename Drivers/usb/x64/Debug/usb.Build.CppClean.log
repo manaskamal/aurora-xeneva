@@ -1,4 +1,5 @@
 E:\XENEVA PROJECT\XENEVA\DRIVERS\USB\X64\DEBUG\MAIN.OBJ
+E:\XENEVA PROJECT\XENEVA\DRIVERS\USB\X64\DEBUG\USB_STD_RQ.OBJ
 E:\XENEVA PROJECT\XENEVA\DRIVERS\USB\X64\DEBUG\XHCI.OBJ
 E:\XENEVA PROJECT\XENEVA\DRIVERS\USB\X64\DEBUG\XHCI_CMD.OBJ
 E:\XENEVA PROJECT\XENEVA\DRIVERS\USB\X64\DEBUG\VC110.PDB
@@ -7,6 +8,7 @@ F:\USB.MAP
 E:\Xeneva Project\Xeneva\Drivers\usb\x64\Debug\usb.lib
 E:\Xeneva Project\Xeneva\Drivers\usb\x64\Debug\usb.exp
 E:\Xeneva Project\Xeneva\Drivers\usb\x64\Debug\main.obj
+E:\Xeneva Project\Xeneva\Drivers\usb\x64\Debug\usb_std_rq.obj
 E:\Xeneva Project\Xeneva\Drivers\usb\x64\Debug\xhci.obj
 E:\Xeneva Project\Xeneva\Drivers\usb\x64\Debug\xhci_cmd.obj
 E:\Xeneva Project\Xeneva\Drivers\usb\x64\Debug\cl.command.1.tlog
