@@ -301,6 +301,5 @@ AU_EXTERN AU_EXPORT int AuDriverMain() {
 
 	AuDisableInterupts();
 
-
 	return 0;
 }

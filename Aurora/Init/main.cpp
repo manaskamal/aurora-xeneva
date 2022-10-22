@@ -53,8 +53,9 @@
  */
 XE_EXTERN XE_EXPORT int XeMain (int argc, char* argv[]) {
 	
+	sys_print_text ("[init] init process is running \n");
 	/* Start the window manager */
-	sys_print_text ("[init]: Starting window manager... \r\n");
+	sys_print_text ("[init]: Starting window manager... \n");
 	int priwm_pid = create_process("/priwm.exe", "priwm");
 	sys_print_text ("[init]: window manager started at pid %d \r\n", priwm_pid);
 
