@@ -66,6 +66,7 @@ uint8_t port_num;
  */
 void AuUSBThread() {
 	while(1) {
+		_debug_print_ ("USB Thread polling \r\n");
 		if (usb_thread_msg == USB_THREAD_MSG_PORT_CHANGE) {
 			xhci_port_initialize(usb_device,port_num);
 			usb_thread_msg = 0;
@@ -116,8 +117,11 @@ void AuUSBInterrupt(size_t v, void* p) {
 				if (usb_device->initialized) {
 					usb_thread_msg = USB_THREAD_MSG_PORT_CHANGE;
 					port_num = event[usb_device->evnt_ring_index].trb_param_1 >> 24;
-					unblock_thread (usb_device->usb_thread);
-					_debug_print_ ("Unblocked thread -> %x \r\n", usb_device->usb_thread);
+
+					/* Unblock the usb thread, if it's blocked */
+					if (usb_device->usb_thread->state == THREAD_STATE_BLOCKED)
+						unblock_thread (usb_device->usb_thread);
+
 				}
 			}
 			

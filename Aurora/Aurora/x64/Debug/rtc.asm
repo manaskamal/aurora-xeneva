@@ -40,7 +40,6 @@ EXTRN	x64_inportb:PROC
 EXTRN	x64_outportb:PROC
 EXTRN	AuInterruptEnd:PROC
 EXTRN	AuInterruptSet:PROC
-EXTRN	?pri_put_message@@YAXPEAU_pri_event_@@@Z:PROC	; pri_put_message
 _BSS	SEGMENT
 bcd	DB	01H DUP (?)
 _BSS	ENDS
@@ -61,7 +60,7 @@ $pdata$?AuRTCReadDateTime@@YAXXZ DD imagerel $LN6
 	DD	imagerel $LN6+455
 	DD	imagerel $unwind$?AuRTCReadDateTime@@YAXXZ
 $pdata$?AuRTCClockUpdate@@YAX_KPEAX@Z DD imagerel $LN6
-	DD	imagerel $LN6+186
+	DD	imagerel $LN6+94
 	DD	imagerel $unwind$?AuRTCClockUpdate@@YAX_KPEAX@Z
 pdata	ENDS
 xdata	SEGMENT
@@ -75,17 +74,16 @@ $unwind$?AuIsUpdatingRTC@@YAHXZ DD 010401H
 	DD	06204H
 $unwind$?AuRTCReadDateTime@@YAXXZ DD 010401H
 	DD	08204H
-$unwind$?AuRTCClockUpdate@@YAX_KPEAX@Z DD 021101H
-	DD	01d0111H
+$unwind$?AuRTCClockUpdate@@YAX_KPEAX@Z DD 010e01H
+	DD	0620eH
 xdata	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\drivers\rtc.cpp
 _TEXT	SEGMENT
 tv69 = 32
 ready$ = 33
-msg$ = 48
-s$ = 240
-p$ = 248
+s$ = 64
+p$ = 72
 ?AuRTCClockUpdate@@YAX_KPEAX@Z PROC			; AuRTCClockUpdate
 
 ; 85   : void AuRTCClockUpdate(size_t s, void* p) {
@@ -93,7 +91,7 @@ p$ = 248
 $LN6:
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
-	sub	rsp, 232				; 000000e8H
+	sub	rsp, 56					; 00000038H
 
 ; 86   : 	x64_cli ();
 
@@ -130,66 +128,30 @@ $LN1@AuRTCClock:
 ; 91   : 	}
 ; 92   : 
 ; 93   : 	
-; 94   : 	pri_event_t msg;
-; 95   : 	msg.type = CLOCK_MESSAGE;
-
-	mov	BYTE PTR msg$[rsp], 10
-
-; 96   : 	msg.dword = second;
-
-	movzx	eax, BYTE PTR ?second@@3EA		; second
-	mov	DWORD PTR msg$[rsp+4], eax
-
-; 97   : 	msg.dword2 = minute;
-
-	movzx	eax, BYTE PTR ?minute@@3EA		; minute
-	mov	DWORD PTR msg$[rsp+8], eax
-
-; 98   : 	msg.dword3 = hour;
-
-	movzx	eax, BYTE PTR ?hour@@3EA		; hour
-	mov	DWORD PTR msg$[rsp+12], eax
-
-; 99   : 	msg.dword5 = day;
-
-	movzx	eax, BYTE PTR ?day@@3EA			; day
-	mov	DWORD PTR msg$[rsp+20], eax
-
-; 100  : 	msg.dword6 = month;
-
-	movzx	eax, BYTE PTR ?month@@3EA		; month
-	mov	DWORD PTR msg$[rsp+24], eax
-
-; 101  : 	msg.dword7 = year;
-
-	movzx	eax, BYTE PTR ?year@@3EA		; year
-	mov	DWORD PTR msg$[rsp+28], eax
-
-; 102  : 	msg.to_id = 3; //the dock bar
-
-	mov	BYTE PTR msg$[rsp+1], 3
-
+; 94   : 	//pri_event_t msg;
+; 95   : 	//msg.type = CLOCK_MESSAGE;
+; 96   : 	//msg.dword = second;
+; 97   : 	//msg.dword2 = minute;
+; 98   : 	//msg.dword3 = hour;
+; 99   : 	//msg.dword5 = day;
+; 100  : 	//msg.dword6 = month;
+; 101  : 	//msg.dword7 = year;
+; 102  : 	//msg.to_id = 3; //the dock bar
 ; 103  : 
-; 104  : 	pri_put_message(&msg);
-
-	lea	rcx, QWORD PTR msg$[rsp]
-	call	?pri_put_message@@YAXPEAU_pri_event_@@@Z ; pri_put_message
-
-; 105  : 
-; 106  : 
-; 107  : 	x64_sti();
-
-	call	x64_sti
-
-; 108  : 	//!send a EOI to apic
-; 109  : 	AuInterruptEnd(8);
+; 104  : 	//pri_put_message(&msg);
+; 105  : 	//!send a EOI to apic
+; 106  : 	AuInterruptEnd(8);
 
 	mov	ecx, 8
 	call	AuInterruptEnd
 
-; 110  : }
+; 107  : 	x64_sti();
 
-	add	rsp, 232				; 000000e8H
+	call	x64_sti
+
+; 108  : }
+
+	add	rsp, 56					; 00000038H
 	ret	0
 ?AuRTCClockUpdate@@YAX_KPEAX@Z ENDP			; AuRTCClockUpdate
 _TEXT	ENDS
@@ -488,11 +450,11 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 AuGetMonth PROC
 
-; 170  : 	return month;
+; 168  : 	return month;
 
 	movzx	eax, BYTE PTR ?month@@3EA		; month
 
-; 171  : }
+; 169  : }
 
 	ret	0
 AuGetMonth ENDP
@@ -502,11 +464,11 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 AuGetCentury PROC
 
-; 150  : 	return century;
+; 148  : 	return century;
 
 	movzx	eax, BYTE PTR ?century@@3EA		; century
 
-; 151  : }
+; 149  : }
 
 	ret	0
 AuGetCentury ENDP
@@ -516,11 +478,11 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 AuGetMinutes PROC
 
-; 154  : 	return minute;
+; 152  : 	return minute;
 
 	movzx	eax, BYTE PTR ?minute@@3EA		; minute
 
-; 155  : }
+; 153  : }
 
 	ret	0
 AuGetMinutes ENDP
@@ -530,11 +492,11 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 AuGetHour PROC
 
-; 166  : 	return hour;
+; 164  : 	return hour;
 
 	movzx	eax, BYTE PTR ?hour@@3EA		; hour
 
-; 167  : }
+; 165  : }
 
 	ret	0
 AuGetHour ENDP
@@ -544,11 +506,11 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 AuGetDay PROC
 
-; 162  : 	return day;
+; 160  : 	return day;
 
 	movzx	eax, BYTE PTR ?day@@3EA			; day
 
-; 163  : }
+; 161  : }
 
 	ret	0
 AuGetDay ENDP
@@ -558,11 +520,11 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 AuGetSecond PROC
 
-; 158  : 	return second;
+; 156  : 	return second;
 
 	movzx	eax, BYTE PTR ?second@@3EA		; second
 
-; 159  : }
+; 157  : }
 
 	ret	0
 AuGetSecond ENDP
@@ -572,11 +534,11 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 AuGetYear PROC
 
-; 146  : 	return year;
+; 144  : 	return year;
 
 	movzx	eax, BYTE PTR ?year@@3EA		; year
 
-; 147  : }
+; 145  : }
 
 	ret	0
 AuGetYear ENDP
@@ -588,13 +550,13 @@ status$ = 32
 tv81 = 36
 ?AuInitializeRTC@@YAXXZ PROC				; AuInitializeRTC
 
-; 115  : void AuInitializeRTC () {
+; 113  : void AuInitializeRTC () {
 
 $LN5:
 	sub	rsp, 56					; 00000038H
 
-; 116  : 
-; 117  : 	century = year = month = day = 0;
+; 114  : 
+; 115  : 	century = year = month = day = 0;
 
 	mov	BYTE PTR ?day@@3EA, 0			; day
 	movzx	eax, BYTE PTR ?day@@3EA			; day
@@ -604,7 +566,7 @@ $LN5:
 	movzx	eax, BYTE PTR ?year@@3EA		; year
 	mov	BYTE PTR ?century@@3EA, al		; century
 
-; 118  :     hour = minute = second = 0;
+; 116  :     hour = minute = second = 0;
 
 	mov	BYTE PTR ?second@@3EA, 0		; second
 	movzx	eax, BYTE PTR ?second@@3EA		; second
@@ -612,38 +574,38 @@ $LN5:
 	movzx	eax, BYTE PTR ?minute@@3EA		; minute
 	mov	BYTE PTR ?hour@@3EA, al			; hour
 
-; 119  : 
-; 120  : 	unsigned char status = AuGetRTCRegister(0x0B);
+; 117  : 
+; 118  : 	unsigned char status = AuGetRTCRegister(0x0B);
 
 	mov	ecx, 11
 	call	?AuGetRTCRegister@@YAEH@Z		; AuGetRTCRegister
 	mov	BYTE PTR status$[rsp], al
 
-; 121  : 	status |= 0x02;
+; 119  : 	status |= 0x02;
 
 	movzx	eax, BYTE PTR status$[rsp]
 	or	eax, 2
 	mov	BYTE PTR status$[rsp], al
 
-; 122  : 	status |= 0x10;
+; 120  : 	status |= 0x10;
 
 	movzx	eax, BYTE PTR status$[rsp]
 	or	eax, 16
 	mov	BYTE PTR status$[rsp], al
 
-; 123  : 	status &= ~0x20;
+; 121  : 	status &= ~0x20;
 
 	movzx	eax, BYTE PTR status$[rsp]
 	and	eax, -33				; ffffffffffffffdfH
 	mov	BYTE PTR status$[rsp], al
 
-; 124  : 	status &= ~0x40;
+; 122  : 	status &= ~0x40;
 
 	movzx	eax, BYTE PTR status$[rsp]
 	and	eax, -65				; ffffffffffffffbfH
 	mov	BYTE PTR status$[rsp], al
 
-; 125  : 	bcd = !(status & 0x04);
+; 123  : 	bcd = !(status & 0x04);
 
 	movzx	eax, BYTE PTR status$[rsp]
 	and	eax, 4
@@ -657,35 +619,35 @@ $LN4@AuInitiali:
 	movzx	eax, BYTE PTR tv81[rsp]
 	mov	BYTE PTR bcd, al
 
-; 126  : 
-; 127  : 	//! Write status to rtc
-; 128  : 	x64_outportb (0x70, 0x0B);
+; 124  : 
+; 125  : 	//! Write status to rtc
+; 126  : 	x64_outportb (0x70, 0x0B);
 
 	mov	dl, 11
 	mov	cx, 112					; 00000070H
 	call	x64_outportb
 
-; 129  : 	x64_outportb (0x71, status);
+; 127  : 	x64_outportb (0x71, status);
 
 	movzx	edx, BYTE PTR status$[rsp]
 	mov	cx, 113					; 00000071H
 	call	x64_outportb
 
-; 130  : 
-; 131  : 	//! Read status from RTC
-; 132  : 	AuGetRTCRegister(0x0C);
+; 128  : 
+; 129  : 	//! Read status from RTC
+; 130  : 	AuGetRTCRegister(0x0C);
 
 	mov	ecx, 12
 	call	?AuGetRTCRegister@@YAEH@Z		; AuGetRTCRegister
 
-; 133  : 
-; 134  : 	AuRTCReadDateTime();
+; 131  : 
+; 132  : 	AuRTCReadDateTime();
 
 	call	?AuRTCReadDateTime@@YAXXZ		; AuRTCReadDateTime
 
-; 135  : 
-; 136  : 	//!register interrupt
-; 137  : 	AuInterruptSet(8,AuRTCClockUpdate, 8, false);
+; 133  : 
+; 134  : 	//!register interrupt
+; 135  : 	AuInterruptSet(8,AuRTCClockUpdate, 8, false);
 
 	xor	r9d, r9d
 	mov	r8b, 8
@@ -693,11 +655,11 @@ $LN4@AuInitiali:
 	mov	ecx, 8
 	call	AuInterruptSet
 
-; 138  : 
-; 139  : #ifdef USE_PIC
-; 140  : 	AuIrqMask(8,false);
-; 141  : #endif
-; 142  : }
+; 136  : 
+; 137  : #ifdef USE_PIC
+; 138  : 	AuIrqMask(8,false);
+; 139  : #endif
+; 140  : }
 
 	add	rsp, 56					; 00000038H
 	ret	0

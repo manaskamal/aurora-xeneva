@@ -138,7 +138,7 @@ $LN5@au_mmap:
 ; 70   : 	
 ; 71   : 	au_vm_area_t *vma = (au_vm_area_t*)malloc(sizeof(au_vm_area_t));
 
-	mov	ecx, 72					; 00000048H
+	mov	ecx, 80					; 00000050H
 	call	malloc
 	mov	QWORD PTR vma$[rsp], rax
 

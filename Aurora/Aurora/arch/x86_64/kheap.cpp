@@ -60,15 +60,18 @@ void AuHeapInitialize() {
  * au_split_block -- split block into two block
  */
 int au_split_block(meta_data_t* splitable, size_t req_size) {
+	
 	uint8_t* meta_block_a = (uint8_t*)splitable;	
 
 	uint8_t* new_block = (uint8_t*)(meta_block_a + sizeof(meta_data_t) + req_size);
 	meta_data_t* new_block_m = (meta_data_t*)new_block;
 	size_t size =  splitable->size - req_size - sizeof(meta_data_t);
 
+
 	uint64_t new_block_pos = (uint64_t)new_block;
 	if ((new_block_pos + req_size) > last_mark)
 		return 0;
+
 	
 	//new_block->free = true;
 	new_block_m->magic = MAGIC_FREE;
@@ -80,11 +83,14 @@ int au_split_block(meta_data_t* splitable, size_t req_size) {
 
 	new_block_m->size = size;
 	
+
 	splitable->size = req_size;
 	splitable->next = new_block_m;
 
+
 	if (last_block == splitable)
 		last_block = new_block_m;
+
 
 	return 1;
 }
@@ -138,7 +144,6 @@ void* malloc(size_t size) {
 	/* now search begins */
 	while(meta){
 		if (meta->magic == MAGIC_FREE) {
-		
 			if (meta->size > size) {
 				if (au_split_block(meta, size)){
 					meta->magic = MAGIC_USED;
@@ -166,6 +171,12 @@ void* malloc(size_t size) {
 		
 	}
 	return malloc(size);
+}
+
+void kheap_debug () {
+	for (meta_data_t *block = first_block; block != NULL; block = block->next) {
+		_debug_print_ ("Prev -> %x || Current -> %x | Next -> %x \r\n", block->prev, block, block->next);
+	}
 }
 
 /*
@@ -209,6 +220,7 @@ void free(void* ptr) {
 	uint8_t* actual_addr = (uint8_t*)ptr;
 	meta_data_t *meta = (meta_data_t*)(actual_addr - sizeof(meta_data_t));
 	meta->magic = MAGIC_FREE;
+	
 	/* merge it with 3 near blocks if they are free*/
 	merge_next(meta);
 	merge_prev(meta);

@@ -95,7 +95,7 @@ void remove_process (process_t *proc) {
  */
 process_t *find_process_by_thread (thread_t *thread) {
 	for (process_t *proc = process_head; proc != NULL; proc = proc->next) {
-		if (proc->thread_data_pointer == thread) {
+		if (proc->main_thread == thread) {
 			return proc;
 		}
 	}
@@ -175,12 +175,11 @@ void allocate_fd (thread_t *t) {
  */
 int AuCreateProcess(const char* filename, char* procname) {
 	//!allocate a data-structure for process 
-	_debug_print_ ("Creating Process \r\n");
-	process_t *process = (process_t*)malloc(sizeof(process_t)); //pmmngr_alloc();
+	
+	process_t *process = (process_t*)malloc(sizeof(process_t));
 	memset(process, 0,sizeof(process_t));
 	process->pid_t = pid;
 
-	_debug_print_ ("Process created -> %x \r\n",process);
 
 	//!open the process file-binary
 	char *fname = (char*)filename;
@@ -260,17 +259,6 @@ int AuCreateProcess(const char* filename, char* procname) {
 		}
 	}
 	
-	/*AuLibEntry_t *lib4 = AuGetSysLib("ft.dll");
-	printf ("FT Lib physc-> %d \n", lib4->phys_blocks_count);
-	if (lib4 != NULL) {
-		for (int i = 0; i < lib4->phys_blocks_count; i++) {
-			void* phys = (void*)p2v((size_t)AuPmmngrAlloc());
-			memcpy (phys, (void*)p2v(lib4->phys_start + i * 4096), 4096);
-			AuMapPageEx(cr3, v2p((size_t)phys), 0x100500000 + i * 4096, PAGING_USER);
-		}
-	}*/
-
-
 
 
 	uint64_t text_section_end = _image_base_ + position * 4096;
@@ -288,7 +276,6 @@ int AuCreateProcess(const char* filename, char* procname) {
 	uint64_t stack = (uint64_t)create_user_stack(process,cr3);
 
 	//!allocate current process
-	//strcpy (process->name,procname);
 	process->name = procname;
 	process->entry_point = ent;
 	process->num_thread = 0;
@@ -306,164 +293,14 @@ int AuCreateProcess(const char* filename, char* procname) {
 	//! add the process to process manager
 	process->threads[process->num_thread] = t;
 	process->num_thread++;
-	process->thread_data_pointer = t; //the root thread
+	process->main_thread = t; 
     add_process(process);
 
-	//free(file);
+	_debug_print_ ("***Process created \r\n");
 	return t->id;
 }
 
-/**
- * kill_process -- kills the running process
- */
-void kill_process () {
-	x64_cli();
-	thread_t * remove_thread = get_current_thread();
-	uint16_t t_id = remove_thread->id;
-	process_t *proc = get_current_process();
-	uint64_t  init_stack = proc->stack - (2*1024*1024);
-	uint64_t image_base = proc->image_base;
-	uint64_t *cr3 = (uint64_t*)remove_thread->frame.cr3;
-	
-	int timer = find_timer_id (remove_thread->id);
 
-	AuSoundDestroyDSP(t_id);
-
-	/** destroy the timer */
-	if (timer != -1) {
-		destroy_timer (timer);
-	}
-
-	/*Close all open dlls */
-	AuLibEntry_t *lib1 = AuGetSysLib("xewid.dll");
-	for (int i = 0; i < lib1->phys_blocks_count; i++)
-		AuUnmapPage(XNWID_BASE + i * 4096, true);
-
-	AuLibEntry_t *lib2 = AuGetSysLib("xnclib.dll");
-	for (int i = 0; i < lib2->phys_blocks_count; i++)
-		AuUnmapPage(XNCLIB_BASE + i * 4096, true);
-
-	AuLibEntry_t *lib3 = AuGetSysLib("xnacrl.dll");
-	for (int i = 0; i < lib3->phys_blocks_count; i++)
-		AuUnmapPage(XNACRL_BASE + i * 4096, true);
-
-
-	//!unmap the binary image
-	for (uint32_t i = 0; i < proc->image_size / 4096 + 1; i++) {
-	//	uint64_t virtual_addr = proc->image_base + (i * 4096);
-		_debug_print_ ("Freeing physical of image **** \r\n");
-		void* phys = AuGetPhysicalAddress((uint64_t)cr3,proc->image_base + i * 4096);
-		uint64_t physical_address = (uint64_t)v2p((uint64_t)phys);
-		_debug_print_ ("PHYSICAL ADD -> %x \r\n", physical_address);
-		if (physical_address != 0){
-			_debug_print_ ("****Image physical addr -> %x \r\n", physical_address);
-			AuPmmngrFree((void*)physical_address);
-		}
-	}
-	
-	//!unmap the runtime stack
-	for (int i = 0; i < (2*1024*1024) / 4096; i++) {
-		AuUnmapPage(init_stack + i * 4096, true);
-	}
-
-	for (int i = 0; i < proc->_heap_size_ / 4096; i++) {
-		void* phys = AuGetPhysicalAddress((uint64_t)cr3,PROCESS_HEAP_BREAK + i * 4096);
-		uint64_t physical_address = (uint64_t)v2p((uint64_t)phys);
-		if (physical_address != 0){
-			AuPmmngrFree((void*)physical_address);
-		}
-		//AuUnmapPage(PROCESS_HEAP_BREAK + i * 4096, true);
-	}
-	
-	AuPmmngrFree((void*)v2p((size_t)remove_thread->msg_box));
-	pri_loop_destroy_by_id (t_id);
-
-	AuCleanVMA(proc);
-	
-	/* Here we need to free all child threads */
-	for (int i = 1; i < proc->num_thread; i++) {
-		thread_t *killable = proc->threads[i];
-		free_kstack_child(cr3,killable->frame.kern_esp - 8192);
-		free(killable->fx_state);
-		uint64_t stack_location = (uint64_t)killable->user_stack;
-		stack_location += 1*1024*1024;
-		stack_location -= 2*1024*1024;
-		for (int i = 0; i < (2*1024*1024) / 4096; i++) {
-			void* phys = AuGetPhysicalAddress((uint64_t)cr3,stack_location + i * 4096);
-			uint64_t physical_address = (uint64_t)v2p((uint64_t)phys);
-			if (physical_address != 0){
-				AuPmmngrFree((void*)physical_address);
-			}
-		}
-		thread_t *t = thread_iterate_block_list(killable->id);
-		if (t != NULL){
-			unblock_thread(t);
-		}
-
-		task_delete(killable);
-		free(killable);
-	}
-	
-	free(remove_thread->fx_state);
-	free(proc->process_file);
-	remove_process (proc);
-	
-
-	task_delete (remove_thread);
-	free(remove_thread);
-
-	
-
-	free_kstack(cr3);
-	AuPmmngrFree((void*)cr3);
-}
-
-/**
- * kill_process_by_id -- kills a process by its id
- * @param id -- id of the thread to be killed
- */
-void kill_process_by_id (uint16_t id) {
-	x64_cli();
-	bool was_blocked = false;
-	thread_t * remove_thread = thread_iterate_ready_list(id);
-	if (remove_thread == NULL) {
-		remove_thread = (thread_t*)thread_iterate_block_list(id);
-		was_blocked = true;
-	}
-	process_t *proc = find_process_by_thread (remove_thread);
-
-	uint64_t  init_stack = proc->stack - 0x100000;
-	uint64_t image_base = proc->image_base;
-	size_t image_size = proc->image_size;
-	//uint64_t heap_base = (uint64_t)proc->user_heap_start;
-	uint64_t *cr3 = (uint64_t*)remove_thread->frame.cr3;
-
-	if (was_blocked)
-		unblock_thread(remove_thread);
-	remove_thread->state = THREAD_STATE_BLOCKED;
-	task_delete (remove_thread);
-	AuPmmngrFree(remove_thread);
-	remove_process (proc);
-
-	
-	//!unmap the runtime stack
-	for (int i = 0; i < 0x100000 / 4096; i++) {
-		AuUnmapPageEx(cr3,init_stack + i * 4096, true);
-	}
-
-	//!unmap the binary image
-	for (int i = 0; i < image_size / 4096; i++) {
-		uint64_t virtual_addr = image_base + (i * 4096);
-		AuUnmapPageEx(cr3, virtual_addr, true);
-	}
-
-	//!unmap user heap
-	/*for (int i = 0; i < 0xB01000 / 4096; i++) {
-		unmap_page_ex(cr3,heap_base + i * 4096, true);
-	}*/
-
-	AuPmmngrFree(cr3);
-}
 
 
 uint32_t fork () {

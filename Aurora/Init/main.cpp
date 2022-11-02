@@ -67,6 +67,7 @@ XE_EXTERN XE_EXPORT int XeMain (int argc, char* argv[]) {
 	sys_print_text ("[init]: dock manager started at pid %d \r\n", xedock_pid);
 
 	while(1) {
+		sys_print_text("init\r\n");
 		sys_wait();
 	}
 	return 0;

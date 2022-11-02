@@ -22,8 +22,8 @@ $pdata$?allocate_kstack@@YA_KPEA_K@Z DD imagerel $LN6
 $pdata$?allocate_kstack_child@@YA_KPEA_K@Z DD imagerel $LN6
 	DD	imagerel $LN6+132
 	DD	imagerel $unwind$?allocate_kstack_child@@YA_KPEA_K@Z
-$pdata$?free_kstack@@YAXPEA_K@Z DD imagerel $LN6
-	DD	imagerel $LN6+117
+$pdata$?free_kstack@@YAXPEA_K@Z DD imagerel $LN7
+	DD	imagerel $LN7+125
 	DD	imagerel $unwind$?free_kstack@@YAXPEA_K@Z
 $pdata$?free_kstack_child@@YAXPEA_K_K@Z DD imagerel $LN6
 	DD	imagerel $LN6+107
@@ -48,14 +48,14 @@ cr3$ = 64
 location$ = 72
 ?free_kstack_child@@YAXPEA_K_K@Z PROC			; free_kstack_child
 
-; 88   : void free_kstack_child (uint64_t *cr3, uint64_t location) {
+; 89   : void free_kstack_child (uint64_t *cr3, uint64_t location) {
 
 $LN6:
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 56					; 00000038H
 
-; 89   : 	for (int i = 0; i < 8192 / 4096; i++) {
+; 90   : 	for (int i = 0; i < 8192 / 4096; i++) {
 
 	mov	DWORD PTR i$1[rsp], 0
 	jmp	SHORT $LN3@free_kstac
@@ -67,7 +67,7 @@ $LN3@free_kstac:
 	cmp	DWORD PTR i$1[rsp], 2
 	jge	SHORT $LN1@free_kstac
 
-; 90   : 		void* p = AuGetPhysicalAddress((size_t)cr3,location + i * 4096);
+; 91   : 		void* p = AuGetPhysicalAddress((size_t)cr3,location + i * 4096);
 
 	mov	eax, DWORD PTR i$1[rsp]
 	imul	eax, 4096				; 00001000H
@@ -80,19 +80,19 @@ $LN3@free_kstac:
 	call	AuGetPhysicalAddress
 	mov	QWORD PTR p$2[rsp], rax
 
-; 91   : 		AuPmmngrFree((void*)v2p((size_t)p));
+; 92   : 		AuPmmngrFree((void*)v2p((size_t)p));
 
 	mov	rcx, QWORD PTR p$2[rsp]
 	call	v2p
 	mov	rcx, rax
 	call	AuPmmngrFree
 
-; 92   : 	}
+; 93   : 	}
 
 	jmp	SHORT $LN2@free_kstac
 $LN1@free_kstac:
 
-; 93   : }
+; 94   : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -102,14 +102,14 @@ _TEXT	ENDS
 ; File e:\xeneva project\xeneva\aurora\aurora\arch\x86_64\kstack.cpp
 _TEXT	SEGMENT
 i$1 = 32
-location$ = 40
-p$2 = 48
+p$2 = 40
+location$ = 48
 cr3$ = 80
 ?free_kstack@@YAXPEA_K@Z PROC				; free_kstack
 
 ; 53   : void free_kstack (uint64_t *cr3) {
 
-$LN6:
+$LN7:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 72					; 00000048H
 
@@ -128,14 +128,14 @@ $LN6:
 ; 62   : 	for (int i = 0; i < 8192 / 4096; i++) {
 
 	mov	DWORD PTR i$1[rsp], 0
-	jmp	SHORT $LN3@free_kstac
-$LN2@free_kstac:
+	jmp	SHORT $LN4@free_kstac
+$LN3@free_kstac:
 	mov	eax, DWORD PTR i$1[rsp]
 	inc	eax
 	mov	DWORD PTR i$1[rsp], eax
-$LN3@free_kstac:
+$LN4@free_kstac:
 	cmp	DWORD PTR i$1[rsp], 2
-	jge	SHORT $LN1@free_kstac
+	jge	SHORT $LN2@free_kstac
 
 ; 63   : 		void* p = AuGetPhysicalAddress((size_t)cr3,location + i * 4096);
 
@@ -150,19 +150,25 @@ $LN3@free_kstac:
 	call	AuGetPhysicalAddress
 	mov	QWORD PTR p$2[rsp], rax
 
-; 64   : 		AuPmmngrFree((void*)v2p((size_t)p));
+; 64   : 		if (p != 0) 
+
+	cmp	QWORD PTR p$2[rsp], 0
+	je	SHORT $LN1@free_kstac
+
+; 65   : 			AuPmmngrFree((void*)v2p((size_t)p));
 
 	mov	rcx, QWORD PTR p$2[rsp]
 	call	v2p
 	mov	rcx, rax
 	call	AuPmmngrFree
-
-; 65   : 	}
-
-	jmp	SHORT $LN2@free_kstac
 $LN1@free_kstac:
 
-; 66   : }
+; 66   : 	}
+
+	jmp	SHORT $LN3@free_kstac
+$LN2@free_kstac:
+
+; 67   : }
 
 	add	rsp, 72					; 00000048H
 	ret	0
@@ -177,13 +183,13 @@ p$2 = 48
 cr3$ = 80
 ?allocate_kstack_child@@YA_KPEA_K@Z PROC		; allocate_kstack_child
 
-; 73   : uint64_t allocate_kstack_child (uint64_t *cr3) {
+; 74   : uint64_t allocate_kstack_child (uint64_t *cr3) {
 
 $LN6:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 72					; 00000048H
 
-; 74   : 	uint64_t location = (uint64_t)AuGetFreePage(0,true,(void*)KSTACK_START);
+; 75   : 	uint64_t location = (uint64_t)AuGetFreePage(0,true,(void*)KSTACK_START);
 
 	mov	r8, -5497558138880			; fffffb0000000000H
 	mov	dl, 1
@@ -191,7 +197,7 @@ $LN6:
 	call	AuGetFreePage
 	mov	QWORD PTR location$[rsp], rax
 
-; 75   : 	for (int i = 0; i < 8192/4096; i++) {
+; 76   : 	for (int i = 0; i < 8192/4096; i++) {
 
 	mov	DWORD PTR i$1[rsp], 0
 	jmp	SHORT $LN3@allocate_k
@@ -203,12 +209,12 @@ $LN3@allocate_k:
 	cmp	DWORD PTR i$1[rsp], 2
 	jge	SHORT $LN1@allocate_k
 
-; 76   : 		void* p = AuPmmngrAlloc();
+; 77   : 		void* p = AuPmmngrAlloc();
 
 	call	AuPmmngrAlloc
 	mov	QWORD PTR p$2[rsp], rax
 
-; 77   : 		AuMapPageEx (cr3,(uint64_t)p,location + i * 4096, 0);
+; 78   : 		AuMapPageEx (cr3,(uint64_t)p,location + i * 4096, 0);
 
 	mov	eax, DWORD PTR i$1[rsp]
 	imul	eax, 4096				; 00001000H
@@ -222,18 +228,18 @@ $LN3@allocate_k:
 	mov	rcx, QWORD PTR cr3$[rsp]
 	call	?AuMapPageEx@@YA_NPEA_K_K1E@Z		; AuMapPageEx
 
-; 78   : 	}
+; 79   : 	}
 
 	jmp	SHORT $LN2@allocate_k
 $LN1@allocate_k:
 
-; 79   : 	
-; 80   : 	return (location + 8192);
+; 80   : 	
+; 81   : 	return (location + 8192);
 
 	mov	rax, QWORD PTR location$[rsp]
 	add	rax, 8192				; 00002000H
 
-; 81   : }
+; 82   : }
 
 	add	rsp, 72					; 00000048H
 	ret	0

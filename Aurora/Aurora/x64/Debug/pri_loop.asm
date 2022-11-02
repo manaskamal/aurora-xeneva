@@ -12,9 +12,9 @@ _BSS	SEGMENT
 ?last_loop@@3PEAU_pri_loop_box_@@EA DQ 01H DUP (?)	; last_loop
 _BSS	ENDS
 CONST	SEGMENT
-$SG3628	DB	'pri_loop', 00H
+$SG3627	DB	'pri_loop', 00H
 	ORG $+7
-$SG3629	DB	'/dev/pri_loop', 00H
+$SG3628	DB	'/dev/pri_loop', 00H
 CONST	ENDS
 PUBLIC	?pri_loop_init@@YAXXZ				; pri_loop_init
 PUBLIC	?pri_put_message@@YAXPEAU_pri_event_@@@Z	; pri_put_message
@@ -90,7 +90,7 @@ code$ = 264
 arg$ = 272
 ?pri_loop_ioquery@@YAHPEAU_vfs_node_@@HPEAX@Z PROC	; pri_loop_ioquery
 
-; 170  : int pri_loop_ioquery (vfs_node_t *file, int code, void *arg) {
+; 171  : int pri_loop_ioquery (vfs_node_t *file, int code, void *arg) {
 
 $LN13:
 	mov	QWORD PTR [rsp+24], r8
@@ -98,11 +98,11 @@ $LN13:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 248				; 000000f8H
 
-; 171  : 	x64_cli();
+; 172  : 	x64_cli();
 
 	call	x64_cli
 
-; 172  : 	switch (code) {
+; 173  : 	switch (code) {
 
 	mov	eax, DWORD PTR code$[rsp]
 	mov	DWORD PTR tv64[rsp], eax
@@ -117,20 +117,20 @@ $LN13:
 	jmp	$LN9@pri_loop_i
 $LN8@pri_loop_i:
 
-; 173  : 	case PRI_LOOP_CREATE: {
-; 174  : 		pri_loop_create();
+; 174  : 	case PRI_LOOP_CREATE: {
+; 175  : 		pri_loop_create();
 
 	call	?pri_loop_create@@YAXXZ			; pri_loop_create
 
-; 175  : 		break;
+; 176  : 		break;
 
 	jmp	$LN9@pri_loop_i
 $LN7@pri_loop_i:
 
-; 176  : 	}
-; 177  : 	case PRI_LOOP_DESTROY: {
-; 178  : 		pri_loop_box_t *box;
-; 179  : 		for (box = first_loop; box != NULL; box = box->next) {
+; 177  : 	}
+; 178  : 	case PRI_LOOP_DESTROY: {
+; 179  : 		pri_loop_box_t *box;
+; 180  : 		for (box = first_loop; box != NULL; box = box->next) {
 
 	mov	rax, QWORD PTR ?first_loop@@3PEAU_pri_loop_box_@@EA ; first_loop
 	mov	QWORD PTR box$1[rsp], rax
@@ -143,7 +143,7 @@ $LN6@pri_loop_i:
 	cmp	QWORD PTR box$1[rsp], 0
 	je	SHORT $LN4@pri_loop_i
 
-; 180  : 			if (box->owner_id == get_current_thread()->id) {
+; 181  : 			if (box->owner_id == get_current_thread()->id) {
 
 	mov	rax, QWORD PTR box$1[rsp]
 	movzx	eax, WORD PTR [rax+8]
@@ -154,54 +154,54 @@ $LN6@pri_loop_i:
 	cmp	ecx, eax
 	jne	SHORT $LN3@pri_loop_i
 
-; 181  : 				pri_loop_destroy(box);
+; 182  : 				pri_loop_destroy(box);
 
 	mov	rcx, QWORD PTR box$1[rsp]
 	call	?pri_loop_destroy@@YAXPEAU_pri_loop_box_@@@Z ; pri_loop_destroy
 
-; 182  : 				break;
+; 183  : 				break;
 
 	jmp	SHORT $LN4@pri_loop_i
 $LN3@pri_loop_i:
 
-; 183  : 			}
-; 184  : 		}
+; 184  : 			}
+; 185  : 		}
 
 	jmp	SHORT $LN5@pri_loop_i
 $LN4@pri_loop_i:
 
-; 185  : 		break;
+; 186  : 		break;
 
 	jmp	SHORT $LN9@pri_loop_i
 $LN2@pri_loop_i:
 
-; 186  : 	}
-; 187  : 	case PRI_LOOP_PUT_EVENT: {
-; 188  : 		pri_event_t *event = (pri_event_t*)arg;
+; 187  : 	}
+; 188  : 	case PRI_LOOP_PUT_EVENT: {
+; 189  : 		pri_event_t *event = (pri_event_t*)arg;
 
 	mov	rax, QWORD PTR arg$[rsp]
 	mov	QWORD PTR event$2[rsp], rax
 
-; 189  : 		pri_put_message(event);
+; 190  : 		pri_put_message(event);
 
 	mov	rcx, QWORD PTR event$2[rsp]
 	call	?pri_put_message@@YAXPEAU_pri_event_@@@Z ; pri_put_message
 
-; 190  : 		break;
+; 191  : 		break;
 
 	jmp	SHORT $LN9@pri_loop_i
 $LN1@pri_loop_i:
 
-; 191  : 	}
-; 192  : 
-; 193  : 	case PRI_LOOP_GET_EVENT: {
-; 194  : 		pri_event_t e;
-; 195  : 		pri_get_message(&e);
+; 192  : 	}
+; 193  : 
+; 194  : 	case PRI_LOOP_GET_EVENT: {
+; 195  : 		pri_event_t e;
+; 196  : 		pri_get_message(&e);
 
 	lea	rcx, QWORD PTR e$3[rsp]
 	call	?pri_get_message@@YAXPEAU_pri_event_@@@Z ; pri_get_message
 
-; 196  : 		memcpy (arg,&e,sizeof(pri_event_t));
+; 197  : 		memcpy (arg,&e,sizeof(pri_event_t));
 
 	mov	r8d, 176				; 000000b0H
 	lea	rdx, QWORD PTR e$3[rsp]
@@ -209,15 +209,15 @@ $LN1@pri_loop_i:
 	call	memcpy
 $LN9@pri_loop_i:
 
-; 197  : 		break;
-; 198  : 	}
+; 198  : 		break;
 ; 199  : 	}
-; 200  : 
-; 201  : 	return 1;
+; 200  : 	}
+; 201  : 
+; 202  : 	return 1;
 
 	mov	eax, 1
 
-; 202  : }
+; 203  : }
 
 	add	rsp, 248				; 000000f8H
 	ret	0
@@ -231,24 +231,24 @@ loop$1 = 40
 event$ = 64
 ?pri_get_message@@YAXPEAU_pri_event_@@@Z PROC		; pri_get_message
 
-; 145  : void pri_get_message (pri_event_t *event) {
+; 146  : void pri_get_message (pri_event_t *event) {
 
 $LN8:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 56					; 00000038H
 
-; 146  : 	x64_cli();
+; 147  : 	x64_cli();
 
 	call	x64_cli
 
-; 147  : 
-; 148  : 	uint16_t owner_id = get_current_thread()->id;
+; 148  : 
+; 149  : 	uint16_t owner_id = get_current_thread()->id;
 
 	call	get_current_thread
 	movzx	eax, WORD PTR [rax+242]
 	mov	WORD PTR owner_id$[rsp], ax
 
-; 149  : 	for (pri_loop_box_t *loop = first_loop; loop != NULL; loop = loop->next) {
+; 150  : 	for (pri_loop_box_t *loop = first_loop; loop != NULL; loop = loop->next) {
 
 	mov	rax, QWORD PTR ?first_loop@@3PEAU_pri_loop_box_@@EA ; first_loop
 	mov	QWORD PTR loop$1[rsp], rax
@@ -261,7 +261,7 @@ $LN5@pri_get_me:
 	cmp	QWORD PTR loop$1[rsp], 0
 	je	SHORT $LN3@pri_get_me
 
-; 150  : 		if (loop->owner_id == owner_id) {
+; 151  : 		if (loop->owner_id == owner_id) {
 
 	mov	rax, QWORD PTR loop$1[rsp]
 	movzx	eax, WORD PTR [rax+8]
@@ -269,14 +269,14 @@ $LN5@pri_get_me:
 	cmp	eax, ecx
 	jne	SHORT $LN2@pri_get_me
 
-; 151  : 			if (loop->message_pending){
+; 152  : 			if (loop->message_pending){
 
 	mov	rax, QWORD PTR loop$1[rsp]
 	movzx	eax, BYTE PTR [rax+10]
 	test	eax, eax
 	je	SHORT $LN1@pri_get_me
 
-; 152  : 				memcpy (event,loop->address, sizeof(pri_event_t));
+; 153  : 				memcpy (event,loop->address, sizeof(pri_event_t));
 
 	mov	r8d, 176				; 000000b0H
 	mov	rax, QWORD PTR loop$1[rsp]
@@ -284,7 +284,7 @@ $LN5@pri_get_me:
 	mov	rcx, QWORD PTR event$[rsp]
 	call	memcpy
 
-; 153  : 				memset (loop->address, 0, sizeof(pri_event_t));
+; 154  : 				memset (loop->address, 0, sizeof(pri_event_t));
 
 	mov	r8d, 176				; 000000b0H
 	xor	edx, edx
@@ -292,14 +292,14 @@ $LN5@pri_get_me:
 	mov	rcx, QWORD PTR [rax]
 	call	memset
 
-; 154  : 				loop->message_pending = false;
+; 155  : 				loop->message_pending = false;
 
 	mov	rax, QWORD PTR loop$1[rsp]
 	mov	BYTE PTR [rax+10], 0
 $LN1@pri_get_me:
 
-; 155  : 			}
-; 156  : 			memset (loop->address, 0, sizeof(pri_event_t));
+; 156  : 			}
+; 157  : 			memset (loop->address, 0, sizeof(pri_event_t));
 
 	mov	r8d, 176				; 000000b0H
 	xor	edx, edx
@@ -307,20 +307,20 @@ $LN1@pri_get_me:
 	mov	rcx, QWORD PTR [rax]
 	call	memset
 
-; 157  : 			break;
+; 158  : 			break;
 
 	jmp	SHORT $LN3@pri_get_me
 $LN2@pri_get_me:
 
-; 158  : 		}
-; 159  : 	}
+; 159  : 		}
+; 160  : 	}
 
 	jmp	$LN4@pri_get_me
 $LN3@pri_get_me:
 
-; 160  : 
-; 161  : 	return;
-; 162  : }
+; 161  : 
+; 162  : 	return;
+; 163  : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -351,9 +351,9 @@ $LN5:
 	mov	rcx, QWORD PTR loop$[rsp]
 	mov	QWORD PTR [rcx], rax
 
-; 55   : 	memset(loop->address,0, sizeof(pri_event_t));
+; 55   : 	memset(loop->address,0, 4096);
 
-	mov	r8d, 176				; 000000b0H
+	mov	r8d, 4096				; 00001000H
 	xor	edx, edx
 	mov	rax, QWORD PTR loop$[rsp]
 	mov	rcx, QWORD PTR [rax]
@@ -708,8 +708,9 @@ $ret$11:
 
 ; 136  : 	}
 ; 137  : ret:
-; 138  : 	return;
-; 139  : }
+; 138  : 
+; 139  : 	return;
+; 140  : }
 
 	add	rsp, 72					; 00000048H
 	ret	0
@@ -721,88 +722,88 @@ _TEXT	SEGMENT
 node$ = 32
 ?pri_loop_init@@YAXXZ PROC				; pri_loop_init
 
-; 207  : void pri_loop_init () {
+; 208  : void pri_loop_init () {
 
 $LN3:
 	sub	rsp, 56					; 00000038H
 
-; 208  : 	vfs_node_t *node = (vfs_node_t*)malloc(sizeof(vfs_node_t));
+; 209  : 	vfs_node_t *node = (vfs_node_t*)malloc(sizeof(vfs_node_t));
 
 	mov	ecx, 112				; 00000070H
 	call	malloc
 	mov	QWORD PTR node$[rsp], rax
 
-; 209  : 	strcpy (node->filename, "pri_loop");
+; 210  : 	strcpy (node->filename, "pri_loop");
 
 	mov	rax, QWORD PTR node$[rsp]
-	lea	rdx, OFFSET FLAT:$SG3628
+	lea	rdx, OFFSET FLAT:$SG3627
 	mov	rcx, rax
 	call	strcpy
 
-; 210  : 	node->size = 0;
+; 211  : 	node->size = 0;
 
 	mov	rax, QWORD PTR node$[rsp]
 	mov	DWORD PTR [rax+32], 0
 
-; 211  : 	node->eof = 0;
+; 212  : 	node->eof = 0;
 
 	mov	rax, QWORD PTR node$[rsp]
 	mov	BYTE PTR [rax+36], 0
 
-; 212  : 	node->pos = 0;
+; 213  : 	node->pos = 0;
 
 	mov	rax, QWORD PTR node$[rsp]
 	mov	DWORD PTR [rax+40], 0
 
-; 213  : 	node->current = 0;
+; 214  : 	node->current = 0;
 
 	mov	rax, QWORD PTR node$[rsp]
 	mov	DWORD PTR [rax+44], 0
 
-; 214  : 	node->flags = FS_FLAG_GENERAL | FS_FLAG_DEVICE;
+; 215  : 	node->flags = FS_FLAG_GENERAL | FS_FLAG_DEVICE;
 
 	mov	rax, QWORD PTR node$[rsp]
 	mov	BYTE PTR [rax+48], 12
 
-; 215  : 	node->status = 0;
+; 216  : 	node->status = 0;
 
 	mov	rax, QWORD PTR node$[rsp]
 	mov	BYTE PTR [rax+49], 0
 
-; 216  : 	node->open = 0;
+; 217  : 	node->open = 0;
 
 	mov	rax, QWORD PTR node$[rsp]
 	mov	QWORD PTR [rax+64], 0
 
-; 217  : 	node->read = 0;
+; 218  : 	node->read = 0;
 
 	mov	rax, QWORD PTR node$[rsp]
 	mov	QWORD PTR [rax+72], 0
 
-; 218  : 	node->write = 0;
+; 219  : 	node->write = 0;
 
 	mov	rax, QWORD PTR node$[rsp]
 	mov	QWORD PTR [rax+80], 0
 
-; 219  : 	node->read_blk = 0;
+; 220  : 	node->read_blk = 0;
 
 	mov	rax, QWORD PTR node$[rsp]
 	mov	QWORD PTR [rax+96], 0
 
-; 220  : 	node->ioquery = pri_loop_ioquery;
+; 221  : 	node->ioquery = pri_loop_ioquery;
 
 	mov	rax, QWORD PTR node$[rsp]
 	lea	rcx, OFFSET FLAT:?pri_loop_ioquery@@YAHPEAU_vfs_node_@@HPEAX@Z ; pri_loop_ioquery
 	mov	QWORD PTR [rax+104], rcx
 
-; 221  : 	vfs_mount ("/dev/pri_loop", node, 0);
+; 222  : 	vfs_mount ("/dev/pri_loop", node, 0);
 
 	xor	r8d, r8d
 	mov	rdx, QWORD PTR node$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3629
+	lea	rcx, OFFSET FLAT:$SG3628
 	call	vfs_mount
 
-; 222  : }
+; 223  : }
 
 	add	rsp, 56					; 00000038H
 	ret	0

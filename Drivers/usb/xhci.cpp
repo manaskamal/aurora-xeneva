@@ -169,12 +169,12 @@ void xhci_slot_remove (usb_dev_t* dev, uint8_t slot_id) {
 /*
  * xhci_get_slot -- returns a slot struct from the slot list
  * @param dev -- Pointer to usb device structure
- * @param slot_id -- slot id 
+ * @param port_num -- port id 
  */
-xhci_slot_t *xhci_get_slot (usb_dev_t* dev, uint8_t slot_id) {
+xhci_slot_t *xhci_get_slot (usb_dev_t* dev, uint8_t port_num) {
 	for (int i = 0; i < dev->slot_list->pointer; i++) {
 		xhci_slot_t *slot = (xhci_slot_t*)list_get_at(dev->slot_list, i);
-		if (slot->slot_id == slot_id)
+		if (slot->root_hub_port_num == port_num)
 			return slot;
 	}
 	return NULL;
@@ -231,7 +231,10 @@ xhci_slot_t* xhci_create_device_ctx (usb_dev_t* dev, uint8_t slot_num, uint8_t p
 	slot->cmd_ring_index = 0;
 	slot->cmd_ring_max = 64;
 	slot->cmd_ring_cycle = 1;
-
+	slot->slot_id = slot_num;
+	slot->root_hub_port_num = root_port_num;
+	slot->input_context_phys = v2p(input_ctx);
+	slot->output_context_phys = v2p(output_ctx);
 	xhci_add_slot (dev, slot);
 
 	/* Here we need an function, which will issues commands to this slot */
@@ -494,6 +497,8 @@ char* xhci_get_port_speed (uint8_t port_speed) {
 	}
 }
 
+#define PORT_CHANGE_CLEAR_BIT   (1<<17) | (1<<18) | (1<<20) | (1<<21) | (1<<22)
+
 /*
  * xhci_port_reset -- reset the given port
  * @param this_port -- pointer to port register
@@ -505,6 +510,8 @@ void xhci_port_reset (xhci_port_regs_t *this_port) {
 			while((this_port->port_sc & (1<<4)) != 0);
 		}
 	}
+	uint32_t port_change_bit = this_port->port_sc;
+	this_port->port_sc |= port_change_bit;
 }
 
 
@@ -516,8 +523,33 @@ void xhci_port_reset (xhci_port_regs_t *this_port) {
 void xhci_port_initialize (usb_dev_t *dev, unsigned int port) {
 	xhci_port_regs_t *this_port = &dev->ports[port - 1];
 
-	if ((this_port->port_sc & 1)) {	
+	if ((this_port->port_sc & 1) == 0) {
+		/* Handle device disconnection */
+		xhci_slot_t *slot = xhci_get_slot(dev,port);
+		uint8_t slot_id = slot->slot_id;
 
+		/* disable the slot */
+		xhci_disable_slot(dev,slot_id);
+		int idx = xhci_poll_event(dev,TRB_EVENT_CMD_COMPLETION);
+		if (idx == -1)
+			return;
+
+		dev->dev_ctx_base_array[slot_id] = 0;
+
+		AuPmmngrFree((void*)slot->input_context_phys);
+		AuPmmngrFree((void*)slot->output_context_phys);
+		AuPmmngrFree((void*)slot->cmd_ring_base);
+		
+		xhci_slot_remove(dev, slot_id);
+
+		/* Here we need to pass this notification to, Aurora
+		 * that device is disconnected */
+		printf ("Device disconnected at port -> %d, slot -> %d \n", port, slot_id);
+		this_port->port_sc |= this_port->port_sc;
+	}
+
+	if ((this_port->port_sc & 1)) {	
+		/* Handle device connection */
 		/* Reset the port */
 		xhci_port_reset(this_port);
 

@@ -292,6 +292,8 @@ typedef struct _xhci_slot_ {
 	uint8_t slot_id;
 	uint8_t root_hub_port_num;
 	uint64_t cmd_ring_base;
+	uint64_t input_context_phys;
+	uint64_t output_context_phys;
 	xhci_trb_t* cmd_ring;
 	unsigned cmd_ring_index;
 	unsigned cmd_ring_max;

@@ -40,6 +40,7 @@ XE_EXTERN int XeMain (int argc, char* argv[]) {
 
 	canvas_t * canvas = create_canvas(app->buffer_width, app->buffer_height);
 
+
 	XEWindow *win = XECreateWindow(app,canvas, 1,"XeConsole",canvas->width/2 - 400/2,canvas->height/2 - 400/2);
 	win->color = 0xFF3E3E3E;
 
@@ -47,7 +48,7 @@ XE_EXTERN int XeMain (int argc, char* argv[]) {
 
 	XEWindowAddWidget(win, (XEWidget*)term);
 
-	win->shwin->alpha = true;
+	win->shwin->alpha = false;
 	XEShowWindow(win);
 
 	sys_set_signal(SIGINT, HandleSignal);
@@ -94,7 +95,7 @@ XE_EXTERN int XeMain (int argc, char* argv[]) {
 			}
 
 		}
-
-		sys_sleep(100);
+		
+		sys_sleep(500);
 	}
 }

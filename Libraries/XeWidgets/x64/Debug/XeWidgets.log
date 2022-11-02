@@ -1,4 +1,4 @@
-﻿Build started 25-09-2022 ৰাতিপু 10:19:26.
+﻿Build started 31-10-2022 আবেলি 7:03:58.
      1>Project "E:\Xeneva Project\Xeneva\Libraries\XeWidgets\XeWidgets.vcxproj" on node 2 (Rebuild target(s)).
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\xnlib\xnclib" /I"E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes" /I"E:\Xeneva Project\Xeneva\xnlib\xnacrylic\include" /Zi /nologo /W3 /WX- /Od /Oy /D ARCH_X64 /D DEFAULT_COLOR_MODE /D _WINDLL /D _MBCS /X /Gm /GS- /arch:SSE2 /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt list.cpp styles\XEDefaultButtonStyle.cpp styles\XEDefaultMenuStyle.cpp styles\XEDefaultRadioButtonStyle.cpp styles\XEDefaultRadioGroupStyle.cpp styles\XEDefaultWinStyle.cpp styles\XEMenubarDefaultStyle.cpp xebase.cpp xebutton.cpp xeloop.cpp xemenu.cpp xequwindow.cpp xeradiobutton.cpp xeradiogroup.cpp xewindow.cpp xe_glblctrl_close.cpp
@@ -17,7 +17,7 @@
      1>xequwindow.cpp(75): warning C4267: 'argument' : conversion from 'size_t' to 'unsigned int', possible loss of data
          xemenu.cpp
      1>xemenu.cpp(40): warning C4018: '<' : signed/unsigned mismatch
-     1>xemenu.cpp(133): warning C4267: 'argument' : conversion from 'size_t' to 'unsigned int', possible loss of data
+     1>xemenu.cpp(132): warning C4267: 'argument' : conversion from 'size_t' to 'unsigned int', possible loss of data
          xeloop.cpp
          xebutton.cpp
      1>xebutton.cpp(118): warning C4267: 'argument' : conversion from 'size_t' to 'unsigned int', possible loss of data
@@ -62,4 +62,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:07.25
+Time Elapsed 00:00:01.36

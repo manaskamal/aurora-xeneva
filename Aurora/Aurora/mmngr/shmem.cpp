@@ -58,6 +58,7 @@ uint32_t AuCreateShMem (uint32_t key,size_t size, uint32_t flags) {
 		if (mem->key == key)
 			return mem->id;
 	}
+	
 	shared_mem_t *sh_mem = (shared_mem_t*)malloc(sizeof(shared_mem_t));
 	memset(sh_mem, 0, sizeof(shared_mem_t));
 	sh_mem->id = sh_id;

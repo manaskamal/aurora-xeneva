@@ -42,6 +42,17 @@ void xhci_enable_slot (usb_dev_t *dev,uint8_t slot_type) {
 	xhci_ring_doorbell(dev);
 }
 
+/*
+ * xhci_disable_slot -- sends disable slot command to xHC
+ * @param dev -- Pointer to usb device structure
+ * @param slot_num -- slot id to disable
+ */
+void xhci_disable_slot (usb_dev_t *dev,uint8_t slot_num) {
+	/* Send Enable slot command */
+	xhci_send_command(dev,0,0,0,(slot_num << 24) | (TRB_CMD_DISABLE_SLOT << 10));
+	xhci_ring_doorbell(dev);
+}
+
 
 /* xhci_send_noop_cmd -- Send No operation command
  * @param dev -- Pointer to USB structure

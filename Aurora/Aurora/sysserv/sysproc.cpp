@@ -35,6 +35,7 @@
 #include <drivers\mouse.h>
 #include <serial.h>
 #include <arch\x86_64\x86_64_signal.h>
+#include <exit.h>
 /**
  * create__sys_process -- creates a process and returns its id
  * @param name -- filepath of the process
@@ -53,9 +54,8 @@ int create__sys_process (const char* name, char* procnm) {
  */
 void sys_exit () {
 	x64_cli();	
-	kill_process();
-	_debug_print_ ("***Process killed \r\n");
-	_debug_print_ ("*** Current used RAM -> %d MB / total -> %d MB \r\n", pmmngr_get_used_ram() / 1024 / 1024, pmmngr_get_total_ram() / 1024 / 1024);
+	process_t* proc = get_current_process();
+	AuExitProcess(proc);
 	force_sched();
 }
 

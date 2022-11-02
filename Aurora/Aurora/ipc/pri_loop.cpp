@@ -52,7 +52,7 @@ pri_loop_box_t *last_loop = NULL;
 void pri_loop_create () {
 	pri_loop_box_t *loop = (pri_loop_box_t*)malloc(sizeof(pri_loop_box_t));
 	loop->address = (void*)p2v((size_t)AuPmmngrAlloc());//malloc(sizeof(pri_event_t));
-	memset(loop->address,0, sizeof(pri_event_t));
+	memset(loop->address,0, 4096);
 	loop->owner_id = get_current_thread()->id;
 	loop->message_pending = 0;
 	loop->next = NULL;
@@ -135,6 +135,7 @@ void pri_put_message (pri_event_t *event) {
 		unblock_thread(thread);
 	}
 ret:
+
 	return;
 }
 

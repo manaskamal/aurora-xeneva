@@ -271,9 +271,7 @@ thread_t* create_user_thread (void (*entry) (void*),uint64_t stack,uint64_t cr3,
 	t->state = THREAD_STATE_READY;
 	t->priority = priority;
 	t->fd_current = 3;
-	/*for (int i = 0; i < 1024*1024 / 4096; i++)
-		AuMapPageEx((uint64_t*)cr3,(uint64_t)AuPmmngrAlloc(), 0x0000700000400000 + i * 4096, PAGING_USER); 
-	t->signal_stack = (0x0000700000400000 + 1024*1024 - 256);*/
+
 	t->signal_queue = NULL;
 	t->pending_signal_count = 0;
 	thread_insert (t);

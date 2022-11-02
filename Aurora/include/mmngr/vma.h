@@ -55,6 +55,7 @@ typedef struct _vma_area_ {
 	size_t    length;
 	char      type;
 	uint32_t  unique_id;
+	bool      unmapped;
 	struct _vma_area_ *next;
 	struct _vma_area_ *prev;
 }au_vm_area_t;

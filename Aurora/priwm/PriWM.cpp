@@ -1234,7 +1234,7 @@ XE_EXTERN int XeMain (int argc, char* argv[]) {
 
 		pri_wm_get_message (&event);
 		message_receive(&key_msg);
-		//frame_tick = sys_get_system_tick();
+		frame_tick = sys_get_system_tick();
 		//1 draw everything
 		compose_frame();
 
@@ -1324,6 +1324,7 @@ XE_EXTERN int XeMain (int argc, char* argv[]) {
 			e.to_id = event.from_id;
 			ioquery(pri_loop_fd,PRI_LOOP_PUT_EVENT, &e);
 			
+
 			memset (&event, 0, sizeof(pri_event_t));
 		}
 
@@ -1347,7 +1348,6 @@ XE_EXTERN int XeMain (int argc, char* argv[]) {
 			e.dword2 = popup->buffer_win_key;
 			e.to_id = owner_id;
 			ioquery (pri_loop_fd, PRI_LOOP_PUT_EVENT, &e);
-			
 			
 			memset(&event, 0, sizeof(pri_event_t));
 		}
@@ -1436,8 +1436,6 @@ XE_EXTERN int XeMain (int argc, char* argv[]) {
 				sys_shm_unlink(win->backing_store_key);
 				
 					//list_remove(window_list, i);
-				sys_print_text ("Freeing win -> %x  %d \r\n", win, owner_id);
-				sys_print_text ("Freeing win n-> %x, p-> %x \r\n", win->next, win->prev);
 				pri_remove_window(win);
 				free(win);
 			}
@@ -1483,12 +1481,12 @@ XE_EXTERN int XeMain (int argc, char* argv[]) {
 			memset(&event, 0, sizeof(pri_event_t));
 		}
 
-		//diff_tick = sys_get_system_tick();
-		//int delta = diff_tick - frame_tick;
-		//if (delta < 1000/60) {
+		diff_tick = sys_get_system_tick();
+		int delta = diff_tick - frame_tick;
+		if (delta < 1000/60) {
 			//! it will sleep for 16 ms
-			//sys_sleep (1000/60 - delta);
-		//}
-		sys_sleep(12);
+			sys_sleep (1000/60 - delta);
+		}
+		//sys_sleep(16);
 	}
 }

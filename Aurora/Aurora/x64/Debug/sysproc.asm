@@ -6,12 +6,7 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 CONST	SEGMENT
-$SG4040	DB	'***Process killed ', 0dH, 0aH, 00H
-	ORG $+3
-$SG4041	DB	'*** Current used RAM -> %d MB / total -> %d MB ', 0dH, 0aH
-	DB	00H
-	ORG $+2
-$SG4057	DB	'Loop', 00H
+$SG4061	DB	'Loop', 00H
 CONST	ENDS
 PUBLIC	?create__sys_process@@YAHPEBDPEAD@Z		; create__sys_process
 PUBLIC	?sys_exit@@YAXXZ				; sys_exit
@@ -19,23 +14,22 @@ PUBLIC	?sys_kill@@YAXHH@Z				; sys_kill
 PUBLIC	?sys_set_signal@@YAXHP6AXH@Z@Z			; sys_set_signal
 PUBLIC	?sig_loop_tst@@YAXXZ				; sig_loop_tst
 PUBLIC	?sys_sigreturn@@YAXH@Z				; sys_sigreturn
-EXTRN	?pmmngr_get_used_ram@@YA_KXZ:PROC		; pmmngr_get_used_ram
-EXTRN	?pmmngr_get_total_ram@@YA_KXZ:PROC		; pmmngr_get_total_ram
 EXTRN	x64_cli:PROC
 EXTRN	get_current_thread:PROC
 EXTRN	force_sched:PROC
 EXTRN	?thread_iterate_ready_list@@YAPEAU_thread_@@G@Z:PROC ; thread_iterate_ready_list
 EXTRN	?thread_iterate_block_list@@YAPEAU_thread_@@H@Z:PROC ; thread_iterate_block_list
 EXTRN	?AuCreateProcess@@YAHPEBDPEAD@Z:PROC		; AuCreateProcess
-EXTRN	?kill_process@@YAXXZ:PROC			; kill_process
+EXTRN	?get_current_process@@YAPEAU_process_@@XZ:PROC	; get_current_process
 EXTRN	_debug_print_:PROC
 EXTRN	?AuAllocSignal@@YAXPEAU_thread_@@H@Z:PROC	; AuAllocSignal
+EXTRN	?AuExitProcess@@YAXPEAU_process_@@@Z:PROC	; AuExitProcess
 pdata	SEGMENT
 $pdata$?create__sys_process@@YAHPEBDPEAD@Z DD imagerel $LN3
 	DD	imagerel $LN3+47
 	DD	imagerel $unwind$?create__sys_process@@YAHPEBDPEAD@Z
 $pdata$?sys_exit@@YAXXZ DD imagerel $LN3
-	DD	imagerel $LN3+114
+	DD	imagerel $LN3+39
 	DD	imagerel $unwind$?sys_exit@@YAXXZ
 $pdata$?sys_kill@@YAXHH@Z DD imagerel $LN4
 	DD	imagerel $LN4+73
@@ -107,7 +101,7 @@ $LN2@sig_loop_t:
 ; 90   : 	for(;;) {
 ; 91   : 		_debug_print_ ("Loop");
 
-	lea	rcx, OFFSET FLAT:$SG4057
+	lea	rcx, OFFSET FLAT:$SG4061
 	call	_debug_print_
 
 ; 92   : 	}
@@ -206,49 +200,27 @@ _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\sysserv\sysproc.cpp
 _TEXT	SEGMENT
-tv67 = 32
+proc$ = 32
 ?sys_exit@@YAXXZ PROC					; sys_exit
 
-; 54   : void sys_exit () {
+; 55   : void sys_exit () {
 
 $LN3:
 	sub	rsp, 56					; 00000038H
 
-; 55   : 	x64_cli();	
+; 56   : 	x64_cli();	
 
 	call	x64_cli
 
-; 56   : 	kill_process();
+; 57   : 	process_t* proc = get_current_process();
 
-	call	?kill_process@@YAXXZ			; kill_process
+	call	?get_current_process@@YAPEAU_process_@@XZ ; get_current_process
+	mov	QWORD PTR proc$[rsp], rax
 
-; 57   : 	_debug_print_ ("***Process killed \r\n");
+; 58   : 	AuExitProcess(proc);
 
-	lea	rcx, OFFSET FLAT:$SG4040
-	call	_debug_print_
-
-; 58   : 	_debug_print_ ("*** Current used RAM -> %d MB / total -> %d MB \r\n", pmmngr_get_used_ram() / 1024 / 1024, pmmngr_get_total_ram() / 1024 / 1024);
-
-	call	?pmmngr_get_total_ram@@YA_KXZ		; pmmngr_get_total_ram
-	xor	edx, edx
-	mov	ecx, 1024				; 00000400H
-	div	rcx
-	xor	edx, edx
-	mov	ecx, 1024				; 00000400H
-	div	rcx
-	mov	QWORD PTR tv67[rsp], rax
-	call	?pmmngr_get_used_ram@@YA_KXZ		; pmmngr_get_used_ram
-	xor	edx, edx
-	mov	ecx, 1024				; 00000400H
-	div	rcx
-	xor	edx, edx
-	mov	ecx, 1024				; 00000400H
-	div	rcx
-	mov	rcx, QWORD PTR tv67[rsp]
-	mov	r8, rcx
-	mov	rdx, rax
-	lea	rcx, OFFSET FLAT:$SG4041
-	call	_debug_print_
+	mov	rcx, QWORD PTR proc$[rsp]
+	call	?AuExitProcess@@YAXPEAU_process_@@@Z	; AuExitProcess
 
 ; 59   : 	force_sched();
 
@@ -268,29 +240,29 @@ name$ = 64
 procnm$ = 72
 ?create__sys_process@@YAHPEBDPEAD@Z PROC		; create__sys_process
 
-; 44   : int create__sys_process (const char* name, char* procnm) {
+; 45   : int create__sys_process (const char* name, char* procnm) {
 
 $LN3:
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 56					; 00000038H
 
-; 45   : 	x64_cli();
+; 46   : 	x64_cli();
 
 	call	x64_cli
 
-; 46   : 	int id = AuCreateProcess (name, procnm);
+; 47   : 	int id = AuCreateProcess (name, procnm);
 
 	mov	rdx, QWORD PTR procnm$[rsp]
 	mov	rcx, QWORD PTR name$[rsp]
 	call	?AuCreateProcess@@YAHPEBDPEAD@Z		; AuCreateProcess
 	mov	DWORD PTR id$[rsp], eax
 
-; 47   : 	return id;
+; 48   : 	return id;
 
 	mov	eax, DWORD PTR id$[rsp]
 
-; 48   : }
+; 49   : }
 
 	add	rsp, 56					; 00000038H
 	ret	0

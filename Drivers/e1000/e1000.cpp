@@ -302,7 +302,6 @@ void e1000_thread() {
 		}
 
 		e1000_write_command(e1000_nic, E1000_REG_ICR, status);
-		
 		sleep_thread(get_current_thread(),2000);
 		force_sched();
 	}

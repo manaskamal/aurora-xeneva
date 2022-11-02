@@ -91,22 +91,20 @@ void AuRTCClockUpdate(size_t s, void* p) {
 	}
 
 	
-	pri_event_t msg;
-	msg.type = CLOCK_MESSAGE;
-	msg.dword = second;
-	msg.dword2 = minute;
-	msg.dword3 = hour;
-	msg.dword5 = day;
-	msg.dword6 = month;
-	msg.dword7 = year;
-	msg.to_id = 3; //the dock bar
+	//pri_event_t msg;
+	//msg.type = CLOCK_MESSAGE;
+	//msg.dword = second;
+	//msg.dword2 = minute;
+	//msg.dword3 = hour;
+	//msg.dword5 = day;
+	//msg.dword6 = month;
+	//msg.dword7 = year;
+	//msg.to_id = 3; //the dock bar
 
-	pri_put_message(&msg);
-
-
-	x64_sti();
+	//pri_put_message(&msg);
 	//!send a EOI to apic
 	AuInterruptEnd(8);
+	x64_sti();
 }
 
 /*

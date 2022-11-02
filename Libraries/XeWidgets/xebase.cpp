@@ -99,6 +99,7 @@ XeApp* XeStartApplication(int argc, char* argv[]) {
 	memset(&e, 0, sizeof(pri_event_t));
 	int sh_key, back_key = 0;
 
+
 	while(1){
 		ioquery(event_fd, PRI_LOOP_GET_EVENT, &e);
 		if (e.type != 0){

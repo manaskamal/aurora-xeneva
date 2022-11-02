@@ -75,7 +75,7 @@ void  XEMenubarMouseEvent (XEWidget *widget, XEWindow *window, int mouse_x, int 
 
 		}
 	}
-}
+
 
 
 /*

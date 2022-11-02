@@ -63,7 +63,7 @@ $LN7:
 	jmp	SHORT $LN4@AuFindVMAU
 $LN3@AuFindVMAU:
 	mov	rax, QWORD PTR vma$1[rsp]
-	mov	rax, QWORD PTR [rax+56]
+	mov	rax, QWORD PTR [rax+64]
 	mov	QWORD PTR vma$1[rsp], rax
 $LN4@AuFindVMAU:
 	cmp	QWORD PTR vma$1[rsp], 0
@@ -120,7 +120,7 @@ $LN6:
 	jmp	SHORT $LN3@AuCleanVMA
 $LN2@AuCleanVMA:
 	mov	rax, QWORD PTR vma$1[rsp]
-	mov	rax, QWORD PTR [rax+56]
+	mov	rax, QWORD PTR [rax+64]
 	mov	QWORD PTR vma$1[rsp], rax
 $LN3@AuCleanVMA:
 	cmp	QWORD PTR vma$1[rsp], 0
@@ -166,7 +166,7 @@ $LN7:
 	jmp	SHORT $LN4@AuFindVMA
 $LN3@AuFindVMA:
 	mov	rax, QWORD PTR vma$1[rsp]
-	mov	rax, QWORD PTR [rax+56]
+	mov	rax, QWORD PTR [rax+64]
 	mov	QWORD PTR vma$1[rsp], rax
 $LN4@AuFindVMA:
 	cmp	QWORD PTR vma$1[rsp], 0
@@ -244,7 +244,7 @@ $LN5@AuRemoveVM:
 	mov	rax, QWORD PTR proc$[rsp]
 	mov	rax, QWORD PTR [rax+2128]
 	mov	rcx, QWORD PTR proc$[rsp]
-	mov	rax, QWORD PTR [rax+56]
+	mov	rax, QWORD PTR [rax+64]
 	mov	QWORD PTR [rcx+2128], rax
 
 ; 64   : 	} else {
@@ -255,10 +255,10 @@ $LN4@AuRemoveVM:
 ; 65   : 		vma->prev->next = vma->next;
 
 	mov	rax, QWORD PTR vma$[rsp]
-	mov	rax, QWORD PTR [rax+64]
+	mov	rax, QWORD PTR [rax+72]
 	mov	rcx, QWORD PTR vma$[rsp]
-	mov	rcx, QWORD PTR [rcx+56]
-	mov	QWORD PTR [rax+56], rcx
+	mov	rcx, QWORD PTR [rcx+64]
+	mov	QWORD PTR [rax+64], rcx
 $LN3@AuRemoveVM:
 
 ; 66   : 	}
@@ -274,7 +274,7 @@ $LN3@AuRemoveVM:
 
 	mov	rax, QWORD PTR proc$[rsp]
 	mov	rcx, QWORD PTR vma$[rsp]
-	mov	rcx, QWORD PTR [rcx+64]
+	mov	rcx, QWORD PTR [rcx+72]
 	mov	QWORD PTR [rax+2136], rcx
 
 ; 70   : 	} else {
@@ -285,10 +285,10 @@ $LN2@AuRemoveVM:
 ; 71   : 		vma->next->prev = vma->prev;
 
 	mov	rax, QWORD PTR vma$[rsp]
-	mov	rax, QWORD PTR [rax+56]
+	mov	rax, QWORD PTR [rax+64]
 	mov	rcx, QWORD PTR vma$[rsp]
-	mov	rcx, QWORD PTR [rcx+64]
-	mov	QWORD PTR [rax+64], rcx
+	mov	rcx, QWORD PTR [rcx+72]
+	mov	QWORD PTR [rax+72], rcx
 $LN1@AuRemoveVM:
 
 ; 72   : 	}
@@ -320,12 +320,12 @@ vma$ = 16
 ; 40   : 	vma->next = NULL;
 
 	mov	rax, QWORD PTR vma$[rsp]
-	mov	QWORD PTR [rax+56], 0
+	mov	QWORD PTR [rax+64], 0
 
 ; 41   : 	vma->prev = NULL;
 
 	mov	rax, QWORD PTR vma$[rsp]
-	mov	QWORD PTR [rax+64], 0
+	mov	QWORD PTR [rax+72], 0
 
 ; 42   : 
 ; 43   : 	if (proc->vma_area == NULL){
@@ -357,14 +357,14 @@ $LN2@AuInsertVM:
 	mov	rax, QWORD PTR proc$[rsp]
 	mov	rax, QWORD PTR [rax+2136]
 	mov	rcx, QWORD PTR vma$[rsp]
-	mov	QWORD PTR [rax+56], rcx
+	mov	QWORD PTR [rax+64], rcx
 
 ; 48   : 		vma->prev = proc->last_vma;
 
 	mov	rax, QWORD PTR vma$[rsp]
 	mov	rcx, QWORD PTR proc$[rsp]
 	mov	rcx, QWORD PTR [rcx+2136]
-	mov	QWORD PTR [rax+64], rcx
+	mov	QWORD PTR [rax+72], rcx
 
 ; 49   : 		proc->last_vma = vma;
 

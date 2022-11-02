@@ -61,7 +61,8 @@ void free_kstack (uint64_t *cr3) {
 	 */
 	for (int i = 0; i < 8192 / 4096; i++) {
 		void* p = AuGetPhysicalAddress((size_t)cr3,location + i * 4096);
-		AuPmmngrFree((void*)v2p((size_t)p));
+		if (p != 0) 
+			AuPmmngrFree((void*)v2p((size_t)p));
 	}
 }
 

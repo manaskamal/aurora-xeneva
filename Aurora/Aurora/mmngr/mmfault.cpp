@@ -40,10 +40,11 @@
 void AuHandlePageNotPresent (uint64_t vaddr, bool user, void* param) {
 	x64_cli();
 	interrupt_stack_frame *frame = (interrupt_stack_frame*)param;
+	void* virtual_address = (void*)x64_read_cr2();
 	if (!user) {
 		x64_cli();
 		printf ("Kernel Panic!! Page fault \n");
-		printf ("Virtual address -> %x \n", vaddr);
+		printf ("Virtual address -> %x \n", virtual_address);
 		printf ("RIP ->%x \n", frame->rip);
 		printf ("Current thread -> %s \n", get_current_thread()->name);
 		for(;;);

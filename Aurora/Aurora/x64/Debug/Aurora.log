@@ -1,8 +1,8 @@
-﻿Build started 22-10-2022 আবেলি 11:44:07.
+﻿Build started 01-11-2022 ৰাতিপু 8:19:37.
      1>Project "E:\Xeneva Project\Xeneva\Aurora\Aurora\Aurora.vcxproj" on node 2 (Rebuild target(s)).
      1>_NASM:
          arch\x86_64\interrupts.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmpdecd26dcf1e943ada25316b18572d57d.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp5ea36298d2a04d058b0e49072db28c97.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\interrupts.obj"  "E:\Xeneva Project\Xeneva\Aurora\Aurora\arch\x86_64\interrupts.asm"
      1>E:\Xeneva Project\Xeneva\Aurora\Aurora\arch\x86_64\interrupts.asm(132): warning : signed dword immediate exceeds bounds [-w+number-overflow]
      1>E:\Xeneva Project\Xeneva\Aurora\Aurora\arch\x86_64\interrupts.asm(132): warning : dword data exceeds bounds [-w+number-overflow]
@@ -502,22 +502,22 @@
      1>E:\Xeneva Project\Xeneva\Aurora\Aurora\arch\x86_64\interrupts.asm(156): warning : dword data exceeds bounds [-w+number-overflow]
        _NASM:
          arch\x86_64\switch.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp631b6cf01aaa483a8c72d3c7df91a152.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp9b6963db67df447cb2d8a27691ce3096.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\switch.obj"  "E:\Xeneva Project\Xeneva\Aurora\Aurora\arch\x86_64\switch.asm"
        _NASM:
          arch\x86_64\user.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp8086744cd5de43539dd91ecd77dc3bd4.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp6d3f5630c97f428cbc90b1118e48610b.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\user.obj"  "E:\Xeneva Project\Xeneva\Aurora\Aurora\arch\x86_64\user.asm"
        _NASM:
          arch\x86_64\_low_level.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmpffdd301698a54bb29d8c9716b66dd84b.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp6877e27ce28a41479bdc5dabd6586894.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\_low_level.obj"  "E:\Xeneva Project\Xeneva\Aurora\Aurora\arch\x86_64\_low_level.asm"
        _NASM:
          _fast_cpy.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp994a70e0a01d470ca7a7d0741372daa6.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp4fb8f940b67f4144b2739eab8fd32b35.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\_fast_cpy.obj"  "E:\Xeneva Project\Xeneva\Aurora\Aurora\_fast_cpy.asm"
        ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I..\include /ZI /nologo /W0 /WX- /Od /Oy /D ARCH_X64 /D USE_APIC /D X64 /D _DEBUG_ON_ /D _MBCS /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /GR- /FAs /Fa"x64\Debug\\" /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt arch\x86_64\apic.cpp arch\x86_64\apinit.cpp arch\x86_64\x86_64_signal.cpp arch\x86_64\cpu.cpp arch\x86_64\exception.cpp arch\x86_64\ioapic.cpp arch\x86_64\kheap.cpp arch\x86_64\kstack.cpp arch\x86_64\map.cpp arch\x86_64\pcpu.cpp arch\x86_64\pic.cpp arch\x86_64\systable.cpp arch\x86_64\thread.cpp arch\x86_64\user64.cpp arch\x86_64\paging.cpp atomic\mutex.cpp console.cpp drivers\acpi\acpi.cpp drivers\ahci.cpp drivers\ahci_disk.cpp drivers\ata.cpp drivers\kybrd.cpp drivers\mouse.cpp drivers\pci.cpp drivers\pcie.cpp drivers\rtc.cpp audrv.cpp fs\devfs.cpp fs\fat\fat.cpp fs\fat\fat_f.cpp fs\fat\fat_util.cpp fs\fat\fat_dir.cpp fs\gpt.cpp fs\ttype.cpp fs\vfs.cpp hal.cpp init.cpp ipc\pointdev.cpp ipc\message.cpp ipc\postbox.cpp ipc\pri_loop.cpp libmngr.cpp mmngr\aummap.cpp mmngr\mmfault.cpp mmngr\shmem.cpp mmngr\vma.cpp net\arp.cpp net\aunet.cpp net\ethernet.cpp pe.cpp pmmngr.cpp proc.cpp screen.cpp serial.cpp shirq.cpp sound.cpp stdio.cpp string.cpp sysserv\ioquery.cpp sysserv\sysfb.cpp sysserv\sysfile.cpp sysserv\sysmem.cpp sysserv\sysmouse.cpp sysserv\sysproc.cpp sysserv\systhread.cpp sysserv\systime.cpp sysserv\syswait.cpp sysserv\valloc.cpp timer.cpp utils\circ_buf.cpp utils\lnklist.cpp utils\pipe.cpp utils\ring.cpp _crt.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I..\include /ZI /nologo /W0 /WX- /Od /Oy /D ARCH_X64 /D USE_APIC /D X64 /D _DEBUG_ON_ /D _MBCS /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /GR- /FAs /Fa"x64\Debug\\" /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt arch\x86_64\apic.cpp arch\x86_64\apinit.cpp arch\x86_64\x86_64_signal.cpp arch\x86_64\cpu.cpp arch\x86_64\exception.cpp arch\x86_64\ioapic.cpp arch\x86_64\kheap.cpp arch\x86_64\kstack.cpp arch\x86_64\map.cpp arch\x86_64\pcpu.cpp arch\x86_64\pic.cpp arch\x86_64\systable.cpp arch\x86_64\thread.cpp arch\x86_64\user64.cpp arch\x86_64\paging.cpp atomic\mutex.cpp console.cpp drivers\acpi\acpi.cpp drivers\ahci.cpp drivers\ahci_disk.cpp drivers\ata.cpp drivers\kybrd.cpp drivers\mouse.cpp drivers\pci.cpp drivers\pcie.cpp drivers\rtc.cpp audrv.cpp exit.cpp fs\devfs.cpp fs\fat\fat.cpp fs\fat\fat_f.cpp fs\fat\fat_util.cpp fs\fat\fat_dir.cpp fs\gpt.cpp fs\ttype.cpp fs\vfs.cpp hal.cpp init.cpp ipc\pointdev.cpp ipc\message.cpp ipc\postbox.cpp ipc\pri_loop.cpp libmngr.cpp mmngr\aummap.cpp mmngr\mmfault.cpp mmngr\shmem.cpp mmngr\vma.cpp net\arp.cpp net\aunet.cpp net\ethernet.cpp pe.cpp pmmngr.cpp proc.cpp screen.cpp serial.cpp shirq.cpp sound.cpp stdio.cpp string.cpp sysserv\ioquery.cpp sysserv\sysfb.cpp sysserv\sysfile.cpp sysserv\sysmem.cpp sysserv\sysmouse.cpp sysserv\sysproc.cpp sysserv\systhread.cpp sysserv\systime.cpp sysserv\syswait.cpp sysserv\valloc.cpp timer.cpp utils\circ_buf.cpp utils\lnklist.cpp utils\pipe.cpp utils\ring.cpp _crt.cpp
      1>cl : Command line warning D9038: /ZI is not supported on this platform; enabling /Zi instead
      1>cl : Command line warning D9007: '/Gm' requires '/Zi'; option ignored
      1>cl : Command line warning D9002: ignoring unknown option '/arch:SSE'
@@ -550,6 +550,7 @@
          pcie.cpp
          rtc.cpp
          audrv.cpp
+         exit.cpp
          devfs.cpp
          fat.cpp
          fat_f.cpp
@@ -562,9 +563,9 @@
          init.cpp
          pointdev.cpp
          message.cpp
-         postbox.cpp
          Generating Code...
          Compiling...
+         postbox.cpp
          pri_loop.cpp
          libmngr.cpp
          aummap.cpp
@@ -584,9 +585,9 @@
          stdio.cpp
          string.cpp
          ioquery.cpp
-         sysfb.cpp
          Generating Code...
          Compiling...
+         sysfb.cpp
          sysfile.cpp
          sysmem.cpp
          sysmouse.cpp
@@ -632,6 +633,7 @@
          x64\Debug\pcie.obj
          x64\Debug\rtc.obj
          x64\Debug\audrv.obj
+         x64\Debug\exit.obj
          x64\Debug\devfs.obj
          x64\Debug\fat.obj
          x64\Debug\fat_f.obj
@@ -692,4 +694,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:06.24
+Time Elapsed 00:00:04.60

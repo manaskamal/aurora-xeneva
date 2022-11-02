@@ -52,7 +52,7 @@ typedef struct _process_ {
 	char *name;
 	main_thread entry_point;
 	thread_t * threads[255]; 
-	thread_t * thread_data_pointer;
+	thread_t * main_thread;
 	uint8_t num_thread;
 	size_t   image_size;
 	uint64_t* cr3;
@@ -69,7 +69,16 @@ typedef struct _process_ {
 	struct _process_ *parent;
 }process_t;
 
-
+/**
+ * add_process -- Adds a process to the process list
+ * @param proc -- process address
+ */
+extern void add_process (process_t *proc);
+/**
+ * remove_process -- removes a process from the process list
+ * @param proc -- process address
+ */
+extern void remove_process (process_t *proc);
 /*
  * AuInsertVMArea -- Insert vm area object to given process
  * @param proc -- process where to insert vm object
@@ -126,16 +135,6 @@ extern uint64_t* create_inc_stack (uint64_t* cr3);
  */
 extern int AuCreateProcess(const char* filename, char* procname);
 
-/**
- * kill_process -- kills the current process
- */
-extern void kill_process ();
-
-/**
- * kill_process_by_id -- kills a process by its id
- * @param id -- the id of the thread to be killed
- */
-extern void kill_process_by_id (uint16_t id);
 
 /**
  * get_num_process -- returns the number of process
