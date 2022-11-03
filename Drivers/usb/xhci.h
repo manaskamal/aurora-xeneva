@@ -313,6 +313,7 @@ typedef struct _usb_dev_ {
 	xhci_port_regs_t *ports;
 	uint32_t num_slots;
 	uint32_t num_ports;
+	uint16_t max_intrs;
 	uint8_t irq;
 	uint64_t* dev_ctx_base_array;
 	xhci_trb_t *cmd_ring;

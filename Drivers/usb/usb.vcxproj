@@ -148,6 +148,7 @@
     <ClCompile Include="xhci_cmd.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="dev\usb_hid.h" />
     <ClInclude Include="usb_std_def.h" />
     <ClInclude Include="usb_thr.h" />
     <ClInclude Include="xhci.h" />

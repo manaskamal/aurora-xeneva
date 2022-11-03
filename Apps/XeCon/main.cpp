@@ -70,6 +70,7 @@ XE_EXTERN int XeMain (int argc, char* argv[]) {
 
 	pri_event_t ev;
 	int bytes_ret = 0;
+	int ret_code = 0;
 	for(;;) {
 		bytes_ret = sys_read_file(master_fd,term->buffer, NULL);
 		for (int i = 0; i < bytes_ret; i++)
@@ -81,7 +82,7 @@ XE_EXTERN int XeMain (int argc, char* argv[]) {
 			XEUpdateWindow(win,term->base.x, term->base.y, term->base.w, term->base.h, true);
 		}
 
-		ioquery(event_fd,PRI_LOOP_GET_EVENT, &ev);
+		ret_code = ioquery(event_fd,PRI_LOOP_GET_EVENT, &ev);
 		if (ev.type != 0) {
 			if (ev.type == 201) {
 				XEWindowMouseHandle(win,ev.dword,ev.dword2,ev.dword3,0);
@@ -96,6 +97,7 @@ XE_EXTERN int XeMain (int argc, char* argv[]) {
 
 		}
 		
-		sys_sleep(500);
+		if (ret_code == -1)
+			sys_sleep(100);
 	}
 }

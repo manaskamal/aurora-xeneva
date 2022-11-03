@@ -51,7 +51,7 @@ static int __request_buffer_height = 0;
  * XeSendEventPRIWM -- Sends a message to PRIWM
  * @param event -- message body
  */
-void XeSendEventPRIWM (pri_event_t *event) {
+void XeSendEventPRIWM (pri_event_t *event, int event_fd) {
 	void* address = (void*)PRI_WM_RECEIVER;
 	pri_event_t *data = (pri_event_t*)address;
 	int count = 10;
@@ -76,10 +76,9 @@ force:
 XeApp* XeStartApplication(int argc, char* argv[]) {
 	int event_fd = XePriLoopCreate();
 
-	sys_print_text ("Initializing font \r\n");
+	
 	/* Start truetype font engine */
 	acrylic_initialize_font();
-	sys_print_text ("Font initialized \r\n");
 
 	XeApp *app = (XeApp*)malloc(sizeof(XeApp));
 	memset(app, 0, sizeof(XeApp));
@@ -95,13 +94,13 @@ XeApp* XeStartApplication(int argc, char* argv[]) {
 	e.dword3 = __request_buffer_width;
 	e.dword4 = __request_buffer_height;
 	e.dword5 = 0;
-	XeSendEventPRIWM(&e);
+	XeSendEventPRIWM(&e, event_fd);
 	memset(&e, 0, sizeof(pri_event_t));
 	int sh_key, back_key = 0;
 
-
+	int ret_code = 0;
 	while(1){
-		ioquery(event_fd, PRI_LOOP_GET_EVENT, &e);
+		ret_code = ioquery(event_fd, PRI_LOOP_GET_EVENT, &e);
 		if (e.type != 0){
 
 			/* And we got a window from the server 
@@ -137,13 +136,15 @@ XeApp* XeStartApplication(int argc, char* argv[]) {
 				pri_event_t e;
 				e.type = PRIWM_WINDOW_SHOW;
 				e.from_id = get_current_pid();
-				XeSendEventPRIWM(&e);
+				XeSendEventPRIWM(&e, event_fd);
 
 				memset(&e, 0, sizeof(pri_event_t));
 				break;
 			}
 		}
-		sys_wait();
+
+		if (ret_code == -1)
+			sys_wait();
 	}
 
 	return app;
@@ -156,7 +157,7 @@ XeApp* XeStartApplication(int argc, char* argv[]) {
 XE_EXTERN XE_EXPORT void XECloseApplication (XeApp *app) {
 	pri_event_t ev;
 	ev.type = 102; //mark for close message
-	XeSendEventPRIWM(&ev);
+	XeSendEventPRIWM(&ev, app->event_fd);
 	memset(&ev, 0, sizeof(pri_event_t));
 	for(;;) {
 		ioquery(app->event_fd, PRI_LOOP_GET_EVENT, &ev);

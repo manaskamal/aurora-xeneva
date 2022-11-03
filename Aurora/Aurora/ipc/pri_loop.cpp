@@ -39,24 +39,65 @@
 
 pri_loop_box_t *first_loop = NULL;
 pri_loop_box_t *last_loop = NULL;
+bool _pri_loop_root_created_ = false;
+
 
 /*
- * TODO: Messages should be stored in a doubly-linked
- * list structures in each loop box!!!
+ * Messages are stored in a ring buffer pattern
+ * in each loop box!!!
  */
 
+void pri_loop_advance (pri_loop_box_t* loop) {
+
+	if (loop->full) {
+		loop->tail_idx = (loop->tail_idx + 1) % loop->size;
+	}
+
+	loop->head_idx = (loop->head_idx + 1) & loop->size;
+
+	loop->full = (loop->head_idx == loop->tail_idx);
+}
+
+
+void pri_loop_retreat (pri_loop_box_t* loop) {
+	loop->full = false;
+	loop->tail_idx = (loop->tail_idx + 1) % loop->size;
+}
+
+bool pri_loop_empty (pri_loop_box_t* loop) {
+	return (!loop->full && (loop->head_idx == loop->tail_idx));
+}
+
+bool pri_loop_full(pri_loop_box_t* loop)
+{
+	return loop->full;
+}
 
 /**
  * pri_loop_create -- create a new pri_loop_box 
  */
-void pri_loop_create () {
+void pri_loop_create (bool root) {
 	pri_loop_box_t *loop = (pri_loop_box_t*)malloc(sizeof(pri_loop_box_t));
-	loop->address = (void*)p2v((size_t)AuPmmngrAlloc());//malloc(sizeof(pri_event_t));
+	loop->address = (uint64_t*)p2v((size_t)AuPmmngrAlloc());//malloc(sizeof(pri_event_t));
 	memset(loop->address,0, 4096);
-	loop->owner_id = get_current_thread()->id;
-	loop->message_pending = 0;
+
+	if (root && _pri_loop_root_created_ == false){
+		loop->owner_id = PRI_LOOP_ROOT_ID; 
+		_pri_loop_root_created_ = true;
+	}else {
+		loop->owner_id = get_current_thread()->id;
+	}
+
 	loop->next = NULL;
 	loop->prev = NULL;
+	loop->head_idx = 0;
+	loop->tail_idx = 0;
+	loop->full = false;
+
+	/* speed of consuming/producing messages depends
+	 * on size of the loop box, less size =
+	 * low latency message consum/produce */
+	loop->size = 4096 / sizeof(pri_event_t);
 
 	if (first_loop == NULL)  {
 		first_loop = loop;
@@ -89,7 +130,6 @@ void pri_loop_destroy (pri_loop_box_t *box) {
 	}
 
 	AuPmmngrFree((void*)v2p((size_t)box->address));
-	//AuPmmngrFree(box);
 	free(box);
 }
 
@@ -118,10 +158,12 @@ void pri_put_message (pri_event_t *event) {
 	uint16_t owner_id = event->to_id;
 	for (pri_loop_box_t *loop = first_loop; loop != NULL; loop = loop->next) {
 		if (loop->owner_id == owner_id) {
-			if (loop->message_pending)
-				break;
-			memcpy (loop->address, event, sizeof(pri_event_t));
-			loop->message_pending = 1;
+
+			if (!pri_loop_full(loop)) {
+				memcpy (&loop->address[loop->head_idx], event, sizeof(pri_event_t));
+				pri_loop_advance(loop);
+			}
+			
 			break;
 		}
 	}
@@ -143,23 +185,30 @@ ret:
  * pri_get_message -- pops a message from specific pri_loop_box
  * @param event -- pointer where to store the specific message
  */
-void pri_get_message (pri_event_t *event) {
+int pri_get_message (pri_event_t *event, bool root) {
 	x64_cli();
+	int ret_code = PRI_LOOP_NO_MSG;
 
-	uint16_t owner_id = get_current_thread()->id;
+	uint16_t owner_id = 0;
+	if(root)
+		owner_id = PRI_LOOP_ROOT_ID;
+	else
+		owner_id = get_current_thread()->id;
+
 	for (pri_loop_box_t *loop = first_loop; loop != NULL; loop = loop->next) {
 		if (loop->owner_id == owner_id) {
-			if (loop->message_pending){
-				memcpy (event,loop->address, sizeof(pri_event_t));
-				memset (loop->address, 0, sizeof(pri_event_t));
-				loop->message_pending = false;
+
+			if (!pri_loop_empty(loop)) {
+				memcpy (event,&loop->address[loop->tail_idx], sizeof(pri_event_t));
+				memset (&loop->address[loop->tail_idx], 0, sizeof(pri_event_t));
+				pri_loop_retreat(loop);
+				ret_code = 1;
 			}
-			memset (loop->address, 0, sizeof(pri_event_t));
 			break;
 		}
 	}
 
-	return;
+	return ret_code;
 }
 
 /**
@@ -170,9 +219,14 @@ void pri_get_message (pri_event_t *event) {
  */
 int pri_loop_ioquery (vfs_node_t *file, int code, void *arg) {
 	x64_cli();
+	int ret_code = 1;
 	switch (code) {
 	case PRI_LOOP_CREATE: {
-		pri_loop_create();
+		pri_loop_create(false);
+		break;
+	}
+	case PRI_LOOP_CREATE_ROOT: {
+		pri_loop_create(true);
 		break;
 	}
 	case PRI_LOOP_DESTROY: {
@@ -193,13 +247,20 @@ int pri_loop_ioquery (vfs_node_t *file, int code, void *arg) {
 
 	case PRI_LOOP_GET_EVENT: {
 		pri_event_t e;
-		pri_get_message(&e);
+		ret_code = pri_get_message(&e, false);
+		memcpy (arg,&e,sizeof(pri_event_t));
+		break;
+	}
+
+	case PRI_LOOP_GET_EVENT_ROOT: {
+		pri_event_t e;
+		ret_code = pri_get_message(&e, true);
 		memcpy (arg,&e,sizeof(pri_event_t));
 		break;
 	}
 	}
 
-	return 1;
+	return ret_code;
 }
 
 /**
@@ -220,4 +281,5 @@ void pri_loop_init () {
 	node->read_blk = 0;
 	node->ioquery = pri_loop_ioquery;
 	vfs_mount ("/dev/pri_loop", node, 0);
+	_pri_loop_root_created_ = false;
 }

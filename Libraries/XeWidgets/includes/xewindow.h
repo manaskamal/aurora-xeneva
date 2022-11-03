@@ -209,13 +209,13 @@ XE_EXTERN XE_EXPORT void XERedrawWindow (XEWindow *win);
  * @param w -- width
  * @param h -- height
  */
-XE_EXTERN XE_EXPORT void XEResizeWindow (int w, int h) ;
+XE_EXTERN XE_EXPORT void XEResizeWindow (XEWindow* win,int w, int h) ;
 
 
 /*
  * XEWindowSetAttrib -- Set window attributes/properties
  * @param attrib -- attribute value
  */
-XE_EXTERN XE_EXPORT void XEWindowSetAttrib (uint8_t attrib);
+XE_EXTERN XE_EXPORT void XEWindowSetAttrib (XEWindow* win,uint8_t attrib);
 
 #endif

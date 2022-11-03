@@ -223,7 +223,7 @@ XE_EXTERN XE_EXPORT void XEShowWindow(XEWindow *win) {
 		pri_event_t e;
 		e.type = PRIWM_WINDOW_SHOW;
 		e.from_id = get_current_pid();
-		XeSendEventPRIWM(&e);
+		XeSendEventPRIWM(&e, win->app->event_fd);
 		win->first_time = false;
 	}
 }
@@ -316,23 +316,23 @@ XE_EXTERN XE_EXPORT void XEWindowHandleResize (XeApp *app, XEWindow *win, uint16
  * @param w -- width
  * @param h -- height
  */
-XE_EXTERN XE_EXPORT void XEResizeWindow (int w, int h) {
+XE_EXTERN XE_EXPORT void XEResizeWindow (XEWindow* win,int w, int h) {
 	pri_event_t ev;
 	ev.type = 108;
 	ev.dword = w;
 	ev.dword2 = h;
-	XeSendEventPRIWM(&ev);
+	XeSendEventPRIWM(&ev,win->app->event_fd);
 }
 
 /*
  * XEWindowSetAttrib -- Set window attributes/properties
  * @param attrib -- attribute value
  */
-XE_EXTERN XE_EXPORT void XEWindowSetAttrib (uint8_t attrib) {
+XE_EXTERN XE_EXPORT void XEWindowSetAttrib (XEWindow* win,uint8_t attrib) {
 	pri_event_t ev;
 	ev.type = 109;
 	ev.dword = attrib;
-	XeSendEventPRIWM(&ev);
+	XeSendEventPRIWM(&ev, win->app->event_fd);
 }
 
 

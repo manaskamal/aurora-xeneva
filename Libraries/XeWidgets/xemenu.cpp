@@ -49,14 +49,14 @@ void  XEMenubarMouseEvent (XEWidget *widget, XEWindow *window, int mouse_x, int 
 
 					if (menubar->active_menu && menubar->active_menu != menu &&
 						menubar->active_menu->visible == true) {
-						XEQuickWindowClose(menubar->active_menu->quickwin);
+						XEQuickWindowClose(menubar->active_menu->quickwin, window);
 						menubar->active_menu->visible = false;
 						//menubar->active_menu->quickwin->server->hide = true;
 						menubar->active_menu = NULL;
 					}
 
 					if (menu->visible) {
-						XEQuickWindowClose(menu->quickwin);
+						XEQuickWindowClose(menu->quickwin, window);
 						//menu->quickwin->server->hide = true;
 						menu->visible = false;
 					}else {

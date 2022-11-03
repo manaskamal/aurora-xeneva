@@ -68,7 +68,7 @@ typedef struct _tele_type_ {
 #define TIOSPGRP    0x5405
 
 
-extern void ttype_init ();
+extern void AuTTypeInit ();
 /*
  * ttype_create_master -- creates a master device file
  * @param tty -- Pointer to ttype structure

@@ -11,5 +11,13 @@
     <ClInclude Include="xhci_cmd.h" />
     <ClInclude Include="usb_thr.h" />
     <ClInclude Include="usb_std_def.h" />
+    <ClInclude Include="dev\usb_hid.h">
+      <Filter>dev</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="dev">
+      <UniqueIdentifier>{18d2f353-9835-4d04-8b52-752b1aa76c88}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>

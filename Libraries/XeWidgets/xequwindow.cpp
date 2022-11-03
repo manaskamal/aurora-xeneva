@@ -47,13 +47,13 @@ XEQuickWindow * XECreateQuickWindow (XeApp *app, int x, int y, int w, int h, cha
 	e.dword2 = y;
 	e.dword3 = w;
 	e.dword4 = h;
-	XeSendEventPRIWM(&e);
+	XeSendEventPRIWM(&e, app->event_fd);
 
 	memset(&e, 0, sizeof(pri_event_t));
 	int sh_key, back_key = 0;
-
+	int ret_code = 0;
 	while(1){
-		ioquery(app->event_fd, PRI_LOOP_GET_EVENT, &e);
+		ret_code = ioquery(app->event_fd, PRI_LOOP_GET_EVENT, &e);
 		if (e.type != 0){
 			/* And we got a window from the server 
 			 * Server provides 4 parameters ->    
@@ -82,9 +82,9 @@ XEQuickWindow * XECreateQuickWindow (XeApp *app, int x, int y, int w, int h, cha
 				quickw->server_win_key = sh_key;
 				quickw->buffer_key = back_key;
 
-				/*for (int i = 0; i < w; i++)
+				for (int i = 0; i < w; i++)
 					for (int j = 0; j < h; j++)
-						quickw->buffer[i + j * quickw->server->w] = LIGHTSILVER;*/
+						quickw->buffer[i + j * quickw->server->w] = LIGHTSILVER;
 
 				quickw->server->dirty = true;
 				memset(&e, 0, sizeof(pri_event_t));
@@ -92,7 +92,8 @@ XEQuickWindow * XECreateQuickWindow (XeApp *app, int x, int y, int w, int h, cha
 			}
 			
 		}
-		sys_wait();
+		if (ret_code == -1)
+			sys_wait();
 	}
 	return quickw;
 }
@@ -101,7 +102,7 @@ XEQuickWindow * XECreateQuickWindow (XeApp *app, int x, int y, int w, int h, cha
  * XEQuickWindowClose -- Closes opened quick window
  * @param quickw -- Pointer to XEQuickWindow
  */
-void XEQuickWindowClose (XEQuickWindow *quickw) {
+void XEQuickWindowClose (XEQuickWindow *quickw, XEWindow* win) {
 	quickw->server->close = true;
 	free(quickw->title);
 	sys_shm_unlink(quickw->server_win_key);
@@ -110,7 +111,7 @@ void XEQuickWindowClose (XEQuickWindow *quickw) {
 	pri_event_t e;
 	memset(&e, 0, sizeof(pri_event_t));
 	e.type = PRIWM_POPUP_WIN_CLOSE;
-	XeSendEventPRIWM(&e);
+	XeSendEventPRIWM(&e,win->app->event_fd);
 }
 
 /*

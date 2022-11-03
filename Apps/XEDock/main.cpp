@@ -166,20 +166,23 @@ XE_EXTERN XE_EXPORT int XeMain (int argc, char* argv[]) {
 
 	Image *img = load_wallpaper("/kati.jpg");
 	
-	XEWindowSetAttrib((1<<1));
+	XEWindowSetAttrib(win,(1<<1));
 	XEShowWindow(win);
 
 
 	pri_event_t ev;
+	int ret_code = 0;
 	while(1) {
-		ioquery(event_fd,PRI_LOOP_GET_EVENT, &ev);
+		ret_code = ioquery(event_fd,PRI_LOOP_GET_EVENT, &ev);
 		if (ev.type != NULL) {
 			if (ev.type == 201) {
 				//XEWindowMouseHandle(win,ev.dword,ev.dword2,ev.dword3,0);
 				memset(&ev, 0, sizeof(pri_event_t));
 			}
 		}
-		sys_wait();
+
+		if (ret_code == -1)
+			sys_wait();
 	}
 	return 0;
 }

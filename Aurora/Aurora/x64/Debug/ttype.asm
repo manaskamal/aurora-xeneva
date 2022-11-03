@@ -16,15 +16,15 @@ _BSS	SEGMENT
 ?last@@3PEAU_tele_type_@@EA DQ 01H DUP (?)		; last
 _BSS	ENDS
 CONST	SEGMENT
-$SG3716	DB	'/dev/', 00H
+$SG3717	DB	'/dev/', 00H
 	ORG $+2
-$SG3717	DB	'ttym', 00H
+$SG3718	DB	'ttym', 00H
 	ORG $+3
-$SG3725	DB	'/dev/', 00H
+$SG3726	DB	'/dev/', 00H
 	ORG $+2
-$SG3726	DB	'ttys', 00H
+$SG3727	DB	'ttys', 00H
 CONST	ENDS
-PUBLIC	?ttype_init@@YAXXZ				; ttype_init
+PUBLIC	?AuTTypeInit@@YAXXZ				; AuTTypeInit
 PUBLIC	?ttype_create_master@@YAPEAU_vfs_node_@@PEAU_tele_type_@@@Z ; ttype_create_master
 PUBLIC	?ttype_create_slave@@YAPEAU_vfs_node_@@PEAU_tele_type_@@@Z ; ttype_create_slave
 PUBLIC	?ttype_create@@YAHPEAH0@Z			; ttype_create
@@ -1198,14 +1198,14 @@ $LN3:
 ; 268  : 	char sname[10];
 ; 269  : 	strcpy (sname, "/dev/");
 
-	lea	rdx, OFFSET FLAT:$SG3725
+	lea	rdx, OFFSET FLAT:$SG3726
 	lea	rcx, QWORD PTR sname$[rsp]
 	call	strcpy
 
 ; 270  : 	strcpy (sname+5, "ttys");
 
 	lea	rax, QWORD PTR sname$[rsp+5]
-	lea	rdx, OFFSET FLAT:$SG3726
+	lea	rdx, OFFSET FLAT:$SG3727
 	mov	rcx, rax
 	call	strcpy
 
@@ -1338,14 +1338,14 @@ $LN3:
 ; 235  : 	char mname[10];
 ; 236  : 	strcpy (mname, "/dev/");
 
-	lea	rdx, OFFSET FLAT:$SG3716
+	lea	rdx, OFFSET FLAT:$SG3717
 	lea	rcx, QWORD PTR mname$[rsp]
 	call	strcpy
 
 ; 237  : 	strcpy (mname+5, "ttym");
 
 	lea	rax, QWORD PTR mname$[rsp+5]
-	lea	rdx, OFFSET FLAT:$SG3717
+	lea	rdx, OFFSET FLAT:$SG3718
 	mov	rcx, rax
 	call	strcpy
 
@@ -1456,7 +1456,7 @@ _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\fs\ttype.cpp
 _TEXT	SEGMENT
-?ttype_init@@YAXXZ PROC					; ttype_init
+?AuTTypeInit@@YAXXZ PROC				; AuTTypeInit
 
 ; 362  : 	root = NULL;
 
@@ -1477,6 +1477,6 @@ _TEXT	SEGMENT
 ; 366  : }
 
 	ret	0
-?ttype_init@@YAXXZ ENDP					; ttype_init
+?AuTTypeInit@@YAXXZ ENDP				; AuTTypeInit
 _TEXT	ENDS
 END

@@ -39,6 +39,11 @@
 #define PRI_LOOP_DESTROY 402
 #define PRI_LOOP_PUT_EVENT 403
 #define PRI_LOOP_GET_EVENT 404
+#define PRI_LOOP_CREATE_ROOT 405
+#define PRI_LOOP_GET_EVENT_ROOT 406
+
+#define PRI_LOOP_NO_MSG  -1
+#define PRI_LOOP_ROOT_ID  1
 
 /*
  * pri_event_t -- event message structure
@@ -66,9 +71,12 @@ typedef struct _pri_event_ {
  * pri_loop_box_t -- loop_box structure
  */
 typedef struct _pri_loop_box_ {
-	void* address;
+	uint64_t* address;
 	uint16_t owner_id;
-	bool message_pending;
+	int head_idx;  //Message enqueue
+	int tail_idx;  //Message dequeue
+	bool full;
+	uint16_t size;
 	struct _pri_loop_box_ *next;
 	struct _pri_loop_box_ *prev;
 }pri_loop_box_t;

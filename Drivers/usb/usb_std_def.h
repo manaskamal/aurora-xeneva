@@ -81,6 +81,34 @@ typedef struct _dev_desc_ {
 }usb_dev_desc_t;
 #pragma pack(pop)
 
+#pragma pack(push,1)
+typedef struct _interface_desc_ {
+	uint8_t bLength;
+	uint8_t bDescriptorType;
+	uint8_t bInterfaceNumber;
+	uint8_t bAlternateSetting;
+	uint8_t bNumEndpoints;
+	uint8_t bInterfaceClass;
+	uint8_t bInterfaceSubClass;
+	uint8_t bInterfaceProtocol;
+	uint8_t iInterface;
+}usb_if_desc_t;
+#pragma pack(pop)
+
+#pragma pack(push,1)
+typedef struct _qualifier_desc_ {
+	uint8_t bLength;
+	uint8_t bDescriptorType;
+	uint16_t bcdUSB;
+	uint8_t bDeviceClass;
+	uint8_t bDeviceSubClass;
+	uint8_t bDeviceProtocol;
+	uint8_t bMaxPacketSize0;
+	uint8_t bNumConfigurations;
+	uint8_t bReserved;
+}usb_qualifier_desc_t;
+#pragma pack(pop)
+
 
 /*
  * usb_get_device_desc -- sends USB_GET_DESCRIPTOR request to specific device

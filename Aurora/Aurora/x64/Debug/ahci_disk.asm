@@ -10,16 +10,16 @@ _BSS	SEGMENT
 ?sata_drive_port@@3PEAU_hba_port_@@EA DQ 01H DUP (?)	; sata_drive_port
 _BSS	ENDS
 CONST	SEGMENT
-$SG3679	DB	'[AHCI]: Port error ', 0dH, 0aH, 00H
+$SG3680	DB	'[AHCI]: Port error ', 0dH, 0aH, 00H
 	ORG $+2
-$SG3706	DB	'[AHCI]:Port Hung', 0aH, 00H
+$SG3707	DB	'[AHCI]:Port Hung', 0aH, 00H
 	ORG $+6
-$SG3712	DB	'[AHCI]: Port error ', 0dH, 0aH, 00H
+$SG3713	DB	'[AHCI]: Port error ', 0dH, 0aH, 00H
 	ORG $+2
-$SG3741	DB	'[AHCI]:Port Hung', 0aH, 00H
+$SG3742	DB	'[AHCI]:Port Hung', 0aH, 00H
 	ORG $+6
-$SG3760	DB	'[AHCI]: Port Supports cold presence %d', 0aH, 00H
-$SG3777	DB	'[AHCI]: Model -> %s', 0aH, 00H
+$SG3761	DB	'[AHCI]: Port Supports cold presence %d', 0aH, 00H
+$SG3778	DB	'[AHCI]: Model -> %s', 0aH, 00H
 CONST	ENDS
 PUBLIC	?ahci_disk_initialize@@YAXPEAU_hba_port_@@@Z	; ahci_disk_initialize
 PUBLIC	?ahci_disk_write@@YAXPEAU_hba_port_@@_KIPEA_K@Z	; ahci_disk_write
@@ -407,7 +407,7 @@ $LN5@ahci_disk_:
 
 ; 259  : 		printf ("[AHCI]:Port Hung\n");
 
-	lea	rcx, OFFSET FLAT:$SG3741
+	lea	rcx, OFFSET FLAT:$SG3742
 	call	printf
 $LN4@ahci_disk_:
 
@@ -969,7 +969,7 @@ $LN4@ahci_disk_:
 
 ; 141  : 			_debug_print_ ("[AHCI]: Port error \r\n");
 
-	lea	rcx, OFFSET FLAT:$SG3679
+	lea	rcx, OFFSET FLAT:$SG3680
 	call	_debug_print_
 
 ; 142  : 			break;
@@ -1262,7 +1262,7 @@ $LN6@ahci_disk_:
 
 ; 195  : 		printf ("[AHCI]:Port Hung\n");
 
-	lea	rcx, OFFSET FLAT:$SG3706
+	lea	rcx, OFFSET FLAT:$SG3707
 	call	printf
 $LN5@ahci_disk_:
 
@@ -1315,7 +1315,7 @@ $LN2@ahci_disk_:
 
 ; 202  : 			_debug_print_ ("[AHCI]: Port error \r\n");
 
-	lea	rcx, OFFSET FLAT:$SG3712
+	lea	rcx, OFFSET FLAT:$SG3713
 	call	_debug_print_
 
 ; 203  : 			break;
@@ -1462,7 +1462,7 @@ $LN10:
 
 	movzx	eax, BYTE PTR cold_presence$[rsp]
 	mov	edx, eax
-	lea	rcx, OFFSET FLAT:$SG3760
+	lea	rcx, OFFSET FLAT:$SG3761
 	call	printf
 $LN7@ahci_disk_:
 
@@ -1667,7 +1667,7 @@ $LN1@ahci_disk_:
 ; 340  : 	printf ("[AHCI]: Model -> %s\n", ata_device_name);
 
 	lea	rdx, QWORD PTR ata_device_name$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3777
+	lea	rcx, OFFSET FLAT:$SG3778
 	call	printf
 
 ; 341  : 

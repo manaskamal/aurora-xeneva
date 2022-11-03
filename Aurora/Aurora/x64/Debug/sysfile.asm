@@ -6,8 +6,8 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 CONST	SEGMENT
-$SG3943	DB	'dev', 00H
-$SG3957	DB	'/', 00H
+$SG3944	DB	'dev', 00H
+$SG3958	DB	'/', 00H
 CONST	ENDS
 PUBLIC	?sys_open_file@@YAHPEADPEAU_file_@@@Z		; sys_open_file
 PUBLIC	?sys_read_file@@YA_KHPEAEPEAU_file_@@@Z		; sys_read_file
@@ -407,7 +407,7 @@ $LN13:
 
 ; 127  : 		node = vfs_finddir("/");
 
-	lea	rcx, OFFSET FLAT:$SG3957
+	lea	rcx, OFFSET FLAT:$SG3958
 	call	?vfs_finddir@@YAPEAU_vfs_node_@@PEAD@Z	; vfs_finddir
 	mov	QWORD PTR node$[rsp], rax
 
@@ -767,7 +767,7 @@ $LN9@sys_open_f:
 ; 83   : 
 ; 84   : 	if (!(strcmp(pathname, "dev") == 0)) {
 
-	lea	rdx, OFFSET FLAT:$SG3943
+	lea	rdx, OFFSET FLAT:$SG3944
 	lea	rcx, QWORD PTR pathname$[rsp]
 	call	strcmp
 	test	eax, eax

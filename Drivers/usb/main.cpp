@@ -236,6 +236,8 @@ AU_EXTERN AU_EXPORT int AuDriverMain() {
 
 	usb_device->num_slots = (cap->cap_hcsparams1 & 0xFF);
 	usb_device->num_ports = (cap->cap_hcsparams1 >> 24);
+	usb_device->max_intrs = (cap->cap_hcsparams1 >> 8) & 0xffff;
+
 
 	/* We need to check, if controller supports port power switch, so that
 	 * individual ports can be powered on or off

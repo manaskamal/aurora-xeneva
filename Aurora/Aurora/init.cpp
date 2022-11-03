@@ -113,7 +113,7 @@ void _AuMain (KERNEL_BOOT_INFO *info) {
 	/*AuDriverLoadMem(info->driver_entry1);
 	for(;;);*/
 	AuVFSInit();
-	
+	AuInitializeSerialFile();
 	AuInitializeScreen(info);
 	AuConsoleInitialize(info);
 	AuSoundInitialize();
@@ -122,14 +122,7 @@ void _AuMain (KERNEL_BOOT_INFO *info) {
 	AuInitializeMouse();
 	AuNetInitialize();
 	
-	/***************************************************
-	 * PHASE - 2
-	 ***************************************************
-	 */
 
-	//================================================
-	//! Initialize the scheduler here
-	//!===============================================
 	AuInitializeScheduler();
 
 	//Here we initialise all drivers stuffs
@@ -149,7 +142,7 @@ void _AuMain (KERNEL_BOOT_INFO *info) {
 
 	// Initialize the process list
 	AuProcessListInit();
-	ttype_init();
+	AuTTypeInit();
 	
 	/* Start the sound subsystem */
 	AuSoundStart();

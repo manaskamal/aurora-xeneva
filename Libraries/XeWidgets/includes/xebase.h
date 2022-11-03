@@ -66,7 +66,7 @@ typedef struct _xe_app_ {
  * XeSendEventPRIWM -- Sends a message to PRIWM
  * @param event -- message body
  */
-XE_EXTERN XE_EXPORT void XeSendEventPRIWM (pri_event_t *event);
+XE_EXTERN XE_EXPORT void XeSendEventPRIWM (pri_event_t *event, int event_fd);
 /*
  * XeStartApplication -- Initializes all the required stuffs
  * for GUI Application

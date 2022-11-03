@@ -1300,7 +1300,7 @@ XE_EXTERN int XeMain (int argc, char* argv[]) {
 			memset(&key_msg, 0, sizeof(message_t));
 		}
 
-               		
+ 		
 		/* PRI_WIN_CREATE -- handles window 
 		 * creation message */
 		if (event.type == PRI_WIN_CREATE) {
@@ -1480,6 +1480,7 @@ XE_EXTERN int XeMain (int argc, char* argv[]) {
 
 			memset(&event, 0, sizeof(pri_event_t));
 		}
+		
 
 		diff_tick = sys_get_system_tick();
 		int delta = diff_tick - frame_tick;

@@ -358,7 +358,7 @@ int ttype_create (int* master_fd, int* slave_fd) {
 }
 
 
-void ttype_init () {
+void AuTTypeInit () {
 	root = NULL;
 	last = NULL;
 	master_count = 1;

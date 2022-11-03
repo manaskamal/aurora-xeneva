@@ -71,7 +71,7 @@ XE_EXTERN XE_EXPORT XEQuickWindow* XECreateQuickWindow (XeApp *app,int x, int y,
  * XEQuickWindowClose -- Closes opened quick window
  * @param quickw -- Pointer to XEQuickWindow
  */
-XE_EXTERN XE_EXPORT void XEQuickWindowClose (XEQuickWindow *quickw);
+XE_EXTERN XE_EXPORT void XEQuickWindowClose (XEQuickWindow *quickw, XEWindow* win);
 
 
 /*
