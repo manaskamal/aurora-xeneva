@@ -16,7 +16,7 @@
 #include <acrylic.h>
 #include <font.h>
 #include <sys\_xeneva.h>
-
+#include <color.h>
 #include <xewidgets.h>
 #include <canvas.h>
 #include <stdlib.h>
@@ -42,13 +42,13 @@ XE_EXTERN int XeMain (int argc, char* argv[]) {
 
 
 	XEWindow *win = XECreateWindow(app,canvas, 1,"XeConsole",canvas->width/2 - 400/2,canvas->height/2 - 400/2);
-	win->color = 0xFF3E3E3E;
+	win->color = 0xCC3E3E3E;
 
 	XETerm *term = XECreateTerm(0,23, app->buffer_width, app->buffer_height - 23);
 
 	XEWindowAddWidget(win, (XEWidget*)term);
 
-	win->shwin->alpha = false;
+	win->shwin->alpha = true;;
 	XEShowWindow(win);
 
 	sys_set_signal(SIGINT, HandleSignal);

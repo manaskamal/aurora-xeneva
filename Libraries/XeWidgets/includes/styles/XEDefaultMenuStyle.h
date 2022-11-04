@@ -33,5 +33,6 @@
 #include <xewidget.h>
 #include <xewindow.h>
 
-
+extern void XEDefaultMenuPainter (XEWidget *widget, XEWindow* window);
+extern void XEDefaultMenuItemPainter (XEWidget* widget, XEWindow* window);
 #endif

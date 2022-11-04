@@ -35,7 +35,7 @@
 
 void XETermPainter (XEWidget *widget, XEWindow *win) {
 	XETerm *term = (XETerm*)widget;
-	acrylic_draw_rect_filled(win->ctx,widget->x, widget->y,widget->w, widget->h, term->back_color);
+	//acrylic_draw_rect_filled(win->ctx,widget->x, widget->y,widget->w, widget->h, term->back_color);
 	//acrylic_draw_arr_string(win->ctx, widget->x + 8, widget->y, "Hello World", WHITE);
 	int _x = term->cursor_x + 2; 
 	int _y = term->cursor_y + 23;

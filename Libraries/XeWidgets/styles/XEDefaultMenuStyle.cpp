@@ -30,6 +30,37 @@
 #include "styles\XEDefaultMenuStyle.h"
 #include <canvas.h>
 #include <acrylic.h>
+#include <color.h>
+#include <xemenu.h>
+#include <sys/_term.h>
+#include <font.h>
 
 void XEDefaultMenuPainter (XEWidget *widget, XEWindow* window) {
+	XEMenu *menu = (XEMenu*)widget;
+
+	acrylic_draw_rect_filled(menu->pixbuf, 0,0,menu->quickwin->server->w,menu->quickwin->server->h-1,WHITE);
+
+	if (!menu->calculated_metrics) 
+		XEMenuCalculateItemMetrics(menu);
+
+
+	for (int i = 0; i < menu->menu_items->pointer; i++) {
+		XEMenuItemButton *button = (XEMenuItemButton*)list_get_at(menu->menu_items, i);
+		if (button->base.painter)
+			button->base.painter((XEWidget*)button,window);
+	}
+
+	acrylic_draw_rect_unfilled(menu->pixbuf, 0,0,menu->quickwin->server->w,menu->quickwin->server->h-1,BLACK);
+
+}
+
+void XEDefaultMenuItemPainter (XEWidget* widget, XEWindow* window) {
+	XEMenuItemButton *menu_item = (XEMenuItemButton*)widget;
+	acrylic_font_set_size(10);
+	if (menu_item->parent) {
+		int font_h = acrylic_font_get_height(menu_item->name);
+		int font_w = acrylic_font_get_length(menu_item->name);
+		acrylic_font_draw_string(menu_item->parent->pixbuf, menu_item->name,menu_item->base.x, 
+			menu_item->base.y + menu_item->base.h/2 - font_h/2, 10, BLACK);
+	}
 }

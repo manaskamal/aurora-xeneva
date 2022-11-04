@@ -45,6 +45,7 @@ typedef struct _xequickserver_ {
 	bool dirty;
 	bool close;
 	bool hide;
+	bool popuped;
 }XEQuickServer;
 
 typedef struct _xequick_win_ {
@@ -66,6 +67,19 @@ typedef struct _xequick_win_ {
  * @param title -- title of the window
  */
 XE_EXTERN XE_EXPORT XEQuickWindow* XECreateQuickWindow (XeApp *app,int x, int y, int w, int h, char* title);
+
+
+/*
+ * XEQuickWindowUpdate -- Update canvas contents to Quick Window buffer
+ * @param quickw -- Pointer to	QuickWindow
+ * @param canvas -- Pointer to canvas
+ * @param x -- X location
+ * @param y -- Y location
+ * @param w -- Width of the update region
+ * @param h -- Height of the update region
+ */
+XE_EXTERN XE_EXPORT void XEQuickWindowUpdate (XEQuickWindow *quickw, canvas_t* canvas, int x, int y, int w, int h);
+
 
 /*
  * XEQuickWindowClose -- Closes opened quick window

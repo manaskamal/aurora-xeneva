@@ -59,12 +59,18 @@ typedef struct _xe_menu_ {
 	list_t *menu_items;
 	bool visible;
 	_xe_menu_ *parent_link;
+	int menu_last_mx;
+	int menu_last_my;
+	bool calculated_metrics;
 }XEMenu;
 
+
+#define MENU_ITEM_BUTTON_HEIGHT 15
 
 typedef struct _xe_menu_item_button_ {
 	XEWidget base;
 	char* name;
+	XEMenu* parent;
 	XEMenu *next_menu;
 }XEMenuItemButton;
 
@@ -74,6 +80,8 @@ typedef struct _xe_menubar_ {
 	list_t *menu_list;
 	uint8_t custom_color;
 	XEMenu* active_menu;
+	int mouse_last_x;
+	int mouse_last_y;
 }XEMenubar;
 
 /*
@@ -87,12 +95,23 @@ XE_EXTERN XE_EXPORT XEMenubar* XECreateMenubar (XEWindow *window);
  */
 XE_EXTERN XE_EXPORT XEMenu *XECreateMenu (char* name);
 
+XE_EXTERN XE_EXPORT void XEMenuCalculateItemMetrics (XEMenu *menu);
+
+XE_EXTERN XE_EXPORT void XEMenuAddItem (XEMenu* menu, XEMenuItemButton* item);
+
 /*
  * XEMenubarAdd -- Adds a menu to menubar list
  * @param menubar -- Pointer to menubar
  * @param menu -- Pointer to menu
  */
 XE_EXTERN XE_EXPORT void XEMenubarAdd (XEMenubar *menubar, XEMenu* menu);
+
+/*
+ * XECreateMenuItem -- Creates a new menu item button
+ * @param text -- Button text
+ * @param next_menu -- links to next menu
+ */
+XE_EXTERN XE_EXPORT XEMenuItemButton * XECreateMenuItem (char* text,XEMenu *next_menu, XEMenu* parent);
 
 
 #endif

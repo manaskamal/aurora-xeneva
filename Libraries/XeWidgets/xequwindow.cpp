@@ -34,6 +34,7 @@
 #include <sys/_wait.h>
 #include <sys/_sleep.h>
 #include <stdlib.h>
+#include <fastcpy.h>
 #include <color.h>
 
 XEQuickWindow * XECreateQuickWindow (XeApp *app, int x, int y, int w, int h, char* title) {
@@ -71,7 +72,7 @@ XEQuickWindow * XECreateQuickWindow (XeApp *app, int x, int y, int w, int h, cha
 				void* backing_store = sys_shmat(back_id, 0, 0);
 				uint32_t *fb = (uint32_t*)backing_store;
 
-				XEQuickWindow *quickw = (XEQuickWindow*)malloc(sizeof(XEQuickWindow));
+				quickw = (XEQuickWindow*)malloc(sizeof(XEQuickWindow));
 				quickw->title = (char*)malloc(strlen(title)+1);
 				strcpy(quickw->title, title);
 				quickw->widget_list = list_init();
@@ -98,6 +99,20 @@ XEQuickWindow * XECreateQuickWindow (XeApp *app, int x, int y, int w, int h, cha
 	return quickw;
 }
 
+
+/*
+ * XEQuickWindowUpdate -- Update canvas contents to Quick Window buffer
+ * @param quickw -- Pointer to	QuickWindow
+ * @param canvas -- Pointer to canvas
+ * @param x -- X location
+ * @param y -- Y location
+ * @param w -- Width of the update region
+ * @param h -- Height of the update region
+ */
+ void XEQuickWindowUpdate (XEQuickWindow *quickw, canvas_t* canvas, int x, int y, int w, int h) {
+	 for (int i = 0; i < h; i++)
+		 fastcpy(quickw->buffer + (y + i) * quickw->server->w + x, canvas->address + (y + i) * quickw->server->w + x, w*4);
+ }
 /*
  * XEQuickWindowClose -- Closes opened quick window
  * @param quickw -- Pointer to XEQuickWindow

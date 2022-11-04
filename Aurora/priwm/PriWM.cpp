@@ -773,6 +773,21 @@ void pri_window_make_top (pri_window_t *win) {
  * @param win -- window to make focused
  */
 void pri_window_set_focused (pri_window_t * win, bool notify) {
+
+	/* new window gained focus, so any popup windows from previous
+	 * window should be hidden and mark its corrupted close bit to on
+	 */
+	if (focused_win != NULL && focused_win != win) {
+		for (int i = 0; i < focused_win->popup_wins->pointer; i++) {
+			pri_popup_win_t *pwin = (pri_popup_win_t*)list_get_at(focused_win->popup_wins, i);
+			if (pwin->shwin->popuped) {
+				pwin->shwin->close = true; //<- corrupted close
+				pwin->shwin->hide = true;
+				pwin->shwin->popuped = false;
+			}
+		}
+	}
+
 	/* check if it is already focused */
 	if (focused_win == win)
 		return;
@@ -827,6 +842,14 @@ void pri_window_move (pri_window_t *win, int x, int y) {
 		wh = canvas->height - info->y;
 	}
 
+	for (int i = 0; i < win->popup_wins->pointer; i++) {
+		pri_popup_win_t *popup_win = (pri_popup_win_t*)list_get_at(win->popup_wins, i);
+		if (popup_win->shwin->popuped) {
+			popup_win->shwin->hide = true;
+			popup_win->shwin->popuped = false;
+			popup_win->shwin->close = true; //<- corrupted close
+		}
+	}
 	pri_wallp_add_dirty_clip(wx, wy, ww, wh);
 	info->x = x;
 	info->y = y;
@@ -1031,9 +1054,15 @@ void compose_frame () {
 			}
 
 			if (pwin->shwin->hide) {
+				int popup_x = pwin->shwin->x;
+				int popup_y = pwin->shwin->y;
+				int popup_w = pwin->shwin->w;
+				int popup_h = pwin->shwin->h;
 				pwin->shwin->dirty = false;
 				pwin->shwin->hide = false;
-				_window_update_all_ = true;
+				//pri_wallp_add_dirty_clip(popup_x, popup_y, popup_w, popup_h);
+				info->dirty = 1;
+				//_window_update_all_ = true;
 			}
 		}
 	}

@@ -75,7 +75,7 @@ _Please refer to __"Drivers/"__ directory_
 
 
 # Screenshot
-![alt text](https://github.com/manaskamal/aurora-xeneva/blob/master/images/XEUINew2.png?raw=true)
+![alt text](https://github.com/manaskamal/aurora-xeneva/blob/master/images/XENEVA64-2022-11-04-18-07-25.png?raw=true)
                              _Aurora's Xeneva in 1024x768 resolution_
 
 # About Me:
