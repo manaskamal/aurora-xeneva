@@ -35,7 +35,9 @@ canvas_t *create_canvas (int width, int height) {
 
 	canvas_t *canvas = (canvas_t*)malloc(sizeof(canvas_t));
 	
-	uint32_t *address = acrylic_allocate_buffer(width * height * 4);
+	//uint32_t *address = acrylic_allocate_buffer(width * height * 4);
+	size_t sz = width * height * 4;
+	void* address = mmap(NULL,sz,0,0,0,0);
 		/*for (int i = 0; i < (width * height * 32) / 4096; i++)
 			valloc(0x0000600000000000 + i * 4096);*/
 
@@ -45,7 +47,7 @@ canvas_t *create_canvas (int width, int height) {
 	canvas->scanline = scanline;
 	canvas->ctx_width = width;
 	canvas->ctx_height = height;
-	canvas->address = address;   //0x0000600000000000;
+	canvas->address = (uint32_t*)address;   //0x0000600000000000;
 	canvas->pitch = pitch;
 	return canvas;
 }

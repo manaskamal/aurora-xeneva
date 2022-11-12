@@ -91,7 +91,7 @@ void  XEMenubarMouseEvent (XEWidget *widget, XEWindow *window, int mouse_x, int 
 
 						/* Here check for quick window, if it's already created */
 						if (menu->quickwin == NULL) {
-							int menu_w = 310;
+							int menu_w = 100;
 							int menu_h = 0;
 							if ((menu->menu_items->pointer * 20) > 100)
 								menu_h += menu->menu_items->pointer * 20;

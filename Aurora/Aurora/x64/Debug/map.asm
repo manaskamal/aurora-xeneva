@@ -5,6 +5,9 @@ include listing.inc
 INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
+CONST	SEGMENT
+$SG3889	DB	'[AU_UNMAP]: VMA Found ', 0dH, 0aH, 00H
+CONST	ENDS
 PUBLIC	?map_memory@@YAPEAX_KIE@Z			; map_memory
 PUBLIC	?unmap_memory@@YAXPEAXI@Z			; unmap_memory
 EXTRN	AuPmmngrAlloc:PROC
@@ -12,13 +15,16 @@ EXTRN	x64_cli:PROC
 EXTRN	AuMapPage:PROC
 EXTRN	AuUnmapPage:PROC
 EXTRN	AuGetFreePage:PROC
+EXTRN	?AuRemoveVMArea@@YAXPEAU_process_@@PEAU_vma_area_@@@Z:PROC ; AuRemoveVMArea
+EXTRN	?AuFindVMA@@YAPEAU_vma_area_@@_K@Z:PROC		; AuFindVMA
 EXTRN	?get_current_process@@YAPEAU_process_@@XZ:PROC	; get_current_process
+EXTRN	_debug_print_:PROC
 pdata	SEGMENT
 $pdata$?map_memory@@YAPEAX_KIE@Z DD imagerel $LN22
 	DD	imagerel $LN22+501
 	DD	imagerel $unwind$?map_memory@@YAPEAX_KIE@Z
-$pdata$?unmap_memory@@YAXPEAXI@Z DD imagerel $LN8
-	DD	imagerel $LN8+149
+$pdata$?unmap_memory@@YAXPEAXI@Z DD imagerel $LN9
+	DD	imagerel $LN9+193
 	DD	imagerel $unwind$?unmap_memory@@YAXPEAXI@Z
 pdata	ENDS
 xdata	SEGMENT
@@ -31,15 +37,16 @@ xdata	ENDS
 ; File e:\xeneva project\xeneva\aurora\aurora\arch\x86_64\map.cpp
 _TEXT	SEGMENT
 i$1 = 32
-address$ = 40
-c_proc$ = 48
+vm$ = 40
+address$ = 48
+c_proc$ = 56
 addr$ = 80
 length$ = 88
 ?unmap_memory@@YAXPEAXI@Z PROC				; unmap_memory
 
 ; 74   : void unmap_memory (void* addr, uint32_t length) {
 
-$LN8:
+$LN9:
 	mov	DWORD PTR [rsp+16], edx
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 72					; 00000048H
@@ -60,30 +67,55 @@ $LN8:
 ; 81   : 	 * kept for future use
 ; 82   : 	 */
 ; 83   : 
-; 84   : 	uint64_t address = (uint64_t)addr;
+; 84   : 	au_vm_area_t *vm = AuFindVMA((uint64_t)addr);
+
+	mov	rcx, QWORD PTR addr$[rsp]
+	call	?AuFindVMA@@YAPEAU_vma_area_@@_K@Z	; AuFindVMA
+	mov	QWORD PTR vm$[rsp], rax
+
+; 85   : 	if (vm != NULL) {
+
+	cmp	QWORD PTR vm$[rsp], 0
+	je	SHORT $LN6@unmap_memo
+
+; 86   : 		_debug_print_ ("[AU_UNMAP]: VMA Found \r\n");
+
+	lea	rcx, OFFSET FLAT:$SG3889
+	call	_debug_print_
+
+; 87   : 		AuRemoveVMArea(c_proc, vm);
+
+	mov	rdx, QWORD PTR vm$[rsp]
+	mov	rcx, QWORD PTR c_proc$[rsp]
+	call	?AuRemoveVMArea@@YAXPEAU_process_@@PEAU_vma_area_@@@Z ; AuRemoveVMArea
+$LN6@unmap_memo:
+
+; 88   : 	}
+; 89   : 
+; 90   : 	uint64_t address = (uint64_t)addr;
 
 	mov	rax, QWORD PTR addr$[rsp]
 	mov	QWORD PTR address$[rsp], rax
 
-; 85   : 	if (length == 4096) 
+; 91   : 	if (length == 1) 
 
-	cmp	DWORD PTR length$[rsp], 4096		; 00001000H
+	cmp	DWORD PTR length$[rsp], 1
 	jne	SHORT $LN5@unmap_memo
 
-; 86   : 		AuUnmapPage(address, true);
+; 92   : 		AuUnmapPage(address, true);
 
 	mov	dl, 1
 	mov	rcx, QWORD PTR address$[rsp]
 	call	AuUnmapPage
 $LN5@unmap_memo:
 
-; 87   : 
-; 88   : 	if (length > 4096) {
+; 93   : 
+; 94   : 	if (length > 1) {
 
-	cmp	DWORD PTR length$[rsp], 4096		; 00001000H
+	cmp	DWORD PTR length$[rsp], 1
 	jbe	SHORT $LN4@unmap_memo
 
-; 89   : 		for (int i = 0; i < length / 4096; i++) {
+; 95   : 		for (int i = 0; i < length / 4096; i++) {
 
 	mov	DWORD PTR i$1[rsp], 0
 	jmp	SHORT $LN3@unmap_memo
@@ -99,7 +131,7 @@ $LN3@unmap_memo:
 	cmp	DWORD PTR i$1[rsp], eax
 	jae	SHORT $LN1@unmap_memo
 
-; 90   : 			AuUnmapPage(address + i * 4096, true);
+; 96   : 			AuUnmapPage(address + i * 4096, true);
 
 	mov	eax, DWORD PTR i$1[rsp]
 	imul	eax, 4096				; 00001000H
@@ -111,16 +143,16 @@ $LN3@unmap_memo:
 	mov	rcx, rax
 	call	AuUnmapPage
 
-; 91   : 		}
+; 97   : 		}
 
 	jmp	SHORT $LN2@unmap_memo
 $LN1@unmap_memo:
 $LN4@unmap_memo:
 
-; 92   : 	}
-; 93   : 
-; 94   : 
-; 95   : }
+; 98   : 	}
+; 99   : 
+; 100  : 
+; 101  : }
 
 	add	rsp, 72					; 00000048H
 	ret	0

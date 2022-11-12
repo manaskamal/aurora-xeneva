@@ -17,7 +17,7 @@ $SG3976	DB	'Page Fault -> %x ', 0aH, 00H
 	ORG $+5
 $SG3977	DB	'RIP -> %x ', 0aH, 00H
 	ORG $+4
-$SG3978	DB	'Current thread -> %s ', 0aH, 00H
+$SG3978	DB	'Current thread -> %s,id -> %d ', 0aH, 00H
 CONST	ENDS
 PUBLIC	?AuHandlePageNotPresent@@YAX_K_NPEAX@Z		; AuHandlePageNotPresent
 EXTRN	printf:PROC
@@ -30,7 +30,7 @@ EXTRN	?AuFindVMA@@YAPEAU_vma_area_@@_K@Z:PROC		; AuFindVMA
 EXTRN	?fat32_read@@YA_KPEAU_vfs_node_@@PEA_K@Z:PROC	; fat32_read
 pdata	SEGMENT
 $pdata$?AuHandlePageNotPresent@@YAX_K_NPEAX@Z DD imagerel $LN13
-	DD	imagerel $LN13+347
+	DD	imagerel $LN13+370
 	DD	imagerel $unwind$?AuHandlePageNotPresent@@YAX_K_NPEAX@Z
 pdata	ENDS
 xdata	SEGMENT
@@ -41,6 +41,7 @@ xdata	ENDS
 ; File e:\xeneva project\xeneva\aurora\aurora\mmngr\mmfault.cpp
 _TEXT	SEGMENT
 i$1 = 32
+tv87 = 36
 vm$ = 40
 frame$ = 48
 phys_addr$2 = 56
@@ -142,9 +143,14 @@ $LN10@AuHandlePa:
 	lea	rcx, OFFSET FLAT:$SG3977
 	call	printf
 
-; 57   : 		printf ("Current thread -> %s \n", get_current_thread()->name);
+; 57   : 		printf ("Current thread -> %s,id -> %d \n", get_current_thread()->name, get_current_thread()->id);
 
 	call	get_current_thread
+	movzx	eax, WORD PTR [rax+242]
+	mov	DWORD PTR tv87[rsp], eax
+	call	get_current_thread
+	mov	ecx, DWORD PTR tv87[rsp]
+	mov	r8d, ecx
 	mov	rdx, QWORD PTR [rax+232]
 	lea	rcx, OFFSET FLAT:$SG3978
 	call	printf

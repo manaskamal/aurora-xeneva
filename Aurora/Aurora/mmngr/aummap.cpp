@@ -65,12 +65,12 @@ void* au_mmap (void* address, size_t length, int protect, int flags, int filedes
 
 	uint64_t size = length / 4096;
 	
-	if (size == 0)
+	if (size <= 0)
 		size = 1;
 	
 	au_vm_area_t *vma = (au_vm_area_t*)malloc(sizeof(au_vm_area_t));
 	vma->start = vaddr_start;
-	vma->end = vma->start + (size * 0x1000);
+	vma->end = vaddr_start + length;
 	vma->file = file;
 	vma->offset = offset;
 	vma->prot_flags = protect;
@@ -80,8 +80,8 @@ void* au_mmap (void* address, size_t length, int protect, int flags, int filedes
 
 	/* Map it quicky */
 	if (vma->file == NULL)
-		for (int i = 0; i < size; i++) {
-			AuMapPage((uint64_t)AuPmmngrAlloc(), vma->start + i * 4096, PAGING_USER);
+		for (int i = 0; i < length / 4096; i++) {
+			AuMapPage((uint64_t)AuPmmngrAlloc(), vaddr_start + i * 4096, PAGING_USER);
 		}
 	return address;
 }

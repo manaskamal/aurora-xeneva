@@ -16,7 +16,7 @@ EXTRN	?AuInsertVMArea@@YAXPEAU_process_@@PEAU_vma_area_@@@Z:PROC ; AuInsertVMAre
 EXTRN	?get_current_process@@YAPEAU_process_@@XZ:PROC	; get_current_process
 pdata	SEGMENT
 $pdata$?au_mmap@@YAPEAXPEAX_KHHH1@Z DD imagerel $LN11
-	DD	imagerel $LN11+425
+	DD	imagerel $LN11+447
 	DD	imagerel $unwind$?au_mmap@@YAPEAXPEAX_KHHH1@Z
 pdata	ENDS
 xdata	SEGMENT
@@ -28,11 +28,12 @@ xdata	ENDS
 _TEXT	SEGMENT
 i$1 = 32
 vma$ = 40
-size$ = 48
-vaddr_start$ = 56
+vaddr_start$ = 48
+size$ = 56
 file$ = 64
 proc$ = 72
-tv134 = 80
+tv93 = 80
+tv132 = 88
 address$ = 112
 length$ = 120
 protect$ = 128
@@ -125,10 +126,10 @@ $LN6@au_mmap:
 	mov	QWORD PTR size$[rsp], rax
 
 ; 67   : 	
-; 68   : 	if (size == 0)
+; 68   : 	if (size <= 0)
 
 	cmp	QWORD PTR size$[rsp], 0
-	jne	SHORT $LN5@au_mmap
+	ja	SHORT $LN5@au_mmap
 
 ; 69   : 		size = 1;
 
@@ -148,12 +149,12 @@ $LN5@au_mmap:
 	mov	rcx, QWORD PTR vaddr_start$[rsp]
 	mov	QWORD PTR [rax], rcx
 
-; 73   : 	vma->end = vma->start + (size * 0x1000);
+; 73   : 	vma->end = vaddr_start + length;
 
-	mov	rax, QWORD PTR size$[rsp]
-	imul	rax, 4096				; 00001000H
-	mov	rcx, QWORD PTR vma$[rsp]
-	add	rax, QWORD PTR [rcx]
+	mov	rax, QWORD PTR length$[rsp]
+	mov	rcx, QWORD PTR vaddr_start$[rsp]
+	add	rcx, rax
+	mov	rax, rcx
 	mov	rcx, QWORD PTR vma$[rsp]
 	mov	QWORD PTR [rcx+8], rax
 
@@ -200,7 +201,7 @@ $LN5@au_mmap:
 	cmp	QWORD PTR [rax+24], 0
 	jne	SHORT $LN4@au_mmap
 
-; 83   : 		for (int i = 0; i < size; i++) {
+; 83   : 		for (int i = 0; i < length / 4096; i++) {
 
 	mov	DWORD PTR i$1[rsp], 0
 	jmp	SHORT $LN3@au_mmap
@@ -210,20 +211,27 @@ $LN2@au_mmap:
 	mov	DWORD PTR i$1[rsp], eax
 $LN3@au_mmap:
 	movsxd	rax, DWORD PTR i$1[rsp]
-	cmp	rax, QWORD PTR size$[rsp]
+	mov	QWORD PTR tv93[rsp], rax
+	xor	edx, edx
+	mov	rax, QWORD PTR length$[rsp]
+	mov	ecx, 4096				; 00001000H
+	div	rcx
+	mov	rcx, QWORD PTR tv93[rsp]
+	cmp	rcx, rax
 	jae	SHORT $LN1@au_mmap
 
-; 84   : 			AuMapPage((uint64_t)AuPmmngrAlloc(), vma->start + i * 4096, PAGING_USER);
+; 84   : 			AuMapPage((uint64_t)AuPmmngrAlloc(), vaddr_start + i * 4096, PAGING_USER);
 
 	mov	eax, DWORD PTR i$1[rsp]
 	imul	eax, 4096				; 00001000H
 	cdqe
-	mov	rcx, QWORD PTR vma$[rsp]
-	add	rax, QWORD PTR [rcx]
-	mov	QWORD PTR tv134[rsp], rax
+	mov	rcx, QWORD PTR vaddr_start$[rsp]
+	add	rcx, rax
+	mov	rax, rcx
+	mov	QWORD PTR tv132[rsp], rax
 	call	AuPmmngrAlloc
 	mov	r8b, 4
-	mov	rcx, QWORD PTR tv134[rsp]
+	mov	rcx, QWORD PTR tv132[rsp]
 	mov	rdx, rcx
 	mov	rcx, rax
 	call	AuMapPage

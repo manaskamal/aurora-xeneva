@@ -1,8 +1,8 @@
-﻿Build started 04-11-2022 আবেলি 3:53:21.
+﻿Build started 06-11-2022 ৰাতিপু 7:39:30.
      1>Project "E:\Xeneva Project\Xeneva\xnlib\xnacrylic\xnacrylic.vcxproj" on node 2 (Rebuild target(s)).
      1>_NASM:
          _base.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp17406849dbca4e56a49f98941d5afb0b.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp96d045c8e9bd4a8491d55fae24830d9f.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\_base.obj"  "E:\Xeneva Project\Xeneva\xnlib\xnacrylic\_base.asm"
        ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\xnlib\xnclib" /I"E:\Xeneva Project\Xeneva\xnlib\xnacrylic\include" /I"E:\os_dev\freetype2-master\freetype2-master\include" /Zi /nologo /W4 /WX- /sdl- /MP /Od /D ARCH_X64 /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt source\acrylic.cpp source\buffer.cpp source\canvas.cpp source\color.cpp source\font.cpp source\image.cpp source\path2d.cpp source\psf\psf.cpp xnacrylic.cpp
@@ -98,9 +98,9 @@
      1>source\color.cpp(92): warning C4018: '<' : signed/unsigned mismatch
          canvas.cpp
      1>source\canvas.cpp(33): warning C4244: 'initializing' : conversion from 'int' to 'uint16_t', possible loss of data
-     1>source\canvas.cpp(93): warning C4018: '<' : signed/unsigned mismatch
-     1>source\canvas.cpp(119): warning C4018: '<' : signed/unsigned mismatch
-     1>source\canvas.cpp(120): warning C4018: '<' : signed/unsigned mismatch
+     1>source\canvas.cpp(95): warning C4018: '<' : signed/unsigned mismatch
+     1>source\canvas.cpp(121): warning C4018: '<' : signed/unsigned mismatch
+     1>source\canvas.cpp(122): warning C4018: '<' : signed/unsigned mismatch
          buffer.cpp
      1>source\buffer.cpp(30): warning C4267: 'argument' : conversion from 'size_t' to 'uint32_t', possible loss of data
      1>source\buffer.cpp(29): warning C4189: 'location' : local variable is initialized but not referenced
@@ -158,4 +158,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:04.43
+Time Elapsed 00:00:08.89

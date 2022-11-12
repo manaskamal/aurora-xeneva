@@ -94,6 +94,22 @@ XE_EXTERN int XeMain (int argc, char* argv[]) {
 					_asm_test();
 				memset(&ev.type, 0, sizeof(pri_event_t));
 			}
+			if (ev.type == XE_RESIZE_WINDOW) {
+				XEWindowHandleResize(app,win,ev.dword2);
+				for (int i = 0; i < win->shwin->width; i++) {
+					for (int j = 0; j < win->shwin->height; j++) {
+						app->framebuffer[j * win->shwin->width + i] = WHITE;
+					}
+				}
+
+
+				/*canvas_close(canvas);
+				canvas = create_canvas(win->shwin->width, win->shwin->height);
+				win->ctx = canvas;
+				win->paint(win);
+				XEUpdateWindow(win,0,0,win->shwin->width, win->shwin->height, false);*/
+				memset(&ev, 0, sizeof(pri_event_t));
+			}
 
 		}
 		

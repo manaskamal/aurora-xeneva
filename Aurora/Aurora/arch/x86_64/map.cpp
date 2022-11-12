@@ -81,11 +81,17 @@ void unmap_memory (void* addr, uint32_t length) {
 	 * kept for future use
 	 */
 
+	au_vm_area_t *vm = AuFindVMA((uint64_t)addr);
+	if (vm != NULL) {
+		_debug_print_ ("[AU_UNMAP]: VMA Found \r\n");
+		AuRemoveVMArea(c_proc, vm);
+	}
+
 	uint64_t address = (uint64_t)addr;
-	if (length == 4096) 
+	if (length == 1) 
 		AuUnmapPage(address, true);
 
-	if (length > 4096) {
+	if (length > 1) {
 		for (int i = 0; i < length / 4096; i++) {
 			AuUnmapPage(address + i * 4096, true);
 		}
