@@ -50,94 +50,19 @@
 #include <xewidget.h>
 #include <acrylic.h>
 #include <color.h>
+#include "XEDesktop.h"
 
 #define DOCK_HEIGHT  20
 
-typedef struct _wallpaper_ {
-	uint8_t* buffer;
-	Image* img;
-	int w;
-	int h;
-}Wallpaper_t;
 
-Wallpaper_t *wallpaper = NULL;
+
+
 canvas_t *canvas;
 
 uint32_t screen_width = 0;
 uint32_t screen_height = 0;
 
 
-
-/**
- * pri_load_wallpaper -- loads an wallpaper to pri_wallpaper
- * @param filename -- file path of the wallpaper
- */
-Image *load_wallpaper (char *filename) {
-	wallpaper = (Wallpaper_t*)malloc(sizeof(Wallpaper_t));
-	for (int i = 0; i < (screen_width * screen_height * 4) / 4096; i++) 
-		valloc(0x0000060000000000 + i * 4096);
-
-	Image *img = LoadImage (filename, (uint8_t*)0x0000060000000000);
-	wallpaper->buffer = (uint8_t*)0x0000060000000000;
-	wallpaper->img = img;
-	/* finally call the jpeg decoder and draw the
-	 * image to wallpapers backing store
-	 */
-	if (img != NULL) {
-		CallJpegDecoder(img);
-		wallpaper->w = img->width;
-		wallpaper->h = img->height;
-	}
-
-	return img;
-}
-
-/**
- * pri_wallpaper_draw -- draw the wallpaper to backing store
- * @param img -- img to draw 
- */
-void pri_wallpaper_draw (Image *img) {
-	unsigned x = 0;
-	unsigned y = 0;
-	if (img != NULL){
-
-		if (img->data == NULL)
-			pri_wallpaper_draw(NULL);
-
-		uint8_t* data = img->image;
-		uint32_t w = img->width;
-		uint32_t h = img->height;
-		for (int i = 0; i < h; i++) {
-			for (int k = 0; k < w; k++) {
-				int j = k + i * w;
-				uint8_t r = data[j * 3];        
-				uint8_t g = data[j * 3 + 1];        
-				uint8_t b = data[j * 3 + 2];       
-				//uint8_t a = data[j * 3 + 3];
-				uint32_t rgba =  ((r<<16) | (g<<8) | (b)) & 0x00ffffff;  //0xFF000000 | (r << 16) | (g << 8) | b;
-				rgba = rgba | 0xff000000;
-				canvas_draw_pixel(canvas,x + k, y + i,rgba);
-				j++;
-			}
-		}
-	} else{
-		for (int i = 0; i < canvas->width; i++) {
-			for (int j = 0; j < canvas->height; j++) {
-				canvas_draw_pixel(canvas,0 + i, 0 + j, LIGHTBLACK);
-			}
-		}
-	}
-
-}
-
-
-
-
-
-void DockPaint (XEWindow* win) {
-	acrylic_draw_vertical_gradient(win->ctx, 0,0,win->shwin->width,screen_height, LIGHTSILVER, GRAY);
-	pri_wallpaper_draw(wallpaper->img);
-}
 
 /*
  * main -- the main entry point of init
@@ -152,9 +77,6 @@ XE_EXTERN XE_EXPORT int XeMain (int argc, char* argv[]) {
 	XeApp *app = XeStartApplication(argc, argv);
 	int event_fd = app->event_fd;
 	
-
-	
-
 	canvas = create_canvas(screen_width, screen_height);
 
 
@@ -162,9 +84,9 @@ XE_EXTERN XE_EXPORT int XeMain (int argc, char* argv[]) {
 	win->shwin->width = screen_width;
 	win->shwin->height = screen_height;
 	win->color = LIGHTCORAL;
-	win->paint = DockPaint;
+	win->paint = XEDesktopPaint;
 
-	Image *img = load_wallpaper("/kati.jpg");
+	Image *img = load_wallpaper(screen_width,screen_height,"/kati.jpg");
 	
 	XEWindowSetAttrib(win,(1<<1));
 	XEShowWindow(win);

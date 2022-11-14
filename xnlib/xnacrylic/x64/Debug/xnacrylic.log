@@ -1,17 +1,18 @@
-﻿Build started 06-11-2022 ৰাতিপু 7:39:30.
+﻿Build started 14-11-2022 ৰাতিপু 9:16:50.
      1>Project "E:\Xeneva Project\Xeneva\xnlib\xnacrylic\xnacrylic.vcxproj" on node 2 (Rebuild target(s)).
      1>_NASM:
          _base.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp96d045c8e9bd4a8491d55fae24830d9f.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp6dcdee1ed5e8471289f336014a090727.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\_base.obj"  "E:\Xeneva Project\Xeneva\xnlib\xnacrylic\_base.asm"
        ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\xnlib\xnclib" /I"E:\Xeneva Project\Xeneva\xnlib\xnacrylic\include" /I"E:\os_dev\freetype2-master\freetype2-master\include" /Zi /nologo /W4 /WX- /sdl- /MP /Od /D ARCH_X64 /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt source\acrylic.cpp source\buffer.cpp source\canvas.cpp source\color.cpp source\font.cpp source\image.cpp source\path2d.cpp source\psf\psf.cpp xnacrylic.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\xnlib\xnclib" /I"E:\Xeneva Project\Xeneva\xnlib\xnacrylic\include" /I"E:\os_dev\freetype2-master\freetype2-master\include" /Zi /nologo /W4 /WX- /sdl- /MP /Od /D ARCH_X64 /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt source\acrylic.cpp source\buffer.cpp source\canvas.cpp source\color.cpp source\font.cpp source\image.cpp source\path2d.cpp source\psf\psf.cpp source\shbitmap.cpp xnacrylic.cpp
      1>cl : Command line warning D9025: overriding '/sdl-' with '/GS-'
      1>cl : Command line warning D9002: ignoring unknown option '/arch:SSE'
      1>cl : Command line warning D9030: '/Gm' is incompatible with multiprocessing; ignoring /MP switch
          xnacrylic.cpp
      1>xnacrylic.cpp(37): warning C4267: 'argument' : conversion from 'size_t' to 'unsigned int', possible loss of data
      1>xnacrylic.cpp(41): warning C4267: 'argument' : conversion from 'size_t' to 'unsigned int', possible loss of data
+         shbitmap.cpp
          psf.cpp
      1>source\psf\psf.cpp(41): warning C4018: '<' : signed/unsigned mismatch
      1>source\psf\psf.cpp(43): warning C4018: '<' : signed/unsigned mismatch
@@ -148,6 +149,7 @@
          x64\Debug\image.obj
          x64\Debug\path2d.obj
          x64\Debug\psf.obj
+         x64\Debug\shbitmap.obj
          x64\Debug\xnacrylic.obj
          x64\Debug\_base.obj
      1>LINK : warning LNK4075: ignoring '/INCREMENTAL' due to '/LTCG' specification
@@ -158,4 +160,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:08.89
+Time Elapsed 00:00:10.58

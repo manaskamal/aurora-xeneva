@@ -48,6 +48,9 @@
     <ClCompile Include="xnacrylic.cpp">
       <Filter>source</Filter>
     </ClCompile>
+    <ClCompile Include="source\shbitmap.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\canvas.h">
@@ -81,6 +84,9 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="include\buffer.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\shbitmap.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
