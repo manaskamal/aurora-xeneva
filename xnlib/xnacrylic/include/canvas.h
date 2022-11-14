@@ -52,6 +52,8 @@ XE_EXTERN XE_EXPORT uint32_t canvas_get_height (canvas_t * canvas);
 XE_EXTERN XE_EXPORT void canvas_screen_update (canvas_t * canvas,uint32_t x, uint32_t y, uint32_t w, uint32_t h);
 XE_EXTERN XE_EXPORT void canvas_draw_pixel (canvas_t * canvas,uint32_t x, uint32_t y, uint32_t color);
 XE_EXTERN XE_EXPORT uint32_t canvas_get_pixel (canvas_t * canvas,uint32_t x, uint32_t y);
+XE_EXTERN XE_EXPORT void canvas_draw_pixel_to_mem (canvas_t* sys_canvas, uint32_t* lfb, uint32_t x, uint32_t y, uint32_t color);
+XE_EXTERN XE_EXPORT uint32_t canvas_get_pixel_from_mem (canvas_t* sys_canvas, uint32_t* lfb, uint32_t x, uint32_t y);
 XE_EXTERN XE_EXPORT void canvas_fill (canvas_t * canvas,uint32_t w, uint32_t h, uint32_t color);
 XE_EXTERN XE_EXPORT unsigned int* canvas_get_framebuffer (canvas_t * canvas);
 XE_EXTERN XE_EXPORT uint16_t canvas_get_scanline (canvas_t * canvas);

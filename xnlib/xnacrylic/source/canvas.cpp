@@ -116,6 +116,15 @@ uint32_t canvas_get_pixel (canvas_t * canvas,uint32_t x, uint32_t y) {
 	return lfb[x + y * canvas_get_width(canvas)];
 }
 
+void canvas_draw_pixel_to_mem (canvas_t* sys_canvas, uint32_t* lfb, uint32_t x, uint32_t y, uint32_t color) {
+	lfb[y* sys_canvas->ctx_width + x] = color;
+}
+
+
+uint32_t canvas_get_pixel_from_mem (canvas_t* sys_canvas, uint32_t* lfb, uint32_t x, uint32_t y){
+	return lfb[x + y * canvas_get_width(sys_canvas)];
+}
+
 
 void canvas_fill (canvas_t * canvas,uint32_t w, uint32_t h, uint32_t color) {
 	for (int i = 0; i < w; i++)

@@ -1,8 +1,8 @@
-﻿Build started 14-11-2022 ৰাতিপু 9:16:50.
+﻿Build started 14-11-2022 আবেলি 2:27:57.
      1>Project "E:\Xeneva Project\Xeneva\xnlib\xnacrylic\xnacrylic.vcxproj" on node 2 (Rebuild target(s)).
      1>_NASM:
          _base.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp6dcdee1ed5e8471289f336014a090727.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmpe8c56b953e7b433d9f509d7abac0ac8c.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\_base.obj"  "E:\Xeneva Project\Xeneva\xnlib\xnacrylic\_base.asm"
        ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\xnlib\xnclib" /I"E:\Xeneva Project\Xeneva\xnlib\xnacrylic\include" /I"E:\os_dev\freetype2-master\freetype2-master\include" /Zi /nologo /W4 /WX- /sdl- /MP /Od /D ARCH_X64 /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt source\acrylic.cpp source\buffer.cpp source\canvas.cpp source\color.cpp source\font.cpp source\image.cpp source\path2d.cpp source\psf\psf.cpp source\shbitmap.cpp xnacrylic.cpp
@@ -13,6 +13,9 @@
      1>xnacrylic.cpp(37): warning C4267: 'argument' : conversion from 'size_t' to 'unsigned int', possible loss of data
      1>xnacrylic.cpp(41): warning C4267: 'argument' : conversion from 'size_t' to 'unsigned int', possible loss of data
          shbitmap.cpp
+     1>source\shbitmap.cpp(101): warning C4018: '<' : signed/unsigned mismatch
+     1>source\shbitmap.cpp(102): warning C4018: '<' : signed/unsigned mismatch
+     1>source\shbitmap.cpp(107): warning C4189: 'a' : local variable is initialized but not referenced
          psf.cpp
      1>source\psf\psf.cpp(41): warning C4018: '<' : signed/unsigned mismatch
      1>source\psf\psf.cpp(43): warning C4018: '<' : signed/unsigned mismatch
@@ -100,8 +103,8 @@
          canvas.cpp
      1>source\canvas.cpp(33): warning C4244: 'initializing' : conversion from 'int' to 'uint16_t', possible loss of data
      1>source\canvas.cpp(95): warning C4018: '<' : signed/unsigned mismatch
-     1>source\canvas.cpp(121): warning C4018: '<' : signed/unsigned mismatch
-     1>source\canvas.cpp(122): warning C4018: '<' : signed/unsigned mismatch
+     1>source\canvas.cpp(130): warning C4018: '<' : signed/unsigned mismatch
+     1>source\canvas.cpp(131): warning C4018: '<' : signed/unsigned mismatch
          buffer.cpp
      1>source\buffer.cpp(30): warning C4267: 'argument' : conversion from 'size_t' to 'uint32_t', possible loss of data
      1>source\buffer.cpp(29): warning C4189: 'location' : local variable is initialized but not referenced
@@ -160,4 +163,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:10.58
+Time Elapsed 00:00:03.00

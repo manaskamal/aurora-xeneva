@@ -31,6 +31,7 @@
 #define __SHARED_BITMAP_H__
 
 #include <stdint.h>
+#include <canvas.h>
 #include <image.h>
 #include <sys/_xeneva.h>
 
@@ -76,5 +77,21 @@ XE_EXTERN XE_EXPORT void sh_bitmap_free_image (shared_bitmap_t *shbitmap);
  * @param shbitmap -- pointer to shared bitmap buffer
  */
 XE_EXTERN XE_EXPORT void sh_bitmap_destroy (shared_bitmap_t* shbitmap);
+
+/*
+ * sh_bitmap_draw -- finally decode and draws the image into
+ * shared memory buffer
+ * @param shbitmap -- Pointer to shbitmap
+ */
+XE_EXTERN XE_EXPORT void sh_bitmap_draw (canvas_t *canvas,shared_bitmap_t* shbitmap, int x, int y);
+
+/*
+ * sh_bitmap_copy_to_canvas -- copies shared image data to canvas
+ * @param canvas -- Pointer to canvas
+ * @param shbitmap -- Pointer to shared bitmap structure
+ * @param x -- X location relative to canvas plane
+ * @param y -- Y location relative to canvas plane
+ */
+XE_EXTERN XE_EXPORT void sh_bitmap_copy_to_canvas (canvas_t* canvas, shared_bitmap_t *shbitmap, int x, int y);
 
 #endif
