@@ -106,7 +106,6 @@ void pri_wallpaper_draw (canvas_t *canvas, Image *img) {
  * @param win -- Pointer to window
  */
 void XEDesktopPaint (XEWindow* win) {
-	pri_wallpaper_draw(win->ctx,wallpaper->img);
 	acrylic_draw_vertical_gradient(win->ctx, 0,0,win->shwin->width,win->ctx->height, LIGHTSILVER, GRAY);
-
+	pri_wallpaper_draw(win->ctx,wallpaper->img);
 }

@@ -13,6 +13,33 @@
 #include <stdint.h>
 #include <sys\_xeneva.h>
 
+#pragma pack (push, 1)
+typedef struct _bmp_img_{
+	unsigned short type;   //0x4d42
+	unsigned int size;
+	unsigned short resv1;
+	unsigned short resv2;
+	unsigned int off_bits;
+} bitmap_img_t;
+
+
+typedef struct _bmp_info_ {
+	unsigned int biSize;
+	long biWidth;
+	long biHeight;
+	unsigned short biPlanes;
+	unsigned short biBitCount;
+	unsigned int biCompression;
+	unsigned int biSizeImage;
+	long biXPelsPerMeter;
+	long biYPelsPerMeter;
+	unsigned int biClrUsed;
+	unsigned int biClrImportant;
+} bitmap_info_t;
+
+#pragma pack(pop)
+
+
 typedef struct _IMAGE_ {
 	uint32_t width;
 	uint32_t height;

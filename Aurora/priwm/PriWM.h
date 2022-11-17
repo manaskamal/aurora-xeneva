@@ -57,6 +57,9 @@
 #define PRI_POPUP_WIN_CLOSE     112
 #define PRI_DIALOG_WIN_CLOSE    113
 
+/* Broadcast msgs */
+#define PRI_BROADCAST_MSG  114
+
 /* Messages that are being send to client by server */
 #define DAISY_WIN_MOVE  200
 #define DAISY_CURSOR_MOVED 201

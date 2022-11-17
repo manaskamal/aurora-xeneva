@@ -158,7 +158,7 @@
     <ClCompile Include="source\image.cpp" />
     <ClCompile Include="source\path2d.cpp" />
     <ClCompile Include="source\psf\psf.cpp" />
-    <ClCompile Include="source\shbitmap.cpp" />
+    <ClCompile Include="source\icon.cpp" />
     <ClCompile Include="xnacrylic.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -173,7 +173,7 @@
     <ClInclude Include="include\jpg\jpeg_decoder.h" />
     <ClInclude Include="include\path2d.h" />
     <ClInclude Include="include\psf\psf.h" />
-    <ClInclude Include="include\shbitmap.h" />
+    <ClInclude Include="include\icon.h" />
   </ItemGroup>
   <ItemGroup>
     <NASM Include="_base.asm">

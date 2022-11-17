@@ -1509,14 +1509,26 @@ XE_EXTERN int XeMain (int argc, char* argv[]) {
 
 			memset(&event, 0, sizeof(pri_event_t));
 		}
+
+		/* Register a desktop component like, launcher applications */
+		if (event.type == PRI_REGISTER_DESKTOP_COMPONENT) {
+			memset (&event, 0, sizeof(pri_event_t));
+		}
+
+		/* Broadcast messages are delivered to 
+		 * desktop component applications
+		 */
+		if (event.type == PRI_BROADCAST_MSG ) {
+			memset (&event, 0, sizeof(pri_event_t));
+		}
 		
 
-		diff_tick = sys_get_system_tick();
-		int delta = diff_tick - frame_tick;
-		if (delta < 1000/60) {
-			//! it will sleep for 16 ms
-			sys_sleep (1000/60 - delta);
-		}
-		//sys_sleep(16);
+		//diff_tick = sys_get_system_tick();
+		//int delta = diff_tick - frame_tick;
+		//if (delta < 1000/60) {
+		//	//! it will sleep for 16 ms
+		//	sys_sleep (1000/60 - delta);
+		//}
+		sys_sleep(16);
 	}
 }
