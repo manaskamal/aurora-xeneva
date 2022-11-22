@@ -17,7 +17,7 @@ void devfs_mount () {
 	vfs_node_t *node = (vfs_node_t*)malloc(sizeof(vfs_node_t));
 	memset(node, 0, sizeof(vfs_node_t));
 	strcpy(node->filename, "dev");
-	node->flags = FS_FLAG_DIRECTORY;
+	node->flags |= FS_FLAG_DIRECTORY;
 
 	vfs_entry *ent = vfs_mkentry();
 	vfs_mkdir("/dev", node, ent);

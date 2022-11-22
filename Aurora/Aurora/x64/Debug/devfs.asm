@@ -6,8 +6,8 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 CONST	SEGMENT
-$SG3244	DB	'dev', 00H
-$SG3246	DB	'/dev', 00H
+$SG3248	DB	'dev', 00H
+$SG3250	DB	'/dev', 00H
 CONST	ENDS
 PUBLIC	?devfs_mount@@YAXXZ				; devfs_mount
 EXTRN	strcpy:PROC
@@ -17,7 +17,7 @@ EXTRN	vfs_mkentry:PROC
 EXTRN	malloc:PROC
 pdata	SEGMENT
 $pdata$?devfs_mount@@YAXXZ DD imagerel $LN3
-	DD	imagerel $LN3+103
+	DD	imagerel $LN3+114
 	DD	imagerel $unwind$?devfs_mount@@YAXXZ
 pdata	ENDS
 xdata	SEGMENT
@@ -52,14 +52,17 @@ $LN3:
 ; 19   : 	strcpy(node->filename, "dev");
 
 	mov	rax, QWORD PTR node$[rsp]
-	lea	rdx, OFFSET FLAT:$SG3244
+	lea	rdx, OFFSET FLAT:$SG3248
 	mov	rcx, rax
 	call	strcpy
 
-; 20   : 	node->flags = FS_FLAG_DIRECTORY;
+; 20   : 	node->flags |= FS_FLAG_DIRECTORY;
 
 	mov	rax, QWORD PTR node$[rsp]
-	mov	BYTE PTR [rax+48], 2
+	movzx	eax, BYTE PTR [rax+48]
+	or	eax, 2
+	mov	rcx, QWORD PTR node$[rsp]
+	mov	BYTE PTR [rcx+48], al
 
 ; 21   : 
 ; 22   : 	vfs_entry *ent = vfs_mkentry();
@@ -71,7 +74,7 @@ $LN3:
 
 	mov	r8, QWORD PTR ent$[rsp]
 	mov	rdx, QWORD PTR node$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3246
+	lea	rcx, OFFSET FLAT:$SG3250
 	call	vfs_mkdir
 
 ; 24   : }

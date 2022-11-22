@@ -6,7 +6,7 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 CONST	SEGMENT
-$SG3889	DB	'[AU_UNMAP]: VMA Found ', 0dH, 0aH, 00H
+$SG3893	DB	'[AU_UNMAP]: VMA Found ', 0dH, 0aH, 00H
 CONST	ENDS
 PUBLIC	?map_memory@@YAPEAX_KIE@Z			; map_memory
 PUBLIC	?unmap_memory@@YAXPEAXI@Z			; unmap_memory
@@ -80,7 +80,7 @@ $LN9:
 
 ; 86   : 		_debug_print_ ("[AU_UNMAP]: VMA Found \r\n");
 
-	lea	rcx, OFFSET FLAT:$SG3889
+	lea	rcx, OFFSET FLAT:$SG3893
 	call	_debug_print_
 
 ; 87   : 		AuRemoveVMArea(c_proc, vm);

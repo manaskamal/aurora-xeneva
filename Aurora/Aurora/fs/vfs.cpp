@@ -138,6 +138,66 @@ vfs_node_t* vfs_finddir (char *path) {
 	return entry_found;
 }
 
+
+/*
+ * vfs_unmount -- unmounts a file or directory from 
+ * virtual file system 
+ * @param path -- path of the directory/file
+ */
+vfs_node_t* vfs_unmount (char *path) {
+
+	char* next = strchr(path, '/');
+	if (next)
+		next++;
+
+	char* fs_path = next;
+
+	vfs_entry* ent = root_dir;
+	vfs_node_t* entry_found = 0;
+	char pathname[16];
+	int index = 0;
+	while(next) {
+		int i = 0;
+		for (i = 0; i < 16; i++) {
+			if (next[i] == '/' || next[i] == '\0')
+				break;
+			pathname[i] = next[i];
+		}
+		pathname[i] = 0;
+
+		if (ent == NULL)
+			ent = root_dir;
+
+		for (int j = 0; j < ent->childs->pointer; j++) {
+			vfs_node_t *file_ = (vfs_node_t*)list_get_at(ent->childs, j);
+			if (strcmp(file_->filename, pathname) == 0) {
+				if (file_->flags & FS_FLAG_DIRECTORY)
+					ent = (vfs_entry*)file_->device;
+				entry_found = file_;
+				index = j;
+			}
+		}
+
+		next = strchr(next + 1, '/');
+		if (next)
+			next++;
+	}
+
+	if (!entry_found) 
+		entry_found = root_dir->node;
+
+	vfs_node_t* ret = (vfs_node_t*)list_remove (ent->childs, index);
+	return ret;
+}
+
+/*
+ * vfs_remove_file -- removes a file/directory 
+ * from the virtual file system layer
+ * @param path -- file path
+ */
+vfs_node_t* vfs_remove_file (char* path) {
+	return vfs_unmount (path);
+}
 /*
  * vfs_mkdir -- creates a virtual directory
  * @param path -- path to use
@@ -280,6 +340,8 @@ void vfs_mount (char *path, vfs_node_t *node, vfs_entry *dirnode) {
 	
 }
 
+
+
 void vfs_lsdir (char* path) {
 	char* next = strchr(path, '/');
 	if (next)
@@ -323,11 +385,11 @@ void vfs_lsdir (char* path) {
 		for (int i = 0; i < ent->childs->pointer; i++) {
 			vfs_node_t *f = (vfs_node_t*)list_get_at(ent->childs, i);
 			char* type = 0;
-			if (f->flags == FS_FLAG_DIRECTORY)
+			if (f->flags & FS_FLAG_DIRECTORY)
 				type = "Directory";
-			else if (f->flags == FS_FLAG_GENERAL)
+			else if (f->flags & FS_FLAG_GENERAL)
 				type = "File";
-			printf("%s -> %s \n",type, f->filename);
+			_debug_print_("%s -> %s \r\n",type, f->filename);
 		}
 		return;
 	}

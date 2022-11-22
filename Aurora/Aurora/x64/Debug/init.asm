@@ -10,11 +10,11 @@ _BSS	SEGMENT
 ?debug@@3P6AXPEBDZZEA DQ 01H DUP (?)			; debug
 _BSS	ENDS
 CONST	SEGMENT
-$SG5604	DB	'Scheduler Initialized', 0aH, 00H
+$SG5610	DB	'Scheduler Initialized', 0aH, 00H
 	ORG $+1
-$SG5606	DB	'shell', 00H
+$SG5612	DB	'shell', 00H
 	ORG $+2
-$SG5607	DB	'/init.exe', 00H
+$SG5613	DB	'/init.exe', 00H
 CONST	ENDS
 PUBLIC	?debug_print@@YAXPEBDZZ				; debug_print
 PUBLIC	?_AuMain@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z		; _AuMain
@@ -245,7 +245,7 @@ $LN5:
 ; 159  : 
 ; 160  : 	printf ("Scheduler Initialized\n");
 
-	lea	rcx, OFFSET FLAT:$SG5604
+	lea	rcx, OFFSET FLAT:$SG5610
 	call	printf
 
 ; 161  : 	int au_status = 0;
@@ -256,8 +256,8 @@ $LN5:
 ; 163  : 	/* start the init process here */
 ; 164  : 	au_status = AuCreateProcess ("/init.exe","shell");
 
-	lea	rdx, OFFSET FLAT:$SG5606
-	lea	rcx, OFFSET FLAT:$SG5607
+	lea	rdx, OFFSET FLAT:$SG5612
+	lea	rcx, OFFSET FLAT:$SG5613
 	call	?AuCreateProcess@@YAHPEBDPEAD@Z		; AuCreateProcess
 	mov	DWORD PTR au_status$[rsp], eax
 

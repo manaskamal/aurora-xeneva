@@ -1,8 +1,8 @@
-﻿Build started 06-11-2022 ৰাতিপু 8:54:58.
+﻿Build started 22-11-2022 আবেলি 1:58:30.
      1>Project "E:\Xeneva Project\Xeneva\Apps\XeCon\XeCon.vcxproj" on node 2 (Rebuild target(s)).
      1>_NASM:
          asm_test.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmpe224a7225d634df08d48a622aac5a13a.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp43a6f01f8c8243978bdcdc76926ea7cd.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\asm_test.obj"  "E:\Xeneva Project\Xeneva\Apps\XeCon\asm_test.asm"
        ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\xnlib\xnclib" /I"E:\Xeneva Project\Xeneva\xnlib\xnacrylic\include" /I"E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes" /Zi /nologo /W3 /WX- /sdl- /Od /D ARCH_X64 /D _MBCS /X /Gm /GS- /arch:SSE2 /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt main.cpp XeTerm.cpp
@@ -28,4 +28,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:00.88
+Time Elapsed 00:00:00.68

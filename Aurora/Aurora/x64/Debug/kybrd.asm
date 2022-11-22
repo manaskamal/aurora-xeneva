@@ -10,11 +10,11 @@ _BSS	SEGMENT
 ?kyboard_thr@@3PEAU_thread_@@EA DQ 01H DUP (?)		; kyboard_thr
 _BSS	ENDS
 CONST	SEGMENT
-$SG3631	DB	'[Aurora]:Key Pressed', 0aH, 00H
+$SG3635	DB	'[Aurora]:Key Pressed', 0aH, 00H
 	ORG $+2
-$SG3648	DB	'kybrd', 00H
+$SG3652	DB	'kybrd', 00H
 	ORG $+2
-$SG3649	DB	'/dev/kybrd', 00H
+$SG3653	DB	'/dev/kybrd', 00H
 CONST	ENDS
 PUBLIC	?AuKeyboardInitialize@@YAXXZ			; AuKeyboardInitialize
 PUBLIC	?AuKeyboardSendCmd@@YAXE@Z			; AuKeyboardSendCmd
@@ -241,7 +241,7 @@ $LN4@AuKeyboard:
 
 ; 77   : 			printf ("[Aurora]:Key Pressed\n");
 
-	lea	rcx, OFFSET FLAT:$SG3631
+	lea	rcx, OFFSET FLAT:$SG3635
 	call	printf
 $LN1@AuKeyboard:
 $LN5@AuKeyboard:
@@ -452,7 +452,7 @@ $LN3:
 ; 118  : 	strcpy (node->filename, "kybrd");
 
 	mov	rax, QWORD PTR node$[rsp]
-	lea	rdx, OFFSET FLAT:$SG3648
+	lea	rdx, OFFSET FLAT:$SG3652
 	mov	rcx, rax
 	call	strcpy
 
@@ -516,7 +516,7 @@ $LN3:
 
 	xor	r8d, r8d
 	mov	rdx, QWORD PTR node$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3649
+	lea	rcx, OFFSET FLAT:$SG3653
 	call	vfs_mount
 
 ; 131  : 

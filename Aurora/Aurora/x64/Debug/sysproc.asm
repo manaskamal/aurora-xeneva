@@ -6,7 +6,7 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 CONST	SEGMENT
-$SG4062	DB	'Loop', 00H
+$SG4068	DB	'Loop', 00H
 CONST	ENDS
 PUBLIC	?create__sys_process@@YAHPEBDPEAD@Z		; create__sys_process
 PUBLIC	?sys_exit@@YAXXZ				; sys_exit
@@ -101,7 +101,7 @@ $LN2@sig_loop_t:
 ; 90   : 	for(;;) {
 ; 91   : 		_debug_print_ ("Loop");
 
-	lea	rcx, OFFSET FLAT:$SG4062
+	lea	rcx, OFFSET FLAT:$SG4068
 	call	_debug_print_
 
 ; 92   : 	}

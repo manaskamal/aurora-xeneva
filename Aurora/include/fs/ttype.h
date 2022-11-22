@@ -52,6 +52,8 @@ typedef struct _tele_type_ {
 	termios_t term;
 	circ_buf_t *master_buffer;
 	circ_buf_t *slave_buffer;
+	void* master_buf_ptr;
+	void* slave_buf_ptr;
 	int master_written;
 	int slave_written;
 	uint16_t master_pid;

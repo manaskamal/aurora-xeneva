@@ -71,6 +71,8 @@
 #define  FS_FLAG_DEVICE     (1<<3)
 #define  FS_FLAG_DELETED    0x3
 #define  FS_FLAG_INVALID    FS_FLAG_DELETED
+#define  FS_FLAG_UNALLOCATED  (1<<5)
+
 
 #define FS_STATUS_FOUND 0x4
 struct _vfs_node_;
@@ -129,6 +131,8 @@ extern vfs_node_t* vfs_finddir (char *path);
 AU_EXTERN AU_EXPORT void vfs_mkdir (char* path, vfs_node_t* dir, vfs_entry* dir_node);
 AU_EXTERN AU_EXPORT vfs_entry * vfs_mkentry();
 AU_EXTERN AU_EXPORT void vfs_mount (char *path, vfs_node_t *node, vfs_entry* ent);
+AU_EXTERN AU_EXPORT vfs_node_t* vfs_unmount (char *path);
+AU_EXTERN AU_EXPORT vfs_node_t* vfs_remove_file (char* path);
 extern void vfs_lsdir (char* path);
 AU_EXTERN AU_EXPORT vfs_node_t* openfs (vfs_node_t *node, char* path);
 AU_EXTERN AU_EXPORT size_t readfs (vfs_node_t *node, vfs_node_t *file, uint64_t* buffer, uint32_t length);

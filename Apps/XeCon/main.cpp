@@ -90,8 +90,15 @@ XE_EXTERN int XeMain (int argc, char* argv[]) {
 			}
 
 			if (ev.type == 204) {
-				if (ev.dword == KEY_C)
-					_asm_test();
+				if (ev.dword == KEY_C) {
+					/*
+					 * WARNING: closing slave_fd's will crash if
+					 * slave processes are not notified for closing
+					 * slave fd 
+					 */
+					sys_close_file(slave_fd);
+					sys_close_file(master_fd);
+				}
 				memset(&ev.type, 0, sizeof(pri_event_t));
 			}
 			if (ev.type == XE_RESIZE_WINDOW) {
@@ -114,6 +121,6 @@ XE_EXTERN int XeMain (int argc, char* argv[]) {
 		}
 		
 		if (ret_code == -1)
-			sys_sleep(100);
+			sys_sleep(50);
 	}
 }

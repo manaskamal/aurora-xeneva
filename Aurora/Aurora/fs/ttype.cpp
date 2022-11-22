@@ -186,6 +186,45 @@ ttype_t * get_ttype (int id) {
 	return NULL;
 }
 
+/*
+ * ttype_slave_close -- close the slave end
+ * @param file -- pointer to slave file
+ */
+int ttype_slave_close (vfs_node_t *file) {
+
+	/* here we only unmount the slave,
+	 * we don't free tty, because it is
+	 * owned by some master end */
+	char name[10];
+	memset(name, 0, 10);
+	strcpy(name, "/dev/");
+	strcpy(name+5, file->filename);
+	vfs_unmount (name);
+	free(file);
+	return AU_SUCCESS;
+}
+
+/*
+ * ttype_master_close -- close the master end
+ * @param file -- Pointer to master file
+ */
+int ttype_master_close (vfs_node_t *file) {
+	ttype_t* tty = (ttype_t*)file->device;
+	circ_buf_free(tty->master_buffer);
+	circ_buf_free(tty->slave_buffer);
+	free(tty->master_buf_ptr);
+	free(tty->slave_buf_ptr);
+	ttype_delete (tty);
+
+	/* unmount the tty from vfs layer */
+	char name[10];
+	memset(name, 0, 10);
+	strcpy(name, "/dev/");
+	strcpy(name+5, file->filename);
+	vfs_unmount(name);
+	free(file);
+	return AU_SUCCESS;
+}
 
 /*
  * tty_ioquery -- IoQuery Commands for ttype
@@ -231,6 +270,7 @@ int tty_ioquery (vfs_node_t *file, int code, void *arg){
 vfs_node_t* ttype_create_master (ttype_t *tty) {
 
 	vfs_node_t *node = (vfs_node_t*)malloc(sizeof(vfs_node_t));
+	memset(node->filename, 0, 32);
 
 	char mname[10];
 	strcpy (mname, "/dev/");
@@ -249,6 +289,7 @@ vfs_node_t* ttype_create_master (ttype_t *tty) {
 	node->device = tty;
 	node->read = ttype_master_read;
 	node->write = ttype_master_write;
+	node->close = ttype_master_close;
 	node->read_blk = 0;
 	node->ioquery = tty_ioquery;
 
@@ -264,7 +305,7 @@ vfs_node_t* ttype_create_master (ttype_t *tty) {
 vfs_node_t* ttype_create_slave (ttype_t *tty) {
 
 	vfs_node_t *node = (vfs_node_t*)malloc(sizeof(vfs_node_t));
-
+	memset(node->filename, 0, 32);
 	char sname[10];
 	strcpy (sname, "/dev/");
 	strcpy (sname+5, "ttys");
@@ -282,6 +323,7 @@ vfs_node_t* ttype_create_slave (ttype_t *tty) {
 	node->device = tty;
 	node->read = ttype_slave_read;
 	node->write = ttype_slave_write;
+	node->close = ttype_slave_close;
 	node->read_blk = 0;
 	node->ioquery = tty_ioquery;
 
@@ -309,6 +351,9 @@ int ttype_create (int* master_fd, int* slave_fd) {
 	tty->id = slave_count;
 	tty->master_written = 0;
 	tty->slave_written = 0;
+
+	tty->master_buf_ptr = inbuffer;
+	tty->slave_buf_ptr = outbuffer;
 
 	tty->term.c_iflag = ICRNL | BRKINT;
 	tty->term.c_oflag = ONLCR | OPOST;
