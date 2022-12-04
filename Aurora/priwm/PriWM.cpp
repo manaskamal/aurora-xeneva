@@ -760,16 +760,14 @@ pri_window_t * pri_win_find_by_id (uint16_t owner_id) {
  * @param win -- window to make top
  */
 void pri_window_make_top (pri_window_t *win) {
-	int i = 0;
-	/*for (i = 0; i < window_list->pointer; i++) {
-		pri_window_t* _win = (pri_window_t*)list_get_at(window_list, i);
-		if (_win == win)
-			break;
-	}*/
+	
+	/* never move static window to top */
+	if (win->attribute & PRI_WIN_STATIC)
+		return;
+	
 	if (root_window == win && last_window == win)
 		return;
-	//list_remove (window_list,i);
-	//list_add(window_list, win);
+	
 	pri_remove_window(win);
 	pri_add_window(win);
 }
@@ -930,9 +928,58 @@ void compose_frame () {
 		if (win != NULL && win->anim)
 			_window_update_all_ = true;
 
+		if (info->rect_count > 0) {
+			for (int k = 0; k < info->rect_count; k++) {
+				int r_x = info->rect[k].x;
+				int r_y = info->rect[k].y;
+				int r_w = info->rect[k].w;
+				int r_h = info->rect[k].h;
+
+				/* calculate desktop bounds */
+				if (r_x < 0) 
+					r_x = 0;
+
+				if (r_y < 0) 
+					r_y = 0;
+
+				if (r_x + r_w >= canvas->width)
+					r_w  = canvas->width - r_x;
+
+				if (r_y + r_h >= canvas->height)
+					r_h = canvas->height - r_y;
+
+				if (info->alpha) {
+					/* Here we need full SSE library to perform alpha bliting in faster way, if system supports
+					* GPU, that will add extra benifits */
+
+					for (int j = 0; j < r_h; j++) {
+						for (int i = 0; i < r_w; i++){
+							*(uint32_t*)(canvas->address + (info->y + r_y + j) * canvas->width + (info->x + r_x + i)) = 
+								alpha_blend(*(uint32_t*)(canvas->address + (r_y + j)* canvas->width + (r_x + i)),
+							*(uint32_t*)(win->backing_store + (r_y + j) * info->width + (r_x + i)));
+						}
+					}
+				}else {
+					for (int i = 0; i < r_h; i++)  {
+					/* Align the count to 16 byte boundary */
+						/*memcpy_sse2(canvas->address + (winy + i) * canvas->width + winx, win->backing_store + (0 + i) * info->width + 0,
+						(wid/16)*4-1);*/
+						fastcpy(canvas->address + (info->y + r_y + i) * canvas->width + info->x + r_x, 
+							win->backing_store + (r_y + i) * info->width + r_x, r_w*4);
+					}
+				}
+
+
+				/* here we need to calculate clippings respected to other windows */
+				pri_add_clip(info->x + r_x,info->y + r_y, r_w, r_h);
+
+				info->rect_count = 0;
+				info->dirty = 0;
+			}
+		}
 
 		/* update entire window */
-		if (win != NULL && _window_update_all_ || info->rect_count > 0 || 
+		if (win != NULL && _window_update_all_  || 
 			(info->rect_count == 0 && info->dirty == 1)) {
 			int winx = 0;
 			int winy = 0;

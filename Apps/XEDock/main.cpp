@@ -98,6 +98,7 @@ XE_EXTERN XE_EXPORT int XeMain (int argc, char* argv[]) {
 	win->shwin->height = screen_height;
 	win->color = LIGHTCORAL;
 	win->paint = XEDesktopPaint;
+	win->shwin->alpha = false;
 
 	/* Dock do not require global controls, so free it */
 	XERemoveGlobalButton(win, XE_GLBL_CNTRL_MINIMIZE);
