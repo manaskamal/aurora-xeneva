@@ -37,6 +37,7 @@ typedef struct _xe_term_ {
 	XEWidget base;
 	uint8_t back_color;
 	uint8_t foreground_color;
+	bool show_cell_grid;
 	int cursor_x;
 	int cursor_y;
 	int ws_col;
@@ -52,6 +53,14 @@ typedef struct _win_size_ {
 	unsigned short ws_xpixel;
 	unsigned short ws_ypixel;
 }winsize_t;
+
+
+typedef struct _cell_ {
+	uint8_t c;
+	uint32_t bg_color;
+	uint32_t fg_color;
+}cell_t;
+
 
 /* IoQuery Commands */
 #define TIOCGWINSZ  0x5401

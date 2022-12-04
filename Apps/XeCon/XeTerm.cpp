@@ -33,10 +33,68 @@
 #include <sys\_term.h>
 #include <acrylic.h>
 
+/**
+ * XETermShowCellGrid -- Shows terminal cell grid
+ * @param widget -- Pointer to terminal widget
+ * @param win -- Pointer to application window
+ */
+void XETermShowCellGrid (XEWidget* widget, XEWindow* win) {
+	XETerm *term = (XETerm*)widget;
+
+	for (int i = 0; i < term->ws_col; i++) 
+		acrylic_draw_vertical_line (win->ctx, i * 8, 24, win->shwin->height - 24, GRAY);
+
+	int __y = 24;
+	for (int i = 0; i < term->ws_row; i++) {
+		acrylic_draw_horizontal_line (win->ctx, 1, __y, win->shwin->width - 1, GRAY);
+		__y += 1 * 16;
+	}
+}
+
+
+void XETermDrawCell (XEWindow* win, XEWidget* widget, int x, int y) {
+	XETerm *term = (XETerm*)widget;
+	cell_t *cell = (cell_t*)(term->buffer + y * term->ws_col + x);
+	acrylic_draw_rect_filled (win->ctx, x, y, 8, 16, cell->bg_color);
+}
+
+/*
+ * XETermSetCellData -- Set a specific cell with character and other properties
+ * @param widget -- Pointer to terminal widget
+ * @param x -- Cell x location
+ * @param y -- Cell y location
+ * @param bg -- Background color
+ * @param fg -- Foreground color
+ */
+void XETermSetCellData (XEWidget* widget, int x, int y, uint8_t c, uint32_t bg, uint32_t fg) {
+	XETerm *term = (XETerm*)widget;
+	cell_t *cell = (cell_t*)(term->buffer + y * term->ws_col + x);
+	cell->c = c;
+	cell->bg_color = bg;
+	cell->fg_color = fg;
+}
+/*
+ * XEDrawCursor -- Draws the terminal cursor at given position
+ * @param win -- Pointer to application window
+ * @param x -- X location
+ * @param y -- Y location
+ */
+void XETermDrawCursor (XEWindow* win, int x, int y) {
+	acrylic_draw_horizontal_line (win->ctx, x, y + 16 - 2, 8, WHITE);
+	acrylic_draw_horizontal_line (win->ctx, x, y + 16 - 1, 8, WHITE);
+}
+
 void XETermPainter (XEWidget *widget, XEWindow *win) {
 	XETerm *term = (XETerm*)widget;
-	//acrylic_draw_rect_filled(win->ctx,widget->x, widget->y,widget->w, widget->h, term->back_color);
-	//acrylic_draw_arr_string(win->ctx, widget->x + 8, widget->y, "Hello World", WHITE);
+
+	XETermDrawCursor (win, 0, 24);
+	
+	if (term->show_cell_grid)
+		XETermShowCellGrid(widget, win);
+
+	/*for (int x = 0; x < term->ws_col; x++)
+		XETermDrawCell (win, widget, */
+
 	int _x = term->cursor_x + 2; 
 	int _y = term->cursor_y + 23;
 	int count = 0;
@@ -53,7 +111,6 @@ void XETermPainter (XEWidget *widget, XEWindow *win) {
 void XETermMouseEvent (XEWidget *widget, XEWindow *win, int x, int y, int button) {
 
 }
-
 
 
 XETerm * XECreateTerm (int x, int y, int w, int h) {
@@ -73,14 +130,13 @@ XETerm * XECreateTerm (int x, int y, int w, int h) {
 	term->base.destroy = 0; 
 	term->back_color = LIGHTBLACK;
 	term->foreground_color = WHITE;
+	term->show_cell_grid = false;
 	term->cursor_x = 0;
 	term->cursor_y = 0;
 	term->ws_col = w / 8;
 	term->ws_row = h / 16;
 	term->ws_xpixels = w;
-	term->cursor_x = 0;
-	term->cursor_y = 0;
 	term->ws_ypixels = h;
-	term->buffer = (uint8_t*)malloc(term->ws_col * term->ws_row);
+	term->buffer = (uint8_t*)malloc(term->ws_col * term->ws_row * sizeof(cell_t));
 	return term;
 }

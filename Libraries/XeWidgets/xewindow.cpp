@@ -38,6 +38,7 @@
 #include <color.h>
 #include <xe_glblctrl_close.h>
 #include <sys\shm.h>
+#include <font.h>
 
 /*
  * =========================================================================================
@@ -161,6 +162,23 @@ XE_EXTERN XE_EXPORT XEWindow * XECreateWindow (XeApp *app, canvas_t *canvas, uin
 	return win;
 }
 
+/**
+ * XERemoveGlobalButton -- Remove a particular global button
+ * from application window
+ * @param win -- Pointer to the application window
+ * @param type -- Global Button type
+ */
+XE_EXTERN XE_EXPORT void XERemoveGlobalButton (XEWindow* win, uint8_t type) {
+	for (int i = 0; i < win->global_controls->pointer; i++) {
+		XEGlobalControl* control = (XEGlobalControl*)list_get_at(win->global_controls, i);
+		if (control->type == type) {
+			list_remove(win->global_controls, i);
+			free(control);
+		}
+	}
+}
+
+
 /*
  * XEWindowSetXY -- Sets a new location for the window
  * @param win -- Pointer to the window structure
@@ -237,6 +255,17 @@ XE_EXTERN XE_EXPORT void XERedrawWindow (XEWindow *win) {
 		win->paint;
 }
 
+/**
+ * XERepaintWidgets -- Repaints all widgets
+ * @param win -- Pointer to application window
+ */
+XE_EXTERN XE_EXPORT void XERepaindWidgets (XEWindow* win) {
+	for (int i = 0; i < win->widgets->pointer; i++) {
+		XEWidget* wid = (XEWidget*)list_get_at(win->widgets, i);
+		if (wid->painter)
+			wid->painter(wid, win);
+	}
+}
 
 /*
  * XEWindowMouseHandle -- Default Mouse handler for XEWindow
@@ -333,6 +362,18 @@ XE_EXTERN XE_EXPORT void XEWindowSetAttrib (XEWindow* win,uint8_t attrib) {
 	ev.type = 109;
 	ev.dword = attrib;
 	XeSendEventPRIWM(&ev, win->app->event_fd);
+}
+
+/*
+ * XEExitWindow -- Exits a graphical window
+ * @param win -- Pointer to window
+ */
+XE_EXTERN XE_EXPORT void XEExitWindow (XEWindow* win) {
+	acrylic_close_font();
+	sys_shm_unlink(win->app->back_key);
+	sys_shm_unlink(win->app->sh_key);
+	canvas_close(win->ctx);
+	XECloseApplication(win->app);
 }
 
 

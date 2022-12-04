@@ -93,6 +93,42 @@ void ttype_delete (ttype_t* tty) {
 	free(tty);
 }
 
+
+
+/*
+ * ttype_write_slave -- writes a single character to
+ * the slave endpoint
+ * @param type -- Pointer to tele type structure
+ * @param c -- Character to be printed
+ */
+void ttype_write_slave (ttype_t *type, uint8_t c) {
+	circular_buf_put2 (type->slave_buffer, c);
+}
+
+
+
+
+/*
+ * ttype_write_master -- writes a single character to 
+ * the master endpoint
+ * @param type -- Pointer to tele type structure
+ * @param c -- Character to be printed
+ */
+void ttype_write_master (ttype_t* type, uint8_t c) {
+	circular_buf_put2 (type->master_buffer, c);
+}
+
+
+
+/**
+ * ttype_process_line_in -- processes line discipline
+ * @param type -- pointer to tele type
+ * @param c -- Character to be printed
+ */
+void ttype_process_line_in (ttype_t* type, uint8_t c) {
+
+}
+
 /**
  * ttype_master_read -- not implemented
  * @param file -- file node
@@ -346,8 +382,15 @@ int ttype_create (int* master_fd, int* slave_fd) {
 	void* outbuffer = malloc(512);
 	memset(outbuffer, 0, 512);
 
+	/* From Terminal Emulator perspective, when slave process
+	 * writes it goes to master buffer, and master read from
+	 * master buffer, and when master writes it goes to 
+	 * slave buffer and slave reads from slave buffer
+	 */
 	tty->master_buffer = circ_buf_init((uint8_t*)inbuffer,512);
 	tty->slave_buffer = circ_buf_init((uint8_t*)outbuffer,512);
+
+
 	tty->id = slave_count;
 	tty->master_written = 0;
 	tty->slave_written = 0;

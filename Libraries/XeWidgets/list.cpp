@@ -31,7 +31,7 @@
 #include <list.h>
 #include <stdlib.h>
 
-list_t* list_init() {
+XE_EXPORT XE_EXTERN list_t* list_init() {
 	list_t *list = (list_t*)malloc(sizeof(list_t));
 	list->entry_current = nullptr;
 	list->pointer = 0;
@@ -39,7 +39,7 @@ list_t* list_init() {
 }
 
 
-void list_add(list_t* list, void* data) {
+XE_EXPORT XE_EXTERN void list_add(list_t* list, void* data) {
 	dataentry *current_data = (dataentry*)malloc(sizeof(dataentry));
 	current_data->next = nullptr;
 	current_data->prev = nullptr;
@@ -59,7 +59,7 @@ void list_add(list_t* list, void* data) {
 	list->pointer++;
 }
 
-void * list_get_at(list_t* list, unsigned int index) {
+XE_EXPORT XE_EXTERN void * list_get_at(list_t* list, unsigned int index) {
 
 	if (list->pointer == 0 || index >= list->pointer)
 		return nullptr;
@@ -72,7 +72,7 @@ void * list_get_at(list_t* list, unsigned int index) {
 	return current_node ? current_node->data : nullptr;
 }
 
-void* list_remove(list_t* list, unsigned int index) {
+XE_EXPORT XE_EXTERN void* list_remove(list_t* list, unsigned int index) {
 
 	void* payload;
 

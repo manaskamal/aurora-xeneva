@@ -41,7 +41,7 @@ XE_EXTERN int XeMain (int argc, char* argv[]) {
 	canvas_t * canvas = create_canvas(app->buffer_width, app->buffer_height);
 
 
-	XEWindow *win = XECreateWindow(app,canvas, 1,"XeConsole",canvas->width/2 - 400/2,canvas->height/2 - 400/2);
+	XEWindow *win = XECreateWindow(app,canvas, 1,"XEConsole",canvas->width/2 - 400/2,canvas->height/2 - 400/2);
 	win->color = 0xCC3E3E3E;
 
 	XETerm *term = XECreateTerm(0,23, app->buffer_width, app->buffer_height - 23);
@@ -77,7 +77,6 @@ XE_EXTERN int XeMain (int argc, char* argv[]) {
 			sys_print_text ("%c",term->buffer[i]);
 
 		if (bytes_ret > 0){
-			sys_print_text ("Bytes ret -> %d \r\n", bytes_ret);
 			term->base.painter((XEWidget*)term,win);
 			XEUpdateWindow(win,term->base.x, term->base.y, term->base.w, term->base.h, true);
 		}
@@ -96,6 +95,7 @@ XE_EXTERN int XeMain (int argc, char* argv[]) {
 					 * slave processes are not notified for closing
 					 * slave fd 
 					 */
+					sys_kill(pid, SIGKILL);
 					sys_close_file(slave_fd);
 					sys_close_file(master_fd);
 				}

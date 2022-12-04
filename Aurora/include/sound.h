@@ -89,6 +89,11 @@ AU_EXTERN AU_EXPORT void AuSoundRequestNext (uint64_t* buffer);
 extern void AuSoundStart();
 
 /*
+ * AuSoundStop -- Stop Sound card
+ */
+extern void AuSoundStop();
+
+/*
  * AuSoundDeInitialize -- Stops the Sound card
  */
 extern void AuSoundDeInitialize();

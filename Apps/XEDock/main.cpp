@@ -48,9 +48,11 @@
 #include <sys\_sleep.h>
 
 #include <xewidget.h>
+#include <list.h>
 #include <acrylic.h>
 #include <color.h>
 #include "XEDesktop.h"
+#include "XEGoButton.h"
 
 #define DOCK_HEIGHT  20
 
@@ -61,6 +63,17 @@ canvas_t *canvas;
 
 uint32_t screen_width = 0;
 uint32_t screen_height = 0;
+
+/*
+ * XEDockRegister -- Register the dock as
+ * a desktop component
+ * @param app -- Pointer to XEApp
+ */
+void XEDockRegister (XeApp *app) {
+	pri_event_t ev;
+	ev.type = 105;
+	XeSendEventPRIWM(&ev, app->event_fd);
+}
 
 
 
@@ -86,11 +99,21 @@ XE_EXTERN XE_EXPORT int XeMain (int argc, char* argv[]) {
 	win->color = LIGHTCORAL;
 	win->paint = XEDesktopPaint;
 
-	Image *img = load_wallpaper(screen_width,screen_height,"/kati.jpg");
+	/* Dock do not require global controls, so free it */
+	XERemoveGlobalButton(win, XE_GLBL_CNTRL_MINIMIZE);
+	XERemoveGlobalButton(win, XE_GLBL_CNTRL_MAXIMIZE);
+	XERemoveGlobalButton(win, XE_GLBL_CNTRL_CLOSE);
+
+	XEGoButton *gobut = XECreateGoButton(10, screen_height - 40, 60, 30, "Xeneva", "/xelogo.bmp");
+	XEWindowAddWidget(win, (XEWidget*)gobut);
+
+
+	Image *img = load_wallpaper(screen_width,screen_height,"/flora.jpg");
 	
 	XEWindowSetAttrib(win,(1<<1));
 	XEShowWindow(win);
 
+	XEDockRegister(app);
 
 	pri_event_t ev;
 	int ret_code = 0;
@@ -98,7 +121,7 @@ XE_EXTERN XE_EXPORT int XeMain (int argc, char* argv[]) {
 		ret_code = ioquery(event_fd,PRI_LOOP_GET_EVENT, &ev);
 		if (ev.type != NULL) {
 			if (ev.type == 201) {
-				//XEWindowMouseHandle(win,ev.dword,ev.dword2,ev.dword3,0);
+				XEWindowMouseHandle(win,ev.dword,ev.dword2,ev.dword3,0);
 				memset(&ev, 0, sizeof(pri_event_t));
 			}
 		}

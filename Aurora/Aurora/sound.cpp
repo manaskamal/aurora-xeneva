@@ -44,6 +44,7 @@ uint32_t next_pos = 0;
 uint8_t* data_buff = 0;
 
 #define BUFF_SIZE  4096
+#define KERNEL_DSP_ID  -2
 
 dsp_t* dsp_first;
 dsp_t* dsp_last;
@@ -233,6 +234,14 @@ void AuSoundInitialize () {
 	dsp_last = NULL;
 	_audio_started_ = false;
 	_audio_stoped_ = false;
+
+	dsp_t *dsp_ = (dsp_t*)malloc(sizeof(dsp_t));
+	uint8_t* buffer = (uint8_t*)p2v((size_t)AuPmmngrAllocBlocks(BUFF_SIZE/4096));
+	memset(buffer, 0, BUFF_SIZE);
+	dsp_->buffer = circ_buf_init(buffer, BUFF_SIZE); //(uint8_t*)
+	dsp_->id = KERNEL_DSP_ID;
+	dsp_->registered_thr = get_current_thread();
+	AuSoundAddDSP(dsp_);
 }
 
 /*
@@ -299,6 +308,15 @@ void AuSoundStart() {
 }
 
 /*
+ * AuSoundStop -- Stop Sound card
+ */
+void AuSoundStop() {
+	if (registered_dev == NULL)
+		return;
+	registered_dev->stop_output_stream();
+}
+
+/*
  * AuSoundDeInitialize -- Stops the Sound card
  */
 void AuSoundDeInitialize() {
@@ -324,6 +342,7 @@ void AuSoundDestroyDSP(uint16_t id) {
 
 	if (target_dsp == NULL)
 		return;
+
 
 	AuPmmngrFreeBlocks((void*)v2p((uint64_t)target_dsp->buffer->buffer),
 		BUFF_SIZE/4096);

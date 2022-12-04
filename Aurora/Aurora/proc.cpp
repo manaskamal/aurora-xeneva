@@ -297,6 +297,7 @@ int AuCreateProcess(const char* filename, char* procname) {
     add_process(process);
 
 	_debug_print_ ("***Process created \r\n");
+
 	return t->id;
 }
 

@@ -187,6 +187,14 @@ XE_EXTERN XE_EXPORT void XEWindowMouseHandle(XEWindow *win, int x, int y, int bu
  */
 XE_EXTERN XE_EXPORT XEGlobalControl* XEAddGlobalButton(XEWindow *win,int x, int y, int w, int h, uint8_t type);
 
+/**
+ * XERemoveGlobalButton -- Remove a particular global button
+ * from application window
+ * @param win -- Pointer to the application window
+ * @param type -- Global Button type
+ */
+XE_EXTERN XE_EXPORT void XERemoveGlobalButton (XEWindow* win, uint8_t type);
+
 /*
  * XEWindowHandleResize -- Handle new window resize events from window server
  * @param win -- Pointer to XEWindow
@@ -202,6 +210,11 @@ XE_EXTERN XE_EXPORT void XEWindowHandleResize (XeApp *app, XEWindow *win, uint16
  */
 XE_EXTERN XE_EXPORT void XERedrawWindow (XEWindow *win);
 
+/**
+ * XERepaintWidgets -- Repaints all widgets
+ * @param win -- Pointer to application window
+ */
+XE_EXTERN XE_EXPORT void XERepaindWidgets (XEWindow* win);
 
 /*
  * XEResizeWindow -- Sends resize command to window server
@@ -217,5 +230,11 @@ XE_EXTERN XE_EXPORT void XEResizeWindow (XEWindow* win,int w, int h) ;
  * @param attrib -- attribute value
  */
 XE_EXTERN XE_EXPORT void XEWindowSetAttrib (XEWindow* win,uint8_t attrib);
+
+/*
+ * XEExitWindow -- Exits a graphical window
+ * @param win -- Pointer to window
+ */
+XE_EXTERN XE_EXPORT void XEExitWindow (XEWindow* win);
 
 #endif

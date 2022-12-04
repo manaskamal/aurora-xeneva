@@ -1,18 +1,18 @@
-﻿Build started 22-11-2022 আবেলি 1:58:30.
+﻿Build started 04-12-2022 ৰাতিপু 9:39:35.
      1>Project "E:\Xeneva Project\Xeneva\Apps\XeCon\XeCon.vcxproj" on node 2 (Rebuild target(s)).
      1>_NASM:
          asm_test.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp43a6f01f8c8243978bdcdc76926ea7cd.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp5509ec5c8fe84fb9abdb523ca8efaf65.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\asm_test.obj"  "E:\Xeneva Project\Xeneva\Apps\XeCon\asm_test.asm"
        ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\xnlib\xnclib" /I"E:\Xeneva Project\Xeneva\xnlib\xnacrylic\include" /I"E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes" /Zi /nologo /W3 /WX- /sdl- /Od /D ARCH_X64 /D _MBCS /X /Gm /GS- /arch:SSE2 /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt main.cpp XeTerm.cpp
      1>cl : Command line warning D9025: overriding '/sdl-' with '/GS-'
      1>cl : Command line warning D9002: ignoring unknown option '/arch:SSE2'
          XeTerm.cpp
-     1>XeTerm.cpp(74): warning C4305: '=' : truncation from 'unsigned int' to 'uint8_t'
-     1>XeTerm.cpp(74): warning C4309: '=' : truncation of constant value
-     1>XeTerm.cpp(75): warning C4305: '=' : truncation from 'unsigned int' to 'uint8_t'
-     1>XeTerm.cpp(75): warning C4309: '=' : truncation of constant value
+     1>XeTerm.cpp(131): warning C4305: '=' : truncation from 'unsigned int' to 'uint8_t'
+     1>XeTerm.cpp(131): warning C4309: '=' : truncation of constant value
+     1>XeTerm.cpp(132): warning C4305: '=' : truncation from 'unsigned int' to 'uint8_t'
+     1>XeTerm.cpp(132): warning C4309: '=' : truncation of constant value
          main.cpp
      1>main.cpp(75): warning C4267: '=' : conversion from 'size_t' to 'int', possible loss of data
          Generating Code...
@@ -28,4 +28,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:00.68
+Time Elapsed 00:00:03.33

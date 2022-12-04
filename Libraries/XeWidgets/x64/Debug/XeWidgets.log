@@ -1,42 +1,164 @@
-﻿Build started 15-11-2022 ৰাতিপু 9:00:46.
+﻿Build started 04-12-2022 ৰাতিপু 11:14:59.
      1>Project "E:\Xeneva Project\Xeneva\Libraries\XeWidgets\XeWidgets.vcxproj" on node 2 (Rebuild target(s)).
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\xnlib\xnclib" /I"E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes" /I"E:\Xeneva Project\Xeneva\xnlib\xnacrylic\include" /Zi /nologo /W3 /WX- /Od /Oy /D ARCH_X64 /D DEFAULT_COLOR_MODE /D _WINDLL /D _MBCS /X /Gm /GS- /arch:SSE2 /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt list.cpp styles\XEDefaultButtonStyle.cpp styles\XEDefaultMenuStyle.cpp styles\XEDefaultRadioButtonStyle.cpp styles\XEDefaultRadioGroupStyle.cpp styles\XEDefaultWinStyle.cpp styles\XEMenubarDefaultStyle.cpp xebase.cpp xebutton.cpp xeloop.cpp xemenu.cpp xequwindow.cpp xeradiobutton.cpp xeradiogroup.cpp xewindow.cpp xe_glblctrl_close.cpp
      1>cl : Command line warning D9002: ignoring unknown option '/arch:SSE2'
          xe_glblctrl_close.cpp
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(49): warning C4518: '__declspec(dllexport)' : storage-class or type specifier(s) unexpected here; ignored
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(49): warning C4502: 'linkage specification' requires use of keyword 'extern' and must precede all other specifiers
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(50): warning C4518: '__declspec(dllexport)' : storage-class or type specifier(s) unexpected here; ignored
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(50): warning C4502: 'linkage specification' requires use of keyword 'extern' and must precede all other specifiers
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(51): warning C4518: '__declspec(dllexport)' : storage-class or type specifier(s) unexpected here; ignored
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(51): warning C4502: 'linkage specification' requires use of keyword 'extern' and must precede all other specifiers
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(52): warning C4518: '__declspec(dllexport)' : storage-class or type specifier(s) unexpected here; ignored
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(52): warning C4502: 'linkage specification' requires use of keyword 'extern' and must precede all other specifiers
          xewindow.cpp
-     1>xewindow.cpp(115): warning C4267: 'argument' : conversion from 'size_t' to 'unsigned int', possible loss of data
-     1>xewindow.cpp(253): warning C4018: '<' : signed/unsigned mismatch
-     1>xewindow.cpp(277): warning C4018: '<' : signed/unsigned mismatch
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(49): warning C4518: '__declspec(dllexport)' : storage-class or type specifier(s) unexpected here; ignored
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(49): warning C4502: 'linkage specification' requires use of keyword 'extern' and must precede all other specifiers
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(50): warning C4518: '__declspec(dllexport)' : storage-class or type specifier(s) unexpected here; ignored
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(50): warning C4502: 'linkage specification' requires use of keyword 'extern' and must precede all other specifiers
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(51): warning C4518: '__declspec(dllexport)' : storage-class or type specifier(s) unexpected here; ignored
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(51): warning C4502: 'linkage specification' requires use of keyword 'extern' and must precede all other specifiers
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(52): warning C4518: '__declspec(dllexport)' : storage-class or type specifier(s) unexpected here; ignored
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(52): warning C4502: 'linkage specification' requires use of keyword 'extern' and must precede all other specifiers
+     1>xewindow.cpp(116): warning C4267: 'argument' : conversion from 'size_t' to 'unsigned int', possible loss of data
+     1>xewindow.cpp(172): warning C4018: '<' : signed/unsigned mismatch
+     1>xewindow.cpp(263): warning C4018: '<' : signed/unsigned mismatch
+     1>xewindow.cpp(282): warning C4018: '<' : signed/unsigned mismatch
+     1>xewindow.cpp(306): warning C4018: '<' : signed/unsigned mismatch
          xeradiogroup.cpp
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(49): warning C4518: '__declspec(dllexport)' : storage-class or type specifier(s) unexpected here; ignored
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(49): warning C4502: 'linkage specification' requires use of keyword 'extern' and must precede all other specifiers
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(50): warning C4518: '__declspec(dllexport)' : storage-class or type specifier(s) unexpected here; ignored
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(50): warning C4502: 'linkage specification' requires use of keyword 'extern' and must precede all other specifiers
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(51): warning C4518: '__declspec(dllexport)' : storage-class or type specifier(s) unexpected here; ignored
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(51): warning C4502: 'linkage specification' requires use of keyword 'extern' and must precede all other specifiers
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(52): warning C4518: '__declspec(dllexport)' : storage-class or type specifier(s) unexpected here; ignored
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(52): warning C4502: 'linkage specification' requires use of keyword 'extern' and must precede all other specifiers
      1>xeradiogroup.cpp(40): warning C4018: '<' : signed/unsigned mismatch
      1>xeradiogroup.cpp(81): warning C4267: 'argument' : conversion from 'size_t' to 'unsigned int', possible loss of data
          xeradiobutton.cpp
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(49): warning C4518: '__declspec(dllexport)' : storage-class or type specifier(s) unexpected here; ignored
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(49): warning C4502: 'linkage specification' requires use of keyword 'extern' and must precede all other specifiers
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(50): warning C4518: '__declspec(dllexport)' : storage-class or type specifier(s) unexpected here; ignored
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(50): warning C4502: 'linkage specification' requires use of keyword 'extern' and must precede all other specifiers
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(51): warning C4518: '__declspec(dllexport)' : storage-class or type specifier(s) unexpected here; ignored
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(51): warning C4502: 'linkage specification' requires use of keyword 'extern' and must precede all other specifiers
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(52): warning C4518: '__declspec(dllexport)' : storage-class or type specifier(s) unexpected here; ignored
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(52): warning C4502: 'linkage specification' requires use of keyword 'extern' and must precede all other specifiers
      1>xeradiobutton.cpp(77): warning C4267: 'argument' : conversion from 'size_t' to 'unsigned int', possible loss of data
          xequwindow.cpp
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(49): warning C4518: '__declspec(dllexport)' : storage-class or type specifier(s) unexpected here; ignored
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(49): warning C4502: 'linkage specification' requires use of keyword 'extern' and must precede all other specifiers
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(50): warning C4518: '__declspec(dllexport)' : storage-class or type specifier(s) unexpected here; ignored
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(50): warning C4502: 'linkage specification' requires use of keyword 'extern' and must precede all other specifiers
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(51): warning C4518: '__declspec(dllexport)' : storage-class or type specifier(s) unexpected here; ignored
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(51): warning C4502: 'linkage specification' requires use of keyword 'extern' and must precede all other specifiers
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(52): warning C4518: '__declspec(dllexport)' : storage-class or type specifier(s) unexpected here; ignored
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(52): warning C4502: 'linkage specification' requires use of keyword 'extern' and must precede all other specifiers
      1>xequwindow.cpp(76): warning C4267: 'argument' : conversion from 'size_t' to 'unsigned int', possible loss of data
          xemenu.cpp
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(49): warning C4518: '__declspec(dllexport)' : storage-class or type specifier(s) unexpected here; ignored
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(49): warning C4502: 'linkage specification' requires use of keyword 'extern' and must precede all other specifiers
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(50): warning C4518: '__declspec(dllexport)' : storage-class or type specifier(s) unexpected here; ignored
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(50): warning C4502: 'linkage specification' requires use of keyword 'extern' and must precede all other specifiers
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(51): warning C4518: '__declspec(dllexport)' : storage-class or type specifier(s) unexpected here; ignored
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(51): warning C4502: 'linkage specification' requires use of keyword 'extern' and must precede all other specifiers
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(52): warning C4518: '__declspec(dllexport)' : storage-class or type specifier(s) unexpected here; ignored
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(52): warning C4502: 'linkage specification' requires use of keyword 'extern' and must precede all other specifiers
      1>xemenu.cpp(42): warning C4018: '<' : signed/unsigned mismatch
      1>xemenu.cpp(192): warning C4267: 'argument' : conversion from 'size_t' to 'unsigned int', possible loss of data
      1>xemenu.cpp(205): warning C4018: '<' : signed/unsigned mismatch
      1>xemenu.cpp(227): warning C4267: 'argument' : conversion from 'size_t' to 'unsigned int', possible loss of data
          xeloop.cpp
          xebutton.cpp
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(49): warning C4518: '__declspec(dllexport)' : storage-class or type specifier(s) unexpected here; ignored
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(49): warning C4502: 'linkage specification' requires use of keyword 'extern' and must precede all other specifiers
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(50): warning C4518: '__declspec(dllexport)' : storage-class or type specifier(s) unexpected here; ignored
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(50): warning C4502: 'linkage specification' requires use of keyword 'extern' and must precede all other specifiers
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(51): warning C4518: '__declspec(dllexport)' : storage-class or type specifier(s) unexpected here; ignored
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(51): warning C4502: 'linkage specification' requires use of keyword 'extern' and must precede all other specifiers
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(52): warning C4518: '__declspec(dllexport)' : storage-class or type specifier(s) unexpected here; ignored
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(52): warning C4502: 'linkage specification' requires use of keyword 'extern' and must precede all other specifiers
      1>xebutton.cpp(118): warning C4267: 'argument' : conversion from 'size_t' to 'unsigned int', possible loss of data
          xebase.cpp
          XEMenubarDefaultStyle.cpp
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(49): warning C4518: '__declspec(dllexport)' : storage-class or type specifier(s) unexpected here; ignored
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(49): warning C4502: 'linkage specification' requires use of keyword 'extern' and must precede all other specifiers
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(50): warning C4518: '__declspec(dllexport)' : storage-class or type specifier(s) unexpected here; ignored
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(50): warning C4502: 'linkage specification' requires use of keyword 'extern' and must precede all other specifiers
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(51): warning C4518: '__declspec(dllexport)' : storage-class or type specifier(s) unexpected here; ignored
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(51): warning C4502: 'linkage specification' requires use of keyword 'extern' and must precede all other specifiers
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(52): warning C4518: '__declspec(dllexport)' : storage-class or type specifier(s) unexpected here; ignored
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(52): warning C4502: 'linkage specification' requires use of keyword 'extern' and must precede all other specifiers
      1>styles\XEMenubarDefaultStyle.cpp(45): warning C4018: '<' : signed/unsigned mismatch
          XEDefaultWinStyle.cpp
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(49): warning C4518: '__declspec(dllexport)' : storage-class or type specifier(s) unexpected here; ignored
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(49): warning C4502: 'linkage specification' requires use of keyword 'extern' and must precede all other specifiers
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(50): warning C4518: '__declspec(dllexport)' : storage-class or type specifier(s) unexpected here; ignored
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(50): warning C4502: 'linkage specification' requires use of keyword 'extern' and must precede all other specifiers
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(51): warning C4518: '__declspec(dllexport)' : storage-class or type specifier(s) unexpected here; ignored
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(51): warning C4502: 'linkage specification' requires use of keyword 'extern' and must precede all other specifiers
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(52): warning C4518: '__declspec(dllexport)' : storage-class or type specifier(s) unexpected here; ignored
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(52): warning C4502: 'linkage specification' requires use of keyword 'extern' and must precede all other specifiers
      1>styles\XEDefaultWinStyle.cpp(46): warning C4018: '<' : signed/unsigned mismatch
      1>styles\XEDefaultWinStyle.cpp(67): warning C4018: '<' : signed/unsigned mismatch
          XEDefaultRadioGroupStyle.cpp
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(49): warning C4518: '__declspec(dllexport)' : storage-class or type specifier(s) unexpected here; ignored
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(49): warning C4502: 'linkage specification' requires use of keyword 'extern' and must precede all other specifiers
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(50): warning C4518: '__declspec(dllexport)' : storage-class or type specifier(s) unexpected here; ignored
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(50): warning C4502: 'linkage specification' requires use of keyword 'extern' and must precede all other specifiers
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(51): warning C4518: '__declspec(dllexport)' : storage-class or type specifier(s) unexpected here; ignored
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(51): warning C4502: 'linkage specification' requires use of keyword 'extern' and must precede all other specifiers
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(52): warning C4518: '__declspec(dllexport)' : storage-class or type specifier(s) unexpected here; ignored
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(52): warning C4502: 'linkage specification' requires use of keyword 'extern' and must precede all other specifiers
      1>styles\XEDefaultRadioGroupStyle.cpp(49): warning C4018: '<' : signed/unsigned mismatch
      1>styles\XEDefaultRadioGroupStyle.cpp(70): warning C4018: '<' : signed/unsigned mismatch
          XEDefaultRadioButtonStyle.cpp
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(49): warning C4518: '__declspec(dllexport)' : storage-class or type specifier(s) unexpected here; ignored
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(49): warning C4502: 'linkage specification' requires use of keyword 'extern' and must precede all other specifiers
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(50): warning C4518: '__declspec(dllexport)' : storage-class or type specifier(s) unexpected here; ignored
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(50): warning C4502: 'linkage specification' requires use of keyword 'extern' and must precede all other specifiers
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(51): warning C4518: '__declspec(dllexport)' : storage-class or type specifier(s) unexpected here; ignored
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(51): warning C4502: 'linkage specification' requires use of keyword 'extern' and must precede all other specifiers
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(52): warning C4518: '__declspec(dllexport)' : storage-class or type specifier(s) unexpected here; ignored
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(52): warning C4502: 'linkage specification' requires use of keyword 'extern' and must precede all other specifiers
          XEDefaultMenuStyle.cpp
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(49): warning C4518: '__declspec(dllexport)' : storage-class or type specifier(s) unexpected here; ignored
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(49): warning C4502: 'linkage specification' requires use of keyword 'extern' and must precede all other specifiers
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(50): warning C4518: '__declspec(dllexport)' : storage-class or type specifier(s) unexpected here; ignored
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(50): warning C4502: 'linkage specification' requires use of keyword 'extern' and must precede all other specifiers
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(51): warning C4518: '__declspec(dllexport)' : storage-class or type specifier(s) unexpected here; ignored
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(51): warning C4502: 'linkage specification' requires use of keyword 'extern' and must precede all other specifiers
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(52): warning C4518: '__declspec(dllexport)' : storage-class or type specifier(s) unexpected here; ignored
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(52): warning C4502: 'linkage specification' requires use of keyword 'extern' and must precede all other specifiers
      1>styles\XEDefaultMenuStyle.cpp(47): warning C4018: '<' : signed/unsigned mismatch
          XEDefaultButtonStyle.cpp
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(49): warning C4518: '__declspec(dllexport)' : storage-class or type specifier(s) unexpected here; ignored
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(49): warning C4502: 'linkage specification' requires use of keyword 'extern' and must precede all other specifiers
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(50): warning C4518: '__declspec(dllexport)' : storage-class or type specifier(s) unexpected here; ignored
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(50): warning C4502: 'linkage specification' requires use of keyword 'extern' and must precede all other specifiers
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(51): warning C4518: '__declspec(dllexport)' : storage-class or type specifier(s) unexpected here; ignored
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(51): warning C4502: 'linkage specification' requires use of keyword 'extern' and must precede all other specifiers
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(52): warning C4518: '__declspec(dllexport)' : storage-class or type specifier(s) unexpected here; ignored
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(52): warning C4502: 'linkage specification' requires use of keyword 'extern' and must precede all other specifiers
          list.cpp
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(49): warning C4518: '__declspec(dllexport)' : storage-class or type specifier(s) unexpected here; ignored
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(49): warning C4502: 'linkage specification' requires use of keyword 'extern' and must precede all other specifiers
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(50): warning C4518: '__declspec(dllexport)' : storage-class or type specifier(s) unexpected here; ignored
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(50): warning C4502: 'linkage specification' requires use of keyword 'extern' and must precede all other specifiers
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(51): warning C4518: '__declspec(dllexport)' : storage-class or type specifier(s) unexpected here; ignored
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(51): warning C4502: 'linkage specification' requires use of keyword 'extern' and must precede all other specifiers
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(52): warning C4518: '__declspec(dllexport)' : storage-class or type specifier(s) unexpected here; ignored
+     1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(52): warning C4502: 'linkage specification' requires use of keyword 'extern' and must precede all other specifiers
+     1>list.cpp(34): warning C4518: '__declspec(dllexport)' : storage-class or type specifier(s) unexpected here; ignored
+     1>list.cpp(34): warning C4502: 'linkage specification' requires use of keyword 'extern' and must precede all other specifiers
+     1>list.cpp(42): warning C4518: '__declspec(dllexport)' : storage-class or type specifier(s) unexpected here; ignored
+     1>list.cpp(42): warning C4502: 'linkage specification' requires use of keyword 'extern' and must precede all other specifiers
+     1>list.cpp(62): warning C4518: '__declspec(dllexport)' : storage-class or type specifier(s) unexpected here; ignored
+     1>list.cpp(62): warning C4502: 'linkage specification' requires use of keyword 'extern' and must precede all other specifiers
+     1>list.cpp(75): warning C4518: '__declspec(dllexport)' : storage-class or type specifier(s) unexpected here; ignored
+     1>list.cpp(75): warning C4502: 'linkage specification' requires use of keyword 'extern' and must precede all other specifiers
          Generating Code...
      1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V110\Microsoft.CppBuild.targets(1137,5): warning MSB8012: TargetPath(E:\Xeneva Project\Xeneva\Aurora\x64\Debug\XeWidgets.dll) does not match the Linker's OutputFile property value (F:\xewid.dll). This may cause your project to build incorrectly. To correct this, please make sure that $(OutDir), $(TargetName) and $(TargetExt) property values match the value specified in %(Link.OutputFile).
      1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V110\Microsoft.CppBuild.targets(1139,5): warning MSB8012: TargetName(XeWidgets) does not match the Linker's OutputFile property value (xewid). This may cause your project to build incorrectly. To correct this, please make sure that $(OutDir), $(TargetName) and $(TargetExt) property values match the value specified in %(Link.OutputFile).
@@ -65,4 +187,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:02.39
+Time Elapsed 00:00:01.44

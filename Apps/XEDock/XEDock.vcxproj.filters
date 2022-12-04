@@ -3,8 +3,10 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="XEDesktop.cpp" />
+    <ClCompile Include="XEGoButton.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="XEDesktop.h" />
+    <ClInclude Include="XEGoButton.h" />
   </ItemGroup>
 </Project>

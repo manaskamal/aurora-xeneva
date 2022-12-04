@@ -32,7 +32,7 @@
 #ifndef __LIST_H__
 #define __LIST_H__
 
-
+#include <sys\_xeneva.h>
 
 typedef struct _data_ {
 	_data_ *next;
@@ -46,10 +46,10 @@ typedef struct _list_ {
 	dataentry *entry_current;
 }list_t;
 
-extern list_t* list_init();
-extern void list_add (list_t* list, void* data);
-extern void* list_remove(list_t* list, unsigned int);
-extern void * list_get_at(list_t* list, unsigned int index);
+XE_EXPORT XE_EXTERN list_t* list_init();
+XE_EXPORT XE_EXTERN void list_add (list_t* list, void* data);
+XE_EXPORT XE_EXTERN void* list_remove(list_t* list, unsigned int);
+XE_EXPORT XE_EXTERN void * list_get_at(list_t* list, unsigned int index);
 
 
 #endif

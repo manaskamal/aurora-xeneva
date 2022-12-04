@@ -142,9 +142,11 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="XEDesktop.cpp" />
+    <ClCompile Include="XEGoButton.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="XEDesktop.h" />
+    <ClInclude Include="XEGoButton.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

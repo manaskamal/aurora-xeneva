@@ -51,11 +51,14 @@
 #define PRI_WIN_SET_PROPERTIES 109
 
 
+
 /* ADDITIONAL WIN CREATE */
 #define PRI_POPUP_WIN_CREATE    110
 #define PRI_DIALOG_WIN_CREATE   111
 #define PRI_POPUP_WIN_CLOSE     112
 #define PRI_DIALOG_WIN_CLOSE    113
+
+#define PRI_REMOVE_DESKTOP_COMPONENT 114
 
 /* Broadcast msgs */
 #define PRI_BROADCAST_MSG  114
@@ -230,6 +233,7 @@ typedef struct _pri_wallp_ {
 	int h;
 	Image *img;
 }pri_wallpaper_t;
+
 
 /*
  * desktop component structure

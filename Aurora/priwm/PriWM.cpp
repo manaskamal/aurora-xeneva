@@ -589,6 +589,24 @@ void pri_add_desktop_component (uint16_t id) {
 }
 
 /**
+ * pri_remove_desktop_component -- removes a desktop component from the
+ * component list
+ * @param id -- process id
+ */
+void pri_remove_desktop_component (uint16_t id) {
+	desktop_component_t *comp = NULL;
+	for (int i = 0; i < desktop_component_list->pointer; i++) {
+		desktop_component_t *comp_ = (desktop_component_t*)list_get_at(desktop_component_list, i);
+		if (comp_->process_id = id) {
+			list_remove(desktop_component_list, i);
+			comp = comp_;
+		}
+	}
+	if (comp)
+		free(comp);
+}
+
+/**
  * pri_notify_win_create -- notifies desktop components about 
  * new window
  */
@@ -631,18 +649,6 @@ void pri_send_quit (uint16_t owner_id) {
 	ioquery(pri_loop_fd, PRI_LOOP_PUT_EVENT, &e);
 }
 
-/*
- * pri_remove_desktop_component -- removes a desktop component
- * from component list
- * @param id -- process id to remove
- */
-void pri_remove_desktop_component (uint16_t id) {
-	for (int i = 0; i < desktop_component_list->pointer; i++) {
-		desktop_component_t *component = (desktop_component_t*)list_get_at(desktop_component_list, i);
-		if (component)
-			list_remove(desktop_component_list, i);
-	}
-}
 
 /**
  * window_create -- create a new window and allocate its resources
@@ -1045,9 +1051,20 @@ void compose_frame () {
 				int popup_w = pwin->shwin->w;
 				int popup_h = pwin->shwin->h;
 
-				for (int i = 0; i < popup_h; i++) {
-					fastcpy(canvas->address + (popup_y + i) * canvas->width + popup_x, 
-						pwin->buffer + (0 + i) * pwin->shwin->w + 0, popup_w*4);
+				/* Do check, if this popup window supports transparency */
+				if (pwin->shwin->alpha) {
+					for (int j = 0; j < popup_h; j++) {
+						for (int i = 0; i < popup_w; i++){
+							*(uint32_t*)(canvas->address + (popup_y + j) * canvas->width + (popup_x + i)) = 
+								alpha_blend(*(uint32_t*)(canvas->address + (popup_y + j)* canvas->width + (popup_x + i)),
+								*(uint32_t*)(pwin->buffer + j * info->width + i));
+						}
+					}
+				} else {
+					for (int i = 0; i < popup_h; i++) {
+						fastcpy(canvas->address + (popup_y + i) * canvas->width + popup_x, 
+							pwin->buffer + (0 + i) * pwin->shwin->w + 0, popup_w*4);
+					}
 				}
 
 				pri_add_clip(popup_x, popup_y, popup_w, popup_h);
@@ -1258,6 +1275,7 @@ XE_EXTERN int XeMain (int argc, char* argv[]) {
 	ioquery(mouse_fd, MOUSE_REGISTER_WM,NULL);
 
 	int test_id =0;
+
 	while (1) {
 		mouse_get (&mouse);
 
@@ -1463,8 +1481,19 @@ XE_EXTERN int XeMain (int argc, char* argv[]) {
 
 				sys_shm_unlink(win->sh_win_key);
 				sys_shm_unlink(win->backing_store_key);
+
+				/* it's time to close all opened popup windows */
+				for (int j = 0; j < win->popup_wins->pointer; j++) {
+					pri_popup_win_t *pw = (pri_popup_win_t*)list_get_at(win->popup_wins, j);
+					sys_shm_unlink(pw->buffer_win_key);
+					sys_shm_unlink(pw->shwin_key);
+					list_remove(win->popup_wins, j);
+					free(pw);
+				}
+
+				free(win->popup_wins);
 				
-					//list_remove(window_list, i);
+				//list_remove(window_list, i);
 				pri_remove_window(win);
 				free(win);
 			}
@@ -1512,13 +1541,21 @@ XE_EXTERN int XeMain (int argc, char* argv[]) {
 
 		/* Register a desktop component like, launcher applications */
 		if (event.type == PRI_REGISTER_DESKTOP_COMPONENT) {
+			pri_add_desktop_component(event.from_id);
 			memset (&event, 0, sizeof(pri_event_t));
+		}
+
+		/* Remove a desktop component from compositor */
+		if (event.type == PRI_REMOVE_DESKTOP_COMPONENT) {
+			pri_remove_desktop_component(event.from_id);
+			memset(&event, 0, sizeof(pri_event_t));
 		}
 
 		/* Broadcast messages are delivered to 
 		 * desktop component applications
 		 */
 		if (event.type == PRI_BROADCAST_MSG ) {
+
 			memset (&event, 0, sizeof(pri_event_t));
 		}
 		
@@ -1529,6 +1566,6 @@ XE_EXTERN int XeMain (int argc, char* argv[]) {
 		//	//! it will sleep for 16 ms
 		//	sys_sleep (1000/60 - delta);
 		//}
-		sys_sleep(16);
+		sys_sleep(12);
 	}
 }

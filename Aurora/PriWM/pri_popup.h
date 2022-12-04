@@ -47,6 +47,7 @@ typedef struct _pri_popup_sh_win_ {
 	bool close;
 	bool hide;
 	bool popuped;
+	bool alpha;
 }pri_popup_sh_win;
 
 typedef struct _pri_popup_win_ {
