@@ -48,7 +48,7 @@ XE_EXTERN int XeMain (int argc, char* argv[]) {
 
 	XEWindowAddWidget(win, (XEWidget*)term);
 
-	win->shwin->alpha = true;;
+	win->shwin->alpha = true;
 	XEShowWindow(win);
 
 	sys_set_signal(SIGINT, HandleSignal);
@@ -119,7 +119,7 @@ XE_EXTERN int XeMain (int argc, char* argv[]) {
 			}
 
 		}
-		
+
 		if (ret_code == -1)
 			sys_sleep(50);
 	}

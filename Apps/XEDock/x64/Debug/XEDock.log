@@ -1,4 +1,4 @@
-﻿Build started 04-12-2022 আবেলি 9:07:22.
+﻿Build started 06-12-2022 ৰাতিপু 8:26:46.
      1>Project "E:\Xeneva Project\Xeneva\Apps\XEDock\XEDock.vcxproj" on node 2 (Rebuild target(s)).
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\xnlib\xnclib" /I"E:\Xeneva Project\Xeneva\xnlib\xnacrylic\include" /I"E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes" /Zi /nologo /W3 /WX- /sdl- /Od /D ARCH_X64 /D _MBCS /X /Gm /GS- /arch:SSE2 /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt main.cpp XEDesktop.cpp XEGoButton.cpp
@@ -13,7 +13,7 @@
      1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(51): warning C4502: 'linkage specification' requires use of keyword 'extern' and must precede all other specifiers
      1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(52): warning C4518: '__declspec(dllexport)' : storage-class or type specifier(s) unexpected here; ignored
      1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(52): warning C4502: 'linkage specification' requires use of keyword 'extern' and must precede all other specifiers
-     1>XEGoButton.cpp(146): warning C4267: 'argument' : conversion from 'size_t' to 'unsigned int', possible loss of data
+     1>XEGoButton.cpp(147): warning C4267: 'argument' : conversion from 'size_t' to 'unsigned int', possible loss of data
          XEDesktop.cpp
      1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(49): warning C4518: '__declspec(dllexport)' : storage-class or type specifier(s) unexpected here; ignored
      1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(49): warning C4502: 'linkage specification' requires use of keyword 'extern' and must precede all other specifiers
@@ -50,4 +50,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:00.70
+Time Elapsed 00:00:02.41

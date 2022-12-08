@@ -34,13 +34,19 @@
 #include <image.h>
 #include <xewidget.h>
 #include <icon.h>
+#include <xequwindow.h>
 
+typedef struct _XEGoMenu_ {
+	XEWidget wid;
+	XEQuickWindow *qwin;
+}XEGoMenu;
 
 typedef struct __xe_go_button__ {
 	XEWidget base;
 	icon_t *logo_icon;
 	char* title;
 	uint8_t color_scheme;
+	bool menu_created;
 }XEGoButton;
 
 /**

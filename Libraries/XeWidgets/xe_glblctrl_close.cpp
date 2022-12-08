@@ -36,7 +36,6 @@
 
 void XEGlobalControl_CloseHandler(XEGlobalControl *ctrl, XEWindow *win) {
 	/* Call XECloseApplication */
-
 	acrylic_close_font();
 	sys_shm_unlink(win->app->back_key);
 	sys_shm_unlink(win->app->sh_key);

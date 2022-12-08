@@ -143,8 +143,10 @@ XEGoButton * XECreateGoButton (int x, int y, int w, int h, char* title, char* ic
 	gobut->base.painter = XEGoButtonPainter;
 	gobut->base.destroy = 0;
 	gobut->color_scheme = 0;
+	gobut->menu_created = false;
 	gobut->title = (char*)malloc(strlen(title)+1);
 	memset(gobut->title, 0, strlen(title));
 	strcpy(gobut->title, title);
 	return gobut;
 }
+

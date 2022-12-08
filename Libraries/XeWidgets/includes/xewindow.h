@@ -64,6 +64,10 @@ typedef struct _xe_sh_win_ {
 	int width;
 	int height;
 	bool alpha;
+	bool anim_on;
+	uint8_t anim_type;
+	uint8_t anim_frame_cnt;
+	uint8_t shared_prop;
 }XESharedWin;
 
 

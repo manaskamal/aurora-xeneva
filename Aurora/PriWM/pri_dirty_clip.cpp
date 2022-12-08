@@ -31,6 +31,7 @@
  **/
 
 #include "pri_dirty_clip.h"
+#include <sys\_term.h>
 #include <canvas.h>
 #include <stdlib.h>
 
@@ -56,8 +57,9 @@ void pri_add_dirty_clip (int x, int y, int w, int h) {
  * @param canvas -- offscreen canvas
  */
 void  pri_dirty_rect_screen_update(canvas_t *canvas) {
-	for (int i = 0; i < _dirty_count; i++)
+	for (int i = 0; i < _dirty_count; i++) {
 		canvas_screen_update(canvas, dirty_rect[i].x, dirty_rect[i].y, dirty_rect[i].w, dirty_rect[i].h);
+	}
 	
 	_dirty_count = 0;
 }

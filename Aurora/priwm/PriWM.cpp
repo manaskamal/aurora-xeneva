@@ -942,40 +942,110 @@ void compose_frame () {
 				if (r_y < 0) 
 					r_y = 0;
 
-				if (r_x + r_w >= canvas->width)
-					r_w  = canvas->width - r_x;
+				if ((info->x + r_x + r_w) >= canvas->width)
+					r_w  = canvas->width - (info->x + r_x );
 
-				if (r_y + r_h >= canvas->height)
-					r_h = canvas->height - r_y;
+				if ( (info->y + r_y + r_h) >= canvas->height)
+					r_h = canvas->height - (info->y + r_y);
 
-				if (info->alpha) {
-					/* Here we need full SSE library to perform alpha bliting in faster way, if system supports
-					* GPU, that will add extra benifits */
 
-					for (int j = 0; j < r_h; j++) {
-						for (int i = 0; i < r_w; i++){
-							*(uint32_t*)(canvas->address + (info->y + r_y + j) * canvas->width + (info->x + r_x + i)) = 
-								alpha_blend(*(uint32_t*)(canvas->address + (r_y + j)* canvas->width + (r_x + i)),
-							*(uint32_t*)(win->backing_store + (r_y + j) * info->width + (r_x + i)));
-						}
-					}
-				}else {
-					for (int i = 0; i < r_h; i++)  {
-					/* Align the count to 16 byte boundary */
-						/*memcpy_sse2(canvas->address + (winy + i) * canvas->width + winx, win->backing_store + (0 + i) * info->width + 0,
-						(wid/16)*4-1);*/
-						fastcpy(canvas->address + (info->y + r_y + i) * canvas->width + info->x + r_x, 
-							win->backing_store + (r_y + i) * info->width + r_x, r_w*4);
+				/* Calculate Clipping here */
+				pri_rect_t r1;
+				pri_rect_t r2;
+				r1.x = r_x;
+				r1.y = r_y;
+				r1.w = r_w;
+				r1.h = r_h;
+
+				pri_rect_t clip_rect[512];
+				int clip_count = 0;
+				pri_window_t *clip_win = NULL;
+				pri_win_info_t *clip_info = NULL;
+				for (clip_win = root_window; clip_win != NULL; clip_win = clip_win->next) {
+					clip_info = (pri_win_info_t*)clip_win->pri_win_info_loc;
+					if (clip_win == win)
+						continue;
+					r2.x = clip_info->x;
+					r2.y = clip_info->y;
+					r2.w = clip_info->width;
+					r2.h = clip_info->height;
+
+					if (pri_check_intersect(&r1, &r2)) {
+						/* Now calculate the clip rects and add it to 
+						 * clip_rect list */
+						pri_calculate_clip_rects(&r1, &r2,clip_rect, &clip_count);
+						//clip_info->dirty = 1;
 					}
 				}
 
+				if (clip_count == 0) {
+					if (info->alpha) {
+						/* Here we need full SSE library to perform alpha bliting in faster way, if system supports
+						* GPU, that will add extra benifits */
 
-				/* here we need to calculate clippings respected to other windows */
-				pri_add_clip(info->x + r_x,info->y + r_y, r_w, r_h);
+						for (int j = 0; j < r_h; j++) {
+							for (int i = 0; i < r_w; i++){
+								*(uint32_t*)(canvas->address + (info->y + r_y + j) * canvas->width + (info->x + r_x + i)) = 
+									alpha_blend(*(uint32_t*)(canvas->address + (r_y + j)* canvas->width + (r_x + i)),
+									*(uint32_t*)(win->backing_store + (r_y + j) * info->width + (r_x + i)));
+							}
+						}
+					}else {
+						for (int i = 0; i < r_h; i++)  {
+							/* Align the count to 16 byte boundary */
+							/*memcpy_sse2(canvas->address + (winy + i) * canvas->width + winx, win->backing_store + (0 + i) * info->width + 0,
+							(wid/16)*4-1);*/
+							fastcpy(canvas->address + (info->y + r_y + i) * canvas->width + info->x + r_x, 
+								win->backing_store + (r_y + i) * info->width + r_x, r_w*4);
+						}
+					}
+					pri_add_clip(info->x + r_x,info->y + r_y, r_w, r_h);
+				}
 
-				info->rect_count = 0;
-				info->dirty = 0;
+				for (int k = 0; k < clip_count; k++) {
+					int k_x = clip_rect[k].x;
+					int k_y = clip_rect[k].y;
+					int k_w = clip_rect[k].w;
+					int k_h = clip_rect[k].h;
+
+					if (k_x < 0)
+						k_x = 0;
+					if (k_y < 0)
+						k_y = 0;
+					if ((k_x + k_w) >= canvas->width)
+						k_w = canvas->width - k_x;
+					if ((k_y + k_h) >= canvas->height)
+						k_h = canvas->height - k_y;
+
+					if (info->alpha) {
+						/* Here we need full SSE library to perform alpha bliting in faster way, if system supports
+						* GPU, that will add extra benifits */
+
+						for (int j = 0; j < k_h; j++) {
+							for (int i = 0; i < k_w; i++){
+								*(uint32_t*)(canvas->address + (info->y + k_y + j) * canvas->width + (info->x + k_x + i)) = 
+									alpha_blend(*(uint32_t*)(canvas->address + (k_y + j)* canvas->width + (k_x + i)),
+									*(uint32_t*)(win->backing_store + (k_y + j) * info->width + (k_x + i)));
+							}
+						}
+					}else {
+						for (int i = 0; i < k_h; i++)  {
+							/* Align the count to 16 byte boundary */
+							/*memcpy_sse2(canvas->address + (winy + i) * canvas->width + winx, win->backing_store + (0 + i) * info->width + 0,
+							(wid/16)*4-1);*/
+							fastcpy(canvas->address + (info->y + k_y + i) * canvas->width + info->x + k_x, 
+								win->backing_store + (k_y + i) * info->width + k_x, k_w*4);
+						}
+					}
+
+					pri_add_clip(k_x,k_y, k_w, k_h);
+					
+				}	
+				clip_count = 0;
 			}
+
+			info->rect_count = 0;
+			info->dirty = 0;
 		}
 
 		/* update entire window */
@@ -1514,18 +1584,17 @@ XE_EXTERN int XeMain (int argc, char* argv[]) {
 			int h = 0;
 			uint16_t owner_id = event.from_id;
 			
-
 			pri_window_t *win = pri_win_find_by_id(owner_id);
-	
 			focused_win = NULL;
 			//pri_notify_win_destroyed(owner_id);
 			if (win != NULL) {
 				pri_win_info_t *info = (pri_win_info_t*)win->pri_win_info_loc;
+				
 				x = info->x;
 				y = info->y;
 				w = info->width;
 				h = info->height;
-
+			
 				sys_shm_unlink(win->sh_win_key);
 				sys_shm_unlink(win->backing_store_key);
 
@@ -1606,13 +1675,13 @@ XE_EXTERN int XeMain (int argc, char* argv[]) {
 			memset (&event, 0, sizeof(pri_event_t));
 		}
 		
-
 		//diff_tick = sys_get_system_tick();
 		//int delta = diff_tick - frame_tick;
 		//if (delta < 1000/60) {
 		//	//! it will sleep for 16 ms
 		//	sys_sleep (1000/60 - delta);
 		//}
+
 		sys_sleep(12);
 	}
 }

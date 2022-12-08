@@ -75,7 +75,20 @@ void XEDockRegister (XeApp *app) {
 	XeSendEventPRIWM(&ev, app->event_fd);
 }
 
+/*
+ * XEInitStartupSound -- start the startup sound
+ * player
+ */
+int XEInitStartupSound () {
+	int snd_fd = sys_open_file("/dev/dsp", NULL);
+	ioquery(snd_fd, SOUND_REGISTER_MEDIAPLAYER, NULL);
+	return snd_fd;
+}
 
+/* here we need to launch our go menu */
+void GoButOnClick (XEWidget* widget, XEWindow* win) {
+	XEGoButton *gobut = (XEGoButton*)widget;
+}
 
 /*
  * main -- the main entry point of init
@@ -92,11 +105,26 @@ XE_EXTERN XE_EXPORT int XeMain (int argc, char* argv[]) {
 	
 	canvas = create_canvas(screen_width, screen_height);
 
+	/* Start the startup sound here */
+	int snd_fd = XEInitStartupSound();
 
+	UFILE sndfile;
+	int file = sys_open_file("/xesnd.wav", &sndfile);
+	sndfile.size = 1;
+	uint8_t* buffer = (uint8_t*)malloc(4096);
+	sys_read_file(file,buffer, &sndfile);
+
+	UFILE snd;
+	snd.flags = 0;
+	sys_write_file(snd_fd, (uint64_t*)buffer, &snd);
+
+	/* now create the desktop window */
 	XEWindow *win = XECreateWindow(app,canvas,(1<<1) ,"Dock",0,0);
 	win->shwin->width = screen_width;
 	win->shwin->height = screen_height;
 	win->color = LIGHTCORAL;
+	/* Bypass the default window paint to 
+	 * XEDock's own paint method */
 	win->paint = XEDesktopPaint;
 	win->shwin->alpha = false;
 
@@ -105,9 +133,10 @@ XE_EXTERN XE_EXPORT int XeMain (int argc, char* argv[]) {
 	XERemoveGlobalButton(win, XE_GLBL_CNTRL_MAXIMIZE);
 	XERemoveGlobalButton(win, XE_GLBL_CNTRL_CLOSE);
 
+	/* Main menu button */
 	XEGoButton *gobut = XECreateGoButton(10, screen_height - 40, 60, 30, "Xeneva", "/xelogo.bmp");
 	XEWindowAddWidget(win, (XEWidget*)gobut);
-
+	gobut->base.action_handler = GoButOnClick;
 
 	Image *img = load_wallpaper(screen_width,screen_height,"/flora.jpg");
 	
@@ -116,6 +145,7 @@ XE_EXTERN XE_EXPORT int XeMain (int argc, char* argv[]) {
 
 	XEDockRegister(app);
 
+
 	pri_event_t ev;
 	int ret_code = 0;
 	while(1) {
@@ -123,6 +153,18 @@ XE_EXTERN XE_EXPORT int XeMain (int argc, char* argv[]) {
 		if (ev.type != NULL) {
 			if (ev.type == 201) {
 				XEWindowMouseHandle(win,ev.dword,ev.dword2,ev.dword3,0);
+				memset(&ev, 0, sizeof(pri_event_t));
+			}
+
+			if (ev.type == 10) {
+				if (sndfile.eof != 1){
+					sys_read_file(file, buffer, &sndfile);
+					sys_write_file (snd_fd, (uint64_t*)buffer, &snd);
+				}
+
+				if (sndfile.eof)
+					ioquery(snd_fd, SOUND_STOP_OUTPUT, NULL);
+
 				memset(&ev, 0, sizeof(pri_event_t));
 			}
 		}

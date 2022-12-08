@@ -173,6 +173,10 @@ typedef struct _shared_win_struct_ {
  **    |  PRI_WINDOW SERVER/CLIENT      |
  **    |________________________________|
  **/
+
+#define PRIWM_ANIM_TYPE_FADE_IN   1
+#define PRIWM_ANIM_TYPE_FADE_OUT  2
+
 /**
  * pri_win_info_t -- window internal datas
  * that are being shared between clients and
@@ -187,6 +191,9 @@ typedef struct _pri_win_info_ {
 	int width;
 	int height;
 	bool alpha;
+	bool anim_on;
+	uint8_t anim_type;
+	uint8_t anim_frame_cnt;
 	uint8_t shared_prop;
 }pri_win_info_t;
 

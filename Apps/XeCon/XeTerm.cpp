@@ -92,8 +92,9 @@ void XETermPainter (XEWidget *widget, XEWindow *win) {
 	if (term->show_cell_grid)
 		XETermShowCellGrid(widget, win);
 
-	/*for (int x = 0; x < term->ws_col; x++)
-		XETermDrawCell (win, widget, */
+	/*for (int x = 0; x < term->ws_row; x++)
+		for (int j = 0; j < term->ws_col; j++)
+			XETermDrawCell(win,widget,x * 8, j * 16);*/
 
 	int _x = term->cursor_x + 2; 
 	int _y = term->cursor_y + 23;
@@ -138,5 +139,9 @@ XETerm * XECreateTerm (int x, int y, int w, int h) {
 	term->ws_xpixels = w;
 	term->ws_ypixels = h;
 	term->buffer = (uint8_t*)malloc(term->ws_col * term->ws_row * sizeof(cell_t));
+
+	for (int i = 0; i < term->ws_row; i++)
+		for (int j = 0; j < term->ws_col; j++)
+			XETermSetCellData((XEWidget*)term,i, j, 0, BLUE, WHITE);
 	return term;
 }
