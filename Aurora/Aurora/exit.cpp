@@ -197,8 +197,6 @@ void AuDestroyMainThread (process_t* proc, thread_t* thr) {
 void AuExitProcess (process_t *proc) {
 	x64_cli ();
 
-	AuSoundStop();
-
 	thread_t* main_thr = proc->main_thread;
 	uint16_t t_id = main_thr->id;
 
@@ -215,7 +213,6 @@ void AuExitProcess (process_t *proc) {
 
 	/* Destroy the opened pri_loop message box */
 	pri_loop_destroy_by_id(t_id);
-
 
 	/* unallocate system libraries */
 	AuUnallocSysLibs();
@@ -243,6 +240,4 @@ void AuExitProcess (process_t *proc) {
 	free_kstack((uint64_t*)cr3);
 	/* free the address space */
 	AuPmmngrFree((void*)cr3);
-
-	AuSoundStart();
 }

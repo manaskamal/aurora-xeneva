@@ -109,7 +109,6 @@ XE_EXTERN int XeMain (int argc, char* argv[]) {
 					}
 				}
 
-
 				/*canvas_close(canvas);
 				canvas = create_canvas(win->shwin->width, win->shwin->height);
 				win->ctx = canvas;

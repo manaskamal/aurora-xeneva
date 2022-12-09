@@ -63,7 +63,7 @@ typedef struct _icon_ {
  * @param w -- width of the icon
  * @param h -- height of the icon
  */
-XE_EXTERN XE_EXPORT icon_t * create_icon (uint32_t key,int w, int h);
+XE_EXTERN XE_EXPORT icon_t * create_icon (int w, int h);
 
 /*
  * icon_open_from_file -- open the icon from file

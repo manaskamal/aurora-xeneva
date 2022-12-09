@@ -249,6 +249,7 @@ size_t fat32_read_file (vfs_node_t *file, uint64_t* buffer, uint32_t count) {
  */
 vfs_node_t *fat32_locate_dir (const char* dir) {
 	vfs_node_t *file = (vfs_node_t*)malloc(sizeof(vfs_node_t));
+	memset (file, 0, sizeof(vfs_node_t));
 
 	uint64_t* buf;
 	fat32_dir *dirent;
@@ -276,7 +277,7 @@ vfs_node_t *fat32_locate_dir (const char* dir) {
 				file->size = dirent->file_size;
 				file->eof = 0;
 				file->status = FS_STATUS_FOUND;
-
+				file->close = 0;
 				if (dirent->attrib == 0x10)
 					file->flags = FS_FLAG_DIRECTORY;
 				else
@@ -303,6 +304,7 @@ vfs_node_t *fat32_locate_dir (const char* dir) {
 vfs_node_t *fat32_locate_subdir (vfs_node_t *kfile, const char* filename) {
 
 	vfs_node_t *file = (vfs_node_t*)malloc(sizeof(vfs_node_t));
+	memset(file, 0, sizeof(vfs_node_t));
 
 	char dos_file_name[11];
 	fat32_to_dos_file_name (filename, dos_file_name, 11);

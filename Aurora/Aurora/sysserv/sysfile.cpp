@@ -198,7 +198,6 @@ void sys_write_file (int fd, uint64* buffer, FILE *ufile) {
  */
 void sys_close_file (int fd) {
 	x64_cli();
-
 	/* If already it's freed by someone, so
 	 * just return from the system call
 	 */

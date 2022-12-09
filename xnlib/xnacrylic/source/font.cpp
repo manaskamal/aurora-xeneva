@@ -132,6 +132,7 @@ int acrylic_font_get_height(char* string) {
 void acrylic_close_font () {
 	FT_Done_Face(face);
 	FT_Done_FreeType(lib);
+	sys_print_text("Acrylic closing font -> %d \n", system_font.fd);
 	sys_close_file(system_font.fd);
 	for (int i = 0; i < 1024*1024/4096; i++)
 		vfree(0xFFFFFFFFC0000000 + i * 4096);

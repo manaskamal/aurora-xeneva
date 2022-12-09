@@ -306,6 +306,7 @@ int tty_ioquery (vfs_node_t *file, int code, void *arg){
 vfs_node_t* ttype_create_master (ttype_t *tty) {
 
 	vfs_node_t *node = (vfs_node_t*)malloc(sizeof(vfs_node_t));
+	memset(node, 0, sizeof(vfs_node_t));
 	memset(node->filename, 0, 32);
 
 	char mname[10];
@@ -341,6 +342,8 @@ vfs_node_t* ttype_create_master (ttype_t *tty) {
 vfs_node_t* ttype_create_slave (ttype_t *tty) {
 
 	vfs_node_t *node = (vfs_node_t*)malloc(sizeof(vfs_node_t));
+	memset(node, 0, sizeof(vfs_node_t));
+
 	memset(node->filename, 0, 32);
 	char sname[10];
 	strcpy (sname, "/dev/");
@@ -377,6 +380,8 @@ int ttype_create (int* master_fd, int* slave_fd) {
 	x64_cli();
 
 	ttype_t *tty= (ttype_t*)malloc(sizeof(ttype_t)); 
+	memset(tty, 0, sizeof(ttype_t));
+
 	void* inbuffer = malloc(512);
 	memset(inbuffer, 0, 512);
 	void* outbuffer = malloc(512);

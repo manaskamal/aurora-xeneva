@@ -35,6 +35,7 @@
 #include <sys\shm.h>
 #include <sys\_file.h>
 #include <jpg\jpeg_decoder.h>
+#include <image.h>
 /*
  * create_icon -- creates a icon bitmap buffer segment
  * @param w -- width of the bitmap
@@ -132,7 +133,7 @@ void icon_draw_jpg (canvas_t *canvas, icon_t* icon, int x, int y) {
  */
 void icon_draw_bmp (canvas_t *canvas, icon_t* icon, int x, int y) {
 
-	bitmap_img* file_header = (bitmap_img*)icon->file->buffer;
+	bitmap_img_t* file_header = (bitmap_img_t*)icon->file->buffer;
 	unsigned int offset = file_header->off_bits;
 
 	if (file_header->type != 0x4d42) {
@@ -141,7 +142,7 @@ void icon_draw_bmp (canvas_t *canvas, icon_t* icon, int x, int y) {
 	}
 	
 
-	bitmap_info *info = (bitmap_info*)(icon->file->buffer + sizeof(bitmap_img));
+	bitmap_info_t *info = (bitmap_info_t*)(icon->file->buffer + sizeof(bitmap_img_t));
 	uint32_t width = info->biWidth;
 	uint32_t height = info->biHeight;
 	

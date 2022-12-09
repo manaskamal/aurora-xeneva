@@ -895,7 +895,6 @@ void pri_window_resize (pri_window_t *win, int n_w,int n_h) {
 	// (--BUGGY---)
 }
 
-
 /**
  * compose_frame -- draw everything in an optimized waythat needs 
  * to be displayed on the screen
@@ -921,8 +920,7 @@ void compose_frame () {
 
 	//----Here goes composing of all window buffers ---//
 	for (pri_window_t *win = root_window; win != NULL; win = win->next) {
-	//	sys_print_text ("Compose Win -> %x \r\n", win);
-		//pri_window_t *win = (pri_window_t*)list_get_at(window_list, i);
+
 		pri_win_info_t *info = (pri_win_info_t*)win->pri_win_info_loc;
 
 		if (win != NULL && win->anim)
@@ -1200,8 +1198,6 @@ void compose_frame () {
 			}
 		}
 	}
-
-	
 
 	/* now store the new occluded area by cursor */
 	cursor_store_back(mouse_x, mouse_y);
@@ -1578,22 +1574,16 @@ XE_EXTERN int XeMain (int argc, char* argv[]) {
 		}
 
 		if (event.type == PRI_WIN_MARK_FOR_CLOSE) {
-			int x = 0;
-			int y = 0;
-			int w = 0;
-			int h = 0;
 			uint16_t owner_id = event.from_id;
-			
 			pri_window_t *win = pri_win_find_by_id(owner_id);
-			focused_win = NULL;
-			//pri_notify_win_destroyed(owner_id);
 			if (win != NULL) {
-				pri_win_info_t *info = (pri_win_info_t*)win->pri_win_info_loc;
-				
-				x = info->x;
-				y = info->y;
-				w = info->width;
-				h = info->height;
+				focused_win = NULL;
+				//pri_notify_win_destroyed(owner_id);
+				pri_win_info_t *info = (pri_win_info_t*)win->pri_win_info_loc;		
+				int x = info->x;
+				int y = info->y;
+				int w = info->width;
+				int h = info->height;
 			
 				sys_shm_unlink(win->sh_win_key);
 				sys_shm_unlink(win->backing_store_key);
@@ -1612,16 +1602,14 @@ XE_EXTERN int XeMain (int argc, char* argv[]) {
 				//list_remove(window_list, i);
 				pri_remove_window(win);
 				free(win);
-			}
            
-			pri_send_quit(owner_id);
-
-			if (x != 0 && y != 0 && w != 0 && h != 0) {
-				pri_wallp_add_dirty_clip(x, y, w, h);
-			}
+				pri_send_quit(owner_id);
+				if (x != 0 && y != 0 && w != 0 && h != 0) {
+					pri_wallp_add_dirty_clip(x, y, w, h);
+				}
 			
-
-			_window_update_all_ = true;
+				_window_update_all_ = true;
+			}
 
 			memset(&event, 0, sizeof(pri_event_t));
 		}
