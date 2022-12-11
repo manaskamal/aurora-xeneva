@@ -119,7 +119,7 @@ typedef struct _thread_ {
     uint8_t *fx_state;  
 	uint32_t mxcsr;
 	bool _is_user;       
-	char* name;
+	char name[8];
 	uint8_t state;
 	uint16_t id;
 	uint8_t priviledge;

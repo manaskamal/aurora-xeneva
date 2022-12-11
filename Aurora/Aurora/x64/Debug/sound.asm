@@ -152,7 +152,7 @@ $LN7:
 ; 201  : 	dsp_t *dsp = AuSoundGetDSP(get_current_thread()->id);
 
 	call	get_current_thread
-	movzx	ecx, WORD PTR [rax+242]
+	movzx	ecx, WORD PTR [rax+238]
 	call	?AuSoundGetDSP@@YAPEAU_dsp_@@G@Z	; AuSoundGetDSP
 	mov	QWORD PTR dsp$[rsp], rax
 
@@ -303,7 +303,7 @@ $LN7@AuSoundIOQ:
 
 	call	get_current_thread
 	mov	rcx, QWORD PTR dsp$1[rsp]
-	movzx	eax, WORD PTR [rax+242]
+	movzx	eax, WORD PTR [rax+238]
 	mov	WORD PTR [rcx+8], ax
 
 ; 171  : 		dsp->registered_thr = get_current_thread();

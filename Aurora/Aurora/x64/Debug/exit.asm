@@ -466,7 +466,7 @@ $LN3@AuDestroyC:
 ; 130  : 		thread_t *t = thread_iterate_block_list(killable->id);
 
 	mov	rax, QWORD PTR killable$3[rsp]
-	movzx	eax, WORD PTR [rax+242]
+	movzx	eax, WORD PTR [rax+238]
 	mov	ecx, eax
 	call	?thread_iterate_block_list@@YAPEAU_thread_@@H@Z ; thread_iterate_block_list
 	mov	QWORD PTR t$6[rsp], rax
@@ -805,7 +805,7 @@ $LN4:
 ; 201  : 	uint16_t t_id = main_thr->id;
 
 	mov	rax, QWORD PTR main_thr$[rsp]
-	movzx	eax, WORD PTR [rax+242]
+	movzx	eax, WORD PTR [rax+238]
 	mov	WORD PTR t_id$[rsp], ax
 
 ; 202  : 

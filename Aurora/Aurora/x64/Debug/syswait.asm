@@ -59,7 +59,7 @@ $LN5:
 ; 31   : 		if (thr->state == THREAD_STATE_BLOCKED) {
 
 	mov	rax, QWORD PTR thr$[rsp]
-	movzx	eax, BYTE PTR [rax+240]
+	movzx	eax, BYTE PTR [rax+237]
 	cmp	eax, 3
 	jne	SHORT $LN1@sys_unbloc
 

@@ -264,7 +264,7 @@ $LN1@tty_ioquer:
 
 	call	get_current_thread
 	mov	rcx, QWORD PTR tty$[rsp]
-	movzx	eax, WORD PTR [rax+242]
+	movzx	eax, WORD PTR [rax+238]
 	mov	WORD PTR [rcx+114], ax
 $LN4@tty_ioquer:
 
@@ -1334,7 +1334,7 @@ $LN3:
 
 	call	get_current_thread
 	mov	rcx, QWORD PTR tty$[rsp]
-	movzx	eax, WORD PTR [rax+242]
+	movzx	eax, WORD PTR [rax+238]
 	mov	WORD PTR [rcx+112], ax
 
 ; 428  : 	tty->slave_pid = 0;

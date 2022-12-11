@@ -1,8 +1,8 @@
-﻿Build started 09-12-2022 ৰাতিপু 7:33:12.
+﻿Build started 11-12-2022 আবেলি 6:26:44.
      1>Project "E:\Xeneva Project\Xeneva\Aurora\Aurora\Aurora.vcxproj" on node 2 (Rebuild target(s)).
      1>_NASM:
          arch\x86_64\interrupts.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmpacb6ea3133994638ba9cefa69ae4c10a.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp1d50817e5aac462b8cd4908d922dcbd5.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\interrupts.obj"  "E:\Xeneva Project\Xeneva\Aurora\Aurora\arch\x86_64\interrupts.asm"
      1>E:\Xeneva Project\Xeneva\Aurora\Aurora\arch\x86_64\interrupts.asm(132): warning : signed dword immediate exceeds bounds [-w+number-overflow]
      1>E:\Xeneva Project\Xeneva\Aurora\Aurora\arch\x86_64\interrupts.asm(132): warning : dword data exceeds bounds [-w+number-overflow]
@@ -502,19 +502,19 @@
      1>E:\Xeneva Project\Xeneva\Aurora\Aurora\arch\x86_64\interrupts.asm(156): warning : dword data exceeds bounds [-w+number-overflow]
        _NASM:
          arch\x86_64\switch.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp389078d71a93454d9e67a5c46863a7f4.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp6187683dcbc04532bb778b899bc62c91.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\switch.obj"  "E:\Xeneva Project\Xeneva\Aurora\Aurora\arch\x86_64\switch.asm"
        _NASM:
          arch\x86_64\user.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp88cec7aa57ac4a408586309afbf8a557.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp98ba099f6bbb4f8f98578ba87a5bfbc1.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\user.obj"  "E:\Xeneva Project\Xeneva\Aurora\Aurora\arch\x86_64\user.asm"
        _NASM:
          arch\x86_64\_low_level.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp56f6ec5890c24811839e0dea02f2958d.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmpc430c842db5e49b08793ca6b060c6464.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\_low_level.obj"  "E:\Xeneva Project\Xeneva\Aurora\Aurora\arch\x86_64\_low_level.asm"
        _NASM:
          _fast_cpy.asm
-         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmpef872329f57a4581be037be5ecf25e81.cmd"
+         cmd.exe /C "C:\Users\HP\AppData\Local\Temp\tmp3adc54d315f94dfa99d7ae1cc657400e.cmd"
          "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\"nasm.exe -Xvc -f win64 -o "x64\Debug\_fast_cpy.obj"  "E:\Xeneva Project\Xeneva\Aurora\Aurora\_fast_cpy.asm"
        ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I..\include /ZI /nologo /W0 /WX- /Od /Oy /D ARCH_X64 /D USE_APIC /D X64 /D _DEBUG_ON_ /D _MBCS /X /Gm /GS- /arch:SSE /fp:precise /Zc:wchar_t /Zc:forScope /GR- /FAs /Fa"x64\Debug\\" /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt arch\x86_64\apic.cpp arch\x86_64\apinit.cpp arch\x86_64\x86_64_signal.cpp arch\x86_64\cpu.cpp arch\x86_64\exception.cpp arch\x86_64\ioapic.cpp arch\x86_64\kheap.cpp arch\x86_64\kstack.cpp arch\x86_64\map.cpp arch\x86_64\pcpu.cpp arch\x86_64\pic.cpp arch\x86_64\systable.cpp arch\x86_64\thread.cpp arch\x86_64\user64.cpp arch\x86_64\paging.cpp atomic\mutex.cpp console.cpp drivers\acpi\acpi.cpp drivers\ahci.cpp drivers\ahci_disk.cpp drivers\ata.cpp drivers\kybrd.cpp drivers\mouse.cpp drivers\pci.cpp drivers\pcie.cpp drivers\rtc.cpp audrv.cpp exit.cpp fs\devfs.cpp fs\fat\fat.cpp fs\fat\fat_f.cpp fs\fat\fat_util.cpp fs\fat\fat_dir.cpp fs\gpt.cpp fs\ttype.cpp fs\vfs.cpp hal.cpp init.cpp ipc\pointdev.cpp ipc\message.cpp ipc\postbox.cpp ipc\pri_loop.cpp libmngr.cpp mmngr\aummap.cpp mmngr\mmfault.cpp mmngr\shmem.cpp mmngr\vma.cpp net\arp.cpp net\aunet.cpp net\ethernet.cpp pe.cpp pmmngr.cpp proc.cpp screen.cpp serial.cpp shirq.cpp sound.cpp stdio.cpp string.cpp sysserv\ioquery.cpp sysserv\sysfb.cpp sysserv\sysfile.cpp sysserv\sysmem.cpp sysserv\sysmouse.cpp sysserv\sysproc.cpp sysserv\systhread.cpp sysserv\systime.cpp sysserv\syswait.cpp sysserv\valloc.cpp timer.cpp utils\circ_buf.cpp utils\lnklist.cpp utils\pipe.cpp utils\ring.cpp _crt.cpp
@@ -694,4 +694,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:05.62
+Time Elapsed 00:00:05.00

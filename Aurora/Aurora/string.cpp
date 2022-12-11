@@ -61,6 +61,9 @@ void memcpy(void *dest, void *src, size_t count)
 
 int strcmp (const char* str1, const char* str2)
 {
+	if (str1 == NULL || str2 == NULL)
+		return -1;
+
 	int res=0;
 	while (!(res = *(unsigned char*)str1 - *(unsigned char*)str2) && *str2)
 		++str1, ++str2;
@@ -75,6 +78,9 @@ int strcmp (const char* str1, const char* str2)
 
 char *strcpy(char *s1, const char *s2)
 {
+	if (s1 == NULL || s2 == NULL)
+		return NULL;
+
 	char *s1_p = s1;
 	while (*s1++ = *s2++);
 	return s1_p;

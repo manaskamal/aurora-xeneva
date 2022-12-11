@@ -183,48 +183,48 @@ $LN5:
 	mov	rcx, QWORD PTR info$[rsp]
 	call	?AuDrvMngrInitialize@@YAXPEAU_KERNEL_BOOT_INFO_@@@Z ; AuDrvMngrInitialize
 
-; 132  : 	
+; 132  : 
 ; 133  : 	// Load system known libraries for usermode processes
 ; 134  : 	AuSysLibInitialize();
 
 	call	?AuSysLibInitialize@@YAXXZ		; AuSysLibInitialize
 
 ; 135  : 
-; 136  : 
-; 137  : 	AuKeyboardInitialize();
+; 136  : 	AuKeyboardInitialize();
 
 	call	?AuKeyboardInitialize@@YAXXZ		; AuKeyboardInitialize
 
-; 138  : 	AuPointDevInitialize();
+; 137  : 	AuPointDevInitialize();
 
 	call	?AuPointDevInitialize@@YAXXZ		; AuPointDevInitialize
 
-; 139  : 	
-; 140  : 	// Initialize main ipc manager
-; 141  : 	pri_loop_init();
+; 138  : 	
+; 139  : 	// Initialize main ipc manager
+; 140  : 	pri_loop_init();
 
 	call	?pri_loop_init@@YAXXZ			; pri_loop_init
 
-; 142  : 
-; 143  : 	// Initialize the process list
-; 144  : 	AuProcessListInit();
+; 141  : 
+; 142  : 	// Initialize the process list
+; 143  : 	AuProcessListInit();
 
 	call	?AuProcessListInit@@YAXXZ		; AuProcessListInit
 
-; 145  : 	AuTTypeInit();
+; 144  : 	AuTTypeInit();
 
 	call	?AuTTypeInit@@YAXXZ			; AuTTypeInit
 
-; 146  : 	
-; 147  : 	/* Start the sound subsystem */
-; 148  : 	AuSoundStart();
+; 145  : 	
+; 146  : 	/* Start the sound subsystem */
+; 147  : 	AuSoundStart();
 
 	call	?AuSoundStart@@YAXXZ			; AuSoundStart
 
-; 149  : 	AuARPRequestMAC();
+; 148  : 	AuARPRequestMAC();
 
 	call	?AuARPRequestMAC@@YAXXZ			; AuARPRequestMAC
 
+; 149  : 
 ; 150  : 	/*Initialize other processor */
 ; 151  : 	AuInitializeCpu(AuGetNumCPU());	
 

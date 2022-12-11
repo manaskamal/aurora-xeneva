@@ -14,7 +14,9 @@
 #include <drivers\svga\vmsvga.h>
 #include <arch\x86_64\x86_64_signal.h>
 #include <mmngr\mmfault.h>
+#include <proc.h>
 #include <screen.h>
+#include <exit.h>
 #include <serial.h>
 
 void panic(const char* msg,...) {
@@ -138,6 +140,11 @@ void general_protection_fault (size_t v, void* p){
 	printf ("CS -> %x, SS -> %x\n", frame->cs, frame->ss);
 	printf ("CURRENT TASK STATE -> %d\n", get_current_thread()->state);
     for(;;);
+	process_t *proc = get_current_process();
+	_debug_print_ ("GPF With process -> %x \r\n", proc);
+	/*if (proc != NULL)
+		AuExitProcess (proc);
+	else*/
 	block_thread(get_current_thread());
 	force_sched();
 }

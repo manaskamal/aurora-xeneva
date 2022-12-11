@@ -100,7 +100,7 @@ $LN2@post_box_p:
 ; 46   : 	if (t->state == THREAD_STATE_BLOCKED){
 
 	mov	rax, QWORD PTR t$[rsp]
-	movzx	eax, BYTE PTR [rax+240]
+	movzx	eax, BYTE PTR [rax+237]
 	cmp	eax, 3
 	jne	SHORT $LN1@post_box_p
 

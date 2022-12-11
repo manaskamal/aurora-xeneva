@@ -1,4 +1,4 @@
-﻿Build started 09-12-2022 ৰাতিপু 7:29:43.
+﻿Build started 11-12-2022 আবেলি 6:15:35.
      1>Project "E:\Xeneva Project\Xeneva\Aurora\PriWM\PriWM.vcxproj" on node 2 (Rebuild target(s)).
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"E:\Xeneva Project\Xeneva\xnlib\xnclib" /I"E:\Xeneva Project\Xeneva\xnlib\xnacrylic\include" /I"E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes" /Zi /nologo /W3 /WX- /sdl- /Od /D ARCH_X64 /D DEFAULT_COLOR_MODE /D _MBCS /X /Gm /GS- /arch:SSE2 /fp:precise /Zc:wchar_t /Zc:forScope /GR- /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt priwin.cpp priwm.cpp pri_blit.cpp pri_clip.cpp pri_dirty_clip.cpp pri_event.cpp pri_menu.cpp pri_menu_painter.cpp pri_popup.cpp pri_rect.cpp pri_wallp_dirty_clip.cpp
@@ -114,21 +114,21 @@
      1>priwm.cpp(849): warning C4018: '<' : signed/unsigned mismatch
      1>priwm.cpp(891): warning C4244: '=' : conversion from 'uint16_t' to 'uint8_t', possible loss of data
      1>priwm.cpp(913): warning C4018: '<' : signed/unsigned mismatch
-     1>priwm.cpp(944): warning C4018: '>=' : signed/unsigned mismatch
-     1>priwm.cpp(947): warning C4018: '>=' : signed/unsigned mismatch
-     1>priwm.cpp(1014): warning C4018: '>=' : signed/unsigned mismatch
-     1>priwm.cpp(1016): warning C4018: '>=' : signed/unsigned mismatch
-     1>priwm.cpp(1073): warning C4018: '>=' : signed/unsigned mismatch
-     1>priwm.cpp(1076): warning C4018: '>=' : signed/unsigned mismatch
-     1>priwm.cpp(1139): warning C4018: '>=' : signed/unsigned mismatch
-     1>priwm.cpp(1141): warning C4018: '>=' : signed/unsigned mismatch
-     1>priwm.cpp(1161): warning C4018: '<' : signed/unsigned mismatch
-     1>priwm.cpp(1234): warning C4244: '=' : conversion from 'uint16_t' to 'uint8_t', possible loss of data
-     1>priwm.cpp(1247): warning C4244: '=' : conversion from 'uint16_t' to 'uint8_t', possible loss of data
-     1>priwm.cpp(1510): warning C4244: '=' : conversion from 'uint16_t' to 'uint8_t', possible loss of data
-     1>priwm.cpp(1593): warning C4018: '<' : signed/unsigned mismatch
-     1>priwm.cpp(1632): warning C4018: '<' : signed/unsigned mismatch
-     1>priwm.cpp(1383): warning C4101: 'diff_tick' : unreferenced local variable
+     1>priwm.cpp(943): warning C4018: '>=' : signed/unsigned mismatch
+     1>priwm.cpp(946): warning C4018: '>=' : signed/unsigned mismatch
+     1>priwm.cpp(1013): warning C4018: '>=' : signed/unsigned mismatch
+     1>priwm.cpp(1015): warning C4018: '>=' : signed/unsigned mismatch
+     1>priwm.cpp(1072): warning C4018: '>=' : signed/unsigned mismatch
+     1>priwm.cpp(1075): warning C4018: '>=' : signed/unsigned mismatch
+     1>priwm.cpp(1138): warning C4018: '>=' : signed/unsigned mismatch
+     1>priwm.cpp(1140): warning C4018: '>=' : signed/unsigned mismatch
+     1>priwm.cpp(1160): warning C4018: '<' : signed/unsigned mismatch
+     1>priwm.cpp(1233): warning C4244: '=' : conversion from 'uint16_t' to 'uint8_t', possible loss of data
+     1>priwm.cpp(1246): warning C4244: '=' : conversion from 'uint16_t' to 'uint8_t', possible loss of data
+     1>priwm.cpp(1513): warning C4244: '=' : conversion from 'uint16_t' to 'uint8_t', possible loss of data
+     1>priwm.cpp(1596): warning C4018: '<' : signed/unsigned mismatch
+     1>priwm.cpp(1635): warning C4018: '<' : signed/unsigned mismatch
+     1>priwm.cpp(1382): warning C4101: 'diff_tick' : unreferenced local variable
          priwin.cpp
      1>priwin.cpp(34): warning C4067: unexpected tokens following preprocessor directive - expected a newline
      1>E:\Xeneva Project\Xeneva\Libraries\XeWidgets\includes\list.h(49): warning C4518: '__declspec(dllexport)' : storage-class or type specifier(s) unexpected here; ignored
@@ -160,4 +160,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:01.14
+Time Elapsed 00:00:01.43

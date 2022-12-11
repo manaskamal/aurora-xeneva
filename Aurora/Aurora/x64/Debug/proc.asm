@@ -51,6 +51,7 @@ PUBLIC	?allocate_fd@@YAXPEAU_thread_@@@Z		; allocate_fd
 PUBLIC	??$raw_offset@PEAU_IMAGE_NT_HEADERS_PE32PLUS@@PEAU_IMAGE_DOS_HEADER_@@@@YAPEAU_IMAGE_NT_HEADERS_PE32PLUS@@PEAU_IMAGE_DOS_HEADER_@@H@Z ; raw_offset<_IMAGE_NT_HEADERS_PE32PLUS * __ptr64,_IMAGE_DOS_HEADER_ * __ptr64>
 PUBLIC	?fork@@YAIXZ					; fork
 PUBLIC	?exec@@YAXPEBDI@Z				; exec
+EXTRN	strncpy:PROC
 EXTRN	memset:PROC
 EXTRN	memcpy:PROC
 EXTRN	initialize_list:PROC
@@ -88,7 +89,7 @@ $pdata$?create_inc_stack@@YAPEA_KPEA_K@Z DD imagerel $LN6
 	DD	imagerel $LN6+134
 	DD	imagerel $unwind$?create_inc_stack@@YAPEA_KPEA_K@Z
 $pdata$?AuCreateProcess@@YAHPEBDPEAD@Z DD imagerel $LN18
-	DD	imagerel $LN18+1732
+	DD	imagerel $LN18+1771
 	DD	imagerel $unwind$?AuCreateProcess@@YAHPEBDPEAD@Z
 $pdata$?get_num_process@@YAIXZ DD imagerel $LN6
 	DD	imagerel $LN6+68
@@ -165,87 +166,87 @@ filename$ = 160
 pid$ = 168
 ?exec@@YAXPEBDI@Z PROC					; exec
 
-; 328  : void exec (const char* filename, uint32_t pid) {
+; 330  : void exec (const char* filename, uint32_t pid) {
 
 $LN3:
 	mov	DWORD PTR [rsp+16], edx
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 152				; 00000098H
 
-; 329  : 	process_t *child_proc = find_process_by_id (pid);
+; 331  : 	process_t *child_proc = find_process_by_id (pid);
 
 	mov	ecx, DWORD PTR pid$[rsp]
 	call	?find_process_by_id@@YAPEAU_process_@@I@Z ; find_process_by_id
 	mov	QWORD PTR child_proc$[rsp], rax
 
-; 330  : 	uint64_t p_cr3 = x64_read_cr3();
+; 332  : 	uint64_t p_cr3 = x64_read_cr3();
 
 	call	x64_read_cr3
 	mov	QWORD PTR p_cr3$[rsp], rax
 
-; 331  : 
-; 332  : 	//!Clear up the child address space
-; 333  : 	uint64_t c_cr3 = (uint64_t)child_proc->cr3;
+; 333  : 
+; 334  : 	//!Clear up the child address space
+; 335  : 	uint64_t c_cr3 = (uint64_t)child_proc->cr3;
 
 	mov	rax, QWORD PTR child_proc$[rsp]
 	mov	rax, QWORD PTR [rax+2088]
 	mov	QWORD PTR c_cr3$[rsp], rax
 
-; 334  : 	memset((void*)c_cr3, 0, 4096);
+; 336  : 	memset((void*)c_cr3, 0, 4096);
 
 	mov	r8d, 4096				; 00001000H
 	xor	edx, edx
 	mov	rcx, QWORD PTR c_cr3$[rsp]
 	call	memset
 
-; 335  : 	/*FILE f = open (filename);
-; 336  : 	if (f.status == FILE_FLAG_INVALID)
-; 337  : 		return;*/
-; 338  : 	unsigned char* buffer = (unsigned char*)AuPmmngrAlloc();
+; 337  : 	/*FILE f = open (filename);
+; 338  : 	if (f.status == FILE_FLAG_INVALID)
+; 339  : 		return;*/
+; 340  : 	unsigned char* buffer = (unsigned char*)AuPmmngrAlloc();
 
 	call	AuPmmngrAlloc
 	mov	QWORD PTR buffer$[rsp], rax
 
-; 339  : /*	read_blk (&f, buffer, f.id);
-; 340  : */
-; 341  : 	//! Create new mappings for exec
-; 342  : 	uint64_t* new_cr3 = AuCreateAddressSpace();
+; 341  : /*	read_blk (&f, buffer, f.id);
+; 342  : */
+; 343  : 	//! Create new mappings for exec
+; 344  : 	uint64_t* new_cr3 = AuCreateAddressSpace();
 
 	call	?AuCreateAddressSpace@@YAPEA_KXZ	; AuCreateAddressSpace
 	mov	QWORD PTR new_cr3$[rsp], rax
 
-; 343  : 	//! copy the new mappings to child_cr3
-; 344  : 	memcpy ((void*)c_cr3, new_cr3, 4096);
+; 345  : 	//! copy the new mappings to child_cr3
+; 346  : 	memcpy ((void*)c_cr3, new_cr3, 4096);
 
 	mov	r8d, 4096				; 00001000H
 	mov	rdx, QWORD PTR new_cr3$[rsp]
 	mov	rcx, QWORD PTR c_cr3$[rsp]
 	call	memcpy
 
-; 345  : 	//! deallocate the new mappings
-; 346  : 	memset((void*)new_cr3, 0, 4096);
+; 347  : 	//! deallocate the new mappings
+; 348  : 	memset((void*)new_cr3, 0, 4096);
 
 	mov	r8d, 4096				; 00001000H
 	xor	edx, edx
 	mov	rcx, QWORD PTR new_cr3$[rsp]
 	call	memset
 
-; 347  : 	AuPmmngrFree(new_cr3);
+; 349  : 	AuPmmngrFree(new_cr3);
 
 	mov	rcx, QWORD PTR new_cr3$[rsp]
 	call	AuPmmngrFree
 
-; 348  : 
-; 349  : 
-; 350  : 	//!After reading we can change cr3
-; 351  :     x64_write_cr3((size_t)c_cr3);
+; 350  : 
+; 351  : 
+; 352  : 	//!After reading we can change cr3
+; 353  :     x64_write_cr3((size_t)c_cr3);
 
 	mov	rcx, QWORD PTR c_cr3$[rsp]
 	call	x64_write_cr3
 
-; 352  : 
-; 353  : 	//!create the stack
-; 354  : 	uint64_t stack = (uint64_t)create_user_stack(child_proc,child_proc->cr3);
+; 354  : 
+; 355  : 	//!create the stack
+; 356  : 	uint64_t stack = (uint64_t)create_user_stack(child_proc,child_proc->cr3);
 
 	mov	rax, QWORD PTR child_proc$[rsp]
 	mov	rdx, QWORD PTR [rax+2088]
@@ -253,19 +254,19 @@ $LN3:
 	call	?create_user_stack@@YAPEA_KPEAU_process_@@PEA_K@Z ; create_user_stack
 	mov	QWORD PTR stack$[rsp], rax
 
-; 355  : 	child_proc->stack = stack;
+; 357  : 	child_proc->stack = stack;
 
 	mov	rax, QWORD PTR child_proc$[rsp]
 	mov	rcx, QWORD PTR stack$[rsp]
 	mov	QWORD PTR [rax+2104], rcx
 
-; 356  : 
-; 357  : 	IMAGE_DOS_HEADER* dos = (IMAGE_DOS_HEADER*)buffer;
+; 358  : 
+; 359  : 	IMAGE_DOS_HEADER* dos = (IMAGE_DOS_HEADER*)buffer;
 
 	mov	rax, QWORD PTR buffer$[rsp]
 	mov	QWORD PTR dos$[rsp], rax
 
-; 358  : 	PIMAGE_NT_HEADERS nt = raw_offset<PIMAGE_NT_HEADERS>(dos, dos->e_lfanew);
+; 360  : 	PIMAGE_NT_HEADERS nt = raw_offset<PIMAGE_NT_HEADERS>(dos, dos->e_lfanew);
 
 	mov	rax, QWORD PTR dos$[rsp]
 	movzx	eax, WORD PTR [rax+60]
@@ -274,16 +275,16 @@ $LN3:
 	call	??$raw_offset@PEAU_IMAGE_NT_HEADERS_PE32PLUS@@PEAU_IMAGE_DOS_HEADER_@@@@YAPEAU_IMAGE_NT_HEADERS_PE32PLUS@@PEAU_IMAGE_DOS_HEADER_@@H@Z ; raw_offset<_IMAGE_NT_HEADERS_PE32PLUS * __ptr64,_IMAGE_DOS_HEADER_ * __ptr64>
 	mov	QWORD PTR nt$[rsp], rax
 
-; 359  : 	
-; 360  : 	//!extract the informations
-; 361  :     //load_pe_file(buffer,f.size);
-; 362  : 	uint64_t _image_base_ = nt->OptionalHeader.ImageBase;
+; 361  : 	
+; 362  : 	//!extract the informations
+; 363  :     //load_pe_file(buffer,f.size);
+; 364  : 	uint64_t _image_base_ = nt->OptionalHeader.ImageBase;
 
 	mov	rax, QWORD PTR nt$[rsp]
 	mov	rax, QWORD PTR [rax+48]
 	mov	QWORD PTR _image_base_$[rsp], rax
 
-; 363  : 	ientry ent = (ientry)(nt->OptionalHeader.AddressOfEntryPoint + nt->OptionalHeader.ImageBase); //buffer
+; 365  : 	ientry ent = (ientry)(nt->OptionalHeader.AddressOfEntryPoint + nt->OptionalHeader.ImageBase); //buffer
 
 	mov	rax, QWORD PTR nt$[rsp]
 	mov	eax, DWORD PTR [rax+40]
@@ -291,39 +292,39 @@ $LN3:
 	add	rax, QWORD PTR [rcx+48]
 	mov	QWORD PTR ent$[rsp], rax
 
-; 364  : 
-; 365  : 	AuMapPage((uint64_t)buffer,_image_base_, PAGING_USER);
+; 366  : 
+; 367  : 	AuMapPage((uint64_t)buffer,_image_base_, PAGING_USER);
 
 	mov	r8b, 4
 	mov	rdx, QWORD PTR _image_base_$[rsp]
 	mov	rcx, QWORD PTR buffer$[rsp]
 	call	AuMapPage
 
-; 366  : 	int position = 1;  //we already read 4096 bytes at first
+; 368  : 	int position = 1;  //we already read 4096 bytes at first
 
 	mov	DWORD PTR position$[rsp], 1
 
-; 367  : 	//while(f.eof != 1){
-; 368  : 	//	unsigned char* block = (unsigned char*)pmmngr_alloc();
-; 369  : 	//	//read_blk(&f,block, f.id);
-; 370  : 	//	map_page((uint64_t)block,_image_base_ + position * 4096);
-; 371  : 	//	position++;
-; 372  : 	//}
-; 373  : 
-; 374  : 	child_proc->entry_point = ent;
+; 369  : 	//while(f.eof != 1){
+; 370  : 	//	unsigned char* block = (unsigned char*)pmmngr_alloc();
+; 371  : 	//	//read_blk(&f,block, f.id);
+; 372  : 	//	map_page((uint64_t)block,_image_base_ + position * 4096);
+; 373  : 	//	position++;
+; 374  : 	//}
+; 375  : 
+; 376  : 	child_proc->entry_point = ent;
 
 	mov	rax, QWORD PTR child_proc$[rsp]
 	mov	rcx, QWORD PTR ent$[rsp]
 	mov	QWORD PTR [rax+16], rcx
 
-; 375  : 	x64_write_cr3(p_cr3);
+; 377  : 	x64_write_cr3(p_cr3);
 
 	mov	rcx, QWORD PTR p_cr3$[rsp]
 	call	x64_write_cr3
 
-; 376  : 
-; 377  : 
-; 378  : 	thread_t *t = create_user_thread(child_proc->entry_point,child_proc->stack,(uint64_t)child_proc->cr3,"child",1);
+; 378  : 
+; 379  : 
+; 380  : 	thread_t *t = create_user_thread(child_proc->entry_point,child_proc->stack,(uint64_t)child_proc->cr3,"child",1);
 
 	mov	BYTE PTR [rsp+32], 1
 	lea	r9, OFFSET FLAT:$SG4453
@@ -336,7 +337,7 @@ $LN3:
 	call	?create_user_thread@@YAPEAU_thread_@@P6AXPEAX@Z_K2QEADE@Z ; create_user_thread
 	mov	QWORD PTR t$[rsp], rax
 
-; 379  : }
+; 381  : }
 
 	add	rsp, 152				; 00000098H
 	ret	0
@@ -353,42 +354,42 @@ p_thread$ = 64
 parent_cr3$ = 72
 ?fork@@YAIXZ PROC					; fork
 
-; 307  : uint32_t fork () {
+; 309  : uint32_t fork () {
 
 $LN6:
 	sub	rsp, 88					; 00000058H
 
-; 308  : 	process_t *child_process = (process_t*)AuPmmngrAlloc();
+; 310  : 	process_t *child_process = (process_t*)AuPmmngrAlloc();
 
 	call	AuPmmngrAlloc
 	mov	QWORD PTR child_process$[rsp], rax
 
-; 309  : 	
-; 310  : 	thread_t * p_thread = get_current_thread();
+; 311  : 	
+; 312  : 	thread_t * p_thread = get_current_thread();
 
 	call	get_current_thread
 	mov	QWORD PTR p_thread$[rsp], rax
 
-; 311  : 	process_t *parent = find_process_by_thread (p_thread);
+; 313  : 	process_t *parent = find_process_by_thread (p_thread);
 
 	mov	rcx, QWORD PTR p_thread$[rsp]
 	call	?find_process_by_thread@@YAPEAU_process_@@PEAU_thread_@@@Z ; find_process_by_thread
 	mov	QWORD PTR parent$[rsp], rax
 
-; 312  : 
-; 313  : 	uint64_t *child_cr3 = (uint64_t*)AuPmmngrAlloc(); //create_user_address_space();
+; 314  : 
+; 315  : 	uint64_t *child_cr3 = (uint64_t*)AuPmmngrAlloc(); //create_user_address_space();
 
 	call	AuPmmngrAlloc
 	mov	QWORD PTR child_cr3$[rsp], rax
 
-; 314  : 	uint64_t *parent_cr3 = parent->cr3;
+; 316  : 	uint64_t *parent_cr3 = parent->cr3;
 
 	mov	rax, QWORD PTR parent$[rsp]
 	mov	rax, QWORD PTR [rax+2088]
 	mov	QWORD PTR parent_cr3$[rsp], rax
 
-; 315  : 
-; 316  : 	for (int i = 0; i < 512; i++)
+; 317  : 
+; 318  : 	for (int i = 0; i < 512; i++)
 
 	mov	DWORD PTR i$1[rsp], 0
 	jmp	SHORT $LN3@fork
@@ -400,7 +401,7 @@ $LN3@fork:
 	cmp	DWORD PTR i$1[rsp], 512			; 00000200H
 	jge	SHORT $LN1@fork
 
-; 317  : 		child_cr3[i] = parent_cr3[i];
+; 319  : 		child_cr3[i] = parent_cr3[i];
 
 	movsxd	rax, DWORD PTR i$1[rsp]
 	movsxd	rcx, DWORD PTR i$1[rsp]
@@ -411,43 +412,43 @@ $LN3@fork:
 	jmp	SHORT $LN2@fork
 $LN1@fork:
 
-; 318  : 
-; 319  : 	memcpy (child_process, parent,sizeof(process_t));
+; 320  : 
+; 321  : 	memcpy (child_process, parent,sizeof(process_t));
 
 	mov	r8d, 2184				; 00000888H
 	mov	rdx, QWORD PTR parent$[rsp]
 	mov	rcx, QWORD PTR child_process$[rsp]
 	call	memcpy
 
-; 320  : 	child_process->pid_t = pid;
+; 322  : 	child_process->pid_t = pid;
 
 	mov	rax, QWORD PTR child_process$[rsp]
 	mov	ecx, DWORD PTR pid
 	mov	DWORD PTR [rax], ecx
 
-; 321  : 	child_process->cr3 = child_cr3; //parent->cr3;
+; 323  : 	child_process->cr3 = child_cr3; //parent->cr3;
 
 	mov	rax, QWORD PTR child_process$[rsp]
 	mov	rcx, QWORD PTR child_cr3$[rsp]
 	mov	QWORD PTR [rax+2088], rcx
 
-; 322  : 	child_process->parent = parent;
+; 324  : 	child_process->parent = parent;
 
 	mov	rax, QWORD PTR child_process$[rsp]
 	mov	rcx, QWORD PTR parent$[rsp]
 	mov	QWORD PTR [rax+2176], rcx
 
-; 323  : 	add_process (child_process);
+; 325  : 	add_process (child_process);
 
 	mov	rcx, QWORD PTR child_process$[rsp]
 	call	?add_process@@YAXPEAU_process_@@@Z	; add_process
 
-; 324  : 	return child_process->pid_t;
+; 326  : 	return child_process->pid_t;
 
 	mov	rax, QWORD PTR child_process$[rsp]
 	mov	eax, DWORD PTR [rax]
 
-; 325  : }
+; 327  : }
 
 	add	rsp, 88					; 00000058H
 	ret	0
@@ -571,19 +572,19 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 ?AuProcessListInit@@YAXXZ PROC				; AuProcessListInit
 
-; 399  : 	pid = 0;
+; 401  : 	pid = 0;
 
 	mov	DWORD PTR pid, 0
 
-; 400  : 	process_head = NULL;
+; 402  : 	process_head = NULL;
 
 	mov	QWORD PTR ?process_head@@3PEAU_process_@@EA, 0 ; process_head
 
-; 401  : 	process_last = NULL;
+; 403  : 	process_last = NULL;
 
 	mov	QWORD PTR ?process_last@@3PEAU_process_@@EA, 0 ; process_last
 
-; 402  : }
+; 404  : }
 
 	ret	0
 ?AuProcessListInit@@YAXXZ ENDP				; AuProcessListInit
@@ -594,57 +595,57 @@ _TEXT	SEGMENT
 proc$ = 32
 ?process_link_libraries@@YAXXZ PROC			; process_link_libraries
 
-; 428  : void process_link_libraries () {
+; 430  : void process_link_libraries () {
 
 $LN3:
 	sub	rsp, 56					; 00000038H
 
-; 429  : 	x64_cli();
+; 431  : 	x64_cli();
 
 	call	x64_cli
 
-; 430  : 
-; 431  : 	process_t *proc = get_current_process();
+; 432  : 
+; 433  : 	process_t *proc = get_current_process();
 
 	call	?get_current_process@@YAPEAU_process_@@XZ ; get_current_process
 	mov	QWORD PTR proc$[rsp], rax
 
-; 432  : 	
-; 433  : 	AuPeLinkLibraryEx((void*)0x0000000100400000,(void*)0x0000000100000000);
+; 434  : 	
+; 435  : 	AuPeLinkLibraryEx((void*)0x0000000100400000,(void*)0x0000000100000000);
 
 	mov	rdx, 4294967296				; 0000000100000000H
 	mov	rcx, 4299161600				; 0000000100400000H
 	call	?AuPeLinkLibraryEx@@YAXPEAX0@Z		; AuPeLinkLibraryEx
 
-; 434  :     AuPeLinkLibraryEx((void*)0x0000000100200000,(void*)0x0000000100000000);
+; 436  :     AuPeLinkLibraryEx((void*)0x0000000100200000,(void*)0x0000000100000000);
 
 	mov	rdx, 4294967296				; 0000000100000000H
 	mov	rcx, 4297064448				; 0000000100200000H
 	call	?AuPeLinkLibraryEx@@YAXPEAX0@Z		; AuPeLinkLibraryEx
 
-; 435  : 	//AuPeLinkLibraryEx((void*)0x0000000100500000,(void*)0x0000000100000000);
-; 436  : 	//
-; 437  : 
-; 438  : 	AuPeLinkLibraryEx((void*)0x0000000000600000,(void*)0x0000000100000000);  //
+; 437  : 	//AuPeLinkLibraryEx((void*)0x0000000100500000,(void*)0x0000000100000000);
+; 438  : 	//
+; 439  : 
+; 440  : 	AuPeLinkLibraryEx((void*)0x0000000000600000,(void*)0x0000000100000000);  //
 
 	mov	rdx, 4294967296				; 0000000100000000H
 	mov	ecx, 6291456				; 00600000H
 	call	?AuPeLinkLibraryEx@@YAXPEAX0@Z		; AuPeLinkLibraryEx
 
-; 439  : 	AuPeLinkLibraryEx((void*)0x0000000100000000,(void*)0x0000000000600000); //
+; 441  : 	AuPeLinkLibraryEx((void*)0x0000000100000000,(void*)0x0000000000600000); //
 
 	mov	edx, 6291456				; 00600000H
 	mov	rcx, 4294967296				; 0000000100000000H
 	call	?AuPeLinkLibraryEx@@YAXPEAX0@Z		; AuPeLinkLibraryEx
 
-; 440  : 	
-; 441  : 	//AuPeLinkLibraryEx((void*)0x0000000000600000,(void*)0x0000000100400000);
-; 442  : 	///* Link the CLIB to every DLL */
-; 443  : 	
-; 444  : 
+; 442  : 	
+; 443  : 	//AuPeLinkLibraryEx((void*)0x0000000000600000,(void*)0x0000000100400000);
+; 444  : 	///* Link the CLIB to every DLL */
 ; 445  : 	
-; 446  :     //AuPeLinkLibraryEx((void*)0x0000000000600000,(void*)0x0000000100200000);
-; 447  : }
+; 446  : 
+; 447  : 	
+; 448  :     //AuPeLinkLibraryEx((void*)0x0000000000600000,(void*)0x0000000100200000);
+; 449  : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -661,30 +662,30 @@ p$2 = 64
 pages$ = 96
 ?process_heap_break@@YAPEAX_K@Z PROC			; process_heap_break
 
-; 409  : void* process_heap_break (uint64_t pages) {
+; 411  : void* process_heap_break (uint64_t pages) {
 
 $LN7:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 88					; 00000058H
 
-; 410  : 	x64_cli();
+; 412  : 	x64_cli();
 
 	call	x64_cli
 
-; 411  : 	process_t *proc = get_current_process();
+; 413  : 	process_t *proc = get_current_process();
 
 	call	?get_current_process@@YAPEAU_process_@@XZ ; get_current_process
 	mov	QWORD PTR proc$[rsp], rax
 
-; 412  : 	int i = 0;
+; 414  : 	int i = 0;
 
 	mov	DWORD PTR i$[rsp], 0
 
-; 413  : 	uint64_t first_page = 0;
+; 415  : 	uint64_t first_page = 0;
 
 	mov	QWORD PTR first_page$[rsp], 0
 
-; 414  : 	for (i = 0; i < pages; i++) {
+; 416  : 	for (i = 0; i < pages; i++) {
 
 	mov	DWORD PTR i$[rsp], 0
 	jmp	SHORT $LN4@process_he
@@ -697,7 +698,7 @@ $LN4@process_he:
 	cmp	rax, QWORD PTR pages$[rsp]
 	jae	SHORT $LN2@process_he
 
-; 415  : 		uint64_t page = (uint64_t)AuGetFreePage(0,true,(void*)proc->_image_heap_break_);
+; 417  : 		uint64_t page = (uint64_t)AuGetFreePage(0,true,(void*)proc->_image_heap_break_);
 
 	mov	rax, QWORD PTR proc$[rsp]
 	mov	r8, QWORD PTR [rax+2112]
@@ -706,35 +707,35 @@ $LN4@process_he:
 	call	AuGetFreePage
 	mov	QWORD PTR page$1[rsp], rax
 
-; 416  : 		if (first_page == 0)
+; 418  : 		if (first_page == 0)
 
 	cmp	QWORD PTR first_page$[rsp], 0
 	jne	SHORT $LN1@process_he
 
-; 417  : 			first_page = page;
+; 419  : 			first_page = page;
 
 	mov	rax, QWORD PTR page$1[rsp]
 	mov	QWORD PTR first_page$[rsp], rax
 $LN1@process_he:
 
-; 418  : 		uint64_t p = (uint64_t)AuPmmngrAlloc();
+; 420  : 		uint64_t p = (uint64_t)AuPmmngrAlloc();
 
 	call	AuPmmngrAlloc
 	mov	QWORD PTR p$2[rsp], rax
 
-; 419  : 		AuMapPage((uint64_t)p, page, PAGING_USER);
+; 421  : 		AuMapPage((uint64_t)p, page, PAGING_USER);
 
 	mov	r8b, 4
 	mov	rdx, QWORD PTR page$1[rsp]
 	mov	rcx, QWORD PTR p$2[rsp]
 	call	AuMapPage
 
-; 420  : 	}
+; 422  : 	}
 
 	jmp	SHORT $LN3@process_he
 $LN2@process_he:
 
-; 421  : 	proc->_heap_size_ += pages * 4096;
+; 423  : 	proc->_heap_size_ += pages * 4096;
 
 	mov	rax, QWORD PTR pages$[rsp]
 	imul	rax, 4096				; 00001000H
@@ -743,11 +744,11 @@ $LN2@process_he:
 	mov	rcx, QWORD PTR proc$[rsp]
 	mov	QWORD PTR [rcx+2120], rax
 
-; 422  : 	return (void*)first_page;
+; 424  : 	return (void*)first_page;
 
 	mov	rax, QWORD PTR first_page$[rsp]
 
-; 423  : }
+; 425  : }
 
 	add	rsp, 88					; 00000058H
 	ret	0
@@ -868,27 +869,27 @@ p_thread$ = 32
 c_proc$ = 40
 ?get_current_process@@YAPEAU_process_@@XZ PROC		; get_current_process
 
-; 392  : process_t * get_current_process () {
+; 394  : process_t * get_current_process () {
 
 $LN3:
 	sub	rsp, 56					; 00000038H
 
-; 393  : 	thread_t * p_thread = get_current_thread();
+; 395  : 	thread_t * p_thread = get_current_thread();
 
 	call	get_current_thread
 	mov	QWORD PTR p_thread$[rsp], rax
 
-; 394  : 	process_t *c_proc = find_process_by_thread (p_thread);
+; 396  : 	process_t *c_proc = find_process_by_thread (p_thread);
 
 	mov	rcx, QWORD PTR p_thread$[rsp]
 	call	?find_process_by_thread@@YAPEAU_process_@@PEAU_thread_@@@Z ; find_process_by_thread
 	mov	QWORD PTR c_proc$[rsp], rax
 
-; 395  : 	return c_proc;
+; 397  : 	return c_proc;
 
 	mov	rax, QWORD PTR c_proc$[rsp]
 
-; 396  : }
+; 398  : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -901,16 +902,16 @@ num_process$ = 0
 current_proc$1 = 8
 ?get_num_process@@YAIXZ PROC				; get_num_process
 
-; 383  : uint32_t get_num_process () {
+; 385  : uint32_t get_num_process () {
 
 $LN6:
 	sub	rsp, 24
 
-; 384  : 	uint32_t num_process = 0;
+; 386  : 	uint32_t num_process = 0;
 
 	mov	DWORD PTR num_process$[rsp], 0
 
-; 385  : 	for (process_t * current_proc = process_head; current_proc != NULL; current_proc = current_proc->next) {
+; 387  : 	for (process_t * current_proc = process_head; current_proc != NULL; current_proc = current_proc->next) {
 
 	mov	rax, QWORD PTR ?process_head@@3PEAU_process_@@EA ; process_head
 	mov	QWORD PTR current_proc$1[rsp], rax
@@ -923,22 +924,22 @@ $LN3@get_num_pr:
 	cmp	QWORD PTR current_proc$1[rsp], 0
 	je	SHORT $LN1@get_num_pr
 
-; 386  : 		num_process++;
+; 388  : 		num_process++;
 
 	mov	eax, DWORD PTR num_process$[rsp]
 	inc	eax
 	mov	DWORD PTR num_process$[rsp], eax
 
-; 387  : 	}
+; 389  : 	}
 
 	jmp	SHORT $LN2@get_num_pr
 $LN1@get_num_pr:
 
-; 388  : 	return num_process;
+; 390  : 	return num_process;
 
 	mov	eax, DWORD PTR num_process$[rsp]
 
-; 389  : }
+; 391  : }
 
 	add	rsp, 24
 	ret	0
@@ -1486,78 +1487,91 @@ $LN4@AuCreatePr:
 
 ; 277  : 
 ; 278  : 	//!allocate current process
-; 279  : 	process->name = procname;
+; 279  : 	memset(process->name, 0, 8);
 
 	mov	rax, QWORD PTR process$[rsp]
-	mov	rcx, QWORD PTR procname$[rsp]
-	mov	QWORD PTR [rax+8], rcx
+	add	rax, 4
+	mov	r8d, 8
+	xor	edx, edx
+	mov	rcx, rax
+	call	memset
 
-; 280  : 	process->entry_point = ent;
+; 280  : 	strncpy (process->name, procname, 8);
+
+	mov	rax, QWORD PTR process$[rsp]
+	add	rax, 4
+	mov	r8d, 8
+	mov	rdx, QWORD PTR procname$[rsp]
+	mov	rcx, rax
+	call	strncpy
+
+; 281  : 
+; 282  : 	process->entry_point = ent;
 
 	mov	rax, QWORD PTR process$[rsp]
 	mov	rcx, QWORD PTR ent$[rsp]
 	mov	QWORD PTR [rax+16], rcx
 
-; 281  : 	process->num_thread = 0;
+; 283  : 	process->num_thread = 0;
 
 	mov	rax, QWORD PTR process$[rsp]
 	mov	BYTE PTR [rax+2072], 0
 
-; 282  : 	process->cr3 = cr3;
+; 284  : 	process->cr3 = cr3;
 
 	mov	rax, QWORD PTR process$[rsp]
 	mov	rcx, QWORD PTR cr3$[rsp]
 	mov	QWORD PTR [rax+2088], rcx
 
-; 283  : 	process->image_base = _image_base_;
+; 285  : 	process->image_base = _image_base_;
 
 	mov	rax, QWORD PTR process$[rsp]
 	mov	rcx, QWORD PTR _image_base_$[rsp]
 	mov	QWORD PTR [rax+2096], rcx
 
-; 284  : 	process->stack = stack;
+; 286  : 	process->stack = stack;
 
 	mov	rax, QWORD PTR process$[rsp]
 	mov	rcx, QWORD PTR stack$[rsp]
 	mov	QWORD PTR [rax+2104], rcx
 
-; 285  : 	process->image_size = nt->OptionalHeader.SizeOfImage;
+; 287  : 	process->image_size = nt->OptionalHeader.SizeOfImage;
 
 	mov	rax, QWORD PTR nt$[rsp]
 	mov	eax, DWORD PTR [rax+80]
 	mov	rcx, QWORD PTR process$[rsp]
 	mov	QWORD PTR [rcx+2080], rax
 
-; 286  : 	process->parent = NULL;
+; 288  : 	process->parent = NULL;
 
 	mov	rax, QWORD PTR process$[rsp]
 	mov	QWORD PTR [rax+2176], 0
 
-; 287  : 	process->_image_heap_break_ = PROCESS_HEAP_BREAK;
+; 289  : 	process->_image_heap_break_ = PROCESS_HEAP_BREAK;
 
 	mov	rax, QWORD PTR process$[rsp]
 	mov	rcx, 15032385536			; 0000000380000000H
 	mov	QWORD PTR [rax+2112], rcx
 
-; 288  : 	process->_heap_size_ = 0;
+; 290  : 	process->_heap_size_ = 0;
 
 	mov	rax, QWORD PTR process$[rsp]
 	mov	QWORD PTR [rax+2120], 0
 
-; 289  : 	process->process_file = file;
+; 291  : 	process->process_file = file;
 
 	mov	rax, QWORD PTR process$[rsp]
 	mov	rcx, QWORD PTR file$[rsp]
 	mov	QWORD PTR [rax+2144], rcx
 
-; 290  : 	process->shared_mem_list = initialize_list();
+; 292  : 	process->shared_mem_list = initialize_list();
 
 	call	initialize_list
 	mov	rcx, QWORD PTR process$[rsp]
 	mov	QWORD PTR [rcx+2152], rax
 
-; 291  : 	//! Create and thread and start scheduling when scheduler starts */
-; 292  : 	thread_t *t = create_user_thread(ent,stack,(uint64_t)cr3,procname,0);
+; 293  : 	//! Create and thread and start scheduling when scheduler starts */
+; 294  : 	thread_t *t = create_user_thread(ent,stack,(uint64_t)cr3,procname,0);
 
 	mov	BYTE PTR [rsp+32], 0
 	mov	r9, QWORD PTR procname$[rsp]
@@ -1567,8 +1581,8 @@ $LN4@AuCreatePr:
 	call	?create_user_thread@@YAPEAU_thread_@@P6AXPEAX@Z_K2QEADE@Z ; create_user_thread
 	mov	QWORD PTR t$[rsp], rax
 
-; 293  : 	//! add the process to process manager
-; 294  : 	process->threads[process->num_thread] = t;
+; 295  : 	//! add the process to process manager
+; 296  : 	process->threads[process->num_thread] = t;
 
 	mov	rax, QWORD PTR process$[rsp]
 	movzx	eax, BYTE PTR [rax+2072]
@@ -1576,7 +1590,7 @@ $LN4@AuCreatePr:
 	mov	rdx, QWORD PTR t$[rsp]
 	mov	QWORD PTR [rcx+rax*8+24], rdx
 
-; 295  : 	process->num_thread++;
+; 297  : 	process->num_thread++;
 
 	mov	rax, QWORD PTR process$[rsp]
 	movzx	eax, BYTE PTR [rax+2072]
@@ -1584,31 +1598,31 @@ $LN4@AuCreatePr:
 	mov	rcx, QWORD PTR process$[rsp]
 	mov	BYTE PTR [rcx+2072], al
 
-; 296  : 	process->main_thread = t; 
+; 298  : 	process->main_thread = t; 
 
 	mov	rax, QWORD PTR process$[rsp]
 	mov	rcx, QWORD PTR t$[rsp]
 	mov	QWORD PTR [rax+2064], rcx
 
-; 297  :     add_process(process);
+; 299  :     add_process(process);
 
 	mov	rcx, QWORD PTR process$[rsp]
 	call	?add_process@@YAXPEAU_process_@@@Z	; add_process
 
-; 298  : 
-; 299  : 	_debug_print_ ("***Process created \r\n");
+; 300  : 
+; 301  : 	_debug_print_ ("***Process created \r\n");
 
 	lea	rcx, OFFSET FLAT:$SG4410
 	call	_debug_print_
 
-; 300  : 
-; 301  : 	return t->id;
+; 302  : 
+; 303  : 	return t->id;
 
 	mov	rax, QWORD PTR t$[rsp]
-	movzx	eax, WORD PTR [rax+242]
+	movzx	eax, WORD PTR [rax+238]
 $LN16@AuCreatePr:
 
-; 302  : }
+; 304  : }
 
 	add	rsp, 280				; 00000118H
 	ret	0

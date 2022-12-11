@@ -49,7 +49,7 @@ typedef void (*main_thread) (void*);
 //!Process structure
 typedef struct _process_ {
 	uint32_t pid_t;
-	char *name;
+	char name[8];
 	main_thread entry_point;
 	thread_t * threads[255]; 
 	thread_t * main_thread;

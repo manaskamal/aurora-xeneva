@@ -224,7 +224,7 @@ $LN2@PointDevPu:
 ; 91   : 	thread_t *t  = thread_iterate_ready_list (window_manager_thr->id);   //!ready list
 
 	mov	rax, QWORD PTR ?window_manager_thr@@3PEAU_thread_@@EA ; window_manager_thr
-	movzx	ecx, WORD PTR [rax+242]
+	movzx	ecx, WORD PTR [rax+238]
 	call	?thread_iterate_ready_list@@YAPEAU_thread_@@G@Z ; thread_iterate_ready_list
 	mov	QWORD PTR t$[rsp], rax
 
@@ -236,7 +236,7 @@ $LN2@PointDevPu:
 ; 93   : 		t = thread_iterate_block_list(window_manager_thr->id);
 
 	mov	rax, QWORD PTR ?window_manager_thr@@3PEAU_thread_@@EA ; window_manager_thr
-	movzx	eax, WORD PTR [rax+242]
+	movzx	eax, WORD PTR [rax+238]
 	mov	ecx, eax
 	call	?thread_iterate_block_list@@YAPEAU_thread_@@H@Z ; thread_iterate_block_list
 	mov	QWORD PTR t$[rsp], rax

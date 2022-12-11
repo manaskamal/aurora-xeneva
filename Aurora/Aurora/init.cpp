@@ -129,10 +129,9 @@ void _AuMain (KERNEL_BOOT_INFO *info) {
 	/* Clear interrupts as scheduler will enable it */
 	x64_cli();
 	AuDrvMngrInitialize(info);
-	
+
 	// Load system known libraries for usermode processes
 	AuSysLibInitialize();
-
 
 	AuKeyboardInitialize();
 	AuPointDevInitialize();
@@ -147,6 +146,7 @@ void _AuMain (KERNEL_BOOT_INFO *info) {
 	/* Start the sound subsystem */
 	AuSoundStart();
 	AuARPRequestMAC();
+
 	/*Initialize other processor */
 	AuInitializeCpu(AuGetNumCPU());	
 

@@ -127,7 +127,7 @@ void XEGoButtonMouseEvent (XEWidget* widget, XEWindow* win, int x, int y, int bu
 
 XEGoButton * XECreateGoButton (int x, int y, int w, int h, char* title, char* icon_file) {
 	XEGoButton *gobut = (XEGoButton*)malloc(sizeof(XEGoButton));
-	gobut->logo_icon = create_icon(NULL, 45,30);
+	gobut->logo_icon = create_icon(45,30);
 	icon_open_from_file(gobut->logo_icon, icon_file);
 	gobut->base.x = x;
 	gobut->base.y = y;

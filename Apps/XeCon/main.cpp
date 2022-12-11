@@ -64,9 +64,9 @@ XE_EXTERN int XeMain (int argc, char* argv[]) {
 	ioquery(master_fd, TIOCSWINSZ, &sz);
 
 
-	int pid = create_process("/ptest.exe", "ptest");
+	/*int pid = create_process("/ptest.exe", "ptest");
 	sys_print_text ("PTEST PID -> %d \r\n", pid);
-	sys_copy_fd(pid, slave_fd, 0);
+	sys_copy_fd(pid, slave_fd, 0);*/
 
 	pri_event_t ev;
 	int bytes_ret = 0;
@@ -95,7 +95,7 @@ XE_EXTERN int XeMain (int argc, char* argv[]) {
 					 * slave processes are not notified for closing
 					 * slave fd 
 					 */
-					sys_kill(pid, SIGKILL);
+					//sys_kill(pid, SIGKILL);
 					sys_close_file(slave_fd);
 					sys_close_file(master_fd);
 				}

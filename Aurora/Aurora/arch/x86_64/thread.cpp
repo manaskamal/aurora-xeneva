@@ -198,7 +198,8 @@ thread_t* create_kthread (void (*entry) (void), uint64_t stack,uint64_t cr3, cha
 	t->user_stack = stack;
 	t->_is_user = 0;
 	t->frame.cr3 = cr3;
-	t->name = name;
+	memset(t->name, 0, 8);
+	strncpy(t->name, name, 8);
 	t->id = task_id++;
 	t->quanta = 0;
 	t->priviledge = THREAD_LEVEL_KERNEL;
@@ -256,7 +257,8 @@ thread_t* create_user_thread (void (*entry) (void*),uint64_t stack,uint64_t cr3,
 	t->frame.fs = 0x23;
 	t->frame.gs = 0x23;
 	t->frame.cr3 = v2p(cr3);
-	t->name = name;
+	memset(t->name, 0, 8);
+	strncpy (t->name, name, 8);
 	t->id = task_id++;
 	t->quanta = 0;
 	t->msg_box = (uint64_t*)p2v((size_t)AuPmmngrAlloc());
@@ -318,7 +320,8 @@ thread_t* create_child_thread (thread_t *parent, void (*entry)(void*),uint64_t s
 	t->frame.fs = 0x23;
 	t->frame.gs = 0x23;
 	t->frame.cr3 = parent->frame.cr3;
-	t->name = name;
+	memset(t->name, 0, 8);
+	strncpy(t->name, name, 8);
 	t->id = task_id++;
 	t->quanta = 0;
 	t->msg_box = NULL; //parent->msg_box;

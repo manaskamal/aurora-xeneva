@@ -3,6 +3,7 @@
 extern XeMain
 extern sys_exit
 extern sys_link_libs
+extern InitSignalHandlers 
 
 section .text
 [BITS 64]
@@ -18,10 +19,13 @@ _start:
      mov rsi, rcx
 	 mov rdi, rdx
 
-
-
 	 sub rsp, 32
 	 call sys_link_libs
+	 add rsp, 32
+
+	 ; Initialize the default Signal Handler
+	 sub rsp, 32
+	 call InitSignalHandlers 
 	 add rsp, 32
 
 

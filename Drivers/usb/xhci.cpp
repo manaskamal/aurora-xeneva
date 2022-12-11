@@ -599,7 +599,7 @@ void xhci_port_initialize (usb_dev_t *dev, unsigned int port) {
 				xhci_get_port_speed(port_speed));
 		}
 
-		uint64_t* string_buf = (uint64_t*)p2v((uint64_t)AuPmmngrAlloc());
+		/*uint64_t* string_buf = (uint64_t*)p2v((uint64_t)AuPmmngrAlloc());
 		memset(string_buf, 0, 4096);
 		
 		usb_get_string_desc(dev,slot,slot_id,v2p((uint64_t)string_buf),dev_desc->iManufacturer);
@@ -613,7 +613,7 @@ void xhci_port_initialize (usb_dev_t *dev, unsigned int port) {
 		uint16_t* string = (uint16_t*)string_buf;
 		for (int l = 0; l < 10; l++)
 			printf ("%c", string[l]);
-		printf ("\n");
+		printf ("\n");*/
 	}
 }
 

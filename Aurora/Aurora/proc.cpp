@@ -276,7 +276,9 @@ int AuCreateProcess(const char* filename, char* procname) {
 	uint64_t stack = (uint64_t)create_user_stack(process,cr3);
 
 	//!allocate current process
-	process->name = procname;
+	memset(process->name, 0, 8);
+	strncpy (process->name, procname, 8);
+
 	process->entry_point = ent;
 	process->num_thread = 0;
 	process->cr3 = cr3;

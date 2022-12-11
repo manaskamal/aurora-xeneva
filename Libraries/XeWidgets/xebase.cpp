@@ -40,12 +40,12 @@
 #include <stdlib.h>
 #include <acrylic.h>
 #include <font.h>
+#include <sys\signal.h>
 
 
 #define PRI_WM_RECEIVER       0xFFFFD00000000000
 static int __request_buffer_width = 0;
 static int __request_buffer_height = 0;
-
 
 /*
  * XeSendEventPRIWM -- Sends a message to PRIWM
@@ -76,6 +76,10 @@ force:
 XeApp* XeStartApplication(int argc, char* argv[]) {
 	int event_fd = XePriLoopCreate();
 
+	/* so XEApps are graphical apps so, 
+	 * we need to initialize all default signal handlers
+	 * with graphical handler function
+	 */
 	
 	/* Start truetype font engine */
 	acrylic_initialize_font();
@@ -131,7 +135,6 @@ XeApp* XeStartApplication(int argc, char* argv[]) {
 				app->shared_win_address = sh_win_addr;
 				app->buffer_width = 400;
 				app->buffer_height = 400;
-
 
 				pri_event_t e;
 				e.type = PRIWM_WINDOW_SHOW;

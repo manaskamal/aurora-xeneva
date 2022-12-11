@@ -222,7 +222,7 @@ $LN3@AuKeyboard:
 
 	mov	rdx, QWORD PTR msg$2[rsp]
 	mov	rax, QWORD PTR ?kyboard_thr@@3PEAU_thread_@@EA ; kyboard_thr
-	movzx	ecx, WORD PTR [rax+242]
+	movzx	ecx, WORD PTR [rax+238]
 	call	?message_send@@YAXGPEAU_message_@@@Z	; message_send
 
 ; 74   : 				AuPmmngrFree ((void*)v2p((size_t)msg));

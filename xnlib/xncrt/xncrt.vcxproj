@@ -134,6 +134,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="crt.cpp" />
+    <ClCompile Include="sig_init.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="helper.h" />

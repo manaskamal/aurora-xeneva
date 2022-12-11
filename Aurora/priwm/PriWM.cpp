@@ -1449,6 +1449,10 @@ XE_EXTERN int XeMain (int argc, char* argv[]) {
 				test_id = create_process ("/xecon.exe", "xecon");
 			}
 
+			if (key_msg.dword == KEY_P) {
+				test_id = create_process ("/ptest.exe", "ptest");
+			}
+
 			if (key_msg.dword == KEY_S) {
 				sys_kill(test_id, SIGINT);
 			}
