@@ -1,13 +1,32 @@
 /**
- * Copyright (C) Manas Kamal Choudhury 2021
+ * BSD 2-Clause License
  *
- *  vmmngr.h -- Memory Manager Abstraction Layer
+ * Copyright (c) 2022, Manas Kamal Choudhury
+ * All rights reserved.
  *
- *  /PROJECT - Aurora { Xeneva v1.0 }
- *  /AUTHOR  - Manas Kamal Choudhury
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
  *
- *===============================================
- */
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer.
+ *
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * 
+ *
+ **/
 
 #ifndef __VMMNGR_H__
 #define __VMMNGR_H__
@@ -37,6 +56,25 @@ extern size_t pd_index (uint64_t addr);
 extern size_t pt_index (uint64_t addr);
 extern size_t p_index (uint64_t addr);
 
+
+typedef union _AuVPage_ {
+	struct {
+		uint64_t present:1;
+		uint64_t writable:1;
+		uint64_t user:1;
+		uint64_t write_through:1;
+		uint64_t cache_disable:1;
+		uint64_t access:1;
+		uint64_t dirty:1;
+		uint64_t size:1;
+		uint64_t global:1;
+		uint64_t cow:1;
+		uint64_t _avail:2;
+		uint64_t page:28;
+		uint64_t reserved:12;
+		uint64_t nx:1;
+	} bits;
+}AuVPage;
 
 //*************************************************
 //! F U N C T I O N S   P R O T O T Y P E
