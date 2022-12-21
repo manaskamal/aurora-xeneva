@@ -1,13 +1,32 @@
 /**
- * Copyright (C) Manas Kamal Choudhury 2021
+ * BSD 2-Clause License
  *
- *  vmmngr.h -- Memory Manager Abstraction Layer
+ * Copyright (c) 2021 - present, Manas Kamal Choudhury
+ * All rights reserved.
  *
- *  /PROJECT - Aurora { Xeneva v1.0 }
- *  /AUTHOR  - Manas Kamal Choudhury
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
  *
- *===============================================
- */
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ *    list of conditions and the following disclaimer.
+ *
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ *
+ **/
 
 #include <arch\x86_64\mmngr\paging.h>
 #include <screen.h>
@@ -126,7 +145,12 @@ void AuPagingInit() {
 }
 
 
-//! Map a page in current address space
+/*
+ * AuMapPage -- Map a page in current address space
+ * @param physical_address -- Physical address
+ * @param virtual_address -- Virtual address to map to
+ * @param attrib -- Additional attributes
+ */
 bool AuMapPage(uint64_t physical_address, uint64_t virtual_address, uint8_t attrib){
 	uint8_t flags = PAGING_PRESENT | PAGING_WRITABLE | attrib;
 
@@ -140,7 +164,6 @@ bool AuMapPage(uint64_t physical_address, uint64_t virtual_address, uint8_t attr
 
 	if (!(pml4i[i4] & PAGING_PRESENT))
 	{
-		
 		const uint64_t page = (uint64_t)AuPmmngrAlloc();
 		pml4i[i4] = page | flags;
 		clear((void*)p2v(page));
@@ -151,7 +174,6 @@ bool AuMapPage(uint64_t physical_address, uint64_t virtual_address, uint8_t attr
 	
 	if (!(pml3[i3] & PAGING_PRESENT))
 	{
-		
 		const uint64_t page = (uint64_t)AuPmmngrAlloc();
 		pml3[i3] = page | flags;
 		clear((void*)p2v(page));
@@ -186,7 +208,12 @@ bool AuMapPage(uint64_t physical_address, uint64_t virtual_address, uint8_t attr
 	return true;
 }
 
-
+/*
+ * AuUnmapPage -- Unmaps a physical address from its virtual address
+ * @param virt_addr -- virtual address
+ * @param free_physical -- boolean value specifies if physical frame
+ * needs to be freed or not
+ */
 void AuUnmapPage(uint64_t virt_addr, bool free_physical){
 	
 	const long i1 = pml4_index(virt_addr);
@@ -225,6 +252,75 @@ void AuUnmapPageEx(uint64_t* cr3, uint64_t virt_addr, bool free_physical){
 	if (free_physical && page != 0) 
 		AuPmmngrFree(page);
 
+}
+
+/*
+ * AuGetPage -- Returns a virtual page in a AuVPage structure
+ * if it's not present then a new virtual page will be created
+ * and returned to the caller
+ * @param virtual_address -- virtual address to check
+ * @param attrib -- new attribute to follow
+ */
+AuVPage* AuGetPage (uint64_t virtual_address, uint8_t attrib) {
+	uint8_t flags = PAGING_PRESENT | PAGING_WRITABLE | attrib ;
+
+	
+	const long i4 = (virtual_address >> 39) & 0x1FF;
+	const long i3 = (virtual_address >> 30) & 0x1FF;
+	const long i2 = (virtual_address >> 21) & 0x1FF;
+	const long i1 = (virtual_address >> 12) & 0x1FF;
+
+	uint64_t *pml4i = (uint64_t*)p2v(x64_read_cr3());
+
+	if (!(pml4i[i4] & PAGING_PRESENT))
+	{
+		const uint64_t page = (uint64_t)AuPmmngrAlloc();
+		pml4i[i4] = page | flags;
+		clear((void*)p2v(page));
+		flush_tlb((void*)page);
+		x64_mfence();
+	}
+	uint64_t* pml3 = (uint64_t*)(p2v(pml4i[i4]) & ~(4096 - 1));
+	
+	if (!(pml3[i3] & PAGING_PRESENT))
+	{
+		const uint64_t page = (uint64_t)AuPmmngrAlloc();
+		pml3[i3] = page | flags;
+		clear((void*)p2v(page));
+		flush_tlb((void*)page);
+		x64_mfence();
+		
+	}
+    
+	
+	uint64_t* pml2 = (uint64_t*)(p2v(pml3[i3]) & ~(4096 - 1));
+	
+	if (!(pml2[i2] & PAGING_PRESENT))
+	{
+		const uint64_t page = (uint64_t)AuPmmngrAlloc();
+		pml2[i2] = page | flags;
+		clear((void*)p2v(page));
+		flush_tlb((void*)page);
+		x64_mfence();
+		
+	}
+	
+	uint64_t* pml1 = (uint64_t*)(p2v(pml2[i2]) & ~(4096 - 1));
+	if (pml1[i1] & PAGING_PRESENT)
+	{
+
+		AuVPage *page = (AuVPage*)&pml1[i1];
+		return page;
+	} else {
+		uint64_t phys_addr = (uint64_t)AuPmmngrAlloc();
+		memset((void*)p2v(phys_addr), 0, 4096);
+		pml1[i1] = phys_addr | flags;
+		flush_tlb ((void*)virtual_address);
+		x64_mfence ();
+		AuVPage *vpage = (AuVPage*)&pml1[i1];
+		return vpage;
+	}
+	return NULL;
 }
 
 
@@ -336,8 +432,9 @@ void AuPagingClearLow() {
 		cr3[i] = 0;
 }
 
-//! creates a new address space for user with same structure
-//! to kernel i.e clone kernel space
+/*
+ * AuCreateAddressSpace -- Creates a new address space 
+ */
 uint64_t *AuCreateAddressSpace (){
 	
 	uint64_t *cr3 = (uint64_t*)p2v((uint64_t)root_cr3);

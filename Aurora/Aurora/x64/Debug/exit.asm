@@ -6,11 +6,11 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 CONST	SEGMENT
-$SG4201	DB	'xewid.dll', 00H
+$SG4235	DB	'xewid.dll', 00H
 	ORG $+6
-$SG4207	DB	'xnclib.dll', 00H
+$SG4241	DB	'xnclib.dll', 00H
 	ORG $+5
-$SG4213	DB	'xnacrl.dll', 00H
+$SG4247	DB	'xnacrl.dll', 00H
 CONST	ENDS
 PUBLIC	?AuExitProcess@@YAXPEAU_process_@@@Z		; AuExitProcess
 PUBLIC	?AuUnmapProcess@@YAXPEAU_process_@@PEAU_thread_@@@Z ; AuUnmapProcess
@@ -132,7 +132,7 @@ $LN12:
 ; 173  : 	/*Close all open dlls */
 ; 174  : 	AuLibEntry_t *lib1 = AuGetSysLib("xewid.dll");
 
-	lea	rcx, OFFSET FLAT:$SG4201
+	lea	rcx, OFFSET FLAT:$SG4235
 	call	?AuGetSysLib@@YAPEAU_libentry_@@PEAD@Z	; AuGetSysLib
 	mov	QWORD PTR lib1$[rsp], rax
 
@@ -166,7 +166,7 @@ $LN7@AuUnallocS:
 ; 177  : 
 ; 178  : 	AuLibEntry_t *lib2 = AuGetSysLib("xnclib.dll");
 
-	lea	rcx, OFFSET FLAT:$SG4207
+	lea	rcx, OFFSET FLAT:$SG4241
 	call	?AuGetSysLib@@YAPEAU_libentry_@@PEAD@Z	; AuGetSysLib
 	mov	QWORD PTR lib2$[rsp], rax
 
@@ -200,7 +200,7 @@ $LN4@AuUnallocS:
 ; 181  : 
 ; 182  : 	AuLibEntry_t *lib3 = AuGetSysLib("xnacrl.dll");
 
-	lea	rcx, OFFSET FLAT:$SG4213
+	lea	rcx, OFFSET FLAT:$SG4247
 	call	?AuGetSysLib@@YAPEAU_libentry_@@PEAD@Z	; AuGetSysLib
 	mov	QWORD PTR lib3$[rsp], rax
 

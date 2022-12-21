@@ -74,18 +74,45 @@ typedef union _AuVPage_ {
 		uint64_t reserved:12;
 		uint64_t nx:1;
 	} bits;
+	uint64_t raw;
 }AuVPage;
 
 //*************************************************
 //! F U N C T I O N S   P R O T O T Y P E
 //*************************************************
 extern void AuPagingInit();
+
+/*
+ * AuMapPage -- Map a page in current address space
+ * @param physical_address -- Physical address
+ * @param virtual_address -- Virtual address to map to
+ * @param attrib -- Additional attributes
+ */
 AU_EXTERN AU_EXPORT bool AuMapPage (uint64_t physical_address, uint64_t virtual_address, uint8_t attrib);
 extern bool AuMapPageEx(uint64_t *pml4i,uint64_t physical_address, uint64_t virtual_address, uint8_t attrib);
 extern void AuUnmapPageEx(uint64_t* cr3, uint64_t virt_addr, bool free_physical);
+
+/*
+ * AuUnmapPage -- Unmaps a physical address from its virtual address
+ * @param virt_addr -- virtual address
+ * @param free_physical -- boolean value specifies if physical frame
+ * needs to be freed or not
+ */
 AU_EXTERN AU_EXPORT void AuUnmapPage(uint64_t virt_addr, bool free_physical);
+
+/*
+ * AuCreateAddressSpace -- Creates a new address space 
+ */
 extern uint64_t *AuCreateAddressSpace();
 
+/*
+ * AuGetPage -- Returns a virtual page in a AuVPage structure
+ * if it's not present then a new virtual page will be created
+ * and returned to the caller
+ * @param virtual_address -- virtual address to check
+ * @param attrib -- new attribute to follow
+ */
+AU_EXTERN AU_EXPORT AuVPage* AuGetPage (uint64_t virtual_address, uint8_t attrib);
 AU_EXTERN AU_EXPORT uint64_t* AuGetPhysicalAddress(uint64_t cr3,uint64_t virt_addr);
 AU_EXTERN AU_EXPORT uint64_t* AuGetFreePage(size_t s, bool user, void* ptr);
 AU_EXTERN AU_EXPORT  uint64_t* AuGetRootPageTable();

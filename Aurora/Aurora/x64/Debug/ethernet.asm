@@ -6,9 +6,9 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 CONST	SEGMENT
-$SG3298	DB	'Ethernet ARP: Packet received ', 0dH, 0aH, 00H
+$SG3332	DB	'Ethernet ARP: Packet received ', 0dH, 0aH, 00H
 	ORG $+7
-$SG3300	DB	'Ethernet IPv4: Packet received ', 0dH, 0aH, 00H
+$SG3334	DB	'Ethernet IPv4: Packet received ', 0dH, 0aH, 00H
 CONST	ENDS
 PUBLIC	ethernet_handle_packet
 PUBLIC	?ethernet_send@@YAXPEAX_KGPEAE@Z		; ethernet_send
@@ -160,7 +160,7 @@ $LN2@ethernet_h:
 ; 38   : 	case ETHERNET_TYPE_ARP:
 ; 39   : 		_debug_print_ ("Ethernet ARP: Packet received \r\n");
 
-	lea	rcx, OFFSET FLAT:$SG3298
+	lea	rcx, OFFSET FLAT:$SG3332
 	call	_debug_print_
 
 ; 40   : 		break;
@@ -171,7 +171,7 @@ $LN1@ethernet_h:
 ; 41   : 	case ETHERNET_TYPE_IPV4:
 ; 42   : 		_debug_print_ ("Ethernet IPv4: Packet received \r\n");
 
-	lea	rcx, OFFSET FLAT:$SG3300
+	lea	rcx, OFFSET FLAT:$SG3334
 	call	_debug_print_
 $LN3@ethernet_h:
 

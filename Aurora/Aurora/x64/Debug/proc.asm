@@ -13,27 +13,27 @@ _BSS	SEGMENT
 pid	DD	01H DUP (?)
 _BSS	ENDS
 CONST	SEGMENT
-$SG4315	DB	'/dev/stdin', 00H
+$SG4349	DB	'/dev/stdin', 00H
 	ORG $+5
-$SG4317	DB	'/dev/stdout', 00H
+$SG4351	DB	'/dev/stdout', 00H
 	ORG $+4
-$SG4319	DB	'/dev/stderr', 00H
+$SG4353	DB	'/dev/stderr', 00H
 	ORG $+4
-$SG4332	DB	'Executable invalid ', 0dH, 0aH, 00H
+$SG4366	DB	'Executable invalid ', 0dH, 0aH, 00H
 	ORG $+2
-$SG4333	DB	'Executable image not found', 0aH, 00H
+$SG4367	DB	'Executable image not found', 0aH, 00H
 	ORG $+4
-$SG4353	DB	'PROCESS CR3 -> %x ', 0dH, 0aH, 00H
+$SG4387	DB	'PROCESS CR3 -> %x ', 0dH, 0aH, 00H
 	ORG $+3
-$SG4367	DB	'xnclib.dll', 00H
+$SG4401	DB	'xnclib.dll', 00H
 	ORG $+5
-$SG4379	DB	'xnacrl.dll', 00H
+$SG4413	DB	'xnacrl.dll', 00H
 	ORG $+5
-$SG4391	DB	'xewid.dll', 00H
+$SG4425	DB	'xewid.dll', 00H
 	ORG $+6
-$SG4410	DB	'***Process created ', 0dH, 0aH, 00H
+$SG4444	DB	'***Process created ', 0dH, 0aH, 00H
 	ORG $+2
-$SG4453	DB	'child', 00H
+$SG4487	DB	'child', 00H
 CONST	ENDS
 PUBLIC	?add_process@@YAXPEAU_process_@@@Z		; add_process
 PUBLIC	?remove_process@@YAXPEAU_process_@@@Z		; remove_process
@@ -327,7 +327,7 @@ $LN3:
 ; 380  : 	thread_t *t = create_user_thread(child_proc->entry_point,child_proc->stack,(uint64_t)child_proc->cr3,"child",1);
 
 	mov	BYTE PTR [rsp+32], 1
-	lea	r9, OFFSET FLAT:$SG4453
+	lea	r9, OFFSET FLAT:$SG4487
 	mov	rax, QWORD PTR child_proc$[rsp]
 	mov	r8, QWORD PTR [rax+2088]
 	mov	rax, QWORD PTR child_proc$[rsp]
@@ -496,7 +496,7 @@ $LN3:
 
 ; 157  : 	vfs_node_t * stdin = vfs_finddir("/dev/stdin");
 
-	lea	rcx, OFFSET FLAT:$SG4315
+	lea	rcx, OFFSET FLAT:$SG4349
 	call	?vfs_finddir@@YAPEAU_vfs_node_@@PEAD@Z	; vfs_finddir
 	mov	QWORD PTR stdin$[rsp], rax
 
@@ -518,7 +518,7 @@ $LN3:
 
 ; 160  : 	vfs_node_t* stdout = vfs_finddir("/dev/stdout");
 
-	lea	rcx, OFFSET FLAT:$SG4317
+	lea	rcx, OFFSET FLAT:$SG4351
 	call	?vfs_finddir@@YAPEAU_vfs_node_@@PEAD@Z	; vfs_finddir
 	mov	QWORD PTR stdout$[rsp], rax
 
@@ -540,7 +540,7 @@ $LN3:
 
 ; 163  : 	vfs_node_t* stderr = vfs_finddir("/dev/stderr");
 
-	lea	rcx, OFFSET FLAT:$SG4319
+	lea	rcx, OFFSET FLAT:$SG4353
 	call	?vfs_finddir@@YAPEAU_vfs_node_@@PEAD@Z	; vfs_finddir
 	mov	QWORD PTR stderr$[rsp], rax
 
@@ -1035,12 +1035,12 @@ $LN18:
 
 ; 190  : 		_debug_print_ ("Executable invalid \r\n");
 
-	lea	rcx, OFFSET FLAT:$SG4332
+	lea	rcx, OFFSET FLAT:$SG4366
 	call	_debug_print_
 
 ; 191  : 		printf("Executable image not found\n");
 
-	lea	rcx, OFFSET FLAT:$SG4333
+	lea	rcx, OFFSET FLAT:$SG4367
 	call	printf
 
 ; 192  : 		return -1;
@@ -1113,7 +1113,7 @@ $LN15@AuCreatePr:
 ; 213  : 	_debug_print_ ("PROCESS CR3 -> %x \r\n", cr3);
 
 	mov	rdx, QWORD PTR cr3$[rsp]
-	lea	rcx, OFFSET FLAT:$SG4353
+	lea	rcx, OFFSET FLAT:$SG4387
 	call	_debug_print_
 
 ; 214  : 
@@ -1202,7 +1202,7 @@ $LN13@AuCreatePr:
 ; 235  : 
 ; 236  : 	AuLibEntry_t *lib = AuGetSysLib("xnclib.dll");
 
-	lea	rcx, OFFSET FLAT:$SG4367
+	lea	rcx, OFFSET FLAT:$SG4401
 	call	?AuGetSysLib@@YAPEAU_libentry_@@PEAD@Z	; AuGetSysLib
 	mov	QWORD PTR lib$[rsp], rax
 
@@ -1272,7 +1272,7 @@ $LN12@AuCreatePr:
 ; 243  : 
 ; 244  : 	AuLibEntry_t *lib3 = AuGetSysLib("xnacrl.dll");
 
-	lea	rcx, OFFSET FLAT:$SG4379
+	lea	rcx, OFFSET FLAT:$SG4413
 	call	?AuGetSysLib@@YAPEAU_libentry_@@PEAD@Z	; AuGetSysLib
 	mov	QWORD PTR lib3$[rsp], rax
 
@@ -1343,7 +1343,7 @@ $LN8@AuCreatePr:
 ; 252  : 
 ; 253  : 	AuLibEntry_t *lib2 = AuGetSysLib("xewid.dll");
 
-	lea	rcx, OFFSET FLAT:$SG4391
+	lea	rcx, OFFSET FLAT:$SG4425
 	call	?AuGetSysLib@@YAPEAU_libentry_@@PEAD@Z	; AuGetSysLib
 	mov	QWORD PTR lib2$[rsp], rax
 
@@ -1612,7 +1612,7 @@ $LN4@AuCreatePr:
 ; 300  : 
 ; 301  : 	_debug_print_ ("***Process created \r\n");
 
-	lea	rcx, OFFSET FLAT:$SG4410
+	lea	rcx, OFFSET FLAT:$SG4444
 	call	_debug_print_
 
 ; 302  : 

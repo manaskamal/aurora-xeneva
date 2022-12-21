@@ -10,11 +10,11 @@ _BSS	SEGMENT
 ?window_manager_thr@@3PEAU_thread_@@EA DQ 01H DUP (?)	; window_manager_thr
 _BSS	ENDS
 CONST	SEGMENT
-$SG3668	DB	'Allocating new File ', 0dH, 0aH, 00H
+$SG3702	DB	'Allocating new File ', 0dH, 0aH, 00H
 	ORG $+1
-$SG3672	DB	'mouse', 00H
+$SG3706	DB	'mouse', 00H
 	ORG $+2
-$SG3673	DB	'/dev/mouse', 00H
+$SG3707	DB	'/dev/mouse', 00H
 CONST	ENDS
 PUBLIC	?AuPointDevInitialize@@YAXXZ			; AuPointDevInitialize
 PUBLIC	?PointDevPutMessage@@YAXPEAU_dwm_message_@@@Z	; PointDevPutMessage
@@ -319,7 +319,7 @@ $LN3:
 
 ; 59   : 	_debug_print_ ("Allocating new File \r\n");
 
-	lea	rcx, OFFSET FLAT:$SG3668
+	lea	rcx, OFFSET FLAT:$SG3702
 	call	_debug_print_
 
 ; 60   : 
@@ -333,7 +333,7 @@ $LN3:
 ; 63   : 	strcpy (node->filename, "mouse");
 
 	mov	rax, QWORD PTR node$[rsp]
-	lea	rdx, OFFSET FLAT:$SG3672
+	lea	rdx, OFFSET FLAT:$SG3706
 	mov	rcx, rax
 	call	strcpy
 
@@ -398,7 +398,7 @@ $LN3:
 
 	xor	r8d, r8d
 	mov	rdx, QWORD PTR node$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3673
+	lea	rcx, OFFSET FLAT:$SG3707
 	call	vfs_mount
 
 ; 76   : 	window_manager_thr = NULL;
