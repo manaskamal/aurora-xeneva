@@ -37,6 +37,7 @@
 #include <ipc\pri_loop.h>
 #include <arch\x86_64\kstack.h>
 #include <serial.h>
+#include <screen.h>
 
 /* AuUnmapProcess -- unmaps the process image and its stack
  * @param proc -- pointer to the process data structure
@@ -44,7 +45,7 @@
  */
 void AuUnmapProcess(process_t *proc, thread_t *thread) {
 
-	uint64_t init_stack = proc->stack - 2*1024*1024;
+	uint64_t init_stack = proc->stack - PROCESS_USER_STACK_SZ;
 
 	/* Unmap the process image */
 	for (uint32_t i = 0; i < proc->image_size / 4096 + 1; i++) {
@@ -57,7 +58,7 @@ void AuUnmapProcess(process_t *proc, thread_t *thread) {
 
 	/* here we leave the user stack unmap steps */
 	//!unmap the runtime stack
-	for (int i = 0; i < (2*1024*1024) / 4096; i++) 
+	for (int i = 0; i < (PROCESS_USER_STACK_SZ) / 4096; i++) 
 		AuUnmapPage(init_stack + i * 4096, true);
 	
 
@@ -191,6 +192,20 @@ void AuDestroyMainThread (process_t* proc, thread_t* thr) {
 	task_delete(thr);
 }
 
+
+void AuCloseScreen (uint16_t cur_id) {
+	int16_t to_id = AuGetScreenMngrID();
+	void* address = (void*)0xFFFFD00000000000;
+	if (to_id != -1) {
+		pri_event_t e;
+		memset(&e, 0, sizeof(pri_event_t));
+		e.type = 102;
+		e.to_id = to_id;
+		e.from_id = cur_id;
+		memcpy(address, &e, sizeof(pri_event_t));
+	}
+}
+
 /*
  * AuExitProcess -- Exits the current process
  */
@@ -211,16 +226,21 @@ void AuExitProcess (process_t *proc) {
 	if (timer != -1) 
 		destroy_timer(timer);
 
-	/* Destroy the opened pri_loop message box */
-	pri_loop_destroy_by_id(t_id);
-
 	/* unallocate system libraries */
 	AuUnallocSysLibs();
 
 	/* destroy allocated memory */
 	AuDestroyMemory(proc, main_thr);
 	
-	
+	/* before destroying pri_loop, drop a message
+	 * to the screen manager id, to close the registered
+	 * gui object with this process */
+	AuCloseScreen(t_id);
+
+	/* Destroy the opened pri_loop message box */
+	pri_loop_destroy_by_id(t_id);
+
+
 	/* destroy all threads allocated */
 	AuDestroyChildThreads(proc, main_thr);
 
@@ -240,4 +260,7 @@ void AuExitProcess (process_t *proc) {
 	free_kstack((uint64_t*)cr3);
 	/* free the address space */
 	AuPmmngrFree((void*)cr3);
+
+	/* switch next task */
+	force_sched();
 }

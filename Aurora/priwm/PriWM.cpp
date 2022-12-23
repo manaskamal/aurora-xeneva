@@ -1329,6 +1329,7 @@ XE_EXTERN int XeMain (int argc, char* argv[]) {
 	
 	uint32_t s_width = ioquery(svga_fd,SCREEN_GETWIDTH,NULL);
 	uint32_t s_height = ioquery(svga_fd, SCREEN_GETHEIGHT, NULL);
+	ioquery (svga_fd, SCREEN_MNGR_REGISTER, NULL);
 
 	root_window = NULL;
 	last_window = NULL;
@@ -1445,16 +1446,16 @@ XE_EXTERN int XeMain (int argc, char* argv[]) {
 			}
 
 			if (key_msg.dword == KEY_A) {
-				//test_id = create_process("/ptest.exe", "ptest");
+			//	//test_id = create_process("/ptest.exe", "ptest");
 				test_id = create_process ("/xecon.exe", "xecon");
 			}
 
-			if (key_msg.dword == KEY_P) {
+			/*if (key_msg.dword == KEY_P) {
 				test_id = create_process ("/ptest.exe", "ptest");
-			}
+			}*/
 
 			if (key_msg.dword == KEY_S) {
-				sys_kill(test_id, SIGINT);
+				sys_kill(test_id, SIGKILL);
 			}
 
 			if (key_msg.dword == KEY_N) {
@@ -1607,7 +1608,7 @@ XE_EXTERN int XeMain (int argc, char* argv[]) {
 				pri_remove_window(win);
 				free(win);
            
-				pri_send_quit(owner_id);
+				//pri_send_quit(owner_id);
 				if (x != 0 && y != 0 && w != 0 && h != 0) {
 					pri_wallp_add_dirty_clip(x, y, w, h);
 				}

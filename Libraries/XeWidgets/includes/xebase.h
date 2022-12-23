@@ -80,6 +80,11 @@ XE_EXTERN XE_EXPORT XeApp* XeStartApplication(int argc, char* argv[]);
 XE_EXTERN XE_EXPORT void XECloseApplication (XeApp *app);
 
 /*
+ * XEGetApp -- Returns application structure
+ */
+XE_EXTERN XE_EXPORT XeApp* XEGetApp();
+
+/*
  * XESetRequestBufferSize -- Set requesting buffer width and height size in px
  * @param buffer_width -- buffer width to request
  * @param buffer_height -- buffer height to request

@@ -42,6 +42,8 @@
 #include <mmngr\vma.h>
 #include <mmngr\vma.h>
 
+#define PROCESS_USER_STACK_SZ  256*1024   /*256 KiB */
+
 typedef void (*main_thread) (void*);
 
 ///! Future use!! Current vfs system is not sufficient
@@ -63,6 +65,7 @@ typedef struct _process_ {
 	au_vm_area_t * vma_area;
 	au_vm_area_t * last_vma;
 	vfs_node_t *process_file;
+	int file_position;
 	list_t *shared_mem_list;
 	struct _process_ *next;
 	struct _process_ *prev;
@@ -135,6 +138,12 @@ extern uint64_t* create_inc_stack (uint64_t* cr3);
  */
 extern int AuCreateProcess(const char* filename, char* procname);
 
+/*
+ * process_map_from_file -- just read the file from disk
+ * to physical block
+ * @param proc -- pointer to process 
+ */
+extern void process_map_from_file (process_t *proc);
 
 /**
  * get_num_process -- returns the number of process

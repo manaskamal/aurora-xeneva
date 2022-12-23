@@ -14,9 +14,9 @@ _BSS	SEGMENT
 ?last_mark@@3_KA DQ 01H DUP (?)				; last_mark
 _BSS	ENDS
 CONST	SEGMENT
-$SG3242	DB	'Prev -> %x || Current -> %x | Next -> %x ', 0dH, 0aH, 00H
+$SG3243	DB	'Prev -> %x || Current -> %x | Next -> %x ', 0dH, 0aH, 00H
 	ORG $+4
-$SG3283	DB	'*****Requesting page -> %x num_page-> %d ', 0dH, 0aH, 00H
+$SG3284	DB	'*****Requesting page -> %x num_page-> %d ', 0dH, 0aH, 00H
 CONST	ENDS
 PUBLIC	?AuHeapInitialize@@YAXXZ			; AuHeapInitialize
 PUBLIC	?au_request_page@@YAPEAXH@Z			; au_request_page
@@ -376,7 +376,7 @@ $LN3@kheap_debu:
 	mov	r8, QWORD PTR block$1[rsp]
 	mov	rax, QWORD PTR block$1[rsp]
 	mov	rdx, QWORD PTR [rax+16]
-	lea	rcx, OFFSET FLAT:$SG3242
+	lea	rcx, OFFSET FLAT:$SG3243
 	call	_debug_print_
 
 ; 179  : 	}
@@ -967,7 +967,7 @@ $LN6:
 
 	mov	r8d, DWORD PTR pages$[rsp]
 	mov	rdx, QWORD PTR page$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3283
+	lea	rcx, OFFSET FLAT:$SG3284
 	call	_debug_print_
 
 ; 269  : 	for (size_t i = 0; i < pages; i++) {

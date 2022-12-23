@@ -40,7 +40,7 @@ $pdata$?AuInitializeShMem@@YAXXZ DD imagerel $LN3
 	DD	imagerel $LN3+31
 	DD	imagerel $unwind$?AuInitializeShMem@@YAXXZ
 $pdata$?AuCreateShMem@@YAII_KI@Z DD imagerel $LN9
-	DD	imagerel $LN9+344
+	DD	imagerel $LN9+368
 	DD	imagerel $unwind$?AuCreateShMem@@YAII_KI@Z
 $pdata$?AuObtainShMem@@YAPEAXIPEAXH@Z DD imagerel $LN18
 	DD	imagerel $LN18+846
@@ -79,32 +79,32 @@ thr$ = 88
 key$ = 112
 ?shm_unlink_direct@@YAXI@Z PROC				; shm_unlink_direct
 
-; 234  : void shm_unlink_direct (uint32_t key) {
+; 239  : void shm_unlink_direct (uint32_t key) {
 
 $LN15:
 	mov	DWORD PTR [rsp+8], ecx
 	sub	rsp, 104				; 00000068H
 
-; 235  : 	x64_cli();
+; 240  : 	x64_cli();
 
 	call	x64_cli
 
-; 236  : 	process_t *proc = get_current_process();
+; 241  : 	process_t *proc = get_current_process();
 
 	call	?get_current_process@@YAPEAU_process_@@XZ ; get_current_process
 	mov	QWORD PTR proc$[rsp], rax
 
-; 237  : 	thread_t *thr = get_current_thread();
+; 242  : 	thread_t *thr = get_current_thread();
 
 	call	get_current_thread
 	mov	QWORD PTR thr$[rsp], rax
 
-; 238  : 
-; 239  : 	shared_mem_t *mem = NULL;
+; 243  : 
+; 244  : 	shared_mem_t *mem = NULL;
 
 	mov	QWORD PTR mem$[rsp], 0
 
-; 240  : 	for (int i = 0; i < shared_mem_list->pointer; i++) {
+; 245  : 	for (int i = 0; i < shared_mem_list->pointer; i++) {
 
 	mov	DWORD PTR i$2[rsp], 0
 	jmp	SHORT $LN12@shm_unlink
@@ -118,49 +118,49 @@ $LN12@shm_unlink:
 	cmp	DWORD PTR i$2[rsp], eax
 	jae	SHORT $LN10@shm_unlink
 
-; 241  : 		mem = (shared_mem_t*)list_get_at(shared_mem_list, i);
+; 246  : 		mem = (shared_mem_t*)list_get_at(shared_mem_list, i);
 
 	mov	edx, DWORD PTR i$2[rsp]
 	mov	rcx, QWORD PTR ?shared_mem_list@@3PEAU_list_@@EA ; shared_mem_list
 	call	list_get_at
 	mov	QWORD PTR mem$[rsp], rax
 
-; 242  : 		if (mem->key == key)
+; 247  : 		if (mem->key == key)
 
 	mov	rax, QWORD PTR mem$[rsp]
 	mov	ecx, DWORD PTR key$[rsp]
 	cmp	DWORD PTR [rax+16], ecx
 	jne	SHORT $LN9@shm_unlink
 
-; 243  : 			break;
+; 248  : 			break;
 
 	jmp	SHORT $LN10@shm_unlink
 $LN9@shm_unlink:
 
-; 244  : 	}
+; 249  : 	}
 
 	jmp	SHORT $LN11@shm_unlink
 $LN10@shm_unlink:
 
-; 245  : 
-; 246  : 	if (mem == NULL)
+; 250  : 
+; 251  : 	if (mem == NULL)
 
 	cmp	QWORD PTR mem$[rsp], 0
 	jne	SHORT $LN8@shm_unlink
 
-; 247  : 		return;
+; 252  : 		return;
 
 	jmp	$LN13@shm_unlink
 $LN8@shm_unlink:
 
-; 248  : 
-; 249  : 	uint64_t start_addr = (uint64_t)mem->first_process_vaddr;
+; 253  : 
+; 254  : 	uint64_t start_addr = (uint64_t)mem->first_process_vaddr;
 
 	mov	rax, QWORD PTR mem$[rsp]
-	mov	rax, QWORD PTR [rax+56]
+	mov	rax, QWORD PTR [rax+64]
 	mov	QWORD PTR start_addr$[rsp], rax
 
-; 250  : 	for (int i = 0; i < mem->num_frames; i++) 
+; 255  : 	for (int i = 0; i < mem->num_frames; i++) 
 
 	mov	DWORD PTR i$3[rsp], 0
 	jmp	SHORT $LN7@shm_unlink
@@ -174,7 +174,7 @@ $LN7@shm_unlink:
 	cmp	DWORD PTR i$3[rsp], eax
 	jae	SHORT $LN5@shm_unlink
 
-; 251  : 		AuUnmapPage(start_addr + i * 4096, true);
+; 256  : 		AuUnmapPage(start_addr + i * 4096, true);
 
 	mov	eax, DWORD PTR i$3[rsp]
 	imul	eax, 4096				; 00001000H
@@ -188,24 +188,24 @@ $LN7@shm_unlink:
 	jmp	SHORT $LN6@shm_unlink
 $LN5@shm_unlink:
 
-; 252  : 
-; 253  : 	/* Remove the vm area */
-; 254  : 	au_vm_area_t *vma = AuFindVMAUniqueId(mem->key);
+; 257  : 
+; 258  : 	/* Remove the vm area */
+; 259  : 	au_vm_area_t *vma = AuFindVMAUniqueId(mem->key);
 
 	mov	rax, QWORD PTR mem$[rsp]
 	mov	ecx, DWORD PTR [rax+16]
 	call	?AuFindVMAUniqueId@@YAPEAU_vma_area_@@I@Z ; AuFindVMAUniqueId
 	mov	QWORD PTR vma$[rsp], rax
 
-; 255  : 	AuRemoveVMArea(proc, vma);
+; 260  : 	AuRemoveVMArea(proc, vma);
 
 	mov	rdx, QWORD PTR vma$[rsp]
 	mov	rcx, QWORD PTR proc$[rsp]
 	call	?AuRemoveVMArea@@YAXPEAU_process_@@PEAU_vma_area_@@@Z ; AuRemoveVMArea
 
-; 256  : 
-; 257  : 	/* Finally delete the shared memory segment */
-; 258  : 	for (int i = 0; i < shared_mem_list->pointer; i++) {
+; 261  : 
+; 262  : 	/* Finally delete the shared memory segment */
+; 263  : 	for (int i = 0; i < shared_mem_list->pointer; i++) {
 
 	mov	DWORD PTR i$1[rsp], 0
 	jmp	SHORT $LN4@shm_unlink
@@ -219,14 +219,14 @@ $LN4@shm_unlink:
 	cmp	DWORD PTR i$1[rsp], eax
 	jae	SHORT $LN2@shm_unlink
 
-; 259  : 		shared_mem_t *m = (shared_mem_t*)list_get_at(shared_mem_list, i);
+; 264  : 		shared_mem_t *m = (shared_mem_t*)list_get_at(shared_mem_list, i);
 
 	mov	edx, DWORD PTR i$1[rsp]
 	mov	rcx, QWORD PTR ?shared_mem_list@@3PEAU_list_@@EA ; shared_mem_list
 	call	list_get_at
 	mov	QWORD PTR m$4[rsp], rax
 
-; 260  : 		if (m->key == mem->key) {
+; 265  : 		if (m->key == mem->key) {
 
 	mov	rax, QWORD PTR m$4[rsp]
 	mov	rcx, QWORD PTR mem$[rsp]
@@ -234,27 +234,27 @@ $LN4@shm_unlink:
 	cmp	DWORD PTR [rax+16], ecx
 	jne	SHORT $LN1@shm_unlink
 
-; 261  : 			list_remove(shared_mem_list, i);
+; 266  : 			list_remove(shared_mem_list, i);
 
 	mov	edx, DWORD PTR i$1[rsp]
 	mov	rcx, QWORD PTR ?shared_mem_list@@3PEAU_list_@@EA ; shared_mem_list
 	call	list_remove
 $LN1@shm_unlink:
 
-; 262  : 		}
-; 263  : 	}
+; 267  : 		}
+; 268  : 	}
 
 	jmp	SHORT $LN3@shm_unlink
 $LN2@shm_unlink:
 
-; 264  : 
-; 265  : 	free(mem);
+; 269  : 
+; 270  : 	free(mem);
 
 	mov	rcx, QWORD PTR mem$[rsp]
 	call	free
 $LN13@shm_unlink:
 
-; 266  : }
+; 271  : }
 
 	add	rsp, 104				; 00000068H
 	ret	0
@@ -279,32 +279,32 @@ length$10 = 112
 key$ = 144
 ?shm_unlink@@YAXI@Z PROC				; shm_unlink
 
-; 164  : void shm_unlink (uint32_t key) {
+; 169  : void shm_unlink (uint32_t key) {
 
 $LN21:
 	mov	DWORD PTR [rsp+8], ecx
 	sub	rsp, 136				; 00000088H
 
-; 165  : 	x64_cli();
+; 170  : 	x64_cli();
 
 	call	x64_cli
 
-; 166  : 	process_t *proc = get_current_process();
+; 171  : 	process_t *proc = get_current_process();
 
 	call	?get_current_process@@YAPEAU_process_@@XZ ; get_current_process
 	mov	QWORD PTR proc$[rsp], rax
 
-; 167  : 	thread_t *thr = get_current_thread();
+; 172  : 	thread_t *thr = get_current_thread();
 
 	call	get_current_thread
 	mov	QWORD PTR thr$[rsp], rax
 
-; 168  : 
-; 169  : 	shared_mem_t *mem = NULL;
+; 173  : 
+; 174  : 	shared_mem_t *mem = NULL;
 
 	mov	QWORD PTR mem$[rsp], 0
 
-; 170  : 	for (int i = 0; i < shared_mem_list->pointer; i++) {
+; 175  : 	for (int i = 0; i < shared_mem_list->pointer; i++) {
 
 	mov	DWORD PTR i$3[rsp], 0
 	jmp	SHORT $LN18@shm_unlink
@@ -318,75 +318,75 @@ $LN18@shm_unlink:
 	cmp	DWORD PTR i$3[rsp], eax
 	jae	SHORT $LN16@shm_unlink
 
-; 171  : 		mem = (shared_mem_t*)list_get_at(shared_mem_list, i);
+; 176  : 		mem = (shared_mem_t*)list_get_at(shared_mem_list, i);
 
 	mov	edx, DWORD PTR i$3[rsp]
 	mov	rcx, QWORD PTR ?shared_mem_list@@3PEAU_list_@@EA ; shared_mem_list
 	call	list_get_at
 	mov	QWORD PTR mem$[rsp], rax
 
-; 172  : 		if (mem->key == key)
+; 177  : 		if (mem->key == key)
 
 	mov	rax, QWORD PTR mem$[rsp]
 	mov	ecx, DWORD PTR key$[rsp]
 	cmp	DWORD PTR [rax+16], ecx
 	jne	SHORT $LN15@shm_unlink
 
-; 173  : 			break;
+; 178  : 			break;
 
 	jmp	SHORT $LN16@shm_unlink
 $LN15@shm_unlink:
 
-; 174  : 	}
+; 179  : 	}
 
 	jmp	SHORT $LN17@shm_unlink
 $LN16@shm_unlink:
 
-; 175  : 
-; 176  : 	if (mem == NULL)
+; 180  : 
+; 181  : 	if (mem == NULL)
 
 	cmp	QWORD PTR mem$[rsp], 0
 	jne	SHORT $LN14@shm_unlink
 
-; 177  : 		return;
+; 182  : 		return;
 
 	jmp	$LN19@shm_unlink
 $LN14@shm_unlink:
 
-; 178  : 
-; 179  : 	/* Check if the creator of this shared memory
-; 180  : 	 * segment is this thread, if not then just
-; 181  : 	 * unmap the virtual address without freeing up
-; 182  : 	 * the physical addresses
-; 183  : 	 */
-; 184  : 	if (mem->map_in_thread != thr) {
+; 183  : 
+; 184  : 	/* Check if the creator of this shared memory
+; 185  : 	 * segment is this thread, if not then just
+; 186  : 	 * unmap the virtual address without freeing up
+; 187  : 	 * the physical addresses
+; 188  : 	 */
+; 189  : 	if (mem->map_in_thread != thr) {
 
 	mov	rax, QWORD PTR mem$[rsp]
 	mov	rcx, QWORD PTR thr$[rsp]
-	cmp	QWORD PTR [rax+48], rcx
+	cmp	QWORD PTR [rax+56], rcx
 	je	$LN13@shm_unlink
 
-; 185  : 		au_vm_area_t *vma = AuFindVMAUniqueId(mem->key);
+; 190  : 		au_vm_area_t *vma = AuFindVMAUniqueId(mem->key);
 
 	mov	rax, QWORD PTR mem$[rsp]
 	mov	ecx, DWORD PTR [rax+16]
 	call	?AuFindVMAUniqueId@@YAPEAU_vma_area_@@I@Z ; AuFindVMAUniqueId
 	mov	QWORD PTR vma$5[rsp], rax
 
-; 186  : 		uint64_t start_addr = vma->start;
+; 191  : 		uint64_t start_addr = vma->start;
 
 	mov	rax, QWORD PTR vma$5[rsp]
 	mov	rax, QWORD PTR [rax]
 	mov	QWORD PTR start_addr$9[rsp], rax
 
-; 187  : 		uint64_t length = vma->length;
+; 192  : 		uint64_t length = vma->length;
 
 	mov	rax, QWORD PTR vma$5[rsp]
 	mov	rax, QWORD PTR [rax+40]
 	mov	QWORD PTR length$10[rsp], rax
 
-; 188  : 
-; 189  : 		for (int i = 0; i < mem->num_frames; i++)
+; 193  : 
+; 194  : 		for (int i = 0; i < mem->num_frames; i++)
 
 	mov	DWORD PTR i$2[rsp], 0
 	jmp	SHORT $LN12@shm_unlink
@@ -400,7 +400,7 @@ $LN12@shm_unlink:
 	cmp	DWORD PTR i$2[rsp], eax
 	jae	SHORT $LN10@shm_unlink
 
-; 190  : 			AuUnmapPage(start_addr + i * 4096, false);
+; 195  : 			AuUnmapPage(start_addr + i * 4096, false);
 
 	mov	eax, DWORD PTR i$2[rsp]
 	imul	eax, 4096				; 00001000H
@@ -414,14 +414,14 @@ $LN12@shm_unlink:
 	jmp	SHORT $LN11@shm_unlink
 $LN10@shm_unlink:
 
-; 191  : 
-; 192  : 		AuRemoveVMArea(proc, vma);
+; 196  : 
+; 197  : 		AuRemoveVMArea(proc, vma);
 
 	mov	rdx, QWORD PTR vma$5[rsp]
 	mov	rcx, QWORD PTR proc$[rsp]
 	call	?AuRemoveVMArea@@YAXPEAU_process_@@PEAU_vma_area_@@@Z ; AuRemoveVMArea
 
-; 193  : 		mem->link_count--;
+; 198  : 		mem->link_count--;
 
 	mov	rax, QWORD PTR mem$[rsp]
 	movzx	eax, WORD PTR [rax+40]
@@ -430,43 +430,43 @@ $LN10@shm_unlink:
 	mov	WORD PTR [rcx+40], ax
 $LN13@shm_unlink:
 
-; 194  : 	}
-; 195  : 
-; 196  : 	/* Check if the creator of this sh memory
-; 197  : 	 * segment is this, than unmap the physical
-; 198  : 	 * address also */
-; 199  : 	if (mem->map_in_thread == thr) {
+; 199  : 	}
+; 200  : 
+; 201  : 	/* Check if the creator of this sh memory
+; 202  : 	 * segment is this, than unmap the physical
+; 203  : 	 * address also */
+; 204  : 	if (mem->map_in_thread == thr) {
 
 	mov	rax, QWORD PTR mem$[rsp]
 	mov	rcx, QWORD PTR thr$[rsp]
-	cmp	QWORD PTR [rax+48], rcx
+	cmp	QWORD PTR [rax+56], rcx
 	jne	$LN9@shm_unlink
 
-; 200  : 		/* check the number of links */
-; 201  : 		if (mem->link_count != 0) {
+; 205  : 		/* check the number of links */
+; 206  : 		if (mem->link_count != 0) {
 
 	mov	rax, QWORD PTR mem$[rsp]
 	movzx	eax, WORD PTR [rax+40]
 	test	eax, eax
 	je	SHORT $LN8@shm_unlink
 
-; 202  : 			/* means, another process still working on
-; 203  : 			 * this sh mem segment
-; 204  : 			 */
-; 205  : 			return;
+; 207  : 			/* means, another process still working on
+; 208  : 			 * this sh mem segment
+; 209  : 			 */
+; 210  : 			return;
 
 	jmp	$LN19@shm_unlink
 $LN8@shm_unlink:
 
-; 206  : 		}
-; 207  : 
-; 208  : 		uint64_t start_addr = (uint64_t)mem->first_process_vaddr;
+; 211  : 		}
+; 212  : 
+; 213  : 		uint64_t start_addr = (uint64_t)mem->first_process_vaddr;
 
 	mov	rax, QWORD PTR mem$[rsp]
-	mov	rax, QWORD PTR [rax+56]
+	mov	rax, QWORD PTR [rax+64]
 	mov	QWORD PTR start_addr$6[rsp], rax
 
-; 209  : 		for (int i = 0; i < mem->num_frames; i++) 
+; 214  : 		for (int i = 0; i < mem->num_frames; i++) 
 
 	mov	DWORD PTR i$4[rsp], 0
 	jmp	SHORT $LN7@shm_unlink
@@ -480,7 +480,7 @@ $LN7@shm_unlink:
 	cmp	DWORD PTR i$4[rsp], eax
 	jae	SHORT $LN5@shm_unlink
 
-; 210  : 			AuUnmapPage(start_addr + i * 4096, true);
+; 215  : 			AuUnmapPage(start_addr + i * 4096, true);
 
 	mov	eax, DWORD PTR i$4[rsp]
 	imul	eax, 4096				; 00001000H
@@ -494,24 +494,24 @@ $LN7@shm_unlink:
 	jmp	SHORT $LN6@shm_unlink
 $LN5@shm_unlink:
 
-; 211  : 
-; 212  : 		/* Remove the vm area */
-; 213  : 		au_vm_area_t *vma = AuFindVMAUniqueId(mem->key);
+; 216  : 
+; 217  : 		/* Remove the vm area */
+; 218  : 		au_vm_area_t *vma = AuFindVMAUniqueId(mem->key);
 
 	mov	rax, QWORD PTR mem$[rsp]
 	mov	ecx, DWORD PTR [rax+16]
 	call	?AuFindVMAUniqueId@@YAPEAU_vma_area_@@I@Z ; AuFindVMAUniqueId
 	mov	QWORD PTR vma$7[rsp], rax
 
-; 214  : 		AuRemoveVMArea(proc, vma);
+; 219  : 		AuRemoveVMArea(proc, vma);
 
 	mov	rdx, QWORD PTR vma$7[rsp]
 	mov	rcx, QWORD PTR proc$[rsp]
 	call	?AuRemoveVMArea@@YAXPEAU_process_@@PEAU_vma_area_@@@Z ; AuRemoveVMArea
 
-; 215  : 
-; 216  : 		/* Finally delete the shared memory segment */
-; 217  : 		for (int i = 0; i < shared_mem_list->pointer; i++) {
+; 220  : 
+; 221  : 		/* Finally delete the shared memory segment */
+; 222  : 		for (int i = 0; i < shared_mem_list->pointer; i++) {
 
 	mov	DWORD PTR i$1[rsp], 0
 	jmp	SHORT $LN4@shm_unlink
@@ -525,14 +525,14 @@ $LN4@shm_unlink:
 	cmp	DWORD PTR i$1[rsp], eax
 	jae	SHORT $LN2@shm_unlink
 
-; 218  : 			shared_mem_t *m = (shared_mem_t*)list_get_at(shared_mem_list, i);
+; 223  : 			shared_mem_t *m = (shared_mem_t*)list_get_at(shared_mem_list, i);
 
 	mov	edx, DWORD PTR i$1[rsp]
 	mov	rcx, QWORD PTR ?shared_mem_list@@3PEAU_list_@@EA ; shared_mem_list
 	call	list_get_at
 	mov	QWORD PTR m$8[rsp], rax
 
-; 219  : 			if (m->key == mem->key) {
+; 224  : 			if (m->key == mem->key) {
 
 	mov	rax, QWORD PTR m$8[rsp]
 	mov	rcx, QWORD PTR mem$[rsp]
@@ -540,30 +540,30 @@ $LN4@shm_unlink:
 	cmp	DWORD PTR [rax+16], ecx
 	jne	SHORT $LN1@shm_unlink
 
-; 220  : 				list_remove(shared_mem_list, i);
+; 225  : 				list_remove(shared_mem_list, i);
 
 	mov	edx, DWORD PTR i$1[rsp]
 	mov	rcx, QWORD PTR ?shared_mem_list@@3PEAU_list_@@EA ; shared_mem_list
 	call	list_remove
 $LN1@shm_unlink:
 
-; 221  : 			}
-; 222  : 		}
+; 226  : 			}
+; 227  : 		}
 
 	jmp	SHORT $LN3@shm_unlink
 $LN2@shm_unlink:
 
-; 223  : 
-; 224  : 		free(mem);
+; 228  : 
+; 229  : 		free(mem);
 
 	mov	rcx, QWORD PTR mem$[rsp]
 	call	free
 $LN9@shm_unlink:
 $LN19@shm_unlink:
 
-; 225  : 	}
-; 226  : 
-; 227  : }
+; 230  : 	}
+; 231  : 
+; 232  : }
 
 	add	rsp, 136				; 00000088H
 	ret	0
@@ -591,7 +591,7 @@ shmaddr$ = 168
 shmflg$ = 176
 ?AuObtainShMem@@YAPEAXIPEAXH@Z PROC			; AuObtainShMem
 
-; 84   : void* AuObtainShMem (uint32_t id, void * shmaddr, int shmflg) {
+; 88   : void* AuObtainShMem (uint32_t id, void * shmaddr, int shmflg) {
 
 $LN18:
 	mov	DWORD PTR [rsp+24], r8d
@@ -599,21 +599,21 @@ $LN18:
 	mov	DWORD PTR [rsp+8], ecx
 	sub	rsp, 152				; 00000098H
 
-; 85   : 	x64_cli();
+; 89   : 	x64_cli();
 
 	call	x64_cli
 
-; 86   : 	shared_mem_t *mem = NULL;
+; 90   : 	shared_mem_t *mem = NULL;
 
 	mov	QWORD PTR mem$[rsp], 0
 
-; 87   : 	process_t * proc = get_current_process();
+; 91   : 	process_t * proc = get_current_process();
 
 	call	?get_current_process@@YAPEAU_process_@@XZ ; get_current_process
 	mov	QWORD PTR proc$[rsp], rax
 
-; 88   : 
-; 89   : 	for (int i = 0; i < shared_mem_list->pointer; i++) {
+; 92   : 
+; 93   : 	for (int i = 0; i < shared_mem_list->pointer; i++) {
 
 	mov	DWORD PTR i$3[rsp], 0
 	jmp	SHORT $LN15@AuObtainSh
@@ -627,72 +627,73 @@ $LN15@AuObtainSh:
 	cmp	DWORD PTR i$3[rsp], eax
 	jae	SHORT $LN13@AuObtainSh
 
-; 90   : 		mem = (shared_mem_t*)list_get_at(shared_mem_list, i);
+; 94   : 		mem = (shared_mem_t*)list_get_at(shared_mem_list, i);
 
 	mov	edx, DWORD PTR i$3[rsp]
 	mov	rcx, QWORD PTR ?shared_mem_list@@3PEAU_list_@@EA ; shared_mem_list
 	call	list_get_at
 	mov	QWORD PTR mem$[rsp], rax
 
-; 91   : 		if (mem->id == id){
+; 95   : 		if (mem->id == id){
 
 	mov	rax, QWORD PTR mem$[rsp]
 	mov	ecx, DWORD PTR id$[rsp]
 	cmp	DWORD PTR [rax], ecx
 	jne	SHORT $LN12@AuObtainSh
 
-; 92   : 			break;
+; 96   : 			break;
 
 	jmp	SHORT $LN13@AuObtainSh
 $LN12@AuObtainSh:
 
-; 93   : 		}
-; 94   : 	}
+; 97   : 		}
+; 98   : 	}
 
 	jmp	SHORT $LN14@AuObtainSh
 $LN13@AuObtainSh:
 
-; 95   : 
-; 96   : 	if (mem == NULL)
+; 99   : 
+; 100  : 	if (mem == NULL)
 
 	cmp	QWORD PTR mem$[rsp], 0
 	jne	SHORT $LN11@AuObtainSh
 
-; 97   : 		return NULL;
+; 101  : 		return NULL;
 
 	xor	eax, eax
 	jmp	$LN16@AuObtainSh
 $LN11@AuObtainSh:
 
-; 98   : 
-; 99   : 	void* ret_addre = NULL;
+; 102  : 
+; 103  : 
+; 104  : 	void* ret_addre = NULL;
 
 	mov	QWORD PTR ret_addre$[rsp], 0
 
-; 100  : 	/* Shared memory was already mapped so, 
-; 101  : 	 * lets copy the physical frames from that process's
-; 102  : 	 * address space */
-; 103  : 	if (mem->map_in_thread) {
+; 105  : 	/* Shared memory was already mapped so, 
+; 106  : 	 * lets copy the physical frames from that process's
+; 107  : 	 * address space */
+; 108  : 	if (mem->map_in_thread) {
 
 	mov	rax, QWORD PTR mem$[rsp]
-	cmp	QWORD PTR [rax+48], 0
+	cmp	QWORD PTR [rax+56], 0
 	je	$LN10@AuObtainSh
 
-; 104  : 		uint64_t cr3 = mem->map_in_thread->frame.cr3;
-
-	mov	rax, QWORD PTR mem$[rsp]
-	mov	rax, QWORD PTR [rax+48]
-	mov	rax, QWORD PTR [rax+192]
-	mov	QWORD PTR cr3$10[rsp], rax
-
-; 105  : 		uint64_t virtual_addr = (uint64_t)mem->first_process_vaddr;
+; 109  : 		uint64_t cr3 = mem->map_in_thread->frame.cr3;
 
 	mov	rax, QWORD PTR mem$[rsp]
 	mov	rax, QWORD PTR [rax+56]
+	mov	rax, QWORD PTR [rax+192]
+	mov	QWORD PTR cr3$10[rsp], rax
+
+; 110  : 		uint64_t virtual_addr = (uint64_t)mem->first_process_vaddr;
+
+	mov	rax, QWORD PTR mem$[rsp]
+	mov	rax, QWORD PTR [rax+64]
 	mov	QWORD PTR virtual_addr$8[rsp], rax
 
-; 106  : 		/*Now we have the first virtual address, lets map in */
-; 107  : 		for (int i = 0; i < mem->num_frames; i++) {
+; 111  : 		/*Now we have the first virtual address, lets map in */
+; 112  : 		for (int i = 0; i < mem->num_frames; i++) {
 
 	mov	DWORD PTR i$4[rsp], 0
 	jmp	SHORT $LN9@AuObtainSh
@@ -706,7 +707,7 @@ $LN9@AuObtainSh:
 	cmp	DWORD PTR i$4[rsp], eax
 	jae	SHORT $LN7@AuObtainSh
 
-; 108  : 			uint64_t *phys_addr = (uint64_t*)AuGetPhysicalAddress(cr3,virtual_addr + i * 4096);
+; 113  : 			uint64_t *phys_addr = (uint64_t*)AuGetPhysicalAddress(cr3,virtual_addr + i * 4096);
 
 	mov	eax, DWORD PTR i$4[rsp]
 	imul	eax, 4096				; 00001000H
@@ -719,7 +720,7 @@ $LN9@AuObtainSh:
 	call	AuGetPhysicalAddress
 	mov	QWORD PTR phys_addr$9[rsp], rax
 
-; 109  : 			uint64_t current_virt = (uint64_t)AuGetFreePage(0,true, 0);
+; 114  : 			uint64_t current_virt = (uint64_t)AuGetFreePage(0,true, 0);
 
 	xor	r8d, r8d
 	mov	dl, 1
@@ -727,7 +728,7 @@ $LN9@AuObtainSh:
 	call	AuGetFreePage
 	mov	QWORD PTR current_virt$7[rsp], rax
 
-; 110  : 			AuMapPage(v2p((uint64_t)phys_addr),current_virt,PAGING_USER);
+; 115  : 			AuMapPage(v2p((uint64_t)phys_addr),current_virt,PAGING_USER);
 
 	mov	rcx, QWORD PTR phys_addr$9[rsp]
 	call	v2p
@@ -736,24 +737,24 @@ $LN9@AuObtainSh:
 	mov	rcx, rax
 	call	AuMapPage
 
-; 111  : 			if (ret_addre == NULL)
+; 116  : 			if (ret_addre == NULL)
 
 	cmp	QWORD PTR ret_addre$[rsp], 0
 	jne	SHORT $LN6@AuObtainSh
 
-; 112  : 				ret_addre = (void*)current_virt;
+; 117  : 				ret_addre = (void*)current_virt;
 
 	mov	rax, QWORD PTR current_virt$7[rsp]
 	mov	QWORD PTR ret_addre$[rsp], rax
 $LN6@AuObtainSh:
 
-; 113  : 		}
+; 118  : 		}
 
 	jmp	SHORT $LN8@AuObtainSh
 $LN7@AuObtainSh:
 
-; 114  : 
-; 115  : 		mem->link_count++;
+; 119  : 
+; 120  : 		mem->link_count++;
 
 	mov	rax, QWORD PTR mem$[rsp]
 	movzx	eax, WORD PTR [rax+40]
@@ -761,21 +762,21 @@ $LN7@AuObtainSh:
 	mov	rcx, QWORD PTR mem$[rsp]
 	mov	WORD PTR [rcx+40], ax
 
-; 116  : 
-; 117  : 		/* Keep a track of this shared memory segment */
-; 118  : 		au_vm_area_t *vma = (au_vm_area_t*)malloc(sizeof(au_vm_area_t));
+; 121  : 
+; 122  : 		/* Keep a track of this shared memory segment */
+; 123  : 		au_vm_area_t *vma = (au_vm_area_t*)malloc(sizeof(au_vm_area_t));
 
 	mov	ecx, 80					; 00000050H
 	call	malloc
 	mov	QWORD PTR vma$2[rsp], rax
 
-; 119  : 		vma->start = (uint64_t)ret_addre;
+; 124  : 		vma->start = (uint64_t)ret_addre;
 
 	mov	rax, QWORD PTR vma$2[rsp]
 	mov	rcx, QWORD PTR ret_addre$[rsp]
 	mov	QWORD PTR [rax], rcx
 
-; 120  : 		vma->end = (vma->start + mem->num_frames * 4096);
+; 125  : 		vma->end = (vma->start + mem->num_frames * 4096);
 
 	mov	rax, QWORD PTR mem$[rsp]
 	mov	eax, DWORD PTR [rax+36]
@@ -786,35 +787,35 @@ $LN7@AuObtainSh:
 	mov	rcx, QWORD PTR vma$2[rsp]
 	mov	QWORD PTR [rcx+8], rax
 
-; 121  : 		vma->file = NULL;
+; 126  : 		vma->file = NULL;
 
 	mov	rax, QWORD PTR vma$2[rsp]
 	mov	QWORD PTR [rax+24], 0
 
-; 122  : 		vma->offset = 0;
+; 127  : 		vma->offset = 0;
 
 	mov	rax, QWORD PTR vma$2[rsp]
 	mov	QWORD PTR [rax+32], 0
 
-; 123  : 		vma->prot_flags = VM_READ | VM_EXEC | VM_SHARED;
+; 128  : 		vma->prot_flags = VM_READ | VM_EXEC | VM_SHARED;
 
 	mov	eax, 13
 	mov	rcx, QWORD PTR vma$2[rsp]
 	mov	WORD PTR [rcx+16], ax
 
-; 124  : 		vma->type = VM_TYPE_DATA;
+; 129  : 		vma->type = VM_TYPE_DATA;
 
 	mov	rax, QWORD PTR vma$2[rsp]
 	mov	BYTE PTR [rax+48], 2
 
-; 125  : 		vma->unique_id = mem->key;
+; 130  : 		vma->unique_id = mem->key;
 
 	mov	rax, QWORD PTR vma$2[rsp]
 	mov	rcx, QWORD PTR mem$[rsp]
 	mov	ecx, DWORD PTR [rcx+16]
 	mov	DWORD PTR [rax+52], ecx
 
-; 126  : 		vma->length = mem->num_frames * 4096; 
+; 131  : 		vma->length = mem->num_frames * 4096; 
 
 	mov	rax, QWORD PTR mem$[rsp]
 	mov	eax, DWORD PTR [rax+36]
@@ -823,7 +824,7 @@ $LN7@AuObtainSh:
 	mov	rcx, QWORD PTR vma$2[rsp]
 	mov	QWORD PTR [rcx+40], rax
 
-; 127  : 		AuInsertVMArea(proc, vma);
+; 132  : 		AuInsertVMArea(proc, vma);
 
 	mov	rdx, QWORD PTR vma$2[rsp]
 	mov	rcx, QWORD PTR proc$[rsp]
@@ -831,18 +832,18 @@ $LN7@AuObtainSh:
 	jmp	$LN5@AuObtainSh
 $LN10@AuObtainSh:
 
-; 128  : 	}else {
-; 129  : 		/* No process has mapped the shared memory, let this process's
-; 130  : 		   thread map in some memory for other process to use */
-; 131  : 		mem->map_in_thread = get_current_thread();
+; 133  : 	}else {
+; 134  : 		/* No process has mapped the shared memory, let this process's
+; 135  : 		   thread map in some memory for other process to use */
+; 136  : 		mem->map_in_thread = get_current_thread();
 
 	call	get_current_thread
 	mov	rcx, QWORD PTR mem$[rsp]
-	mov	QWORD PTR [rcx+48], rax
+	mov	QWORD PTR [rcx+56], rax
 
-; 132  : 
-; 133  : 		/* Allocate some memory for this process */
-; 134  : 		for (int i = 0; i < mem->num_frames; i++) {
+; 137  : 
+; 138  : 		/* Allocate some memory for this process */
+; 139  : 		for (int i = 0; i < mem->num_frames; i++) {
 
 	mov	DWORD PTR i$5[rsp], 0
 	jmp	SHORT $LN4@AuObtainSh
@@ -856,12 +857,12 @@ $LN4@AuObtainSh:
 	cmp	DWORD PTR i$5[rsp], eax
 	jae	SHORT $LN2@AuObtainSh
 
-; 135  : 			void* p = AuPmmngrAlloc();
+; 140  : 			void* p = AuPmmngrAlloc();
 
 	call	AuPmmngrAlloc
 	mov	QWORD PTR p$11[rsp], rax
 
-; 136  : 			uint64_t virt = (uint64_t)AuGetFreePage(0,true, 0);
+; 141  : 			uint64_t virt = (uint64_t)AuGetFreePage(0,true, 0);
 
 	xor	r8d, r8d
 	mov	dl, 1
@@ -869,54 +870,54 @@ $LN4@AuObtainSh:
 	call	AuGetFreePage
 	mov	QWORD PTR virt$6[rsp], rax
 
-; 137  : 			AuMapPage ((uint64_t)p,virt, PAGING_USER);
+; 142  : 			AuMapPage ((uint64_t)p,virt, PAGING_USER);
 
 	mov	r8b, 4
 	mov	rdx, QWORD PTR virt$6[rsp]
 	mov	rcx, QWORD PTR p$11[rsp]
 	call	AuMapPage
 
-; 138  : 
-; 139  : 			/* Store the first virtual address */
-; 140  : 			if (mem->first_process_vaddr == NULL)
+; 143  : 
+; 144  : 			/* Store the first virtual address */
+; 145  : 			if (mem->first_process_vaddr == NULL)
 
 	mov	rax, QWORD PTR mem$[rsp]
-	cmp	QWORD PTR [rax+56], 0
+	cmp	QWORD PTR [rax+64], 0
 	jne	SHORT $LN1@AuObtainSh
 
-; 141  : 				mem->first_process_vaddr = (void*)virt;
+; 146  : 				mem->first_process_vaddr = (void*)virt;
 
 	mov	rax, QWORD PTR mem$[rsp]
 	mov	rcx, QWORD PTR virt$6[rsp]
-	mov	QWORD PTR [rax+56], rcx
+	mov	QWORD PTR [rax+64], rcx
 $LN1@AuObtainSh:
 
-; 142  : 		}
+; 147  : 		}
 
 	jmp	SHORT $LN3@AuObtainSh
 $LN2@AuObtainSh:
 
-; 143  : 		ret_addre = mem->first_process_vaddr;
+; 148  : 		ret_addre = mem->first_process_vaddr;
 
 	mov	rax, QWORD PTR mem$[rsp]
-	mov	rax, QWORD PTR [rax+56]
+	mov	rax, QWORD PTR [rax+64]
 	mov	QWORD PTR ret_addre$[rsp], rax
 
-; 144  : 
-; 145  : 		/* Keep a track of this shared memory segment */
-; 146  : 		au_vm_area_t *vma = (au_vm_area_t*)malloc(sizeof(au_vm_area_t));
+; 149  : 
+; 150  : 		/* Keep a track of this shared memory segment */
+; 151  : 		au_vm_area_t *vma = (au_vm_area_t*)malloc(sizeof(au_vm_area_t));
 
 	mov	ecx, 80					; 00000050H
 	call	malloc
 	mov	QWORD PTR vma$1[rsp], rax
 
-; 147  : 		vma->start = (uint64_t)ret_addre;
+; 152  : 		vma->start = (uint64_t)ret_addre;
 
 	mov	rax, QWORD PTR vma$1[rsp]
 	mov	rcx, QWORD PTR ret_addre$[rsp]
 	mov	QWORD PTR [rax], rcx
 
-; 148  : 		vma->end = (vma->start + mem->num_frames * 4096);
+; 153  : 		vma->end = (vma->start + mem->num_frames * 4096);
 
 	mov	rax, QWORD PTR mem$[rsp]
 	mov	eax, DWORD PTR [rax+36]
@@ -927,28 +928,28 @@ $LN2@AuObtainSh:
 	mov	rcx, QWORD PTR vma$1[rsp]
 	mov	QWORD PTR [rcx+8], rax
 
-; 149  : 		vma->file = NULL;
+; 154  : 		vma->file = NULL;
 
 	mov	rax, QWORD PTR vma$1[rsp]
 	mov	QWORD PTR [rax+24], 0
 
-; 150  : 		vma->offset = 0;
+; 155  : 		vma->offset = 0;
 
 	mov	rax, QWORD PTR vma$1[rsp]
 	mov	QWORD PTR [rax+32], 0
 
-; 151  : 		vma->prot_flags = VM_READ | VM_EXEC | VM_SHARED;
+; 156  : 		vma->prot_flags = VM_READ | VM_EXEC | VM_SHARED;
 
 	mov	eax, 13
 	mov	rcx, QWORD PTR vma$1[rsp]
 	mov	WORD PTR [rcx+16], ax
 
-; 152  : 		vma->type = VM_TYPE_DATA;
+; 157  : 		vma->type = VM_TYPE_DATA;
 
 	mov	rax, QWORD PTR vma$1[rsp]
 	mov	BYTE PTR [rax+48], 2
 
-; 153  : 		vma->length = mem->num_frames * 4096; 
+; 158  : 		vma->length = mem->num_frames * 4096; 
 
 	mov	rax, QWORD PTR mem$[rsp]
 	mov	eax, DWORD PTR [rax+36]
@@ -957,28 +958,28 @@ $LN2@AuObtainSh:
 	mov	rcx, QWORD PTR vma$1[rsp]
 	mov	QWORD PTR [rcx+40], rax
 
-; 154  : 		vma->unique_id = mem->key;
+; 159  : 		vma->unique_id = mem->key;
 
 	mov	rax, QWORD PTR vma$1[rsp]
 	mov	rcx, QWORD PTR mem$[rsp]
 	mov	ecx, DWORD PTR [rcx+16]
 	mov	DWORD PTR [rax+52], ecx
 
-; 155  : 		AuInsertVMArea(proc, vma);
+; 160  : 		AuInsertVMArea(proc, vma);
 
 	mov	rdx, QWORD PTR vma$1[rsp]
 	mov	rcx, QWORD PTR proc$[rsp]
 	call	?AuInsertVMArea@@YAXPEAU_process_@@PEAU_vma_area_@@@Z ; AuInsertVMArea
 $LN5@AuObtainSh:
 
-; 156  : 	}
-; 157  : 
-; 158  : 	return ret_addre;
+; 161  : 	}
+; 162  : 
+; 163  : 	return ret_addre;
 
 	mov	rax, QWORD PTR ret_addre$[rsp]
 $LN16@AuObtainSh:
 
-; 159  : }
+; 164  : }
 
 	add	rsp, 152				; 00000098H
 	ret	0
@@ -988,9 +989,10 @@ _TEXT	ENDS
 ; File e:\xeneva project\xeneva\aurora\aurora\mmngr\shmem.cpp
 _TEXT	SEGMENT
 i$1 = 32
-tv86 = 36
+tv87 = 36
 sh_mem$ = 40
 mem$2 = 48
+proc$ = 56
 key$ = 80
 size$ = 88
 flags$ = 96
@@ -1008,7 +1010,13 @@ $LN9:
 
 	call	x64_cli
 
-; 56   : 	for (int i = 0; i < shared_mem_list->pointer; i++) {
+; 56   : 	process_t* proc = get_current_process();
+
+	call	?get_current_process@@YAPEAU_process_@@XZ ; get_current_process
+	mov	QWORD PTR proc$[rsp], rax
+
+; 57   : 
+; 58   : 	for (int i = 0; i < shared_mem_list->pointer; i++) {
 
 	mov	DWORD PTR i$1[rsp], 0
 	jmp	SHORT $LN4@AuCreateSh
@@ -1022,70 +1030,70 @@ $LN4@AuCreateSh:
 	cmp	DWORD PTR i$1[rsp], eax
 	jae	SHORT $LN2@AuCreateSh
 
-; 57   : 		shared_mem_t *mem = (shared_mem_t*)list_get_at(shared_mem_list, i);
+; 59   : 		shared_mem_t *mem = (shared_mem_t*)list_get_at(shared_mem_list, i);
 
 	mov	edx, DWORD PTR i$1[rsp]
 	mov	rcx, QWORD PTR ?shared_mem_list@@3PEAU_list_@@EA ; shared_mem_list
 	call	list_get_at
 	mov	QWORD PTR mem$2[rsp], rax
 
-; 58   : 		if (mem->key == key)
+; 60   : 		if (mem->key == key)
 
 	mov	rax, QWORD PTR mem$2[rsp]
 	mov	ecx, DWORD PTR key$[rsp]
 	cmp	DWORD PTR [rax+16], ecx
 	jne	SHORT $LN1@AuCreateSh
 
-; 59   : 			return mem->id;
+; 61   : 			return mem->id;
 
 	mov	rax, QWORD PTR mem$2[rsp]
 	mov	eax, DWORD PTR [rax]
 	jmp	$LN5@AuCreateSh
 $LN1@AuCreateSh:
 
-; 60   : 	}
+; 62   : 	}
 
 	jmp	SHORT $LN3@AuCreateSh
 $LN2@AuCreateSh:
 
-; 61   : 	
-; 62   : 	shared_mem_t *sh_mem = (shared_mem_t*)malloc(sizeof(shared_mem_t));
+; 63   : 	
+; 64   : 	shared_mem_t *sh_mem = (shared_mem_t*)malloc(sizeof(shared_mem_t));
 
-	mov	ecx, 64					; 00000040H
+	mov	ecx, 72					; 00000048H
 	call	malloc
 	mov	QWORD PTR sh_mem$[rsp], rax
 
-; 63   : 	memset(sh_mem, 0, sizeof(shared_mem_t));
+; 65   : 	memset(sh_mem, 0, sizeof(shared_mem_t));
 
-	mov	r8d, 64					; 00000040H
+	mov	r8d, 72					; 00000048H
 	xor	edx, edx
 	mov	rcx, QWORD PTR sh_mem$[rsp]
 	call	memset
 
-; 64   : 	sh_mem->id = sh_id;
+; 66   : 	sh_mem->id = sh_id;
 
 	mov	rax, QWORD PTR sh_mem$[rsp]
 	mov	ecx, DWORD PTR ?sh_id@@3IA		; sh_id
 	mov	DWORD PTR [rax], ecx
 
-; 65   : 	sh_mem->ptr = 0;
+; 67   : 	sh_mem->ptr = 0;
 
 	mov	rax, QWORD PTR sh_mem$[rsp]
 	mov	QWORD PTR [rax+8], 0
 
-; 66   : 	sh_mem->key = key;
+; 68   : 	sh_mem->key = key;
 
 	mov	rax, QWORD PTR sh_mem$[rsp]
 	mov	ecx, DWORD PTR key$[rsp]
 	mov	DWORD PTR [rax+16], ecx
 
-; 67   : 	sh_mem->size = size;
+; 69   : 	sh_mem->size = size;
 
 	mov	rax, QWORD PTR sh_mem$[rsp]
 	mov	rcx, QWORD PTR size$[rsp]
 	mov	QWORD PTR [rax+24], rcx
 
-; 68   : 	sh_mem->num_frames = (size / 0x1000) + ((size % 0x1000) ? 1 : 0);
+; 70   : 	sh_mem->num_frames = (size / 0x1000) + ((size % 0x1000) ? 1 : 0);
 
 	xor	edx, edx
 	mov	rax, QWORD PTR size$[rsp]
@@ -1094,55 +1102,62 @@ $LN2@AuCreateSh:
 	mov	rax, rdx
 	test	rax, rax
 	je	SHORT $LN7@AuCreateSh
-	mov	DWORD PTR tv86[rsp], 1
+	mov	DWORD PTR tv87[rsp], 1
 	jmp	SHORT $LN8@AuCreateSh
 $LN7@AuCreateSh:
-	mov	DWORD PTR tv86[rsp], 0
+	mov	DWORD PTR tv87[rsp], 0
 $LN8@AuCreateSh:
 	xor	edx, edx
 	mov	rax, QWORD PTR size$[rsp]
 	mov	ecx, 4096				; 00001000H
 	div	rcx
-	movsxd	rcx, DWORD PTR tv86[rsp]
+	movsxd	rcx, DWORD PTR tv87[rsp]
 	add	rax, rcx
 	mov	rcx, QWORD PTR sh_mem$[rsp]
 	mov	DWORD PTR [rcx+36], eax
 
-; 69   : 	sh_mem->link_count = 0;
+; 71   : 	sh_mem->link_count = 0;
 
 	xor	eax, eax
 	mov	rcx, QWORD PTR sh_mem$[rsp]
 	mov	WORD PTR [rcx+40], ax
 
-; 70   : 	sh_mem->map_in_thread = NULL;
-
-	mov	rax, QWORD PTR sh_mem$[rsp]
-	mov	QWORD PTR [rax+48], 0
-
-; 71   : 	sh_mem->first_process_vaddr = NULL;
+; 72   : 	sh_mem->map_in_thread = NULL;
 
 	mov	rax, QWORD PTR sh_mem$[rsp]
 	mov	QWORD PTR [rax+56], 0
 
-; 72   : 	list_add(shared_mem_list, sh_mem);
+; 73   : 	sh_mem->first_process_vaddr = NULL;
+
+	mov	rax, QWORD PTR sh_mem$[rsp]
+	mov	QWORD PTR [rax+64], 0
+
+; 74   : 	sh_mem->shm_lnk_list = initialize_list();
+
+	call	initialize_list
+	mov	rcx, QWORD PTR sh_mem$[rsp]
+	mov	QWORD PTR [rcx+48], rax
+
+; 75   : 	list_add(shared_mem_list, sh_mem);
 
 	mov	rdx, QWORD PTR sh_mem$[rsp]
 	mov	rcx, QWORD PTR ?shared_mem_list@@3PEAU_list_@@EA ; shared_mem_list
 	call	list_add
 
-; 73   : 	sh_id++;
+; 76   : 	/* also add it to the process's shared_mem_list */
+; 77   : 	sh_id++;
 
 	mov	eax, DWORD PTR ?sh_id@@3IA		; sh_id
 	inc	eax
 	mov	DWORD PTR ?sh_id@@3IA, eax		; sh_id
 
-; 74   : 	return sh_mem->id;
+; 78   : 	return sh_mem->id;
 
 	mov	rax, QWORD PTR sh_mem$[rsp]
 	mov	eax, DWORD PTR [rax]
 $LN5@AuCreateSh:
 
-; 75   : }
+; 79   : }
 
 	add	rsp, 72					; 00000048H
 	ret	0

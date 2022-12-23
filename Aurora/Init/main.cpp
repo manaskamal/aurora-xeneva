@@ -52,22 +52,11 @@
  * main -- the main entry point of init
  */
 XE_EXTERN XE_EXPORT int XeMain (int argc, char* argv[]) {
-	
-	sys_print_text ("[init] init process is running \n");
-	/* Start the window manager */
-	sys_print_text ("[init]: Starting window manager... \n");
-	int priwm_pid = create_process("/priwm.exe", "priwm");
-	sys_print_text ("[init]: window manager started at pid %d \r\n", priwm_pid);
-
-	/* let window manager start properly, and render some frame */
-	sys_sleep(100);
-
-	/* Start xedock */
-	int xedock_pid = create_process("/xedock.exe", "xedock");
-	sys_print_text ("[init]: dock manager started at pid %d \r\n", xedock_pid);
-
+	sys_print_text ("[init] init process is running \r\n");
+	int pid = create_process ("/priwm.exe", "priwm");
+	sys_print_text ("[init]: priwm started at pid -> %d \r\n", pid);
+	int pid2 = create_process ("/xedock.exe", "xedock");
 	while(1) {
-		sys_print_text("init\r\n");
 		sys_wait();
 	}
 	return 0;

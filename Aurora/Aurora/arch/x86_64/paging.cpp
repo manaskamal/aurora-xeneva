@@ -54,11 +54,9 @@
 //!!--------------------------------------------------------------------------------------
 //!!======================================================================================
 
-
-
 uint64_t* mmio_base_address = 0;
-
 uint64_t* root_cr3;
+
 
 static void* make_canonical_i(size_t addr)
 {
@@ -363,7 +361,13 @@ uint64_t* AuGetPhysicalAddress (uint64_t cr3,uint64_t virt_addr) {
 }
 
 
-
+/*
+ * AuMapPageEx -- Maps a page in external paging structure
+ * @param pml4i -- Root paging structure
+ * @param physical_address -- Physical address to map
+ * @param virtual address -- Virtual address to map to
+ * @param attrib -- Extra attributes
+ */
 bool AuMapPageEx (uint64_t *pml4i,uint64_t physical_address, uint64_t virtual_address, uint8_t attrib){
 
 
@@ -411,7 +415,6 @@ bool AuMapPageEx (uint64_t *pml4i,uint64_t physical_address, uint64_t virtual_ad
 
 	if (pml1[i1] & PAGING_PRESENT){
 		AuPmmngrFree((void*)physical_address);
-		printf ("Already present -> %x \n", virtual_address);
 		return false;
 	}
 
@@ -459,7 +462,14 @@ uint64_t *AuCreateAddressSpace (){
 	return new_cr3;
 }
 
-
+/*
+ * AuGetFreePage -- Checks for free page
+ * @param size -- UNUSED
+ * @param user -- specifies if it needs to look from 
+ * user base address
+ * @param ptr -- if it is non-null, than lookup
+ * begins from given pointer
+ */
 uint64_t* AuGetFreePage (size_t s, bool user, void* ptr) {
 	uint64_t* page = 0;
 	uint64_t start = 0;
@@ -497,7 +507,7 @@ uint64_t* AuGetFreePage (size_t s, bool user, void* ptr) {
 	return 0;
 }
 
-bool first = false;
+
 /*
  * AuMapMMIO -- Maps Memory Mapped IO addresses
  * @param phys_addr -- mmio physical address

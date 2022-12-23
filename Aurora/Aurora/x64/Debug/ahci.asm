@@ -13,11 +13,9 @@ ___ahci_64_bit___ DB 01H DUP (?)
 ?hbabar@@3PEAXEA DQ 01H DUP (?)				; hbabar
 _BSS	ENDS
 CONST	SEGMENT
-$SG3755	DB	'[AHCI]: Taking the control from firmware took %d ms', 0aH
+$SG3756	DB	'[AHCI]: Taking the control from firmware took %d ms', 0aH
 	DB	00H
 	ORG $+3
-$SG3776	DB	'AHCI device -> %x ', 0aH, 00H
-	ORG $+4
 $SG3780	DB	'*******************************', 0aH, 00H
 	ORG $+7
 $SG3781	DB	'AHCI/SATA not found', 0aH, 00H
@@ -27,27 +25,23 @@ $SG3782	DB	'Xeneva initialisation failed', 0aH, 00H
 $SG3783	DB	'Halting System', 0aH, 00H
 $SG3784	DB	'*******************************', 0aH, 00H
 	ORG $+7
-$SG3789	DB	'AHCI INTERRUPT LINE -> %d ', 0dH, 0aH, 00H
-	ORG $+3
-$SG3791	DB	'AHCI/SATA found BAR -> %x ', 0aH, 00H
-	ORG $+4
-$SG3800	DB	'[AHCI]: Version -- %d.%d', 0aH, 00H
+$SG3798	DB	'[AHCI]: Version -- %d.%d', 0aH, 00H
 	ORG $+6
-$SG3803	DB	'[AHCI]: 64-bit DMA supported', 0aH, 00H
+$SG3801	DB	'[AHCI]: 64-bit DMA supported', 0aH, 00H
 	ORG $+2
-$SG3805	DB	'[AHCI]: Num Command Slots -> %d', 0aH, 00H
+$SG3803	DB	'[AHCI]: Num Command Slots -> %d', 0aH, 00H
 	ORG $+7
-$SG3808	DB	'[AHCI]: Support Staggered spin-up %d', 0aH, 00H
+$SG3806	DB	'[AHCI]: Support Staggered spin-up %d', 0aH, 00H
 	ORG $+2
-$SG3810	DB	'[AHCI]: FIS-Based Switching supported', 0aH, 00H
+$SG3808	DB	'[AHCI]: FIS-Based Switching supported', 0aH, 00H
 	ORG $+1
-$SG3819	DB	'[AHCI]: SATA Drive found at port %d', 0aH, 00H
+$SG3817	DB	'[AHCI]: SATA Drive found at port %d', 0aH, 00H
 	ORG $+3
-$SG3822	DB	'[AHCI]: SATAPI Drive found at port %d', 0aH, 00H
+$SG3820	DB	'[AHCI]: SATAPI Drive found at port %d', 0aH, 00H
 	ORG $+1
-$SG3825	DB	'[AHCI]: SEMB Drive found at port %d', 0aH, 00H
+$SG3823	DB	'[AHCI]: SEMB Drive found at port %d', 0aH, 00H
 	ORG $+3
-$SG3828	DB	'[AHCI]: PM Drive found at port %d', 0aH, 00H
+$SG3826	DB	'[AHCI]: PM Drive found at port %d', 0aH, 00H
 CONST	ENDS
 PUBLIC	?ahci_initialize@@YAXXZ				; ahci_initialize
 PUBLIC	?ahci_is_64_bit_supported@@YA_NXZ		; ahci_is_64_bit_supported
@@ -67,7 +61,7 @@ EXTRN	printf:PROC
 EXTRN	_debug_print_:PROC
 pdata	SEGMENT
 $pdata$?ahci_initialize@@YAXXZ DD imagerel $LN21
-	DD	imagerel $LN21+1188
+	DD	imagerel $LN21+1130
 	DD	imagerel $unwind$?ahci_initialize@@YAXXZ
 $pdata$?ahci_check_type@@YAHPEAU_hba_port_@@@Z DD imagerel $LN11
 	DD	imagerel $LN11+147
@@ -268,7 +262,7 @@ $LN1@ahci_contr:
 ; 95   : 	printf ("[AHCI]: Taking the control from firmware took %d ms\n", i);
 
 	mov	edx, DWORD PTR i$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3755
+	lea	rcx, OFFSET FLAT:$SG3756
 	call	printf
 
 ; 96   : }
@@ -391,11 +385,11 @@ _TEXT	ENDS
 _TEXT	SEGMENT
 ?ahci_is_64_bit_supported@@YA_NXZ PROC			; ahci_is_64_bit_supported
 
-; 255  : 	return ___ahci_64_bit___;
+; 251  : 	return ___ahci_64_bit___;
 
 	movzx	eax, BYTE PTR ___ahci_64_bit___
 
-; 256  : }
+; 252  : }
 
 	ret	0
 ?ahci_is_64_bit_supported@@YA_NXZ ENDP			; ahci_is_64_bit_supported
@@ -410,18 +404,18 @@ hba$ = 56
 func$ = 64
 bus$ = 68
 dev$ = 72
+dt$1 = 76
 device$ = 80
-dt$1 = 88
-pi$ = 92
-base_address$ = 96
-command$ = 104
-int_line$ = 112
-hba_phys$ = 116
-version_minor$ = 120
-num_command_slots$ = 124
-version_major$ = 128
-_bit$ = 132
-mmio$ = 136
+pi$ = 88
+command$ = 96
+hba_phys$ = 104
+base_address$ = 108
+_bit$ = 112
+version_minor$ = 116
+num_command_slots$ = 120
+version_major$ = 124
+mmio$ = 128
+int_line$ = 136
 ?ahci_initialize@@YAXXZ PROC				; ahci_initialize
 
 ; 147  : void ahci_initialize () {
@@ -450,33 +444,27 @@ $LN21:
 	call	pci_express_scan_class
 	mov	QWORD PTR device$[rsp], rax
 
-; 153  : 	printf ("AHCI device -> %x \n", device);
-
-	mov	rdx, QWORD PTR device$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3776
-	call	printf
-
-; 154  : 	if (device == 0xFFFFFFFF)
+; 153  : 	if (device == 0xFFFFFFFF)
 
 	mov	eax, -1					; ffffffffH
 	cmp	QWORD PTR device$[rsp], rax
 	jne	SHORT $LN18@ahci_initi
 
-; 155  : 		ahci_not_found = true; // pci_express_scan_class(0x01,0x06);
+; 154  : 		ahci_not_found = true; // pci_express_scan_class(0x01,0x06);
 
 	mov	BYTE PTR ahci_not_found$[rsp], 1
 $LN18@ahci_initi:
 
-; 156  : 	
-; 157  : 
-; 158  : 	/* not found? now search in RAID registry */
-; 159  : 	if (ahci_not_found) {
+; 155  : 	
+; 156  : 
+; 157  : 	/* not found? now search in RAID registry */
+; 158  : 	if (ahci_not_found) {
 
 	movzx	eax, BYTE PTR ahci_not_found$[rsp]
 	test	eax, eax
 	je	SHORT $LN17@ahci_initi
 
-; 160  : 		device = pci_express_scan_class(0x01,0x04, &bus, &dev, &func);
+; 159  : 		device = pci_express_scan_class(0x01,0x04, &bus, &dev, &func);
 
 	lea	rax, QWORD PTR func$[rsp]
 	mov	QWORD PTR [rsp+32], rax
@@ -487,49 +475,49 @@ $LN18@ahci_initi:
 	call	pci_express_scan_class
 	mov	QWORD PTR device$[rsp], rax
 
-; 161  : 		if (device == 0xFFFFFFFF){
+; 160  : 		if (device == 0xFFFFFFFF){
 
 	mov	eax, -1					; ffffffffH
 	cmp	QWORD PTR device$[rsp], rax
 	jne	SHORT $LN16@ahci_initi
 
-; 162  : 			printf ("*******************************\n");
+; 161  : 			printf ("*******************************\n");
 
 	lea	rcx, OFFSET FLAT:$SG3780
 	call	printf
 
-; 163  : 			printf ("AHCI/SATA not found\n");
+; 162  : 			printf ("AHCI/SATA not found\n");
 
 	lea	rcx, OFFSET FLAT:$SG3781
 	call	printf
 
-; 164  : 			printf ("Xeneva initialisation failed\n");
+; 163  : 			printf ("Xeneva initialisation failed\n");
 
 	lea	rcx, OFFSET FLAT:$SG3782
 	call	printf
 
-; 165  : 			printf ("Halting System\n");
+; 164  : 			printf ("Halting System\n");
 
 	lea	rcx, OFFSET FLAT:$SG3783
 	call	printf
 
-; 166  : 			printf ("*******************************\n");
+; 165  : 			printf ("*******************************\n");
 
 	lea	rcx, OFFSET FLAT:$SG3784
 	call	printf
 $LN15@ahci_initi:
 
-; 167  : 			for(;;);
+; 166  : 			for(;;);
 
 	jmp	SHORT $LN15@ahci_initi
 $LN16@ahci_initi:
 $LN17@ahci_initi:
 
-; 168  : 		}
-; 169  : 	}
+; 167  : 		}
+; 168  : 	}
+; 169  : 	
 ; 170  : 	
-; 171  : 	
-; 172  : 	uint32_t int_line = pci_express_read(device, PCI_INTERRUPT_LINE, bus, dev, func);
+; 171  : 	uint32_t int_line = pci_express_read(device, PCI_INTERRUPT_LINE, bus, dev, func);
 
 	mov	eax, DWORD PTR func$[rsp]
 	mov	DWORD PTR [rsp+32], eax
@@ -540,13 +528,7 @@ $LN17@ahci_initi:
 	call	pci_express_read
 	mov	DWORD PTR int_line$[rsp], eax
 
-; 173  : 	printf ("AHCI INTERRUPT LINE -> %d \r\n", int_line);
-
-	mov	edx, DWORD PTR int_line$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3789
-	call	printf
-
-; 174  : 	uint32_t base_address = pci_express_read(device,PCI_BAR5, bus, dev, func);
+; 172  : 	uint32_t base_address = pci_express_read(device,PCI_BAR5, bus, dev, func);
 
 	mov	eax, DWORD PTR func$[rsp]
 	mov	DWORD PTR [rsp+32], eax
@@ -557,16 +539,9 @@ $LN17@ahci_initi:
 	call	pci_express_read
 	mov	DWORD PTR base_address$[rsp], eax
 
-; 175  : 	printf ("AHCI/SATA found BAR -> %x \n", base_address);
-
-	mov	edx, DWORD PTR base_address$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3791
-	call	printf
-
-; 176  : 
-; 177  : 	
-; 178  : 
-; 179  : 	uint64_t command = pci_express_read(device,PCI_COMMAND, bus, dev, func); 
+; 173  : 	
+; 174  : 
+; 175  : 	uint64_t command = pci_express_read(device,PCI_COMMAND, bus, dev, func); 
 
 	mov	eax, DWORD PTR func$[rsp]
 	mov	DWORD PTR [rsp+32], eax
@@ -578,19 +553,19 @@ $LN17@ahci_initi:
 	mov	eax, eax
 	mov	QWORD PTR command$[rsp], rax
 
-; 180  : 	command |= (1<<1);
+; 176  : 	command |= (1<<1);
 
 	mov	rax, QWORD PTR command$[rsp]
 	or	rax, 2
 	mov	QWORD PTR command$[rsp], rax
 
-; 181  : 	command |= (1<<10);
+; 177  : 	command |= (1<<10);
 
 	mov	rax, QWORD PTR command$[rsp]
 	bts	rax, 10
 	mov	QWORD PTR command$[rsp], rax
 
-; 182  : 	pci_express_write(device, PCI_COMMAND, command, bus, dev, func);
+; 178  : 	pci_express_write(device, PCI_COMMAND, command, bus, dev, func);
 
 	mov	eax, DWORD PTR func$[rsp]
 	mov	DWORD PTR [rsp+40], eax
@@ -602,9 +577,9 @@ $LN17@ahci_initi:
 	mov	rcx, QWORD PTR device$[rsp]
 	call	pci_express_write
 
-; 183  : 
-; 184  : 
-; 185  : 	pcie_alloc_msi(device, 36, bus, dev, func);
+; 179  : 
+; 180  : 
+; 181  : 	pcie_alloc_msi(device, 36, bus, dev, func);
 
 	mov	eax, DWORD PTR func$[rsp]
 	mov	DWORD PTR [rsp+32], eax
@@ -614,21 +589,21 @@ $LN17@ahci_initi:
 	mov	rcx, QWORD PTR device$[rsp]
 	call	pcie_alloc_msi
 
-; 186  : 	setvect(36, ahci_interrupt_handler);
+; 182  : 	setvect(36, ahci_interrupt_handler);
 
 	lea	rdx, OFFSET FLAT:?ahci_interrupt_handler@@YAX_KPEAX@Z ; ahci_interrupt_handler
 	mov	ecx, 36					; 00000024H
 	call	setvect
 
-; 187  : 	
-; 188  : 
-; 189  : 	uintptr_t hba_phys = base_address & 0xFFFFFFF0;
+; 183  : 	
+; 184  : 
+; 185  : 	uintptr_t hba_phys = base_address & 0xFFFFFFF0;
 
 	mov	eax, DWORD PTR base_address$[rsp]
 	and	eax, -16				; fffffff0H
 	mov	DWORD PTR hba_phys$[rsp], eax
 
-; 190  : 	void* mmio = AuMapMMIO(hba_phys,3);
+; 186  : 	void* mmio = AuMapMMIO(hba_phys,3);
 
 	mov	eax, DWORD PTR hba_phys$[rsp]
 	mov	edx, 3
@@ -636,40 +611,40 @@ $LN17@ahci_initi:
 	call	AuMapMMIO
 	mov	QWORD PTR mmio$[rsp], rax
 
-; 191  : 	HBA_MEM *hba = (HBA_MEM*)mmio;//(info->device.nonBridge.baseAddress[5] & 0xFFFFFFF0);
+; 187  : 	HBA_MEM *hba = (HBA_MEM*)mmio;//(info->device.nonBridge.baseAddress[5] & 0xFFFFFFF0);
 
 	mov	rax, QWORD PTR mmio$[rsp]
 	mov	QWORD PTR hba$[rsp], rax
 
-; 192  : 	hbabar = (void*)mmio; //(info->device.nonBridge.baseAddress[5] & 0xFFFFFFF0);
+; 188  : 	hbabar = (void*)mmio; //(info->device.nonBridge.baseAddress[5] & 0xFFFFFFF0);
 
 	mov	rax, QWORD PTR mmio$[rsp]
 	mov	QWORD PTR ?hbabar@@3PEAXEA, rax		; hbabar
 
-; 193  : 	hba->ghc = 1;
+; 189  : 	hba->ghc = 1;
 
 	mov	rax, QWORD PTR hba$[rsp]
 	mov	DWORD PTR [rax+4], 1
 
-; 194  : 
-; 195  : 	timer_sleep(500);
+; 190  : 
+; 191  : 	timer_sleep(500);
 
 	mov	ecx, 500				; 000001f4H
 	call	?timer_sleep@@YAXI@Z			; timer_sleep
 
-; 196  : 	hba->ghc = (1<<31);
+; 192  : 	hba->ghc = (1<<31);
 
 	mov	rax, QWORD PTR hba$[rsp]
 	mov	DWORD PTR [rax+4], -2147483648		; 80000000H
 
-; 197  : 	timer_sleep(100);
+; 193  : 	timer_sleep(100);
 
 	mov	ecx, 100				; 00000064H
 	call	?timer_sleep@@YAXI@Z			; timer_sleep
 
-; 198  : 	//hba->ghc = (1<<1);
-; 199  : 
-; 200  : 	uint32_t version_major = hba->vs >> 16 & 0xff;
+; 194  : 	//hba->ghc = (1<<1);
+; 195  : 
+; 196  : 	uint32_t version_major = hba->vs >> 16 & 0xff;
 
 	mov	rax, QWORD PTR hba$[rsp]
 	mov	eax, DWORD PTR [rax+16]
@@ -677,22 +652,22 @@ $LN17@ahci_initi:
 	and	eax, 255				; 000000ffH
 	mov	DWORD PTR version_major$[rsp], eax
 
-; 201  : 	uint32_t version_minor = hba->vs & 0xff;
+; 197  : 	uint32_t version_minor = hba->vs & 0xff;
 
 	mov	rax, QWORD PTR hba$[rsp]
 	mov	eax, DWORD PTR [rax+16]
 	and	eax, 255				; 000000ffH
 	mov	DWORD PTR version_minor$[rsp], eax
 
-; 202  : 
-; 203  : 	printf ("[AHCI]: Version -- %d.%d\n", version_major, version_minor);
+; 198  : 
+; 199  : 	printf ("[AHCI]: Version -- %d.%d\n", version_major, version_minor);
 
 	mov	r8d, DWORD PTR version_minor$[rsp]
 	mov	edx, DWORD PTR version_major$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3800
+	lea	rcx, OFFSET FLAT:$SG3798
 	call	printf
 
-; 204  : 	uint32_t _bit = hba->cap >> 31 & 0xff;
+; 200  : 	uint32_t _bit = hba->cap >> 31 & 0xff;
 
 	mov	rax, QWORD PTR hba$[rsp]
 	mov	eax, DWORD PTR [rax]
@@ -700,30 +675,30 @@ $LN17@ahci_initi:
 	and	eax, 255				; 000000ffH
 	mov	DWORD PTR _bit$[rsp], eax
 
-; 205  : 	if (_bit) {
+; 201  : 	if (_bit) {
 
 	cmp	DWORD PTR _bit$[rsp], 0
 	je	SHORT $LN13@ahci_initi
 
-; 206  : 		printf ("[AHCI]: 64-bit DMA supported\n");
+; 202  : 		printf ("[AHCI]: 64-bit DMA supported\n");
 
-	lea	rcx, OFFSET FLAT:$SG3803
+	lea	rcx, OFFSET FLAT:$SG3801
 	call	printf
 
-; 207  : 		___ahci_64_bit___ = true;
+; 203  : 		___ahci_64_bit___ = true;
 
 	mov	BYTE PTR ___ahci_64_bit___, 1
 $LN13@ahci_initi:
 
-; 208  : 	}
-; 209  : 
-; 210  : 	
-; 211  : 	hba->is = UINT32_MAX;
+; 204  : 	}
+; 205  : 
+; 206  : 	
+; 207  : 	hba->is = UINT32_MAX;
 
 	mov	rax, QWORD PTR hba$[rsp]
 	mov	DWORD PTR [rax+8], -1			; ffffffffH
 
-; 212  : 	hba->ghc |= 0x2;
+; 208  : 	hba->ghc |= 0x2;
 
 	mov	rax, QWORD PTR hba$[rsp]
 	mov	eax, DWORD PTR [rax+4]
@@ -731,8 +706,8 @@ $LN13@ahci_initi:
 	mov	rcx, QWORD PTR hba$[rsp]
 	mov	DWORD PTR [rcx+4], eax
 
-; 213  : 
-; 214  : 	uint32_t num_command_slots  = hba->cap >> 8 & 0xff;
+; 209  : 
+; 210  : 	uint32_t num_command_slots  = hba->cap >> 8 & 0xff;
 
 	mov	rax, QWORD PTR hba$[rsp]
 	mov	eax, DWORD PTR [rax]
@@ -740,37 +715,37 @@ $LN13@ahci_initi:
 	and	eax, 255				; 000000ffH
 	mov	DWORD PTR num_command_slots$[rsp], eax
 
-; 215  : 	_debug_print_ ("[AHCI]: Num Command Slots -> %d\n", num_command_slots);
+; 211  : 	_debug_print_ ("[AHCI]: Num Command Slots -> %d\n", num_command_slots);
 
 	mov	edx, DWORD PTR num_command_slots$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3805
+	lea	rcx, OFFSET FLAT:$SG3803
 	call	_debug_print_
 
-; 216  : 
-; 217  : 	uint8_t support_spin = hba->cap & (1<<27);
+; 212  : 
+; 213  : 	uint8_t support_spin = hba->cap & (1<<27);
 
 	mov	rax, QWORD PTR hba$[rsp]
 	mov	eax, DWORD PTR [rax]
 	and	eax, 134217728				; 08000000H
 	mov	BYTE PTR support_spin$[rsp], al
 
-; 218  : 	if (support_spin) {
+; 214  : 	if (support_spin) {
 
 	movzx	eax, BYTE PTR support_spin$[rsp]
 	test	eax, eax
 	je	SHORT $LN12@ahci_initi
 
-; 219  : 		_debug_print_ ("[AHCI]: Support Staggered spin-up %d\n", support_spin);
+; 215  : 		_debug_print_ ("[AHCI]: Support Staggered spin-up %d\n", support_spin);
 
 	movzx	eax, BYTE PTR support_spin$[rsp]
 	mov	edx, eax
-	lea	rcx, OFFSET FLAT:$SG3808
+	lea	rcx, OFFSET FLAT:$SG3806
 	call	_debug_print_
 $LN12@ahci_initi:
 
-; 220  : 	}
-; 221  : 
-; 222  : 	if (hba->cap & (1<<16))
+; 216  : 	}
+; 217  : 
+; 218  : 	if (hba->cap & (1<<16))
 
 	mov	rax, QWORD PTR hba$[rsp]
 	mov	eax, DWORD PTR [rax]
@@ -778,36 +753,36 @@ $LN12@ahci_initi:
 	test	eax, eax
 	je	SHORT $LN11@ahci_initi
 
-; 223  : 		_debug_print_ ("[AHCI]: FIS-Based Switching supported\n");
+; 219  : 		_debug_print_ ("[AHCI]: FIS-Based Switching supported\n");
 
-	lea	rcx, OFFSET FLAT:$SG3810
+	lea	rcx, OFFSET FLAT:$SG3808
 	call	_debug_print_
 $LN11@ahci_initi:
 
-; 224  : 	uint32_t pi = hba->pi;
+; 220  : 	uint32_t pi = hba->pi;
 
 	mov	rax, QWORD PTR hba$[rsp]
 	mov	eax, DWORD PTR [rax+12]
 	mov	DWORD PTR pi$[rsp], eax
 
-; 225  : 	int i = 0;
+; 221  : 	int i = 0;
 
 	mov	DWORD PTR i$[rsp], 0
 $LN10@ahci_initi:
 
-; 226  : 	while (i < 32) {
+; 222  : 	while (i < 32) {
 
 	cmp	DWORD PTR i$[rsp], 32			; 00000020H
 	jge	$LN9@ahci_initi
 
-; 227  : 		if (pi & 1) {
+; 223  : 		if (pi & 1) {
 
 	mov	eax, DWORD PTR pi$[rsp]
 	and	eax, 1
 	test	eax, eax
 	je	$LN8@ahci_initi
 
-; 228  : 			int dt = ahci_check_type (&hba->port[i]);
+; 224  : 			int dt = ahci_check_type (&hba->port[i]);
 
 	movsxd	rax, DWORD PTR i$[rsp]
 	imul	rax, 128				; 00000080H
@@ -817,18 +792,18 @@ $LN10@ahci_initi:
 	call	?ahci_check_type@@YAHPEAU_hba_port_@@@Z	; ahci_check_type
 	mov	DWORD PTR dt$1[rsp], eax
 
-; 229  : 			if (dt == AHCI_DEV_SATA) {
+; 225  : 			if (dt == AHCI_DEV_SATA) {
 
 	cmp	DWORD PTR dt$1[rsp], 1
 	jne	$LN7@ahci_initi
 
-; 230  : 				printf ("[AHCI]: SATA Drive found at port %d\n", i);
+; 226  : 				printf ("[AHCI]: SATA Drive found at port %d\n", i);
 
 	mov	edx, DWORD PTR i$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3819
+	lea	rcx, OFFSET FLAT:$SG3817
 	call	printf
 
-; 231  : 				hba->port[i].sctl &= ~PX_SCTL_IPM_MASK;
+; 227  : 				hba->port[i].sctl &= ~PX_SCTL_IPM_MASK;
 
 	movsxd	rax, DWORD PTR i$[rsp]
 	imul	rax, 128				; 00000080H
@@ -840,7 +815,7 @@ $LN10@ahci_initi:
 	mov	rdx, QWORD PTR hba$[rsp]
 	mov	DWORD PTR [rdx+rcx+300], eax
 
-; 232  : 				hba->port[i].sctl |= PX_SCTL_IPM_NONE;
+; 228  : 				hba->port[i].sctl |= PX_SCTL_IPM_NONE;
 
 	movsxd	rax, DWORD PTR i$[rsp]
 	imul	rax, 128				; 00000080H
@@ -852,7 +827,7 @@ $LN10@ahci_initi:
 	mov	rdx, QWORD PTR hba$[rsp]
 	mov	DWORD PTR [rdx+rcx+300], eax
 
-; 233  : 				ahci_disk_initialize(&hba->port[i]);
+; 229  : 				ahci_disk_initialize(&hba->port[i]);
 
 	movsxd	rax, DWORD PTR i$[rsp]
 	imul	rax, 128				; 00000080H
@@ -863,42 +838,42 @@ $LN10@ahci_initi:
 	jmp	SHORT $LN6@ahci_initi
 $LN7@ahci_initi:
 
-; 234  : 			}
-; 235  : 			else if (dt == AHCI_DEV_SATAPI) {
+; 230  : 			}
+; 231  : 			else if (dt == AHCI_DEV_SATAPI) {
 
 	cmp	DWORD PTR dt$1[rsp], 4
 	jne	SHORT $LN5@ahci_initi
 
-; 236  : 				printf ("[AHCI]: SATAPI Drive found at port %d\n", i);
+; 232  : 				printf ("[AHCI]: SATAPI Drive found at port %d\n", i);
 
 	mov	edx, DWORD PTR i$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3822
+	lea	rcx, OFFSET FLAT:$SG3820
 	call	printf
 	jmp	SHORT $LN4@ahci_initi
 $LN5@ahci_initi:
 
-; 237  : 			}else if (dt == AHCI_DEV_SEMB) {
+; 233  : 			}else if (dt == AHCI_DEV_SEMB) {
 
 	cmp	DWORD PTR dt$1[rsp], 2
 	jne	SHORT $LN3@ahci_initi
 
-; 238  : 				printf ("[AHCI]: SEMB Drive found at port %d\n", i);
+; 234  : 				printf ("[AHCI]: SEMB Drive found at port %d\n", i);
 
 	mov	edx, DWORD PTR i$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3825
+	lea	rcx, OFFSET FLAT:$SG3823
 	call	printf
 	jmp	SHORT $LN2@ahci_initi
 $LN3@ahci_initi:
 
-; 239  : 			}else if (dt == AHCI_DEV_PM) {
+; 235  : 			}else if (dt == AHCI_DEV_PM) {
 
 	cmp	DWORD PTR dt$1[rsp], 3
 	jne	SHORT $LN1@ahci_initi
 
-; 240  : 				printf ("[AHCI]: PM Drive found at port %d\n", i);
+; 236  : 				printf ("[AHCI]: PM Drive found at port %d\n", i);
 
 	mov	edx, DWORD PTR i$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3828
+	lea	rcx, OFFSET FLAT:$SG3826
 	call	printf
 $LN1@ahci_initi:
 $LN2@ahci_initi:
@@ -906,28 +881,28 @@ $LN4@ahci_initi:
 $LN6@ahci_initi:
 $LN8@ahci_initi:
 
-; 241  : 			}
-; 242  : 		}
-; 243  : 		pi >>= 1;
+; 237  : 			}
+; 238  : 		}
+; 239  : 		pi >>= 1;
 
 	mov	eax, DWORD PTR pi$[rsp]
 	shr	eax, 1
 	mov	DWORD PTR pi$[rsp], eax
 
-; 244  : 		i++;
+; 240  : 		i++;
 
 	mov	eax, DWORD PTR i$[rsp]
 	inc	eax
 	mov	DWORD PTR i$[rsp], eax
 
-; 245  : 	}
+; 241  : 	}
 
 	jmp	$LN10@ahci_initi
 $LN9@ahci_initi:
 
-; 246  : 
-; 247  : 	//pcie_print_capabilities(device);
-; 248  : }
+; 242  : 
+; 243  : 	//pcie_print_capabilities(device);
+; 244  : }
 
 	add	rsp, 152				; 00000098H
 	ret	0

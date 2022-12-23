@@ -50,6 +50,8 @@
 
 #define PROCESS_HEAP_BREAK  0x0000000380000000   //12GiB
 
+#define PAGE_SHIFT  12
+
 extern size_t  pml4_index (uint64_t addr);
 extern size_t pdp_index (uint64_t addr);
 extern size_t pd_index (uint64_t addr);
@@ -72,6 +74,7 @@ typedef union _AuVPage_ {
 		uint64_t _avail:2;
 		uint64_t page:28;
 		uint64_t reserved:12;
+		uint64_t _avail2:11;
 		uint64_t nx:1;
 	} bits;
 	uint64_t raw;
@@ -89,7 +92,16 @@ extern void AuPagingInit();
  * @param attrib -- Additional attributes
  */
 AU_EXTERN AU_EXPORT bool AuMapPage (uint64_t physical_address, uint64_t virtual_address, uint8_t attrib);
+
+/*
+ * AuMapPageEx -- Maps a page in external paging structure
+ * @param pml4i -- Root paging structure
+ * @param physical_address -- Physical address to map
+ * @param virtual address -- Virtual address to map to
+ * @param attrib -- Extra attributes
+ */
 extern bool AuMapPageEx(uint64_t *pml4i,uint64_t physical_address, uint64_t virtual_address, uint8_t attrib);
+
 extern void AuUnmapPageEx(uint64_t* cr3, uint64_t virt_addr, bool free_physical);
 
 /*
@@ -114,9 +126,24 @@ extern uint64_t *AuCreateAddressSpace();
  */
 AU_EXTERN AU_EXPORT AuVPage* AuGetPage (uint64_t virtual_address, uint8_t attrib);
 AU_EXTERN AU_EXPORT uint64_t* AuGetPhysicalAddress(uint64_t cr3,uint64_t virt_addr);
+
+/*
+ * AuGetFreePage -- Checks for free page
+ * @param size -- UNUSED
+ * @param user -- specifies if it needs to look from 
+ * user base address
+ * @param ptr -- if it is non-null, than lookup
+ * begins from given pointer
+ */
 AU_EXTERN AU_EXPORT uint64_t* AuGetFreePage(size_t s, bool user, void* ptr);
 AU_EXTERN AU_EXPORT  uint64_t* AuGetRootPageTable();
 AU_EXTERN AU_EXPORT void AuFreePages(uint64_t virt_addr, bool free_physical, size_t s);
+
+/*
+ * AuMapMMIO -- Maps Memory Mapped IO addresses
+ * @param phys_addr -- mmio physical address
+ * @param page_count -- number of pages
+ */
 AU_EXTERN AU_EXPORT void* AuMapMMIO (uint64_t phys_addr, size_t page_count);
 extern void AuPagingClearLow();
 #endif

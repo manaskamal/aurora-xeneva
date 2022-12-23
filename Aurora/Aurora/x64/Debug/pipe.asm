@@ -6,9 +6,9 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 CONST	SEGMENT
-$SG3640	DB	'AuPipe', 00H
+$SG3641	DB	'AuPipe', 00H
 	ORG $+1
-$SG3644	DB	'AuPipe', 00H
+$SG3645	DB	'AuPipe', 00H
 CONST	ENDS
 PUBLIC	?AuCreatePipe@@YAPEAU_pipe_@@XZ			; AuCreatePipe
 PUBLIC	?AuAllocAnonPipe@@YAXQEAH@Z			; AuAllocAnonPipe
@@ -241,7 +241,7 @@ $LN3:
 ; 94   : 	strcpy(readn->filename, "AuPipe");
 
 	mov	rax, QWORD PTR readn$[rsp]
-	lea	rdx, OFFSET FLAT:$SG3640
+	lea	rdx, OFFSET FLAT:$SG3641
 	mov	rcx, rax
 	call	strcpy
 
@@ -323,7 +323,7 @@ $LN3:
 ; 110  : 	strcpy(writen->filename, "AuPipe");
 
 	mov	rax, QWORD PTR writen$[rsp]
-	lea	rdx, OFFSET FLAT:$SG3644
+	lea	rdx, OFFSET FLAT:$SG3645
 	mov	rcx, rax
 	call	strcpy
 

@@ -6,11 +6,11 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 CONST	SEGMENT
-$SG4235	DB	'xewid.dll', 00H
+$SG4272	DB	'xewid.dll', 00H
 	ORG $+6
-$SG4241	DB	'xnclib.dll', 00H
+$SG4278	DB	'xnclib.dll', 00H
 	ORG $+5
-$SG4247	DB	'xnacrl.dll', 00H
+$SG4284	DB	'xnacrl.dll', 00H
 CONST	ENDS
 PUBLIC	?AuExitProcess@@YAXPEAU_process_@@@Z		; AuExitProcess
 PUBLIC	?AuUnmapProcess@@YAXPEAU_process_@@PEAU_thread_@@@Z ; AuUnmapProcess
@@ -19,6 +19,9 @@ PUBLIC	?AuDestroyChildThreads@@YAXPEAU_process_@@PEAU_thread_@@@Z ; AuDestroyChi
 PUBLIC	?AuDestroyMemory@@YAXPEAU_process_@@PEAU_thread_@@@Z ; AuDestroyMemory
 PUBLIC	?AuUnallocSysLibs@@YAXXZ			; AuUnallocSysLibs
 PUBLIC	?AuDestroyMainThread@@YAXPEAU_process_@@PEAU_thread_@@@Z ; AuDestroyMainThread
+PUBLIC	?AuCloseScreen@@YAXG@Z				; AuCloseScreen
+EXTRN	memset:PROC
+EXTRN	memcpy:PROC
 EXTRN	AuPmmngrFree:PROC
 EXTRN	v2p:PROC
 EXTRN	x64_cli:PROC
@@ -26,6 +29,7 @@ EXTRN	AuUnmapPage:PROC
 EXTRN	AuGetPhysicalAddress:PROC
 EXTRN	free:PROC
 EXTRN	unblock_thread:PROC
+EXTRN	force_sched:PROC
 EXTRN	?thread_iterate_block_list@@YAPEAU_thread_@@H@Z:PROC ; thread_iterate_block_list
 EXTRN	?task_delete@@YAXPEAU_thread_@@@Z:PROC		; task_delete
 EXTRN	?remove_process@@YAXPEAU_process_@@@Z:PROC	; remove_process
@@ -37,12 +41,13 @@ EXTRN	?AuGetSysLib@@YAPEAU_libentry_@@PEAD@Z:PROC	; AuGetSysLib
 EXTRN	?pri_loop_destroy_by_id@@YAXG@Z:PROC		; pri_loop_destroy_by_id
 EXTRN	?free_kstack@@YAXPEA_K@Z:PROC			; free_kstack
 EXTRN	?free_kstack_child@@YAXPEA_K_K@Z:PROC		; free_kstack_child
+EXTRN	AuGetScreenMngrID:PROC
 pdata	SEGMENT
 $pdata$?AuExitProcess@@YAXPEAU_process_@@@Z DD imagerel $LN4
-	DD	imagerel $LN4+254
+	DD	imagerel $LN4+269
 	DD	imagerel $unwind$?AuExitProcess@@YAXPEAU_process_@@@Z
 $pdata$?AuUnmapProcess@@YAXPEAU_process_@@PEAU_thread_@@@Z DD imagerel $LN14
-	DD	imagerel $LN14+426
+	DD	imagerel $LN14+423
 	DD	imagerel $unwind$?AuUnmapProcess@@YAXPEAU_process_@@PEAU_thread_@@@Z
 $pdata$?AuDestroyFiles@@YAXPEAU_process_@@PEAU_thread_@@@Z DD imagerel $LN8
 	DD	imagerel $LN8+117
@@ -59,6 +64,9 @@ $pdata$?AuUnallocSysLibs@@YAXXZ DD imagerel $LN12
 $pdata$?AuDestroyMainThread@@YAXPEAU_process_@@PEAU_thread_@@@Z DD imagerel $LN3
 	DD	imagerel $LN3+61
 	DD	imagerel $unwind$?AuDestroyMainThread@@YAXPEAU_process_@@PEAU_thread_@@@Z
+$pdata$?AuCloseScreen@@YAXG@Z DD imagerel $LN4
+	DD	imagerel $LN4+120
+	DD	imagerel $unwind$?AuCloseScreen@@YAXG@Z
 pdata	ENDS
 xdata	SEGMENT
 $unwind$?AuExitProcess@@YAXPEAU_process_@@@Z DD 010901H
@@ -75,7 +83,77 @@ $unwind$?AuUnallocSysLibs@@YAXXZ DD 010401H
 	DD	0a204H
 $unwind$?AuDestroyMainThread@@YAXPEAU_process_@@PEAU_thread_@@@Z DD 010e01H
 	DD	0420eH
+$unwind$?AuCloseScreen@@YAXG@Z DD 020c01H
+	DD	01d010cH
 xdata	ENDS
+; Function compile flags: /Odtpy
+; File e:\xeneva project\xeneva\aurora\aurora\exit.cpp
+_TEXT	SEGMENT
+to_id$ = 32
+address$ = 40
+e$1 = 48
+cur_id$ = 240
+?AuCloseScreen@@YAXG@Z PROC				; AuCloseScreen
+
+; 196  : void AuCloseScreen (uint16_t cur_id) {
+
+$LN4:
+	mov	WORD PTR [rsp+8], cx
+	sub	rsp, 232				; 000000e8H
+
+; 197  : 	int16_t to_id = AuGetScreenMngrID();
+
+	call	AuGetScreenMngrID
+	mov	WORD PTR to_id$[rsp], ax
+
+; 198  : 	void* address = (void*)0xFFFFD00000000000;
+
+	mov	rax, -52776558133248			; ffffd00000000000H
+	mov	QWORD PTR address$[rsp], rax
+
+; 199  : 	if (to_id != -1) {
+
+	movsx	eax, WORD PTR to_id$[rsp]
+	cmp	eax, -1
+	je	SHORT $LN1@AuCloseScr
+
+; 200  : 		pri_event_t e;
+; 201  : 		memset(&e, 0, sizeof(pri_event_t));
+
+	mov	r8d, 176				; 000000b0H
+	xor	edx, edx
+	lea	rcx, QWORD PTR e$1[rsp]
+	call	memset
+
+; 202  : 		e.type = 102;
+
+	mov	BYTE PTR e$1[rsp], 102			; 00000066H
+
+; 203  : 		e.to_id = to_id;
+
+	movzx	eax, BYTE PTR to_id$[rsp]
+	mov	BYTE PTR e$1[rsp+1], al
+
+; 204  : 		e.from_id = cur_id;
+
+	movzx	eax, BYTE PTR cur_id$[rsp]
+	mov	BYTE PTR e$1[rsp+2], al
+
+; 205  : 		memcpy(address, &e, sizeof(pri_event_t));
+
+	mov	r8d, 176				; 000000b0H
+	lea	rdx, QWORD PTR e$1[rsp]
+	mov	rcx, QWORD PTR address$[rsp]
+	call	memcpy
+$LN1@AuCloseScr:
+
+; 206  : 	}
+; 207  : }
+
+	add	rsp, 232				; 000000e8H
+	ret	0
+?AuCloseScreen@@YAXG@Z ENDP				; AuCloseScreen
+_TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\exit.cpp
 _TEXT	SEGMENT
@@ -83,31 +161,31 @@ proc$ = 48
 thr$ = 56
 ?AuDestroyMainThread@@YAXPEAU_process_@@PEAU_thread_@@@Z PROC ; AuDestroyMainThread
 
-; 188  : void AuDestroyMainThread (process_t* proc, thread_t* thr) {
+; 189  : void AuDestroyMainThread (process_t* proc, thread_t* thr) {
 
 $LN3:
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 40					; 00000028H
 
-; 189  : 	free(thr->fx_state);
+; 190  : 	free(thr->fx_state);
 
 	mov	rax, QWORD PTR thr$[rsp]
 	mov	rcx, QWORD PTR [rax+216]
 	call	free
 
-; 190  : 	AuDestroyFiles(proc, thr);
+; 191  : 	AuDestroyFiles(proc, thr);
 
 	mov	rdx, QWORD PTR thr$[rsp]
 	mov	rcx, QWORD PTR proc$[rsp]
 	call	?AuDestroyFiles@@YAXPEAU_process_@@PEAU_thread_@@@Z ; AuDestroyFiles
 
-; 191  : 	task_delete(thr);
+; 192  : 	task_delete(thr);
 
 	mov	rcx, QWORD PTR thr$[rsp]
 	call	?task_delete@@YAXPEAU_thread_@@@Z	; task_delete
 
-; 192  : }
+; 193  : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -124,19 +202,19 @@ lib2$ = 56
 lib3$ = 64
 ?AuUnallocSysLibs@@YAXXZ PROC				; AuUnallocSysLibs
 
-; 172  : void AuUnallocSysLibs () {
+; 173  : void AuUnallocSysLibs () {
 
 $LN12:
 	sub	rsp, 88					; 00000058H
 
-; 173  : 	/*Close all open dlls */
-; 174  : 	AuLibEntry_t *lib1 = AuGetSysLib("xewid.dll");
+; 174  : 	/*Close all open dlls */
+; 175  : 	AuLibEntry_t *lib1 = AuGetSysLib("xewid.dll");
 
-	lea	rcx, OFFSET FLAT:$SG4235
+	lea	rcx, OFFSET FLAT:$SG4272
 	call	?AuGetSysLib@@YAPEAU_libentry_@@PEAD@Z	; AuGetSysLib
 	mov	QWORD PTR lib1$[rsp], rax
 
-; 175  : 	for (int i = 0; i < lib1->phys_blocks_count; i++)
+; 176  : 	for (int i = 0; i < lib1->phys_blocks_count; i++)
 
 	mov	DWORD PTR i$1[rsp], 0
 	jmp	SHORT $LN9@AuUnallocS
@@ -150,7 +228,7 @@ $LN9@AuUnallocS:
 	cmp	DWORD PTR i$1[rsp], eax
 	jge	SHORT $LN7@AuUnallocS
 
-; 176  : 		AuUnmapPage(XNWID_BASE + i * 4096, true);
+; 177  : 		AuUnmapPage(XNWID_BASE + i * 4096, true);
 
 	mov	eax, DWORD PTR i$1[rsp]
 	imul	eax, 4096				; 00001000H
@@ -163,14 +241,14 @@ $LN9@AuUnallocS:
 	jmp	SHORT $LN8@AuUnallocS
 $LN7@AuUnallocS:
 
-; 177  : 
-; 178  : 	AuLibEntry_t *lib2 = AuGetSysLib("xnclib.dll");
+; 178  : 
+; 179  : 	AuLibEntry_t *lib2 = AuGetSysLib("xnclib.dll");
 
-	lea	rcx, OFFSET FLAT:$SG4241
+	lea	rcx, OFFSET FLAT:$SG4278
 	call	?AuGetSysLib@@YAPEAU_libentry_@@PEAD@Z	; AuGetSysLib
 	mov	QWORD PTR lib2$[rsp], rax
 
-; 179  : 	for (int i = 0; i < lib2->phys_blocks_count; i++)
+; 180  : 	for (int i = 0; i < lib2->phys_blocks_count; i++)
 
 	mov	DWORD PTR i$2[rsp], 0
 	jmp	SHORT $LN6@AuUnallocS
@@ -184,7 +262,7 @@ $LN6@AuUnallocS:
 	cmp	DWORD PTR i$2[rsp], eax
 	jge	SHORT $LN4@AuUnallocS
 
-; 180  : 		AuUnmapPage(XNCLIB_BASE + i * 4096, true);
+; 181  : 		AuUnmapPage(XNCLIB_BASE + i * 4096, true);
 
 	mov	eax, DWORD PTR i$2[rsp]
 	imul	eax, 4096				; 00001000H
@@ -197,14 +275,14 @@ $LN6@AuUnallocS:
 	jmp	SHORT $LN5@AuUnallocS
 $LN4@AuUnallocS:
 
-; 181  : 
-; 182  : 	AuLibEntry_t *lib3 = AuGetSysLib("xnacrl.dll");
+; 182  : 
+; 183  : 	AuLibEntry_t *lib3 = AuGetSysLib("xnacrl.dll");
 
-	lea	rcx, OFFSET FLAT:$SG4247
+	lea	rcx, OFFSET FLAT:$SG4284
 	call	?AuGetSysLib@@YAPEAU_libentry_@@PEAD@Z	; AuGetSysLib
 	mov	QWORD PTR lib3$[rsp], rax
 
-; 183  : 	for (int i = 0; i < lib3->phys_blocks_count; i++)
+; 184  : 	for (int i = 0; i < lib3->phys_blocks_count; i++)
 
 	mov	DWORD PTR i$3[rsp], 0
 	jmp	SHORT $LN3@AuUnallocS
@@ -218,7 +296,7 @@ $LN3@AuUnallocS:
 	cmp	DWORD PTR i$3[rsp], eax
 	jge	SHORT $LN1@AuUnallocS
 
-; 184  : 		AuUnmapPage(XNACRL_BASE + i * 4096, true);
+; 185  : 		AuUnmapPage(XNACRL_BASE + i * 4096, true);
 
 	mov	eax, DWORD PTR i$3[rsp]
 	imul	eax, 4096				; 00001000H
@@ -231,7 +309,7 @@ $LN3@AuUnallocS:
 	jmp	SHORT $LN2@AuUnallocS
 $LN1@AuUnallocS:
 
-; 185  : }
+; 186  : }
 
 	add	rsp, 88					; 00000058H
 	ret	0
@@ -244,24 +322,24 @@ proc$ = 48
 thread$ = 56
 ?AuDestroyMemory@@YAXPEAU_process_@@PEAU_thread_@@@Z PROC ; AuDestroyMemory
 
-; 152  : void AuDestroyMemory (process_t *proc, thread_t *thread) {
+; 153  : void AuDestroyMemory (process_t *proc, thread_t *thread) {
 
 $LN3:
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 40					; 00000028H
 
-; 153  : 
-; 154  : 	/* Unmap, process image, stack & heap */
-; 155  : 	AuUnmapProcess(proc, thread);
+; 154  : 
+; 155  : 	/* Unmap, process image, stack & heap */
+; 156  : 	AuUnmapProcess(proc, thread);
 
 	mov	rdx, QWORD PTR thread$[rsp]
 	mov	rcx, QWORD PTR proc$[rsp]
 	call	?AuUnmapProcess@@YAXPEAU_process_@@PEAU_thread_@@@Z ; AuUnmapProcess
 
-; 156  : 
-; 157  : 	/* Free the message box */
-; 158  : 	AuPmmngrFree((void*)v2p((size_t)thread->msg_box));
+; 157  : 
+; 158  : 	/* Free the message box */
+; 159  : 	AuPmmngrFree((void*)v2p((size_t)thread->msg_box));
 
 	mov	rax, QWORD PTR thread$[rsp]
 	mov	rcx, QWORD PTR [rax+248]
@@ -269,15 +347,15 @@ $LN3:
 	mov	rcx, rax
 	call	AuPmmngrFree
 
-; 159  : 
-; 160  : 	/* clean all allocated memory data structure */
-; 161  : 	AuCleanVMA(proc);
+; 160  : 
+; 161  : 	/* clean all allocated memory data structure */
+; 162  : 	AuCleanVMA(proc);
 
 	mov	rcx, QWORD PTR proc$[rsp]
 	call	?AuCleanVMA@@YAXPEAU_process_@@@Z	; AuCleanVMA
 
-; 162  : 
-; 163  : }
+; 163  : 
+; 164  : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -297,15 +375,15 @@ proc$ = 96
 thread$ = 104
 ?AuDestroyChildThreads@@YAXPEAU_process_@@PEAU_thread_@@@Z PROC ; AuDestroyChildThreads
 
-; 93   : void AuDestroyChildThreads (process_t* proc, thread_t* thread) {
+; 94   : void AuDestroyChildThreads (process_t* proc, thread_t* thread) {
 
 $LN14:
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 88					; 00000058H
 
-; 94   : 	/* Here we need to free all child threads */
-; 95   : 	for (int i = 1; i < proc->num_thread-1; i++) {
+; 95   : 	/* Here we need to free all child threads */
+; 96   : 	for (int i = 1; i < proc->num_thread-1; i++) {
 
 	mov	DWORD PTR i$1[rsp], 1
 	jmp	SHORT $LN11@AuDestroyC
@@ -320,28 +398,28 @@ $LN11@AuDestroyC:
 	cmp	DWORD PTR i$1[rsp], eax
 	jge	$LN9@AuDestroyC
 
-; 96   : 		thread_t *killable = proc->threads[i];
+; 97   : 		thread_t *killable = proc->threads[i];
 
 	movsxd	rax, DWORD PTR i$1[rsp]
 	mov	rcx, QWORD PTR proc$[rsp]
 	mov	rax, QWORD PTR [rcx+rax*8+24]
 	mov	QWORD PTR killable$3[rsp], rax
 
-; 97   : 
-; 98   : 		if (killable == NULL)
+; 98   : 
+; 99   : 		if (killable == NULL)
 
 	cmp	QWORD PTR killable$3[rsp], 0
 	jne	SHORT $LN8@AuDestroyC
 
-; 99   : 			continue;
+; 100  : 			continue;
 
 	jmp	SHORT $LN10@AuDestroyC
 $LN8@AuDestroyC:
 
-; 100  : 
 ; 101  : 
-; 102  : 		/* free kernel stack */
-; 103  : 		free_kstack_child((uint64_t*)killable->frame.cr3,killable->frame.kern_esp - 8192);
+; 102  : 
+; 103  : 		/* free kernel stack */
+; 104  : 		free_kstack_child((uint64_t*)killable->frame.cr3,killable->frame.kern_esp - 8192);
 
 	mov	rax, QWORD PTR killable$3[rsp]
 	mov	rax, QWORD PTR [rax+200]
@@ -351,67 +429,67 @@ $LN8@AuDestroyC:
 	mov	rcx, QWORD PTR [rax+192]
 	call	?free_kstack_child@@YAXPEA_K_K@Z	; free_kstack_child
 
-; 104  : 
-; 105  : 		/* free the SSE memory */
-; 106  : 		free(killable->fx_state);
+; 105  : 
+; 106  : 		/* free the SSE memory */
+; 107  : 		free(killable->fx_state);
 
 	mov	rax, QWORD PTR killable$3[rsp]
 	mov	rcx, QWORD PTR [rax+216]
 	call	free
 
-; 107  : 
-; 108  : 		/* free up the user stack location */
-; 109  : 		uint64_t stack_location = 0;
+; 108  : 
+; 109  : 		/* free up the user stack location */
+; 110  : 		uint64_t stack_location = 0;
 
 	mov	QWORD PTR stack_location$4[rsp], 0
 
-; 110  : 		if (killable == proc->main_thread) {
+; 111  : 		if (killable == proc->main_thread) {
 
 	mov	rax, QWORD PTR proc$[rsp]
 	mov	rax, QWORD PTR [rax+2064]
 	cmp	QWORD PTR killable$3[rsp], rax
 	jne	SHORT $LN7@AuDestroyC
 
-; 111  : 			stack_location = proc->stack;
+; 112  : 			stack_location = proc->stack;
 
 	mov	rax, QWORD PTR proc$[rsp]
 	mov	rax, QWORD PTR [rax+2104]
 	mov	QWORD PTR stack_location$4[rsp], rax
 
-; 112  : 			stack_location -= 2*1024*1024;
+; 113  : 			stack_location -= 2*1024*1024;
 
 	mov	rax, QWORD PTR stack_location$4[rsp]
 	sub	rax, 2097152				; 00200000H
 	mov	QWORD PTR stack_location$4[rsp], rax
 
-; 113  : 		}else {
+; 114  : 		}else {
 
 	jmp	SHORT $LN6@AuDestroyC
 $LN7@AuDestroyC:
 
-; 114  : 			stack_location = killable->user_stack;
+; 115  : 			stack_location = killable->user_stack;
 
 	mov	rax, QWORD PTR killable$3[rsp]
 	mov	rax, QWORD PTR [rax+208]
 	mov	QWORD PTR stack_location$4[rsp], rax
 
-; 115  : 			stack_location += 1*1024*1024;
+; 116  : 			stack_location += 1*1024*1024;
 
 	mov	rax, QWORD PTR stack_location$4[rsp]
 	add	rax, 1048576				; 00100000H
 	mov	QWORD PTR stack_location$4[rsp], rax
 
-; 116  : 			stack_location -= 2*1024*1024;
+; 117  : 			stack_location -= 2*1024*1024;
 
 	mov	rax, QWORD PTR stack_location$4[rsp]
 	sub	rax, 2097152				; 00200000H
 	mov	QWORD PTR stack_location$4[rsp], rax
 $LN6@AuDestroyC:
 
-; 117  : 		}
-; 118  : 
+; 118  : 		}
 ; 119  : 
-; 120  : 		for (int i = 0; i < (2*1024*1024) / 4096; i++) {
+; 120  : 
+; 121  : 		for (int i = 0; i < (2*1024*1024) / 4096; i++) {
 
 	mov	DWORD PTR i$2[rsp], 0
 	jmp	SHORT $LN5@AuDestroyC
@@ -423,7 +501,7 @@ $LN5@AuDestroyC:
 	cmp	DWORD PTR i$2[rsp], 512			; 00000200H
 	jge	SHORT $LN3@AuDestroyC
 
-; 121  : 			void* phys = AuGetPhysicalAddress(killable->frame.cr3,stack_location + i * 4096);
+; 122  : 			void* phys = AuGetPhysicalAddress(killable->frame.cr3,stack_location + i * 4096);
 
 	mov	eax, DWORD PTR i$2[rsp]
 	imul	eax, 4096				; 00001000H
@@ -437,33 +515,33 @@ $LN5@AuDestroyC:
 	call	AuGetPhysicalAddress
 	mov	QWORD PTR phys$7[rsp], rax
 
-; 122  : 			uint64_t physical_address = (uint64_t)v2p((uint64_t)phys);
+; 123  : 			uint64_t physical_address = (uint64_t)v2p((uint64_t)phys);
 
 	mov	rcx, QWORD PTR phys$7[rsp]
 	call	v2p
 	mov	QWORD PTR physical_address$5[rsp], rax
 
-; 123  : 			if (physical_address != 0){
+; 124  : 			if (physical_address != 0){
 
 	cmp	QWORD PTR physical_address$5[rsp], 0
 	je	SHORT $LN2@AuDestroyC
 
-; 124  : 				AuPmmngrFree((void*)physical_address);
+; 125  : 				AuPmmngrFree((void*)physical_address);
 
 	mov	rcx, QWORD PTR physical_address$5[rsp]
 	call	AuPmmngrFree
 $LN2@AuDestroyC:
 
-; 125  : 			}
-; 126  : 		}
+; 126  : 			}
+; 127  : 		}
 
 	jmp	SHORT $LN4@AuDestroyC
 $LN3@AuDestroyC:
 
-; 127  : 		/* Now, check if the thread is in block list,
-; 128  : 		 * if yes, than move it to runtime queue and free
-; 129  : 		 * up the block list */
-; 130  : 		thread_t *t = thread_iterate_block_list(killable->id);
+; 128  : 		/* Now, check if the thread is in block list,
+; 129  : 		 * if yes, than move it to runtime queue and free
+; 130  : 		 * up the block list */
+; 131  : 		thread_t *t = thread_iterate_block_list(killable->id);
 
 	mov	rax, QWORD PTR killable$3[rsp]
 	movzx	eax, WORD PTR [rax+238]
@@ -471,45 +549,45 @@ $LN3@AuDestroyC:
 	call	?thread_iterate_block_list@@YAPEAU_thread_@@H@Z ; thread_iterate_block_list
 	mov	QWORD PTR t$6[rsp], rax
 
-; 131  : 		if (t != NULL){
+; 132  : 		if (t != NULL){
 
 	cmp	QWORD PTR t$6[rsp], 0
 	je	SHORT $LN1@AuDestroyC
 
-; 132  : 			unblock_thread(t);
+; 133  : 			unblock_thread(t);
 
 	mov	rcx, QWORD PTR t$6[rsp]
 	call	unblock_thread
 $LN1@AuDestroyC:
 
-; 133  : 		}
-; 134  : 
-; 135  : 		/* Destroy all opened files */
-; 136  : 		AuDestroyFiles(proc,killable);
+; 134  : 		}
+; 135  : 
+; 136  : 		/* Destroy all opened files */
+; 137  : 		AuDestroyFiles(proc,killable);
 
 	mov	rdx, QWORD PTR killable$3[rsp]
 	mov	rcx, QWORD PTR proc$[rsp]
 	call	?AuDestroyFiles@@YAXPEAU_process_@@PEAU_thread_@@@Z ; AuDestroyFiles
 
-; 137  : 		/* delete the task */
-; 138  : 		task_delete(killable);
+; 138  : 		/* delete the task */
+; 139  : 		task_delete(killable);
 
 	mov	rcx, QWORD PTR killable$3[rsp]
 	call	?task_delete@@YAXPEAU_thread_@@@Z	; task_delete
 
-; 139  : 
-; 140  : 		/* free the killable thread */
-; 141  : 		free(killable);
+; 140  : 
+; 141  : 		/* free the killable thread */
+; 142  : 		free(killable);
 
 	mov	rcx, QWORD PTR killable$3[rsp]
 	call	free
 
-; 142  : 	}
+; 143  : 	}
 
 	jmp	$LN10@AuDestroyC
 $LN9@AuDestroyC:
 
-; 143  : }
+; 144  : }
 
 	add	rsp, 88					; 00000058H
 	ret	0
@@ -524,14 +602,14 @@ proc$ = 64
 thread$ = 72
 ?AuDestroyFiles@@YAXPEAU_process_@@PEAU_thread_@@@Z PROC ; AuDestroyFiles
 
-; 79   : void AuDestroyFiles (process_t *proc, thread_t *thread) {
+; 80   : void AuDestroyFiles (process_t *proc, thread_t *thread) {
 
 $LN8:
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 56					; 00000038H
 
-; 80   : 	for (int i = 0; i < thread->fd_current; i++) {
+; 81   : 	for (int i = 0; i < thread->fd_current; i++) {
 
 	mov	DWORD PTR i$1[rsp], 0
 	jmp	SHORT $LN5@AuDestroyF
@@ -545,19 +623,19 @@ $LN5@AuDestroyF:
 	cmp	DWORD PTR i$1[rsp], eax
 	jge	SHORT $LN3@AuDestroyF
 
-; 81   : 		vfs_node_t *file = thread->fd[i];
+; 82   : 		vfs_node_t *file = thread->fd[i];
 
 	movsxd	rax, DWORD PTR i$1[rsp]
 	mov	rcx, QWORD PTR thread$[rsp]
 	mov	rax, QWORD PTR [rcx+rax*8+264]
 	mov	QWORD PTR file$2[rsp], rax
 
-; 82   : 		if (file) {
+; 83   : 		if (file) {
 
 	cmp	QWORD PTR file$2[rsp], 0
 	je	SHORT $LN2@AuDestroyF
 
-; 83   : 			if (file->flags & FS_FLAG_DEVICE) {
+; 84   : 			if (file->flags & FS_FLAG_DEVICE) {
 
 	mov	rax, QWORD PTR file$2[rsp]
 	movzx	eax, BYTE PTR [rax+48]
@@ -565,26 +643,26 @@ $LN5@AuDestroyF:
 	test	eax, eax
 	je	SHORT $LN1@AuDestroyF
 
-; 84   : 				continue;
+; 85   : 				continue;
 
 	jmp	SHORT $LN4@AuDestroyF
 $LN1@AuDestroyF:
 
-; 85   : 			}
-; 86   : 			free(file);
+; 86   : 			}
+; 87   : 			free(file);
 
 	mov	rcx, QWORD PTR file$2[rsp]
 	call	free
 $LN2@AuDestroyF:
 
-; 87   : 		}
-; 88   : 	}
+; 88   : 		}
+; 89   : 	}
 
 	jmp	SHORT $LN4@AuDestroyF
 $LN3@AuDestroyF:
 
-; 89   : 
-; 90   : }
+; 90   : 
+; 91   : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -607,24 +685,24 @@ proc$ = 128
 thread$ = 136
 ?AuUnmapProcess@@YAXPEAU_process_@@PEAU_thread_@@@Z PROC ; AuUnmapProcess
 
-; 45   : void AuUnmapProcess(process_t *proc, thread_t *thread) {
+; 46   : void AuUnmapProcess(process_t *proc, thread_t *thread) {
 
 $LN14:
 	mov	QWORD PTR [rsp+16], rdx
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 120				; 00000078H
 
-; 46   : 
-; 47   : 	uint64_t init_stack = proc->stack - 2*1024*1024;
+; 47   : 
+; 48   : 	uint64_t init_stack = proc->stack - PROCESS_USER_STACK_SZ;
 
 	mov	rax, QWORD PTR proc$[rsp]
 	mov	rax, QWORD PTR [rax+2104]
-	sub	rax, 2097152				; 00200000H
+	sub	rax, 262144				; 00040000H
 	mov	QWORD PTR init_stack$[rsp], rax
 
-; 48   : 
-; 49   : 	/* Unmap the process image */
-; 50   : 	for (uint32_t i = 0; i < proc->image_size / 4096 + 1; i++) {
+; 49   : 
+; 50   : 	/* Unmap the process image */
+; 51   : 	for (uint32_t i = 0; i < proc->image_size / 4096 + 1; i++) {
 
 	mov	DWORD PTR i$2[rsp], 0
 	jmp	SHORT $LN11@AuUnmapPro
@@ -645,7 +723,7 @@ $LN11@AuUnmapPro:
 	cmp	rcx, rax
 	jae	SHORT $LN9@AuUnmapPro
 
-; 51   : 		void* phys = AuGetPhysicalAddress(thread->frame.cr3,proc->image_base + i * 4096);
+; 52   : 		void* phys = AuGetPhysicalAddress(thread->frame.cr3,proc->image_base + i * 4096);
 
 	mov	eax, DWORD PTR i$2[rsp]
 	imul	eax, 4096				; 00001000H
@@ -658,33 +736,33 @@ $LN11@AuUnmapPro:
 	call	AuGetPhysicalAddress
 	mov	QWORD PTR phys$6[rsp], rax
 
-; 52   : 		uint64_t physical_address = (uint64_t)v2p((uint64_t)phys);
+; 53   : 		uint64_t physical_address = (uint64_t)v2p((uint64_t)phys);
 
 	mov	rcx, QWORD PTR phys$6[rsp]
 	call	v2p
 	mov	QWORD PTR physical_address$5[rsp], rax
 
-; 53   : 		if (physical_address != 0){
+; 54   : 		if (physical_address != 0){
 
 	cmp	QWORD PTR physical_address$5[rsp], 0
 	je	SHORT $LN8@AuUnmapPro
 
-; 54   : 			AuPmmngrFree((void*)physical_address);
+; 55   : 			AuPmmngrFree((void*)physical_address);
 
 	mov	rcx, QWORD PTR physical_address$5[rsp]
 	call	AuPmmngrFree
 $LN8@AuUnmapPro:
 
-; 55   : 		}
-; 56   : 	}
+; 56   : 		}
+; 57   : 	}
 
 	jmp	$LN10@AuUnmapPro
 $LN9@AuUnmapPro:
 
-; 57   : 
-; 58   : 	/* here we leave the user stack unmap steps */
-; 59   : 	//!unmap the runtime stack
-; 60   : 	for (int i = 0; i < (2*1024*1024) / 4096; i++) 
+; 58   : 
+; 59   : 	/* here we leave the user stack unmap steps */
+; 60   : 	//!unmap the runtime stack
+; 61   : 	for (int i = 0; i < (PROCESS_USER_STACK_SZ) / 4096; i++) 
 
 	mov	DWORD PTR i$1[rsp], 0
 	jmp	SHORT $LN7@AuUnmapPro
@@ -693,10 +771,10 @@ $LN6@AuUnmapPro:
 	inc	eax
 	mov	DWORD PTR i$1[rsp], eax
 $LN7@AuUnmapPro:
-	cmp	DWORD PTR i$1[rsp], 512			; 00000200H
+	cmp	DWORD PTR i$1[rsp], 64			; 00000040H
 	jge	SHORT $LN5@AuUnmapPro
 
-; 61   : 		AuUnmapPage(init_stack + i * 4096, true);
+; 62   : 		AuUnmapPage(init_stack + i * 4096, true);
 
 	mov	eax, DWORD PTR i$1[rsp]
 	imul	eax, 4096				; 00001000H
@@ -710,10 +788,10 @@ $LN7@AuUnmapPro:
 	jmp	SHORT $LN6@AuUnmapPro
 $LN5@AuUnmapPro:
 
-; 62   : 	
-; 63   : 
-; 64   : 	/* finally unmap the user space heap of this process */
-; 65   : 	for (int i = 0; i < proc->_heap_size_ / 4096; i++) {
+; 63   : 	
+; 64   : 
+; 65   : 	/* finally unmap the user space heap of this process */
+; 66   : 	for (int i = 0; i < proc->_heap_size_ / 4096; i++) {
 
 	mov	DWORD PTR i$3[rsp], 0
 	jmp	SHORT $LN4@AuUnmapPro
@@ -733,7 +811,7 @@ $LN4@AuUnmapPro:
 	cmp	rcx, rax
 	jae	SHORT $LN2@AuUnmapPro
 
-; 66   : 		void* phys = AuGetPhysicalAddress(thread->frame.cr3,PROCESS_HEAP_BREAK + i * 4096);
+; 67   : 		void* phys = AuGetPhysicalAddress(thread->frame.cr3,PROCESS_HEAP_BREAK + i * 4096);
 
 	mov	eax, DWORD PTR i$3[rsp]
 	imul	eax, 4096				; 00001000H
@@ -746,30 +824,30 @@ $LN4@AuUnmapPro:
 	call	AuGetPhysicalAddress
 	mov	QWORD PTR phys$7[rsp], rax
 
-; 67   : 		uint64_t physical_address = (uint64_t)v2p((uint64_t)phys);
+; 68   : 		uint64_t physical_address = (uint64_t)v2p((uint64_t)phys);
 
 	mov	rcx, QWORD PTR phys$7[rsp]
 	call	v2p
 	mov	QWORD PTR physical_address$4[rsp], rax
 
-; 68   : 		if (physical_address != 0){
+; 69   : 		if (physical_address != 0){
 
 	cmp	QWORD PTR physical_address$4[rsp], 0
 	je	SHORT $LN1@AuUnmapPro
 
-; 69   : 			AuPmmngrFree((void*)physical_address);
+; 70   : 			AuPmmngrFree((void*)physical_address);
 
 	mov	rcx, QWORD PTR physical_address$4[rsp]
 	call	AuPmmngrFree
 $LN1@AuUnmapPro:
 
-; 70   : 		}
-; 71   : 	}
+; 71   : 		}
+; 72   : 	}
 
 	jmp	$LN3@AuUnmapPro
 $LN2@AuUnmapPro:
 
-; 72   : }
+; 73   : }
 
 	add	rsp, 120				; 00000078H
 	ret	0
@@ -785,146 +863,161 @@ cr3$ = 48
 proc$ = 80
 ?AuExitProcess@@YAXPEAU_process_@@@Z PROC		; AuExitProcess
 
-; 197  : void AuExitProcess (process_t *proc) {
+; 212  : void AuExitProcess (process_t *proc) {
 
 $LN4:
 	mov	QWORD PTR [rsp+8], rcx
 	sub	rsp, 72					; 00000048H
 
-; 198  : 	x64_cli ();
+; 213  : 	x64_cli ();
 
 	call	x64_cli
 
-; 199  : 
-; 200  : 	thread_t* main_thr = proc->main_thread;
+; 214  : 
+; 215  : 	thread_t* main_thr = proc->main_thread;
 
 	mov	rax, QWORD PTR proc$[rsp]
 	mov	rax, QWORD PTR [rax+2064]
 	mov	QWORD PTR main_thr$[rsp], rax
 
-; 201  : 	uint16_t t_id = main_thr->id;
+; 216  : 	uint16_t t_id = main_thr->id;
 
 	mov	rax, QWORD PTR main_thr$[rsp]
 	movzx	eax, WORD PTR [rax+238]
 	mov	WORD PTR t_id$[rsp], ax
 
-; 202  : 
-; 203  : 	uint64_t cr3 = main_thr->frame.cr3;
+; 217  : 
+; 218  : 	uint64_t cr3 = main_thr->frame.cr3;
 
 	mov	rax, QWORD PTR main_thr$[rsp]
 	mov	rax, QWORD PTR [rax+192]
 	mov	QWORD PTR cr3$[rsp], rax
 
-; 204  : 
-; 205  : 	/* Destroy the sound dsp entry */
-; 206  : 	AuSoundDestroyDSP(t_id);
+; 219  : 
+; 220  : 	/* Destroy the sound dsp entry */
+; 221  : 	AuSoundDestroyDSP(t_id);
 
 	movzx	ecx, WORD PTR t_id$[rsp]
 	call	?AuSoundDestroyDSP@@YAXG@Z		; AuSoundDestroyDSP
 
-; 207  : 
-; 208  : 	/* Now find a timer entry for this thread */
-; 209  : 	int timer = find_timer_id(t_id);
+; 222  : 
+; 223  : 	/* Now find a timer entry for this thread */
+; 224  : 	int timer = find_timer_id(t_id);
 
 	movzx	ecx, WORD PTR t_id$[rsp]
 	call	?find_timer_id@@YAHG@Z			; find_timer_id
 	mov	DWORD PTR timer$[rsp], eax
 
-; 210  : 
-; 211  : 	if (timer != -1) 
+; 225  : 
+; 226  : 	if (timer != -1) 
 
 	cmp	DWORD PTR timer$[rsp], -1
 	je	SHORT $LN1@AuExitProc
 
-; 212  : 		destroy_timer(timer);
+; 227  : 		destroy_timer(timer);
 
 	mov	ecx, DWORD PTR timer$[rsp]
 	call	?destroy_timer@@YAXH@Z			; destroy_timer
 $LN1@AuExitProc:
 
-; 213  : 
-; 214  : 	/* Destroy the opened pri_loop message box */
-; 215  : 	pri_loop_destroy_by_id(t_id);
-
-	movzx	ecx, WORD PTR t_id$[rsp]
-	call	?pri_loop_destroy_by_id@@YAXG@Z		; pri_loop_destroy_by_id
-
-; 216  : 
-; 217  : 	/* unallocate system libraries */
-; 218  : 	AuUnallocSysLibs();
+; 228  : 
+; 229  : 	/* unallocate system libraries */
+; 230  : 	AuUnallocSysLibs();
 
 	call	?AuUnallocSysLibs@@YAXXZ		; AuUnallocSysLibs
 
-; 219  : 
-; 220  : 	/* destroy allocated memory */
-; 221  : 	AuDestroyMemory(proc, main_thr);
+; 231  : 
+; 232  : 	/* destroy allocated memory */
+; 233  : 	AuDestroyMemory(proc, main_thr);
 
 	mov	rdx, QWORD PTR main_thr$[rsp]
 	mov	rcx, QWORD PTR proc$[rsp]
 	call	?AuDestroyMemory@@YAXPEAU_process_@@PEAU_thread_@@@Z ; AuDestroyMemory
 
-; 222  : 	
-; 223  : 	
-; 224  : 	/* destroy all threads allocated */
-; 225  : 	AuDestroyChildThreads(proc, main_thr);
+; 234  : 	
+; 235  : 	/* before destroying pri_loop, drop a message
+; 236  : 	 * to the screen manager id, to close the registered
+; 237  : 	 * gui object with this process */
+; 238  : 	AuCloseScreen(t_id);
+
+	movzx	ecx, WORD PTR t_id$[rsp]
+	call	?AuCloseScreen@@YAXG@Z			; AuCloseScreen
+
+; 239  : 
+; 240  : 	/* Destroy the opened pri_loop message box */
+; 241  : 	pri_loop_destroy_by_id(t_id);
+
+	movzx	ecx, WORD PTR t_id$[rsp]
+	call	?pri_loop_destroy_by_id@@YAXG@Z		; pri_loop_destroy_by_id
+
+; 242  : 
+; 243  : 
+; 244  : 	/* destroy all threads allocated */
+; 245  : 	AuDestroyChildThreads(proc, main_thr);
 
 	mov	rdx, QWORD PTR main_thr$[rsp]
 	mov	rcx, QWORD PTR proc$[rsp]
 	call	?AuDestroyChildThreads@@YAXPEAU_process_@@PEAU_thread_@@@Z ; AuDestroyChildThreads
 
-; 226  : 
-; 227  : 	AuDestroyFiles(proc, main_thr);
+; 246  : 
+; 247  : 	AuDestroyFiles(proc, main_thr);
 
 	mov	rdx, QWORD PTR main_thr$[rsp]
 	mov	rcx, QWORD PTR proc$[rsp]
 	call	?AuDestroyFiles@@YAXPEAU_process_@@PEAU_thread_@@@Z ; AuDestroyFiles
 
-; 228  : 	
-; 229  : 	/* remove the process from process 
-; 230  : 	 * list
-; 231  : 	 */
-; 232  : 	
-; 233  : 	free(main_thr->fx_state);
+; 248  : 	
+; 249  : 	/* remove the process from process 
+; 250  : 	 * list
+; 251  : 	 */
+; 252  : 	
+; 253  : 	free(main_thr->fx_state);
 
 	mov	rax, QWORD PTR main_thr$[rsp]
 	mov	rcx, QWORD PTR [rax+216]
 	call	free
 
-; 234  : 	task_delete (main_thr);
+; 254  : 	task_delete (main_thr);
 
 	mov	rcx, QWORD PTR main_thr$[rsp]
 	call	?task_delete@@YAXPEAU_thread_@@@Z	; task_delete
 
-; 235  : 	free(main_thr);
+; 255  : 	free(main_thr);
 
 	mov	rcx, QWORD PTR main_thr$[rsp]
 	call	free
 
-; 236  : 
-; 237  : 	free(proc->process_file);
+; 256  : 
+; 257  : 	free(proc->process_file);
 
 	mov	rax, QWORD PTR proc$[rsp]
 	mov	rcx, QWORD PTR [rax+2144]
 	call	free
 
-; 238  : 	remove_process (proc);
+; 258  : 	remove_process (proc);
 
 	mov	rcx, QWORD PTR proc$[rsp]
 	call	?remove_process@@YAXPEAU_process_@@@Z	; remove_process
 
-; 239  : 
-; 240  : 	free_kstack((uint64_t*)cr3);
+; 259  : 
+; 260  : 	free_kstack((uint64_t*)cr3);
 
 	mov	rcx, QWORD PTR cr3$[rsp]
 	call	?free_kstack@@YAXPEA_K@Z		; free_kstack
 
-; 241  : 	/* free the address space */
-; 242  : 	AuPmmngrFree((void*)cr3);
+; 261  : 	/* free the address space */
+; 262  : 	AuPmmngrFree((void*)cr3);
 
 	mov	rcx, QWORD PTR cr3$[rsp]
 	call	AuPmmngrFree
 
-; 243  : }
+; 263  : 
+; 264  : 	/* switch next task */
+; 265  : 	force_sched();
+
+	call	force_sched
+
+; 266  : }
 
 	add	rsp, 72					; 00000048H
 	ret	0

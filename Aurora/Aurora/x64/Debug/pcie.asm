@@ -6,12 +6,12 @@ INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
 CONST	SEGMENT
-$SG3804	DB	'MSI-X found for this device', 0aH, 00H
+$SG3805	DB	'MSI-X found for this device', 0aH, 00H
 	ORG $+3
-$SG3832	DB	'PCIE Dev -- VENID -> %x, DEVID -> %x, CC-> %x, SC-> %x ', 0aH
+$SG3833	DB	'PCIE Dev -- VENID -> %x, DEVID -> %x, CC-> %x, SC-> %x ', 0aH
 	DB	00H
 	ORG $+7
-$SG3833	DB	'BUS-> %d, DEV -> %d, func ->%d ', 0aH, 00H
+$SG3834	DB	'BUS-> %d, DEV -> %d, func ->%d ', 0aH, 00H
 CONST	ENDS
 PUBLIC	?pci_express_get_device@@YA_KGHHH@Z		; pci_express_get_device
 PUBLIC	pci_express_scan_class
@@ -369,7 +369,7 @@ $LN1@pcie_scan_:
 	mov	r8d, edx
 	mov	eax, DWORD PTR tv154[rsp]
 	mov	edx, eax
-	lea	rcx, OFFSET FLAT:$SG3832
+	lea	rcx, OFFSET FLAT:$SG3833
 	call	printf
 
 ; 503  : 				printf ("BUS-> %d, DEV -> %d, func ->%d \n", bus, dev, func);
@@ -378,7 +378,7 @@ $LN1@pcie_scan_:
 	mov	r9d, DWORD PTR func$2[rsp]
 	mov	r8d, eax
 	mov	edx, DWORD PTR bus$3[rsp]
-	lea	rcx, OFFSET FLAT:$SG3833
+	lea	rcx, OFFSET FLAT:$SG3834
 	call	printf
 
 ; 504  : 			}
@@ -767,7 +767,7 @@ $LN5@pcie_alloc:
 
 ; 469  : 				printf ("MSI-X found for this device\n");
 
-	lea	rcx, OFFSET FLAT:$SG3804
+	lea	rcx, OFFSET FLAT:$SG3805
 	call	printf
 
 ; 470  : 				value = true; //MSI-X Allocated: not implemented

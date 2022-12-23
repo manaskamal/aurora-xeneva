@@ -45,6 +45,7 @@ typedef struct _shared_mem_ {
 	uint8_t flags;
 	uint32_t num_frames;
 	uint16_t link_count;
+	list_t* shm_lnk_list;
 	thread_t* map_in_thread;
 	void *first_process_vaddr;
 }shared_mem_t;

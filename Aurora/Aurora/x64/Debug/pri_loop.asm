@@ -14,9 +14,9 @@ _BSS	SEGMENT
 ?_pri_loop_root_created_@@3_NA DB 01H DUP (?)		; _pri_loop_root_created_
 _BSS	ENDS
 CONST	SEGMENT
-$SG3695	DB	'pri_loop', 00H
+$SG3696	DB	'pri_loop', 00H
 	ORG $+7
-$SG3696	DB	'/dev/pri_loop', 00H
+$SG3697	DB	'/dev/pri_loop', 00H
 CONST	ENDS
 PUBLIC	?pri_loop_init@@YAXXZ				; pri_loop_init
 PUBLIC	?pri_put_message@@YAXPEAU_pri_event_@@@Z	; pri_put_message
@@ -1059,7 +1059,7 @@ $LN3:
 ; 271  : 	strcpy (node->filename, "pri_loop");
 
 	mov	rax, QWORD PTR node$[rsp]
-	lea	rdx, OFFSET FLAT:$SG3695
+	lea	rdx, OFFSET FLAT:$SG3696
 	mov	rcx, rax
 	call	strcpy
 
@@ -1123,7 +1123,7 @@ $LN3:
 
 	xor	r8d, r8d
 	mov	rdx, QWORD PTR node$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3696
+	lea	rcx, OFFSET FLAT:$SG3697
 	call	vfs_mount
 
 ; 284  : 	_pri_loop_root_created_ = false;

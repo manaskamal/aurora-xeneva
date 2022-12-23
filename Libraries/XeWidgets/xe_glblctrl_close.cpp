@@ -31,6 +31,7 @@
 #include <xebase.h>
 #include <canvas.h>
 #include <sys\shm.h>
+#include <sys\_exit.h>
 #include <stdlib.h>
 #include <font.h>
 
@@ -40,5 +41,6 @@ void XEGlobalControl_CloseHandler(XEGlobalControl *ctrl, XEWindow *win) {
 	sys_shm_unlink(win->app->back_key);
 	sys_shm_unlink(win->app->sh_key);
 	canvas_close(win->ctx);
-	XECloseApplication(win->app);
+	//XECloseApplication(win->app);
+	sys_exit();
 }

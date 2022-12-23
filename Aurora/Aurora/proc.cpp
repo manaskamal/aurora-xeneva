@@ -123,21 +123,21 @@ uint64_t *create_user_stack (process_t *proc, uint64_t* cr3) {
 	uint64_t location = USER_STACK;
 	
 	/* 2 mb stack / process */
-	for (int i=0; i < (2*1024*1024)/4096; i++) {
+	for (int i=0; i < (PROCESS_USER_STACK_SZ)/4096; i++) {
 		uint64_t *block = (uint64_t*)p2v((size_t)AuPmmngrAlloc());
 		AuMapPageEx(cr3,v2p((size_t)block),location + i * 4096, PAGING_USER);
 	}
 
 	au_vm_area_t *vma = (au_vm_area_t*)malloc(sizeof(au_vm_area_t));
 	vma->start = location;
-	vma->end = (location + 2*1024*1024);
+	vma->end = (location + PROCESS_USER_STACK_SZ);
 	vma->file = NULL;
 	vma->offset = 0;
 	vma->prot_flags = VM_READ | VM_EXEC;
 	vma->type = VM_TYPE_STACK;
 	vma->length = 2*1024*1024;
 	AuInsertVMArea(proc, vma);
-	return (uint64_t*)(USER_STACK + (2*1024*1024));
+	return (uint64_t*)(USER_STACK + (PROCESS_USER_STACK_SZ));
 }
 
 /*
@@ -210,12 +210,13 @@ int AuCreateProcess(const char* filename, char* procname) {
 
 	//! create the user stack and address space
 	uint64_t *cr3 = AuCreateAddressSpace();	
-	_debug_print_ ("PROCESS CR3 -> %x \r\n", cr3);
 
 
 	AuMapPageEx(cr3,v2p((size_t)buf),_image_base_, PAGING_USER);
+
 	////! read rest of the image
 	int position = 1;  //we already read 4096 bytes at first
+	process->file_position = position;
 
 	uint64_t text_section_start = _image_base_;
 
@@ -297,8 +298,6 @@ int AuCreateProcess(const char* filename, char* procname) {
 	process->num_thread++;
 	process->main_thread = t; 
     add_process(process);
-
-	_debug_print_ ("***Process created \r\n");
 
 	return t->id;
 }

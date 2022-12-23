@@ -46,7 +46,7 @@
 #define PRI_WM_RECEIVER       0xFFFFD00000000000
 static int __request_buffer_width = 0;
 static int __request_buffer_height = 0;
-
+XeApp* base_app;
 /*
  * XeSendEventPRIWM -- Sends a message to PRIWM
  * @param event -- message body
@@ -70,11 +70,31 @@ force:
 }
 
 /*
+ * XEDefaultSignalHandler -- default signal handler
+ * for GUI apps
+ * @param signo -- system parameter
+ */
+void XEDefaultSignalHandler (int signo) {
+	XeApp* app = base_app;
+	if (app != NULL) {
+		int back_key = app->back_key;
+		int sh_key = app->sh_key;
+		sys_shm_unlink(back_key);
+		sys_shm_unlink(sh_key);
+	}
+	sys_exit();
+}
+/*
  * XeStartApplication -- Initializes all the required stuffs
  * for GUI Application
  */
 XeApp* XeStartApplication(int argc, char* argv[]) {
 	int event_fd = XePriLoopCreate();
+
+	base_app = NULL;
+
+	for (int i = 1; i <= NUMSIGNALS; i++)
+		sys_set_signal(i, XEDefaultSignalHandler);
 
 	/* so XEApps are graphical apps so, 
 	 * we need to initialize all default signal handlers
@@ -135,6 +155,7 @@ XeApp* XeStartApplication(int argc, char* argv[]) {
 				app->shared_win_address = sh_win_addr;
 				app->buffer_width = 400;
 				app->buffer_height = 400;
+				base_app = app;
 
 				pri_event_t e;
 				e.type = PRIWM_WINDOW_SHOW;
@@ -161,8 +182,7 @@ XE_EXTERN XE_EXPORT void XECloseApplication (XeApp *app) {
 	pri_event_t ev;
 	ev.type = 102; //mark for close message
 	XeSendEventPRIWM(&ev, app->event_fd);
-	memset(&ev, 0, sizeof(pri_event_t));
-	for(;;) {
+	/*for(;;) {
 		ioquery(app->event_fd, PRI_LOOP_GET_EVENT, &ev);
 		if (ev.type != 0) {
 			if (ev.type == 208) {
@@ -170,7 +190,8 @@ XE_EXTERN XE_EXPORT void XECloseApplication (XeApp *app) {
 				memset(&ev, 0, sizeof(pri_event_t));
 			}
 		}
-	}
+	}*/
+	sys_exit();
 }
 
 /*
@@ -181,4 +202,11 @@ XE_EXTERN XE_EXPORT void XECloseApplication (XeApp *app) {
 XE_EXTERN XE_EXPORT void XESetRequestBufferSize (int buffer_width, int buffer_height) {
 	__request_buffer_width = buffer_width;
 	__request_buffer_height = buffer_height;
+}
+
+/*
+ * XEGetApp -- Returns application structure
+ */
+XE_EXTERN XE_EXPORT XeApp* XEGetApp() {
+	return base_app;
 }

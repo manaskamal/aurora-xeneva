@@ -5,23 +5,17 @@ include listing.inc
 INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
-CONST	SEGMENT
-$SG4102	DB	'Loop', 00H
-CONST	ENDS
 PUBLIC	?create__sys_process@@YAHPEBDPEAD@Z		; create__sys_process
 PUBLIC	?sys_exit@@YAXXZ				; sys_exit
 PUBLIC	?sys_kill@@YAXHH@Z				; sys_kill
 PUBLIC	?sys_set_signal@@YAXHP6AXH@Z@Z			; sys_set_signal
-PUBLIC	?sig_loop_tst@@YAXXZ				; sig_loop_tst
 PUBLIC	?sys_sigreturn@@YAXH@Z				; sys_sigreturn
 EXTRN	x64_cli:PROC
 EXTRN	get_current_thread:PROC
-EXTRN	force_sched:PROC
 EXTRN	?thread_iterate_ready_list@@YAPEAU_thread_@@G@Z:PROC ; thread_iterate_ready_list
 EXTRN	?thread_iterate_block_list@@YAPEAU_thread_@@H@Z:PROC ; thread_iterate_block_list
 EXTRN	?AuCreateProcess@@YAHPEBDPEAD@Z:PROC		; AuCreateProcess
 EXTRN	?get_current_process@@YAPEAU_process_@@XZ:PROC	; get_current_process
-EXTRN	_debug_print_:PROC
 EXTRN	?AuAllocSignal@@YAXPEAU_thread_@@H@Z:PROC	; AuAllocSignal
 EXTRN	?AuExitProcess@@YAXPEAU_process_@@@Z:PROC	; AuExitProcess
 pdata	SEGMENT
@@ -29,7 +23,7 @@ $pdata$?create__sys_process@@YAHPEBDPEAD@Z DD imagerel $LN3
 	DD	imagerel $LN3+47
 	DD	imagerel $unwind$?create__sys_process@@YAHPEBDPEAD@Z
 $pdata$?sys_exit@@YAXXZ DD imagerel $LN3
-	DD	imagerel $LN3+39
+	DD	imagerel $LN3+34
 	DD	imagerel $unwind$?sys_exit@@YAXXZ
 $pdata$?sys_kill@@YAXHH@Z DD imagerel $LN4
 	DD	imagerel $LN4+73
@@ -37,9 +31,6 @@ $pdata$?sys_kill@@YAXHH@Z DD imagerel $LN4
 $pdata$?sys_set_signal@@YAXHP6AXH@Z@Z DD imagerel $LN3
 	DD	imagerel $LN3+46
 	DD	imagerel $unwind$?sys_set_signal@@YAXHP6AXH@Z@Z
-$pdata$?sig_loop_tst@@YAXXZ DD imagerel $LN5
-	DD	imagerel $LN5+23
-	DD	imagerel $unwind$?sig_loop_tst@@YAXXZ
 $pdata$?sys_sigreturn@@YAXH@Z DD imagerel $LN3
 	DD	imagerel $LN3+28
 	DD	imagerel $unwind$?sys_sigreturn@@YAXH@Z
@@ -53,8 +44,6 @@ $unwind$?sys_kill@@YAXHH@Z DD 010c01H
 	DD	0620cH
 $unwind$?sys_set_signal@@YAXHP6AXH@Z@Z DD 010d01H
 	DD	0420dH
-$unwind$?sig_loop_tst@@YAXXZ DD 010401H
-	DD	04204H
 $unwind$?sys_sigreturn@@YAXH@Z DD 010801H
 	DD	06208H
 xdata	ENDS
@@ -65,23 +54,23 @@ current_thread$ = 32
 num$ = 64
 ?sys_sigreturn@@YAXH@Z PROC				; sys_sigreturn
 
-; 97   : void sys_sigreturn (int num) {
+; 91   : void sys_sigreturn (int num) {
 
 $LN3:
 	mov	DWORD PTR [rsp+8], ecx
 	sub	rsp, 56					; 00000038H
 
-; 98   : 	x64_cli();
+; 92   : 	x64_cli();
 
 	call	x64_cli
 
-; 99   : 	thread_t *current_thread = get_current_thread();
+; 93   : 	thread_t *current_thread = get_current_thread();
 
 	call	get_current_thread
 	mov	QWORD PTR current_thread$[rsp], rax
 
-; 100  : 	/* Just make a page fault here */
-; 101  : }
+; 94   : 	/* Just make a page fault here */
+; 95   : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -90,56 +79,29 @@ _TEXT	ENDS
 ; Function compile flags: /Odtpy
 ; File e:\xeneva project\xeneva\aurora\aurora\sysserv\sysproc.cpp
 _TEXT	SEGMENT
-?sig_loop_tst@@YAXXZ PROC				; sig_loop_tst
-
-; 89   : void sig_loop_tst() {
-
-$LN5:
-	sub	rsp, 40					; 00000028H
-$LN2@sig_loop_t:
-
-; 90   : 	for(;;) {
-; 91   : 		_debug_print_ ("Loop");
-
-	lea	rcx, OFFSET FLAT:$SG4102
-	call	_debug_print_
-
-; 92   : 	}
-
-	jmp	SHORT $LN2@sig_loop_t
-
-; 93   : }
-
-	add	rsp, 40					; 00000028H
-	ret	0
-?sig_loop_tst@@YAXXZ ENDP				; sig_loop_tst
-_TEXT	ENDS
-; Function compile flags: /Odtpy
-; File e:\xeneva project\xeneva\aurora\aurora\sysserv\sysproc.cpp
-_TEXT	SEGMENT
 signo$ = 48
 handler$ = 56
 ?sys_set_signal@@YAXHP6AXH@Z@Z PROC			; sys_set_signal
 
-; 84   : void sys_set_signal (int signo, sig_handler handler) {
+; 83   : void sys_set_signal (int signo, sig_handler handler) {
 
 $LN3:
 	mov	QWORD PTR [rsp+16], rdx
 	mov	DWORD PTR [rsp+8], ecx
 	sub	rsp, 40					; 00000028H
 
-; 85   : 	x64_cli();
+; 84   : 	x64_cli();
 
 	call	x64_cli
 
-; 86   : 	get_current_thread()->signals[signo] = handler;
+; 85   : 	get_current_thread()->signals[signo] = handler;
 
 	call	get_current_thread
 	movsxd	rcx, DWORD PTR signo$[rsp]
 	mov	rdx, QWORD PTR handler$[rsp]
 	mov	QWORD PTR [rax+rcx*8+752], rdx
 
-; 87   : }
+; 86   : }
 
 	add	rsp, 40					; 00000028H
 	ret	0
@@ -153,45 +115,45 @@ pid$ = 64
 signo$ = 72
 ?sys_kill@@YAXHH@Z PROC					; sys_kill
 
-; 68   : void sys_kill (int pid, int signo) {
+; 67   : void sys_kill (int pid, int signo) {
 
 $LN4:
 	mov	DWORD PTR [rsp+16], edx
 	mov	DWORD PTR [rsp+8], ecx
 	sub	rsp, 56					; 00000038H
 
-; 69   : 	x64_cli();
+; 68   : 	x64_cli();
 
 	call	x64_cli
 
-; 70   : 	thread_t *current_thread = thread_iterate_ready_list(pid);
+; 69   : 	thread_t *current_thread = thread_iterate_ready_list(pid);
 
 	movzx	ecx, WORD PTR pid$[rsp]
 	call	?thread_iterate_ready_list@@YAPEAU_thread_@@G@Z ; thread_iterate_ready_list
 	mov	QWORD PTR current_thread$[rsp], rax
 
-; 71   : 	if (current_thread == NULL) 
+; 70   : 	if (current_thread == NULL) 
 
 	cmp	QWORD PTR current_thread$[rsp], 0
 	jne	SHORT $LN1@sys_kill
 
-; 72   : 		current_thread = thread_iterate_block_list(pid);
+; 71   : 		current_thread = thread_iterate_block_list(pid);
 
 	mov	ecx, DWORD PTR pid$[rsp]
 	call	?thread_iterate_block_list@@YAPEAU_thread_@@H@Z ; thread_iterate_block_list
 	mov	QWORD PTR current_thread$[rsp], rax
 $LN1@sys_kill:
 
-; 73   : 
-; 74   : 	/* Allocate a new signal */
-; 75   : 	AuAllocSignal(current_thread,signo);
+; 72   : 
+; 73   : 	/* Allocate a new signal */
+; 74   : 	AuAllocSignal(current_thread,signo);
 
 	mov	edx, DWORD PTR signo$[rsp]
 	mov	rcx, QWORD PTR current_thread$[rsp]
 	call	?AuAllocSignal@@YAXPEAU_thread_@@H@Z	; AuAllocSignal
 
-; 76   : 
-; 77   : }
+; 75   : 
+; 76   : }
 
 	add	rsp, 56					; 00000038H
 	ret	0
@@ -222,11 +184,7 @@ $LN3:
 	mov	rcx, QWORD PTR proc$[rsp]
 	call	?AuExitProcess@@YAXPEAU_process_@@@Z	; AuExitProcess
 
-; 59   : 	force_sched();
-
-	call	force_sched
-
-; 60   : }
+; 59   : }
 
 	add	rsp, 56					; 00000038H
 	ret	0

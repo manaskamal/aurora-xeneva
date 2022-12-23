@@ -340,7 +340,7 @@ thread_t* create_child_thread (thread_t *parent, void (*entry)(void*),uint64_t s
 //! the main idle thread
 void idle_thread () {
 	while(1) {
-		//x64_hlt();
+		x64_hlt();
 	}
 }
 
@@ -390,15 +390,6 @@ end:
 	current_thread = (thread_t*)pcpu->au_current_thread;//AuPCPUGetCurrentThread(); //task;
 }
 
-
-
-
-void sig_loop () {
-	for(;;) {
-		//_debug_print_ ("Loop    ");
-		x64_cli();
-	}
-}
 
 /** ===============================================
  **  Scheduler Isr | Scheduler Isr

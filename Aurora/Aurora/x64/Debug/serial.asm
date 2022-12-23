@@ -9,12 +9,12 @@ _BSS	SEGMENT
 _serial_initialized_ DB 01H DUP (?)
 _BSS	ENDS
 CONST	SEGMENT
-$SG3616	DB	'Serial Handler', 0aH, 00H
-$SG3709	DB	'.', 00H
+$SG3617	DB	'Serial Handler', 0aH, 00H
+$SG3710	DB	'.', 00H
 	ORG $+2
-$SG3736	DB	'serial', 00H
+$SG3737	DB	'serial', 00H
 	ORG $+5
-$SG3737	DB	'/dev/serial', 00H
+$SG3738	DB	'/dev/serial', 00H
 CONST	ENDS
 PUBLIC	?AuInitializeSerial@@YAXXZ			; AuInitializeSerial
 PUBLIC	?AuInitializeSerialFile@@YAXXZ			; AuInitializeSerialFile
@@ -200,7 +200,7 @@ $LN3:
 
 ; 47   : 	printf ("Serial Handler\n");
 
-	lea	rcx, OFFSET FLAT:$SG3616
+	lea	rcx, OFFSET FLAT:$SG3617
 	call	printf
 
 ; 48   : 	AuInterruptEnd(4);
@@ -545,7 +545,7 @@ $LN5@debug_prin:
 ; 142  : 			{
 ; 143  : 				debug_serial(".");
 
-	lea	rcx, OFFSET FLAT:$SG3709
+	lea	rcx, OFFSET FLAT:$SG3710
 	call	?debug_serial@@YAXPEAD@Z		; debug_serial
 
 ; 144  : 			}
@@ -726,7 +726,7 @@ $LN3:
 ; 194  : 	strcpy (node->filename, "serial");
 
 	mov	rax, QWORD PTR node$[rsp]
-	lea	rdx, OFFSET FLAT:$SG3736
+	lea	rdx, OFFSET FLAT:$SG3737
 	mov	rcx, rax
 	call	strcpy
 
@@ -792,7 +792,7 @@ $LN3:
 
 	xor	r8d, r8d
 	mov	rdx, QWORD PTR node$[rsp]
-	lea	rcx, OFFSET FLAT:$SG3737
+	lea	rcx, OFFSET FLAT:$SG3738
 	call	vfs_mount
 
 ; 207  : }

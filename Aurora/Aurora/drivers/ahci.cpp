@@ -150,7 +150,6 @@ void ahci_initialize () {
 
 	/* First find in standard registry */
 	uint64_t device = pci_express_scan_class(0x01,0x06, &bus, &dev, &func);
-	printf ("AHCI device -> %x \n", device);
 	if (device == 0xFFFFFFFF)
 		ahci_not_found = true; // pci_express_scan_class(0x01,0x06);
 	
@@ -170,10 +169,7 @@ void ahci_initialize () {
 	
 	
 	uint32_t int_line = pci_express_read(device, PCI_INTERRUPT_LINE, bus, dev, func);
-	printf ("AHCI INTERRUPT LINE -> %d \r\n", int_line);
 	uint32_t base_address = pci_express_read(device,PCI_BAR5, bus, dev, func);
-	printf ("AHCI/SATA found BAR -> %x \n", base_address);
-
 	
 
 	uint64_t command = pci_express_read(device,PCI_COMMAND, bus, dev, func); 

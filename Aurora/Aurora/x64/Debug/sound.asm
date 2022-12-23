@@ -28,9 +28,9 @@ _BSS	SEGMENT
 ?_audio_stoped_@@3_NA DB 01H DUP (?)			; _audio_stoped_
 _BSS	ENDS
 CONST	SEGMENT
-$SG4019	DB	'dsp', 00H
+$SG4020	DB	'dsp', 00H
 	ORG $+4
-$SG4020	DB	'/dev/dsp', 00H
+$SG4021	DB	'/dev/dsp', 00H
 CONST	ENDS
 PUBLIC	?AuSoundInitialize@@YAXXZ			; AuSoundInitialize
 PUBLIC	AuSoundRegisterDevice
@@ -1323,7 +1323,7 @@ $LN3:
 ; 219  : 	strcpy (dsp->filename, "dsp");
 
 	mov	rax, QWORD PTR dsp$[rsp]
-	lea	rdx, OFFSET FLAT:$SG4019
+	lea	rdx, OFFSET FLAT:$SG4020
 	mov	rcx, rax
 	call	strcpy
 
@@ -1389,7 +1389,7 @@ $LN3:
 
 	xor	r8d, r8d
 	mov	rdx, QWORD PTR dsp$[rsp]
-	lea	rcx, OFFSET FLAT:$SG4020
+	lea	rcx, OFFSET FLAT:$SG4021
 	call	vfs_mount
 
 ; 232  : 

@@ -56,7 +56,6 @@ void sys_exit () {
 	x64_cli();	
 	process_t* proc = get_current_process();
 	AuExitProcess(proc);
-	force_sched();
 }
 
 
@@ -86,11 +85,6 @@ void sys_set_signal (int signo, sig_handler handler) {
 	get_current_thread()->signals[signo] = handler;
 }
 
-void sig_loop_tst() {
-	for(;;) {
-		_debug_print_ ("Loop");
-	}
-}
 /**
  * sys_sigreturn -- return from a signal handler
  */

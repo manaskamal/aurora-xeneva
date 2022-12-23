@@ -157,7 +157,6 @@ void _AuMain (KERNEL_BOOT_INFO *info) {
 
 #ifdef ARCH_X64
 
-	printf ("Scheduler Initialized\n");
 	int au_status = 0;
 
 	/* start the init process here */

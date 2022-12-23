@@ -5,22 +5,7 @@ include listing.inc
 INCLUDELIB LIBCMT
 INCLUDELIB OLDNAMES
 
-CONST	SEGMENT
-$SG4005	DB	'Kernel Panic!! Page fault ', 0aH, 00H
-	ORG $+4
-$SG4006	DB	'Virtual address -> %x ', 0aH, 00H
-$SG4007	DB	'RIP ->%x ', 0aH, 00H
-	ORG $+5
-$SG4008	DB	'Current thread -> %s ', 0aH, 00H
-	ORG $+1
-$SG4012	DB	'Page Fault -> 0x%x ', 0aH, 00H
-	ORG $+3
-$SG4013	DB	'RIP -> %x ', 0aH, 00H
-	ORG $+4
-$SG4014	DB	'Current thread -> %s,id -> %d ', 0aH, 00H
-CONST	ENDS
 PUBLIC	?AuHandlePageNotPresent@@YAX_K_NPEAX@Z		; AuHandlePageNotPresent
-EXTRN	printf:PROC
 EXTRN	AuPmmngrAlloc:PROC
 EXTRN	x64_cli:PROC
 EXTRN	x64_read_cr2:PROC
@@ -32,7 +17,7 @@ EXTRN	?AuFindVMA@@YAPEAU_vma_area_@@_K@Z:PROC		; AuFindVMA
 EXTRN	?fat32_read@@YA_KPEAU_vfs_node_@@PEA_K@Z:PROC	; fat32_read
 pdata	SEGMENT
 $pdata$?AuHandlePageNotPresent@@YAX_K_NPEAX@Z DD imagerel $LN10
-	DD	imagerel $LN10+414
+	DD	imagerel $LN10+251
 	DD	imagerel $unwind$?AuHandlePageNotPresent@@YAX_K_NPEAX@Z
 pdata	ENDS
 xdata	SEGMENT
@@ -43,11 +28,10 @@ xdata	ENDS
 ; File e:\xeneva project\xeneva\aurora\aurora\mmngr\mmfault.cpp
 _TEXT	SEGMENT
 i$1 = 32
-tv90 = 36
 vm$ = 40
-virtual_address$ = 48
-frame$ = 56
-phys_addr$2 = 64
+phys_addr$2 = 48
+virtual_address$ = 56
+frame$ = 64
 vaddr$ = 96
 user$ = 104
 param$ = 112
@@ -85,32 +69,10 @@ $LN10:
 
 	call	x64_cli
 
-; 46   : 		printf ("Kernel Panic!! Page fault \n");
-
-	lea	rcx, OFFSET FLAT:$SG4005
-	call	printf
-
-; 47   : 		printf ("Virtual address -> %x \n", virtual_address);
-
-	mov	rdx, QWORD PTR virtual_address$[rsp]
-	lea	rcx, OFFSET FLAT:$SG4006
-	call	printf
-
-; 48   : 		printf ("RIP ->%x \n", frame->rip);
-
-	mov	rax, QWORD PTR frame$[rsp]
-	mov	rdx, QWORD PTR [rax+16]
-	lea	rcx, OFFSET FLAT:$SG4007
-	call	printf
-
-; 49   : 		printf ("Current thread -> %s \n", get_current_thread()->name);
-
-	call	get_current_thread
-	add	rax, 229				; 000000e5H
-	mov	rdx, rax
-	lea	rcx, OFFSET FLAT:$SG4008
-	call	printf
-
+; 46   : 		//printf ("Kernel Panic!! Page fault \n");
+; 47   : 		//printf ("Virtual address -> %x \n", virtual_address);
+; 48   : 		//printf ("RIP ->%x \n", frame->rip);
+; 49   : 		//printf ("Current thread -> %s \n", get_current_thread()->name);
 ; 50   : 		if (virtual_address == NULL)
 
 	cmp	QWORD PTR virtual_address$[rsp], 0
@@ -144,32 +106,9 @@ $LN7@AuHandlePa:
 
 	call	x64_cli
 
-; 57   : 		printf ("Page Fault -> 0x%x \n", vaddr);
-
-	mov	rdx, QWORD PTR vaddr$[rsp]
-	lea	rcx, OFFSET FLAT:$SG4012
-	call	printf
-
-; 58   : 		printf ("RIP -> %x \n", frame->rip);
-
-	mov	rax, QWORD PTR frame$[rsp]
-	mov	rdx, QWORD PTR [rax+16]
-	lea	rcx, OFFSET FLAT:$SG4013
-	call	printf
-
-; 59   : 		printf ("Current thread -> %s,id -> %d \n", get_current_thread()->name, get_current_thread()->id);
-
-	call	get_current_thread
-	movzx	eax, WORD PTR [rax+238]
-	mov	DWORD PTR tv90[rsp], eax
-	call	get_current_thread
-	add	rax, 229				; 000000e5H
-	mov	ecx, DWORD PTR tv90[rsp]
-	mov	r8d, ecx
-	mov	rdx, rax
-	lea	rcx, OFFSET FLAT:$SG4014
-	call	printf
-
+; 57   : 		//printf ("Page Fault -> 0x%x \n", vaddr);
+; 58   : 		//printf ("RIP -> %x \n", frame->rip);
+; 59   : 		//printf ("Current thread -> %s,id -> %d \n", get_current_thread()->name, get_current_thread()->id);
 ; 60   : 		block_thread (get_current_thread());
 
 	call	get_current_thread

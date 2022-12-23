@@ -43,10 +43,10 @@ void AuHandlePageNotPresent (uint64_t vaddr, bool user, void* param) {
 	void* virtual_address = (void*)x64_read_cr2();
 	if (!user) {
 		x64_cli();
-		printf ("Kernel Panic!! Page fault \n");
-		printf ("Virtual address -> %x \n", virtual_address);
-		printf ("RIP ->%x \n", frame->rip);
-		printf ("Current thread -> %s \n", get_current_thread()->name);
+		//printf ("Kernel Panic!! Page fault \n");
+		//printf ("Virtual address -> %x \n", virtual_address);
+		//printf ("RIP ->%x \n", frame->rip);
+		//printf ("Current thread -> %s \n", get_current_thread()->name);
 		if (virtual_address == NULL)
 			block_thread (get_current_thread());
 		force_sched();
@@ -54,9 +54,9 @@ void AuHandlePageNotPresent (uint64_t vaddr, bool user, void* param) {
 	au_vm_area_t *vm = AuFindVMA(vaddr);
 	if (vm == NULL){
 		x64_cli();
-		printf ("Page Fault -> 0x%x \n", vaddr);
-		printf ("RIP -> %x \n", frame->rip);
-		printf ("Current thread -> %s,id -> %d \n", get_current_thread()->name, get_current_thread()->id);
+		//printf ("Page Fault -> 0x%x \n", vaddr);
+		//printf ("RIP -> %x \n", frame->rip);
+		//printf ("Current thread -> %s,id -> %d \n", get_current_thread()->name, get_current_thread()->id);
 		block_thread (get_current_thread());
 		force_sched();
 		return;

@@ -53,6 +53,8 @@ void AuInitializeShMem () {
  */
 uint32_t AuCreateShMem (uint32_t key,size_t size, uint32_t flags) {
 	x64_cli();
+	process_t* proc = get_current_process();
+
 	for (int i = 0; i < shared_mem_list->pointer; i++) {
 		shared_mem_t *mem = (shared_mem_t*)list_get_at(shared_mem_list, i);
 		if (mem->key == key)
@@ -69,7 +71,9 @@ uint32_t AuCreateShMem (uint32_t key,size_t size, uint32_t flags) {
 	sh_mem->link_count = 0;
 	sh_mem->map_in_thread = NULL;
 	sh_mem->first_process_vaddr = NULL;
+	sh_mem->shm_lnk_list = initialize_list();
 	list_add(shared_mem_list, sh_mem);
+	/* also add it to the process's shared_mem_list */
 	sh_id++;
 	return sh_mem->id;
 }
@@ -95,6 +99,7 @@ void* AuObtainShMem (uint32_t id, void * shmaddr, int shmflg) {
 
 	if (mem == NULL)
 		return NULL;
+
 
 	void* ret_addre = NULL;
 	/* Shared memory was already mapped so, 

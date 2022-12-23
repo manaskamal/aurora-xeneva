@@ -18,13 +18,14 @@
 #include <screen.h>
 #include <fs\vfs.h>
 #include <arch\x86_64\mmngr\kheap.h>
+#include <proc.h>
 
 //! Architecture specific
 #ifdef ARCH_X64
 #include <arch\x86_64\mmngr\paging.h>
 #endif
 
-display_t display;
+display_t *display;
 
 int screen_io_query (vfs_node_t* node, int code, void* arg);
 
@@ -34,13 +35,16 @@ int screen_io_query (vfs_node_t* node, int code, void* arg);
  * @param info -- the boot information pointer passed by xnldr
  */
 void AuInitializeScreen (KERNEL_BOOT_INFO *info){
-	display.buffer = info->graphics_framebuffer;
-	display.width = info->X_Resolution;
-	display.height = info->Y_Resolution;
-	display.bpp = 32;
-	display.scanline = info->pixels_per_line;
-	display.pitch = 4*info->pixels_per_line;
-	display.size = info->fb_size;
+	display = (display_t*)malloc(sizeof(display_t));
+	memset(display, 0, sizeof(display_t));
+	display->buffer = info->graphics_framebuffer;
+	display->width = info->X_Resolution;
+	display->height = info->Y_Resolution;
+	display->bpp = 32;
+	display->scanline = info->pixels_per_line;
+	display->pitch = 4*info->pixels_per_line;
+	display->size = info->fb_size;
+	display->screen_mngr_pid = -1;
 
 	/**
 	 * register the device node for screen interface
@@ -58,9 +62,7 @@ void AuInitializeScreen (KERNEL_BOOT_INFO *info){
 	svga->write = 0;
 	svga->read_blk = 0;
 	svga->ioquery = screen_io_query;
-	printf ("VFS Node created\n");
 	vfs_mount ("/dev/fb", svga, 0);
-	printf ("VFS DEV FB Registered\n");
 
 	/* clear the screen */
 	for (int w = 0; w < info->X_Resolution; w++) {
@@ -80,13 +82,13 @@ void AuInitializeScreen (KERNEL_BOOT_INFO *info){
  * @param height -- mode height
  */
 void AuScreenMap (uint32_t width, uint32_t height) {
-	display.width = width;
-	display.height = height;
+	display->width = width;
+	display->height = height;
 	//! Map a shared region for other processes to output
-	for (int i = 0; i < display.size / 4096; i++)
-		AuMapPage((uint64_t)display.buffer + i * 4096, 0xFFFFD00000200000 + i * 4096, PAGING_USER);
+	for (int i = 0; i < display->size / 4096; i++)
+		AuMapPage((uint64_t)display->buffer + i * 4096, 0xFFFFD00000200000 + i * 4096, PAGING_USER);
 
-	display.buffer = (uint32_t*)0xFFFFD00000200000;
+	display->buffer = (uint32_t*)0xFFFFD00000200000;
 }
 
 /**
@@ -94,7 +96,7 @@ void AuScreenMap (uint32_t width, uint32_t height) {
  * @return -- width of the screen
  */
 uint32_t AuGetScreenWidth () {
-	return display.width;
+	return display->width;
 }
 
 /**
@@ -102,7 +104,7 @@ uint32_t AuGetScreenWidth () {
  * @return -- height of the screen
  */
 uint32_t AuGetScreenHeight () {
-	return display.height;
+	return display->height;
 }
 
 /**
@@ -111,7 +113,7 @@ uint32_t AuGetScreenHeight () {
  * @return -- framebuffer address
  */
 uint32_t * AuGetFramebuffer () {
-	return display.buffer;
+	return display->buffer;
 }
 
 /**
@@ -119,7 +121,7 @@ uint32_t * AuGetFramebuffer () {
  * @return -- bits/pixel of the screen
  */
 uint32_t AuGetScreenBPP () {
-	return display.bpp;
+	return display->bpp;
 }
 
 /**
@@ -127,7 +129,7 @@ uint32_t AuGetScreenBPP () {
  * @return -- scanline of the screen
  */
 uint16_t AuGetScreenScanline() {
-	return display.scanline;
+	return display->scanline;
 }
 
 /**
@@ -135,7 +137,7 @@ uint16_t AuGetScreenScanline() {
  * @return -- framebuffer size
  */
 uint32_t AuGetFramebufferSize() {
-	return display.size;
+	return display->size;
 }
 
 /**
@@ -145,7 +147,7 @@ uint32_t AuGetFramebufferSize() {
  * @param color -- color of the pixel
  */
 void AuDrawPixel (unsigned x, unsigned y, uint32_t color ) {
-	display.buffer[x + y * display.width] = color;
+	display->buffer[x + y * display->width] = color;
 }
 
 /**
@@ -159,29 +161,44 @@ int screen_io_query (vfs_node_t* node, int code, void* arg) {
 	int ret = 0;
 	switch (code) {
 	case SCREEN_GETWIDTH:{
-		uint32_t width = display.width;
+		uint32_t width = display->width;
 		ret = width;
 		break;
 	}
 	case SCREEN_GETHEIGHT:{
-		uint32_t height = display.height;
+		uint32_t height = display->height;
 		ret = height;
 		break;
 	}
 	case SCREEN_GETBPP:{
-		uint32_t bpp = display.bpp;
+		uint32_t bpp = display->bpp;
 		ret =  bpp;
 		break;
 	 }
 	case SCREEN_GET_SCANLINE: {
-		uint16_t scanline = display.scanline;
+		uint16_t scanline = display->scanline;
 		ret =  scanline;
 		break;
 	}
 	case SCREEN_GET_PITCH:
-		ret = display.pitch;
+		ret = display->pitch;
 		break;
-	}
 
+	case SCREEN_REGISTER_MNGR: {
+		if (display->screen_mngr_pid == -1) {
+			thread_t* thr = get_current_thread();
+			display->screen_mngr_pid = thr->id;
+		}
+		break;
+    }
+	}
 	return ret;
+}
+
+/*
+ * AuGetScreenMngrID -- returns screen manager process
+ * id 
+ */
+uint16_t AuGetScreenMngrID () {
+	return display->screen_mngr_pid;
 }

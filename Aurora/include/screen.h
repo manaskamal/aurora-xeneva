@@ -34,6 +34,7 @@
 #define SCREEN_MOVE_CURSOR  0x106
 #define SCREEN_GET_SCANLINE 0x107
 #define SCREEN_GET_PITCH    0x108
+#define SCREEN_REGISTER_MNGR 0x109
 
 
 //! Display structure
@@ -45,6 +46,7 @@ typedef struct __display__ {
 	uint16_t scanline;
 	uint32_t size;
 	uint32_t pitch;
+	int16_t screen_mngr_pid;
 }display_t;
 
 //!Simple Display Interface for User mode applications
@@ -107,5 +109,11 @@ AU_EXTERN AU_EXPORT uint32_t AuGetFramebufferSize();
  * @param color -- color of the pixel
  */
 AU_EXTERN AU_EXPORT void AuDrawPixel(unsigned x, unsigned y, uint32_t color);
+
+/*
+ * AuGetScreenMngrID -- returns screen manager process
+ * id 
+ */
+AU_EXTERN AU_EXPORT uint16_t AuGetScreenMngrID ();
 
 #endif

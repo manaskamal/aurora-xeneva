@@ -110,7 +110,6 @@ void initialize_fat32 () {
 	total_clusters = fat32_data->large_sector_count / sectors_per_cluster;
 	_debug_print_ ("FAT32 Total clusters -> %d \r\n", total_clusters);
 
-
 }
 
 /**
