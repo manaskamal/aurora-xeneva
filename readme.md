@@ -2,7 +2,7 @@
 
 # Latest Updates
 
-## _I'll be focusing on it's Kernel 'Aurora' like--hardware support, multiple architecture support, Network support,booting on Real-Machine...etc_
+## [Moved to new repository, new rewritten version of Xeneva is here ]( https://github.com/manaskamal/XenevaOS )
 
 
 # Aurora's Xeneva
